@@ -434,6 +434,7 @@ AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify atexit clock_gettime f
 
 AC_CANONICAL_HOST
 
+build_gnu=no
 build_linux=no
 build_windows=no
 build_mac=no
@@ -441,6 +442,9 @@ build_freebsd=no
 
 # Detect the target system
 case "${host_os}" in
+    gnu*)
+        build_gnu=yes
+        ;;
     linux*)
         build_linux=yes
         ;;
@@ -459,6 +463,7 @@ case "${host_os}" in
 esac
 
 # Pass the conditionals to automake
+AM_CONDITIONAL([GNU], [test "$build_gnu" = "yes"])
 AM_CONDITIONAL([LINUX], [test "$build_linux" = "yes"])
 AM_CONDITIONAL([FREEBSD], [test "$build_freebsd" = "yes"])
 AM_CONDITIONAL([WINDOWS], [test "$build_windows" = "yes"])

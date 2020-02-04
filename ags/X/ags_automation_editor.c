@@ -1448,7 +1448,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
       automation_edit = ags_automation_edit_new();
 
       g_object_set(automation_edit,
-		   "channel-type", G_TYPE_NONE,
+		   "channel-type", AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type,
 		   "control-specifier", AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->control_name,
 		   "control-name", control_name,
 		   "upper", upper,

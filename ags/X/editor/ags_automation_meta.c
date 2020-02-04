@@ -546,7 +546,8 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
     guint length;
     guint x0, y0;
     guint x1, y1;
-    guint i;
+    guint i, i_stop;
+    guint j, j_stop;
     
     gtk_label_set_label(automation_meta->machine_type,
 			G_OBJECT_TYPE_NAME(automation_editor->selected_machine)); 
@@ -964,6 +965,8 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
       gtk_label_set_label(automation_meta->current_acceleration,
 			  "(null)"); 
     }else{
+      GType *channel_type;
+      
       /* focused port */
       gtk_label_set_label(automation_meta->focused_port,
 			  automation_editor->focused_automation_edit->control_specifier);
@@ -999,6 +1002,208 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
 			  str); 
 
       g_free(str);
+
+      /* current acceleration */
+      g_object_get(automation_editor->selected_machine->audio,
+		   "automation", &start_automation,
+		   NULL);
+
+      timestamp = ags_timestamp_new();
+
+      timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+      timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+    
+      x0 = automation_editor->focused_automation_edit->cursor_position_x;
+      y0 = automation_editor->focused_automation_edit->lower;
+    
+      x1 = x0 + (exp2(6.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom)) * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH);
+      y1 = automation_editor->focused_automation_edit->upper;
+
+      str = NULL;
+
+      i_stop = 0;
+      
+      if(notebook == NULL){
+	i_stop = 1;
+	j_stop = 1;
+
+	channel_type = G_TYPE_NONE;
+      }else if(notebook == automation_editor->output_notebook){      
+	g_object_get(automation_editor->selected_machine->audio,
+		     "audio-channels", &i_stop,
+		     "output-pads", &j_stop,
+		     NULL);
+
+	channel_type = AGS_TYPE_OUTPUT;
+      }else if(notebook == automation_editor->input_notebook){
+	g_object_get(automation_editor->selected_machine->audio,
+		     "audio-channels", &i_stop,
+		     "input-pads", &j_stop,
+		     NULL);
+
+	channel_type = AGS_TYPE_INPUT;
+      }
+
+      for(i = 0; i < i_stop; i++){
+	gchar *current_str;
+	  
+	timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x0 / AGS_AUTOMATION_DEFAULT_OFFSET);
+      
+	position = i;
+	  
+	current_str = NULL;
+	
+	for(j = 0; j < j_stop;){
+	  gboolean j_success;
+	  
+	  position = ags_notebook_next_active_tab(notebook, position);
+	  
+	  if(position == -1){
+	    break;
+	  }      
+
+	  j = (guint) floor(position / i_stop);  
+
+	  if(position % i_stop != i){
+	    position++;
+
+	    continue;
+	  }
+	  
+	  j_success = FALSE;
+	  
+	ags_automation_meta_refresh_CURRENT_ACCELERATION_TIMESTAMP_NO2:
+	  automation = start_automation;
+	  
+	  while((automation = ags_automation_find_near_timestamp_extended(automation, position,
+									  channel_type, automation_editor->focused_automation_edit->control_specifier,
+									  timestamp)) != NULL){
+	    start_acceleration = ags_automation_find_region(automation->data,
+							    x0, y0,
+							    x1, y1,
+							    FALSE);
+	    
+	    acceleration = start_acceleration;
+
+	    while(acceleration != NULL){
+	      guint x;
+	      gdouble y;
+	      
+	      g_object_get(acceleration->data,
+			   "x", &x,
+			   "y", &y,
+			   NULL);
+	      
+	      if(current_str == NULL){
+		current_str = g_strdup_printf("\n    @line[%u] -> {%u|%f",
+					      j,
+					      x,
+					      y);
+	      }else{
+		gchar *tmp;
+
+		if(!j_success){
+		  tmp = g_strdup_printf("%s,\n    @line[%u] -> {%u|%f",
+					current_str,
+					j,
+					x,
+					y);
+		}else{
+		  tmp = g_strdup_printf("%s, %u|%f",
+					current_str,
+					x,
+					y);
+		}
+
+		g_free(current_str);
+
+		current_str = tmp;
+	      }
+
+	      j_success = TRUE;
+
+	      acceleration = acceleration->next;
+	    }	    
+	    
+	    automation = automation->next;
+	  }
+	  
+	  if(timestamp->timer.ags_offset.offset < AGS_AUTOMATION_DEFAULT_OFFSET * floor(x1 / AGS_AUTOMATION_DEFAULT_OFFSET)){
+	    timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x1 / AGS_AUTOMATION_DEFAULT_OFFSET);
+	    
+	    goto ags_automation_meta_refresh_CURRENT_ACCELERATION_TIMESTAMP_NO2;
+	  }
+
+	  if(j_success){
+	    gchar *tmp;
+
+	    tmp = g_strdup_printf("%s}",
+				  current_str);
+
+	    g_free(current_str);
+
+	    current_str = tmp;
+	  }
+	  
+	  j++;
+	  position++;
+	}
+
+	if(current_str == NULL){
+	  if(str == NULL){
+	    str = g_strdup_printf("@audio_channel[%d] -> (null)",
+				  i);
+	  }else{
+	    gchar *tmp;
+	  
+	    tmp = g_strdup_printf("%s,\n  @audio_channel[%d] -> (null)",
+				  str,
+				  i);
+
+	    g_free(str);
+
+	    str = tmp;
+	  }
+	}else{
+	  if(str == NULL){
+	    str = g_strdup_printf("@audio_channel[%d] -> {%s}",
+				  i,
+				  current_str);
+	  }else{
+	    gchar *tmp;
+	  
+	    tmp = g_strdup_printf("%s,\n  @audio_channel[%d] -> {%s}",
+				  str,
+				  i,
+				  current_str);
+
+	    g_free(str);
+
+	    str = tmp;
+	  }
+
+	  g_free(current_str);
+	}
+      }
+      
+      g_list_free_full(start_automation,
+		       (GDestroyNotify) g_object_unref);
+
+      if(str == NULL){
+	gtk_label_set_label(automation_meta->current_acceleration,
+			    "(null)");
+      }else{
+	gchar *tmp;
+      
+	tmp = g_strdup_printf("[%s]", str);
+	gtk_label_set_label(automation_meta->current_acceleration,
+			    tmp);
+
+	g_free(str);
+	g_free(tmp);
+      }
+    
+      g_object_unref(timestamp);
     }
   }
 }

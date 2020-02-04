@@ -671,6 +671,8 @@ FREEBSD_FALSE
 FREEBSD_TRUE
 LINUX_FALSE
 LINUX_TRUE
+GNU_FALSE
+GNU_TRUE
 LIBOBJS
 FAST_TEST_MODE_FALSE
 FAST_TEST_MODE_TRUE
@@ -22991,6 +22993,7 @@ done
 
 
 
+build_gnu=no
 build_linux=no
 build_windows=no
 build_mac=no
@@ -22998,6 +23001,9 @@ build_freebsd=no
 
 # Detect the target system
 case "${host_os}" in
+    gnu*)
+        build_gnu=yes
+        ;;
     linux*)
         build_linux=yes
         ;;
@@ -23016,6 +23022,14 @@ case "${host_os}" in
 esac
 
 # Pass the conditionals to automake
+ if test "$build_gnu" = "yes"; then
+  GNU_TRUE=
+  GNU_FALSE='#'
+else
+  GNU_TRUE='#'
+  GNU_FALSE=
+fi
+
  if test "$build_linux" = "yes"; then
   LINUX_TRUE=
   LINUX_FALSE='#'
@@ -23982,6 +23996,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${FAST_TEST_MODE_TRUE}" && test -z "${FAST_TEST_MODE_FALSE}"; then
   as_fn_error $? "conditional \"FAST_TEST_MODE\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${GNU_TRUE}" && test -z "${GNU_FALSE}"; then
+  as_fn_error $? "conditional \"GNU\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${LINUX_TRUE}" && test -z "${LINUX_FALSE}"; then

@@ -631,8 +631,7 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
     x0 = notation_editor->notation_edit->cursor_position_x;
     y0 = notation_editor->notation_edit->cursor_position_y;
 
-    x1 = x0 + exp2(6.0 - (double) gtk_combo_box_get_active(notation_editor->notation_toolbar->zoom));
-    
+    x1 = x0 + exp2(6.0 - (double) gtk_combo_box_get_active(notation_editor->notation_toolbar->zoom));    
     y1 = y0 + 1;
 
     str = NULL;
@@ -649,12 +648,12 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
 	break;
       }
 
-      i = position;
-
+      current_str = NULL;
     ags_notation_meta_refresh_CURRENT_NOTE_TIMESTAMP_NO2:
+      
       notation = start_notation;
 
-      current_str = NULL;
+      i = position;
       
       while((notation = ags_notation_find_near_timestamp(notation, i,
 							 timestamp)) != NULL){
@@ -700,6 +699,9 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
     
       if(timestamp->timer.ags_offset.offset < AGS_NOTATION_DEFAULT_OFFSET * floor(x1 / AGS_NOTATION_DEFAULT_OFFSET)){
 	timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(x1 / AGS_NOTATION_DEFAULT_OFFSET);
+
+	position = i;
+	
 	goto ags_notation_meta_refresh_CURRENT_NOTE_TIMESTAMP_NO2;
       }
       

@@ -3,7 +3,7 @@ ags (3.1.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented getter and setter functions of properties
 	* implemented meta widget of AgsNotationEditor
-	* TODO:JK: implemented meta widget of AgsAutomationEditor
+	* implemented meta widget of AgsAutomationEditor
 	* TODO:JK: implemented meta widget of AgsWaveEditor
 	* TODO:JK: implemented AgsOnlineHelpWindow
 	* implemented accoustic feedback of ags-recall-dssi
@@ -13,6 +13,7 @@ ags (3.1.0)
 	* TODO:JK: refactored GSequencer to allow single window mode
 	* fixed ref-count of AgsRecallDssi:count-beats-audio-run
 	* fixed AgsAutomationEdit not shown again
+	* fixed AgsAutomationEdit cursor x-position
 
 ags (3.0.13)
 
