@@ -44,6 +44,7 @@ typedef struct _AgsAutomationMetaClass AgsAutomationMetaClass;
 
 typedef enum{
   AGS_AUTOMATION_META_CONNECTED   = 1,
+  AGS_AUTOMATION_META_ENABLED     = 1 <<  1,
 }AgsAutomationMetaFlags;
 
 struct _AgsAutomationMeta

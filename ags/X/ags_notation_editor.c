@@ -50,6 +50,9 @@ void ags_notation_editor_finalize(GObject *gobject);
 void ags_notation_editor_connect(AgsConnectable *connectable);
 void ags_notation_editor_disconnect(AgsConnectable *connectable);
 
+void ags_notation_editor_show(GtkWidget *widget);
+void ags_notation_editor_show_all(GtkWidget *widget);
+
 void ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 					      AgsMachine *machine);
 
@@ -154,6 +157,8 @@ void
 ags_notation_editor_class_init(AgsNotationEditorClass *notation_editor)
 {
   GObjectClass *gobject;
+  GtkWidgetClass *widget;
+  
   GParamSpec *param_spec;
 
   ags_notation_editor_parent_class = g_type_class_peek_parent(notation_editor);
@@ -183,6 +188,12 @@ ags_notation_editor_class_init(AgsNotationEditorClass *notation_editor)
 				  PROP_SOUNDCARD,
 				  param_spec);
 
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) notation_editor;
+  
+  widget->show = ags_notation_editor_show;
+  widget->show_all = ags_notation_editor_show_all;
+  
   /* AgsEditorClass */
   notation_editor->machine_changed = ags_notation_editor_real_machine_changed;
 
@@ -356,6 +367,9 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 
   /* notation meta */
   notation_editor->notation_meta = ags_notation_meta_new();
+  g_object_set(notation_editor->notation_meta,
+	       "valign", GTK_ALIGN_START,
+	       NULL);  
   gtk_table_attach(table,
 		   (GtkWidget *) notation_editor->notation_meta,
 		   2, 3,
@@ -514,6 +528,22 @@ ags_notation_editor_disconnect(AgsConnectable *connectable)
 
   /* notation meta */
   ags_connectable_disconnect(AGS_CONNECTABLE(notation_editor->notation_meta));
+}
+
+void
+ags_notation_editor_show(GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS(ags_notation_editor_parent_class)->show(widget);
+
+  gtk_widget_hide(AGS_NOTATION_EDITOR(widget)->notation_meta);
+}
+
+void
+ags_notation_editor_show_all(GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS(ags_notation_editor_parent_class)->show_all(widget);
+
+  gtk_widget_hide(AGS_NOTATION_EDITOR(widget)->notation_meta);
 }
 
 void

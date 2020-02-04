@@ -44,6 +44,7 @@ typedef struct _AgsWaveMetaClass AgsWaveMetaClass;
 
 typedef enum{
   AGS_WAVE_META_CONNECTED   = 1,
+  AGS_WAVE_META_ENABLED     = 1 <<  1,
 }AgsWaveMetaFlags;
 
 struct _AgsWaveMeta

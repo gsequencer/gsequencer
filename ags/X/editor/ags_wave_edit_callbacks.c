@@ -471,6 +471,24 @@ ags_wave_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event
 	}
       }
       break;
+    case GDK_KEY_m:
+      {
+	/* meta */
+	if((AGS_WAVE_EDIT_KEY_L_CONTROL & (wave_edit->key_mask)) != 0 || (AGS_WAVE_EDIT_KEY_R_CONTROL & (wave_edit->key_mask)) != 0){
+	  if((AGS_WAVE_META_ENABLED & (wave_editor->wave_meta->flags)) != 0){
+	    wave_editor->wave_meta->flags &= (~AGS_WAVE_META_ENABLED);
+
+	    gtk_widget_hide(wave_editor->wave_meta);
+	  }else{
+	    wave_editor->wave_meta->flags |= AGS_WAVE_META_ENABLED;
+
+	    gtk_widget_show_all(wave_editor->wave_meta);
+
+	    ags_wave_meta_refresh(wave_editor->wave_meta);
+	  }
+	}
+      }
+      break;
     }
   }
 

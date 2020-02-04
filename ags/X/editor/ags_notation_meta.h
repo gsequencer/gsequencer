@@ -44,6 +44,7 @@ typedef struct _AgsNotationMetaClass AgsNotationMetaClass;
 
 typedef enum{
   AGS_NOTATION_META_CONNECTED   = 1,
+  AGS_NOTATION_META_ENABLED     = 1 <<  1,
 }AgsNotationMetaFlags;
 
 struct _AgsNotationMeta

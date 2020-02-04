@@ -619,6 +619,24 @@ ags_notation_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *e
 	}
       }
       break;
+    case GDK_KEY_m:
+      {
+	/* meta */
+	if((AGS_NOTATION_EDIT_KEY_L_CONTROL & (notation_edit->key_mask)) != 0 || (AGS_NOTATION_EDIT_KEY_R_CONTROL & (notation_edit->key_mask)) != 0){
+	  if((AGS_NOTATION_META_ENABLED & (notation_editor->notation_meta->flags)) != 0){
+	    notation_editor->notation_meta->flags &= (~AGS_NOTATION_META_ENABLED);
+
+	    gtk_widget_hide(notation_editor->notation_meta);
+	  }else{
+	    notation_editor->notation_meta->flags |= AGS_NOTATION_META_ENABLED;
+
+	    gtk_widget_show_all(notation_editor->notation_meta);
+
+	    ags_notation_meta_refresh(notation_editor->notation_meta);
+	  }
+	}
+      }
+      break;
     }
   }
 

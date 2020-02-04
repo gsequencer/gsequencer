@@ -45,9 +45,13 @@ void ags_wave_editor_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
+void ags_wave_editor_finalize(GObject *gobject);
+
 void ags_wave_editor_connect(AgsConnectable *connectable);
 void ags_wave_editor_disconnect(AgsConnectable *connectable);
-void ags_wave_editor_finalize(GObject *gobject);
+
+void ags_wave_editor_show(GtkWidget *widget);
+void ags_wave_editor_show_all(GtkWidget *widget);
 
 gint ags_wave_editor_paste_wave_all(AgsWaveEditor *wave_editor,
 				    AgsMachine *machine,
@@ -144,6 +148,8 @@ void
 ags_wave_editor_class_init(AgsWaveEditorClass *wave_editor)
 {
   GObjectClass *gobject;
+  GtkWidgetClass *widget;
+  
   GParamSpec *param_spec;
 
   ags_wave_editor_parent_class = g_type_class_peek_parent(wave_editor);
@@ -158,6 +164,12 @@ ags_wave_editor_class_init(AgsWaveEditorClass *wave_editor)
   
   /* properties */
 
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) wave_editor;
+  
+  widget->show = ags_wave_editor_show;
+  widget->show_all = ags_wave_editor_show_all;
+  
   /* AgsEditorClass */
   wave_editor->machine_changed = ags_wave_editor_real_machine_changed;
 
@@ -608,6 +620,22 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
 			     gtk_adjustment_get_value(hscrollbar_adjustment) / old_h_upper * h_upper);
 #endif
   }
+}
+
+void
+ags_wave_editor_show(GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS(ags_wave_editor_parent_class)->show(widget);
+
+  gtk_widget_hide(AGS_WAVE_EDITOR(widget)->wave_meta);
+}
+
+void
+ags_wave_editor_show_all(GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS(ags_wave_editor_parent_class)->show_all(widget);
+
+  gtk_widget_hide(AGS_WAVE_EDITOR(widget)->wave_meta);
 }
 
 void

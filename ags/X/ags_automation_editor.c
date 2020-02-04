@@ -49,6 +49,9 @@ void ags_automation_editor_connect(AgsConnectable *connectable);
 void ags_automation_editor_disconnect(AgsConnectable *connectable);
 void ags_automation_editor_finalize(GObject *gobject);
 
+void ags_automation_editor_show(GtkWidget *widget);
+void ags_automation_editor_show_all(GtkWidget *widget);
+
 void ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine);
 
 gint ags_automation_editor_paste_automation_all(AgsAutomationEditor *automation_editor,
@@ -144,6 +147,8 @@ void
 ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
 {
   GObjectClass *gobject;
+  GtkWidgetClass *widget;
+
   GParamSpec *param_spec;
 
   ags_automation_editor_parent_class = g_type_class_peek_parent(automation_editor);
@@ -158,6 +163,12 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
   
   /* properties */
   
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) automation_editor;
+  
+  widget->show = ags_automation_editor_show;
+  widget->show_all = ags_automation_editor_show_all;
+
   /* AgsEditorClass */
   automation_editor->machine_changed = ags_automation_editor_real_machine_changed;
 
@@ -1045,6 +1056,22 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
 			     gtk_adjustment_get_value(input_hscrollbar_adjustment) / old_h_upper * h_upper);
 #endif
   }
+}
+
+void
+ags_automation_editor_show(GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS(ags_automation_editor_parent_class)->show(widget);
+
+  gtk_widget_hide(AGS_AUTOMATION_EDITOR(widget)->automation_meta);
+}
+
+void
+ags_automation_editor_show_all(GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS(ags_automation_editor_parent_class)->show_all(widget);
+
+  gtk_widget_hide(AGS_AUTOMATION_EDITOR(widget)->automation_meta);
 }
 
 void

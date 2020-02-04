@@ -1038,6 +1038,24 @@ ags_automation_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey 
 	}
       }
       break;
+    case GDK_KEY_m:
+      {
+	/* meta */
+	if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & (automation_edit->key_mask)) != 0 || (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & (automation_edit->key_mask)) != 0){
+	  if((AGS_AUTOMATION_META_ENABLED & (automation_editor->automation_meta->flags)) != 0){
+	    automation_editor->automation_meta->flags &= (~AGS_AUTOMATION_META_ENABLED);
+
+	    gtk_widget_hide(automation_editor->automation_meta);
+	  }else{
+	    automation_editor->automation_meta->flags |= AGS_AUTOMATION_META_ENABLED;
+
+	    gtk_widget_show_all(automation_editor->automation_meta);
+
+	    ags_automation_meta_refresh(automation_editor->automation_meta);
+	  }
+	}
+      }
+      break;
     }
   }
 
