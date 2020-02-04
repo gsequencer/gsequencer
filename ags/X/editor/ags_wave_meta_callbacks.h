@@ -30,9 +30,14 @@
 
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_wave_editor.h>
+
 #include <ags/X/editor/ags_wave_meta.h>
 
 G_BEGIN_DECLS
+
+void ags_wave_meta_machine_changed_callback(AgsWaveEditor *wave_editor, AgsMachine *machine,
+					    AgsWaveMeta *wave_meta);
 
 G_END_DECLS
 

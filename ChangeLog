@@ -4,7 +4,7 @@ ags (3.1.0)
 	* TODO:JK: implemented getter and setter functions of properties
 	* implemented meta widget of AgsNotationEditor
 	* implemented meta widget of AgsAutomationEditor
-	* TODO:JK: implemented meta widget of AgsWaveEditor
+	* implemented meta widget of AgsWaveEditor
 	* TODO:JK: implemented AgsOnlineHelpWindow
 	* implemented accoustic feedback of ags-recall-dssi
 	* implemented accoustic feedback of ags-recall-lv2

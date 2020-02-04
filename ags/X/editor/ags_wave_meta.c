@@ -20,6 +20,8 @@
 #include <ags/X/editor/ags_wave_meta.h>
 #include <ags/X/editor/ags_wave_meta_callbacks.h>
 
+#include <ags/X/ags_wave_editor.h>
+
 #include <ags/i18n.h>
 
 void ags_wave_meta_class_init(AgsWaveMetaClass *wave_meta);
@@ -114,13 +116,19 @@ ags_wave_meta_init(AgsWaveMeta *wave_meta)
   /* machine type */
   i = 0;
   
-  label = (GtkLabel *) gtk_label_new(i18n("machine type"));
+  label = (GtkLabel *) gtk_label_new(i18n("machine type: "));
+  g_object_set(label,
+	       "halign", GTK_ALIGN_START,
+	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
 		  0, i,
 		  1, 1);
 
   wave_meta->machine_type = (GtkLabel *) gtk_label_new("(null)");
+  g_object_set(wave_meta->machine_type,
+	       "halign", GTK_ALIGN_START,
+	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) wave_meta->machine_type,
 		  1, i,
@@ -129,13 +137,19 @@ ags_wave_meta_init(AgsWaveMeta *wave_meta)
   /* machine name */
   i++;
   
-  label = (GtkLabel *) gtk_label_new(i18n("machine name"));
+  label = (GtkLabel *) gtk_label_new(i18n("machine name: "));
+  g_object_set(label,
+	       "halign", GTK_ALIGN_START,
+	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
 		  0, i,
 		  1, 1);
 
   wave_meta->machine_name = (GtkLabel *) gtk_label_new("(null)");
+  g_object_set(wave_meta->machine_name,
+	       "halign", GTK_ALIGN_START,
+	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) wave_meta->machine_name,
 		  1, i,
@@ -144,28 +158,40 @@ ags_wave_meta_init(AgsWaveMeta *wave_meta)
   /* audio channels */
   i++;
   
-  label = (GtkLabel *) gtk_label_new(i18n("audio channels"));
+  label = (GtkLabel *) gtk_label_new(i18n("audio channels: "));
+  g_object_set(label,
+	       "halign", GTK_ALIGN_START,
+	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
 		  0, i,
 		  1, 1);
 
   wave_meta->audio_channels = (GtkLabel *) gtk_label_new("-1");
+  g_object_set(wave_meta->audio_channels,
+	       "halign", GTK_ALIGN_START,
+	       NULL);
   gtk_grid_attach(grid,
-		  (GtkWidget *) label,
+		  (GtkWidget *) wave_meta->audio_channels,
 		  1, i,
 		  1, 1);
 
   /* output pads */
   i++;
   
-  label = (GtkLabel *) gtk_label_new(i18n("output pads"));
+  label = (GtkLabel *) gtk_label_new(i18n("output pads: "));
+  g_object_set(label,
+	       "halign", GTK_ALIGN_START,
+	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
 		  0, i,
 		  1, 1);
 
   wave_meta->output_pads = (GtkLabel *) gtk_label_new("-1");
+  g_object_set(wave_meta->output_pads,
+	       "halign", GTK_ALIGN_START,
+	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) wave_meta->output_pads,
 		  1, i,
@@ -174,13 +200,19 @@ ags_wave_meta_init(AgsWaveMeta *wave_meta)
   /* input pads */
   i++;
   
-  label = (GtkLabel *) gtk_label_new(i18n("input pads"));
+  label = (GtkLabel *) gtk_label_new(i18n("input pads: "));
+  g_object_set(label,
+	       "halign", GTK_ALIGN_START,
+	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
 		  0, i,
 		  1, 1);
 
   wave_meta->input_pads = (GtkLabel *) gtk_label_new("-1");
+  g_object_set(wave_meta->input_pads,
+	       "halign", GTK_ALIGN_START,
+	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) wave_meta->input_pads,
 		  1, i,
@@ -189,13 +221,19 @@ ags_wave_meta_init(AgsWaveMeta *wave_meta)
   /* editor tool */
   i++;
   
-  label = (GtkLabel *) gtk_label_new(i18n("editor tool"));
+  label = (GtkLabel *) gtk_label_new(i18n("editor tool: "));
+  g_object_set(label,
+	       "halign", GTK_ALIGN_START,
+	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
 		  0, i,
 		  1, 1);
 
   wave_meta->editor_tool = (GtkLabel *) gtk_label_new("(null)");
+  g_object_set(wave_meta->editor_tool,
+	       "halign", GTK_ALIGN_START,
+	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) wave_meta->editor_tool,
 		  1, i,
@@ -204,13 +242,20 @@ ags_wave_meta_init(AgsWaveMeta *wave_meta)
   /* active audio channel */
   i++;
   
-  label = (GtkLabel *) gtk_label_new(i18n("active audio channel"));
+  label = (GtkLabel *) gtk_label_new(i18n("active audio channel: "));
+  g_object_set(label,
+	       "halign", GTK_ALIGN_START,
+	       "valign", GTK_ALIGN_START,
+	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
 		  0, i,
 		  1, 1);
 
   wave_meta->active_audio_channel = (GtkLabel *) gtk_label_new("(null)");
+  g_object_set(wave_meta->active_audio_channel,
+	       "halign", GTK_ALIGN_START,
+	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) wave_meta->active_audio_channel,
 		  1, i,
@@ -219,13 +264,19 @@ ags_wave_meta_init(AgsWaveMeta *wave_meta)
   /* cursor x-position */
   i++;
   
-  label = (GtkLabel *) gtk_label_new(i18n("cursor x-position"));
+  label = (GtkLabel *) gtk_label_new(i18n("cursor x-position: "));
+  g_object_set(label,
+	       "halign", GTK_ALIGN_START,
+	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
 		  0, i,
 		  1, 1);
 
   wave_meta->cursor_x_position = (GtkLabel *) gtk_label_new("-1");
+  g_object_set(wave_meta->cursor_x_position,
+	       "halign", GTK_ALIGN_START,
+	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) wave_meta->cursor_x_position,
 		  1, i,
@@ -235,6 +286,7 @@ ags_wave_meta_init(AgsWaveMeta *wave_meta)
 void
 ags_wave_meta_connect(AgsConnectable *connectable)
 {
+  AgsWaveEditor *wave_editor;
   AgsWaveMeta *wave_meta;
   
   wave_meta = AGS_WAVE_META(connectable);
@@ -245,15 +297,20 @@ ags_wave_meta_connect(AgsConnectable *connectable)
 
   wave_meta->flags |= AGS_WAVE_META_CONNECTED;
 
-  //TODO:JK: implement me
+  wave_editor = gtk_widget_get_ancestor(wave_meta,
+					AGS_TYPE_WAVE_EDITOR);
+
+  if(wave_editor != NULL){
+    g_signal_connect_after(wave_editor, "machine-changed",
+			   G_CALLBACK(ags_wave_meta_machine_changed_callback), wave_meta);
+  }
 }
 
 void
 ags_wave_meta_disconnect(AgsConnectable *connectable)
 {
+  AgsWaveEditor *wave_editor;
   AgsWaveMeta *wave_meta;
-
-  GList *list;
   
   wave_meta = AGS_WAVE_META(connectable);
 
@@ -263,7 +320,237 @@ ags_wave_meta_disconnect(AgsConnectable *connectable)
 
   wave_meta->flags &= (~AGS_WAVE_META_CONNECTED);
 
-  //TODO:JK: implement me
+  wave_editor = gtk_widget_get_ancestor(wave_meta,
+					AGS_TYPE_WAVE_EDITOR);
+  
+  if(wave_editor != NULL){
+    g_object_disconnect(wave_editor,
+			"any_signal::machine-changed",
+			G_CALLBACK(ags_wave_meta_machine_changed_callback),
+			wave_meta,
+			NULL);
+  }
+}
+
+/**
+ * ags_wave_meta_refresh:
+ * @wave_meta: the #AgsWaveMeta
+ * 
+ * Refresh @wave_meta.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_wave_meta_refresh(AgsWaveMeta *wave_meta)
+{
+  AgsWaveEditor *wave_editor;
+  
+  if(!AGS_IS_WAVE_META(wave_meta)){
+    return;
+  }
+  
+  wave_editor = gtk_widget_get_ancestor(wave_meta,
+					AGS_TYPE_WAVE_EDITOR);
+
+  if(wave_editor == NULL){
+    return;
+  }
+
+  if(wave_editor->selected_machine == NULL){
+    gtk_label_set_label(wave_meta->machine_type,
+			"(null)"); 
+
+    gtk_label_set_label(wave_meta->machine_name,
+			"(null)"); 
+
+    gtk_label_set_label(wave_meta->audio_channels,
+			"-1");
+
+    gtk_label_set_label(wave_meta->output_pads,
+			"-1"); 
+
+    gtk_label_set_label(wave_meta->input_pads,
+			"-1"); 
+
+    gtk_label_set_label(wave_meta->editor_tool,
+			"(null)");
+    
+    gtk_label_set_label(wave_meta->active_audio_channel,
+			"(null)"); 
+
+    gtk_label_set_label(wave_meta->cursor_x_position,
+			"-1"); 
+  }else{
+    gchar *str;
+    
+    guint audio_channels;
+    guint output_pads, input_pads;
+    gint active_start, active_end;
+    gint position;
+    guint i;
+
+    gtk_label_set_label(wave_meta->machine_type,
+			G_OBJECT_TYPE_NAME(wave_editor->selected_machine)); 
+
+    gtk_label_set_label(wave_meta->machine_name,
+			wave_editor->selected_machine->machine_name); 
+
+    g_object_get(wave_editor->selected_machine->audio,
+		 "audio-channels", &audio_channels,
+		 "output-pads", &output_pads,
+		 "input-pads", &input_pads,
+		 NULL);
+    
+    /* audio channels */
+    str = g_strdup_printf("%u", audio_channels);
+    gtk_label_set_label(wave_meta->audio_channels,
+			str); 
+
+    g_free(str);
+    
+    /* output pads */
+    str = g_strdup_printf("%u", output_pads);
+    gtk_label_set_label(wave_meta->output_pads,
+			str);
+
+    g_free(str);
+
+    /* input pads */
+    str = g_strdup_printf("%u", input_pads);
+    gtk_label_set_label(wave_meta->input_pads,
+			str);
+
+    g_free(str);
+
+    str = NULL;
+
+    if(wave_editor->wave_toolbar->selected_edit_mode == wave_editor->wave_toolbar->position){
+      str = i18n("position");
+    }else if(wave_editor->wave_toolbar->selected_edit_mode == wave_editor->wave_toolbar->select){
+      str = i18n("select");
+    }
+
+    if(str != NULL){
+      gtk_label_set_label(wave_meta->editor_tool,
+			  str);
+    }else{
+      gtk_label_set_label(wave_meta->editor_tool,
+			  "(null)");
+    }
+
+    /* active audio channels */
+    str = NULL;
+    
+    active_start = -1;
+    active_end = -1;
+
+    position = 0;
+    
+    for(; (position = ags_notebook_next_active_tab(wave_editor->notebook, position)) != -1; position++){
+      if(active_start == -1){
+	active_start = position;
+	active_end = position;
+      }else{
+	if(position == active_end + 1){
+	  active_end = position;
+	}else{
+	  if(str == NULL){
+	    if(active_start == active_end){
+	      str = g_strdup_printf("%d",
+				    active_start);
+	    }else{
+	      str = g_strdup_printf("%d-%d",
+				    active_start,
+				    active_end);
+	    }
+	  }else{
+	    if(active_start == active_end){
+	      gchar *tmp;
+	    
+	      tmp = g_strdup_printf("%s, %d",
+				    str,
+				    active_start);
+
+	      g_free(str);
+
+	      str = tmp;
+	    }else{
+	      gchar *tmp;
+	    
+	      tmp = g_strdup_printf("%s, %d-%d",
+				    str,
+				    active_start,
+				    active_end);
+
+	      g_free(str);
+
+	      str = tmp;
+	    }
+	  }
+
+	  active_start = position;
+	  active_end = position;
+	}
+      }
+    }
+
+    if(active_start == -1){
+      gtk_label_set_label(wave_meta->active_audio_channel,
+			  "(null)"); 
+    }else{
+      if(str == NULL){
+	if(active_start == active_end){
+	  str = g_strdup_printf("[%d]",
+				active_start);
+	}else{
+	  gchar *tmp;
+	    
+	  tmp = g_strdup_printf("[%d-%d]",
+				active_start,
+				active_end);
+
+	  g_free(str);
+
+	  str = tmp;
+	}
+      }else{
+	if(active_start == active_end){
+	  gchar *tmp;
+	    
+	  tmp = g_strdup_printf("[%s, %d]",
+				str,
+				active_start);
+
+	  g_free(str);
+
+	  str = tmp;
+	}else{
+	  gchar *tmp;
+	    
+	  tmp = g_strdup_printf("[%s, %d-%d]",
+				str,
+				active_start,
+				active_end);
+
+	  g_free(str);
+
+	  str = tmp;
+	}
+      }
+
+      gtk_label_set_label(wave_meta->active_audio_channel,
+			  str);
+
+      g_free(str);
+    }
+
+    /* cursor position x */
+    str = g_strdup_printf("%u", wave_editor->focused_wave_edit->cursor_position_x);
+    gtk_label_set_label(wave_meta->cursor_x_position,
+			str);
+
+    g_free(str);
+  }
 }
 
 /**

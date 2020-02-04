@@ -73,6 +73,8 @@ struct _AgsWaveMetaClass
 
 GType ags_wave_meta_get_type(void);
 
+void ags_wave_meta_refresh(AgsWaveMeta *wave_meta);
+
 AgsWaveMeta* ags_wave_meta_new();
 
 G_END_DECLS

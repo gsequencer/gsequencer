@@ -18,3 +18,10 @@
  */
 
 #include <ags/X/editor/ags_wave_meta_callbacks.h>
+
+void
+ags_wave_meta_machine_changed_callback(AgsWaveEditor *wave_editor, AgsMachine *machine,
+				       AgsWaveMeta *wave_meta)
+{
+  ags_wave_meta_refresh(wave_meta);
+}
