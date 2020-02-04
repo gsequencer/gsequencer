@@ -538,7 +538,9 @@ ags_plugin_port_get_property(GObject *gobject,
 
       lower_value = g_new0(GValue,
 			   1);
-
+      g_value_init(lower_value,
+		   G_VALUE_TYPE(plugin_port->lower_value));
+      
       g_value_copy(plugin_port->lower_value,
 		   lower_value);
       
@@ -556,6 +558,8 @@ ags_plugin_port_get_property(GObject *gobject,
 
       upper_value = g_new0(GValue,
 			   1);
+      g_value_init(upper_value,
+		   G_VALUE_TYPE(plugin_port->upper_value));
 
       g_value_copy(plugin_port->upper_value,
 		   upper_value);
@@ -574,6 +578,8 @@ ags_plugin_port_get_property(GObject *gobject,
 
       default_value = g_new0(GValue,
 			   1);
+      g_value_init(default_value,
+		   G_VALUE_TYPE(plugin_port->default_value));
 
       g_value_copy(plugin_port->default_value,
 		   default_value);

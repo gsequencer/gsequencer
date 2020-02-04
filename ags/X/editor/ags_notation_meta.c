@@ -245,6 +245,7 @@ ags_notation_meta_init(AgsNotationMeta *notation_meta)
   label = (GtkLabel *) gtk_label_new(i18n("active audio channel: "));
   g_object_set(label,
 	       "halign", GTK_ALIGN_START,
+	       "valign", GTK_ALIGN_START,
 	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
@@ -308,6 +309,7 @@ ags_notation_meta_init(AgsNotationMeta *notation_meta)
   label = (GtkLabel *) gtk_label_new(i18n("current note: "));
   g_object_set(label,
 	       "halign", GTK_ALIGN_START,
+	       "valign", GTK_ALIGN_START,
 	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,

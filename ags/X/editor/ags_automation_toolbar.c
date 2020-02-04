@@ -613,13 +613,8 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
 		 "plugin-port", &plugin_port,
 		 NULL);
 
-#ifdef HAVE_GLIB_2_44
     contains_control_name = g_strv_contains(collected_specifier,
 					    specifier);
-#else
-    contains_control_name = ags_strv_contains(collected_specifier,
-					      specifier);
-#endif
 
     if(plugin_port != NULL &&
        !contains_control_name){
@@ -637,7 +632,7 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
 
       /* add to collected specifier */
       collected_specifier = (gchar **) realloc(collected_specifier,
-				     (length + 1) * sizeof(gchar *));
+					       (length + 1) * sizeof(gchar *));
       collected_specifier[length - 1] = g_strdup(specifier);
       collected_specifier[length] = NULL;
 
@@ -679,13 +674,8 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
 		   "plugin-port", &plugin_port,
 		   NULL);
 
-#ifdef HAVE_GLIB_2_44
       contains_control_name = g_strv_contains(collected_specifier,
 					      specifier);
-#else
-      contains_control_name = ags_strv_contains(collected_specifier,
-						specifier);
-#endif
 
       if(plugin_port != NULL &&
 	 !contains_control_name){

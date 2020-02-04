@@ -246,6 +246,7 @@ ags_automation_meta_init(AgsAutomationMeta *automation_meta)
   label = (GtkLabel *) gtk_label_new(i18n("active audio channel: "));
   g_object_set(label,
 	       "halign", GTK_ALIGN_START,
+	       "valign", GTK_ALIGN_START,
 	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
@@ -267,6 +268,7 @@ ags_automation_meta_init(AgsAutomationMeta *automation_meta)
   label = (GtkLabel *) gtk_label_new(i18n("active port: "));
   g_object_set(label,
 	       "halign", GTK_ALIGN_START,
+	       "valign", GTK_ALIGN_START,
 	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
@@ -393,6 +395,7 @@ ags_automation_meta_init(AgsAutomationMeta *automation_meta)
   label = (GtkLabel *) gtk_label_new(i18n("current acceleration: "));
   g_object_set(label,
 	       "halign", GTK_ALIGN_START,
+	       "valign", GTK_ALIGN_START,
 	       NULL);
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
@@ -528,8 +531,11 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
       
     AgsTimestamp *timestamp;
     
+    GList *start_port, *port;
     GList *start_automation, *automation;
     GList *start_acceleration, *acceleration;
+
+    gchar **collected_specifier;
     
     gchar *str;
     
@@ -537,6 +543,7 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
     guint output_pads, input_pads;
     gint active_start, active_end;
     gint position;
+    guint length;
     guint x0, y0;
     guint x1, y1;
     guint i;
@@ -798,6 +805,200 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
 
       g_free(str);
       g_free(tmp);
+    }
+
+    /* active port */
+    start_port = NULL;
+  
+    if(notebook == NULL){
+      start_port = ags_audio_collect_all_audio_ports(automation_editor->selected_machine->audio);
+    }else{
+      AgsChannel *start_channel, *channel;
+
+      if(notebook == automation_editor->output_notebook){      
+	g_object_get(automation_editor->selected_machine->audio,
+		     "output", &start_channel,
+		     NULL);
+      }else if(notebook == automation_editor->input_notebook){
+	g_object_get(automation_editor->selected_machine->audio,
+		     "input", &start_channel,
+		     NULL);
+      }
+
+      channel = start_channel;
+
+      start_port = NULL;
+    
+      while(channel != NULL){
+	AgsChannel *next_channel;
+
+	GList *list;
+      
+	list = ags_channel_collect_all_channel_ports(channel);
+
+	if(start_port == NULL){
+	  start_port = list;
+	}else{
+	  start_port = g_list_concat(start_port,
+				     list);
+	}
+      
+	/* iterate */
+	next_channel = ags_channel_next(channel);
+
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+    }
+
+    port = start_port;
+
+    collected_specifier = (gchar **) malloc(sizeof(gchar*));
+
+    collected_specifier[0] = NULL;
+    length = 1;
+
+    str = NULL;
+  
+    while(port != NULL){
+      AgsPluginPort *plugin_port;
+
+      gchar *specifier;
+
+      gboolean is_enabled;
+      gboolean contains_control_name;
+
+      g_object_get(port->data,
+		   "specifier", &specifier,
+		   "plugin-port", &plugin_port,
+		   NULL);
+
+      contains_control_name = g_strv_contains(collected_specifier,
+					      specifier);
+      
+      if(plugin_port != NULL &&
+	 !contains_control_name){
+	is_enabled = FALSE;
+      
+	if(notebook == NULL){
+	  is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(automation_editor->selected_machine->enabled_automation_port,
+											G_TYPE_NONE,
+											specifier)) ? TRUE: FALSE;
+	}else if(notebook == automation_editor->output_notebook){
+	  is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(automation_editor->selected_machine->enabled_automation_port,
+											AGS_TYPE_OUTPUT,
+											specifier)) ? TRUE: FALSE;
+	}else if(notebook == automation_editor->input_notebook){
+	  is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(automation_editor->selected_machine->enabled_automation_port,
+											AGS_TYPE_INPUT,
+											specifier)) ? TRUE: FALSE;
+	}
+
+	/* add to collected specifier */
+	collected_specifier = (gchar **) realloc(collected_specifier,
+						 (length + 1) * sizeof(gchar *));
+	collected_specifier[length - 1] = g_strdup(specifier);
+	collected_specifier[length] = NULL;
+
+	length++;	  
+
+	if(is_enabled){
+	  if(str == NULL){
+	    str = specifier;
+	  }else{
+	    gchar *tmp;
+
+	    tmp = g_strdup_printf("%s, %s",
+				  str,
+				  specifier);
+
+	    g_free(specifier);
+	    g_free(str);
+
+	    str = tmp;
+	  }
+	}
+      }
+      
+      if(plugin_port != NULL){
+	g_object_unref(plugin_port);
+      }
+      
+      port = port->next;
+    }
+
+    if(str == NULL){
+      gtk_label_set_label(automation_meta->active_port,
+			  "(null)");
+    }else{
+      gchar *tmp;
+
+      tmp = g_strdup_printf("(%s)",
+			    str);
+      
+      gtk_label_set_label(automation_meta->active_port,
+			  tmp);
+
+      g_free(str);
+      g_free(tmp);
+    }
+
+    /* focus related */
+    if(automation_editor->focused_automation_edit == NULL){
+      gtk_label_set_label(automation_meta->focused_port,
+			  "(null)");
+
+      gtk_label_set_label(automation_meta->range_upper,
+			  "0.0");
+
+      gtk_label_set_label(automation_meta->range_lower,
+			  "0.0");
+
+      gtk_label_set_label(automation_meta->cursor_x_position,
+			  "-1"); 
+
+      gtk_label_set_label(automation_meta->cursor_y_position,
+			  "-1"); 
+
+      gtk_label_set_label(automation_meta->current_acceleration,
+			  "(null)"); 
+    }else{
+      /* focused port */
+      gtk_label_set_label(automation_meta->focused_port,
+			  automation_editor->focused_automation_edit->control_specifier);
+
+      /* upper */
+      str = g_strdup_printf("%f", automation_editor->focused_automation_edit->upper);
+      
+      gtk_label_set_label(automation_meta->range_upper,
+			  str);
+
+      g_free(str);
+
+      /* lower */
+      str = g_strdup_printf("%f", automation_editor->focused_automation_edit->lower);
+      
+      gtk_label_set_label(automation_meta->range_lower,
+			  str);
+
+      g_free(str);
+
+      /* cursor x-position */
+      str = g_strdup_printf("%f", (double) automation_editor->focused_automation_edit->cursor_position_x / (double) AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH);
+      
+      gtk_label_set_label(automation_meta->cursor_x_position,
+			  str);
+
+      g_free(str);
+
+      /* cursor y-position */
+      str = g_strdup_printf("%f", automation_editor->focused_automation_edit->cursor_position_y);
+
+      gtk_label_set_label(automation_meta->cursor_y_position,
+			  str); 
+
+      g_free(str);
     }
   }
 }

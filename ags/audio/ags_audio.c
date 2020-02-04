@@ -10173,7 +10173,8 @@ ags_audio_add_automation_port(AgsAudio *audio, gchar *control_name)
 
   g_rec_mutex_lock(audio_mutex);
 
-  if(g_strv_contains(audio->automation_port, control_name)){
+  if(audio->automation_port != NULL &&
+     g_strv_contains(audio->automation_port, control_name)){
     g_rec_mutex_unlock(audio_mutex);
 
     return;
