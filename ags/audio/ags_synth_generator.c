@@ -813,6 +813,52 @@ ags_synth_generator_finalize(GObject *gobject)
 }
 
 /**
+ * ags_synth_generator_get_obj_mutex:
+ * @synth_generator: the #AgsSynthGenerator
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @synth_generator
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_synth_generator_get_obj_mutex(AgsSynthGenerator *synth_generator)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(NULL);
+  }
+
+  return(AGS_SYNTH_GENERATOR_GET_OBJ_MUTEX(synth_generator));
+}
+
+/**
+ * ags_synth_generator_get_samplerate:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets samplerate.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_synth_generator_get_samplerate(AgsSynthGenerator *synth_generator)
+{
+  guint samplerate;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0);
+  }
+
+  g_object_get(synth_generator,
+	       "samplerate", &samplerate,
+	       NULL);
+
+  return(samplerate);
+}
+
+/**
  * ags_synth_generator_set_samplerate:
  * @synth_generator: the #AgsSynthGenerator
  * @samplerate: the samplerate
@@ -855,6 +901,32 @@ ags_synth_generator_set_samplerate(AgsSynthGenerator *synth_generator, guint sam
 }
 
 /**
+ * ags_synth_generator_get_buffer_size:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets buffer size.
+ * 
+ * Returns: the buffer size
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_synth_generator_get_buffer_size(AgsSynthGenerator *synth_generator)
+{
+  guint buffer_size;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0);
+  }
+
+  g_object_get(synth_generator,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  return(buffer_size);
+}
+
+/**
  * ags_synth_generator_set_buffer_size:
  * @synth_generator: the #AgsSynthGenerator
  * @buffer_size: the buffer size
@@ -874,6 +946,32 @@ ags_synth_generator_set_buffer_size(AgsSynthGenerator *synth_generator, guint bu
 }
 
 /**
+ * ags_synth_generator_get_format:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets format.
+ * 
+ * Returns: the format
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_synth_generator_get_format(AgsSynthGenerator *synth_generator)
+{
+  guint format;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0);
+  }
+
+  g_object_get(synth_generator,
+	       "format", &format,
+	       NULL);
+
+  return(format);
+}
+
+/**
  * ags_synth_generator_set_format:
  * @synth_generator: the #AgsSynthGenerator
  * @format: the format
@@ -890,6 +988,805 @@ ags_synth_generator_set_format(AgsSynthGenerator *synth_generator, guint format)
   }
 
   synth_generator->format = format;
+}
+
+/**
+ * ags_synth_generator_get_delay:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets delay.
+ * 
+ * Returns: the delay
+ * 
+ * Since: 3.1.0
+ */
+gdouble
+ags_synth_generator_get_delay(AgsSynthGenerator *synth_generator)
+{
+  gdouble delay;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0.0);
+  }
+
+  g_object_get(synth_generator,
+	       "delay", &delay,
+	       NULL);
+
+  return(delay);
+}
+
+/**
+ * ags_synth_generator_set_delay:
+ * @synth_generator: the #AgsSynthGenerator
+ * @delay: the delay
+ *
+ * Sets delay.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_delay(AgsSynthGenerator *synth_generator, gdouble delay)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "delay", delay,
+	       NULL);
+}
+
+/**
+ * ags_synth_generator_get_frame_count:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets frame count.
+ * 
+ * Returns: the frame count
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_synth_generator_get_frame_count(AgsSynthGenerator *synth_generator)
+{
+  guint frame_count;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0);
+  }
+
+  g_object_get(synth_generator,
+	       "frame-count", &frame_count,
+	       NULL);
+
+  return(frame_count);
+}
+
+/**
+ * ags_synth_generator_set_frame_count:
+ * @synth_generator: the #AgsSynthGenerator
+ * @frame_count: the frame count
+ *
+ * Sets frame count.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_frame_count(AgsSynthGenerator *synth_generator, guint frame_count)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "frame-count", frame_count,
+	       NULL);
+}
+
+/**
+ * ags_synth_generator_get_loop_start:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets loop start.
+ * 
+ * Returns: the loop start
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_synth_generator_get_loop_start(AgsSynthGenerator *synth_generator)
+{
+  guint loop_start;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0);
+  }
+
+  g_object_get(synth_generator,
+	       "loop-start", &loop_start,
+	       NULL);
+
+  return(loop_start);
+}
+
+/**
+ * ags_synth_generator_set_loop_start:
+ * @synth_generator: the #AgsSynthGenerator
+ * @loop_start: the loop start
+ *
+ * Sets loop start.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_loop_start(AgsSynthGenerator *synth_generator, guint loop_start)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "loop-start", loop_start,
+	       NULL);
+}
+
+/**
+ * ags_synth_generator_get_loop_end:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets loop end.
+ * 
+ * Returns: the loop end
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_synth_generator_get_loop_end(AgsSynthGenerator *synth_generator)
+{
+  guint loop_end;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0);
+  }
+
+  g_object_get(synth_generator,
+	       "loop-end", &loop_end,
+	       NULL);
+
+  return(loop_end);
+}
+
+/**
+ * ags_synth_generator_set_loop_end:
+ * @synth_generator: the #AgsSynthGenerator
+ * @loop_end: the loop end
+ *
+ * Sets loop end.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_loop_end(AgsSynthGenerator *synth_generator, guint loop_end)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "loop-end", loop_end,
+	       NULL);
+}
+
+/**
+ * ags_synth_generator_get_do_lfo:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets do lfo.
+ * 
+ * Returns: the do lfo
+ * 
+ * Since: 3.1.0
+ */
+gboolean
+ags_synth_generator_get_do_lfo(AgsSynthGenerator *synth_generator)
+{
+  gboolean do_lfo;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(FALSE);
+  }
+
+  g_object_get(synth_generator,
+	       "do-lfo", &do_lfo,
+	       NULL);
+
+  return(do_lfo);
+}
+
+/**
+ * ags_synth_generator_set_do_lfo:
+ * @synth_generator: the #AgsSynthGenerator
+ * @do_lfo: the do lfo
+ *
+ * Sets do lfo.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_do_lfo(AgsSynthGenerator *synth_generator, gboolean do_lfo)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "do-lfo", do_lfo,
+	       NULL);
+}
+
+/**
+ * ags_synth_generator_get_oscillator:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets oscillator.
+ * 
+ * Returns: the oscillator
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_synth_generator_get_oscillator(AgsSynthGenerator *synth_generator)
+{
+  guint oscillator;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0);
+  }
+
+  g_object_get(synth_generator,
+	       "oscillator", &oscillator,
+	       NULL);
+
+  return(oscillator);
+}
+
+/**
+ * ags_synth_generator_set_oscillator:
+ * @synth_generator: the #AgsSynthGenerator
+ * @oscillator: the oscillator
+ *
+ * Sets oscillator.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_oscillator(AgsSynthGenerator *synth_generator, guint oscillator)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "oscillator", oscillator,
+	       NULL);
+}
+
+/**
+ * ags_synth_generator_get_frequency:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets frequency.
+ * 
+ * Returns: the frequency
+ * 
+ * Since: 3.1.0
+ */
+gdouble
+ags_synth_generator_get_frequency(AgsSynthGenerator *synth_generator)
+{
+  gdouble frequency;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0.0);
+  }
+
+  g_object_get(synth_generator,
+	       "frequency", &frequency,
+	       NULL);
+
+  return(frequency);
+}
+
+/**
+ * ags_synth_generator_set_frequency:
+ * @synth_generator: the #AgsSynthGenerator
+ * @frequency: the frequency
+ *
+ * Sets frequency.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_frequency(AgsSynthGenerator *synth_generator, gdouble frequency)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "frequency", frequency,
+	       NULL);
+}
+
+/**
+ * ags_synth_generator_get_phase:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets phase.
+ * 
+ * Returns: the phase
+ * 
+ * Since: 3.1.0
+ */
+gdouble
+ags_synth_generator_get_phase(AgsSynthGenerator *synth_generator)
+{
+  gdouble phase;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0.0);
+  }
+
+  g_object_get(synth_generator,
+	       "phase", &phase,
+	       NULL);
+
+  return(phase);
+}
+
+/**
+ * ags_synth_generator_set_phase:
+ * @synth_generator: the #AgsSynthGenerator
+ * @phase: the phase
+ *
+ * Sets phase.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_phase(AgsSynthGenerator *synth_generator, gdouble phase)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "phase", phase,
+	       NULL);
+}
+
+/**
+ * ags_synth_generator_get_volume:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets volume.
+ * 
+ * Returns: the volume
+ * 
+ * Since: 3.1.0
+ */
+gdouble
+ags_synth_generator_get_volume(AgsSynthGenerator *synth_generator)
+{
+  gdouble volume;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0.0);
+  }
+
+  g_object_get(synth_generator,
+	       "volume", &volume,
+	       NULL);
+
+  return(volume);
+}
+
+/**
+ * ags_synth_generator_set_volume:
+ * @synth_generator: the #AgsSynthGenerator
+ * @volume: the volume
+ *
+ * Sets volume.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_volume(AgsSynthGenerator *synth_generator, gdouble volume)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "volume", volume,
+	       NULL);
+}
+
+/**
+ * ags_synth_generator_get_lfo_depth:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets LFO depth.
+ * 
+ * Returns: the LFO depth
+ * 
+ * Since: 3.1.0
+ */
+gdouble
+ags_synth_generator_get_lfo_depth(AgsSynthGenerator *synth_generator)
+{
+  gdouble lfo_depth;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0.0);
+  }
+
+  g_object_get(synth_generator,
+	       "lfo-depth", &lfo_depth,
+	       NULL);
+
+  return(lfo_depth);
+}
+
+/**
+ * ags_synth_generator_set_lfo_depth:
+ * @synth_generator: the #AgsSynthGenerator
+ * @lfo_depth: the LFO depth
+ *
+ * Sets LFO depth.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_lfo_depth(AgsSynthGenerator *synth_generator, gdouble lfo_depth)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "lfo-depth", lfo_depth,
+	       NULL);
+}
+
+/**
+ * ags_synth_generator_get_tuning:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets tuning.
+ * 
+ * Returns: the tuning
+ * 
+ * Since: 3.1.0
+ */
+gdouble
+ags_synth_generator_get_tuning(AgsSynthGenerator *synth_generator)
+{
+  gdouble tuning;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0.0);
+  }
+
+  g_object_get(synth_generator,
+	       "tuning", &tuning,
+	       NULL);
+
+  return(tuning);
+}
+
+/**
+ * ags_synth_generator_set_tuning:
+ * @synth_generator: the #AgsSynthGenerator
+ * @tuning: the tuning
+ *
+ * Sets tuning.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_tuning(AgsSynthGenerator *synth_generator, gdouble tuning)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "tuning", tuning,
+	       NULL);
+}
+
+/**
+ * ags_synth_generator_get_do_fm_synth:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets do FM synth.
+ * 
+ * Returns: the do FM synth
+ * 
+ * Since: 3.1.0
+ */
+gboolean
+ags_synth_generator_get_do_fm_synth(AgsSynthGenerator *synth_generator)
+{
+  gboolean do_fm_synth;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(FALSE);
+  }
+
+  g_object_get(synth_generator,
+	       "do-fm-synth", &do_fm_synth,
+	       NULL);
+
+  return(do_fm_synth);
+}
+
+/**
+ * ags_synth_generator_set_do_fm_synth:
+ * @synth_generator: the #AgsSynthGenerator
+ * @do_fm_synth: the do FM synth
+ *
+ * Sets do FM synth.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_do_fm_synth(AgsSynthGenerator *synth_generator, gboolean do_fm_synth)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "do-fm-synth", do_fm_synth,
+	       NULL);
+}
+
+/**
+ * ags_synth_generator_get_fm_lfo_oscillator:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets FM LFO oscillator.
+ * 
+ * Returns: the FM LFO oscillator
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_synth_generator_get_fm_lfo_oscillator(AgsSynthGenerator *synth_generator)
+{
+  guint fm_lfo_oscillator;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0);
+  }
+
+  g_object_get(synth_generator,
+	       "fm-lfo-oscillator", &fm_lfo_oscillator,
+	       NULL);
+
+  return(fm_lfo_oscillator);
+}
+
+/**
+ * ags_synth_generator_set_fm_lfo_oscillator:
+ * @synth_generator: the #AgsSynthGenerator
+ * @fm_lfo_oscillator: the FM LFO oscillator
+ *
+ * Sets FM LFO oscillator.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_fm_lfo_oscillator(AgsSynthGenerator *synth_generator, guint fm_lfo_oscillator)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "fm-lfo-oscillator", fm_lfo_oscillator,
+	       NULL);
+}
+
+/**
+ * ags_synth_generator_get_fm_lfo_frequency:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets FM LFO frequency.
+ * 
+ * Returns: the FM LFO frequency
+ * 
+ * Since: 3.1.0
+ */
+gdouble
+ags_synth_generator_get_fm_lfo_frequency(AgsSynthGenerator *synth_generator)
+{
+  gdouble fm_lfo_frequency;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0.0);
+  }
+
+  g_object_get(synth_generator,
+	       "fm-lfo-frequency", &fm_lfo_frequency,
+	       NULL);
+
+  return(fm_lfo_frequency);
+}
+
+/**
+ * ags_synth_generator_set_fm_lfo_frequency:
+ * @synth_generator: the #AgsSynthGenerator
+ * @fm_lfo_frequency: the FM LFO frequency
+ *
+ * Sets FM LFO frequency.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_fm_lfo_frequency(AgsSynthGenerator *synth_generator, gdouble fm_lfo_frequency)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "fm-lfo-frequency", fm_lfo_frequency,
+	       NULL);
+}
+
+/**
+ * ags_synth_generator_get_fm_lfo_depth:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets FM LFO depth.
+ * 
+ * Returns: the FM LFO depth
+ * 
+ * Since: 3.1.0
+ */
+gdouble
+ags_synth_generator_get_fm_lfo_depth(AgsSynthGenerator *synth_generator)
+{
+  gdouble fm_lfo_depth;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0.0);
+  }
+
+  g_object_get(synth_generator,
+	       "fm-lfo-depth", &fm_lfo_depth,
+	       NULL);
+
+  return(fm_lfo_depth);
+}
+
+/**
+ * ags_synth_generator_set_fm_lfo_depth:
+ * @synth_generator: the #AgsSynthGenerator
+ * @fm_lfo_depth: the FM LFO depth
+ *
+ * Sets FM LFO depth.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_fm_lfo_depth(AgsSynthGenerator *synth_generator, gdouble fm_lfo_depth)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "fm-lfo-depth", fm_lfo_depth,
+	       NULL);
+}
+
+/**
+ * ags_synth_generator_get_fm_tuning:
+ * @synth_generator: the #AgsSynthGenerator
+ *
+ * Gets FM tuning.
+ * 
+ * Returns: the FM tuning
+ * 
+ * Since: 3.1.0
+ */
+gdouble
+ags_synth_generator_get_fm_tuning(AgsSynthGenerator *synth_generator)
+{
+  gdouble fm_tuning;
+  
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(0.0);
+  }
+
+  g_object_get(synth_generator,
+	       "fm-tuning", &fm_tuning,
+	       NULL);
+
+  return(fm_tuning);
+}
+
+/**
+ * ags_synth_generator_set_fm_tuning:
+ * @synth_generator: the #AgsSynthGenerator
+ * @fm_tuning: the FM tuning
+ *
+ * Sets FM tuning.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_fm_tuning(AgsSynthGenerator *synth_generator, gdouble fm_tuning)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "fm-tuning", fm_tuning,
+	       NULL);
+}
+
+/**
+ * ags_synth_generator_get_timestamp:
+ * @synth_generator: the #AgsSynthGenerator
+ * 
+ * Get timestamp.
+ * 
+ * Returns: (transfer full): the #AgsTimestamp
+ * 
+ * Since: 3.1.0
+ */
+AgsTimestamp*
+ags_synth_generator_get_timestamp(AgsSynthGenerator *synth_generator)
+{
+  AgsTimestamp *timestamp;
+
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return(NULL);
+  }
+
+  g_object_get(synth_generator,
+	       "timestamp", &timestamp,
+	       NULL);
+
+  return(timestamp);
+}
+
+/**
+ * ags_synth_generator_set_timestamp:
+ * @synth_generator: the #AgsSynthGenerator
+ * @timestamp: the #AgsTimestamp
+ * 
+ * Set timestamp.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_synth_generator_set_timestamp(AgsSynthGenerator *synth_generator, AgsTimestamp *timestamp)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  g_object_set(synth_generator,
+	       "timestamp", timestamp,
+	       NULL);
 }
 
 /**

@@ -433,11 +433,11 @@ void ags_audio_remove_wave(AgsAudio *audio, GObject *wave);
 
 GObject* ags_audio_get_output_audio_file(AgsAudio *audio);
 void ags_audio_set_output_audio_file(AgsAudio *audio,
-				     GObject *audio_file);
+				     GObject *output_audio_file);
 
 GObject* ags_audio_get_input_audio_file(AgsAudio *audio);
 void ags_audio_set_input_audio_file(AgsAudio *audio,
-				    GObject *audio_file);
+				    GObject *input_audio_file);
 
 gchar* ags_audio_get_instrument_name(AgsAudio *audio);
 void ags_audio_set_instrument_name(AgsAudio *audio, gchar *instrument_name);
@@ -453,11 +453,11 @@ void ags_audio_remove_midi(AgsAudio *audio, GObject *midi);
 
 GObject* ags_audio_get_output_midi_file(AgsAudio *audio);
 void ags_audio_set_output_midi_file(AgsAudio *audio,
-				    GObject *midi_file);
+				    GObject *output_midi_file);
 
 GObject* ags_audio_get_input_midi_file(AgsAudio *audio);
 void ags_audio_set_input_midi_file(AgsAudio *audio,
-				   GObject *midi_file);
+				   GObject *input_midi_file);
 
 /* recall related */
 GList* ags_audio_get_recall_id(AgsAudio *audio);

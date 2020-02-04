@@ -131,9 +131,68 @@ struct _AgsSynthGeneratorClass
   
 GType ags_synth_generator_get_type();
 
+GRecMutex* ags_synth_generator_get_obj_mutex(AgsSynthGenerator *synth_generator);
+
+guint ags_synth_generator_get_samplerate(AgsSynthGenerator *synth_generator);
 void ags_synth_generator_set_samplerate(AgsSynthGenerator *synth_generator, guint samplerate);
+
+guint ags_synth_generator_get_buffer_size(AgsSynthGenerator *synth_generator);
 void ags_synth_generator_set_buffer_size(AgsSynthGenerator *synth_generator, guint buffer_size);
+
+guint ags_synth_generator_get_format(AgsSynthGenerator *synth_generator);
 void ags_synth_generator_set_format(AgsSynthGenerator *synth_generator, guint format);
+
+gdouble ags_synth_generator_get_delay(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_delay(AgsSynthGenerator *synth_generator, gdouble delay);
+
+guint ags_synth_generator_get_frame_count(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_frame_count(AgsSynthGenerator *synth_generator, guint frame_count);
+
+guint ags_synth_generator_get_loop_start(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_loop_start(AgsSynthGenerator *synth_generator, guint loop_start);
+
+guint ags_synth_generator_get_loop_end(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_loop_end(AgsSynthGenerator *synth_generator, guint loop_end);
+
+gboolean ags_synth_generator_get_do_lfo(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_do_lfo(AgsSynthGenerator *synth_generator, gboolean do_lfo);
+
+guint ags_synth_generator_get_oscillator(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_oscillator(AgsSynthGenerator *synth_generator, guint oscillator);
+
+gdouble ags_synth_generator_get_frequency(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_frequency(AgsSynthGenerator *synth_generator, gdouble frequency);
+
+gdouble ags_synth_generator_get_phase(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_phase(AgsSynthGenerator *synth_generator, gdouble phase);
+
+gdouble ags_synth_generator_get_volume(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_volume(AgsSynthGenerator *synth_generator, gdouble volume);
+
+gdouble ags_synth_generator_get_lfo_depth(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_lfo_depth(AgsSynthGenerator *synth_generator, gdouble lfo_depth);
+
+gdouble ags_synth_generator_get_tuning(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_tuning(AgsSynthGenerator *synth_generator, gdouble tuning);
+
+gboolean ags_synth_generator_get_do_fm_synth(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_do_fm_synth(AgsSynthGenerator *synth_generator, gboolean do_fm_synth);
+
+guint ags_synth_generator_get_fm_lfo_oscillator(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_fm_lfo_oscillator(AgsSynthGenerator *synth_generator, guint fm_lfo_oscillator);
+
+gdouble ags_synth_generator_get_fm_lfo_frequency(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_fm_lfo_frequency(AgsSynthGenerator *synth_generator, gdouble fm_lfo_frequency);
+
+gdouble ags_synth_generator_get_fm_lfo_depth(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_fm_lfo_depth(AgsSynthGenerator *synth_generator, gdouble fm_lfo_depth);
+
+gdouble ags_synth_generator_get_fm_tuning(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_fm_tuning(AgsSynthGenerator *synth_generator, gdouble fm_tuning);
+
+AgsTimestamp* ags_synth_generator_get_timestamp(AgsSynthGenerator *synth_generator);
+void ags_synth_generator_set_timestamp(AgsSynthGenerator *synth_generator,
+				       AgsTimestamp *timestamp);
 
 void ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 				 GObject *audio_signal,

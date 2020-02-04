@@ -5050,7 +5050,7 @@ ags_audio_get_audio_name(AgsAudio *audio)
 }
 
 /**
- * ags_audio_get_audio_name:
+ * ags_audio_set_audio_name:
  * @audio: the #AgsAudio
  * @audio_name: the audio name
  * 

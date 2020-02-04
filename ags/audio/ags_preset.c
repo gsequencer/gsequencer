@@ -768,7 +768,7 @@ ags_preset_get_scope(AgsPreset *preset)
 }
 
 /**
- * ags_preset_get_scope:
+ * ags_preset_set_scope:
  * @preset: the #AgsPreset
  * @scope: the scope
  * 
@@ -816,7 +816,7 @@ ags_preset_get_preset_name(AgsPreset *preset)
 }
 
 /**
- * ags_preset_get_preset_name:
+ * ags_preset_set_preset_name:
  * @preset: the #AgsPreset
  * @preset_name: the preset name
  * 
