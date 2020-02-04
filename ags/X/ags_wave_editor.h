@@ -36,6 +36,7 @@
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_scrolled_wave_edit_box.h>
 #include <ags/X/editor/ags_wave_edit.h>
+#include <ags/X/editor/ags_wave_meta.h>
 
 G_BEGIN_DECLS
 
@@ -92,6 +93,8 @@ struct _AgsWaveEditor
   GtkHScrollbar *hscrollbar;
 
   AgsWaveEdit *focused_wave_edit;
+
+  AgsWaveMeta *wave_meta;
 };
 
 struct _AgsWaveEditorClass

@@ -186,6 +186,7 @@ void
 ags_wave_editor_init(AgsWaveEditor *wave_editor)
 {
   GtkViewport *viewport;
+  GtkHBox *hbox;
   GtkScrolledWindow *scrolled_window;  
   GtkTable *table;
   
@@ -268,14 +269,22 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   wave_editor->selected_machine = NULL;
 
   /* table */
+  hbox = gtk_hbox_new(FALSE,
+		      0);
+  gtk_paned_pack2((GtkPaned *) wave_editor->paned,
+		  (GtkWidget *) hbox,
+		  TRUE,
+		  TRUE);
+
   viewport = (GtkViewport *) gtk_viewport_new(NULL,
 					      NULL);
   g_object_set(viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
-  gtk_paned_pack2((GtkPaned *) wave_editor->paned,
-		  (GtkWidget *) viewport,
-		  TRUE, TRUE);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) viewport,
+		     TRUE, TRUE,
+		     0);
 
   table = (GtkTable *) gtk_table_new(4, 3, FALSE);
   gtk_container_add(GTK_CONTAINER(viewport),
@@ -385,6 +394,16 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   /* focused wave edit */
   wave_editor->focused_wave_edit = NULL;
 
+  /* wave meta */
+  wave_editor->wave_meta = ags_wave_meta_new();
+  g_object_set(wave_editor->wave_meta,
+	       "valign", GTK_ALIGN_START,
+	       NULL);  
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) wave_editor->wave_meta,
+		     FALSE, FALSE,
+		     0);
+
   /* style context */
   style_context = gtk_widget_get_style_context(wave_editor);
   gtk_style_context_add_class(style_context,
@@ -455,6 +474,8 @@ ags_wave_editor_connect(AgsConnectable *connectable)
   /*  */
   ags_connectable_connect(AGS_CONNECTABLE(wave_editor->wave_toolbar));
   ags_connectable_connect(AGS_CONNECTABLE(wave_editor->machine_selector));
+
+  ags_connectable_connect(AGS_CONNECTABLE(wave_editor->wave_meta));
 }
 
 void
@@ -486,6 +507,8 @@ ags_wave_editor_disconnect(AgsConnectable *connectable)
 
   ags_connectable_disconnect(AGS_CONNECTABLE(wave_editor->wave_toolbar)); 
   ags_connectable_disconnect(AGS_CONNECTABLE(wave_editor->machine_selector));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(wave_editor->wave_meta));
 }
 
 void

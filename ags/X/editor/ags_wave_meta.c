@@ -545,11 +545,16 @@ ags_wave_meta_refresh(AgsWaveMeta *wave_meta)
     }
 
     /* cursor position x */
-    str = g_strdup_printf("%u", wave_editor->focused_wave_edit->cursor_position_x);
-    gtk_label_set_label(wave_meta->cursor_x_position,
-			str);
-
-    g_free(str);
+    if(wave_editor->focused_wave_edit == NULL){
+      gtk_label_set_label(wave_meta->cursor_x_position,
+			  "-1");
+    }else{
+      str = g_strdup_printf("%u", wave_editor->focused_wave_edit->cursor_position_x);
+      gtk_label_set_label(wave_meta->cursor_x_position,
+			  str);
+      
+      g_free(str);
+    }
   }
 }
 
