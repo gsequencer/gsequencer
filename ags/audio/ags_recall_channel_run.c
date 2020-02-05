@@ -1579,6 +1579,241 @@ ags_recall_channel_run_destination_recycling_changed_callback(AgsChannel *channe
 }
 
 /**
+ * ags_recall_channel_run_get_recall_audio:
+ * @recall_channel_run: the #AgsRecallChannelRun
+ * 
+ * Get recall audio.
+ * 
+ * Returns: (transfer full): the #AgsRecallAudio
+ * 
+ * Since: 3.1.0
+ */
+AgsRecallAudio*
+ags_recall_channel_run_get_recall_audio(AgsRecallChannelRun *recall_channel_run)
+{
+  AgsRecallAudio *recall_audio;
+
+  if(!AGS_IS_RECALL_CHANNEL_RUN(recall_channel_run)){
+    return(NULL);
+  }
+
+  g_object_get(recall_channel_run,
+	       "recall-audio", &recall_audio,
+	       NULL);
+
+  return(recall_audio);
+}
+
+/**
+ * ags_recall_channel_run_set_recall_audio:
+ * @recall_channel_run: the #AgsRecallChannelRun
+ * @recall_audio: the #AgsRecallAudio
+ * 
+ * Set recall audio.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recall_channel_run_set_recall_audio(AgsRecallChannelRun *recall_channel_run, AgsRecallAudio *recall_audio)
+{
+  if(!AGS_IS_RECALL_CHANNEL_RUN(recall_channel_run)){
+    return;
+  }
+
+  g_object_set(recall_channel_run,
+	       "recall-audio", recall_audio,
+	       NULL);
+}
+
+/**
+ * ags_recall_channel_run_get_recall_audio_run:
+ * @recall_channel_run: the #AgsRecallChannelRun
+ * 
+ * Get recall audio.
+ * 
+ * Returns: (transfer full): the #AgsRecallAudioRun
+ * 
+ * Since: 3.1.0
+ */
+AgsRecallAudioRun*
+ags_recall_channel_run_get_recall_audio_run(AgsRecallChannelRun *recall_channel_run)
+{
+  AgsRecallAudioRun *recall_audio_run;
+
+  if(!AGS_IS_RECALL_CHANNEL_RUN(recall_channel_run)){
+    return(NULL);
+  }
+
+  g_object_get(recall_channel_run,
+	       "recall-audio-run", &recall_audio_run,
+	       NULL);
+
+  return(recall_audio_run);
+}
+
+/**
+ * ags_recall_channel_run_set_recall_audio_run:
+ * @recall_channel_run: the #AgsRecallChannelRun
+ * @recall_audio_run: the #AgsRecallAudioRun
+ * 
+ * Set recall audio.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recall_channel_run_set_recall_audio_run(AgsRecallChannelRun *recall_channel_run, AgsRecallAudioRun *recall_audio_run)
+{
+  if(!AGS_IS_RECALL_CHANNEL_RUN(recall_channel_run)){
+    return;
+  }
+
+  g_object_set(recall_channel_run,
+	       "recall-audio-run", recall_audio_run,
+	       NULL);
+}
+
+/**
+ * ags_recall_channel_run_get_recall_channel:
+ * @recall_channel_run: the #AgsRecallChannelRun
+ * 
+ * Get recall audio.
+ * 
+ * Returns: (transfer full): the #AgsRecallChannel
+ * 
+ * Since: 3.1.0
+ */
+AgsRecallChannel*
+ags_recall_channel_run_get_recall_channel(AgsRecallChannelRun *recall_channel_run)
+{
+  AgsRecallChannel *recall_channel;
+
+  if(!AGS_IS_RECALL_CHANNEL_RUN(recall_channel_run)){
+    return(NULL);
+  }
+
+  g_object_get(recall_channel_run,
+	       "recall-channel", &recall_channel,
+	       NULL);
+
+  return(recall_channel);
+}
+
+/**
+ * ags_recall_channel_run_set_recall_channel:
+ * @recall_channel_run: the #AgsRecallChannelRun
+ * @recall_channel: the #AgsRecallChannel
+ * 
+ * Set recall audio.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recall_channel_run_set_recall_channel(AgsRecallChannelRun *recall_channel_run, AgsRecallChannel *recall_channel)
+{
+  if(!AGS_IS_RECALL_CHANNEL_RUN(recall_channel_run)){
+    return;
+  }
+
+  g_object_set(recall_channel_run,
+	       "recall-channel", recall_channel,
+	       NULL);
+}
+
+/**
+ * ags_recall_channel_run_get_destination:
+ * @recall_channel_run: the #AgsRecallDestination
+ * 
+ * Get destination.
+ * 
+ * Returns: (transfer full): the #AgsDestination
+ * 
+ * Since: 3.1.0
+ */
+AgsChannel*
+ags_recall_channel_run_get_destination(AgsRecallChannelRun *recall_channel_run)
+{
+  AgsChannel *destination;
+
+  if(!AGS_IS_RECALL_CHANNEL_RUN(recall_channel_run)){
+    return(NULL);
+  }
+
+  g_object_get(recall_channel_run,
+	       "destination", &destination,
+	       NULL);
+
+  return(destination);
+}
+
+/**
+ * ags_recall_channel_run_set_destination:
+ * @recall_channel_run: the #AgsRecallChannelRun
+ * @destination: the #AgsChannel
+ * 
+ * Set destination.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recall_channel_run_set_destination(AgsRecallChannelRun *recall_channel_run, AgsChannel *destination)
+{
+  if(!AGS_IS_RECALL_CHANNEL_RUN(recall_channel_run)){
+    return;
+  }
+
+  g_object_set(recall_channel_run,
+	       "destination", destination,
+	       NULL);
+}
+
+/**
+ * ags_recall_channel_run_get_source:
+ * @recall_channel_run: the #AgsRecallSource
+ * 
+ * Get source.
+ * 
+ * Returns: (transfer full): the #AgsSource
+ * 
+ * Since: 3.1.0
+ */
+AgsChannel*
+ags_recall_channel_run_get_source(AgsRecallChannelRun *recall_channel_run)
+{
+  AgsChannel *source;
+
+  if(!AGS_IS_RECALL_CHANNEL_RUN(recall_channel_run)){
+    return(NULL);
+  }
+
+  g_object_get(recall_channel_run,
+	       "source", &source,
+	       NULL);
+
+  return(source);
+}
+
+/**
+ * ags_recall_channel_run_set_source:
+ * @recall_channel_run: the #AgsRecallChannelRun
+ * @source: the #AgsChannel
+ * 
+ * Set source.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recall_channel_run_set_source(AgsRecallChannelRun *recall_channel_run, AgsChannel *source)
+{
+  if(!AGS_IS_RECALL_CHANNEL_RUN(recall_channel_run)){
+    return;
+  }
+
+  g_object_set(recall_channel_run,
+	       "source", source,
+	       NULL);
+}
+
+/**
  * ags_recall_channel_run_new:
  *
  * Creates an #AgsRecallChannelRun

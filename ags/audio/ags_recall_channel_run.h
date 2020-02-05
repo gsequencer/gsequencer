@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -61,6 +61,26 @@ struct _AgsRecallChannelRunClass
 };
 
 GType ags_recall_channel_run_get_type();
+
+AgsRecallAudio* ags_recall_channel_run_get_recall_audio(AgsRecallChannelRun *recall_channel_run);
+void ags_recall_channel_run_set_recall_audio(AgsRecallChannelRun *recall_channel_run,
+					     AgsRecallAudio *recall_audio);
+
+AgsRecallAudioRun* ags_recall_channel_run_get_recall_audio_run(AgsRecallChannelRun *recall_channel_run);
+void ags_recall_channel_run_set_recall_audio_run(AgsRecallChannelRun *recall_channel_run,
+						 AgsRecallAudioRun *recall_audio_run);
+
+AgsRecallChannel* ags_recall_channel_run_get_recall_channel(AgsRecallChannelRun *recall_channel_run);
+void ags_recall_channel_run_set_recall_channel(AgsRecallChannelRun *recall_channel_run,
+					       AgsRecallChannel *recall_channel);
+
+AgsChannel* ags_recall_channel_run_get_destination(AgsRecallChannelRun *recall_channel_run);
+void ags_recall_channel_run_set_destination(AgsRecallChannelRun *recall_channel_run,
+					AgsChannel *destination);
+
+AgsChannel* ags_recall_channel_run_get_source(AgsRecallChannelRun *recall_channel_run);
+void ags_recall_channel_run_set_source(AgsRecallChannelRun *recall_channel_run,
+				       AgsChannel *source);
 
 AgsRecallChannelRun* ags_recall_channel_run_new();
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+#include <ags/libags.h>
 
 G_BEGIN_DECLS
 
@@ -92,9 +94,47 @@ GType ags_preset_get_type();
 
 GQuark ags_preset_error_quark();
 
+GRecMutex* ags_preset_get_obj_mutex(AgsPreset *preset);
+
 gboolean ags_preset_test_flags(AgsPreset *preset, guint flags);
 void ags_preset_set_flags(AgsPreset *preset, guint flags);
 void ags_preset_unset_flags(AgsPreset *preset, guint flags);
+
+GObject* ags_preset_get_audio(AgsPreset *preset);
+void ags_preset_set_audio(AgsPreset *preset,
+			  GObject *audio);
+
+gchar* ags_preset_get_scope(AgsPreset *preset);
+void ags_preset_set_scope(AgsPreset *preset,
+			  gchar *scope);
+
+gchar* ags_preset_get_preset_name(AgsPreset *preset);
+void ags_preset_set_preset_name(AgsPreset *preset,
+				gchar *preset_name);
+
+guint ags_preset_get_audio_channel_start(AgsPreset *preset);
+void ags_preset_set_audio_channel_start(AgsPreset *preset,
+					guint audio_channel_start);
+
+guint ags_preset_get_audio_channel_end(AgsPreset *preset);
+void ags_preset_set_audio_channel_end(AgsPreset *preset,
+				      guint audio_channel_end);
+
+guint ags_preset_get_pad_start(AgsPreset *preset);
+void ags_preset_set_pad_start(AgsPreset *preset,
+			      guint pad_start);
+
+guint ags_preset_get_pad_end(AgsPreset *preset);
+void ags_preset_set_pad_end(AgsPreset *preset,
+			    guint pad_end);
+
+guint ags_preset_get_x_start(AgsPreset *preset);
+void ags_preset_set_x_start(AgsPreset *preset,
+			    guint x_start);
+
+guint ags_preset_get_x_end(AgsPreset *preset);
+void ags_preset_set_x_end(AgsPreset *preset,
+			  guint x_end);
 
 GList* ags_preset_find_scope(GList *preset,
 			     gchar *scope);

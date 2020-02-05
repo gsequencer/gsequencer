@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -457,6 +457,62 @@ ags_buffer_finalize(GObject *gobject)
 }
 
 /**
+ * ags_buffer_get_obj_mutex:
+ * @buffer: the #AgsBuffer
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @buffer
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_buffer_get_obj_mutex(AgsBuffer *buffer)
+{
+  if(!AGS_IS_BUFFER(buffer)){
+    return(NULL);
+  }
+
+  return(AGS_BUFFER_GET_OBJ_MUTEX(buffer));
+}
+
+/**
+ * ags_buffer_lock:
+ * @buffer: the #AgsBuffer
+ * 
+ * Lock object mutex.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_buffer_lock(AgsBuffer *buffer)
+{
+  if(!AGS_IS_BUFFER(buffer)){
+    return;
+  }
+
+  g_rec_mutex_lock(AGS_BUFFER_GET_OBJ_MUTEX(buffer));
+}
+
+/**
+ * ags_buffer_unlock:
+ * @buffer: the #AgsBuffer
+ * 
+ * Unlock object mutex.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_buffer_unlock(AgsBuffer *buffer)
+{
+  if(!AGS_IS_BUFFER(buffer)){
+    return;
+  }
+
+  g_rec_mutex_unlock(AGS_BUFFER_GET_OBJ_MUTEX(buffer));
+}
+
+/**
  * ags_buffer_test_flags:
  * @buffer: the #AgsBuffer
  * @flags: the flags
@@ -550,6 +606,119 @@ ags_buffer_unset_flags(AgsBuffer *buffer, guint flags)
 }
 
 /**
+ * ags_buffer_sort_func:
+ * @a: an #AgsBuffer
+ * @b: an other #AgsBuffer
+ * 
+ * Sort buffers.
+ * 
+ * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
+ *
+ * Since: 3.0.0
+ */
+gint
+ags_buffer_sort_func(gconstpointer a,
+		     gconstpointer b)
+{
+  guint64 a_x, b_x ;
+
+  if(a == NULL || b == NULL){
+    return(0);
+  }
+    
+  g_object_get(a,
+	       "x", &a_x,
+	       NULL);
+    
+  g_object_get(b,
+	       "x", &b_x,
+	       NULL);
+
+  if(a_x == b_x){
+    return(0);
+  }
+
+  if(a_x < b_x){
+    return(-1);
+  }else{
+    return(1);
+  }  
+}
+
+/**
+ * ags_buffer_get_x:
+ * @buffer: the #AgsBuffer
+ *
+ * Gets x.
+ * 
+ * Returns: the x
+ * 
+ * Since: 3.1.0
+ */
+guint64
+ags_buffer_get_x(AgsBuffer *buffer)
+{
+  guint64 x;
+  
+  if(!AGS_IS_BUFFER(buffer)){
+    return(0);
+  }
+
+  g_object_get(buffer,
+	       "x", &x,
+	       NULL);
+
+  return(x);
+}
+
+/**
+ * ags_buffer_set_x:
+ * @buffer: the #AgsBuffer
+ * @x: the x
+ *
+ * Sets x.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_buffer_set_x(AgsBuffer *buffer, guint64 x)
+{
+  if(!AGS_IS_BUFFER(buffer)){
+    return;
+  }
+
+  g_object_set(buffer,
+	       "x", x,
+	       NULL);
+}
+
+/**
+ * ags_buffer_get_samplerate:
+ * @buffer: the #AgsBuffer
+ *
+ * Gets samplerate.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_buffer_get_samplerate(AgsBuffer *buffer)
+{
+  guint samplerate;
+  
+  if(!AGS_IS_BUFFER(buffer)){
+    return(0);
+  }
+
+  g_object_get(buffer,
+	       "samplerate", &samplerate,
+	       NULL);
+
+  return(samplerate);
+}
+
+/**
  * ags_buffer_set_samplerate:
  * @buffer: the #AgsBuffer
  * @samplerate: the samplerate
@@ -578,6 +747,32 @@ ags_buffer_set_samplerate(AgsBuffer *buffer,
   buffer->samplerate = samplerate;
   
   g_rec_mutex_unlock(buffer_mutex);
+}
+
+/**
+ * ags_buffer_get_buffer_size:
+ * @buffer: the #AgsBuffer
+ *
+ * Gets buffer size.
+ * 
+ * Returns: the buffer size
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_buffer_get_buffer_size(AgsBuffer *buffer)
+{
+  guint buffer_size;
+  
+  if(!AGS_IS_BUFFER(buffer)){
+    return(0);
+  }
+
+  g_object_get(buffer,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  return(buffer_size);
 }
 
 /**
@@ -671,6 +866,32 @@ ags_buffer_set_buffer_size(AgsBuffer *buffer,
 }
 
 /**
+ * ags_buffer_get_format:
+ * @buffer: the #AgsBuffer
+ *
+ * Gets format.
+ * 
+ * Returns: the format
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_buffer_get_format(AgsBuffer *buffer)
+{
+  guint format;
+  
+  if(!AGS_IS_BUFFER(buffer)){
+    return(0);
+  }
+
+  g_object_get(buffer,
+	       "format", &format,
+	       NULL);
+
+  return(format);
+}
+
+/**
  * ags_buffer_set_format:
  * @buffer: the #AgsBuffer
  * @format: the format
@@ -725,43 +946,37 @@ ags_buffer_set_format(AgsBuffer *buffer,
 }
 
 /**
- * ags_buffer_sort_func:
- * @a: an #AgsBuffer
- * @b: an other #AgsBuffer
- * 
- * Sort buffers.
- * 
- * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
+ * ags_buffer_get_data:
+ * @buffer: the #AgsBuffer
  *
- * Since: 3.0.0
+ * Gets data.
+ * 
+ * Returns: the data
+ * 
+ * Since: 3.1.0
  */
-gint
-ags_buffer_sort_func(gconstpointer a,
-		     gconstpointer b)
+gpointer
+ags_buffer_get_data(AgsBuffer *buffer)
 {
-  guint64 a_x, b_x ;
+  gpointer data;
+  
+  GRecMutex *buffer_mutex;
 
-  if(a == NULL || b == NULL){
-    return(0);
+  if(!AGS_IS_BUFFER(buffer)){
+    return(NULL);
   }
-    
-  g_object_get(a,
-	       "x", &a_x,
-	       NULL);
-    
-  g_object_get(b,
-	       "x", &b_x,
-	       NULL);
+      
+  /* get buffer mutex */
+  buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(buffer);
 
-  if(a_x == b_x){
-    return(0);
-  }
+  /* set format */
+  g_rec_mutex_lock(buffer_mutex);
 
-  if(a_x < b_x){
-    return(-1);
-  }else{
-    return(1);
-  }  
+  data = buffer->data;
+  
+  g_rec_mutex_unlock(buffer_mutex);
+
+  return(data);
 }
 
 /**

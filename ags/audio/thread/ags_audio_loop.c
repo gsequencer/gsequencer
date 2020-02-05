@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -669,7 +669,7 @@ ags_audio_loop_run(AgsThread *thread)
     priority = ags_priority_get_instance();
     
     /* Declare ourself as a real time task */
-    param.sched_priority = 1;
+    param.sched_priority = 45;
 
     str = ags_priority_get_value(priority,
 				 AGS_PRIORITY_RT_THREAD,
@@ -679,14 +679,19 @@ ags_audio_loop_run(AgsThread *thread)
       param.sched_priority = (int) g_ascii_strtoull(str,
 						    NULL,
 						    10);
-
-      g_free(str);
     }
     
-    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed");
+    if(str == NULL ||
+       ((!g_ascii_strncasecmp(str,
+			      "0",
+			      2)) != TRUE)){
+      if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+	perror("sched_setscheduler failed");
+      }
     }
 
+    g_free(str);
+    
     ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_RT_SETUP);
   }
 #endif
@@ -817,22 +822,6 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
   gint sound_scope;
 
   GRecMutex *thread_mutex;
-
-#if 1  
-  static const guint playback_staging_flags = (AGS_SOUND_STAGING_RESET |
-					       AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
-					       AGS_SOUND_STAGING_AUTOMATE |
-					       AGS_SOUND_STAGING_RUN_PRE |
-					       AGS_SOUND_STAGING_RUN_INTER |
-					       AGS_SOUND_STAGING_RUN_POST |
-					       AGS_SOUND_STAGING_DO_FEEDBACK |
-					       AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE);
-#else
-  static const guint playback_staging_flags = (AGS_SOUND_STAGING_AUTOMATE |
-					       AGS_SOUND_STAGING_RUN_PRE |
-					       AGS_SOUND_STAGING_RUN_INTER |
-					       AGS_SOUND_STAGING_RUN_POST);
-#endif
   
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
 
@@ -870,11 +859,13 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 		 NULL);
         
     /* play */
+#if 0
     if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
       /* super threaded */
       ags_audio_loop_play_channel_super_threaded(audio_loop,
 						 playback);
     }else{
+#endif
       /* not super threaded */
       sound_scope = AGS_SOUND_SCOPE_PLAYBACK;
       
@@ -887,13 +878,33 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
       }
     
       if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
+#if 1
 	ags_channel_recursive_run_stage(channel,
-					sound_scope, playback_staging_flags);
+					sound_scope, (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
+						      AGS_SOUND_STAGING_AUTOMATE |
+						      AGS_SOUND_STAGING_RUN_PRE));
+
+	ags_channel_recursive_run_stage(channel,
+					sound_scope, (AGS_SOUND_STAGING_RUN_INTER));
+
+	ags_channel_recursive_run_stage(channel,
+					sound_scope, (AGS_SOUND_STAGING_RUN_POST |
+						      AGS_SOUND_STAGING_DO_FEEDBACK |
+						      AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));
+#else
+	ags_channel_recursive_run_stage(channel,
+					sound_scope, (AGS_SOUND_STAGING_AUTOMATE |
+						      AGS_SOUND_STAGING_RUN_PRE |
+						      AGS_SOUND_STAGING_RUN_INTER |
+						      AGS_SOUND_STAGING_RUN_POST));
+#endif
 
 	g_list_free_full(recall_id,
 			 g_object_unref);
       }
+#if 0
     }
+#endif
 
     g_object_unref(channel);
 
@@ -902,6 +913,7 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
   }
 
   /* sync channel */
+#if 0
   play_channel = start_play_channel;
   
   while(play_channel != NULL){    
@@ -917,7 +929,8 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
     /* iterate */
     play_channel = play_channel->next;
   }
-
+#endif
+  
   g_list_free_full(start_play_channel,
 		   g_object_unref);
 }
@@ -1102,8 +1115,7 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	if((recall_id = ags_audio_check_scope(audio, sound_scope)) != NULL){
 #if 1
 	  ags_audio_recursive_run_stage(audio,
-					sound_scope, (AGS_SOUND_STAGING_RESET |
-						      AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
+					sound_scope, (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
 						      AGS_SOUND_STAGING_AUTOMATE |
 						      AGS_SOUND_STAGING_RUN_PRE));
 

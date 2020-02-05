@@ -45,9 +45,13 @@ void ags_wave_editor_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
+void ags_wave_editor_finalize(GObject *gobject);
+
 void ags_wave_editor_connect(AgsConnectable *connectable);
 void ags_wave_editor_disconnect(AgsConnectable *connectable);
-void ags_wave_editor_finalize(GObject *gobject);
+
+void ags_wave_editor_show(GtkWidget *widget);
+void ags_wave_editor_show_all(GtkWidget *widget);
 
 gint ags_wave_editor_paste_wave_all(AgsWaveEditor *wave_editor,
 				    AgsMachine *machine,
@@ -144,6 +148,8 @@ void
 ags_wave_editor_class_init(AgsWaveEditorClass *wave_editor)
 {
   GObjectClass *gobject;
+  GtkWidgetClass *widget;
+  
   GParamSpec *param_spec;
 
   ags_wave_editor_parent_class = g_type_class_peek_parent(wave_editor);
@@ -158,6 +164,12 @@ ags_wave_editor_class_init(AgsWaveEditorClass *wave_editor)
   
   /* properties */
 
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) wave_editor;
+  
+  widget->show = ags_wave_editor_show;
+  widget->show_all = ags_wave_editor_show_all;
+  
   /* AgsEditorClass */
   wave_editor->machine_changed = ags_wave_editor_real_machine_changed;
 
@@ -186,6 +198,7 @@ void
 ags_wave_editor_init(AgsWaveEditor *wave_editor)
 {
   GtkViewport *viewport;
+  GtkHBox *hbox;
   GtkScrolledWindow *scrolled_window;  
   GtkTable *table;
   
@@ -268,14 +281,22 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   wave_editor->selected_machine = NULL;
 
   /* table */
+  hbox = gtk_hbox_new(FALSE,
+		      0);
+  gtk_paned_pack2((GtkPaned *) wave_editor->paned,
+		  (GtkWidget *) hbox,
+		  TRUE,
+		  TRUE);
+
   viewport = (GtkViewport *) gtk_viewport_new(NULL,
 					      NULL);
   g_object_set(viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
-  gtk_paned_pack2((GtkPaned *) wave_editor->paned,
-		  (GtkWidget *) viewport,
-		  TRUE, TRUE);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) viewport,
+		     TRUE, TRUE,
+		     0);
 
   table = (GtkTable *) gtk_table_new(4, 3, FALSE);
   gtk_container_add(GTK_CONTAINER(viewport),
@@ -385,6 +406,16 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   /* focused wave edit */
   wave_editor->focused_wave_edit = NULL;
 
+  /* wave meta */
+  wave_editor->wave_meta = ags_wave_meta_new();
+  g_object_set(wave_editor->wave_meta,
+	       "valign", GTK_ALIGN_START,
+	       NULL);  
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) wave_editor->wave_meta,
+		     FALSE, FALSE,
+		     0);
+
   /* style context */
   style_context = gtk_widget_get_style_context(wave_editor);
   gtk_style_context_add_class(style_context,
@@ -455,6 +486,8 @@ ags_wave_editor_connect(AgsConnectable *connectable)
   /*  */
   ags_connectable_connect(AGS_CONNECTABLE(wave_editor->wave_toolbar));
   ags_connectable_connect(AGS_CONNECTABLE(wave_editor->machine_selector));
+
+  ags_connectable_connect(AGS_CONNECTABLE(wave_editor->wave_meta));
 }
 
 void
@@ -486,6 +519,8 @@ ags_wave_editor_disconnect(AgsConnectable *connectable)
 
   ags_connectable_disconnect(AGS_CONNECTABLE(wave_editor->wave_toolbar)); 
   ags_connectable_disconnect(AGS_CONNECTABLE(wave_editor->machine_selector));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(wave_editor->wave_meta));
 }
 
 void
@@ -585,6 +620,22 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
 			     gtk_adjustment_get_value(hscrollbar_adjustment) / old_h_upper * h_upper);
 #endif
   }
+}
+
+void
+ags_wave_editor_show(GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS(ags_wave_editor_parent_class)->show(widget);
+
+  gtk_widget_hide(AGS_WAVE_EDITOR(widget)->wave_meta);
+}
+
+void
+ags_wave_editor_show_all(GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS(ags_wave_editor_parent_class)->show_all(widget);
+
+  gtk_widget_hide(AGS_WAVE_EDITOR(widget)->wave_meta);
 }
 
 void

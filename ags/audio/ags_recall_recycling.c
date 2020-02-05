@@ -865,11 +865,11 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   if(!ags_recall_id_check_sound_scope(recall_id, sound_scope)){
     goto ags_recall_recycling_source_add_audio_signal_callback_END;
   }
-
-#ifdef AGS_DEBUG
+  
+#ifdef AGS_DEBUG  
   g_message("add %s",
 	    G_OBJECT_TYPE_NAME(recall_recycling));
-  
+
   g_message("ags_recall_recycling_source_add_audio_signal_callback %s[%llx]",
 	    G_OBJECT_TYPE_NAME(recall_recycling), (long long unsigned int) recall_recycling);
 

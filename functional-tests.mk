@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2019 Jo\u00EBl Kr\u00E4hemann
+# Copyright (C) 2005-2019 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright

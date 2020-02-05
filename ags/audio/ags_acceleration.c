@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -299,6 +299,26 @@ ags_acceleration_finalize(GObject *gobject)
 }
 
 /**
+ * ags_acceleration_get_obj_mutex:
+ * @acceleration: the #AgsAcceleration
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @acceleration
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_acceleration_get_obj_mutex(AgsAcceleration *acceleration)
+{
+  if(!AGS_IS_ACCELERATION(acceleration)){
+    return(NULL);
+  }
+
+  return(AGS_ACCELERATION_GET_OBJ_MUTEX(acceleration));
+}
+
+/**
  * ags_acceleration_test_flags:
  * @acceleration: the #AgsAcceleration
  * @flags: the flags
@@ -428,6 +448,100 @@ ags_acceleration_sort_func(gconstpointer a, gconstpointer b)
   }else{
     return(1);
   }
+}
+
+/**
+ * ags_acceleration_get_x:
+ * @acceleration: the #AgsAcceleration
+ *
+ * Gets x.
+ * 
+ * Returns: the x
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_acceleration_get_x(AgsAcceleration *acceleration)
+{
+  guint x;
+  
+  if(!AGS_IS_ACCELERATION(acceleration)){
+    return(0);
+  }
+
+  g_object_get(acceleration,
+	       "x", &x,
+	       NULL);
+
+  return(x);
+}
+
+/**
+ * ags_acceleration_set_x:
+ * @acceleration: the #AgsAcceleration
+ * @x: the x
+ *
+ * Sets x.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_acceleration_set_x(AgsAcceleration *acceleration, guint x)
+{
+  if(!AGS_IS_ACCELERATION(acceleration)){
+    return;
+  }
+
+  g_object_set(acceleration,
+	       "x", x,
+	       NULL);
+}
+
+/**
+ * ags_acceleration_get_y:
+ * @acceleration: the #AgsAcceleration
+ *
+ * Gets y.
+ * 
+ * Returns: the y
+ * 
+ * Since: 3.1.0
+ */
+gdouble
+ags_acceleration_get_y(AgsAcceleration *acceleration)
+{
+  gdouble y;
+  
+  if(!AGS_IS_ACCELERATION(acceleration)){
+    return(0);
+  }
+
+  g_object_get(acceleration,
+	       "y", &y,
+	       NULL);
+
+  return(y);
+}
+
+/**
+ * ags_acceleration_set_y:
+ * @acceleration: the #AgsAcceleration
+ * @y: the y
+ *
+ * Sets y.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_acceleration_set_y(AgsAcceleration *acceleration, gdouble y)
+{
+  if(!AGS_IS_ACCELERATION(acceleration)){
+    return;
+  }
+
+  g_object_set(acceleration,
+	       "y", y,
+	       NULL);
 }
 
 /**

@@ -1595,6 +1595,10 @@ ags_lv2_plugin_event_buffer_append_midi(gpointer event_buffer,
   guint i;
   gboolean success;
 
+  if(event_buffer == NULL){
+    return(FALSE);
+  }
+
   /* find offset */
   offset = AGS_LV2_EVENT_BUFFER(event_buffer)->data;
   offset += AGS_LV2_EVENT_BUFFER(event_buffer)->size;
@@ -1663,6 +1667,10 @@ ags_lv2_plugin_event_buffer_remove_midi(gpointer event_buffer,
   guint i;
   gboolean success;
 
+  if(event_buffer == NULL){
+    return(FALSE);
+  }
+
   /* find offset */
   offset = AGS_LV2_EVENT_BUFFER(event_buffer)->data;
   
@@ -1728,6 +1736,10 @@ ags_lv2_plugin_clear_event_buffer(gpointer event_buffer,
 
   guint padded_buffer_size;
 
+  if(event_buffer == NULL){
+    return;
+  }
+  
   offset = AGS_LV2_EVENT_BUFFER(event_buffer)->data;
   
   if(buffer_size < 8){
@@ -1803,6 +1815,10 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
   guint i;
   gboolean success;
 
+  if(atom_sequence == NULL){
+    return(FALSE);
+  }
+  
   aseq = (LV2_Atom_Sequence *) atom_sequence;
   
   /* find offset */
@@ -1882,6 +1898,10 @@ ags_lv2_plugin_atom_sequence_remove_midi(gpointer atom_sequence,
   guint i;
   gboolean success;
 
+  if(atom_sequence == NULL){
+    return(FALSE);
+  }
+
   aseq = (LV2_Atom_Sequence *) atom_sequence;
   
   /* find offset */
@@ -1940,6 +1960,10 @@ void
 ags_lv2_plugin_clear_atom_sequence(gpointer atom_sequence,
 				   guint sequence_size)
 {
+  if(atom_sequence == NULL){
+    return;
+  }
+  
   memset(atom_sequence, 0, sequence_size);
 }
 

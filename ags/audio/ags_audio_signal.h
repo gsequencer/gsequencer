@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -126,6 +126,11 @@ struct _AgsAudioSignalClass
 
 GType ags_audio_signal_get_type();
 
+GRecMutex* ags_audio_signal_get_obj_mutex(AgsAudioSignal *audio_signal);
+
+void ags_audio_signal_stream_lock(AgsAudioSignal *audio_signal);
+void ags_audio_signal_stream_unlock(AgsAudioSignal *audio_signal);
+
 gboolean ags_audio_signal_test_flags(AgsAudioSignal *audio_signal, guint flags);
 void ags_audio_signal_set_flags(AgsAudioSignal *audio_signal, guint flags);
 void ags_audio_signal_unset_flags(AgsAudioSignal *audio_signal, guint flags);
@@ -134,16 +139,31 @@ void* ags_stream_alloc(guint buffer_size,
 		       guint format);
 void ags_stream_free(void *buffer);
 
+/* parent */
+GObject* ags_audio_signal_get_recycling(AgsAudioSignal *audio_signal);
+void ags_audio_signal_set_recycling(AgsAudioSignal *audio_signal, GObject *recycling);
+
 /* soundcard */
+GObject* ags_audio_signal_get_output_soundcard(AgsAudioSignal *audio_signal);
 void ags_audio_signal_set_output_soundcard(AgsAudioSignal *audio_signal, GObject *output_soundcard);
+
+GObject* ags_audio_signal_get_input_soundcard(AgsAudioSignal *audio_signal);
 void ags_audio_signal_set_input_soundcard(AgsAudioSignal *audio_signal, GObject *input_soundcard);
 
 /* presets */
+guint ags_audio_signal_get_samplerate(AgsAudioSignal *audio_signal);
 void ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate);
+
+guint ags_audio_signal_get_buffer_size(AgsAudioSignal *audio_signal);
 void ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size);
+
+guint ags_audio_signal_get_format(AgsAudioSignal *audio_signal);
 void ags_audio_signal_set_format(AgsAudioSignal *audio_signal, guint format);
 
 /* children */
+GList* ags_audio_signal_get_note(AgsAudioSignal *audio_signal);
+void ags_audio_signal_set_note(AgsAudioSignal *audio_signal, GList *note);
+
 void ags_audio_signal_add_note(AgsAudioSignal *audio_signal,
 			       GObject *note);
 void ags_audio_signal_remove_note(AgsAudioSignal *audio_signal,

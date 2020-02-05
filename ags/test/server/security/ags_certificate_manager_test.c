@@ -50,6 +50,8 @@ ags_certificate_manager_test_init_suite()
 {
   AgsConfig *config;
 
+  ags_priority_load_defaults(ags_priority_get_instance());  
+
   config = ags_config_get_instance();
 
   server_application_context = (AgsApplicationContext *) ags_server_application_context_new();

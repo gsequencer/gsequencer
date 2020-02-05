@@ -35,6 +35,21 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.1.1" date="2020-02-04">
+      <description>
+	<p>Updated the user manual.</p>
+      </description>
+    </release>
+
+    <release version="3.1.0" date="2020-02-04">
+      <description>
+	<p>Implemented meta widgets of notation, automation and wave editor.</p>
+	<p>Implemented acoustic feedback of DSSI and LV2.</p>
+	<p>Fixed automation editor not showing again after machine changed.</p>
+	<p>Minor improvements</p>
+      </description>
+    </release>
+
     <release version="3.0.8" date="2020-01-23">
       <description>
 	<p>Fixes to WASAPI backend.</p>

@@ -56,6 +56,10 @@ struct _AgsRecallAudioClass
 
 GType ags_recall_audio_get_type();
 
+AgsAudio* ags_recall_audio_get_audio(AgsRecallAudio *recall_audio);
+void ags_recall_audio_set_audio(AgsRecallAudio *recall_audio,
+				AgsAudio *audio);
+
 AgsRecallAudio* ags_recall_audio_new(AgsAudio *audio);
 
 G_END_DECLS

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -57,6 +57,14 @@ struct _AgsRecallChannelClass
 };
 
 GType ags_recall_channel_get_type();
+
+AgsChannel* ags_recall_channel_get_destination(AgsRecallChannel *recall_channel);
+void ags_recall_channel_set_destination(AgsRecallChannel *recall_channel,
+					AgsChannel *destination);
+
+AgsChannel* ags_recall_channel_get_source(AgsRecallChannel *recall_channel);
+void ags_recall_channel_set_source(AgsRecallChannel *recall_channel,
+				   AgsChannel *source);
 
 GList* ags_recall_channel_find_channel(GList *recall_channel, AgsChannel *source);
 

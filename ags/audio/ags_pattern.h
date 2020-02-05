@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -94,13 +94,28 @@ struct _AgsPatternClass
 
 GType ags_pattern_get_type();
 
+GRecMutex* ags_pattern_get_obj_mutex(AgsPattern *pattern);
+
 gboolean ags_pattern_test_flags(AgsPattern *pattern, guint flags);
 void ags_pattern_set_flags(AgsPattern *pattern, guint flags);
 void ags_pattern_unset_flags(AgsPattern *pattern, guint flags);
 
 GList* ags_pattern_find_near_timestamp(GList *pattern, AgsTimestamp *timestamp);
 
+GObject* ags_pattern_get_channel(AgsPattern *pattern);
+void ags_pattern_set_channel(AgsPattern *pattern,
+			     GObject *channel);
+
+AgsTimestamp* ags_pattern_get_timestamp(AgsPattern *pattern);
+void ags_pattern_set_timestamp(AgsPattern *pattern,
+			       AgsTimestamp *timestamp);
+
+void ags_pattern_get_dim(AgsPattern *pattern, guint *dim0, guint *dim1, guint *length);
 void ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length);
+
+GObject* ags_pattern_get_port(AgsPattern *pattern);
+void ags_pattern_set_port(AgsPattern *pattern,
+			  GObject *port);
 
 gboolean ags_pattern_is_empty(AgsPattern *pattern, guint i, guint j);
 

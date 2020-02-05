@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -582,6 +582,26 @@ ags_preset_finalize(GObject *gobject)
 }
 
 /**
+ * ags_preset_get_obj_mutex:
+ * @preset: the #AgsPreset
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @preset
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_preset_get_obj_mutex(AgsPreset *preset)
+{
+  if(!AGS_IS_PRESET(preset)){
+    return(NULL);
+  }
+
+  return(AGS_PRESET_GET_OBJ_MUTEX(preset));
+}
+
+/**
  * ags_preset_test_flags:
  * @preset: the #AgsPreset
  * @flags: the flags
@@ -672,6 +692,431 @@ ags_preset_unset_flags(AgsPreset *preset, guint flags)
   preset->flags &= (~flags);
 
   g_rec_mutex_unlock(preset_mutex);
+}
+
+/**
+ * ags_preset_get_audio:
+ * @preset: the #AgsPreset
+ * 
+ * Get audio.
+ * 
+ * Returns: (transfer full): the #AgsAudio
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_preset_get_audio(AgsPreset *preset)
+{
+  GObject *audio;
+
+  if(!AGS_IS_PRESET(preset)){
+    return(NULL);
+  }
+
+  g_object_get(preset,
+	       "audio", &audio,
+	       NULL);
+
+  return(audio);
+}
+
+/**
+ * ags_preset_set_audio:
+ * @preset: the #AgsPreset
+ * @audio: the #AgsAudio
+ * 
+ * Set audio.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_preset_set_audio(AgsPreset *preset, GObject *audio)
+{
+  if(!AGS_IS_PRESET(preset)){
+    return;
+  }
+
+  g_object_set(preset,
+	       "audio", audio,
+	       NULL);
+}
+
+/**
+ * ags_preset_get_scope:
+ * @preset: the #AgsPreset
+ * 
+ * Get scope.
+ * 
+ * Returns: the scope
+ * 
+ * Since: 3.1.0
+ */
+gchar*
+ags_preset_get_scope(AgsPreset *preset)
+{
+  gchar *scope;
+
+  if(!AGS_IS_PRESET(preset)){
+    return(NULL);
+  }
+
+  g_object_get(preset,
+	       "scope", &scope,
+	       NULL);
+
+  return(scope);
+}
+
+/**
+ * ags_preset_set_scope:
+ * @preset: the #AgsPreset
+ * @scope: the scope
+ * 
+ * Set scope.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_preset_set_scope(AgsPreset *preset,
+		     gchar *scope)
+{
+  if(!AGS_IS_PRESET(preset)){
+    return;
+  }
+
+  g_object_set(preset,
+	       "scope", scope,
+	       NULL);
+}
+
+/**
+ * ags_preset_get_preset_name:
+ * @preset: the #AgsPreset
+ * 
+ * Get preset name.
+ * 
+ * Returns: the preset name
+ * 
+ * Since: 3.1.0
+ */
+gchar*
+ags_preset_get_preset_name(AgsPreset *preset)
+{
+  gchar *preset_name;
+
+  if(!AGS_IS_PRESET(preset)){
+    return(NULL);
+  }
+
+  g_object_get(preset,
+	       "preset-name", &preset_name,
+	       NULL);
+
+  return(preset_name);
+}
+
+/**
+ * ags_preset_set_preset_name:
+ * @preset: the #AgsPreset
+ * @preset_name: the preset name
+ * 
+ * Set preset name.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_preset_set_preset_name(AgsPreset *preset,
+			   gchar *preset_name)
+{
+  if(!AGS_IS_PRESET(preset)){
+    return;
+  }
+
+  g_object_set(preset,
+	       "preset-name", preset_name,
+	       NULL);
+}
+
+/**
+ * ags_preset_get_audio_channel_start:
+ * @preset: the #AgsPreset
+ *
+ * Gets audio channel start.
+ * 
+ * Returns: the audio channel start
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_preset_get_audio_channel_start(AgsPreset *preset)
+{
+  guint audio_channel_start;
+  
+  if(!AGS_IS_PRESET(preset)){
+    return(0);
+  }
+
+  g_object_get(preset,
+	       "audio-channel-start", &audio_channel_start,
+	       NULL);
+
+  return(audio_channel_start);
+}
+
+/**
+ * ags_preset_set_audio_channel_start:
+ * @preset: the #AgsPreset
+ * @audio_channel_start: the audio channel start
+ *
+ * Sets audio channel start.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_preset_set_audio_channel_start(AgsPreset *preset, guint audio_channel_start)
+{
+  if(!AGS_IS_PRESET(preset)){
+    return;
+  }
+
+  g_object_set(preset,
+	       "audio-channel-start", audio_channel_start,
+	       NULL);
+}
+
+/**
+ * ags_preset_get_audio_channel_end:
+ * @preset: the #AgsPreset
+ *
+ * Gets audio channel end.
+ * 
+ * Returns: the audio channel end
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_preset_get_audio_channel_end(AgsPreset *preset)
+{
+  guint audio_channel_end;
+  
+  if(!AGS_IS_PRESET(preset)){
+    return(0);
+  }
+
+  g_object_get(preset,
+	       "audio-channel-end", &audio_channel_end,
+	       NULL);
+
+  return(audio_channel_end);
+}
+
+/**
+ * ags_preset_set_audio_channel_end:
+ * @preset: the #AgsPreset
+ * @audio_channel_end: the audio channel end
+ *
+ * Sets audio channel end.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_preset_set_audio_channel_end(AgsPreset *preset, guint audio_channel_end)
+{
+  if(!AGS_IS_PRESET(preset)){
+    return;
+  }
+
+  g_object_set(preset,
+	       "audio-channel-end", audio_channel_end,
+	       NULL);
+}
+
+/**
+ * ags_preset_get_pad_start:
+ * @preset: the #AgsPreset
+ *
+ * Gets pad start.
+ * 
+ * Returns: the pad start
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_preset_get_pad_start(AgsPreset *preset)
+{
+  guint pad_start;
+  
+  if(!AGS_IS_PRESET(preset)){
+    return(0);
+  }
+
+  g_object_get(preset,
+	       "pad-start", &pad_start,
+	       NULL);
+
+  return(pad_start);
+}
+
+/**
+ * ags_preset_set_pad_start:
+ * @preset: the #AgsPreset
+ * @pad_start: the pad start
+ *
+ * Sets pad start.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_preset_set_pad_start(AgsPreset *preset, guint pad_start)
+{
+  if(!AGS_IS_PRESET(preset)){
+    return;
+  }
+
+  g_object_set(preset,
+	       "pad-start", pad_start,
+	       NULL);
+}
+
+/**
+ * ags_preset_get_pad_end:
+ * @preset: the #AgsPreset
+ *
+ * Gets pad end.
+ * 
+ * Returns: the pad end
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_preset_get_pad_end(AgsPreset *preset)
+{
+  guint pad_end;
+  
+  if(!AGS_IS_PRESET(preset)){
+    return(0);
+  }
+
+  g_object_get(preset,
+	       "pad-end", &pad_end,
+	       NULL);
+
+  return(pad_end);
+}
+
+/**
+ * ags_preset_set_pad_end:
+ * @preset: the #AgsPreset
+ * @pad_end: the pad end
+ *
+ * Sets pad end.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_preset_set_pad_end(AgsPreset *preset, guint pad_end)
+{
+  if(!AGS_IS_PRESET(preset)){
+    return;
+  }
+
+  g_object_set(preset,
+	       "pad-end", pad_end,
+	       NULL);
+}
+
+/**
+ * ags_preset_get_x_start:
+ * @preset: the #AgsPreset
+ *
+ * Gets x start.
+ * 
+ * Returns: the x start
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_preset_get_x_start(AgsPreset *preset)
+{
+  guint x_start;
+  
+  if(!AGS_IS_PRESET(preset)){
+    return(0);
+  }
+
+  g_object_get(preset,
+	       "x-start", &x_start,
+	       NULL);
+
+  return(x_start);
+}
+
+/**
+ * ags_preset_set_x_start:
+ * @preset: the #AgsPreset
+ * @x_start: the x start
+ *
+ * Sets x start.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_preset_set_x_start(AgsPreset *preset, guint x_start)
+{
+  if(!AGS_IS_PRESET(preset)){
+    return;
+  }
+
+  g_object_set(preset,
+	       "x-start", x_start,
+	       NULL);
+}
+
+/**
+ * ags_preset_get_x_end:
+ * @preset: the #AgsPreset
+ *
+ * Gets x end.
+ * 
+ * Returns: the x end
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_preset_get_x_end(AgsPreset *preset)
+{
+  guint x_end;
+  
+  if(!AGS_IS_PRESET(preset)){
+    return(0);
+  }
+
+  g_object_get(preset,
+	       "x-end", &x_end,
+	       NULL);
+
+  return(x_end);
+}
+
+/**
+ * ags_preset_set_x_end:
+ * @preset: the #AgsPreset
+ * @x_end: the x end
+ *
+ * Sets x end.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_preset_set_x_end(AgsPreset *preset, guint x_end)
+{
+  if(!AGS_IS_PRESET(preset)){
+    return;
+  }
+
+  g_object_set(preset,
+	       "x-end", x_end,
+	       NULL);
 }
 
 /**

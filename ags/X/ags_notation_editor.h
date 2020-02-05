@@ -35,6 +35,7 @@
 #include <ags/X/editor/ags_notation_toolbar.h>
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_notation_edit.h>
+#include <ags/X/editor/ags_notation_meta.h>
 
 G_BEGIN_DECLS
 
@@ -91,6 +92,8 @@ struct _AgsNotationEditor
   AgsScrolledPiano *scrolled_piano;
   
   AgsNotationEdit *notation_edit;
+
+  AgsNotationMeta *notation_meta;
 };
 
 struct _AgsNotationEditorClass

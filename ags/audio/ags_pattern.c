@@ -714,6 +714,26 @@ ags_pattern_disconnect(AgsConnectable *connectable)
 }
 
 /**
+ * ags_pattern_get_obj_mutex:
+ * @pattern: the #AgsPattern
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @pattern
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_pattern_get_obj_mutex(AgsPattern *pattern)
+{
+  if(!AGS_IS_PATTERN(pattern)){
+    return(NULL);
+  }
+
+  return(AGS_PATTERN_GET_OBJ_MUTEX(pattern));
+}
+
+/**
  * ags_pattern_test_flags:
  * @pattern: the #AgsPattern
  * @flags: the flags
@@ -1028,6 +1048,141 @@ ags_pattern_find_near_timestamp(GList *pattern, AgsTimestamp *timestamp)
 }
 
 /**
+ * ags_pattern_get_channel:
+ * @pattern: the #AgsPattern
+ * 
+ * Get channel.
+ * 
+ * Returns: (transfer full): the #AgsChannel
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_pattern_get_channel(AgsPattern *pattern)
+{
+  GObject *channel;
+
+  if(!AGS_IS_PATTERN(pattern)){
+    return(NULL);
+  }
+
+  g_object_get(pattern,
+	       "channel", &channel,
+	       NULL);
+
+  return(channel);
+}
+
+/**
+ * ags_pattern_set_channel:
+ * @pattern: the #AgsPattern
+ * @channel: the #AgsChannel
+ * 
+ * Set channel.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_pattern_set_channel(AgsPattern *pattern, GObject *channel)
+{
+  if(!AGS_IS_PATTERN(pattern)){
+    return;
+  }
+
+  g_object_set(pattern,
+	       "channel", channel,
+	       NULL);
+}
+
+/**
+ * ags_pattern_get_timestamp:
+ * @pattern: the #AgsPattern
+ * 
+ * Get timestamp.
+ * 
+ * Returns: (transfer full): the #AgsTimestamp
+ * 
+ * Since: 3.1.0
+ */
+AgsTimestamp*
+ags_pattern_get_timestamp(AgsPattern *pattern)
+{
+  AgsTimestamp *timestamp;
+
+  if(!AGS_IS_PATTERN(pattern)){
+    return(NULL);
+  }
+
+  g_object_get(pattern,
+	       "timestamp", &timestamp,
+	       NULL);
+
+  return(timestamp);
+}
+
+/**
+ * ags_pattern_set_timestamp:
+ * @pattern: the #AgsPattern
+ * @timestamp: the #AgsTimestamp
+ * 
+ * Set timestamp.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_pattern_set_timestamp(AgsPattern *pattern, AgsTimestamp *timestamp)
+{
+  if(!AGS_IS_PATTERN(pattern)){
+    return;
+  }
+
+  g_object_set(pattern,
+	       "timestamp", timestamp,
+	       NULL);
+}
+
+/**
+ * ags_pattern_get_dim:
+ * @pattern: an #AgsPattern
+ * @dim0: (out): bank 0 size
+ * @dim1: (out): bank 1 size
+ * @length: (out): amount of beats
+ *
+ * Get the pattern's dimensions.
+ *
+ * Since: 3.1.0
+ */
+void 
+ags_pattern_get_dim(AgsPattern *pattern, guint *dim0, guint *dim1, guint *length)
+{
+  GRecMutex *pattern_mutex;
+
+  if(!AGS_IS_PATTERN(pattern)){
+    return;
+  }
+  
+  /* get pattern mutex */
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
+
+  /* get dim */
+  g_rec_mutex_lock(pattern_mutex);
+
+  if(dim0 != NULL){
+    dim0[0] = pattern->dim[0];
+  }
+
+  if(dim1 != NULL){
+    dim1[0] = pattern->dim[1];
+  }
+
+  if(length != NULL){
+    length[0] = pattern->dim[2];
+  }
+  
+  g_rec_mutex_unlock(pattern_mutex);
+}
+
+/**
  * ags_pattern_set_dim:
  * @pattern: an #AgsPattern
  * @dim0: bank 0 size
@@ -1054,7 +1209,7 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
   /* get pattern mutex */
   pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
-  /* set dim*/
+  /* set dim */
   g_rec_mutex_lock(pattern_mutex);
 
   if(dim0 == 0 && pattern->pattern == NULL){

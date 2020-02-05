@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -491,7 +491,8 @@ ags_play_channel_run_run_post(AgsRecall *recall)
 		     g_object_unref);
   }
   
-  if(!found){
+  if(!found &&
+     !ags_recall_id_test_state_flags(recall_id, AGS_SOUND_STATE_IS_WAITING)){
     ags_recall_done(recall);
   }
 

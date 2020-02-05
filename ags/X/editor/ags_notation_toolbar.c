@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,7 @@
 void ags_notation_toolbar_class_init(AgsNotationToolbarClass *notation_toolbar);
 void ags_notation_toolbar_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar);
+
 void ags_notation_toolbar_connect(AgsConnectable *connectable);
 void ags_notation_toolbar_disconnect(AgsConnectable *connectable);
 
@@ -89,6 +90,7 @@ ags_notation_toolbar_get_type(void)
 void
 ags_notation_toolbar_class_init(AgsNotationToolbarClass *notation_toolbar)
 {
+  /* empty */
 }
 
 void

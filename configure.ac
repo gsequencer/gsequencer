@@ -1,5 +1,5 @@
 #                                               -*- Autoconf -*-
-# Copyright (C) 2005-2020 Joël Krähemann
+# Copyright (C) 2005-2020 Joel Kraehemann
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.0.9],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.1.1],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -154,6 +154,9 @@ AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_INSTALL
 
+#AS_IF([test "x$enable_w32api" != xno],
+#      [gl_EARLY])
+
 # libtool
 LT_PREREQ([2.4.2])
 LT_INIT
@@ -195,8 +198,7 @@ AC_CHECK_LIB([m], [main], , AC_MSG_ERROR("No math library present"))
 AS_IF([test "x$enable_strip_rt_events" != xno],
       [AC_DEFINE([AGS_STRIP_RT_EVENTS], [1], [striping rt-events enabled])
       AC_MSG_NOTICE([striping rt-events enabled])],
-      [AC_MSG_NOTICE([striping rt-events disabled])
-       ])
+      [AC_MSG_NOTICE([striping rt-events disabled])])
 
 # FIXME: Replace `main' with a function in `-lrt':
 AS_IF([test "x$enable_rt" != xno],
@@ -204,13 +206,12 @@ AS_IF([test "x$enable_rt" != xno],
       RT_LIBS="-lrt"
       AC_CHECK_LIB([rt], [main], , AC_MSG_ERROR("No rt library present"))
       AC_MSG_NOTICE([rt enabled])],
-      [AC_MSG_NOTICE([rt disabled])
-       ])
+      [AC_MSG_NOTICE([rt disabled])])
 
 # Checks for header files.
 AC_PATH_X
 AC_FUNC_ALLOCA
-# AC_CHECK_HEADERS([fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h ladspa.h lv2.h], , AC_MSG_ERROR("missing headers"))
+AC_CHECK_HEADERS([stdlib.h string.h unistd.h ladspa.h dssi.h lv2.h], , AC_MSG_ERROR("missing headers"))
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -223,12 +224,14 @@ AC_TYPE_UINT32_T
 AC_TYPE_UINT8_T
 AC_CHECK_TYPES([ptrdiff_t])
 
+WITH_W32API=0
+
 AS_IF([test "x$enable_w32api" != xno],
       [AC_DEFINE([AGS_W32API], [1], [w32api enabled])
       W32API_CFLAGS="-nostdinc -I./lib -I/usr/lib/gcc/x86_64-w64-mingw32/7.4.0/include -I/usr/x86_64-w64-mingw32/sys-root/mingw/include -I/usr/x86_64-w64-mingw32/sys-root/mingw/include/dssi -include ags/config.h "
       W32API_LIBS="-L./lib -lgnu"
       AC_MSG_NOTICE([w32api enabled])],
-      AC_MSG_NOTICE([w32api disabled]))
+      [AC_MSG_NOTICE([w32api disabled])])
 AM_CONDITIONAL([WITH_W32API], [test "x$enable_w32api" == xyes])
 
 AS_IF([test "x$enable_osxapi" != xno],
@@ -236,7 +239,7 @@ AS_IF([test "x$enable_osxapi" != xno],
       OSXAPI_CFLAGS=""
       OSXAPI_LIBS=""
       AC_MSG_NOTICE([OS X api enabled])],
-      AC_MSG_NOTICE([OS X api disabled]))
+      [AC_MSG_NOTICE([OS X api disabled])])
 AM_CONDITIONAL([WITH_OSXAPI], [test "x$enable_osxapi" == xyes])
 
 PKG_CHECK_MODULES([UUID], [uuid >= 1.0.1])
@@ -265,7 +268,7 @@ AS_IF([test "x$enable_alsa" != xno],
 AS_IF([test "x$enable_oss" != xno],
       [AC_DEFINE([AGS_WITH_OSS], [1], [OSS enabled])
        AC_MSG_NOTICE([OSS enabled])],
-      AC_MSG_NOTICE([OSS disabled]))
+      [AC_MSG_NOTICE([OSS disabled])])
 
 AS_IF([test "x$enable_core_audio" != xno],
       [AC_DEFINE([AGS_WITH_CORE_AUDIO], [1], [core-audio enabled])
@@ -276,18 +279,18 @@ AS_IF([test "x$enable_core_audio" != xno],
       AC_SUBST(CORE_AUDIO_LIBS)
 
       AC_MSG_NOTICE([core audio enabled])],
-      AC_MSG_NOTICE([core audio disabled]))
+      [AC_MSG_NOTICE([core audio disabled])])
 
 AS_IF([test "x$enable_audio_unit" != xno],
-      [AC_DEFINE([AGS_WITH_AUDIO_UNIT], [1], [core-audio enabled])
+      [AC_DEFINE([AGS_WITH_AUDIO_UNIT], [1], [audio-unit enabled])
 
       AUDIO_UNIT_CFLAGS= 
       AUDIO_UNIT_LIBS="-framework AudioUnit -framework AudioToolbox"
       AC_SUBST(AUDIO_UNIT_CFLAGS)
       AC_SUBST(AUDIO_UNIT_LIBS)
 
-      AC_MSG_NOTICE([core audio enabled])],
-      AC_MSG_NOTICE([core audio disabled]))
+      AC_MSG_NOTICE([audio-unit enabled])],
+      [AC_MSG_NOTICE([audio-unit disabled])])
 
 AS_IF([test "x$enable_wasapi" != xno],
       [AC_DEFINE([AGS_WITH_WASAPI], [1], [wasapi enabled])
@@ -297,7 +300,7 @@ AS_IF([test "x$enable_wasapi" != xno],
       AC_SUBST(WASAPI_LIBS)
 
       AC_MSG_NOTICE([wasapi enabled])],
-      AC_MSG_NOTICE([wasapi disabled]))
+      [AC_MSG_NOTICE([wasapi disabled])])
 
 AS_IF([test "x$enable_jack" != xno],
       [AC_DEFINE([AGS_WITH_JACK], [1], [JACK enabled])
@@ -309,7 +312,7 @@ AS_IF([test "x$enable_jack" != xno],
       AC_CHECK_FUNC([jack_port_uuid],
 		    [AC_DEFINE([HAVE_JACK_PORT_UUID], [1], [Jack port uuid available])])
       AC_MSG_NOTICE([JACK enabled])],
-      AC_MSG_NOTICE([JACK disabled]))
+      [AC_MSG_NOTICE([JACK disabled])])
 
 AS_IF([test "x$enable_pulse" != xno],
       [AC_DEFINE([AGS_WITH_PULSE], [1], [PULSE enabled])
@@ -319,7 +322,7 @@ AS_IF([test "x$enable_pulse" != xno],
       AC_SUBST(PULSE_LIBS)
 
       AC_MSG_NOTICE([PULSE enabled])],
-      AC_MSG_NOTICE([PULSE disabled]))
+      [AC_MSG_NOTICE([PULSE disabled])])
 
 PKG_CHECK_MODULES([LIBXML2], [libxml-2.0 >= 2.8.0])
 AC_SUBST(LIBXML2_CFLAGS)
@@ -345,12 +348,9 @@ PKG_CHECK_MODULES([GOBJECT], [gobject-2.0 >= 2.56.0 glib-2.0 >= 2.56.0 gmodule-2
 AC_SUBST(GOBJECT_CFLAGS)
 AC_SUBST(GOBJECT_LIBS)
 
-AC_CHECK_LIB(glib-2.0, g_strv_length,
-            AC_DEFINE([HAVE_GLIB_2_6], [1], [GLib 2.6 available]))
-AC_CHECK_LIB(glib-2.0, g_strv_contains,
-            AC_DEFINE([HAVE_GLIB_2_44], [1], [GLib 2.44 available]))
-AC_CHECK_LIB(glib-2.0, g_object_setv,
-            AC_DEFINE([HAVE_GLIB_2_54], [1], [GLib 2.54 available]))
+AC_DEFINE([HAVE_GLIB_2_6], [1], [GLib 2.6 available])
+AC_DEFINE([HAVE_GLIB_2_44], [1], [GLib 2.44 available])
+AC_DEFINE([HAVE_GLIB_2_54], [1], [GLib 2.54 available])
 
 GOBJECT_INTROSPECTION_CHECK([1.30.0])
 
@@ -362,28 +362,27 @@ PKG_CHECK_MODULES([LIBSOUP], [libsoup-2.4 >= 2.52.0])
 AC_SUBST(LIBSOUP_CFLAGS)
 AC_SUBST(LIBSOUP_LIBS)
 
-AC_CHECK_LIB(atk-1.0, atk_value_get_value_and_text,
-             [AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])])
+AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])
 
 AS_IF([test "x$enable_public_libgsequencer" != xno],
       [AC_DEFINE([AGS_WITH_PUBLIC_LIBGSEQUENCER], [1], [public libgsequencer enabled])
       
       AC_MSG_NOTICE([public libgsequencer enabled])],
-      AC_MSG_NOTICE([public libgsequencer disabled]))
+      [AC_MSG_NOTICE([public libgsequencer disabled])])
 AM_CONDITIONAL([AGS_WITH_PUBLIC_LIBGSEQUENCER], [test "x$enable_public_libgsequencer" == xyes])
 
 AS_IF([test "x$enable_upstream_gtk_doc" != xno],
       [AC_DEFINE([AGS_WITH_UPSTREAM_GTK_DOC], [1], [upstream API reference directory enabled])
       
       AC_MSG_NOTICE([upstream API reference directory enabled])],
-      AC_MSG_NOTICE([upstream API reference directory disabled]))
+      [AC_MSG_NOTICE([upstream API reference directory disabled])])
 AM_CONDITIONAL([AGS_WITH_UPSTREAM_GTK_DOC], [test "x$enable_upstream_gtk_doc" == xyes])
 
 AS_IF([test "x$enable_single_docdir" != xno],
       [AC_DEFINE([AGS_WITH_SINGLE_DOCDIR], [1], [single documentation directory enabled])
       
       AC_MSG_NOTICE([single documentation directory enabled])],
-      AC_MSG_NOTICE([single documentation directory disabled]))
+      [AC_MSG_NOTICE([single documentation directory disabled])])
 AM_CONDITIONAL([AGS_WITH_SINGLE_DOCDIR], [test "x$enable_single_docdir" == xyes])
 
 AS_IF([test "x$enable_libinstpatch" != xno],
@@ -391,7 +390,7 @@ AS_IF([test "x$enable_libinstpatch" != xno],
       AC_SUBST(LIBINSTPATCH_CFLAGS)
       AC_SUBST(LIBINSTPATCH_LIBS)
       AC_DEFINE([AGS_WITH_LIBINSTPATCH], [1], [Disable if you don't want libinstpatch])],
-      AC_MSG_NOTICE([libinstpatch disabled]))
+      [AC_MSG_NOTICE([libinstpatch disabled])])
 AM_CONDITIONAL([WITH_LIBINSTPATCH], [test "x$enable_libinstpatch" == xyes])
 
 AS_IF([test "x$enable_vst3" != xno],
@@ -401,7 +400,7 @@ AS_IF([test "x$enable_vst3" != xno],
       AC_SUBST(VST3_LIBS)
       
       AC_MSG_NOTICE([VST3 enabled])],
-      AC_MSG_NOTICE([VST3 disabled]))
+      [AC_MSG_NOTICE([VST3 disabled])])
 
 PKG_CHECK_MODULES([CAIRO], [cairo >= 1.12.0])
 AC_SUBST(CAIRO_CFLAGS)
@@ -412,25 +411,64 @@ AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
 AS_IF([test "x$enable_w32api" != xyes],
-      PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0 >= 2.10.0])
-      AC_SUBST(WEBKITGTK_CFLAGS)
-      AC_SUBST(WEBKITGTK_LIBS))
+      [PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0 >= 2.10.0])
+       AC_SUBST(WEBKITGTK_CFLAGS)
+       AC_SUBST(WEBKITGTK_LIBS)],
+       [])
 
 AS_IF([test "x$enable_run_functional_tests" == xyes],
       [AC_MSG_NOTICE([run functional tests enabled])],
-      AC_MSG_NOTICE([run functional tests disabled]))
+      [AC_MSG_NOTICE([run functional tests disabled])])
 AM_CONDITIONAL([RUN_FUNCTIONAL_TESTS], [test "x$enable_run_functional_tests" == xyes])
 
 AS_IF([test "x$enable_fast_test_mode" == xyes],
       [AC_MSG_NOTICE([fast test mode enabled])],
-      AC_MSG_NOTICE([fast test mode disabled]))
+      [AC_MSG_NOTICE([fast test mode disabled])])
 AM_CONDITIONAL([FAST_TEST_MODE], [test "x$enable_fast_test_mode" == xyes])
 
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_MMAP
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify atexit clock_gettime floor getcwd localeconv mblen mbrlen memchr mempcpy memset munmap nl_langinfo setlocale socket sqrt stpcpy strcasecmp strchr strcspn strdup strstr strtol strtoul])
+AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify atexit clock_gettime floor memmove memset pow putenv realpath regcomp setlocale sqrt strchr strdup strerror strrchr strstr strtoul])
+
+AC_CANONICAL_HOST
+
+build_gnu=no
+build_linux=no
+build_windows=no
+build_mac=no
+build_freebsd=no
+
+# Detect the target system
+case "${host_os}" in
+    gnu*)
+        build_gnu=yes
+        ;;
+    linux*)
+        build_linux=yes
+        ;;
+    freebsd*)
+        build_freebsd=yes
+        ;;
+    cygwin*|mingw*)
+        build_windows=yes
+        ;;
+    darwin*)
+        build_mac=yes
+        ;;
+    *)
+        AC_MSG_ERROR(["OS $host_os is not supported"])
+        ;;
+esac
+
+# Pass the conditionals to automake
+AM_CONDITIONAL([GNU], [test "$build_gnu" = "yes"])
+AM_CONDITIONAL([LINUX], [test "$build_linux" = "yes"])
+AM_CONDITIONAL([FREEBSD], [test "$build_freebsd" = "yes"])
+AM_CONDITIONAL([WINDOWS], [test "$build_windows" = "yes"])
+AM_CONDITIONAL([OSX], [test "$build_mac" = "yes"])
+
 
 # check for gtk-doc
 m4_ifdef([GTK_DOC_CHECK], [
@@ -585,6 +623,9 @@ AS_IF([test "x$LIBGSEQUENCER_API_DIR" != x],
        AC_MSG_NOTICE([LIBGSEQUENCER_API_DIR = $LIBGSEQUENCER_API_DIR])])
 ])
 
+#AS_IF([test "x$enable_w32api" != xno],
+#       [gl_INIT])
+
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 Makefile
@@ -600,5 +641,8 @@ libags.pc
 libags_audio.pc
 libags_gui.pc
 libgsequencer.pc])
+
+#AM_COND_IF([WITH_W32API],
+#           [AC_CONFIG_FILES([lib/Makefile])])
 
 AC_OUTPUT

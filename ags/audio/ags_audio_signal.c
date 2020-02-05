@@ -1820,6 +1820,62 @@ ags_audio_signal_disconnect(AgsConnectable *connectable)
 }
 
 /**
+ * ags_audio_signal_get_obj_mutex:
+ * @audio_signal: the #AgsAudioSignal
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @audio_signal
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_audio_signal_get_obj_mutex(AgsAudioSignal *audio_signal)
+{
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(NULL);
+  }
+
+  return(AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal));
+}
+
+/**
+ * ags_audio_signal_stream_lock:
+ * @audio_signal: the #AgsAudioSignal
+ * 
+ * Lock stream mutex.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_signal_stream_lock(AgsAudioSignal *audio_signal)
+{
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  g_rec_mutex_lock(AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal));
+}
+
+/**
+ * ags_audio_signal_stream_unlock:
+ * @audio_signal: the #AgsAudioSignal
+ * 
+ * Unlock stream mutex.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_signal_stream_unlock(AgsAudioSignal *audio_signal)
+{
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  g_rec_mutex_unlock(AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal));
+}
+
+/**
  * ags_audio_signal_test_flags:
  * @audio_signal: the #AgsAudioSignal
  * @flags: the flags
@@ -2021,6 +2077,79 @@ ags_stream_free(void *buffer)
 }
 
 /**
+ * ags_audio_signal_get_recycling:
+ * @audio_signal: the #AgsAudioSignal
+ * 
+ * Get recycling.
+ * 
+ * Returns: (transfer full): the #AgsRecycling
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_audio_signal_get_recycling(AgsAudioSignal *audio_signal)
+{
+  GObject *recycling;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(NULL);
+  }
+
+  g_object_get(audio_signal,
+	       "recycling", &recycling,
+	       NULL);
+
+  return(recycling);
+}
+
+/**
+ * ags_audio_signal_set_recycling:
+ * @audio_signal: the #AgsAudioSignal
+ * @recycling: the #AgsRecycling
+ * 
+ * Set recycling.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_signal_set_recycling(AgsAudioSignal *audio_signal, GObject *recycling)
+{
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  g_object_set(audio_signal,
+	       "recycling", recycling,
+	       NULL);
+}
+
+/**
+ * ags_audio_signal_get_output_soundcard:
+ * @audio_signal: the #AgsAudioSignal
+ *
+ * Get the output soundcard object of @audio_signal.
+ *
+ * Returns: (transfer full): the output soundcard
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_audio_signal_get_output_soundcard(AgsAudioSignal *audio_signal)
+{
+  GObject *output_soundcard;
+  
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(NULL);
+  }
+
+  g_object_get(audio_signal,
+	       "output-soundcard", &output_soundcard,
+	       NULL);
+
+  return(output_soundcard);
+}
+
+/**
  * ags_audio_signal_set_output_soundcard:
  * @audio_signal: the #AgsAudioSignal
  * @output_soundcard: the #GObject implementing #AgsSoundcard
@@ -2084,6 +2213,32 @@ ags_audio_signal_set_output_soundcard(AgsAudioSignal *audio_signal, GObject *out
 }
 
 /**
+ * ags_audio_signal_get_input_soundcard:
+ * @audio_signal: the #AgsAudioSignal
+ *
+ * Get the input soundcard object of @audio_signal.
+ *
+ * Returns: (transfer full): the input soundcard
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_audio_signal_get_input_soundcard(AgsAudioSignal *audio_signal)
+{
+  GObject *input_soundcard;
+  
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(NULL);
+  }
+
+  g_object_get(audio_signal,
+	       "input-soundcard", &input_soundcard,
+	       NULL);
+
+  return(input_soundcard);
+}
+
+/**
  * ags_audio_signal_set_input_soundcard:
  * @audio_signal: the #AgsAudioSignal
  * @input_soundcard: the #GObject implementing #AgsSoundcard
@@ -2125,6 +2280,32 @@ ags_audio_signal_set_input_soundcard(AgsAudioSignal *audio_signal, GObject *inpu
   audio_signal->input_soundcard = input_soundcard;
 
   g_rec_mutex_unlock(audio_signal_mutex);
+}
+
+/**
+ * ags_audio_signal_get_samplerate:
+ * @audio_signal: the #AgsAudioSignal
+ *
+ * Gets samplerate.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_signal_get_samplerate(AgsAudioSignal *audio_signal)
+{
+  guint samplerate;
+  
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(0);
+  }
+
+  g_object_get(audio_signal,
+	       "samplerate", &samplerate,
+	       NULL);
+
+  return(samplerate);
 }
 
 /**
@@ -2325,6 +2506,32 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   if(resampled_data != NULL){
     free(resampled_data);
   }
+}
+
+/**
+ * ags_audio_signal_get_buffer_size:
+ * @audio_signal: the #AgsAudioSignal
+ *
+ * Gets buffer size.
+ * 
+ * Returns: the buffer size
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_signal_get_buffer_size(AgsAudioSignal *audio_signal)
+{
+  guint buffer_size;
+  
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(0);
+  }
+
+  g_object_get(audio_signal,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  return(buffer_size);
 }
 
 /**
@@ -2570,6 +2777,32 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
   if(data != NULL){
     free(data);
   }
+}
+
+/**
+ * ags_audio_signal_get_format:
+ * @audio_signal: the #AgsAudioSignal
+ *
+ * Gets format.
+ * 
+ * Returns: the format
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_signal_get_format(AgsAudioSignal *audio_signal)
+{
+  guint format;
+  
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(0);
+  }
+
+  g_object_get(audio_signal,
+	       "format", &format,
+	       NULL);
+
+  return(format);
 }
 
 /**
@@ -3257,6 +3490,66 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
   }
 
   g_rec_mutex_unlock(template_stream_mutex);
+}
+
+/**
+ * ags_audio_signal_get_note:
+ * @audio_signal: the #AgsAudioSignal
+ * 
+ * Get note.
+ * 
+ * Returns: (element-type AgsAudio.Note) (transfer full): the #GList-struct containig #AgsNote
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_audio_signal_get_note(AgsAudioSignal *audio_signal)
+{
+  GList *note;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(NULL);
+  }
+
+  g_object_get(audio_signal,
+	       "note", &note,
+	       NULL);
+
+  return(note);
+}
+
+/**
+ * ags_audio_signal_set_note:
+ * @audio_signal: the #AgsAudioSignal
+ * @note: (element-type AgsAudio.Note) (transfer full): the #GList-struct containing #AgsNote
+ * 
+ * Set note by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_signal_set_note(AgsAudioSignal *audio_signal, GList *note)
+{
+  GList *start_note;
+  
+  GRecMutex *audio_signal_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  /* get audio_signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
+    
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  start_note = audio_signal->note;
+  audio_signal->note = note;
+  
+  g_rec_mutex_unlock(audio_signal_mutex);
+
+  g_list_free_full(start_note,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -215,6 +215,8 @@ gboolean ags_recall_global_get_omit_event();
 gboolean ags_recall_global_get_performance_mode();
 gboolean ags_recall_global_get_rt_safe();
 
+GRecMutex* ags_recall_get_obj_mutex(AgsRecall *recall);
+
 gboolean ags_recall_test_flags(AgsRecall *recall, guint flags);
 void ags_recall_set_flags(AgsRecall *recall, guint flags);
 void ags_recall_unset_flags(AgsRecall *recall, guint flags);
@@ -254,11 +256,40 @@ void ags_recall_unset_state_flags(AgsRecall *recall, guint state_flags);
 
 gboolean ags_recall_check_state_flags(AgsRecall *recall, guint state_flags);
 
-/* children */
-void ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id);
+/* fields */
+gchar* ags_recall_get_filename(AgsRecall *recall);
+void ags_recall_set_filename(AgsRecall *recall,
+			     gchar *filename);
 
-void ags_recall_add_recall_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency);
-void ags_recall_remove_recall_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency);
+gchar* ags_recall_get_effect(AgsRecall *recall);
+void ags_recall_set_effect(AgsRecall *recall,
+			   gchar *effect);
+
+guint ags_recall_get_effect_index(AgsRecall *recall);
+void ags_recall_set_effect_index(AgsRecall *recall,
+				 guint effect_index);
+
+GObject* ags_recall_get_recall_container(AgsRecall *recall);
+void ags_recall_set_recall_container(AgsRecall *recall,
+				     GObject *recall_container);
+
+/* children */
+AgsRecallID* ags_recall_get_recall_id(AgsRecall *recall);
+void ags_recall_set_recall_id(AgsRecall *recall,
+			      AgsRecallID *recall_id);
+
+GList* ags_recall_get_recall_dependency(AgsRecall *recall);
+void ags_recall_set_recall_dependency(AgsRecall *recall,
+				      GList *recall_dependency);
+
+void ags_recall_add_recall_dependency(AgsRecall *recall,
+				      AgsRecallDependency *recall_dependency);
+void ags_recall_remove_recall_dependency(AgsRecall *recall,
+					 AgsRecallDependency *recall_dependency);
+
+GList* ags_recall_get_children(AgsRecall *recall);
+void ags_recall_set_children(AgsRecall *recall,
+			     GList *children);
 
 void ags_recall_add_child(AgsRecall *recall, AgsRecall *child);
 void ags_recall_remove_child(AgsRecall *recall, AgsRecall *child);
@@ -274,12 +305,20 @@ void ags_recall_remove_recall_handler(AgsRecall *recall,
 				      AgsRecallHandler *recall_handler);
 
 /* soundcard */
+GObject* ags_recall_get_output_soundcard(AgsRecall *recall);
 void ags_recall_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard);
+
+GObject* ags_recall_get_input_soundcard(AgsRecall *recall);
 void ags_recall_set_input_soundcard(AgsRecall *recall, GObject *input_soundcard);
 
 /* presets */
+guint ags_recall_get_samplerate(AgsRecall *recall);
 void ags_recall_set_samplerate(AgsRecall *recall, guint samplerate);
+
+guint ags_recall_get_buffer_size(AgsRecall *recall);
 void ags_recall_set_buffer_size(AgsRecall *recall, guint buffer_size);
+
+guint ags_recall_get_format(AgsRecall *recall);
 void ags_recall_set_format(AgsRecall *recall, guint format);
 
 /* events */

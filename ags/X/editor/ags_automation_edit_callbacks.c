@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -146,7 +146,7 @@ ags_automation_edit_drawing_area_button_press_position_cursor(AgsAutomationEdito
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom));
 
   /* cursor position */
-  automation_edit->cursor_position_x = (guint) (zoom_factor * (event->x + gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar)))) / automation_edit->control_width;
+  automation_edit->cursor_position_x = (guint) (zoom_factor * (event->x + gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar))));
     
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
     lower = automation_edit->lower;
@@ -381,7 +381,7 @@ ags_automation_edit_drawing_area_button_release_position_cursor(AgsAutomationEdi
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom));
 
   /* cursor position */
-  automation_edit->cursor_position_x = (guint) (zoom_factor * (event->x + gtk_adjustment_get_value(hscrollbar_adjustment))) / automation_edit->control_width;
+  automation_edit->cursor_position_x = (guint) (zoom_factor * (event->x + gtk_adjustment_get_value(hscrollbar_adjustment)));
     
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
     lower = automation_edit->lower;
@@ -1035,6 +1035,24 @@ ags_automation_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey 
 	/* invert accelerations */
 	if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & (automation_edit->key_mask)) != 0 || (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & (automation_edit->key_mask)) != 0){
 	  ags_automation_editor_invert(automation_editor);
+	}
+      }
+      break;
+    case GDK_KEY_m:
+      {
+	/* meta */
+	if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & (automation_edit->key_mask)) != 0 || (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & (automation_edit->key_mask)) != 0){
+	  if((AGS_AUTOMATION_META_ENABLED & (automation_editor->automation_meta->flags)) != 0){
+	    automation_editor->automation_meta->flags &= (~AGS_AUTOMATION_META_ENABLED);
+
+	    gtk_widget_hide(automation_editor->automation_meta);
+	  }else{
+	    automation_editor->automation_meta->flags |= AGS_AUTOMATION_META_ENABLED;
+
+	    gtk_widget_show_all(automation_editor->automation_meta);
+
+	    ags_automation_meta_refresh(automation_editor->automation_meta);
+	  }
 	}
       }
       break;

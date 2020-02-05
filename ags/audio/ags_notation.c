@@ -465,6 +465,26 @@ ags_notation_finalize(GObject *gobject)
 }
 
 /**
+ * ags_notation_get_obj_mutex:
+ * @notation: the #AgsNotation
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @notation
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_notation_get_obj_mutex(AgsNotation *notation)
+{
+  if(!AGS_IS_NOTATION(notation)){
+    return(NULL);
+  }
+
+  return(AGS_NOTATION_GET_OBJ_MUTEX(notation));
+}
+
+/**
  * ags_notation_test_flags:
  * @notation: the #AgsNotation
  * @flags: the flags
@@ -801,6 +821,17 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
   return(retval);
 }
 
+/**
+ * ags_notation_sort_func:
+ * @a: the #AgsNotation
+ * @b: another #AgsNotation
+ * 
+ * Compare @a and @b.
+ * 
+ * Returns: 0 if equal, -1 if smaller and 1 if bigger timestamp
+ * 
+ * Since: 3.0.0
+ */
 gint
 ags_notation_sort_func(gconstpointer a,
 		       gconstpointer b)
@@ -832,6 +863,301 @@ ags_notation_sort_func(gconstpointer a,
   }
 
   return(0);
+}
+
+/**
+ * ags_notation_get_audio:
+ * @notation: the #AgsNotation
+ * 
+ * Get audio.
+ * 
+ * Returns: (transfer full): the #AgsAudio
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_notation_get_audio(AgsNotation *notation)
+{
+  GObject *audio;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return(NULL);
+  }
+
+  g_object_get(notation,
+	       "audio", &audio,
+	       NULL);
+
+  return(audio);
+}
+
+/**
+ * ags_notation_set_audio:
+ * @notation: the #AgsNotation
+ * @audio: the #AgsAudio
+ * 
+ * Set audio.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_notation_set_audio(AgsNotation *notation, GObject *audio)
+{
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  g_object_set(notation,
+	       "audio", audio,
+	       NULL);
+}
+
+/**
+ * ags_notation_get_audio_channel:
+ * @notation: the #AgsNotation
+ *
+ * Gets audio channel.
+ * 
+ * Returns: the audio channel
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_notation_get_audio_channel(AgsNotation *notation)
+{
+  guint audio_channel;
+  
+  if(!AGS_IS_NOTATION(notation)){
+    return(0);
+  }
+
+  g_object_get(notation,
+	       "audio-channel", &audio_channel,
+	       NULL);
+
+  return(audio_channel);
+}
+
+/**
+ * ags_notation_set_audio_channel:
+ * @notation: the #AgsNotation
+ * @audio_channel: the audio channel
+ *
+ * Sets audio channel.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_notation_set_audio_channel(AgsNotation *notation, guint audio_channel)
+{
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  g_object_set(notation,
+	       "audio-channel", audio_channel,
+	       NULL);
+}
+
+/**
+ * ags_notation_get_is_minor:
+ * @notation: the #AgsNotation
+ *
+ * Gets is minor.
+ * 
+ * Returns: is minor
+ * 
+ * Since: 3.1.0
+ */
+gboolean
+ags_notation_get_is_minor(AgsNotation *notation)
+{
+  gboolean is_minor;
+  
+  if(!AGS_IS_NOTATION(notation)){
+    return(FALSE);
+  }
+
+  g_object_get(notation,
+	       "is-minor", &is_minor,
+	       NULL);
+
+  return(is_minor);
+}
+
+/**
+ * ags_notation_set_is_minor:
+ * @notation: the #AgsNotation
+ * @is_minor: is minor
+ *
+ * Sets is minor.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_notation_set_is_minor(AgsNotation *notation, gboolean is_minor)
+{
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  g_object_set(notation,
+	       "is-minor", is_minor,
+	       NULL);
+}
+
+/**
+ * ags_notation_get_sharp_flats:
+ * @notation: the #AgsNotation
+ *
+ * Gets sharp flats.
+ * 
+ * Returns: the sharp flats
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_notation_get_sharp_flats(AgsNotation *notation)
+{
+  guint sharp_flats;
+  
+  if(!AGS_IS_NOTATION(notation)){
+    return(0);
+  }
+
+  g_object_get(notation,
+	       "sharp-flats", &sharp_flats,
+	       NULL);
+
+  return(sharp_flats);
+}
+
+/**
+ * ags_notation_set_sharp_flats:
+ * @notation: the #AgsNotation
+ * @sharp_flats: the sharp flats
+ *
+ * Sets sharp flats.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_notation_set_sharp_flats(AgsNotation *notation, guint sharp_flats)
+{
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  g_object_set(notation,
+	       "sharp-flats", sharp_flats,
+	       NULL);
+}
+
+/**
+ * ags_notation_get_timestamp:
+ * @notation: the #AgsNotation
+ * 
+ * Get timestamp.
+ * 
+ * Returns: (transfer full): the #AgsTimestamp
+ * 
+ * Since: 3.1.0
+ */
+AgsTimestamp*
+ags_notation_get_timestamp(AgsNotation *notation)
+{
+  AgsTimestamp *timestamp;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return(NULL);
+  }
+
+  g_object_get(notation,
+	       "timestamp", &timestamp,
+	       NULL);
+
+  return(timestamp);
+}
+
+/**
+ * ags_notation_set_timestamp:
+ * @notation: the #AgsNotation
+ * @timestamp: the #AgsTimestamp
+ * 
+ * Set timestamp.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_notation_set_timestamp(AgsNotation *notation, AgsTimestamp *timestamp)
+{
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  g_object_set(notation,
+	       "timestamp", timestamp,
+	       NULL);
+}
+
+/**
+ * ags_notation_get_note:
+ * @notation: the #AgsNotation
+ * 
+ * Get note.
+ * 
+ * Returns: (element-type AgsAudio.Note) (transfer full): the #GList-struct containig #AgsNote
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_notation_get_note(AgsNotation *notation)
+{
+  GList *note;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return(NULL);
+  }
+
+  g_object_get(notation,
+	       "note", &note,
+	       NULL);
+
+  return(note);
+}
+
+/**
+ * ags_notation_set_note:
+ * @notation: the #AgsNotation
+ * @note: (element-type AgsAudio.Note) (transfer full): the #GList-struct containing #AgsNote
+ * 
+ * Set note by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_notation_set_note(AgsNotation *notation, GList *note)
+{
+  GList *start_note;
+  
+  GRecMutex *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  /* get notation mutex */
+  notation_mutex = AGS_NOTATION_GET_OBJ_MUTEX(notation);
+    
+  g_rec_mutex_lock(notation_mutex);
+
+  start_note = notation->note;
+  notation->note = note;
+  
+  g_rec_mutex_unlock(notation_mutex);
+
+  g_list_free_full(start_note,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**

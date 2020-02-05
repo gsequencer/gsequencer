@@ -2661,13 +2661,15 @@ ags_devout_oss_free(AgsSoundcard *soundcard)
 
   /* free ring-buffer */
   g_atomic_int_set(&(devout->available), TRUE);
-  
-  for(i = 0; i < devout->ring_buffer_size; i++){
-    free(devout->ring_buffer[i]);
+
+  if(devout->ring_buffer != NULL){
+    for(i = 0; i < devout->ring_buffer_size; i++){
+      free(devout->ring_buffer[i]);
+    }
+    
+    free(devout->ring_buffer);
   }
   
-  free(devout->ring_buffer);
-
   devout->ring_buffer = NULL;
 
   /* reset flags */
@@ -3677,12 +3679,14 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   /* free ring-buffer */
   g_rec_mutex_lock(devout_mutex);
 
-  for(i = 0; i < devout->ring_buffer_size; i++){
-    free(devout->ring_buffer[i]);
+  if(devout->ring_buffer != NULL){
+    for(i = 0; i < devout->ring_buffer_size; i++){
+      free(devout->ring_buffer[i]);
+    }
+    
+    free(devout->ring_buffer);
   }
-
-  free(devout->ring_buffer);
-
+  
   devout->ring_buffer = NULL;
 
   /* reset flags */

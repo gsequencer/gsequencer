@@ -170,6 +170,8 @@
 ./ags/X/export/ags_machine_collection_entry_callbacks.c
 ./ags/X/export/ags_midi_export_wizard.c
 ./ags/X/export/ags_midi_export_wizard_callbacks.c
+./ags/X/export/ags_wave_export_dialog.c
+./ags/X/export/ags_wave_export_dialog_callbacks.c
 ./ags/X/file/ags_simple_file.c
 ./ags/X/import/ags_midi_import_wizard.c
 ./ags/X/import/ags_midi_import_wizard_callbacks.c

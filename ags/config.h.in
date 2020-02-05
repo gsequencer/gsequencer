@@ -12,7 +12,7 @@
 /* ALSA enabled */
 #undef AGS_WITH_ALSA
 
-/* core-audio enabled */
+/* audio-unit enabled */
 #undef AGS_WITH_AUDIO_UNIT
 
 /* core-audio enabled */
@@ -100,11 +100,11 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
+/* Define to 1 if you have the <dssi.h> header file. */
+#undef HAVE_DSSI_H
+
 /* Define to 1 if you have the `floor' function. */
 #undef HAVE_FLOOR
-
-/* Define to 1 if you have the `getcwd' function. */
-#undef HAVE_GETCWD
 
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
@@ -130,6 +130,9 @@
 /* Jack port uuid available */
 #undef HAVE_JACK_PORT_UUID
 
+/* Define to 1 if you have the <ladspa.h> header file. */
+#undef HAVE_LADSPA_H
+
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
 
@@ -139,27 +142,18 @@
 /* Define to 1 if you have the `X11' library (-lX11). */
 #undef HAVE_LIBX11
 
-/* Define to 1 if you have the `localeconv' function. */
-#undef HAVE_LOCALECONV
+/* Define to 1 if you have the <lv2.h> header file. */
+#undef HAVE_LV2_H
 
 /* Define to 1 if your system has a GNU libc compatible `malloc' function, and
    to 0 otherwise. */
 #undef HAVE_MALLOC
 
-/* Define to 1 if you have the `mblen' function. */
-#undef HAVE_MBLEN
-
-/* Define to 1 if you have the `mbrlen' function. */
-#undef HAVE_MBRLEN
-
-/* Define to 1 if you have the `memchr' function. */
-#undef HAVE_MEMCHR
+/* Define to 1 if you have the `memmove' function. */
+#undef HAVE_MEMMOVE
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
-
-/* Define to 1 if you have the `mempcpy' function. */
-#undef HAVE_MEMPCPY
 
 /* Define to 1 if you have the `memset' function. */
 #undef HAVE_MEMSET
@@ -167,24 +161,27 @@
 /* Define to 1 if you have a working `mmap' system call. */
 #undef HAVE_MMAP
 
-/* Define to 1 if you have the `munmap' function. */
-#undef HAVE_MUNMAP
-
-/* Define to 1 if you have the `nl_langinfo' function. */
-#undef HAVE_NL_LANGINFO
+/* Define to 1 if you have the `pow' function. */
+#undef HAVE_POW
 
 /* Define to 1 if the system has the type `ptrdiff_t'. */
 #undef HAVE_PTRDIFF_T
+
+/* Define to 1 if you have the `putenv' function. */
+#undef HAVE_PUTENV
 
 /* Define to 1 if your system has a GNU libc compatible `realloc' function,
    and to 0 otherwise. */
 #undef HAVE_REALLOC
 
+/* Define to 1 if you have the `realpath' function. */
+#undef HAVE_REALPATH
+
+/* Define to 1 if you have the `regcomp' function. */
+#undef HAVE_REGCOMP
+
 /* Define to 1 if you have the `setlocale' function. */
 #undef HAVE_SETLOCALE
-
-/* Define to 1 if you have the `socket' function. */
-#undef HAVE_SOCKET
 
 /* Define to 1 if you have the `sqrt' function. */
 #undef HAVE_SQRT
@@ -195,20 +192,14 @@
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
 
-/* Define to 1 if you have the `stpcpy' function. */
-#undef HAVE_STPCPY
-
-/* Define to 1 if you have the `strcasecmp' function. */
-#undef HAVE_STRCASECMP
-
 /* Define to 1 if you have the `strchr' function. */
 #undef HAVE_STRCHR
 
-/* Define to 1 if you have the `strcspn' function. */
-#undef HAVE_STRCSPN
-
 /* Define to 1 if you have the `strdup' function. */
 #undef HAVE_STRDUP
+
+/* Define to 1 if you have the `strerror' function. */
+#undef HAVE_STRERROR
 
 /* Define to 1 if you have the <strings.h> header file. */
 #undef HAVE_STRINGS_H
@@ -216,11 +207,11 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
+/* Define to 1 if you have the `strrchr' function. */
+#undef HAVE_STRRCHR
+
 /* Define to 1 if you have the `strstr' function. */
 #undef HAVE_STRSTR
-
-/* Define to 1 if you have the `strtol' function. */
-#undef HAVE_STRTOL
 
 /* Define to 1 if you have the `strtoul' function. */
 #undef HAVE_STRTOUL
@@ -288,68 +279,17 @@
 #ifndef _ALL_SOURCE
 # undef _ALL_SOURCE
 #endif
-/* Enable general extensions on macOS.  */
-#ifndef _DARWIN_C_SOURCE
-# undef _DARWIN_C_SOURCE
-#endif
 /* Enable GNU extensions on systems that have them.  */
 #ifndef _GNU_SOURCE
 # undef _GNU_SOURCE
-#endif
-/* Enable NetBSD extensions on NetBSD.  */
-#ifndef _NETBSD_SOURCE
-# undef _NETBSD_SOURCE
-#endif
-/* Enable OpenBSD extensions on NetBSD.  */
-#ifndef _OPENBSD_SOURCE
-# undef _OPENBSD_SOURCE
 #endif
 /* Enable threading extensions on Solaris.  */
 #ifndef _POSIX_PTHREAD_SEMANTICS
 # undef _POSIX_PTHREAD_SEMANTICS
 #endif
-/* Enable extensions specified by ISO/IEC TS 18661-5:2014.  */
-#ifndef __STDC_WANT_IEC_60559_ATTRIBS_EXT__
-# undef __STDC_WANT_IEC_60559_ATTRIBS_EXT__
-#endif
-/* Enable extensions specified by ISO/IEC TS 18661-1:2014.  */
-#ifndef __STDC_WANT_IEC_60559_BFP_EXT__
-# undef __STDC_WANT_IEC_60559_BFP_EXT__
-#endif
-/* Enable extensions specified by ISO/IEC TS 18661-2:2015.  */
-#ifndef __STDC_WANT_IEC_60559_DFP_EXT__
-# undef __STDC_WANT_IEC_60559_DFP_EXT__
-#endif
-/* Enable extensions specified by ISO/IEC TS 18661-4:2015.  */
-#ifndef __STDC_WANT_IEC_60559_FUNCS_EXT__
-# undef __STDC_WANT_IEC_60559_FUNCS_EXT__
-#endif
-/* Enable extensions specified by ISO/IEC TS 18661-3:2015.  */
-#ifndef __STDC_WANT_IEC_60559_TYPES_EXT__
-# undef __STDC_WANT_IEC_60559_TYPES_EXT__
-#endif
-/* Enable extensions specified by ISO/IEC TR 24731-2:2010.  */
-#ifndef __STDC_WANT_LIB_EXT2__
-# undef __STDC_WANT_LIB_EXT2__
-#endif
-/* Enable extensions specified by ISO/IEC 24747:2009.  */
-#ifndef __STDC_WANT_MATH_SPEC_FUNCS__
-# undef __STDC_WANT_MATH_SPEC_FUNCS__
-#endif
 /* Enable extensions on HP NonStop.  */
 #ifndef _TANDEM_SOURCE
 # undef _TANDEM_SOURCE
-#endif
-/* Enable X/Open extensions if necessary.  HP-UX 11.11 defines
-   mbstate_t only if _XOPEN_SOURCE is defined to 500, regardless of
-   whether compiling with -Ae or -D_HPUX_SOURCE=1.  */
-#ifndef _XOPEN_SOURCE
-# undef _XOPEN_SOURCE
-#endif
-/* Enable X/Open compliant socket functions that do not require linking
-   with -lxnet on HP-UX 11.11.  */
-#ifndef _HPUX_ALT_XOPEN_SOCKET_API
-# undef _HPUX_ALT_XOPEN_SOCKET_API
 #endif
 /* Enable general extensions on Solaris.  */
 #ifndef __EXTENSIONS__
@@ -363,14 +303,11 @@
 /* Define to 1 if on MINIX. */
 #undef _MINIX
 
-/* Define to 1 to make NetBSD features available. MINIX 3 needs this. */
-#undef _NETBSD_SOURCE
-
 /* Define to 2 if the system does not provide POSIX.1 features except with
    this defined. */
 #undef _POSIX_1_SOURCE
 
-/* Define to 1 if you need to in order for 'stat' and other things to work. */
+/* Define to 1 if you need to in order for `stat' and other things to work. */
 #undef _POSIX_SOURCE
 
 /* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,

@@ -902,6 +902,26 @@ ags_base_plugin_finalize(GObject *gobject)
 }
 
 /**
+ * ags_base_plugin_get_obj_mutex:
+ * @base_plugin: the #AgsBasePlugin
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @base_plugin
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_base_plugin_get_obj_mutex(AgsBasePlugin *base_plugin)
+{
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return(NULL);
+  }
+
+  return(AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin));
+}
+
+/**
  * ags_base_plugin_test_flags:
  * @base_plugin: the #AgsBasePlugin
  * @flags: the flags
@@ -992,6 +1012,451 @@ ags_base_plugin_unset_flags(AgsBasePlugin *base_plugin, guint flags)
   base_plugin->flags &= (~flags);
   
   g_rec_mutex_unlock(base_plugin_mutex);
+}
+
+/**
+ * ags_base_plugin_get_filename:
+ * @base_plugin: the #AgsBasePlugin
+ * 
+ * Get filename.
+ * 
+ * Returns: the filename
+ * 
+ * Since: 3.1.0
+ */
+gchar*
+ags_base_plugin_get_filename(AgsBasePlugin *base_plugin)
+{
+  gchar *filename;
+
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return(NULL);
+  }
+
+  g_object_get(base_plugin,
+	       "filename", &filename,
+	       NULL);
+
+  return(filename);
+}
+
+/**
+ * ags_base_plugin_set_filename:
+ * @base_plugin: the #AgsBasePlugin
+ * @filename: the filename
+ * 
+ * Set filename.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_base_plugin_set_filename(AgsBasePlugin *base_plugin,
+			gchar *filename)
+{
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return;
+  }
+
+  g_object_set(base_plugin,
+	       "filename", filename,
+	       NULL);
+}
+
+/**
+ * ags_base_plugin_get_effect:
+ * @base_plugin: the #AgsBasePlugin
+ * 
+ * Get effect.
+ * 
+ * Returns: the effect
+ * 
+ * Since: 3.1.0
+ */
+gchar*
+ags_base_plugin_get_effect(AgsBasePlugin *base_plugin)
+{
+  gchar *effect;
+
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return(NULL);
+  }
+
+  g_object_get(base_plugin,
+	       "effect", &effect,
+	       NULL);
+
+  return(effect);
+}
+
+/**
+ * ags_base_plugin_set_effect:
+ * @base_plugin: the #AgsBasePlugin
+ * @effect: the effect
+ * 
+ * Set effect.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_base_plugin_set_effect(AgsBasePlugin *base_plugin,
+			   gchar *effect)
+{
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return;
+  }
+
+  g_object_set(base_plugin,
+	       "effect", effect,
+	       NULL);
+}
+
+/**
+ * ags_base_plugin_get_effect_index:
+ * @base_plugin: the #AgsBasePlugin
+ * 
+ * Get effect index.
+ * 
+ * Returns: the effect index
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_base_plugin_get_effect_index(AgsBasePlugin *base_plugin)
+{
+  guint effect_index;
+
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return(NULL);
+  }
+
+  g_object_get(base_plugin,
+	       "effect-index", &effect_index,
+	       NULL);
+
+  return(effect_index);
+}
+
+/**
+ * ags_base_plugin_set_effect_index:
+ * @base_plugin: the #AgsBasePlugin
+ * @effect_index: the effect index
+ * 
+ * Set effect index.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_base_plugin_set_effect_index(AgsBasePlugin *base_plugin,
+				 guint effect_index)
+{
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return;
+  }
+
+  g_object_set(base_plugin,
+	       "effect-index", effect_index,
+	       NULL);
+}
+
+/**
+ * ags_base_plugin_get_plugin_so:
+ * @base_plugin: the #AgsBasePlugin
+ * 
+ * Get plugin so.
+ * 
+ * Returns: the plugin so
+ * 
+ * Since: 3.1.0
+ */
+gpointer
+ags_base_plugin_get_plugin_so(AgsBasePlugin *base_plugin)
+{
+  gpointer plugin_so;
+  
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return(NULL);
+  }
+
+  g_object_get(base_plugin,
+	       "plugin-so", &plugin_so,
+	       NULL);
+
+  return(plugin_so);
+}
+
+/**
+ * ags_base_plugin_set_plugin_so:
+ * @base_plugin: the #AgsBasePlugin
+ * @plugin_so: the plugin so
+ * 
+ * Set plugin_so.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_base_plugin_set_plugin_so(AgsBasePlugin *base_plugin,
+			      gpointer plugin_so)
+{
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return;
+  }
+
+  g_object_set(base_plugin,
+	       "plugin-so", plugin_so,
+	       NULL);
+}
+
+/**
+ * ags_base_plugin_get_base_plugin_dependency:
+ * @base_plugin: the #AgsBasePlugin
+ * 
+ * Get recall dependency.
+ * 
+ * Returns: (element-type AgsAudio.PluginPort) (transfer full): the #GList-struct containig #AgsPluginPort
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_base_plugin_get_plugin_port(AgsBasePlugin *base_plugin)
+{
+  GList *plugin_port;
+
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return(NULL);
+  }
+
+  g_object_get(base_plugin,
+	       "recall-dependency", &plugin_port,
+	       NULL);
+
+  return(plugin_port);
+}
+
+/**
+ * ags_base_plugin_set_plugin_port:
+ * @base_plugin: the #AgsBasePlugin
+ * @plugin_port: (element-type AgsAudio.PluginPort) (transfer full): the #GList-struct containing #AgsPluginPort
+ * 
+ * Set recall dependency by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_base_plugin_set_plugin_port(AgsBasePlugin *base_plugin,
+				GList *plugin_port)
+{
+  GList *start_plugin_port;
+  
+  GRecMutex *base_plugin_mutex;
+
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return;
+  }
+
+  /* get base_plugin mutex */
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
+    
+  g_rec_mutex_lock(base_plugin_mutex);
+
+  start_plugin_port = base_plugin->plugin_port;
+  base_plugin->plugin_port = plugin_port;
+  
+  g_rec_mutex_unlock(base_plugin_mutex);
+
+  g_list_free_full(start_plugin_port,
+		   (GDestroyNotify) g_object_unref);
+}
+
+/**
+ * ags_base_plugin_get_ui_filename:
+ * @base_plugin: the #AgsBasePlugin
+ * 
+ * Get UI filename.
+ * 
+ * Returns: the UI filename
+ * 
+ * Since: 3.1.0
+ */
+gchar*
+ags_base_plugin_get_ui_filename(AgsBasePlugin *base_plugin)
+{
+  gchar *ui_filename;
+
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return(NULL);
+  }
+
+  g_object_get(base_plugin,
+	       "ui-filename", &ui_filename,
+	       NULL);
+
+  return(ui_filename);
+}
+
+/**
+ * ags_base_plugin_set_ui_filename:
+ * @base_plugin: the #AgsBasePlugin
+ * @ui_filename: the UI filename
+ * 
+ * Set UI filename.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_base_plugin_set_ui_filename(AgsBasePlugin *base_plugin,
+				gchar *ui_filename)
+{
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return;
+  }
+
+  g_object_set(base_plugin,
+	       "ui-filename", ui_filename,
+	       NULL);
+}
+
+/**
+ * ags_base_plugin_get_ui_effect:
+ * @base_plugin: the #AgsBasePlugin
+ * 
+ * Get UI effect.
+ * 
+ * Returns: the UI effect
+ * 
+ * Since: 3.1.0
+ */
+gchar*
+ags_base_plugin_get_ui_effect(AgsBasePlugin *base_plugin)
+{
+  gchar *ui_effect;
+
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return(NULL);
+  }
+
+  g_object_get(base_plugin,
+	       "ui-effect", &ui_effect,
+	       NULL);
+
+  return(ui_effect);
+}
+
+/**
+ * ags_base_plugin_set_ui_effect:
+ * @base_plugin: the #AgsBasePlugin
+ * @ui_effect: the UI effect
+ * 
+ * Set UI effect.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_base_plugin_set_ui_effect(AgsBasePlugin *base_plugin,
+			      gchar *ui_effect)
+{
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return;
+  }
+
+  g_object_set(base_plugin,
+	       "ui-effect", ui_effect,
+	       NULL);
+}
+
+/**
+ * ags_base_plugin_get_ui_effect_index:
+ * @base_plugin: the #AgsBasePlugin
+ * 
+ * Get UI effect index.
+ * 
+ * Returns: the UI effect index
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_base_plugin_get_ui_effect_index(AgsBasePlugin *base_plugin)
+{
+  guint ui_effect_index;
+
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return(NULL);
+  }
+
+  g_object_get(base_plugin,
+	       "ui-effect-index", &ui_effect_index,
+	       NULL);
+
+  return(ui_effect_index);
+}
+
+/**
+ * ags_base_plugin_set_ui_effect_index:
+ * @base_plugin: the #AgsBasePlugin
+ * @ui_effect_index: the UI effect index
+ * 
+ * Set UI effect index.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_base_plugin_set_ui_effect_index(AgsBasePlugin *base_plugin,
+				    guint ui_effect_index)
+{
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return;
+  }
+
+  g_object_set(base_plugin,
+	       "ui-effect-index", ui_effect_index,
+	       NULL);
+}
+
+/**
+ * ags_base_plugin_get_ui_plugin_so:
+ * @base_plugin: the #AgsBasePlugin
+ * 
+ * Get plugin so.
+ * 
+ * Returns: the plugin so
+ * 
+ * Since: 3.1.0
+ */
+gpointer
+ags_base_plugin_get_ui_plugin_so(AgsBasePlugin *base_plugin)
+{
+  gpointer ui_plugin_so;
+  
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return(NULL);
+  }
+
+  g_object_get(base_plugin,
+	       "ui-plugin-so", &ui_plugin_so,
+	       NULL);
+
+  return(ui_plugin_so);
+}
+
+/**
+ * ags_base_plugin_set_ui_plugin_so:
+ * @base_plugin: the #AgsBasePlugin
+ * @ui_plugin_so: the plugin so
+ * 
+ * Set ui_plugin_so.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_base_plugin_set_ui_plugin_so(AgsBasePlugin *base_plugin,
+			      gpointer ui_plugin_so)
+{
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return;
+  }
+
+  g_object_set(base_plugin,
+	       "ui-plugin-so", ui_plugin_so,
+	       NULL);
 }
 
 /**

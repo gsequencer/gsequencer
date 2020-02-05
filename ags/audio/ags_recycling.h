@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -101,24 +101,41 @@ struct _AgsRecyclingClass
 
 GType ags_recycling_get_type(void);
 
+GRecMutex* ags_recycling_get_obj_mutex(AgsRecycling *recycling);
+
 gboolean ags_recycling_test_flags(AgsRecycling *recycling, guint flags);
 void ags_recycling_set_flags(AgsRecycling *recycling, guint flags);
 void ags_recycling_unset_flags(AgsRecycling *recycling, guint flags);
+
+/* parent */
+GObject* ags_recycling_get_channel(AgsRecycling *recycling);
+void ags_recycling_set_channel(AgsRecycling *recycling, GObject *channel);
 
 /* recycling */
 AgsRecycling* ags_recycling_next(AgsRecycling *recycling);
 AgsRecycling* ags_recycling_prev(AgsRecycling *recycling);
 
 /* soundcard */
+GObject* ags_recycling_get_output_soundcard(AgsRecycling *recycling);
 void ags_recycling_set_output_soundcard(AgsRecycling *recycling, GObject *output_soundcard);
+
+GObject* ags_recycling_get_input_soundcard(AgsRecycling *recycling);
 void ags_recycling_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundcard);
 
 /* presets */
+guint ags_recycling_get_samplerate(AgsRecycling *recycling);
 void ags_recycling_set_samplerate(AgsRecycling *recycling, guint samplerate);
+
+guint ags_recycling_get_buffer_size(AgsRecycling *recycling);
 void ags_recycling_set_buffer_size(AgsRecycling *recycling, guint buffer_size);
+
+guint ags_recycling_get_format(AgsRecycling *recycling);
 void ags_recycling_set_format(AgsRecycling *recycling, guint format);
 
 /* children */
+GList* ags_recycling_get_audio_signal(AgsRecycling *recycling);
+void ags_recycling_set_audio_signal(AgsRecycling *recycling, GList *audio_signal);
+
 void ags_recycling_add_audio_signal(AgsRecycling *recycling,
 				    AgsAudioSignal *audio_signal);
 void ags_recycling_remove_audio_signal(AgsRecycling *recycling,

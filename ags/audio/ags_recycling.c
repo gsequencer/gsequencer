@@ -1191,6 +1191,26 @@ ags_recycling_disconnect(AgsConnectable *connectable)
 }
 
 /**
+ * ags_recycling_get_obj_mutex:
+ * @recycling: the #AgsRecycling
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @recycling
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_recycling_get_obj_mutex(AgsRecycling *recycling)
+{
+  if(!AGS_IS_RECYCLING(recycling)){
+    return(NULL);
+  }
+
+  return(AGS_RECYCLING_GET_OBJ_MUTEX(recycling));
+}
+
+/**
  * ags_recycling_test_flags:
  * @recycling: the #AgsRecycling
  * @flags: the flags
@@ -1288,6 +1308,53 @@ ags_recycling_unset_flags(AgsRecycling *recycling, guint flags)
 }
 
 /**
+ * ags_recycling_get_channel:
+ * @recycling: the #AgsRecycling
+ * 
+ * Get channel.
+ * 
+ * Returns: (transfer full): the #AgsChannel
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_recycling_get_channel(AgsRecycling *recycling)
+{
+  GObject *channel;
+
+  if(!AGS_IS_RECYCLING(recycling)){
+    return(NULL);
+  }
+
+  g_object_get(recycling,
+	       "channel", &channel,
+	       NULL);
+
+  return(channel);
+}
+
+/**
+ * ags_recycling_set_channel:
+ * @recycling: the #AgsRecycling
+ * @channel: the #AgsChannel
+ * 
+ * Set channel.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recycling_set_channel(AgsRecycling *recycling, GObject *channel)
+{
+  if(!AGS_IS_RECYCLING(recycling)){
+    return;
+  }
+
+  g_object_set(recycling,
+	       "channel", channel,
+	       NULL);
+}
+
+/**
  * ags_recycling_next:
  * @recycling: the #AgsRecycling
  * 
@@ -1364,6 +1431,32 @@ ags_recycling_prev(AgsRecycling *recycling)
 }
 
 /**
+ * ags_recycling_get_output_soundcard:
+ * @recycling: the #AgsRecycling
+ *
+ * Get the output soundcard object of @recycling.
+ *
+ * Returns: (transfer full): the output soundcard
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_recycling_get_output_soundcard(AgsRecycling *recycling)
+{
+  GObject *output_soundcard;
+  
+  if(!AGS_IS_RECYCLING(recycling)){
+    return(NULL);
+  }
+
+  g_object_get(recycling,
+	       "output-soundcard", &output_soundcard,
+	       NULL);
+
+  return(output_soundcard);
+}
+
+/**
  * ags_recycling_set_output_soundcard:
  * @recycling: the #AgsRecycling
  * @output_soundcard: the #GObject to set
@@ -1424,6 +1517,32 @@ ags_recycling_set_output_soundcard(AgsRecycling *recycling, GObject *output_soun
 
   g_list_free_full(start_list,
 		   g_object_unref);
+}
+
+/**
+ * ags_recycling_get_input_soundcard:
+ * @recycling: the #AgsRecycling
+ *
+ * Get the input soundcard object of @recycling.
+ *
+ * Returns: (transfer full): the input soundcard
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_recycling_get_input_soundcard(AgsRecycling *recycling)
+{
+  GObject *input_soundcard;
+  
+  if(!AGS_IS_RECYCLING(recycling)){
+    return(NULL);
+  }
+
+  g_object_get(recycling,
+	       "input-soundcard", &input_soundcard,
+	       NULL);
+
+  return(input_soundcard);
 }
 
 /**
@@ -1490,6 +1609,32 @@ ags_recycling_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundc
 }
 
 /**
+ * ags_recycling_get_samplerate:
+ * @recycling: the #AgsRecycling
+ *
+ * Gets samplerate.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_recycling_get_samplerate(AgsRecycling *recycling)
+{
+  guint samplerate;
+  
+  if(!AGS_IS_RECYCLING(recycling)){
+    return(0);
+  }
+
+  g_object_get(recycling,
+	       "samplerate", &samplerate,
+	       NULL);
+
+  return(samplerate);
+}
+
+/**
  * ags_recycling_set_samplerate:
  * @recycling: the #AgsRecycling
  * @samplerate: the samplerate
@@ -1549,6 +1694,32 @@ ags_recycling_set_samplerate(AgsRecycling *recycling, guint samplerate)
   /* free list */
   g_list_free_full(audio_signal,
 		   g_object_unref);
+}
+
+/**
+ * ags_recycling_get_buffer_size:
+ * @recycling: the #AgsRecycling
+ *
+ * Gets buffer size.
+ * 
+ * Returns: the buffer size
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_recycling_get_buffer_size(AgsRecycling *recycling)
+{
+  guint buffer_size;
+  
+  if(!AGS_IS_RECYCLING(recycling)){
+    return(0);
+  }
+
+  g_object_get(recycling,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  return(buffer_size);
 }
 
 /**
@@ -1614,6 +1785,32 @@ ags_recycling_set_buffer_size(AgsRecycling *recycling, guint buffer_size)
 }
 
 /**
+ * ags_recycling_get_format:
+ * @recycling: the #AgsRecycling
+ *
+ * Gets format.
+ * 
+ * Returns: the format
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_recycling_get_format(AgsRecycling *recycling)
+{
+  guint format;
+  
+  if(!AGS_IS_RECYCLING(recycling)){
+    return(0);
+  }
+
+  g_object_get(recycling,
+	       "format", &format,
+	       NULL);
+
+  return(format);
+}
+
+/**
  * ags_recycling_set_format:
  * @recycling: the #AgsRecycling
  * @format: the format
@@ -1673,6 +1870,67 @@ ags_recycling_set_format(AgsRecycling *recycling, guint format)
   /* free list */
   g_list_free_full(audio_signal,
 		   g_object_unref);
+}
+
+/**
+ * ags_recycling_get_audio_signal:
+ * @recycling: the #AgsRecycling
+ * 
+ * Get recall id.
+ * 
+ * Returns: (element-type AgsAudio.AudioSignal) (transfer full): the #GList-struct containig #AgsAudioSignal
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_recycling_get_audio_signal(AgsRecycling *recycling)
+{
+  GList *audio_signal;
+
+  if(!AGS_IS_RECYCLING(recycling)){
+    return(NULL);
+  }
+
+  g_object_get(recycling,
+	       "audio-signal", &audio_signal,
+	       NULL);
+
+  return(audio_signal);
+}
+
+/**
+ * ags_recycling_set_audio_signal:
+ * @recycling: the #AgsRecycling
+ * @audio_signal: (element-type AgsAudio.AudioSignal) (transfer full): the #GList-struct containing #AgsAudioSignal
+ * 
+ * Set recall id by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recycling_set_audio_signal(AgsRecycling *recycling, GList *audio_signal)
+{
+  GList *start_audio_signal;
+  
+  GRecMutex *recycling_mutex;
+
+  if(!AGS_IS_RECYCLING(recycling)){
+    return;
+  }
+
+  /* get recycling mutex */
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
+    
+  g_rec_mutex_lock(recycling_mutex);
+
+  start_audio_signal = recycling->audio_signal;
+
+  recycling->audio_signal = audio_signal;
+  
+  g_rec_mutex_unlock(recycling_mutex);
+
+  g_list_free_full(start_audio_signal,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void

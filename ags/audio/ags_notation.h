@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -102,6 +102,8 @@ struct _AgsNotationClass
 
 GType ags_notation_get_type();
 
+GRecMutex* ags_notation_get_obj_mutex(AgsNotation *notation);
+
 gboolean ags_notation_test_flags(AgsNotation *notation, guint flags);
 void ags_notation_set_flags(AgsNotation *notation, guint flags);
 void ags_notation_unset_flags(AgsNotation *notation, guint flags);
@@ -114,6 +116,28 @@ GList* ags_notation_add(GList *notation,
 
 gint ags_notation_sort_func(gconstpointer a,
 			    gconstpointer b);
+
+GObject* ags_notation_get_audio(AgsNotation *notation);
+void ags_notation_set_audio(AgsNotation *notation,
+			    GObject *audio);
+
+guint ags_notation_get_audio_channel(AgsNotation *notation);
+void ags_notation_set_audio_channel(AgsNotation *notation,
+				    guint audio_channel);
+
+gboolean ags_notation_get_is_minor(AgsNotation *notation);
+void ags_notation_set_is_minor(AgsNotation *notation, gboolean is_minor);
+
+guint ags_notation_get_sharp_flats(AgsNotation *notation);
+void ags_notation_set_sharp_flats(AgsNotation *notation, guint sharp_flats);
+
+AgsTimestamp* ags_notation_get_timestamp(AgsNotation *notation);
+void ags_notation_set_timestamp(AgsNotation *notation,
+				AgsTimestamp *timestamp);
+
+GList* ags_notation_get_note(AgsNotation *notation);
+void ags_notation_set_note(AgsNotation *notation,
+			   GList *note);
 
 void ags_notation_add_note(AgsNotation *notation,
 			   AgsNote *note,

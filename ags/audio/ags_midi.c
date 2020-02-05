@@ -441,6 +441,26 @@ ags_midi_finalize(GObject *gobject)
 }
 
 /**
+ * ags_midi_get_obj_mutex:
+ * @midi: the #AgsMidi
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @midi
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_midi_get_obj_mutex(AgsMidi *midi)
+{
+  if(!AGS_IS_MIDI(midi)){
+    return(NULL);
+  }
+
+  return(AGS_MIDI_GET_OBJ_MUTEX(midi));
+}
+
+/**
  * ags_midi_test_flags:
  * @midi: the #AgsMidi
  * @flags: the flags
@@ -769,6 +789,17 @@ ags_midi_find_near_timestamp(GList *midi, guint audio_channel,
   return(retval);
 }
 
+/**
+ * ags_midi_sort_func:
+ * @a: the #AgsMidi
+ * @b: another #AgsMidi
+ * 
+ * Compare @a and @b.
+ * 
+ * Returns: 0 if equal, -1 if smaller and 1 if bigger timestamp
+ * 
+ * Since: 3.0.0
+ */
 gint
 ags_midi_sort_func(gconstpointer a,
 		   gconstpointer b)
@@ -800,6 +831,207 @@ ags_midi_sort_func(gconstpointer a,
   }
 
   return(0);
+}
+
+/**
+ * ags_midi_get_audio:
+ * @midi: the #AgsMidi
+ * 
+ * Get audio.
+ * 
+ * Returns: (transfer full): the #AgsAudio
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_midi_get_audio(AgsMidi *midi)
+{
+  GObject *audio;
+
+  if(!AGS_IS_MIDI(midi)){
+    return(NULL);
+  }
+
+  g_object_get(midi,
+	       "audio", &audio,
+	       NULL);
+
+  return(audio);
+}
+
+/**
+ * ags_midi_set_audio:
+ * @midi: the #AgsMidi
+ * @audio: the #AgsAudio
+ * 
+ * Set audio.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_midi_set_audio(AgsMidi *midi, GObject *audio)
+{
+  if(!AGS_IS_MIDI(midi)){
+    return;
+  }
+
+  g_object_set(midi,
+	       "audio", audio,
+	       NULL);
+}
+
+/**
+ * ags_midi_get_audio_channel:
+ * @midi: the #AgsMidi
+ *
+ * Gets audio channel.
+ * 
+ * Returns: the audio channel
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_midi_get_audio_channel(AgsMidi *midi)
+{
+  guint audio_channel;
+  
+  if(!AGS_IS_MIDI(midi)){
+    return(0);
+  }
+
+  g_object_get(midi,
+	       "audio-channel", &audio_channel,
+	       NULL);
+
+  return(audio_channel);
+}
+
+/**
+ * ags_midi_set_audio_channel:
+ * @midi: the #AgsMidi
+ * @audio_channel: the audio channel
+ *
+ * Sets audio channel.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_midi_set_audio_channel(AgsMidi *midi, guint audio_channel)
+{
+  if(!AGS_IS_MIDI(midi)){
+    return;
+  }
+
+  g_object_set(midi,
+	       "audio-channel", audio_channel,
+	       NULL);
+}
+
+/**
+ * ags_midi_get_timestamp:
+ * @midi: the #AgsMidi
+ * 
+ * Get timestamp.
+ * 
+ * Returns: (transfer full): the #AgsTimestamp
+ * 
+ * Since: 3.1.0
+ */
+AgsTimestamp*
+ags_midi_get_timestamp(AgsMidi *midi)
+{
+  AgsTimestamp *timestamp;
+
+  if(!AGS_IS_MIDI(midi)){
+    return(NULL);
+  }
+
+  g_object_get(midi,
+	       "timestamp", &timestamp,
+	       NULL);
+
+  return(timestamp);
+}
+
+/**
+ * ags_midi_set_timestamp:
+ * @midi: the #AgsMidi
+ * @timestamp: the #AgsTimestamp
+ * 
+ * Set timestamp.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_midi_set_timestamp(AgsMidi *midi, AgsTimestamp *timestamp)
+{
+  if(!AGS_IS_MIDI(midi)){
+    return;
+  }
+
+  g_object_set(midi,
+	       "timestamp", timestamp,
+	       NULL);
+}
+
+/**
+ * ags_midi_get_track:
+ * @midi: the #AgsMidi
+ * 
+ * Get track.
+ * 
+ * Returns: (element-type AgsAudio.Track) (transfer full): the #GList-struct containig #AgsTrack
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_midi_get_track(AgsMidi *midi)
+{
+  GList *track;
+
+  if(!AGS_IS_MIDI(midi)){
+    return(NULL);
+  }
+
+  g_object_get(midi,
+	       "track", &track,
+	       NULL);
+
+  return(track);
+}
+
+/**
+ * ags_midi_set_track:
+ * @midi: the #AgsMidi
+ * @track: (element-type AgsAudio.Track) (transfer full): the #GList-struct containing #AgsTrack
+ * 
+ * Set track by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_midi_set_track(AgsMidi *midi, GList *track)
+{
+  GList *start_track;
+  
+  GRecMutex *midi_mutex;
+
+  if(!AGS_IS_MIDI(midi)){
+    return;
+  }
+
+  /* get midi mutex */
+  midi_mutex = AGS_MIDI_GET_OBJ_MUTEX(midi);
+    
+  g_rec_mutex_lock(midi_mutex);
+
+  start_track = midi->track;
+  midi->track = track;
+  
+  g_rec_mutex_unlock(midi_mutex);
+
+  g_list_free_full(start_track,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**

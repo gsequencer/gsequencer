@@ -15,7 +15,7 @@
 <book xmlns="http://docbook.org/ns/docbook"
       xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
   <title>Advanced Gtk+ Sequencer</title>
-  <subtitle>User's Handbook</subtitle>
+  <subtitle>User&apos;s Handbook</subtitle>
 
   <info>
     <legalnotice>

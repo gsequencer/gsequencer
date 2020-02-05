@@ -48,7 +48,7 @@
       </imageobject>
       <caption>
 	<para>
-	  The editor's toolbar screenshot
+	  The editor&apos;s toolbar screenshot
 	</para>
       </caption>
     </mediaobject>
@@ -87,7 +87,7 @@
 	    <entry><imagedata fileref="&deleteIcon;" /></entry>
 	    <entry>delete</entry>
 	    <entry>
-	      Delete notes by clicking on the note you don't want anymore.
+	      Delete notes by clicking on the note you don&apos;t want anymore.
 	    </entry>
 	  </row>
 	  <row>
@@ -252,7 +252,7 @@
       </mediaobject>
       <para>
 	The crop notes dialog allows you to crop selected notes to a specified width or insert
-	desired padding. Per default the values are added or subtracted of each note and doesn't
+	desired padding. Per default the values are added or subtracted of each note and doesn&apos;t
 	require any additional space.
       </para>
 
@@ -530,6 +530,20 @@
       </listitem>
       <listitem>
 	<para>
+	  Ctrl+m
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Show/hide meta information.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
 	  Tab
 	</para>
 	
@@ -703,6 +717,20 @@
 	  <listitem>
 	    <para>
 	      Invert all.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Ctrl+m
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Show/hide meta information.
 	    </para>
 	  </listitem>
 	</itemizedlist>

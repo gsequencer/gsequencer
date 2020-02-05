@@ -34,7 +34,7 @@
     The automation window is accessed by edit menu item automation. There are basic edit tools
     available to do your automation. You can use keyboard bindings to do your tasks are select
     appropriate edit tool of toolbar. As the appropriate port is checked it enables the automation
-    of it. Else it is by-passed and won't see any automation data. By enabling a port it gets visible
+    of it. Else it is by-passed and won&apos;t see any automation data. By enabling a port it gets visible
     within the editor.
   </para>
 
@@ -61,17 +61,22 @@
     </listitem>
     <listitem>
       <para>
-	Copy automation. Control-C key-stroke.
+	Copy automation. Control-c key-stroke.
       </para>
     </listitem>
     <listitem>
       <para>
-	Cut automation. Control-X key-stroke.
+	Cut automation. Control-x key-stroke.
       </para>
     </listitem>
     <listitem>
       <para>
-	Paste automation. Control-V key-stroke.
+	Paste automation. Control-v key-stroke.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	Show/hide meta information. Control-m key-stroke.
       </para>
     </listitem>
   </itemizedlist>
@@ -88,7 +93,7 @@
       </imageobject>
       <caption>
 	<para>
-	  The automation editor's toolbar screenshot
+	  The automation editor&apos;s toolbar screenshot
 	</para>
       </caption>
     </mediaobject>
@@ -126,7 +131,7 @@
 	    <entry><imagedata fileref="&deleteIcon;" /></entry>
 	    <entry>delete</entry>
 	    <entry>
-	      Delete accelerations by clicking on the acceleration you don't want anymore.
+	      Delete accelerations by clicking on the acceleration you don&apos;t want anymore.
 	    </entry>
 	  </row>
 	  <row>

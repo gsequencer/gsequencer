@@ -2711,6 +2711,66 @@ ags_channel_disconnect(AgsConnectable *connectable)
 }
 
 /**
+ * ags_channel_get_obj_mutex:
+ * @channel: the #AgsChannel
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @channel
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_channel_get_obj_mutex(AgsChannel *channel)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  return(AGS_CHANNEL_GET_OBJ_MUTEX(channel));
+}
+
+/**
+ * ags_channel_get_play_mutex:
+ * @channel: the #AgsChannel
+ * 
+ * Get play mutex.
+ * 
+ * Returns: the #GRecMutex to lock @channel's play property
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_channel_get_play_mutex(AgsChannel *channel)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  return(AGS_CHANNEL_GET_PLAY_MUTEX(channel));
+}
+
+/**
+ * ags_channel_get_recall_mutex:
+ * @channel: the #AgsChannel
+ * 
+ * Get recall mutex.
+ * 
+ * Returns: the #GRecMutex to lock @channel's recall property
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_channel_get_recall_mutex(AgsChannel *channel)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  return(AGS_CHANNEL_GET_RECALL_MUTEX(channel));
+}
+
+/**
  * ags_channel_test_flags:
  * @channel: the #AgsChannel
  * @flags: the flags
@@ -3414,6 +3474,53 @@ ags_channel_unset_staging_flags(AgsChannel *channel, gint sound_scope,
   }
 
   g_rec_mutex_unlock(channel_mutex);
+}
+
+/**
+ * ags_channel_get_audio:
+ * @channel: the #AgsChannel
+ * 
+ * Get audio.
+ * 
+ * Returns: (transfer full): the #AgsAudio
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_channel_get_audio(AgsChannel *channel)
+{
+  GObject *audio;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "audio", &audio,
+	       NULL);
+
+  return(audio);
+}
+
+/**
+ * ags_channel_set_audio:
+ * @channel: the #AgsChannel
+ * @audio: the #AgsAudio
+ * 
+ * Set audio.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_audio(AgsChannel *channel, GObject *audio)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "audio", audio,
+	       NULL);
 }
 
 /**
@@ -6504,6 +6611,32 @@ ags_channel_recycling_changed(AgsChannel *channel,
 }
 
 /**
+ * ags_channel_get_output_soundcard:
+ * @channel: the #AgsChannel
+ *
+ * Get the output soundcard object of @channel.
+ *
+ * Returns: (transfer full): the output soundcard
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_channel_get_output_soundcard(AgsChannel *channel)
+{
+  GObject *output_soundcard;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "output-soundcard", &output_soundcard,
+	       NULL);
+
+  return(output_soundcard);
+}
+
+/**
  * ags_channel_set_output_soundcard:
  * @channel: an #AgsChannel
  * @output_soundcard: an #GObject
@@ -6674,6 +6807,32 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
 }
 
 /**
+ * ags_channel_get_input_soundcard:
+ * @channel: the #AgsChannel
+ *
+ * Get the input soundcard object of @channel.
+ *
+ * Returns: (transfer full): the input soundcard
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_channel_get_input_soundcard(AgsChannel *channel)
+{
+  GObject *input_soundcard;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "input-soundcard", &input_soundcard,
+	       NULL);
+
+  return(input_soundcard);
+}
+
+/**
  * ags_channel_set_input_soundcard:
  * @channel: the #AgsChannel
  * @input_soundcard: an #AgsSoundcard
@@ -6791,6 +6950,32 @@ ags_channel_set_input_soundcard(AgsChannel *channel,
   if(old_soundcard != NULL){
     g_object_unref(old_soundcard);
   }
+}
+
+/**
+ * ags_channel_get_samplerate:
+ * @channel: the #AgsChannel
+ *
+ * Gets samplerate.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_channel_get_samplerate(AgsChannel *channel)
+{
+  guint samplerate;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "samplerate", &samplerate,
+	       NULL);
+
+  return(samplerate);
 }
 
 /**
@@ -6937,6 +7122,32 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
 }
 
 /**
+ * ags_channel_get_buffer_size:
+ * @channel: the #AgsChannel
+ *
+ * Gets buffer size.
+ * 
+ * Returns: the buffer size
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_channel_get_buffer_size(AgsChannel *channel)
+{
+  guint buffer_size;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  return(buffer_size);
+}
+
+/**
  * ags_channel_set_buffer_size:
  * @channel: the #AgsChannel
  * @buffer_size: the buffer_size
@@ -7080,6 +7291,32 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
 }
 
 /**
+ * ags_channel_get_format:
+ * @channel: the #AgsChannel
+ *
+ * Gets format.
+ * 
+ * Returns: the format
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_channel_get_format(AgsChannel *channel)
+{
+  guint format;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "format", &format,
+	       NULL);
+
+  return(format);
+}
+
+/**
  * ags_channel_set_format:
  * @channel: the #AgsChannel
  * @format: the format
@@ -7193,6 +7430,351 @@ ags_channel_set_format(AgsChannel *channel, guint format)
 }
 
 /**
+ * ags_channel_get_pad:
+ * @channel: the #AgsChannel
+ *
+ * Gets pad.
+ * 
+ * Returns: the pad
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_channel_get_pad(AgsChannel *channel)
+{
+  guint pad;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "pad", &pad,
+	       NULL);
+
+  return(pad);
+}
+
+/**
+ * ags_channel_set_pad:
+ * @channel: the #AgsChannel
+ * @pad: the pad
+ *
+ * Set pad.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_channel_set_pad(AgsChannel *channel, guint pad)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+
+  g_object_set(channel,
+	       "pad", pad,
+	       NULL);
+}
+
+/**
+ * ags_channel_get_audio_channel:
+ * @channel: the #AgsChannel
+ *
+ * Gets audio_channel.
+ * 
+ * Returns: the audio_channel
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_channel_get_audio_channel(AgsChannel *channel)
+{
+  guint audio_channel;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "audio-channel", &audio_channel,
+	       NULL);
+
+  return(audio_channel);
+}
+
+/**
+ * ags_channel_set_audio_channel:
+ * @channel: the #AgsChannel
+ * @audio_channel: the audio_channel
+ *
+ * Set audio_channel.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_channel_set_audio_channel(AgsChannel *channel, guint audio_channel)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+
+  g_object_set(channel,
+	       "audio-channel", audio_channel,
+	       NULL);
+}
+
+/**
+ * ags_channel_get_line:
+ * @channel: the #AgsChannel
+ *
+ * Gets line.
+ * 
+ * Returns: the line
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_channel_get_line(AgsChannel *channel)
+{
+  guint line;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "line", &line,
+	       NULL);
+
+  return(line);
+}
+
+/**
+ * ags_channel_set_line:
+ * @channel: the #AgsChannel
+ * @line: the line
+ *
+ * Set line.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_channel_set_line(AgsChannel *channel, guint line)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+
+  g_object_set(channel,
+	       "line", line,
+	       NULL);
+}
+
+/**
+ * ags_channel_get_octave:
+ * @channel: the #AgsChannel
+ *
+ * Gets octave.
+ * 
+ * Returns: the octave
+ * 
+ * Since: 3.1.0
+ */
+gint
+ags_channel_get_octave(AgsChannel *channel)
+{
+  gint octave;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "octave", &octave,
+	       NULL);
+
+  return(octave);
+}
+
+/**
+ * ags_channel_set_octave:
+ * @channel: the #AgsChannel
+ * @octave: the octave
+ *
+ * Sets octave.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_octave(AgsChannel *channel, gint octave)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "octave", octave,
+	       NULL);
+}
+
+/**
+ * ags_channel_get_key:
+ * @channel: the #AgsChannel
+ *
+ * Gets key.
+ * 
+ * Returns: the key
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_channel_get_key(AgsChannel *channel)
+{
+  guint key;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "key", &key,
+	       NULL);
+
+  return(key);
+}
+
+/**
+ * ags_channel_set_key:
+ * @channel: the #AgsChannel
+ * @key: the key
+ *
+ * Sets key.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_key(AgsChannel *channel, guint key)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "key", key,
+	       NULL);
+}
+
+/**
+ * ags_channel_get_absolute_key:
+ * @channel: the #AgsChannel
+ *
+ * Gets absolute key.
+ * 
+ * Returns: the absolute key
+ * 
+ * Since: 3.1.0
+ */
+gint
+ags_channel_get_absolute_key(AgsChannel *channel)
+{
+  gint absolute_key;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "absolute-key", &absolute_key,
+	       NULL);
+
+  return(absolute_key);
+}
+
+/**
+ * ags_channel_set_absolute_key:
+ * @channel: the #AgsChannel
+ * @absolute_key: the absolute key
+ *
+ * Sets absolute key.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_absolute_key(AgsChannel *channel, gint absolute_key)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "absolute-key", absolute_key,
+	       NULL);
+}
+
+/**
+ * ags_channel_get_pattern:
+ * @channel: the #AgsChannel
+ * 
+ * Get pattern.
+ * 
+ * Returns: (element-type AgsAudio.Pattern) (transfer full): the #GList-struct containig #AgsPattern
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_channel_get_pattern(AgsChannel *channel)
+{
+  GList *pattern;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "pattern", &pattern,
+	       NULL);
+
+  return(pattern);
+}
+
+/**
+ * ags_channel_set_pattern:
+ * @channel: the #AgsChannel
+ * @pattern: (element-type AgsAudio.Pattern) (transfer full): the #GList-struct containing #AgsPattern
+ * 
+ * Set pattern by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_pattern(AgsChannel *channel, GList *pattern)
+{
+  GList *start_pattern;
+  
+  GRecMutex *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+    
+  g_rec_mutex_lock(channel_mutex);
+
+  start_pattern = channel->pattern;
+  channel->pattern = pattern;
+  
+  g_rec_mutex_unlock(channel_mutex);
+
+  g_list_free_full(start_pattern,
+		   (GDestroyNotify) g_object_unref);
+}
+
+/**
  * ags_channel_add_pattern:
  * @channel: an #AgsChannel
  * @pattern: the #AgsPattern
@@ -7258,6 +7840,113 @@ ags_channel_remove_pattern(AgsChannel *channel, GObject *pattern)
   }
 
   g_rec_mutex_unlock(channel_mutex);
+}
+
+/**
+ * ags_channel_get_playback:
+ * @channel: the #AgsChannel
+ * 
+ * Get playback domain.
+ * 
+ * Returns: (transfer full): the #AgsPlayback
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_channel_get_playback(AgsChannel *channel)
+{
+  GObject *playback;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "playback", &playback,
+	       NULL);
+
+  return(playback);
+}
+
+/**
+ * ags_channel_set_playback:
+ * @channel: the #AgsChannel
+ * @playback: the #AgsPlayback
+ * 
+ * Set playback.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_playback(AgsChannel *channel, GObject *playback)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "playback", playback,
+	       NULL);
+}
+
+/**
+ * ags_channel_get_recall_id:
+ * @channel: the #AgsChannel
+ * 
+ * Get recall id.
+ * 
+ * Returns: (element-type AgsAudio.RecallID) (transfer full): the #GList-struct containig #AgsRecallID
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_channel_get_recall_id(AgsChannel *channel)
+{
+  GList *recall_id;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "recall_id", &recall_id,
+	       NULL);
+
+  return(recall_id);
+}
+
+/**
+ * ags_channel_set_recall_id:
+ * @channel: the #AgsChannel
+ * @recall_id: (element-type AgsAudio.RecallID) (transfer full): the #GList-struct containing #AgsRecallID
+ * 
+ * Set recall id by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_recall_id(AgsChannel *channel, GList *recall_id)
+{
+  GList *start_recall_id;
+  
+  GRecMutex *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+    
+  g_rec_mutex_lock(channel_mutex);
+
+  start_recall_id = channel->recall_id;
+  channel->recall_id = recall_id;
+  
+  g_rec_mutex_unlock(channel_mutex);
+
+  g_list_free_full(start_recall_id,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -7329,6 +8018,66 @@ ags_channel_remove_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
 }
 
 /**
+ * ags_channel_get_recall_container:
+ * @channel: the #AgsChannel
+ * 
+ * Get recall_container.
+ * 
+ * Returns: (element-type AgsAudio.RecallContainer) (transfer full): the #GList-struct containig #AgsRecallContainer
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_channel_get_recall_container(AgsChannel *channel)
+{
+  GList *recall_container;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "recall-container", &recall_container,
+	       NULL);
+
+  return(recall_container);
+}
+
+/**
+ * ags_channel_set_recall_container:
+ * @channel: the #AgsChannel
+ * @recall_container: (element-type AgsAudio.RecallContainer) (transfer full): the #GList-struct containing #AgsRecallContainer
+ * 
+ * Set recall_container by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_recall_container(AgsChannel *channel, GList *recall_container)
+{
+  GList *start_recall_container;
+  
+  GRecMutex *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+    
+  g_rec_mutex_lock(channel_mutex);
+
+  start_recall_container = channel->recall_container;
+  channel->recall_container = recall_container;
+  
+  g_rec_mutex_unlock(channel_mutex);
+
+  g_list_free_full(start_recall_container,
+		   (GDestroyNotify) g_object_unref);
+}
+
+/**
  * ags_channel_add_recall_container:
  * @channel: an #AgsChannel
  * @recall_container: the #AgsRecallContainer
@@ -7394,6 +8143,126 @@ ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_contain
   }
   
   g_rec_mutex_unlock(channel_mutex);
+}
+
+/**
+ * ags_channel_get_play:
+ * @channel: the #AgsChannel
+ * 
+ * Get play.
+ * 
+ * Returns: (element-type AgsAudio.Recall) (transfer full): the #GList-struct containig #AgsRecall
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_channel_get_play(AgsChannel *channel)
+{
+  GList *play;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "play", &play,
+	       NULL);
+
+  return(play);
+}
+
+/**
+ * ags_channel_set_play:
+ * @channel: the #AgsChannel
+ * @play: (element-type AgsAudio.Recall) (transfer full): the #GList-struct containing #AgsRecall
+ * 
+ * Set play by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_play(AgsChannel *channel, GList *play)
+{
+  GList *start_play;
+  
+  GRecMutex *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+    
+  g_rec_mutex_lock(channel_mutex);
+
+  start_play = channel->play;
+  channel->play = play;
+  
+  g_rec_mutex_unlock(channel_mutex);
+
+  g_list_free_full(start_play,
+		   (GDestroyNotify) g_object_unref);
+}
+
+/**
+ * ags_channel_get_recall:
+ * @channel: the #AgsChannel
+ * 
+ * Get recall.
+ * 
+ * Returns: (element-type AgsAudio.Recall) (transfer full): the #GList-struct containig #AgsRecall
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_channel_get_recall(AgsChannel *channel)
+{
+  GList *recall;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "recall", &recall,
+	       NULL);
+
+  return(recall);
+}
+
+/**
+ * ags_channel_set_recall:
+ * @channel: the #AgsChannel
+ * @recall: (element-type AgsAudio.Recall) (transfer full): the #GList-struct containing #AgsRecall
+ * 
+ * Set recall by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_recall(AgsChannel *channel, GList *recall)
+{
+  GList *start_recall;
+  
+  GRecMutex *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+    
+  g_rec_mutex_lock(channel_mutex);
+
+  start_recall = channel->recall;
+  channel->recall = recall;
+  
+  g_rec_mutex_unlock(channel_mutex);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -7700,8 +8569,8 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
       if(AGS_RECALL_ID(recall_id->data)->recycling_context != NULL &&
 	 AGS_RECALL_ID(recall_id->data)->recycling_context->parent == NULL){
 	if(ags_recall_id_check_staging_flags(recall_id->data,
-					     AGS_SOUND_STATE_IS_WAITING |
-					     AGS_SOUND_STATE_IS_ACTIVE)){
+					     (AGS_SOUND_STATE_IS_WAITING |
+					      AGS_SOUND_STATE_IS_ACTIVE))){
 	  gint sound_scope;
 	  guint staging_flags;
 	  
@@ -7820,8 +8689,8 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
       if(AGS_RECALL_ID(recall_id->data)->recycling_context != NULL &&
 	 AGS_RECALL_ID(recall_id->data)->recycling_context->parent != NULL){
 	if(ags_recall_id_check_staging_flags(recall_id->data,
-					     AGS_SOUND_STATE_IS_WAITING |
-					     AGS_SOUND_STATE_IS_ACTIVE)){
+					     (AGS_SOUND_STATE_IS_WAITING |
+					      AGS_SOUND_STATE_IS_ACTIVE))){
 
 	  gint sound_scope;
 	  guint staging_flags;
@@ -8004,8 +8873,8 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
       if(AGS_RECALL_ID(recall_id->data)->recycling_context != NULL &&
 	 AGS_RECALL_ID(recall_id->data)->recycling_context->parent == NULL){
 	if(ags_recall_id_check_staging_flags(recall_id->data,
-					     AGS_SOUND_STATE_IS_WAITING |
-					     AGS_SOUND_STATE_IS_ACTIVE)){
+					     (AGS_SOUND_STATE_IS_WAITING |
+					      AGS_SOUND_STATE_IS_ACTIVE))){
 	  gint sound_scope;
 	  guint staging_flags;
 	  
@@ -8124,8 +8993,8 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
       if(AGS_RECALL_ID(recall_id->data)->recycling_context != NULL &&
 	 AGS_RECALL_ID(recall_id->data)->recycling_context->parent != NULL){
 	if(ags_recall_id_check_staging_flags(recall_id->data,
-					     AGS_SOUND_STATE_IS_WAITING |
-					     AGS_SOUND_STATE_IS_ACTIVE)){
+					     (AGS_SOUND_STATE_IS_WAITING |
+					      AGS_SOUND_STATE_IS_ACTIVE))){
 
 	  gint sound_scope;
 	  guint staging_flags;
@@ -8315,8 +9184,8 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
       if(AGS_RECALL_ID(recall_id->data)->recycling_context != NULL &&
 	 AGS_RECALL_ID(recall_id->data)->recycling_context->parent == NULL){
 	if(ags_recall_id_check_staging_flags(recall_id->data,
-					     AGS_SOUND_STATE_IS_WAITING |
-					     AGS_SOUND_STATE_IS_ACTIVE)){
+					     (AGS_SOUND_STATE_IS_WAITING |
+					      AGS_SOUND_STATE_IS_ACTIVE))){
 	  gint sound_scope;
 	  guint staging_flags;
 	  
@@ -8439,8 +9308,8 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
       if(AGS_RECALL_ID(recall_id->data)->recycling_context != NULL &&
 	 AGS_RECALL_ID(recall_id->data)->recycling_context->parent == NULL){
 	if(ags_recall_id_check_staging_flags(recall_id->data,
-					     AGS_SOUND_STATE_IS_WAITING |
-					     AGS_SOUND_STATE_IS_ACTIVE)){
+					     (AGS_SOUND_STATE_IS_WAITING |
+					      AGS_SOUND_STATE_IS_ACTIVE))){
 	  gint sound_scope;
 	  guint staging_flags;
 	  
@@ -9559,8 +10428,12 @@ ags_channel_real_play_recall(AgsChannel *channel,
   if(!AGS_IS_RECALL_ID(recall_id)){
     return;
   }
+
+//  g_message("recall ID 0x%x", recall_id);
   
   if(ags_recall_id_check_state_flags(recall_id, AGS_SOUND_STATE_IS_TERMINATING)){
+//    g_message("`⁻ term");
+    
     return;
   }
 
@@ -10352,6 +11225,10 @@ ags_channel_real_start(AgsChannel *channel,
 				       channel_recall_id);
     
       /* set playback's recall id */
+      if(AGS_SOUND_SCOPE_PLAYBACK == sound_scope){
+//	ags_recall_id_set_state_flags(channel_recall_id, AGS_SOUND_STATE_IS_WAITING);
+      }
+      
       ags_playback_set_recall_id(playback,
 				 channel_recall_id,
 				 sound_scope);
@@ -10370,32 +11247,34 @@ ags_channel_real_start(AgsChannel *channel,
 
     start_wait_thread = NULL;
     
-    if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
-      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							  sound_scope);
+    if(AGS_SOUND_SCOPE_PLAYBACK != sound_scope){    
+      if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
+	audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							    sound_scope);
 
-      if(audio_thread != NULL){
-	start_wait_thread = g_list_prepend(start_wait_thread,
-					   audio_thread);
+	if(audio_thread != NULL){
+	  start_wait_thread = g_list_prepend(start_wait_thread,
+					     audio_thread);
 	
-	ags_thread_add_start_queue(audio_loop,
-				   audio_thread);
+	  ags_thread_add_start_queue(audio_loop,
+				     audio_thread);
+	}
       }
-    }
     
-    if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
-      channel_thread = ags_playback_get_channel_thread(playback,
-						       sound_scope);
+      if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
+	channel_thread = ags_playback_get_channel_thread(playback,
+							 sound_scope);
 
-      if(channel_thread != NULL){
-	start_wait_thread = g_list_prepend(start_wait_thread,
-					   channel_thread);
+	if(channel_thread != NULL){
+	  start_wait_thread = g_list_prepend(start_wait_thread,
+					     channel_thread);
 	
-	ags_thread_add_start_queue(audio_loop,
-				   channel_thread);
+	  ags_thread_add_start_queue(audio_loop,
+				     channel_thread);
+	}
       }
     }
-
+      
     /* unref */
     wait_thread = start_wait_thread;
 
@@ -10474,6 +11353,10 @@ ags_channel_real_start(AgsChannel *channel,
 					 channel_recall_id);
     
 	/* set playback's recall id */
+	if(AGS_SOUND_SCOPE_PLAYBACK == i){
+//	  ags_recall_id_set_state_flags(channel_recall_id, AGS_SOUND_STATE_IS_WAITING);
+	}
+	
 	ags_playback_set_recall_id(playback,
 				   channel_recall_id,
 				   i);
@@ -10492,29 +11375,31 @@ ags_channel_real_start(AgsChannel *channel,
 
       start_wait_thread = NULL;
 
-      if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
-	audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							    i);
+      if(AGS_SOUND_SCOPE_PLAYBACK != i){
+	if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
+	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							      i);
 
-	if(audio_thread != NULL){
-	  start_wait_thread = g_list_prepend(start_wait_thread,
-					     audio_thread);
+	  if(audio_thread != NULL){
+	    start_wait_thread = g_list_prepend(start_wait_thread,
+					       audio_thread);
 	  
-	  ags_thread_add_start_queue(audio_loop,
-				     audio_thread);
+	    ags_thread_add_start_queue(audio_loop,
+				       audio_thread);
+	  }
 	}
-      }
       
-      if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
-	channel_thread = ags_playback_get_channel_thread(playback,
-							 i);
+	if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
+	  channel_thread = ags_playback_get_channel_thread(playback,
+							   i);
 
-	if(channel_thread != NULL){
-	  start_wait_thread = g_list_prepend(start_wait_thread,
-					     channel_thread);
+	  if(channel_thread != NULL){
+	    start_wait_thread = g_list_prepend(start_wait_thread,
+					       channel_thread);
       
-	  ags_thread_add_start_queue(audio_loop,
-				     channel_thread);
+	    ags_thread_add_start_queue(audio_loop,
+				       channel_thread);
+	  }
 	}
       }
       

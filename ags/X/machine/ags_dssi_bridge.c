@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -577,7 +577,7 @@ ags_dssi_bridge_resize_audio_channels(AgsMachine *machine,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	ags_audio_signal_stream_resize(audio_signal,
-				       1);
+				       25);
 	ags_recycling_add_audio_signal(first_recycling,
 				       audio_signal);
 
@@ -749,7 +749,7 @@ ags_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	ags_audio_signal_stream_resize(audio_signal,
-				       1);
+				       25);
 	ags_recycling_add_audio_signal(first_recycling,
 				       audio_signal);
 
@@ -1162,7 +1162,7 @@ ags_dssi_bridge_input_map_recall(AgsDssiBridge *dssi_bridge,
 
     /* recall - use note length */
     recall = ags_recall_template_find_type(start_recall,
-					 AGS_TYPE_ENVELOPE_CHANNEL);
+					   AGS_TYPE_ENVELOPE_CHANNEL);
 
     if(recall != NULL){
       GValue use_note_length_value = {0,};
@@ -1225,7 +1225,7 @@ ags_dssi_bridge_input_map_recall(AgsDssiBridge *dssi_bridge,
 
       current = ags_channel_nth(start_input,
 				i * audio_channels + j);
-
+      
       /* ags-play */
       ags_recall_factory_create(audio,
 				NULL, NULL,

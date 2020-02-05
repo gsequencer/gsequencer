@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -455,6 +455,53 @@ ags_recall_audio_duplicate(AgsRecall *recall,
   g_warning("ags_recall_audio_duplicate - you shouldn't do this %s", G_OBJECT_TYPE_NAME(recall));
   
   return((AgsRecall *) copy_recall_audio);
+}
+
+/**
+ * ags_recall_audio_get_audio:
+ * @recall_audio: the #AgsRecallAudio
+ * 
+ * Get audio.
+ * 
+ * Returns: (transfer full): the #AgsAudio
+ * 
+ * Since: 3.1.0
+ */
+AgsAudio*
+ags_recall_audio_get_audio(AgsRecallAudio *recall_audio)
+{
+  AgsAudio *audio;
+
+  if(!AGS_IS_RECALL_AUDIO(recall_audio)){
+    return(NULL);
+  }
+
+  g_object_get(recall_audio,
+	       "audio", &audio,
+	       NULL);
+
+  return(audio);
+}
+
+/**
+ * ags_recall_audio_set_audio:
+ * @recall_audio: the #AgsRecallAudio
+ * @audio: the #AgsAudio
+ * 
+ * Set audio.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recall_audio_set_audio(AgsRecallAudio *recall_audio, AgsAudio *audio)
+{
+  if(!AGS_IS_RECALL_AUDIO(recall_audio)){
+    return;
+  }
+
+  g_object_set(recall_audio,
+	       "audio", audio,
+	       NULL);
 }
 
 /**

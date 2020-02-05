@@ -182,13 +182,13 @@
 	</para>
 	<para>
 	  Samplerate affects the entire project. Your audio files have to be at very same rate further
-	  your device has to support the given rate. Like buffer size this affects the thread's related to
+	  your device has to support the given rate. Like buffer size this affects the thread&apos;s related to
 	  audio processing their frequencies. Note a too low frequency may cause unexpected behavior like
 	  no proper velocity.
 	</para>
 	<para>
 	  Buffer size is used for all audio buffers. Your soundcard has to support the passed buffer size.
-	  This preference affects thread's frequencies.
+	  This preference affects thread&apos;s frequencies.
 	</para>
 	<para>
 	  Format determines the storage size of one frame. All available formats are signed integers. The
