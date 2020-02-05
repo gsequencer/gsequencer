@@ -30,7 +30,7 @@
   </mediaobject>
   <para>
     With the navigation you have overall control of your song. Settings you perform
-    here may influence the behaviour of AGS. There's a duration label doing a time approximation.
+    here may influence the behaviour of AGS. There&apos;s a duration label doing a time approximation.
     It is really unreliable and may differ about 30 seconds after 3 minutes of playback. Note
     with higher frequency of the audio related threads it may differ less. An other factor is bpm
     what has an influence, as well.
@@ -73,12 +73,12 @@
 	  <row>
 	    <entry><imagedata fileref="&backwardIcon;" /></entry>
 	    <entry>backward</entry>
-	    <entry>Seeking back until it's pressed again.</entry>
+	    <entry>Seeking back until it&apos;s pressed again.</entry>
 	  </row>
 	  <row>
 	    <entry><imagedata fileref="&previousIcon;" /></entry>
 	    <entry>previous</entry>
-	    <entry>Seeking back until it's not pressed anymore.</entry>
+	    <entry>Seeking back until it&apos;s not pressed anymore.</entry>
 	  </row>
 	  <row>
 	    <entry><imagedata fileref="&playIcon;" /></entry>
@@ -93,12 +93,12 @@
 	  <row>
 	    <entry><imagedata fileref="&nextIcon;" /></entry>
 	    <entry>next</entry>
-	    <entry>Seeking forward until it's not pressed anymore.</entry>
+	    <entry>Seeking forward until it&apos;s not pressed anymore.</entry>
 	  </row>
 	  <row>
 	    <entry><imagedata fileref="&forwardIcon;" /></entry>
 	    <entry>forward</entry>
-	    <entry>Seeking forward until it's pressed again.</entry>
+	    <entry>Seeking forward until it&apos;s pressed again.</entry>
 	  </row>
 	</tbody>
       </tgroup>

@@ -1,3 +1,8 @@
+ags (3.1.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* updated user manual
+
 ags (3.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -5,8 +10,8 @@ ags (3.1.0)
 	* implemented meta widget of AgsNotationEditor
 	* implemented meta widget of AgsAutomationEditor
 	* implemented meta widget of AgsWaveEditor
-	* implemented accoustic feedback of ags-recall-dssi
-	* implemented accoustic feedback of ags-recall-lv2
+	* implemented acoustic feedback of ags-recall-dssi
+	* implemented acoustic feedback of ags-recall-lv2
 	* fixed ref-count of AgsRecallDssi:count-beats-audio-run
 	* fixed AgsAutomationEdit not shown again
 	* fixed AgsAutomationEdit cursor x-position

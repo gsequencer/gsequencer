@@ -12,7 +12,7 @@
   <title>Engines</title>
   <para>
     You can add engines by activating the appropriate menu item within
-    the "add" submenu of the "edit" menu item. You may change the properties
+    the &quot;add&quot; submenu of the &quot;edit&quot; menu item. You may change the properties
     of an engine by opening the properties dialog from the context menu at the
     top of each machine within vertical order. From the context menu you may
     perform some other tasks, as well.
@@ -25,32 +25,32 @@
   <itemizedlist mark="bullet">
     <listitem>
       <para>
-	To move up or down an engine open context menu and activate "up"
-	respectively "down" entry.
+	To move up or down an engine open context menu and activate &quot;up&quot;
+	respectively &quot;down&quot; entry.
       </para>
     </listitem>
     <listitem>
       <para>
-	To show or hide an engine open context menu and activate "show"
-	respectively "hide" entry. Note the engines won't be hidden entirely
+	To show or hide an engine open context menu and activate &quot;show&quot;
+	respectively &quot;hide&quot; entry. Note the engines won&apos;t be hidden entirely
 	they are just collapsed.
       </para>
     </listitem>
     <listitem>
       <para>
-	To rename an engine open context menu and activate "rename" entry.
+	To rename an engine open context menu and activate &quot;rename&quot; entry.
       </para>
     </listitem>
     <listitem>
       <para>
-	To remove an engine open context menu and activate "destroy" entry.
+	To remove an engine open context menu and activate &quot;destroy&quot; entry.
       </para>
     </listitem>
     <listitem>
       <para>
-	To open properties dialog open context menu and activate "properties"
+	To open properties dialog open context menu and activate &quot;properties&quot;
 	entry. There you might link, resize or asign LADSPA effects to channels.
-	NOTE for LADSPA sink or generators aren't supported, yet.
+	NOTE for LADSPA sink or generators aren&apos;t supported, yet.
       </para>
     </listitem>
     <listitem>
@@ -94,7 +94,7 @@
       </mediaobject>
       <para>
 	The output tab lets you mainly perform linking lines and adding effects to them. For each
-	line there's a combo box listing available linking engines, on the right of it there is
+	line there&apos;s a combo box listing available linking engines, on the right of it there is
 	a spin button let you choose the input line to be linked.
 	As you have added a plugin by clicking add and selected appropriate effect by using plugin browser
 	dialog. You may remove it by clicking checkbox of the listed plugin and finally click remove.
@@ -133,7 +133,7 @@
 	</caption>
       </mediaobject>
       <para>
-	Do linking in batch mode. This means you're able to assign multiple lines at once.
+	Do linking in batch mode. This means you&apos;re able to assign multiple lines at once.
 	Thus you have to decide what start channel on each side to use and the count of
 	lines to be linked.
       </para>
@@ -199,7 +199,7 @@
       </mediaobject>
       
       <para>
-	Select the desired soundcard and don't forget to click enable. In order apply your modifications.
+	Select the desired soundcard and don&apos;t forget to click enable. In order apply your modifications.
 	After click OK.
       </para>    
     </sect2>
@@ -236,7 +236,7 @@
       </mediaobject>
       
       <para>
-	Select the desired soundcard and don't forget to click enable. In order apply your modifications.
+	Select the desired soundcard and don&apos;t forget to click enable. In order apply your modifications.
 	After click OK.
       </para>    
     </sect2>
@@ -276,7 +276,7 @@
 	</imageobject>
 	<caption>
 	  <para>
-	    The envelope dialog's editor tab screenshot
+	    The envelope dialog&apos;s editor tab screenshot
 	  </para>
 	</caption>
       </mediaobject>
@@ -294,7 +294,7 @@
 	</imageobject>
 	<caption>
 	  <para>
-	    The envelope dialog's info tab screenshot
+	    The envelope dialog&apos;s info tab screenshot
 	  </para>
 	</caption>
       </mediaobject>
@@ -312,7 +312,7 @@
 	</imageobject>
 	<caption>
 	  <para>
-	    The envelope dialog's pattern tab screenshot
+	    The envelope dialog&apos;s pattern tab screenshot
 	  </para>
 	</caption>
       </mediaobject>
@@ -360,8 +360,8 @@
       audio processing tree. It contains per audio channel a mute check box.
     </para>
     <para>
-      Due the synchroneous nature of the output engine you're just able to adjust the audio
-      channels. The output pads aren't visible and the ones available for input are packed
+      Due the synchroneous nature of the output engine you&apos;re just able to adjust the audio
+      channels. The output pads aren&apos;t visible and the ones available for input are packed
       vertically.
     </para>
   </sect1>
@@ -384,7 +384,7 @@
     </para>
     <para>
       Due the limitation of recycling it is just able to handle multiple input lines and only one
-      output pad. Whereas the output is hidden. They are locate just below the machine's menu tool
+      output pad. Whereas the output is hidden. They are locate just below the machine&apos;s menu tool
       button. 
     </para>
   </sect1>
@@ -441,18 +441,18 @@
       box. Thus multi-selection of files is supported and assigning can be controlled by the
       controls just above the action widgets. The drum input pad contains an open button, too.
       It assigns available audio channels of the file to the grouped lines. One more way to
-      assign audio files is doing it so by link editor of machine's property dialog.
+      assign audio files is doing it so by link editor of machine&apos;s property dialog.
       The drum may contain LADSPA plugins, too.
     </para>
     <para>
       The drum may contain multiple input as well output pads. They are packed on top of the
-      composite widget, just below the machine's menu tool button. The input is packed horizontally
+      composite widget, just below the machine&apos;s menu tool button. The input is packed horizontally
       followed by vertically packed output.
       The edit button within every input pad enables it as current input for editing pattern data.
       Further you may de-/activate the group toggle button to control audio channel assignment.
     </para>
     <para>
-      Next to the multi-selection enable open button there's a loop check-box followed by the run
+      Next to the multi-selection enable open button there&apos;s a loop check-box followed by the run
       button what starts the drum sequencer. It follows the into a two dimensional matrix packed
       pattern banks. Labeled from 1 to 12 and an the combined index labeled a throughout d. The
       length spin-button controls the number of pattern pads to be played in sequence which may
@@ -585,12 +585,12 @@
       </caption>
     </mediaobject>
     <para>
-      Produce an audio stream by defining a pattern. The matrix itselves doesn't
+      Produce an audio stream by defining a pattern. The matrix itselves doesn&apos;t
       have any audio signals on its own input you may rather link it to a synth
       engine. The matrix is a rectangular area you may navigate within by arrow keys
       or toggle pattern by hiting space.
       The matrix is a true mono device but you may emulate multiple channels by doing
-      multi-output. This is fulfilled by adjusting output pads within machine's properties
+      multi-output. This is fulfilled by adjusting output pads within machine&apos;s properties
       dialog.
     </para>
     <para>
@@ -800,7 +800,7 @@
     </para>
     <para>
       The ffplayer contains recently the bridge widget. You can add plugins in bulk mode by
-      click Add or Remove within AgsFFPlayer's bridge, what you can collapse/expand. To add an effect
+      click Add or Remove within AgsFFPlayer&apos;s bridge, what you can collapse/expand. To add an effect
       to a line, you have open as usual input/output of machine properties.
     </para>
   </sect1>
