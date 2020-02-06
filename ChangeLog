@@ -1,3 +1,8 @@
+ags (3.1.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_automation_meta.c channel_type variable to use proper GType
+
 ags (3.1.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
