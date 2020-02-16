@@ -1,3 +1,9 @@
+ags (3.1.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential integer overflow in ags_osc_front_controller_do_request()
+	* minor improvements
+
 ags (3.1.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

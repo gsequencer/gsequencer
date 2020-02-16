@@ -270,6 +270,10 @@ ags_functional_osc_server_test_init_suite()
   signal(SIGPIPE, SIG_IGN);
   
   osc_server = ags_osc_server_new();
+
+  osc_server->accept_delay->tv_nsec = AGS_NSEC_PER_SEC / 30;
+  osc_server->dispatch_delay->tv_nsec = AGS_NSEC_PER_SEC / 30;
+  
   ags_osc_server_set_flags(osc_server,
 			   (AGS_OSC_SERVER_INET4 |
 			    AGS_OSC_SERVER_TCP));
@@ -603,6 +607,15 @@ ags_functional_osc_server_test_meter_controller()
   
   meter_packet_count = 0;
   i = 0;
+
+  /* set work-around for arm */
+  g_object_set(osc_client->ip4_socket,
+	       "blocking", FALSE,
+	       NULL);
+
+  g_object_set(osc_client->ip6_socket,
+	       "blocking", FALSE,
+	       NULL);
   
   while(!ags_time_timeout_expired(&start_time,
 				  &timeout_delay)){
@@ -644,6 +657,15 @@ ags_functional_osc_server_test_meter_controller()
   }
   
   CU_ASSERT(meter_packet_count >= AGS_FUNCTIONAL_OSC_SERVER_TEST_METER_PACKET_COUNT);
+
+  /* unset work-around for arm */
+  g_object_set(osc_client->ip4_socket,
+	       "blocking", TRUE,
+	       NULL);
+
+  g_object_set(osc_client->ip6_socket,
+	       "blocking", TRUE,
+	       NULL);
 
   /* disable meter */
   packet = (guchar *) malloc((4 + disable_peak_message_size) * sizeof(guchar));

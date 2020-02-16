@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -763,14 +763,16 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 	g_critical("AgsOscConnection - %s", error->message);
       }
 
-      g_error_free(error);
-
       if(g_error_matches(error, G_IO_ERROR, G_IO_ERROR_WOULD_BLOCK)){
 	if(available_data_length == 0){
+	  g_error_free(error);
+
 	  continue;
 	}
       }else{
 	if(g_error_matches(error, G_IO_ERROR, G_IO_ERROR_CONNECTION_CLOSED)){
+	  g_error_free(error);
+
 	  g_rec_mutex_lock(osc_connection_mutex);
 
 	  error = NULL;
@@ -786,6 +788,8 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 	  break;
 	}
       }
+      
+      g_error_free(error);
     }
     
     if(available_data_length == 0){

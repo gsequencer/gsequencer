@@ -955,7 +955,12 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
   gint32 tv_fraction;
   gboolean immediately;
   gsize offset;
-    
+
+  if(packet == NULL ||
+     packet_size < 0){
+    return(NULL);
+  }
+  
   tv_sec = 0;
   tv_fraction = 0;
   immediately = TRUE;
@@ -967,6 +972,8 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
     g_message("%d %d", offset, packet_size);
     g_message("%x[%c]", packet[offset], packet[offset]);
 #endif
+
+    read_count = 0;
     
     if(!g_strcmp0(packet + offset, "#bundle")){      
       read_count = ags_osc_front_controller_read_bundle(osc_front_controller,
@@ -979,10 +986,6 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 							 packet, packet_size,
 							 offset,
 							 0, 0, TRUE);
-    }else{
-      read_count = 1;
-
-      g_warning("malformed data");
     }
 
     if(read_count > 0){
@@ -1024,7 +1027,7 @@ ags_osc_front_controller_do_request(AgsOscFrontController *osc_front_controller,
   g_signal_emit(G_OBJECT(osc_front_controller),
 		osc_front_controller_signals[DO_REQUEST], 0,
 		osc_connection,
-		packet, packet_size,
+		packet, (gint64) packet_size,
 		&osc_response);
   g_object_unref((GObject *) osc_connection);
   g_object_unref((GObject *) osc_front_controller);
