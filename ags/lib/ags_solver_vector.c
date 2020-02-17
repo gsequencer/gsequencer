@@ -176,11 +176,55 @@ ags_solver_vector_insert_term(AgsSolverVector *solver_vector,
 			      AgsSolverTerm *solver_term,
 			      gint position)
 {
-  //TODO:JK: implement me
+  guint i, j;
+
+  GRecMutex *solver_vector_mutex;
+  
+  if(!AGS_IS_SOLVER_VECTOR(solver_vector) ||
+     !AGS_IS_SOLVER_TERM(solver_term)){
+    return;
+  }
+
+  solver_vector_mutex = AGS_SOLVER_VECTOR_GET_OBJ_MUTEX(solver_vector);
+
+  g_rec_mutex_lock(solver_vector_mutex);
+  
+  if(position > solver_vector->term_count){
+    position = solver_vector->term_count;
+  }
+  
+  if(solver_vector->term_column == NULL){
+    solver_vector->term_column = (AgsSolverTerm **) g_malloc(sizeof(AgsSolverTerm *));
+  }else{
+    solver_vector->term_column = (AgsSolverTerm **) g_realloc(solver_vector->term_column,
+							      (solver_vector->term_count + 1) * sizeof(AgsSolverTerm *));
+  }
+
+  g_object_ref(solver_term);
+  
+  if(position < 0){
+    solver_vector->term_column[solver_vector->term_count] = solver_term;
+  }else{
+    for(i = 0, j = 0; i < solver_vector->term_count + 1; i++){
+      if(i > position){
+	solver_vector->term_column[i] = solver_vector->term_column[j];
+      }
+
+      if(i != position){
+	j++;
+      }
+    }
+
+    solver_vector->term_column[position] = solver_term;
+  }
+
+  solver_vector->term_count += 1;
+  
+  g_rec_mutex_unlock(solver_vector_mutex);  
 }
 
 /**
- * ags_solver_vector_insert_term:
+ * ags_solver_vector_remove_term:
  * @solver_vector: the #AgsSolverVector
  * @solver_term: the #AgsSolverTerm
  * 
@@ -192,7 +236,56 @@ void
 ags_solver_vector_remove_term(AgsSolverVector *solver_vector,
 			      AgsSolverTerm *solver_term)
 {
-  //TODO:JK: implement me
+  gint position;
+  guint i, j;
+  
+  GRecMutex *solver_vector_mutex;
+  
+  if(!AGS_IS_SOLVER_VECTOR(solver_vector) ||
+     !AGS_IS_SOLVER_TERM(solver_term)){
+    return;
+  }
+
+  solver_vector_mutex = AGS_SOLVER_VECTOR_GET_OBJ_MUTEX(solver_vector);
+
+  g_rec_mutex_lock(solver_vector_mutex);
+
+  position = -1;
+  
+  for(i = 0; i < solver_vector->term_count; i++){
+    if(solver_vector->term_column[i] == solver_term){
+      position = i;
+
+      break;
+    }
+  }
+
+  if(position >= 0){
+    if(solver_vector->term_count == 1){
+      g_free(solver_vector->term_column);
+
+      solver_vector->term_column = NULL;
+    }else{
+      for(i = 0, j = 0; i < solver_vector->term_count; i++){
+	if(i > position){
+	  solver_vector->term_column[j] = solver_vector->term_column[i];
+	}
+
+	if(i != position){
+	  j++;
+	}
+      }
+      
+      solver_vector->term_column = (AgsSolverTerm **) g_realloc(solver_vector->term_column,
+								(solver_vector->term_count - 1) * sizeof(AgsSolverTerm *));
+    }
+
+    g_object_unref(solver_term);
+  }
+
+  solver_vector->term_count -= 1;
+  
+  g_rec_mutex_unlock(solver_vector_mutex);  
 }
 
 /**

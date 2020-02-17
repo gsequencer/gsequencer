@@ -37,6 +37,8 @@ ags_function_symbolic_translate_value
 ags_function_substitute_values
 ags_function_translate_value
 ags_function_new
+ags_solver_term_get_type
+ags_solver_term_new
 ags_complex_get_type
 ags_complex_alloc
 ags_complex_copy
@@ -44,6 +46,8 @@ ags_complex_free
 ags_complex_get
 ags_complex_set
 ags_solver_vector_get_type
+ags_solver_vector_insert_term
+ags_solver_vector_remove_term
 ags_solver_vector_new
 ags_string_util_escape_single_quote
 ags_strv_length
@@ -145,6 +149,8 @@ ags_conversion_get_type
 ags_conversion_convert
 ags_conversion_new
 ags_solver_matrix_get_type
+ags_solver_matrix_insert_vector
+ags_solver_matrix_remove_vector
 ags_solver_matrix_new
 ags_application_context
 ags_connectable_get_type
