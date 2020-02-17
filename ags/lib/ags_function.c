@@ -233,18 +233,20 @@ ags_function_init(AgsFunction *function)
 {
   function->flags = 0;
   
+  /* function mutex */
+  g_rec_mutex_init(&(function->obj_mutex));
+
   function->is_pushing = TRUE;
+
   function->equation = NULL;
+
   function->transformed_equation = NULL;
-  function->equation_count = 0;
 
   function->source_function = NULL;
-
 
   function->normalized_function = NULL;
 
   function->symbol = NULL;
-  function->symbol_count = 0;
 
   function->solver_matrix = NULL;
 
@@ -351,32 +353,35 @@ void
 ags_function_finalize(GObject *gobject)
 {
   AgsFunction *function;
+
+  gchar **iter;
+  
   guint i, j, k;
   
   function = AGS_FUNCTION(gobject);
 
   if(function->equation != NULL){
-    for(i = 0; i < function->equation_count; i++){
-      free(function->equation[i]);
+    for(iter = function->equation; iter[0] != NULL; iter++){
+      g_free(iter[0]);
     }
 
-    free(function->equation);
+    g_free(function->equation);
   }
 
   if(function->source_function != NULL){
-    free(function->source_function);
+    g_free(function->source_function);
   }
 
   if(function->normalized_function != NULL){
-    free(function->normalized_function);
+    g_free(function->normalized_function);
   }
 
   if(function->symbol != NULL){
-    for(i = 0; i < function->symbol_count; i++){
-      free(function->symbol[i]);
+    for(iter = function->symbol; iter[0] != NULL; iter++){
+      g_free(iter[0]);
     }
 
-    free(function->symbol);
+    g_free(function->symbol);
   }
 
   if(function->pivot_table != NULL){
@@ -657,7 +662,7 @@ ags_function_literal_solve(AgsFunction *function)
   
   /* compute dimensions */
   transformed_function = g_strdup(function->source_function);
-  max_exponent = function->symbol_count;
+  max_exponent = g_strv_length(function->symbol);
 
   /* step #0 of normalization - eliminate trigonometric functions */
   str = transformed_function;
@@ -702,25 +707,27 @@ ags_function_push_equation(AgsFunction *function,
 			   gchar *equation)
 {
   gchar *str;
-  
+
+  guint equation_count;
   guint i;
   
   if(!AGS_IS_FUNCTION(function)){
     return(FALSE);
   }
 
-  i = function->equation_count;
+  i =
+    equation_count = g_strv_length(function->equation);
   
-  if(function->equation_count == 0){
-    function->equation = (gchar **) malloc(sizeof(gchar*));
+  if(equation_count == 0){
+    function->equation = (gchar **) g_malloc(sizeof(gchar *));
 
-    function->transformed_equation = (gchar **) malloc(sizeof(gchar*));
+    function->transformed_equation = (gchar **) g_malloc(sizeof(gchar *));
   }else{
-    function->equation = (gchar **) realloc(function->equation,
-					    (i + 1) * sizeof(gchar*));
+    function->equation = (gchar **) g_realloc(function->equation,
+					      (i + 1) * sizeof(gchar *));
 
-    function->transformed_equation = (gchar **) realloc(function->equation,
-							(i + 1) * sizeof(gchar*));
+    function->transformed_equation = (gchar **) g_realloc(function->equation,
+							  (i + 1) * sizeof(gchar *));
   }
 
   /* assume normalized else use right side as term - use subtraction */
@@ -766,8 +773,6 @@ ags_function_push_equation(AgsFunction *function,
   
   function->transformed_equation[i] = NULL;
   
-  function->equation_count += 1;
-  
   return(TRUE);
 }
 
@@ -785,6 +790,8 @@ void
 ags_function_pop_equation(AgsFunction *function,
 			  GError **error)
 {
+  guint equation_count;
+  guint symbol_count;
   guint length;
   guint i;
   
@@ -793,31 +800,32 @@ ags_function_pop_equation(AgsFunction *function,
   }
 
   /* retrieve of all equations string length */
+  equation_count = g_strv_length(function->equation);
   length = 0;
   
-  for(i = 0; i < function->equation_count; i++){
+  for(i = 0; i < equation_count; i++){
     length += strlen(function->equation[i]);
   }
 
   /* allocate source function and memcpy equations - use addition */
-  if(function->equation_count > 0){
-    if(function->equation_count > 1){
-      length += (function->equation_count * 2) + (function->equation_count - 1) + 1;
+  if(equation_count > 0){
+    if(equation_count > 1){
+      length += (equation_count * 2) + (equation_count - 1) + 1;
     }else{
       length += 1;
     }
     
-    function->source_function = (gchar *) malloc(length * sizeof(gchar));
+    function->source_function = (gchar *) g_malloc(length * sizeof(gchar));
     function->source_function[length - 1] = '\0';
     
-    if(function->equation_count > 1){
+    if(equation_count > 1){
       gchar *offset;
 
       guint num_bytes;
       
       offset = function->source_function;
       
-      for(i = 0; i < function->equation_count; i++){
+      for(i = 0; i < equation_count; i++){
 	if(i != 0){
 	  *offset = '+';
 	  offset++;
@@ -844,7 +852,7 @@ ags_function_pop_equation(AgsFunction *function,
 
   /* find literals and literal solve */
   function->symbol = ags_function_find_literals(function,
-						&(function->symbol_count));
+						&symbol_count);
   ags_function_literal_solve(function);
   
   function->is_pushing = FALSE;

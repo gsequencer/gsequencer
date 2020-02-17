@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -104,7 +104,18 @@ ags_solver_matrix_class_init(AgsSolverMatrixClass *solver_matrix)
 void
 ags_solver_matrix_init(AgsSolverMatrix *solver_matrix)
 {
-  //TODO:JK: implement me
+  solver_matrix->flags = 0;
+  
+  g_rec_mutex_init(&(solver_matrix->obj_mutex));
+
+  solver_matrix->function_history = NULL;
+  
+  solver_matrix->source_function = NULL;
+  
+  solver_matrix->term_table = NULL;
+
+  solver_matrix->row_count = 0;
+  solver_matrix->column_count = 0;
 }
 
 void
@@ -150,6 +161,40 @@ ags_solver_matrix_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_solver_matrix_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_solver_matrix_insert_vector:
+ * @solver_matrix: the #AgsSolverMatrix
+ * @solver_vector: the #AgsSolverVector
+ * @position: the position
+ * 
+ * Insert @solver_vector to @solver_matrix.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_solver_matrix_insert_vector(AgsSolverMatrix *solver_matrix,
+				AgsSolverVector *solver_vector,
+				gint position)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_solver_matrix_insert_vector:
+ * @solver_matrix: the #AgsSolverMatrix
+ * @solver_vector: the #AgsSolverVector
+ * 
+ * Remove @solver_vector from @solver_matrix.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_solver_matrix_remove_vector(AgsSolverMatrix *solver_matrix,
+				AgsSolverVector *solver_vector)
+{
+  //TODO:JK: implement me
 }
 
 /**

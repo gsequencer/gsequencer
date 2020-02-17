@@ -452,6 +452,7 @@ am__objects_2 = $(am__objects_1) ags/lib/libags_la-ags_buffer_util.lo \
 	ags/lib/libags_la-ags_function.lo ags/lib/libags_la-ags_log.lo \
 	ags/lib/libags_la-ags_regex.lo \
 	ags/lib/libags_la-ags_solver_matrix.lo \
+	ags/lib/libags_la-ags_solver_term.lo \
 	ags/lib/libags_la-ags_solver_vector.lo \
 	ags/lib/libags_la-ags_string_util.lo \
 	ags/lib/libags_la-ags_time.lo ags/lib/libags_la-ags_turtle.lo \
@@ -5027,6 +5028,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/lib/$(DEPDIR)/libags_la-ags_log.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_regex.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_solver_matrix.Plo \
+	ags/lib/$(DEPDIR)/libags_la-ags_solver_term.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_solver_vector.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_string_util.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_time.Plo \
@@ -5767,12 +5769,13 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/lib/ags_buffer_util.h ags/lib/ags_complex.h \
 	ags/lib/ags_conversion.h ags/lib/ags_endian.h \
 	ags/lib/ags_function.h ags/lib/ags_log.h ags/lib/ags_regex.h \
-	ags/lib/ags_solver_matrix.h ags/lib/ags_solver_vector.h \
-	ags/lib/ags_string_util.h ags/lib/ags_time.h \
-	ags/lib/ags_turtle.h ags/lib/ags_turtle_manager.h \
-	ags/lib/ags_uuid.h ags/util/ags_destroy_util.h \
-	ags/util/ags_id_generator.h ags/util/ags_list_util.h \
-	ags/util/ags_soundcard_helper.h ags/object/ags_applicable.h \
+	ags/lib/ags_solver_matrix.h ags/lib/ags_solver_term.h \
+	ags/lib/ags_solver_vector.h ags/lib/ags_string_util.h \
+	ags/lib/ags_time.h ags/lib/ags_turtle.h \
+	ags/lib/ags_turtle_manager.h ags/lib/ags_uuid.h \
+	ags/util/ags_destroy_util.h ags/util/ags_id_generator.h \
+	ags/util/ags_list_util.h ags/util/ags_soundcard_helper.h \
+	ags/object/ags_applicable.h \
 	ags/object/ags_application_context.h ags/object/ags_config.h \
 	ags/object/ags_connectable.h ags/object/ags_countable.h \
 	ags/object/ags_cursor.h ags/object/ags_globals.h \
@@ -8267,6 +8270,7 @@ libags_h_sources = \
 	ags/lib/ags_log.h \
 	ags/lib/ags_regex.h \
 	ags/lib/ags_solver_matrix.h \
+	ags/lib/ags_solver_term.h \
 	ags/lib/ags_solver_vector.h \
 	ags/lib/ags_string_util.h \
 	ags/lib/ags_time.h \
@@ -8285,6 +8289,7 @@ libags_c_sources = \
 	ags/lib/ags_log.c \
 	ags/lib/ags_regex.c \
 	ags/lib/ags_solver_matrix.c \
+	ags/lib/ags_solver_term.c \
 	ags/lib/ags_solver_vector.c \
 	ags/lib/ags_string_util.c \
 	ags/lib/ags_time.c \
@@ -10164,6 +10169,8 @@ ags/lib/libags_la-ags_log.lo: ags/lib/$(am__dirstamp) \
 ags/lib/libags_la-ags_regex.lo: ags/lib/$(am__dirstamp) \
 	ags/lib/$(DEPDIR)/$(am__dirstamp)
 ags/lib/libags_la-ags_solver_matrix.lo: ags/lib/$(am__dirstamp) \
+	ags/lib/$(DEPDIR)/$(am__dirstamp)
+ags/lib/libags_la-ags_solver_term.lo: ags/lib/$(am__dirstamp) \
 	ags/lib/$(DEPDIR)/$(am__dirstamp)
 ags/lib/libags_la-ags_solver_vector.lo: ags/lib/$(am__dirstamp) \
 	ags/lib/$(DEPDIR)/$(am__dirstamp)
@@ -14387,6 +14394,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_log.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_regex.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_solver_matrix.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_solver_term.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_solver_vector.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_string_util.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_time.Plo@am__quote@ # am--include-marker
@@ -14805,6 +14813,13 @@ ags/lib/libags_la-ags_solver_matrix.lo: ags/lib/ags_solver_matrix.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/lib/ags_solver_matrix.c' object='ags/lib/libags_la-ags_solver_matrix.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/lib/libags_la-ags_solver_matrix.lo `test -f 'ags/lib/ags_solver_matrix.c' || echo '$(srcdir)/'`ags/lib/ags_solver_matrix.c
+
+ags/lib/libags_la-ags_solver_term.lo: ags/lib/ags_solver_term.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/lib/libags_la-ags_solver_term.lo -MD -MP -MF ags/lib/$(DEPDIR)/libags_la-ags_solver_term.Tpo -c -o ags/lib/libags_la-ags_solver_term.lo `test -f 'ags/lib/ags_solver_term.c' || echo '$(srcdir)/'`ags/lib/ags_solver_term.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/lib/$(DEPDIR)/libags_la-ags_solver_term.Tpo ags/lib/$(DEPDIR)/libags_la-ags_solver_term.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/lib/ags_solver_term.c' object='ags/lib/libags_la-ags_solver_term.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/lib/libags_la-ags_solver_term.lo `test -f 'ags/lib/ags_solver_term.c' || echo '$(srcdir)/'`ags/lib/ags_solver_term.c
 
 ags/lib/libags_la-ags_solver_vector.lo: ags/lib/ags_solver_vector.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/lib/libags_la-ags_solver_vector.lo -MD -MP -MF ags/lib/$(DEPDIR)/libags_la-ags_solver_vector.Tpo -c -o ags/lib/libags_la-ags_solver_vector.lo `test -f 'ags/lib/ags_solver_vector.c' || echo '$(srcdir)/'`ags/lib/ags_solver_vector.c
@@ -25173,6 +25188,7 @@ distclean: distclean-recursive
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_log.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_regex.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_matrix.Plo
+	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_term.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_vector.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_string_util.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_time.Plo
@@ -26112,6 +26128,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_log.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_regex.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_matrix.Plo
+	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_term.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_vector.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_string_util.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_time.Plo

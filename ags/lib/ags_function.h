@@ -77,16 +77,13 @@ struct _AgsFunction
   gboolean is_pushing;
 
   gchar **equation;
-  guint equation_count;
   
   gchar **transformed_equation;
-  guint transformed_equation_count;
 
   gchar *source_function;
   gchar *normalized_function;
   
   gchar **symbol;
-  guint symbol_count;
 
   GList *solver_matrix;
 

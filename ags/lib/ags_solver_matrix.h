@@ -64,6 +64,12 @@ struct _AgsSolverMatrixClass
 
 GType ags_solver_matrix_get_type(void);
 
+void ags_solver_matrix_insert_vector(AgsSolverMatrix *solver_matrix,
+				     AgsSolverVector *solver_vector,
+				     gint position);
+void ags_solver_matrix_remove_vector(AgsSolverMatrix *solver_matrix,
+				     AgsSolverVector *solver_vector);
+
 AgsSolverMatrix* ags_solver_matrix_new();
 
 G_END_DECLS
