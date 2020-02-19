@@ -389,13 +389,13 @@ ags_function_finalize(GObject *gobject)
       for(j = 0; j < function->row_count[i]; j++){
 	ags_complex_free(function->pivot_table[i][j]);
 
-	free(function->pivot_table[i][j]);
+	g_free(function->pivot_table[i][j]);
       }
 
-      free(function->pivot_table[i]);
+      g_free(function->pivot_table[i]);
     }
 
-    free(function->pivot_table);
+    g_free(function->pivot_table);
   }
 
   /* call parent */
@@ -992,6 +992,56 @@ ags_function_translate_value(AgsFunction *function,
   //TODO:JK: implement me
 
   return(retval);
+}
+
+/**
+ * ags_function_add_matrix:
+ * @function: the #AgsFunction
+ * @solver_matrix: the #AgsSolverMatrix
+ * 
+ * Add @solver_matrix to @function.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_function_add_matrix(AgsFunction *function,
+			AgsSolverMatrix *solver_matrix)
+{
+  if(!AGS_IS_FUNCTION(function) ||
+     !AGS_IS_SOLVER_MATRIX(solver_matrix)){
+    return;
+  }
+
+  if(g_list_find(function->solver_matrix, solver_matrix) == NULL){
+    g_object_ref(solver_matrix);
+
+    function->solver_matrix = g_list_prepend(function->solver_matrix, solver_matrix);
+  }
+}
+
+/**
+ * ags_function_remove_matrix:
+ * @function: the #AgsFunction
+ * @solver_matrix: the #AgsSolverMatrix
+ * 
+ * Remove @solver_matrix from @function.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_function_remove_matrix(AgsFunction *function,
+			   AgsSolverMatrix *solver_matrix)
+{
+  if(!AGS_IS_FUNCTION(function) ||
+     !AGS_IS_SOLVER_MATRIX(solver_matrix)){
+    return;
+  }
+
+  if(g_list_find(function->solver_matrix, solver_matrix) != NULL){
+    function->solver_matrix = g_list_remove(function->solver_matrix, solver_matrix);
+
+    g_object_unref(solver_matrix);
+  }
 }
 
 /**

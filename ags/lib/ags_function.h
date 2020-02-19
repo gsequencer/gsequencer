@@ -25,6 +25,7 @@
 
 #include <ags/lib/ags_complex.h>
 #include <ags/lib/ags_conversion.h>
+#include <ags/lib/ags_solver_matrix.h>
 
 #define AGS_TYPE_FUNCTION                (ags_function_get_type())
 #define AGS_FUNCTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FUNCTION, AgsFunction))
@@ -133,6 +134,11 @@ gboolean ags_function_substitute_values(AgsFunction *function,
 					gchar *symbol, ...);
 AgsComplex* ags_function_translate_value(AgsFunction *function,
 					 AgsComplex *value);
+
+void ags_function_add_matrix(AgsFunction *function,
+			     AgsSolverMatrix *solver_matrix);
+void ags_function_remove_matrix(AgsFunction *function,
+				AgsSolverMatrix *solver_matrix);
 
 AgsFunction* ags_function_new(gchar *source_function);
 

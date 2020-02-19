@@ -36,6 +36,8 @@ ags_function_compute_term
 ags_function_symbolic_translate_value
 ags_function_substitute_values
 ags_function_translate_value
+ags_function_add_matrix
+ags_function_remove_matrix
 ags_function_new
 ags_solver_term_get_type
 ags_solver_term_new
