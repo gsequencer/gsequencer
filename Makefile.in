@@ -153,11 +153,13 @@ bin_PROGRAMS = gsequencer$(EXEEXT) midi2xml$(EXEEXT)
 @WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_37 = -ldl
 check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_complex_test$(EXEEXT) ags_conversion_test$(EXEEXT) \
-	ags_log_test$(EXEEXT) ags_time_test$(EXEEXT) \
-	ags_turtle_manager_test$(EXEEXT) ags_turtle_test$(EXEEXT) \
-	ags_application_context_test$(EXEEXT) ags_config_test$(EXEEXT) \
-	ags_connectable_test$(EXEEXT) ags_soundcard_test$(EXEEXT) \
-	ags_destroy_worker_test$(EXEEXT) \
+	ags_function_test$(EXEEXT) ags_log_test$(EXEEXT) \
+	ags_solver_matrix_test$(EXEEXT) \
+	ags_solver_vector_test$(EXEEXT) ags_solver_term_test$(EXEEXT) \
+	ags_time_test$(EXEEXT) ags_turtle_manager_test$(EXEEXT) \
+	ags_turtle_test$(EXEEXT) ags_application_context_test$(EXEEXT) \
+	ags_config_test$(EXEEXT) ags_connectable_test$(EXEEXT) \
+	ags_soundcard_test$(EXEEXT) ags_destroy_worker_test$(EXEEXT) \
 	ags_returnable_thread_test$(EXEEXT) ags_task_test$(EXEEXT) \
 	ags_thread_test$(EXEEXT) ags_thread_pool_test$(EXEEXT) \
 	ags_worker_thread_test$(EXEEXT) ags_file_test$(EXEEXT) \
@@ -363,16 +365,16 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ags-docs-api.m4 \
 	$(top_srcdir)/m4/ags-listings.m4 \
 	$(top_srcdir)/m4/ags-marshallers.m4 \
-	$(top_srcdir)/m4/ags-symbols.m4 $(top_srcdir)/m4/gettext.m4 \
-	$(top_srcdir)/m4/gtk-doc.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/intlmacosx.m4 \
+	$(top_srcdir)/m4/ags-symbols.m4 $(top_srcdir)/m4/extensions.m4 \
+	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/gtk-doc.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/intlmacosx.m4 \
 	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/lib-ld.m4 \
 	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
 	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
 	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/nls.m4 \
 	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/stdbool.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -2847,6 +2849,16 @@ ags_front_controller_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_front_controller_test_CFLAGS) $(CFLAGS) \
 	$(ags_front_controller_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_function_test_OBJECTS =  \
+	ags/test/lib/function_test-ags_function_test.$(OBJEXT)
+ags_function_test_OBJECTS = $(am_ags_function_test_OBJECTS)
+ags_function_test_DEPENDENCIES = libags_server.la libags_thread.la \
+	libags.la libags_thread.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_function_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_function_test_CFLAGS) $(CFLAGS) \
+	$(ags_function_test_LDFLAGS) $(LDFLAGS) -o $@
 am__ags_functional_audio_config_test_SOURCES_DIST =  \
 	ags/test/X/ags_functional_audio_config_test.c
 @RUN_FUNCTIONAL_TESTS_TRUE@am_ags_functional_audio_config_test_OBJECTS = ags/test/X/functional_audio_config_test-ags_functional_audio_config_test.$(OBJEXT)
@@ -4189,6 +4201,36 @@ ags_set_samplerate_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_set_samplerate_test_CFLAGS) $(CFLAGS) \
 	$(ags_set_samplerate_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_solver_matrix_test_OBJECTS = ags/test/lib/solver_matrix_test-ags_solver_matrix_test.$(OBJEXT)
+ags_solver_matrix_test_OBJECTS = $(am_ags_solver_matrix_test_OBJECTS)
+ags_solver_matrix_test_DEPENDENCIES = libags_server.la \
+	libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+ags_solver_matrix_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_solver_matrix_test_CFLAGS) $(CFLAGS) \
+	$(ags_solver_matrix_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_solver_term_test_OBJECTS =  \
+	ags/test/lib/solver_term_test-ags_solver_term_test.$(OBJEXT)
+ags_solver_term_test_OBJECTS = $(am_ags_solver_term_test_OBJECTS)
+ags_solver_term_test_DEPENDENCIES = libags_server.la libags_thread.la \
+	libags.la libags_thread.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_solver_term_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_solver_term_test_CFLAGS) $(CFLAGS) \
+	$(ags_solver_term_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_solver_vector_test_OBJECTS = ags/test/lib/solver_vector_test-ags_solver_vector_test.$(OBJEXT)
+ags_solver_vector_test_OBJECTS = $(am_ags_solver_vector_test_OBJECTS)
+ags_solver_vector_test_DEPENDENCIES = libags_server.la \
+	libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+ags_solver_vector_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_solver_vector_test_CFLAGS) $(CFLAGS) \
+	$(ags_solver_vector_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_soundcard_test_OBJECTS =  \
 	ags/test/object/soundcard_test-ags_soundcard_test.$(OBJEXT)
 ags_soundcard_test_OBJECTS = $(am_ags_soundcard_test_OBJECTS)
@@ -5251,7 +5293,11 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/lib/$(DEPDIR)/buffer_util_test-ags_buffer_util_test.Po \
 	ags/test/lib/$(DEPDIR)/complex_test-ags_complex_test.Po \
 	ags/test/lib/$(DEPDIR)/conversion_test-ags_conversion_test.Po \
+	ags/test/lib/$(DEPDIR)/function_test-ags_function_test.Po \
 	ags/test/lib/$(DEPDIR)/log_test-ags_log_test.Po \
+	ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Po \
+	ags/test/lib/$(DEPDIR)/solver_term_test-ags_solver_term_test.Po \
+	ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Po \
 	ags/test/lib/$(DEPDIR)/time_test-ags_time_test.Po \
 	ags/test/lib/$(DEPDIR)/turtle_manager_test-ags_turtle_manager_test.Po \
 	ags/test/lib/$(DEPDIR)/turtle_test-ags_turtle_test.Po \
@@ -5456,6 +5502,7 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_fourier_transform_util_test_SOURCES) \
 	$(ags_free_selection_test_SOURCES) \
 	$(ags_front_controller_test_SOURCES) \
+	$(ags_function_test_SOURCES) \
 	$(ags_functional_audio_config_test_SOURCES) \
 	$(ags_functional_audio_test_SOURCES) \
 	$(ags_functional_automation_editor_workflow_test_SOURCES) \
@@ -5555,6 +5602,9 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_set_device_test_SOURCES) $(ags_set_format_test_SOURCES) \
 	$(ags_set_muted_test_SOURCES) \
 	$(ags_set_samplerate_test_SOURCES) \
+	$(ags_solver_matrix_test_SOURCES) \
+	$(ags_solver_term_test_SOURCES) \
+	$(ags_solver_vector_test_SOURCES) \
 	$(ags_soundcard_test_SOURCES) $(ags_start_audio_test_SOURCES) \
 	$(ags_start_channel_test_SOURCES) \
 	$(ags_stream_audio_signal_test_SOURCES) \
@@ -5631,6 +5681,7 @@ DIST_SOURCES = $(libags_la_SOURCES) \
 	$(ags_fourier_transform_util_test_SOURCES) \
 	$(ags_free_selection_test_SOURCES) \
 	$(ags_front_controller_test_SOURCES) \
+	$(ags_function_test_SOURCES) \
 	$(am__ags_functional_audio_config_test_SOURCES_DIST) \
 	$(am__ags_functional_audio_test_SOURCES_DIST) \
 	$(am__ags_functional_automation_editor_workflow_test_SOURCES_DIST) \
@@ -5731,6 +5782,9 @@ DIST_SOURCES = $(libags_la_SOURCES) \
 	$(ags_set_device_test_SOURCES) $(ags_set_format_test_SOURCES) \
 	$(ags_set_muted_test_SOURCES) \
 	$(ags_set_samplerate_test_SOURCES) \
+	$(ags_solver_matrix_test_SOURCES) \
+	$(ags_solver_term_test_SOURCES) \
+	$(ags_solver_vector_test_SOURCES) \
 	$(ags_soundcard_test_SOURCES) $(ags_start_audio_test_SOURCES) \
 	$(ags_start_channel_test_SOURCES) \
 	$(ags_stream_audio_signal_test_SOURCES) \
@@ -7042,11 +7096,35 @@ ags_conversion_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIB
 ags_conversion_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_conversion_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
+# function unit test
+ags_function_test_SOURCES = ags/test/lib/ags_function_test.c
+ags_function_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_function_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_function_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
 # log unit test
 ags_log_test_SOURCES = ags/test/lib/ags_log_test.c
 ags_log_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_log_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_log_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# solver matrix unit test
+ags_solver_matrix_test_SOURCES = ags/test/lib/ags_solver_matrix_test.c
+ags_solver_matrix_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_solver_matrix_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_solver_matrix_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# solver vector unit test
+ags_solver_vector_test_SOURCES = ags/test/lib/ags_solver_vector_test.c
+ags_solver_vector_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_solver_vector_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_solver_vector_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# solver term unit test
+ags_solver_term_test_SOURCES = ags/test/lib/ags_solver_term_test.c
+ags_solver_term_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_solver_term_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_solver_term_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # time unit test
 ags_time_test_SOURCES = ags/test/lib/ags_time_test.c
@@ -12786,6 +12864,13 @@ ags/test/server/controller/front_controller_test-ags_front_controller_test.$(OBJ
 ags_front_controller_test$(EXEEXT): $(ags_front_controller_test_OBJECTS) $(ags_front_controller_test_DEPENDENCIES) $(EXTRA_ags_front_controller_test_DEPENDENCIES) 
 	@rm -f ags_front_controller_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_front_controller_test_LINK) $(ags_front_controller_test_OBJECTS) $(ags_front_controller_test_LDADD) $(LIBS)
+ags/test/lib/function_test-ags_function_test.$(OBJEXT):  \
+	ags/test/lib/$(am__dirstamp) \
+	ags/test/lib/$(DEPDIR)/$(am__dirstamp)
+
+ags_function_test$(EXEEXT): $(ags_function_test_OBJECTS) $(ags_function_test_DEPENDENCIES) $(EXTRA_ags_function_test_DEPENDENCIES) 
+	@rm -f ags_function_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_function_test_LINK) $(ags_function_test_OBJECTS) $(ags_function_test_LDADD) $(LIBS)
 ags/test/X/functional_audio_config_test-ags_functional_audio_config_test.$(OBJEXT):  \
 	ags/test/X/$(am__dirstamp) \
 	ags/test/X/$(DEPDIR)/$(am__dirstamp)
@@ -13571,6 +13656,27 @@ ags/test/audio/task/set_samplerate_test-ags_set_samplerate_test.$(OBJEXT):  \
 ags_set_samplerate_test$(EXEEXT): $(ags_set_samplerate_test_OBJECTS) $(ags_set_samplerate_test_DEPENDENCIES) $(EXTRA_ags_set_samplerate_test_DEPENDENCIES) 
 	@rm -f ags_set_samplerate_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_set_samplerate_test_LINK) $(ags_set_samplerate_test_OBJECTS) $(ags_set_samplerate_test_LDADD) $(LIBS)
+ags/test/lib/solver_matrix_test-ags_solver_matrix_test.$(OBJEXT):  \
+	ags/test/lib/$(am__dirstamp) \
+	ags/test/lib/$(DEPDIR)/$(am__dirstamp)
+
+ags_solver_matrix_test$(EXEEXT): $(ags_solver_matrix_test_OBJECTS) $(ags_solver_matrix_test_DEPENDENCIES) $(EXTRA_ags_solver_matrix_test_DEPENDENCIES) 
+	@rm -f ags_solver_matrix_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_solver_matrix_test_LINK) $(ags_solver_matrix_test_OBJECTS) $(ags_solver_matrix_test_LDADD) $(LIBS)
+ags/test/lib/solver_term_test-ags_solver_term_test.$(OBJEXT):  \
+	ags/test/lib/$(am__dirstamp) \
+	ags/test/lib/$(DEPDIR)/$(am__dirstamp)
+
+ags_solver_term_test$(EXEEXT): $(ags_solver_term_test_OBJECTS) $(ags_solver_term_test_DEPENDENCIES) $(EXTRA_ags_solver_term_test_DEPENDENCIES) 
+	@rm -f ags_solver_term_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_solver_term_test_LINK) $(ags_solver_term_test_OBJECTS) $(ags_solver_term_test_LDADD) $(LIBS)
+ags/test/lib/solver_vector_test-ags_solver_vector_test.$(OBJEXT):  \
+	ags/test/lib/$(am__dirstamp) \
+	ags/test/lib/$(DEPDIR)/$(am__dirstamp)
+
+ags_solver_vector_test$(EXEEXT): $(ags_solver_vector_test_OBJECTS) $(ags_solver_vector_test_DEPENDENCIES) $(EXTRA_ags_solver_vector_test_DEPENDENCIES) 
+	@rm -f ags_solver_vector_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_solver_vector_test_LINK) $(ags_solver_vector_test_OBJECTS) $(ags_solver_vector_test_LDADD) $(LIBS)
 ags/test/object/soundcard_test-ags_soundcard_test.$(OBJEXT):  \
 	ags/test/object/$(am__dirstamp) \
 	ags/test/object/$(DEPDIR)/$(am__dirstamp)
@@ -14617,7 +14723,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/buffer_util_test-ags_buffer_util_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/complex_test-ags_complex_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/conversion_test-ags_conversion_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/function_test-ags_function_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/log_test-ags_log_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/solver_term_test-ags_solver_term_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/time_test-ags_time_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/turtle_manager_test-ags_turtle_manager_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/turtle_test-ags_turtle_test.Po@am__quote@ # am--include-marker
@@ -20435,6 +20545,20 @@ ags/test/server/controller/front_controller_test-ags_front_controller_test.obj: 
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_front_controller_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/controller/front_controller_test-ags_front_controller_test.obj `if test -f 'ags/test/server/controller/ags_front_controller_test.c'; then $(CYGPATH_W) 'ags/test/server/controller/ags_front_controller_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/controller/ags_front_controller_test.c'; fi`
 
+ags/test/lib/function_test-ags_function_test.o: ags/test/lib/ags_function_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_function_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/function_test-ags_function_test.o -MD -MP -MF ags/test/lib/$(DEPDIR)/function_test-ags_function_test.Tpo -c -o ags/test/lib/function_test-ags_function_test.o `test -f 'ags/test/lib/ags_function_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_function_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/function_test-ags_function_test.Tpo ags/test/lib/$(DEPDIR)/function_test-ags_function_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/lib/ags_function_test.c' object='ags/test/lib/function_test-ags_function_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_function_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/function_test-ags_function_test.o `test -f 'ags/test/lib/ags_function_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_function_test.c
+
+ags/test/lib/function_test-ags_function_test.obj: ags/test/lib/ags_function_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_function_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/function_test-ags_function_test.obj -MD -MP -MF ags/test/lib/$(DEPDIR)/function_test-ags_function_test.Tpo -c -o ags/test/lib/function_test-ags_function_test.obj `if test -f 'ags/test/lib/ags_function_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_function_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_function_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/function_test-ags_function_test.Tpo ags/test/lib/$(DEPDIR)/function_test-ags_function_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/lib/ags_function_test.c' object='ags/test/lib/function_test-ags_function_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_function_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/function_test-ags_function_test.obj `if test -f 'ags/test/lib/ags_function_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_function_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_function_test.c'; fi`
+
 ags/test/X/functional_audio_config_test-ags_functional_audio_config_test.o: ags/test/X/ags_functional_audio_config_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_audio_config_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_audio_config_test_CFLAGS) $(CFLAGS) -MT ags/test/X/functional_audio_config_test-ags_functional_audio_config_test.o -MD -MP -MF ags/test/X/$(DEPDIR)/functional_audio_config_test-ags_functional_audio_config_test.Tpo -c -o ags/test/X/functional_audio_config_test-ags_functional_audio_config_test.o `test -f 'ags/test/X/ags_functional_audio_config_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_audio_config_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/functional_audio_config_test-ags_functional_audio_config_test.Tpo ags/test/X/$(DEPDIR)/functional_audio_config_test-ags_functional_audio_config_test.Po
@@ -21933,6 +22057,48 @@ ags/test/audio/task/set_samplerate_test-ags_set_samplerate_test.obj: ags/test/au
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_set_samplerate_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/set_samplerate_test-ags_set_samplerate_test.obj `if test -f 'ags/test/audio/task/ags_set_samplerate_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_set_samplerate_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_set_samplerate_test.c'; fi`
 
+ags/test/lib/solver_matrix_test-ags_solver_matrix_test.o: ags/test/lib/ags_solver_matrix_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_matrix_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/solver_matrix_test-ags_solver_matrix_test.o -MD -MP -MF ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Tpo -c -o ags/test/lib/solver_matrix_test-ags_solver_matrix_test.o `test -f 'ags/test/lib/ags_solver_matrix_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_solver_matrix_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Tpo ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/lib/ags_solver_matrix_test.c' object='ags/test/lib/solver_matrix_test-ags_solver_matrix_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_matrix_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/solver_matrix_test-ags_solver_matrix_test.o `test -f 'ags/test/lib/ags_solver_matrix_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_solver_matrix_test.c
+
+ags/test/lib/solver_matrix_test-ags_solver_matrix_test.obj: ags/test/lib/ags_solver_matrix_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_matrix_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/solver_matrix_test-ags_solver_matrix_test.obj -MD -MP -MF ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Tpo -c -o ags/test/lib/solver_matrix_test-ags_solver_matrix_test.obj `if test -f 'ags/test/lib/ags_solver_matrix_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_solver_matrix_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_solver_matrix_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Tpo ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/lib/ags_solver_matrix_test.c' object='ags/test/lib/solver_matrix_test-ags_solver_matrix_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_matrix_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/solver_matrix_test-ags_solver_matrix_test.obj `if test -f 'ags/test/lib/ags_solver_matrix_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_solver_matrix_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_solver_matrix_test.c'; fi`
+
+ags/test/lib/solver_term_test-ags_solver_term_test.o: ags/test/lib/ags_solver_term_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_term_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/solver_term_test-ags_solver_term_test.o -MD -MP -MF ags/test/lib/$(DEPDIR)/solver_term_test-ags_solver_term_test.Tpo -c -o ags/test/lib/solver_term_test-ags_solver_term_test.o `test -f 'ags/test/lib/ags_solver_term_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_solver_term_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/solver_term_test-ags_solver_term_test.Tpo ags/test/lib/$(DEPDIR)/solver_term_test-ags_solver_term_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/lib/ags_solver_term_test.c' object='ags/test/lib/solver_term_test-ags_solver_term_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_term_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/solver_term_test-ags_solver_term_test.o `test -f 'ags/test/lib/ags_solver_term_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_solver_term_test.c
+
+ags/test/lib/solver_term_test-ags_solver_term_test.obj: ags/test/lib/ags_solver_term_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_term_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/solver_term_test-ags_solver_term_test.obj -MD -MP -MF ags/test/lib/$(DEPDIR)/solver_term_test-ags_solver_term_test.Tpo -c -o ags/test/lib/solver_term_test-ags_solver_term_test.obj `if test -f 'ags/test/lib/ags_solver_term_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_solver_term_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_solver_term_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/solver_term_test-ags_solver_term_test.Tpo ags/test/lib/$(DEPDIR)/solver_term_test-ags_solver_term_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/lib/ags_solver_term_test.c' object='ags/test/lib/solver_term_test-ags_solver_term_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_term_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/solver_term_test-ags_solver_term_test.obj `if test -f 'ags/test/lib/ags_solver_term_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_solver_term_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_solver_term_test.c'; fi`
+
+ags/test/lib/solver_vector_test-ags_solver_vector_test.o: ags/test/lib/ags_solver_vector_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_vector_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/solver_vector_test-ags_solver_vector_test.o -MD -MP -MF ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Tpo -c -o ags/test/lib/solver_vector_test-ags_solver_vector_test.o `test -f 'ags/test/lib/ags_solver_vector_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_solver_vector_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Tpo ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/lib/ags_solver_vector_test.c' object='ags/test/lib/solver_vector_test-ags_solver_vector_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_vector_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/solver_vector_test-ags_solver_vector_test.o `test -f 'ags/test/lib/ags_solver_vector_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_solver_vector_test.c
+
+ags/test/lib/solver_vector_test-ags_solver_vector_test.obj: ags/test/lib/ags_solver_vector_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_vector_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/solver_vector_test-ags_solver_vector_test.obj -MD -MP -MF ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Tpo -c -o ags/test/lib/solver_vector_test-ags_solver_vector_test.obj `if test -f 'ags/test/lib/ags_solver_vector_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_solver_vector_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_solver_vector_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Tpo ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/lib/ags_solver_vector_test.c' object='ags/test/lib/solver_vector_test-ags_solver_vector_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_vector_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/solver_vector_test-ags_solver_vector_test.obj `if test -f 'ags/test/lib/ags_solver_vector_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_solver_vector_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_solver_vector_test.c'; fi`
+
 ags/test/object/soundcard_test-ags_soundcard_test.o: ags/test/object/ags_soundcard_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_soundcard_test_CFLAGS) $(CFLAGS) -MT ags/test/object/soundcard_test-ags_soundcard_test.o -MD -MP -MF ags/test/object/$(DEPDIR)/soundcard_test-ags_soundcard_test.Tpo -c -o ags/test/object/soundcard_test-ags_soundcard_test.o `test -f 'ags/test/object/ags_soundcard_test.c' || echo '$(srcdir)/'`ags/test/object/ags_soundcard_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/object/$(DEPDIR)/soundcard_test-ags_soundcard_test.Tpo ags/test/object/$(DEPDIR)/soundcard_test-ags_soundcard_test.Po
@@ -22904,9 +23070,37 @@ ags_conversion_test.log: ags_conversion_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_function_test.log: ags_function_test$(EXEEXT)
+	@p='ags_function_test$(EXEEXT)'; \
+	b='ags_function_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_log_test.log: ags_log_test$(EXEEXT)
 	@p='ags_log_test$(EXEEXT)'; \
 	b='ags_log_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_solver_matrix_test.log: ags_solver_matrix_test$(EXEEXT)
+	@p='ags_solver_matrix_test$(EXEEXT)'; \
+	b='ags_solver_matrix_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_solver_vector_test.log: ags_solver_vector_test$(EXEEXT)
+	@p='ags_solver_vector_test$(EXEEXT)'; \
+	b='ags_solver_vector_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_solver_term_test.log: ags_solver_term_test$(EXEEXT)
+	@p='ags_solver_term_test$(EXEEXT)'; \
+	b='ags_solver_term_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -25411,7 +25605,11 @@ distclean: distclean-recursive
 	-rm -f ags/test/lib/$(DEPDIR)/buffer_util_test-ags_buffer_util_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/complex_test-ags_complex_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/conversion_test-ags_conversion_test.Po
+	-rm -f ags/test/lib/$(DEPDIR)/function_test-ags_function_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/log_test-ags_log_test.Po
+	-rm -f ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Po
+	-rm -f ags/test/lib/$(DEPDIR)/solver_term_test-ags_solver_term_test.Po
+	-rm -f ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/time_test-ags_time_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/turtle_manager_test-ags_turtle_manager_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/turtle_test-ags_turtle_test.Po
@@ -26351,7 +26549,11 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/lib/$(DEPDIR)/buffer_util_test-ags_buffer_util_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/complex_test-ags_complex_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/conversion_test-ags_conversion_test.Po
+	-rm -f ags/test/lib/$(DEPDIR)/function_test-ags_function_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/log_test-ags_log_test.Po
+	-rm -f ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Po
+	-rm -f ags/test/lib/$(DEPDIR)/solver_term_test-ags_solver_term_test.Po
+	-rm -f ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/time_test-ags_time_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/turtle_manager_test-ags_turtle_manager_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/turtle_test-ags_turtle_test.Po
