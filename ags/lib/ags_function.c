@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,8 @@
  */
 
 #include <ags/lib/ags_function.h>
+
+#include <ags/lib/ags_regex.h>
 
 #include <stdlib.h>
 
@@ -335,17 +337,25 @@ ags_function_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_SOURCE_FUNCTION:
+  {
     g_value_set_string(value, function->source_function);
-    break;
+  }
+  break;
   case PROP_NORMALIZED_FUNCTION:
+  {
     g_value_set_string(value, function->normalized_function);
-    break;
+  }
+  break;
   case PROP_PIVOT_TABLE:
+  {
     g_value_set_pointer(value, function->pivot_table);
-    break;
+  }
+  break;
   default:
+  {
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
+  }
+  break;
   }
 }
 
@@ -440,78 +450,159 @@ ags_function_collapse_parantheses(AgsFunction *function,
 gchar**
 ags_function_find_literals(AgsFunction *function,
 			   guint *symbol_count)
-{ 
-  regmatch_t match_arr[1];
-
+{
+  GMatchInfo *function_match_info;
+  GMatchInfo *literal_match_info;
+  
   gchar **literals;
-  gchar *str;
+  gchar *str, *end_str;
+  gint prev, next;
   
   guint n_literals;
-  
-  static gboolean regex_compiled = FALSE;
 
-  static regex_t literal_regex;
+  GError *error;
 
-  static const char *literal_pattern = "^((?!log|exp|sin|cos|tan|asin|acos|atan)([a-zA-Z][0-9]*))";
+  static const GRegex *function_regex = NULL;
+  static const GRegex *literal_regex = NULL;
+
+  static const gchar *function_pattern = "(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)|([\\s\\+\\-\\*\\/\\(\\)])";
+  static const gchar *literal_pattern = "([a-zA-Z][0-9]*)";
 
   static const size_t max_matches = 1;
-
-  literals = NULL;
-  n_literals = 0;
   
   /* compile regex */
   g_mutex_lock(&regex_mutex);
 
-  if(!regex_compiled){
-    regex_compiled = TRUE;
+  if(function_regex == NULL){
+    error = NULL;
+    function_regex = g_regex_new(function_pattern,
+				 (G_REGEX_EXTENDED),
+				 0,
+				 &error);
 
-    regcomp(&literal_regex, literal_pattern, REG_EXTENDED);
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  if(literal_regex == NULL){
+    error = NULL;
+    literal_regex = g_regex_new(literal_pattern,
+				(G_REGEX_EXTENDED),
+				0,
+				&error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
   }
 
   g_mutex_unlock(&regex_mutex);
 
   /* find literals */
+  literals = NULL;
+  n_literals = 0;
+
   str = function->source_function;
+  end_str = str + strlen(str);
+
+  prev = NULL;
+  next = NULL;
   
-  while(str != NULL && *str != '\0'){
-    if(regexec(&literal_regex, str, max_matches, match_arr, 0) == 0){
-      if(literals == NULL){
-	literals = (gchar **) malloc((n_literals + 1) * sizeof(gchar *));
+  g_regex_match(function_regex, str, 0, &function_match_info);
 
-	literals[n_literals] = g_strndup(str,
-					 match_arr[0].rm_eo - match_arr[0].rm_so);
-	n_literals++;
-      }else{
-	gchar *current_literal;
+#ifdef AGS_DEBUG	    
+  g_message("check %s", function->source_function);
+#endif
+  
+  while(g_match_info_matches(function_match_info)){
+    gchar *current_literal;
+    gint start_pos, end_pos;
+    
+    current_literal = NULL;
+    g_match_info_fetch_pos(function_match_info,
+			   0,
+			   &start_pos, &end_pos);
 
-	current_literal = g_strndup(str,
-				    match_arr[0].rm_eo - match_arr[0].rm_so);
-	
-	if(!g_strv_contains(literals,
-			    current_literal)){
-	  literals = (gchar **) realloc(literals,
-					(n_literals + 1) * sizeof(gchar *));
-
-	  literals[n_literals] = current_literal;
-	  n_literals++;
+    if(prev == NULL){
+      if(start_pos != 0){
+	if(next == 0){
+	  current_literal = g_strndup(str,
+				      start_pos);
 	}else{
-	  g_free(current_literal);
+	  current_literal = g_strndup(str + next,
+				      start_pos - next);
 	}
+	
+	prev = start_pos;
       }
       
-      if(str[match_arr[0].rm_eo - match_arr[0].rm_so] != '\0'){
-	str += (match_arr[0].rm_eo - match_arr[0].rm_so);
-      }else{
-	break;
-      }
+      next = end_pos;
     }else{
-      break;
-    }
-  }
+      current_literal = g_strndup(str + next,
+				  start_pos - next);
 
+      next = end_pos;
+      prev = start_pos;
+    }
+
+    if(current_literal != NULL){
+      g_regex_match(literal_regex, current_literal, 0, &literal_match_info);
+    
+      while(g_match_info_matches(literal_match_info)){
+    
+	if(literals == NULL){
+	  literals = (gchar **) g_malloc(2 * sizeof(gchar *));
+
+	  literals[0] = g_match_info_fetch(literal_match_info,
+					   1);
+	  literals[1] = NULL;
+
+#ifdef AGS_DEBUG	    
+	  g_message("found %s", literals[0]);
+#endif
+	  
+	  n_literals++;
+	}else{
+	  if(!g_strv_contains(literals,
+			      current_literal)){
+	    literals = (gchar **) g_realloc(literals,
+					    (n_literals + 2) * sizeof(gchar *));
+
+	    literals[n_literals] = g_match_info_fetch(literal_match_info,
+						      1);
+	    literals[n_literals + 1] = NULL;
+
+#ifdef AGS_DEBUG	    
+	    g_message("found %s", literals[n_literals]);
+#endif
+	    
+	    n_literals++;
+	  }else{
+	    g_free(current_literal);
+	  }
+	}
+
+	g_match_info_next(literal_match_info,
+			  NULL);
+      }
+    
+      g_match_info_free(literal_match_info);
+    }
+    
+    g_match_info_next(function_match_info,
+		      NULL);
+  }
+  
+  g_match_info_free(function_match_info);
+    
   /* return symbols and its count*/
   if(symbol_count != NULL){
-    *symbol_count = n_literals;
+    symbol_count[0] = n_literals;
   }
 
   return(literals);
