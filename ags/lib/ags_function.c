@@ -456,6 +456,7 @@ ags_function_find_literals(AgsFunction *function,
   
   gchar **literals;
   gchar *str, *end_str;
+  gchar *current_literal;
   gint prev, next;
   
   guint n_literals;
@@ -510,8 +511,8 @@ ags_function_find_literals(AgsFunction *function,
   str = function->source_function;
   end_str = str + strlen(str);
 
-  prev = NULL;
-  next = NULL;
+  prev = -1;
+  next = -1;
   
   g_regex_match(function_regex, str, 0, &function_match_info);
 
@@ -520,7 +521,6 @@ ags_function_find_literals(AgsFunction *function,
 #endif
   
   while(g_match_info_matches(function_match_info)){
-    gchar *current_literal;
     gint start_pos, end_pos;
     
     current_literal = NULL;
@@ -528,9 +528,9 @@ ags_function_find_literals(AgsFunction *function,
 			   0,
 			   &start_pos, &end_pos);
 
-    if(prev == NULL){
+    if(prev == -1){
       if(start_pos != 0){
-	if(next == 0){
+	if(next == -1){
 	  current_literal = g_strndup(str,
 				      start_pos);
 	}else{
@@ -599,7 +599,67 @@ ags_function_find_literals(AgsFunction *function,
   }
   
   g_match_info_free(function_match_info);
+
+  /*  */
+  current_literal = NULL;
+  
+  if(prev == -1){
+    if(next == -1){
+      current_literal = g_strdup(str);
+    }else{
+      current_literal = g_strndup(str + next,
+				  strlen(str) - next);
+    }
+  }else{
+    current_literal = g_strndup(str + next,
+				strlen(str) - next);
+  }
+
+  if(current_literal != NULL){
+    g_regex_match(literal_regex, current_literal, 0, &literal_match_info);
     
+    while(g_match_info_matches(literal_match_info)){
+    
+      if(literals == NULL){
+	literals = (gchar **) g_malloc(2 * sizeof(gchar *));
+
+	literals[0] = g_match_info_fetch(literal_match_info,
+					 1);
+	literals[1] = NULL;
+
+#ifdef AGS_DEBUG	    
+	g_message("found %s", literals[0]);
+#endif
+	  
+	n_literals++;
+      }else{
+	if(!g_strv_contains(literals,
+			    current_literal)){
+	  literals = (gchar **) g_realloc(literals,
+					  (n_literals + 2) * sizeof(gchar *));
+
+	  literals[n_literals] = g_match_info_fetch(literal_match_info,
+						    1);
+	  literals[n_literals + 1] = NULL;
+
+#ifdef AGS_DEBUG	    
+	  g_message("found %s", literals[n_literals]);
+#endif
+	    
+	  n_literals++;
+	}else{
+	  g_free(current_literal);
+	}
+      }
+
+      g_match_info_next(literal_match_info,
+			NULL);
+    }
+    
+    g_match_info_free(literal_match_info);
+  }
+
+  
   /* return symbols and its count*/
   if(symbol_count != NULL){
     symbol_count[0] = n_literals;

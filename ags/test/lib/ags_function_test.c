@@ -56,8 +56,11 @@ ags_function_test_find_literals()
 {
   AgsFunction *function;
   
+  gchar *x = "x";
+  gchar *x0_plus_x1 = "x0 + x1";
   gchar *log_x = "log(x)";
   gchar *exp_x = "exp(x)";
+  gchar *floor_x_half_plus_y = "floor(x / 2) + y";
   gchar *floor_y_per_x = "floor(y / x)";
   gchar *ceil_y_per_x = "ceil(y / x)";
   gchar *round_number = "round(0.75)";
@@ -70,7 +73,30 @@ ags_function_test_find_literals()
   gchar **symbols;
 
   guint n_symbols;
+
+  /* assert x */
+  function = ags_function_new(x);
+  symbols = ags_function_find_literals(function,
+				       &n_symbols);
+
+  CU_ASSERT(n_symbols == 1 &&
+	    !g_ascii_strncasecmp(symbols[0],
+				 "x",
+				 2));
   
+  /* assert x0 plus x1 */
+  function = ags_function_new(x0_plus_x1);
+  symbols = ags_function_find_literals(function,
+				       &n_symbols);
+
+  CU_ASSERT(n_symbols == 2 &&
+	    !g_ascii_strncasecmp(symbols[0],
+				 "x0",
+				 2) &&
+	    !g_ascii_strncasecmp(symbols[1],
+				 "x1",
+				 2));
+
   /* assert log x */
   function = ags_function_new(log_x);
   symbols = ags_function_find_literals(function,
@@ -89,6 +115,19 @@ ags_function_test_find_literals()
   CU_ASSERT(n_symbols == 1 &&
 	    !g_ascii_strncasecmp(symbols[0],
 				 "x",
+				 2));
+
+  /* assert floor x half plus y */
+  function = ags_function_new(floor_x_half_plus_y);
+  symbols = ags_function_find_literals(function,
+				       &n_symbols);
+
+  CU_ASSERT(n_symbols == 2 &&
+	    !g_ascii_strncasecmp(symbols[0],
+				 "x",
+				 2) &&
+	    !g_ascii_strncasecmp(symbols[1],
+				 "y",
 				 2));
 
   /* assert floor y per x */
