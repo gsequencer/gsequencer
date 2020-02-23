@@ -146,6 +146,26 @@ ags_math_util_find_exponent_parantheses(gchar *str,
 
   guint exponent_open_pos_count, exponent_close_pos_count;
 
+  if(str == NULL){
+    if(exponent_open_position == NULL){
+      exponent_open_position[0] = NULL;
+    }
+
+    if(exponent_close_position == NULL){
+      exponent_close_position[0] = NULL;
+    }
+
+    if(exponent_open_position_count == NULL){
+      exponent_open_position_count[0] = NULL;
+    }
+
+    if(exponent_close_position_count == NULL){
+      exponent_close_position_count[0] = NULL;
+    }
+
+    return;
+  }
+
   exponent_open_pos = NULL;
   exponent_open_pos_count = 0;
   
@@ -256,7 +276,94 @@ ags_math_util_find_term_parantheses(gchar *str,
 				    gint **term_open_position, gint **term_close_position,
 				    guint *term_open_position_count, guint *term_close_position_count)
 {
-  //TODO:JK: implement me
+  gint *open_pos, *close_pos;
+  gint *exponent_open_pos, *exponent_close_pos;
+  gint *term_open_pos, *term_close_pos;
+
+  guint open_pos_count, close_pos_count;
+  guint exponent_open_pos_count, exponent_close_pos_count;
+  guint term_open_pos_count, term_close_pos_count;
+  guint i, j, k;
+  
+  if(str == NULL){
+    if(term_open_position == NULL){
+      term_open_position[0] = NULL;
+    }
+
+    if(term_close_position == NULL){
+      term_close_position[0] = NULL;
+    }
+
+    if(term_open_position_count == NULL){
+      term_open_position_count[0] = NULL;
+    }
+
+    if(term_close_position_count == NULL){
+      term_close_position_count[0] = NULL;
+    }
+
+    return;
+  }
+  
+  ags_math_util_find_parantheses_all(str,
+				     &open_pos, &close_pos,
+				     &open_pos_count, &close_pos_count);
+  
+  ags_math_util_find_exponent_parantheses(str,
+					  &exponent_open_pos, &exponent_close_pos,
+					  &exponent_open_pos_count, &exponent_close_pos_count);
+  
+  term_open_pos = NULL;
+  term_close_pos = NULL;
+  
+  term_open_pos_count = open_pos_count - exponent_open_pos_count;
+  term_close_pos_count = close_pos_count - exponent_close_pos_count;
+
+  if(term_open_pos_count > 0){
+    term_open_pos = g_malloc(term_open_pos_count * sizeof(gint));
+
+    for(i = 0, j = 0, k = 0; i < term_open_pos_count;){
+      for(; j < open_pos_count && k < exponent_close_pos_count && open_pos[j] == exponent_open_pos[k]; j++, k++);
+      
+      term_open_pos[i] = open_pos[j];	
+      i++;
+      j++;
+    }
+  }
+  
+  if(term_close_pos_count > 0){
+    term_close_pos = g_malloc(term_close_pos_count * sizeof(gint));
+
+    for(i = 0, j = 0, k = 0; i < term_close_pos_count;){
+      for(; j < close_pos_count && k < exponent_close_pos_count && close_pos[j] == exponent_close_pos[k]; j++, k++);
+      
+      term_close_pos[i] = close_pos[j];	
+      i++;
+      j++;
+    }
+  }
+
+  g_free(open_pos);
+  g_free(close_pos);
+
+  g_free(exponent_open_pos);
+  g_free(exponent_close_pos);
+  
+  if(term_open_position == NULL){
+    term_open_position[0] = term_open_pos;
+  }
+
+  if(term_close_position == NULL){
+    term_close_position[0] = term_close_pos;
+  }
+
+  if(term_open_position_count == NULL){
+    term_open_position_count[0] = term_open_pos_count;
+  }
+
+  if(term_close_position_count == NULL){
+    term_close_position_count[0] = term_close_pos_count;
+  }
 }
 
 /**
