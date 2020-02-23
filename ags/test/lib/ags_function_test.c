@@ -29,6 +29,7 @@
 int ags_function_test_init_suite();
 int ags_function_test_clean_suite();
 
+void ags_function_test_collapse_parantheses();
 void ags_function_test_find_literals();
 
 /* The suite initialization function.
@@ -49,6 +50,58 @@ int
 ags_function_test_clean_suite()
 {
   return(0);
+}
+
+void
+ags_function_test_collapse_parantheses()
+{
+  AgsFunction *function;
+  
+  gchar *no_parantheses = "x0 + x1 = 0";
+  gchar *binomic_formula_0 = "(a + b) * (a + b) = 0";
+  gchar *binomic_formula_1 = "(a - b) * (a - b) = 0";
+  gchar *binomic_formula_2 = "(a + b) * (a - b) = 0";
+  gchar **functions;
+
+  guint n_functions;
+
+  /* assert no parantheses */
+  function = ags_function_new(no_parantheses);
+  functions = ags_function_collapse_parantheses(function,
+						&n_functions);
+
+  CU_ASSERT(n_functions == 1 &&
+	    !g_ascii_strcasecmp(functions[0],
+				no_parantheses));
+
+  /* assert binomic formula #0 */
+  function = ags_function_new(binomic_formula_0);
+  functions = ags_function_collapse_parantheses(function,
+						&n_functions);
+
+  CU_ASSERT(n_functions == 1 &&
+	    !g_ascii_strcasecmp(functions[0],
+				"a^2 + 2ab + b^2 = 0"));
+
+  /* assert binomic formula #1 */
+  function = ags_function_new(binomic_formula_1);
+  functions = ags_function_collapse_parantheses(function,
+						&n_functions);
+
+  CU_ASSERT(n_functions == 1 &&
+	    !g_ascii_strcasecmp(functions[0],
+				"a^2 - 2ab + b^2 = 0"));
+
+  /* assert binomic formula #2 */
+  function = ags_function_new(binomic_formula_2);
+  functions = ags_function_collapse_parantheses(function,
+						&n_functions);
+
+  CU_ASSERT(n_functions == 1 &&
+	    !g_ascii_strcasecmp(functions[0],
+				"a^2 - b^2 = 0"));
+  
+  //TODO:JK: implement me
 }
 
 void
@@ -256,7 +309,8 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsFunction find literals", ags_function_test_find_literals) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsFunction collapse parantheses", ags_function_test_collapse_parantheses) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFunction find literals", ags_function_test_find_literals) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

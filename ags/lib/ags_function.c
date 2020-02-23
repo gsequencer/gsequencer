@@ -412,10 +412,57 @@ ags_function_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_function_parent_class)->finalize(gobject);
 }
 
+gchar*
+ags_function_recursive_get_term(gchar *term,
+				gchar **open_offset, gchar **close_offset)
+{
+  GMatchInfo *parantheses_match_info;
+
+  gchar *retval;
+
+  GError *error;
+  
+  static const GRegex *parantheses_regex = NULL;
+
+  static const gchar *parantheses_pattern = "\\(([^\\)]*)\\)";
+
+  if(term == NULL){
+    return(NULL);
+  }
+  
+  /* compile regex */
+  g_mutex_lock(&regex_mutex);
+
+  if(parantheses_regex == NULL){
+    error = NULL;
+    parantheses_regex = g_regex_new(parantheses_pattern,
+				    (G_REGEX_EXTENDED),
+				    0,
+				    &error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  g_mutex_unlock(&regex_mutex);
+
+  retval = g_strdup(term);
+  
+  g_regex_match(parantheses_regex, term, 0, &parantheses_match_info);
+
+  while(g_match_info_matches(parantheses_match_info)){
+  }
+  
+  return(retval);
+}
+
 /**
  * ags_function_collapse_parantheses:
  * @function: the @AgsFunction
- * @function_count: return location of count of possible functions
+ * @function_count: (out): return location of count of possible functions
  * 
  * Collapse parantheses by respecting many possibilities.
  * 
@@ -427,13 +474,42 @@ gchar**
 ags_function_collapse_parantheses(AgsFunction *function,
 				  guint *function_count)
 {
-  gchar **functions;
+  gchar *str;
+  gchar *next, *iter;
+  gchar **target_function;
 
-  functions = NULL;
+  gint *open_pos, *close_pos;
+  gint *exponent_open_pos, *exponent_close_pos;
+
+  guint symbol_count;
+  guint open_pos_count, close_pos_count;
+  guint exponent_open_pos_count, exponent_close_pos_count;
+  guint n_functions;
+  guint i, i_stop;
+  guint j;
   
+  if(!AGS_IS_FUNCTION(function)){
+    if(function_count != NULL){
+      function_count[0] = 0;
+    }
+
+    return(NULL);
+  }
+
+  /* attempt #0 - first, closed parantheses */
+  str = g_strdup(function->source_function);
+
+  target_function = NULL;
+  n_functions = 0;
+
+  /* attempt #1 - first, innermost parantheses */
   //TODO:JK: implement me
 
-  return(functions);
+  if(function_count != NULL){
+    function_count[0] = n_functions;
+  }
+  
+  return(target_function);
 }
 
 /**
@@ -451,214 +527,33 @@ gchar**
 ags_function_find_literals(AgsFunction *function,
 			   guint *symbol_count)
 {
-  GMatchInfo *function_match_info;
-  GMatchInfo *literal_match_info;
-  
   gchar **literals;
-  gchar *str, *end_str;
-  gchar *current_literal;
-  gint prev, next;
+
+  gchar *source_function;
   
   guint n_literals;
-
-  GError *error;
-
-  static const GRegex *function_regex = NULL;
-  static const GRegex *literal_regex = NULL;
-
-  static const gchar *function_pattern = "(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)|([\\s\\+\\-\\*\\/\\(\\)])";
-  static const gchar *literal_pattern = "([a-zA-Z][0-9]*)";
-
-  static const size_t max_matches = 1;
   
-  /* compile regex */
-  g_mutex_lock(&regex_mutex);
-
-  if(function_regex == NULL){
-    error = NULL;
-    function_regex = g_regex_new(function_pattern,
-				 (G_REGEX_EXTENDED),
-				 0,
-				 &error);
-
-    if(error != NULL){
-      g_message("%s", error->message);
-
-      g_error_free(error);
+  if(!AGS_IS_FUNCTION(function)){
+    if(symbol_count != NULL){
+      symbol_count[0] = 0;
     }
+
+    return(NULL);
   }
 
-  if(literal_regex == NULL){
-    error = NULL;
-    literal_regex = g_regex_new(literal_pattern,
-				(G_REGEX_EXTENDED),
-				0,
-				&error);
-
-    if(error != NULL){
-      g_message("%s", error->message);
-
-      g_error_free(error);
-    }
-  }
-
-  g_mutex_unlock(&regex_mutex);
-
-  /* find literals */
   literals = NULL;
+  
   n_literals = 0;
 
-  str = function->source_function;
-  end_str = str + strlen(str);
+  /* get some fields */
+  g_object_get(function,
+	       "source-function", &source_function,
+	       NULL);
 
-  prev = -1;
-  next = -1;
-  
-  g_regex_match(function_regex, str, 0, &function_match_info);
+  literals = ags_math_util_find_parantheses_all(source_function,
+						&n_literals);
 
-#ifdef AGS_DEBUG	    
-  g_message("check %s", function->source_function);
-#endif
-  
-  while(g_match_info_matches(function_match_info)){
-    gint start_pos, end_pos;
-    
-    current_literal = NULL;
-    g_match_info_fetch_pos(function_match_info,
-			   0,
-			   &start_pos, &end_pos);
-
-    if(prev == -1){
-      if(start_pos != 0){
-	if(next == -1){
-	  current_literal = g_strndup(str,
-				      start_pos);
-	}else{
-	  current_literal = g_strndup(str + next,
-				      start_pos - next);
-	}
-	
-	prev = start_pos;
-      }
-      
-      next = end_pos;
-    }else{
-      current_literal = g_strndup(str + next,
-				  start_pos - next);
-
-      next = end_pos;
-      prev = start_pos;
-    }
-
-    if(current_literal != NULL){
-      g_regex_match(literal_regex, current_literal, 0, &literal_match_info);
-    
-      while(g_match_info_matches(literal_match_info)){
-    
-	if(literals == NULL){
-	  literals = (gchar **) g_malloc(2 * sizeof(gchar *));
-
-	  literals[0] = g_match_info_fetch(literal_match_info,
-					   1);
-	  literals[1] = NULL;
-
-#ifdef AGS_DEBUG	    
-	  g_message("found %s", literals[0]);
-#endif
-	  
-	  n_literals++;
-	}else{
-	  if(!g_strv_contains(literals,
-			      current_literal)){
-	    literals = (gchar **) g_realloc(literals,
-					    (n_literals + 2) * sizeof(gchar *));
-
-	    literals[n_literals] = g_match_info_fetch(literal_match_info,
-						      1);
-	    literals[n_literals + 1] = NULL;
-
-#ifdef AGS_DEBUG	    
-	    g_message("found %s", literals[n_literals]);
-#endif
-	    
-	    n_literals++;
-	  }else{
-	    g_free(current_literal);
-	  }
-	}
-
-	g_match_info_next(literal_match_info,
-			  NULL);
-      }
-    
-      g_match_info_free(literal_match_info);
-    }
-    
-    g_match_info_next(function_match_info,
-		      NULL);
-  }
-  
-  g_match_info_free(function_match_info);
-
-  /*  */
-  current_literal = NULL;
-  
-  if(prev == -1){
-    if(next == -1){
-      current_literal = g_strdup(str);
-    }else{
-      current_literal = g_strndup(str + next,
-				  strlen(str) - next);
-    }
-  }else{
-    current_literal = g_strndup(str + next,
-				strlen(str) - next);
-  }
-
-  if(current_literal != NULL){
-    g_regex_match(literal_regex, current_literal, 0, &literal_match_info);
-    
-    while(g_match_info_matches(literal_match_info)){
-    
-      if(literals == NULL){
-	literals = (gchar **) g_malloc(2 * sizeof(gchar *));
-
-	literals[0] = g_match_info_fetch(literal_match_info,
-					 1);
-	literals[1] = NULL;
-
-#ifdef AGS_DEBUG	    
-	g_message("found %s", literals[0]);
-#endif
-	  
-	n_literals++;
-      }else{
-	if(!g_strv_contains(literals,
-			    current_literal)){
-	  literals = (gchar **) g_realloc(literals,
-					  (n_literals + 2) * sizeof(gchar *));
-
-	  literals[n_literals] = g_match_info_fetch(literal_match_info,
-						    1);
-	  literals[n_literals + 1] = NULL;
-
-#ifdef AGS_DEBUG	    
-	  g_message("found %s", literals[n_literals]);
-#endif
-	    
-	  n_literals++;
-	}else{
-	  g_free(current_literal);
-	}
-      }
-
-      g_match_info_next(literal_match_info,
-			NULL);
-    }
-    
-    g_match_info_free(literal_match_info);
-  }
-
+  g_free(source_function);
   
   /* return symbols and its count*/
   if(symbol_count != NULL){

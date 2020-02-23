@@ -452,6 +452,7 @@ am__objects_2 = $(am__objects_1) ags/lib/libags_la-ags_buffer_util.lo \
 	ags/lib/libags_la-ags_conversion.lo \
 	ags/lib/libags_la-ags_endian.lo \
 	ags/lib/libags_la-ags_function.lo ags/lib/libags_la-ags_log.lo \
+	ags/lib/libags_la-ags_math_util.lo \
 	ags/lib/libags_la-ags_regex.lo \
 	ags/lib/libags_la-ags_solver_matrix.lo \
 	ags/lib/libags_la-ags_solver_term.lo \
@@ -5068,6 +5069,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/lib/$(DEPDIR)/libags_la-ags_endian.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_function.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_log.Plo \
+	ags/lib/$(DEPDIR)/libags_la-ags_math_util.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_regex.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_solver_matrix.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_solver_term.Plo \
@@ -5822,7 +5824,8 @@ DATA = $(appdata_DATA) $(doc_DATA) $(gir_DATA) $(pkgconfig_DATA) \
 am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/lib/ags_buffer_util.h ags/lib/ags_complex.h \
 	ags/lib/ags_conversion.h ags/lib/ags_endian.h \
-	ags/lib/ags_function.h ags/lib/ags_log.h ags/lib/ags_regex.h \
+	ags/lib/ags_function.h ags/lib/ags_log.h \
+	ags/lib/ags_math_util.h ags/lib/ags_regex.h \
 	ags/lib/ags_solver_matrix.h ags/lib/ags_solver_term.h \
 	ags/lib/ags_solver_vector.h ags/lib/ags_string_util.h \
 	ags/lib/ags_time.h ags/lib/ags_turtle.h \
@@ -8346,6 +8349,7 @@ libags_h_sources = \
 	ags/lib/ags_endian.h \
 	ags/lib/ags_function.h \
 	ags/lib/ags_log.h \
+	ags/lib/ags_math_util.h \
 	ags/lib/ags_regex.h \
 	ags/lib/ags_solver_matrix.h \
 	ags/lib/ags_solver_term.h \
@@ -8365,6 +8369,7 @@ libags_c_sources = \
 	ags/lib/ags_endian.c \
 	ags/lib/ags_function.c \
 	ags/lib/ags_log.c \
+	ags/lib/ags_math_util.c \
 	ags/lib/ags_regex.c \
 	ags/lib/ags_solver_matrix.c \
 	ags/lib/ags_solver_term.c \
@@ -10243,6 +10248,8 @@ ags/lib/libags_la-ags_endian.lo: ags/lib/$(am__dirstamp) \
 ags/lib/libags_la-ags_function.lo: ags/lib/$(am__dirstamp) \
 	ags/lib/$(DEPDIR)/$(am__dirstamp)
 ags/lib/libags_la-ags_log.lo: ags/lib/$(am__dirstamp) \
+	ags/lib/$(DEPDIR)/$(am__dirstamp)
+ags/lib/libags_la-ags_math_util.lo: ags/lib/$(am__dirstamp) \
 	ags/lib/$(DEPDIR)/$(am__dirstamp)
 ags/lib/libags_la-ags_regex.lo: ags/lib/$(am__dirstamp) \
 	ags/lib/$(DEPDIR)/$(am__dirstamp)
@@ -14498,6 +14505,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_endian.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_function.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_log.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_math_util.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_regex.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_solver_matrix.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_solver_term.Plo@am__quote@ # am--include-marker
@@ -14909,6 +14917,13 @@ ags/lib/libags_la-ags_log.lo: ags/lib/ags_log.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/lib/ags_log.c' object='ags/lib/libags_la-ags_log.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/lib/libags_la-ags_log.lo `test -f 'ags/lib/ags_log.c' || echo '$(srcdir)/'`ags/lib/ags_log.c
+
+ags/lib/libags_la-ags_math_util.lo: ags/lib/ags_math_util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/lib/libags_la-ags_math_util.lo -MD -MP -MF ags/lib/$(DEPDIR)/libags_la-ags_math_util.Tpo -c -o ags/lib/libags_la-ags_math_util.lo `test -f 'ags/lib/ags_math_util.c' || echo '$(srcdir)/'`ags/lib/ags_math_util.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/lib/$(DEPDIR)/libags_la-ags_math_util.Tpo ags/lib/$(DEPDIR)/libags_la-ags_math_util.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/lib/ags_math_util.c' object='ags/lib/libags_la-ags_math_util.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/lib/libags_la-ags_math_util.lo `test -f 'ags/lib/ags_math_util.c' || echo '$(srcdir)/'`ags/lib/ags_math_util.c
 
 ags/lib/libags_la-ags_regex.lo: ags/lib/ags_regex.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/lib/libags_la-ags_regex.lo -MD -MP -MF ags/lib/$(DEPDIR)/libags_la-ags_regex.Tpo -c -o ags/lib/libags_la-ags_regex.lo `test -f 'ags/lib/ags_regex.c' || echo '$(srcdir)/'`ags/lib/ags_regex.c
@@ -25380,6 +25395,7 @@ distclean: distclean-recursive
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_endian.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_function.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_log.Plo
+	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_math_util.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_regex.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_matrix.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_term.Plo
@@ -26324,6 +26340,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_endian.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_function.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_log.Plo
+	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_math_util.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_regex.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_matrix.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_term.Plo

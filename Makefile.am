@@ -666,6 +666,7 @@ libags_h_sources = \
 	ags/lib/ags_endian.h \
 	ags/lib/ags_function.h \
 	ags/lib/ags_log.h \
+	ags/lib/ags_math_util.h \
 	ags/lib/ags_regex.h \
 	ags/lib/ags_solver_matrix.h \
 	ags/lib/ags_solver_term.h \
@@ -686,6 +687,7 @@ libags_c_sources = \
 	ags/lib/ags_endian.c \
 	ags/lib/ags_function.c \
 	ags/lib/ags_log.c \
+	ags/lib/ags_math_util.c \
 	ags/lib/ags_regex.c \
 	ags/lib/ags_solver_matrix.c \
 	ags/lib/ags_solver_term.c \
