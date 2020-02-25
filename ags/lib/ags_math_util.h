@@ -31,6 +31,9 @@ void ags_math_util_find_parantheses_all(gchar *str,
 void ags_math_util_find_exponent_parantheses(gchar *str,
 					     gint **exponent_open_position, gint **exponent_close_position,
 					     guint *exponent_open_position_count, guint *exponent_close_position_count);
+void ags_math_util_find_function_parantheses(gchar *str,
+					     gint **function_open_position, gint **function_close_position,
+					     guint *function_open_position_count, guint *function_close_position_count);
 void ags_math_util_find_term_parantheses(gchar *str,
 					 gint **term_open_position, gint **term_close_position,
 					 guint *term_open_position_count, guint *term_close_position_count);

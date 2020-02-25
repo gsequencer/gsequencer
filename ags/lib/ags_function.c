@@ -19,6 +19,7 @@
 
 #include <ags/lib/ags_function.h>
 
+#include <ags/lib/ags_math_util.h>
 #include <ags/lib/ags_regex.h>
 
 #include <stdlib.h>
@@ -269,8 +270,13 @@ ags_function_set_property(GObject *gobject,
 {
   AgsFunction *function;
 
+  GRecMutex *function_mutex;
+  
   function = AGS_FUNCTION(gobject);
 
+  /* get function mutex */
+  function_mutex = AGS_FUNCTION_GET_OBJ_MUTEX(function);
+  
   switch(prop_id){
   case PROP_SOURCE_FUNCTION:
     {
@@ -278,7 +284,11 @@ ags_function_set_property(GObject *gobject,
 
       source_function = (gchar *) g_value_get_string(value);
 
+      g_rec_mutex_lock(function_mutex);
+      
       if(function->source_function == source_function){
+	g_rec_mutex_unlock(function_mutex);
+
 	return;
       }
       
@@ -287,6 +297,8 @@ ags_function_set_property(GObject *gobject,
       }
 
       function->source_function = g_strdup(source_function);
+
+      g_rec_mutex_unlock(function_mutex);
     }
     break;
   case PROP_NORMALIZED_FUNCTION:
@@ -295,7 +307,11 @@ ags_function_set_property(GObject *gobject,
 
       normalized_function = (gchar *) g_value_get_string(value);
 
+      g_rec_mutex_lock(function_mutex);
+
       if(function->normalized_function == normalized_function){
+	g_rec_mutex_unlock(function_mutex);
+
 	return;
       }
       
@@ -304,6 +320,8 @@ ags_function_set_property(GObject *gobject,
       }
 
       function->normalized_function = g_strdup(normalized_function);
+
+      g_rec_mutex_unlock(function_mutex);
     }
     break;
   case PROP_PIVOT_TABLE:
@@ -312,11 +330,17 @@ ags_function_set_property(GObject *gobject,
 
       pivot_table = (AgsComplex ***) g_value_get_pointer(value);
 
+      g_rec_mutex_lock(function_mutex);
+
       if(pivot_table == function->pivot_table){
+	g_rec_mutex_unlock(function_mutex);
+
 	return;
       }
 
       function->pivot_table = pivot_table;
+
+      g_rec_mutex_unlock(function_mutex);
     }
     break;
   default:
@@ -333,22 +357,39 @@ ags_function_get_property(GObject *gobject,
 {
   AgsFunction *function;
 
+  GRecMutex *function_mutex;
+  
   function = AGS_FUNCTION(gobject);
+
+  /* get function mutex */
+  function_mutex = AGS_FUNCTION_GET_OBJ_MUTEX(function);
 
   switch(prop_id){
   case PROP_SOURCE_FUNCTION:
   {
+    g_rec_mutex_lock(function_mutex);
+    
     g_value_set_string(value, function->source_function);
+
+    g_rec_mutex_unlock(function_mutex);
   }
   break;
   case PROP_NORMALIZED_FUNCTION:
   {
+    g_rec_mutex_lock(function_mutex);
+
     g_value_set_string(value, function->normalized_function);
+
+    g_rec_mutex_unlock(function_mutex);
   }
   break;
   case PROP_PIVOT_TABLE:
   {
+    g_rec_mutex_lock(function_mutex);
+
     g_value_set_pointer(value, function->pivot_table);
+
+    g_rec_mutex_unlock(function_mutex);
   }
   break;
   default:
@@ -412,53 +453,6 @@ ags_function_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_function_parent_class)->finalize(gobject);
 }
 
-gchar*
-ags_function_recursive_get_term(gchar *term,
-				gchar **open_offset, gchar **close_offset)
-{
-  GMatchInfo *parantheses_match_info;
-
-  gchar *retval;
-
-  GError *error;
-  
-  static const GRegex *parantheses_regex = NULL;
-
-  static const gchar *parantheses_pattern = "\\(([^\\)]*)\\)";
-
-  if(term == NULL){
-    return(NULL);
-  }
-  
-  /* compile regex */
-  g_mutex_lock(&regex_mutex);
-
-  if(parantheses_regex == NULL){
-    error = NULL;
-    parantheses_regex = g_regex_new(parantheses_pattern,
-				    (G_REGEX_EXTENDED),
-				    0,
-				    &error);
-
-    if(error != NULL){
-      g_message("%s", error->message);
-
-      g_error_free(error);
-    }
-  }
-
-  g_mutex_unlock(&regex_mutex);
-
-  retval = g_strdup(term);
-  
-  g_regex_match(parantheses_regex, term, 0, &parantheses_match_info);
-
-  while(g_match_info_matches(parantheses_match_info)){
-  }
-  
-  return(retval);
-}
-
 /**
  * ags_function_collapse_parantheses:
  * @function: the @AgsFunction
@@ -474,19 +468,14 @@ gchar**
 ags_function_collapse_parantheses(AgsFunction *function,
 				  guint *function_count)
 {
-  gchar *str;
-  gchar *next, *iter;
   gchar **target_function;
 
-  gint *open_pos, *close_pos;
-  gint *exponent_open_pos, *exponent_close_pos;
+  gchar *source_function;
 
-  guint symbol_count;
-  guint open_pos_count, close_pos_count;
-  guint exponent_open_pos_count, exponent_close_pos_count;
+  gint *term_open_pos, *term_close_pos;
+
+  guint term_open_pos_count, term_close_pos_count;
   guint n_functions;
-  guint i, i_stop;
-  guint j;
   
   if(!AGS_IS_FUNCTION(function)){
     if(function_count != NULL){
@@ -496,11 +485,20 @@ ags_function_collapse_parantheses(AgsFunction *function,
     return(NULL);
   }
 
-  /* attempt #0 - first, closed parantheses */
-  str = g_strdup(function->source_function);
-
+  g_object_get(function,
+	       "source-function", &source_function,
+	       NULL);
+  
   target_function = NULL;
+
   n_functions = 0;
+
+  ags_math_util_find_term_parantheses(source_function,
+				      &term_open_pos, &term_close_pos,
+				      &term_open_pos_count, &term_close_pos_count);
+  
+  /* attempt #0 - first, closed parantheses */
+  //TODO:JK: implement me
 
   /* attempt #1 - first, innermost parantheses */
   //TODO:JK: implement me

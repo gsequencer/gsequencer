@@ -260,6 +260,138 @@ ags_math_util_find_exponent_parantheses(gchar *str,
 }
 
 /**
+ * ags_math_util_find_function_parantheses:
+ * @str: the string
+ * @function_open_position: (out): function open position array return location
+ * @function_close_position: (out): function close position array return location
+ * @function_open_position_count: (out): function open position count return location
+ * @function_close_position_count: (out): function close position count return location
+ * 
+ * Find function parantheses.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_math_util_find_function_parantheses(gchar *str,
+					gint **function_open_position, gint **function_close_position,
+					guint *function_open_position_count, guint *function_close_position_count)
+{
+  GMatchInfo *function_match_info;
+
+  static const GRegex *function_regex = NULL;
+
+  static const gchar *function_pattern = "(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)";
+
+  if(str == NULL){
+    if(function_open_position == NULL){
+      function_open_position[0] = NULL;
+    }
+
+    if(function_close_position == NULL){
+      function_close_position[0] = NULL;
+    }
+
+    if(function_open_position_count == NULL){
+      function_open_position_count[0] = NULL;
+    }
+
+    if(function_close_position_count == NULL){
+      function_close_position_count[0] = NULL;
+    }
+
+    return;
+  }
+
+  /* compile regex */
+  g_mutex_lock(&regex_mutex);
+
+  if(function_regex == NULL){
+    error = NULL;
+    function_regex = g_regex_new(function_pattern,
+				 (G_REGEX_EXTENDED),
+				 0,
+				 &error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  g_mutex_unlock(&regex_mutex);
+
+  /* find parantheses */
+  g_regex_match(function_regex, str, 0, &function_match_info);
+
+  while(g_match_info_matches(function_match_info)){
+    gchar *tmp_iter;
+
+    gint start_pos, end_pos;
+    gint current_function_open_pos, current_function_close_pos;
+    guint nested_parantheses;
+    
+    current_function_open_pos = -1;
+    current_function_close_pos = -1;
+
+    g_match_info_fetch_pos(function_match_info,
+			   0,
+			   &start_pos, &end_pos);
+
+    for(tmp_iter = str + end_pos; tmp_iter != '\0' && tmp_iter == ' '; tmp_iter++);
+
+    if(tmp_iter == '('){
+      current_function_open_pos = tmp_iter - str;
+    }else{
+      continue;
+    }
+    
+    nested_parantheses = 0;
+	
+    for(tmp_iter = str + current_function_open_pos; tmp_iter[0] != '\0'; tmp_iter++){
+      if(tmp_iter[0] == '('){
+	nested_parantheses++;
+      }
+
+      if(tmp_iter[0] == ')'){
+	if(nested_parantheses == 0){
+	  current_function_close_pos = tmp_iter - str;
+
+	  break;
+	}else{
+	  nested_parantheses--;
+	}
+      }
+    }
+
+    if(current_function_open_pos != -1 &&
+       current_function_close_pos != -1){
+      /* function open position */
+      if(function_open_pos == NULL){
+	function_open_pos = g_malloc(sizeof(gint));
+      }else{
+	function_open_pos = g_realloc(function_open_pos,
+				      (function_open_pos_count + 1) * sizeof(gint));
+      }
+
+      function_open_pos[function_open_pos_count] = current_function_open_pos;
+      function_open_pos_count++;
+
+      /* function close position */
+      if(function_close_pos == NULL){
+	function_close_pos = g_malloc(sizeof(gint));
+      }else{
+	function_close_pos = g_realloc(function_close_pos,
+				       (function_close_pos_count + 1) * sizeof(gint));
+      }
+
+      function_close_pos[function_close_pos_count] = current_function_close_pos;
+      function_close_pos_count++;
+    }
+  }
+}
+
+/**
  * ags_math_util_find_term_parantheses:
  * @str: the string
  * @term_open_position: (out): term open position array return location
@@ -278,12 +410,14 @@ ags_math_util_find_term_parantheses(gchar *str,
 {
   gint *open_pos, *close_pos;
   gint *exponent_open_pos, *exponent_close_pos;
+  gint *function_open_pos, *function_close_pos;
   gint *term_open_pos, *term_close_pos;
 
   guint open_pos_count, close_pos_count;
   guint exponent_open_pos_count, exponent_close_pos_count;
+  guint function_open_pos_count, function_close_pos_count;
   guint term_open_pos_count, term_close_pos_count;
-  guint i, j, k;
+  guint i, j, k, l;
   
   if(str == NULL){
     if(term_open_position == NULL){
@@ -312,18 +446,30 @@ ags_math_util_find_term_parantheses(gchar *str,
   ags_math_util_find_exponent_parantheses(str,
 					  &exponent_open_pos, &exponent_close_pos,
 					  &exponent_open_pos_count, &exponent_close_pos_count);
+
+  ags_math_util_find_function_parantheses(str,
+					  &function_open_pos, &function_close_pos,
+					  &function_open_pos_count, &function_close_pos_count);
   
   term_open_pos = NULL;
   term_close_pos = NULL;
   
-  term_open_pos_count = open_pos_count - exponent_open_pos_count;
-  term_close_pos_count = close_pos_count - exponent_close_pos_count;
+  term_open_pos_count = open_pos_count - exponent_open_pos_count - function_open_pos_count;
+  term_close_pos_count = close_pos_count - exponent_close_pos_count - function_close_pos_count;
 
   if(term_open_pos_count > 0){
     term_open_pos = g_malloc(term_open_pos_count * sizeof(gint));
 
-    for(i = 0, j = 0, k = 0; i < term_open_pos_count;){
-      for(; j < open_pos_count && k < exponent_close_pos_count && open_pos[j] == exponent_open_pos[k]; j++, k++);
+    for(i = 0, j = 0, k = 0, l = 0; i < term_open_pos_count;){
+      for(; j < open_pos_count && k < exponent_close_pos_count && (open_pos[j] == exponent_open_pos[k] || open_pos[j] == function_open_pos[l]); j++){
+	if(open_pos[j] == exponent_open_pos[k]){
+	  k++;
+	}
+
+	if(open_pos[j] == function_open_pos[l]){
+	  l++;
+	}
+      }
       
       term_open_pos[i] = open_pos[j];	
       i++;
@@ -334,8 +480,16 @@ ags_math_util_find_term_parantheses(gchar *str,
   if(term_close_pos_count > 0){
     term_close_pos = g_malloc(term_close_pos_count * sizeof(gint));
 
-    for(i = 0, j = 0, k = 0; i < term_close_pos_count;){
-      for(; j < close_pos_count && k < exponent_close_pos_count && close_pos[j] == exponent_close_pos[k]; j++, k++);
+    for(i = 0, j = 0, k = 0, l = 0; i < term_close_pos_count;){
+      for(; j < close_pos_count && k < exponent_close_pos_count && (close_pos[j] == exponent_close_pos[k] || close_pos[j] == function_close_pos[l]); j++){
+	if(close_pos[j] == exponent_close_pos[k]){
+	  k++;
+	}
+
+	if(close_pos[j] == function_close_pos[l]){
+	  l++;
+	}
+      }
       
       term_close_pos[i] = close_pos[j];	
       i++;
@@ -348,6 +502,9 @@ ags_math_util_find_term_parantheses(gchar *str,
 
   g_free(exponent_open_pos);
   g_free(exponent_close_pos);
+
+  g_free(function_open_pos);
+  g_free(function_close_pos);
   
   if(term_open_position == NULL){
     term_open_position[0] = term_open_pos;
