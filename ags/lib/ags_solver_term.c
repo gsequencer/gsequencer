@@ -461,10 +461,27 @@ void
 ags_solver_term_parse(AgsSolverTerm *solver_term,
 		      gchar *term)
 {
+  gchar *coefficient;
+  gchar *symbol;
+  gchar *exponent;
+  
+  AgsComplex coefficient_value;
+  AgsComplex exponent_value;
+  
+  complex z;
+
   if(!AGS_IS_SOLVER_TERM(solver_term)){
     return;
   }
 
+  z = 1.0 + I * 0.0;
+  ags_complex_set(&(coefficient_value),
+		  z);
+
+  z = 0.0 + I * 0.0;
+  ags_complex_set(&(exponent_value),
+		  z);
+  
   //TODO:JK: implement me
 }
 

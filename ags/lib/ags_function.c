@@ -548,8 +548,8 @@ ags_function_find_literals(AgsFunction *function,
 	       "source-function", &source_function,
 	       NULL);
 
-  literals = ags_math_util_find_parantheses_all(source_function,
-						&n_literals);
+  literals = ags_math_util_find_literals(source_function,
+					 &n_literals);
 
   g_free(source_function);
   

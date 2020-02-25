@@ -55,20 +55,20 @@ ags_math_util_find_parantheses_all(gchar *str,
   guint open_pos_count, close_pos_count;
 
   if(str == NULL){
-    if(open_position == NULL){
+    if(open_position != NULL){
       open_position[0] = NULL;
     }
 
-    if(close_position == NULL){
+    if(close_position != NULL){
       close_position[0] = NULL;
     }
 
-    if(open_position_count == NULL){
-      open_position_count[0] = NULL;
+    if(open_position_count != NULL){
+      open_position_count[0] = 0;
     }
 
-    if(close_position_count == NULL){
-      close_position_count[0] = NULL;
+    if(close_position_count != NULL){
+      close_position_count[0] = 0;
     }
 
     return;
@@ -106,19 +106,19 @@ ags_math_util_find_parantheses_all(gchar *str,
     close_pos_count++;
   }
 
-  if(open_position == NULL){
+  if(open_position != NULL){
     open_position[0] = open_pos;
   }
 
-  if(close_position == NULL){
+  if(close_position != NULL){
     close_position[0] = close_pos;
   }
 
-  if(open_position_count == NULL){
+  if(open_position_count != NULL){
     open_position_count[0] = open_pos_count;
   }
 
-  if(close_position_count == NULL){
+  if(close_position_count != NULL){
     close_position_count[0] = close_pos_count;
   }
 }
@@ -147,20 +147,20 @@ ags_math_util_find_exponent_parantheses(gchar *str,
   guint exponent_open_pos_count, exponent_close_pos_count;
 
   if(str == NULL){
-    if(exponent_open_position == NULL){
+    if(exponent_open_position != NULL){
       exponent_open_position[0] = NULL;
     }
 
-    if(exponent_close_position == NULL){
+    if(exponent_close_position != NULL){
       exponent_close_position[0] = NULL;
     }
 
-    if(exponent_open_position_count == NULL){
-      exponent_open_position_count[0] = NULL;
+    if(exponent_open_position_count != NULL){
+      exponent_open_position_count[0] = 0;
     }
 
-    if(exponent_close_position_count == NULL){
-      exponent_close_position_count[0] = NULL;
+    if(exponent_close_position_count != NULL){
+      exponent_close_position_count[0] = 0;
     }
 
     return;
@@ -189,7 +189,7 @@ ags_math_util_find_exponent_parantheses(gchar *str,
     if(iter > str){
       for(tmp_iter = iter - 1; tmp_iter[0] == ' ' && tmp_iter >= str; tmp_iter--);
 	
-      if(tmp_iter == '^'){
+      if(tmp_iter[0] == '^'){
 	is_exponent = TRUE;
 
 	current_exponent_open_pos = iter - str;
@@ -242,19 +242,19 @@ ags_math_util_find_exponent_parantheses(gchar *str,
     }
   }
 
-  if(exponent_open_position == NULL){
+  if(exponent_open_position != NULL){
     exponent_open_position[0] = exponent_open_pos;
   }
 
-  if(exponent_close_position == NULL){
+  if(exponent_close_position != NULL){
     exponent_close_position[0] = exponent_close_pos;
   }
 
-  if(exponent_open_position_count == NULL){
+  if(exponent_open_position_count != NULL){
     exponent_open_position_count[0] = exponent_open_pos_count;
   }
 
-  if(exponent_close_position_count == NULL){
+  if(exponent_close_position_count != NULL){
     exponent_close_position_count[0] = exponent_close_pos_count;
   }
 }
@@ -278,29 +278,41 @@ ags_math_util_find_function_parantheses(gchar *str,
 {
   GMatchInfo *function_match_info;
 
+  gint *function_open_pos, *function_close_pos;
+
+  guint function_open_pos_count, function_close_pos_count;
+
+  GError *error;
+
   static const GRegex *function_regex = NULL;
 
   static const gchar *function_pattern = "(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)";
 
   if(str == NULL){
-    if(function_open_position == NULL){
+    if(function_open_position != NULL){
       function_open_position[0] = NULL;
     }
 
-    if(function_close_position == NULL){
+    if(function_close_position != NULL){
       function_close_position[0] = NULL;
     }
 
-    if(function_open_position_count == NULL){
-      function_open_position_count[0] = NULL;
+    if(function_open_position_count != NULL){
+      function_open_position_count[0] = 0;
     }
 
-    if(function_close_position_count == NULL){
-      function_close_position_count[0] = NULL;
+    if(function_close_position_count != NULL){
+      function_close_position_count[0] = 0;
     }
 
     return;
   }
+
+  function_open_pos = NULL;
+  function_open_pos_count = 0;
+  
+  function_close_pos = NULL;
+  function_close_pos_count = 0;
 
   /* compile regex */
   g_mutex_lock(&regex_mutex);
@@ -338,9 +350,9 @@ ags_math_util_find_function_parantheses(gchar *str,
 			   0,
 			   &start_pos, &end_pos);
 
-    for(tmp_iter = str + end_pos; tmp_iter != '\0' && tmp_iter == ' '; tmp_iter++);
+    for(tmp_iter = str + end_pos; tmp_iter[0] != '\0' && tmp_iter[0] == ' '; tmp_iter++);
 
-    if(tmp_iter == '('){
+    if(tmp_iter[0] == '('){
       current_function_open_pos = tmp_iter - str;
     }else{
       continue;
@@ -420,20 +432,20 @@ ags_math_util_find_term_parantheses(gchar *str,
   guint i, j, k, l;
   
   if(str == NULL){
-    if(term_open_position == NULL){
+    if(term_open_position != NULL){
       term_open_position[0] = NULL;
     }
 
-    if(term_close_position == NULL){
+    if(term_close_position != NULL){
       term_close_position[0] = NULL;
     }
 
-    if(term_open_position_count == NULL){
-      term_open_position_count[0] = NULL;
+    if(term_open_position_count != NULL){
+      term_open_position_count[0] = 0;
     }
 
-    if(term_close_position_count == NULL){
-      term_close_position_count[0] = NULL;
+    if(term_close_position_count != NULL){
+      term_close_position_count[0] = 0;
     }
 
     return;
@@ -506,19 +518,19 @@ ags_math_util_find_term_parantheses(gchar *str,
   g_free(function_open_pos);
   g_free(function_close_pos);
   
-  if(term_open_position == NULL){
+  if(term_open_position != NULL){
     term_open_position[0] = term_open_pos;
   }
 
-  if(term_close_position == NULL){
+  if(term_close_position != NULL){
     term_close_position[0] = term_close_pos;
   }
 
-  if(term_open_position_count == NULL){
+  if(term_open_position_count != NULL){
     term_open_position_count[0] = term_open_pos_count;
   }
 
-  if(term_close_position_count == NULL){
+  if(term_close_position_count != NULL){
     term_close_position_count[0] = term_close_pos_count;
   }
 }
