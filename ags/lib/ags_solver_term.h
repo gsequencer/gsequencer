@@ -49,7 +49,12 @@ struct _AgsSolverTerm
 
   gchar *term;
 
-  AgsComplex *numeric_value;
+  gchar *coefficient;
+  gchar *symbol;
+  gchar *exponent;
+
+  AgsComplex coefficient_value;
+  AgsComplex exponent_value;
 };
 
 struct _AgsSolverTermClass
@@ -58,6 +63,9 @@ struct _AgsSolverTermClass
 };
 
 GType ags_solver_term_get_type(void);
+
+void ags_solver_term_parse(AgsSolverTerm *solver_term,
+			   gchar *term);
 
 AgsSolverTerm* ags_solver_term_new();
 

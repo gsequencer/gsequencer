@@ -20,6 +20,7 @@
 #include <ags/lib/ags_solver_term.h>
 
 #include <stdlib.h>
+#include <complex.h>
 
 #include <ags/i18n.h>
 
@@ -47,6 +48,12 @@ void ags_solver_term_finalize(GObject *gobject);
 
 enum{
   PROP_0,
+  PROP_TERM,
+  PROP_COEFFICIENT,
+  PROP_SYMBOL,
+  PROP_EXPONENT,
+  PROP_COEFFICIENT_VALUE,
+  PROP_EXPONENT_VALUE,
 };
 
 static gpointer ags_solver_term_parent_class = NULL;
@@ -99,18 +106,126 @@ ags_solver_term_class_init(AgsSolverTermClass *solver_term)
   gobject->finalize = ags_solver_term_finalize;
 
   /* properties */
+  /**
+   * AgsSolverTerm:term:
+   *
+   * The assigned term.
+   * 
+   * Since: 3.2.0
+   */
+  param_spec = g_param_spec_string("term",
+				   i18n_pspec("term of solver term"),
+				   i18n_pspec("The term this solver term is assigned to"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TERM,
+				  param_spec);
+
+  /**
+   * AgsSolverTerm:coefficient:
+   *
+   * The assigned coefficient.
+   * 
+   * Since: 3.2.0
+   */
+  param_spec = g_param_spec_string("coefficient",
+				   i18n_pspec("coefficient of solver term"),
+				   i18n_pspec("The coefficient this solver term is assigned to"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_COEFFICIENT,
+				  param_spec);
+
+  /**
+   * AgsSolverTerm:symbol:
+   *
+   * The assigned symbol.
+   * 
+   * Since: 3.2.0
+   */
+  param_spec = g_param_spec_string("symbol",
+				   i18n_pspec("symbol of solver term"),
+				   i18n_pspec("The symbol this solver term is assigned to"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYMBOL,
+				  param_spec);
+
+  /**
+   * AgsSolverTerm:exponent:
+   *
+   * The assigned exponent.
+   * 
+   * Since: 3.2.0
+   */
+  param_spec = g_param_spec_string("exponent",
+				   i18n_pspec("exponent of solver term"),
+				   i18n_pspec("The exponent this solver term is assigned to"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_EXPONENT,
+				  param_spec);
+
+  /**
+   * AgsSolverTerm:coefficient-value:
+   *
+   * Coefficient value.
+   * 
+   * Since: 3.2.0
+   */
+  param_spec = g_param_spec_boxed("coefficient-value",
+				  i18n_pspec("coefficient value"),
+				  i18n_pspec("The coefficient value"),
+				  AGS_TYPE_COMPLEX,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_COEFFICIENT_VALUE,
+				  param_spec);
+
+
+  /**
+   * AgsSolverTerm:exponent-value:
+   *
+   * Exponent value.
+   * 
+   * Since: 3.2.0
+   */
+  param_spec = g_param_spec_boxed("exponent-value",
+				  i18n_pspec("exponent value"),
+				  i18n_pspec("The exponent value"),
+				  AGS_TYPE_COMPLEX,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_EXPONENT_VALUE,
+				  param_spec);
 }
 
 void
 ags_solver_term_init(AgsSolverTerm *solver_term)
 {
+  complex z;
+
   solver_term->flags = 0;
   
   g_rec_mutex_init(&(solver_term->obj_mutex));
 
   solver_term->term = NULL;
 
-  solver_term->numeric_value = NULL;
+  solver_term->coefficient = NULL;
+  solver_term->symbol = NULL;
+  solver_term->exponent = NULL;
+
+  z = 1.0 + I * 0.0;
+  ags_complex_set(&(solver_term->coefficient_value),
+		  z);
+
+  z = 0.0 + I * 0.0;
+  ags_complex_set(&(solver_term->exponent_value),
+		  z);
 }
 
 void
@@ -121,9 +236,134 @@ ags_solver_term_set_property(GObject *gobject,
 {
   AgsSolverTerm *solver_term;
 
+  GRecMutex *solver_term_mutex;
+  
   solver_term = AGS_SOLVER_TERM(gobject);
 
+  /* solver term mutex */
+  solver_term_mutex = AGS_SOLVER_TERM_GET_OBJ_MUTEX(solver_term);
+  
   switch(prop_id){
+  case PROP_TERM:
+  {
+    gchar *term;
+
+    term = (gchar *) g_value_get_string(value);
+
+    g_rec_mutex_lock(solver_term_mutex);
+
+    if(solver_term->term == term){
+      g_rec_mutex_unlock(solver_term_mutex);
+
+      return;
+    }
+      
+    if(solver_term->term != NULL){
+      g_free(solver_term->term);
+    }
+
+    solver_term->term = g_strdup(term);
+
+    g_rec_mutex_unlock(solver_term_mutex);
+  }
+  break;
+  case PROP_COEFFICIENT:
+  {
+    gchar *coefficient;
+
+    coefficient = (gchar *) g_value_get_string(value);
+
+    g_rec_mutex_lock(solver_term_mutex);
+
+    if(solver_term->coefficient == coefficient){
+      g_rec_mutex_unlock(solver_term_mutex);
+
+      return;
+    }
+      
+    if(solver_term->coefficient != NULL){
+      g_free(solver_term->coefficient);
+    }
+
+    solver_term->coefficient = g_strdup(coefficient);
+
+    g_rec_mutex_unlock(solver_term_mutex);
+  }
+  break;
+  case PROP_SYMBOL:
+  {
+    gchar *symbol;
+
+    symbol = (gchar *) g_value_get_string(value);
+
+    g_rec_mutex_lock(solver_term_mutex);
+
+    if(solver_term->symbol == symbol){
+      g_rec_mutex_unlock(solver_term_mutex);
+
+      return;
+    }
+      
+    if(solver_term->symbol != NULL){
+      g_free(solver_term->symbol);
+    }
+
+    solver_term->symbol = g_strdup(symbol);
+
+    g_rec_mutex_unlock(solver_term_mutex);
+  }
+  break;
+  case PROP_EXPONENT:
+  {
+    gchar *exponent;
+
+    exponent = (gchar *) g_value_get_string(value);
+
+    g_rec_mutex_lock(solver_term_mutex);
+
+    if(solver_term->exponent == exponent){
+      g_rec_mutex_unlock(solver_term_mutex);
+
+      return;
+    }
+      
+    if(solver_term->exponent != NULL){
+      g_free(solver_term->exponent);
+    }
+
+    solver_term->exponent = g_strdup(exponent);
+
+    g_rec_mutex_unlock(solver_term_mutex);
+  }
+  break;
+  case PROP_COEFFICIENT_VALUE:
+  {
+    AgsComplex *coefficient_value;
+
+    coefficient_value = (AgsComplex *) g_value_get_boxed(value);
+
+    g_rec_mutex_lock(solver_term_mutex);
+
+    ags_complex_set(&(solver_term->coefficient_value),
+		    ags_complex_get(coefficient_value));
+
+    g_rec_mutex_unlock(solver_term_mutex);
+  }
+  break;    
+  case PROP_EXPONENT_VALUE:
+  {
+    AgsComplex *exponent_value;
+
+    exponent_value = (AgsComplex *) g_value_get_boxed(value);
+
+    g_rec_mutex_lock(solver_term_mutex);
+
+    ags_complex_set(&(solver_term->exponent_value),
+		    ags_complex_get(exponent_value));
+
+    g_rec_mutex_unlock(solver_term_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -138,9 +378,68 @@ ags_solver_term_get_property(GObject *gobject,
 {
   AgsSolverTerm *solver_term;
 
+  GRecMutex *solver_term_mutex;
+
   solver_term = AGS_SOLVER_TERM(gobject);
 
+  /* solver term mutex */
+  solver_term_mutex = AGS_SOLVER_TERM_GET_OBJ_MUTEX(solver_term);
+
   switch(prop_id){
+  case PROP_TERM:
+  {
+    g_rec_mutex_lock(solver_term_mutex);
+
+    g_value_set_string(value, solver_term->term);
+
+    g_rec_mutex_unlock(solver_term_mutex);
+  }
+  break;
+  case PROP_COEFFICIENT:
+  {
+    g_rec_mutex_lock(solver_term_mutex);
+
+    g_value_set_string(value, solver_term->coefficient);
+
+    g_rec_mutex_unlock(solver_term_mutex);
+  }
+  break;
+  case PROP_SYMBOL:
+  {
+    g_rec_mutex_lock(solver_term_mutex);
+
+    g_value_set_string(value, solver_term->symbol);
+
+    g_rec_mutex_unlock(solver_term_mutex);
+  }
+  break;
+  case PROP_EXPONENT:
+  {
+    g_rec_mutex_lock(solver_term_mutex);
+
+    g_value_set_string(value, solver_term->exponent);
+
+    g_rec_mutex_unlock(solver_term_mutex);
+  }
+  break;
+  case PROP_COEFFICIENT_VALUE:
+  {
+    g_rec_mutex_lock(solver_term_mutex);
+
+    g_value_set_boxed(value, &(solver_term->coefficient_value));
+
+    g_rec_mutex_unlock(solver_term_mutex);
+  }
+  break;
+  case PROP_EXPONENT_VALUE:
+  {
+    g_rec_mutex_lock(solver_term_mutex);
+
+    g_value_set_boxed(value, &(solver_term->exponent_value));
+
+    g_rec_mutex_unlock(solver_term_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -156,6 +455,17 @@ ags_solver_term_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_solver_term_parent_class)->finalize(gobject);
+}
+
+void
+ags_solver_term_parse(AgsSolverTerm *solver_term,
+		      gchar *term)
+{
+  if(!AGS_IS_SOLVER_TERM(solver_term)){
+    return;
+  }
+
+  //TODO:JK: implement me
 }
 
 /**
