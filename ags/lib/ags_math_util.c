@@ -335,7 +335,7 @@ ags_math_util_find_function_parantheses(gchar *str,
 
   /* find parantheses */
   g_regex_match(function_regex, str, 0, &function_match_info);
-
+  
   while(g_match_info_matches(function_match_info)){
     gchar *tmp_iter;
 
@@ -355,12 +355,15 @@ ags_math_util_find_function_parantheses(gchar *str,
     if(tmp_iter[0] == '('){
       current_function_open_pos = tmp_iter - str;
     }else{
+      g_match_info_next(function_match_info,
+			NULL);
+
       continue;
     }
     
     nested_parantheses = 0;
 	
-    for(tmp_iter = str + current_function_open_pos; tmp_iter[0] != '\0'; tmp_iter++){
+    for(tmp_iter = str + current_function_open_pos + 1; tmp_iter[0] != '\0'; tmp_iter++){
       if(tmp_iter[0] == '('){
 	nested_parantheses++;
       }
@@ -400,6 +403,25 @@ ags_math_util_find_function_parantheses(gchar *str,
       function_close_pos[function_close_pos_count] = current_function_close_pos;
       function_close_pos_count++;
     }
+
+    g_match_info_next(function_match_info,
+		      NULL);
+  }
+
+  if(function_open_position != NULL){
+    function_open_position[0] = function_open_pos;
+  }
+
+  if(function_close_position != NULL){
+    function_close_position[0] = function_close_pos;
+  }
+
+  if(function_open_position_count != NULL){
+    function_open_position_count[0] = function_open_pos_count;
+  }
+
+  if(function_close_position_count != NULL){
+    function_close_position_count[0] = function_close_pos_count;
   }
 }
 
@@ -450,6 +472,18 @@ ags_math_util_find_term_parantheses(gchar *str,
 
     return;
   }
+
+  open_pos = NULL;
+  close_pos = NULL;
+
+  exponent_open_pos = NULL;
+  exponent_close_pos = NULL;
+
+  function_open_pos = NULL;
+  function_close_pos = NULL;
+  
+  term_open_pos = NULL;
+  term_close_pos = NULL;
   
   ags_math_util_find_parantheses_all(str,
 				     &open_pos, &close_pos,
@@ -462,10 +496,7 @@ ags_math_util_find_term_parantheses(gchar *str,
   ags_math_util_find_function_parantheses(str,
 					  &function_open_pos, &function_close_pos,
 					  &function_open_pos_count, &function_close_pos_count);
-  
-  term_open_pos = NULL;
-  term_close_pos = NULL;
-  
+    
   term_open_pos_count = open_pos_count - exponent_open_pos_count - function_open_pos_count;
   term_close_pos_count = close_pos_count - exponent_close_pos_count - function_close_pos_count;
 
