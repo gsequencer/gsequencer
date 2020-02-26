@@ -528,15 +528,8 @@ ags_math_util_test_find_literals()
 					 &symbol_count);
 
   CU_ASSERT(symbol_count == 5);
-
+  
   CU_ASSERT(literals != NULL);
-
-  g_message("%s", literals[0]);
-  g_message("%s", literals[1]);
-  g_message("%s", literals[2]);
-  g_message("%s", literals[3]);
-  g_message("%s", literals[4]);
-  g_message("%s", literals[5]);
 
   CU_ASSERT(g_strv_contains(literals, "a0"));
   CU_ASSERT(g_strv_contains(literals, "b0"));

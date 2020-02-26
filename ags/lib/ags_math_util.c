@@ -607,6 +607,10 @@ ags_math_util_find_literals(gchar *str,
     return(NULL);
   }
   
+  literals = NULL;
+
+  n_literals = 0;
+    
   /* compile regex */
   g_mutex_lock(&regex_mutex);
 
@@ -641,10 +645,6 @@ ags_math_util_find_literals(gchar *str,
   g_mutex_unlock(&regex_mutex);
 
   /* find literals */
-  literals = NULL;
-
-  n_literals = 0;
-  
   g_regex_match(function_regex, str, 0, &function_match_info);
 
 #ifdef AGS_DEBUG	    
@@ -668,8 +668,10 @@ ags_math_util_find_literals(gchar *str,
 	  current_literal = g_strndup(str,
 				      start_pos);
 	}else{
-	  current_literal = g_strndup(str + next,
-				      start_pos - next);
+	  if(start_pos - next > 0){
+	    current_literal = g_strndup(str + next,
+					start_pos - next);
+	  }
 	}
 	
 	prev = start_pos;
@@ -677,9 +679,11 @@ ags_math_util_find_literals(gchar *str,
       
       next = end_pos;
     }else{
-      current_literal = g_strndup(str + next,
-				  start_pos - next);
-
+      if(start_pos - next > 0){
+	current_literal = g_strndup(str + next,
+				    start_pos - next);
+      }
+      
       next = end_pos;
       prev = start_pos;
     }
@@ -691,7 +695,7 @@ ags_math_util_find_literals(gchar *str,
 	gchar *tmp_literal;
 
 	tmp_literal = g_match_info_fetch(literal_match_info,
-					 1);
+					 0);
 	
 	if(literals == NULL){
 	  literals = (gchar **) g_malloc(2 * sizeof(gchar *));
@@ -762,7 +766,7 @@ ags_math_util_find_literals(gchar *str,
       gchar *tmp_literal;
 
       tmp_literal = g_match_info_fetch(literal_match_info,
-				       1);
+				       0);
 	
       if(literals == NULL){
 	literals = (gchar **) g_malloc(2 * sizeof(gchar *));
