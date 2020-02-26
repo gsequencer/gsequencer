@@ -12,6 +12,7 @@ check_PROGRAMS += \
 	ags_conversion_test \
 	ags_function_test \
 	ags_log_test \
+	ags_math_util_test \
 	ags_solver_matrix_test \
 	ags_solver_vector_test \
 	ags_solver_term_test \
@@ -232,6 +233,12 @@ ags_log_test_SOURCES = ags/test/lib/ags_log_test.c
 ags_log_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_log_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_log_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# math util unit test
+ags_math_util_test_SOURCES = ags/test/lib/ags_math_util_test.c
+ags_math_util_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_math_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_math_util_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # solver matrix unit test
 ags_solver_matrix_test_SOURCES = ags/test/lib/ags_solver_matrix_test.c

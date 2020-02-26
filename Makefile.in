@@ -154,7 +154,7 @@ bin_PROGRAMS = gsequencer$(EXEEXT) midi2xml$(EXEEXT)
 check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_complex_test$(EXEEXT) ags_conversion_test$(EXEEXT) \
 	ags_function_test$(EXEEXT) ags_log_test$(EXEEXT) \
-	ags_solver_matrix_test$(EXEEXT) \
+	ags_math_util_test$(EXEEXT) ags_solver_matrix_test$(EXEEXT) \
 	ags_solver_vector_test$(EXEEXT) ags_solver_term_test$(EXEEXT) \
 	ags_time_test$(EXEEXT) ags_turtle_manager_test$(EXEEXT) \
 	ags_turtle_test$(EXEEXT) ags_application_context_test$(EXEEXT) \
@@ -3284,6 +3284,16 @@ ags_lv2ui_plugin_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_lv2ui_plugin_test_CFLAGS) $(CFLAGS) \
 	$(ags_lv2ui_plugin_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_math_util_test_OBJECTS =  \
+	ags/test/lib/math_util_test-ags_math_util_test.$(OBJEXT)
+ags_math_util_test_OBJECTS = $(am_ags_math_util_test_OBJECTS)
+ags_math_util_test_DEPENDENCIES = libags_server.la libags_thread.la \
+	libags.la libags_thread.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_math_util_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_math_util_test_CFLAGS) $(CFLAGS) \
+	$(ags_math_util_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_midi_buffer_util_test_OBJECTS = ags/test/audio/midi/midi_buffer_util_test-ags_midi_buffer_util_test.$(OBJEXT)
 ags_midi_buffer_util_test_OBJECTS =  \
 	$(am_ags_midi_buffer_util_test_OBJECTS)
@@ -5297,6 +5307,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/lib/$(DEPDIR)/conversion_test-ags_conversion_test.Po \
 	ags/test/lib/$(DEPDIR)/function_test-ags_function_test.Po \
 	ags/test/lib/$(DEPDIR)/log_test-ags_log_test.Po \
+	ags/test/lib/$(DEPDIR)/math_util_test-ags_math_util_test.Po \
 	ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Po \
 	ags/test/lib/$(DEPDIR)/solver_term_test-ags_solver_term_test.Po \
 	ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Po \
@@ -5535,7 +5546,7 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_lv2_urid_manager_test_SOURCES) \
 	$(ags_lv2_worker_manager_test_SOURCES) \
 	$(ags_lv2ui_manager_test_SOURCES) \
-	$(ags_lv2ui_plugin_test_SOURCES) \
+	$(ags_lv2ui_plugin_test_SOURCES) $(ags_math_util_test_SOURCES) \
 	$(ags_midi_buffer_util_test_SOURCES) \
 	$(ags_midi_builder_test_SOURCES) $(ags_midi_test_SOURCES) \
 	$(ags_midiin_test_SOURCES) $(ags_move_note_test_SOURCES) \
@@ -5715,7 +5726,7 @@ DIST_SOURCES = $(libags_la_SOURCES) \
 	$(ags_lv2_urid_manager_test_SOURCES) \
 	$(ags_lv2_worker_manager_test_SOURCES) \
 	$(ags_lv2ui_manager_test_SOURCES) \
-	$(ags_lv2ui_plugin_test_SOURCES) \
+	$(ags_lv2ui_plugin_test_SOURCES) $(ags_math_util_test_SOURCES) \
 	$(ags_midi_buffer_util_test_SOURCES) \
 	$(ags_midi_builder_test_SOURCES) $(ags_midi_test_SOURCES) \
 	$(ags_midiin_test_SOURCES) $(ags_move_note_test_SOURCES) \
@@ -7110,6 +7121,12 @@ ags_log_test_SOURCES = ags/test/lib/ags_log_test.c
 ags_log_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_log_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_log_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# math util unit test
+ags_math_util_test_SOURCES = ags/test/lib/ags_math_util_test.c
+ags_math_util_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_math_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_math_util_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # solver matrix unit test
 ags_solver_matrix_test_SOURCES = ags/test/lib/ags_solver_matrix_test.c
@@ -13134,6 +13151,13 @@ ags/test/plugin/lv2ui_plugin_test-ags_lv2ui_plugin_test.$(OBJEXT):  \
 ags_lv2ui_plugin_test$(EXEEXT): $(ags_lv2ui_plugin_test_OBJECTS) $(ags_lv2ui_plugin_test_DEPENDENCIES) $(EXTRA_ags_lv2ui_plugin_test_DEPENDENCIES) 
 	@rm -f ags_lv2ui_plugin_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_lv2ui_plugin_test_LINK) $(ags_lv2ui_plugin_test_OBJECTS) $(ags_lv2ui_plugin_test_LDADD) $(LIBS)
+ags/test/lib/math_util_test-ags_math_util_test.$(OBJEXT):  \
+	ags/test/lib/$(am__dirstamp) \
+	ags/test/lib/$(DEPDIR)/$(am__dirstamp)
+
+ags_math_util_test$(EXEEXT): $(ags_math_util_test_OBJECTS) $(ags_math_util_test_DEPENDENCIES) $(EXTRA_ags_math_util_test_DEPENDENCIES) 
+	@rm -f ags_math_util_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_math_util_test_LINK) $(ags_math_util_test_OBJECTS) $(ags_math_util_test_LDADD) $(LIBS)
 ags/test/audio/midi/$(am__dirstamp):
 	@$(MKDIR_P) ags/test/audio/midi
 	@: > ags/test/audio/midi/$(am__dirstamp)
@@ -14733,6 +14757,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/conversion_test-ags_conversion_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/function_test-ags_function_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/log_test-ags_log_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/math_util_test-ags_math_util_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/solver_term_test-ags_solver_term_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Po@am__quote@ # am--include-marker
@@ -21050,6 +21075,20 @@ ags/test/plugin/lv2ui_plugin_test-ags_lv2ui_plugin_test.obj: ags/test/plugin/ags
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_lv2ui_plugin_test_CFLAGS) $(CFLAGS) -c -o ags/test/plugin/lv2ui_plugin_test-ags_lv2ui_plugin_test.obj `if test -f 'ags/test/plugin/ags_lv2ui_plugin_test.c'; then $(CYGPATH_W) 'ags/test/plugin/ags_lv2ui_plugin_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/plugin/ags_lv2ui_plugin_test.c'; fi`
 
+ags/test/lib/math_util_test-ags_math_util_test.o: ags/test/lib/ags_math_util_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_math_util_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/math_util_test-ags_math_util_test.o -MD -MP -MF ags/test/lib/$(DEPDIR)/math_util_test-ags_math_util_test.Tpo -c -o ags/test/lib/math_util_test-ags_math_util_test.o `test -f 'ags/test/lib/ags_math_util_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_math_util_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/math_util_test-ags_math_util_test.Tpo ags/test/lib/$(DEPDIR)/math_util_test-ags_math_util_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/lib/ags_math_util_test.c' object='ags/test/lib/math_util_test-ags_math_util_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_math_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/math_util_test-ags_math_util_test.o `test -f 'ags/test/lib/ags_math_util_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_math_util_test.c
+
+ags/test/lib/math_util_test-ags_math_util_test.obj: ags/test/lib/ags_math_util_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_math_util_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/math_util_test-ags_math_util_test.obj -MD -MP -MF ags/test/lib/$(DEPDIR)/math_util_test-ags_math_util_test.Tpo -c -o ags/test/lib/math_util_test-ags_math_util_test.obj `if test -f 'ags/test/lib/ags_math_util_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_math_util_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_math_util_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/math_util_test-ags_math_util_test.Tpo ags/test/lib/$(DEPDIR)/math_util_test-ags_math_util_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/lib/ags_math_util_test.c' object='ags/test/lib/math_util_test-ags_math_util_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_math_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/math_util_test-ags_math_util_test.obj `if test -f 'ags/test/lib/ags_math_util_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_math_util_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_math_util_test.c'; fi`
+
 ags/test/audio/midi/midi_buffer_util_test-ags_midi_buffer_util_test.o: ags/test/audio/midi/ags_midi_buffer_util_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_midi_buffer_util_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/midi/midi_buffer_util_test-ags_midi_buffer_util_test.o -MD -MP -MF ags/test/audio/midi/$(DEPDIR)/midi_buffer_util_test-ags_midi_buffer_util_test.Tpo -c -o ags/test/audio/midi/midi_buffer_util_test-ags_midi_buffer_util_test.o `test -f 'ags/test/audio/midi/ags_midi_buffer_util_test.c' || echo '$(srcdir)/'`ags/test/audio/midi/ags_midi_buffer_util_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/midi/$(DEPDIR)/midi_buffer_util_test-ags_midi_buffer_util_test.Tpo ags/test/audio/midi/$(DEPDIR)/midi_buffer_util_test-ags_midi_buffer_util_test.Po
@@ -23095,6 +23134,13 @@ ags_function_test.log: ags_function_test$(EXEEXT)
 ags_log_test.log: ags_log_test$(EXEEXT)
 	@p='ags_log_test$(EXEEXT)'; \
 	b='ags_log_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_math_util_test.log: ags_math_util_test$(EXEEXT)
+	@p='ags_math_util_test$(EXEEXT)'; \
+	b='ags_math_util_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -25623,6 +25669,7 @@ distclean: distclean-recursive
 	-rm -f ags/test/lib/$(DEPDIR)/conversion_test-ags_conversion_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/function_test-ags_function_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/log_test-ags_log_test.Po
+	-rm -f ags/test/lib/$(DEPDIR)/math_util_test-ags_math_util_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/solver_term_test-ags_solver_term_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Po
@@ -26568,6 +26615,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/lib/$(DEPDIR)/conversion_test-ags_conversion_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/function_test-ags_function_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/log_test-ags_log_test.Po
+	-rm -f ags/test/lib/$(DEPDIR)/math_util_test-ags_math_util_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/solver_term_test-ags_solver_term_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Po

@@ -40,6 +40,7 @@ ags_function_add_matrix
 ags_function_remove_matrix
 ags_function_new
 ags_solver_term_get_type
+ags_solver_term_parse
 ags_solver_term_new
 ags_complex_get_type
 ags_complex_alloc
@@ -51,6 +52,11 @@ ags_solver_vector_get_type
 ags_solver_vector_insert_term
 ags_solver_vector_remove_term
 ags_solver_vector_new
+ags_math_util_find_parantheses_all
+ags_math_util_find_exponent_parantheses
+ags_math_util_find_function_parantheses
+ags_math_util_find_term_parantheses
+ags_math_util_find_literals
 ags_string_util_escape_single_quote
 ags_strv_length
 ags_strv_contains
