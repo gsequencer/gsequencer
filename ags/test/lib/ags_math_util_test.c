@@ -338,20 +338,213 @@ ags_math_util_test_find_function_parantheses()
 	    close_position[0] == 12 &&
 	    close_position[1] == 28);
 
+  /* assert function #4 */
+  ags_math_util_find_function_parantheses(function_str_4,
+					  &open_position, &close_position,
+					  &open_position_count, &close_position_count);
 
-//TODO:JK: implement me
+  CU_ASSERT(open_position_count == 1);
+  CU_ASSERT(close_position_count == 1);
+
+  CU_ASSERT(open_position != NULL &&
+	    open_position[0] == 3);
+
+  CU_ASSERT(close_position != NULL &&
+	    close_position[0] == 7);
+
+  /* assert function #5 */
+  ags_math_util_find_function_parantheses(function_str_5,
+					  &open_position, &close_position,
+					  &open_position_count, &close_position_count);
+
+  CU_ASSERT(open_position_count == 1);
+  CU_ASSERT(close_position_count == 1);
+
+  CU_ASSERT(open_position != NULL &&
+	    open_position[0] == 4);
+
+  CU_ASSERT(close_position != NULL &&
+	    close_position[0] == 12);
+
+  /* assert function #6 */
+  ags_math_util_find_function_parantheses(function_str_6,
+					  &open_position, &close_position,
+					  &open_position_count, &close_position_count);
+
+  CU_ASSERT(open_position_count == 1);
+  CU_ASSERT(close_position_count == 1);
+
+  CU_ASSERT(open_position != NULL &&
+	    open_position[0] == 4);
+
+  CU_ASSERT(close_position != NULL &&
+	    close_position[0] == 12);
+
+  /* assert function #7 */
+  ags_math_util_find_function_parantheses(function_str_7,
+					  &open_position, &close_position,
+					  &open_position_count, &close_position_count);
+
+  CU_ASSERT(open_position_count == 1);
+  CU_ASSERT(close_position_count == 1);
+
+  CU_ASSERT(open_position != NULL &&
+	    open_position[0] == 20);
+
+  CU_ASSERT(close_position != NULL &&
+	    close_position[0] == 26);
+
+  /* assert function #8 */
+  ags_math_util_find_function_parantheses(function_str_8,
+					  &open_position, &close_position,
+					  &open_position_count, &close_position_count);
+
+  CU_ASSERT(open_position_count == 1);
+  CU_ASSERT(close_position_count == 1);
+
+  CU_ASSERT(open_position != NULL &&
+	    open_position[0] == 15);
+
+  CU_ASSERT(close_position != NULL &&
+	    close_position[0] == 23);
+  
+  /* assert function #9 */
+  ags_math_util_find_function_parantheses(function_str_9,
+					  &open_position, &close_position,
+					  &open_position_count, &close_position_count);
+
+  CU_ASSERT(open_position_count == 1);
+  CU_ASSERT(close_position_count == 1);
+
+  CU_ASSERT(open_position != NULL &&
+	    open_position[0] == 9);
+
+  CU_ASSERT(close_position != NULL &&
+	    close_position[0] == 19);
+  
+  /* assert function #10 */
+  ags_math_util_find_function_parantheses(function_str_10,
+					  &open_position, &close_position,
+					  &open_position_count, &close_position_count);
+
+  CU_ASSERT(open_position_count == 1);
+  CU_ASSERT(close_position_count == 1);
+
+  CU_ASSERT(open_position != NULL &&
+	    open_position[0] == 5);
+
+  CU_ASSERT(close_position != NULL &&
+	    close_position[0] == 24);
 }
 
 void
 ags_math_util_test_find_term_parantheses()
 {
-  //TODO:JK: implement me
+  gchar *term_str_0 = "a + b";
+  gchar *term_str_1 = "(a + b) * (a + b)";
+  gchar *term_str_2 = "(a + b + c) * (a + b + c) * (a + b + c)";
+  gchar *term_str_3 = "x * (1.0 / (a + b))";
+  
+  gint *open_position, *close_position;
+  
+  guint open_position_count, close_position_count;
+
+  /* assert function #0 */
+  ags_math_util_find_term_parantheses(term_str_0,
+				      &open_position, &close_position,
+				      &open_position_count, &close_position_count);
+
+  CU_ASSERT(open_position_count == 0);
+  CU_ASSERT(close_position_count == 0);
+
+  CU_ASSERT(open_position == NULL);
+
+  CU_ASSERT(close_position == NULL);
+  
+  /* assert function #1 */
+  ags_math_util_find_term_parantheses(term_str_1,
+				      &open_position, &close_position,
+				      &open_position_count, &close_position_count);
+
+  CU_ASSERT(open_position_count == 2);
+  CU_ASSERT(close_position_count == 2);
+
+  CU_ASSERT(open_position != NULL &&
+	    open_position[0] == 0 &&
+	    open_position[1] == 10);
+
+  CU_ASSERT(close_position != NULL &&
+	    close_position[0] == 6 &&
+	    close_position[1] == 16);
+
+  /* assert function #2 */
+  ags_math_util_find_term_parantheses(term_str_2,
+				      &open_position, &close_position,
+				      &open_position_count, &close_position_count);
+
+  CU_ASSERT(open_position_count == 3);
+  CU_ASSERT(close_position_count == 3);
+
+  CU_ASSERT(open_position != NULL &&
+	    open_position[0] == 0 &&
+	    open_position[1] == 14 &&
+	    open_position[2] == 28);
+
+  CU_ASSERT(close_position != NULL &&
+	    close_position[0] == 10 &&
+	    close_position[1] == 24 &&
+	    close_position[2] == 38);
+
+  /* assert function #3 */
+  ags_math_util_find_term_parantheses(term_str_3,
+				      &open_position, &close_position,
+				      &open_position_count, &close_position_count);
+
+  CU_ASSERT(open_position_count == 2);
+  CU_ASSERT(close_position_count == 2);
+
+  CU_ASSERT(open_position != NULL &&
+	    open_position[0] == 4 &&
+	    open_position[1] == 11);
+
+  CU_ASSERT(close_position != NULL &&
+	    close_position[0] == 17 &&
+	    close_position[1] == 18);
 }
 
 void
 ags_math_util_test_find_literals()
 {
-  //TODO:JK: implement me
+  gchar **literals;
+
+  gchar *literals_str_0 = "a0 + b0 * sin((x1 - x0) / f0)";
+
+  guint symbol_count;
+
+  literals = NULL;
+  symbol_count = 0;
+  
+  literals = ags_math_util_find_literals(literals_str_0,
+					 &symbol_count);
+
+  CU_ASSERT(symbol_count == 5);
+
+  CU_ASSERT(literals != NULL);
+
+  g_message("%s", literals[0]);
+  g_message("%s", literals[1]);
+  g_message("%s", literals[2]);
+  g_message("%s", literals[3]);
+  g_message("%s", literals[4]);
+  g_message("%s", literals[5]);
+
+  CU_ASSERT(g_strv_contains(literals, "a0"));
+  CU_ASSERT(g_strv_contains(literals, "b0"));
+
+  CU_ASSERT(g_strv_contains(literals, "x0"));
+  CU_ASSERT(g_strv_contains(literals, "x1"));
+
+  CU_ASSERT(g_strv_contains(literals, "f0"));
 }
 
 int

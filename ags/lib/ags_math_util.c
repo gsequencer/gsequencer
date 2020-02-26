@@ -688,12 +688,15 @@ ags_math_util_find_literals(gchar *str,
       g_regex_match(literal_regex, current_literal, 0, &literal_match_info);
     
       while(g_match_info_matches(literal_match_info)){
-    
+	gchar *tmp_literal;
+
+	tmp_literal = g_match_info_fetch(literal_match_info,
+					 1);
+	
 	if(literals == NULL){
 	  literals = (gchar **) g_malloc(2 * sizeof(gchar *));
 
-	  literals[0] = g_match_info_fetch(literal_match_info,
-					   1);
+	  literals[0] = g_strdup(tmp_literal);
 	  literals[1] = NULL;
 
 #ifdef AGS_DEBUG	    
@@ -702,17 +705,12 @@ ags_math_util_find_literals(gchar *str,
 	  
 	  n_literals++;
 	}else{
-	  gchar *tmp_literal;
-
-	  tmp_literal = g_match_info_fetch(literal_match_info,
- 					   1);
-	  
 	  if(!g_strv_contains(literals,
 			      tmp_literal)){
 	    literals = (gchar **) g_realloc(literals,
 					    (n_literals + 2) * sizeof(gchar *));
 
-	    literals[n_literals] = tmp_literal;
+	    literals[n_literals] = g_strdup(tmp_literal);
 	    literals[n_literals + 1] = NULL;
 
 #ifdef AGS_DEBUG	    
@@ -720,8 +718,6 @@ ags_math_util_find_literals(gchar *str,
 #endif
 	    
 	    n_literals++;
-	  }else{
-	    g_free(tmp_literal);
 	  }
 	}
 
@@ -747,23 +743,31 @@ ags_math_util_find_literals(gchar *str,
     if(next == -1){
       current_literal = g_strdup(str);
     }else{
+      if(strlen(str) - next > 0){
+	current_literal = g_strndup(str + next,
+				    strlen(str) - next);
+      }
+    }
+  }else{
+    if(strlen(str) - next > 0){
       current_literal = g_strndup(str + next,
 				  strlen(str) - next);
     }
-  }else{
-    current_literal = g_strndup(str + next,
-				strlen(str) - next);
   }
-
+  
   if(current_literal != NULL){
     g_regex_match(literal_regex, current_literal, 0, &literal_match_info);
     
     while(g_match_info_matches(literal_match_info)){    
+      gchar *tmp_literal;
+
+      tmp_literal = g_match_info_fetch(literal_match_info,
+				       1);
+	
       if(literals == NULL){
 	literals = (gchar **) g_malloc(2 * sizeof(gchar *));
 
-	literals[0] = g_match_info_fetch(literal_match_info,
-					 1);
+	literals[0] = g_strdup(tmp_literal);
 	literals[1] = NULL;
 
 #ifdef AGS_DEBUG	    
@@ -772,17 +776,12 @@ ags_math_util_find_literals(gchar *str,
 	  
 	n_literals++;
       }else{
-	gchar *tmp_literal;
-
-	tmp_literal = g_match_info_fetch(literal_match_info,
-					 1);
-	
 	if(!g_strv_contains(literals,
 			    tmp_literal)){
 	  literals = (gchar **) g_realloc(literals,
 					  (n_literals + 2) * sizeof(gchar *));
 
-	  literals[n_literals] = tmp_literal;
+	  literals[n_literals] = g_strdup(tmp_literal);
 	  literals[n_literals + 1] = NULL;
 
 #ifdef AGS_DEBUG	    
@@ -790,8 +789,6 @@ ags_math_util_find_literals(gchar *str,
 #endif
 	    
 	  n_literals++;
-	}else{
-	  g_free(tmp_literal);
 	}
       }
 
