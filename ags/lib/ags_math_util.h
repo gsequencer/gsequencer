@@ -41,6 +41,14 @@ void ags_math_util_find_term_parantheses(gchar *str,
 gchar** ags_math_util_find_literals(gchar *str,
 				    guint *symbol_count);
 
+gboolean ags_math_util_is_term(gchar *term);
+
+void ags_math_util_lookup_exponent(gchar *equation_str,
+				   gchar *exponent,
+				   gint **exponent_position, guint *exponent_count);
+void ags_math_util_lookup_function(gchar *equation_str,
+				   gchar *function,
+				   gint **function_position, guint *function_count);
 void ags_math_util_lookup_term(gchar *equation_str,
 			       gchar *term,
 			       gint **term_position, guint *term_count);

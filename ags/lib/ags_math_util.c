@@ -596,7 +596,7 @@ ags_math_util_find_literals(gchar *str,
   static const GRegex *function_regex = NULL;
   static const GRegex *literal_regex = NULL;
 
-  static const gchar *function_pattern = "(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)|([\\s\\+\\-%\\*\\/\\(\\)\\^\\=])";
+  static const gchar *function_pattern = "(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)|([\\s\\+\\-%\\*\\/\\(\\)\\^\\|\\=])";
   static const gchar *literal_pattern = "([a-zA-Z][0-9]*)";
 
   if(str == NULL){
@@ -811,6 +811,150 @@ ags_math_util_find_literals(gchar *str,
   }
 
   return(literals);
+}
+
+/**
+ * ags_math_util_is_term:
+ * @term: the term
+ * 
+ * Check if @term is a term.
+ * 
+ * Returns: %TRUE if it is a term, otherwise %FALSE
+ * 
+ * Since: 3.2.0
+ */
+gboolean
+ags_math_util_is_term(gchar *term)
+{
+  GMatchInfo *function_match_info;
+  GMatchInfo *term_match_info;
+  
+  static const GRegex *function_regex = NULL;
+  static const GRegex *term_regex = NULL;
+
+  static const gchar *function_pattern = "^(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)";
+  static const gchar *term_pattern = "^([\\s]*)([\\+\\-]?[\\s]*)(([0-9]+[\\s]*\\*[\\s]*)|([0-9]*[\\s]*))([a-zA-Z][0-9]*)([\\s]*[\\+\\-][\\s]*[0-9]+)?";
+
+  if(term == NULL){
+    return(FALSE);
+  }
+
+  /* compile regex */
+  g_mutex_lock(&regex_mutex);
+
+  if(function_regex == NULL){
+    error = NULL;
+    function_regex = g_regex_new(function_pattern,
+				 (G_REGEX_EXTENDED),
+				 0,
+				 &error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  if(term_regex == NULL){
+    error = NULL;
+    term_regex = g_regex_new(term_pattern,
+			     (G_REGEX_EXTENDED),
+			     0,
+			     &error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  g_mutex_unlock(&regex_mutex);
+
+  /* check is function */
+  g_regex_match(function_regex, str, 0, &function_match_info);
+  
+  if(g_match_info_matches(function_match_info)){
+    g_match_info_free(function_match_info);
+
+    return(FALSE);
+  }
+
+  /* check is term */
+  g_regex_match(term_regex, str, 0, &term_match_info);
+  
+  if(g_match_info_matches(term_match_info)){
+    g_match_info_free(term_match_info);
+
+    return(TRUE);
+  }
+
+  return(FALSE);
+}
+
+/**
+ * ags_math_util_lookup_exponent:
+ * @equation_str: the equation as string
+ * @exponent: the exponent
+ * @exponent_position: (out): the exponent position return location
+ * @exponent_count: (out): the exponent count return location
+ * 
+ * Lookup @exponent within @equation_str and obtain @exponent_position of @exponent_count occurrences.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_math_util_lookup_exponent(gchar *equation_str,
+			      gchar *exponent,
+			      gint **exponent_position, guint *exponent_count)
+{
+  if(equation_str == NULL ||
+     exponent == NULL){
+    if(exponent_position != NULL){
+      exponent_position[0] = NULL;
+    }
+    
+    if(exponent_count != NULL){
+      exponent_count[0] = 0;
+    }
+
+    return;
+  }
+
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_math_util_lookup_function:
+ * @equation_str: the equation as string
+ * @function: the function
+ * @function_position: (out): the function position return location
+ * @function_count: (out): the function count return location
+ * 
+ * Lookup @function within @equation_str and obtain @function_position of @function_count occurrences.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_math_util_lookup_function(gchar *equation_str,
+			      gchar *function,
+			      gint **function_position, guint *function_count)
+{
+  if(equation_str == NULL ||
+     function == NULL){
+    if(function_position != NULL){
+      function_position[0] = NULL;
+    }
+    
+    if(function_count != NULL){
+      function_count[0] = 0;
+    }
+
+    return;
+  }
+
+  //TODO:JK: implement me
 }
 
 /**

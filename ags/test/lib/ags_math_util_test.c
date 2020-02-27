@@ -34,6 +34,15 @@ void ags_math_util_test_find_exponent_parantheses();
 void ags_math_util_test_find_function_parantheses();
 void ags_math_util_test_find_term_parantheses();
 void ags_math_util_test_find_literals();
+void ags_math_util_test_lookup_exponent();
+void ags_math_util_test_lookup_function();
+void ags_math_util_test_lookup_term();
+void ags_math_util_test_add_term();
+void ags_math_util_test_subtract_term();
+void ags_math_util_test_multiply_term();
+void ags_math_util_test_divide_term();
+void ags_math_util_test_raise_power_term();
+void ags_math_util_test_extract_root_term();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -540,6 +549,117 @@ ags_math_util_test_find_literals()
   CU_ASSERT(g_strv_contains(literals, "f0"));
 }
 
+void
+ags_math_util_test_lookup_exponent()
+{
+  gchar *equation_str_0 = "2^(x0 - 8) = 0";
+  gchar *equation_str_1 = "2^(x1 - x0) = 0";
+  gchar *equation_str_2 = "2^(4 * x0 - 32) = 0";
+  gchar *equation_str_3 = "2^(-x0 + 8) - 2^(4x0 - 32) = 0";
+  gchar *equation_str_4 = "exp(-x0 + 8) = 0";
+  gchar *term_0 = "x0 - 8";
+
+  gint *term_position;
+  guint term_count;
+  
+  /* assert equation string #0 */
+  ags_math_util_lookup_exponent(equation_str_0,
+				term_0,
+				&term_position, &term_count);
+
+  CU_ASSERT(term_position != NULL);
+  CU_ASSERT(term_count == 1);
+
+  CU_ASSERT(term_position[0] == 3);
+  
+  /* assert equation string #1 */
+  ags_math_util_lookup_exponent(equation_str_1,
+				term_0,
+				&term_position, &term_count);
+
+  CU_ASSERT(term_position == NULL);
+  CU_ASSERT(term_count == 0);
+
+  /* assert equation string #2 */
+  ags_math_util_lookup_exponent(equation_str_2,
+				term_0,
+				&term_position, &term_count);
+
+  CU_ASSERT(term_position != NULL);
+  CU_ASSERT(term_count == 1);
+
+  CU_ASSERT(term_position[0] == 3);
+  
+  /* assert equation string #3 */
+  ags_math_util_lookup_exponent(equation_str_3,
+				term_0,
+				&term_position, &term_count);
+
+  CU_ASSERT(term_position != NULL);
+  CU_ASSERT(term_count == 2);
+
+  CU_ASSERT(term_position[0] == 3);
+  CU_ASSERT(term_position[1] == 17);
+
+  /* assert equation string #4 */
+  ags_math_util_lookup_exponent(equation_str_4,
+				term_0,
+				&term_position, &term_count);
+
+  CU_ASSERT(term_position != NULL);
+  CU_ASSERT(term_count == 1);
+
+  CU_ASSERT(term_position[0] == 4);
+}
+
+void
+ags_math_util_test_lookup_function()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_math_util_test_lookup_term()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_math_util_test_add_term()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_math_util_test_subtract_term()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_math_util_test_multiply_term()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_math_util_test_divide_term()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_math_util_test_raise_power_term()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_math_util_test_extract_root_term()
+{
+  //TODO:JK: implement me
+}
+
 int
 main(int argc, char **argv)
 {
@@ -564,7 +684,16 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_math_util.c find exponent parantheses", ags_math_util_test_find_exponent_parantheses) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c find function parantheses", ags_math_util_test_find_function_parantheses) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c find term parantheses", ags_math_util_test_find_term_parantheses) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_math_util.c find literals", ags_math_util_test_find_literals) == NULL)){
+     (CU_add_test(pSuite, "test of ags_math_util.c find literals", ags_math_util_test_find_literals) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_math_util.c lookup exponent", ags_math_util_test_lookup_exponent) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_math_util.c lookup function", ags_math_util_test_lookup_function) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_math_util.c lookup term", ags_math_util_test_lookup_term) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_math_util.c add term", ags_math_util_test_add_term) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_math_util.c subtract term", ags_math_util_test_subtract_term) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_math_util.c multiply term", ags_math_util_test_multiply_term) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_math_util.c divide term", ags_math_util_test_divide_term) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_math_util.c raise power term", ags_math_util_test_raise_power_term) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_math_util.c extract root term", ags_math_util_test_extract_root_term) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();
