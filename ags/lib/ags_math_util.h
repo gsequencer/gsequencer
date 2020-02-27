@@ -41,6 +41,25 @@ void ags_math_util_find_term_parantheses(gchar *str,
 gchar** ags_math_util_find_literals(gchar *str,
 				    guint *symbol_count);
 
+void ags_math_util_lookup_term(gchar *equation_str,
+			       gchar *term,
+			       gint **term_position, guint *term_count);
+
+gchar* ags_math_util_add_term(gchar *equation_str,
+			      gchar *term);
+gchar* ags_math_util_subtract_term(gchar *equation_str,
+				   gchar *term);
+
+gchar* ags_math_util_multiply_term(gchar *equation_str,
+				   gchar *term);
+gchar* ags_math_util_divide_term(gchar *equation_str,
+				 gchar *term);
+
+gchar* ags_math_util_raise_power_term(gchar *equation_str,
+				      gchar *term);
+gchar* ags_math_util_extract_root_term(gchar *equation_str,
+				       gchar *term);
+
 G_END_DECLS
 
 #endif /*__AGS_MATH_UTIL__*/

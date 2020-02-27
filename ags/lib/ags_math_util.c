@@ -812,3 +812,209 @@ ags_math_util_find_literals(gchar *str,
 
   return(literals);
 }
+
+/**
+ * ags_math_util_lookup_term:
+ * @equation_str: the equation as string
+ * @term: the term
+ * @term_position: (out): the term position return location
+ * @term_count: (out): the term count return location
+ * 
+ * Lookup @term within @equation_str and obtain @term_position of @term_count occurrences.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_math_util_lookup_term(gchar *equation_str,
+			  gchar *term,
+			  gint **term_position, guint *term_count)
+{
+  if(equation_str == NULL ||
+     term == NULL){
+    if(term_position != NULL){
+      term_position[0] = NULL;
+    }
+    
+    if(term_count != NULL){
+      term_count[0] = 0;
+    }
+
+    return;
+  }
+
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_math_util_add_term:
+ * @equation_str: the equation as string
+ * @term: the term
+ * 
+ * Add @term of @equation_str.
+ * 
+ * Returns: the resulting equation
+ * 
+ * Since: 3.2.0
+ */
+gchar*
+ags_math_util_add_term(gchar *equation_str,
+		       gchar *term)
+{
+  gchar *resulting_equation_str;
+
+  if(equation_str == NULL ||
+     term == NULL){
+    return(NULL);
+  }
+  
+  resulting_equation_str = NULL;
+  
+  //TODO:JK: implement me
+
+  return(resulting_equation_str);
+}
+
+/**
+ * ags_math_util_subtract_term:
+ * @equation_str: the equation as string
+ * @term: the term
+ * 
+ * Subtract @term of @equation_str.
+ * 
+ * Returns: the resulting equation
+ * 
+ * Since: 3.2.0
+ */
+gchar*
+ags_math_util_subtract_term(gchar *equation_str,
+			    gchar *term)
+{
+  gchar *resulting_equation_str;
+
+  if(equation_str == NULL ||
+     term == NULL){
+    return(NULL);
+  }
+  
+  resulting_equation_str = NULL;
+  
+  //TODO:JK: implement me
+
+  return(resulting_equation_str);
+}
+
+/**
+ * ags_math_util_multiply_term:
+ * @equation_str: the equation as string
+ * @term: the term
+ * 
+ * Multiply @term of @equation_str.
+ * 
+ * Returns: the resulting equation
+ * 
+ * Since: 3.2.0
+ */
+gchar*
+ags_math_util_multiply_term(gchar *equation_str,
+			    gchar *term)
+{
+  gchar *resulting_equation_str;
+
+  if(equation_str == NULL ||
+     term == NULL){
+    return(NULL);
+  }
+  
+  resulting_equation_str = NULL;
+  
+  //TODO:JK: implement me
+
+  return(resulting_equation_str);
+}
+
+/**
+ * ags_math_util_divide_term:
+ * @equation_str: the equation as string
+ * @term: the term
+ * 
+ * Divide @term of @equation_str.
+ * 
+ * Returns: the resulting equation
+ * 
+ * Since: 3.2.0
+ */
+gchar*
+ags_math_util_divide_term(gchar *equation_str,
+			  gchar *term)
+{
+  gchar *resulting_equation_str;
+
+  if(equation_str == NULL ||
+     term == NULL){
+    return(NULL);
+  }
+  
+  resulting_equation_str = NULL;
+  
+  //TODO:JK: implement me
+
+  return(resulting_equation_str);
+}
+
+/**
+ * ags_math_util_raise_power_term:
+ * @equation_str: the equation as string
+ * @term: the term
+ * 
+ * Raise power @term of @equation_str.
+ * 
+ * Returns: the resulting equation
+ * 
+ * Since: 3.2.0
+ */
+gchar*
+ags_math_util_raise_power_term(gchar *equation_str,
+			       gchar *term)
+{
+  gchar *resulting_equation_str;
+
+  if(equation_str == NULL ||
+     term == NULL){
+    return(NULL);
+  }
+  
+  resulting_equation_str = NULL;
+  
+  //TODO:JK: implement me
+
+  return(resulting_equation_str);
+}
+
+/**
+ * ags_math_util_extract_root_term:
+ * @equation_str: the equation as string
+ * @term: the term
+ * 
+ * Extract root @term of @equation_str.
+ * 
+ * Returns: the resulting equation
+ * 
+ * Since: 3.2.0
+ */
+gchar*
+ags_math_util_extract_root_term(gchar *equation_str,
+				gchar *term)
+{
+  gchar *resulting_equation_str;
+
+  if(equation_str == NULL ||
+     term == NULL){
+    return(NULL);
+  }
+  
+  resulting_equation_str = NULL;
+  
+  //TODO:JK: implement me
+
+  return(resulting_equation_str);
+}
