@@ -34,6 +34,7 @@ void ags_math_util_test_find_exponent_parantheses();
 void ags_math_util_test_find_function_parantheses();
 void ags_math_util_test_find_term_parantheses();
 void ags_math_util_test_find_literals();
+void ags_math_util_test_is_term();
 void ags_math_util_test_lookup_exponent();
 void ags_math_util_test_lookup_function();
 void ags_math_util_test_lookup_term();
@@ -550,6 +551,12 @@ ags_math_util_test_find_literals()
 }
 
 void
+ags_math_util_test_is_term()
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_math_util_test_lookup_exponent()
 {
   gchar *equation_str_0 = "2^(x0 - 8) = 0";
@@ -685,6 +692,7 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_math_util.c find function parantheses", ags_math_util_test_find_function_parantheses) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c find term parantheses", ags_math_util_test_find_term_parantheses) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c find literals", ags_math_util_test_find_literals) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_math_util.c is term", ags_math_util_test_is_term) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c lookup exponent", ags_math_util_test_lookup_exponent) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c lookup function", ags_math_util_test_lookup_function) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c lookup term", ags_math_util_test_lookup_term) == NULL) ||

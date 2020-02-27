@@ -832,7 +832,7 @@ ags_math_util_is_term(gchar *term)
   static const GRegex *function_regex = NULL;
   static const GRegex *term_regex = NULL;
 
-  static const gchar *function_pattern = "^(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)";
+  static const gchar *function_pattern = "^([\\s]*)([\\+\\-]?[\\s]*)(([0-9]+[\\s]*\\*[\\s]*)|([0-9]*[\\s]*))(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)";
   static const gchar *term_pattern = "^([\\s]*)([\\+\\-]?[\\s]*)(([0-9]+[\\s]*\\*[\\s]*)|([0-9]*[\\s]*))([a-zA-Z][0-9]*)([\\s]*[\\+\\-][\\s]*[0-9]+)?";
 
   if(term == NULL){
