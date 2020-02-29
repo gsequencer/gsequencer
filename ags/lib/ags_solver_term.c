@@ -54,6 +54,7 @@ enum{
   PROP_EXPONENT,
   PROP_COEFFICIENT_VALUE,
   PROP_EXPONENT_VALUE,
+  PROP_SUMMAND_VALUE,
 };
 
 static gpointer ags_solver_term_parent_class = NULL;
@@ -202,6 +203,28 @@ ags_solver_term_class_init(AgsSolverTermClass *solver_term)
   g_object_class_install_property(gobject,
 				  PROP_EXPONENT_VALUE,
 				  param_spec);
+
+  /**
+   * AgsSolverTerm:summand-value:
+   *
+   * Summand value.
+   * 
+   * Since: 3.2.0
+   */
+  param_spec = g_param_spec_boxed("summand-value",
+				  i18n_pspec("summand value"),
+				  i18n_pspec("The summand value"),
+				  AGS_TYPE_COMPLEX,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SUMMAND_VALUE,
+				  param_spec);
+}
+
+GQuark
+ags_solver_term_error_quark()
+{
+  return(g_quark_from_static_string("ags-solver-term-error-quark"));
 }
 
 void
@@ -223,8 +246,12 @@ ags_solver_term_init(AgsSolverTerm *solver_term)
   ags_complex_set(&(solver_term->coefficient_value),
 		  z);
 
-  z = 0.0 + I * 0.0;
+  z = 1.0 + I * 0.0;
   ags_complex_set(&(solver_term->exponent_value),
+		  z);
+
+  z = 0.0 + I * 0.0;
+  ags_complex_set(&(solver_term->summand_value),
 		  z);
 }
 
@@ -364,6 +391,20 @@ ags_solver_term_set_property(GObject *gobject,
     g_rec_mutex_unlock(solver_term_mutex);
   }
   break;
+  case PROP_SUMMAND_VALUE:
+  {
+    AgsComplex *summand_value;
+
+    summand_value = (AgsComplex *) g_value_get_boxed(value);
+
+    g_rec_mutex_lock(solver_term_mutex);
+
+    ags_complex_set(&(solver_term->summand_value),
+		    ags_complex_get(summand_value));
+
+    g_rec_mutex_unlock(solver_term_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -440,6 +481,15 @@ ags_solver_term_get_property(GObject *gobject,
     g_rec_mutex_unlock(solver_term_mutex);
   }
   break;
+  case PROP_SUMMAND_VALUE:
+  {
+    g_rec_mutex_lock(solver_term_mutex);
+
+    g_value_set_boxed(value, &(solver_term->summand_value));
+
+    g_rec_mutex_unlock(solver_term_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -453,10 +503,39 @@ ags_solver_term_finalize(GObject *gobject)
 
   solver_term = AGS_SOLVER_TERM(gobject);
 
+  g_free(solver_term->term);
+
+  g_free(solver_term->coefficient);
+  g_free(solver_term->symbol);
+  g_free(solver_term->exponent);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_solver_term_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_solver_term_update:
+ * @solver_term: the #AgsSolverTerm
+ * 
+ * Update string representation of @solver_term.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_solver_term_update(AgsSolverTerm *solver_term)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_solver_term_parse:
+ * @solver_term: the #AgsSolverTerm
+ * @term: the term as string
+ * 
+ * Parse @term and apply to @solver_term.
+ * 
+ * Since: 3.2.0
+ */
 void
 ags_solver_term_parse(AgsSolverTerm *solver_term,
 		      gchar *term)
@@ -470,7 +549,8 @@ ags_solver_term_parse(AgsSolverTerm *solver_term,
   
   complex z;
 
-  if(!AGS_IS_SOLVER_TERM(solver_term)){
+  if(!AGS_IS_SOLVER_TERM(solver_term) ||
+     term == NULL){
     return;
   }
 
@@ -478,10 +558,224 @@ ags_solver_term_parse(AgsSolverTerm *solver_term,
   ags_complex_set(&(coefficient_value),
 		  z);
 
-  z = 0.0 + I * 0.0;
+  z = 1.0 + I * 0.0;
   ags_complex_set(&(exponent_value),
 		  z);
   
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_solver_term_add:
+ * @term_a: the first summand
+ * @term_b: the second summand
+ * 
+ * Perform addition of @term_a and @term_b. Both summands need to have the very same
+ * symbol and exponent, otherwise %NULL returned and error is appropriately set.
+ * 
+ * Returns: the newly instantiated #AgsSolverTerm or %NULL
+ * 
+ * Since: 3.2.0
+ */
+AgsSolverTerm*
+ags_solver_term_add(AgsSolverTerm *term_a,
+		    AgsSolverTerm *term_b,
+		    GError **error)
+{
+  AgsSolverTerm *solver_term;
+
+  gchar *symbol_a, *symbol_b;
+  gchar *exponent_a, *exponent_b;
+
+  complex coefficient_a, coefficient_b;
+  complex summand_a, summand_b;
+  
+  gboolean is_symbol_matching;
+  gboolean is_exponent_matching;
+
+  GRecMutex *term_a_mutex;
+  GRecMutex *term_b_mutex;
+  
+  if(!AGS_IS_SOLVER_TERM(term_a) ||
+     !AGS_IS_SOLVER_TERM(term_b)){
+    return(NULL);
+  }
+
+  is_symbol_matching = FALSE;
+  is_exponent_matching = FALSE;
+  
+  g_object_get(term_a,
+	       "symbol", &symbol_a,
+	       NULL);
+
+  g_object_get(term_b,
+	       "symbol", &symbol_b,
+	       NULL);
+
+  is_symbol_matching = (symbol_a != NULL &&
+			symbol_b != NULL &&
+			!g_ascii_strcasecmp0(symbol_a,
+					     symbol_b)) ? TRUE: FALSE;
+
+  g_free(symbol_a);
+  g_free(symbol_b);
+  
+  if(!is_symbol_matching){
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_SOLVER_TERM_ERROR,
+		  AGS_SOLVER_TERM_ERROR_SYMBOL_MISMATCH,
+		  "symbols don't match");
+    }
+    
+    return(NULL);
+  }
+
+  g_object_get(term_a,
+	       "exponent", &exponent_a,
+	       NULL);
+
+  g_object_get(term_b,
+	       "exponent", &exponent_b,
+	       NULL);
+
+  is_exponent_matching = (exponent_a != NULL &&
+			  exponent_b != NULL &&
+			  !g_ascii_strcasecmp0(exponent_a,
+					       exponent_b)) ? TRUE: FALSE;
+  
+  g_free(exponent_a);
+  g_free(exponent_b);
+  
+  if(!is_exponent_matching){
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_SOLVER_TERM_ERROR,
+		  AGS_SOLVER_TERM_ERROR_EXPONENT_MISMATCH,
+		  "exponents don't match");
+    }
+    
+    return(NULL);
+  }
+    
+  solver_term = ags_solver_term_new();
+
+  term_a_mutex = AGS_SOLVER_TERM_GET_OBJ_MUTEX(term_a);
+  term_b_mutex = AGS_SOLVER_TERM_GET_OBJ_MUTEX(term_b);
+  
+  g_object_get(term_a,
+	       "symbol", &symbol_a,
+	       "exponent", &exponent_a,
+	       NULL);
+
+  g_object_set(solver_term,
+	       "symbol", symbol_a,
+	       "exponent", exponent_a,
+	       NULL);
+
+  /* get coeffiecient and summand of term a */
+  g_rec_mutex_lock(term_a_mutex);
+
+  coefficient_a = ags_complex_get(&(term_a->coefficient_value));
+  summand_a = ags_complex_get(&(term_a->summand_value));
+  
+  g_rec_mutex_unlock(term_a_mutex);
+
+  /* get coeffiecient and summand of term b */
+  g_rec_mutex_lock(term_b_mutex);
+
+  coefficient_b = ags_complex_get(&(term_b->coefficient_value));
+  summand_b = ags_complex_get(&(term_b->summand_value));
+
+  g_rec_mutex_unlock(term_b_mutex);
+
+  /* add */
+  ags_complex_set(&(solver_term->coefficient_value),
+		  coefficient_a + coefficient_b);
+  
+  ags_complex_set(&(solver_term->summand_value),
+		  summand_a + summand_b);
+
+  ags_solver_term_update(solver_term);
+  
+  g_free(symbol_a);
+  g_free(exponent_a);
+  
+  return(solver_term);
+}
+
+AgsSolverTerm*
+ags_solver_term_subtract(AgsSolverTerm *term_a,
+			 AgsSolverTerm *term_b,
+			 GError **error)
+{
+  AgsSolverTerm *solver_term;
+  
+  if(!AGS_IS_SOLVER_TERM(term_a) ||
+     !AGS_IS_SOLVER_TERM(term_b)){
+    return(NULL);
+  }
+
+  //TODO:JK: implement me
+}
+
+AgsSolverTerm*
+ags_solver_term_multiply(AgsSolverTerm *term_a,
+			 AgsSolverTerm *term_b,
+			 GError **error)
+{
+  AgsSolverTerm *solver_term;
+  
+  if(!AGS_IS_SOLVER_TERM(term_a) ||
+     !AGS_IS_SOLVER_TERM(term_b)){
+    return(NULL);
+  }
+
+  //TODO:JK: implement me
+}
+
+AgsSolverTerm*
+ags_solver_term_divide(AgsSolverTerm *term_a,
+		       AgsSolverTerm *term_b,
+		       GError **error)
+{
+  AgsSolverTerm *solver_term;
+  
+  if(!AGS_IS_SOLVER_TERM(term_a) ||
+     !AGS_IS_SOLVER_TERM(term_b)){
+    return(NULL);
+  }
+
+  //TODO:JK: implement me
+}
+
+AgsSolverTerm*
+ags_solver_term_raise_power(AgsSolverTerm *term_a,
+			    AgsSolverTerm *term_b,
+			    GError **error)
+{
+  AgsSolverTerm *solver_term;
+  
+  if(!AGS_IS_SOLVER_TERM(term_a) ||
+     !AGS_IS_SOLVER_TERM(term_b)){
+    return(NULL);
+  }
+
+  //TODO:JK: implement me
+}
+
+AgsSolverTerm*
+ags_solver_term_extract_root(AgsSolverTerm *term_a,
+			     AgsSolverTerm *term_b,
+			     GError **error)
+{
+  AgsSolverTerm *solver_term;
+  
+  if(!AGS_IS_SOLVER_TERM(term_a) ||
+     !AGS_IS_SOLVER_TERM(term_b)){
+    return(NULL);
+  }
+
   //TODO:JK: implement me
 }
 

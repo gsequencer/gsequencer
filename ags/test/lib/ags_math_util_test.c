@@ -38,12 +38,6 @@ void ags_math_util_test_is_term();
 void ags_math_util_test_lookup_exponent();
 void ags_math_util_test_lookup_function();
 void ags_math_util_test_lookup_term();
-void ags_math_util_test_add_term();
-void ags_math_util_test_subtract_term();
-void ags_math_util_test_multiply_term();
-void ags_math_util_test_divide_term();
-void ags_math_util_test_raise_power_term();
-void ags_math_util_test_extract_root_term();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -592,10 +586,8 @@ ags_math_util_test_lookup_exponent()
 				term_0,
 				&term_position, &term_count);
 
-  CU_ASSERT(term_position != NULL);
-  CU_ASSERT(term_count == 1);
-
-  CU_ASSERT(term_position[0] == 3);
+  CU_ASSERT(term_position == NULL);
+  CU_ASSERT(term_count == 0);
   
   /* assert equation string #3 */
   ags_math_util_lookup_exponent(equation_str_3,
@@ -603,10 +595,9 @@ ags_math_util_test_lookup_exponent()
 				&term_position, &term_count);
 
   CU_ASSERT(term_position != NULL);
-  CU_ASSERT(term_count == 2);
+  CU_ASSERT(term_count == 1);
 
   CU_ASSERT(term_position[0] == 3);
-  CU_ASSERT(term_position[1] == 17);
 
   /* assert equation string #4 */
   ags_math_util_lookup_exponent(equation_str_4,
@@ -627,42 +618,6 @@ ags_math_util_test_lookup_function()
 
 void
 ags_math_util_test_lookup_term()
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_math_util_test_add_term()
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_math_util_test_subtract_term()
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_math_util_test_multiply_term()
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_math_util_test_divide_term()
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_math_util_test_raise_power_term()
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_math_util_test_extract_root_term()
 {
   //TODO:JK: implement me
 }
@@ -695,13 +650,7 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_math_util.c is term", ags_math_util_test_is_term) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c lookup exponent", ags_math_util_test_lookup_exponent) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c lookup function", ags_math_util_test_lookup_function) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_math_util.c lookup term", ags_math_util_test_lookup_term) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_math_util.c add term", ags_math_util_test_add_term) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_math_util.c subtract term", ags_math_util_test_subtract_term) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_math_util.c multiply term", ags_math_util_test_multiply_term) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_math_util.c divide term", ags_math_util_test_divide_term) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_math_util.c raise power term", ags_math_util_test_raise_power_term) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_math_util.c extract root term", ags_math_util_test_extract_root_term) == NULL)){
+     (CU_add_test(pSuite, "test of ags_math_util.c lookup term", ags_math_util_test_lookup_term) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

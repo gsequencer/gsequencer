@@ -45,28 +45,13 @@ gboolean ags_math_util_is_term(gchar *term);
 
 void ags_math_util_lookup_exponent(gchar *equation_str,
 				   gchar *exponent,
-				   gint **exponent_position, guint *exponent_count);
+				   gint **exponent_position, guint *exponent_position_count);
 void ags_math_util_lookup_function(gchar *equation_str,
 				   gchar *function,
-				   gint **function_position, guint *function_count);
+				   gint **function_position, guint *function_position_count);
 void ags_math_util_lookup_term(gchar *equation_str,
 			       gchar *term,
-			       gint **term_position, guint *term_count);
-
-gchar* ags_math_util_add_term(gchar *equation_str,
-			      gchar *term);
-gchar* ags_math_util_subtract_term(gchar *equation_str,
-				   gchar *term);
-
-gchar* ags_math_util_multiply_term(gchar *equation_str,
-				   gchar *term);
-gchar* ags_math_util_divide_term(gchar *equation_str,
-				 gchar *term);
-
-gchar* ags_math_util_raise_power_term(gchar *equation_str,
-				      gchar *term);
-gchar* ags_math_util_extract_root_term(gchar *equation_str,
-				       gchar *term);
+			       gint **term_position, guint *term_position_count);
 
 G_END_DECLS
 

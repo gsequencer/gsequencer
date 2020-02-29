@@ -39,6 +39,14 @@ G_BEGIN_DECLS
 typedef struct _AgsSolverTerm AgsSolverTerm;
 typedef struct _AgsSolverTermClass AgsSolverTermClass;
 
+#define AGS_SOLVER_TERM_ERROR (ags_solver_term_error_quark())
+
+typedef enum{
+  AGS_SOLVER_TERM_ERROR_SYMBOL_MISMATCH,
+  AGS_SOLVER_TERM_ERROR_EXPONENT_MISMATCH,
+  AGS_SOLVER_TERM_ERROR_DIVISION_BY_ZERO,
+}AgsSolverTermError;
+
 struct _AgsSolverTerm
 {
   GObject gobject;
@@ -55,6 +63,7 @@ struct _AgsSolverTerm
 
   AgsComplex coefficient_value;
   AgsComplex exponent_value;
+  AgsComplex summand_value;
 };
 
 struct _AgsSolverTermClass
@@ -64,8 +73,32 @@ struct _AgsSolverTermClass
 
 GType ags_solver_term_get_type(void);
 
+GQuark ags_solver_term_error_quark();
+
+void ags_solver_term_update(AgsSolverTerm *solver_term);
 void ags_solver_term_parse(AgsSolverTerm *solver_term,
 			   gchar *term);
+
+AgsSolverTerm* ags_solver_term_add(AgsSolverTerm *term_a,
+				   AgsSolverTerm *term_b,
+				   GError **error);
+AgsSolverTerm* ags_solver_term_subtract(AgsSolverTerm *term_a,
+					AgsSolverTerm *term_b,
+					GError **error);
+
+AgsSolverTerm* ags_solver_term_multiply(AgsSolverTerm *term_a,
+					AgsSolverTerm *term_b,
+					GError **error);
+AgsSolverTerm* ags_solver_term_divide(AgsSolverTerm *term_a,
+				      AgsSolverTerm *term_b,
+				      GError **error);
+
+AgsSolverTerm* ags_solver_term_raise_power(AgsSolverTerm *term_a,
+					   AgsSolverTerm *term_b,
+					   GError **error);
+AgsSolverTerm* ags_solver_term_extract_root(AgsSolverTerm *term_a,
+					    AgsSolverTerm *term_b,
+					    GError **error);
 
 AgsSolverTerm* ags_solver_term_new();
 

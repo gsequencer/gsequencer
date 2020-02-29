@@ -187,7 +187,7 @@ ags_math_util_find_exponent_parantheses(gchar *str,
 
     /* scan prev */
     if(iter > str){
-      for(tmp_iter = iter - 1; tmp_iter[0] == ' ' && tmp_iter >= str; tmp_iter--);
+      for(tmp_iter = iter - 1; tmp_iter[0] == ' ' && tmp_iter > str; tmp_iter--);
 	
       if(tmp_iter[0] == '^'){
 	is_exponent = TRUE;
@@ -898,31 +898,113 @@ ags_math_util_is_term(gchar *term)
  * @equation_str: the equation as string
  * @exponent: the exponent
  * @exponent_position: (out): the exponent position return location
- * @exponent_count: (out): the exponent count return location
+ * @exponent_position_count: (out): the exponent count return location
  * 
- * Lookup @exponent within @equation_str and obtain @exponent_position of @exponent_count occurrences.
+ * Lookup @exponent within @equation_str and obtain @exponent_position of @exponent_position_count occurrences.
  * 
  * Since: 3.2.0
  */
 void
 ags_math_util_lookup_exponent(gchar *equation_str,
 			      gchar *exponent,
-			      gint **exponent_position, guint *exponent_count)
+			      gint **exponent_position, guint *exponent_position_count)
 {
+  gchar *exponent_swapped_sign;
+  
+  gint *exponent_pos;
+  gint *exponent_open_position, *exponent_close_position;
+  
+  guint exponent_pos_count;
+  guint exponent_open_position_count, exponent_close_position_count;
+  guint exponent_length;
+  guint i;
+  
   if(equation_str == NULL ||
      exponent == NULL){
     if(exponent_position != NULL){
       exponent_position[0] = NULL;
     }
     
-    if(exponent_count != NULL){
-      exponent_count[0] = 0;
+    if(exponent_position_count != NULL){
+      exponent_position_count[0] = 0;
     }
 
     return;
   }
 
-  //TODO:JK: implement me
+  exponent_pos = NULL;
+  exponent_pos_count = 0;
+
+  exponent_open_position = NULL;
+  exponent_open_position_count = 0;
+
+  exponent_close_position = NULL;
+  exponent_close_position_count = 0;
+
+  exponent_length = strlen(exponent);
+    
+  ags_math_util_find_exponent_parantheses(equation_str,
+					  &exponent_open_position, &exponent_close_position,
+					  &exponent_open_position_count, &exponent_close_position_count);
+
+  /* attempt #0 original sign */
+  for(i = 0; i < exponent_open_position_count; i++){
+    gchar *tmp_str;
+    gchar *iter, *tmp_iter;
+    
+    tmp_str = g_strdup_printf("%.*s",
+			      exponent_close_position[i] - exponent_open_position[i], equation_str + exponent_open_position[i]);
+
+    iter = tmp_str;
+
+    while((iter = g_strstr_len(tmp_str, -1, exponent)) != NULL){
+      gboolean prev_success, next_success;
+      
+      prev_success = FALSE;
+      next_success = FALSE;
+
+      /* check prev */
+      for(tmp_iter = iter; tmp_iter > tmp_str && (tmp_iter[0] == ' ' || tmp_iter[0] == '|' || tmp_iter[0] == '('); iter--);
+
+      if(tmp_iter == tmp_str ||
+	 tmp_iter[0] == '+' ||
+	 tmp_iter[0] == '-'){
+	prev_success = TRUE;
+      }
+      
+      /* check next */
+      for(tmp_iter = iter; tmp_iter[0] != '\0' && (tmp_iter[0] == ' ' || tmp_iter[0] == '|' || tmp_iter[0] == ')'); iter++);
+
+      if(tmp_iter[0] == '\0' ||
+	 tmp_iter[0] == '+' ||
+	 tmp_iter[0] == '-'){
+	next_success = TRUE;
+      }
+
+      /* success */
+      if(prev_success == TRUE &&
+	 next_success == TRUE){
+	if(exponent_pos == NULL){
+	  exponent_pos = (gint *) g_malloc(sizeof(gint));
+	}else{
+	  exponent_pos = (gint *) g_realloc(exponent_pos,
+					    (exponent_pos_count + 1) * sizeof(gint));
+	}
+
+	exponent_pos[exponent_pos_count] = exponent_open_position[i] + (iter - tmp_str);
+	exponent_pos_count++;
+      }
+      
+      iter += exponent_length;
+    }
+    
+    g_free(tmp_str);
+  }
+  
+  /* attempt #1 swapped sign */
+
+  
+//TODO:JK: implement me
 }
 
 /**
@@ -930,16 +1012,16 @@ ags_math_util_lookup_exponent(gchar *equation_str,
  * @equation_str: the equation as string
  * @function: the function
  * @function_position: (out): the function position return location
- * @function_count: (out): the function count return location
+ * @function_position_count: (out): the function count return location
  * 
- * Lookup @function within @equation_str and obtain @function_position of @function_count occurrences.
+ * Lookup @function within @equation_str and obtain @function_position of @function_position_count occurrences.
  * 
  * Since: 3.2.0
  */
 void
 ags_math_util_lookup_function(gchar *equation_str,
 			      gchar *function,
-			      gint **function_position, guint *function_count)
+			      gint **function_position, guint *function_position_count)
 {
   if(equation_str == NULL ||
      function == NULL){
@@ -947,8 +1029,8 @@ ags_math_util_lookup_function(gchar *equation_str,
       function_position[0] = NULL;
     }
     
-    if(function_count != NULL){
-      function_count[0] = 0;
+    if(function_position_count != NULL){
+      function_position_count[0] = 0;
     }
 
     return;
@@ -962,16 +1044,16 @@ ags_math_util_lookup_function(gchar *equation_str,
  * @equation_str: the equation as string
  * @term: the term
  * @term_position: (out): the term position return location
- * @term_count: (out): the term count return location
+ * @term_position_count: (out): the term count return location
  * 
- * Lookup @term within @equation_str and obtain @term_position of @term_count occurrences.
+ * Lookup @term within @equation_str and obtain @term_position of @term_position_count occurrences.
  * 
  * Since: 3.2.0
  */
 void
 ags_math_util_lookup_term(gchar *equation_str,
 			  gchar *term,
-			  gint **term_position, guint *term_count)
+			  gint **term_position, guint *term_position_count)
 {
   if(equation_str == NULL ||
      term == NULL){
@@ -979,186 +1061,12 @@ ags_math_util_lookup_term(gchar *equation_str,
       term_position[0] = NULL;
     }
     
-    if(term_count != NULL){
-      term_count[0] = 0;
+    if(term_position_count != NULL){
+      term_position_count[0] = 0;
     }
 
     return;
   }
 
   //TODO:JK: implement me
-}
-
-/**
- * ags_math_util_add_term:
- * @equation_str: the equation as string
- * @term: the term
- * 
- * Add @term of @equation_str.
- * 
- * Returns: the resulting equation
- * 
- * Since: 3.2.0
- */
-gchar*
-ags_math_util_add_term(gchar *equation_str,
-		       gchar *term)
-{
-  gchar *resulting_equation_str;
-
-  if(equation_str == NULL ||
-     term == NULL){
-    return(NULL);
-  }
-  
-  resulting_equation_str = NULL;
-  
-  //TODO:JK: implement me
-
-  return(resulting_equation_str);
-}
-
-/**
- * ags_math_util_subtract_term:
- * @equation_str: the equation as string
- * @term: the term
- * 
- * Subtract @term of @equation_str.
- * 
- * Returns: the resulting equation
- * 
- * Since: 3.2.0
- */
-gchar*
-ags_math_util_subtract_term(gchar *equation_str,
-			    gchar *term)
-{
-  gchar *resulting_equation_str;
-
-  if(equation_str == NULL ||
-     term == NULL){
-    return(NULL);
-  }
-  
-  resulting_equation_str = NULL;
-  
-  //TODO:JK: implement me
-
-  return(resulting_equation_str);
-}
-
-/**
- * ags_math_util_multiply_term:
- * @equation_str: the equation as string
- * @term: the term
- * 
- * Multiply @term of @equation_str.
- * 
- * Returns: the resulting equation
- * 
- * Since: 3.2.0
- */
-gchar*
-ags_math_util_multiply_term(gchar *equation_str,
-			    gchar *term)
-{
-  gchar *resulting_equation_str;
-
-  if(equation_str == NULL ||
-     term == NULL){
-    return(NULL);
-  }
-  
-  resulting_equation_str = NULL;
-  
-  //TODO:JK: implement me
-
-  return(resulting_equation_str);
-}
-
-/**
- * ags_math_util_divide_term:
- * @equation_str: the equation as string
- * @term: the term
- * 
- * Divide @term of @equation_str.
- * 
- * Returns: the resulting equation
- * 
- * Since: 3.2.0
- */
-gchar*
-ags_math_util_divide_term(gchar *equation_str,
-			  gchar *term)
-{
-  gchar *resulting_equation_str;
-
-  if(equation_str == NULL ||
-     term == NULL){
-    return(NULL);
-  }
-  
-  resulting_equation_str = NULL;
-  
-  //TODO:JK: implement me
-
-  return(resulting_equation_str);
-}
-
-/**
- * ags_math_util_raise_power_term:
- * @equation_str: the equation as string
- * @term: the term
- * 
- * Raise power @term of @equation_str.
- * 
- * Returns: the resulting equation
- * 
- * Since: 3.2.0
- */
-gchar*
-ags_math_util_raise_power_term(gchar *equation_str,
-			       gchar *term)
-{
-  gchar *resulting_equation_str;
-
-  if(equation_str == NULL ||
-     term == NULL){
-    return(NULL);
-  }
-  
-  resulting_equation_str = NULL;
-  
-  //TODO:JK: implement me
-
-  return(resulting_equation_str);
-}
-
-/**
- * ags_math_util_extract_root_term:
- * @equation_str: the equation as string
- * @term: the term
- * 
- * Extract root @term of @equation_str.
- * 
- * Returns: the resulting equation
- * 
- * Since: 3.2.0
- */
-gchar*
-ags_math_util_extract_root_term(gchar *equation_str,
-				gchar *term)
-{
-  gchar *resulting_equation_str;
-
-  if(equation_str == NULL ||
-     term == NULL){
-    return(NULL);
-  }
-  
-  resulting_equation_str = NULL;
-  
-  //TODO:JK: implement me
-
-  return(resulting_equation_str);
 }
