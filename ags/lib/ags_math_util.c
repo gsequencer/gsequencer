@@ -828,12 +828,14 @@ ags_math_util_is_term(gchar *term)
 {
   GMatchInfo *function_match_info;
   GMatchInfo *term_match_info;
+
+  GError *error;
   
   static const GRegex *function_regex = NULL;
   static const GRegex *term_regex = NULL;
 
-  static const gchar *function_pattern = "^([\\s]*)([\\+\\-]?[\\s]*)(([0-9]+[\\s]*\\*[\\s]*)|([0-9]*[\\s]*))(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)";
-  static const gchar *term_pattern = "^([\\s]*)([\\+\\-]?[\\s]*)(([0-9]+[\\s]*\\*[\\s]*)|([0-9]*[\\s]*))([a-zA-Z][0-9]*)([\\s]*[\\+\\-][\\s]*[0-9]+)?";
+  static const gchar *function_pattern = "^([\\s]*)([\\+\\-]?[\\s]*)(([0-9]+(\\.[0-9]+)?[\\s]*\\*[\\s]*)|(([0-9]+(\\.[0-9]+)?)?[\\s]*))?(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)";
+  static const gchar *term_pattern = "^([\\s]*)([\\+\\-]?[\\s]*)(([0-9]+(\\.[0-9]+)?[\\s]*\\*[\\s]*)|(([0-9]+(\\.[0-9]+)?)[\\s]*))?([a-zA-Z][0-9]*(?=[\\s]*\\*[\\s]*[a-zA-Z])?([\\s]*\\^[\\s]*\\([\\+\\-]?[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*\\))?)+([\\s]*[\\+\\-][\\s]*[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*)?";
 
   if(term == NULL){
     return(FALSE);
@@ -873,7 +875,7 @@ ags_math_util_is_term(gchar *term)
   g_mutex_unlock(&regex_mutex);
 
   /* check is function */
-  g_regex_match(function_regex, str, 0, &function_match_info);
+  g_regex_match(function_regex, term, 0, &function_match_info);
   
   if(g_match_info_matches(function_match_info)){
     g_match_info_free(function_match_info);
@@ -882,7 +884,7 @@ ags_math_util_is_term(gchar *term)
   }
 
   /* check is term */
-  g_regex_match(term_regex, str, 0, &term_match_info);
+  g_regex_match(term_regex, term, 0, &term_match_info);
   
   if(g_match_info_matches(term_match_info)){
     g_match_info_free(term_match_info);
@@ -891,182 +893,4 @@ ags_math_util_is_term(gchar *term)
   }
 
   return(FALSE);
-}
-
-/**
- * ags_math_util_lookup_exponent:
- * @equation_str: the equation as string
- * @exponent: the exponent
- * @exponent_position: (out): the exponent position return location
- * @exponent_position_count: (out): the exponent count return location
- * 
- * Lookup @exponent within @equation_str and obtain @exponent_position of @exponent_position_count occurrences.
- * 
- * Since: 3.2.0
- */
-void
-ags_math_util_lookup_exponent(gchar *equation_str,
-			      gchar *exponent,
-			      gint **exponent_position, guint *exponent_position_count)
-{
-  gchar *exponent_swapped_sign;
-  
-  gint *exponent_pos;
-  gint *exponent_open_position, *exponent_close_position;
-  
-  guint exponent_pos_count;
-  guint exponent_open_position_count, exponent_close_position_count;
-  guint exponent_length;
-  guint i;
-  
-  if(equation_str == NULL ||
-     exponent == NULL){
-    if(exponent_position != NULL){
-      exponent_position[0] = NULL;
-    }
-    
-    if(exponent_position_count != NULL){
-      exponent_position_count[0] = 0;
-    }
-
-    return;
-  }
-
-  exponent_pos = NULL;
-  exponent_pos_count = 0;
-
-  exponent_open_position = NULL;
-  exponent_open_position_count = 0;
-
-  exponent_close_position = NULL;
-  exponent_close_position_count = 0;
-
-  exponent_length = strlen(exponent);
-    
-  ags_math_util_find_exponent_parantheses(equation_str,
-					  &exponent_open_position, &exponent_close_position,
-					  &exponent_open_position_count, &exponent_close_position_count);
-
-  /* attempt #0 original sign */
-  for(i = 0; i < exponent_open_position_count; i++){
-    gchar *tmp_str;
-    gchar *iter, *tmp_iter;
-    
-    tmp_str = g_strdup_printf("%.*s",
-			      exponent_close_position[i] - exponent_open_position[i], equation_str + exponent_open_position[i]);
-
-    iter = tmp_str;
-
-    while((iter = g_strstr_len(tmp_str, -1, exponent)) != NULL){
-      gboolean prev_success, next_success;
-      
-      prev_success = FALSE;
-      next_success = FALSE;
-
-      /* check prev */
-      for(tmp_iter = iter; tmp_iter > tmp_str && (tmp_iter[0] == ' ' || tmp_iter[0] == '|' || tmp_iter[0] == '('); iter--);
-
-      if(tmp_iter == tmp_str ||
-	 tmp_iter[0] == '+' ||
-	 tmp_iter[0] == '-'){
-	prev_success = TRUE;
-      }
-      
-      /* check next */
-      for(tmp_iter = iter; tmp_iter[0] != '\0' && (tmp_iter[0] == ' ' || tmp_iter[0] == '|' || tmp_iter[0] == ')'); iter++);
-
-      if(tmp_iter[0] == '\0' ||
-	 tmp_iter[0] == '+' ||
-	 tmp_iter[0] == '-'){
-	next_success = TRUE;
-      }
-
-      /* success */
-      if(prev_success == TRUE &&
-	 next_success == TRUE){
-	if(exponent_pos == NULL){
-	  exponent_pos = (gint *) g_malloc(sizeof(gint));
-	}else{
-	  exponent_pos = (gint *) g_realloc(exponent_pos,
-					    (exponent_pos_count + 1) * sizeof(gint));
-	}
-
-	exponent_pos[exponent_pos_count] = exponent_open_position[i] + (iter - tmp_str);
-	exponent_pos_count++;
-      }
-      
-      iter += exponent_length;
-    }
-    
-    g_free(tmp_str);
-  }
-  
-  /* attempt #1 swapped sign */
-
-  
-//TODO:JK: implement me
-}
-
-/**
- * ags_math_util_lookup_function:
- * @equation_str: the equation as string
- * @function: the function
- * @function_position: (out): the function position return location
- * @function_position_count: (out): the function count return location
- * 
- * Lookup @function within @equation_str and obtain @function_position of @function_position_count occurrences.
- * 
- * Since: 3.2.0
- */
-void
-ags_math_util_lookup_function(gchar *equation_str,
-			      gchar *function,
-			      gint **function_position, guint *function_position_count)
-{
-  if(equation_str == NULL ||
-     function == NULL){
-    if(function_position != NULL){
-      function_position[0] = NULL;
-    }
-    
-    if(function_position_count != NULL){
-      function_position_count[0] = 0;
-    }
-
-    return;
-  }
-
-  //TODO:JK: implement me
-}
-
-/**
- * ags_math_util_lookup_term:
- * @equation_str: the equation as string
- * @term: the term
- * @term_position: (out): the term position return location
- * @term_position_count: (out): the term count return location
- * 
- * Lookup @term within @equation_str and obtain @term_position of @term_position_count occurrences.
- * 
- * Since: 3.2.0
- */
-void
-ags_math_util_lookup_term(gchar *equation_str,
-			  gchar *term,
-			  gint **term_position, guint *term_position_count)
-{
-  if(equation_str == NULL ||
-     term == NULL){
-    if(term_position != NULL){
-      term_position[0] = NULL;
-    }
-    
-    if(term_position_count != NULL){
-      term_position_count[0] = 0;
-    }
-
-    return;
-  }
-
-  //TODO:JK: implement me
 }

@@ -316,6 +316,8 @@ ags_solver_term_set_property(GObject *gobject,
   case PROP_SYMBOL:
   {
     gchar *symbol;
+    
+    complex z;
 
     guint length;
 
@@ -510,6 +512,10 @@ ags_solver_term_finalize(GObject *gobject)
 void
 ags_solver_term_update(AgsSolverTerm *solver_term)
 {
+  if(!AGS_IS_SOLVER_TERM(solver_term)){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -526,29 +532,86 @@ void
 ags_solver_term_parse(AgsSolverTerm *solver_term,
 		      gchar *term)
 {
+  gchar **symbol;
+  gchar **exponent;
+  
   gchar *coefficient;
-  gchar *symbol;
-  gchar *exponent;
   
   AgsComplex coefficient_value;
-  AgsComplex exponent_value;
+  AgsComplex *exponent_value;
+  AgsComplex summand_value;
   
   complex z;
 
+  guint symbol_count;
+  guint i;
+
+  GRecMutex *solver_term_mutex;
+  
   if(!AGS_IS_SOLVER_TERM(solver_term) ||
      term == NULL){
     return;
   }
 
+  solver_term_mutex = AGS_SOLVER_TERM_GET_OBJ_MUTEX(solver_term);
+  
+  symbol = NULL;
+  exponent = NULL;
+
+  coefficient = NULL;
+
+  exponent_value = NULL;
+  
+  symbol_count = 0;
+
+  /* get base */
+  //TODO:JK: implement me
+
+  /* coefficient */
   z = 1.0 + I * 0.0;
   ags_complex_set(&(coefficient_value),
 		  z);
-
-  z = 1.0 + I * 0.0;
-  ags_complex_set(&(exponent_value),
-		  z);
   
+  /* exponent */
+  if(symbol_count > 0){
+    exponent_value = g_new(AgsComplex,
+			   symbol_count);    
+
+    for(i = 0; i < symbol_count; i++){
+      z = 1.0 + I * 0.0;
+      
+      ags_complex_set(&(exponent_value[i]),
+		      z);
+    }
+  }
+
+  /* summand */
+  z = 0.0 + I * 0.0;
+  ags_complex_set(&(summand_value),
+		  z);
+
+  /* parse */
   //TODO:JK: implement me
+  
+  /* apply */
+  g_rec_mutex_lock(solver_term_mutex);
+
+  solver_term->term = g_strdup(term);
+
+  solver_term->coefficient = coefficient;
+
+  solver_term->symbol = symbol;
+  solver_term->exponent = exponent;
+  
+  ags_complex_set(&(solver_term->coefficient_value),
+		  ags_complex_get(&coefficient_value));
+
+  solver_term->exponent_value = exponent_value;
+
+  ags_complex_set(&(solver_term->summand_value),
+		  ags_complex_get(&summand_value));
+
+  g_rec_mutex_unlock(solver_term_mutex);
 }
 
 /**
@@ -890,6 +953,8 @@ ags_solver_term_multiply(AgsSolverTerm *term_a,
   }
 
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 AgsSolverTerm*
@@ -905,6 +970,8 @@ ags_solver_term_divide(AgsSolverTerm *term_a,
   }
 
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 AgsSolverTerm*
@@ -920,6 +987,8 @@ ags_solver_term_raise_power(AgsSolverTerm *term_a,
   }
 
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 AgsSolverTerm*
@@ -935,6 +1004,8 @@ ags_solver_term_extract_root(AgsSolverTerm *term_a,
   }
 
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**

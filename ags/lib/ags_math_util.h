@@ -43,16 +43,6 @@ gchar** ags_math_util_find_literals(gchar *str,
 
 gboolean ags_math_util_is_term(gchar *term);
 
-void ags_math_util_lookup_exponent(gchar *equation_str,
-				   gchar *exponent,
-				   gint **exponent_position, guint *exponent_position_count);
-void ags_math_util_lookup_function(gchar *equation_str,
-				   gchar *function,
-				   gint **function_position, guint *function_position_count);
-void ags_math_util_lookup_term(gchar *equation_str,
-			       gchar *term,
-			       gint **term_position, guint *term_position_count);
-
 G_END_DECLS
 
 #endif /*__AGS_MATH_UTIL__*/
