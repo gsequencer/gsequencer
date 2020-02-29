@@ -164,7 +164,7 @@ ags_solver_term_class_init(AgsSolverTermClass *solver_term)
   param_spec = g_param_spec_pointer("exponent",
 				    i18n_pspec("exponent of solver term"),
 				    i18n_pspec("The exponent this solver term is assigned to"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_EXPONENT,
 				  param_spec);
@@ -332,48 +332,16 @@ ags_solver_term_set_property(GObject *gobject,
     if(solver_term->symbol == NULL){
       length = 0;
       
-      solver_term->symbol = (gchar **) g_malloc(2 * sizeof(gchar *));
-    }else{
-      length = g_strv_length(solver_term->symbol);
-      
-      solver_term->symbol = (gchar **) g_realloc(solver_term->symbol,
-						 (length + 2) * sizeof(gchar *));
-    }
-    
-    solver_term->symbol[length] = g_strdup(symbol);
-    solver_term->symbol[length + 1] = NULL;
-    
-    g_rec_mutex_unlock(solver_term_mutex);
-  }
-  break;
-  case PROP_EXPONENT:
-  {
-    gchar *exponent;
-
-    complex z;
-    
-    guint length;
-    
-    exponent = (gchar *) g_value_get_pointer(value);
-
-    g_rec_mutex_lock(solver_term_mutex);
-
-    if(g_strv_contains(solver_term->exponent, exponent)){
-      g_rec_mutex_unlock(solver_term_mutex);
-
-      return;
-    }
-
-    if(solver_term->exponent == NULL){
-      length = 0;
-      
+      solver_term->symbol = (gchar **) g_malloc(2 * sizeof(gchar *));      
       solver_term->exponent = (gchar **) g_malloc(2 * sizeof(gchar *));
 
       solver_term->exponent_value = g_new(AgsComplex,
 					  1);
     }else{
-      length = g_strv_length(solver_term->exponent);
+      length = g_strv_length(solver_term->symbol);
       
+      solver_term->symbol = (gchar **) g_realloc(solver_term->symbol,
+						 (length + 2) * sizeof(gchar *));
       solver_term->exponent = (gchar **) g_realloc(solver_term->exponent,
 						   (length + 2) * sizeof(gchar *));
 
@@ -381,14 +349,17 @@ ags_solver_term_set_property(GObject *gobject,
 					    solver_term->exponent_value,
 					    (length + 1));
     }
-      
-    solver_term->exponent[length] = g_strdup(exponent);
+    
+    solver_term->symbol[length] = g_strdup(symbol);
+    solver_term->symbol[length + 1] = NULL;
+
+    solver_term->exponent[length] = g_strdup("1");
     solver_term->exponent[length + 1] = NULL;
 
     z = 1.0 + I * 0.0;
     ags_complex_set(&(solver_term->exponent_value[length]),
 		    z);
-
+    
     g_rec_mutex_unlock(solver_term_mutex);
   }
   break;
