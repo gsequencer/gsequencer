@@ -58,11 +58,11 @@ struct _AgsSolverTerm
   gchar *term;
 
   gchar *coefficient;
-  gchar *symbol;
-  gchar *exponent;
+  gchar **symbol;
+  gchar **exponent;
 
   AgsComplex coefficient_value;
-  AgsComplex exponent_value;
+  AgsComplex *exponent_value;
   AgsComplex summand_value;
 };
 

@@ -146,11 +146,10 @@ ags_solver_term_class_init(AgsSolverTermClass *solver_term)
    * 
    * Since: 3.2.0
    */
-  param_spec = g_param_spec_string("symbol",
-				   i18n_pspec("symbol of solver term"),
-				   i18n_pspec("The symbol this solver term is assigned to"),
-				   NULL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("symbol",
+				    i18n_pspec("symbol of solver term"),
+				    i18n_pspec("The symbol this solver term is assigned to"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SYMBOL,
 				  param_spec);
@@ -162,11 +161,10 @@ ags_solver_term_class_init(AgsSolverTermClass *solver_term)
    * 
    * Since: 3.2.0
    */
-  param_spec = g_param_spec_string("exponent",
-				   i18n_pspec("exponent of solver term"),
-				   i18n_pspec("The exponent this solver term is assigned to"),
-				   NULL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("exponent",
+				    i18n_pspec("exponent of solver term"),
+				    i18n_pspec("The exponent this solver term is assigned to"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_EXPONENT,
 				  param_spec);
@@ -199,7 +197,7 @@ ags_solver_term_class_init(AgsSolverTermClass *solver_term)
 				  i18n_pspec("exponent value"),
 				  i18n_pspec("The exponent value"),
 				  AGS_TYPE_COMPLEX,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+				  G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_EXPONENT_VALUE,
 				  param_spec);
@@ -246,9 +244,7 @@ ags_solver_term_init(AgsSolverTerm *solver_term)
   ags_complex_set(&(solver_term->coefficient_value),
 		  z);
 
-  z = 1.0 + I * 0.0;
-  ags_complex_set(&(solver_term->exponent_value),
-		  z);
+  solver_term->exponent_value = NULL;
 
   z = 0.0 + I * 0.0;
   ags_complex_set(&(solver_term->summand_value),
@@ -321,22 +317,32 @@ ags_solver_term_set_property(GObject *gobject,
   {
     gchar *symbol;
 
-    symbol = (gchar *) g_value_get_string(value);
+    guint length;
+
+    symbol = (gchar *) g_value_get_pointer(value);
 
     g_rec_mutex_lock(solver_term_mutex);
 
-    if(solver_term->symbol == symbol){
+    if(g_strv_contains(solver_term->symbol, symbol)){
       g_rec_mutex_unlock(solver_term_mutex);
 
       return;
     }
+
+    if(solver_term->symbol == NULL){
+      length = 0;
       
-    if(solver_term->symbol != NULL){
-      g_free(solver_term->symbol);
+      solver_term->symbol = (gchar **) g_malloc(2 * sizeof(gchar *));
+    }else{
+      length = g_strv_length(solver_term->symbol);
+      
+      solver_term->symbol = (gchar **) g_realloc(solver_term->symbol,
+						 (length + 2) * sizeof(gchar *));
     }
-
-    solver_term->symbol = g_strdup(symbol);
-
+    
+    solver_term->symbol[length] = g_strdup(symbol);
+    solver_term->symbol[length + 1] = NULL;
+    
     g_rec_mutex_unlock(solver_term_mutex);
   }
   break;
@@ -344,21 +350,44 @@ ags_solver_term_set_property(GObject *gobject,
   {
     gchar *exponent;
 
-    exponent = (gchar *) g_value_get_string(value);
+    complex z;
+    
+    guint length;
+    
+    exponent = (gchar *) g_value_get_pointer(value);
 
     g_rec_mutex_lock(solver_term_mutex);
 
-    if(solver_term->exponent == exponent){
+    if(g_strv_contains(solver_term->exponent, exponent)){
       g_rec_mutex_unlock(solver_term_mutex);
 
       return;
     }
-      
-    if(solver_term->exponent != NULL){
-      g_free(solver_term->exponent);
-    }
 
-    solver_term->exponent = g_strdup(exponent);
+    if(solver_term->exponent == NULL){
+      length = 0;
+      
+      solver_term->exponent = (gchar **) g_malloc(2 * sizeof(gchar *));
+
+      solver_term->exponent_value = g_new(AgsComplex,
+					  1);
+    }else{
+      length = g_strv_length(solver_term->exponent);
+      
+      solver_term->exponent = (gchar **) g_realloc(solver_term->exponent,
+						   (length + 2) * sizeof(gchar *));
+
+      solver_term->exponent_value = g_renew(AgsComplex,
+					    solver_term->exponent_value,
+					    (length + 1));
+    }
+      
+    solver_term->exponent[length] = g_strdup(exponent);
+    solver_term->exponent[length + 1] = NULL;
+
+    z = 1.0 + I * 0.0;
+    ags_complex_set(&(solver_term->exponent_value[length]),
+		    z);
 
     g_rec_mutex_unlock(solver_term_mutex);
   }
@@ -377,20 +406,6 @@ ags_solver_term_set_property(GObject *gobject,
     g_rec_mutex_unlock(solver_term_mutex);
   }
   break;    
-  case PROP_EXPONENT_VALUE:
-  {
-    AgsComplex *exponent_value;
-
-    exponent_value = (AgsComplex *) g_value_get_boxed(value);
-
-    g_rec_mutex_lock(solver_term_mutex);
-
-    ags_complex_set(&(solver_term->exponent_value),
-		    ags_complex_get(exponent_value));
-
-    g_rec_mutex_unlock(solver_term_mutex);
-  }
-  break;
   case PROP_SUMMAND_VALUE:
   {
     AgsComplex *summand_value;
@@ -449,7 +464,7 @@ ags_solver_term_get_property(GObject *gobject,
   {
     g_rec_mutex_lock(solver_term_mutex);
 
-    g_value_set_string(value, solver_term->symbol);
+    g_value_set_pointer(value, g_strdupv(solver_term->symbol));
 
     g_rec_mutex_unlock(solver_term_mutex);
   }
@@ -458,7 +473,7 @@ ags_solver_term_get_property(GObject *gobject,
   {
     g_rec_mutex_lock(solver_term_mutex);
 
-    g_value_set_string(value, solver_term->exponent);
+    g_value_set_pointer(value, g_strdupv(solver_term->exponent));
 
     g_rec_mutex_unlock(solver_term_mutex);
   }
@@ -584,12 +599,15 @@ ags_solver_term_add(AgsSolverTerm *term_a,
 {
   AgsSolverTerm *solver_term;
 
-  gchar *symbol_a, *symbol_b;
-  gchar *exponent_a, *exponent_b;
+  gchar **iter_a;
+  
+  gchar **symbol_a, **symbol_b;
+  gchar **exponent_a, **exponent_b;
 
   complex coefficient_a, coefficient_b;
   complex summand_a, summand_b;
-  
+
+  guint length_a, length_b;
   gboolean is_symbol_matching;
   gboolean is_exponent_matching;
 
@@ -601,6 +619,12 @@ ags_solver_term_add(AgsSolverTerm *term_a,
     return(NULL);
   }
 
+  symbol_a = NULL;
+  symbol_b = NULL;
+
+  exponent_a = NULL;
+  exponent_b = NULL;
+  
   is_symbol_matching = FALSE;
   is_exponent_matching = FALSE;
   
@@ -614,11 +638,11 @@ ags_solver_term_add(AgsSolverTerm *term_a,
 
   is_symbol_matching = (symbol_a != NULL &&
 			symbol_b != NULL &&
-			!g_ascii_strcasecmp0(symbol_a,
-					     symbol_b)) ? TRUE: FALSE;
+			g_strv_equal(symbol_a,
+				     symbol_b)) ? TRUE: FALSE;
 
-  g_free(symbol_a);
-  g_free(symbol_b);
+  g_strfreev(symbol_a);
+  g_strfreev(symbol_b);
   
   if(!is_symbol_matching){
     if(error != NULL){
@@ -641,11 +665,11 @@ ags_solver_term_add(AgsSolverTerm *term_a,
 
   is_exponent_matching = (exponent_a != NULL &&
 			  exponent_b != NULL &&
-			  !g_ascii_strcasecmp0(exponent_a,
-					       exponent_b)) ? TRUE: FALSE;
+			  g_strv_equal(exponent_a,
+				       exponent_b)) ? TRUE: FALSE;
   
-  g_free(exponent_a);
-  g_free(exponent_b);
+  g_strfreev(exponent_a);
+  g_strfreev(exponent_b);
   
   if(!is_exponent_matching){
     if(error != NULL){
@@ -657,6 +681,12 @@ ags_solver_term_add(AgsSolverTerm *term_a,
     
     return(NULL);
   }
+
+  symbol_a = NULL;
+  symbol_b = NULL;
+
+  exponent_a = NULL;
+  exponent_b = NULL;
     
   solver_term = ags_solver_term_new();
 
@@ -668,10 +698,8 @@ ags_solver_term_add(AgsSolverTerm *term_a,
 	       "exponent", &exponent_a,
 	       NULL);
 
-  g_object_set(solver_term,
-	       "symbol", symbol_a,
-	       "exponent", exponent_a,
-	       NULL);
+  solver_term->symbol = g_strdupv(symbol_a);
+  solver_term->exponent = g_strdupv(exponent_a);
 
   /* get coeffiecient and summand of term a */
   g_rec_mutex_lock(term_a_mutex);
@@ -698,8 +726,8 @@ ags_solver_term_add(AgsSolverTerm *term_a,
 
   ags_solver_term_update(solver_term);
   
-  g_free(symbol_a);
-  g_free(exponent_a);
+  g_strfreev(symbol_a);
+  g_strfreev(exponent_a);
   
   return(solver_term);
 }
@@ -710,13 +738,138 @@ ags_solver_term_subtract(AgsSolverTerm *term_a,
 			 GError **error)
 {
   AgsSolverTerm *solver_term;
+
+  gchar **iter_a;
+  
+  gchar **symbol_a, **symbol_b;
+  gchar **exponent_a, **exponent_b;
+
+  complex coefficient_a, coefficient_b;
+  complex minuend_a, subtrahend_b;
+
+  guint length_a, length_b;
+  gboolean is_symbol_matching;
+  gboolean is_exponent_matching;
+
+  GRecMutex *term_a_mutex;
+  GRecMutex *term_b_mutex;
   
   if(!AGS_IS_SOLVER_TERM(term_a) ||
      !AGS_IS_SOLVER_TERM(term_b)){
     return(NULL);
   }
 
-  //TODO:JK: implement me
+  symbol_a = NULL;
+  symbol_b = NULL;
+
+  exponent_a = NULL;
+  exponent_b = NULL;
+  
+  is_symbol_matching = FALSE;
+  is_exponent_matching = FALSE;
+  
+  g_object_get(term_a,
+	       "symbol", &symbol_a,
+	       NULL);
+
+  g_object_get(term_b,
+	       "symbol", &symbol_b,
+	       NULL);
+
+  is_symbol_matching = (symbol_a != NULL &&
+			symbol_b != NULL &&
+			g_strv_equal(symbol_a,
+				     symbol_b)) ? TRUE: FALSE;
+
+  g_strfreev(symbol_a);
+  g_strfreev(symbol_b);
+  
+  if(!is_symbol_matching){
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_SOLVER_TERM_ERROR,
+		  AGS_SOLVER_TERM_ERROR_SYMBOL_MISMATCH,
+		  "symbols don't match");
+    }
+    
+    return(NULL);
+  }
+
+  g_object_get(term_a,
+	       "exponent", &exponent_a,
+	       NULL);
+
+  g_object_get(term_b,
+	       "exponent", &exponent_b,
+	       NULL);
+
+  is_exponent_matching = (exponent_a != NULL &&
+			  exponent_b != NULL &&
+			  g_strv_equal(exponent_a,
+				       exponent_b)) ? TRUE: FALSE;
+  
+  g_strfreev(exponent_a);
+  g_strfreev(exponent_b);
+  
+  if(!is_exponent_matching){
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_SOLVER_TERM_ERROR,
+		  AGS_SOLVER_TERM_ERROR_EXPONENT_MISMATCH,
+		  "exponents don't match");
+    }
+    
+    return(NULL);
+  }
+
+  symbol_a = NULL;
+  symbol_b = NULL;
+
+  exponent_a = NULL;
+  exponent_b = NULL;
+    
+  solver_term = ags_solver_term_new();
+
+  term_a_mutex = AGS_SOLVER_TERM_GET_OBJ_MUTEX(term_a);
+  term_b_mutex = AGS_SOLVER_TERM_GET_OBJ_MUTEX(term_b);
+  
+  g_object_get(term_a,
+	       "symbol", &symbol_a,
+	       "exponent", &exponent_a,
+	       NULL);
+
+  solver_term->symbol = g_strdupv(symbol_a);
+  solver_term->exponent = g_strdupv(exponent_a);
+
+  /* get coeffiecient and summand of term a */
+  g_rec_mutex_lock(term_a_mutex);
+
+  coefficient_a = ags_complex_get(&(term_a->coefficient_value));
+  minuend_a = ags_complex_get(&(term_a->summand_value));
+  
+  g_rec_mutex_unlock(term_a_mutex);
+
+  /* get coeffiecient and summand of term b */
+  g_rec_mutex_lock(term_b_mutex);
+
+  coefficient_b = ags_complex_get(&(term_b->coefficient_value));
+  subtrahend_b = ags_complex_get(&(term_b->summand_value));
+
+  g_rec_mutex_unlock(term_b_mutex);
+
+  /* add */
+  ags_complex_set(&(solver_term->coefficient_value),
+		  coefficient_a - coefficient_b);
+  
+  ags_complex_set(&(solver_term->summand_value),
+		  minuend_a - subtrahend_b);
+
+  ags_solver_term_update(solver_term);
+  
+  g_strfreev(symbol_a);
+  g_strfreev(exponent_a);
+  
+  return(solver_term);
 }
 
 AgsSolverTerm*
