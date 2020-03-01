@@ -38,10 +38,15 @@ void ags_math_util_find_term_parantheses(gchar *str,
 					 gint **term_open_position, gint **term_close_position,
 					 guint *term_open_position_count, guint *term_close_position_count);
 
-gchar** ags_math_util_find_literals(gchar *str,
-				    guint *symbol_count);
+gchar* ags_math_util_find_function(gchar *str);
+
+gchar* ags_math_util_find_symbol(gchar *str);
+gchar** ags_math_util_find_symbol_all(gchar *str,
+				      guint *symbol_count);
 
 gboolean ags_math_util_is_term(gchar *term);
+gchar** ags_math_util_split_term(gchar *term,
+				 guint *group_count);
 
 G_END_DECLS
 

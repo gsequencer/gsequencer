@@ -567,19 +567,247 @@ ags_math_util_find_term_parantheses(gchar *str,
 }
 
 /**
- * ags_math_util_find_literals:
+ * ags_math_util_find_function:
+ * @str: the string
+ *  
+ * Find next function.
+ * 
+ * Returns: the string offset matching function, otherwise %NULL
+ * 
+ * Since: 3.2.0
+ */
+gchar*
+ags_math_util_find_function(gchar *str)
+{
+  GMatchInfo *function_match_info;
+
+  gchar *retval;
+  
+  static const GRegex *function_regex = NULL;
+
+  static const gchar *function_pattern = "(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)";
+
+  if(str == NULL){
+    return(NULL);
+  }
+  
+  /* compile regex */
+  g_mutex_lock(&regex_mutex);
+
+  if(function_regex == NULL){
+    error = NULL;
+    function_regex = g_regex_new(function_pattern,
+				 (G_REGEX_EXTENDED),
+				 0,
+				 &error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  g_mutex_unlock(&regex_mutex);
+
+  /* find function */
+  retval = NULL;
+  
+  g_regex_match(function_regex, str, 0, &function_match_info);
+
+  if(g_match_info_matches(function_match_info)){
+    gint start_pos, end_pos;
+
+    g_match_info_fetch_pos(function_match_info,
+			   0,
+			   &start_pos, &end_pos);
+
+    retval = str + end_pos;
+  }
+  
+  g_match_info_free(function_match_info);
+    
+  return(retval);
+}
+
+/**
+ * ags_math_util_find_symbol:
+ * @str: the string
+ *  
+ * Find next symbol.
+ * 
+ * Returns: the string offset matching symbol, otherwise %NULL
+ * 
+ * Since: 3.2.0
+ */
+gchar*
+ags_math_util_find_symbol(gchar *str)
+{
+  GMatchInfo *function_match_info;
+  GMatchInfo *symbol_match_info;
+
+  gchar *retval;
+  gchar *tmp_str;
+
+  gint prev, next;
+  
+  static const GRegex *function_regex = NULL;
+  static const GRegex *symbol_regex = NULL;
+
+  static const gchar *function_pattern = "(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)";
+  static const gchar *symbol_pattern = "([a-zA-Z][0-9]*)";
+
+  if(str == NULL){
+    return(NULL);
+  }
+
+  /* compile regex */
+  g_mutex_lock(&regex_mutex);
+
+  if(function_regex == NULL){
+    error = NULL;
+    function_regex = g_regex_new(function_pattern,
+				 (G_REGEX_EXTENDED),
+				 0,
+				 &error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  if(symbol_regex == NULL){
+    error = NULL;
+    symbol_regex = g_regex_new(symbol_pattern,
+			       (G_REGEX_EXTENDED),
+			       0,
+			       &error);
+    
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  g_mutex_unlock(&regex_mutex);
+  
+  retval = NULL;
+
+  next = -1;
+  prev = -1;
+    
+  g_regex_match(function_regex, str, 0, &function_match_info);
+ 
+  while(g_match_info_matches(function_match_info)){
+    gint function_start_pos, function_end_pos;
+
+    tmp_str = NULL;
+    
+    function_start_pos = -1;
+    function_end_pos = -1;
+
+    g_match_info_fetch_pos(function_match_info,
+			   0,
+			   &function_start_pos, &function_end_pos);
+
+    next = function_start_pos;
+    
+    if(prev == -1){
+      tmp_str = g_strdup_printf("%*.s",
+				function_start_pos, str);
+    }else{
+      tmp_str = g_strdup_printf("%*.s",
+				(function_start_pos - prev), str + prev);
+    }
+    
+    if(tmp_str != NULL){
+      g_regex_match(symbol_regex, tmp_str, 0, &symbol_match_info);
+
+      if(g_match_info_matches(symbol_match_info)){
+	gint symbol_start_pos, symbol_end_pos;
+
+	g_match_info_fetch_pos(symbol_match_info,
+			       0,
+			       &symbol_start_pos, &symbol_end_pos);
+
+	if(prev != -1){
+	  retval = str + prev + symbol_start_pos;
+	}else{
+	  retval = str + symbol_start_pos;
+	}
+      }
+
+      g_match_info_free(symbol_match_info);
+
+      g_free(tmp_str);
+    }
+
+    if(retval != NULL){
+      break;
+    }
+
+    prev = next;
+    next = -1;
+    
+    g_match_info_next(function_match_info,
+		      NULL);
+  }
+
+  g_match_info_free(function_match_info);
+
+  if(retval == NULL){
+    tmp_str = NULL;
+
+    if(prev == -1){
+      tmp_str = g_strdup(str);
+    }else{
+      tmp_str = g_strdup_printf("%*.s",
+				(strlen(str) - prev), str + prev);
+    }
+    
+    if(tmp_str != NULL){
+      g_regex_match(symbol_regex, tmp_str, 0, &symbol_match_info);
+
+      if(g_match_info_matches(symbol_match_info)){
+	gint symbol_start_pos, symbol_end_pos;
+
+	g_match_info_fetch_pos(symbol_match_info,
+			       0,
+			       &symbol_start_pos, &symbol_end_pos);
+
+	if(prev != -1){
+	  retval = str + prev + symbol_start_pos;
+	}else{
+	  retval = str + symbol_start_pos;
+	}
+      }
+      
+      g_match_info_free(symbol_match_info);
+    }
+    
+    g_free(tmp_str);  
+  }
+  
+  return(retval);
+}
+
+/**
+ * ags_math_util_find_symbol_all:
  * @str: the string
  * @symbol_count: (out): the symbol count return location
  * 
- * Find literals.
+ * Find all symbols.
  * 
  * Returns: the string vector containing the symbols
  * 
  * Since: 3.2.0
  */
 gchar**
-ags_math_util_find_literals(gchar *str,
-			    guint *symbol_count)
+ags_math_util_find_symbol_all(gchar *str,
+			      guint *symbol_count)
 {
   GMatchInfo *function_match_info;
   GMatchInfo *literal_match_info;
@@ -834,8 +1062,8 @@ ags_math_util_is_term(gchar *term)
   static const GRegex *function_regex = NULL;
   static const GRegex *term_regex = NULL;
 
-  static const gchar *function_pattern = "^([\\s]*)([\\+\\-]?[\\s]*)(([0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*[\\s]*\\*[\\s]*)|(([0-9]+(\\.[0-9]+)?)?[\\s]*))?(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)";
-  static const gchar *term_pattern = "^([\\s]*)([\\+\\-]?[\\s]*)(([0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*[\\s]*\\*[\\s]*)|(([0-9]+(\\.[0-9]+)?)[\\s]*))?([a-zA-Z][0-9]*(?=[\\s]*\\*[\\s]*[a-zA-Z])?([\\s]*\\^[\\s]*\\([\\+\\-]?[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*\\))?)+([\\s]*[\\+\\-][\\s]*[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*)?";
+//  static const gchar *function_pattern = "^([\\s]*)([\\+\\-]?[\\s]*)(([0-9]+(\\.[0-9]+)?([\\s]*\\^[\\s]*\\([\\+\\-]?[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*\\))?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖])([\\s]*\\^[\\s]*\\([\\+\\-]?[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*\\))?)*[\\s]*\\*[\\s]*)|(([0-9]+(\\.[0-9]+)?([\\s]*\\^[\\s]*\\([\\+\\-]?[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*\\))?)?[\\s]*))?(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)";
+//  static const gchar *term_pattern = "^([\\s]*)([\\+\\-]?[\\s]*)(([0-9]+(\\.[0-9]+)?([\\s]*\\^[\\s]*\\([\\+\\-]?[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖])([\\s]*\\^[\\s]*\\([\\+\\-]?[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*\\))?)*\\))?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*[\\s]*\\*[\\s]*)|(([0-9]+(\\.[0-9]+)?([\\s]*\\^[\\s]*\\([\\+\\-]?[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*\\))?)[\\s]*))?([a-zA-Z][0-9]*(?=[\\s]*\\*[\\s]*[a-zA-Z])?([\\s]*\\^[\\s]*\\([\\+\\-]?[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*\\))?)+([\\s]*[\\+\\-][\\s]*[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*)?";
 
   if(term == NULL){
     return(FALSE);
@@ -893,4 +1121,347 @@ ags_math_util_is_term(gchar *term)
   }
 
   return(FALSE);
+}
+
+/**
+ * ags_math_util_split_term:
+ * @term: the term
+ * @factor: the return location of factors
+ * @factor_exponent: the return location of factor exponents
+ * @summand: the return location of summands
+ * @summand_exponent: the return location of summand exponents
+ *
+ * Split @term into coefficient, powers of symbols and summand.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_math_util_split_term(gchar *term,
+			 gchar ***factor, gchar ***factor_exponent,
+			 gchar ***summand, gchar ***summand_exponent)
+{
+  GMatchInfo *numeric_match_info;
+  GMatchInfo *constants_match_info;
+  GMatchInfo *exponent_match_info;
+  GMatchInfo *polynom_match_info;
+
+  gchar **numeric_factor;
+  gchar **numeric_factor_exponent;
+  gchar **symbol_factor;
+  gchar **symbol_factor_exponent;
+  gchar **numeric_summand;
+  gchar **numeric_summand_exponent;
+  gchar **term_sign;
+
+  gchar *iter;
+  
+  guint factor_length;
+  guint summand_length;
+  guint i;
+  gboolean has_function;
+  gboolean has_symbol;
+  gboolean has_summand;
+  gboolean success;
+  
+  GError *error;
+  
+  static const GRegex *numeric_regex = NULL;
+  static const GRegex *constants_regex = NULL;
+  static const GRegex *exponent_regex = NULL;
+  static const GRegex *polynom_regex = NULL;
+  
+  /* groups: #1 sign */
+  static const gchar *sign_pattern = "^[\\s]*([\\+\\-])?";
+  
+  /* groups: #1-2 numeric base and fraction,  */
+  static const gchar *numeric_pattern = "^[\\s]*([0-9]+(\\.[0-9]+))";
+  
+  /* groups: #1 constants */
+  static const gchar *constants_pattern = "^[\\s]*([ℯ𝜋𝑖])";
+
+  /* groups: #1 exponent operator, #2 exponent */
+  static const gchar *exponent_pattern = "[\\s]*(\\^)[\\s]*\\(([^\\)]+)\\)";
+  
+  /* groups: #1 polynom */
+  static const gchar *polynom_pattern = "^[\\s]*([a-zA-Z][0-9]*)";
+
+  if(term == NULL){
+    if(factor != NULL){
+      factor[0] = NULL;
+    }
+
+    if(factor_exponent != NULL){
+      factor_exponent[0] = NULL;
+    }
+
+    if(summand != NULL){
+      summand[0] = NULL;
+    }
+
+    if(summand_exponent != NULL){
+      summand_exponent[0] = NULL;
+    }
+    
+    return;
+  }
+
+  numeric_factor = NULL;
+  numeric_factor_exponent = NULL;
+  
+  symbol_factor = NULL;
+  symbol_factor_exponent = NULL;
+
+  numeric_summand = NULL;
+  numeric_summand_exponent = NULL;
+
+  term_sign = NULL;
+
+  iter = NULL;
+
+  factor_length = 0;
+  summand_length = 0;
+  
+  has_function = FALSE;
+  has_symbol = FALSE;
+  has_summand = FALSE;
+  
+  /* compile regex */
+  g_mutex_lock(&regex_mutex);
+
+  if(sign_regex == NULL){
+    error = NULL;
+    sign_regex = g_regex_new(sign_pattern,
+			     (G_REGEX_EXTENDED),
+			     0,
+			     &error);
+    
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  if(nummeric_regex == NULL){
+    error = NULL;
+    nummeric_regex = g_regex_new(nummeric_pattern,
+				 (G_REGEX_EXTENDED),
+				 0,
+				 &error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  if(exponent_regex == NULL){
+    error = NULL;
+    exponent_regex = g_regex_new(exponent_pattern,
+				 (G_REGEX_EXTENDED),
+				 0,
+				 &error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  if(polynom_regex == NULL){
+    error = NULL;
+    polynom_regex = g_regex_new(polynom_pattern,
+				(G_REGEX_EXTENDED),
+				0,
+				&error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+  
+  g_mutex_unlock(&regex_mutex);
+
+  iter = term;
+  
+  has_function = (ags_math_util_find_function(term) != NULL) ? TRUE: FALSE;
+
+  if(has_function){
+    g_critical("term contains function, rewrite first");
+    
+    if(factor != NULL){
+      factor[0] = NULL;
+    }
+
+    if(factor_exponent != NULL){
+      factor_exponent[0] = NULL;
+    }
+
+    if(summand != NULL){
+      summand[0] = NULL;
+    }
+
+    if(summand_exponent != NULL){
+      summand_exponent[0] = NULL;
+    }
+    
+    return;
+  }
+
+  has_symbol = (ags_math_util_find_symbol(term) != NULL) ? TRUE: FALSE;
+
+  if(has_symbol){
+    /* match sign */
+    term_sign = (gchar **) g_malloc(2 * sizeof(gchar *));
+    
+    g_regex_match(sign_regex, iter, 0, &sign_match_info);
+
+    if(g_match_info_matches(sign_match_info)){
+      gchar *sign_group_0;
+      gchar *sign_group_1;
+
+      sign_group_0 = g_match_info_fetch(sign_match_info,
+					0);
+      sign_group_1 = g_match_info_fetch(sign_match_info,
+					1);
+
+      term_sign[0] = sign_group_1;
+      
+      iter += strlen(sign_group_0);
+      
+      g_match_info_free(sign_match_info);
+      
+      g_free(sign_group_0);
+    }else{
+      term_sign[0] = g_strdup("+");
+    }
+    
+    term_sign[1] = NULL;
+
+    /* match numeric or constants including exponent */
+    success = TRUE;
+
+    i = 0;
+    
+    while(success){
+      gboolean numeric_success, constants_success;
+
+      numeric_success = FALSE;
+      constants_success = FALSE;
+
+      /* numeric */
+      g_regex_match(numeric_regex, iter, 0, &numeric_match_info);
+
+      if(g_match_info_matches(numeric_match_info)){
+	gchar *numeric_group_0;
+	gchar *numeric_group_1;
+
+	numeric_group_0 = g_match_info_fetch(numeric_match_info,
+					     0);
+	numeric_group_1 = g_match_info_fetch(numeric_match_info,
+					     1);
+
+
+	if(numeric_factor == NULL){
+	  numeric_factor = (gchar **) g_malloc(2 * sizeof(gchar *));
+	  numeric_factor_exponent = (gchar **) g_malloc(2 * sizeof(gchar *));
+	}else{
+	  numeric_factor = (gchar **) g_realloc(numeric_factor,
+						(i + 2) * sizeof(gchar *));
+	  numeric_factor_exponent = (gchar **) g_realloc(numeric_factor_exponent,
+							 (i + 2) * sizeof(gchar *));
+	}
+
+	numeric_factor[i] = numeric_group_1;
+	numeric_factor[i + 1] = NULL;
+	
+	iter += strlen(numeric_group_0);
+	
+	numeric_success = TRUE;
+    
+	g_match_info_free(numeric_match_info);
+
+	g_free(numeric_group_0);
+      }
+
+      /* constants */
+      if(!numeric_success){
+	g_regex_match(constants_regex, iter, 0, &constants_match_info);
+
+	if(g_match_info_matches(constants_match_info)){
+	  gchar *constants_group_0;
+	  gchar *constants_group_1;
+
+	  constants_group_0 = g_match_info_fetch(constants_match_info,
+						 0);
+	  constants_group_1 = g_match_info_fetch(constants_match_info,
+						 1);
+
+
+	  if(numeric_factor == NULL){
+	    numeric_factor = (gchar **) g_malloc(2 * sizeof(gchar *));
+	    numeric_factor_exponent = (gchar **) g_malloc(2 * sizeof(gchar *));
+	  }else{
+	    numeric_factor = (gchar **) g_realloc(numeric_factor,
+						  (i + 2) * sizeof(gchar *));
+	    numeric_factor_exponent = (gchar **) g_realloc(numeric_factor_exponent,
+							   (i + 2) * sizeof(gchar *));
+	  }
+
+	  numeric_factor[i] = constants_group_1;
+	  numeric_factor[i + 1] = NULL;
+	
+	  iter += strlen(constants_group_0);
+	
+	  constants_success = TRUE;
+    
+	  g_match_info_free(constants_match_info);
+
+	  g_free(constants_group_0);
+	}
+      }
+
+      /* exponent */
+      if(numeric_sucess ||
+	 constants_success){
+	g_regex_match(exponent_regex, iter, 0, &exponent_match_info);
+
+	if(g_match_info_matches(exponent_match_info)){
+	  gchar *exponent_group_0;
+	  gchar *exponent_group_2;
+	  
+	  exponent_group_0 = g_match_info_fetch(exponent_match_info,
+						0);
+	  exponent_group_2 = g_match_info_fetch(exponent_match_info,
+						2);
+
+	  numeric_factor_exponent[i] = g_strstrip(exponent_group_2);
+	  numeric_factor_exponent[i + 1] = NULL;
+	
+	  iter += strlen(exponent_group_0);
+	
+	  exponent_success = TRUE;
+    
+	  g_match_info_free(exponent_match_info);
+
+	  g_free(exponent_group_0);
+	}
+      }
+      
+      /* check success */
+      if(!numeric_success &&
+	 !constants_success){
+	success = FALSE;
+      }
+
+      /* iterate */
+      i++;
+    }
+  }  
+
+
 }
