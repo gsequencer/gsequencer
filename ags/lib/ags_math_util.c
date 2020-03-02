@@ -582,6 +582,8 @@ ags_math_util_find_function(gchar *str)
   GMatchInfo *function_match_info;
 
   gchar *retval;
+
+  GError *error;  
   
   static const GRegex *function_regex = NULL;
 
@@ -650,6 +652,8 @@ ags_math_util_find_symbol(gchar *str)
   gchar *tmp_str;
 
   gint prev, next;
+
+  GError *error;  
   
   static const GRegex *function_regex = NULL;
   static const GRegex *symbol_regex = NULL;
@@ -1045,101 +1049,35 @@ ags_math_util_find_symbol_all(gchar *str,
  * ags_math_util_is_term:
  * @term: the term
  * 
- * Check if @term is a term.
+ * Test if @term is a term.
  * 
- * Returns: %TRUE if it is a term, otherwise %FALSE
+ * Returns: %TRUE on success, otherwise %FALSE
  * 
  * Since: 3.2.0
  */
 gboolean
 ags_math_util_is_term(gchar *term)
 {
-  GMatchInfo *function_match_info;
-  GMatchInfo *term_match_info;
-
-  GError *error;
-  
-  static const GRegex *function_regex = NULL;
-  static const GRegex *term_regex = NULL;
-
-//  static const gchar *function_pattern = "^([\\s]*)([\\+\\-]?[\\s]*)(([0-9]+(\\.[0-9]+)?([\\s]*\\^[\\s]*\\([\\+\\-]?[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*\\))?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖])([\\s]*\\^[\\s]*\\([\\+\\-]?[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*\\))?)*[\\s]*\\*[\\s]*)|(([0-9]+(\\.[0-9]+)?([\\s]*\\^[\\s]*\\([\\+\\-]?[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*\\))?)?[\\s]*))?(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)";
-//  static const gchar *term_pattern = "^([\\s]*)([\\+\\-]?[\\s]*)(([0-9]+(\\.[0-9]+)?([\\s]*\\^[\\s]*\\([\\+\\-]?[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖])([\\s]*\\^[\\s]*\\([\\+\\-]?[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*\\))?)*\\))?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*[\\s]*\\*[\\s]*)|(([0-9]+(\\.[0-9]+)?([\\s]*\\^[\\s]*\\([\\+\\-]?[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*\\))?)[\\s]*))?([a-zA-Z][0-9]*(?=[\\s]*\\*[\\s]*[a-zA-Z])?([\\s]*\\^[\\s]*\\([\\+\\-]?[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*\\))?)+([\\s]*[\\+\\-][\\s]*[0-9]+(\\.[0-9]+)?(([\\s]*\\*[\\s]*[ℯ𝜋𝑖])|([ℯ𝜋𝑖]))*)?";
-
-  if(term == NULL){
-    return(FALSE);
-  }
-
-  /* compile regex */
-  g_mutex_lock(&regex_mutex);
-
-  if(function_regex == NULL){
-    error = NULL;
-    function_regex = g_regex_new(function_pattern,
-				 (G_REGEX_EXTENDED),
-				 0,
-				 &error);
-
-    if(error != NULL){
-      g_message("%s", error->message);
-
-      g_error_free(error);
-    }
-  }
-
-  if(term_regex == NULL){
-    error = NULL;
-    term_regex = g_regex_new(term_pattern,
-			     (G_REGEX_EXTENDED),
-			     0,
-			     &error);
-
-    if(error != NULL){
-      g_message("%s", error->message);
-
-      g_error_free(error);
-    }
-  }
-
-  g_mutex_unlock(&regex_mutex);
-
-  /* check is function */
-  g_regex_match(function_regex, term, 0, &function_match_info);
-  
-  if(g_match_info_matches(function_match_info)){
-    g_match_info_free(function_match_info);
-
-    return(FALSE);
-  }
-
-  /* check is term */
-  g_regex_match(term_regex, term, 0, &term_match_info);
-  
-  if(g_match_info_matches(term_match_info)){
-    g_match_info_free(term_match_info);
-
-    return(TRUE);
-  }
+  //TODO:JK: implement me
 
   return(FALSE);
 }
 
 /**
- * ags_math_util_split_term:
- * @term: the term
+ * ags_math_util_split_polynom:
+ * @polynom: the polynom
  * @factor: the return location of factors
  * @factor_exponent: the return location of factor exponents
- * @summand: the return location of summands
- * @summand_exponent: the return location of summand exponents
  *
- * Split @term into coefficient, powers of symbols and summand.
+ * Split @polynom into coefficient, powers of symbols and summand.
  * 
  * Since: 3.2.0
  */
 void
-ags_math_util_split_term(gchar *term,
-			 gchar ***factor, gchar ***factor_exponent,
-			 gchar ***summand, gchar ***summand_exponent)
+ags_math_util_split_polynom(gchar *polynom,
+			    gchar ***factor, gchar ***factor_exponent)
 {
+  GMatchInfo *sign_match_info;
   GMatchInfo *numeric_match_info;
   GMatchInfo *constants_match_info;
   GMatchInfo *exponent_match_info;
@@ -1149,22 +1087,19 @@ ags_math_util_split_term(gchar *term,
   gchar **numeric_factor_exponent;
   gchar **symbol_factor;
   gchar **symbol_factor_exponent;
-  gchar **numeric_summand;
-  gchar **numeric_summand_exponent;
-  gchar **term_sign;
+  gchar **polynom_sign;
 
   gchar *iter;
   
   guint factor_length;
-  guint summand_length;
   guint i;
   gboolean has_function;
   gboolean has_symbol;
-  gboolean has_summand;
   gboolean success;
   
   GError *error;
   
+  static const GRegex *sign_regex = NULL;
   static const GRegex *numeric_regex = NULL;
   static const GRegex *constants_regex = NULL;
   static const GRegex *exponent_regex = NULL;
@@ -1185,21 +1120,13 @@ ags_math_util_split_term(gchar *term,
   /* groups: #1 polynom */
   static const gchar *polynom_pattern = "^[\\s]*([a-zA-Z][0-9]*)";
 
-  if(term == NULL){
+  if(polynom == NULL){
     if(factor != NULL){
       factor[0] = NULL;
     }
 
     if(factor_exponent != NULL){
       factor_exponent[0] = NULL;
-    }
-
-    if(summand != NULL){
-      summand[0] = NULL;
-    }
-
-    if(summand_exponent != NULL){
-      summand_exponent[0] = NULL;
     }
     
     return;
@@ -1211,19 +1138,14 @@ ags_math_util_split_term(gchar *term,
   symbol_factor = NULL;
   symbol_factor_exponent = NULL;
 
-  numeric_summand = NULL;
-  numeric_summand_exponent = NULL;
-
-  term_sign = NULL;
+  polynom_sign = NULL;
 
   iter = NULL;
 
   factor_length = 0;
-  summand_length = 0;
   
   has_function = FALSE;
   has_symbol = FALSE;
-  has_summand = FALSE;
   
   /* compile regex */
   g_mutex_lock(&regex_mutex);
@@ -1242,12 +1164,12 @@ ags_math_util_split_term(gchar *term,
     }
   }
 
-  if(nummeric_regex == NULL){
+  if(numeric_regex == NULL){
     error = NULL;
-    nummeric_regex = g_regex_new(nummeric_pattern,
-				 (G_REGEX_EXTENDED),
-				 0,
-				 &error);
+    numeric_regex = g_regex_new(numeric_pattern,
+				(G_REGEX_EXTENDED),
+				0,
+				&error);
 
     if(error != NULL){
       g_message("%s", error->message);
@@ -1286,12 +1208,12 @@ ags_math_util_split_term(gchar *term,
   
   g_mutex_unlock(&regex_mutex);
 
-  iter = term;
+  iter = polynom;
   
-  has_function = (ags_math_util_find_function(term) != NULL) ? TRUE: FALSE;
+  has_function = (ags_math_util_find_function(polynom) != NULL) ? TRUE: FALSE;
 
   if(has_function){
-    g_critical("term contains function, rewrite first");
+    g_critical("polynom contains function, rewrite first");
     
     if(factor != NULL){
       factor[0] = NULL;
@@ -1300,23 +1222,15 @@ ags_math_util_split_term(gchar *term,
     if(factor_exponent != NULL){
       factor_exponent[0] = NULL;
     }
-
-    if(summand != NULL){
-      summand[0] = NULL;
-    }
-
-    if(summand_exponent != NULL){
-      summand_exponent[0] = NULL;
-    }
     
     return;
   }
 
-  has_symbol = (ags_math_util_find_symbol(term) != NULL) ? TRUE: FALSE;
+  has_symbol = (ags_math_util_find_symbol(polynom) != NULL) ? TRUE: FALSE;
 
   if(has_symbol){
     /* match sign */
-    term_sign = (gchar **) g_malloc(2 * sizeof(gchar *));
+    polynom_sign = (gchar **) g_malloc(2 * sizeof(gchar *));
     
     g_regex_match(sign_regex, iter, 0, &sign_match_info);
 
@@ -1329,7 +1243,7 @@ ags_math_util_split_term(gchar *term,
       sign_group_1 = g_match_info_fetch(sign_match_info,
 					1);
 
-      term_sign[0] = sign_group_1;
+      polynom_sign[0] = sign_group_1;
       
       iter += strlen(sign_group_0);
       
@@ -1337,10 +1251,10 @@ ags_math_util_split_term(gchar *term,
       
       g_free(sign_group_0);
     }else{
-      term_sign[0] = g_strdup("+");
+      polynom_sign[0] = g_strdup("+");
     }
     
-    term_sign[1] = NULL;
+    polynom_sign[1] = NULL;
 
     /* match numeric or constants including exponent */
     success = TRUE;
@@ -1348,10 +1262,11 @@ ags_math_util_split_term(gchar *term,
     i = 0;
     
     while(success){
-      gboolean numeric_success, constants_success;
+      gboolean numeric_success, constants_success, exponent_success;
 
       numeric_success = FALSE;
       constants_success = FALSE;
+      exponent_success = FALSE;
 
       /* numeric */
       g_regex_match(numeric_regex, iter, 0, &numeric_match_info);
@@ -1426,7 +1341,7 @@ ags_math_util_split_term(gchar *term,
       }
 
       /* exponent */
-      if(numeric_sucess ||
+      if(numeric_success ||
 	 constants_success){
 	g_regex_match(exponent_regex, iter, 0, &exponent_match_info);
 
@@ -1439,7 +1354,7 @@ ags_math_util_split_term(gchar *term,
 	  exponent_group_2 = g_match_info_fetch(exponent_match_info,
 						2);
 
-	  numeric_factor_exponent[i] = g_strstrip(exponent_group_2);
+	  numeric_factor_exponent[i] = exponent_group_2;
 	  numeric_factor_exponent[i + 1] = NULL;
 	
 	  iter += strlen(exponent_group_0);
@@ -1450,6 +1365,11 @@ ags_math_util_split_term(gchar *term,
 
 	  g_free(exponent_group_0);
 	}
+      }
+
+      if(!exponent_success){
+	numeric_factor_exponent[i] = g_strdup("1");
+	numeric_factor_exponent[i + 1] = NULL;	
       }
       
       /* check success */
@@ -1463,5 +1383,21 @@ ags_math_util_split_term(gchar *term,
     }
   }  
 
+  //TODO:JK: implement me
+}
 
+/**
+ * ags_math_util_split_sum:
+ * @sum: the sum
+ * @summand: the return location of summands
+ *
+ * Split @sum into summands.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_math_util_split_sum(gchar *sum,
+			gchar ***summand)
+{
+  //TODO:JK: implement me
 }

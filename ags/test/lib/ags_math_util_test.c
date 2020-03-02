@@ -33,8 +33,7 @@ void ags_math_util_test_find_parantheses_all();
 void ags_math_util_test_find_exponent_parantheses();
 void ags_math_util_test_find_function_parantheses();
 void ags_math_util_test_find_term_parantheses();
-void ags_math_util_test_find_literals();
-void ags_math_util_test_is_term();
+void ags_math_util_test_find_symbol_all();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -514,31 +513,31 @@ ags_math_util_test_find_term_parantheses()
 }
 
 void
-ags_math_util_test_find_literals()
+ags_math_util_test_find_symbol_all()
 {
-  gchar **literals;
+  gchar **symbol_all;
 
-  gchar *literals_str_0 = "a0 + b0 * sin((x1 - x0) / f0)";
+  gchar *symbol_all_str_0 = "a0 + b0 * sin((x1 - x0) / f0)";
 
   guint symbol_count;
 
-  literals = NULL;
+  symbol_all = NULL;
   symbol_count = 0;
   
-  literals = ags_math_util_find_literals(literals_str_0,
-					 &symbol_count);
+  symbol_all = ags_math_util_find_symbol_all(symbol_all_str_0,
+					     &symbol_count);
 
   CU_ASSERT(symbol_count == 5);
   
-  CU_ASSERT(literals != NULL);
+  CU_ASSERT(symbol_all != NULL);
 
-  CU_ASSERT(g_strv_contains(literals, "a0"));
-  CU_ASSERT(g_strv_contains(literals, "b0"));
+  CU_ASSERT(g_strv_contains(symbol_all, "a0"));
+  CU_ASSERT(g_strv_contains(symbol_all, "b0"));
 
-  CU_ASSERT(g_strv_contains(literals, "x0"));
-  CU_ASSERT(g_strv_contains(literals, "x1"));
+  CU_ASSERT(g_strv_contains(symbol_all, "x0"));
+  CU_ASSERT(g_strv_contains(symbol_all, "x1"));
 
-  CU_ASSERT(g_strv_contains(literals, "f0"));
+  CU_ASSERT(g_strv_contains(symbol_all, "f0"));
 }
 
 void
@@ -688,7 +687,7 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_math_util.c find exponent parantheses", ags_math_util_test_find_exponent_parantheses) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c find function parantheses", ags_math_util_test_find_function_parantheses) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c find term parantheses", ags_math_util_test_find_term_parantheses) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_math_util.c find literals", ags_math_util_test_find_literals) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_math_util.c find symbol all", ags_math_util_test_find_symbol_all) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c is term", ags_math_util_test_is_term) == NULL)){
     CU_cleanup_registry();
     

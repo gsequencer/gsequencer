@@ -45,8 +45,11 @@ gchar** ags_math_util_find_symbol_all(gchar *str,
 				      guint *symbol_count);
 
 gboolean ags_math_util_is_term(gchar *term);
-gchar** ags_math_util_split_term(gchar *term,
-				 guint *group_count);
+
+void ags_math_util_split_polynom(gchar *polynom,
+				 gchar ***factor, gchar ***factor_exponent);
+void ags_math_util_split_sum(gchar *sum,
+			     gchar ***summand);
 
 G_END_DECLS
 
