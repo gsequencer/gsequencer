@@ -108,12 +108,12 @@ ags_solver_vector_init(AgsSolverVector *solver_vector)
   
   g_rec_mutex_init(&(solver_vector->obj_mutex));
 
-  solver_vector->term_history = NULL;
+  solver_vector->polynom_history = NULL;
   
-  solver_vector->source_term = NULL;
+  solver_vector->source_polynom = NULL;
   
-  solver_vector->term_column = NULL;
-  solver_vector->term_count = 0;
+  solver_vector->polynom_column = NULL;
+  solver_vector->polynom_count = 0;
 }
 
 void
@@ -162,26 +162,26 @@ ags_solver_vector_finalize(GObject *gobject)
 }
 
 /**
- * ags_solver_vector_insert_term:
+ * ags_solver_vector_insert_polynom:
  * @solver_vector: the #AgsSolverVector
- * @solver_term: the #AgsSolverTerm
+ * @solver_polynom: the #AgsSolverPolynom
  * @position: the position
  * 
- * Insert @solver_term to @solver_vector.
+ * Insert @solver_polynom to @solver_vector.
  * 
  * Since: 3.2.0
  */
 void
-ags_solver_vector_insert_term(AgsSolverVector *solver_vector,
-			      AgsSolverTerm *solver_term,
-			      gint position)
+ags_solver_vector_insert_polynom(AgsSolverVector *solver_vector,
+				 AgsSolverPolynom *solver_polynom,
+				 gint position)
 {
   guint i, j;
 
   GRecMutex *solver_vector_mutex;
   
   if(!AGS_IS_SOLVER_VECTOR(solver_vector) ||
-     !AGS_IS_SOLVER_TERM(solver_term)){
+     !AGS_IS_SOLVER_POLYNOM(solver_polynom)){
     return;
   }
 
@@ -189,25 +189,25 @@ ags_solver_vector_insert_term(AgsSolverVector *solver_vector,
 
   g_rec_mutex_lock(solver_vector_mutex);
   
-  if(position > solver_vector->term_count){
-    position = solver_vector->term_count;
+  if(position > solver_vector->polynom_count){
+    position = solver_vector->polynom_count;
   }
   
-  if(solver_vector->term_column == NULL){
-    solver_vector->term_column = (AgsSolverTerm **) g_malloc(sizeof(AgsSolverTerm *));
+  if(solver_vector->polynom_column == NULL){
+    solver_vector->polynom_column = (AgsSolverPolynom **) g_malloc(sizeof(AgsSolverPolynom *));
   }else{
-    solver_vector->term_column = (AgsSolverTerm **) g_realloc(solver_vector->term_column,
-							      (solver_vector->term_count + 1) * sizeof(AgsSolverTerm *));
+    solver_vector->polynom_column = (AgsSolverPolynom **) g_realloc(solver_vector->polynom_column,
+								    (solver_vector->polynom_count + 1) * sizeof(AgsSolverPolynom *));
   }
 
-  g_object_ref(solver_term);
+  g_object_ref(solver_polynom);
   
   if(position < 0){
-    solver_vector->term_column[solver_vector->term_count] = solver_term;
+    solver_vector->polynom_column[solver_vector->polynom_count] = solver_polynom;
   }else{
-    for(i = 0, j = 0; i < solver_vector->term_count + 1; i++){
+    for(i = 0, j = 0; i < solver_vector->polynom_count + 1; i++){
       if(i > position){
-	solver_vector->term_column[i] = solver_vector->term_column[j];
+	solver_vector->polynom_column[i] = solver_vector->polynom_column[j];
       }
 
       if(i != position){
@@ -215,26 +215,26 @@ ags_solver_vector_insert_term(AgsSolverVector *solver_vector,
       }
     }
 
-    solver_vector->term_column[position] = solver_term;
+    solver_vector->polynom_column[position] = solver_polynom;
   }
 
-  solver_vector->term_count += 1;
+  solver_vector->polynom_count += 1;
   
   g_rec_mutex_unlock(solver_vector_mutex);  
 }
 
 /**
- * ags_solver_vector_remove_term:
+ * ags_solver_vector_remove_polynom:
  * @solver_vector: the #AgsSolverVector
- * @solver_term: the #AgsSolverTerm
+ * @solver_polynom: the #AgsSolverPolynom
  * 
- * Remove @solver_term from @solver_vector.
+ * Remove @solver_polynom from @solver_vector.
  * 
  * Since: 3.2.0
  */
 void
-ags_solver_vector_remove_term(AgsSolverVector *solver_vector,
-			      AgsSolverTerm *solver_term)
+ags_solver_vector_remove_polynom(AgsSolverVector *solver_vector,
+				 AgsSolverPolynom *solver_polynom)
 {
   gint position;
   guint i, j;
@@ -242,7 +242,7 @@ ags_solver_vector_remove_term(AgsSolverVector *solver_vector,
   GRecMutex *solver_vector_mutex;
   
   if(!AGS_IS_SOLVER_VECTOR(solver_vector) ||
-     !AGS_IS_SOLVER_TERM(solver_term)){
+     !AGS_IS_SOLVER_POLYNOM(solver_polynom)){
     return;
   }
 
@@ -252,8 +252,8 @@ ags_solver_vector_remove_term(AgsSolverVector *solver_vector,
 
   position = -1;
   
-  for(i = 0; i < solver_vector->term_count; i++){
-    if(solver_vector->term_column[i] == solver_term){
+  for(i = 0; i < solver_vector->polynom_count; i++){
+    if(solver_vector->polynom_column[i] == solver_polynom){
       position = i;
 
       break;
@@ -261,14 +261,14 @@ ags_solver_vector_remove_term(AgsSolverVector *solver_vector,
   }
 
   if(position >= 0){
-    if(solver_vector->term_count == 1){
-      g_free(solver_vector->term_column);
+    if(solver_vector->polynom_count == 1){
+      g_free(solver_vector->polynom_column);
 
-      solver_vector->term_column = NULL;
+      solver_vector->polynom_column = NULL;
     }else{
-      for(i = 0, j = 0; i < solver_vector->term_count; i++){
+      for(i = 0, j = 0; i < solver_vector->polynom_count; i++){
 	if(i > position){
-	  solver_vector->term_column[j] = solver_vector->term_column[i];
+	  solver_vector->polynom_column[j] = solver_vector->polynom_column[i];
 	}
 
 	if(i != position){
@@ -276,14 +276,14 @@ ags_solver_vector_remove_term(AgsSolverVector *solver_vector,
 	}
       }
       
-      solver_vector->term_column = (AgsSolverTerm **) g_realloc(solver_vector->term_column,
-								(solver_vector->term_count - 1) * sizeof(AgsSolverTerm *));
+      solver_vector->polynom_column = (AgsSolverPolynom **) g_realloc(solver_vector->polynom_column,
+								      (solver_vector->polynom_count - 1) * sizeof(AgsSolverPolynom *));
     }
 
-    g_object_unref(solver_term);
+    g_object_unref(solver_polynom);
   }
 
-  solver_vector->term_count -= 1;
+  solver_vector->polynom_count -= 1;
   
   g_rec_mutex_unlock(solver_vector_mutex);  
 }

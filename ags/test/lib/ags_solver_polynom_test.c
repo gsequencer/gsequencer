@@ -26,18 +26,18 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
-int ags_solver_term_test_init_suite();
-int ags_solver_term_test_clean_suite();
+int ags_solver_polynom_test_init_suite();
+int ags_solver_polynom_test_clean_suite();
 
-void ags_solver_term_test_set_property();
-void ags_solver_term_test_get_property();
+void ags_solver_polynom_test_set_property();
+void ags_solver_polynom_test_get_property();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_solver_term_test_init_suite()
+ags_solver_polynom_test_init_suite()
 {
   return(0);
 }
@@ -47,19 +47,19 @@ ags_solver_term_test_init_suite()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_solver_term_test_clean_suite()
+ags_solver_polynom_test_clean_suite()
 {
   return(0);
 }
 
 void
-ags_solver_term_test_set_property()
+ags_solver_polynom_test_set_property()
 {
   //TODO:JK: implement me
 }
 
 void
-ags_solver_term_test_get_property()
+ags_solver_polynom_test_get_property()
 {
   //TODO:JK: implement me
 }
@@ -78,7 +78,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsSolverTermTest", ags_solver_term_test_init_suite, ags_solver_term_test_clean_suite);
+  pSuite = CU_add_suite("AgsSolverPolynomTest", ags_solver_polynom_test_init_suite, ags_solver_polynom_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -87,8 +87,8 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsSolverTerm set property", ags_solver_term_test_set_property) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsSolverTerm get property", ags_solver_term_test_get_property) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsSolverPolynom set property", ags_solver_polynom_test_set_property) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSolverPolynom get property", ags_solver_polynom_test_get_property) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

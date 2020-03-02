@@ -30,7 +30,7 @@ libags_installcheck_programs = \
 	ags_check_system_math_util_test \
 	ags_check_system_solver_matrix_test \
 	ags_check_system_solver_vector_test \
-	ags_check_system_solver_term_test \
+	ags_check_system_solver_polynom_test \
 	ags_check_system_time_test \
 	ags_check_system_turtle_manager_test \
 	ags_check_system_turtle_test \
@@ -277,12 +277,12 @@ ags_check_system_solver_vector_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_solver_vector_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_solver_vector_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
-# solver term unit test
-ags_check_system_solver_term_test_SOURCES = ags/test/lib/ags_solver_term_test.c
-ags_check_system_solver_term_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
-ags_check_system_solver_term_test_CPPFLAGS = $(AGS_FEATURES)
-ags_check_system_solver_term_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_solver_term_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+# solver polynom unit test
+ags_check_system_solver_polynom_test_SOURCES = ags/test/lib/ags_solver_polynom_test.c
+ags_check_system_solver_polynom_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_check_system_solver_polynom_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_solver_polynom_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_solver_polynom_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # time unit test
 ags_check_system_time_test_SOURCES = ags/test/lib/ags_time_test.c
@@ -1504,7 +1504,7 @@ ags-check-system-unit-tests: $(libags_installcheck_programs) $(libags_audio_inst
 	./ags_check_system_math_util_test
 	./ags_check_system_solver_matrix_test
 	./ags_check_system_solver_vector_test
-	./ags_check_system_solver_term_test
+	./ags_check_system_solver_polynom_test
 	./ags_check_system_time_test
 	./ags_check_system_turtle_manager_test
 	./ags_check_system_turtle_test

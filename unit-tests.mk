@@ -15,7 +15,7 @@ check_PROGRAMS += \
 	ags_math_util_test \
 	ags_solver_matrix_test \
 	ags_solver_vector_test \
-	ags_solver_term_test \
+	ags_solver_polynom_test \
 	ags_time_test \
 	ags_turtle_manager_test \
 	ags_turtle_test \
@@ -252,11 +252,11 @@ ags_solver_vector_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(
 ags_solver_vector_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_solver_vector_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
-# solver term unit test
-ags_solver_term_test_SOURCES = ags/test/lib/ags_solver_term_test.c
-ags_solver_term_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
-ags_solver_term_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_solver_term_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+# solver polynom unit test
+ags_solver_polynom_test_SOURCES = ags/test/lib/ags_solver_polynom_test.c
+ags_solver_polynom_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_solver_polynom_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_solver_polynom_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # time unit test
 ags_time_test_SOURCES = ags/test/lib/ags_time_test.c
