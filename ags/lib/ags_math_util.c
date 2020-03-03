@@ -1064,6 +1064,22 @@ ags_math_util_is_term(gchar *term)
 }
 
 /**
+ * ags_math_util_rewrite_numeric:
+ * @numeric_str: the numeric string
+ * 
+ * Rewrite numeric string.
+ * 
+ * Returns: the optimized string
+ * 
+ * Since: 3.2.0
+ */
+gchar*
+ags_math_util_rewrite_numeric(gchar *numeric_str,
+			      gboolean preserve_constants)
+{
+}
+
+/**
  * ags_math_util_split_polynom:
  * @polynom: the polynom
  * @factor: (out): the return location of factors
@@ -1078,6 +1094,7 @@ ags_math_util_split_polynom(gchar *polynom,
 			    gchar ***factor, gchar ***factor_exponent)
 {
   GMatchInfo *sign_match_info;
+  GMatchInfo *multiply_match_info;
   GMatchInfo *numeric_match_info;
   GMatchInfo *constants_match_info;
   GMatchInfo *exponent_match_info;
@@ -1100,6 +1117,7 @@ ags_math_util_split_polynom(gchar *polynom,
   GError *error;
   
   static const GRegex *sign_regex = NULL;
+  static const GRegex *multiply_regex = NULL;
   static const GRegex *numeric_regex = NULL;
   static const GRegex *constants_regex = NULL;
   static const GRegex *exponent_regex = NULL;
@@ -1107,6 +1125,9 @@ ags_math_util_split_polynom(gchar *polynom,
   
   /* groups: #1 sign */
   static const gchar *sign_pattern = "^[\\s]*([\\+\\-])?";
+
+  /* groups: #1 multiply */
+  static const gchar *mulitply_pattern = "^[\\s]*([\\*])?";
   
   /* groups: #1-2 numeric base and fraction,  */
   static const gchar *numeric_pattern = "^[\\s]*([0-9]+(\\.[0-9]+))";
@@ -1115,7 +1136,7 @@ ags_math_util_split_polynom(gchar *polynom,
   static const gchar *constants_pattern = "^[\\s]*([ℯ𝜋𝑖])";
 
   /* groups: #1 exponent operator, #2 exponent */
-  static const gchar *exponent_pattern = "[\\s]*(\\^)[\\s]*\\(([^\\)]+)\\)";
+  static const gchar *exponent_pattern = "[\\s]*(\\^)[\\s]*(\\([^)(]*+(?:(?R)[^)(]*)*+\\))";
   
   /* groups: #1 symbol */
   static const gchar *symbol_pattern = "^[\\s]*([a-zA-Z][0-9]*)";
@@ -1245,11 +1266,32 @@ ags_math_util_split_polynom(gchar *polynom,
   i = 0;
     
   while(success){
-    gboolean numeric_success, constants_success, exponent_success;
+    gboolean multiply_success, numeric_success, constants_success, exponent_success;
 
+    multiply_success = FALSE;
     numeric_success = FALSE;
     constants_success = FALSE;
     exponent_success = FALSE;
+
+    /* mulitply */
+    if(numeric_factor != NULL){
+      g_regex_match(multiply_regex, iter, 0, &multiply_match_info);
+
+      if(g_match_info_matches(multiply_match_info)){
+	gint start_pos, end_pos;
+
+	g_match_info_fetch_pos(multiply_match_info,
+			       0,
+			       &start_pos,
+			       &end_pos);
+
+	multiply_success = TRUE;
+
+	iter += end_pos;
+      }
+    
+      g_match_info_free(multiply_match_info);
+    }
 
     /* numeric */
     g_regex_match(numeric_regex, iter, 0, &numeric_match_info);
@@ -1280,11 +1322,11 @@ ags_math_util_split_polynom(gchar *polynom,
       iter += strlen(numeric_group_0);
 	
       numeric_success = TRUE;
-    
-      g_match_info_free(numeric_match_info);
 
       g_free(numeric_group_0);
     }
+    
+    g_match_info_free(numeric_match_info);
 
     /* constants */
     if(!numeric_success){
@@ -1317,10 +1359,10 @@ ags_math_util_split_polynom(gchar *polynom,
 	
 	constants_success = TRUE;
     
-	g_match_info_free(constants_match_info);
-
 	g_free(constants_group_0);
       }
+
+      g_match_info_free(constants_match_info);
     }
 
     /* exponent */
@@ -1343,11 +1385,11 @@ ags_math_util_split_polynom(gchar *polynom,
 	iter += strlen(exponent_group_0);
 	
 	exponent_success = TRUE;
-    
-	g_match_info_free(exponent_match_info);
 
 	g_free(exponent_group_0);
       }
+    
+      g_match_info_free(exponent_match_info);
     }
 
     if(!exponent_success){
@@ -1366,17 +1408,39 @@ ags_math_util_split_polynom(gchar *polynom,
   }
 
   /* match numeric or constants including exponent */
-  success = TRUE;
-
-  i = 0;
-
   if(has_symbol){
-    while(success){
-      gboolean symbol_success, exponent_success;
+    success = TRUE;
 
+    i = 0;
+
+    while(success){
+      gboolean multiply_success, symbol_success, exponent_success;
+
+      multiply_success = FALSE;
       symbol_success = FALSE;
       exponent_success = FALSE;
 
+      /* mulitply */
+      if(numeric_factor != NULL ||
+	 symbol_factor != NULL){
+	g_regex_match(multiply_regex, iter, 0, &multiply_match_info);
+
+	if(g_match_info_matches(multiply_match_info)){
+	  gint start_pos, end_pos;
+
+	  g_match_info_fetch_pos(multiply_match_info,
+				 0,
+				 &start_pos,
+				 &end_pos);
+
+	  multiply_success = TRUE;
+
+	  iter += end_pos;
+	}
+    
+	g_match_info_free(multiply_match_info);
+      }
+      
       /* symbol */
       g_regex_match(symbol_regex, iter, 0, &symbol_match_info);
 
@@ -1406,11 +1470,11 @@ ags_math_util_split_polynom(gchar *polynom,
 	iter += strlen(symbol_group_0);
 	
 	symbol_success = TRUE;
-    
-	g_match_info_free(symbol_match_info);
 
 	g_free(symbol_group_0);
       }
+    
+      g_match_info_free(symbol_match_info);
 
       /* exponent */
       if(symbol_success){
@@ -1431,11 +1495,11 @@ ags_math_util_split_polynom(gchar *polynom,
 	  iter += strlen(exponent_group_0);
 	
 	  exponent_success = TRUE;
-    
-	  g_match_info_free(exponent_match_info);
 
 	  g_free(exponent_group_0);
 	}
+    
+	g_match_info_free(exponent_match_info);
       }
 
       if(!exponent_success){

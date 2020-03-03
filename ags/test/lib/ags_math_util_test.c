@@ -34,6 +34,8 @@ void ags_math_util_test_find_exponent_parantheses();
 void ags_math_util_test_find_function_parantheses();
 void ags_math_util_test_find_term_parantheses();
 void ags_math_util_test_find_symbol_all();
+void ags_math_util_test_is_term();
+void ags_math_util_test_split_polynom();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -663,6 +665,159 @@ ags_math_util_test_is_term()
   CU_ASSERT(success == TRUE);
 }
 
+void
+ags_math_util_test_split_polynom()
+{
+  static const gchar *polynom[] = {
+    "a",
+    "-a",
+    "ab",
+    "-ab",
+    "3ab",
+    "3 * ab",
+    "3.0ab",
+    "3.0 * ab",
+    "-3ab",
+    "-3 * ab",
+    "-3.0ab",
+    "-3.0 * ab",
+    "-3.0 * a * b",
+    "3.0x0y0",
+    "3.0 * x0y0",
+    "3.0 * x0 * y0",
+    "-3.0x0y0",
+    "-3.0 * x0y0",
+    "-3.0 * x0 * y0",
+    "3.9a^(2)",
+    "3.9 * a^(2)",
+    "3.9a^(2.5)",
+    "3.9 * a^(2.5)",
+    "-3.9a^(-2)",
+    "-3.9 * a^(-2)",
+    "-3.9a^(-2)",
+    "-3.9 * a^(-2)",
+    "2a^(2𝜋)b^(-0.25𝜋)",
+    "2 * a^(2𝜋)b^(-0.25𝜋)",
+    "2 * a^(2𝜋) * b^(-0.25𝜋)",
+    "-2a^(-2ℯ𝑖)b^(0.25𝜋)",
+    "-2 * a^(-2ℯ𝑖)b^(0.25𝜋)",
+    "-2 * a^(-2 * ℯ * 𝑖)b^(0.25 * 𝜋)",
+    "-2 * a^(-2ℯ𝑖) * b^(0.25𝜋)",
+    "-2 * a^(-2 * ℯ * 𝑖) * b^(0.25 * 𝜋)",
+    "2 * x0^(2𝜋)y0^(-0.25𝜋)",
+    "2 * x0^(2𝜋)y0^(-0.25 * 𝜋)",
+    "-2 * x0^(-2ℯ𝑖) * y0^(0.25𝜋)",
+    "-2 * x0^(-2ℯ𝑖) * y0^(0.25 * 𝜋)",
+    "+2 * x0^(-2ℯ𝑖) * y0^(+0.25 * 𝜋)",
+    "2 * x0^(-2ℯ𝑖) * y0^(+0.25 * 𝜋)",
+    "2𝜋 * x0^(-2ℯ𝑖) * y0^(+0.25 * 𝜋)",
+    "2 * x0^(-2ℯ𝑖) * y0^(+0.25 * 𝜋)",
+    "2 * 𝜋 * x0^(-2ℯ𝑖) * y0^(+0.25 * 𝜋)",
+    "2 * x0^(-2ℯ𝑖) * y0^(+0.25 * 𝜋)",
+    "2 * x0^(-2ℯ𝑖) * y0^(+0.25 * 𝜋)",
+    "2𝜋 * x0^(-2ℯ𝑖) * y0^(+0.25 * 𝜋)",
+    NULL,
+  };
+
+  static const gchar **polynom_factor[] = {
+    {"a", NULL},
+    {"a", NULL},
+    {"a", "b", NULL},
+    {"a", "b", NULL},
+    {"3", "a", "b", NULL},
+    {"3.0", "a", "b", NULL},
+    {"3.0", "a", "b", NULL},
+    {"3", "a", "b", NULL},
+    {"3", "a", "b", NULL},
+    {"3.0", "a", "b", NULL},
+    {"3.0", "a", "b", NULL},
+    {"3.0", "a", "b", NULL},
+    {"3.0", "x0", "y0", NULL},
+    {"3.0", "x0", "y0", NULL},
+    {"3.0", "x0", "y0", NULL},
+    {"3.0", "x0", "y0", NULL},
+    {"3.0", "x0", "y0", NULL},
+    {"3.0", "x0", "y0", NULL},
+    {"3.9", "a", NULL},
+    {"3.9", "a", NULL},
+    {"3.9", "a", NULL},
+    {"3.9", "a", NULL},
+    {"3.9", "a", NULL},
+    {"3.9", "a", NULL},
+    {"3.9", "a", NULL},
+    {"3.9", "a", NULL},
+    {"2", "a", "b", NULL},
+    {"2", "a", "b", NULL},
+    {"2", "a", "b", NULL},
+    {"2", "a", "b", NULL},
+    {"2", "a", "b", NULL},
+    {"2", "a", "b", NULL},
+    {"2", "a", "b", NULL},
+    {"2", "x0", "y0", NULL},
+    {"2", "x0", "y0", NULL},
+    {"2", "x0", "y0", NULL},
+    {"2", "x0", "y0", NULL},
+    {"2", "x0", "y0", NULL},
+    {"2", "x0", "y0", NULL},
+    {"2", "𝜋", "x0", "y0", NULL},
+    {"2", "x0", "y0", NULL},
+    {"2", "𝜋", "x0", "y0", NULL},
+    {"2", "x0", "y0", NULL},
+    {"2", "x0", "y0", NULL},
+    {"2", "𝜋", "x0", "y0", NULL},
+    NULL,
+  };
+
+  static const gchar **polynom_factor_exponent[] = {
+    {"1", NULL},
+    {"1", NULL},
+    {"1", "1", NULL},
+    {"1", "1", NULL},
+    {"1", "1", "1", NULL},
+    {"1", "1", "1", NULL},
+    {"1", "1", "1", NULL},
+    {"1", "1", "1", NULL},
+    {"1", "1", "1", NULL},
+    {"1", "1", "1", NULL},
+    {"1", "1", "1", NULL},
+    {"1", "1", "1", NULL},
+    {"1", "1", "1", NULL},
+    {"1", "1", "1", NULL},
+    {"1", "1", "1", NULL},
+    {"1", "1", "1", NULL},
+    {"1", "1", "1", NULL},
+    {"1", "1", "1", NULL},
+    {"1", "2", NULL},
+    {"1", "2", NULL},
+    {"1", "2.5", NULL},
+    {"1", "2.5", NULL},
+    {"1", "-2", NULL},
+    {"1", "-2", NULL},
+    {"1", "-2", NULL},
+    {"1", "-2", NULL},
+    {"1", "2𝜋", "-0.25𝜋", NULL},
+    {"1", "2𝜋", "-0.25𝜋", NULL},
+    {"1", "2𝜋", "-0.25𝜋", NULL},
+    {"1", "-2ℯ𝑖", "0.25𝜋", NULL},
+    {"1", "-2ℯ𝑖", "0.25𝜋", NULL},
+    {"1", "-2ℯ𝑖", "0.25𝜋", NULL},
+    {"1", "-2ℯ𝑖", "0.25𝜋", NULL},
+    {"1", "2𝜋", "-0.25𝜋", NULL},
+    {"1", "2𝜋", "-0.25𝜋", NULL},
+    {"1", "-2ℯ𝑖", "0.25𝜋", NULL},
+    {"1", "-2ℯ𝑖", "0.25𝜋", NULL},
+    {"1", "-2ℯ𝑖", "0.25𝜋", NULL},
+    {"1", "-2ℯ𝑖", "0.25𝜋", NULL},
+    {"1", "𝜋", "-2ℯ𝑖", "0.25𝜋", NULL},
+    {"1", "-2ℯ𝑖", "0.25𝜋", NULL},
+    {"1", "𝜋", "-2ℯ𝑖", "0.25𝜋", NULL},
+    {"1", "-2ℯ𝑖", "0.25𝜋", NULL},
+    {"1", "-2ℯ𝑖", "0.25𝜋", NULL},
+    {"1", "𝜋", "-2ℯ𝑖", "0.25𝜋", NULL},
+    NULL,
+  };
+}
+
 int
 main(int argc, char **argv)
 {
@@ -688,7 +843,8 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_math_util.c find function parantheses", ags_math_util_test_find_function_parantheses) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c find term parantheses", ags_math_util_test_find_term_parantheses) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c find symbol all", ags_math_util_test_find_symbol_all) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_math_util.c is term", ags_math_util_test_is_term) == NULL)){
+     (CU_add_test(pSuite, "test of ags_math_util.c is term", ags_math_util_test_is_term) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_math_util.c split polynom", ags_math_util_test_split_polynom) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();
