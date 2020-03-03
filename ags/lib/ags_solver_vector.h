@@ -24,7 +24,7 @@
 #include <glib-object.h>
 
 #include <ags/lib/ags_complex.h>
-#include <ags/lib/ags_solver_polynom.h>
+#include <ags/lib/ags_solver_polynomial.h>
 
 G_BEGIN_DECLS
 
@@ -48,12 +48,12 @@ struct _AgsSolverVector
   
   GRecMutex obj_mutex;
 
-  gchar **polynom_history;
+  gchar **polynomial_history;
 
-  gchar *source_polynom;
+  gchar *source_polynomial;
 
-  AgsSolverPolynom **polynom_column;
-  guint polynom_count;
+  AgsSolverPolynomial **polynomial_column;
+  guint polynomial_count;
 };
 
 struct _AgsSolverVectorClass
@@ -63,11 +63,11 @@ struct _AgsSolverVectorClass
 
 GType ags_solver_vector_get_type(void);
 
-void ags_solver_vector_insert_polynom(AgsSolverVector *solver_vector,
-				      AgsSolverPolynom *solver_polynom,
-				      gint position);
-void ags_solver_vector_remove_polynom(AgsSolverVector *solver_vector,
-				   AgsSolverPolynom *solver_polynom);
+void ags_solver_vector_insert_polynomial(AgsSolverVector *solver_vector,
+					 AgsSolverPolynomial *solver_polynomial,
+					 gint position);
+void ags_solver_vector_remove_polynomial(AgsSolverVector *solver_vector,
+					 AgsSolverPolynomial *solver_polynomial);
 
 AgsSolverVector* ags_solver_vector_new();
 

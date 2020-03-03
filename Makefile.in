@@ -156,7 +156,7 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_function_test$(EXEEXT) ags_log_test$(EXEEXT) \
 	ags_math_util_test$(EXEEXT) ags_solver_matrix_test$(EXEEXT) \
 	ags_solver_vector_test$(EXEEXT) \
-	ags_solver_polynom_test$(EXEEXT) ags_time_test$(EXEEXT) \
+	ags_solver_polynomial_test$(EXEEXT) ags_time_test$(EXEEXT) \
 	ags_turtle_manager_test$(EXEEXT) ags_turtle_test$(EXEEXT) \
 	ags_application_context_test$(EXEEXT) ags_config_test$(EXEEXT) \
 	ags_connectable_test$(EXEEXT) ags_soundcard_test$(EXEEXT) \
@@ -456,7 +456,7 @@ am__objects_2 = $(am__objects_1) ags/lib/libags_la-ags_buffer_util.lo \
 	ags/lib/libags_la-ags_math_util.lo \
 	ags/lib/libags_la-ags_regex.lo \
 	ags/lib/libags_la-ags_solver_matrix.lo \
-	ags/lib/libags_la-ags_solver_polynom.lo \
+	ags/lib/libags_la-ags_solver_polynomial.lo \
 	ags/lib/libags_la-ags_solver_vector.lo \
 	ags/lib/libags_la-ags_string_util.lo \
 	ags/lib/libags_la-ags_time.lo ags/lib/libags_la-ags_turtle.lo \
@@ -4223,17 +4223,17 @@ ags_solver_matrix_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_solver_matrix_test_CFLAGS) $(CFLAGS) \
 	$(ags_solver_matrix_test_LDFLAGS) $(LDFLAGS) -o $@
-am_ags_solver_polynom_test_OBJECTS = ags/test/lib/solver_polynom_test-ags_solver_polynom_test.$(OBJEXT)
-ags_solver_polynom_test_OBJECTS =  \
-	$(am_ags_solver_polynom_test_OBJECTS)
-ags_solver_polynom_test_DEPENDENCIES = libags_server.la \
+am_ags_solver_polynomial_test_OBJECTS = ags/test/lib/solver_polynomial_test-ags_solver_polynomial_test.$(OBJEXT)
+ags_solver_polynomial_test_OBJECTS =  \
+	$(am_ags_solver_polynomial_test_OBJECTS)
+ags_solver_polynomial_test_DEPENDENCIES = libags_server.la \
 	libags_thread.la libags.la libags_thread.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
-ags_solver_polynom_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+ags_solver_polynomial_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
-	$(ags_solver_polynom_test_CFLAGS) $(CFLAGS) \
-	$(ags_solver_polynom_test_LDFLAGS) $(LDFLAGS) -o $@
+	$(ags_solver_polynomial_test_CFLAGS) $(CFLAGS) \
+	$(ags_solver_polynomial_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_solver_vector_test_OBJECTS = ags/test/lib/solver_vector_test-ags_solver_vector_test.$(OBJEXT)
 ags_solver_vector_test_OBJECTS = $(am_ags_solver_vector_test_OBJECTS)
 ags_solver_vector_test_DEPENDENCIES = libags_server.la \
@@ -5084,7 +5084,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/lib/$(DEPDIR)/libags_la-ags_math_util.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_regex.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_solver_matrix.Plo \
-	ags/lib/$(DEPDIR)/libags_la-ags_solver_polynom.Plo \
+	ags/lib/$(DEPDIR)/libags_la-ags_solver_polynomial.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_solver_vector.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_string_util.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_time.Plo \
@@ -5311,7 +5311,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/lib/$(DEPDIR)/log_test-ags_log_test.Po \
 	ags/test/lib/$(DEPDIR)/math_util_test-ags_math_util_test.Po \
 	ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Po \
-	ags/test/lib/$(DEPDIR)/solver_polynom_test-ags_solver_polynom_test.Po \
+	ags/test/lib/$(DEPDIR)/solver_polynomial_test-ags_solver_polynomial_test.Po \
 	ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Po \
 	ags/test/lib/$(DEPDIR)/time_test-ags_time_test.Po \
 	ags/test/lib/$(DEPDIR)/turtle_manager_test-ags_turtle_manager_test.Po \
@@ -5618,7 +5618,7 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_set_muted_test_SOURCES) \
 	$(ags_set_samplerate_test_SOURCES) \
 	$(ags_solver_matrix_test_SOURCES) \
-	$(ags_solver_polynom_test_SOURCES) \
+	$(ags_solver_polynomial_test_SOURCES) \
 	$(ags_solver_vector_test_SOURCES) \
 	$(ags_soundcard_test_SOURCES) $(ags_start_audio_test_SOURCES) \
 	$(ags_start_channel_test_SOURCES) \
@@ -5798,7 +5798,7 @@ DIST_SOURCES = $(libags_la_SOURCES) \
 	$(ags_set_muted_test_SOURCES) \
 	$(ags_set_samplerate_test_SOURCES) \
 	$(ags_solver_matrix_test_SOURCES) \
-	$(ags_solver_polynom_test_SOURCES) \
+	$(ags_solver_polynomial_test_SOURCES) \
 	$(ags_solver_vector_test_SOURCES) \
 	$(ags_soundcard_test_SOURCES) $(ags_start_audio_test_SOURCES) \
 	$(ags_start_channel_test_SOURCES) \
@@ -5839,7 +5839,7 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/lib/ags_conversion.h ags/lib/ags_endian.h \
 	ags/lib/ags_function.h ags/lib/ags_log.h \
 	ags/lib/ags_math_util.h ags/lib/ags_regex.h \
-	ags/lib/ags_solver_matrix.h ags/lib/ags_solver_polynom.h \
+	ags/lib/ags_solver_matrix.h ags/lib/ags_solver_polynomial.h \
 	ags/lib/ags_solver_vector.h ags/lib/ags_string_util.h \
 	ags/lib/ags_time.h ags/lib/ags_turtle.h \
 	ags/lib/ags_turtle_manager.h ags/lib/ags_uuid.h \
@@ -7142,11 +7142,11 @@ ags_solver_vector_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(
 ags_solver_vector_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_solver_vector_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
-# solver polynom unit test
-ags_solver_polynom_test_SOURCES = ags/test/lib/ags_solver_polynom_test.c
-ags_solver_polynom_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
-ags_solver_polynom_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_solver_polynom_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+# solver polynomial unit test
+ags_solver_polynomial_test_SOURCES = ags/test/lib/ags_solver_polynomial_test.c
+ags_solver_polynomial_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_solver_polynomial_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_solver_polynomial_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # time unit test
 ags_time_test_SOURCES = ags/test/lib/ags_time_test.c
@@ -8371,7 +8371,7 @@ libags_h_sources = \
 	ags/lib/ags_math_util.h \
 	ags/lib/ags_regex.h \
 	ags/lib/ags_solver_matrix.h \
-	ags/lib/ags_solver_polynom.h \
+	ags/lib/ags_solver_polynomial.h \
 	ags/lib/ags_solver_vector.h \
 	ags/lib/ags_string_util.h \
 	ags/lib/ags_time.h \
@@ -8391,7 +8391,7 @@ libags_c_sources = \
 	ags/lib/ags_math_util.c \
 	ags/lib/ags_regex.c \
 	ags/lib/ags_solver_matrix.c \
-	ags/lib/ags_solver_polynom.c \
+	ags/lib/ags_solver_polynomial.c \
 	ags/lib/ags_solver_vector.c \
 	ags/lib/ags_string_util.c \
 	ags/lib/ags_time.c \
@@ -10274,7 +10274,7 @@ ags/lib/libags_la-ags_regex.lo: ags/lib/$(am__dirstamp) \
 	ags/lib/$(DEPDIR)/$(am__dirstamp)
 ags/lib/libags_la-ags_solver_matrix.lo: ags/lib/$(am__dirstamp) \
 	ags/lib/$(DEPDIR)/$(am__dirstamp)
-ags/lib/libags_la-ags_solver_polynom.lo: ags/lib/$(am__dirstamp) \
+ags/lib/libags_la-ags_solver_polynomial.lo: ags/lib/$(am__dirstamp) \
 	ags/lib/$(DEPDIR)/$(am__dirstamp)
 ags/lib/libags_la-ags_solver_vector.lo: ags/lib/$(am__dirstamp) \
 	ags/lib/$(DEPDIR)/$(am__dirstamp)
@@ -13696,13 +13696,13 @@ ags/test/lib/solver_matrix_test-ags_solver_matrix_test.$(OBJEXT):  \
 ags_solver_matrix_test$(EXEEXT): $(ags_solver_matrix_test_OBJECTS) $(ags_solver_matrix_test_DEPENDENCIES) $(EXTRA_ags_solver_matrix_test_DEPENDENCIES) 
 	@rm -f ags_solver_matrix_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_solver_matrix_test_LINK) $(ags_solver_matrix_test_OBJECTS) $(ags_solver_matrix_test_LDADD) $(LIBS)
-ags/test/lib/solver_polynom_test-ags_solver_polynom_test.$(OBJEXT):  \
+ags/test/lib/solver_polynomial_test-ags_solver_polynomial_test.$(OBJEXT):  \
 	ags/test/lib/$(am__dirstamp) \
 	ags/test/lib/$(DEPDIR)/$(am__dirstamp)
 
-ags_solver_polynom_test$(EXEEXT): $(ags_solver_polynom_test_OBJECTS) $(ags_solver_polynom_test_DEPENDENCIES) $(EXTRA_ags_solver_polynom_test_DEPENDENCIES) 
-	@rm -f ags_solver_polynom_test$(EXEEXT)
-	$(AM_V_CCLD)$(ags_solver_polynom_test_LINK) $(ags_solver_polynom_test_OBJECTS) $(ags_solver_polynom_test_LDADD) $(LIBS)
+ags_solver_polynomial_test$(EXEEXT): $(ags_solver_polynomial_test_OBJECTS) $(ags_solver_polynomial_test_DEPENDENCIES) $(EXTRA_ags_solver_polynomial_test_DEPENDENCIES) 
+	@rm -f ags_solver_polynomial_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_solver_polynomial_test_LINK) $(ags_solver_polynomial_test_OBJECTS) $(ags_solver_polynomial_test_LDADD) $(LIBS)
 ags/test/lib/solver_vector_test-ags_solver_vector_test.$(OBJEXT):  \
 	ags/test/lib/$(am__dirstamp) \
 	ags/test/lib/$(DEPDIR)/$(am__dirstamp)
@@ -14534,7 +14534,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_math_util.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_regex.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_solver_matrix.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_solver_polynom.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_solver_polynomial.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_solver_vector.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_string_util.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_time.Plo@am__quote@ # am--include-marker
@@ -14761,7 +14761,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/log_test-ags_log_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/math_util_test-ags_math_util_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/solver_polynom_test-ags_solver_polynom_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/solver_polynomial_test-ags_solver_polynomial_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/time_test-ags_time_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/turtle_manager_test-ags_turtle_manager_test.Po@am__quote@ # am--include-marker
@@ -14966,12 +14966,12 @@ ags/lib/libags_la-ags_solver_matrix.lo: ags/lib/ags_solver_matrix.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/lib/libags_la-ags_solver_matrix.lo `test -f 'ags/lib/ags_solver_matrix.c' || echo '$(srcdir)/'`ags/lib/ags_solver_matrix.c
 
-ags/lib/libags_la-ags_solver_polynom.lo: ags/lib/ags_solver_polynom.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/lib/libags_la-ags_solver_polynom.lo -MD -MP -MF ags/lib/$(DEPDIR)/libags_la-ags_solver_polynom.Tpo -c -o ags/lib/libags_la-ags_solver_polynom.lo `test -f 'ags/lib/ags_solver_polynom.c' || echo '$(srcdir)/'`ags/lib/ags_solver_polynom.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/lib/$(DEPDIR)/libags_la-ags_solver_polynom.Tpo ags/lib/$(DEPDIR)/libags_la-ags_solver_polynom.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/lib/ags_solver_polynom.c' object='ags/lib/libags_la-ags_solver_polynom.lo' libtool=yes @AMDEPBACKSLASH@
+ags/lib/libags_la-ags_solver_polynomial.lo: ags/lib/ags_solver_polynomial.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/lib/libags_la-ags_solver_polynomial.lo -MD -MP -MF ags/lib/$(DEPDIR)/libags_la-ags_solver_polynomial.Tpo -c -o ags/lib/libags_la-ags_solver_polynomial.lo `test -f 'ags/lib/ags_solver_polynomial.c' || echo '$(srcdir)/'`ags/lib/ags_solver_polynomial.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/lib/$(DEPDIR)/libags_la-ags_solver_polynomial.Tpo ags/lib/$(DEPDIR)/libags_la-ags_solver_polynomial.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/lib/ags_solver_polynomial.c' object='ags/lib/libags_la-ags_solver_polynomial.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/lib/libags_la-ags_solver_polynom.lo `test -f 'ags/lib/ags_solver_polynom.c' || echo '$(srcdir)/'`ags/lib/ags_solver_polynom.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/lib/libags_la-ags_solver_polynomial.lo `test -f 'ags/lib/ags_solver_polynomial.c' || echo '$(srcdir)/'`ags/lib/ags_solver_polynomial.c
 
 ags/lib/libags_la-ags_solver_vector.lo: ags/lib/ags_solver_vector.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/lib/libags_la-ags_solver_vector.lo -MD -MP -MF ags/lib/$(DEPDIR)/libags_la-ags_solver_vector.Tpo -c -o ags/lib/libags_la-ags_solver_vector.lo `test -f 'ags/lib/ags_solver_vector.c' || echo '$(srcdir)/'`ags/lib/ags_solver_vector.c
@@ -22127,19 +22127,19 @@ ags/test/lib/solver_matrix_test-ags_solver_matrix_test.obj: ags/test/lib/ags_sol
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_matrix_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/solver_matrix_test-ags_solver_matrix_test.obj `if test -f 'ags/test/lib/ags_solver_matrix_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_solver_matrix_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_solver_matrix_test.c'; fi`
 
-ags/test/lib/solver_polynom_test-ags_solver_polynom_test.o: ags/test/lib/ags_solver_polynom_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_polynom_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/solver_polynom_test-ags_solver_polynom_test.o -MD -MP -MF ags/test/lib/$(DEPDIR)/solver_polynom_test-ags_solver_polynom_test.Tpo -c -o ags/test/lib/solver_polynom_test-ags_solver_polynom_test.o `test -f 'ags/test/lib/ags_solver_polynom_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_solver_polynom_test.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/solver_polynom_test-ags_solver_polynom_test.Tpo ags/test/lib/$(DEPDIR)/solver_polynom_test-ags_solver_polynom_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/lib/ags_solver_polynom_test.c' object='ags/test/lib/solver_polynom_test-ags_solver_polynom_test.o' libtool=no @AMDEPBACKSLASH@
+ags/test/lib/solver_polynomial_test-ags_solver_polynomial_test.o: ags/test/lib/ags_solver_polynomial_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_polynomial_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/solver_polynomial_test-ags_solver_polynomial_test.o -MD -MP -MF ags/test/lib/$(DEPDIR)/solver_polynomial_test-ags_solver_polynomial_test.Tpo -c -o ags/test/lib/solver_polynomial_test-ags_solver_polynomial_test.o `test -f 'ags/test/lib/ags_solver_polynomial_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_solver_polynomial_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/solver_polynomial_test-ags_solver_polynomial_test.Tpo ags/test/lib/$(DEPDIR)/solver_polynomial_test-ags_solver_polynomial_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/lib/ags_solver_polynomial_test.c' object='ags/test/lib/solver_polynomial_test-ags_solver_polynomial_test.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_polynom_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/solver_polynom_test-ags_solver_polynom_test.o `test -f 'ags/test/lib/ags_solver_polynom_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_solver_polynom_test.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_polynomial_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/solver_polynomial_test-ags_solver_polynomial_test.o `test -f 'ags/test/lib/ags_solver_polynomial_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_solver_polynomial_test.c
 
-ags/test/lib/solver_polynom_test-ags_solver_polynom_test.obj: ags/test/lib/ags_solver_polynom_test.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_polynom_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/solver_polynom_test-ags_solver_polynom_test.obj -MD -MP -MF ags/test/lib/$(DEPDIR)/solver_polynom_test-ags_solver_polynom_test.Tpo -c -o ags/test/lib/solver_polynom_test-ags_solver_polynom_test.obj `if test -f 'ags/test/lib/ags_solver_polynom_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_solver_polynom_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_solver_polynom_test.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/solver_polynom_test-ags_solver_polynom_test.Tpo ags/test/lib/$(DEPDIR)/solver_polynom_test-ags_solver_polynom_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/lib/ags_solver_polynom_test.c' object='ags/test/lib/solver_polynom_test-ags_solver_polynom_test.obj' libtool=no @AMDEPBACKSLASH@
+ags/test/lib/solver_polynomial_test-ags_solver_polynomial_test.obj: ags/test/lib/ags_solver_polynomial_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_polynomial_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/solver_polynomial_test-ags_solver_polynomial_test.obj -MD -MP -MF ags/test/lib/$(DEPDIR)/solver_polynomial_test-ags_solver_polynomial_test.Tpo -c -o ags/test/lib/solver_polynomial_test-ags_solver_polynomial_test.obj `if test -f 'ags/test/lib/ags_solver_polynomial_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_solver_polynomial_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_solver_polynomial_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/solver_polynomial_test-ags_solver_polynomial_test.Tpo ags/test/lib/$(DEPDIR)/solver_polynomial_test-ags_solver_polynomial_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/lib/ags_solver_polynomial_test.c' object='ags/test/lib/solver_polynomial_test-ags_solver_polynomial_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_polynom_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/solver_polynom_test-ags_solver_polynom_test.obj `if test -f 'ags/test/lib/ags_solver_polynom_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_solver_polynom_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_solver_polynom_test.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_polynomial_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/solver_polynomial_test-ags_solver_polynomial_test.obj `if test -f 'ags/test/lib/ags_solver_polynomial_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_solver_polynomial_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_solver_polynomial_test.c'; fi`
 
 ags/test/lib/solver_vector_test-ags_solver_vector_test.o: ags/test/lib/ags_solver_vector_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_solver_vector_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/solver_vector_test-ags_solver_vector_test.o -MD -MP -MF ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Tpo -c -o ags/test/lib/solver_vector_test-ags_solver_vector_test.o `test -f 'ags/test/lib/ags_solver_vector_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_solver_vector_test.c
@@ -23161,9 +23161,9 @@ ags_solver_vector_test.log: ags_solver_vector_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-ags_solver_polynom_test.log: ags_solver_polynom_test$(EXEEXT)
-	@p='ags_solver_polynom_test$(EXEEXT)'; \
-	b='ags_solver_polynom_test'; \
+ags_solver_polynomial_test.log: ags_solver_polynomial_test$(EXEEXT)
+	@p='ags_solver_polynomial_test$(EXEEXT)'; \
+	b='ags_solver_polynomial_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -25446,7 +25446,7 @@ distclean: distclean-recursive
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_math_util.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_regex.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_matrix.Plo
-	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_polynom.Plo
+	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_polynomial.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_vector.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_string_util.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_time.Plo
@@ -25673,7 +25673,7 @@ distclean: distclean-recursive
 	-rm -f ags/test/lib/$(DEPDIR)/log_test-ags_log_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/math_util_test-ags_math_util_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Po
-	-rm -f ags/test/lib/$(DEPDIR)/solver_polynom_test-ags_solver_polynom_test.Po
+	-rm -f ags/test/lib/$(DEPDIR)/solver_polynomial_test-ags_solver_polynomial_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/time_test-ags_time_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/turtle_manager_test-ags_turtle_manager_test.Po
@@ -26392,7 +26392,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_math_util.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_regex.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_matrix.Plo
-	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_polynom.Plo
+	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_polynomial.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_solver_vector.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_string_util.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_time.Plo
@@ -26619,7 +26619,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/lib/$(DEPDIR)/log_test-ags_log_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/math_util_test-ags_math_util_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/solver_matrix_test-ags_solver_matrix_test.Po
-	-rm -f ags/test/lib/$(DEPDIR)/solver_polynom_test-ags_solver_polynom_test.Po
+	-rm -f ags/test/lib/$(DEPDIR)/solver_polynomial_test-ags_solver_polynomial_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/solver_vector_test-ags_solver_vector_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/time_test-ags_time_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/turtle_manager_test-ags_turtle_manager_test.Po
