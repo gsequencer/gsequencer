@@ -638,6 +638,7 @@ ags_math_util_test_is_term()
     NULL,
   };
 
+#if 0
   /* match */
   success = TRUE;
   
@@ -663,12 +664,19 @@ ags_math_util_test_is_term()
   }
 
   CU_ASSERT(success == TRUE);
+#endif
 }
+
+struct _AgsStrvArr{
+  gchar *strv[128];
+};
 
 void
 ags_math_util_test_split_polynom()
 {
-
+  guint i;
+  gboolean success;
+  
   static const gchar *polynom[] = {
     "a", /* #000 */
     "-a", /* #001 */
@@ -718,11 +726,11 @@ ags_math_util_test_split_polynom()
     NULL,
   };
 
-  static const gchar **polynom_factor[] = {
-    {"1", "a", NULL}, /* #000 a */
-    {"-1", "a", NULL}, /* #001 -a */
-    {"1", "a", "b", NULL}, /* #002 ab */
-    {"-1", "a", "b", NULL}, /* #003 -ab */
+  struct _AgsStrvArr polynom_factor[64] = {
+    {"a", NULL}, /* #000 a */
+    {"-a", NULL}, /* #001 -a */
+    {"a", "b", NULL}, /* #002 ab */
+    {"-a", "b", NULL}, /* #003 -ab */
     {"3", "a", "b", NULL}, /* #004 3ab */
     {"3", "a", "b", NULL}, /* #005 3 * ab */
     {"3.0", "a", "b", NULL}, /* #006 3.0ab */
@@ -767,7 +775,7 @@ ags_math_util_test_split_polynom()
     NULL,
   };
 
-  static const gchar **polynom_factor_exponent[] = {
+  struct _AgsStrvArr polynom_factor_exponent[64] = {
     {"1", NULL}, /* #000 a */
     {"1", NULL}, /* #001 -a */
     {"1", "1", NULL}, /* #002 ab */
@@ -815,6 +823,39 @@ ags_math_util_test_split_polynom()
     {"1", "1", "-2ℯ𝑖", "+0.25 * 𝜋", NULL}, /* #044 2𝜋 * x0^(-2ℯ𝑖) * y0^(+0.25 * 𝜋) */
     NULL,
   };
+
+  success = TRUE;
+  
+  for(i = 0; polynom[i] != NULL; i++){
+    gchar **factor;
+    gchar **factor_exponent;
+    
+    factor = NULL;
+    factor_exponent = NULL;
+
+    ags_math_util_split_polynom(polynom[i],
+				&factor, &factor_exponent);
+
+    if(factor == NULL ||
+       polynom_factor[i].strv == NULL ||
+       !g_strv_equal(factor,
+		     polynom_factor[i].strv)){
+      g_message("polynom factor failed - %s", polynom_factor[i]);
+      
+      success = FALSE;
+    }
+
+    if(factor_exponent == NULL ||
+       polynom_factor_exponent[i].strv == NULL ||
+       !g_strv_equal(factor_exponent,
+		     polynom_factor_exponent[i].strv)){
+      g_message("polynom factor exponent failed - %s", polynom_factor_exponent[i]);
+      
+      success = FALSE;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 int
