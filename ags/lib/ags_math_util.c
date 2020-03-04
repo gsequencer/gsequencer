@@ -32,19 +32,19 @@
 static GMutex regex_mutex;
 
 /**
- * ags_math_util_find_parantheses_all:
+ * ags_math_util_find_parenthesis_all:
  * @str: the string
  * @open_position: (out): open position array return location
  * @close_position: (out): close position array return location
  * @open_position_count: (out): open position count return location
  * @close_position_count: (out): close position count return location
  * 
- * Find all parantheses.
+ * Find all parenthesis.
  * 
  * Since: 3.2.0
  */
 void
-ags_math_util_find_parantheses_all(gchar *str,
+ags_math_util_find_parenthesis_all(gchar *str,
 				   gint **open_position, gint **close_position,
 				   guint *open_position_count, guint *close_position_count)
 {
@@ -124,19 +124,19 @@ ags_math_util_find_parantheses_all(gchar *str,
 }
 
 /**
- * ags_math_util_find_exponent_parantheses:
+ * ags_math_util_find_exponent_parenthesis:
  * @str: the string
  * @exponent_open_position: (out): exponent open position array return location
  * @exponent_close_position: (out): exponent close position array return location
  * @exponent_open_position_count: (out): exponent open position count return location
  * @exponent_close_position_count: (out): exponent close position count return location
  * 
- * Find exponent parantheses.
+ * Find exponent parenthesis.
  * 
  * Since: 3.2.0
  */
 void
-ags_math_util_find_exponent_parantheses(gchar *str,
+ags_math_util_find_exponent_parenthesis(gchar *str,
 					gint **exponent_open_position, gint **exponent_close_position,
 					guint *exponent_open_position_count, guint *exponent_close_position_count)
 {
@@ -177,7 +177,7 @@ ags_math_util_find_exponent_parantheses(gchar *str,
     gchar *tmp_iter;
 
     gint current_exponent_open_pos, current_exponent_close_pos;
-    guint nested_parantheses;
+    guint nested_parenthesis;
     gboolean is_exponent;
 
     current_exponent_open_pos = -1;
@@ -198,20 +198,20 @@ ags_math_util_find_exponent_parantheses(gchar *str,
 
     /* scan next */
     if(is_exponent){
-      nested_parantheses = 0;
+      nested_parenthesis = 0;
 	
       for(tmp_iter = iter + 1; tmp_iter[0] != '\0'; tmp_iter++){
 	if(tmp_iter[0] == '('){
-	  nested_parantheses++;
+	  nested_parenthesis++;
 	}
 
 	if(tmp_iter[0] == ')'){
-	  if(nested_parantheses == 0){
+	  if(nested_parenthesis == 0){
 	    current_exponent_close_pos = tmp_iter - str;
 
 	    break;
 	  }else{
-	    nested_parantheses--;
+	    nested_parenthesis--;
 	  }
 	}
       }
@@ -260,19 +260,19 @@ ags_math_util_find_exponent_parantheses(gchar *str,
 }
 
 /**
- * ags_math_util_find_function_parantheses:
+ * ags_math_util_find_function_parenthesis:
  * @str: the string
  * @function_open_position: (out): function open position array return location
  * @function_close_position: (out): function close position array return location
  * @function_open_position_count: (out): function open position count return location
  * @function_close_position_count: (out): function close position count return location
  * 
- * Find function parantheses.
+ * Find function parenthesis.
  * 
  * Since: 3.2.0
  */
 void
-ags_math_util_find_function_parantheses(gchar *str,
+ags_math_util_find_function_parenthesis(gchar *str,
 					gint **function_open_position, gint **function_close_position,
 					guint *function_open_position_count, guint *function_close_position_count)
 {
@@ -333,7 +333,7 @@ ags_math_util_find_function_parantheses(gchar *str,
 
   g_mutex_unlock(&regex_mutex);
 
-  /* find parantheses */
+  /* find parenthesis */
   g_regex_match(function_regex, str, 0, &function_match_info);
   
   while(g_match_info_matches(function_match_info)){
@@ -341,7 +341,7 @@ ags_math_util_find_function_parantheses(gchar *str,
 
     gint start_pos, end_pos;
     gint current_function_open_pos, current_function_close_pos;
-    guint nested_parantheses;
+    guint nested_parenthesis;
     
     current_function_open_pos = -1;
     current_function_close_pos = -1;
@@ -361,20 +361,20 @@ ags_math_util_find_function_parantheses(gchar *str,
       continue;
     }
     
-    nested_parantheses = 0;
+    nested_parenthesis = 0;
 	
     for(tmp_iter = str + current_function_open_pos + 1; tmp_iter[0] != '\0'; tmp_iter++){
       if(tmp_iter[0] == '('){
-	nested_parantheses++;
+	nested_parenthesis++;
       }
 
       if(tmp_iter[0] == ')'){
-	if(nested_parantheses == 0){
+	if(nested_parenthesis == 0){
 	  current_function_close_pos = tmp_iter - str;
 
 	  break;
 	}else{
-	  nested_parantheses--;
+	  nested_parenthesis--;
 	}
       }
     }
@@ -426,19 +426,19 @@ ags_math_util_find_function_parantheses(gchar *str,
 }
 
 /**
- * ags_math_util_find_term_parantheses:
+ * ags_math_util_find_term_parenthesis:
  * @str: the string
  * @term_open_position: (out): term open position array return location
  * @term_close_position: (out): term close position array return location
  * @term_open_position_count: (out): term open position count return location
  * @term_close_position_count: (out): term close position count return location
  * 
- * Find term parantheses.
+ * Find term parenthesis.
  * 
  * Since: 3.2.0
  */
 void
-ags_math_util_find_term_parantheses(gchar *str,
+ags_math_util_find_term_parenthesis(gchar *str,
 				    gint **term_open_position, gint **term_close_position,
 				    guint *term_open_position_count, guint *term_close_position_count)
 {
@@ -485,15 +485,15 @@ ags_math_util_find_term_parantheses(gchar *str,
   term_open_pos = NULL;
   term_close_pos = NULL;
   
-  ags_math_util_find_parantheses_all(str,
+  ags_math_util_find_parenthesis_all(str,
 				     &open_pos, &close_pos,
 				     &open_pos_count, &close_pos_count);
   
-  ags_math_util_find_exponent_parantheses(str,
+  ags_math_util_find_exponent_parenthesis(str,
 					  &exponent_open_pos, &exponent_close_pos,
 					  &exponent_open_pos_count, &exponent_close_pos_count);
 
-  ags_math_util_find_function_parantheses(str,
+  ags_math_util_find_function_parenthesis(str,
 					  &function_open_pos, &function_close_pos,
 					  &function_open_pos_count, &function_close_pos_count);
     
@@ -1069,11 +1069,11 @@ ags_math_util_is_term(gchar *term)
  * 
  * Rewrite numeric string.
  * 
- * Returns: the optimized string
+ * Returns: the optimized string vector
  * 
  * Since: 3.2.0
  */
-gchar*
+gchar**
 ags_math_util_rewrite_numeric(gchar *numeric_str,
 			      gboolean preserve_constants)
 {
@@ -1659,5 +1659,14 @@ void
 ags_math_util_split_sum(gchar *sum,
 			gchar ***summand)
 {
+  gchar **polynomial_summand;
+
+  gchar *iter;
+
+  gint open_parent
+  
+  polynomial_summand = NULL;
+
+  
   //TODO:JK: implement me
 }

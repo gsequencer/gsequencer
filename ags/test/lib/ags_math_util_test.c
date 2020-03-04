@@ -29,10 +29,10 @@
 int ags_math_util_test_init_suite();
 int ags_math_util_test_clean_suite();
 
-void ags_math_util_test_find_parantheses_all();
-void ags_math_util_test_find_exponent_parantheses();
-void ags_math_util_test_find_function_parantheses();
-void ags_math_util_test_find_term_parantheses();
+void ags_math_util_test_find_parenthesis_all();
+void ags_math_util_test_find_exponent_parenthesis();
+void ags_math_util_test_find_function_parenthesis();
+void ags_math_util_test_find_term_parenthesis();
 void ags_math_util_test_find_symbol_all();
 void ags_math_util_test_is_term();
 void ags_math_util_test_split_polynomial();
@@ -58,7 +58,7 @@ ags_math_util_test_clean_suite()
 }
 
 void
-ags_math_util_test_find_parantheses_all()
+ags_math_util_test_find_parenthesis_all()
 {
   gchar *binomic_str_0 = "(a + b) * (a + b)";
   gchar *binomic_str_1 = "(a + b) * (a - b)";
@@ -76,7 +76,7 @@ ags_math_util_test_find_parantheses_all()
   guint open_position_count, close_position_count;
 
   /* assert binomic #0 */
-  ags_math_util_find_parantheses_all(binomic_str_0,
+  ags_math_util_find_parenthesis_all(binomic_str_0,
 				     &open_position, &close_position,
 				     &open_position_count, &close_position_count);
 
@@ -92,7 +92,7 @@ ags_math_util_test_find_parantheses_all()
 	    close_position[1] == 16);
   
   /* assert binomic #1 */
-  ags_math_util_find_parantheses_all(binomic_str_1,
+  ags_math_util_find_parenthesis_all(binomic_str_1,
 				     &open_position, &close_position,
 				     &open_position_count, &close_position_count);
 
@@ -108,7 +108,7 @@ ags_math_util_test_find_parantheses_all()
 	    close_position[1] == 16);
 
   /* assert binomic #2 */
-  ags_math_util_find_parantheses_all(binomic_str_2,
+  ags_math_util_find_parenthesis_all(binomic_str_2,
 				     &open_position, &close_position,
 				     &open_position_count, &close_position_count);
 
@@ -124,7 +124,7 @@ ags_math_util_test_find_parantheses_all()
 	    close_position[1] == 16);
 
   /* assert binomic #3 */
-  ags_math_util_find_parantheses_all(binomic_str_3,
+  ags_math_util_find_parenthesis_all(binomic_str_3,
 				     &open_position, &close_position,
 				     &open_position_count, &close_position_count);
 
@@ -138,7 +138,7 @@ ags_math_util_test_find_parantheses_all()
 	    close_position[0] == 6);
 
   /* assert binomic #4 */
-  ags_math_util_find_parantheses_all(binomic_str_4,
+  ags_math_util_find_parenthesis_all(binomic_str_4,
 				     &open_position, &close_position,
 				     &open_position_count, &close_position_count);
 
@@ -152,7 +152,7 @@ ags_math_util_test_find_parantheses_all()
 	    close_position[0] == 6);
   
   /* assert binomic #5 */
-  ags_math_util_find_parantheses_all(binomic_str_5,
+  ags_math_util_find_parenthesis_all(binomic_str_5,
 				     &open_position, &close_position,
 				     &open_position_count, &close_position_count);
 
@@ -168,7 +168,7 @@ ags_math_util_test_find_parantheses_all()
 	    close_position[1] == 18);
 
   /* assert binomic #6 */
-  ags_math_util_find_parantheses_all(binomic_str_6,
+  ags_math_util_find_parenthesis_all(binomic_str_6,
 				     &open_position, &close_position,
 				     &open_position_count, &close_position_count);
 
@@ -184,7 +184,7 @@ ags_math_util_test_find_parantheses_all()
 	    close_position[1] == 18);
 
   /* assert binomic #7 */
-  ags_math_util_find_parantheses_all(binomic_str_7,
+  ags_math_util_find_parenthesis_all(binomic_str_7,
 				     &open_position, &close_position,
 				     &open_position_count, &close_position_count);
 
@@ -198,7 +198,7 @@ ags_math_util_test_find_parantheses_all()
 	    close_position[0] == 17);
 
   /* assert binomic #8 */
-  ags_math_util_find_parantheses_all(binomic_str_8,
+  ags_math_util_find_parenthesis_all(binomic_str_8,
 				     &open_position, &close_position,
 				     &open_position_count, &close_position_count);
 
@@ -212,7 +212,7 @@ ags_math_util_test_find_parantheses_all()
 	    close_position[0] == 17);
 
   /* assert binomic #9 */
-  ags_math_util_find_parantheses_all(binomic_str_9,
+  ags_math_util_find_parenthesis_all(binomic_str_9,
 				     &open_position, &close_position,
 				     &open_position_count, &close_position_count);
 
@@ -225,7 +225,7 @@ ags_math_util_test_find_parantheses_all()
 }
 
 void
-ags_math_util_test_find_exponent_parantheses()
+ags_math_util_test_find_exponent_parenthesis()
 {
   gchar *exponent_str_0 = "ℯ^(2𝜋𝑖) * log(x)";
   gchar *exponent_str_1 = "2^8 * 2^(-7)";
@@ -235,7 +235,7 @@ ags_math_util_test_find_exponent_parantheses()
   guint open_position_count, close_position_count;
 
   /* assert exponent #0 */
-  ags_math_util_find_exponent_parantheses(exponent_str_0,
+  ags_math_util_find_exponent_parenthesis(exponent_str_0,
 					  &open_position, &close_position,
 					  &open_position_count, &close_position_count);
 
@@ -249,7 +249,7 @@ ags_math_util_test_find_exponent_parantheses()
 	    close_position[0] == 14);
 
   /* assert exponent #1 */
-  ags_math_util_find_exponent_parantheses(exponent_str_1,
+  ags_math_util_find_exponent_parenthesis(exponent_str_1,
 					  &open_position, &close_position,
 					  &open_position_count, &close_position_count);
 
@@ -264,7 +264,7 @@ ags_math_util_test_find_exponent_parantheses()
 }
 
 void
-ags_math_util_test_find_function_parantheses()
+ags_math_util_test_find_function_parenthesis()
 {
   gchar *function_str_0 = "x0 * log(x1)";
   gchar *function_str_1 = "1.0 / exp(x0)";
@@ -283,7 +283,7 @@ ags_math_util_test_find_function_parantheses()
   guint open_position_count, close_position_count;
 
   /* assert function #0 */
-  ags_math_util_find_function_parantheses(function_str_0,
+  ags_math_util_find_function_parenthesis(function_str_0,
 					  &open_position, &close_position,
 					  &open_position_count, &close_position_count);
 
@@ -297,7 +297,7 @@ ags_math_util_test_find_function_parantheses()
 	    close_position[0] == 11);
 
   /* assert function #1 */
-  ags_math_util_find_function_parantheses(function_str_1,
+  ags_math_util_find_function_parenthesis(function_str_1,
 					  &open_position, &close_position,
 					  &open_position_count, &close_position_count);
 
@@ -311,7 +311,7 @@ ags_math_util_test_find_function_parantheses()
 	    close_position[0] == 12);
 
   /* assert function #2 */
-  ags_math_util_find_function_parantheses(function_str_2,
+  ags_math_util_find_function_parenthesis(function_str_2,
 					  &open_position, &close_position,
 					  &open_position_count, &close_position_count);
 
@@ -325,7 +325,7 @@ ags_math_util_test_find_function_parantheses()
 	    close_position[0] == 17);
 
   /* assert function #3 */
-  ags_math_util_find_function_parantheses(function_str_3,
+  ags_math_util_find_function_parenthesis(function_str_3,
 					  &open_position, &close_position,
 					  &open_position_count, &close_position_count);
 
@@ -341,7 +341,7 @@ ags_math_util_test_find_function_parantheses()
 	    close_position[1] == 28);
 
   /* assert function #4 */
-  ags_math_util_find_function_parantheses(function_str_4,
+  ags_math_util_find_function_parenthesis(function_str_4,
 					  &open_position, &close_position,
 					  &open_position_count, &close_position_count);
 
@@ -355,7 +355,7 @@ ags_math_util_test_find_function_parantheses()
 	    close_position[0] == 7);
 
   /* assert function #5 */
-  ags_math_util_find_function_parantheses(function_str_5,
+  ags_math_util_find_function_parenthesis(function_str_5,
 					  &open_position, &close_position,
 					  &open_position_count, &close_position_count);
 
@@ -369,7 +369,7 @@ ags_math_util_test_find_function_parantheses()
 	    close_position[0] == 12);
 
   /* assert function #6 */
-  ags_math_util_find_function_parantheses(function_str_6,
+  ags_math_util_find_function_parenthesis(function_str_6,
 					  &open_position, &close_position,
 					  &open_position_count, &close_position_count);
 
@@ -383,7 +383,7 @@ ags_math_util_test_find_function_parantheses()
 	    close_position[0] == 12);
 
   /* assert function #7 */
-  ags_math_util_find_function_parantheses(function_str_7,
+  ags_math_util_find_function_parenthesis(function_str_7,
 					  &open_position, &close_position,
 					  &open_position_count, &close_position_count);
 
@@ -397,7 +397,7 @@ ags_math_util_test_find_function_parantheses()
 	    close_position[0] == 26);
 
   /* assert function #8 */
-  ags_math_util_find_function_parantheses(function_str_8,
+  ags_math_util_find_function_parenthesis(function_str_8,
 					  &open_position, &close_position,
 					  &open_position_count, &close_position_count);
 
@@ -411,7 +411,7 @@ ags_math_util_test_find_function_parantheses()
 	    close_position[0] == 23);
   
   /* assert function #9 */
-  ags_math_util_find_function_parantheses(function_str_9,
+  ags_math_util_find_function_parenthesis(function_str_9,
 					  &open_position, &close_position,
 					  &open_position_count, &close_position_count);
 
@@ -425,7 +425,7 @@ ags_math_util_test_find_function_parantheses()
 	    close_position[0] == 19);
   
   /* assert function #10 */
-  ags_math_util_find_function_parantheses(function_str_10,
+  ags_math_util_find_function_parenthesis(function_str_10,
 					  &open_position, &close_position,
 					  &open_position_count, &close_position_count);
 
@@ -440,7 +440,7 @@ ags_math_util_test_find_function_parantheses()
 }
 
 void
-ags_math_util_test_find_term_parantheses()
+ags_math_util_test_find_term_parenthesis()
 {
   gchar *term_str_0 = "a + b";
   gchar *term_str_1 = "(a + b) * (a + b)";
@@ -452,7 +452,7 @@ ags_math_util_test_find_term_parantheses()
   guint open_position_count, close_position_count;
 
   /* assert function #0 */
-  ags_math_util_find_term_parantheses(term_str_0,
+  ags_math_util_find_term_parenthesis(term_str_0,
 				      &open_position, &close_position,
 				      &open_position_count, &close_position_count);
 
@@ -464,7 +464,7 @@ ags_math_util_test_find_term_parantheses()
   CU_ASSERT(close_position == NULL);
   
   /* assert function #1 */
-  ags_math_util_find_term_parantheses(term_str_1,
+  ags_math_util_find_term_parenthesis(term_str_1,
 				      &open_position, &close_position,
 				      &open_position_count, &close_position_count);
 
@@ -480,7 +480,7 @@ ags_math_util_test_find_term_parantheses()
 	    close_position[1] == 16);
 
   /* assert function #2 */
-  ags_math_util_find_term_parantheses(term_str_2,
+  ags_math_util_find_term_parenthesis(term_str_2,
 				      &open_position, &close_position,
 				      &open_position_count, &close_position_count);
 
@@ -498,7 +498,7 @@ ags_math_util_test_find_term_parantheses()
 	    close_position[2] == 38);
 
   /* assert function #3 */
-  ags_math_util_find_term_parantheses(term_str_3,
+  ags_math_util_find_term_parenthesis(term_str_3,
 				      &open_position, &close_position,
 				      &open_position_count, &close_position_count);
 
@@ -878,10 +878,10 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of ags_math_util.c find parantheses all", ags_math_util_test_find_parantheses_all) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_math_util.c find exponent parantheses", ags_math_util_test_find_exponent_parantheses) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_math_util.c find function parantheses", ags_math_util_test_find_function_parantheses) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_math_util.c find term parantheses", ags_math_util_test_find_term_parantheses) == NULL) ||
+  if((CU_add_test(pSuite, "test of ags_math_util.c find parenthesis all", ags_math_util_test_find_parenthesis_all) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_math_util.c find exponent parenthesis", ags_math_util_test_find_exponent_parenthesis) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_math_util.c find function parenthesis", ags_math_util_test_find_function_parenthesis) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_math_util.c find term parenthesis", ags_math_util_test_find_term_parenthesis) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c find symbol all", ags_math_util_test_find_symbol_all) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c is term", ags_math_util_test_is_term) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c split polynomial", ags_math_util_test_split_polynomial) == NULL)){

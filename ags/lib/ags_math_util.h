@@ -25,16 +25,16 @@
 
 G_BEGIN_DECLS
 
-void ags_math_util_find_parantheses_all(gchar *str,
+void ags_math_util_find_parenthesis_all(gchar *str,
 					gint **open_position, gint **close_position,
 					guint *open_position_count, guint *close_position_count);
-void ags_math_util_find_exponent_parantheses(gchar *str,
+void ags_math_util_find_exponent_parenthesis(gchar *str,
 					     gint **exponent_open_position, gint **exponent_close_position,
 					     guint *exponent_open_position_count, guint *exponent_close_position_count);
-void ags_math_util_find_function_parantheses(gchar *str,
+void ags_math_util_find_function_parenthesis(gchar *str,
 					     gint **function_open_position, gint **function_close_position,
 					     guint *function_open_position_count, guint *function_close_position_count);
-void ags_math_util_find_term_parantheses(gchar *str,
+void ags_math_util_find_term_parenthesis(gchar *str,
 					 gint **term_open_position, gint **term_close_position,
 					 guint *term_open_position_count, guint *term_close_position_count);
 
@@ -46,8 +46,8 @@ gchar** ags_math_util_find_symbol_all(gchar *str,
 
 gboolean ags_math_util_is_term(gchar *term);
 
-gchar* ags_math_util_rewrite_numeric(gchar *numeric_str,
-				     gboolean preserve_constants);
+gchar** ags_math_util_rewrite_numeric(gchar *numeric_str,
+				      gboolean preserve_constants);
 
 void ags_math_util_split_polynomial(gchar *polynomial,
 				    gchar ***factor, gchar ***factor_exponent);
