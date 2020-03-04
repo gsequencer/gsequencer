@@ -1659,7 +1659,7 @@ void
 ags_math_util_split_sum(gchar *sum,
 			gchar ***summand)
 {
-  oGMatchInfo *operator_match_info;
+  GMatchInfo *operator_match_info;
 
   gchar **polynomial_summand;
 

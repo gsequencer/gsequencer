@@ -493,7 +493,7 @@ ags_function_collapse_parantheses(AgsFunction *function,
 
   n_functions = 0;
 
-  ags_math_util_find_term_parantheses(source_function,
+  ags_math_util_find_term_parenthesis(source_function,
 				      &term_open_pos, &term_close_pos,
 				      &term_open_pos_count, &term_close_pos_count);
   

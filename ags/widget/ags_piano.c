@@ -1366,6 +1366,246 @@ ags_piano_draw(AgsPiano *piano, cairo_t *cr)
 }
 
 /**
+ * ags_piano_set_base_note:
+ * @piano: the #AgsPiano
+ * @base_note: the base note
+ * 
+ * Set base note of @piano.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_piano_set_base_note(AgsPiano *piano,
+			gchar *base_note)
+{
+  if(!AGS_IS_PIANO(piano)){
+    return;
+  }
+
+  g_object_set(piano,
+	       "base-note", base_note,
+	       NULL);
+}
+
+/**
+ * ags_piano_get_base_note:
+ * @piano: the #AgsPiano
+ * 
+ * Get base note of @piano.
+ * 
+ * Returns: the base note
+ * 
+ * Since: 3.2.0
+ */
+gchar*
+ags_piano_get_base_note(AgsPiano *piano)
+{
+  gchar *base_note;
+  
+  if(!AGS_IS_PIANO(piano)){
+    return(NULL);
+  }
+  
+  g_object_get(piano,
+	       "base-note", &base_note,
+	       NULL);
+
+  return(base_note);
+}
+
+/**
+ * ags_piano_set_base_key_code:
+ * @piano: the #AgsPiano
+ * @base_key_code: the base key code
+ * 
+ * Set base key code of @piano.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_piano_set_base_key_code(AgsPiano *piano,
+			    gint base_key_code)
+{
+  if(!AGS_IS_PIANO(piano)){
+    return;
+  }
+  
+  g_object_set(piano,
+	       "base-key-code", base_key_code,
+	       NULL);
+}
+
+/**
+ * ags_piano_get_base_key_code:
+ * @piano: the #AgsPiano
+ * 
+ * Get base key code of @piano.
+ * 
+ * Returns: the base key code
+ * 
+ * Since: 3.2.0
+ */
+gint
+ags_piano_get_base_key_code(AgsPiano *piano)
+{
+  gint base_key_code;
+  
+  if(!AGS_IS_PIANO(piano)){
+    return(0);
+  }
+  
+  g_object_get(piano,
+	       "base-key-code", &base_key_code,
+	       NULL);
+
+  return(base_key_code);
+}
+
+/**
+ * ags_piano_set_key_width:
+ * @piano: the #AgsPiano
+ * @key_width: the base note
+ * 
+ * Set key width of @piano.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_piano_set_key_width(AgsPiano *piano,
+			guint key_width)
+{
+  if(!AGS_IS_PIANO(piano)){
+    return;
+  }
+  
+  g_object_set(piano,
+	       "key-width", key_width,
+	       NULL);
+}
+
+/**
+ * ags_piano_get_key_width:
+ * @piano: the #AgsPiano
+ * 
+ * Get key width of @piano.
+ * 
+ * Returns: the key width
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_piano_get_key_width(AgsPiano *piano)
+{
+  guint key_width;
+  
+  if(!AGS_IS_PIANO(piano)){
+    return(0);
+  }
+  
+  g_object_get(piano,
+	       "key-width", &key_width,
+	       NULL);
+
+  return(key_width);
+}
+
+/**
+ * ags_piano_set_key_height:
+ * @piano: the #AgsPiano
+ * @key_height: the key width
+ * 
+ * Set key width of @piano.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_piano_set_key_height(AgsPiano *piano,
+			 guint key_height)
+{
+  if(!AGS_IS_PIANO(piano)){
+    return;
+  }
+  
+  g_object_set(piano,
+	       "key-height", key_height,
+	       NULL);
+}
+
+/**
+ * ags_piano_get_key_height:
+ * @piano: the #AgsPiano
+ * 
+ * Get key height of @piano.
+ * 
+ * Returns: the key height
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_piano_get_key_height(AgsPiano *piano)
+{
+  guint key_height;
+  
+  if(!AGS_IS_PIANO(piano)){
+    return(0);
+  }
+  
+  g_object_get(piano,
+	       "key-height", &key_height,
+	       NULL);
+
+  return(key_height);
+}
+
+/**
+ * ags_piano_set_key_count:
+ * @piano: the #AgsPiano
+ * @key_count: the key count
+ * 
+ * Set key count of @piano.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_piano_set_key_count(AgsPiano *piano,
+			guint key_count)
+{
+  if(!AGS_IS_PIANO(piano)){
+    return;
+  }
+  
+  g_object_set(piano,
+	       "key-count", key_count,
+	       NULL);
+}
+
+/**
+ * ags_piano_get_key_count:
+ * @piano: the #AgsPiano
+ * 
+ * Get key count of @piano.
+ * 
+ * Returns: the key count
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_piano_get_key_count(AgsPiano *piano)
+{
+  guint key_count;
+  
+  if(!AGS_IS_PIANO(piano)){
+    return(0);
+  }
+  
+  g_object_get(piano,
+	       "key-count", &key_count,
+	       NULL);
+
+  return(key_count);
+}
+
+/**
  * ags_piano_key_code_to_note:
  * @key_code: the key code
  * 

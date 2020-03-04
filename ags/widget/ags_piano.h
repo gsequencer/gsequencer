@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -121,6 +121,28 @@ struct _AgsPianoClass
 
 GType ags_piano_get_type(void);
 
+/* getter and setter */
+void ags_piano_set_base_note(AgsPiano *piano,
+			     gchar *base_note);
+gchar* ags_piano_get_base_note(AgsPiano *piano);
+
+void ags_piano_set_base_key_code(AgsPiano *piano,
+				 gint base_key_code);
+gint ags_piano_get_base_key_code(AgsPiano *piano);
+
+void ags_piano_set_key_width(AgsPiano *piano,
+			     guint key_width);
+guint ags_piano_get_key_width(AgsPiano *piano);
+
+void ags_piano_set_key_height(AgsPiano *piano,
+			      guint key_height);
+guint ags_piano_get_key_height(AgsPiano *piano);
+
+void ags_piano_set_key_count(AgsPiano *piano,
+			     guint key_count);
+guint ags_piano_get_key_count(AgsPiano *piano);
+
+/* events related */
 gchar* ags_piano_key_code_to_note(gint key_code);
 
 void ags_piano_key_pressed(AgsPiano *piano,
@@ -134,6 +156,7 @@ void ags_piano_key_clicked(AgsPiano *piano,
 gint* ags_piano_get_active_key(AgsPiano *piano,
 			       guint *active_key_count);
 
+/* instantiate */
 AgsPiano* ags_piano_new();
 
 #endif /*__AGS_PIANO_H__*/
