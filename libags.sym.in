@@ -104,7 +104,7 @@ ags_math_util_find_symbol
 ags_math_util_find_symbol_all
 ags_math_util_is_term
 ags_math_util_rewrite_numeric
-ags_math_util_split_polynom
+ags_math_util_split_polynomial
 ags_math_util_split_sum
 ags_function_get_type
 ags_function_collapse_parantheses

@@ -35,7 +35,7 @@ void ags_math_util_test_find_function_parantheses();
 void ags_math_util_test_find_term_parantheses();
 void ags_math_util_test_find_symbol_all();
 void ags_math_util_test_is_term();
-void ags_math_util_test_split_polynom();
+void ags_math_util_test_split_polynomial();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -672,12 +672,12 @@ struct _AgsStrvArr{
 };
 
 void
-ags_math_util_test_split_polynom()
+ags_math_util_test_split_polynomial()
 {
   guint i;
   gboolean success;
   
-  static const gchar *polynom[] = {
+  static const gchar *polynomial[] = {
     "a", /* #000 */
     "-a", /* #001 */
     "ab", /* #002 */
@@ -726,7 +726,7 @@ ags_math_util_test_split_polynom()
     NULL,
   };
 
-  struct _AgsStrvArr polynom_factor[64] = {
+  struct _AgsStrvArr polynomial_factor[64] = {
     {"a", NULL}, /* #000 a */
     {"-a", NULL}, /* #001 -a */
     {"a", "b", NULL}, /* #002 ab */
@@ -775,7 +775,7 @@ ags_math_util_test_split_polynom()
     NULL,
   };
 
-  struct _AgsStrvArr polynom_factor_exponent[64] = {
+  struct _AgsStrvArr polynomial_factor_exponent[64] = {
     {"1", NULL}, /* #000 a */
     {"1", NULL}, /* #001 -a */
     {"1", "1", NULL}, /* #002 ab */
@@ -826,30 +826,30 @@ ags_math_util_test_split_polynom()
 
   success = TRUE;
   
-  for(i = 0; polynom[i] != NULL; i++){
+  for(i = 0; polynomial[i] != NULL; i++){
     gchar **factor;
     gchar **factor_exponent;
     
     factor = NULL;
     factor_exponent = NULL;
 
-    ags_math_util_split_polynom(polynom[i],
+    ags_math_util_split_polynomial(polynomial[i],
 				&factor, &factor_exponent);
 
     if(factor == NULL ||
-       polynom_factor[i].strv == NULL ||
+       polynomial_factor[i].strv == NULL ||
        !g_strv_equal(factor,
-		     polynom_factor[i].strv)){
-      g_message("polynom factor failed - %s", polynom_factor[i]);
+		     polynomial_factor[i].strv)){
+      g_message("polynomial factor failed - %s", polynomial_factor[i]);
       
       success = FALSE;
     }
 
     if(factor_exponent == NULL ||
-       polynom_factor_exponent[i].strv == NULL ||
+       polynomial_factor_exponent[i].strv == NULL ||
        !g_strv_equal(factor_exponent,
-		     polynom_factor_exponent[i].strv)){
-      g_message("polynom factor exponent failed - %s", polynom_factor_exponent[i]);
+		     polynomial_factor_exponent[i].strv)){
+      g_message("polynomial factor exponent failed - %s", polynomial_factor_exponent[i]);
       
       success = FALSE;
     }
@@ -884,7 +884,7 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_math_util.c find term parantheses", ags_math_util_test_find_term_parantheses) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c find symbol all", ags_math_util_test_find_symbol_all) == NULL) ||
      (CU_add_test(pSuite, "test of ags_math_util.c is term", ags_math_util_test_is_term) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_math_util.c split polynom", ags_math_util_test_split_polynom) == NULL)){
+     (CU_add_test(pSuite, "test of ags_math_util.c split polynomial", ags_math_util_test_split_polynomial) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

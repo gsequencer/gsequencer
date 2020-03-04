@@ -1083,18 +1083,18 @@ ags_math_util_rewrite_numeric(gchar *numeric_str,
 }
 
 /**
- * ags_math_util_split_polynom:
- * @polynom: the polynom
+ * ags_math_util_split_polynomial:
+ * @polynomial: the polynomial
  * @factor: (out): the return location of factors
  * @factor_exponent: (out): the return location of factor exponents
  *
- * Split @polynom into coefficient, powers of symbols and summand.
+ * Split @polynomial into coefficient, powers of symbols and summand.
  * 
  * Since: 3.2.0
  */
 void
-ags_math_util_split_polynom(gchar *polynom,
-			    gchar ***factor, gchar ***factor_exponent)
+ags_math_util_split_polynomial(gchar *polynomial,
+			       gchar ***factor, gchar ***factor_exponent)
 {
   GMatchInfo *sign_match_info;
   GMatchInfo *multiply_match_info;
@@ -1107,7 +1107,7 @@ ags_math_util_split_polynom(gchar *polynom,
   gchar **numeric_factor_exponent;
   gchar **symbol_factor;
   gchar **symbol_factor_exponent;
-  gchar *polynom_sign;
+  gchar *polynomial_sign;
 
   gchar *iter;
   
@@ -1144,8 +1144,8 @@ ags_math_util_split_polynom(gchar *polynom,
   /* groups: #1 symbol */
   static const gchar *symbol_pattern = "^[\\s]*([a-zA-Z][0-9]*)";
 
-  if(polynom == NULL){
-    goto ags_math_util_split_polynom_RETURN_NULL;
+  if(polynomial == NULL){
+    goto ags_math_util_split_polynomial_RETURN_NULL;
   }
 
   numeric_factor = NULL;
@@ -1154,7 +1154,7 @@ ags_math_util_split_polynom(gchar *polynom,
   symbol_factor = NULL;
   symbol_factor_exponent = NULL;
 
-  polynom_sign = NULL;
+  polynomial_sign = NULL;
 
   iter = NULL;
 
@@ -1252,20 +1252,20 @@ ags_math_util_split_polynom(gchar *polynom,
   
   g_mutex_unlock(&regex_mutex);
 
-  has_function = (ags_math_util_find_function(polynom) != NULL) ? TRUE: FALSE;
+  has_function = (ags_math_util_find_function(polynomial) != NULL) ? TRUE: FALSE;
 
   if(has_function){
-    g_critical("polynom contains function, rewrite first");
+    g_critical("polynomial contains function, rewrite first");
 
-    goto ags_math_util_split_polynom_RETURN_NULL;
+    goto ags_math_util_split_polynomial_RETURN_NULL;
   }
 
-  has_symbol = (ags_math_util_find_symbol(polynom) != NULL) ? TRUE: FALSE;
+  has_symbol = (ags_math_util_find_symbol(polynomial) != NULL) ? TRUE: FALSE;
 
   /* match sign */
-  iter = polynom;
+  iter = polynomial;
   
-  polynom_sign = NULL;
+  polynomial_sign = NULL;
     
   g_regex_match(sign_regex, iter, 0, &sign_match_info);
 
@@ -1278,7 +1278,7 @@ ags_math_util_split_polynom(gchar *polynom,
     sign_group_1 = g_match_info_fetch(sign_match_info,
 				      1);
 
-    polynom_sign = sign_group_1;
+    polynomial_sign = sign_group_1;
       
     iter += strlen(sign_group_0);
       
@@ -1286,7 +1286,7 @@ ags_math_util_split_polynom(gchar *polynom,
       
     g_free(sign_group_0);
   }else{
-    polynom_sign = g_strdup("+");
+    polynomial_sign = g_strdup("+");
   }
 
   /* match numeric or constants including exponent */
@@ -1562,7 +1562,7 @@ ags_math_util_split_polynom(gchar *polynom,
 
     first_success = TRUE;
     
-    if(!g_ascii_strncasecmp(polynom_sign, "-", 1)){
+    if(!g_ascii_strncasecmp(polynomial_sign, "-", 1)){
       first_success = FALSE;
     }
     
@@ -1636,7 +1636,7 @@ ags_math_util_split_polynom(gchar *polynom,
   }
 
   /* return NULL */
-ags_math_util_split_polynom_RETURN_NULL:
+ags_math_util_split_polynomial_RETURN_NULL:
   if(factor != NULL){
     factor[0] = NULL;
   }
