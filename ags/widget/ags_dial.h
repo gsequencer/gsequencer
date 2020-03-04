@@ -102,11 +102,50 @@ struct _AgsDialClass
 
 GType ags_dial_get_type(void);
 
+/* getter and setter */
+void ags_dial_set_radius(AgsDial *dial,
+			 guint radius);
+guint ags_dial_get_radius(AgsDial *dial);
+
+void ags_dial_set_outline_strength(AgsDial *dial,
+				   guint outline_strength);
+guint ags_dial_get_outline_strength(AgsDial *dial);
+
+void ags_dial_set_scale_precision(AgsDial *dial,
+				  guint scale_precision);
+guint ags_dial_get_scale_precision(AgsDial *dial);
+
+void ags_dial_set_font_size(AgsDial *dial,
+			    guint font_size);
+guint ags_dial_get_font_size(AgsDial *dial);
+
+void ags_dial_set_button_width(AgsDial *dial,
+			       gint button_width);
+gint ags_dial_get_button_width(AgsDial *dial);
+
+void ags_dial_set_button_height(AgsDial *dial,
+				gint button_height);
+gint ags_dial_get_button_height(AgsDial *dial);
+
+void ags_dial_set_margin_left(AgsDial *dial,
+			      gint margin_left);
+gint ags_dial_get_margin_left(AgsDial *dial);
+
+void ags_dial_set_margin_right(AgsDial *dial,
+			       gint margin_right);
+gint ags_dial_get_margin_right(AgsDial *dial);
+
+void ags_dial_set_adjustment(AgsDial *dial,
+			     GtkAdjustment *adjustment);
+GtkAdjustment* ags_dial_get_adjustment(AgsDial *dial);
+
+/* events related */
 void ags_dial_value_changed(AgsDial *dial);
 
 void ags_dial_set_value(AgsDial *dial,
 			gdouble value);
 
+/* instantiate */
 AgsDial* ags_dial_new();
 
 #endif /*__AGS_DIAL_H__*/

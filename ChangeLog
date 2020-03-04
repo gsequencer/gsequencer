@@ -3,6 +3,7 @@ ags (3.2.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented AgsFunction and related
 	* TODO:JK: improve AgsComplex support
+	* TODO:JK: added AgsGui setter and getter functions
 
 ags (3.1.3)
 

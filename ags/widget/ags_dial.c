@@ -2044,6 +2044,438 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
 }
 
 /**
+ * ags_dial_set_radius:
+ * @dial: the #AgsDial
+ * @radius: the radius
+ * 
+ * Set radius of @dial.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_dial_set_radius(AgsDial *dial,
+		    guint radius)
+{
+  if(!AGS_IS_DIAL(dial)){
+    return;
+  }
+
+  g_object_set(dial,
+	       "radius", radius,
+	       NULL);
+}
+
+/**
+ * ags_dial_get_radius:
+ * @dial: the #AgsDial
+ * 
+ * Get radius of @dial.
+ * 
+ * Returns: the radius
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_dial_get_radius(AgsDial *dial)
+{
+  guint radius;
+  
+  if(!AGS_IS_DIAL(dial)){
+    return(0);
+  }
+
+  g_object_get(dial,
+	       "radius", &radius,
+	       NULL);
+
+  return(radius);
+}
+
+/**
+ * ags_dial_set_outline_strength:
+ * @dial: the #AgsDial
+ * @outline_strength: the outline strength
+ * 
+ * Set outline strength of @dial.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_dial_set_outline_strength(AgsDial *dial,
+			      guint outline_strength)
+{
+  if(!AGS_IS_DIAL(dial)){
+    return;
+  }
+  
+  g_object_set(dial,
+	       "outline-strength", outline_strength,
+	       NULL);
+}
+
+/**
+ * ags_dial_get_outline_strength:
+ * @dial: the #AgsDial
+ * 
+ * Get outline strength of @dial.
+ * 
+ * Returns: the outline _strength
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_dial_get_outline_strength(AgsDial *dial)
+{
+  guint outline_strength;
+  
+  if(!AGS_IS_DIAL(dial)){
+    return(0);
+  }
+  
+  g_object_get(dial,
+	       "outline-strength", &outline_strength,
+	       NULL);
+
+  return(outline_strength);
+}
+
+/**
+ * ags_dial_set_scale_precision:
+ * @dial: the #AgsDial
+ * @scale_precision: the scale precision
+ * 
+ * Set scale precision of @dial.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_dial_set_scale_precision(AgsDial *dial,
+			     guint scale_precision)
+{
+  if(!AGS_IS_DIAL(dial)){
+    return;
+  }
+
+  g_object_set(dial,
+	       "scale-precision", scale_precision,
+	       NULL);
+}
+
+/**
+ * ags_dial_get_scale_precision:
+ * @dial: the #AgsDial
+ * 
+ * Get scale precision of @dial.
+ * 
+ * Returns: the scale precision
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_dial_get_scale_precision(AgsDial *dial)
+{
+  guint scale_precision;
+  
+  if(!AGS_IS_DIAL(dial)){
+    return(0);
+  }
+
+  g_object_get(dial,
+	       "scale-precision", &scale_precision,
+	       NULL);
+
+  return(scale_precision);
+}
+
+/**
+ * ags_dial_set_font_size:
+ * @dial: the #AgsDial
+ * @font_size: the font size
+ * 
+ * Set font size of @dial.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_dial_set_font_size(AgsDial *dial,
+		       guint font_size)
+{
+  if(!AGS_IS_DIAL(dial)){
+    return;
+  }
+  
+  g_object_set(dial,
+	       "font-size", font_size,
+	       NULL);
+}
+
+/**
+ * ags_dial_get_font_size:
+ * @dial: the #AgsDial
+ * 
+ * Get font size of @dial.
+ * 
+ * Returns: the font size
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_dial_get_font_size(AgsDial *dial)
+{
+  guint font_size;
+  
+  if(!AGS_IS_DIAL(dial)){
+    return(0);
+  }
+  
+  g_object_get(dial,
+	       "font-size", &font_size,
+	       NULL);
+
+  return(font_size);
+}
+
+/**
+ * ags_dial_set_button_width:
+ * @dial: the #AgsDial
+ * @button_width: the button width
+ * 
+ * Set button width of @dial.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_dial_set_button_width(AgsDial *dial,
+			  gint button_width)
+{
+  if(!AGS_IS_DIAL(dial)){
+    return;
+  }
+  
+  g_object_set(dial,
+	       "button-width", button_width,
+	       NULL);
+}
+
+/**
+ * ags_dial_get_button_width:
+ * @dial: the #AgsDial
+ * 
+ * Get button width of @dial.
+ * 
+ * Returns: the button width
+ * 
+ * Since: 3.2.0
+ */
+gint
+ags_dial_get_button_width(AgsDial *dial)
+{
+  gint button_width;
+  
+  if(!AGS_IS_DIAL(dial)){
+    return(-1);
+  }
+  
+  g_object_get(dial,
+	       "button-width", &button_width,
+	       NULL);
+
+  return(button_width);
+}
+
+/**
+ * ags_dial_set_button_height:
+ * @dial: the #AgsDial
+ * @button_height: the button height
+ * 
+ * Set button height of @dial.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_dial_set_button_height(AgsDial *dial,
+			   gint button_height)
+{
+  if(!AGS_IS_DIAL(dial)){
+    return;
+  }
+  
+  g_object_set(dial,
+	       "button-height", button_height,
+	       NULL);
+}
+
+/**
+ * ags_dial_get_button_height:
+ * @dial: the #AgsDial
+ * 
+ * Get button height of @dial.
+ * 
+ * Returns: the button height
+ * 
+ * Since: 3.2.0
+ */
+gint
+ags_dial_get_button_height(AgsDial *dial)
+{
+  gint button_height;
+  
+  if(!AGS_IS_DIAL(dial)){
+    return(-1);
+  }
+  
+  g_object_get(dial,
+	       "button-height", &button_height,
+	       NULL);
+
+  return(button_height);
+}
+
+/**
+ * ags_dial_set_margin_left:
+ * @dial: the #AgsDial
+ * @margin_left: the margin left
+ * 
+ * Set margin left of @dial.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_dial_set_margin_left(AgsDial *dial,
+			 gint margin_left)
+{
+  if(!AGS_IS_DIAL(dial)){
+    return;
+  }
+  
+  g_object_set(dial,
+	       "margin-left", margin_left,
+	       NULL);
+}
+
+/**
+ * ags_dial_get_margin_left:
+ * @dial: the #AgsDial
+ * 
+ * Get margin_left of @dial.
+ * 
+ * Returns: the margin left
+ * 
+ * Since: 3.2.0
+ */
+gint
+ags_dial_get_margin_left(AgsDial *dial)
+{
+  gint margin_left;
+  
+  if(!AGS_IS_DIAL(dial)){
+    return(-1);
+  }
+  
+  g_object_set(dial,
+	       "margin-left", &margin_left,
+	       NULL);
+
+  return(margin_left);
+}
+
+/**
+ * ags_dial_set_margin_right:
+ * @dial: the #AgsDial
+ * @margin_right: the margin right
+ * 
+ * Set margin right of @dial.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_dial_set_margin_right(AgsDial *dial,
+			  gint margin_right)
+{
+  if(!AGS_IS_DIAL(dial)){
+    return;
+  }
+  
+  g_object_set(dial,
+	       "margin-right", margin_right,
+	       NULL);
+}
+
+/**
+ * ags_dial_get_margin_right:
+ * @dial: the #AgsDial
+ * 
+ * Get margin right of @dial.
+ * 
+ * Returns: the margin right
+ * 
+ * Since: 3.2.0
+ */
+gint
+ags_dial_get_margin_right(AgsDial *dial)
+{
+  gint margin_right;
+  
+  if(!AGS_IS_DIAL(dial)){
+    return(-1);
+  }  
+  
+  g_object_get(dial,
+	       "margin-right", &margin_right,
+	       NULL);
+
+  return(margin_right);
+}
+
+/**
+ * ags_dial_set_adjustment:
+ * @dial: the #AgsDial
+ * @adjustment: the #GtkAdjustment
+ * 
+ * Set adjustment of @dial.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_dial_set_adjustment(AgsDial *dial,
+			GtkAdjustment *adjustment)
+{
+  if(!AGS_IS_DIAL(dial)){
+    return;
+  }
+  
+  g_object_set(dial,
+	       "adjustment", adjustment,
+	       NULL);
+}
+
+/**
+ * ags_dial_get_adjustment:
+ * @dial: the #AgsDial
+ * 
+ * Get adjustment of @dial.
+ * 
+ * Returns: the #GtkAdjustment
+ * 
+ * Since: 3.2.0
+ */
+GtkAdjustment*
+ags_dial_get_adjustment(AgsDial *dial)
+{
+  GtkAdjustment *adjustment;
+  
+  if(!AGS_IS_DIAL(dial)){
+    return(NULL);
+  }
+  
+  g_object_get(dial,
+	       "adjustment", &adjustment,
+	       NULL);
+
+  return(adjustment);
+}
+
+/**
  * ags_dial_value_changed:
  * @dial: an #AgsDial
  *

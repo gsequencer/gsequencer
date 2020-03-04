@@ -1148,6 +1148,14 @@ ags_math_util_split_polynomial(gchar *polynomial,
     goto ags_math_util_split_polynomial_RETURN_NULL;
   }
 
+  has_function = (ags_math_util_find_function(polynomial) != NULL) ? TRUE: FALSE;
+
+  if(has_function){
+    g_critical("polynomial contains function, rewrite first");
+
+    goto ags_math_util_split_polynomial_RETURN_NULL;
+  }
+
   numeric_factor = NULL;
   numeric_factor_exponent = NULL;
   
@@ -1251,14 +1259,6 @@ ags_math_util_split_polynomial(gchar *polynomial,
   }
   
   g_mutex_unlock(&regex_mutex);
-
-  has_function = (ags_math_util_find_function(polynomial) != NULL) ? TRUE: FALSE;
-
-  if(has_function){
-    g_critical("polynomial contains function, rewrite first");
-
-    goto ags_math_util_split_polynomial_RETURN_NULL;
-  }
 
   has_symbol = (ags_math_util_find_symbol(polynomial) != NULL) ? TRUE: FALSE;
 
@@ -1659,14 +1659,108 @@ void
 ags_math_util_split_sum(gchar *sum,
 			gchar ***summand)
 {
+  oGMatchInfo *operator_match_info;
+
   gchar **polynomial_summand;
 
   gchar *iter;
-
-  gint open_parent
+  gchar *prev;
   
+  gint open_parenthesis;
+  guint i;
+  gboolean has_function;
+  gboolean success;
+  
+  GError *error;
+  
+  static const GRegex *operator_regex = NULL;
+
+  /* groups: #1 operator */
+  static const gchar *operator_pattern = "^[\\s]*([\\+\\-])";
+
+  if(sum == NULL){
+    goto ags_math_util_split_sum_RETURN_NULL;
+  }
+
+  has_function = (ags_math_util_find_function(sum) != NULL) ? TRUE: FALSE;
+
+  if(has_function){
+    g_critical("sum contains function, rewrite first");
+
+    goto ags_math_util_split_sum_RETURN_NULL;
+  }
+  
+  /* compile regex */
+  g_mutex_lock(&regex_mutex);
+
+  if(operator_regex == NULL){
+    error = NULL;
+    operator_regex = g_regex_new(operator_pattern,
+				 (G_REGEX_EXTENDED),
+				 0,
+				 &error);
+    
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  g_mutex_unlock(&regex_mutex);
+
   polynomial_summand = NULL;
 
+  iter =
+    prev = sum;
+  open_parenthesis = 0;
+
+  i = 0;  
+
+  success = TRUE;
+  
+  while(success){
+    gint start_pos, end_pos;
+    
+    gboolean operator_success;
+
+    operator_success = FALSE;
+
+    /* operator */
+    g_regex_match(operator_regex, iter, 0, &operator_match_info);
+
+    if(g_match_info_matches(operator_match_info)){
+      g_match_info_fetch_pos(operator_match_info,
+			     0,
+			     &start_pos,
+			     &end_pos);
+	
+      operator_success = TRUE;
+    }
+    
+    g_match_info_free(operator_match_info);
+
+    /* scan parenthesis */
+    if(operator_success){
+      if(prev != sum){
+      }else{
+      }
+    }else{
+      if(prev != sum){
+      }
+      
+      success = FALSE;
+    }
+    
+    iter += end_pos;
+  }
   
   //TODO:JK: implement me
+
+  /* return NULL */
+ags_math_util_split_sum_RETURN_NULL:
+
+  if(summand != NULL){
+    summand[0] = NULL;
+  }
 }
