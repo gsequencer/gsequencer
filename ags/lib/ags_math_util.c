@@ -1660,13 +1660,20 @@ ags_math_util_split_sum(gchar *sum,
 			gchar ***summand)
 {
   GMatchInfo *operator_match_info;
+  GMatchInfo *numeric_match_info;
+  GMatchInfo *symbol_match_info;
+  GMatchInfo *exponent_match_info;
 
   gchar **polynomial_summand;
-
+  
   gchar *iter;
   gchar *prev;
   
-  gint open_parenthesis;
+  gint open_parenthesis, close_parenthesis;
+  gint power;
+  gint constants;
+  gint numeric;
+  gint symbol;
   guint i;
   gboolean has_function;
   gboolean success;
@@ -1674,9 +1681,21 @@ ags_math_util_split_sum(gchar *sum,
   GError *error;
   
   static const GRegex *operator_regex = NULL;
+  static const GRegex *numeric_regex = NULL;
+  static const GRegex *symbol_regex = NULL;
+  static const GRegex *exponent_regex = NULL;
 
   /* groups: #1 operator */
   static const gchar *operator_pattern = "^[\\s]*([\\+\\-])";
+  
+  /* groups: #1-2 numeric base and fraction,  */
+  static const gchar *numeric_pattern = "^([0-9]+(\\.[0-9]+)?)";
+  
+  /* groups: #1 symbol */
+  static const gchar *symbol_pattern = "^([a-zA-Z][0-9]*)";
+
+  /* groups: #1 exponent operator, #2 exponent */
+  static const gchar *exponent_pattern = "^(\\^)[\\s]*(\\([^)(]*+(?:(?R)[^)(]*)*+\\))";
 
   if(sum == NULL){
     goto ags_math_util_split_sum_RETURN_NULL;
@@ -1707,33 +1726,91 @@ ags_math_util_split_sum(gchar *sum,
     }
   }
 
+  if(numeric_regex == NULL){
+    error = NULL;
+    numeric_regex = g_regex_new(numeric_pattern,
+				(G_REGEX_EXTENDED),
+				0,
+				&error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  if(symbol_regex == NULL){
+    error = NULL;
+    symbol_regex = g_regex_new(symbol_pattern,
+			       (G_REGEX_EXTENDED),
+			       0,
+			       &error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  if(exponent_regex == NULL){
+    error = NULL;
+    exponent_regex = g_regex_new(exponent_pattern,
+				 (G_REGEX_EXTENDED),
+				 0,
+				 &error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
   g_mutex_unlock(&regex_mutex);
 
   polynomial_summand = NULL;
 
   iter =
     prev = sum;
+  
   open_parenthesis = 0;
+  close_parenthesis = 0;
+  
+  power = 0;
 
+  numeric = 0;
+  constants = 0;
+  symbol = 0;
+  
   i = 0;  
 
   success = TRUE;
   
   while(success){
-    gint start_pos, end_pos;
-    
+    gchar *tmp_iter;
+
+    gint operator_start_pos, operator_end_pos;
+
+    gboolean found_polynomial;    
     gboolean operator_success;
-
+    gboolean polynomial_success;
+    
+    start_pos = -1;
+    end_pos = -1;
+    
     operator_success = FALSE;
-
+    polynomial_success = FALSE;
+    
     /* operator */
     g_regex_match(operator_regex, iter, 0, &operator_match_info);
 
     if(g_match_info_matches(operator_match_info)){
       g_match_info_fetch_pos(operator_match_info,
 			     0,
-			     &start_pos,
-			     &end_pos);
+			     &operator_start_pos,
+			     &operator_end_pos);
 	
       operator_success = TRUE;
     }
@@ -1741,21 +1818,147 @@ ags_math_util_split_sum(gchar *sum,
     g_match_info_free(operator_match_info);
 
     /* scan parenthesis */
-    if(operator_success){
-      if(prev != sum){
-      }else{
-      }
-    }else{
-      if(prev != sum){
+    tmp_match = NULL;
+    
+    found_polynomial = FALSE;
+      
+    for(tmp_iter = iter; tmp_iter < iter + operator_start_pos; tmp_iter++){      
+      if((tmp_iter[0] >= 'a' && tmp_iter[0] <= 'z') ||
+	 (tmp_iter[0] >= 'A' && tmp_iter[0] <= 'Z')){
+	g_regex_match(symbol_regex, tmp_iter, 0, &symbol_match_info);
+
+	if(g_match_info_matches(symbol_match_info)){
+	  gint start_pos, end_pos;
+
+	  start_pos = -1;
+	  end_pos = -1;
+
+	  g_match_info_fetch_pos(symbol_match_info,
+				 0,
+				 &start_pos,
+				 &end_pos);
+
+	  tmp_iter += (end_pos - 1);
+	}
+    
+	g_match_info_free(multiply_match_info);
+	    
+	symbol++;
+	    
+	found_polynomial = TRUE;
+      }else if(tmp_iter[0] >= '0' && tmp_iter[0] <= '9'){
+	g_regex_match(numeric_regex, tmp_iter, 0, &numeric_match_info);
+
+	if(g_match_info_matches(numeric_match_info)){
+	  gint start_pos, end_pos;
+
+	  g_match_info_fetch_pos(numeric_match_info,
+				 0,
+				 &start_pos,
+				 &end_pos);
+
+	  tmp_iter += (end_pos - 1);
+	}
+    
+	g_match_info_free(multiply_match_info);
+
+	numeric++;
+	  
+	found_polynomial = TRUE;
+      }else if(!g_ascii_strncasecmp(tmp_iter,
+				    AGS_SYMBOLIC_EULER,
+				    strlen(AGS_SYMBOLIC_EULER))){
+	constants++;
+	    
+	found_polynomial = TRUE;
+	  
+	tmp_iter += (strlen(AGS_SYMBOLIC_EULER) - 1);
+      }else if(!g_ascii_strncasecmp(tmp_iter,
+				    AGS_SYMBOLIC_PI,
+				    strlen(AGS_SYMBOLIC_PI))){
+	constants++;
+	    
+	found_polynomial = TRUE;
+	  
+	tmp_iter += (strlen(AGS_SYMBOLIC_PI) - 1);
+      }else if(!g_ascii_strncasecmp(tmp_iter,
+				    AGS_SYMBOLIC_COMPLEX_UNIT,
+				    strlen(AGS_SYMBOLIC_COMPLEX_UNIT))){
+	constants++;
+	    
+	found_polynomial = TRUE;
+	  
+	tmp_iter += (strlen(AGS_SYMBOLIC_COMPLEX_UNIT) - 1);
+      }else if(tmp_iter[0] == '('){
+	open_parenthesis++;
+      }else if(tmp_iter[0] == ')'){
+	close_parenthesis++;
+      }else if(tmp_iter[0] == '^'){
+	g_regex_match(exponent_regex, tmp_iter, 0, &exponent_match_info);
+
+	if(g_match_info_matches(exponent_match_info)){
+	  gint start_pos, end_pos;
+
+	  start_pos = -1;
+	  end_pos = -1;
+
+	  g_match_info_fetch_pos(exponent_match_info,
+				 0,
+				 &start_pos,
+				 &end_pos);
+
+	  tmp_iter += (end_pos - 1);
+	}
+    
+	g_match_info_free(multiply_match_info);
+	  
+	power++;
       }
       
-      success = FALSE;
+      if((symbol > 0 ||
+	  numeric > 0 ||
+	  constants > 0) &&
+	 open_parenthesis == close_parenthesis){
+	polynomial_success = TRUE;
+	  
+	break;
+      }
     }
-    
-    iter += end_pos;
+
+    if(polynomial_success){
+      if(prev != sum){
+	polynomial_summand = (gchar **) g_realloc(polynomial_summand,
+						  (i + 2) * sizeof(gchar *));
+      }else{
+	polynomial_summand = (gchar **) g_malloc(2 * sizeof(gchar *));
+      }
+
+      if(operator_success){
+	polynomial_summand[i] = g_strdup_printf("%*.s",
+						operator_start_pos, prev);
+      }else{
+	polynomial_summand[i] = g_strdup(sum);
+
+	success = FALSE;
+      }
+
+      polynomial_summand[i + 1] = NULL;
+      
+      if(operator_success){
+	iter += operator_end_pos;
+      }
+      
+      prev = iter;
+
+      i++;
+    }else{
+      iter += operator_end_pos;
+    }
+  }  
+
+  if(summand != NULL){
+    summand[0] = polynomial_summand;
   }
-  
-  //TODO:JK: implement me
 
   /* return NULL */
 ags_math_util_split_sum_RETURN_NULL:
