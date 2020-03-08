@@ -81,7 +81,7 @@ API since 2005 as of today in year 2019. The source code was developed by Joël 
 Third-party files of autotools permissive licensed see specific files for warranty disclaimer and a notice preservation requirement, copyright provided by http://www.fsf.org:
 
 * aclocal.m4
-* acsite.m4 (missing copyright)
+* acsite.m4
 * compile
 * compile.guess
 * config.rpath
