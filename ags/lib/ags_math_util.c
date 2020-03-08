@@ -1797,8 +1797,8 @@ ags_math_util_split_sum(gchar *sum,
     gboolean operator_success;
     gboolean polynomial_success;
     
-    start_pos = -1;
-    end_pos = -1;
+    operator_start_pos = -1;
+    operator_end_pos = -1;
     
     operator_success = FALSE;
     polynomial_success = FALSE;
@@ -1817,9 +1817,7 @@ ags_math_util_split_sum(gchar *sum,
     
     g_match_info_free(operator_match_info);
 
-    /* scan parenthesis */
-    tmp_match = NULL;
-    
+    /* scan parenthesis */    
     found_polynomial = FALSE;
       
     for(tmp_iter = iter; tmp_iter < iter + operator_start_pos; tmp_iter++){      
@@ -1841,7 +1839,7 @@ ags_math_util_split_sum(gchar *sum,
 	  tmp_iter += (end_pos - 1);
 	}
     
-	g_match_info_free(multiply_match_info);
+	g_match_info_free(symbol_match_info);
 	    
 	symbol++;
 	    
@@ -1860,7 +1858,7 @@ ags_math_util_split_sum(gchar *sum,
 	  tmp_iter += (end_pos - 1);
 	}
     
-	g_match_info_free(multiply_match_info);
+	g_match_info_free(numeric_match_info);
 
 	numeric++;
 	  
@@ -1910,7 +1908,7 @@ ags_math_util_split_sum(gchar *sum,
 	  tmp_iter += (end_pos - 1);
 	}
     
-	g_match_info_free(multiply_match_info);
+	g_match_info_free(exponent_match_info);
 	  
 	power++;
       }

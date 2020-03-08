@@ -103,16 +103,16 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ags-docs-api.m4 \
 	$(top_srcdir)/m4/ags-listings.m4 \
 	$(top_srcdir)/m4/ags-marshallers.m4 \
-	$(top_srcdir)/m4/ags-symbols.m4 $(top_srcdir)/m4/gettext.m4 \
-	$(top_srcdir)/m4/gtk-doc.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/intlmacosx.m4 \
+	$(top_srcdir)/m4/ags-symbols.m4 $(top_srcdir)/m4/extensions.m4 \
+	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/gtk-doc.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/intlmacosx.m4 \
 	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/lib-ld.m4 \
 	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
 	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
 	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/nls.m4 \
 	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/stdbool.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/unit-system-tests.mk.am \
@@ -131,9 +131,10 @@ CONFIG_CLEAN_VPATH_FILES =
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_conversion_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_function_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_log_test$(EXEEXT) \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_math_util_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_solver_matrix_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_solver_vector_test$(EXEEXT) \
-@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_solver_term_test$(EXEEXT) \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_solver_polynomial_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_time_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_turtle_manager_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_turtle_test$(EXEEXT) \
@@ -1732,6 +1733,19 @@ ags_check_system_lv2ui_plugin_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
 	$(CCLD) $(ags_check_system_lv2ui_plugin_test_CFLAGS) $(CFLAGS) \
 	$(ags_check_system_lv2ui_plugin_test_LDFLAGS) $(LDFLAGS) -o $@
+am__ags_check_system_math_util_test_SOURCES_DIST =  \
+	ags/test/lib/ags_math_util_test.c
+@WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_math_util_test_OBJECTS = ags/test/lib/check_system_math_util_test-ags_math_util_test.$(OBJEXT)
+ags_check_system_math_util_test_OBJECTS =  \
+	$(am_ags_check_system_math_util_test_OBJECTS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_math_util_test_DEPENDENCIES =  \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1)
+ags_check_system_math_util_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_check_system_math_util_test_CFLAGS) $(CFLAGS) \
+	$(ags_check_system_math_util_test_LDFLAGS) $(LDFLAGS) -o $@
 am__ags_check_system_midi_buffer_util_test_SOURCES_DIST =  \
 	ags/test/audio/midi/ags_midi_buffer_util_test.c
 @WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_midi_buffer_util_test_OBJECTS = ags/test/audio/midi/check_system_midi_buffer_util_test-ags_midi_buffer_util_test.$(OBJEXT)
@@ -3023,19 +3037,20 @@ ags_check_system_solver_matrix_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 	$(CCLD) $(ags_check_system_solver_matrix_test_CFLAGS) \
 	$(CFLAGS) $(ags_check_system_solver_matrix_test_LDFLAGS) \
 	$(LDFLAGS) -o $@
-am__ags_check_system_solver_term_test_SOURCES_DIST =  \
-	ags/test/lib/ags_solver_term_test.c
-@WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_solver_term_test_OBJECTS = ags/test/lib/check_system_solver_term_test-ags_solver_term_test.$(OBJEXT)
-ags_check_system_solver_term_test_OBJECTS =  \
-	$(am_ags_check_system_solver_term_test_OBJECTS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_solver_term_test_DEPENDENCIES =  \
+am__ags_check_system_solver_polynomial_test_SOURCES_DIST =  \
+	ags/test/lib/ags_solver_polynomial_test.c
+@WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_solver_polynomial_test_OBJECTS = ags/test/lib/check_system_solver_polynomial_test-ags_solver_polynomial_test.$(OBJEXT)
+ags_check_system_solver_polynomial_test_OBJECTS =  \
+	$(am_ags_check_system_solver_polynomial_test_OBJECTS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_solver_polynomial_test_DEPENDENCIES =  \
 @WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
 @WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
 @WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1)
-ags_check_system_solver_term_test_LINK = $(LIBTOOL) $(AM_V_lt) \
+ags_check_system_solver_polynomial_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
-	$(CCLD) $(ags_check_system_solver_term_test_CFLAGS) $(CFLAGS) \
-	$(ags_check_system_solver_term_test_LDFLAGS) $(LDFLAGS) -o $@
+	$(CCLD) $(ags_check_system_solver_polynomial_test_CFLAGS) \
+	$(CFLAGS) $(ags_check_system_solver_polynomial_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am__ags_check_system_solver_vector_test_SOURCES_DIST =  \
 	ags/test/lib/ags_solver_vector_test.c
 @WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_solver_vector_test_OBJECTS = ags/test/lib/check_system_solver_vector_test-ags_solver_vector_test.$(OBJEXT)
@@ -3496,6 +3511,7 @@ SOURCES = $(ags_check_system_acceleration_test_SOURCES) \
 	$(ags_check_system_lv2_worker_manager_test_SOURCES) \
 	$(ags_check_system_lv2ui_manager_test_SOURCES) \
 	$(ags_check_system_lv2ui_plugin_test_SOURCES) \
+	$(ags_check_system_math_util_test_SOURCES) \
 	$(ags_check_system_midi_buffer_util_test_SOURCES) \
 	$(ags_check_system_midi_builder_test_SOURCES) \
 	$(ags_check_system_midi_test_SOURCES) \
@@ -3570,7 +3586,7 @@ SOURCES = $(ags_check_system_acceleration_test_SOURCES) \
 	$(ags_check_system_set_muted_test_SOURCES) \
 	$(ags_check_system_set_samplerate_test_SOURCES) \
 	$(ags_check_system_solver_matrix_test_SOURCES) \
-	$(ags_check_system_solver_term_test_SOURCES) \
+	$(ags_check_system_solver_polynomial_test_SOURCES) \
 	$(ags_check_system_solver_vector_test_SOURCES) \
 	$(ags_check_system_soundcard_test_SOURCES) \
 	$(ags_check_system_start_audio_test_SOURCES) \
@@ -3677,6 +3693,7 @@ DIST_SOURCES = $(am__ags_check_system_acceleration_test_SOURCES_DIST) \
 	$(am__ags_check_system_lv2_worker_manager_test_SOURCES_DIST) \
 	$(am__ags_check_system_lv2ui_manager_test_SOURCES_DIST) \
 	$(am__ags_check_system_lv2ui_plugin_test_SOURCES_DIST) \
+	$(am__ags_check_system_math_util_test_SOURCES_DIST) \
 	$(am__ags_check_system_midi_buffer_util_test_SOURCES_DIST) \
 	$(am__ags_check_system_midi_builder_test_SOURCES_DIST) \
 	$(am__ags_check_system_midi_test_SOURCES_DIST) \
@@ -3751,7 +3768,7 @@ DIST_SOURCES = $(am__ags_check_system_acceleration_test_SOURCES_DIST) \
 	$(am__ags_check_system_set_muted_test_SOURCES_DIST) \
 	$(am__ags_check_system_set_samplerate_test_SOURCES_DIST) \
 	$(am__ags_check_system_solver_matrix_test_SOURCES_DIST) \
-	$(am__ags_check_system_solver_term_test_SOURCES_DIST) \
+	$(am__ags_check_system_solver_polynomial_test_SOURCES_DIST) \
 	$(am__ags_check_system_solver_vector_test_SOURCES_DIST) \
 	$(am__ags_check_system_soundcard_test_SOURCES_DIST) \
 	$(am__ags_check_system_start_audio_test_SOURCES_DIST) \
@@ -4097,9 +4114,10 @@ AGS_FEATURES = $(am__append_1)
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_conversion_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_function_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_log_test \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_math_util_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_solver_matrix_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_solver_vector_test \
-@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_solver_term_test \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_solver_polynomial_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_time_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_turtle_manager_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_turtle_test \
@@ -4317,6 +4335,13 @@ AGS_FEATURES = $(am__append_1)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_log_test_LDFLAGS = -pthread $(LDFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_log_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
+# math util unit test
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_math_util_test_SOURCES = ags/test/lib/ags_math_util_test.c
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_math_util_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_math_util_test_CPPFLAGS = $(AGS_FEATURES)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_math_util_test_LDFLAGS = -pthread $(LDFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_math_util_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
 # solver matrix unit test
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_solver_matrix_test_SOURCES = ags/test/lib/ags_solver_matrix_test.c
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_solver_matrix_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
@@ -4331,12 +4356,12 @@ AGS_FEATURES = $(am__append_1)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_solver_vector_test_LDFLAGS = -pthread $(LDFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_solver_vector_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
-# solver term unit test
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_solver_term_test_SOURCES = ags/test/lib/ags_solver_term_test.c
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_solver_term_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_solver_term_test_CPPFLAGS = $(AGS_FEATURES)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_solver_term_test_LDFLAGS = -pthread $(LDFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_solver_term_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+# solver polynomial unit test
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_solver_polynomial_test_SOURCES = ags/test/lib/ags_solver_polynomial_test.c
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_solver_polynomial_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_solver_polynomial_test_CPPFLAGS = $(AGS_FEATURES)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_solver_polynomial_test_LDFLAGS = -pthread $(LDFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_solver_polynomial_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # time unit test
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_time_test_SOURCES = ags/test/lib/ags_time_test.c
@@ -6159,6 +6184,12 @@ ags/test/plugin/check_system_lv2ui_plugin_test-ags_lv2ui_plugin_test.$(OBJEXT): 
 ags_check_system_lv2ui_plugin_test$(EXEEXT): $(ags_check_system_lv2ui_plugin_test_OBJECTS) $(ags_check_system_lv2ui_plugin_test_DEPENDENCIES) $(EXTRA_ags_check_system_lv2ui_plugin_test_DEPENDENCIES) 
 	@rm -f ags_check_system_lv2ui_plugin_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_lv2ui_plugin_test_LINK) $(ags_check_system_lv2ui_plugin_test_OBJECTS) $(ags_check_system_lv2ui_plugin_test_LDADD) $(LIBS)
+ags/test/lib/check_system_math_util_test-ags_math_util_test.$(OBJEXT):  \
+	ags/test/lib/$(am__dirstamp)
+
+ags_check_system_math_util_test$(EXEEXT): $(ags_check_system_math_util_test_OBJECTS) $(ags_check_system_math_util_test_DEPENDENCIES) $(EXTRA_ags_check_system_math_util_test_DEPENDENCIES) 
+	@rm -f ags_check_system_math_util_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_check_system_math_util_test_LINK) $(ags_check_system_math_util_test_OBJECTS) $(ags_check_system_math_util_test_LDADD) $(LIBS)
 ags/test/audio/midi/$(am__dirstamp):
 	@$(MKDIR_P) ags/test/audio/midi
 	@: > ags/test/audio/midi/$(am__dirstamp)
@@ -6618,12 +6649,12 @@ ags/test/lib/check_system_solver_matrix_test-ags_solver_matrix_test.$(OBJEXT):  
 ags_check_system_solver_matrix_test$(EXEEXT): $(ags_check_system_solver_matrix_test_OBJECTS) $(ags_check_system_solver_matrix_test_DEPENDENCIES) $(EXTRA_ags_check_system_solver_matrix_test_DEPENDENCIES) 
 	@rm -f ags_check_system_solver_matrix_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_solver_matrix_test_LINK) $(ags_check_system_solver_matrix_test_OBJECTS) $(ags_check_system_solver_matrix_test_LDADD) $(LIBS)
-ags/test/lib/check_system_solver_term_test-ags_solver_term_test.$(OBJEXT):  \
+ags/test/lib/check_system_solver_polynomial_test-ags_solver_polynomial_test.$(OBJEXT):  \
 	ags/test/lib/$(am__dirstamp)
 
-ags_check_system_solver_term_test$(EXEEXT): $(ags_check_system_solver_term_test_OBJECTS) $(ags_check_system_solver_term_test_DEPENDENCIES) $(EXTRA_ags_check_system_solver_term_test_DEPENDENCIES) 
-	@rm -f ags_check_system_solver_term_test$(EXEEXT)
-	$(AM_V_CCLD)$(ags_check_system_solver_term_test_LINK) $(ags_check_system_solver_term_test_OBJECTS) $(ags_check_system_solver_term_test_LDADD) $(LIBS)
+ags_check_system_solver_polynomial_test$(EXEEXT): $(ags_check_system_solver_polynomial_test_OBJECTS) $(ags_check_system_solver_polynomial_test_DEPENDENCIES) $(EXTRA_ags_check_system_solver_polynomial_test_DEPENDENCIES) 
+	@rm -f ags_check_system_solver_polynomial_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_check_system_solver_polynomial_test_LINK) $(ags_check_system_solver_polynomial_test_OBJECTS) $(ags_check_system_solver_polynomial_test_LDADD) $(LIBS)
 ags/test/lib/check_system_solver_vector_test-ags_solver_vector_test.$(OBJEXT):  \
 	ags/test/lib/$(am__dirstamp)
 
@@ -7295,6 +7326,12 @@ ags/test/plugin/check_system_lv2ui_plugin_test-ags_lv2ui_plugin_test.o: ags/test
 ags/test/plugin/check_system_lv2ui_plugin_test-ags_lv2ui_plugin_test.obj: ags/test/plugin/ags_lv2ui_plugin_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_lv2ui_plugin_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_lv2ui_plugin_test_CFLAGS) $(CFLAGS) -c -o ags/test/plugin/check_system_lv2ui_plugin_test-ags_lv2ui_plugin_test.obj `if test -f 'ags/test/plugin/ags_lv2ui_plugin_test.c'; then $(CYGPATH_W) 'ags/test/plugin/ags_lv2ui_plugin_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/plugin/ags_lv2ui_plugin_test.c'; fi`
 
+ags/test/lib/check_system_math_util_test-ags_math_util_test.o: ags/test/lib/ags_math_util_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_math_util_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_math_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/check_system_math_util_test-ags_math_util_test.o `test -f 'ags/test/lib/ags_math_util_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_math_util_test.c
+
+ags/test/lib/check_system_math_util_test-ags_math_util_test.obj: ags/test/lib/ags_math_util_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_math_util_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_math_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/check_system_math_util_test-ags_math_util_test.obj `if test -f 'ags/test/lib/ags_math_util_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_math_util_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_math_util_test.c'; fi`
+
 ags/test/audio/midi/check_system_midi_buffer_util_test-ags_midi_buffer_util_test.o: ags/test/audio/midi/ags_midi_buffer_util_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_midi_buffer_util_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_midi_buffer_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/midi/check_system_midi_buffer_util_test-ags_midi_buffer_util_test.o `test -f 'ags/test/audio/midi/ags_midi_buffer_util_test.c' || echo '$(srcdir)/'`ags/test/audio/midi/ags_midi_buffer_util_test.c
 
@@ -7739,11 +7776,11 @@ ags/test/lib/check_system_solver_matrix_test-ags_solver_matrix_test.o: ags/test/
 ags/test/lib/check_system_solver_matrix_test-ags_solver_matrix_test.obj: ags/test/lib/ags_solver_matrix_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_solver_matrix_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_solver_matrix_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/check_system_solver_matrix_test-ags_solver_matrix_test.obj `if test -f 'ags/test/lib/ags_solver_matrix_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_solver_matrix_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_solver_matrix_test.c'; fi`
 
-ags/test/lib/check_system_solver_term_test-ags_solver_term_test.o: ags/test/lib/ags_solver_term_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_solver_term_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_solver_term_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/check_system_solver_term_test-ags_solver_term_test.o `test -f 'ags/test/lib/ags_solver_term_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_solver_term_test.c
+ags/test/lib/check_system_solver_polynomial_test-ags_solver_polynomial_test.o: ags/test/lib/ags_solver_polynomial_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_solver_polynomial_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_solver_polynomial_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/check_system_solver_polynomial_test-ags_solver_polynomial_test.o `test -f 'ags/test/lib/ags_solver_polynomial_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_solver_polynomial_test.c
 
-ags/test/lib/check_system_solver_term_test-ags_solver_term_test.obj: ags/test/lib/ags_solver_term_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_solver_term_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_solver_term_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/check_system_solver_term_test-ags_solver_term_test.obj `if test -f 'ags/test/lib/ags_solver_term_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_solver_term_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_solver_term_test.c'; fi`
+ags/test/lib/check_system_solver_polynomial_test-ags_solver_polynomial_test.obj: ags/test/lib/ags_solver_polynomial_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_solver_polynomial_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_solver_polynomial_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/check_system_solver_polynomial_test-ags_solver_polynomial_test.obj `if test -f 'ags/test/lib/ags_solver_polynomial_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_solver_polynomial_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_solver_polynomial_test.c'; fi`
 
 ags/test/lib/check_system_solver_vector_test-ags_solver_vector_test.o: ags/test/lib/ags_solver_vector_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_solver_vector_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_solver_vector_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/check_system_solver_vector_test-ags_solver_vector_test.o `test -f 'ags/test/lib/ags_solver_vector_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_solver_vector_test.c
@@ -8340,9 +8377,10 @@ uninstall-am:
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_conversion_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_function_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_log_test
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_math_util_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_solver_matrix_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_solver_vector_test
-@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_solver_term_test
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_solver_polynomial_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_time_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_turtle_manager_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_turtle_test

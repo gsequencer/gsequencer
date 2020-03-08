@@ -25,6 +25,11 @@
 
 G_BEGIN_DECLS
 
+#define AGS_SYMBOLIC_EULER "ℯ"
+#define AGS_SYMBOLIC_PI "𝜋"
+#define AGS_SYMBOLIC_INFINIT "∞"
+#define AGS_SYMBOLIC_COMPLEX_UNIT "𝑖"
+
 void ags_math_util_find_parenthesis_all(gchar *str,
 					gint **open_position, gint **close_position,
 					guint *open_position_count, guint *close_position_count);

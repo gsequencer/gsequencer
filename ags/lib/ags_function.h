@@ -26,6 +26,9 @@
 #include <ags/lib/ags_complex.h>
 #include <ags/lib/ags_conversion.h>
 #include <ags/lib/ags_solver_matrix.h>
+#include <ags/lib/ags_math_util.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_FUNCTION                (ags_function_get_type())
 #define AGS_FUNCTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FUNCTION, AgsFunction))
@@ -35,11 +38,6 @@
 #define AGS_FUNCTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_FUNCTION, AgsFunctionClass))
 
 #define AGS_FUNCTION_GET_OBJ_MUTEX(obj) (&(((AgsFunction *) obj)->obj_mutex))
-
-#define AGS_SYMBOLIC_EULER "ℯ"
-#define AGS_SYMBOLIC_PI "𝜋"
-#define AGS_SYMBOLIC_INFINIT "∞"
-#define AGS_SYMBOLIC_COMPLEX_UNIT "𝑖"
 
 typedef struct _AgsFunction AgsFunction;
 typedef struct _AgsFunctionClass AgsFunctionClass;
