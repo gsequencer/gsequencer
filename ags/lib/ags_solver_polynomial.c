@@ -565,6 +565,7 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
  * ags_solver_polynomial_add:
  * @polynomial_a: the first summand
  * @polynomial_b: the second summand
+ * @error: return location of #GError-struct
  * 
  * Perform addition of @polynomial_a and @polynomial_b. Both summands need to have the very same
  * symbol and exponent, otherwise %NULL returned and error is appropriately set.
@@ -724,6 +725,19 @@ ags_solver_polynomial_add(AgsSolverPolynomial *polynomial_a,
   return(solver_polynomial);
 }
 
+/**
+ * ags_solver_polynomial_subtract:
+ * @polynomial_a: the minuend
+ * @polynomial_b: the subtrahend
+ * @error: return location of #GError-struct
+ * 
+ * Perform subtraction of @polynomial_a and @polynomial_b. Both minuend and subtrahend need to have the very same
+ * symbol and exponent, otherwise %NULL returned and error is appropriately set.
+ * 
+ * Returns: the newly instantiated #AgsSolverPolynomial or %NULL
+ * 
+ * Since: 3.2.0
+ */
 AgsSolverPolynomial*
 ags_solver_polynomial_subtract(AgsSolverPolynomial *polynomial_a,
 			       AgsSolverPolynomial *polynomial_b,
@@ -863,7 +877,7 @@ ags_solver_polynomial_subtract(AgsSolverPolynomial *polynomial_a,
 
   g_rec_mutex_unlock(polynomial_b_mutex);
 
-  /* add */
+  /* subtract */
   ags_complex_set(&(solver_polynomial->coefficient_value),
 		  coefficient_a - coefficient_b);
 
@@ -875,6 +889,18 @@ ags_solver_polynomial_subtract(AgsSolverPolynomial *polynomial_a,
   return(solver_polynomial);
 }
 
+/**
+ * ags_solver_polynomial_multiply:
+ * @polynomial_a: the first factor
+ * @polynomial_b: the second factor
+ * @error: return location of #GError-struct
+ * 
+ * Perform multiplication of @polynomial_a and @polynomial_b.
+ * 
+ * Returns: the newly instantiated #AgsSolverPolynomial or %NULL
+ * 
+ * Since: 3.2.0
+ */
 AgsSolverPolynomial*
 ags_solver_polynomial_multiply(AgsSolverPolynomial *polynomial_a,
 			       AgsSolverPolynomial *polynomial_b,
@@ -892,6 +918,18 @@ ags_solver_polynomial_multiply(AgsSolverPolynomial *polynomial_a,
   return(NULL);
 }
 
+/**
+ * ags_solver_polynomial_divide:
+ * @polynomial_a: the dividend
+ * @polynomial_b: the divisor
+ * @error: return location of #GError-struct
+ * 
+ * Perform division of @polynomial_a and @polynomial_b.
+ * 
+ * Returns: the newly instantiated #AgsSolverPolynomial or %NULL
+ * 
+ * Since: 3.2.0
+ */
 AgsSolverPolynomial*
 ags_solver_polynomial_divide(AgsSolverPolynomial *polynomial_a,
 			     AgsSolverPolynomial *polynomial_b,
@@ -909,6 +947,18 @@ ags_solver_polynomial_divide(AgsSolverPolynomial *polynomial_a,
   return(NULL);
 }
 
+/**
+ * ags_solver_polynomial_raise_power:
+ * @polynomial_a: the base
+ * @polynomial_b: the exponent
+ * @error: return location of #GError-struct
+ * 
+ * Perform raising power of @polynomial_a and @polynomial_b.
+ * 
+ * Returns: the newly instantiated #AgsSolverPolynomial or %NULL
+ * 
+ * Since: 3.2.0
+ */
 AgsSolverPolynomial*
 ags_solver_polynomial_raise_power(AgsSolverPolynomial *polynomial_a,
 				  AgsSolverPolynomial *polynomial_b,
@@ -926,6 +976,18 @@ ags_solver_polynomial_raise_power(AgsSolverPolynomial *polynomial_a,
   return(NULL);
 }
 
+/**
+ * ags_solver_polynomial_extract_root:
+ * @polynomial_a: the base
+ * @polynomial_b: the index of root
+ * @error: return location of #GError-struct
+ * 
+ * Perform raising power of @polynomial_a and @polynomial_b.
+ * 
+ * Returns: the newly instantiated #AgsSolverPolynomial or %NULL
+ * 
+ * Since: 3.2.0
+ */
 AgsSolverPolynomial*
 ags_solver_polynomial_extract_root(AgsSolverPolynomial *polynomial_a,
 				   AgsSolverPolynomial *polynomial_b,
