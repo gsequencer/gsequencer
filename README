@@ -82,7 +82,7 @@ Third-party files of autotools permissive licensed see specific files for warran
 
 * aclocal.m4
 * acsite.m4 (missing copyright)
-* compile (missing copyright)
+* compile
 * compile.guess
 * config.rpath
 * config.sub
