@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright (C) 2005-2019 Joël Krähemann -->
+<!-- Copying and distribution of this file, with or without modification, -->
+<!-- are permitted in any medium without royalty provided the copyright -->
+<!-- notice and this notice are preserved.  This file is offered as-is, -->
+<!-- without any warranty. -->
+
 <ags-simple-file xmlns:agssf="http://nongnu.org/gsequencer/ns/ags-simple-file" id="6920687a-327a-11ea-83fe-3b5c1e3cc5c0" version="3.0.0-beta1" build-id="Wed Nov  6 18:28:15 UTC 2019">
   <ags-sf-config id="6920687b-327a-11ea-83fe-3b5c1e3cc5c0" version="0.7.0" build-id="CEST 13-10-2015 01:19"><![CDATA[[generic]
 disable-feature=experimental
