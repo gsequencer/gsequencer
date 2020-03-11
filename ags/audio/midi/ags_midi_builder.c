@@ -3075,7 +3075,7 @@ ags_midi_builder_from_xml_doc(AgsMidiBuilder *midi_builder,
   xmlNode *root_node;
   xmlNode *child;
 
-  if(midi_builder == NULL ||
+  if(!AGS_IS_MIDI_BUILDER(midi_builder) ||
      doc == NULL){
     return;
   }
@@ -3120,7 +3120,7 @@ ags_midi_builder_build(AgsMidiBuilder *midi_builder)
   
   guint length;
   
-  if(midi_builder == NULL){
+  if(!AGS_IS_MIDI_BUILDER(midi_builder)){
     return;
   }
 
@@ -3184,8 +3184,73 @@ ags_midi_builder_build(AgsMidiBuilder *midi_builder)
 }
 
 /**
+ * ags_midi_builder_open_filename:
+ * @midi_builder: the #AgsMidiBuilder
+ * @filename: the filename
+ * 
+ * Open @filename and assign FILE stream to @midi_builder.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_midi_builder_open_filename(AgsMidiBuilder *midi_builder,
+			       gchar *filename)
+{
+  FILE *file;
+
+  if(!AGS_IS_MIDI_BUILDER(midi_builder) ||
+     filename == NULL){
+    return;
+  }
+
+  file = fopen(filename, "w");
+  
+  g_object_set(midi_builder,
+	       "file", file,
+	       NULL);
+}
+
+/**
+ * ags_midi_builder_get_data:
+ * @midi_builder: the #AgsMidiBuilder
+ * 
+ * Get data of @midi_builder.
+ * 
+ * Returns: the SMF data
+ * 
+ * Since: 3.2.0
+ */
+guchar*
+ags_midi_builder_get_data(AgsMidiBuilder *midi_builder)
+{  
+  if(!AGS_IS_MIDI_BUILDER(midi_builder)){
+    return(NULL);
+  }
+
+  return(midi_builder->data);
+}
+
+/**
+ * ags_midi_builder_write:
+ * @midi_builder: the #AgsMidiBuilder
+ * 
+ * Write data of @midi_builder to file.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_midi_builder_write(AgsMidiBuilder *midi_builder)
+{
+  if(!AGS_IS_MIDI_BUILDER(midi_builder)){
+    return;
+  }
+
+  fwrite(midi_builder->data, sizeof(guchar), midi_builder->length, midi_builder->file);
+}
+
+/**
  * ags_midi_builder_new:
- * @file: the FILE handle
+ * @file: (nullable): the FILE handle
  * 
  * Creates a new instance of #AgsMidiBuilder
  *
@@ -3202,6 +3267,30 @@ ags_midi_builder_new(FILE *file)
 						 "file", file,
 						 NULL);
 
+  
+  return(midi_builder);
+}
+
+/**
+ * ags_midi_builder_new_from_filename:
+ * @filename: (nullable): the filename
+ * 
+ * Creates a new instance of #AgsMidiBuilder
+ *
+ * Returns: the new #AgsMidiBuilder
+ * 
+ * Since: 3.2.0
+ */
+AgsMidiBuilder*
+ags_midi_builder_new_from_filename(gchar *filename)
+{
+  AgsMidiBuilder *midi_builder;
+
+  midi_builder = (AgsMidiBuilder *) g_object_new(AGS_TYPE_MIDI_BUILDER,
+						 NULL);
+
+  ags_midi_builder_open_filename(midi_builder,
+				 filename);
   
   return(midi_builder);
 }

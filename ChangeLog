@@ -6,6 +6,7 @@ ags (3.2.0)
 	* TODO:JK: added to AgsGui getter and setter functions
 	* implemented some getter and setter functions
 	* updated developer manual
+	* improved API of AgsMidiBuilder and AgsMidiParser
 	* minor improvements
 
 ags (3.1.3)
