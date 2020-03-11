@@ -14,7 +14,7 @@
 
 AgsThread *thread;
 
-pthread_mutex_t *thread_mutex;
+GRecMutex *thread_mutex;
 
 thread = ags_thread_new(NULL);
 

@@ -31,46 +31,52 @@ main(int argc, char **argv)
 
   application_context = ags_thread_application_context_new();
 
+  ags_application_context_prepare(application_context);
+  ags_application_context_setup(application_context);
+  
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-  thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  thread_pool = ags_thread_pool_new(main_loop);
+  ags_concurrency_provider_set_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context),
+					   thread_pool);
 
   ags_thread_start(main_loop);
   ags_thread_pool_start(thread_pool);
   
   /* create thread 0 */
-  thread_0 = ags_thread_pool_pull(task_thread->thread_pool);
+  thread_0 = ags_thread_pool_pull(thread_pool);
   
-  pthread_mutex_lock(AGS_RETURNABLE_THREAD(thread_0)->reset_mutex);
+  g_rec_mutex_lock(AGS_RETURNABLE_THREAD(thread_0)->reset_mutex);
 
   g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread_0)->safe_data),
                        "thread 0");
 
   ags_returnable_thread_connect_safe_run(AGS_RETURNABLE_THREAD(thread_0),
-                                         ags_task_thread_append_task_queue);
+                                         thread_run_callback);
 
-  g_atomic_int_or(&(AGS_RETURNABLE_THREAD(thread_0)->flags),
-                  AGS_RETURNABLE_THREAD_IN_USE);
+  ags_returnable_thread_set_flags(thread_0,
+				  AGS_RETURNABLE_THREAD_IN_USE);
     
-  pthread_mutex_unlock(AGS_RETURNABLE_THREAD(thread_0)->reset_mutex);
+  g_rec_mutex_unlock(AGS_RETURNABLE_THREAD(thread_0)->reset_mutex);
 
   /* create thread 1 */
-  thread_1 = ags_thread_pool_pull(task_thread->thread_pool);
+  thread_1 = ags_thread_pool_pull(thread_pool);
   
-  pthread_mutex_lock(AGS_RETURNABLE_THREAD(thread_1)->reset_mutex);
+  g_rec_mutex_lock(AGS_RETURNABLE_THREAD(thread_1)->reset_mutex);
 
   g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread_1)->safe_data),
                        "thread 1");
 
   ags_returnable_thread_connect_safe_run(AGS_RETURNABLE_THREAD(thread_1),
-                                         ags_task_thread_append_task_queue);
+                                         thread_run_callback);
 
-  g_atomic_int_or(&(AGS_RETURNABLE_THREAD(thread_1)->flags),
-                  AGS_RETURNABLE_THREAD_IN_USE);
+  ags_returnable_thread_set_flags(thread_1,
+				  AGS_RETURNABLE_THREAD_IN_USE);
     
-  pthread_mutex_unlock(AGS_RETURNABLE_THREAD(thread_1)->reset_mutex);
+  g_rec_mutex_unlock(AGS_RETURNABLE_THREAD(thread_1)->reset_mutex);
 
   /*  */
-  pthread_join(*(main_loop->thread));
+  g_thread_join(main_loop->thread);
   
   return(0);
 }

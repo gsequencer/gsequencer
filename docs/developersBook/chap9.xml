@@ -198,7 +198,7 @@
       <itemizedlist mark="bullet">
 	<listitem>
 	  <para>
-	    channel_class-&gt;recycling_changed
+	    AgsChannel::recycling-changed()
 	  </para>
 	</listitem>
       </itemizedlist>
@@ -212,7 +212,7 @@
       <itemizedlist mark="bullet">
 	<listitem>
 	  <para>
-	    channel_class-&gt;duplicate
+	    AgsChannel::duplicate-recall()
 	  </para>
 	  <itemizedlist mark="circle">
 	    <listitem>
@@ -230,7 +230,7 @@
       <itemizedlist mark="bullet">
 	<listitem>
 	  <para>
-	    recall_class-&gt;resolve_dependency
+	    AgsRecall::resolve-dependency()
 	  </para>
 	  <itemizedlist mark="circle">
 	    <listitem>
@@ -245,13 +245,13 @@
 
 	<listitem>
 	  <para>
-	    recall_class-&gt;run_init_pre, recall_class-&gt;run_init_inter &amp;
-	    recall_class-&gt;run_init_post
+	    AgsRecall::run-init-pre(), AgsRecall::run-init-inter() &amp;
+	    AgsRecall::run-init-post()
 	  </para>
 	  <itemizedlist mark="circle">
 	    <listitem>
 	      <para>
-		Will be called only once for the run reffering to dedicated AgsRecallID.
+		Will be called only once for the run refering to dedicated AgsRecallID.
 	      </para>
 	    </listitem>
 	  </itemizedlist>
@@ -259,13 +259,13 @@
 
 	<listitem>
 	  <para>
-	    recall_class-&gt;run_pre, recall_class-&gt;run_inter &amp;
-	    recall_class-&gt;run_post
+	    AgsRecall::run-pre(), AgsRecall::run-inter() &amp;
+	    AgsRecall::run-post()
 	  </para>
 	  <itemizedlist mark="circle">
 	    <listitem>
 	      <para>
-		Will be called for each cycle of a run reffering to AgsRecallID.
+		Will be called for each cycle of a run refering to AgsRecallID.
 	      </para>
 	    </listitem>
 	    <listitem>
@@ -288,14 +288,14 @@
       <itemizedlist mark="bullet">
 	<listitem>
 	  <para>
-	    recall_class-&gt;run_init_pre, recall_class-&gt;run_init_inter &amp;
-	    recall_class-&gt;run_init_post
+	    AgsRecall::run-init-pre(), AgsRecall::run-init-inter() &amp;
+	    AgsRecall::run-init-post()
 	  </para>
 	</listitem>
 	<listitem>
 	  <para>
-	    recall_class-&gt;automate, recall_class-&gt;feed_input_queue, recall_class-&gt;run_pre, recall_class-&gt;run_inter,
-	    recall_class-&gt;run_post &amp; recall_class-&gt;feed_output_queue
+	    AgsRecall::automate(), AgsRecall::feed-input-queue(), AgsRecall::run-pre(), AgsRecall::run-inter(),
+	    AgsRecall::run-post() &amp; AgsRecall::feed-output-queue()
 	  </para>
 	</listitem>
       </itemizedlist>
@@ -307,7 +307,7 @@
       <itemizedlist mark="bullet">
 	<listitem>
 	  <para>
-	    recall_class-&gt;done
+	    AgsRecall::done()
 	  </para>
 	</listitem>
       </itemizedlist>

@@ -13,8 +13,6 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
-#include <pthread.h>
-
 AgsAudio* setup_master(AgsApplicationContext *application_context);
 AgsAudio* setup_slave(AgsApplicationContext *application_context);
 
@@ -305,7 +303,7 @@ main(int argc, char **argv)
   AgsStartAudio *start_audio;
   
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsTaskLauncher *task_launcher;
   
   AgsApplicationContext *application_context;
   AgsConfig *config;
@@ -314,9 +312,8 @@ main(int argc, char **argv)
 
   /* create application context */
   application_context = ags_audio_application_context_new();
-  g_object_get(application_context,
-	       "task-thread", &task_thread,
-	       NULL);
+
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
   
   /* set config */
   config = application_context->config;
@@ -364,12 +361,11 @@ main(int argc, char **argv)
 
   /* launch task */
   sleep(3);
-  ags_task_thread_append_task(task_thread,
-			      start_audio);
+  ags_task_launcher_add_task(task_launcher,
+			     start_audio);
 
   /* join main loop */
-  pthread_join(*(main_loop->thread),
-               NULL);
+  g_thread_join(main_loop->thread);
 
   return(0);
 }

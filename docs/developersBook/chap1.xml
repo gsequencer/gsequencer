@@ -37,10 +37,10 @@
   <sect1>
     <title>Implementations and their interfaces</title>
     <para>
-      Creating a AgsThreadApplicationContext and then get the task thread by calling
-      <code language="C">AgsThread* ags_concurrency_provider_get_task_thread(AgsConcurrencyProvider*)</code>.
+      Creating a AgsThreadApplicationContext and then get the task launcher by calling
+      <code language="C">AgsThread* ags_concurrency_provider_get_task_launcher(AgsConcurrencyProvider*)</code>.
       Since the AgsConcurrency interface is implemented by the context, we retrieve
-      the task thread. The AgsTaskThread gives you a thread safe signal. It is used
+      the task launcher. The AgsTaskLauncher gives you a thread safe signal. It is used
       to launch AgsTask objects to do thread safe operations but later on this.
     </para>
     
@@ -53,7 +53,7 @@
 
     <para>
       The AgsAudioApplicationContext inherites from AgsApplicationContext and implements
-      the AgsConcurrency interface, too. So you can retrieve the task thread the same
+      the AgsConcurrency interface, too. So you can retrieve the task launcher the same
       way. But the context implements one more, the AgsSoundProvider interface. Giving
       you objects related to threading and audio processing.
     </para>

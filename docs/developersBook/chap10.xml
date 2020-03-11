@@ -243,6 +243,28 @@
 
     <varlistentry>
       <term>
+	<code>ags-play-dssi</code>
+      </term>
+      <listitem>
+	<para>
+	  Play DSSI plugin.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<code>ags-play-lv2</code>
+      </term>
+      <listitem>
+	<para>
+	  Play LV2 plugin.
+	</para>
+      </listitem>
+    </varlistentry>
+    
+    <varlistentry>
+      <term>
 	<code>ags-record-midi</code>
       </term>
       <listitem>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE book [
-<!ENTITY libagsso "libags.so.1">
-<!ENTITY libagsthreadso "libags_thread.so.2">
-<!ENTITY libagsserverso "libags_server.so.2">
-<!ENTITY libagsaudioso "libags_audio.so.2">
+<!ENTITY libagsso "libags.so.3">
+<!ENTITY libagsthreadso "libags_thread.so.3">
+<!ENTITY libagsserverso "libags_server.so.3">
+<!ENTITY libagsaudioso "libags_audio.so.3">
 ]>
 
 <!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
@@ -24,11 +24,10 @@
   </para>
 
   <para>
-    The AgsTaskThread runs synchronized as well but is going to be waited
+    The AgsTaskLauncher runs synchronized as well but is going to be waited
     after syncing to run all tasks. The AgsTask signal ::launch runs
-    asynchronous exclusively. So the task thread implements AgsAsyncQueue
-    interface. Every thread tree shall have at toplevel a thread implementing
-    AgsMainLoop interface.
+    asynchronous exclusively. Every thread tree shall have at toplevel a
+    thread implementing AgsMainLoop interface.
   </para>
 
   <para>
@@ -48,51 +47,17 @@
     <para>
       AgsMainLoop should be implemented by toplevel threads. Within a thread
       tree this is the topmost element. It has various get and set methods
-      you would expect. ::set_tic and ::get_tic is used for synchronization purpose
-      as well ::set_last_sync and ::get_last_sync. ::get_async_queue should return
-      an instance implementing AgsAsyncQueue eg. AgsTaskThread. ::get_application_context
-      returns the AgsApplicationContext.
+      you would expect.
     </para>
 
     <para>
-      To control the AgsThread::clock signal AgsMainLoop's methods are going to be invoked.
+      To control the AgsThread::clock signal AgsMainLoop&apos;s methods are going to be invoked.
       The involved functions are:
-    </para>
-
-    <itemizedlist>
-      <listitem>
-	<code language="C">void ags_main_loop_set_tic(AgsMainLoop*, guint)</code>
-      </listitem>
-      <listitem>
-	<code language="C">guint ags_main_loop_get_tic(AgsMainLoop*)</code>
-      </listitem>
-      <listitem>
-	<code language="C">void ags_main_loop_set_last_sync(AgsMainLoop*, guint)</code>
-      </listitem>
-      <listitem>
-	<code language="C">guint ags_main_loop_get_last_sync(AgsMainLoop*)</code>
-      </listitem>
-    </itemizedlist>
-    
-    <para>
-      The main loop specifies some signals like ::interrupt, ::monitor and ::change-frequency.
-      They are all related to realtime behavior of an application. Assumed you have a thread
-      you want to run within the thread tree, but it is not mandatory to run it. With these
-      functions you can determine if you shall pause your thread during ::interrupt signal.
-      How many time you are allowed to consume or running at all, can be concluded by using
-      ::monitor. In order to get notified about modified refreshing rate of your thread, listen
-      to ::change-frequency signal.
-    </para>
-    
-    <para>
-      The interface provides some other function pointers. If you want to provide AgsTaskThread
-      to your application, use <code language="C">void ags_main_loop_set_async_queue(AgsMainLoop*, GObject*)</code>
-      and <code language="C">GObject* ags_main_loop_get_async_queue(AgsMainLoop*)</code>.
     </para>
 
     <para>
       As it shall be implemented by AGS_TYPE_THREAD subtypes, this parent object provides
-      a mutex to properly lock the object. You should obtain the pthread_mutex_t pointer
+      a mutex to properly lock the object. You should obtain the GRecMutex pointer
       by accessing its field:
       <programlisting language="C">
 <xi:include href="../listings/thread_obj_mutex.c" parse="text" />
@@ -164,13 +129,13 @@
     <title>Worker-threads to do tic-less parallelism</title>
     <para>
       Worker threads are used to perform heavy load tasks that run completely asynchronous. This
-      means they don't do any sync with the tree. You start worker threads like any other thread
+      means they don&apos;t do any sync with the tree. You start worker threads like any other thread
       by calling <code language="C">void ags_thread_start(AgsThread*)</code> or
       <code language="C">void ags_thread_stop(AgsThread*)</code> to stop it.
     </para>
 
     <para>
-      The AgsWorkerThread overrides ::start of AgsThread class and won't do any synchronization.
+      The AgsWorkerThread overrides ::start of AgsThread class and won&apos;t do any synchronization.
       The worker implementation is responsible to delay computation by calling usleep() or nanosleep().
     </para>
 
@@ -205,7 +170,7 @@
 
     <para>
       Call ags_polling_thread_add_poll_fd() and pass an AgsPollFd to it, in order to poll a resource.
-      Note the resource won't be polled unless the thread was started by calling
+      Note the resource won&apos;t be polled unless the thread was started by calling
       <code language="C">void ags_thread_start(AgsThread*)</code>. The ::dispatch signal notifies about
       a ressource to be ready for Input/Output.
     </para>
@@ -213,21 +178,21 @@
     <para>
       To stop poll a resource either remove the poll file descriptor by calling
       <code language="C">void ags_polling_thread_remove_poll_fd(AgsPollingThread*, GObject*)</code>. Or
-      just stop the polling thread by ags_thread_stop() so any resource won't be polled.
+      just stop the polling thread by ags_thread_stop() so any resource won&apos;t be polled.
     </para>
   </sect1>
     
   <sect1>
     <title>Launching tasks</title>
     <para>
-      It's for thread-safety for sure to run tasks asynchronously exclusive. This means what ever
-      you do it's safe exceptional in view of third-party libraries that might have their own threads.
+      It&apos;s for thread-safety for sure to run tasks asynchronously exclusive. This means what ever
+      you do it&apos;s safe exceptional in view of third-party libraries that might have their own threads.
       To do your own task you should inherit AgsTask base object and implement ::launch. This signal
       is invoked after syncing the thread tree.
     </para>
 
     <para>
-      You can use either ags_task_thread_append_task() or ags_task_thread_append_tasks() to add one
+      You can use either ags_task_launcher_add_task() or ags_task_launcher_add_task_all() to add one
       respectively a GList of tasks. The task shall report failures by calling ::failure signal.
     </para>
   </sect1>
