@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -600,6 +600,198 @@ ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
   cairo_paint(cr);
 
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
+}
+
+/**
+ * ags_ruler_get_step:
+ * @ruler: the #AgsRuler
+ * 
+ * Get step of @ruler.
+ * 
+ * Returns: the step
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_ruler_get_step(AgsRuler *ruler)
+{
+  guint step;
+
+  if(!AGS_IS_RULER(ruler)){
+    return(0);
+  }
+
+  g_object_get(ruler,
+	       "step", &step,
+	       NULL);
+
+  return(step);
+}
+
+/**
+ * ags_ruler_set_step:
+ * @ruler: the #AgsRuler
+ * @step: the step
+ * 
+ * Set step of @ruler.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_ruler_set_step(AgsRuler *ruler,
+		   guint step)
+{
+  if(!AGS_IS_RULER(ruler)){
+    return;
+  }
+
+  g_object_set(ruler,
+	       "step", step,
+	       NULL);
+}
+
+/**
+ * ags_ruler_get_large_step:
+ * @ruler: the #AgsRuler
+ * 
+ * Get large step of @ruler.
+ * 
+ * Returns: the large step
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_ruler_get_large_step(AgsRuler *ruler)
+{
+  guint large_step;
+  
+  if(!AGS_IS_RULER(ruler)){
+    return(0);
+  }
+
+  g_object_get(ruler,
+	       "large-step", &large_step,
+	       NULL);
+
+  return(large_step);
+}
+
+/**
+ * ags_ruler_set_large_step:
+ * @ruler: the #AgsRuler
+ * @large_step: the large step
+ * 
+ * Set large step of @ruler.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_ruler_set_large_step(AgsRuler *ruler,
+			 guint large_step)
+{
+  if(!AGS_IS_RULER(ruler)){
+    return;
+  }
+
+  g_object_set(ruler,
+	       "large-step", large_step,
+	       NULL);
+}
+
+/**
+ * ags_ruler_get_small_step:
+ * @ruler: the #AgsRuler
+ * 
+ * Get small step of @ruler.
+ * 
+ * Returns: the small step
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_ruler_get_small_step(AgsRuler *ruler)
+{
+  guint small_step;
+  
+  if(!AGS_IS_RULER(ruler)){
+    return(0);
+  }
+
+  g_object_get(ruler,
+	       "small-step", &small_step,
+	       NULL);
+
+  return(small_step);
+}
+
+/**
+ * ags_ruler_set_small_step:
+ * @ruler: the #AgsRuler
+ * @small_step: the small step
+ * 
+ * Set small step of @ruler.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_ruler_set_small_step(AgsRuler *ruler,
+			 guint small_step)
+{
+  if(!AGS_IS_RULER(ruler)){
+    return;
+  }
+
+  g_object_set(ruler,
+	       "small-step", small_step,
+	       NULL);
+}
+
+/**
+ * ags_ruler_get_adjustment:
+ * @ruler: the #AgsRuler
+ * 
+ * Get adjustment of @ruler.
+ * 
+ * Returns: the #GtkAdjustment
+ * 
+ * Since: 3.2.0
+ */
+GtkAdjustment*
+ags_ruler_get_adjustment(AgsRuler *ruler)
+{
+  GtkAdjustment *adjustment;
+  
+  if(!AGS_IS_RULER(ruler)){
+    return(NULL);
+  }
+
+  g_object_get(ruler,
+	       "adjustment", &adjustment,
+	       NULL);
+
+  return(adjustment);
+}
+
+/**
+ * ags_ruler_set_adjustment:
+ * @ruler: the #AgsRuler
+ * @adjustment: the #GtkAdjustment
+ * 
+ * Set adjustment of @ruler.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_ruler_set_adjustment(AgsRuler *ruler,
+			 GtkAdjustment *adjustment)
+{  
+  if(!AGS_IS_RULER(ruler)){
+    return;
+  }
+
+  g_object_set(ruler,
+	       "adjustment", adjustment,
+	       NULL);
 }
 
 /**

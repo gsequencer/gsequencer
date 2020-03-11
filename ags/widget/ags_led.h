@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -55,6 +55,8 @@ struct _AgsLedClass
 };
 
 GType ags_led_get_type(void);
+
+gboolean ags_led_is_active(AgsLed *led);
 
 void ags_led_set_active(AgsLed *led);
 void ags_led_unset_active(AgsLed *led);

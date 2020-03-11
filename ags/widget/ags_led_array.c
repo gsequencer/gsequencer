@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -265,6 +265,128 @@ ags_led_array_realize(GtkWidget *widget)
   
   /* call parent */
   GTK_WIDGET_CLASS(ags_led_array_parent_class)->realize(widget);
+}
+
+/**
+ * ags_led_array_get_led_width:
+ * @led_array: the #AgsLedArray
+ * 
+ * Get led width of @led_array.
+ *
+ * Returns: the led width
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_led_array_get_led_width(AgsLedArray *led_array)
+{
+  guint led_width;
+  
+  if(!AGS_IS_LED_ARRAY(led_array)){
+    return(0);
+  }
+
+  g_object_get(led_array,
+	       "led-width", &led_width,
+	       NULL);
+
+  return(led_width);
+}
+
+/**
+ * ags_led_array_set_led_width:
+ * @led_array: the #AgsLedArray
+ * @led_width: the led width
+ * 
+ * Set led width of @led_array.
+ *
+ * Since: 3.2.0
+ */
+void
+ags_led_array_set_led_width(AgsLedArray *led_array,
+			    guint led_width)
+{
+  if(!AGS_IS_LED_ARRAY(led_array)){
+    return;
+  }
+
+  g_object_get(led_array,
+	       "led-width", led_width,
+	       NULL);
+}
+
+/**
+ * ags_led_array_set_led_height:
+ * @led_array: the #AgsLedArray
+ * 
+ * Set led height of @led_array.
+ *
+ * Returns: the led height
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_led_array_get_led_height(AgsLedArray *led_array)
+{
+  guint led_height;
+  
+  if(!AGS_IS_LED_ARRAY(led_array)){
+    return(0);
+  }
+
+  g_object_get(led_array,
+	       "led-height", &led_height,
+	       NULL);
+
+  return(led_height);
+}
+
+/**
+ * ags_led_array_set_led_height:
+ * @led_array: the #AgsLedArray
+ * @led_height: the led height
+ * 
+ * Set led height of @led_array.
+ *
+ * Since: 3.2.0
+ */
+void
+ags_led_array_set_led_height(AgsLedArray *led_array,
+			     guint led_height)
+{
+  if(!AGS_IS_LED_ARRAY(led_array)){
+    return;
+  }
+
+  g_object_get(led_array,
+	       "led-height", led_height,
+	       NULL);
+}
+
+/**
+ * ags_led_array_get_led_count:
+ * @led_array: the #AgsLedArray
+ * 
+ * Get led count of @led_array.
+ *
+ * Returns: the led count
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_led_array_get_led_count(AgsLedArray *led_array)
+{
+  guint led_count;
+  
+  if(!AGS_IS_LED_ARRAY(led_array)){
+    return(0);
+  }
+
+  g_object_get(led_array,
+	       "led-count", &led_count,
+	       NULL);
+
+  return(led_count);
 }
 
 /**

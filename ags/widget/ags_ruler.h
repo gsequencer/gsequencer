@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_RULER                (ags_ruler_get_type())
@@ -68,6 +69,24 @@ struct _AgsRulerClass
 
 GType ags_ruler_get_type();
 
+/* properties */
+guint ags_ruler_get_step(AgsRuler *ruler);
+void ags_ruler_set_step(AgsRuler *ruler,
+			guint step);
+
+guint ags_ruler_get_large_step(AgsRuler *ruler);
+void ags_ruler_set_large_step(AgsRuler *ruler,
+			      guint large_step);
+
+guint ags_ruler_get_small_step(AgsRuler *ruler);
+void ags_ruler_set_small_step(AgsRuler *ruler,
+			      guint small_step);
+
+GtkAdjustment* ags_ruler_get_adjustment(AgsRuler *ruler);
+void ags_ruler_set_adjustment(AgsRuler *ruler,
+			      GtkAdjustment *adjustment);
+
+/* instantiate */
 AgsRuler* ags_ruler_new();
 
 #endif /*__AGS_RULER_H__*/

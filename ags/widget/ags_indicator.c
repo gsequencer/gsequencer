@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -430,6 +430,246 @@ void
 ags_indicator_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_indicator_parent_class)->show(widget);
+}
+
+/**
+ * ags_indicator_get_segment_width:
+ * @indicator: the #AgsIndicator
+ * 
+ * Get segment width.
+ * 
+ * Returns: the segment width
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_indicator_get_segment_width(AgsIndicator *indicator)
+{
+  guint segment_width;
+
+  if(!AGS_IS_INDICATOR(indicator)){
+    return(0);
+  }
+
+  g_object_get(indicator,
+	       "segment-width", &segment_width,
+	       NULL);
+
+  return(segment_width);
+}
+
+/**
+ * ags_indicator_set_segment_width:
+ * @indicator: the #AgsIndicator
+ * @segment_width: the segment width
+ * 
+ * Set segment width.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_indicator_set_segment_width(AgsIndicator *indicator,
+				guint segment_width)
+{
+  if(!AGS_IS_INDICATOR(indicator)){
+    return;
+  }
+
+  g_object_set(indicator,
+	       "segment-width", segment_width,
+	       NULL);
+}
+
+/**
+ * ags_indicator_get_segment_height:
+ * @indicator: the #AgsIndicator
+ * 
+ * Get segment height.
+ * 
+ * Returns: the segment height
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_indicator_get_segment_height(AgsIndicator *indicator)
+{
+  guint segment_height;
+  
+  if(!AGS_IS_INDICATOR(indicator)){
+    return(0);
+  }
+
+  g_object_get(indicator,
+	       "segment-height", &segment_height,
+	       NULL);
+
+  return(segment_height);
+}
+
+/**
+ * ags_indicator_set_segment_height:
+ * @indicator: the #AgsIndicator
+ * @segment_height: the segment height
+ * 
+ * Set segment height.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_indicator_set_segment_height(AgsIndicator *indicator,
+				 guint segment_height)
+{
+  if(!AGS_IS_INDICATOR(indicator)){
+    return;
+  }
+
+  g_object_set(indicator,
+	       "segment-height", segment_height,
+	       NULL);
+}
+
+/**
+ * ags_indicator_get_segment_padding:
+ * @indicator: the #AgsIndicator
+ * 
+ * Get segment padding.
+ * 
+ * Returns: the segment padding
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_indicator_get_segment_padding(AgsIndicator *indicator)
+{
+  guint segment_padding;
+  
+  if(!AGS_IS_INDICATOR(indicator)){
+    return(0);
+  }
+
+  g_object_get(indicator,
+	       "segment-padding", &segment_padding,
+	       NULL);
+
+  return(segment_padding);
+}
+
+/**
+ * ags_indicator_set_segment_padding:
+ * @indicator: the #AgsIndicator
+ * @segment_padding: the segment padding
+ * 
+ * Set segment padding.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_indicator_set_segment_padding(AgsIndicator *indicator,
+				  guint segment_padding)
+{
+  if(!AGS_IS_INDICATOR(indicator)){
+    return;
+  }
+
+  g_object_set(indicator,
+	       "segment-padding", segment_padding,
+	       NULL);
+}
+
+/**
+ * ags_indicator_get_segment_count:
+ * @indicator: the #AgsIndicator
+ * 
+ * Get segment count.
+ * 
+ * Returns: the segment count
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_indicator_get_segment_count(AgsIndicator *indicator)
+{
+  guint segment_count;
+  
+  if(!AGS_IS_INDICATOR(indicator)){
+    return(0);
+  }
+
+  g_object_get(indicator,
+	       "segment-count", &segment_count,
+	       NULL);
+
+  return(segment_count);
+}
+
+/**
+ * ags_indicator_set_segment_count:
+ * @indicator: the #AgsIndicator
+ * @segment_count: the segment count
+ * 
+ * Set segment count.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_indicator_set_segment_count(AgsIndicator *indicator,
+				     guint segment_count)
+{
+  if(!AGS_IS_INDICATOR(indicator)){
+    return;
+  }
+
+  g_object_set(indicator,
+	       "segment-count", segment_count,
+	       NULL);
+}
+
+/**
+ * ags_indicator_get_adjustment:
+ * @indicator: the #AgsIndicator
+ * 
+ * Get adjustment.
+ * 
+ * Returns: the #GtkAdjustment
+ * 
+ * Since: 3.2.0
+ */
+GtkAdjustment*
+ags_indicator_get_adjustment(AgsIndicator *indicator)
+{
+  GtkAdjustment *adjustment;
+  
+  if(!AGS_IS_INDICATOR(indicator)){
+    return(NULL);
+  }
+
+  g_object_get(indicator,
+	       "adjustment", &adjustment,
+	       NULL);
+
+  return(adjustment);
+}
+
+/**
+ * ags_indicator_set_adjustment:
+ * @indicator: the #AgsIndicator
+ * @adjustment: the #GtkAdjustment
+ * 
+ * Set adjustment.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_indicator_set_adjustment(AgsIndicator *indicator,
+			     GtkAdjustment *adjustment)
+{
+  if(!AGS_IS_INDICATOR(indicator)){
+    return;
+  }
+
+  g_object_set(indicator,
+	       "adjustment", adjustment,
+	       NULL);
 }
 
 /**
