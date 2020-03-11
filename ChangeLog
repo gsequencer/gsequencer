@@ -4,7 +4,9 @@ ags (3.2.0)
 	* TODO:JK: implemented AgsFunction and related
 	* TODO:JK: improve AgsComplex support
 	* TODO:JK: added to AgsGui getter and setter functions
+	* added some getter and setter functions
 	* updated developer manual
+	* minor improvements
 
 ags (3.1.3)
 

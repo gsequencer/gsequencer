@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -608,6 +608,254 @@ ags_sf2_loader_run(void *ptr)
   return(NULL);
 }
 
+/**
+ * ags_sf2_loader_get_audio:
+ * @sf2_loader: the #AgsSF2Loader
+ * 
+ * Get audio of @sf2_loader.
+ * 
+ * Returns: the assigned #AgsAudio
+ * 
+ * Since: 3.2.0
+ */
+AgsAudio*
+ags_sf2_loader_get_audio(AgsSF2Loader *sf2_loader)
+{
+  AgsAudio *audio;
+
+  if(!AGS_IS_SF2_LOADER(sf2_loader)){
+    return(NULL);
+  }
+
+  g_object_get(sf2_loader,
+	       "audio", &audio,
+	       NULL);
+
+  return(audio);
+}
+
+/**
+ * ags_sf2_loader_set_audio:
+ * @sf2_loader: the #AgsSF2Loader
+ * @audio: the #AgsAudio
+ * 
+ * Set audio of @sf2_loader.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_sf2_loader_set_audio(AgsSF2Loader *sf2_loader,
+			 AgsAudio *audio)
+{
+  if(!AGS_IS_SF2_LOADER(sf2_loader)){
+    return;
+  }
+
+  g_object_set(sf2_loader,
+	       "audio", audio,
+	       NULL);
+}
+
+/**
+ * ags_sf2_loader_get_filename:
+ * @sf2_loader: the #AgsSF2Loader
+ * 
+ * Get filename of @sf2_loader.
+ * 
+ * Returns: the assigned filename
+ * 
+ * Since: 3.2.0
+ */
+gchar*
+ags_sf2_loader_get_filename(AgsSF2Loader *sf2_loader)
+{
+  gchar *filename;
+  
+  if(!AGS_IS_SF2_LOADER(sf2_loader)){
+    return(NULL);
+  }
+
+  g_object_get(sf2_loader,
+	       "filename", &filename,
+	       NULL);
+
+  return(filename);
+}
+
+/**
+ * ags_sf2_loader_set_filename:
+ * @sf2_loader: the #AgsSF2Loader
+ * @filename: the filename
+ * 
+ * Set filename of @sf2_loader.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_sf2_loader_set_filename(AgsSF2Loader *sf2_loader,
+			    gchar *filename)
+{
+  if(!AGS_IS_SF2_LOADER(sf2_loader)){
+    return;
+  }
+
+  g_object_set(sf2_loader,
+	       "filename", filename,
+	       NULL);
+}
+
+/**
+ * ags_sf2_loader_get_preset:
+ * @sf2_loader: the #AgsSF2Loader
+ * 
+ * Get preset of @sf2_loader.
+ * 
+ * Returns: the assigned preset
+ * 
+ * Since: 3.2.0
+ */
+gchar*
+ags_sf2_loader_get_preset(AgsSF2Loader *sf2_loader)
+{
+  gchar *preset;
+  
+  if(!AGS_IS_SF2_LOADER(sf2_loader)){
+    return(NULL);
+  }
+
+  g_object_get(sf2_loader,
+	       "preset", &preset,
+	       NULL);
+
+  return(preset);
+}
+
+/**
+ * ags_sf2_loader_set_preset:
+ * @sf2_loader: the #AgsSF2Loader
+ * @preset: the preset
+ * 
+ * Set preset of @sf2_loader.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_sf2_loader_set_preset(AgsSF2Loader *sf2_loader,
+			  gchar *preset)
+{
+  if(!AGS_IS_SF2_LOADER(sf2_loader)){
+    return;
+  }
+
+  g_object_set(sf2_loader,
+	       "preset", preset,
+	       NULL);
+}
+
+/**
+ * ags_sf2_loader_get_instrument:
+ * @sf2_loader: the #AgsSF2Loader
+ * 
+ * Get instrument of @sf2_loader.
+ * 
+ * Returns: the assigned instrument
+ * 
+ * Since: 3.2.0
+ */
+gchar*
+ags_sf2_loader_get_instrument(AgsSF2Loader *sf2_loader)
+{
+  gchar *instrument;
+  
+  if(!AGS_IS_SF2_LOADER(sf2_loader)){
+    return(NULL);
+  }
+
+  g_object_get(sf2_loader,
+	       "instrument", &instrument,
+	       NULL);
+
+  return(instrument);
+}
+
+/**
+ * ags_sf2_loader_set_instrument:
+ * @sf2_loader: the #AgsSF2Loader
+ * @instrument: the instrument
+ * 
+ * Set instrument of @sf2_loader.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_sf2_loader_set_instrument(AgsSF2Loader *sf2_loader,
+			      gchar *instrument)
+{
+  if(!AGS_IS_SF2_LOADER(sf2_loader)){
+    return;
+  }
+
+  g_object_set(sf2_loader,
+	       "instrument", instrument,
+	       NULL);
+}
+
+/**
+ * ags_sf2_loader_get_audio_container:
+ * @sf2_loader: the #AgsSF2Loader
+ * 
+ * Get audio container of @sf2_loader.
+ * 
+ * Returns: the assigned #AgsAudioContainer
+ * 
+ * Since: 3.2.0
+ */
+AgsAudioContainer*
+ags_sf2_loader_get_audio_container(AgsSF2Loader *sf2_loader)
+{
+  AgsAudioContainer *audio_container;
+  
+  if(!AGS_IS_SF2_LOADER(sf2_loader)){
+    return(NULL);
+  }
+
+  g_object_get(sf2_loader,
+	       "audio-container", &audio_container,
+	       NULL);
+
+  return(audio_container);
+}
+
+/**
+ * ags_sf2_loader_set_audio_container:
+ * @sf2_loader: the #AgsSF2Loader
+ * @audio_container: the #AgsAudioContainer
+ * 
+ * Set audio container of @sf2_loader.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_sf2_loader_set_audio_container(AgsSF2Loader *sf2_loader,
+				   AgsAudioContainer *audio_container)
+{
+  if(!AGS_IS_SF2_LOADER(sf2_loader)){
+    return;
+  }
+
+  g_object_set(sf2_loader,
+	       "audio-container", audio_container,
+	       NULL);
+}
+
+/**
+ * ags_sf2_loader_start:
+ * @sf2_loader: the #AgsSF2Loader
+ * 
+ * Start @sf2_loader.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_sf2_loader_start(AgsSF2Loader *sf2_loader)
 {

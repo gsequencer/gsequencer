@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -80,12 +80,36 @@ struct _AgsSF2LoaderClass
 
 GType ags_sf2_loader_get_type();
 
+/* flags */
 gboolean ags_sf2_loader_test_flags(AgsSF2Loader *sf2_loader, guint flags);
 void ags_sf2_loader_set_flags(AgsSF2Loader *sf2_loader, guint flags);
 void ags_sf2_loader_unset_flags(AgsSF2Loader *sf2_loader, guint flags);
 
+/* properties */
+AgsAudio* ags_sf2_loader_get_audio(AgsSF2Loader *sf2_loader);
+void ags_sf2_loader_set_audio(AgsSF2Loader *sf2_loader,
+			      AgsAudio *audio);
+
+gchar* ags_sf2_loader_get_filename(AgsSF2Loader *sf2_loader);
+void ags_sf2_loader_set_filename(AgsSF2Loader *sf2_loader,
+				 gchar *filename);
+
+gchar* ags_sf2_loader_get_preset(AgsSF2Loader *sf2_loader);
+void ags_sf2_loader_set_preset(AgsSF2Loader *sf2_loader,
+			       gchar *preset);
+
+gchar* ags_sf2_loader_get_instrument(AgsSF2Loader *sf2_loader);
+void ags_sf2_loader_set_instrument(AgsSF2Loader *sf2_loader,
+				   gchar *instrument);
+
+AgsAudioContainer* ags_sf2_loader_get_audio_container(AgsSF2Loader *sf2_loader);
+void ags_sf2_loader_set_audio_container(AgsSF2Loader *sf2_loader,
+					AgsAudioContainer *audio_container);
+
+/* thread */
 void ags_sf2_loader_start(AgsSF2Loader *sf2_loader);
 
+/* instantiate */
 AgsSF2Loader* ags_sf2_loader_new(AgsAudio *audio,
 				 gchar *filename,
 				 gchar *preset,

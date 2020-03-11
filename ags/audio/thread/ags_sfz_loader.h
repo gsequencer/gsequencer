@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -79,12 +79,28 @@ struct _AgsSFZLoaderClass
 
 GType ags_sfz_loader_get_type();
 
+/* flags */
 gboolean ags_sfz_loader_test_flags(AgsSFZLoader *sfz_loader, guint flags);
 void ags_sfz_loader_set_flags(AgsSFZLoader *sfz_loader, guint flags);
 void ags_sfz_loader_unset_flags(AgsSFZLoader *sfz_loader, guint flags);
 
+/* properties */
+AgsAudio* ags_sfz_loader_get_audio(AgsSFZLoader *sfz_loader);
+void ags_sfz_loader_set_audio(AgsSFZLoader *sfz_loader,
+			      AgsAudio *audio);
+
+gchar* ags_sfz_loader_get_filename(AgsSFZLoader *sfz_loader);
+void ags_sfz_loader_set_filename(AgsSFZLoader *sfz_loader,
+				 gchar *filename);
+
+AgsAudioContainer* ags_sfz_loader_get_audio_container(AgsSFZLoader *sfz_loader);
+void ags_sfz_loader_set_audio_container(AgsSFZLoader *sfz_loader,
+					AgsAudioContainer *audio_container);
+
+/* thread */
 void ags_sfz_loader_start(AgsSFZLoader *sfz_loader);
 
+/* instantiate */
 AgsSFZLoader* ags_sfz_loader_new(AgsAudio *audio,
 				 gchar *filename,
 				 gboolean do_replace);
