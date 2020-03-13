@@ -4,8 +4,16 @@ ABOUT-NLS
 confdefs.h
 conftest.dir
 ags_functional_server_test_cookie
+stamp-h1
 po/Rules-quot
 po/boldquot.sed
 po/en@boldquot.header
 po/en@quot.header
 po/quot.sed
+po/stamp-po
+po/remove-potcdate.sin
+po/insert-header.sin
+po/\*.po
+po/ChangeLog
+po/Makevars.template
+po/POTFILES.in

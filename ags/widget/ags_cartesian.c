@@ -2698,7 +2698,7 @@ ags_cartesian_set_y_step_height(AgsCartesian *cartesian,
  * ags_cartesian_get_x_scale_step_width:
  * @cartesian: the #AgsCartesian
  * 
- * Get x scale step width.
+ * Get x scale step width of @cartesian.
  * 
  * Returns: the x scale step width
  * 
@@ -2725,7 +2725,7 @@ ags_cartesian_get_x_scale_step_width(AgsCartesian *cartesian)
  * @cartesian: the #AgsCartesian
  * @x_scale_step_width: the x scale step width
  * 
- * Set x scale step width.
+ * Set x scale step width of @cartesian.
  * 
  * Since: 3.2.0
  */
@@ -2746,7 +2746,7 @@ ags_cartesian_set_x_scale_step_width(AgsCartesian *cartesian,
  * ags_cartesian_get_y_scale_step_height:
  * @cartesian: the #AgsCartesian
  * 
- * Get y scale step height.
+ * Get y scale step height of @cartesian.
  * 
  * Returns: the y scale step height
  * 
@@ -2773,7 +2773,7 @@ ags_cartesian_get_y_scale_step_height(AgsCartesian *cartesian)
  * @cartesian: the #AgsCartesian
  * @y_scale_step_height: the y scale step height
  * 
- * Set y scale step height.
+ * Set y scale step height of @cartesian.
  * 
  * Since: 3.2.0
  */
@@ -2794,25 +2794,34 @@ ags_cartesian_set_y_scale_step_height(AgsCartesian *cartesian,
  * ags_cartesian_get_x_unit_x0:
  * @cartesian: the #AgsCartesian
  * 
+ * Get x unit x0 of @cartesian.
  * 
+ * Returns: the x unit x0
  * 
  * Since: 3.2.0
  */
 gdouble
 ags_cartesian_get_x_unit_x0(AgsCartesian *cartesian)
 {
+  gdouble x_unit_x0;
+  
   if(!AGS_IS_CARTESIAN(cartesian)){
     return(0.0);
   }
 
-  //TODO:JK: implement me
+  g_object_get(cartesian,
+	       "x-unit-x0", &x_unit_x0,
+	       NULL);
+
+  return(x_unit_x0);
 }
 
 /**
  * ags_cartesian_set_x_unit_x0:
  * @cartesian: the #AgsCartesian
+ * @x_unit_x0: the x unit x0
  * 
- * 
+ * Set x unit x0 of @cartesian.
  * 
  * Since: 3.2.0
  */
@@ -2824,32 +2833,43 @@ ags_cartesian_set_x_unit_x0(AgsCartesian *cartesian,
     return;
   }
 
-  //TODO:JK: implement me
+  g_object_set(cartesian,
+	       "x-unit-x0", x_unit_x0,
+	       NULL);
 }
 
 /**
  * ags_cartesian_get_x_unit_y0:
  * @cartesian: the #AgsCartesian
  * 
+ * Get x unit y0 of @cartesian.
  * 
+ * Returns: the x unit y0
  * 
  * Since: 3.2.0
  */
 gdouble
 ags_cartesian_get_x_unit_y0(AgsCartesian *cartesian)
 {
+  gdouble x_unit_y0;
+  
   if(!AGS_IS_CARTESIAN(cartesian)){
     return(0.0);
   }
 
-  //TODO:JK: implement me
+  g_object_get(cartesian,
+	       "x-unit-y0", &x_unit_y0,
+	       NULL);
+
+  return(x_unit_y0);
 }
 
 /**
  * ags_cartesian_set_x_unit_y0:
  * @cartesian: the #AgsCartesian
+ * @x_unit_y0: the x unit y0
  * 
- * 
+ * Set x unit y0 of @cartesian.
  * 
  * Since: 3.2.0
  */
@@ -2861,32 +2881,43 @@ ags_cartesian_set_x_unit_y0(AgsCartesian *cartesian,
     return;
   }
 
-  //TODO:JK: implement me
+  g_object_set(cartesian,
+	       "x-unit-y0", x_unit_y0,
+	       NULL);
 }
 
 /**
  * ags_cartesian_get_x_unit_size:
  * @cartesian: the #AgsCartesian
  * 
+ * Get x unit size of @cartesian.
  * 
+ * Returns: the x unit size
  * 
  * Since: 3.2.0
  */
 gdouble
 ags_cartesian_get_x_unit_size(AgsCartesian *cartesian)
 {
+  gdouble x_unit_size;
+  
   if(!AGS_IS_CARTESIAN(cartesian)){
     return(0.0);
   }
 
-  //TODO:JK: implement me
+  g_object_get(cartesian,
+	       "x-unit-size", &x_unit_size,
+	       NULL);
+
+  return(x_unit_size);
 }
 
 /**
  * ags_cartesian_set_x_unit_size:
  * @cartesian: the #AgsCartesian
+ * @x_unit_size: the x unit size
  * 
- * 
+ * Set x unit size of @cartesian.
  * 
  * Since: 3.2.0
  */
@@ -2898,32 +2929,43 @@ ags_cartesian_set_x_unit_size(AgsCartesian *cartesian,
     return;
   }
 
-  //TODO:JK: implement me
+  g_object_set(cartesian,
+	       "x-unit-size", x_unit_size,
+	       NULL);
 }
 
 /**
  * ags_cartesian_get_y_unit_x0:
  * @cartesian: the #AgsCartesian
  * 
+ * Get y unit x0 of @cartesian.
  * 
+ * Returns: the y unit x0
  * 
  * Since: 3.2.0
  */
 gdouble
 ags_cartesian_get_y_unit_x0(AgsCartesian *cartesian)
 {
+  gdouble y_unit_x0;
+  
   if(!AGS_IS_CARTESIAN(cartesian)){
     return(0.0);
   }
 
-  //TODO:JK: implement me
+  g_object_get(cartesian,
+	       "y-unit-x0", &y_unit_x0,
+	       NULL);
+
+  return(y_unit_x0);
 }
 
 /**
  * ags_cartesian_set_y_unit_x0:
  * @cartesian: the #AgsCartesian
+ * @y_unit_x0: the y unit x0
  * 
- * 
+ * Set y unit x0 of @cartesian.
  * 
  * Since: 3.2.0
  */
@@ -2935,32 +2977,41 @@ ags_cartesian_set_y_unit_x0(AgsCartesian *cartesian,
     return;
   }
 
-  //TODO:JK: implement me
+  g_object_set(cartesian,
+	       "y-unit-x0", y_unit_x0,
+	       NULL);
 }
 
 /**
  * ags_cartesian_get_y_unit_y0:
  * @cartesian: the #AgsCartesian
  * 
- * 
+ * Get y unit y0 of @cartesian.
  * 
  * Since: 3.2.0
  */
 gdouble
 ags_cartesian_get_y_unit_y0(AgsCartesian *cartesian)
 {
+  gdouble y_unit_y0;
+  
   if(!AGS_IS_CARTESIAN(cartesian)){
     return(0.0);
   }
 
-  //TODO:JK: implement me
+  g_object_get(cartesian,
+	       "y-unit-y0", &y_unit_y0,
+	       NULL);
+
+  return(y_unit_y0);
 }
 
 /**
  * ags_cartesian_set_y_unit_y0:
  * @cartesian: the #AgsCartesian
+ * @y_unit_y0: the y unit y0
  * 
- * 
+ * Set y unit y0 of @cartesian.
  * 
  * Since: 3.2.0
  */
@@ -2972,32 +3023,43 @@ ags_cartesian_set_y_unit_y0(AgsCartesian *cartesian,
     return;
   }
 
-  //TODO:JK: implement me
+  g_object_set(cartesian,
+	       "y-unit-y0", y_unit_y0,
+	       NULL);
 }
 
 /**
  * ags_cartesian_get_y_unit_size:
  * @cartesian: the #AgsCartesian
  * 
+ * Get y unit size of @cartesian.
  * 
+ * Returns: the y unit size
  * 
  * Since: 3.2.0
  */
 gdouble
 ags_cartesian_get_y_unit_size(AgsCartesian *cartesian)
 {
+  gdouble y_unit_size;
+  
   if(!AGS_IS_CARTESIAN(cartesian)){
     return(0.0);
   }
 
-  //TODO:JK: implement me
+  g_object_get(cartesian,
+	       "y-unit-size", &y_unit_size,
+	       NULL);
+
+  return(y_unit_size);
 }
 
 /**
  * ags_cartesian_set_y_unit_size:
  * @cartesian: the #AgsCartesian
+ * @y_unit_size: the y unit size
  * 
- * 
+ * Set y unit size of @cartesian.
  * 
  * Since: 3.2.0
  */
@@ -3009,7 +3071,9 @@ ags_cartesian_set_y_unit_size(AgsCartesian *cartesian,
     return;
   }
 
-  //TODO:JK: implement me
+  g_object_set(cartesian,
+	       "y-unit-size", y_unit_size,
+	       NULL);
 }
 
 /**
