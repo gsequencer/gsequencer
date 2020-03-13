@@ -801,7 +801,6 @@ ags_math_util_find_symbol(gchar *str)
 /**
  * ags_math_util_find_symbol_all:
  * @str: the string
- * @symbol_count: (out): the symbol count return location
  * 
  * Find all symbols.
  * 
@@ -810,8 +809,7 @@ ags_math_util_find_symbol(gchar *str)
  * Since: 3.2.0
  */
 gchar**
-ags_math_util_find_symbol_all(gchar *str,
-			      guint *symbol_count)
+ags_math_util_find_symbol_all(gchar *str)
 {
   GMatchInfo *function_match_info;
   GMatchInfo *literal_match_info;
@@ -832,10 +830,6 @@ ags_math_util_find_symbol_all(gchar *str,
   static const gchar *literal_pattern = "([a-zA-Z][0-9]*)";
 
   if(str == NULL){
-    if(symbol_count == NULL){
-      symbol_count[0] = 0;
-    }
-    
     return(NULL);
   }
   
@@ -1035,11 +1029,6 @@ ags_math_util_find_symbol_all(gchar *str,
     g_match_info_free(literal_match_info);
 
     g_free(current_literal);
-  }
-  
-  /* return symbols and its count*/
-  if(symbol_count != NULL){
-    symbol_count[0] = n_literals;
   }
 
   return(literals);

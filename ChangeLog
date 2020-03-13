@@ -1,10 +1,8 @@
 ags (3.2.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented AgsFunction and related
-	* TODO:JK: improve AgsComplex support
-	* TODO:JK: added to AgsGui getter and setter functions
 	* implemented some getter and setter functions
+	* disabled GMainLoop integration of AgsXorgApplicationContext
 	* updated developer manual
 	* improved API of AgsMidiBuilder and AgsMidiParser
 	* minor improvements

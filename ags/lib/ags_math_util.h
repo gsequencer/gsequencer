@@ -46,13 +46,9 @@ void ags_math_util_find_term_parenthesis(gchar *str,
 gchar* ags_math_util_find_function(gchar *str);
 
 gchar* ags_math_util_find_symbol(gchar *str);
-gchar** ags_math_util_find_symbol_all(gchar *str,
-				      guint *symbol_count);
+gchar** ags_math_util_find_symbol_all(gchar *str);
 
 gboolean ags_math_util_is_term(gchar *term);
-
-gchar** ags_math_util_rewrite_numeric(gchar *numeric_str,
-				      gboolean preserve_constants);
 
 void ags_math_util_split_polynomial(gchar *polynomial,
 				    gchar ***factor, gchar ***factor_exponent);

@@ -316,7 +316,7 @@ ags_led_array_set_led_width(AgsLedArray *led_array,
 }
 
 /**
- * ags_led_array_set_led_height:
+ * ags_led_array_get_led_height:
  * @led_array: the #AgsLedArray
  * 
  * Set led height of @led_array.

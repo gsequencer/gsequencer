@@ -521,18 +521,14 @@ ags_math_util_test_find_symbol_all()
 
   gchar *symbol_all_str_0 = "a0 + b0 * sin((x1 - x0) / f0)";
 
-  guint symbol_count;
-
   symbol_all = NULL;
-  symbol_count = 0;
   
-  symbol_all = ags_math_util_find_symbol_all(symbol_all_str_0,
-					     &symbol_count);
+  symbol_all = ags_math_util_find_symbol_all(symbol_all_str_0);
 
-  CU_ASSERT(symbol_count == 5);
-  
   CU_ASSERT(symbol_all != NULL);
-
+  
+  CU_ASSERT(g_strv_length(symbol_all) == 5);
+  
   CU_ASSERT(g_strv_contains(symbol_all, "a0"));
   CU_ASSERT(g_strv_contains(symbol_all, "b0"));
 

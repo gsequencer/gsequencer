@@ -2011,7 +2011,7 @@ ags_plot_get_point_color(AgsPlot *plot)
 /**
  * ags_plot_set_point_color:
  * @plot: the #AgsPlot-struct
- * @point: the points colors as array of RGB value
+ * @point_color: the points colors as array of RGB value
  * 
  * Set point color field of @plot.
  * 
@@ -2051,7 +2051,7 @@ ags_plot_get_point_label(AgsPlot *plot)
 /**
  * ags_plot_set_point_label:
  * @plot: the #AgsPlot-struct
- * @point: the points labels as string vector
+ * @point_label: the points labels as string vector
  * 
  * Set point label field of @plot.
  * 
@@ -2171,7 +2171,7 @@ ags_plot_get_bitmap_color(AgsPlot *plot)
 /**
  * ags_plot_set_bitmap_color:
  * @plot: the #AgsPlot-struct
- * @bitmap: the bitmaps colors as array of RGB value
+ * @bitmap_color: the bitmaps colors as array of RGB value
  * 
  * Set bitmap color field of @plot.
  * 

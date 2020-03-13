@@ -101,7 +101,6 @@ EXTRA_DIST = config.rpath \
 	ags/ags_config.h.in \
 	gtk-doc.make \
 	gsequencer.share \
-	acsite.m4 \
 	aclocal.m4 \
 	gsequencer.1 \
 	README \
@@ -117,25 +116,17 @@ EXTRA_DIST = config.rpath \
 	ags_functional_osc_xmlrpc_server_test_password_store.xml \
 	ags_functional_notation_edit_test.xml \
 	ags_functional_audio_config_test.xml \
-	mkinstalldirs \
 	m4/Makefile.am \
 	m4/Makefile.in \
-	m4/introspection.m4 \
 	ags/i18n.h \
 	ags/gettext.h \
-	ags/README \
 	ags/lib/AUTHORS \
 	ags/server/security/AUTHORS \
 	ags/audio/AUTHORS \
 	ags/audio/recall/AUTHORS \
 	docs/images/README \
-	docs/reference/libags-audio/README \
-	docs/reference/libags-gui/README \
-	docs/reference/libags/README \
-	docs/reference/libgsequencer/README \
 	gsequencer.share/icons/README \
-	gsequencer.share/images/README \
-	po/README
+	gsequencer.share/images/README
 
 EXTRA_DIST += \
 	license-notice-gnu-agpl-3-0+-c.txt \

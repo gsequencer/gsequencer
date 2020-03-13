@@ -528,9 +528,7 @@ ags_function_find_literals(AgsFunction *function,
   gchar **symbol_all;
 
   gchar *source_function;
-  
-  guint n_symbol_all;
-  
+    
   if(!AGS_IS_FUNCTION(function)){
     if(symbol_count != NULL){
       symbol_count[0] = 0;
@@ -541,21 +539,18 @@ ags_function_find_literals(AgsFunction *function,
 
   symbol_all = NULL;
   
-  n_symbol_all = 0;
-
   /* get some fields */
   g_object_get(function,
 	       "source-function", &source_function,
 	       NULL);
 
-  symbol_all = ags_math_util_find_symbol_all(source_function,
-					     &n_symbol_all);
+  symbol_all = ags_math_util_find_symbol_all(source_function);
 
   g_free(source_function);
   
   /* return symbols and its count*/
   if(symbol_count != NULL){
-    symbol_count[0] = n_symbol_all;
+    symbol_count[0] = g_strv_length(symbol_all);
   }
 
   return(symbol_all);

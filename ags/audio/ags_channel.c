@@ -11256,8 +11256,12 @@ ags_channel_real_start(AgsChannel *channel,
 	  start_wait_thread = g_list_prepend(start_wait_thread,
 					     audio_thread);
 	
+#if 1
 	  ags_thread_add_start_queue(audio_loop,
 				     audio_thread);
+#else
+	  ags_thread_start(audio_thread);
+#endif
 	}
       }
     
@@ -11269,13 +11273,18 @@ ags_channel_real_start(AgsChannel *channel,
 	  start_wait_thread = g_list_prepend(start_wait_thread,
 					     channel_thread);
 	
+#if 1
 	  ags_thread_add_start_queue(audio_loop,
 				     channel_thread);
+#else
+	  ags_thread_start(channel_thread);
+#endif
 	}
       }
     }
       
     /* unref */
+#if 0
     wait_thread = start_wait_thread;
 
     start_wait_timeout = g_get_monotonic_time() + 5 * G_USEC_PER_SEC;
@@ -11306,6 +11315,7 @@ ags_channel_real_start(AgsChannel *channel,
 
       wait_thread = wait_thread->next;
     }
+#endif
     
   ags_channel_real_start_ONE_SCOPE_TIMEOUT:
     g_list_free_full(start_wait_thread,
@@ -11384,8 +11394,12 @@ ags_channel_real_start(AgsChannel *channel,
 	    start_wait_thread = g_list_prepend(start_wait_thread,
 					       audio_thread);
 	  
+#if 1
 	    ags_thread_add_start_queue(audio_loop,
 				       audio_thread);
+#else
+	    ags_thread_start(audio_thread);
+#endif
 	  }
 	}
       
@@ -11397,13 +11411,18 @@ ags_channel_real_start(AgsChannel *channel,
 	    start_wait_thread = g_list_prepend(start_wait_thread,
 					       channel_thread);
       
+#if 1
 	    ags_thread_add_start_queue(audio_loop,
 				       channel_thread);
+#else
+	    ags_thread_start(channel_thread);
+#endif
 	  }
 	}
       }
       
       /* unref */
+#if 0
       wait_thread = start_wait_thread;
 
       start_wait_timeout = g_get_monotonic_time() + 5 * G_USEC_PER_SEC;
@@ -11434,7 +11453,8 @@ ags_channel_real_start(AgsChannel *channel,
 
 	wait_thread = wait_thread->next;
       }
-    
+#endif
+      
     ags_channel_real_start_ALL_SCOPE_TIMEOUT:
       g_list_free_full(start_wait_thread,
 		       g_object_unref);

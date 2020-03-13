@@ -2929,7 +2929,7 @@ ags_midi_parser_open_filename(AgsMidiParser *midi_parser,
 }
 
 /**
- * ags_midi_builder_set_buffer:
+ * ags_midi_parser_set_buffer:
  * @midi_parser: the #AgsMidiParser
  * @buffer: the buffer
  * 
@@ -2938,8 +2938,8 @@ ags_midi_parser_open_filename(AgsMidiParser *midi_parser,
  * Since: 3.2.0
  */
 void
-ags_midi_builder_set_buffer(AgsMidiBuilder *midi_builder,
-			    guchar *buffer)
+ags_midi_parser_set_buffer(AgsMidiParser *midi_parser,
+			   guchar *buffer)
 {
   if(!AGS_IS_MIDI_PARSER(midi_parser)){
     return;
@@ -2987,7 +2987,6 @@ ags_midi_parser_new_from_filename(gchar *filename)
   AgsMidiParser *midi_parser;
   
   midi_parser = (AgsMidiParser *) g_object_new(AGS_TYPE_MIDI_PARSER,
-					       "file", file,
 					       NULL);
   
   ags_midi_parser_open_filename(midi_parser,

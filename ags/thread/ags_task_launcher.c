@@ -899,21 +899,30 @@ ags_task_launcher_sync_run(AgsTaskLauncher *task_launcher)
   g_rec_mutex_lock(task_launcher_mutex);
 
   main_context = task_launcher->main_context;
-  g_main_context_ref(main_context);
 
+  if(main_context != NULL){
+    g_main_context_ref(main_context);
+  }
+  
   g_rec_mutex_unlock(task_launcher_mutex);
 
   /* invoke */
-  g_object_ref(task_launcher);
-  g_main_context_invoke_full(main_context,
-			     G_PRIORITY_HIGH,
-			     ags_task_launcher_source_func,
-			     task_launcher,
-			     (GDestroyNotify) g_object_unref);
-
+  if(main_context != NULL){
+    g_object_ref(task_launcher);
+    g_main_context_invoke_full(main_context,
+			       G_PRIORITY_HIGH,
+			       ags_task_launcher_source_func,
+			       task_launcher,
+			       (GDestroyNotify) g_object_unref);
+  }else{
+    ags_task_launcher_run(task_launcher);
+  }
+  
   /* unref */
-  g_main_context_unref(main_context);
-
+  if(main_context != NULL){
+    g_main_context_unref(main_context);
+  }
+  
   g_mutex_lock(&(task_launcher->wait_mutex));
 
   g_atomic_int_set(&(task_launcher->is_running),
