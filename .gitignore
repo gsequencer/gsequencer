@@ -3,6 +3,10 @@ autom4te.cache
 ABOUT-NLS
 confdefs.h
 conftest.dir
+config.sub
+config.rpath
+config.guess
+compile
 ags_functional_server_test_cookie
 mkinstalldirs
 missing
