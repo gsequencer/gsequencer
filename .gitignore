@@ -6,6 +6,7 @@ conftest.dir
 config.sub
 config.rpath
 config.guess
+configure
 compile
 ags_functional_server_test_cookie
 mkinstalldirs
