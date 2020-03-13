@@ -965,7 +965,7 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
       gtk_label_set_label(automation_meta->current_acceleration,
 			  "(null)"); 
     }else{
-      GType *channel_type;
+      GType channel_type;
       
       /* focused port */
       gtk_label_set_label(automation_meta->focused_port,
