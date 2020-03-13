@@ -4,6 +4,9 @@ ABOUT-NLS
 confdefs.h
 conftest.dir
 ags_functional_server_test_cookie
+mkinstalldirs
+missing
+ltmain.sh
 stamp-h1
 po/Rules-quot
 po/boldquot.sed
