@@ -25,6 +25,8 @@ po/ChangeLog
 po/Makevars.template
 po/POTFILES.in
 aclocal.m4
+acsite.m4
+test-driver
 m4/codeset.m4
 m4/extern-inline.m4
 m4/fcntl-o.m4
