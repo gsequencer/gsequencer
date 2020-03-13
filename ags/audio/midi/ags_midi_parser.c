@@ -2929,6 +2929,26 @@ ags_midi_parser_open_filename(AgsMidiParser *midi_parser,
 }
 
 /**
+ * ags_midi_builder_set_buffer:
+ * @midi_parser: the #AgsMidiParser
+ * @buffer: the buffer
+ * 
+ * Set buffer of @midi_parser
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_midi_builder_set_buffer(AgsMidiBuilder *midi_builder,
+			    guchar *buffer)
+{
+  if(!AGS_IS_MIDI_PARSER(midi_parser)){
+    return;
+  }
+
+  midi_parser->buffer = buffer;
+}
+
+/**
  * ags_midi_parser_new:
  * @file: (nullable): the FILE handle
  * 

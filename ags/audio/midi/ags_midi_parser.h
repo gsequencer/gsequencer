@@ -178,6 +178,9 @@ xmlNode* ags_midi_parser_text_event(AgsMidiParser *midi_parser, guint meta_type)
 void ags_midi_parser_open_filename(AgsMidiParser *midi_parser,
 				   gchar *filename);
 
+void ags_midi_builder_set_buffer(AgsMidiBuilder *midi_builder,
+				 guchar *buffer);
+
 /* instantiate */
 AgsMidiParser* ags_midi_parser_new(FILE *file);
 AgsMidiParser* ags_midi_parser_new_from_filename(gchar *filename);
