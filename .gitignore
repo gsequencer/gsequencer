@@ -27,6 +27,9 @@ po/POTFILES.in
 aclocal.m4
 acsite.m4
 test-driver
+Makefile.in
+unit-system-tests.mk.in
+functional-system-tests.mk.in
 m4/codeset.m4
 m4/extern-inline.m4
 m4/fcntl-o.m4
