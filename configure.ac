@@ -637,6 +637,7 @@ docs/reference/libags-gui/Makefile
 docs/reference/libgsequencer/Makefile
 m4/Makefile
 po/Makefile.in
+po/Makefile
 libags.pc
 libags_audio.pc
 libags_gui.pc

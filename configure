@@ -23896,7 +23896,7 @@ fi
 #       [gl_INIT])
 
 
-ac_config_files="$ac_config_files Makefile unit-system-tests.mk functional-system-tests.mk docs/reference/libags/Makefile docs/reference/libags-audio/Makefile docs/reference/libags-gui/Makefile docs/reference/libgsequencer/Makefile m4/Makefile po/Makefile.in libags.pc libags_audio.pc libags_gui.pc libgsequencer.pc"
+ac_config_files="$ac_config_files Makefile unit-system-tests.mk functional-system-tests.mk docs/reference/libags/Makefile docs/reference/libags-audio/Makefile docs/reference/libags-gui/Makefile docs/reference/libgsequencer/Makefile m4/Makefile po/Makefile.in po/Makefile libags.pc libags_audio.pc libags_gui.pc libgsequencer.pc"
 
 
 #AM_COND_IF([WITH_W32API],
@@ -25129,6 +25129,7 @@ do
     "docs/reference/libgsequencer/Makefile") CONFIG_FILES="$CONFIG_FILES docs/reference/libgsequencer/Makefile" ;;
     "m4/Makefile") CONFIG_FILES="$CONFIG_FILES m4/Makefile" ;;
     "po/Makefile.in") CONFIG_FILES="$CONFIG_FILES po/Makefile.in" ;;
+    "po/Makefile") CONFIG_FILES="$CONFIG_FILES po/Makefile" ;;
     "libags.pc") CONFIG_FILES="$CONFIG_FILES libags.pc" ;;
     "libags_audio.pc") CONFIG_FILES="$CONFIG_FILES libags_audio.pc" ;;
     "libags_gui.pc") CONFIG_FILES="$CONFIG_FILES libags_gui.pc" ;;
