@@ -1,8 +1,14 @@
+ags (3.2.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_strv_equal() comparing unsorted string vectors
+	* disabled GMainLoop integration of AgsTaskLauncher in AgsAudioApplicationContext
+
 ags (3.2.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented some getter and setter functions
-	* disabled GMainLoop integration of AgsXorgApplicationContext
+	* disabled GMainLoop integration of AgsTaskLauncher in AgsXorgApplicationContext
 	* updated developer manual
 	* improved API of AgsMidiBuilder and AgsMidiParser
 	* minor improvements

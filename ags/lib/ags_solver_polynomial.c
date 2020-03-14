@@ -620,8 +620,8 @@ ags_solver_polynomial_add(AgsSolverPolynomial *polynomial_a,
 
   is_symbol_matching = (symbol_a != NULL &&
 			symbol_b != NULL &&
-			g_strv_equal(symbol_a,
-				     symbol_b)) ? TRUE: FALSE;
+			ags_strv_equal(symbol_a,
+				       symbol_b)) ? TRUE: FALSE;
 
   g_strfreev(symbol_a);
   g_strfreev(symbol_b);
@@ -647,8 +647,8 @@ ags_solver_polynomial_add(AgsSolverPolynomial *polynomial_a,
 
   is_exponent_matching = (exponent_a != NULL &&
 			  exponent_b != NULL &&
-			  g_strv_equal(exponent_a,
-				       exponent_b)) ? TRUE: FALSE;
+			  ags_strv_equal(exponent_a,
+					 exponent_b)) ? TRUE: FALSE;
   
   g_strfreev(exponent_a);
   g_strfreev(exponent_b);
@@ -784,8 +784,8 @@ ags_solver_polynomial_subtract(AgsSolverPolynomial *polynomial_a,
 
   is_symbol_matching = (symbol_a != NULL &&
 			symbol_b != NULL &&
-			g_strv_equal(symbol_a,
-				     symbol_b)) ? TRUE: FALSE;
+			ags_strv_equal(symbol_a,
+				       symbol_b)) ? TRUE: FALSE;
 
   g_strfreev(symbol_a);
   g_strfreev(symbol_b);
@@ -811,8 +811,8 @@ ags_solver_polynomial_subtract(AgsSolverPolynomial *polynomial_a,
 
   is_exponent_matching = (exponent_a != NULL &&
 			  exponent_b != NULL &&
-			  g_strv_equal(exponent_a,
-				       exponent_b)) ? TRUE: FALSE;
+			  ags_strv_equal(exponent_a,
+					 exponent_b)) ? TRUE: FALSE;
   
   g_strfreev(exponent_a);
   g_strfreev(exponent_b);

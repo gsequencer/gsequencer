@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -178,3 +178,49 @@ ags_strv_index(gchar **str_array,
   return(-1);
 }
 
+/**
+ * ags_strv_equal:
+ * @strv1: the string vector
+ * @strv2: an other string vector
+ * 
+ * Check @strv1 and @strv2 to be equal. The arrays don't have to be
+ * sorted.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE 
+ * 
+ * Since: 3.2.1
+ */
+gboolean
+ags_strv_equal(gchar **strv1,
+	       gchar **strv2)
+{
+  gchar **iter;
+
+  gboolean success;
+  
+  if(strv1 == NULL &&
+     strv2 == NULL){
+    return(TRUE);
+  }
+
+  if((strv1 == NULL &&
+      strv2 != NULL) ||
+     (strv1 != NULL &&
+      strv2 == NULL)){
+    return(FALSE);
+  }
+
+  if(g_strv_length(strv1) != g_strv_length(strv2)){
+    return(FALSE);
+  }
+
+  success = TRUE;
+  
+  for(iter = strv2; success && iter[0] != NULL; iter++){
+    if(!ags_strv_contains(strv1, iter[0])){
+      success = FALSE;
+    }
+  }
+
+  return(success);
+}

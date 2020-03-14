@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,9 @@ gboolean ags_strv_contains(gchar **str_array,
 
 gint ags_strv_index(gchar **str_array,
 		    gchar *str);
+
+gboolean ags_strv_equal(gchar **strv1,
+			gchar **strv2);
 
 G_END_DECLS
 
