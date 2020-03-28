@@ -2430,7 +2430,7 @@ ags_dial_get_margin_right(AgsDial *dial)
 /**
  * ags_dial_set_adjustment:
  * @dial: the #AgsDial
- * @adjustment: the #GtkAdjustment
+ * @adjustment: (transfer none): the #GtkAdjustment
  * 
  * Set adjustment of @dial.
  * 
@@ -2455,7 +2455,7 @@ ags_dial_set_adjustment(AgsDial *dial,
  * 
  * Get adjustment of @dial.
  * 
- * Returns: the #GtkAdjustment
+ * Returns: (transfer full): the #GtkAdjustment
  * 
  * Since: 3.2.0
  */

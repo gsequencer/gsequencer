@@ -1,3 +1,8 @@
+ags (3.2.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved introspection annotations of AgsGui
+
 ags (3.2.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

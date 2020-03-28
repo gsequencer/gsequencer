@@ -630,7 +630,7 @@ ags_indicator_set_segment_count(AgsIndicator *indicator,
  * 
  * Get adjustment.
  * 
- * Returns: the #GtkAdjustment
+ * Returns: (transfer full): the #GtkAdjustment
  * 
  * Since: 3.2.0
  */
@@ -653,7 +653,7 @@ ags_indicator_get_adjustment(AgsIndicator *indicator)
 /**
  * ags_indicator_set_adjustment:
  * @indicator: the #AgsIndicator
- * @adjustment: the #GtkAdjustment
+ * @adjustment: (transfer none): the #GtkAdjustment
  * 
  * Set adjustment.
  * 

@@ -1736,7 +1736,7 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
  * 
  * Allocate #AgsPlot-struct.
  * 
- * Returns: the newly allocated #AgsPlot-struct
+ * Returns: (type gpointer) (transfer full): the newly allocated #AgsPlot-struct
  * 
  * Since: 3.0.0
  */
@@ -1817,7 +1817,7 @@ ags_plot_alloc(guint n_points, guint n_bitmaps, guint n_pixmaps)
 
 /**
  * ags_plot_free:
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer) (transfer full): the #AgsPlot-struct
  * 
  * Free @plot.
  * 
@@ -1870,7 +1870,7 @@ ags_plot_free(AgsPlot *plot)
 
 /**
  * ags_plot_get_n_points:
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer): the #AgsPlot-struct
  * 
  * Get number of points.
  * 
@@ -1890,7 +1890,7 @@ ags_plot_get_n_points(AgsPlot *plot)
 
 /**
  * ags_plot_set_n_points:
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer): the #AgsPlot-struct
  * @n_points: the number of points
  * 
  * Set n_points field of @plot.
@@ -1910,7 +1910,7 @@ ags_plot_set_n_points(AgsPlot *plot,
 
 /**
  * ags_plot_get_join_points:
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer): the #AgsPlot-struct
  * 
  * Get join points.
  * 
@@ -1930,7 +1930,7 @@ ags_plot_get_join_points(AgsPlot *plot)
 
 /**
  * ags_plot_set_join_points:
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer): the #AgsPlot-struct
  * @join_points: if %TRUE join points, otherwise not
  * 
  * Set join_points field of @plot.
@@ -1950,11 +1950,11 @@ ags_plot_set_join_points(AgsPlot *plot,
 
 /**
  * ags_plot_get_point:
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer): the #AgsPlot-struct
  * 
  * Get points.
  * 
- * Returns: point field
+ * Returns: (transfer none): point field
  * 
  * Since: 3.2.0
  */
@@ -1970,8 +1970,8 @@ ags_plot_get_point(AgsPlot *plot)
 
 /**
  * ags_plot_set_point:
- * @plot: the #AgsPlot-struct
- * @point: the points as array of coordinates
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * @point: (transfer full): the points as array of coordinates
  * 
  * Set point field of @plot.
  * 
@@ -1990,11 +1990,11 @@ ags_plot_set_point(AgsPlot *plot,
 
 /**
  * ags_plot_get_point_color:
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer): the #AgsPlot-struct
  * 
  * Get point colors.
  * 
- * Returns: point color field
+ * Returns: (transfer none): point color field
  * 
  * Since: 3.2.0
  */
@@ -2010,8 +2010,8 @@ ags_plot_get_point_color(AgsPlot *plot)
 
 /**
  * ags_plot_set_point_color:
- * @plot: the #AgsPlot-struct
- * @point_color: the points colors as array of RGB value
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * @point_color: (transfer full): the points colors as array of RGB value
  * 
  * Set point color field of @plot.
  * 
@@ -2030,11 +2030,11 @@ ags_plot_set_point_color(AgsPlot *plot,
 
 /**
  * ags_plot_get_point_label:
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer): the #AgsPlot-struct
  * 
  * Get point labels.
  * 
- * Returns: point label field
+ * Returns: (element-type utf8) (transfer none): point label field
  * 
  * Since: 3.2.0
  */
@@ -2050,8 +2050,8 @@ ags_plot_get_point_label(AgsPlot *plot)
 
 /**
  * ags_plot_set_point_label:
- * @plot: the #AgsPlot-struct
- * @point_label: the points labels as string vector
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * @point_label: (transfer full): the points labels as string vector
  * 
  * Set point label field of @plot.
  * 
@@ -2070,7 +2070,7 @@ ags_plot_set_point_label(AgsPlot *plot,
 
 /**
  * ags_plot_get_n_bitmaps:
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer): the #AgsPlot-struct
  * 
  * Get number of bitmaps.
  * 
@@ -2090,7 +2090,7 @@ ags_plot_get_n_bitmaps(AgsPlot *plot)
 
 /**
  * ags_plot_set_n_bitmaps:
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer): the #AgsPlot-struct
  * @n_bitmaps: the number of bitmaps
  * 
  * Set n_bitmaps field of @plot.
@@ -2110,11 +2110,11 @@ ags_plot_set_n_bitmaps(AgsPlot *plot,
 
 /**
  * ags_plot_get_bitmap:
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer): the #AgsPlot-struct
  * 
  * Get bitmaps.
  * 
- * Returns: bitmap field
+ * Returns: (transfer none): bitmap field
  * 
  * Since: 3.2.0
  */
@@ -2130,8 +2130,8 @@ ags_plot_get_bitmap(AgsPlot *plot)
 
 /**
  * ags_plot_set_bitmap:
- * @plot: the #AgsPlot-struct
- * @bitmap: the bitmaps
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * @bitmap: (transfer full): the bitmaps
  * 
  * Set bitmap field of @plot.
  * 
@@ -2150,11 +2150,11 @@ ags_plot_set_bitmap(AgsPlot *plot,
 
 /**
  * ags_plot_get_bitmap_color:
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer): the #AgsPlot-struct
  * 
  * Get bitmap colors.
  * 
- * Returns: bitmap color field
+ * Returns: (transfer none): bitmap color field
  * 
  * Since: 3.2.0
  */
@@ -2170,8 +2170,8 @@ ags_plot_get_bitmap_color(AgsPlot *plot)
 
 /**
  * ags_plot_set_bitmap_color:
- * @plot: the #AgsPlot-struct
- * @bitmap_color: the bitmaps colors as array of RGB value
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * @bitmap_color: (transfer full): the bitmaps colors as array of RGB value
  * 
  * Set bitmap color field of @plot.
  * 
@@ -2190,7 +2190,7 @@ ags_plot_set_bitmap_color(AgsPlot *plot,
 
 /**
  * ags_plot_get_n_pixmaps:
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer): the #AgsPlot-struct
  * 
  * Get number of pixmaps.
  * 
@@ -2210,7 +2210,7 @@ ags_plot_get_n_pixmaps(AgsPlot *plot)
 
 /**
  * ags_plot_set_n_pixmaps:
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer): the #AgsPlot-struct
  * @n_pixmaps: the number of pixmaps
  * 
  * Set n_pixmaps field of @plot.
@@ -2230,11 +2230,11 @@ ags_plot_set_n_pixmaps(AgsPlot *plot,
 
 /**
  * ags_plot_get_pixmap:
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer): the #AgsPlot-struct
  * 
  * Get pixmaps.
  * 
- * Returns: pixmap field
+ * Returns: (transfer none): pixmap field
  * 
  * Since: 3.2.0
  */
@@ -2250,8 +2250,8 @@ ags_plot_get_pixmap(AgsPlot *plot)
 
 /**
  * ags_plot_set_pixmap:
- * @plot: the #AgsPlot-struct
- * @pixmap: the pixmaps
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * @pixmap: (transfer full): the pixmaps
  * 
  * Set pixmap field of @plot.
  * 
@@ -2271,7 +2271,7 @@ ags_plot_set_pixmap(AgsPlot *plot,
 /**
  * ags_cartesian_add_plot:
  * @cartesian: the #AgsCartesian
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer): the #AgsPlot-struct
  * 
  * Add @plot to @cartesian.
  * 
@@ -2292,7 +2292,7 @@ ags_cartesian_add_plot(AgsCartesian *cartesian,
 /**
  * ags_cartesian_remove_plot:
  * @cartesian: the #AgsCartesian
- * @plot: the #AgsPlot-struct
+ * @plot: (type gpointer): the #AgsPlot-struct
  * 
  * Remove @plot from @cartesian.
  * 
