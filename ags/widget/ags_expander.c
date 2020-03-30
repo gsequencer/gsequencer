@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -366,13 +366,26 @@ ags_expander_flags(AgsExpander *expander,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_expander_child_alloc:
+ * @x: the x position
+ * @y: the y position
+ * @width: the width
+ * @height: the height
+ * 
+ * Allocate #AgsExpanderChild-struct.
+ * 
+ * Returns: (type gpointer) (transfer full): the new #AgsExpanderChild-struct
+ * 
+ * Since: 3.0.0
+ */
 AgsExpanderChild*
 ags_expander_child_alloc(guint x, guint y,
 			 guint width, guint height)
 {
   AgsExpanderChild *child;
 
-  child = (AgsExpanderChild *) malloc(sizeof(AgsExpanderChild));
+  child = (AgsExpanderChild *) g_malloc(sizeof(AgsExpanderChild));
 
   child->x = x;
   child->y = y;
@@ -382,17 +395,51 @@ ags_expander_child_alloc(guint x, guint y,
   return(child);
 }
 
+/**
+ * ags_expander_child_free:
+ * @expander_child: (type gpointer) (transfer full): the #AgsExpanderChild-struct
+ * 
+ * Free @expander_child.
+ * 
+ * Since: 3.2.2
+ */
+void
+ags_expander_child_free(AgsExpanderChild *expander_child)
+{
+  if(expander_child == NULL){
+    return;
+  }
+
+  g_free(expander_child);
+}
+
 void
 ags_expander_draw(AgsExpander *expander)
 {
   //TODO:JK: implement me
 }
 
+/**
+ * ags_expander_child_find:
+ * @expander: the #AgsExpander
+ * @child: the #GtkWidget
+ * 
+ * Find @child of @expander.
+ * 
+ * Returns: (type gpointer) (transfer none): the matching #AgsExpanderChild-struct
+ * 
+ * Since: 3.0.0
+ */
 AgsExpanderChild*
 ags_expander_child_find(AgsExpander *expander,
 			GtkWidget *child)
 {
   GList *list;
+
+  if(!AGS_IS_EXPANDER(expander) ||
+     !GTK_IS_WIDGET(child)){
+    return(NULL);
+  }
   
   list = expander->children;
 
@@ -413,6 +460,11 @@ ags_expander_insert_child(AgsExpander *expander,
 {
   GList *list;
   guint i;
+
+  if(!AGS_IS_EXPANDER(expander) ||
+     child == NULL){
+    return;
+  }
   
   list = expander->children;
 
@@ -461,13 +513,18 @@ void
 ags_expander_remove_child(AgsExpander *expander,
 			  AgsExpanderChild *child)
 {
+  if(!AGS_IS_EXPANDER(expander) ||
+     child == NULL){
+    return;
+  }
+
   gtk_container_remove(GTK_CONTAINER(expander->table),
 		       child->child);
 
   expander->children = g_list_remove(expander->children,
 				     child);
 
-  free(child);
+  ags_expander_child_free(child);
 }
 
 /**
@@ -490,6 +547,18 @@ ags_expander_add(AgsExpander *expander,
 		 guint width, guint height)
 {
   AgsExpanderChild *child;
+
+  if(!AGS_IS_EXPANDER(expander) ||
+     !GTK_IS_WIDGET(widget)){
+    return;
+  }
+
+  if(ags_expander_child_find(expander,
+			     widget) != NULL){
+    g_warning("widget already packed by expander");
+
+    return;
+  }
 
   child = ags_expander_child_alloc(x, y,
 				   width, height);
@@ -516,6 +585,11 @@ void
 ags_expander_remove(AgsExpander *expander,
 		    GtkWidget *widget)
 {
+  if(!AGS_IS_EXPANDER(expander) ||
+     !GTK_IS_WIDGET(child)){
+    return;
+  }
+  
   ags_expander_remove_child(expander,
 			    ags_expander_child_find(expander,
 						    widget));

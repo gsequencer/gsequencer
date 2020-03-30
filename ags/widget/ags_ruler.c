@@ -752,7 +752,7 @@ ags_ruler_set_small_step(AgsRuler *ruler,
  * 
  * Get adjustment of @ruler.
  * 
- * Returns: the #GtkAdjustment
+ * Returns: (transfer full): the #GtkAdjustment
  * 
  * Since: 3.2.0
  */
@@ -775,7 +775,7 @@ ags_ruler_get_adjustment(AgsRuler *ruler)
 /**
  * ags_ruler_set_adjustment:
  * @ruler: the #AgsRuler
- * @adjustment: the #GtkAdjustment
+ * @adjustment: (transfer none): the #GtkAdjustment
  * 
  * Set adjustment of @ruler.
  * 

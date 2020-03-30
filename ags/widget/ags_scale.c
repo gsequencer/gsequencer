@@ -1358,6 +1358,294 @@ ags_scale_draw(AgsScale *scale, cairo_t *cr)
 }
 
 /**
+ * ags_scale_set_scale_width:
+ * @scale: the #AgsScale
+ * @scale_width: the scale width
+ * 
+ * Set @scale_width of @scale.
+ * 
+ * Since: 3.2.2
+ */
+void
+ags_scale_set_scale_width(AgsScale *scale,
+			  guint scale_width)
+{
+  if(!AGS_IS_SCALE(scale)){
+    return;
+  }
+
+  g_object_set(scale,
+	       "scale-width", scale_width,
+	       NULL);
+}
+
+/**
+ * ags_scale_get_scale_width:
+ * @scale: the #AgsScale
+ * 
+ * Get scale width of @scale.
+ * 
+ * Returns: the scale width
+ * 
+ * Since: 3.2.2
+ */
+guint
+ags_scale_get_scale_width(AgsScale *scale)
+{
+  guint scale_width;
+  
+  if(!AGS_IS_SCALE(scale)){
+    return(0);
+  }
+
+  g_object_get(scale,
+	       "scale-width", &scale_width,
+	       NULL);
+
+  return(scale_width);
+}
+
+/**
+ * ags_scale_set_scale_height:
+ * @scale: the #AgsScale
+ * @scale_height: the scale height
+ * 
+ * Set @scale_height of @scale.
+ * 
+ * Since: 3.2.2
+ */
+void
+ags_scale_set_scale_height(AgsScale *scale,
+			   guint scale_height)
+{
+  if(!AGS_IS_SCALE(scale)){
+    return;
+  }
+
+  g_object_set(scale,
+	       "scale-height", scale_height,
+	       NULL);
+}
+
+/**
+ * ags_scale_get_scale_height:
+ * @scale: the #AgsScale
+ * 
+ * Get scale height of @scale.
+ * 
+ * Returns: the scale height
+ * 
+ * Since: 3.2.2
+ */
+guint
+ags_scale_get_scale_height(AgsScale *scale)
+{
+  guint scale_height;
+  
+  if(!AGS_IS_SCALE(scale)){
+    return(0);
+  }
+
+  g_object_get(scale,
+	       "scale-height", &scale_height,
+	       NULL);
+
+  return(scale_height);
+}
+
+/**
+ * ags_scale_set_control_name:
+ * @scale: the #AgsScale
+ * @control_name: the scale height
+ * 
+ * Set @control_name of @scale.
+ * 
+ * Since: 3.2.2
+ */
+void
+ags_scale_set_control_name(AgsScale *scale,
+			   gchar *control_name)
+{
+  if(!AGS_IS_SCALE(scale)){
+    return;
+  }
+
+  g_object_set(scale,
+	       "control-name", control_name,
+	       NULL);
+}
+
+/**
+ * ags_scale_get_control_name:
+ * @scale: the #AgsScale
+ * 
+ * Get scale height of @scale.
+ * 
+ * Returns: the scale height
+ * 
+ * Since: 3.2.2
+ */
+gchar*
+ags_scale_get_control_name(AgsScale *scale)
+{
+  gchar *control_name;
+  
+  if(!AGS_IS_SCALE(scale)){
+    return(NULL);
+  }
+
+  g_object_get(scale,
+	       "control-name", &control_name,
+	       NULL);
+
+  return(control_name);
+}
+
+/**
+ * ags_scale_set_upper:
+ * @scale: the #AgsScale
+ * @upper: the upper
+ * 
+ * Set @upper of @scale.
+ * 
+ * Since: 3.2.2
+ */
+void
+ags_scale_set_upper(AgsScale *scale,
+		    gdouble upper)
+{
+  if(!AGS_IS_SCALE(scale)){
+    return;
+  }
+
+  g_object_set(scale,
+	       "upper", upper,
+	       NULL);
+}
+
+/**
+ * ags_scale_get_upper:
+ * @scale: the #AgsScale
+ * 
+ * Get upper of @scale.
+ * 
+ * Returns: the upper
+ * 
+ * Since: 3.2.2
+ */
+gdouble
+ags_scale_get_upper(AgsScale *scale)
+{
+  gdouble upper;
+  
+  if(!AGS_IS_SCALE(scale)){
+    return(0.0);
+  }
+
+  g_object_get(scale,
+	       "upper", &upper,
+	       NULL);
+
+  return(upper);
+}
+
+/**
+ * ags_scale_set_lower:
+ * @scale: the #AgsScale
+ * @lower: the lower
+ * 
+ * Set @lower of @scale.
+ * 
+ * Since: 3.2.2
+ */
+void
+ags_scale_set_lower(AgsScale *scale,
+		    gdouble lower)
+{
+  if(!AGS_IS_SCALE(scale)){
+    return;
+  }
+
+  g_object_set(scale,
+	       "lower", lower,
+	       NULL);
+}
+
+/**
+ * ags_scale_get_lower:
+ * @scale: the #AgsScale
+ * 
+ * Get lower of @scale.
+ * 
+ * Returns: the lower
+ * 
+ * Since: 3.2.2
+ */
+gdouble
+ags_scale_get_lower(AgsScale *scale)
+{
+  gdoubler lower;
+  
+  if(!AGS_IS_SCALE(scale)){
+    return(0.0);
+  }
+
+  g_object_get(scale,
+	       "lower", &lower,
+	       NULL);
+
+  return(lower);
+}
+
+/**
+ * ags_scale_set_default_value:
+ * @scale: the #AgsScale
+ * @default_value: the normalized volume
+ * 
+ * Set @default_value of @scale.
+ * 
+ * Since: 3.2.2
+ */
+void
+ags_scale_set_default_value(AgsScale *scale,
+				gdouble default_value)
+{
+  if(!AGS_IS_SCALE(scale)){
+    return;
+  }
+
+  g_object_set(scale,
+	       "default-value", default_value,
+	       NULL);
+}
+
+/**
+ * ags_scale_get_default_value:
+ * @scale: the #AgsScale
+ * 
+ * Get normalized volume of @scale.
+ * 
+ * Returns: the normalized volume
+ * 
+ * Since: 3.2.2
+ */
+gdouble
+ags_scale_get_default_value(AgsScale *scale)
+{
+  gdouble default_value;
+  
+  if(!AGS_IS_SCALE(scale)){
+    return(0.0);
+  }
+
+  g_object_get(scale,
+	       "default-value", &default_value,
+	       NULL);
+
+  return(default_value);
+}
+
+/**
  * ags_scale_value_changed:
  * @scale: the #AgsScale
  * @default_value: the default value
