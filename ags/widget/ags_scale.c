@@ -1584,7 +1584,7 @@ ags_scale_set_lower(AgsScale *scale,
 gdouble
 ags_scale_get_lower(AgsScale *scale)
 {
-  gdoubler lower;
+  gdouble lower;
   
   if(!AGS_IS_SCALE(scale)){
     return(0.0);

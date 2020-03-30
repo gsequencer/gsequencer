@@ -63,6 +63,7 @@ ags_string_util_escape_single_quote
 ags_strv_length
 ags_strv_contains
 ags_strv_index
+ags_strv_equal
 ags_endian_host_is_le
 ags_endian_host_is_be
 ags_endian_swap_float

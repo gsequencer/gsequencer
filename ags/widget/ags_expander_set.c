@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -287,13 +287,26 @@ ags_expander_set_set_flags(AgsExpanderSet *expander_set,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_expander_set_child_alloc:
+ * @x: the x position
+ * @y: the y position
+ * @width: the width
+ * @height: the height
+ * 
+ * Allocate #AgsExpanderSetChild-struct.
+ * 
+ * Returns: (type gpointer) (transfer full): the new #AgsExpanderSetChild-struct
+ * 
+ * Since: 3.0.0
+ */
 AgsExpanderSetChild*
 ags_expander_set_child_alloc(guint x, guint y,
 			     guint width, guint height)
 {
   AgsExpanderSetChild *child;
 
-  child = (AgsExpanderSetChild *) malloc(sizeof(AgsExpanderSetChild));
+  child = (AgsExpanderSetChild *) g_malloc(sizeof(AgsExpanderSetChild));
 
   child->x = x;
   child->y = y;
@@ -303,11 +316,45 @@ ags_expander_set_child_alloc(guint x, guint y,
   return(child);
 }
 
+/**
+ * ags_expander_set_child_free:
+ * @expander_set_child: (type gpointer) (transfer full): the #AgsExpanderSetChild-struct
+ * 
+ * Free @expander_set_child.
+ * 
+ * Since: 3.2.2
+ */
+void
+ags_expander_set_child_free(AgsExpanderSetChild *expander_set_child)
+{
+  if(expander_set_child == NULL){
+    return;
+  }
+
+  g_free(expander_set_child);
+}
+
+/**
+ * ags_expander_set_child_find:
+ * @expander_set: the #AgsExpanderSet
+ * @child: the #GtkWidget
+ * 
+ * Find @child of @expander_set.
+ * 
+ * Returns: (type gpointer) (transfer none): the matching #AgsExpanderSetChild-struct
+ * 
+ * Since: 3.0.0
+ */
 AgsExpanderSetChild*
 ags_expander_set_child_find(AgsExpanderSet *expander_set,
 			    GtkWidget *child)
 {
   GList *list;
+
+  if(!AGS_IS_EXPANDER_SET(expander_set) ||
+     !GTK_IS_WIDGET(child)){
+    return(NULL);
+  }
   
   list = expander_set->location;
 
@@ -334,7 +381,13 @@ ags_expander_set_insert_child(AgsExpanderSet *expander_set,
 			      gboolean ghost)
 {
   GList *list;
+
   guint i;
+
+  if(!AGS_IS_EXPANDER_SET(expander_set) ||
+     child == NULL){
+    return;
+  }
   
   if(ghost){
     list = expander_set->ghost;
@@ -397,6 +450,11 @@ ags_expander_set_remove_child(AgsExpanderSet *expander_set,
 			      AgsExpanderSetChild *child,
 			      gboolean ghost)
 {
+  if(!AGS_IS_EXPANDER_SET(expander_set) ||
+     child == NULL){
+    return;
+  }
+
   gtk_container_remove(GTK_CONTAINER(expander_set),
 		       child->child);
 
@@ -408,7 +466,7 @@ ags_expander_set_remove_child(AgsExpanderSet *expander_set,
 					   child);
   }
 
-  free(child);
+  ags_expander_set_child_free(child);
 }
 
 /**
@@ -431,6 +489,11 @@ ags_expander_set_add(AgsExpanderSet *expander_set,
 		     guint width, guint height)
 {
   AgsExpanderSetChild *child;
+
+  if(!AGS_IS_EXPANDER_SET(expander_set) ||
+     !GTK_IS_WIDGET(widget)){
+    return;
+  }
 
   child = ags_expander_set_child_alloc(x, y,
 				       width, height);
@@ -460,6 +523,11 @@ void
 ags_expander_set_remove(AgsExpanderSet *expander_set,
 			GtkWidget *widget)
 {
+  if(!AGS_IS_EXPANDER_SET(expander_set) ||
+     !GTK_IS_WIDGET(widget)){
+    return;
+  }
+
   ags_expander_set_remove_child(expander_set,
 				ags_expander_set_child_find(expander_set,
 							    widget),

@@ -1473,7 +1473,7 @@ ags_level_set_lower(AgsLevel *level,
 gdouble
 ags_level_get_lower(AgsLevel *level)
 {
-  gdoubler lower;
+  gdouble lower;
   
   if(!AGS_IS_LEVEL(level)){
     return(0.0);

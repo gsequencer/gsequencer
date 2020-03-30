@@ -586,7 +586,7 @@ ags_expander_remove(AgsExpander *expander,
 		    GtkWidget *widget)
 {
   if(!AGS_IS_EXPANDER(expander) ||
-     !GTK_IS_WIDGET(child)){
+     !GTK_IS_WIDGET(widget)){
     return;
   }
   
