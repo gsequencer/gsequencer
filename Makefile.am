@@ -119,7 +119,6 @@ EXTRA_DIST = config.rpath \
 	ags_functional_audio_config_test.xml \
 	m4/Makefile.am \
 	m4/Makefile.in \
-	po/Makevars \
 	po/POTFILES.in.in \
 	po/gsequencer.pot-header \
 	ags/i18n.h \
