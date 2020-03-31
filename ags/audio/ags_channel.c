@@ -111,6 +111,16 @@ gboolean ags_channel_is_connected(AgsConnectable *connectable);
 void ags_channel_connect(AgsConnectable *connectable);
 void ags_channel_disconnect(AgsConnectable *connectable);
 
+void ags_channel_real_set_output_soundcard(AgsChannel *channel, GObject *output_soundcard);
+
+void ags_channel_real_set_input_soundcard(AgsChannel *channel, GObject *input_soundcard);
+
+void ags_channel_real_set_samplerate(AgsChannel *channel, guint samplerate);
+
+void ags_channel_real_set_buffer_size(AgsChannel *channel, guint buffer_size);
+
+void ags_channel_real_set_format(AgsChannel *channel, guint format);
+
 gboolean ags_channel_reset_recycling_recursive_input(AgsChannel *input,
 						     AgsAudio **found_next, AgsAudio **found_prev,
 						     AgsChannel **next_channel, AgsChannel **prev_channel,
@@ -1374,8 +1384,8 @@ ags_channel_set_property(GObject *gobject,
 
     output_soundcard = (GObject *) g_value_get_object(value);
 
-    ags_channel_set_output_soundcard(channel,
-				     output_soundcard);
+    ags_channel_real_set_output_soundcard(channel,
+					  output_soundcard);
   }
   break;
   case PROP_OUTPUT_SOUNDCARD_CHANNEL:
@@ -1393,8 +1403,8 @@ ags_channel_set_property(GObject *gobject,
 
     input_soundcard = (GObject *) g_value_get_object(value);
 
-    ags_channel_set_input_soundcard(channel,
-				    input_soundcard);
+    ags_channel_real_set_input_soundcard(channel,
+					 input_soundcard);
   }
   break;
   case PROP_INPUT_SOUNDCARD_CHANNEL:
@@ -1412,8 +1422,8 @@ ags_channel_set_property(GObject *gobject,
 
     samplerate = g_value_get_uint(value);
 
-    ags_channel_set_samplerate(channel,
-			       samplerate);
+    ags_channel_real_set_samplerate(channel,
+				    samplerate);
   }
   break;
   case PROP_BUFFER_SIZE:
@@ -1422,8 +1432,8 @@ ags_channel_set_property(GObject *gobject,
 
     buffer_size = g_value_get_uint(value);
 
-    ags_channel_set_buffer_size(channel,
-				buffer_size);
+    ags_channel_real_set_buffer_size(channel,
+				     buffer_size);
   }
   break;
   case PROP_FORMAT:
@@ -1432,8 +1442,8 @@ ags_channel_set_property(GObject *gobject,
 
     format = g_value_get_uint(value);
 
-    ags_channel_set_format(channel,
-			   format);
+    ags_channel_real_set_format(channel,
+				format);
   }
   break;
   case PROP_PAD:
@@ -6636,18 +6646,9 @@ ags_channel_get_output_soundcard(AgsChannel *channel)
   return(output_soundcard);
 }
 
-/**
- * ags_channel_set_output_soundcard:
- * @channel: an #AgsChannel
- * @output_soundcard: an #GObject
- *
- * Set the output soundcard object of @channel.
- *
- * Since: 3.0.0
- */
 void
-ags_channel_set_output_soundcard(AgsChannel *channel,
-				 GObject *output_soundcard)
+ags_channel_real_set_output_soundcard(AgsChannel *channel,
+				      GObject *output_soundcard)
 {
   AgsRecycling *recycling;
   AgsPlayback *playback;
@@ -6807,6 +6808,27 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
 }
 
 /**
+ * ags_channel_set_output_soundcard:
+ * @channel: an #AgsChannel
+ * @output_soundcard: the #GObject implementing #AgsSoundcard
+ *
+ * Set the output soundcard object of @channel.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_channel_set_output_soundcard(AgsChannel *channel, GObject *output_soundcard)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "output-soundcard", output_soundcard,
+	       NULL);
+}
+
+/**
  * ags_channel_get_input_soundcard:
  * @channel: the #AgsChannel
  *
@@ -6832,18 +6854,9 @@ ags_channel_get_input_soundcard(AgsChannel *channel)
   return(input_soundcard);
 }
 
-/**
- * ags_channel_set_input_soundcard:
- * @channel: the #AgsChannel
- * @input_soundcard: an #AgsSoundcard
- *
- * Set the input soundcard object on channel.
- *
- * Since: 3.0.0
- */
 void
-ags_channel_set_input_soundcard(AgsChannel *channel,
-				GObject *input_soundcard)
+ags_channel_real_set_input_soundcard(AgsChannel *channel,
+				     GObject *input_soundcard)
 {
   AgsRecycling *recycling;
 
@@ -6953,6 +6966,27 @@ ags_channel_set_input_soundcard(AgsChannel *channel,
 }
 
 /**
+ * ags_channel_set_input_soundcard:
+ * @channel: an #AgsChannel
+ * @input_soundcard: the #GObject implementing #AgsSoundcard
+ *
+ * Set the input soundcard object of @channel.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_channel_set_input_soundcard(AgsChannel *channel, GObject *input_soundcard)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "input-soundcard", input_soundcard,
+	       NULL);
+}
+
+/**
  * ags_channel_get_samplerate:
  * @channel: the #AgsChannel
  *
@@ -6978,17 +7012,8 @@ ags_channel_get_samplerate(AgsChannel *channel)
   return(samplerate);
 }
 
-/**
- * ags_channel_set_samplerate:
- * @channel: the #AgsChannel
- * @samplerate: the samplerate
- *
- * Set samplerate.
- *
- * Since: 3.0.0
- */
 void
-ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
+ags_channel_real_set_samplerate(AgsChannel *channel, guint samplerate)
 {
   AgsChannel *link;
   AgsRecycling *recycling;
@@ -7122,6 +7147,27 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
 }
 
 /**
+ * ags_channel_set_samplerate:
+ * @channel: the #AgsChannel
+ * @samplerate: the samplerate
+ *
+ * Set samplerate.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "samplerate", samplerate,
+	       NULL);
+}
+
+/**
  * ags_channel_get_buffer_size:
  * @channel: the #AgsChannel
  *
@@ -7147,17 +7193,8 @@ ags_channel_get_buffer_size(AgsChannel *channel)
   return(buffer_size);
 }
 
-/**
- * ags_channel_set_buffer_size:
- * @channel: the #AgsChannel
- * @buffer_size: the buffer_size
- *
- * Set buffer-size.
- *
- * Since: 3.0.0
- */
 void
-ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
+ags_channel_real_set_buffer_size(AgsChannel *channel, guint buffer_size)
 {
   AgsChannel *link;
   AgsRecycling *recycling;
@@ -7291,6 +7328,27 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
 }
 
 /**
+ * ags_channel_set_buffer_size:
+ * @channel: the #AgsChannel
+ * @buffer_size: the buffer_size
+ *
+ * Set buffer-size.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "buffer-size", buffer_size,
+	       NULL);
+}
+
+/**
  * ags_channel_get_format:
  * @channel: the #AgsChannel
  *
@@ -7316,17 +7374,8 @@ ags_channel_get_format(AgsChannel *channel)
   return(format);
 }
 
-/**
- * ags_channel_set_format:
- * @channel: the #AgsChannel
- * @format: the format
- *
- * Set format.
- *
- * Since: 3.0.0
- */
 void
-ags_channel_set_format(AgsChannel *channel, guint format)
+ags_channel_real_set_format(AgsChannel *channel, guint format)
 {
   AgsChannel *link;
   AgsRecycling *recycling;
@@ -7427,6 +7476,27 @@ ags_channel_set_format(AgsChannel *channel, guint format)
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
   }
+}
+
+/**
+ * ags_channel_set_format:
+ * @channel: the #AgsChannel
+ * @format: the format
+ *
+ * Set format.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_channel_set_format(AgsChannel *channel, guint format)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "format", format,
+	       NULL);
 }
 
 /**

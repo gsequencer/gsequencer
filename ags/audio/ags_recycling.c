@@ -55,6 +55,10 @@ gboolean ags_recycling_is_connected(AgsConnectable *connectable);
 void ags_recycling_connect(AgsConnectable *connectable);
 void ags_recycling_disconnect(AgsConnectable *connectable);
 
+void ags_recycling_real_set_output_soundcard(AgsRecycling *recycling, GObject *output_soundcard);
+
+void ags_recycling_real_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundcard);
+
 void ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
 					 AgsAudioSignal *audio_signal);
 
@@ -542,7 +546,7 @@ ags_recycling_set_property(GObject *gobject,
 
       soundcard = (GObject *) g_value_get_object(value);
 
-      ags_recycling_set_output_soundcard(recycling, (GObject *) soundcard);
+      ags_recycling_real_set_output_soundcard(recycling, (GObject *) soundcard);
     }
     break;
   case PROP_OUTPUT_SOUNDCARD_CHANNEL:
@@ -560,7 +564,7 @@ ags_recycling_set_property(GObject *gobject,
 
       soundcard = (GObject *) g_value_get_object(value);
 
-      ags_recycling_set_input_soundcard(recycling, (GObject *) soundcard);
+      ags_recycling_real_set_input_soundcard(recycling, (GObject *) soundcard);
     }
     break;
   case PROP_INPUT_SOUNDCARD_CHANNEL:
@@ -1456,17 +1460,8 @@ ags_recycling_get_output_soundcard(AgsRecycling *recycling)
   return(output_soundcard);
 }
 
-/**
- * ags_recycling_set_output_soundcard:
- * @recycling: the #AgsRecycling
- * @output_soundcard: the #GObject to set
- *
- * Set @output_soundcard of @recycling.
- *
- * Since: 3.0.0
- */
 void
-ags_recycling_set_output_soundcard(AgsRecycling *recycling, GObject *output_soundcard)
+ags_recycling_real_set_output_soundcard(AgsRecycling *recycling, GObject *output_soundcard)
 {
   GList *start_list, *list;
   
@@ -1520,6 +1515,27 @@ ags_recycling_set_output_soundcard(AgsRecycling *recycling, GObject *output_soun
 }
 
 /**
+ * ags_recycling_set_output_soundcard:
+ * @recycling: the #AgsRecycling
+ * @output_soundcard: the #GObject implementing #AgsSoundcard
+ *
+ * Set the output soundcard object of @recycling.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_recycling_set_output_soundcard(AgsRecycling *recycling, GObject *output_soundcard)
+{
+  if(!AGS_IS_RECYCLING(recycling)){
+    return;
+  }
+
+  g_object_set(recycling,
+	       "output-soundcard", output_soundcard,
+	       NULL);
+}
+
+/**
  * ags_recycling_get_input_soundcard:
  * @recycling: the #AgsRecycling
  *
@@ -1545,17 +1561,8 @@ ags_recycling_get_input_soundcard(AgsRecycling *recycling)
   return(input_soundcard);
 }
 
-/**
- * ags_recycling_set_input_soundcard:
- * @recycling: the #AgsRecycling
- * @input_soundcard: the #GObject to set
- *
- * Set @input_soundcard of @recycling.
- *
- * Since: 3.0.0
- */
 void
-ags_recycling_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundcard)
+ags_recycling_real_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundcard)
 {
   GList *start_list, *list;
   
@@ -1606,6 +1613,27 @@ ags_recycling_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundc
 
   g_list_free_full(start_list,
 		   g_object_unref);
+}
+
+/**
+ * ags_recycling_set_input_soundcard:
+ * @recycling: an #AgsRecycling
+ * @input_soundcard: the #GObject implementing #AgsSoundcard
+ *
+ * Set the input soundcard object of @recycling.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_recycling_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundcard)
+{
+  if(!AGS_IS_RECYCLING(recycling)){
+    return;
+  }
+
+  g_object_set(recycling,
+	       "input-soundcard", input_soundcard,
+	       NULL);
 }
 
 /**

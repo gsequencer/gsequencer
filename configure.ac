@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.2.2],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.2.3],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -340,11 +340,11 @@ PKG_CHECK_MODULES([FFTW], [fftw3 >= 3.3.4])
 AC_SUBST(FFTW_CFLAGS)
 AC_SUBST(FFTW_LIBS)
 
-PKG_CHECK_MODULES([GLIB], [glib-2.0 >= 2.60.0])
+PKG_CHECK_MODULES([GLIB], [glib-2.0 >= 2.56.0])
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
 
-PKG_CHECK_MODULES([GOBJECT], [gobject-2.0 >= 2.60.0 glib-2.0 >= 2.60.0 gmodule-2.0 >= 2.60.0 gthread-2.0 >= 2.60.0])
+PKG_CHECK_MODULES([GOBJECT], [gobject-2.0 >= 2.56.0 glib-2.0 >= 2.56.0 gmodule-2.0 >= 2.56.0 gthread-2.0 >= 2.56.0])
 AC_SUBST(GOBJECT_CFLAGS)
 AC_SUBST(GOBJECT_LIBS)
 
@@ -354,7 +354,7 @@ AC_DEFINE([HAVE_GLIB_2_54], [1], [GLib 2.54 available])
 
 GOBJECT_INTROSPECTION_CHECK([1.30.0])
 
-PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.60.0 glib-2.0 >= 2.60.0 gmodule-2.0 >= 2.60.0 gthread-2.0 >= 2.60.0])
+PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.56.0 glib-2.0 >= 2.56.0 gmodule-2.0 >= 2.56.0 gthread-2.0 >= 2.56.0])
 AC_SUBST(GIO_CFLAGS)
 AC_SUBST(GIO_LIBS)
 

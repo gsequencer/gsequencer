@@ -63,6 +63,10 @@ gboolean ags_audio_signal_is_connected(AgsConnectable *connectable);
 void ags_audio_signal_connect(AgsConnectable *connectable);
 void ags_audio_signal_disconnect(AgsConnectable *connectable);
 
+void ags_audio_signal_real_set_output_soundcard(AgsAudioSignal *audio_signal, GObject *output_soundcard);
+
+void ags_audio_signal_real_set_input_soundcard(AgsAudioSignal *audio_signal, GObject *input_soundcard);
+
 void ags_audio_signal_real_add_note(AgsAudioSignal *audio_signal,
 				    GObject *note);
 void ags_audio_signal_real_remove_note(AgsAudioSignal *audio_signal,
@@ -920,8 +924,8 @@ ags_audio_signal_set_property(GObject *gobject,
 
     output_soundcard = g_value_get_object(value);
 
-    ags_audio_signal_set_output_soundcard(audio_signal,
-					  output_soundcard);
+    ags_audio_signal_real_set_output_soundcard(audio_signal,
+					       output_soundcard);
   }
   break;
   case PROP_OUTPUT_SOUNDCARD_CHANNEL:
@@ -939,8 +943,8 @@ ags_audio_signal_set_property(GObject *gobject,
       
     input_soundcard = g_value_get_object(value);
 
-    ags_audio_signal_set_input_soundcard(audio_signal,
-					 input_soundcard);
+    ags_audio_signal_real_set_input_soundcard(audio_signal,
+					      input_soundcard);
   }
   break;
   case PROP_INPUT_SOUNDCARD_CHANNEL:
@@ -2149,17 +2153,8 @@ ags_audio_signal_get_output_soundcard(AgsAudioSignal *audio_signal)
   return(output_soundcard);
 }
 
-/**
- * ags_audio_signal_set_output_soundcard:
- * @audio_signal: the #AgsAudioSignal
- * @output_soundcard: the #GObject implementing #AgsSoundcard
- * 
- * Set output soundcarod of @audio_signal.
- * 
- * Since: 3.0.0
- */
 void
-ags_audio_signal_set_output_soundcard(AgsAudioSignal *audio_signal, GObject *output_soundcard)
+ags_audio_signal_real_set_output_soundcard(AgsAudioSignal *audio_signal, GObject *output_soundcard)
 {
   guint samplerate;
   guint buffer_size;
@@ -2213,6 +2208,27 @@ ags_audio_signal_set_output_soundcard(AgsAudioSignal *audio_signal, GObject *out
 }
 
 /**
+ * ags_audio_signal_set_output_soundcard:
+ * @audio_signal: the #AgsAudioSignal
+ * @output_soundcard: the #GObject implementing #AgsSoundcard
+ *
+ * Set the output soundcard object of @audio_signal.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_audio_signal_set_output_soundcard(AgsAudioSignal *audio_signal, GObject *output_soundcard)
+{
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  g_object_set(audio_signal,
+	       "output-soundcard", output_soundcard,
+	       NULL);
+}
+
+/**
  * ags_audio_signal_get_input_soundcard:
  * @audio_signal: the #AgsAudioSignal
  *
@@ -2238,17 +2254,8 @@ ags_audio_signal_get_input_soundcard(AgsAudioSignal *audio_signal)
   return(input_soundcard);
 }
 
-/**
- * ags_audio_signal_set_input_soundcard:
- * @audio_signal: the #AgsAudioSignal
- * @input_soundcard: the #GObject implementing #AgsSoundcard
- * 
- * Set input soundcarod of @audio_signal.
- * 
- * Since: 3.0.0
- */
 void
-ags_audio_signal_set_input_soundcard(AgsAudioSignal *audio_signal, GObject *input_soundcard)
+ags_audio_signal_real_set_input_soundcard(AgsAudioSignal *audio_signal, GObject *input_soundcard)
 {
   GRecMutex *audio_signal_mutex;
 
@@ -2280,6 +2287,27 @@ ags_audio_signal_set_input_soundcard(AgsAudioSignal *audio_signal, GObject *inpu
   audio_signal->input_soundcard = input_soundcard;
 
   g_rec_mutex_unlock(audio_signal_mutex);
+}
+
+/**
+ * ags_audio_signal_set_input_soundcard:
+ * @audio_signal: an #AgsAudioSignal
+ * @input_soundcard: the #GObject implementing #AgsSoundcard
+ *
+ * Set the input soundcard object of @audio_signal.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_audio_signal_set_input_soundcard(AgsAudioSignal *audio_signal, GObject *input_soundcard)
+{
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  g_object_set(audio_signal,
+	       "input-soundcard", input_soundcard,
+	       NULL);
 }
 
 /**

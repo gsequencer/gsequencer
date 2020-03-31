@@ -163,9 +163,22 @@ void ags_audio_real_set_pads(AgsAudio *audio,
 			     GType channel_type,
 			     guint channels, guint channels_old);
 
+void ags_audio_real_set_output_soundcard(AgsAudio *audio, GObject *output_soundcard);
+
+void ags_audio_real_set_input_soundcard(AgsAudio *audio, GObject *input_soundcard);
+
+void ags_audio_real_set_output_sequencer(AgsAudio *audio, GObject *output_sequencer);
+
+void ags_audio_real_set_input_sequencer(AgsAudio *audio, GObject *input_sequencer);
+
 void ags_audio_set_samplerate_channel(AgsChannel *start_channel, guint samplerate);
+void ags_audio_real_set_samplerate(AgsAudio *audio, guint samplerate);
+
 void ags_audio_set_buffer_size_channel(AgsChannel *start_channel, guint buffer_size);
+void ags_audio_real_set_buffer_size(AgsAudio *audio, guint buffer_size);
+
 void ags_audio_set_format_channel(AgsChannel *start_channel, guint format);
+void ags_audio_real_set_format(AgsAudio *audio, guint format);
 
 void ags_audio_real_duplicate_recall(AgsAudio *audio,
 				     AgsRecallID *recall_id,
@@ -1783,8 +1796,8 @@ ags_audio_set_property(GObject *gobject,
 
     soundcard = g_value_get_object(value);
 
-    ags_audio_set_output_soundcard(audio,
-				   (GObject *) soundcard);
+    ags_audio_real_set_output_soundcard(audio,
+					(GObject *) soundcard);
   }
   break;
   case PROP_INPUT_SOUNDCARD:
@@ -1793,8 +1806,8 @@ ags_audio_set_property(GObject *gobject,
 
     soundcard = g_value_get_object(value);
 
-    ags_audio_set_input_soundcard(audio,
-				  (GObject *) soundcard);
+    ags_audio_real_set_input_soundcard(audio,
+				       (GObject *) soundcard);
   }
   break;
   case PROP_OUTPUT_SEQUENCER:
@@ -1803,8 +1816,8 @@ ags_audio_set_property(GObject *gobject,
 
     sequencer = g_value_get_object(value);
 
-    ags_audio_set_output_sequencer(audio,
-				   (GObject *) sequencer);
+    ags_audio_real_set_output_sequencer(audio,
+					(GObject *) sequencer);
   }
   break;
   case PROP_INPUT_SEQUENCER:
@@ -1813,8 +1826,8 @@ ags_audio_set_property(GObject *gobject,
 
     sequencer = g_value_get_object(value);
 
-    ags_audio_set_input_sequencer(audio,
-				  (GObject *) sequencer);
+    ags_audio_real_set_input_sequencer(audio,
+				       (GObject *) sequencer);
   }
   break;
   case PROP_SAMPLERATE:
@@ -1823,8 +1836,8 @@ ags_audio_set_property(GObject *gobject,
 
     samplerate = g_value_get_uint(value);
 
-    ags_audio_set_samplerate(audio,
-			     samplerate);
+    ags_audio_real_set_samplerate(audio,
+				  samplerate);
   }
   break;
   case PROP_BUFFER_SIZE:
@@ -1833,8 +1846,8 @@ ags_audio_set_property(GObject *gobject,
 
     buffer_size = g_value_get_uint(value);
 
-    ags_audio_set_buffer_size(audio,
-			      buffer_size);
+    ags_audio_real_set_buffer_size(audio,
+				   buffer_size);
   }
   break;
   case PROP_FORMAT:
@@ -1843,8 +1856,8 @@ ags_audio_set_property(GObject *gobject,
 
     format = g_value_get_uint(value);
 
-    ags_audio_set_format(audio,
-			 format);
+    ags_audio_real_set_format(audio,
+			      format);
   }
   break;
   case PROP_BPM:
@@ -7739,18 +7752,9 @@ ags_audio_get_output_soundcard(AgsAudio *audio)
   return(output_soundcard);
 }
 
-/**
- * ags_audio_set_output_soundcard:
- * @audio: the #AgsAudio
- * @output_soundcard: an #AgsSoundcard
- *
- * Set the output soundcard object of @audio.
- *
- * Since: 3.0.0
- */
 void
-ags_audio_set_output_soundcard(AgsAudio *audio,
-			       GObject *output_soundcard)
+ags_audio_real_set_output_soundcard(AgsAudio *audio,
+				    GObject *output_soundcard)
 {
   AgsChannel *start_channel, *channel, *next_channel;
   AgsPlaybackDomain *playback_domain;
@@ -7931,6 +7935,27 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
 }
 
 /**
+ * ags_audio_set_output_soundcard:
+ * @audio: the #AgsAudio
+ * @output_soundcard: the #GObject implementing #AgsSoundcard
+ *
+ * Set the output soundcard object of @audio.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_audio_set_output_soundcard(AgsAudio *audio, GObject *output_soundcard)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "output-soundcard", output_soundcard,
+	       NULL);
+}
+
+/**
  * ags_audio_get_input_soundcard:
  * @audio: the #AgsAudio
  *
@@ -7956,18 +7981,9 @@ ags_audio_get_input_soundcard(AgsAudio *audio)
   return(input_soundcard);
 }
 
-/**
- * ags_audio_set_input_soundcard:
- * @audio: the #AgsAudio
- * @input_soundcard: an #AgsSoundcard
- *
- * Set the input soundcard object on audio.
- *
- * Since: 3.0.0
- */
 void
-ags_audio_set_input_soundcard(AgsAudio *audio,
-			      GObject *input_soundcard)
+ags_audio_real_set_input_soundcard(AgsAudio *audio,
+				   GObject *input_soundcard)
 {
   AgsChannel *start_channel, *channel, *next_channel;
 
@@ -8102,6 +8118,27 @@ ags_audio_set_input_soundcard(AgsAudio *audio,
 }
 
 /**
+ * ags_audio_set_input_soundcard:
+ * @audio: an #AgsAudio
+ * @input_soundcard: the #GObject implementing #AgsSoundcard
+ *
+ * Set the input soundcard object of @audio.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_audio_set_input_soundcard(AgsAudio *audio, GObject *input_soundcard)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "input-soundcard", input_soundcard,
+	       NULL);
+}
+
+/**
  * ags_audio_get_output_sequencer:
  * @audio: the #AgsAudio
  *
@@ -8127,18 +8164,9 @@ ags_audio_get_output_sequencer(AgsAudio *audio)
   return(output_sequencer);
 }
 
-/**
- * ags_audio_set_output_sequencer:
- * @audio: the #AgsAudio
- * @sequencer: the output sequencer
- * 
- * Set output sequencer.
- * 
- * Since: 3.0.0
- */
 void
-ags_audio_set_output_sequencer(AgsAudio *audio,
-			       GObject *sequencer)
+ags_audio_real_set_output_sequencer(AgsAudio *audio,
+				    GObject *sequencer)
 {
   GObject *old_sequencer;
 
@@ -8180,6 +8208,27 @@ ags_audio_set_output_sequencer(AgsAudio *audio,
 }
 
 /**
+ * ags_audio_set_output_sequencer:
+ * @audio: an #AgsAudio
+ * @output_sequencer: the #GObject implementing #AgsSequencer
+ *
+ * Set the output sequencer object of @audio.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_audio_set_output_sequencer(AgsAudio *audio, GObject *output_sequencer)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "output-sequencer", output_sequencer,
+	       NULL);
+}
+
+/**
  * ags_audio_get_input_sequencer:
  * @audio: the #AgsAudio
  *
@@ -8205,18 +8254,9 @@ ags_audio_get_input_sequencer(AgsAudio *audio)
   return(input_sequencer);
 }
 
-/**
- * ags_audio_set_input_sequencer:
- * @audio: the #AgsAudio
- * @sequencer: the input sequencer
- * 
- * Set input sequencer.
- * 
- * Since: 3.0.0
- */
 void
-ags_audio_set_input_sequencer(AgsAudio *audio,
-			      GObject *sequencer)
+ags_audio_real_set_input_sequencer(AgsAudio *audio,
+				   GObject *sequencer)
 {
   GObject *old_sequencer;
 
@@ -8255,6 +8295,27 @@ ags_audio_set_input_sequencer(AgsAudio *audio,
   if(old_sequencer != NULL){
     g_object_unref(old_sequencer);
   }
+}
+
+/**
+ * ags_audio_set_input_sequencer:
+ * @audio: an #AgsAudio
+ * @input_sequencer: the #GObject implementing #AgsSequencer
+ *
+ * Set the input sequencer object of @audio.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_audio_set_input_sequencer(AgsAudio *audio, GObject *input_sequencer)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "input-sequencer", input_sequencer,
+	       NULL);
 }
 
 /**
@@ -8310,17 +8371,8 @@ ags_audio_set_samplerate_channel(AgsChannel *start_channel, guint samplerate)
   }
 }
 
-/**
- * ags_audio_set_samplerate:
- * @audio: the #AgsAudio
- * @samplerate: the samplerate
- *
- * Sets samplerate.
- *
- * Since: 3.0.0
- */
 void
-ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
+ags_audio_real_set_samplerate(AgsAudio *audio, guint samplerate)
 {
   AgsChannel *start_output, *start_input;
   AgsPlaybackDomain *playback_domain;
@@ -8471,6 +8523,27 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
 }
 
 /**
+ * ags_audio_set_samplerate:
+ * @audio: the #AgsAudio
+ * @samplerate: the samplerate
+ *
+ * Sets samplerate.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "samplerate", samplerate,
+	       NULL);
+}
+
+/**
  * ags_audio_get_buffer_size:
  * @audio: the #AgsAudio
  *
@@ -8523,17 +8596,8 @@ ags_audio_set_buffer_size_channel(AgsChannel *start_channel, guint buffer_size)
   }
 }
 
-/**
- * ags_audio_set_buffer_size:
- * @audio: the #AgsAudio
- * @buffer_size: the buffer length
- *
- * Sets buffer length.
- *
- * Since: 3.0.0
- */
 void
-ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
+ags_audio_real_set_buffer_size(AgsAudio *audio, guint buffer_size)
 {
   AgsChannel *start_output, *start_input;
   AgsPlaybackDomain *playback_domain;
@@ -8684,6 +8748,27 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
 }
 
 /**
+ * ags_audio_set_buffer_size:
+ * @audio: the #AgsAudio
+ * @buffer_size: the buffer length
+ *
+ * Sets buffer length.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "buffer-size", buffer_size,
+	       NULL);
+}
+
+/**
  * ags_audio_get_format:
  * @audio: the #AgsAudio
  *
@@ -8736,17 +8821,8 @@ ags_audio_set_format_channel(AgsChannel *start_channel, guint format)
   }
 }  
 
-/**
- * ags_audio_set_format:
- * @audio: the #AgsAudio
- * @format: the format
- *
- * Sets buffer length.
- *
- * Since: 3.0.0
- */
 void
-ags_audio_set_format(AgsAudio *audio, guint format)
+ags_audio_real_set_format(AgsAudio *audio, guint format)
 {
   AgsChannel *start_output, *start_input;
   
@@ -8870,6 +8946,27 @@ ags_audio_set_format(AgsAudio *audio, guint format)
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
   }
+}
+
+/**
+ * ags_audio_set_format:
+ * @audio: the #AgsAudio
+ * @format: the format
+ *
+ * Sets buffer length.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_audio_set_format(AgsAudio *audio, guint format)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "format", format,
+	       NULL);
 }
 
 /**

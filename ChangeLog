@@ -1,3 +1,10 @@
+ags (3.2.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reverted GLib dependency to version 2.56.0
+	* refactored AgsAudio, AgsChannel, AgsRecycling and AgsAudioSignal to use property for some setter functions
+	* minor improvements
+
 ags (3.2.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

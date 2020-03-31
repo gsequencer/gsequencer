@@ -816,6 +816,8 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
     }else{
       AgsChannel *start_channel, *channel;
 
+      start_channel = NULL;
+      
       if(notebook == automation_editor->output_notebook){      
 	g_object_get(automation_editor->selected_machine->audio,
 		     "output", &start_channel,
