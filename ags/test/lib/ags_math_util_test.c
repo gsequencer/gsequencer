@@ -834,8 +834,8 @@ ags_math_util_test_split_polynomial()
 
     if(factor == NULL ||
        polynomial_factor[i].strv == NULL ||
-       !g_strv_equal(factor,
-		     polynomial_factor[i].strv)){
+       !ags_strv_equal(factor,
+		       polynomial_factor[i].strv)){
       g_message("polynomial factor failed - %s", polynomial_factor[i]);
       
       success = FALSE;
@@ -843,8 +843,8 @@ ags_math_util_test_split_polynomial()
 
     if(factor_exponent == NULL ||
        polynomial_factor_exponent[i].strv == NULL ||
-       !g_strv_equal(factor_exponent,
-		     polynomial_factor_exponent[i].strv)){
+       !ags_strv_equal(factor_exponent,
+		       polynomial_factor_exponent[i].strv)){
       g_message("polynomial factor exponent failed - %s", polynomial_factor_exponent[i]);
       
       success = FALSE;
