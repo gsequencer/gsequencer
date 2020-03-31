@@ -481,6 +481,8 @@ AM_CONDITIONAL([WITH_SYSTEM_TESTS], [test "x$enable_run_system_tests" == xyes])
 AM_CONDITIONAL([WITH_VST3], [test "x$enable_vst3" == xyes])
 AM_CONDITIONAL([WITH_EXPERIMENTAL], [test "x$enable_experimental" == xyes])
 
+AGS_POTFILES([])
+
 LIBAGS_SYMBOLS([])
 LIBAGS_THREAD_SYMBOLS([])
 LIBAGS_SERVER_SYMBOLS([])
