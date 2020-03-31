@@ -22,7 +22,6 @@ po/\*.po
 po/ChangeLog
 po/Makevars.template
 po/POTFILES.in
-aclocal.m4
 acsite.m4
 test-driver
 Makefile.in
