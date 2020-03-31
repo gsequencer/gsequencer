@@ -633,6 +633,7 @@ unit-system-tests.mk
 functional-system-tests.mk
 m4/Makefile
 po/Makefile.in
+po/Makefile
 docs/reference/libags/Makefile
 docs/reference/libags-audio/Makefile
 docs/reference/libags-gui/Makefile
