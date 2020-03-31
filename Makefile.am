@@ -121,6 +121,7 @@ EXTRA_DIST = config.rpath \
 	m4/Makefile.in \
 	po/Makevars \
 	po/POTFILES.in.in \
+	po/gsequencer.pot-header \
 	ags/i18n.h \
 	ags/gettext.h \
 	ags/lib/AUTHORS \
