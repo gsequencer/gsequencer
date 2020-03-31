@@ -4,7 +4,6 @@ ABOUT-NLS
 confdefs.h
 conftest.dir
 config.sub
-config.rpath
 config.guess
 configure
 compile
