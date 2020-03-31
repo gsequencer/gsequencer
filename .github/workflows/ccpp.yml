@@ -17,6 +17,8 @@ jobs:
       run: autoreconf -fi
     - name: configure
       run: ./configure
+    - name: update-po
+      run: make update-po
     - name: make
       run: make
     - name: make check
