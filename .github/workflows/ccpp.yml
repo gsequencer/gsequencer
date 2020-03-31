@@ -12,7 +12,7 @@ jobs:
     - name: Set and install dependencies
       run: |
         sudo apt-get update -qq
-        sudo apt-get install -qq make gcc gettext autoconf automake autopoint autotools-dev pkg-config gobject-introspection libgirepository1.0-dev libwebkit2gtk-4.0-dev libgtk-3-dev libinstpatch-dev libsndfile-dev libsamplerate-dev libsoup2.4-dev libxml2-dev ladspa-sdk dssi-dev lv2-dev fftw3-dev libasound2-dev libjack-jackd2-dev libpulse-dev uuid-dev xvfb libcunit1-dev
+        sudo apt-get install -qq make gcc gettext autoconf automake autopoint autotools-dev pkg-config gobject-introspection libgirepository1.0-dev libwebkit2gtk-4.0-dev libgtk-3-dev libinstpatch-dev libsndfile-dev libsamplerate-dev libsoup2.4-dev libxml2-dev ladspa-sdk dssi-dev lv2-dev fftw3-dev libasound2-dev libjack-jackd2-dev libpulse-dev uuid-dev xvfb libcunit1-dev gtk-doc-tools
     - name: autoreconf
       run: autoreconf -fi
     - name: configure
