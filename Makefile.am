@@ -6,7 +6,8 @@
 # without any warranty.
 
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = m4
+
+SUBDIRS = m4 po
 
 AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection
 
