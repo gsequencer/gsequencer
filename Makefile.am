@@ -119,6 +119,7 @@ EXTRA_DIST = config.rpath \
 	ags_functional_audio_config_test.xml \
 	m4/Makefile.am \
 	m4/Makefile.in \
+	po/Makevars \
 	ags/i18n.h \
 	ags/gettext.h \
 	ags/lib/AUTHORS \
