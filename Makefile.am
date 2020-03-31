@@ -119,8 +119,8 @@ EXTRA_DIST = config.rpath \
 	ags_functional_audio_config_test.xml \
 	m4/Makefile.am \
 	m4/Makefile.in \
-	po/Makevars \
 	po/POTFILES.in.in \
+	po/gsequencer.pot-header \
 	ags/i18n.h \
 	ags/gettext.h \
 	ags/lib/AUTHORS \
@@ -2806,6 +2806,10 @@ update-po: check-gettext
 	if diff $(srcdir)/po/POTFILES.in $(srcdir)/po/POTFILES.in.2 >/dev/null 2>&1 ; then \
 		rm -f $(srcdir)/po/POTFILES.in.2 ; \
 	else \
+		rm $(srcdir)/po/POTFILES.in ; \
+		touch $(srcdir)/po/POTFILES.in ; \
+		cat $(srcdir)/license-notice-gnu-gpl-3-0+-sym.txt >> $(srcdir)/po/POTFILES.in.in ; \
+		cat $(srcdir)/po/POTFILES.in.2 >> $(srcdir)/po/POTFILES.in.in ; \
 		mv $(srcdir)/po/POTFILES.in.2 $(srcdir)/po/POTFILES.in ; \
 	fi
 	cd po && $(MAKE) $(AM_MAKEFLAGS) update-po
