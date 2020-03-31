@@ -631,13 +631,12 @@ AC_CONFIG_FILES([
 Makefile
 unit-system-tests.mk
 functional-system-tests.mk
+m4/Makefile
+po/Makefile.in
 docs/reference/libags/Makefile
 docs/reference/libags-audio/Makefile
 docs/reference/libags-gui/Makefile
 docs/reference/libgsequencer/Makefile
-m4/Makefile
-po/Makefile.in
-po/Makefile
 libags.pc
 libags_audio.pc
 libags_gui.pc
