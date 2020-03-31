@@ -3,8 +3,6 @@ autom4te.cache
 ABOUT-NLS
 confdefs.h
 conftest.dir
-config.sub
-config.guess
 configure
 compile
 ags_functional_server_test_cookie
