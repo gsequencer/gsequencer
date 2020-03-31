@@ -101,7 +101,6 @@ EXTRA_DIST = config.rpath \
 	ags/ags_config.h.in \
 	gtk-doc.make \
 	gsequencer.share \
-	acsite.m4 \
 	aclocal.m4 \
 	gsequencer.1 \
 	README \
@@ -117,25 +116,17 @@ EXTRA_DIST = config.rpath \
 	ags_functional_osc_xmlrpc_server_test_password_store.xml \
 	ags_functional_notation_edit_test.xml \
 	ags_functional_audio_config_test.xml \
-	mkinstalldirs \
 	m4/Makefile.am \
 	m4/Makefile.in \
-	m4/introspection.m4 \
 	ags/i18n.h \
 	ags/gettext.h \
-	ags/README \
 	ags/lib/AUTHORS \
 	ags/server/security/AUTHORS \
 	ags/audio/AUTHORS \
 	ags/audio/recall/AUTHORS \
 	docs/images/README \
-	docs/reference/libags-audio/README \
-	docs/reference/libags-gui/README \
-	docs/reference/libags/README \
-	docs/reference/libgsequencer/README \
 	gsequencer.share/icons/README \
-	gsequencer.share/images/README \
-	po/README
+	gsequencer.share/images/README
 
 EXTRA_DIST += \
 	license-notice-gnu-agpl-3-0+-c.txt \
@@ -666,8 +657,10 @@ libags_h_sources = \
 	ags/lib/ags_endian.h \
 	ags/lib/ags_function.h \
 	ags/lib/ags_log.h \
+	ags/lib/ags_math_util.h \
 	ags/lib/ags_regex.h \
 	ags/lib/ags_solver_matrix.h \
+	ags/lib/ags_solver_polynomial.h \
 	ags/lib/ags_solver_vector.h \
 	ags/lib/ags_string_util.h \
 	ags/lib/ags_time.h \
@@ -685,8 +678,10 @@ libags_c_sources = \
 	ags/lib/ags_endian.c \
 	ags/lib/ags_function.c \
 	ags/lib/ags_log.c \
+	ags/lib/ags_math_util.c \
 	ags/lib/ags_regex.c \
 	ags/lib/ags_solver_matrix.c \
+	ags/lib/ags_solver_polynomial.c \
 	ags/lib/ags_solver_vector.c \
 	ags/lib/ags_string_util.c \
 	ags/lib/ags_time.c \

@@ -17,26 +17,19 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_STRING_UTIL__
-#define __AGS_STRING_UTIL__
-
 #include <glib.h>
 #include <glib-object.h>
 
-G_BEGIN_DECLS
+#include <gtk/gtk.h>
 
-gchar* ags_string_util_escape_single_quote(gchar *str);
+#include <ags/libags.h>
 
-guint ags_strv_length(gchar **str_array);
-gboolean ags_strv_contains(gchar **str_array,
-			   gchar *str);
+int
+main(int argc, char **argv)
+{
+  char *polynomal_0 = "a + b";
+  char *polynomal_1 = "a² + 2ab + b²";
+  char *polynomal_2 = "a³ + 3a²b + 3ab² + b³";
 
-gint ags_strv_index(gchar **str_array,
-		    gchar *str);
-
-gboolean ags_strv_equal(gchar **strv1,
-			gchar **strv2);
-
-G_END_DECLS
-
-#endif /*__AGS_STRING_UTIL__*/
+  return(0);
+}

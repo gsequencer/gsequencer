@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -112,9 +112,36 @@ struct _AgsScaleClass
 
 GType ags_scale_get_type(void);
 
+/* properties get/set */
+void ags_scale_set_scale_width(AgsScale *scale,
+			       guint scale_width);
+guint ags_scale_get_scale_width(AgsScale *scale);
+
+void ags_scale_set_scale_height(AgsScale *scale,
+				guint scale_height);
+guint ags_scale_get_scale_height(AgsScale *scale);
+
+void ags_scale_set_control_name(AgsScale *scale,
+				gchar *control_name);
+gchar* ags_scale_get_control_name(AgsScale *scale);
+
+void ags_scale_set_upper(AgsScale *scale,
+			 gdouble upper);
+gdouble ags_scale_get_upper(AgsScale *scale);
+
+void ags_scale_set_lower(AgsScale *scale,
+			 gdouble lower);
+gdouble ags_scale_get_lower(AgsScale *scale);
+
+void ags_scale_set_default_value(AgsScale *scale,
+				 gdouble default_value);
+gdouble ags_scale_get_default_value(AgsScale *scale);
+
+/* signal */
 void ags_scale_value_changed(AgsScale *scale,
 			     gdouble default_value);
 
+/* instantiate */
 AgsScale* ags_scale_new();
 
 #endif /*__AGS_SCALE_H__*/

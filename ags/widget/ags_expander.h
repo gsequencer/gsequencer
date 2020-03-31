@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -73,6 +73,8 @@ GType ags_expander_get_type(void);
 
 AgsExpanderChild* ags_expander_child_alloc(guint x, guint y,
 					   guint width, guint height);
+void ags_expander_child_free(AgsExpanderChild *expander_child);
+
 AgsExpanderChild* ags_expander_child_find(AgsExpander *expander,
 					  GtkWidget *child);
 

@@ -626,6 +626,34 @@ ags_move_note_launch(AgsTask *task)
 }
 
 /**
+ * ags_move_note_set_selection:
+ * @move_note: the #AgsMoveNote
+ * @selection: (element-type AgsAudio.Note) (transfer none): the selection as #GList-struct
+ * 
+ * Set @selection of @move_note.
+ * 
+ * Since: 3.2.3
+ */
+void
+ags_move_note_set_selection(AgsMoveNote *move_note,
+			    GList *selection)
+{
+  if(!AGS_IS_MOVE_NOTE(move_note) ||
+     move_note->selection == selection){
+    return;
+  }
+
+  if(move_note->selection != NULL){
+    g_list_free_full(move_note->selection,
+		     (GDestroyNotify) g_object_unref);
+  }
+  
+  move_note->selection = g_list_copy_deep(selection,
+					  (GCopyFunc) g_object_ref,
+					  NULL);
+}
+
+/**
  * ags_move_note_new:
  * @audio: the #AgsAudio
  * @notation: the #AgsNotation
@@ -665,11 +693,8 @@ ags_move_note_new(AgsAudio *audio,
 					   "absolute", absolute,
 					   NULL);
 
-  //FIXME:JK: argh, introspection!
-
-  move_note->selection = g_list_copy_deep(selection,
-					  (GCopyFunc) g_object_ref,
-					  NULL);
+  ags_move_note_set_selection(move_note,
+			      selection);
 
   return(move_note);
 }

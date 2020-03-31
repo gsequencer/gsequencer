@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -119,9 +119,32 @@ struct _AgsLevelClass
 
 GType ags_level_get_type(void);
 
+/* properties get/set */
+void ags_level_set_level_width(AgsLevel *level,
+			       guint level_width);
+guint ags_level_get_level_width(AgsLevel *level);
+
+void ags_level_set_level_height(AgsLevel *level,
+				guint level_height);
+guint ags_level_get_level_height(AgsLevel *level);
+
+void ags_level_set_upper(AgsLevel *level,
+			 gdouble upper);
+gdouble ags_level_get_upper(AgsLevel *level);
+
+void ags_level_set_lower(AgsLevel *level,
+			 gdouble lower);
+gdouble ags_level_get_lower(AgsLevel *level);
+
+void ags_level_set_normalized_volume(AgsLevel *level,
+				     gdouble normalized_volume);
+gdouble ags_level_get_normalized_volume(AgsLevel *level);
+
+/* signal */
 void ags_level_value_changed(AgsLevel *level,
 			     gdouble normalized_volume);
 
+/* instantiate */
 AgsLevel* ags_level_new();
 
 #endif /*__AGS_LEVEL_H__*/

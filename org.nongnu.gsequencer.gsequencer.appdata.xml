@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Copyright 2018-2019 Joël Krähemann <jkraehemann@gmail.com> -->
+<!-- Copyright 2018-2020 Joël Krähemann <jkraehemann@gmail.com> -->
 <!-- Copying and distribution of this file, with or without modification, -->
 <!-- are permitted in any medium without royalty provided the copyright -->
 <!-- notice and this notice are preserved. This file is offered as-is, -->
@@ -35,6 +35,18 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.2.2" date="2020-03-30">
+      <description>
+	<p>Implemented additional getter/setter functions of AgsGui.</p>
+      </description>
+    </release>
+
+    <release version="3.2.0" date="2020-03-13">
+      <description>
+	<p>Disabled GMainLoop integration of AgsTaskLauncher in AgsXorgApplicationContext.</p>
+      </description>
+    </release>
+
     <release version="3.1.1" date="2020-02-04">
       <description>
 	<p>Updated the user manual.</p>

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -67,6 +67,9 @@ struct _AgsMoveNoteClass
 };
 
 GType ags_move_note_get_type();
+
+void ags_move_note_set_selection(AgsMoveNote *move_note,
+				 GList *selection);
 
 AgsMoveNote* ags_move_note_new(AgsAudio *audio,
 			       AgsNotation *notation,

@@ -30,7 +30,11 @@
 #include <ags/lib/ags_complex.h>
 #include <ags/lib/ags_conversion.h>
 #include <ags/lib/ags_endian.h>
+#include <ags/lib/ags_math_util.h>
 #include <ags/lib/ags_function.h>
+#include <ags/lib/ags_solver_matrix.h>
+#include <ags/lib/ags_solver_vector.h>
+#include <ags/lib/ags_solver_polynomial.h>
 #include <ags/lib/ags_log.h>
 #include <ags/lib/ags_regex.h>
 #include <ags/lib/ags_string_util.h>

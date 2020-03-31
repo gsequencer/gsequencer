@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_INDICATOR                (ags_indicator_get_type())
@@ -60,6 +61,28 @@ struct _AgsIndicatorClass
 
 GType ags_indicator_get_type(void);
 
+/* properties */
+guint ags_indicator_get_segment_width(AgsIndicator *indicator);
+void ags_indicator_set_segment_width(AgsIndicator *indicator,
+				     guint segment_width);
+
+guint ags_indicator_get_segment_height(AgsIndicator *indicator);
+void ags_indicator_set_segment_height(AgsIndicator *indicator,
+				      guint segment_height);
+
+guint ags_indicator_get_segment_padding(AgsIndicator *indicator);
+void ags_indicator_set_segment_padding(AgsIndicator *indicator,
+				       guint segment_padding);
+
+guint ags_indicator_get_segment_count(AgsIndicator *indicator);
+void ags_indicator_set_segment_count(AgsIndicator *indicator,
+				     guint segment_count);
+
+GtkAdjustment* ags_indicator_get_adjustment(AgsIndicator *indicator);
+void ags_indicator_set_adjustment(AgsIndicator *indicator,
+				  GtkAdjustment *adjustment);
+
+/* instantiate */
 AgsIndicator* ags_indicator_new();
 
 #endif /*__AGS_INDICATOR_H__*/

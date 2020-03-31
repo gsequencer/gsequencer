@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,7 +46,7 @@ void ags_cartesian_get_preferred_height(GtkWidget *widget,
 					gint *minimum_height,
 					gint *natural_height);
 
-void ags_cartesian_draw_putpixel(unsigned char *data,
+void ags_cartesian_draw_putpixel(guchar *data,
 				 gdouble width, gdouble height,
 				 guint stride,
 				 int x, int y, unsigned long int pixel);
@@ -941,14 +941,14 @@ ags_cartesian_get_preferred_height(GtkWidget *widget,
 }
 
 void
-ags_cartesian_draw_putpixel(unsigned char *data,
+ags_cartesian_draw_putpixel(guchar *data,
 			    gdouble width, gdouble height,
 			    guint stride,
 			    int x, int y, unsigned long int pixel)
 {
   int bpp = stride / width;
   /* Here p is the address to the pixel we want to set */
-  unsigned char *p = data + y * stride + x * bpp;
+  guchar *p = data + y * stride + x * bpp;
 
   switch(bpp) {
   case 1:
@@ -987,7 +987,7 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
 
   GList *list;
   
-  unsigned char *data;
+  guchar *data;
   guint32 *data_ptr;
 
   gchar *font_name;
@@ -1089,7 +1089,7 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
 		 ((guint) (255.0 * bg_color->green) << 8) |
 		 ((guint) (255.0 * bg_color->blue)));
   
-  //  memset(data, clear_color, (4 * width * height * sizeof(unsigned char)));
+  //  memset(data, clear_color, (4 * width * height * sizeof(guchar)));
   for(i = 0; i < width * height; i++){
     data_ptr[i] = clear_color;
   }
@@ -1728,6 +1728,18 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
+/**
+ * ags_plot_alloc:
+ * @n_points: number of points
+ * @n_bitmaps: number of bitmaps
+ * @n_pixmaps: number of pixmaps
+ * 
+ * Allocate #AgsPlot-struct.
+ * 
+ * Returns: (type gpointer) (transfer full): the newly allocated #AgsPlot-struct
+ * 
+ * Since: 3.0.0
+ */
 AgsPlot*
 ags_plot_alloc(guint n_points, guint n_bitmaps, guint n_pixmaps)
 {
@@ -1735,7 +1747,7 @@ ags_plot_alloc(guint n_points, guint n_bitmaps, guint n_pixmaps)
 
   guint i;
 
-  plot = (AgsPlot *) malloc(sizeof(AgsPlot));
+  plot = (AgsPlot *) g_malloc(sizeof(AgsPlot));
 
   plot->fill_flags = AGS_PLOT_FILL_REPLACE;
 
@@ -1747,16 +1759,16 @@ ags_plot_alloc(guint n_points, guint n_bitmaps, guint n_pixmaps)
     plot->point = NULL;
     plot->point_color = NULL;
   }else{
-    plot->point = (gdouble **) malloc(n_points * sizeof(gdouble *));
-    plot->point_color = (gdouble **) malloc(n_points * sizeof(gdouble *));
-    plot->point_label = (gchar **) malloc((n_points + 1) * sizeof(gchar *));
+    plot->point = (gdouble **) g_malloc(n_points * sizeof(gdouble *));
+    plot->point_color = (gdouble **) g_malloc(n_points * sizeof(gdouble *));
+    plot->point_label = (gchar **) g_malloc((n_points + 1) * sizeof(gchar *));
 
     for(i = 0; i < n_points; i++){
-      plot->point[i] = (gdouble *) malloc(2 * sizeof(gdouble));
+      plot->point[i] = (gdouble *) g_malloc(2 * sizeof(gdouble));
       plot->point[i][0] = 0.0;
       plot->point[i][1] = 0.0;
       
-      plot->point_color[i] = (gdouble *) malloc(3 * sizeof(gdouble));
+      plot->point_color[i] = (gdouble *) g_malloc(3 * sizeof(gdouble));
       plot->point_color[i][0] = 0.0;
       plot->point_color[i][1] = 0.0;
       plot->point_color[i][2] = 0.0;
@@ -1774,13 +1786,13 @@ ags_plot_alloc(guint n_points, guint n_bitmaps, guint n_pixmaps)
     plot->bitmap = NULL;
     plot->bitmap_color = NULL;
   }else{
-    plot->bitmap = (unsigned char **) malloc(n_bitmaps * sizeof(unsigned char *));
-    plot->bitmap_color = (gdouble **) malloc(n_bitmaps * sizeof(gdouble *));
+    plot->bitmap = (guchar **) g_malloc(n_bitmaps * sizeof(guchar *));
+    plot->bitmap_color = (gdouble **) g_malloc(n_bitmaps * sizeof(gdouble *));
 
     for(i = 0; i < n_bitmaps; i++){
       plot->bitmap[i] = NULL;
       
-      plot->bitmap_color[i] = (gdouble *) malloc(3 * sizeof(gdouble));
+      plot->bitmap_color[i] = (gdouble *) g_malloc(3 * sizeof(gdouble));
       plot->bitmap_color[i][0] = 1.0;
       plot->bitmap_color[i][1] = 0.0;
       plot->bitmap_color[i][2] = 0.0;
@@ -1793,7 +1805,7 @@ ags_plot_alloc(guint n_points, guint n_bitmaps, guint n_pixmaps)
   if(n_pixmaps == 0){
     plot->pixmap = NULL;
   }else{
-    plot->pixmap = (gdouble ***) malloc(n_pixmaps * sizeof(gdouble **));
+    plot->pixmap = (gdouble ***) g_malloc(n_pixmaps * sizeof(gdouble **));
 
     for(i = 0; i < n_pixmaps; i++){
       plot->pixmap[i] = NULL;
@@ -1803,12 +1815,468 @@ ags_plot_alloc(guint n_points, guint n_bitmaps, guint n_pixmaps)
   return(plot);
 }
 
+/**
+ * ags_plot_free:
+ * @plot: (type gpointer) (transfer full): the #AgsPlot-struct
+ * 
+ * Free @plot.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_plot_free(AgsPlot *plot)
 {
-  //TODO:JK: implement me
+  guint i;
+  
+  if(plot == NULL){
+    return;
+  }
+
+  /* points */
+  for(i = 0; i < plot->n_points; i++){
+    g_free(plot->point[i]);
+
+    g_free(plot->point_color[i]);
+    
+    g_free(plot->point_label[i]);
+  }
+
+  g_free(plot->point);
+
+  g_free(plot->point_color);
+
+  g_free(plot->point_label);
+
+  /* bitmap */
+  for(i = 0; i < plot->n_bitmaps; i++){
+    g_free(plot->bitmap[i]);
+
+    g_free(plot->bitmap_color[i]);
+  }
+
+  g_free(plot->bitmap);
+
+  g_free(plot->bitmap_color);
+
+  /* pixmap */
+  for(i = 0; i < plot->n_pixmaps; i++){
+    g_free(plot->pixmap[i]);
+  }
+
+  g_free(plot->pixmap);
+
+  g_free(plot);
 }
 
+/**
+ * ags_plot_get_n_points:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * 
+ * Get number of points.
+ * 
+ * Returns: n_points field
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_plot_get_n_points(AgsPlot *plot)
+{
+  if(plot == NULL){
+    return(0);
+  }
+
+  return(plot->n_points);
+}
+
+/**
+ * ags_plot_set_n_points:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * @n_points: the number of points
+ * 
+ * Set n_points field of @plot.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_plot_set_n_points(AgsPlot *plot,
+		      guint n_points)
+{
+  if(plot == NULL){
+    return;
+  }
+
+  plot->n_points = n_points;
+}
+
+/**
+ * ags_plot_get_join_points:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * 
+ * Get join points.
+ * 
+ * Returns: join_points field
+ * 
+ * Since: 3.2.0
+ */
+gboolean
+ags_plot_get_join_points(AgsPlot *plot)
+{
+  if(plot == NULL){
+    return(FALSE);
+  }
+
+  return(plot->join_points);
+}
+
+/**
+ * ags_plot_set_join_points:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * @join_points: if %TRUE join points, otherwise not
+ * 
+ * Set join_points field of @plot.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_plot_set_join_points(AgsPlot *plot,
+			 gboolean join_points)
+{
+  if(plot == NULL){
+    return;
+  }
+
+  plot->join_points = join_points;
+}
+
+/**
+ * ags_plot_get_point:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * 
+ * Get points.
+ * 
+ * Returns: (transfer none): point field
+ * 
+ * Since: 3.2.0
+ */
+gdouble**
+ags_plot_get_point(AgsPlot *plot)
+{
+  if(plot == NULL){
+    return(NULL);
+  }
+
+  return(plot->point);
+}
+
+/**
+ * ags_plot_set_point:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * @point: (transfer full): the points as array of coordinates
+ * 
+ * Set point field of @plot.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_plot_set_point(AgsPlot *plot,
+		   gdouble **point)
+{
+  if(plot == NULL){
+    return;
+  }
+  
+  plot->point = point;
+}
+
+/**
+ * ags_plot_get_point_color:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * 
+ * Get point colors.
+ * 
+ * Returns: (transfer none): point color field
+ * 
+ * Since: 3.2.0
+ */
+gdouble**
+ags_plot_get_point_color(AgsPlot *plot)
+{
+  if(plot == NULL){
+    return(NULL);
+  }
+
+  return(plot->point_color);
+}
+
+/**
+ * ags_plot_set_point_color:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * @point_color: (transfer full): the points colors as array of RGB value
+ * 
+ * Set point color field of @plot.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_plot_set_point_color(AgsPlot *plot,
+			 gdouble **point_color)
+{
+  if(plot == NULL){
+    return;
+  }
+  
+  plot->point_color = point_color;
+}
+
+/**
+ * ags_plot_get_point_label:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * 
+ * Get point labels.
+ * 
+ * Returns: (element-type utf8) (transfer none): point label field
+ * 
+ * Since: 3.2.0
+ */
+gchar**
+ags_plot_get_point_label(AgsPlot *plot)
+{
+  if(plot == NULL){
+    return(NULL);
+  }
+
+  return(plot->point_label);
+}
+
+/**
+ * ags_plot_set_point_label:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * @point_label: (transfer full): the points labels as string vector
+ * 
+ * Set point label field of @plot.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_plot_set_point_label(AgsPlot *plot,
+			 gchar **point_label)
+{
+  if(plot == NULL){
+    return;
+  }
+  
+  plot->point_label = point_label;
+}
+
+/**
+ * ags_plot_get_n_bitmaps:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * 
+ * Get number of bitmaps.
+ * 
+ * Returns: n_bitmaps field
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_plot_get_n_bitmaps(AgsPlot *plot)
+{
+  if(plot == NULL){
+    return(0);
+  }
+
+  return(plot->n_bitmaps);
+}
+
+/**
+ * ags_plot_set_n_bitmaps:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * @n_bitmaps: the number of bitmaps
+ * 
+ * Set n_bitmaps field of @plot.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_plot_set_n_bitmaps(AgsPlot *plot,
+		       guint n_bitmaps)
+{
+  if(plot == NULL){
+    return;
+  }
+  
+  plot->n_bitmaps = n_bitmaps;
+}
+
+/**
+ * ags_plot_get_bitmap:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * 
+ * Get bitmaps.
+ * 
+ * Returns: (transfer none): bitmap field
+ * 
+ * Since: 3.2.0
+ */
+guchar**
+ags_plot_get_bitmap(AgsPlot *plot)
+{
+  if(plot == NULL){
+    return(NULL);
+  }
+
+  return(plot->bitmap);
+}
+
+/**
+ * ags_plot_set_bitmap:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * @bitmap: (transfer full): the bitmaps
+ * 
+ * Set bitmap field of @plot.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_plot_set_bitmap(AgsPlot *plot,
+		    guchar **bitmap)
+{
+  if(plot == NULL){
+    return;
+  }
+
+  plot->bitmap = bitmap;
+}
+
+/**
+ * ags_plot_get_bitmap_color:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * 
+ * Get bitmap colors.
+ * 
+ * Returns: (transfer none): bitmap color field
+ * 
+ * Since: 3.2.0
+ */
+gdouble**
+ags_plot_get_bitmap_color(AgsPlot *plot)
+{
+  if(plot == NULL){
+    return(NULL);
+  }
+
+  return(plot->bitmap_color);
+}
+
+/**
+ * ags_plot_set_bitmap_color:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * @bitmap_color: (transfer full): the bitmaps colors as array of RGB value
+ * 
+ * Set bitmap color field of @plot.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_plot_set_bitmap_color(AgsPlot *plot,
+			  gdouble **bitmap_color)
+{
+  if(plot == NULL){
+    return;
+  }
+  
+  plot->bitmap_color = bitmap_color;
+}
+
+/**
+ * ags_plot_get_n_pixmaps:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * 
+ * Get number of pixmaps.
+ * 
+ * Returns: n_pixmaps field
+ * 
+ * Since: 3.2.0
+ */
+guint
+ags_plot_get_n_pixmaps(AgsPlot *plot)
+{
+  if(plot == NULL){
+    return(0);
+  }
+
+  return(plot->n_pixmaps);
+}
+
+/**
+ * ags_plot_set_n_pixmaps:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * @n_pixmaps: the number of pixmaps
+ * 
+ * Set n_pixmaps field of @plot.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_plot_set_n_pixmaps(AgsPlot *plot,
+		       guint n_pixmaps)
+{
+  if(plot == NULL){
+    return;
+  }
+  
+  plot->n_pixmaps = n_pixmaps;
+}
+
+/**
+ * ags_plot_get_pixmap:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * 
+ * Get pixmaps.
+ * 
+ * Returns: (transfer none): pixmap field
+ * 
+ * Since: 3.2.0
+ */
+guchar**
+ags_plot_get_pixmap(AgsPlot *plot)
+{
+  if(plot == NULL){
+    return(NULL);
+  }
+
+  return(plot->pixmap);
+}
+
+/**
+ * ags_plot_set_pixmap:
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * @pixmap: (transfer full): the pixmaps
+ * 
+ * Set pixmap field of @plot.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_plot_set_pixmap(AgsPlot *plot,
+		    guchar **pixmap)
+{
+  if(plot == NULL){
+    return;
+  }
+
+  plot->pixmap = pixmap;
+}
+
+/**
+ * ags_cartesian_add_plot:
+ * @cartesian: the #AgsCartesian
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * 
+ * Add @plot to @cartesian.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_cartesian_add_plot(AgsCartesian *cartesian,
 		       AgsPlot *plot)
@@ -1821,6 +2289,15 @@ ags_cartesian_add_plot(AgsCartesian *cartesian,
 				   plot);
 }
 
+/**
+ * ags_cartesian_remove_plot:
+ * @cartesian: the #AgsCartesian
+ * @plot: (type gpointer): the #AgsPlot-struct
+ * 
+ * Remove @plot from @cartesian.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_cartesian_remove_plot(AgsCartesian *cartesian,
 			  AgsPlot *plot)
@@ -1833,6 +2310,1961 @@ ags_cartesian_remove_plot(AgsCartesian *cartesian,
 				  plot);
 }
 
+/**
+ * ags_cartesian_get_x_margin:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x margin of @cartesian.
+ * 
+ * Returns: the x margin
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_x_margin(AgsCartesian *cartesian)
+{
+  gdouble x_margin;
+
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "x-margin", &x_margin,
+	       NULL);
+
+  return(x_margin);
+}
+
+/**
+ * ags_cartesian_set_x_margin:
+ * @cartesian: the #AgsCartesian
+ * @x_margin: the x margin
+ * 
+ * Set x margin of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_margin(AgsCartesian *cartesian,
+			   gdouble x_margin)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-margin", x_margin,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_margin:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y margin of @cartesian.
+ * 
+ * Returns: the y margin
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_y_margin(AgsCartesian *cartesian)
+{
+  gdouble y_margin;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "y-margin", &y_margin,
+	       NULL);
+
+  return(y_margin);
+}
+
+/**
+ * ags_cartesian_set_y_margin:
+ * @cartesian: the #AgsCartesian
+ * @y_margin: the y margin
+ * 
+ * Set y margin of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_margin(AgsCartesian *cartesian,
+			   gdouble y_margin)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-margin", y_margin,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_center:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get center of @cartesian.
+ * 
+ * Returns: the center
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_center(AgsCartesian *cartesian)
+{
+  gdouble center;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "center", &center,
+	       NULL);
+
+  return(center);
+}
+
+/**
+ * ags_cartesian_set_center:
+ * @cartesian: the #AgsCartesian
+ * @center: the center
+ * 
+ * Set center of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_center(AgsCartesian *cartesian,
+			 gdouble center)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "center", center,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_line_width:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get line width of @cartesian.
+ * 
+ * Returns: the line width
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_line_width(AgsCartesian *cartesian)
+{
+  gdouble line_width;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "line-width", &line_width,
+	       NULL);
+
+  return(line_width);
+}
+
+/**
+ * ags_cartesian_set_line_width:
+ * @cartesian: the #AgsCartesian
+ * @line_width: the line width
+ * 
+ * Set line width of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_line_width(AgsCartesian *cartesian,
+			     gdouble line_width)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "line-width", line_width,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_point_radius:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get point radius.
+ * 
+ * Returns: the point radius
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_point_radius(AgsCartesian *cartesian)
+{
+  gdouble point_radius;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "point-radius", &point_radius,
+	       NULL);
+
+  return(point_radius);
+}
+
+/**
+ * ags_cartesian_set_point_radius:
+ * @cartesian: the #AgsCartesian
+ * @point_radius: the point radius
+ * 
+ * Set point radius.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_point_radius(AgsCartesian *cartesian,
+			       gdouble point_radius)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "point-radius", point_radius,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_font_size:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get font size of @cartesian.
+ * 
+ * Returns: the font size
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_font_size(AgsCartesian *cartesian)
+{
+  gdouble font_size;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "font-size", &font_size,
+	       NULL);
+
+  return(font_size);
+}
+
+/**
+ * ags_cartesian_set_font_size:
+ * @cartesian: the #AgsCartesian
+ * @font_size: the font size
+ * 
+ * Set font size of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_font_size(AgsCartesian *cartesian,
+			    gdouble font_size)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "font-size", font_size,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_x_step_width:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x step width of @cartesian.
+ * 
+ * Returns: the x step width
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_x_step_width(AgsCartesian *cartesian)
+{
+  gdouble x_step_width;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "x-step-width", &x_step_width,
+	       NULL);
+
+  return(x_step_width);
+}
+
+/**
+ * ags_cartesian_set_x_step_width:
+ * @cartesian: the #AgsCartesian
+ * @x_step_width: the x step width
+ * 
+ * Set x step width of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_step_width(AgsCartesian *cartesian,
+			       gdouble x_step_width)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-step-width", x_step_width,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_step_height:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y step height.
+ * 
+ * Returns: the y step height
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_y_step_height(AgsCartesian *cartesian)
+{
+  gdouble y_step_height;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "y-step-height", &y_step_height,
+	       NULL);
+
+  return(y_step_height);
+}
+
+/**
+ * ags_cartesian_set_y_step_height:
+ * @cartesian: the #AgsCartesian
+ * @y_step_height: the y step height
+ * 
+ * Set y step height of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_step_height(AgsCartesian *cartesian,
+				gdouble y_step_height)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-step-height", y_step_height,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_x_scale_step_width:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x scale step width of @cartesian.
+ * 
+ * Returns: the x scale step width
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_x_scale_step_width(AgsCartesian *cartesian)
+{
+  gdouble x_scale_step_width;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "x-scale-step-width", &x_scale_step_width,
+	       NULL);
+
+  return(x_scale_step_width);
+}
+
+/**
+ * ags_cartesian_set_x_scale_step_width:
+ * @cartesian: the #AgsCartesian
+ * @x_scale_step_width: the x scale step width
+ * 
+ * Set x scale step width of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_scale_step_width(AgsCartesian *cartesian,
+				     gdouble x_scale_step_width)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-scale-step-width", x_scale_step_width,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_scale_step_height:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y scale step height of @cartesian.
+ * 
+ * Returns: the y scale step height
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_y_scale_step_height(AgsCartesian *cartesian)
+{
+  gdouble y_scale_step_height;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "y-scale-step-height", &y_scale_step_height,
+	       NULL);
+
+  return(y_scale_step_height);
+}
+
+/**
+ * ags_cartesian_set_y_scale_step_height:
+ * @cartesian: the #AgsCartesian
+ * @y_scale_step_height: the y scale step height
+ * 
+ * Set y scale step height of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_scale_step_height(AgsCartesian *cartesian,
+				      gdouble y_scale_step_height)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-scale-step-height", y_scale_step_height,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_x_unit_x0:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x unit x0 of @cartesian.
+ * 
+ * Returns: the x unit x0
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_x_unit_x0(AgsCartesian *cartesian)
+{
+  gdouble x_unit_x0;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "x-unit-x0", &x_unit_x0,
+	       NULL);
+
+  return(x_unit_x0);
+}
+
+/**
+ * ags_cartesian_set_x_unit_x0:
+ * @cartesian: the #AgsCartesian
+ * @x_unit_x0: the x unit x0
+ * 
+ * Set x unit x0 of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_unit_x0(AgsCartesian *cartesian,
+			    gdouble x_unit_x0)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-unit-x0", x_unit_x0,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_x_unit_y0:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x unit y0 of @cartesian.
+ * 
+ * Returns: the x unit y0
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_x_unit_y0(AgsCartesian *cartesian)
+{
+  gdouble x_unit_y0;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "x-unit-y0", &x_unit_y0,
+	       NULL);
+
+  return(x_unit_y0);
+}
+
+/**
+ * ags_cartesian_set_x_unit_y0:
+ * @cartesian: the #AgsCartesian
+ * @x_unit_y0: the x unit y0
+ * 
+ * Set x unit y0 of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_unit_y0(AgsCartesian *cartesian,
+			    gdouble x_unit_y0)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-unit-y0", x_unit_y0,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_x_unit_size:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x unit size of @cartesian.
+ * 
+ * Returns: the x unit size
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_x_unit_size(AgsCartesian *cartesian)
+{
+  gdouble x_unit_size;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "x-unit-size", &x_unit_size,
+	       NULL);
+
+  return(x_unit_size);
+}
+
+/**
+ * ags_cartesian_set_x_unit_size:
+ * @cartesian: the #AgsCartesian
+ * @x_unit_size: the x unit size
+ * 
+ * Set x unit size of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_unit_size(AgsCartesian *cartesian,
+			      gdouble x_unit_size)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-unit-size", x_unit_size,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_unit_x0:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y unit x0 of @cartesian.
+ * 
+ * Returns: the y unit x0
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_y_unit_x0(AgsCartesian *cartesian)
+{
+  gdouble y_unit_x0;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "y-unit-x0", &y_unit_x0,
+	       NULL);
+
+  return(y_unit_x0);
+}
+
+/**
+ * ags_cartesian_set_y_unit_x0:
+ * @cartesian: the #AgsCartesian
+ * @y_unit_x0: the y unit x0
+ * 
+ * Set y unit x0 of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_unit_x0(AgsCartesian *cartesian,
+			    gdouble y_unit_x0)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-unit-x0", y_unit_x0,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_unit_y0:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y unit y0 of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_y_unit_y0(AgsCartesian *cartesian)
+{
+  gdouble y_unit_y0;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "y-unit-y0", &y_unit_y0,
+	       NULL);
+
+  return(y_unit_y0);
+}
+
+/**
+ * ags_cartesian_set_y_unit_y0:
+ * @cartesian: the #AgsCartesian
+ * @y_unit_y0: the y unit y0
+ * 
+ * Set y unit y0 of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_unit_y0(AgsCartesian *cartesian,
+			    gdouble y_unit_y0)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-unit-y0", y_unit_y0,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_unit_size:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y unit size of @cartesian.
+ * 
+ * Returns: the y unit size
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_y_unit_size(AgsCartesian *cartesian)
+{
+  gdouble y_unit_size;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "y-unit-size", &y_unit_size,
+	       NULL);
+
+  return(y_unit_size);
+}
+
+/**
+ * ags_cartesian_set_y_unit_size:
+ * @cartesian: the #AgsCartesian
+ * @y_unit_size: the y unit size
+ * 
+ * Set y unit size of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_unit_size(AgsCartesian *cartesian,
+			      gdouble y_unit_size)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-unit-size", y_unit_size,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_x_label_start:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x label start of @cartesian.
+ * 
+ * Returns: the x label start
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_x_label_start(AgsCartesian *cartesian)
+{
+  gdouble x_label_start;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "x-label-start", &x_label_start,
+	       NULL);
+
+  return(x_label_start);
+}
+
+/**
+ * ags_cartesian_set_x_label_start:
+ * @cartesian: the #AgsCartesian
+ * @x_label_start: the x label start
+ * 
+ * Set x label start of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_label_start(AgsCartesian *cartesian,
+				gdouble x_label_start)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-label-start", x_label_start,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_x_label_step_width:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x label step width.
+ * 
+ * Returns: the x label step width
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_x_label_step_width(AgsCartesian *cartesian)
+{
+  gdouble x_label_step_width;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "x-label-step-width", &x_label_step_width,
+	       NULL);
+
+  return(x_label_step_width);
+}
+
+/**
+ * ags_cartesian_set_x_label_step_width:
+ * @cartesian: the #AgsCartesian
+ * @x_label_step_width: the x label step width
+ * 
+ * Set x label step width of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_label_step_width(AgsCartesian *cartesian,
+				     gdouble x_label_step_width)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-label-step-width", x_label_step_width,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_label_start:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y label start of @cartesian.
+ * 
+ * Returns: the y label start
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_y_label_start(AgsCartesian *cartesian)
+{
+  gdouble y_label_start;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "y-label-start", &y_label_start,
+	       NULL);
+
+  return(y_label_start);
+}
+
+/**
+ * ags_cartesian_set_y_label_start:
+ * @cartesian: the #AgsCartesian
+ * @y_label_start: the y label start
+ * 
+ * Set y label start of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_label_start(AgsCartesian *cartesian,
+				gdouble y_label_start)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-label-start", y_label_start,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_label_step_height:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y label step height of @cartesian.
+ * 
+ * Returns: the y label step height
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_y_label_step_height(AgsCartesian *cartesian)
+{
+  gdouble y_label_step_height;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "y-label-step-height", &y_label_step_height,
+	       NULL);
+
+  return(y_label_step_height);
+}
+
+/**
+ * ags_cartesian_set_y_label_step_height:
+ * @cartesian: the #AgsCartesian
+ * @y_label_step_height: the y label step height
+ * 
+ * Set y label step height of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_label_step_height(AgsCartesian *cartesian,
+				      gdouble y_label_step_height)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-label-step-height", y_label_step_height,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_x_step:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x step of @cartesian.
+ * 
+ * Returns: the x step
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_x_step(AgsCartesian *cartesian)
+{
+  gdouble x_step;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "x-step", &x_step,
+	       NULL);
+
+  return(x_step);
+}
+
+/**
+ * ags_cartesian_set_x_step:
+ * @cartesian: the #AgsCartesian
+ * @x_step: the x step
+ * 
+ * Set x step of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_step(AgsCartesian *cartesian,
+			 gdouble x_step)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-step", x_step,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_step:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y step of @cartesian.
+ * 
+ * Returns: the y step
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_y_step(AgsCartesian *cartesian)
+{
+  gdouble y_step;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "y-step", &y_step,
+	       NULL);
+
+  return(y_step);
+}
+
+/**
+ * ags_cartesian_set_y_step:
+ * @cartesian: the #AgsCartesian
+ * @y_step: the y step
+ * 
+ * Set y step of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_step(AgsCartesian *cartesian,
+			 gdouble y_step)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-step", y_step,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_x_start:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x start of @cartesian.
+ * 
+ * Returns: the x start
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_x_start(AgsCartesian *cartesian)
+{
+  gdouble x_start;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "x-start", &x_start,
+	       NULL);
+
+  return(x_start);
+}
+
+/**
+ * ags_cartesian_set_x_start:
+ * @cartesian: the #AgsCartesian
+ * @x_start: the x start
+ * 
+ * Set x start of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_start(AgsCartesian *cartesian,
+			  gdouble x_start)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-start", x_start,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_x_end:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x end of @cartesian.
+ * 
+ * Returns: the x end
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_x_end(AgsCartesian *cartesian)
+{
+  gdouble x_end;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "x-end", &x_end,
+	       NULL);
+
+  return(x_end);
+}
+
+/**
+ * ags_cartesian_set_x_end:
+ * @cartesian: the #AgsCartesian
+ * @x_end: the x end
+ * 
+ * Set x end of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_end(AgsCartesian *cartesian,
+			gdouble x_end)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-end", x_end,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_start:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y start of @cartesian.
+ * 
+ * Returns: the y start
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_y_start(AgsCartesian *cartesian)
+{
+  gdouble y_start;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "y-start", &y_start,
+	       NULL);
+
+  return(y_start);
+}
+
+/**
+ * ags_cartesian_set_y_start:
+ * @cartesian: the #AgsCartesian
+ * @y_start: the y start
+ * 
+ * Set y start of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_start(AgsCartesian *cartesian,
+			  gdouble y_start)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-start", y_start,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_end:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y end of @cartesian.
+ * 
+ * Returns: the y end
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_y_end(AgsCartesian *cartesian)
+{
+  gdouble y_end;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "y-end", &y_end,
+	       NULL);
+
+  return(y_end);
+}
+
+/**
+ * ags_cartesian_set_y_end:
+ * @cartesian: the #AgsCartesian
+ * @y_end: the y end
+ * 
+ * Set y end of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_end(AgsCartesian *cartesian,
+			gdouble y_end)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-end", y_end,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_x_unit:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x unit of @cartesian.
+ * 
+ * Returns: the x unit
+ * 
+ * Since: 3.2.0
+ */
+gchar*
+ags_cartesian_get_x_unit(AgsCartesian *cartesian)
+{
+  gchar *x_unit;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(NULL);
+  }
+
+  g_object_get(cartesian,
+	       "x-unit", &x_unit,
+	       NULL);
+
+  return(x_unit);
+}
+
+/**
+ * ags_cartesian_set_x_unit:
+ * @cartesian: the #AgsCartesian
+ * @x_unit: the x unit
+ * 
+ * Set x unit of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_unit(AgsCartesian *cartesian,
+			 gchar *x_unit)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-unit", x_unit,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_unit:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y unit of @cartesian.
+ * 
+ * Returns: the y unit
+ * 
+ * Since: 3.2.0
+ */
+gchar*
+ags_cartesian_get_y_unit(AgsCartesian *cartesian)
+{
+  gchar *y_unit;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(NULL);
+  }
+
+  g_object_get(cartesian,
+	       "y-unit", &y_unit,
+	       NULL);
+
+  return(y_unit);
+}
+
+/**
+ * ags_cartesian_set_y_unit:
+ * @cartesian: the #AgsCartesian
+ * @y_unit: the y unit
+ * 
+ * Set y unit of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_unit(AgsCartesian *cartesian,
+			 gchar *y_unit)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-unit", y_unit,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_x_label:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x label of @cartesian.
+ * 
+ * Returns: (transfer none): the x label
+ * 
+ * Since: 3.2.0
+ */
+gchar**
+ags_cartesian_get_x_label(AgsCartesian *cartesian)
+{
+  gchar **x_label;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(NULL);
+  }
+
+  x_label = cartesian->x_label;
+
+  return(x_label);
+}
+
+/**
+ * ags_cartesian_set_x_label:
+ * @cartesian: the #AgsCartesian
+ * @x_label: (transfer none): the x label
+ * 
+ * Set x label of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_label(AgsCartesian *cartesian,
+			  gchar **x_label)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  if(cartesian->x_label != NULL){
+    g_strfreev(cartesian->x_label);
+  }
+
+  cartesian->x_label = g_strdupv(x_label);
+}
+
+/**
+ * ags_cartesian_get_y_label:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y label of @cartesian.
+ * 
+ * Returns: (transfer none): the y label
+ * 
+ * Since: 3.2.0
+ */
+gchar**
+ags_cartesian_get_y_label(AgsCartesian *cartesian)
+{
+  gchar **y_label;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(NULL);
+  }
+
+  y_label = cartesian->y_label;
+
+  return(y_label);
+}
+
+/**
+ * ags_cartesian_set_y_label:
+ * @cartesian: the #AgsCartesian
+ * @y_label: (transfer none): the y label
+ * 
+ * Set y label of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_label(AgsCartesian *cartesian,
+			  gchar **y_label)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  if(cartesian->y_label != NULL){
+    g_strfreev(cartesian->y_label);
+  }
+
+  cartesian->y_label = g_strdupv(y_label);
+}
+
+/**
+ * ags_cartesian_get_x_step_factor:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x step factor of @cartesian.
+ * 
+ * Returns: the x step factor
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_x_step_factor(AgsCartesian *cartesian)
+{
+  gdouble x_step_factor;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "x-step-factor", &x_step_factor,
+	       NULL);
+
+  return(x_step_factor);
+}
+
+/**
+ * ags_cartesian_set_x_step_factor:
+ * @cartesian: the #AgsCartesian
+ * @x_step_factor: the x step factor
+ * 
+ * Set x step factor of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_step_factor(AgsCartesian *cartesian,
+				gdouble x_step_factor)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-step-factor", x_step_factor,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_step_factor:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y step factor of @cartesian.
+ * 
+ * Returns: the y step factor
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_y_step_factor(AgsCartesian *cartesian)
+{
+  gdouble y_step_factor;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "y-step-factor", &y_step_factor,
+	       NULL);
+
+  return(y_step_factor);
+}
+
+/**
+ * ags_cartesian_set_y_step_factor:
+ * @cartesian: the #AgsCartesian
+ * @y_step_factor: the y step factor
+ * 
+ * Set y step factor of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_step_factor(AgsCartesian *cartesian,
+				gdouble y_step_factor)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-step-factor", y_step_factor,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_x_small_scale_factor:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x small scale factor of @cartesian.
+ *
+ * Returns: the x small factor
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_x_small_scale_factor(AgsCartesian *cartesian)
+{
+  gdouble x_small_scale_factor;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "x-small-scale-factor", &x_small_scale_factor,
+	       NULL);
+
+  return(x_small_scale_factor);
+}
+
+/**
+ * ags_cartesian_set_x_small_scale_factor:
+ * @cartesian: the #AgsCartesian
+ * @x_small_scale_factor: the x small scale factor
+ * 
+ * Set x small scale factor of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_small_scale_factor(AgsCartesian *cartesian,
+				       gdouble x_small_scale_factor)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-small-scale-factor", x_small_scale_factor,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_x_big_scale_factor:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x big scale factor of @cartesian.
+ *
+ * Returns: the x big factor
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_x_big_scale_factor(AgsCartesian *cartesian)
+{
+  gdouble x_big_scale_factor;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "x-big-scale-factor", &x_big_scale_factor,
+	       NULL);
+
+  return(x_big_scale_factor);
+}
+
+/**
+ * ags_cartesian_set_x_big_scale_factor:
+ * @cartesian: the #AgsCartesian
+ * @x_big_scale_factor: the x big scale factor
+ * 
+ * Set x big scale factor of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_big_scale_factor(AgsCartesian *cartesian,
+				     gdouble x_big_scale_factor)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-big-scale-factor", x_big_scale_factor,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_small_scale_factor:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y small scale factor of @cartesian.
+ *
+ * Returns: the y small factor
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_y_small_scale_factor(AgsCartesian *cartesian)
+{
+  gdouble y_small_scale_factor;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "y-small-scale-factor", &y_small_scale_factor,
+	       NULL);
+
+  return(y_small_scale_factor);
+}
+
+/**
+ * ags_cartesian_set_y_small_scale_factor:
+ * @cartesian: the #AgsCartesian
+ * @y_small_scale_factor: the y small scale factor
+ * 
+ * Set y small scale factor of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_small_scale_factor(AgsCartesian *cartesian,
+				       gdouble y_small_scale_factor)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-small-scale-factor", y_small_scale_factor,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_big_scale_factor:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y big scale factor of @cartesian.
+ *
+ * Returns: the y big factor
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_y_big_scale_factor(AgsCartesian *cartesian)
+{
+  gdouble y_big_scale_factor;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "y-big-scale-factor", &y_big_scale_factor,
+	       NULL);
+
+  return(y_big_scale_factor);
+}
+
+/**
+ * ags_cartesian_set_y_big_scale_factor:
+ * @cartesian: the #AgsCartesian
+ * @y_big_scale_factor: the y big scale factor
+ * 
+ * Set y big scale factor of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_big_scale_factor(AgsCartesian *cartesian,
+				     gdouble y_big_scale_factor)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-big-scale-factor", y_big_scale_factor,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_x_label_factor:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x label factor of @cartesian.
+ * 
+ * Returns: the x label factor
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_x_label_factor(AgsCartesian *cartesian)
+{
+  gdouble x_label_factor;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "x-label-factor", &x_label_factor,
+	       NULL);
+
+  return(x_label_factor);
+}
+
+/**
+ * ags_cartesian_set_x_label_factor:
+ * @cartesian: the #AgsCartesian
+ * @x_label_factor: the x label factor
+ * 
+ * Set x label factor of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_label_factor(AgsCartesian *cartesian,
+				 gdouble x_label_factor)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-label-factor", x_label_factor,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_x_label_precision:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get x label precision of @cartesian.
+ * 
+ * Returns: the x label precision
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_x_label_precision(AgsCartesian *cartesian)
+{
+  gdouble x_label_precision;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "x-label-precision", &x_label_precision,
+	       NULL);
+
+  return(x_label_precision);
+}
+
+/**
+ * ags_cartesian_set_x_label_precision:
+ * @cartesian: the #AgsCartesian
+ * @x_label_precision: the x label precision
+ * 
+ * Set x label precision of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_x_label_precision(AgsCartesian *cartesian,
+				 gdouble x_label_precision)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "x-label-precision", x_label_precision,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_label_factor:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y label factor of @cartesian.
+ * 
+ * Returns: the y label factor
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_y_label_factor(AgsCartesian *cartesian)
+{
+  gdouble y_label_factor;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "y-label-factor", &y_label_factor,
+	       NULL);
+
+  return(y_label_factor);
+}
+
+/**
+ * ags_cartesian_set_y_label_factor:
+ * @cartesian: the #AgsCartesian
+ * @y_label_factor: the y label factor
+ * 
+ * Set y label factor of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_label_factor(AgsCartesian *cartesian,
+				 gdouble y_label_factor)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-label-factor", y_label_factor,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_y_label_precision:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get y label precision of @cartesian.
+ * 
+ * Returns: the y label precision
+ * 
+ * Since: 3.2.0
+ */
+gdouble
+ags_cartesian_get_y_label_precision(AgsCartesian *cartesian)
+{
+  gdouble y_label_precision;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(0.0);
+  }
+
+  g_object_get(cartesian,
+	       "y-label-precision", &y_label_precision,
+	       NULL);
+
+  return(y_label_precision);
+}
+
+/**
+ * ags_cartesian_set_y_label_precision:
+ * @cartesian: the #AgsCartesian
+ * @y_label_precision: the y label precision
+ * 
+ * Set y label precision of @cartesian.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_cartesian_set_y_label_precision(AgsCartesian *cartesian,
+				 gdouble y_label_precision)
+{
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  g_object_set(cartesian,
+	       "y-label-precision", y_label_precision,
+	       NULL);
+}
+
+/**
+ * ags_cartesian_get_surface:
+ * @cartesian: the #AgsCartesian
+ * 
+ * Get cairo surface of @cartesian.
+ * 
+ * Returns: (transfer full): the cairo surface
+ * 
+ * Since: 3.2.0
+ */
+cairo_surface_t*
+ags_cartesian_get_surface(AgsCartesian *cartesian)
+{
+  cairo_surface_t *surface;
+  
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return(NULL);
+  }
+
+  surface = cartesian->surface;
+  cairo_surface_reference(surface);
+  
+  return(surface);
+}
+
+/**
+ * ags_cartesian_linear_step_conversion_func:
+ * @current: current step value
+ * @is_abscissae: is abscissae
+ * @data: the data
+ * 
+ * Perform linear step conversion.
+ * 
+ * Returns: the converted step value
+ * 
+ * Since: 3.0.0
+ */
 gdouble
 ags_cartesian_linear_step_conversion_func(gdouble current,
 					  gboolean is_abscissae,
@@ -1850,6 +4282,18 @@ ags_cartesian_linear_step_conversion_func(gdouble current,
   }
 }
 
+/**
+ * ags_cartesian_linear_translate_func:
+ * @x: the x position
+ * @y: the y position
+ * @ret_x: (out): the return location of translated x
+ * @ret_y: (out): the return location of transloated y
+ * @data: the #AgsCartesian
+ * 
+ * Perform linear translation.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_cartesian_linear_translate_func(gdouble x,
 				    gdouble y,
@@ -1879,6 +4323,17 @@ ags_cartesian_linear_translate_func(gdouble x,
   }
 }
 
+/**
+ * ags_cartesian_linear_x_small_scale_func:
+ * @value: the value
+ * @data: the #AgsCartesian
+ * 
+ * Labeling function of x small scale
+ * 
+ * Returns: the matching scale value
+ * 
+ * Since: 3.0.0
+ */
 gdouble
 ags_cartesian_linear_x_small_scale_func(gdouble value,
 					gpointer data)
@@ -1891,6 +4346,17 @@ ags_cartesian_linear_x_small_scale_func(gdouble value,
   return(AGS_CARTESIAN(data)->x_small_scale_factor * value);
 }
 
+/**
+ * ags_cartesian_linear_x_big_scale_func:
+ * @value: the value
+ * @data: the #AgsCartesian
+ * 
+ * Labeling function of x big scale
+ * 
+ * Returns: the matching scale value
+ * 
+ * Since: 3.0.0
+ */
 gdouble
 ags_cartesian_linear_x_big_scale_func(gdouble value,
 				      gpointer data)
@@ -1903,6 +4369,17 @@ ags_cartesian_linear_x_big_scale_func(gdouble value,
   return(AGS_CARTESIAN(data)->x_big_scale_factor * value);
 }
 
+/**
+ * ags_cartesian_linear_y_small_scale_func:
+ * @value: the value
+ * @data: the #AgsCartesian
+ * 
+ * Labeling function of y small scale
+ * 
+ * Returns: the matching scale value
+ * 
+ * Since: 3.0.0
+ */
 gdouble
 ags_cartesian_linear_y_small_scale_func(gdouble value,
 					gpointer data)
@@ -1915,6 +4392,17 @@ ags_cartesian_linear_y_small_scale_func(gdouble value,
   return(AGS_CARTESIAN(data)->y_small_scale_factor * value);
 }
 
+/**
+ * ags_cartesian_linear_y_big_scale_func:
+ * @value: the value
+ * @data: the #AgsCartesian
+ * 
+ * Labeling function of y big scale
+ * 
+ * Returns: the matching scale value
+ * 
+ * Since: 3.0.0
+ */
 gdouble
 ags_cartesian_linear_y_big_scale_func(gdouble value,
 				      gpointer data)
@@ -1927,6 +4415,17 @@ ags_cartesian_linear_y_big_scale_func(gdouble value,
   return(AGS_CARTESIAN(data)->y_big_scale_factor * value);
 }
 
+/**
+ * ags_cartesian_linear_x_label_func:
+ * @value: the value
+ * @data: the #AgsCartesian
+ * 
+ * Format x label @value appropriately.
+ * 
+ * Returns: the formatted string
+ * 
+ * Since: 3.0.0
+ */
 gchar*
 ags_cartesian_linear_x_label_func(gdouble value,
 				  gpointer data)
@@ -1952,6 +4451,17 @@ ags_cartesian_linear_x_label_func(gdouble value,
   return(str);
 }
 
+/**
+ * ags_cartesian_linear_y_label_func:
+ * @value: the value
+ * @data: the #AgsCartesian
+ * 
+ * Format y label @value appropriately.
+ * 
+ * Returns: the formatted string
+ * 
+ * Since: 3.0.0
+ */
 gchar*
 ags_cartesian_linear_y_label_func(gdouble value,
 				  gpointer data)
@@ -1977,6 +4487,15 @@ ags_cartesian_linear_y_label_func(gdouble value,
   return(str);
 }
 
+/**
+ * ags_cartesian_reallocate_label:
+ * @cartesian: the #AgsCartesian
+ * @do_x_label: do x label
+ * 
+ * Reallocate x label if @do_x_label, otherwise y label.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_cartesian_reallocate_label(AgsCartesian *cartesian,
 			       gboolean do_x_label)
@@ -1995,15 +4514,15 @@ ags_cartesian_reallocate_label(AgsCartesian *cartesian,
       
     if(cartesian->x_label == NULL){
       /* allocate */
-      cartesian->x_label = (gchar **) malloc((i_stop + 1)  * sizeof(gchar *));
+      cartesian->x_label = (gchar **) g_malloc((i_stop + 1)  * sizeof(gchar *));
 
       /* iteration control */
       i_start = 0;
       i = 0;
     }else{
       /* reallocate */
-      cartesian->x_label = (gchar **) realloc(cartesian->x_label,
-					      (i_stop + 1) * sizeof(gchar *));
+      cartesian->x_label = (gchar **) g_realloc(cartesian->x_label,
+						(i_stop + 1) * sizeof(gchar *));
 
       /* iteration control */
       i_start = g_strv_length(cartesian->x_label);
@@ -2035,15 +4554,15 @@ ags_cartesian_reallocate_label(AgsCartesian *cartesian,
       
     if(cartesian->y_label == NULL){
       /* allocate */
-      cartesian->y_label = (gchar **) malloc((i_stop + 1)  * sizeof(gchar *));
+      cartesian->y_label = (gchar **) g_malloc((i_stop + 1)  * sizeof(gchar *));
 
       /* iteration control */
       i_start = 0;
       i = 0;
     }else{
       /* reallocate */
-      cartesian->y_label = (gchar **) realloc(cartesian->y_label,
-					      (i_stop + 1) * sizeof(gchar *));
+      cartesian->y_label = (gchar **) g_realloc(cartesian->y_label,
+						(i_stop + 1) * sizeof(gchar *));
 
       /* iteration control */
       i_start = g_strv_length(cartesian->y_label);
@@ -2072,6 +4591,15 @@ ags_cartesian_reallocate_label(AgsCartesian *cartesian,
   }
 }
 
+/**
+ * ags_cartesian_fill_label:
+ * @cartesian: the #AgsCartesian
+ * @do_x_label: do x label
+ * 
+ * Fill x label if @do_x_label, otherwise y label.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_cartesian_fill_label(AgsCartesian *cartesian,
 			 gboolean do_x_label)

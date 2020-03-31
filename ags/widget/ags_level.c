@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1292,6 +1292,246 @@ ags_level_draw(AgsLevel *level, cairo_t *cr)
   cairo_paint(cr);
 
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
+}
+
+/**
+ * ags_level_set_level_width:
+ * @level: the #AgsLevel
+ * @level_width: the level width
+ * 
+ * Set @level_width of @level.
+ * 
+ * Since: 3.2.2
+ */
+void
+ags_level_set_level_width(AgsLevel *level,
+			  guint level_width)
+{
+  if(!AGS_IS_LEVEL(level)){
+    return;
+  }
+
+  g_object_set(level,
+	       "level-width", level_width,
+	       NULL);
+}
+
+/**
+ * ags_level_get_level_width:
+ * @level: the #AgsLevel
+ * 
+ * Get level width of @level.
+ * 
+ * Returns: the level width
+ * 
+ * Since: 3.2.2
+ */
+guint
+ags_level_get_level_width(AgsLevel *level)
+{
+  guint level_width;
+  
+  if(!AGS_IS_LEVEL(level)){
+    return(0);
+  }
+
+  g_object_get(level,
+	       "level-width", &level_width,
+	       NULL);
+
+  return(level_width);
+}
+
+/**
+ * ags_level_set_level_height:
+ * @level: the #AgsLevel
+ * @level_height: the level height
+ * 
+ * Set @level_height of @level.
+ * 
+ * Since: 3.2.2
+ */
+void
+ags_level_set_level_height(AgsLevel *level,
+			   guint level_height)
+{
+  if(!AGS_IS_LEVEL(level)){
+    return;
+  }
+
+  g_object_set(level,
+	       "level-height", level_height,
+	       NULL);
+}
+
+/**
+ * ags_level_get_level_height:
+ * @level: the #AgsLevel
+ * 
+ * Get level height of @level.
+ * 
+ * Returns: the level height
+ * 
+ * Since: 3.2.2
+ */
+guint
+ags_level_get_level_height(AgsLevel *level)
+{
+  guint level_height;
+  
+  if(!AGS_IS_LEVEL(level)){
+    return(0);
+  }
+
+  g_object_get(level,
+	       "level-height", &level_height,
+	       NULL);
+
+  return(level_height);
+}
+
+/**
+ * ags_level_set_upper:
+ * @level: the #AgsLevel
+ * @upper: the upper
+ * 
+ * Set @upper of @level.
+ * 
+ * Since: 3.2.2
+ */
+void
+ags_level_set_upper(AgsLevel *level,
+		    gdouble upper)
+{
+  if(!AGS_IS_LEVEL(level)){
+    return;
+  }
+
+  g_object_set(level,
+	       "upper", upper,
+	       NULL);
+}
+
+/**
+ * ags_level_get_upper:
+ * @level: the #AgsLevel
+ * 
+ * Get upper of @level.
+ * 
+ * Returns: the upper
+ * 
+ * Since: 3.2.2
+ */
+gdouble
+ags_level_get_upper(AgsLevel *level)
+{
+  gdouble upper;
+  
+  if(!AGS_IS_LEVEL(level)){
+    return(0.0);
+  }
+
+  g_object_get(level,
+	       "upper", &upper,
+	       NULL);
+
+  return(upper);
+}
+
+/**
+ * ags_level_set_lower:
+ * @level: the #AgsLevel
+ * @lower: the lower
+ * 
+ * Set @lower of @level.
+ * 
+ * Since: 3.2.2
+ */
+void
+ags_level_set_lower(AgsLevel *level,
+		    gdouble lower)
+{
+  if(!AGS_IS_LEVEL(level)){
+    return;
+  }
+
+  g_object_set(level,
+	       "lower", lower,
+	       NULL);
+}
+
+/**
+ * ags_level_get_lower:
+ * @level: the #AgsLevel
+ * 
+ * Get lower of @level.
+ * 
+ * Returns: the lower
+ * 
+ * Since: 3.2.2
+ */
+gdouble
+ags_level_get_lower(AgsLevel *level)
+{
+  gdouble lower;
+  
+  if(!AGS_IS_LEVEL(level)){
+    return(0.0);
+  }
+
+  g_object_get(level,
+	       "lower", &lower,
+	       NULL);
+
+  return(lower);
+}
+
+/**
+ * ags_level_set_normalized_volume:
+ * @level: the #AgsLevel
+ * @normalized_volume: the normalized volume
+ * 
+ * Set @normalized_volume of @level.
+ * 
+ * Since: 3.2.2
+ */
+void
+ags_level_set_normalized_volume(AgsLevel *level,
+				gdouble normalized_volume)
+{
+  if(!AGS_IS_LEVEL(level)){
+    return;
+  }
+
+  g_object_set(level,
+	       "normalized-volume", normalized_volume,
+	       NULL);
+}
+
+/**
+ * ags_level_get_normalized_volume:
+ * @level: the #AgsLevel
+ * 
+ * Get normalized volume of @level.
+ * 
+ * Returns: the normalized volume
+ * 
+ * Since: 3.2.2
+ */
+gdouble
+ags_level_get_normalized_volume(AgsLevel *level)
+{
+  gdouble normalized_volume;
+  
+  if(!AGS_IS_LEVEL(level)){
+    return(0.0);
+  }
+
+  g_object_get(level,
+	       "normalized-volume", &normalized_volume,
+	       NULL);
+
+  return(normalized_volume);
 }
 
 /**

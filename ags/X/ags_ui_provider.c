@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,7 @@ void ags_ui_provider_class_init(AgsUiProviderInterface *ginterface);
 
 /**
  * SECTION:ags_ui_provider
- * @short_description: provide accoustics
+ * @short_description: provide user interface
  * @title: AgsUiProvider
  * @section_id: AgsUiProvider
  * @include: ags/X/ags_ui_provider.h

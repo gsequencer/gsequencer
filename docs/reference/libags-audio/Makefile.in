@@ -14,6 +14,30 @@
 
 @SET_MAKE@
 
+# Makefile.am - template makefile for gtk-doc module
+# Copyright (C) 2007-2017  Stefan Sauer
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# As a special exception, the above copyright owner gives unlimited
+# permission to copy, distribute and modify this Makefile.am template.
+# You need not follow the terms of the GNU General Public License when
+# using or distributing such Makefile.am files, even though portions of
+# the text of the Makefile.am appear in them. The GNU General Public
+# License (GPL) does govern all other use of the material that constitutes
+# the Makefile.am template.
+
 # This is a blank Makefile.am for using gtk-doc.
 # Copy this to your project's API docs directory and modify the variables to
 # suit your project. See the GTK+ Makefiles in gtk+/docs/reference for examples
@@ -122,19 +146,17 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ags-docs-api.m4 \
 	$(top_srcdir)/m4/ags-listings.m4 \
 	$(top_srcdir)/m4/ags-marshallers.m4 \
 	$(top_srcdir)/m4/ags-symbols.m4 $(top_srcdir)/m4/gettext.m4 \
-	$(top_srcdir)/m4/gtk-doc.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/intlmacosx.m4 \
-	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/nls.m4 \
-	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/intlmacosx.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
-mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/ags/config.h \
 	$(top_builddir)/ags/ags_config.h
 CONFIG_CLEAN_FILES =
@@ -363,7 +385,7 @@ am__set_b = \
       b='$*';; \
   esac
 am__DIST_COMMON = $(srcdir)/./gtk-doc.make $(srcdir)/Makefile.in \
-	$(top_srcdir)/mkinstalldirs $(top_srcdir)/test-driver README
+	$(top_srcdir)/test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALLOCA = @ALLOCA@

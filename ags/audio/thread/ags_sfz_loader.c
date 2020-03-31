@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1159,6 +1159,158 @@ ags_sfz_loader_run(void *ptr)
   return(NULL);
 }
 
+/**
+ * ags_sfz_loader_get_audio:
+ * @sfz_loader: the #AgsSFZLoader
+ * 
+ * Get audio of @sfz_loader.
+ * 
+ * Returns: the assigned #AgsAudio
+ * 
+ * Since: 3.2.0
+ */
+AgsAudio*
+ags_sfz_loader_get_audio(AgsSFZLoader *sfz_loader)
+{
+  AgsAudio *audio;
+
+  if(!AGS_IS_SFZ_LOADER(sfz_loader)){
+    return(NULL);
+  }
+
+  g_object_get(sfz_loader,
+	       "audio", &audio,
+	       NULL);
+
+  return(audio);
+}
+
+/**
+ * ags_sfz_loader_set_audio:
+ * @sfz_loader: the #AgsSFZLoader
+ * @audio: the #AgsAudio
+ * 
+ * Set audio of @sfz_loader.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_sfz_loader_set_audio(AgsSFZLoader *sfz_loader,
+			 AgsAudio *audio)
+{
+  if(!AGS_IS_SFZ_LOADER(sfz_loader)){
+    return;
+  }
+
+  g_object_set(sfz_loader,
+	       "audio", audio,
+	       NULL);
+}
+
+/**
+ * ags_sfz_loader_get_filename:
+ * @sfz_loader: the #AgsSFZLoader
+ * 
+ * Get filename of @sfz_loader.
+ * 
+ * Returns: the assigned filename
+ * 
+ * Since: 3.2.0
+ */
+gchar*
+ags_sfz_loader_get_filename(AgsSFZLoader *sfz_loader)
+{
+  gchar *filename;
+  
+  if(!AGS_IS_SFZ_LOADER(sfz_loader)){
+    return(NULL);
+  }
+
+  g_object_get(sfz_loader,
+	       "filename", &filename,
+	       NULL);
+
+  return(filename);
+}
+
+/**
+ * ags_sfz_loader_set_filename:
+ * @sfz_loader: the #AgsSFZLoader
+ * @filename: the filename
+ * 
+ * Set filename of @sfz_loader.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_sfz_loader_set_filename(AgsSFZLoader *sfz_loader,
+			    gchar *filename)
+{
+  if(!AGS_IS_SFZ_LOADER(sfz_loader)){
+    return;
+  }
+
+  g_object_set(sfz_loader,
+	       "filename", filename,
+	       NULL);
+}
+
+/**
+ * ags_sfz_loader_get_audio_container:
+ * @sfz_loader: the #AgsSFZLoader
+ * 
+ * Get audio container of @sfz_loader.
+ * 
+ * Returns: the assigned #AgsAudioContainer
+ * 
+ * Since: 3.2.0
+ */
+AgsAudioContainer*
+ags_sfz_loader_get_audio_container(AgsSFZLoader *sfz_loader)
+{
+  AgsAudioContainer *audio_container;
+  
+  if(!AGS_IS_SFZ_LOADER(sfz_loader)){
+    return(NULL);
+  }
+
+  g_object_get(sfz_loader,
+	       "audio-container", &audio_container,
+	       NULL);
+
+  return(audio_container);
+}
+
+/**
+ * ags_sfz_loader_set_audio_container:
+ * @sfz_loader: the #AgsSFZLoader
+ * @audio_container: the #AgsAudioContainer
+ * 
+ * Set audio container of @sfz_loader.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_sfz_loader_set_audio_container(AgsSFZLoader *sfz_loader,
+				   AgsAudioContainer *audio_container)
+{
+  if(!AGS_IS_SFZ_LOADER(sfz_loader)){
+    return;
+  }
+
+  g_object_set(sfz_loader,
+	       "audio-container", audio_container,
+	       NULL);
+}
+
+/**
+ * ags_sfz_loader_start:
+ * @sfz_loader: the #AgsSFZLoader
+ * 
+ * Start @sfz_loader.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_sfz_loader_start(AgsSFZLoader *sfz_loader)
 {
@@ -1170,7 +1322,6 @@ ags_sfz_loader_start(AgsSFZLoader *sfz_loader)
 				    ags_sfz_loader_run,
 				    sfz_loader);
 }
-
 
 /**
  * ags_sfz_loader_new:

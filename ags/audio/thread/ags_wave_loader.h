@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -72,12 +72,28 @@ struct _AgsWaveLoaderClass
 
 GType ags_wave_loader_get_type();
 
+/* flags */
 gboolean ags_wave_loader_test_flags(AgsWaveLoader *wave_loader, guint flags);
 void ags_wave_loader_set_flags(AgsWaveLoader *wave_loader, guint flags);
 void ags_wave_loader_unset_flags(AgsWaveLoader *wave_loader, guint flags);
 
+/* properties */
+AgsAudio* ags_wave_loader_get_audio(AgsWaveLoader *wave_loader);
+void ags_wave_loader_set_audio(AgsWaveLoader *wave_loader,
+			       AgsAudio *audio);
+
+gchar* ags_wave_loader_get_filename(AgsWaveLoader *wave_loader);
+void ags_wave_loader_set_filename(AgsWaveLoader *wave_loader,
+				  gchar *filename);
+
+AgsAudioFile* ags_wave_loader_get_audio_file(AgsWaveLoader *wave_loader);
+void ags_wave_loader_set_audio_file(AgsWaveLoader *wave_loader,
+				    AgsAudioFile *audio_file);
+
+/* thread */
 void ags_wave_loader_start(AgsWaveLoader *wave_loader);
 
+/* instantiate */
 AgsWaveLoader* ags_wave_loader_new(AgsAudio *audio,
 				   gchar *filename,
 				   gboolean do_replace);

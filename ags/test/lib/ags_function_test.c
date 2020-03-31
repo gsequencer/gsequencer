@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2016 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,10 +17,10 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/lib/ags_function.h>
-
 #include <glib.h>
 #include <glib-object.h>
+
+#include <ags/libags.h>
 
 #include <CUnit/CUnit.h>
 #include <CUnit/Automated.h>
@@ -29,6 +29,7 @@
 int ags_function_test_init_suite();
 int ags_function_test_clean_suite();
 
+void ags_function_test_collapse_parantheses();
 void ags_function_test_find_literals();
 
 /* The suite initialization function.
@@ -52,25 +53,103 @@ ags_function_test_clean_suite()
 }
 
 void
+ags_function_test_collapse_parantheses()
+{
+  AgsFunction *function;
+  
+  gchar *no_parantheses = "x0 + x1 = 0";
+  gchar *binomic_formula_0 = "(a + b) * (a + b) = 0";
+  gchar *binomic_formula_1 = "(a - b) * (a - b) = 0";
+  gchar *binomic_formula_2 = "(a + b) * (a - b) = 0";
+  gchar **functions;
+
+  guint n_functions;
+
+  /* assert no parantheses */
+  function = ags_function_new(no_parantheses);
+  functions = ags_function_collapse_parantheses(function,
+						&n_functions);
+
+  CU_ASSERT(n_functions == 1 &&
+	    !g_ascii_strcasecmp(functions[0],
+				no_parantheses));
+
+  /* assert binomic formula #0 */
+  function = ags_function_new(binomic_formula_0);
+  functions = ags_function_collapse_parantheses(function,
+						&n_functions);
+
+  CU_ASSERT(n_functions == 1 &&
+	    !g_ascii_strcasecmp(functions[0],
+				"a^2 + 2ab + b^2 = 0"));
+
+  /* assert binomic formula #1 */
+  function = ags_function_new(binomic_formula_1);
+  functions = ags_function_collapse_parantheses(function,
+						&n_functions);
+
+  CU_ASSERT(n_functions == 1 &&
+	    !g_ascii_strcasecmp(functions[0],
+				"a^2 - 2ab + b^2 = 0"));
+
+  /* assert binomic formula #2 */
+  function = ags_function_new(binomic_formula_2);
+  functions = ags_function_collapse_parantheses(function,
+						&n_functions);
+
+  CU_ASSERT(n_functions == 1 &&
+	    !g_ascii_strcasecmp(functions[0],
+				"a^2 - b^2 = 0"));
+  
+  //TODO:JK: implement me
+}
+
+void
 ags_function_test_find_literals()
 {
   AgsFunction *function;
   
-  gchar *log_x = "log(x)\0";
-  gchar *exp_x = "exp(x)\0";
-  gchar *floor_y_per_x = "floor(y / x)\0";
-  gchar *ceil_y_per_x = "ceil(y / x)\0";
-  gchar *round_number = "round(0.75)\0";
-  gchar *sin_per_x = "sin(1.0 / x)\0";
-  gchar *cos_per_x_plus_pi_half = "cos(1.0 / x + (𝜋 / 2.0))\0";
-  gchar *tan_x = "tan(x)\0";
-  gchar *asin_x0_plus_x1 = "asin(x0 + x1)\0";
-  gchar *acos_x0_plus_x1 = "acos(x0 + x1)\0";
-  gchar *atan_x_plus_y = "atan(2x + 0.75y)\0";
+  gchar *x = "x";
+  gchar *x0_plus_x1 = "x0 + x1";
+  gchar *log_x = "log(x)";
+  gchar *exp_x = "exp(x)";
+  gchar *floor_x_half_plus_y = "floor(x / 2) + y";
+  gchar *floor_y_per_x = "floor(y / x)";
+  gchar *ceil_y_per_x = "ceil(y / x)";
+  gchar *round_number = "round(0.75)";
+  gchar *sin_per_x = "sin(1.0 / x)";
+  gchar *cos_per_x_plus_pi_half = "cos(1.0 / x + (𝜋 / 2.0))";
+  gchar *tan_x = "tan(x)";
+  gchar *asin_x0_plus_x1 = "asin(x0 + x1)";
+  gchar *acos_x0_plus_x1 = "acos(x0 + x1)";
+  gchar *atan_x_plus_y = "atan(2x + 0.75y)";
   gchar **symbols;
 
   guint n_symbols;
+
+  /* assert x */
+  function = ags_function_new(x);
+  symbols = ags_function_find_literals(function,
+				       &n_symbols);
+
+  CU_ASSERT(n_symbols == 1 &&
+	    !g_ascii_strncasecmp(symbols[0],
+				 "x",
+				 2));
   
+  /* assert x0 plus x1 */
+  function = ags_function_new(x0_plus_x1);
+  symbols = ags_function_find_literals(function,
+				       &n_symbols);
+
+  CU_ASSERT(n_symbols == 2 &&
+	    !g_ascii_strncasecmp(symbols[0],
+				 "x0",
+				 2) &&
+	    !g_ascii_strncasecmp(symbols[1],
+				 "x1",
+				 2));
+
   /* assert log x */
   function = ags_function_new(log_x);
   symbols = ags_function_find_literals(function,
@@ -78,7 +157,7 @@ ags_function_test_find_literals()
 
   CU_ASSERT(n_symbols == 1 &&
 	    !g_ascii_strncasecmp(symbols[0],
-				 "x\0",
+				 "x",
 				 2));
 
   /* assert exp x */
@@ -88,7 +167,20 @@ ags_function_test_find_literals()
 
   CU_ASSERT(n_symbols == 1 &&
 	    !g_ascii_strncasecmp(symbols[0],
-				 "x\0",
+				 "x",
+				 2));
+
+  /* assert floor x half plus y */
+  function = ags_function_new(floor_x_half_plus_y);
+  symbols = ags_function_find_literals(function,
+				       &n_symbols);
+
+  CU_ASSERT(n_symbols == 2 &&
+	    !g_ascii_strncasecmp(symbols[0],
+				 "x",
+				 2) &&
+	    !g_ascii_strncasecmp(symbols[1],
+				 "y",
 				 2));
 
   /* assert floor y per x */
@@ -98,10 +190,10 @@ ags_function_test_find_literals()
 
   CU_ASSERT(n_symbols == 2 &&
 	    !g_ascii_strncasecmp(symbols[0],
-				 "y\0",
+				 "y",
 				 2) &&
 	    !g_ascii_strncasecmp(symbols[1],
-				 "x\0",
+				 "x",
 				 2));
 
   /* assert ceil y per x */
@@ -111,10 +203,10 @@ ags_function_test_find_literals()
 
   CU_ASSERT(n_symbols == 2 &&
 	    !g_ascii_strncasecmp(symbols[0],
-				 "y\0",
+				 "y",
 				 2) &&
 	    !g_ascii_strncasecmp(symbols[1],
-				 "x\0",
+				 "x",
 				 2));
 
   /* assert round number */
@@ -131,7 +223,7 @@ ags_function_test_find_literals()
 
   CU_ASSERT(n_symbols == 1 &&
 	    !g_ascii_strncasecmp(symbols[0],
-				 "x\0",
+				 "x",
 				 2));
 
   /* assert cos per x */
@@ -141,7 +233,7 @@ ags_function_test_find_literals()
 
   CU_ASSERT(n_symbols == 1 &&
 	    !g_ascii_strncasecmp(symbols[0],
-				 "x\0",
+				 "x",
 				 2));
 
   /* assert tan x */
@@ -151,7 +243,7 @@ ags_function_test_find_literals()
 
   CU_ASSERT(n_symbols == 1 &&
 	    !g_ascii_strncasecmp(symbols[0],
-				 "x\0",
+				 "x",
 				 2));
 
   /* assert asin x0 plus x1 */
@@ -161,10 +253,10 @@ ags_function_test_find_literals()
 
   CU_ASSERT(n_symbols == 2 &&
 	    !g_ascii_strncasecmp(symbols[0],
-				 "x0\0",
+				 "x0",
 				 2) &&
 	    !g_ascii_strncasecmp(symbols[1],
-				 "x1\0",
+				 "x1",
 				 2));
 
   /* assert acos x0 plus x1 */
@@ -174,10 +266,10 @@ ags_function_test_find_literals()
 
   CU_ASSERT(n_symbols == 2 &&
 	    !g_ascii_strncasecmp(symbols[0],
-				 "x0\0",
+				 "x0",
 				 2) &&
 	    !g_ascii_strncasecmp(symbols[1],
-				 "x1\0",
+				 "x1",
 				 2));
 
   /* assert atan x plus y */
@@ -187,10 +279,10 @@ ags_function_test_find_literals()
 
   CU_ASSERT(n_symbols == 2 &&
 	    !g_ascii_strncasecmp(symbols[0],
-				 "x\0",
+				 "x",
 				 2) &&
 	    !g_ascii_strncasecmp(symbols[1],
-				 "y\0",
+				 "y",
 				 2));
 }
 
@@ -199,8 +291,8 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
 
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -208,7 +300,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFunctionTest\0", ags_function_test_init_suite, ags_function_test_clean_suite);
+  pSuite = CU_add_suite("AgsFunctionTest", ags_function_test_init_suite, ags_function_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -217,7 +309,8 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsFunction find literals\0", ags_function_test_find_literals) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsFunction collapse parantheses", ags_function_test_collapse_parantheses) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFunction find literals", ags_function_test_find_literals) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

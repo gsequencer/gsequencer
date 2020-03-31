@@ -25,6 +25,10 @@
 
 #include <ags/lib/ags_complex.h>
 #include <ags/lib/ags_conversion.h>
+#include <ags/lib/ags_solver_matrix.h>
+#include <ags/lib/ags_math_util.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_FUNCTION                (ags_function_get_type())
 #define AGS_FUNCTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FUNCTION, AgsFunction))
@@ -34,11 +38,6 @@
 #define AGS_FUNCTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_FUNCTION, AgsFunctionClass))
 
 #define AGS_FUNCTION_GET_OBJ_MUTEX(obj) (&(((AgsFunction *) obj)->obj_mutex))
-
-#define AGS_SYMBOLIC_EULER "ℯ"
-#define AGS_SYMBOLIC_PI "𝜋"
-#define AGS_SYMBOLIC_INFINIT "∞"
-#define AGS_SYMBOLIC_COMPLEX_UNIT "𝑖"
 
 typedef struct _AgsFunction AgsFunction;
 typedef struct _AgsFunctionClass AgsFunctionClass;
@@ -77,16 +76,13 @@ struct _AgsFunction
   gboolean is_pushing;
 
   gchar **equation;
-  guint equation_count;
   
   gchar **transformed_equation;
-  guint transformed_equation_count;
 
   gchar *source_function;
   gchar *normalized_function;
   
   gchar **symbol;
-  guint symbol_count;
 
   GList *solver_matrix;
 
@@ -136,6 +132,11 @@ gboolean ags_function_substitute_values(AgsFunction *function,
 					gchar *symbol, ...);
 AgsComplex* ags_function_translate_value(AgsFunction *function,
 					 AgsComplex *value);
+
+void ags_function_add_matrix(AgsFunction *function,
+			     AgsSolverMatrix *solver_matrix);
+void ags_function_remove_matrix(AgsFunction *function,
+				AgsSolverMatrix *solver_matrix);
 
 AgsFunction* ags_function_new(gchar *source_function);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -479,7 +479,7 @@ ags_notebook_scroll_next_callback(GtkWidget *button,
  * 
  * Allocate #AgsNotebookTab-struct.
  * 
- * Returns: the newly allocated #AgsNotebookTab-struct
+ * Returns: (type gpointer) (transfer full): the newly allocated #AgsNotebookTab-struct
  * 
  * Since: 3.0.0
  */
@@ -488,7 +488,7 @@ ags_notebook_tab_alloc()
 {
   AgsNotebookTab *notebook_tab;
 
-  notebook_tab = (AgsNotebookTab *) malloc(sizeof(AgsNotebookTab));
+  notebook_tab = (AgsNotebookTab *) g_malloc(sizeof(AgsNotebookTab));
 
   notebook_tab->data = NULL;
   notebook_tab->toggle = NULL;
@@ -498,7 +498,7 @@ ags_notebook_tab_alloc()
 
 /**
  * ags_notebook_tab_free:
- * @tab: the #AgsNotebookTab-struct
+ * @tab: (type gpointer) (transfer full): the #AgsNotebookTab-struct
  * 
  * Free @tab's memory.
  * 
@@ -701,7 +701,7 @@ ags_notebook_add_tab(AgsNotebook *notebook)
 /**
  * ags_notebook_add_tab_with_label:
  * @notebook: the #AgsNotebook
- * @data: the assigned data
+ * @label: the label
  * 
  * Add a new #AgsNotebookTab-struct to @notebook and set specified @label.
  * 

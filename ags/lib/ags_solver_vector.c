@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -104,7 +104,16 @@ ags_solver_vector_class_init(AgsSolverVectorClass *solver_vector)
 void
 ags_solver_vector_init(AgsSolverVector *solver_vector)
 {
-  //TODO:JK: implement me
+  solver_vector->flags = 0;
+  
+  g_rec_mutex_init(&(solver_vector->obj_mutex));
+
+  solver_vector->polynomial_history = NULL;
+  
+  solver_vector->source_polynomial = NULL;
+  
+  solver_vector->polynomial_column = NULL;
+  solver_vector->polynomial_count = 0;
 }
 
 void
@@ -150,6 +159,133 @@ ags_solver_vector_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_solver_vector_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_solver_vector_insert_polynomial:
+ * @solver_vector: the #AgsSolverVector
+ * @solver_polynomial: the #AgsSolverPolynomial
+ * @position: the position
+ * 
+ * Insert @solver_polynomial to @solver_vector.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_solver_vector_insert_polynomial(AgsSolverVector *solver_vector,
+				    AgsSolverPolynomial *solver_polynomial,
+				    gint position)
+{
+  guint i, j;
+
+  GRecMutex *solver_vector_mutex;
+  
+  if(!AGS_IS_SOLVER_VECTOR(solver_vector) ||
+     !AGS_IS_SOLVER_POLYNOMIAL(solver_polynomial)){
+    return;
+  }
+
+  solver_vector_mutex = AGS_SOLVER_VECTOR_GET_OBJ_MUTEX(solver_vector);
+
+  g_rec_mutex_lock(solver_vector_mutex);
+  
+  if(position > solver_vector->polynomial_count){
+    position = solver_vector->polynomial_count;
+  }
+  
+  if(solver_vector->polynomial_column == NULL){
+    solver_vector->polynomial_column = (AgsSolverPolynomial **) g_malloc(sizeof(AgsSolverPolynomial *));
+  }else{
+    solver_vector->polynomial_column = (AgsSolverPolynomial **) g_realloc(solver_vector->polynomial_column,
+									  (solver_vector->polynomial_count + 1) * sizeof(AgsSolverPolynomial *));
+  }
+
+  g_object_ref(solver_polynomial);
+  
+  if(position < 0){
+    solver_vector->polynomial_column[solver_vector->polynomial_count] = solver_polynomial;
+  }else{
+    for(i = 0, j = 0; i < solver_vector->polynomial_count + 1; i++){
+      if(i > position){
+	solver_vector->polynomial_column[i] = solver_vector->polynomial_column[j];
+      }
+
+      if(i != position){
+	j++;
+      }
+    }
+
+    solver_vector->polynomial_column[position] = solver_polynomial;
+  }
+
+  solver_vector->polynomial_count += 1;
+  
+  g_rec_mutex_unlock(solver_vector_mutex);  
+}
+
+/**
+ * ags_solver_vector_remove_polynomial:
+ * @solver_vector: the #AgsSolverVector
+ * @solver_polynomial: the #AgsSolverPolynomial
+ * 
+ * Remove @solver_polynomial from @solver_vector.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_solver_vector_remove_polynomial(AgsSolverVector *solver_vector,
+				    AgsSolverPolynomial *solver_polynomial)
+{
+  gint position;
+  guint i, j;
+  
+  GRecMutex *solver_vector_mutex;
+  
+  if(!AGS_IS_SOLVER_VECTOR(solver_vector) ||
+     !AGS_IS_SOLVER_POLYNOMIAL(solver_polynomial)){
+    return;
+  }
+
+  solver_vector_mutex = AGS_SOLVER_VECTOR_GET_OBJ_MUTEX(solver_vector);
+
+  g_rec_mutex_lock(solver_vector_mutex);
+
+  position = -1;
+  
+  for(i = 0; i < solver_vector->polynomial_count; i++){
+    if(solver_vector->polynomial_column[i] == solver_polynomial){
+      position = i;
+
+      break;
+    }
+  }
+
+  if(position >= 0){
+    if(solver_vector->polynomial_count == 1){
+      g_free(solver_vector->polynomial_column);
+
+      solver_vector->polynomial_column = NULL;
+    }else{
+      for(i = 0, j = 0; i < solver_vector->polynomial_count; i++){
+	if(i > position){
+	  solver_vector->polynomial_column[j] = solver_vector->polynomial_column[i];
+	}
+
+	if(i != position){
+	  j++;
+	}
+      }
+      
+      solver_vector->polynomial_column = (AgsSolverPolynomial **) g_realloc(solver_vector->polynomial_column,
+									    (solver_vector->polynomial_count - 1) * sizeof(AgsSolverPolynomial *));
+    }
+
+    g_object_unref(solver_polynomial);
+  }
+
+  solver_vector->polynomial_count -= 1;
+  
+  g_rec_mutex_unlock(solver_vector_mutex);  
 }
 
 /**

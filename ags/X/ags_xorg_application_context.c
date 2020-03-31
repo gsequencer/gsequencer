@@ -2693,6 +2693,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 	       main_loop);
 
   /* audio main context and main loop */
+#if 1
   audio_main_context = g_main_context_new();
   g_main_context_ref(audio_main_context);
 
@@ -2704,7 +2705,10 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   g_thread_new("Advanced Gtk+ Sequencer - audio main loop",
 	       ags_xorg_application_context_audio_main_loop_thread,
 	       main_loop);
-
+#else
+  xorg_application_context->audio_main_context = NULL;  
+#endif
+  
   /* message delivery */
   message_delivery = ags_message_delivery_get_instance();
 
@@ -2745,8 +2749,10 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   application_context->task_launcher = (GObject *) task_launcher;
   ags_connectable_connect(AGS_CONNECTABLE(task_launcher));  
 
+#if 0  
   ags_task_launcher_attach(task_launcher,
 			   audio_main_context);
+#endif
   
   /* start audio loop and thread pool*/
   ags_thread_start(audio_loop);

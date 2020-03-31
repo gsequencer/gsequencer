@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,6 +63,12 @@ struct _AgsSolverMatrixClass
 };
 
 GType ags_solver_matrix_get_type(void);
+
+void ags_solver_matrix_insert_vector(AgsSolverMatrix *solver_matrix,
+				     AgsSolverVector *solver_vector,
+				     gint position);
+void ags_solver_matrix_remove_vector(AgsSolverMatrix *solver_matrix,
+				     AgsSolverVector *solver_vector);
 
 AgsSolverMatrix* ags_solver_matrix_new();
 

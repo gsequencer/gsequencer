@@ -12,8 +12,6 @@
 
 #include <ags/libags.h>
 
-#include <pthread.h>
-
 AgsApplicationContext *application_context;
 
 AgsThread *main_loop;

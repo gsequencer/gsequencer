@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -318,6 +318,30 @@ ags_led_draw(AgsLed *led, cairo_t *cr)
   g_boxed_free(GDK_TYPE_RGBA, border_color);
   
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
+}
+
+/**
+ * ags_led_is_active:
+ * @led: the #AgsLed
+ * 
+ * Set @led to active state.
+ * 
+ * Returns: %TRUE if led active, otherwise %FALSE
+ * 
+ * Since: 3.2.0
+ */
+gboolean
+ags_led_is_active(AgsLed *led)
+{
+  if(!AGS_IS_LED(led)){
+    return(FALSE);
+  }
+
+  if((AGS_LED_ACTIVE & (led->flags)) != 0){
+    return(TRUE);
+  }
+
+  return(FALSE);
 }
 
 /**

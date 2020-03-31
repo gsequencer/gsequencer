@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2902,8 +2902,55 @@ ags_midi_parser_text_event(AgsMidiParser *midi_parser, guint meta_type)
 }
 
 /**
+ * ags_midi_parser_open_filename:
+ * @midi_parser: the #AgsMidiParser
+ * @filename: the filename
+ * 
+ * Open @filename and assign FILE stream to @midi_parser.
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_midi_parser_open_filename(AgsMidiParser *midi_parser,
+			      gchar *filename)
+{
+  FILE *file;
+
+  if(!AGS_IS_MIDI_PARSER(midi_parser) ||
+     filename == NULL){
+    return;
+  }
+
+  file = fopen(filename, "r");
+  
+  g_object_set(midi_parser,
+	       "file", file,
+	       NULL);
+}
+
+/**
+ * ags_midi_parser_set_buffer:
+ * @midi_parser: the #AgsMidiParser
+ * @buffer: the buffer
+ * 
+ * Set buffer of @midi_parser
+ * 
+ * Since: 3.2.0
+ */
+void
+ags_midi_parser_set_buffer(AgsMidiParser *midi_parser,
+			   guchar *buffer)
+{
+  if(!AGS_IS_MIDI_PARSER(midi_parser)){
+    return;
+  }
+
+  midi_parser->buffer = buffer;
+}
+
+/**
  * ags_midi_parser_new:
- * @file: the FILE handle
+ * @file: (nullable): the FILE handle
  * 
  * Creates a new instance of #AgsMidiParser
  *
@@ -2915,7 +2962,6 @@ AgsMidiParser*
 ags_midi_parser_new(FILE *file)
 {
   AgsMidiParser *midi_parser;
-  struct stat sb;
   
   midi_parser = (AgsMidiParser *) g_object_new(AGS_TYPE_MIDI_PARSER,
 					       "file", file,
@@ -2925,3 +2971,26 @@ ags_midi_parser_new(FILE *file)
   return(midi_parser);
 }
 
+/**
+ * ags_midi_parser_new_from_filename:
+ * @filename: (nullable): the filename
+ * 
+ * Creates a new instance of #AgsMidiParser
+ *
+ * Returns: the new #AgsMidiParser
+ * 
+ * Since: 3.2.0
+ */
+AgsMidiParser*
+ags_midi_parser_new_from_filename(gchar *filename)
+{
+  AgsMidiParser *midi_parser;
+  
+  midi_parser = (AgsMidiParser *) g_object_new(AGS_TYPE_MIDI_PARSER,
+					       NULL);
+  
+  ags_midi_parser_open_filename(midi_parser,
+				filename);
+  
+  return(midi_parser);
+}

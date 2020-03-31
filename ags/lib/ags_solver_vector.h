@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #include <ags/lib/ags_complex.h>
+#include <ags/lib/ags_solver_polynomial.h>
 
 G_BEGIN_DECLS
 
@@ -47,12 +48,12 @@ struct _AgsSolverVector
   
   GRecMutex obj_mutex;
 
-  gchar *term;
-  gchar *term_exp;
+  gchar **polynomial_history;
 
-  AgsComplex *numeric_value;
-  gchar *symbol;
-  AgsComplex *exp_value;
+  gchar *source_polynomial;
+
+  AgsSolverPolynomial **polynomial_column;
+  guint polynomial_count;
 };
 
 struct _AgsSolverVectorClass
@@ -61,6 +62,12 @@ struct _AgsSolverVectorClass
 };
 
 GType ags_solver_vector_get_type(void);
+
+void ags_solver_vector_insert_polynomial(AgsSolverVector *solver_vector,
+					 AgsSolverPolynomial *solver_polynomial,
+					 gint position);
+void ags_solver_vector_remove_polynomial(AgsSolverVector *solver_vector,
+					 AgsSolverPolynomial *solver_polynomial);
 
 AgsSolverVector* ags_solver_vector_new();
 

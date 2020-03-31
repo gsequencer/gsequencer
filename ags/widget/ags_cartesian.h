@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -228,7 +228,7 @@ struct _AgsPlot
   gchar **point_label;
 
   guint n_bitmaps;
-  unsigned char **bitmap;
+  guchar **bitmap;
   gdouble **bitmap_color;
 
   guint n_pixmaps;
@@ -241,10 +241,213 @@ GType ags_cartesian_get_type(void);
 AgsPlot* ags_plot_alloc(guint n_points, guint n_bitmaps, guint n_pixmaps);
 void ags_plot_free(AgsPlot *plot);
 
+guint ags_plot_get_n_points(AgsPlot *plot);
+void ags_plot_set_n_points(AgsPlot *plot,
+			   guint n_points);
+
+gboolean ags_plot_get_join_points(AgsPlot *plot);
+void ags_plot_set_join_points(AgsPlot *plot,
+			      gboolean join_points);
+
+gdouble** ags_plot_get_point(AgsPlot *plot);
+void ags_plot_set_point(AgsPlot *plot,
+			gdouble **point);
+
+gdouble** ags_plot_get_point_color(AgsPlot *plot);
+void ags_plot_set_point_color(AgsPlot *plot,
+			      gdouble **point_color);
+
+gchar** ags_plot_get_point_label(AgsPlot *plot);
+void ags_plot_set_point_label(AgsPlot *plot,
+			      gchar **point_label);
+
+guint ags_plot_get_n_bitmaps(AgsPlot *plot);
+void ags_plot_set_n_bitmaps(AgsPlot *plot,
+			    guint n_bitmaps);
+
+guchar** ags_plot_get_bitmap(AgsPlot *plot);
+void ags_plot_set_bitmap(AgsPlot *plot,
+			 guchar **bitmap);
+
+gdouble** ags_plot_get_bitmap_color(AgsPlot *plot);
+void ags_plot_set_bitmap_color(AgsPlot *plot,
+			       gdouble **bitmap_color);
+
+guint ags_plot_get_n_pixmaps(AgsPlot *plot);
+void ags_plot_set_n_pixmaps(AgsPlot *plot,
+			    guint n_pixmaps);
+
+guchar** ags_plot_get_pixmap(AgsPlot *plot);
+void ags_plot_set_pixmap(AgsPlot *plot,
+			 guchar **pixmap);
+
 void ags_cartesian_add_plot(AgsCartesian *cartesian,
 			    AgsPlot *plot);
 void ags_cartesian_remove_plot(AgsCartesian *cartesian,
 			       AgsPlot *plot);
+
+/* properties */
+gdouble ags_cartesian_get_x_margin(AgsCartesian *cartesian);
+void ags_cartesian_set_x_margin(AgsCartesian *cartesian,
+				gdouble x_margin);
+
+gdouble ags_cartesian_get_y_margin(AgsCartesian *cartesian);
+void ags_cartesian_set_y_margin(AgsCartesian *cartesian,
+				gdouble y_margin);
+
+gdouble ags_cartesian_get_center(AgsCartesian *cartesian);
+void ags_cartesian_set_center(AgsCartesian *cartesian,
+			      gdouble center);
+
+gdouble ags_cartesian_get_line_width(AgsCartesian *cartesian);
+void ags_cartesian_set_line_width(AgsCartesian *cartesian,
+				  gdouble line_width);
+
+gdouble ags_cartesian_get_point_radius(AgsCartesian *cartesian);
+void ags_cartesian_set_point_radius(AgsCartesian *cartesian,
+				    gdouble point_radius);
+
+gdouble ags_cartesian_get_font_size(AgsCartesian *cartesian);
+void ags_cartesian_set_font_size(AgsCartesian *cartesian,
+				 gdouble font_size);
+
+gdouble ags_cartesian_get_x_step_width(AgsCartesian *cartesian);
+void ags_cartesian_set_x_step_width(AgsCartesian *cartesian,
+				    gdouble x_step_width);
+
+gdouble ags_cartesian_get_y_step_height(AgsCartesian *cartesian);
+void ags_cartesian_set_y_step_height(AgsCartesian *cartesian,
+				     gdouble y_step_height);
+
+gdouble ags_cartesian_get_x_scale_step_width(AgsCartesian *cartesian);
+void ags_cartesian_set_x_scale_step_width(AgsCartesian *cartesian,
+					  gdouble x_scale_step_width);
+
+gdouble ags_cartesian_get_y_scale_step_height(AgsCartesian *cartesian);
+void ags_cartesian_set_y_scale_step_height(AgsCartesian *cartesian,
+					   gdouble y_scale_step_height);
+
+gdouble ags_cartesian_get_x_unit_x0(AgsCartesian *cartesian);
+void ags_cartesian_set_x_unit_x0(AgsCartesian *cartesian,
+				 gdouble x_unit_x0);
+
+gdouble ags_cartesian_get_x_unit_y0(AgsCartesian *cartesian);
+void ags_cartesian_set_x_unit_y0(AgsCartesian *cartesian,
+				 gdouble x_unit_y0);
+
+gdouble ags_cartesian_get_x_unit_size(AgsCartesian *cartesian);
+void ags_cartesian_set_x_unit_size(AgsCartesian *cartesian,
+				   gdouble x_unit_size);
+
+gdouble ags_cartesian_get_y_unit_x0(AgsCartesian *cartesian);
+void ags_cartesian_set_y_unit_x0(AgsCartesian *cartesian,
+				 gdouble y_unit_x0);
+
+gdouble ags_cartesian_get_y_unit_y0(AgsCartesian *cartesian);
+void ags_cartesian_set_y_unit_y0(AgsCartesian *cartesian,
+				 gdouble y_unit_y0);
+
+gdouble ags_cartesian_get_y_unit_size(AgsCartesian *cartesian);
+void ags_cartesian_set_y_unit_size(AgsCartesian *cartesian,
+				   gdouble y_unit_size);
+
+gdouble ags_cartesian_get_x_label_start(AgsCartesian *cartesian);
+void ags_cartesian_set_x_label_start(AgsCartesian *cartesian,
+				     gdouble x_label_start);
+
+gdouble ags_cartesian_get_x_label_step_width(AgsCartesian *cartesian);
+void ags_cartesian_set_x_label_step_width(AgsCartesian *cartesian,
+					  gdouble x_label_step_width);
+
+gdouble ags_cartesian_get_y_label_start(AgsCartesian *cartesian);
+void ags_cartesian_set_y_label_start(AgsCartesian *cartesian,
+				     gdouble y_label_start);
+
+gdouble ags_cartesian_get_y_label_step_height(AgsCartesian *cartesian);
+void ags_cartesian_set_y_label_step_height(AgsCartesian *cartesian,
+					   gdouble y_label_step_height);
+
+gdouble ags_cartesian_get_x_step(AgsCartesian *cartesian);
+void ags_cartesian_set_x_step(AgsCartesian *cartesian,
+			      gdouble x_step);
+
+gdouble ags_cartesian_get_y_step(AgsCartesian *cartesian);
+void ags_cartesian_set_y_step(AgsCartesian *cartesian,
+			      gdouble y_step);
+
+gdouble ags_cartesian_get_x_start(AgsCartesian *cartesian);
+void ags_cartesian_set_x_start(AgsCartesian *cartesian,
+			       gdouble x_start);
+
+gdouble ags_cartesian_get_x_end(AgsCartesian *cartesian);
+void ags_cartesian_set_x_end(AgsCartesian *cartesian,
+			     gdouble x_end);
+
+gdouble ags_cartesian_get_y_start(AgsCartesian *cartesian);
+void ags_cartesian_set_y_start(AgsCartesian *cartesian,
+			       gdouble y_start);
+
+gdouble ags_cartesian_get_y_end(AgsCartesian *cartesian);
+void ags_cartesian_set_y_end(AgsCartesian *cartesian,
+			     gdouble y_end);
+
+gchar* ags_cartesian_get_x_unit(AgsCartesian *cartesian);
+void ags_cartesian_set_x_unit(AgsCartesian *cartesian,
+			      gchar *x_unit);
+
+gchar* ags_cartesian_get_y_unit(AgsCartesian *cartesian);
+void ags_cartesian_set_y_unit(AgsCartesian *cartesian,
+			      gchar *y_unit);
+
+gchar** ags_cartesian_get_x_label(AgsCartesian *cartesian);
+void ags_cartesian_set_x_label(AgsCartesian *cartesian,
+			       gchar **x_label);
+
+gchar** ags_cartesian_get_y_label(AgsCartesian *cartesian);
+void ags_cartesian_set_y_label(AgsCartesian *cartesian,
+			       gchar **y_label);
+
+gdouble ags_cartesian_get_x_step_factor(AgsCartesian *cartesian);
+void ags_cartesian_set_x_step_factor(AgsCartesian *cartesian,
+				     gdouble x_step_factor);
+
+gdouble ags_cartesian_get_y_step_factor(AgsCartesian *cartesian);
+void ags_cartesian_set_y_step_factor(AgsCartesian *cartesian,
+				     gdouble y_step_factor);
+
+gdouble ags_cartesian_get_x_small_scale_factor(AgsCartesian *cartesian);
+void ags_cartesian_set_x_small_scale_factor(AgsCartesian *cartesian,
+					    gdouble x_small_scale_factor);
+
+gdouble ags_cartesian_get_x_big_scale_factor(AgsCartesian *cartesian);
+void ags_cartesian_set_x_big_scale_factor(AgsCartesian *cartesian,
+					  gdouble x_big_scale_factor);
+
+gdouble ags_cartesian_get_y_small_scale_factor(AgsCartesian *cartesian);
+void ags_cartesian_set_y_small_scale_factor(AgsCartesian *cartesian,
+					    gdouble y_small_scale_factor);
+
+gdouble ags_cartesian_get_y_big_scale_factor(AgsCartesian *cartesian);
+void ags_cartesian_set_y_big_scale_factor(AgsCartesian *cartesian,
+					  gdouble y_big_scale_factor);
+
+gdouble ags_cartesian_get_x_label_factor(AgsCartesian *cartesian);
+void ags_cartesian_set_x_label_factor(AgsCartesian *cartesian,
+				      gdouble x_label_factor);
+
+gdouble ags_cartesian_get_x_label_precision(AgsCartesian *cartesian);
+void ags_cartesian_set_x_label_precision(AgsCartesian *cartesian,
+					 gdouble x_label_precision);
+
+gdouble ags_cartesian_get_y_label_factor(AgsCartesian *cartesian);
+void ags_cartesian_set_y_label_factor(AgsCartesian *cartesian,
+				      gdouble y_label_factor);
+
+gdouble ags_cartesian_get_y_label_precision(AgsCartesian *cartesian);
+void ags_cartesian_set_y_label_precision(AgsCartesian *cartesian,
+					 gdouble y_label_precision);
+
+cairo_surface_t* ags_cartesian_get_surface(AgsCartesian *cartesian);
 
 /* predefined linear system */
 gdouble ags_cartesian_linear_step_conversion_func(gdouble current,
@@ -278,6 +481,7 @@ void ags_cartesian_reallocate_label(AgsCartesian *cartesian,
 void ags_cartesian_fill_label(AgsCartesian *cartesian,
 			      gboolean do_x_label);
 
+/* instantiate */
 AgsCartesian* ags_cartesian_new();
 
 #endif /*__AGS_CARTESIAN_H__*/

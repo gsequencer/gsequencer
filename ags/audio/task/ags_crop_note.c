@@ -628,6 +628,34 @@ ags_crop_note_launch(AgsTask *task)
 }
 
 /**
+ * ags_crop_note_set_selection:
+ * @crop_note: the #AgsCropNote
+ * @selection: (element-type AgsAudio.Note) (transfer none): the selection as #GList-struct
+ * 
+ * Set @selection of @crop_note.
+ * 
+ * Since: 3.2.3
+ */
+void
+ags_crop_note_set_selection(AgsCropNote *crop_note,
+			    GList *selection)
+{
+  if(!AGS_IS_CROP_NOTE(crop_note) ||
+     crop_note->selection == selection){
+    return;
+  }
+
+  if(crop_note->selection != NULL){
+    g_list_free_full(crop_note->selection,
+		     (GDestroyNotify) g_object_unref);
+  }
+  
+  crop_note->selection = g_list_copy_deep(selection,
+					  (GCopyFunc) g_object_ref,
+					  NULL);
+}
+
+/**
  * ags_crop_note_new:
  * @audio: the #AgsAudio
  * @notation: the #AgsNotation
@@ -665,11 +693,8 @@ ags_crop_note_new(AgsAudio *audio,
 					   "do-resize", do_resize,
 					   NULL);
 
-  //FIXME:JK: argh, introspection!
-  
-  crop_note->selection = g_list_copy_deep(selection,
-					  (GCopyFunc) g_object_ref,
-					  NULL);
+  ags_crop_note_set_selection(crop_note,
+			      selection);
   
   return(crop_note);
 }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -66,13 +66,25 @@ struct _AgsLedArrayClass
 
 GType ags_led_array_get_type(void);
 
+/* properties */
+guint ags_led_array_get_led_width(AgsLedArray *led_array);
+void ags_led_array_set_led_width(AgsLedArray *led_array,
+				 guint led_width);
+
+guint ags_led_array_get_led_height(AgsLedArray *led_array);
+void ags_led_array_set_led_height(AgsLedArray *led_array,
+				  guint led_height);
+
+guint ags_led_array_get_led_count(AgsLedArray *led_array);
 void ags_led_array_set_led_count(AgsLedArray *led_array,
 				 guint led_count);
 
+/* control */
 void ags_led_array_unset_all(AgsLedArray *led_array);
 void ags_led_array_set_nth(AgsLedArray *led_array,
 			   guint nth);
 
+/* instantiate */
 AgsLedArray* ags_led_array_new();
 
 #endif /*__AGS_LED_ARRAY_H__*/
