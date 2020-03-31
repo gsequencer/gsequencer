@@ -1398,6 +1398,7 @@ ags_reset_amplitude_remove
 ags_reset_amplitude_get_instance
 ags_reset_amplitude_new
 ags_crop_note_get_type
+ags_crop_note_set_selection
 ags_crop_note_new
 ags_set_device_get_type
 ags_set_device_new
@@ -1408,6 +1409,7 @@ ags_add_audio_new
 ags_seek_soundcard_get_type
 ags_seek_soundcard_new
 ags_move_note_get_type
+ags_move_note_set_selection
 ags_move_note_new
 ags_remove_soundcard_get_type
 ags_remove_soundcard_new
