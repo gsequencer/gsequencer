@@ -679,7 +679,7 @@ uint32_t
 ags_lv2_option_manager_lv2_options_get(LV2_Handle instance,
 				       LV2_Options_Option *options)
 {
-  guint retval, tmpval;
+  uint32_t retval, tmpval;
   guint i;
   
   if(options == NULL){
@@ -722,7 +722,7 @@ uint32_t
 ags_lv2_option_manager_lv2_options_set(LV2_Handle instance,
 				       LV2_Options_Option* options)
 {
-  guint retval, tmpval;
+  uint32_t retval, tmpval;
   guint i;
   
   if(options == NULL){

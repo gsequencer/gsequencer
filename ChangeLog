@@ -1,6 +1,8 @@
 ags (3.2.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented LV2_OPTIONS__options
+	* fixed LV2_OPTIONS__interface URI
 	* fixed ags_math_util_test.c to use ags_strv_equal()
 
 ags (3.2.4)
