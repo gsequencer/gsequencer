@@ -1,3 +1,8 @@
+ags (3.2.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsLv2TurtleScanner quick scan
+
 ags (3.2.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1126,41 +1126,75 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  if(filename != NULL &&
+     effect != NULL){
+    AgsTurtle *manifest;
+    AgsTurtleManager *turtle_manager;
+    
+    gchar *path;
+    gchar *manifest_filename;
+
+    turtle_manager = ags_turtle_manager_get_instance();
+    
+    path = g_path_get_dirname(filename);
+
+    manifest_filename = g_strdup_printf("%s%c%s",
+					path,
+					G_DIR_SEPARATOR,
+					"manifest.ttl");
+
+    manifest = ags_turtle_manager_find(turtle_manager,
+				       manifest_filename);
+
+    if(manifest == NULL){
+      AgsLv2TurtleParser *lv2_turtle_parser;
+	
+      AgsTurtle **turtle;
+
+      guint n_turtle;
+
+      if(!g_file_test(manifest_filename,
+		      G_FILE_TEST_EXISTS)){
+	return;
+      }
+
+      g_message("new turtle [Manifest] - %s", manifest_filename);
+	
+      manifest = ags_turtle_new(manifest_filename);
+      ags_turtle_load(manifest,
+		      NULL);
+      ags_turtle_manager_add(turtle_manager,
+			     (GObject *) manifest);
+
+      lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
+
+      n_turtle = 1;
+      turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
+
+      turtle[0] = manifest;
+      turtle[1] = NULL;
+	
+      ags_lv2_turtle_parser_parse(lv2_turtle_parser,
+				  turtle, n_turtle);
+    
+      g_object_run_dispose(lv2_turtle_parser);
+      g_object_unref(lv2_turtle_parser);
+	
+      g_object_unref(manifest);
+	
+      free(turtle);
+    }
+    
+    g_free(manifest_filename);
+  }
   
   /* create lv2 bridge */    
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       filename, effect);
 
-  if(lv2_plugin != NULL &&
-     AGS_BASE_PLUGIN(lv2_plugin)->plugin_port == NULL){
-    AgsLv2TurtleParser *lv2_turtle_parser;
-	
-    AgsTurtle *manifest;
-    AgsTurtle **turtle;
-
-    guint n_turtle;
-
-    g_object_get(lv2_plugin,
-		 "manifest", &manifest,
-		 NULL);
-
-    lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
-
-    n_turtle = 1;
-    turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
-
-    turtle[0] = manifest;
-    turtle[1] = NULL;
-	
-    ags_lv2_turtle_parser_parse(lv2_turtle_parser,
-				turtle, n_turtle);
-    
-    g_object_run_dispose(lv2_turtle_parser);
-    g_object_unref(lv2_turtle_parser);
-	
-    g_object_unref(manifest);
-	
-    free(turtle);
+  if(lv2_plugin == NULL){
+    return;
   }
   
   lv2_bridge = ags_lv2_bridge_new(G_OBJECT(default_soundcard),
@@ -1320,39 +1354,73 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   /* create live lv2 bridge */    
+  if(filename != NULL &&
+     effect != NULL){
+    AgsTurtle *manifest;
+    AgsTurtleManager *turtle_manager;
+    
+    gchar *path;
+    gchar *manifest_filename;
+
+    turtle_manager = ags_turtle_manager_get_instance();
+    
+    path = g_path_get_dirname(filename);
+
+    manifest_filename = g_strdup_printf("%s%c%s",
+					path,
+					G_DIR_SEPARATOR,
+					"manifest.ttl");
+
+    manifest = ags_turtle_manager_find(turtle_manager,
+				       manifest_filename);
+
+    if(manifest == NULL){
+      AgsLv2TurtleParser *lv2_turtle_parser;
+	
+      AgsTurtle **turtle;
+
+      guint n_turtle;
+
+      if(!g_file_test(manifest_filename,
+		      G_FILE_TEST_EXISTS)){
+	return;
+      }
+
+      g_message("new turtle [Manifest] - %s", manifest_filename);
+	
+      manifest = ags_turtle_new(manifest_filename);
+      ags_turtle_load(manifest,
+		      NULL);
+      ags_turtle_manager_add(turtle_manager,
+			     (GObject *) manifest);
+
+      lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
+
+      n_turtle = 1;
+      turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
+
+      turtle[0] = manifest;
+      turtle[1] = NULL;
+	
+      ags_lv2_turtle_parser_parse(lv2_turtle_parser,
+				  turtle, n_turtle);
+    
+      g_object_run_dispose(lv2_turtle_parser);
+      g_object_unref(lv2_turtle_parser);
+	
+      g_object_unref(manifest);
+	
+      free(turtle);
+    }
+    
+    g_free(manifest_filename);
+  }
+
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       filename, effect);
 
-  if(lv2_plugin != NULL &&
-     AGS_BASE_PLUGIN(lv2_plugin)->plugin_port == NULL){
-    AgsLv2TurtleParser *lv2_turtle_parser;
-	
-    AgsTurtle *manifest;
-    AgsTurtle **turtle;
-
-    guint n_turtle;
-
-    g_object_get(lv2_plugin,
-		 "manifest", &manifest,
-		 NULL);
-
-    lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
-
-    n_turtle = 1;
-    turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
-
-    turtle[0] = manifest;
-    turtle[1] = NULL;
-	
-    ags_lv2_turtle_parser_parse(lv2_turtle_parser,
-				turtle, n_turtle);
-    
-    g_object_run_dispose(lv2_turtle_parser);
-    g_object_unref(lv2_turtle_parser);
-	
-    g_object_unref(manifest);
-	
-    free(turtle);
+  if(lv2_plugin == NULL){
+    return;
   }
   
   live_lv2_bridge = ags_live_lv2_bridge_new(G_OBJECT(default_soundcard),

@@ -1723,8 +1723,9 @@ ags_lv2_turtle_scanner_load_read_object_list(AgsLv2TurtleScanner *lv2_turtle_sca
       path = g_path_get_dirname(cache_turtle->turtle_filename);
       
       g_hash_table_insert(manifest_cache_turtle->plugin_filename,
-			  g_strdup(lv2_turtle_scanner->current_subject_iriref), g_strdup_printf("%s/%.*s",
+			  g_strdup(lv2_turtle_scanner->current_subject_iriref), g_strdup_printf("%s%c%.*s",
 												path,
+												G_DIR_SEPARATOR,
 												(gint) (strlen(iriref) - 2),
 												iriref + 1));
 
@@ -2135,8 +2136,9 @@ ags_lv2_turtle_scanner_quick_scan_see_also(AgsLv2TurtleScanner *lv2_turtle_scann
       gchar *path;
 
       path = g_path_get_dirname(turtle_filename);
-      filename = g_strdup_printf("%s/%.*s",
+      filename = g_strdup_printf("%s%c%.*s",
 				 path,
+				 G_DIR_SEPARATOR,
 				 (int) (strlen(see_also[0]) - 2),
 				 see_also[0] + 1);
       
@@ -2252,8 +2254,9 @@ ags_lv2_turtle_scanner_quick_scan(AgsLv2TurtleScanner *lv2_turtle_scanner,
       gchar *path;
 
       path = g_path_get_dirname(manifest_filename);
-      filename = g_strdup_printf("%s/%.*s",
+      filename = g_strdup_printf("%s%c%.*s",
 				 path,
+				 G_DIR_SEPARATOR,
 				 (int) (strlen(see_also[0]) - 2),
 				 see_also[0] + 1);
 

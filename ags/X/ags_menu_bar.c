@@ -846,8 +846,6 @@ ags_lv2_bridge_menu_new()
 
   AgsLv2Manager *lv2_manager;
 
-  GList *list, *start_list;
-
   guint length;
   guint i;
   
@@ -987,7 +985,8 @@ ags_live_lv2_bridge_menu_new()
 
   AgsLv2Manager *lv2_manager;
 
-  GList *list, *start_list;
+  guint length;
+  guint i;
 
   GRecMutex *lv2_manager_mutex;
   
@@ -1000,32 +999,21 @@ ags_live_lv2_bridge_menu_new()
 
   /* get plugin */
   g_rec_mutex_lock(lv2_manager_mutex);
-  
-  list =
-    start_list = g_list_copy_deep(lv2_manager->lv2_plugin,
-				  (GCopyFunc) g_object_ref,
-				  NULL);
 
-  g_rec_mutex_unlock(lv2_manager_mutex);
-  
-  start_list = ags_base_plugin_sort(start_list);
-  g_list_free(list);
- 
-  list = start_list;
-  
-  while(list != NULL){
-    if(ags_lv2_plugin_test_flags(list->data, AGS_LV2_PLUGIN_IS_SYNTHESIZER)){
-      gchar *filename, *effect;
-      
-      /* get filename and effect */
-      g_object_get(list->data,
-		   "filename", &filename,
-		   "effect", &effect,
-		   NULL);
-      
-      /* create item */
+  length = g_strv_length(lv2_manager->quick_scan_instrument_filename);
+
+  for(i = 0; i < length; i++){
+    gchar *filename, *effect;
+    
+    /* get filename and effect */
+    filename = lv2_manager->quick_scan_instrument_filename[i];
+    effect = lv2_manager->quick_scan_instrument_effect[i];
+    
+    /* create item */
+    if(filename != NULL &&
+       effect != NULL){
       item = (GtkMenuItem *) gtk_menu_item_new_with_label(effect);
-
+    
       g_object_set_data((GObject *) item,
 			AGS_MENU_ITEM_FILENAME_KEY, filename);
       g_object_set_data((GObject *) item,
@@ -1034,10 +1022,10 @@ ags_live_lv2_bridge_menu_new()
       gtk_menu_shell_append((GtkMenuShell *) menu,
 			    (GtkWidget *) item);
     }
-    
-    list = list->next;
   }
-  
+
+  g_rec_mutex_unlock(lv2_manager_mutex);
+    
   return(menu);
 }
 
