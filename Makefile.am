@@ -1082,6 +1082,7 @@ libags_plugin_h_sources = \
 	ags/plugin/ags_lv2_conversion.h \
 	ags/plugin/ags_lv2_manager.h \
 	ags/plugin/ags_lv2_turtle_parser.h \
+	ags/plugin/ags_lv2_turtle_scanner.h \
 	ags/plugin/ags_lv2_plugin.h \
 	ags/plugin/ags_lv2_preset_manager.h \
 	ags/plugin/ags_lv2_preset.h \
@@ -1110,6 +1111,7 @@ libags_plugin_c_sources = \
 	ags/plugin/ags_lv2_conversion.c \
 	ags/plugin/ags_lv2_manager.c \
 	ags/plugin/ags_lv2_turtle_parser.c \
+	ags/plugin/ags_lv2_turtle_scanner.c \
 	ags/plugin/ags_lv2_plugin.c \
 	ags/plugin/ags_lv2_preset_manager.c \
 	ags/plugin/ags_lv2_preset.c \

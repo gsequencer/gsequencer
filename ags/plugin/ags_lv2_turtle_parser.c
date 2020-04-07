@@ -465,7 +465,6 @@ ags_lv2_turtle_parser_finalize(GObject *gobject)
 
   lv2_turtle_parser = AGS_LV2_TURTLE_PARSER(gobject);
 
-  /* destroy object mutex */
   if(lv2_turtle_parser->turtle != NULL){
     g_list_free_full(lv2_turtle_parser->turtle,
 		     g_object_unref);
