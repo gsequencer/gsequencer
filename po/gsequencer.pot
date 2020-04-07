@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.2.6\n"
+"Project-Id-Version: gsequencer 3.2.7\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-04-07 10:05+0200\n"
+"POT-Creation-Date: 2020-04-07 22:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -208,12 +208,12 @@ msgid "About"
 msgstr ""
 
 #: ags/X/ags_dssi_browser.c:152 ags/X/ags_ladspa_browser.c:145
-#: ags/X/ags_lv2_browser.c:149 ags/X/machine/ags_audiorec.c:216
+#: ags/X/ags_lv2_browser.c:156 ags/X/machine/ags_audiorec.c:216
 msgid "filename: "
 msgstr ""
 
 #: ags/X/ags_dssi_browser.c:181 ags/X/ags_ladspa_browser.c:188
-#: ags/X/ags_lv2_browser.c:192
+#: ags/X/ags_lv2_browser.c:202
 msgid "effect: "
 msgstr ""
 
@@ -364,23 +364,23 @@ msgstr ""
 msgid "audio channel: "
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:212 ags/X/ags_lv2_browser_callbacks.c:174
-#: ags/X/ags_lv2_browser_callbacks.c:297
+#: ags/X/ags_lv2_browser.c:222 ags/X/ags_lv2_browser_callbacks.c:273
+#: ags/X/ags_lv2_browser_callbacks.c:396
 msgid "Name"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:225 ags/X/ags_lv2_browser_callbacks.c:184
-#: ags/X/ags_lv2_browser_callbacks.c:306
+#: ags/X/ags_lv2_browser.c:235 ags/X/ags_lv2_browser_callbacks.c:283
+#: ags/X/ags_lv2_browser_callbacks.c:405
 msgid "Homepage"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:238 ags/X/ags_lv2_browser_callbacks.c:194
-#: ags/X/ags_lv2_browser_callbacks.c:315
+#: ags/X/ags_lv2_browser.c:248 ags/X/ags_lv2_browser_callbacks.c:293
+#: ags/X/ags_lv2_browser_callbacks.c:414
 msgid "M-Box"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:251 ags/X/ags_lv2_browser_callbacks.c:205
-#: ags/X/ags_lv2_browser_callbacks.c:324
+#: ags/X/ags_lv2_browser.c:261 ags/X/ags_lv2_browser_callbacks.c:304
+#: ags/X/ags_lv2_browser_callbacks.c:423
 msgid "Ports"
 msgstr ""
 
@@ -724,27 +724,27 @@ msgstr ""
 msgid "Lv2"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3309
+#: ags/X/ags_xorg_application_context.c:3311
 #: ags/audio/ags_audio_application_context.c:2139
 #: ags/audio/task/ags_apply_sound_config.c:894
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3319
+#: ags/X/ags_xorg_application_context.c:3321
 #: ags/audio/ags_audio_application_context.c:2149
 #: ags/audio/task/ags_apply_sound_config.c:904
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3561
+#: ags/X/ags_xorg_application_context.c:3563
 #: ags/audio/ags_audio_application_context.c:2391
 #: ags/audio/task/ags_apply_sound_config.c:1144
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3571
+#: ags/X/ags_xorg_application_context.c:3573
 #: ags/audio/ags_audio_application_context.c:2401
 #: ags/audio/task/ags_apply_sound_config.c:1154
 msgid "unknown sequencer backend - NULL"

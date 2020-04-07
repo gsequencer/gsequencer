@@ -343,7 +343,7 @@ ags_lv2_turtle_scanner_load_skip_comments_and_blanks(AgsLv2TurtleScanner *lv2_tu
     }
 
     /* spaces */
-    if(!(*look_ahead == ' ' || *look_ahead == '\t' || *look_ahead == '\n')){
+    if(!(look_ahead[0] == ' ' || look_ahead[0] == '\t' || look_ahead[0] == '\n')){
       break;
     }
   }
@@ -684,19 +684,19 @@ ags_lv2_turtle_scanner_load_read_prefix_id(AgsLv2TurtleScanner *lv2_turtle_scann
   if(ags_regexec(&prefix_id_regex, look_ahead, max_matches, match_arr, 0) == 0){
     look_ahead += (match_arr[0].rm_eo - match_arr[0].rm_so);
       
+    look_ahead = ags_lv2_turtle_scanner_load_skip_comments_and_blanks(lv2_turtle_scanner,
+								      buffer, buffer_length,
+								      &look_ahead);
     rdf_pname_ns_str = look_ahead;
-    rdf_pname_ns_str = ags_lv2_turtle_scanner_load_skip_comments_and_blanks(lv2_turtle_scanner,
-									    buffer, buffer_length,
-									    &rdf_pname_ns_str);
 
     ags_lv2_turtle_scanner_load_read_pname_ns(lv2_turtle_scanner,
 					      buffer, buffer_length,
 					      &look_ahead);
-      
+    
+    look_ahead = ags_lv2_turtle_scanner_load_skip_comments_and_blanks(lv2_turtle_scanner,
+								      buffer, buffer_length,
+								      &look_ahead);
     rdf_iriref_str = look_ahead;
-    rdf_iriref_str = ags_lv2_turtle_scanner_load_skip_comments_and_blanks(lv2_turtle_scanner,
-									  buffer, buffer_length,
-									  &rdf_iriref_str);
 
     ags_lv2_turtle_scanner_load_read_iriref(lv2_turtle_scanner,
 					    buffer, buffer_length,
@@ -832,8 +832,8 @@ ags_lv2_turtle_scanner_load_read_sparql_prefix(AgsLv2TurtleScanner *lv2_turtle_s
     rdf_pname_ns_str = look_ahead;
     
     ags_lv2_turtle_scanner_load_read_pname_ns(lv2_turtle_scanner,
-				  buffer, buffer_length,
-				  &look_ahead);
+					      buffer, buffer_length,
+					      &look_ahead);
       
     look_ahead = ags_lv2_turtle_scanner_load_skip_comments_and_blanks(lv2_turtle_scanner,
 								      buffer, buffer_length,
@@ -1487,7 +1487,7 @@ ags_lv2_turtle_scanner_load_read_subject(AgsLv2TurtleScanner *lv2_turtle_scanner
 	AgsLv2CacheTurtle *cache_turtle_iter;
   
 	cache_turtle = lv2_turtle_scanner->cache_turtle->data;
-	
+
 	for(cache_turtle_iter = cache_turtle; cache_turtle_iter != NULL;){
 	  GList *start_list, *list;
 
@@ -1498,9 +1498,16 @@ ags_lv2_turtle_scanner_load_read_subject(AgsLv2TurtleScanner *lv2_turtle_scanner
 	  suffix = strchr(pname, ':');
 
 	  if(suffix != NULL){
+	    suffix += 1;
+	    
 	    prefix = g_strndup(pname,
-			       suffix - pname + 1);
-	    suffix = g_strdup(suffix + 1);
+			       suffix - pname);
+
+	    if(suffix != '\0'){
+	      suffix = g_strdup(suffix);
+	    }else{
+	      suffix = NULL;
+	    }
 	  }
 
 	  list =
@@ -1531,6 +1538,10 @@ ags_lv2_turtle_scanner_load_read_subject(AgsLv2TurtleScanner *lv2_turtle_scanner
 	    iriref = g_strdup_printf("%s%s",
 				     str,
 				     suffix);
+
+	    lv2_turtle_scanner->current_subject_iriref = iriref;
+	  }else if(str != NULL){
+	    iriref = g_strdup(str);
 
 	    lv2_turtle_scanner->current_subject_iriref = iriref;
 	  }
@@ -1722,13 +1733,15 @@ ags_lv2_turtle_scanner_load_read_object_list(AgsLv2TurtleScanner *lv2_turtle_sca
 
       path = g_path_get_dirname(cache_turtle->turtle_filename);
       
-      g_hash_table_insert(manifest_cache_turtle->plugin_filename,
-			  g_strdup(lv2_turtle_scanner->current_subject_iriref), g_strdup_printf("%s%c%.*s",
-												path,
-												G_DIR_SEPARATOR,
-												(gint) (strlen(iriref) - 2),
-												iriref + 1));
-
+      if(lv2_turtle_scanner->current_subject_iriref != NULL){
+	g_hash_table_insert(manifest_cache_turtle->plugin_filename,
+			    g_strdup(lv2_turtle_scanner->current_subject_iriref), g_strdup_printf("%s%c%.*s",
+												  path,
+												  G_DIR_SEPARATOR,
+												  (gint) (strlen(iriref) - 2),
+												  iriref + 1));
+      }
+      
       g_free(path);
       g_free(iriref);
     }
@@ -1780,8 +1793,10 @@ ags_lv2_turtle_scanner_load_read_object_list(AgsLv2TurtleScanner *lv2_turtle_sca
 	name = tmp;
       }
       
-      g_hash_table_insert(manifest_cache_turtle->plugin_effect,
-			  g_strdup(lv2_turtle_scanner->current_subject_iriref), name);
+      if(lv2_turtle_scanner->current_subject_iriref != NULL){
+	g_hash_table_insert(manifest_cache_turtle->plugin_effect,
+			    g_strdup(lv2_turtle_scanner->current_subject_iriref), name);
+      }
     }
     
     /* iterate */
@@ -1858,13 +1873,17 @@ ags_lv2_turtle_scanner_load_read_object_list(AgsLv2TurtleScanner *lv2_turtle_sca
   }
 
   if(is_plugin){
-    g_hash_table_insert(manifest_cache_turtle->is_plugin,
-			g_strdup(lv2_turtle_scanner->current_subject_iriref), GINT_TO_POINTER(TRUE));
+    if(lv2_turtle_scanner->current_subject_iriref != NULL){
+      g_hash_table_insert(manifest_cache_turtle->is_plugin,
+			  g_strdup(lv2_turtle_scanner->current_subject_iriref), GINT_TO_POINTER(TRUE));
+    }
   }
       
   if(is_instrument){
-    g_hash_table_insert(manifest_cache_turtle->is_instrument,
-			g_strdup(lv2_turtle_scanner->current_subject_iriref), GINT_TO_POINTER(TRUE));
+    if(lv2_turtle_scanner->current_subject_iriref != NULL){
+      g_hash_table_insert(manifest_cache_turtle->is_instrument,
+			  g_strdup(lv2_turtle_scanner->current_subject_iriref), GINT_TO_POINTER(TRUE));
+    }
   }
 
   lv2_turtle_scanner->status_flags = 0;
