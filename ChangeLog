@@ -1,3 +1,9 @@
+ags (3.2.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-play-lv2 to handle note-on correctly
+	* fixed ags-play-dssi to handle note-on correctly
+
 ags (3.2.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
