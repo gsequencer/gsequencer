@@ -229,6 +229,11 @@ ags_lv2_turtle_scanner_finalize(GObject *gobject)
   AgsLv2TurtleScanner *lv2_turtle_scanner;
 
   lv2_turtle_scanner = AGS_LV2_TURTLE_SCANNER(gobject);
+
+  g_list_free_full(lv2_turtle_scanner->cache_turtle,
+		   (GDestroyNotify) ags_lv2_cache_turtle_free);
+
+  g_free(lv2_turtle_scanner->current_subject_iriref);
   
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_turtle_scanner_parent_class)->finalize(gobject);
