@@ -325,11 +325,11 @@ void ags_audio_set_input_soundcard(AgsAudio *audio,
 /* sequencer */
 GObject* ags_audio_get_output_sequencer(AgsAudio *audio);
 void ags_audio_set_output_sequencer(AgsAudio *audio,
-				    GObject *sequencer);
+				    GObject *output_sequencer);
 
 GObject* ags_audio_get_input_sequencer(AgsAudio *audio);
 void ags_audio_set_input_sequencer(AgsAudio *audio,
-				   GObject *sequencer);
+				   GObject *input_sequencer);
 
 /* presets */
 guint ags_audio_get_samplerate(AgsAudio *audio);

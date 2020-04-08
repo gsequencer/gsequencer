@@ -1,6 +1,28 @@
+ags (3.2.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* updated API Reference Manuals
+	* minor improvements
+
+ags (3.2.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsLv2TurtleScanner quick scan
+	* added AgsSimpleFile fixup to deal with LV2 quotes
+	* fixed LV2 quotes in effect and specifier
+	* minor bug-fixes
+
+ags (3.2.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-play-lv2 to handle note-on correctly
+	* fixed ags-play-dssi to handle note-on correctly
+
 ags (3.2.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented LV2_OPTIONS__options
+	* fixed LV2_OPTIONS__interface URI
 	* fixed ags_math_util_test.c to use ags_strv_equal()
 
 ags (3.2.4)

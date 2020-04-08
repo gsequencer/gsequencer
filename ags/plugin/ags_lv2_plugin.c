@@ -877,6 +877,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   guint conf_samplerate;
   double rate;
   guint total_feature;
+  guint options_feature_position;
   guint nth;
   guint i;
   gboolean initial_call;
@@ -976,6 +977,8 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 
   worker_handle = NULL;
 
+  options_feature_position = 0;
+  
   if(feature == NULL){    
     initial_call = TRUE;
 
@@ -1069,8 +1072,17 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     options_interface->get = ags_lv2_option_manager_lv2_options_get;
   
     feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-    feature[nth]->URI = LV2_OPTIONS_URI;
+    feature[nth]->URI = LV2_OPTIONS__interface;
     feature[nth]->data = options_interface;
+
+    nth++;
+
+    /* Options options */
+    options_feature_position = nth;
+    
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_OPTIONS__options;
+    feature[nth]->data = NULL;
 
     nth++;
 
@@ -1124,13 +1136,6 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   
   /* instantiate */
   rate = (double) samplerate;
-
-  if(instantiate != NULL){
-    lv2_handle[0] = instantiate(plugin_descriptor,
-				rate,
-				path,
-				feature);
-  }
   
   if(initial_call){
     /* some options */
@@ -1215,9 +1220,18 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     options[5].type = 0;
     options[5].value = NULL;
     
+    feature[options_feature_position]->data = options;
+    
     /* set options */
     ags_lv2_option_manager_lv2_options_set(lv2_handle[0],
 					   options);
+  }
+
+  if(instantiate != NULL){
+    lv2_handle[0] = instantiate(plugin_descriptor,
+				rate,
+				path,
+				feature);
   }
   
   /*  */  

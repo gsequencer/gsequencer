@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1493,16 +1493,17 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       start_append_note = g_list_prepend(start_append_note,
 					 note);
       g_object_ref(note);
-    }else if(do_feed &&
-	     notation_counter != 0 &&
-	     (note_x1 == notation_counter ||
-	      note_x1 == notation_counter - 1)){
+    }else if((do_feed &&
+	      (note_x1 == notation_counter ||
+	       note_x1 + 1 == notation_counter)) ||
+	     (!do_feed &&
+	      note_x0 <= notation_counter &&
+	      note_x1 > notation_counter)){
       //feed
     }else if((do_feed &&
-	      notation_counter > 1 &&
-	      note_x1 == notation_counter - 2) ||
+	      note_x1 + 1 == notation_counter) ||
 	     (!do_feed &&
-	      note_x1 <= notation_counter)){
+	      note_x1 == notation_counter)){
       start_remove_note = g_list_prepend(start_remove_note,
 					 note);
       g_object_ref(note);
@@ -1538,7 +1539,7 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     }
 
     /* key on */
-    seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
+    seq_event = (snd_seq_event_t *) g_malloc(sizeof(snd_seq_event_t));
     memset(seq_event, 0, sizeof(snd_seq_event_t));
 
     seq_event->type = SND_SEQ_EVENT_NOTEON;
@@ -1566,7 +1567,7 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       play_lv2_audio_run->key_on += 1;
     }
       
-    free(seq_event);
+    g_free(seq_event);
     
     /* iterate */
     g_object_unref(append_note->data);

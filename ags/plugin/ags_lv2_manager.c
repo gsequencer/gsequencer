@@ -21,6 +21,7 @@
 
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_lv2_turtle_parser.h>
+#include <ags/plugin/ags_lv2_turtle_scanner.h>
 
 #if defined(AGS_W32API)
 #include <windows.h>
@@ -51,6 +52,9 @@ void ags_lv2_manager_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_lv2_manager_dispose(GObject *gobject);
 void ags_lv2_manager_finalize(GObject *gobject);
+
+gint ags_lv2_manager_compare_strv(gconstpointer a,
+				  gconstpointer b);
 
 /**
  * SECTION:ags_lv2_manager
@@ -279,6 +283,13 @@ ags_lv2_manager_init(AgsLv2Manager *lv2_manager)
 #endif
     }
   }
+
+  /* quick scan filename and effect */
+  lv2_manager->quick_scan_plugin_filename = NULL;
+  lv2_manager->quick_scan_plugin_effect = NULL;
+
+  lv2_manager->quick_scan_instrument_filename = NULL;
+  lv2_manager->quick_scan_instrument_effect = NULL;
 }
 
 void
@@ -707,6 +718,259 @@ ags_lv2_manager_load_preset(AgsLv2Manager *lv2_manager,
 			    AgsLv2Plugin *lv2_plugin,
 			    AgsTurtle *preset)
 {
+}
+
+gint
+ags_lv2_manager_compare_strv(gconstpointer a,
+			     gconstpointer b)
+{
+  return(g_strcmp0(((gchar **) a)[1], ((gchar **) b)[1]));
+}
+
+/**
+ * ags_lv2_manager_quick_scan_default_directory:
+ * @lv2_manager: the #AgsLv2Manager
+ * 
+ * Quick scan available plugins.
+ *
+ * Since: 3.2.7
+ */
+void
+ags_lv2_manager_quick_scan_default_directory(AgsLv2Manager *lv2_manager)
+{
+  AgsLv2TurtleScanner *lv2_turtle_scanner;
+  
+  GDir *dir;
+
+  GList *start_lv2_cache_turtle, *lv2_cache_turtle;
+
+  GList *start_plugin;
+  GList *start_instrument;
+  
+  gchar **quick_scan_plugin_filename;
+  gchar **quick_scan_plugin_effect;
+  
+  gchar **quick_scan_instrument_filename;
+  gchar **quick_scan_instrument_effect;  
+
+  gchar **lv2_path;
+  gchar *path, *plugin_path;
+  gchar *str;
+
+  GError *error;
+  
+  if(!AGS_IS_LV2_MANAGER(lv2_manager)){
+    return;
+  }
+
+  lv2_turtle_scanner = ags_lv2_turtle_scanner_new();
+  
+  lv2_path = ags_lv2_default_path;
+
+  while(*lv2_path != NULL){
+    if(!g_file_test(*lv2_path,
+		    G_FILE_TEST_EXISTS)){
+      lv2_path++;
+      
+      continue;
+    }
+
+    error = NULL;
+    dir = g_dir_open(*lv2_path,
+		     0,
+		     &error);
+
+    if(error != NULL){
+      g_warning("%s", error->message);
+
+      lv2_path++;
+
+      g_error_free(error);
+      
+      continue;
+    }
+
+    while((path = g_dir_read_name(dir)) != NULL){
+      if(!g_ascii_strncasecmp(path,
+			      "..",
+			      3) ||
+	 !g_ascii_strncasecmp(path,
+			      ".",
+			      2)){
+	continue;
+      }
+    
+      plugin_path = g_strdup_printf("%s%c%s",
+				    *lv2_path,
+				    G_DIR_SEPARATOR,
+				    path);
+
+      if(g_file_test(plugin_path,
+		     G_FILE_TEST_IS_DIR)){
+
+	gchar *manifest_filename;
+	
+	guint n_turtle;
+	
+	manifest_filename = g_strdup_printf("%s%c%s",
+					    plugin_path,
+					    G_DIR_SEPARATOR,
+					    "manifest.ttl");
+
+	if(!g_file_test(manifest_filename,
+			G_FILE_TEST_EXISTS)){
+	  g_free(manifest_filename);
+	  
+	  continue;
+	}
+	
+	g_message("quick scan turtle [Manifest] - %s", manifest_filename);
+	
+	ags_lv2_turtle_scanner_quick_scan(lv2_turtle_scanner,
+					  manifest_filename);
+
+	g_free(manifest_filename);
+      }
+    }
+
+    lv2_path++;
+  }
+
+  /* read plugins */
+  lv2_cache_turtle =
+    start_lv2_cache_turtle = g_list_reverse(g_list_copy(lv2_turtle_scanner->cache_turtle));
+
+  start_plugin = NULL;
+  start_instrument = NULL; 
+  
+  quick_scan_plugin_filename = NULL;
+  quick_scan_plugin_effect = NULL;
+
+  quick_scan_instrument_filename = NULL;
+  quick_scan_instrument_effect = NULL;
+
+  while(lv2_cache_turtle != NULL){
+    AgsLv2CacheTurtle *current;
+
+    current = AGS_LV2_CACHE_TURTLE(lv2_cache_turtle->data);
+    
+    if(g_str_has_suffix(current->turtle_filename,
+			"manifest.ttl")){
+      GList *start_list, *list;
+      
+      list =
+	start_list = g_hash_table_get_keys(current->plugin_filename);
+      
+      while(list != NULL){
+	gchar **strv;
+	
+	gchar *filename;
+	gchar *effect;
+
+	gboolean is_instrument;
+
+	filename = g_hash_table_lookup(current->plugin_filename,
+				       list->data);
+
+	effect = g_hash_table_lookup(current->plugin_effect,
+				     list->data);
+
+	is_instrument = FALSE;
+
+	if(g_hash_table_contains(current->is_instrument,
+				 list->data)){
+	  is_instrument = TRUE;
+	}
+
+	strv = g_malloc(3 * sizeof(gchar *));	
+	
+	strv[0] = g_strdup(filename);
+	strv[1] = g_strdup(effect);
+	strv[2] = NULL;
+	
+	if(!is_instrument){
+	  start_plugin = g_list_insert_sorted(start_plugin,
+					      strv,
+					      (GCompareFunc) ags_lv2_manager_compare_strv);
+	}else{
+	  start_instrument = g_list_insert_sorted(start_instrument,
+						  strv,
+						  (GCompareFunc) ags_lv2_manager_compare_strv);
+	}
+	
+	list = list->next;
+      }
+
+      g_list_free(start_list);
+    }
+    
+    lv2_cache_turtle = lv2_cache_turtle->next;
+  }
+
+  g_list_free(start_lv2_cache_turtle);
+
+  if(start_plugin != NULL){
+    GList *plugin;
+    
+    guint length;
+    guint i;
+
+    plugin = start_plugin;
+    
+    length = g_list_length(start_plugin);
+    
+    quick_scan_plugin_filename = (gchar **) g_malloc((length + 1) * sizeof(gchar *));
+    quick_scan_plugin_effect = (gchar **) g_malloc((length + 1) * sizeof(gchar *));
+
+    for(i = 0; i < length; i++){
+      quick_scan_plugin_filename[i] = ((gchar **) plugin->data)[0];
+      quick_scan_plugin_effect[i] = ((gchar **) plugin->data)[1];
+      
+      plugin = plugin->next;
+    }
+    
+    quick_scan_plugin_filename[i] = NULL;
+    quick_scan_plugin_effect[i] = NULL;
+  }
+  
+  if(start_instrument != NULL){
+    GList *instrument;
+    
+    guint length;
+    guint i;
+
+    instrument = start_instrument;
+    
+    length = g_list_length(start_instrument);
+    
+    quick_scan_instrument_filename = (gchar **) g_malloc((length + 1) * sizeof(gchar *));
+    quick_scan_instrument_effect = (gchar **) g_malloc((length + 1) * sizeof(gchar *));
+
+    for(i = 0; i < length; i++){
+      quick_scan_instrument_filename[i] = ((gchar **) instrument->data)[0];
+      quick_scan_instrument_effect[i] = ((gchar **) instrument->data)[1];
+
+      instrument = instrument->next;
+    }
+    
+    quick_scan_instrument_filename[i] = NULL;
+    quick_scan_instrument_effect[i] = NULL;
+  }
+
+  lv2_manager->quick_scan_plugin_filename = quick_scan_plugin_filename;
+  lv2_manager->quick_scan_plugin_effect = quick_scan_plugin_effect;
+
+  lv2_manager->quick_scan_instrument_filename = quick_scan_instrument_filename;
+  lv2_manager->quick_scan_instrument_effect = quick_scan_instrument_effect;
+  
+  g_list_free_full(start_plugin,
+		   g_free);
+
+  g_list_free_full(start_instrument,
+		   g_free);
+  
+  /* unref */
+  g_object_unref(lv2_turtle_scanner);
 }
 
 /**
