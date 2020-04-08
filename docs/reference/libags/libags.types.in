@@ -64,6 +64,7 @@ ags_server_get_type
 ags_server_status_get_type
 ags_service_provider_get_type
 ags_solver_matrix_get_type
+ags_solver_polynomial_get_type
 ags_solver_vector_get_type
 ags_sound_server_get_type
 ags_soundcard_get_type

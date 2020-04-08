@@ -77,6 +77,7 @@
       <xi:include href="xml/ags_lv2_manager.xml"/>
       <xi:include href="xml/ags_lv2_option_manager.xml"/>
       <xi:include href="xml/ags_lv2_turtle_parser.xml"/>
+      <xi:include href="xml/ags_lv2_turtle_scanner.xml"/>
       <xi:include href="xml/ags_lv2_plugin.xml"/>
       <xi:include href="xml/ags_lv2_preset_manager.xml"/>
       <xi:include href="xml/ags_lv2_preset.xml"/>

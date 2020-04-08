@@ -34,6 +34,7 @@
     <xi:include href="xml/ags_function.xml"/>
     <xi:include href="xml/ags_solver_matrix.xml"/>
     <xi:include href="xml/ags_solver_vector.xml"/>
+    <xi:include href="xml/ags_solver_polynomial.xml"/>
     <xi:include href="xml/ags_log.xml"/>
     <xi:include href="xml/ags_regex.xml"/>
     <xi:include href="xml/ags_string_util.xml"/>

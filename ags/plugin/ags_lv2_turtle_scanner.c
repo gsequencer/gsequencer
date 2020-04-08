@@ -1709,20 +1709,30 @@ ags_lv2_turtle_scanner_load_read_object_list(AgsLv2TurtleScanner *lv2_turtle_sca
       if(cache_turtle->see_also == NULL ||
 	 !g_strv_contains(cache_turtle->see_also, iriref)){
 	guint length;
-	  
+	gboolean is_available;
+
+	is_available = FALSE;
+	
 	if(cache_turtle->see_also == NULL){
 	  length = 0;
 	  
 	  cache_turtle->see_also = (gchar **) g_malloc(2 * sizeof(gchar *));
 	}else{
-	  length = g_strv_length(cache_turtle->see_also);
-
-	  cache_turtle->see_also = (gchar **) g_realloc(cache_turtle->see_also,
-							(length + 2) * sizeof(gchar *));
+	  if(!g_strv_contains(cache_turtle->see_also,
+			      iriref)){
+	    length = g_strv_length(cache_turtle->see_also);
+	    
+	    cache_turtle->see_also = (gchar **) g_realloc(cache_turtle->see_also,
+							  (length + 2) * sizeof(gchar *));
+	  }else{
+	    is_available = TRUE;
+	  }
 	}
 
-	cache_turtle->see_also[length] = iriref;
-	cache_turtle->see_also[length + 1] = NULL;
+	if(!is_available){
+	  cache_turtle->see_also[length] = iriref;
+	  cache_turtle->see_also[length + 1] = NULL;
+	}
       }
     }
 
