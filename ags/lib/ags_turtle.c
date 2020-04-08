@@ -2659,7 +2659,7 @@ ags_turtle_load_read_sparql_prefix(AgsTurtle *turtle,
       
     rdf_iriref_node = ags_turtle_load_read_iriref(turtle,
 						  buffer, buffer_length,
-						  &look_ahead);;
+						  &look_ahead);
 
     /* create node if complete sparql prefix */
     if(rdf_pname_ns_node != NULL &&
@@ -2722,7 +2722,7 @@ ags_turtle_load_read_sparql_base(AgsTurtle *turtle,
       
     rdf_iriref_node = ags_turtle_load_read_iriref(turtle,
 						  buffer, buffer_length,
-						  &look_ahead);;
+						  &look_ahead);
 
     /* create node if complete sparqle base */
     if(rdf_iriref_node != NULL){
@@ -2794,6 +2794,11 @@ ags_turtle_load_read_blank_node(AgsTurtle *turtle,
   node = NULL;
   look_ahead = *iter;    
 
+  /* skip blanks and comments */
+  look_ahead = ags_turtle_load_skip_comments_and_blanks(turtle,
+							buffer, buffer_length,
+							&look_ahead);
+
   rdf_blank_node_label = ags_turtle_read_blank_node_label(look_ahead,
 							  &(buffer[buffer_length]));
     
@@ -2806,7 +2811,7 @@ ags_turtle_load_read_blank_node(AgsTurtle *turtle,
 
     g_free(rdf_blank_node_label);
       
-    *iter = look_ahead;
+    *iter = look_ahead + strlen(rdf_blank_node_label);
   }else{
     rdf_anon_node = ags_turtle_load_read_anon(turtle,
 					      buffer, buffer_length,

@@ -21,5 +21,6 @@
 AC_DEFUN([AGS_POTFILES],
 [
   AC_MSG_NOTICE([generating po/POTFILES.in])
+  `mkdir -p $PWD/po`
   `tail -n +19 $srcdir/po/POTFILES.in.in > $PWD/po/POTFILES.in`
 ])

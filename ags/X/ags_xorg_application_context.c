@@ -3076,7 +3076,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   ags_log_add_message(log,
 		      "* Loading Lv2 plugins");
 
-  ags_lv2_manager_load_default_directory(lv2_manager);
+  ags_lv2_manager_quick_scan_default_directory(lv2_manager);
 
   /* load lv2ui manager */
   lv2ui_manager = ags_lv2ui_manager_get_instance();  
@@ -3085,11 +3085,13 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 				       blacklist_path);
   ags_lv2ui_manager_load_blacklist(lv2ui_manager,
 				   blacklist_filename);
-  
+
+#if 0
   ags_log_add_message(log,
 		      "* Loading Lv2ui plugins");
 
   ags_lv2ui_manager_load_default_directory(lv2ui_manager);
+#endif
   
   /* launch GUI */
   ags_log_add_message(log,

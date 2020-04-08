@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -60,6 +60,12 @@ struct _AgsLv2Manager
   GList *lv2_plugin;
 
   GHashTable *current_plugin_node;
+
+  gchar **quick_scan_plugin_filename;
+  gchar **quick_scan_plugin_effect;  
+
+  gchar **quick_scan_instrument_filename;
+  gchar **quick_scan_instrument_effect;  
 };
 
 struct _AgsLv2ManagerClass
@@ -91,6 +97,8 @@ void ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 void ags_lv2_manager_load_preset(AgsLv2Manager *lv2_manager,
 				 AgsLv2Plugin *lv2_plugin,
 				 AgsTurtle *preset);
+
+void ags_lv2_manager_quick_scan_default_directory(AgsLv2Manager *lv2_manager);
 void ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager);
 
 /*  */

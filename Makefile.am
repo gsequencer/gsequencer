@@ -187,6 +187,7 @@ CLEANFILES = \
 	libags_server.sym \
 	libags_audio.sym \
 	libags_gui.sym \
+	po/POTFILES.in \
 	ags/object/ags_marshallers.list \
 	ags/widget/ags_widget_marshallers.list \
 	docs/listings/add_pattern.c \
@@ -1081,6 +1082,7 @@ libags_plugin_h_sources = \
 	ags/plugin/ags_lv2_conversion.h \
 	ags/plugin/ags_lv2_manager.h \
 	ags/plugin/ags_lv2_turtle_parser.h \
+	ags/plugin/ags_lv2_turtle_scanner.h \
 	ags/plugin/ags_lv2_plugin.h \
 	ags/plugin/ags_lv2_preset_manager.h \
 	ags/plugin/ags_lv2_preset.h \
@@ -1109,6 +1111,7 @@ libags_plugin_c_sources = \
 	ags/plugin/ags_lv2_conversion.c \
 	ags/plugin/ags_lv2_manager.c \
 	ags/plugin/ags_lv2_turtle_parser.c \
+	ags/plugin/ags_lv2_turtle_scanner.c \
 	ags/plugin/ags_lv2_plugin.c \
 	ags/plugin/ags_lv2_preset_manager.c \
 	ags/plugin/ags_lv2_preset.c \
@@ -2505,6 +2508,16 @@ html:
 	$(MAKE) -C $(top_srcdir)/docs/reference/libgsequencer
 	cd $(top_srcdir)
 
+sphinx:
+	mkdir -p $(top_builddir)/xml/
+	mkdir -p $(top_builddir)/sphinx/
+	xmllint --xinclude $(top_srcdir)/docs/usersBook.xml --output $(top_builddir)/xml/usersBook.xml
+	xmllint --xinclude $(top_srcdir)/docs/developersBook.xml --output $(top_builddir)/xml/developersBook.xml
+	xmllint --xinclude $(top_srcdir)/docs/oscBook.xml --output $(top_builddir)/xml/oscBook.xml
+	pandoc -f docbook $(top_builddir)/xml/usersBook.xml -o $(top_builddir)/sphinx/usersBook.rst
+	pandoc -f docbook $(top_builddir)/xml/developersBook.xml -o $(top_builddir)/sphinx/developersBook.rst
+	pandoc -f docbook $(top_builddir)/xml/oscBook.xml -o $(top_builddir)/sphinx/oscBook.rst
+
 install-compress-changelog:
 	rm -f $(DESTDIR)/$(docdir)/changelog
 	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(docdir)/changelog.gz
@@ -2684,7 +2697,6 @@ endif
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libgsequencer.pc
 
 clean-local:
-	rm -rf $(top_srcdir)/html
 	rm -rf $(top_srcdir)/docs/reference/libags/xml
 	rm -rf $(top_srcdir)/docs/reference/libags/libags-html
 	rm -rf $(top_srcdir)/docs/reference/libags/tmpl
@@ -2697,6 +2709,9 @@ clean-local:
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/xml
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/tmpl
+	rm -rf $(top_builddir)/html
+	rm -rf $(top_builddir)/xml
+	rm -rf $(top_builddir)/sphinx
 	rm -f $(top_builddir)/docs/reference/libags/Makefile
 	rm -f $(top_builddir)/docs/reference/libags-audio/Makefile
 	rm -f $(top_builddir)/docs/reference/libags-gui/Makefile

@@ -49,8 +49,109 @@ AgsPlotFillFlags
 AgsPlot
 ags_plot_alloc
 ags_plot_free
+ags_plot_get_n_points
+ags_plot_set_n_points
+ags_plot_get_join_points
+ags_plot_set_join_points
+ags_plot_get_point
+ags_plot_set_point
+ags_plot_get_point_color
+ags_plot_set_point_color
+ags_plot_get_point_label
+ags_plot_set_point_label
+ags_plot_get_n_bitmaps
+ags_plot_set_n_bitmaps
+ags_plot_get_bitmap
+ags_plot_set_bitmap
+ags_plot_get_bitmap_color
+ags_plot_set_bitmap_color
+ags_plot_get_n_pixmaps
+ags_plot_set_n_pixmaps
+ags_plot_get_pixmap
+ags_plot_set_pixmap
 ags_cartesian_add_plot
 ags_cartesian_remove_plot
+ags_cartesian_get_x_margin
+ags_cartesian_set_x_margin
+ags_cartesian_get_y_margin
+ags_cartesian_set_y_margin
+ags_cartesian_get_center
+ags_cartesian_set_center
+ags_cartesian_get_line_width
+ags_cartesian_set_line_width
+ags_cartesian_get_point_radius
+ags_cartesian_set_point_radius
+ags_cartesian_get_font_size
+ags_cartesian_set_font_size
+ags_cartesian_get_x_step_width
+ags_cartesian_set_x_step_width
+ags_cartesian_get_y_step_height
+ags_cartesian_set_y_step_height
+ags_cartesian_get_x_scale_step_width
+ags_cartesian_set_x_scale_step_width
+ags_cartesian_get_y_scale_step_height
+ags_cartesian_set_y_scale_step_height
+ags_cartesian_get_x_unit_x0
+ags_cartesian_set_x_unit_x0
+ags_cartesian_get_x_unit_y0
+ags_cartesian_set_x_unit_y0
+ags_cartesian_get_x_unit_size
+ags_cartesian_set_x_unit_size
+ags_cartesian_get_y_unit_x0
+ags_cartesian_set_y_unit_x0
+ags_cartesian_get_y_unit_y0
+ags_cartesian_set_y_unit_y0
+ags_cartesian_get_y_unit_size
+ags_cartesian_set_y_unit_size
+ags_cartesian_get_x_label_start
+ags_cartesian_set_x_label_start
+ags_cartesian_get_x_label_step_width
+ags_cartesian_set_x_label_step_width
+ags_cartesian_get_y_label_start
+ags_cartesian_set_y_label_start
+ags_cartesian_get_y_label_step_height
+ags_cartesian_set_y_label_step_height
+ags_cartesian_get_x_step
+ags_cartesian_set_x_step
+ags_cartesian_get_y_step
+ags_cartesian_set_y_step
+ags_cartesian_get_x_start
+ags_cartesian_set_x_start
+ags_cartesian_get_x_end
+ags_cartesian_set_x_end
+ags_cartesian_get_y_start
+ags_cartesian_set_y_start
+ags_cartesian_get_y_end
+ags_cartesian_set_y_end
+ags_cartesian_get_x_unit
+ags_cartesian_set_x_unit
+ags_cartesian_get_y_unit
+ags_cartesian_set_y_unit
+ags_cartesian_get_x_label
+ags_cartesian_set_x_label
+ags_cartesian_get_y_label
+ags_cartesian_set_y_label
+ags_cartesian_get_x_step_factor
+ags_cartesian_set_x_step_factor
+ags_cartesian_get_y_step_factor
+ags_cartesian_set_y_step_factor
+ags_cartesian_get_x_small_scale_factor
+ags_cartesian_set_x_small_scale_factor
+ags_cartesian_get_x_big_scale_factor
+ags_cartesian_set_x_big_scale_factor
+ags_cartesian_get_y_small_scale_factor
+ags_cartesian_set_y_small_scale_factor
+ags_cartesian_get_y_big_scale_factor
+ags_cartesian_set_y_big_scale_factor
+ags_cartesian_get_x_label_factor
+ags_cartesian_set_x_label_factor
+ags_cartesian_get_x_label_precision
+ags_cartesian_set_x_label_precision
+ags_cartesian_get_y_label_factor
+ags_cartesian_set_y_label_factor
+ags_cartesian_get_y_label_precision
+ags_cartesian_set_y_label_precision
+ags_cartesian_get_surface
 ags_cartesian_linear_step_conversion_func
 ags_cartesian_linear_translate_func
 ags_cartesian_linear_x_small_scale_func
@@ -67,6 +168,7 @@ AGS_CARTESIAN
 AGS_CARTESIAN_CLASS
 AGS_CARTESIAN_GET_CLASS
 AGS_IS_CARTESIAN
+AGS_IS_CARTESIAN_CLASS
 AGS_TYPE_CARTESIAN
 AgsCartesian
 AgsCartesianClass
@@ -94,6 +196,24 @@ AGS_DIAL_DEFAULT_HEIGHT
 AGS_DIAL_DEFAULT_WIDTH
 AgsDialFlags
 AgsDialAction
+ags_dial_set_radius
+ags_dial_get_radius
+ags_dial_set_outline_strength
+ags_dial_get_outline_strength
+ags_dial_set_scale_precision
+ags_dial_get_scale_precision
+ags_dial_set_font_size
+ags_dial_get_font_size
+ags_dial_set_button_width
+ags_dial_get_button_width
+ags_dial_set_button_height
+ags_dial_get_button_height
+ags_dial_set_margin_left
+ags_dial_get_margin_left
+ags_dial_set_margin_right
+ags_dial_get_margin_right
+ags_dial_set_adjustment
+ags_dial_get_adjustment
 ags_dial_value_changed
 ags_dial_set_value
 ags_dial_new
@@ -102,6 +222,7 @@ AGS_DIAL
 AGS_DIAL_CLASS
 AGS_DIAL_GET_CLASS
 AGS_IS_DIAL
+AGS_IS_DIAL_CLASS
 AGS_TYPE_DIAL
 AgsDial
 AgsDialClass
@@ -115,6 +236,7 @@ AGS_EXPANDER_CHILD
 AgsExpanderFlags
 AgsExpanderChild
 ags_expander_child_alloc
+ags_expander_child_free
 ags_expander_child_find
 ags_expander_add
 ags_expander_remove
@@ -124,6 +246,7 @@ AGS_EXPANDER
 AGS_EXPANDER_CLASS
 AGS_EXPANDER_GET_CLASS
 AGS_IS_EXPANDER
+AGS_IS_EXPANDER_CLASS
 AGS_TYPE_EXPANDER
 AgsExpander
 AgsExpanderClass
@@ -137,6 +260,7 @@ AGS_EXPANDER_SET_CHILD
 AgsExpanderSetFlags
 AgsExpanderSetChild
 ags_expander_set_child_alloc
+ags_expander_set_child_free
 ags_expander_set_child_find
 ags_expander_set_set_flags
 ags_expander_set_add
@@ -147,6 +271,7 @@ AGS_EXPANDER_SET
 AGS_EXPANDER_SET_CLASS
 AGS_EXPANDER_SET_GET_CLASS
 AGS_IS_EXPANDER_SET
+AGS_IS_EXPANDER_SET_CLASS
 AGS_TYPE_EXPANDER_SET
 AgsExpanderSet
 AgsExpanderSetClass
@@ -164,6 +289,7 @@ AGS_HINDICATOR
 AGS_HINDICATOR_CLASS
 AGS_HINDICATOR_GET_CLASS
 AGS_IS_HINDICATOR
+AGS_IS_HINDICATOR_CLASS
 AGS_TYPE_HINDICATOR
 AgsHIndicator
 AgsHIndicatorClass
@@ -179,6 +305,7 @@ AGS_HLED_ARRAY
 AGS_HLED_ARRAY_CLASS
 AGS_HLED_ARRAY_GET_CLASS
 AGS_IS_HLED_ARRAY
+AGS_IS_HLED_ARRAY_CLASS
 AGS_TYPE_HLED_ARRAY
 AgsHLedArray
 AgsHLedArrayClass
@@ -194,6 +321,7 @@ AGS_HLEVEL_BOX
 AGS_HLEVEL_BOX_CLASS
 AGS_HLEVEL_BOX_GET_CLASS
 AGS_IS_HLEVEL_BOX
+AGS_IS_HLEVEL_BOX_CLASS
 AGS_TYPE_HLEVEL_BOX
 AgsHLevelBox
 AgsHLevelBoxClass
@@ -209,6 +337,7 @@ AGS_HSCALE_BOX
 AGS_HSCALE_BOX_CLASS
 AGS_HSCALE_BOX_GET_CLASS
 AGS_IS_HSCALE_BOX
+AGS_IS_HSCALE_BOX_CLASS
 AGS_TYPE_HSCALE_BOX
 AgsHScaleBox
 AgsHScaleBoxClass
@@ -222,12 +351,23 @@ AGS_INDICATOR_DEFAULT_SEGMENT_WIDTH
 AGS_INDICATOR_DEFAULT_SEGMENT_HEIGHT
 AGS_INDICATOR_DEFAULT_SEGMENT_PADDING
 AGS_INDICATOR_DEFAULT_SEGMENT_COUNT
+ags_indicator_get_segment_width
+ags_indicator_set_segment_width
+ags_indicator_get_segment_height
+ags_indicator_set_segment_height
+ags_indicator_get_segment_padding
+ags_indicator_set_segment_padding
+ags_indicator_get_segment_count
+ags_indicator_set_segment_count
+ags_indicator_get_adjustment
+ags_indicator_set_adjustment
 ags_indicator_new
 <SUBSECTION Public>
 AGS_INDICATOR
 AGS_INDICATOR_CLASS
 AGS_INDICATOR_GET_CLASS
 AGS_IS_INDICATOR
+AGS_IS_INDICATOR_CLASS
 AGS_TYPE_INDICATOR
 AgsIndicator
 AgsIndicatorClass
@@ -240,11 +380,13 @@ ags_indicator_get_type
 AGS_LED_DEFAULT_WIDTH
 AGS_LED_DEFAULT_HEIGHT
 AgsLedFlags
+ags_led_is_active
 ags_led_set_active
 ags_led_unset_active
 ags_led_new
 <SUBSECTION Public>
 AGS_IS_LED
+AGS_IS_LED_CLASS
 AGS_LED
 AGS_LED_CLASS
 AGS_LED_GET_CLASS
@@ -260,12 +402,18 @@ ags_led_get_type
 AGS_LED_ARRAY_DEFAULT_LED_WIDTH
 AGS_LED_ARRAY_DEFAULT_LED_HEIGHT
 AgsLedArrayFlags
+ags_led_array_get_led_width
+ags_led_array_set_led_width
+ags_led_array_get_led_height
+ags_led_array_set_led_height
+ags_led_array_get_led_count
 ags_led_array_set_led_count
 ags_led_array_unset_all
 ags_led_array_set_nth
 ags_led_array_new
 <SUBSECTION Public>
 AGS_IS_LED_ARRAY
+AGS_IS_LED_ARRAY_CLASS
 AGS_LED_ARRAY
 AGS_LED_ARRAY_CLASS
 AGS_LED_ARRAY_GET_CLASS
@@ -291,10 +439,21 @@ AgsLevelButtonState
 AgsLevelKeyMask
 AgsLevelLayout
 AgsLevelAction
+ags_level_set_level_width
+ags_level_get_level_width
+ags_level_set_level_height
+ags_level_get_level_height
+ags_level_set_upper
+ags_level_get_upper
+ags_level_set_lower
+ags_level_get_lower
+ags_level_set_normalized_volume
+ags_level_get_normalized_volume
 ags_level_value_changed
 ags_level_new
 <SUBSECTION Public>
 AGS_IS_LEVEL
+AGS_IS_LEVEL_CLASS
 AGS_LEVEL
 AGS_LEVEL_CLASS
 AGS_LEVEL_GET_CLASS
@@ -313,6 +472,7 @@ AgsLevelBoxFlags
 ags_level_box_new
 <SUBSECTION Public>
 AGS_IS_LEVEL_BOX
+AGS_IS_LEVEL_BOX_CLASS
 AGS_LEVEL_BOX
 AGS_LEVEL_BOX_CLASS
 AGS_LEVEL_BOX_GET_CLASS
@@ -345,6 +505,7 @@ ags_notebook_remove_tab_with_data
 ags_notebook_new
 <SUBSECTION Public>
 AGS_IS_NOTEBOOK
+AGS_IS_NOTEBOOK_CLASS
 AGS_NOTEBOOK
 AGS_NOTEBOOK_CLASS
 AGS_NOTEBOOK_GET_CLASS
@@ -367,6 +528,16 @@ AgsPianoButtonState
 AgsPianoLayout
 AgsPianoAction
 AgsPianoOctave
+ags_piano_set_base_note
+ags_piano_get_base_note
+ags_piano_set_base_key_code
+ags_piano_get_base_key_code
+ags_piano_set_key_width
+ags_piano_get_key_width
+ags_piano_set_key_height
+ags_piano_get_key_height
+ags_piano_set_key_count
+ags_piano_get_key_count
 ags_piano_key_code_to_note
 ags_piano_key_pressed
 ags_piano_key_released
@@ -375,6 +546,7 @@ ags_piano_get_active_key
 ags_piano_new
 <SUBSECTION Public>
 AGS_IS_PIANO
+AGS_IS_PIANO_CLASS
 AGS_PIANO
 AGS_PIANO_CLASS
 AGS_PIANO_GET_CLASS
@@ -529,9 +701,18 @@ AGS_RULER_DEFAULT_HEIGHT
 AGS_RULER_DEFAULT_STEP
 AGS_RULER_DEFAULT_LARGE_STEP
 AGS_RULER_DEFAULT_SMALL_STEP
+ags_ruler_get_step
+ags_ruler_set_step
+ags_ruler_get_large_step
+ags_ruler_set_large_step
+ags_ruler_get_small_step
+ags_ruler_set_small_step
+ags_ruler_get_adjustment
+ags_ruler_set_adjustment
 ags_ruler_new
 <SUBSECTION Public>
 AGS_IS_RULER
+AGS_IS_RULER_CLASS
 AGS_RULER
 AGS_RULER_CLASS
 AGS_RULER_GET_CLASS
@@ -556,10 +737,23 @@ AgsScaleButtonState
 AgsScaleKeyMask
 AgsScaleLayout
 AgsScaleAction
+ags_scale_set_scale_width
+ags_scale_get_scale_width
+ags_scale_set_scale_height
+ags_scale_get_scale_height
+ags_scale_set_control_name
+ags_scale_get_control_name
+ags_scale_set_upper
+ags_scale_get_upper
+ags_scale_set_lower
+ags_scale_get_lower
+ags_scale_set_default_value
+ags_scale_get_default_value
 ags_scale_value_changed
 ags_scale_new
 <SUBSECTION Public>
 AGS_IS_SCALE
+AGS_IS_SCALE_CLASS
 AGS_SCALE
 AGS_SCALE_CLASS
 AGS_SCALE_GET_CLASS
@@ -578,6 +772,7 @@ AgsScaleBoxFlags
 ags_scale_box_new
 <SUBSECTION Public>
 AGS_IS_SCALE_BOX
+AGS_IS_SCALE_BOX_CLASS
 AGS_SCALE_BOX
 AGS_SCALE_BOX_CLASS
 AGS_SCALE_BOX_GET_CLASS
@@ -593,6 +788,7 @@ ags_scale_box_get_type
 ags_scrolled_level_box_new
 <SUBSECTION Public>
 AGS_IS_SCROLLED_LEVEL_BOX
+AGS_IS_SCROLLED_LEVEL_BOX_CLASS
 AGS_SCROLLED_LEVEL_BOX
 AGS_SCROLLED_LEVEL_BOX_CLASS
 AGS_SCROLLED_LEVEL_BOX_GET_CLASS
@@ -608,6 +804,7 @@ ags_scrolled_level_box_get_type
 ags_scrolled_piano_new
 <SUBSECTION Public>
 AGS_IS_SCROLLED_PIANO
+AGS_IS_SCROLLED_PIANO_CLASS
 AGS_SCROLLED_PIANO
 AGS_SCROLLED_PIANO_CLASS
 AGS_SCROLLED_PIANO_GET_CLASS
@@ -623,6 +820,7 @@ ags_scrolled_piano_get_type
 ags_scrolled_scale_box_new
 <SUBSECTION Public>
 AGS_IS_SCROLLED_SCALE_BOX
+AGS_IS_SCROLLED_SCALE_BOX_CLASS
 AGS_SCROLLED_SCALE_BOX
 AGS_SCROLLED_SCALE_BOX_CLASS
 AGS_SCROLLED_SCALE_BOX_GET_CLASS
@@ -640,6 +838,7 @@ AGS_VINDICATOR_DEFAULT_SEGMENT_HEIGHT
 ags_vindicator_new
 <SUBSECTION Public>
 AGS_IS_VINDICATOR
+AGS_IS_VINDICATOR_CLASS
 AGS_TYPE_VINDICATOR
 AGS_VINDICATOR
 AGS_VINDICATOR_CLASS
@@ -655,6 +854,7 @@ ags_vindicator_get_type
 ags_vled_array_new
 <SUBSECTION Public>
 AGS_IS_VLED_ARRAY
+AGS_IS_VLED_ARRAY_CLASS
 AGS_TYPE_VLED_ARRAY
 AGS_VLED_ARRAY
 AGS_VLED_ARRAY_CLASS
@@ -670,6 +870,7 @@ ags_vled_array_get_type
 ags_vlevel_box_new
 <SUBSECTION Public>
 AGS_IS_VLEVEL_BOX
+AGS_IS_VLEVEL_BOX_CLASS
 AGS_TYPE_VLEVEL_BOX
 AGS_VLEVEL_BOX
 AGS_VLEVEL_BOX_CLASS
@@ -685,6 +886,7 @@ ags_vlevel_box_get_type
 ags_vscale_box_new
 <SUBSECTION Public>
 AGS_IS_VSCALE_BOX
+AGS_IS_VSCALE_BOX_CLASS
 AGS_TYPE_VSCALE_BOX
 AGS_VSCALE_BOX
 AGS_VSCALE_BOX_CLASS

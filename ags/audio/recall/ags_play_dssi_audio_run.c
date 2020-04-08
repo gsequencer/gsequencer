@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1442,6 +1442,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   GList *start_list, *list;
   GList *start_current_position, *current_position;
+  GList *start_feed_note, *feed_note;
   GList *start_append_note, *append_note;
   GList *start_remove_note, *remove_note;
 
@@ -1500,6 +1501,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   notation = NULL;
   current_position = NULL;
   
+  start_feed_note = NULL;
   start_append_note = NULL;
   start_remove_note = NULL;
 
@@ -1522,6 +1524,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   list = ags_notation_find_near_timestamp(start_list, audio_channel,
 					  play_dssi_audio_run->timestamp);
+
   start_current_position = NULL;
   
   if(list != NULL){
@@ -1555,16 +1558,19 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       start_append_note = g_list_prepend(start_append_note,
 					 note);
       g_object_ref(note);
-    }else if(do_feed &&
-	     notation_counter != 0 &&
-	     (note_x1 == notation_counter ||
-	      note_x1 == notation_counter - 1)){
-      //feed
     }else if((do_feed &&
-	      notation_counter > 1 &&
-	      note_x1 == notation_counter - 2) ||
+	      (note_x1 == notation_counter ||
+	       note_x1 + 1 == notation_counter)) ||
 	     (!do_feed &&
-	      note_x1 <= notation_counter)){
+	      note_x0 <= notation_counter &&
+	      note_x1 > notation_counter)){
+      start_feed_note = g_list_prepend(start_feed_note,
+				       note);
+      g_object_ref(note);
+    }else if((do_feed &&
+	      note_x1 + 1 == notation_counter) ||
+	     (!do_feed &&
+	      note_x1 == notation_counter)){
       start_remove_note = g_list_prepend(start_remove_note,
 					 note);
       g_object_ref(note);
@@ -1576,20 +1582,34 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     current_position = current_position->next;
   }
 
+  feed_note =
+    start_feed_note = g_list_reverse(start_feed_note);
+
   append_note =
     start_append_note = g_list_reverse(start_append_note);
   
   remove_note =
     start_remove_note = g_list_reverse(start_remove_note);
+  
+  /* feed/append */
+  if(start_feed_note != NULL){
+    if(start_append_note != NULL){
+      start_feed_note = g_list_concat(start_feed_note,
+				      start_append_note);
+    }
+  }else{
+    start_feed_note = start_append_note;
+  }
 
-  /* append */
-  while(append_note != NULL){
-    note = append_note->data;
+  feed_note = start_feed_note;
+  
+  for(i = 0; feed_note != NULL && i < AGS_PLAY_DSSI_AUDIO_RUN_DEFAULT_MIDI_LENGHT; i++){
+    note = feed_note->data;
 
     g_object_get(note,
 		 "y", &note_y,
 		 NULL);
-  
+    
     /* send key-on */
     if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
       selected_key = input_pads - note_y - 1;
@@ -1597,121 +1617,50 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       selected_key = note_y;
     }
 
+    if(play_dssi_audio_run->event_buffer[i] == NULL){
+      play_dssi_audio_run->event_buffer[i] = (snd_seq_event_t *) g_malloc(sizeof(snd_seq_event_t));
+    }
+
+    seq_event = play_dssi_audio_run->event_buffer[i];
+    
+    play_dssi_audio_run->event_count[i] = 1;
+    
     /* key on */
-    seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
     memset(seq_event, 0, sizeof(snd_seq_event_t));
-    //memset(seq_event, 0, sizeof(snd_seq_event_t));
-	      
+    
     seq_event->type = SND_SEQ_EVENT_NOTEON;
 
     seq_event->data.note.channel = 0;
     seq_event->data.note.note = 0x7f & (selected_key - audio_start_mapping + midi_start_mapping);
     seq_event->data.note.velocity = 127;
 
-    /* find end */
-    event_count = 0;
-    i = 0;
-      
-    if(play_dssi_audio_run->event_buffer != NULL){
-      event_buffer = play_dssi_audio_run->event_buffer;
-      
-      while(event_buffer[0] != NULL){
-	event_buffer++;
-	event_count++;
-	i++;
-      }
-
-      if(i + 1 < AGS_PLAY_DSSI_AUDIO_RUN_DEFAULT_MIDI_LENGHT){
-	play_dssi_audio_run->event_buffer[i] = seq_event;
-	play_dssi_audio_run->event_buffer[i + 1] = NULL;
-		  
-	play_dssi_audio_run->event_count[i] = 1;
-	play_dssi_audio_run->event_count[i + 1] = 0;
-
-	play_dssi_audio_run->key_on += 1;
-      }
-    }
-
-    //FIXME:JK: check memory leak
-    //    free(seq_event);
+    play_dssi_audio_run->key_on += 1;
 
     /* iterate */
-    g_object_unref(append_note->data);
-
-    append_note = append_note->next;
+    feed_note = feed_note->next;
   }
 
-  /* remove */
-  while(remove_note != NULL){
-    gint match_index;
-    gboolean success;
-      
-    note = remove_note->data;
-
-    g_object_get(note,
-		 "y", &note_y,
-		 NULL);
-  
-    /* send key-on */
-    if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
-      selected_key = input_pads - note_y - 1;
-    }else{
-      selected_key = note_y;
-    }
+  for(; remove_note != NULL && i < AGS_PLAY_DSSI_AUDIO_RUN_DEFAULT_MIDI_LENGHT; i++){
+    g_free(play_dssi_audio_run->event_buffer[i]);
     
-    /* find end */
-    i = 0;
-    match_index = -1;
-      
-    if(play_dssi_audio_run->event_buffer != NULL){
-      event_buffer = play_dssi_audio_run->event_buffer;
-      event_count = play_dssi_audio_run->event_count;
-      
-      while(event_buffer[0] != NULL){
-	if(event_buffer[0]->data.note.note == (0x7f & (selected_key - audio_start_mapping + midi_start_mapping))){
-	  match_index = i;
-	  //	    free(event_buffer[0]);
-	}
-	  
-	event_buffer++;
-	event_count++;
-	i++;
-      }
-    }
-
-    /* clear note */
-    if(i > 0 &&
-       match_index != -1){
-      if(match_index + 1 != i){
-	memmove(&(play_dssi_audio_run->event_buffer[match_index]),
-		&(play_dssi_audio_run->event_buffer[match_index + 1]),
-		i - 1);
-      }
-
-      play_dssi_audio_run->event_buffer[i - 1] = NULL;
-      play_dssi_audio_run->event_count[i - 1] = 0;
-	
-      play_dssi_audio_run->event_buffer[i] = NULL;
-      play_dssi_audio_run->event_count[i] = 0;
-
-      if(play_dssi_audio_run->key_on > 0){
-	play_dssi_audio_run->key_on -= 1;
-      }
-    }
+    play_dssi_audio_run->event_buffer[i] = NULL;
+    play_dssi_audio_run->event_count[i] = 0;
+    
+    play_dssi_audio_run->key_on -= 1;
 
     /* iterate */
-    g_object_unref(remove_note->data);
-
     remove_note = remove_note->next;
   }
-
+  
   g_list_free_full(start_list,
 		   g_object_unref);
   g_list_free_full(start_current_position,
 		   g_object_unref);
   
-  g_list_free(start_append_note);
-  g_list_free(start_remove_note);
+  g_list_free_full(start_feed_note,
+		   g_object_unref);
+  g_list_free_full(start_remove_note,
+		   g_object_unref);
 
   /* unref */
   g_object_unref(audio);

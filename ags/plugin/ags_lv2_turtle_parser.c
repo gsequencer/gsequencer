@@ -465,7 +465,6 @@ ags_lv2_turtle_parser_finalize(GObject *gobject)
 
   lv2_turtle_parser = AGS_LV2_TURTLE_PARSER(gobject);
 
-  /* destroy object mutex */
   if(lv2_turtle_parser->turtle != NULL){
     g_list_free_full(lv2_turtle_parser->turtle,
 		     g_object_unref);
@@ -593,9 +592,16 @@ ags_lv2_turtle_parser_parse_names_triple(AgsLv2TurtleParser *lv2_turtle_parser,
 	      suffix = strchr(pname, ':');
 
 	      if(suffix != NULL){
+		suffix += 1;
+		
 		prefix = g_strndup(pname,
-				   suffix - pname + 1);
-		suffix = g_strdup(suffix + 1);
+				   suffix - pname);
+
+		if(suffix != '\0'){
+		  suffix = g_strdup(suffix);
+		}else{
+		  suffix = NULL;
+		}
 	      }
 
 	      list =
@@ -626,6 +632,8 @@ ags_lv2_turtle_parser_parse_names_triple(AgsLv2TurtleParser *lv2_turtle_parser,
 		subject_iriref = g_strdup_printf("%s%s",
 						 str,
 						 suffix);
+	      }else if(str != NULL){
+		subject_iriref = g_strdup(str);
 	      }
 
 	      g_free(prefix);
@@ -1038,9 +1046,20 @@ ags_lv2_turtle_parser_parse_names_predicate_object_list(AgsLv2TurtleParser *lv2_
 	if(str != NULL){
 	  if(strlen(str) > 2){
 	    gchar *tmp;
-	    
-	    tmp = g_strndup(str + 1,
-			    strlen(str) - 2);
+
+	    if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
+	      tmp = g_strndup(str + 3,
+			      (gsize) (strlen(str) - 6));
+	    }else if(!g_ascii_strncasecmp(str, "'''", 3)){
+	      tmp = g_strndup(str + 3,
+			      (gsize) (strlen(str) - 6));
+	    }else if(str[0] = '"'){
+	      tmp = g_strndup(str + 1,
+			      (gsize) (strlen(str) - 2));
+	    }else if(str[0] == '\''){
+	      tmp = g_strndup(str + 1,
+			      (gsize) (strlen(str) - 2));
+	    }
 	      
 #if AGS_DEBUG
 	    g_message(" `-- effect %s %s %s", AGS_BASE_PLUGIN(lv2_plugin)->filename, subject_iriref, tmp);
@@ -2206,13 +2225,24 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 	if(str != NULL){
 	  if(strlen(str) > 2){
 	    gchar *tmp;
+
+	    if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
+	      tmp = g_strndup(str + 3,
+			      (gsize) (strlen(str) - 6));
+	    }else if(!g_ascii_strncasecmp(str, "'''", 3)){
+	      tmp = g_strndup(str + 3,
+			      (gsize) (strlen(str) - 6));
+	    }else if(str[0] = '"'){
+	      tmp = g_strndup(str + 1,
+			      (gsize) (strlen(str) - 2));
+	    }else if(str[0] == '\''){
+	      tmp = g_strndup(str + 1,
+			      (gsize) (strlen(str) - 2));
+	    }
 	    
 #if AGS_DEBUG
 	    g_message(" `-- effect %s", str);
 #endif
-
-	    tmp = g_strndup(str + 1,
-			    strlen(str) - 2);
 	    
 	    g_object_set(lv2_plugin,
 			 "effect", tmp,
@@ -2435,10 +2465,28 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 	str = xmlNodeGetContent((xmlNode *) start_label_xpath_result->data);
 
 	if(str != NULL){
+	  gchar *tmp;
+
+	  if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
+	    tmp = g_strndup(str + 3,
+			    (gsize) (strlen(str) - 6));
+	  }else if(!g_ascii_strncasecmp(str, "'''", 3)){
+	    tmp = g_strndup(str + 3,
+			    (gsize) (strlen(str) - 6));
+	  }else if(str[0] = '"'){
+	    tmp = g_strndup(str + 1,
+			    (gsize) (strlen(str) - 2));
+	  }else if(str[0] == '\''){
+	    tmp = g_strndup(str + 1,
+			    (gsize) (strlen(str) - 2));
+	  }
+
 	  g_object_set(lv2_plugin,
-		       "foaf-name", str,
+		       "foaf-name", tmp,
 		       NULL);
 
+	  g_free(tmp);
+	  
 	  xmlFree(str);
 	}
       }
@@ -3096,8 +3144,19 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 		      if(strlen(str) > 2){
 			gchar *tmp;
 
-			tmp = g_strndup(str + 1,
-					strlen(str) - 2);
+			if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
+			  tmp = g_strndup(str + 3,
+					  (gsize) (strlen(str) - 6));
+			}else if(!g_ascii_strncasecmp(str, "'''", 3)){
+			  tmp = g_strndup(str + 3,
+					  (gsize) (strlen(str) - 6));
+			}else if(str[0] = '"'){
+			  tmp = g_strndup(str + 1,
+					  (gsize) (strlen(str) - 2));
+			}else if(str[0] == '\''){
+			  tmp = g_strndup(str + 1,
+					  (gsize) (strlen(str) - 2));
+			}
 		    
 			g_object_set(plugin_port,
 				     "port-name", tmp,
@@ -3169,8 +3228,19 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 		      if(strlen(str) > 2){
 			gchar *tmp;
 
-			tmp = g_strndup(str + 1,
-					strlen(str) - 2);
+			if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
+			  tmp = g_strndup(str + 3,
+					  (gsize) (strlen(str) - 6));
+			}else if(!g_ascii_strncasecmp(str, "'''", 3)){
+			  tmp = g_strndup(str + 3,
+					  (gsize) (strlen(str) - 6));
+			}else if(str[0] = '"'){
+			  tmp = g_strndup(str + 1,
+					  (gsize) (strlen(str) - 2));
+			}else if(str[0] == '\''){
+			  tmp = g_strndup(str + 1,
+					  (gsize) (strlen(str) - 2));
+			}
 
 			g_object_set(plugin_port,
 				     "port-symbol", tmp,
@@ -3693,7 +3763,23 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 		      str = xmlNodeGetContent((xmlNode *) start_label_xpath_result->data);
 
 		      if(str != NULL){
-			plugin_port->scale_point[scale_point_count] = g_strdup(str);
+			gchar *tmp;
+			
+			if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
+			  tmp = g_strndup(str + 3,
+					  (gsize) (strlen(str) - 6));
+			}else if(!g_ascii_strncasecmp(str, "'''", 3)){
+			  tmp = g_strndup(str + 3,
+					  (gsize) (strlen(str) - 6));
+			}else if(str[0] = '"'){
+			  tmp = g_strndup(str + 1,
+					  (gsize) (strlen(str) - 2));
+			}else if(str[0] == '\''){
+			  tmp = g_strndup(str + 1,
+					  (gsize) (strlen(str) - 2));
+			}
+			
+			plugin_port->scale_point[scale_point_count] = tmp;
 
 			xmlFree(str);
 		      }
@@ -3851,11 +3937,22 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 	  if(strlen(str) > 2){
 	    gchar *tmp;
 	      
-	    tmp = g_strndup(str + 1,
-			    strlen(str) - 2);
+	    if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
+	      tmp = g_strndup(str + 3,
+			      (gsize) (strlen(str) - 6));
+	    }else if(!g_ascii_strncasecmp(str, "'''", 3)){
+	      tmp = g_strndup(str + 3,
+			      (gsize) (strlen(str) - 6));
+	    }else if(str[0] = '"'){
+	      tmp = g_strndup(str + 1,
+			      (gsize) (strlen(str) - 2));
+	    }else if(str[0] == '\''){
+	      tmp = g_strndup(str + 1,
+			      (gsize) (strlen(str) - 2));
+	    }
 	      
 	    g_object_set(lv2_preset,
-			 "preset-label", str,
+			 "preset-label", tmp,
 			 NULL);
 	      
 	    g_free(tmp);
@@ -3921,10 +4018,28 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 	str = xmlNodeGetContent((xmlNode *) start_bank_xpath_result->data);
 
 	if(str != NULL){
+	  gchar *tmp;
+
+	  if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
+	    tmp = g_strndup(str + 3,
+			    (gsize) (strlen(str) - 6));
+	  }else if(!g_ascii_strncasecmp(str, "'''", 3)){
+	    tmp = g_strndup(str + 3,
+			    (gsize) (strlen(str) - 6));
+	  }else if(str[0] = '"'){
+	    tmp = g_strndup(str + 1,
+			    (gsize) (strlen(str) - 2));
+	  }else if(str[0] == '\''){
+	    tmp = g_strndup(str + 1,
+			    (gsize) (strlen(str) - 2));
+	  }
+
 	  g_object_set(lv2_preset,
-		       "bank", str,
+		       "bank", tmp,
 		       NULL);
 
+	  g_free(tmp);
+	  
 	  xmlFree(str);
 	}
       }
@@ -4205,8 +4320,19 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 
 		if(str != NULL){
 		  if(strlen(str) > 2){
-		    port_symbol = g_strndup(str + 1,
-					    strlen(str) - 2);
+		    if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
+		      port_symbol = g_strndup(str + 3,
+					      (gsize) (strlen(str) - 6));
+		    }else if(!g_ascii_strncasecmp(str, "'''", 3)){
+		      port_symbol = g_strndup(str + 3,
+					      (gsize) (strlen(str) - 6));
+		    }else if(str[0] = '"'){
+		      port_symbol = g_strndup(str + 1,
+					      (gsize) (strlen(str) - 2));
+		    }else if(str[0] == '\''){
+		      port_symbol = g_strndup(str + 1,
+					      (gsize) (strlen(str) - 2));
+		    }
 		  }
 
 		  xmlFree(str);
