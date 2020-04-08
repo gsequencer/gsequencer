@@ -2079,7 +2079,92 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 					     filename,
 					     effect);
   }else{
-    lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+    AgsLv2Manager *lv2_manager;
+
+    gboolean is_lv2_plugin;
+
+    GRecMutex *lv2_manager_mutex;
+
+    lv2_manager = ags_lv2_manager_get_instance();
+
+    lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
+    
+    g_rec_mutex_lock(lv2_manager_mutex);
+	      
+    is_lv2_plugin = ((lv2_manager->quick_scan_plugin_filename != NULL &&
+		      g_strv_contains(lv2_manager->quick_scan_plugin_filename,
+				      filename)) ||
+		     (lv2_manager->quick_scan_instrument_filename != NULL &&
+		      g_strv_contains(lv2_manager->quick_scan_instrument_filename,
+				      filename))) ? TRUE: FALSE;
+	      
+    g_rec_mutex_unlock(lv2_manager_mutex);
+
+    if(filename != NULL &&
+       effect != NULL &&
+       is_lv2_plugin){
+      AgsTurtle *manifest;
+      AgsTurtleManager *turtle_manager;
+    
+      gchar *path;
+      gchar *manifest_filename;
+
+      turtle_manager = ags_turtle_manager_get_instance();
+    
+      path = g_path_get_dirname(filename);
+
+      manifest_filename = g_strdup_printf("%s%c%s",
+					  path,
+					  G_DIR_SEPARATOR,
+					  "manifest.ttl");
+
+      manifest = ags_turtle_manager_find(turtle_manager,
+					 manifest_filename);
+
+      if(manifest == NULL){
+	AgsLv2TurtleParser *lv2_turtle_parser;
+	
+	AgsTurtle **turtle;
+
+	guint n_turtle;
+
+	if(!g_file_test(manifest_filename,
+			G_FILE_TEST_EXISTS)){
+	  goto ags_effect_line_real_add_effect_FIND_LV2;
+	}
+
+	g_message("new turtle [Manifest] - %s", manifest_filename);
+	
+	manifest = ags_turtle_new(manifest_filename);
+	ags_turtle_load(manifest,
+			NULL);
+	ags_turtle_manager_add(turtle_manager,
+			       (GObject *) manifest);
+
+	lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
+
+	n_turtle = 1;
+	turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
+
+	turtle[0] = manifest;
+	turtle[1] = NULL;
+	
+	ags_lv2_turtle_parser_parse(lv2_turtle_parser,
+				    turtle, n_turtle);
+    
+	g_object_run_dispose(lv2_turtle_parser);
+	g_object_unref(lv2_turtle_parser);
+	
+	g_object_unref(manifest);
+	
+	free(turtle);
+      }
+    
+      g_free(manifest_filename);
+    }
+    
+  ags_effect_line_real_add_effect_FIND_LV2:
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_manager,
 						 filename, effect);
     
     if(lv2_plugin != NULL){
