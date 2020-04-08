@@ -2,6 +2,9 @@ ags (3.2.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsLv2TurtleScanner quick scan
+	* added AgsSimpleFile fixup to deal with LV2 quotes
+	* fixed LV2 quotes in effect and specifier
+	* minor bug-fixes
 
 ags (3.2.6)
 

@@ -137,7 +137,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   GList *start_list, *list;
 
   gchar *str;
-  gchar **filenames, **filenames_start;
+  gchar **filename_strv;
 
   guint length;
   guint i;
@@ -173,6 +173,8 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
 
   /* get plugin */
+  filename_strv = NULL;
+
   g_rec_mutex_lock(lv2_manager_mutex);
 
   length = g_strv_length(lv2_manager->quick_scan_plugin_filename);
@@ -186,14 +188,35 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
     
     /* create item */
     if(filename != NULL &&
-       effect != NULL){
+       effect != NULL &&
+       (filename_strv == NULL ||
+	!g_strv_contains(filename_strv,
+			 filename))){
+      guint length;
+      
       gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(lv2_browser->filename),
 				     filename);
+
+      if(filename_strv == NULL){
+	length = 0;
+	
+	filename_strv = (gchar **) g_malloc(2 * sizeof(gchar *));
+      }else{
+	length = g_strv_length(filename_strv);
+
+	filename_strv = (gchar **) g_realloc(filename_strv,
+					     (length + 2) * sizeof(gchar *));
+      }
+
+      filename_strv[length] = filename;
+      filename_strv[length + 1] = NULL;
     }
   }
 
   g_rec_mutex_unlock(lv2_manager_mutex);
 
+  g_free(filename_strv);
+  
   label = (GtkLabel *) gtk_label_new(i18n("effect: "));
   gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),
 		     GTK_WIDGET(label),

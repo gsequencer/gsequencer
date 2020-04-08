@@ -129,7 +129,7 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 
   g_rec_mutex_unlock(lv2_manager_mutex);
 
-  while((list = ags_base_plugin_find_filename(list, gtk_combo_box_text_get_active_text(filename))) != NULL){
+  while((list = ags_base_plugin_find_filename(list, gtk_combo_box_text_get_active_text(filename_combo))) != NULL){
     gchar *effect;
 
     lv2_plugin = list->data;

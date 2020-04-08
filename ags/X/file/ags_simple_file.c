@@ -126,19 +126,19 @@ void ags_simple_file_read_machine_resize_pads(AgsMachine *machine,
 					      guint new_size, guint old_size,
 					      gpointer data);
 
-void ags_simple_file_read_equalizer10_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsEqualizer10 *equalizer10);
-void ags_simple_file_read_drum_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDrum *drum);
-void ags_simple_file_read_matrix_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsMatrix *matrix);
-void ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsSyncsynth *syncsynth);
-void ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsPitchSampler *pitch_sampler);
+void ags_simple_file_read_equalizer10_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEqualizer10 *equalizer10);
+void ags_simple_file_read_drum_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsDrum *drum);
+void ags_simple_file_read_matrix_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsMatrix *matrix);
+void ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsSyncsynth *syncsynth);
+void ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsPitchSampler *pitch_sampler);
 #ifdef AGS_WITH_LIBINSTPATCH
-void ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsFFPlayer *ffplayer);
+void ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFFPlayer *ffplayer);
 #endif
-void ags_simple_file_read_audiorec_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsAudiorec *audiorec);
-void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge);
-void ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveDssiBridge *live_dssi_bridge);
-void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLv2Bridge *lv2_bridge);
-void ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveLv2Bridge *live_lv2_bridge);
+void ags_simple_file_read_audiorec_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsAudiorec *audiorec);
+void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsDssiBridge *dssi_bridge);
+void ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveDssiBridge *live_dssi_bridge);
+void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLv2Bridge *lv2_bridge);
+void ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveLv2Bridge *live_lv2_bridge);
 void ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge);
 void ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBulk *effect_bulk);
 void ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsBulkMember *bulk_member);
@@ -2143,13 +2143,65 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
       xmlFree(effect);
     }
   }else if(AGS_IS_LIVE_DSSI_BRIDGE(gobject)){
+    xmlChar *version;
     xmlChar *filename, *effect;
+
+    guint major, minor, micro;
 
     filename = xmlGetProp(node,
 			  "plugin-file");
 
     effect = xmlGetProp(node,
 			"effect");
+
+    /* fixup 3.2.7 */
+    version = xmlGetProp(simple_file->root_node,
+			 "version");
+    
+    major = 0;
+    minor = 0;
+    micro = 0;
+    
+    if(version != NULL){
+      sscanf(version, "%d.%d.%d",
+	     &major,
+	     &minor,
+	     &micro);
+
+      xmlFree(version);
+    }
+
+    if(major < 3 ||
+       (major == 3 &&
+	micro < 2) ||
+       (major == 3 &&
+	micro < 2 &&
+	micro < 7)){
+      gchar *tmp;
+
+      tmp = NULL;
+      
+      if(!g_ascii_strncasecmp(effect, "\"\"\"", 3)){
+	tmp = g_strndup(effect + 3,
+			(gsize) (strlen(effect) - 6));
+      }else if(!g_ascii_strncasecmp(effect, "'''", 3)){
+	tmp = g_strndup(effect + 3,
+			(gsize) (strlen(effect) - 6));
+      }else if(effect[0] = '"'){
+	tmp = g_strndup(effect + 1,
+			(gsize) (strlen(effect) - 2));
+      }else if(effect[0] == '\''){
+	tmp = g_strndup(effect + 1,
+			(gsize) (strlen(effect) - 2));
+      }
+
+      if(tmp != NULL){
+	xmlFree(effect);
+
+	effect = xmlStrdup(tmp);
+	g_free(tmp);
+      }
+    }
 
     g_object_set(gobject,
 		 "filename", filename,
@@ -2166,13 +2218,65 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   }else if(AGS_IS_LV2_BRIDGE(gobject)){
     AgsLv2Plugin *lv2_plugin;
 
+    xmlChar *version;
     xmlChar *filename, *effect;
+
+    guint major, minor, micro;
 
     filename = xmlGetProp(node,
 			  "plugin-file");
 
     effect = xmlGetProp(node,
 			"effect");
+
+    /* fixup 3.2.7 */
+    version = xmlGetProp(simple_file->root_node,
+			 "version");
+    
+    major = 0;
+    minor = 0;
+    micro = 0;
+    
+    if(version != NULL){
+      sscanf(version, "%d.%d.%d",
+	     &major,
+	     &minor,
+	     &micro);
+
+      xmlFree(version);
+    }
+
+    if(major < 3 ||
+       (major == 3 &&
+	micro < 2) ||
+       (major == 3 &&
+	micro < 2 &&
+	micro < 7)){
+      gchar *tmp;
+
+      tmp = NULL;
+      
+      if(!g_ascii_strncasecmp(effect, "\"\"\"", 3)){
+	tmp = g_strndup(effect + 3,
+			(gsize) (strlen(effect) - 6));
+      }else if(!g_ascii_strncasecmp(effect, "'''", 3)){
+	tmp = g_strndup(effect + 3,
+			(gsize) (strlen(effect) - 6));
+      }else if(effect[0] = '"'){
+	tmp = g_strndup(effect + 1,
+			(gsize) (strlen(effect) - 2));
+      }else if(effect[0] == '\''){
+	tmp = g_strndup(effect + 1,
+			(gsize) (strlen(effect) - 2));
+      }
+
+      if(tmp != NULL){
+	xmlFree(effect);
+
+	effect = xmlStrdup(tmp);
+	g_free(tmp);
+      }
+    }
     
     lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 						 filename, effect);
@@ -2244,7 +2348,10 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   }else if(AGS_IS_LIVE_LV2_BRIDGE(gobject)){
     AgsLv2Plugin *lv2_plugin;
 
+    xmlChar *version;
     xmlChar *filename, *effect;
+
+    guint major, minor, micro;
 
     filename = xmlGetProp(node,
 			  "plugin-file");
@@ -2252,6 +2359,55 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     effect = xmlGetProp(node,
 			"effect");
     
+    /* fixup 3.2.7 */
+    version = xmlGetProp(simple_file->root_node,
+			 "version");
+    
+    major = 0;
+    minor = 0;
+    micro = 0;
+    
+    if(version != NULL){
+      sscanf(version, "%d.%d.%d",
+	     &major,
+	     &minor,
+	     &micro);
+
+      xmlFree(version);
+    }
+
+    if(major < 3 ||
+       (major == 3 &&
+	micro < 2) ||
+       (major == 3 &&
+	micro < 2 &&
+	micro < 7)){
+      gchar *tmp;
+
+      tmp = NULL;
+      
+      if(!g_ascii_strncasecmp(effect, "\"\"\"", 3)){
+	tmp = g_strndup(effect + 3,
+			(gsize) (strlen(effect) - 6));
+      }else if(!g_ascii_strncasecmp(effect, "'''", 3)){
+	tmp = g_strndup(effect + 3,
+			(gsize) (strlen(effect) - 6));
+      }else if(effect[0] = '"'){
+	tmp = g_strndup(effect + 1,
+			(gsize) (strlen(effect) - 2));
+      }else if(effect[0] == '\''){
+	tmp = g_strndup(effect + 1,
+			(gsize) (strlen(effect) - 2));
+      }
+
+      if(tmp != NULL){
+	xmlFree(effect);
+
+	effect = xmlStrdup(tmp);
+	g_free(tmp);
+      }
+    }
+
     lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 						 filename, effect);
 
@@ -2868,7 +3024,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 }
 
 void
-ags_simple_file_read_equalizer10_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsEqualizer10 *equalizer10)
+ags_simple_file_read_equalizer10_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEqualizer10 *equalizer10)
 {
   xmlNode *child;
 
@@ -2983,7 +3139,7 @@ ags_simple_file_read_equalizer10_launch(AgsSimpleFile *simpleFile, xmlNode *node
 }
   
 void
-ags_simple_file_read_drum_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDrum *drum)
+ags_simple_file_read_drum_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsDrum *drum)
 {
   xmlChar *str;
     
@@ -3056,7 +3212,7 @@ ags_simple_file_read_drum_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDr
 }
   
 void
-ags_simple_file_read_matrix_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsMatrix *matrix)
+ags_simple_file_read_matrix_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsMatrix *matrix)
 {
   xmlChar *str;
     
@@ -3112,7 +3268,7 @@ ags_simple_file_read_matrix_launch(AgsSimpleFile *simpleFile, xmlNode *node, Ags
 }
 
 void
-ags_simple_file_read_synth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsSynth *synth)
+ags_simple_file_read_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsSynth *synth)
 {
   xmlChar *str;
     
@@ -3137,7 +3293,7 @@ ags_simple_file_read_synth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsS
 }
   
 void
-ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsSyncsynth *syncsynth)
+ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsSyncsynth *syncsynth)
 {
   GList *list, *list_start;
   GList *child_start;
@@ -3205,7 +3361,7 @@ ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simpleFile, xmlNode *node, 
 }
 
 void
-ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsPitchSampler *pitch_sampler)
+ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsPitchSampler *pitch_sampler)
 {
   GtkTreeModel *model;
   GtkTreeIter iter;
@@ -3272,7 +3428,7 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simpleFile, xmlNode *no
 
 #ifdef AGS_WITH_LIBINSTPATCH
 void
-ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsFFPlayer *ffplayer)
+ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFFPlayer *ffplayer)
 {
   GtkTreeModel *model;
   GtkTreeIter iter;
@@ -3349,7 +3505,7 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simpleFile, xmlNode *node, A
 #endif
   
 void
-ags_simple_file_read_audiorec_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsAudiorec *audiorec)
+ags_simple_file_read_audiorec_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsAudiorec *audiorec)
 {
   xmlChar *str;
   gchar *value;
@@ -3366,7 +3522,7 @@ ags_simple_file_read_audiorec_launch(AgsSimpleFile *simpleFile, xmlNode *node, A
 }
   
 void
-ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge)
+ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsDssiBridge *dssi_bridge)
 {
   GtkTreeModel *model;
   GtkTreeIter iter;
@@ -3406,7 +3562,7 @@ ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node
 }
 
 void
-ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveDssiBridge *live_dssi_bridge)
+ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveDssiBridge *live_dssi_bridge)
 {
   GtkTreeModel *model;
   GtkTreeIter iter;
@@ -3446,13 +3602,16 @@ ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode 
 }
 
 void
-ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLv2Bridge *lv2_bridge)
+ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLv2Bridge *lv2_bridge)
 {
   GtkTreeModel *model;
   GtkTreeIter iter;
 
-  xmlChar *str;
+  xmlChar *version;
+  xmlChar *preset;
   gchar *value;
+
+  guint major, minor, micro;
 
   if(lv2_bridge->preset == NULL){
     return;
@@ -3465,8 +3624,57 @@ ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node,
 
   model = gtk_combo_box_get_model((GtkComboBox *) lv2_bridge->preset);
 
-  str = xmlGetProp(node,
-		   "preset");
+  preset = xmlGetProp(node,
+		      "preset");
+
+  /* fixup 3.2.7 */
+  version = xmlGetProp(simple_file->root_node,
+		       "version");
+    
+  major = 0;
+  minor = 0;
+  micro = 0;
+    
+  if(version != NULL){
+    sscanf(version, "%d.%d.%d",
+	   &major,
+	   &minor,
+	   &micro);
+
+    xmlFree(version);
+  }
+
+  if(major < 3 ||
+     (major == 3 &&
+      micro < 2) ||
+     (major == 3 &&
+      micro < 2 &&
+      micro < 7)){
+    gchar *tmp;
+
+    tmp = NULL;
+      
+    if(!g_ascii_strncasecmp(preset, "\"\"\"", 3)){
+      tmp = g_strndup(preset + 3,
+		      (gsize) (strlen(preset) - 6));
+    }else if(!g_ascii_strncasecmp(preset, "'''", 3)){
+      tmp = g_strndup(preset + 3,
+		      (gsize) (strlen(preset) - 6));
+    }else if(preset[0] = '"'){
+      tmp = g_strndup(preset + 1,
+		      (gsize) (strlen(preset) - 2));
+    }else if(preset[0] == '\''){
+      tmp = g_strndup(preset + 1,
+		      (gsize) (strlen(preset) - 2));
+    }
+
+    if(tmp != NULL){
+      xmlFree(preset);
+
+      preset = xmlStrdup(tmp);
+      g_free(tmp);
+    }
+  }
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
     do{
@@ -3474,7 +3682,7 @@ ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node,
 			 0, &value,
 			 -1);
 
-      if(!g_strcmp0(str,
+      if(!g_strcmp0(preset,
 		    value)){
 	gtk_combo_box_set_active_iter((GtkComboBox *) lv2_bridge->preset,
 				      &iter);
@@ -3484,19 +3692,22 @@ ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node,
 				    &iter));
   }
 
-  if(str != NULL){      
-    xmlFree(str);
+  if(preset != NULL){      
+    xmlFree(preset);
   }
 }
 
 void
-ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveLv2Bridge *live_lv2_bridge)
+ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveLv2Bridge *live_lv2_bridge)
 {
   GtkTreeModel *model;
   GtkTreeIter iter;
 
-  xmlChar *str;
+  xmlChar *version;
+  xmlChar *preset;
   gchar *value;
+
+  guint major, minor, micro;
 
   if(live_lv2_bridge->preset == NULL){
     return;
@@ -3509,8 +3720,57 @@ ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *
 
   model = gtk_combo_box_get_model((GtkComboBox *) live_lv2_bridge->preset);
 
-  str = xmlGetProp(node,
-		   "preset");
+  preset = xmlGetProp(node,
+		      "preset");
+
+  /* fixup 3.2.7 */
+  version = xmlGetProp(simple_file->root_node,
+		       "version");
+    
+  major = 0;
+  minor = 0;
+  micro = 0;
+    
+  if(version != NULL){
+    sscanf(version, "%d.%d.%d",
+	   &major,
+	   &minor,
+	   &micro);
+
+    xmlFree(version);
+  }
+
+  if(major < 3 ||
+     (major == 3 &&
+      micro < 2) ||
+     (major == 3 &&
+      micro < 2 &&
+      micro < 7)){
+    gchar *tmp;
+
+    tmp = NULL;
+      
+    if(!g_ascii_strncasecmp(preset, "\"\"\"", 3)){
+      tmp = g_strndup(preset + 3,
+		      (gsize) (strlen(preset) - 6));
+    }else if(!g_ascii_strncasecmp(preset, "'''", 3)){
+      tmp = g_strndup(preset + 3,
+		      (gsize) (strlen(preset) - 6));
+    }else if(preset[0] = '"'){
+      tmp = g_strndup(preset + 1,
+		      (gsize) (strlen(preset) - 2));
+    }else if(preset[0] == '\''){
+      tmp = g_strndup(preset + 1,
+		      (gsize) (strlen(preset) - 2));
+    }
+
+    if(tmp != NULL){
+      xmlFree(preset);
+
+      preset = xmlStrdup(tmp);
+      g_free(tmp);
+    }
+  }
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
     do{
@@ -3518,7 +3778,7 @@ ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *
 			 0, &value,
 			 -1);
 
-      if(!g_strcmp0(str,
+      if(!g_strcmp0(preset,
 		    value)){
 	gtk_combo_box_set_active_iter((GtkComboBox *) live_lv2_bridge->preset,
 				      &iter);
@@ -3528,8 +3788,8 @@ ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *
 				    &iter));
   }
 
-  if(str != NULL){      
-    xmlFree(str);
+  if(preset != NULL){      
+    xmlFree(preset);
   }
 }
 
@@ -3586,16 +3846,78 @@ ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *n
 void
 ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBulk *effect_bulk)
 {
+  AgsMachine *machine;
+  
   xmlNode *child;
     
+  xmlChar *version;
   xmlChar *filename, *effect;
 
+  guint major, minor, micro;
+  gboolean do_fixup_3_2_7;
+  
+  machine = gtk_widget_get_ancestor(effect_bulk,
+				    AGS_TYPE_MACHINE);
+  
   filename = xmlGetProp(node,
 			"filename");
 	      
   effect = xmlGetProp(node,
 		      "effect");
 
+  /* fixup 3.2.7 */
+  do_fixup_3_2_7 = FALSE;
+  
+  version = xmlGetProp(simple_file->root_node,
+		       "version");
+    
+  major = 0;
+  minor = 0;
+  micro = 0;
+    
+  if(version != NULL){
+    sscanf(version, "%d.%d.%d",
+	   &major,
+	   &minor,
+	   &micro);
+
+    xmlFree(version);
+  }
+
+  if(major < 3 ||
+     (major == 3 &&
+      micro < 2) ||
+     (major == 3 &&
+      micro < 2 &&
+      micro < 7)){
+    gchar *tmp;
+
+    do_fixup_3_2_7 = TRUE;
+
+    tmp = NULL;
+      
+    if(!g_ascii_strncasecmp(effect, "\"\"\"", 3)){
+      tmp = g_strndup(effect + 3,
+		      (gsize) (strlen(effect) - 6));
+    }else if(!g_ascii_strncasecmp(effect, "'''", 3)){
+      tmp = g_strndup(effect + 3,
+		      (gsize) (strlen(effect) - 6));
+    }else if(effect[0] = '"'){
+      tmp = g_strndup(effect + 1,
+		      (gsize) (strlen(effect) - 2));
+    }else if(effect[0] == '\''){
+      tmp = g_strndup(effect + 1,
+		      (gsize) (strlen(effect) - 2));
+    }
+
+    if(tmp != NULL){
+      xmlFree(effect);
+
+      effect = xmlStrdup(tmp);
+      g_free(tmp);
+    }
+  }
+  
   /* effect list children */
   child = node->children;
 
@@ -3610,7 +3932,34 @@ ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *nod
 
 	specifier = xmlGetProp(child,
 			       "specifier");
-	  
+
+	if(do_fixup_3_2_7){
+	  gchar *tmp;
+
+	  tmp = NULL;
+      
+	  if(!g_ascii_strncasecmp(specifier, "\"\"\"", 3)){
+	    tmp = g_strndup(specifier + 3,
+			    (gsize) (strlen(specifier) - 6));
+	  }else if(!g_ascii_strncasecmp(specifier, "'''", 3)){
+	    tmp = g_strndup(specifier + 3,
+			    (gsize) (strlen(specifier) - 6));
+	  }else if(specifier[0] = '"'){
+	    tmp = g_strndup(specifier + 1,
+			    (gsize) (strlen(specifier) - 2));
+	  }else if(specifier[0] == '\''){
+	    tmp = g_strndup(specifier + 1,
+			    (gsize) (strlen(specifier) - 2));
+	  }
+
+	  if(tmp != NULL){
+	    xmlFree(specifier);
+
+	    specifier = xmlStrdup(tmp);
+	    g_free(tmp);
+	  }
+	}
+	
 	list_start = gtk_container_get_children(GTK_CONTAINER(effect_bulk->table));
 	list = list_start;
 
@@ -3692,11 +4041,11 @@ ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *nod
 			   NULL);
 		      
       if(bulk_member->conversion != NULL &&
-	 major == 1 || 
-	 (major == 2 &&
-	  minor < 2 ||
-	  (minor == 2 &&
-	   micro <= 8))){
+	 (major == 1 || 
+	  (major == 2 &&
+	   minor < 2 ||
+	   (minor == 2 &&
+	    micro <= 8)))){
 	val = ags_conversion_convert(bulk_member->conversion,
 				     val,
 				     TRUE);
@@ -3711,11 +4060,11 @@ ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *nod
 			   NULL);
 		      
       if(bulk_member->conversion != NULL &&
-	 major == 1 || 
-	 (major == 2 &&
-	  minor < 2 ||
-	  (minor == 2 &&
-	   micro <= 8))){
+	 (major == 1 || 
+	  (major == 2 &&
+	   minor < 2 ||
+	   (minor == 2 &&
+	    micro <= 8)))){
 	val = ags_conversion_convert(bulk_member->conversion,
 				     val,
 				     TRUE);
@@ -3730,11 +4079,11 @@ ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *nod
 			   NULL);
 		      
       if(bulk_member->conversion != NULL &&
-	 major == 1 || 
-	 (major == 2 &&
-	  minor < 2 ||
-	  (minor == 2 &&
-	   micro <= 8))){
+	 (major == 1 || 
+	  (major == 2 &&
+	   minor < 2 ||
+	   (minor == 2 &&
+	    micro <= 8)))){
 	val = ags_conversion_convert(bulk_member->conversion,
 				     val,
 				     TRUE);
@@ -4190,11 +4539,11 @@ ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsL
 			   NULL);
 
       if(line_member->conversion != NULL &&
-	 major == 1 || 
-	 (major == 2 &&
-	  minor < 2 ||
-	  (minor == 2 &&
-	   micro <= 8))){
+	 (major == 1 || 
+	  (major == 2 &&
+	   minor < 2 ||
+	   (minor == 2 &&
+	    micro <= 8)))){
 	val = ags_conversion_convert(line_member->conversion,
 				     val,
 				     TRUE);
@@ -4207,11 +4556,11 @@ ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsL
 			   NULL);    
       
       if(line_member->conversion != NULL &&
-	 major == 1 || 
-	 (major == 2 &&
-	  minor < 2 ||
-	  (minor == 2 &&
-	   micro <= 8))){
+	 (major == 1 || 
+	  (major == 2 &&
+	   minor < 2 ||
+	   (minor == 2 &&
+	    micro <= 8)))){
 	val = ags_conversion_convert(line_member->conversion,
 				     val,
 				     TRUE);
@@ -4224,11 +4573,11 @@ ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsL
 			   NULL);    
       
       if(line_member->conversion != NULL &&
-	 major == 1 || 
-	 (major == 2 &&
-	  minor < 2 ||
-	  (minor == 2 &&
-	   micro <= 8))){
+	 (major == 1 || 
+	  (major == 2 &&
+	   minor < 2 ||
+	   (minor == 2 &&
+	    micro <= 8)))){
 	val = ags_conversion_convert(line_member->conversion,
 				     val,
 				     TRUE);
@@ -4252,6 +4601,8 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 {
   AgsPad *pad;
   GObject *gobject;
+
+  AgsLv2Manager *lv2_manager;
   
   AgsFileLaunch *file_launch;
   AgsFileIdRef *file_id_ref;
@@ -4265,11 +4616,48 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 
   GList *start_list, *list;
 
+  xmlChar *version;
   xmlChar *device;
   xmlChar *str;
   
   guint nth_line;
   guint i;
+  guint major, minor, micro;
+  gboolean do_fixup_3_2_7;
+
+  GRecMutex *lv2_manager_mutex;
+  
+  lv2_manager = ags_lv2_manager_get_instance();
+
+  lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
+  
+  /* fixup 3.2.7 */
+  do_fixup_3_2_7 = FALSE;
+  
+  version = xmlGetProp(simple_file->root_node,
+		       "version");
+    
+  major = 0;
+  minor = 0;
+  micro = 0;
+    
+  if(version != NULL){
+    sscanf(version, "%d.%d.%d",
+	   &major,
+	   &minor,
+	   &micro);
+
+    xmlFree(version);
+  }
+
+  if(major < 3 ||
+     (major == 3 &&
+      micro < 2) ||
+     (major == 3 &&
+      micro < 2 &&
+      micro < 7)){
+    do_fixup_3_2_7 = TRUE;
+  }
   
   pad = NULL;
   
@@ -4456,11 +4844,52 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 
 	      xmlChar *filename, *effect;
 
+	      gboolean is_lv2_plugin;
+	      
 	      filename = xmlGetProp(effect_list_child,
 				    "filename");
 	      
 	      effect = xmlGetProp(effect_list_child,
 				  "effect");
+
+	      g_rec_mutex_lock(lv2_manager_mutex);
+	      
+	      is_lv2_plugin = ((lv2_manager->quick_scan_plugin_filename != NULL &&
+				g_strv_contains(lv2_manager->quick_scan_plugin_filename,
+						filename)) ||
+			       (lv2_manager->quick_scan_instrument_filename != NULL &&
+				g_strv_contains(lv2_manager->quick_scan_instrument_filename,
+						filename))) ? TRUE: FALSE;
+	      
+	      g_rec_mutex_unlock(lv2_manager_mutex);
+
+	      if(is_lv2_plugin &&
+		 do_fixup_3_2_7){
+		gchar *tmp;
+
+		tmp = NULL;
+      
+		if(!g_ascii_strncasecmp(effect, "\"\"\"", 3)){
+		  tmp = g_strndup(effect + 3,
+				  (gsize) (strlen(effect) - 6));
+		}else if(!g_ascii_strncasecmp(effect, "'''", 3)){
+		  tmp = g_strndup(effect + 3,
+				  (gsize) (strlen(effect) - 6));
+		}else if(effect[0] = '"'){
+		  tmp = g_strndup(effect + 1,
+				  (gsize) (strlen(effect) - 2));
+		}else if(effect[0] == '\''){
+		  tmp = g_strndup(effect + 1,
+				  (gsize) (strlen(effect) - 2));
+		}
+
+		if(tmp != NULL){
+		  xmlFree(effect);
+
+		  effect = xmlStrdup(tmp);
+		  g_free(tmp);
+		}
+	      }
 	      
 	      if(filename != NULL &&
 		 effect != NULL){
@@ -4509,7 +4938,35 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 
 		    specifier = xmlGetProp(effect_child,
 					   "specifier");
-		    		       
+
+		    if(is_lv2_plugin &&
+		       do_fixup_3_2_7){
+		      gchar *tmp;
+
+		      tmp = NULL;
+      
+		      if(!g_ascii_strncasecmp(specifier, "\"\"\"", 3)){
+			tmp = g_strndup(specifier + 3,
+					(gsize) (strlen(specifier) - 6));
+		      }else if(!g_ascii_strncasecmp(specifier, "'''", 3)){
+			tmp = g_strndup(specifier + 3,
+					(gsize) (strlen(specifier) - 6));
+		      }else if(specifier[0] = '"'){
+			tmp = g_strndup(specifier + 1,
+					(gsize) (strlen(specifier) - 2));
+		      }else if(specifier[0] == '\''){
+			tmp = g_strndup(specifier + 1,
+					(gsize) (strlen(specifier) - 2));
+		      }
+
+		      if(tmp != NULL){
+			xmlFree(specifier);
+
+			specifier = xmlStrdup(tmp);
+			g_free(tmp);
+		      }
+		    }
+		    
 		    list =
 		      list_start = gtk_container_get_children((GtkContainer *) AGS_LINE(gobject)->expander->table);
 
@@ -5123,14 +5580,54 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 
   AgsFileLaunch *file_launch;
 
+  AgsLv2Manager *lv2_manager;  
+
   xmlNode *child;
 
+  xmlChar *version;
   xmlChar *str;
+
+  guint major, minor, micro;
+  gboolean do_fixup_3_2_7;
+
+  GRecMutex *lv2_manager_mutex;
   
   if(*effect_line != NULL){
     gobject = *effect_line;
   }else{
     return;
+  }
+
+  lv2_manager = ags_lv2_manager_get_instance();
+
+  lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
+  
+  /* fixup 3.2.7 */
+  do_fixup_3_2_7 = FALSE;
+  
+  version = xmlGetProp(simple_file->root_node,
+		       "version");
+    
+  major = 0;
+  minor = 0;
+  micro = 0;
+    
+  if(version != NULL){
+    sscanf(version, "%d.%d.%d",
+	   &major,
+	   &minor,
+	   &micro);
+
+    xmlFree(version);
+  }
+
+  if(major < 3 ||
+     (major == 3 &&
+      micro < 2) ||
+     (major == 3 &&
+      micro < 2 &&
+      micro < 7)){
+    do_fixup_3_2_7 = TRUE;
   }
 
   /* children */
@@ -5155,12 +5652,53 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 	      
 	      xmlChar *filename, *effect;
 
+	      gboolean is_lv2_plugin;
+
 	      filename = xmlGetProp(effect_list_child,
 				    "filename");
 	      
 	      effect = xmlGetProp(effect_list_child,
 				  "effect");
 	      
+	      g_rec_mutex_lock(lv2_manager_mutex);
+	      
+	      is_lv2_plugin = ((lv2_manager->quick_scan_plugin_filename != NULL &&
+				g_strv_contains(lv2_manager->quick_scan_plugin_filename,
+						filename)) ||
+			       (lv2_manager->quick_scan_instrument_filename != NULL &&
+				g_strv_contains(lv2_manager->quick_scan_instrument_filename,
+						filename))) ? TRUE: FALSE;
+	      
+	      g_rec_mutex_unlock(lv2_manager_mutex);
+
+	      if(is_lv2_plugin &&
+		 do_fixup_3_2_7){
+		gchar *tmp;
+
+		tmp = NULL;
+      
+		if(!g_ascii_strncasecmp(effect, "\"\"\"", 3)){
+		  tmp = g_strndup(effect + 3,
+				  (gsize) (strlen(effect) - 6));
+		}else if(!g_ascii_strncasecmp(effect, "'''", 3)){
+		  tmp = g_strndup(effect + 3,
+				  (gsize) (strlen(effect) - 6));
+		}else if(effect[0] = '"'){
+		  tmp = g_strndup(effect + 1,
+				  (gsize) (strlen(effect) - 2));
+		}else if(effect[0] == '\''){
+		  tmp = g_strndup(effect + 1,
+				  (gsize) (strlen(effect) - 2));
+		}
+
+		if(tmp != NULL){
+		  xmlFree(effect);
+
+		  effect = xmlStrdup(tmp);
+		  g_free(tmp);
+		}
+	      }
+
 	      /* effect list children */
 	      effect_child = child->children;
 
@@ -5181,6 +5719,34 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 		    specifier = xmlGetProp(effect_child,
 					   "specifier");
 
+		    if(is_lv2_plugin &&
+		       do_fixup_3_2_7){
+		      gchar *tmp;
+
+		      tmp = NULL;
+      
+		      if(!g_ascii_strncasecmp(specifier, "\"\"\"", 3)){
+			tmp = g_strndup(specifier + 3,
+					(gsize) (strlen(specifier) - 6));
+		      }else if(!g_ascii_strncasecmp(specifier, "'''", 3)){
+			tmp = g_strndup(specifier + 3,
+					(gsize) (strlen(specifier) - 6));
+		      }else if(specifier[0] = '"'){
+			tmp = g_strndup(specifier + 1,
+					(gsize) (strlen(specifier) - 2));
+		      }else if(specifier[0] == '\''){
+			tmp = g_strndup(specifier + 1,
+					(gsize) (strlen(specifier) - 2));
+		      }
+
+		      if(tmp != NULL){
+			xmlFree(specifier);
+
+			specifier = xmlStrdup(tmp);
+			g_free(tmp);
+		      }
+		    }
+		    
 		    str = xmlGetProp(effect_child,
 				     "value");
 

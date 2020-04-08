@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.2.7\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-04-08 07:10+0200\n"
+"POT-Creation-Date: 2020-04-08 09:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -213,7 +213,7 @@ msgid "filename: "
 msgstr ""
 
 #: ags/X/ags_dssi_browser.c:181 ags/X/ags_ladspa_browser.c:188
-#: ags/X/ags_lv2_browser.c:197
+#: ags/X/ags_lv2_browser.c:220
 msgid "effect: "
 msgstr ""
 
@@ -364,22 +364,22 @@ msgstr ""
 msgid "audio channel: "
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:217 ags/X/ags_lv2_browser_callbacks.c:273
+#: ags/X/ags_lv2_browser.c:240 ags/X/ags_lv2_browser_callbacks.c:273
 #: ags/X/ags_lv2_browser_callbacks.c:396
 msgid "Name"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:230 ags/X/ags_lv2_browser_callbacks.c:283
+#: ags/X/ags_lv2_browser.c:253 ags/X/ags_lv2_browser_callbacks.c:283
 #: ags/X/ags_lv2_browser_callbacks.c:405
 msgid "Homepage"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:243 ags/X/ags_lv2_browser_callbacks.c:293
+#: ags/X/ags_lv2_browser.c:266 ags/X/ags_lv2_browser_callbacks.c:293
 #: ags/X/ags_lv2_browser_callbacks.c:414
 msgid "M-Box"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:256 ags/X/ags_lv2_browser_callbacks.c:304
+#: ags/X/ags_lv2_browser.c:279 ags/X/ags_lv2_browser_callbacks.c:304
 #: ags/X/ags_lv2_browser_callbacks.c:423
 msgid "Ports"
 msgstr ""
