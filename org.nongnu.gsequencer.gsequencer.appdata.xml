@@ -35,6 +35,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.2.10" date="2020-04-09">
+      <description>
+	<p>Faster load of AgsMachineEditor.</p>
+      </description>
+    </release>
+
     <release version="3.2.8" date="2020-04-08">
       <description>
 	<p>Improved LV2 scanner.</p>

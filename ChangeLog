@@ -1,3 +1,8 @@
+ags (3.2.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved instantiate AgsPluginBrowser only as needed in AgsLineMemberEditor
+
 ags (3.2.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

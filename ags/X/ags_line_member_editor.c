@@ -152,7 +152,7 @@ ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
 		     FALSE, FALSE,
 		     0);
 
-  line_member_editor->plugin_browser = ags_plugin_browser_new((GtkWidget *) line_member_editor);
+  line_member_editor->plugin_browser = NULL;
 }
 
 void
@@ -173,11 +173,6 @@ ags_line_member_editor_connect(AgsConnectable *connectable)
 
   g_signal_connect(G_OBJECT(line_member_editor->remove), "clicked",
 		   G_CALLBACK(ags_line_member_editor_remove_callback), line_member_editor);
-
-  ags_connectable_connect(AGS_CONNECTABLE(line_member_editor->plugin_browser));
-
-  g_signal_connect(G_OBJECT(line_member_editor->plugin_browser), "response",
-		   G_CALLBACK(ags_line_member_editor_plugin_browser_response_callback), line_member_editor);
 }
 
 void
@@ -205,13 +200,15 @@ ags_line_member_editor_disconnect(AgsConnectable *connectable)
 		      line_member_editor,
 		      NULL);
 
-  ags_connectable_disconnect(AGS_CONNECTABLE(line_member_editor->plugin_browser));
-
-  g_object_disconnect(G_OBJECT(line_member_editor->plugin_browser),
-		      "any_signal::response",
-		      G_CALLBACK(ags_line_member_editor_plugin_browser_response_callback),
-		      line_member_editor,
-		      NULL);
+  if(line_member_editor->plugin_browser != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(line_member_editor->plugin_browser));
+    
+    g_object_disconnect(G_OBJECT(line_member_editor->plugin_browser),
+			"any_signal::response",
+			G_CALLBACK(ags_line_member_editor_plugin_browser_response_callback),
+			line_member_editor,
+			NULL);
+  }
 }
 
 void
