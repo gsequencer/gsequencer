@@ -41,7 +41,7 @@
       </description>
     </release>
 
-    <release version="3.2.5" date="2020-04-07">
+    <release version="3.2.6" date="2020-04-07">
       <description>
 	<p>Fixed AgsLiveLv2Bridge and AgsLiveDssiBridge to handle note-on properly.</p>
       </description>
