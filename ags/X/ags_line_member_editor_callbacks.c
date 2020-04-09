@@ -48,6 +48,15 @@ void
 ags_line_member_editor_add_callback(GtkWidget *button,
 				    AgsLineMemberEditor *line_member_editor)
 {
+  if(line_member_editor->plugin_browser == NULL){
+    line_member_editor->plugin_browser = ags_plugin_browser_new((GtkWidget *) line_member_editor);
+
+    ags_connectable_connect(AGS_CONNECTABLE(line_member_editor->plugin_browser));
+
+    g_signal_connect(G_OBJECT(line_member_editor->plugin_browser), "response",
+		     G_CALLBACK(ags_line_member_editor_plugin_browser_response_callback), line_member_editor);
+  }
+  
   gtk_widget_show_all((GtkWidget *) line_member_editor->plugin_browser);
 }
 
