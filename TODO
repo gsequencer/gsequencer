@@ -23,7 +23,6 @@ Free Documentation License".
 * TODO:JK: check recall id cleanup
 * TODO:JK: improved AgsRecallContainer detection of ags_recall_factory.c
 * TODO:JK: implemented AgsSoundContainer manager
-* TODO:JK: extended user's handbook to cover OSC server preferences
 * TODO:JK: added unit-tests
 * TODO:JK: implement ::seek() of AgsMidiParser and AgsOscParser
 * TODO:JK: implement ::seek() of AgsMidiBuilder and AgsOscBuilder
@@ -34,10 +33,7 @@ Free Documentation License".
 * TODO:JK: improved ags_audio_signal_feed() reduce over-head
 * TODO:JK: improved AgsApplySynth thread-safety
 * TODO:JK: refactored AgsAutomationEditor to be more light-weight
-* TODO:JK: implemented AgsCartesian properties
 * TODO:JK: implemented AgsConnectable:disconnect() to all implementing objects
-* TODO:JK: implemented AgsPlaybackDomain properties
-* TODO:JK: implemented AgsPlayback properties
 * TODO:JK: implemented AgsScaleArea properties
 * TODO:JK: implemented AgsApplicationContext properties
 * TODO:JK: implement AgsConnectable properly
@@ -49,9 +45,6 @@ Free Documentation License".
 * TODO:JK: implement UI configuration of plugins, loading at runtime
 * TODO:JK: implement AgsFunction
 * TODO:JK: implement AgsDesk a better jukebox as mixing desk
-* TODO:JK: implement AgsSheetEditor
-* TODO:JK: implement CUPS support to print notation sheet
-* TODO:JK: implement Music XML support
 * TODO:JK: implement file bundle embedding plugins and audio data
 * TODO:JK: fix AgsAudio typo
 * TODO:JK: improve ags-simple.xsl

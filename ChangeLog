@@ -1,3 +1,11 @@
+ags (3.3.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: extended user's handbook to cover OSC server preferences
+	* TODO:JK: implement AgsSheetEditor
+	* TODO:JK: implement CUPS support to print notation sheet
+	* TODO:JK: implement Music XML support
+
 ags (3.2.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
