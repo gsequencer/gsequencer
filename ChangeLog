@@ -1,3 +1,10 @@
+ags (3.2.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented AgsTurtle match functions
+	* TODO:JK: refactored AgsTurtle read functions
+	* TODO:JK: refactored AgsLv2TurtleScanner to use match functions
+
 ags (3.2.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

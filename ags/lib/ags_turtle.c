@@ -386,34 +386,19 @@ gchar*
 ags_turtle_read_iriref(gchar *offset,
 		       gchar *end_ptr)
 {
-  regmatch_t match_arr[1];
-    
   gchar *str;
+  gchar *iriref_start_offset, *iriref_end_offset;
 
-  static regex_t iriref_regex;
-    
-  static gboolean regex_compiled = FALSE;
-
-  //FIXME:JK: do like in specs explained
-  static const gchar *iriref_pattern = "^(<([^>\x20]*)>)";
-
-  static const size_t max_matches = 1;
-  
   str = NULL;
-
-  g_mutex_lock(&regex_mutex);
   
-  if(!regex_compiled){
-    regex_compiled = TRUE;
-    
-    ags_regcomp(&iriref_regex, iriref_pattern, REG_EXTENDED);
-  }
-
-  g_mutex_unlock(&regex_mutex);
-
-  if(ags_regexec(&iriref_regex, offset, max_matches, match_arr, 0) == 0){
+  iriref_start_offset = NULL;
+  iriref_end_offset = NULL;
+  
+  if(ags_turtle_match_iriref(offset,
+			     end_ptr,
+			     &iriref_start_offset, &iriref_end_offset)){
     str = g_strndup(offset,
-		    match_arr[0].rm_eo - match_arr[0].rm_so);
+		    iriref_end_offset - iriref_start_offset);
 
 #ifdef AGS_DEBUG
     g_message("iriref %s", str);
@@ -438,27 +423,19 @@ gchar*
 ags_turtle_read_pname_ns(gchar *offset,
 			 gchar *end_ptr)
 {
-  gchar *pn_prefix;
   gchar *str;
+  gchar *pname_ns_start_offset, *pname_ns_end_offset;
 
-  pn_prefix = ags_turtle_read_pn_prefix(offset,
-					end_ptr);
-
-  if(pn_prefix != NULL &&
-     &(offset[strlen(pn_prefix)]) < end_ptr &&
-     offset[strlen(pn_prefix)] == ':'){
-    str = g_strdup_printf("%s:",
-			  pn_prefix);
-  }else{
-    if(offset[0] == ':'){
-      str = g_strdup(":");
-    }else{
-      str = NULL;
-    }
-  }
-
-  if(pn_prefix != NULL){
-    free(pn_prefix);
+  str = NULL;
+  
+  pname_ns_start_offset = NULL;
+  pname_ns_end_offset = NULL;
+  
+  if(ags_turtle_match_pname_ns(offset,
+			       end_ptr,
+			       &pname_ns_start_offset, &pname_ns_end_offset)){
+    str = g_strndup(offset,
+		    (pname_ns_end_offset + 1) - offset);
   }
   
   return(str);
@@ -502,11 +479,11 @@ ags_turtle_read_pname_ln(gchar *offset,
   }
 
   if(pname_ns != NULL){
-    free(pname_ns);
+    g_free(pname_ns);
   }
 
   if(pn_local != NULL){
-    free(pn_local);
+    g_free(pn_local);
   }
   
   return(str);
@@ -556,7 +533,7 @@ ags_turtle_read_blank_node_label(gchar *offset,
       str = g_strdup_printf("_:%s", tmp);
       offset += (2 + strlen(tmp));
 	
-      free(tmp);
+      g_free(tmp);
     }
   }
   
@@ -580,7 +557,7 @@ ags_turtle_read_blank_node_label(gchar *offset,
 	tmp_str = g_strdup_printf("%s.",
 				  str);
 
-	free(str);
+	g_free(str);
 
 	str = tmp_str;
 
@@ -601,8 +578,8 @@ ags_turtle_read_blank_node_label(gchar *offset,
 				str, tmp);
       offset += strlen(tmp);
       
-      free(str);
-      free(tmp);
+      g_free(str);
+      g_free(tmp);
 
       str = tmp_str;
       
@@ -664,6 +641,232 @@ ags_turtle_read_langtag(gchar *offset,
   }
   
   return(str);
+}
+
+/**
+ * ags_turtle_match_iriref:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match iriref value.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_iriref(gchar *offset,
+			gchar *end_ptr,
+			gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+  gchar *iter;
+
+  gboolean success;
+  
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+  
+  if(offset < end_ptr && offset[0] == '<'){    
+    for(iter = offset; !success && iter < end_ptr; iter++){
+      if(iter[0] == '>'){
+	match[0] = offset;
+	match[1] = iter + 1;
+	
+	success = TRUE;
+
+	break;
+      }
+
+      if(iter[0] >= 0x0 && iter[0] <= 0x20){
+	break;
+      }
+
+      if(iter[0] == '<' || iter[0] == '"' || iter[0] == '{' || iter[0] == '}' || iter[0] == '|' || iter[0] == '^' || iter[0] == '`' || iter[0] == '\\'){
+	break;
+      }
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    start_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_pname_ns:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match iriref value.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_pname_ns(gchar *offset,
+			  gchar *end_ptr,
+			  gchar **start_offset, gchar **end_offset))
+{
+  gchar* match[2];
+  gchar *pname_prefix_start_offset, *pname_prefix_end_offset;
+
+  gboolean success;
+  
+  match[0] = NULL;
+  match[1] = NULL;
+
+  pname_prefix_start_offset = NULL;
+  pname_prefix_end_offset = NULL;
+  
+  success = FALSE;
+
+  if(ags_turtle_match_pname_prefix(offset,
+				   end_ptr,
+				   &pname_prefix_start_offset, &pname_prefix_end_offset)){
+    if(pname_prefix_end_offset < end_ptr &&
+       pname_prefix_end_offset[0] == ':'){
+      match[0] = offset;
+      match[1] = pname_prefix_end_offset + 1;
+      
+      success = TRUE;
+    }
+  }else{
+    if(offset[0] == ':'){
+      match[0] = offset;
+      match[1] = offset + 1;
+      
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    start_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_pname_ln:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match iriref value.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_pname_ln(gchar *offset,
+			  gchar *end_ptr,
+			  gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+  gchar *pname_ns_start_offset, *pname_ns_end_offset;
+  gchar *pn_local_start_offset, *pn_local_end_offset;
+
+  gboolean success;
+  
+  match[0] = NULL;
+  match[1] = NULL;
+
+  pname_ns_start_offset = NULL;
+  pname_ns_end_offset = NULL;
+
+  pn_local_start_offset = NULL;
+  pn_local_end_offset = NULL;
+  
+  success = FALSE;
+
+  if(ags_turtle_match_pname_ns(offset,
+			       end_ptr,
+			       &pname_ns_start_offset, &pname_ns_end_offset)){
+    if(ags_turtle_match_pn_local(pname_ns_end_offset,
+				 end_ptr,
+				 &pn_local_start_offset, &pn_local_end_offset)){
+      match[0] = offset;
+      match[1] = pn_local_end_offset;
+
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    start_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_blank_node_label:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match iriref value.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_blank_node_label(gchar *offset,
+				  gchar *end_ptr,
+				  gchar **start_offset, gchar **end_offset)
+{
+  //TODO:JK: implement me
+  
+  return(FALSE);
+}
+
+/**
+ * ags_turtle_match_langtag:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match iriref value.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_langtag(gchar *offset,
+			 gchar *end_ptr,
+			 gchar **start_offset, gchar **end_offset)
+{
+  //TODO:JK: implement me
+  
+  return(FALSE);
 }
 
 /**
@@ -1620,8 +1823,8 @@ ags_turtle_read_pn_prefix(gchar *offset,
 				  str, tmp);
 	offset += strlen(tmp);
 
-	free(str);
-	free(tmp);
+	g_free(str);
+	g_free(tmp);
 
 	str = str_tmp;
       }else{
@@ -1629,7 +1832,7 @@ ags_turtle_read_pn_prefix(gchar *offset,
 				  str);
 	offset++;	
 
-	free(str);
+	g_free(str);
 
 	str = str_tmp;
       }
@@ -1731,8 +1934,8 @@ ags_turtle_read_pn_local(gchar *offset,
 				    tmp);
 	  offset += strlen(tmp);
 	
-	  free(str);
-	  free(tmp);
+	  g_free(str);
+	  g_free(tmp);
 	
 	  str = tmp_str;
 	}else{
@@ -3651,7 +3854,7 @@ ags_turtle_load(AgsTurtle *turtle,
 #endif
   
   /* entry point - open file and read it */
-  sb = (struct stat *) malloc(sizeof(struct stat));
+  sb = (struct stat *) g_malloc(sizeof(struct stat));
   stat(turtle->filename,
        sb);
   file = fopen(turtle->filename,
@@ -3659,15 +3862,15 @@ ags_turtle_load(AgsTurtle *turtle,
   
   if(file == NULL ||
      sb->st_size <= 0){
-    free(sb);
+    g_free(sb);
     
     return(NULL);
   }
 
-  buffer = (gchar *) malloc((sb->st_size + 1) * sizeof(gchar));
+  buffer = (gchar *) g_malloc((sb->st_size + 1) * sizeof(gchar));
 
   if(buffer == NULL){
-    free(sb);
+    g_free(sb);
 
     return(NULL);
   }
@@ -3716,8 +3919,8 @@ ags_turtle_load(AgsTurtle *turtle,
     }
   }while(iter < &(buffer[sb->st_size]));
   
-  free(sb);
-  free(buffer);
+  g_free(sb);
+  g_free(buffer);
 
 //  xmlCleanupParser();
 //  xmlMemoryDump();

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -88,6 +88,22 @@ gchar* ags_turtle_read_blank_node_label(gchar *offset,
 gchar* ags_turtle_read_langtag(gchar *offset,
 			       gchar *end_ptr);
 
+gboolean ags_turtle_match_iriref(gchar *offset,
+				 gchar *end_ptr,
+				 gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_pname_ns(gchar *offset,
+				   gchar *end_ptr,
+				   gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_pname_ln(gchar *offset,
+				   gchar *end_ptr,
+				   gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_blank_node_label(gchar *offset,
+					   gchar *end_ptr,
+					   gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_langtag(gchar *offset,
+				  gchar *end_ptr,
+				  gchar **start_offset, gchar **end_offset);
+
 /* numbers */
 gchar* ags_turtle_read_boolean(gchar *offset,
 			       gchar *end_ptr);
@@ -100,9 +116,29 @@ gchar* ags_turtle_read_double(gchar *offset,
 gchar* ags_turtle_read_exponent(gchar *offset,
 				gchar *end_ptr);
 
+gboolean ags_turtle_match_boolean(gchar *offset,
+				  gchar *end_ptr,
+				  gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_integer(gchar *offset,
+				  gchar *end_ptr,
+				  gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_decimal(gchar *offset,
+				  gchar *end_ptr,
+				  gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_double(gchar *offset,
+				 gchar *end_ptr,
+				 gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_exponent(gchar *offset,
+				   gchar *end_ptr,
+				   gchar **start_offset, gchar **end_offset);
+
 /* literals */
 gchar* ags_turtle_read_string(gchar *offset,
 			      gchar *end_ptr);
+
+gboolean ags_turtle_match_string(gchar *offset,
+				 gchar *end_ptr,
+				 gchar **start_offset, gchar **end_offset);
 
 gchar* ags_turtle_read_string_literal_quote(gchar *offset,
 					    gchar *end_ptr);
@@ -112,6 +148,19 @@ gchar* ags_turtle_read_string_literal_long_quote(gchar *offset,
 						 gchar *end_ptr);
 gchar* ags_turtle_read_string_literal_long_single_quote(gchar *offset,
 							gchar *end_ptr);
+
+gboolean ags_turtle_match_string_literal_quote(gchar *offset,
+					       gchar *end_ptr,
+					       gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_string_literal_single_quote(gchar *offset,
+						      gchar *end_ptr,
+						      gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_string_literal_long_quote(gchar *offset,
+						    gchar *end_ptr,
+						    gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_string_literal_long_single_quote(gchar *offset,
+							   gchar *end_ptr,
+							   gchar **start_offset, gchar **end_offset);
 
 /* character ranges might return multi-byte */
 gchar* ags_turtle_read_uchar(gchar *offset,
@@ -140,6 +189,46 @@ gchar* ags_turtle_read_hex(gchar *offset,
 			   gchar *end_ptr);
 gchar* ags_turtle_read_pn_local_esc(gchar *offset,
 				    gchar *end_ptr);
+
+gboolean ags_turtle_match_uchar(gchar *offset,
+				gchar *end_ptr,
+				gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_echar(gchar *offset,
+				gchar *end_ptr,
+				gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_ws(gchar *offset,
+			     gchar *end_ptr,
+			     gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_anon(gchar *offset,
+			       gchar *end_ptr,
+			       gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_pn_chars_base(gchar *offset,
+					gchar *end_ptr,
+					gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_pn_chars_u(gchar *offset,
+				     gchar *end_ptr,
+				     gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_pn_chars(gchar *offset,
+				   gchar *end_ptr,
+				   gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_pn_prefix(gchar *offset,
+				    gchar *end_ptr,
+				    gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_pn_local(gchar *offset,
+				   gchar *end_ptr,
+				   gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_plx(gchar *offset,
+			      gchar *end_ptr,
+			      gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_percent(gchar *offset,
+				  gchar *end_ptr,
+				  gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_hex(gchar *offset,
+			      gchar *end_ptr,
+			      gchar **start_offset, gchar **end_offset);
+gboolean ags_turtle_match_pn_local_esc(gchar *offset,
+				       gchar *end_ptr,
+				       gchar **start_offset, gchar **end_offset);
 
 /* XML related */
 GList* ags_turtle_find_xpath(AgsTurtle *turtle,
