@@ -435,7 +435,7 @@ ags_turtle_read_pname_ns(gchar *offset,
 			       end_ptr,
 			       &pname_ns_start_offset, &pname_ns_end_offset)){
     str = g_strndup(offset,
-		    (pname_ns_end_offset + 1) - offset);
+		    pname_ns_end_offset - offset);
   }
   
   return(str);
@@ -468,7 +468,7 @@ ags_turtle_read_pname_ln(gchar *offset,
 			       end_ptr,
 			       &pname_ln_start_offset, &pname_ln_end_offset)){
     str = g_strndup(offset,
-		    (pname_ln_end_offset + 1) - offset);
+		    pname_ln_end_offset - offset);
   }
   
   return(str);
@@ -501,7 +501,7 @@ ags_turtle_read_blank_node_label(gchar *offset,
 				       end_ptr,
 				       &blank_node_label_start_offset, &blank_node_label_end_offset)){
     str = g_strndup(offset,
-		    (blank_node_label_end_offset + 1) - offset);
+		    blank_node_label_end_offset - offset);
   }
   
   return(str);
@@ -534,7 +534,7 @@ ags_turtle_read_langtag(gchar *offset,
 			      end_ptr,
 			      &langtag_start_offset, &langtag_end_offset)){
     str = g_strndup(offset,
-		    (langtag_end_offset + 1) - offset);
+		    langtag_end_offset - offset);
   }
   
   return(str);
@@ -547,7 +547,7 @@ ags_turtle_read_langtag(gchar *offset,
  * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
  * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
  *
- * Match iriref value.
+ * Match iriref.
  *
  * Returns: %TRUE on success, otherwise %FALSE
  * 
@@ -568,7 +568,9 @@ ags_turtle_match_iriref(gchar *offset,
 
   success = FALSE;
   
-  if(offset < end_ptr && offset[0] == '<'){    
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr && offset[0] == '<'){    
     for(iter = offset; !success && iter < end_ptr; iter++){
       if(iter[0] == '>'){
 	match[0] = offset;
@@ -594,7 +596,7 @@ ags_turtle_match_iriref(gchar *offset,
   }
   
   if(end_offset != NULL){
-    start_offset[0] = match[1];
+    end_offset[0] = match[1];
   }
   
   return(success);
@@ -607,7 +609,7 @@ ags_turtle_match_iriref(gchar *offset,
  * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
  * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
  *
- * Match iriref value.
+ * Match match pname-ns.
  *
  * Returns: %TRUE on success, otherwise %FALSE
  * 
@@ -631,7 +633,9 @@ ags_turtle_match_pname_ns(gchar *offset,
   
   success = FALSE;
 
-  if(ags_turtle_match_pname_prefix(offset,
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     ags_turtle_match_pname_prefix(offset,
 				   end_ptr,
 				   &pname_prefix_start_offset, &pname_prefix_end_offset)){
     if(pname_prefix_end_offset < end_ptr &&
@@ -655,7 +659,7 @@ ags_turtle_match_pname_ns(gchar *offset,
   }
   
   if(end_offset != NULL){
-    start_offset[0] = match[1];
+    end_offset[0] = match[1];
   }
   
   return(success);
@@ -668,7 +672,7 @@ ags_turtle_match_pname_ns(gchar *offset,
  * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
  * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
  *
- * Match iriref value.
+ * Match pname-ln.
  *
  * Returns: %TRUE on success, otherwise %FALSE
  * 
@@ -696,7 +700,9 @@ ags_turtle_match_pname_ln(gchar *offset,
   
   success = FALSE;
 
-  if(ags_turtle_match_pname_ns(offset,
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     ags_turtle_match_pname_ns(offset,
 			       end_ptr,
 			       &pname_ns_start_offset, &pname_ns_end_offset)){
     if(ags_turtle_match_pn_local(pname_ns_end_offset,
@@ -714,7 +720,7 @@ ags_turtle_match_pname_ln(gchar *offset,
   }
   
   if(end_offset != NULL){
-    start_offset[0] = match[1];
+    end_offset[0] = match[1];
   }
   
   return(success);
@@ -727,7 +733,7 @@ ags_turtle_match_pname_ln(gchar *offset,
  * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
  * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
  *
- * Match iriref value.
+ * Match blank node label.
  *
  * Returns: %TRUE on success, otherwise %FALSE
  * 
@@ -751,7 +757,9 @@ ags_turtle_match_blank_node_label(gchar *offset,
   
   success = FALSE;
 
-  if(offset + 3 < end_ptr &&
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset + 3 < end_ptr &&
      offset[0] == '_' &&
      offset[1] == ':'){
     if(ags_turtle_match_pn_chars_u(offset + 2,
@@ -809,7 +817,7 @@ ags_turtle_match_blank_node_label(gchar *offset,
   }
   
   if(end_offset != NULL){
-    start_offset[0] = match[1];
+    end_offset[0] = match[1];
   }
   
   return(success);
@@ -822,7 +830,7 @@ ags_turtle_match_blank_node_label(gchar *offset,
  * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
  * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
  *
- * Match iriref value.
+ * Match langtag.
  *
  * Returns: %TRUE on success, otherwise %FALSE
  * 
@@ -842,12 +850,14 @@ ags_turtle_match_langtag(gchar *offset,
 
   success = FALSE;
 
-  if(offset + 2 < end_ptr &&
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset + 2 < end_ptr &&
      offset[0] == '@' &&
      ((offset[1] >= 'a' &&
-       offset[1] >= 'z') ||
+       offset[1] <= 'z') ||
       (offset[1] >= 'A' &&
-       offset[1] >= 'Z'))){
+       offset[1] <= 'Z'))){
     gchar *iter;
 
     gboolean initial_dash;
@@ -858,9 +868,9 @@ ags_turtle_match_langtag(gchar *offset,
 
     while(iter < end_ptr){
       if((iter[0] >= 'a' &&
-	  iter[0] >= 'z') ||
+	  iter[0] <= 'z') ||
 	 (iter[0] >= 'A' &&
-	  iter[0] >= 'Z')){
+	  iter[0] <= 'Z')){
 	iter++;
       }else{
 	break;
@@ -871,11 +881,11 @@ ags_turtle_match_langtag(gchar *offset,
     
     while(iter < end_ptr){
       if((iter[0] >= 'a' &&
-	  iter[0] >= 'z') ||
+	  iter[0] <= 'z') ||
 	 (iter[0] >= 'A' &&
-	  iter[0] >= 'Z') ||
+	  iter[0] <= 'Z') ||
 	 (iter[0] >= '0' &&
-	  iter[0] >= '9')){
+	  iter[0] <= '9')){
 	initial_dash = FALSE;
 
 	iter++;
@@ -889,6 +899,10 @@ ags_turtle_match_langtag(gchar *offset,
       }
     }
 
+    if(initial_dash){
+      iter--;
+    }
+    
     match[0] = offset;
     match[1] = iter;
   }
@@ -898,7 +912,7 @@ ags_turtle_match_langtag(gchar *offset,
   }
   
   if(end_offset != NULL){
-    start_offset[0] = match[1];
+    end_offset[0] = match[1];
   }
   
   return(success);
@@ -919,33 +933,19 @@ gchar*
 ags_turtle_read_boolean(gchar *offset,
 			gchar *end_ptr)
 {
-  regmatch_t match_arr[1];
-  
   gchar *str;
-  
-  static regex_t boolean_literal_regex;
+  gchar *boolean_start_offset, *boolean_end_offset;
 
-  static gboolean regex_compiled = FALSE;
-    
-  static const char *boolean_literal_pattern = "^(true|false)";
-
-  static const size_t max_matches = 1;
-  
   str = NULL;
-
-  g_mutex_lock(&regex_mutex);
-
-  if(!regex_compiled){
-    regex_compiled = TRUE;
-      
-    ags_regcomp(&boolean_literal_regex, boolean_literal_pattern, REG_EXTENDED);
-  }
-
-  g_mutex_unlock(&regex_mutex);
-
-  if(ags_regexec(&boolean_literal_regex, offset, max_matches, match_arr, 0) == 0){
+  
+  boolean_start_offset = NULL;
+  boolean_end_offset = NULL;
+  
+  if(ags_turtle_match_boolean(offset,
+			      end_ptr,
+			      &boolean_start_offset, &boolean_end_offset)){
     str = g_strndup(offset,
-		    match_arr[0].rm_eo - match_arr[0].rm_so);
+		    boolean_end_offset - offset);
   }
   
   return(str);
@@ -966,33 +966,19 @@ gchar*
 ags_turtle_read_integer(gchar *offset,
 			gchar *end_ptr)
 {
-  regmatch_t match_arr[1];
-  
   gchar *str;
-  
-  static regex_t integer_literal_regex;
+  gchar *integer_start_offset, *integer_end_offset;
 
-  static gboolean regex_compiled = FALSE;
-    
-  static const char *integer_literal_pattern = "^([+-]?[0-9]+)";
-
-  static const size_t max_matches = 1;
-  
   str = NULL;
-
-  g_mutex_lock(&regex_mutex);
-
-  if(!regex_compiled){
-    regex_compiled = TRUE;
-      
-    ags_regcomp(&integer_literal_regex, integer_literal_pattern, REG_EXTENDED);
-  }
-
-  g_mutex_unlock(&regex_mutex);
-
-  if(ags_regexec(&integer_literal_regex, offset, max_matches, match_arr, 0) == 0){
+  
+  integer_start_offset = NULL;
+  integer_end_offset = NULL;
+  
+  if(ags_turtle_match_integer(offset,
+			      end_ptr,
+			      &integer_start_offset, &integer_end_offset)){
     str = g_strndup(offset,
-		    match_arr[0].rm_eo - match_arr[0].rm_so);
+		    integer_end_offset - offset);
   }
   
   return(str);
@@ -1013,33 +999,19 @@ gchar*
 ags_turtle_read_decimal(gchar *offset,
 			gchar *end_ptr)
 {
-  regmatch_t match_arr[1];
-  
   gchar *str;
+  gchar *decimal_start_offset, *decimal_end_offset;
 
-  static regex_t decimal_literal_regex;
-
-  static gboolean regex_compiled = FALSE;
-
-  static const char *decimal_literal_pattern = "^([\\+\\-]?[0-9]*\\.[0-9]+)";
-
-  static const size_t max_matches = 1;
-    
   str = NULL;
-
-  g_mutex_lock(&regex_mutex);
-
-  if(!regex_compiled){
-    regex_compiled = TRUE;
-      
-    ags_regcomp(&decimal_literal_regex, decimal_literal_pattern, REG_EXTENDED);
-  }
-
-  g_mutex_unlock(&regex_mutex);
-
-  if(ags_regexec(&decimal_literal_regex, offset, max_matches, match_arr, 0) == 0){
+  
+  decimal_start_offset = NULL;
+  decimal_end_offset = NULL;
+  
+  if(ags_turtle_match_decimal(offset,
+			      end_ptr,
+			      &decimal_start_offset, &decimal_end_offset)){
     str = g_strndup(offset,
-		    match_arr[0].rm_eo - match_arr[0].rm_so);
+		    decimal_end_offset - offset);
   }
   
   return(str);
@@ -1060,33 +1032,19 @@ gchar*
 ags_turtle_read_double(gchar *offset,
 		       gchar *end_ptr)
 {
-  regmatch_t match_arr[1];
-  
   gchar *str;
+  gchar *double_start_offset, *double_end_offset;
 
-  static regex_t double_literal_regex;
-  
-  static gboolean regex_compiled = FALSE;
-  
-  static const char *double_literal_pattern = "^([\\+\\-]?(([0-9]+\\.[0-9]*[eE][\\+\\-]?[0-9]+)|(\\.[0-9]+[eE][\\+\\-]?[0-9]+)|([0-9]+[eE][+-]?[0-9]+)))";
-
-  static const size_t max_matches = 1;
-    
   str = NULL;
-
-  g_mutex_lock(&regex_mutex);
-
-  if(!regex_compiled){
-    regex_compiled = TRUE;
-      
-    ags_regcomp(&double_literal_regex, double_literal_pattern, REG_EXTENDED);
-  }
-
-  g_mutex_unlock(&regex_mutex);
-
-  if(ags_regexec(&double_literal_regex, offset, max_matches, match_arr, 0) == 0){
+  
+  double_start_offset = NULL;
+  double_end_offset = NULL;
+  
+  if(ags_turtle_match_double(offset,
+			     end_ptr,
+			     &double_start_offset, &double_end_offset)){
     str = g_strndup(offset,
-		    match_arr[0].rm_eo - match_arr[0].rm_so);
+		    double_end_offset - offset);
   }
   
   return(str);
@@ -1107,36 +1065,451 @@ gchar*
 ags_turtle_read_exponent(gchar *offset,
 			 gchar *end_ptr)
 {
-  regmatch_t match_arr[1];
-  
   gchar *str;
+  gchar *exponent_start_offset, *exponent_end_offset;
 
-  static regex_t exponent_literal_regex;
-
-  static gboolean regex_compiled = FALSE;
-  
-  static const char *exponent_literal_pattern = "^([eE][+-]?[0-9]+)";
-
-  static const size_t max_matches = 1;
-    
   str = NULL;
-
-  g_mutex_lock(&regex_mutex);
-
-  if(!regex_compiled){
-    regex_compiled = TRUE;
-
-    ags_regcomp(&exponent_literal_regex, exponent_literal_pattern, REG_EXTENDED);
-  }
-
-  g_mutex_unlock(&regex_mutex);
-
-  if(ags_regexec(&exponent_literal_regex, offset, max_matches, match_arr, 0) == 0){
+  
+  exponent_start_offset = NULL;
+  exponent_end_offset = NULL;
+  
+  if(ags_turtle_match_exponent(offset,
+			       end_ptr,
+			       &exponent_start_offset, &exponent_end_offset)){
     str = g_strndup(offset,
-		    match_arr[0].rm_eo - match_arr[0].rm_so);
+		    exponent_end_offset - offset);
   }
   
   return(str);
+}
+
+/**
+ * ags_turtle_match_boolean:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match boolean.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_boolean(gchar *offset,
+			 gchar *end_ptr,
+			 gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    if(!strncmp(offset,
+		AGS_TURTLE_BOOLEAN_LITERAL_TRUE,
+		4)){
+      match[0] = offset;
+      match[1] = offset + 4;
+      
+      success = TRUE;
+    }else if(!strncmp(offset,
+		      AGS_TURTLE_BOOLEAN_LITERAL_FALSE,
+		      5)){
+      match[0] = offset;
+      match[1] = offset + 5;
+
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_integer:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match integer.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_integer(gchar *offset,
+			 gchar *end_ptr,
+			 gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    gchar *iter;
+    
+    gboolean has_sign;
+
+    iter = offset;
+    
+    has_sign = FALSE;
+    
+    if(iter[0] == '+' ||
+       iter[1] == '-'){
+      iter++;
+      
+      has_sign = TRUE;
+    }
+
+    for(; iter < end_ptr; iter++){
+      if(iter[0] >= '0' &&
+	 iter[1] <= '9'){
+	if(!success){
+	  success = TRUE;
+	}
+      }else{
+	break;
+      }
+    }
+
+    if(success){
+      match[0] = offset;
+      match[1] = iter;
+    }
+  }
+    
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+
+  return(success);
+}
+
+/**
+ * ags_turtle_match_decimal:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match decimal.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_decimal(gchar *offset,
+			 gchar *end_ptr,
+			 gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    gchar *iter;
+
+    gboolean has_sign;
+    gboolean has_int;
+    gboolean has_float;
+
+    iter = offset;
+
+    has_sign = FALSE;
+    has_int = FALSE;
+    has_float = FALSE;
+    
+    if(iter[0] == '+' ||
+       iter[1] == '-'){
+      iter++;
+      
+      has_sign = TRUE;
+    }
+
+    for(; iter < end_ptr; iter++){
+      if(iter[0] >= '0' &&
+	 iter[1] <= '9'){
+	if(!has_int){
+	  has_int = TRUE;
+	}
+      }else{
+	break;
+      }
+    }
+
+    if(iter[0] == '.'){
+      iter++;
+      
+      for(; iter < end_ptr; iter++){
+	if(iter[0] >= '0' &&
+	   iter[1] <= '9'){
+	  if(!has_float){
+	    has_float = TRUE;
+	    
+	    success = TRUE;
+	  }
+	}else{
+	  break;
+	}
+      }      
+    }
+    
+    if(success){
+      match[0] = offset;
+      match[1] = iter;
+    }
+  }
+  
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+
+  return(success);
+}
+
+/**
+ * ags_turtle_match_double:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match double.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_double(gchar *offset,
+			gchar *end_ptr,
+			gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    gchar *iter;
+    gchar *exponent_start_offset, *exponent_end_offset;
+    
+    gboolean has_sign;
+    gboolean has_int;
+    gboolean has_float;
+    gboolean has_exponent;
+    
+    iter = offset;
+
+    has_sign = FALSE;
+    has_int = FALSE;
+    has_float = FALSE;
+    has_exponent = FALSE;
+    
+    if(iter[0] == '+' ||
+       iter[1] == '-'){
+      iter++;
+      
+      has_sign = TRUE;
+    }
+
+    for(; iter < end_ptr; iter++){
+      if(iter[0] >= '0' &&
+	 iter[1] <= '9'){
+	if(!has_int){
+	  has_int = TRUE;
+	}
+      }else{
+	break;
+      }
+    }
+    
+    if(iter[0] == '.'){
+      iter++;
+      
+      for(; iter < end_ptr; iter++){
+	if(iter[0] >= '0' &&
+	   iter[1] <= '9'){
+	  if(!has_float){
+	    has_float = TRUE;
+	  }
+	}else{
+	  break;
+	}
+      }      
+    }
+
+    if(ags_turtle_match_exponent(iter,
+				 end_ptr,
+				 &exponent_start_offset, &exponent_end_offset)){
+      iter = exponent_end_offset;
+
+      has_exponent = TRUE;
+    }
+
+    if((has_int && has_float && has_exponent) ||
+       (has_float && has_exponent) ||
+       (has_int && has_exponent)){
+      success = TRUE;
+    }
+    
+    if(success){
+      match[0] = offset;
+      match[1] = iter;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_exponent:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match exponent.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_exponent(gchar *offset,
+			  gchar *end_ptr,
+			  gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    gchar *iter;
+
+    gboolean has_e;
+    gboolean has_exponent_sign;
+    gboolean has_exponent;
+    
+    iter = offset;
+
+    has_e = FALSE;
+    has_exponent_sign = FALSE;
+    has_exponent = FALSE;
+
+    if(iter[0] == 'e' ||
+       iter[0] == 'E'){
+      iter++;
+
+      has_e = TRUE;
+
+      if(iter[0] == '+' ||
+	 iter[1] == '-'){
+	iter++;
+      
+	has_exponent_sign = TRUE;
+      }
+      
+      for(; iter < end_ptr; iter++){
+	if(iter[0] >= '0' &&
+	   iter[1] <= '9'){
+	  if(!has_exponent){
+	    has_exponent = TRUE;
+	  }
+	}else{
+	  break;
+	}
+      }      
+    }
+
+    success = has_exponent;
+
+    if(success){
+      match[0] = offset;
+      match[1] = iter;
+    }
+  }
+  
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+
+  return(success);
 }
 
 /**

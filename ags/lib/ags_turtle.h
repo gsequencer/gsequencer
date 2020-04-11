@@ -40,6 +40,9 @@ G_BEGIN_DECLS
 
 #define AGS_TURTLE_DEFAULT_VERSION "0.7.3"
 
+#define AGS_TURTLE_BOOLEAN_LITERAL_TRUE "true"
+#define AGS_TURTLE_BOOLEAN_LITERAL_FALSE "false"
+
 typedef struct _AgsTurtle AgsTurtle;
 typedef struct _AgsTurtleClass AgsTurtleClass;
 
