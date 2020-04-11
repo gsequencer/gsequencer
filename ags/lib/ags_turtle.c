@@ -1621,9 +1621,9 @@ ags_turtle_match_string(gchar *offset,
     }
 
     /* match string literal single quote */
-    if(ags_turtle_match_string_literal_quote(offset,
-					     end_ptr,
-					     &string_literal_single_quote_start_offset, &string_literal_single_quote_end_offset)){
+    if(ags_turtle_match_string_literal_single_quote(offset,
+						    end_ptr,
+						    &string_literal_single_quote_start_offset, &string_literal_single_quote_end_offset)){
       match[0] = offset;
       match[1] = string_literal_single_quote_end_offset;
       
