@@ -1528,36 +1528,118 @@ ags_turtle_read_string(gchar *offset,
 		       gchar *end_ptr)
 {
   gchar *str;
+  gchar *string_start_offset, *string_end_offset;
 
-  str = ags_turtle_read_string_literal_long_quote(offset,
-						  end_ptr);
+  str = NULL;
   
-  if(str != NULL){
-    return(str);
+  string_start_offset = NULL;
+  string_end_offset = NULL;
+  
+  if(ags_turtle_match_string(offset,
+			     end_ptr,
+			     &string_start_offset, &string_end_offset)){
+    str = g_strndup(offset,
+		    string_end_offset - offset);
+  }
+  
+  return(str);
+}
+
+/**
+ * ags_turtle_match_string:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match string.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_string(gchar *offset,
+			gchar *end_ptr,
+			gchar **start_offset, gchar **end_offset)
+{
+  gchar *string_literal_long_quote_start_offset, *string_literal_long_quote_end_offset;
+  gchar *string_literal_long_single_quote_start_offset, *string_literal_long_single_quote_end_offset;
+  gchar *string_literal_quote_start_offset, *string_literal_quote_end_offset;
+  gchar *string_literal_single_quote_start_offset, *string_literal_single_quote_end_offset;
+  gchar* match[2];
+
+  gboolean success;
+
+  string_literal_long_quote_start_offset = NULL;
+  string_literal_long_quote_end_offset = NULL;
+  
+  string_literal_long_single_quote_start_offset = NULL;
+  string_literal_long_single_quote_end_offset = NULL;
+
+  string_literal_quote_start_offset = NULL;
+  string_literal_quote_end_offset = NULL;
+
+  string_literal_single_quote_start_offset = NULL;
+  string_literal_single_quote_end_offset = NULL;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL){
+    /* match string literal long quote */
+    if(ags_turtle_match_string_literal_long_quote(offset,
+						  end_ptr,
+						  &string_literal_long_quote_start_offset, &string_literal_long_quote_end_offset)){
+      match[0] = offset;
+      match[1] = string_literal_long_quote_end_offset;
+      
+      success = TRUE;
+    }
+    
+    /* match string literal long single quote */
+    if(ags_turtle_match_string_literal_long_single_quote(offset,
+							 end_ptr,
+							 &string_literal_long_single_quote_start_offset, &string_literal_long_single_quote_end_offset)){
+      match[0] = offset;
+      match[1] = string_literal_long_single_quote_end_offset;
+      
+      success = TRUE;
+    }
+
+    /* match string literal quote */
+    if(ags_turtle_match_string_literal_quote(offset,
+					     end_ptr,
+					     &string_literal_quote_start_offset, &string_literal_quote_end_offset)){
+      match[0] = offset;
+      match[1] = string_literal_quote_end_offset;
+      
+      success = TRUE;
+    }
+
+    /* match string literal single quote */
+    if(ags_turtle_match_string_literal_quote(offset,
+					     end_ptr,
+					     &string_literal_single_quote_start_offset, &string_literal_single_quote_end_offset)){
+      match[0] = offset;
+      match[1] = string_literal_single_quote_end_offset;
+      
+      success = TRUE;
+    }
   }
 
-  str = ags_turtle_read_string_literal_long_single_quote(offset,
-							 end_ptr);
-  
-  if(str != NULL){
-    return(str);
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
   }
-
-  str = ags_turtle_read_string_literal_quote(offset,
-					     end_ptr);
   
-  if(str != NULL){
-    return(str);
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
   }
-
-  str = ags_turtle_read_string_literal_single_quote(offset,
-						    end_ptr);
   
-  if(str != NULL){
-    return(str);
-  }
-
-  return(NULL);
+  return(success);
 }
 
 /**
