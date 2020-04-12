@@ -398,7 +398,7 @@ ags_turtle_read_iriref(gchar *offset,
 			     end_ptr,
 			     &iriref_start_offset, &iriref_end_offset)){
     str = g_strndup(offset,
-		    iriref_end_offset - iriref_start_offset);
+		    iriref_end_offset - offset);
 
 #ifdef AGS_DEBUG
     g_message("iriref %s", str);
@@ -571,22 +571,35 @@ ags_turtle_match_iriref(gchar *offset,
   if(offset != NULL &&
      end_ptr != NULL &&
      offset < end_ptr && offset[0] == '<'){    
-    for(iter = offset; !success && iter < end_ptr; iter++){
+    for(iter = offset + 1; !success && iter < end_ptr;){
+      gchar *uchar_start_offset, *uchar_end_offset;
+      
       if(iter[0] == '>'){
 	match[0] = offset;
 	match[1] = iter + 1;
 	
 	success = TRUE;
-
+	
 	break;
       }
 
-      if(iter[0] >= 0x0 && iter[0] <= 0x20){
-	break;
-      }
-
-      if(iter[0] == '<' || iter[0] == '"' || iter[0] == '{' || iter[0] == '}' || iter[0] == '|' || iter[0] == '^' || iter[0] == '`' || iter[0] == '\\'){
-	break;
+      uchar_start_offset = NULL;
+      uchar_end_offset = NULL;
+      
+      if(ags_turtle_match_uchar(iter,
+				end_ptr,
+				&uchar_start_offset, &uchar_end_offset)){
+	iter += (uchar_end_offset - uchar_start_offset);
+      }else{
+	if(iter[0] >= 0x0 && iter[0] <= 0x20){
+	  break;
+	}
+	
+	if(iter[0] == '<' || iter[0] == '"' || iter[0] == '{' || iter[0] == '}' || iter[0] == '|' || iter[0] == '^' || iter[0] == '`' || iter[0] == '\\'){
+	  break;
+	}
+	
+	iter++;
       }
     }
   }
@@ -618,39 +631,40 @@ ags_turtle_match_iriref(gchar *offset,
 gboolean
 ags_turtle_match_pname_ns(gchar *offset,
 			  gchar *end_ptr,
-			  gchar **start_offset, gchar **end_offset))
+			  gchar **start_offset, gchar **end_offset)
 {
   gchar* match[2];
-  gchar *pname_prefix_start_offset, *pname_prefix_end_offset;
+  gchar *pn_prefix_start_offset, *pn_prefix_end_offset;
 
   gboolean success;
   
   match[0] = NULL;
   match[1] = NULL;
 
-  pname_prefix_start_offset = NULL;
-  pname_prefix_end_offset = NULL;
+  pn_prefix_start_offset = NULL;
+  pn_prefix_end_offset = NULL;
   
   success = FALSE;
 
   if(offset != NULL &&
-     end_ptr != NULL &&
-     ags_turtle_match_pname_prefix(offset,
-				   end_ptr,
-				   &pname_prefix_start_offset, &pname_prefix_end_offset)){
-    if(pname_prefix_end_offset < end_ptr &&
-       pname_prefix_end_offset[0] == ':'){
-      match[0] = offset;
-      match[1] = pname_prefix_end_offset + 1;
+     end_ptr != NULL){
+    if(ags_turtle_match_pn_prefix(offset,
+				  end_ptr,
+				  &pn_prefix_start_offset, &pn_prefix_end_offset)){
+      if(pn_prefix_end_offset < end_ptr &&
+	 pn_prefix_end_offset[0] == ':'){
+	match[0] = offset;
+	match[1] = pn_prefix_end_offset + 1;
       
-      success = TRUE;
-    }
-  }else{
-    if(offset[0] == ':'){
-      match[0] = offset;
-      match[1] = offset + 1;
+	success = TRUE;
+      }
+    }else{
+      if(offset[0] == ':'){
+	match[0] = offset;
+	match[1] = offset + 1;
       
-      success = TRUE;
+	success = TRUE;
+      }
     }
   }
 
@@ -1241,15 +1255,6 @@ ags_turtle_match_decimal(gchar *offset,
 
   success = FALSE;
 
-  gchar* match[2];
-
-  gboolean success;
-
-  match[0] = NULL;
-  match[1] = NULL;
-
-  success = FALSE;
-
   if(offset != NULL &&
      end_ptr != NULL &&
      offset < end_ptr){
@@ -1590,40 +1595,30 @@ ags_turtle_match_string(gchar *offset,
 
   if(offset != NULL &&
      end_ptr != NULL){
-    /* match string literal long quote */
     if(ags_turtle_match_string_literal_long_quote(offset,
 						  end_ptr,
-						  &string_literal_long_quote_start_offset, &string_literal_long_quote_end_offset)){
+						  &string_literal_long_quote_start_offset, &string_literal_long_quote_end_offset)){ /* match string literal long quote */
       match[0] = offset;
       match[1] = string_literal_long_quote_end_offset;
       
       success = TRUE;
-    }
-    
-    /* match string literal long single quote */
-    if(ags_turtle_match_string_literal_long_single_quote(offset,
-							 end_ptr,
-							 &string_literal_long_single_quote_start_offset, &string_literal_long_single_quote_end_offset)){
+    }else if(ags_turtle_match_string_literal_long_single_quote(offset, 
+							       end_ptr,
+							       &string_literal_long_single_quote_start_offset, &string_literal_long_single_quote_end_offset)){ /* match string literal long single quote */
       match[0] = offset;
       match[1] = string_literal_long_single_quote_end_offset;
       
       success = TRUE;
-    }
-
-    /* match string literal quote */
-    if(ags_turtle_match_string_literal_quote(offset,
-					     end_ptr,
-					     &string_literal_quote_start_offset, &string_literal_quote_end_offset)){
+    }else if(ags_turtle_match_string_literal_quote(offset,
+						   end_ptr,
+						   &string_literal_quote_start_offset, &string_literal_quote_end_offset)){ /* match string literal quote */
       match[0] = offset;
       match[1] = string_literal_quote_end_offset;
       
       success = TRUE;
-    }
-
-    /* match string literal single quote */
-    if(ags_turtle_match_string_literal_single_quote(offset,
-						    end_ptr,
-						    &string_literal_single_quote_start_offset, &string_literal_single_quote_end_offset)){
+    }else if(ags_turtle_match_string_literal_single_quote(offset,
+							  end_ptr,
+							  &string_literal_single_quote_start_offset, &string_literal_single_quote_end_offset)){ /* match string literal single quote */
       match[0] = offset;
       match[1] = string_literal_single_quote_end_offset;
       
@@ -1811,7 +1806,7 @@ ags_turtle_match_string_literal_quote(gchar *offset,
     if(iter[0] == '"'){
       iter++;
       
-      for(; iter < end_ptr; iter++){
+      while(iter < end_ptr){
 	gchar *uchar_start_offset, *uchar_end_offset;
 	gchar *echar_start_offset, *echar_end_offset;
 	
@@ -1849,6 +1844,8 @@ ags_turtle_match_string_literal_quote(gchar *offset,
 	if(iter[0] == '\\' || iter[0] == '\n' || iter[0] == '\r'){
 	  break;
 	}
+
+	iter++;
       }
     }
   }
@@ -1886,9 +1883,6 @@ ags_turtle_match_string_literal_single_quote(gchar *offset,
 
   gboolean success;
 
-  string_literal_quote_start_offset = NULL;
-  string_literal_quote_end_offset = NULL;
-
   match[0] = NULL;
   match[1] = NULL;
 
@@ -1904,7 +1898,7 @@ ags_turtle_match_string_literal_single_quote(gchar *offset,
     if(iter[0] == '\''){
       iter++;
       
-      for(; iter < end_ptr; iter++){
+      while(iter < end_ptr){
 	gchar *uchar_start_offset, *uchar_end_offset;
 	gchar *echar_start_offset, *echar_end_offset;
 	
@@ -1942,6 +1936,8 @@ ags_turtle_match_string_literal_single_quote(gchar *offset,
 	if(iter[0] == '\\' || iter[0] == '\n' || iter[0] == '\r'){
 	  break;
 	}
+
+	iter++;
       }
     }
   }
@@ -1980,9 +1976,6 @@ ags_turtle_match_string_literal_long_quote(gchar *offset,
   guint n_match;
   gboolean success;
 
-  string_literal_quote_start_offset = NULL;
-  string_literal_quote_end_offset = NULL;
-
   match[0] = NULL;
   match[1] = NULL;
 
@@ -1990,7 +1983,7 @@ ags_turtle_match_string_literal_long_quote(gchar *offset,
 
   if(offset != NULL &&
      end_ptr != NULL &&
-     offset < end_ptr){
+     offset + 6 < end_ptr){
     gchar *iter;
 
     iter = offset;
@@ -2000,7 +1993,7 @@ ags_turtle_match_string_literal_long_quote(gchar *offset,
        iter[2] == '"'){
       iter += 3;
       
-      for(n_match = 0; iter < end_ptr; iter++){
+      for(n_match = 0; iter < end_ptr;){
 	gchar *uchar_start_offset, *uchar_end_offset;
 	gchar *echar_start_offset, *echar_end_offset;
 	
@@ -2015,9 +2008,13 @@ ags_turtle_match_string_literal_long_quote(gchar *offset,
 	    
 	    break;
 	  }
-	}else{
-	  n_match = 0;
+
+	  iter++;
+
+	  continue;
 	}
+	
+	n_match = 0;
 
 	uchar_start_offset = NULL;
 	uchar_end_offset = NULL;
@@ -2044,6 +2041,8 @@ ags_turtle_match_string_literal_long_quote(gchar *offset,
 	if(iter[0] == '\\'){
 	  break;
 	}
+
+	iter++;
       }
     }
   }
@@ -2082,9 +2081,6 @@ ags_turtle_match_string_literal_long_single_quote(gchar *offset,
   guint n_match;
   gboolean success;
 
-  string_literal_quote_start_offset = NULL;
-  string_literal_quote_end_offset = NULL;
-
   match[0] = NULL;
   match[1] = NULL;
 
@@ -2102,7 +2098,7 @@ ags_turtle_match_string_literal_long_single_quote(gchar *offset,
        iter[2] == '\''){
       iter += 3;
       
-      for(n_match = 0; iter < end_ptr; iter++){
+      for(n_match = 0; iter < end_ptr;){
 	gchar *uchar_start_offset, *uchar_end_offset;
 	gchar *echar_start_offset, *echar_end_offset;
 	
@@ -2117,9 +2113,13 @@ ags_turtle_match_string_literal_long_single_quote(gchar *offset,
 	    
 	    break;
 	  }
-	}else{
-	  n_match = 0;
+
+	  iter++;
+
+	  continue;
 	}
+	
+	n_match = 0;
 
 	uchar_start_offset = NULL;
 	uchar_end_offset = NULL;
@@ -2146,6 +2146,8 @@ ags_turtle_match_string_literal_long_single_quote(gchar *offset,
 	if(iter[0] == '\\'){
 	  break;
 	}
+	
+	iter++;
       }
     }
   }
@@ -2276,7 +2278,6 @@ gchar*
 ags_turtle_read_anon(gchar *offset,
 		     gchar *end_ptr)
 {
-  gchar *str;
   gchar *str;
   gchar *anon_start_offset, *anon_end_offset;
 
@@ -3007,9 +3008,9 @@ ags_turtle_match_pn_chars_u(gchar *offset,
     pn_chars_base_start_offset = NULL;
     pn_chars_base_end_offset = NULL;
 
-    if(ags_turtle_match_pname_chars_base(offset,
-					 end_ptr,
-					 &pn_chars_base_start_offset, &pn_chars_base_end_offset)){
+    if(ags_turtle_match_pn_chars_base(offset,
+				      end_ptr,
+				      &pn_chars_base_start_offset, &pn_chars_base_end_offset)){
       match[0] = offset;
       match[1] = pn_chars_base_end_offset;
       
@@ -3068,9 +3069,9 @@ ags_turtle_match_pn_chars(gchar *offset,
     pn_chars_u_start_offset = NULL;
     pn_chars_u_end_offset = NULL;
 
-    if(ags_turtle_match_pname_chars_u(offset,
-				      end_ptr,
-				      &pn_chars_u_start_offset, &pn_chars_u_end_offset)){
+    if(ags_turtle_match_pn_chars_u(offset,
+				   end_ptr,
+				   &pn_chars_u_start_offset, &pn_chars_u_end_offset)){
       match[0] = offset;
       match[1] = pn_chars_u_end_offset;
       
@@ -3170,7 +3171,8 @@ ags_turtle_match_pn_prefix(gchar *offset,
      offset < end_ptr){
     gchar *iter;
     gchar *pn_chars_base_start_offset, *pn_chars_base_end_offset;
-
+    gchar *check_point_start_offset;
+    
     gboolean check_point;
     
     pn_chars_base_start_offset = NULL;
@@ -3178,6 +3180,8 @@ ags_turtle_match_pn_prefix(gchar *offset,
     
     iter = offset;
 
+    check_point_start_offset = NULL;
+    
     check_point = FALSE;
     
     if(ags_turtle_match_pn_chars_base(iter,
@@ -3185,15 +3189,17 @@ ags_turtle_match_pn_prefix(gchar *offset,
 				      &pn_chars_base_start_offset, &pn_chars_base_end_offset)){
       iter += (pn_chars_base_end_offset - pn_chars_base_start_offset);
 
+      check_point_start_offset = iter;
+      
       while(iter < end_ptr){
 	gchar *pn_chars_start_offset, *pn_chars_end_offset;
 	
 	pn_chars_start_offset = NULL;
 	pn_chars_end_offset = NULL;
     
-	if(ags_turtle_match_pn_chars_base(iter,
-					  end_ptr,
-					  &pn_chars_start_offset, &pn_chars_end_offset)){
+	if(ags_turtle_match_pn_chars(iter,
+				     end_ptr,
+				     &pn_chars_start_offset, &pn_chars_end_offset)){
 	  iter += (pn_chars_end_offset - pn_chars_start_offset);
 
 	  check_point = FALSE;
@@ -3208,7 +3214,7 @@ ags_turtle_match_pn_prefix(gchar *offset,
     }
 
     if(check_point){
-      for(iter -= 1; iter >= pn_chars_base_end_offset && iter[0] == '.'; iter--);
+      for(iter -= 1; iter >= check_point_start_offset && iter[0] == '.'; iter--);
     }
 
     match[0] = offset;
@@ -3725,7 +3731,7 @@ ags_turtle_load_skip_comments_and_blanks(AgsTurtle *turtle,
   }
     
   /* skip whitespaces and comments */
-  for(; (look_ahead < &(buffer[buffer_length])) && *look_ahead != '\0'; look_ahead++){
+  for(; (look_ahead < &(buffer[buffer_length])) && *look_ahead != '\0';){
     /* skip comments */
     if(buffer == look_ahead){
       if(*buffer == '#'){
@@ -3759,6 +3765,8 @@ ags_turtle_load_skip_comments_and_blanks(AgsTurtle *turtle,
     if(!(*look_ahead == ' ' || *look_ahead == '\t' || *look_ahead == '\n')){
       break;
     }
+
+    look_ahead++;
   }
 
   return(look_ahead);
@@ -5442,7 +5450,7 @@ ags_turtle_load(AgsTurtle *turtle,
   
   g_free(sb);
   g_free(buffer);
-
+  
 //  xmlCleanupParser();
 //  xmlMemoryDump();
   

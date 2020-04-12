@@ -368,7 +368,7 @@ ags_lv2_turtle_scanner_load_skip_comments_and_blanks(AgsLv2TurtleScanner *lv2_tu
   }
     
   /* skip whitespaces and comments */
-  for(; (look_ahead < &(buffer[buffer_length])) && *look_ahead != '\0'; look_ahead++){
+  for(; (look_ahead < &(buffer[buffer_length])) && *look_ahead != '\0';){
     /* skip comments */
     if(buffer == look_ahead){
       if(*buffer == '#'){
@@ -402,6 +402,8 @@ ags_lv2_turtle_scanner_load_skip_comments_and_blanks(AgsLv2TurtleScanner *lv2_tu
     if(!(look_ahead[0] == ' ' || look_ahead[0] == '\t' || look_ahead[0] == '\n')){
       break;
     }
+
+    look_ahead++;
   }
 
   return(look_ahead);
@@ -413,8 +415,8 @@ ags_lv2_turtle_scanner_load_read_iriref(AgsLv2TurtleScanner *lv2_turtle_scanner,
 					gchar **iter)
 {
   gchar *look_ahead;
-  gchar *str;
-    
+  gchar *start_offset, *end_offset;
+  
   look_ahead = *iter;
     
   /* skip blanks and comments */
@@ -422,14 +424,14 @@ ags_lv2_turtle_scanner_load_read_iriref(AgsLv2TurtleScanner *lv2_turtle_scanner,
 								    buffer, buffer_length,
 								    &look_ahead);
   
-  /* read iriref */
-  str = ags_turtle_read_iriref(look_ahead,
-			       &(buffer[buffer_length]));
-
-  if(str != NULL){
-    *iter = look_ahead + strlen(str);
-
-    g_free(str);
+  /* match iriref */
+  start_offset = NULL;
+  end_offset = NULL;
+  
+  if(ags_turtle_match_iriref(look_ahead,
+			     &(buffer[buffer_length]),
+			     &start_offset, &end_offset)){
+    iter[0] = end_offset;
   }
 }
 
@@ -439,7 +441,7 @@ ags_lv2_turtle_scanner_load_read_anon(AgsLv2TurtleScanner *lv2_turtle_scanner,
 				      gchar **iter)
 {
   gchar *look_ahead;
-  gchar *str;
+  gchar *start_offset, *end_offset;
     
   look_ahead = *iter;
     
@@ -448,14 +450,14 @@ ags_lv2_turtle_scanner_load_read_anon(AgsLv2TurtleScanner *lv2_turtle_scanner,
 								    buffer, buffer_length,
 								    &look_ahead);
 
-  /* read anon */
-  str = ags_turtle_read_anon(look_ahead,
-			     &(buffer[buffer_length]));
+  /* match anon */
+  start_offset = NULL;
+  end_offset = NULL;
 
-  if(str != NULL){
-    *iter = look_ahead + strlen(str);
-    
-    g_free(str);
+  if(ags_turtle_match_anon(look_ahead,
+			     &(buffer[buffer_length]),
+			     &start_offset, &end_offset)){
+    iter[0] = end_offset;
   }
 }
 
@@ -465,7 +467,7 @@ ags_lv2_turtle_scanner_load_read_pname_ns(AgsLv2TurtleScanner *lv2_turtle_scanne
 					  gchar **iter)
 {
   gchar *look_ahead;
-  gchar *str;
+  gchar *start_offset, *end_offset;
     
   look_ahead = *iter;
     
@@ -475,13 +477,13 @@ ags_lv2_turtle_scanner_load_read_pname_ns(AgsLv2TurtleScanner *lv2_turtle_scanne
 								    &look_ahead);
 
   /* read pname-ns */
-  str = ags_turtle_read_pname_ns(look_ahead,
-				 &(buffer[buffer_length]));
-    
-  if(str != NULL){
-    *iter = look_ahead + strlen(str);
+  start_offset = NULL;
+  end_offset = NULL;
 
-    g_free(str);      
+  if(ags_turtle_match_pname_ns(look_ahead,
+			       &(buffer[buffer_length]),
+			       &start_offset, &end_offset)){
+    iter[0] = end_offset;
   }
 }
 
@@ -491,7 +493,7 @@ ags_lv2_turtle_scanner_load_read_pname_ln(AgsLv2TurtleScanner *lv2_turtle_scanne
 					  gchar **iter)
 {
   gchar *look_ahead;
-  gchar *str;
+  gchar *start_offset, *end_offset;
     
   look_ahead = *iter;
     
@@ -500,14 +502,14 @@ ags_lv2_turtle_scanner_load_read_pname_ln(AgsLv2TurtleScanner *lv2_turtle_scanne
 								    buffer, buffer_length,
 								    &look_ahead);
 
-  /* read pname-ln */
-  str = ags_turtle_read_pname_ln(look_ahead,
-				 &(buffer[buffer_length]));
-    
-  if(str != NULL){
-    *iter = look_ahead + strlen(str);
-
-    g_free(str);      
+  /* match pname-ln */
+  start_offset = NULL;
+  end_offset = NULL;
+  
+  if(ags_turtle_match_pname_ln(look_ahead,
+			       &(buffer[buffer_length]),
+			       &start_offset, &end_offset)){
+    iter[0] = end_offset;
   }
 }
 
@@ -517,7 +519,7 @@ ags_lv2_turtle_scanner_load_read_numeric(AgsLv2TurtleScanner *lv2_turtle_scanner
 					 gchar **iter)
 {
   gchar *look_ahead;
-  gchar *str;
+  gchar *start_offset, *end_offset;
     
   look_ahead = *iter;
     
@@ -527,32 +529,48 @@ ags_lv2_turtle_scanner_load_read_numeric(AgsLv2TurtleScanner *lv2_turtle_scanner
 								    &look_ahead);
 
   /* read numeric */
-  str = NULL;
-    
-  if(str == NULL){
-    str = ags_turtle_read_decimal(look_ahead,
-				  &(buffer[buffer_length]));
+  start_offset = NULL;
+  end_offset = NULL;
+
+  if(ags_turtle_match_decimal(look_ahead,
+			      &(buffer[buffer_length]),
+			      &start_offset, &end_offset)){
+    iter[0] = end_offset;
+
+    return;
   }
 
-  if(str == NULL){
-    str = ags_turtle_read_double(look_ahead,
-				 &(buffer[buffer_length]));      
+  start_offset = NULL;
+  end_offset = NULL;
+
+  if(ags_turtle_match_double(look_ahead,
+			     &(buffer[buffer_length]),
+			     &start_offset, &end_offset)){
+    iter[0] = end_offset;
+
+    return;
   }
 
-  if(str == NULL){
-    str = ags_turtle_read_integer(look_ahead,
-				  &(buffer[buffer_length]));
+  start_offset = NULL;
+  end_offset = NULL;
+
+  if(ags_turtle_match_integer(look_ahead,
+			      &(buffer[buffer_length]),
+			      &start_offset, &end_offset)){
+    iter[0] = end_offset;
+
+    return;
   }
 
-  if(str == NULL){
-    str = ags_turtle_read_boolean(look_ahead,
-				  &(buffer[buffer_length]));      
-  }
-    
-  if(str != NULL){
-    *iter = look_ahead + strlen(str);
+  start_offset = NULL;
+  end_offset = NULL;
 
-    g_free(str);
+  if(ags_turtle_match_boolean(look_ahead,
+			      &(buffer[buffer_length]),
+			      &start_offset, &end_offset)){
+    iter[0] = end_offset;
+
+    return;
   }
 }
 
@@ -562,7 +580,7 @@ ags_lv2_turtle_scanner_load_read_string(AgsLv2TurtleScanner *lv2_turtle_scanner,
 					gchar **iter)
 {
   gchar *look_ahead;
-  gchar *str;
+  gchar *start_offset, *end_offset;
     
   look_ahead = *iter;
     
@@ -571,14 +589,14 @@ ags_lv2_turtle_scanner_load_read_string(AgsLv2TurtleScanner *lv2_turtle_scanner,
 								    buffer, buffer_length,
 								    &look_ahead);
 
-  /* read pname-ns */
-  str = ags_turtle_read_string(look_ahead,
-			       &(buffer[buffer_length]));
-    
-  if(str != NULL){      
-    *iter = look_ahead + strlen(str);
-
-    g_free(str);
+  /* match string */
+  start_offset = NULL;
+  end_offset = NULL;
+  
+  if(ags_turtle_match_string(look_ahead,
+			     &(buffer[buffer_length]),
+			     &start_offset, &end_offset)){
+    iter[0] = end_offset;
   }
 }
 
@@ -588,7 +606,7 @@ ags_lv2_turtle_scanner_load_read_langtag(AgsLv2TurtleScanner *lv2_turtle_scanner
 					 gchar **iter)
 {
   gchar *look_ahead;
-  gchar *str;
+  gchar *start_offset, *end_offset;
     
   look_ahead = *iter;
     
@@ -597,14 +615,14 @@ ags_lv2_turtle_scanner_load_read_langtag(AgsLv2TurtleScanner *lv2_turtle_scanner
 								    buffer, buffer_length,
 								    &look_ahead);
 
-  /* read langtag */
-  str = ags_turtle_read_langtag(look_ahead,
-				&(buffer[buffer_length]));
-    
-  if(str != NULL){            
-    *iter = look_ahead + strlen(str);
-    
-    g_free(str);
+  /* match langtag */
+  start_offset = NULL;
+  end_offset = NULL;
+  
+  if(ags_turtle_match_langtag(look_ahead,
+			      &(buffer[buffer_length]),
+			      &start_offset, &end_offset)){
+    iter[0] = end_offset;
   }
 }
 
@@ -998,9 +1016,8 @@ ags_lv2_turtle_scanner_load_read_blank_node(AgsLv2TurtleScanner *lv2_turtle_scan
 					    gchar *buffer, gsize buffer_length,
 					    gchar **iter)
 {
-  gchar *rdf_blank_node_label;
   gchar *look_ahead;
-  gchar *str;
+  gchar *start_offset, *end_offset;
     
   look_ahead = *iter;
 
@@ -1008,15 +1025,17 @@ ags_lv2_turtle_scanner_load_read_blank_node(AgsLv2TurtleScanner *lv2_turtle_scan
   look_ahead = ags_lv2_turtle_scanner_load_skip_comments_and_blanks(lv2_turtle_scanner,
 								    buffer, buffer_length,
 								    &look_ahead);
-
-  rdf_blank_node_label = ags_turtle_read_blank_node_label(look_ahead,
-							  &(buffer[buffer_length]));
   
-  if(rdf_blank_node_label != NULL){
-    *iter = look_ahead + strlen(rdf_blank_node_label);
-    
-    g_free(rdf_blank_node_label);      
+  start_offset = NULL;
+  end_offset = NULL;
+
+  if(ags_turtle_match_blank_node_label(look_ahead,
+				       &(buffer[buffer_length]),
+				       &start_offset, &end_offset)){
+    iter[0] = end_offset;
   }else{
+    gchar *str;
+
     str = look_ahead;
     
     ags_lv2_turtle_scanner_load_read_anon(lv2_turtle_scanner,
@@ -2155,6 +2174,7 @@ ags_lv2_turtle_scanner_quick_scan_see_also(AgsLv2TurtleScanner *lv2_turtle_scann
   lv2_turtle_scanner_mutex = AGS_LV2_TURTLE_SCANNER_GET_OBJ_MUTEX(lv2_turtle_scanner);
 
   /* check if turtle yet available */
+#if 0
   g_rec_mutex_lock(lv2_turtle_scanner_mutex);
 
   is_available = (ags_lv2_cache_turtle_find(lv2_turtle_scanner->cache_turtle, turtle_filename) != NULL) ? TRUE: FALSE;
@@ -2164,6 +2184,7 @@ ags_lv2_turtle_scanner_quick_scan_see_also(AgsLv2TurtleScanner *lv2_turtle_scann
   if(is_available){
     return;
   }
+#endif
   
   /* entry point - open file and read it */
   sb = (struct stat *) g_malloc(sizeof(struct stat));
@@ -2224,6 +2245,8 @@ ags_lv2_turtle_scanner_quick_scan_see_also(AgsLv2TurtleScanner *lv2_turtle_scann
     
     if(iter == str){
       iter++;
+
+      break;
     }
   }while(iter < &(buffer[sb->st_size]));
   
@@ -2291,6 +2314,7 @@ ags_lv2_turtle_scanner_quick_scan(AgsLv2TurtleScanner *lv2_turtle_scanner,
   lv2_turtle_scanner_mutex = AGS_LV2_TURTLE_SCANNER_GET_OBJ_MUTEX(lv2_turtle_scanner);
 
   /* check if turtle yet available */
+#if 0
   g_rec_mutex_lock(lv2_turtle_scanner_mutex);
 
   is_available = (ags_lv2_cache_turtle_find(lv2_turtle_scanner->cache_turtle, manifest_filename) != NULL) ? TRUE: FALSE;
@@ -2300,6 +2324,7 @@ ags_lv2_turtle_scanner_quick_scan(AgsLv2TurtleScanner *lv2_turtle_scanner,
   if(is_available){
     return;
   }
+#endif
   
   /* entry point - open file and read it */
   sb = (struct stat *) g_malloc(sizeof(struct stat));
@@ -2358,6 +2383,8 @@ ags_lv2_turtle_scanner_quick_scan(AgsLv2TurtleScanner *lv2_turtle_scanner,
     
     if(iter == str){
       iter++;
+
+      break;
     }
   }while(iter < &(buffer[sb->st_size]));
   
