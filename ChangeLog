@@ -4,6 +4,7 @@ ags (3.2.12)
 	* TODO:JK: implemented AgsTurtle match functions
 	* TODO:JK: refactored AgsTurtle read functions
 	* TODO:JK: refactored AgsLv2TurtleScanner to use match functions
+	* fixed AgsFFPlayer restore
 
 ags (3.2.11)
 
