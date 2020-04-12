@@ -6,6 +6,19 @@ ags (3.3.0)
 	* TODO:JK: implement CUPS support to print notation sheet
 	* TODO:JK: implement Music XML support
 
+ags (3.2.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsTurtle match functions
+	* refactored AgsTurtle read functions
+	* refactored AgsLv2TurtleScanner to use match functions
+	* fixed AgsFFPlayer restore
+
+ags (3.2.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_lv2_cache_turtle_find()
+
 ags (3.2.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

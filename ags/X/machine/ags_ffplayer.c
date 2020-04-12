@@ -328,6 +328,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   ffplayer->sf2_loader = NULL;
 
+  ffplayer->load_preset = NULL;
+  ffplayer->load_instrument = NULL;
+
   ffplayer->position = -1;
 
   ffplayer->loading = (GtkLabel *) gtk_label_new(i18n("loading ...  "));
@@ -1551,11 +1554,71 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
 	gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));
 
 	/* level select */
-	if(ffplayer->audio_container->sound_container != NULL){
+	if(ffplayer->audio_container->sound_container != NULL){	  
 	  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(ffplayer->audio_container->sound_container), 0);
 	  AGS_IPATCH(ffplayer->audio_container->sound_container)->nesting_level += 1;
     
 	  ags_ffplayer_load_preset(ffplayer);
+
+	  if(ffplayer->load_preset != NULL){
+	    GtkTreeModel *model;
+	    GtkTreeIter iter;
+
+	    gchar *value;
+
+	    /* preset */
+	    model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset));
+
+	    if(gtk_tree_model_get_iter_first(model, &iter)){
+	      do{
+		gtk_tree_model_get(model, &iter,
+				   0, &value,
+				   -1);
+
+		if(!g_strcmp0(ffplayer->load_preset,
+			      value)){
+		  gtk_combo_box_set_active_iter((GtkComboBox *) ffplayer->preset,
+						&iter);
+		  break;
+		}
+	      }while(gtk_tree_model_iter_next(model,
+					      &iter));
+	    }
+
+	    g_free(ffplayer->load_preset);
+
+	    ffplayer->load_preset = NULL;
+	  }
+
+	  if(ffplayer->load_instrument != NULL){
+	    GtkTreeModel *model;
+	    GtkTreeIter iter;
+
+	    gchar *value;
+
+	    /* instrument */
+	    model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument));
+
+	    if(gtk_tree_model_get_iter_first(model, &iter)){
+	      do{
+		gtk_tree_model_get(model, &iter,
+				   0, &value,
+				   -1);
+
+		if(!g_strcmp0(ffplayer->load_instrument,
+			      value)){
+		  gtk_combo_box_set_active_iter((GtkComboBox *) ffplayer->instrument,
+						&iter);
+		  break;
+		}
+	      }while(gtk_tree_model_iter_next(model,
+					      &iter));
+	    }
+
+	    g_free(ffplayer->load_instrument);
+
+	    ffplayer->load_instrument = NULL;
+	  }
 	}
 
 	/* cleanup */	

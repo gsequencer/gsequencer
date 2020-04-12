@@ -84,6 +84,7 @@ ags_dssi_manager_new
 ags_lv2_turtle_scanner_get_type
 ags_lv2_cache_turtle_alloc
 ags_lv2_cache_turtle_free
+ags_lv2_cache_turtle_find
 ags_lv2_turtle_scanner_quick_scan_see_also
 ags_lv2_turtle_scanner_quick_scan
 ags_lv2_turtle_scanner_new

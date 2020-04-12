@@ -861,51 +861,55 @@ ags_lv2_bridge_menu_new()
   /* get plugin */
   g_rec_mutex_lock(lv2_manager_mutex);
 
-  length = g_strv_length(lv2_manager->quick_scan_plugin_filename);
+  if(lv2_manager->quick_scan_plugin_filename != NULL){
+    length = g_strv_length(lv2_manager->quick_scan_plugin_filename);
 
-  for(i = 0; i < length; i++){
-    gchar *filename, *effect;
+    for(i = 0; i < length; i++){
+      gchar *filename, *effect;
     
-    /* get filename and effect */
-    filename = lv2_manager->quick_scan_plugin_filename[i];
-    effect = lv2_manager->quick_scan_plugin_effect[i];
+      /* get filename and effect */
+      filename = lv2_manager->quick_scan_plugin_filename[i];
+      effect = lv2_manager->quick_scan_plugin_effect[i];
     
-    /* create item */
-    if(filename != NULL &&
-       effect != NULL){
-      item = (GtkMenuItem *) gtk_menu_item_new_with_label(effect);
+      /* create item */
+      if(filename != NULL &&
+	 effect != NULL){
+	item = (GtkMenuItem *) gtk_menu_item_new_with_label(effect);
     
-      g_object_set_data((GObject *) item,
-			AGS_MENU_ITEM_FILENAME_KEY, filename);
-      g_object_set_data((GObject *) item,
-			AGS_MENU_ITEM_EFFECT_KEY, effect);
+	g_object_set_data((GObject *) item,
+			  AGS_MENU_ITEM_FILENAME_KEY, filename);
+	g_object_set_data((GObject *) item,
+			  AGS_MENU_ITEM_EFFECT_KEY, effect);
     
-      gtk_menu_shell_append((GtkMenuShell *) menu,
-			    (GtkWidget *) item);
+	gtk_menu_shell_append((GtkMenuShell *) menu,
+			      (GtkWidget *) item);
+      }
     }
   }
-
-  length = g_strv_length(lv2_manager->quick_scan_instrument_filename);
-
-  for(i = 0; i < length; i++){
-    gchar *filename, *effect;
+  
+  if(lv2_manager->quick_scan_instrument_filename != NULL){
+    length = g_strv_length(lv2_manager->quick_scan_instrument_filename);
+  
+    for(i = 0; i < length; i++){
+      gchar *filename, *effect;
     
-    /* get filename and effect */
-    filename = lv2_manager->quick_scan_instrument_filename[i];
-    effect = lv2_manager->quick_scan_instrument_effect[i];
+      /* get filename and effect */
+      filename = lv2_manager->quick_scan_instrument_filename[i];
+      effect = lv2_manager->quick_scan_instrument_effect[i];
     
-    /* create item */
-    if(filename != NULL &&
-       effect != NULL){
-      item = (GtkMenuItem *) gtk_menu_item_new_with_label(effect);
+      /* create item */
+      if(filename != NULL &&
+	 effect != NULL){
+	item = (GtkMenuItem *) gtk_menu_item_new_with_label(effect);
     
-      g_object_set_data((GObject *) item,
-			AGS_MENU_ITEM_FILENAME_KEY, filename);
-      g_object_set_data((GObject *) item,
-			AGS_MENU_ITEM_EFFECT_KEY, effect);
+	g_object_set_data((GObject *) item,
+			  AGS_MENU_ITEM_FILENAME_KEY, filename);
+	g_object_set_data((GObject *) item,
+			  AGS_MENU_ITEM_EFFECT_KEY, effect);
     
-      gtk_menu_shell_append((GtkMenuShell *) menu,
-			    (GtkWidget *) item);
+	gtk_menu_shell_append((GtkMenuShell *) menu,
+			      (GtkWidget *) item);
+      }
     }
   }
 
@@ -1000,30 +1004,32 @@ ags_live_lv2_bridge_menu_new()
   /* get plugin */
   g_rec_mutex_lock(lv2_manager_mutex);
 
-  length = g_strv_length(lv2_manager->quick_scan_instrument_filename);
+  if(lv2_manager->quick_scan_instrument_filename != NULL){
+    length = g_strv_length(lv2_manager->quick_scan_instrument_filename);
 
-  for(i = 0; i < length; i++){
-    gchar *filename, *effect;
+    for(i = 0; i < length; i++){
+      gchar *filename, *effect;
     
-    /* get filename and effect */
-    filename = lv2_manager->quick_scan_instrument_filename[i];
-    effect = lv2_manager->quick_scan_instrument_effect[i];
+      /* get filename and effect */
+      filename = lv2_manager->quick_scan_instrument_filename[i];
+      effect = lv2_manager->quick_scan_instrument_effect[i];
     
-    /* create item */
-    if(filename != NULL &&
-       effect != NULL){
-      item = (GtkMenuItem *) gtk_menu_item_new_with_label(effect);
+      /* create item */
+      if(filename != NULL &&
+	 effect != NULL){
+	item = (GtkMenuItem *) gtk_menu_item_new_with_label(effect);
     
-      g_object_set_data((GObject *) item,
-			AGS_MENU_ITEM_FILENAME_KEY, filename);
-      g_object_set_data((GObject *) item,
-			AGS_MENU_ITEM_EFFECT_KEY, effect);
+	g_object_set_data((GObject *) item,
+			  AGS_MENU_ITEM_FILENAME_KEY, filename);
+	g_object_set_data((GObject *) item,
+			  AGS_MENU_ITEM_EFFECT_KEY, effect);
     
-      gtk_menu_shell_append((GtkMenuShell *) menu,
-			    (GtkWidget *) item);
+	gtk_menu_shell_append((GtkMenuShell *) menu,
+			      (GtkWidget *) item);
+      }
     }
   }
-
+  
   g_rec_mutex_unlock(lv2_manager_mutex);
     
   return(menu);
