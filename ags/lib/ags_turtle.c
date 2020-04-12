@@ -1657,37 +1657,19 @@ gchar*
 ags_turtle_read_string_literal_quote(gchar *offset,
 				     gchar *end_ptr)
 {
-  regmatch_t match_arr[1];
-  
   gchar *str;
+  gchar *string_literal_quote_start_offset, *string_literal_quote_end_offset;
 
-  static regex_t string_literal_double_quote_regex;
-
-  static gboolean regex_compiled = FALSE;
-  
-  static const char *string_literal_double_quote_pattern = "^(\"((([\\\\]['])|[^\"])*)\")";
-
-  static const size_t max_matches = 1;
-
-  if(offset >= end_ptr){
-    return(NULL);
-  }
-  
   str = NULL;
-
-  g_mutex_lock(&regex_mutex);
   
-  if(!regex_compiled){
-    regex_compiled = TRUE;
-      
-    ags_regcomp(&string_literal_double_quote_regex, string_literal_double_quote_pattern, REG_EXTENDED);
-  }
-
-  g_mutex_unlock(&regex_mutex);
-
-  if(ags_regexec(&string_literal_double_quote_regex, offset, max_matches, match_arr, 0) == 0){
+  string_literal_quote_start_offset = NULL;
+  string_literal_quote_end_offset = NULL;
+  
+  if(ags_turtle_match_string_literal_quote(offset,
+					   end_ptr,
+					   &string_literal_quote_start_offset, &string_literal_quote_end_offset)){
     str = g_strndup(offset,
-		    match_arr[0].rm_eo - match_arr[0].rm_so);
+		    string_literal_quote_end_offset - offset);
   }
   
   return(str);
@@ -1708,37 +1690,19 @@ gchar*
 ags_turtle_read_string_literal_single_quote(gchar *offset,
 					    gchar *end_ptr)
 {
-  regmatch_t match_arr[1];
-  
   gchar *str;
+  gchar *string_literal_single_quote_start_offset, *string_literal_single_quote_end_offset;
 
-  static regex_t string_literal_single_quote_regex;
-
-  static gboolean regex_compiled = FALSE;
-  
-  static const char *string_literal_single_quote_pattern = "^('((([\\\\]['])|[^'])*)')";
-
-  static const size_t max_matches = 1;
-    
-  if(offset >= end_ptr){
-    return(NULL);
-  }
-  
   str = NULL;
-
-  g_mutex_lock(&regex_mutex);
   
-  if(!regex_compiled){
-    regex_compiled = TRUE;
-      
-    ags_regcomp(&string_literal_single_quote_regex, string_literal_single_quote_pattern, REG_EXTENDED);
-  }
-
-  g_mutex_unlock(&regex_mutex);
-
-  if(ags_regexec(&string_literal_single_quote_regex, offset, max_matches, match_arr, 0) == 0){
+  string_literal_single_quote_start_offset = NULL;
+  string_literal_single_quote_end_offset = NULL;
+  
+  if(ags_turtle_match_string_literal_single_quote(offset,
+						  end_ptr,
+						  &string_literal_single_quote_start_offset, &string_literal_single_quote_end_offset)){
     str = g_strndup(offset,
-		    match_arr[0].rm_eo - match_arr[0].rm_so);
+		    string_literal_single_quote_end_offset - offset);
   }
   
   return(str);
@@ -1759,27 +1723,21 @@ gchar*
 ags_turtle_read_string_literal_long_quote(gchar *offset,
 					  gchar *end_ptr)
 {
-  gchar *str, *end;
+  gchar *str;
+  gchar *string_literal_long_quote_start_offset, *string_literal_long_quote_end_offset;
 
   str = NULL;
   
-  if(g_str_has_prefix(offset,
-		      "\"\"\"")){
-    end = offset + 3;
-    
-    while((end = strstr(end,
-			"\"\"\"")) != NULL &&
-	  *(end - 1) == '\\'){
-      end++;
-    }
-
-    if(end != NULL &&
-       end > offset){
-      str = g_strndup(offset,
-		      end - offset + 3);
-    }
+  string_literal_long_quote_start_offset = NULL;
+  string_literal_long_quote_end_offset = NULL;
+  
+  if(ags_turtle_match_string_literal_long_quote(offset,
+						end_ptr,
+						&string_literal_long_quote_start_offset, &string_literal_long_quote_end_offset)){
+    str = g_strndup(offset,
+		    string_literal_long_quote_end_offset - offset);
   }
-
+  
   return(str);
 }
 
@@ -1798,29 +1756,314 @@ gchar*
 ags_turtle_read_string_literal_long_single_quote(gchar *offset,
 						 gchar *end_ptr)
 {
-  gchar *str, *end;
+  gchar *str;
+  gchar *string_literal_long_single_quote_start_offset, *string_literal_long_single_quote_end_offset;
 
   str = NULL;
   
-  if(g_str_has_prefix(offset,
-		      "'''")){
-    end = offset + 3;
-    
-    while((end = strstr(end,
-			"'''")) != NULL &&
-	  *(end - 1) == '\\'){
-      end++;
-    }
+  string_literal_long_single_quote_start_offset = NULL;
+  string_literal_long_single_quote_end_offset = NULL;
+  
+  if(ags_turtle_match_string_literal_long_single_quote(offset,
+						       end_ptr,
+						       &string_literal_long_single_quote_start_offset, &string_literal_long_single_quote_end_offset)){
+    str = g_strndup(offset,
+		    string_literal_long_single_quote_end_offset - offset);
+  }
+  
+  return(str);
+}
 
-    if(end != NULL &&
-       end > offset){
-      str = g_strndup(offset,
-		      end - offset + 3);
+/**
+ * ags_turtle_match_string_literal_quote:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match string.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_string_literal_quote(gchar *offset,
+				      gchar *end_ptr,
+				      gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  string_literal_quote_start_offset = NULL;
+  string_literal_quote_end_offset = NULL;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    gchar *iter;
+
+    iter = offset;
+
+    if(iter[0] == '"'){
+      iter++;
+      
+      for(; iter < end_ptr; iter++){
+	if(iter[0] == '"'){
+	  match[0] = offset;
+	  match[1] = iter + 1;
+	  
+	  success = TRUE;
+
+	  break;
+	}
+
+	if(iter[0] == '\\' || iter[0] == '\n' || iter[0] == '\r'){
+	  break;
+	}
+      }
     }
   }
 
-  return(str);
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+
+  return(success);
 }
+
+/**
+ * ags_turtle_match_string_literal_single_quote:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match string.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_string_literal_single_quote(gchar *offset,
+					     gchar *end_ptr,
+					     gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  string_literal_quote_start_offset = NULL;
+  string_literal_quote_end_offset = NULL;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    gchar *iter;
+
+    iter = offset;
+
+    if(iter[0] == '\''){
+      iter++;
+      
+      for(; iter < end_ptr; iter++){
+	if(iter[0] == '\''){
+	  match[0] = offset;
+	  match[1] = iter + 1;
+	  
+	  success = TRUE;
+
+	  break;
+	}
+
+	if(iter[0] == '\\' || iter[0] == '\n' || iter[0] == '\r'){
+	  break;
+	}
+      }
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+
+  return(success);
+}
+
+/**
+ * ags_turtle_match_string_literal_long_quote:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match string.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_string_literal_long_quote(gchar *offset,
+					   gchar *end_ptr,
+					   gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  guint n_match;
+  gboolean success;
+
+  string_literal_quote_start_offset = NULL;
+  string_literal_quote_end_offset = NULL;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    gchar *iter;
+
+    iter = offset;
+
+    if(iter[0] == '"' &&
+       iter[1] == '"' &&
+       iter[2] == '"'){
+      iter += 3;
+      
+      for(n_match = 0; iter < end_ptr; iter++){
+	if(iter[0] == '"'){
+	  n_match++;
+
+	  if(n_match == 3){
+	    match[0] = offset;
+	    match[1] = iter + 1;
+	    
+	    success = TRUE;
+	    
+	    break;
+	  }
+	}else{
+	  n_match = 0;
+	}
+	
+	if(iter[0] == '\\'){
+	  break;
+	}
+      }
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+
+  return(success);
+}
+
+/**
+ * ags_turtle_match_string_literal_long_single_quote:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match string.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_string_literal_long_single_quote(gchar *offset,
+						  gchar *end_ptr,
+						  gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  guint n_match;
+  gboolean success;
+
+  string_literal_quote_start_offset = NULL;
+  string_literal_quote_end_offset = NULL;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    gchar *iter;
+
+    iter = offset;
+
+    if(iter[0] == '\'' &&
+       iter[1] == '\'' &&
+       iter[2] == '\''){
+      iter += 3;
+      
+      for(n_match = 0; iter < end_ptr; iter++){
+	if(iter[0] == '\''){
+	  n_match++;
+
+	  if(n_match == 3){
+	    match[0] = offset;
+	    match[1] = iter + 1;
+	    
+	    success = TRUE;
+	    
+	    break;
+	  }
+	}else{
+	  n_match = 0;
+	}
+
+	if(iter[0] == '\\'){
+	  break;
+	}
+      }
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+
+  return(success);
+}
+
 
 /**
  * ags_turtle_read_uchar:
