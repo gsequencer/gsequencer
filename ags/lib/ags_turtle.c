@@ -1781,7 +1781,7 @@ ags_turtle_read_string_literal_long_single_quote(gchar *offset,
  * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
  * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
  *
- * Match string.
+ * Match string literal quote.
  *
  * Returns: %TRUE on success, otherwise %FALSE
  * 
@@ -1795,9 +1795,6 @@ ags_turtle_match_string_literal_quote(gchar *offset,
   gchar* match[2];
 
   gboolean success;
-
-  string_literal_quote_start_offset = NULL;
-  string_literal_quote_end_offset = NULL;
 
   match[0] = NULL;
   match[1] = NULL;
@@ -1815,6 +1812,9 @@ ags_turtle_match_string_literal_quote(gchar *offset,
       iter++;
       
       for(; iter < end_ptr; iter++){
+	gchar *uchar_start_offset, *uchar_end_offset;
+	gchar *echar_start_offset, *echar_end_offset;
+	
 	if(iter[0] == '"'){
 	  match[0] = offset;
 	  match[1] = iter + 1;
@@ -1824,6 +1824,28 @@ ags_turtle_match_string_literal_quote(gchar *offset,
 	  break;
 	}
 
+	uchar_start_offset = NULL;
+	uchar_end_offset = NULL;
+
+	echar_start_offset = NULL;
+	echar_end_offset = NULL;
+
+	if(ags_turtle_match_echar(iter,
+				  end_ptr,
+				  &echar_start_offset, &echar_end_offset)){
+	  iter += (echar_end_offset - echar_start_offset);
+	  
+	  continue;
+	}
+
+	if(ags_turtle_match_uchar(iter,
+				  end_ptr,
+				  &uchar_start_offset, &uchar_end_offset)){
+	  iter += (uchar_end_offset - uchar_start_offset);
+	  
+	  continue;
+	}
+	
 	if(iter[0] == '\\' || iter[0] == '\n' || iter[0] == '\r'){
 	  break;
 	}
@@ -1849,7 +1871,7 @@ ags_turtle_match_string_literal_quote(gchar *offset,
  * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
  * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
  *
- * Match string.
+ * Match string literal single quote.
  *
  * Returns: %TRUE on success, otherwise %FALSE
  * 
@@ -1883,6 +1905,9 @@ ags_turtle_match_string_literal_single_quote(gchar *offset,
       iter++;
       
       for(; iter < end_ptr; iter++){
+	gchar *uchar_start_offset, *uchar_end_offset;
+	gchar *echar_start_offset, *echar_end_offset;
+	
 	if(iter[0] == '\''){
 	  match[0] = offset;
 	  match[1] = iter + 1;
@@ -1890,6 +1915,28 @@ ags_turtle_match_string_literal_single_quote(gchar *offset,
 	  success = TRUE;
 
 	  break;
+	}
+
+	uchar_start_offset = NULL;
+	uchar_end_offset = NULL;
+
+	echar_start_offset = NULL;
+	echar_end_offset = NULL;
+
+	if(ags_turtle_match_echar(iter,
+				  end_ptr,
+				  &echar_start_offset, &echar_end_offset)){
+	  iter += (echar_end_offset - echar_start_offset);
+	  
+	  continue;
+	}
+
+	if(ags_turtle_match_uchar(iter,
+				  end_ptr,
+				  &uchar_start_offset, &uchar_end_offset)){
+	  iter += (uchar_end_offset - uchar_start_offset);
+	  
+	  continue;
 	}
 
 	if(iter[0] == '\\' || iter[0] == '\n' || iter[0] == '\r'){
@@ -1917,7 +1964,7 @@ ags_turtle_match_string_literal_single_quote(gchar *offset,
  * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
  * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
  *
- * Match string.
+ * Match string literal long quote.
  *
  * Returns: %TRUE on success, otherwise %FALSE
  * 
@@ -1954,6 +2001,9 @@ ags_turtle_match_string_literal_long_quote(gchar *offset,
       iter += 3;
       
       for(n_match = 0; iter < end_ptr; iter++){
+	gchar *uchar_start_offset, *uchar_end_offset;
+	gchar *echar_start_offset, *echar_end_offset;
+	
 	if(iter[0] == '"'){
 	  n_match++;
 
@@ -1967,6 +2017,28 @@ ags_turtle_match_string_literal_long_quote(gchar *offset,
 	  }
 	}else{
 	  n_match = 0;
+	}
+
+	uchar_start_offset = NULL;
+	uchar_end_offset = NULL;
+
+	echar_start_offset = NULL;
+	echar_end_offset = NULL;
+
+	if(ags_turtle_match_echar(iter,
+				  end_ptr,
+				  &echar_start_offset, &echar_end_offset)){
+	  iter += (echar_end_offset - echar_start_offset);
+	  
+	  continue;
+	}
+
+	if(ags_turtle_match_uchar(iter,
+				  end_ptr,
+				  &uchar_start_offset, &uchar_end_offset)){
+	  iter += (uchar_end_offset - uchar_start_offset);
+	  
+	  continue;
 	}
 	
 	if(iter[0] == '\\'){
@@ -1994,7 +2066,7 @@ ags_turtle_match_string_literal_long_quote(gchar *offset,
  * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
  * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
  *
- * Match string.
+ * Match string literal long single quote.
  *
  * Returns: %TRUE on success, otherwise %FALSE
  * 
@@ -2031,6 +2103,9 @@ ags_turtle_match_string_literal_long_single_quote(gchar *offset,
       iter += 3;
       
       for(n_match = 0; iter < end_ptr; iter++){
+	gchar *uchar_start_offset, *uchar_end_offset;
+	gchar *echar_start_offset, *echar_end_offset;
+	
 	if(iter[0] == '\''){
 	  n_match++;
 
@@ -2044,6 +2119,28 @@ ags_turtle_match_string_literal_long_single_quote(gchar *offset,
 	  }
 	}else{
 	  n_match = 0;
+	}
+
+	uchar_start_offset = NULL;
+	uchar_end_offset = NULL;
+
+	echar_start_offset = NULL;
+	echar_end_offset = NULL;
+
+	if(ags_turtle_match_echar(iter,
+				  end_ptr,
+				  &echar_start_offset, &echar_end_offset)){
+	  iter += (echar_end_offset - echar_start_offset);
+	  
+	  continue;
+	}
+
+	if(ags_turtle_match_uchar(iter,
+				  end_ptr,
+				  &uchar_start_offset, &uchar_end_offset)){
+	  iter += (uchar_end_offset - uchar_start_offset);
+	  
+	  continue;
 	}
 
 	if(iter[0] == '\\'){
@@ -2081,40 +2178,18 @@ ags_turtle_read_uchar(gchar *offset,
 		      gchar *end_ptr)
 {
   gchar *str;
+  gchar *uchar_start_offset, *uchar_end_offset;
 
-  guint hex_digit_count;
-  guint i;
-  gboolean success;
-
-  if(offset + 1 >= end_ptr){
-    return(NULL);
-  }
-  
   str = NULL;
-
-  if(g_str_has_prefix(offset,
-		      "\\u")){
-    hex_digit_count = 4;
-  }else if(g_str_has_prefix(offset,
-			    "\\U")){
-    hex_digit_count = 8;
-  }else{
-    return(NULL);
-  }
-
-  success = TRUE;
   
-  for(i = 0; i < hex_digit_count; i++){
-    if(!g_ascii_isxdigit(offset[i + 2])){
-      success = FALSE;
-
-      break;
-    }
-  }
-
-  if(success){
+  uchar_start_offset = NULL;
+  uchar_end_offset = NULL;
+  
+  if(ags_turtle_match_uchar(offset,
+			    end_ptr,
+			    &uchar_start_offset, &uchar_end_offset)){
     str = g_strndup(offset,
-		    hex_digit_count + 2);
+		    uchar_end_offset - offset);
   }
   
   return(str);
@@ -2136,23 +2211,20 @@ ags_turtle_read_echar(gchar *offset,
 		      gchar *end_ptr)
 {
   gchar *str;
+  gchar *echar_start_offset, *echar_end_offset;
 
-  static const gchar *echar = "tbnrf\"";
-  
-  if(offset + 1 >= end_ptr){
-    return(NULL);
-  }
-  
   str = NULL;
-
-  if(*offset == '\\'){
-    if(strchr(echar,
-	      offset[1]) != NULL){
-      str = g_strndup(offset,
-		      2);
-    }
+  
+  echar_start_offset = NULL;
+  echar_end_offset = NULL;
+  
+  if(ags_turtle_match_echar(offset,
+			    end_ptr,
+			    &echar_start_offset, &echar_end_offset)){
+    str = g_strndup(offset,
+		    echar_end_offset - offset);
   }
-
+  
   return(str);
 }
 
@@ -2172,15 +2244,18 @@ ags_turtle_read_ws(gchar *offset,
 		   gchar *end_ptr)
 {
   gchar *str;
-
-  static const gchar *ws = "\x20\x09\x0D\x0A";
+  gchar *ws_start_offset, *ws_end_offset;
 
   str = NULL;
-
-  if(offset < end_ptr &&
-     strchr(ws, *offset) != NULL){
+  
+  ws_start_offset = NULL;
+  ws_end_offset = NULL;
+  
+  if(ags_turtle_match_ws(offset,
+			 end_ptr,
+			 &ws_start_offset, &ws_end_offset)){
     str = g_strndup(offset,
-		    1);
+		    ws_end_offset - offset);
   }
   
   return(str);
@@ -2202,75 +2277,23 @@ ags_turtle_read_anon(gchar *offset,
 		     gchar *end_ptr)
 {
   gchar *str;
-  gchar *tmp, *tmp_str;
+  gchar *str;
+  gchar *anon_start_offset, *anon_end_offset;
 
-  gboolean success;
-  
-  static const gchar *ws = "\x20\x09\x0D\x0A";
-
-  if(offset >= end_ptr){
-    return(NULL);
-  }
-  
   str = NULL;
-
-  success = FALSE;
   
-  if(*offset == '['){
-    tmp = strchr(offset + 1,
-		 ']');
-
-    if(tmp != NULL){
-      success = TRUE;
-      
-      for(tmp_str = offset + 1; tmp_str < tmp; tmp_str++){
-	if(strchr(ws,
-		  *tmp_str) == NULL){
-	  success = FALSE;
-	  
-	  break;
-	}
-      }
-    }
-  }
-
-  if(success){
+  anon_start_offset = NULL;
+  anon_end_offset = NULL;
+  
+  if(ags_turtle_match_anon(offset,
+			   end_ptr,
+			   &anon_start_offset, &anon_end_offset)){
     str = g_strndup(offset,
-		    tmp - offset + 1);
+		    anon_end_offset - offset);
   }
   
   return(str);
 }
-
-#define AGS_TURTLE_UTF8_RANGE_0 "([A-Za-z])"
-#define AGS_TURTLE_UTF8_RANGE_1 "(\xC3[\x80-\x96])"
-#define AGS_TURTLE_UTF8_RANGE_2 "(\xC3[\x98-\xB6])"
-#define AGS_TURTLE_UTF8_RANGE_3 "((\xC3[\xB8-\xBF])|([\xC3-\xCA][\x80-\xBF])|(\xCB[\x80-\xBF]))"
-#define AGS_TURTLE_UTF8_RANGE_4 "(\xCD[\xB0-\xBD])"
-#define AGS_TURTLE_UTF8_RANGE_5 "((\xCD[\xBF-\xDF])|([\xCE-\xDF][\x80-\xBF])|([\xE0-\xE1][\x80-\xBF][\x80-\xBF]))"
-#define AGS_TURTLE_UTF8_RANGE_6 "(\xE2\x80[\x8C-\x8D])"
-#define AGS_TURTLE_UTF8_RANGE_7 "((\xE2\x81[\xB0-\xBF])|(\xE2[\x81-\x85][\x80-\xBF])|(\xE2\x86[\x80-\x8F]))"
-#define AGS_TURTLE_UTF8_RANGE_8 "((\xE2[\xB0-\xBE][\x80-\xBF])|(\xE2\xBF[\x80-\xAF]))"
-#define AGS_TURTLE_UTF8_RANGE_9 "((\xE3[\x80-\xBF][\x81-\xBF])|([\xE4-\xEC][\x80-\x9F][\x80-\xBF]))"
-#define AGS_TURTLE_UTF8_RANGE_10 "((\xEF[\xA4-\xB6][\x80-\xBF])|(\xEF\xB7[\x80-\x8F]))"
-#define AGS_TURTLE_UTF8_RANGE_11 "((\xEF\xB7[\xB0-\xBF])|(\xEF[\xB8-\xBE][\x80-\xBF])|(\xEF\xBF[\x80-\xBD]))"
-#define AGS_TURTLE_UTF8_RANGE_12 "(([\xF0-\xF3][\x90-\xAF][\x80-\xBF][\x80-\xBF]))"
-
-#define AGS_TURTLE_UTF8_RANGE_ALL "(" AGS_TURTLE_UTF8_RANGE_0 "|"	\
-  AGS_TURTLE_UTF8_RANGE_1 "|"						\
-  AGS_TURTLE_UTF8_RANGE_2 "|"						\
-  AGS_TURTLE_UTF8_RANGE_3 "|"						\
-  AGS_TURTLE_UTF8_RANGE_4 "|"						\
-  AGS_TURTLE_UTF8_RANGE_5 "|"						\
-  AGS_TURTLE_UTF8_RANGE_6 "|"						\
-  AGS_TURTLE_UTF8_RANGE_7 "|"						\
-  AGS_TURTLE_UTF8_RANGE_8 "|"						\
-  AGS_TURTLE_UTF8_RANGE_9 "|"						\
-  AGS_TURTLE_UTF8_RANGE_10 "|"						\
-  AGS_TURTLE_UTF8_RANGE_11 "|"						\
-  AGS_TURTLE_UTF8_RANGE_12 ")"
-
-#define AGS_TURLTE_UTF8_RANGE_ALL_PATTERN "^" AGS_TURTLE_UTF8_RANGE_ALL
 
 /**
  * ags_turtle_read_pn_chars_base:
@@ -2287,139 +2310,20 @@ gchar*
 ags_turtle_read_pn_chars_base(gchar *offset,
 			      gchar *end_ptr)
 {
-#if 0
-  regmatch_t match_arr[1];
-    
   gchar *str;
-  
-  static regex_t chars_base_regex;
-    
-  static gboolean regex_compiled = FALSE;
-
-  static const char *chars_base_pattern = AGS_TURLTE_UTF8_RANGE_ALL_PATTERN;
-
-  static const size_t max_matches = 1;
-
-  if(offset == NULL ||
-     offset >= end_ptr){
-    return(NULL);
-  }
+  gchar *pn_chars_base_start_offset, *pn_chars_base_end_offset;
 
   str = NULL;
-
-  g_mutex_lock(&regex_mutex);
-
-  if(!regex_compiled){
-    regex_compiled = TRUE;
-    
-    if(ags_regcomp(&chars_base_regex, chars_base_pattern, REG_EXTENDED)){
-      g_warning("failed to compile regex: %s", chars_base_pattern);
-    }
-  }
-
-  g_mutex_unlock(&regex_mutex);
-
-  if(ags_regexec(&chars_base_regex, offset, max_matches, match_arr, 0) == 0){
-    str = g_strndup(offset,
-		    match_arr[0].rm_eo - match_arr[0].rm_so);
-  }
-#else
-  gchar *str;
-  gchar *look_ahead;
-
-  gboolean success;
-
-  if(offset == NULL ||
-     offset >= end_ptr){
-    return(NULL);
-  }
-
-  look_ahead = offset;
-  str = NULL;
-
-  success = TRUE;
   
-  while(success &&
-	look_ahead < end_ptr){
-    if((look_ahead[0] >= 'a' && look_ahead[0] <= 'z') ||
-       (look_ahead[0] >= 'A' && look_ahead[0] <= 'Z')){
-      look_ahead++;
-    }else if(look_ahead + 2 < end_ptr &&
-	     ((look_ahead[0] == '\xC3' &&
-	       ((look_ahead[1] >= '\x80' && look_ahead[1] <= '\x96') ||
-		(look_ahead[1] >= '\x98' && look_ahead[1] <= '\xB6') ||
-		(look_ahead[1] >= '\xB8' && look_ahead[1] <= '\xBF'))) ||
-	      ((look_ahead[0] >= '\xC3' && look_ahead[0] <= '\xCA') &&
-	       (look_ahead[1] >= '\x80' && look_ahead[1] <= '\xBF')) ||
-	      (look_ahead[0] == '\xCB' &&
-	       (look_ahead[1] >= '\x80' && look_ahead[1] <= '\xBF')) ||
-	      (look_ahead[0] == '\xCD' &&
-	       (look_ahead[1] >= '\xB0' && look_ahead[1] <= '\xBD')) ||
-	      (look_ahead[0] == '\xCD' &&
-	       (look_ahead[1] >= '\xBF' && look_ahead[1] <= '\xDF')) ||
-	      ((look_ahead[0] >= '\xCE' && look_ahead[0] <= '\xDF') &&
-	       (look_ahead[1] >= '\x80' && look_ahead[1] <= '\xBF')))){
-      look_ahead += 2;
-    }else if(look_ahead + 3 < end_ptr &&
-	     (((look_ahead[0] >= '\xE0' && look_ahead[0] <= '\xE1') &&
-	       (look_ahead[1] >= '\x80' && look_ahead[1] <= '\xBF') &&
-	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
-	      (look_ahead[0] == '\xE2' &&
-	       look_ahead[1] == '\x80' &&
-	       (look_ahead[2] >= '\x8C' && look_ahead[2] <= '\x8D')) ||
-	      (look_ahead[0] == '\xE2' &&
-	       look_ahead[1] == '\x81' &&
-	       (look_ahead[2] >= '\xB0' && look_ahead[2] <= '\xBF')) ||
-	      (look_ahead[0] == '\xE2' &&
-	       (look_ahead[1] >= '\x81' && look_ahead[1] <= '\x85') &&
-	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
-	      (look_ahead[0] == '\xE2' &&
-	       look_ahead[1] == '\x86' &&
-	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\x8F')) ||
-	      (look_ahead[0] == '\xE2' &&
-	       (look_ahead[1] >= '\xB0' && look_ahead[1] <= '\xBE') &&
-	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
-	      (look_ahead[0] == '\xE2' &&
-	       look_ahead[1] == '\xBF' &&
-	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xAF')) ||
-	      (look_ahead[0] == '\xE3' &&
-	       (look_ahead[1] >= '\xB0' && look_ahead[1] <= '\xBF') &&
-	       (look_ahead[2] >= '\x81' && look_ahead[2] <= '\xBF')) ||
-	      ((look_ahead[0] >= '\xE4') && look_ahead[0] <= '\xEC') &&
-	      (look_ahead[1] >= '\x80' && look_ahead[1] <= '\x9F') &&
-	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
-	     (look_ahead[0] == '\xEF' &&
-	      (look_ahead[1] >= '\xA4' && look_ahead[1] <= '\xB6') &&
-	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
-	     (look_ahead[0] == '\xEF' &&
-	      look_ahead[1] == '\xB7' &&
-	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\x8F')) ||
-	     (look_ahead[0] == '\xEF' &&
-	      look_ahead[1] == '\xB7' &&
-	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
-	     (look_ahead[0] == '\xEF' &&
-	      (look_ahead[1] >= '\xB8' && look_ahead[1] <= '\xBE') &&
-	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
-	     (look_ahead[0] == '\xEF' &&
-	      look_ahead[1] == '\xBF' &&
-	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBD'))){
-      look_ahead += 3;
-    }else if(look_ahead + 4 < end_ptr &&
-	     ((look_ahead[0] == '\xF0' && look_ahead[0] == '\xF3') &&
-	      (look_ahead[1] == '\x90' && look_ahead[1] == '\xAF') &&
-	      (look_ahead[2] == '\x80' && look_ahead[2] == '\xBF') &&
-	      (look_ahead[3] == '\x80' && look_ahead[3] == '\xBF'))){
-      look_ahead += 4;
-    }else{
-      success = FALSE;
-    }
-  }
-
-  if(look_ahead != offset){
+  pn_chars_base_start_offset = NULL;
+  pn_chars_base_end_offset = NULL;
+  
+  if(ags_turtle_match_pn_chars_base(offset,
+				    end_ptr,
+				    &pn_chars_base_start_offset, &pn_chars_base_end_offset)){
     str = g_strndup(offset,
-		    look_ahead - offset);
+		    pn_chars_base_end_offset - offset);
   }
-#endif
   
   return(str);
 }
@@ -2438,16 +2342,20 @@ ags_turtle_read_pn_chars_base(gchar *offset,
 gchar*
 ags_turtle_read_pn_chars_u(gchar *offset,
 			   gchar *end_ptr)
-{
+{  
   gchar *str;
+  gchar *pn_chars_u_start_offset, *pn_chars_u_end_offset;
 
-  str = ags_turtle_read_pn_chars_base(offset,
-				      end_ptr);
-
-  if(str == NULL &&
-     offset < end_ptr &&
-     *offset == '_'){
-    str = g_strdup("_");
+  str = NULL;
+  
+  pn_chars_u_start_offset = NULL;
+  pn_chars_u_end_offset = NULL;
+  
+  if(ags_turtle_match_pn_chars_u(offset,
+				 end_ptr,
+				 &pn_chars_u_start_offset, &pn_chars_u_end_offset)){
+    str = g_strndup(offset,
+		    (pn_chars_u_end_offset + 1) - offset);
   }
   
   return(str);
@@ -2468,43 +2376,19 @@ gchar*
 ags_turtle_read_pn_chars(gchar *offset,
 			 gchar *end_ptr)
 {
-  regmatch_t match_arr[1];
-    
   gchar *str;
+  gchar *pn_chars_start_offset, *pn_chars_end_offset;
+
+  str = NULL;
   
-  static regex_t chars_regex;
-    
-  static gboolean regex_compiled = FALSE;
+  pn_chars_start_offset = NULL;
+  pn_chars_end_offset = NULL;
   
-  static const char *chars_pattern = "^(([0-9])|(\xC2\xB7)|((\xCC[\x80-\xBF])|(\xCD[\x80-\xAF]))|((\xE2\x80\xBF)|(\xE2\x81\x80)))";
-
-  static const size_t max_matches = 1;
-
-  str = ags_turtle_read_pn_chars_u(offset,
-				   end_ptr);
-
-  if(str == NULL &&
-     offset < end_ptr &&
-     *offset == '-'){
-    str = g_strdup("-");
-  }
-
-  if(str == NULL &&
-     offset < end_ptr){
-    g_mutex_lock(&regex_mutex);
-    
-    if(!regex_compiled){
-      regex_compiled = TRUE;
-    
-      ags_regcomp(&chars_regex, chars_pattern, REG_EXTENDED);
-    }
-
-    g_mutex_unlock(&regex_mutex);
-
-    if(ags_regexec(&chars_regex, offset, max_matches, match_arr, 0) == 0){
-      str = g_strndup(offset,
-		      match_arr[0].rm_eo - match_arr[0].rm_so);
-    }
+  if(ags_turtle_match_pn_chars(offset,
+			       end_ptr,
+			       &pn_chars_start_offset, &pn_chars_end_offset)){
+    str = g_strndup(offset,
+		    (pn_chars_end_offset + 1) - offset);
   }
   
   return(str);
@@ -2526,50 +2410,18 @@ ags_turtle_read_pn_prefix(gchar *offset,
 			  gchar *end_ptr)
 {
   gchar *str;
-  gchar *tmp, *str_tmp;
+  gchar *pn_prefix_start_offset, *pn_prefix_end_offset;
 
-  gboolean last_is_point;
-
-  if(offset == NULL ||
-     offset >= end_ptr){
-    return(NULL);
-  }
-    
-  str = ags_turtle_read_pn_chars_base(offset,
-				      end_ptr);
+  str = NULL;
   
-  if(str != NULL){
-    offset += strlen(str);
-    last_is_point = FALSE;
-    
-    while((tmp = ags_turtle_read_pn_chars(offset,
-					  end_ptr)) != NULL ||
-	  *offset == '.'){
-      if(tmp == NULL){
-	last_is_point = TRUE;
-      }else{
-	last_is_point = FALSE;
-      }
-
-      if(tmp != NULL){
-	str_tmp = g_strdup_printf("%s%s",
-				  str, tmp);
-	offset += strlen(tmp);
-
-	g_free(str);
-	g_free(tmp);
-
-	str = str_tmp;
-      }else{
-	str_tmp = g_strdup_printf("%s.",
-				  str);
-	offset++;	
-
-	g_free(str);
-
-	str = str_tmp;
-      }
-    }
+  pn_prefix_start_offset = NULL;
+  pn_prefix_end_offset = NULL;
+  
+  if(ags_turtle_match_pn_prefix(offset,
+				end_ptr,
+				&pn_prefix_start_offset, &pn_prefix_end_offset)){
+    str = g_strndup(offset,
+		    (pn_prefix_end_offset + 1) - offset);
   }
   
   return(str);
@@ -2591,92 +2443,18 @@ ags_turtle_read_pn_local(gchar *offset,
 			 gchar *end_ptr)
 {
   gchar *str;
-  gchar *tmp_str, *tmp;
+  gchar *pn_local_start_offset, *pn_local_end_offset;
 
-  gboolean initial_find, found_str;
-  gboolean last_is_point;
-
-  if(offset >= end_ptr){
-    return(NULL);
-  }
+  str = NULL;
   
-  tmp_str = NULL;
-
-  found_str = FALSE;
+  pn_local_start_offset = NULL;
+  pn_local_end_offset = NULL;
   
-  tmp = ags_turtle_read_pn_chars_u(offset,
-				   end_ptr);
-        
-  if(tmp == NULL &&
-     *offset == ':'){
-    tmp = g_strdup(":");
-  }
-
-  if(tmp == NULL &&
-     g_ascii_isdigit(*offset)){
-    tmp = g_strndup(offset,
-		    1);
-  }
-
-  if(tmp == NULL){
-    tmp = ags_turtle_read_plx(offset, end_ptr);
-  }
-
-  str = tmp;
-  
-  if(str != NULL){
-    offset += strlen(str);
-
-    initial_find = TRUE;
-    last_is_point = FALSE;
-    
-    while(initial_find ||
-	  found_str){
-      found_str = FALSE;
-      initial_find = FALSE;
-    
-      last_is_point = FALSE;
-
-      tmp = ags_turtle_read_pn_chars(offset,
-				     end_ptr);
-      
-      if(tmp == NULL &&
-	 *offset == '.'){
-	tmp = g_strdup(".");
-	
-	last_is_point = TRUE;
-      }
-
-      if(tmp == NULL &&
-	 *offset == ':'){
-	tmp = g_strdup(":");	
-      }
-
-      if(tmp == NULL){
-	tmp = ags_turtle_read_plx(offset,
-				  end_ptr);
-      }
-    
-      /* concat new strings */
-      if(tmp != NULL){
-	found_str = TRUE;
-
-	if(str != NULL){
-	  tmp_str = g_strdup_printf("%s%s",
-				    str,
-				    tmp);
-	  offset += strlen(tmp);
-	
-	  g_free(str);
-	  g_free(tmp);
-	
-	  str = tmp_str;
-	}else{
-	  str = tmp;
-	  offset += strlen(tmp);
-	}
-      }
-    }
+  if(ags_turtle_match_pn_local(offset,
+			       end_ptr,
+			       &pn_local_start_offset, &pn_local_end_offset)){
+    str = g_strndup(offset,
+		    (pn_local_end_offset + 1) - offset);
   }
   
   return(str);
@@ -2698,13 +2476,18 @@ ags_turtle_read_plx(gchar *offset,
 		    gchar *end_ptr)
 {
   gchar *str;
+  gchar *plx_start_offset, *plx_end_offset;
 
-  str = ags_turtle_read_percent(offset,
-				end_ptr);
-
-  if(str == NULL){
-    str = ags_turtle_read_pn_local_esc(offset,
-				       end_ptr);
+  str = NULL;
+  
+  plx_start_offset = NULL;
+  plx_end_offset = NULL;
+  
+  if(ags_turtle_match_plx(offset,
+			  end_ptr,
+			  &plx_start_offset, &plx_end_offset)){
+    str = g_strndup(offset,
+		    (plx_end_offset + 1) - offset);
   }
   
   return(str);
@@ -2726,16 +2509,18 @@ ags_turtle_read_percent(gchar *offset,
 			gchar *end_ptr)
 {
   gchar *str;
+  gchar *percent_start_offset, *percent_end_offset;
 
   str = NULL;
-
-  if(offset != NULL &&
-     offset + 2 < end_ptr &&
-     offset[0] == '%' &&
-     g_ascii_isxdigit(offset[1]) &&
-     g_ascii_isxdigit(offset[2])){
+  
+  percent_start_offset = NULL;
+  percent_end_offset = NULL;
+  
+  if(ags_turtle_match_percent(offset,
+			      end_ptr,
+			      &percent_start_offset, &percent_end_offset)){
     str = g_strndup(offset,
-		    3);
+		    (percent_end_offset + 1) - offset);
   }
   
   return(str);
@@ -2757,12 +2542,18 @@ ags_turtle_read_hex(gchar *offset,
 		    gchar *end_ptr)
 {
   gchar *str;
+  gchar *hex_start_offset, *hex_end_offset;
 
   str = NULL;
-
-  if(g_ascii_isxdigit(*offset)){
+  
+  hex_start_offset = NULL;
+  hex_end_offset = NULL;
+  
+  if(ags_turtle_match_hex(offset,
+			  end_ptr,
+			  &hex_start_offset, &hex_end_offset)){
     str = g_strndup(offset,
-		    1);
+		    (hex_end_offset + 1) - offset);
   }
   
   return(str);
@@ -2783,21 +2574,1018 @@ gchar*
 ags_turtle_read_pn_local_esc(gchar *offset,
 			     gchar *end_ptr)
 {
-  static const gchar *escapes = "_~.-!$&'()*+,;=/?#@%";
   gchar *str;
+  gchar *pn_local_esc_start_offset, *pn_local_esc_end_offset;
 
   str = NULL;
-
-  if(offset != NULL &&
-     offset + 1 < end_ptr &&
-     *offset == '\\' &&
-     (strchr(escapes,
-	     offset[1])) != NULL){
+  
+  pn_local_esc_start_offset = NULL;
+  pn_local_esc_end_offset = NULL;
+  
+  if(ags_turtle_match_pn_local_esc(offset,
+				   end_ptr,
+				   &pn_local_esc_start_offset, &pn_local_esc_end_offset)){
     str = g_strndup(offset,
-		    2);
+		    (pn_local_esc_end_offset + 1) - offset);
   }
   
   return(str);
+}
+
+/**
+ * ags_turtle_match_uchar:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match uchar.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_uchar(gchar *offset,
+		       gchar *end_ptr,
+		       gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset + 1 < end_ptr){
+    if(offset[0] == '\\' &&
+       offset[1] == 'u' &&
+       offset + 5 < end_ptr){
+      if(g_ascii_isxdigit(offset[2]) &&
+	 g_ascii_isxdigit(offset[3]) &&
+	 g_ascii_isxdigit(offset[4]) &&
+	 g_ascii_isxdigit(offset[5])){
+	match[0] = offset;
+	match[1] = offset + 6;
+	
+	success = TRUE;
+      }
+    }else if(offset[0] == '\\' &&
+	     offset[1] == 'U' &&
+	     offset + 9 < end_ptr){
+      if(g_ascii_isxdigit(offset[2]) &&
+	 g_ascii_isxdigit(offset[3]) &&
+	 g_ascii_isxdigit(offset[4]) &&
+	 g_ascii_isxdigit(offset[5]) &&
+	 g_ascii_isxdigit(offset[6]) &&
+	 g_ascii_isxdigit(offset[7]) &&
+	 g_ascii_isxdigit(offset[8]) &&
+	 g_ascii_isxdigit(offset[9])){
+	match[0] = offset;
+	match[1] = offset + 10;
+	
+	success = TRUE;
+      }
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_echar:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match echar.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_echar(gchar *offset,
+		       gchar *end_ptr,
+		       gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL){
+    if(offset + 1 < end_ptr &&
+       offset[0] == '\\' &&
+       (offset[1] == 't' ||
+	offset[1] == 'b' ||
+	offset[1] == 'n' ||
+	offset[1] == 'r' ||
+	offset[1] == 'f' ||
+	offset[1] == '"' ||
+	offset[1] == '\'' ||
+	offset[1] == '\\')){
+      match[0] = offset;
+      match[0] = offset + 2;
+      
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_ws:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match ws.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_ws(gchar *offset,
+		    gchar *end_ptr,
+		    gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL){
+    if(offset < end_ptr &&
+       (offset[0] == ' ' || offset[0] == '\t' || offset[0] == '\r' || offset[0] == '\n')){
+      match[0] = offset;
+      match[1] = offset + 1;
+      
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_anon:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match anon.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_anon(gchar *offset,
+		      gchar *end_ptr,
+		      gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    gchar *iter;
+    gchar *ws_start_offset, *ws_end_offset;
+    
+    iter = offset;
+
+    if(iter[0] == '['){
+      iter++;
+      
+      for(; iter < end_ptr; iter++){
+	if(iter == ']'){
+	  match[0] = offset;
+	  match[1] = iter + 1;
+	  
+	  success = TRUE;
+
+	  break;
+	}
+
+	ws_start_offset = NULL;
+	ws_end_offset = NULL;
+	
+	if(ags_turtle_match_ws(iter,
+			       end_ptr,
+			       &ws_start_offset, &ws_end_offset)){
+	  iter += (ws_end_offset - ws_start_offset);
+	}else{
+	  break;
+	}
+      }
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_pn_chars_base:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match pn chars base.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_pn_chars_base(gchar *offset,
+			       gchar *end_ptr,
+			       gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    gchar *iter;
+
+    iter = offset;
+
+    if((iter[0] >= 'a' && iter[0] <= 'z') ||
+       (iter[0] >= 'A' && iter[0] <= 'Z')){
+      match[0] = offset;
+      match[1] = offset + 1;
+      
+      success = TRUE;
+    }else if(iter + 1 < end_ptr &&
+	     ((iter[0] == 0xc3 &&
+	       ((iter[1] >= 0x80 && iter[1] <= 0x96) ||
+		(iter[1] >= 0x98 && iter[1] <= 0xb6) ||
+		(iter[1] >= 0xb8 && iter[1] <= 0xbf))) ||
+	      ((iter[0] >= 0xc3 && iter[0] <= 0xca) &&
+	       (iter[1] >= 0x80 && iter[1] <= 0xbf)) ||
+	      (iter[0] == 0xcb &&
+	       (iter[1] >= 0x80 && iter[1] <= 0xbf)) ||
+	      (iter[0] == 0xcd &&
+	       (iter[1] >= 0xb0 && iter[1] <= 0xbd)) ||
+	      (iter[0] == 0xcd &&
+	       (iter[1] >= 0xbf && iter[1] <= 0xdf)) ||
+	      ((iter[0] >= 0xce && iter[0] <= 0xdf) &&
+	       (iter[1] >= 0x80 && iter[1] <= 0xbf)))){
+      match[0] = offset;
+      match[1] = offset + 2;
+      
+      success = TRUE;
+    }else if(iter + 2 < end_ptr &&
+	     (((iter[0] >= 0xe0 && iter[0] <= 0xe1) &&
+	       (iter[1] >= 0x80 && iter[1] <= 0xbf) &&
+	       (iter[2] >= 0x80 && iter[2] <= 0xbf)) ||
+	      (iter[0] == 0xe2 &&
+	       iter[1] == 0x80 &&
+	       (iter[2] >= 0x8c && iter[2] <= 0x8d)) ||
+	      (iter[0] == 0xe2 &&
+	       iter[1] == 0x81 &&
+	       (iter[2] >= 0xb0 && iter[2] <= 0xbf)) ||
+	      (iter[0] == 0xe2 &&
+	       (iter[1] >= 0x81 && iter[1] <= 0x85) &&
+	       (iter[2] >= 0x80 && iter[2] <= 0xbf)) ||
+	      (iter[0] == 0xe2 &&
+	       iter[1] == 0x86 &&
+	       (iter[2] >= 0x80 && iter[2] <= 0x8f)) ||
+	      (iter[0] == 0xe2 &&
+	       (iter[1] >= 0xb0 && iter[1] <= 0xbe) &&
+	       (iter[2] >= 0x80 && iter[2] <= 0xbf)) ||
+	      (iter[0] == 0xe2 &&
+	       iter[1] == 0xbf &&
+	       (iter[2] >= 0x80 && iter[2] <= 0xaf)) ||
+	      (iter[0] == 0xe3 &&
+	       (iter[1] >= 0xb0 && iter[1] <= 0xbf) &&
+	       (iter[2] >= 0x81 && iter[2] <= 0xbf)) ||
+	      ((iter[0] >= 0xe4) && iter[0] <= 0xec) &&
+	      (iter[1] >= 0x80 && iter[1] <= 0x9f) &&
+	      (iter[2] >= 0x80 && iter[2] <= 0xbf)) ||
+	     (iter[0] == 0xef &&
+	      (iter[1] >= 0xa4 && iter[1] <= 0xb6) &&
+	      (iter[2] >= 0x80 && iter[2] <= 0xbf)) ||
+	     (iter[0] == 0xef &&
+	      iter[1] == 0xb7 &&
+	      (iter[2] >= 0x80 && iter[2] <= 0x8f)) ||
+	     (iter[0] == 0xef &&
+	      iter[1] == 0xb7 &&
+	      (iter[2] >= 0x80 && iter[2] <= 0xbf)) ||
+	     (iter[0] == 0xef &&
+	      (iter[1] >= 0xb8 && iter[1] <= 0xbe) &&
+	      (iter[2] >= 0x80 && iter[2] <= 0xbf)) ||
+	     (iter[0] == 0xef &&
+	      iter[1] == 0xbf &&
+	      (iter[2] >= 0x80 && iter[2] <= 0xBD))){
+      match[0] = offset;
+      match[1] = offset + 3;
+      
+      success = TRUE;
+    }else if(iter + 3 < end_ptr &&
+	     ((iter[0] == 0xf0 && iter[0] == 0xf3) &&
+	      (iter[1] == 0x90 && iter[1] == 0xaf) &&
+	      (iter[2] == 0x80 && iter[2] == 0xbf) &&
+	      (iter[3] == 0x80 && iter[3] == 0xbf))){
+      match[0] = offset;
+      match[1] = offset + 4;
+      
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_pn_chars_u:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match pn chars u.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_pn_chars_u(gchar *offset,
+			    gchar *end_ptr,
+			    gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    gchar *pn_chars_base_start_offset, *pn_chars_base_end_offset;
+
+    pn_chars_base_start_offset = NULL;
+    pn_chars_base_end_offset = NULL;
+
+    if(ags_turtle_match_pname_chars_base(offset,
+					 end_ptr,
+					 &pn_chars_base_start_offset, &pn_chars_base_end_offset)){
+      match[0] = offset;
+      match[1] = pn_chars_base_end_offset;
+      
+      success = TRUE;
+    }else if(offset[0] == '_'){
+      match[0] = offset;
+      match[1] = offset + 1;
+      
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_pn_chars:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match pn chars.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_pn_chars(gchar *offset,
+			  gchar *end_ptr,
+			  gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    gchar *pn_chars_u_start_offset, *pn_chars_u_end_offset;
+
+    pn_chars_u_start_offset = NULL;
+    pn_chars_u_end_offset = NULL;
+
+    if(ags_turtle_match_pname_chars_u(offset,
+				      end_ptr,
+				      &pn_chars_u_start_offset, &pn_chars_u_end_offset)){
+      match[0] = offset;
+      match[1] = pn_chars_u_end_offset;
+      
+      success = TRUE;
+    }else if(offset[0] == '-'){
+      match[0] = offset;
+      match[1] = offset + 1;
+      
+      success = TRUE;
+    }else if(offset[0] >= '0' && offset[0] <= '9'){
+      match[0] = offset;
+      match[1] = offset + 1;
+      
+      success = TRUE;
+    }else if(offset + 1 < end_ptr &&
+	     offset[0] == 0xc2 &&
+	     offset[1] == 0xb7){
+      match[0] = offset;
+      match[1] = offset + 2;
+      
+      success = TRUE;
+    }else if(offset + 2 < end_ptr &&
+	     offset[0] == 0xcc &&
+	     offset[1] >= 0x80 &&
+	     offset[2] <= 0xbf){
+      match[0] = offset;
+      match[1] = offset + 3;
+      
+      success = TRUE;
+    }else if(offset + 2 < end_ptr &&
+	     offset[0] == 0xcd &&
+	     offset[1] >= 0x80 &&
+	     offset[2] <= 0xaf){
+      match[0] = offset;
+      match[1] = offset + 3;
+      
+      success = TRUE;
+    }else if(offset + 3 < end_ptr &&
+	     offset[0] == 0xe2 &&
+	     offset[1] == 0x80 &&
+	     offset[2] == 0xbf){
+      match[0] = offset;
+      match[1] = offset + 3;
+      
+      success = TRUE;
+    }else if(offset + 3 < end_ptr &&
+	     offset[0] == 0xe2 &&
+	     offset[1] == 0x81 &&
+	     offset[2] == 0x80){
+      match[0] = offset;
+      match[1] = offset + 3;
+      
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_pn_prefix:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match pn prefix.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_pn_prefix(gchar *offset,
+			   gchar *end_ptr,
+			   gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    gchar *iter;
+    gchar *pn_chars_base_start_offset, *pn_chars_base_end_offset;
+
+    gboolean check_point;
+    
+    pn_chars_base_start_offset = NULL;
+    pn_chars_base_end_offset = NULL;
+    
+    iter = offset;
+
+    check_point = FALSE;
+    
+    if(ags_turtle_match_pn_chars_base(iter,
+				      end_ptr,
+				      &pn_chars_base_start_offset, &pn_chars_base_end_offset)){
+      iter += (pn_chars_base_end_offset - pn_chars_base_start_offset);
+
+      while(iter < end_ptr){
+	gchar *pn_chars_start_offset, *pn_chars_end_offset;
+	
+	pn_chars_start_offset = NULL;
+	pn_chars_end_offset = NULL;
+    
+	if(ags_turtle_match_pn_chars_base(iter,
+					  end_ptr,
+					  &pn_chars_start_offset, &pn_chars_end_offset)){
+	  iter += (pn_chars_end_offset - pn_chars_start_offset);
+
+	  check_point = FALSE;
+	}else if(iter[0] == '.'){
+	  iter++;
+
+	  check_point = TRUE;
+	}else{
+	  break;
+	}
+      }
+    }
+
+    if(check_point){
+      for(iter -= 1; iter >= pn_chars_base_end_offset && iter[0] == '.'; iter--);
+    }
+
+    match[0] = offset;
+    match[1] = iter;
+    
+    success = TRUE;
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_pn_local:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match uchar.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_pn_local(gchar *offset,
+			  gchar *end_ptr,
+			  gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    gchar *iter;
+    gchar *pn_chars_u_start_offset, *pn_chars_u_end_offset;
+    gchar *plx_start_offset, *plx_end_offset;
+    gchar *check_point_start_offset;
+    
+    gboolean check_point;
+    
+    iter = offset;
+
+    pn_chars_u_start_offset = NULL;
+    pn_chars_u_end_offset = NULL;
+
+    plx_start_offset = NULL;
+    plx_end_offset = NULL;
+    
+    if(ags_turtle_match_pn_chars_u(iter,
+				   end_ptr,
+				   &pn_chars_u_start_offset, &pn_chars_u_end_offset)){
+      iter += (pn_chars_u_end_offset - pn_chars_u_start_offset);
+    }else if(iter[0] == ':'){
+      iter++;
+    }else if(iter[0] >= '0' &&
+	     iter[0] <= '9'){
+      iter++;
+    }else if(ags_turtle_match_plx(iter,
+				  end_ptr,
+				  &plx_start_offset, &plx_end_offset)){
+      iter += (plx_end_offset - plx_start_offset);
+    }else{
+      goto ags_turtle_match_pn_local_END;
+    }
+
+    check_point_start_offset = iter;
+    
+    check_point = FALSE;
+    
+    while(iter < end_ptr){
+      gchar *pn_chars_start_offset, *pn_chars_end_offset;
+      gchar *plx_start_offset, *plx_end_offset;
+
+      pn_chars_start_offset = NULL;
+      pn_chars_end_offset = NULL;
+
+      plx_start_offset = NULL;
+      plx_end_offset = NULL;
+      
+      if(ags_turtle_match_pn_chars(iter,
+				   end_ptr,
+				   &pn_chars_start_offset, &pn_chars_end_offset)){
+	iter += (pn_chars_end_offset - pn_chars_start_offset);
+
+	check_point = FALSE;
+      }else if(iter[0] == '.'){
+	iter++;
+	
+	check_point = TRUE;
+      }else if(iter[0] == ':'){
+	iter++;
+
+	check_point = FALSE;
+      }else if(ags_turtle_match_plx(iter,
+				    end_ptr,
+				    &plx_start_offset, &plx_end_offset)){
+	iter += (plx_end_offset - plx_start_offset);
+
+	check_point = FALSE;
+      }else{
+	break;
+      }
+    }
+
+    if(check_point){
+      for(iter -= 1; iter >= check_point_start_offset && iter[0] == '.'; iter--);
+    }
+
+    match[0] = offset;
+    match[1] = iter;
+    
+    success = TRUE;
+  }
+
+ags_turtle_match_pn_local_END:
+  
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_plx:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match plx.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_plx(gchar *offset,
+		     gchar *end_ptr,
+		     gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    gchar *percent_start_offset, *percent_end_offset;
+    gchar *pn_local_esc_start_offset, *pn_local_esc_end_offset;
+
+    percent_start_offset = NULL;
+    percent_end_offset = NULL;
+
+    pn_local_esc_start_offset = NULL;
+    pn_local_esc_end_offset = NULL;
+    
+    if(ags_turtle_match_percent(offset,
+				end_ptr,
+				&percent_start_offset, &percent_end_offset)){
+      match[0] = offset;
+      match[1] = percent_end_offset;
+      
+      success = TRUE;
+    }else if(ags_turtle_match_pn_local_esc(offset,
+					   end_ptr,
+					   &pn_local_esc_start_offset, &pn_local_esc_end_offset)){
+      match[0] = offset;
+      match[1] = pn_local_esc_end_offset;
+      
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_percent:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match percent.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_percent(gchar *offset,
+			 gchar *end_ptr,
+			 gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset + 2 < end_ptr){
+    if(offset[0] == '%' &&
+       g_ascii_isxdigit(offset[1]) &&
+       g_ascii_isxdigit(offset[2])){
+      match[0] = offset;
+      match[1] = offset + 3;
+      
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_hex:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match hex.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_hex(gchar *offset,
+		     gchar *end_ptr,
+		     gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    if(g_ascii_isxdigit(offset[0])){
+      match[0] = offset;
+      match[1] = offset + 1;
+      
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_turtle_match_pn_local_es:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ *
+ * Match pn local esc.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.12
+ */
+gboolean
+ags_turtle_match_pn_local_esc(gchar *offset,
+			      gchar *end_ptr,
+			      gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset + 1 < end_ptr){
+    if(offset[0] == '\\' &&
+       (offset[1] == '_' ||
+	offset[1] == '~' ||
+	offset[1] == '.' ||
+	offset[1] == '-' ||
+	offset[1] == '!' ||
+	offset[1] == '$' ||
+	offset[1] == '&' ||
+	offset[1] == '\'' ||
+	offset[1] == '(' ||
+	offset[1] == ')' ||
+	offset[1] == '*' ||
+	offset[1] == '+' ||
+	offset[1] == ',' ||
+	offset[1] == ';' ||
+	offset[1] == '=' ||
+	offset[1] == '/' ||
+	offset[1] == '?' ||
+	offset[1] == '#' ||
+	offset[1] == '@' ||
+	offset[1] == '%')){
+      match[0] = offset;
+      match[1] = offset + 2;
+      
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
 }
 
 /**
