@@ -2174,7 +2174,6 @@ ags_lv2_turtle_scanner_quick_scan_see_also(AgsLv2TurtleScanner *lv2_turtle_scann
   lv2_turtle_scanner_mutex = AGS_LV2_TURTLE_SCANNER_GET_OBJ_MUTEX(lv2_turtle_scanner);
 
   /* check if turtle yet available */
-#if 0
   g_rec_mutex_lock(lv2_turtle_scanner_mutex);
 
   is_available = (ags_lv2_cache_turtle_find(lv2_turtle_scanner->cache_turtle, turtle_filename) != NULL) ? TRUE: FALSE;
@@ -2184,7 +2183,6 @@ ags_lv2_turtle_scanner_quick_scan_see_also(AgsLv2TurtleScanner *lv2_turtle_scann
   if(is_available){
     return;
   }
-#endif
   
   /* entry point - open file and read it */
   sb = (struct stat *) g_malloc(sizeof(struct stat));
@@ -2245,8 +2243,6 @@ ags_lv2_turtle_scanner_quick_scan_see_also(AgsLv2TurtleScanner *lv2_turtle_scann
     
     if(iter == str){
       iter++;
-
-      break;
     }
   }while(iter < &(buffer[sb->st_size]));
   
@@ -2314,7 +2310,6 @@ ags_lv2_turtle_scanner_quick_scan(AgsLv2TurtleScanner *lv2_turtle_scanner,
   lv2_turtle_scanner_mutex = AGS_LV2_TURTLE_SCANNER_GET_OBJ_MUTEX(lv2_turtle_scanner);
 
   /* check if turtle yet available */
-#if 0
   g_rec_mutex_lock(lv2_turtle_scanner_mutex);
 
   is_available = (ags_lv2_cache_turtle_find(lv2_turtle_scanner->cache_turtle, manifest_filename) != NULL) ? TRUE: FALSE;
@@ -2324,7 +2319,6 @@ ags_lv2_turtle_scanner_quick_scan(AgsLv2TurtleScanner *lv2_turtle_scanner,
   if(is_available){
     return;
   }
-#endif
   
   /* entry point - open file and read it */
   sb = (struct stat *) g_malloc(sizeof(struct stat));
@@ -2383,8 +2377,6 @@ ags_lv2_turtle_scanner_quick_scan(AgsLv2TurtleScanner *lv2_turtle_scanner,
     
     if(iter == str){
       iter++;
-
-      break;
     }
   }while(iter < &(buffer[sb->st_size]));
   
