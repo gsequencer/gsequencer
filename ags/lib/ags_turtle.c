@@ -1194,7 +1194,7 @@ ags_turtle_match_integer(gchar *offset,
     has_sign = FALSE;
     
     if(iter[0] == '+' ||
-       iter[1] == '-'){
+       iter[0] == '-'){
       iter++;
       
       has_sign = TRUE;
@@ -1202,7 +1202,7 @@ ags_turtle_match_integer(gchar *offset,
 
     for(; iter < end_ptr; iter++){
       if(iter[0] >= '0' &&
-	 iter[1] <= '9'){
+	 iter[0] <= '9'){
 	if(!success){
 	  success = TRUE;
 	}
@@ -1271,7 +1271,7 @@ ags_turtle_match_decimal(gchar *offset,
     has_float = FALSE;
     
     if(iter[0] == '+' ||
-       iter[1] == '-'){
+       iter[0] == '-'){
       iter++;
       
       has_sign = TRUE;
@@ -1279,7 +1279,7 @@ ags_turtle_match_decimal(gchar *offset,
 
     for(; iter < end_ptr; iter++){
       if(iter[0] >= '0' &&
-	 iter[1] <= '9'){
+	 iter[0] <= '9'){
 	if(!has_int){
 	  has_int = TRUE;
 	}
@@ -1293,7 +1293,7 @@ ags_turtle_match_decimal(gchar *offset,
       
       for(; iter < end_ptr; iter++){
 	if(iter[0] >= '0' &&
-	   iter[1] <= '9'){
+	   iter[0] <= '9'){
 	  if(!has_float){
 	    has_float = TRUE;
 	    
@@ -1368,7 +1368,7 @@ ags_turtle_match_double(gchar *offset,
     has_exponent = FALSE;
     
     if(iter[0] == '+' ||
-       iter[1] == '-'){
+       iter[0] == '-'){
       iter++;
       
       has_sign = TRUE;
@@ -1376,7 +1376,7 @@ ags_turtle_match_double(gchar *offset,
 
     for(; iter < end_ptr; iter++){
       if(iter[0] >= '0' &&
-	 iter[1] <= '9'){
+	 iter[0] <= '9'){
 	if(!has_int){
 	  has_int = TRUE;
 	}
@@ -1390,7 +1390,7 @@ ags_turtle_match_double(gchar *offset,
       
       for(; iter < end_ptr; iter++){
 	if(iter[0] >= '0' &&
-	   iter[1] <= '9'){
+	   iter[0] <= '9'){
 	  if(!has_float){
 	    has_float = TRUE;
 	  }
@@ -1480,7 +1480,7 @@ ags_turtle_match_exponent(gchar *offset,
       has_e = TRUE;
 
       if(iter[0] == '+' ||
-	 iter[1] == '-'){
+	 iter[0] == '-'){
 	iter++;
       
 	has_exponent_sign = TRUE;
@@ -1488,7 +1488,7 @@ ags_turtle_match_exponent(gchar *offset,
       
       for(; iter < end_ptr; iter++){
 	if(iter[0] >= '0' &&
-	   iter[1] <= '9'){
+	   iter[0] <= '9'){
 	  if(!has_exponent){
 	    has_exponent = TRUE;
 	  }
@@ -2356,7 +2356,7 @@ ags_turtle_read_pn_chars_u(gchar *offset,
 				 end_ptr,
 				 &pn_chars_u_start_offset, &pn_chars_u_end_offset)){
     str = g_strndup(offset,
-		    (pn_chars_u_end_offset + 1) - offset);
+		    pn_chars_u_end_offset - offset);
   }
   
   return(str);
@@ -2389,7 +2389,7 @@ ags_turtle_read_pn_chars(gchar *offset,
 			       end_ptr,
 			       &pn_chars_start_offset, &pn_chars_end_offset)){
     str = g_strndup(offset,
-		    (pn_chars_end_offset + 1) - offset);
+		    pn_chars_end_offset - offset);
   }
   
   return(str);
@@ -2422,7 +2422,7 @@ ags_turtle_read_pn_prefix(gchar *offset,
 				end_ptr,
 				&pn_prefix_start_offset, &pn_prefix_end_offset)){
     str = g_strndup(offset,
-		    (pn_prefix_end_offset + 1) - offset);
+		    pn_prefix_end_offset - offset);
   }
   
   return(str);
@@ -2455,7 +2455,7 @@ ags_turtle_read_pn_local(gchar *offset,
 			       end_ptr,
 			       &pn_local_start_offset, &pn_local_end_offset)){
     str = g_strndup(offset,
-		    (pn_local_end_offset + 1) - offset);
+		    pn_local_end_offset - offset);
   }
   
   return(str);
@@ -2488,7 +2488,7 @@ ags_turtle_read_plx(gchar *offset,
 			  end_ptr,
 			  &plx_start_offset, &plx_end_offset)){
     str = g_strndup(offset,
-		    (plx_end_offset + 1) - offset);
+		    plx_end_offset - offset);
   }
   
   return(str);
@@ -2521,7 +2521,7 @@ ags_turtle_read_percent(gchar *offset,
 			      end_ptr,
 			      &percent_start_offset, &percent_end_offset)){
     str = g_strndup(offset,
-		    (percent_end_offset + 1) - offset);
+		    percent_end_offset - offset);
   }
   
   return(str);
@@ -2554,7 +2554,7 @@ ags_turtle_read_hex(gchar *offset,
 			  end_ptr,
 			  &hex_start_offset, &hex_end_offset)){
     str = g_strndup(offset,
-		    (hex_end_offset + 1) - offset);
+		    hex_end_offset - offset);
   }
   
   return(str);
@@ -2587,7 +2587,7 @@ ags_turtle_read_pn_local_esc(gchar *offset,
 				   end_ptr,
 				   &pn_local_esc_start_offset, &pn_local_esc_end_offset)){
     str = g_strndup(offset,
-		    (pn_local_esc_end_offset + 1) - offset);
+		    pn_local_esc_end_offset - offset);
   }
   
   return(str);
@@ -2705,7 +2705,7 @@ ags_turtle_match_echar(gchar *offset,
 	offset[1] == '\'' ||
 	offset[1] == '\\')){
       match[0] = offset;
-      match[0] = offset + 2;
+      match[1] = offset + 2;
       
       success = TRUE;
     }
@@ -2750,9 +2750,9 @@ ags_turtle_match_ws(gchar *offset,
   success = FALSE;
 
   if(offset != NULL &&
-     end_ptr != NULL){
-    if(offset < end_ptr &&
-       (offset[0] == ' ' || offset[0] == '\t' || offset[0] == '\r' || offset[0] == '\n')){
+     end_ptr != NULL &&
+     offset < end_ptr){
+    if(offset[0] == ' ' || offset[0] == '\t' || offset[0] == '\r' || offset[0] == '\n'){
       match[0] = offset;
       match[1] = offset + 1;
       
@@ -2809,8 +2809,8 @@ ags_turtle_match_anon(gchar *offset,
     if(iter[0] == '['){
       iter++;
       
-      for(; iter < end_ptr; iter++){
-	if(iter == ']'){
+      for(; iter < end_ptr;){
+	if(iter[0] == ']'){
 	  match[0] = offset;
 	  match[1] = iter + 1;
 	  
@@ -2951,10 +2951,10 @@ ags_turtle_match_pn_chars_base(gchar *offset,
       
       success = TRUE;
     }else if(iter + 3 < end_ptr &&
-	     ((iter[0] == 0xf0 && iter[0] == 0xf3) &&
-	      (iter[1] == 0x90 && iter[1] == 0xaf) &&
-	      (iter[2] == 0x80 && iter[2] == 0xbf) &&
-	      (iter[3] == 0x80 && iter[3] == 0xbf))){
+	     ((iter[0] >= 0xf0 && iter[0] <= 0xf3) &&
+	      (iter[1] >= 0x90 && iter[1] <= 0xaf) &&
+	      (iter[2] >= 0x80 && iter[2] <= 0xbf) &&
+	      (iter[3] >= 0x80 && iter[3] <= 0xbf))){
       match[0] = offset;
       match[1] = offset + 4;
       
