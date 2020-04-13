@@ -1,3 +1,8 @@
+ags (3.2.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed greedy ags-lv2 and ags-dssi
+
 ags (3.2.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
