@@ -913,7 +913,7 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   }else{
     if(parent_recycling_context == NULL &&
        audio_signal->stream_current == NULL){
-#if 0
+#if 1
       g_rec_mutex_lock(recall_lv2_mutex);
 
       deactivate = recall_lv2->plugin_descriptor->deactivate;
