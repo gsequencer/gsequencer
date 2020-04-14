@@ -35,6 +35,13 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.2.14" date="2020-04-14">
+      <description>
+	<p>Fixed potential NULL pointer dereference.</p>
+	<p>Fixed wrong midi-end-mapping of AgsSimpleFile.</p>
+      </description>
+    </release>
+
     <release version="3.2.13" date="2020-04-13">
       <description>
 	<p>Fixed greedy DSSI and LV2.</p>

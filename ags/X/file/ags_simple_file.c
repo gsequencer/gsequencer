@@ -8783,7 +8783,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		 "audio-start-mapping", &audio_start_mapping,
 		 "audio-end-mapping", &audio_end_mapping,
 		 "midi-start-mapping", &midi_start_mapping,
-		 "midi-start-mapping", &midi_end_mapping,
+		 "midi-end-mapping", &midi_end_mapping,
 		 NULL);
     
     str = g_strdup_printf("%d",
