@@ -1,9 +1,20 @@
+ags (3.2.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential NULL pointer dereference of LADSPA, DSSI and LV2
+	* fixed wrong midi-end-mapping persistence of AgsSimpleFile
+
+ags (3.2.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed greedy ags-lv2 and ags-dssi
+
 ags (3.2.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented AgsTurtle match functions
-	* TODO:JK: refactored AgsTurtle read functions
-	* TODO:JK: refactored AgsLv2TurtleScanner to use match functions
+	* implemented AgsTurtle match functions
+	* refactored AgsTurtle read functions
+	* refactored AgsLv2TurtleScanner to use match functions
 	* fixed AgsFFPlayer restore
 
 ags (3.2.11)
