@@ -1,3 +1,21 @@
+ags (3.2.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed greedy ags-lv2 and ags-dssi
+
+ags (3.2.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsTurtle match functions
+	* refactored AgsTurtle read functions
+	* refactored AgsLv2TurtleScanner to use match functions
+	* fixed AgsFFPlayer restore
+
+ags (3.2.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_lv2_cache_turtle_find()
+
 ags (3.2.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

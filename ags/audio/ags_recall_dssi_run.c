@@ -752,7 +752,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   }else{
     if(parent_recycling_context == NULL &&
        audio_signal->stream_current == NULL){
-#if 0
+#if 1
       g_rec_mutex_lock(recall_dssi_mutex);
 
       deactivate = recall_dssi->plugin_descriptor->LADSPA_Plugin->deactivate;

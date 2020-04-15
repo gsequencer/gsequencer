@@ -69,6 +69,9 @@ struct _AgsFFPlayer
   
   AgsSF2Loader *sf2_loader;
 
+  gchar *load_preset;
+  gchar *load_instrument;
+  
   gint position;
   GtkLabel *loading;
 

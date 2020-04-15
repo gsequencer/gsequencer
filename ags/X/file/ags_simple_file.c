@@ -3572,76 +3572,33 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
 void
 ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFFPlayer *ffplayer)
 {
-  GtkTreeModel *model;
-  GtkTreeIter iter;
+  xmlChar *filename, *preset, *instrument;
 
-  xmlChar *str;
-  gchar *value;
+  filename = xmlGetProp(node,
+			"filename");
 
-  str = xmlGetProp(node,
-		   "filename");
+  preset = xmlGetProp(node,
+		      "preset");
     
+  instrument = xmlGetProp(node,
+			  "instrument");
+
+  ffplayer->load_preset = g_strdup(preset);
+  ffplayer->load_instrument = g_strdup(instrument);
+  
   ags_ffplayer_open_filename(ffplayer,
-			     str);
+			     filename);
 
-  if(str != NULL){      
-    xmlFree(str);
-  }
-    
-  if(ffplayer->audio_container == NULL){
-    return;
+  if(filename != NULL){
+    xmlFree(filename);
   }
 
-  /* preset */
-  model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset));
-
-  str = xmlGetProp(node,
-		   "preset");
-
-  if(gtk_tree_model_get_iter_first(model, &iter)){
-    do{
-      gtk_tree_model_get(model, &iter,
-			 0, &value,
-			 -1);
-
-      if(!g_strcmp0(str,
-		    value)){
-	gtk_combo_box_set_active_iter((GtkComboBox *) ffplayer->preset,
-				      &iter);
-	break;
-      }
-    }while(gtk_tree_model_iter_next(model,
-				    &iter));
+  if(preset != NULL){
+    xmlFree(preset);
   }
 
-  if(str != NULL){      
-    xmlFree(str);
-  }
-    
-  /* instrument */
-  model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument));
-
-  str = xmlGetProp(node,
-		   "instrument");
-
-  if(gtk_tree_model_get_iter_first(model, &iter)){
-    do{
-      gtk_tree_model_get(model, &iter,
-			 0, &value,
-			 -1);
-
-      if(!g_strcmp0(str,
-		    value)){
-	gtk_combo_box_set_active_iter((GtkComboBox *) ffplayer->instrument,
-				      &iter);
-	break;
-      }
-    }while(gtk_tree_model_iter_next(model,
-				    &iter));
-  }
-
-  if(str != NULL){      
-    xmlFree(str);
+  if(instrument != NULL){
+    xmlFree(instrument);
   }
 }
 #endif

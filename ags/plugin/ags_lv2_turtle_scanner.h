@@ -94,6 +94,9 @@ AgsLv2CacheTurtle* ags_lv2_cache_turtle_alloc(AgsLv2CacheTurtle *parent,
 					      gchar *turtle_filename);
 void ags_lv2_cache_turtle_free(AgsLv2CacheTurtle *lv2_cache_turtle);
 
+GList* ags_lv2_cache_turtle_find(GList *lv2_cache_turtle,
+				 gchar *turtle_filename);
+
 void ags_lv2_turtle_scanner_quick_scan_see_also(AgsLv2TurtleScanner *lv2_turtle_scanner,
 						AgsLv2CacheTurtle *parent,
 						gchar *turtle_filename);

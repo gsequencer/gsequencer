@@ -583,7 +583,7 @@ void
 ags_turtle_test_read_echar()
 {
   gchar current[3];
-  gchar *echar = "tbnrf\"";
+  gchar *echar = "tbnrf\"'\\";
   gchar *str;
   
   guint i;
@@ -595,17 +595,20 @@ ags_turtle_test_read_echar()
 
   success = TRUE;
 
-  for(i = 0; i < 7; i++){
+  for(i = 0; i < 8; i++){
     current[1] = echar[i];
 
     str = ags_turtle_read_echar(current,
 				current + 3);
     
-    if(g_ascii_strncasecmp(current,
+    if(str == NULL ||
+       g_ascii_strncasecmp(current,
 			   str,
 			   3)){
-      success = FALSE;
+      g_message("failed[%d] %s", i, current);
 
+      success = FALSE;
+      
       break;
     }
   }
@@ -1135,7 +1138,7 @@ ags_turtle_test_read_pn_prefix()
   CU_ASSERT(str != NULL &&
 	    !g_ascii_strncasecmp(prefix[0],
 				 str,
-				 strlen(prefix[0])));
+				 strlen(prefix[0]) - 1));
   
   /* test prefix 1 */  
   str = ags_turtle_read_pn_prefix(prefix[1],
@@ -1144,7 +1147,7 @@ ags_turtle_test_read_pn_prefix()
   CU_ASSERT(str != NULL &&
 	    !g_ascii_strncasecmp(prefix[1],
 				 str,
-				 strlen(prefix[1])));
+				 strlen(prefix[1]) - 3));
 
   /* test prefix 2 */  
   str = ags_turtle_read_pn_prefix(prefix[2],
