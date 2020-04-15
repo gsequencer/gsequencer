@@ -1,3 +1,8 @@
+ags (3.2.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsTurtle to check unichar range instead of UTF-8 sequences
+
 ags (3.2.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
