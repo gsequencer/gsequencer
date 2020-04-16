@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -78,6 +78,10 @@ struct _AgsSynthClass
 };
 
 GType ags_synth_get_type(void);
+
+gboolean ags_synth_test_flags(AgsSynth *synth, guint flags);
+void ags_synth_set_flags(AgsSynth *synth, guint flags);
+void ags_synth_unset_flags(AgsSynth *synth, guint flags);
 
 void ags_synth_update(AgsSynth *synth);
 

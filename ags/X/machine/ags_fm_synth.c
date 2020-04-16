@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -210,6 +210,8 @@ ags_fm_synth_init(AgsFMSynth *fm_synth)
   fm_synth->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_FM_SYNTH_BASE_NOTE_MIN,
 								     AGS_FM_SYNTH_BASE_NOTE_MAX,
 								     1.0);
+  gtk_spin_button_set_digits(fm_synth->lower,
+			     2);
   gtk_spin_button_set_value(fm_synth->lower, -48.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(fm_synth->lower),
@@ -243,7 +245,7 @@ ags_fm_synth_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) fm_synth->lower, "value-changed",
 		   G_CALLBACK(ags_fm_synth_lower_callback), fm_synth);
 
-  g_signal_connect((GObject *) fm_synth->auto_update, "toggled",
+  g_signal_connect((GObject *) fm_synth->auto_update, "clicked",
 		   G_CALLBACK(ags_fm_synth_auto_update_callback), fm_synth);
 
   g_signal_connect((GObject *) fm_synth->update, "clicked",
@@ -271,7 +273,7 @@ ags_fm_synth_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   g_object_disconnect((GObject *) fm_synth->auto_update,
-		      "any_signal::toggled",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_fm_synth_auto_update_callback),
 		      fm_synth,
 		      NULL);
@@ -298,6 +300,77 @@ ags_fm_synth_map_recall(AgsMachine *machine)
   AGS_MACHINE_CLASS(ags_fm_synth_parent_class)->map_recall(machine);
 }
 
+/**
+ * ags_fm_synth_test_flags:
+ * @fm_synth: the #AgsFMSynth
+ * @flags: the flags
+ * 
+ * Test @flags of @fm_synth.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.15
+ */
+gboolean
+ags_fm_synth_test_flags(AgsFMSynth *fm_synth, guint flags)
+{
+  gboolean success;
+  
+  if(!AGS_IS_FM_SYNTH(fm_synth)){
+    return(FALSE);
+  }
+
+  success = ((flags & (fm_synth->flags))) ? TRUE: FALSE;
+
+  return(success);
+}
+
+/**
+ * ags_fm_synth_set_flags:
+ * @fm_synth: the #AgsFMSynth
+ * @flags: the flags
+ * 
+ * Set @flags of @fm_synth.
+ * 
+ * Since: 3.2.15
+ */
+void
+ags_fm_synth_set_flags(AgsFMSynth *fm_synth, guint flags)
+{
+  if(!AGS_IS_FM_SYNTH(fm_synth)){
+    return;
+  }
+
+  fm_synth->flags |= flags;
+}
+
+/**
+ * ags_fm_synth_unset_flags:
+ * @fm_synth: the #AgsFMSynth
+ * @flags: the flags
+ * 
+ * Unset @flags of @fm_synth.
+ * 
+ * Since: 3.2.15
+ */
+void
+ags_fm_synth_unset_flags(AgsFMSynth *fm_synth, guint flags)
+{
+  if(!AGS_IS_FM_SYNTH(fm_synth)){
+    return;
+  }
+
+  fm_synth->flags &= (~flags);
+}
+
+/**
+ * ags_fm_synth_update:
+ * @fm_synth: the #AgsFMSynth
+ * 
+ * Update @fm_synth.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_fm_synth_update(AgsFMSynth *fm_synth)
 {
@@ -330,6 +403,10 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
   AgsComplex **sync_point;
   guint sync_point_count;
   
+  if(!AGS_IS_FM_SYNTH(fm_synth)){
+    return;
+  }
+
   application_context = ags_application_context_get_instance();
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) fm_synth);

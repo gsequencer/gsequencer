@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -428,6 +428,9 @@ ags_fm_oscillator_connect(AgsConnectable *connectable)
   g_signal_connect(G_OBJECT(fm_oscillator->volume), "value-changed",
 		   G_CALLBACK(ags_fm_oscillator_volume_callback), fm_oscillator);
 
+  g_signal_connect(G_OBJECT(fm_oscillator->do_sync), "toggled",
+		   G_CALLBACK(ags_fm_oscillator_do_sync_callback), fm_oscillator);
+
   for(i = 0; i < 2 * fm_oscillator->sync_point_count; i++){
     g_signal_connect(G_OBJECT(fm_oscillator->sync_point[i]), "value-changed",
 		     G_CALLBACK(ags_fm_oscillator_sync_point_callback), fm_oscillator);
@@ -492,6 +495,12 @@ ags_fm_oscillator_disconnect(AgsConnectable *connectable)
   g_object_disconnect((GObject *) fm_oscillator->volume,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_fm_oscillator_volume_callback),
+		      (gpointer) fm_oscillator,
+		      NULL);
+
+  g_object_disconnect((GObject *) fm_oscillator->do_sync,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_fm_oscillator_do_sync_callback),
 		      (gpointer) fm_oscillator,
 		      NULL);
 

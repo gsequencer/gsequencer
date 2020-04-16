@@ -630,6 +630,9 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 		 NULL);
   }
   
+  gtk_widget_queue_resize(notation_editor->scrolled_piano->piano);
+  gtk_widget_queue_resize(notation_editor->scrolled_piano);
+
   gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano->piano);
   gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano);
   

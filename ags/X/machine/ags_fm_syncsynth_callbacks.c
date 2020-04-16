@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -177,7 +177,7 @@ ags_fm_syncsynth_fm_oscillator_control_changed_callback(AgsFMOscillator *fm_osci
 {
   ags_fm_syncsynth_reset_loop(fm_syncsynth);
 
-  if((AGS_FM_SYNCSYNTH_AUTO_UPDATE & (fm_syncsynth->flags)) != 0){
+  if(ags_fm_syncsynth_test_flags(fm_syncsynth, AGS_FM_SYNCSYNTH_AUTO_UPDATE)){
     ags_fm_syncsynth_update(fm_syncsynth);
   }
 }
@@ -185,7 +185,9 @@ ags_fm_syncsynth_fm_oscillator_control_changed_callback(AgsFMOscillator *fm_osci
 void
 ags_fm_syncsynth_lower_callback(GtkSpinButton *spin_button, AgsFMSyncsynth *fm_syncsynth)
 {
-  //TODO:JK: implement me
+  if(ags_fm_syncsynth_test_flags(fm_syncsynth, AGS_FM_SYNCSYNTH_AUTO_UPDATE)){
+    ags_fm_syncsynth_update(fm_syncsynth);
+  }
 }
 
 void

@@ -1035,7 +1035,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
   GList *play_port, *recall_port;
   GList *start_plugin_port, *plugin_port;
 
-  gdouble step;
+  gdouble page, step;
   guint port_count;
 
   guint x, y;
@@ -1363,8 +1363,22 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	  step = (upper - lower) / step_count;
 	}
 
+	if(step_count > 8){
+	  if(upper >= 0.0 && lower >= 0.0){
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else if(upper < 0.0 && lower < 0.0){
+	    page = -1.0 * (lower - upper) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else{
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }
+	}else{
+	  page = step;
+	}
+	
 	gtk_adjustment_set_step_increment(adjustment,
 					  step);
+	gtk_adjustment_set_page_increment(adjustment,
+					  page);
 	gtk_adjustment_set_lower(adjustment,
 				 lower);
 	gtk_adjustment_set_upper(adjustment,
@@ -1439,8 +1453,22 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	  step = (upper - lower) / step_count;
 	}
 
+	if(step_count > 8){
+	  if(upper >= 0.0 && lower >= 0.0){
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else if(upper < 0.0 && lower < 0.0){
+	    page = -1.0 * (lower - upper) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else{
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }
+	}else{
+	  page = step;
+	}
+	
 	gtk_adjustment_set_step_increment(adjustment,
 					  step);
+	gtk_adjustment_set_page_increment(adjustment,
+					  page);
 	gtk_adjustment_set_lower(adjustment,
 				 lower);
 	gtk_adjustment_set_upper(adjustment,
@@ -1515,8 +1543,22 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	  step = (upper - lower) / step_count;
 	}
 
+	if(step_count > 8){
+	  if(upper >= 0.0 && lower >= 0.0){
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else if(upper < 0.0 && lower < 0.0){
+	    page = -1.0 * (lower - upper) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else{
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }
+	}else{
+	  page = step;
+	}
+	
 	gtk_adjustment_set_step_increment(adjustment,
 					  step);
+	gtk_adjustment_set_page_increment(adjustment,
+					  page);
 	gtk_adjustment_set_lower(adjustment,
 				 lower);
 	gtk_adjustment_set_upper(adjustment,
@@ -1604,7 +1646,7 @@ ags_line_add_lv2_effect(AgsLine *line,
   gchar *plugin_name;
   gchar *control_port;
 
-  gdouble step;
+  gdouble page, step;
   guint port_count;
 
   guint x, y;
@@ -1912,8 +1954,22 @@ ags_line_add_lv2_effect(AgsLine *line,
 	  step = (upper - lower) / step_count;
 	}
 
+	if(step_count > 8){
+	  if(upper >= 0.0 && lower >= 0.0){
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else if(upper < 0.0 && lower < 0.0){
+	    page = -1.0 * (lower - upper) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else{
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }
+	}else{
+	  page = step;
+	}
+	
 	gtk_adjustment_set_step_increment(adjustment,
 					  step);
+	gtk_adjustment_set_page_increment(adjustment,
+					  page);
 	gtk_adjustment_set_lower(adjustment,
 				 lower);
 	gtk_adjustment_set_upper(adjustment,
@@ -1988,8 +2044,22 @@ ags_line_add_lv2_effect(AgsLine *line,
 	  step = (upper - lower) / step_count;
 	}
 
+	if(step_count > 8){
+	  if(upper >= 0.0 && lower >= 0.0){
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else if(upper < 0.0 && lower < 0.0){
+	    page = -1.0 * (lower - upper) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else{
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }
+	}else{
+	  page = step;
+	}
+	
 	gtk_adjustment_set_step_increment(adjustment,
 					  step);
+	gtk_adjustment_set_page_increment(adjustment,
+					  page);
 	gtk_adjustment_set_lower(adjustment,
 				 lower);
 	gtk_adjustment_set_upper(adjustment,
@@ -2064,8 +2134,22 @@ ags_line_add_lv2_effect(AgsLine *line,
 	  step = (upper - lower) / step_count;
 	}
 
+	if(step_count > 8){
+	  if(upper >= 0.0 && lower >= 0.0){
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else if(upper < 0.0 && lower < 0.0){
+	    page = -1.0 * (lower - upper) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else{
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }
+	}else{
+	  page = step;
+	}
+	
 	gtk_adjustment_set_step_increment(adjustment,
 					  step);
+	gtk_adjustment_set_page_increment(adjustment,
+					  page);
 	gtk_adjustment_set_lower(adjustment,
 				 lower);
 	gtk_adjustment_set_upper(adjustment,

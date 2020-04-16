@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -299,6 +299,77 @@ ags_synth_map_recall(AgsMachine *machine)
   AGS_MACHINE_CLASS(ags_synth_parent_class)->map_recall(machine);
 }
 
+/**
+ * ags_synth_test_flags:
+ * @synth: the #AgsSynth
+ * @flags: the flags
+ * 
+ * Test @flags of @synth.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.15
+ */
+gboolean
+ags_synth_test_flags(AgsSynth *synth, guint flags)
+{
+  gboolean success;
+  
+  if(!AGS_IS_SYNTH(synth)){
+    return(FALSE);
+  }
+
+  success = ((flags & (synth->flags))) ? TRUE: FALSE;
+
+  return(success);
+}
+
+/**
+ * ags_synth_set_flags:
+ * @synth: the #AgsSynth
+ * @flags: the flags
+ * 
+ * Set @flags of @synth.
+ * 
+ * Since: 3.2.15
+ */
+void
+ags_synth_set_flags(AgsSynth *synth, guint flags)
+{
+  if(!AGS_IS_SYNTH(synth)){
+    return;
+  }
+
+  synth->flags |= flags;
+}
+
+/**
+ * ags_synth_unset_flags:
+ * @synth: the #AgsSynth
+ * @flags: the flags
+ * 
+ * Unset @flags of @synth.
+ * 
+ * Since: 3.2.15
+ */
+void
+ags_synth_unset_flags(AgsSynth *synth, guint flags)
+{
+  if(!AGS_IS_SYNTH(synth)){
+    return;
+  }
+
+  synth->flags &= (~flags);
+}
+
+/**
+ * ags_synth_update:
+ * @synth: the #AgsSynth
+ * 
+ * Update @synth.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_synth_update(AgsSynth *synth)
 {
@@ -328,6 +399,10 @@ ags_synth_update(AgsSynth *synth)
 
   AgsComplex **sync_point;
   guint sync_point_count;
+
+  if(!AGS_IS_SYNTH(synth)){
+    return;
+  }
   
   application_context = ags_application_context_get_instance();
 

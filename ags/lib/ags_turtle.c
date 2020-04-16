@@ -21,6 +21,8 @@
 
 #include <ags/lib/ags_regex.h>
 
+#include <gmodule.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -2884,81 +2886,29 @@ ags_turtle_match_pn_chars_base(gchar *offset,
       match[1] = offset + 1;
       
       success = TRUE;
-    }else if(iter + 1 < end_ptr &&
-	     ((iter[0] == 0xc3 &&
-	       ((iter[1] >= 0x80 && iter[1] <= 0x96) ||
-		(iter[1] >= 0x98 && iter[1] <= 0xb6) ||
-		(iter[1] >= 0xb8 && iter[1] <= 0xbf))) ||
-	      ((iter[0] >= 0xc3 && iter[0] <= 0xca) &&
-	       (iter[1] >= 0x80 && iter[1] <= 0xbf)) ||
-	      (iter[0] == 0xcb &&
-	       (iter[1] >= 0x80 && iter[1] <= 0xbf)) ||
-	      (iter[0] == 0xcd &&
-	       (iter[1] >= 0xb0 && iter[1] <= 0xbd)) ||
-	      (iter[0] == 0xcd &&
-	       (iter[1] >= 0xbf && iter[1] <= 0xdf)) ||
-	      ((iter[0] >= 0xce && iter[0] <= 0xdf) &&
-	       (iter[1] >= 0x80 && iter[1] <= 0xbf)))){
-      match[0] = offset;
-      match[1] = offset + 2;
-      
-      success = TRUE;
-    }else if(iter + 2 < end_ptr &&
-	     (((iter[0] >= 0xe0 && iter[0] <= 0xe1) &&
-	       (iter[1] >= 0x80 && iter[1] <= 0xbf) &&
-	       (iter[2] >= 0x80 && iter[2] <= 0xbf)) ||
-	      (iter[0] == 0xe2 &&
-	       iter[1] == 0x80 &&
-	       (iter[2] >= 0x8c && iter[2] <= 0x8d)) ||
-	      (iter[0] == 0xe2 &&
-	       iter[1] == 0x81 &&
-	       (iter[2] >= 0xb0 && iter[2] <= 0xbf)) ||
-	      (iter[0] == 0xe2 &&
-	       (iter[1] >= 0x81 && iter[1] <= 0x85) &&
-	       (iter[2] >= 0x80 && iter[2] <= 0xbf)) ||
-	      (iter[0] == 0xe2 &&
-	       iter[1] == 0x86 &&
-	       (iter[2] >= 0x80 && iter[2] <= 0x8f)) ||
-	      (iter[0] == 0xe2 &&
-	       (iter[1] >= 0xb0 && iter[1] <= 0xbe) &&
-	       (iter[2] >= 0x80 && iter[2] <= 0xbf)) ||
-	      (iter[0] == 0xe2 &&
-	       iter[1] == 0xbf &&
-	       (iter[2] >= 0x80 && iter[2] <= 0xaf)) ||
-	      (iter[0] == 0xe3 &&
-	       (iter[1] >= 0xb0 && iter[1] <= 0xbf) &&
-	       (iter[2] >= 0x81 && iter[2] <= 0xbf)) ||
-	      ((iter[0] >= 0xe4) && iter[0] <= 0xec) &&
-	      (iter[1] >= 0x80 && iter[1] <= 0x9f) &&
-	      (iter[2] >= 0x80 && iter[2] <= 0xbf)) ||
-	     (iter[0] == 0xef &&
-	      (iter[1] >= 0xa4 && iter[1] <= 0xb6) &&
-	      (iter[2] >= 0x80 && iter[2] <= 0xbf)) ||
-	     (iter[0] == 0xef &&
-	      iter[1] == 0xb7 &&
-	      (iter[2] >= 0x80 && iter[2] <= 0x8f)) ||
-	     (iter[0] == 0xef &&
-	      iter[1] == 0xb7 &&
-	      (iter[2] >= 0x80 && iter[2] <= 0xbf)) ||
-	     (iter[0] == 0xef &&
-	      (iter[1] >= 0xb8 && iter[1] <= 0xbe) &&
-	      (iter[2] >= 0x80 && iter[2] <= 0xbf)) ||
-	     (iter[0] == 0xef &&
-	      iter[1] == 0xbf &&
-	      (iter[2] >= 0x80 && iter[2] <= 0xBD))){
-      match[0] = offset;
-      match[1] = offset + 3;
-      
-      success = TRUE;
-    }else if(iter + 3 < end_ptr &&
-	     ((iter[0] >= 0xf0 && iter[0] <= 0xf3) &&
-	      (iter[1] >= 0x90 && iter[1] <= 0xaf) &&
-	      (iter[2] >= 0x80 && iter[2] <= 0xbf) &&
-	      (iter[3] >= 0x80 && iter[3] <= 0xbf))){
-      match[0] = offset;
-      match[1] = offset + 4;
-      
-      success = TRUE;
+    }else{
+      gunichar c;
+
+      c = g_utf8_get_char(iter);
+
+      if((c >= 0x00c0 && c <= 0x00d6) ||
+	 (c >= 0x00d8 && c <= 0x00f6) ||
+	 (c >= 0x00f8 && c <= 0x02ff) ||
+	 (c >= 0x0370 && c <= 0x037d) ||
+	 (c >= 0x037f && c <= 0x1fff) ||
+	 (c >= 0x200c && c <= 0x200d) ||
+	 (c >= 0x2070 && c <= 0x218f) ||
+	 (c >= 0x2c00 && c <= 0x2fef) ||
+	 (c >= 0x3001 && c <= 0xd7ff) ||
+	 (c >= 0xf900 && c <= 0xfdcf) ||
+	 (c >= 0xfdf0 && c <= 0xfffd) ||
+	 (c >= 0x10000 && c <= 0xeffff)){
+	match[0] = offset;
+	match[1] = offset + g_unichar_to_utf8(c,
+					      NULL);
+	
+	success = TRUE;
+      }
     }
   }
 
@@ -3086,45 +3036,20 @@ ags_turtle_match_pn_chars(gchar *offset,
       match[1] = offset + 1;
       
       success = TRUE;
-    }else if(offset + 1 < end_ptr &&
-	     offset[0] == 0xc2 &&
-	     offset[1] == 0xb7){
-      match[0] = offset;
-      match[1] = offset + 2;
-      
-      success = TRUE;
-    }else if(offset + 2 < end_ptr &&
-	     offset[0] == 0xcc &&
-	     offset[1] >= 0x80 &&
-	     offset[2] <= 0xbf){
-      match[0] = offset;
-      match[1] = offset + 3;
-      
-      success = TRUE;
-    }else if(offset + 2 < end_ptr &&
-	     offset[0] == 0xcd &&
-	     offset[1] >= 0x80 &&
-	     offset[2] <= 0xaf){
-      match[0] = offset;
-      match[1] = offset + 3;
-      
-      success = TRUE;
-    }else if(offset + 3 < end_ptr &&
-	     offset[0] == 0xe2 &&
-	     offset[1] == 0x80 &&
-	     offset[2] == 0xbf){
-      match[0] = offset;
-      match[1] = offset + 3;
-      
-      success = TRUE;
-    }else if(offset + 3 < end_ptr &&
-	     offset[0] == 0xe2 &&
-	     offset[1] == 0x81 &&
-	     offset[2] == 0x80){
-      match[0] = offset;
-      match[1] = offset + 3;
-      
-      success = TRUE;
+    }else{
+      gunichar c;
+
+      c = g_utf8_get_char(offset);
+
+      if((c == 0x00b7) ||
+	 (c >= 0x0300 && c <= 0x036f) ||
+	 (c >= 0x203f && c <= 0x2040)){
+	match[0] = offset;
+	match[1] = offset + g_unichar_to_utf8(c,
+					      NULL);
+	
+	success = TRUE;
+      }
     }
   }
 

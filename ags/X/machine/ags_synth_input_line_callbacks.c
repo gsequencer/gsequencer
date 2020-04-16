@@ -58,7 +58,7 @@ ags_synth_input_line_oscillator_control_changed_callback(AgsOscillator *oscillat
   synth = (AgsSynth *) gtk_widget_get_ancestor((GtkWidget *) synth_input_line,
 					       AGS_TYPE_SYNTH);
 
-  if((AGS_SYNTH_AUTO_UPDATE & (synth->flags)) != 0){
+  if(ags_synth_test_flags(synth, AGS_SYNTH_AUTO_UPDATE)){
     ags_synth_update(synth);
   }
 }

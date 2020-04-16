@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,9 +54,9 @@ void
 ags_synth_auto_update_callback(GtkToggleButton *toggle, AgsSynth *synth)
 {
   if(gtk_toggle_button_get_active(toggle)){
-    synth->flags |= AGS_SYNTH_AUTO_UPDATE;
+    ags_synth_set_flags(synth, AGS_SYNTH_AUTO_UPDATE);
   }else{
-    synth->flags &= (~AGS_SYNTH_AUTO_UPDATE);
+    ags_synth_unset_flags(synth, AGS_SYNTH_AUTO_UPDATE);
   }
 }
 
@@ -69,5 +69,7 @@ ags_synth_update_callback(GtkButton *button, AgsSynth *synth)
 void
 ags_synth_lower_callback(GtkSpinButton *spin_button, AgsSynth *synth)
 {
-  //TODO:JK: implement me
+  if(ags_synth_test_flags(synth, AGS_SYNTH_AUTO_UPDATE)){
+    ags_synth_update(synth);
+  }
 }

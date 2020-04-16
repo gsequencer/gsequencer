@@ -751,7 +751,7 @@ ags_accessible_dial_do_action(AtkAction *action,
   case AGS_DIAL_INCREMENT:
     {
       key_press->keyval =
-	key_release->keyval = GDK_KEY_Up;
+	key_release->keyval = GDK_KEY_Page_Up;
     
       /* send event */
       gtk_widget_event((GtkWidget *) dial,
@@ -763,7 +763,7 @@ ags_accessible_dial_do_action(AtkAction *action,
   case AGS_DIAL_DECREMENT:
     {
       key_press->keyval =
-	key_release->keyval = GDK_KEY_Down;
+	key_release->keyval = GDK_KEY_Page_Down;
       
       /* send event */
       gtk_widget_event((GtkWidget *) dial,
@@ -1214,7 +1214,7 @@ ags_dial_button_release(GtkWidget *widget,
 
     if(gtk_adjustment_get_value(adjustment) > gtk_adjustment_get_lower(adjustment)){
       gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) - gtk_adjustment_get_step_increment(adjustment));
+			       gtk_adjustment_get_value(adjustment) - gtk_adjustment_get_page_increment(adjustment));
 
       gtk_widget_queue_draw(dial);
     }
@@ -1227,7 +1227,7 @@ ags_dial_button_release(GtkWidget *widget,
 
     if(gtk_adjustment_get_value(adjustment) < gtk_adjustment_get_upper(adjustment)){
       gtk_adjustment_set_value(adjustment,
-			       gtk_adjustment_get_value(adjustment) + gtk_adjustment_get_step_increment(adjustment));
+			       gtk_adjustment_get_value(adjustment) + gtk_adjustment_get_page_increment(adjustment));
 
       gtk_widget_queue_draw(dial);
     }
@@ -1313,6 +1313,46 @@ ags_dial_key_release(GtkWidget *widget,
     }else{
       gtk_adjustment_set_value(dial->adjustment,
 			       value - step);
+    }
+
+    gtk_widget_queue_draw(widget);
+  }
+  break;
+  case GDK_KEY_Page_Up:
+  case GDK_KEY_KP_Page_Up:
+    {
+      gdouble value, page, upper;
+
+      value = gtk_adjustment_get_value(dial->adjustment);
+      page = gtk_adjustment_get_page_increment(dial->adjustment);
+      upper = gtk_adjustment_get_upper(dial->adjustment);
+      
+      if(value + page > upper){
+	gtk_adjustment_set_value(dial->adjustment,
+				 upper);
+      }else{
+	gtk_adjustment_set_value(dial->adjustment,
+				 value + page);
+      }
+
+      gtk_widget_queue_draw(widget);
+    }
+    break;
+  case GDK_KEY_Page_Down:
+  case GDK_KEY_KP_Page_Down:
+  {
+    gdouble value, page, lower;
+
+    value = gtk_adjustment_get_value(dial->adjustment);
+    page = gtk_adjustment_get_page_increment(dial->adjustment);
+    lower = gtk_adjustment_get_lower(dial->adjustment);
+      
+    if(value - page < lower){
+      gtk_adjustment_set_value(dial->adjustment,
+			       lower);
+    }else{
+      gtk_adjustment_set_value(dial->adjustment,
+			       value - page);
     }
 
     gtk_widget_queue_draw(widget);
@@ -1766,12 +1806,20 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
     cairo_stroke(cr);
 
     /* text */
+#if 0
     cairo_set_source_rgba(cr,
 			  font_color->red,
 			  font_color->green,
 			  font_color->blue,
 			  font_color->alpha);
-
+#else
+    cairo_set_source_rgba(cr,
+			  fg_color->red,
+			  fg_color->green,
+			  fg_color->blue,
+			  fg_color->alpha);
+#endif
+    
     layout = pango_cairo_create_layout(cr);
     pango_layout_set_text(layout,
 			  text,
@@ -1829,11 +1877,19 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
     cairo_stroke(cr);
 
     /* text */
+#if 0
     cairo_set_source_rgba(cr,
 			  font_color->red,
 			  font_color->green,
 			  font_color->blue,
 			  font_color->alpha);
+#else
+    cairo_set_source_rgba(cr,
+			  fg_color->red,
+			  fg_color->green,
+			  fg_color->blue,
+			  fg_color->alpha);
+#endif
 
     layout = pango_cairo_create_layout(cr);
     pango_layout_set_text(layout,

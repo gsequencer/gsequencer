@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -266,8 +266,6 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
   syncsynth->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_SYNCSYNTH_BASE_NOTE_MIN,
 								      AGS_SYNCSYNTH_BASE_NOTE_MAX,
 								      1.0);
-  gtk_spin_button_set_digits(syncsynth->lower,
-			     2);
   gtk_spin_button_set_value(syncsynth->lower, -48.0);
   gtk_spin_button_set_digits(syncsynth->lower,
 			     2);
@@ -1348,6 +1346,69 @@ ags_syncsynth_output_map_recall(AgsSyncsynth *syncsynth,
   }
   
   syncsynth->mapped_output_pad = audio->output_pads;
+}
+
+/**
+ * ags_syncsynth_test_flags:
+ * @syncsynth: the #AgsSyncsynth
+ * @flags: the flags
+ * 
+ * Test @flags of @syncsynth.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.15
+ */
+gboolean
+ags_syncsynth_test_flags(AgsSyncsynth *syncsynth, guint flags)
+{
+  gboolean success;
+  
+  if(!AGS_IS_SYNCSYNTH(syncsynth)){
+    return(FALSE);
+  }
+
+  success = ((flags & (syncsynth->flags))) ? TRUE: FALSE;
+
+  return(success);
+}
+
+/**
+ * ags_syncsynth_set_flags:
+ * @syncsynth: the #AgsSyncsynth
+ * @flags: the flags
+ * 
+ * Set @flags of @syncsynth.
+ * 
+ * Since: 3.2.15
+ */
+void
+ags_syncsynth_set_flags(AgsSyncsynth *syncsynth, guint flags)
+{
+  if(!AGS_IS_SYNCSYNTH(syncsynth)){
+    return;
+  }
+
+  syncsynth->flags |= flags;
+}
+
+/**
+ * ags_syncsynth_unset_flags:
+ * @syncsynth: the #AgsSyncsynth
+ * @flags: the flags
+ * 
+ * Unset @flags of @syncsynth.
+ * 
+ * Since: 3.2.15
+ */
+void
+ags_syncsynth_unset_flags(AgsSyncsynth *syncsynth, guint flags)
+{
+  if(!AGS_IS_SYNCSYNTH(syncsynth)){
+    return;
+  }
+
+  syncsynth->flags &= (~flags);
 }
 
 /**

@@ -830,7 +830,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 
   guint effect_index;
   guint pads, audio_channels;
-  gdouble step;
+  gdouble page, step;
   guint port_count;
   guint control_count;
   
@@ -1284,8 +1284,22 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	  step = (upper - lower) / step_count;
 	}
 
+	if(step_count > 8){
+	  if(upper >= 0.0 && lower >= 0.0){
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else if(upper < 0.0 && lower < 0.0){
+	    page = -1.0 * (lower - upper) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else{
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }
+	}else{
+	  page = step;
+	}
+	
 	gtk_adjustment_set_step_increment(adjustment,
 					  step);
+	gtk_adjustment_set_page_increment(adjustment,
+					  page);
 	gtk_adjustment_set_lower(adjustment,
 				 lower);
 	gtk_adjustment_set_upper(adjustment,
@@ -1393,7 +1407,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   guint unique_id;
   guint effect_index;
   guint pads, audio_channels;
-  gdouble step;
+  gdouble page, step;
   guint port_count;
   guint control_count;
   
@@ -1848,8 +1862,22 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 	  step = (upper - lower) / step_count;
 	}
 
+	if(step_count > 8){
+	  if(upper >= 0.0 && lower >= 0.0){
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else if(upper < 0.0 && lower < 0.0){
+	    page = -1.0 * (lower - upper) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else{
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }
+	}else{
+	  page = step;
+	}
+
 	gtk_adjustment_set_step_increment(adjustment,
 					  step);
+	gtk_adjustment_set_page_increment(adjustment,
+					  page);
 	gtk_adjustment_set_lower(adjustment,
 				 lower);
 	gtk_adjustment_set_upper(adjustment,
@@ -1949,7 +1977,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   gchar *str;
 
   guint effect_index;
-  gdouble step;
+  gdouble page, step;
   guint pads, audio_channels;
   guint port_count;
   guint control_count;
@@ -2382,10 +2410,24 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	  step = -1.0 * (lower - upper) / step_count;
 	}else{
 	  step = (upper - lower) / step_count;
+	}	
+
+	if(step_count > 8){
+	  if(upper >= 0.0 && lower >= 0.0){
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else if(upper < 0.0 && lower < 0.0){
+	    page = -1.0 * (lower - upper) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else{
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }
+	}else{
+	  page = step;
 	}
 	
 	gtk_adjustment_set_step_increment(adjustment,
 					  step);
+	gtk_adjustment_set_page_increment(adjustment,
+					  page);
 	gtk_adjustment_set_lower(adjustment,
 				 lower);
 	gtk_adjustment_set_upper(adjustment,
