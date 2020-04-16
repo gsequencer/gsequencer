@@ -2,6 +2,7 @@ ags (3.2.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved AgsTurtle to check unichar range instead of UTF-8 sequences
+	* improved AgsNotationEditor to queue resize piano
 
 ags (3.2.14)
 
