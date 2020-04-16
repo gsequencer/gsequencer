@@ -1346,6 +1346,69 @@ ags_fm_syncsynth_output_map_recall(AgsFMSyncsynth *fm_syncsynth,
 }
 
 /**
+ * ags_fm_syncsynth_test_flags:
+ * @fm_syncsynth: the #AgsFMSyncsynth
+ * @flags: the flags
+ * 
+ * Test @flags of @fm_syncsynth.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.2.15
+ */
+gboolean
+ags_fm_syncsynth_test_flags(AgsFMSyncsynth *fm_syncsynth, guint flags)
+{
+  gboolean success;
+  
+  if(!AGS_IS_FM_SYNCSYNTH(fm_syncsynth)){
+    return(FALSE);
+  }
+
+  success = ((flags & (fm_syncsynth->flags))) ? TRUE: FALSE;
+
+  return(success);
+}
+
+/**
+ * ags_fm_syncsynth_set_flags:
+ * @fm_syncsynth: the #AgsFMSyncsynth
+ * @flags: the flags
+ * 
+ * Set @flags of @fm_syncsynth.
+ * 
+ * Since: 3.2.15
+ */
+void
+ags_fm_syncsynth_set_flags(AgsFMSyncsynth *fm_syncsynth, guint flags)
+{
+  if(!AGS_IS_FM_SYNCSYNTH(fm_syncsynth)){
+    return;
+  }
+
+  fm_syncsynth->flags |= flags;
+}
+
+/**
+ * ags_fm_syncsynth_unset_flags:
+ * @fm_syncsynth: the #AgsFMSyncsynth
+ * @flags: the flags
+ * 
+ * Unset @flags of @fm_syncsynth.
+ * 
+ * Since: 3.2.15
+ */
+void
+ags_fm_syncsynth_unset_flags(AgsFMSyncsynth *fm_syncsynth, guint flags)
+{
+  if(!AGS_IS_FM_SYNCSYNTH(fm_syncsynth)){
+    return;
+  }
+
+  fm_syncsynth->flags &= (~flags);
+}
+
+/**
  * ags_fm_syncsynth_add_fm_oscillator:
  * @fm_syncsynth: the #AgsFMSyncsynth
  * @fm_oscillator: the #AgsFMOscillator

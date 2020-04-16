@@ -1,8 +1,11 @@
 ags (3.2.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented test, set and unset flags of AgsSynth, AgsFMSynth, AgsSyncsynth and AgsFMSyncsynth
 	* improved AgsTurtle to check unichar range instead of UTF-8 sequences
 	* improved AgsNotationEditor to queue resize piano
+	* improved AgsFMSynth to have 2 digits of lower
+	* improved AgsOscillator and AgsFMOscillator do sync to emit oscillator changed
 
 ags (3.2.14)
 
