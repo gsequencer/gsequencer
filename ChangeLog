@@ -2,6 +2,9 @@ ags (3.2.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented test, set and unset flags of AgsSynth, AgsFMSynth, AgsSyncsynth and AgsFMSyncsynth
+	* improved AgsDial to use page-up and page-down keys
+	* improved AgsDial to increment page as clicking buttons
+	* improved AgsEffectBulk, AgsEffecLine and AgsLine to apply page-size of adjustments
 	* improved AgsTurtle to check unichar range instead of UTF-8 sequences
 	* improved AgsNotationEditor to queue resize piano
 	* improved AgsFMSynth to have 2 digits of lower
