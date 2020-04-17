@@ -54,6 +54,7 @@ static const gchar *ags_fx_notation_audio_specifier[] = {
   "./loop[0]",
   "./loop-end[0]"
   "./loop-start[0]",
+  "./loop-start[0]",
 };
 
 static const gchar *ags_fx_notation_audio_control_port[] = {
@@ -252,6 +253,13 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
   AGS_RECALL(fx_notation_audio)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_notation_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_notation_audio)->xml_type = "ags-fx-notation-audio";
+
+  fx_notation_audio->flags = 0;
+  
+  fx_notation_audio->delay_counter = 0.0;
+  fx_notation_audio->offset_counter = 0;
+
+  fx_notation_audio->feed_note = NULL;
 
   bpm = AGS_SOUNDCARD_DEFAULT_BPM;
   delay = AGS_SOUNDCARD_DEFAULT_DELAY;
@@ -762,6 +770,99 @@ ags_fx_notation_audio_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_notation_audio_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_fx_notation_audio_test_flags:
+ * @fx_notation_audio: the #AgsFxNotationAudio
+ * @flags: the flags
+ * 
+ * Test @flags of @fx_notation_audio.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.3.0
+ */
+gboolean
+ags_fx_notation_audio_test_flags(AgsFxNotationAudio *fx_notation_audio, guint flags)
+{
+  gboolean success;
+  
+  GRecMutex *recall_mutex;
+  
+  if(!AGS_IS_FX_NOTATION_AUDIO(fx_notation_audio)){
+    return(FALSE);
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio);
+
+  /* test flags */
+  g_rec_mutex_lock(recall_mutex);
+
+  success = ((flags & (fx_notation_audio->flags)) != 0) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(recall_mutex);
+
+  return(success);
+}
+
+/**
+ * ags_fx_notation_audio_set_flags:
+ * @fx_notation_audio: the #AgsFxNotationAudio
+ * @flags: the flags
+ * 
+ * Set @flags of @fx_notation_audio.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_fx_notation_audio_set_flags(AgsFxNotationAudio *fx_notation_audio, guint flags)
+{  
+  GRecMutex *recall_mutex;
+
+  if(!AGS_IS_FX_NOTATION_AUDIO(fx_notation_audio)){
+    return;
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio);
+
+  /* set flags */
+  g_rec_mutex_lock(recall_mutex);
+
+  fx_notation_audio->flags |= flags;
+
+  g_rec_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_fx_notation_audio_unset_flags:
+ * @fx_notation_audio: the #AgsFxNotationAudio
+ * @flags: the flags
+ * 
+ * Unset @flags of @fx_notation_audio.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_fx_notation_audio_unset_flags(AgsFxNotationAudio *fx_notation_audio, guint flags)
+{  
+  GRecMutex *recall_mutex;
+
+  if(!AGS_IS_FX_NOTATION_AUDIO(fx_notation_audio)){
+    return;
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio);
+
+  /* set flags */
+  g_rec_mutex_lock(recall_mutex);
+
+  fx_notation_audio->flags &= (~flags);
+
+  g_rec_mutex_unlock(recall_mutex);
 }
 
 /**

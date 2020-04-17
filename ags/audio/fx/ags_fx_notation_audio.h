@@ -41,13 +41,23 @@ G_BEGIN_DECLS
 typedef struct _AgsFxNotationAudio AgsFxNotationAudio;
 typedef struct _AgsFxNotationAudioClass AgsFxNotationAudioClass;
 
+typedef enum{
+  AGS_FX_NOTATION_AUDIO_PLAY     = 1,
+  AGS_FX_NOTATION_AUDIO_RECORD   = 1 <<  1,
+  AGS_FX_NOTATION_AUDIO_FEED     = 1 <<  2,
+}AgsFxNotationAudioFlags;
+
 struct _AgsFxNotationAudio
 {
   AgsRecallAudio recall_audio;
 
+  guint flags;
+  
   gdouble delay_counter;  
   guint64 offset_counter;
 
+  GList *feed_note;
+  
   AgsPort *bpm;
   AgsPort *tact;
 
@@ -57,7 +67,6 @@ struct _AgsFxNotationAudio
   AgsPort *loop;
   AgsPort *loop_start;
   AgsPort *loop_end;
-
 };
 
 struct _AgsFxNotationAudioClass
@@ -66,6 +75,10 @@ struct _AgsFxNotationAudioClass
 };
 
 GType ags_fx_notation_audio_get_type();
+
+gboolean ags_fx_notation_audio_test_flags(AgsFxNotationAudio *fx_notation_audio, guint flags);
+void ags_fx_notation_audio_set_flags(AgsFxNotationAudio *fx_notation_audio, guint flags);
+void ags_fx_notation_audio_unset_flags(AgsFxNotationAudio *fx_notation_audio, guint flags);
 
 AgsFxNotationAudio* ags_fx_notation_audio_new(AgsAudio *audio);
 
