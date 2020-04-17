@@ -53,13 +53,15 @@ struct _AgsFxDssiAudio
   guint bank;
   guint program;
 
-  LADSPA_Data* input[128];
-  LADSPA_Data* output[128];
+  LADSPA_Data **input;
+  LADSPA_Data **output;
   
   guint event_count;
-  snd_seq_event_t event_buffer[128];
+  snd_seq_event_t *event_buffer;
 
-  LADSPA_Handle* ladspa_handle[128];
+  guint key_on[128];
+  
+  LADSPA_Handle **ladspa_handle;
 
   AgsDssiPlugin *dssi_plugin;
 };
@@ -76,6 +78,7 @@ void ags_fx_dssi_audio_set_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags);
 void ags_fx_dssi_audio_unset_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags);
 
 void ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio);
+void ags_fx_dssi_audio_unload_plugin(AgsFxDssiAudio *fx_dssi_audio);
 
 AgsFxDssiAudio* ags_fx_dssi_audio_new(AgsAudio *audio);
 

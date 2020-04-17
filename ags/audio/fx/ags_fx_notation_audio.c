@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/recall/ags_fx_notation_audio.h>
+#include <ags/audio/fx/ags_fx_notation_audio.h>
 
 void ags_fx_notation_audio_class_init(AgsFxNotationAudioClass *fx_notation_audio);
 void ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio);
@@ -37,7 +37,7 @@ void ags_fx_notation_audio_finalize(GObject *gobject);
  * @short_description: fx notation audio
  * @title: AgsFxNotationAudio
  * @section_id:
- * @include: ags/audio/recall/ags_fx_notation_audio.h
+ * @include: ags/audio/fx/ags_fx_notation_audio.h
  *
  * The #AgsFxNotationAudio class provides ports to the effect processor.
  */
@@ -687,6 +687,13 @@ ags_fx_notation_audio_dispose(GObject *gobject)
   
   fx_notation_audio = AGS_FX_NOTATION_AUDIO(gobject);
 
+  if(fx_notation->feed_note != NULL){
+    g_list_free_full(fx_notation->feed_note,
+		     (GDestroyNotify) g_object_unref);
+
+    fx_notation->feed_note = NULL;
+  }
+
   if(fx_notation->bpm != NULL){
     g_object_unref(fx_notation->bpm);
 
@@ -740,6 +747,11 @@ ags_fx_notation_audio_finalize(GObject *gobject)
   
   fx_notation_audio = AGS_FX_NOTATION_AUDIO(gobject);
 
+  if(fx_notation->feed_note != NULL){
+    g_list_free_full(fx_notation->feed_note,
+		     (GDestroyNotify) g_object_unref);
+  }
+  
   if(fx_notation->bpm != NULL){
     g_object_unref(fx_notation->bpm);
   }

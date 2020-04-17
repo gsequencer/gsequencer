@@ -1,7 +1,9 @@
 ags (3.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented ags/audio/fx
+	* TODO:JK: implemented AgsFxNotationAudio and AgsFxNotationAudioProcessor
+	* TODO:JK: implemented AgsFxDssiAudio and AgsFxDssiAudioProcessor
+	* TODO:JK: implemented ags/audio/fx
 	* TODO:JK: extended user's handbook to cover OSC server preferences
 
 ags (3.2.15)

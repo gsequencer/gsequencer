@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/recall/ags_fx_dssi_audio.h>
+#include <ags/audio/fx/ags_fx_dssi_audio.h>
 
 void ags_fx_dssi_audio_class_init(AgsFxDssiAudioClass *fx_dssi_audio);
 void ags_fx_dssi_audio_init(AgsFxDssiAudio *fx_dssi_audio);
@@ -33,7 +33,7 @@ void ags_fx_dssi_audio_notify_buffer_size_callback(GObject *gobject,
  * @short_description: fx dssi audio
  * @title: AgsFxDssiAudio
  * @section_id:
- * @include: ags/audio/recall/ags_fx_dssi_audio.h
+ * @include: ags/audio/fx/ags_fx_dssi_audio.h
  *
  * The #AgsFxDssiAudio class provides ports to the effect processor.
  */
@@ -102,19 +102,39 @@ ags_fx_dssi_audio_init(AgsFxDssiAudio *fx_dssi_audio)
   AGS_RECALL(fx_dssi_audio)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_dssi_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_dssi_audio)->xml_type = "ags-fx-dssi-audio";
+
+  fx_dssi_audio->flags = AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT;
   
   /* get buffer size */
   g_object_get(fx_dssi_audio,
 	       "buffer-size", &buffer_size,
 	       NULL);
 
-  /* allocate buffer */
-  for(i = 0; i < 128; i++){
-    fx_dssi_audio->input[i] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
-    fx_dssi_audio->output[i] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
+  fx_dssi_audio->input_lines = 0;
+  fx_dssi_audio->output_lines = 0;
+  
+  fx_dssi_audio->input_port = NULL;
+  fx_dssi_audio->output_port = NULL;
 
-    fx_dssi_audio->ladspa_handle[i] = NULL;
+  fx_dssi_audio->bank = 0;
+  fx_dssi_audio->program = 0;
+  
+  fx_dssi_audio->event_count = 0;
+
+  fx_dssi_audio->input = (LADSPA_Data **) g_malloc(sizeof(LADSPA_Data *));
+  fx_dssi_audio->input[0] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
+
+  fx_dssi_audio->output = (LADSPA_Data **) g_malloc(sizeof(LADSPA_Data *));
+  fx_dssi_audio->output[0] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
+
+  fx_dssi_audio->event_buffer = (snd_seq_event_t *) g_malloc(sizeof(snd_seq_event_t));
+
+  for(i = 0; i < 128; i++){
+    fx_dssi_audio->key_one = 0;
   }
+  
+  fx_dssi_audio->ladspa_handle = (LADSPA_Handle **) g_malloc(sizeof(LADSPA_Handle *));
+  fx_dssi_audio->ladspa_handle[0] = NULL;
 
   fx_dssi_audio->dssi_plugin = NULL;
 }
@@ -134,17 +154,79 @@ void
 ags_fx_dssi_audio_finalize(GObject *gobject)
 {
   AgsFxDssiAudio *fx_dssi_audio;
+  AgsDssiPlugin *dssi_plugin;
   
+  gpointer plugin_descriptor;
+    
   guint i;
 
+  GRecMutex *base_plugin_mutex;
+  
   fx_dssi_audio = AGS_FX_DSSI_AUDIO(gobject);
 
-  /* free buffer */
-  for(i = 0; i < 128; i++){
-    g_free(fx_dssi_audio->input[i]);
-    g_free(fx_dssi_audio->output[i]);
-  }
+  dssi_plugin = fx_dssi_audio->dssi_plugin;
 
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
+
+  /* get plugin descriptor */
+  plugin_descriptor = NULL;
+
+  if(dssi_plugin != NULL){
+    g_rec_mutex_lock(base_plugin_mutex);
+  
+    plugin_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->plugin_descriptor;
+    
+    g_rec_mutex_unlock(base_plugin_mutex);
+  }
+  
+  /* finalize */
+  g_free(fx_dssi_audio->input_port);
+  g_free(fx_dssi_audio->output_port);
+
+  /* free buffer */
+  if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
+    g_free(fx_dssi_audio->input[0]);
+    g_free(fx_dssi_audio->output[0]);
+
+    if(plugin_descriptor != NULL){
+      g_rec_mutex_lock(base_plugin_mutex);
+    
+      if(AGS_DSSI_PLUGIN_DESCRIPTOR(plugin_descriptor)->LADSPA_Plugin->deactivate != NULL){
+	AGS_DSSI_PLUGIN_DESCRIPTOR(plugin_descriptor)->LADSPA_Plugin->deactivate(fx_dssi_audio->ladspa_handle[0]);
+      }
+
+      if(AGS_DSSI_PLUGIN_DESCRIPTOR(plugin_descriptor)->LADSPA_Plugin->cleanup != NULL){
+	AGS_DSSI_PLUGIN_DESCRIPTOR(plugin_descriptor)->LADSPA_Plugin->cleanup(fx_dssi_audio->ladspa_handle[0]);
+      }
+    
+      g_rec_mutex_unlock(base_plugin_mutex);
+    }
+  }else{
+    for(i = 0; i < 128; i++){
+      g_free(fx_dssi_audio->input[i]);
+      g_free(fx_dssi_audio->output[i]);
+
+      if(plugin_descriptor != NULL){
+	g_rec_mutex_lock(base_plugin_mutex);
+    
+	if(AGS_DSSI_PLUGIN_DESCRIPTOR(plugin_descriptor)->LADSPA_Plugin->deactivate != NULL){
+	  AGS_DSSI_PLUGIN_DESCRIPTOR(plugin_descriptor)->LADSPA_Plugin->deactivate(fx_dssi_audio->ladspa_handle[i]); 
+	}
+	
+	if(AGS_DSSI_PLUGIN_DESCRIPTOR(plugin_descriptor)->LADSPA_Plugin->cleanup != NULL){
+	  AGS_DSSI_PLUGIN_DESCRIPTOR(plugin_descriptor)->LADSPA_Plugin->cleanup(fx_dssi_audio->ladspa_handle[i]);
+	}
+    
+	g_rec_mutex_unlock(base_plugin_mutex);
+      }
+    }
+  }
+  
+  g_free(fx_dssi_audio->input);
+  g_free(fx_dssi_audio->output);
+    
+  g_free(fx_dssi_audio->ladspa_handle);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_fx_dssi_audio_parent_class)->finalize(gobject);
 }
@@ -174,14 +256,22 @@ ags_fx_dssi_audio_notify_buffer_size_callback(GObject *gobject,
   /* reallocate buffer - apply buffer size */
   g_rec_mutex_lock(recall_mutex);
   
-  for(i = 0; i < 128; i++){
-    g_free(fx_dssi_audio->input[i]);
-    g_free(fx_dssi_audio->output[i]);
+  if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
+    g_free(fx_dssi_audio->input[0]);
+    g_free(fx_dssi_audio->output[0]);
   
-    fx_dssi_audio->input[i] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
-    fx_dssi_audio->output[i] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
+    fx_dssi_audio->input[0] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
+    fx_dssi_audio->output[0] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
+  }else{
+    for(i = 0; i < 128; i++){
+      g_free(fx_dssi_audio->input[i]);
+      g_free(fx_dssi_audio->output[i]);
+  
+      fx_dssi_audio->input[i] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
+      fx_dssi_audio->output[i] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
+    }
   }
-
+  
   g_rec_mutex_unlock(recall_mutex);
 }
 
@@ -241,6 +331,52 @@ ags_fx_dssi_audio_set_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags)
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_audio);
 
+  if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
+    if((AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT & (flags)) == 0){
+      g_rec_mutex_lock(recall_mutex);
+      
+      fx_dssi_audio->input = (LADSPA_Data **) g_realloc(fx_dssi_audio->input,
+							sizeof(LADSPA_Data *));
+      fx_dssi_audio->output = (LADSPA_Data **) g_realloc(fx_dssi_audio->ouput,
+							 sizeof(LADSPA_Data *));
+
+      fx_dssi_audio->event_buffer = (snd_seq_event_t *) g_realloc(fx_dssi_audio->event_buffer,
+								  sizeof(snd_seq_event_t));
+      
+      fx_dssi_audio->ladspa_handle = (LADSPA_Handle **) g_realloc(fx_dssi_audio->ladspa_handle,
+								  sizeof(LADSPA_Handle *));
+
+      g_rec_mutex_unlock(recall_mutex);
+    }
+  }else{
+    if((AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT & (flags)) != 0){
+      guint i;
+
+      g_rec_mutex_lock(recall_mutex);
+
+      fx_dssi_audio->input = (LADSPA_Data **) g_realloc(fx_dssi_audio->input,
+							128 * sizeof(LADSPA_Data *));
+      fx_dssi_audio->output = (LADSPA_Data **) g_realloc(fx_dssi_audio->ouput,
+							 128 * sizeof(LADSPA_Data *));
+
+      fx_dssi_audio->event_buffer = (snd_seq_event_t *) g_realloc(fx_dssi_audio->event_buffer,
+								  128 * sizeof(snd_seq_event_t));
+      
+      fx_dssi_audio->ladspa_handle = (LADSPA_Handle **) g_realloc(fx_dssi_audio->ladspa_handle,
+								  128 * sizeof(LADSPA_Handle *));
+      
+      for(i = 1; i < 128; i++){
+	fx_dssi_audio->input[i] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
+	
+	fx_dssi_audio->output[i] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
+
+	fx_dssi_audio->ladspa_handle[i] = NULL;
+      }
+    }
+
+    g_rec_mutex_unlock(recall_mutex);
+  }
+  
   /* set flags */
   g_rec_mutex_lock(recall_mutex);
 
@@ -357,6 +493,12 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
   
   g_free(filename);
   g_free(effect);
+}
+
+void
+ags_fx_dssi_audio_unload_plugin(AgsFxDssiAudio *fx_dssi_audio)
+{
+  //TODO:JK: implement me
 }
 
 /**
