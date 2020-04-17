@@ -3816,6 +3816,76 @@ ags_recall_remove_recall_dependency(AgsRecall *recall, AgsRecallDependency *reca
 }
 
 /**
+ * ags_recall_add_port:
+ * @recall: the #AgsRecall
+ * @port: the #AgsPort
+ * 
+ * Add @port to @recall.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_recall_add_port(AgsRecall *recall,
+		    AgsPort *port)
+{
+  GRecMutex *recall_mutex;
+  
+  if(!AGS_IS_RECALL(recall) ||
+     !AGS_IS_PORT(port)){
+    return;
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+
+  /* add port */
+  g_rec_mutex_lock(recall_mutex);
+
+  if(g_list_find(recall->port, port) == NULL){
+    g_object_ref(port);
+    recall->port = g_list_prepend(recall->port,
+				  port);
+  }
+  
+  g_rec_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_recall_remove_port:
+ * @recall: the #AgsRecall
+ * @port: the #AgsPort
+ * 
+ * Remove @port from @recall.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_recall_remove_port(AgsRecall *recall,
+		       AgsPort *port)
+{
+  GRecMutex *recall_mutex;
+  
+  if(!AGS_IS_RECALL(recall) ||
+     !AGS_IS_PORT(port)){
+    return;
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+
+  /* remove port */
+  g_rec_mutex_lock(recall_mutex);
+
+  if(g_list_find(recall->port, port) != NULL){
+    g_object_unref(port);
+    recall->port = g_list_remove(recall->port,
+				 port);
+  }
+  
+  g_rec_mutex_unlock(recall_mutex);
+}
+
+/**
  * ags_recall_get_children:
  * @recall: the #AgsRecall
  * 

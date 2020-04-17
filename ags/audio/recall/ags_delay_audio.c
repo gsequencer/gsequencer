@@ -265,6 +265,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
   g_object_class_install_property(gobject,
 				  PROP_NOTATION_DELAY,
 				  param_spec);
+
   /**
    * AgsDelayAudio:wave-delay:
    *
