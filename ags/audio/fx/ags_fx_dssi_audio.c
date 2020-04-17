@@ -130,12 +130,11 @@ ags_fx_dssi_audio_init(AgsFxDssiAudio *fx_dssi_audio)
   fx_dssi_audio->event_buffer = (snd_seq_event_t *) g_malloc(sizeof(snd_seq_event_t));
 
   for(i = 0; i < 128; i++){
-    fx_dssi_audio->key_one = 0;
+    fx_dssi_audio->key_on = 0;
   }
   
-  fx_dssi_audio->ladspa_handle = (LADSPA_Handle **) g_malloc(sizeof(LADSPA_Handle *));
-  fx_dssi_audio->ladspa_handle[0] = NULL;
-
+  fx_dssi_audio->ladspa_handle = NULL;
+  
   fx_dssi_audio->dssi_plugin = NULL;
 }
 
@@ -428,6 +427,8 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
   AgsDssiManager *dssi_manager;
   AgsDssiPlugin *dssi_plugin;
 
+  LADSPA_Handle **ladspa_handle;
+
   gchar *filename, *effect;
 
   guint buffer_size;
@@ -449,11 +450,13 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
   /* check if already loaded */
   g_rec_mutex_lock(recall_mutex);
 
-  dssi_plugin = fx_dssi_audio->dssi_plugin;
+  dssi_plugin = fx_dssi_audio->dssi_plugin;  
+  ladspa_handle = fx_dssi_audio->ladspa_handle;
   
   g_rec_mutex_unlock(recall_mutex);
 
-  if(dssi_plugin != NULL){
+  if(dssi_plugin != NULL ||
+     ladspa_handle != NULL){
     return;
   }    
   
@@ -481,24 +484,136 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
 
     /* instantiate */
     if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
-      fx_dssi_audio->ladspa_handle[0] = ags_base_plugin_instantiate(dssi_plugin,
-								    samplerate, buffer_size);
+      ladspa_handle = (LADSPA_Handle **) g_malloc(sizeof(LADSPA_Handle *));
+    
+      ladspa_handle[0] = ags_base_plugin_instantiate(dssi_plugin,
+						     samplerate, buffer_size);
     }else{
+      ladspa_handle = (LADSPA_Handle **) g_malloc(128 * sizeof(LADSPA_Handle *));
+      
       for(i = 0; i < 128; i++){
-	fx_dssi_audio->ladspa_handle[i] = ags_base_plugin_instantiate(dssi_plugin,
-								      samplerate, buffer_size);
+	ladspa_handle[i] = ags_base_plugin_instantiate(dssi_plugin,
+						       samplerate, buffer_size);
       }
     }
+
+    g_rec_mutex_lock(recall_mutex);
+
+    fx_dssi_audio->ladspa_handle = ladspa_handle;
+    
+    g_rec_mutex_unlock(recall_mutex);
   }
   
   g_free(filename);
   g_free(effect);
 }
 
+/**
+ * ags_fx_dssi_audio_unload_plugin:
+ * @fx_dssi_audio: the #AgsFxDssiAudio
+ * 
+ * Unload plugin of @fx_dssi_audio.
+ * 
+ * Since: 3.3.0
+ */
 void
 ags_fx_dssi_audio_unload_plugin(AgsFxDssiAudio *fx_dssi_audio)
-{
-  //TODO:JK: implement me
+{  
+  LADSPA_Handle **ladspa_handle;
+
+  gpointer plugin_descriptor;
+
+  GRecMutex *recall_mutex;
+  GRecMutex *base_plugin_mutex;
+
+  if(!AGS_IS_FX_DSSI_AUDIO(fx_dssi_audio)){
+    return;
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_audio);
+
+  /* check if not loaded */
+  g_rec_mutex_lock(recall_mutex);
+
+  dssi_plugin = fx_dssi_audio->dssi_plugin;
+  ladspa_handle = fx_dssi_audio->ladspa_handle;
+  
+  g_rec_mutex_unlock(recall_mutex);
+
+  if(dssi_plugin == NULL ||
+     ladspa_handle == NULL){
+    return;
+  }
+
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
+
+  /* get plugin descriptor */
+  plugin_descriptor = NULL;
+
+  if(dssi_plugin != NULL){
+    g_rec_mutex_lock(base_plugin_mutex);
+  
+    plugin_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->plugin_descriptor;
+    
+    g_rec_mutex_unlock(base_plugin_mutex);
+  }
+  
+  if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
+    /* alloc empty */
+    g_rec_mutex_lock(recall_mutex);
+
+    fx_dssi_audio->ladspa_handle = NULL;
+    
+    g_rec_mutex_unlock(recall_mutex);
+
+    /* destroy old */
+    if(plugin_descriptor != NULL){
+      g_rec_mutex_lock(base_plugin_mutex);
+    
+      if(AGS_DSSI_PLUGIN_DESCRIPTOR(plugin_descriptor)->LADSPA_Plugin->deactivate != NULL){
+	AGS_DSSI_PLUGIN_DESCRIPTOR(plugin_descriptor)->LADSPA_Plugin->deactivate(ladspa_handle[0]);
+      }
+
+      if(AGS_DSSI_PLUGIN_DESCRIPTOR(plugin_descriptor)->LADSPA_Plugin->cleanup != NULL){
+	AGS_DSSI_PLUGIN_DESCRIPTOR(plugin_descriptor)->LADSPA_Plugin->cleanup(ladspa_handle[0]);
+      }
+    
+      g_rec_mutex_unlock(base_plugin_mutex);
+    }
+  }else{
+    /* alloc empty */
+    g_rec_mutex_lock(recall_mutex);
+
+    fx_dssi_audio->ladspa_handle = NULL;
+    
+    g_rec_mutex_unlock(recall_mutex);
+    
+    /* destroy old */
+    if(plugin_descriptor != NULL){    
+      g_rec_mutex_lock(base_plugin_mutex);
+    
+      for(i = 0; i < 128; i++){
+	if(AGS_DSSI_PLUGIN_DESCRIPTOR(plugin_descriptor)->LADSPA_Plugin->deactivate != NULL){
+	  AGS_DSSI_PLUGIN_DESCRIPTOR(plugin_descriptor)->LADSPA_Plugin->deactivate(ladspa_handle[i]);
+	}
+
+	if(AGS_DSSI_PLUGIN_DESCRIPTOR(plugin_descriptor)->LADSPA_Plugin->cleanup != NULL){
+	  AGS_DSSI_PLUGIN_DESCRIPTOR(plugin_descriptor)->LADSPA_Plugin->cleanup(ladspa_handle[i]);
+	}
+      }
+    
+      g_rec_mutex_unlock(base_plugin_mutex);
+    }
+  }
+  
+  g_rec_mutex_lock(recall_mutex);
+  
+  g_object_unref(fx_dssi_audio->dssi_plugin);
+  
+  fx_dssi_audio->dssi_plugin = NULL;
+    
+  g_rec_mutex_unlock(recall_mutex);
 }
 
 /**
