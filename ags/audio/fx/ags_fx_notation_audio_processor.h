@@ -41,6 +41,12 @@ G_BEGIN_DECLS
 typedef struct _AgsFxNotationAudioProcessor AgsFxNotationAudioProcessor;
 typedef struct _AgsFxNotationAudioProcessorClass AgsFxNotationAudioProcessorClass;
 
+typedef enum{
+  AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_PLAY,
+  AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_RECORD,
+  AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_FEED,
+}AgsFxNotationAudioProcessorKeyMode;
+
 struct _AgsFxNotationAudioProcessor
 {
   AgsRecallAudioRun recall_audio_run;
@@ -51,7 +57,10 @@ struct _AgsFxNotationAudioProcessor
   AgsTimestamp *timestamp;
 
   GList *recording_note;
+  GList *recording_audio_signal;
+
   GList *feeding_note;
+  GList *feeding_audio_signal;
 };
 
 struct _AgsFxNotationAudioProcessorClass
@@ -60,13 +69,16 @@ struct _AgsFxNotationAudioProcessorClass
 
   void (*key_on)(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
 		 AgsNote *note,
-		 guint velocity);
+		 guint velocity,
+		 guint key_mode);
   void (*key_off)(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
 		  AgsNote *note,
-		  guint velocity);
+		  guint velocity,
+		  guint key_mode);
   void (*key_pressure)(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
 		       AgsNote *note,
-		       guint velocity);
+		       guint velocity,
+		       guint key_mode);
   
   void (*play)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
   void (*record)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
@@ -79,13 +91,16 @@ GType ags_fx_notation_audio_processor_get_type();
 
 void ags_fx_notation_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
 					    AgsNote *note,
-					    guint velocity);
+					    guint velocity,
+					    guint key_mode);
 void ags_fx_notation_audio_processor_key_off(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
 					     AgsNote *note,
-					     guint velocity);
+					     guint velocity,
+					     guint key_mode);
 void ags_fx_notation_audio_processor_key_pressure(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
 						  AgsNote *note,
-						  guint velocity);
+						  guint velocity,
+						  guint key_mode);
 
 void ags_fx_notation_audio_processor_play(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 void ags_fx_notation_audio_processor_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor);

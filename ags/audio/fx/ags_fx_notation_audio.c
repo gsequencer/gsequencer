@@ -256,6 +256,8 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
 
   fx_notation_audio->flags = 0;
   
+  fx_notation_audio->feed_note = NULL;
+
   bpm = AGS_SOUNDCARD_DEFAULT_BPM;
   delay = AGS_SOUNDCARD_DEFAULT_DELAY;
 
@@ -682,6 +684,13 @@ ags_fx_notation_audio_dispose(GObject *gobject)
   
   fx_notation_audio = AGS_FX_NOTATION_AUDIO(gobject);
 
+  if(fx_notation->feed_note != NULL){
+    g_list_free_full(fx_notation->feed_note,
+		     (GDestroyNotify) g_object_unref);
+
+    fx_notation->feed_note = NULL;
+  }
+
   if(fx_notation->bpm != NULL){
     g_object_unref(fx_notation->bpm);
 
@@ -734,6 +743,11 @@ ags_fx_notation_audio_finalize(GObject *gobject)
   AgsFxNotationAudio *fx_notation_audio;
   
   fx_notation_audio = AGS_FX_NOTATION_AUDIO(gobject);
+
+  if(fx_notation->feed_note != NULL){
+    g_list_free_full(fx_notation->feed_note,
+		     (GDestroyNotify) g_object_unref);
+  }
   
   if(fx_notation->bpm != NULL){
     g_object_unref(fx_notation->bpm);
@@ -852,11 +866,116 @@ ags_fx_notation_audio_unset_flags(AgsFxNotationAudio *fx_notation_audio, guint f
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio);
 
-  /* set flags */
+  /* unset flags */
   g_rec_mutex_lock(recall_mutex);
 
   fx_notation_audio->flags &= (~flags);
 
+  g_rec_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_fx_notation_audio_get_feed_note:
+ * @fx_notation_audio: the #AgsFxNotationAudio
+ * 
+ * Get feed note of @fx_notation_audio.
+ * 
+ * Returns: (element-type AgsAudio.Note) (transfer full): the #GList-struct containing feed note
+ * 
+ * Since: 3.3.0
+ */
+GList*
+ags_fx_notation_audio_get_feed_note(AgsFxNotationAudio *fx_notation_audio)
+{
+  GList *feed_note;
+  
+  GRecMutex *recall_mutex;
+
+  if(!AGS_IS_FX_NOTATION_AUDIO(fx_notation_audio)){
+    return(NULL);
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio);
+
+  /* unset flags */
+  g_rec_mutex_lock(recall_mutex);
+
+  feed_note = g_list_copy_deep(fx_notation_audio->feed_note,
+			       (GCopyFunc) g_object_ref,
+			       NULL);
+
+  g_rec_mutex_unlock(recall_mutex);
+
+  return(feed_note);
+}
+
+/**
+ * ags_fx_notation_audio_add_feed_note:
+ * @fx_notation_audio: the #AgsFxNotationAudio
+ * @feed_note: the #AgsNote
+ * 
+ * Add @feed_note to @fx_notation_audio.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_fx_notation_audio_add_feed_note(AgsFxNotationAudio *fx_notation_audio,
+				    AgsNote *feed_note)
+{
+  GRecMutex *recall_mutex;
+
+  if(!AGS_IS_FX_NOTATION_AUDIO(fx_notation_audio)){
+    return;
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio);
+
+  /* add */
+  g_rec_mutex_lock(recall_mutex);
+
+  if(g_list_find(fx_notation_audio->feed_note, feed_note) == NULL){
+    g_object_ref(feed_note);
+
+    fx_notation_audio->feed_note = g_list_prepend(fx_notation_audio->feed_note,
+						  feed_note);
+  }
+  
+  g_rec_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_fx_notation_audio_remove_feed_note:
+ * @fx_notation_audio: the #AgsFxNotationAudio
+ * @feed_note: the #AgsNote
+ * 
+ * Remove @feed_note from @fx_notation_audio.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_fx_notation_audio_remove_feed_note(AgsFxNotationAudio *fx_notation_audio,
+				       AgsNote *feed_note)
+{
+  GRecMutex *recall_mutex;
+
+  if(!AGS_IS_FX_NOTATION_AUDIO(fx_notation_audio)){
+    return;
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio);
+
+  /* remove */
+  g_rec_mutex_lock(recall_mutex);
+
+  if(g_list_find(fx_notation_audio->feed_note, feed_note) != NULL){
+    fx_notation_audio->feed_note = g_list_remove(fx_notation_audio->feed_note,
+						 feed_note);
+    g_object_unref(feed_note);
+  }
+  
   g_rec_mutex_unlock(recall_mutex);
 }
 

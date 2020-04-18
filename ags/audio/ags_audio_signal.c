@@ -2991,6 +2991,44 @@ ags_audio_signal_get_length_till_current(AgsAudioSignal *audio_signal)
 }
 
 /**
+ * ags_audio_signal_contains_note:
+ * @audio_signal: the #AgsAudioSignal
+ * @note: the #AgsNote
+ *
+ * Check if @audio_signal contains @note.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ *
+ * Since: 3.3.0
+ */
+gboolean
+ags_audio_signal_contains_note(AgsAudioSignal *audio_signal,
+			       AgsNote *note)
+{
+  gboolean success;
+
+  GRecMutex *audio_signal_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(FALSE);
+  }
+
+  /* get audio signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
+
+  success = FALSE;
+  
+  /* check note */
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  success = (g_list_find(audio_signal->note, note) != NULL) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(audio_signal_mutex);
+
+  return(success);
+}
+
+/**
  * ags_audio_signal_add_stream:
  * @audio_signal: the #AgsAudioSignal
  *

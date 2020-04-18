@@ -186,6 +186,8 @@ void ags_audio_signal_feed(AgsAudioSignal *audio_signal,
 
 /* query */
 guint ags_audio_signal_get_length_till_current(AgsAudioSignal *audio_signal);
+gboolean ags_audio_signal_contains_note(AgsAudioSignal *audio_signal,
+					AgsNote *note);
 
 AgsAudioSignal* ags_audio_signal_get_template(GList *audio_signal);
 GList* ags_audio_signal_get_rt_template(GList *audio_signal);
