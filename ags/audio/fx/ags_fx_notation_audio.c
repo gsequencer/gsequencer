@@ -256,8 +256,6 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
 
   fx_notation_audio->flags = 0;
   
-  fx_notation_audio->feed_note = NULL;
-
   bpm = AGS_SOUNDCARD_DEFAULT_BPM;
   delay = AGS_SOUNDCARD_DEFAULT_DELAY;
 
@@ -684,13 +682,6 @@ ags_fx_notation_audio_dispose(GObject *gobject)
   
   fx_notation_audio = AGS_FX_NOTATION_AUDIO(gobject);
 
-  if(fx_notation->feed_note != NULL){
-    g_list_free_full(fx_notation->feed_note,
-		     (GDestroyNotify) g_object_unref);
-
-    fx_notation->feed_note = NULL;
-  }
-
   if(fx_notation->bpm != NULL){
     g_object_unref(fx_notation->bpm);
 
@@ -743,11 +734,6 @@ ags_fx_notation_audio_finalize(GObject *gobject)
   AgsFxNotationAudio *fx_notation_audio;
   
   fx_notation_audio = AGS_FX_NOTATION_AUDIO(gobject);
-
-  if(fx_notation->feed_note != NULL){
-    g_list_free_full(fx_notation->feed_note,
-		     (GDestroyNotify) g_object_unref);
-  }
   
   if(fx_notation->bpm != NULL){
     g_object_unref(fx_notation->bpm);

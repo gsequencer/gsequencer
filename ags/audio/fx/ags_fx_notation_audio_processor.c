@@ -125,10 +125,12 @@ ags_fx_notation_audio_processor_init(AgsFxNotationAudioProcessor *fx_notation_au
 {
   g_signal_connect(fx_notation_audio_processor, "notify::output-soundcard",
 		   G_CALLBACK(ags_fx_notation_audio_processor_notify_output_soundcard_callback), NULL);
-  
+
+  /* counter */
   fx_notation_audio_processor->delay_counter = 0.0;
   fx_notation_audio_processor->offset_counter = 0;
 
+  /* timestamp */
   fx_notation_audio_processor->timestamp = ags_timestamp_new();
   g_object_ref(fx_notation_audio_processor->timestamp);
   
@@ -136,6 +138,12 @@ ags_fx_notation_audio_processor_init(AgsFxNotationAudioProcessor *fx_notation_au
   fx_notation_audio_processor->timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 
   fx_notation_audio_processor->timestamp->timer.ags_offset.offset = 0;
+
+  /* recording note */
+  fx_notation_audio_processor->recording_note = NULL;
+
+  /* feeding note */
+  fx_notation_audio_processor->feeding_note = NULL;
 }
 
 void
@@ -161,6 +169,18 @@ ags_fx_notation_audio_processor_finalize(GObject *gobject)
     g_object_unref((GObject *) fx_notation_audio_processor->timestamp);
   }
 
+  /* recording note */
+  if(fx_notation_audio_processor->recording_note != NULL){
+    g_list_free_full(fx_notation_audio_processor->recording_note,
+		     (GDestroyNotify) g_object_unref);
+  }
+
+  /* feeding note */
+  if(fx_notation_audio_processor->feeding_note != NULL){
+    g_list_free_full(fx_notation_audio_processor->feeding_note,
+		     (GDestroyNotify) g_object_unref);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_fx_notation_audio_processor_parent_class)->finalize(gobject);
 }
@@ -509,14 +529,15 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
 	       "audio-channel", &audio_channel,
 	       NULL);
 
-  start_notation = NULL;
-
-  if(audio != NULL){
-    g_object_get(audio,
-		 "notation", &start_notation,
-		 NULL);
+  if(audio == NULL){
+    return;
   }
   
+  g_object_get(audio,
+	       "notation", &start_notation,
+	       NULL);
+  
+  /* timestamp and offset counter */
   g_rec_mutex_lock(fx_notation_audio_processor_mutex);
     
   timestamp = fx_notation_audio_processor->timestamp;
@@ -527,7 +548,8 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
 
   ags_timestamp_set_ags_offset(timestamp,
 			       AGS_NOTATION_DEFAULT_OFFSET * floor(offset_counter / AGS_NOTATION_DEFAULT_OFFSET));
-  
+
+  /* find near timestamp */
   notation = ags_notation_find_near_timestamp(start_notation, audio_channel,
 					      timestamp);
 
@@ -553,13 +575,10 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
 		     (GDestroyNotify) g_object_unref);
   }
 
-  if(audio != NULL){
-    g_object_unref(audio);
-  }
+  g_object_unref(audio);
   
   g_list_free_full(start_notation,
-		   (GDestroyNotify) g_object_unref);
-  
+		   (GDestroyNotify) g_object_unref);  
 }
 
 void
@@ -575,7 +594,361 @@ ags_fx_notation_audio_processor_play(AgsFxNotationAudioProcessor *fx_notation_au
 void
 ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  AgsNotation *current_notation;
+  
+  AgsTimestamp *timestamp;
+  
+  GObject *input_sequencer;
+
+  GList *start_notation, *notation;
+  GList *start_note, *note;
+
+  guchar *midi_buffer;
+
+  guint input_pads;
+  guint audio_start_mapping;
+  guint midi_start_mapping, midi_end_mapping;
+  guint midi_channel;
+  guint64 offset_counter;
+  guint audio_channel;
+  gboolean reverse_mapping;
+  gboolean pattern_mode;
+
+  GRecMutex *fx_notation_audio_processor_mutex;
+
+  fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
+
+  g_object_get(fx_notation_audio_processor,
+	       "audio", &audio,
+	       "audio-channel", &audio_channel,
+	       NULL);
+
+  if(audio == NULL){
+    return;
+  }
+
+  g_object_get(audio,
+	       "input-sequencer", &input_sequencer,
+	       "input-pads", &input_pads,
+	       "audio-start-mapping", &audio_start_mapping,
+	       "midi-start-mapping", &midi_start_mapping,
+	       "midi-end-mapping", &midi_end_mapping,
+	       "midi-channel", &midi_channel,
+	       "midi-channel", &midi_channel,
+	       NULL);
+
+  if(input_sequencer == NULL){
+    g_object_unref(audio);
+    
+    return;
+  }
+
+  current_notation = NULL;
+  
+  start_notation = NULL;
+  start_note = NULL;
+
+  g_object_get(audio,
+	       "notation", &start_notation,
+	       NULL);
+
+  /* timestamp and offset counter */
+  g_rec_mutex_lock(fx_notation_audio_processor_mutex);
+    
+  timestamp = fx_notation_audio_processor->timestamp;
+  
+  offset_counter = fx_notation_audio_processor->offset_counter;
+
+  g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
+
+  ags_timestamp_set_ags_offset(timestamp,
+			       AGS_NOTATION_DEFAULT_OFFSET * floor(offset_counter / AGS_NOTATION_DEFAULT_OFFSET));
+
+  /* test flags */
+  reverse_mapping = ags_audio_test_behaviour_flags(audio,
+						   AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING);
+  
+  pattern_mode = ags_audio_test_behaviour_flags(audio,
+						AGS_SOUND_BEHAVIOUR_PATTERN_MODE);
+  
+  /* find near timestamp */
+  notation = ags_notation_find_near_timestamp(start_notation, audio_channel,
+					      timestamp);
+
+  if(notation != NULL){
+    current_notation = notation->data;
+  }
+ 
+  /* retrieve buffer */
+  midi_buffer = ags_sequencer_get_buffer(AGS_SEQUENCER(input_sequencer),
+					 &buffer_length);
+  
+  ags_sequencer_lock_buffer(AGS_SEQUENCER(input_sequencer),
+			    midi_buffer);
+
+  if(midi_buffer != NULL){
+    guchar *midi_iter;
+    
+    /* parse bytes */
+    midi_iter = midi_buffer;
+
+    if(ags_midi_util_is_key_on(midi_iter)){
+      /* check midi channel */
+      if(midi_channel == (0x0f & midi_iter[0])){
+	AgsNote *current_note;
+
+	GList *start_recording_note, *recording_note;
+	
+	gint y;
+
+	current_note = NULL;
+	y = -1;
+	
+	/* check mapping */
+	if((0x7f & midi_iter[1]) >= midi_start_mapping &&
+	   (0x7f & midi_iter[1]) <= midi_end_mapping){
+	  /* check channel */
+	  if(!reverse_mapping){
+	    y = audio_start_mapping + ((0x7f & midi_iter[1]) - midi_start_mapping);
+	  }else{
+	    y = input_pads - (audio_start_mapping + ((0x7f & midi_iter[1]) - midi_start_mapping)) - 1;
+	  }
+	}
+
+	if(y >= 0 &&
+	   y < input_pads){
+	  g_rec_mutex_lock(fx_notation_audio_processor_mutex);
+
+	  start_recording_note = g_list_copy_deep(fx_notation_audio_processor->recording_note,
+						  (GCopyFunc) g_object_ref,
+						  NULL);
+	  
+	  g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
+
+	  recording_note = start_recording_note;
+
+	  while(recording_note != NULL){
+	    guint current_y;
+	    
+	    g_object_get(recording_note->data,
+			 "y", &current_y,
+			 NULL);
+	    
+	    if(current_y == y){
+	      current_note = recording_note->data;
+	      
+	      break;
+	    }
+	    
+	    /* iterate */
+	    recording_note = recording_note->next;
+	  }
+	  
+	  if(current_note == NULL){
+	    current_note = ags_note_new();
+	    
+	    current_note->x[0] = offset_counter;
+	    current_note->x[1] = offset_counter + 1;
+	      
+	    current_note->y = y;
+		
+	    if(!pattern_mode){
+	      fx_notation_audio_processor->recording_note = g_list_prepend(fx_notation_audio_processor->recording_note,
+									   current_note);
+	      g_object_ref(current_note);
+
+	      ags_note_set_flags(current_note,
+				 AGS_NOTE_FEED);
+	    }
+
+	    g_object_ref(current_note);
+	    start_note = g_list_prepend(start_note,
+					current_note);
+	    
+	    /* check notation */
+	    if(current_notation == NULL){
+	      current_notation = ags_notation_new((GObject *) audio,
+						  audio_channel);
+
+	      ags_timestamp_set_ags_offset(current_notation->timestamp,
+					   ags_timestamp_get_ags_offset(timestamp));
+
+	      ags_audio_add_notation(audio,
+				     (GObject *) current_notation);
+	    }
+
+	    /* add note */
+	    ags_notation_add_note(current_notation,
+				  current_note,
+				  FALSE);
+	  }else{
+	    if((0x7f & (midi_iter[2])) == 0){
+	      /* note-off */
+	      ags_note_unset_flags(current_note,
+				   AGS_NOTE_FEED);
+
+	      fx_notation_audio_processor->recording_note = g_list_remove(fx_notation_audio_processor->recording_note,
+									  current_note);
+	      g_object_unref(current_note);
+	    }
+	  }
+
+	  g_list_free_full(start_recording_note,
+			   (GDestroyNotify) g_object_unref);
+	}
+      }
+	
+      midi_iter += 3;
+    }else if(ags_midi_util_is_key_off(midi_iter)){
+      /* check midi channel */
+      if(midi_channel == (0x0f & midi_iter[0])){
+	AgsNote *current_note;
+
+	GList *start_recording_note, *recording_note;
+	
+	gint y;
+
+	current_note = NULL;
+	y = -1;
+	
+	/* check mapping */
+	if((0x7f & midi_iter[1]) >= midi_start_mapping &&
+	   (0x7f & midi_iter[1]) <= midi_end_mapping){
+	  /* check channel */
+	  if(!reverse_mapping){
+	    y = audio_start_mapping + ((0x7f & midi_iter[1]) - midi_start_mapping);
+	  }else{
+	    y = input_pads - (audio_start_mapping + ((0x7f & midi_iter[1]) - midi_start_mapping)) - 1;
+	  }
+	}
+
+	if(y >= 0 &&
+	   y < input_pads){
+	  g_rec_mutex_lock(fx_notation_audio_processor_mutex);
+
+	  start_recording_note = g_list_copy_deep(fx_notation_audio_processor->recording_note,
+						  (GCopyFunc) g_object_ref,
+						  NULL);
+	  
+	  g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
+
+	  recording_note = start_recording_note;
+
+	  while(recording_note != NULL){
+	    guint current_y;
+	    
+	    g_object_get(recording_note->data,
+			 "y", &current_y,
+			 NULL);
+	    
+	    if(current_y == y){
+	      current_note = recording_note->data;
+	      
+	      break;
+	    }
+	    
+	    /* iterate */
+	    recording_note = recording_note->next;
+	  }
+	  
+	  if(current_note != NULL){
+	    ags_note_unset_flags(current_note,
+				 AGS_NOTE_FEED);
+	      
+	    fx_notation_audio_processor->recording_note = g_list_remove(fx_notation_audio_processor->recording_note,
+									current_note);
+	    g_object_unref(current_note);
+	  }
+	}
+      }
+      
+      midi_iter += 3;
+    }else if(ags_midi_util_is_key_pressure(midi_iter)){
+      midi_iter += 3;
+    }else if(ags_midi_util_is_change_parameter(midi_iter)){
+      /* change parameter */
+      //TODO:JK: implement me	  
+	  
+      midi_iter += 3;
+    }else if(ags_midi_util_is_pitch_bend(midi_iter)){
+      /* change parameter */
+      //TODO:JK: implement me	  
+	  
+      midi_iter += 3;
+    }else if(ags_midi_util_is_change_program(midi_iter)){
+      /* change program */
+      //TODO:JK: implement me	  
+	  
+      midi_iter += 2;
+    }else if(ags_midi_util_is_change_pressure(midi_iter)){
+      /* change pressure */
+      //TODO:JK: implement me	  
+	  
+      midi_iter += 2;
+    }else if(ags_midi_util_is_sysex(midi_iter)){
+      guint n;
+	  
+      /* sysex */
+      n = 0;
+	  
+      while(midi_iter[n] != 0xf7){
+	n++;
+      }
+
+      //TODO:JK: implement me	  
+	  
+      midi_iter += (n + 1);
+    }else if(ags_midi_util_is_song_position(midi_iter)){
+      /* song position */
+      //TODO:JK: implement me	  
+	  
+      midi_iter += 3;
+    }else if(ags_midi_util_is_song_select(midi_iter)){
+      /* song select */
+      //TODO:JK: implement me	  
+	  
+      midi_iter += 2;
+    }else if(ags_midi_util_is_tune_request(midi_iter)){
+      /* tune request */
+      //TODO:JK: implement me	  
+	  
+      midi_iter += 1;
+    }else if(ags_midi_util_is_meta_event(midi_iter)){
+      /* meta event */
+      //TODO:JK: implement me	  
+	  
+      midi_iter += (3 + midi_iter[2]);
+    }else{
+      g_warning("ags_fx_notation_audio_processor.c - unexpected byte %x", midi_iter[0]);
+	  
+      midi_iter++;
+    }
+  }
+  
+  ags_sequencer_unlock_buffer(AGS_SEQUENCER(input_sequencer),
+			      midi_buffer);
+
+  note = start_note;
+
+  while(note != NULL){
+    ags_fx_notation_audio_processor_key_on(fx_notation_audio_processor,
+					   note->data,
+					   AGS_FX_NOTATION_AUDIO_PROCESSOR_DEFAULT_KEY_ON_VELOCITY);
+    
+    note = note->next;
+  }
+  
+  /*  */
+  g_object_unref(audio);
+  
+  g_object_unref(input_sequencer);
+
+  g_list_free_full(start_notation,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(start_note,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void

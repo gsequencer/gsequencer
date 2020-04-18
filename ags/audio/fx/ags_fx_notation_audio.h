@@ -53,8 +53,6 @@ struct _AgsFxNotationAudio
 
   guint flags;
 
-  GList *feed_note;
-  
   AgsPort *bpm;
   AgsPort *tact;
 

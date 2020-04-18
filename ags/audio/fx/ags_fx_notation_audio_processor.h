@@ -49,6 +49,9 @@ struct _AgsFxNotationAudioProcessor
   guint64 offset_counter;
 
   AgsTimestamp *timestamp;
+
+  GList *recording_note;
+  GList *feeding_note;
 };
 
 struct _AgsFxNotationAudioProcessorClass
