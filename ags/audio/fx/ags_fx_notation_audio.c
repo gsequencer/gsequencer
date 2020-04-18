@@ -19,6 +19,8 @@
 
 #include <ags/audio/fx/ags_fx_notation_audio.h>
 
+#include <ags/i18n.h>
+
 void ags_fx_notation_audio_class_init(AgsFxNotationAudioClass *fx_notation_audio);
 void ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio);
 void ags_fx_notation_audio_set_property(GObject *gobject,
@@ -124,7 +126,7 @@ ags_fx_notation_audio_class_init(AgsFxNotationAudioClass *fx_notation_audio)
   gobject = (GObjectClass *) fx_notation_audio;
 
   gobject->set_property = ags_fx_notation_audio_set_property;
-  gobject->get_property = ags_fx_notationo_audio_get_property;
+  gobject->get_property = ags_fx_notation_audio_get_property;
 
   gobject->dispose = ags_fx_notation_audio_dispose;
   gobject->finalize = ags_fx_notation_audio_finalize;
@@ -175,7 +177,7 @@ ags_fx_notation_audio_class_init(AgsFxNotationAudioClass *fx_notation_audio)
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_NOTATION_DELAY,
+				  PROP_DELAY,
 				  param_spec);
 
   /**
@@ -191,7 +193,7 @@ ags_fx_notation_audio_class_init(AgsFxNotationAudioClass *fx_notation_audio)
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_NOTATION_DURATION,
+				  PROP_DURATION,
 				  param_spec);
 
   /**
@@ -207,7 +209,7 @@ ags_fx_notation_audio_class_init(AgsFxNotationAudioClass *fx_notation_audio)
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_NOTATION_LOOP,
+				  PROP_LOOP,
 				  param_spec);
 
   /**
@@ -223,7 +225,7 @@ ags_fx_notation_audio_class_init(AgsFxNotationAudioClass *fx_notation_audio)
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_NOTATION_LOOP_START,
+				  PROP_LOOP_START,
 				  param_spec);
 
   /**
@@ -239,7 +241,7 @@ ags_fx_notation_audio_class_init(AgsFxNotationAudioClass *fx_notation_audio)
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_NOTATION_LOOP_END,
+				  PROP_LOOP_END,
 				  param_spec);
 }
 
@@ -275,7 +277,7 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
   
   fx_notation_audio->bpm->port_value.ags_port_double = bpm;
 
-  ags_recall_add_port(fx_notation_audio,
+  ags_recall_add_port((AgsRecall *) fx_notation_audio,
 		      fx_notation_audio->bpm);
   
   /* tact */
@@ -292,7 +294,7 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
   
   fx_notation_audio->tact->port_value.ags_port_double = AGS_SOUNDCARD_DEFAULT_TACT;
 
-  ags_recall_add_port(fx_notation_audio,
+  ags_recall_add_port((AgsRecall *) fx_notation_audio,
 		      fx_notation_audio->tact);
 
   /* delay */
@@ -309,7 +311,7 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
   
   fx_notation_audio->delay->port_value.ags_port_double = delay;
 
-  ags_recall_add_port(fx_notation_audio,
+  ags_recall_add_port((AgsRecall *) fx_notation_audio,
 		      fx_notation_audio->delay);
   
   /* duration */
@@ -324,9 +326,9 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
 					     NULL);
   g_object_ref(fx_notation_audio->duration);
   
-  fx_notation_audio->duration->port_value.ags_port_double = ceil(AGS_DEFAULT_DURATION * delay);
+  fx_notation_audio->duration->port_value.ags_port_double = ceil(AGS_NOTATION_DEFAULT_DURATION * delay);
 
-  ags_recall_add_port(fx_notation_audio,
+  ags_recall_add_port((AgsRecall *) fx_notation_audio,
 		      fx_notation_audio->duration);
 
   /* loop */
@@ -343,7 +345,7 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
   
   fx_notation_audio->loop->port_value.ags_port_boolean = FALSE;
 
-  ags_recall_add_port(fx_notation_audio,
+  ags_recall_add_port((AgsRecall *) fx_notation_audio,
 		      fx_notation_audio->loop);
 
   /* loop-start */
@@ -360,7 +362,7 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
   
   fx_notation_audio->loop_start->port_value.ags_port_uint = AGS_FX_NOTATION_AUDIO_DEFAULT_LOOP_START;
 
-  ags_recall_add_port(fx_notation_audio,
+  ags_recall_add_port((AgsRecall *) fx_notation_audio,
 		      fx_notation_audio->loop_start);
   
   /* loop-end */
@@ -377,7 +379,7 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
   
   fx_notation_audio->loop_end->port_value.ags_port_uint = AGS_FX_NOTATION_AUDIO_DEFAULT_LOOP_END;
 
-  ags_recall_add_port(fx_notation_audio,
+  ags_recall_add_port((AgsRecall *) fx_notation_audio,
 		      fx_notation_audio->loop_end);
 }
 
@@ -387,7 +389,7 @@ ags_fx_notation_audio_set_property(GObject *gobject,
 				   const GValue *value,
 				   GParamSpec *param_spec)
 {
-  AgsCountBeatsAudio *fx_notation_audio;
+  AgsFxNotationAudio *fx_notation_audio;
 
   GRecMutex *recall_mutex;
   
@@ -598,7 +600,7 @@ ags_fx_notation_audio_get_property(GObject *gobject,
 				   GValue *value,
 				   GParamSpec *param_spec)
 {
-  AgsCountBeatsAudio *fx_notation_audio;
+  AgsFxNotationAudio *fx_notation_audio;
   
   GRecMutex *recall_mutex;
 
@@ -684,53 +686,53 @@ ags_fx_notation_audio_dispose(GObject *gobject)
   
   fx_notation_audio = AGS_FX_NOTATION_AUDIO(gobject);
 
-  if(fx_notation->feed_note != NULL){
-    g_list_free_full(fx_notation->feed_note,
+  if(fx_notation_audio->feed_note != NULL){
+    g_list_free_full(fx_notation_audio->feed_note,
 		     (GDestroyNotify) g_object_unref);
 
-    fx_notation->feed_note = NULL;
+    fx_notation_audio->feed_note = NULL;
   }
 
-  if(fx_notation->bpm != NULL){
-    g_object_unref(fx_notation->bpm);
+  if(fx_notation_audio->bpm != NULL){
+    g_object_unref(fx_notation_audio->bpm);
 
-    fx_notation->bpm = NULL;
+    fx_notation_audio->bpm = NULL;
   }
 
-  if(fx_notation->tact != NULL){
-    g_object_unref(fx_notation->tact);
+  if(fx_notation_audio->tact != NULL){
+    g_object_unref(fx_notation_audio->tact);
 
-    fx_notation->tact = NULL;
+    fx_notation_audio->tact = NULL;
   }
 
-  if(fx_notation->delay != NULL){
-    g_object_unref(fx_notation->delay);
+  if(fx_notation_audio->delay != NULL){
+    g_object_unref(fx_notation_audio->delay);
 
-    fx_notation->delay = NULL;
+    fx_notation_audio->delay = NULL;
   }
 
-  if(fx_notation->duration != NULL){
-    g_object_unref(fx_notation->duration);
+  if(fx_notation_audio->duration != NULL){
+    g_object_unref(fx_notation_audio->duration);
 
-    fx_notation->duration = NULL;
+    fx_notation_audio->duration = NULL;
   }
 
-  if(fx_notation->loop != NULL){
-    g_object_unref(fx_notation->loop);
+  if(fx_notation_audio->loop != NULL){
+    g_object_unref(fx_notation_audio->loop);
 
-    fx_notation->loop = NULL;
+    fx_notation_audio->loop = NULL;
   }
 
-  if(fx_notation->loop_start != NULL){
-    g_object_unref(fx_notation->loop_start);
+  if(fx_notation_audio->loop_start != NULL){
+    g_object_unref(fx_notation_audio->loop_start);
 
-    fx_notation->loop_start = NULL;
+    fx_notation_audio->loop_start = NULL;
   }
 
-  if(fx_notation->loop_end != NULL){
-    g_object_unref(fx_notation->loop_end);
+  if(fx_notation_audio->loop_end != NULL){
+    g_object_unref(fx_notation_audio->loop_end);
 
-    fx_notation->loop_end = NULL;
+    fx_notation_audio->loop_end = NULL;
   }
   
   /* call parent */
@@ -744,37 +746,37 @@ ags_fx_notation_audio_finalize(GObject *gobject)
   
   fx_notation_audio = AGS_FX_NOTATION_AUDIO(gobject);
 
-  if(fx_notation->feed_note != NULL){
-    g_list_free_full(fx_notation->feed_note,
+  if(fx_notation_audio->feed_note != NULL){
+    g_list_free_full(fx_notation_audio->feed_note,
 		     (GDestroyNotify) g_object_unref);
   }
   
-  if(fx_notation->bpm != NULL){
-    g_object_unref(fx_notation->bpm);
+  if(fx_notation_audio->bpm != NULL){
+    g_object_unref(fx_notation_audio->bpm);
   }
 
-  if(fx_notation->tact != NULL){
-    g_object_unref(fx_notation->tact);
+  if(fx_notation_audio->tact != NULL){
+    g_object_unref(fx_notation_audio->tact);
   }
 
-  if(fx_notation->delay != NULL){
-    g_object_unref(fx_notation->delay);
+  if(fx_notation_audio->delay != NULL){
+    g_object_unref(fx_notation_audio->delay);
   }
 
-  if(fx_notation->duration != NULL){
-    g_object_unref(fx_notation->duration);
+  if(fx_notation_audio->duration != NULL){
+    g_object_unref(fx_notation_audio->duration);
   }
 
-  if(fx_notation->loop != NULL){
-    g_object_unref(fx_notation->loop);
+  if(fx_notation_audio->loop != NULL){
+    g_object_unref(fx_notation_audio->loop);
   }
 
-  if(fx_notation->loop_start != NULL){
-    g_object_unref(fx_notation->loop_start);
+  if(fx_notation_audio->loop_start != NULL){
+    g_object_unref(fx_notation_audio->loop_start);
   }
 
-  if(fx_notation->loop_end != NULL){
-    g_object_unref(fx_notation->loop_end);
+  if(fx_notation_audio->loop_end != NULL){
+    g_object_unref(fx_notation_audio->loop_end);
   }
 
   /* call parent */

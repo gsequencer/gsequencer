@@ -23,7 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_note.h>
 #include <ags/audio/ags_recall_audio.h>
 
 G_BEGIN_DECLS

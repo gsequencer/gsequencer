@@ -19,6 +19,22 @@
 
 #include <ags/audio/fx/ags_fx_notation_audio_processor.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_port.h>
+#include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_note.h>
+#include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recycling_context.h>
+
+#include <ags/audio/midi/ags_midi_util.h>
+
+#include <ags/audio/fx/ags_fx_notation_audio.h>
+
+#include <ags/i18n.h>
+
 void ags_fx_notation_audio_processor_class_init(AgsFxNotationAudioProcessorClass *fx_notation_audio_processor);
 void ags_fx_notation_audio_processor_init(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 void ags_fx_notation_audio_processor_dispose(GObject *gobject);
@@ -77,7 +93,7 @@ ags_fx_notation_audio_processor_get_type()
       (GInstanceInitFunc) ags_fx_notation_audio_processor_init,
     };
 
-    ags_type_fx_notation_audio_processor = g_type_register_static(AGS_TYPE_RECALL_AUDIO_PROCESSOR,
+    ags_type_fx_notation_audio_processor = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
 								  "AgsFxNotationAudioProcessor",
 								  &ags_fx_notation_audio_processor_info,
 								  0);
@@ -249,7 +265,6 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
   guint input_pads;
   guint audio_channel;
   guint y;
-  guint i;
 
   GValue value = {0,};
 
@@ -344,7 +359,6 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 
     while(child_recall_id == NULL &&
 	  list != NULL){
-      AgsRecallID *current_recall_id;
       AgsRecyclingContext *current_recycling_context, *current_parent_recycling_context;
 
       g_object_get(list->data,
@@ -376,6 +390,8 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
     g_object_ref(recycling);
     
     while(recycling != end_recycling){
+      AgsAudioSignal *audio_signal;
+      
       /* create audio signal */
       audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
 					  (GObject *) recycling,
@@ -648,10 +664,9 @@ void
 ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor)
 {
   AgsAudio *audio;
-  AgsChannel *start_input;
-  AgsChannel *input, *selected_input;
-  AgsRecallID *recall_id;
+  AgsPort *port;
   AgsNotation *current_notation;
+  AgsFxNotationAudio *fx_notation_audio;
   
   AgsTimestamp *timestamp;
   
@@ -670,24 +685,31 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
   gdouble delay;
   guint64 offset_counter;
   guint audio_channel;
+  guint buffer_length;
   gboolean reverse_mapping;
   gboolean pattern_mode;
 
+  GValue value = {0,};
+  
   GRecMutex *fx_notation_audio_processor_mutex;
 
   fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
 
   g_object_get(fx_notation_audio_processor,
 	       "audio", &audio,
+	       "recall-audio", &fx_notation_audio,
 	       "audio-channel", &audio_channel,
 	       NULL);
 
   if(audio == NULL){
+    if(fx_notation_audio != NULL){
+      g_object_unref(fx_notation_audio);
+    }
+
     return;
   }
 
   g_object_get(audio,
-	       "input", &start_input,
 	       "input-sequencer", &input_sequencer,
 	       "input-pads", &input_pads,
 	       "audio-start-mapping", &audio_start_mapping,
@@ -700,8 +722,8 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
   if(input_sequencer == NULL){
     g_object_unref(audio);
 
-    if(start_input != NULL){
-      g_object_unref(start_input);
+    if(fx_notation_audio != NULL){
+      g_object_unref(fx_notation_audio);
     }
     
     return;
@@ -778,235 +800,237 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
     /* parse bytes */
     midi_iter = midi_buffer;
 
-    if(ags_midi_util_is_key_on(midi_iter)){
-      /* check midi channel */
-      if(midi_channel == (0x0f & midi_iter[0])){
-	AgsNote *current_note;
+    while(midi_iter < midi_buffer + buffer_length){
+      if(ags_midi_util_is_key_on(midi_iter)){
+	/* check midi channel */
+	if(midi_channel == (0x0f & midi_iter[0])){
+	  AgsNote *current_note;
 
-	gint y;
+	  gint y;
 
-	current_note = NULL;
-	y = -1;
+	  current_note = NULL;
+	  y = -1;
 	
-	/* check mapping */
-	if((0x7f & midi_iter[1]) >= midi_start_mapping &&
-	   (0x7f & midi_iter[1]) <= midi_end_mapping){
-	  /* check channel */
-	  if(!reverse_mapping){
-	    y = audio_start_mapping + ((0x7f & midi_iter[1]) - midi_start_mapping);
-	  }else{
-	    y = input_pads - (audio_start_mapping + ((0x7f & midi_iter[1]) - midi_start_mapping)) - 1;
+	  /* check mapping */
+	  if((0x7f & midi_iter[1]) >= midi_start_mapping &&
+	     (0x7f & midi_iter[1]) <= midi_end_mapping){
+	    /* check channel */
+	    if(!reverse_mapping){
+	      y = audio_start_mapping + ((0x7f & midi_iter[1]) - midi_start_mapping);
+	    }else{
+	      y = input_pads - (audio_start_mapping + ((0x7f & midi_iter[1]) - midi_start_mapping)) - 1;
+	    }
+	  }
+
+	  if(y >= 0 &&
+	     y < input_pads){
+	    g_rec_mutex_lock(fx_notation_audio_processor_mutex);
+
+	    start_recording_note = g_list_copy_deep(fx_notation_audio_processor->recording_note,
+						    (GCopyFunc) g_object_ref,
+						    NULL);
+	  
+	    g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
+
+	    recording_note = start_recording_note;
+
+	    while(recording_note != NULL){
+	      guint current_y;
+	    
+	      g_object_get(recording_note->data,
+			   "y", &current_y,
+			   NULL);
+	    
+	      if(current_y == y){
+		current_note = recording_note->data;
+	      
+		break;
+	      }
+	    
+	      /* iterate */
+	      recording_note = recording_note->next;
+	    }
+	  
+	    if(current_note == NULL){
+	      current_note = ags_note_new();
+	    
+	      current_note->x[0] = offset_counter;
+	      current_note->x[1] = offset_counter + 1;
+	      
+	      current_note->y = y;
+		
+	      if(!pattern_mode){
+		fx_notation_audio_processor->recording_note = g_list_prepend(fx_notation_audio_processor->recording_note,
+									     current_note);
+		g_object_ref(current_note);
+
+		ags_note_set_flags(current_note,
+				   AGS_NOTE_FEED);
+	      }
+
+	      g_object_ref(current_note);
+	      start_note = g_list_prepend(start_note,
+					  current_note);
+	    
+	      /* check notation */
+	      if(current_notation == NULL){
+		current_notation = ags_notation_new((GObject *) audio,
+						    audio_channel);
+
+		ags_timestamp_set_ags_offset(current_notation->timestamp,
+					     ags_timestamp_get_ags_offset(timestamp));
+
+		ags_audio_add_notation(audio,
+				       (GObject *) current_notation);
+	      }
+
+	      /* add note */
+	      ags_notation_add_note(current_notation,
+				    current_note,
+				    FALSE);
+	    }else{
+	      if((0x7f & (midi_iter[2])) == 0){
+		/* note-off */
+		ags_note_unset_flags(current_note,
+				     AGS_NOTE_FEED);
+
+		fx_notation_audio_processor->recording_note = g_list_remove(fx_notation_audio_processor->recording_note,
+									    current_note);
+		g_object_unref(current_note);
+	      }
+	    }
+
+	    g_list_free_full(start_recording_note,
+			     (GDestroyNotify) g_object_unref);
 	  }
 	}
+	
+	midi_iter += 3;
+      }else if(ags_midi_util_is_key_off(midi_iter)){
+	/* check midi channel */
+	if(midi_channel == (0x0f & midi_iter[0])){
+	  AgsNote *current_note;
 
-	if(y >= 0 &&
-	   y < input_pads){
-	  g_rec_mutex_lock(fx_notation_audio_processor_mutex);
+	  gint y;
 
-	  start_recording_note = g_list_copy_deep(fx_notation_audio_processor->recording_note,
-						  (GCopyFunc) g_object_ref,
-						  NULL);
-	  
-	  g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
-
-	  recording_note = start_recording_note;
-
-	  while(recording_note != NULL){
-	    guint current_y;
-	    
-	    g_object_get(recording_note->data,
-			 "y", &current_y,
-			 NULL);
-	    
-	    if(current_y == y){
-	      current_note = recording_note->data;
-	      
-	      break;
+	  current_note = NULL;
+	  y = -1;
+	
+	  /* check mapping */
+	  if((0x7f & midi_iter[1]) >= midi_start_mapping &&
+	     (0x7f & midi_iter[1]) <= midi_end_mapping){
+	    /* check channel */
+	    if(!reverse_mapping){
+	      y = audio_start_mapping + ((0x7f & midi_iter[1]) - midi_start_mapping);
+	    }else{
+	      y = input_pads - (audio_start_mapping + ((0x7f & midi_iter[1]) - midi_start_mapping)) - 1;
 	    }
-	    
-	    /* iterate */
-	    recording_note = recording_note->next;
 	  }
+
+	  if(y >= 0 &&
+	     y < input_pads){
+	    g_rec_mutex_lock(fx_notation_audio_processor_mutex);
+
+	    start_recording_note = g_list_copy_deep(fx_notation_audio_processor->recording_note,
+						    (GCopyFunc) g_object_ref,
+						    NULL);
 	  
-	  if(current_note == NULL){
-	    current_note = ags_note_new();
+	    g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
+
+	    recording_note = start_recording_note;
+
+	    while(recording_note != NULL){
+	      guint current_y;
 	    
-	    current_note->x[0] = offset_counter;
-	    current_note->x[1] = offset_counter + 1;
+	      g_object_get(recording_note->data,
+			   "y", &current_y,
+			   NULL);
+	    
+	      if(current_y == y){
+		current_note = recording_note->data;
 	      
-	    current_note->y = y;
-		
-	    if(!pattern_mode){
-	      fx_notation_audio_processor->recording_note = g_list_prepend(fx_notation_audio_processor->recording_note,
-									   current_note);
-	      g_object_ref(current_note);
-
-	      ags_note_set_flags(current_note,
-				 AGS_NOTE_FEED);
-	    }
-
-	    g_object_ref(current_note);
-	    start_note = g_list_prepend(start_note,
-					current_note);
+		break;
+	      }
 	    
-	    /* check notation */
-	    if(current_notation == NULL){
-	      current_notation = ags_notation_new((GObject *) audio,
-						  audio_channel);
-
-	      ags_timestamp_set_ags_offset(current_notation->timestamp,
-					   ags_timestamp_get_ags_offset(timestamp));
-
-	      ags_audio_add_notation(audio,
-				     (GObject *) current_notation);
+	      /* iterate */
+	      recording_note = recording_note->next;
 	    }
-
-	    /* add note */
-	    ags_notation_add_note(current_notation,
-				  current_note,
-				  FALSE);
-	  }else{
-	    if((0x7f & (midi_iter[2])) == 0){
-	      /* note-off */
+	  
+	    if(current_note != NULL){
 	      ags_note_unset_flags(current_note,
 				   AGS_NOTE_FEED);
-
+	      
 	      fx_notation_audio_processor->recording_note = g_list_remove(fx_notation_audio_processor->recording_note,
 									  current_note);
 	      g_object_unref(current_note);
 	    }
-	  }
 
-	  g_list_free_full(start_recording_note,
-			   (GDestroyNotify) g_object_unref);
-	}
-      }
-	
-      midi_iter += 3;
-    }else if(ags_midi_util_is_key_off(midi_iter)){
-      /* check midi channel */
-      if(midi_channel == (0x0f & midi_iter[0])){
-	AgsNote *current_note;
-
-	gint y;
-
-	current_note = NULL;
-	y = -1;
-	
-	/* check mapping */
-	if((0x7f & midi_iter[1]) >= midi_start_mapping &&
-	   (0x7f & midi_iter[1]) <= midi_end_mapping){
-	  /* check channel */
-	  if(!reverse_mapping){
-	    y = audio_start_mapping + ((0x7f & midi_iter[1]) - midi_start_mapping);
-	  }else{
-	    y = input_pads - (audio_start_mapping + ((0x7f & midi_iter[1]) - midi_start_mapping)) - 1;
+	    g_list_free_full(start_recording_note,
+			     (GDestroyNotify) g_object_unref);
 	  }
 	}
-
-	if(y >= 0 &&
-	   y < input_pads){
-	  g_rec_mutex_lock(fx_notation_audio_processor_mutex);
-
-	  start_recording_note = g_list_copy_deep(fx_notation_audio_processor->recording_note,
-						  (GCopyFunc) g_object_ref,
-						  NULL);
-	  
-	  g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
-
-	  recording_note = start_recording_note;
-
-	  while(recording_note != NULL){
-	    guint current_y;
-	    
-	    g_object_get(recording_note->data,
-			 "y", &current_y,
-			 NULL);
-	    
-	    if(current_y == y){
-	      current_note = recording_note->data;
-	      
-	      break;
-	    }
-	    
-	    /* iterate */
-	    recording_note = recording_note->next;
-	  }
-	  
-	  if(current_note != NULL){
-	    ags_note_unset_flags(current_note,
-				 AGS_NOTE_FEED);
-	      
-	    fx_notation_audio_processor->recording_note = g_list_remove(fx_notation_audio_processor->recording_note,
-									current_note);
-	    g_object_unref(current_note);
-	  }
-
-	  g_list_free_full(start_recording_note,
-			   (GDestroyNotify) g_object_unref);
-	}
-      }
       
-      midi_iter += 3;
-    }else if(ags_midi_util_is_key_pressure(midi_iter)){
-      midi_iter += 3;
-    }else if(ags_midi_util_is_change_parameter(midi_iter)){
-      /* change parameter */
-      //TODO:JK: implement me	  
+	midi_iter += 3;
+      }else if(ags_midi_util_is_key_pressure(midi_iter)){
+	midi_iter += 3;
+      }else if(ags_midi_util_is_change_parameter(midi_iter)){
+	/* change parameter */
+	//TODO:JK: implement me	  
 	  
-      midi_iter += 3;
-    }else if(ags_midi_util_is_pitch_bend(midi_iter)){
-      /* change parameter */
-      //TODO:JK: implement me	  
+	midi_iter += 3;
+      }else if(ags_midi_util_is_pitch_bend(midi_iter)){
+	/* change parameter */
+	//TODO:JK: implement me	  
 	  
-      midi_iter += 3;
-    }else if(ags_midi_util_is_change_program(midi_iter)){
-      /* change program */
-      //TODO:JK: implement me	  
+	midi_iter += 3;
+      }else if(ags_midi_util_is_change_program(midi_iter)){
+	/* change program */
+	//TODO:JK: implement me	  
 	  
-      midi_iter += 2;
-    }else if(ags_midi_util_is_change_pressure(midi_iter)){
-      /* change pressure */
-      //TODO:JK: implement me	  
+	midi_iter += 2;
+      }else if(ags_midi_util_is_change_pressure(midi_iter)){
+	/* change pressure */
+	//TODO:JK: implement me	  
 	  
-      midi_iter += 2;
-    }else if(ags_midi_util_is_sysex(midi_iter)){
-      guint n;
+	midi_iter += 2;
+      }else if(ags_midi_util_is_sysex(midi_iter)){
+	guint n;
 	  
-      /* sysex */
-      n = 0;
+	/* sysex */
+	n = 0;
 	  
-      while(midi_iter[n] != 0xf7){
-	n++;
-      }
+	while(midi_iter[n] != 0xf7){
+	  n++;
+	}
 
-      //TODO:JK: implement me	  
+	//TODO:JK: implement me	  
 	  
-      midi_iter += (n + 1);
-    }else if(ags_midi_util_is_song_position(midi_iter)){
-      /* song position */
-      //TODO:JK: implement me	  
+	midi_iter += (n + 1);
+      }else if(ags_midi_util_is_song_position(midi_iter)){
+	/* song position */
+	//TODO:JK: implement me	  
 	  
-      midi_iter += 3;
-    }else if(ags_midi_util_is_song_select(midi_iter)){
-      /* song select */
-      //TODO:JK: implement me	  
+	midi_iter += 3;
+      }else if(ags_midi_util_is_song_select(midi_iter)){
+	/* song select */
+	//TODO:JK: implement me	  
 	  
-      midi_iter += 2;
-    }else if(ags_midi_util_is_tune_request(midi_iter)){
-      /* tune request */
-      //TODO:JK: implement me	  
+	midi_iter += 2;
+      }else if(ags_midi_util_is_tune_request(midi_iter)){
+	/* tune request */
+	//TODO:JK: implement me	  
 	  
-      midi_iter += 1;
-    }else if(ags_midi_util_is_meta_event(midi_iter)){
-      /* meta event */
-      //TODO:JK: implement me	  
+	midi_iter += 1;
+      }else if(ags_midi_util_is_meta_event(midi_iter)){
+	/* meta event */
+	//TODO:JK: implement me	  
 	  
-      midi_iter += (3 + midi_iter[2]);
-    }else{
-      g_warning("ags_fx_notation_audio_processor.c - unexpected byte %x", midi_iter[0]);
+	midi_iter += (3 + midi_iter[2]);
+      }else{
+	g_warning("ags_fx_notation_audio_processor.c - unexpected byte %x", midi_iter[0]);
 	  
-      midi_iter++;
+	midi_iter++;
+      }
     }
   }
   
@@ -1026,9 +1050,6 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
   }
 
   /* update */
-  input = ags_channel_nth(start_input,
-			  audio_channel);
-
   g_rec_mutex_lock(fx_notation_audio_processor_mutex);
 
   start_recording_note = g_list_copy_deep(fx_notation_audio_processor->recording_note,
@@ -1087,9 +1108,17 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 					      length + floor(delay) + 1);
 
 	  ags_audio_signal_feed(audio_signal->data,
-				template->data,
+				template,
 				(length + floor(delay) + 1) * buffer_size);
 
+	  if(recycling != NULL){
+	    g_object_unref(recycling);
+	  }
+
+	  if(template != NULL){
+	    g_object_unref(template);
+	  }
+	  
 	  g_list_free_full(start_list,
 			   (GDestroyNotify) g_object_unref);
 
@@ -1101,29 +1130,6 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 
       g_list_free_full(start_audio_signal,
 		       (GDestroyNotify) g_object_unref);
-
-      if(first_recycling != NULL){
-	g_object_unref(first_recycling);
-      }
-
-      if(last_recycling != NULL){
-	g_object_unref(last_recycling);
-      }
-
-      if(end_recycling != NULL){
-	g_object_unref(end_recycling);
-      }
-
-      if(recycling != NULL){
-	g_object_unref(recycling);
-      }
-
-      g_list_free_full(start_list,
-		       g_object_unref);
-
-      if(child_recall_id != NULL){
-	g_object_unref(child_recall_id);
-      }
     }
 	    
     /* iterate */
@@ -1136,8 +1142,8 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
   /*  */
   g_object_unref(audio);  
 
-  if(start_input != NULL){
-    g_object_unref(start_input);
+  if(fx_notation_audio != NULL){
+    g_object_unref(fx_notation_audio);
   }
   
   g_object_unref(input_sequencer);
@@ -1163,18 +1169,17 @@ void
 ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notation_audio_processor)
 {
   AgsAudio *audio;
-  AgsChannel *start_input;
-  AgsChannel *input, *selected_input;
+  AgsPort *port;
   AgsFxNotationAudio *fx_notation_audio;
 
   GList *start_feed_note, *feed_note;
   GList *start_feeding_note, *feeding_note;
   
-  guint input_pads;
+  gdouble delay;
   guint64 offset_counter;
-  guint audio_channel;
-  gboolean reverse_mapping;
 
+  GValue value = {0,};
+  
   GRecMutex *fx_notation_audio_processor_mutex;
 
   fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
@@ -1182,12 +1187,6 @@ ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notati
   g_object_get(fx_notation_audio_processor,
 	       "audio", &audio,
 	       "recall-audio", &fx_notation_audio,
-	       "audio-channel", &audio_channel,
-	       NULL);
-
-  g_object_get(audio,
-	       "input", &start_input,
-	       "input-pads", &input_pads,
 	       NULL);
 
   g_rec_mutex_lock(fx_notation_audio_processor_mutex);
@@ -1196,9 +1195,27 @@ ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notati
 
   g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
 
-  /* test flags */
-  reverse_mapping = ags_audio_test_behaviour_flags(audio,
-						   AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING);
+  /* get delay */
+  delay = AGS_SOUNDCARD_DEFAULT_DELAY;
+  
+  if(fx_notation_audio != NULL){        
+    g_object_get(fx_notation_audio,
+		 "delay", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value,
+		   G_TYPE_DOUBLE);
+    
+      ags_port_safe_read(port,
+			 &value);
+
+      delay = g_value_get_double(&value);
+      g_value_unset(&value);
+
+      g_object_unref(port);
+    }
+  }
 
   /* get feed note */
   feed_note = 
@@ -1225,9 +1242,6 @@ ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notati
   }
 
   /* check removed and update */
-  input = ags_channel_nth(start_input,
-			  audio_channel);
-
   g_rec_mutex_lock(fx_notation_audio_processor_mutex);
 
   feeding_note = 
@@ -1290,8 +1304,16 @@ ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notati
 						length + floor(delay) + 1);
 
 	    ags_audio_signal_feed(audio_signal->data,
-				  template->data,
+				  template,
 				  (length + floor(delay) + 1) * buffer_size);
+
+	    if(recycling != NULL){
+	      g_object_unref(recycling);
+	    }
+
+	    if(template != NULL){
+	      g_object_unref(template);
+	    }
 
 	    g_list_free_full(start_list,
 			     (GDestroyNotify) g_object_unref);
@@ -1304,29 +1326,6 @@ ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notati
 
 	g_list_free_full(start_audio_signal,
 			 (GDestroyNotify) g_object_unref);
-
-	if(first_recycling != NULL){
-	  g_object_unref(first_recycling);
-	}
-
-	if(last_recycling != NULL){
-	  g_object_unref(last_recycling);
-	}
-
-	if(end_recycling != NULL){
-	  g_object_unref(end_recycling);
-	}
-
-	if(recycling != NULL){
-	  g_object_unref(recycling);
-	}
-
-	g_list_free_full(start_list,
-			 g_object_unref);
-
-	if(child_recall_id != NULL){
-	  g_object_unref(child_recall_id);
-	}
       }      
     }else{
       g_rec_mutex_lock(fx_notation_audio_processor_mutex);
@@ -1369,8 +1368,6 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
   AgsFxNotationAudio *fx_notation_audio;
 
   gdouble delay;
-  gdouble delay_counter;
-  guint64 offset_counter;
   gboolean loop;
   guint64 loop_start, loop_end;
   
@@ -1384,13 +1381,6 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
   g_object_get(fx_notation_audio_processor,
 	       "recall-audio", &fx_notation_audio,
 	       NULL);
-
-  g_rec_mutex_lock(fx_notation_audio_processor_mutex);
-    
-  delay_counter = fx_notation_audio_processor->delay_counter;
-  offset_counter = fx_notation_audio_processor->offset_counter;
-
-  g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
 
   delay = AGS_SOUNDCARD_DEFAULT_DELAY;
 
@@ -1445,7 +1435,7 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
 
     if(port != NULL){
       g_value_init(&value,
-		   G_TYPE_UINT4);
+		   G_TYPE_UINT64);
     
       ags_port_safe_read(port,
 			 &value);
@@ -1463,7 +1453,7 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
 
     if(port != NULL){
       g_value_init(&value,
-		   G_TYPE_UINT4);
+		   G_TYPE_UINT64);
     
       ags_port_safe_read(port,
 			 &value);

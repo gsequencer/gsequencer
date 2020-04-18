@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_note.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_AUDIO_SIGNAL                (ags_audio_signal_get_type())
