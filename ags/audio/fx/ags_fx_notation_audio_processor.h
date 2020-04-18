@@ -44,13 +44,16 @@ typedef struct _AgsFxNotationAudioProcessorClass AgsFxNotationAudioProcessorClas
 struct _AgsFxNotationAudioProcessor
 {
   AgsRecallAudioRun recall_audio_run;
-
-  AgsAudioSignal* audio_signal[AGS_FX_NOTATION_AUDIO_PROCESSOR_MAX_CHANNELS];
 };
 
 struct _AgsFxNotationAudioProcessorClass
 {
   AgsRecallAudioRunClass recall_audio_run;
+
+  void (*alloc_data)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
+  
+  void (*copy_data)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
+  void (*clear_data)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 
   void (*key_on)(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
 		 AgsNote *note,
@@ -68,6 +71,11 @@ struct _AgsFxNotationAudioProcessorClass
 };
 
 GType ags_fx_notation_audio_processor_get_type();
+
+void ags_fx_notation_audio_processor_alloc_data(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
+
+void ags_fx_notation_audio_processor_copy_data(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
+void ags_fx_notation_audio_processor_clear_data(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 
 void ags_fx_notation_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
 					    AgsNote *note,

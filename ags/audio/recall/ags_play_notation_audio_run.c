@@ -952,7 +952,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
       list = start_list;
       child_recall_id = NULL;
 
-      while(list != NULL){
+      while(child_recall_id == NULL &&
+	    list != NULL){
 	AgsRecallID *current_recall_id;
 	AgsRecyclingContext *current_recycling_context, *current_parent_recycling_context;
 
@@ -966,8 +967,15 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	  
 	if(current_parent_recycling_context == recycling_context){
 	  child_recall_id = (AgsRecallID *) list->data;
-	    
-	  break;
+	  g_object_ref(child_recall_id);
+	}
+
+	if(current_recycling_context != NULL){
+	  g_object_unref(current_recycling_context);
+	}
+
+	if(current_parent_recycling_context != NULL){
+	  g_object_unref(current_parent_recycling_context);
 	}
 
 	/* iterate */
@@ -1089,6 +1097,10 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	g_object_unref(next_recycling);
       }
 
+      if(child_recall_id != NULL){
+	g_object_unref(child_recall_id);
+      }
+
       /* iterate */
       current_position = current_position->next;
     }
@@ -1112,6 +1124,10 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   
   if(recall_id != NULL){
     g_object_unref(recall_id);
+  }
+  
+  if(recycling_context != NULL){
+    g_object_unref(recycling_context);
   }
   
   if(delay_audio_run != NULL){
