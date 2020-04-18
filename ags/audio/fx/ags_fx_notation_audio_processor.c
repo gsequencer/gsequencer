@@ -24,11 +24,6 @@ void ags_fx_notation_audio_processor_init(AgsFxNotationAudioProcessor *fx_notati
 void ags_fx_notation_audio_processor_dispose(GObject *gobject);
 void ags_fx_notation_audio_processor_finalize(GObject *gobject);
 
-void ags_fx_notation_audio_processor_real_alloc_data(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
-
-void ags_fx_notation_audio_processor_real_copy_data(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
-void ags_fx_notation_audio_processor_real_clear_data(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
-
 void ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
 						 AgsNote *note,
 						 guint velocity);
@@ -104,11 +99,6 @@ ags_fx_notation_audio_processor_class_init(AgsFxNotationAudioProcessorClass *fx_
   gobject->finalize = ags_fx_notation_audio_processor_finalize;
 
   /* AgsFxNotationAudioProcessorClass */
-  fx_notation_audio_processor->alloc_data = ags_fx_notation_audio_processor_real_alloc_data;
-
-  fx_notation_audio_processor->copy_data = ags_fx_notation_audio_processor_real_copy_data;
-  fx_notation_audio_processor->clear_data = ags_fx_notation_audio_processor_real_clear_data;
-
   fx_notation_audio_processor->key_on = ags_fx_notation_audio_processor_real_key_on;
   fx_notation_audio_processor->key_off = ags_fx_notation_audio_processor_real_key_off;
   fx_notation_audio_processor->key_pressure = ags_fx_notation_audio_processor_real_key_pressure;
@@ -150,21 +140,31 @@ ags_fx_notation_audio_processor_finalize(GObject *gobject)
 }
 
 void
-ags_fx_notation_audio_processor_real_alloc_data(AgsFxNotationAudioProcessor *fx_notation_audio_processor)
+ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
+					    AgsNote *note,
+					    guint velocity)
 {
   AgsAudio *audio;
   AgsChannel *start_input;
-  AgsChannel *input, *next_input;
+  AgsChannel *input, *selected_input;
   AgsRecallID *recall_id;
   AgsRecyclingContext *recycling_context;
-  
+  AgsFxNotationAudio *fx_notation_audio;
+  AgsPort *port;
+
+  gdouble delay;
+  guint input_pads;
   guint audio_channel;
+  guint y;
   guint i;
 
+  GValue value = {0,};
+  
   g_object_get(fx_notation_audio_processor,
 	       "audio", &audio,
 	       "input", &start_input,
 	       "recall-id", &recall_id,
+	       "recall-audio", &fx_notation_audio,
 	       "audio-channel", &audio_channel,
 	       NULL);
   
@@ -172,21 +172,64 @@ ags_fx_notation_audio_processor_real_alloc_data(AgsFxNotationAudioProcessor *fx_
 	       "recycling-context", &recycling_context,
 	       NULL);
 
+  /* get delay */
+  delay = AGS_SOUNDCARD_DEFAULT_DELAY;
+
+  if(fx_notation_audio != NULL){
+    g_object_get(fx_notation_audio,
+		 "delay", &port,
+		 NULL);
+
+    if(port != NUll){
+      g_value_init(&value,
+		   G_TYPE_DOUBLE);
+    
+      ags_port_safe_read(port,
+			 &value);
+
+      delay = g_value_get_double(&value);
+      g_value_unset(&value);
+
+      g_object_unref(port);
+    }
+  }
+
+  g_object_get(audio,
+	       "input-pads", &input_pads,
+	       NULL);
+  
+  g_object_get(note,
+	       "y", &y,
+	       NULL);
+  
   input = ags_channel_nth(start_input,
 			  audio_channel);
+
+  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
+    selected_input = ags_channel_pad_nth(input,
+					 input_pads - y - 1);
+  }else{
+    selected_input = ags_channel_pad_nth(input,
+					 y);
+  }
   
-  for(i = 0; input != NULL && i < AGS_FX_NOTATION_AUDIO_PROCESSOR_MAX_CHANNELS; i++){
-    AgsRecycling *first_recycling;
+  if(selected_input != NULL){
+    AgsRecycling *first_recycling, *last_recycling;
+    AgsRecycling *recycling, *next_recycling;
+    AgsRecycling *end_recycling;
     AgsRecallID *child_recall_id;
     
     GObject *output_soundcard;
 
     GList *start_list, *list;
 
-    g_object_get(input,
+    g_object_get(selected_input,
 		 "output-soundcard", &output_soundcard,
 		 "first-recycling", &first_recycling,
+		 "last-recycling", &last_recycling,
 		 NULL);
+
+    end_recycling = ags_recycling_next(last_recycling);
 
     /* get child recall id */
     g_object_get(selected_channel,
@@ -226,16 +269,51 @@ ags_fx_notation_audio_processor_real_alloc_data(AgsFxNotationAudioProcessor *fx_
       list = list->next;
     }
     
-    fx_notation_audio_processor->audio_signal[i] = ags_audio_signal_new(output_soundcard,
-									first_recycling,
-									child_recall_id);
-    ags_audio_signal_stream_resize(fx_notation_audio_processor->audio_signal[i],
-				   1);
+    while(recycling != end_recycling){
+      /* create audio signal */
+      audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
+					  (GObject *) recycling,
+					  (GObject *) child_recall_id);
+      g_object_set(audio_signal,
+		   "note", note,
+		   NULL);
+	  
+      if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_PATTERN_MODE)){
+	ags_recycling_create_audio_signal_with_defaults(recycling,
+							audio_signal,
+							0.0, 0);
+      }else{
+	guint note_x0, note_x1;
+	guint buffer_size;
 
-    fx_notation_audio_processor->audio_signal[i]->stream_current = fx_notation_audio_processor->audio_signal[i]->stream;
+	note_x0 = notation_counter;
 
-    ags_recycling_add_audio_signal(fx_notation_audio_processor->audio_signal[i],
-				   audio_signal);
+	g_object_get(note,
+		     "x1", &note_x1,
+		     NULL);
+
+	buffer_size = audio_signal->buffer_size;
+	
+	/* create audio signal with frame count */
+	ags_recycling_create_audio_signal_with_frame_count(recycling,
+							   audio_signal,
+							   (guint) (((gdouble) buffer_size * delay) * (gdouble) (note_x1 - note_x0)),
+							   0.0, 0);
+      }
+	  
+      audio_signal->stream_current = audio_signal->stream;
+	    
+      ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
+      ags_recycling_add_audio_signal(recycling,
+				     audio_signal);
+
+      /* iterate */
+      next_recycling = ags_recycling_next(recycling);
+
+      g_object_unref(recycling);
+
+      recycling = next_recycling;
+    }
 
     if(output_soundcard != NULL){
       g_object_unref(output_soundcard);
@@ -251,15 +329,12 @@ ags_fx_notation_audio_processor_real_alloc_data(AgsFxNotationAudioProcessor *fx_
     if(child_recall_id != NULL){
       g_object_unref(child_recall_id);
     }
-    
-    /* iterate */
-    next_input = ags_channel_next_pad(input);
-
-    g_object_unref(input);
-
-    input = next_input;
   }
 
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+  
   if(start_input != NULL){
     g_object_unref(start_input);
   }
@@ -267,56 +342,18 @@ ags_fx_notation_audio_processor_real_alloc_data(AgsFxNotationAudioProcessor *fx_
   if(input != NULL){
     g_object_unref(input);
   }
-}
 
-void
-ags_fx_notation_audio_processor_alloc_data(AgsFxNotationAudioProcessor *fx_notation_audio_processor)
-{
-  g_return_if_fail(AGS_IS_FX_NOTATION_AUDIO_PROCESSOR(fx_notation_audio_processor));
+  if(selected_input != NULL){
+    g_object_unref(selected_input);
+  }
 
-  g_object_ref(fx_notation_audio_processor);
-  AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->alloc_data(fx_notation_audio_processor);
-  g_object_unref(fx_notation_audio_processor);
-}
-
-void
-ags_fx_notation_audio_processor_real_copy_data(AgsFxNotationAudioProcessor *fx_notation_audio_processor)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_fx_notation_audio_processor_copy_data(AgsFxNotationAudioProcessor *fx_notation_audio_processor)
-{
-  g_return_if_fail(AGS_IS_FX_NOTATION_AUDIO_PROCESSOR(fx_notation_audio_processor));
-
-  g_object_ref(fx_notation_audio_processor);
-  AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->copy_data(fx_notation_audio_processor);
-  g_object_unref(fx_notation_audio_processor);
-}
-
-void
-ags_fx_notation_audio_processor_real_clear_data(AgsFxNotationAudioProcessor *fx_notation_audio_processor)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_fx_notation_audio_processor_clear_data(AgsFxNotationAudioProcessor *fx_notation_audio_processor)
-{
-  g_return_if_fail(AGS_IS_FX_NOTATION_AUDIO_PROCESSOR(fx_notation_audio_processor));
-
-  g_object_ref(fx_notation_audio_processor);
-  AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->clear_data(fx_notation_audio_processor);
-  g_object_unref(fx_notation_audio_processor);
-}
-
-void
-ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
-					    AgsNote *note,
-					    guint velocity)
-{
-  //TODO:JK: implement me
+  if(recall_id != NULL){
+    g_object_unref(recall_id);
+  }
+  
+  if(fx_notation_audio != NULL){
+    g_object_unref(fx_notation_audio);
+  }
 }
 
 void

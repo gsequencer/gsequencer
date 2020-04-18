@@ -50,11 +50,6 @@ struct _AgsFxNotationAudioProcessorClass
 {
   AgsRecallAudioRunClass recall_audio_run;
 
-  void (*alloc_data)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
-  
-  void (*copy_data)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
-  void (*clear_data)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
-
   void (*key_on)(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
 		 AgsNote *note,
 		 guint velocity);
@@ -71,11 +66,6 @@ struct _AgsFxNotationAudioProcessorClass
 };
 
 GType ags_fx_notation_audio_processor_get_type();
-
-void ags_fx_notation_audio_processor_alloc_data(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
-
-void ags_fx_notation_audio_processor_copy_data(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
-void ags_fx_notation_audio_processor_clear_data(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 
 void ags_fx_notation_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
 					    AgsNote *note,
