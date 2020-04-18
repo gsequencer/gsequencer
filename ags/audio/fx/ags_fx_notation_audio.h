@@ -52,9 +52,6 @@ struct _AgsFxNotationAudio
   AgsRecallAudio recall_audio;
 
   guint flags;
-  
-  gdouble delay_counter;  
-  guint64 offset_counter;
 
   GList *feed_note;
   

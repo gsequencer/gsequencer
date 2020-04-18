@@ -36,7 +36,7 @@ G_BEGIN_DECLS
 #define AGS_IS_FX_NOTATION_AUDIO_PROCESSOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FX_NOTATION_AUDIO_PROCESSOR))
 #define AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_NOTATION_AUDIO_PROCESSOR, AgsFxNotationAudioProcessorClass))
 
-#define AGS_FX_NOTATION_AUDIO_PROCESSOR_MAX_CHANNELS (128)
+#define AGS_FX_NOTATION_AUDIO_PROCESSOR_DEFAULT_KEY_ON_VELOCITY (127)
 
 typedef struct _AgsFxNotationAudioProcessor AgsFxNotationAudioProcessor;
 typedef struct _AgsFxNotationAudioProcessorClass AgsFxNotationAudioProcessorClass;
@@ -44,6 +44,11 @@ typedef struct _AgsFxNotationAudioProcessorClass AgsFxNotationAudioProcessorClas
 struct _AgsFxNotationAudioProcessor
 {
   AgsRecallAudioRun recall_audio_run;
+  
+  gdouble delay_counter;  
+  guint64 offset_counter;
+
+  AgsTimestamp *timestamp;
 };
 
 struct _AgsFxNotationAudioProcessorClass

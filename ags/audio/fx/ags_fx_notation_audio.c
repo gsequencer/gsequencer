@@ -256,9 +256,6 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
 
   fx_notation_audio->flags = 0;
   
-  fx_notation_audio->delay_counter = 0.0;
-  fx_notation_audio->offset_counter = 0;
-
   fx_notation_audio->feed_note = NULL;
 
   bpm = AGS_SOUNDCARD_DEFAULT_BPM;
