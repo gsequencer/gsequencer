@@ -68,6 +68,8 @@ struct _AgsFxNotationAudioProcessorClass
   void (*play)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
   void (*record)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
   void (*feed)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
+
+  void (*counter_change)(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 };
 
 GType ags_fx_notation_audio_processor_get_type();
@@ -85,6 +87,8 @@ void ags_fx_notation_audio_processor_key_pressure(AgsFxNotationAudioProcessor *f
 void ags_fx_notation_audio_processor_play(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 void ags_fx_notation_audio_processor_record(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 void ags_fx_notation_audio_processor_feed(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
+
+void ags_fx_notation_audio_processor_counter_change(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 
 AgsFxNotationAudioProcessor* ags_fx_notation_audio_processor_new(AgsAudio *audio);
 
