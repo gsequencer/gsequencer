@@ -60,7 +60,7 @@ ags_fx_dssi_channel_get_type()
       (GInstanceInitFunc) ags_fx_dssi_channel_init,
     };
 
-    ags_type_fx_dssi_channel = g_type_register_static(AGS_TYPE_FX_DSSI_CHANNEL,
+    ags_type_fx_dssi_channel = g_type_register_static(AGS_TYPE_FX_NOTATION_CHANNEL,
 						      "AgsFxDssiChannel",
 						      &ags_fx_dssi_channel_info,
 						      0);
