@@ -20,6 +20,7 @@
 #include <ags/audio/fx/ags_fx_dssi_audio.h>
 
 #include <ags/plugin/ags_dssi_manager.h>
+#include <ags/plugin/ags_dssi_plugin.h>
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_plugin_port.h>
 
@@ -870,6 +871,64 @@ ags_fx_dssi_audio_unload_port(AgsFxDssiAudio *fx_dssi_audio)
   }
 
   g_free(dssi_port);
+}
+
+/**
+ * ags_fx_dssi_audio_change_program:
+ * @fx_dssi_audio: the #AgsFxDssiAudio
+ * @bank_index: the bank index
+ * @program_index: the program index
+ * 
+ * Change program of @fx_dssi_audio.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_fx_dssi_audio_change_program(AgsFxDssiAudio *fx_dssi_audio,
+				 guint bank_index,
+				 guint program_index)
+{
+  AgsDssiPlugin *dssi_plugin;
+
+  guint i;
+
+  GRecMutex *recall_mutex;
+  
+  if(!AGS_IS_FX_DSSI_AUDIO(fx_dssi_audio)){
+    return;
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_audio);
+
+  /* get DSSI plugin and port */
+  g_rec_mutex_lock(recall_mutex);
+
+  dssi_plugin = fx_dssi_audio->dssi_plugin;
+  
+  g_rec_mutex_unlock(recall_mutex);
+  
+  if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
+    g_rec_mutex_lock(recall_mutex);
+
+    ags_dssi_plugin_change_program(dssi_plugin,
+				   fx_dssi_audio->ladspa_handle[0],
+				   bank_index,
+				   program_index);
+    
+    g_rec_mutex_unlock(recall_mutex);
+  }else{
+    g_rec_mutex_lock(recall_mutex);
+
+    for(i = 0; i < 128; i++){
+      ags_dssi_plugin_change_program(dssi_plugin,
+				     fx_dssi_audio->ladspa_handle[i],
+				     bank_index,
+				     program_index);
+    }
+    
+    g_rec_mutex_unlock(recall_mutex);
+  }
 }
 
 /**

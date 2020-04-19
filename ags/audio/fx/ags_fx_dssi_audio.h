@@ -85,6 +85,8 @@ struct _AgsFxDssiAudio
 struct _AgsFxDssiAudioClass
 {
   AgsFxNotationAudioClass fx_notation_audio;
+
+  
 };
 
 GType ags_fx_dssi_audio_get_type();
@@ -98,6 +100,10 @@ void ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio);
 
 void ags_fx_dssi_audio_unload_plugin(AgsFxDssiAudio *fx_dssi_audio);
 void ags_fx_dssi_audio_unload_port(AgsFxDssiAudio *fx_dssi_audio);
+
+void ags_fx_dssi_audio_change_program(AgsFxDssiAudio *fx_dssi_audio,
+				      guint bank_index,
+				      guint program_index);
 
 AgsFxDssiAudio* ags_fx_dssi_audio_new(AgsAudio *audio);
 
