@@ -185,6 +185,20 @@ void ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 void ags_audio_signal_feed(AgsAudioSignal *audio_signal,
 			   AgsAudioSignal *template,
 			   guint frame_count);
+void ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
+				    AgsAudioSignal *template,
+				    guint frame_count,
+				    gboolean do_open, gboolean do_close);
+
+void ags_audio_signal_open_feed(AgsAudioSignal *audio_signal,
+				AgsAudioSignal *template,
+				guint frame_count);
+void ags_audio_signal_continue_feed(AgsAudioSignal *audio_signal,
+				    AgsAudioSignal *template,
+				    guint frame_count);
+void ags_audio_signal_close_feed(AgsAudioSignal *audio_signal,
+				 AgsAudioSignal *template,
+				 guint frame_count);
 
 /* query */
 guint ags_audio_signal_get_length_till_current(AgsAudioSignal *audio_signal);
