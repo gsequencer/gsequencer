@@ -560,6 +560,7 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_audio);
 
+  /* get DSSI plugin and port */
   g_rec_mutex_lock(recall_mutex);
 
   dssi_plugin = fx_dssi_audio->dssi_plugin;
@@ -700,12 +701,14 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
     dssi_port[i] = NULL;
   }
 
+  /* set DSSI port */
   g_rec_mutex_lock(recall_mutex);
 
   fx_dssi_audio->dssi_port = dssi_port;
   
   g_rec_mutex_unlock(recall_mutex);
 
+  /* unref */
   g_list_free_full(start_plugin_port,
 		   (GDestroyNotify) g_object_unref);
 }

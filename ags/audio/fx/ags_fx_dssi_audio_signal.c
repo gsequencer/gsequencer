@@ -19,6 +19,8 @@
 
 #include <ags/audio/fx/ags_fx_dssi_audio_signal.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
+
 #include <ags/audio/fx/ags_fx_dssi_audio.h>
 #include <ags/audio/fx/ags_fx_dssi_channel_processor.h>
 #include <ags/audio/fx/ags_fx_dssi_recycling.h>
@@ -157,12 +159,16 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
   AgsFxDssiAudio *fx_dssi_audio;
   AgsFxDssiChannelProcessor *fx_dssi_channel_processor;
   AgsFxDssiRecycling *fx_dssi_recycling;
+  AgsFxDssiAudioSignal *fx_dssi_audio_signal;
   
   AgsDssiPlugin *dssi_plugin;
 
   guint audio_start_mapping;
   guint midi_start_mapping;
   gint midi_note;
+  guint format;
+  guint copy_mode_out;
+  guint i;
   
   void (*run_synth)(LADSPA_Handle Instance,
 		    unsigned long SampleCount,
@@ -171,6 +177,7 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
   void (*run)(LADSPA_Handle Instance,
 	      unsigned long SampleCount);
   
+  GRecMutex *source_stream_mutex;
   GRecMutex *fx_dssi_audio_mutex;
   GRecMutex *base_plugin_mutex;
 
@@ -199,6 +206,10 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 	       "audio", &audio,
 	       NULL);
   
+  g_object_get(source,
+	       "format", &format,
+	       NULL);
+
   /* get DSSI plugin */
   fx_dssi_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_audio);
 
@@ -209,6 +220,7 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
   g_rec_mutex_unlock(fx_dssi_audio_mutex);
 
   /* process data */
+  source_stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
 
   g_rec_mutex_lock(base_plugin_mutex);
@@ -225,19 +237,27 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 
   midi_note = (y - audio_start_mapping + midi_start_mapping);
 
+  copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
+
   if(midi_note >= 0 &&
      midi_note < 128){
     if(delay_counter == 0.0 &&
        x0 == offset_counter){
       g_rec_mutex_lock(fx_dssi_audio_mutex);
-      
+
       fx_dssi_audio->key_on[midi_note] += 1;
-      
-      g_rec_mutex_lock(fx_dssi_audio_mutex);
+
+      g_rec_mutex_unlock(fx_dssi_audio_mutex);
     }    
     
     if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
       g_rec_mutex_lock(fx_dssi_audio_mutex);
+
+      if(fx_dssi_audio->output != NULL){
+	ags_audio_buffer_util_clear_float(fx_dssi_audio->output[0], fx_dssi_audio->output_lines,
+					  buffer_size);
+      }
 
       if(run_synth != NULL){
 	/* key on */
@@ -246,27 +266,62 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 	fx_dssi_audio->event_buffer[midi_note]->data.note.channel = 0;
 	fx_dssi_audio->event_buffer[midi_note]->data.note.note = midi_note;
 	fx_dssi_audio->event_buffer[midi_note]->data.note.velocity = 127;
-	
+
 	run_synth(fx_dssi_audio->ladspa_handle[0],
-		  (unsigned long) buffer_size,
+		  (unsigned long) (fx_dssi_audio->output_lines * buffer_size),
 		  fx_dssi_audio->event_buffer[midi_note],
 		  1);
       }else if(run != NULL){
 	run(fx_dssi_audio->ladspa_handle[0],
-	    (unsigned long) buffer_size);
+	    (unsigned long) (fx_dssi_audio->output_lines * buffer_size));
       }
-      
-      g_rec_mutex_unlock(fx_dssi_audio_mutex);
+
+      g_rec_mutex_lock(source_stream_mutex);
+
+      if(fx_dssi_audio->output != NULL &&
+	 fx_dssi_audio->output_lines >= 1 &&
+	 source->stream_current != NULL){
+	//NOTE:JK: only mono input, additional channels discarded
+	ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+						    fx_dssi_audio->output[0], fx_dssi_audio->output_lines, 0,
+						    buffer_size, copy_mode_out);
+      }
+	  
+      g_rec_mutex_unlock(source_stream_mutex);
+
+      g_rec_mutex_lock(fx_dssi_audio_mutex);
     }else{
+      g_rec_mutex_lock(fx_dssi_audio_mutex);
+
+      if(fx_dssi_audio->output != NULL){
+	ags_audio_buffer_util_clear_float(fx_dssi_audio->output[midi_note], fx_dssi_audio->output_lines,
+					  buffer_size);
+      }
+
       if(run_synth != NULL){
 	run_synth(fx_dssi_audio->ladspa_handle[midi_note],
-		  (unsigned long) buffer_size,
+		  (unsigned long) (fx_dssi_audio->output_lines * buffer_size),
 		  fx_dssi_audio->event_buffer[midi_note],
 		  1);
       }else if(run != NULL){
 	run(fx_dssi_audio->ladspa_handle[midi_note],
-	    (unsigned long) buffer_size);
+	    (unsigned long) (fx_dssi_audio->output_lines * buffer_size));
       }
+      
+      g_rec_mutex_lock(source_stream_mutex);
+
+      if(fx_dssi_audio->output != NULL &&
+	 fx_dssi_audio->output_lines >= 1 &&
+	 source->stream_current != NULL){
+	//NOTE:JK: only mono input, additional channels discarded
+	ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+						    fx_dssi_audio->output[midi_note], fx_dssi_audio->output_lines, 0,
+						    buffer_size, copy_mode_out);
+      }
+	  
+      g_rec_mutex_unlock(source_stream_mutex);
+
+      g_rec_mutex_unlock(fx_dssi_audio_mutex);
     }
   }
   
