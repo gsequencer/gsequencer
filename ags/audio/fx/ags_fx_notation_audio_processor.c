@@ -240,10 +240,11 @@ ags_fx_notation_audio_processor_real_run_inter(AgsRecall *recall)
 
   ags_fx_notation_audio_processor_feed(fx_notation_audio_processor);
   
-  ags_fx_notation_audio_processor_counter_change(fx_notation_audio_processor);
-  
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_notation_audio_processor_parent_class)->run_inter(recall);
+
+  /* post processing - counter change */
+  ags_fx_notation_audio_processor_counter_change(fx_notation_audio_processor);
 }
 
 void
@@ -399,31 +400,9 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
       g_object_set(audio_signal,
 		   "note", note,
 		   NULL);
-	  
-      if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_PATTERN_MODE)){
-	ags_recycling_create_audio_signal_with_defaults(recycling,
-							audio_signal,
-							0.0, 0);
-      }else{
-	guint note_x0, note_x1;
-	guint buffer_size;
 
-	note_x0 = (guint) offset_counter;
-
-	g_object_get(note,
-		     "x1", &note_x1,
-		     NULL);
-
-	buffer_size = audio_signal->buffer_size;
-	
-	/* create audio signal with frame count */
-	ags_recycling_create_audio_signal_with_frame_count(recycling,
-							   audio_signal,
-							   (guint) (((gdouble) buffer_size * delay) * (gdouble) (note_x1 - note_x0)),
-							   0.0, 0);
-      }
-	  
-      audio_signal->stream_current = audio_signal->stream;
+      ags_audio_signal_stream_resize(audio_signal,
+				     (guint) floor(delay) + 1);      
 	    
       ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
       ags_recycling_add_audio_signal(recycling,
@@ -1062,58 +1041,15 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 
   while(recording_note != NULL){
     guint current_x1;
-    guint current_y;
 	    
     g_object_get(recording_note->data,
 		 "x1", &current_x1,
-		 "y", &current_y,
 		 NULL);
     
     if(current_x1 < offset_counter){
-      GList *start_audio_signal, *audio_signal;
-
-      g_rec_mutex_lock(fx_notation_audio_processor_mutex);
-
-      start_audio_signal = g_list_copy_deep(fx_notation_audio_processor->recording_audio_signal,
-					    (GCopyFunc) g_object_ref,
-					    NULL);
-      
-      g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
-      
-      audio_signal = start_audio_signal;
-	
-      while(audio_signal != NULL){
-	if(ags_audio_signal_contains_note(audio_signal->data, recording_note->data)){
-	  AgsAudioSignal *template;
-	  
-	  guint length;
-	  guint buffer_size;
-
-	  g_object_get(audio_signal->data,
-		       "template", &template,
-		       "length", &length,
-		       "buffer-size", &buffer_size,
-		       NULL);
-	  
-	  ags_audio_signal_stream_safe_resize(audio_signal->data,
-					      length + floor(delay) + 1);
-
-	  ags_audio_signal_feed(audio_signal->data,
-				template,
-				(length + floor(delay) + 1) * buffer_size);
-
-	  if(template != NULL){
-	    g_object_unref(template);
-	  }
-
-	  break;
-	}
-
-	audio_signal = audio_signal->next;
-      }
-
-      g_list_free_full(start_audio_signal,
-		       (GDestroyNotify) g_object_unref);
+      g_object_set(recording_note->data,
+		   "x1", current_x1 + 1,
+		   NULL);
     }
 	    
     /* iterate */
@@ -1242,58 +1178,15 @@ ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notati
 
     if(!is_removed){
       guint current_x1;
-      guint current_y;
       
       g_object_get(feeding_note->data,
 		   "x1", &current_x1,
-		   "y", &current_y,
 		   NULL);
     
       if(current_x1 < offset_counter){
-	GList *start_audio_signal, *audio_signal;
-
-	g_rec_mutex_lock(fx_notation_audio_processor_mutex);
-
-	start_audio_signal = g_list_copy_deep(fx_notation_audio_processor->feeding_audio_signal,
-					      (GCopyFunc) g_object_ref,
-					      NULL);
-      
-	g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
-      
-	audio_signal = start_audio_signal;
-	
-	while(audio_signal != NULL){
-	  if(ags_audio_signal_contains_note(audio_signal->data, feeding_note->data)){
-	    AgsAudioSignal *template;
-	  
-	    guint length;
-	    guint buffer_size;
-
-	    g_object_get(audio_signal->data,
-			 "template", &template,
-			 "length", &length,
-			 "buffer-size", &buffer_size,
-			 NULL);
-
-	    ags_audio_signal_stream_safe_resize(audio_signal->data,
-						length + floor(delay) + 1);
-
-	    ags_audio_signal_feed(audio_signal->data,
-				  template,
-				  (length + floor(delay) + 1) * buffer_size);
-
-	    if(template != NULL){
-	      g_object_unref(template);
-	    }
-
-	    break;
-	  }
-
-	  audio_signal = audio_signal->next;
-	}
-
-	g_list_free_full(start_audio_signal,
-			 (GDestroyNotify) g_object_unref);
+	g_object_set(feeding_note->data,
+		     "x1", current_x1 + 1,
+		     NULL);
       }      
     }else{
       g_rec_mutex_lock(fx_notation_audio_processor_mutex);

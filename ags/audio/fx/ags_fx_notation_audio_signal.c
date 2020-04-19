@@ -19,12 +19,18 @@
 
 #include <ags/audio/fx/ags_fx_notation_audio_signal.h>
 
+#include <ags/audio/fx/ags_fx_notation_audio_processor.h>
+#include <ags/audio/fx/ags_fx_notation_channel_processor.h>
+#include <ags/audio/fx/ags_fx_notation_recycling.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_notation_audio_signal_class_init(AgsFxNotationAudioSignalClass *fx_notation_audio_signal);
 void ags_fx_notation_audio_signal_init(AgsFxNotationAudioSignal *fx_notation_audio_signal);
 void ags_fx_notation_audio_signal_dispose(GObject *gobject);
 void ags_fx_notation_audio_signal_finalize(GObject *gobject);
+
+void ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_notation_audio_signal
@@ -75,6 +81,7 @@ void
 ags_fx_notation_audio_signal_class_init(AgsFxNotationAudioSignalClass *fx_notation_audio_signal)
 {
   GObjectClass *gobject;
+  AgsRecallClass *recall;
 
   ags_fx_notation_audio_signal_parent_class = g_type_class_peek_parent(fx_notation_audio_signal);
 
@@ -83,6 +90,11 @@ ags_fx_notation_audio_signal_class_init(AgsFxNotationAudioSignalClass *fx_notati
 
   gobject->dispose = ags_fx_notation_audio_signal_dispose;
   gobject->finalize = ags_fx_notation_audio_signal_finalize;
+
+  /* AgsRecallClass */
+  recall = (AgsRecallClass *) fx_notation_audio_signal;
+  
+  recall->run_inter = ags_fx_notation_audio_signal_real_run_inter;
 }
 
 void
@@ -114,6 +126,154 @@ ags_fx_notation_audio_signal_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_notation_audio_signal_parent_class)->finalize(gobject);
+}
+
+void
+ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
+{
+  AgsAudioSignal *source;
+  AgsAudioSignal *template;
+  AgsFxNotationAudioProcessor *fx_notation_audio_processor;
+  AgsFxNotationChannelProcessor *fx_notation_channel_processor;
+  AgsFxNotationRecycling *fx_notation_recycling;
+
+  GList *start_note, *note;
+  
+  gdouble delay_counter;
+  guint64 offset_counter;
+  gdouble delay;
+  guint length;
+  guint frame_count;
+  guint buffer_size;
+  guint i;
+  
+  GRecMutex *fx_notation_audio_processor_mutex;
+
+  source = NULL;
+
+  fx_notation_audio_processor = NULL;
+  fx_notation_channel_processor = NULL;
+  fx_notation_recycling = NULL;
+  
+  g_object_get(recall,
+	       "source", &source,
+	       "parent", &fx_notation_recycling,
+	       NULL);
+
+  g_object_get(fx_notation_recycling,
+	       "parent", &fx_notation_channel_processor,
+	       NULL);
+  
+  g_object_get(fx_notation_channel_processor,
+	       "recall-audio-run", &fx_notation_audio_processor,
+	       NULL);
+
+  fx_notation_audio_processor_mutex = NULL;
+  
+  delay_counter = 0.0;
+  offset_counter = 0;
+
+  if(fx_notation_audio_processor != NULL){
+    fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
+
+    /* get delay counter */
+    g_rec_mutex_lock(fx_notation_audio_processor_mutex);
+    
+    delay_counter = fx_notation_audio_processor->delay_counter;
+    offset_counter = fx_notation_audio_processor->offset_counter;
+
+    g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
+  }
+
+  template = NULL;
+
+  start_note = NULL;
+
+  length = 0;
+  frame_count = 0;
+  
+  g_object_get(source,
+	       "template", &template,
+	       "note", &start_note,
+	       "delay", &delay,
+	       "length", &length,
+	       "frame-count", &frame_count,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  note = start_note;
+
+  for(i = 0; note != NULL; i++){
+    guint x0, x1;
+
+    g_object_get(note->data,
+		 "x0", &x0,
+		 "x1", &x1,
+		 NULL);
+
+    if(x0 >= offset_counter){
+      if(x1 < offset_counter){
+	if(delay_counter == 0.0 &&
+	   x0 != offset_counter){
+	  ags_audio_signal_stream_safe_resize(source,
+					      length + ((guint) floor(delay) + 1));
+	}
+
+	if(i > 0){
+	  g_object_set(source,
+		       "frame-count", frame_count,
+		       NULL);
+	}
+
+	if(x0 == offset_counter &&
+	   delay_counter == 0.0){
+	  ags_audio_signal_open_feed(source,
+				     template,
+				     frame_count + buffer_size);
+	}else if(x1 + 1 == offset_counter &&
+		 delay_counter + 1.0 >= delay){
+	  ags_audio_signal_close_feed(source,
+				      template,
+				      frame_count + buffer_size);
+	}else{
+	  ags_audio_signal_continue_feed(source,
+					 template,
+					 frame_count + buffer_size);
+	}
+      }else{
+	ags_audio_signal_remove_note(source,
+				     note->data);
+      }
+    }
+
+    note = note->next;
+  }
+  
+  if(source != NULL){
+    g_object_unref(source);
+  }
+
+  if(template != NULL){
+    g_object_unref(template);
+  }
+
+  g_list_free_full(start_note,
+		   (GDestroyNotify) g_object_unref);
+  
+  if(fx_notation_audio_processor != NULL){
+    g_object_unref(fx_notation_audio_processor);
+  }
+  
+  if(fx_notation_channel_processor != NULL){
+    g_object_unref(fx_notation_channel_processor);
+  }
+  
+  if(fx_notation_recycling != NULL){
+    g_object_unref(fx_notation_recycling);
+  }
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_fx_notation_audio_signal_parent_class)->run_inter(recall);
 }
 
 /**
