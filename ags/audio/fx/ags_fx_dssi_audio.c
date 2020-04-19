@@ -158,6 +158,7 @@ ags_fx_dssi_audio_dispose(GObject *gobject)
 void
 ags_fx_dssi_audio_finalize(GObject *gobject)
 {
+  AgsPort **iter;
   AgsFxDssiAudio *fx_dssi_audio;
   AgsDssiPlugin *dssi_plugin;
   
@@ -231,6 +232,14 @@ ags_fx_dssi_audio_finalize(GObject *gobject)
   g_free(fx_dssi_audio->output);
     
   g_free(fx_dssi_audio->ladspa_handle);
+
+  if(fx_dssi_audio->dssi_port == NULL){
+    for(iter = fx_dssi_audio->dssi_port; iter[0] != NULL; iter++){
+      g_object_unref(iter[0]);
+    }
+
+    g_free(fx_dssi_audio->dssi_port);
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_fx_dssi_audio_parent_class)->finalize(gobject);
@@ -533,7 +542,7 @@ void
 ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 {
   AgsDssiPlugin *dssi_plugin;
-  AgsPort **dssi_port;
+  AgsPort **dssi_port, **iter;
 
   GList *start_plugin_port, *plugin_port;
 
@@ -559,18 +568,18 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 
   if(!ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
     g_rec_mutex_lock(recall_mutex);
-
-    if(fx_dssi_audio->dssi_port != NULL){
-      for(; dssi_port[0] != NULL; dssi_port++){
-	g_object_unref(dssi_port[0]);
-      }
-
-      g_free(fx_dssi_audio->dssi_port);
-
-      fx_dssi_audio->dssi_port = NULL;
-    }
+    
+    fx_dssi_audio->dssi_port = NULL;
     
     g_rec_mutex_unlock(recall_mutex);
+
+    if(dssi_port != NULL){
+      for(iter = dssi_port; iter[0] != NULL; iter++){
+	g_object_unref(iter[0]);
+      }
+
+      g_free(dssi_port);
+    }
     
     return;
   }
@@ -822,11 +831,40 @@ ags_fx_dssi_audio_unload_plugin(AgsFxDssiAudio *fx_dssi_audio)
 void
 ags_fx_dssi_audio_unload_port(AgsFxDssiAudio *fx_dssi_audio)
 {
+  AgsPort **dssi_port, **iter;
+
+  guint i;
+
+  GRecMutex *recall_mutex;
+
   if(!AGS_IS_FX_DSSI_AUDIO(fx_dssi_audio)){
     return;
   }
 
-  //TODO:JK: implement me
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_audio);
+
+  g_rec_mutex_lock(recall_mutex);
+
+  dssi_port = fx_dssi_audio->dssi_port;
+  
+  g_rec_mutex_unlock(recall_mutex);
+
+  if(dssi_port == NULL){
+    return;
+  }
+  
+  g_rec_mutex_lock(recall_mutex);
+
+  fx_dssi_audio->dssi_port = NULL;
+
+  g_rec_mutex_unlock(recall_mutex);
+
+  for(iter = dssi_port; iter[0] != NULL; iter++){
+    g_object_unref(iter[0]);
+  }
+
+  g_free(dssi_port);
 }
 
 /**
