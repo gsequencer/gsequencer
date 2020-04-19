@@ -19,12 +19,32 @@
 
 #include <ags/audio/fx/ags_fx_dssi_audio_signal.h>
 
+#include <ags/audio/fx/ags_fx_dssi_audio.h>
+#include <ags/audio/fx/ags_fx_dssi_channel_processor.h>
+#include <ags/audio/fx/ags_fx_dssi_recycling.h>
+
+#include <ags/plugin/ags_base_plugin.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_dssi_audio_signal_class_init(AgsFxDssiAudioSignalClass *fx_dssi_audio_signal);
 void ags_fx_dssi_audio_signal_init(AgsFxDssiAudioSignal *fx_dssi_audio_signal);
 void ags_fx_dssi_audio_signal_dispose(GObject *gobject);
 void ags_fx_dssi_audio_signal_finalize(GObject *gobject);
+
+void ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+					  AgsAudioSignal *source,
+					  AgsNote *note,
+					  guint x0, guint x1,
+					  guint y,
+					  gdouble delay_counter, guint64 offset_counter,
+					  guint frame_count,
+					  gdouble delay, guint buffer_size);
+void ags_fx_dssi_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+					    AgsAudioSignal *source,
+					    AgsNote *note,
+					    guint x0, guint x1,
+					    guint y);
 
 /**
  * SECTION:ags_fx_dssi_audio_signal
@@ -75,6 +95,7 @@ void
 ags_fx_dssi_audio_signal_class_init(AgsFxDssiAudioSignalClass *fx_dssi_audio_signal)
 {
   GObjectClass *gobject;
+  AgsFxNotationAudioSignalClass *fx_notation_audio_signal;
 
   ags_fx_dssi_audio_signal_parent_class = g_type_class_peek_parent(fx_dssi_audio_signal);
 
@@ -83,6 +104,12 @@ ags_fx_dssi_audio_signal_class_init(AgsFxDssiAudioSignalClass *fx_dssi_audio_sig
 
   gobject->dispose = ags_fx_dssi_audio_signal_dispose;
   gobject->finalize = ags_fx_dssi_audio_signal_finalize;
+
+  /* AgsFxNotationAudioSignalClass */
+  fx_notation_audio_signal = (AgsFxNotationAudioSignalClass *) fx_dssi_audio_signal;
+  
+  fx_notation_audio_signal->stream_feed = ags_fx_dssi_audio_signal_stream_feed;
+  fx_notation_audio_signal->notify_remove = ags_fx_dssi_audio_signal_notify_remove;
 }
 
 void
@@ -114,6 +141,228 @@ ags_fx_dssi_audio_signal_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_dssi_audio_signal_parent_class)->finalize(gobject);
+}
+
+void
+ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+				     AgsAudioSignal *source,
+				     AgsNote *note,
+				     guint x0, guint x1,
+				     guint y,
+				     gdouble delay_counter, guint64 offset_counter,
+				     guint frame_count,
+				     gdouble delay, guint buffer_size)
+{
+  AgsAudio *audio;
+  AgsFxDssiAudio *fx_dssi_audio;
+  AgsFxDssiChannelProcessor *fx_dssi_channel_processor;
+  AgsFxDssiRecycling *fx_dssi_recycling;
+  
+  AgsDssiPlugin *dssi_plugin;
+
+  guint audio_start_mapping;
+  guint midi_start_mapping;
+  gint midi_note;
+  
+  void (*run_synth)(LADSPA_Handle Instance,
+		    unsigned long SampleCount,
+		    snd_seq_event_t *Events,
+		    unsigned long EventCount);
+  void (*run)(LADSPA_Handle Instance,
+	      unsigned long SampleCount);
+  
+  GRecMutex *fx_dssi_audio_mutex;
+  GRecMutex *base_plugin_mutex;
+
+  audio = NULL;
+  
+  fx_dssi_audio = NULL;
+  fx_dssi_channel_processor = NULL;
+  fx_dssi_recycling = NULL;
+
+  audio_start_mapping = 0;
+  midi_start_mapping = 0;
+  
+  g_object_get(fx_notation_audio_signal,
+	       "parent", &fx_dssi_recycling,
+	       NULL);
+
+  g_object_get(fx_dssi_recycling,
+	       "parent", &fx_dssi_channel_processor,
+	       NULL);
+  
+  g_object_get(fx_dssi_channel_processor,
+	       "recall-audio", &fx_dssi_audio,
+	       NULL);
+
+  g_object_get(fx_dssi_audio,
+	       "audio", &audio,
+	       NULL);
+  
+  /* get DSSI plugin */
+  fx_dssi_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_audio);
+
+  g_rec_mutex_lock(fx_dssi_audio_mutex);
+
+  dssi_plugin = fx_dssi_audio->dssi_plugin;
+  
+  g_rec_mutex_unlock(fx_dssi_audio_mutex);
+
+  /* process data */
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
+
+  g_rec_mutex_lock(base_plugin_mutex);
+
+  run_synth = AGS_DSSI_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(dssi_plugin)->plugin_descriptor)->run_synth;
+  run = AGS_DSSI_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(dssi_plugin)->plugin_descriptor)->LADSPA_Plugin->run;
+  
+  g_rec_mutex_unlock(base_plugin_mutex);
+
+  g_object_get(audio,
+	       "audio-start-mapping", &audio_start_mapping,
+	       "midi-start-mapping", &midi_start_mapping,
+	       NULL);
+
+  midi_note = (y - audio_start_mapping + midi_start_mapping);
+
+  if(midi_note >= 0 &&
+     midi_note < 128){
+    if(delay_counter == 0.0 &&
+       x0 == offset_counter){
+      g_rec_mutex_lock(fx_dssi_audio_mutex);
+      
+      fx_dssi_audio->key_on[midi_note] += 1;
+      
+      g_rec_mutex_lock(fx_dssi_audio_mutex);
+    }    
+    
+    if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
+      g_rec_mutex_lock(fx_dssi_audio_mutex);
+
+      if(run_synth != NULL){
+	/* key on */
+	fx_dssi_audio->event_buffer[midi_note]->type = SND_SEQ_EVENT_NOTEON;
+
+	fx_dssi_audio->event_buffer[midi_note]->data.note.channel = 0;
+	fx_dssi_audio->event_buffer[midi_note]->data.note.note = midi_note;
+	fx_dssi_audio->event_buffer[midi_note]->data.note.velocity = 127;
+	
+	run_synth(fx_dssi_audio->ladspa_handle[0],
+		  (unsigned long) buffer_size,
+		  fx_dssi_audio->event_buffer[midi_note],
+		  1);
+      }else if(run != NULL){
+	run(fx_dssi_audio->ladspa_handle[0],
+	    (unsigned long) buffer_size);
+      }
+      
+      g_rec_mutex_unlock(fx_dssi_audio_mutex);
+    }else{
+      if(run_synth != NULL){
+	run_synth(fx_dssi_audio->ladspa_handle[midi_note],
+		  (unsigned long) buffer_size,
+		  fx_dssi_audio->event_buffer[midi_note],
+		  1);
+      }else if(run != NULL){
+	run(fx_dssi_audio->ladspa_handle[midi_note],
+	    (unsigned long) buffer_size);
+      }
+    }
+  }
+  
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+  
+  if(fx_dssi_audio != NULL){
+    g_object_unref(fx_dssi_audio);
+  }
+  
+  if(fx_dssi_channel_processor != NULL){
+    g_object_unref(fx_dssi_channel_processor);
+  }
+  
+  if(fx_dssi_recycling != NULL){
+    g_object_unref(fx_dssi_recycling);
+  }
+}
+
+void
+ags_fx_dssi_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+				       AgsAudioSignal *source,
+				       AgsNote *note,
+				       guint x0, guint x1,
+				       guint y)
+{
+  AgsAudio *audio;
+  AgsFxDssiAudio *fx_dssi_audio;
+  AgsFxDssiChannelProcessor *fx_dssi_channel_processor;
+  AgsFxDssiRecycling *fx_dssi_recycling;
+
+  guint audio_start_mapping;
+  guint midi_start_mapping;
+  gint midi_note;
+
+  GRecMutex *fx_dssi_audio_mutex;
+
+  audio = NULL;
+  
+  fx_dssi_audio = NULL;
+  fx_dssi_channel_processor = NULL;
+  fx_dssi_recycling = NULL;
+
+  audio_start_mapping = 0;
+  midi_start_mapping = 0;
+
+  g_object_get(fx_notation_audio_signal,
+	       "parent", &fx_dssi_recycling,
+	       NULL);
+
+  g_object_get(fx_dssi_recycling,
+	       "parent", &fx_dssi_channel_processor,
+	       NULL);
+  
+  g_object_get(fx_dssi_channel_processor,
+	       "recall-audio", &fx_dssi_audio,
+	       NULL);
+
+  g_object_get(fx_dssi_audio,
+	       "audio", &audio,
+	       NULL);
+
+  g_object_get(audio,
+	       "audio-start-mapping", &audio_start_mapping,
+	       "midi-start-mapping", &midi_start_mapping,
+	       NULL);
+
+  fx_dssi_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_audio);
+
+  midi_note = (y - audio_start_mapping + midi_start_mapping);
+
+  if(midi_note >= 0 &&
+     midi_note < 128){
+    g_rec_mutex_lock(fx_dssi_audio_mutex);
+      
+    fx_dssi_audio->key_on[midi_note] -= 1;
+      
+    g_rec_mutex_lock(fx_dssi_audio_mutex);
+  }
+  
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+  
+  if(fx_dssi_audio != NULL){
+    g_object_unref(fx_dssi_audio);
+  }
+  
+  if(fx_dssi_channel_processor != NULL){
+    g_object_unref(fx_dssi_channel_processor);
+  }
+  
+  if(fx_dssi_recycling != NULL){
+    g_object_unref(fx_dssi_recycling);
+  }
 }
 
 /**

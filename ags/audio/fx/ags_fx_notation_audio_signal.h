@@ -48,9 +48,39 @@ struct _AgsFxNotationAudioSignal
 struct _AgsFxNotationAudioSignalClass
 {
   AgsRecallAudioSignalClass recall_audio_signal;
+
+  void (*stream_feed)(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+		      AgsAudioSignal *source,
+		      AgsNote *note,
+		      guint x0, guint x1,
+		      guint y,
+		      gdouble delay_counter, guint64 offset_counter,
+		      guint frame_count,
+		      gdouble delay, guint buffer_size);
+
+  void (*notify_remove)(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+			AgsAudioSignal *source,
+			AgsNote *note,
+			guint x0, guint x1,
+			guint y);
 };
 
 GType ags_fx_notation_audio_signal_get_type();
+
+void ags_fx_notation_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+					      AgsAudioSignal *source,
+					      AgsNote *note,
+					      guint x0, guint x1,
+					      guint y,
+					      gdouble delay_counter, guint64 offset_counter,
+					      guint frame_count,
+					      gdouble delay, guint buffer_size);
+
+void ags_fx_notation_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+						AgsAudioSignal *source,
+						AgsNote *note,
+						guint x0, guint x1,
+						guint y);
 
 /*  */
 AgsFxNotationAudioSignal* ags_fx_notation_audio_signal_new(AgsAudioSignal *audio_signal);

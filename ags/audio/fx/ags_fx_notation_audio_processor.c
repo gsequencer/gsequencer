@@ -498,10 +498,14 @@ ags_fx_notation_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_
   g_return_if_fail(AGS_IS_FX_NOTATION_AUDIO_PROCESSOR(fx_notation_audio_processor));
 
   g_object_ref(fx_notation_audio_processor);
-  AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->key_on(fx_notation_audio_processor,
-										 note,
-										 velocity,
-										 key_mode);
+
+  if(AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->key_on != NULL){
+    AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->key_on(fx_notation_audio_processor,
+										   note,
+										   velocity,
+										   key_mode);
+  }
+  
   g_object_unref(fx_notation_audio_processor);
 }
 
@@ -523,10 +527,14 @@ ags_fx_notation_audio_processor_key_off(AgsFxNotationAudioProcessor *fx_notation
   g_return_if_fail(AGS_IS_FX_NOTATION_AUDIO_PROCESSOR(fx_notation_audio_processor));
 
   g_object_ref(fx_notation_audio_processor);
-  AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->key_off(fx_notation_audio_processor,
-										  note,
-										  velocity,
-										  key_mode);
+
+  if(AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->key_off != NULL){
+    AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->key_off(fx_notation_audio_processor,
+										    note,
+										    velocity,
+										    key_mode);
+  }
+  
   g_object_unref(fx_notation_audio_processor);
 }
 
@@ -548,10 +556,14 @@ ags_fx_notation_audio_processor_key_pressure(AgsFxNotationAudioProcessor *fx_not
   g_return_if_fail(AGS_IS_FX_NOTATION_AUDIO_PROCESSOR(fx_notation_audio_processor));
 
   g_object_ref(fx_notation_audio_processor);
-  AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->key_pressure(fx_notation_audio_processor,
-										       note,
-										       velocity,
-										       key_mode);
+
+  if(AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->key_pressure != NULL){
+    AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->key_pressure(fx_notation_audio_processor,
+											 note,
+											 velocity,
+											 key_mode);
+  }
+  
   g_object_unref(fx_notation_audio_processor);
 }
 
@@ -635,7 +647,11 @@ ags_fx_notation_audio_processor_play(AgsFxNotationAudioProcessor *fx_notation_au
   g_return_if_fail(AGS_IS_FX_NOTATION_AUDIO_PROCESSOR(fx_notation_audio_processor));
 
   g_object_ref(fx_notation_audio_processor);
-  AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->play(fx_notation_audio_processor);
+
+  if(AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->play != NULL){
+    AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->play(fx_notation_audio_processor);
+  }
+  
   g_object_unref(fx_notation_audio_processor);
 }
 
@@ -1081,7 +1097,11 @@ ags_fx_notation_audio_processor_record(AgsFxNotationAudioProcessor *fx_notation_
   g_return_if_fail(AGS_IS_FX_NOTATION_AUDIO_PROCESSOR(fx_notation_audio_processor));
 
   g_object_ref(fx_notation_audio_processor);
-  AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->record(fx_notation_audio_processor);
+  
+  if(AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->record != NULL){
+    AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->record(fx_notation_audio_processor);
+  }
+  
   g_object_unref(fx_notation_audio_processor);
 }
 
@@ -1219,7 +1239,11 @@ ags_fx_notation_audio_processor_feed(AgsFxNotationAudioProcessor *fx_notation_au
   g_return_if_fail(AGS_IS_FX_NOTATION_AUDIO_PROCESSOR(fx_notation_audio_processor));
 
   g_object_ref(fx_notation_audio_processor);
-  AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->feed(fx_notation_audio_processor);
+
+  if(AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->feed != NULL){
+    AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->feed(fx_notation_audio_processor);
+  }
+  
   g_object_unref(fx_notation_audio_processor);
 }
 
@@ -1358,7 +1382,11 @@ ags_fx_notation_audio_processor_counter_change(AgsFxNotationAudioProcessor *fx_n
   g_return_if_fail(AGS_IS_FX_NOTATION_AUDIO_PROCESSOR(fx_notation_audio_processor));
 
   g_object_ref(fx_notation_audio_processor);
-  AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->counter_change(fx_notation_audio_processor);
+  
+  if(AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->counter_change != NULL){
+    AGS_FX_NOTATION_AUDIO_PROCESSOR_GET_CLASS(fx_notation_audio_processor)->counter_change(fx_notation_audio_processor);
+  }
+  
   g_object_unref(fx_notation_audio_processor);
 }
 

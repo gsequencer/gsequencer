@@ -71,7 +71,7 @@ struct _AgsFxDssiAudio
   LADSPA_Data **output;
   
   guint event_count;
-  snd_seq_event_t *event_buffer;
+  snd_seq_event_t* event_buffer[128];
 
   guint key_on[128];
   

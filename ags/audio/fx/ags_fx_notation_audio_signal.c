@@ -32,6 +32,20 @@ void ags_fx_notation_audio_signal_finalize(GObject *gobject);
 
 void ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall);
 
+void ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+						   AgsAudioSignal *source,
+						   AgsNote *note,
+						   guint x0, guint x1,
+						   guint y,
+						   gdouble delay_counter, guint64 offset_counter,
+						   guint frame_count,
+						   gdouble delay, guint buffer_size);
+void ags_fx_notation_audio_signal_real_notify_remove(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+						     AgsAudioSignal *source,
+						     AgsNote *note,
+						     guint x0, guint x1,
+						     guint y);
+
 /**
  * SECTION:ags_fx_notation_audio_signal
  * @short_description: fx notation audio_signal
@@ -95,6 +109,10 @@ ags_fx_notation_audio_signal_class_init(AgsFxNotationAudioSignalClass *fx_notati
   recall = (AgsRecallClass *) fx_notation_audio_signal;
   
   recall->run_inter = ags_fx_notation_audio_signal_real_run_inter;
+
+  /* AgsFxNotationAudioSignalClass */
+  fx_notation_audio_signal->stream_feed = ags_fx_notation_audio_signal_real_stream_feed;
+  fx_notation_audio_signal->notify_remove = NULL;
 }
 
 void
@@ -132,7 +150,6 @@ void
 ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 {
   AgsAudioSignal *source;
-  AgsAudioSignal *template;
   AgsFxNotationAudioProcessor *fx_notation_audio_processor;
   AgsFxNotationChannelProcessor *fx_notation_channel_processor;
   AgsFxNotationRecycling *fx_notation_recycling;
@@ -185,15 +202,12 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
     g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
   }
 
-  template = NULL;
-
   start_note = NULL;
 
   length = 0;
   frame_count = 0;
   
   g_object_get(source,
-	       "template", &template,
 	       "note", &start_note,
 	       "delay", &delay,
 	       "length", &length,
@@ -205,10 +219,12 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 
   for(i = 0; note != NULL; i++){
     guint x0, x1;
-
+    guint y;
+    
     g_object_get(note->data,
 		 "x0", &x0,
 		 "x1", &x1,
+		 "y", &y,
 		 NULL);
 
     if(x0 >= offset_counter){
@@ -225,24 +241,23 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 		       NULL);
 	}
 
-	if(x0 == offset_counter &&
-	   delay_counter == 0.0){
-	  ags_audio_signal_open_feed(source,
-				     template,
-				     frame_count + buffer_size);
-	}else if(x1 + 1 == offset_counter &&
-		 delay_counter + 1.0 >= delay){
-	  ags_audio_signal_close_feed(source,
-				      template,
-				      frame_count + buffer_size);
-	}else{
-	  ags_audio_signal_continue_feed(source,
-					 template,
-					 frame_count + buffer_size);
-	}
+	ags_fx_notation_audio_signal_stream_feed((AgsFxNotationAudioSignal *) recall,
+						 source,
+						 note->data,
+						 x0, x1,
+						 y,
+						 delay_counter, offset_counter,
+						 frame_count,
+						 delay, buffer_size);
       }else{
 	ags_audio_signal_remove_note(source,
 				     note->data);
+
+	ags_fx_notation_audio_signal_notify_remove((AgsFxNotationAudioSignal *) recall,
+						   source,
+						   note->data,
+						   x0, x1,
+						   y);
       }
     }
 
@@ -251,10 +266,6 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   
   if(source != NULL){
     g_object_unref(source);
-  }
-
-  if(template != NULL){
-    g_object_unref(template);
   }
 
   g_list_free_full(start_note,
@@ -274,6 +285,95 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_notation_audio_signal_parent_class)->run_inter(recall);
+}
+
+void
+ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+					      AgsAudioSignal *source,
+					      AgsNote *note,
+					      guint x0, guint x1,
+					      guint y,
+					      gdouble delay_counter, guint64 offset_counter,
+					      guint frame_count,
+					      gdouble delay, guint buffer_size)
+{
+  AgsAudioSignal *template;
+
+  template = NULL;
+
+  g_object_get(source,
+	       "template", &template,
+	       NULL);
+		 
+  if(x0 == offset_counter &&
+     delay_counter == 0.0){
+    ags_audio_signal_open_feed(source,
+			       template,
+			       frame_count + buffer_size);
+  }else if(x1 + 1 == offset_counter &&
+	   delay_counter + 1.0 >= delay){
+    ags_audio_signal_close_feed(source,
+				template,
+				frame_count + buffer_size);
+  }else{
+    ags_audio_signal_continue_feed(source,
+				   template,
+				   frame_count + buffer_size);
+  }
+
+  if(template != NULL){
+    g_object_unref(template);
+  }
+}
+
+void
+ags_fx_notation_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+					 AgsAudioSignal *source,
+					 AgsNote *note,
+					 guint x0, guint x1,
+					 guint y,
+					 gdouble delay_counter, guint64 offset_counter,
+					 guint frame_count,
+					 gdouble delay, guint buffer_size)
+{
+  g_return_if_fail(AGS_IS_FX_NOTATION_AUDIO_SIGNAL(fx_notation_audio_signal));
+
+  g_object_ref(fx_notation_audio_signal);
+
+  if(AGS_FX_NOTATION_AUDIO_SIGNAL_GET_CLASS(fx_notation_audio_signal)->stream_feed != NULL){
+    AGS_FX_NOTATION_AUDIO_SIGNAL_GET_CLASS(fx_notation_audio_signal)->stream_feed(fx_notation_audio_signal,
+										  source,
+										  note,
+										  x0, x1,
+										  y,
+										  delay_counter, offset_counter,
+										  frame_count,
+										  delay, buffer_size);
+  }
+
+  g_object_unref(fx_notation_audio_signal);
+}
+
+void
+ags_fx_notation_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+					   AgsAudioSignal *source,
+					   AgsNote *note,
+					   guint x0, guint x1,
+					   guint y)
+{
+  g_return_if_fail(AGS_IS_FX_NOTATION_AUDIO_SIGNAL(fx_notation_audio_signal));
+
+  g_object_ref(fx_notation_audio_signal);
+
+  if(AGS_FX_NOTATION_AUDIO_SIGNAL_GET_CLASS(fx_notation_audio_signal)->notify_remove != NULL){
+    AGS_FX_NOTATION_AUDIO_SIGNAL_GET_CLASS(fx_notation_audio_signal)->notify_remove(fx_notation_audio_signal,
+										    source,
+										    note,
+										    x0, x1,
+										    y);
+  }
+  
+  g_object_unref(fx_notation_audio_signal);
 }
 
 /**
