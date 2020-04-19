@@ -57,18 +57,18 @@ struct _AgsFxDssiAudio
   AgsFxNotationAudio fx_notation_audio;
 
   guint flags;
-  
-  guint input_lines;
-  guint output_lines;
 
-  guint *input_port;
+  guint output_port_count;
   guint *output_port;
+
+  guint input_port_count;
+  guint *input_port;
 
   guint bank;
   guint program;
 
-  LADSPA_Data **input;
   LADSPA_Data **output;
+  LADSPA_Data **input;
   
   guint event_count;
   snd_seq_event_t* event_buffer[128];

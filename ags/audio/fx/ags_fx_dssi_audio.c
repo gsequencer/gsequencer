@@ -114,23 +114,22 @@ ags_fx_dssi_audio_init(AgsFxDssiAudio *fx_dssi_audio)
   g_object_get(fx_dssi_audio,
 	       "buffer-size", &buffer_size,
 	       NULL);
-
-  fx_dssi_audio->input_lines = 0;
-  fx_dssi_audio->output_lines = 0;
   
-  fx_dssi_audio->input_port = NULL;
+  fx_dssi_audio->output_port_count = 1;
   fx_dssi_audio->output_port = NULL;
+
+  fx_dssi_audio->input_port_count = 0;  
+  fx_dssi_audio->input_port = NULL;
 
   fx_dssi_audio->bank = 0;
   fx_dssi_audio->program = 0;
   
   fx_dssi_audio->event_count = 0;
 
-  fx_dssi_audio->input = (LADSPA_Data **) g_malloc(sizeof(LADSPA_Data *));
-  fx_dssi_audio->input[0] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
-
   fx_dssi_audio->output = (LADSPA_Data **) g_malloc(sizeof(LADSPA_Data *));
   fx_dssi_audio->output[0] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
+
+  fx_dssi_audio->input = NULL;
 
   for(i = 0; i < 128; i++){
     fx_dssi_audio->event_buffer[i] = (snd_seq_event_t *) g_malloc(sizeof(snd_seq_event_t));
@@ -187,14 +186,19 @@ ags_fx_dssi_audio_finalize(GObject *gobject)
   }
   
   /* finalize */
-  g_free(fx_dssi_audio->input_port);
   g_free(fx_dssi_audio->output_port);
+  g_free(fx_dssi_audio->input_port);
 
   /* free buffer */
   if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
-    g_free(fx_dssi_audio->input[0]);
-    g_free(fx_dssi_audio->output[0]);
+    if(fx_dssi_audio->output != NULL){
+      g_free(fx_dssi_audio->output[0]);
+    }
 
+    if(fx_dssi_audio->input != NULL){
+      g_free(fx_dssi_audio->input[0]);
+    }
+    
     if(plugin_descriptor != NULL){
       g_rec_mutex_lock(base_plugin_mutex);
     
@@ -210,9 +214,14 @@ ags_fx_dssi_audio_finalize(GObject *gobject)
     }
   }else{
     for(i = 0; i < 128; i++){
-      g_free(fx_dssi_audio->input[i]);
-      g_free(fx_dssi_audio->output[i]);
+      if(fx_dssi_audio->output != NULL){
+	g_free(fx_dssi_audio->output[i]);
+      }
 
+      if(fx_dssi_audio->input != NULL){
+	g_free(fx_dssi_audio->input[i]);
+      }
+      
       if(plugin_descriptor != NULL){
 	g_rec_mutex_lock(base_plugin_mutex);
     
@@ -280,18 +289,50 @@ ags_fx_dssi_audio_notify_buffer_size_callback(GObject *gobject,
   g_rec_mutex_lock(recall_mutex);
   
   if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
-    g_free(fx_dssi_audio->input[0]);
-    g_free(fx_dssi_audio->output[0]);
-  
-    fx_dssi_audio->input[0] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
-    fx_dssi_audio->output[0] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
+    if(fx_dssi_audio->output != NULL){
+      g_free(fx_dssi_audio->output[0]);
+    }
+
+    if(fx_dssi_audio->input != NULL){
+      g_free(fx_dssi_audio->input[0]);
+    }
+    
+    if(fx_dssi_audio->output_port_count > 0){
+      fx_dssi_audio->output[0] = (LADSPA_Data *) g_malloc(fx_dssi_audio->output_port_count * buffer_size * sizeof(LADSPA_Data));
+    }else{
+      fx_dssi_audio->output = NULL;
+    }
+
+    if(fx_dssi_audio->input_port_count > 0){
+      fx_dssi_audio->input[0] = (LADSPA_Data *) g_malloc(fx_dssi_audio->input_port_count * buffer_size * sizeof(LADSPA_Data));
+    }else{
+      fx_dssi_audio->input = NULL;
+    }
   }else{
+    if(fx_dssi_audio->output_port_count == 0){
+      fx_dssi_audio->output = NULL;
+    }
+
+    if(fx_dssi_audio->input_port_count == 0){
+      fx_dssi_audio->input = NULL;
+    }
+    
     for(i = 0; i < 128; i++){
-      g_free(fx_dssi_audio->input[i]);
-      g_free(fx_dssi_audio->output[i]);
-  
-      fx_dssi_audio->input[i] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
-      fx_dssi_audio->output[i] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
+      if(fx_dssi_audio->output != NULL){
+	g_free(fx_dssi_audio->output[i]);
+      }
+
+      if(fx_dssi_audio->input != NULL){
+	g_free(fx_dssi_audio->input[i]);
+      }
+      
+      if(fx_dssi_audio->output_port_count > 0){
+	fx_dssi_audio->output[i] = (LADSPA_Data *) g_malloc(fx_dssi_audio->output_port_count * buffer_size * sizeof(LADSPA_Data));
+      }
+
+      if(fx_dssi_audio->input_port_count > 0){
+	fx_dssi_audio->input[i] = (LADSPA_Data *) g_malloc(fx_dssi_audio->input_port_count * buffer_size * sizeof(LADSPA_Data));
+      }
     }
   }
   
@@ -365,18 +406,27 @@ ags_fx_dssi_audio_set_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags)
 
       g_rec_mutex_lock(recall_mutex);
 
-      fx_dssi_audio->input = (LADSPA_Data **) g_realloc(fx_dssi_audio->input,
-							128 * sizeof(LADSPA_Data *));
-      fx_dssi_audio->output = (LADSPA_Data **) g_realloc(fx_dssi_audio->output,
-							 128 * sizeof(LADSPA_Data *));
+      if(fx_dssi_audio->output_port_count > 0){
+	fx_dssi_audio->output = (LADSPA_Data **) g_realloc(fx_dssi_audio->output,
+							   128 * sizeof(LADSPA_Data *));
+      }
+
+      if(fx_dssi_audio->input_port_count > 0){
+	fx_dssi_audio->input = (LADSPA_Data **) g_realloc(fx_dssi_audio->input,
+							  128 * sizeof(LADSPA_Data *));
+      }
       
       fx_dssi_audio->ladspa_handle = (LADSPA_Handle **) g_realloc(fx_dssi_audio->ladspa_handle,
 								  128 * sizeof(LADSPA_Handle *));
       
-      for(i = 1; i < 128; i++){
-	fx_dssi_audio->input[i] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
+      for(i = 1; i < 128; i++){	
+	if(fx_dssi_audio->output != NULL){
+	  fx_dssi_audio->output[i] = (LADSPA_Data *) g_malloc(fx_dssi_audio->output_port_count * buffer_size * sizeof(LADSPA_Data));
+	}
 	
-	fx_dssi_audio->output[i] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
+	if(fx_dssi_audio->input != NULL){
+	  fx_dssi_audio->input[i] = (LADSPA_Data *) g_malloc(fx_dssi_audio->input_port_count * buffer_size * sizeof(LADSPA_Data));
+	}
 
 	fx_dssi_audio->ladspa_handle[i] = NULL;
       }
@@ -417,12 +467,17 @@ ags_fx_dssi_audio_unset_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags)
   if((AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT & (flags)) != 0){
     if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
       g_rec_mutex_lock(recall_mutex);
-      
-      fx_dssi_audio->input = (LADSPA_Data **) g_realloc(fx_dssi_audio->input,
-							sizeof(LADSPA_Data *));
-      fx_dssi_audio->output = (LADSPA_Data **) g_realloc(fx_dssi_audio->output,
-							 sizeof(LADSPA_Data *));
 
+      if(fx_dssi_audio->output != NULL){
+	fx_dssi_audio->output = (LADSPA_Data **) g_realloc(fx_dssi_audio->output,
+							   sizeof(LADSPA_Data *));
+      }
+
+      if(fx_dssi_audio->input != NULL){
+	fx_dssi_audio->input = (LADSPA_Data **) g_realloc(fx_dssi_audio->input,
+							  sizeof(LADSPA_Data *));
+      }
+      
       fx_dssi_audio->ladspa_handle = (LADSPA_Handle **) g_realloc(fx_dssi_audio->ladspa_handle,
 								  sizeof(LADSPA_Handle *));
 
@@ -539,7 +594,7 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
  * 
  * Load port of @fx_dssi_audio.
  * 
- * Since: 3.3.0
+< * Since: 3.3.0
  */
 void
 ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
@@ -549,7 +604,13 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 
   GList *start_plugin_port, *plugin_port;
 
+  guint *output_port;
+  guint *input_port;
+  
+  guint output_port_count;
+  guint input_port_count;
   guint control_port_count;
+  guint buffer_size;
   guint i;
   
   GRecMutex *recall_mutex;
@@ -593,6 +654,10 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
     return;
   }
 
+  g_object_get(fx_dssi_audio,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
   g_object_get(dssi_plugin,
 	       "plugin-port", &start_plugin_port,
 	       NULL);
@@ -600,15 +665,50 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
   /* get control port count */
   plugin_port = start_plugin_port;
 
+  output_port = NULL;
+  input_port = NULL;
+  
+  output_port_count = 0;
+  input_port_count = 0;
+
   control_port_count = 0;
   
   while(plugin_port != NULL){
     if(ags_plugin_port_test_flags(plugin_port->data,
 				  AGS_PLUGIN_PORT_CONTROL)){
       control_port_count++;
-    }
+    }else if(ags_plugin_port_test_flags(plugin_port->data,
+					AGS_PLUGIN_PORT_AUDIO)){
+      guint port_index;
 
-    plugin_port != NULL;
+      g_object_get(plugin_port->data,
+		   "port-index", &port_index,
+		   NULL);
+      
+      if(ags_plugin_port_test_flags(plugin_port->data,
+				    AGS_PLUGIN_PORT_INPUT)){
+	if(input_port == NULL){
+	  input_port = (guint *) g_malloc(sizeof(guint));	  
+	}else{
+	  input_port = (guint *) g_realloc(input_port,
+					   (input_port_count + 1) * sizeof(guint));
+	}
+
+	input_port[input_port_count] = port_index;
+	input_port_count++;
+      }else if(ags_plugin_port_test_flags(plugin_port->data,
+					  AGS_PLUGIN_PORT_OUTPUT)){
+	if(output_port == NULL){
+	  output_port = (guint *) g_malloc(sizeof(guint));	  
+	}else{
+	  output_port = (guint *) g_realloc(output_port,
+					    (output_port_count + 1) * sizeof(guint));
+	}
+
+	output_port[output_port_count] = port_index;
+	output_port_count++;
+      }
+    }
   }
 
   /*  */
@@ -704,6 +804,80 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 
   /* set DSSI port */
   g_rec_mutex_lock(recall_mutex);
+
+  if(fx_dssi_audio->output_port_count != output_port_count){
+    gboolean do_alloc;
+
+    do_alloc = TRUE;
+    
+    if(fx_dssi_audio->output == NULL){
+      if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
+	fx_dssi_audio->output = (LADSPA_Data **) g_malloc(sizeof(LADSPA_Data *));
+      }else{
+	fx_dssi_audio->output = (LADSPA_Data **) g_malloc(128 * sizeof(LADSPA_Data *));
+      }
+    }else{
+      do_alloc = FALSE;
+    }
+
+    if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
+      if(do_alloc){
+	fx_dssi_audio->output[0] = (LADSPA_Data *) g_malloc(output_port_count * buffer_size * sizeof(LADSPA_Data));
+      }else{
+	fx_dssi_audio->output[0] = (LADSPA_Data *) g_realloc(fx_dssi_audio->output[0],
+							     output_port_count * buffer_size * sizeof(LADSPA_Data));
+      }
+    }else{
+      for(i = 0; i < 128; i++){
+	if(do_alloc){
+	  fx_dssi_audio->output[i] = (LADSPA_Data *) g_malloc(output_port_count * buffer_size * sizeof(LADSPA_Data));
+	}else{
+	  fx_dssi_audio->output[i] = (LADSPA_Data *) g_realloc(fx_dssi_audio->output[i],
+							       output_port_count * buffer_size * sizeof(LADSPA_Data));
+	}
+      }
+    }
+  }
+  
+  if(fx_dssi_audio->input_port_count != input_port_count){
+    gboolean do_alloc;
+
+    do_alloc = TRUE;
+    
+    if(fx_dssi_audio->input == NULL){
+      if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
+	fx_dssi_audio->input = (LADSPA_Data **) g_malloc(sizeof(LADSPA_Data *));
+      }else{
+	fx_dssi_audio->input = (LADSPA_Data **) g_malloc(128 * sizeof(LADSPA_Data *));
+      }
+    }else{
+      do_alloc = FALSE;
+    }
+
+    if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
+      if(do_alloc){
+	fx_dssi_audio->input[0] = (LADSPA_Data *) g_malloc(input_port_count * buffer_size * sizeof(LADSPA_Data));
+      }else{
+	fx_dssi_audio->input[0] = (LADSPA_Data *) g_realloc(fx_dssi_audio->input[0],
+							    input_port_count * buffer_size * sizeof(LADSPA_Data));
+      }
+    }else{
+      for(i = 0; i < 128; i++){
+	if(do_alloc){
+	  fx_dssi_audio->input[i] = (LADSPA_Data *) g_malloc(input_port_count * buffer_size * sizeof(LADSPA_Data));
+	}else{
+	  fx_dssi_audio->input[i] = (LADSPA_Data *) g_realloc(fx_dssi_audio->input[i],
+							      input_port_count * buffer_size * sizeof(LADSPA_Data));
+	}
+      }
+    }
+  }
+
+  fx_dssi_audio->output_port_count = output_port_count;
+  fx_dssi_audio->output_port = output_port;
+
+  fx_dssi_audio->input_port_count = input_port_count;
+  fx_dssi_audio->input_port = input_port;
 
   fx_dssi_audio->dssi_port = dssi_port;
   

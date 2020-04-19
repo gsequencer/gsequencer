@@ -255,7 +255,7 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       g_rec_mutex_lock(fx_dssi_audio_mutex);
 
       if(fx_dssi_audio->output != NULL){
-	ags_audio_buffer_util_clear_float(fx_dssi_audio->output[0], fx_dssi_audio->output_lines,
+	ags_audio_buffer_util_clear_float(fx_dssi_audio->output[0], fx_dssi_audio->output_port_count,
 					  buffer_size);
       }
 
@@ -268,22 +268,22 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 	fx_dssi_audio->event_buffer[midi_note]->data.note.velocity = 127;
 
 	run_synth(fx_dssi_audio->ladspa_handle[0],
-		  (unsigned long) (fx_dssi_audio->output_lines * buffer_size),
+		  (unsigned long) (fx_dssi_audio->output_port_count * buffer_size),
 		  fx_dssi_audio->event_buffer[midi_note],
 		  1);
       }else if(run != NULL){
 	run(fx_dssi_audio->ladspa_handle[0],
-	    (unsigned long) (fx_dssi_audio->output_lines * buffer_size));
+	    (unsigned long) (fx_dssi_audio->output_port_count * buffer_size));
       }
 
       g_rec_mutex_lock(source_stream_mutex);
 
       if(fx_dssi_audio->output != NULL &&
-	 fx_dssi_audio->output_lines >= 1 &&
+	 fx_dssi_audio->output_port_count >= 1 &&
 	 source->stream_current != NULL){
 	//NOTE:JK: only mono input, additional channels discarded
 	ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
-						    fx_dssi_audio->output[0], fx_dssi_audio->output_lines, 0,
+						    fx_dssi_audio->output[0], fx_dssi_audio->output_port_count, 0,
 						    buffer_size, copy_mode_out);
       }
 	  
@@ -294,28 +294,28 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       g_rec_mutex_lock(fx_dssi_audio_mutex);
 
       if(fx_dssi_audio->output != NULL){
-	ags_audio_buffer_util_clear_float(fx_dssi_audio->output[midi_note], fx_dssi_audio->output_lines,
+	ags_audio_buffer_util_clear_float(fx_dssi_audio->output[midi_note], fx_dssi_audio->output_port_count,
 					  buffer_size);
       }
 
       if(run_synth != NULL){
 	run_synth(fx_dssi_audio->ladspa_handle[midi_note],
-		  (unsigned long) (fx_dssi_audio->output_lines * buffer_size),
+		  (unsigned long) (fx_dssi_audio->output_port_count * buffer_size),
 		  fx_dssi_audio->event_buffer[midi_note],
 		  1);
       }else if(run != NULL){
 	run(fx_dssi_audio->ladspa_handle[midi_note],
-	    (unsigned long) (fx_dssi_audio->output_lines * buffer_size));
+	    (unsigned long) (fx_dssi_audio->output_port_count * buffer_size));
       }
       
       g_rec_mutex_lock(source_stream_mutex);
 
       if(fx_dssi_audio->output != NULL &&
-	 fx_dssi_audio->output_lines >= 1 &&
+	 fx_dssi_audio->output_port_count >= 1 &&
 	 source->stream_current != NULL){
 	//NOTE:JK: only mono input, additional channels discarded
 	ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
-						    fx_dssi_audio->output[midi_note], fx_dssi_audio->output_lines, 0,
+						    fx_dssi_audio->output[midi_note], fx_dssi_audio->output_port_count, 0,
 						    buffer_size, copy_mode_out);
       }
 	  
