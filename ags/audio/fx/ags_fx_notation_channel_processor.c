@@ -19,6 +19,8 @@
 
 #include <ags/audio/fx/ags_fx_notation_channel_processor.h>
 
+#include <ags/audio/fx/ags_fx_notation_recycling.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_notation_channel_processor_class_init(AgsFxNotationChannelProcessorClass *fx_notation_channel_processor);

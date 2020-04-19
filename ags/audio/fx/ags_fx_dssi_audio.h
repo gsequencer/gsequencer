@@ -94,11 +94,13 @@ void ags_fx_dssi_audio_set_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags);
 void ags_fx_dssi_audio_unset_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags);
 
 void ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio);
+void ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio);
+
 void ags_fx_dssi_audio_unload_plugin(AgsFxDssiAudio *fx_dssi_audio);
+void ags_fx_dssi_audio_unload_port(AgsFxDssiAudio *fx_dssi_audio);
 
 AgsFxDssiAudio* ags_fx_dssi_audio_new(AgsAudio *audio);
 
 G_END_DECLS
 
 #endif /*__AGS_FX_DSSI_AUDIO_H__*/
-

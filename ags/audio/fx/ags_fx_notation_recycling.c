@@ -19,6 +19,8 @@
 
 #include <ags/audio/fx/ags_fx_notation_recycling.h>
 
+#include <ags/audio/fx/ags_fx_notation_audio_signal.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_notation_recycling_class_init(AgsFxNotationRecyclingClass *fx_notation_recycling);

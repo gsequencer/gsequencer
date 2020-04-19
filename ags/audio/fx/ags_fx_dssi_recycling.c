@@ -19,6 +19,8 @@
 
 #include <ags/audio/fx/ags_fx_dssi_recycling.h>
 
+#include <ags/audio/fx/ags_fx_dssi_audio_signal.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_dssi_recycling_class_init(AgsFxDssiRecyclingClass *fx_dssi_recycling);

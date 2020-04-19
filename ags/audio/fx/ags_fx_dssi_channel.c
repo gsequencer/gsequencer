@@ -119,6 +119,42 @@ ags_fx_dssi_channel_finalize(GObject *gobject)
 }
 
 /**
+ * ags_fx_dssi_channel_load_port:
+ * @fx_dssi_channel: the #AgsFxDssiChannel
+ * 
+ * Load port of @fx_dssi_channel.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
+{
+  if(!AGS_IS_FX_DSSI_CHANNEL(fx_dssi_channel)){
+    return;
+  }
+
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fx_dssi_channel_unload_port:
+ * @fx_dssi_channel: the #AgsFxDssiChannel
+ * 
+ * Unload port of @fx_dssi_channel.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_fx_dssi_channel_unload_port(AgsFxDssiChannel *fx_dssi_channel)
+{
+  if(!AGS_IS_FX_DSSI_CHANNEL(fx_dssi_channel)){
+    return;
+  }
+
+  //TODO:JK: implement me
+}
+
+/**
  * ags_fx_dssi_channel_new:
  * @channel: the #AgsChannel
  *

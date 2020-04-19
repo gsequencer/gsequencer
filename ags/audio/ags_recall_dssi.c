@@ -532,11 +532,15 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 				    AGS_PLUGIN_PORT_CONTROL)){
 	gchar *plugin_name;
 	gchar *specifier;
-
+	gchar *control_port;
+	
 	GValue *default_value;
 	
 	plugin_name = g_strdup_printf("dssi-%u", dssi_plugin->unique_id);
-
+	control_port = g_strdup_printf("%u/%u",
+				       i,
+				       port_count);
+	  
 	default_value = g_new0(GValue,
 			       1);
 	
@@ -554,9 +558,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 	current_port = g_object_new(AGS_TYPE_PORT,
 				    "plugin-name", plugin_name,
 				    "specifier", specifier,
-				    "control-port", g_strdup_printf("%u/%u",
-								    i,
-								    port_count),
+				    "control-port", control_port,
 				    "port-value-is-pointer", FALSE,
 				    "port-value-type", G_TYPE_FLOAT,
 				    NULL);
@@ -595,7 +597,9 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 
 	g_value_unset(default_value);
 	g_free(default_value);
+
 	g_free(plugin_name);
+	g_free(control_port);
 	g_free(specifier);
       }else if(ags_plugin_port_test_flags(current_plugin_port,
 					  AGS_PLUGIN_PORT_AUDIO)){
@@ -672,49 +676,8 @@ ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
     return;
   }
 
-  ladspa_conversion = NULL;
-
-  if(ags_plugin_port_test_flags(plugin_port,
-				AGS_PLUGIN_PORT_BOUNDED_BELOW)){
-    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
-      ladspa_conversion = ags_ladspa_conversion_new();
-    }
-
-    ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
-  }
-
-  if(ags_plugin_port_test_flags(plugin_port,
-				AGS_PLUGIN_PORT_BOUNDED_ABOVE)){
-    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
-      ladspa_conversion = ags_ladspa_conversion_new();
-    }
-
-    ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
-  }
-  
-  if(ags_plugin_port_test_flags(plugin_port,
-				AGS_PLUGIN_PORT_SAMPLERATE)){
-    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
-      ladspa_conversion = ags_ladspa_conversion_new();
-    }
-        
-    ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
-  }
-
-  if(ags_plugin_port_test_flags(plugin_port,
-				AGS_PLUGIN_PORT_LOGARITHMIC)){
-    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
-      ladspa_conversion = ags_ladspa_conversion_new();
-    }
-    
-    ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
-  }
-
-  if(ladspa_conversion != NULL){
-    g_object_set(port,
-		 "conversion", ladspa_conversion,
-		 NULL);
-  }
+  ags_port_util_load_conversion(port,
+				plugin_port);
 }
 
 /**
