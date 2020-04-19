@@ -1264,26 +1264,17 @@ ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notati
 	
 	while(audio_signal != NULL){
 	  if(ags_audio_signal_contains_note(audio_signal->data, feeding_note->data)){
-	    AgsRecycling *recycling;
 	    AgsAudioSignal *template;
-	  
-	    GList *start_list;
 	  
 	    guint length;
 	    guint buffer_size;
 
 	    g_object_get(audio_signal->data,
-			 "recycling", &recycling,
+			 "template", &template,
 			 "length", &length,
 			 "buffer-size", &buffer_size,
 			 NULL);
 
-	    g_object_get(recycling,
-			 "audio-signal", &start_list,
-			 NULL);
-
-	    template = ags_audio_signal_get_template(start_list);
-	  
 	    ags_audio_signal_stream_safe_resize(audio_signal->data,
 						length + floor(delay) + 1);
 
@@ -1291,16 +1282,9 @@ ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notati
 				  template,
 				  (length + floor(delay) + 1) * buffer_size);
 
-	    if(recycling != NULL){
-	      g_object_unref(recycling);
-	    }
-
 	    if(template != NULL){
 	      g_object_unref(template);
 	    }
-
-	    g_list_free_full(start_list,
-			     (GDestroyNotify) g_object_unref);
 
 	    break;
 	  }
