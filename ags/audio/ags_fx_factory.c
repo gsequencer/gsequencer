@@ -420,6 +420,8 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 						    "input-sequencer", input_sequencer,
 						    "audio", audio,
 						    "recall-container", play_container,
+						    "filename", filename,
+						    "effect", effect,						    
 						    NULL);
     ags_recall_set_flags((AgsRecall *) fx_dssi_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -437,7 +439,7 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 		 "recall-audio", fx_dssi_audio,
 		 NULL);
     ags_connectable_connect(AGS_CONNECTABLE(fx_dssi_audio));
-
+    
     /* AgsFxDssiAudioProcessor */
     fx_dssi_audio_processor = (AgsFxDssiAudioProcessor *) g_object_new(AGS_TYPE_FX_DSSI_AUDIO_PROCESSOR,
 								       "output-soundcard", output_soundcard,
@@ -445,6 +447,8 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 								       "audio", audio,
 								       "recall-audio", fx_dssi_audio,
 								       "recall-container", play_container,
+								       "filename", filename,
+								       "effect", effect,						    
 								       NULL);
     ags_recall_set_flags((AgsRecall *) fx_dssi_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
@@ -462,6 +466,15 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 		 "recall-audio-run", fx_dssi_audio_processor,
 		 NULL);
     ags_connectable_connect(AGS_CONNECTABLE(fx_dssi_audio_processor));
+
+    /* load */
+    if((AGS_FX_FACTORY_LIVE & (create_flags)) == 0){
+      ags_fx_dssi_audio_unset_flags(fx_dssi_audio,
+				    AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT);
+    }
+    
+    ags_fx_dssi_audio_load_plugin(fx_dssi_audio);
+    ags_fx_dssi_audio_load_port(fx_dssi_audio);
   }else{
     GList *start_list, *list;
     
@@ -528,6 +541,8 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 							    "source", channel,
 							    "recall-audio", fx_dssi_audio,
 							    "recall-container", play_container,
+							    "filename", filename,
+							    "effect", effect,						    
 							    NULL);
 	ags_recall_set_flags((AgsRecall *) fx_dssi_channel,
 			     (AGS_RECALL_TEMPLATE));
@@ -555,6 +570,8 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 									       "recall-audio-run", fx_dssi_audio_processor,
 									       "recall-channel", fx_dssi_channel,
 									       "recall-container", play_container,
+									       "filename", filename,
+									       "effect", effect,						    
 									       NULL);
 	ags_recall_set_flags((AgsRecall *) fx_dssi_channel_processor,
 			     (AGS_RECALL_TEMPLATE));
@@ -572,6 +589,9 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 		     "recall-channel-run", fx_dssi_channel_processor,
 		     NULL);
 	ags_connectable_connect(AGS_CONNECTABLE(fx_dssi_channel_processor));
+
+	/* load */
+	ags_fx_dssi_channel_load_port(fx_dssi_channel);
       }else{
 	g_warning("ags-fx-dssi recall already added");
       }
@@ -690,7 +710,14 @@ ags_fx_factory_create(AgsAudio *audio,
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-notation",
 				16)){
-    //TODO:JK: implement me
+    ags_fx_factory_create_notation(audio,
+				   play_container, recall_container,
+				   plugin_name,
+				   filename,
+				   effect,
+				   start_audio_channel, stop_audio_channel,
+				   start_pad, stop_pad,
+				   create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-ladspa",
 				14)){
@@ -698,7 +725,14 @@ ags_fx_factory_create(AgsAudio *audio,
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-dssi",
 				12)){
-    //TODO:JK: implement me
+    ags_fx_factory_create_dssi(audio,
+			       play_container, recall_container,
+			       plugin_name,
+			       filename,
+			       effect,
+			       start_audio_channel, stop_audio_channel,
+			       start_pad, stop_pad,
+			       create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-lv2",
 				11)){
