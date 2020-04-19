@@ -92,6 +92,8 @@ ags_fx_dssi_channel_processor_init(AgsFxDssiChannelProcessor *fx_dssi_channel_pr
   AGS_RECALL(fx_dssi_channel_processor)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_dssi_channel_processor)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_dssi_channel_processor)->xml_type = "ags-fx-dssi-channel-processor";
+  
+  AGS_RECALL(fx_dssi_channel_processor)->child_type = AGS_TYPE_FX_DSSI_RECYCLING;
 }
 
 void

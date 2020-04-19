@@ -92,6 +92,8 @@ ags_fx_notation_recycling_init(AgsFxNotationRecycling *fx_notation_recycling)
   AGS_RECALL(fx_notation_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_notation_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_notation_recycling)->xml_type = "ags-fx-notation-recycling";
+
+  AGS_RECALL(fx_notation_recycling)->child_type = AGS_TYPE_FX_NOTATION_AUDIO_SIGNAL;
 }
 
 void

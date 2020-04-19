@@ -92,6 +92,8 @@ ags_fx_dssi_recycling_init(AgsFxDssiRecycling *fx_dssi_recycling)
   AGS_RECALL(fx_dssi_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_dssi_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_dssi_recycling)->xml_type = "ags-fx-dssi-recycling";
+
+  AGS_RECALL(fx_dssi_recycling)->child_type = AGS_TYPE_FX_DSSI_AUDIO_SIGNAL;
 }
 
 void

@@ -92,6 +92,8 @@ ags_fx_notation_channel_processor_init(AgsFxNotationChannelProcessor *fx_notatio
   AGS_RECALL(fx_notation_channel_processor)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_notation_channel_processor)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_notation_channel_processor)->xml_type = "ags-fx-notation-channel-processor";
+
+  AGS_RECALL(fx_notation_channel_processor)->child_type = AGS_TYPE_FX_NOTATION_RECYCLING;
 }
 
 void
