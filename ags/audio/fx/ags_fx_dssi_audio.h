@@ -23,6 +23,17 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <alsa/seq_event.h>
+
+#include <ladspa.h>
+#include <dssi.h>
+
+#include <ags/plugin/ags_dssi_plugin.h>
+
+#include <ags/audio/ags_port.h>
+
 #include <ags/audio/fx/ags_fx_notation_audio.h>
 
 G_BEGIN_DECLS
@@ -34,9 +45,12 @@ G_BEGIN_DECLS
 #define AGS_IS_FX_DSSI_AUDIO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FX_DSSI_AUDIO))
 #define AGS_FX_DSSI_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_DSSI_AUDIO, AgsFxDssiAudioClass))
 
+typedef struct _AgsFxDssiAudio AgsFxDssiAudio;
+typedef struct _AgsFxDssiAudioClass AgsFxDssiAudioClass;
+
 typedef enum{
   AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT     = 1,
-}AgsFxNotationAudioFlags;
+}AgsFxDssiAudioFlags;
 
 struct _AgsFxDssiAudio
 {
@@ -64,6 +78,8 @@ struct _AgsFxDssiAudio
   LADSPA_Handle **ladspa_handle;
 
   AgsDssiPlugin *dssi_plugin;
+
+  AgsPort **dssi_port;
 };
 
 struct _AgsFxDssiAudioClass
@@ -73,7 +89,7 @@ struct _AgsFxDssiAudioClass
 
 GType ags_fx_dssi_audio_get_type();
 
-gboolean ags_fx_dssi_audio_test_flags(AgsFxDssiAudio *fx_dssi_audio);
+gboolean ags_fx_dssi_audio_test_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags);
 void ags_fx_dssi_audio_set_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags);
 void ags_fx_dssi_audio_unset_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags);
 

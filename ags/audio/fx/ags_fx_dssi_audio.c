@@ -19,6 +19,8 @@
 
 #include <ags/audio/fx/ags_fx_dssi_audio.h>
 
+#include <ags/plugin/ags_dssi_manager.h>
+
 void ags_fx_dssi_audio_class_init(AgsFxDssiAudioClass *fx_dssi_audio);
 void ags_fx_dssi_audio_init(AgsFxDssiAudio *fx_dssi_audio);
 void ags_fx_dssi_audio_dispose(GObject *gobject);
@@ -130,12 +132,14 @@ ags_fx_dssi_audio_init(AgsFxDssiAudio *fx_dssi_audio)
   fx_dssi_audio->event_buffer = (snd_seq_event_t *) g_malloc(sizeof(snd_seq_event_t));
 
   for(i = 0; i < 128; i++){
-    fx_dssi_audio->key_on = 0;
+    fx_dssi_audio->key_on[i] = 0;
   }
   
   fx_dssi_audio->ladspa_handle = NULL;
   
   fx_dssi_audio->dssi_plugin = NULL;
+
+  fx_dssi_audio->dssi_port = NULL;
 }
 
 void
@@ -330,32 +334,20 @@ ags_fx_dssi_audio_set_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags)
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_audio);
 
-  if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
-    if((AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT & (flags)) == 0){
-      g_rec_mutex_lock(recall_mutex);
-      
-      fx_dssi_audio->input = (LADSPA_Data **) g_realloc(fx_dssi_audio->input,
-							sizeof(LADSPA_Data *));
-      fx_dssi_audio->output = (LADSPA_Data **) g_realloc(fx_dssi_audio->ouput,
-							 sizeof(LADSPA_Data *));
-
-      fx_dssi_audio->event_buffer = (snd_seq_event_t *) g_realloc(fx_dssi_audio->event_buffer,
-								  sizeof(snd_seq_event_t));
-      
-      fx_dssi_audio->ladspa_handle = (LADSPA_Handle **) g_realloc(fx_dssi_audio->ladspa_handle,
-								  sizeof(LADSPA_Handle *));
-
-      g_rec_mutex_unlock(recall_mutex);
-    }
-  }else{
-    if((AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT & (flags)) != 0){
+  if((AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT & (flags)) != 0){
+    if(!ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
+      guint buffer_size;
       guint i;
+
+      g_object_get(fx_dssi_audio,
+		   "buffer-size", &buffer_size,
+		   NULL);
 
       g_rec_mutex_lock(recall_mutex);
 
       fx_dssi_audio->input = (LADSPA_Data **) g_realloc(fx_dssi_audio->input,
 							128 * sizeof(LADSPA_Data *));
-      fx_dssi_audio->output = (LADSPA_Data **) g_realloc(fx_dssi_audio->ouput,
+      fx_dssi_audio->output = (LADSPA_Data **) g_realloc(fx_dssi_audio->output,
 							 128 * sizeof(LADSPA_Data *));
 
       fx_dssi_audio->event_buffer = (snd_seq_event_t *) g_realloc(fx_dssi_audio->event_buffer,
@@ -405,6 +397,25 @@ ags_fx_dssi_audio_unset_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags)
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_audio);
 
+  if((AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT & (flags)) != 0){
+    if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
+      g_rec_mutex_lock(recall_mutex);
+      
+      fx_dssi_audio->input = (LADSPA_Data **) g_realloc(fx_dssi_audio->input,
+							sizeof(LADSPA_Data *));
+      fx_dssi_audio->output = (LADSPA_Data **) g_realloc(fx_dssi_audio->output,
+							 sizeof(LADSPA_Data *));
+
+      fx_dssi_audio->event_buffer = (snd_seq_event_t *) g_realloc(fx_dssi_audio->event_buffer,
+								  sizeof(snd_seq_event_t));
+      
+      fx_dssi_audio->ladspa_handle = (LADSPA_Handle **) g_realloc(fx_dssi_audio->ladspa_handle,
+								  sizeof(LADSPA_Handle *));
+
+      g_rec_mutex_unlock(recall_mutex);
+    }
+  }
+  
   /* set flags */
   g_rec_mutex_lock(recall_mutex);
 
@@ -519,10 +530,14 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
 void
 ags_fx_dssi_audio_unload_plugin(AgsFxDssiAudio *fx_dssi_audio)
 {  
+  AgsDssiPlugin *dssi_plugin;
+
   LADSPA_Handle **ladspa_handle;
 
   gpointer plugin_descriptor;
 
+  guint i;
+  
   GRecMutex *recall_mutex;
   GRecMutex *base_plugin_mutex;
 

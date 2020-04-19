@@ -1575,14 +1575,28 @@ deprecated_libags_audio_fx_h_sources =
 libags_audio_fx_h_sources = \
 	$(deprecated_libags_audio_fx_h_sources) \
 	ags/audio/fx/ags_fx_notation_audio.h \
-	ags/audio/fx/ags_fx_notation_audio_processor.h
+	ags/audio/fx/ags_fx_notation_audio_processor.h \
+	ags/audio/fx/ags_fx_notation_channel.h \
+	ags/audio/fx/ags_fx_notation_channel_processor.h \
+	ags/audio/fx/ags_fx_notation_recycling.h \
+	ags/audio/fx/ags_fx_notation_audio_signal.h \
+	ags/audio/fx/ags_fx_dssi_audio.h \
+	ags/audio/fx/ags_fx_dssi_audio_processor.h \
+	ags/audio/fx/ags_fx_dssi_channel.c
 
 deprecated_libags_audio_fx_c_sources =
 
 libags_audio_fx_c_sources = \
 	$(deprecated_libags_audio_fx_c_sources) \
 	ags/audio/fx/ags_fx_notation_audio.c \
-	ags/audio/fx/ags_fx_notation_audio_processor.c
+	ags/audio/fx/ags_fx_notation_audio_processor.c \
+	ags/audio/fx/ags_fx_notation_channel.c \
+	ags/audio/fx/ags_fx_notation_channel_processor.c \
+	ags/audio/fx/ags_fx_notation_recycling.c \
+	ags/audio/fx/ags_fx_notation_audio_signal.c \
+	ags/audio/fx/ags_fx_dssi_audio.c \
+	ags/audio/fx/ags_fx_dssi_audio_processor.c \
+	ags/audio/fx/ags_fx_dssi_channel.c
 
 # libags-audio - task
 deprecated_libags_audio_task_h_sources =
