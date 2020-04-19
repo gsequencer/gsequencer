@@ -115,7 +115,7 @@ ags_fx_dssi_audio_init(AgsFxDssiAudio *fx_dssi_audio)
 	       "buffer-size", &buffer_size,
 	       NULL);
   
-  fx_dssi_audio->output_port_count = 1;
+  fx_dssi_audio->output_port_count = 0;
   fx_dssi_audio->output_port = NULL;
 
   fx_dssi_audio->input_port_count = 0;  
@@ -126,9 +126,7 @@ ags_fx_dssi_audio_init(AgsFxDssiAudio *fx_dssi_audio)
   
   fx_dssi_audio->event_count = 0;
 
-  fx_dssi_audio->output = (LADSPA_Data **) g_malloc(sizeof(LADSPA_Data *));
-  fx_dssi_audio->output[0] = (LADSPA_Data *) g_malloc(buffer_size * sizeof(LADSPA_Data));
-
+  fx_dssi_audio->output = NULL;
   fx_dssi_audio->input = NULL;
 
   for(i = 0; i < 128; i++){

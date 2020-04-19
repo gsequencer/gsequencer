@@ -9362,6 +9362,10 @@ ags_recall_factory_create(AgsAudio *audio,
 			  guint create_flags, guint recall_flags)
 {
   GList *recall;
+
+  if(plugin_name == NULL){
+    return(NULL);
+  }
   
   recall = NULL;
 
