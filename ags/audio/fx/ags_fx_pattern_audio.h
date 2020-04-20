@@ -50,7 +50,7 @@ struct _AgsFxPatternAudio
 
   guint flags;
 
-  AgsNote **note;
+  AgsNote ***note;
   
   AgsPort *bpm;
   AgsPort *tact;

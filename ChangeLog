@@ -8,7 +8,6 @@ ags (3.3.0)
 	* implemented AgsFxDssiAudio, AgsFxDssiAudioProcessor, AgsFxDssiChannel,
 	  AgsFxDssiChannelProcessor, AgsFxDssiRecycling and AgsFxDssiAudioSignal
 	* TODO:JK: implemented AgsFxLadspaAudio and AgsFxLadspaAudioProcessor
-	* TODO:JK: implemented AgsFxDssiAudio and AgsFxDssiAudioProcessor
 	* TODO:JK: implemented AgsFxLv2Audio and AgsFxLv2AudioProcessor
 	* TODO:JK: implemented ags/audio/fx
 	* TODO:JK: extended user's handbook to cover OSC server preferences

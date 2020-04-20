@@ -460,17 +460,7 @@ ags_fx_pattern_audio_processor_real_play(AgsFxPatternAudioProcessor *fx_pattern_
   g_rec_mutex_unlock(fx_pattern_audio_processor_mutex);
 
   note = NULL;
-  
-  if(fx_pattern_audio != NULL){
-    fx_pattern_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_pattern_audio);
-
-    g_rec_mutex_lock(fx_pattern_audio_mutex);
     
-    note = fx_pattern_audio->note[offset_counter];
-
-    g_rec_mutex_unlock(fx_pattern_audio_mutex);    
-  }
-  
   bank_index_0 = 0.0;
   bank_index_1 = 0.0;
 
@@ -526,10 +516,15 @@ ags_fx_pattern_audio_processor_real_play(AgsFxPatternAudioProcessor *fx_pattern_
     
     GList *start_pattern;
 
+    guint pad;
+    
     current_pattern = NULL;
+
+    pad = 0;
     
     g_object_get(channel,
 		 "pattern", &start_pattern,
+		 "pad", &pad,
 		 NULL);
 
     if(start_pattern != NULL){
@@ -540,10 +535,17 @@ ags_fx_pattern_audio_processor_real_play(AgsFxPatternAudioProcessor *fx_pattern_
 			   (guint) bank_index_0,
 			   (guint) bank_index_1,
 			   offset_counter)){
+      note = ags_pattern_get_note(current_pattern,
+				  offset_counter);
+      
       ags_fx_pattern_audio_processor_key_on(fx_pattern_audio_processor,
 					    note,
 					    AGS_FX_PATTERN_AUDIO_PROCESSOR_DEFAULT_KEY_ON_VELOCITY,
 					    0);
+
+      if(note != NULL){
+	g_object_unref(note);
+      }
     }
     
     g_list_free_full(start_pattern,

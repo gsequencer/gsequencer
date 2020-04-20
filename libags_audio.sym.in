@@ -2178,6 +2178,7 @@ ags_pattern_set_port
 ags_pattern_is_empty
 ags_pattern_get_bit
 ags_pattern_toggle_bit
+ags_pattern_get_note
 ags_pattern_new
 ags_recall_factory_get_type
 ags_recall_factory_create

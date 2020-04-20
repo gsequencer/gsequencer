@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_note.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_PATTERN                (ags_pattern_get_type())
@@ -85,6 +87,8 @@ struct _AgsPattern
   guint i;
   guint j;
   guint bit;
+
+  AgsNote **note;
 };
 
 struct _AgsPatternClass
@@ -121,6 +125,8 @@ gboolean ags_pattern_is_empty(AgsPattern *pattern, guint i, guint j);
 
 gboolean ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit);
 void ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit);
+
+AgsNote* ags_pattern_get_note(AgsPattern *pattern, guint bit);
 
 AgsPattern* ags_pattern_new();
 

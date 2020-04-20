@@ -36,10 +36,6 @@ void ags_fx_pattern_audio_get_property(GObject *gobject,
 void ags_fx_pattern_audio_dispose(GObject *gobject);
 void ags_fx_pattern_audio_finalize(GObject *gobject);
 
-void ags_fx_pattern_audio_duration_callback(AgsPort *port,
-					    GValue *value,
-					    AgsFxPatternAudio *fx_pattern_audio);
-
 /**
  * SECTION:ags_fx_pattern_audio
  * @short_description: fx pattern audio
@@ -293,8 +289,7 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
 {
   gdouble bpm;
   gdouble delay;
-  guint i;
-  
+
   AGS_RECALL(fx_pattern_audio)->name = "ags-fx-pattern";
   AGS_RECALL(fx_pattern_audio)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_pattern_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
@@ -305,16 +300,7 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
   bpm = AGS_SOUNDCARD_DEFAULT_BPM;
   delay = AGS_SOUNDCARD_DEFAULT_DELAY;
 
-  fx_pattern_audio->note = (AgsNote **) g_malloc(AGS_PATTERN_DEFAULT_OFFSET * sizeof(AgsNote *));
-
-  for(i = 0; i < AGS_PATTERN_DEFAULT_OFFSET; i++){
-    fx_pattern_audio->note[i] = ags_note_new();
-
-    g_object_set(fx_pattern_audio->note[i],
-		 "x0", i,
-		 "x1", i + 1,
-		 NULL);
-  }
+  fx_pattern_audio->note = NULL;
   
   /* bpm */
   fx_pattern_audio->bpm = g_object_new(AGS_TYPE_PORT,
@@ -383,9 +369,6 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
 
   ags_recall_add_port((AgsRecall *) fx_pattern_audio,
 		      fx_pattern_audio->duration);
-
-  g_signal_connect(fx_pattern_audio->duration, "safe-write",
-		   G_CALLBACK(ags_fx_pattern_audio_duration_callback), fx_pattern_audio);
   
   /* loop */
   fx_pattern_audio->loop = g_object_new(AGS_TYPE_PORT,
@@ -951,63 +934,6 @@ ags_fx_pattern_audio_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_pattern_audio_parent_class)->finalize(gobject);
-}
-
-void
-ags_fx_pattern_audio_duration_callback(AgsPort *port,
-				       GValue *value,
-				       AgsFxPatternAudio *fx_pattern_audio)
-{
-  gdouble new_duration, old_duration;
-  guint i;
-
-  GValue old_value = {0,};
-
-  /* get new */
-  new_duration = g_value_get_double(value);
-
-  /* get old */
-  g_value_init(&old_value,
-	       G_TYPE_DOUBLE);
-    
-  ags_port_safe_read(port,
-		     &old_value);
-
-  old_duration = g_value_get_double(&value);
-
-  g_value_unset(&value);
-
-  /*  */
-  if(new_duration > old_duration){
-    if(fx_pattern_audio->note == NULL){
-      fx_pattern_audio->note = (AgsNote **) g_malloc((guint) new_duration * sizeof(AgsNote *));
-    }else{
-      fx_pattern_audio->note = (AgsNote **) g_realloc(fx_pattern_audio->note,
-						      (guint) new_duration * sizeof(AgsNote *));
-    }
-
-    for(i = (guint) old_duration; i < (guint) new_duration; i++){
-      fx_pattern_audio->note[i] = ags_note_new();
-
-      g_object_set(fx_pattern_audio->note[i],
-		   "x0", i,
-		   "x1", i + 1,
-		   NULL);
-    }
-  }else{
-    for(i = (guint) new_duration; i < (guint) old_duration; i++){
-      g_object_unref(fx_pattern_audio->note[i]);
-    }
-    
-    if(new_duration == 0.0){
-      g_free(fx_pattern_audio->note);
-
-      fx_pattern_audio->note = NULL;
-    }else{
-      fx_pattern_audio->note = (AgsNote **) g_realloc(fx_pattern_audio->note,
-						      (guint) new_duration * sizeof(AgsNote *));
-    }
-  }
 }
 
 /**

@@ -48,7 +48,7 @@ void ags_pattern_remove_from_registry(AgsConnectable *connectable);
 xmlNode* ags_pattern_list_resource(AgsConnectable *connectable);
 xmlNode* ags_pattern_xml_compose(AgsConnectable *connectable);
 void ags_pattern_xml_parse(AgsConnectable *connectable,
-			  xmlNode *node);
+			   xmlNode *node);
 gboolean ags_pattern_is_connected(AgsConnectable *connectable);
 void ags_pattern_connect(AgsConnectable *connectable);
 void ags_pattern_disconnect(AgsConnectable *connectable);
@@ -299,6 +299,9 @@ ags_pattern_init(AgsPattern *pattern)
   pattern->i = 0;
   pattern->j = 0;
   pattern->bit = 0;
+
+  /* note */
+  pattern->note = NULL;
 }
 
 void
@@ -318,71 +321,71 @@ ags_pattern_set_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_FIRST_INDEX:
-    {
-      guint i;
+  {
+    guint i;
 
-      i = g_value_get_uint(value);
+    i = g_value_get_uint(value);
 
-      g_rec_mutex_lock(pattern_mutex);
+    g_rec_mutex_lock(pattern_mutex);
 
-      pattern->i = i;
+    pattern->i = i;
 
-      g_rec_mutex_unlock(pattern_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(pattern_mutex);
+  }
+  break;
   case PROP_SECOND_INDEX:
-    {
-      guint j;
+  {
+    guint j;
 
-      j = g_value_get_uint(value);
+    j = g_value_get_uint(value);
 
-      g_rec_mutex_lock(pattern_mutex);
+    g_rec_mutex_lock(pattern_mutex);
 
-      pattern->j = j;
+    pattern->j = j;
 
-      g_rec_mutex_unlock(pattern_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(pattern_mutex);
+  }
+  break;
   case PROP_OFFSET:
-    {
-      guint bit;
+  {
+    guint bit;
 
-      bit = g_value_get_uint(value);
+    bit = g_value_get_uint(value);
 
-      g_rec_mutex_lock(pattern_mutex);
+    g_rec_mutex_lock(pattern_mutex);
 
-      pattern->bit = bit;
+    pattern->bit = bit;
 
-      g_rec_mutex_unlock(pattern_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(pattern_mutex);
+  }
+  break;
   case PROP_TIMESTAMP:
-    {
-      AgsTimestamp *timestamp;
+  {
+    AgsTimestamp *timestamp;
 
-      timestamp = (AgsTimestamp *) g_value_get_object(value);
+    timestamp = (AgsTimestamp *) g_value_get_object(value);
 
-      g_rec_mutex_lock(pattern_mutex);
+    g_rec_mutex_lock(pattern_mutex);
 
-      if(timestamp == pattern->timestamp){
-	g_rec_mutex_unlock(pattern_mutex);
-
-	return;
-      }
-
-      if(pattern->timestamp != NULL){
-	g_object_unref(G_OBJECT(pattern->timestamp));
-      }
-
-      if(timestamp != NULL){
-	g_object_ref(G_OBJECT(timestamp));
-      }
-
-      pattern->timestamp = timestamp;
-
+    if(timestamp == pattern->timestamp){
       g_rec_mutex_unlock(pattern_mutex);
+
+      return;
     }
-    break;
+
+    if(pattern->timestamp != NULL){
+      g_object_unref(G_OBJECT(pattern->timestamp));
+    }
+
+    if(timestamp != NULL){
+      g_object_ref(G_OBJECT(timestamp));
+    }
+
+    pattern->timestamp = timestamp;
+
+    g_rec_mutex_unlock(pattern_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -406,70 +409,70 @@ ags_pattern_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_PORT:
-    {
-      g_rec_mutex_lock(pattern_mutex);
+  {
+    g_rec_mutex_lock(pattern_mutex);
 
-      g_value_set_object(value, pattern->port);
+    g_value_set_object(value, pattern->port);
 
-      g_rec_mutex_unlock(pattern_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(pattern_mutex);
+  }
+  break;
   case PROP_FIRST_INDEX:
-    {
-      g_rec_mutex_lock(pattern_mutex);
+  {
+    g_rec_mutex_lock(pattern_mutex);
 
-      g_value_set_uint(value, pattern->i);
+    g_value_set_uint(value, pattern->i);
 
-      g_rec_mutex_unlock(pattern_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(pattern_mutex);
+  }
+  break;
   case PROP_SECOND_INDEX:
-    {
-      g_rec_mutex_lock(pattern_mutex);
+  {
+    g_rec_mutex_lock(pattern_mutex);
 
-      g_value_set_uint(value, pattern->j);
+    g_value_set_uint(value, pattern->j);
 
-      g_rec_mutex_unlock(pattern_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(pattern_mutex);
+  }
+  break;
   case PROP_OFFSET:
-    {
-      g_rec_mutex_lock(pattern_mutex);
+  {
+    g_rec_mutex_lock(pattern_mutex);
 
-      g_value_set_uint(value, pattern->bit);
+    g_value_set_uint(value, pattern->bit);
 
-      g_rec_mutex_unlock(pattern_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(pattern_mutex);
+  }
+  break;
   case PROP_CURRENT_BIT:
-    {
-      guint i, j;
-      guint bit;
+  {
+    guint i, j;
+    guint bit;
 
-      g_rec_mutex_lock(pattern_mutex);
+    g_rec_mutex_lock(pattern_mutex);
 
-      i = pattern->i;
-      j = pattern->j;
-      bit = pattern->bit;
+    i = pattern->i;
+    j = pattern->j;
+    bit = pattern->bit;
 
-      g_rec_mutex_unlock(pattern_mutex);
+    g_rec_mutex_unlock(pattern_mutex);
 
-      g_value_set_boolean(value, ags_pattern_get_bit(pattern,
-						     i,
-						     j,
-						     bit));
-    }
-    break;
+    g_value_set_boolean(value, ags_pattern_get_bit(pattern,
+						   i,
+						   j,
+						   bit));
+  }
+  break;
   case PROP_TIMESTAMP:
-    {
-      g_rec_mutex_lock(pattern_mutex);
+  {
+    g_rec_mutex_lock(pattern_mutex);
 
-      g_value_set_object(value,
-			 pattern->timestamp);
+    g_value_set_object(value,
+		       pattern->timestamp);
 
-      g_rec_mutex_unlock(pattern_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(pattern_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -521,15 +524,15 @@ ags_pattern_finalize(GObject *gobject)
       if(pattern->pattern[i] != NULL){
 	for(j = 0; j < pattern->dim[1]; j++){
 	  if(pattern->pattern[i][j] != NULL){
-	    free(pattern->pattern[i][j]);
+	    g_free(pattern->pattern[i][j]);
 	  }
 	}
 
-	free(pattern->pattern[i]);
+	g_free(pattern->pattern[i]);
       }
     }
 
-    free(pattern->pattern);
+    g_free(pattern->pattern);
   }
  
   /* port */
@@ -657,7 +660,7 @@ ags_pattern_xml_compose(AgsConnectable *connectable)
 
 void
 ags_pattern_xml_parse(AgsConnectable *connectable,
-		     xmlNode *node)
+		      xmlNode *node)
 {
   //TODO:JK: implement me
 }
@@ -1222,16 +1225,16 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
   if(pattern->dim[0] > dim0){
     for(i = dim0; i < pattern->dim[0]; i++){
       for(j = 0; j < pattern->dim[1]; j++){
-	free(pattern->pattern[i][j]);
+	g_free(pattern->pattern[i][j]);
       }
 
-      free(pattern->pattern[i]);
+      g_free(pattern->pattern[i]);
 
       pattern->pattern[i] = NULL;
     }
 
     if(dim0 == 0){
-      free(pattern->pattern);
+      g_free(pattern->pattern);
       
       pattern->pattern = NULL;
       pattern->dim[0] = 0;
@@ -1240,8 +1243,8 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
     
       return;
     }else{
-      pattern->pattern = (guint ***) realloc(pattern->pattern,
-					     (int) dim0 * sizeof(guint **));
+      pattern->pattern = (guint ***) g_realloc(pattern->pattern,
+					       (int) dim0 * sizeof(guint **));
 
       pattern->dim[0] = dim0;
     }
@@ -1251,7 +1254,7 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
     if(dim1 == 0){
       for(i = 0; i < pattern->dim[0]; i++){
 	for(j = dim1; j < pattern->dim[1]; j++){
-	  free(pattern->pattern[i][j]);
+	  g_free(pattern->pattern[i][j]);
 	}
 
 	pattern->pattern[i] = NULL;
@@ -1265,13 +1268,13 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
     }else{
       for(i = 0; i < pattern->dim[0]; i++){
 	for(j = dim1; j < pattern->dim[1]; j++){
-	  free(pattern->pattern[i][j]);
+	  g_free(pattern->pattern[i][j]);
 	}
       }
 
       for(i = 0; pattern->dim[0]; i++){
-	pattern->pattern[i] = (guint **) realloc(pattern->pattern[i],
-						 dim1 * sizeof(guint *));
+	pattern->pattern[i] = (guint **) g_realloc(pattern->pattern[i],
+						   dim1 * sizeof(guint *));
       }
 
       pattern->dim[1] = dim1;
@@ -1282,20 +1285,35 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
     if(length == 0){
       for(i = 0; i < pattern->dim[0]; i++){
 	for(j = 0; j < pattern->dim[1]; j++){
-      	  free(pattern->pattern[i][j]);
+      	  g_free(pattern->pattern[i][j]);
 	  
 	  pattern->pattern[i][j] = NULL;
 	}
       }
 
+      for(k = 0; k < pattern->dim[2]; k++){
+	g_object_unref(pattern->note[k]);
+      }
+      
+      g_free(pattern->note);
+      
+      pattern->note = NULL;
+      
       pattern->dim[2] = 0;
     }else{
       for(i = 0; i < pattern->dim[0]; i++){
 	for(j = 0; j < pattern->dim[1]; j++){
-	  pattern->pattern[i][j] = (guint *) realloc(pattern->pattern[i][j],
-						     (guint) ceil((double) length / (double) (sizeof(guint) * 8)) * sizeof(guint));
+	  pattern->pattern[i][j] = (guint *) g_realloc(pattern->pattern[i][j],
+						       (guint) ceil((double) length / (double) (sizeof(guint) * 8)) * sizeof(guint));
 	}
       }
+
+      for(k = length; k < pattern->dim[2]; k++){
+	g_object_unref(pattern->note[k]);
+      }
+      
+      pattern->note = g_realloc(pattern->note,
+				length * sizeof(AgsNote *));
 
       pattern->dim[2] = length;
     }
@@ -1306,20 +1324,20 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
     
   if(pattern->dim[0] < dim0){
     if(pattern->pattern == NULL){
-      pattern->pattern = (guint ***) malloc(dim0 * sizeof(guint **));
+      pattern->pattern = (guint ***) g_malloc(dim0 * sizeof(guint **));
     }else{
-      pattern->pattern = (guint ***) realloc(pattern->pattern,
-					     dim0 * sizeof(guint **));
+      pattern->pattern = (guint ***) g_realloc(pattern->pattern,
+					       dim0 * sizeof(guint **));
     }
 
     for(i = pattern->dim[0]; i < dim0; i++){
-      pattern->pattern[i] = (guint **) malloc(pattern->dim[1] * sizeof(guint *));
+      pattern->pattern[i] = (guint **) g_malloc(pattern->dim[1] * sizeof(guint *));
 
       for(j = 0; j < pattern->dim[1]; j++){
 	if(bitmap_size == 0){
 	  pattern->pattern[i][j] = NULL;
 	}else{
-	  pattern->pattern[i][j] = (guint *) malloc(bitmap_size);
+	  pattern->pattern[i][j] = (guint *) g_malloc(bitmap_size);
 	  memset(pattern->pattern[i][j], 0, bitmap_size);
 	}
       }
@@ -1331,17 +1349,17 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
   if(pattern->dim[1] < dim1){  
     for(i = 0; i < pattern->dim[0]; i++){
       if(pattern->pattern[i] == NULL){
-	pattern->pattern[i] = (guint **) malloc(dim1 * sizeof(guint *));
+	pattern->pattern[i] = (guint **) g_malloc(dim1 * sizeof(guint *));
       }else{
-	pattern->pattern[i] = (guint **) realloc(pattern->pattern[i],
-						 dim1 * sizeof(guint *));
+	pattern->pattern[i] = (guint **) g_realloc(pattern->pattern[i],
+						   dim1 * sizeof(guint *));
       }
 
       for(j = pattern->dim[1]; j < dim1; j++){
 	if(bitmap_size == 0){
 	  pattern->pattern[i][j] = NULL;
 	}else{
-	  pattern->pattern[i][j] = (guint *) malloc(bitmap_size);
+	  pattern->pattern[i][j] = (guint *) g_malloc(bitmap_size);
 	  memset(pattern->pattern[i][j], 0, bitmap_size);
 	}
       }
@@ -1358,15 +1376,32 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
     for(i = 0; i < pattern->dim[0]; i++){
       for(j = 0; j < pattern->dim[1]; j++){
 	if(pattern->pattern[i][j] == NULL){
-	  pattern->pattern[i][j] = (guint *) malloc(new_bitmap_size);
+	  pattern->pattern[i][j] = (guint *) g_malloc(new_bitmap_size);
 	  memset(pattern->pattern[i][j], 0, new_bitmap_size);
 	}else{
-	  pattern->pattern[i][j] =(guint *) realloc(pattern->pattern[i][j],
-						    new_bitmap_size);
+	  pattern->pattern[i][j] =(guint *) g_realloc(pattern->pattern[i][j],
+						      new_bitmap_size);
 	  memset(pattern->pattern[i][j] + bitmap_size, 0, new_bitmap_size - bitmap_size);
 	}
       }
     }
+
+    if(pattern->note == NULL){
+      pattern->note = (AgsNote **) g_malloc(length * sizeof(AgsNote *));
+    }else{
+      pattern->note = (AgsNote **) g_realloc(pattern->note,
+					     length * sizeof(AgsNote *));
+    }
+    
+    for(k = pattern->dim[2]; k < length; k++){
+      pattern->note[k] = ags_note_new();
+
+      g_object_set(pattern->note[k],
+		   "x0", k,
+		   "x1", k + 1,
+		   NULL);
+    }
+      
 
     pattern->dim[2] = length;
   }
@@ -1518,6 +1553,46 @@ ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit)
   }
 
   g_rec_mutex_unlock(pattern_mutex);
+}
+
+/**
+ * ags_pattern_get_note:
+ * @pattern: an #AgsPattern
+ * @bit: the tic
+ *
+ * Get note of @pattern.
+ *
+ * Returns: (transfer full): the #AgsNote at given position or %NULL
+ *
+ * Since: 3.3.0
+ */
+AgsNote*
+ags_pattern_get_note(AgsPattern *pattern, guint bit)
+{
+  AgsNote *note;
+  
+  GRecMutex *pattern_mutex;
+
+  if(!AGS_IS_PATTERN(pattern)){
+    return(NULL);
+  }
+
+  note = NULL;
+
+  /* get pattern mutex */
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
+
+  g_rec_mutex_lock(pattern_mutex);
+
+  if(bit < pattern->dim[2]){
+    note = pattern->note[bit];
+    
+    g_object_ref(note);
+  }
+  
+  g_rec_mutex_unlock(pattern_mutex);
+
+  return(note);
 }
 
 /**
