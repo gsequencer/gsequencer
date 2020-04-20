@@ -84,7 +84,10 @@ ags_fx_dssi_audio_processor_class_init(AgsFxDssiAudioProcessorClass *fx_dssi_aud
 void
 ags_fx_dssi_audio_processor_init(AgsFxDssiAudioProcessor *fx_dssi_audio_processor)
 {
-  //TODO:JK: implement me
+  AGS_RECALL(fx_dssi_audio_processor)->name = "ags-fx-dssi";
+  AGS_RECALL(fx_dssi_audio_processor)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(fx_dssi_audio_processor)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
+  AGS_RECALL(fx_dssi_audio_processor)->xml_type = "ags-fx-dssi-audio-processor";
 }
 
 void

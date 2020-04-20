@@ -85,26 +85,28 @@ struct _AgsFxDssiAudio
 struct _AgsFxDssiAudioClass
 {
   AgsFxNotationAudioClass fx_notation_audio;
-
-  
 };
 
 GType ags_fx_dssi_audio_get_type();
 
+/* flags */
 gboolean ags_fx_dssi_audio_test_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags);
 void ags_fx_dssi_audio_set_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags);
 void ags_fx_dssi_audio_unset_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags);
 
+/* load/unload */
 void ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio);
 void ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio);
 
 void ags_fx_dssi_audio_unload_plugin(AgsFxDssiAudio *fx_dssi_audio);
 void ags_fx_dssi_audio_unload_port(AgsFxDssiAudio *fx_dssi_audio);
 
+/* plugin */
 void ags_fx_dssi_audio_change_program(AgsFxDssiAudio *fx_dssi_audio,
 				      guint bank_index,
 				      guint program_index);
 
+/* instantiate */
 AgsFxDssiAudio* ags_fx_dssi_audio_new(AgsAudio *audio);
 
 G_END_DECLS

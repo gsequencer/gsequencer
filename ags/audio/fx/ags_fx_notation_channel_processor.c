@@ -136,7 +136,7 @@ ags_fx_notation_channel_processor_new(AgsChannel *channel)
   AgsFxNotationChannelProcessor *fx_notation_channel_processor;
 
   fx_notation_channel_processor = (AgsFxNotationChannelProcessor *) g_object_new(AGS_TYPE_FX_NOTATION_CHANNEL_PROCESSOR,
-										 "channel", channel,
+										 "source", channel,
 										 NULL);
 
   return(fx_notation_channel_processor);

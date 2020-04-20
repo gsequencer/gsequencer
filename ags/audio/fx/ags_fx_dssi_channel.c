@@ -385,7 +385,7 @@ ags_fx_dssi_channel_new(AgsChannel *channel)
   AgsFxDssiChannel *fx_dssi_channel;
 
   fx_dssi_channel = (AgsFxDssiChannel *) g_object_new(AGS_TYPE_FX_DSSI_CHANNEL,
-						      "channel", channel,
+						      "source", channel,
 						      NULL);
 
   return(fx_dssi_channel);

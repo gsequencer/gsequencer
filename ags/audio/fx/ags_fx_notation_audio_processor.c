@@ -138,6 +138,11 @@ ags_fx_notation_audio_processor_class_init(AgsFxNotationAudioProcessorClass *fx_
 void
 ags_fx_notation_audio_processor_init(AgsFxNotationAudioProcessor *fx_notation_audio_processor)
 {
+  AGS_RECALL(fx_notation_audio_processor)->name = "ags-fx-notation";
+  AGS_RECALL(fx_notation_audio_processor)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(fx_notation_audio_processor)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
+  AGS_RECALL(fx_notation_audio_processor)->xml_type = "ags-fx-notation-audio-processor";
+
   /* counter */
   fx_notation_audio_processor->delay_counter = 0.0;
   fx_notation_audio_processor->offset_counter = 0;

@@ -136,7 +136,7 @@ ags_fx_dssi_channel_processor_new(AgsChannel *channel)
   AgsFxDssiChannelProcessor *fx_dssi_channel_processor;
 
   fx_dssi_channel_processor = (AgsFxDssiChannelProcessor *) g_object_new(AGS_TYPE_FX_DSSI_CHANNEL_PROCESSOR,
-									 "channel", channel,
+									 "source", channel,
 									 NULL);
 
   return(fx_dssi_channel_processor);

@@ -55,7 +55,8 @@ static const gchar *ags_fx_notation_audio_specifier[] = {
   "./duration[0]"
   "./loop[0]",
   "./loop-start[0]",
-  "./loop-end[0]"
+  "./loop-end[0]",
+  NULL,
 };
 
 static const gchar *ags_fx_notation_audio_control_port[] = {
@@ -66,6 +67,7 @@ static const gchar *ags_fx_notation_audio_control_port[] = {
   "5/7",
   "6/7",
   "7/7",
+  NULL,
 };
 
 enum{

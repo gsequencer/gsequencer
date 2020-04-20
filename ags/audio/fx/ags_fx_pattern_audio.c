@@ -60,6 +60,7 @@ static const gchar *ags_fx_pattern_audio_specifier[] = {
   "./loop-end[0]"
   "./bank-index-0[0]",
   "./bank-index-1[0]",
+  NULL,
 };
 
 static const gchar *ags_fx_pattern_audio_control_port[] = {
@@ -72,6 +73,7 @@ static const gchar *ags_fx_pattern_audio_control_port[] = {
   "7/9",
   "8/9",
   "9/9",
+  NULL,
 };
 
 enum{

@@ -132,7 +132,7 @@ ags_fx_notation_channel_new(AgsChannel *channel)
   AgsFxNotationChannel *fx_notation_channel;
 
   fx_notation_channel = (AgsFxNotationChannel *) g_object_new(AGS_TYPE_FX_NOTATION_CHANNEL,
-							      "channel", channel,
+							      "source", channel,
 							      NULL);
 
   return(fx_notation_channel);

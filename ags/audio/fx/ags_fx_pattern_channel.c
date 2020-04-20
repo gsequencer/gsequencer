@@ -132,7 +132,7 @@ ags_fx_pattern_channel_new(AgsChannel *channel)
   AgsFxPatternChannel *fx_pattern_channel;
 
   fx_pattern_channel = (AgsFxPatternChannel *) g_object_new(AGS_TYPE_FX_PATTERN_CHANNEL,
-							    "channel", channel,
+							    "source", channel,
 							    NULL);
 
   return(fx_pattern_channel);

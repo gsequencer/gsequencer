@@ -136,7 +136,7 @@ ags_fx_pattern_channel_processor_new(AgsChannel *channel)
   AgsFxPatternChannelProcessor *fx_pattern_channel_processor;
 
   fx_pattern_channel_processor = (AgsFxPatternChannelProcessor *) g_object_new(AGS_TYPE_FX_PATTERN_CHANNEL_PROCESSOR,
-									       "channel", channel,
+									       "source", channel,
 									       NULL);
 
   return(fx_pattern_channel_processor);

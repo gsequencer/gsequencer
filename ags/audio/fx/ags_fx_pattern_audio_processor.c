@@ -19,7 +19,6 @@
 
 #include <ags/audio/fx/ags_fx_pattern_audio_processor.h>
 
-#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
@@ -124,6 +123,11 @@ ags_fx_pattern_audio_processor_class_init(AgsFxPatternAudioProcessorClass *fx_pa
 void
 ags_fx_pattern_audio_processor_init(AgsFxPatternAudioProcessor *fx_pattern_audio_processor)
 {
+  AGS_RECALL(fx_pattern_audio_processor)->name = "ags-fx-pattern";
+  AGS_RECALL(fx_pattern_audio_processor)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(fx_pattern_audio_processor)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
+  AGS_RECALL(fx_pattern_audio_processor)->xml_type = "ags-fx-pattern-audio-processor";
+
   /* counter */
   fx_pattern_audio_processor->delay_counter = 0.0;
   fx_pattern_audio_processor->offset_counter = 0;
