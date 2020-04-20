@@ -592,7 +592,7 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
  * 
  * Load port of @fx_dssi_audio.
  * 
-< * Since: 3.3.0
+ * Since: 3.3.0
  */
 void
 ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
