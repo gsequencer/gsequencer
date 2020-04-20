@@ -54,9 +54,8 @@ static const gchar *ags_fx_notation_audio_specifier[] = {
   "./delay[0]",
   "./duration[0]"
   "./loop[0]",
+  "./loop-start[0]",
   "./loop-end[0]"
-  "./loop-start[0]",
-  "./loop-start[0]",
 };
 
 static const gchar *ags_fx_notation_audio_control_port[] = {

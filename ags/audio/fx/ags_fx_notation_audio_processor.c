@@ -142,6 +142,9 @@ ags_fx_notation_audio_processor_init(AgsFxNotationAudioProcessor *fx_notation_au
   fx_notation_audio_processor->delay_counter = 0.0;
   fx_notation_audio_processor->offset_counter = 0;
 
+  fx_notation_audio_processor->current_delay_counter = 0.0;
+  fx_notation_audio_processor->current_offset_counter = 0;
+
   /* timestamp */
   fx_notation_audio_processor->timestamp = ags_timestamp_new();
   g_object_ref(fx_notation_audio_processor->timestamp);
@@ -227,6 +230,9 @@ ags_fx_notation_audio_processor_real_run_inter(AgsRecall *recall)
   /* get delay counter */
   g_rec_mutex_lock(fx_notation_audio_processor_mutex);
     
+  fx_notation_audio_processor->current_delay_counter = fx_notation_audio_processor->delay_counter;
+  fx_notation_audio_processor->current_offset_counter = fx_notation_audio_processor->offset_counter;
+  
   delay_counter = fx_notation_audio_processor->delay_counter;
 
   g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
@@ -239,12 +245,12 @@ ags_fx_notation_audio_processor_real_run_inter(AgsRecall *recall)
   ags_fx_notation_audio_processor_record(fx_notation_audio_processor);
 
   ags_fx_notation_audio_processor_feed(fx_notation_audio_processor);
+
+  /* counter change */
+  ags_fx_notation_audio_processor_counter_change(fx_notation_audio_processor);
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_notation_audio_processor_parent_class)->run_inter(recall);
-
-  /* post processing - counter change */
-  ags_fx_notation_audio_processor_counter_change(fx_notation_audio_processor);
 }
 
 void

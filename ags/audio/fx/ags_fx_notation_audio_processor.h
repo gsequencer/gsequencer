@@ -53,9 +53,12 @@ struct _AgsFxNotationAudioProcessor
 {
   AgsRecallAudioRun recall_audio_run;
   
-  gdouble delay_counter;  
+  gdouble delay_counter;
   guint64 offset_counter;
-
+  
+  gdouble current_delay_counter;
+  guint64 current_offset_counter;
+  
   AgsTimestamp *timestamp;
 
   GList *recording_note;
@@ -110,6 +113,7 @@ void ags_fx_notation_audio_processor_feed(AgsFxNotationAudioProcessor *fx_notati
 
 void ags_fx_notation_audio_processor_counter_change(AgsFxNotationAudioProcessor *fx_notation_audio_processor);
 
+/*  */
 AgsFxNotationAudioProcessor* ags_fx_notation_audio_processor_new(AgsAudio *audio);
 
 G_END_DECLS

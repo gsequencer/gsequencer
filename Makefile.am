@@ -1578,6 +1578,8 @@ deprecated_libags_audio_fx_h_sources =
 
 libags_audio_fx_h_sources = \
 	$(deprecated_libags_audio_fx_h_sources) \
+	ags/audio/fx/ags_fx_pattern_audio.h \
+	ags/audio/fx/ags_fx_pattern_audio_processor.h \
 	ags/audio/fx/ags_fx_notation_audio.h \
 	ags/audio/fx/ags_fx_notation_audio_processor.h \
 	ags/audio/fx/ags_fx_notation_channel.h \
@@ -1595,6 +1597,8 @@ deprecated_libags_audio_fx_c_sources =
 
 libags_audio_fx_c_sources = \
 	$(deprecated_libags_audio_fx_c_sources) \
+	ags/audio/fx/ags_fx_pattern_audio.c \
+	ags/audio/fx/ags_fx_pattern_audio_processor.c \
 	ags/audio/fx/ags_fx_notation_audio.c \
 	ags/audio/fx/ags_fx_notation_audio_processor.c \
 	ags/audio/fx/ags_fx_notation_channel.c \
