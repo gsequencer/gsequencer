@@ -227,8 +227,8 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 		 "y", &y,
 		 NULL);
 
-    if(x0 >= offset_counter){
-      if(x1 < offset_counter){
+    if(offset_counter >= x0){
+      if(offset_counter < x1){
 	if(delay_counter == 0.0 &&
 	   x0 != offset_counter){
 	  ags_audio_signal_stream_safe_resize(source,
@@ -310,7 +310,7 @@ ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notat
     ags_audio_signal_open_feed(source,
 			       template,
 			       frame_count + buffer_size);
-  }else if(x1 + 1 == offset_counter &&
+  }else if(offset_counter + 1 == x1 &&
 	   delay_counter + 1.0 >= delay){
     ags_audio_signal_close_feed(source,
 				template,
@@ -320,6 +320,10 @@ ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notat
 				   template,
 				   frame_count + buffer_size);
   }
+
+  g_object_set(source,
+	       "frame-count", frame_count + buffer_size,
+	       NULL);
 
   if(template != NULL){
     g_object_unref(template);

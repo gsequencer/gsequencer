@@ -1,8 +1,12 @@
 ags (3.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented AgsFxNotationAudio and AgsFxNotationAudioProcessor
-	* implemented AgsFxDssiAudio and AgsFxDssiAudioProcessor
+	* implemented AgsFxNotationAudio, AgsFxNotationAudioProcessor, AgsFxNotationChannel,
+	  AgsFxNotationChannelProcessor, AgsFxNotationRecycling and AgsFxNotationAudioSignal
+	* implemented AgsFxPatternAudio, AgsFxPatternAudioProcessor, AgsFxPatternChannel,
+	  AgsFxPatternChannelProcessor, AgsFxPatternRecycling and AgsFxPatternAudioSignal
+	* implemented AgsFxDssiAudio, AgsFxDssiAudioProcessor, AgsFxDssiChannel,
+	  AgsFxDssiChannelProcessor, AgsFxDssiRecycling and AgsFxDssiAudioSignal
 	* TODO:JK: implemented AgsFxLadspaAudio and AgsFxLadspaAudioProcessor
 	* TODO:JK: implemented AgsFxDssiAudio and AgsFxDssiAudioProcessor
 	* TODO:JK: implemented AgsFxLv2Audio and AgsFxLv2AudioProcessor
