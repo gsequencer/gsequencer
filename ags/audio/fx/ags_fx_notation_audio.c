@@ -72,8 +72,6 @@ static const gchar *ags_fx_notation_audio_control_port[] = {
 
 enum{
   PROP_0,
-  PROP_DELAY_COUNTER,
-  PROP_OFFSET_COUNTER,
   PROP_TACT,
   PROP_BPM,
   PROP_DELAY,
@@ -916,15 +914,15 @@ ags_fx_notation_audio_get_feed_note(AgsFxNotationAudio *fx_notation_audio)
 /**
  * ags_fx_notation_audio_add_feed_note:
  * @fx_notation_audio: the #AgsFxNotationAudio
- * @feed_note: the #AgsNote
+ * @note: the #AgsNote
  * 
- * Add @feed_note to @fx_notation_audio.
+ * Add @note to @fx_notation_audio.
  * 
  * Since: 3.3.0
  */
 void
 ags_fx_notation_audio_add_feed_note(AgsFxNotationAudio *fx_notation_audio,
-				    AgsNote *feed_note)
+				    AgsNote *note)
 {
   GRecMutex *recall_mutex;
 
@@ -938,11 +936,11 @@ ags_fx_notation_audio_add_feed_note(AgsFxNotationAudio *fx_notation_audio,
   /* add */
   g_rec_mutex_lock(recall_mutex);
 
-  if(g_list_find(fx_notation_audio->feed_note, feed_note) == NULL){
-    g_object_ref(feed_note);
+  if(g_list_find(fx_notation_audio->feed_note, note) == NULL){
+    g_object_ref(note);
 
     fx_notation_audio->feed_note = g_list_prepend(fx_notation_audio->feed_note,
-						  feed_note);
+						  note);
   }
   
   g_rec_mutex_unlock(recall_mutex);
@@ -951,15 +949,15 @@ ags_fx_notation_audio_add_feed_note(AgsFxNotationAudio *fx_notation_audio,
 /**
  * ags_fx_notation_audio_remove_feed_note:
  * @fx_notation_audio: the #AgsFxNotationAudio
- * @feed_note: the #AgsNote
+ * @note: the #AgsNote
  * 
- * Remove @feed_note from @fx_notation_audio.
+ * Remove @note from @fx_notation_audio.
  * 
  * Since: 3.3.0
  */
 void
 ags_fx_notation_audio_remove_feed_note(AgsFxNotationAudio *fx_notation_audio,
-				       AgsNote *feed_note)
+				       AgsNote *note)
 {
   GRecMutex *recall_mutex;
 
@@ -973,10 +971,10 @@ ags_fx_notation_audio_remove_feed_note(AgsFxNotationAudio *fx_notation_audio,
   /* remove */
   g_rec_mutex_lock(recall_mutex);
 
-  if(g_list_find(fx_notation_audio->feed_note, feed_note) != NULL){
+  if(g_list_find(fx_notation_audio->feed_note, note) != NULL){
     fx_notation_audio->feed_note = g_list_remove(fx_notation_audio->feed_note,
-						 feed_note);
-    g_object_unref(feed_note);
+						 note);
+    g_object_unref(note);
   }
   
   g_rec_mutex_unlock(recall_mutex);

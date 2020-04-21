@@ -80,15 +80,15 @@ gboolean ags_fx_notation_audio_test_flags(AgsFxNotationAudio *fx_notation_audio,
 void ags_fx_notation_audio_set_flags(AgsFxNotationAudio *fx_notation_audio, guint flags);
 void ags_fx_notation_audio_unset_flags(AgsFxNotationAudio *fx_notation_audio, guint flags);
 
-/*  */
+/* feed note */
 GList* ags_fx_notation_audio_get_feed_note(AgsFxNotationAudio *fx_notation_audio);
 
 void ags_fx_notation_audio_add_feed_note(AgsFxNotationAudio *fx_notation_audio,
-					 AgsNote *feed_note);
+					 AgsNote *note);
 void ags_fx_notation_audio_remove_feed_note(AgsFxNotationAudio *fx_notation_audio,
-					    AgsNote *feed_note);
+					    AgsNote *note);
 
-/*  */
+/* instantiate */
 AgsFxNotationAudio* ags_fx_notation_audio_new(AgsAudio *audio);
 
 G_END_DECLS
