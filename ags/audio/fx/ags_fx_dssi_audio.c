@@ -26,6 +26,9 @@
 
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_port_util.h>
+
+#include <ags/audio/fx/ags_fx_dssi_channel.h>
 
 void ags_fx_dssi_audio_class_init(AgsFxDssiAudioClass *fx_dssi_audio);
 void ags_fx_dssi_audio_init(AgsFxDssiAudio *fx_dssi_audio);
@@ -99,8 +102,6 @@ void
 ags_fx_dssi_audio_class_init(AgsFxDssiAudioClass *fx_dssi_audio)
 {
   GObjectClass *gobject;
-
-  GParamSpec *param_spec;
 
   ags_fx_dssi_audio_parent_class = g_type_class_peek_parent(fx_dssi_audio);
 
@@ -215,8 +216,6 @@ ags_fx_dssi_audio_notify_audio_callback(GObject *gobject,
   AgsAudio *audio;
   AgsFxDssiAudio *fx_dssi_audio;
 
-  GRecMutex *recall_mutex;
-  
   fx_dssi_audio = AGS_FX_DSSI_AUDIO(gobject);
 
   /* get audio */
@@ -341,33 +340,32 @@ ags_fx_dssi_audio_notify_samplerate_callback(GObject *gobject,
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_audio);
 
-  g_object_get(fx_dssi_audio,
-	       "audio", &audio,
-	       "audio-channels", &audio_channels,
-	       NULL);
+  audio = NULL;
 
-  start_input = NULL;
-
-  input_pads = 0;
-
-  g_object_get(audio,
-	       "input", &start_input,
-	       "input-pads", &input_pads,
-	       NULL);
-
-  /* recall container, buffer size and samplerate */
   recall_container = NULL;
 
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   samplerate =  AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  
+
   g_object_get(fx_dssi_audio,
+	       "audio", &audio,
 	       "recall-container", &recall_container,
 	       "buffer-size", &buffer_size,
 	       "samplerate", &samplerate,
 	       NULL);
   
   start_recall_channel = ags_recall_container_get_recall_channel(recall_container);
+
+  start_input = NULL;
+
+  input_pads = 0;
+  audio_channels = 0;
+  
+  g_object_get(audio,
+	       "input", &start_input,
+	       "input-pads", &input_pads,
+	       "audio-channels", &audio_channels,
+	       NULL);
 
   /* get DSSI plugin */
   g_rec_mutex_lock(recall_mutex);
@@ -388,7 +386,7 @@ ags_fx_dssi_audio_notify_samplerate_callback(GObject *gobject,
     gpointer plugin_descriptor;
     
     base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
-      
+    
     g_rec_mutex_lock(base_plugin_mutex);
   
     plugin_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->plugin_descriptor;
@@ -436,11 +434,11 @@ ags_fx_dssi_audio_notify_samplerate_callback(GObject *gobject,
 	    cleanup(channel_data->ladspa_handle);
 	  }	  
 
-	  channel_data->ladspa_handle = ags_base_plugin_instantiate(dssi_plugin,
+	  channel_data->ladspa_handle = ags_base_plugin_instantiate((AgsBasePlugin *) dssi_plugin,
 								    samplerate, buffer_size);
 
 	  for(nth = 0; nth < output_port_count; nth++){
-	    ags_base_plugin_connect_port(dssi_plugin,
+	    ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
 					 channel_data->ladspa_handle,
 					 fx_dssi_audio->output_port[nth],
 					 &(channel_data->output[nth]));
@@ -463,7 +461,7 @@ ags_fx_dssi_audio_notify_samplerate_callback(GObject *gobject,
 			 "port-index", &port_index,
 			 NULL);
 	    
-	    ags_base_plugin_connect_port(dssi_plugin,
+	    ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
 					 channel_data->ladspa_handle,
 					 port_index,
 					 &(iter[0]->port_value.ags_port_ladspa));
@@ -488,28 +486,30 @@ ags_fx_dssi_audio_notify_samplerate_callback(GObject *gobject,
 	      cleanup(input_data->ladspa_handle);
 	    }
 
-	    input_data->ladspa_handle = ags_base_plugin_instantiate(dssi_plugin,
+	    input_data->ladspa_handle = ags_base_plugin_instantiate((AgsBasePlugin *) dssi_plugin,
 								    samplerate, buffer_size);
-
-	    if(k < input_pads){
-	      AgsChannel *input;
-	    
-	      AgsFxDssiAudioInputData *input_data;
-	  
-	      input = ags_channel_nth(start_input,
-				      k * audio_channels + j);
-
-	      recall_channel = ags_recall_template_find_provider(start_recall_channel, input);
-
-	      if(recall_channel != NULL){
-		ags_fx_dssi_channel_load_port(recall_channel->data);
-	      }
-
-	      if(input != NULL){
-		g_object_unref(input);
-	      }
-	    }
 	  }
+	}
+      }
+    }
+  }
+
+  if(!is_live_instrument){
+    for(j = 0; j < audio_channels; j++){
+      for(k = 0; k < input_pads; k++){
+	AgsChannel *input;
+
+	input = ags_channel_nth(start_input,
+				k * audio_channels + j);
+
+	recall_channel = ags_recall_template_find_provider(start_recall_channel, (GObject *) input);
+
+	if(recall_channel != NULL){
+	  ags_fx_dssi_channel_load_port(recall_channel->data);
+	}
+
+	if(input != NULL){
+	  g_object_unref(input);
 	}
       }
     }
@@ -517,6 +517,7 @@ ags_fx_dssi_audio_notify_samplerate_callback(GObject *gobject,
   
   g_rec_mutex_unlock(recall_mutex);
 
+  /* unref */
   if(start_input != NULL){
     g_object_unref(start_input);
   }
@@ -627,7 +628,7 @@ ags_fx_dssi_audio_set_audio_channels_callback(AgsAudio *audio,
 	  
 	    guint nth;
 
-	    channel_data->ladspa_handle = ags_base_plugin_instantiate(dssi_plugin,
+	    channel_data->ladspa_handle = ags_base_plugin_instantiate((AgsBasePlugin *) dssi_plugin,
 								      samplerate, buffer_size);
 	  
 	    if(channel_data->output == NULL){
@@ -635,7 +636,7 @@ ags_fx_dssi_audio_set_audio_channels_callback(AgsAudio *audio,
 	    }
 
 	    for(nth = 0; nth < output_port_count; nth++){
-	      ags_base_plugin_connect_port(dssi_plugin,
+	      ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
 					   channel_data->ladspa_handle,
 					   fx_dssi_audio->output_port[nth],
 					   &(channel_data->output[nth]));
@@ -658,7 +659,7 @@ ags_fx_dssi_audio_set_audio_channels_callback(AgsAudio *audio,
 			   "port-index", &port_index,
 			   NULL);
 	    
-	      ags_base_plugin_connect_port(dssi_plugin,
+	      ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
 					   channel_data->ladspa_handle,
 					   port_index,
 					   &(iter[0]->port_value.ags_port_ladspa));
@@ -675,30 +676,11 @@ ags_fx_dssi_audio_set_audio_channels_callback(AgsAudio *audio,
 
 	      input_data = channel_data->input_data[k];
 
-	      input_data->ladspa_handle = ags_base_plugin_instantiate(dssi_plugin,
+	      input_data->ladspa_handle = ags_base_plugin_instantiate((AgsBasePlugin *) dssi_plugin,
 								      samplerate, buffer_size);
 	    
 	      if(input_data->output == NULL){
 		input_data->output = (LADSPA_Data *) g_malloc(output_port_count * buffer_size * sizeof(LADSPA_Data));
-	      }
-
-	      if(k < input_pads){
-		AgsChannel *input;
-	    
-		AgsFxDssiAudioInputData *input_data;
-	  
-		input = ags_channel_nth(start_input,
-					k * audio_channels + j);
-
-		recall_channel = ags_recall_template_find_provider(start_recall_channel, input);
-
-		if(recall_channel != NULL){
-		  ags_fx_dssi_channel_load_port(recall_channel->data);
-		}
-
-		if(input != NULL){
-		  g_object_unref(input);
-		}
 	      }
 	    }
 	  }
@@ -708,6 +690,28 @@ ags_fx_dssi_audio_set_audio_channels_callback(AgsAudio *audio,
       scope_data->audio_channels = audio_channels;
     }
   }  
+
+  if(!is_live_instrument &&
+     audio_channels_old < audio_channels){
+    for(j = audio_channels_old; j < audio_channels; j++){
+      for(k = 0; k < input_pads; k++){
+	AgsChannel *input;
+
+	input = ags_channel_nth(start_input,
+				k * audio_channels + j);
+
+	recall_channel = ags_recall_template_find_provider(start_recall_channel, (GObject *) input);
+
+	if(recall_channel != NULL){
+	  ags_fx_dssi_channel_load_port(recall_channel->data);
+	}
+
+	if(input != NULL){
+	  g_object_unref(input);
+	}
+      }
+    }
+  }
 
   g_rec_mutex_unlock(recall_mutex);
   
@@ -732,12 +736,10 @@ ags_fx_dssi_audio_set_pads_callback(AgsAudio *audio,
   AgsChannel *start_input;
   AgsRecallContainer *recall_container;
   
-  AgsDssiPlugin *dssi_plugin;
-
   GList *start_recall_channel, *recall_channel;
   
   guint audio_channels;
-  guint i, j, k;
+  guint j, k;
   gboolean is_live_instrument;
   
   GRecMutex *recall_mutex;
@@ -751,8 +753,6 @@ ags_fx_dssi_audio_set_pads_callback(AgsAudio *audio,
 
   /* get DSSI plugin and port */
   g_rec_mutex_lock(recall_mutex);
-
-  dssi_plugin = fx_dssi_audio->dssi_plugin;
   
   g_rec_mutex_unlock(recall_mutex);
 
@@ -781,39 +781,21 @@ ags_fx_dssi_audio_set_pads_callback(AgsAudio *audio,
   
   /* connect */
   if(pads_old < pads){
-    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      AgsFxDssiAudioScopeData *scope_data;
+    for(j = 0; j < audio_channels; j++){
+      for(k = pads_old; k < pads; k++){
+	AgsChannel *input;
 
-      scope_data = fx_dssi_audio->scope_data[i];
+	input = ags_channel_nth(start_input,
+				k * audio_channels + j);
 
-      if(i == AGS_SOUND_SCOPE_PLAYBACK ||
-	 i == AGS_SOUND_SCOPE_NOTATION ||
-	 i == AGS_SOUND_SCOPE_MIDI){
-	for(j = 0; j < scope_data->audio_channels; j++){
-	  AgsFxDssiAudioChannelData *channel_data;
+	recall_channel = ags_recall_template_find_provider(start_recall_channel, (GObject *) input);
 
-	  channel_data = scope_data->channel_data[j];
+	if(recall_channel != NULL){
+	  ags_fx_dssi_channel_load_port(recall_channel->data);
+	}
 
-	  for(k = pads_old; k < pads; k++){
-	    AgsChannel *input;
-	    
-	    AgsFxDssiAudioInputData *input_data;
-	  
-	    input_data = channel_data->input_data[k];
-
-	    input = ags_channel_nth(start_input,
-				    k * audio_channels + j);
-
-	    recall_channel = ags_recall_template_find_provider(start_recall_channel, input);
-
-	    if(recall_channel != NULL){
-	      ags_fx_dssi_channel_load_port(recall_channel->data);
-	    }
-
-	    if(input != NULL){
-	      g_object_unref(input);
-	    }
-	  }
+	if(input != NULL){
+	  g_object_unref(input);
 	}
       }
     }
@@ -965,7 +947,7 @@ ags_fx_dssi_audio_channel_data_free(AgsFxDssiAudioChannelData *channel_data)
     
     if(dssi_plugin != NULL){
       base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
-      
+
       g_rec_mutex_lock(base_plugin_mutex);
   
       plugin_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->plugin_descriptor;
@@ -1034,11 +1016,6 @@ void
 ags_fx_dssi_audio_input_data_free(AgsFxDssiAudioInputData *input_data)
 {
   AgsDssiPlugin *dssi_plugin;
-
-  gpointer plugin_descriptor;
-
-  void (*deactivate)(LADSPA_Handle Instance);
-  void (*cleanup)(LADSPA_Handle Instance);
   
   if(input_data == NULL){
     return;
@@ -1049,7 +1026,7 @@ ags_fx_dssi_audio_input_data_free(AgsFxDssiAudioInputData *input_data)
 
   if(input_data->ladspa_handle != NULL){
     gpointer plugin_descriptor;
-    
+
     GRecMutex *base_plugin_mutex;
     
     void (*deactivate)(LADSPA_Handle Instance);
@@ -1206,7 +1183,6 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
 
   guint buffer_size;
   guint samplerate;
-  guint effect_index;
   
   GRecMutex *recall_mutex;
 
@@ -1222,25 +1198,24 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
   /* check if already loaded */
   g_rec_mutex_lock(recall_mutex);
 
-  dssi_plugin = fx_dssi_audio->dssi_plugin;  
+  dssi_plugin = fx_dssi_audio->dssi_plugin;
+
+  if(dssi_plugin == NULL){
+    dssi_plugin =
+      fx_dssi_audio->dssi_plugin = ags_dssi_manager_find_dssi_plugin(dssi_manager,
+								     filename, effect);
+  }    
   
   g_rec_mutex_unlock(recall_mutex);
 
-  if(dssi_plugin != NULL){
-    return;
-  }    
   
   /* get filename and effect */
   g_object_get(fx_dssi_audio,
 	       "filename", &filename,
 	       "effect", &effect,
-	       "effect-index", &effect_index,
 	       "buffer-size", &buffer_size,
 	       "samplerate", &samplerate,
 	       NULL);
-
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(dssi_manager,
-						  filename, effect);    
     
   if(dssi_plugin != NULL){
     guint i, j, k;
@@ -1270,7 +1245,7 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
 
 	  if(is_live_instrument){
 	    if(channel_data->ladspa_handle == NULL){
-	      channel_data->ladspa_handle = ags_base_plugin_instantiate(dssi_plugin,
+	      channel_data->ladspa_handle = ags_base_plugin_instantiate((AgsBasePlugin *) dssi_plugin,
 									samplerate, buffer_size);
 	    }
 	  }
@@ -1282,7 +1257,7 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
 	      input_data = channel_data->input_data[k];
 
 	      if(input_data->ladspa_handle == NULL){
-		input_data->ladspa_handle = ags_base_plugin_instantiate(dssi_plugin,
+		input_data->ladspa_handle = ags_base_plugin_instantiate((AgsBasePlugin *) dssi_plugin,
 									samplerate, buffer_size);
 	      }
 	    }
@@ -1309,18 +1284,26 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
 void
 ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 {
-  AgsDssiPlugin *dssi_plugin;
-  AgsPort **dssi_port, **iter;
+  AgsAudio *audio;
+  AgsChannel *start_input;
+  AgsRecallContainer *recall_container;
+  AgsPort **dssi_port;
 
+  AgsDssiPlugin *dssi_plugin;
+
+  GList *start_recall_channel, *recall_channel;
   GList *start_plugin_port, *plugin_port;
 
   guint *output_port;
   guint *input_port;
   
+  guint input_pads;
+  guint audio_channels;
   guint output_port_count;
   guint input_port_count;
   guint control_port_count;
   guint buffer_size;
+  guint nth;
   guint i, j, k;
   gboolean is_live_instrument;
   
@@ -1333,6 +1316,39 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_audio);
 
+  g_rec_mutex_lock(recall_mutex);
+
+  if(fx_dssi_audio->dssi_port != NULL){
+    g_rec_mutex_unlock(recall_mutex);
+    
+    return;
+  }
+
+  g_rec_mutex_unlock(recall_mutex);
+  
+  audio = NULL;
+
+  recall_container = NULL;
+
+  g_object_get(fx_dssi_audio,
+	       "audio", &audio,
+	       "recall-container", &recall_container,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  start_recall_channel = ags_recall_container_get_recall_channel(recall_container);
+
+  start_input = NULL;
+
+  input_pads = 0;
+  audio_channels = 0;
+  
+  g_object_get(audio,
+	       "input", &start_input,
+	       "input-pads", &input_pads,
+	       "audio-channels", &audio_channels,
+	       NULL);
+  
   /* get DSSI plugin and port */
   g_rec_mutex_lock(recall_mutex);
 
@@ -1341,34 +1357,7 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
   dssi_port = fx_dssi_audio->dssi_port;
   
   g_rec_mutex_unlock(recall_mutex);
-
-  if(!ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
-    g_rec_mutex_lock(recall_mutex);
-    
-    fx_dssi_audio->dssi_port = NULL;
-    
-    g_rec_mutex_unlock(recall_mutex);
-
-    if(dssi_port != NULL){
-      for(iter = dssi_port; iter[0] != NULL; iter++){
-	g_object_unref(iter[0]);
-      }
-
-      g_free(dssi_port);
-    }
-    
-    return;
-  }
-
-  if(dssi_port != NULL ||
-     dssi_plugin == NULL){
-    return;
-  }
-
-  g_object_get(fx_dssi_audio,
-	       "buffer-size", &buffer_size,
-	       NULL);
-
+  
   g_object_get(dssi_plugin,
 	       "plugin-port", &start_plugin_port,
 	       NULL);
@@ -1422,6 +1411,8 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 	output_port_count++;
       }
     }
+
+    plugin_port = plugin_port->next;
   }
 
   /*  */
@@ -1431,7 +1422,7 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 
     plugin_port = start_plugin_port;
     
-    for(i = 0; i < control_port_count; i++){
+    for(nth = 0; nth < control_port_count; nth++){
       AgsPluginPort *current_plugin_port;
 
       gchar *plugin_name;
@@ -1452,13 +1443,17 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
       /* plugin name, specifier and control port */
       plugin_name = g_strdup_printf("dssi-%u", dssi_plugin->unique_id);
 
+      specifier = NULL;
+      
+      port_index = 0;
+
       g_object_get(current_plugin_port,
 		   "port-name", &specifier,
 		   "port-index", &port_index,
 		   NULL);
 
       control_port = g_strdup_printf("%u/%u",
-				     i,
+				     nth,
 				     control_port_count);
 
       /* default value */
@@ -1473,19 +1468,19 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
       g_rec_mutex_unlock(plugin_port_mutex);
 
       /* dssi port */
-      dssi_port[i] = g_object_new(AGS_TYPE_PORT,
-				  "plugin-name", plugin_name,
-				  "specifier", specifier,
-				  "control-port", control_port,
-				  "port-value-is-pointer", FALSE,
-				  "port-value-type", G_TYPE_FLOAT,
-				  NULL);
-      ags_port_set_flags(dssi_port[i], AGS_PORT_USE_LADSPA_FLOAT);
-      g_object_ref(dssi_port[i]);
+      dssi_port[nth] = g_object_new(AGS_TYPE_PORT,
+				    "plugin-name", plugin_name,
+				    "specifier", specifier,
+				    "control-port", control_port,
+				    "port-value-is-pointer", FALSE,
+				    "port-value-type", G_TYPE_FLOAT,
+				    NULL);
+      ags_port_set_flags(dssi_port[nth], AGS_PORT_USE_LADSPA_FLOAT);
+      g_object_ref(dssi_port[nth]);
       
       if(ags_plugin_port_test_flags(current_plugin_port,
 				    AGS_PLUGIN_PORT_OUTPUT)){
-	ags_port_set_flags(dssi_port[i], AGS_PORT_IS_OUTPUT);
+	ags_port_set_flags(dssi_port[nth], AGS_PORT_IS_OUTPUT);
 	  
 	ags_recall_set_flags((AgsRecall *) fx_dssi_audio,
 			     AGS_RECALL_HAS_OUTPUT_PORT);
@@ -1495,18 +1490,18 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 				       AGS_PLUGIN_PORT_INTEGER) &&
 	   !ags_plugin_port_test_flags(current_plugin_port,
 				       AGS_PLUGIN_PORT_TOGGLED)){
-	  ags_port_set_flags(dssi_port[i], AGS_PORT_INFINITE_RANGE);
+	  ags_port_set_flags(dssi_port[nth], AGS_PORT_INFINITE_RANGE);
 	}
       }
 	
-      g_object_set(dssi_port[i],
+      g_object_set(dssi_port[nth],
 		   "plugin-port", current_plugin_port,
 		   NULL);
 
-      ags_port_util_load_ladspa_conversion(dssi_port[i],
+      ags_port_util_load_ladspa_conversion(dssi_port[nth],
 					   current_plugin_port);
 	
-      ags_port_safe_write_raw(dssi_port[i],
+      ags_port_safe_write_raw(dssi_port[nth],
 			      &default_value);
 
       /* connect port */
@@ -1521,13 +1516,12 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 	  for(j = 0; j < scope_data->audio_channels; j++){
 	    AgsFxDssiAudioChannelData *channel_data;
 
-	    channel_data =
-	      scope_data->channel_data[j] = ags_fx_dssi_audio_channel_data_alloc();
+	    channel_data = scope_data->channel_data[j];
 	    
-	    ags_base_plugin_connect_port(dssi_plugin,
+	    ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
 					 channel_data->ladspa_handle,
 					 port_index,
-					 &(dssi_port[i]->port_value.ags_port_ladspa));
+					 &(dssi_port[nth]->port_value.ags_port_ladspa));
 	  }
 	}
       }
@@ -1539,7 +1533,7 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
       g_value_unset(&default_value);
     }
 
-    dssi_port[i] = NULL;
+    dssi_port[nth] = NULL;
   }
 
   /* set DSSI output */
@@ -1568,7 +1562,7 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 	  }
 
 	  for(nth = 0; nth < output_port_count; nth++){
-	    ags_base_plugin_connect_port(dssi_plugin,
+	    ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
 					 channel_data->ladspa_handle,
 					 output_port[nth],
 					 &(channel_data->output[nth]));
@@ -1590,7 +1584,7 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 	    }
 
 	    for(nth = 0; nth < output_port_count; nth++){
-	      ags_base_plugin_connect_port(dssi_plugin,
+	      ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
 					   channel_data->ladspa_handle,
 					   output_port[nth],
 					   &(channel_data->output[nth]));
@@ -1600,6 +1594,27 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
       }
     }
   }  
+
+  if(!is_live_instrument){
+    for(j = 0; j < audio_channels; j++){
+      for(k = 0; k < input_pads; k++){
+	AgsChannel *input;
+
+	input = ags_channel_nth(start_input,
+				k * audio_channels + j);
+
+	recall_channel = ags_recall_template_find_provider(start_recall_channel, (GObject *) input);
+
+	if(recall_channel != NULL){
+	  ags_fx_dssi_channel_load_port(recall_channel->data);
+	}
+
+	if(input != NULL){
+	  g_object_unref(input);
+	}
+      }
+    }
+  }
 
   fx_dssi_audio->output_port_count = output_port_count;
   fx_dssi_audio->output_port = output_port;
@@ -1612,6 +1627,21 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
   g_rec_mutex_unlock(recall_mutex);
 
   /* unref */
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+
+  if(recall_container != NULL){
+    g_object_unref(recall_container);
+  }
+
+  g_list_free_full(start_recall_channel,
+		   g_object_unref);
+
   g_list_free_full(start_plugin_port,
 		   (GDestroyNotify) g_object_unref);
 }

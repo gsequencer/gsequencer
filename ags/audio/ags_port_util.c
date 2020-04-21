@@ -41,8 +41,8 @@
  * Since: 3.3.0
  */
 void
-ags_port_util_load_conversion(AgsPort *port,
-			      AgsPluginPort *plugin_port)
+ags_port_util_load_ladspa_conversion(AgsPort *port,
+				     AgsPluginPort *plugin_port)
 {
   AgsLadspaConversion *ladspa_conversion;
 

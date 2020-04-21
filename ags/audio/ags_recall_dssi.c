@@ -28,6 +28,7 @@
 #include <ags/plugin/ags_ladspa_conversion.h>
 
 #include <ags/audio/ags_port.h>
+#include <ags/audio/ags_port_util.h>
 
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined(__DragonFly__)
 #include <machine/endian.h>
@@ -676,8 +677,8 @@ ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
     return;
   }
 
-  ags_port_util_load_conversion(port,
-				plugin_port);
+  ags_port_util_load_ladspa_conversion(port,
+				       plugin_port);
 }
 
 /**

@@ -19,11 +19,14 @@
 
 #include <ags/audio/fx/ags_fx_dssi_channel.h>
 
-#include <ags/audio/fx/ags_fx_dssi_audio.h>
-
 #include <ags/plugin/ags_dssi_manager.h>
+#include <ags/plugin/ags_dssi_plugin.h>
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_plugin_port.h>
+
+#include <ags/audio/ags_port_util.h>
+
+#include <ags/audio/fx/ags_fx_dssi_audio.h>
 
 void ags_fx_dssi_channel_class_init(AgsFxDssiChannelClass *fx_dssi_channel);
 void ags_fx_dssi_channel_init(AgsFxDssiChannel *fx_dssi_channel);
@@ -114,9 +117,18 @@ ags_fx_dssi_channel_dispose(GObject *gobject)
 void
 ags_fx_dssi_channel_finalize(GObject *gobject)
 {
+  AgsPort **iter;
   AgsFxDssiChannel *fx_dssi_channel;
   
   fx_dssi_channel = AGS_FX_DSSI_CHANNEL(gobject);
+  
+  if(fx_dssi_channel->dssi_port == NULL){
+    for(iter = fx_dssi_channel->dssi_port; iter[0] != NULL; iter++){
+      g_object_unref(iter[0]);
+    }
+
+    g_free(fx_dssi_channel->dssi_port);
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_fx_dssi_channel_parent_class)->finalize(gobject);
@@ -133,15 +145,19 @@ ags_fx_dssi_channel_finalize(GObject *gobject)
 void
 ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
 {
+  AgsChannel *input;
   AgsFxDssiAudio *fx_dssi_audio;
+  AgsPort **dssi_port;
   
   AgsDssiPlugin *dssi_plugin;
-  AgsPort **dssi_port, **iter;
 
   GList *start_plugin_port, *plugin_port;
 
+  guint pad;
   guint control_port_count;
-  guint i;
+  guint nth;
+  guint i, j;
+  gboolean is_live_instrument;
   
   GRecMutex *fx_dssi_audio_mutex;
   GRecMutex *fx_dssi_channel_mutex;
@@ -150,6 +166,20 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
     return;
   }
 
+  fx_dssi_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_channel);
+
+  g_rec_mutex_lock(fx_dssi_channel_mutex);
+
+  if(fx_dssi_channel->dssi_port != NULL){
+    g_rec_mutex_unlock(fx_dssi_channel_mutex);
+    
+    return;
+  }
+
+  g_rec_mutex_unlock(fx_dssi_channel_mutex);
+  
+  fx_dssi_audio = NULL;
+
   g_object_get(fx_dssi_channel,
 	       "recall-audio", &fx_dssi_audio,
 	       NULL);
@@ -157,11 +187,32 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
   if(fx_dssi_audio == NULL){
     return;
   }
+
+  is_live_instrument = ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT);
+
+  if(is_live_instrument){
+    if(fx_dssi_audio != NULL){
+      g_object_unref(fx_dssi_audio);
+    }
+    
+    return;
+  }
   
   /* get recall mutex */
   fx_dssi_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_audio);
-  fx_dssi_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_channel);
 
+  input = NULL;
+
+  g_object_get(fx_dssi_channel,
+	       "source", &input,
+	       NULL);
+
+  pad = 0;
+
+  g_object_get(input,
+	       "pad", &pad,
+	       NULL);
+  
   /* get DSSI plugin */
   g_rec_mutex_lock(fx_dssi_audio_mutex);
 
@@ -175,29 +226,6 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
   dssi_port = fx_dssi_channel->dssi_port;
 
   g_rec_mutex_unlock(fx_dssi_channel_mutex);
-
-  if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
-    g_rec_mutex_lock(fx_dssi_channel_mutex);
-    
-    fx_dssi_channel->dssi_port = NULL;
-    
-    g_rec_mutex_unlock(fx_dssi_channel_mutex);
-
-    if(dssi_port != NULL){
-      for(iter = dssi_port; iter[0] != NULL; iter++){
-	g_object_unref(iter[0]);
-      }
-
-      g_free(dssi_port);
-    }
-    
-    return;
-  }
-
-  if(dssi_port != NULL ||
-     dssi_plugin == NULL){
-    return;
-  }
 
   g_object_get(dssi_plugin,
 	       "plugin-port", &start_plugin_port,
@@ -214,7 +242,7 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
       control_port_count++;
     }
 
-    plugin_port != NULL;
+    plugin_port = plugin_port->next;
   }
 
   /*  */
@@ -223,12 +251,14 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
 
     plugin_port = start_plugin_port;
     
-    for(i = 0; i < control_port_count; i++){
+    for(nth = 0; nth < control_port_count; nth++){
       AgsPluginPort *current_plugin_port;
 
       gchar *plugin_name;
       gchar *specifier;
       gchar *control_port;
+      
+      guint port_index;
       
       GValue default_value = {0,};
 
@@ -242,12 +272,17 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
       /* plugin name, specifier and control port */
       plugin_name = g_strdup_printf("dssi-%u", dssi_plugin->unique_id);
 
+      specifier = NULL;
+      
+      port_index = 0;
+      
       g_object_get(current_plugin_port,
 		   "port-name", &specifier,
+		   "port-index", &port_index,
 		   NULL);
 
       control_port = g_strdup_printf("%u/%u",
-				     i,
+				     nth,
 				     control_port_count);
 
       /* default value */
@@ -262,19 +297,19 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
       g_rec_mutex_unlock(plugin_port_mutex);
 
       /* dssi port */
-      dssi_port[i] = g_object_new(AGS_TYPE_PORT,
-				  "plugin-name", plugin_name,
-				  "specifier", specifier,
-				  "control-port", control_port,
-				  "port-value-is-pointer", FALSE,
-				  "port-value-type", G_TYPE_FLOAT,
-				  NULL);
-      ags_port_set_flags(dssi_port[i], AGS_PORT_USE_LADSPA_FLOAT);
-      g_object_ref(dssi_port[i]);
+      dssi_port[nth] = g_object_new(AGS_TYPE_PORT,
+				    "plugin-name", plugin_name,
+				    "specifier", specifier,
+				    "control-port", control_port,
+				    "port-value-is-pointer", FALSE,
+				    "port-value-type", G_TYPE_FLOAT,
+				    NULL);
+      ags_port_set_flags(dssi_port[nth], AGS_PORT_USE_LADSPA_FLOAT);
+      g_object_ref(dssi_port[nth]);
       
       if(ags_plugin_port_test_flags(current_plugin_port,
 				    AGS_PLUGIN_PORT_OUTPUT)){
-	ags_port_set_flags(dssi_port[i], AGS_PORT_IS_OUTPUT);
+	ags_port_set_flags(dssi_port[nth], AGS_PORT_IS_OUTPUT);
 	  
 	ags_recall_set_flags((AgsRecall *) fx_dssi_channel,
 			     AGS_RECALL_HAS_OUTPUT_PORT);
@@ -284,19 +319,47 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
 				       AGS_PLUGIN_PORT_INTEGER) &&
 	   !ags_plugin_port_test_flags(current_plugin_port,
 				       AGS_PLUGIN_PORT_TOGGLED)){
-	  ags_port_set_flags(dssi_port[i], AGS_PORT_INFINITE_RANGE);
+	  ags_port_set_flags(dssi_port[nth], AGS_PORT_INFINITE_RANGE);
 	}
       }
 	
-      g_object_set(dssi_port[i],
+      g_object_set(dssi_port[nth],
 		   "plugin-port", current_plugin_port,
 		   NULL);
 
-      ags_port_util_load_ladspa_conversion(dssi_port[i],
+      ags_port_util_load_ladspa_conversion(dssi_port[nth],
 					   current_plugin_port);
 	
-      ags_port_safe_write_raw(dssi_port[i],
+      ags_port_safe_write_raw(dssi_port[nth],
 			      &default_value);
+
+      /* connect port */
+      for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+	AgsFxDssiAudioScopeData *scope_data;
+
+	scope_data = fx_dssi_audio->scope_data[i];
+
+	if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+	   i == AGS_SOUND_SCOPE_NOTATION ||
+	   i == AGS_SOUND_SCOPE_MIDI){
+	  for(j = 0; j < scope_data->audio_channels; j++){
+	    AgsFxDssiAudioChannelData *channel_data;
+
+	    channel_data = scope_data->channel_data[j];
+
+	    if(pad < 128){
+	      AgsFxDssiAudioInputData *input_data;
+	  
+	      input_data = channel_data->input_data[pad];
+
+	      ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
+					   input_data->ladspa_handle,
+					   port_index,
+					   &(dssi_port[nth]->port_value.ags_port_ladspa));
+	    }
+	  }
+	}
+      }
 
       g_free(plugin_name);
       g_free(specifier);
@@ -305,7 +368,7 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
       g_value_unset(&default_value);
     }
 
-    dssi_port[i] = NULL;
+    dssi_port[nth] = NULL;
   }
 
   /* set DSSI port */
@@ -316,7 +379,9 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
   g_rec_mutex_unlock(fx_dssi_channel_mutex);
 
   /* unref */
-  g_object_unref(fx_dssi_audio);
+  if(fx_dssi_audio != NULL){
+    g_object_unref(fx_dssi_audio);
+  }
 
   g_list_free_full(start_plugin_port,
 		   (GDestroyNotify) g_object_unref);

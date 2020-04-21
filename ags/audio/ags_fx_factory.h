@@ -43,6 +43,7 @@ G_BEGIN_DECLS
  * @AGS_FX_FACTORY_PLAY: bounded to play
  * @AGS_FX_FACTORY_RECALL: bounded to recall
  * @AGS_FX_FACTORY_BULK: operates on bulk mode
+ * @AGS_FX_FACTORY_LIVE: is live version
  * 
  * Enum values controlling instantiating the recall implementation.
  */
