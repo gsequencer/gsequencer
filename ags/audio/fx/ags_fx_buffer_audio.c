@@ -23,14 +23,6 @@
 
 void ags_fx_buffer_audio_class_init(AgsFxBufferAudioClass *fx_buffer_audio);
 void ags_fx_buffer_audio_init(AgsFxBufferAudio *fx_buffer_audio);
-void ags_fx_buffer_audio_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_fx_buffer_audio_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
 void ags_fx_buffer_audio_dispose(GObject *gobject);
 void ags_fx_buffer_audio_finalize(GObject *gobject);
 
@@ -103,9 +95,6 @@ ags_fx_buffer_audio_class_init(AgsFxBufferAudioClass *fx_buffer_audio)
   /* GObjectClass */
   gobject = (GObjectClass *) fx_buffer_audio;
 
-  gobject->set_property = ags_fx_buffer_audio_set_property;
-  gobject->get_property = ags_fx_buffer_audio_get_property;
-
   gobject->dispose = ags_fx_buffer_audio_dispose;
   gobject->finalize = ags_fx_buffer_audio_finalize;
 
@@ -119,52 +108,6 @@ ags_fx_buffer_audio_init(AgsFxBufferAudio *fx_buffer_audio)
   AGS_RECALL(fx_buffer_audio)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_buffer_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_buffer_audio)->xml_type = "ags-fx-buffer-audio";
-
-  fx_buffer_audio->flags = 0;
-}
-
-void
-ags_fx_buffer_audio_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec)
-{
-  AgsFxBufferAudio *fx_buffer_audio;
-
-  GRecMutex *recall_mutex;
-  
-  fx_buffer_audio = AGS_FX_BUFFER_AUDIO(gobject);
-
-  /* get recall mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_buffer_audio);
-
-  switch(prop_id){
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  };
-}
-
-void
-ags_fx_buffer_audio_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec)
-{
-  AgsFxBufferAudio *fx_buffer_audio;
-  
-  GRecMutex *recall_mutex;
-
-  fx_buffer_audio = AGS_FX_BUFFER_AUDIO(gobject);
-
-  /* get recall mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_buffer_audio);
-
-  switch(prop_id){
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  };
 }
 
 void

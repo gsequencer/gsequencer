@@ -427,6 +427,9 @@ ags_fx_buffer_audio_signal_real_run_inter_END:
   if(destination != NULL){
     g_object_unref(destination);
   }
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_fx_buffer_audio_signal_parent_class)->run_inter(recall);
 }
 
 /**
