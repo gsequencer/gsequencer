@@ -740,17 +740,26 @@ ags_recall_channel_set_source(AgsRecallChannel *recall_channel, AgsChannel *sour
 GList*
 ags_recall_channel_find_channel(GList *recall_channel, AgsChannel *source)
 {
-  AgsChannel *current_source;
   AgsRecallChannel *current_recall_channel;
 
+  gboolean success;
+  
   while(recall_channel != NULL){
+    AgsChannel *current_source;
+    
     current_recall_channel = AGS_RECALL_CHANNEL(recall_channel->data);
 
     g_object_get(current_recall_channel,
 		 "source", &current_source,
 		 NULL);
+
+    success = (current_source == source) ? TRUE: FALSE;
+
+    if(current_source != NULL){
+      g_object_unref(current_source);
+    }
     
-    if(current_source == source){
+    if(success){
       return(recall_channel);
     }
 

@@ -323,53 +323,6 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
 }
 
 /**
- * ags_fx_dssi_channel_unload_port:
- * @fx_dssi_channel: the #AgsFxDssiChannel
- * 
- * Unload port of @fx_dssi_channel.
- * 
- * Since: 3.3.0
- */
-void
-ags_fx_dssi_channel_unload_port(AgsFxDssiChannel *fx_dssi_channel)
-{
-  AgsPort **dssi_port, **iter;
-
-  guint i;
-
-  GRecMutex *recall_mutex;
-
-  if(!AGS_IS_FX_DSSI_CHANNEL(fx_dssi_channel)){
-    return;
-  }
-
-  /* get recall mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_channel);
-
-  g_rec_mutex_lock(recall_mutex);
-
-  dssi_port = fx_dssi_channel->dssi_port;
-  
-  g_rec_mutex_unlock(recall_mutex);
-
-  if(dssi_port == NULL){
-    return;
-  }
-  
-  g_rec_mutex_lock(recall_mutex);
-
-  fx_dssi_channel->dssi_port = NULL;
-
-  g_rec_mutex_unlock(recall_mutex);
-
-  for(iter = dssi_port; iter[0] != NULL; iter++){
-    g_object_unref(iter[0]);
-  }
-
-  g_free(dssi_port);
-}
-
-/**
  * ags_fx_dssi_channel_new:
  * @channel: the #AgsChannel
  *

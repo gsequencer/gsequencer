@@ -57,8 +57,6 @@ GType ags_fx_dssi_channel_get_type();
 
 void ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel);
 
-void ags_fx_dssi_channel_unload_port(AgsFxDssiChannel *fx_dssi_channel);
-
 AgsFxDssiChannel* ags_fx_dssi_channel_new(AgsChannel *channel);
 
 G_END_DECLS
