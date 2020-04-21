@@ -49,24 +49,15 @@ static gpointer ags_fx_buffer_audio_parent_class = NULL;
 static const gchar *ags_fx_buffer_audio_plugin_name = "ags-fx-buffer";
 
 static const gchar *ags_fx_buffer_audio_specifier[] = {
-  "./available-matrix[0]",
-  "./conversion-matrix[0]",
-  "./completed-matrix[0]",
   NULL,
 };
 
 static const gchar *ags_fx_buffer_audio_control_port[] = {
-  "1/3",
-  "2/3",
-  "3/3",
   NULL,
 };
 
 enum{
   PROP_0,
-  PROP_AVAILABLE_MATRIX,
-  PROP_CONVERSION_MATRIX,
-  PROP_COMPLETED_MATRIX,
 };
 
 GType
@@ -119,53 +110,6 @@ ags_fx_buffer_audio_class_init(AgsFxBufferAudioClass *fx_buffer_audio)
   gobject->finalize = ags_fx_buffer_audio_finalize;
 
   /* properties */
-  /**
-   * AgsFxBufferAudio:available-matrix:
-   *
-   * The beats per minute.
-   * 
-   * Since: 3.3.0
-   */
-  param_spec = g_param_spec_object("available-matrix",
-				   i18n_pspec("available matrix of recall"),
-				   i18n_pspec("The recall's available matrix"),
-				   AGS_TYPE_PORT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_AVAILABLE_MATRIX,
-				  param_spec);
-
-  /**
-   * AgsFxBufferAudio:conversion-matrix:
-   *
-   * The beats per minute.
-   * 
-   * Since: 3.3.0
-   */
-  param_spec = g_param_spec_object("conversion-matrix",
-				   i18n_pspec("conversion matrix of recall"),
-				   i18n_pspec("The recall's conversion matrix"),
-				   AGS_TYPE_PORT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_CONVERSION_MATRIX,
-				  param_spec);
-
-  /**
-   * AgsFxBufferAudio:completed-matrix:
-   *
-   * The beats per minute.
-   * 
-   * Since: 3.3.0
-   */
-  param_spec = g_param_spec_object("completed-matrix",
-				   i18n_pspec("completed matrix of recall"),
-				   i18n_pspec("The recall's completed matrix"),
-				   AGS_TYPE_PORT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_COMPLETED_MATRIX,
-				  param_spec);
 }
 
 void
@@ -177,57 +121,6 @@ ags_fx_buffer_audio_init(AgsFxBufferAudio *fx_buffer_audio)
   AGS_RECALL(fx_buffer_audio)->xml_type = "ags-fx-buffer-audio";
 
   fx_buffer_audio->flags = 0;
-  
-  /* available matrix */
-  fx_buffer_audio->available_matrix = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name", ags_fx_buffer_audio_plugin_name,
-					 "specifier", ags_fx_buffer_audio_specifier[0],
-					 "control-port", ags_fx_buffer_audio_control_port[0],
-					 "port-value-is-pointer", TRUE,
-					 "port-value-type", G_TYPE_POINTER,
-					 "port-value-size", sizeof(gboolean),
-					 "port-value-length", AGS_FX_BUFFER_AUDIO_MATRIX_SIZE,
-					 NULL);
-  g_object_ref(fx_buffer_audio->available_matrix);
-  
-  fx_buffer_audio->available_matrix->port_value.ags_port_pointer = (gboolean *) g_malloc(AGS_FX_BUFFER_AUDIO_MATRIX_SIZE * sizeof(gboolean));
-
-  ags_recall_add_port((AgsRecall *) fx_buffer_audio,
-		      fx_buffer_audio->available_matrix);
-  
-  /* conversion matrix */
-  fx_buffer_audio->conversion_matrix = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name", ags_fx_buffer_audio_plugin_name,
-					 "specifier", ags_fx_buffer_audio_specifier[1],
-					 "control-port", ags_fx_buffer_audio_control_port[1],
-					 "port-value-is-pointer", TRUE,
-					 "port-value-type", G_TYPE_POINTER,
-					 "port-value-size", sizeof(gboolean),
-					 "port-value-length", AGS_FX_BUFFER_AUDIO_MATRIX_SIZE,
-					 NULL);
-  g_object_ref(fx_buffer_audio->conversion_matrix);
-  
-  fx_buffer_audio->conversion_matrix->port_value.ags_port_pointer = (gboolean *) g_malloc(AGS_FX_BUFFER_AUDIO_MATRIX_SIZE * sizeof(gboolean));
-
-  ags_recall_add_port((AgsRecall *) fx_buffer_audio,
-		      fx_buffer_audio->conversion_matrix);
-  
-  /* completed matrix */
-  fx_buffer_audio->completed_matrix = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name", ags_fx_buffer_audio_plugin_name,
-					 "specifier", ags_fx_buffer_audio_specifier[2],
-					 "control-port", ags_fx_buffer_audio_control_port[2],
-					 "port-value-is-pointer", TRUE,
-					 "port-value-type", G_TYPE_POINTER,
-					 "port-value-size", sizeof(gboolean),
-					 "port-value-length", AGS_FX_BUFFER_AUDIO_MATRIX_SIZE,
-					 NULL);
-  g_object_ref(fx_buffer_audio->completed_matrix);
-  
-  fx_buffer_audio->completed_matrix->port_value.ags_port_pointer = (gboolean *) g_malloc(AGS_FX_BUFFER_AUDIO_MATRIX_SIZE * sizeof(gboolean));
-
-  ags_recall_add_port((AgsRecall *) fx_buffer_audio,
-		      fx_buffer_audio->completed_matrix);
 }
 
 void
@@ -246,87 +139,6 @@ ags_fx_buffer_audio_set_property(GObject *gobject,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_buffer_audio);
 
   switch(prop_id){
-  case PROP_AVAILABLE_MATRIX:
-  {
-    AgsPort *port;
-
-    port = (AgsPort *) g_value_get_object(value);
-
-    g_rec_mutex_lock(recall_mutex);
-
-    if(port == fx_buffer_audio->available_matrix){
-      g_rec_mutex_unlock(recall_mutex);
-
-      return;
-    }
-
-    if(fx_buffer_audio->available_matrix != NULL){
-      g_object_unref(G_OBJECT(fx_buffer_audio->available_matrix));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_buffer_audio->available_matrix = port;
-
-    g_rec_mutex_unlock(recall_mutex);
-  }
-  break;
-  case PROP_CONVERSION_MATRIX:
-  {
-    AgsPort *port;
-
-    port = (AgsPort *) g_value_get_object(value);
-
-    g_rec_mutex_lock(recall_mutex);
-
-    if(port == fx_buffer_audio->conversion_matrix){
-      g_rec_mutex_unlock(recall_mutex);
-
-      return;
-    }
-
-    if(fx_buffer_audio->conversion_matrix != NULL){
-      g_object_unref(G_OBJECT(fx_buffer_audio->conversion_matrix));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_buffer_audio->conversion_matrix = port;
-
-    g_rec_mutex_unlock(recall_mutex);
-  }
-  break;
-  case PROP_COMPLETED_MATRIX:
-  {
-    AgsPort *port;
-
-    port = (AgsPort *) g_value_get_object(value);
-
-    g_rec_mutex_lock(recall_mutex);
-
-    if(port == fx_buffer_audio->completed_matrix){
-      g_rec_mutex_unlock(recall_mutex);
-
-      return;
-    }
-
-    if(fx_buffer_audio->completed_matrix != NULL){
-      g_object_unref(G_OBJECT(fx_buffer_audio->completed_matrix));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_buffer_audio->completed_matrix = port;
-
-    g_rec_mutex_unlock(recall_mutex);
-  }
-  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -349,33 +161,6 @@ ags_fx_buffer_audio_get_property(GObject *gobject,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_buffer_audio);
 
   switch(prop_id){
-  case PROP_AVAILABLE_MATRIX:
-  {
-    g_rec_mutex_lock(recall_mutex);
-
-    g_value_set_object(value, fx_buffer_audio->available_matrix);
-
-    g_rec_mutex_unlock(recall_mutex);
-  }
-  break;
-  case PROP_CONVERSION_MATRIX:
-  {
-    g_rec_mutex_lock(recall_mutex);
-
-    g_value_set_object(value, fx_buffer_audio->conversion_matrix);
-
-    g_rec_mutex_unlock(recall_mutex);
-  }
-  break;
-  case PROP_COMPLETED_MATRIX:
-  {
-    g_rec_mutex_lock(recall_mutex);
-
-    g_value_set_object(value, fx_buffer_audio->completed_matrix);
-
-    g_rec_mutex_unlock(recall_mutex);
-  }
-  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -389,24 +174,6 @@ ags_fx_buffer_audio_dispose(GObject *gobject)
   
   fx_buffer_audio = AGS_FX_BUFFER_AUDIO(gobject);
 
-  if(fx_buffer_audio->available_matrix != NULL){
-    g_object_unref(fx_buffer_audio->available_matrix);
-
-    fx_buffer_audio->available_matrix = NULL;
-  }
-
-  if(fx_buffer_audio->conversion_matrix != NULL){
-    g_object_unref(fx_buffer_audio->conversion_matrix);
-
-    fx_buffer_audio->conversion_matrix = NULL;
-  }
-
-  if(fx_buffer_audio->completed_matrix != NULL){
-    g_object_unref(fx_buffer_audio->completed_matrix);
-
-    fx_buffer_audio->completed_matrix = NULL;
-  }
-
   /* call parent */
   G_OBJECT_CLASS(ags_fx_buffer_audio_parent_class)->dispose(gobject);
 }
@@ -417,18 +184,6 @@ ags_fx_buffer_audio_finalize(GObject *gobject)
   AgsFxBufferAudio *fx_buffer_audio;
   
   fx_buffer_audio = AGS_FX_BUFFER_AUDIO(gobject);
-  
-  if(fx_buffer_audio->available_matrix != NULL){
-    g_object_unref(fx_buffer_audio->available_matrix);
-  }
-  
-  if(fx_buffer_audio->conversion_matrix != NULL){
-    g_object_unref(fx_buffer_audio->conversion_matrix);
-  }
-  
-  if(fx_buffer_audio->completed_matrix != NULL){
-    g_object_unref(fx_buffer_audio->completed_matrix);
-  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_buffer_audio_parent_class)->finalize(gobject);

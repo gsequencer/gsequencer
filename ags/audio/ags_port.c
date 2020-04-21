@@ -1280,7 +1280,7 @@ ags_port_safe_read_raw(AgsPort *port, GValue *value)
     }else if(port->port_value_type == G_TYPE_OBJECT){
       data = port->port_value.ags_port_object;
     }else{
-      data = (gpointer) malloc(overall_size);
+      data = (gpointer) g_malloc(overall_size);
 
       if(port->port_value_type == G_TYPE_BOOLEAN){
 	memcpy(data, port->port_value.ags_port_boolean_ptr, overall_size);

@@ -38,6 +38,7 @@ G_BEGIN_DECLS
 #define AGS_FX_BUFFER_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_BUFFER_AUDIO, AgsFxBufferAudioClass))
 
 #define AGS_FX_BUFFER_AUDIO_MATRIX_SIZE (128 * 128)
+#define AGS_FX_BUFFER_AUDIO_VECTOR_SIZE (128)
 
 typedef struct _AgsFxBufferAudio AgsFxBufferAudio;
 typedef struct _AgsFxBufferAudioClass AgsFxBufferAudioClass;
@@ -47,10 +48,6 @@ struct _AgsFxBufferAudio
   AgsRecallAudio recall_audio;
 
   guint flags;
-
-  AgsPort *available_matrix;
-  AgsPort *conversion_matrix;
-  AgsPort *completed_matrix;
 };
 
 struct _AgsFxBufferAudioClass

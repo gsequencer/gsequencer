@@ -131,7 +131,302 @@ ags_fx_buffer_audio_signal_finalize(GObject *gobject)
 void
 ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  AgsAudioSignal *source;
+  AgsAudioSignal *destination;
+  
+  GList *stream_destination, *stream_source;
+
+  void *buffer_source;
+  void *buffer_source_prev;
+
+  guint destination_buffer_size, source_buffer_size;
+  guint destination_samplerate, source_samplerate;
+  guint destination_format, source_format;
+  guint attack;  
+  guint copy_mode;
+  gboolean resample;
+
+  GRecMutex *source_stream_mutex;
+  GRecMutex *destination_stream_mutex;
+  
+  /* get some fields */
+  g_object_get(recall,
+	       "source", &source,
+	       "destination", &destination,
+	       NULL);
+
+  /* check destination */
+  if(destination == NULL){
+    AgsChannel *output;
+    AgsRecycling *destination_recycling;
+    AgsRecallID *recall_id;
+    AgsRecallID *parent_recall_id;
+    AgsRecyclingContext *recycling_context;
+    AgsRecyclingContext *parent_recycling_context;
+
+    AgsFxBufferChannelProcessor *fx_buffer_channel_processor;
+    AgsFxBufferRecycling *fx_buffer_recycling;
+
+    GObject *output_soundcard;
+
+    GList *start_list;
+
+    output = NULL;
+
+    destination_recycling = NULL;
+    
+    recall_id = NULL;
+    parent_recall_id = NULL;
+
+    recycling_context = NULL;
+    parent_recycling_context = NULL;
+    
+    fx_buffer_channel_processor = NULL;
+    fx_buffer_recycling = NULL;
+    
+    output_soundcard = NULL;
+    
+    g_object_get(recall,
+		 "output-soundcard", &output_soundcard,
+		 "recall-id", &recall_id,
+		 NULL);
+
+    g_object_get(fx_buffer_recycling,
+		 "parent", &fx_buffer_channel_processor,
+		 "destination", &destination_recycling,
+		 NULL);
+    
+    g_object_get(fx_buffer_channel_processor,
+		 "destination", &output,
+		 NULL);
+
+    /* get parent recall id */
+    g_object_get(output,
+		 "recall-id", &start_list,
+		 NULL);
+
+    g_object_get(recall_id,
+		 "recycling-context", &recycling_context,
+		 NULL);
+
+    g_object_get(recycling_context,
+		 "parent", &parent_recycling_context,
+		 NULL);
+    
+    parent_recall_id = ags_recall_id_find_recycling_context(start_list,
+							    parent_recycling_context);
+    
+    g_list_free_full(start_list,
+		     g_object_unref);
+    
+    /* create new audio signal */
+    destination = ags_audio_signal_new((GObject *) output_soundcard,
+				       (GObject *) destination_recycling,
+				       (GObject *) parent_recall_id);
+    g_object_ref(destination);
+
+    ags_audio_signal_stream_resize(destination,
+				   3);
+    destination->stream_current = destination->stream;
+
+    g_object_set(recall,
+		 "destination", destination,
+		 NULL);
+
+    ags_connectable_connect(AGS_CONNECTABLE(destination));  
+
+    ags_recycling_add_audio_signal(destination_recycling,
+				   destination);
+
+    /* unref */
+    if(output != NULL){
+      g_object_unref(output);
+    }
+
+    if(destination_recycling != NULL){
+      g_object_unref(destination_recycling);
+    }
+    
+    if(recall_id != NULL){
+      g_object_unref(recall_id);
+    }
+
+    if(parent_recall_id != NULL){
+      g_object_unref(parent_recall_id);
+    }
+
+    if(recycling_context != NULL){
+      g_object_unref(recycling_context);
+    }
+    
+    if(parent_recycling_context != NULL){
+      g_object_unref(parent_recycling_context);
+    }
+    
+    if(fx_buffer_channel_processor != NULL){
+      g_object_unref(fx_buffer_channel_processor);
+    }
+
+    if(fx_buffer_recycling != NULL){
+      g_object_unref(fx_buffer_recycling);
+    }
+  
+    if(output_soundcard != NULL){
+      g_object_unref(output_soundcard);
+    }
+  }
+  
+  /* get some fields */
+  source_stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
+  destination_stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(destination);
+
+  g_rec_mutex_lock(source_stream_mutex);
+  
+  stream_source = source->stream_current;
+
+  g_rec_mutex_unlock(source_stream_mutex);
+  
+  if(stream_source == NULL){
+    ags_recall_done(recall);
+
+    goto ags_fx_buffer_audio_signal_real_run_inter_END;
+  }
+
+  g_rec_mutex_lock(source_stream_mutex);
+  
+  stream_destination = destination->stream_current;
+
+  g_rec_mutex_unlock(source_stream_mutex);
+  
+  g_object_get(destination,
+	       "buffer-size", &destination_buffer_size,
+	       "samplerate", &destination_samplerate,
+	       "format", &destination_format,
+	       NULL);
+
+  g_object_get(source,
+ 	       "attack", &attack,
+	       "buffer-size", &source_buffer_size,
+	       "samplerate", &source_samplerate,
+	       "format", &source_format,
+	       NULL);
+
+  if(stream_destination != NULL){
+    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(destination_format),
+						    ags_audio_buffer_util_format_from_soundcard(source_format));
+    resample = FALSE;
+    
+    if(stream_destination->next == NULL){
+      ags_audio_signal_add_stream(destination);
+    }
+
+    g_rec_mutex_lock(source_stream_mutex);
+    
+    buffer_source = stream_source->data;
+
+    g_rec_mutex_unlock(source_stream_mutex);
+    
+    attack = (destination_samplerate / source_samplerate) * attack;
+    
+    if(source_samplerate != destination_samplerate){
+      void *tmp_buffer_source;
+
+      tmp_buffer_source = ags_stream_alloc(destination_buffer_size,
+					   source_format);
+
+      g_rec_mutex_lock(source_stream_mutex);
+      
+      ags_audio_buffer_util_resample_with_buffer(buffer_source, 1,
+						 ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
+						 source_buffer_size,
+						 destination_samplerate,
+						 destination_buffer_size,
+						 tmp_buffer_source);
+
+      g_rec_mutex_unlock(source_stream_mutex);
+      
+      buffer_source = tmp_buffer_source;
+      
+      resample = TRUE;
+    }
+
+    /* copy */
+    if(ags_recall_test_flags(recall, AGS_RECALL_INITIAL_RUN)){
+      g_rec_mutex_lock(source_stream_mutex);
+      g_rec_mutex_lock(destination_stream_mutex);
+
+      ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, attack,
+						  buffer_source, 1, 0,
+						  destination_buffer_size - attack, copy_mode);
+
+      g_rec_mutex_unlock(destination_stream_mutex);
+      g_rec_mutex_unlock(source_stream_mutex);
+
+      ags_recall_unset_flags(recall, AGS_RECALL_INITIAL_RUN);
+    }else{
+      if(attack != 0 && stream_source->prev != NULL){	
+	buffer_source_prev = stream_source->prev->data;
+
+	if(resample){
+	  void *tmp_buffer_source_prev;
+
+	  tmp_buffer_source_prev = ags_stream_alloc(destination_buffer_size,
+						    source_format);
+	  
+	  g_rec_mutex_lock(source_stream_mutex);
+	  
+	  ags_audio_buffer_util_resample_with_buffer(buffer_source_prev, 1,
+						     ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
+						     source_buffer_size,
+						     destination_samplerate,
+						     destination_buffer_size,
+						     tmp_buffer_source_prev);
+
+	  g_rec_mutex_unlock(source_stream_mutex);
+      
+	  buffer_source_prev = tmp_buffer_source_prev;
+	}
+	
+	g_rec_mutex_lock(source_stream_mutex);
+	g_rec_mutex_lock(destination_stream_mutex);
+
+	ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, 0,
+						    buffer_source_prev, 1, destination_buffer_size - attack,
+						    attack, copy_mode);
+
+	g_rec_mutex_unlock(destination_stream_mutex);
+	g_rec_mutex_unlock(source_stream_mutex);
+
+	if(resample){
+	  free(buffer_source_prev);
+	}
+      }
+
+      g_rec_mutex_lock(source_stream_mutex);
+      g_rec_mutex_lock(destination_stream_mutex);
+
+      ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, attack,
+						  buffer_source, 1, 0,
+						  destination_buffer_size - attack, copy_mode);
+
+      g_rec_mutex_unlock(destination_stream_mutex);
+      g_rec_mutex_unlock(source_stream_mutex);
+
+      if(resample){
+	free(buffer_source);
+      }
+    }
+  }
+  
+ags_fx_buffer_audio_signal_real_run_inter_END:
+  
+  if(source != NULL){
+    g_object_unref(source);
+  }
+
+  if(destination != NULL){
+    g_object_unref(destination);
+  }
 }
 
 /**
