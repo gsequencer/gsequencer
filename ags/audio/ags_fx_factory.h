@@ -30,6 +30,7 @@
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_port.h>
+#include <ags/audio/ags_sound_enums.h>
 
 G_BEGIN_DECLS
 

@@ -1044,7 +1044,8 @@ ags_fx_factory_create_notation(AgsAudio *audio,
     ags_recall_set_flags((AgsRecall *) fx_notation_audio,
 			 (AGS_RECALL_TEMPLATE));
     ags_recall_set_ability_flags((AgsRecall *) fx_notation_audio,
-				 (AGS_SOUND_ABILITY_NOTATION |
+				 (AGS_SOUND_ABILITY_PLAYBACK |
+				  AGS_SOUND_ABILITY_NOTATION |
 				  AGS_SOUND_ABILITY_MIDI));
     ags_recall_set_behaviour_flags((AgsRecall *) fx_notation_audio,
 				   (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
@@ -1069,7 +1070,8 @@ ags_fx_factory_create_notation(AgsAudio *audio,
     ags_recall_set_flags((AgsRecall *) fx_notation_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
     ags_recall_set_ability_flags((AgsRecall *) fx_notation_audio_processor,
-				 (AGS_SOUND_ABILITY_NOTATION |
+				 (AGS_SOUND_ABILITY_PLAYBACK |
+				  AGS_SOUND_ABILITY_NOTATION |
 				  AGS_SOUND_ABILITY_MIDI));
     ags_recall_set_behaviour_flags((AgsRecall *) fx_notation_audio_processor,
 				   (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
@@ -1152,7 +1154,8 @@ ags_fx_factory_create_notation(AgsAudio *audio,
 	ags_recall_set_flags((AgsRecall *) fx_notation_channel,
 			     (AGS_RECALL_TEMPLATE));
 	ags_recall_set_ability_flags((AgsRecall *) fx_notation_channel,
-				     (AGS_SOUND_ABILITY_NOTATION |
+				     (AGS_SOUND_ABILITY_PLAYBACK |
+				      AGS_SOUND_ABILITY_NOTATION |
 				      AGS_SOUND_ABILITY_MIDI));
 	ags_recall_set_behaviour_flags((AgsRecall *) fx_notation_channel,
 				       (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
@@ -1179,7 +1182,8 @@ ags_fx_factory_create_notation(AgsAudio *audio,
 	ags_recall_set_flags((AgsRecall *) fx_notation_channel_processor,
 			     (AGS_RECALL_TEMPLATE));
 	ags_recall_set_ability_flags((AgsRecall *) fx_notation_channel_processor,
-				     (AGS_SOUND_ABILITY_NOTATION |
+				     (AGS_SOUND_ABILITY_PLAYBACK |
+				      AGS_SOUND_ABILITY_NOTATION |
 				      AGS_SOUND_ABILITY_MIDI));
 	ags_recall_set_behaviour_flags((AgsRecall *) fx_notation_channel_processor,
 				       (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
@@ -1321,7 +1325,8 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
     ags_recall_set_flags((AgsRecall *) fx_dssi_audio,
 			 (AGS_RECALL_TEMPLATE));
     ags_recall_set_ability_flags((AgsRecall *) fx_dssi_audio,
-				 (AGS_SOUND_ABILITY_NOTATION |
+				 (AGS_SOUND_ABILITY_PLAYBACK |
+				  AGS_SOUND_ABILITY_NOTATION |
 				  AGS_SOUND_ABILITY_MIDI));
     ags_recall_set_behaviour_flags((AgsRecall *) fx_dssi_audio,
 				   (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
@@ -1348,7 +1353,8 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
     ags_recall_set_flags((AgsRecall *) fx_dssi_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
     ags_recall_set_ability_flags((AgsRecall *) fx_dssi_audio_processor,
-				 (AGS_SOUND_ABILITY_NOTATION |
+				 (AGS_SOUND_ABILITY_PLAYBACK |
+				  AGS_SOUND_ABILITY_NOTATION |
 				  AGS_SOUND_ABILITY_MIDI));
     ags_recall_set_behaviour_flags((AgsRecall *) fx_dssi_audio_processor,
 				   (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
@@ -1442,7 +1448,8 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 	ags_recall_set_flags((AgsRecall *) fx_dssi_channel,
 			     (AGS_RECALL_TEMPLATE));
 	ags_recall_set_ability_flags((AgsRecall *) fx_dssi_channel,
-				     (AGS_SOUND_ABILITY_NOTATION |
+				     (AGS_SOUND_ABILITY_PLAYBACK |
+				      AGS_SOUND_ABILITY_NOTATION |
 				      AGS_SOUND_ABILITY_MIDI));
 	ags_recall_set_behaviour_flags((AgsRecall *) fx_dssi_channel,
 				       (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
@@ -1471,7 +1478,8 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 	ags_recall_set_flags((AgsRecall *) fx_dssi_channel_processor,
 			     (AGS_RECALL_TEMPLATE));
 	ags_recall_set_ability_flags((AgsRecall *) fx_dssi_channel_processor,
-				     (AGS_SOUND_ABILITY_NOTATION |
+				     (AGS_SOUND_ABILITY_PLAYBACK |
+				      AGS_SOUND_ABILITY_NOTATION |
 				      AGS_SOUND_ABILITY_MIDI));
 	ags_recall_set_behaviour_flags((AgsRecall *) fx_dssi_channel_processor,
 				       (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));

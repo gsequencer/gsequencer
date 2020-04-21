@@ -222,6 +222,7 @@ ags_fx_notation_audio_processor_finalize(GObject *gobject)
 void
 ags_fx_notation_audio_processor_real_run_inter(AgsRecall *recall)
 {
+  AgsRecallID *recall_id;
   AgsFxNotationAudioProcessor *fx_notation_audio_processor;
 
   gdouble delay_counter;
@@ -232,6 +233,10 @@ ags_fx_notation_audio_processor_real_run_inter(AgsRecall *recall)
   
   fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
 
+  g_object_get(recall,
+	       "recall-id", &recall_id,
+	       NULL);
+  
   /* get delay counter */
   g_rec_mutex_lock(fx_notation_audio_processor_mutex);
     
@@ -243,16 +248,26 @@ ags_fx_notation_audio_processor_real_run_inter(AgsRecall *recall)
   g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
 
   /* run */
-  if(delay_counter == 0.0){
-    ags_fx_notation_audio_processor_play(fx_notation_audio_processor);
+  if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_NOTATION)){
+    if(delay_counter == 0.0){
+      ags_fx_notation_audio_processor_play(fx_notation_audio_processor);
+    }
   }
 
-  ags_fx_notation_audio_processor_record(fx_notation_audio_processor);
-
-  ags_fx_notation_audio_processor_feed(fx_notation_audio_processor);
-
+  if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_MIDI)){
+    ags_fx_notation_audio_processor_record(fx_notation_audio_processor);
+  }
+  
+  if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_PLAYBACK)){
+    ags_fx_notation_audio_processor_feed(fx_notation_audio_processor);
+  }
+  
   /* counter change */
   ags_fx_notation_audio_processor_counter_change(fx_notation_audio_processor);
+
+  if(recall_id != NULL){
+    g_object_unref(recall_id);
+  }
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_notation_audio_processor_parent_class)->run_inter(recall);

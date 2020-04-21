@@ -33,6 +33,7 @@
 #include <ags/plugin/ags_dssi_plugin.h>
 
 #include <ags/audio/ags_port.h>
+#include <ags/audio/ags_sound_enums.h>
 
 #include <ags/audio/fx/ags_fx_notation_audio.h>
 
@@ -45,7 +46,14 @@ G_BEGIN_DECLS
 #define AGS_IS_FX_DSSI_AUDIO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FX_DSSI_AUDIO))
 #define AGS_FX_DSSI_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_DSSI_AUDIO, AgsFxDssiAudioClass))
 
+#define AGS_FX_DSSI_AUDIO_SCOPE_DATA(ptr) ((AgsFxDssiAudioScopeData *) (ptr))
+#define AGS_FX_DSSI_AUDIO_CHANNEL_DATA(ptr) ((AgsFxDssiAudioChannelData *) (ptr))
+#define AGS_FX_DSSI_AUDIO_INPUT_DATA(ptr) ((AgsFxDssiAudioInputData *) (ptr))
+
 typedef struct _AgsFxDssiAudio AgsFxDssiAudio;
+typedef struct _AgsFxDssiAudioScopeData AgsFxDssiAudioScopeData;
+typedef struct _AgsFxDssiAudioChannelData AgsFxDssiAudioChannelData;
+typedef struct _AgsFxDssiAudioInputData AgsFxDssiAudioInputData;
 typedef struct _AgsFxDssiAudioClass AgsFxDssiAudioClass;
 
 typedef enum{
@@ -67,15 +75,7 @@ struct _AgsFxDssiAudio
   guint bank;
   guint program;
 
-  LADSPA_Data **output;
-  LADSPA_Data **input;
-  
-  guint event_count;
-  snd_seq_event_t* event_buffer[128];
-
-  guint key_on[128];
-  
-  LADSPA_Handle **ladspa_handle;
+  AgsFxDssiAudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];
 
   AgsDssiPlugin *dssi_plugin;
 
@@ -89,6 +89,52 @@ struct _AgsFxDssiAudioClass
 
 GType ags_fx_dssi_audio_get_type();
 
+struct _AgsFxDssiAudioScopeData
+{
+  gpointer parent;
+  
+  guint audio_channels;
+  
+  AgsFxDssiAudioChannelData **channel_data;
+};
+
+struct _AgsFxDssiAudioChannelData
+{
+  gpointer parent;
+
+  guint event_count;
+  
+  LADSPA_Data *output;
+  LADSPA_Data *input;
+  
+  LADSPA_Handle ladspa_handle;
+
+  AgsFxDssiAudioInputData* input_data[128];
+};
+
+struct _AgsFxDssiAudioInputData
+{
+  gpointer parent;
+
+  LADSPA_Data *output;
+  LADSPA_Data *input;
+
+  LADSPA_Handle ladspa_handle;
+  
+  snd_seq_event_t *event_buffer;
+  guint key_on;
+};
+
+/* runtime */
+AgsFxDssiAudioScopeData* ags_fx_dssi_audio_scope_data_alloc();
+void ags_fx_dssi_audio_scope_data_free(AgsFxDssiAudioScopeData *scope_data);
+
+AgsFxDssiAudioChannelData* ags_fx_dssi_audio_channel_data_alloc();
+void ags_fx_dssi_audio_channel_data_free(AgsFxDssiAudioChannelData *channel_data);
+
+AgsFxDssiAudioInputData* ags_fx_dssi_audio_input_data_alloc();
+void ags_fx_dssi_audio_input_data_free(AgsFxDssiAudioInputData *input_data);
+
 /* flags */
 gboolean ags_fx_dssi_audio_test_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags);
 void ags_fx_dssi_audio_set_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags);
@@ -100,6 +146,9 @@ void ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio);
 
 void ags_fx_dssi_audio_unload_plugin(AgsFxDssiAudio *fx_dssi_audio);
 void ags_fx_dssi_audio_unload_port(AgsFxDssiAudio *fx_dssi_audio);
+
+/* connect port */
+void ags_fx_dssi_audio_connect_port(AgsFxDssiAudio *fx_dssi_audio);
 
 /* plugin */
 void ags_fx_dssi_audio_change_program(AgsFxDssiAudio *fx_dssi_audio,

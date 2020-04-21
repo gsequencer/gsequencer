@@ -22,6 +22,7 @@
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/fx/ags_fx_dssi_audio.h>
+#include <ags/audio/fx/ags_fx_dssi_audio_processor.h>
 #include <ags/audio/fx/ags_fx_dssi_channel_processor.h>
 #include <ags/audio/fx/ags_fx_dssi_recycling.h>
 
@@ -157,12 +158,15 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 {
   AgsAudio *audio;
   AgsFxDssiAudio *fx_dssi_audio;
+  AgsFxDssiAudioProcessor *fx_dssi_audio_processor;
   AgsFxDssiChannelProcessor *fx_dssi_channel_processor;
   AgsFxDssiRecycling *fx_dssi_recycling;
   AgsFxDssiAudioSignal *fx_dssi_audio_signal;
   
   AgsDssiPlugin *dssi_plugin;
 
+  guint sound_scope;
+  guint audio_channel;
   guint audio_start_mapping;
   guint midi_start_mapping;
   gint midi_note;
@@ -184,9 +188,16 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
   audio = NULL;
   
   fx_dssi_audio = NULL;
+  fx_dssi_audio_processor = NULL;
+  
   fx_dssi_channel_processor = NULL;
+
   fx_dssi_recycling = NULL;
 
+  sound_scope = ags_recall_get_sound_scope(fx_notation_audio_signal);
+
+  audio_channel = 0;
+  
   audio_start_mapping = 0;
   midi_start_mapping = 0;
   
@@ -200,10 +211,15 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
   
   g_object_get(fx_dssi_channel_processor,
 	       "recall-audio", &fx_dssi_audio,
+	       "recall-audio-run", &fx_dssi_audio_processor,
 	       NULL);
 
   g_object_get(fx_dssi_audio,
 	       "audio", &audio,
+	       NULL);
+
+  g_object_get(fx_dssi_audio_processor,
+	       "audio-channel", &audio_channel,
 	       NULL);
   
   g_object_get(source,
@@ -244,46 +260,56 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
      midi_note < 128){
     if(delay_counter == 0.0 &&
        x0 == offset_counter){
+      AgsFxDssiAudioScopeData *scope_data;
+      AgsFxDssiAudioChannelData *channel_data;
+      AgsFxDssiAudioInputData *input_data;
+
       g_rec_mutex_lock(fx_dssi_audio_mutex);
 
-      fx_dssi_audio->key_on[midi_note] += 1;
+      scope_data = fx_dssi_audio->scope_data[sound_scope];
+
+      channel_data = scope_data->channel_data[audio_channel];
+
+      input_data = channel_data->input_data[midi_note];
+
+      input_data->key_on += 1;
 
       g_rec_mutex_unlock(fx_dssi_audio_mutex);
     }    
     
     if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
+      AgsFxDssiAudioScopeData *scope_data;
+      AgsFxDssiAudioChannelData *channel_data;
+      
       g_rec_mutex_lock(fx_dssi_audio_mutex);
 
-      if(fx_dssi_audio->output != NULL){
-	ags_audio_buffer_util_clear_float(fx_dssi_audio->output[0], fx_dssi_audio->output_port_count,
+      scope_data = fx_dssi_audio->scope_data[sound_scope];
+
+      channel_data = scope_data->channel_data[audio_channel];
+      
+      if(channel_data->output != NULL){
+	ags_audio_buffer_util_clear_float(channel_data->output, fx_dssi_audio->output_port_count,
 					  buffer_size);
       }
 
       if(run_synth != NULL){
-	/* key on */
-	fx_dssi_audio->event_buffer[midi_note]->type = SND_SEQ_EVENT_NOTEON;
-
-	fx_dssi_audio->event_buffer[midi_note]->data.note.channel = 0;
-	fx_dssi_audio->event_buffer[midi_note]->data.note.note = midi_note;
-	fx_dssi_audio->event_buffer[midi_note]->data.note.velocity = 127;
-
-	run_synth(fx_dssi_audio->ladspa_handle[0],
+	run_synth(channel_data->ladspa_handle,
 		  (unsigned long) (fx_dssi_audio->output_port_count * buffer_size),
-		  fx_dssi_audio->event_buffer[midi_note],
+		  channel_data->input_data[midi_note]->event_buffer,
 		  1);
       }else if(run != NULL){
-	run(fx_dssi_audio->ladspa_handle[0],
+	run(channel_data->ladspa_handle,
 	    (unsigned long) (fx_dssi_audio->output_port_count * buffer_size));
       }
 
       g_rec_mutex_lock(source_stream_mutex);
 
-      if(fx_dssi_audio->output != NULL &&
+      if(channel_data->output != NULL &&
 	 fx_dssi_audio->output_port_count >= 1 &&
 	 source->stream_current != NULL){
 	//NOTE:JK: only mono input, additional channels discarded
 	ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
-						    fx_dssi_audio->output[0], fx_dssi_audio->output_port_count, 0,
+						    channel_data->output, fx_dssi_audio->output_port_count, 0,
 						    buffer_size, copy_mode_out);
       }
 	  
@@ -291,31 +317,41 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 
       g_rec_mutex_lock(fx_dssi_audio_mutex);
     }else{
+      AgsFxDssiAudioScopeData *scope_data;
+      AgsFxDssiAudioChannelData *channel_data;
+      AgsFxDssiAudioInputData *input_data;
+
       g_rec_mutex_lock(fx_dssi_audio_mutex);
 
-      if(fx_dssi_audio->output != NULL){
-	ags_audio_buffer_util_clear_float(fx_dssi_audio->output[midi_note], fx_dssi_audio->output_port_count,
+      scope_data = fx_dssi_audio->scope_data[sound_scope];
+
+      channel_data = scope_data->channel_data[audio_channel];
+
+      input_data = channel_data->input_data[midi_note];
+      
+      if(input_data->output != NULL){
+	ags_audio_buffer_util_clear_float(input_data->output, fx_dssi_audio->output_port_count,
 					  buffer_size);
       }
 
       if(run_synth != NULL){
-	run_synth(fx_dssi_audio->ladspa_handle[midi_note],
+	run_synth(input_data->ladspa_handle,
 		  (unsigned long) (fx_dssi_audio->output_port_count * buffer_size),
-		  fx_dssi_audio->event_buffer[midi_note],
+		  input_data->event_buffer,
 		  1);
       }else if(run != NULL){
-	run(fx_dssi_audio->ladspa_handle[midi_note],
+	run(input_data->ladspa_handle,
 	    (unsigned long) (fx_dssi_audio->output_port_count * buffer_size));
       }
       
       g_rec_mutex_lock(source_stream_mutex);
 
-      if(fx_dssi_audio->output != NULL &&
+      if(input_data->output != NULL &&
 	 fx_dssi_audio->output_port_count >= 1 &&
 	 source->stream_current != NULL){
 	//NOTE:JK: only mono input, additional channels discarded
 	ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
-						    fx_dssi_audio->output[midi_note], fx_dssi_audio->output_port_count, 0,
+						    input_data->output, fx_dssi_audio->output_port_count, 0,
 						    buffer_size, copy_mode_out);
       }
 	  
@@ -331,6 +367,10 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
   
   if(fx_dssi_audio != NULL){
     g_object_unref(fx_dssi_audio);
+  }
+
+  if(fx_dssi_audio_processor != NULL){
+    g_object_unref(fx_dssi_audio_processor);
   }
   
   if(fx_dssi_channel_processor != NULL){
@@ -351,9 +391,12 @@ ags_fx_dssi_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_aud
 {
   AgsAudio *audio;
   AgsFxDssiAudio *fx_dssi_audio;
+  AgsFxDssiAudioProcessor *fx_dssi_audio_processor;
   AgsFxDssiChannelProcessor *fx_dssi_channel_processor;
   AgsFxDssiRecycling *fx_dssi_recycling;
 
+  guint sound_scope;
+  guint audio_channel;
   guint audio_start_mapping;
   guint midi_start_mapping;
   gint midi_note;
@@ -363,8 +406,15 @@ ags_fx_dssi_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_aud
   audio = NULL;
   
   fx_dssi_audio = NULL;
+  fx_dssi_audio_processor = NULL;
+
   fx_dssi_channel_processor = NULL;
+
   fx_dssi_recycling = NULL;
+
+  sound_scope = ags_recall_get_sound_scope(fx_notation_audio_signal);
+
+  audio_channel = 0;
 
   audio_start_mapping = 0;
   midi_start_mapping = 0;
@@ -379,10 +429,15 @@ ags_fx_dssi_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_aud
   
   g_object_get(fx_dssi_channel_processor,
 	       "recall-audio", &fx_dssi_audio,
+	       "recall-audio-run", &fx_dssi_audio_processor,
 	       NULL);
 
   g_object_get(fx_dssi_audio,
 	       "audio", &audio,
+	       NULL);
+
+  g_object_get(fx_dssi_audio_processor,
+	       "audio-channel", &audio_channel,
 	       NULL);
 
   g_object_get(audio,
@@ -396,9 +451,19 @@ ags_fx_dssi_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_aud
 
   if(midi_note >= 0 &&
      midi_note < 128){
+    AgsFxDssiAudioScopeData *scope_data;
+    AgsFxDssiAudioChannelData *channel_data;
+    AgsFxDssiAudioInputData *input_data;
+
     g_rec_mutex_lock(fx_dssi_audio_mutex);
       
-    fx_dssi_audio->key_on[midi_note] -= 1;
+    scope_data = fx_dssi_audio->scope_data[sound_scope];
+
+    channel_data = scope_data->channel_data[audio_channel];
+
+    input_data = channel_data->input_data[midi_note];
+
+    input_data->key_on -= 1;
       
     g_rec_mutex_lock(fx_dssi_audio_mutex);
   }
@@ -409,6 +474,10 @@ ags_fx_dssi_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_aud
   
   if(fx_dssi_audio != NULL){
     g_object_unref(fx_dssi_audio);
+  }
+
+  if(fx_dssi_audio_processor != NULL){
+    g_object_unref(fx_dssi_audio_processor);
   }
   
   if(fx_dssi_channel_processor != NULL){
