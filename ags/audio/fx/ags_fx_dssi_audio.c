@@ -286,7 +286,7 @@ ags_fx_dssi_audio_notify_buffer_size_callback(GObject *gobject,
 	}
 	
 	if(!is_live_instrument){
-	  for(k = 0; k < 128; k++){
+	  for(k = 0; k < AGS_SEQUENCER_MAX_MIDI_KEYS; k++){
 	    AgsFxDssiAudioInputData *input_data;
 
 	    input_data = channel_data->input_data[k];
@@ -473,7 +473,7 @@ ags_fx_dssi_audio_notify_samplerate_callback(GObject *gobject,
 	}
 	
 	if(!is_live_instrument){
-	  for(k = 0; k < 128; k++){
+	  for(k = 0; k < AGS_SEQUENCER_MAX_MIDI_KEYS; k++){
 	    AgsFxDssiAudioInputData *input_data;
 
 	    input_data = channel_data->input_data[k];
@@ -671,7 +671,7 @@ ags_fx_dssi_audio_set_audio_channels_callback(AgsAudio *audio,
 	  }
 	
 	  if(!is_live_instrument){
-	    for(k = 0; k < 128; k++){
+	    for(k = 0; k < AGS_SEQUENCER_MAX_MIDI_KEYS; k++){
 	      AgsFxDssiAudioInputData *input_data;
 
 	      input_data = channel_data->input_data[k];
@@ -894,7 +894,7 @@ ags_fx_dssi_audio_channel_data_alloc()
 
   channel_data->ladspa_handle = NULL;
 
-  for(i = 0; i < 128; i++){
+  for(i = 0; i < AGS_SEQUENCER_MAX_MIDI_KEYS; i++){
     channel_data->input_data[i] = ags_fx_dssi_audio_input_data_alloc();
 
     channel_data->input_data[i]->parent = channel_data;
@@ -967,7 +967,7 @@ ags_fx_dssi_audio_channel_data_free(AgsFxDssiAudioChannelData *channel_data)
     }
   }
   
-  for(i = 0; i < 128; i++){
+  for(i = 0; i < AGS_SEQUENCER_MAX_MIDI_KEYS; i++){
     ags_fx_dssi_audio_input_data_free(channel_data->input_data[i]);
   }
 
@@ -1251,7 +1251,7 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
 	  }
 	
 	  if(!is_live_instrument){
-	    for(k = 0; k < 128; k++){
+	    for(k = 0; k < AGS_SEQUENCER_MAX_MIDI_KEYS; k++){
 	      AgsFxDssiAudioInputData *input_data;
 
 	      input_data = channel_data->input_data[k];
@@ -1570,7 +1570,7 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 	}
 
 	if(!is_live_instrument){	  
-	  for(k = 0; k < 128; k++){
+	  for(k = 0; k < AGS_SEQUENCER_MAX_MIDI_KEYS; k++){
 	    AgsFxDssiAudioInputData *input_data;
 
 	    guint nth;
@@ -1713,7 +1713,7 @@ ags_fx_dssi_audio_change_program(AgsFxDssiAudio *fx_dssi_audio,
 	  }
 	
 	  if(!is_live_instrument){
-	    for(k = 0; k < 128; k++){
+	    for(k = 0; k < AGS_SEQUENCER_MAX_MIDI_KEYS; k++){
 	      AgsFxDssiAudioInputData *input_data;
 
 	      input_data = channel_data->input_data[k];

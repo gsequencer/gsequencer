@@ -355,9 +355,11 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
   fx_playback_audio->feed_audio_signal = NULL;
   fx_playback_audio->master_audio_signal = NULL;
 
+  fx_playback_audio->audio_file = NULL;
+  
   bpm = AGS_SOUNDCARD_DEFAULT_BPM;
   delay = AGS_SOUNDCARD_DEFAULT_DELAY;
-
+  
   /* bpm */
   fx_playback_audio->bpm = g_object_new(AGS_TYPE_PORT,
 					"plugin-name", ags_fx_playback_audio_plugin_name,
@@ -1150,6 +1152,10 @@ ags_fx_playback_audio_finalize(GObject *gobject)
     g_list_free_full(fx_playback_audio->master_audio_signal,
 		     (GDestroyNotify) g_object_unref);
   }
+
+  if(fx_playback_audio->audio_file != NULL){
+    g_object_unref(fx_playback_audio->audio_file);
+  }
   
   if(fx_playback_audio->bpm != NULL){
     g_object_unref(fx_playback_audio->bpm);
@@ -1504,6 +1510,20 @@ ags_fx_playback_audio_remove_master_audio_signal(AgsFxPlaybackAudio *fx_playback
   }
   
   g_rec_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_fx_playback_audio_open_audio_file:
+ * @fx_playback_audio: the #AgsFxPlaybackAudio
+ * 
+ * Open audio file of @fx_playback_audio.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_fx_playback_audio_open_audio_file(AgsFxPlaybackAudio *fx_playback_audio)
+{
+  //TODO:JK: implement me
 }
 
 /**

@@ -87,8 +87,6 @@ struct _AgsFxDssiAudioClass
   AgsFxNotationAudioClass fx_notation_audio;
 };
 
-GType ags_fx_dssi_audio_get_type();
-
 struct _AgsFxDssiAudioScopeData
 {
   gpointer parent;
@@ -109,7 +107,7 @@ struct _AgsFxDssiAudioChannelData
   
   LADSPA_Handle ladspa_handle;
 
-  AgsFxDssiAudioInputData* input_data[128];
+  AgsFxDssiAudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
 };
 
 struct _AgsFxDssiAudioInputData
@@ -124,6 +122,8 @@ struct _AgsFxDssiAudioInputData
   snd_seq_event_t *event_buffer;
   guint key_on;
 };
+
+GType ags_fx_dssi_audio_get_type();
 
 /* runtime */
 AgsFxDssiAudioScopeData* ags_fx_dssi_audio_scope_data_alloc();

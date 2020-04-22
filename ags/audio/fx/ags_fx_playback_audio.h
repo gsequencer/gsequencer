@@ -62,7 +62,7 @@ struct _AgsFxPlaybackAudio
   GList *master_audio_signal;  
   
   AgsAudioFile *audio_file;
-
+  
   AgsPort *bpm;
   AgsPort *tact;
 
@@ -107,6 +107,9 @@ void ags_fx_playback_audio_add_master_audio_signal(AgsFxPlaybackAudio *fx_playba
 						   AgsAudioSignal *audio_signal);
 void ags_fx_playback_audio_remove_master_audio_signal(AgsFxPlaybackAudio *fx_playback_audio,
 						      AgsAudioSignal *audio_signal);
+
+/* open audio file */
+void ags_fx_playback_audio_open_audio_file(AgsFxPlaybackAudio *fx_playback_audio);
 
 /* instantiate */
 AgsFxPlaybackAudio* ags_fx_playback_audio_new(AgsAudio *audio);

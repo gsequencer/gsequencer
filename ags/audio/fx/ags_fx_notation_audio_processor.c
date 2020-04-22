@@ -298,6 +298,14 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
   GRecMutex *fx_notation_audio_processor_mutex;
 
   fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
+
+  audio = NULL;
+
+  start_input = NULL;
+
+  recall_id = NULL;
+
+  fx_notation_audio = NULL;
   
   g_object_get(fx_notation_audio_processor,
 	       "audio", &audio,
@@ -306,6 +314,8 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 	       "recall-audio", &fx_notation_audio,
 	       "audio-channel", &audio_channel,
 	       NULL);
+
+  recycling_context = NULL;
   
   g_object_get(recall_id,
 	       "recycling-context", &recycling_context,
@@ -320,7 +330,9 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
   /* get delay */
   delay = AGS_SOUNDCARD_DEFAULT_DELAY;
   
-  if(fx_notation_audio != NULL){        
+  if(fx_notation_audio != NULL){
+    port = NULL;
+    
     g_object_get(fx_notation_audio,
 		 "delay", &port,
 		 NULL);
@@ -339,9 +351,13 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
     }
   }
 
+  input_pads = 0;
+  
   g_object_get(audio,
 	       "input-pads", &input_pads,
 	       NULL);
+
+  y = 0;
   
   g_object_get(note,
 	       "y", &y,
@@ -368,6 +384,11 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 
     GList *start_list, *list;
 
+    output_soundcard = NULL;
+
+    first_recycling = NULL;
+    last_recycling = NULL;
+    
     g_object_get(selected_input,
 		 "output-soundcard", &output_soundcard,
 		 "first-recycling", &first_recycling,
@@ -377,6 +398,8 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
     end_recycling = ags_recycling_next(last_recycling);
 
     /* get child recall id */
+    start_list = NULL;
+    
     g_object_get(selected_input,
 		 "recall-id", &start_list,
 		 NULL);
@@ -716,6 +739,12 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 
   fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
 
+  audio = NULL;
+
+  fx_notation_audio = NULL;
+
+  audio_channel = 0;
+  
   g_object_get(fx_notation_audio_processor,
 	       "audio", &audio,
 	       "recall-audio", &fx_notation_audio,
@@ -730,6 +759,17 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
     return;
   }
 
+  input_sequencer = NULL;
+
+  input_pads = 0;
+
+  audio_start_mapping = 0;
+  
+  midi_start_mapping = 0;
+  midi_end_mapping = 0;
+
+  midi_channel = 0;
+  
   g_object_get(audio,
 	       "input-sequencer", &input_sequencer,
 	       "input-pads", &input_pads,
@@ -737,12 +777,13 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 	       "midi-start-mapping", &midi_start_mapping,
 	       "midi-end-mapping", &midi_end_mapping,
 	       "midi-channel", &midi_channel,
-	       "midi-channel", &midi_channel,
 	       NULL);
 
   if(input_sequencer == NULL){
-    g_object_unref(audio);
-
+    if(audio != NULL){
+      g_object_unref(audio);
+    }
+    
     if(fx_notation_audio != NULL){
       g_object_unref(fx_notation_audio);
     }
@@ -857,7 +898,9 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 
 	    while(recording_note != NULL){
 	      guint current_y;
-	    
+
+	      current_y = 0;
+	      
 	      g_object_get(recording_note->data,
 			   "y", &current_y,
 			   NULL);
@@ -962,7 +1005,9 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 
 	    while(recording_note != NULL){
 	      guint current_y;
-	    
+
+	      current_y = 0;
+	      
 	      g_object_get(recording_note->data,
 			   "y", &current_y,
 			   NULL);
@@ -1083,7 +1128,9 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 
   while(recording_note != NULL){
     guint current_x1;
-	    
+
+    current_x1 = 0;
+    
     g_object_get(recording_note->data,
 		 "x1", &current_x1,
 		 NULL);
@@ -1097,19 +1144,23 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
     /* iterate */
     recording_note = recording_note->next;
   }
-
+  
+  /* unref */
   g_list_free_full(start_recording_note,
 		   (GDestroyNotify) g_object_unref);
-  
-  /*  */
-  g_object_unref(audio);  
 
+  if(audio != NULL){
+    g_object_unref(audio);  
+  }
+  
   if(fx_notation_audio != NULL){
     g_object_unref(fx_notation_audio);
   }
-  
-  g_object_unref(input_sequencer);
 
+  if(input_sequencer != NULL){
+    g_object_unref(input_sequencer);
+  }
+  
   g_list_free_full(start_notation,
 		   (GDestroyNotify) g_object_unref);
 
@@ -1150,6 +1201,10 @@ ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notati
 
   fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
 
+  audio = NULL;
+
+  fx_notation_audio = NULL;
+  
   g_object_get(fx_notation_audio_processor,
 	       "audio", &audio,
 	       "recall-audio", &fx_notation_audio,
@@ -1164,7 +1219,9 @@ ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notati
   /* get delay */
   delay = AGS_SOUNDCARD_DEFAULT_DELAY;
   
-  if(fx_notation_audio != NULL){        
+  if(fx_notation_audio != NULL){
+    port = NULL;
+    
     g_object_get(fx_notation_audio,
 		 "delay", &port,
 		 NULL);
@@ -1224,6 +1281,8 @@ ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notati
 
     if(!is_removed){
       guint current_x1;
+
+      current_x1 = 0;
       
       g_object_get(feeding_note->data,
 		   "x1", &current_x1,
@@ -1246,8 +1305,13 @@ ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notati
     }
 
     feeding_note = feeding_note->next;
+  }  
+
+  /* unref */
+  if(audio != NULL){
+    g_object_unref(audio);
   }
-  
+
   if(fx_notation_audio != NULL){
     g_object_unref(fx_notation_audio);
   }
@@ -1286,8 +1350,9 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
 
   GRecMutex *fx_notation_audio_processor_mutex;
   
-  fx_notation_audio_processor = NULL;
   fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
+
+  fx_notation_audio = NULL;
 
   g_object_get(fx_notation_audio_processor,
 	       "recall-audio", &fx_notation_audio,
@@ -1304,6 +1369,8 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
     AgsPort *port;
 
     /* delay */
+    port = NULL;
+    
     g_object_get(fx_notation_audio,
 		 "delay", &port,
 		 NULL);
@@ -1322,6 +1389,8 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
     }
 
     /* loop */
+    port = NULL;
+
     g_object_get(fx_notation_audio,
 		 "loop", &port,
 		 NULL);
@@ -1340,6 +1409,8 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
     }
 
     /* loop-start */
+    port = NULL;
+
     g_object_get(fx_notation_audio,
 		 "loop-start", &port,
 		 NULL);
@@ -1358,6 +1429,8 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
     }
 
     /* loop-end */
+    port = NULL;
+
     g_object_get(fx_notation_audio,
 		 "loop-end", &port,
 		 NULL);
@@ -1396,7 +1469,8 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
 
     g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
   }
-  
+
+  /* unref */
   if(fx_notation_audio != NULL){
     g_object_unref(fx_notation_audio);
   }

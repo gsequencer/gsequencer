@@ -35,6 +35,10 @@ G_BEGIN_DECLS
 typedef struct _AgsSequencer AgsSequencer;
 typedef struct _AgsSequencerInterface AgsSequencerInterface;
 
+#define AGS_SEQUENCER_MAX_MIDI_CHANNELS (16)
+
+#define AGS_SEQUENCER_MAX_MIDI_KEYS (128)
+
 #define AGS_SEQUENCER_DEFAULT_SAMPLERATE (44100.0)
 #define AGS_SEQUENCER_DEFAULT_BUFFER_SIZE (944)
 #define AGS_SEQUENCER_DEFAULT_DEVICE "hw:0"

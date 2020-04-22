@@ -26,6 +26,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_buffer.h>
 #include <ags/audio/ags_recall_audio_run.h>
 
 G_BEGIN_DECLS
@@ -36,10 +37,6 @@ G_BEGIN_DECLS
 #define AGS_IS_FX_PLAYBACK_AUDIO_PROCESSOR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_FX_PLAYBACK_AUDIO_PROCESSOR))
 #define AGS_IS_FX_PLAYBACK_AUDIO_PROCESSOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FX_PLAYBACK_AUDIO_PROCESSOR))
 #define AGS_FX_PLAYBACK_AUDIO_PROCESSOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_PLAYBACK_AUDIO_PROCESSOR, AgsFxPlaybackAudioProcessorClass))
-
-#define AGS_FX_PLAYBACK_AUDIO_PROCESSOR_RING_BUFFER_SIZE (8)
-
-#define AGS_FX_PLAYBACK_AUDIO_PROCESSOR_CACHE_SIZE (AGS_FX_PLAYBACK_AUDIO_PROCESSOR_RING_BUFFER_SIZE * AGS_SOUNDCARD_MAX_BUFFER_SIZE * (AGS_SOUNDCARD_MAX_SAMPLERATE / AGS_SOUNDCARD_MIN_SAMPLERATE) * sizeof(AgsComplex))
 
 typedef struct _AgsFxPlaybackAudioProcessor AgsFxPlaybackAudioProcessor;
 typedef struct _AgsFxPlaybackAudioProcessorClass AgsFxPlaybackAudioProcessorClass;
@@ -61,13 +58,15 @@ struct _AgsFxPlaybackAudioProcessor
   gdouble current_delay_counter;
   guint64 current_offset_counter;
 
+  guint64 x_offset;
+  
   AgsTimestamp *timestamp;
   
-  gpointer playing_cache;
   GList *playing_buffer;
-
-  gpointer recording_cache;
+  GList *playing_audio_signal;
+  
   GList *recording_buffer;
+  GList *recording_audio_signal;
 
   GList *feeding_audio_signal;
 
@@ -79,16 +78,10 @@ struct _AgsFxPlaybackAudioProcessorClass
   AgsRecallAudioRunClass recall_audio_run;
 
   void (*data_put)(AgsFxPlaybackAudioProcessor *fx_playback_audio_processor,
-		   gpointer data,
-		   guint samplerate,
-		   guint buffer_size,
-		   guint format,
+		   AgsBuffer *buffer,
 		   guint data_mode);
   void (*data_get)(AgsFxPlaybackAudioProcessor *fx_playback_audio_processor,
-		   gpointer data,
-		   guint samplerate,
-		   guint buffer_size,
-		   guint format,
+		   AgsBuffer *buffer,
 		   guint data_mode);
   
   void (*play)(AgsFxPlaybackAudioProcessor *fx_playback_audio_processor);
@@ -102,16 +95,10 @@ struct _AgsFxPlaybackAudioProcessorClass
 GType ags_fx_playback_audio_processor_get_type();
 
 void ags_fx_playback_audio_processor_data_put(AgsFxPlaybackAudioProcessor *fx_playback_audio_processor,
-					      gpointer data,
-					      guint samplerate,
-					      guint buffer_size,
-					      guint format,
+					      AgsBuffer *buffer,
 					      guint data_mode);
 void ags_fx_playback_audio_processor_data_get(AgsFxPlaybackAudioProcessor *fx_playback_audio_processor,
-					      gpointer data,
-					      guint samplerate,
-					      guint buffer_size,
-					      guint format,
+					      AgsBuffer *buffer,
 					      guint data_mode);
 
 void ags_fx_playback_audio_processor_play(AgsFxPlaybackAudioProcessor *fx_playback_audio_processor);
