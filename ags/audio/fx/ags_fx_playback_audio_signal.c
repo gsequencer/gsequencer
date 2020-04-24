@@ -131,7 +131,116 @@ ags_fx_playback_audio_signal_finalize(GObject *gobject)
 void
 ags_fx_playback_audio_signal_real_run_inter(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  AgsAudioSignal *source;
+
+  GObject *output_soundcard;
+
+  gpointer buffer;
+  gpointer audio_signal_data;
+  
+  guint pcm_channels;
+  guint output_soundcard_channel;
+  guint samplerate, target_samplerate;
+  guint buffer_size, target_buffer_size;
+  guint format, target_format;
+  guint attack;
+  guint copy_mode;
+
+  GRecMutex *source_stream_mutex;
+
+  output_soundcard = NULL;
+
+  source = NULL;
+  
+  g_object_get(recall,
+	       "output-soundcard", &output_soundcard,
+	       "source", &source,
+	       "output-soundcard-channel", &output_soundcard_channel,
+	       NULL);
+
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+
+  attack = 0;
+  
+  g_object_get(source,
+	       "samplerate", &samplerate,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       "attack", &attack,
+	       NULL);
+  
+  /* get presets */
+  source_stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
+
+  ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
+			    &pcm_channels,
+			    &target_samplerate,
+			    &target_buffer_size,
+			    &target_format);
+
+  buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(output_soundcard));
+
+  if(samplerate != target_samplerate){
+    attack = target_samplerate * (attack / samplerate);
+  }
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
+						  ags_audio_buffer_util_format_from_soundcard(format));
+  
+  if(buffer != NULL){
+    if(samplerate == target_samplerate){
+      /* copy */
+      g_rec_mutex_lock(source_stream_mutex);
+      
+      ags_soundcard_lock_buffer(AGS_SOUNDCARD(output_soundcard),
+				buffer);
+            
+      ags_audio_buffer_util_copy_buffer_to_buffer(buffer, pcm_channels, output_soundcard_channel + attack * pcm_channels,
+						  source->stream_current->data, 1, 0,
+						  target_buffer_size - attack, copy_mode);
+
+      ags_soundcard_unlock_buffer(AGS_SOUNDCARD(output_soundcard),
+				  buffer);
+      g_rec_mutex_unlock(source_stream_mutex);    
+    }else{
+      audio_signal_data = ags_stream_alloc(target_buffer_size,
+					   format);
+      
+      g_rec_mutex_lock(source_stream_mutex);
+
+      ags_audio_buffer_util_resample_with_buffer(source->stream_current->data, 1,
+						 target_format, target_samplerate,
+						 target_buffer_size,
+						 samplerate,
+						 buffer_size,
+						 audio_signal_data);
+      
+      ags_soundcard_lock_buffer(AGS_SOUNDCARD(output_soundcard),
+				buffer);
+            
+      ags_audio_buffer_util_copy_buffer_to_buffer(buffer, pcm_channels, output_soundcard_channel + attack * pcm_channels,
+						  audio_signal_data, 1, 0,
+						  target_buffer_size - attack, copy_mode);
+
+      ags_soundcard_unlock_buffer(AGS_SOUNDCARD(output_soundcard),
+				  buffer);
+
+      g_rec_mutex_unlock(source_stream_mutex);
+
+      ags_stream_free(audio_signal_data);
+    }
+  }
+
+  /* unref */
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+
+  if(source != NULL){
+    g_object_unref(source);
+  }
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_playback_audio_signal_parent_class)->run_inter(recall);

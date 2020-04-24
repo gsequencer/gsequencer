@@ -947,7 +947,95 @@ ags_fx_playback_audio_processor_record(AgsFxPlaybackAudioProcessor *fx_playback_
 void
 ags_fx_playback_audio_processor_real_feed(AgsFxPlaybackAudioProcessor *fx_playback_audio_processor)
 {
-  //TODO:JK: implement me
+  AgsFxPlaybackAudio *fx_playback_audio;
+
+  GList *start_feed_audio_signal, *feed_audio_signal;
+  GList *start_feeding_audio_signal, *feeding_audio_signal;
+
+  gboolean done;
+  
+  GRecMutex *fx_playback_audio_processor_mutex;
+
+  fx_playback_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_playback_audio_processor);
+
+  fx_playback_audio = NULL;
+  
+  g_object_get(fx_playback_audio_processor,
+	       "recall-audio", &fx_playback_audio,
+	       NULL);
+
+  done = FALSE;
+
+  /* get feed audio signal */
+  feed_audio_signal = 
+    start_feed_audio_signal = ags_fx_playback_audio_get_feed_audio_signal(fx_playback_audio);
+  
+  /* check new */
+  while(feed_audio_signal != NULL){
+    gboolean is_new;
+    
+    g_rec_mutex_lock(fx_playback_audio_processor_mutex);
+
+    is_new = (g_list_find(fx_playback_audio_processor->feeding_audio_signal, feed_audio_signal->data) == NULL) ? TRUE: FALSE;
+    
+    g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
+
+    if(is_new){
+      g_rec_mutex_lock(fx_playback_audio_processor_mutex);
+
+      fx_playback_audio_processor->feeding_audio_signal = g_list_prepend(fx_playback_audio_processor->feeding_audio_signal,
+									 feed_audio_signal->data);
+      
+      g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
+    }
+    
+    feed_audio_signal = feed_audio_signal->next;
+  }
+
+  /* check removed and update */
+  g_rec_mutex_lock(fx_playback_audio_processor_mutex);
+
+  feeding_audio_signal = 
+    start_feeding_audio_signal = g_list_copy_deep(fx_playback_audio_processor->feeding_audio_signal,
+						  (GCopyFunc) g_object_ref,
+						  NULL);
+  
+  g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
+  
+  while(feeding_audio_signal != NULL){
+    gboolean is_removed;
+
+    is_removed = (g_list_find(start_feed_audio_signal, feeding_audio_signal->data) == NULL) ? TRUE: FALSE;
+
+    if(is_removed){
+      g_rec_mutex_lock(fx_playback_audio_processor_mutex);
+      
+      start_feeding_audio_signal = g_list_remove(fx_playback_audio_processor->feeding_audio_signal,
+						 feeding_audio_signal->data); 
+
+      done = (fx_playback_audio_processor->feeding_audio_signal == NULL) ? TRUE: FALSE;
+      
+      g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
+
+      g_object_unref(feeding_audio_signal->data);
+    }
+
+    feeding_audio_signal = feeding_audio_signal->next;
+  }
+
+  if(done){
+    ags_recall_done((AgsRecall *) fx_playback_audio_processor);
+  }
+
+  if(fx_playback_audio != NULL){
+    g_object_unref(fx_playback_audio);
+  }
+
+  g_list_free_full(start_feed_audio_signal,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(start_feeding_audio_signal,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
@@ -966,8 +1054,96 @@ ags_fx_playback_audio_processor_feed(AgsFxPlaybackAudioProcessor *fx_playback_au
 
 void
 ags_fx_playback_audio_processor_real_master(AgsFxPlaybackAudioProcessor *fx_playback_audio_processor)
-{
-  //TODO:JK: implement me
+{ 
+  AgsFxPlaybackAudio *fx_playback_audio;
+
+  GList *start_master_audio_signal, *master_audio_signal;
+  GList *start_mastering_audio_signal, *mastering_audio_signal;
+
+  gboolean done;
+  
+  GRecMutex *fx_playback_audio_processor_mutex;
+
+  fx_playback_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_playback_audio_processor);
+
+  fx_playback_audio = NULL;
+  
+  g_object_get(fx_playback_audio_processor,
+	       "recall-audio", &fx_playback_audio,
+	       NULL);
+
+  done = FALSE;
+
+  /* get master audio signal */
+  master_audio_signal = 
+    start_master_audio_signal = ags_fx_playback_audio_get_master_audio_signal(fx_playback_audio);
+  
+  /* check new */
+  while(master_audio_signal != NULL){
+    gboolean is_new;
+    
+    g_rec_mutex_lock(fx_playback_audio_processor_mutex);
+
+    is_new = (g_list_find(fx_playback_audio_processor->mastering_audio_signal, master_audio_signal->data) == NULL) ? TRUE: FALSE;
+    
+    g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
+
+    if(is_new){
+      g_rec_mutex_lock(fx_playback_audio_processor_mutex);
+
+      fx_playback_audio_processor->mastering_audio_signal = g_list_prepend(fx_playback_audio_processor->mastering_audio_signal,
+									   master_audio_signal->data);
+      
+      g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
+    }
+    
+    master_audio_signal = master_audio_signal->next;
+  }
+
+  /* check removed and update */
+  g_rec_mutex_lock(fx_playback_audio_processor_mutex);
+
+  mastering_audio_signal = 
+    start_mastering_audio_signal = g_list_copy_deep(fx_playback_audio_processor->mastering_audio_signal,
+						    (GCopyFunc) g_object_ref,
+						    NULL);
+  
+  g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
+  
+  while(mastering_audio_signal != NULL){
+    gboolean is_removed;
+
+    is_removed = (g_list_find(start_master_audio_signal, mastering_audio_signal->data) == NULL) ? TRUE: FALSE;
+
+    if(is_removed){
+      g_rec_mutex_lock(fx_playback_audio_processor_mutex);
+      
+      start_mastering_audio_signal = g_list_remove(fx_playback_audio_processor->mastering_audio_signal,
+						   mastering_audio_signal->data); 
+
+      done = (fx_playback_audio_processor->mastering_audio_signal == NULL) ? TRUE: FALSE;
+      
+      g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
+
+      g_object_unref(mastering_audio_signal->data);
+    }
+
+    mastering_audio_signal = mastering_audio_signal->next;
+  }
+
+  if(done){
+    ags_recall_done((AgsRecall *) fx_playback_audio_processor);
+  }
+
+  if(fx_playback_audio != NULL){
+    g_object_unref(fx_playback_audio);
+  }
+
+  g_list_free_full(start_master_audio_signal,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(start_mastering_audio_signal,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
