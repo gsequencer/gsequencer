@@ -59,6 +59,7 @@ struct _AgsFxPlaybackAudioProcessor
   guint64 current_offset_counter;
 
   guint64 x_offset;
+  guint64 current_x_offset;
   
   AgsTimestamp *timestamp;
   

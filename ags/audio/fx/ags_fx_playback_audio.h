@@ -73,6 +73,7 @@ struct _AgsFxPlaybackAudio
   AgsPort *loop_start;
   AgsPort *loop_end;
 
+  AgsPort *export;
   AgsPort *filename;
 
   AgsPort *file_audio_channels;
