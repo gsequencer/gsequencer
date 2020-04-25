@@ -239,7 +239,7 @@ ags_fx_dssi_audio_notify_buffer_size_callback(GObject *gobject,
 {
   AgsFxDssiAudio *fx_dssi_audio;
 
-  guint output_port_count;
+  guint output_port_count, input_port_count;
   guint buffer_size;
   guint i, j, k;
   gboolean is_live_instrument;
@@ -262,6 +262,7 @@ ags_fx_dssi_audio_notify_buffer_size_callback(GObject *gobject,
   g_rec_mutex_lock(recall_mutex);
 
   output_port_count = fx_dssi_audio->output_port_count;
+  input_port_count = fx_dssi_audio->input_port_count;
 
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
     AgsFxDssiAudioScopeData *scope_data;
@@ -277,12 +278,25 @@ ags_fx_dssi_audio_notify_buffer_size_callback(GObject *gobject,
 	channel_data = scope_data->channel_data[j];
 
 	if(is_live_instrument){
-	  if(channel_data->output == NULL){
-	    channel_data->output = (LADSPA_Data *) g_malloc(output_port_count * buffer_size * sizeof(LADSPA_Data));
-	  }else{
-	    channel_data->output = (LADSPA_Data *) g_realloc(channel_data->output,
-							     output_port_count * buffer_size * sizeof(LADSPA_Data));	    
+	  if(output_port_count > 0 &&
+	     buffer_size > 0){
+	    if(channel_data->output == NULL){
+	      channel_data->output = (LADSPA_Data *) g_malloc(output_port_count * buffer_size * sizeof(LADSPA_Data));
+	    }else{
+	      channel_data->output = (LADSPA_Data *) g_realloc(channel_data->output,
+							       output_port_count * buffer_size * sizeof(LADSPA_Data));	    
+	    }
 	  }
+
+	  if(input_port_count > 0 &&
+	     buffer_size > 0){
+	    if(channel_data->input == NULL){
+	      channel_data->input = (LADSPA_Data *) g_malloc(input_port_count * buffer_size * sizeof(LADSPA_Data));
+	    }else{
+	      channel_data->input = (LADSPA_Data *) g_realloc(channel_data->input,
+							      input_port_count * buffer_size * sizeof(LADSPA_Data));	    
+	    }
+	  }	  
 	}
 	
 	if(!is_live_instrument){
@@ -291,12 +305,25 @@ ags_fx_dssi_audio_notify_buffer_size_callback(GObject *gobject,
 
 	    input_data = channel_data->input_data[k];
 	    
-	    if(input_data->output == NULL){
-	      input_data->output = (LADSPA_Data *) g_malloc(output_port_count * buffer_size * sizeof(LADSPA_Data));
-	    }else{
-	      input_data->output = (LADSPA_Data *) g_realloc(input_data->output,
-							     output_port_count * buffer_size * sizeof(LADSPA_Data));	    
-	    }	    
+	    if(output_port_count > 0 &&
+	       buffer_size > 0){
+	      if(input_data->output == NULL){
+		input_data->output = (LADSPA_Data *) g_malloc(output_port_count * buffer_size * sizeof(LADSPA_Data));
+	      }else{
+		input_data->output = (LADSPA_Data *) g_realloc(input_data->output,
+							       output_port_count * buffer_size * sizeof(LADSPA_Data));	    
+	      }
+	    }
+	    
+	    if(input_port_count > 0 &&
+	       buffer_size > 0){
+	      if(input_data->input == NULL){
+		input_data->input = (LADSPA_Data *) g_malloc(input_port_count * buffer_size * sizeof(LADSPA_Data));
+	      }else{
+		input_data->input = (LADSPA_Data *) g_realloc(input_data->input,
+							      input_port_count * buffer_size * sizeof(LADSPA_Data));	    
+	      }
+	    }
 	  }
 	}
       }
@@ -396,12 +423,6 @@ ags_fx_dssi_audio_notify_samplerate_callback(GObject *gobject,
       
     g_rec_mutex_unlock(base_plugin_mutex);
   }
-
-  /* get buffer size */
-  g_object_get(fx_dssi_audio,
-	       "buffer-size", &buffer_size,
-	       "samplerate", &samplerate,
-	       NULL);
 
   is_live_instrument = ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT);
 
@@ -543,7 +564,7 @@ ags_fx_dssi_audio_set_audio_channels_callback(AgsAudio *audio,
   GList *start_recall_channel, *recall_channel;
 
   guint input_pads;
-  guint output_port_count;
+  guint output_port_count, input_port_count;
   guint buffer_size;
   guint samplerate;
   guint i, j, k;
@@ -581,6 +602,7 @@ ags_fx_dssi_audio_set_audio_channels_callback(AgsAudio *audio,
   g_rec_mutex_lock(recall_mutex);
 
   output_port_count = fx_dssi_audio->output_port_count;
+  input_port_count = fx_dssi_audio->input_port_count;
 
   dssi_plugin = fx_dssi_audio->dssi_plugin;
 
@@ -631,9 +653,25 @@ ags_fx_dssi_audio_set_audio_channels_callback(AgsAudio *audio,
 	    channel_data->ladspa_handle = ags_base_plugin_instantiate((AgsBasePlugin *) dssi_plugin,
 								      samplerate, buffer_size);
 	  
-	    if(channel_data->output == NULL){
-	      channel_data->output = (LADSPA_Data *) g_malloc(output_port_count * buffer_size * sizeof(LADSPA_Data));
+	    if(output_port_count > 0 &&
+	       buffer_size > 0){
+	      if(channel_data->output == NULL){
+		channel_data->output = (LADSPA_Data *) g_malloc(output_port_count * buffer_size * sizeof(LADSPA_Data));
+	      }else{
+		channel_data->output = (LADSPA_Data *) g_realloc(channel_data->output,
+								 output_port_count * buffer_size * sizeof(LADSPA_Data));	    
+	      }
 	    }
+
+	    if(input_port_count > 0 &&
+	       buffer_size > 0){
+	      if(channel_data->input == NULL){
+		channel_data->input = (LADSPA_Data *) g_malloc(input_port_count * buffer_size * sizeof(LADSPA_Data));
+	      }else{
+		channel_data->input = (LADSPA_Data *) g_realloc(channel_data->input,
+								input_port_count * buffer_size * sizeof(LADSPA_Data));	    
+	      }
+	    }	  
 
 	    for(nth = 0; nth < output_port_count; nth++){
 	      ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
@@ -679,8 +717,24 @@ ags_fx_dssi_audio_set_audio_channels_callback(AgsAudio *audio,
 	      input_data->ladspa_handle = ags_base_plugin_instantiate((AgsBasePlugin *) dssi_plugin,
 								      samplerate, buffer_size);
 	    
-	      if(input_data->output == NULL){
-		input_data->output = (LADSPA_Data *) g_malloc(output_port_count * buffer_size * sizeof(LADSPA_Data));
+	      if(output_port_count > 0 &&
+		 buffer_size > 0){
+		if(input_data->output == NULL){
+		  input_data->output = (LADSPA_Data *) g_malloc(output_port_count * buffer_size * sizeof(LADSPA_Data));
+		}else{
+		  input_data->output = (LADSPA_Data *) g_realloc(input_data->output,
+								 output_port_count * buffer_size * sizeof(LADSPA_Data));	    
+		}
+	      }
+	    
+	      if(input_port_count > 0 &&
+		 buffer_size > 0){
+		if(input_data->input == NULL){
+		  input_data->input = (LADSPA_Data *) g_malloc(input_port_count * buffer_size * sizeof(LADSPA_Data));
+		}else{
+		  input_data->input = (LADSPA_Data *) g_realloc(input_data->input,
+								input_port_count * buffer_size * sizeof(LADSPA_Data));	    
+		}
 	      }
 	    }
 	  }
@@ -1204,6 +1258,7 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
     dssi_plugin =
       fx_dssi_audio->dssi_plugin = ags_dssi_manager_find_dssi_plugin(dssi_manager,
 								     filename, effect);
+    g_object_ref(dssi_plugin);
   }    
   
   g_rec_mutex_unlock(recall_mutex);
@@ -1223,12 +1278,8 @@ ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio)
 
     is_live_instrument = ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT);
     
-    /* set dssi plugin */
-    g_object_ref(dssi_plugin);
-    
+    /* set dssi plugin */    
     g_rec_mutex_lock(recall_mutex);
-
-    fx_dssi_audio->dssi_plugin = dssi_plugin;
 
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       AgsFxDssiAudioScopeData *scope_data;
@@ -1299,8 +1350,7 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
   
   guint input_pads;
   guint audio_channels;
-  guint output_port_count;
-  guint input_port_count;
+  guint output_port_count, input_port_count;
   guint control_port_count;
   guint buffer_size;
   guint nth;
@@ -1560,6 +1610,12 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 	     buffer_size > 0){
 	    channel_data->output = (LADSPA_Data *) g_malloc(output_port_count * buffer_size * sizeof(LADSPA_Data));
 	  }
+	  
+	  if(channel_data->input == NULL &&
+	     input_port_count > 0 &&
+	     buffer_size > 0){
+	    channel_data->input = (LADSPA_Data *) g_malloc(input_port_count * buffer_size * sizeof(LADSPA_Data));
+	  }
 
 	  for(nth = 0; nth < output_port_count; nth++){
 	    ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
@@ -1581,6 +1637,12 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 	       output_port_count > 0 &&
 	       buffer_size > 0){
 	      input_data->output = (LADSPA_Data *) g_malloc(output_port_count * buffer_size * sizeof(LADSPA_Data));
+	    }
+	  
+	    if(input_data->input == NULL &&
+	       input_port_count > 0 &&
+	       buffer_size > 0){
+	      input_data->input = (LADSPA_Data *) g_malloc(input_port_count * buffer_size * sizeof(LADSPA_Data));
 	    }
 
 	    for(nth = 0; nth < output_port_count; nth++){

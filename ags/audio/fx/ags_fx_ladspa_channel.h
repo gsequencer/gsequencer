@@ -25,6 +25,11 @@
 
 #include <ags/libags.h>
 
+#include <ags/plugin/ags_ladspa_plugin.h>
+
+#include <ags/audio/ags_port.h>
+#include <ags/audio/ags_sound_enums.h>
+
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel.h>
 
@@ -37,12 +42,27 @@ G_BEGIN_DECLS
 #define AGS_IS_FX_LADSPA_CHANNEL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FX_LADSPA_CHANNEL))
 #define AGS_FX_LADSPA_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_LADSPA_CHANNEL, AgsFxLadspaChannelClass))
 
+#define AGS_FX_LADSPA_CHANNEL_INPUT_DATA(ptr) ((AgsFxLadspaChannelInputData *) (ptr))
+
 typedef struct _AgsFxLadspaChannel AgsFxLadspaChannel;
+typedef struct _AgsFxLadspaChannelInputData AgsFxLadspaChannelInputData;
 typedef struct _AgsFxLadspaChannelClass AgsFxLadspaChannelClass;
 
 struct _AgsFxLadspaChannel
 {
   AgsRecallChannel recall_channel;
+
+  guint output_port_count;
+  guint *output_port;
+
+  guint input_port_count;
+  guint *input_port;
+
+  AgsFxLadspaChannelInputData* input_data[AGS_SOUND_SCOPE_LAST];
+
+  AgsLadspaPlugin *ladspa_plugin;
+
+  AgsPort **ladspa_port;
 };
 
 struct _AgsFxLadspaChannelClass
@@ -50,9 +70,30 @@ struct _AgsFxLadspaChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
+struct _AgsFxLadspaChannelInputData
+{
+  gpointer parent;
+
+  LADSPA_Data *output;
+  LADSPA_Data *input;
+
+  LADSPA_Handle ladspa_handle;
+};
+
 GType ags_fx_ladspa_channel_get_type();
 
-/*  */
+/* runtime */
+AgsFxLadspaChannelInputData* ags_fx_ladspa_channel_input_data_alloc();
+void ags_fx_ladspa_channel_input_data_free(AgsFxLadspaChannelInputData *input_data);
+
+/* load/unload */
+void ags_fx_ladspa_channel_load_plugin(AgsFxLadspaChannel *fx_ladspa_channel);
+void ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel);
+
+/* connect port */
+void ags_fx_ladspa_channel_connect_port(AgsFxLadspaChannel *fx_ladspa_channel);
+
+/* instantiate */
 AgsFxLadspaChannel* ags_fx_ladspa_channel_new(AgsChannel *channel);
 
 G_END_DECLS

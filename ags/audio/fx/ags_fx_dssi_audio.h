@@ -144,9 +144,6 @@ void ags_fx_dssi_audio_unset_flags(AgsFxDssiAudio *fx_dssi_audio, guint flags);
 void ags_fx_dssi_audio_load_plugin(AgsFxDssiAudio *fx_dssi_audio);
 void ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio);
 
-/* connect port */
-void ags_fx_dssi_audio_connect_port(AgsFxDssiAudio *fx_dssi_audio);
-
 /* plugin */
 void ags_fx_dssi_audio_change_program(AgsFxDssiAudio *fx_dssi_audio,
 				      guint bank_index,
