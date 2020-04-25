@@ -59,6 +59,7 @@ struct _AgsFxPlaybackAudio
   guint flags;
   
   GList *feed_audio_signal;  
+
   GList *master_audio_signal;  
   
   AgsAudioFile *audio_file;

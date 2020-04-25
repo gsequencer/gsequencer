@@ -19,6 +19,12 @@
 
 #include <ags/audio/fx/ags_fx_playback_recycling.h>
 
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_audio_signal.h>
+
+#include <ags/audio/fx/ags_fx_playback_audio.h>
+#include <ags/audio/fx/ags_fx_playback_channel_processor.h>
 #include <ags/audio/fx/ags_fx_playback_audio_signal.h>
 
 #include <ags/i18n.h>
@@ -27,6 +33,17 @@ void ags_fx_playback_recycling_class_init(AgsFxPlaybackRecyclingClass *fx_playba
 void ags_fx_playback_recycling_init(AgsFxPlaybackRecycling *fx_playback_recycling);
 void ags_fx_playback_recycling_dispose(GObject *gobject);
 void ags_fx_playback_recycling_finalize(GObject *gobject);
+
+void ags_fx_playback_recycling_notify_source_callback(GObject *gobject,
+						      GParamSpec *pspec,
+						      gpointer user_data);
+
+void ags_fx_playback_recycling_add_audio_signal_callback(AgsRecycling *recycling,
+							 AgsAudioSignal *audio_signal,
+							 AgsFxPlaybackRecycling *fx_playback_recycling);
+void ags_fx_playback_recycling_remove_audio_signal_callback(AgsRecycling *recycling,
+							    AgsAudioSignal *audio_signal,
+							    AgsFxPlaybackRecycling *fx_playback_recycling);
 
 /**
  * SECTION:ags_fx_playback_recycling
@@ -90,6 +107,9 @@ ags_fx_playback_recycling_class_init(AgsFxPlaybackRecyclingClass *fx_playback_re
 void
 ags_fx_playback_recycling_init(AgsFxPlaybackRecycling *fx_playback_recycling)
 {
+  g_signal_connect(fx_playback_recycling, "notify::source",
+		   G_CALLBACK(ags_fx_playback_recycling_notify_source_callback), NULL);
+
   AGS_RECALL(fx_playback_recycling)->name = "ags-fx-playback";
   AGS_RECALL(fx_playback_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_playback_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
@@ -118,6 +138,128 @@ ags_fx_playback_recycling_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_playback_recycling_parent_class)->finalize(gobject);
+}
+
+void
+ags_fx_playback_recycling_notify_source_callback(GObject *gobject,
+						 GParamSpec *pspec,
+						 gpointer user_data)
+{
+  AgsRecycling *source;
+
+  g_object_get(gobject,
+	       "source", &source,
+	       NULL);
+
+  if(source == NULL){
+    return;
+  }
+
+  g_signal_connect(source, "add-audio-signal",
+		   G_CALLBACK(ags_fx_playback_recycling_add_audio_signal_callback), gobject);
+
+  g_signal_connect(source, "remove-audio-signal",
+		   G_CALLBACK(ags_fx_playback_recycling_add_audio_signal_callback), gobject);
+
+  g_object_unref(source);
+}
+
+void
+ags_fx_playback_recycling_add_audio_signal_callback(AgsRecycling *recycling,
+						    AgsAudioSignal *audio_signal,
+						    AgsFxPlaybackRecycling *fx_playback_recycling)
+{
+  AgsChannel *source;
+  AgsFxPlaybackAudio *fx_playback_audio;
+  AgsFxPlaybackChannelProcessor *fx_playback_channel_processor;
+  AgsRecallID *recall_id;
+
+  recall_id = NULL;
+  
+  g_object_get(fx_playback_recycling,
+	       "recall-id", &recall_id,
+	       NULL);
+
+  if(recall_id == NULL){
+    return;
+  }
+
+  g_object_get(fx_playback_recycling,
+	       "parent", &fx_playback_channel_processor,
+	       NULL);
+
+  g_object_get(fx_playback_channel_processor,
+	       "recall-audio", &fx_playback_audio,
+	       NULL);
+
+  if(ags_audio_signal_test_flags(audio_signal, AGS_AUDIO_SIGNAL_MASTER)){
+    ags_fx_playback_audio_add_master_audio_signal(fx_playback_audio,
+						  audio_signal);    
+  }else if(ags_audio_signal_test_flags(audio_signal, AGS_AUDIO_SIGNAL_FEED)){
+    ags_fx_playback_audio_add_feed_audio_signal(fx_playback_audio,
+						audio_signal);
+  }
+  
+  if(recall_id != NULL){
+    g_object_unref(recall_id);
+  }
+
+  if(fx_playback_audio != NULL){
+    g_object_unref(fx_playback_audio);
+  }
+  
+  if(fx_playback_channel_processor != NULL){
+    g_object_unref(fx_playback_channel_processor);
+  }
+}
+
+void
+ags_fx_playback_recycling_remove_audio_signal_callback(AgsRecycling *recycling,
+						       AgsAudioSignal *audio_signal,
+						       AgsFxPlaybackRecycling *fx_playback_recycling)
+{
+  AgsChannel *source;
+  AgsFxPlaybackAudio *fx_playback_audio;
+  AgsFxPlaybackChannelProcessor *fx_playback_channel_processor;
+  AgsRecallID *recall_id;
+
+  recall_id = NULL;
+  
+  g_object_get(fx_playback_recycling,
+	       "recall-id", &recall_id,
+	       NULL);
+
+  if(recall_id == NULL){
+    return;
+  }
+
+  g_object_get(fx_playback_recycling,
+	       "parent", &fx_playback_channel_processor,
+	       NULL);
+
+  g_object_get(fx_playback_channel_processor,
+	       "recall-audio", &fx_playback_audio,
+	       NULL);
+
+  if(ags_audio_signal_test_flags(audio_signal, AGS_AUDIO_SIGNAL_MASTER)){
+    ags_fx_playback_audio_remove_master_audio_signal(fx_playback_audio,
+						     audio_signal);    
+  }else if(ags_audio_signal_test_flags(audio_signal, AGS_AUDIO_SIGNAL_FEED)){
+    ags_fx_playback_audio_remove_feed_audio_signal(fx_playback_audio,
+						   audio_signal);
+  }
+  
+  if(recall_id != NULL){
+    g_object_unref(recall_id);
+  }
+
+  if(fx_playback_audio != NULL){
+    g_object_unref(fx_playback_audio);
+  }
+  
+  if(fx_playback_channel_processor != NULL){
+    g_object_unref(fx_playback_channel_processor);
+  }
 }
 
 /**

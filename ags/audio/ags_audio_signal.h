@@ -48,6 +48,9 @@ typedef struct _AgsAudioSignalClass AgsAudioSignalClass;
  * @AGS_AUDIO_SIGNAL_CONNECTED: indicates the audio signal was connected by calling #AgsConnectable::connect()
  * @AGS_AUDIO_SIGNAL_TEMPLATE: the audio signal acts as a template
  * @AGS_AUDIO_SIGNAL_RT_TEMPLATE: the audio signal acts as a realtime template
+ * @AGS_AUDIO_SIGNAL_MASTER: the audio signal needs master
+ * @AGS_AUDIO_SIGNAL_FEED: the audio signal needs feed
+ * @AGS_AUDIO_SIGNAL_RECYCLED: the audio signal is recycled
  * 
  * Enum values to control the behavior or indicate internal state of #AgsAudioSignal by
  * enable/disable as flags.
@@ -57,8 +60,9 @@ typedef enum{
   AGS_AUDIO_SIGNAL_CONNECTED            = 1 <<  1,
   AGS_AUDIO_SIGNAL_TEMPLATE             = 1 <<  2,
   AGS_AUDIO_SIGNAL_RT_TEMPLATE          = 1 <<  3,
-  //  AGS_AUDIO_SIGNAL_PLAY_DONE            = 1 <<  3,
-  //  AGS_AUDIO_SIGNAL_STANDALONE           = 1 <<  4,
+  AGS_AUDIO_SIGNAL_MASTER               = 1 <<  4,
+  AGS_AUDIO_SIGNAL_FEED                 = 1 <<  5,
+  AGS_AUDIO_SIGNAL_RECYCLED             = 1 <<  6,
 }AgsAudioSignalFlags;
 
 struct _AgsAudioSignal

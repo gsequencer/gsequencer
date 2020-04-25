@@ -19,6 +19,8 @@
 
 #include <ags/audio/fx/ags_fx_buffer_audio_signal.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
+
 #include <ags/audio/fx/ags_fx_buffer_audio_processor.h>
 #include <ags/audio/fx/ags_fx_buffer_channel_processor.h>
 #include <ags/audio/fx/ags_fx_buffer_recycling.h>
@@ -223,6 +225,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
     destination = ags_audio_signal_new((GObject *) output_soundcard,
 				       (GObject *) destination_recycling,
 				       (GObject *) parent_recall_id);
+    ags_audio_signal_set_flags(destination, AGS_AUDIO_SIGNAL_MASTER);
     g_object_ref(destination);
 
     ags_audio_signal_stream_resize(destination,
