@@ -28,7 +28,7 @@ void ags_fx_buffer_audio_processor_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_buffer_audio_processor
- * @short_description: fx buffer audio_processor
+ * @short_description: fx buffer audio processor
  * @title: AgsFxBufferAudioProcessor
  * @section_id:
  * @include: ags/audio/fx/ags_fx_buffer_audio_processor.h

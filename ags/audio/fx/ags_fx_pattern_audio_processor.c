@@ -52,7 +52,7 @@ void ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcess
 
 /**
  * SECTION:ags_fx_pattern_audio_processor
- * @short_description: fx pattern audio_processor
+ * @short_description: fx pattern audio processor
  * @title: AgsFxPatternAudioProcessor
  * @section_id:
  * @include: ags/audio/fx/ags_fx_pattern_audio_processor.h

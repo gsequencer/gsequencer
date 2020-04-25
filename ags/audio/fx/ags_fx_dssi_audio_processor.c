@@ -26,7 +26,7 @@ void ags_fx_dssi_audio_processor_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_dssi_audio_processor
- * @short_description: fx dssi audio_processor
+ * @short_description: fx dssi audio processor
  * @title: AgsFxDssiAudioProcessor
  * @section_id:
  * @include: ags/audio/fx/ags_fx_dssi_audio_processor.h

@@ -63,7 +63,7 @@ void ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProce
 
 /**
  * SECTION:ags_fx_notation_audio_processor
- * @short_description: fx notation audio_processor
+ * @short_description: fx notation audio processor
  * @title: AgsFxNotationAudioProcessor
  * @section_id:
  * @include: ags/audio/fx/ags_fx_notation_audio_processor.h

@@ -28,7 +28,7 @@ void ags_fx_ladspa_audio_processor_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_ladspa_audio_processor
- * @short_description: fx ladspa audio_processor
+ * @short_description: fx ladspa audio processor
  * @title: AgsFxLadspaAudioProcessor
  * @section_id:
  * @include: ags/audio/fx/ags_fx_ladspa_audio_processor.h

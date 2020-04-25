@@ -48,7 +48,7 @@ void ags_fx_playback_audio_processor_real_counter_change(AgsFxPlaybackAudioProce
 
 /**
  * SECTION:ags_fx_playback_audio_processor
- * @short_description: fx playback audio_processor
+ * @short_description: fx playback audio processor
  * @title: AgsFxPlaybackAudioProcessor
  * @section_id:
  * @include: ags/audio/fx/ags_fx_playback_audio_processor.h

@@ -27,7 +27,6 @@
 
 #include <alsa/seq_event.h>
 
-#include <ladspa.h>
 #include <lv2.h>
 
 #include <ags/plugin/ags_lv2_plugin.h>
@@ -46,6 +45,9 @@ G_BEGIN_DECLS
 #define AGS_FX_LV2_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_LV2_AUDIO, AgsFxLv2AudioClass))
 
 typedef struct _AgsFxLv2Audio AgsFxLv2Audio;
+typedef struct _AgsFxLv2AudioScopeData AgsFxLv2AudioScopeData;
+typedef struct _AgsFxLv2AudioChannelData AgsFxLv2AudioChannelData;
+typedef struct _AgsFxLv2AudioInputData AgsFxLv2AudioInputData;
 typedef struct _AgsFxLv2AudioClass AgsFxLv2AudioClass;
 
 typedef enum{
@@ -68,15 +70,7 @@ struct _AgsFxLv2Audio
   guint bank;
   guint program;
 
-  float **input;
-  float **output;
-  
-  guint event_count;
-  snd_seq_event_t* event_buffer[128];
-
-  guint key_on[128];
-  
-  LV2_Handle *lv2_handle;
+  AgsFxLv2AudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];
 
   AgsLv2Plugin *lv2_plugin;
 
@@ -86,28 +80,74 @@ struct _AgsFxLv2Audio
 struct _AgsFxLv2AudioClass
 {
   AgsFxNotationAudioClass fx_notation_audio;
+};
+
+struct _AgsFxLv2AudioScopeData
+{
+  gpointer parent;
   
-  void (*change_program)(AgsLv2Plugin *lv2_plugin,
-			 guint bank_index,
-			 guint program_index);
+  guint audio_channels;
+  
+  AgsFxLv2AudioChannelData **channel_data;
+};
+
+struct _AgsFxLv2AudioChannelData
+{
+  gpointer parent;
+
+  guint event_count;
+  
+  float *output;
+  float *input;
+  
+  LV2_Handle lv2_handle;
+
+  AgsFxLv2AudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
+};
+
+struct _AgsFxLv2AudioInputData
+{
+  gpointer parent;
+
+  float *output;
+  float *input;
+
+  LV2_Handle lv2_handle;
+  
+  snd_seq_event_t *event_buffer;
+  guint key_on;
 };
 
 GType ags_fx_lv2_audio_get_type();
 
+/* runtime */
+AgsFxLv2AudioScopeData* ags_fx_lv2_audio_scope_data_alloc();
+void ags_fx_lv2_audio_scope_data_free(AgsFxLv2AudioScopeData *scope_data);
+
+AgsFxLv2AudioChannelData* ags_fx_lv2_audio_channel_data_alloc();
+void ags_fx_lv2_audio_channel_data_free(AgsFxLv2AudioChannelData *channel_data);
+
+AgsFxLv2AudioInputData* ags_fx_lv2_audio_input_data_alloc();
+void ags_fx_lv2_audio_input_data_free(AgsFxLv2AudioInputData *input_data);
+
+/* flags */
 gboolean ags_fx_lv2_audio_test_flags(AgsFxLv2Audio *fx_lv2_audio, guint flags);
 void ags_fx_lv2_audio_set_flags(AgsFxLv2Audio *fx_lv2_audio, guint flags);
 void ags_fx_lv2_audio_unset_flags(AgsFxLv2Audio *fx_lv2_audio, guint flags);
 
+/* load/unload */
 void ags_fx_lv2_audio_load_plugin(AgsFxLv2Audio *fx_lv2_audio);
 void ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio);
 
-void ags_fx_lv2_audio_unload_plugin(AgsFxLv2Audio *fx_lv2_audio);
-void ags_fx_lv2_audio_unload_port(AgsFxLv2Audio *fx_lv2_audio);
+/* connect port */
+void ags_fx_lv2_audio_connect_port(AgsFxLv2Audio *fx_lv2_audio);
 
-void ags_fx_lv2_audio_change_program(AgsLv2Plugin *lv2_plugin,
+/* plugin */
+void ags_fx_lv2_audio_change_program(AgsFxLv2Audio *fx_lv2_audio,
 				     guint bank_index,
 				     guint program_index);
 
+/* instantiate */
 AgsFxLv2Audio* ags_fx_lv2_audio_new(AgsAudio *audio);
 
 G_END_DECLS
