@@ -58,7 +58,7 @@ ags_fm_synth_input_line_fm_oscillator_control_changed_callback(AgsFMOscillator *
   fm_synth = (AgsFMSynth *) gtk_widget_get_ancestor((GtkWidget *) fm_synth_input_line,
 						    AGS_TYPE_FM_SYNTH);
 
-  if((AGS_FM_SYNTH_AUTO_UPDATE & (fm_synth->flags)) != 0){
+  if(ags_fm_synth_test_flags(fm_synth, AGS_FM_SYNTH_AUTO_UPDATE)){
     ags_fm_synth_update(fm_synth);
   }
 }

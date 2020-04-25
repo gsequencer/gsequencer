@@ -463,7 +463,8 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
   }
 
   /* copy data  */
-  if(recall_ladspa_run->input != NULL){
+  if(recall_ladspa_run->input != NULL &&
+     audio_signal->stream_current != NULL){
     ags_audio_buffer_util_clear_float(recall_ladspa_run->input, input_lines,
 				      buffer_size);
 
@@ -477,7 +478,8 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
       buffer_size);
 
   /* copy data */
-  if(recall_ladspa_run->output != NULL){
+  if(recall_ladspa_run->output != NULL &&
+     audio_signal->stream_current != NULL){
     ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
 				       buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
     

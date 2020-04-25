@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -84,6 +84,10 @@ struct _AgsFMSynthClass
 };
 
 GType ags_fm_synth_get_type(void);
+
+gboolean ags_fm_synth_test_flags(AgsFMSynth *fm_synth, guint flags);
+void ags_fm_synth_set_flags(AgsFMSynth *fm_synth, guint flags);
+void ags_fm_synth_unset_flags(AgsFMSynth *fm_synth, guint flags);
 
 void ags_fm_synth_update(AgsFMSynth *fm_synth);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,6 +51,12 @@ ags_fm_oscillator_phase_callback(GtkSpinButton *spin_button, AgsFMOscillator *fm
 
 void
 ags_fm_oscillator_volume_callback(GtkSpinButton *spin_button, AgsFMOscillator *fm_oscillator)
+{
+  ags_fm_oscillator_control_changed(fm_oscillator);
+}
+
+void
+ags_fm_oscillator_do_sync_callback(GtkToggleButton *toggle_button, AgsFMOscillator *fm_oscillator)
 {
   ags_fm_oscillator_control_changed(fm_oscillator);
 }

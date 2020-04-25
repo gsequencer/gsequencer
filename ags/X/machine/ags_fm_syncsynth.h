@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -90,6 +90,10 @@ struct _AgsFMSyncsynthClass
 };
 
 GType ags_fm_syncsynth_get_type(void);
+
+gboolean ags_fm_syncsynth_test_flags(AgsFMSyncsynth *fm_syncsynth, guint flags);
+void ags_fm_syncsynth_set_flags(AgsFMSyncsynth *fm_syncsynth, guint flags);
+void ags_fm_syncsynth_unset_flags(AgsFMSyncsynth *fm_syncsynth, guint flags);
 
 void ags_fm_syncsynth_add_fm_oscillator(AgsFMSyncsynth *fm_syncsynth,
 					AgsFMOscillator *fm_oscillator);

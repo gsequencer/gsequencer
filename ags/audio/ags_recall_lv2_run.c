@@ -964,7 +964,8 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   }
 
   /* copy data  */
-  if(recall_lv2_run->input != NULL){
+  if(recall_lv2_run->input != NULL &&
+     audio_signal->stream_current != NULL){
     ags_audio_buffer_util_copy_buffer_to_buffer(recall_lv2_run->input, 1, 0,
 						audio_signal->stream_current->data, 1, 0,
 						(guint) buffer_size, copy_mode_in);
@@ -1048,7 +1049,8 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   g_list_free(note_start);
 
   /* copy data */
-  if(recall_lv2_run->output != NULL){
+  if(recall_lv2_run->output != NULL &&
+     audio_signal->stream_current != NULL){
     ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
 				       buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
     
@@ -1251,7 +1253,8 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
 				      buffer_size);
   }
 
-  if(recall_lv2_run->input != NULL){
+  if(recall_lv2_run->input != NULL &&
+     audio_signal->stream_current != NULL){
     ags_audio_buffer_util_copy_buffer_to_buffer(recall_lv2_run->input, (guint) input_lines, 0,
 						audio_signal->stream_current->data, 1, 0,
 						(guint) buffer_size, copy_mode_in);
@@ -1262,7 +1265,8 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
       (uint32_t) buffer_size);
   
   /* copy data */
-  if(recall_lv2_run->output != NULL){
+  if(recall_lv2_run->output != NULL &&
+     audio_signal->stream_current != NULL){
     ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
 				       buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
     
