@@ -172,7 +172,6 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
   gint midi_note;
   guint format;
   guint copy_mode_out;
-  guint i;
   
   void (*run_synth)(LADSPA_Handle Instance,
 		    unsigned long SampleCount,
@@ -361,6 +360,7 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
     }
   }
   
+  /* unref */
   if(audio != NULL){
     g_object_unref(audio);
   }
