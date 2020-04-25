@@ -48,7 +48,7 @@ void ags_fx_pattern_audio_signal_real_notify_remove(AgsFxPatternAudioSignal *fx_
 
 /**
  * SECTION:ags_fx_pattern_audio_signal
- * @short_description: fx pattern audio_signal
+ * @short_description: fx pattern audio signal
  * @title: AgsFxPatternAudioSignal
  * @section_id:
  * @include: ags/audio/fx/ags_fx_pattern_audio_signal.h

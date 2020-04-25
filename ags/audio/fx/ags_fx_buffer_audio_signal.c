@@ -36,7 +36,7 @@ void ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_buffer_audio_signal
- * @short_description: fx buffer audio_signal
+ * @short_description: fx buffer audio signal
  * @title: AgsFxBufferAudioSignal
  * @section_id:
  * @include: ags/audio/fx/ags_fx_buffer_audio_signal.h
@@ -152,6 +152,9 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
   GRecMutex *destination_stream_mutex;
   
   /* get some fields */
+  source = NULL;
+  destination = NULL;
+  
   g_object_get(recall,
 	       "source", &source,
 	       "destination", &destination,

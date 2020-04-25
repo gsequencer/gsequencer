@@ -51,7 +51,7 @@ void ags_fx_dssi_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notatio
 
 /**
  * SECTION:ags_fx_dssi_audio_signal
- * @short_description: fx dssi audio_signal
+ * @short_description: fx dssi audio signal
  * @title: AgsFxDssiAudioSignal
  * @section_id:
  * @include: ags/audio/fx/ags_fx_dssi_audio_signal.h

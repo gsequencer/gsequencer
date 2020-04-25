@@ -34,7 +34,7 @@ void ags_fx_playback_audio_signal_real_run_inter(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_playback_audio_signal
- * @short_description: fx playback audio_signal
+ * @short_description: fx playback audio signal
  * @title: AgsFxPlaybackAudioSignal
  * @section_id:
  * @include: ags/audio/fx/ags_fx_playback_audio_signal.h

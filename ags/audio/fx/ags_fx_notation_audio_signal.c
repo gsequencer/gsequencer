@@ -48,7 +48,7 @@ void ags_fx_notation_audio_signal_real_notify_remove(AgsFxNotationAudioSignal *f
 
 /**
  * SECTION:ags_fx_notation_audio_signal
- * @short_description: fx notation audio_signal
+ * @short_description: fx notation audio signal
  * @title: AgsFxNotationAudioSignal
  * @section_id:
  * @include: ags/audio/fx/ags_fx_notation_audio_signal.h
