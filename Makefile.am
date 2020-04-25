@@ -1602,12 +1602,24 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_notation_channel_processor.h \
 	ags/audio/fx/ags_fx_notation_recycling.h \
 	ags/audio/fx/ags_fx_notation_audio_signal.h \
+	ags/audio/fx/ags_fx_ladspa_audio.h \
+	ags/audio/fx/ags_fx_ladspa_audio_processor.h \
+	ags/audio/fx/ags_fx_ladspa_channel.h \
+	ags/audio/fx/ags_fx_ladspa_channel_processor.h \
+	ags/audio/fx/ags_fx_ladspa_recycling.h \
+	ags/audio/fx/ags_fx_ladspa_audio_signal.h \
 	ags/audio/fx/ags_fx_dssi_audio.h \
 	ags/audio/fx/ags_fx_dssi_audio_processor.h \
 	ags/audio/fx/ags_fx_dssi_channel.h \
 	ags/audio/fx/ags_fx_dssi_channel_processor.h \
 	ags/audio/fx/ags_fx_dssi_recycling.h \
-	ags/audio/fx/ags_fx_dssi_audio_signal.h
+	ags/audio/fx/ags_fx_dssi_audio_signal.h \
+	ags/audio/fx/ags_fx_lv2_audio.h \
+	ags/audio/fx/ags_fx_lv2_audio_processor.h \
+	ags/audio/fx/ags_fx_lv2_channel.h \
+	ags/audio/fx/ags_fx_lv2_channel_processor.h \
+	ags/audio/fx/ags_fx_lv2_recycling.h \
+	ags/audio/fx/ags_fx_lv2_audio_signal.h
 
 deprecated_libags_audio_fx_c_sources =
 
@@ -1637,12 +1649,24 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_notation_channel_processor.c \
 	ags/audio/fx/ags_fx_notation_recycling.c \
 	ags/audio/fx/ags_fx_notation_audio_signal.c \
+	ags/audio/fx/ags_fx_ladspa_audio.c \
+	ags/audio/fx/ags_fx_ladspa_audio_processor.c \
+	ags/audio/fx/ags_fx_ladspa_channel.c \
+	ags/audio/fx/ags_fx_ladspa_channel_processor.c \
+	ags/audio/fx/ags_fx_ladspa_recycling.c \
+	ags/audio/fx/ags_fx_ladspa_audio_signal.c \
 	ags/audio/fx/ags_fx_dssi_audio.c \
 	ags/audio/fx/ags_fx_dssi_audio_processor.c \
 	ags/audio/fx/ags_fx_dssi_channel.c \
 	ags/audio/fx/ags_fx_dssi_channel_processor.c \
 	ags/audio/fx/ags_fx_dssi_recycling.c \
-	ags/audio/fx/ags_fx_dssi_audio_signal.c
+	ags/audio/fx/ags_fx_dssi_audio_signal.c \
+	ags/audio/fx/ags_fx_lv2_audio.c \
+	ags/audio/fx/ags_fx_lv2_audio_processor.c \
+	ags/audio/fx/ags_fx_lv2_channel.c \
+	ags/audio/fx/ags_fx_lv2_channel_processor.c \
+	ags/audio/fx/ags_fx_lv2_recycling.c \
+	ags/audio/fx/ags_fx_lv2_audio_signal.c
 
 # libags-audio - task
 deprecated_libags_audio_task_h_sources =
