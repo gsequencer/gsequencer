@@ -244,7 +244,6 @@ ags_fx_ladspa_channel_notify_samplerate_callback(GObject *gobject,
 
   AgsLadspaPlugin *ladspa_plugin;
 
-  guint output_port_count;
   guint buffer_size;
   guint samplerate;
   guint i;
@@ -260,6 +259,17 @@ ags_fx_ladspa_channel_notify_samplerate_callback(GObject *gobject,
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_ladspa_channel);
 
+  /* get LADSPA plugin */
+  g_rec_mutex_lock(recall_mutex);
+
+  ladspa_plugin = fx_ladspa_channel->ladspa_plugin;
+
+  g_rec_mutex_unlock(recall_mutex);
+
+  if(ladspa_plugin == NULL){
+    return;
+  }
+
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   samplerate =  AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
@@ -267,16 +277,7 @@ ags_fx_ladspa_channel_notify_samplerate_callback(GObject *gobject,
 	       "buffer-size", &buffer_size,
 	       "samplerate", &samplerate,
 	       NULL);
-
-  /* get LADSPA plugin */
-  g_rec_mutex_lock(recall_mutex);
-
-  output_port_count = fx_ladspa_channel->output_port_count;
-
-  ladspa_plugin = fx_ladspa_channel->ladspa_plugin;
-
-  g_rec_mutex_unlock(recall_mutex);
-
+  
   /* get deactivate and cleanup */
   base_plugin_mutex = NULL;
 
@@ -440,6 +441,20 @@ ags_fx_ladspa_channel_load_plugin(AgsFxLadspaChannel *fx_ladspa_channel)
   
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_ladspa_channel);
+  
+  /* get filename and effect */
+  filename = NULL;
+  effect = NULL;
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  g_object_get(fx_ladspa_channel,
+	       "filename", &filename,
+	       "effect", &effect,
+	       "buffer-size", &buffer_size,
+	       "samplerate", &samplerate,
+	       NULL);
 
   /* check if already loaded */
   g_rec_mutex_lock(recall_mutex);
@@ -453,14 +468,6 @@ ags_fx_ladspa_channel_load_plugin(AgsFxLadspaChannel *fx_ladspa_channel)
   }    
   
   g_rec_mutex_unlock(recall_mutex);
-  
-  /* get filename and effect */
-  g_object_get(fx_ladspa_channel,
-	       "filename", &filename,
-	       "effect", &effect,
-	       "buffer-size", &buffer_size,
-	       "samplerate", &samplerate,
-	       NULL);
   
   if(ladspa_plugin != NULL){
     guint i;
