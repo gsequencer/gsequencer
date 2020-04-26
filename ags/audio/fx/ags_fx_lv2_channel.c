@@ -67,7 +67,7 @@ ags_fx_lv2_channel_get_type()
       (GInstanceInitFunc) ags_fx_lv2_channel_init,
     };
 
-    ags_type_fx_lv2_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
+    ags_type_fx_lv2_channel = g_type_register_static(AGS_TYPE_FX_NOTATION_CHANNEL,
 						     "AgsFxLv2Channel",
 						     &ags_fx_lv2_channel_info,
 						     0);

@@ -58,7 +58,7 @@ ags_fx_lv2_audio_processor_get_type()
       (GInstanceInitFunc) ags_fx_lv2_audio_processor_init,
     };
 
-    ags_type_fx_lv2_audio_processor = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
+    ags_type_fx_lv2_audio_processor = g_type_register_static(AGS_TYPE_FX_NOTATION_AUDIO_PROCESSOR,
 							     "AgsFxLv2AudioProcessor",
 							     &ags_fx_lv2_audio_processor_info,
 							     0);

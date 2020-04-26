@@ -107,7 +107,7 @@ ags_fx_lv2_audio_get_type()
       (GInstanceInitFunc) ags_fx_lv2_audio_init,
     };
 
-    ags_type_fx_lv2_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
+    ags_type_fx_lv2_audio = g_type_register_static(AGS_TYPE_FX_NOTATION_AUDIO,
 						   "AgsFxLv2Audio",
 						   &ags_fx_lv2_audio_info,
 						   0);

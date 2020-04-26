@@ -26,7 +26,8 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_recall_audio_signal.h>
+
+#include <ags/audio/fx/ags_fx_notation_audio_signal.h>
 
 G_BEGIN_DECLS
 
@@ -42,12 +43,12 @@ typedef struct _AgsFxLv2AudioSignalClass AgsFxLv2AudioSignalClass;
 
 struct _AgsFxLv2AudioSignal
 {
-  AgsRecallAudioSignal recall_audio_signal;
+  AgsFxNotationAudioSignal fx_notation_audio_signal;
 };
 
 struct _AgsFxLv2AudioSignalClass
 {
-  AgsRecallAudioSignalClass recall_audio_signal;
+  AgsFxNotationAudioSignalClass fx_notation_audio_signal;
 };
 
 GType ags_fx_lv2_audio_signal_get_type();

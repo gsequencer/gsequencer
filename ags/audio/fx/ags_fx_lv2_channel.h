@@ -35,7 +35,8 @@
 #include <ags/audio/ags_sound_enums.h>
 
 #include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_recall_channel.h>
+
+#include <ags/audio/fx/ags_fx_notation_channel.h>
 
 G_BEGIN_DECLS
 
@@ -52,7 +53,7 @@ typedef struct _AgsFxLv2ChannelClass AgsFxLv2ChannelClass;
 
 struct _AgsFxLv2Channel
 {
-  AgsRecallChannel recall_channel;
+  AgsFxNotationChannel fx_notation_channel;
 
   guint output_port_count;
   guint *output_port;
@@ -69,7 +70,7 @@ struct _AgsFxLv2Channel
 
 struct _AgsFxLv2ChannelClass
 {
-  AgsRecallChannelClass recall_channel;
+  AgsFxNotationChannelClass fx_notation_channel;
 };
 
 struct _AgsFxLv2ChannelInputData

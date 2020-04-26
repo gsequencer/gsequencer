@@ -62,7 +62,7 @@ ags_fx_lv2_recycling_get_type()
       (GInstanceInitFunc) ags_fx_lv2_recycling_init,
     };
 
-    ags_type_fx_lv2_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
+    ags_type_fx_lv2_recycling = g_type_register_static(AGS_TYPE_FX_NOTATION_RECYCLING,
 						       "AgsFxLv2Recycling",
 						       &ags_fx_lv2_recycling_info,
 						       0);

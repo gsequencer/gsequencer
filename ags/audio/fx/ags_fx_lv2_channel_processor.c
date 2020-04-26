@@ -62,7 +62,7 @@ ags_fx_lv2_channel_processor_get_type()
       (GInstanceInitFunc) ags_fx_lv2_channel_processor_init,
     };
 
-    ags_type_fx_lv2_channel_processor = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
+    ags_type_fx_lv2_channel_processor = g_type_register_static(AGS_TYPE_FX_NOTATION_CHANNEL_PROCESSOR,
 							       "AgsFxLv2ChannelProcessor",
 							       &ags_fx_lv2_channel_processor_info,
 							       0);
