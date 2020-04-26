@@ -90,9 +90,6 @@ void ags_fx_ladspa_channel_input_data_free(AgsFxLadspaChannelInputData *input_da
 void ags_fx_ladspa_channel_load_plugin(AgsFxLadspaChannel *fx_ladspa_channel);
 void ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel);
 
-/* connect port */
-void ags_fx_ladspa_channel_connect_port(AgsFxLadspaChannel *fx_ladspa_channel);
-
 /* instantiate */
 AgsFxLadspaChannel* ags_fx_ladspa_channel_new(AgsChannel *channel);
 

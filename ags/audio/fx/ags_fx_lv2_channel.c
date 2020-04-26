@@ -26,6 +26,13 @@ void ags_fx_lv2_channel_init(AgsFxLv2Channel *fx_lv2_channel);
 void ags_fx_lv2_channel_dispose(GObject *gobject);
 void ags_fx_lv2_channel_finalize(GObject *gobject);
 
+void ags_fx_lv2_channel_notify_buffer_size_callback(GObject *gobject,
+						    GParamSpec *pspec,
+						    gpointer user_data);
+void ags_fx_lv2_channel_notify_samplerate_callback(GObject *gobject,
+						   GParamSpec *pspec,
+						   gpointer user_data);
+
 /**
  * SECTION:ags_fx_lv2_channel
  * @short_description: fx lv2 channel
@@ -88,6 +95,12 @@ ags_fx_lv2_channel_class_init(AgsFxLv2ChannelClass *fx_lv2_channel)
 void
 ags_fx_lv2_channel_init(AgsFxLv2Channel *fx_lv2_channel)
 {
+  g_signal_connect(fx_lv2_channel, "notify::buffer-size",
+		   G_CALLBACK(ags_fx_lv2_channel_notify_buffer_size_callback), NULL);
+
+  g_signal_connect(fx_lv2_channel, "notify::samplerate",
+		   G_CALLBACK(ags_fx_lv2_channel_notify_samplerate_callback), NULL);
+
   AGS_RECALL(fx_lv2_channel)->name = "ags-fx-lv2";
   AGS_RECALL(fx_lv2_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_lv2_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
@@ -114,6 +127,140 @@ ags_fx_lv2_channel_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_lv2_channel_parent_class)->finalize(gobject);
+}
+
+void
+ags_fx_lv2_channel_notify_buffer_size_callback(GObject *gobject,
+					       GParamSpec *pspec,
+					       gpointer user_data)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_fx_lv2_channel_notify_samplerate_callback(GObject *gobject,
+					      GParamSpec *pspec,
+					      gpointer user_data)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fx_lv2_channel_input_data_alloc:
+ * 
+ * Allocate #AgsFxLv2ChannelInputData-struct
+ * 
+ * Returns: the new #AgsFxLv2ChannelInputData-struct
+ * 
+ * Since: 3.3.0
+ */
+AgsFxLv2ChannelInputData*
+ags_fx_lv2_channel_input_data_alloc()
+{
+  AgsFxLv2ChannelInputData *input_data;
+
+  input_data = (AgsFxLv2ChannelInputData *) g_malloc(sizeof(AgsFxLv2ChannelInputData));
+
+  input_data->parent = NULL;
+
+  input_data->output = NULL;
+  input_data->input = NULL;
+
+  input_data->lv2_handle = NULL;
+
+  return(input_data);
+}
+
+/**
+ * ags_fx_lv2_channel_input_data_free:
+ * @input_data: the #AgsFxLv2ChannelInputData-struct
+ * 
+ * Free @input_data.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_fx_lv2_channel_input_data_free(AgsFxLv2ChannelInputData *input_data)
+{
+  AgsLv2Plugin *lv2_plugin;
+  
+  if(input_data == NULL){
+    return;
+  }
+
+  g_free(input_data->output);
+  g_free(input_data->input);
+
+  if(input_data->lv2_handle != NULL){
+    gpointer plugin_descriptor;
+
+    GRecMutex *base_plugin_mutex;
+    
+    void (*deactivate)(LV2_Handle Instance);
+    void (*cleanup)(LV2_Handle Instance);
+  
+    lv2_plugin = NULL;
+    
+    deactivate = NULL;
+    cleanup = NULL;
+
+    base_plugin_mutex = NULL;
+    
+    if(input_data->parent != NULL){
+      lv2_plugin = AGS_FX_LV2_CHANNEL(input_data->parent)->lv2_plugin;
+    }
+    
+    if(lv2_plugin != NULL){
+      base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
+      
+      g_rec_mutex_lock(base_plugin_mutex);
+  
+      plugin_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
+
+      deactivate = AGS_LV2_PLUGIN_DESCRIPTOR(plugin_descriptor)->deactivate;
+      cleanup = AGS_LV2_PLUGIN_DESCRIPTOR(plugin_descriptor)->cleanup;
+      
+      g_rec_mutex_unlock(base_plugin_mutex);
+    }
+
+    if(deactivate != NULL){
+      deactivate(input_data->lv2_handle);
+    }
+
+    if(cleanup != NULL){
+      cleanup(input_data->lv2_handle);
+    }
+  }
+  
+  g_free(input_data);
+}
+
+/**
+ * ags_fx_lv2_channel_load_plugin:
+ * @fx_lv2_channel: the #AgsFxLv2Channel
+ * 
+ * Load plugin of @fx_lv2_channel.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_fx_lv2_channel_load_plugin(AgsFxLv2Channel *fx_lv2_channel)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fx_lv2_channel_load_port:
+ * @fx_lv2_channel: the #AgsFxLv2Channel
+ * 
+ * Load port of @fx_lv2_channel.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
+{
+  //TODO:JK: implement me
 }
 
 /**

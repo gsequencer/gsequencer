@@ -127,6 +127,10 @@ ags_fx_ladspa_channel_init(AgsFxLadspaChannel *fx_ladspa_channel)
       
     fx_ladspa_channel->input_data[i]->parent = fx_ladspa_channel;
   }
+  
+  fx_ladspa_channel->ladspa_plugin = NULL;
+
+  fx_ladspa_channel->ladspa_port = NULL;
 }
 
 void
@@ -143,6 +147,7 @@ ags_fx_ladspa_channel_dispose(GObject *gobject)
 void
 ags_fx_ladspa_channel_finalize(GObject *gobject)
 {
+  AgsPort **iter;
   AgsFxLadspaChannel *fx_ladspa_channel;
   
   guint i;
@@ -158,6 +163,14 @@ ags_fx_ladspa_channel_finalize(GObject *gobject)
   
   if(fx_ladspa_channel->ladspa_plugin != NULL){
     g_object_unref(fx_ladspa_channel->ladspa_plugin);
+  }
+  
+  if(fx_ladspa_channel->ladspa_port == NULL){
+    for(iter = fx_ladspa_channel->ladspa_port; iter[0] != NULL; iter++){
+      g_object_unref(iter[0]);
+    }
+
+    g_free(fx_ladspa_channel->ladspa_port);
   }
 
   /* call parent */

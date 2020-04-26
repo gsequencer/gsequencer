@@ -44,6 +44,10 @@ G_BEGIN_DECLS
 #define AGS_IS_FX_LV2_AUDIO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FX_LV2_AUDIO))
 #define AGS_FX_LV2_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_LV2_AUDIO, AgsFxLv2AudioClass))
 
+#define AGS_FX_LV2_AUDIO_SCOPE_DATA(ptr) ((AgsFxLv2AudioScopeData *) (ptr))
+#define AGS_FX_LV2_AUDIO_CHANNEL_DATA(ptr) ((AgsFxLv2AudioChannelData *) (ptr))
+#define AGS_FX_LV2_AUDIO_INPUT_DATA(ptr) ((AgsFxLv2AudioInputData *) (ptr))
+
 typedef struct _AgsFxLv2Audio AgsFxLv2Audio;
 typedef struct _AgsFxLv2AudioScopeData AgsFxLv2AudioScopeData;
 typedef struct _AgsFxLv2AudioChannelData AgsFxLv2AudioChannelData;
@@ -61,11 +65,11 @@ struct _AgsFxLv2Audio
 
   guint flags;
   
-  guint input_lines;
-  guint output_lines;
-
-  guint *input_port;
+  guint output_port_count;
   guint *output_port;
+
+  guint input_port_count;
+  guint *input_port;
 
   guint bank;
   guint program;
@@ -138,9 +142,6 @@ void ags_fx_lv2_audio_unset_flags(AgsFxLv2Audio *fx_lv2_audio, guint flags);
 /* load/unload */
 void ags_fx_lv2_audio_load_plugin(AgsFxLv2Audio *fx_lv2_audio);
 void ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio);
-
-/* connect port */
-void ags_fx_lv2_audio_connect_port(AgsFxLv2Audio *fx_lv2_audio);
 
 /* plugin */
 void ags_fx_lv2_audio_change_program(AgsFxLv2Audio *fx_lv2_audio,
