@@ -20,6 +20,7 @@
 #include <ags/audio/ags_port_util.h>
 
 #include <ags/plugin/ags_ladspa_conversion.h>
+#include <ags/plugin/ags_lv2_conversion.h>
 
 /**
  * SECTION:ags_port_util
@@ -92,6 +93,44 @@ ags_port_util_load_ladspa_conversion(AgsPort *port,
   if(ladspa_conversion != NULL){
     g_object_set(port,
 		 "conversion", ladspa_conversion,
+		 NULL);
+  }
+}
+
+/**
+ * ags_port_util_load_lv2_conversion:
+ * @port: the #AgsPort
+ * @plugin_port: the #AgsPluginPort
+ * 
+ * Loads conversion object by using @plugin_port and sets in on @port.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_port_util_load_lv2_conversion(AgsPort *port,
+				     AgsPluginPort *plugin_port)
+{
+  AgsLv2Conversion *lv2_conversion;
+
+  if(!AGS_IS_PORT(port) ||
+     !AGS_IS_PLUGIN_PORT(plugin_port)){
+    return;
+  }
+
+  lv2_conversion = NULL;
+
+  if(ags_plugin_port_test_flags(plugin_port,
+				AGS_PLUGIN_PORT_LOGARITHMIC)){
+    if(!AGS_IS_LV2_CONVERSION(lv2_conversion)){
+      lv2_conversion = ags_lv2_conversion_new();
+    }
+    
+    lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;
+  }
+
+  if(lv2_conversion != NULL){
+    g_object_set(port,
+		 "conversion", lv2_conversion,
 		 NULL);
   }
 }

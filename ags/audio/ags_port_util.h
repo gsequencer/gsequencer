@@ -32,5 +32,7 @@
 void ags_port_util_load_ladspa_conversion(AgsPort *port,
 					  AgsPluginPort *plugin_port);
 
+void ags_port_util_load_lv2_conversion(AgsPort *port,
+				       AgsPluginPort *plugin_port);
 
 #endif /*__AGS_PORT_UTIL_H__*/

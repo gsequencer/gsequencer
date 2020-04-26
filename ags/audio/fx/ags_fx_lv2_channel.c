@@ -95,6 +95,8 @@ ags_fx_lv2_channel_class_init(AgsFxLv2ChannelClass *fx_lv2_channel)
 void
 ags_fx_lv2_channel_init(AgsFxLv2Channel *fx_lv2_channel)
 {
+  guint i;
+  
   g_signal_connect(fx_lv2_channel, "notify::buffer-size",
 		   G_CALLBACK(ags_fx_lv2_channel_notify_buffer_size_callback), NULL);
 
@@ -105,6 +107,23 @@ ags_fx_lv2_channel_init(AgsFxLv2Channel *fx_lv2_channel)
   AGS_RECALL(fx_lv2_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_lv2_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_lv2_channel)->xml_type = "ags-fx-lv2-channel";
+
+  fx_lv2_channel->output_port_count = 0;
+  fx_lv2_channel->output_port = NULL;
+  
+  fx_lv2_channel->input_port_count = 0;
+  fx_lv2_channel->input_port = NULL;
+
+  /* input data */
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    fx_lv2_channel->input_data[i] = ags_fx_lv2_channel_input_data_alloc();
+      
+    fx_lv2_channel->input_data[i]->parent = fx_lv2_channel;
+  }
+  
+  fx_lv2_channel->lv2_plugin = NULL;
+
+  fx_lv2_channel->lv2_port = NULL;
 }
 
 void
@@ -121,9 +140,31 @@ ags_fx_lv2_channel_dispose(GObject *gobject)
 void
 ags_fx_lv2_channel_finalize(GObject *gobject)
 {
+  AgsPort **iter;
   AgsFxLv2Channel *fx_lv2_channel;
   
+  guint i;
+  
   fx_lv2_channel = AGS_FX_LV2_CHANNEL(gobject);
+
+  g_free(fx_lv2_channel->output_port);
+  g_free(fx_lv2_channel->input_port);
+  
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    ags_fx_lv2_channel_input_data_free(fx_lv2_channel->input_data[i]);
+  }
+  
+  if(fx_lv2_channel->lv2_plugin != NULL){
+    g_object_unref(fx_lv2_channel->lv2_plugin);
+  }
+  
+  if(fx_lv2_channel->lv2_port == NULL){
+    for(iter = fx_lv2_channel->lv2_port; iter[0] != NULL; iter++){
+      g_object_unref(iter[0]);
+    }
+
+    g_free(fx_lv2_channel->lv2_port);
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_lv2_channel_parent_class)->finalize(gobject);

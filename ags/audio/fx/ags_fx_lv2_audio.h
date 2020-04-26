@@ -55,8 +55,7 @@ typedef struct _AgsFxLv2AudioInputData AgsFxLv2AudioInputData;
 typedef struct _AgsFxLv2AudioClass AgsFxLv2AudioClass;
 
 typedef enum{
-  AGS_FX_LV2_AUDIO_INSTRUMENT          = 1,
-  AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT     = 1 <<  1,
+  AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT     = 1,
 }AgsFxLv2AudioFlags;
 
 struct _AgsFxLv2Audio

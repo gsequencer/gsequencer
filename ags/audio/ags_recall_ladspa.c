@@ -575,49 +575,8 @@ ags_recall_ladspa_load_conversion(AgsRecallLadspa *recall_ladspa,
     return;
   }
 
-  ladspa_conversion = NULL;
-
-  if(ags_plugin_port_test_flags(plugin_port,
-				AGS_PLUGIN_PORT_BOUNDED_BELOW)){
-    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
-      ladspa_conversion = ags_ladspa_conversion_new();
-    }
-
-    ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
-  }
-
-  if(ags_plugin_port_test_flags(plugin_port,
-				AGS_PLUGIN_PORT_BOUNDED_ABOVE)){
-    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
-      ladspa_conversion = ags_ladspa_conversion_new();
-    }
-
-    ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
-  }
-  
-  if(ags_plugin_port_test_flags(plugin_port,
-				AGS_PLUGIN_PORT_SAMPLERATE)){
-    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
-      ladspa_conversion = ags_ladspa_conversion_new();
-    }
-        
-    ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
-  }
-
-  if(ags_plugin_port_test_flags(plugin_port,
-				AGS_PLUGIN_PORT_LOGARITHMIC)){
-    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
-      ladspa_conversion = ags_ladspa_conversion_new();
-    }
-    
-    ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
-  }
-
-  if(ladspa_conversion != NULL){
-    g_object_set(port,
-		 "conversion", ladspa_conversion,
-		 NULL);
-  }
+  ags_port_util_load_ladspa_conversion(port,
+				       plugin_port);
 }
 
 /**

@@ -350,7 +350,7 @@ ags_fx_dssi_audio_notify_samplerate_callback(GObject *gobject,
 
   guint input_pads;
   guint audio_channels;
-  guint output_port_count;
+  guint output_port_count, input_port_count;
   guint buffer_size;
   guint samplerate;
   guint i, j, k;
@@ -398,6 +398,7 @@ ags_fx_dssi_audio_notify_samplerate_callback(GObject *gobject,
   g_rec_mutex_lock(recall_mutex);
 
   output_port_count = fx_dssi_audio->output_port_count;
+  input_port_count = fx_dssi_audio->input_port_count;
 
   dssi_plugin = fx_dssi_audio->dssi_plugin;
 
@@ -463,6 +464,13 @@ ags_fx_dssi_audio_notify_samplerate_callback(GObject *gobject,
 					 channel_data->ladspa_handle,
 					 fx_dssi_audio->output_port[nth],
 					 &(channel_data->output[nth]));
+	  }
+
+	  for(nth = 0; nth < input_port_count; nth++){
+	    ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
+					 channel_data->ladspa_handle,
+					 fx_dssi_audio->input_port[nth],
+					 &(channel_data->input[nth]));
 	  }
 
 	  for(iter = fx_dssi_audio->dssi_port; iter[0] != NULL; iter++){
@@ -680,6 +688,13 @@ ags_fx_dssi_audio_set_audio_channels_callback(AgsAudio *audio,
 					   &(channel_data->output[nth]));
 	    }
 
+	    for(nth = 0; nth < input_port_count; nth++){
+	      ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
+					   channel_data->ladspa_handle,
+					   fx_dssi_audio->input_port[nth],
+					   &(channel_data->input[nth]));
+	    }
+	    
 	    for(iter = fx_dssi_audio->dssi_port; iter[0] != NULL; iter++){
 	      AgsPluginPort *plugin_port;
 
@@ -1623,6 +1638,13 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 					 output_port[nth],
 					 &(channel_data->output[nth]));
 	  }
+
+	  for(nth = 0; nth < input_port_count; nth++){
+	    ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
+					 channel_data->ladspa_handle,
+					 input_port[nth],
+					 &(channel_data->input[nth]));
+	  }
 	}
 
 	if(!is_live_instrument){	  
@@ -1650,6 +1672,13 @@ ags_fx_dssi_audio_load_port(AgsFxDssiAudio *fx_dssi_audio)
 					   channel_data->ladspa_handle,
 					   output_port[nth],
 					   &(channel_data->output[nth]));
+	    }
+
+	    for(nth = 0; nth < input_port_count; nth++){
+	      ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
+					   channel_data->ladspa_handle,
+					   input_port[nth],
+					   &(channel_data->input[nth]));
 	    }
 	  }
 	}
