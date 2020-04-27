@@ -19,6 +19,9 @@
 
 #include <ags/audio/fx/ags_fx_lv2_audio_signal.h>
 
+#include <ags/plugin/ags_base_plugin.h>
+#include <ags/plugin/ags_lv2_plugin.h>
+
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/fx/ags_fx_lv2_audio.h>
@@ -26,8 +29,6 @@
 #include <ags/audio/fx/ags_fx_lv2_channel.h>
 #include <ags/audio/fx/ags_fx_lv2_channel_processor.h>
 #include <ags/audio/fx/ags_fx_lv2_recycling.h>
-
-#include <ags/plugin/ags_base_plugin.h>
 
 #include <ags/i18n.h>
 
@@ -636,8 +637,30 @@ ags_fx_lv2_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audi
     input_data = channel_data->input_data[midi_note];
 
     input_data->key_on -= 1;
-      
-    g_rec_mutex_lock(fx_lv2_audio_mutex);
+    
+    if(ags_fx_lv2_audio_test_flags(fx_lv2_audio, AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT)){
+      if(channel_data->event_port != NULL){
+	ags_lv2_plugin_event_buffer_remove_midi(channel_data->event_port,
+						AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						midi_note);
+      }else if(channel_data->atom_port != NULL){
+	ags_lv2_plugin_atom_sequence_remove_midi(channel_data->atom_port,
+						 AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						 midi_note);
+      }
+    }else{
+      if(input_data->event_port != NULL){
+	ags_lv2_plugin_event_buffer_remove_midi(input_data->event_port,
+						AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						midi_note);
+      }else if(input_data->atom_port != NULL){
+	ags_lv2_plugin_atom_sequence_remove_midi(input_data->atom_port,
+						 AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						 midi_note);
+      }
+    }
+
+    g_rec_mutex_unlock(fx_lv2_audio_mutex);
   }
   
   if(audio != NULL){

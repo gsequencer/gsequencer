@@ -39,7 +39,7 @@ G_BEGIN_DECLS
 
 #define AGS_TYPE_FX_LV2_AUDIO                (ags_fx_lv2_audio_get_type())
 #define AGS_FX_LV2_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FX_LV2_AUDIO, AgsFxLv2Audio))
-#define AGS_FX_LV2_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FX_LV2_AUDIO, AgsFxLv2Audio))
+#define AGS_FX_LV2_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FX_LV2_AUDIO, AgsFxLv2AudioClass))
 #define AGS_IS_FX_LV2_AUDIO(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_FX_LV2_AUDIO))
 #define AGS_IS_FX_LV2_AUDIO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FX_LV2_AUDIO))
 #define AGS_FX_LV2_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_LV2_AUDIO, AgsFxLv2AudioClass))
@@ -47,6 +47,8 @@ G_BEGIN_DECLS
 #define AGS_FX_LV2_AUDIO_SCOPE_DATA(ptr) ((AgsFxLv2AudioScopeData *) (ptr))
 #define AGS_FX_LV2_AUDIO_CHANNEL_DATA(ptr) ((AgsFxLv2AudioChannelData *) (ptr))
 #define AGS_FX_LV2_AUDIO_INPUT_DATA(ptr) ((AgsFxLv2AudioInputData *) (ptr))
+
+#define AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT (8 * 256)
 
 typedef struct _AgsFxLv2Audio AgsFxLv2Audio;
 typedef struct _AgsFxLv2AudioScopeData AgsFxLv2AudioScopeData;
@@ -102,6 +104,9 @@ struct _AgsFxLv2AudioChannelData
   
   float *output;
   float *input;
+
+  gpointer event_port;
+  gpointer atom_port;
   
   LV2_Handle lv2_handle;
 
@@ -114,6 +119,9 @@ struct _AgsFxLv2AudioInputData
 
   float *output;
   float *input;
+
+  gpointer event_port;
+  gpointer atom_port;
 
   LV2_Handle lv2_handle;
   

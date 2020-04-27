@@ -1498,6 +1498,24 @@ ags_lv2_plugin_event_buffer_alloc(guint buffer_size)
 }
 
 /**
+ * ags_lv2_plugin_event_buffer_free:
+ * @event_buffer: (type gpointer) (transfer none): the LV2_Event_Buffer struct
+o * 
+ * Free LV2_Event_Buffer struct.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_lv2_plugin_event_buffer_free(gpointer event_buffer)
+{
+  if(event_buffer == NULL){
+    return;
+  }
+
+  free(event_buffer);
+}
+
+/**
  * ags_lv2_plugin_event_buffer_realloc_data:
  * @event_buffer: (type gpointer) (transfer none): the LV2_Event_Buffer struct
  * @buffer_size: the data's buffer size
@@ -1796,6 +1814,24 @@ ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
   aev->body.type = 0;
   
   return(aseq);
+}
+
+/**
+ * ags_lv2_plugin_atom_sequence_free:
+ * @atom_sequence: the atom sequence
+ *
+ * Free atom sequence.
+ *
+ * Since: 3.3.0
+ */
+void
+ags_lv2_plugin_atom_sequence_free(gpointer atom_sequence)
+{
+  if(atom_sequence == NULL){
+    return;
+  }
+  
+  free(atom_sequence);
 }
 
 /**

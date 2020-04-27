@@ -33,7 +33,7 @@ G_BEGIN_DECLS
 
 #define AGS_TYPE_FX_DSSI_CHANNEL                (ags_fx_dssi_channel_get_type())
 #define AGS_FX_DSSI_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FX_DSSI_CHANNEL, AgsFxDssiChannel))
-#define AGS_FX_DSSI_CHANNEL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FX_DSSI_CHANNEL, AgsFxDssiChannel))
+#define AGS_FX_DSSI_CHANNEL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FX_DSSI_CHANNEL, AgsFxDssiChannelClass))
 #define AGS_IS_FX_DSSI_CHANNEL(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_FX_DSSI_CHANNEL))
 #define AGS_IS_FX_DSSI_CHANNEL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FX_DSSI_CHANNEL))
 #define AGS_FX_DSSI_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_DSSI_CHANNEL, AgsFxDssiChannelClass))

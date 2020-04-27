@@ -356,7 +356,7 @@ ags_fx_lv2_audio_notify_buffer_size_callback(GObject *gobject,
 	      channel_data->input = (float *) g_realloc(channel_data->input,
 							input_port_count * buffer_size * sizeof(float));	    
 	    }
-	  }	  
+	  }
 	}
 	
 	if(!is_live_instrument){
@@ -1041,6 +1041,9 @@ ags_fx_lv2_audio_channel_data_alloc()
   channel_data->output = NULL;
   channel_data->input = NULL;
 
+  channel_data->event_port = NULL;
+  channel_data->atom_port = NULL;
+
   channel_data->lv2_handle = NULL;
 
   for(i = 0; i < AGS_SEQUENCER_MAX_MIDI_KEYS; i++){
@@ -1074,6 +1077,9 @@ ags_fx_lv2_audio_channel_data_free(AgsFxLv2AudioChannelData *channel_data)
   g_free(channel_data->output);
   g_free(channel_data->input);
 
+  ags_lv2_plugin_event_buffer_free(channel_data->event_port);
+  ags_lv2_plugin_atom_sequence_free(channel_data->atom_port);
+  
   if(channel_data->lv2_handle != NULL){
     gpointer plugin_descriptor;
     
@@ -1144,6 +1150,9 @@ ags_fx_lv2_audio_input_data_alloc()
   input_data->output = NULL;
   input_data->input = NULL;
 
+  input_data->event_port = NULL;
+  input_data->atom_port = NULL;
+
   input_data->lv2_handle = NULL;
 
   input_data->event_buffer = (snd_seq_event_t *) g_malloc(sizeof(snd_seq_event_t));
@@ -1172,6 +1181,9 @@ ags_fx_lv2_audio_input_data_free(AgsFxLv2AudioInputData *input_data)
 
   g_free(input_data->output);
   g_free(input_data->input);
+
+  ags_lv2_plugin_event_buffer_free(input_data->event_port);
+  ags_lv2_plugin_atom_sequence_free(input_data->atom_port);
 
   if(input_data->lv2_handle != NULL){
     gpointer plugin_descriptor;
@@ -1443,10 +1455,14 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
   guint audio_channels;
   guint output_port_count, input_port_count;
   guint control_port_count;
+  guint event_port;
+  guint atom_port;
   guint buffer_size;
   guint nth;
   guint i, j, k;
   gboolean is_live_instrument;
+  gboolean has_atom_port;
+  gboolean has_event_port;
   
   GRecMutex *recall_mutex;
 
@@ -1517,6 +1533,9 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
   output_port_count = 0;
   input_port_count = 0;
 
+  has_event_port = FALSE;
+  has_atom_port = FALSE;
+
   control_port_count = 0;
 
   is_live_instrument = ags_fx_lv2_audio_test_flags(fx_lv2_audio, AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT);
@@ -1555,6 +1574,14 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
 
 	output_port[output_port_count] = port_index;
 	output_port_count++;
+      }else if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_EVENT)){
+	has_event_port = TRUE;
+
+	event_port = port_index;
+      }else if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_ATOM)){
+	has_atom_port = TRUE;
+
+	atom_port = port_index;
       }
     }
 
@@ -1725,6 +1752,24 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
 					 input_port[nth],
 					 &(channel_data->input[nth]));
 	  }
+
+	  if(has_event_port){
+	    channel_data->event_port = ags_lv2_plugin_event_buffer_alloc(AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
+	    
+	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+					 channel_data->lv2_handle,
+					 event_port,
+					 channel_data->event_port);
+	  }
+
+	  if(has_atom_port){
+	    channel_data->atom_port = ags_lv2_plugin_alloc_atom_sequence(AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
+	    
+	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+					 channel_data->lv2_handle,
+					 atom_port,
+					 channel_data->atom_port);
+	  }
 	}
 
 	if(!is_live_instrument){	  
@@ -1759,6 +1804,24 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
 					   channel_data->lv2_handle,
 					   input_port[nth],
 					   &(channel_data->input[nth]));
+	    }
+
+	    if(has_event_port){
+	      input_data->event_port = ags_lv2_plugin_event_buffer_alloc(AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
+	    
+	      ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+					   input_data->lv2_handle,
+					   event_port,
+					   input_data->event_port);
+	    }
+
+	    if(has_atom_port){
+	      input_data->atom_port = ags_lv2_plugin_alloc_atom_sequence(AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
+	    
+	      ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+					   input_data->lv2_handle,
+					   atom_port,
+					   input_data->atom_port);
 	    }
 	  }
 	}

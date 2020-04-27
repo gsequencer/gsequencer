@@ -123,6 +123,7 @@ void ags_lv2_plugin_set_flags(AgsLv2Plugin *lv2_plugin, guint flags);
 void ags_lv2_plugin_unset_flags(AgsLv2Plugin *lv2_plugin, guint flags);
 
 LV2_Event_Buffer* ags_lv2_plugin_event_buffer_alloc(guint buffer_size);
+void ags_lv2_plugin_event_buffer_free(gpointer event_buffer);
 void ags_lv2_plugin_event_buffer_realloc_data(LV2_Event_Buffer *event_buffer,
 					      guint buffer_size);
 LV2_Event_Buffer* ags_lv2_plugin_event_buffer_concat(LV2_Event_Buffer *event_buffer, ...);
@@ -138,6 +139,7 @@ void ags_lv2_plugin_clear_event_buffer(gpointer event_buffer,
 				       guint buffer_size);
 
 gpointer ags_lv2_plugin_alloc_atom_sequence(guint sequence_size);
+void ags_lv2_plugin_atom_sequence_free(gpointer atom_sequence);
 
 gboolean ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
 						  guint sequence_size,

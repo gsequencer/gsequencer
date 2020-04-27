@@ -314,7 +314,7 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 	  
       g_rec_mutex_unlock(source_stream_mutex);
 
-      g_rec_mutex_lock(fx_dssi_audio_mutex);
+      g_rec_mutex_unlock(fx_dssi_audio_mutex);
     }else{
       AgsFxDssiAudioScopeData *scope_data;
       AgsFxDssiAudioChannelData *channel_data;
@@ -465,7 +465,7 @@ ags_fx_dssi_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_aud
 
     input_data->key_on -= 1;
       
-    g_rec_mutex_lock(fx_dssi_audio_mutex);
+    g_rec_mutex_unlock(fx_dssi_audio_mutex);
   }
   
   if(audio != NULL){
