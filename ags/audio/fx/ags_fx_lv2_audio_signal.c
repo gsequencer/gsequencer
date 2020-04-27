@@ -19,6 +19,16 @@
 
 #include <ags/audio/fx/ags_fx_lv2_audio_signal.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
+
+#include <ags/audio/fx/ags_fx_lv2_audio.h>
+#include <ags/audio/fx/ags_fx_lv2_audio_processor.h>
+#include <ags/audio/fx/ags_fx_lv2_channel.h>
+#include <ags/audio/fx/ags_fx_lv2_channel_processor.h>
+#include <ags/audio/fx/ags_fx_lv2_recycling.h>
+
+#include <ags/plugin/ags_base_plugin.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_lv2_audio_signal_class_init(AgsFxLv2AudioSignalClass *fx_lv2_audio_signal);
@@ -27,6 +37,20 @@ void ags_fx_lv2_audio_signal_dispose(GObject *gobject);
 void ags_fx_lv2_audio_signal_finalize(GObject *gobject);
 
 void ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall);
+
+void ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+					 AgsAudioSignal *source,
+					 AgsNote *note,
+					 guint x0, guint x1,
+					 guint y,
+					 gdouble delay_counter, guint64 offset_counter,
+					 guint frame_count,
+					 gdouble delay, guint buffer_size);
+void ags_fx_lv2_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+					   AgsAudioSignal *source,
+					   AgsNote *note,
+					   guint x0, guint x1,
+					   guint y);
 
 /**
  * SECTION:ags_fx_lv2_audio_signal
@@ -38,6 +62,7 @@ void ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall);
  * The #AgsFxLv2AudioSignal class provides ports to the effect processor.
  */
 
+static gpointer ags_fx_lv2_audio_signal_recall_audio_signal_class = NULL;
 static gpointer ags_fx_lv2_audio_signal_parent_class = NULL;
 
 static const gchar *ags_fx_lv2_audio_signal_plugin_name = "ags-fx-lv2";
@@ -79,6 +104,7 @@ ags_fx_lv2_audio_signal_class_init(AgsFxLv2AudioSignalClass *fx_lv2_audio_signal
   GObjectClass *gobject;
   AgsRecallClass *recall;
 
+  ags_fx_lv2_audio_signal_recall_audio_signal_class = g_type_class_peek(AGS_TYPE_RECALL_AUDIO_SIGNAL);
   ags_fx_lv2_audio_signal_parent_class = g_type_class_peek_parent(fx_lv2_audio_signal);
 
   /* GObjectClass */
@@ -127,8 +153,512 @@ ags_fx_lv2_audio_signal_finalize(GObject *gobject)
 void
 ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall)
 {
+  AgsAudioSignal *source;
+  AgsFxLv2Audio *fx_lv2_audio;
+  AgsFxLv2Channel *fx_lv2_channel;
+  AgsFxLv2ChannelProcessor *fx_lv2_channel_processor;
+  AgsFxLv2Recycling *fx_lv2_recycling;
+  AgsLv2Plugin *lv2_plugin;
+
+  guint sound_scope;
+  guint buffer_size;
+  guint format;
+  guint copy_mode_out, copy_mode_in;
+  
+  void (*run)(LV2_Handle instance,
+	      uint32_t sample_count);
+
+  GRecMutex *source_stream_mutex;
+  GRecMutex *fx_lv2_audio_mutex;
+  GRecMutex *fx_lv2_channel_mutex;
+  GRecMutex *base_plugin_mutex;
+
+  fx_lv2_channel = NULL;
+  fx_lv2_channel_processor = NULL;
+
+  fx_lv2_recycling = NULL;
+
+  source = NULL;
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  
+  sound_scope = ags_recall_get_sound_scope(recall);
+
+  g_object_get(recall,
+	       "parent", &fx_lv2_recycling,
+	       NULL);
+
+  g_object_get(fx_lv2_recycling,
+	       "parent", &fx_lv2_channel_processor,
+	       NULL);
+
+  g_object_get(fx_lv2_channel_processor,
+	       "recall-audio", &fx_lv2_audio,
+	       NULL);
+
+  /* get LV2 plugin */
+  fx_lv2_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_audio);
+
+  g_rec_mutex_lock(fx_lv2_audio_mutex);
+
+  lv2_plugin = fx_lv2_audio->lv2_plugin;
+  
+  g_rec_mutex_unlock(fx_lv2_audio_mutex);
+
+  if(lv2_plugin != NULL &&
+     ags_base_plugin_test_flags((AgsBasePlugin *) lv2_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    if(fx_lv2_audio != NULL){
+      g_object_unref(fx_lv2_audio);
+    }
+  
+    if(fx_lv2_channel_processor != NULL){
+      g_object_unref(fx_lv2_channel_processor);
+    }
+  
+    if(fx_lv2_recycling != NULL){
+      g_object_unref(fx_lv2_recycling);
+    }  
+    
+    /* call parent */
+    AGS_RECALL_CLASS(ags_fx_lv2_audio_signal_parent_class)->run_inter(recall);
+
+    return;
+  }
+
+  g_object_get(recall,
+	       "source", &source,
+	       NULL);
+
+  g_object_get(fx_lv2_channel_processor,
+	       "recall-channel", &fx_lv2_channel,
+	       NULL);
+  
+  g_object_get(source,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       NULL);
+
+  /* get LV2 plugin */
+  fx_lv2_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_channel);
+
+  g_rec_mutex_lock(fx_lv2_channel_mutex);
+
+  lv2_plugin = fx_lv2_channel->lv2_plugin;
+  
+  g_rec_mutex_unlock(fx_lv2_channel_mutex);
+
+  /* process data */
+  source_stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
+
+  g_rec_mutex_lock(base_plugin_mutex);
+
+  run = AGS_LV2_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor)->run;
+  
+  g_rec_mutex_unlock(base_plugin_mutex);
+
+  copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  
+  copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
+						     ags_audio_buffer_util_format_from_soundcard(format));
+
+  if(run != NULL){
+    AgsFxLv2ChannelInputData *input_data;
+
+    g_rec_mutex_lock(fx_lv2_channel_mutex);
+    
+    input_data = fx_lv2_channel->input_data[sound_scope];
+
+    if(input_data->output != NULL){
+      ags_audio_buffer_util_clear_float(input_data->output, fx_lv2_channel->output_port_count,
+					buffer_size);
+    }
+
+    if(input_data->input != NULL){
+      ags_audio_buffer_util_clear_float(input_data->input, fx_lv2_channel->input_port_count,
+					buffer_size);
+    }
+
+    g_rec_mutex_lock(source_stream_mutex);
+    
+    if(input_data->output != NULL &&
+       fx_lv2_channel->output_port_count >= 1 &&
+       source->stream_current != NULL){
+      ags_audio_buffer_util_copy_buffer_to_buffer(input_data->input, fx_lv2_channel->input_port_count, 0,
+						  source->stream_current->data, 1, 0,
+						  buffer_size, copy_mode_out);
+    }
+
+    run(input_data->lv2_handle,
+	(uint32_t) (fx_lv2_channel->output_port_count * buffer_size));
+
+    if(input_data->output != NULL &&
+       fx_lv2_channel->output_port_count >= 1 &&
+       source->stream_current != NULL){
+      //NOTE:JK: only mono input, additional channels discarded
+      ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+						  input_data->output, fx_lv2_channel->output_port_count, 0,
+						  buffer_size, copy_mode_out);
+    }
+    
+    g_rec_mutex_unlock(source_stream_mutex);
+    
+    g_rec_mutex_lock(fx_lv2_channel_mutex);
+  }
+  
+  /* unref */
+  if(source != NULL){
+    g_object_unref(source);
+  }
+
+  if(fx_lv2_audio != NULL){
+    g_object_unref(fx_lv2_audio);
+  }
+  
+  if(fx_lv2_channel != NULL){
+    g_object_unref(fx_lv2_channel);
+  }
+  
+  if(fx_lv2_channel_processor != NULL){
+    g_object_unref(fx_lv2_channel_processor);
+  }
+  
+  if(fx_lv2_recycling != NULL){
+    g_object_unref(fx_lv2_recycling);
+  }  
+  
   /* call parent */
-  AGS_RECALL_CLASS(ags_fx_lv2_audio_signal_parent_class)->run_inter(recall);
+  AGS_RECALL_CLASS(ags_fx_lv2_audio_signal_recall_audio_signal_class)->run_inter(recall);
+}
+
+void
+ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+				     AgsAudioSignal *source,
+				     AgsNote *note,
+				     guint x0, guint x1,
+				     guint y,
+				     gdouble delay_counter, guint64 offset_counter,
+				     guint frame_count,
+				     gdouble delay, guint buffer_size)
+{
+  AgsAudio *audio;
+  AgsFxLv2Audio *fx_lv2_audio;
+  AgsFxLv2AudioProcessor *fx_lv2_audio_processor;
+  AgsFxLv2ChannelProcessor *fx_lv2_channel_processor;
+  AgsFxLv2Recycling *fx_lv2_recycling;
+  AgsFxLv2AudioSignal *fx_lv2_audio_signal;
+  
+  AgsLv2Plugin *lv2_plugin;
+
+  guint sound_scope;
+  guint audio_channel;
+  guint audio_start_mapping;
+  guint midi_start_mapping;
+  gint midi_note;
+  guint format;
+  guint copy_mode_out;
+
+  void (*run)(LV2_Handle instance,
+	      uint32_t sample_count);
+  
+  GRecMutex *source_stream_mutex;
+  GRecMutex *fx_lv2_audio_mutex;
+  GRecMutex *base_plugin_mutex;
+
+  audio = NULL;
+  
+  fx_lv2_audio = NULL;
+  fx_lv2_audio_processor = NULL;
+  
+  fx_lv2_channel_processor = NULL;
+
+  fx_lv2_recycling = NULL;
+
+  sound_scope = ags_recall_get_sound_scope(fx_notation_audio_signal);
+
+  audio_channel = 0;
+  
+  audio_start_mapping = 0;
+  midi_start_mapping = 0;
+  
+  g_object_get(fx_notation_audio_signal,
+	       "parent", &fx_lv2_recycling,
+	       NULL);
+
+  g_object_get(fx_lv2_recycling,
+	       "parent", &fx_lv2_channel_processor,
+	       NULL);
+  
+  g_object_get(fx_lv2_channel_processor,
+	       "recall-audio", &fx_lv2_audio,
+	       "recall-audio-run", &fx_lv2_audio_processor,
+	       NULL);
+
+  g_object_get(fx_lv2_audio,
+	       "audio", &audio,
+	       NULL);
+
+  g_object_get(fx_lv2_audio_processor,
+	       "audio-channel", &audio_channel,
+	       NULL);
+  
+  g_object_get(source,
+	       "format", &format,
+	       NULL);
+
+  /* get LV2 plugin */
+  fx_lv2_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_audio);
+
+  g_rec_mutex_lock(fx_lv2_audio_mutex);
+
+  lv2_plugin = fx_lv2_audio->lv2_plugin;
+  
+  g_rec_mutex_unlock(fx_lv2_audio_mutex);
+
+  /* process data */
+  source_stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
+
+  g_rec_mutex_lock(base_plugin_mutex);
+
+  run = AGS_LV2_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor)->run;
+  
+  g_rec_mutex_unlock(base_plugin_mutex);
+
+  g_object_get(audio,
+	       "audio-start-mapping", &audio_start_mapping,
+	       "midi-start-mapping", &midi_start_mapping,
+	       NULL);
+
+  midi_note = (y - audio_start_mapping + midi_start_mapping);
+
+  copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
+
+  if(midi_note >= 0 &&
+     midi_note < 128){
+    if(delay_counter == 0.0 &&
+       x0 == offset_counter){
+      AgsFxLv2AudioScopeData *scope_data;
+      AgsFxLv2AudioChannelData *channel_data;
+      AgsFxLv2AudioInputData *input_data;
+
+      g_rec_mutex_lock(fx_lv2_audio_mutex);
+
+      scope_data = fx_lv2_audio->scope_data[sound_scope];
+
+      channel_data = scope_data->channel_data[audio_channel];
+
+      input_data = channel_data->input_data[midi_note];
+
+      input_data->key_on += 1;
+
+      g_rec_mutex_unlock(fx_lv2_audio_mutex);
+    }    
+    
+    if(ags_fx_lv2_audio_test_flags(fx_lv2_audio, AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT)){
+      AgsFxLv2AudioScopeData *scope_data;
+      AgsFxLv2AudioChannelData *channel_data;
+      
+      g_rec_mutex_lock(fx_lv2_audio_mutex);
+
+      scope_data = fx_lv2_audio->scope_data[sound_scope];
+
+      channel_data = scope_data->channel_data[audio_channel];
+      
+      if(channel_data->output != NULL){
+	ags_audio_buffer_util_clear_float(channel_data->output, fx_lv2_audio->output_port_count,
+					  buffer_size);
+      }
+
+      if(run != NULL){
+	run(channel_data->lv2_handle,
+	    (uint32_t) (fx_lv2_audio->output_port_count * buffer_size));
+      }
+
+      g_rec_mutex_lock(source_stream_mutex);
+
+      if(channel_data->output != NULL &&
+	 fx_lv2_audio->output_port_count >= 1 &&
+	 source->stream_current != NULL){
+	//NOTE:JK: only mono input, additional channels discarded
+	ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+						    channel_data->output, fx_lv2_audio->output_port_count, 0,
+						    buffer_size, copy_mode_out);
+      }
+	  
+      g_rec_mutex_unlock(source_stream_mutex);
+
+      g_rec_mutex_lock(fx_lv2_audio_mutex);
+    }else{
+      AgsFxLv2AudioScopeData *scope_data;
+      AgsFxLv2AudioChannelData *channel_data;
+      AgsFxLv2AudioInputData *input_data;
+
+      g_rec_mutex_lock(fx_lv2_audio_mutex);
+
+      scope_data = fx_lv2_audio->scope_data[sound_scope];
+
+      channel_data = scope_data->channel_data[audio_channel];
+
+      input_data = channel_data->input_data[midi_note];
+      
+      if(input_data->output != NULL){
+	ags_audio_buffer_util_clear_float(input_data->output, fx_lv2_audio->output_port_count,
+					  buffer_size);
+      }
+
+      if(run != NULL){
+	run(input_data->lv2_handle,
+	    (uint32_t) (fx_lv2_audio->output_port_count * buffer_size));
+      }
+      
+      g_rec_mutex_lock(source_stream_mutex);
+
+      if(input_data->output != NULL &&
+	 fx_lv2_audio->output_port_count >= 1 &&
+	 source->stream_current != NULL){
+	//NOTE:JK: only mono input, additional channels discarded
+	ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+						    input_data->output, fx_lv2_audio->output_port_count, 0,
+						    buffer_size, copy_mode_out);
+      }
+	  
+      g_rec_mutex_unlock(source_stream_mutex);
+
+      g_rec_mutex_unlock(fx_lv2_audio_mutex);
+    }
+  }
+  
+  /* unref */
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+  
+  if(fx_lv2_audio != NULL){
+    g_object_unref(fx_lv2_audio);
+  }
+
+  if(fx_lv2_audio_processor != NULL){
+    g_object_unref(fx_lv2_audio_processor);
+  }
+  
+  if(fx_lv2_channel_processor != NULL){
+    g_object_unref(fx_lv2_channel_processor);
+  }
+  
+  if(fx_lv2_recycling != NULL){
+    g_object_unref(fx_lv2_recycling);
+  }
+}
+
+void
+ags_fx_lv2_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+				       AgsAudioSignal *source,
+				       AgsNote *note,
+				       guint x0, guint x1,
+				       guint y)
+{
+  AgsAudio *audio;
+  AgsFxLv2Audio *fx_lv2_audio;
+  AgsFxLv2AudioProcessor *fx_lv2_audio_processor;
+  AgsFxLv2ChannelProcessor *fx_lv2_channel_processor;
+  AgsFxLv2Recycling *fx_lv2_recycling;
+
+  guint sound_scope;
+  guint audio_channel;
+  guint audio_start_mapping;
+  guint midi_start_mapping;
+  gint midi_note;
+
+  GRecMutex *fx_lv2_audio_mutex;
+
+  audio = NULL;
+  
+  fx_lv2_audio = NULL;
+  fx_lv2_audio_processor = NULL;
+
+  fx_lv2_channel_processor = NULL;
+
+  fx_lv2_recycling = NULL;
+
+  sound_scope = ags_recall_get_sound_scope(fx_notation_audio_signal);
+
+  audio_channel = 0;
+
+  audio_start_mapping = 0;
+  midi_start_mapping = 0;
+
+  g_object_get(fx_notation_audio_signal,
+	       "parent", &fx_lv2_recycling,
+	       NULL);
+
+  g_object_get(fx_lv2_recycling,
+	       "parent", &fx_lv2_channel_processor,
+	       NULL);
+  
+  g_object_get(fx_lv2_channel_processor,
+	       "recall-audio", &fx_lv2_audio,
+	       "recall-audio-run", &fx_lv2_audio_processor,
+	       NULL);
+
+  g_object_get(fx_lv2_audio,
+	       "audio", &audio,
+	       NULL);
+
+  g_object_get(fx_lv2_audio_processor,
+	       "audio-channel", &audio_channel,
+	       NULL);
+
+  g_object_get(audio,
+	       "audio-start-mapping", &audio_start_mapping,
+	       "midi-start-mapping", &midi_start_mapping,
+	       NULL);
+
+  fx_lv2_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_audio);
+
+  midi_note = (y - audio_start_mapping + midi_start_mapping);
+
+  if(midi_note >= 0 &&
+     midi_note < 128){
+    AgsFxLv2AudioScopeData *scope_data;
+    AgsFxLv2AudioChannelData *channel_data;
+    AgsFxLv2AudioInputData *input_data;
+
+    g_rec_mutex_lock(fx_lv2_audio_mutex);
+      
+    scope_data = fx_lv2_audio->scope_data[sound_scope];
+
+    channel_data = scope_data->channel_data[audio_channel];
+
+    input_data = channel_data->input_data[midi_note];
+
+    input_data->key_on -= 1;
+      
+    g_rec_mutex_lock(fx_lv2_audio_mutex);
+  }
+  
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+  
+  if(fx_lv2_audio != NULL){
+    g_object_unref(fx_lv2_audio);
+  }
+
+  if(fx_lv2_audio_processor != NULL){
+    g_object_unref(fx_lv2_audio_processor);
+  }
+  
+  if(fx_lv2_channel_processor != NULL){
+    g_object_unref(fx_lv2_channel_processor);
+  }
+  
+  if(fx_lv2_recycling != NULL){
+    g_object_unref(fx_lv2_recycling);
+  }
 }
 
 /**
