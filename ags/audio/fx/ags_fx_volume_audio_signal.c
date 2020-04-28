@@ -19,7 +19,11 @@
 
 #include <ags/audio/fx/ags_fx_volume_audio_signal.h>
 
-#include <ags/audio/fx/ags_fx_volume_audio_processor.h>
+#include <ags/audio/ags_port.h>
+#include <ags/audio/ags_audio_buffer_util.h>
+
+#include <ags/audio/fx/ags_fx_volume_audio.h>
+#include <ags/audio/fx/ags_fx_volume_channel.h>
 #include <ags/audio/fx/ags_fx_volume_channel_processor.h>
 #include <ags/audio/fx/ags_fx_volume_recycling.h>
 
@@ -131,7 +135,163 @@ ags_fx_volume_audio_signal_finalize(GObject *gobject)
 void
 ags_fx_volume_audio_signal_real_run_inter(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  AgsAudioSignal *source;
+  AgsFxVolumeAudio *fx_volume_audio;
+  AgsFxVolumeChannel *fx_volume_channel;
+  AgsFxVolumeChannelProcessor *fx_volume_channel_processor;
+  AgsFxVolumeRecycling *fx_volume_recycling;
+  
+  guint buffer_size;
+  guint format;
+  gdouble volume;
+  gboolean muted;
+
+  GRecMutex *stream_mutex;
+  
+  source = NULL;
+
+  fx_volume_audio = NULL;
+  fx_volume_channel = NULL;
+  fx_volume_channel_processor = NULL;
+  fx_volume_recycling = NULL;
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  
+  volume = 1.0;
+  
+  muted = FALSE;
+
+  g_object_get(recall,
+	       "parent", &fx_volume_recycling,
+	       "source", &source,
+	       NULL);
+
+  g_object_get(fx_volume_recycling,
+	       "parent", &fx_volume_channel_processor,
+	       NULL);
+
+  g_object_get(fx_volume_channel_processor,
+	       "recall-audio", &fx_volume_audio,
+	       "recall-channel", &fx_volume_channel,
+	       NULL);
+
+  g_object_get(source,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       NULL);
+  
+  if(fx_volume_audio != NULL){
+    AgsPort *port;
+
+    GValue value = {0,};
+    
+    /* muted */    
+    g_object_get(fx_volume_audio,
+		 "muted", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != (gfloat) FALSE){
+	muted = TRUE;
+      }
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+  }
+
+  if(!muted &&
+     fx_volume_channel != NULL){
+    AgsPort *port;
+
+    GValue value = {0,};
+        
+    /* muted */    
+    g_object_get(fx_volume_channel,
+		 "muted", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != (gfloat) FALSE){
+	muted = TRUE;
+      }
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* volume */
+    if(!muted){
+      g_object_get(fx_volume_channel,
+		   "volume", &port,
+		   NULL);
+
+      g_value_init(&value, G_TYPE_FLOAT);
+    
+      if(port != NULL){      
+	ags_port_safe_read(port,
+			   &value);
+
+	volume = g_value_get_float(&value);
+      
+	g_object_unref(port);
+      }
+
+      g_value_unset(&value);
+    }
+  }
+  
+  if(source != NULL){
+    stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
+    
+    g_rec_mutex_lock(stream_mutex);
+
+    if(!muted){
+      ags_audio_buffer_util_volume(source->stream_current->data, 1,
+				   ags_audio_buffer_util_format_from_soundcard(format),
+				   buffer_size,
+				   volume);
+    }else{
+      ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
+					 ags_audio_buffer_util_format_from_soundcard(format),
+					 buffer_size);
+    }
+    
+    g_rec_mutex_unlock(stream_mutex);
+  }
+  
+  if(source != NULL){
+    g_object_unref(source);
+  }
+  
+  if(fx_volume_audio != NULL){
+    g_object_unref(fx_volume_audio);
+  }
+  
+  if(fx_volume_channel != NULL){
+    g_object_unref(fx_volume_channel);
+  }
+
+  if(fx_volume_channel_processor != NULL){
+    g_object_unref(fx_volume_channel_processor);
+  }
+
+  if(fx_volume_recycling != NULL){
+    g_object_unref(fx_volume_recycling);
+  }
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_volume_audio_signal_parent_class)->run_inter(recall);
