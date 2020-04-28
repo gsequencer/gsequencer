@@ -43,6 +43,8 @@ typedef struct _AgsFxVolumeAudioClass AgsFxVolumeAudioClass;
 struct _AgsFxVolumeAudio
 {
   AgsRecallAudio recall_audio;
+
+  AgsPort *muted;
 };
 
 struct _AgsFxVolumeAudioClass

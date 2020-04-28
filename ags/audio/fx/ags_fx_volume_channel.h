@@ -43,6 +43,9 @@ typedef struct _AgsFxVolumeChannelClass AgsFxVolumeChannelClass;
 struct _AgsFxVolumeChannel
 {
   AgsRecallChannel recall_channel;
+
+  AgsPort *muted;
+  AgsPort *volume;
 };
 
 struct _AgsFxVolumeChannelClass
