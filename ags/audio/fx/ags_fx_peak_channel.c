@@ -23,8 +23,20 @@
 
 void ags_fx_peak_channel_class_init(AgsFxPeakChannelClass *fx_peak_channel);
 void ags_fx_peak_channel_init(AgsFxPeakChannel *fx_peak_channel);
+void ags_fx_peak_channel_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec);
+void ags_fx_peak_channel_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec);
 void ags_fx_peak_channel_dispose(GObject *gobject);
 void ags_fx_peak_channel_finalize(GObject *gobject);
+
+void ags_fx_peak_channel_notify_buffer_size_callback(GObject *gobject,
+						     GParamSpec *pspec,
+						     gpointer user_data);
 
 /**
  * SECTION:ags_fx_peak_channel
@@ -39,6 +51,22 @@ void ags_fx_peak_channel_finalize(GObject *gobject);
 static gpointer ags_fx_peak_channel_parent_class = NULL;
 
 static const gchar *ags_fx_peak_channel_plugin_name = "ags-fx-peak";
+
+
+static const gchar *ags_fx_peak_channel_specifier[] = {
+  "./peak[0]",
+  NULL,
+};
+
+static const gchar *ags_fx_peak_channel_control_port[] = {
+  "1/1",
+  NULL,
+};
+
+enum{
+  PROP_0,
+  PROP_PEAK,
+};
 
 GType
 ags_fx_peak_channel_get_type()
@@ -75,23 +103,154 @@ void
 ags_fx_peak_channel_class_init(AgsFxPeakChannelClass *fx_peak_channel)
 {
   GObjectClass *gobject;
+  
+  GParamSpec *param_spec;
 
   ags_fx_peak_channel_parent_class = g_type_class_peek_parent(fx_peak_channel);
 
   /* GObjectClass */
   gobject = (GObjectClass *) fx_peak_channel;
 
+  gobject->set_property = ags_fx_peak_channel_set_property;
+  gobject->get_property = ags_fx_peak_channel_get_property;
+
   gobject->dispose = ags_fx_peak_channel_dispose;
   gobject->finalize = ags_fx_peak_channel_finalize;
+
+  /* properties */
+  /**
+   * AgsFxPeakChannel:peak:
+   *
+   * The beats per minute.
+   * 
+   * Since: 3.3.0
+   */
+  param_spec = g_param_spec_object("peak",
+				   i18n_pspec("peak of recall"),
+				   i18n_pspec("The recall's peak"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PEAK,
+				  param_spec);
 }
 
 void
 ags_fx_peak_channel_init(AgsFxPeakChannel *fx_peak_channel)
 {
+  guint i;
+  
+  g_signal_connect(fx_peak_channel, "notify::buffer-size",
+		   G_CALLBACK(ags_fx_peak_channel_notify_buffer_size_callback), NULL);
+
   AGS_RECALL(fx_peak_channel)->name = "ags-fx-peak";
   AGS_RECALL(fx_peak_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_peak_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_peak_channel)->xml_type = "ags-fx-peak-channel";
+
+  /* peak */
+  fx_peak_channel->peak = g_object_new(AGS_TYPE_PORT,
+				       "plugin-name", ags_fx_peak_channel_plugin_name,
+				       "specifier", ags_fx_peak_channel_specifier[0],
+				       "control-port", ags_fx_peak_channel_control_port[0],
+				       "port-value-is-pointer", FALSE,
+				       "port-value-type", G_TYPE_FLOAT,
+				       "port-value-size", sizeof(gfloat),
+				       "port-value-length", 1,
+				       NULL);
+  g_object_ref(fx_peak_channel->peak);
+  
+  fx_peak_channel->peak->port_value.ags_port_float = (gfloat) FALSE;
+
+  ags_recall_add_port((AgsRecall *) fx_peak_channel,
+		      fx_peak_channel->peak);
+
+  /* input data */
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    fx_peak_channel->input_data[i] = ags_fx_peak_channel_input_data_alloc();
+      
+    fx_peak_channel->input_data[i]->parent = fx_peak_channel;
+  }
+}
+
+void
+ags_fx_peak_channel_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec)
+{
+  AgsFxPeakChannel *fx_peak_channel;
+
+  GRecMutex *recall_mutex;
+
+  fx_peak_channel = AGS_FX_PEAK_CHANNEL(gobject);
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_peak_channel);
+
+  switch(prop_id){
+  case PROP_PEAK:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_peak_channel->peak){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_peak_channel->peak != NULL){
+      g_object_unref(G_OBJECT(fx_peak_channel->peak));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_peak_channel->peak = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }  
+}
+
+void
+ags_fx_peak_channel_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec)
+{
+  AgsFxPeakChannel *fx_peak_channel;
+
+  GRecMutex *recall_mutex;
+
+  fx_peak_channel = AGS_FX_PEAK_CHANNEL(gobject);
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_peak_channel);
+
+  switch(prop_id){
+  case PROP_PEAK:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_peak_channel->peak);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -100,6 +259,13 @@ ags_fx_peak_channel_dispose(GObject *gobject)
   AgsFxPeakChannel *fx_peak_channel;
   
   fx_peak_channel = AGS_FX_PEAK_CHANNEL(gobject);
+
+  /* peak */
+  if(fx_peak_channel->peak != NULL){
+    g_object_unref(G_OBJECT(fx_peak_channel->peak));
+
+    fx_peak_channel->peak = NULL;
+  }  
   
   /* call parent */
   G_OBJECT_CLASS(ags_fx_peak_channel_parent_class)->dispose(gobject);
@@ -112,8 +278,99 @@ ags_fx_peak_channel_finalize(GObject *gobject)
   
   fx_peak_channel = AGS_FX_PEAK_CHANNEL(gobject);
 
+  /* peak */
+  if(fx_peak_channel->peak != NULL){
+    g_object_unref(G_OBJECT(fx_peak_channel->peak));
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_fx_peak_channel_parent_class)->finalize(gobject);
+}
+
+void
+ags_fx_peak_channel_notify_buffer_size_callback(GObject *gobject,
+					       GParamSpec *pspec,
+					       gpointer user_data)
+{
+  AgsFxPeakChannel *fx_peak_channel;
+
+  guint buffer_size;
+  guint i;
+  
+  GRecMutex *recall_mutex;
+  
+  fx_peak_channel = AGS_FX_PEAK_CHANNEL(gobject);
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_peak_channel);
+
+  /* get buffer size */
+  g_object_get(fx_peak_channel,
+	       "buffer-size", &buffer_size,
+	       NULL);
+  
+  /* reallocate buffer - apply buffer size */
+  g_rec_mutex_lock(recall_mutex);
+
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    AgsFxPeakChannelInputData *input_data;
+
+    input_data = fx_peak_channel->input_data[i];
+
+    if(buffer_size > 0){
+      if(input_data->buffer == NULL){
+	input_data->buffer = (float *) g_malloc(buffer_size * sizeof(float));
+      }else{
+	input_data->buffer = (float *) g_realloc(input_data->buffer,
+						 buffer_size * sizeof(float));	    
+      }
+    }
+  }
+  
+  g_rec_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_fx_peak_channel_input_data_alloc:
+ * 
+ * Allocate #AgsFxPeakChannelInputData-struct
+ * 
+ * Returns: the new #AgsFxPeakChannelInputData-struct
+ * 
+ * Since: 3.3.0
+ */
+AgsFxPeakChannelInputData*
+ags_fx_peak_channel_input_data_alloc()
+{
+  AgsFxPeakChannelInputData *input_data;
+
+  input_data = (AgsFxPeakChannelInputData *) g_malloc(sizeof(AgsFxPeakChannelInputData));
+
+  input_data->parent = NULL;
+
+  input_data->buffer = NULL;
+
+  return(input_data);
+}
+
+/**
+ * ags_fx_peak_channel_input_data_free:
+ * @input_data: the #AgsFxPeakChannelInputData-struct
+ * 
+ * Free @input_data.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_fx_peak_channel_input_data_free(AgsFxPeakChannelInputData *input_data)
+{
+  if(input_data == NULL){
+    return;
+  }
+
+  ags_stream_free(input_data->buffer);
+  
+  g_free(input_data);
 }
 
 /**

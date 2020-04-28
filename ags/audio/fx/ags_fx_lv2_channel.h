@@ -93,7 +93,7 @@ void ags_fx_lv2_channel_input_data_free(AgsFxLv2ChannelInputData *input_data);
 void ags_fx_lv2_channel_load_plugin(AgsFxLv2Channel *fx_lv2_channel);
 void ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel);
 
-/*  */
+/* instantiate */
 AgsFxLv2Channel* ags_fx_lv2_channel_new(AgsChannel *channel);
 
 G_END_DECLS

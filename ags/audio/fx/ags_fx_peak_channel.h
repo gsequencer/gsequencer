@@ -38,11 +38,16 @@ G_BEGIN_DECLS
 #define AGS_FX_PEAK_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_PEAK_CHANNEL, AgsFxPeakChannelClass))
 
 typedef struct _AgsFxPeakChannel AgsFxPeakChannel;
+typedef struct _AgsFxPeakChannelInputData AgsFxPeakChannelInputData;
 typedef struct _AgsFxPeakChannelClass AgsFxPeakChannelClass;
 
 struct _AgsFxPeakChannel
 {
   AgsRecallChannel recall_channel;
+
+  AgsFxPeakChannelInputData* input_data[AGS_SOUND_SCOPE_LAST];
+
+  AgsPort *peak;
 };
 
 struct _AgsFxPeakChannelClass
@@ -50,9 +55,20 @@ struct _AgsFxPeakChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
+struct _AgsFxPeakChannelInputData
+{
+  gpointer parent;
+
+  void *buffer;
+};
+
 GType ags_fx_peak_channel_get_type();
 
-/*  */
+/* runtime */
+AgsFxPeakChannelInputData* ags_fx_peak_channel_input_data_alloc();
+void ags_fx_peak_channel_input_data_free(AgsFxPeakChannelInputData *input_data);
+
+/* instantiate */
 AgsFxPeakChannel* ags_fx_peak_channel_new(AgsChannel *channel);
 
 G_END_DECLS
