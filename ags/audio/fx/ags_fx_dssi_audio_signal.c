@@ -505,7 +505,7 @@ ags_fx_dssi_audio_signal_new(AgsAudioSignal *audio_signal)
   AgsFxDssiAudioSignal *fx_dssi_audio_signal;
 
   fx_dssi_audio_signal = (AgsFxDssiAudioSignal *) g_object_new(AGS_TYPE_FX_DSSI_AUDIO_SIGNAL,
-							       "audio-signal", audio_signal,
+							       "source", audio_signal,
 							       NULL);
 
   return(fx_dssi_audio_signal);

@@ -136,7 +136,7 @@ ags_fx_buffer_recycling_new(AgsRecycling *recycling)
   AgsFxBufferRecycling *fx_buffer_recycling;
 
   fx_buffer_recycling = (AgsFxBufferRecycling *) g_object_new(AGS_TYPE_FX_BUFFER_RECYCLING,
-							      "recycling", recycling,
+							      "source", recycling,
 							      NULL);
 
   return(fx_buffer_recycling);

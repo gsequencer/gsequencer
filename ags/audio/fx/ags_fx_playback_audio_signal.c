@@ -262,7 +262,7 @@ ags_fx_playback_audio_signal_new(AgsAudioSignal *audio_signal)
   AgsFxPlaybackAudioSignal *fx_playback_audio_signal;
 
   fx_playback_audio_signal = (AgsFxPlaybackAudioSignal *) g_object_new(AGS_TYPE_FX_PLAYBACK_AUDIO_SIGNAL,
-								       "audio-signal", audio_signal,
+								       "source", audio_signal,
 								       NULL);
 
   return(fx_playback_audio_signal);

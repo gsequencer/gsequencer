@@ -700,7 +700,7 @@ ags_fx_lv2_audio_signal_new(AgsAudioSignal *audio_signal)
   AgsFxLv2AudioSignal *fx_lv2_audio_signal;
 
   fx_lv2_audio_signal = (AgsFxLv2AudioSignal *) g_object_new(AGS_TYPE_FX_LV2_AUDIO_SIGNAL,
-							     "audio-signal", audio_signal,
+							     "source", audio_signal,
 							     NULL);
 
   return(fx_lv2_audio_signal);

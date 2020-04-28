@@ -289,7 +289,7 @@ ags_fx_ladspa_audio_signal_new(AgsAudioSignal *audio_signal)
   AgsFxLadspaAudioSignal *fx_ladspa_audio_signal;
 
   fx_ladspa_audio_signal = (AgsFxLadspaAudioSignal *) g_object_new(AGS_TYPE_FX_LADSPA_AUDIO_SIGNAL,
-								   "audio-signal", audio_signal,
+								   "source", audio_signal,
 								   NULL);
 
   return(fx_ladspa_audio_signal);

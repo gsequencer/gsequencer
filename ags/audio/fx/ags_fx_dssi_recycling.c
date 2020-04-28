@@ -136,7 +136,7 @@ ags_fx_dssi_recycling_new(AgsRecycling *recycling)
   AgsFxDssiRecycling *fx_dssi_recycling;
 
   fx_dssi_recycling = (AgsFxDssiRecycling *) g_object_new(AGS_TYPE_FX_DSSI_RECYCLING,
-							  "recycling", recycling,
+							  "source", recycling,
 							  NULL);
 
   return(fx_dssi_recycling);

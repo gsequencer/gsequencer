@@ -421,7 +421,7 @@ ags_fx_pattern_audio_signal_new(AgsAudioSignal *audio_signal)
   AgsFxPatternAudioSignal *fx_pattern_audio_signal;
 
   fx_pattern_audio_signal = (AgsFxPatternAudioSignal *) g_object_new(AGS_TYPE_FX_PATTERN_AUDIO_SIGNAL,
-								     "audio-signal", audio_signal,
+								     "source", audio_signal,
 								     NULL);
 
   return(fx_pattern_audio_signal);

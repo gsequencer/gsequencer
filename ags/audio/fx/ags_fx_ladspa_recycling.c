@@ -136,7 +136,7 @@ ags_fx_ladspa_recycling_new(AgsRecycling *recycling)
   AgsFxLadspaRecycling *fx_ladspa_recycling;
 
   fx_ladspa_recycling = (AgsFxLadspaRecycling *) g_object_new(AGS_TYPE_FX_LADSPA_RECYCLING,
-							      "recycling", recycling,
+							      "source", recycling,
 							      NULL);
 
   return(fx_ladspa_recycling);

@@ -136,7 +136,7 @@ ags_fx_pattern_recycling_new(AgsRecycling *recycling)
   AgsFxPatternRecycling *fx_pattern_recycling;
 
   fx_pattern_recycling = (AgsFxPatternRecycling *) g_object_new(AGS_TYPE_FX_PATTERN_RECYCLING,
-								"recycling", recycling,
+								"source", recycling,
 								NULL);
 
   return(fx_pattern_recycling);

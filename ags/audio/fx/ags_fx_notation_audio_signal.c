@@ -396,7 +396,7 @@ ags_fx_notation_audio_signal_new(AgsAudioSignal *audio_signal)
   AgsFxNotationAudioSignal *fx_notation_audio_signal;
 
   fx_notation_audio_signal = (AgsFxNotationAudioSignal *) g_object_new(AGS_TYPE_FX_NOTATION_AUDIO_SIGNAL,
-								       "audio-signal", audio_signal,
+								       "source", audio_signal,
 								       NULL);
 
   return(fx_notation_audio_signal);

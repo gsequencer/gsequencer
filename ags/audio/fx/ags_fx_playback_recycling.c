@@ -278,7 +278,7 @@ ags_fx_playback_recycling_new(AgsRecycling *recycling)
   AgsFxPlaybackRecycling *fx_playback_recycling;
 
   fx_playback_recycling = (AgsFxPlaybackRecycling *) g_object_new(AGS_TYPE_FX_PLAYBACK_RECYCLING,
-								  "recycling", recycling,
+								  "source", recycling,
 								  NULL);
 
   return(fx_playback_recycling);

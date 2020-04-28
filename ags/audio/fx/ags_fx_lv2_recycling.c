@@ -136,7 +136,7 @@ ags_fx_lv2_recycling_new(AgsRecycling *recycling)
   AgsFxLv2Recycling *fx_lv2_recycling;
 
   fx_lv2_recycling = (AgsFxLv2Recycling *) g_object_new(AGS_TYPE_FX_LV2_RECYCLING,
-							"recycling", recycling,
+							"source", recycling,
 							NULL);
 
   return(fx_lv2_recycling);

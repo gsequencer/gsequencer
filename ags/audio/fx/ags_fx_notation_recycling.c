@@ -136,7 +136,7 @@ ags_fx_notation_recycling_new(AgsRecycling *recycling)
   AgsFxNotationRecycling *fx_notation_recycling;
 
   fx_notation_recycling = (AgsFxNotationRecycling *) g_object_new(AGS_TYPE_FX_NOTATION_RECYCLING,
-								  "recycling", recycling,
+								  "source", recycling,
 								  NULL);
 
   return(fx_notation_recycling);

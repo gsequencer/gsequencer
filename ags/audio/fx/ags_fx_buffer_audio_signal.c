@@ -454,7 +454,7 @@ ags_fx_buffer_audio_signal_new(AgsAudioSignal *audio_signal)
   AgsFxBufferAudioSignal *fx_buffer_audio_signal;
 
   fx_buffer_audio_signal = (AgsFxBufferAudioSignal *) g_object_new(AGS_TYPE_FX_BUFFER_AUDIO_SIGNAL,
-								   "audio-signal", audio_signal,
+								   "source", audio_signal,
 								   NULL);
 
   return(fx_buffer_audio_signal);

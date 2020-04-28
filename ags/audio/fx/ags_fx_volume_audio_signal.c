@@ -155,7 +155,7 @@ ags_fx_volume_audio_signal_new(AgsAudioSignal *audio_signal)
   AgsFxVolumeAudioSignal *fx_volume_audio_signal;
 
   fx_volume_audio_signal = (AgsFxVolumeAudioSignal *) g_object_new(AGS_TYPE_FX_VOLUME_AUDIO_SIGNAL,
-								   "audio-signal", audio_signal,
+								   "source", audio_signal,
 								   NULL);
 
   return(fx_volume_audio_signal);

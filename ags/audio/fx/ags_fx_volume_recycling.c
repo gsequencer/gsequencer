@@ -136,7 +136,7 @@ ags_fx_volume_recycling_new(AgsRecycling *recycling)
   AgsFxVolumeRecycling *fx_volume_recycling;
 
   fx_volume_recycling = (AgsFxVolumeRecycling *) g_object_new(AGS_TYPE_FX_VOLUME_RECYCLING,
-							      "recycling", recycling,
+							      "source", recycling,
 							      NULL);
 
   return(fx_volume_recycling);
