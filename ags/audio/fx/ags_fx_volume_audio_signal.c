@@ -19,8 +19,6 @@
 
 #include <ags/audio/fx/ags_fx_volume_audio_signal.h>
 
-#include <ags/audio/ags_audio_volume_util.h>
-
 #include <ags/audio/fx/ags_fx_volume_audio_processor.h>
 #include <ags/audio/fx/ags_fx_volume_channel_processor.h>
 #include <ags/audio/fx/ags_fx_volume_recycling.h>

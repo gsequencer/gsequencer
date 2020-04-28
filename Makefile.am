@@ -1590,6 +1590,30 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_buffer_channel_processor.h \
 	ags/audio/fx/ags_fx_buffer_recycling.h \
 	ags/audio/fx/ags_fx_buffer_audio_signal.h \
+	ags/audio/fx/ags_fx_volume_audio.h \
+	ags/audio/fx/ags_fx_volume_audio_processor.h \
+	ags/audio/fx/ags_fx_volume_channel.h \
+	ags/audio/fx/ags_fx_volume_channel_processor.h \
+	ags/audio/fx/ags_fx_volume_recycling.h \
+	ags/audio/fx/ags_fx_volume_audio_signal.h \
+	ags/audio/fx/ags_fx_peak_audio.h \
+	ags/audio/fx/ags_fx_peak_audio_processor.h \
+	ags/audio/fx/ags_fx_peak_channel.h \
+	ags/audio/fx/ags_fx_peak_channel_processor.h \
+	ags/audio/fx/ags_fx_peak_recycling.h \
+	ags/audio/fx/ags_fx_peak_audio_signal.h \
+	ags/audio/fx/ags_fx_envelope_audio.h \
+	ags/audio/fx/ags_fx_envelope_audio_processor.h \
+	ags/audio/fx/ags_fx_envelope_channel.h \
+	ags/audio/fx/ags_fx_envelope_channel_processor.h \
+	ags/audio/fx/ags_fx_envelope_recycling.h \
+	ags/audio/fx/ags_fx_envelope_audio_signal.h \
+	ags/audio/fx/ags_fx_analyse_audio.h \
+	ags/audio/fx/ags_fx_analyse_audio_processor.h \
+	ags/audio/fx/ags_fx_analyse_channel.h \
+	ags/audio/fx/ags_fx_analyse_channel_processor.h \
+	ags/audio/fx/ags_fx_analyse_recycling.h \
+	ags/audio/fx/ags_fx_analyse_audio_signal.h \
 	ags/audio/fx/ags_fx_pattern_audio.h \
 	ags/audio/fx/ags_fx_pattern_audio_processor.h \
 	ags/audio/fx/ags_fx_pattern_channel.h \
@@ -1637,6 +1661,30 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_buffer_channel_processor.c \
 	ags/audio/fx/ags_fx_buffer_recycling.c \
 	ags/audio/fx/ags_fx_buffer_audio_signal.c \
+	ags/audio/fx/ags_fx_volume_audio.c \
+	ags/audio/fx/ags_fx_volume_audio_processor.c \
+	ags/audio/fx/ags_fx_volume_channel.c \
+	ags/audio/fx/ags_fx_volume_channel_processor.c \
+	ags/audio/fx/ags_fx_volume_recycling.c \
+	ags/audio/fx/ags_fx_volume_audio_signal.c \
+	ags/audio/fx/ags_fx_peak_audio.c \
+	ags/audio/fx/ags_fx_peak_audio_processor.c \
+	ags/audio/fx/ags_fx_peak_channel.c \
+	ags/audio/fx/ags_fx_peak_channel_processor.c \
+	ags/audio/fx/ags_fx_peak_recycling.c \
+	ags/audio/fx/ags_fx_peak_audio_signal.c \
+	ags/audio/fx/ags_fx_envelope_audio.c \
+	ags/audio/fx/ags_fx_envelope_audio_processor.c \
+	ags/audio/fx/ags_fx_envelope_channel.c \
+	ags/audio/fx/ags_fx_envelope_channel_processor.c \
+	ags/audio/fx/ags_fx_envelope_recycling.c \
+	ags/audio/fx/ags_fx_envelope_audio_signal.c \
+	ags/audio/fx/ags_fx_analyse_audio.c \
+	ags/audio/fx/ags_fx_analyse_audio_processor.c \
+	ags/audio/fx/ags_fx_analyse_channel.c \
+	ags/audio/fx/ags_fx_analyse_channel_processor.c \
+	ags/audio/fx/ags_fx_analyse_recycling.c \
+	ags/audio/fx/ags_fx_analyse_audio_signal.c \
 	ags/audio/fx/ags_fx_pattern_audio.c \
 	ags/audio/fx/ags_fx_pattern_audio_processor.c \
 	ags/audio/fx/ags_fx_pattern_channel.c \

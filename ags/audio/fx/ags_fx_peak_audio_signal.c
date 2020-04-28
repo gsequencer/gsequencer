@@ -19,8 +19,6 @@
 
 #include <ags/audio/fx/ags_fx_peak_audio_signal.h>
 
-#include <ags/audio/ags_audio_peak_util.h>
-
 #include <ags/audio/fx/ags_fx_peak_audio_processor.h>
 #include <ags/audio/fx/ags_fx_peak_channel_processor.h>
 #include <ags/audio/fx/ags_fx_peak_recycling.h>

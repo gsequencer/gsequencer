@@ -19,8 +19,6 @@
 
 #include <ags/audio/fx/ags_fx_envelope_audio_signal.h>
 
-#include <ags/audio/ags_audio_envelope_util.h>
-
 #include <ags/audio/fx/ags_fx_envelope_audio_processor.h>
 #include <ags/audio/fx/ags_fx_envelope_channel_processor.h>
 #include <ags/audio/fx/ags_fx_envelope_recycling.h>
