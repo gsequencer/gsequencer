@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <fftw3.h>
+
 #include <ags/libags.h>
 
 #include <ags/audio/ags_channel.h>
@@ -37,12 +39,31 @@ G_BEGIN_DECLS
 #define AGS_IS_FX_ANALYSE_CHANNEL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FX_ANALYSE_CHANNEL))
 #define AGS_FX_ANALYSE_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_ANALYSE_CHANNEL, AgsFxAnalyseChannelClass))
 
+#define AGS_FX_ANALYSE_CHANNEL_INPUT_DATA(ptr) ((AgsFxAnalyseChannelInputData *)(ptr))
+
 typedef struct _AgsFxAnalyseChannel AgsFxAnalyseChannel;
+typedef struct _AgsFxAnalyseChannelInputData AgsFxAnalyseChannelInputData;
 typedef struct _AgsFxAnalyseChannelClass AgsFxAnalyseChannelClass;
 
 struct _AgsFxAnalyseChannel
 {
   AgsRecallChannel recall_channel;
+
+  AgsFxAnalyseChannelInputData* input_data[AGS_SOUND_SCOPE_LAST];
+
+  AgsPort *frequency;
+  AgsPort *magnitude;
+};
+
+struct _AgsFxAnalyseChannelInputData
+{
+  gpointer parent;
+
+  fftw_plan plan;
+  fftw_complex *comout;
+
+  double *in;
+  double *out;
 };
 
 struct _AgsFxAnalyseChannelClass
@@ -52,7 +73,11 @@ struct _AgsFxAnalyseChannelClass
 
 GType ags_fx_analyse_channel_get_type();
 
-/*  */
+/* runtime */
+AgsFxAnalyseChannelInputData* ags_fx_analyse_channel_input_data_alloc();
+void ags_fx_analyse_channel_input_data_free(AgsFxAnalyseChannelInputData *input_data);
+
+/* instantiate */
 AgsFxAnalyseChannel* ags_fx_analyse_channel_new(AgsChannel *channel);
 
 G_END_DECLS

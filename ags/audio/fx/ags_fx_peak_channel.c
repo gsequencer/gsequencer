@@ -52,7 +52,6 @@ static gpointer ags_fx_peak_channel_parent_class = NULL;
 
 static const gchar *ags_fx_peak_channel_plugin_name = "ags-fx-peak";
 
-
 static const gchar *ags_fx_peak_channel_specifier[] = {
   "./peak[0]",
   NULL,
