@@ -274,12 +274,19 @@ void
 ags_fx_peak_channel_finalize(GObject *gobject)
 {
   AgsFxPeakChannel *fx_peak_channel;
+
+  guint i;
   
   fx_peak_channel = AGS_FX_PEAK_CHANNEL(gobject);
 
   /* peak */
   if(fx_peak_channel->peak != NULL){
     g_object_unref(G_OBJECT(fx_peak_channel->peak));
+  }
+
+  /* input data */
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    ags_fx_peak_channel_input_data_free(fx_peak_channel->input_data[i]);
   }
 
   /* call parent */

@@ -19,6 +19,7 @@
 
 #include <ags/audio/fx/ags_fx_analyse_channel_processor.h>
 
+#include <ags/audio/fx/ags_fx_analyse_channel.h>
 #include <ags/audio/fx/ags_fx_analyse_recycling.h>
 
 #include <ags/i18n.h>
@@ -27,6 +28,8 @@ void ags_fx_analyse_channel_processor_class_init(AgsFxAnalyseChannelProcessorCla
 void ags_fx_analyse_channel_processor_init(AgsFxAnalyseChannelProcessor *fx_analyse_channel_processor);
 void ags_fx_analyse_channel_processor_dispose(GObject *gobject);
 void ags_fx_analyse_channel_processor_finalize(GObject *gobject);
+
+void ags_fx_analyse_channel_processor_real_run_inter(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_analyse_channel_processor
@@ -77,6 +80,7 @@ void
 ags_fx_analyse_channel_processor_class_init(AgsFxAnalyseChannelProcessorClass *fx_analyse_channel_processor)
 {
   GObjectClass *gobject;
+  AgsRecallClass *recall;
 
   ags_fx_analyse_channel_processor_parent_class = g_type_class_peek_parent(fx_analyse_channel_processor);
 
@@ -85,6 +89,11 @@ ags_fx_analyse_channel_processor_class_init(AgsFxAnalyseChannelProcessorClass *f
 
   gobject->dispose = ags_fx_analyse_channel_processor_dispose;
   gobject->finalize = ags_fx_analyse_channel_processor_finalize;
+
+  /* AgsRecallClass */
+  recall = (AgsRecallClass *) fx_analyse_channel_processor;
+
+  recall->run_inter = ags_fx_analyse_channel_processor_real_run_inter;
 }
 
 void
@@ -118,6 +127,71 @@ ags_fx_analyse_channel_processor_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_analyse_channel_processor_parent_class)->finalize(gobject);
+}
+
+void
+ags_fx_analyse_channel_processor_real_run_inter(AgsRecall *recall)
+{
+  AgsFxAnalyseChannel *fx_analyse_channel;
+  
+  guint buffer_size;
+  gint sound_scope;
+  guint i;
+
+  GRecMutex *fx_analyse_channel_mutex;
+
+  sound_scope = ags_recall_get_sound_scope(recall);
+  
+  fx_analyse_channel = NULL;
+
+  fx_analyse_channel_mutex = NULL;
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
+  g_object_get(recall,
+	       "recall-channel", &fx_analyse_channel,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  if(fx_analyse_channel != NULL){
+    AgsPort *magnitude;
+
+    GRecMutex *port_mutex;
+    
+    memset((void *) fx_analyse_channel->input_data[sound_scope]->out, 0, buffer_size * sizeof(double));
+    
+    fftw_execute(fx_analyse_channel->input_data[sound_scope]->plan);
+
+    magnitude = NULL;
+    
+    g_object_get(fx_analyse_channel,
+		 "magnitude", &magnitude,
+		 NULL);
+
+    if(magnitude != NULL){
+      port_mutex = AGS_PORT_GET_OBJ_MUTEX(magnitude);
+
+      g_rec_mutex_lock(port_mutex);
+      
+      for(i = 0; i < buffer_size; i++){
+	fx_analyse_channel->magnitude->port_value.ags_port_double_ptr[i] = fx_analyse_channel->input_data[sound_scope]->out[i];
+      }
+
+      g_rec_mutex_unlock(port_mutex);
+    }
+
+    if(magnitude != NULL){    
+      g_object_unref(magnitude);
+    }
+  }
+
+  /* unref */
+  if(fx_analyse_channel != NULL){
+    g_object_unref(fx_analyse_channel);
+  }
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_fx_analyse_channel_processor_parent_class)->run_inter(recall);
 }
 
 /**

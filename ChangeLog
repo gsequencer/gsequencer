@@ -15,6 +15,12 @@ ags (3.3.0)
 	  AgsFxDssiChannelProcessor, AgsFxDssiRecycling and AgsFxDssiAudioSignal
 	* implemented AgsFxLv2Audio, AgsFxLv2AudioProcessor, AgsFxLv2Channel,
 	  AgsFxLv2ChannelProcessor, AgsFxLv2Recycling and AgsFxLv2AudioSignal
+	* implemented AgsFxVolumeAudio, AgsFxVolumeAudioProcessor, AgsFxVolumeChannel,
+	  AgsFxVolumeChannelProcessor, AgsFxVolumeRecycling and AgsFxVolumeAudioSignal
+	* implemented AgsFxPeakAudio, AgsFxPeakAudioProcessor, AgsFxPeakChannel,
+	  AgsFxPeakChannelProcessor, AgsFxPeakRecycling and AgsFxPeakAudioSignal
+	* TODO:JK: implemented AgsFxAnalyseAudio, AgsFxAnalyseAudioProcessor, AgsFxAnalyseChannel,
+	  AgsFxAnalyseChannelProcessor, AgsFxAnalyseRecycling and AgsFxAnalyseAudioSignal
 	* TODO:JK: implemented AgsFxLadspaAudio and AgsFxLadspaAudioProcessor
 	* TODO:JK: implemented AgsFxLv2Audio and AgsFxLv2AudioProcessor
 	* TODO:JK: implemented ags/audio/fx

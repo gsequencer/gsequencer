@@ -194,6 +194,11 @@ ags_fx_peak_channel_processor_real_run_inter(AgsRecall *recall)
       g_object_unref(port);
     }
   }
+
+  /* unref */
+  if(fx_peak_channel != NULL){
+    g_object_unref(fx_peak_channel);
+  }
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_peak_channel_processor_parent_class)->run_inter(recall);

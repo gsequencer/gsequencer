@@ -34,6 +34,9 @@ void ags_fx_analyse_channel_get_property(GObject *gobject,
 void ags_fx_analyse_channel_dispose(GObject *gobject);
 void ags_fx_analyse_channel_finalize(GObject *gobject);
 
+void ags_fx_analyse_channel_notify_samplerate_callback(GObject *gobject,
+						       GParamSpec *pspec,
+						       gpointer user_data);
 void ags_fx_analyse_channel_notify_buffer_size_callback(GObject *gobject,
 							GParamSpec *pspec,
 							gpointer user_data);
@@ -156,8 +159,13 @@ ags_fx_analyse_channel_class_init(AgsFxAnalyseChannelClass *fx_analyse_channel)
 void
 ags_fx_analyse_channel_init(AgsFxAnalyseChannel *fx_analyse_channel)
 {
+  double correction;
+  guint samplerate;
   guint buffer_size;
   guint i;
+
+  g_signal_connect(fx_analyse_channel, "notify::samplerate",
+		   G_CALLBACK(ags_fx_analyse_channel_notify_samplerate_callback), NULL);
   
   g_signal_connect(fx_analyse_channel, "notify::buffer-size",
 		   G_CALLBACK(ags_fx_analyse_channel_notify_buffer_size_callback), NULL);
@@ -167,7 +175,11 @@ ags_fx_analyse_channel_init(AgsFxAnalyseChannel *fx_analyse_channel)
   AGS_RECALL(fx_analyse_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_analyse_channel)->xml_type = "ags-fx-analyse-channel";
 
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  
   g_object_get(fx_analyse_channel,
+	       "samplerate", &samplerate,
 	       "buffer-size", &buffer_size,
 	       NULL);
   
@@ -188,7 +200,13 @@ ags_fx_analyse_channel_init(AgsFxAnalyseChannel *fx_analyse_channel)
 
   ags_recall_add_port((AgsRecall *) fx_analyse_channel,
 		      fx_analyse_channel->frequency);
+  
+  correction = (double) samplerate / (double) buffer_size;
 
+  for(i = 0; i < buffer_size; i++){
+    fx_analyse_channel->frequency->port_value.ags_port_double_ptr[i] = (double) i * (double) correction;
+  }
+  
   /* magnitude */
   fx_analyse_channel->magnitude = g_object_new(AGS_TYPE_PORT,
 					       "plugin-name", ags_fx_analyse_channel_plugin_name,
@@ -369,6 +387,8 @@ void
 ags_fx_analyse_channel_finalize(GObject *gobject)
 {
   AgsFxAnalyseChannel *fx_analyse_channel;
+
+  guint i;
   
   fx_analyse_channel = AGS_FX_ANALYSE_CHANNEL(gobject);
 
@@ -382,19 +402,76 @@ ags_fx_analyse_channel_finalize(GObject *gobject)
     g_object_unref(G_OBJECT(fx_analyse_channel->magnitude));
   }
 
+  /* input data */
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    ags_fx_analyse_channel_input_data_free(fx_analyse_channel->input_data[i]);
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_fx_analyse_channel_parent_class)->finalize(gobject);
 }
 
 void
+ags_fx_analyse_channel_notify_samplerate_callback(GObject *gobject,
+						  GParamSpec *pspec,
+						  gpointer user_data)
+{
+  AgsFxAnalyseChannel *fx_analyse_channel;
+  AgsPort *frequency;
+
+  double correction;
+  guint samplerate;
+  guint buffer_size;
+  guint i;
+  
+  GRecMutex *port_mutex;
+  
+  fx_analyse_channel = AGS_FX_ANALYSE_CHANNEL(gobject);
+
+  /* get buffer size */
+  frequency = NULL;
+  
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
+  g_object_get(fx_analyse_channel,
+	       "frequency", &frequency,
+	       "samplerate", &samplerate,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  /* realloc port - frequency */
+  correction = (double) samplerate / (double) buffer_size;
+    
+  if(frequency != NULL){
+    port_mutex = AGS_PORT_GET_OBJ_MUTEX(frequency);
+
+    g_rec_mutex_lock(port_mutex);
+
+    for(i = 0; i < buffer_size; i++){
+      frequency->port_value.ags_port_double_ptr[i] = (double) i * (double) correction;
+    }
+    
+    g_rec_mutex_unlock(port_mutex);
+  }
+
+  /* unref */
+  if(frequency != NULL){
+    g_object_unref(frequency);
+  }
+}
+
+void
 ags_fx_analyse_channel_notify_buffer_size_callback(GObject *gobject,
-					       GParamSpec *pspec,
-					       gpointer user_data)
+						   GParamSpec *pspec,
+						   gpointer user_data)
 {
   AgsFxAnalyseChannel *fx_analyse_channel;
   AgsPort *frequency;
   AgsPort *magnitude;
-      
+
+  double correction;
+  guint samplerate;
   guint buffer_size;
   guint i;
   
@@ -409,26 +486,36 @@ ags_fx_analyse_channel_notify_buffer_size_callback(GObject *gobject,
   /* get buffer size */
   frequency = NULL;
   magnitude = NULL;
+
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   
   g_object_get(fx_analyse_channel,
-	       "buffer-size", &buffer_size,
 	       "frequency", &frequency,
 	       "magnitude", &magnitude,
+	       "samplerate", &samplerate,
+	       "buffer-size", &buffer_size,
 	       NULL);
 
   /* realloc port - frequency */
+  correction = (double) samplerate / (double) buffer_size;
+    
   if(frequency != NULL){
     port_mutex = AGS_PORT_GET_OBJ_MUTEX(frequency);
 
     g_rec_mutex_lock(port_mutex);
 
-    ags_stream_free(fx_analyse_channel->frequency->port_value.ags_port_double_ptr);
+    ags_stream_free(frequency->port_value.ags_port_double_ptr);
 
     if(buffer_size > 0){
-      fx_analyse_channel->frequency->port_value.ags_port_double_ptr = ags_stream_alloc(buffer_size,
-										       AGS_SOUNDCARD_DOUBLE);
+      frequency->port_value.ags_port_double_ptr = ags_stream_alloc(buffer_size,
+								   AGS_SOUNDCARD_DOUBLE);
     }else{
-      fx_analyse_channel->frequency->port_value.ags_port_double_ptr = NULL;
+      frequency->port_value.ags_port_double_ptr = NULL;
+    }
+
+    for(i = 0; i < buffer_size; i++){
+      frequency->port_value.ags_port_double_ptr[i] = (double) i * (double) correction;
     }
     
     g_rec_mutex_unlock(port_mutex);
