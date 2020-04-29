@@ -19,7 +19,9 @@
 
 #include <ags/audio/fx/ags_fx_peak_audio_signal.h>
 
-#include <ags/audio/fx/ags_fx_peak_audio_processor.h>
+#include <ags/audio/ags_audio_buffer_util.h>
+
+#include <ags/audio/fx/ags_fx_peak_channel.h>
 #include <ags/audio/fx/ags_fx_peak_channel_processor.h>
 #include <ags/audio/fx/ags_fx_peak_recycling.h>
 
@@ -131,7 +133,69 @@ ags_fx_peak_audio_signal_finalize(GObject *gobject)
 void
 ags_fx_peak_audio_signal_real_run_inter(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  AgsFxPeakChannel *fx_peak_channel;
+  AgsFxPeakChannelProcessor *fx_peak_channel_processor;
+  AgsFxPeakRecycling *fx_peak_recycling;
+  AgsAudioSignal *source;
+
+  gint sound_scope;
+  guint buffer_size;
+  guint format;
+  guint copy_mode;
+  
+  GRecMutex *fx_peak_channel_mutex;
+  GRecMutex *stream_mutex;
+
+  sound_scope = ags_recall_get_sound_scope(recall);
+  
+  fx_peak_channel = NULL;
+  fx_peak_channel_mutex = NULL;
+
+  fx_peak_channel_processor = NULL;
+
+  fx_peak_recycling = NULL;
+
+  source = NULL;
+
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  
+  g_object_get(recall,
+	       "parent", &fx_peak_recycling,
+	       "source", &source,
+	       NULL);
+
+  g_object_get(fx_peak_recycling,
+	       "parent", &fx_peak_channel_processor,
+	       NULL);
+
+  g_object_get(fx_peak_channel_processor,
+	       "recall-channel", &fx_peak_channel,
+	       NULL);
+
+  g_object_get(source,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       NULL);
+  
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+						  ags_audio_buffer_util_format_from_soundcard(format));
+
+  if(fx_peak_channel != NULL &&
+     source != NULL &&
+     source->stream_current != NULL){
+    fx_peak_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_peak_channel);
+    stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(fx_peak_channel);
+  
+    g_rec_mutex_lock(fx_peak_channel_mutex);
+    g_rec_mutex_lock(stream_mutex);
+
+    ags_audio_buffer_util_copy_buffer_to_buffer(fx_peak_channel->input_data[sound_scope]->buffer, 1, 0,
+						source->stream_current->data, 1, 0,
+						buffer_size, copy_mode);    
+    
+    g_rec_mutex_unlock(stream_mutex);
+    g_rec_mutex_unlock(fx_peak_channel_mutex);
+  }
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_peak_audio_signal_parent_class)->run_inter(recall);

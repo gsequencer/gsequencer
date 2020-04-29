@@ -19,6 +19,9 @@
 
 #include <ags/audio/fx/ags_fx_peak_channel_processor.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
+
+#include <ags/audio/fx/ags_fx_peak_channel.h>
 #include <ags/audio/fx/ags_fx_peak_recycling.h>
 
 #include <ags/i18n.h>
@@ -27,6 +30,8 @@ void ags_fx_peak_channel_processor_class_init(AgsFxPeakChannelProcessorClass *fx
 void ags_fx_peak_channel_processor_init(AgsFxPeakChannelProcessor *fx_peak_channel_processor);
 void ags_fx_peak_channel_processor_dispose(GObject *gobject);
 void ags_fx_peak_channel_processor_finalize(GObject *gobject);
+
+void ags_fx_peak_channel_processor_real_run_inter(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_peak_channel_processor
@@ -77,7 +82,8 @@ void
 ags_fx_peak_channel_processor_class_init(AgsFxPeakChannelProcessorClass *fx_peak_channel_processor)
 {
   GObjectClass *gobject;
-
+  AgsRecallClass *recall;
+  
   ags_fx_peak_channel_processor_parent_class = g_type_class_peek_parent(fx_peak_channel_processor);
 
   /* GObjectClass */
@@ -85,6 +91,11 @@ ags_fx_peak_channel_processor_class_init(AgsFxPeakChannelProcessorClass *fx_peak
 
   gobject->dispose = ags_fx_peak_channel_processor_dispose;
   gobject->finalize = ags_fx_peak_channel_processor_finalize;
+
+  /* AgsRecallClass */
+  recall = (AgsRecallClass *) fx_peak_channel_processor;
+
+  recall->run_inter = ags_fx_peak_channel_processor_real_run_inter;
 }
 
 void
@@ -118,6 +129,74 @@ ags_fx_peak_channel_processor_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_peak_channel_processor_parent_class)->finalize(gobject);
+}
+
+void
+ags_fx_peak_channel_processor_real_run_inter(AgsRecall *recall)
+{
+  AgsFxPeakChannel *fx_peak_channel;
+  
+  gdouble peak;
+  guint buffer_size;
+  gint sound_scope;
+
+  GRecMutex *fx_peak_channel_mutex;
+
+  sound_scope = ags_recall_get_sound_scope(recall);
+  
+  fx_peak_channel = NULL;
+
+  fx_peak_channel_mutex = NULL;
+
+  peak = 0.0;
+
+  g_object_get(recall,
+	       "recall-channel", &fx_peak_channel,
+	       "buffer-size", &buffer_size,
+	       NULL);
+    
+  if(fx_peak_channel != NULL){
+    AgsPort *port;
+
+    GValue value = {0,};
+    
+    fx_peak_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_peak_channel);
+  
+    g_rec_mutex_lock(fx_peak_channel_mutex);
+
+    peak = ags_audio_buffer_util_peak(fx_peak_channel->input_data[sound_scope]->buffer, 1,
+				      AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+				      buffer_size,
+				      440.0,
+				      22000.0,
+				      1.0);
+
+    ags_audio_buffer_util_clear_buffer(fx_peak_channel->input_data[sound_scope]->buffer, 1,
+				       buffer_size, AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+    
+    g_rec_mutex_unlock(fx_peak_channel_mutex);
+
+    port = NULL;
+
+    g_object_get(fx_peak_channel,
+		 "peak", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_FLOAT);
+
+      g_value_set_float(&value, (gfloat) peak);
+      
+      ags_port_safe_write(port, &value);
+      
+      g_value_unset(&value);
+      
+      g_object_unref(port);
+    }
+  }
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_fx_peak_channel_processor_parent_class)->run_inter(recall);
 }
 
 /**

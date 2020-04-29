@@ -160,7 +160,7 @@ ags_fx_peak_channel_init(AgsFxPeakChannel *fx_peak_channel)
 				       NULL);
   g_object_ref(fx_peak_channel->peak);
   
-  fx_peak_channel->peak->port_value.ags_port_float = (gfloat) FALSE;
+  fx_peak_channel->peak->port_value.ags_port_float = 0.0;
 
   ags_recall_add_port((AgsRecall *) fx_peak_channel,
 		      fx_peak_channel->peak);
