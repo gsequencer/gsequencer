@@ -150,6 +150,8 @@ ags_fx_peak_channel_processor_real_run_inter(AgsRecall *recall)
 
   peak = 0.0;
 
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  
   g_object_get(recall,
 	       "recall-channel", &fx_peak_channel,
 	       "buffer-size", &buffer_size,
@@ -158,12 +160,35 @@ ags_fx_peak_channel_processor_real_run_inter(AgsRecall *recall)
   if(fx_peak_channel != NULL){
     AgsPort *port;
 
+    gboolean peak_reseted;
+    
     GValue value = {0,};
+
+    port = NULL;
+
+    g_object_get(fx_peak_channel,
+		 "peak", &port,
+		 NULL);
     
     fx_peak_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_peak_channel);
   
     g_rec_mutex_lock(fx_peak_channel_mutex);
 
+    peak_reseted = fx_peak_channel->peak_reseted;
+
+    fx_peak_channel->peak_reseted = TRUE;
+    
+    if(!peak_reseted &&
+       port != NULL){
+      g_value_init(&value, G_TYPE_FLOAT);
+
+      g_value_set_float(&value, 0.0);
+      
+      ags_port_safe_write(port, &value);
+
+      g_value_unset(&value);
+    }
+  
     peak = ags_audio_buffer_util_peak(fx_peak_channel->input_data[sound_scope]->buffer, 1,
 				      AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 				      buffer_size,
@@ -176,17 +201,12 @@ ags_fx_peak_channel_processor_real_run_inter(AgsRecall *recall)
     
     g_rec_mutex_unlock(fx_peak_channel_mutex);
 
-    port = NULL;
-
-    g_object_get(fx_peak_channel,
-		 "peak", &port,
-		 NULL);
-
     if(port != NULL){
       g_value_init(&value, G_TYPE_FLOAT);
 
-      g_value_set_float(&value, (gfloat) peak);
+      ags_port_safe_read(port, &value);
       
+      g_value_set_float(&value, g_value_get_float(&value) + (gfloat) peak);
       ags_port_safe_write(port, &value);
       
       g_value_unset(&value);

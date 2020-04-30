@@ -67,6 +67,8 @@ ags_fx_peak_recycling_test_new()
 
   CU_ASSERT(fx_peak_recycling != NULL);
   CU_ASSERT(AGS_RECALL_RECYCLING(fx_peak_recycling)->source == recycling);
+
+  CU_ASSERT(AGS_RECALL(fx_peak_recycling)->child_type == AGS_TYPE_FX_PEAK_AUDIO_SIGNAL);
 }
 
 int

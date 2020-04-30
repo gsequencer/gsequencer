@@ -196,6 +196,11 @@ ags_fx_peak_audio_signal_real_run_inter(AgsRecall *recall)
     g_rec_mutex_unlock(stream_mutex);
     g_rec_mutex_unlock(fx_peak_channel_mutex);
   }
+
+  if(source == NULL ||
+     source->stream_current == NULL){
+    ags_recall_done(recall);
+  }
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_peak_audio_signal_parent_class)->run_inter(recall);

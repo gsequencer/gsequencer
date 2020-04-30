@@ -137,6 +137,7 @@ ags_fx_peak_channel_class_init(AgsFxPeakChannelClass *fx_peak_channel)
 void
 ags_fx_peak_channel_init(AgsFxPeakChannel *fx_peak_channel)
 {
+  guint buffer_size;
   guint i;
   
   g_signal_connect(fx_peak_channel, "notify::buffer-size",
@@ -147,6 +148,14 @@ ags_fx_peak_channel_init(AgsFxPeakChannel *fx_peak_channel)
   AGS_RECALL(fx_peak_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_peak_channel)->xml_type = "ags-fx-peak-channel";
 
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
+  fx_peak_channel->peak_reseted = TRUE;
+
+  g_object_get(fx_peak_channel,
+	       "buffer-size", &buffer_size,
+	       NULL);
+  
   /* peak */
   fx_peak_channel->peak = g_object_new(AGS_TYPE_PORT,
 				       "plugin-name", ags_fx_peak_channel_plugin_name,
@@ -168,6 +177,8 @@ ags_fx_peak_channel_init(AgsFxPeakChannel *fx_peak_channel)
     fx_peak_channel->input_data[i] = ags_fx_peak_channel_input_data_alloc();
       
     fx_peak_channel->input_data[i]->parent = fx_peak_channel;
+
+    fx_peak_channel->input_data[i]->buffer = (gdouble *) g_malloc(buffer_size * sizeof(gdouble));
   }
 }
 
@@ -324,10 +335,10 @@ ags_fx_peak_channel_notify_buffer_size_callback(GObject *gobject,
 
     if(buffer_size > 0){
       if(input_data->buffer == NULL){
-	input_data->buffer = (float *) g_malloc(buffer_size * sizeof(float));
+	input_data->buffer = (gdouble *) g_malloc(buffer_size * sizeof(gdouble));
       }else{
-	input_data->buffer = (float *) g_realloc(input_data->buffer,
-						 buffer_size * sizeof(float));	    
+	input_data->buffer = (gdouble *) g_realloc(input_data->buffer,
+						   buffer_size * sizeof(gdouble));	    
       }
     }
   }

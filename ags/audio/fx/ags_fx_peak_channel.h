@@ -47,6 +47,8 @@ struct _AgsFxPeakChannel
 {
   AgsRecallChannel recall_channel;
 
+  gboolean peak_reseted;
+
   AgsFxPeakChannelInputData* input_data[AGS_SOUND_SCOPE_LAST];
 
   AgsPort *peak;

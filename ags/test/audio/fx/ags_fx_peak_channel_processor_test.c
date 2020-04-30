@@ -33,6 +33,7 @@ int ags_fx_peak_channel_processor_test_init_suite();
 int ags_fx_peak_channel_processor_test_clean_suite();
 
 void ags_fx_peak_channel_processor_test_new();
+void ags_fx_peak_channel_processor_test_run_inter();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -67,6 +68,89 @@ ags_fx_peak_channel_processor_test_new()
 
   CU_ASSERT(fx_peak_channel_processor != NULL);
   CU_ASSERT(AGS_RECALL_CHANNEL_RUN(fx_peak_channel_processor)->source == channel);
+
+  CU_ASSERT(AGS_RECALL(fx_peak_channel_processor)->child_type == AGS_TYPE_FX_PEAK_RECYCLING);
+}
+
+void
+ags_fx_peak_channel_processor_test_run_inter()
+{
+  AgsAudio *audio;
+  AgsChannel *channel;
+  AgsRecallContainer *recall_container;
+  AgsFxPeakAudio *fx_peak_audio;
+  AgsFxPeakAudioProcessor *fx_peak_audio_processor;
+  AgsFxPeakChannel *fx_peak_channel;
+  AgsFxPeakChannelProcessor *fx_peak_channel_processor;
+  
+  /* audio */
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       NULL);
+
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio,
+				 recall_container);
+  
+  fx_peak_audio = ags_fx_peak_audio_new(audio);
+  ags_recall_set_sound_scope(fx_peak_audio, AGS_SOUND_SCOPE_PLAYBACK);
+  ags_recall_container_add(recall_container,
+			   fx_peak_audio);
+  
+  CU_ASSERT(fx_peak_audio != NULL);
+
+  /* audio processor */  
+  fx_peak_audio_processor = ags_fx_peak_audio_processor_new(audio);
+  ags_recall_set_sound_scope(fx_peak_audio_processor, AGS_SOUND_SCOPE_PLAYBACK);
+
+  g_object_set(fx_peak_audio_processor,
+	       "recall-audio", fx_peak_audio,
+	       NULL);
+  
+  ags_recall_container_add(recall_container,
+			   fx_peak_audio_processor);
+
+  CU_ASSERT(fx_peak_audio_processor != NULL);
+
+  /* channel */
+  channel = g_object_new(AGS_TYPE_CHANNEL,
+			 NULL);
+
+  ags_channel_add_recall_container(channel,
+				   recall_container);
+  
+  fx_peak_channel = ags_fx_peak_channel_new(channel);
+  ags_recall_set_sound_scope(fx_peak_channel, AGS_SOUND_SCOPE_PLAYBACK);
+
+  g_object_set(fx_peak_channel,
+	       "recall-audio", fx_peak_audio,
+	       NULL);
+
+  ags_recall_container_add(recall_container,
+			   fx_peak_channel);
+
+  CU_ASSERT(fx_peak_channel != NULL);
+
+  /* channel processor */  
+  fx_peak_channel_processor = ags_fx_peak_channel_processor_new(channel);
+  ags_recall_set_sound_scope(fx_peak_channel_processor, AGS_SOUND_SCOPE_PLAYBACK);
+
+  g_object_set(fx_peak_channel_processor,
+	       "recall-audio", fx_peak_audio,
+	       "recall-channel", fx_peak_channel,
+	       NULL);
+
+  ags_recall_container_add(recall_container,
+			   fx_peak_channel_processor);
+
+  CU_ASSERT(fx_peak_channel_processor != NULL);
+
+  /* run inter - attempt #0 */  
+  ags_recall_run_inter(fx_peak_channel_processor);
+
+  /* run inter - attempt #1 */
+  fx_peak_channel->peak_reseted = FALSE;
+  
+  ags_recall_run_inter(fx_peak_channel_processor);
 }
 
 int
@@ -96,7 +180,8 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsFxPeakChannelProcessor new", ags_fx_peak_channel_processor_test_new) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsFxPeakChannelProcessor new", ags_fx_peak_channel_processor_test_new) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxPeakChannelProcessor run inter", ags_fx_peak_channel_processor_test_run_inter) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();
