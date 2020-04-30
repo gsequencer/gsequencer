@@ -254,7 +254,8 @@ ags_fx_volume_audio_signal_real_run_inter(AgsRecall *recall)
     }
   }
   
-  if(source != NULL){
+  if(source != NULL &&
+     source->stream_current != NULL){
     stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
     
     g_rec_mutex_lock(stream_mutex);
@@ -266,11 +267,15 @@ ags_fx_volume_audio_signal_real_run_inter(AgsRecall *recall)
 				   volume);
     }else{
       ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
-					 ags_audio_buffer_util_format_from_soundcard(format),
-					 buffer_size);
+					 buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
     }
     
     g_rec_mutex_unlock(stream_mutex);
+  }
+
+  if(source == NULL ||
+     source->stream_current == NULL){
+    ags_recall_done(recall);
   }
   
   if(source != NULL){

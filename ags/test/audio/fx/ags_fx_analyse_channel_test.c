@@ -32,9 +32,21 @@
 int ags_fx_analyse_channel_test_init_suite();
 int ags_fx_analyse_channel_test_clean_suite();
 
+void ags_fx_analyse_channel_stub_finalize();
+
 void ags_fx_analyse_channel_test_new();
+void ags_fx_analyse_channel_test_dispose();
+void ags_fx_analyse_channel_test_finalize();
 void ags_fx_analyse_channel_test_input_data_alloc();
 void ags_fx_analyse_channel_test_input_data_free();
+
+gboolean finalized;
+
+void
+ags_fx_analyse_channel_stub_finalize(GObject *gobject)
+{
+  finalized = TRUE;
+}
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -115,6 +127,63 @@ ags_fx_analyse_channel_test_new()
 }
 
 void
+ags_fx_analyse_channel_test_dispose()
+{
+  AgsChannel *channel;
+  AgsFxAnalyseChannel *fx_analyse_channel;
+
+  channel = g_object_new(AGS_TYPE_CHANNEL,
+			 NULL);
+  
+  fx_analyse_channel = ags_fx_analyse_channel_new(channel);
+
+  g_object_run_dispose(fx_analyse_channel);
+
+  CU_ASSERT(fx_analyse_channel->frequency == NULL);
+  CU_ASSERT(fx_analyse_channel->magnitude == NULL);
+
+  g_object_unref(fx_analyse_channel);
+}
+
+void
+ags_fx_analyse_channel_test_finalize()
+{
+  AgsChannel *channel;
+  AgsFxAnalyseChannel *fx_analyse_channel;
+
+  GObjectClass *gobject_class;
+  
+  gpointer stub;
+  
+  /* attempt #0 */
+  channel = g_object_new(AGS_TYPE_CHANNEL,
+			 NULL);
+  
+  fx_analyse_channel = ags_fx_analyse_channel_new(channel);
+
+  gobject_class = (GObjectClass *) g_type_class_ref(AGS_TYPE_FX_ANALYSE_CHANNEL);
+  
+  finalized = FALSE;
+
+  stub = gobject_class->finalize;
+  gobject_class->finalize = ags_fx_analyse_channel_stub_finalize;
+  
+  g_object_unref(fx_analyse_channel);
+
+  CU_ASSERT(finalized == TRUE);
+
+  gobject_class->finalize = stub;
+
+  /* attempt #1 */
+  channel = g_object_new(AGS_TYPE_CHANNEL,
+			 NULL);
+  
+  fx_analyse_channel = ags_fx_analyse_channel_new(channel);
+
+  g_object_unref(fx_analyse_channel);
+}
+
+void
 ags_fx_analyse_channel_test_input_data_alloc()
 {
   AgsFxAnalyseChannelInputData *input_data;
@@ -164,6 +233,8 @@ main(int argc, char **argv)
 
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsFxAnalyseChannel new", ags_fx_analyse_channel_test_new) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxAnalyseChannel dispose", ags_fx_analyse_channel_test_dispose) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxAnalyseChannel finalize", ags_fx_analyse_channel_test_finalize) == NULL) ||
      (CU_add_test(pSuite, "test of AgsFxAnalyseChannel input data alloc", ags_fx_analyse_channel_test_input_data_alloc) == NULL) ||
      (CU_add_test(pSuite, "test of AgsFxAnalyseChannel input data free", ags_fx_analyse_channel_test_input_data_free) == NULL)){
     CU_cleanup_registry();

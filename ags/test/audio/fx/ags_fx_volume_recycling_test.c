@@ -67,6 +67,8 @@ ags_fx_volume_recycling_test_new()
 
   CU_ASSERT(fx_volume_recycling != NULL);
   CU_ASSERT(AGS_RECALL_RECYCLING(fx_volume_recycling)->source == recycling);
+
+  CU_ASSERT(AGS_RECALL(fx_volume_recycling)->child_type == AGS_TYPE_FX_VOLUME_AUDIO_SIGNAL);
 }
 
 int

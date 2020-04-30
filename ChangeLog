@@ -21,10 +21,12 @@ ags (3.3.0)
 	  AgsFxPeakChannelProcessor, AgsFxPeakRecycling and AgsFxPeakAudioSignal
 	* implemented AgsFxAnalyseAudio, AgsFxAnalyseAudioProcessor, AgsFxAnalyseChannel,
 	  AgsFxAnalyseChannelProcessor, AgsFxAnalyseRecycling and AgsFxAnalyseAudioSignal
+	* implemented AgsFxEnvelopeAudio, AgsFxEnvelopeAudioProcessor, AgsFxEnvelopeChannel,
+	  AgsFxEnvelopeChannelProcessor, AgsFxEnvelopeRecycling and AgsFxEnvelopeAudioSignal
 	* TODO:JK: implemented Fx mutex per scope
 	* TODO:JK: implemented resample cache per scope
-	* TODO:JK: implemented AgsFxEnvelopeAudio, AgsFxEnvelopeAudioProcessor, AgsFxEnvelopeChannel,
-	  AgsFxEnvelopeChannelProcessor, AgsFxEnvelopeRecycling and AgsFxEnvelopeAudioSignal
+	* TODO:JK: fixed AgsComplex
+	* TODO:JK: improve AgsComplex support
 	* TODO:JK: extended user's handbook to cover OSC server preferences
 
 ags (3.2.15)

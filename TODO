@@ -8,7 +8,6 @@ A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
 * TODO:JK: implemented AgsFunction and related
-* TODO:JK: improve AgsComplex support
 * TODO:JK: implemented support for GtkApplication
 * TODO:JK: refactored AgsNotationToolbar, AgsAutomationToolbar and AgsWaveToolbar
 * TODO:JK: migrated AgsBasePlugin to GModule
