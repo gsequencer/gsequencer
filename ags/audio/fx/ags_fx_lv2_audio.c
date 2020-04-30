@@ -1648,7 +1648,6 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
 				   "port-value-is-pointer", FALSE,
 				   "port-value-type", G_TYPE_FLOAT,
 				   NULL);
-      g_object_ref(lv2_port[nth]);
       
       if(ags_plugin_port_test_flags(current_plugin_port,
 				    AGS_PLUGIN_PORT_OUTPUT)){
@@ -1676,6 +1675,9 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
       ags_port_safe_write_raw(lv2_port[nth],
 			      &default_value);
 
+      ags_recall_add_port((AgsRecall *) fx_lv2_audio,
+			  lv2_port[nth]);
+      
       /* connect port */
       for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
 	AgsFxLv2AudioScopeData *scope_data;

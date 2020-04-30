@@ -389,7 +389,6 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
 					"port-value-size", sizeof(gdouble),
 					"port-value-length", 1,
 					NULL);
-  g_object_ref(fx_playback_audio->bpm);
   
   fx_playback_audio->bpm->port_value.ags_port_double = bpm;
 
@@ -406,7 +405,6 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
 					 "port-value-size", sizeof(gdouble),
 					 "port-value-length", 1,
 					 NULL);
-  g_object_ref(fx_playback_audio->tact);
   
   fx_playback_audio->tact->port_value.ags_port_double = AGS_SOUNDCARD_DEFAULT_TACT;
 
@@ -423,7 +421,6 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
 					  "port-value-size", sizeof(gdouble),
 					  "port-value-length", 1,
 					  NULL);
-  g_object_ref(fx_playback_audio->delay);
   
   fx_playback_audio->delay->port_value.ags_port_double = delay;
 
@@ -440,7 +437,6 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
 					     "port-value-size", sizeof(guint64),
 					     "port-value-length", 1,
 					     NULL);
-  g_object_ref(fx_playback_audio->duration);
   
   fx_playback_audio->duration->port_value.ags_port_double = ceil(AGS_NOTATION_DEFAULT_DURATION * delay);
 
@@ -457,7 +453,6 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
 					 "port-value-size", sizeof(gboolean),
 					 "port-value-length", 1,
 					 NULL);
-  g_object_ref(fx_playback_audio->loop);
   
   fx_playback_audio->loop->port_value.ags_port_boolean = FALSE;
 
@@ -474,7 +469,6 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
 					       "port-value-size", sizeof(guint64),
 					       "port-value-length", 1,
 					       NULL);
-  g_object_ref(fx_playback_audio->loop_start);
   
   fx_playback_audio->loop_start->port_value.ags_port_uint = AGS_FX_PLAYBACK_AUDIO_DEFAULT_LOOP_START;
 
@@ -491,7 +485,6 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
 					     "port-value-size", sizeof(guint64),
 					     "port-value-length", 1,
 					     NULL);
-  g_object_ref(fx_playback_audio->loop_end);
   
   fx_playback_audio->loop_end->port_value.ags_port_uint = AGS_FX_PLAYBACK_AUDIO_DEFAULT_LOOP_END;
 
@@ -508,7 +501,6 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
 					   "port-value-size", sizeof(gboolean),
 					   "port-value-length", 1,
 					   NULL);
-  g_object_ref(fx_playback_audio->export);
   
   fx_playback_audio->export->port_value.ags_port_boolean = FALSE;
 
@@ -523,7 +515,6 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
 					     "port-value-is-pointer", FALSE,
 					     "port-value-type", G_TYPE_POINTER,
 					     NULL);
-  g_object_ref(fx_playback_audio->filename);
   
   fx_playback_audio->filename->port_value.ags_port_pointer = NULL;
 
@@ -540,7 +531,6 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
 							"port-value-size", sizeof(guint64),
 							"port-value-length", 1,
 							NULL);
-  g_object_ref(fx_playback_audio->file_audio_channels);
   
   fx_playback_audio->file_audio_channels->port_value.ags_port_uint = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
 
@@ -557,7 +547,6 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
 						    "port-value-size", sizeof(guint64),
 						    "port-value-length", 1,
 						    NULL);
-  g_object_ref(fx_playback_audio->file_samplerate);
   
   fx_playback_audio->file_samplerate->port_value.ags_port_uint = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
@@ -574,7 +563,6 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
 						     "port-value-size", sizeof(guint64),
 						     "port-value-length", 1,
 						     NULL);
-  g_object_ref(fx_playback_audio->file_buffer_size);
   
   fx_playback_audio->file_buffer_size->port_value.ags_port_uint = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
@@ -591,7 +579,6 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
 						"port-value-size", sizeof(guint64),
 						"port-value-length", 1,
 						NULL);
-  g_object_ref(fx_playback_audio->file_format);
   
   fx_playback_audio->file_format->port_value.ags_port_uint = AGS_SOUNDCARD_DEFAULT_FORMAT;
 

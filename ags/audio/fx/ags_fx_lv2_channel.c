@@ -675,7 +675,6 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 				     "port-value-is-pointer", FALSE,
 				     "port-value-type", G_TYPE_FLOAT,
 				     NULL);
-	g_object_ref(lv2_port[nth]);
       
 	if(ags_plugin_port_test_flags(current_plugin_port,
 				      AGS_PLUGIN_PORT_OUTPUT)){
@@ -703,6 +702,9 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 	ags_port_safe_write_raw(lv2_port[nth],
 				&default_value);
 
+	ags_recall_add_port((AgsRecall *) fx_lv2_channel,
+			    lv2_port[nth]);
+	
 	/* connect port */
 	for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
 	  AgsFxLv2AudioScopeData *scope_data;
@@ -851,7 +853,6 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 					"port-value-is-pointer", FALSE,
 					"port-value-type", G_TYPE_FLOAT,
 					NULL);
-	g_object_ref(lv2_port[nth]);
       
 	if(ags_plugin_port_test_flags(current_plugin_port,
 				      AGS_PLUGIN_PORT_OUTPUT)){
@@ -874,10 +875,13 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 		     NULL);
 
 	ags_port_util_load_lv2_conversion(lv2_port[nth],
-					     current_plugin_port);
+					  current_plugin_port);
 	
 	ags_port_safe_write_raw(lv2_port[nth],
 				&default_value);
+
+	ags_recall_add_port((AgsRecall *) fx_lv2_channel,
+			    lv2_port[nth]);
 
 	/* connect port */
 	for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){

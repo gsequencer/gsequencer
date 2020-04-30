@@ -314,7 +314,6 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
 				       "port-value-size", sizeof(gdouble),
 				       "port-value-length", 1,
 				       NULL);
-  g_object_ref(fx_pattern_audio->bpm);
   
   fx_pattern_audio->bpm->port_value.ags_port_double = bpm;
 
@@ -331,7 +330,6 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
 					"port-value-size", sizeof(gdouble),
 					"port-value-length", 1,
 					NULL);
-  g_object_ref(fx_pattern_audio->tact);
   
   fx_pattern_audio->tact->port_value.ags_port_double = AGS_SOUNDCARD_DEFAULT_TACT;
 
@@ -348,7 +346,6 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
 					 "port-value-size", sizeof(gdouble),
 					 "port-value-length", 1,
 					 NULL);
-  g_object_ref(fx_pattern_audio->delay);
   
   fx_pattern_audio->delay->port_value.ags_port_double = delay;
 
@@ -365,7 +362,6 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
 					    "port-value-size", sizeof(guint64),
 					    "port-value-length", 1,
 					    NULL);
-  g_object_ref(fx_pattern_audio->duration);
   
   fx_pattern_audio->duration->port_value.ags_port_double = (gdouble) AGS_PATTERN_DEFAULT_OFFSET;
 
@@ -382,7 +378,6 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
 					"port-value-size", sizeof(gboolean),
 					"port-value-length", 1,
 					NULL);
-  g_object_ref(fx_pattern_audio->loop);
   
   fx_pattern_audio->loop->port_value.ags_port_boolean = FALSE;
 
@@ -399,7 +394,6 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
 					      "port-value-size", sizeof(guint64),
 					      "port-value-length", 1,
 					      NULL);
-  g_object_ref(fx_pattern_audio->loop_start);
   
   fx_pattern_audio->loop_start->port_value.ags_port_uint = AGS_FX_PATTERN_AUDIO_DEFAULT_LOOP_START;
 
@@ -416,7 +410,6 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
 					    "port-value-size", sizeof(guint64),
 					    "port-value-length", 1,
 					    NULL);
-  g_object_ref(fx_pattern_audio->loop_end);
   
   fx_pattern_audio->loop_end->port_value.ags_port_uint = AGS_FX_PATTERN_AUDIO_DEFAULT_LOOP_END;
 
@@ -433,7 +426,6 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
 						"port-value-size", sizeof(gfloat),
 						"port-value-length", 1,
 						NULL);
-  g_object_ref(fx_pattern_audio->bank_index_0);
   
   fx_pattern_audio->bank_index_0->port_value.ags_port_float = 0.0;
 
@@ -450,7 +442,6 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
 						"port-value-size", sizeof(gfloat),
 						"port-value-length", 1,
 						NULL);
-  g_object_ref(fx_pattern_audio->bank_index_1);
   
   fx_pattern_audio->bank_index_1->port_value.ags_port_float = 0.0;
 

@@ -195,7 +195,6 @@ ags_fx_analyse_channel_init(AgsFxAnalyseChannel *fx_analyse_channel)
 					       "port-value-size", sizeof(gdouble),
 					       "port-value-length", buffer_size,
 					       NULL);
-  g_object_ref(fx_analyse_channel->frequency);
   
   fx_analyse_channel->frequency->port_value.ags_port_double_ptr = ags_stream_alloc(buffer_size,
 										   AGS_SOUNDCARD_DOUBLE);
@@ -219,7 +218,6 @@ ags_fx_analyse_channel_init(AgsFxAnalyseChannel *fx_analyse_channel)
 					       "port-value-size", sizeof(gdouble),
 					       "port-value-length", buffer_size,
 					       NULL);
-  g_object_ref(fx_analyse_channel->magnitude);
   
   fx_analyse_channel->magnitude->port_value.ags_port_double_ptr = ags_stream_alloc(buffer_size,
 										   AGS_SOUNDCARD_DOUBLE);

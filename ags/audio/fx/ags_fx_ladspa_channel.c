@@ -660,14 +660,13 @@ ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
 
       /* ladspa port */
       ladspa_port[nth] = g_object_new(AGS_TYPE_PORT,
-				    "plugin-name", plugin_name,
-				    "specifier", specifier,
-				    "control-port", control_port,
-				    "port-value-is-pointer", FALSE,
-				    "port-value-type", G_TYPE_FLOAT,
-				    NULL);
+				      "plugin-name", plugin_name,
+				      "specifier", specifier,
+				      "control-port", control_port,
+				      "port-value-is-pointer", FALSE,
+				      "port-value-type", G_TYPE_FLOAT,
+				      NULL);
       ags_port_set_flags(ladspa_port[nth], AGS_PORT_USE_LADSPA_FLOAT);
-      g_object_ref(ladspa_port[nth]);
       
       if(ags_plugin_port_test_flags(current_plugin_port,
 				    AGS_PLUGIN_PORT_OUTPUT)){
@@ -694,6 +693,9 @@ ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
 	
       ags_port_safe_write_raw(ladspa_port[nth],
 			      &default_value);
+
+      ags_recall_add_port((AgsRecall *) fx_ladspa_channel,
+			  ladspa_port[nth]);
 
       /* connect port */
       for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){

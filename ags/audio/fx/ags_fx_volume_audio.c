@@ -148,7 +148,6 @@ ags_fx_volume_audio_init(AgsFxVolumeAudio *fx_volume_audio)
 					"port-value-size", sizeof(gfloat),
 					"port-value-length", 1,
 					NULL);
-  g_object_ref(fx_volume_audio->muted);
   
   fx_volume_audio->muted->port_value.ags_port_float = (gfloat) FALSE;
 

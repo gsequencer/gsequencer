@@ -167,7 +167,6 @@ ags_fx_volume_channel_init(AgsFxVolumeChannel *fx_volume_channel)
 					"port-value-size", sizeof(gfloat),
 					"port-value-length", 1,
 					NULL);
-  g_object_ref(fx_volume_channel->muted);
   
   fx_volume_channel->muted->port_value.ags_port_float = (gfloat) FALSE;
 
@@ -184,7 +183,6 @@ ags_fx_volume_channel_init(AgsFxVolumeChannel *fx_volume_channel)
 					"port-value-size", sizeof(gfloat),
 					"port-value-length", 1,
 					NULL);
-  g_object_ref(fx_volume_channel->volume);
   
   fx_volume_channel->volume->port_value.ags_port_float = (gfloat) 1.0;
 

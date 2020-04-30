@@ -305,7 +305,6 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
 				    "port-value-type", G_TYPE_FLOAT,
 				    NULL);
       ags_port_set_flags(dssi_port[nth], AGS_PORT_USE_LADSPA_FLOAT);
-      g_object_ref(dssi_port[nth]);
       
       if(ags_plugin_port_test_flags(current_plugin_port,
 				    AGS_PLUGIN_PORT_OUTPUT)){
@@ -332,6 +331,9 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
 	
       ags_port_safe_write_raw(dssi_port[nth],
 			      &default_value);
+
+      ags_recall_add_port((AgsRecall *) fx_dssi_channel,
+			  dssi_port[nth]);
 
       /* connect port */
       for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){

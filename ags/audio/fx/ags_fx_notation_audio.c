@@ -272,7 +272,6 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
 					"port-value-size", sizeof(gdouble),
 					"port-value-length", 1,
 					NULL);
-  g_object_ref(fx_notation_audio->bpm);
   
   fx_notation_audio->bpm->port_value.ags_port_double = bpm;
 
@@ -289,7 +288,6 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
 					 "port-value-size", sizeof(gdouble),
 					 "port-value-length", 1,
 					 NULL);
-  g_object_ref(fx_notation_audio->tact);
   
   fx_notation_audio->tact->port_value.ags_port_double = AGS_SOUNDCARD_DEFAULT_TACT;
 
@@ -306,7 +304,6 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
 					  "port-value-size", sizeof(gdouble),
 					  "port-value-length", 1,
 					  NULL);
-  g_object_ref(fx_notation_audio->delay);
   
   fx_notation_audio->delay->port_value.ags_port_double = delay;
 
@@ -323,7 +320,6 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
 					     "port-value-size", sizeof(guint64),
 					     "port-value-length", 1,
 					     NULL);
-  g_object_ref(fx_notation_audio->duration);
   
   fx_notation_audio->duration->port_value.ags_port_double = ceil(AGS_NOTATION_DEFAULT_DURATION * delay);
 
@@ -340,7 +336,6 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
 					 "port-value-size", sizeof(gboolean),
 					 "port-value-length", 1,
 					 NULL);
-  g_object_ref(fx_notation_audio->loop);
   
   fx_notation_audio->loop->port_value.ags_port_boolean = FALSE;
 
@@ -357,7 +352,6 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
 					       "port-value-size", sizeof(guint64),
 					       "port-value-length", 1,
 					       NULL);
-  g_object_ref(fx_notation_audio->loop_start);
   
   fx_notation_audio->loop_start->port_value.ags_port_uint = AGS_FX_NOTATION_AUDIO_DEFAULT_LOOP_START;
 
@@ -374,7 +368,6 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
 					     "port-value-size", sizeof(guint64),
 					     "port-value-length", 1,
 					     NULL);
-  g_object_ref(fx_notation_audio->loop_end);
   
   fx_notation_audio->loop_end->port_value.ags_port_uint = AGS_FX_NOTATION_AUDIO_DEFAULT_LOOP_END;
 

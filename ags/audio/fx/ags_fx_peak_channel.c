@@ -157,7 +157,6 @@ ags_fx_peak_channel_init(AgsFxPeakChannel *fx_peak_channel)
 				       "port-value-size", sizeof(gfloat),
 				       "port-value-length", 1,
 				       NULL);
-  g_object_ref(fx_peak_channel->peak);
   
   fx_peak_channel->peak->port_value.ags_port_float = 0.0;
 
