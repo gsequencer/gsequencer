@@ -84,7 +84,6 @@ ags_fx_analyse_audio_signal_test_run_inter()
   AgsFxAnalyseChannelProcessor *fx_analyse_channel_processor;
   AgsFxAnalyseRecycling *fx_analyse_recycling;
   AgsFxAnalyseAudioSignal *fx_analyse_audio_signal;
-
   
   /* audio */
   audio = g_object_new(AGS_TYPE_AUDIO,
@@ -95,6 +94,7 @@ ags_fx_analyse_audio_signal_test_run_inter()
 				 recall_container);
   
   fx_analyse_audio = ags_fx_analyse_audio_new(audio);
+  ags_recall_set_sound_scope(fx_analyse_audio, AGS_SOUND_SCOPE_PLAYBACK);
   ags_recall_container_add(recall_container,
 			   fx_analyse_audio);
   
@@ -102,6 +102,7 @@ ags_fx_analyse_audio_signal_test_run_inter()
 
   /* audio processor */  
   fx_analyse_audio_processor = ags_fx_analyse_audio_processor_new(audio);
+  ags_recall_set_sound_scope(fx_analyse_audio_processor, AGS_SOUND_SCOPE_PLAYBACK);
 
   g_object_set(fx_analyse_audio_processor,
 	       "recall-audio", fx_analyse_audio,
@@ -120,6 +121,7 @@ ags_fx_analyse_audio_signal_test_run_inter()
 				   recall_container);
   
   fx_analyse_channel = ags_fx_analyse_channel_new(channel);
+  ags_recall_set_sound_scope(fx_analyse_channel, AGS_SOUND_SCOPE_PLAYBACK);
 
   g_object_set(fx_analyse_channel,
 	       "recall-audio", fx_analyse_audio,
@@ -132,6 +134,7 @@ ags_fx_analyse_audio_signal_test_run_inter()
 
   /* channel processor */  
   fx_analyse_channel_processor = ags_fx_analyse_channel_processor_new(channel);
+  ags_recall_set_sound_scope(fx_analyse_channel_processor, AGS_SOUND_SCOPE_PLAYBACK);
 
   g_object_set(fx_analyse_channel_processor,
 	       "recall-audio", fx_analyse_audio,
@@ -148,6 +151,7 @@ ags_fx_analyse_audio_signal_test_run_inter()
 			   NULL);
   
   fx_analyse_recycling = ags_fx_analyse_recycling_new(recycling);
+  ags_recall_set_sound_scope(fx_analyse_recycling, AGS_SOUND_SCOPE_PLAYBACK);
 
   ags_recall_add_child(fx_analyse_channel_processor,
 		       fx_analyse_recycling);
@@ -157,17 +161,27 @@ ags_fx_analyse_audio_signal_test_run_inter()
   /* audio signal */
   audio_signal = g_object_new(AGS_TYPE_AUDIO_SIGNAL,
 			      NULL);
+
+  ags_audio_signal_stream_resize(audio_signal,
+				 3);
+  audio_signal->stream_current = audio_signal->stream;
   
   fx_analyse_audio_signal = ags_fx_analyse_audio_signal_new(audio_signal);
+  ags_recall_set_sound_scope(fx_analyse_audio_signal, AGS_SOUND_SCOPE_PLAYBACK);
 
   ags_recall_add_child(fx_analyse_recycling,
 		       fx_analyse_audio_signal);
 
   CU_ASSERT(fx_analyse_audio_signal != NULL);
 
-  /* run inter */
   //TODO:JK: improve me
-  
+
+  /* run inter - attempt #0 */  
+  ags_recall_run_inter(fx_analyse_audio_signal);
+
+  /* run inter - attempt #1 */  
+  audio_signal->stream_current = NULL;
+
   ags_recall_run_inter(fx_analyse_audio_signal);
 }
 
