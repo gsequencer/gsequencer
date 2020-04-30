@@ -174,8 +174,6 @@ ags_fx_analyse_audio_signal_test_run_inter()
 
   CU_ASSERT(fx_analyse_audio_signal != NULL);
 
-  //TODO:JK: improve me
-
   /* run inter - attempt #0 */  
   ags_recall_run_inter(fx_analyse_audio_signal);
 

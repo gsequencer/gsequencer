@@ -19,6 +19,8 @@
 
 #include <ags/audio/fx/ags_fx_analyse_channel_processor.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
+
 #include <ags/audio/fx/ags_fx_analyse_channel.h>
 #include <ags/audio/fx/ags_fx_analyse_recycling.h>
 
@@ -153,16 +155,29 @@ ags_fx_analyse_channel_processor_real_run_inter(AgsRecall *recall)
 	       "buffer-size", &buffer_size,
 	       NULL);
 
-  if(fx_analyse_channel != NULL){
+  if(fx_analyse_channel != NULL &&
+     sound_scope >= 0 &&
+     sound_scope < AGS_SOUND_SCOPE_LAST &&
+     buffer_size > 0){
     AgsPort *magnitude;
 
+    gboolean magnitude_cleared;
+    
     GRecMutex *port_mutex;
+
+    fx_analyse_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_analyse_channel);
+
+    g_rec_mutex_lock(fx_analyse_channel_mutex);
+
+    magnitude_cleared = fx_analyse_channel->magnitude_cleared;
     
     memset((void *) fx_analyse_channel->input_data[sound_scope]->out, 0, buffer_size * sizeof(double));
     
     fftw_execute(fx_analyse_channel->input_data[sound_scope]->plan);
 
     magnitude = NULL;
+    
+    g_rec_mutex_unlock(fx_analyse_channel_mutex);
     
     g_object_get(fx_analyse_channel,
 		 "magnitude", &magnitude,
@@ -172,9 +187,14 @@ ags_fx_analyse_channel_processor_real_run_inter(AgsRecall *recall)
       port_mutex = AGS_PORT_GET_OBJ_MUTEX(magnitude);
 
       g_rec_mutex_lock(port_mutex);
+
+      if(!magnitude_cleared){
+	ags_audio_buffer_util_clear_buffer(fx_analyse_channel->magnitude->port_value.ags_port_double_ptr, 1,
+					   buffer_size, AGS_AUDIO_BUFFER_UTIL_DOUBLE);	
+      }
       
       for(i = 0; i < buffer_size; i++){
-	fx_analyse_channel->magnitude->port_value.ags_port_double_ptr[i] = fx_analyse_channel->input_data[sound_scope]->out[i];
+	fx_analyse_channel->magnitude->port_value.ags_port_double_ptr[i] += fx_analyse_channel->input_data[sound_scope]->out[i];
       }
 
       g_rec_mutex_unlock(port_mutex);

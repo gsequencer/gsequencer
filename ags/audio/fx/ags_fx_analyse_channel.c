@@ -177,6 +177,8 @@ ags_fx_analyse_channel_init(AgsFxAnalyseChannel *fx_analyse_channel)
 
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
+  fx_analyse_channel->magnitude_cleared = TRUE;
   
   g_object_get(fx_analyse_channel,
 	       "samplerate", &samplerate,

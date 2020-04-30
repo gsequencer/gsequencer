@@ -49,6 +49,8 @@ struct _AgsFxAnalyseChannel
 {
   AgsRecallChannel recall_channel;
 
+  gboolean magnitude_cleared;
+  
   AgsFxAnalyseChannelInputData* input_data[AGS_SOUND_SCOPE_LAST];
 
   AgsPort *frequency;
