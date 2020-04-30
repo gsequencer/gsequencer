@@ -706,6 +706,8 @@ ags_recall_id_find_recycling_context(GList *recall_id,
     AgsRecyclingContext *current_recycling_context;
 
     gboolean success;
+
+    current_recycling_context = NULL;
     
     g_object_get(recall_id->data,
 		 "recycling-context", &current_recycling_context,
@@ -713,7 +715,9 @@ ags_recall_id_find_recycling_context(GList *recall_id,
 
     success = (current_recycling_context == recycling_context) ? TRUE: FALSE;
 
-    g_object_unref(current_recycling_context);
+    if(current_recycling_context != NULL){
+      g_object_unref(current_recycling_context);
+    }
     
     if(success){
       return(recall_id->data);

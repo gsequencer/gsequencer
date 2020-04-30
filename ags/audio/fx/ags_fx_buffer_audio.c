@@ -40,18 +40,6 @@ static gpointer ags_fx_buffer_audio_parent_class = NULL;
 
 static const gchar *ags_fx_buffer_audio_plugin_name = "ags-fx-buffer";
 
-static const gchar *ags_fx_buffer_audio_specifier[] = {
-  NULL,
-};
-
-static const gchar *ags_fx_buffer_audio_control_port[] = {
-  NULL,
-};
-
-enum{
-  PROP_0,
-};
-
 GType
 ags_fx_buffer_audio_get_type()
 {

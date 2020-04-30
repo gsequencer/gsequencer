@@ -245,9 +245,9 @@ ags_fx_analyse_channel_init(AgsFxAnalyseChannel *fx_analyse_channel)
 
 void
 ags_fx_analyse_channel_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec)
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec)
 {
   AgsFxAnalyseChannel *fx_analyse_channel;
 
@@ -321,9 +321,9 @@ ags_fx_analyse_channel_set_property(GObject *gobject,
 
 void
 ags_fx_analyse_channel_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec)
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec)
 {
   AgsFxAnalyseChannel *fx_analyse_channel;
 

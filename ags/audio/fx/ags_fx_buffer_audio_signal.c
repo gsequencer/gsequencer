@@ -190,10 +190,13 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
     fx_buffer_recycling = NULL;
     
     output_soundcard = NULL;
+
+    start_list = NULL;
     
     g_object_get(recall,
 		 "output-soundcard", &output_soundcard,
 		 "recall-id", &recall_id,
+		 "parent", &fx_buffer_recycling,
 		 NULL);
 
     g_object_get(fx_buffer_recycling,
@@ -365,12 +368,16 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 						  buffer_source, 1, 0,
 						  destination_buffer_size - attack, copy_mode);
 
+      source->stream_current = source->stream_current->next;
+      
       g_rec_mutex_unlock(destination_stream_mutex);
       g_rec_mutex_unlock(source_stream_mutex);
 
       ags_recall_unset_flags(recall, AGS_RECALL_INITIAL_RUN);
     }else{
       if(attack != 0 && stream_source->prev != NULL){	
+	g_rec_mutex_lock(source_stream_mutex);
+	
 	buffer_source_prev = stream_source->prev->data;
 
 	if(resample){
@@ -379,8 +386,6 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 	  tmp_buffer_source_prev = ags_stream_alloc(destination_buffer_size,
 						    source_format);
 	  
-	  g_rec_mutex_lock(source_stream_mutex);
-	  
 	  ags_audio_buffer_util_resample_with_buffer(buffer_source_prev, 1,
 						     ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
 						     source_buffer_size,
@@ -388,12 +393,9 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 						     destination_buffer_size,
 						     tmp_buffer_source_prev);
 
-	  g_rec_mutex_unlock(source_stream_mutex);
-      
 	  buffer_source_prev = tmp_buffer_source_prev;
 	}
 	
-	g_rec_mutex_lock(source_stream_mutex);
 	g_rec_mutex_lock(destination_stream_mutex);
 
 	ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, 0,
@@ -414,6 +416,8 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
       ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, attack,
 						  buffer_source, 1, 0,
 						  destination_buffer_size - attack, copy_mode);
+
+      source->stream_current = source->stream_current->next;
 
       g_rec_mutex_unlock(destination_stream_mutex);
       g_rec_mutex_unlock(source_stream_mutex);
