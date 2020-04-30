@@ -52,7 +52,7 @@ struct _AgsFxAnalyseAudioProcessorClass
 
 GType ags_fx_analyse_audio_processor_get_type();
 
-/*  */
+/* instantiate */
 AgsFxAnalyseAudioProcessor* ags_fx_analyse_audio_processor_new(AgsAudio *audio);
 
 G_END_DECLS
