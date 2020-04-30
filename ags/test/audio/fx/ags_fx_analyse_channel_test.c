@@ -33,6 +33,8 @@ int ags_fx_analyse_channel_test_init_suite();
 int ags_fx_analyse_channel_test_clean_suite();
 
 void ags_fx_analyse_channel_test_new();
+void ags_fx_analyse_channel_test_input_data_alloc();
+void ags_fx_analyse_channel_test_input_data_free();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -60,13 +62,78 @@ ags_fx_analyse_channel_test_new()
   AgsChannel *channel;
   AgsFxAnalyseChannel *fx_analyse_channel;
 
+  guint i;
+  gboolean success;
+  
   channel = g_object_new(AGS_TYPE_CHANNEL,
 			 NULL);
   
   fx_analyse_channel = ags_fx_analyse_channel_new(channel);
 
   CU_ASSERT(fx_analyse_channel != NULL);
+
   CU_ASSERT(AGS_RECALL_CHANNEL(fx_analyse_channel)->source == channel);
+
+  CU_ASSERT(fx_analyse_channel->frequency != NULL);
+  CU_ASSERT(fx_analyse_channel->magnitude != NULL);
+
+  success = TRUE;
+  
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    if(fx_analyse_channel->input_data[i]->parent == NULL){
+      success = FALSE;
+      
+      break;
+    }
+
+    if(fx_analyse_channel->input_data[i]->plan == NULL){
+      success = FALSE;
+      
+      break;
+    }
+
+    if(fx_analyse_channel->input_data[i]->comout == NULL){
+      success = FALSE;
+      
+      break;
+    }
+
+    if(fx_analyse_channel->input_data[i]->in == NULL){
+      success = FALSE;
+      
+      break;
+    }
+
+    if(fx_analyse_channel->input_data[i]->out == NULL){
+      success = FALSE;
+      
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
+}
+
+void
+ags_fx_analyse_channel_test_input_data_alloc()
+{
+  AgsFxAnalyseChannelInputData *input_data;
+
+  input_data = ags_fx_analyse_channel_input_data_alloc();
+
+  CU_ASSERT(input_data != NULL);
+}
+
+void
+ags_fx_analyse_channel_test_input_data_free()
+{
+  AgsFxAnalyseChannelInputData *input_data;
+
+  input_data = ags_fx_analyse_channel_input_data_alloc();
+
+  CU_ASSERT(input_data != NULL);
+
+  ags_fx_analyse_channel_input_data_free(input_data);
 }
 
 int
@@ -96,7 +163,9 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsFxAnalyseChannel new", ags_fx_analyse_channel_test_new) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsFxAnalyseChannel new", ags_fx_analyse_channel_test_new) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxAnalyseChannel input data alloc", ags_fx_analyse_channel_test_input_data_alloc) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxAnalyseChannel input data free", ags_fx_analyse_channel_test_input_data_free) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

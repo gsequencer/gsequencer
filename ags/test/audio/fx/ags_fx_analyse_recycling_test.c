@@ -66,7 +66,10 @@ ags_fx_analyse_recycling_test_new()
   fx_analyse_recycling = ags_fx_analyse_recycling_new(recycling);
 
   CU_ASSERT(fx_analyse_recycling != NULL);
+
   CU_ASSERT(AGS_RECALL_RECYCLING(fx_analyse_recycling)->source == recycling);
+
+  CU_ASSERT(AGS_RECALL(fx_analyse_recycling)->child_type == AGS_TYPE_FX_ANALYSE_AUDIO_SIGNAL);
 }
 
 int

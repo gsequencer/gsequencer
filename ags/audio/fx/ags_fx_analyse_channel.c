@@ -589,7 +589,7 @@ ags_fx_analyse_channel_notify_buffer_size_callback(GObject *gobject,
  * 
  * Allocate #AgsFxAnalyseChannelInputData-struct
  * 
- * Returns: the new #AgsFxAnalyseChannelInputData-struct
+ * Returns: (type gpointer) (transfer full): the new #AgsFxAnalyseChannelInputData-struct
  * 
  * Since: 3.3.0
  */
@@ -613,7 +613,7 @@ ags_fx_analyse_channel_input_data_alloc()
 
 /**
  * ags_fx_analyse_channel_input_data_free:
- * @input_data: the #AgsFxAnalyseChannelInputData-struct
+ * @input_data: (type gpointer) (transfer full): the #AgsFxAnalyseChannelInputData-struct
  * 
  * Free @input_data.
  * 

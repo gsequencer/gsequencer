@@ -67,6 +67,8 @@ ags_fx_analyse_channel_processor_test_new()
 
   CU_ASSERT(fx_analyse_channel_processor != NULL);
   CU_ASSERT(AGS_RECALL_CHANNEL_RUN(fx_analyse_channel_processor)->source == channel);
+
+  CU_ASSERT(AGS_RECALL(fx_analyse_channel_processor)->child_type == AGS_TYPE_FX_ANALYSE_RECYCLING);
 }
 
 int

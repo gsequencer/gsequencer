@@ -1500,7 +1500,7 @@ ags_lv2_plugin_event_buffer_alloc(guint buffer_size)
 /**
  * ags_lv2_plugin_event_buffer_free:
  * @event_buffer: (type gpointer) (transfer none): the LV2_Event_Buffer struct
-o * 
+ * 
  * Free LV2_Event_Buffer struct.
  * 
  * Since: 3.3.0
