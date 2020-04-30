@@ -40,9 +40,25 @@ G_BEGIN_DECLS
 typedef struct _AgsFxEnvelopeChannel AgsFxEnvelopeChannel;
 typedef struct _AgsFxEnvelopeChannelClass AgsFxEnvelopeChannelClass;
 
+typedef enum{
+  AGS_FX_ENVELOPE_CHANNEL_MODE_STREAM_LENGTH,
+  AGS_FX_ENVELOPE_CHANNEL_MODE_NOTE_LENGTH,
+  AGS_FX_ENVELOPE_CHANNEL_MODE_FIXED_LENGTH,
+}AgsFxEnvelopeChannelMode;
+
 struct _AgsFxEnvelopeChannel
 {
   AgsRecallChannel recall_channel;
+
+  guint envelope_mode;
+
+  AgsPort *fixed_length;
+
+  AgsPort *attack;
+  AgsPort *decay;
+  AgsPort *sustain;
+  AgsPort *release;
+  AgsPort *ratio;
 };
 
 struct _AgsFxEnvelopeChannelClass
