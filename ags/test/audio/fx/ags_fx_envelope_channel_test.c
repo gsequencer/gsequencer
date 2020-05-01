@@ -32,7 +32,19 @@
 int ags_fx_envelope_channel_test_init_suite();
 int ags_fx_envelope_channel_test_clean_suite();
 
+void ags_fx_envelope_channel_stub_finalize();
+
 void ags_fx_envelope_channel_test_new();
+void ags_fx_envelope_channel_test_dispose();
+void ags_fx_envelope_channel_test_finalize();
+
+gboolean finalized;
+
+void
+ags_fx_envelope_channel_stub_finalize(GObject *gobject)
+{
+  finalized = TRUE;
+}
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -67,6 +79,74 @@ ags_fx_envelope_channel_test_new()
 
   CU_ASSERT(fx_envelope_channel != NULL);
   CU_ASSERT(AGS_RECALL_CHANNEL(fx_envelope_channel)->source == channel);
+
+  CU_ASSERT(fx_envelope_channel->fixed_length != NULL);
+  CU_ASSERT(fx_envelope_channel->attack != NULL);
+  CU_ASSERT(fx_envelope_channel->decay != NULL);
+  CU_ASSERT(fx_envelope_channel->sustain != NULL);
+  CU_ASSERT(fx_envelope_channel->release != NULL);
+  CU_ASSERT(fx_envelope_channel->ratio != NULL);
+}
+
+void
+ags_fx_envelope_channel_test_dispose()
+{
+  AgsChannel *channel;
+  AgsFxEnvelopeChannel *fx_envelope_channel;
+
+  channel = g_object_new(AGS_TYPE_CHANNEL,
+			 NULL);
+  
+  fx_envelope_channel = ags_fx_envelope_channel_new(channel);
+
+  g_object_run_dispose(fx_envelope_channel);
+
+  CU_ASSERT(fx_envelope_channel->fixed_length == NULL);
+  CU_ASSERT(fx_envelope_channel->attack == NULL);
+  CU_ASSERT(fx_envelope_channel->decay == NULL);
+  CU_ASSERT(fx_envelope_channel->sustain == NULL);
+  CU_ASSERT(fx_envelope_channel->release == NULL);
+  CU_ASSERT(fx_envelope_channel->ratio == NULL);
+
+  g_object_unref(fx_envelope_channel);
+}
+
+void
+ags_fx_envelope_channel_test_finalize()
+{
+  AgsChannel *channel;
+  AgsFxEnvelopeChannel *fx_envelope_channel;
+
+  GObjectClass *gobject_class;
+  
+  gpointer stub;
+  
+  /* attempt #0 */
+  channel = g_object_new(AGS_TYPE_CHANNEL,
+			 NULL);
+  
+  fx_envelope_channel = ags_fx_envelope_channel_new(channel);
+
+  gobject_class = (GObjectClass *) g_type_class_ref(AGS_TYPE_FX_ENVELOPE_CHANNEL);
+  
+  finalized = FALSE;
+
+  stub = gobject_class->finalize;
+  gobject_class->finalize = ags_fx_envelope_channel_stub_finalize;
+  
+  g_object_unref(fx_envelope_channel);
+
+  CU_ASSERT(finalized == TRUE);
+
+  gobject_class->finalize = stub;
+
+  /* attempt #1 */
+  channel = g_object_new(AGS_TYPE_CHANNEL,
+			 NULL);
+  
+  fx_envelope_channel = ags_fx_envelope_channel_new(channel);
+
+  g_object_unref(fx_envelope_channel);
 }
 
 int
@@ -96,7 +176,9 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsFxEnvelopeChannel new", ags_fx_envelope_channel_test_new) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsFxEnvelopeChannel new", ags_fx_envelope_channel_test_new) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxEnvelopeChannel dispose", ags_fx_envelope_channel_test_dispose) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxEnvelopeChannel finalize", ags_fx_envelope_channel_test_finalize) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

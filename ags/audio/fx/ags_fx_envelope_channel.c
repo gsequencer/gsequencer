@@ -247,7 +247,6 @@ ags_fx_envelope_channel_init(AgsFxEnvelopeChannel *fx_envelope_channel)
 						   "port-value-size", sizeof(gfloat),
 						   "port-value-length", 1,
 						   NULL);
-  g_object_ref(fx_envelope_channel->fixed_length);
   
   fx_envelope_channel->fixed_length->port_value.ags_port_float = (gfloat) -1.0;
 
@@ -264,10 +263,9 @@ ags_fx_envelope_channel_init(AgsFxEnvelopeChannel *fx_envelope_channel)
 					     "port-value-size", sizeof(AgsComplex),
 					     "port-value-length", 1,
 					     NULL);
-  g_object_ref(fx_envelope_channel->attack);
-  
+
   ags_complex_set(&(fx_envelope_channel->attack->port_value.ags_port_complex),
-		  (complex) 1.0 + 0.25 * I);
+		  1.0 + 0.25 * I);
 
   ags_recall_add_port((AgsRecall *) fx_envelope_channel,
 		      fx_envelope_channel->attack);
@@ -282,10 +280,9 @@ ags_fx_envelope_channel_init(AgsFxEnvelopeChannel *fx_envelope_channel)
 					    "port-value-size", sizeof(AgsComplex),
 					    "port-value-length", 1,
 					    NULL);
-  g_object_ref(fx_envelope_channel->decay);
   
   ags_complex_set(&(fx_envelope_channel->decay->port_value.ags_port_complex),
-		  (complex) 1.0 + 0.25 * I);
+		  1.0 + 0.25 * I);
 
   ags_recall_add_port((AgsRecall *) fx_envelope_channel,
 		      fx_envelope_channel->decay);
@@ -300,10 +297,9 @@ ags_fx_envelope_channel_init(AgsFxEnvelopeChannel *fx_envelope_channel)
 					      "port-value-size", sizeof(AgsComplex),
 					      "port-value-length", 1,
 					      NULL);
-  g_object_ref(fx_envelope_channel->sustain);
   
   ags_complex_set(&(fx_envelope_channel->sustain->port_value.ags_port_complex),
-		  (complex) 1.0 + 0.25 * I);
+		  1.0 + 0.25 * I);
 
   ags_recall_add_port((AgsRecall *) fx_envelope_channel,
 		      fx_envelope_channel->sustain);
@@ -318,10 +314,9 @@ ags_fx_envelope_channel_init(AgsFxEnvelopeChannel *fx_envelope_channel)
 					      "port-value-size", sizeof(AgsComplex),
 					      "port-value-length", 1,
 					      NULL);
-  g_object_ref(fx_envelope_channel->release);
   
   ags_complex_set(&(fx_envelope_channel->release->port_value.ags_port_complex),
-		  (complex) 1.0 + 0.25 * I);
+		  1.0 + 0.25 * I);
 
   ags_recall_add_port((AgsRecall *) fx_envelope_channel,
 		      fx_envelope_channel->release);
@@ -336,10 +331,9 @@ ags_fx_envelope_channel_init(AgsFxEnvelopeChannel *fx_envelope_channel)
 					    "port-value-size", sizeof(AgsComplex),
 					    "port-value-length", 1,
 					    NULL);
-  g_object_ref(fx_envelope_channel->ratio);
   
   ags_complex_set(&(fx_envelope_channel->ratio->port_value.ags_port_complex),
-		  (complex) 1.0 + 0.25 * I);
+		  1.0 + 0.25 * I);
 
   ags_recall_add_port((AgsRecall *) fx_envelope_channel,
 		      fx_envelope_channel->ratio);

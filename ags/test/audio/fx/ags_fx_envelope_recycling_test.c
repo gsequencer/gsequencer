@@ -67,6 +67,8 @@ ags_fx_envelope_recycling_test_new()
 
   CU_ASSERT(fx_envelope_recycling != NULL);
   CU_ASSERT(AGS_RECALL_RECYCLING(fx_envelope_recycling)->source == recycling);
+
+  CU_ASSERT(AGS_RECALL(fx_envelope_recycling)->child_type == AGS_TYPE_FX_ENVELOPE_AUDIO_SIGNAL);
 }
 
 int

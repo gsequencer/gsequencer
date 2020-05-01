@@ -195,7 +195,8 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
   GRecMutex *attack_mutex, *decay_mutex, *sustain_mutex, *release_mutex, *ratio_mutex;
 
   output_soundcard = NULL;
-  
+
+  template = NULL;
   source = NULL;
 
   fx_envelope_channel = NULL;
@@ -212,6 +213,8 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
   
   start_note = NULL;
 
+  length = 0;
+  
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
 
@@ -254,7 +257,8 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	       "length", &length,
 	       NULL);
 
-  if(source != NULL){
+  if(source != NULL &&
+     source->stream_current != NULL){
     stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
 
     if(start_note != NULL){
@@ -581,6 +585,11 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
     }
   }
 
+  if(source == NULL ||
+     source->stream_current == NULL){
+    ags_recall_done(recall);
+  }
+  
   if(output_soundcard != NULL){
     g_object_unref(output_soundcard);
   }
