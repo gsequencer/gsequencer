@@ -217,13 +217,26 @@ ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_patter
   GRecMutex *fx_pattern_audio_processor_mutex;
 
   fx_pattern_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_pattern_audio_processor);
+
+  audio = NULL;
+
+  start_input = NULL;
+
+  audio_channel = 0;
+  
+  recall_id = NULL;
+
+  fx_pattern_audio = NULL;
   
   g_object_get(fx_pattern_audio_processor,
 	       "audio", &audio,
-	       "input", &start_input,
 	       "recall-id", &recall_id,
 	       "recall-audio", &fx_pattern_audio,
 	       "audio-channel", &audio_channel,
+	       NULL);
+
+  g_object_get(audio,
+    	       "input", &start_input,
 	       NULL);
   
   g_object_get(recall_id,
@@ -449,14 +462,25 @@ ags_fx_pattern_audio_processor_real_play(AgsFxPatternAudioProcessor *fx_pattern_
   GRecMutex *fx_pattern_audio_processor_mutex;
 
   fx_pattern_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_pattern_audio_processor);
+
+  audio = NULL;
+
+  start_input = NULL;
+  
+  fx_pattern_audio = NULL;
+
+  audio_channel = 0;
   
   g_object_get(fx_pattern_audio_processor,
 	       "audio", &audio,
-	       "input", &start_input,
 	       "recall-audio", &fx_pattern_audio,
 	       "audio-channel", &audio_channel,
 	       NULL);
 
+  g_object_get(audio,
+	       "input", &start_input,
+	       NULL);
+  
   g_rec_mutex_lock(fx_pattern_audio_processor_mutex);
     
   offset_counter = fx_pattern_audio_processor->offset_counter;
@@ -607,9 +631,10 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
 
   GRecMutex *fx_pattern_audio_processor_mutex;
   
-  fx_pattern_audio_processor = NULL;
   fx_pattern_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_pattern_audio_processor);
 
+  fx_pattern_audio = NULL;
+  
   g_object_get(fx_pattern_audio_processor,
 	       "recall-audio", &fx_pattern_audio,
 	       NULL);

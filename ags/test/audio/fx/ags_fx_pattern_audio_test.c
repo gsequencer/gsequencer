@@ -32,7 +32,19 @@
 int ags_fx_pattern_audio_test_init_suite();
 int ags_fx_pattern_audio_test_clean_suite();
 
+void ags_fx_pattern_audio_stub_finalize();
+
 void ags_fx_pattern_audio_test_new();
+void ags_fx_pattern_audio_test_dispose();
+void ags_fx_pattern_audio_test_finalize();
+
+gboolean finalized;
+
+void
+ags_fx_pattern_audio_stub_finalize(GObject *gobject)
+{
+  finalized = TRUE;
+}
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -67,6 +79,80 @@ ags_fx_pattern_audio_test_new()
 
   CU_ASSERT(fx_pattern_audio != NULL);
   CU_ASSERT(AGS_RECALL_AUDIO(fx_pattern_audio)->audio == audio);
+
+  CU_ASSERT(fx_pattern_audio->bpm != NULL);
+  CU_ASSERT(fx_pattern_audio->tact != NULL);
+  CU_ASSERT(fx_pattern_audio->delay != NULL);
+  CU_ASSERT(fx_pattern_audio->duration != NULL);
+  CU_ASSERT(fx_pattern_audio->loop != NULL);
+  CU_ASSERT(fx_pattern_audio->loop_start != NULL);
+  CU_ASSERT(fx_pattern_audio->loop_end != NULL);
+  CU_ASSERT(fx_pattern_audio->bank_index_0 != NULL);
+  CU_ASSERT(fx_pattern_audio->bank_index_1 != NULL);
+}
+
+void
+ags_fx_pattern_audio_test_dispose()
+{
+  AgsAudio *audio;
+  AgsFxPatternAudio *fx_pattern_audio;
+
+  audio = g_object_new(AGS_TYPE_AUDIO,
+			 NULL);
+  
+  fx_pattern_audio = ags_fx_pattern_audio_new(audio);
+
+  g_object_run_dispose(fx_pattern_audio);
+
+  CU_ASSERT(fx_pattern_audio->bpm == NULL);
+  CU_ASSERT(fx_pattern_audio->tact == NULL);
+  CU_ASSERT(fx_pattern_audio->delay == NULL);
+  CU_ASSERT(fx_pattern_audio->duration == NULL);
+  CU_ASSERT(fx_pattern_audio->loop == NULL);
+  CU_ASSERT(fx_pattern_audio->loop_start == NULL);
+  CU_ASSERT(fx_pattern_audio->loop_end == NULL);
+  CU_ASSERT(fx_pattern_audio->bank_index_0 == NULL);
+  CU_ASSERT(fx_pattern_audio->bank_index_1 == NULL);
+
+  g_object_unref(fx_pattern_audio);
+}
+
+void
+ags_fx_pattern_audio_test_finalize()
+{
+  AgsAudio *audio;
+  AgsFxPatternAudio *fx_pattern_audio;
+
+  GObjectClass *gobject_class;
+  
+  gpointer stub;
+  
+  /* attempt #0 */
+  audio = g_object_new(AGS_TYPE_AUDIO,
+			 NULL);
+  
+  fx_pattern_audio = ags_fx_pattern_audio_new(audio);
+
+  gobject_class = (GObjectClass *) g_type_class_ref(AGS_TYPE_FX_PATTERN_AUDIO);
+  
+  finalized = FALSE;
+
+  stub = gobject_class->finalize;
+  gobject_class->finalize = ags_fx_pattern_audio_stub_finalize;
+
+  g_object_unref(fx_pattern_audio);
+
+  CU_ASSERT(finalized == TRUE);
+
+  gobject_class->finalize = stub;
+
+  /* attempt #1 */
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       NULL);
+  
+  fx_pattern_audio = ags_fx_pattern_audio_new(audio);
+
+  g_object_unref(fx_pattern_audio);
 }
 
 int
@@ -96,7 +182,9 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsFxPatternAudio new", ags_fx_pattern_audio_test_new) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsFxPatternAudio new", ags_fx_pattern_audio_test_new) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxPatternAudio dispose", ags_fx_pattern_audio_test_dispose) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxPatternAudio finalize", ags_fx_pattern_audio_test_finalize) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

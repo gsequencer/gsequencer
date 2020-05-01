@@ -67,6 +67,8 @@ ags_fx_pattern_recycling_test_new()
 
   CU_ASSERT(fx_pattern_recycling != NULL);
   CU_ASSERT(AGS_RECALL_RECYCLING(fx_pattern_recycling)->source == recycling);
+
+  CU_ASSERT(AGS_RECALL(fx_pattern_recycling)->child_type == AGS_TYPE_FX_PATTERN_AUDIO_SIGNAL);
 }
 
 int
