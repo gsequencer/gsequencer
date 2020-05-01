@@ -33,6 +33,41 @@
 #include <ags/audio/fx/ags_fx_buffer_recycling.h>
 #include <ags/audio/fx/ags_fx_buffer_audio_signal.h>
 
+#include <ags/audio/fx/ags_fx_volume_audio.h>
+#include <ags/audio/fx/ags_fx_volume_audio_processor.h>
+#include <ags/audio/fx/ags_fx_volume_channel.h>
+#include <ags/audio/fx/ags_fx_volume_channel_processor.h>
+#include <ags/audio/fx/ags_fx_volume_recycling.h>
+#include <ags/audio/fx/ags_fx_volume_audio_signal.h>
+
+#include <ags/audio/fx/ags_fx_peak_audio.h>
+#include <ags/audio/fx/ags_fx_peak_audio_processor.h>
+#include <ags/audio/fx/ags_fx_peak_channel.h>
+#include <ags/audio/fx/ags_fx_peak_channel_processor.h>
+#include <ags/audio/fx/ags_fx_peak_recycling.h>
+#include <ags/audio/fx/ags_fx_peak_audio_signal.h>
+
+#include <ags/audio/fx/ags_fx_eq10_audio.h>
+#include <ags/audio/fx/ags_fx_eq10_audio_processor.h>
+#include <ags/audio/fx/ags_fx_eq10_channel.h>
+#include <ags/audio/fx/ags_fx_eq10_channel_processor.h>
+#include <ags/audio/fx/ags_fx_eq10_recycling.h>
+#include <ags/audio/fx/ags_fx_eq10_audio_signal.h>
+
+#include <ags/audio/fx/ags_fx_analyse_audio.h>
+#include <ags/audio/fx/ags_fx_analyse_audio_processor.h>
+#include <ags/audio/fx/ags_fx_analyse_channel.h>
+#include <ags/audio/fx/ags_fx_analyse_channel_processor.h>
+#include <ags/audio/fx/ags_fx_analyse_recycling.h>
+#include <ags/audio/fx/ags_fx_analyse_audio_signal.h>
+
+#include <ags/audio/fx/ags_fx_envelope_audio.h>
+#include <ags/audio/fx/ags_fx_envelope_audio_processor.h>
+#include <ags/audio/fx/ags_fx_envelope_channel.h>
+#include <ags/audio/fx/ags_fx_envelope_channel_processor.h>
+#include <ags/audio/fx/ags_fx_envelope_recycling.h>
+#include <ags/audio/fx/ags_fx_envelope_audio_signal.h>
+
 #include <ags/audio/fx/ags_fx_pattern_audio.h>
 #include <ags/audio/fx/ags_fx_pattern_audio_processor.h>
 #include <ags/audio/fx/ags_fx_pattern_channel.h>
@@ -60,6 +95,13 @@
 #include <ags/audio/fx/ags_fx_dssi_channel_processor.h>
 #include <ags/audio/fx/ags_fx_dssi_recycling.h>
 #include <ags/audio/fx/ags_fx_dssi_audio_signal.h>
+
+#include <ags/audio/fx/ags_fx_lv2_audio.h>
+#include <ags/audio/fx/ags_fx_lv2_audio_processor.h>
+#include <ags/audio/fx/ags_fx_lv2_channel.h>
+#include <ags/audio/fx/ags_fx_lv2_channel_processor.h>
+#include <ags/audio/fx/ags_fx_lv2_recycling.h>
+#include <ags/audio/fx/ags_fx_lv2_audio_signal.h>
 
 /**
  * SECTION:ags_fx_factory
@@ -89,6 +131,51 @@ GList* ags_fx_factory_create_buffer(AgsAudio *audio,
 				    guint start_audio_channel, guint stop_audio_channel,
 				    guint start_pad, guint stop_pad,
 				    guint create_flags, guint recall_flags);
+
+GList* ags_fx_factory_create_volume(AgsAudio *audio,
+				    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				    gchar *plugin_name,
+				    gchar *filename,
+				    gchar *effect,
+				    guint start_audio_channel, guint stop_audio_channel,
+				    guint start_pad, guint stop_pad,
+				    guint create_flags, guint recall_flags);
+
+GList* ags_fx_factory_create_peak(AgsAudio *audio,
+				  AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				  gchar *plugin_name,
+				  gchar *filename,
+				  gchar *effect,
+				  guint start_audio_channel, guint stop_audio_channel,
+				  guint start_pad, guint stop_pad,
+				  guint create_flags, guint recall_flags);
+
+GList* ags_fx_factory_create_eq10(AgsAudio *audio,
+				  AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				  gchar *plugin_name,
+				  gchar *filename,
+				  gchar *effect,
+				  guint start_audio_channel, guint stop_audio_channel,
+				  guint start_pad, guint stop_pad,
+				  guint create_flags, guint recall_flags);
+
+GList* ags_fx_factory_create_analyse(AgsAudio *audio,
+				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				     gchar *plugin_name,
+				     gchar *filename,
+				     gchar *effect,
+				     guint start_audio_channel, guint stop_audio_channel,
+				     guint start_pad, guint stop_pad,
+				     guint create_flags, guint recall_flags);
+
+GList* ags_fx_factory_create_envelope(AgsAudio *audio,
+				      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				      gchar *plugin_name,
+				      gchar *filename,
+				      gchar *effect,
+				      guint start_audio_channel, guint stop_audio_channel,
+				      guint start_pad, guint stop_pad,
+				      guint create_flags, guint recall_flags);
 
 GList* ags_fx_factory_create_pattern(AgsAudio *audio,
 				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -125,6 +212,15 @@ GList* ags_fx_factory_create_dssi(AgsAudio *audio,
 				  guint start_audio_channel, guint stop_audio_channel,
 				  guint start_pad, guint stop_pad,
 				  guint create_flags, guint recall_flags);
+
+GList* ags_fx_factory_create_lv2(AgsAudio *audio,
+				 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				 gchar *plugin_name,
+				 gchar *filename,
+				 gchar *effect,
+				 guint start_audio_channel, guint stop_audio_channel,
+				 guint start_pad, guint stop_pad,
+				 guint create_flags, guint recall_flags);
 
 /* implementation */
 GList*
@@ -695,6 +791,101 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
     g_object_unref(channel);
   }
 
+  return(start_recall);
+}
+
+GList*
+ags_fx_factory_create_volume(AgsAudio *audio,
+			     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			     gchar *plugin_name,
+			     gchar *filename,
+			     gchar *effect,
+			     guint start_audio_channel, guint stop_audio_channel,
+			     guint start_pad, guint stop_pad,
+			     guint create_flags, guint recall_flags)
+{
+  GList *start_recall;
+
+  start_recall = NULL;
+
+  //TODO:JK: implement me
+  
+  return(start_recall);
+}
+
+GList*
+ags_fx_factory_create_peak(AgsAudio *audio,
+			   AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			   gchar *plugin_name,
+			   gchar *filename,
+			   gchar *effect,
+			   guint start_audio_channel, guint stop_audio_channel,
+			   guint start_pad, guint stop_pad,
+			   guint create_flags, guint recall_flags)
+{
+  GList *start_recall;
+
+  start_recall = NULL;
+
+  //TODO:JK: implement me
+  
+  return(start_recall);
+}
+
+GList*
+ags_fx_factory_create_eq10(AgsAudio *audio,
+			   AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			   gchar *plugin_name,
+			   gchar *filename,
+			   gchar *effect,
+			   guint start_audio_channel, guint stop_audio_channel,
+			   guint start_pad, guint stop_pad,
+			   guint create_flags, guint recall_flags)
+{
+  GList *start_recall;
+
+  start_recall = NULL;
+
+  //TODO:JK: implement me
+  
+  return(start_recall);
+}
+
+GList*
+ags_fx_factory_create_analyse(AgsAudio *audio,
+			      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			      gchar *plugin_name,
+			      gchar *filename,
+			      gchar *effect,
+			      guint start_audio_channel, guint stop_audio_channel,
+			      guint start_pad, guint stop_pad,
+			      guint create_flags, guint recall_flags)
+{
+  GList *start_recall;
+
+  start_recall = NULL;
+
+  //TODO:JK: implement me
+  
+  return(start_recall);
+}
+
+GList*
+ags_fx_factory_create_envelope(AgsAudio *audio,
+			       AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			       gchar *plugin_name,
+			       gchar *filename,
+			       gchar *effect,
+			       guint start_audio_channel, guint stop_audio_channel,
+			       guint start_pad, guint stop_pad,
+			       guint create_flags, guint recall_flags)
+{
+  GList *start_recall;
+
+  start_recall = NULL;
+
+  //TODO:JK: implement me
+  
   return(start_recall);
 }
 
@@ -1910,6 +2101,25 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
   return(start_recall);
 }
 
+GList*
+ags_fx_factory_create_lv2(AgsAudio *audio,
+			  AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			  gchar *plugin_name,
+			  gchar *filename,
+			  gchar *effect,
+			  guint start_audio_channel, guint stop_audio_channel,
+			  guint start_pad, guint stop_pad,
+			  guint create_flags, guint recall_flags)
+{
+  GList *start_recall;
+
+  start_recall = NULL;
+
+  //TODO:JK: implement me
+  
+  return(start_recall);
+}
+
 /**
  * ags_fx_factory_create:
  * @audio: an #AgsAudio that should keep the recalls
@@ -1975,23 +2185,58 @@ ags_fx_factory_create(AgsAudio *audio,
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-volume",
 				14)){
-    //TODO:JK: implement me
+    ags_fx_factory_create_volume(audio,
+				 play_container, recall_container,
+				 plugin_name,
+				 filename,
+				 effect,
+				 start_audio_channel, stop_audio_channel,
+				 start_pad, stop_pad,
+				 create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-peak",
 				12)){
-    //TODO:JK: implement me
+    ags_fx_factory_create_peak(audio,
+			       play_container, recall_container,
+			       plugin_name,
+			       filename,
+			       effect,
+			       start_audio_channel, stop_audio_channel,
+			       start_pad, stop_pad,
+			       create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-eq10",
 				12)){
-    //TODO:JK: implement me
+    ags_fx_factory_create_eq10(audio,
+			       play_container, recall_container,
+			       plugin_name,
+			       filename,
+			       effect,
+			       start_audio_channel, stop_audio_channel,
+			       start_pad, stop_pad,
+			       create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-analyse",
 				15)){
-    //TODO:JK: implement me
+    ags_fx_factory_create_analyse(audio,
+				  play_container, recall_container,
+				  plugin_name,
+				  filename,
+				  effect,
+				  start_audio_channel, stop_audio_channel,
+				  start_pad, stop_pad,
+				  create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-envelope",
 				16)){
-    //TODO:JK: implement me
+    ags_fx_factory_create_envelope(audio,
+				   play_container, recall_container,
+				   plugin_name,
+				   filename,
+				   effect,
+				   start_audio_channel, stop_audio_channel,
+				   start_pad, stop_pad,
+				   create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-pattern",
 				15)){
@@ -2039,7 +2284,14 @@ ags_fx_factory_create(AgsAudio *audio,
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-lv2",
 				11)){
-    //TODO:JK: implement me
+    ags_fx_factory_create_lv2(audio,
+			      play_container, recall_container,
+			      plugin_name,
+			      filename,
+			      effect,
+			      start_audio_channel, stop_audio_channel,
+			      start_pad, stop_pad,
+			      create_flags, recall_flags);
   }else{
     g_warning("no such plugin - %s", plugin_name);
   }
