@@ -32,7 +32,25 @@
 int ags_fx_notation_audio_test_init_suite();
 int ags_fx_notation_audio_test_clean_suite();
 
+void ags_fx_notation_audio_stub_finalize();
+
 void ags_fx_notation_audio_test_new();
+void ags_fx_notation_audio_test_dispose();
+void ags_fx_notation_audio_test_finalize();
+void ags_fx_notation_audio_test_test_flags();
+void ags_fx_notation_audio_test_set_flags();
+void ags_fx_notation_audio_test_unset_flags();
+void ags_fx_notation_audio_test_get_feed_note();
+void ags_fx_notation_audio_test_add_feed_note();
+void ags_fx_notation_audio_test_remove_feed_note();
+
+gboolean finalized;
+
+void
+ags_fx_notation_audio_stub_finalize(GObject *gobject)
+{
+  finalized = TRUE;
+}
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -67,6 +85,221 @@ ags_fx_notation_audio_test_new()
 
   CU_ASSERT(fx_notation_audio != NULL);
   CU_ASSERT(AGS_RECALL_AUDIO(fx_notation_audio)->audio == audio);
+
+  CU_ASSERT(fx_notation_audio->bpm != NULL);
+  CU_ASSERT(fx_notation_audio->tact != NULL);
+  CU_ASSERT(fx_notation_audio->delay != NULL);
+  CU_ASSERT(fx_notation_audio->duration != NULL);
+  CU_ASSERT(fx_notation_audio->loop != NULL);
+  CU_ASSERT(fx_notation_audio->loop_start != NULL);
+  CU_ASSERT(fx_notation_audio->loop_end != NULL);
+}
+
+
+void
+ags_fx_notation_audio_test_dispose()
+{
+  AgsAudio *audio;
+  AgsFxNotationAudio *fx_notation_audio;
+
+  audio = g_object_new(AGS_TYPE_AUDIO,
+			 NULL);
+  
+  fx_notation_audio = ags_fx_notation_audio_new(audio);
+
+  g_object_run_dispose(fx_notation_audio);
+
+  CU_ASSERT(fx_notation_audio->bpm == NULL);
+  CU_ASSERT(fx_notation_audio->tact == NULL);
+  CU_ASSERT(fx_notation_audio->delay == NULL);
+  CU_ASSERT(fx_notation_audio->duration == NULL);
+  CU_ASSERT(fx_notation_audio->loop == NULL);
+  CU_ASSERT(fx_notation_audio->loop_start == NULL);
+  CU_ASSERT(fx_notation_audio->loop_end == NULL);
+
+  g_object_unref(fx_notation_audio);
+}
+
+void
+ags_fx_notation_audio_test_finalize()
+{
+  AgsAudio *audio;
+  AgsFxNotationAudio *fx_notation_audio;
+
+  GObjectClass *gobject_class;
+  
+  gpointer stub;
+  
+  /* attempt #0 */
+  audio = g_object_new(AGS_TYPE_AUDIO,
+			 NULL);
+  
+  fx_notation_audio = ags_fx_notation_audio_new(audio);
+
+  gobject_class = (GObjectClass *) g_type_class_ref(AGS_TYPE_FX_NOTATION_AUDIO);
+  
+  finalized = FALSE;
+
+  stub = gobject_class->finalize;
+  gobject_class->finalize = ags_fx_notation_audio_stub_finalize;
+
+  g_object_unref(fx_notation_audio);
+
+  CU_ASSERT(finalized == TRUE);
+
+  gobject_class->finalize = stub;
+
+  /* attempt #1 */
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       NULL);
+  
+  fx_notation_audio = ags_fx_notation_audio_new(audio);
+
+  g_object_unref(fx_notation_audio);
+}
+
+void
+ags_fx_notation_audio_test_test_flags()
+{
+  AgsAudio *audio;
+  AgsFxNotationAudio *fx_notation_audio;
+
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       NULL);
+  
+  fx_notation_audio = ags_fx_notation_audio_new(audio);
+
+  /* attempt #0 */
+  fx_notation_audio->flags = 0;
+
+  CU_ASSERT(ags_fx_notation_audio_test_flags(fx_notation_audio, AGS_FX_NOTATION_AUDIO_PLAY) == FALSE);
+  CU_ASSERT(ags_fx_notation_audio_test_flags(fx_notation_audio, AGS_FX_NOTATION_AUDIO_RECORD) == FALSE);
+  CU_ASSERT(ags_fx_notation_audio_test_flags(fx_notation_audio, AGS_FX_NOTATION_AUDIO_FEED) == FALSE);
+
+  /* attempt #1 */
+  fx_notation_audio->flags = AGS_FX_NOTATION_AUDIO_PLAY;
+  CU_ASSERT(ags_fx_notation_audio_test_flags(fx_notation_audio, AGS_FX_NOTATION_AUDIO_PLAY) == TRUE);
+
+  fx_notation_audio->flags = AGS_FX_NOTATION_AUDIO_RECORD;
+  CU_ASSERT(ags_fx_notation_audio_test_flags(fx_notation_audio, AGS_FX_NOTATION_AUDIO_RECORD) == TRUE);
+
+  fx_notation_audio->flags = AGS_FX_NOTATION_AUDIO_FEED;
+  CU_ASSERT(ags_fx_notation_audio_test_flags(fx_notation_audio, AGS_FX_NOTATION_AUDIO_FEED) == TRUE);
+}
+
+void
+ags_fx_notation_audio_test_set_flags()
+{
+  AgsAudio *audio;
+  AgsFxNotationAudio *fx_notation_audio;
+
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       NULL);
+  
+  fx_notation_audio = ags_fx_notation_audio_new(audio);
+
+  fx_notation_audio->flags = 0;
+  
+  ags_fx_notation_audio_set_flags(fx_notation_audio, AGS_FX_NOTATION_AUDIO_PLAY);
+  ags_fx_notation_audio_set_flags(fx_notation_audio, AGS_FX_NOTATION_AUDIO_RECORD);
+  ags_fx_notation_audio_set_flags(fx_notation_audio, AGS_FX_NOTATION_AUDIO_FEED);
+
+  CU_ASSERT(fx_notation_audio->flags == (AGS_FX_NOTATION_AUDIO_PLAY |
+					 AGS_FX_NOTATION_AUDIO_RECORD |
+					 AGS_FX_NOTATION_AUDIO_FEED));
+}
+
+void
+ags_fx_notation_audio_test_unset_flags()
+{
+  AgsAudio *audio;
+  AgsFxNotationAudio *fx_notation_audio;
+
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       NULL);
+  
+  fx_notation_audio = ags_fx_notation_audio_new(audio);
+
+  fx_notation_audio->flags = (AGS_FX_NOTATION_AUDIO_PLAY |
+			      AGS_FX_NOTATION_AUDIO_RECORD |
+			      AGS_FX_NOTATION_AUDIO_FEED);
+
+  ags_fx_notation_audio_unset_flags(fx_notation_audio, AGS_FX_NOTATION_AUDIO_PLAY);
+  ags_fx_notation_audio_unset_flags(fx_notation_audio, AGS_FX_NOTATION_AUDIO_RECORD);
+  ags_fx_notation_audio_unset_flags(fx_notation_audio, AGS_FX_NOTATION_AUDIO_FEED);
+
+  CU_ASSERT(fx_notation_audio->flags == 0);
+}
+
+void
+ags_fx_notation_audio_test_get_feed_note()
+{
+  AgsAudio *audio;
+  AgsNote *note;
+  AgsFxNotationAudio *fx_notation_audio;
+
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       NULL);
+  
+  fx_notation_audio = ags_fx_notation_audio_new(audio);
+
+  /* attempt #0 */
+  CU_ASSERT(ags_fx_notation_audio_get_feed_note(fx_notation_audio) == NULL);
+
+  /* attempt #1 */
+  note = ags_note_new();
+
+  fx_notation_audio->feed_note = g_list_prepend(fx_notation_audio->feed_note,
+						note);
+  
+  CU_ASSERT(g_list_length(ags_fx_notation_audio_get_feed_note(fx_notation_audio)) == 1);
+  CU_ASSERT(ags_fx_notation_audio_get_feed_note(fx_notation_audio)->data == note);
+}
+
+void
+ags_fx_notation_audio_test_add_feed_note()
+{
+  AgsAudio *audio;
+  AgsNote *note;
+  AgsFxNotationAudio *fx_notation_audio;
+
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       NULL);
+  
+  fx_notation_audio = ags_fx_notation_audio_new(audio);
+
+  /* attempt #0 */
+  note = ags_note_new();
+
+  ags_fx_notation_audio_add_feed_note(fx_notation_audio,
+				      note);
+  
+  CU_ASSERT(g_list_length(ags_fx_notation_audio_get_feed_note(fx_notation_audio)) == 1);
+  CU_ASSERT(ags_fx_notation_audio_get_feed_note(fx_notation_audio)->data == note);
+}
+
+void
+ags_fx_notation_audio_test_remove_feed_note()
+{
+  AgsAudio *audio;
+  AgsNote *note;
+  AgsFxNotationAudio *fx_notation_audio;
+
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       NULL);
+  
+  fx_notation_audio = ags_fx_notation_audio_new(audio);
+
+  /* attempt #1 */
+  note = ags_note_new();
+
+  fx_notation_audio->feed_note = g_list_prepend(fx_notation_audio->feed_note,
+						note);
+
+  ags_fx_notation_audio_remove_feed_note(fx_notation_audio,
+					 note);
+  
+  CU_ASSERT(ags_fx_notation_audio_get_feed_note(fx_notation_audio) == NULL);
 }
 
 int
@@ -96,7 +329,15 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsFxNotationAudio new", ags_fx_notation_audio_test_new) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsFxNotationAudio new", ags_fx_notation_audio_test_new) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxNotationAudio dispose", ags_fx_notation_audio_test_dispose) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxNotationAudio finalize", ags_fx_notation_audio_test_finalize) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxNotationAudio test flags", ags_fx_notation_audio_test_test_flags) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxNotationAudio set flags", ags_fx_notation_audio_test_set_flags) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxNotationAudio unset flags", ags_fx_notation_audio_test_unset_flags) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxNotationAudio get feed note", ags_fx_notation_audio_test_get_feed_note) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxNotationAudio add feed note", ags_fx_notation_audio_test_add_feed_note) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxNotationAudio remove feed note", ags_fx_notation_audio_test_remove_feed_note) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

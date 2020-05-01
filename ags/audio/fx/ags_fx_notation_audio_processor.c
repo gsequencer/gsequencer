@@ -309,12 +309,15 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
   
   g_object_get(fx_notation_audio_processor,
 	       "audio", &audio,
-	       "input", &start_input,
 	       "recall-id", &recall_id,
 	       "recall-audio", &fx_notation_audio,
 	       "audio-channel", &audio_channel,
 	       NULL);
 
+  g_object_get(audio,
+	       "input", &start_input,
+	       NULL);
+  
   recycling_context = NULL;
   
   g_object_get(recall_id,

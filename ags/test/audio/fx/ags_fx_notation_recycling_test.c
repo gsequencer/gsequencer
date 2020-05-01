@@ -67,6 +67,8 @@ ags_fx_notation_recycling_test_new()
 
   CU_ASSERT(fx_notation_recycling != NULL);
   CU_ASSERT(AGS_RECALL_RECYCLING(fx_notation_recycling)->source == recycling);
+
+  CU_ASSERT(AGS_RECALL(fx_notation_recycling)->child_type == AGS_TYPE_FX_NOTATION_AUDIO_SIGNAL);
 }
 
 int
