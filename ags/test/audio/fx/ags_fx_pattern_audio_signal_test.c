@@ -33,6 +33,9 @@ int ags_fx_pattern_audio_signal_test_init_suite();
 int ags_fx_pattern_audio_signal_test_clean_suite();
 
 void ags_fx_pattern_audio_signal_test_new();
+void ags_fx_pattern_audio_signal_test_run_inter();
+void ags_fx_pattern_audio_signal_test_stream_feed();
+void ags_fx_pattern_audio_signal_test_notify_remove();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -69,6 +72,316 @@ ags_fx_pattern_audio_signal_test_new()
   CU_ASSERT(AGS_RECALL_AUDIO_SIGNAL(fx_pattern_audio_signal)->source == audio_signal);
 }
 
+void
+ags_fx_pattern_audio_signal_test_run_inter()
+{
+  AgsAudio *audio;
+  AgsChannel *channel;
+  AgsRecycling *recycling;
+  AgsAudioSignal *audio_signal;
+  AgsNote *note;
+  AgsRecallContainer *recall_container;
+  AgsFxPatternAudio *fx_pattern_audio;
+  AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
+  AgsFxPatternChannel *fx_pattern_channel;
+  AgsFxPatternChannelProcessor *fx_pattern_channel_processor;
+  AgsFxPatternRecycling *fx_pattern_recycling;
+  AgsFxPatternAudioSignal *fx_pattern_audio_signal;
+
+  GValue value = {0,};
+  
+  /* audio */
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       NULL);
+
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio,
+				 recall_container);
+  
+  fx_pattern_audio = ags_fx_pattern_audio_new(audio);
+  ags_recall_set_sound_scope(fx_pattern_audio, AGS_SOUND_SCOPE_PLAYBACK);
+  ags_recall_container_add(recall_container,
+			   fx_pattern_audio);
+  
+  CU_ASSERT(fx_pattern_audio != NULL);
+
+  /* audio processor */  
+  fx_pattern_audio_processor = ags_fx_pattern_audio_processor_new(audio);
+  ags_recall_set_sound_scope(fx_pattern_audio_processor, AGS_SOUND_SCOPE_PLAYBACK);
+
+  g_object_set(fx_pattern_audio_processor,
+	       "recall-audio", fx_pattern_audio,
+	       NULL);
+  
+  ags_recall_container_add(recall_container,
+			   fx_pattern_audio_processor);
+
+  CU_ASSERT(fx_pattern_audio_processor != NULL);
+
+  /* channel */
+  channel = g_object_new(AGS_TYPE_CHANNEL,
+			 NULL);
+
+  ags_channel_add_recall_container(channel,
+				   recall_container);
+  
+  fx_pattern_channel = ags_fx_pattern_channel_new(channel);
+  ags_recall_set_sound_scope(fx_pattern_channel, AGS_SOUND_SCOPE_PLAYBACK);
+
+  g_object_set(fx_pattern_channel,
+	       "recall-audio", fx_pattern_audio,
+	       NULL);
+
+  ags_recall_container_add(recall_container,
+			   fx_pattern_channel);
+
+  CU_ASSERT(fx_pattern_channel != NULL);
+
+  /* channel processor */  
+  fx_pattern_channel_processor = ags_fx_pattern_channel_processor_new(channel);
+  ags_recall_set_sound_scope(fx_pattern_channel_processor, AGS_SOUND_SCOPE_PLAYBACK);
+
+  g_object_set(fx_pattern_channel_processor,
+	       "recall-audio", fx_pattern_audio,
+	       "recall-channel", fx_pattern_channel,
+	       NULL);
+
+  ags_recall_container_add(recall_container,
+			   fx_pattern_channel_processor);
+
+  CU_ASSERT(fx_pattern_channel_processor != NULL);
+
+  /* recycling */
+  recycling = g_object_new(AGS_TYPE_RECYCLING,
+			   NULL);
+  
+  fx_pattern_recycling = ags_fx_pattern_recycling_new(recycling);
+  ags_recall_set_sound_scope(fx_pattern_recycling, AGS_SOUND_SCOPE_PLAYBACK);
+
+  ags_recall_add_child(fx_pattern_channel_processor,
+		       fx_pattern_recycling);
+  
+  CU_ASSERT(fx_pattern_recycling != NULL);
+
+  /* audio signal */
+  audio_signal = g_object_new(AGS_TYPE_AUDIO_SIGNAL,
+			      NULL);
+
+  ags_audio_signal_stream_resize(audio_signal,
+				 3);
+  audio_signal->stream_current = audio_signal->stream;
+
+  note = ags_note_new();
+  g_object_set(note,
+	       "x0", 0,
+	       "x1", 1,
+	       "y", 0,
+	       NULL);
+  
+  fx_pattern_audio_signal = ags_fx_pattern_audio_signal_new(audio_signal);
+  ags_recall_set_sound_scope(fx_pattern_audio_signal, AGS_SOUND_SCOPE_PLAYBACK);
+
+  ags_recall_add_child(fx_pattern_recycling,
+		       fx_pattern_audio_signal);
+
+  CU_ASSERT(fx_pattern_audio_signal != NULL);
+
+  /* run inter - attempt #0 */  
+  ags_recall_run_inter(fx_pattern_audio_signal);
+
+  /* run inter - attempt #1 */
+  fx_pattern_audio_processor->current_delay_counter = 1.0;
+  
+  ags_recall_run_inter(fx_pattern_audio_signal);
+
+  /* run inter - attempt #2 */
+  fx_pattern_audio_processor->current_delay_counter = 0.0;
+  fx_pattern_audio_processor->offset_counter = 1;
+  
+  ags_recall_run_inter(fx_pattern_audio_signal);
+
+  /* run inter - attempt #3 */
+  audio_signal->stream_current = NULL;
+
+  ags_recall_run_inter(fx_pattern_audio_signal);
+}
+
+void
+ags_fx_pattern_audio_signal_test_stream_feed()
+{
+  AgsAudio *audio;
+  AgsChannel *channel;
+  AgsRecycling *recycling;
+  AgsAudioSignal *template, *audio_signal;
+  AgsNote *note;
+  AgsRecallContainer *recall_container;
+  AgsFxPatternAudio *fx_pattern_audio;
+  AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
+  AgsFxPatternChannel *fx_pattern_channel;
+  AgsFxPatternChannelProcessor *fx_pattern_channel_processor;
+  AgsFxPatternRecycling *fx_pattern_recycling;
+  AgsFxPatternAudioSignal *fx_pattern_audio_signal;
+
+  GValue value = {0,};
+  
+  /* audio */
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       NULL);
+
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio,
+				 recall_container);
+  
+  fx_pattern_audio = ags_fx_pattern_audio_new(audio);
+  ags_recall_set_sound_scope(fx_pattern_audio, AGS_SOUND_SCOPE_PLAYBACK);
+  ags_recall_container_add(recall_container,
+			   fx_pattern_audio);
+  
+  CU_ASSERT(fx_pattern_audio != NULL);
+
+  /* audio processor */  
+  fx_pattern_audio_processor = ags_fx_pattern_audio_processor_new(audio);
+  ags_recall_set_sound_scope(fx_pattern_audio_processor, AGS_SOUND_SCOPE_PLAYBACK);
+
+  g_object_set(fx_pattern_audio_processor,
+	       "recall-audio", fx_pattern_audio,
+	       NULL);
+  
+  ags_recall_container_add(recall_container,
+			   fx_pattern_audio_processor);
+
+  CU_ASSERT(fx_pattern_audio_processor != NULL);
+
+  /* channel */
+  channel = g_object_new(AGS_TYPE_CHANNEL,
+			 NULL);
+
+  ags_channel_add_recall_container(channel,
+				   recall_container);
+  
+  fx_pattern_channel = ags_fx_pattern_channel_new(channel);
+  ags_recall_set_sound_scope(fx_pattern_channel, AGS_SOUND_SCOPE_PLAYBACK);
+
+  g_object_set(fx_pattern_channel,
+	       "recall-audio", fx_pattern_audio,
+	       NULL);
+
+  ags_recall_container_add(recall_container,
+			   fx_pattern_channel);
+
+  CU_ASSERT(fx_pattern_channel != NULL);
+
+  /* channel processor */  
+  fx_pattern_channel_processor = ags_fx_pattern_channel_processor_new(channel);
+  ags_recall_set_sound_scope(fx_pattern_channel_processor, AGS_SOUND_SCOPE_PLAYBACK);
+
+  g_object_set(fx_pattern_channel_processor,
+	       "recall-audio", fx_pattern_audio,
+	       "recall-channel", fx_pattern_channel,
+	       NULL);
+
+  ags_recall_container_add(recall_container,
+			   fx_pattern_channel_processor);
+
+  CU_ASSERT(fx_pattern_channel_processor != NULL);
+
+  /* recycling */
+  recycling = g_object_new(AGS_TYPE_RECYCLING,
+			   NULL);
+  
+  fx_pattern_recycling = ags_fx_pattern_recycling_new(recycling);
+  ags_recall_set_sound_scope(fx_pattern_recycling, AGS_SOUND_SCOPE_PLAYBACK);
+
+  ags_recall_add_child(fx_pattern_channel_processor,
+		       fx_pattern_recycling);
+  
+  CU_ASSERT(fx_pattern_recycling != NULL);
+
+  /* audio signal */
+  template = g_object_new(AGS_TYPE_AUDIO_SIGNAL,
+			  NULL);
+  ags_audio_signal_stream_resize(template,
+				 3);
+
+  audio_signal = g_object_new(AGS_TYPE_AUDIO_SIGNAL,
+			      "template", template,
+			      NULL);
+
+  ags_audio_signal_stream_resize(audio_signal,
+				 3);
+  audio_signal->stream_current = audio_signal->stream;
+
+  note = ags_note_new();
+  g_object_set(note,
+	       "x0", 0,
+	       "x1", 1,
+	       "y", 0,
+	       NULL);
+  
+  fx_pattern_audio_signal = ags_fx_pattern_audio_signal_new(audio_signal);
+  ags_recall_set_sound_scope(fx_pattern_audio_signal, AGS_SOUND_SCOPE_PLAYBACK);
+
+  ags_recall_add_child(fx_pattern_recycling,
+		       fx_pattern_audio_signal);
+
+  CU_ASSERT(fx_pattern_audio_signal != NULL);
+
+  /* stream feed - attempt #0 */  
+  ags_fx_pattern_audio_signal_stream_feed(fx_pattern_audio_signal,
+					  audio_signal,
+					  note,
+					  0, 1,
+					  0,
+					  0.0, 0,
+					  0,
+					  AGS_SOUNDCARD_DEFAULT_DELAY, AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
+
+  /* stream feed - attempt #1 */  
+  ags_fx_pattern_audio_signal_stream_feed(fx_pattern_audio_signal,
+					   audio_signal,
+					   note,
+					   0, 1,
+					   0,
+					   1.0, 0,
+					   AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
+					   AGS_SOUNDCARD_DEFAULT_DELAY, AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
+}
+
+void
+ags_fx_pattern_audio_signal_test_notify_remove()
+{
+  AgsAudioSignal *audio_signal;
+  AgsNote *note;
+  AgsFxPatternAudioSignal *fx_pattern_audio_signal;
+
+  /* audio signal */
+  audio_signal = g_object_new(AGS_TYPE_AUDIO_SIGNAL,
+			      NULL);
+
+  ags_audio_signal_stream_resize(audio_signal,
+				 3);
+  audio_signal->stream_current = audio_signal->stream;
+
+  note = ags_note_new();
+  g_object_set(note,
+	       "x0", 0,
+	       "x1", 1,
+	       "y", 0,
+	       NULL);
+  
+  fx_pattern_audio_signal = ags_fx_pattern_audio_signal_new(audio_signal);
+  ags_recall_set_sound_scope(fx_pattern_audio_signal, AGS_SOUND_SCOPE_PLAYBACK);
+
+  CU_ASSERT(fx_pattern_audio_signal != NULL);
+
+  /* stream feed - attempt #0 */  
+  ags_fx_pattern_audio_signal_notify_remove(fx_pattern_audio_signal,
+					    audio_signal,
+					    note,
+					    0, 1,
+					    0);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -96,7 +409,10 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsFxPatternAudioSignal new", ags_fx_pattern_audio_signal_test_new) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsFxPatternAudioSignal new", ags_fx_pattern_audio_signal_test_new) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxPatternAudioSignal run inter", ags_fx_pattern_audio_signal_test_run_inter) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxPatternAudioSignal stream feed", ags_fx_pattern_audio_signal_test_stream_feed) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxPatternAudioSignal notify remove", ags_fx_pattern_audio_signal_test_notify_remove) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

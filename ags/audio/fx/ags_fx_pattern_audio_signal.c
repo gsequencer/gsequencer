@@ -40,11 +40,6 @@ void ags_fx_pattern_audio_signal_real_stream_feed(AgsFxPatternAudioSignal *fx_pa
 						  gdouble delay_counter, guint64 offset_counter,
 						  guint frame_count,
 						  gdouble delay, guint buffer_size);
-void ags_fx_pattern_audio_signal_real_notify_remove(AgsFxPatternAudioSignal *fx_pattern_audio_signal,
-						    AgsAudioSignal *source,
-						    AgsNote *note,
-						    guint x0, guint x1,
-						    guint y);
 
 /**
  * SECTION:ags_fx_pattern_audio_signal
@@ -285,6 +280,11 @@ ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
     note = note->next;
   }
 
+  if(source == NULL ||
+     source->stream_current == NULL){
+    ags_recall_done(recall);
+  }
+  
   if(template != NULL){
     g_object_unref(template);
   }
