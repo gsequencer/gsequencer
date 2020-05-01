@@ -116,7 +116,6 @@ ags_fx_ladspa_channel_test_new()
   CU_ASSERT(success == TRUE);
 }
 
-
 void
 ags_fx_ladspa_channel_test_dispose()
 {

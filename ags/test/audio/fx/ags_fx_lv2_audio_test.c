@@ -32,7 +32,25 @@
 int ags_fx_lv2_audio_test_init_suite();
 int ags_fx_lv2_audio_test_clean_suite();
 
+void ags_fx_lv2_audio_stub_finalize();
+
 void ags_fx_lv2_audio_test_new();
+void ags_fx_lv2_audio_test_dispose();
+void ags_fx_lv2_audio_test_finalize();
+void ags_fx_lv2_audio_test_scope_data_alloc();
+void ags_fx_lv2_audio_test_scope_data_free();
+void ags_fx_lv2_audio_test_channel_data_alloc();
+void ags_fx_lv2_audio_test_channel_data_free();
+void ags_fx_lv2_audio_test_input_data_alloc();
+void ags_fx_lv2_audio_test_input_data_free();
+
+gboolean finalized;
+
+void
+ags_fx_lv2_audio_stub_finalize(GObject *gobject)
+{
+  finalized = TRUE;
+}
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -60,6 +78,9 @@ ags_fx_lv2_audio_test_new()
   AgsAudio *audio;
   AgsFxLv2Audio *fx_lv2_audio;
 
+  guint i;
+  gboolean success;
+
   audio = g_object_new(AGS_TYPE_AUDIO,
 		       NULL);
   
@@ -67,6 +88,148 @@ ags_fx_lv2_audio_test_new()
 
   CU_ASSERT(fx_lv2_audio != NULL);
   CU_ASSERT(AGS_RECALL_AUDIO(fx_lv2_audio)->audio == audio);
+  
+  success = TRUE;
+  
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+       i == AGS_SOUND_SCOPE_NOTATION ||
+       i == AGS_SOUND_SCOPE_MIDI){
+      if(fx_lv2_audio->scope_data[i]->parent == NULL){
+	success = FALSE;
+      
+	break;
+      }
+    }else{
+      if(fx_lv2_audio->scope_data[i] != NULL){
+	success = FALSE;
+	
+	break;
+      }
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
+}
+
+void
+ags_fx_lv2_audio_test_dispose()
+{
+  AgsAudio *audio;
+  AgsFxLv2Audio *fx_lv2_audio;
+
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       NULL);
+  
+  fx_lv2_audio = ags_fx_lv2_audio_new(audio);
+
+  g_object_run_dispose(fx_lv2_audio);
+
+  g_object_unref(fx_lv2_audio);
+}
+
+void
+ags_fx_lv2_audio_test_finalize()
+{
+  AgsAudio *audio;
+  AgsFxLv2Audio *fx_lv2_audio;
+
+  GObjectClass *gobject_class;
+  
+  gpointer stub;
+  
+  /* attempt #0 */
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       NULL);
+  
+  fx_lv2_audio = ags_fx_lv2_audio_new(audio);
+
+  gobject_class = (GObjectClass *) g_type_class_ref(AGS_TYPE_FX_LV2_AUDIO);
+  
+  finalized = FALSE;
+
+  stub = gobject_class->finalize;
+  gobject_class->finalize = ags_fx_lv2_audio_stub_finalize;
+  
+  g_object_unref(fx_lv2_audio);
+
+  CU_ASSERT(finalized == TRUE);
+
+  gobject_class->finalize = stub;
+
+  /* attempt #1 */
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       NULL);
+  
+  fx_lv2_audio = ags_fx_lv2_audio_new(audio);
+
+  g_object_unref(fx_lv2_audio);
+}
+
+void
+ags_fx_lv2_audio_test_scope_data_alloc()
+{
+  AgsFxLv2AudioScopeData *scope_data;
+
+  scope_data = ags_fx_lv2_audio_scope_data_alloc();
+
+  CU_ASSERT(scope_data != NULL);
+}
+
+void
+ags_fx_lv2_audio_test_scope_data_free()
+{
+  AgsFxLv2AudioScopeData *scope_data;
+
+  scope_data = ags_fx_lv2_audio_scope_data_alloc();
+
+  CU_ASSERT(scope_data != NULL);
+
+  ags_fx_lv2_audio_scope_data_free(scope_data);
+}
+
+void
+ags_fx_lv2_audio_test_channel_data_alloc()
+{
+  AgsFxLv2AudioChannelData *channel_data;
+
+  channel_data = ags_fx_lv2_audio_channel_data_alloc();
+
+  CU_ASSERT(channel_data != NULL);
+}
+
+void
+ags_fx_lv2_audio_test_channel_data_free()
+{
+  AgsFxLv2AudioChannelData *channel_data;
+
+  channel_data = ags_fx_lv2_audio_channel_data_alloc();
+
+  CU_ASSERT(channel_data != NULL);
+
+  ags_fx_lv2_audio_channel_data_free(channel_data);
+}
+
+void
+ags_fx_lv2_audio_test_input_data_alloc()
+{
+  AgsFxLv2AudioInputData *input_data;
+
+  input_data = ags_fx_lv2_audio_input_data_alloc();
+
+  CU_ASSERT(input_data != NULL);
+}
+
+void
+ags_fx_lv2_audio_test_input_data_free()
+{
+  AgsFxLv2AudioInputData *input_data;
+
+  input_data = ags_fx_lv2_audio_input_data_alloc();
+
+  CU_ASSERT(input_data != NULL);
+
+  ags_fx_lv2_audio_input_data_free(input_data);
 }
 
 int
@@ -78,7 +241,7 @@ main(int argc, char **argv)
   putenv("LANG=C");
 
   putenv("LADSPA_PATH=\"\"");
-  putenv("DSSI_PATH=\"\"");
+  putenv("LV2_PATH=\"\"");
   putenv("LV2_PATH=\"\"");
   
   /* initialize the CUnit test registry */
@@ -96,7 +259,15 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsFxLv2Audio new", ags_fx_lv2_audio_test_new) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsFxLv2Audio new", ags_fx_lv2_audio_test_new) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxLv2Audio dispose", ags_fx_lv2_audio_test_dispose) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxLv2Audio finalize", ags_fx_lv2_audio_test_finalize) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxLv2Audio scope data alloc", ags_fx_lv2_audio_test_scope_data_alloc) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxLv2Audio scope data free", ags_fx_lv2_audio_test_scope_data_free) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxLv2Audio channel data alloc", ags_fx_lv2_audio_test_channel_data_alloc) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxLv2Audio channel data free", ags_fx_lv2_audio_test_channel_data_free) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxLv2Audio input data alloc", ags_fx_lv2_audio_test_input_data_alloc) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxLv2Audio input data free", ags_fx_lv2_audio_test_input_data_free) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

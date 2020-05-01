@@ -95,13 +95,13 @@ ags_fx_lv2_channel_test_new()
       break;
     }
 
-    if(fx_lv2_channel->input_data[i]->output == NULL){
+    if(fx_lv2_channel->input_data[i]->output != NULL){
       success = FALSE;
       
       break;
     }
 
-    if(fx_lv2_channel->input_data[i]->input == NULL){
+    if(fx_lv2_channel->input_data[i]->input != NULL){
       success = FALSE;
       
       break;
