@@ -308,6 +308,11 @@ ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall)
     
     g_rec_mutex_lock(fx_lv2_channel_mutex);
   }
+
+  if(source == NULL ||
+     source->stream_current == NULL){
+    ags_recall_done(recall);
+  }
   
   /* unref */
   if(source != NULL){

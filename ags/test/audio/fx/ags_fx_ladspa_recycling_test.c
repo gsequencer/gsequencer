@@ -67,6 +67,8 @@ ags_fx_ladspa_recycling_test_new()
 
   CU_ASSERT(fx_ladspa_recycling != NULL);
   CU_ASSERT(AGS_RECALL_RECYCLING(fx_ladspa_recycling)->source == recycling);
+
+  CU_ASSERT(AGS_RECALL(fx_ladspa_recycling)->child_type == AGS_TYPE_FX_LADSPA_AUDIO_SIGNAL);
 }
 
 int

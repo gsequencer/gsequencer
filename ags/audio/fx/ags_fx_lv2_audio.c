@@ -226,7 +226,7 @@ ags_fx_lv2_audio_finalize(GObject *gobject)
     g_object_unref(fx_lv2_audio->lv2_plugin);
   }
   
-  if(fx_lv2_audio->lv2_port == NULL){
+  if(fx_lv2_audio->lv2_port != NULL){
     for(iter = fx_lv2_audio->lv2_port; iter[0] != NULL; iter++){
       g_object_unref(iter[0]);
     }

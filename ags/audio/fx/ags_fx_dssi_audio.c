@@ -196,7 +196,7 @@ ags_fx_dssi_audio_finalize(GObject *gobject)
     g_object_unref(fx_dssi_audio->dssi_plugin);
   }
   
-  if(fx_dssi_audio->dssi_port == NULL){
+  if(fx_dssi_audio->dssi_port != NULL){
     for(iter = fx_dssi_audio->dssi_port; iter[0] != NULL; iter++){
       g_object_unref(iter[0]);
     }

@@ -251,6 +251,11 @@ ags_fx_ladspa_audio_signal_real_run_inter(AgsRecall *recall)
     
     g_rec_mutex_lock(fx_ladspa_channel_mutex);
   }
+
+  if(source == NULL ||
+     source->stream_current == NULL){
+    ags_recall_done(recall);
+  }
   
   /* unref */
   if(source != NULL){
