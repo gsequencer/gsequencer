@@ -233,6 +233,11 @@ ags_fx_playback_audio_signal_real_run_inter(AgsRecall *recall)
     }
   }
 
+  if(source == NULL ||
+     source->stream_current == NULL){
+    ags_recall_done(recall);
+  }
+  
   /* unref */
   if(output_soundcard != NULL){
     g_object_unref(output_soundcard);

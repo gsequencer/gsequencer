@@ -1174,9 +1174,12 @@ ags_fx_playback_audio_processor_real_counter_change(AgsFxPlaybackAudioProcessor 
 
   GRecMutex *fx_playback_audio_processor_mutex;
   
-  fx_playback_audio_processor = NULL;
   fx_playback_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_playback_audio_processor);
 
+  fx_playback_audio = NULL;
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  
   g_object_get(fx_playback_audio_processor,
 	       "recall-audio", &fx_playback_audio,
 	       "buffer-size", &buffer_size,

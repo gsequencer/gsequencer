@@ -32,7 +32,19 @@
 int ags_fx_playback_audio_test_init_suite();
 int ags_fx_playback_audio_test_clean_suite();
 
+void ags_fx_playback_audio_stub_finalize();
+
 void ags_fx_playback_audio_test_new();
+void ags_fx_playback_audio_test_dispose();
+void ags_fx_playback_audio_test_finalize();
+
+gboolean finalized;
+
+void
+ags_fx_playback_audio_stub_finalize(GObject *gobject)
+{
+  finalized = TRUE;
+}
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -67,6 +79,88 @@ ags_fx_playback_audio_test_new()
 
   CU_ASSERT(fx_playback_audio != NULL);
   CU_ASSERT(AGS_RECALL_AUDIO(fx_playback_audio)->audio == audio);
+
+  CU_ASSERT(fx_playback_audio->bpm != NULL);
+  CU_ASSERT(fx_playback_audio->tact != NULL);
+  CU_ASSERT(fx_playback_audio->delay != NULL);
+  CU_ASSERT(fx_playback_audio->duration != NULL);
+  CU_ASSERT(fx_playback_audio->loop != NULL);
+  CU_ASSERT(fx_playback_audio->loop_start != NULL);
+  CU_ASSERT(fx_playback_audio->loop_end != NULL);
+  CU_ASSERT(fx_playback_audio->export != NULL);
+  CU_ASSERT(fx_playback_audio->filename != NULL);
+  CU_ASSERT(fx_playback_audio->file_audio_channels != NULL);
+  CU_ASSERT(fx_playback_audio->file_samplerate != NULL);
+  CU_ASSERT(fx_playback_audio->file_buffer_size != NULL);
+  CU_ASSERT(fx_playback_audio->file_format != NULL);
+}
+
+void
+ags_fx_playback_audio_test_dispose()
+{
+  AgsAudio *audio;
+  AgsFxPlaybackAudio *fx_playback_audio;
+
+  audio = g_object_new(AGS_TYPE_AUDIO,
+			 NULL);
+  
+  fx_playback_audio = ags_fx_playback_audio_new(audio);
+
+  g_object_run_dispose(fx_playback_audio);
+
+  CU_ASSERT(fx_playback_audio->bpm == NULL);
+  CU_ASSERT(fx_playback_audio->tact == NULL);
+  CU_ASSERT(fx_playback_audio->delay == NULL);
+  CU_ASSERT(fx_playback_audio->duration == NULL);
+  CU_ASSERT(fx_playback_audio->loop == NULL);
+  CU_ASSERT(fx_playback_audio->loop_start == NULL);
+  CU_ASSERT(fx_playback_audio->loop_end == NULL);
+  CU_ASSERT(fx_playback_audio->export == NULL);
+  CU_ASSERT(fx_playback_audio->filename == NULL);
+  CU_ASSERT(fx_playback_audio->file_audio_channels == NULL);
+  CU_ASSERT(fx_playback_audio->file_samplerate == NULL);
+  CU_ASSERT(fx_playback_audio->file_buffer_size == NULL);
+  CU_ASSERT(fx_playback_audio->file_format == NULL);
+
+  g_object_unref(fx_playback_audio);
+}
+
+void
+ags_fx_playback_audio_test_finalize()
+{
+  AgsAudio *audio;
+  AgsFxPlaybackAudio *fx_playback_audio;
+
+  GObjectClass *gobject_class;
+  
+  gpointer stub;
+  
+  /* attempt #0 */
+  audio = g_object_new(AGS_TYPE_AUDIO,
+			 NULL);
+  
+  fx_playback_audio = ags_fx_playback_audio_new(audio);
+
+  gobject_class = (GObjectClass *) g_type_class_ref(AGS_TYPE_FX_PLAYBACK_AUDIO);
+  
+  finalized = FALSE;
+
+  stub = gobject_class->finalize;
+  gobject_class->finalize = ags_fx_playback_audio_stub_finalize;
+
+  g_object_unref(fx_playback_audio);
+
+  CU_ASSERT(finalized == TRUE);
+
+  gobject_class->finalize = stub;
+
+  /* attempt #1 */
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       NULL);
+  
+  fx_playback_audio = ags_fx_playback_audio_new(audio);
+
+  g_object_unref(fx_playback_audio);
 }
 
 int
@@ -96,7 +190,9 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsFxPlaybackAudio new", ags_fx_playback_audio_test_new) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsFxPlaybackAudio new", ags_fx_playback_audio_test_new) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxPlaybackAudio dispose", ags_fx_playback_audio_test_dispose) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFxPlaybackAudio finalize", ags_fx_playback_audio_test_finalize) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

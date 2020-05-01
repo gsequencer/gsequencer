@@ -88,8 +88,6 @@ ags_fx_pattern_audio_signal_test_run_inter()
   AgsFxPatternRecycling *fx_pattern_recycling;
   AgsFxPatternAudioSignal *fx_pattern_audio_signal;
 
-  GValue value = {0,};
-  
   /* audio */
   audio = g_object_new(AGS_TYPE_AUDIO,
 		       NULL);
