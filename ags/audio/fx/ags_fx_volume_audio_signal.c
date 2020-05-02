@@ -277,7 +277,8 @@ ags_fx_volume_audio_signal_real_run_inter(AgsRecall *recall)
      source->stream_current == NULL){
     ags_recall_done(recall);
   }
-  
+
+  /* unref */
   if(source != NULL){
     g_object_unref(source);
   }

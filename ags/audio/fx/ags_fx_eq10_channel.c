@@ -34,6 +34,10 @@ void ags_fx_eq10_channel_get_property(GObject *gobject,
 void ags_fx_eq10_channel_dispose(GObject *gobject);
 void ags_fx_eq10_channel_finalize(GObject *gobject);
 
+void ags_fx_eq10_channel_notify_buffer_size_callback(GObject *gobject,
+						     GParamSpec *pspec,
+						     gpointer user_data);
+
 /**
  * SECTION:ags_fx_eq10_channel
  * @short_description: fx eq10 channel
@@ -323,10 +327,22 @@ ags_fx_eq10_channel_class_init(AgsFxEq10ChannelClass *fx_eq10_channel)
 void
 ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel)
 {
+  guint buffer_size;
+  guint i;
+
+  g_signal_connect(fx_eq10_channel, "notify::buffer-size",
+		   G_CALLBACK(ags_fx_eq10_channel_notify_buffer_size_callback), NULL);
+
   AGS_RECALL(fx_eq10_channel)->name = "ags-fx-eq10";
   AGS_RECALL(fx_eq10_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_eq10_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_eq10_channel)->xml_type = "ags-fx-eq10-channel";
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  
+  g_object_get(fx_eq10_channel,
+	       "buffer-size", &buffer_size,
+	       NULL);
 
   /* peak 28hz */
   fx_eq10_channel->peak_28hz = g_object_new(AGS_TYPE_PORT,
@@ -504,6 +520,18 @@ ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel)
 
   ags_recall_add_port((AgsRecall *) fx_eq10_channel,
 		      fx_eq10_channel->pressure);
+
+  /* input data */
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    fx_eq10_channel->input_data[i] = ags_fx_eq10_channel_input_data_alloc();
+      
+    fx_eq10_channel->input_data[i]->parent = fx_eq10_channel;
+
+    fx_eq10_channel->input_data[i]->output = (gdouble *) ags_stream_alloc(buffer_size,
+ AGS_SOUNDCARD_DOUBLE);
+    fx_eq10_channel->input_data[i]->input = (gdouble *) ags_stream_alloc(buffer_size,
+AGS_SOUNDCARD_DOUBLE);
+  }
 }
 
 void
@@ -604,221 +632,221 @@ ags_fx_eq10_channel_set_property(GObject *gobject,
     }
     break;
   case PROP_PEAK_224HZ:
-    {
-      AgsPort *port;
+  {
+    AgsPort *port;
 
-      port = (AgsPort *) g_value_get_object(value);
+    port = (AgsPort *) g_value_get_object(value);
 
-      g_rec_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
-      if(port == fx_eq10_channel->peak_224hz){
-	g_rec_mutex_unlock(recall_mutex);	
-
-	return;
-      }
-
-      if(fx_eq10_channel->peak_224hz != NULL){
-	g_object_unref(G_OBJECT(fx_eq10_channel->peak_224hz));
-      }
-      
-      if(port != NULL){
-	g_object_ref(G_OBJECT(port));
-      }
-
-      fx_eq10_channel->peak_224hz = port;
-      
+    if(port == fx_eq10_channel->peak_224hz){
       g_rec_mutex_unlock(recall_mutex);	
+
+      return;
     }
-    break;
+
+    if(fx_eq10_channel->peak_224hz != NULL){
+      g_object_unref(G_OBJECT(fx_eq10_channel->peak_224hz));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_eq10_channel->peak_224hz = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_PEAK_448HZ:
-    {
-      AgsPort *port;
+  {
+    AgsPort *port;
 
-      port = (AgsPort *) g_value_get_object(value);
+    port = (AgsPort *) g_value_get_object(value);
 
-      g_rec_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
-      if(port == fx_eq10_channel->peak_448hz){
-	g_rec_mutex_unlock(recall_mutex);	
-
-	return;
-      }
-
-      if(fx_eq10_channel->peak_448hz != NULL){
-	g_object_unref(G_OBJECT(fx_eq10_channel->peak_448hz));
-      }
-      
-      if(port != NULL){
-	g_object_ref(G_OBJECT(port));
-      }
-
-      fx_eq10_channel->peak_448hz = port;
-      
+    if(port == fx_eq10_channel->peak_448hz){
       g_rec_mutex_unlock(recall_mutex);	
+
+      return;
     }
-    break;
+
+    if(fx_eq10_channel->peak_448hz != NULL){
+      g_object_unref(G_OBJECT(fx_eq10_channel->peak_448hz));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_eq10_channel->peak_448hz = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_PEAK_896HZ:
-    {
-      AgsPort *port;
+  {
+    AgsPort *port;
 
-      port = (AgsPort *) g_value_get_object(value);
+    port = (AgsPort *) g_value_get_object(value);
 
-      g_rec_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
-      if(port == fx_eq10_channel->peak_896hz){
-	g_rec_mutex_unlock(recall_mutex);	
-
-	return;
-      }
-
-      if(fx_eq10_channel->peak_896hz != NULL){
-	g_object_unref(G_OBJECT(fx_eq10_channel->peak_896hz));
-      }
-      
-      if(port != NULL){
-	g_object_ref(G_OBJECT(port));
-      }
-
-      fx_eq10_channel->peak_896hz = port;
-      
+    if(port == fx_eq10_channel->peak_896hz){
       g_rec_mutex_unlock(recall_mutex);	
+
+      return;
     }
-    break;
+
+    if(fx_eq10_channel->peak_896hz != NULL){
+      g_object_unref(G_OBJECT(fx_eq10_channel->peak_896hz));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_eq10_channel->peak_896hz = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_PEAK_1792HZ:
-    {
-      AgsPort *port;
+  {
+    AgsPort *port;
 
-      port = (AgsPort *) g_value_get_object(value);
+    port = (AgsPort *) g_value_get_object(value);
 
-      g_rec_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
-      if(port == fx_eq10_channel->peak_1792hz){
-	g_rec_mutex_unlock(recall_mutex);	
-
-	return;
-      }
-
-      if(fx_eq10_channel->peak_1792hz != NULL){
-	g_object_unref(G_OBJECT(fx_eq10_channel->peak_1792hz));
-      }
-      
-      if(port != NULL){
-	g_object_ref(G_OBJECT(port));
-      }
-
-      fx_eq10_channel->peak_1792hz = port;
-      
+    if(port == fx_eq10_channel->peak_1792hz){
       g_rec_mutex_unlock(recall_mutex);	
+
+      return;
     }
-    break;
+
+    if(fx_eq10_channel->peak_1792hz != NULL){
+      g_object_unref(G_OBJECT(fx_eq10_channel->peak_1792hz));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_eq10_channel->peak_1792hz = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_PEAK_3584HZ:
-    {
-      AgsPort *port;
+  {
+    AgsPort *port;
 
-      port = (AgsPort *) g_value_get_object(value);
+    port = (AgsPort *) g_value_get_object(value);
 
-      g_rec_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
-      if(port == fx_eq10_channel->peak_3584hz){
-	g_rec_mutex_unlock(recall_mutex);	
-
-	return;
-      }
-
-      if(fx_eq10_channel->peak_3584hz != NULL){
-	g_object_unref(G_OBJECT(fx_eq10_channel->peak_3584hz));
-      }
-      
-      if(port != NULL){
-	g_object_ref(G_OBJECT(port));
-      }
-
-      fx_eq10_channel->peak_3584hz = port;
-      
+    if(port == fx_eq10_channel->peak_3584hz){
       g_rec_mutex_unlock(recall_mutex);	
+
+      return;
     }
-    break;
+
+    if(fx_eq10_channel->peak_3584hz != NULL){
+      g_object_unref(G_OBJECT(fx_eq10_channel->peak_3584hz));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_eq10_channel->peak_3584hz = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_PEAK_7168HZ:
-    {
-      AgsPort *port;
+  {
+    AgsPort *port;
 
-      port = (AgsPort *) g_value_get_object(value);
+    port = (AgsPort *) g_value_get_object(value);
 
-      g_rec_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
-      if(port == fx_eq10_channel->peak_7168hz){
-	g_rec_mutex_unlock(recall_mutex);	
-
-	return;
-      }
-
-      if(fx_eq10_channel->peak_7168hz != NULL){
-	g_object_unref(G_OBJECT(fx_eq10_channel->peak_7168hz));
-      }
-      
-      if(port != NULL){
-	g_object_ref(G_OBJECT(port));
-      }
-
-      fx_eq10_channel->peak_7168hz = port;
-      
+    if(port == fx_eq10_channel->peak_7168hz){
       g_rec_mutex_unlock(recall_mutex);	
+
+      return;
     }
-    break;
+
+    if(fx_eq10_channel->peak_7168hz != NULL){
+      g_object_unref(G_OBJECT(fx_eq10_channel->peak_7168hz));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_eq10_channel->peak_7168hz = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_PEAK_14336HZ:
-    {
-      AgsPort *port;
+  {
+    AgsPort *port;
 
-      port = (AgsPort *) g_value_get_object(value);
+    port = (AgsPort *) g_value_get_object(value);
 
-      g_rec_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
-      if(port == fx_eq10_channel->peak_14336hz){
-	g_rec_mutex_unlock(recall_mutex);	
-
-	return;
-      }
-
-      if(fx_eq10_channel->peak_14336hz != NULL){
-	g_object_unref(G_OBJECT(fx_eq10_channel->peak_14336hz));
-      }
-      
-      if(port != NULL){
-	g_object_ref(G_OBJECT(port));
-      }
-
-      fx_eq10_channel->peak_14336hz = port;
-      
+    if(port == fx_eq10_channel->peak_14336hz){
       g_rec_mutex_unlock(recall_mutex);	
+
+      return;
     }
-    break;
+
+    if(fx_eq10_channel->peak_14336hz != NULL){
+      g_object_unref(G_OBJECT(fx_eq10_channel->peak_14336hz));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_eq10_channel->peak_14336hz = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_PRESSURE:
-    {
-      AgsPort *port;
+  {
+    AgsPort *port;
 
-      port = (AgsPort *) g_value_get_object(value);
+    port = (AgsPort *) g_value_get_object(value);
 
-      g_rec_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
-      if(port == fx_eq10_channel->pressure){
-	g_rec_mutex_unlock(recall_mutex);	
-
-	return;
-      }
-
-      if(fx_eq10_channel->pressure != NULL){
-	g_object_unref(G_OBJECT(fx_eq10_channel->pressure));
-      }
-      
-      if(port != NULL){
-	g_object_ref(G_OBJECT(port));
-      }
-
-      fx_eq10_channel->pressure = port;
-      
+    if(port == fx_eq10_channel->pressure){
       g_rec_mutex_unlock(recall_mutex);	
+
+      return;
     }
-    break;
+
+    if(fx_eq10_channel->pressure != NULL){
+      g_object_unref(G_OBJECT(fx_eq10_channel->pressure));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_eq10_channel->pressure = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -842,104 +870,104 @@ ags_fx_eq10_channel_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_PEAK_28HZ:
-    {
-      g_rec_mutex_lock(recall_mutex);
+  {
+    g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, fx_eq10_channel->peak_28hz);
+    g_value_set_object(value, fx_eq10_channel->peak_28hz);
       
-      g_rec_mutex_unlock(recall_mutex);	
-    }
-    break;
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_PEAK_56HZ:
-    {
-      g_rec_mutex_lock(recall_mutex);
+  {
+    g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, fx_eq10_channel->peak_56hz);
+    g_value_set_object(value, fx_eq10_channel->peak_56hz);
       
-      g_rec_mutex_unlock(recall_mutex);	
-    }
-    break;
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_PEAK_112HZ:
-    {
-      g_rec_mutex_lock(recall_mutex);
+  {
+    g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, fx_eq10_channel->peak_112hz);
+    g_value_set_object(value, fx_eq10_channel->peak_112hz);
       
-      g_rec_mutex_unlock(recall_mutex);	
-    }
-    break;
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_PEAK_224HZ:
-    {
-      g_rec_mutex_lock(recall_mutex);
+  {
+    g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, fx_eq10_channel->peak_224hz);
+    g_value_set_object(value, fx_eq10_channel->peak_224hz);
       
-      g_rec_mutex_unlock(recall_mutex);	
-    }
-    break;
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_PEAK_448HZ:
-    {
-      g_rec_mutex_lock(recall_mutex);
+  {
+    g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, fx_eq10_channel->peak_448hz);
+    g_value_set_object(value, fx_eq10_channel->peak_448hz);
       
-      g_rec_mutex_unlock(recall_mutex);	
-    }
-    break;
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_PEAK_896HZ:
-    {
-      g_rec_mutex_lock(recall_mutex);
+  {
+    g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, fx_eq10_channel->peak_896hz);
+    g_value_set_object(value, fx_eq10_channel->peak_896hz);
 
-      g_rec_mutex_unlock(recall_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(recall_mutex);
+  }
+  break;
   case PROP_PEAK_1792HZ:
-    {
-      g_rec_mutex_lock(recall_mutex);
+  {
+    g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, fx_eq10_channel->peak_1792hz);
+    g_value_set_object(value, fx_eq10_channel->peak_1792hz);
       
-      g_rec_mutex_unlock(recall_mutex);	
-    }
-    break;
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_PEAK_3584HZ:
-    {
-      g_rec_mutex_lock(recall_mutex);
+  {
+    g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, fx_eq10_channel->peak_3584hz);
+    g_value_set_object(value, fx_eq10_channel->peak_3584hz);
       
-      g_rec_mutex_unlock(recall_mutex);	
-    }
-    break;
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_PEAK_7168HZ:
-    {
-      g_rec_mutex_lock(recall_mutex);
+  {
+    g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, fx_eq10_channel->peak_7168hz);
+    g_value_set_object(value, fx_eq10_channel->peak_7168hz);
       
-      g_rec_mutex_unlock(recall_mutex);	
-    }
-    break;
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_PEAK_14336HZ:
-    {
-      g_rec_mutex_lock(recall_mutex);
+  {
+    g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, fx_eq10_channel->peak_14336hz);
+    g_value_set_object(value, fx_eq10_channel->peak_14336hz);
       
-      g_rec_mutex_unlock(recall_mutex);	
-    }
-    break;
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   case PROP_PRESSURE:
-    {
-      g_rec_mutex_lock(recall_mutex);
+  {
+    g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, fx_eq10_channel->pressure);
+    g_value_set_object(value, fx_eq10_channel->pressure);
       
-      g_rec_mutex_unlock(recall_mutex);	
-    }
-    break;
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1038,6 +1066,8 @@ void
 ags_fx_eq10_channel_finalize(GObject *gobject)
 {
   AgsFxEq10Channel *fx_eq10_channel;
+
+  guint i;
   
   fx_eq10_channel = AGS_FX_EQ10_CHANNEL(gobject);
 
@@ -1096,8 +1126,108 @@ ags_fx_eq10_channel_finalize(GObject *gobject)
     g_object_unref(G_OBJECT(fx_eq10_channel->pressure));
   }
 
+  /* input data */
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    ags_fx_eq10_channel_input_data_free(fx_eq10_channel->input_data[i]);
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_fx_eq10_channel_parent_class)->finalize(gobject);
+}
+
+void
+ags_fx_eq10_channel_notify_buffer_size_callback(GObject *gobject,
+						GParamSpec *pspec,
+						gpointer user_data)
+{
+  AgsFxEq10Channel *fx_eq10_channel;
+
+  guint buffer_size;
+  guint i;
+  
+  GRecMutex *recall_mutex;
+  
+  fx_eq10_channel = AGS_FX_EQ10_CHANNEL(gobject);
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_eq10_channel);
+
+  /* get buffer size */
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  
+  g_object_get(fx_eq10_channel,
+	       "buffer-size", &buffer_size,
+	       NULL);
+  
+  /* reallocate buffer - apply buffer size */
+  g_rec_mutex_lock(recall_mutex);
+
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    AgsFxEq10ChannelInputData *input_data;
+
+    input_data = fx_eq10_channel->input_data[i];
+
+    /* buffer */
+    ags_stream_free(input_data->output);
+    ags_stream_free(input_data->input);
+    
+    if(buffer_size > 0){
+      input_data->output = (gdouble *) ags_stream_alloc(buffer_size,
+							AGS_SOUNDCARD_DOUBLE);
+      input_data->input = (gdouble *) ags_stream_alloc(buffer_size,
+						       AGS_SOUNDCARD_DOUBLE);
+    }else{
+      input_data->output = NULL;
+      input_data->input = NULL;
+    }
+  }
+  
+  g_rec_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_fx_eq10_channel_input_data_alloc:
+ * 
+ * Allocate #AgsFxEq10ChannelInputData-struct
+ * 
+ * Returns: (type gpointer) (transfer full): the new #AgsFxEq10ChannelInputData-struct
+ * 
+ * Since: 3.3.0
+ */
+AgsFxEq10ChannelInputData*
+ags_fx_eq10_channel_input_data_alloc()
+{
+  AgsFxEq10ChannelInputData *input_data;
+
+  input_data = (AgsFxEq10ChannelInputData *) g_malloc(sizeof(AgsFxEq10ChannelInputData));
+
+  input_data->parent = NULL;
+
+  input_data->output = NULL;
+  input_data->input = NULL;
+
+  return(input_data);
+}
+
+/**
+ * ags_fx_eq10_channel_input_data_free:
+ * @input_data: (type gpointer) (transfer full): the #AgsFxEq10ChannelInputData-struct
+ * 
+ * Free @input_data.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_fx_eq10_channel_input_data_free(AgsFxEq10ChannelInputData *input_data)
+{
+  if(input_data == NULL){
+    return;
+  }
+
+  ags_stream_free(input_data->output);
+  ags_stream_free(input_data->input);
+  
+  g_free(input_data);
 }
 
 /**

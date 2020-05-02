@@ -79,6 +79,18 @@ ags_fx_eq10_channel_test_new()
 
   CU_ASSERT(fx_eq10_channel != NULL);
   CU_ASSERT(AGS_RECALL_CHANNEL(fx_eq10_channel)->source == channel);
+
+  CU_ASSERT(fx_eq10_channel->peak_28hz != NULL);
+  CU_ASSERT(fx_eq10_channel->peak_56hz != NULL);
+  CU_ASSERT(fx_eq10_channel->peak_112hz != NULL);
+  CU_ASSERT(fx_eq10_channel->peak_224hz != NULL);
+  CU_ASSERT(fx_eq10_channel->peak_448hz != NULL);
+  CU_ASSERT(fx_eq10_channel->peak_896hz != NULL);
+  CU_ASSERT(fx_eq10_channel->peak_1792hz != NULL);
+  CU_ASSERT(fx_eq10_channel->peak_3584hz != NULL);
+  CU_ASSERT(fx_eq10_channel->peak_7168hz != NULL);
+  CU_ASSERT(fx_eq10_channel->peak_14336hz != NULL);
+  CU_ASSERT(fx_eq10_channel->pressure != NULL);
 }
 
 void
@@ -93,6 +105,18 @@ ags_fx_eq10_channel_test_dispose()
   fx_eq10_channel = ags_fx_eq10_channel_new(channel);
 
   g_object_run_dispose(fx_eq10_channel);
+
+  CU_ASSERT(fx_eq10_channel->peak_28hz == NULL);
+  CU_ASSERT(fx_eq10_channel->peak_56hz == NULL);
+  CU_ASSERT(fx_eq10_channel->peak_112hz == NULL);
+  CU_ASSERT(fx_eq10_channel->peak_224hz == NULL);
+  CU_ASSERT(fx_eq10_channel->peak_448hz == NULL);
+  CU_ASSERT(fx_eq10_channel->peak_896hz == NULL);
+  CU_ASSERT(fx_eq10_channel->peak_1792hz == NULL);
+  CU_ASSERT(fx_eq10_channel->peak_3584hz == NULL);
+  CU_ASSERT(fx_eq10_channel->peak_7168hz == NULL);
+  CU_ASSERT(fx_eq10_channel->peak_14336hz == NULL);
+  CU_ASSERT(fx_eq10_channel->pressure == NULL);
 
   g_object_unref(fx_eq10_channel);
 }
