@@ -50,7 +50,8 @@ struct _AgsPanel
   gchar *name;
   gchar *xml_type;
 
-  AgsRecallContainer *playback_container;
+  AgsRecallContainer *playback_play_container;
+  AgsRecallContainer *playback_recall_container;
   
   GtkVBox *vbox;
 };

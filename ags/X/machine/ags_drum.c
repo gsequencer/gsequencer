@@ -215,6 +215,26 @@ ags_drum_init(AgsDrum *drum)
   drum->name = NULL;
   drum->xml_type = "ags-drum";
 
+  drum->playback_play_container = ags_recall_container_new();
+  drum->playback_recall_container = ags_recall_container_new();
+
+  drum->pattern_play_container = ags_recall_container_new();
+  drum->pattern_recall_container = ags_recall_container_new();
+
+  drum->notation_play_container = ags_recall_container_new();
+  drum->notation_recall_container = ags_recall_container_new();
+
+  drum->volume_play_container = ags_recall_container_new();
+  drum->volume_recall_container = ags_recall_container_new();
+
+  drum->envelope_play_container = ags_recall_container_new();
+  drum->envelope_recall_container = ags_recall_container_new();
+
+  drum->peak_play_container = ags_recall_container_new();
+  drum->peak_recall_container = ags_recall_container_new();
+
+  drum->buffer_container = ags_recall_container_new();
+
   /* create widgets */
   drum->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) gtk_bin_get_child((GtkBin *) drum), (GtkWidget *) drum->vbox);
@@ -498,21 +518,7 @@ ags_drum_map_recall(AgsMachine *machine)
   
   AgsAudio *audio;
 
-  AgsDelayAudio *play_delay_audio;
-  AgsDelayAudioRun *play_delay_audio_run;
-  AgsCountBeatsAudio *play_count_beats_audio;
-  AgsCountBeatsAudioRun *play_count_beats_audio_run;
-  AgsCopyPatternAudio *recall_copy_pattern_audio;
-  AgsCopyPatternAudioRun *recall_copy_pattern_audio_run;
-  AgsRecordMidiAudio *recall_record_midi_audio;
-  AgsRecordMidiAudioRun *recall_record_midi_audio_run;
-  AgsPlayNotationAudio *recall_notation_audio;
-  AgsPlayNotationAudioRun *recall_notation_audio_run;
-
-  GList *start_play, *play;
   GList *start_recall, *recall;
-  
-  GValue value = {0,};
 
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
@@ -524,189 +530,103 @@ ags_drum_map_recall(AgsMachine *machine)
   
   audio = machine->audio;
 
-  /* ags-delay */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-delay",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
-
-  g_object_get(audio,
-	       "play", &start_play,
-	       NULL);
-
-  play = ags_recall_find_type(start_play,
-			      AGS_TYPE_DELAY_AUDIO_RUN);
-
-  if(play != NULL){
-    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(play->data);
-    //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
-  }else{
-    play_delay_audio_run = NULL;
-  }
-
-  g_list_free_full(start_play,
-		   g_object_unref);
-  
-  /* ags-count-beats */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-count-beats",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
-  
-  g_object_get(audio,
-	       "play", &start_play,
-	       NULL);
-
-  play = ags_recall_find_type(start_play,
-			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
-
-  if(play != NULL){
-    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(play->data);
-
-    /* set dependency */  
-    g_object_set(G_OBJECT(play_count_beats_audio_run),
-		 "delay-audio-run", play_delay_audio_run,
-		 NULL);
-    ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      (gint64) 16 * gtk_spin_button_get_value(window->navigation->position_tact),
-		      AGS_SEEK_SET);
-
-    /* notation loop */
-    g_value_init(&value, G_TYPE_BOOLEAN);
-    
-    g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
-    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
-			&value);
-
-    g_value_unset(&value);
-    g_value_init(&value, G_TYPE_UINT64);
-
-    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_left_tact));
-    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_start,
-			&value);
-
-    g_value_reset(&value);
-
-    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_right_tact));
-    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_end,
-			&value);
-  }else{
-    play_count_beats_audio_run = NULL;
-  }
-
-  g_list_free_full(start_play,
-		   g_object_unref);
-  
-  /* ags-copy-pattern */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-copy-pattern",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_REMAP |
-			     AGS_RECALL_FACTORY_RECALL),
-			    0);
-
-  g_object_get(audio,
-	       "recall", &start_recall,
-	       NULL);
-
-  recall = ags_recall_find_type(start_recall,
-				AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
-
-  if(recall != NULL){
-    recall_copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall->data);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_copy_pattern_audio_run),
-		 "delay-audio-run", play_delay_audio_run,
-		 "count-beats-audio-run", play_count_beats_audio_run,
-		 NULL);
-  }
+  /* ags-fx-playback */
+  start_recall = ags_fx_factory_create(audio,
+				       AGS_DRUM(machine)->playback_play_container, AGS_DRUM(machine)->playback_recall_container,
+				       "ags-fx-playback",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
 
   g_list_free_full(start_recall,
-		   g_object_unref);
-  
-  /* ags-record-midi */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-record-midi",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
+		   (GDestroyNotify) g_object_unref);
 
-  g_object_get(audio,
-	       "play", &start_play,
-	       NULL);
+  /* ags-fx-pattern */
+  start_recall = ags_fx_factory_create(audio,
+				       AGS_DRUM(machine)->pattern_play_container, AGS_DRUM(machine)->pattern_recall_container,
+				       "ags-fx-pattern",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
 
-  play = ags_recall_find_type(start_play,
-			      AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
-  if(play != NULL){
-    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(play->data);
-    
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_record_midi_audio_run),
-		 "delay-audio-run", play_delay_audio_run,
-		 NULL);
+  /* ags-fx-notation */
+  start_recall = ags_fx_factory_create(audio,
+				       AGS_DRUM(machine)->notation_play_container, AGS_DRUM(machine)->notation_recall_container,
+				       "ags-fx-notation",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
 
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_record_midi_audio_run),
-		 "count-beats-audio-run", play_count_beats_audio_run,
-		 NULL);
-  }  
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
-  g_list_free_full(start_play,
-		   g_object_unref);
-  
-  /* ags-play-notation */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-play-notation",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       AGS_DRUM(machine)->volume_play_container, AGS_DRUM(machine)->volume_recall_container,
+				       "ags-fx-volume",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
 
-  g_object_get(audio,
-	       "play", &start_play,
-	       NULL);
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
-  play = ags_recall_find_type(start_play,
-			      AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
+  /* ags-fx-envelope */
+  start_recall = ags_fx_factory_create(audio,
+				       AGS_DRUM(machine)->envelope_play_container, AGS_DRUM(machine)->envelope_recall_container,
+				       "ags-fx-envelope",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
 
-  if(play != NULL){
-    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(play->data);
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_notation_audio_run),
-		 "delay-audio-run", play_delay_audio_run,
-		 NULL);
+  /* ags-fx-peak */
+  start_recall = ags_fx_factory_create(audio,
+				       AGS_DRUM(machine)->peak_play_container, AGS_DRUM(machine)->peak_recall_container,
+				       "ags-fx-peak",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
 
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_notation_audio_run),
-		 "count-beats-audio-run", play_count_beats_audio_run,
-		 NULL);
-  }
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
-  g_list_free_full(start_play,
-		   g_object_unref);
+  /* ags-fx-buffer */
+  start_recall = ags_fx_factory_create(audio,
+				       NULL, AGS_DRUM(machine)->buffer_container,
+				       "ags-fx-buffer",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
   
   /* call parent */
   AGS_MACHINE_CLASS(ags_drum_parent_class)->map_recall(machine);

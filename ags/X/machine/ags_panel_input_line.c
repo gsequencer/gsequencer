@@ -304,7 +304,7 @@ ags_panel_input_line_map_recall(AgsLine *line,
 
   /* ags-fx-playback */
   start_recall = ags_fx_factory_create(audio,
-				       panel->playback_container, NULL,
+				       panel->playback_play_container, panel->playback_recall_container,
 				       "ags-fx-playback",
 				       NULL,
 				       NULL,
@@ -314,8 +314,8 @@ ags_panel_input_line_map_recall(AgsLine *line,
 				       0);
 
   /* unref */
-//  g_list_free_full(start_recall,
-//		   (GDestroyNotify) g_object_unref);
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
   /* call parent */
   AGS_LINE_CLASS(ags_panel_input_line_parent_class)->map_recall(line,

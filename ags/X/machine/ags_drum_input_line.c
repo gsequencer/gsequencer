@@ -324,217 +324,136 @@ void
 ags_drum_input_line_map_recall(AgsLine *line,
 			       guint output_pad_start)
 {
-  AgsLineMember *line_member;
-
+  AgsDrum *drum;
   AgsAudio *audio;
   AgsChannel *source;
-  AgsChannel *current;
-  AgsPort *port;
-  AgsRecallHandler *recall_handler;
 
-  AgsCopyPatternChannel *copy_pattern_channel;
-  AgsPlayChannel *play_channel;
-  AgsPlayChannelRun *play_channel_run;
-  AgsPeakChannelRun *recall_peak_channel_run, *play_peak_channel_run;
-  AgsStreamChannelRun *stream_channel_run;
+  GList *start_recall;
 
-  GList *start_play, *play;
-  GList *start_recall, *recall;
-  
   guint pad, audio_channel;
-  guint i;
 
   if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0 ||
      (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
     return;
   }
 
+  drum = (AgsDrum *) gtk_widget_get_ancestor(line,
+					     AGS_TYPE_DRUM);
+  
+  audio = AGS_MACHINE(drum)->audio;
+
   source = line->channel;
   
   /* get some fields */
   g_object_get(source,
-	       "audio", &audio,
 	       "pad", &pad,
 	       "audio-channel", &audio_channel,
 	       NULL);
 
-  /* ags-peak */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-peak",
-			    audio_channel, audio_channel + 1, 
-			    pad, pad + 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* ags-fx-playback */
+  start_recall = ags_fx_factory_create(audio,
+				       drum->playback_play_container, drum->playback_recall_container,
+				       "ags-fx-playback",
+				       NULL,
+				       NULL,
+				       audio_channel, audio_channel + 1,
+				       pad, pad + 1,
+				       (AGS_FX_FACTORY_REMAP),
+				       0);
 
-  /* ags-copy-pattern */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-copy-pattern",
-			    audio_channel, audio_channel + 1, 
-			    pad, pad + 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_REMAP |
-			     AGS_RECALL_FACTORY_RECALL),
-			    0);
-
-  /* set pattern object on port */
-  g_object_get(source,
-	       "recall", &start_recall,
-	       NULL);
-
-  recall = ags_recall_template_find_type(start_recall,
-					 AGS_TYPE_COPY_PATTERN_CHANNEL);
-
-  if(recall != NULL){
-    GList *pattern;
-
-    GValue pattern_value = {0,};
-    
-    copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(recall->data);
-    g_object_get(copy_pattern_channel,
-		 "pattern", &port,
-		 NULL);
-
-    g_object_get(source,
-		 "pattern", &pattern,
-		 NULL);
-
-    g_value_init(&pattern_value,
-		 G_TYPE_OBJECT);
-    
-    g_value_set_object(&pattern_value,
-		       pattern->data);
-
-    ags_port_safe_write(port,
-			&pattern_value);
-
-    g_object_unref(port);
-    
-    g_list_free_full(pattern,
-		     g_object_unref);
-  }
-
+  /* unref */
   g_list_free_full(start_recall,
-		   g_object_unref);
-  
-  if(ags_recall_global_get_rt_safe()){
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-rt-stream",
-			      audio_channel, audio_channel + 1, 
-			      pad, pad + 1,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-  }
+		   (GDestroyNotify) g_object_unref);
 
-  /* ags-play */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-play",
-			    audio_channel, audio_channel + 1, 
-			    pad, pad + 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* ags-fx-pattern */
+  start_recall = ags_fx_factory_create(audio,
+				       drum->pattern_play_container, drum->pattern_recall_container,
+				       "ags-fx-pattern",
+				       NULL,
+				       NULL,
+				       audio_channel, audio_channel + 1,
+				       pad, pad + 1,
+				       (AGS_FX_FACTORY_REMAP),
+				       0);
 
-  g_object_get(source,
-	       "play", &start_play,
-	       NULL);
+  /* unref */
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
-  play = start_play;
+  /* ags-fx-notation */
+  start_recall = ags_fx_factory_create(audio,
+				       drum->notation_play_container, drum->notation_recall_container,
+				       "ags-fx-notation",
+				       NULL,
+				       NULL,
+				       audio_channel, audio_channel + 1,
+				       pad, pad + 1,
+				       (AGS_FX_FACTORY_REMAP),
+				       0);
 
-  while((play = ags_recall_find_type(play, AGS_TYPE_PLAY_CHANNEL)) != NULL){
-    GValue audio_channel_value = {0,};
+  /* unref */
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
-    play_channel = AGS_PLAY_CHANNEL(play->data);    
-    g_object_get(play_channel,
-		 "audio-channel", &port,
-		 NULL);
-    
-    g_value_init(&audio_channel_value,
-		 G_TYPE_UINT64);
-    
-    g_value_set_uint64(&audio_channel_value,
-		       audio_channel);
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       drum->volume_play_container, drum->volume_recall_container,
+				       "ags-fx-volume",
+				       NULL,
+				       NULL,
+				       audio_channel, audio_channel + 1,
+				       pad, pad + 1,
+				       (AGS_FX_FACTORY_REMAP),
+				       0);
 
-    ags_port_safe_write(port,
-			&audio_channel_value);
+  /* unref */
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
-    g_object_unref(port);
-    
-    play = play->next;
-  }
+  /* ags-fx-envelope */
+  start_recall = ags_fx_factory_create(audio,
+				       drum->envelope_play_container, drum->envelope_recall_container,
+				       "ags-fx-envelope",
+				       NULL,
+				       NULL,
+				       audio_channel, audio_channel + 1,
+				       pad, pad + 1,
+				       (AGS_FX_FACTORY_REMAP),
+				       0);
 
-  g_list_free_full(start_play,
-		   g_object_unref);
-  
-  /* ags-volume */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-volume",
-			    audio_channel, audio_channel + 1, 
-			    pad, pad + 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* unref */
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
-  /* ags-envelope */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-envelope",
-			    audio_channel, audio_channel + 1, 
-			    pad, pad + 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* ags-fx-peak */
+  start_recall = ags_fx_factory_create(audio,
+				       drum->peak_play_container, drum->peak_recall_container,
+				       "ags-fx-peak",
+				       NULL,
+				       NULL,
+				       audio_channel, audio_channel + 1,
+				       pad, pad + 1,
+				       (AGS_FX_FACTORY_REMAP),
+				       0);
 
-  /* ags-stream */
-  if(!ags_recall_global_get_rt_safe()){
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-stream",
-			      audio_channel, audio_channel + 1, 
-			      pad, pad + 1,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
+  /* unref */
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
-    /* set up dependencies */
-    g_object_get(source,
-		 "play", &start_play,
-		 NULL);
-    
-    play = ags_recall_find_type(start_play,
-				AGS_TYPE_PLAY_CHANNEL_RUN);
-    play_channel_run = AGS_PLAY_CHANNEL_RUN(play->data);
+  /* ags-fx-buffer */
+  start_recall = ags_fx_factory_create(audio,
+				       NULL, drum->buffer_container,
+				       "ags-fx-buffer",
+				       NULL,
+				       NULL,
+				       audio_channel, audio_channel + 1,
+				       pad, pad + 1,
+				       (AGS_FX_FACTORY_REMAP),
+				       0);
 
-    play = ags_recall_find_type(start_play,
-				AGS_TYPE_STREAM_CHANNEL_RUN);
-    stream_channel_run = AGS_STREAM_CHANNEL_RUN(play->data);
-
-    g_object_set(G_OBJECT(play_channel_run),
-		 "stream-channel-run", stream_channel_run,
-		 NULL);
-
-    g_list_free_full(start_play,
-		     g_object_unref);
-  }
-
-  g_object_unref(audio);
+  /* unref */
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
   
   /* call parent */
   AGS_LINE_CLASS(ags_drum_input_line_parent_class)->map_recall(line,

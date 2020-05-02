@@ -55,6 +55,26 @@ struct _AgsDrum
   gchar *name;
   gchar *xml_type;
 
+  AgsRecallContainer *playback_play_container;
+  AgsRecallContainer *playback_recall_container;
+
+  AgsRecallContainer *pattern_play_container;
+  AgsRecallContainer *pattern_recall_container;
+
+  AgsRecallContainer *notation_play_container;
+  AgsRecallContainer *notation_recall_container;
+
+  AgsRecallContainer *volume_play_container;
+  AgsRecallContainer *volume_recall_container;
+
+  AgsRecallContainer *envelope_play_container;
+  AgsRecallContainer *envelope_recall_container;
+
+  AgsRecallContainer *peak_play_container;
+  AgsRecallContainer *peak_recall_container;
+  
+  AgsRecallContainer *buffer_container;
+  
   GtkButton *open;
   GtkWidget *open_dialog;
   
