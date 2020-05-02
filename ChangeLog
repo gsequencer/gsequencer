@@ -26,6 +26,7 @@ ags (3.3.0)
 	  AgsFxEnvelopeChannelProcessor, AgsFxEnvelopeRecycling and AgsFxEnvelopeAudioSignal
 	* implemented AgsFxEq10Audio, AgsFxEq10AudioProcessor, AgsFxEq10Channel,
 	  AgsFxEq10ChannelProcessor, AgsFxEq10Recycling and AgsFxEq10AudioSignal
+	* implemented ags_audio_insert_recall() and ags_channel_insert_recall()
 	* TODO:JK: implemented Fx mutex per scope
 	* TODO:JK: implemented resample cache per scope
 	* TODO:JK: improve AgsComplex support

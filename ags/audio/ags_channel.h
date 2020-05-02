@@ -334,8 +334,13 @@ void ags_channel_set_play(AgsChannel *channel, GList *play);
 GList* ags_channel_get_recall(AgsChannel *channel);
 void ags_channel_set_recall(AgsChannel *channel, GList *recall);
 
-void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play_context);
-void ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play_context);
+void ags_channel_add_recall(AgsChannel *channel, GObject *recall,
+			    gboolean play_context);
+void ags_channel_insert_recall(AgsChannel *channel, GObject *recall,
+			       gboolean play_context,
+			       gint position);
+void ags_channel_remove_recall(AgsChannel *channel, GObject *recall,
+			       gboolean play_context);
 
 /* add/remove effect */
 GList* ags_channel_add_effect(AgsChannel *channel,

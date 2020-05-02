@@ -11628,8 +11628,8 @@ ags_audio_set_recall(AgsAudio *audio, GList *recall)
  * Since: 3.0.0
  */
 void
-ags_audio_add_recall(AgsAudio *audio,
-		     GObject *recall, gboolean play_context)
+ags_audio_add_recall(AgsAudio *audio, GObject *recall,
+		     gboolean play_context)
 {
   gboolean success;
   
@@ -11691,6 +11691,83 @@ ags_audio_add_recall(AgsAudio *audio,
 }
 
 /**
+ * ags_audio_insert_recall:
+ * @audio: the #AgsAudio
+ * @recall: the #AgsRecall
+ * @play_context: if %TRUE play context, else if %FALSE recall context
+ * @position: the position
+ *
+ * Insert @recall at @position in @audio's @play_context.
+ *
+ * Since: 3.3.0
+ */
+void
+ags_audio_insert_recall(AgsAudio *audio, GObject *recall,
+			gboolean play_context,
+			gint position)
+{
+  gboolean success;
+  
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  success = FALSE;
+  
+  if(play_context){
+    GRecMutex *play_mutex;
+
+    /* get play mutex */
+    play_mutex = AGS_AUDIO_GET_PLAY_MUTEX(audio);
+
+    /* add recall */
+    g_rec_mutex_lock(play_mutex);
+    
+    if(g_list_find(audio->play, recall) == NULL){
+      success = TRUE;
+
+      g_object_ref(G_OBJECT(recall));
+    
+      audio->play = g_list_insert(audio->play,
+				  recall,
+				  position);
+    }
+
+    g_rec_mutex_unlock(play_mutex);
+  }else{
+    GRecMutex *recall_mutex;
+
+    /* get recall mutex */
+    recall_mutex = AGS_AUDIO_GET_RECALL_MUTEX(audio);
+
+    /* add recall */
+    g_rec_mutex_lock(recall_mutex);
+
+    if(g_list_find(audio->recall, recall) == NULL){
+      success = TRUE;
+      
+      g_object_ref(G_OBJECT(recall));
+    
+      audio->recall = g_list_insert(audio->recall,
+				    recall,
+				    position);
+    }
+
+    g_rec_mutex_unlock(recall_mutex);
+  }
+
+  if(success){
+    if(AGS_IS_RECALL_AUDIO(recall) ||
+       AGS_IS_RECALL_AUDIO_RUN(recall)){
+      g_object_set(recall,
+		   "audio", audio,
+		   NULL);
+    }
+  }
+}
+
+/**
  * ags_audio_remove_recall:
  * @audio: the #AgsAudio
  * @recall: the #AgsRecall
@@ -11701,7 +11778,8 @@ ags_audio_add_recall(AgsAudio *audio,
  * Since: 3.0.0
  */
 void
-ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play_context)
+ags_audio_remove_recall(AgsAudio *audio, GObject *recall,
+			gboolean play_context)
 {
   gboolean success;
   

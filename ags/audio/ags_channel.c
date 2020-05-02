@@ -8346,7 +8346,8 @@ ags_channel_set_recall(AgsChannel *channel, GList *recall)
  * Since: 3.0.0
  */
 void
-ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play_context)
+ags_channel_add_recall(AgsChannel *channel, GObject *recall,
+		       gboolean play_context)
 {
   GObject *output_soundcard, *input_soundcard;
 
@@ -8439,6 +8440,114 @@ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play_conte
 }
 
 /**
+ * ags_channel_insert_recall:
+ * @channel: an #AgsChannel
+ * @recall: the #AgsRecall
+ * @play_context: %TRUE if play context, else if %FALSE recall context
+ * @position: the position
+ *
+ * Insert @recall at @position in @channel's @play_context.
+ *
+ * Since: 3.3.0
+ */
+void
+ags_channel_insert_recall(AgsChannel *channel, GObject *recall,
+			  gboolean play_context,
+			  gint position)
+{
+  GObject *output_soundcard, *input_soundcard;
+
+  gint output_soundcard_channel, input_soundcard_channel;
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+  gboolean success;
+
+  GRecMutex *channel_mutex;
+  
+  if(!AGS_IS_CHANNEL(channel) ||
+     !AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+
+  /* get some fields */
+  g_rec_mutex_lock(channel_mutex);
+
+  output_soundcard = channel->output_soundcard;
+  output_soundcard_channel = channel->output_soundcard_channel;
+
+  input_soundcard = channel->input_soundcard;
+  input_soundcard_channel = channel->input_soundcard_channel;
+
+  samplerate = channel->samplerate;
+  buffer_size = channel->buffer_size;
+  format = channel->format; 
+  
+  g_rec_mutex_unlock(channel_mutex);
+  
+  success = FALSE;
+  g_object_set(recall,
+	       "output-soundcard", output_soundcard,
+	       "output-soundcard-channel", output_soundcard_channel,
+	       "input-soundcard", input_soundcard,
+	       "input-soundcard-channel", input_soundcard_channel,
+	       "samplerate", samplerate,
+	       "buffer-size", buffer_size,
+	       "format", format,
+	       NULL);
+  
+  if(play_context){
+    GRecMutex *play_mutex;
+
+    /* get play mutex */
+    play_mutex = AGS_CHANNEL_GET_PLAY_MUTEX(channel);
+
+    /* insert recall */
+    g_rec_mutex_lock(play_mutex);
+    
+    if(g_list_find(channel->play, recall) == NULL){
+      g_object_ref(G_OBJECT(recall));
+    
+      channel->play = g_list_insert(channel->play,
+				    recall,
+				    position);
+    }
+
+    g_rec_mutex_unlock(play_mutex);
+  }else{
+    GRecMutex *recall_mutex;
+
+    /* get recall mutex */
+    recall_mutex = AGS_CHANNEL_GET_RECALL_MUTEX(channel);
+
+    /* insert recall */
+    g_rec_mutex_lock(recall_mutex);
+
+    if(g_list_find(channel->recall, recall) == NULL){
+      g_object_ref(G_OBJECT(recall));
+    
+      channel->recall = g_list_insert(channel->recall,
+				      recall,
+				      position);
+    }
+
+    g_rec_mutex_unlock(recall_mutex);
+  }
+
+  if(success){
+    if(AGS_IS_RECALL_CHANNEL(recall) ||
+       AGS_IS_RECALL_CHANNEL_RUN(recall)){
+      g_object_set(recall,
+		   "source", channel,
+		   NULL);
+    }
+  }
+}
+
+/**
  * ags_channel_remove_recall:
  * @channel: an #AgsChannel
  * @recall: the #AgsRecall
@@ -8449,7 +8558,8 @@ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play_conte
  * Since: 3.0.0
  */
 void
-ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play_context)
+ags_channel_remove_recall(AgsChannel *channel, GObject *recall,
+			  gboolean play_context)
 {
   gboolean success;
   
@@ -8466,7 +8576,7 @@ ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play_co
     /* get play mutex */
     play_mutex = AGS_CHANNEL_GET_PLAY_MUTEX(channel);
 
-    /* add recall */
+    /* remove recall */
     g_rec_mutex_lock(play_mutex);
     
     if(g_list_find(channel->play, recall) != NULL){
@@ -8483,7 +8593,7 @@ ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play_co
     /* get recall mutex */
     recall_mutex = AGS_CHANNEL_GET_RECALL_MUTEX(channel);
 
-    /* add recall */
+    /* remove recall */
     g_rec_mutex_lock(recall_mutex);
 
     if(g_list_find(channel->recall, recall) != NULL){

@@ -486,6 +486,9 @@ void ags_audio_set_recall(AgsAudio *audio, GList *recall);
 
 void ags_audio_add_recall(AgsAudio *audio, GObject *recall,
 			  gboolean play_context);
+void ags_audio_insert_recall(AgsAudio *audio, GObject *recall,
+			     gboolean play_context,
+			     gint position);
 void ags_audio_remove_recall(AgsAudio *audio, GObject *recall,
 			     gboolean play_context);
 
