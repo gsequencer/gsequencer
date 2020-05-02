@@ -617,7 +617,7 @@ ags_recall_container_set_property(GObject *gobject,
 	
 	return;
       }
-
+      
       g_object_ref(G_OBJECT(recall_channel_run));
       recall_container->recall_channel_run = g_list_prepend(recall_container->recall_channel_run,
 							    recall_channel_run);

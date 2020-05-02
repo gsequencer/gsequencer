@@ -276,13 +276,11 @@ void
 ags_panel_input_line_map_recall(AgsLine *line,
 				guint output_pad_start)
 {
+  AgsPanel *panel;
   AgsAudio *audio;
   AgsChannel *source;
 
-  AgsPlayChannel *play_channel;
-  AgsPlayChannelRunMaster *play_channel_run;
-  
-  GList *start_play, *play;
+  GList *start_recall;
 
   guint pad, audio_channel;
 
@@ -290,60 +288,38 @@ ags_panel_input_line_map_recall(AgsLine *line,
      (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
     return;
   }
+
+  panel = (AgsPanel *) gtk_widget_get_ancestor(line,
+					       AGS_TYPE_PANEL);
   
+  audio = AGS_MACHINE(panel)->audio;
+
   source = line->channel;
   
   /* get some fields */
   g_object_get(source,
-	       "audio", &audio,
 	       "pad", &pad,
 	       "audio-channel", &audio_channel,
 	       NULL);
 
-  /* ags-play */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-play-master",
-			    audio_channel, audio_channel + 1,
-			    pad, pad + 1,
-			    (AGS_RECALL_FACTORY_INPUT,
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* ags-fx-playback */
+  start_recall = ags_fx_factory_create(audio,
+				       panel->playback_container, NULL,
+				       "ags-fx-playback",
+				       NULL,
+				       NULL,
+				       audio_channel, audio_channel + 1,
+				       pad, pad + 1,
+				       (AGS_FX_FACTORY_REMAP),
+				       0);
 
-  /* get some fields */
-  g_object_get(source,
-	       "play", &start_play,
-	       NULL);
-
-  /* set audio channel */
-  play = start_play;
-
-  while((play = ags_recall_template_find_type(play,
-					      AGS_TYPE_PLAY_CHANNEL)) != NULL){
-    GValue audio_channel_value = {0,};
-
-    play_channel = AGS_PLAY_CHANNEL(play->data);
-
-    g_value_init(&audio_channel_value, G_TYPE_UINT64);
-    g_value_set_uint64(&audio_channel_value,
-		       audio_channel);
-    ags_port_safe_write(play_channel->audio_channel,
-			&audio_channel_value);
-    g_value_unset(&audio_channel_value);
-
-    /* iterate */
-    play = play->next;
-  }
-
-  g_list_free_full(start_play,
-		   g_object_unref);
+  /* unref */
+//  g_list_free_full(start_recall,
+//		   (GDestroyNotify) g_object_unref);
 
   /* call parent */
   AGS_LINE_CLASS(ags_panel_input_line_parent_class)->map_recall(line,
 								output_pad_start);
-
-  g_object_unref(audio);
 }
 
 /**

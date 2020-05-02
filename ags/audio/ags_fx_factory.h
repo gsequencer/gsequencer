@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_RECALL_FACTORY_H__
-#define __AGS_RECALL_FACTORY_H__
+#ifndef __AGS_FX_FACTORY_H__
+#define __AGS_FX_FACTORY_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -69,4 +69,4 @@ GList* ags_fx_factory_create(AgsAudio *audio,
 
 G_END_DECLS
 
-#endif /*__AGS_RECALL_FACTORY_H__*/
+#endif /*__AGS_FX_FACTORY_H__*/
