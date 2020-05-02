@@ -356,6 +356,12 @@
 #include <ags/audio/fx/ags_fx_volume_channel.h>
 #include <ags/audio/fx/ags_fx_volume_channel_processor.h>
 #include <ags/audio/fx/ags_fx_volume_recycling.h>
+#include <ags/audio/fx/ags_fx_eq10_audio.h>
+#include <ags/audio/fx/ags_fx_eq10_audio_processor.h>
+#include <ags/audio/fx/ags_fx_eq10_audio_signal.h>
+#include <ags/audio/fx/ags_fx_eq10_channel.h>
+#include <ags/audio/fx/ags_fx_eq10_channel_processor.h>
+#include <ags/audio/fx/ags_fx_eq10_recycling.h>
 
 /* audio task */
 #include <ags/audio/task/ags_add_audio.h>

@@ -49,15 +49,48 @@ static gpointer ags_fx_eq10_channel_parent_class = NULL;
 static const gchar *ags_fx_eq10_channel_plugin_name = "ags-fx-eq10";
 
 static const gchar *ags_fx_eq10_channel_specifier[] = {
+  "./peak-28hz[0]",
+  "./peak-56hz[0]",
+  "./peak-112hz[0]",
+  "./peak-224hz[0]",
+  "./peak-448hz[0]",
+  "./peak-896hz[0]",
+  "./peak-1792hz[0]",
+  "./peak-3584hz[0]",
+  "./peak-7168hz[0]",
+  "./peak-14336hz[0]",
+  "./pressure[0]",
   NULL,
 };
 
 static const gchar *ags_fx_eq10_channel_control_port[] = {
+  "1/11",
+  "2/11",
+  "3/11",
+  "4/11",
+  "5/11",
+  "6/11",
+  "7/11",
+  "8/11",
+  "9/11",
+  "10/11",
+  "11/11",
   NULL,
 };
 
 enum{
   PROP_0,
+  PROP_PEAK_28HZ,
+  PROP_PEAK_56HZ,
+  PROP_PEAK_112HZ,
+  PROP_PEAK_224HZ,
+  PROP_PEAK_448HZ,
+  PROP_PEAK_896HZ,
+  PROP_PEAK_1792HZ,
+  PROP_PEAK_3584HZ,
+  PROP_PEAK_7168HZ,
+  PROP_PEAK_14336HZ,
+  PROP_PRESSURE,
 };
 
 GType
@@ -110,6 +143,181 @@ ags_fx_eq10_channel_class_init(AgsFxEq10ChannelClass *fx_eq10_channel)
   gobject->finalize = ags_fx_eq10_channel_finalize;
 
   /* properties */
+  /**
+   * AgsFxEq10Channel:peak-28hz:
+   * 
+   * The peak 28Hz port.
+   * 
+   * Since: 3.3.0 
+   */
+  param_spec = g_param_spec_object("peak-28hz",
+				   i18n_pspec("28Hz peak to apply"),
+				   i18n_pspec("The 28Hz peak to apply on the channel"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PEAK_28HZ,
+				  param_spec);
+
+  /**
+   * AgsFxEq10Channel:peak-56hz:
+   * 
+   * The peak 56Hz port.
+   * 
+   * Since: 3.3.0 
+   */
+  param_spec = g_param_spec_object("peak-56hz",
+				   i18n_pspec("56Hz peak to apply"),
+				   i18n_pspec("The 56Hz peak to apply on the channel"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PEAK_56HZ,
+				  param_spec);
+
+  /**
+   * AgsFxEq10Channel:peak-112hz:
+   * 
+   * The peak 112Hz port.
+   * 
+   * Since: 3.3.0 
+   */
+  param_spec = g_param_spec_object("peak-112hz",
+				   i18n_pspec("112Hz peak to apply"),
+				   i18n_pspec("The 112Hz peak to apply on the channel"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PEAK_112HZ,
+				  param_spec);
+
+  /**
+   * AgsFxEq10Channel:peak-224hz:
+   * 
+   * The peak 224Hz port.
+   * 
+   * Since: 3.3.0 
+   */
+  param_spec = g_param_spec_object("peak-224hz",
+				   i18n_pspec("224Hz peak to apply"),
+				   i18n_pspec("The 224Hz peak to apply on the channel"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PEAK_224HZ,
+				  param_spec);
+
+  /**
+   * AgsFxEq10Channel:peak-448hz:
+   * 
+   * The peak 448Hz port.
+   * 
+   * Since: 3.3.0 
+   */
+  param_spec = g_param_spec_object("peak-448hz",
+				   i18n_pspec("448Hz peak to apply"),
+				   i18n_pspec("The 448Hz peak to apply on the channel"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PEAK_448HZ,
+				  param_spec);
+
+  /**
+   * AgsFxEq10Channel:peak-896hz:
+   * 
+   * The peak 896Hz port.
+   * 
+   * Since: 3.3.0 
+   */
+  param_spec = g_param_spec_object("peak-896hz",
+				   i18n_pspec("896Hz peak to apply"),
+				   i18n_pspec("The 896Hz peak to apply on the channel"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PEAK_896HZ,
+				  param_spec);
+
+  /**
+   * AgsFxEq10Channel:peak-1792hz:
+   * 
+   * The peak 1792Hz port.
+   * 
+   * Since: 3.3.0 
+   */
+  param_spec = g_param_spec_object("peak-1792hz",
+				   i18n_pspec("1792Hz peak to apply"),
+				   i18n_pspec("The 1792Hz peak to apply on the channel"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PEAK_1792HZ,
+				  param_spec);
+
+  /**
+   * AgsFxEq10Channel:peak-3584hz:
+   * 
+   * The peak 3584Hz port.
+   * 
+   * Since: 3.3.0 
+   */
+  param_spec = g_param_spec_object("peak-3584hz",
+				   i18n_pspec("3584Hz peak to apply"),
+				   i18n_pspec("The 3584Hz peak to apply on the channel"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PEAK_3584HZ,
+				  param_spec);
+
+  /**
+   * AgsFxEq10Channel:peak-7168hz:
+   * 
+   * The peak 7168Hz port.
+   * 
+   * Since: 3.3.0 
+   */
+  param_spec = g_param_spec_object("peak-7168hz",
+				   i18n_pspec("7168Hz peak to apply"),
+				   i18n_pspec("The 7168Hz peak to apply on the channel"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PEAK_7168HZ,
+				  param_spec);
+
+  /**
+   * AgsFxEq10Channel:peak-14336hz:
+   * 
+   * The peak 14336Hz port.
+   * 
+   * Since: 3.3.0 
+   */
+  param_spec = g_param_spec_object("peak-14336hz",
+				   i18n_pspec("14336Hz peak to apply"),
+				   i18n_pspec("The 14336Hz peak to apply on the channel"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PEAK_14336HZ,
+				  param_spec);
+
+  /**
+   * AgsFxEq10Channel:pressure:
+   * 
+   * The pressure port.
+   * 
+   * Since: 3.3.0 
+   */
+  param_spec = g_param_spec_object("pressure",
+				   i18n_pspec("pressure to apply"),
+				   i18n_pspec("The pressure to apply on the channel"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PRESSURE,
+				  param_spec);
 }
 
 void
@@ -119,6 +327,183 @@ ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel)
   AGS_RECALL(fx_eq10_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_eq10_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_eq10_channel)->xml_type = "ags-fx-eq10-channel";
+
+  /* peak 28hz */
+  fx_eq10_channel->peak_28hz = g_object_new(AGS_TYPE_PORT,
+					    "plugin-name", ags_fx_eq10_channel_plugin_name,
+					    "specifier", ags_fx_eq10_channel_specifier[0],
+					    "control-port", ags_fx_eq10_channel_control_port[0],
+					    "port-value-is-pointer", FALSE,
+					    "port-value-type", G_TYPE_FLOAT,
+					    "port-value-size", sizeof(gfloat),
+					    "port-value-length", 1,
+					    NULL);
+
+  fx_eq10_channel->peak_28hz->port_value.ags_port_float = 1.0;
+
+  ags_recall_add_port((AgsRecall *) fx_eq10_channel,
+		      fx_eq10_channel->peak_28hz);
+
+  /* peak 56hz */
+  fx_eq10_channel->peak_56hz = g_object_new(AGS_TYPE_PORT,
+					    "plugin-name", ags_fx_eq10_channel_plugin_name,
+					    "specifier", ags_fx_eq10_channel_specifier[0],
+					    "control-port", ags_fx_eq10_channel_control_port[0],
+					    "port-value-is-pointer", FALSE,
+					    "port-value-type", G_TYPE_FLOAT,
+					    "port-value-size", sizeof(gfloat),
+					    "port-value-length", 1,
+					    NULL);
+
+  fx_eq10_channel->peak_56hz->port_value.ags_port_float = 1.0;
+
+  ags_recall_add_port((AgsRecall *) fx_eq10_channel,
+		      fx_eq10_channel->peak_56hz);
+
+  /* peak 112hz */
+  fx_eq10_channel->peak_112hz = g_object_new(AGS_TYPE_PORT,
+					     "plugin-name", ags_fx_eq10_channel_plugin_name,
+					     "specifier", ags_fx_eq10_channel_specifier[0],
+					     "control-port", ags_fx_eq10_channel_control_port[0],
+					     "port-value-is-pointer", FALSE,
+					     "port-value-type", G_TYPE_FLOAT,
+					     "port-value-size", sizeof(gfloat),
+					     "port-value-length", 1,
+					     NULL);
+
+  fx_eq10_channel->peak_112hz->port_value.ags_port_float = 1.0;
+
+  ags_recall_add_port((AgsRecall *) fx_eq10_channel,
+		      fx_eq10_channel->peak_112hz);
+
+  /* peak 224hz */
+  fx_eq10_channel->peak_224hz = g_object_new(AGS_TYPE_PORT,
+					     "plugin-name", ags_fx_eq10_channel_plugin_name,
+					     "specifier", ags_fx_eq10_channel_specifier[0],
+					     "control-port", ags_fx_eq10_channel_control_port[0],
+					     "port-value-is-pointer", FALSE,
+					     "port-value-type", G_TYPE_FLOAT,
+					     "port-value-size", sizeof(gfloat),
+					     "port-value-length", 1,
+					     NULL);
+
+  fx_eq10_channel->peak_224hz->port_value.ags_port_float = 1.0;
+
+  ags_recall_add_port((AgsRecall *) fx_eq10_channel,
+		      fx_eq10_channel->peak_224hz);
+
+  /* peak 448hz */
+  fx_eq10_channel->peak_448hz = g_object_new(AGS_TYPE_PORT,
+					     "plugin-name", ags_fx_eq10_channel_plugin_name,
+					     "specifier", ags_fx_eq10_channel_specifier[0],
+					     "control-port", ags_fx_eq10_channel_control_port[0],
+					     "port-value-is-pointer", FALSE,
+					     "port-value-type", G_TYPE_FLOAT,
+					     "port-value-size", sizeof(gfloat),
+					     "port-value-length", 1,
+					     NULL);
+
+  fx_eq10_channel->peak_448hz->port_value.ags_port_float = 1.0;
+
+  ags_recall_add_port((AgsRecall *) fx_eq10_channel,
+		      fx_eq10_channel->peak_448hz);
+
+  /* peak 896hz */
+  fx_eq10_channel->peak_896hz = g_object_new(AGS_TYPE_PORT,
+					     "plugin-name", ags_fx_eq10_channel_plugin_name,
+					     "specifier", ags_fx_eq10_channel_specifier[0],
+					     "control-port", ags_fx_eq10_channel_control_port[0],
+					     "port-value-is-pointer", FALSE,
+					     "port-value-type", G_TYPE_FLOAT,
+					     "port-value-size", sizeof(gfloat),
+					     "port-value-length", 1,
+					     NULL);
+
+  fx_eq10_channel->peak_896hz->port_value.ags_port_float = 1.0;
+
+  ags_recall_add_port((AgsRecall *) fx_eq10_channel,
+		      fx_eq10_channel->peak_896hz);
+
+  /* peak 1792hz */
+  fx_eq10_channel->peak_1792hz = g_object_new(AGS_TYPE_PORT,
+					      "plugin-name", ags_fx_eq10_channel_plugin_name,
+					      "specifier", ags_fx_eq10_channel_specifier[0],
+					      "control-port", ags_fx_eq10_channel_control_port[0],
+					      "port-value-is-pointer", FALSE,
+					      "port-value-type", G_TYPE_FLOAT,
+					      "port-value-size", sizeof(gfloat),
+					      "port-value-length", 1,
+					      NULL);
+
+  fx_eq10_channel->peak_1792hz->port_value.ags_port_float = 1.0;
+
+  ags_recall_add_port((AgsRecall *) fx_eq10_channel,
+		      fx_eq10_channel->peak_1792hz);
+
+  /* peak 3584hz */
+  fx_eq10_channel->peak_3584hz = g_object_new(AGS_TYPE_PORT,
+					      "plugin-name", ags_fx_eq10_channel_plugin_name,
+					      "specifier", ags_fx_eq10_channel_specifier[0],
+					      "control-port", ags_fx_eq10_channel_control_port[0],
+					      "port-value-is-pointer", FALSE,
+					      "port-value-type", G_TYPE_FLOAT,
+					      "port-value-size", sizeof(gfloat),
+					      "port-value-length", 1,
+					      NULL);
+
+  fx_eq10_channel->peak_3584hz->port_value.ags_port_float = 1.0;
+
+  ags_recall_add_port((AgsRecall *) fx_eq10_channel,
+		      fx_eq10_channel->peak_3584hz);
+
+  /* peak 7168hz */
+  fx_eq10_channel->peak_7168hz = g_object_new(AGS_TYPE_PORT,
+					      "plugin-name", ags_fx_eq10_channel_plugin_name,
+					      "specifier", ags_fx_eq10_channel_specifier[0],
+					      "control-port", ags_fx_eq10_channel_control_port[0],
+					      "port-value-is-pointer", FALSE,
+					      "port-value-type", G_TYPE_FLOAT,
+					      "port-value-size", sizeof(gfloat),
+					      "port-value-length", 1,
+					      NULL);
+
+  fx_eq10_channel->peak_7168hz->port_value.ags_port_float = 1.0;
+
+  ags_recall_add_port((AgsRecall *) fx_eq10_channel,
+		      fx_eq10_channel->peak_7168hz);
+
+  /* peak 14336hz */
+  fx_eq10_channel->peak_14336hz = g_object_new(AGS_TYPE_PORT,
+					       "plugin-name", ags_fx_eq10_channel_plugin_name,
+					       "specifier", ags_fx_eq10_channel_specifier[0],
+					       "control-port", ags_fx_eq10_channel_control_port[0],
+					       "port-value-is-pointer", FALSE,
+					       "port-value-type", G_TYPE_FLOAT,
+					       "port-value-size", sizeof(gfloat),
+					       "port-value-length", 1,
+					       NULL);
+
+  fx_eq10_channel->peak_14336hz->port_value.ags_port_float = 1.0;
+
+  ags_recall_add_port((AgsRecall *) fx_eq10_channel,
+		      fx_eq10_channel->peak_14336hz);
+
+
+  /* pressure */
+  fx_eq10_channel->pressure = g_object_new(AGS_TYPE_PORT,
+					   "plugin-name", ags_fx_eq10_channel_plugin_name,
+					   "specifier", ags_fx_eq10_channel_specifier[0],
+					   "control-port", ags_fx_eq10_channel_control_port[0],
+					   "port-value-is-pointer", FALSE,
+					   "port-value-type", G_TYPE_FLOAT,
+					   "port-value-size", sizeof(gfloat),
+					   "port-value-length", 1,
+					   NULL);
+
+  fx_eq10_channel->pressure->port_value.ags_port_float = 1.0;
+
+  ags_recall_add_port((AgsRecall *) fx_eq10_channel,
+		      fx_eq10_channel->pressure);
 }
 
 void
@@ -137,6 +522,303 @@ ags_fx_eq10_channel_set_property(GObject *gobject,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_eq10_channel);
 
   switch(prop_id){
+  case PROP_PEAK_28HZ:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_eq10_channel->peak_28hz){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_eq10_channel->peak_28hz != NULL){
+	g_object_unref(G_OBJECT(fx_eq10_channel->peak_28hz));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_eq10_channel->peak_28hz = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_56HZ:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_eq10_channel->peak_56hz){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_eq10_channel->peak_56hz != NULL){
+	g_object_unref(G_OBJECT(fx_eq10_channel->peak_56hz));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_eq10_channel->peak_56hz = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_112HZ:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_eq10_channel->peak_112hz){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_eq10_channel->peak_112hz != NULL){
+	g_object_unref(G_OBJECT(fx_eq10_channel->peak_112hz));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_eq10_channel->peak_112hz = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_224HZ:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_eq10_channel->peak_224hz){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_eq10_channel->peak_224hz != NULL){
+	g_object_unref(G_OBJECT(fx_eq10_channel->peak_224hz));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_eq10_channel->peak_224hz = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_448HZ:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_eq10_channel->peak_448hz){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_eq10_channel->peak_448hz != NULL){
+	g_object_unref(G_OBJECT(fx_eq10_channel->peak_448hz));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_eq10_channel->peak_448hz = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_896HZ:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_eq10_channel->peak_896hz){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_eq10_channel->peak_896hz != NULL){
+	g_object_unref(G_OBJECT(fx_eq10_channel->peak_896hz));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_eq10_channel->peak_896hz = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_1792HZ:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_eq10_channel->peak_1792hz){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_eq10_channel->peak_1792hz != NULL){
+	g_object_unref(G_OBJECT(fx_eq10_channel->peak_1792hz));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_eq10_channel->peak_1792hz = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_3584HZ:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_eq10_channel->peak_3584hz){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_eq10_channel->peak_3584hz != NULL){
+	g_object_unref(G_OBJECT(fx_eq10_channel->peak_3584hz));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_eq10_channel->peak_3584hz = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_7168HZ:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_eq10_channel->peak_7168hz){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_eq10_channel->peak_7168hz != NULL){
+	g_object_unref(G_OBJECT(fx_eq10_channel->peak_7168hz));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_eq10_channel->peak_7168hz = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_14336HZ:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_eq10_channel->peak_14336hz){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_eq10_channel->peak_14336hz != NULL){
+	g_object_unref(G_OBJECT(fx_eq10_channel->peak_14336hz));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_eq10_channel->peak_14336hz = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PRESSURE:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_eq10_channel->pressure){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_eq10_channel->pressure != NULL){
+	g_object_unref(G_OBJECT(fx_eq10_channel->pressure));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_eq10_channel->pressure = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -159,6 +841,105 @@ ags_fx_eq10_channel_get_property(GObject *gobject,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_eq10_channel);
 
   switch(prop_id){
+  case PROP_PEAK_28HZ:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_eq10_channel->peak_28hz);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_56HZ:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_eq10_channel->peak_56hz);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_112HZ:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_eq10_channel->peak_112hz);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_224HZ:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_eq10_channel->peak_224hz);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_448HZ:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_eq10_channel->peak_448hz);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_896HZ:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_eq10_channel->peak_896hz);
+
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_PEAK_1792HZ:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_eq10_channel->peak_1792hz);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_3584HZ:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_eq10_channel->peak_3584hz);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_7168HZ:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_eq10_channel->peak_7168hz);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PEAK_14336HZ:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_eq10_channel->peak_14336hz);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PRESSURE:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_eq10_channel->pressure);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -171,6 +952,83 @@ ags_fx_eq10_channel_dispose(GObject *gobject)
   AgsFxEq10Channel *fx_eq10_channel;
   
   fx_eq10_channel = AGS_FX_EQ10_CHANNEL(gobject);
+
+  /* peak 28hz */
+  if(fx_eq10_channel->peak_28hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_28hz));
+
+    fx_eq10_channel->peak_28hz = NULL;
+  }
+
+  /* peak 56hz */
+  if(fx_eq10_channel->peak_56hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_56hz));
+
+    fx_eq10_channel->peak_56hz = NULL;
+  }
+
+  /* peak 112hz */
+  if(fx_eq10_channel->peak_112hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_112hz));
+
+    fx_eq10_channel->peak_112hz = NULL;
+  }
+
+  /* peak 224hz */
+  if(fx_eq10_channel->peak_224hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_224hz));
+
+    fx_eq10_channel->peak_224hz = NULL;
+  }
+
+  /* peak 448hz */
+  if(fx_eq10_channel->peak_448hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_448hz));
+
+    fx_eq10_channel->peak_448hz = NULL;
+  }
+
+  /* peak 896hz */
+  if(fx_eq10_channel->peak_896hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_896hz));
+
+    fx_eq10_channel->peak_896hz = NULL;
+  }
+
+  /* peak 1792hz */
+  if(fx_eq10_channel->peak_1792hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_1792hz));
+
+    fx_eq10_channel->peak_1792hz = NULL;
+  }
+
+  /* peak 3584hz */
+  if(fx_eq10_channel->peak_3584hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_3584hz));
+
+    fx_eq10_channel->peak_3584hz = NULL;
+  }
+
+  /* peak 7168hz */
+  if(fx_eq10_channel->peak_7168hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_7168hz));
+
+    fx_eq10_channel->peak_7168hz = NULL;
+  }
+
+  /* peak 14336hz */
+  if(fx_eq10_channel->peak_14336hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_14336hz));
+
+    fx_eq10_channel->peak_14336hz = NULL;
+  }
+
+  /* pressure */
+  if(fx_eq10_channel->pressure != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->pressure));
+
+    fx_eq10_channel->pressure = NULL;
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_fx_eq10_channel_parent_class)->dispose(gobject);
@@ -182,6 +1040,61 @@ ags_fx_eq10_channel_finalize(GObject *gobject)
   AgsFxEq10Channel *fx_eq10_channel;
   
   fx_eq10_channel = AGS_FX_EQ10_CHANNEL(gobject);
+
+  /* peak 28hz */
+  if(fx_eq10_channel->peak_28hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_28hz));
+  }
+
+  /* peak 56hz */
+  if(fx_eq10_channel->peak_56hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_56hz));
+  }
+
+  /* peak 112hz */
+  if(fx_eq10_channel->peak_112hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_112hz));
+  }
+
+  /* peak 224hz */
+  if(fx_eq10_channel->peak_224hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_224hz));
+  }
+
+  /* peak 448hz */
+  if(fx_eq10_channel->peak_448hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_448hz));
+  }
+
+  /* peak 896hz */
+  if(fx_eq10_channel->peak_896hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_896hz));
+  }
+
+  /* peak 1792hz */
+  if(fx_eq10_channel->peak_1792hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_1792hz));
+  }
+
+  /* peak 3584hz */
+  if(fx_eq10_channel->peak_3584hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_3584hz));
+  }
+
+  /* peak 7168hz */
+  if(fx_eq10_channel->peak_7168hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_7168hz));
+  }
+
+  /* peak 14336hz */
+  if(fx_eq10_channel->peak_14336hz != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->peak_14336hz));
+  }
+
+  /* pressure */
+  if(fx_eq10_channel->pressure != NULL){
+    g_object_unref(G_OBJECT(fx_eq10_channel->pressure));
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_eq10_channel_parent_class)->finalize(gobject);

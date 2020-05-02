@@ -43,6 +43,19 @@ typedef struct _AgsFxEq10ChannelClass AgsFxEq10ChannelClass;
 struct _AgsFxEq10Channel
 {
   AgsRecallChannel recall_channel;
+
+  AgsPort *peak_28hz;
+  AgsPort *peak_56hz;
+  AgsPort *peak_112hz;
+  AgsPort *peak_224hz;
+  AgsPort *peak_448hz;
+  AgsPort *peak_896hz;
+  AgsPort *peak_1792hz;
+  AgsPort *peak_3584hz;
+  AgsPort *peak_7168hz;
+  AgsPort *peak_14336hz;
+
+  AgsPort *pressure;
 };
 
 struct _AgsFxEq10ChannelClass
