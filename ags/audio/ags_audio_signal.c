@@ -3353,7 +3353,7 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
 {
   ags_audio_signal_feed_extended(audio_signal,
 				 template,
-				 frame_count,
+				 frame_count, 0,
 				 TRUE, TRUE);
 }
 
@@ -3362,6 +3362,7 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
  * @audio_signal: the #AgsAudioSignal
  * @template: the template #AgsAudioSignal
  * @frame_count: the new frame count
+ * @old_frame_count: the old frame count
  * @do_open: open feed
  * @do_close: close feed
  * 
@@ -3372,7 +3373,7 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
 void
 ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
 			       AgsAudioSignal *template,
-			       guint frame_count,
+			       guint frame_count, guint old_frame_count,
 			       gboolean do_open, gboolean do_close)
 {
   GList *stream, *template_stream;
@@ -3381,7 +3382,6 @@ ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
   guint attack;
   guint old_length;
   guint old_last_frame;
-  guint old_frame_count;
   guint last_frame;
   guint loop_start, loop_end;
   guint template_length;
@@ -3427,7 +3427,6 @@ ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
   
   old_length = audio_signal->length;
   old_last_frame = audio_signal->last_frame;
-  old_frame_count = old_last_frame + (old_length * audio_signal->buffer_size) - audio_signal->first_frame;
 
   g_rec_mutex_unlock(audio_signal_mutex);
 
@@ -3459,12 +3458,16 @@ ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
     }else{
       template_loop_frame_count = template_loop_length;
     }
-    
-    ags_audio_signal_stream_safe_resize(audio_signal,
-					(guint) floor((attack + frame_count) / buffer_size) + 1);
+
+    if(old_length < (guint) floor((attack + frame_count) / buffer_size) + 1){
+      ags_audio_signal_stream_safe_resize(audio_signal,
+					  (guint) floor((attack + frame_count) / buffer_size) + 1);
+    }
   }else{
-    ags_audio_signal_stream_safe_resize(audio_signal,
-					(guint) floor((attack + frame_count) / buffer_size) + 1);
+    if(old_length < (guint) floor((attack + frame_count) / buffer_size) + 1){
+      ags_audio_signal_stream_safe_resize(audio_signal,
+					  (guint) floor((attack + frame_count) / buffer_size) + 1);
+    }
   }
   
   if(template_buffer_size != buffer_size ||
@@ -3485,6 +3488,8 @@ ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
 	       NULL);
   
   if(template_length == 0){
+    g_warning("empty template");
+
     return;
   }
   
@@ -3573,6 +3578,7 @@ ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
  * @audio_signal: the #AgsAudioSignal
  * @template: the template #AgsAudioSignal
  * @frame_count: the new frame count
+ * @old_frame_count: the old frame count
  * 
  * Feed audio signal to grow upto frame count.
  * 
@@ -3581,11 +3587,11 @@ ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
 void
 ags_audio_signal_open_feed(AgsAudioSignal *audio_signal,
 			   AgsAudioSignal *template,
-			   guint frame_count)
+			   guint frame_count, guint old_frame_count)
 {
   ags_audio_signal_feed_extended(audio_signal,
 				 template,
-				 frame_count,
+				 frame_count, old_frame_count,
 				 TRUE, FALSE);
 }
 
@@ -3594,6 +3600,7 @@ ags_audio_signal_open_feed(AgsAudioSignal *audio_signal,
  * @audio_signal: the #AgsAudioSignal
  * @template: the template #AgsAudioSignal
  * @frame_count: the new frame count
+ * @old_frame_count: the old frame count
  * 
  * Feed audio signal to grow upto frame count.
  * 
@@ -3602,11 +3609,11 @@ ags_audio_signal_open_feed(AgsAudioSignal *audio_signal,
 void
 ags_audio_signal_continue_feed(AgsAudioSignal *audio_signal,
 			       AgsAudioSignal *template,
-			       guint frame_count)
+			       guint frame_count, guint old_frame_count)
 {
   ags_audio_signal_feed_extended(audio_signal,
 				 template,
-				 frame_count,
+				 frame_count, old_frame_count,
 				 FALSE, FALSE);
 }
 
@@ -3615,6 +3622,7 @@ ags_audio_signal_continue_feed(AgsAudioSignal *audio_signal,
  * @audio_signal: the #AgsAudioSignal
  * @template: the template #AgsAudioSignal
  * @frame_count: the new frame count
+ * @old_frame_count: the old frame count
  * 
  * Feed audio signal to grow upto frame count.
  * 
@@ -3623,11 +3631,11 @@ ags_audio_signal_continue_feed(AgsAudioSignal *audio_signal,
 void
 ags_audio_signal_close_feed(AgsAudioSignal *audio_signal,
 			    AgsAudioSignal *template,
-			    guint frame_count)
+			    guint frame_count, guint old_frame_count)
 {
   ags_audio_signal_feed_extended(audio_signal,
 				 template,
-				 frame_count,
+				 frame_count, old_frame_count,
 				 FALSE, TRUE);
 }
 

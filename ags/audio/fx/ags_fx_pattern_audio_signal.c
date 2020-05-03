@@ -19,6 +19,7 @@
 
 #include <ags/audio/fx/ags_fx_pattern_audio_signal.h>
 
+#include <ags/audio/fx/ags_fx_pattern_audio.h>
 #include <ags/audio/fx/ags_fx_pattern_audio_processor.h>
 #include <ags/audio/fx/ags_fx_pattern_channel_processor.h>
 #include <ags/audio/fx/ags_fx_pattern_recycling.h>
@@ -146,10 +147,12 @@ ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
 {
   AgsAudioSignal *source;
   AgsAudioSignal *template;
+  AgsFxPatternAudio *fx_pattern_audio;
   AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
   AgsFxPatternChannelProcessor *fx_pattern_channel_processor;
   AgsFxPatternRecycling *fx_pattern_recycling;
-
+  AgsPort *port;
+  
   GList *start_note, *note;
   
   gdouble delay_counter;
@@ -161,8 +164,19 @@ ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
   guint template_frame_count;
   guint buffer_size;
   guint i;
+
+  GValue value = {0,};
   
   GRecMutex *fx_pattern_audio_processor_mutex;
+
+  if(!ags_recall_check_sound_scope(recall, AGS_SOUND_SCOPE_SEQUENCER)){
+    ags_recall_done(recall);
+
+    /* call parent */
+    AGS_RECALL_CLASS(ags_fx_pattern_audio_signal_parent_class)->run_inter(recall);
+    
+    return;
+  }
 
   source = NULL;
 
@@ -180,6 +194,7 @@ ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
 	       NULL);
   
   g_object_get(fx_pattern_channel_processor,
+	       "recall-audio", &fx_pattern_audio,
 	       "recall-audio-run", &fx_pattern_audio_processor,
 	       NULL);
 
@@ -204,6 +219,24 @@ ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
 
   start_note = NULL;
 
+  delay = AGS_SOUNDCARD_DEFAULT_DELAY;
+
+  if(fx_pattern_audio != NULL){
+    g_object_get(fx_pattern_audio,
+		 "delay", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_DOUBLE);
+
+      ags_port_safe_read(port, &value);
+
+      delay = g_value_get_double(&value);
+      
+      g_value_unset(&value);
+    }
+  }
+  
   length = 0;
   frame_count = 0;
 
@@ -213,7 +246,6 @@ ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
   g_object_get(source,
 	       "template", &template,
 	       "note", &start_note,
-	       "delay", &delay,
 	       "length", &length,
 	       "frame-count", &frame_count,
 	       "buffer-size", &buffer_size,
@@ -231,55 +263,61 @@ ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
   
   note = start_note;
 
-  for(i = 0; note != NULL; i++){
-    guint x0, x1;
-    guint y;
+  if(source != NULL &&
+     source->stream_current != NULL){
+    for(i = 0; note != NULL; i++){
+      guint x0, x1;
+      guint y;
     
-    g_object_get(note->data,
-		 "x0", &x0,
-		 "x1", &x1,
-		 "y", &y,
-		 NULL);
+      g_object_get(note->data,
+		   "x0", &x0,
+		   "x1", &x1,
+		   "y", &y,
+		   NULL);
+    
+      if(offset_counter >= x0){
+	g_message("ags-fx-pattern{%d} [%d] -> [%d] 0x%x", length, template_frame_count, frame_count, source);
+      
+	if(frame_count <= template_frame_count){
 
-    if(offset_counter >= x0){
-      if(frame_count <= template_frame_count){
-	if(delay_counter == 0.0 &&
-	   x0 != offset_counter){
-	  if(length <= template_length){
+	  if(delay_counter < 1.0 &&
+	     x0 != offset_counter){
+	    g_message("resize");
+
 	    ags_audio_signal_stream_safe_resize(source,
 						length + ((guint) floor(delay) + 1));
 	  }
-	}
 
-	if(i > 0){
-	  g_object_set(source,
-		       "frame-count", frame_count,
-		       NULL);
-	}
-
-	ags_fx_pattern_audio_signal_stream_feed((AgsFxPatternAudioSignal *) recall,
-						source,
-						note->data,
-						x0, x1,
-						y,
-						delay_counter, offset_counter,
-						frame_count,
-						delay, buffer_size);
-      }else{
-	ags_audio_signal_remove_note(source,
-				     note->data);
-
-	ags_fx_pattern_audio_signal_notify_remove((AgsFxPatternAudioSignal *) recall,
+	  ags_fx_pattern_audio_signal_stream_feed((AgsFxPatternAudioSignal *) recall,
 						  source,
 						  note->data,
 						  x0, x1,
-						  y);
+						  y,
+						  delay_counter, offset_counter,
+						  frame_count,
+						  delay, buffer_size);
+	
+	  if(i == 0){
+	    g_object_set(source,
+			 "frame-count", frame_count + buffer_size,
+			 NULL);
+	  }
+	}else{
+	  ags_audio_signal_remove_note(source,
+				       note->data);
+
+	  ags_fx_pattern_audio_signal_notify_remove((AgsFxPatternAudioSignal *) recall,
+						    source,
+						    note->data,
+						    x0, x1,
+						    y);
+	}
       }
+
+      note = note->next;
     }
-
-    note = note->next;
   }
-
+  
   if(source == NULL ||
      source->stream_current == NULL){
     ags_recall_done(recall);
@@ -295,6 +333,10 @@ ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
 
   g_list_free_full(start_note,
 		   (GDestroyNotify) g_object_unref);
+  
+  if(fx_pattern_audio != NULL){
+    g_object_unref(fx_pattern_audio);
+  }
   
   if(fx_pattern_audio_processor != NULL){
     g_object_unref(fx_pattern_audio_processor);
@@ -334,16 +376,16 @@ ags_fx_pattern_audio_signal_real_stream_feed(AgsFxPatternAudioSignal *fx_pattern
      delay_counter == 0.0){
     ags_audio_signal_open_feed(source,
 			       template,
-			       frame_count + buffer_size);
+			       frame_count + buffer_size, frame_count);
   }else if(offset_counter + 1 == x1 &&
 	   delay_counter + 1.0 >= delay){
     ags_audio_signal_close_feed(source,
 				template,
-				frame_count + buffer_size);
+				frame_count + buffer_size, frame_count);
   }else{
     ags_audio_signal_continue_feed(source,
 				   template,
-				   frame_count + buffer_size);
+				   frame_count + buffer_size, frame_count);
   }
 
   g_object_set(source,

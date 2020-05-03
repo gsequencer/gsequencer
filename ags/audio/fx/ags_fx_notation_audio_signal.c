@@ -166,6 +166,15 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   
   GRecMutex *fx_notation_audio_processor_mutex;
 
+  if(!ags_recall_check_sound_scope(recall, AGS_SOUND_SCOPE_NOTATION)){
+    ags_recall_done(recall);
+
+    /* call parent */
+    AGS_RECALL_CLASS(ags_fx_notation_audio_signal_parent_class)->run_inter(recall);
+    
+    return;
+  }
+  
   source = NULL;
 
   fx_notation_audio_processor = NULL;
@@ -228,17 +237,13 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 		 NULL);
 
     if(offset_counter >= x0){
+      g_message("ags-fx-notation 0x%x", source);
+      
       if(offset_counter < x1){
-	if(delay_counter == 0.0 &&
+	if(delay_counter < 1.0 &&
 	   x0 != offset_counter){
 	  ags_audio_signal_stream_safe_resize(source,
 					      length + ((guint) floor(delay) + 1));
-	}
-
-	if(i > 0){
-	  g_object_set(source,
-		       "frame-count", frame_count,
-		       NULL);
 	}
 
 	ags_fx_notation_audio_signal_stream_feed((AgsFxNotationAudioSignal *) recall,
@@ -249,6 +254,11 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 						 delay_counter, offset_counter,
 						 frame_count,
 						 delay, buffer_size);
+	if(i == 0){
+	  g_object_set(source,
+		       "frame-count", frame_count + buffer_size,
+		       NULL);
+	}
       }else{
 	ags_audio_signal_remove_note(source,
 				     note->data);
@@ -309,16 +319,16 @@ ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notat
      delay_counter == 0.0){
     ags_audio_signal_open_feed(source,
 			       template,
-			       frame_count + buffer_size);
+			       frame_count + buffer_size, frame_count);
   }else if(offset_counter + 1 == x1 &&
 	   delay_counter + 1.0 >= delay){
     ags_audio_signal_close_feed(source,
 				template,
-				frame_count + buffer_size);
+				frame_count + buffer_size, frame_count);
   }else{
     ags_audio_signal_continue_feed(source,
 				   template,
-				   frame_count + buffer_size);
+				   frame_count + buffer_size, frame_count);
   }
 
   g_object_set(source,

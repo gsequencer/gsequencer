@@ -156,7 +156,7 @@ ags_fx_playback_audio_signal_real_run_inter(AgsRecall *recall)
 	       "source", &source,
 	       NULL);
 
-  if(!ags_audio_signal_test_flags(source, AGS_AUDIO_SIGNAL_MASTER) ||
+  if(!ags_audio_signal_test_flags(source, AGS_AUDIO_SIGNAL_MASTER) &&
      !ags_audio_signal_test_flags(source, AGS_AUDIO_SIGNAL_FEED)){
     ags_recall_done(recall);
 
@@ -200,6 +200,11 @@ ags_fx_playback_audio_signal_real_run_inter(AgsRecall *recall)
   if(buffer != NULL &&
      source != NULL &&
      source->stream_current != NULL){
+    g_message("ags-fx-playback 0x%x", source);
+    
+#ifdef AGS_DEBUG
+#endif
+    
     if(samplerate == target_samplerate){
       /* copy */
       g_rec_mutex_lock(source_stream_mutex);

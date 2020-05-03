@@ -34,6 +34,10 @@ void ags_fx_notation_audio_get_property(GObject *gobject,
 void ags_fx_notation_audio_dispose(GObject *gobject);
 void ags_fx_notation_audio_finalize(GObject *gobject);
 
+void ags_fx_notation_audio_notify_output_soundcard_callback(GObject *gobject,
+							    GParamSpec *pspec,
+							    gpointer user_data);
+
 /**
  * SECTION:ags_fx_notation_audio
  * @short_description: fx notation audio
@@ -249,6 +253,9 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
 {
   gdouble bpm;
   gdouble delay;
+
+  g_signal_connect(fx_notation_audio, "notify::output-soundcard",
+		   G_CALLBACK(ags_fx_notation_audio_notify_output_soundcard_callback), NULL);
 
   AGS_RECALL(fx_notation_audio)->name = "ags-fx-notation";
   AGS_RECALL(fx_notation_audio)->version = AGS_RECALL_DEFAULT_VERSION;
@@ -971,6 +978,62 @@ ags_fx_notation_audio_remove_feed_note(AgsFxNotationAudio *fx_notation_audio,
   }
   
   g_rec_mutex_unlock(recall_mutex);
+}
+
+void
+ags_fx_notation_audio_notify_output_soundcard_callback(GObject *gobject,
+						       GParamSpec *pspec,
+						       gpointer user_data)
+{
+  AgsFxNotationAudio *fx_notation_audio;
+  AgsPort *port;
+  
+  GObject *output_soundcard;
+
+  GValue value = {0,};
+  
+  fx_notation_audio = AGS_FX_NOTATION_AUDIO(gobject);
+
+  /* get audio */
+  output_soundcard = NULL;
+
+  g_object_get(fx_notation_audio,
+	       "output-soundcard", &output_soundcard,
+	       NULL);
+
+  /* delay */
+  g_object_get(fx_notation_audio,
+	       "delay", &port,
+	       NULL);
+
+  if(port != NULL){
+    g_value_init(&value, G_TYPE_DOUBLE);
+
+    g_value_set_double(&value, ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard)));
+
+    ags_port_safe_write(port, &value);
+
+    g_value_unset(&value);
+
+    g_object_unref(port);
+  }
+
+  /* bpm */
+  g_object_get(fx_notation_audio,
+	       "bpm", &port,
+	       NULL);
+
+  if(port != NULL){
+    g_value_init(&value, G_TYPE_DOUBLE);
+
+    g_value_set_double(&value, ags_soundcard_get_bpm(AGS_SOUNDCARD(output_soundcard)));
+
+    ags_port_safe_write(port, &value);
+
+    g_value_unset(&value);
+
+    g_object_unref(port);
+  }
 }
 
 /**
