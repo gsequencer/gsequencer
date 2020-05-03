@@ -474,7 +474,7 @@ ags_fx_factory_create_playback(AgsAudio *audio,
     fx_playback_audio = (AgsFxPlaybackAudio *) g_object_new(AGS_TYPE_FX_PLAYBACK_AUDIO,
 							    "output-soundcard", output_soundcard,
 							    "audio", audio,
-							    "recall-container", play_container,
+							    "recall-container", recall_container,
 							    NULL);
     ags_recall_set_flags((AgsRecall *) fx_playback_audio,
 			 (AGS_RECALL_TEMPLATE));
@@ -503,7 +503,7 @@ ags_fx_factory_create_playback(AgsAudio *audio,
 									       "output-soundcard", output_soundcard,
 									       "audio", audio,
 									       "recall-audio", fx_playback_audio,
-									       "recall-container", play_container,
+									       "recall-container", recall_container,
 									       NULL);
     ags_recall_set_flags((AgsRecall *) fx_playback_audio_processor,
 			 (AGS_RECALL_TEMPLATE));
