@@ -283,7 +283,8 @@ ags_panel_input_line_map_recall(AgsLine *line,
   GList *start_recall;
 
   guint pad, audio_channel;
-
+  gint position;
+  
   if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0 ||
      (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
     return;
@@ -295,6 +296,8 @@ ags_panel_input_line_map_recall(AgsLine *line,
   audio = AGS_MACHINE(panel)->audio;
 
   source = line->channel;
+
+  position = 0;
   
   /* get some fields */
   g_object_get(source,
@@ -310,6 +313,7 @@ ags_panel_input_line_map_recall(AgsLine *line,
 				       NULL,
 				       audio_channel, audio_channel + 1,
 				       pad, pad + 1,
+				       position,
 				       (AGS_FX_FACTORY_REMAP),
 				       0);
 

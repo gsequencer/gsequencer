@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -520,6 +520,8 @@ ags_drum_map_recall(AgsMachine *machine)
 
   GList *start_recall, *recall;
 
+  gint position;
+  
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
@@ -530,6 +532,8 @@ ags_drum_map_recall(AgsMachine *machine)
   
   audio = machine->audio;
 
+  position = 0;
+  
   /* ags-fx-playback */
   start_recall = ags_fx_factory_create(audio,
 				       AGS_DRUM(machine)->playback_play_container, AGS_DRUM(machine)->playback_recall_container,
@@ -538,6 +542,7 @@ ags_drum_map_recall(AgsMachine *machine)
 				       NULL,
 				       0, 0,
 				       0, 0,
+				       position,
 				       (AGS_FX_FACTORY_ADD),
 				       0);
 
@@ -552,6 +557,7 @@ ags_drum_map_recall(AgsMachine *machine)
 				       NULL,
 				       0, 0,
 				       0, 0,
+				       position,
 				       (AGS_FX_FACTORY_ADD),
 				       0);
 
@@ -566,6 +572,7 @@ ags_drum_map_recall(AgsMachine *machine)
 				       NULL,
 				       0, 0,
 				       0, 0,
+				       position,
 				       (AGS_FX_FACTORY_ADD),
 				       0);
 
@@ -580,6 +587,7 @@ ags_drum_map_recall(AgsMachine *machine)
 				       NULL,
 				       0, 0,
 				       0, 0,
+				       position,
 				       (AGS_FX_FACTORY_ADD),
 				       0);
 
@@ -594,6 +602,7 @@ ags_drum_map_recall(AgsMachine *machine)
 				       NULL,
 				       0, 0,
 				       0, 0,
+				       position,
 				       (AGS_FX_FACTORY_ADD),
 				       0);
 
@@ -608,6 +617,7 @@ ags_drum_map_recall(AgsMachine *machine)
 				       NULL,
 				       0, 0,
 				       0, 0,
+				       position,
 				       (AGS_FX_FACTORY_ADD),
 				       0);
 
@@ -622,6 +632,7 @@ ags_drum_map_recall(AgsMachine *machine)
 				       NULL,
 				       0, 0,
 				       0, 0,
+				       position,
 				       (AGS_FX_FACTORY_ADD),
 				       0);
 

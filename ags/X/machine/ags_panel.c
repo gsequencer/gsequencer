@@ -216,6 +216,8 @@ ags_panel_map_recall(AgsMachine *machine)
   AgsAudio *audio;
 
   GList *start_recall;
+
+  gint position;
   
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
@@ -223,6 +225,8 @@ ags_panel_map_recall(AgsMachine *machine)
   }
 
   audio = machine->audio;
+
+  position = 0;
   
   /* ags-fx-playback */
   start_recall = ags_fx_factory_create(audio,
@@ -232,6 +236,7 @@ ags_panel_map_recall(AgsMachine *machine)
 				       NULL,
 				       0, 0,
 				       0, 0,
+				       position,
 				       (AGS_FX_FACTORY_ADD),
 				       0);
 
