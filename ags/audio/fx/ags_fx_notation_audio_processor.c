@@ -443,13 +443,25 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
     g_object_ref(recycling);
     
     while(recycling != end_recycling){
-      AgsAudioSignal *audio_signal;
+      AgsAudioSignal *template, *audio_signal;
+
+      GRecMutex *recycling_mutex;
+
+      recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
+
+      g_rec_mutex_lock(recycling_mutex);
+
+      template = ags_audio_signal_get_template(recycling->audio_signal);
+      
+      g_rec_mutex_unlock(recycling_mutex);
       
       /* create audio signal */
       audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
 					  (GObject *) recycling,
 					  (GObject *) child_recall_id);
+      ags_audio_signal_set_flags(audio_signal, AGS_AUDIO_SIGNAL_STREAM);
       g_object_set(audio_signal,
+		   "template", template,
 		   "note", note,
 		   NULL);
 

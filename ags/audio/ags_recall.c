@@ -2793,6 +2793,10 @@ ags_recall_check_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
 void
 ags_recall_set_sound_scope(AgsRecall *recall, gint sound_scope)
 {
+  GList *start_child, *child, *next;
+
+  gboolean children_lock_free;  
+  
   GRecMutex *recall_mutex;
 
   if(!AGS_IS_RECALL(recall) &&
@@ -2804,12 +2808,35 @@ ags_recall_set_sound_scope(AgsRecall *recall, gint sound_scope)
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
+  children_lock_free = ags_recall_global_get_children_lock_free();
+
   /* set sound scope */
   g_rec_mutex_lock(recall_mutex);
 
   recall->sound_scope = sound_scope;
 
+  /* apply recursivly */
+  if(!children_lock_free){
+    child =
+      start_child = g_list_copy(recall->children);
+  }else{
+    child =
+      start_child = recall->children;
+  }
+
   g_rec_mutex_unlock(recall_mutex);
+
+  while(child != NULL){
+    next = child->next;
+    
+    ags_recall_set_sound_scope(AGS_RECALL(child->data), sound_scope);
+
+    child = next;
+  }
+
+  if(!children_lock_free){
+    g_list_free(start_child);
+  }  
 }
 
 /**
@@ -2842,7 +2869,7 @@ ags_recall_get_sound_scope(AgsRecall *recall)
   sound_scope = recall->sound_scope;
 
   g_rec_mutex_unlock(recall_mutex);
-
+  
   return(sound_scope);
 }
 

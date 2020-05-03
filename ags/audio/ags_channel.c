@@ -10195,7 +10195,7 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
 #endif
 
     /* set appropriate sound scope */
-    copy_recall->sound_scope = sound_scope;
+    ags_recall_set_sound_scope(copy_recall, sound_scope);
       
     /* append to AgsChannel */
     ags_channel_add_recall(channel,

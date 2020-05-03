@@ -12032,8 +12032,8 @@ ags_audio_real_duplicate_recall(AgsAudio *audio,
 #endif
 
     /* set appropriate sound scope */
-    copy_recall->sound_scope = sound_scope;
-      
+    ags_recall_set_sound_scope(copy_recall, sound_scope);
+    
     /* append to AgsAudio */
     ags_audio_add_recall(audio,
 			 (GObject *) copy_recall,

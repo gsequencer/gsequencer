@@ -482,6 +482,7 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 					NULL,
 					NULL);
     g_object_set(audio_signal,
+		 "frame-count", frame_count,
 		 "samplerate", target_samplerate,
 		 "buffer-size", target_buffer_size,
 		 "format", target_format,

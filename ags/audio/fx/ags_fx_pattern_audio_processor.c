@@ -343,13 +343,25 @@ ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_patter
     g_object_ref(recycling);
     
     while(recycling != end_recycling){
-      AgsAudioSignal *audio_signal;
+      AgsAudioSignal *template, *audio_signal;
+
+      GRecMutex *recycling_mutex;
+
+      recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
+
+      g_rec_mutex_lock(recycling_mutex);
+
+      template = ags_audio_signal_get_template(recycling->audio_signal);
+      
+      g_rec_mutex_unlock(recycling_mutex);
       
       /* create audio signal */
       audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
 					  (GObject *) recycling,
 					  (GObject *) child_recall_id);
+      ags_audio_signal_set_flags(audio_signal, AGS_AUDIO_SIGNAL_STREAM);
       g_object_set(audio_signal,
+		   "template", template,
 		   "note", note,
 		   NULL);
 
@@ -731,10 +743,14 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
        fx_pattern_audio_processor->offset_counter + 1 >= loop_end){
       fx_pattern_audio_processor->offset_counter = loop_start;
     }else{
-      fx_pattern_audio_processor->offset_counter += 1;
-
-      if(fx_pattern_audio_processor->offset_counter >= loop_end){
-	ags_recall_done(fx_pattern_audio_processor);
+      if(!ags_recall_test_staging_flags(fx_pattern_audio_processor, AGS_SOUND_STAGING_DONE)){
+	fx_pattern_audio_processor->offset_counter += 1;
+	
+	if(fx_pattern_audio_processor->offset_counter >= loop_end){
+	  ags_recall_done(fx_pattern_audio_processor);
+	}
+      }else{
+	fx_pattern_audio_processor->offset_counter = 0;
       }
     }
     

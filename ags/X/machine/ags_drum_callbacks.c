@@ -131,17 +131,13 @@ ags_drum_open_response_callback(GtkDialog *dialog, gint response, AgsDrum *drum)
 void
 ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
 {
-  AgsPort *port;
-  
-  AgsCountBeatsAudio *count_beats_audio;
-
   GList *start_list, *list;
 
   gboolean loop;
 
   loop = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button));
 
-  /* play - count beats audio */
+  /* play - ags-fx-pattern */
   g_object_get(AGS_MACHINE(drum)->audio,
 	       "play", &start_list,
 	       NULL);
@@ -149,25 +145,34 @@ ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
   list = start_list;
 
   while((list = ags_recall_find_type(list,
-				     AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
-    GValue value = {0,};
+				     AGS_TYPE_FX_PATTERN_AUDIO)) != NULL){
+    AgsFxPatternAudio *fx_pattern_audio;
+    AgsPort *port;
     
-    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-    g_object_get(count_beats_audio,
-		 "sequencer-loop", &port,
+    fx_pattern_audio = AGS_FX_PATTERN_AUDIO(list->data);
+
+    port = NULL;
+    
+    g_object_get(fx_pattern_audio,
+		 "loop", &port,
 		 NULL);
 
-    g_value_init(&value,
-		 G_TYPE_BOOLEAN);
-    g_value_set_boolean(&value,
-			loop);
+    if(port != NULL){
+      GValue value = {0,};
+      
+      g_value_init(&value,
+		   G_TYPE_BOOLEAN);
 
-    ags_port_safe_write(port,
-			&value);
-
-    g_value_unset(&value);
-
-    g_object_unref(port);
+      g_value_set_boolean(&value,
+			  loop);
+      
+      ags_port_safe_write(port,
+			  &value);
+      
+      g_value_unset(&value);
+      
+      g_object_unref(port);
+    }
     
     /* iterate */
     list = list->next;
@@ -176,33 +181,42 @@ ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
   g_list_free_full(start_list,
 		   g_object_unref);
 
-  /* recall - count beats audio */
+  /* recall - ags-fx-pattern */
   g_object_get(AGS_MACHINE(drum)->audio,
 	       "recall", &start_list,
 	       NULL);
-
+  
   list = start_list;
 
   while((list = ags_recall_find_type(list,
-				     AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
-    GValue value = {0,};
+				     AGS_TYPE_FX_PATTERN_AUDIO)) != NULL){
+    AgsFxPatternAudio *fx_pattern_audio;
+    AgsPort *port;
     
-    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-    g_object_get(count_beats_audio,
-		 "sequencer-loop", &port,
+    fx_pattern_audio = AGS_FX_PATTERN_AUDIO(list->data);
+
+    port = NULL;
+    
+    g_object_get(fx_pattern_audio,
+		 "loop", &port,
 		 NULL);
 
-    g_value_init(&value,
-		 G_TYPE_BOOLEAN);
-    g_value_set_boolean(&value,
-			loop);
+    if(port != NULL){
+      GValue value = {0,};
+      
+      g_value_init(&value,
+		   G_TYPE_BOOLEAN);
 
-    ags_port_safe_write(port,
-			&value);
-
-    g_value_unset(&value);
-
-    g_object_unref(port);
+      g_value_set_boolean(&value,
+			  loop);
+      
+      ags_port_safe_write(port,
+			  &value);
+      
+      g_value_unset(&value);
+      
+      g_object_unref(port);
+    }
     
     /* iterate */
     list = list->next;

@@ -33,32 +33,5 @@ ags_drum_output_line_resize_pads_callback(AgsDrum *drum, GType channel_type,
 
   audio = AGS_MACHINE(drum)->audio;
 
-  if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
-    if(pads_new > pads_old){
-      if(ags_recall_global_get_rt_safe() ||
-	 ags_recall_global_get_performance_mode()){
-	/* ags-copy */
-	ags_recall_factory_create(audio,
-				  NULL, NULL,
-				  "ags-copy",
-				  0, audio->audio_channels, 
-				  pads_old, pads_new,
-				  (AGS_RECALL_FACTORY_INPUT |
-				   AGS_RECALL_FACTORY_RECALL |
-				   AGS_RECALL_FACTORY_ADD),
-				  0);
-      }else{
-	/* ags-buffer */
-	ags_recall_factory_create(audio,
-				  NULL, NULL,
-				  "ags-buffer",
-				  0, audio->audio_channels, 
-				  pads_old, pads_new,
-				  (AGS_RECALL_FACTORY_INPUT |
-				   AGS_RECALL_FACTORY_RECALL |
-				   AGS_RECALL_FACTORY_ADD),
-				  0);
-      }
-    }
-  }
+  //TODO:JK: implement me
 }

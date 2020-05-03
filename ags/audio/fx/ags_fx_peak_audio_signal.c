@@ -157,6 +157,7 @@ ags_fx_peak_audio_signal_real_run_inter(AgsRecall *recall)
 
   source = NULL;
 
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   
   g_object_get(recall,
@@ -182,7 +183,9 @@ ags_fx_peak_audio_signal_real_run_inter(AgsRecall *recall)
 
   if(fx_peak_channel != NULL &&
      source != NULL &&
-     source->stream_current != NULL){
+     source->stream_current != NULL &&
+     sound_scope >= 0 &&
+     sound_scope < AGS_SOUND_SCOPE_LAST){
     fx_peak_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_peak_channel);
     stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(fx_peak_channel);
   

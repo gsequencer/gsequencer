@@ -253,10 +253,12 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
   
   delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
 
-  g_object_get(template,
-	       "length", &length,
-	       NULL);
-
+  if(template != NULL){
+    g_object_get(template,
+		 "length", &length,
+		 NULL);
+  }
+  
   if(source != NULL &&
      source->stream_current != NULL){
     stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
