@@ -61,6 +61,8 @@
 
 #include <ags/audio/recall/ags_play_channel_run.h>
 
+#include <ags/audio/fx/ags_fx_playback_channel_processor.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -11274,8 +11276,9 @@ ags_channel_recall_done_callback(AgsRecall *recall,
 
   gint sound_scope;
 
-  if(AGS_IS_PLAY_CHANNEL_RUN(recall) &&
-     !ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING)){
+  if(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING) &&
+     (AGS_IS_PLAY_CHANNEL_RUN(recall) ||
+      AGS_IS_FX_PLAYBACK_CHANNEL_PROCESSOR(recall))){
     sound_scope = ags_recall_get_sound_scope(recall);
 
     if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK){

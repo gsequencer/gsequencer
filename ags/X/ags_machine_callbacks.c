@@ -808,10 +808,26 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
   AgsAudioSignal *template, *audio_signal; 
   AgsRecallID *recall_id;
   AgsNote *play_note;
-
+  AgsFxPlaybackAudio *fx_playback_audio;
+  
   GObject *output_soundcard;
+
+  GList *start_recall, *recall;
   
   GRecMutex *recycling_mutex;
+
+  audio = NULL;
+  
+  channel = NULL;
+
+  first_recycling = NULL;
+  last_recycling = NULL;
+  
+  play_note = NULL;
+
+  fx_playback_audio = NULL;
+  
+  start_recall = NULL;
   
   g_object_get(playback,
 	       "channel", &channel,
@@ -821,6 +837,16 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
   g_object_get(channel,
 	       "audio", &audio,
 	       NULL);
+
+  g_object_get(audio,
+	       "play", &start_recall,
+	       NULL);
+
+  recall = ags_recall_template_find_type(start_recall, AGS_TYPE_FX_PLAYBACK_AUDIO);
+
+  if(recall != NULL){
+    fx_playback_audio = recall->data;
+  }
   
   recall_id = ags_playback_get_recall_id(playback,
 					 AGS_SOUND_SCOPE_PLAYBACK);
@@ -891,7 +917,9 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
       
     audio_signal->stream_current = audio_signal->stream;
     ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
-	
+
+    ags_fx_playback_audio_add_feed_audio_signal(fx_playback_audio, audio_signal);
+
     /*
      * emit add_audio_signal on AgsRecycling
      */

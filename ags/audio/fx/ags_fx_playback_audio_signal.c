@@ -19,6 +19,9 @@
 
 #include <ags/audio/fx/ags_fx_playback_audio_signal.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
+
+#include <ags/audio/fx/ags_fx_playback_audio.h>
 #include <ags/audio/fx/ags_fx_playback_audio_processor.h>
 #include <ags/audio/fx/ags_fx_playback_channel_processor.h>
 #include <ags/audio/fx/ags_fx_playback_recycling.h>
@@ -254,6 +257,33 @@ ags_fx_playback_audio_signal_real_run_inter(AgsRecall *recall)
   g_rec_mutex_unlock(source_stream_mutex);
 
   if(is_done){
+    if(ags_audio_signal_test_flags(source, AGS_AUDIO_SIGNAL_FEED)){
+      AgsFxPlaybackAudio *fx_playback_audio;
+      AgsFxPlaybackChannelProcessor *fx_playback_channel_processor;
+      AgsFxPlaybackRecycling *fx_playback_recycling;
+
+      fx_playback_audio = NULL;
+
+      fx_playback_channel_processor = NULL;
+
+      fx_playback_recycling = NULL;
+      
+      g_object_get(recall,
+		   "parent", &fx_playback_recycling,
+		   NULL);
+
+      g_object_get(fx_playback_recycling,
+		   "parent", &fx_playback_channel_processor,
+		   NULL);
+
+      g_object_get(fx_playback_channel_processor,
+		   "recall-audio", &fx_playback_audio,
+		   NULL);
+
+      ags_fx_playback_audio_remove_feed_audio_signal(fx_playback_audio,
+						     source);
+    }
+    
     ags_recall_done(recall);
   }
 

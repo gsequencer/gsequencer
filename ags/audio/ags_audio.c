@@ -49,6 +49,9 @@
 
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 
+#include <ags/audio/fx/ags_fx_playback_audio_processor.h>
+#include <ags/audio/fx/ags_fx_pattern_audio_processor.h>
+
 #include <libxml/tree.h>
 
 #include <stdlib.h>
@@ -13112,8 +13115,10 @@ ags_audio_recall_done_callback(AgsRecall *recall,
 
   gint sound_scope;
   
-  if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall) &&
-     !ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING)){
+  if(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING) &&
+     (AGS_IS_COUNT_BEATS_AUDIO_RUN(recall) ||
+      AGS_IS_FX_PATTERN_AUDIO_PROCESSOR(recall) ||
+      AGS_IS_FX_PLAYBACK_AUDIO_PROCESSOR(recall))){
     sound_scope = ags_recall_get_sound_scope(recall);
 
     application_context = ags_application_context_get_instance();
@@ -13163,8 +13168,7 @@ ags_audio_real_start(AgsAudio *audio,
 				      AGS_SOUND_STAGING_RUN_INIT_INTER |
 				      AGS_SOUND_STAGING_RUN_INIT_POST);
   
-  if(!ags_audio_test_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING) ||
-     sound_scope >= AGS_SOUND_SCOPE_LAST){
+  if(sound_scope >= AGS_SOUND_SCOPE_LAST){
     return(NULL);
   }
 

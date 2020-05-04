@@ -43,6 +43,7 @@ void ags_fx_playback_audio_processor_real_data_get(AgsFxPlaybackAudioProcessor *
 void ags_fx_playback_audio_processor_real_play(AgsFxPlaybackAudioProcessor *fx_playback_audio_processor);
 void ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_playback_audio_processor);
 void ags_fx_playback_audio_processor_real_feed(AgsFxPlaybackAudioProcessor *fx_playback_audio_processor);
+void ags_fx_playback_audio_processor_real_master(AgsFxPlaybackAudioProcessor *fx_playback_audio_processor);
 
 void ags_fx_playback_audio_processor_real_counter_change(AgsFxPlaybackAudioProcessor *fx_playback_audio_processor);
 
@@ -115,6 +116,7 @@ ags_fx_playback_audio_processor_class_init(AgsFxPlaybackAudioProcessorClass *fx_
   fx_playback_audio_processor->play = ags_fx_playback_audio_processor_real_play;
   fx_playback_audio_processor->record = ags_fx_playback_audio_processor_real_record;
   fx_playback_audio_processor->feed = ags_fx_playback_audio_processor_real_feed;
+  fx_playback_audio_processor->master = ags_fx_playback_audio_processor_real_master;
 
   fx_playback_audio_processor->counter_change = ags_fx_playback_audio_processor_real_counter_change;
 }
@@ -260,7 +262,7 @@ ags_fx_playback_audio_processor_real_run_inter(AgsRecall *recall)
   if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_SEQUENCER) ||
      ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_NOTATION) ||
      ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_MIDI)){
-    ags_fx_playback_audio_processor_feed(fx_playback_audio_processor);
+    ags_fx_playback_audio_processor_master(fx_playback_audio_processor);
   }
   
   /* counter change */
@@ -987,6 +989,8 @@ ags_fx_playback_audio_processor_real_feed(AgsFxPlaybackAudioProcessor *fx_playba
 									 feed_audio_signal->data);
       
       g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
+
+      g_object_ref(feed_audio_signal->data);
     }
     
     feed_audio_signal = feed_audio_signal->next;
@@ -1010,14 +1014,14 @@ ags_fx_playback_audio_processor_real_feed(AgsFxPlaybackAudioProcessor *fx_playba
     if(is_removed){
       g_rec_mutex_lock(fx_playback_audio_processor_mutex);
       
-      start_feeding_audio_signal = g_list_remove(fx_playback_audio_processor->feeding_audio_signal,
-						 feeding_audio_signal->data); 
+      fx_playback_audio_processor->feeding_audio_signal = g_list_remove(fx_playback_audio_processor->feeding_audio_signal,
+									feeding_audio_signal->data); 
 
       done = (fx_playback_audio_processor->feeding_audio_signal == NULL) ? TRUE: FALSE;
-      
-      g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
 
       g_object_unref(feeding_audio_signal->data);
+      
+      g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
     }
 
     feeding_audio_signal = feeding_audio_signal->next;
@@ -1095,6 +1099,8 @@ ags_fx_playback_audio_processor_real_master(AgsFxPlaybackAudioProcessor *fx_play
 									   master_audio_signal->data);
       
       g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
+
+      g_object_ref(master_audio_signal->data);
     }
     
     master_audio_signal = master_audio_signal->next;
@@ -1118,8 +1124,8 @@ ags_fx_playback_audio_processor_real_master(AgsFxPlaybackAudioProcessor *fx_play
     if(is_removed){
       g_rec_mutex_lock(fx_playback_audio_processor_mutex);
       
-      start_mastering_audio_signal = g_list_remove(fx_playback_audio_processor->mastering_audio_signal,
-						   mastering_audio_signal->data); 
+      fx_playback_audio_processor->mastering_audio_signal = g_list_remove(fx_playback_audio_processor->mastering_audio_signal,
+									  mastering_audio_signal->data); 
 
       done = (fx_playback_audio_processor->mastering_audio_signal == NULL) ? TRUE: FALSE;
       
