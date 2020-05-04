@@ -52,11 +52,11 @@ struct _AgsMatrix
 
   guint flags;
 
-  gchar *name;
-  gchar *xml_type;
-
   guint mapped_output_pad;
   guint mapped_input_pad;
+
+  gchar *name;
+  gchar *xml_type;
 
   AgsRecallContainer *playback_play_container;
   AgsRecallContainer *playback_recall_container;

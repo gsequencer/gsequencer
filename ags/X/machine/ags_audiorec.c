@@ -178,6 +178,15 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   audiorec->name = NULL;
   audiorec->xml_type = "ags-audiorec";
 
+  audiorec->playback_play_container = ags_recall_container_new();
+  audiorec->playback_recall_container = ags_recall_container_new();
+
+  audiorec->peak_play_container = ags_recall_container_new();
+  audiorec->peak_recall_container = ags_recall_container_new();
+
+  audiorec->buffer_play_container = ags_recall_container_new();
+  audiorec->buffer_recall_container = ags_recall_container_new();
+
   /* context menu */
   ags_machine_popup_add_connection_options((AgsMachine *) audiorec,
 					   (AGS_MACHINE_POPUP_CONNECTION_EDITOR));
@@ -418,127 +427,71 @@ ags_audiorec_show_all(GtkWidget *widget)
 void
 ags_audiorec_map_recall(AgsMachine *machine)
 {
-  AgsWindow *window;
-  
-  AgsAudiorec *audiorec;
-
   AgsAudio *audio;
 
-  AgsPlayWaveAudioRun *play_wave_audio_run;
-  AgsCaptureWaveAudioRun *capture_wave_audio_run;
+  GList *start_recall, *recall;
 
-  GList *start_play, *play;
+  gint position;
 
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
 
-  audiorec = AGS_AUDIOREC(machine);
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						 AGS_TYPE_WINDOW);
-
   audio = machine->audio;
 
-  /* ags-play-wave */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-play-wave",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
+  position = 0;
+  
+  /* ags-fx-playback */
+  start_recall = ags_fx_factory_create(audio,
+				       AGS_AUDIOREC(machine)->playback_play_container, AGS_AUDIOREC(machine)->playback_recall_container,
+				       "ags-fx-playback",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
 
-  g_object_get(audio,
-	       "play", &start_play,
-	       NULL);
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
-  play = ags_recall_find_type(start_play,
-			      AGS_TYPE_PLAY_WAVE_AUDIO_RUN);
+  /* ags-fx-peak */
+  start_recall = ags_fx_factory_create(audio,
+				       AGS_AUDIOREC(machine)->peak_play_container, AGS_AUDIOREC(machine)->peak_recall_container,
+				       "ags-fx-peak",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
 
-  if(play != NULL){
-    GValue value = {0,};
-    
-    play_wave_audio_run = play->data;
-    
-    /* wave loop */
-    g_value_init(&value, G_TYPE_BOOLEAN);
-    
-    g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
-    ags_port_safe_write(AGS_PLAY_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(play_wave_audio_run)->recall_audio)->wave_loop,
-			&value);
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
-    g_value_unset(&value);
-    g_value_init(&value, G_TYPE_UINT64);
+  /* ags-fx-buffer */
+  start_recall = ags_fx_factory_create(audio,
+				       AGS_AUDIOREC(machine)->buffer_play_container, AGS_AUDIOREC(machine)->buffer_recall_container,
+				       "ags-fx-buffer",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
 
-    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_left_tact));
-    ags_port_safe_write(AGS_PLAY_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(play_wave_audio_run)->recall_audio)->wave_loop_start,
-			&value);
-
-    g_value_reset(&value);
-
-    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_right_tact));
-    ags_port_safe_write(AGS_PLAY_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(play_wave_audio_run)->recall_audio)->wave_loop_end,
-			&value);
-  }
-
-  g_list_free_full(start_play,
-		   g_object_unref);
-
-  /* ags-capture-wave */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-capture-wave",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
-
-  g_object_get(audio,
-	       "play", &start_play,
-	       NULL);
-
-  play = ags_recall_find_type(start_play,
-			      AGS_TYPE_CAPTURE_WAVE_AUDIO_RUN);
-
-  if(play != NULL){
-    GValue value = {0,};
-    
-    capture_wave_audio_run = play->data;
-
-    /* wave loop */
-    g_value_init(&value, G_TYPE_BOOLEAN);
-    
-    g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
-    ags_port_safe_write(AGS_CAPTURE_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(capture_wave_audio_run)->recall_audio)->wave_loop,
-			&value);
-
-    g_value_unset(&value);
-    g_value_init(&value, G_TYPE_UINT64);
-
-    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_left_tact));
-    ags_port_safe_write(AGS_CAPTURE_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(capture_wave_audio_run)->recall_audio)->wave_loop_start,
-			&value);
-
-    g_value_reset(&value);
-
-    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_right_tact));
-    ags_port_safe_write(AGS_CAPTURE_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(capture_wave_audio_run)->recall_audio)->wave_loop_end,
-			&value);
-  }
-
-  g_list_free_full(start_play,
-		   g_object_unref);
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
   
   /* depending on destination */
-  ags_audiorec_input_map_recall(audiorec, 0);
+  ags_audiorec_input_map_recall(machine, 0);
 
   /* depending on destination */
-  ags_audiorec_output_map_recall(audiorec, 0);
+  ags_audiorec_output_map_recall(machine, 0);
 
   /* call parent */
   AGS_MACHINE_CLASS(ags_audiorec_parent_class)->map_recall(machine);  
@@ -546,149 +499,22 @@ ags_audiorec_map_recall(AgsMachine *machine)
 
 void
 ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
-{
-  AgsWindow *window;
-  
+{  
   AgsAudio *audio;
-  AgsChannel *start_output;
-  AgsChannel *output, *next_output, *nth_output;
-  
+
   guint output_pads;
-  guint audio_channels;
-  
+
   if(audiorec->mapped_output_pad > output_pad_start){
     return;
   }
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) audiorec,
-						 AGS_TYPE_WINDOW);
-
   audio = AGS_MACHINE(audiorec)->audio;
-
+  
+  /* get some fields */
   g_object_get(audio,
-	       "output", &start_output,
 	       "output-pads", &output_pads,
-	       "audio-channels", &audio_channels,
 	       NULL);
   
-  /* ags-peak */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-peak",
-			    0, audio_channels, 
-			    output_pad_start, output_pads,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
-
-  /* ags-play-wave */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-play-wave",
-			    0, audio_channels,
-			    output_pad_start, output_pads,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
-
-  nth_output = ags_channel_pad_nth(start_output,
-				   output_pad_start);
-
-  output = nth_output;
-
-  next_output = NULL;
-  
-  while(output != NULL){
-    GList *start_play, *play;
-
-    g_object_get(output,
-		 "play", &start_play,
-		 NULL);
-
-    play = ags_recall_find_type(start_play,
-				AGS_TYPE_PLAY_WAVE_CHANNEL_RUN);
-
-    if(play != NULL){
-      GValue value = {0,};
-      
-      ags_seekable_seek(AGS_SEEKABLE(play->data),
-			(gint64) 16 * gtk_spin_button_get_value(window->navigation->position_tact),
-			AGS_SEEK_SET);
-    }
-
-    g_list_free_full(start_play,
-		     g_object_unref);
-
-    /* iterate */
-    next_output = ags_channel_next(output);
-
-    g_object_unref(output);
-
-    output = next_output;
-  }
-
-  if(next_output != NULL){
-    g_object_unref(next_output);
-  }
-  
-  /* ags-capture-wave */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-capture-wave",
-			    0, audio_channels,
-			    output_pad_start, output_pads,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
-
-  nth_output = ags_channel_pad_nth(start_output,
-				   output_pad_start);
-
-  output = nth_output;
-
-  next_output = NULL;
-  
-  while(output != NULL){
-    GList *start_play, *play;
-
-    g_object_get(output,
-		 "play", &start_play,
-		 NULL);
-
-    play = ags_recall_find_type(start_play,
-				AGS_TYPE_CAPTURE_WAVE_CHANNEL_RUN);
-
-    if(play != NULL){
-      GValue value = {0,};
-      
-      ags_seekable_seek(AGS_SEEKABLE(play->data),
-			(gint64) 16 * gtk_spin_button_get_value(window->navigation->position_tact),
-			AGS_SEEK_SET);
-    }
-
-    g_list_free_full(start_play,
-		     g_object_unref);
-
-    /* iterate */
-    next_output = ags_channel_next(output);
-
-    g_object_unref(output);
-
-    output = next_output;
-  }  
-
-  if(next_output != NULL){
-    g_object_unref(next_output);
-  }
-
-  /* unref */
-  if(start_output != NULL){
-    g_object_unref(start_output);
-  }
-
   audiorec->mapped_output_pad = output_pads;
 }
 
@@ -696,12 +522,12 @@ void
 ags_audiorec_input_map_recall(AgsAudiorec *audiorec, guint input_pad_start)
 {
   AgsAudio *audio;
-  AgsChannel *source, *current;
 
-  GList *list;
+  GList *start_recall;
 
   guint input_pads;
   guint audio_channels;
+  gint position;
 
   if(audiorec->mapped_input_pad > input_pad_start){
     return;
@@ -714,6 +540,56 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec, guint input_pad_start)
 	       "input-pads", &input_pads,
 	       "audio-channels", &audio_channels,
 	       NULL);
+
+  position = 0;
+
+  /* ags-fx-playback */
+  start_recall = ags_fx_factory_create(audio,
+				       audiorec->playback_play_container, audiorec->playback_recall_container,
+				       "ags-fx-playback",
+				       NULL,
+				       NULL,
+				       0, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP),
+				       0);
+
+  /* ags-fx-peak */
+  start_recall = ags_fx_factory_create(audio,
+				       audiorec->peak_play_container, audiorec->peak_recall_container,
+				       "ags-fx-peak",
+				       NULL,
+				       NULL,
+				       0, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP),
+				       0);
+
+  /* unref */
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-buffer */
+  start_recall = ags_fx_factory_create(audio,
+				       audiorec->buffer_play_container, audiorec->buffer_recall_container,
+				       "ags-fx-buffer",
+				       NULL,
+				       NULL,
+				       0, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP),
+				       0);
+
+  /* unref */
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* unref */
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
@@ -722,7 +598,7 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 				   gpointer data)
 {
   AgsAudiorec *audiorec;
-
+  
   AgsAudio *audio;
   AgsChannel *start_output;
   AgsChannel *channel, *next_pad, *next_channel, *nth_channel;
@@ -733,14 +609,17 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 
   AgsConfig *config;
 
+  GList *start_recall;
+  
   gchar *str;
 
   gdouble gui_scale_factor;  
   guint output_pads, input_pads;
+  gint position;
   
   audiorec = AGS_AUDIOREC(machine);
-
-  audio = AGS_MACHINE(audiorec)->audio;
+  
+  audio = machine->audio;
 
   g_object_get(audio,
 	       "input-pads", &input_pads,
@@ -829,43 +708,56 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
       g_object_unref(next_pad);
     }
 
-    if(input_pads > 0){      
+    if(input_pads > 0){
+      position = 0;
+      
+      /* ags-fx-playback */
+      start_recall = ags_fx_factory_create(audio,
+					   audiorec->playback_play_container, audiorec->playback_recall_container,
+					   "ags-fx-playback",
+					   NULL,
+					   NULL,
+					   audio_channels_old, audio_channels,
+					   0, input_pads,
+					   position,
+					   (AGS_FX_FACTORY_REMAP),
+					   0);
+
+      /* ags-fx-peak */
+      start_recall = ags_fx_factory_create(audio,
+					   audiorec->peak_play_container, audiorec->peak_recall_container,
+					   "ags-fx-peak",
+					   NULL,
+					   NULL,
+					   audio_channels_old, audio_channels,
+					   0, input_pads,
+					   position,
+					   (AGS_FX_FACTORY_REMAP),
+					   0);
+
+      /* unref */
+      g_list_free_full(start_recall,
+		       (GDestroyNotify) g_object_unref);
+
+      /* ags-fx-buffer */
+      start_recall = ags_fx_factory_create(audio,
+					   audiorec->buffer_play_container, audiorec->buffer_recall_container,
+					   "ags-fx-buffer",
+					   NULL,
+					   NULL,
+					   audio_channels_old, audio_channels,
+					   0, input_pads,
+					   position,
+					   (AGS_FX_FACTORY_REMAP),
+					   0);
+
+      /* unref */
+      g_list_free_full(start_recall,
+		       (GDestroyNotify) g_object_unref);
     }
     
     if(output_pads > 0){
       /* AgsOutput */
-      /* ags-play-wave */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-play-wave",
-				audio_channels_old, audio_channels, 
-				0, output_pads,
-				(AGS_RECALL_FACTORY_OUTPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-
-      /* ags-capture-wave */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-capture-wave",
-				audio_channels_old, audio_channels, 
-				0, output_pads,
-				(AGS_RECALL_FACTORY_OUTPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-      
-      /* ags-peak */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-peak",
-				audio_channels, audio_channels_old, 
-				0, output_pads,
-				(AGS_RECALL_FACTORY_OUTPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_ADD),
-				0);
     }
     
     /* widgets */
@@ -1168,7 +1060,7 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
 
     audio = AGS_MACHINE(audiorec)->audio;
     g_object_get(audio,
-		 "output", &start_channel,
+		 "input", &start_channel,
 		 NULL);
     
     list_start = 
