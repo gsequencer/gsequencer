@@ -515,8 +515,6 @@ ags_drum_show_all(GtkWidget *widget)
 void
 ags_drum_map_recall(AgsMachine *machine)
 {
-  AgsWindow *window;
-  
   AgsAudio *audio;
 
   GList *start_recall, *recall;
@@ -527,9 +525,6 @@ ags_drum_map_recall(AgsMachine *machine)
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
-  
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						 AGS_TYPE_WINDOW);
   
   audio = machine->audio;
 
