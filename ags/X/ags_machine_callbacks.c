@@ -805,11 +805,13 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
   AgsChannel *channel;
   AgsRecycling *first_recycling, *last_recycling;
   AgsRecycling *recycling, *next_recycling, *end_recycling;
-  AgsAudioSignal *audio_signal; 
+  AgsAudioSignal *template, *audio_signal; 
   AgsRecallID *recall_id;
   AgsNote *play_note;
 
   GObject *output_soundcard;
+  
+  GRecMutex *recycling_mutex;
   
   g_object_get(playback,
 	       "channel", &channel,
@@ -836,81 +838,65 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
 
   next_recycling = NULL;
   
-  while(recycling != end_recycling){
+  while(recycling != end_recycling){    
     g_object_get(recycling,
 		 "output-soundcard", &output_soundcard,
 		 NULL);
+
+    recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
+
+    g_rec_mutex_lock(recycling_mutex);
+
+    template = ags_audio_signal_get_template(recycling->audio_signal);
     
-    if(!ags_recall_global_get_rt_safe()){
-      /* instantiate audio signal */
-      audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
-					  (GObject *) recycling,
-					  (GObject *) recall_id);
-      g_object_set(audio_signal,
-		   "note", play_note,
-		   NULL);
+    g_rec_mutex_unlock(recycling_mutex);
 
-      /* add audio signal */
-      if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_PATTERN_MODE)){
-	ags_recycling_create_audio_signal_with_defaults(recycling,
-							audio_signal,
-							0.0, 0);
-      }else{
-	gdouble notation_delay;
-	guint buffer_size;
-	guint note_x0, note_x1;
+    /* instantiate audio signal */
+    audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
+					(GObject *) recycling,
+					(GObject *) recall_id);
+    ags_audio_signal_set_flags(audio_signal, (AGS_AUDIO_SIGNAL_FEED |
+					      AGS_AUDIO_SIGNAL_STREAM));
+    g_object_set(audio_signal,
+		 "template", template,
+		 "note", play_note,
+		 NULL);
 
-	notation_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
-
-	g_object_get(recycling,
-		     "buffer-size", &buffer_size,
-		     NULL);
-	
-	g_object_get(play_note,
-		     "x0", &note_x0,
-		     "x1", &note_x1,
-		     NULL);
-
-	ags_recycling_create_audio_signal_with_frame_count(recycling,
-							   audio_signal,
-							   (guint) (((gdouble) buffer_size * notation_delay) * (gdouble) (note_x1 - note_x0)),
-							   0.0, 0);
-      }
-      
-      audio_signal->stream_current = audio_signal->stream;
-      ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
-	
-      /*
-       * emit add_audio_signal on AgsRecycling
-       */
-      ags_recycling_add_audio_signal(recycling,
-				     audio_signal);
+    /* add audio signal */
+    if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_PATTERN_MODE)){
+      ags_recycling_create_audio_signal_with_defaults(recycling,
+						      audio_signal,
+						      0.0, 0);
     }else{
-      GList *start_list, *list;
+      gdouble notation_delay;
+      guint buffer_size;
+      guint note_x0, note_x1;
+
+      notation_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
 
       g_object_get(recycling,
-		   "audio-signal", &start_list,
+		   "buffer-size", &buffer_size,
 		   NULL);
-      
-      audio_signal = NULL;
-      list = ags_audio_signal_find_by_recall_id(start_list,
-						(GObject *) recall_id);
-	    
-      if(list != NULL){
-	audio_signal = list->data;
-
-	g_object_set(audio_signal,
-		     "note", play_note,
-		     NULL);
-      }
-
-      g_list_free_full(start_list,
-		       g_object_unref);
-
-      g_object_set(play_note,
-		   "rt-offset", 0,
+	
+      g_object_get(play_note,
+		   "x0", &note_x0,
+		   "x1", &note_x1,
 		   NULL);
+
+      ags_recycling_create_audio_signal_with_frame_count(recycling,
+							 audio_signal,
+							 (guint) (((gdouble) buffer_size * notation_delay) * (gdouble) (note_x1 - note_x0)),
+							 0.0, 0);
     }
+      
+    audio_signal->stream_current = audio_signal->stream;
+    ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
+	
+    /*
+     * emit add_audio_signal on AgsRecycling
+     */
+    ags_recycling_add_audio_signal(recycling,
+				   audio_signal);
 
     g_object_unref(output_soundcard);
     

@@ -3123,10 +3123,10 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	if(range == 0.0 ||
 	   current->port_value_type == G_TYPE_BOOLEAN){
 	  if(peak != 0.0){
-	    average_peak = 10.0;
+	    average_peak = 1.0;
 	  }
 	}else{
-	  average_peak += ((1.0 / (range / peak)) * 10.0);
+	  average_peak += peak;
 	}
 
 	/* recall port */
@@ -3150,10 +3150,10 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	if(range == 0.0 ||
 	   current->port_value_type == G_TYPE_BOOLEAN){
 	  if(peak != 0.0){
-	    average_peak = 10.0;
+	    average_peak = 1.0;
 	  }
 	}else{
-	  average_peak += ((1.0 / (range / peak)) * 10.0);
+	  average_peak += peak;
 	}
       
 	/* apply */
@@ -3165,9 +3165,11 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	  g_object_get(child,
 		       "adjustment", &adjustment,
 		       NULL);
-	
+
+//	  g_message("%f", average_peak);
+	  
 	  gtk_adjustment_set_value(adjustment,
-				   average_peak);
+				   10.0 * average_peak);
 	}
       }
     

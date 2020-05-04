@@ -233,7 +233,8 @@ ags_drum_init(AgsDrum *drum)
   drum->peak_play_container = ags_recall_container_new();
   drum->peak_recall_container = ags_recall_container_new();
 
-  drum->buffer_container = ags_recall_container_new();
+  drum->buffer_play_container = ags_recall_container_new();
+  drum->buffer_recall_container = ags_recall_container_new();
 
   /* create widgets */
   drum->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
@@ -626,7 +627,7 @@ ags_drum_map_recall(AgsMachine *machine)
 
   /* ags-fx-buffer */
   start_recall = ags_fx_factory_create(audio,
-				       NULL, AGS_DRUM(machine)->buffer_container,
+				       AGS_DRUM(machine)->buffer_play_container, AGS_DRUM(machine)->buffer_recall_container,
 				       "ags-fx-buffer",
 				       NULL,
 				       NULL,

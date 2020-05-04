@@ -131,7 +131,7 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
   /* volume indicator */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 					       "widget-type", AGS_TYPE_VINDICATOR,
-					       "plugin-name", "ags-peak",
+					       "plugin-name", "ags-fx-peak",
 					       "specifier", "./peak[0]",
 					       "control-port", "1/1",
 					       NULL);
@@ -155,9 +155,9 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
   /* volume control */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 					       "widget-type", GTK_TYPE_VSCALE,
-					       "plugin-name", "ags-volume",
+					       "plugin-name", "ags-fx-volume",
 					       "specifier", "./volume[0]",
-					       "control-port", "1/1",
+					       "control-port", "2/2",
 					       NULL);
   ags_expander_add(AGS_LINE(drum_input_line)->expander,
 		   GTK_WIDGET(line_member),
@@ -451,7 +451,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
 
   /* ags-fx-buffer */
   start_recall = ags_fx_factory_create(audio,
-				       NULL, drum->buffer_container,
+				       drum->buffer_play_container, drum->buffer_recall_container,
 				       "ags-fx-buffer",
 				       NULL,
 				       NULL,

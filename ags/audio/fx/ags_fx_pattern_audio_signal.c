@@ -276,14 +276,14 @@ ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
 		   NULL);
     
       if(offset_counter >= x0){
+#ifdef AGS_DEBUG
 	g_message("ags-fx-pattern{%d} [%d] -> [%d] 0x%x", length, template_frame_count, frame_count, source);
-      
+#endif
+	
 	if(frame_count <= template_frame_count){
 
 	  if(delay_counter < 1.0 &&
 	     x0 != offset_counter){
-	    g_message("resize");
-
 	    ags_audio_signal_stream_safe_resize(source,
 						length + ((guint) floor(delay) + 1));
 	  }

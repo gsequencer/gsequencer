@@ -19,6 +19,10 @@
 
 #include <ags/audio/fx/ags_fx_peak_channel.h>
 
+#include <ags/plugin/ags_plugin_port.h>
+
+#include <ags/audio/task/ags_reset_fx_peak.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_peak_channel_class_init(AgsFxPeakChannelClass *fx_peak_channel);
@@ -37,6 +41,8 @@ void ags_fx_peak_channel_finalize(GObject *gobject);
 void ags_fx_peak_channel_notify_buffer_size_callback(GObject *gobject,
 						     GParamSpec *pspec,
 						     gpointer user_data);
+
+static AgsPluginPort* ags_fx_peak_channel_get_peak_plugin_port();
 
 /**
  * SECTION:ags_fx_peak_channel
@@ -137,6 +143,8 @@ ags_fx_peak_channel_class_init(AgsFxPeakChannelClass *fx_peak_channel)
 void
 ags_fx_peak_channel_init(AgsFxPeakChannel *fx_peak_channel)
 {
+  AgsResetFxPeak *reset_fx_peak;
+
   guint buffer_size;
   guint i;
   
@@ -166,8 +174,13 @@ ags_fx_peak_channel_init(AgsFxPeakChannel *fx_peak_channel)
 				       "port-value-size", sizeof(gfloat),
 				       "port-value-length", 1,
 				       NULL);
+  ags_port_set_flags(fx_peak_channel->peak, AGS_PORT_IS_OUTPUT);
   
   fx_peak_channel->peak->port_value.ags_port_float = 0.0;
+
+  g_object_set(fx_peak_channel->peak,
+	       "plugin-port", ags_fx_peak_channel_get_peak_plugin_port(),
+	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_peak_channel,
 		      fx_peak_channel->peak);
@@ -180,6 +193,12 @@ ags_fx_peak_channel_init(AgsFxPeakChannel *fx_peak_channel)
 
     fx_peak_channel->input_data[i]->buffer = (gdouble *) g_malloc(buffer_size * sizeof(gdouble));
   }
+
+  /* add to reset peak task */
+  reset_fx_peak = ags_reset_fx_peak_get_instance();
+
+  ags_reset_fx_peak_add(reset_fx_peak,
+			fx_peak_channel);
 }
 
 void
@@ -285,6 +304,8 @@ ags_fx_peak_channel_finalize(GObject *gobject)
 {
   AgsFxPeakChannel *fx_peak_channel;
 
+  AgsResetFxPeak *reset_fx_peak;
+
   guint i;
   
   fx_peak_channel = AGS_FX_PEAK_CHANNEL(gobject);
@@ -299,6 +320,12 @@ ags_fx_peak_channel_finalize(GObject *gobject)
     ags_fx_peak_channel_input_data_free(fx_peak_channel->input_data[i]);
   }
 
+  /* reset ags-fx-peak task */
+  reset_fx_peak = ags_reset_fx_peak_get_instance();
+  
+  ags_reset_fx_peak_remove(reset_fx_peak,
+			   fx_peak_channel);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_fx_peak_channel_parent_class)->finalize(gobject);
 }
@@ -387,6 +414,45 @@ ags_fx_peak_channel_input_data_free(AgsFxPeakChannelInputData *input_data)
   ags_stream_free(input_data->buffer);
   
   g_free(input_data);
+}
+
+static AgsPluginPort*
+ags_fx_peak_channel_get_peak_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      1.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
 }
 
 /**

@@ -1573,6 +1573,11 @@ ags_add_effect_get_type
 ags_add_effect_new
 ags_add_audio_signal_get_type
 ags_add_audio_signal_new
+ags_reset_fx_peak_get_type
+ags_reset_fx_peak_add
+ags_reset_fx_peak_remove
+ags_reset_fx_peak_get_instance
+ags_reset_fx_peak_new
 ags_open_file_get_type
 ags_open_file_new
 ags_reset_peak_get_type
@@ -1580,6 +1585,11 @@ ags_reset_peak_add
 ags_reset_peak_remove
 ags_reset_peak_get_instance
 ags_reset_peak_new
+ags_reset_fx_analyse_get_type
+ags_reset_fx_analyse_add
+ags_reset_fx_analyse_remove
+ags_reset_fx_analyse_get_instance
+ags_reset_fx_analyse_new
 ags_link_channel_get_type
 ags_link_channel_new
 ags_stop_sequencer_get_type

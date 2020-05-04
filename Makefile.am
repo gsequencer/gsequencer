@@ -1779,6 +1779,8 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_reset_amplitude.h \
 	ags/audio/task/ags_reset_note.h \
 	ags/audio/task/ags_reset_peak.h \
+	ags/audio/task/ags_reset_fx_analyse.h \
+	ags/audio/task/ags_reset_fx_peak.h \
 	ags/audio/task/ags_set_muted.h
 
 if WITH_LIBINSTPATCH
@@ -1837,6 +1839,8 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_reset_amplitude.c \
 	ags/audio/task/ags_reset_note.c \
 	ags/audio/task/ags_reset_peak.c \
+	ags/audio/task/ags_reset_fx_analyse.c \
+	ags/audio/task/ags_reset_fx_peak.c \
 	ags/audio/task/ags_set_muted.c
 
 if WITH_LIBINSTPATCH

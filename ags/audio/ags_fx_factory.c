@@ -695,7 +695,8 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  if(!AGS_IS_RECALL_CONTAINER(recall_container)){
+  if(!AGS_IS_RECALL_CONTAINER(play_container) ||
+     !AGS_IS_RECALL_CONTAINER(recall_container)){
     g_warning("ags-fx-buffer recall container not provided");
     
     return(NULL);
@@ -710,6 +711,173 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
 	       "audio-channels", &audio_channels,
 	       NULL);
   
+  /* audio - play context */
+  fx_buffer_audio = NULL;
+  fx_buffer_audio_processor = NULL;
+
+  if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
+    /* AgsFxBufferAudio */
+    fx_buffer_audio = (AgsFxBufferAudio *) g_object_new(AGS_TYPE_FX_BUFFER_AUDIO,
+							    "output-soundcard", output_soundcard,
+							    "audio", audio,
+							    "recall-container", play_container,
+							    NULL);
+    ags_recall_set_flags((AgsRecall *) fx_buffer_audio,
+			 (AGS_RECALL_TEMPLATE));
+    ags_recall_set_ability_flags((AgsRecall *) fx_buffer_audio,
+				 0);
+    ags_recall_set_behaviour_flags((AgsRecall *) fx_buffer_audio,
+				   (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+    ags_audio_insert_recall(audio, (GObject *) fx_buffer_audio,
+			    TRUE,
+			    position);
+    ags_recall_container_add(play_container,
+			     fx_buffer_audio);
+    
+    start_recall = g_list_prepend(start_recall,
+				  fx_buffer_audio);
+
+    ags_connectable_connect(AGS_CONNECTABLE(fx_buffer_audio));
+
+    /* AgsFxBufferAudioProcessor */
+    fx_buffer_audio_processor = (AgsFxBufferAudioProcessor *) g_object_new(AGS_TYPE_FX_BUFFER_AUDIO_PROCESSOR,
+									       "output-soundcard", output_soundcard,
+									       "audio", audio,
+									       "recall-audio", fx_buffer_audio,
+									       "recall-container", play_container,
+									       NULL);
+    ags_recall_set_flags((AgsRecall *) fx_buffer_audio_processor,
+			 (AGS_RECALL_TEMPLATE));
+    ags_recall_set_ability_flags((AgsRecall *) fx_buffer_audio_processor,
+				 0);
+    ags_recall_set_behaviour_flags((AgsRecall *) fx_buffer_audio_processor,
+				   (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+    ags_audio_insert_recall(audio, (GObject *) fx_buffer_audio_processor,
+			    TRUE,
+			    position);
+    ags_recall_container_add(play_container,
+			     fx_buffer_audio_processor);
+
+    start_recall = g_list_prepend(start_recall,
+				  fx_buffer_audio_processor);
+
+    ags_connectable_connect(AGS_CONNECTABLE(fx_buffer_audio_processor));
+  }else{
+    GList *start_recall_audio_run, *recall_audio_run;
+    
+    fx_buffer_audio = ags_recall_container_get_recall_audio(play_container);
+
+    if(fx_buffer_audio != NULL){
+      g_object_ref(fx_buffer_audio);
+    }
+    
+    start_recall_audio_run = ags_recall_container_get_recall_audio_run(play_container);
+
+    if((recall_audio_run = ags_recall_find_template(start_recall_audio_run)) != NULL){
+      fx_buffer_audio_processor = recall_audio_run->data;
+      g_object_ref(fx_buffer_audio_processor);
+    }
+  }
+  
+  input = ags_channel_nth(start_input,
+			  start_pad * audio_channels);
+
+  channel = input;
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+  
+  for(i = 0; i < stop_pad - start_pad && channel != NULL; i++){
+    next_channel = ags_channel_nth(channel,
+				   start_audio_channel);
+
+    g_object_unref(channel);
+
+    channel = next_channel;
+      
+    for(j = 0; j < stop_audio_channel - start_audio_channel && channel != NULL; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) play_container);
+	
+      /* AgsFxBufferChannel */
+      fx_buffer_channel = (AgsFxBufferChannel *) g_object_new(AGS_TYPE_FX_BUFFER_CHANNEL,
+								  "output-soundcard", output_soundcard,
+								  "source", channel,
+								  "recall-audio", fx_buffer_audio,
+								  "recall-container", play_container,
+								  NULL);
+      ags_recall_set_flags((AgsRecall *) fx_buffer_channel,
+			   (AGS_RECALL_TEMPLATE));
+      ags_recall_set_ability_flags((AgsRecall *) fx_buffer_channel,
+				   0);
+      ags_recall_set_behaviour_flags((AgsRecall *) fx_buffer_channel,
+				     (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+      ags_channel_insert_recall(channel, (GObject *) fx_buffer_channel,
+				TRUE,
+				position);
+      ags_recall_container_add(play_container,
+			       fx_buffer_channel);
+      
+      start_recall = g_list_prepend(start_recall,
+				    fx_buffer_channel);
+
+      ags_connectable_connect(AGS_CONNECTABLE(fx_buffer_channel));
+
+      /* AgsFxBufferChannelProcessor */
+      fx_buffer_channel_processor = (AgsFxBufferChannelProcessor *) g_object_new(AGS_TYPE_FX_BUFFER_CHANNEL_PROCESSOR,
+										     "output-soundcard", output_soundcard,
+										     "source", channel,
+										     "recall-audio", fx_buffer_audio,
+										     "recall-audio-run", fx_buffer_audio_processor,
+										     "recall-channel", fx_buffer_channel,
+										     "recall-container", play_container,
+										     NULL);
+      ags_recall_set_flags((AgsRecall *) fx_buffer_channel_processor,
+			   (AGS_RECALL_TEMPLATE));
+      ags_recall_set_ability_flags((AgsRecall *) fx_buffer_channel_processor,
+				   0);
+      ags_recall_set_behaviour_flags((AgsRecall *) fx_buffer_channel_processor,
+				     (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+      ags_channel_insert_recall(channel, (GObject *) fx_buffer_channel_processor,
+				TRUE,
+				position);
+      ags_recall_container_add(play_container,
+			       fx_buffer_channel_processor);
+
+      start_recall = g_list_prepend(start_recall,
+				    fx_buffer_channel_processor);
+
+      ags_connectable_connect(AGS_CONNECTABLE(fx_buffer_channel_processor));
+
+      /* iterate */
+      next_channel = ags_channel_nth(channel,
+				     audio_channels - stop_audio_channel);
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+      
+      channel = next_channel;
+    }
+  }  
+  
+  if((AGS_FX_FACTORY_REMAP & (create_flags)) != 0){
+    if(fx_buffer_audio != NULL){
+      g_object_unref(fx_buffer_audio);
+    }
+    
+    if(fx_buffer_audio_processor != NULL){
+      g_object_unref(fx_buffer_audio_processor);
+    }
+  }
+  
+  /* audio - recall context */
   fx_buffer_audio = NULL;
   fx_buffer_audio_processor = NULL;
   

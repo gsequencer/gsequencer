@@ -287,7 +287,9 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 
 	destination->stream_current = destination->stream;
 
+#ifdef AGS_DEBUG
 	g_message("ags-fx-buffer - create destination 0x%x", destination);
+#endif
 	
 	g_hash_table_insert(fx_buffer_audio_signal->destination,
 			    recycling,
@@ -353,8 +355,10 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 		     "format", &source_format,
 		     NULL);
 
+#ifdef AGS_DEBUG
 	g_message("ags-fx-buffer 0x%x -> 0x%x", source, destination);
-
+#endif
+	
 	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(destination_format),
 							ags_audio_buffer_util_format_from_soundcard(source_format));
 	resample = FALSE;
@@ -402,8 +406,10 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 						      buffer_source, 1, 0,
 						      destination_buffer_size - attack, copy_mode);
 
-	  source->stream_current = source->stream_current->next;
-      
+	  if(ags_audio_signal_test_flags(source, AGS_AUDIO_SIGNAL_STREAM)){
+	    source->stream_current = source->stream_current->next;
+	  }
+	  
 	  g_rec_mutex_unlock(destination_stream_mutex);
 	  g_rec_mutex_unlock(source_stream_mutex);
 
@@ -451,8 +457,10 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 						      buffer_source, 1, 0,
 						      destination_buffer_size - attack, copy_mode);
 
-	  source->stream_current = source->stream_current->next;
-
+	  if(ags_audio_signal_test_flags(source, AGS_AUDIO_SIGNAL_STREAM)){
+	    source->stream_current = source->stream_current->next;
+	  }
+	  
 	  g_rec_mutex_unlock(destination_stream_mutex);
 	  g_rec_mutex_unlock(source_stream_mutex);
 
@@ -480,19 +488,6 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
   if(is_done){
     ags_recall_done(recall);
   }
-
-#if 0
-  if(sound_scope >= 0 &&
-     sound_scope < AGS_SOUND_SCOPE_LAST &&
-     !is_done &&
-     ags_audio_signal_test_flags(source, AGS_AUDIO_SIGNAL_STREAM)){
-    g_rec_mutex_lock(source_stream_mutex);
-    
-    source->stream_current = source->stream_current->next;
-
-    g_rec_mutex_unlock(source_stream_mutex);
-  }
-#endif
   
   /* unref */
   if(audio != NULL){

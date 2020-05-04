@@ -19,6 +19,8 @@
 
 #include <ags/audio/fx/ags_fx_analyse_channel.h>
 
+#include <ags/audio/task/ags_reset_fx_analyse.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_analyse_channel_class_init(AgsFxAnalyseChannelClass *fx_analyse_channel);
@@ -159,6 +161,8 @@ ags_fx_analyse_channel_class_init(AgsFxAnalyseChannelClass *fx_analyse_channel)
 void
 ags_fx_analyse_channel_init(AgsFxAnalyseChannel *fx_analyse_channel)
 {
+  AgsResetFxAnalyse *reset_fx_analyse;
+
   double correction;
   guint samplerate;
   guint buffer_size;
@@ -239,6 +243,12 @@ ags_fx_analyse_channel_init(AgsFxAnalyseChannel *fx_analyse_channel)
 
     fx_analyse_channel->input_data[i]->plan = fftw_plan_r2r_1d(buffer_size, fx_analyse_channel->input_data[i]->in, fx_analyse_channel->input_data[i]->out, FFTW_R2HC, FFTW_ESTIMATE);
   }
+
+  /* add to reset analyse task */
+  reset_fx_analyse = ags_reset_fx_analyse_get_instance();
+
+  ags_reset_fx_analyse_add(reset_fx_analyse,
+			   fx_analyse_channel);
 }
 
 void
@@ -388,6 +398,8 @@ ags_fx_analyse_channel_finalize(GObject *gobject)
 {
   AgsFxAnalyseChannel *fx_analyse_channel;
 
+  AgsResetFxAnalyse *reset_fx_analyse;
+
   guint i;
   
   fx_analyse_channel = AGS_FX_ANALYSE_CHANNEL(gobject);
@@ -407,6 +419,12 @@ ags_fx_analyse_channel_finalize(GObject *gobject)
     ags_fx_analyse_channel_input_data_free(fx_analyse_channel->input_data[i]);
   }
 
+  /* reset ags-fx-analyse task */
+  reset_fx_analyse = ags_reset_fx_analyse_get_instance();
+  
+  ags_reset_fx_analyse_remove(reset_fx_analyse,
+			      fx_analyse_channel);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_fx_analyse_channel_parent_class)->finalize(gobject);
 }

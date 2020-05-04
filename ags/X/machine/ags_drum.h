@@ -73,7 +73,8 @@ struct _AgsDrum
   AgsRecallContainer *peak_play_container;
   AgsRecallContainer *peak_recall_container;
   
-  AgsRecallContainer *buffer_container;
+  AgsRecallContainer *buffer_play_container;
+  AgsRecallContainer *buffer_recall_container;
   
   GtkButton *open;
   GtkWidget *open_dialog;
