@@ -45,12 +45,35 @@ G_BEGIN_DECLS
 typedef struct _AgsFxPlaybackAudio AgsFxPlaybackAudio;
 typedef struct _AgsFxPlaybackAudioClass AgsFxPlaybackAudioClass;
 
+/**
+ * AgsFxPlaybackAudioFlags:
+ * @AGS_FX_PLAYBACK_AUDIO_PLAY: do play sound
+ * @AGS_FX_PLAYBACK_AUDIO_RECORD: do record sound
+ * @AGS_FX_PLAYBACK_AUDIO_FEED: do feed audio signal
+ * @AGS_FX_PLAYBACK_AUDIO_MASTER: do master audio signal
+ * 
+ * Enum values to enable specific feature of #AgsFxPlaybackAudio.
+ */
 typedef enum{
   AGS_FX_PLAYBACK_AUDIO_PLAY     = 1,
   AGS_FX_PLAYBACK_AUDIO_RECORD   = 1 <<  1,
   AGS_FX_PLAYBACK_AUDIO_FEED     = 1 <<  2,
   AGS_FX_PLAYBACK_AUDIO_MASTER   = 1 <<  3,
 }AgsFxPlaybackAudioFlags;
+
+/**
+ * AgsFxPlaybackAudioCaptureMode:
+ * @AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_NONE: capture none and preserve data
+ * @AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_REPLACE: capture replace any sound
+ * @AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_MIX: capture mix with existing sound
+ * 
+ * Enum values to specify capture mode of #AgsFxPlaybackAudio.
+ */
+typedef enum{
+  AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_NONE,
+  AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_REPLACE,
+  AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_MIX,
+}AgsFxPlaybackAudioCaptureMode;
 
 struct _AgsFxPlaybackAudio
 {
@@ -73,6 +96,8 @@ struct _AgsFxPlaybackAudio
   AgsPort *loop;
   AgsPort *loop_start;
   AgsPort *loop_end;
+
+  AgsPort *capture_mode;
 
   AgsPort *export;
   AgsPort *filename;

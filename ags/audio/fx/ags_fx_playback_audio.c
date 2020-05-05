@@ -56,6 +56,7 @@ static const gchar *ags_fx_playback_audio_specifier[] = {
   "./loop[0]",
   "./loop-start[0]",
   "./loop-end[0]",
+  "./capture-mode[0]",
   "./export[0]",
   "./filename[0]",
   "./file-audio-channels[0]",
@@ -66,19 +67,20 @@ static const gchar *ags_fx_playback_audio_specifier[] = {
 };
 
 static const gchar *ags_fx_playback_audio_control_port[] = {
-  "1/13",
-  "2/13",
-  "3/13",
-  "4/13",
-  "5/13",
-  "6/13",
-  "7/13",
-  "8/13",
-  "9/13",
-  "10/13",
-  "11/13",
-  "12/13",
-  "13/13",
+  "1/14",
+  "2/14",
+  "3/14",
+  "4/14",
+  "5/14",
+  "6/14",
+  "7/14",
+  "8/14",
+  "9/14",
+  "10/14",
+  "11/14",
+  "12/14",
+  "13/14",
+  "14/14",
   NULL,
 };
 
@@ -91,6 +93,7 @@ enum{
   PROP_LOOP,
   PROP_LOOP_START,
   PROP_LOOP_END,
+  PROP_CAPTURE_MODE,
   PROP_EXPORT,
   PROP_FILENAME,
   PROP_FILE_AUDIO_CHANNELS,
@@ -262,9 +265,25 @@ ags_fx_playback_audio_class_init(AgsFxPlaybackAudioClass *fx_playback_audio)
 				  param_spec);
 
   /**
+   * AgsFxPlaybackAudio:capture-mode:
+   *
+   * The capture mode.
+   * 
+   * Since: 3.3.0
+   */
+  param_spec = g_param_spec_object("capture-mode",
+				   i18n_pspec("capture mode of recall"),
+				   i18n_pspec("The recall's capture mode"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CAPTURE_MODE,
+				  param_spec);
+
+  /**
    * AgsFxPlaybackAudio:export:
    *
-   * The beats per minute.
+   * The export switch.
    * 
    * Since: 3.3.0
    */
@@ -280,7 +299,7 @@ ags_fx_playback_audio_class_init(AgsFxPlaybackAudioClass *fx_playback_audio)
   /**
    * AgsFxPlaybackAudio:filename:
    *
-   * The beats per minute.
+   * The filename to export.
    * 
    * Since: 3.3.0
    */
@@ -296,7 +315,7 @@ ags_fx_playback_audio_class_init(AgsFxPlaybackAudioClass *fx_playback_audio)
   /**
    * AgsFxPlaybackAudio:file-audio-channels:
    *
-   * The beats per minute.
+   * The file's audio channel count.
    * 
    * Since: 3.3.0
    */
@@ -312,7 +331,7 @@ ags_fx_playback_audio_class_init(AgsFxPlaybackAudioClass *fx_playback_audio)
   /**
    * AgsFxPlaybackAudio:file-samplerate:
    *
-   * The beats per minute.
+   * The file's samplerate.
    * 
    * Since: 3.3.0
    */
@@ -328,7 +347,7 @@ ags_fx_playback_audio_class_init(AgsFxPlaybackAudioClass *fx_playback_audio)
   /**
    * AgsFxPlaybackAudio:file-buffer-size:
    *
-   * The beats per minute.
+   * The file's buffer size.
    * 
    * Since: 3.3.0
    */
@@ -344,7 +363,7 @@ ags_fx_playback_audio_class_init(AgsFxPlaybackAudioClass *fx_playback_audio)
   /**
    * AgsFxPlaybackAudio:file-format:
    *
-   * The beats per minute.
+   * The file's format.
    * 
    * Since: 3.3.0
    */
@@ -491,11 +510,27 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
   ags_recall_add_port((AgsRecall *) fx_playback_audio,
 		      fx_playback_audio->loop_end);
 
+  /* capture mode */
+  fx_playback_audio->capture_mode = g_object_new(AGS_TYPE_PORT,
+						 "plugin-name", ags_fx_playback_audio_plugin_name,
+						 "specifier", ags_fx_playback_audio_specifier[7],
+						 "control-port", ags_fx_playback_audio_control_port[7],
+						 "port-value-is-pointer", FALSE,
+						 "port-value-type", G_TYPE_UINT64,
+						 "port-value-size", sizeof(guint64),
+						 "port-value-length", 1,
+						 NULL);
+  
+  fx_playback_audio->capture_mode->port_value.ags_port_uint = AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_NONE;
+
+  ags_recall_add_port((AgsRecall *) fx_playback_audio,
+		      fx_playback_audio->capture_mode);
+
   /* export */
   fx_playback_audio->export = g_object_new(AGS_TYPE_PORT,
 					   "plugin-name", ags_fx_playback_audio_plugin_name,
-					   "specifier", ags_fx_playback_audio_specifier[7],
-					   "control-port", ags_fx_playback_audio_control_port[7],
+					   "specifier", ags_fx_playback_audio_specifier[8],
+					   "control-port", ags_fx_playback_audio_control_port[8],
 					   "port-value-is-pointer", FALSE,
 					   "port-value-type", G_TYPE_BOOLEAN,
 					   "port-value-size", sizeof(gboolean),
@@ -510,8 +545,8 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
   /* filename */
   fx_playback_audio->filename = g_object_new(AGS_TYPE_PORT,
 					     "plugin-name", ags_fx_playback_audio_plugin_name,
-					     "specifier", ags_fx_playback_audio_specifier[7],
-					     "control-port", ags_fx_playback_audio_control_port[7],
+					     "specifier", ags_fx_playback_audio_specifier[9],
+					     "control-port", ags_fx_playback_audio_control_port[9],
 					     "port-value-is-pointer", FALSE,
 					     "port-value-type", G_TYPE_POINTER,
 					     NULL);
@@ -524,8 +559,8 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
   /* file audio channels */
   fx_playback_audio->file_audio_channels = g_object_new(AGS_TYPE_PORT,
 							"plugin-name", ags_fx_playback_audio_plugin_name,
-							"specifier", ags_fx_playback_audio_specifier[8],
-							"control-port", ags_fx_playback_audio_control_port[8],
+							"specifier", ags_fx_playback_audio_specifier[10],
+							"control-port", ags_fx_playback_audio_control_port[10],
 							"port-value-is-pointer", FALSE,
 							"port-value-type", G_TYPE_UINT64,
 							"port-value-size", sizeof(guint64),
@@ -540,8 +575,8 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
   /* file samplerate */
   fx_playback_audio->file_samplerate = g_object_new(AGS_TYPE_PORT,
 						    "plugin-name", ags_fx_playback_audio_plugin_name,
-						    "specifier", ags_fx_playback_audio_specifier[9],
-						    "control-port", ags_fx_playback_audio_control_port[9],
+						    "specifier", ags_fx_playback_audio_specifier[11],
+						    "control-port", ags_fx_playback_audio_control_port[11],
 						    "port-value-is-pointer", FALSE,
 						    "port-value-type", G_TYPE_UINT64,
 						    "port-value-size", sizeof(guint64),
@@ -556,8 +591,8 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
   /* file buffer size */
   fx_playback_audio->file_buffer_size = g_object_new(AGS_TYPE_PORT,
 						     "plugin-name", ags_fx_playback_audio_plugin_name,
-						     "specifier", ags_fx_playback_audio_specifier[10],
-						     "control-port", ags_fx_playback_audio_control_port[10],
+						     "specifier", ags_fx_playback_audio_specifier[12],
+						     "control-port", ags_fx_playback_audio_control_port[12],
 						     "port-value-is-pointer", FALSE,
 						     "port-value-type", G_TYPE_UINT64,
 						     "port-value-size", sizeof(guint64),
@@ -572,8 +607,8 @@ ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio)
   /* file format */
   fx_playback_audio->file_format = g_object_new(AGS_TYPE_PORT,
 						"plugin-name", ags_fx_playback_audio_plugin_name,
-						"specifier", ags_fx_playback_audio_specifier[11],
-						"control-port", ags_fx_playback_audio_control_port[11],
+						"specifier", ags_fx_playback_audio_specifier[13],
+						"control-port", ags_fx_playback_audio_control_port[13],
 						"port-value-is-pointer", FALSE,
 						"port-value-type", G_TYPE_UINT64,
 						"port-value-size", sizeof(guint64),
@@ -787,6 +822,33 @@ ags_fx_playback_audio_set_property(GObject *gobject,
     }
 
     fx_playback_audio->loop_end = port;
+
+    g_rec_mutex_unlock(recall_mutex);
+  }
+  break;
+  case PROP_CAPTURE_MODE:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_playback_audio->capture_mode){
+      g_rec_mutex_unlock(recall_mutex);
+
+      return;
+    }
+
+    if(fx_playback_audio->capture_mode != NULL){
+      g_object_unref(G_OBJECT(fx_playback_audio->capture_mode));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_playback_audio->capture_mode = port;
 
     g_rec_mutex_unlock(recall_mutex);
   }
@@ -1038,6 +1100,15 @@ ags_fx_playback_audio_get_property(GObject *gobject,
     g_rec_mutex_unlock(recall_mutex);
   }
   break;
+  case PROP_CAPTURE_MODE:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_playback_audio->capture_mode);
+
+    g_rec_mutex_unlock(recall_mutex);
+  }
+  break;
   case PROP_EXPORT:
   {
     g_rec_mutex_lock(recall_mutex);
@@ -1161,6 +1232,12 @@ ags_fx_playback_audio_dispose(GObject *gobject)
     fx_playback_audio->loop_end = NULL;
   }
 
+  if(fx_playback_audio->capture_mode != NULL){
+    g_object_unref(fx_playback_audio->capture_mode);
+
+    fx_playback_audio->capture_mode = NULL;
+  }
+
   if(fx_playback_audio->export != NULL){
     g_object_unref(fx_playback_audio->export);
 
@@ -1248,6 +1325,10 @@ ags_fx_playback_audio_finalize(GObject *gobject)
 
   if(fx_playback_audio->loop_end != NULL){
     g_object_unref(fx_playback_audio->loop_end);
+  }
+
+  if(fx_playback_audio->capture_mode != NULL){
+    g_object_unref(fx_playback_audio->capture_mode);
   }
 
   if(fx_playback_audio->export != NULL){

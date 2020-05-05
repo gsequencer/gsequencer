@@ -44,6 +44,14 @@ G_BEGIN_DECLS
 typedef struct _AgsFxNotationAudio AgsFxNotationAudio;
 typedef struct _AgsFxNotationAudioClass AgsFxNotationAudioClass;
 
+/**
+ * AgsFxNotationAudioFlags:
+ * @AGS_FX_NOTATION_AUDIO_PLAY: do play notation
+ * @AGS_FX_NOTATION_AUDIO_RECORD: do record notation
+ * @AGS_FX_NOTATION_AUDIO_FEED: do feed note
+ * 
+ * Enum values to enable specific feature of #AgsFxNotationAudio.
+ */
 typedef enum{
   AGS_FX_NOTATION_AUDIO_PLAY     = 1,
   AGS_FX_NOTATION_AUDIO_RECORD   = 1 <<  1,
