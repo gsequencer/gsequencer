@@ -555,6 +555,10 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec, guint input_pad_start)
 				       (AGS_FX_FACTORY_REMAP),
 				       0);
 
+  /* unref */
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
   /* ags-fx-peak */
   start_recall = ags_fx_factory_create(audio,
 				       audiorec->peak_play_container, audiorec->peak_recall_container,
@@ -586,10 +590,8 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec, guint input_pad_start)
   /* unref */
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
-
-  /* unref */
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+  
+  audiorec->mapped_input_pad = input_pads;
 }
 
 void
@@ -723,6 +725,10 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 					   (AGS_FX_FACTORY_REMAP),
 					   0);
 
+      /* unref */
+      g_list_free_full(start_recall,
+		       (GDestroyNotify) g_object_unref);
+
       /* ags-fx-peak */
       start_recall = ags_fx_factory_create(audio,
 					   audiorec->peak_play_container, audiorec->peak_recall_container,
@@ -800,7 +806,8 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 }
 
 void
-ags_audiorec_resize_pads(AgsMachine *machine, GType type,
+ags_audiorec_resize_pads(AgsMachine *machine,
+			 GType type,
 			 guint pads, guint pads_old,
 			 gpointer data)
 {
@@ -1094,7 +1101,7 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
       
       start_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
 										  "./peak[0]",
-										  TRUE);
+										  FALSE);
 
       current = NULL;
 
@@ -1111,7 +1118,7 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
       g_value_unset(&value);
 
       /* calculate peak */
-      average_peak += ((1.0 / (1.0 / peak)) * 10.0);
+      average_peak += peak;
       
       /* apply */
       g_object_get(child,
@@ -1119,7 +1126,7 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
 		   NULL);
 	
       gtk_adjustment_set_value(adjustment,
-			       average_peak);
+			       10.0 * average_peak);
 
       /* queue draw */
       gtk_widget_queue_draw(child);

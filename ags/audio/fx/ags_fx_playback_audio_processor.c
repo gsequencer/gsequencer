@@ -154,12 +154,16 @@ ags_fx_playback_audio_processor_init(AgsFxPlaybackAudioProcessor *fx_playback_au
 
   /* recording */
   fx_playback_audio_processor->recording_buffer = NULL;
+  fx_playback_audio_processor->recording_audio_signal = NULL;
 
   /* feeding */
   fx_playback_audio_processor->feeding_audio_signal = NULL;
 
   /* mastering */
   fx_playback_audio_processor->mastering_audio_signal = NULL;
+
+  /* capture */
+  fx_playback_audio_processor->capture_audio_signal = NULL;
 }
 
 void
@@ -185,15 +189,25 @@ ags_fx_playback_audio_processor_finalize(GObject *gobject)
     g_object_unref((GObject *) fx_playback_audio_processor->timestamp);
   }
 
-  /* playing - buffer */
+  /* playing - buffer and audio signal */
   if(fx_playback_audio_processor->playing_buffer != NULL){
     g_list_free_full(fx_playback_audio_processor->playing_buffer,
 		     (GDestroyNotify) g_object_unref);
   }
 
-  /* recording - buffer */
+  if(fx_playback_audio_processor->playing_audio_signal != NULL){
+    g_list_free_full(fx_playback_audio_processor->playing_audio_signal,
+		     (GDestroyNotify) g_object_unref);
+  }
+
+  /* recording - buffer and audio signal */
   if(fx_playback_audio_processor->recording_buffer != NULL){
     g_list_free_full(fx_playback_audio_processor->recording_buffer,
+		     (GDestroyNotify) g_object_unref);
+  }
+
+  if(fx_playback_audio_processor->recording_audio_signal != NULL){
+    g_list_free_full(fx_playback_audio_processor->recording_audio_signal,
 		     (GDestroyNotify) g_object_unref);
   }
 
@@ -206,6 +220,12 @@ ags_fx_playback_audio_processor_finalize(GObject *gobject)
   /* mastering - audio signal */
   if(fx_playback_audio_processor->mastering_audio_signal != NULL){
     g_list_free_full(fx_playback_audio_processor->mastering_audio_signal,
+		     (GDestroyNotify) g_object_unref);
+  }
+
+  /* capture - audio signal */
+  if(fx_playback_audio_processor->capture_audio_signal != NULL){
+    g_list_free_full(fx_playback_audio_processor->capture_audio_signal,
 		     (GDestroyNotify) g_object_unref);
   }
   
@@ -386,7 +406,7 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
 
     recycling = NULL;
 
-    if(recycling != NULL){
+    if(input != NULL){
       g_object_get(input,
 		   "first-recycling", &recycling,
 		   NULL);
@@ -430,6 +450,17 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
     ags_audio_signal_stream_resize(current_audio_signal,
 				   (guint) floor(delay) + 1);      
 	    
+    g_rec_mutex_lock(fx_playback_audio_processor_mutex);
+
+    if(data_mode == AGS_FX_PLAYBACK_AUDIO_PROCESSOR_DATA_MODE_PLAY){
+      fx_playback_audio_processor->playing_audio_signal = g_list_prepend(fx_playback_audio_processor->playing_audio_signal,
+									 current_audio_signal);
+    }else if(data_mode == AGS_FX_PLAYBACK_AUDIO_PROCESSOR_DATA_MODE_RECORD){
+      fx_playback_audio_processor->recording_audio_signal = g_list_prepend(fx_playback_audio_processor->recording_audio_signal,
+									   current_audio_signal);
+    }
+    
+    g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
     
     ags_connectable_connect(AGS_CONNECTABLE(current_audio_signal));
     ags_recycling_add_audio_signal(recycling,
@@ -687,7 +718,9 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
   AgsPort *port;
   AgsWave *current_wave;    
   AgsBuffer *buffer;
-
+  AgsFxPlaybackAudio *fx_playback_audio;
+  AgsRecallID *recall_id;
+  
   AgsTimestamp *timestamp;
   
   GObject *output_soundcard, *input_soundcard;
@@ -707,7 +740,11 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
   guint format, target_format, file_format;
   guint frame_count;
   guint target_copy_mode, file_copy_mode;
-
+  guint capture_mode;
+  gboolean found_buffer;
+  
+  GValue value = {0,};
+  
   GRecMutex *fx_playback_audio_processor_mutex;
   GRecMutex *buffer_mutex;
 
@@ -717,12 +754,20 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 
   output_soundcard = NULL;
   input_soundcard = NULL;
+
+  fx_playback_audio = NULL;
+
+  recall_id = NULL;
+  
+  audio_channel = 0;
   
   g_object_get(fx_playback_audio_processor,
 	       "audio", &audio,
 	       "output-soundcard", &output_soundcard,
 	       "input-soundcard", &input_soundcard,
+	       "recall-audio", &fx_playback_audio,
 	       "audio-channel", &audio_channel,
+	       "recall-id", &recall_id,
 	       NULL);
 
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
@@ -774,85 +819,176 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 
   frame_count = target_buffer_size - attack;
 
-  /* find wave - attempt #0 */
-  current_wave = NULL;
-  
-  wave = ags_wave_find_near_timestamp(start_wave, audio_channel,
-				      timestamp);
+  /* capture mode */
+  capture_mode = AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_NONE;
 
-  buffer = NULL;
-  
-  if(wave == NULL){
-    AgsTimestamp *current_timestamp;
-
-    /* instantiate */
-    current_wave = ags_wave_new((GObject *) audio,
-				audio_channel);
-
-    g_object_get(current_wave,
-		 "timestamp", &current_timestamp,
+  if(fx_playback_audio != NULL){
+    g_object_get(fx_playback_audio,
+		 "capture-mode", &port,
 		 NULL);
-    ags_timestamp_set_ags_offset(current_timestamp,
-				 relative_offset * floor(current_x_offset / relative_offset));
-      
-    ags_audio_add_wave(audio,
-		       (GObject *) current_wave);
 
-    g_object_unref(current_timestamp);
-  }else{
-    current_wave = wave->data;
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_UINT64);
+
+      ags_port_safe_read(port, &value);
+
+      capture_mode = g_value_get_uint64(&value);
+      
+      g_object_unref(port);
+
+      g_value_unset(&value);
+    }
+  }
+
+  if(capture_mode == AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_DISCARD){
+    //empty
+  }else if(capture_mode == AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_NONE){
+    AgsAudioSignal *current_audio_signal;
     
-    buffer = ags_wave_find_point(current_wave,
-				 current_x_offset,
-				 FALSE);
-  }
+    GList *start_audio_signal, *audio_signal;
+
+    GRecMutex *stream_mutex;
+    
+    /* get audio signal */
+    current_audio_signal = NULL;
   
-  if(buffer == NULL){
-    /* instantiate buffer */
-    buffer = ags_buffer_new();
-    buffer->x = current_x_offset;
+    start_audio_signal = NULL;
+
+    g_rec_mutex_lock(fx_playback_audio_processor_mutex);
+
+    start_audio_signal = fx_playback_audio_processor->capture_audio_signal;
+  
+    audio_signal = ags_audio_signal_find_by_recall_id(start_audio_signal, (GObject *) recall_id);
+  
+    if(audio_signal != NULL){
+      current_audio_signal = audio_signal->data;
+      g_object_ref(current_audio_signal);
+    }
+    
+    g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
+
+    /* create audio signal */
+    if(current_audio_signal == NULL){  
+      AgsChannel *start_input, *input;
+      AgsRecycling *recycling;
       
-    ags_wave_add_buffer(current_wave,
-			buffer,
-			FALSE);
-  }
+      gdouble delay;
 
-  /* record */
-  buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(buffer);
+      GValue value = {0,};
+    
+      start_input = NULL;
+    
+      g_object_get(audio,
+		   "input", &start_input,
+		   NULL);
 
-  data = ags_soundcard_get_prev_buffer(AGS_SOUNDCARD(input_soundcard));
+      input = ags_channel_nth(start_input, audio_channel);
+
+      recycling = NULL;
+
+      if(input != NULL){
+	g_object_get(input,
+		     "first-recycling", &recycling,
+		     NULL);
+      }
+    
+      /* get delay */
+      delay = AGS_SOUNDCARD_DEFAULT_DELAY;
   
-  target_copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
-							 ags_audio_buffer_util_format_from_soundcard(format));
+      if(fx_playback_audio != NULL){
+	port = NULL;
+    
+	g_object_get(fx_playback_audio,
+		     "delay", &port,
+		     NULL);
 
-  attack = (current_x_offset % relative_offset) % target_buffer_size;
+	if(port != NULL){
+	  g_value_init(&value,
+		       G_TYPE_DOUBLE);
+    
+	  ags_port_safe_read(port,
+			     &value);
+
+	  delay = g_value_get_double(&value);
+	  g_value_unset(&value);
+
+	  g_object_unref(port);
+	}
+      }
+
+      current_audio_signal = ags_audio_signal_new(output_soundcard,
+						  (GObject *) recycling,
+						  (GObject *) recall_id);
+      g_object_ref(current_audio_signal);
+    
+      g_object_set(current_audio_signal,
+		   "samplerate", target_samplerate,
+		   "buffer-size", target_buffer_size,
+		   "format", target_format,
+		   NULL);
+
+      ags_audio_signal_stream_resize(current_audio_signal,
+				     (guint) floor(delay) + 1);      
+
+      g_rec_mutex_lock(fx_playback_audio_processor_mutex);
+
+      fx_playback_audio_processor->capture_audio_signal = g_list_prepend(fx_playback_audio_processor->capture_audio_signal,
+									 current_audio_signal);
+    
+      g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
+      
+      ags_connectable_connect(AGS_CONNECTABLE(current_audio_signal));
+      ags_recycling_add_audio_signal(recycling,
+				     current_audio_signal);
+
+      if(start_input != NULL){
+	g_object_unref(start_input);
+      }
+
+      if(input != NULL){
+	g_object_unref(input);
+      }
+
+      if(recycling != NULL){
+	g_object_unref(recycling);
+      }
+    }
+
+    stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(current_audio_signal);
+    
+    data = ags_soundcard_get_prev_buffer(AGS_SOUNDCARD(input_soundcard));
   
-  g_rec_mutex_lock(buffer_mutex);
-  ags_soundcard_lock_buffer(AGS_SOUNDCARD(input_soundcard), data);
+    target_copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
+							   ags_audio_buffer_util_format_from_soundcard(format));
+
+    g_rec_mutex_lock(stream_mutex);
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(input_soundcard), data);
+
+    ags_audio_buffer_util_clear_buffer(current_audio_signal->stream_current->data, 1,
+				       target_buffer_size, ags_audio_buffer_util_format_from_soundcard(target_format));
+    
+    ags_audio_buffer_util_copy_buffer_to_buffer(current_audio_signal->stream_current, 1, 0,
+						data, audio_channels, input_soundcard_channel,
+						target_buffer_size, target_copy_mode);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(input_soundcard), data);
+    g_rec_mutex_unlock(stream_mutex);
+
+    /* unref */
+    if(current_audio_signal != NULL){
+      g_object_unref(current_audio_signal);
+    }
+  }else{
+    /* find wave - attempt #0 */
+    current_wave = NULL;
   
-  ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
-					      data, audio_channels, input_soundcard_channel,
-					      frame_count, target_copy_mode);
-
-  ags_soundcard_unlock_buffer(AGS_SOUNDCARD(input_soundcard), data);
-  g_rec_mutex_unlock(buffer_mutex);
-  
-  /* data put */
-  ags_fx_playback_audio_processor_data_put(fx_playback_audio_processor,
-					   buffer,
-					   AGS_FX_PLAYBACK_AUDIO_PROCESSOR_DATA_MODE_PLAY);
-
-  /* find wave - attempt #1 */
-  if(attack != 0 ||
-     frame_count != buffer_size){
-    ags_timestamp_set_ags_offset(timestamp,
-				 (guint64) (relative_offset * floor((double) (current_x_offset + frame_count) / (double) relative_offset)));
-
     wave = ags_wave_find_near_timestamp(start_wave, audio_channel,
 					timestamp);
 
     buffer = NULL;
-  
+
+    found_buffer = FALSE;
+    
     if(wave == NULL){
       AgsTimestamp *current_timestamp;
 
@@ -864,7 +1000,7 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 		   "timestamp", &current_timestamp,
 		   NULL);
       ags_timestamp_set_ags_offset(current_timestamp,
-				   (guint64) (relative_offset * floor((double) (current_x_offset + frame_count) / (double) relative_offset)));
+				   relative_offset * floor(current_x_offset / relative_offset));
       
       ags_audio_add_wave(audio,
 			 (GObject *) current_wave);
@@ -874,29 +1010,44 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
       current_wave = wave->data;
     
       buffer = ags_wave_find_point(current_wave,
-				   current_x_offset + frame_count,
+				   current_x_offset,
 				   FALSE);
     }
   
     if(buffer == NULL){
       /* instantiate buffer */
       buffer = ags_buffer_new();
-      buffer->x = current_x_offset + frame_count;
+      buffer->x = current_x_offset;
       
       ags_wave_add_buffer(current_wave,
 			  buffer,
 			  FALSE);
+    }else{
+      found_buffer = TRUE;
     }
 
     /* record */
     buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(buffer);
-    
+
+    data = ags_soundcard_get_prev_buffer(AGS_SOUNDCARD(input_soundcard));
+  
+    target_copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
+							   ags_audio_buffer_util_format_from_soundcard(format));
+
+    attack = (current_x_offset % relative_offset) % target_buffer_size;
+  
     g_rec_mutex_lock(buffer_mutex);
     ags_soundcard_lock_buffer(AGS_SOUNDCARD(input_soundcard), data);
+
+    if(found_buffer &&
+       capture_mode == AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_REPLACE){
+      ags_audio_buffer_util_clear_buffer(buffer->data, 1,
+					 frame_count, ags_audio_buffer_util_format_from_soundcard(target_format));
+    }
     
-    ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
-						data, audio_channels, (frame_count * audio_channels) + input_soundcard_channel,
-						target_buffer_size - frame_count, target_copy_mode);
+    ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+						data, audio_channels, input_soundcard_channel,
+						frame_count, target_copy_mode);
 
     ags_soundcard_unlock_buffer(AGS_SOUNDCARD(input_soundcard), data);
     g_rec_mutex_unlock(buffer_mutex);
@@ -905,8 +1056,83 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
     ags_fx_playback_audio_processor_data_put(fx_playback_audio_processor,
 					     buffer,
 					     AGS_FX_PLAYBACK_AUDIO_PROCESSOR_DATA_MODE_PLAY);
-  }
 
+    /* find wave - attempt #1 */
+    if(attack != 0 ||
+       frame_count != buffer_size){
+      ags_timestamp_set_ags_offset(timestamp,
+				   (guint64) (relative_offset * floor((double) (current_x_offset + frame_count) / (double) relative_offset)));
+
+      wave = ags_wave_find_near_timestamp(start_wave, audio_channel,
+					  timestamp);
+
+      buffer = NULL;
+  
+      found_buffer = FALSE;
+      
+      if(wave == NULL){
+	AgsTimestamp *current_timestamp;
+
+	/* instantiate */
+	current_wave = ags_wave_new((GObject *) audio,
+				    audio_channel);
+
+	g_object_get(current_wave,
+		     "timestamp", &current_timestamp,
+		     NULL);
+	ags_timestamp_set_ags_offset(current_timestamp,
+				     (guint64) (relative_offset * floor((double) (current_x_offset + frame_count) / (double) relative_offset)));
+      
+	ags_audio_add_wave(audio,
+			   (GObject *) current_wave);
+
+	g_object_unref(current_timestamp);
+      }else{
+	current_wave = wave->data;
+    
+	buffer = ags_wave_find_point(current_wave,
+				     current_x_offset + frame_count,
+				     FALSE);
+      }
+  
+      if(buffer == NULL){
+	/* instantiate buffer */
+	buffer = ags_buffer_new();
+	buffer->x = current_x_offset + frame_count;
+      
+	ags_wave_add_buffer(current_wave,
+			    buffer,
+			    FALSE);
+      }else{
+	found_buffer = TRUE;
+      }
+
+      /* record */
+      buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(buffer);
+    
+      g_rec_mutex_lock(buffer_mutex);
+      ags_soundcard_lock_buffer(AGS_SOUNDCARD(input_soundcard), data);
+
+      if(found_buffer &&
+	 capture_mode == AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_REPLACE){
+	ags_audio_buffer_util_clear_buffer(buffer->data, 1,
+					   frame_count, ags_audio_buffer_util_format_from_soundcard(target_format));
+      }
+    
+      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+						  data, audio_channels, (frame_count * audio_channels) + input_soundcard_channel,
+						  target_buffer_size - frame_count, target_copy_mode);
+
+      ags_soundcard_unlock_buffer(AGS_SOUNDCARD(input_soundcard), data);
+      g_rec_mutex_unlock(buffer_mutex);
+  
+      /* data put */
+      ags_fx_playback_audio_processor_data_put(fx_playback_audio_processor,
+					       buffer,
+					       AGS_FX_PLAYBACK_AUDIO_PROCESSOR_DATA_MODE_PLAY);
+    }
+  }
+  
   /* unref */
   if(output_soundcard != NULL){
     g_object_unref(output_soundcard);
@@ -930,6 +1156,14 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
   
   g_list_free_full(start_wave,
 		   (GDestroyNotify) g_object_unref);
+
+  if(fx_playback_audio != NULL){
+    g_object_unref(fx_playback_audio);
+  }
+
+  if(recall_id != NULL){
+    g_object_unref(recall_id);
+  }
 }
 
 void

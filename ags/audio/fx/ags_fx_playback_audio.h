@@ -63,6 +63,7 @@ typedef enum{
 
 /**
  * AgsFxPlaybackAudioCaptureMode:
+ * @AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_DISCARD: discard capture
  * @AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_NONE: capture none and preserve data
  * @AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_REPLACE: capture replace any sound
  * @AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_MIX: capture mix with existing sound
@@ -70,6 +71,7 @@ typedef enum{
  * Enum values to specify capture mode of #AgsFxPlaybackAudio.
  */
 typedef enum{
+  AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_DISCARD,
   AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_NONE,
   AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_REPLACE,
   AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_MIX,

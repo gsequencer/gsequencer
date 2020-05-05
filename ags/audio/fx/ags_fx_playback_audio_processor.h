@@ -41,6 +41,15 @@ G_BEGIN_DECLS
 typedef struct _AgsFxPlaybackAudioProcessor AgsFxPlaybackAudioProcessor;
 typedef struct _AgsFxPlaybackAudioProcessorClass AgsFxPlaybackAudioProcessorClass;
 
+/**
+ * AgsFxPlaybackAudioProcessorDataMode:
+ * @AGS_FX_PLAYBACK_AUDIO_PROCESSOR_DATA_MODE_PLAY: data mode play sound
+ * @AGS_FX_PLAYBACK_AUDIO_PROCESSOR_DATA_MODE_RECORD: data mode record sound
+ * @AGS_FX_PLAYBACK_AUDIO_PROCESSOR_DATA_MODE_FEED: data mode feed audio signal
+ * @AGS_FX_PLAYBACK_AUDIO_PROCESSOR_DATA_MODE_MASTER: data mode master audio signal
+ * 
+ * Enum values to enable specific data mode of #AgsFxPlaybackAudioProcessor.
+ */
 typedef enum{
   AGS_FX_PLAYBACK_AUDIO_PROCESSOR_DATA_MODE_PLAY,
   AGS_FX_PLAYBACK_AUDIO_PROCESSOR_DATA_MODE_RECORD,
@@ -72,6 +81,8 @@ struct _AgsFxPlaybackAudioProcessor
   GList *feeding_audio_signal;
 
   GList *mastering_audio_signal;
+
+  GList *capture_audio_signal;
 };
 
 struct _AgsFxPlaybackAudioProcessorClass
