@@ -108,7 +108,10 @@ struct _AgsEffectBulkClass
 };
 
 struct _AgsEffectBulkPlugin
-{
+{  
+  AgsRecallContainer *play_container;
+  AgsRecallContainer *recall_container;
+  
   gchar *filename;
   gchar *effect;
   

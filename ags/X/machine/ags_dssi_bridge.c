@@ -269,6 +269,12 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   dssi_bridge->mapped_output_pad = 0;
   dssi_bridge->mapped_input_pad = 0;
 
+  dssi_bridge->envelope_play_container = ags_recall_container_new();
+  dssi_bridge->envelope_recall_container = ags_recall_container_new();
+
+  dssi_bridge->buffer_play_container = ags_recall_container_new();
+  dssi_bridge->buffer_recall_container = ags_recall_container_new();
+
   ags_machine_popup_add_edit_options((AgsMachine *) dssi_bridge,
 				     (AGS_MACHINE_POPUP_ENVELOPE));
 				     
@@ -846,241 +852,69 @@ ags_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
 void
 ags_dssi_bridge_map_recall(AgsMachine *machine)
 {  
-  AgsWindow *window;
-  AgsDssiBridge *dssi_bridge;
-  
   AgsAudio *audio;
 
-  AgsDelayAudio *play_delay_audio;
-  AgsDelayAudioRun *play_delay_audio_run;
-  AgsCountBeatsAudio *play_count_beats_audio;
-  AgsCountBeatsAudioRun *play_count_beats_audio_run;
-  AgsRecordMidiAudio *recall_record_midi_audio;
-  AgsRecordMidiAudioRun *recall_record_midi_audio_run;
-  AgsPlayNotationAudio *recall_notation_audio;
-  AgsPlayNotationAudioRun *recall_notation_audio_run;
-  AgsRouteDssiAudio *recall_route_dssi_audio;
-  AgsRouteDssiAudioRun *recall_route_dssi_audio_run;
-
-  GList *start_play, *play;
-  GList *start_recall, *recall;
+  GList *start_recall;
+  GList *start_port;
   
-  GValue value = {0,};
+  gint position;
+  
 
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						 AGS_TYPE_WINDOW);
-
-  dssi_bridge = (AgsDssiBridge *) machine;
-
   audio = machine->audio;
 
-  /* ags-delay */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-delay",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
+  position = 0;
 
-  g_object_get(audio,
-	       "play", &start_play,
-	       NULL);
-  
-  play = ags_recall_find_type(start_play,
-			      AGS_TYPE_DELAY_AUDIO_RUN);
+  /* add to effect bridge */
+  start_port = ags_effect_bulk_add_effect((AgsEffectBulk *) AGS_EFFECT_BRIDGE(machine->bridge)->bulk_input,
+					  NULL,
+					  AGS_DSSI_BRIDGE(machine)->filename,
+					  AGS_DSSI_BRIDGE(machine)->effect);
 
-  if(play != NULL){
-    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(play->data);
-    //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
-  }else{
-    play_delay_audio_run = NULL;
-  }
+  g_list_free_full(start_port,
+		   (GDestroyNotify) g_object_unref);
 
-  g_list_free_full(start_play,
-		   g_object_unref);
-  
-  /* ags-count-beats */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-count-beats",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
+  /* ags-fx-envelope */
+  start_recall = ags_fx_factory_create(audio,
+				       AGS_DSSI_BRIDGE(machine)->envelope_play_container, AGS_DSSI_BRIDGE(machine)->envelope_recall_container,
+				       "ags-fx-envelope",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
 
-  g_object_get(audio,
-	       "play", &start_play,
-	       NULL);
-  
-  play = ags_recall_find_type(start_play,
-			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
-  if(play != NULL){
-    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(play->data);
+  /* ags-fx-buffer */
+  start_recall = ags_fx_factory_create(audio,
+				       AGS_DSSI_BRIDGE(machine)->buffer_play_container, AGS_DSSI_BRIDGE(machine)->buffer_recall_container,
+				       "ags-fx-buffer",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
 
-    /* set dependency */  
-    g_object_set(G_OBJECT(play_count_beats_audio_run),
-		 "delay-audio-run", play_delay_audio_run,
-		 NULL);
-    ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      (gint64) 16 * gtk_spin_button_get_value(window->navigation->position_tact),
-		      AGS_SEEK_SET);
-
-    /* notation loop */
-    g_value_init(&value, G_TYPE_BOOLEAN);
-    g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
-    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
-			&value);
-
-    g_value_unset(&value);
-    g_value_init(&value, G_TYPE_UINT64);
-
-    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_left_tact));
-    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_start,
-			&value);
-
-    g_value_reset(&value);
-
-    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_right_tact));
-    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_end,
-			&value);
-  }else{
-    play_count_beats_audio_run = NULL;
-  }
-
-  g_list_free_full(start_play,
-		   g_object_unref);
-    
-  /* ags-record-midi */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-record-midi",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
-
-  g_object_get(audio,
-	       "play", &start_play,
-	       NULL);
-  
-  play = ags_recall_find_type(start_play,
-			      AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
-
-  if(play != NULL){
-    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(play->data);
-    
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_record_midi_audio_run),
-		 "delay-audio-run", play_delay_audio_run,
-		 NULL);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_record_midi_audio_run),
-		 "count-beats-audio-run", play_count_beats_audio_run,
-		 NULL);
-  }  
-
-  g_list_free_full(start_play,
-		   g_object_unref);
-  
-  /* ags-play-notation */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-play-notation",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
-
-  g_object_get(audio,
-	       "play", &start_play,
-	       NULL);
-  
-  play = ags_recall_find_type(start_play,
-			      AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
-
-  if(play != NULL){
-    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(play->data);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_notation_audio_run),
-		 "delay-audio-run", play_delay_audio_run,
-		 NULL);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_notation_audio_run),
-		 "count-beats-audio-run", play_count_beats_audio_run,
-		 NULL);
-  }
-
-  g_list_free_full(start_play,
-		   g_object_unref);
-  
-  /* ags-route-dssi */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-route-dssi",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
-
-  g_object_get(audio,
-	       "play", &start_play,
-	       NULL);
-  
-  play = ags_recall_find_type(start_play,
-			      AGS_TYPE_ROUTE_DSSI_AUDIO_RUN);
-
-  if(play != NULL){
-    recall_route_dssi_audio_run = AGS_ROUTE_DSSI_AUDIO_RUN(play->data);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_route_dssi_audio_run),
-		 "delay-audio-run", play_delay_audio_run,
-		 NULL);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_route_dssi_audio_run),
-		 "count-beats-audio-run", play_count_beats_audio_run,
-		 NULL);
-  }else{
-    recall_route_dssi_audio_run = NULL;
-  }
-
-  g_list_free_full(start_play,
-		   g_object_unref);
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
   /* depending on destination */
-  ags_dssi_bridge_input_map_recall(dssi_bridge,
+  ags_dssi_bridge_input_map_recall(machine,
 				   0,
 				   0);
 
-  /* add to effect bridge */
-  ags_effect_bulk_add_effect((AgsEffectBulk *) AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input,
-			     NULL,
-			     dssi_bridge->filename,
-			     dssi_bridge->effect);
-
   /* depending on destination */
-  ags_dssi_bridge_output_map_recall(dssi_bridge,
+  ags_dssi_bridge_output_map_recall(machine,
 				    0,
 				    0);
   
