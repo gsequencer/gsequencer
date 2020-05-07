@@ -39,7 +39,6 @@ void ags_fm_syncsynth_connect(AgsConnectable *connectable);
 void ags_fm_syncsynth_disconnect(AgsConnectable *connectable);
 
 void ags_fm_syncsynth_show(GtkWidget *widget);
-void ags_fm_syncsynth_map_recall(AgsMachine *machine);
 
 void ags_fm_syncsynth_resize_audio_channels(AgsMachine *machine,
 					    guint audio_channels, guint audio_channels_old,
@@ -47,6 +46,8 @@ void ags_fm_syncsynth_resize_audio_channels(AgsMachine *machine,
 void ags_fm_syncsynth_resize_pads(AgsMachine *machine, GType channel_type,
 				  guint pads, guint pads_old,
 				  gpointer data);
+
+void ags_fm_syncsynth_map_recall(AgsMachine *machine);
 
 void ags_fm_syncsynth_input_map_recall(AgsFMSyncsynth *fm_syncsynth,
 				       guint audio_channel_start,
