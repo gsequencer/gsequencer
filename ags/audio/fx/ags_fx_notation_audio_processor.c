@@ -466,7 +466,7 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 		   NULL);
 
       ags_audio_signal_stream_resize(audio_signal,
-				     (guint) floor(delay) + 1);      
+				     2);      
 
       audio_signal->stream_current = audio_signal->stream;
 

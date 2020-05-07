@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -213,6 +213,9 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
   
   ladspa_bridge->mapped_output = 0;
   ladspa_bridge->mapped_input = 0;
+
+  ladspa_bridge->ladspa_play_container = ags_recall_container_new();
+  ladspa_bridge->ladspa_recall_container = ags_recall_container_new();
   
   ladspa_bridge->filename = NULL;
   ladspa_bridge->effect = NULL;
@@ -387,15 +390,39 @@ ags_ladspa_bridge_disconnect(AgsConnectable *connectable)
 void
 ags_ladspa_bridge_load(AgsLadspaBridge *ladspa_bridge)
 {
+  gint position;
+  guint input_pads;
+  guint audio_channels;
+
+  if(!AGS_IS_LADSPA_BRIDGE(ladspa_bridge)){
+    return;
+  }
+  
   /* empty */
 #ifdef AGS_DEBUG
   g_message("%s %s",ladspa_bridge->filename, ladspa_bridge->effect);
 #endif
+
+  position = 0;
+
+  input_pads = 0;
+  audio_channels = 0;
+
+  g_object_get(AGS_MACHINE(ladspa_bridge)->audio,
+	       "input-pads", &input_pads,
+	       "audio-channels", &audio_channels,
+	       NULL);
   
-  ags_effect_bulk_add_effect((AgsEffectBulk *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
+  ags_effect_bulk_add_plugin((AgsEffectBulk *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
 			     NULL,
+			     ladspa_bridge->ladspa_play_container, ladspa_bridge->ladspa_recall_container,
+			     "ags-fx-ladspa",
 			     ladspa_bridge->filename,
-			     ladspa_bridge->effect);
+			     ladspa_bridge->effect,
+			     0, audio_channels,
+			     0, input_pads,
+			     position,
+			     (AGS_FX_FACTORY_ADD), 0);
 }
 
 /**

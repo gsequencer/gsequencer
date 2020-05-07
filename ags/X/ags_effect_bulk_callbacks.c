@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -59,7 +59,7 @@ ags_effect_bulk_remove_callback(GtkWidget *button,
       gtk_widget_destroy(GTK_WIDGET(bulk_member->data));
 	
       /* remove effect */
-      ags_effect_bulk_remove_effect(effect_bulk,
+      ags_effect_bulk_remove_plugin(effect_bulk,
 				    nth);
     }
 
@@ -112,11 +112,34 @@ ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
 						 gint response,
 						 AgsEffectBulk *effect_bulk)
 {
+  gchar *plugin_type;
+  gchar *plugin_name;
   gchar *filename, *effect;  
+
+  guint audio_channels;
+  guint input_pads;
   
   switch(response){
   case GTK_RESPONSE_ACCEPT:
     {
+      g_object_get(effect_bulk->audio,
+		   "audio-channels", &audio_channels,
+		   "input-pads", &input_pads,
+		   NULL);
+      
+      plugin_type = gtk_combo_box_text_get_active_text(AGS_PLUGIN_BROWSER(effect_bulk->plugin_browser)->plugin_type);
+      plugin_name = NULL;
+
+      if(!g_ascii_strncasecmp(plugin_type,
+			      "ladspa",
+			      7)){
+	plugin_name = "ags-fx-ladspa";
+      }else if(!g_ascii_strncasecmp(plugin_type,
+				    "lv2",
+				    4)){
+	plugin_name = "ags-fx-lv2";
+      }
+
       /* retrieve plugin */
       filename = ags_plugin_browser_get_plugin_filename((AgsPluginBrowser *) effect_bulk->plugin_browser);
       effect = ags_plugin_browser_get_plugin_effect((AgsPluginBrowser *) effect_bulk->plugin_browser);
@@ -125,10 +148,18 @@ ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
 							   filename, effect);
 	
       /* add effect */
-      ags_effect_bulk_add_effect(effect_bulk,
+      ags_effect_bulk_add_plugin(effect_bulk,
 				 NULL,
+				 ags_recall_container_new(), ags_recall_container_new(),
+				 plugin_name,
 				 filename,
-				 effect);
+				 effect,
+				 0, audio_channels,
+				 0, input_pads,
+				 0,
+				 (AGS_FX_FACTORY_ADD), 0);
+
+      g_free(plugin_type);
 
       g_free(filename);
       g_free(effect);

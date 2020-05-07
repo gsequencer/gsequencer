@@ -77,10 +77,14 @@ struct _AgsBulkMember
   GType widget_type;
   gchar *widget_label;
 
+  AgsRecallContainer *play_container;
+  AgsRecallContainer *recall_container;
+
+  gchar *plugin_name;
+  
   gchar *filename;
   gchar *effect;
   
-  gchar *plugin_name;
   gchar *specifier;
 
   guint port_index;
@@ -137,6 +141,8 @@ GList* ags_bulk_member_find_port(AgsBulkMember *bulk_member);
 GList* ags_bulk_member_find_effect_and_specifier(GList *bulk_member,
 						 gchar *filename, gchar *effect,
 						 gchar *specifier);
+
+void ags_bulk_member_remap_bulk_port(AgsBulkMember *bulk_member);
 
 AgsBulkMember* ags_bulk_member_new();
 

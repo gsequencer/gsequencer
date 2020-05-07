@@ -240,11 +240,7 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
       g_message("ags-fx-notation 0x%x", source);
       
       if(offset_counter < x1){
-	if(delay_counter < 1.0 &&
-	   x0 != offset_counter){
-	  ags_audio_signal_stream_safe_resize(source,
-					      length + ((guint) floor(delay) + 1));
-	}
+	ags_audio_signal_add_stream(source);
 
 	ags_fx_notation_audio_signal_stream_feed((AgsFxNotationAudioSignal *) recall,
 						 source,

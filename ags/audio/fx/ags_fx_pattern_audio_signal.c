@@ -281,12 +281,7 @@ ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
 #endif
 	
 	if(frame_count <= template_frame_count){
-
-	  if(delay_counter < 1.0 &&
-	     x0 != offset_counter){
-	    ags_audio_signal_stream_safe_resize(source,
-						length + ((guint) floor(delay) + 1));
-	  }
+	  ags_audio_signal_add_stream(source);
 
 	  ags_fx_pattern_audio_signal_stream_feed((AgsFxPatternAudioSignal *) recall,
 						  source,

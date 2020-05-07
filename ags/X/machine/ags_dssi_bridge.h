@@ -72,6 +72,9 @@ struct _AgsDssiBridge
   guint mapped_output_pad;
   guint mapped_input_pad;
 
+  AgsRecallContainer *dssi_play_container;
+  AgsRecallContainer *dssi_recall_container;
+
   AgsRecallContainer *envelope_play_container;
   AgsRecallContainer *envelope_recall_container;
 

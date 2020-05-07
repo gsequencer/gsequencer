@@ -89,11 +89,17 @@ struct _AgsEffectBulkClass
 {
   GtkVBoxClass vbox;
 
-  GList* (*add_effect)(AgsEffectBulk *effect_bulk,
-		       GList *control_type_name,
-		       gchar *filename,
-		       gchar *effect);
-  void (*remove_effect)(AgsEffectBulk *effect_bulk,
+  void (*add_plugin)(AgsEffectBulk *effect_bulk,
+		     GList *control_type_name,
+		     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+		     gchar *plugin_name,
+		     gchar *filename,
+		     gchar *effect,
+		     guint start_audio_channel, guint stop_audio_channel,
+		     guint start_pad, guint stop_pad,
+		     gint position,
+		     guint create_flags, guint recall_flags);
+  void (*remove_plugin)(AgsEffectBulk *effect_bulk,
 			guint nth);
 
   void (*resize_audio_channels)(AgsEffectBulk *effect_bulk,
@@ -111,6 +117,8 @@ struct _AgsEffectBulkPlugin
 {  
   AgsRecallContainer *play_container;
   AgsRecallContainer *recall_container;
+
+  gchar *plugin_name;
   
   gchar *filename;
   gchar *effect;
@@ -122,15 +130,22 @@ struct _AgsEffectBulkPlugin
 
 GType ags_effect_bulk_get_type(void);
 
-AgsEffectBulkPlugin* ags_effect_bulk_plugin_alloc(gchar *filename,
+AgsEffectBulkPlugin* ags_effect_bulk_plugin_alloc(AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+						  gchar *filename,
 						  gchar *effect);
 void ags_effect_bulk_plugin_free(AgsEffectBulkPlugin *effect_bulk_plugin);
 
-GList* ags_effect_bulk_add_effect(AgsEffectBulk *effect_bulk,
-				  GList *control_type_name,
-				  gchar *filename,
-				  gchar *effect);
-void ags_effect_bulk_remove_effect(AgsEffectBulk *effect_bulk,
+void ags_effect_bulk_add_plugin(AgsEffectBulk *effect_bulk,
+				GList *control_type_name,
+				AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				gchar *plugin_name,
+				gchar *filename,
+				gchar *effect,
+				guint start_audio_channel, guint stop_audio_channel,
+				guint start_pad, guint stop_pad,
+				gint position,
+				guint create_flags, guint recall_flags);
+void ags_effect_bulk_remove_plugin(AgsEffectBulk *effect_bulk,
 				   guint nth);
 
 void ags_effect_bulk_resize_audio_channels(AgsEffectBulk *effect_bulk,

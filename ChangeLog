@@ -29,9 +29,13 @@ ags (3.3.0)
 	* implemented ags_audio_insert_recall() and ags_channel_insert_recall()
 	* implemented AgsResetFxPeak task
 	* implemented AgsResetFxAnalyse task
+	* TODO:JK: implemented AgsAudio::add-plugin() and AgsAudio::remove-plugin()
+	* TODO:JK: implemented AgsChannel::add-plugin() and AgsChannel::remove-plugin()
 	* TODO:JK: implemented Fx mutex per scope
 	* TODO:JK: implemented resample cache per scope
-	* TODO:JK: improve AgsComplex support
+	* TODO:JK: implemented AgsSeekable and AgsTactable
+	* TODO:JK: fixed AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT/AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT in ags_fx_factory.c
+	* TODO:JK: fixed AgsComplex support
 	* TODO:JK: extended user's handbook to cover OSC server preferences
 
 ags (3.2.15)
