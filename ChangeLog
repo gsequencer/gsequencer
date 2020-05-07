@@ -1,6 +1,7 @@
 ags (3.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented staging program of AgsAudioLoop, AgsAudioThread and AgsChannelThread
 	* implemented ags_fx_factory.[ch]
 	* implemented AgsFxPlaybackAudio, AgsFxPlaybackAudioProcessor, AgsFxPlaybackChannel,
 	  AgsFxPlaybackChannelProcessor, AgsFxPlaybackRecycling and AgsFxPlaybackAudioSignal
@@ -31,6 +32,13 @@ ags (3.3.0)
 	* implemented ags_audio_insert_recall() and ags_channel_insert_recall()
 	* implemented AgsResetFxPeak task
 	* implemented AgsResetFxAnalyse task
+	* implemented ags_audio_loop_get_do_fx_staging() and ags_audio_loop_set_do_fx_staging()
+	* implemented ags_audio_loop_get_staging_program() and ags_audio_loop_set_staging_program()
+	* implemented ags_audio_thread_get_do_fx_staging() and ags_audio_thread_set_do_fx_staging()
+	* implemented ags_audio_thread_get_staging_program() and ags_audio_thread_set_staging_program()
+	* implemented ags_audio_thread_scope_data_alloc() and ags_audio_thread_scope_data_free()
+	* implemented ags_channel_thread_get_do_fx_staging() and ags_channel_thread_set_do_fx_staging()
+	* implemented ags_channel_thread_get_staging_program() and ags_channel_thread_set_staging_program()
 	* implemented ags_audio_test_staging_completed(), ags_audio_set_staging_completed() and ags_audio_unset_staging_completed()
 	* implemented ags_channel_test_staging_completed(), ags_channel_set_staging_completed() and ags_channel_unset_staging_completed()
 	* TODO:JK: implemented AgsAudio::add-plugin() and AgsAudio::remove-plugin()
