@@ -699,6 +699,157 @@ ags_channel_thread_set_sound_scope(AgsChannelThread *channel_thread,
 }
 
 /**
+ * ags_channel_thread_get_do_fx_staging:
+ * @channel_thread: the #AgsChannelThread
+ * 
+ * Get do fx staging.
+ * 
+ * Returns: %TRUE if set, otherwise %FALSE
+ * 
+ * Since: 3.3.0
+ */
+gboolean
+ags_channel_thread_get_do_fx_staging(AgsChannelThread *channel_thread)
+{
+  gboolean do_fx_staging;
+
+  GRecMutex *thread_mutex;
+
+  if(!AGS_IS_CHANNEL_THREAD(channel_thread)){
+    return(FALSE);
+  }
+  
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(channel_thread);
+
+  /* get do fx staging */
+  g_rec_mutex_lock(thread_mutex);
+
+  do_fx_staging = channel_thread->do_fx_staging;
+
+  g_rec_mutex_unlock(thread_mutex);
+
+  return(do_fx_staging);
+}
+
+/**
+ * ags_channel_thread_set_do_fx_staging:
+ * @channel_thread: the #AgsChannelThread
+ * @do_fx_staging: %TRUE if do fx staging, else %FALSe
+ * 
+ * Set do fx staging.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_channel_thread_set_do_fx_staging(AgsChannelThread *channel_thread, gboolean do_fx_staging)
+{
+  GRecMutex *thread_mutex;
+
+  if(!AGS_IS_CHANNEL_THREAD(channel_thread)){
+    return;
+  }
+
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(channel_thread);
+
+  /* get do fx staging */
+  g_rec_mutex_lock(thread_mutex);
+
+  channel_thread->do_fx_staging = do_fx_staging;
+
+  g_rec_mutex_unlock(thread_mutex);
+}
+
+/**
+ * ags_channel_thread_get_staging_program:
+ * @channel_thread: the #AgsChannelThread
+ * @staging_program_count: (out): the staging program count
+ * 
+ * Get staging program.
+ * 
+ * Returns: (transfer full): the staging program
+ * 
+ * Since: 3.3.0
+ */
+guint*
+ags_channel_thread_get_staging_program(AgsChannelThread *channel_thread,
+				       guint *staging_program_count)
+{
+  guint *staging_program;
+
+  GRecMutex *thread_mutex;
+
+  if(!AGS_IS_CHANNEL_THREAD(channel_thread)){
+    if(staging_program_count != NULL){
+      staging_program_count[0] = 0;
+    }
+    
+    return(NULL);
+  }
+
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(channel_thread);
+
+  /* get staging program */
+  staging_program = NULL;
+
+  g_rec_mutex_lock(thread_mutex);
+
+  if(channel_thread->staging_program_count > 0){
+    staging_program = (guint *) g_malloc(channel_thread->staging_program_count * sizeof(guint));
+
+    memcpy(staging_program, channel_thread->staging_program, channel_thread->staging_program_count * sizeof(guint));
+  }
+
+  if(staging_program_count != NULL){
+    staging_program_count[0] = channel_thread->staging_program_count;
+  }
+
+  g_rec_mutex_unlock(thread_mutex);
+
+  return(staging_program);
+}
+
+/**
+ * ags_channel_thread_set_staging_program:
+ * @channel_thread: the #AgsChannelThread
+ * @staging_program: (transfer none): the staging program
+ * @staging_program_count: the staging program count
+ * 
+ * Set staging program.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_channel_thread_set_staging_program(AgsChannelThread *channel_thread,
+				       guint *staging_program,
+				       guint staging_program_count)
+{
+  GRecMutex *thread_mutex;
+
+  if(!AGS_IS_CHANNEL_THREAD(channel_thread)){
+    return;
+  }
+
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(channel_thread);
+
+  /* set staging program */
+  g_rec_mutex_lock(thread_mutex);
+
+  g_free(channel_thread->staging_program);
+  
+  if(staging_program_count > 0){
+    channel_thread->staging_program = (guint *) g_malloc(staging_program_count * sizeof(guint));
+
+    memcpy(channel_thread->staging_program, staging_program, staging_program_count * sizeof(guint));
+  }else{
+    channel_thread->staging_program = NULL;
+  }
+
+  channel_thread->staging_program_count = staging_program_count;
+  
+  g_rec_mutex_unlock(thread_mutex);
+}
+
+/**
  * ags_channel_thread_new:
  * @default_output_soundcard: the #GObject
  * @channel: the #AgsChannel

@@ -188,6 +188,7 @@ ags_audio_thread_init(AgsAudioThread *audio_thread)
   gdouble frequency;
   guint samplerate;
   guint buffer_size;
+  guint i;
   
   thread = (AgsThread *) audio_thread;
 
@@ -225,6 +226,10 @@ ags_audio_thread_init(AgsAudioThread *audio_thread)
   audio_thread->sound_scope = -1;
 
   audio_thread->sync_thread = NULL;
+
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    audio_thread->scope_data[i] = ags_audio_thread_scope_data_alloc();
+  }
 }
 
 void
@@ -373,6 +378,8 @@ ags_audio_thread_finalize(GObject *gobject)
 {
   AgsAudioThread *audio_thread;
 
+  guint i;
+  
   audio_thread = AGS_AUDIO_THREAD(gobject);
 
   /* soundcard */
@@ -383,6 +390,10 @@ ags_audio_thread_finalize(GObject *gobject)
   /* audio */
   if(audio_thread->audio != NULL){
     g_object_unref(audio_thread->audio);
+  }  
+
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    ags_audio_thread_scope_data_free(audio_thread->scope_data[i]);
   }
   
   /* call parent */
@@ -1108,6 +1119,200 @@ ags_audio_thread_set_sound_scope(AgsAudioThread *audio_thread,
   g_rec_mutex_lock(thread_mutex);
 
   audio_thread->sound_scope = sound_scope;
+  
+  g_rec_mutex_unlock(thread_mutex);
+}
+
+/**
+ * ags_audio_thread_scope_data_free:
+ * 
+ * Allocate the #AgsAudioThreadScopeData-struct.
+ * 
+ * Returns: (transfer full): the newly allocated struct
+ * 
+ * Since: 3.3.0
+ */
+AgsAudioThreadScopeData*
+ags_audio_thread_scope_data_alloc()
+{
+  AgsAudioThreadScopeData *scope_data;
+
+  scope_data = (AgsAudioThreadScopeData *) g_malloc(sizeof(AgsAudioThreadScopeData));
+
+  g_atomic_int_set(&(scope_data->fx_done), FALSE);
+  g_atomic_int_set(&(scope_data->fx_wait), 0);
+
+  g_mutex_init(&(scope_data->fx_mutex));
+  g_cond_init(&(scope_data->fx_cond));
+  
+  return(scope_data);
+}
+
+/**
+ * ags_audio_thread_scope_data_free:
+ * @scope_data: (transfer full): the #AgsAudioThreadScopeData-struct
+ * 
+ * Free @scope_data.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_audio_thread_scope_data_free(AgsAudioThreadScopeData *scope_data)
+{
+  if(scope_data == NULL){
+    return;
+  }
+
+  g_free(scope_data);
+}
+
+/**
+ * ags_audio_thread_get_do_fx_staging:
+ * @audio_thread: the #AgsAudioThread
+ * 
+ * Get do fx staging.
+ * 
+ * Returns: %TRUE if set, otherwise %FALSE
+ * 
+ * Since: 3.3.0
+ */
+gboolean
+ags_audio_thread_get_do_fx_staging(AgsAudioThread *audio_thread)
+{
+  gboolean do_fx_staging;
+
+  GRecMutex *thread_mutex;
+
+  if(!AGS_IS_AUDIO_THREAD(audio_thread)){
+    return(FALSE);
+  }
+  
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_thread);
+
+  /* get do fx staging */
+  g_rec_mutex_lock(thread_mutex);
+
+  do_fx_staging = audio_thread->do_fx_staging;
+
+  g_rec_mutex_unlock(thread_mutex);
+
+  return(do_fx_staging);
+}
+
+/**
+ * ags_audio_thread_set_do_fx_staging:
+ * @audio_thread: the #AgsAudioThread
+ * @do_fx_staging: %TRUE if do fx staging, else %FALSe
+ * 
+ * Set do fx staging.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_audio_thread_set_do_fx_staging(AgsAudioThread *audio_thread, gboolean do_fx_staging)
+{
+  GRecMutex *thread_mutex;
+
+  if(!AGS_IS_AUDIO_THREAD(audio_thread)){
+    return;
+  }
+
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_thread);
+
+  /* get do fx staging */
+  g_rec_mutex_lock(thread_mutex);
+
+  audio_thread->do_fx_staging = do_fx_staging;
+
+  g_rec_mutex_unlock(thread_mutex);
+}
+
+/**
+ * ags_audio_thread_get_staging_program:
+ * @audio_thread: the #AgsAudioThread
+ * @staging_program_count: (out): the staging program count
+ * 
+ * Get staging program.
+ * 
+ * Returns: (transfer full): the staging program
+ * 
+ * Since: 3.3.0
+ */
+guint*
+ags_audio_thread_get_staging_program(AgsAudioThread *audio_thread,
+				     guint *staging_program_count)
+{
+  guint *staging_program;
+
+  GRecMutex *thread_mutex;
+
+  if(!AGS_IS_AUDIO_THREAD(audio_thread)){
+    if(staging_program_count != NULL){
+      staging_program_count[0] = 0;
+    }
+    
+    return(NULL);
+  }
+
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_thread);
+
+  /* get staging program */
+  staging_program = NULL;
+
+  g_rec_mutex_lock(thread_mutex);
+
+  if(audio_thread->staging_program_count > 0){
+    staging_program = (guint *) g_malloc(audio_thread->staging_program_count * sizeof(guint));
+
+    memcpy(staging_program, audio_thread->staging_program, audio_thread->staging_program_count * sizeof(guint));
+  }
+
+  if(staging_program_count != NULL){
+    staging_program_count[0] = audio_thread->staging_program_count;
+  }
+
+  g_rec_mutex_unlock(thread_mutex);
+
+  return(staging_program);
+}
+
+/**
+ * ags_audio_thread_set_staging_program:
+ * @audio_thread: the #AgsAudioThread
+ * @staging_program: (transfer none): the staging program
+ * @staging_program_count: the staging program count
+ * 
+ * Set staging program.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_audio_thread_set_staging_program(AgsAudioThread *audio_thread,
+				     guint *staging_program,
+				     guint staging_program_count)
+{
+  GRecMutex *thread_mutex;
+
+  if(!AGS_IS_AUDIO_THREAD(audio_thread)){
+    return;
+  }
+
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_thread);
+
+  /* set staging program */
+  g_rec_mutex_lock(thread_mutex);
+
+  g_free(audio_thread->staging_program);
+  
+  if(staging_program_count > 0){
+    audio_thread->staging_program = (guint *) g_malloc(staging_program_count * sizeof(guint));
+
+    memcpy(audio_thread->staging_program, staging_program, staging_program_count * sizeof(guint));
+  }else{
+    audio_thread->staging_program = NULL;
+  }
+
+  audio_thread->staging_program_count = staging_program_count;
   
   g_rec_mutex_unlock(thread_mutex);
 }

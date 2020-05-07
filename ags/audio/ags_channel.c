@@ -1256,7 +1256,9 @@ ags_channel_init(AgsChannel *channel)
   channel->flags = 0;
   channel->ability_flags = 0;
   channel->behaviour_flags = 0;
-  memset(channel->staging_flags, 0, (AGS_SOUND_SCOPE_LAST + 1) * sizeof(guint));
+  memset(channel->staging_flags, 0, AGS_SOUND_SCOPE_LAST * sizeof(guint));
+
+  memset(channel->staging_completed, FALSE, AGS_SOUND_SCOPE_LAST * sizeof(gboolean));
 
   /* channel mutex */
   g_rec_mutex_init(&(channel->obj_mutex));
@@ -3483,6 +3485,130 @@ ags_channel_unset_staging_flags(AgsChannel *channel, gint sound_scope,
     }
   }else if(sound_scope < AGS_SOUND_SCOPE_LAST){
     channel->staging_flags[sound_scope] &= (~staging_flags);
+  }
+
+  g_rec_mutex_unlock(channel_mutex);
+}
+
+/**
+ * ags_channel_test_staging_completed:
+ * @channel: the #AgsChannel
+ * @sound_scope: the #AgsSoundScope to test
+ *
+ * Test @sound_scope to be completed on @channel.
+ * 
+ * Returns: %TRUE if completed, otherwise %FALSE
+ *
+ * Since: 3.3.0
+ */
+gboolean
+ags_channel_test_staging_completed(AgsChannel *channel, gint sound_scope)
+{
+  guint i;
+  gboolean success;
+  
+  GRecMutex *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(FALSE);
+  }
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+
+  /* test staging completed */
+  success = FALSE;
+  
+  g_rec_mutex_lock(channel_mutex);
+
+  if(sound_scope < 0){
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      if(!channel->staging_completed[i]){
+	break;
+      }
+    }
+
+    if(i == AGS_SOUND_SCOPE_LAST){
+      success = TRUE;
+    }
+  }else if(sound_scope < AGS_SOUND_SCOPE_LAST){
+    success = channel->staging_completed[sound_scope];
+  }
+
+  g_rec_mutex_unlock(channel_mutex);
+
+  return(success);
+}
+
+/**
+ * ags_channel_set_staging_flags:
+ * @channel: the #AgsChannel
+ * @sound_scope: the #AgsSoundScope to apply, or -1 to apply to all
+ * 
+ * Set @sound_scope to be completed.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_channel_set_staging_completed(AgsChannel *channel, gint sound_scope)
+{
+  guint i;
+  
+  GRecMutex *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+
+  /* test staging completed */  
+  g_rec_mutex_lock(channel_mutex);
+
+  if(sound_scope < 0){
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      channel->staging_completed[i] = TRUE;
+    }
+  }else if(sound_scope < AGS_SOUND_SCOPE_LAST){
+    channel->staging_completed[sound_scope] = TRUE;
+  }
+
+  g_rec_mutex_unlock(channel_mutex);
+}
+
+/**
+ * ags_channel_unset_staging_flags:
+ * @channel: the #AgsChannel
+ * @sound_scope: the #AgsSoundScope to apply, or -1 to apply to all
+ * 
+ * Unset @sound_scope to be completed.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_channel_unset_staging_completed(AgsChannel *channel, gint sound_scope)
+{
+  guint i;
+  
+  GRecMutex *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+
+  /* test staging completed */  
+  g_rec_mutex_lock(channel_mutex);
+
+  if(sound_scope < 0){
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      channel->staging_completed[i] = FALSE;
+    }
+  }else if(sound_scope < AGS_SOUND_SCOPE_LAST){
+    channel->staging_completed[sound_scope] = FALSE;
   }
 
   g_rec_mutex_unlock(channel_mutex);

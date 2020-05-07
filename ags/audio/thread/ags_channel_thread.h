@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+#include <ags/audio/ags_sound_enums.h>
 
 G_BEGIN_DECLS
 
@@ -73,6 +75,11 @@ struct _AgsChannelThread
   GObject *channel;
   
   gint sound_scope;
+
+  gboolean do_fx_staging;
+  
+  guint *staging_program;
+  guint staging_program_count;
 };
 
 struct _AgsChannelThreadClass
@@ -82,6 +89,7 @@ struct _AgsChannelThreadClass
 
 GType ags_channel_thread_get_type();
 
+/* flags */
 gboolean ags_channel_thread_test_status_flags(AgsChannelThread *channel_thread, guint status_flags);
 void ags_channel_thread_set_status_flags(AgsChannelThread *channel_thread, guint status_flags);
 void ags_channel_thread_unset_status_flags(AgsChannelThread *channel_thread, guint status_flags);
@@ -89,6 +97,17 @@ void ags_channel_thread_unset_status_flags(AgsChannelThread *channel_thread, gui
 void ags_channel_thread_set_sound_scope(AgsChannelThread *channel_thread,
 					gint sound_scope);
 
+/* staging */
+gboolean ags_channel_thread_get_do_fx_staging(AgsChannelThread *channel_thread);
+void ags_channel_thread_set_do_fx_staging(AgsChannelThread *channel_thread, gboolean do_fx_staging);
+
+guint* ags_channel_thread_get_staging_program(AgsChannelThread *channel_thread,
+					      guint *staging_program_count);
+void ags_channel_thread_set_staging_program(AgsChannelThread *channel_thread,
+					    guint *staging_program,
+					    guint staging_program_count);
+
+/* instantiate */
 AgsChannelThread* ags_channel_thread_new(GObject *default_output_soundcard,
 					 GObject *channel);
 

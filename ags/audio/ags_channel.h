@@ -99,6 +99,8 @@ struct _AgsChannel
   guint behaviour_flags;
   guint staging_flags[AGS_SOUND_SCOPE_LAST];
 
+  gboolean staging_completed[AGS_SOUND_SCOPE_LAST];
+  
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;
@@ -230,6 +232,10 @@ void ags_channel_set_staging_flags(AgsChannel *channel, gint sound_scope,
 				   guint staging_flags);
 void ags_channel_unset_staging_flags(AgsChannel *channel, gint sound_scope,
 				     guint staging_flags);
+
+gboolean ags_channel_test_staging_completed(AgsChannel *channel, gint sound_scope);
+void ags_channel_set_staging_completed(AgsChannel *channel, gint sound_scope);
+void ags_channel_unset_staging_completed(AgsChannel *channel, gint sound_scope);
 
 /* parent */
 GObject* ags_channel_get_audio(AgsChannel *channel);

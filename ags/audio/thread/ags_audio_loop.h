@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+#include <ags/audio/ags_sound_enums.h>
 
 #include <math.h>
 
@@ -82,6 +84,11 @@ struct _AgsAudioLoop
   GList *play_audio; // play AgsAudio
 
   GList *sync_thread;
+
+  gboolean do_fx_staging;
+  
+  guint *staging_program;
+  guint staging_program_count;
 };
 
 struct _AgsAudioLoopClass
@@ -91,16 +98,29 @@ struct _AgsAudioLoopClass
 
 GType ags_audio_loop_get_type();
 
+/* flags */
 gboolean ags_audio_loop_test_flags(AgsAudioLoop *audio_loop, guint flags);
 void ags_audio_loop_set_flags(AgsAudioLoop *audio_loop, guint flags);
 void ags_audio_loop_unset_flags(AgsAudioLoop *audio_loop, guint flags);
 
+/* runtime */
 void ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio);
 void ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio);
 
 void ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel);
 void ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel);
 
+/* staging */
+gboolean ags_audio_loop_get_do_fx_staging(AgsAudioLoop *audio_loop);
+void ags_audio_loop_set_do_fx_staging(AgsAudioLoop *audio_loop, gboolean do_fx_staging);
+
+guint* ags_audio_loop_get_staging_program(AgsAudioLoop *audio_loop,
+					  guint *staging_program_count);
+void ags_audio_loop_set_staging_program(AgsAudioLoop *audio_loop,
+					guint *staging_program,
+					guint staging_program_count);
+
+/* instantiate */
 AgsAudioLoop* ags_audio_loop_new();
 
 G_END_DECLS

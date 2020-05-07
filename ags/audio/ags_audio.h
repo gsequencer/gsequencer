@@ -93,6 +93,8 @@ struct _AgsAudio
   guint behaviour_flags;
   guint staging_flags[AGS_SOUND_SCOPE_LAST];
   
+  gboolean staging_completed[AGS_SOUND_SCOPE_LAST];
+
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;
@@ -265,6 +267,10 @@ void ags_audio_set_staging_flags(AgsAudio *audio, gint sound_scope,
 				 guint staging_flags);
 void ags_audio_unset_staging_flags(AgsAudio *audio, gint sound_scope,
 				   guint staging_flags);
+
+gboolean ags_audio_test_staging_completed(AgsAudio *audio, gint sound_scope);
+void ags_audio_set_staging_completed(AgsAudio *audio, gint sound_scope);
+void ags_audio_unset_staging_completed(AgsAudio *audio, gint sound_scope);
 
 /* audio name */
 gchar* ags_audio_get_audio_name(AgsAudio *audio);

@@ -1620,7 +1620,9 @@ ags_audio_init(AgsAudio *audio)
   audio->flags = 0;
   audio->ability_flags = 0;
   audio->behaviour_flags = 0;
-  memset(audio->staging_flags, 0, (AGS_SOUND_SCOPE_LAST + 1) * sizeof(guint));
+  memset(audio->staging_flags, 0, AGS_SOUND_SCOPE_LAST * sizeof(guint));
+
+  memset(audio->staging_completed, FALSE, AGS_SOUND_SCOPE_LAST * sizeof(gboolean));
 
   /* audio mutex */
   g_rec_mutex_init(&(audio->obj_mutex));
@@ -5034,6 +5036,130 @@ ags_audio_unset_staging_flags(AgsAudio *audio, gint sound_scope,
     }
   }else if(sound_scope < AGS_SOUND_SCOPE_LAST){
     audio->staging_flags[sound_scope] &= (~staging_flags);
+  }
+
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_test_staging_completed:
+ * @audio: the #AgsAudio
+ * @sound_scope: the #AgsSoundScope to test
+ *
+ * Test @sound_scope to be completed on @audio.
+ * 
+ * Returns: %TRUE if completed, otherwise %FALSE
+ *
+ * Since: 3.3.0
+ */
+gboolean
+ags_audio_test_staging_completed(AgsAudio *audio, gint sound_scope)
+{
+  guint i;
+  gboolean success;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(FALSE);
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  /* test staging completed */
+  success = FALSE;
+  
+  g_rec_mutex_lock(audio_mutex);
+
+  if(sound_scope < 0){
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      if(!audio->staging_completed[i]){
+	break;
+      }
+    }
+
+    if(i == AGS_SOUND_SCOPE_LAST){
+      success = TRUE;
+    }
+  }else if(sound_scope < AGS_SOUND_SCOPE_LAST){
+    success = audio->staging_completed[sound_scope];
+  }
+
+  g_rec_mutex_unlock(audio_mutex);
+
+  return(success);
+}
+
+/**
+ * ags_audio_set_staging_flags:
+ * @audio: the #AgsAudio
+ * @sound_scope: the #AgsSoundScope to apply, or -1 to apply to all
+ * 
+ * Set @sound_scope to be completed.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_audio_set_staging_completed(AgsAudio *audio, gint sound_scope)
+{
+  guint i;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  /* test staging completed */  
+  g_rec_mutex_lock(audio_mutex);
+
+  if(sound_scope < 0){
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      audio->staging_completed[i] = TRUE;
+    }
+  }else if(sound_scope < AGS_SOUND_SCOPE_LAST){
+    audio->staging_completed[sound_scope] = TRUE;
+  }
+
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_unset_staging_flags:
+ * @audio: the #AgsAudio
+ * @sound_scope: the #AgsSoundScope to apply, or -1 to apply to all
+ * 
+ * Unset @sound_scope to be completed.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_audio_unset_staging_completed(AgsAudio *audio, gint sound_scope)
+{
+  guint i;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  /* test staging completed */  
+  g_rec_mutex_lock(audio_mutex);
+
+  if(sound_scope < 0){
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      audio->staging_completed[i] = FALSE;
+    }
+  }else if(sound_scope < AGS_SOUND_SCOPE_LAST){
+    audio->staging_completed[sound_scope] = FALSE;
   }
 
   g_rec_mutex_unlock(audio_mutex);
