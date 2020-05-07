@@ -1034,9 +1034,6 @@ ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
 		     AGS_TYPE_OUTPUT,
 		     1, 0);
 
-  /*  */
-  ags_ladspa_bridge_load(ladspa_bridge);
-
   /* */
   gtk_widget_show_all(GTK_WIDGET(ladspa_bridge));
 }

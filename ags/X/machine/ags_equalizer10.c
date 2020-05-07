@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,10 +29,17 @@ void ags_equalizer10_connectable_interface_init(AgsConnectableInterface *connect
 void ags_equalizer10_init(AgsEqualizer10 *equalizer10);
 void ags_equalizer10_finalize(GObject *gobject);
 
-void ags_equalizer10_map_recall(AgsMachine *machine);
-
 void ags_equalizer10_connect(AgsConnectable *connectable);
 void ags_equalizer10_disconnect(AgsConnectable *connectable);
+
+void ags_equalizer10_resize_audio_channels(AgsMachine *machine,
+					   guint audio_channels, guint audio_channels_old,
+					   gpointer data);
+void ags_equalizer10_resize_pads(AgsMachine *machine, GType channel_type,
+				 guint pads, guint pads_old,
+				 gpointer data);
+
+void ags_equalizer10_map_recall(AgsMachine *machine);
 
 /**
  * SECTION:ags_equalizer10
@@ -133,8 +140,20 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
 	       "min-input-pads", 1,
 	       NULL);
 
+  g_signal_connect_after(G_OBJECT(equalizer10), "resize-audio-channels",
+			 G_CALLBACK(ags_equalizer10_resize_audio_channels), NULL);
+  
+  g_signal_connect_after(G_OBJECT(equalizer10), "resize-pads",
+			 G_CALLBACK(ags_equalizer10_resize_pads), NULL);
+
   equalizer10->name = NULL;
   equalizer10->xml_type = "ags-equalizer10";
+  
+  equalizer10->mapped_output_pad = 0;
+  equalizer10->mapped_input_pad = 0;
+
+  equalizer10->eq10_play_container = ags_recall_container_new();
+  equalizer10->eq10_recall_container = ags_recall_container_new();
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE,
 				  0);
@@ -475,6 +494,15 @@ ags_equalizer10_finalize(GObject *gobject)
 
   equalizer10 = (AgsEqualizer10 *) gobject;
 
+  g_object_disconnect(G_OBJECT(equalizer10),
+		      "any_signal::resize-audio-channels",
+		      G_CALLBACK(ags_equalizer10_resize_audio_channels),
+		      NULL,
+		      "any_signal::resize-pads",
+		      G_CALLBACK(ags_equalizer10_resize_pads),
+		      NULL,
+		      NULL);
+
   g_list_free_full(equalizer10->peak_28hz_play_port,
 		   g_object_unref);
 
@@ -553,11 +581,7 @@ ags_equalizer10_connect(AgsConnectable *connectable)
 
   equalizer10 = AGS_EQUALIZER10(connectable);
 
-  g_signal_connect_after(equalizer10, "resize-audio-channels",
-			 G_CALLBACK(ags_equalizer10_resize_audio_channels_callback), NULL);
-  
-  g_signal_connect_after(equalizer10, "resize-pads",
-			 G_CALLBACK(ags_equalizer10_resize_pads_callback), NULL);
+  ags_equalizer10_remap_port(equalizer10);
 
   /* controls */
   g_signal_connect_after(equalizer10->peak_28hz, "value-changed",
@@ -606,18 +630,6 @@ ags_equalizer10_disconnect(AgsConnectable *connectable)
   }
 
   equalizer10 = AGS_EQUALIZER10(connectable);
-
-  g_object_disconnect(equalizer10,
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_equalizer10_resize_audio_channels_callback),
-		      NULL,
-		      NULL);
-
-  g_object_disconnect(equalizer10,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_equalizer10_resize_pads_callback),
-		      NULL,
-		      NULL);
 
   /* controls */
   g_object_disconnect(equalizer10->peak_28hz,
@@ -691,10 +703,221 @@ ags_equalizer10_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_equalizer10_map_recall(AgsMachine *machine)
+ags_equalizer10_resize_audio_channels(AgsMachine *machine,
+				      guint audio_channels, guint audio_channels_old,
+				      gpointer data)
+{
+  AgsEqualizer10 *equalizer10;
+
+  AgsAudio *audio;
+  
+  guint output_pads, input_pads;
+
+  equalizer10 = (AgsEqualizer10 *) machine;  
+
+  audio = machine->audio;
+
+  /* get some fields */
+  g_object_get(audio,
+	       "output-pads", &output_pads,
+	       "input-pads", &input_pads,
+	       NULL);
+  
+  /* check available */
+  if(input_pads == 0 &&
+     output_pads == 0){
+    return;
+  }
+
+  if(audio_channels > audio_channels_old){
+    /* recall */
+    if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
+      ags_equalizer10_input_map_recall(equalizer10,
+				       audio_channels_old,
+				       0);
+
+      ags_equalizer10_output_map_recall(equalizer10,
+					audio_channels_old,
+					0);
+    }
+  }
+}
+
+void
+ags_equalizer10_resize_pads(AgsMachine *machine, GType type,
+			    guint pads, guint pads_old,
+			    gpointer data)
 {
   AgsEqualizer10 *equalizer10;
   
+  AgsAudio *audio;
+  
+  guint audio_channels;
+  gboolean grow;
+
+  equalizer10 = (AgsEqualizer10 *) machine;
+
+  audio = machine->audio;
+
+  /* get some fields */
+  g_object_get(audio,
+	       "audio-channels", &audio_channels,
+	       NULL);
+  
+  /* check available */
+  if(pads == pads_old ||
+     audio_channels == 0){
+    return;
+  }
+
+  if(pads_old < pads){
+    grow = TRUE;
+  }else{
+    grow = FALSE;
+  }
+  
+  if(g_type_is_a(type, AGS_TYPE_INPUT)){
+    if(grow){      
+      /* recall */
+      if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
+	ags_equalizer10_input_map_recall(equalizer10,
+					 0,
+					 pads_old);
+      }
+    }else{
+      equalizer10->mapped_input_pad = pads;
+    }
+  }else{
+    if(grow){
+      /* recall */
+      if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
+	ags_equalizer10_output_map_recall(equalizer10,
+					  0,
+					  pads_old);
+      }
+    }else{
+      equalizer10->mapped_output_pad = pads;
+    }
+  }
+}
+
+void
+ags_equalizer10_map_recall(AgsMachine *machine)
+{  
+  AgsEqualizer10 *equalizer10;
+  
+  AgsAudio *audio;
+
+  GList *start_recall;
+
+  gint position;
+  
+  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
+     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
+    return;
+  }
+
+  equalizer10 = (AgsEqualizer10 *) machine;
+
+  audio = machine->audio;
+
+  position = 0;
+  
+  /* add new controls */
+  ags_fx_factory_create(machine->audio,
+			equalizer10->eq10_play_container, equalizer10->eq10_recall_container,
+			"ags-fx-eq10",
+			NULL,
+			NULL,
+			0, 0,
+			0, 0,
+			position,
+			(AGS_FX_FACTORY_ADD), 0);
+
+  /* depending on destination */
+  ags_equalizer10_input_map_recall(equalizer10,
+				   0,
+				   0);
+
+  /* depending on destination */
+  ags_equalizer10_output_map_recall(equalizer10,
+				    0,
+				    0);
+
+  /* call parent */
+  AGS_MACHINE_CLASS(ags_equalizer10_parent_class)->map_recall(machine);
+}
+
+void
+ags_equalizer10_input_map_recall(AgsEqualizer10 *equalizer10,
+				 guint audio_channel_start,
+				 guint input_pad_start)
+{
+  AgsAudio *audio;
+
+  GList *start_recall;
+
+  gint position;
+  guint input_pads;
+  guint audio_channels;
+
+  if(equalizer10->mapped_input_pad > input_pad_start){
+    return;
+  }
+
+  audio = AGS_MACHINE(equalizer10)->audio;
+
+  position = 0;
+
+  input_pads = 0;
+  audio_channels = 0;
+
+  /* get some fields */
+  g_object_get(audio,
+	       "input-pads", &input_pads,
+	       "audio-channels", &audio_channels,
+	       NULL);
+
+  /* add to effect bridge */
+  ags_fx_factory_create(AGS_MACHINE(equalizer10)->audio,
+			equalizer10->eq10_play_container, equalizer10->eq10_recall_container,
+			"ags-fx-eq10",
+			NULL,
+			NULL,
+			audio_channel_start, audio_channels,
+			input_pad_start, input_pads,
+			position,
+			(AGS_FX_FACTORY_REMAP), 0);
+  
+  equalizer10->mapped_input_pad = input_pads;
+}
+
+void
+ags_equalizer10_output_map_recall(AgsEqualizer10 *equalizer10,
+				  guint audio_channel_start,
+				  guint output_pad_start)
+{
+  AgsAudio *audio;
+
+  guint output_pads;
+
+  if(equalizer10->mapped_output_pad > output_pad_start){
+    return;
+  }
+
+  audio = AGS_MACHINE(equalizer10)->audio;
+
+  /* get some fields */
+  g_object_get(audio,
+	       "output-pads", &output_pads,
+	       NULL);
+
+  equalizer10->mapped_output_pad = output_pads;
+}
+
+void
+ags_equalizer10_remap_port(AgsEqualizer10 *equalizer10)
+{
   AgsAudio *audio;
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
@@ -702,9 +925,7 @@ ags_equalizer10_map_recall(AgsMachine *machine)
   guint audio_channels;
   guint i;
 
-  equalizer10 = (AgsEqualizer10 *) machine;
-  
-  audio = machine->audio;
+  audio = AGS_MACHINE(equalizer10)->audio;
   
   /* get some fields */
   g_object_get(audio,
@@ -712,25 +933,112 @@ ags_equalizer10_map_recall(AgsMachine *machine)
 	       "input", &start_input,
 	       NULL);
 
-  /* ags-eq10 */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-eq10",
-			    0, audio_channels,
-			    0, 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* destroy old */
+  g_list_free_full(equalizer10->peak_28hz_play_port,
+		   (GDestroyNotify) g_object_unref);
 
+  g_list_free_full(equalizer10->peak_28hz_recall_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_56hz_play_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_56hz_recall_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_112hz_play_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_112hz_recall_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_224hz_play_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_224hz_recall_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_448hz_play_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_448hz_recall_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_896hz_play_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_896hz_recall_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_1792hz_play_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_1792hz_recall_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_3584hz_play_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_3584hz_recall_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_7168hz_play_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_7168hz_recall_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_14336hz_play_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->peak_14336hz_recall_port,
+		   (GDestroyNotify) g_object_unref);
+  
+  g_list_free_full(equalizer10->pressure_play_port,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(equalizer10->pressure_recall_port,
+		   (GDestroyNotify) g_object_unref);
+
+  equalizer10->peak_28hz_play_port = NULL;
+  equalizer10->peak_28hz_recall_port = NULL;
+
+  equalizer10->peak_56hz_play_port = NULL;
+  equalizer10->peak_56hz_recall_port = NULL;
+
+  equalizer10->peak_112hz_play_port = NULL;
+  equalizer10->peak_112hz_recall_port = NULL;
+
+  equalizer10->peak_224hz_play_port = NULL;
+  equalizer10->peak_224hz_recall_port = NULL;
+
+  equalizer10->peak_448hz_play_port = NULL;
+  equalizer10->peak_448hz_recall_port = NULL;
+
+  equalizer10->peak_896hz_play_port = NULL;
+  equalizer10->peak_896hz_recall_port = NULL;
+
+  equalizer10->peak_1792hz_play_port = NULL;
+  equalizer10->peak_1792hz_recall_port = NULL;
+
+  equalizer10->peak_3584hz_play_port = NULL;
+  equalizer10->peak_3584hz_recall_port = NULL;
+
+  equalizer10->peak_7168hz_play_port = NULL;
+  equalizer10->peak_7168hz_recall_port = NULL;
+
+  equalizer10->peak_14336hz_play_port = NULL;
+  equalizer10->peak_14336hz_recall_port = NULL;
+
+  equalizer10->pressure_play_port = NULL;
+  equalizer10->pressure_recall_port = NULL;
+
+  /* prepend new */
   channel = start_input;
 
   if(channel != NULL){
     g_object_ref(channel);
   }
-  
-  next_channel = NULL;
   
   for(i = 0; i < audio_channels && channel != NULL; i++){
     AgsPort *port;
@@ -991,12 +1299,9 @@ ags_equalizer10_map_recall(AgsMachine *machine)
     g_object_unref(start_input);
   }
 
-  if(next_channel != NULL){
-    g_object_unref(next_channel);
+  if(channel != NULL){
+    g_object_unref(channel);
   }
-  
-  /* call parent */
-  AGS_MACHINE_CLASS(ags_equalizer10_parent_class)->map_recall(machine);
 }
 
 AgsPort*

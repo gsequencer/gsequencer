@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,14 +34,6 @@
 G_BEGIN_DECLS
 
 void ags_equalizer10_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsEqualizer10 *equalizer10);
-
-void ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
-						    guint audio_channels, guint audio_channels_old,
-						    gpointer data);
-void ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
-					  GType channel_type,
-					  guint pads, guint pads_old,
-					  gpointer data);
 
 void ags_equalizer10_peak_28hz_callback(GtkRange *range,
 					AgsEqualizer10 *equalizer10);

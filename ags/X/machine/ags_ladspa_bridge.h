@@ -67,8 +67,8 @@ struct _AgsLadspaBridge
 
   gchar *xml_type;
   
-  guint mapped_output;
-  guint mapped_input;
+  guint mapped_output_pad;
+  guint mapped_input_pad;
 
   AgsRecallContainer *ladspa_play_container;
   AgsRecallContainer *ladspa_recall_container;
@@ -84,8 +84,6 @@ struct _AgsLadspaBridgeClass
 };
 
 GType ags_ladspa_bridge_get_type(void);
-
-void ags_ladspa_bridge_load(AgsLadspaBridge *ladspa_bridge);
 
 AgsLadspaBridge* ags_ladspa_bridge_new(GObject *soundcard,
 				       gchar *filename,

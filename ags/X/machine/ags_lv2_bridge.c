@@ -129,6 +129,7 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
 {
   AgsMachineClass *machine;
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_lv2_bridge_parent_class = g_type_class_peek_parent(lv2_bridge);

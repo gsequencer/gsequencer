@@ -44,6 +44,15 @@ void ags_ladspa_bridge_finalize(GObject *gobject);
 void ags_ladspa_bridge_connect(AgsConnectable *connectable);
 void ags_ladspa_bridge_disconnect(AgsConnectable *connectable);
 
+void ags_ladspa_bridge_resize_audio_channels(AgsMachine *machine,
+					     guint audio_channels, guint audio_channels_old,
+					     gpointer data);
+void ags_ladspa_bridge_resize_pads(AgsMachine *machine, GType channel_type,
+				   guint pads, guint pads_old,
+				   gpointer data);
+
+void ags_ladspa_bridge_map_recall(AgsMachine *machine);
+
 /**
  * SECTION:ags_ladspa_bridge
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
@@ -108,7 +117,9 @@ ags_ladspa_bridge_get_type(void)
 void
 ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
 {
+  AgsMachineClass *machine;
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_ladspa_bridge_parent_class = g_type_class_peek_parent(ladspa_bridge);
@@ -171,6 +182,11 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
   g_object_class_install_property(gobject,
 				  PROP_INDEX,
 				  param_spec);
+
+  /* AgsMachine */
+  machine = (AgsMachineClass *) ladspa_bridge;
+
+  machine->map_recall = ags_ladspa_bridge_map_recall;
 }
 
 void
@@ -202,6 +218,12 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 	       "min-input-pads", 1,
 	       NULL);
 
+  g_signal_connect_after(G_OBJECT(ladspa_bridge), "resize-audio-channels",
+			 G_CALLBACK(ags_ladspa_bridge_resize_audio_channels), NULL);
+  
+  g_signal_connect_after(G_OBJECT(ladspa_bridge), "resize-pads",
+			 G_CALLBACK(ags_ladspa_bridge_resize_pads), NULL);
+
   ladspa_bridge->flags = 0;
 
   ladspa_bridge->name = NULL;
@@ -211,8 +233,8 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 
   ladspa_bridge->xml_type = "ags-ladspa-bridge";
   
-  ladspa_bridge->mapped_output = 0;
-  ladspa_bridge->mapped_input = 0;
+  ladspa_bridge->mapped_output_pad = 0;
+  ladspa_bridge->mapped_input_pad = 0;
 
   ladspa_bridge->ladspa_play_container = ags_recall_container_new();
   ladspa_bridge->ladspa_recall_container = ags_recall_container_new();
@@ -256,65 +278,65 @@ ags_ladspa_bridge_set_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_FILENAME:
-    {
-      gchar *filename;
+  {
+    gchar *filename;
 
-      filename = g_value_get_string(value);
+    filename = g_value_get_string(value);
 
-      if(filename == ladspa_bridge->filename){
-	return;
-      }
-
-      if(ladspa_bridge->filename != NULL){
-	g_free(ladspa_bridge->filename);
-      }
-
-      if(filename != NULL){
-	if(!g_file_test(filename,
-			G_FILE_TEST_EXISTS)){
-	  AgsWindow *window;
-
-	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ladspa_bridge);
-
-	  ags_window_show_error(window,
-				g_strdup_printf("Plugin file not present %s",
-						filename));
-	}
-      }
-      
-      ladspa_bridge->filename = g_strdup(filename);
+    if(filename == ladspa_bridge->filename){
+      return;
     }
-    break;
+
+    if(ladspa_bridge->filename != NULL){
+      g_free(ladspa_bridge->filename);
+    }
+
+    if(filename != NULL){
+      if(!g_file_test(filename,
+		      G_FILE_TEST_EXISTS)){
+	AgsWindow *window;
+
+	window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ladspa_bridge);
+
+	ags_window_show_error(window,
+			      g_strdup_printf("Plugin file not present %s",
+					      filename));
+      }
+    }
+      
+    ladspa_bridge->filename = g_strdup(filename);
+  }
+  break;
   case PROP_EFFECT:
-    {
-      gchar *effect;
+  {
+    gchar *effect;
       
-      effect = g_value_get_string(value);
+    effect = g_value_get_string(value);
 
-      if(effect == ladspa_bridge->effect){
-	return;
-      }
-
-      if(ladspa_bridge->effect != NULL){
-	g_free(ladspa_bridge->effect);
-      }
-
-      ladspa_bridge->effect = g_strdup(effect);
+    if(effect == ladspa_bridge->effect){
+      return;
     }
-    break;
+
+    if(ladspa_bridge->effect != NULL){
+      g_free(ladspa_bridge->effect);
+    }
+
+    ladspa_bridge->effect = g_strdup(effect);
+  }
+  break;
   case PROP_INDEX:
-    {
-      unsigned long effect_index;
+  {
+    unsigned long effect_index;
       
-      effect_index = g_value_get_ulong(value);
+    effect_index = g_value_get_ulong(value);
 
-      if(effect_index == ladspa_bridge->effect_index){
-	return;
-      }
-
-      ladspa_bridge->effect_index = effect_index;
+    if(effect_index == ladspa_bridge->effect_index){
+      return;
     }
-    break;
+
+    ladspa_bridge->effect_index = effect_index;
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -333,20 +355,20 @@ ags_ladspa_bridge_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_FILENAME:
-    {
-      g_value_set_string(value, ladspa_bridge->filename);
-    }
-    break;
+  {
+    g_value_set_string(value, ladspa_bridge->filename);
+  }
+  break;
   case PROP_EFFECT:
-    {
-      g_value_set_string(value, ladspa_bridge->effect);
-    }
-    break;
+  {
+    g_value_set_string(value, ladspa_bridge->effect);
+  }
+  break;
   case PROP_INDEX:
-    {
-      g_value_set_ulong(value, ladspa_bridge->effect_index);
-    }
-    break;
+  {
+    g_value_set_ulong(value, ladspa_bridge->effect_index);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -359,6 +381,15 @@ ags_ladspa_bridge_finalize(GObject *gobject)
   AgsLadspaBridge *ladspa_bridge;
 
   ladspa_bridge = (AgsLadspaBridge *) gobject;
+  
+  g_object_disconnect(G_OBJECT(ladspa_bridge),
+		      "any_signal::resize-audio-channels",
+		      G_CALLBACK(ags_ladspa_bridge_resize_audio_channels),
+		      NULL,
+		      "any_signal::resize-pads",
+		      G_CALLBACK(ags_ladspa_bridge_resize_pads),
+		      NULL,
+		      NULL);
   
   g_free(ladspa_bridge->filename);
   g_free(ladspa_bridge->effect);
@@ -388,41 +419,218 @@ ags_ladspa_bridge_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_ladspa_bridge_load(AgsLadspaBridge *ladspa_bridge)
+ags_ladspa_bridge_resize_audio_channels(AgsMachine *machine,
+				      guint audio_channels, guint audio_channels_old,
+				      gpointer data)
 {
+  AgsLadspaBridge *ladspa_bridge;
+
+  AgsAudio *audio;
+  
+  guint output_pads, input_pads;
+
+  ladspa_bridge = (AgsLadspaBridge *) machine;  
+
+  audio = machine->audio;
+
+  /* get some fields */
+  g_object_get(audio,
+	       "output-pads", &output_pads,
+	       "input-pads", &input_pads,
+	       NULL);
+  
+  /* check available */
+  if(input_pads == 0 &&
+     output_pads == 0){
+    return;
+  }
+
+  if(audio_channels > audio_channels_old){
+    /* recall */
+    if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
+      ags_ladspa_bridge_input_map_recall(ladspa_bridge,
+				       audio_channels_old,
+				       0);
+
+      ags_ladspa_bridge_output_map_recall(ladspa_bridge,
+					audio_channels_old,
+					0);
+    }
+  }
+}
+
+void
+ags_ladspa_bridge_resize_pads(AgsMachine *machine, GType type,
+			    guint pads, guint pads_old,
+			    gpointer data)
+{
+  AgsLadspaBridge *ladspa_bridge;
+  
+  AgsAudio *audio;
+  
+  guint audio_channels;
+  gboolean grow;
+
+  ladspa_bridge = (AgsLadspaBridge *) machine;
+
+  audio = machine->audio;
+
+  /* get some fields */
+  g_object_get(audio,
+	       "audio-channels", &audio_channels,
+	       NULL);
+  
+  /* check available */
+  if(pads == pads_old ||
+     audio_channels == 0){
+    return;
+  }
+
+  if(pads_old < pads){
+    grow = TRUE;
+  }else{
+    grow = FALSE;
+  }
+  
+  if(g_type_is_a(type, AGS_TYPE_INPUT)){
+    if(grow){      
+      /* recall */
+      if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
+	ags_ladspa_bridge_input_map_recall(ladspa_bridge,
+					 0,
+					 pads_old);
+      }
+    }else{
+      ladspa_bridge->mapped_input_pad = pads;
+    }
+  }else{
+    if(grow){
+      /* recall */
+      if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
+	ags_ladspa_bridge_output_map_recall(ladspa_bridge,
+					  0,
+					  pads_old);
+      }
+    }else{
+      ladspa_bridge->mapped_output_pad = pads;
+    }
+  }
+}
+
+void
+ags_ladspa_bridge_map_recall(AgsMachine *machine)
+{  
+  AgsLadspaBridge *ladspa_bridge;
+  
+  AgsAudio *audio;
+
+  GList *start_recall;
+
+  gint position;
+  
+  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
+     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
+    return;
+  }
+
+  ladspa_bridge = (AgsLadspaBridge *) machine;
+
+  audio = machine->audio;
+
+  position = 0;
+  
+  /* add new controls */
+  ags_effect_bulk_add_plugin(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(machine->bridge)->bulk_input),
+			     NULL,
+			     ladspa_bridge->ladspa_play_container, ladspa_bridge->ladspa_recall_container,
+			     "ags-fx-ladspa",
+			     ladspa_bridge->filename,
+			     ladspa_bridge->effect,
+			     0, 0,
+			     0, 0,
+			     position,
+			     (AGS_FX_FACTORY_ADD), 0);
+
+  /* depending on destination */
+  ags_ladspa_bridge_input_map_recall(ladspa_bridge,
+				     0,
+				     0);
+
+  /* depending on destination */
+  ags_ladspa_bridge_output_map_recall(ladspa_bridge,
+				      0,
+				      0);
+
+  /* call parent */
+  AGS_MACHINE_CLASS(ags_ladspa_bridge_parent_class)->map_recall(machine);
+}
+
+void
+ags_ladspa_bridge_input_map_recall(AgsLadspaBridge *ladspa_bridge,
+				   guint audio_channel_start,
+				   guint input_pad_start)
+{
+  AgsAudio *audio;
+
+  GList *start_recall;
+
   gint position;
   guint input_pads;
   guint audio_channels;
 
-  if(!AGS_IS_LADSPA_BRIDGE(ladspa_bridge)){
+  if(ladspa_bridge->mapped_input_pad > input_pad_start){
     return;
   }
-  
-  /* empty */
-#ifdef AGS_DEBUG
-  g_message("%s %s",ladspa_bridge->filename, ladspa_bridge->effect);
-#endif
+
+  audio = AGS_MACHINE(ladspa_bridge)->audio;
 
   position = 0;
 
   input_pads = 0;
   audio_channels = 0;
 
-  g_object_get(AGS_MACHINE(ladspa_bridge)->audio,
+  /* get some fields */
+  g_object_get(audio,
 	       "input-pads", &input_pads,
 	       "audio-channels", &audio_channels,
 	       NULL);
-  
+
+  /* add to effect bridge */
   ags_effect_bulk_add_plugin((AgsEffectBulk *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
 			     NULL,
 			     ladspa_bridge->ladspa_play_container, ladspa_bridge->ladspa_recall_container,
 			     "ags-fx-ladspa",
 			     ladspa_bridge->filename,
 			     ladspa_bridge->effect,
-			     0, audio_channels,
-			     0, input_pads,
+			     audio_channel_start, audio_channels,
+			     input_pad_start, input_pads,
 			     position,
-			     (AGS_FX_FACTORY_ADD), 0);
+			     (AGS_FX_FACTORY_REMAP), 0);
+  
+  ladspa_bridge->mapped_input_pad = input_pads;
+}
+
+void
+ags_ladspa_bridge_output_map_recall(AgsLadspaBridge *ladspa_bridge,
+				    guint audio_channel_start,
+				    guint output_pad_start)
+{
+  AgsAudio *audio;
+
+  guint output_pads;
+
+  if(ladspa_bridge->mapped_output_pad > output_pad_start){
+    return;
+  }
+
+  audio = AGS_MACHINE(ladspa_bridge)->audio;
+
+  /* get some fields */
+  g_object_get(audio,
+	       "output-pads", &output_pads,
+	       NULL);
+
+  ladspa_bridge->mapped_output_pad = output_pads;
 }
 
 /**

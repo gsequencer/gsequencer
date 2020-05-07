@@ -3072,7 +3072,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   }
 
   if(AGS_IS_LADSPA_BRIDGE(gobject)){
-    ags_ladspa_bridge_load((AgsLadspaBridge *) gobject);
+    //empty
   }else if(AGS_IS_DSSI_BRIDGE(gobject)){
     ags_dssi_bridge_load((AgsDssiBridge *) gobject);
   }else if(AGS_IS_LIVE_DSSI_BRIDGE(gobject)){
