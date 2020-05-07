@@ -377,7 +377,14 @@ ags_drum_init(AgsDrum *drum)
 
 void
 ags_drum_finalize(GObject *gobject)
-{  
+{
+  g_object_disconnect(gobject,
+		      "any_signal::resize-pads",
+		      G_CALLBACK(ags_drum_resize_pads),
+		      NULL,
+		      NULL);
+
+  /* call parent */
   G_OBJECT_CLASS(ags_drum_parent_class)->finalize(gobject);
 }
 
@@ -515,6 +522,8 @@ ags_drum_show_all(GtkWidget *widget)
 void
 ags_drum_map_recall(AgsMachine *machine)
 {
+  AgsDrum *drum;
+  
   AgsAudio *audio;
 
   GList *start_recall, *recall;
@@ -525,6 +534,8 @@ ags_drum_map_recall(AgsMachine *machine)
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
+
+  drum = AGS_DRUM(machine);
   
   audio = machine->audio;
 
@@ -532,7 +543,7 @@ ags_drum_map_recall(AgsMachine *machine)
   
   /* ags-fx-playback */
   start_recall = ags_fx_factory_create(audio,
-				       AGS_DRUM(machine)->playback_play_container, AGS_DRUM(machine)->playback_recall_container,
+				       drum->playback_play_container, drum->playback_recall_container,
 				       "ags-fx-playback",
 				       NULL,
 				       NULL,
@@ -547,7 +558,7 @@ ags_drum_map_recall(AgsMachine *machine)
 
   /* ags-fx-pattern */
   start_recall = ags_fx_factory_create(audio,
-				       AGS_DRUM(machine)->pattern_play_container, AGS_DRUM(machine)->pattern_recall_container,
+				       drum->pattern_play_container, drum->pattern_recall_container,
 				       "ags-fx-pattern",
 				       NULL,
 				       NULL,
@@ -562,7 +573,7 @@ ags_drum_map_recall(AgsMachine *machine)
 
   /* ags-fx-notation */
   start_recall = ags_fx_factory_create(audio,
-				       AGS_DRUM(machine)->notation_play_container, AGS_DRUM(machine)->notation_recall_container,
+				       drum->notation_play_container, drum->notation_recall_container,
 				       "ags-fx-notation",
 				       NULL,
 				       NULL,
@@ -577,7 +588,7 @@ ags_drum_map_recall(AgsMachine *machine)
 
   /* ags-fx-volume */
   start_recall = ags_fx_factory_create(audio,
-				       AGS_DRUM(machine)->volume_play_container, AGS_DRUM(machine)->volume_recall_container,
+				       drum->volume_play_container, drum->volume_recall_container,
 				       "ags-fx-volume",
 				       NULL,
 				       NULL,
@@ -592,7 +603,7 @@ ags_drum_map_recall(AgsMachine *machine)
 
   /* ags-fx-envelope */
   start_recall = ags_fx_factory_create(audio,
-				       AGS_DRUM(machine)->envelope_play_container, AGS_DRUM(machine)->envelope_recall_container,
+				       drum->envelope_play_container, drum->envelope_recall_container,
 				       "ags-fx-envelope",
 				       NULL,
 				       NULL,
@@ -607,7 +618,7 @@ ags_drum_map_recall(AgsMachine *machine)
 
   /* ags-fx-peak */
   start_recall = ags_fx_factory_create(audio,
-				       AGS_DRUM(machine)->peak_play_container, AGS_DRUM(machine)->peak_recall_container,
+				       drum->peak_play_container, drum->peak_recall_container,
 				       "ags-fx-peak",
 				       NULL,
 				       NULL,
@@ -622,7 +633,7 @@ ags_drum_map_recall(AgsMachine *machine)
 
   /* ags-fx-buffer */
   start_recall = ags_fx_factory_create(audio,
-				       AGS_DRUM(machine)->buffer_play_container, AGS_DRUM(machine)->buffer_recall_container,
+				       drum->buffer_play_container, drum->buffer_recall_container,
 				       "ags-fx-buffer",
 				       NULL,
 				       NULL,

@@ -739,6 +739,8 @@ ags_equalizer10_resize_audio_channels(AgsMachine *machine,
       ags_equalizer10_output_map_recall(equalizer10,
 					audio_channels_old,
 					0);
+
+      ags_equalizer10_remap_port(equalizer10);
     }
   }
 }
@@ -783,9 +785,13 @@ ags_equalizer10_resize_pads(AgsMachine *machine, GType type,
 	ags_equalizer10_input_map_recall(equalizer10,
 					 0,
 					 pads_old);
+
+	ags_equalizer10_remap_port(equalizer10);
       }
     }else{
       equalizer10->mapped_input_pad = pads;
+
+      ags_equalizer10_remap_port(equalizer10);
     }
   }else{
     if(grow){
