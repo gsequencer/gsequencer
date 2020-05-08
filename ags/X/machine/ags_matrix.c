@@ -408,26 +408,11 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
 {
   AgsMatrix *matrix;
 
-  AgsAudio *audio;
-  AgsChannel *start_output, *start_input;
-  AgsChannel *channel, *next_channel, *nth_channel;
-  AgsAudioSignal *audio_signal;
-  
-  guint i, j;
   gboolean grow;
 
   matrix = (AgsMatrix *) machine;
-
-  audio = machine->audio;
-  
-  if(pads == pads_old){
-    return;
-  }
   
   /* set size request if needed */
-  start_output = NULL;
-  start_input = NULL;
-  
   if(g_type_is_a(type, AGS_TYPE_INPUT)){
     gtk_adjustment_set_upper(gtk_range_get_adjustment(GTK_RANGE(matrix->cell_pattern->vscrollbar)),
 			     (double) pads);
@@ -451,10 +436,6 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
   }
   
   if(g_type_is_a(type, AGS_TYPE_INPUT)){
-    g_object_get(audio,
-		 "input", &start_input,
-		 NULL);
-    
     if(grow){
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
 	ags_matrix_input_map_recall(matrix,
@@ -463,69 +444,14 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
     }else{
       matrix->mapped_input_pad = pads;
     }
-
-    if(start_input != NULL){
-      g_object_unref(start_input);
-    }
   }else{
     if(grow){
-      g_object_get(audio,
-		   "output", &start_output,
-		   NULL);
-
-      nth_channel = ags_channel_nth(start_output,
-				    pads_old);
-
-      channel = nth_channel;
-      
-      while(channel != NULL){
-	AgsRecycling *recycling;
-	AgsAudioSignal *audio_signal;
-
-	GObject *output_soundcard;
-
-	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_SEQUENCER |
-						AGS_SOUND_ABILITY_NOTATION));
-	
-	g_object_get(audio,
-		     "output-soundcard", &output_soundcard,
-		     NULL);
-
-	/* get recycling */
-	g_object_get(channel,
-		     "first-recycling", &recycling,
-		     NULL);
-
-	/* instantiate template audio signal */
-	audio_signal = ags_audio_signal_new(output_soundcard,
-					    (GObject *) recycling,
-					    NULL);
-	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	ags_recycling_add_audio_signal(recycling,
-				       audio_signal);
-
-	g_object_unref(output_soundcard);
-	
-	g_object_unref(recycling);
-	
-	/* iterate */
-	next_channel = ags_channel_next(channel);
-
-	g_object_unref(channel);
-
-	channel = next_channel;
-      }
-
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
 	ags_matrix_output_map_recall(matrix,
 				     pads_old);
       }
     }else{
       matrix->mapped_output_pad = pads;
-    }
-
-    if(start_output != NULL){
-      g_object_unref(start_output);
     }
   }
 }

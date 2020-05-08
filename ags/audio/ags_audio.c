@@ -5498,7 +5498,7 @@ ags_audio_set_audio_channels_grow(AgsAudio *audio,
   
   /* get audio mutex */
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
-
+  
   /* get some fields */  
   g_object_get(audio,
 	       "samplerate", &samplerate,
@@ -5509,7 +5509,7 @@ ags_audio_set_audio_channels_grow(AgsAudio *audio,
 	       "input-soundcard", &input_soundcard,
 	       NULL);
   
-  if(channel_type == AGS_TYPE_OUTPUT){
+  if(g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
     g_object_get(audio,
 		 "output", &start,
 		 "output-pads", &pads,
@@ -5548,12 +5548,12 @@ ags_audio_set_audio_channels_grow(AgsAudio *audio,
 					    "format", format,
 					    NULL);
       g_object_ref(channel);
-
+      
       playback = (AgsPlayback *) channel->playback;
       g_object_set(playback,
 		   "playback-domain", playback_domain,
 		   NULL);
-	
+
       if(add_pattern){
 	AgsPattern *pattern;
 
@@ -6238,6 +6238,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
 	  g_object_unref(playback);
 	  
+	  ags_channel_set_ability_flags(channel, ability_flags);
+	  
 	  /* iterate */
 	  next_channel = ags_channel_next(channel);
 
@@ -6281,6 +6283,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 					   (GObject *) playback, AGS_TYPE_INPUT);
 
 	  g_object_unref(playback);
+
+	  ags_channel_set_ability_flags(channel, ability_flags);
 
 	  /* iterate */
 	  next_channel = ags_channel_next(channel);
@@ -6624,7 +6628,7 @@ ags_audio_set_pads_grow(AgsAudio *audio,
 	       "playback-domain", &playback_domain,
 	       NULL);
   
-  if(channel_type == AGS_TYPE_OUTPUT){
+  if(g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
     g_object_get(audio,
 		 "output", &start,
 		 NULL);
@@ -7267,6 +7271,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
 	    g_object_unref(playback);
 	    
+	    ags_channel_set_ability_flags(channel, ability_flags);
+      
 	    /* iterate */
 	    next_channel = ags_channel_next(channel);
 
@@ -7492,6 +7498,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	
 	    g_object_unref(playback);
 	    
+	    ags_channel_set_ability_flags(channel, ability_flags);
+      
 	    /* iterate */
 	    next_channel = ags_channel_next(channel);
 

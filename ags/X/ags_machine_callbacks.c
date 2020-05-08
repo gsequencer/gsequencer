@@ -707,9 +707,6 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
       channel = next_channel;
       
       while(channel != next_pad){
-	/* ability */
-	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_WAVE));
-
 	/* fx engine */
 	g_object_get(channel,
 		     "playback", &playback,
@@ -775,9 +772,6 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
       channel = next_channel;
       
       while(channel != next_pad){
-	/* ability */
-	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_WAVE));
-
 	/* fx engine */
 	g_object_get(channel,
 		     "playback", &playback,
@@ -913,8 +907,6 @@ ags_machine_resize_pads_callback(AgsMachine *machine,
 				    pads_old);
       
       while(channel != NULL){
-	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_WAVE));
-
 	/* fx engine */
 	g_object_get(channel,
 		     "playback", &playback,
@@ -969,8 +961,6 @@ ags_machine_resize_pads_callback(AgsMachine *machine,
 				    pads_old);
       
       while(channel != NULL){
-	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_WAVE));
-
 	/* fx engine */
 	g_object_get(channel,
 		     "playback", &playback,

@@ -164,37 +164,8 @@ ags_drum_output_line_disconnect(AgsConnectable *connectable)
 void
 ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 {  
-  AgsRecycling *first_recycling;
-  AgsAudioSignal *audio_signal;
-
-  GObject *output_soundcard;
-
   /* call parent */
   AGS_LINE_CLASS(ags_drum_output_line_parent_class)->set_channel(line, channel);
-
-  if(channel != NULL){
-    ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_SEQUENCER |
-					    AGS_SOUND_ABILITY_NOTATION));
-
-    g_object_get(channel,
-		 "output-soundcard", &output_soundcard,
-		 "first-recycling", &first_recycling,
-		 NULL);
-
-    /* instantiate template audio signal */
-    audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
-					(GObject *) first_recycling,
-					NULL);
-    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-    ags_recycling_add_audio_signal(first_recycling,
-				   audio_signal);
-
-    if(output_soundcard != NULL){
-      g_object_unref(output_soundcard);
-    }
-
-    g_object_unref(first_recycling);
-  }
 }
 
 void

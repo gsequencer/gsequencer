@@ -535,6 +535,7 @@ ags_drum_resize_audio_channels(AgsMachine *machine,
 			       guint audio_channels, guint audio_channels_old,
 			       gpointer data)
 {
+  //empty
 }
 
 void
@@ -612,7 +613,7 @@ ags_drum_resize_pads(AgsMachine *machine,
     }
   }else{
     if(pads > pads_old){
-      //nothing
+      //empty
     }
   }
 }
