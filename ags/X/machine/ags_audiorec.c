@@ -41,7 +41,7 @@ void ags_audiorec_map_recall(AgsMachine *machine);
 void ags_audiorec_resize_audio_channels(AgsMachine *machine,
 					guint audio_channels, guint audio_channels_old,
 					gpointer data);
-void ags_audiorec_resize_pads(AgsMachine *machine, GType type,
+void ags_audiorec_resize_pads(AgsMachine *machine, GType channel_type,
 			      guint pads, guint pads_old,
 			      gpointer data);
 
@@ -470,20 +470,11 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 {
   AgsAudiorec *audiorec;
   
-  AgsAudio *audio;
-  AgsPlayback *playback;
-  AgsChannel *start_output;
-  AgsChannel *start_input;
-  AgsChannel *channel, *next_pad, *next_channel;
-
   AgsConfig *config;
-
-  GList *start_recall;
   
   gchar *str;
 
   gdouble gui_scale_factor;  
-  guint output_pads, input_pads;
   guint i;
   
   static const guint staging_program[] = {
@@ -493,21 +484,6 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
   config = ags_config_get_instance();
 
   audiorec = AGS_AUDIOREC(machine);
-  
-  audio = machine->audio;
-
-  start_output = NULL;
-  start_input = NULL;
-  
-  output_pads = 0;
-  input_pads = 0;
-
-  g_object_get(audio,
-	       "output", &start_output,
-	       "input", &start_input,
-	       "input-pads", &input_pads,
-	       "output-pads", &output_pads,
-	       NULL);
 
   /* scale factor */
   gui_scale_factor = 1.0;
@@ -523,143 +499,7 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
     g_free(str);
   }
       
-  if(audio_channels > audio_channels_old){
-    /* AgsOutput */
-    channel = start_output;
-
-    if(channel != NULL){
-      g_object_ref(channel);
-    }
-
-    next_pad = NULL;
-    
-    while(channel != NULL){      
-      /* get some fields */
-      next_pad = ags_channel_next_pad(channel),
-      
-      next_channel = ags_channel_pad_nth(channel,
-					 audio_channels_old);
-
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
-      
-      channel = next_channel;
-      
-      while(channel != next_pad){
-	/* ability */
-	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_WAVE));
-
-	/* fx engine */
-	g_object_get(channel,
-		     "playback", &playback,
-		     NULL);
-
-	if(playback != NULL){
-	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-	    AgsThread *channel_thread;
-	  
-	    channel_thread = ags_playback_get_channel_thread(playback,
-							     i);
-
-	    if(channel_thread != NULL){
-	      ags_channel_thread_set_do_fx_staging(channel_thread, TRUE);
-	      ags_channel_thread_set_staging_program(channel_thread,
-						     staging_program,
-						     1);
-	    
-	      g_object_unref(channel_thread);
-	    }
-	  }
-	
-	  g_object_unref(playback);
-	}
-	
-	/* iterate */
-	next_channel = ags_channel_next(channel);
-
-	g_object_unref(channel);
-
-	channel = next_channel;
-      }
-
-      if(next_pad != NULL){
-	g_object_unref(next_pad);
-      }
-    }
-
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
-
-    /* AgsInput */
-    channel = start_input;
-
-    if(channel != NULL){
-      g_object_ref(channel);
-    }
-
-    next_pad = NULL;
-    
-    while(channel != NULL){      
-      /* get some fields */
-      next_pad = ags_channel_next_pad(channel),
-      
-      next_channel = ags_channel_pad_nth(channel,
-					 audio_channels_old);
-
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
-      
-      channel = next_channel;
-      
-      while(channel != next_pad){
-	/* ability */
-	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_WAVE));
-
-	/* fx engine */
-	g_object_get(channel,
-		     "playback", &playback,
-		     NULL);
-
-	if(playback != NULL){
-	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-	    AgsThread *channel_thread;
-	  
-	    channel_thread = ags_playback_get_channel_thread(playback,
-							     i);
-
-	    if(channel_thread != NULL){
-	      ags_channel_thread_set_do_fx_staging(channel_thread, TRUE);
-	      ags_channel_thread_set_staging_program(channel_thread,
-						     staging_program,
-						     1);
-	    
-	      g_object_unref(channel_thread);
-	    }
-	  }
-	
-	  g_object_unref(playback);
-	}
-	
-	/* iterate */
-	next_channel = ags_channel_next(channel);
-
-	g_object_unref(channel);
-
-	channel = next_channel;
-      }
-
-      if(next_pad != NULL){
-	g_object_unref(next_pad);
-      }
-    }
-
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
-    
+  if(audio_channels > audio_channels_old){    
     /* recall */
     if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
       ags_audiorec_input_map_recall(audiorec,
@@ -705,34 +545,21 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 
     g_list_free(list_start);
   }
-
-  /* unref */
-  if(start_output != NULL){
-    g_object_unref(start_output);
-  }
 }
 
 void
 ags_audiorec_resize_pads(AgsMachine *machine,
-			 GType type,
+			 GType channel_type,
 			 guint pads, guint pads_old,
 			 gpointer data)
 {
   AgsAudiorec *audiorec;
-
-  AgsAudio *audio;
-  AgsPlayback *playback;
-  AgsChannel *start_output;
-  AgsChannel *start_input;
-  AgsChannel *channel, *next_channel;
 
   AgsConfig *config;    
 
   gchar *str;
 
   gdouble gui_scale_factor;  
-  guint audio_channels;
-  guint i;
   
   static const guint staging_program[] = {
     (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
@@ -741,13 +568,6 @@ ags_audiorec_resize_pads(AgsMachine *machine,
   config = ags_config_get_instance();
 
   audiorec = AGS_AUDIOREC(machine);
-
-  audio = machine->audio;
-
-  start_output = NULL;
-  start_input = NULL;
-  
-  audio_channels = 0;
   
   /* scale factor */
   gui_scale_factor = 1.0;
@@ -763,79 +583,8 @@ ags_audiorec_resize_pads(AgsMachine *machine,
     g_free(str);
   }
 
-  if(g_type_is_a(type, AGS_TYPE_INPUT)){
+  if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
     if(pads > pads_old){
-      /* get some fields */
-      g_object_get(audio,
-		   "input", &start_input,
-		   "audio-channels", &audio_channels,
-		   NULL);
-
-      /* AgsOutput */
-      channel = ags_channel_pad_nth(start_input,
-				    pads_old);
-      
-      while(channel != NULL){
-	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_WAVE));
-
-	/* fx engine */
-	g_object_get(channel,
-		     "playback", &playback,
-		     NULL);
-
-	if(playback != NULL){
-	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-	    AgsThread *channel_thread;
-	  
-	    channel_thread = ags_playback_get_channel_thread(playback,
-							     i);
-
-	    if(channel_thread != NULL){
-	      ags_channel_thread_set_do_fx_staging(channel_thread, TRUE);
-	      ags_channel_thread_set_staging_program(channel_thread,
-						     staging_program,
-						     1);
-	    
-	      g_object_unref(channel_thread);
-	    }
-	  }
-	
-	  g_object_unref(playback);
-	}
-	
-	/* iterate */
-	next_channel = ags_channel_next(channel);
-
-	g_object_unref(channel);
-
-	channel = next_channel;
-      }
-
-      if(start_input != NULL){
-	g_object_unref(start_input);
-      }
-
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
-      
-      for(i = 0; i < audio_channels; i++){
-	AgsHIndicator *hindicator;
-
-	hindicator = ags_hindicator_new();
-	g_object_set(hindicator,
-		     "segment-width", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_WIDTH),
-		     "segment-height", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_HEIGHT),
-		     "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
-		     NULL);
-	gtk_box_pack_start((GtkBox *) audiorec->hindicator_vbox,
-			   (GtkWidget *) hindicator,
-			   FALSE, FALSE,
-			   8);
-      }
-
-      gtk_widget_show_all((GtkWidget *) audiorec->hindicator_vbox);
-
       /* depending on destination */
       ags_audiorec_input_map_recall(audiorec,
 				    0,
@@ -858,60 +607,6 @@ ags_audiorec_resize_pads(AgsMachine *machine,
     }
   }else{
     if(pads > pads_old){
-      /* get some fields */
-      g_object_get(audio,
-		   "output", &start_output,
-		   "audio-channels", &audio_channels,
-		   NULL);
-
-      /* AgsOutput */
-      channel = ags_channel_pad_nth(start_output,
-				    pads_old);
-      
-      while(channel != NULL){
-	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_WAVE));
-
-	/* fx engine */
-	g_object_get(channel,
-		     "playback", &playback,
-		     NULL);
-
-	if(playback != NULL){
-	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-	    AgsThread *channel_thread;
-	  
-	    channel_thread = ags_playback_get_channel_thread(playback,
-							     i);
-
-	    if(channel_thread != NULL){
-	      ags_channel_thread_set_do_fx_staging(channel_thread, TRUE);
-	      ags_channel_thread_set_staging_program(channel_thread,
-						     staging_program,
-						     1);
-	    
-	      g_object_unref(channel_thread);
-	    }
-	  }
-	
-	  g_object_unref(playback);
-	}
-	
-	/* iterate */
-	next_channel = ags_channel_next(channel);
-
-	g_object_unref(channel);
-
-	channel = next_channel;
-      }
-
-      if(start_input != NULL){
-	g_object_unref(start_input);
-      }
-
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
-
       /* depending on destination */
       ags_audiorec_output_map_recall(audiorec,
 				     0,

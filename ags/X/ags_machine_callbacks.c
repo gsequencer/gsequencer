@@ -658,10 +658,177 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
 					   guint audio_channels, guint audio_channels_old,
 					   gpointer data)
 {
+  AgsAudio *audio;
+  AgsPlayback *playback;
+  AgsChannel *start_output;
+  AgsChannel *start_input;
+  AgsChannel *channel, *next_pad, *next_channel;
+
   GList *pad_list;
   GList *line_list;
   
   guint i;
+
+  static const guint staging_program[] = {
+    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
+  };
+
+  audio = machine->audio;
+
+  start_output = NULL;
+  start_input = NULL;
+
+  g_object_get(audio,
+	       "output", &start_output,
+	       "input", &start_input,
+	       NULL);
+
+  if(audio_channels > audio_channels_old){
+    /* AgsOutput */
+    channel = start_output;
+
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+
+    next_pad = NULL;
+    
+    while(channel != NULL){      
+      /* get some fields */
+      next_pad = ags_channel_next_pad(channel),
+      
+      next_channel = ags_channel_pad_nth(channel,
+					 audio_channels_old);
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+      
+      channel = next_channel;
+      
+      while(channel != next_pad){
+	/* ability */
+	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_WAVE));
+
+	/* fx engine */
+	g_object_get(channel,
+		     "playback", &playback,
+		     NULL);
+
+	if(playback != NULL){
+	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+	    AgsThread *channel_thread;
+	  
+	    channel_thread = ags_playback_get_channel_thread(playback,
+							     i);
+
+	    if(channel_thread != NULL){
+	      ags_channel_thread_set_do_fx_staging(channel_thread, TRUE);
+	      ags_channel_thread_set_staging_program(channel_thread,
+						     staging_program,
+						     1);
+	    
+	      g_object_unref(channel_thread);
+	    }
+	  }
+	
+	  g_object_unref(playback);
+	}
+	
+	/* iterate */
+	next_channel = ags_channel_next(channel);
+
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
+    }
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+
+    /* AgsInput */
+    channel = start_input;
+
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+
+    next_pad = NULL;
+    
+    while(channel != NULL){      
+      /* get some fields */
+      next_pad = ags_channel_next_pad(channel),
+      
+      next_channel = ags_channel_pad_nth(channel,
+					 audio_channels_old);
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+      
+      channel = next_channel;
+      
+      while(channel != next_pad){
+	/* ability */
+	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_WAVE));
+
+	/* fx engine */
+	g_object_get(channel,
+		     "playback", &playback,
+		     NULL);
+
+	if(playback != NULL){
+	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+	    AgsThread *channel_thread;
+	  
+	    channel_thread = ags_playback_get_channel_thread(playback,
+							     i);
+
+	    if(channel_thread != NULL){
+	      ags_channel_thread_set_do_fx_staging(channel_thread, TRUE);
+	      ags_channel_thread_set_staging_program(channel_thread,
+						     staging_program,
+						     1);
+	    
+	      g_object_unref(channel_thread);
+	    }
+	  }
+	
+	  g_object_unref(playback);
+	}
+	
+	/* iterate */
+	next_channel = ags_channel_next(channel);
+
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
+    }
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+  }
+   
+  /* unref */
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
   
   /* resize */
   if((AGS_MACHINE_CONNECTED & (machine->flags)) != 0){
@@ -706,11 +873,146 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
 }
 
 void
-ags_machine_resize_pads_callback(AgsMachine *machine, GType channel_type,
+ags_machine_resize_pads_callback(AgsMachine *machine,
+				 GType channel_type,
 				 guint pads, guint pads_old,
 				 gpointer data)
 {
+  AgsAudio *audio;
+  AgsPlayback *playback;
+  AgsChannel *start_output;
+  AgsChannel *start_input;
+  AgsChannel *channel, *next_pad, *next_channel;
+
   GList *pad_list;
+
+  guint audio_channels;
+  guint i;
+
+  static const guint staging_program[] = {
+    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
+  };
+
+  audio = machine->audio;
+
+  start_output = NULL;
+  start_input = NULL;
+  
+  audio_channels = 0;
+
+  if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+    if(pads > pads_old){
+      /* get some fields */
+      g_object_get(audio,
+		   "input", &start_input,
+		   "audio-channels", &audio_channels,
+		   NULL);
+
+      /* AgsOutput */
+      channel = ags_channel_pad_nth(start_input,
+				    pads_old);
+      
+      while(channel != NULL){
+	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_WAVE));
+
+	/* fx engine */
+	g_object_get(channel,
+		     "playback", &playback,
+		     NULL);
+
+	if(playback != NULL){
+	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+	    AgsThread *channel_thread;
+	  
+	    channel_thread = ags_playback_get_channel_thread(playback,
+							     i);
+
+	    if(channel_thread != NULL){
+	      ags_channel_thread_set_do_fx_staging(channel_thread, TRUE);
+	      ags_channel_thread_set_staging_program(channel_thread,
+						     staging_program,
+						     1);
+	    
+	      g_object_unref(channel_thread);
+	    }
+	  }
+	
+	  g_object_unref(playback);
+	}
+	
+	/* iterate */
+	next_channel = ags_channel_next(channel);
+
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(start_input != NULL){
+	g_object_unref(start_input);
+      }
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+    }
+  }else{
+    if(pads > pads_old){
+      /* get some fields */
+      g_object_get(audio,
+		   "output", &start_output,
+		   "audio-channels", &audio_channels,
+		   NULL);
+
+      /* AgsOutput */
+      channel = ags_channel_pad_nth(start_output,
+				    pads_old);
+      
+      while(channel != NULL){
+	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_WAVE));
+
+	/* fx engine */
+	g_object_get(channel,
+		     "playback", &playback,
+		     NULL);
+
+	if(playback != NULL){
+	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+	    AgsThread *channel_thread;
+	  
+	    channel_thread = ags_playback_get_channel_thread(playback,
+							     i);
+
+	    if(channel_thread != NULL){
+	      ags_channel_thread_set_do_fx_staging(channel_thread, TRUE);
+	      ags_channel_thread_set_staging_program(channel_thread,
+						     staging_program,
+						     1);
+	    
+	      g_object_unref(channel_thread);
+	    }
+	  }
+	
+	  g_object_unref(playback);
+	}
+	
+	/* iterate */
+	next_channel = ags_channel_next(channel);
+
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(start_output != NULL){
+	g_object_unref(start_output);
+      }
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+    }
+  }
   
   /* resize */
   if((AGS_MACHINE_CONNECTED & (machine->flags)) != 0){

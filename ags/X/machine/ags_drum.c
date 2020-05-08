@@ -45,11 +45,16 @@ void ags_drum_disconnect(AgsConnectable *connectable);
 
 void ags_drum_show(GtkWidget *widget);
 void ags_drum_show_all(GtkWidget *widget);
-void ags_drum_map_recall(AgsMachine *machine);
 
-void ags_drum_resize_pads(AgsDrum *drum, GType gtype,
+void ags_drum_resize_audio_channels(AgsMachine *machine,
+				    guint audio_channels, guint audio_channels_old,
+				    gpointer data);
+void ags_drum_resize_pads(AgsMachine *machine,
+			  GType channel_type,
 			  guint pads, guint pads_old,
 			  gpointer data);
+
+void ags_drum_map_recall(AgsMachine *machine);
 
 /**
  * SECTION:ags_drum
@@ -206,6 +211,9 @@ ags_drum_init(AgsDrum *drum)
   					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
   /* audio resize */
+  g_signal_connect_after(G_OBJECT(drum), "resize-audio-channels",
+			 G_CALLBACK(ags_drum_resize_audio_channels), NULL);
+
   g_signal_connect_after(G_OBJECT(drum), "resize-pads",
 			 G_CALLBACK(ags_drum_resize_pads), NULL);
 
@@ -379,6 +387,9 @@ void
 ags_drum_finalize(GObject *gobject)
 {
   g_object_disconnect(gobject,
+		      "any_signal::resize-audio-channels",
+		      G_CALLBACK(ags_drum_resize_audio_channels),
+		      NULL,
 		      "any_signal::resize-pads",
 		      G_CALLBACK(ags_drum_resize_pads),
 		      NULL,
@@ -520,6 +531,93 @@ ags_drum_show_all(GtkWidget *widget)
 }
 
 void
+ags_drum_resize_audio_channels(AgsMachine *machine,
+			       guint audio_channels, guint audio_channels_old,
+			       gpointer data)
+{
+}
+
+void
+ags_drum_resize_pads(AgsMachine *machine,
+		     GType channel_type,
+		     guint pads, guint pads_old,
+		     gpointer data)
+{
+  AgsDrum *drum;
+  AgsDrumInputPad *drum_input_pad;
+  
+  GList *start_list;
+
+  drum = AGS_DRUM(machine);
+  
+  if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+    if(pads > pads_old){
+      /* reset edit button */
+      if(pads_old == 0){
+	GtkToggleButton *selected_edit_button;
+
+	start_list = gtk_container_get_children((GtkContainer *) drum->input_pad);
+
+	drum_input_pad = NULL;
+
+	if(start_list != NULL){
+	  drum_input_pad = AGS_DRUM_INPUT_PAD(start_list->data);
+	}
+	
+	drum->selected_pad = drum_input_pad;
+	AGS_MACHINE(drum)->selected_input_pad = (GtkWidget *) drum_input_pad;
+
+	if(drum->selected_pad != NULL){
+	  drum->selected_edit_button = drum->selected_pad->edit;
+	  gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
+	}
+
+	g_list_free(start_list);
+      }
+    }else{
+      /* destroy AgsPad's */
+      if(pads == 0){
+	drum->selected_pad = NULL;
+	drum->selected_edit_button = NULL;
+      }else{
+	guint pad;
+	
+	drum_input_pad = AGS_DRUM_INPUT_PAD(gtk_widget_get_ancestor(GTK_WIDGET(drum->selected_edit_button),
+								    AGS_TYPE_PAD));
+
+	g_object_get(AGS_PAD(drum_input_pad)->channel,
+		     "pad", &pad,
+		     NULL);
+	
+	if(pad > pads){
+	  start_list = gtk_container_get_children((GtkContainer *) drum->input_pad);
+
+	  drum_input_pad = NULL;
+
+	  if(start_list != NULL){
+	    drum_input_pad = AGS_DRUM_INPUT_PAD(start_list->data);
+	  }
+	  
+	  drum->selected_pad = drum_input_pad;
+	  AGS_MACHINE(drum)->selected_input_pad = (GtkWidget *) drum_input_pad;
+	  
+	  if(drum->selected_pad != NULL){
+	    drum->selected_edit_button = drum->selected_pad->edit;
+	    gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
+	  }
+	  
+	  g_list_free(start_list);
+	}
+      }
+    }
+  }else{
+    if(pads > pads_old){
+      //nothing
+    }
+  }
+}
+
+void
 ags_drum_map_recall(AgsMachine *machine)
 {
   AgsDrum *drum;
@@ -648,46 +746,6 @@ ags_drum_map_recall(AgsMachine *machine)
   
   /* call parent */
   AGS_MACHINE_CLASS(ags_drum_parent_class)->map_recall(machine);
-}
-
-void
-ags_drum_resize_pads(AgsDrum *drum, GType gtype,
-		     guint pads, guint pads_old,
-		     gpointer data)
-{
-  if(gtype == AGS_TYPE_INPUT){
-    AgsDrumInputPad *drum_input_pad;
-
-    if(pads_old < pads){
-      /* reset edit button */
-      if(pads_old == 0){
-	GtkToggleButton *selected_edit_button;
-
-	drum->selected_pad = AGS_DRUM_INPUT_PAD(gtk_container_get_children((GtkContainer *) drum->input_pad)->data);
-	AGS_MACHINE(drum)->selected_input_pad = (GtkWidget *) drum->selected_pad;
-
-	drum->selected_edit_button = drum->selected_pad->edit;
-	gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
-      }
-    }else{
-      /* destroy AgsPad's */
-      if(pads == 0){
-	drum->selected_pad = NULL;
-	drum->selected_edit_button = NULL;
-      }else{
-	drum_input_pad = AGS_DRUM_INPUT_PAD(gtk_widget_get_ancestor(GTK_WIDGET(drum->selected_edit_button),
-								    AGS_TYPE_PAD));
-
-	if(drum_input_pad->pad.channel->pad > pads){
-	  drum->selected_pad = AGS_DRUM_INPUT_PAD(gtk_container_get_children((GtkContainer *) drum->input_pad)->data);
-	  AGS_MACHINE(drum)->selected_input_pad = (GtkWidget *) drum->selected_pad;
-	  
-	  drum->selected_edit_button = drum->selected_pad->edit;
-	  gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
-	}
-      }
-    }
-  }  
 }
 
 /**
