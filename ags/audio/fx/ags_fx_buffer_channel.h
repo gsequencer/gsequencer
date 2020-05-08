@@ -37,12 +37,17 @@ G_BEGIN_DECLS
 #define AGS_IS_FX_BUFFER_CHANNEL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FX_BUFFER_CHANNEL))
 #define AGS_FX_BUFFER_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_BUFFER_CHANNEL, AgsFxBufferChannelClass))
 
+#define AGS_FX_BUFFER_CHANNEL_INPUT_DATA(ptr) ((AgsFxBufferChannelInputData *) (ptr))
+
 typedef struct _AgsFxBufferChannel AgsFxBufferChannel;
+typedef struct _AgsFxBufferChannelInputData AgsFxBufferChannelInputData;
 typedef struct _AgsFxBufferChannelClass AgsFxBufferChannelClass;
 
 struct _AgsFxBufferChannel
 {
   AgsRecallChannel recall_channel;
+
+  AgsFxBufferChannelInputData* input_data[AGS_SOUND_SCOPE_LAST];
 };
 
 struct _AgsFxBufferChannelClass
@@ -50,9 +55,19 @@ struct _AgsFxBufferChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
+struct _AgsFxBufferChannelInputData
+{
+  gpointer parent;
+
+  GHashTable *destination;
+};
+
 GType ags_fx_buffer_channel_get_type();
 
-/*  */
+/* runtime */
+AgsFxBufferChannelInputData* ags_fx_buffer_channel_input_data_alloc();
+void ags_fx_buffer_channel_input_data_free(AgsFxBufferChannelInputData *input_data);
+/* instantiate */
 AgsFxBufferChannel* ags_fx_buffer_channel_new(AgsChannel *channel);
 
 G_END_DECLS

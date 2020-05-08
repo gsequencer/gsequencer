@@ -88,10 +88,19 @@ ags_fx_buffer_channel_class_init(AgsFxBufferChannelClass *fx_buffer_channel)
 void
 ags_fx_buffer_channel_init(AgsFxBufferChannel *fx_buffer_channel)
 {
+  guint i;
+  
   AGS_RECALL(fx_buffer_channel)->name = "ags-fx-buffer";
   AGS_RECALL(fx_buffer_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_buffer_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_buffer_channel)->xml_type = "ags-fx-buffer-channel";
+
+  /* input data */
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    fx_buffer_channel->input_data[i] = ags_fx_buffer_channel_input_data_alloc();
+      
+    fx_buffer_channel->input_data[i]->parent = fx_buffer_channel;
+  }
 }
 
 void
@@ -110,10 +119,62 @@ ags_fx_buffer_channel_finalize(GObject *gobject)
 {
   AgsFxBufferChannel *fx_buffer_channel;
   
+  guint i;
+  
   fx_buffer_channel = AGS_FX_BUFFER_CHANNEL(gobject);
 
+ /* input data */
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    ags_fx_buffer_channel_input_data_free(fx_buffer_channel->input_data[i]);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_fx_buffer_channel_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_fx_buffer_channel_input_data_alloc:
+ * 
+ * Allocate #AgsFxBufferChannelInputData-struct
+ * 
+ * Returns: the new #AgsFxBufferChannelInputData-struct
+ * 
+ * Since: 3.3.0
+ */
+AgsFxBufferChannelInputData*
+ags_fx_buffer_channel_input_data_alloc()
+{
+  AgsFxBufferChannelInputData *input_data;
+
+  input_data = (AgsFxBufferChannelInputData *) g_malloc(sizeof(AgsFxBufferChannelInputData));
+
+  input_data->parent = NULL;
+
+  input_data->destination = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+						  g_object_unref,
+						  g_object_unref);
+  
+  return(input_data);
+}
+
+/**
+ * ags_fx_buffer_channel_input_data_free:
+ * @input_data: the #AgsFxBufferChannelInputData-struct
+ * 
+ * Free @input_data.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_fx_buffer_channel_input_data_free(AgsFxBufferChannelInputData *input_data)
+{
+  if(input_data == NULL){
+    return;
+  }
+
+  g_hash_table_destroy(input_data->destination);
+
+  g_free(input_data);
 }
 
 /**

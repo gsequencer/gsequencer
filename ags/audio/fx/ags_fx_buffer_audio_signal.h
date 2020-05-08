@@ -43,8 +43,6 @@ typedef struct _AgsFxBufferAudioSignalClass AgsFxBufferAudioSignalClass;
 struct _AgsFxBufferAudioSignal
 {
   AgsRecallAudioSignal recall_audio_signal;
-
-  GHashTable *destination;
 };
 
 struct _AgsFxBufferAudioSignalClass

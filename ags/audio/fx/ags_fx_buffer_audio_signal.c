@@ -23,6 +23,7 @@
 
 #include <ags/audio/fx/ags_fx_buffer_audio.h>
 #include <ags/audio/fx/ags_fx_buffer_audio_processor.h>
+#include <ags/audio/fx/ags_fx_buffer_channel.h>
 #include <ags/audio/fx/ags_fx_buffer_channel_processor.h>
 #include <ags/audio/fx/ags_fx_buffer_recycling.h>
 
@@ -107,10 +108,6 @@ ags_fx_buffer_audio_signal_init(AgsFxBufferAudioSignal *fx_buffer_audio_signal)
   AGS_RECALL(fx_buffer_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_buffer_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_buffer_audio_signal)->xml_type = "ags-fx-buffer-audio-signal";
-
-  fx_buffer_audio_signal->destination = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-							      g_object_unref,
-							      g_object_unref);
 }
 
 void
@@ -131,8 +128,6 @@ ags_fx_buffer_audio_signal_finalize(GObject *gobject)
   
   fx_buffer_audio_signal = AGS_FX_BUFFER_AUDIO_SIGNAL(gobject);
 
-  g_hash_table_destroy(fx_buffer_audio_signal->destination);
-  
   /* call parent */
   G_OBJECT_CLASS(ags_fx_buffer_audio_signal_parent_class)->finalize(gobject);
 }
@@ -146,6 +141,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
   AgsAudioSignal *source;
   AgsFxBufferAudio *fx_buffer_audio;
   AgsFxBufferAudioProcessor *fx_buffer_audio_processor;
+  AgsFxBufferChannel *fx_buffer_channel;
   AgsFxBufferChannelProcessor *fx_buffer_channel_processor;
   AgsFxBufferRecycling *fx_buffer_recycling;
   AgsFxBufferAudioSignal *fx_buffer_audio_signal;
@@ -165,8 +161,11 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
   gboolean resample;
   gboolean is_done;
   
+  GRecMutex *fx_buffer_channel_mutex;
   GRecMutex *source_stream_mutex;
   GRecMutex *destination_stream_mutex;
+
+  fx_buffer_channel_mutex = NULL;
 
   fx_buffer_audio_signal = AGS_FX_BUFFER_AUDIO_SIGNAL(recall);
 
@@ -181,6 +180,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 
   fx_buffer_audio = NULL;
   fx_buffer_audio_processor = NULL;
+  fx_buffer_channel = NULL;
   fx_buffer_channel_processor = NULL;
   fx_buffer_recycling = NULL;
   
@@ -200,6 +200,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
   g_object_get(fx_buffer_channel_processor,
 	       "recall-audio", &fx_buffer_audio,
 	       "recall-audio-run", &fx_buffer_audio_processor,
+	       "recall-channel", &fx_buffer_channel,
 	       NULL);
 
   g_object_get(fx_buffer_audio,
@@ -215,7 +216,10 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 	       NULL);
 
   if(sound_scope >= 0 &&
-     sound_scope < AGS_SOUND_SCOPE_LAST){
+     sound_scope < AGS_SOUND_SCOPE_LAST &&
+     fx_buffer_channel != NULL){
+    fx_buffer_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_buffer_channel);
+    
     output = ags_channel_nth(start_output,
 			     audio_channel);
     
@@ -229,7 +233,14 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 		   "first-recycling", &recycling,
 		   NULL);
 
-      if((destination = g_hash_table_lookup(fx_buffer_audio_signal->destination, recycling)) == NULL){
+      g_rec_mutex_lock(fx_buffer_channel_mutex);
+      
+      destination = destination = g_hash_table_lookup(fx_buffer_channel->input_data[sound_scope]->destination,
+						      recycling);
+      
+      g_rec_mutex_unlock(fx_buffer_channel_mutex);
+      
+      if(destination == NULL){
 	AgsRecallID *recall_id;
 	AgsRecallID *parent_recall_id;
 	AgsRecyclingContext *recycling_context;
@@ -290,10 +301,13 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 #ifdef AGS_DEBUG
 	g_message("ags-fx-buffer - create destination 0x%x", destination);
 #endif
+	g_rec_mutex_lock(fx_buffer_channel_mutex);
 	
-	g_hash_table_insert(fx_buffer_audio_signal->destination,
+	g_hash_table_insert(fx_buffer_channel->input_data[sound_scope]->destination,
 			    recycling,
 			    destination);
+
+	g_rec_mutex_unlock(fx_buffer_channel_mutex);
 
 	ags_connectable_connect(AGS_CONNECTABLE(destination));  
 
