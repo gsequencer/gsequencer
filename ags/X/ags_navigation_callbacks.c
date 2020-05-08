@@ -360,13 +360,39 @@ ags_navigation_loop_callback(GtkWidget *widget,
       list = list_start;
       
       while((list = ags_recall_find_type(list,
-					 AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
+					 AGS_TYPE_FX_NOTATION_AUDIO)) != NULL){
 	AgsPort *port;
 	
 	recall = AGS_RECALL(list->data);
 
 	g_object_get(recall,
-		     "notation-loop", &port,
+		     "loop", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
+			    &do_loop_value);
+
+	list = list->next;
+      }
+
+      g_list_free_full(list_start,
+		       g_object_unref);
+
+      /* recall context */
+      g_object_get(audio,
+		   "recall", &list_start,
+		   NULL);
+
+      list = list_start;
+      
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_FX_NOTATION_AUDIO)) != NULL){
+	AgsPort *port;
+	
+	recall = AGS_RECALL(list->data);
+
+	g_object_get(recall,
+		     "loop", &port,
 		     NULL);
 	
 	ags_port_safe_write(port,
@@ -392,13 +418,13 @@ ags_navigation_loop_callback(GtkWidget *widget,
       list = list_start;
       
       while((list = ags_recall_find_type(list,
-					 AGS_TYPE_PLAY_WAVE_AUDIO)) != NULL){
+					 AGS_TYPE_FX_PLAYBACK_AUDIO)) != NULL){
 	AgsPort *port;
 	
 	recall = AGS_RECALL(list->data);
 
 	g_object_get(recall,
-		     "wave-loop", &port,
+		     "loop", &port,
 		     NULL);
 	
 	ags_port_safe_write(port,
@@ -407,16 +433,24 @@ ags_navigation_loop_callback(GtkWidget *widget,
 	list = list->next;
       }
 
+      g_list_free_full(list_start,
+		       g_object_unref);
+
+      /* recall context */
+      g_object_get(audio,
+		   "recall", &list_start,
+		   NULL);
+
       list = list_start;
       
       while((list = ags_recall_find_type(list,
-					 AGS_TYPE_CAPTURE_WAVE_AUDIO)) != NULL){
+					 AGS_TYPE_FX_PLAYBACK_AUDIO)) != NULL){
 	AgsPort *port;
 	
 	recall = AGS_RECALL(list->data);
 
 	g_object_get(recall,
-		     "wave-loop", &port,
+		     "loop", &port,
 		     NULL);
 	
 	ags_port_safe_write(port,

@@ -237,9 +237,11 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 		 NULL);
 
     if(offset_counter >= x0){
-      g_message("ags-fx-notation 0x%x", source);
-      
       if(offset_counter < x1){
+#ifdef AGS_DEBUG
+	g_message("ags-fx-notation 0x%x", source);
+#endif
+	
 	ags_audio_signal_add_stream(source);
 
 	ags_fx_notation_audio_signal_stream_feed((AgsFxNotationAudioSignal *) recall,

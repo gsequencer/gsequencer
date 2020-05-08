@@ -5549,6 +5549,11 @@ ags_audio_set_audio_channels_grow(AgsAudio *audio,
 					    NULL);
       g_object_ref(channel);
       
+      /* set indices */
+      channel->pad = j;
+      channel->audio_channel = i;
+      channel->line = j * audio_channels + i;
+
       playback = (AgsPlayback *) channel->playback;
       g_object_set(playback,
 		   "playback-domain", playback_domain,
@@ -5558,6 +5563,10 @@ ags_audio_set_audio_channels_grow(AgsAudio *audio,
 	AgsPattern *pattern;
 
 	pattern = ags_pattern_new();
+	g_object_set(pattern,
+		     "channel", channel,
+		     NULL);
+	
 	g_object_set(channel,
 		     "pattern", pattern,
 		     NULL);
@@ -5628,11 +5637,6 @@ ags_audio_set_audio_channels_grow(AgsAudio *audio,
 
 	g_rec_mutex_unlock(prev_pad_mutex);
       }
-
-      /* set indices */
-      channel->pad = j;
-      channel->audio_channel = i;
-      channel->line = j * audio_channels + i;
 
       /* reset nested AgsRecycling tree */
       if(add_recycling){
@@ -6654,6 +6658,11 @@ ags_audio_set_pads_grow(AgsAudio *audio,
 					    NULL);
       g_object_ref(channel);
 
+      /* set indices */
+      channel->pad = j;
+      channel->audio_channel = i;
+      channel->line = j * audio_channels + i;
+
       playback = (AgsPlayback *) channel->playback;
       g_object_set(playback,
 		   "playback-domain", playback_domain,
@@ -6663,6 +6672,10 @@ ags_audio_set_pads_grow(AgsAudio *audio,
 	AgsPattern *pattern;
 
 	pattern = ags_pattern_new();
+	g_object_set(pattern,
+		     "channel", channel,
+		     NULL);
+
 	g_object_set(channel,
 		     "pattern", pattern,
 		     NULL);
@@ -6729,11 +6742,6 @@ ags_audio_set_pads_grow(AgsAudio *audio,
 	  
 	g_rec_mutex_unlock(prev_pad_mutex);
       }
-
-      /* set indices */
-      channel->pad = j;
-      channel->audio_channel = i;
-      channel->line = j * audio_channels + i;
 
       /* reset nested AgsRecycling tree */
       if(add_recycling){

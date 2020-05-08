@@ -19,6 +19,7 @@
 
 #include <ags/audio/ags_pattern.h>
 
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_port.h>
 
 #include <stdarg.h>
@@ -67,6 +68,7 @@ void ags_pattern_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_
 
 enum{
   PROP_0,
+  PROP_CHANNEL,
   PROP_PORT,
   PROP_FIRST_INDEX,
   PROP_SECOND_INDEX,
@@ -145,6 +147,22 @@ ags_pattern_class_init(AgsPatternClass *pattern)
   gobject->finalize = ags_pattern_finalize;
 
   /* properties */
+  /**
+   * AgsPattern:channel:
+   *
+   * The pattern's channel.
+   * 
+   * Since: 3.3.0
+   */
+  param_spec = g_param_spec_object("channel",
+				   "channel of pattern",
+				   "The channel of pattern",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL,
+				  param_spec);
+
   /**
    * AgsPattern:port:
    *
@@ -282,6 +300,9 @@ ags_pattern_init(AgsPattern *pattern)
   /* pattern mutex */
   g_rec_mutex_init(&(pattern->obj_mutex));
 
+  /* channel */
+  pattern->channel = NULL;
+
   /* timestamp */
   pattern->timestamp = NULL;
 
@@ -320,6 +341,33 @@ ags_pattern_set_property(GObject *gobject,
   pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   switch(prop_id){
+  case PROP_CHANNEL:
+  {
+    AgsChannel *channel;
+
+    channel = (AgsChannel *) g_value_get_object(value);
+
+    g_rec_mutex_lock(pattern_mutex);
+
+    if(channel == pattern->channel){
+      g_rec_mutex_unlock(pattern_mutex);
+
+      return;
+    }
+
+    if(pattern->channel != NULL){
+      g_object_unref(G_OBJECT(pattern->channel));
+    }
+
+    if(channel != NULL){
+      g_object_ref(G_OBJECT(channel));
+    }
+
+    pattern->channel = channel;
+
+    g_rec_mutex_unlock(pattern_mutex);
+  }
+  break;
   case PROP_FIRST_INDEX:
   {
     guint i;
@@ -408,6 +456,16 @@ ags_pattern_get_property(GObject *gobject,
   pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   switch(prop_id){
+  case PROP_CHANNEL:
+  {
+    g_rec_mutex_lock(pattern_mutex);
+
+    g_value_set_object(value,
+		       pattern->channel);
+
+    g_rec_mutex_unlock(pattern_mutex);
+  }
+  break;
   case PROP_PORT:
   {
     g_rec_mutex_lock(pattern_mutex);
@@ -486,6 +544,13 @@ ags_pattern_dispose(GObject *gobject)
 
   pattern = AGS_PATTERN(gobject);
 
+  /* channel */
+  if(pattern->channel != NULL){
+    g_object_run_dispose(G_OBJECT(pattern->channel));
+    
+    g_object_unref(G_OBJECT(pattern->channel));
+  }
+
   /* timestamp */
   if(pattern->timestamp != NULL){
     g_object_run_dispose(G_OBJECT(pattern->timestamp));
@@ -512,6 +577,11 @@ ags_pattern_finalize(GObject *gobject)
   guint i, j;
 
   pattern = AGS_PATTERN(gobject);
+
+  /* channel */
+  if(pattern->channel != NULL){
+    g_object_unref(G_OBJECT(pattern->channel));
+  }
 
   /* timestamp */
   if(pattern->timestamp != NULL){
@@ -1199,7 +1269,11 @@ ags_pattern_get_dim(AgsPattern *pattern, guint *dim0, guint *dim1, guint *length
 void 
 ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
 {
+  AgsChannel *channel;
+  
   guint ***index0, **index1, *bitmap;
+
+  guint pad;
   guint i, j, k, j_set, k_set;
   guint bitmap_size;
 
@@ -1208,6 +1282,10 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
   if(!AGS_IS_PATTERN(pattern)){
     return;
   }
+
+  channel = NULL;
+
+  pad = 0;
   
   /* get pattern mutex */
   pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
@@ -1392,6 +1470,14 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
       pattern->note = (AgsNote **) g_realloc(pattern->note,
 					     length * sizeof(AgsNote *));
     }
+
+    g_object_get(pattern,
+		 "channel", &channel,
+		 NULL);
+
+    g_object_get(channel,
+		 "pad", &pad,
+		 NULL);
     
     for(k = pattern->dim[2]; k < length; k++){
       pattern->note[k] = ags_note_new();
@@ -1399,6 +1485,7 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
       g_object_set(pattern->note[k],
 		   "x0", k,
 		   "x1", k + 1,
+		   "y", pad,
 		   NULL);
     }
       
