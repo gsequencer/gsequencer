@@ -35,9 +35,23 @@
 #include <ags/i18n.h>
 
 void ags_fx_pattern_audio_processor_class_init(AgsFxPatternAudioProcessorClass *fx_pattern_audio_processor);
+void ags_fx_pattern_audio_processor_seekable_interface_init(AgsSeekableInterface *seekable);
+void ags_fx_pattern_audio_processor_countable_interface_init(AgsCountableInterface *countable);
+void ags_fx_pattern_audio_processor_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_fx_pattern_audio_processor_init(AgsFxPatternAudioProcessor *fx_pattern_audio_processor);
 void ags_fx_pattern_audio_processor_dispose(GObject *gobject);
 void ags_fx_pattern_audio_processor_finalize(GObject *gobject);
+
+void ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
+					 gint64 offset,
+					 guint whence);
+
+guint64 ags_fx_pattern_audio_processor_get_sequencer_counter(AgsCountable *countable);
+
+gdouble ags_fx_pattern_audio_processor_get_bpm(AgsTactable *tactable);
+gdouble ags_fx_pattern_audio_processor_get_tact(AgsTactable *tactable);
+void ags_fx_pattern_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
+void ags_fx_pattern_audio_processor_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact);
 
 void ags_fx_pattern_audio_processor_real_run_inter(AgsRecall *recall);
 
@@ -82,10 +96,40 @@ ags_fx_pattern_audio_processor_get_type()
       (GInstanceInitFunc) ags_fx_pattern_audio_processor_init,
     };
 
+    static const GInterfaceInfo ags_seekable_interface_info = {
+      (GInterfaceInitFunc) ags_fx_pattern_audio_processor_seekable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_countable_interface_info = {
+      (GInterfaceInitFunc) ags_fx_pattern_audio_processor_countable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_tactable_interface_info = {
+      (GInterfaceInitFunc) ags_fx_pattern_audio_processor_tactable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_fx_pattern_audio_processor = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
 								 "AgsFxPatternAudioProcessor",
 								 &ags_fx_pattern_audio_processor_info,
 								 0);
+
+    g_type_add_interface_static(ags_type_fx_pattern_audio_processor,
+				AGS_TYPE_COUNTABLE,
+				&ags_countable_interface_info);
+
+    g_type_add_interface_static(ags_type_fx_pattern_audio_processor,
+				AGS_TYPE_SEEKABLE,
+				&ags_seekable_interface_info);
+
+    g_type_add_interface_static(ags_type_fx_pattern_audio_processor,
+				AGS_TYPE_TACTABLE,
+				&ags_tactable_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_fx_pattern_audio_processor);
   }
@@ -118,6 +162,41 @@ ags_fx_pattern_audio_processor_class_init(AgsFxPatternAudioProcessorClass *fx_pa
   fx_pattern_audio_processor->play = ags_fx_pattern_audio_processor_real_play;
 
   fx_pattern_audio_processor->counter_change = ags_fx_pattern_audio_processor_real_counter_change;
+}
+
+void
+ags_fx_pattern_audio_processor_seekable_interface_init(AgsSeekableInterface *seekable)
+{
+  seekable->seek = ags_fx_pattern_audio_processor_seek;
+}
+
+void
+ags_fx_pattern_audio_processor_countable_interface_init(AgsCountableInterface *countable)
+{
+  countable->get_sequencer_counter = ags_fx_pattern_audio_processor_get_sequencer_counter;
+  countable->get_notation_counter = NULL;
+  countable->get_wave_counter = NULL;
+  countable->get_midi_counter = NULL;
+}
+
+void
+ags_fx_pattern_audio_processor_tactable_interface_init(AgsTactableInterface *tactable)
+{
+  tactable->get_bpm = ags_fx_pattern_audio_processor_get_bpm;
+  tactable->get_tact = ags_fx_pattern_audio_processor_get_tact;
+
+  tactable->get_sequencer_duration = NULL;
+  tactable->get_notation_duration = NULL;
+  tactable->get_wave_duration = NULL;
+  tactable->get_midi_duration = NULL;
+
+  tactable->change_sequencer_duration = NULL;
+  tactable->change_notation_duration = NULL;
+  tactable->change_wave_duration = NULL;
+  tactable->change_midi_duration = NULL;
+
+  tactable->change_bpm = ags_fx_pattern_audio_processor_change_bpm;
+  tactable->change_tact = ags_fx_pattern_audio_processor_change_tact;
 }
 
 void
@@ -156,6 +235,306 @@ ags_fx_pattern_audio_processor_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_fx_pattern_audio_processor_parent_class)->finalize(gobject);
+}
+
+void
+ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
+				    gint64 offset,
+				    guint whence)
+{
+  AgsFxPatternAudio *fx_pattern_audio;
+  AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
+  AgsPort *port;
+
+  gdouble sequencer_duration;
+  
+  GRecMutex *recall_mutex;
+
+  guint64 sequencer_counter;
+
+  GValue value = {0,};
+
+  fx_pattern_audio = NULL;
+  
+  fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(seekable);
+  
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_pattern_audio_processor);
+
+  g_object_get(fx_pattern_audio_processor,
+	       "recall-audio", &fx_pattern_audio,
+	       NULL);
+
+  /* duration */
+  port = NULL;
+
+  sequencer_duration = (gdouble) AGS_PATTERN_DEFAULT_OFFSET;
+      
+  g_object_get(fx_pattern_audio,
+	       "duration", &port,
+	       NULL);
+
+  if(port != NULL){
+    g_value_init(&value, G_TYPE_DOUBLE);
+
+    sequencer_duration = g_value_get_double(&value);
+
+    g_value_unset(&value);
+	
+    g_object_unref(port);
+  }
+  switch(whence){
+  case AGS_SEEK_CUR:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      sequencer_counter = fx_pattern_audio_processor->offset_counter;
+
+      if(sequencer_counter + offset < 0){
+	sequencer_counter = (guint64) sequencer_duration - (guint64) ((offset - sequencer_counter) % (guint64) sequencer_duration);
+      }else{
+	sequencer_counter = (guint64) (sequencer_counter + offset) % (guint64) sequencer_duration;
+      }
+
+      fx_pattern_audio_processor->offset_counter = sequencer_counter;
+  
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
+  case AGS_SEEK_END:
+    {      
+      g_rec_mutex_lock(recall_mutex);
+
+      sequencer_counter = fx_pattern_audio_processor->offset_counter;
+
+      /* sequencer */
+      if(sequencer_duration + offset < 0){
+	sequencer_counter = (guint64) sequencer_duration - ((guint64) (offset - sequencer_duration) % (guint64) sequencer_duration);
+      }else{
+	sequencer_counter = (guint64) (sequencer_duration + offset) % (guint64) sequencer_duration;
+      }
+
+      fx_pattern_audio_processor->offset_counter = sequencer_counter;
+  
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
+  case AGS_SEEK_SET:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      fx_pattern_audio_processor->offset_counter = offset % (guint64) sequencer_duration;
+
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    break;
+  }
+
+  if(fx_pattern_audio != NULL){
+    g_object_unref(fx_pattern_audio);
+  }
+}
+
+guint64
+ags_fx_pattern_audio_processor_get_sequencer_counter(AgsCountable *countable)
+{
+  AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
+  
+  guint64 sequencer_counter;
+
+  GRecMutex *recall_mutex;
+
+  fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(countable);
+  
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_pattern_audio_processor);
+
+  /* bpm */
+  g_rec_mutex_lock(recall_mutex);
+
+  sequencer_counter = fx_pattern_audio_processor->offset_counter;
+  
+  g_rec_mutex_unlock(recall_mutex);
+  
+  return(sequencer_counter);
+}
+
+gdouble
+ags_fx_pattern_audio_processor_get_bpm(AgsTactable *tactable)
+{
+  AgsFxPatternAudio *fx_pattern_audio;
+  AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
+  AgsPort *port;
+  
+  gdouble bpm;
+  
+  GValue value = {0,};
+  
+  fx_pattern_audio  = NULL;
+  
+  fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(tactable);
+
+  port = NULL;
+  
+  bpm = AGS_SOUNDCARD_DEFAULT_BPM;
+
+  g_object_get(fx_pattern_audio_processor,
+	       "recall-audio", &fx_pattern_audio,
+	       NULL);
+  
+  if(fx_pattern_audio != NULL){
+    g_object_get(fx_pattern_audio,
+		 "bpm", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_DOUBLE);
+
+      ags_port_safe_read(port, &value);
+
+      bpm = g_value_get_double(&value);
+
+      g_value_unset(&value);
+      
+      g_object_unref(port);
+    }
+  }
+  
+  if(fx_pattern_audio != NULL){
+    g_object_unref(fx_pattern_audio);
+  }
+  
+  return(bpm);
+}
+
+gdouble
+ags_fx_pattern_audio_processor_get_tact(AgsTactable *tactable)
+{
+  AgsFxPatternAudio *fx_pattern_audio;
+  AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
+  AgsPort *port;
+  
+  gdouble tact;
+  
+  GValue value = {0,};
+  
+  fx_pattern_audio  = NULL;
+  
+  fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(tactable);
+
+  port = NULL;
+  
+  tact = AGS_SOUNDCARD_DEFAULT_TACT;
+
+  g_object_get(fx_pattern_audio_processor,
+	       "recall-audio", &fx_pattern_audio,
+	       NULL);
+  
+  if(fx_pattern_audio != NULL){
+    g_object_get(fx_pattern_audio,
+		 "tact", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_DOUBLE);
+
+      ags_port_safe_read(port, &value);
+
+      tact = g_value_get_double(&value);
+
+      g_value_unset(&value);
+      
+      g_object_unref(port);
+    }
+  }
+  
+  if(fx_pattern_audio != NULL){
+    g_object_unref(fx_pattern_audio);
+  }
+  
+  return(tact);
+}
+
+void
+ags_fx_pattern_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm)
+{
+  AgsFxPatternAudio *fx_pattern_audio;
+  AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
+  AgsPort *port;
+    
+  GValue value = {0,};
+  
+  fx_pattern_audio  = NULL;
+  
+  fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(tactable);
+
+  port = NULL;
+  
+  g_object_get(fx_pattern_audio_processor,
+	       "recall-audio", &fx_pattern_audio,
+	       NULL);
+  
+  if(fx_pattern_audio != NULL){
+    g_object_get(fx_pattern_audio,
+		 "bpm", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_DOUBLE);
+      g_value_set_double(&value, new_bpm);
+
+      ags_port_safe_write(port, &value);
+
+      g_value_unset(&value);
+      
+      g_object_unref(port);
+    }
+  }
+  
+  if(fx_pattern_audio != NULL){
+    g_object_unref(fx_pattern_audio);
+  }
+}
+
+void
+ags_fx_pattern_audio_processor_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact)
+{
+  AgsFxPatternAudio *fx_pattern_audio;
+  AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
+  AgsPort *port;
+    
+  GValue value = {0,};
+  
+  fx_pattern_audio  = NULL;
+  
+  fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(tactable);
+
+  port = NULL;
+  
+  g_object_get(fx_pattern_audio_processor,
+	       "recall-audio", &fx_pattern_audio,
+	       NULL);
+  
+  if(fx_pattern_audio != NULL){
+    g_object_get(fx_pattern_audio,
+		 "tact", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_DOUBLE);
+      g_value_set_double(&value, new_tact);
+
+      ags_port_safe_write(port, &value);
+
+      g_value_unset(&value);
+      
+      g_object_unref(port);
+    }
+  }
+  
+  if(fx_pattern_audio != NULL){
+    g_object_unref(fx_pattern_audio);
+  }
 }
 
 void

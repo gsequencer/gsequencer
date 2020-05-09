@@ -365,8 +365,8 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
 					    "specifier", ags_fx_pattern_audio_specifier[3],
 					    "control-port", ags_fx_pattern_audio_control_port[3],
 					    "port-value-is-pointer", FALSE,
-					    "port-value-type", G_TYPE_UINT64,
-					    "port-value-size", sizeof(guint64),
+					    "port-value-type", G_TYPE_DOUBLE,
+					    "port-value-size", sizeof(gdouble),
 					    "port-value-length", 1,
 					    NULL);
   
