@@ -965,7 +965,7 @@ ags_fx_pattern_audio_notify_output_soundcard_callback(GObject *gobject,
   if(port != NULL){
     g_value_init(&value, G_TYPE_DOUBLE);
 
-    g_value_set_double(&value, ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard)));
+    g_value_set_double(&value, ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard)));
 
     ags_port_safe_write(port, &value);
 

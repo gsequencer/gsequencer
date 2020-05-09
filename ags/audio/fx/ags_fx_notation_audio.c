@@ -323,8 +323,8 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
 					     "specifier", ags_fx_notation_audio_specifier[3],
 					     "control-port", ags_fx_notation_audio_control_port[3],
 					     "port-value-is-pointer", FALSE,
-					     "port-value-type", G_TYPE_UINT64,
-					     "port-value-size", sizeof(guint64),
+					     "port-value-type", G_TYPE_DOUBLE,
+					     "port-value-size", sizeof(gdouble),
 					     "port-value-length", 1,
 					     NULL);
   

@@ -53,7 +53,8 @@ gdouble ags_fx_pattern_audio_processor_get_tact(AgsTactable *tactable);
 void ags_fx_pattern_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
 void ags_fx_pattern_audio_processor_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact);
 
-void ags_fx_pattern_audio_processor_real_run_inter(AgsRecall *recall);
+void ags_fx_pattern_audio_processor_run_init_pre(AgsRecall *recall);
+void ags_fx_pattern_audio_processor_run_inter(AgsRecall *recall);
 
 void ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_pattern_audio_processor,
 						AgsNote *note,
@@ -154,7 +155,8 @@ ags_fx_pattern_audio_processor_class_init(AgsFxPatternAudioProcessorClass *fx_pa
   /* AgsRecallClass */
   recall = (AgsRecallClass *) fx_pattern_audio_processor;
   
-  recall->run_inter = ags_fx_pattern_audio_processor_real_run_inter;
+  recall->run_init_pre = ags_fx_pattern_audio_processor_run_init_pre;
+  recall->run_inter = ags_fx_pattern_audio_processor_run_inter;
   
   /* AgsFxPatternAudioProcessorClass */
   fx_pattern_audio_processor->key_on = ags_fx_pattern_audio_processor_real_key_on;
@@ -250,6 +252,7 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
   
   GRecMutex *recall_mutex;
 
+  gdouble delay;
   guint64 sequencer_counter;
 
   GValue value = {0,};
@@ -265,11 +268,32 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
 	       "recall-audio", &fx_pattern_audio,
 	       NULL);
 
+  /* delay */
+  port = NULL;
+
+  delay = AGS_SOUNDCARD_DEFAULT_DELAY;
+
+  sequencer_duration = (gdouble) AGS_PATTERN_DEFAULT_OFFSET;
+  
+  g_object_get(fx_pattern_audio,
+	       "delay", &port,
+	       NULL);
+
+  if(port != NULL){
+    g_value_init(&value, G_TYPE_DOUBLE);
+
+    ags_port_safe_read(port, &value);
+    
+    delay = g_value_get_double(&value);
+
+    g_value_unset(&value);
+	
+    g_object_unref(port);
+  }
+
   /* duration */
   port = NULL;
 
-  sequencer_duration = (gdouble) AGS_PATTERN_DEFAULT_OFFSET;
-      
   g_object_get(fx_pattern_audio,
 	       "duration", &port,
 	       NULL);
@@ -277,12 +301,15 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
   if(port != NULL){
     g_value_init(&value, G_TYPE_DOUBLE);
 
+    ags_port_safe_read(port, &value);
+    
     sequencer_duration = g_value_get_double(&value);
 
     g_value_unset(&value);
 	
     g_object_unref(port);
   }
+
   switch(whence){
   case AGS_SEEK_CUR:
     {
@@ -295,8 +322,12 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
       }else{
 	sequencer_counter = (guint64) (sequencer_counter + offset) % (guint64) sequencer_duration;
       }
-
-      fx_pattern_audio_processor->offset_counter = sequencer_counter;
+      
+      fx_pattern_audio_processor->delay_counter =
+	fx_pattern_audio_processor->current_delay_counter = 0.0;
+      
+      fx_pattern_audio_processor->offset_counter =
+	fx_pattern_audio_processor->current_offset_counter = sequencer_counter;
   
       g_rec_mutex_unlock(recall_mutex);
     }
@@ -314,7 +345,11 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
 	sequencer_counter = (guint64) (sequencer_duration + offset) % (guint64) sequencer_duration;
       }
 
-      fx_pattern_audio_processor->offset_counter = sequencer_counter;
+      fx_pattern_audio_processor->delay_counter =
+	fx_pattern_audio_processor->current_delay_counter = 0.0;
+
+      fx_pattern_audio_processor->offset_counter =
+	fx_pattern_audio_processor->current_offset_counter = sequencer_counter;
   
       g_rec_mutex_unlock(recall_mutex);
     }
@@ -323,7 +358,11 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
     {
       g_rec_mutex_lock(recall_mutex);
 
-      fx_pattern_audio_processor->offset_counter = offset % (guint64) sequencer_duration;
+      fx_pattern_audio_processor->delay_counter =
+	fx_pattern_audio_processor->current_delay_counter = 0.0;
+
+      fx_pattern_audio_processor->offset_counter =
+	fx_pattern_audio_processor->current_offset_counter = offset % (guint64) sequencer_duration;
 
       g_rec_mutex_unlock(recall_mutex);
     }
@@ -488,7 +527,7 @@ ags_fx_pattern_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bpm
     if(port != NULL){
       g_value_init(&value, G_TYPE_DOUBLE);
 
-      g_value_set_double(&value, ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard)));
+      g_value_set_double(&value, ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard)));
 
       ags_port_safe_write(port, &value);
 
@@ -553,7 +592,7 @@ ags_fx_pattern_audio_processor_change_tact(AgsTactable *tactable, gdouble new_ta
     if(port != NULL){
       g_value_init(&value, G_TYPE_DOUBLE);
 
-      g_value_set_double(&value, ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard)));
+      g_value_set_double(&value, ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard)));
 
       ags_port_safe_write(port, &value);
 
@@ -587,7 +626,7 @@ ags_fx_pattern_audio_processor_change_tact(AgsTactable *tactable, gdouble new_ta
 }
 
 void
-ags_fx_pattern_audio_processor_real_run_inter(AgsRecall *recall)
+ags_fx_pattern_audio_processor_run_init_pre(AgsRecall *recall)
 {
   AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
 
@@ -602,8 +641,36 @@ ags_fx_pattern_audio_processor_real_run_inter(AgsRecall *recall)
   /* get delay counter */
   g_rec_mutex_lock(fx_pattern_audio_processor_mutex);
     
-  fx_pattern_audio_processor->current_delay_counter = fx_pattern_audio_processor->delay_counter;
-  fx_pattern_audio_processor->current_offset_counter = fx_pattern_audio_processor->offset_counter;
+  fx_pattern_audio_processor->delay_counter = 0;
+  fx_pattern_audio_processor->offset_counter = 0;
+
+  fx_pattern_audio_processor->current_delay_counter = 0;
+  fx_pattern_audio_processor->current_offset_counter = 0;
+
+  g_rec_mutex_unlock(fx_pattern_audio_processor_mutex);
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_fx_pattern_audio_processor_parent_class)->run_init_pre(recall);
+}
+
+void
+ags_fx_pattern_audio_processor_run_inter(AgsRecall *recall)
+{
+  AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
+
+  gdouble delay_counter;
+  
+  GRecMutex *fx_pattern_audio_processor_mutex;
+
+  fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(recall);
+  
+  fx_pattern_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_pattern_audio_processor);
+
+  /* get delay counter */
+  g_rec_mutex_lock(fx_pattern_audio_processor_mutex);
+    
+  fx_pattern_audio_processor->delay_counter = fx_pattern_audio_processor->current_delay_counter;
+  fx_pattern_audio_processor->offset_counter = fx_pattern_audio_processor->current_offset_counter;
 
   delay_counter = fx_pattern_audio_processor->delay_counter;
 
@@ -872,7 +939,8 @@ ags_fx_pattern_audio_processor_key_on(AgsFxPatternAudioProcessor *fx_pattern_aud
   g_return_if_fail(AGS_IS_FX_PATTERN_AUDIO_PROCESSOR(fx_pattern_audio_processor));
 
   g_object_ref(fx_pattern_audio_processor);
-
+  g_object_ref(note);
+  
   if(AGS_FX_PATTERN_AUDIO_PROCESSOR_GET_CLASS(fx_pattern_audio_processor)->key_on != NULL){
     AGS_FX_PATTERN_AUDIO_PROCESSOR_GET_CLASS(fx_pattern_audio_processor)->key_on(fx_pattern_audio_processor,
 										 note,
@@ -881,6 +949,7 @@ ags_fx_pattern_audio_processor_key_on(AgsFxPatternAudioProcessor *fx_pattern_aud
   }
   
   g_object_unref(fx_pattern_audio_processor);
+  g_object_unref(note);
 }
 
 void
@@ -1065,7 +1134,11 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
 {
   AgsFxPatternAudio *fx_pattern_audio;
 
+  GObject *output_soundcard;
+  
   gdouble delay;
+  guint delay_counter;
+  guint offset_counter;
   gboolean loop;
   guint64 loop_start, loop_end;
   
@@ -1075,9 +1148,12 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
   
   fx_pattern_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_pattern_audio_processor);
 
+  output_soundcard = NULL;
+  
   fx_pattern_audio = NULL;
   
   g_object_get(fx_pattern_audio_processor,
+	       "output-soundcard", &output_soundcard,
 	       "recall-audio", &fx_pattern_audio,
 	       NULL);
 
@@ -1163,32 +1239,55 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
       g_object_unref(port);
     }
   }
-  
+
   g_rec_mutex_lock(fx_pattern_audio_processor_mutex);
+
+  delay_counter = floor(fx_pattern_audio_processor->delay_counter);
+
+  offset_counter = fx_pattern_audio_processor->offset_counter;
   
-  if(fx_pattern_audio_processor->delay_counter + 1.0 >= delay){
-    fx_pattern_audio_processor->delay_counter = fx_pattern_audio_processor->delay_counter + 1.0 - delay;
+  g_rec_mutex_unlock(fx_pattern_audio_processor_mutex);  
+
+  if(output_soundcard != NULL){
+    delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+
+    delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+  }
   
+  if(delay_counter + 1.0 >= delay){
+    g_rec_mutex_lock(fx_pattern_audio_processor_mutex);
+
+    //FIXME:JK: counter problem
+    fx_pattern_audio_processor->current_delay_counter = 0.0; // fx_pattern_audio_processor->delay_counter + 1.0 - delay;
+    
     if(loop &&
-       fx_pattern_audio_processor->offset_counter + 1 >= loop_end){
-      fx_pattern_audio_processor->offset_counter = loop_start;
+       offset_counter + 1 >= loop_end){
+      fx_pattern_audio_processor->current_offset_counter = loop_start;
     }else{
       if(!ags_recall_test_staging_flags(fx_pattern_audio_processor, AGS_SOUND_STAGING_DONE)){
-	fx_pattern_audio_processor->offset_counter += 1;
+	fx_pattern_audio_processor->current_offset_counter += 1;
 	
-	if(fx_pattern_audio_processor->offset_counter >= loop_end){
+	if(fx_pattern_audio_processor->current_offset_counter >= loop_end){
 	  ags_recall_done(fx_pattern_audio_processor);
 	}
       }else{
-	fx_pattern_audio_processor->offset_counter = 0;
+	fx_pattern_audio_processor->current_offset_counter = 0;
       }
     }
+
+    g_rec_mutex_unlock(fx_pattern_audio_processor_mutex);
   }else{
-    fx_pattern_audio_processor->delay_counter += 1.0;
+    g_rec_mutex_lock(fx_pattern_audio_processor_mutex);
+    
+    fx_pattern_audio_processor->current_delay_counter += 1.0;
+
+    g_rec_mutex_unlock(fx_pattern_audio_processor_mutex);
   }
   
-  g_rec_mutex_unlock(fx_pattern_audio_processor_mutex);
-  
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+
   if(fx_pattern_audio != NULL){
     g_object_unref(fx_pattern_audio);
   }
