@@ -688,6 +688,53 @@ ags_recall_id_check_state_flags(AgsRecallID *recall_id, guint state_flags)
 }
 
 /**
+ * ags_recall_id_get_recycling_context:
+ * @recall_id: the #AgsRecallId
+ * 
+ * Get recycling context.
+ * 
+ * Returns: (transfer full): the #AgsRecyclingContext
+ * 
+ * Since: 3.3.0
+ */
+AgsRecyclingContext*
+ags_recall_id_get_recycling_context(AgsRecallID *recall_id)
+{
+  AgsRecyclingContext *recycling_context;
+  
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return(NULL);
+  }
+  
+  g_object_get(recall_id,
+	       "recycling-context", &recycling_context,
+	       NULL);
+  
+  return(recycling_context);
+}
+
+/**
+ * ags_recall_id_set_recycling_context:
+ * @recall_id: the #AgsRecallId
+ * @recycling_context: the #AgsRecyclingContext
+ * 
+ * Set recycling context.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_recall_id_set_recycling_context(AgsRecallID *recall_id, AgsRecyclingContext *recycling_context)
+{
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return;
+  }
+
+  g_object_set(recall_id,
+	       "recycling-context", recycling_context,
+	       NULL);
+}
+
+/**
  * ags_recall_id_find_recycling_context:
  * @recall_id: (element-type AgsAudio.RecallID) (transfer none): the #GList-struct containing #AgsRecallID
  * @recycling_context: the #AgsRecyclingContext to match

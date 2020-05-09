@@ -49,6 +49,7 @@ ags (3.3.0)
 	* TODO:JK: fixed AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT/AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT in ags_fx_factory.c
 	* TODO:JK: fixed AgsComplex support
 	* TODO:JK: extended user's handbook to cover OSC server preferences
+	* improved GObject-Introspection API
 
 ags (3.2.15)
 

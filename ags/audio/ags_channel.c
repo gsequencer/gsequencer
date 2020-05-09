@@ -8044,7 +8044,7 @@ ags_channel_remove_pattern(AgsChannel *channel, GObject *pattern)
  * ags_channel_get_playback:
  * @channel: the #AgsChannel
  * 
- * Get playback domain.
+ * Get playback.
  * 
  * Returns: (transfer full): the #AgsPlayback
  * 
