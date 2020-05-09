@@ -4324,6 +4324,10 @@ ags_recall_get_output_soundcard(AgsRecall *recall)
 void
 ags_recall_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard)
 {
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+
   GRecMutex *recall_mutex;
 
   if(!AGS_IS_RECALL(recall)){
@@ -4332,6 +4336,10 @@ ags_recall_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard)
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
 
   /* unref of old soundcard */
   g_rec_mutex_lock(recall_mutex);
@@ -4346,11 +4354,23 @@ ags_recall_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard)
   /* ref and set output soundcard */
   if(output_soundcard != NULL){
     g_object_ref(output_soundcard);
+    
+    ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
+			      NULL,
+			      &samplerate,
+			      &buffer_size,
+			      &format);
   }
 
   recall->output_soundcard = output_soundcard;
   
   g_rec_mutex_unlock(recall_mutex);
+
+  g_object_set(recall,
+	       "samplerate", samplerate,
+	       "buffer-size", buffer_size,
+	       "format", format,
+	       NULL);
 }
 
 /**

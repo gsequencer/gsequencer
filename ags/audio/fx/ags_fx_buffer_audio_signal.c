@@ -235,8 +235,8 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 
       g_rec_mutex_lock(fx_buffer_channel_mutex);
       
-      destination = destination = g_hash_table_lookup(fx_buffer_channel->input_data[sound_scope]->destination,
-						      recycling);
+      destination = g_hash_table_lookup(fx_buffer_channel->input_data[sound_scope]->destination,
+					recycling);
       
       g_rec_mutex_unlock(fx_buffer_channel_mutex);
       
@@ -302,7 +302,9 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 	g_message("ags-fx-buffer - create destination 0x%x", destination);
 #endif
 	g_rec_mutex_lock(fx_buffer_channel_mutex);
-	
+
+	g_object_ref(recycling);
+	g_object_ref(destination);
 	g_hash_table_insert(fx_buffer_channel->input_data[sound_scope]->destination,
 			    recycling,
 			    destination);

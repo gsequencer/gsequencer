@@ -268,7 +268,12 @@ ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
     for(i = 0; note != NULL; i++){
       guint x0, x1;
       guint y;
-    
+
+      x0 = 0;
+      x1 = 1;
+
+      y = 0;
+      
       g_object_get(note->data,
 		   "x0", &x0,
 		   "x1", &x1,

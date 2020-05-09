@@ -19,6 +19,7 @@
 
 #include <ags/audio/fx/ags_fx_buffer_channel_processor.h>
 
+#include <ags/audio/fx/ags_fx_buffer_channel.h>
 #include <ags/audio/fx/ags_fx_buffer_recycling.h>
 
 #include <ags/i18n.h>
@@ -27,6 +28,8 @@ void ags_fx_buffer_channel_processor_class_init(AgsFxBufferChannelProcessorClass
 void ags_fx_buffer_channel_processor_init(AgsFxBufferChannelProcessor *fx_buffer_channel_processor);
 void ags_fx_buffer_channel_processor_dispose(GObject *gobject);
 void ags_fx_buffer_channel_processor_finalize(GObject *gobject);
+
+void ags_fx_buffer_channel_processor_run_init_pre(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_buffer_channel_processor
@@ -76,6 +79,7 @@ ags_fx_buffer_channel_processor_get_type()
 void
 ags_fx_buffer_channel_processor_class_init(AgsFxBufferChannelProcessorClass *fx_buffer_channel_processor)
 {
+  AgsRecallClass *recall;
   GObjectClass *gobject;
 
   ags_fx_buffer_channel_processor_parent_class = g_type_class_peek_parent(fx_buffer_channel_processor);
@@ -85,6 +89,11 @@ ags_fx_buffer_channel_processor_class_init(AgsFxBufferChannelProcessorClass *fx_
 
   gobject->dispose = ags_fx_buffer_channel_processor_dispose;
   gobject->finalize = ags_fx_buffer_channel_processor_finalize;
+
+  /* AgsRecallClass */
+  recall = (AgsRecallClass *) fx_buffer_channel_processor;
+
+  recall->run_init_pre = ags_fx_buffer_channel_processor_run_init_pre;
 }
 
 void
@@ -118,6 +127,44 @@ ags_fx_buffer_channel_processor_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_buffer_channel_processor_parent_class)->finalize(gobject);
+}
+
+void
+ags_fx_buffer_channel_processor_run_init_pre(AgsRecall *recall)
+{
+  AgsFxBufferChannel *fx_buffer_channel;
+
+  gint sound_scope;
+
+  GRecMutex *fx_buffer_channel_mutex;
+
+  fx_buffer_channel = NULL;
+  fx_buffer_channel_mutex = NULL;
+
+  sound_scope = ags_recall_get_sound_scope(recall);
+
+  g_object_get(recall,
+	       "recall-channel", &fx_buffer_channel,
+	       NULL);
+  
+  if(sound_scope >= 0 &&
+     sound_scope < AGS_SOUND_SCOPE_LAST &&
+     fx_buffer_channel != NULL){
+    fx_buffer_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_buffer_channel);
+
+    g_rec_mutex_lock(fx_buffer_channel_mutex);
+      
+    g_hash_table_remove_all(fx_buffer_channel->input_data[sound_scope]->destination);
+      
+    g_rec_mutex_unlock(fx_buffer_channel_mutex);
+  }
+
+  if(fx_buffer_channel != NULL){
+    g_object_unref(fx_buffer_channel);
+  }
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_fx_buffer_channel_processor_parent_class)->run_init_pre(recall);
 }
 
 /**

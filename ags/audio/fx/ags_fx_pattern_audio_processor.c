@@ -461,8 +461,12 @@ ags_fx_pattern_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bpm
   AgsFxPatternAudio *fx_pattern_audio;
   AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
   AgsPort *port;
+
+  GObject *output_soundcard;
     
   GValue value = {0,};
+
+  output_soundcard = NULL;
   
   fx_pattern_audio  = NULL;
   
@@ -471,9 +475,30 @@ ags_fx_pattern_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bpm
   port = NULL;
   
   g_object_get(fx_pattern_audio_processor,
+	       "output-soundcard", &output_soundcard,
 	       "recall-audio", &fx_pattern_audio,
 	       NULL);
+
+  /* delay */
+  if(fx_pattern_audio != NULL){
+    g_object_get(fx_pattern_audio,
+		 "delay", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_DOUBLE);
+
+      g_value_set_double(&value, ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard)));
+
+      ags_port_safe_write(port, &value);
+
+      g_value_unset(&value);
+
+      g_object_unref(port);
+    }
+  }
   
+  /* bpm */
   if(fx_pattern_audio != NULL){
     g_object_get(fx_pattern_audio,
 		 "bpm", &port,
@@ -503,7 +528,11 @@ ags_fx_pattern_audio_processor_change_tact(AgsTactable *tactable, gdouble new_ta
   AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
   AgsPort *port;
     
+  GObject *output_soundcard;
+
   GValue value = {0,};
+
+  output_soundcard = NULL;
   
   fx_pattern_audio  = NULL;
   
@@ -512,9 +541,29 @@ ags_fx_pattern_audio_processor_change_tact(AgsTactable *tactable, gdouble new_ta
   port = NULL;
   
   g_object_get(fx_pattern_audio_processor,
+	       "output-soundcard", &output_soundcard,
 	       "recall-audio", &fx_pattern_audio,
 	       NULL);
+  /* delay */
+  if(fx_pattern_audio != NULL){
+    g_object_get(fx_pattern_audio,
+		 "delay", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_DOUBLE);
+
+      g_value_set_double(&value, ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard)));
+
+      ags_port_safe_write(port, &value);
+
+      g_value_unset(&value);
+
+      g_object_unref(port);
+    }
+  }
   
+  /* tact */
   if(fx_pattern_audio != NULL){
     g_object_get(fx_pattern_audio,
 		 "tact", &port,
@@ -1117,9 +1166,9 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
   
   g_rec_mutex_lock(fx_pattern_audio_processor_mutex);
   
-  if(fx_pattern_audio_processor->delay_counter + 1.0 >= delay){  
+  if(fx_pattern_audio_processor->delay_counter + 1.0 >= delay){
     fx_pattern_audio_processor->delay_counter = fx_pattern_audio_processor->delay_counter + 1.0 - delay;
-
+  
     if(loop &&
        fx_pattern_audio_processor->offset_counter + 1 >= loop_end){
       fx_pattern_audio_processor->offset_counter = loop_start;

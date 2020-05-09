@@ -149,11 +149,16 @@ ags_fx_buffer_channel_input_data_alloc()
   input_data = (AgsFxBufferChannelInputData *) g_malloc(sizeof(AgsFxBufferChannelInputData));
 
   input_data->parent = NULL;
-
+  
   input_data->destination = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+#if 0
 						  g_object_unref,
 						  g_object_unref);
-  
+#else
+						  NULL,
+						  NULL);
+#endif
+
   return(input_data);
 }
 

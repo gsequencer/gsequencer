@@ -990,6 +990,10 @@ ags_fx_pattern_audio_notify_output_soundcard_callback(GObject *gobject,
 
     g_object_unref(port);
   }
+  
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
 }
 
 /**
