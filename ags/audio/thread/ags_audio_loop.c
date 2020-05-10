@@ -1103,14 +1103,41 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
   play_audio = start_play_audio;
 
   while(play_audio != NULL){
+    AgsChannel *start_output;
+    AgsChannel *output, *next;
+    
     playback_domain = (AgsPlaybackDomain *) play_audio->data;
 
     audio = NULL;
+    
     g_object_get(playback_domain,
 		 "audio", &audio,
 		 NULL);
     
     /* play */
+    start_output = NULL;
+
+    g_object_get(audio,
+		 "output", &start_output,
+		 NULL);
+
+
+    if(start_output != NULL){
+      output = start_output;
+      g_object_ref(output);
+
+      while(output != NULL){
+	ags_channel_unset_staging_completed(output, sound_scope);
+
+	/* iterate */
+	next = ags_channel_next(output);
+
+	g_object_unref(output);
+	
+	output = next;
+      }
+    }
+
     if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
       /* super threaded */
       ags_audio_loop_play_audio_super_threaded(audio_loop,
@@ -1144,7 +1171,13 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
       }
     }
 
-    g_object_unref(audio);
+    if(audio != NULL){
+      g_object_unref(audio);
+    }
+    
+    if(start_output != NULL){
+      g_object_unref(start_output);
+    }
     
     /* iterate */
     play_audio = play_audio->next;

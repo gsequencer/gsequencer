@@ -15085,6 +15085,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 
   GList *recall_id, *recall_id_iter;
 
+  guint pad;
   gint i;
 
   GRecMutex *channel_mutex;
@@ -15094,7 +15095,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
      sound_scope >= AGS_SOUND_SCOPE_LAST){
     return;
   }
-
+  
+  pad = 0;
+  
   /* check scope - input */
   recall_id = ags_channel_check_scope(channel, sound_scope);
 
@@ -15146,39 +15149,61 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
   /* get channel mutex */
   channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
   
-  /* get link */
+  /* get link and pad */
   g_rec_mutex_lock(channel_mutex);
       
   link = channel->link;
 
+  pad = channel->pad;
+  
   g_rec_mutex_unlock(channel_mutex);
   
   if((AGS_SOUND_STAGING_CHECK_RT_DATA & (staging_flags)) != 0 ||
      (AGS_SOUND_STAGING_RUN_INIT_PRE & (staging_flags)) != 0){
     if(AGS_IS_OUTPUT(channel)){
-      /* add recall id */
-      ags_channel_recursive_setup_run_stage_down(channel,
+      if(pad == 0){
+	/* add recall id */
+	ags_channel_recursive_setup_run_stage_down(channel,
+						   recycling_context,
+						   sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID);
+      
+	ags_channel_recursive_setup_run_stage_up(link,
 						 recycling_context,
 						 sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID);
-      ags_channel_recursive_setup_run_stage_up(link,
-					       recycling_context,
-					       sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID);
-
-      /* duplicate */
-      ags_channel_recursive_prepare_run_stage_down(channel,
+	
+	/* duplicate */
+	ags_channel_recursive_prepare_run_stage_down(channel,
+						     recycling_context,
+						     sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_DUPLICATE);
+      
+	ags_channel_recursive_prepare_run_stage_up(link,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_DUPLICATE);
-      ags_channel_recursive_prepare_run_stage_up(link,
-						 recycling_context,
-						 sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_DUPLICATE);
 
-      /* resolve */
-      ags_channel_recursive_prepare_run_stage_down(channel,
+	/* resolve */
+	ags_channel_recursive_prepare_run_stage_down(channel,
+						     recycling_context,
+						     sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_RESOLVE);
+      
+	ags_channel_recursive_prepare_run_stage_up(link,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_RESOLVE);
-      ags_channel_recursive_prepare_run_stage_up(link,
+      }else{
+	/* add recall id */
+	ags_channel_recursive_setup_run_stage_up(channel,
 						 recycling_context,
-						 sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_RESOLVE);
+						 sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID);
+
+	/* duplicate */
+	ags_channel_recursive_prepare_run_stage_up(channel,
+						   recycling_context,
+						   sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_DUPLICATE);
+
+	/* resolve */
+	ags_channel_recursive_prepare_run_stage_up(channel,
+						   recycling_context,
+						   sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_RESOLVE);
+      }
     }else{
       /* add recall id */
       ags_channel_recursive_prepare_run_stage_down(link,
@@ -15208,12 +15233,61 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 
   if(AGS_IS_OUTPUT(channel)){
     /* do run stage - init/play recall */
-    ags_channel_recursive_do_run_stage_down(channel,
+    if(pad == 0){
+      AgsAudio *audio;
+      AgsChannel *start_output;
+      AgsChannel *output, *next;
+      
+      ags_channel_recursive_do_run_stage_down(channel,
+					      recycling_context,
+					      sound_scope, staging_flags);
+
+      audio = NULL;
+    
+      g_object_get(channel,
+		   "audio", &audio,
+		   NULL);
+
+      start_output = NULL;
+
+      g_object_get(audio,
+		   "output", &start_output,
+		   NULL);
+      
+      if(start_output != NULL){
+	output = start_output;
+	g_object_ref(output);
+
+	while(output != NULL){
+	  ags_channel_set_staging_completed(output, sound_scope);
+
+	  /* iterate */
+	  next = ags_channel_next(output);
+
+	  g_object_unref(output);
+	
+	  output = next;
+	}
+      }
+          
+      ags_channel_recursive_do_run_stage_up(link,
 					    recycling_context,
 					    sound_scope, staging_flags);
-    ags_channel_recursive_do_run_stage_up(link,
-					  recycling_context,
-					  sound_scope, staging_flags);
+
+      if(audio != NULL){
+	g_object_unref(audio);
+      }
+    
+      if(output != NULL){
+	g_object_unref(output);
+      }
+    }else{
+      while(!ags_channel_test_staging_completed(channel, sound_scope));
+
+      ags_channel_recursive_do_run_stage_up(channel,
+					    recycling_context,
+					    sound_scope, staging_flags);      
+    }
   }else{
     /* do run stage - init/play recall */
     ags_channel_recursive_do_run_stage_down(link,
@@ -15227,12 +15301,19 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
   if((AGS_SOUND_STAGING_CANCEL & (staging_flags)) != 0){
     if(AGS_IS_OUTPUT(channel)){
       /* cancel */
-      ags_channel_recursive_cleanup_run_stage_down(channel,
+      if(pad == 0){
+	ags_channel_recursive_cleanup_run_stage_down(channel,
+						     recycling_context,
+						     sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_CANCEL_RECALL);
+
+	ags_channel_recursive_cleanup_run_stage_up(link,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_CANCEL_RECALL);
-      ags_channel_recursive_cleanup_run_stage_up(link,
-						 recycling_context,
-						 sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_CANCEL_RECALL);
+      }else{
+	ags_channel_recursive_cleanup_run_stage_up(channel,
+						   recycling_context,
+						   sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_CANCEL_RECALL);
+      }      
     }else{
       /* cancel */
       ags_channel_recursive_cleanup_run_stage_down(link,
@@ -15247,12 +15328,19 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
   if((AGS_SOUND_STAGING_REMOVE & (staging_flags)) != 0){
     if(AGS_IS_OUTPUT(channel)){
       /* remove */
-      ags_channel_recursive_cleanup_run_stage_down(channel,
+      if(pad == 0){
+	ags_channel_recursive_cleanup_run_stage_down(channel,
+						     recycling_context,
+						     sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_REMOVE_RECALL);
+
+	ags_channel_recursive_cleanup_run_stage_up(link,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_REMOVE_RECALL);
-      ags_channel_recursive_cleanup_run_stage_up(link,
-						 recycling_context,
-						 sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_REMOVE_RECALL);
+      }else{
+	ags_channel_recursive_cleanup_run_stage_up(channel,
+						   recycling_context,
+						   sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_REMOVE_RECALL);
+      }
     }else{
       /* remove */
       ags_channel_recursive_cleanup_run_stage_down(link,
@@ -15266,12 +15354,19 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 
   if((AGS_SOUND_STAGING_FINI & (staging_flags)) != 0){
     if(AGS_IS_OUTPUT(channel)){
-      ags_channel_recursive_cleanup_run_stage_down(channel,
+      if(pad == 0){
+	ags_channel_recursive_cleanup_run_stage_down(channel,
+						     recycling_context,
+						     sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_SCOPE);
+
+	ags_channel_recursive_cleanup_run_stage_up(link,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_SCOPE);
-      ags_channel_recursive_cleanup_run_stage_up(link,
-						 recycling_context,
-						 sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_SCOPE);
+      }else{
+	ags_channel_recursive_cleanup_run_stage_up(channel,
+						   recycling_context,
+						   sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_SCOPE);
+      }
     }else{
       ags_channel_recursive_cleanup_run_stage_down(link,
 						   recycling_context,

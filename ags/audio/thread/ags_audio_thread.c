@@ -641,67 +641,68 @@ ags_audio_thread_run(AgsThread *thread)
   while(playback != NULL){    
     if(ags_playback_test_flags(playback->data, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
       ags_audio_thread_play_channel_super_threaded(audio_thread, playback->data);
-    }else{      
+    }else{
+      channel = NULL;
+      
       g_object_get(playback->data,
 		   "channel", &channel,
 		   NULL);
-
-      g_object_unref(channel);
       
       if(sound_scope >= 0){
 	if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK ||
 	   ags_playback_get_recall_id((AgsPlayback *) playback->data, sound_scope) == NULL){
 	  playback = playback->next;
-	  
-	  continue;
-	}
-
-	if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
-	  guint *staging_program;
-	
-	  guint staging_program_count;
-	  guint nth;
-
-	  staging_program = ags_audio_thread_get_staging_program(audio_thread,
-								 &staging_program_count);
-	
-	  for(nth = 0; nth < staging_program_count; nth++){
-	    ags_channel_recursive_run_stage(channel,
-					    sound_scope, staging_program[nth]);
+	}else{
+	  if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
+	    guint *staging_program;
+	    
+	    guint staging_program_count;
+	    guint nth;
+	    
+	    staging_program = ags_audio_thread_get_staging_program(audio_thread,
+								   &staging_program_count);
+	    
+	    for(nth = 0; nth < staging_program_count; nth++){
+	      ags_channel_recursive_run_stage(channel,
+					      sound_scope, staging_program[nth]);
+	    }
+	    
+	    g_free(staging_program);
+	    
+	    g_list_free_full(recall_id,
+			     g_object_unref);
 	  }
-
-	  g_free(staging_program);
-	  
-	  g_list_free_full(recall_id,
-			   g_object_unref);
 	}
       }else{	
 	for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
 	  if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK ||
 	     ags_playback_get_recall_id((AgsPlayback *) playback->data, sound_scope) == NULL){
-	    continue;
-	  }
-
-	  if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
-	    guint *staging_program;
+	  }else{
+	    if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
+	      guint *staging_program;
 	
-	    guint staging_program_count;
-	    guint nth;
+	      guint staging_program_count;
+	      guint nth;
 
-	    staging_program = ags_audio_thread_get_staging_program(audio_thread,
-								   &staging_program_count);
+	      staging_program = ags_audio_thread_get_staging_program(audio_thread,
+								     &staging_program_count);
 	
-	    for(nth = 0; nth < staging_program_count; nth++){
-	      ags_channel_recursive_run_stage(channel,
-					      sound_scope, staging_program[nth]);
-	    }
+	      for(nth = 0; nth < staging_program_count; nth++){
+		ags_channel_recursive_run_stage(channel,
+						sound_scope, staging_program[nth]);
+	      }
 
-	    g_free(staging_program);
+	      g_free(staging_program);
 	  
-	    g_list_free_full(recall_id,
-			     g_object_unref);
+	      g_list_free_full(recall_id,
+			       g_object_unref);
+	    }
 	  }
 	}
+      }
+
+      if(channel != NULL){
+	g_object_unref(channel);
       }
     }
     
