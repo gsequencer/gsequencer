@@ -520,6 +520,8 @@ ags_fx_pattern_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bpm
 
   /* delay */
   if(fx_pattern_audio != NULL){
+    port = NULL;
+    
     g_object_get(fx_pattern_audio,
 		 "delay", &port,
 		 NULL);
@@ -539,12 +541,15 @@ ags_fx_pattern_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bpm
   
   /* bpm */
   if(fx_pattern_audio != NULL){
+    port = NULL;
+    
     g_object_get(fx_pattern_audio,
 		 "bpm", &port,
 		 NULL);
 
     if(port != NULL){
       g_value_init(&value, G_TYPE_DOUBLE);
+
       g_value_set_double(&value, new_bpm);
 
       ags_port_safe_write(port, &value);

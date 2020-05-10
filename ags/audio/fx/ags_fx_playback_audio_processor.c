@@ -27,11 +27,26 @@
 #include <ags/i18n.h>
 
 void ags_fx_playback_audio_processor_class_init(AgsFxPlaybackAudioProcessorClass *fx_playback_audio_processor);
+void ags_fx_playback_audio_processor_seekable_interface_init(AgsSeekableInterface *seekable);
+void ags_fx_playback_audio_processor_countable_interface_init(AgsCountableInterface *countable);
+void ags_fx_playback_audio_processor_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_fx_playback_audio_processor_init(AgsFxPlaybackAudioProcessor *fx_playback_audio_processor);
 void ags_fx_playback_audio_processor_dispose(GObject *gobject);
 void ags_fx_playback_audio_processor_finalize(GObject *gobject);
 
-void ags_fx_playback_audio_processor_real_run_inter(AgsRecall *recall);
+void ags_fx_playback_audio_processor_seek(AgsSeekable *seekable,
+					  gint64 offset,
+					  guint whence);
+
+guint64 ags_fx_playback_audio_processor_get_wave_counter(AgsCountable *countable);
+
+gdouble ags_fx_playback_audio_processor_get_bpm(AgsTactable *tactable);
+gdouble ags_fx_playback_audio_processor_get_tact(AgsTactable *tactable);
+void ags_fx_playback_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
+void ags_fx_playback_audio_processor_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact);
+
+void ags_fx_playback_audio_processor_run_init_pre(AgsRecall *recall);
+void ags_fx_playback_audio_processor_run_inter(AgsRecall *recall);
 
 void ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_playback_audio_processor,
 						   AgsBuffer *buffer,
@@ -79,10 +94,40 @@ ags_fx_playback_audio_processor_get_type()
       (GInstanceInitFunc) ags_fx_playback_audio_processor_init,
     };
 
+    static const GInterfaceInfo ags_seekable_interface_info = {
+      (GInterfaceInitFunc) ags_fx_playback_audio_processor_seekable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_countable_interface_info = {
+      (GInterfaceInitFunc) ags_fx_playback_audio_processor_countable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_tactable_interface_info = {
+      (GInterfaceInitFunc) ags_fx_playback_audio_processor_tactable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_fx_playback_audio_processor = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
 								  "AgsFxPlaybackAudioProcessor",
 								  &ags_fx_playback_audio_processor_info,
 								  0);
+
+    g_type_add_interface_static(ags_type_fx_playback_audio_processor,
+				AGS_TYPE_COUNTABLE,
+				&ags_countable_interface_info);
+
+    g_type_add_interface_static(ags_type_fx_playback_audio_processor,
+				AGS_TYPE_SEEKABLE,
+				&ags_seekable_interface_info);
+
+    g_type_add_interface_static(ags_type_fx_playback_audio_processor,
+				AGS_TYPE_TACTABLE,
+				&ags_tactable_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_fx_playback_audio_processor);
   }
@@ -107,7 +152,8 @@ ags_fx_playback_audio_processor_class_init(AgsFxPlaybackAudioProcessorClass *fx_
   /* AgsRecallClass */
   recall = (AgsRecallClass *) fx_playback_audio_processor;
   
-  recall->run_inter = ags_fx_playback_audio_processor_real_run_inter;
+  recall->run_init_pre = ags_fx_playback_audio_processor_run_init_pre;
+  recall->run_inter = ags_fx_playback_audio_processor_run_inter;
 
   /* AgsFxPlaybackAudioProcessorClass */
   fx_playback_audio_processor->data_put = ags_fx_playback_audio_processor_real_data_put;
@@ -119,6 +165,41 @@ ags_fx_playback_audio_processor_class_init(AgsFxPlaybackAudioProcessorClass *fx_
   fx_playback_audio_processor->master = ags_fx_playback_audio_processor_real_master;
 
   fx_playback_audio_processor->counter_change = ags_fx_playback_audio_processor_real_counter_change;
+}
+
+void
+ags_fx_playback_audio_processor_seekable_interface_init(AgsSeekableInterface *seekable)
+{
+  seekable->seek = ags_fx_playback_audio_processor_seek;
+}
+
+void
+ags_fx_playback_audio_processor_countable_interface_init(AgsCountableInterface *countable)
+{
+  countable->get_sequencer_counter = NULL;
+  countable->get_notation_counter = NULL;
+  countable->get_wave_counter = ags_fx_playback_audio_processor_get_wave_counter;
+  countable->get_midi_counter = NULL;
+}
+
+void
+ags_fx_playback_audio_processor_tactable_interface_init(AgsTactableInterface *tactable)
+{
+  tactable->get_bpm = ags_fx_playback_audio_processor_get_bpm;
+  tactable->get_tact = ags_fx_playback_audio_processor_get_tact;
+
+  tactable->get_sequencer_duration = NULL;
+  tactable->get_notation_duration = NULL;
+  tactable->get_wave_duration = NULL;
+  tactable->get_midi_duration = NULL;
+
+  tactable->change_sequencer_duration = NULL;
+  tactable->change_notation_duration = NULL;
+  tactable->change_wave_duration = NULL;
+  tactable->change_midi_duration = NULL;
+
+  tactable->change_bpm = ags_fx_playback_audio_processor_change_bpm;
+  tactable->change_tact = ags_fx_playback_audio_processor_change_tact;
 }
 
 void
@@ -234,7 +315,446 @@ ags_fx_playback_audio_processor_finalize(GObject *gobject)
 }
 
 void
-ags_fx_playback_audio_processor_real_run_inter(AgsRecall *recall)
+ags_fx_playback_audio_processor_seek(AgsSeekable *seekable,
+				     gint64 offset,
+				     guint whence)
+{
+  AgsFxPlaybackAudio *fx_playback_audio;
+  AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
+  AgsPort *port;
+
+  gdouble playback_duration;
+  
+  GRecMutex *recall_mutex;
+
+  gdouble delay;
+  guint64 playback_counter;
+  guint buffer_size;
+
+  GValue value = {0,};
+
+  fx_playback_audio = NULL;
+  
+  fx_playback_audio_processor = AGS_FX_PLAYBACK_AUDIO_PROCESSOR(seekable);
+  
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_playback_audio_processor);
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
+  g_object_get(fx_playback_audio_processor,
+	       "recall-audio", &fx_playback_audio,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  /* delay */
+  port = NULL;
+
+  delay = AGS_SOUNDCARD_DEFAULT_DELAY;
+  
+  playback_duration = ceil(AGS_NOTATION_DEFAULT_DURATION * delay);
+      
+  g_object_get(fx_playback_audio,
+	       "delay", &port,
+	       NULL);
+
+  if(port != NULL){
+    g_value_init(&value, G_TYPE_DOUBLE);
+
+    ags_port_safe_read(port, &value);
+    
+    delay = g_value_get_double(&value);
+
+    g_value_unset(&value);
+	
+    g_object_unref(port);
+  }
+
+  /* duration */
+  port = NULL;
+
+  g_object_get(fx_playback_audio,
+	       "duration", &port,
+	       NULL);
+
+  if(port != NULL){
+    g_value_init(&value, G_TYPE_DOUBLE);
+
+    ags_port_safe_read(port, &value);
+    
+    playback_duration = g_value_get_double(&value);
+
+    g_value_unset(&value);
+	
+    g_object_unref(port);
+  }
+  
+  switch(whence){
+  case AGS_SEEK_CUR:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    playback_counter = fx_playback_audio_processor->offset_counter;
+
+    if(playback_counter + offset < 0){
+      playback_counter = (guint64) playback_duration - (guint64) ((offset - playback_counter) % (guint64) playback_duration);
+    }else{
+      playback_counter = (guint64) (playback_counter + offset) % (guint64) playback_duration;
+    }
+
+    fx_playback_audio_processor->delay_counter =
+      fx_playback_audio_processor->current_delay_counter = 0.0;
+
+    fx_playback_audio_processor->offset_counter = 
+      fx_playback_audio_processor->current_offset_counter = playback_counter;
+
+    fx_playback_audio_processor->x_offset = 
+      fx_playback_audio_processor->current_x_offset = (guint64) floor(playback_counter * delay) * buffer_size;
+  
+    g_rec_mutex_unlock(recall_mutex);
+  }
+  break;
+  case AGS_SEEK_END:
+  {      
+    g_rec_mutex_lock(recall_mutex);
+
+    playback_counter = fx_playback_audio_processor->offset_counter;
+
+    /* playback */
+    if(playback_duration + offset < 0){
+      playback_counter = (guint64) playback_duration - ((guint64) (offset - playback_duration) % (guint64) playback_duration);
+    }else{
+      playback_counter = (guint64) (playback_duration + offset) % (guint64) playback_duration;
+    }
+
+    fx_playback_audio_processor->delay_counter =
+      fx_playback_audio_processor->current_delay_counter = 0.0;
+
+    fx_playback_audio_processor->offset_counter =
+      fx_playback_audio_processor->current_offset_counter = playback_counter;
+  
+    fx_playback_audio_processor->x_offset = 
+      fx_playback_audio_processor->current_x_offset = (guint64) floor(playback_counter * delay) * buffer_size;
+
+    g_rec_mutex_unlock(recall_mutex);
+  }
+  break;
+  case AGS_SEEK_SET:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    fx_playback_audio_processor->delay_counter =
+      fx_playback_audio_processor->current_delay_counter = 0.0;
+      
+    fx_playback_audio_processor->offset_counter =
+      fx_playback_audio_processor->current_offset_counter = offset;
+
+    fx_playback_audio_processor->x_offset = 
+      fx_playback_audio_processor->current_x_offset = (guint64) floor(offset * delay) * buffer_size;
+    
+    g_rec_mutex_unlock(recall_mutex);
+  }
+  break;
+  }
+
+  if(fx_playback_audio != NULL){
+    g_object_unref(fx_playback_audio);
+  }
+}
+
+guint64
+ags_fx_playback_audio_processor_get_wave_counter(AgsCountable *countable)
+{
+  AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
+  
+  guint64 playback_counter;
+
+  GRecMutex *recall_mutex;
+
+  fx_playback_audio_processor = AGS_FX_PLAYBACK_AUDIO_PROCESSOR(countable);
+  
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_playback_audio_processor);
+
+  /* bpm */
+  g_rec_mutex_lock(recall_mutex);
+
+  playback_counter = fx_playback_audio_processor->offset_counter;
+  
+  g_rec_mutex_unlock(recall_mutex);
+  
+  return(playback_counter);
+}
+
+gdouble
+ags_fx_playback_audio_processor_get_bpm(AgsTactable *tactable)
+{
+  AgsFxPlaybackAudio *fx_playback_audio;
+  AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
+  AgsPort *port;
+  
+  gdouble bpm;
+  
+  GValue value = {0,};
+  
+  fx_playback_audio  = NULL;
+  
+  fx_playback_audio_processor = AGS_FX_PLAYBACK_AUDIO_PROCESSOR(tactable);
+
+  port = NULL;
+  
+  bpm = AGS_SOUNDCARD_DEFAULT_BPM;
+
+  g_object_get(fx_playback_audio_processor,
+	       "recall-audio", &fx_playback_audio,
+	       NULL);
+  
+  if(fx_playback_audio != NULL){
+    g_object_get(fx_playback_audio,
+		 "bpm", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_DOUBLE);
+
+      ags_port_safe_read(port, &value);
+
+      bpm = g_value_get_double(&value);
+
+      g_value_unset(&value);
+      
+      g_object_unref(port);
+    }
+  }
+  
+  if(fx_playback_audio != NULL){
+    g_object_unref(fx_playback_audio);
+  }
+  
+  return(bpm);
+}
+
+gdouble
+ags_fx_playback_audio_processor_get_tact(AgsTactable *tactable)
+{
+  AgsFxPlaybackAudio *fx_playback_audio;
+  AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
+  AgsPort *port;
+  
+  gdouble tact;
+  
+  GValue value = {0,};
+  
+  fx_playback_audio  = NULL;
+  
+  fx_playback_audio_processor = AGS_FX_PLAYBACK_AUDIO_PROCESSOR(tactable);
+
+  port = NULL;
+  
+  tact = AGS_SOUNDCARD_DEFAULT_TACT;
+
+  g_object_get(fx_playback_audio_processor,
+	       "recall-audio", &fx_playback_audio,
+	       NULL);
+  
+  if(fx_playback_audio != NULL){
+    g_object_get(fx_playback_audio,
+		 "tact", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_DOUBLE);
+
+      ags_port_safe_read(port, &value);
+
+      tact = g_value_get_double(&value);
+
+      g_value_unset(&value);
+      
+      g_object_unref(port);
+    }
+  }
+  
+  if(fx_playback_audio != NULL){
+    g_object_unref(fx_playback_audio);
+  }
+  
+  return(tact);
+}
+
+void
+ags_fx_playback_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm)
+{
+  AgsFxPlaybackAudio *fx_playback_audio;
+  AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
+  AgsPort *port;
+
+  GObject *output_soundcard;
+    
+  GValue value = {0,};
+
+  output_soundcard = NULL;
+  
+  fx_playback_audio  = NULL;
+  
+  fx_playback_audio_processor = AGS_FX_PLAYBACK_AUDIO_PROCESSOR(tactable);
+
+  port = NULL;
+  
+  g_object_get(fx_playback_audio_processor,
+	       "output-soundcard", &output_soundcard,
+	       "recall-audio", &fx_playback_audio,
+	       NULL);
+
+  /* delay */
+  if(fx_playback_audio != NULL){
+    port = NULL;
+    
+    g_object_get(fx_playback_audio,
+		 "delay", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_DOUBLE);
+
+      g_value_set_double(&value, ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard)));
+
+      ags_port_safe_write(port, &value);
+
+      g_value_unset(&value);
+
+      g_object_unref(port);
+    }
+  }
+  
+  /* bpm */
+  if(fx_playback_audio != NULL){
+    port = NULL;
+    
+    g_object_get(fx_playback_audio,
+		 "bpm", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_DOUBLE);
+
+      g_value_set_double(&value, new_bpm);
+
+      ags_port_safe_write(port, &value);
+
+      g_value_unset(&value);
+      
+      g_object_unref(port);
+    }
+  }
+  
+  if(fx_playback_audio != NULL){
+    g_object_unref(fx_playback_audio);
+  }
+}
+
+void
+ags_fx_playback_audio_processor_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact)
+{
+  AgsFxPlaybackAudio *fx_playback_audio;
+  AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
+  AgsPort *port;
+    
+  GObject *output_soundcard;
+
+  GValue value = {0,};
+
+  output_soundcard = NULL;
+  
+  fx_playback_audio  = NULL;
+  
+  fx_playback_audio_processor = AGS_FX_PLAYBACK_AUDIO_PROCESSOR(tactable);
+
+  port = NULL;
+  
+  g_object_get(fx_playback_audio_processor,
+	       "output-soundcard", &output_soundcard,
+	       "recall-audio", &fx_playback_audio,
+	       NULL);
+  /* delay */
+  if(fx_playback_audio != NULL){
+    port = NULL;
+    
+    g_object_get(fx_playback_audio,
+		 "delay", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_DOUBLE);
+
+      g_value_set_double(&value, ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard)));
+
+      ags_port_safe_write(port, &value);
+
+      g_value_unset(&value);
+
+      g_object_unref(port);
+    }
+  }
+  
+  /* tact */
+  if(fx_playback_audio != NULL){
+    port = NULL;
+    
+    g_object_get(fx_playback_audio,
+		 "tact", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_DOUBLE);
+
+      g_value_set_double(&value, new_tact);
+
+      ags_port_safe_write(port, &value);
+
+      g_value_unset(&value);
+      
+      g_object_unref(port);
+    }
+  }
+  
+  if(fx_playback_audio != NULL){
+    g_object_unref(fx_playback_audio);
+  }
+}
+
+void
+ags_fx_playback_audio_processor_run_init_pre(AgsRecall *recall)
+{
+  AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
+
+  gdouble delay_counter;
+  
+  GRecMutex *fx_playback_audio_processor_mutex;
+
+  fx_playback_audio_processor = AGS_FX_PLAYBACK_AUDIO_PROCESSOR(recall);
+  
+  fx_playback_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_playback_audio_processor);
+
+  /* get delay counter */
+  g_rec_mutex_lock(fx_playback_audio_processor_mutex);
+    
+  fx_playback_audio_processor->delay_counter = 0;
+  fx_playback_audio_processor->offset_counter = 0;
+  fx_playback_audio_processor->x_offset = 0;
+
+  fx_playback_audio_processor->current_delay_counter = 0;
+  fx_playback_audio_processor->current_offset_counter = 0;
+  fx_playback_audio_processor->current_x_offset = 0;
+
+  g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_fx_playback_audio_processor_parent_class)->run_init_pre(recall);
+}
+
+void
+ags_fx_playback_audio_processor_run_inter(AgsRecall *recall)
 {
   AgsRecallID *recall_id;
   AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
@@ -598,7 +1118,7 @@ ags_fx_playback_audio_processor_real_play(AgsFxPlaybackAudioProcessor *fx_playba
 
   guint audio_channel;
   guint64 relative_offset;
-  guint64 current_x_offset;
+  guint64 x_offset;
   guint attack;
   guint samplerate;
   guint buffer_size;
@@ -621,7 +1141,7 @@ ags_fx_playback_audio_processor_real_play(AgsFxPlaybackAudioProcessor *fx_playba
 
   timestamp = fx_playback_audio_processor->timestamp;
   
-  current_x_offset = fx_playback_audio_processor->current_x_offset;
+  x_offset = fx_playback_audio_processor->x_offset;
   
   g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
 
@@ -629,14 +1149,14 @@ ags_fx_playback_audio_processor_real_play(AgsFxPlaybackAudioProcessor *fx_playba
   relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 
   ags_timestamp_set_ags_offset(timestamp,
-			       (guint64) (relative_offset * floor((double) current_x_offset / (double) relative_offset)));
+			       (guint64) (relative_offset * floor((double) x_offset / (double) relative_offset)));
 
-  attack = (current_x_offset % relative_offset) % buffer_size;
+  attack = (x_offset % relative_offset) % buffer_size;
 
   frame_count = buffer_size - attack;
 
-  if(current_x_offset + frame_count > relative_offset * floor(current_x_offset / relative_offset) + relative_offset){
-    frame_count = relative_offset * floor((current_x_offset + frame_count) / relative_offset) - current_x_offset;
+  if(x_offset + frame_count > relative_offset * floor(x_offset / relative_offset) + relative_offset){
+    frame_count = relative_offset * floor((x_offset + frame_count) / relative_offset) - x_offset;
   }
   
   /* find wave - attempt #0 */
@@ -653,7 +1173,7 @@ ags_fx_playback_audio_processor_real_play(AgsFxPlaybackAudioProcessor *fx_playba
     AgsBuffer *buffer;
 
     buffer = ags_wave_find_point(wave->data,
-				 current_x_offset,
+				 x_offset,
 				 FALSE);
 
     if(buffer != NULL){
@@ -667,7 +1187,7 @@ ags_fx_playback_audio_processor_real_play(AgsFxPlaybackAudioProcessor *fx_playba
   if(attack != 0 ||
      frame_count != buffer_size){
     ags_timestamp_set_ags_offset(timestamp,
-				 (guint64) (relative_offset * floor((double) (current_x_offset + frame_count) / (double) relative_offset)));
+				 (guint64) (relative_offset * floor((double) (x_offset + frame_count) / (double) relative_offset)));
 
     wave = ags_wave_find_near_timestamp(start_wave, audio_channel,
 					timestamp);
@@ -676,7 +1196,7 @@ ags_fx_playback_audio_processor_real_play(AgsFxPlaybackAudioProcessor *fx_playba
       AgsBuffer *buffer;
 
       buffer = ags_wave_find_point(wave->data,
-				   current_x_offset + frame_count,
+				   x_offset + frame_count,
 				   FALSE);
 
       if(buffer != NULL){
@@ -733,7 +1253,7 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
   guint audio_channel;  
   gint input_soundcard_channel;
   guint64 relative_offset;
-  guint64 current_x_offset;
+  guint64 x_offset;
   guint attack;
   guint samplerate, target_samplerate, file_samplerate;
   guint buffer_size, target_buffer_size, file_buffer_size;
@@ -805,7 +1325,7 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 
   timestamp = fx_playback_audio_processor->timestamp;
   
-  current_x_offset = fx_playback_audio_processor->current_x_offset;
+  x_offset = fx_playback_audio_processor->x_offset;
   
   g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
 
@@ -813,9 +1333,9 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
   relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * target_samplerate;
 
   ags_timestamp_set_ags_offset(timestamp,
-			       (guint64) (relative_offset * floor((double) current_x_offset / (double) relative_offset)));
+			       (guint64) (relative_offset * floor((double) x_offset / (double) relative_offset)));
 
-  attack = (current_x_offset % relative_offset) % target_buffer_size;
+  attack = (x_offset % relative_offset) % target_buffer_size;
 
   frame_count = target_buffer_size - attack;
 
@@ -1000,7 +1520,7 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 		   "timestamp", &current_timestamp,
 		   NULL);
       ags_timestamp_set_ags_offset(current_timestamp,
-				   relative_offset * floor(current_x_offset / relative_offset));
+				   relative_offset * floor(x_offset / relative_offset));
       
       ags_audio_add_wave(audio,
 			 (GObject *) current_wave);
@@ -1010,14 +1530,14 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
       current_wave = wave->data;
     
       buffer = ags_wave_find_point(current_wave,
-				   current_x_offset,
+				   x_offset,
 				   FALSE);
     }
   
     if(buffer == NULL){
       /* instantiate buffer */
       buffer = ags_buffer_new();
-      buffer->x = current_x_offset;
+      buffer->x = x_offset;
       
       ags_wave_add_buffer(current_wave,
 			  buffer,
@@ -1034,7 +1554,7 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
     target_copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
 							   ags_audio_buffer_util_format_from_soundcard(format));
 
-    attack = (current_x_offset % relative_offset) % target_buffer_size;
+    attack = (x_offset % relative_offset) % target_buffer_size;
   
     g_rec_mutex_lock(buffer_mutex);
     ags_soundcard_lock_buffer(AGS_SOUNDCARD(input_soundcard), data);
@@ -1061,7 +1581,7 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
     if(attack != 0 ||
        frame_count != buffer_size){
       ags_timestamp_set_ags_offset(timestamp,
-				   (guint64) (relative_offset * floor((double) (current_x_offset + frame_count) / (double) relative_offset)));
+				   (guint64) (relative_offset * floor((double) (x_offset + frame_count) / (double) relative_offset)));
 
       wave = ags_wave_find_near_timestamp(start_wave, audio_channel,
 					  timestamp);
@@ -1081,7 +1601,7 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 		     "timestamp", &current_timestamp,
 		     NULL);
 	ags_timestamp_set_ags_offset(current_timestamp,
-				     (guint64) (relative_offset * floor((double) (current_x_offset + frame_count) / (double) relative_offset)));
+				     (guint64) (relative_offset * floor((double) (x_offset + frame_count) / (double) relative_offset)));
       
 	ags_audio_add_wave(audio,
 			   (GObject *) current_wave);
@@ -1091,14 +1611,14 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 	current_wave = wave->data;
     
 	buffer = ags_wave_find_point(current_wave,
-				     current_x_offset + frame_count,
+				     x_offset + frame_count,
 				     FALSE);
       }
   
       if(buffer == NULL){
 	/* instantiate buffer */
 	buffer = ags_buffer_new();
-	buffer->x = current_x_offset + frame_count;
+	buffer->x = x_offset + frame_count;
       
 	ags_wave_add_buffer(current_wave,
 			    buffer,
@@ -1405,7 +1925,11 @@ ags_fx_playback_audio_processor_real_counter_change(AgsFxPlaybackAudioProcessor 
 {
   AgsFxPlaybackAudio *fx_playback_audio;
 
+  GObject *output_soundcard;
+
   gdouble delay;
+  guint delay_counter;
+  guint offset_counter;
   gboolean loop;
   guint64 loop_start, loop_end;
   guint buffer_size;
@@ -1416,11 +1940,14 @@ ags_fx_playback_audio_processor_real_counter_change(AgsFxPlaybackAudioProcessor 
   
   fx_playback_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_playback_audio_processor);
 
+  output_soundcard = NULL;
+
   fx_playback_audio = NULL;
 
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   
   g_object_get(fx_playback_audio_processor,
+	       "output-soundcard", &output_soundcard,
 	       "recall-audio", &fx_playback_audio,
 	       "buffer-size", &buffer_size,
 	       NULL);
@@ -1508,31 +2035,49 @@ ags_fx_playback_audio_processor_real_counter_change(AgsFxPlaybackAudioProcessor 
     }
   }
 
-  if(delay + 1.0 >= delay){
+  g_rec_mutex_lock(fx_playback_audio_processor_mutex);
+
+  delay_counter = floor(fx_playback_audio_processor->delay_counter);
+
+  offset_counter = fx_playback_audio_processor->offset_counter;
+  
+  g_rec_mutex_unlock(fx_playback_audio_processor_mutex);  
+
+  if(output_soundcard != NULL){
+    delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+
+    delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+  }
+
+  if(delay_counter + 1.0 >= delay){
     g_rec_mutex_lock(fx_playback_audio_processor_mutex);
     
-    fx_playback_audio_processor->delay_counter = 0.0;
+    fx_playback_audio_processor->current_delay_counter = 0.0;
 
     if(loop &&
-       fx_playback_audio_processor->offset_counter + 1 >= loop_end){
-      fx_playback_audio_processor->offset_counter = loop_start;
+       offset_counter + 1 >= loop_end){
+      fx_playback_audio_processor->current_offset_counter = loop_start;
 
-      fx_playback_audio_processor->x_offset = (guint64) floor(loop_start * delay) * buffer_size;
+      fx_playback_audio_processor->current_x_offset = (guint64) floor(loop_start * delay) * buffer_size;
     }else{
-      fx_playback_audio_processor->offset_counter += 1;
+      fx_playback_audio_processor->current_offset_counter += 1;
 
-      fx_playback_audio_processor->x_offset += buffer_size;
+      fx_playback_audio_processor->current_x_offset += buffer_size;
     }
     
     g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
   }else{
     g_rec_mutex_lock(fx_playback_audio_processor_mutex);
     
-    fx_playback_audio_processor->delay_counter += 1.0;
+    fx_playback_audio_processor->current_delay_counter += 1.0;
 
-    fx_playback_audio_processor->x_offset += buffer_size;
+    fx_playback_audio_processor->current_x_offset += buffer_size;
 
     g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
+  }
+  
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
   }
   
   if(fx_playback_audio != NULL){

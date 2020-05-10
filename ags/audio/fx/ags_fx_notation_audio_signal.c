@@ -205,8 +205,8 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
     /* get delay counter */
     g_rec_mutex_lock(fx_notation_audio_processor_mutex);
     
-    delay_counter = fx_notation_audio_processor->current_delay_counter;
-    offset_counter = fx_notation_audio_processor->current_offset_counter;
+    delay_counter = fx_notation_audio_processor->delay_counter;
+    offset_counter = fx_notation_audio_processor->offset_counter;
 
     g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
   }
