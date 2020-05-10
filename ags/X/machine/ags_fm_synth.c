@@ -393,6 +393,7 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
   GList *task;
   
   guint output_lines;
+  guint requested_frame_count;
   guint buffer_size;
   guint attack, frame_count;
   gdouble frequency, phase, start_frequency;
@@ -417,8 +418,7 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
   start_frequency = (gdouble) gtk_spin_button_get_value(fm_synth->lower);
 
   /* clear output */
-  input_pad_start = 
-    input_pad = gtk_container_get_children((GtkContainer *) fm_synth->input_pad);
+  input_pad_start = gtk_container_get_children((GtkContainer *) fm_synth->input_pad);
 
   g_object_get(audio,
 	       "output", &start_output,
@@ -474,8 +474,30 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
   if(next_channel != NULL){
     g_object_unref(next_channel);
   }
+
+  input_pad = input_pad_start;
+
+  requested_frame_count = 0;
+  
+  while(input_pad != NULL){
+    guint current_frame_count;
+    
+    input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
+    fm_oscillator = AGS_FM_OSCILLATOR(gtk_container_get_children((GtkContainer *) AGS_LINE(input_line->data)->expander->table)->data);
+
+    current_frame_count = gtk_spin_button_get_value(fm_oscillator->attack) + gtk_spin_button_get_value(fm_oscillator->frame_count);
+    
+    if(requested_frame_count < current_frame_count){
+      requested_frame_count = current_frame_count;
+    }
+    
+    /* iterate */
+    input_pad = input_pad->next;
+  }
   
   /* write output */  
+  input_pad = input_pad_start;
+
   while(input_pad != NULL){
     AgsChannel *input;
 
@@ -570,6 +592,10 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
     apply_synth = ags_apply_synth_new(synth_generator->data,
 				      start_output,
 				      start_frequency, output_lines);
+    g_object_set(apply_synth,
+		 "requested-frame-count", requested_frame_count,
+		 NULL);
+
     task = g_list_prepend(task,
 			  apply_synth);
 

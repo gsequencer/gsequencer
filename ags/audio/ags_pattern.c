@@ -546,8 +546,6 @@ ags_pattern_dispose(GObject *gobject)
 
   /* channel */
   if(pattern->channel != NULL){
-    g_object_run_dispose(G_OBJECT(pattern->channel));
-    
     g_object_unref(G_OBJECT(pattern->channel));
   }
 

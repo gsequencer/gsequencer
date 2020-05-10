@@ -435,8 +435,10 @@ ags_recycling_context_dispose(GObject *gobject)
 				  NULL);
 
   while(list != NULL){
-    ags_recycling_context_remove_child(recycling_context,
-				       list->data);
+    g_object_set(list->data,
+		 "parent", NULL,
+		 NULL);
+    g_object_unref(list->data);
     
     list = list->next;
   }

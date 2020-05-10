@@ -281,8 +281,8 @@ ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
 		   NULL);
     
       if(offset_counter >= x0){
-#ifdef AGS_DEBUG
 	g_message("ags-fx-pattern{%d} [%d] -> [%d] 0x%x", length, template_frame_count, frame_count, source);
+#ifdef AGS_DEBUG
 #endif
 	
 	if(frame_count <= template_frame_count){
