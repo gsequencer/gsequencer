@@ -211,6 +211,8 @@ ags_fx_playback_audio_processor_init(AgsFxPlaybackAudioProcessor *fx_playback_au
   AGS_RECALL(fx_playback_audio_processor)->xml_type = "ags-fx-playback-audio-processor";
 
   /* counter */
+  fx_playback_audio_processor->delay_completion = 0.0;
+
   fx_playback_audio_processor->delay_counter = 0.0;
   fx_playback_audio_processor->offset_counter = 0;
 
@@ -1927,6 +1929,7 @@ ags_fx_playback_audio_processor_real_counter_change(AgsFxPlaybackAudioProcessor 
 
   GObject *output_soundcard;
 
+  gdouble delay_completion;
   gdouble delay;
   guint delay_counter;
   guint offset_counter;
@@ -2037,6 +2040,8 @@ ags_fx_playback_audio_processor_real_counter_change(AgsFxPlaybackAudioProcessor 
 
   g_rec_mutex_lock(fx_playback_audio_processor_mutex);
 
+  delay_completion = fx_playback_audio_processor->delay_completion;
+
   delay_counter = floor(fx_playback_audio_processor->delay_counter);
 
   offset_counter = fx_playback_audio_processor->offset_counter;
@@ -2049,9 +2054,11 @@ ags_fx_playback_audio_processor_real_counter_change(AgsFxPlaybackAudioProcessor 
     delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
   }
 
-  if(delay_counter + 1.0 >= delay){
+  if(delay_counter + 1.0 >= delay - delay_completion){
     g_rec_mutex_lock(fx_playback_audio_processor_mutex);
     
+    fx_playback_audio_processor->delay_completion = (delay_counter + 1.0) - (delay + delay_completion);
+
     fx_playback_audio_processor->current_delay_counter = 0.0;
 
     if(loop &&

@@ -210,6 +210,8 @@ ags_fx_pattern_audio_processor_init(AgsFxPatternAudioProcessor *fx_pattern_audio
   AGS_RECALL(fx_pattern_audio_processor)->xml_type = "ags-fx-pattern-audio-processor";
 
   /* counter */
+  fx_pattern_audio_processor->delay_completion = 0.0;
+
   fx_pattern_audio_processor->delay_counter = 0.0;
   fx_pattern_audio_processor->offset_counter = 0;
 
@@ -1140,7 +1142,8 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
   AgsFxPatternAudio *fx_pattern_audio;
 
   GObject *output_soundcard;
-  
+
+  gdouble delay_completion;
   gdouble delay;
   guint delay_counter;
   guint offset_counter;
@@ -1247,6 +1250,8 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
 
   g_rec_mutex_lock(fx_pattern_audio_processor_mutex);
 
+  delay_completion = fx_pattern_audio_processor->delay_completion;
+  
   delay_counter = floor(fx_pattern_audio_processor->delay_counter);
 
   offset_counter = fx_pattern_audio_processor->offset_counter;
@@ -1259,11 +1264,12 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
     delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
   }
   
-  if(delay_counter + 1.0 >= delay){
+  if(delay_counter + 1.0 >= delay - delay_completion){
     g_rec_mutex_lock(fx_pattern_audio_processor_mutex);
 
-    //FIXME:JK: counter problem
-    fx_pattern_audio_processor->current_delay_counter = 0.0; // fx_pattern_audio_processor->delay_counter + 1.0 - delay;
+    fx_pattern_audio_processor->delay_completion = (delay_counter + 1.0) - (delay + delay_completion);
+
+    fx_pattern_audio_processor->current_delay_counter = 0.0;
     
     if(loop &&
        offset_counter + 1 >= loop_end){

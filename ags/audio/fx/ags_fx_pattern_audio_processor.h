@@ -46,6 +46,8 @@ typedef struct _AgsFxPatternAudioProcessorClass AgsFxPatternAudioProcessorClass;
 struct _AgsFxPatternAudioProcessor
 {
   AgsRecallAudioRun recall_audio_run;
+
+  gdouble delay_completion;
   
   gdouble delay_counter;  
   guint64 offset_counter;
