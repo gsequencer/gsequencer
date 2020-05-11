@@ -272,7 +272,7 @@ ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_
      live_lv2_bridge->ui_feature != NULL &&
      live_lv2_bridge->ui_feature[1] != NULL &&
      live_lv2_bridge->ui_feature[1]->data != NULL){
-    ((struct _LV2UI_Show_Interface *) live_lv2_bridge->ui_feature[1]->data)->show(live_lv2_bridge->ui_handle[0]);
+    ((LV2UI_Show_Interface *) live_lv2_bridge->ui_feature[1]->data)->show(live_lv2_bridge->ui_handle[0]);
   }else if(live_lv2_bridge->ui_widget != NULL){
     GtkWindow *window;
 

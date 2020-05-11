@@ -271,7 +271,7 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
   if(lv2_bridge->ui_handle != NULL &&
      lv2ui_plugin->feature != NULL &&
      lv2ui_plugin->feature[1]->data != NULL){
-    ((struct _LV2UI_Show_Interface *) lv2ui_plugin->feature[1]->data)->show(lv2_bridge->ui_handle[0]);
+    ((LV2UI_Show_Interface *) lv2ui_plugin->feature[1]->data)->show(lv2_bridge->ui_handle[0]);
   }else if(lv2_bridge->ui_widget != NULL){
     GtkWindow *window;
 

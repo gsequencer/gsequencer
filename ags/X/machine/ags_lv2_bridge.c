@@ -1352,7 +1352,7 @@ ags_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget)
     
     if(lv2ui_plugin->feature != NULL &&
        lv2ui_plugin->feature[0]->data != NULL){
-      retval = ((struct _LV2UI_Idle_Interface *) lv2ui_plugin->feature[0]->data)->idle(lv2_bridge->ui_handle[0]);
+      retval = ((LV2UI_Idle_Interface *) lv2ui_plugin->feature[0]->data)->idle(lv2_bridge->ui_handle[0]);
 
       if(retval != 0){
 	g_hash_table_remove(ags_lv2_bridge_lv2ui_handle,
