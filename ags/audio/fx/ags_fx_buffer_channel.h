@@ -38,6 +38,7 @@ G_BEGIN_DECLS
 #define AGS_FX_BUFFER_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_BUFFER_CHANNEL, AgsFxBufferChannelClass))
 
 #define AGS_FX_BUFFER_CHANNEL_INPUT_DATA(ptr) ((AgsFxBufferChannelInputData *) (ptr))
+#define AGS_FX_BUFFER_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxBufferChannelInputData *)(ptr))->strct_mutex))
 
 typedef struct _AgsFxBufferChannel AgsFxBufferChannel;
 typedef struct _AgsFxBufferChannelInputData AgsFxBufferChannelInputData;
@@ -57,6 +58,8 @@ struct _AgsFxBufferChannelClass
 
 struct _AgsFxBufferChannelInputData
 {
+  GRecMutex strct_mutex;
+
   gpointer parent;
 
   GHashTable *destination;
@@ -67,6 +70,18 @@ GType ags_fx_buffer_channel_get_type();
 /* runtime */
 AgsFxBufferChannelInputData* ags_fx_buffer_channel_input_data_alloc();
 void ags_fx_buffer_channel_input_data_free(AgsFxBufferChannelInputData *input_data);
+
+/* get/set AgsFxBufferChannelInputData */
+GRecMutex* ags_fx_buffer_channel_input_data_get_strct_mutex(AgsFxBufferChannelInputData *input_data);
+
+gpointer ags_fx_buffer_channel_input_get_parent(AgsFxBufferChannelInputData *input_data);
+
+gpointer ags_fx_buffer_channel_input_get_destination(AgsFxBufferChannelInputData *input_data);
+
+/* get/set AgsFxBufferChannel */
+AgsFxBufferChannelInputData* ags_fx_buffer_channel_get_input_data(AgsFxBufferChannel *fx_buffer_channel,
+								  gint sound_scope);
+
 /* instantiate */
 AgsFxBufferChannel* ags_fx_buffer_channel_new(AgsChannel *channel);
 

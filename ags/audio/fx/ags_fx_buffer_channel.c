@@ -137,7 +137,7 @@ ags_fx_buffer_channel_finalize(GObject *gobject)
  * 
  * Allocate #AgsFxBufferChannelInputData-struct
  * 
- * Returns: the new #AgsFxBufferChannelInputData-struct
+ * Returns: (type gpointer) (transfer full): the new #AgsFxBufferChannelInputData-struct
  * 
  * Since: 3.3.0
  */
@@ -155,16 +155,16 @@ ags_fx_buffer_channel_input_data_alloc()
 						  g_object_unref,
 						  g_object_unref);
 #else
-						  NULL,
-						  NULL);
+  NULL,
+    NULL);
 #endif
 
-  return(input_data);
+return(input_data);
 }
 
 /**
  * ags_fx_buffer_channel_input_data_free:
- * @input_data: the #AgsFxBufferChannelInputData-struct
+ * @input_data: (type gpointer) (transfer full): the #AgsFxBufferChannelInputData-struct
  * 
  * Free @input_data.
  * 
@@ -180,6 +180,130 @@ ags_fx_buffer_channel_input_data_free(AgsFxBufferChannelInputData *input_data)
   g_hash_table_destroy(input_data->destination);
 
   g_free(input_data);
+}
+
+
+/**
+ * ags_fx_buffer_channel_input_data_get_strct_mutex:
+ * @input_data: (type gpointer) (transfer none): the #AgsFxBufferChannelInputData
+ * 
+ * Get structure mutex.
+ * 
+ * Returns: (type gpointer) (transfer none): the #GRecMutex to lock @input_data
+ * 
+ * Since: 3.3.0
+ */
+GRecMutex*
+ags_fx_buffer_channel_input_data_get_strct_mutex(AgsFxBufferChannelInputData *input_data)
+{
+  if(input_data == NULL){
+    return(NULL);
+  }
+
+  return(AGS_FX_BUFFER_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data));
+}
+
+/**
+ * ags_fx_buffer_channel_input_get_parent:
+ * @input_data: (type gpointer) (transfer none): the #AgsFxBufferChannelInputData-struct
+ * 
+ * Get parent of @input_data.
+ * 
+ * Returns: (type gpointer) (transfer none): the parent
+ * 
+ * Since: 3.3.0
+ */
+gpointer
+ags_fx_buffer_channel_input_get_parent(AgsFxBufferChannelInputData *input_data)
+{
+  gpointer parent;
+  
+  GRecMutex *input_data_mutex;
+  
+  if(input_data == NULL){
+    return(NULL);
+  }
+
+  input_data_mutex = AGS_FX_BUFFER_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data);
+
+  /* parent */
+  g_rec_mutex_lock(input_data_mutex);
+
+  parent = input_data->parent;
+  
+  g_rec_mutex_unlock(input_data_mutex);
+
+  return(parent);
+}
+
+/**
+ * ags_fx_buffer_channel_input_get_destination:
+ * @input_data: (type gpointer) (transfer none): the #AgsFxBufferChannelInputData-struct
+ * 
+ * Get destination of @input_data.
+ * 
+ * Returns: (element-type AgsAudio.Recycling AgsAudio.AudioSignal) (transfer none): the destination
+ * 
+ * Since: 3.3.0
+ */
+gpointer
+ags_fx_buffer_channel_input_get_destination(AgsFxBufferChannelInputData *input_data)
+{
+  gpointer destination;
+  
+  GRecMutex *input_data_mutex;
+  
+  if(input_data == NULL){
+    return(NULL);
+  }
+
+  input_data_mutex = AGS_FX_BUFFER_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data);
+
+  /* destination */
+  g_rec_mutex_lock(input_data_mutex);
+
+  destination = input_data->destination;
+  
+  g_rec_mutex_unlock(input_data_mutex);
+
+  return(destination);
+}
+
+/**
+ * ags_fx_buffer_channel_get_input_data:
+ * @fx_buffer_channel: the #AgsFxBufferChannel
+ * @sound_scope: the sound scope
+ * 
+ * Get input data from @fx_buffer_channel by @sound_scope.
+ * 
+ * Returns: (type gpointer) (transfer none): the matching #AgsFxBufferChannelInputData-struct
+ * 
+ * Since: 3.3.0
+ */
+AgsFxBufferChannelInputData*
+ags_fx_buffer_channel_get_input_data(AgsFxBufferChannel *fx_buffer_channel,
+				     gint sound_scope)
+{
+  AgsFxBufferChannelInputData *input_data;
+  
+  GRecMutex *fx_buffer_channel_mutex;
+  
+  if(!AGS_IS_FX_BUFFER_CHANNEL(fx_buffer_channel) ||
+     sound_scope < 0 ||
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
+    return(NULL);
+  }
+
+  fx_buffer_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_buffer_channel);
+
+  /* input data */
+  g_rec_mutex_lock(fx_buffer_channel_mutex);
+
+  input_data = fx_buffer_channel->input_data[sound_scope];
+  
+  g_rec_mutex_unlock(fx_buffer_channel_mutex);
+
+  return(input_data);
 }
 
 /**

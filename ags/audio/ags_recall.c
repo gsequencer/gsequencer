@@ -2191,7 +2191,7 @@ ags_recall_global_get_rt_safe()
  * 
  * Get object mutex.
  * 
- * Returns: the #GRecMutex to lock @recall
+ * Returns: (type gpointer) (transfer none): the #GRecMutex to lock @recall
  * 
  * Since: 3.1.0
  */

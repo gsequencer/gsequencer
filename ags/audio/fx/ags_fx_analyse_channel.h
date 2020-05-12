@@ -83,9 +83,9 @@ GType ags_fx_analyse_channel_get_type();
 AgsFxAnalyseChannelInputData* ags_fx_analyse_channel_input_data_alloc();
 void ags_fx_analyse_channel_input_data_free(AgsFxAnalyseChannelInputData *input_data);
 
+/* get/set AgsFxAnalyseChannelInputData */
 GRecMutex* ags_fx_analyse_channel_input_data_get_strct_mutex(AgsFxAnalyseChannelInputData *input_data);
 
-/* get/set AgsFxAnalyseChannelInputData */
 gpointer ags_fx_analyse_channel_input_get_parent(AgsFxAnalyseChannelInputData *input_data);
 
 gpointer ags_fx_analyse_channel_input_get_in(AgsFxAnalyseChannelInputData *input_data);
