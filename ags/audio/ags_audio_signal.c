@@ -3423,7 +3423,7 @@ ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
 
   samplerate = audio_signal->samplerate;
   delay = audio_signal->delay;
-  attack = audio_signal->attack;
+  attack = 0; // audio_signal->attack; is for parent
   
   old_length = audio_signal->length;
   old_last_frame = audio_signal->last_frame;

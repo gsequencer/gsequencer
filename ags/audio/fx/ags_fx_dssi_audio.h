@@ -47,8 +47,13 @@ G_BEGIN_DECLS
 #define AGS_FX_DSSI_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_DSSI_AUDIO, AgsFxDssiAudioClass))
 
 #define AGS_FX_DSSI_AUDIO_SCOPE_DATA(ptr) ((AgsFxDssiAudioScopeData *) (ptr))
+#define AGS_FX_DSSI_AUDIO_SCOPE_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxDssiAudioScopeData *)(ptr))->strct_mutex))
+
 #define AGS_FX_DSSI_AUDIO_CHANNEL_DATA(ptr) ((AgsFxDssiAudioChannelData *) (ptr))
+#define AGS_FX_DSSI_AUDIO_CHANNEL_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxDssiAudioChannelData *)(ptr))->strct_mutex))
+
 #define AGS_FX_DSSI_AUDIO_INPUT_DATA(ptr) ((AgsFxDssiAudioInputData *) (ptr))
+#define AGS_FX_DSSI_AUDIO_INPUT_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxDssiAudioInputData *)(ptr))->strct_mutex))
 
 typedef struct _AgsFxDssiAudio AgsFxDssiAudio;
 typedef struct _AgsFxDssiAudioScopeData AgsFxDssiAudioScopeData;
@@ -89,6 +94,8 @@ struct _AgsFxDssiAudioClass
 
 struct _AgsFxDssiAudioScopeData
 {
+  GRecMutex strct_mutex;
+  
   gpointer parent;
   
   guint audio_channels;
@@ -98,6 +105,8 @@ struct _AgsFxDssiAudioScopeData
 
 struct _AgsFxDssiAudioChannelData
 {
+  GRecMutex strct_mutex;
+  
   gpointer parent;
 
   guint event_count;
@@ -112,6 +121,8 @@ struct _AgsFxDssiAudioChannelData
 
 struct _AgsFxDssiAudioInputData
 {
+  GRecMutex strct_mutex;
+  
   gpointer parent;
 
   LADSPA_Data *output;
