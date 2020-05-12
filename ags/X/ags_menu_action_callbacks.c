@@ -970,7 +970,8 @@ ags_menu_action_add_audiorec_callback(GtkWidget *menu_item, gpointer data)
 
   ags_connectable_connect(AGS_CONNECTABLE(audiorec));
 
-  AGS_MACHINE(audiorec)->audio->audio_channels = 2;
+  ags_audio_set_audio_channels(AGS_MACHINE(audiorec)->audio,
+			       2, 0);
   
   ags_audio_set_pads(AGS_MACHINE(audiorec)->audio,
 		     AGS_TYPE_INPUT,

@@ -50,6 +50,7 @@ guint64 ags_fx_pattern_audio_processor_get_sequencer_counter(AgsCountable *count
 
 gdouble ags_fx_pattern_audio_processor_get_bpm(AgsTactable *tactable);
 gdouble ags_fx_pattern_audio_processor_get_tact(AgsTactable *tactable);
+void ags_fx_pattern_audio_processor_change_sequencer_duration(AgsTactable *tactable, guint64 length);
 void ags_fx_pattern_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
 void ags_fx_pattern_audio_processor_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact);
 
@@ -192,7 +193,7 @@ ags_fx_pattern_audio_processor_tactable_interface_init(AgsTactableInterface *tac
   tactable->get_wave_duration = NULL;
   tactable->get_midi_duration = NULL;
 
-  tactable->change_sequencer_duration = NULL;
+  tactable->change_sequencer_duration = ags_fx_pattern_audio_processor_change_sequencer_duration;
   tactable->change_notation_duration = NULL;
   tactable->change_wave_duration = NULL;
   tactable->change_midi_duration = NULL;
@@ -497,6 +498,48 @@ ags_fx_pattern_audio_processor_get_tact(AgsTactable *tactable)
 }
 
 void
+ags_fx_pattern_audio_processor_change_sequencer_duration(AgsTactable *tactable, guint64 length)
+{
+  AgsFxPatternAudio *fx_pattern_audio;
+  AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
+  AgsPort *port;
+
+  GValue value = {0,};
+
+  fx_pattern_audio  = NULL;
+  
+  fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(tactable);
+
+  port = NULL;
+  
+  g_object_get(fx_pattern_audio_processor,
+	       "recall-audio", &fx_pattern_audio,
+	       NULL);
+  
+  /* duration */
+  if(fx_pattern_audio != NULL){
+    g_object_get(fx_pattern_audio,
+		 "duration", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_DOUBLE);
+      g_value_set_double(&value, (gdouble) length);
+
+      ags_port_safe_write(port, &value);
+
+      g_value_unset(&value);
+      
+      g_object_unref(port);
+    }
+  }
+  
+  if(fx_pattern_audio != NULL){
+    g_object_unref(fx_pattern_audio);
+  }
+}
+
+void
 ags_fx_pattern_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm)
 {
   AgsFxPatternAudio *fx_pattern_audio;
@@ -590,6 +633,7 @@ ags_fx_pattern_audio_processor_change_tact(AgsTactable *tactable, gdouble new_ta
 	       "output-soundcard", &output_soundcard,
 	       "recall-audio", &fx_pattern_audio,
 	       NULL);
+
   /* delay */
   if(fx_pattern_audio != NULL){
     g_object_get(fx_pattern_audio,

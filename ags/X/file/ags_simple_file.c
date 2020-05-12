@@ -2677,7 +2677,9 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     audio_channels = g_ascii_strtoull(str,
 				      NULL,
 				      10);
-    gobject->audio->audio_channels = audio_channels;
+
+    ags_audio_set_audio_channels(gobject->audio,
+				 audio_channels, 0);
 
     xmlFree(str);
   }
