@@ -912,11 +912,13 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
   GList *start_audio_signal, *audio_signal;
 
   gpointer buffer_data;
-  
+
+  guint buffer_x_offset, x_offset;
   guint buffer_samplerate, samplerate;
   guint buffer_buffer_size, buffer_size;
   guint buffer_format, format;
   guint copy_mode;
+  guint attack;
   gboolean do_resample;
   
   GRecMutex *fx_playback_audio_processor_mutex;
@@ -941,6 +943,7 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
   buffer_format = AGS_SOUNDCARD_DEFAULT_FORMAT;
 
   g_object_get(buffer,
+	       "x", &buffer_x_offset,
 	       "samplerate", &buffer_samplerate,
 	       "buffer-size", &buffer_buffer_size,
 	       "format", &buffer_format,
@@ -953,6 +956,8 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
   
   g_rec_mutex_lock(fx_playback_audio_processor_mutex);
 
+  x_offset = fx_playback_audio_processor->x_offset;
+  
   if(data_mode == AGS_FX_PLAYBACK_AUDIO_PROCESSOR_DATA_MODE_PLAY){
     start_audio_signal = fx_playback_audio_processor->playing_audio_signal;
   }else if(data_mode == AGS_FX_PLAYBACK_AUDIO_PROCESSOR_DATA_MODE_RECORD){
@@ -1118,9 +1123,19 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
     
     g_rec_mutex_lock(stream_mutex);
 
-    ags_audio_buffer_util_copy_buffer_to_buffer(current_audio_signal->stream_current->data, 1, 0,
-						buffer_data, 1, 0,
-						buffer_size, copy_mode);
+    if(x_offset < buffer_x_offset){
+      attack = (samplerate / buffer_samplerate) * (buffer_x_offset - x_offset);
+      
+      ags_audio_buffer_util_copy_buffer_to_buffer(current_audio_signal->stream_current->data, 1, attack,
+						  buffer_data, 1, 0,
+						  buffer_size - attack, copy_mode);
+    }else{
+      attack = (samplerate / buffer_samplerate) * (x_offset - buffer_x_offset);
+      
+      ags_audio_buffer_util_copy_buffer_to_buffer(current_audio_signal->stream_current->data, 1, 0,
+						  buffer_data, 1, attack,
+						  buffer_size - attack, copy_mode);
+    }
     
     g_rec_mutex_unlock(stream_mutex);
 
@@ -1128,11 +1143,21 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
   }else{
     g_rec_mutex_lock(buffer_mutex);
     g_rec_mutex_lock(stream_mutex);
-    
-    ags_audio_buffer_util_copy_buffer_to_buffer(current_audio_signal->stream_current->data, 1, 0,
-						buffer->data, 1, 0,
-						buffer_size, copy_mode);
 
+    if(x_offset < buffer_x_offset){
+      attack = buffer_x_offset - x_offset;
+      
+      ags_audio_buffer_util_copy_buffer_to_buffer(current_audio_signal->stream_current->data, 1, attack,
+						  buffer->data, 1, 0,
+						  buffer_size - attack, copy_mode);
+    }else{
+      attack = x_offset - buffer_x_offset;
+      
+      ags_audio_buffer_util_copy_buffer_to_buffer(current_audio_signal->stream_current->data, 1, 0,
+						  buffer->data, 1, attack,
+						  buffer_size - attack, copy_mode);      
+    }
+    
     g_rec_mutex_unlock(stream_mutex);
     g_rec_mutex_unlock(buffer_mutex);
   }
