@@ -298,15 +298,15 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
   port = NULL;
 
   g_object_get(fx_pattern_audio,
-	       "duration", &port,
+	       "loop-end", &port,
 	       NULL);
 
   if(port != NULL){
-    g_value_init(&value, G_TYPE_DOUBLE);
+    g_value_init(&value, G_TYPE_UINT64);
 
     ags_port_safe_read(port, &value);
     
-    sequencer_duration = g_value_get_double(&value);
+    sequencer_duration = g_value_get_uint64(&value);
 
     g_value_unset(&value);
 	
@@ -519,12 +519,12 @@ ags_fx_pattern_audio_processor_change_sequencer_duration(AgsTactable *tactable, 
   /* duration */
   if(fx_pattern_audio != NULL){
     g_object_get(fx_pattern_audio,
-		 "duration", &port,
+		 "loop-end", &port,
 		 NULL);
 
     if(port != NULL){
-      g_value_init(&value, G_TYPE_DOUBLE);
-      g_value_set_double(&value, (gdouble) length);
+      g_value_init(&value, G_TYPE_UINT64);
+      g_value_set_uint64(&value, length);
 
       ags_port_safe_write(port, &value);
 
@@ -848,8 +848,12 @@ ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_patter
 		 "last-recycling", &last_recycling,
 		 NULL);
 
-    attack = ags_soundcard_get_attack(AGS_SOUNDCARD(output_soundcard));
+    attack = 0;
 
+    if(output_soundcard != NULL){
+      attack = ags_soundcard_get_attack(AGS_SOUNDCARD(output_soundcard));
+    }
+    
     end_recycling = ags_recycling_next(last_recycling);
 
     /* get child recall id */
@@ -1192,9 +1196,7 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
 
   GObject *output_soundcard;
 
-  gdouble delay_completion;
   gdouble delay;
-  guint attack;
   guint buffer_size;
   guint delay_counter;
   guint offset_counter;
@@ -1301,24 +1303,16 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
   
   g_rec_mutex_lock(fx_pattern_audio_processor_mutex);
 
-  delay_completion = fx_pattern_audio_processor->delay_completion;
-  
   delay_counter = floor(fx_pattern_audio_processor->delay_counter);
 
   offset_counter = fx_pattern_audio_processor->offset_counter;
   
   g_rec_mutex_unlock(fx_pattern_audio_processor_mutex);  
 
-  attack = 0;
-
-  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  
   if(output_soundcard != NULL){
-    delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+    delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
 
     delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
-
-    attack = ags_soundcard_get_attack(AGS_SOUNDCARD(output_soundcard));
 
     ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
 			      NULL,
@@ -1329,8 +1323,6 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
   
   if(delay_counter + 1.0 >= delay){
     g_rec_mutex_lock(fx_pattern_audio_processor_mutex);
-
-    fx_pattern_audio_processor->delay_completion = -1.0 * (((delay * buffer_size) - (attack + ((delay_counter + 1.0) * buffer_size))) / buffer_size);
 
     fx_pattern_audio_processor->current_delay_counter = 0.0;
     

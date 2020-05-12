@@ -894,6 +894,8 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 
     GList *start_list, *list;
 
+    guint attack;
+    
     output_soundcard = NULL;
 
     first_recycling = NULL;
@@ -904,6 +906,12 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 		 "first-recycling", &first_recycling,
 		 "last-recycling", &last_recycling,
 		 NULL);
+
+    attack = 0;
+
+    if(output_soundcard != NULL){
+      attack = ags_soundcard_get_attack(AGS_SOUNDCARD(output_soundcard));
+    }
 
     end_recycling = ags_recycling_next(last_recycling);
 
@@ -970,6 +978,7 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
       g_object_set(audio_signal,
 		   "template", template,
 		   "note", note,
+		   "attack", attack,
 		   NULL);
 
       ags_audio_signal_stream_resize(audio_signal,
@@ -1868,7 +1877,6 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
 
   GObject *output_soundcard;
 
-  gdouble delay_completion;
   gdouble delay;
   guint delay_counter;
   guint offset_counter;
@@ -1983,8 +1991,6 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
 
   g_rec_mutex_lock(fx_notation_audio_processor_mutex);
 
-  delay_completion = fx_notation_audio_processor->delay_completion;
-
   delay_counter = floor(fx_notation_audio_processor->delay_counter);
 
   offset_counter = fx_notation_audio_processor->offset_counter;
@@ -1992,16 +1998,14 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
   g_rec_mutex_unlock(fx_notation_audio_processor_mutex);  
 
   if(output_soundcard != NULL){
-    delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+    delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
 
     delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
   }
 
-  if(delay_counter + 1.0 >= delay - delay_completion){
+  if(delay_counter + 1.0 >= delay){
     g_rec_mutex_lock(fx_notation_audio_processor_mutex);
     
-    fx_notation_audio_processor->delay_completion = (delay_counter + 1.0) - (delay + delay_completion);
-
     fx_notation_audio_processor->current_delay_counter = 0.0;
 
     if(loop &&
