@@ -339,7 +339,7 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
 	port = NULL;
     
 	g_object_get(fx_pattern_audio,
-		     "loop", &port,
+		     "bank-index-0", &port,
 		     NULL);
 
 	if(port != NULL){
@@ -465,7 +465,7 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 	port = NULL;
     
 	g_object_get(fx_pattern_audio,
-		     "loop", &port,
+		     "bank-index-1", &port,
 		     NULL);
 
 	if(port != NULL){

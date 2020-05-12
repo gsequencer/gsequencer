@@ -140,7 +140,7 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 	port = NULL;
     
 	g_object_get(fx_pattern_audio,
-		     "loop", &port,
+		     "bank-index-1", &port,
 		     NULL);
 
 	if(port != NULL){
