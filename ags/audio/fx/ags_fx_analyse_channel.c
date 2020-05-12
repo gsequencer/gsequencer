@@ -620,6 +620,8 @@ ags_fx_analyse_channel_input_data_alloc()
 
   input_data = (AgsFxAnalyseChannelInputData *) g_malloc(sizeof(AgsFxAnalyseChannelInputData));
 
+  g_rec_mutex_init(&(input_data->strct_mutex));
+  
   input_data->parent = NULL;
 
   input_data->plan = NULL;
@@ -654,6 +656,142 @@ ags_fx_analyse_channel_input_data_free(AgsFxAnalyseChannelInputData *input_data)
   fftw_destroy_plan(input_data->plan);    
   
   g_free(input_data);
+}
+
+/**
+ * ags_fx_analyse_channel_input_get_parent:
+ * @input_data: (type gpointer) (transfer full): the #AgsFxAnalyseChannelInputData-struct
+ * 
+ * Get parent of @input_data.
+ * 
+ * Returns: the parent
+ * 
+ * Since: 3.3.0
+ */
+gpointer
+ags_fx_analyse_channel_input_get_parent(AgsFxAnalyseChannelInputData *input_data)
+{
+  gpointer parent;
+  
+  GRecMutex *input_data_mutex;
+  
+  if(input_data == NULL){
+    return(NULL);
+  }
+
+  input_data_mutex = AGS_FX_ANALYSE_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data);
+
+  /* parent */
+  g_rec_mutex_lock(input_data_mutex);
+
+  parent = input_data->parent;
+  
+  g_rec_mutex_unlock(input_data_mutex);
+
+  return(parent);
+}
+
+/**
+ * ags_fx_analyse_channel_input_get_in:
+ * @input_data: (type gpointer) (transfer full): the #AgsFxAnalyseChannelInputData-struct
+ * 
+ * Get input of @input_data.
+ * 
+ * Returns: the input
+ * 
+ * Since: 3.3.0
+ */
+gpointer
+ags_fx_analyse_channel_input_get_in(AgsFxAnalyseChannelInputData *input_data)
+{
+  gpointer in;
+  
+  GRecMutex *input_data_mutex;
+  
+  if(input_data == NULL){
+    return(NULL);
+  }
+
+  input_data_mutex = AGS_FX_ANALYSE_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data);
+
+  /* in */
+  g_rec_mutex_lock(input_data_mutex);
+
+  in = input_data->in;
+  
+  g_rec_mutex_unlock(input_data_mutex);
+
+  return(in);
+}
+
+/**
+ * ags_fx_analyse_channel_input_get_out:
+ * @input_data: (type gpointer) (transfer full): the #AgsFxAnalyseChannelInputData-struct
+ * 
+ * Get output of @input_data.
+ * 
+ * Returns: the output
+ * 
+ * Since: 3.3.0
+ */
+gpointer
+ags_fx_analyse_channel_input_get_out(AgsFxAnalyseChannelInputData *input_data)
+{
+  gpointer out;
+  
+  GRecMutex *input_data_mutex;
+  
+  if(input_data == NULL){
+    return(NULL);
+  }
+
+  input_data_mutex = AGS_FX_ANALYSE_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data);
+
+  /* out */
+  g_rec_mutex_lock(input_data_mutex);
+
+  out = input_data->out;
+  
+  g_rec_mutex_unlock(input_data_mutex);
+
+  return(out);
+}
+
+/**
+ * ags_fx_analyse_channel_get_input_data:
+ * @fx_analyse_channel: the #AgsFxAnalyseChannel
+ * @sound_scope: the sound scope
+ * 
+ * Get input data from @fx_analyse_channel by @sound_scope.
+ * 
+ * Returns: (type gpointer) (transfer none): the matching #AgsFxAnalyseChannelInputData-struct
+ * 
+ * Since: 3.3.0
+ */
+AgsFxAnalyseChannelInputData*
+ags_fx_analyse_channel_get_input_data(AgsFxAnalyseChannel *fx_analyse_channel,
+				      gint sound_scope)
+{
+  AgsFxAnalyseChannelInputData *input_data;
+  
+  GRecMutex *fx_analyse_channel_mutex;
+  
+  if(!AGS_IS_FX_ANALYSE_CHANNEL(fx_analyse_channel) ||
+     sound_scope < 0 ||
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
+    return(NULL);
+  }
+
+  fx_analyse_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_analyse_channel);
+
+  /* input data */
+  g_rec_mutex_lock(fx_analyse_channel_mutex);
+
+  input_data = fx_analyse_channel->input_data[sound_scope];
+  
+  g_rec_mutex_unlock(fx_analyse_channel_mutex);
+
+  return(input_data);
 }
 
 /**

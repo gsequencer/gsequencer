@@ -41,6 +41,7 @@ G_BEGIN_DECLS
 #define AGS_FX_ANALYSE_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_ANALYSE_CHANNEL, AgsFxAnalyseChannelClass))
 
 #define AGS_FX_ANALYSE_CHANNEL_INPUT_DATA(ptr) ((AgsFxAnalyseChannelInputData *)(ptr))
+#define AGS_FX_ANALYSE_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxAnalyseChannelInputData *)(ptr))->strct_mutex))
 
 typedef struct _AgsFxAnalyseChannel AgsFxAnalyseChannel;
 typedef struct _AgsFxAnalyseChannelInputData AgsFxAnalyseChannelInputData;
@@ -58,8 +59,15 @@ struct _AgsFxAnalyseChannel
   AgsPort *magnitude;
 };
 
+struct _AgsFxAnalyseChannelClass
+{
+  AgsRecallChannelClass recall_channel;
+};
+
 struct _AgsFxAnalyseChannelInputData
 {
+  GRecMutex strct_mutex;
+  
   gpointer parent;
 
   fftw_plan plan;
@@ -69,16 +77,21 @@ struct _AgsFxAnalyseChannelInputData
   double *out;
 };
 
-struct _AgsFxAnalyseChannelClass
-{
-  AgsRecallChannelClass recall_channel;
-};
-
 GType ags_fx_analyse_channel_get_type();
 
 /* runtime */
 AgsFxAnalyseChannelInputData* ags_fx_analyse_channel_input_data_alloc();
 void ags_fx_analyse_channel_input_data_free(AgsFxAnalyseChannelInputData *input_data);
+
+/* get/set AgsFxAnalyseChannelInputData */
+gpointer ags_fx_analyse_channel_input_get_parent(AgsFxAnalyseChannelInputData *input_data);
+
+gpointer ags_fx_analyse_channel_input_get_in(AgsFxAnalyseChannelInputData *input_data);
+gpointer ags_fx_analyse_channel_input_get_out(AgsFxAnalyseChannelInputData *input_data);
+
+/* get/set AgsFxAnalyseChannel */
+AgsFxAnalyseChannelInputData* ags_fx_analyse_channel_get_input_data(AgsFxAnalyseChannel *fx_analyse_channel,
+								    gint sound_scope);
 
 /* instantiate */
 AgsFxAnalyseChannel* ags_fx_analyse_channel_new(AgsChannel *channel);
