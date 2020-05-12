@@ -659,12 +659,32 @@ ags_fx_analyse_channel_input_data_free(AgsFxAnalyseChannelInputData *input_data)
 }
 
 /**
+ * ags_fx_analyse_channel_input_data_get_strct_mutex:
+ * @input_data: (type gpointer) (transfer none): the #AgsFxAnalyseChannelInputData
+ * 
+ * Get structure mutex.
+ * 
+ * Returns: (type gpointer) (transfer none): the #GRecMutex to lock @input_data
+ * 
+ * Since: 3.3.0
+ */
+GRecMutex*
+ags_fx_analyse_channel_input_data_get_strct_mutex(AgsFxAnalyseChannelInputData *input_data)
+{
+  if(input_data == NULL){
+    return(NULL);
+  }
+
+  return(AGS_FX_ANALYSE_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data));
+}
+
+/**
  * ags_fx_analyse_channel_input_get_parent:
- * @input_data: (type gpointer) (transfer full): the #AgsFxAnalyseChannelInputData-struct
+ * @input_data: (type gpointer) (transfer none): the #AgsFxAnalyseChannelInputData-struct
  * 
  * Get parent of @input_data.
  * 
- * Returns: the parent
+ * Returns: (type gpointer) (transfer none): the parent
  * 
  * Since: 3.3.0
  */
@@ -693,11 +713,11 @@ ags_fx_analyse_channel_input_get_parent(AgsFxAnalyseChannelInputData *input_data
 
 /**
  * ags_fx_analyse_channel_input_get_in:
- * @input_data: (type gpointer) (transfer full): the #AgsFxAnalyseChannelInputData-struct
+ * @input_data: (type gpointer) (transfer none): the #AgsFxAnalyseChannelInputData-struct
  * 
  * Get input of @input_data.
  * 
- * Returns: the input
+ * Returns: (type gpointer) (transfer none): the input
  * 
  * Since: 3.3.0
  */
@@ -726,11 +746,11 @@ ags_fx_analyse_channel_input_get_in(AgsFxAnalyseChannelInputData *input_data)
 
 /**
  * ags_fx_analyse_channel_input_get_out:
- * @input_data: (type gpointer) (transfer full): the #AgsFxAnalyseChannelInputData-struct
+ * @input_data: (type gpointer) (transfer none): the #AgsFxAnalyseChannelInputData-struct
  * 
  * Get output of @input_data.
  * 
- * Returns: the output
+ * Returns: (type gpointer) (transfer none): the output
  * 
  * Since: 3.3.0
  */
