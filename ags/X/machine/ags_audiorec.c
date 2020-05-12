@@ -560,6 +560,8 @@ ags_audiorec_resize_pads(AgsMachine *machine,
   gchar *str;
 
   gdouble gui_scale_factor;  
+  guint audio_channels;
+  guint i;
   
   static const guint staging_program[] = {
     (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
@@ -571,6 +573,8 @@ ags_audiorec_resize_pads(AgsMachine *machine,
   
   /* scale factor */
   gui_scale_factor = 1.0;
+
+  audio_channels = 0;
   
   str = ags_config_get_value(config,
 			     AGS_CONFIG_GENERIC,
@@ -583,6 +587,10 @@ ags_audiorec_resize_pads(AgsMachine *machine,
     g_free(str);
   }
 
+  g_object_get(machine->audio,
+	       "audio-channels", &audio_channels,
+	       NULL);
+  
   if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
     if(pads > pads_old){
       /* depending on destination */
@@ -604,6 +612,26 @@ ags_audiorec_resize_pads(AgsMachine *machine,
       g_list_free(list_start);
 
       audiorec->mapped_input_pad = pads;
+    }
+
+    /* widgets */
+    if(pads_old == 0){
+      for(i = 0; i < audio_channels; i++){
+	AgsHIndicator *hindicator;
+	
+	hindicator = ags_hindicator_new();
+	g_object_set(hindicator,
+		     "segment-width", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_WIDTH),
+		     "segment-height", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_HEIGHT),
+		     "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
+		     NULL);
+	gtk_box_pack_start((GtkBox *) audiorec->hindicator_vbox,
+			   (GtkWidget *) hindicator,
+			   FALSE, FALSE,
+			   8);
+      }
+
+      gtk_widget_show_all((GtkWidget *) audiorec->hindicator_vbox);
     }
   }else{
     if(pads > pads_old){
