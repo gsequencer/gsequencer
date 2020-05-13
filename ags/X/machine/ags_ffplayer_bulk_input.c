@@ -23,9 +23,15 @@
 void ags_ffplayer_bulk_input_class_init(AgsFFPlayerBulkInputClass *ffplayer_bulk_input);
 void ags_ffplayer_bulk_input_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ffplayer_bulk_input_init(AgsFFPlayerBulkInput *ffplayer_bulk_input);
+static void ags_ffplayer_bulk_input_finalize(GObject *gobject);
 
 void ags_ffplayer_bulk_input_connect(AgsConnectable *connectable);
 void ags_ffplayer_bulk_input_disconnect(AgsConnectable *connectable);
+
+void ags_ffplayer_bulk_input_map_recall(AgsEffectBulk *effect_bulk);
+void ags_ffplayer_bulk_input_input_map_recall(AgsFFPlayerBulkInput *ffplayer_bulk_input,
+					      guint audio_channel_start,
+					      guint input_pad_start);
 
 /**
  * SECTION:ags_ffplayer_bulk_input
@@ -84,7 +90,20 @@ ags_ffplayer_bulk_input_get_type(void)
 void
 ags_ffplayer_bulk_input_class_init(AgsFFPlayerBulkInputClass *ffplayer_bulk_input)
 {
+  GObjectClass *gobject;
+  AgsEffectBulkClass *effect_bulk;
+  
   ags_ffplayer_bulk_input_parent_class = g_type_class_peek_parent(ffplayer_bulk_input);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) ffplayer_bulk_input;
+  
+  gobject->finalize = ags_ffplayer_bulk_input_finalize;
+
+  /* AgsEffectBulkClass */
+  effect_bulk = (AgsEffectBulkClass *) gobject;
+
+  effect_bulk->map_recall = ags_ffplayer_bulk_input_map_recall;
 }
 
 void
@@ -102,6 +121,33 @@ void
 ags_ffplayer_bulk_input_init(AgsFFPlayerBulkInput *ffplayer_bulk_input)
 {
   AGS_EFFECT_BULK(ffplayer_bulk_input)->channel_type = AGS_TYPE_INPUT;
+
+  /* AgsAudio related forwarded signals */
+  g_signal_connect_after(G_OBJECT(ffplayer_bulk_input), "resize-audio-channels",
+			 G_CALLBACK(ags_ffplayer_bulk_input_resize_audio_channels_callback), NULL);
+
+  g_signal_connect_after(G_OBJECT(ffplayer_bulk_input), "resize-pads",
+			 G_CALLBACK(ags_ffplayer_bulk_input_resize_pads_callback), NULL);
+}
+
+static void
+ags_ffplayer_bulk_input_finalize(GObject *gobject)
+{
+  AgsFFPlayerBulkInput *ffplayer_bulk_input;
+
+  ffplayer_bulk_input = (AgsFFPlayerBulkInput *) gobject;
+
+  g_object_disconnect(gobject,
+		      "any_signal::resize-audio-channels",
+		      G_CALLBACK(ags_ffplayer_bulk_input_resize_audio_channels_callback),
+		      NULL,
+		      "any_signal::resize-pads",
+		      G_CALLBACK(ags_ffplayer_bulk_input_resize_pads_callback),
+		      NULL,
+		      NULL);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_ffplayer_bulk_input_parent_class)->finalize(gobject);
 }
 
 void
@@ -126,6 +172,71 @@ ags_ffplayer_bulk_input_disconnect(AgsConnectable *connectable)
   ags_ffplayer_bulk_input_parent_connectable_interface->disconnect(connectable);
 
   //TODO:JK: implement me
+}
+
+void
+ags_ffplayer_bulk_input_map_recall(AgsEffectBulk *effect_bulk)
+{
+  AgsFFPlayerBulkInput *ffplayer_bulk_input;
+
+  ffplayer_bulk_input = AGS_FFPLAYER_BULK_INPUT(effect_bulk);
+
+  /* depending on destination */
+  ags_ffplayer_bulk_input_input_map_recall(ffplayer_bulk_input,
+					   0,
+					   0);
+
+  /* call parent */
+  AGS_EFFECT_BULK_CLASS(ags_ffplayer_bulk_input_parent_class)->map_recall(effect_bulk);  
+}
+
+void
+ags_ffplayer_bulk_input_input_map_recall(AgsFFPlayerBulkInput *ffplayer_bulk_input,
+					 guint audio_channel_start,
+					 guint input_pad_start)
+{
+  GList *start_list, *list;
+
+  guint audio_channels;
+  guint input_pads;
+  
+  if(!AGS_IS_FFPLAYER_BULK_INPUT(ffplayer_bulk_input)){
+    return;
+  }
+
+  audio_channels = 0;
+  input_pads = 0;
+
+  g_object_get(AGS_EFFECT_BULK(ffplayer_bulk_input)->audio,
+	       "audio-channels", &audio_channels,
+	       "input-pads", &input_pads,
+	       NULL);
+  
+  start_list = g_list_copy(AGS_EFFECT_BULK(ffplayer_bulk_input)->plugin);
+
+  list = g_list_reverse(start_list);
+
+  while(list != NULL){
+    AgsEffectBulkPlugin *bulk_plugin;
+
+    bulk_plugin = list->data;
+    
+    ags_effect_bulk_add_plugin(ffplayer_bulk_input,
+			       NULL,
+			       bulk_plugin->play_container, bulk_plugin->recall_container,
+			       bulk_plugin->plugin_name,
+			       bulk_plugin->filename,
+			       bulk_plugin->effect,
+			       audio_channel_start, audio_channels,
+			       input_pad_start, input_pads,
+			       1,
+			       (AGS_FX_FACTORY_REMAP),
+			       0);
+
+    list = list->next;
+  }
+
+  g_list_free(start_list);
 }
 
 /**
