@@ -4541,15 +4541,6 @@ ags_devout_switch_buffer_flag(AgsDevout *devout)
 void
 ags_devout_adjust_delay_and_attack(AgsDevout *devout)
 {
-  gdouble delay;
-  guint default_tact_frames;
-  guint delay_tact_frames;
-  guint default_period;
-  gint next_attack;
-  guint i;
-
-  GRecMutex *devout_mutex;
-
   if(!AGS_IS_DEVOUT(devout)){
     return;
   }
