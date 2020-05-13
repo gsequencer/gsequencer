@@ -341,6 +341,8 @@ ags_fx_lv2_channel_input_data_alloc()
 
   input_data = (AgsFxLv2ChannelInputData *) g_malloc(sizeof(AgsFxLv2ChannelInputData));
 
+  g_rec_mutex_init(&(input_data->strct_mutex));
+
   input_data->parent = NULL;
 
   input_data->output = NULL;

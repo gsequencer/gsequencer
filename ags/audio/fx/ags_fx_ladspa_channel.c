@@ -338,6 +338,8 @@ ags_fx_ladspa_channel_input_data_alloc()
 
   input_data = (AgsFxLadspaChannelInputData *) g_malloc(sizeof(AgsFxLadspaChannelInputData));
 
+  g_rec_mutex_init(&(input_data->strct_mutex));
+
   input_data->parent = NULL;
 
   input_data->output = NULL;

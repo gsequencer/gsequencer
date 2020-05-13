@@ -39,6 +39,7 @@ G_BEGIN_DECLS
 #define AGS_FX_EQ10_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_EQ10_CHANNEL, AgsFxEq10ChannelClass))
 
 #define AGS_FX_EQ10_CHANNEL_INPUT_DATA(ptr) ((AgsFxEq10ChannelInputData *)(ptr))
+#define AGS_FX_EQ10_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxEq10ChannelInputData *)(ptr))->strct_mutex))
 
 #define AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE (8)
 
@@ -73,6 +74,8 @@ struct _AgsFxEq10ChannelClass
 
 struct _AgsFxEq10ChannelInputData
 {
+  GRecMutex strct_mutex;
+
   gpointer parent;
 
   gdouble cache_28hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE];

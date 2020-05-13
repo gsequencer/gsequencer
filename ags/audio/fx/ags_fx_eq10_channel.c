@@ -1201,6 +1201,8 @@ ags_fx_eq10_channel_input_data_alloc()
 
   input_data = (AgsFxEq10ChannelInputData *) g_malloc(sizeof(AgsFxEq10ChannelInputData));
 
+  g_rec_mutex_init(&(input_data->strct_mutex));
+
   input_data->parent = NULL;
 
   input_data->output = NULL;

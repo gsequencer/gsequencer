@@ -43,6 +43,7 @@ G_BEGIN_DECLS
 #define AGS_FX_LADSPA_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_LADSPA_CHANNEL, AgsFxLadspaChannelClass))
 
 #define AGS_FX_LADSPA_CHANNEL_INPUT_DATA(ptr) ((AgsFxLadspaChannelInputData *) (ptr))
+#define AGS_FX_LADSPA_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxLadspaChannelInputData *)(ptr))->strct_mutex))
 
 typedef struct _AgsFxLadspaChannel AgsFxLadspaChannel;
 typedef struct _AgsFxLadspaChannelInputData AgsFxLadspaChannelInputData;
@@ -72,6 +73,8 @@ struct _AgsFxLadspaChannelClass
 
 struct _AgsFxLadspaChannelInputData
 {
+  GRecMutex strct_mutex;
+
   gpointer parent;
 
   LADSPA_Data *output;

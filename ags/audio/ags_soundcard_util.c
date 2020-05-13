@@ -23,6 +23,7 @@
 #include <ags/audio/ags_devin.h>
 
 #include <ags/audio/pulse/ags_pulse_devout.h>
+#include <ags/audio/pulse/ags_pulse_devin.h>
 
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_devin.h>
@@ -91,7 +92,7 @@ ags_soundcard_util_get_obj_mutex(GObject *soundcard)
  * ags_soundcard_util_adjust_delay_and_attack:
  * @soundcard: the #GObject sub-type implementing #AgsSoundcard
  * 
- * Adjust delay and attack @soundcard.
+ * Adjust delay and attack of @soundcard.
  * 
  * Since: 3.3.0
  */
@@ -131,6 +132,9 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
     delay = AGS_DEVIN(soundcard)->delay;
   }else if(AGS_IS_PULSE_DEVOUT(soundcard)){
     attack = AGS_PULSE_DEVOUT(soundcard)->attack;
+    delay = AGS_PULSE_DEVOUT(soundcard)->delay;
+  }else if(AGS_IS_PULSE_DEVIN(soundcard)){
+    attack = AGS_PULSE_DEVIN(soundcard)->attack;
     delay = AGS_PULSE_DEVOUT(soundcard)->delay;
   }else if(AGS_IS_JACK_DEVOUT(soundcard)){
     attack = AGS_JACK_DEVOUT(soundcard)->attack;

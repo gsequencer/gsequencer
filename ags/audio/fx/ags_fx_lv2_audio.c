@@ -983,6 +983,8 @@ ags_fx_lv2_audio_scope_data_alloc()
 
   scope_data = (AgsFxLv2AudioScopeData *) g_malloc(sizeof(AgsFxLv2AudioScopeData));
 
+  g_rec_mutex_init(&(scope_data->strct_mutex));
+
   scope_data->parent = NULL;
   
   scope_data->audio_channels = 0;
@@ -1033,6 +1035,8 @@ ags_fx_lv2_audio_channel_data_alloc()
   guint i;
   
   channel_data = (AgsFxLv2AudioChannelData *) g_malloc(sizeof(AgsFxLv2AudioChannelData));
+
+  g_rec_mutex_init(&(channel_data->strct_mutex));
 
   channel_data->parent = NULL;
   
@@ -1144,6 +1148,8 @@ ags_fx_lv2_audio_input_data_alloc()
   AgsFxLv2AudioInputData *input_data;
 
   input_data = (AgsFxLv2AudioInputData *) g_malloc(sizeof(AgsFxLv2AudioInputData));
+
+  g_rec_mutex_init(&(input_data->strct_mutex));
 
   input_data->parent = NULL;
 

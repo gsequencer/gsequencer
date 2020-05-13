@@ -903,6 +903,8 @@ ags_fx_dssi_audio_scope_data_alloc()
 
   scope_data = (AgsFxDssiAudioScopeData *) g_malloc(sizeof(AgsFxDssiAudioScopeData));
 
+  g_rec_mutex_init(&(scope_data->strct_mutex));
+  
   scope_data->parent = NULL;
   
   scope_data->audio_channels = 0;
@@ -953,6 +955,8 @@ ags_fx_dssi_audio_channel_data_alloc()
   guint i;
   
   channel_data = (AgsFxDssiAudioChannelData *) g_malloc(sizeof(AgsFxDssiAudioChannelData));
+
+  g_rec_mutex_init(&(channel_data->strct_mutex));
 
   channel_data->parent = NULL;
   
@@ -1058,6 +1062,8 @@ ags_fx_dssi_audio_input_data_alloc()
   AgsFxDssiAudioInputData *input_data;
 
   input_data = (AgsFxDssiAudioInputData *) g_malloc(sizeof(AgsFxDssiAudioInputData));
+
+  g_rec_mutex_init(&(input_data->strct_mutex));
 
   input_data->parent = NULL;
 

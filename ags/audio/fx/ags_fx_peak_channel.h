@@ -38,6 +38,7 @@ G_BEGIN_DECLS
 #define AGS_FX_PEAK_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_PEAK_CHANNEL, AgsFxPeakChannelClass))
 
 #define AGS_FX_PEAK_CHANNEL_INPUT_DATA(ptr) ((AgsFxPeakChannelInputData *)(ptr))
+#define AGS_FX_PEAK_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxPeakChannelInputData *)(ptr))->strct_mutex))
 
 typedef struct _AgsFxPeakChannel AgsFxPeakChannel;
 typedef struct _AgsFxPeakChannelInputData AgsFxPeakChannelInputData;
@@ -61,6 +62,8 @@ struct _AgsFxPeakChannelClass
 
 struct _AgsFxPeakChannelInputData
 {
+  GRecMutex strct_mutex;
+
   gpointer parent;
 
   void *buffer;

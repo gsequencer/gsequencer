@@ -48,6 +48,7 @@ G_BEGIN_DECLS
 #define AGS_FX_LV2_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_LV2_CHANNEL, AgsFxLv2ChannelClass))
 
 #define AGS_FX_LV2_CHANNEL_INPUT_DATA(ptr) ((AgsFxLv2ChannelInputData *)(ptr))
+#define AGS_FX_LV2_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxLv2ChannelInputData *)(ptr))->strct_mutex))
 
 typedef struct _AgsFxLv2Channel AgsFxLv2Channel;
 typedef struct _AgsFxLv2ChannelInputData AgsFxLv2ChannelInputData;
@@ -77,6 +78,8 @@ struct _AgsFxLv2ChannelClass
 
 struct _AgsFxLv2ChannelInputData
 {
+  GRecMutex strct_mutex;
+  
   gpointer parent;
 
   float *output;

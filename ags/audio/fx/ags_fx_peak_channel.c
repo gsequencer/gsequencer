@@ -389,6 +389,8 @@ ags_fx_peak_channel_input_data_alloc()
 
   input_data = (AgsFxPeakChannelInputData *) g_malloc(sizeof(AgsFxPeakChannelInputData));
 
+  g_rec_mutex_init(&(input_data->strct_mutex));
+
   input_data->parent = NULL;
 
   input_data->buffer = NULL;

@@ -45,8 +45,13 @@ G_BEGIN_DECLS
 #define AGS_FX_LV2_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_LV2_AUDIO, AgsFxLv2AudioClass))
 
 #define AGS_FX_LV2_AUDIO_SCOPE_DATA(ptr) ((AgsFxLv2AudioScopeData *) (ptr))
+#define AGS_FX_LV2_AUDIO_SCOPE_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxLv2AudioScopeData *)(ptr))->strct_mutex))
+
 #define AGS_FX_LV2_AUDIO_CHANNEL_DATA(ptr) ((AgsFxLv2AudioChannelData *) (ptr))
+#define AGS_FX_LV2_AUDIO_CHANNEL_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxLv2AudioChannelData *)(ptr))->strct_mutex))
+
 #define AGS_FX_LV2_AUDIO_INPUT_DATA(ptr) ((AgsFxLv2AudioInputData *) (ptr))
+#define AGS_FX_LV2_AUDIO_INPUT_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxLv2AudioInputData *)(ptr))->strct_mutex))
 
 #define AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT (8 * 256)
 
@@ -89,6 +94,8 @@ struct _AgsFxLv2AudioClass
 
 struct _AgsFxLv2AudioScopeData
 {
+  GRecMutex strct_mutex;
+  
   gpointer parent;
   
   guint audio_channels;
@@ -98,6 +105,8 @@ struct _AgsFxLv2AudioScopeData
 
 struct _AgsFxLv2AudioChannelData
 {
+  GRecMutex strct_mutex;
+  
   gpointer parent;
 
   guint event_count;
@@ -115,6 +124,8 @@ struct _AgsFxLv2AudioChannelData
 
 struct _AgsFxLv2AudioInputData
 {
+  GRecMutex strct_mutex;
+  
   gpointer parent;
 
   float *output;
