@@ -280,10 +280,7 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 				    AGS_SOUND_STAGING_AUTOMATE |
 				    AGS_SOUND_STAGING_RUN_PRE);
   audio_loop->staging_program[1] = (AGS_SOUND_STAGING_RUN_INTER);
-  audio_loop->staging_program[2] = (AGS_SOUND_STAGING_AUTOMATE |
-				    AGS_SOUND_STAGING_RUN_PRE |
-				    AGS_SOUND_STAGING_RUN_INTER |
-				    AGS_SOUND_STAGING_RUN_POST);
+  audio_loop->staging_program[2] = (AGS_SOUND_STAGING_RUN_POST);
 
   audio_loop->staging_program_count = 3;
 }

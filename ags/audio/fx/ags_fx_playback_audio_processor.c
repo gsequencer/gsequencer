@@ -758,12 +758,14 @@ ags_fx_playback_audio_processor_run_init_pre(AgsRecall *recall)
 void
 ags_fx_playback_audio_processor_run_inter(AgsRecall *recall)
 {
-  AgsRecallID *recall_id;
   AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
+  AgsRecallID *recall_id;
+  AgsRecyclingContext *parent_recycling_context, *recycling_context;
 
   GList *start_playing_audio_signal, *playing_audio_signal;
   GList *start_recording_audio_signal, *recording_audio_signal;
   
+  gint sound_scope;
   gdouble delay_counter;
   
   GRecMutex *fx_playback_audio_processor_mutex;
@@ -772,8 +774,33 @@ ags_fx_playback_audio_processor_run_inter(AgsRecall *recall)
   
   fx_playback_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_playback_audio_processor);
 
+  recall_id = NULL;
+
+  sound_scope = ags_recall_get_sound_scope(recall);
+
   g_object_get(recall,
 	       "recall-id", &recall_id,
+	       NULL);
+
+  if(!ags_recall_id_check_sound_scope(recall_id, sound_scope)){
+    if(recall_id != NULL){
+      g_object_unref(recall_id);
+    }
+
+    AGS_RECALL_CLASS(ags_fx_playback_audio_processor_parent_class)->run_inter(recall);
+    
+    return;
+  }
+
+  recycling_context = NULL;
+  parent_recycling_context = NULL;
+  
+  g_object_get(recall_id,
+	       "recycling-context", &recycling_context,
+	       NULL);
+
+  g_object_get(recycling_context,
+	       "parent", &parent_recycling_context,
 	       NULL);
   
   /* get delay counter */
@@ -865,22 +892,30 @@ ags_fx_playback_audio_processor_run_inter(AgsRecall *recall)
   
   /* play/record/feed/master */
   if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_WAVE)){
-    ags_fx_playback_audio_processor_play(fx_playback_audio_processor);
+    if(parent_recycling_context == NULL){
+      ags_fx_playback_audio_processor_play(fx_playback_audio_processor);
+    }
   }
 
   if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_WAVE)){
-    ags_fx_playback_audio_processor_record(fx_playback_audio_processor);
+    if(parent_recycling_context == NULL){
+      ags_fx_playback_audio_processor_record(fx_playback_audio_processor);
+    }
   }
   
   if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_PLAYBACK) ||
      ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_MIDI)){
-    ags_fx_playback_audio_processor_feed(fx_playback_audio_processor);
+    if(parent_recycling_context == NULL){
+      ags_fx_playback_audio_processor_feed(fx_playback_audio_processor);
+    }
   }
 
   if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_SEQUENCER) ||
      ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_NOTATION) ||
      ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_MIDI)){
-    ags_fx_playback_audio_processor_master(fx_playback_audio_processor);
+    if(parent_recycling_context == NULL){
+      ags_fx_playback_audio_processor_master(fx_playback_audio_processor);
+    }
   }
   
   /* counter change */
@@ -888,6 +923,14 @@ ags_fx_playback_audio_processor_run_inter(AgsRecall *recall)
 
   if(recall_id != NULL){
     g_object_unref(recall_id);
+  }
+
+  if(recycling_context != NULL){
+    g_object_unref(recycling_context);
+  }
+
+  if(parent_recycling_context != NULL){
+    g_object_unref(parent_recycling_context);
   }
 
   g_list_free_full(start_playing_audio_signal,

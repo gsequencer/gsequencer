@@ -228,10 +228,7 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
 					AGS_SOUND_STAGING_AUTOMATE |
 					AGS_SOUND_STAGING_RUN_PRE);
   channel_thread->staging_program[1] = (AGS_SOUND_STAGING_RUN_INTER);
-  channel_thread->staging_program[2] = (AGS_SOUND_STAGING_AUTOMATE |
-					AGS_SOUND_STAGING_RUN_PRE |
-					AGS_SOUND_STAGING_RUN_INTER |
-					AGS_SOUND_STAGING_RUN_POST);
+  channel_thread->staging_program[2] = (AGS_SOUND_STAGING_RUN_POST);
 
   channel_thread->staging_program_count = 3;
 }

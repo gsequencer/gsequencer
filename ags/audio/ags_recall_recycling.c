@@ -609,12 +609,19 @@ ags_recall_recycling_connect_connection(AgsConnectable *connectable,
   if((GObject *) recall_recycling->destination == connection){
     //empty
   }else if((GObject *) recall_recycling->source == connection){
-    g_signal_connect_after(connection, "add-audio-signal",
-			   G_CALLBACK(ags_recall_recycling_source_add_audio_signal_callback), recall_recycling);
+    if(g_signal_handler_find(connection,
+			     (G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA),
+			     0,
+			     0,
+			     NULL,
+			     G_CALLBACK(ags_recall_recycling_source_add_audio_signal_callback),
+			     recall_recycling) == 0){
+      g_signal_connect_after(connection, "add-audio-signal",
+			     G_CALLBACK(ags_recall_recycling_source_add_audio_signal_callback), recall_recycling);
 
-    g_signal_connect(connection, "remove-audio-signal",
-  		     G_CALLBACK(ags_recall_recycling_source_remove_audio_signal_callback), recall_recycling);
-    
+      g_signal_connect(connection, "remove-audio-signal",
+		       G_CALLBACK(ags_recall_recycling_source_remove_audio_signal_callback), recall_recycling);
+    }
   }
 }
 

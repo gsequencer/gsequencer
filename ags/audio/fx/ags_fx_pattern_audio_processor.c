@@ -708,7 +708,10 @@ void
 ags_fx_pattern_audio_processor_run_inter(AgsRecall *recall)
 {
   AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
-
+  AgsRecallID *recall_id;
+  AgsRecyclingContext *parent_recycling_context, *recycling_context;
+  
+  gint sound_scope;
   gdouble delay_counter;
   
   GRecMutex *fx_pattern_audio_processor_mutex;
@@ -717,6 +720,35 @@ ags_fx_pattern_audio_processor_run_inter(AgsRecall *recall)
   
   fx_pattern_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_pattern_audio_processor);
 
+  recall_id = NULL;
+
+  sound_scope = ags_recall_get_sound_scope(recall);
+
+  g_object_get(recall,
+	       "recall-id", &recall_id,
+	       NULL);
+
+  if(!ags_recall_id_check_sound_scope(recall_id, sound_scope)){
+    if(recall_id != NULL){
+      g_object_unref(recall_id);
+    }
+
+    AGS_RECALL_CLASS(ags_fx_pattern_audio_processor_parent_class)->run_inter(recall);
+    
+    return;
+  }
+
+  recycling_context = NULL;
+  parent_recycling_context = NULL;
+  
+  g_object_get(recall_id,
+	       "recycling-context", &recycling_context,
+	       NULL);
+
+  g_object_get(recycling_context,
+	       "parent", &parent_recycling_context,
+	       NULL);
+  
   /* get delay counter */
   g_rec_mutex_lock(fx_pattern_audio_processor_mutex);
     
@@ -728,12 +760,27 @@ ags_fx_pattern_audio_processor_run_inter(AgsRecall *recall)
   g_rec_mutex_unlock(fx_pattern_audio_processor_mutex);
 
   /* run */
-  if(delay_counter == 0.0){
-    ags_fx_pattern_audio_processor_play(fx_pattern_audio_processor);
+  if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_SEQUENCER)){
+    if(parent_recycling_context == NULL &&
+       delay_counter == 0.0){
+      ags_fx_pattern_audio_processor_play(fx_pattern_audio_processor);
+    }
   }
-
+  
   /* counter change */
   ags_fx_pattern_audio_processor_counter_change(fx_pattern_audio_processor);
+
+  if(recall_id != NULL){
+    g_object_unref(recall_id);
+  }
+
+  if(recycling_context != NULL){
+    g_object_unref(recycling_context);
+  }
+
+  if(parent_recycling_context != NULL){
+    g_object_unref(parent_recycling_context);
+  }
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_pattern_audio_processor_parent_class)->run_inter(recall);
@@ -822,6 +869,7 @@ ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_patter
   input = ags_channel_nth(start_input,
 			  audio_channel);
 
+#if 0
   if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
     selected_input = ags_channel_pad_nth(input,
 					 input_pads - y - 1);
@@ -829,6 +877,10 @@ ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_patter
     selected_input = ags_channel_pad_nth(input,
 					 y);
   }
+#else
+  selected_input = ags_channel_pad_nth(input,
+				       y);
+#endif
   
   if(selected_input != NULL){
     AgsRecycling *first_recycling, *last_recycling;
@@ -850,9 +902,12 @@ ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_patter
 
     attack = 0;
 
+    //TODO:JK: uncomment me
+#if 0
     if(output_soundcard != NULL){
       attack = ags_soundcard_get_attack(AGS_SOUNDCARD(output_soundcard));
     }
+#endif
     
     end_recycling = ags_recycling_next(last_recycling);
 
@@ -895,6 +950,8 @@ ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_patter
 
     recycling = first_recycling;
     g_object_ref(recycling);
+
+//    g_message(" - audio processor");
     
     while(recycling != end_recycling){
       AgsAudioSignal *template, *audio_signal;
@@ -928,7 +985,8 @@ ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_patter
       ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
       ags_recycling_add_audio_signal(recycling,
 				     audio_signal);
-      
+//      g_message(" `- added");
+    
       /* iterate */
       next_recycling = ags_recycling_next(recycling);
 
@@ -1136,7 +1194,7 @@ ags_fx_pattern_audio_processor_real_play(AgsFxPatternAudioProcessor *fx_pattern_
 			   offset_counter)){
       note = ags_pattern_get_note(current_pattern,
 				  offset_counter);
-      
+
       ags_fx_pattern_audio_processor_key_on(fx_pattern_audio_processor,
 					    note,
 					    AGS_FX_PATTERN_AUDIO_PROCESSOR_DEFAULT_KEY_ON_VELOCITY,
@@ -1197,7 +1255,6 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
   GObject *output_soundcard;
 
   gdouble delay;
-  guint buffer_size;
   guint delay_counter;
   guint offset_counter;
   gboolean loop;
@@ -1313,12 +1370,6 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
     delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
 
     delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
-
-    ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
-			      NULL,
-			      NULL,
-			      &buffer_size,
-			      NULL);
   }
   
   if(delay_counter + 1.0 >= delay){

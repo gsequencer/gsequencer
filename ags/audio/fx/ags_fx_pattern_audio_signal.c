@@ -31,7 +31,7 @@ void ags_fx_pattern_audio_signal_init(AgsFxPatternAudioSignal *fx_pattern_audio_
 void ags_fx_pattern_audio_signal_dispose(GObject *gobject);
 void ags_fx_pattern_audio_signal_finalize(GObject *gobject);
 
-void ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall);
+void ags_fx_pattern_audio_signal_run_inter(AgsRecall *recall);
 
 void ags_fx_pattern_audio_signal_real_stream_feed(AgsFxPatternAudioSignal *fx_pattern_audio_signal,
 						  AgsAudioSignal *source,
@@ -104,7 +104,7 @@ ags_fx_pattern_audio_signal_class_init(AgsFxPatternAudioSignalClass *fx_pattern_
   /* AgsRecallClass */
   recall = (AgsRecallClass *) fx_pattern_audio_signal;
   
-  recall->run_inter = ags_fx_pattern_audio_signal_real_run_inter;
+  recall->run_inter = ags_fx_pattern_audio_signal_run_inter;
 
   /* AgsFxPatternAudioSignalClass */
   fx_pattern_audio_signal->stream_feed = ags_fx_pattern_audio_signal_real_stream_feed;
@@ -143,7 +143,7 @@ ags_fx_pattern_audio_signal_finalize(GObject *gobject)
 }
 
 void
-ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
+ags_fx_pattern_audio_signal_run_inter(AgsRecall *recall)
 {
   AgsAudioSignal *source;
   AgsAudioSignal *template;
@@ -154,7 +154,8 @@ ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
   AgsPort *port;
   
   GList *start_note, *note;
-  
+
+  gint sound_scope;
   gdouble delay_counter;
   guint64 offset_counter;
   gdouble delay;
@@ -183,6 +184,10 @@ ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
   fx_pattern_audio_processor = NULL;
   fx_pattern_channel_processor = NULL;
   fx_pattern_recycling = NULL;
+
+  sound_scope = ags_recall_get_sound_scope(recall);
+
+//  g_message("a) sound scope = 0x%x", sound_scope);
   
   g_object_get(recall,
 	       "source", &source,
@@ -273,6 +278,8 @@ ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
       x1 = 1;
 
       y = 0;
+
+//      g_message("0x%x -> %d", note->data, i);
       
       g_object_get(note->data,
 		   "x0", &x0,
@@ -296,12 +303,14 @@ ags_fx_pattern_audio_signal_real_run_inter(AgsRecall *recall)
 						  delay_counter, offset_counter,
 						  frame_count,
 						  delay, buffer_size);
-	
+
+#if 0
 	  if(i == 0){
 	    g_object_set(source,
 			 "frame-count", frame_count + buffer_size,
 			 NULL);
 	  }
+#endif
 	}else{
 	  ags_audio_signal_remove_note(source,
 				       note->data);
@@ -377,11 +386,13 @@ ags_fx_pattern_audio_signal_real_stream_feed(AgsFxPatternAudioSignal *fx_pattern
     ags_audio_signal_open_feed(source,
 			       template,
 			       frame_count + buffer_size, frame_count);
+#if 0
   }else if(offset_counter + 1 == x1 &&
 	   delay_counter + 1.0 >= delay){
     ags_audio_signal_close_feed(source,
 				template,
 				frame_count + buffer_size, frame_count);
+#endif
   }else{
     ags_audio_signal_continue_feed(source,
 				   template,

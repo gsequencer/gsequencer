@@ -43,6 +43,49 @@ int ags_machine_popup_reposition_audio_response_callback(GtkWidget *widget, gint
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
 
 void
+ags_machine_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMachine *machine)
+{
+  AgsAudio *audio;
+  AgsPlaybackDomain *playback_domain;
+  
+  guint i;
+
+  static const guint staging_program[] = {
+    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
+  };
+  
+  if(old_parent != NULL){
+    return;
+  }
+
+  audio = machine->audio;
+
+  g_object_get(audio,
+	       "playback-domain", &playback_domain,
+	       NULL);
+
+  if(playback_domain != NULL){
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      AgsThread *audio_thread;
+	  
+      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							  i);
+
+      if(audio_thread != NULL){
+	ags_audio_thread_set_do_fx_staging(audio_thread, TRUE);
+	ags_audio_thread_set_staging_program(audio_thread,
+					     staging_program,
+					     1);
+	    
+	g_object_unref(audio_thread);
+      }
+    }
+    
+    g_object_unref(playback_domain);
+  }
+}
+
+void
 ags_machine_check_message_callback(GObject *application_context, AgsMachine *machine)
 {
   ags_machine_check_message(machine);

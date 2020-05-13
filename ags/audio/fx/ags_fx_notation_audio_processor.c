@@ -729,9 +729,11 @@ ags_fx_notation_audio_processor_run_init_pre(AgsRecall *recall)
 void
 ags_fx_notation_audio_processor_run_inter(AgsRecall *recall)
 {
-  AgsRecallID *recall_id;
   AgsFxNotationAudioProcessor *fx_notation_audio_processor;
+  AgsRecallID *recall_id;
+  AgsRecyclingContext *parent_recycling_context, *recycling_context;
 
+  gint sound_scope;
   gdouble delay_counter;
   
   GRecMutex *fx_notation_audio_processor_mutex;
@@ -740,15 +742,40 @@ ags_fx_notation_audio_processor_run_inter(AgsRecall *recall)
   
   fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
 
+  recall_id = NULL;
+
+  sound_scope = ags_recall_get_sound_scope(recall);
+
   g_object_get(recall,
 	       "recall-id", &recall_id,
+	       NULL);
+
+  if(!ags_recall_id_check_sound_scope(recall_id, sound_scope)){
+    if(recall_id != NULL){
+      g_object_unref(recall_id);
+    }
+
+    AGS_RECALL_CLASS(ags_fx_notation_audio_processor_parent_class)->run_inter(recall);
+    
+    return;
+  }
+
+  recycling_context = NULL;
+  parent_recycling_context = NULL;
+  
+  g_object_get(recall_id,
+	       "recycling-context", &recycling_context,
+	       NULL);
+
+  g_object_get(recycling_context,
+	       "parent", &parent_recycling_context,
 	       NULL);
   
   /* get delay counter */
   g_rec_mutex_lock(fx_notation_audio_processor_mutex);
-    
-  fx_notation_audio_processor->current_delay_counter = fx_notation_audio_processor->delay_counter;
-  fx_notation_audio_processor->current_offset_counter = fx_notation_audio_processor->offset_counter;
+
+  fx_notation_audio_processor->delay_counter = fx_notation_audio_processor->current_delay_counter;
+  fx_notation_audio_processor->offset_counter = fx_notation_audio_processor->current_offset_counter;
   
   delay_counter = fx_notation_audio_processor->delay_counter;
 
@@ -756,17 +783,22 @@ ags_fx_notation_audio_processor_run_inter(AgsRecall *recall)
 
   /* run */
   if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_NOTATION)){
-    if(delay_counter == 0.0){
+    if(parent_recycling_context == NULL &&
+       delay_counter == 0.0){
       ags_fx_notation_audio_processor_play(fx_notation_audio_processor);
     }
   }
 
   if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_MIDI)){
-    ags_fx_notation_audio_processor_record(fx_notation_audio_processor);
+    if(parent_recycling_context == NULL){
+      ags_fx_notation_audio_processor_record(fx_notation_audio_processor);
+    }
   }
   
   if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_PLAYBACK)){
-    ags_fx_notation_audio_processor_feed(fx_notation_audio_processor);
+    if(parent_recycling_context == NULL){
+      ags_fx_notation_audio_processor_feed(fx_notation_audio_processor);
+    }
   }
   
   /* counter change */
@@ -774,6 +806,14 @@ ags_fx_notation_audio_processor_run_inter(AgsRecall *recall)
 
   if(recall_id != NULL){
     g_object_unref(recall_id);
+  }
+
+  if(recycling_context != NULL){
+    g_object_unref(recycling_context);
+  }
+
+  if(parent_recycling_context != NULL){
+    g_object_unref(parent_recycling_context);
   }
   
   /* call parent */
@@ -909,10 +949,13 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 
     attack = 0;
 
+    //TODO:JK: uncomment me
+#if 0
     if(output_soundcard != NULL){
       attack = ags_soundcard_get_attack(AGS_SOUNDCARD(output_soundcard));
     }
-
+#endif
+    
     end_recycling = ags_recycling_next(last_recycling);
 
     /* get child recall id */
@@ -957,6 +1000,8 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
     recycling = first_recycling;
     g_object_ref(recycling);
     
+//    g_message(" - audio processor");
+
     while(recycling != end_recycling){
       AgsAudioSignal *template, *audio_signal;
 
@@ -989,6 +1034,8 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
       ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
       ags_recycling_add_audio_signal(recycling,
 				     audio_signal);
+
+//      g_message(" `- added");
 
       if(key_mode == AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_RECORD){
 	g_object_ref(audio_signal);

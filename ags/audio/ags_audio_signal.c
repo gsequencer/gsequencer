@@ -3422,7 +3422,7 @@ ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
   format = audio_signal->format;
 
   samplerate = audio_signal->samplerate;
-  delay = audio_signal->delay;
+  delay = 0.0; // audio_signal->delay;
   attack = 0; // audio_signal->attack; is for parent
   
   old_length = audio_signal->length;
@@ -3530,15 +3530,18 @@ ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
       copy_n_frames = frame_count - i;
     }
 
+    //NOTE:JK: caused some data not present
+#if 0
     if(initial_reset &&
        i + copy_n_frames >= old_frame_count){
       copy_n_frames = old_frame_count - i;
       
       initial_reset = FALSE;
     }
-
+#endif
+    
     /* copy */
-    if(i >= old_frame_count){
+    if(i + copy_n_frames >= old_frame_count){
       ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, i % buffer_size,
 						  template_stream->data, 1, j % buffer_size,
 						  copy_n_frames, copy_mode);

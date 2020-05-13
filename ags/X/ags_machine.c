@@ -442,6 +442,9 @@ ags_machine_init(AgsMachine *machine)
   g_signal_connect(application_context, "check-message",
 		   G_CALLBACK(ags_machine_check_message_callback), machine);
   
+  g_signal_connect_after((GObject *) machine, "parent_set",
+			 G_CALLBACK(ags_machine_parent_set_callback), (gpointer) machine);
+
   machine->machine_name = NULL;
 
   machine->version = AGS_MACHINE_DEFAULT_VERSION;

@@ -33,7 +33,7 @@ void ags_fx_playback_audio_signal_init(AgsFxPlaybackAudioSignal *fx_playback_aud
 void ags_fx_playback_audio_signal_dispose(GObject *gobject);
 void ags_fx_playback_audio_signal_finalize(GObject *gobject);
 
-void ags_fx_playback_audio_signal_real_run_inter(AgsRecall *recall);
+void ags_fx_playback_audio_signal_run_inter(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_playback_audio_signal
@@ -97,7 +97,7 @@ ags_fx_playback_audio_signal_class_init(AgsFxPlaybackAudioSignalClass *fx_playba
   /* AgsRecallClass */
   recall = (AgsRecallClass *) fx_playback_audio_signal;
   
-  recall->run_inter = ags_fx_playback_audio_signal_real_run_inter;
+  recall->run_inter = ags_fx_playback_audio_signal_run_inter;
 }
 
 void
@@ -132,7 +132,7 @@ ags_fx_playback_audio_signal_finalize(GObject *gobject)
 }
 
 void
-ags_fx_playback_audio_signal_real_run_inter(AgsRecall *recall)
+ags_fx_playback_audio_signal_run_inter(AgsRecall *recall)
 {
   AgsAudioSignal *source;
 
@@ -140,7 +140,8 @@ ags_fx_playback_audio_signal_real_run_inter(AgsRecall *recall)
 
   gpointer buffer;
   gpointer audio_signal_data;
-  
+
+  gint sound_scope;
   guint pcm_channels;
   guint output_soundcard_channel;
   guint samplerate, target_samplerate;
@@ -150,6 +151,8 @@ ags_fx_playback_audio_signal_real_run_inter(AgsRecall *recall)
   gboolean is_done;
   
   GRecMutex *source_stream_mutex;
+
+  sound_scope = ags_recall_get_sound_scope(recall);
 
   output_soundcard = NULL;
 
@@ -170,6 +173,8 @@ ags_fx_playback_audio_signal_real_run_inter(AgsRecall *recall)
 
     return;
   }
+
+//  g_message("c) sound scope = 0x%x", sound_scope);
   
   g_object_get(recall,
 	       "output-soundcard", &output_soundcard,

@@ -36,6 +36,8 @@ G_BEGIN_DECLS
 
 void ags_machine_check_message_callback(GObject *application_context, AgsMachine *machine);
 
+void ags_machine_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMachine *machine);
+
 /* controls */
 int ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine);
 

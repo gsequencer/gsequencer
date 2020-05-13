@@ -3152,6 +3152,10 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
 void
 ags_recall_unset_staging_flags(AgsRecall *recall, guint staging_flags)
 {
+  GList *list_start, *list, *next;
+
+  gboolean children_lock_free;  
+
   GRecMutex *recall_mutex;
 
   if(!AGS_IS_RECALL(recall)){
@@ -3161,12 +3165,37 @@ ags_recall_unset_staging_flags(AgsRecall *recall, guint staging_flags)
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
+  children_lock_free = ags_recall_global_get_children_lock_free();
+
   /* unset staging flags */
   g_rec_mutex_lock(recall_mutex);
 
   recall->staging_flags &= (~staging_flags);
 
+  if(!children_lock_free){
+    list =
+      list_start = g_list_copy_deep(recall->children,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
+  }else{
+    list = 
+      list_start = recall->children;
+  }
+
   g_rec_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    next = list->next;
+    
+    ags_recall_unset_staging_flags(AGS_RECALL(list->data), staging_flags);
+
+    list = next;
+  }
+
+  if(!children_lock_free){
+    g_list_free_full(list_start,
+		     g_object_unref);
+  }
 }
 
 /**
@@ -4765,13 +4794,19 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
   /* run init pre */
   g_rec_mutex_lock(recall_mutex);
 
+  if((AGS_SOUND_STAGING_RUN_INIT_PRE & (recall->staging_flags)) != 0){
+    g_rec_mutex_unlock(recall_mutex);
+
+    return;
+  }
+
   recall->flags |= AGS_RECALL_INITIAL_RUN;
   recall->staging_flags |= AGS_SOUND_STAGING_RUN_INIT_PRE;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     g_warning("running on template");
   }
-
+  
   if(!children_lock_free){
     list =
       list_start = g_list_copy_deep(recall->children,
@@ -4840,6 +4875,12 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
 
   /* run init inter */
   g_rec_mutex_lock(recall_mutex);
+
+  if((AGS_SOUND_STAGING_RUN_INIT_INTER & (recall->staging_flags)) != 0){
+    g_rec_mutex_unlock(recall_mutex);
+
+    return;
+  }
 
   recall->staging_flags |= AGS_SOUND_STAGING_RUN_INIT_INTER;
 
@@ -4915,6 +4956,12 @@ ags_recall_real_run_init_post(AgsRecall *recall)
 
   /* run init post */
   g_rec_mutex_lock(recall_mutex);
+
+  if((AGS_SOUND_STAGING_RUN_INIT_POST & (recall->staging_flags)) != 0){
+    g_rec_mutex_unlock(recall_mutex);
+
+    return;
+  }
 
   recall->staging_flags |= AGS_SOUND_STAGING_RUN_INIT_POST;
 
@@ -4999,6 +5046,12 @@ ags_recall_real_feed_input_queue(AgsRecall *recall)
   /* feed input queue */
   g_rec_mutex_lock(recall_mutex);
 
+  if((AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (recall->staging_flags)) != 0){
+    g_rec_mutex_unlock(recall_mutex);
+
+    return;
+  }
+
   recall->staging_flags |= AGS_SOUND_STAGING_FEED_INPUT_QUEUE;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
@@ -5074,6 +5127,12 @@ ags_recall_real_automate(AgsRecall *recall)
   /* automate */
   g_rec_mutex_lock(recall_mutex);
 
+  if((AGS_SOUND_STAGING_AUTOMATE & (recall->staging_flags)) != 0){
+    g_rec_mutex_unlock(recall_mutex);
+
+    return;
+  }
+
   recall->staging_flags |= AGS_SOUND_STAGING_AUTOMATE;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
@@ -5146,6 +5205,12 @@ ags_recall_real_run_pre(AgsRecall *recall)
 
   /* run pre */
   g_rec_mutex_lock(recall_mutex);
+
+  if((AGS_SOUND_STAGING_RUN_PRE & (recall->staging_flags)) != 0){
+    g_rec_mutex_unlock(recall_mutex);
+
+    return;
+  }
 
   recall->staging_flags |= AGS_SOUND_STAGING_RUN_PRE;
 
@@ -5228,6 +5293,12 @@ ags_recall_real_run_inter(AgsRecall *recall)
   /* run inter */
   g_rec_mutex_lock(recall_mutex);
 
+  if((AGS_SOUND_STAGING_RUN_INTER & (recall->staging_flags)) != 0){
+    g_rec_mutex_unlock(recall_mutex);
+
+    return;
+  }
+
   recall->staging_flags |= AGS_SOUND_STAGING_RUN_INTER;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
@@ -5309,6 +5380,12 @@ ags_recall_real_run_post(AgsRecall *recall)
   /* run post */
   g_rec_mutex_lock(recall_mutex);
 
+  if((AGS_SOUND_STAGING_RUN_POST & (recall->staging_flags)) != 0){
+    g_rec_mutex_unlock(recall_mutex);
+
+    return;
+  }
+
   recall->staging_flags |= AGS_SOUND_STAGING_RUN_POST;
   recall->flags &= (~AGS_RECALL_INITIAL_RUN);
 
@@ -5385,6 +5462,12 @@ ags_recall_real_do_feedback(AgsRecall *recall)
   /* do feedback */
   g_rec_mutex_lock(recall_mutex);
 
+  if((AGS_SOUND_STAGING_DO_FEEDBACK & (recall->staging_flags)) != 0){
+    g_rec_mutex_unlock(recall_mutex);
+
+    return;
+  }
+
   recall->staging_flags |= AGS_SOUND_STAGING_DO_FEEDBACK;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
@@ -5459,6 +5542,12 @@ ags_recall_real_feed_output_queue(AgsRecall *recall)
 
   /* feed output queue */
   g_rec_mutex_lock(recall_mutex);
+
+  if((AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall->staging_flags)) != 0){
+    g_rec_mutex_unlock(recall_mutex);
+
+    return;
+  }
 
   recall->staging_flags |= AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE;
 
