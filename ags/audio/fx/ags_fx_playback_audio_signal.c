@@ -159,8 +159,8 @@ ags_fx_playback_audio_signal_real_run_inter(AgsRecall *recall)
 	       "source", &source,
 	       NULL);
 
-  if(!ags_audio_signal_test_flags(source, AGS_AUDIO_SIGNAL_MASTER) &&
-     !ags_audio_signal_test_flags(source, AGS_AUDIO_SIGNAL_FEED)){
+  if(!(ags_audio_signal_test_flags(source, AGS_AUDIO_SIGNAL_MASTER) ||
+       ags_audio_signal_test_flags(source, AGS_AUDIO_SIGNAL_FEED))){
     ags_recall_done(recall);
 
     g_object_unref(source);

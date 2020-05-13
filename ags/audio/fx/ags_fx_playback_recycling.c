@@ -169,11 +169,14 @@ ags_fx_playback_recycling_add_audio_signal_callback(AgsRecycling *recycling,
 						    AgsAudioSignal *audio_signal,
 						    AgsFxPlaybackRecycling *fx_playback_recycling)
 {
-  AgsChannel *source;
   AgsFxPlaybackAudio *fx_playback_audio;
   AgsFxPlaybackChannelProcessor *fx_playback_channel_processor;
   AgsRecallID *recall_id;
 
+  fx_playback_audio = NULL;
+
+  fx_playback_channel_processor = NULL;
+  
   recall_id = NULL;
   
   g_object_get(fx_playback_recycling,
@@ -188,10 +191,12 @@ ags_fx_playback_recycling_add_audio_signal_callback(AgsRecycling *recycling,
 	       "parent", &fx_playback_channel_processor,
 	       NULL);
 
-  g_object_get(fx_playback_channel_processor,
-	       "recall-audio", &fx_playback_audio,
-	       NULL);
-
+  if(fx_playback_channel_processor != NULL){
+    g_object_get(fx_playback_channel_processor,
+		 "recall-audio", &fx_playback_audio,
+		 NULL);
+  }
+  
   if(ags_audio_signal_test_flags(audio_signal, AGS_AUDIO_SIGNAL_MASTER)){
     ags_fx_playback_audio_add_master_audio_signal(fx_playback_audio,
 						  audio_signal);    
@@ -218,10 +223,13 @@ ags_fx_playback_recycling_remove_audio_signal_callback(AgsRecycling *recycling,
 						       AgsAudioSignal *audio_signal,
 						       AgsFxPlaybackRecycling *fx_playback_recycling)
 {
-  AgsChannel *source;
   AgsFxPlaybackAudio *fx_playback_audio;
   AgsFxPlaybackChannelProcessor *fx_playback_channel_processor;
   AgsRecallID *recall_id;
+
+  fx_playback_audio = NULL;
+
+  fx_playback_channel_processor = NULL;
 
   recall_id = NULL;
   
@@ -237,10 +245,12 @@ ags_fx_playback_recycling_remove_audio_signal_callback(AgsRecycling *recycling,
 	       "parent", &fx_playback_channel_processor,
 	       NULL);
 
-  g_object_get(fx_playback_channel_processor,
-	       "recall-audio", &fx_playback_audio,
-	       NULL);
-
+  if(fx_playback_channel_processor != NULL){
+    g_object_get(fx_playback_channel_processor,
+		 "recall-audio", &fx_playback_audio,
+		 NULL);
+  }
+  
   if(ags_audio_signal_test_flags(audio_signal, AGS_AUDIO_SIGNAL_MASTER)){
     ags_fx_playback_audio_remove_master_audio_signal(fx_playback_audio,
 						     audio_signal);    

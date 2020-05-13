@@ -63,6 +63,7 @@ struct _AgsFxBufferChannelInputData
   gpointer parent;
 
   GHashTable *destination;
+  GHashTable *resample_cache;
 };
 
 GType ags_fx_buffer_channel_get_type();
