@@ -949,12 +949,9 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 
     attack = 0;
 
-    //TODO:JK: uncomment me
-#if 0
     if(output_soundcard != NULL){
       attack = ags_soundcard_get_attack(AGS_SOUNDCARD(output_soundcard));
     }
-#endif
     
     end_recycling = ags_recycling_next(last_recycling);
 

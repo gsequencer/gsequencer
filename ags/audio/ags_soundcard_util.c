@@ -164,16 +164,38 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
 
   default_tact_frames = absolute_delay * buffer_size;
   
-  attack[0] = (guint) floor(0.25 * buffer_size);
+  attack[0] = 0; // (guint) floor((2.0 * M_PI / (4.0 * buffer_size)) * buffer_size);
   delay[0] = (default_tact_frames + attack[0]) / buffer_size;
   
   for(i = 1; i < AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    attack[i] = (((attack[i - 1] + default_tact_frames) / buffer_size) - absolute_delay) * buffer_size;
+    gint64 current_attack;
+
+    current_attack = (((attack[i - 1] + default_tact_frames) / buffer_size) - absolute_delay) * buffer_size;
+
+    if(current_attack >= buffer_size){
+      attack[i] = buffer_size - 1;
+    }else if(current_attack < 0){
+      attack[i] = 0;
+    }else{
+      attack[i] = current_attack;
+    }
+    
     delay[i] = (default_tact_frames + attack[i] - attack[i - 1]) / buffer_size;
   }
   
   for(; i < 2 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    attack[i] = ((attack[2 * (guint) AGS_SOUNDCARD_DEFAULT_PERIOD - i - 1] + default_tact_frames) - absolute_delay) * buffer_size;
+    gint64 current_attack;
+
+    current_attack = ((attack[2 * (guint) AGS_SOUNDCARD_DEFAULT_PERIOD - i - 1] + default_tact_frames) - absolute_delay) * buffer_size;
+
+    if(current_attack >= buffer_size){
+      attack[i] = buffer_size - 1;
+    }else if(current_attack < 0){
+      attack[i] = 0;
+    }else{
+      attack[i] = current_attack;
+    }
+
     delay[i] = (default_tact_frames + attack[i] - attack[i - 1]) / buffer_size;
   }
 
