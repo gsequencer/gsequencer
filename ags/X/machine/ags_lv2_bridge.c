@@ -656,6 +656,15 @@ ags_lv2_bridge_finalize(GObject *gobject)
 
   lv2_bridge = AGS_LV2_BRIDGE(gobject);
 
+  g_object_disconnect(G_OBJECT(lv2_bridge),
+		      "any_signal::resize-audio-channels",
+		      G_CALLBACK(ags_lv2_bridge_resize_audio_channels),
+		      NULL,
+		      "any_signal::resize-pads",
+		      G_CALLBACK(ags_lv2_bridge_resize_pads),
+		      NULL,
+		      NULL);
+
   /* lv2 plugin */
   if(lv2_bridge->lv2_plugin != NULL){
     g_object_unref(lv2_bridge->lv2_plugin);
@@ -761,7 +770,101 @@ ags_lv2_bridge_connect(AgsConnectable *connectable)
 void
 ags_lv2_bridge_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsLv2Bridge *lv2_bridge;
+  AgsEffectBridge *effect_bridge;
+  AgsBulkMember *bulk_member;
+  GtkWidget *control;
+
+  GList *list, *list_start;
+
+  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+    return;
+  }
+
+  ags_lv2_bridge_parent_connectable_interface->disconnect(connectable);
+
+  lv2_bridge = AGS_LV2_BRIDGE(connectable);
+
+  /* menu */
+  list =
+    list_start = gtk_container_get_children((GtkContainer *) lv2_bridge->lv2_menu);
+
+  g_object_disconnect(G_OBJECT(list->data),
+		      "any_signal::activate",
+		      G_CALLBACK(ags_lv2_bridge_show_gui_callback),
+		      lv2_bridge,
+		      NULL);
+
+  g_list_free(list_start);
+  
+  /* program */
+  if(lv2_bridge->program != NULL){
+    g_object_disconnect(G_OBJECT(lv2_bridge->program),
+			"any_signal::changed",
+			G_CALLBACK(ags_lv2_bridge_program_changed_callback),
+			lv2_bridge,
+			NULL);
+  }
+
+  /* bulk member */
+  effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge);
+  
+  list =
+    list_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(effect_bridge->bulk_input)->table);
+
+  while(list != NULL){
+    bulk_member = list->data;
+
+    control = gtk_bin_get_child(GTK_BIN(bulk_member));
+
+    if(bulk_member->widget_type == AGS_TYPE_DIAL){
+      g_object_disconnect(GTK_WIDGET(control),
+			  "any_signal::value-changed",
+			  G_CALLBACK(ags_lv2_bridge_dial_changed_callback),
+			  lv2_bridge,
+			  NULL);
+    }else if(bulk_member->widget_type == GTK_TYPE_VSCALE){
+      g_object_disconnect(GTK_WIDGET(control),
+			  "any_signal::value-changed",
+			  G_CALLBACK(ags_lv2_bridge_vscale_changed_callback),
+			  lv2_bridge,
+			  NULL);
+    }else if(bulk_member->widget_type == GTK_TYPE_HSCALE){
+      g_object_disconnect(GTK_WIDGET(control),
+			  "any_signal::value-changed",
+			  G_CALLBACK(ags_lv2_bridge_hscale_changed_callback),
+			  lv2_bridge,
+			  NULL);
+    }else if(bulk_member->widget_type == GTK_TYPE_SPIN_BUTTON){
+      g_object_disconnect(GTK_WIDGET(control),
+			  "any_signal::value-changed",
+			  G_CALLBACK(ags_lv2_bridge_spin_button_changed_callback),
+			  lv2_bridge,
+			  NULL);
+    }else if(bulk_member->widget_type == GTK_TYPE_CHECK_BUTTON){
+      g_object_disconnect(GTK_WIDGET(control),
+			  "any_signal::clicked",
+			  G_CALLBACK(ags_lv2_bridge_check_button_clicked_callback),
+			  lv2_bridge,
+			  NULL);
+    }else if(bulk_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
+      g_object_disconnect(GTK_WIDGET(control),
+			  "any_signal::clicked",
+			  G_CALLBACK(ags_lv2_bridge_toggle_button_clicked_callback),
+			  lv2_bridge,
+			  NULL);
+    }else if(bulk_member->widget_type == GTK_TYPE_BUTTON){
+      g_object_disconnect(GTK_WIDGET(control),
+			  "any_signal::clicked",
+			  G_CALLBACK(ags_lv2_bridge_button_clicked_callback),
+			  lv2_bridge,
+			  NULL);
+    }
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 void

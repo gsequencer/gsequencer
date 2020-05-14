@@ -53,6 +53,7 @@ void ags_ladspa_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 
 void ags_ladspa_bridge_map_recall(AgsMachine *machine);
 
+
 /**
  * SECTION:ags_ladspa_bridge
  * @short_description: A composite widget to visualize a bunch of #AgsChannel

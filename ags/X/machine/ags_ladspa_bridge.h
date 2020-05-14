@@ -85,6 +85,13 @@ struct _AgsLadspaBridgeClass
 
 GType ags_ladspa_bridge_get_type(void);
 
+void ags_ladspa_bridge_input_map_recall(AgsLadspaBridge *ladspa_bridge,
+					guint audio_channel_start,
+					guint input_pad_start);
+void ags_ladspa_bridge_output_map_recall(AgsLadspaBridge *ladspa_bridge,
+					 guint audio_channel_start,
+					 guint output_pad_start);
+
 AgsLadspaBridge* ags_ladspa_bridge_new(GObject *soundcard,
 				       gchar *filename,
 				       gchar *effect);
