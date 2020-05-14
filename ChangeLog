@@ -41,11 +41,7 @@ ags (3.3.0)
 	* implemented ags_channel_thread_get_staging_program() and ags_channel_thread_set_staging_program()
 	* implemented ags_audio_test_staging_completed(), ags_audio_set_staging_completed() and ags_audio_unset_staging_completed()
 	* implemented ags_channel_test_staging_completed(), ags_channel_set_staging_completed() and ags_channel_unset_staging_completed()
-	* TODO:JK: implemented AgsAudio::add-plugin() and AgsAudio::remove-plugin()
-	* TODO:JK: implemented AgsChannel::add-plugin() and AgsChannel::remove-plugin()
 	* TODO:JK: implemented Fx mutex per scope
-	* TODO:JK: implemented resample cache per scope
-	* TODO:JK: implemented AgsSeekable and AgsTactable
 	* TODO:JK: fixed AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT/AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT in ags_fx_factory.c
 	* TODO:JK: fixed AgsComplex support
 	* TODO:JK: extended user's handbook to cover OSC server preferences
