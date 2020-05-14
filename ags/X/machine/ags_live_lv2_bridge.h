@@ -74,6 +74,15 @@ struct _AgsLiveLv2Bridge
   guint mapped_output_pad;
   guint mapped_input_pad;
 
+  AgsRecallContainer *lv2_play_container;
+  AgsRecallContainer *lv2_recall_container;
+
+  AgsRecallContainer *envelope_play_container;
+  AgsRecallContainer *envelope_recall_container;
+
+  AgsRecallContainer *buffer_play_container;
+  AgsRecallContainer *buffer_recall_container;
+
   gchar *filename;
   gchar *effect;
   gchar *uri;

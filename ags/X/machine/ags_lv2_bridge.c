@@ -1101,6 +1101,8 @@ ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge,
 
   audio = AGS_MACHINE(lv2_bridge)->audio;
 
+  output_pads = 0;
+
   /* get some fields */
   g_object_get(audio,
 	       "output-pads", &output_pads,
