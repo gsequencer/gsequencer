@@ -263,6 +263,8 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
   AGS_RECALL(fx_notation_audio)->xml_type = "ags-fx-notation-audio";
 
   fx_notation_audio->flags = 0;
+
+  fx_notation_audio->pattern_mode = FALSE;
   
   fx_notation_audio->feed_note = NULL;
 
@@ -871,6 +873,70 @@ ags_fx_notation_audio_unset_flags(AgsFxNotationAudio *fx_notation_audio, guint f
   g_rec_mutex_lock(recall_mutex);
 
   fx_notation_audio->flags &= (~flags);
+
+  g_rec_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_fx_notation_audio_get_pattern_mode:
+ * @fx_notation_audio: the #AgsFxNotationAudio
+ * 
+ * Get pattern mode of @fx_notation_audio.
+ * 
+ * Returns: %TRUE if pattern mode, otherwise %FALSE
+ * 
+ * Since: 3.3.0
+ */
+gboolean
+ags_fx_notation_audio_get_pattern_mode(AgsFxNotationAudio *fx_notation_audio)
+{
+  gboolean pattern_mode;
+  
+  GRecMutex *recall_mutex;
+  
+  if(!AGS_IS_FX_NOTATION_AUDIO(fx_notation_audio)){
+    return(FALSE);
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio);
+
+  /* test flags */
+  g_rec_mutex_lock(recall_mutex);
+
+  pattern_mode = fx_notation_audio->pattern_mode;
+
+  g_rec_mutex_unlock(recall_mutex);
+
+  return(pattern_mode);
+}
+
+/**
+ * ags_fx_notation_audio_set_pattern_mode:
+ * @fx_notation_audio: the #AgsFxNotationAudio
+ * @pattern_mode: %TRUE if pattern mode, otherwise %FALSE
+ * 
+ * Set @pattern_mode of @fx_notation_audio.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_fx_notation_audio_set_pattern_mode(AgsFxNotationAudio *fx_notation_audio,
+				       gboolean pattern_mode)
+{
+  GRecMutex *recall_mutex;
+
+  if(!AGS_IS_FX_NOTATION_AUDIO(fx_notation_audio)){
+    return;
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio);
+
+  /* unset flags */
+  g_rec_mutex_lock(recall_mutex);
+
+  fx_notation_audio->pattern_mode = pattern_mode;
 
   g_rec_mutex_unlock(recall_mutex);
 }

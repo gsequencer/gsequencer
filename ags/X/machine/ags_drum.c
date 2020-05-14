@@ -684,6 +684,13 @@ ags_drum_map_recall(AgsMachine *machine)
 				       (AGS_FX_FACTORY_ADD),
 				       0);
 
+  recall = ags_recall_template_find_type(start_recall, AGS_TYPE_FX_NOTATION_AUDIO);
+
+  if(recall != NULL){
+    ags_fx_notation_audio_set_pattern_mode(recall->data,
+					   TRUE);
+  }
+  
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 

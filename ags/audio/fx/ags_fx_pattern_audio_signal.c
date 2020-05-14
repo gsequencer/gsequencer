@@ -239,6 +239,8 @@ ags_fx_pattern_audio_signal_run_inter(AgsRecall *recall)
       delay = g_value_get_double(&value);
       
       g_value_unset(&value);
+
+      g_object_unref(port);
     }
   }
   

@@ -326,18 +326,20 @@ ags_fx_notation_audio_signal_test_stream_feed()
 
   /* stream feed - attempt #0 */  
   ags_fx_notation_audio_signal_stream_feed(fx_notation_audio_signal,
-					  audio_signal,
-					  note,
-					  0, 1,
-					  0,
-					  0.0, 0,
-					  0,
-					  AGS_SOUNDCARD_DEFAULT_DELAY, AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
+					   audio_signal,
+					   note,
+					   FALSE,
+					   0, 1,
+					   0,
+					   0.0, 0,
+					   0,
+					   AGS_SOUNDCARD_DEFAULT_DELAY, AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
 
   /* stream feed - attempt #1 */  
   ags_fx_notation_audio_signal_stream_feed(fx_notation_audio_signal,
 					   audio_signal,
 					   note,
+					   FALSE,
 					   0, 1,
 					   0,
 					   1.0, 0,

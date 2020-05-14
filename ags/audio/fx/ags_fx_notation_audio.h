@@ -64,6 +64,8 @@ struct _AgsFxNotationAudio
 
   guint flags;
 
+  gboolean pattern_mode;
+  
   GList *feed_note;
   
   AgsPort *bpm;
@@ -87,6 +89,10 @@ GType ags_fx_notation_audio_get_type();
 gboolean ags_fx_notation_audio_test_flags(AgsFxNotationAudio *fx_notation_audio, guint flags);
 void ags_fx_notation_audio_set_flags(AgsFxNotationAudio *fx_notation_audio, guint flags);
 void ags_fx_notation_audio_unset_flags(AgsFxNotationAudio *fx_notation_audio, guint flags);
+
+gboolean ags_fx_notation_audio_get_pattern_mode(AgsFxNotationAudio *fx_notation_audio);
+void ags_fx_notation_audio_set_pattern_mode(AgsFxNotationAudio *fx_notation_audio,
+					    gboolean pattern_mode);
 
 /* feed note */
 GList* ags_fx_notation_audio_get_feed_note(AgsFxNotationAudio *fx_notation_audio);

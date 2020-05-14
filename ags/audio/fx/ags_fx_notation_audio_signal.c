@@ -19,6 +19,7 @@
 
 #include <ags/audio/fx/ags_fx_notation_audio_signal.h>
 
+#include <ags/audio/fx/ags_fx_notation_audio.h>
 #include <ags/audio/fx/ags_fx_notation_audio_processor.h>
 #include <ags/audio/fx/ags_fx_notation_channel_processor.h>
 #include <ags/audio/fx/ags_fx_notation_recycling.h>
@@ -35,6 +36,7 @@ void ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall);
 void ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
 						   AgsAudioSignal *source,
 						   AgsNote *note,
+						   gboolean pattern_mode,
 						   guint x0, guint x1,
 						   guint y,
 						   gdouble delay_counter, guint64 offset_counter,
@@ -150,19 +152,26 @@ void
 ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 {
   AgsAudioSignal *source;
+  AgsAudioSignal *template;
+  AgsFxNotationAudio *fx_notation_audio;
   AgsFxNotationAudioProcessor *fx_notation_audio_processor;
   AgsFxNotationChannelProcessor *fx_notation_channel_processor;
   AgsFxNotationRecycling *fx_notation_recycling;
+  AgsPort *port;
 
   GList *start_note, *note;
-  
+
+  gboolean pattern_mode;
   gdouble delay_counter;
   guint64 offset_counter;
   gdouble delay;
   guint length;
   guint frame_count;
+  guint template_frame_count;
   guint buffer_size;
   guint i;
+  
+  GValue value = {0,};
   
   GRecMutex *fx_notation_audio_processor_mutex;
 
@@ -177,6 +186,7 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   
   source = NULL;
 
+  fx_notation_audio = NULL;
   fx_notation_audio_processor = NULL;
   fx_notation_channel_processor = NULL;
   fx_notation_recycling = NULL;
@@ -191,10 +201,13 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 	       NULL);
   
   g_object_get(fx_notation_channel_processor,
+	       "recall-audio", &fx_notation_audio,
 	       "recall-audio-run", &fx_notation_audio_processor,
 	       NULL);
-
+  
   fx_notation_audio_processor_mutex = NULL;
+
+  pattern_mode = ags_fx_notation_audio_get_pattern_mode(fx_notation_audio);
   
   delay_counter = 0.0;
   offset_counter = 0;
@@ -211,18 +224,50 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
     g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
   }
 
+  template = NULL;
+
   start_note = NULL;
+
+  delay = AGS_SOUNDCARD_DEFAULT_DELAY;
+
+  if(fx_notation_audio != NULL){
+    g_object_get(fx_notation_audio,
+		 "delay", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value, G_TYPE_DOUBLE);
+
+      ags_port_safe_read(port, &value);
+
+      delay = g_value_get_double(&value);
+      
+      g_value_unset(&value);
+
+      g_object_unref(port);
+    }
+  }
 
   length = 0;
   frame_count = 0;
   
+  template_frame_count = 0;  
+
   g_object_get(source,
+	       "template", &template,
 	       "note", &start_note,
-	       "delay", &delay,
 	       "length", &length,
 	       "frame-count", &frame_count,
 	       "buffer-size", &buffer_size,
 	       NULL);
+
+  if(template != NULL){
+    g_object_get(template,
+		 "frame-count", &template_frame_count,
+		 NULL);
+  }else{
+    template_frame_count = ((guint) floor(delay) + 1) * buffer_size;
+  }
 
   note = start_note;
 
@@ -237,7 +282,9 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 		 NULL);
 
     if(offset_counter >= x0){
-      if(offset_counter < x1){
+      if(offset_counter < x1 ||
+	 (pattern_mode &&
+	  frame_count < template_frame_count)){
 #ifdef AGS_DEBUG
 	g_message("ags-fx-notation 0x%x", source);
 #endif
@@ -247,6 +294,7 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 	ags_fx_notation_audio_signal_stream_feed((AgsFxNotationAudioSignal *) recall,
 						 source,
 						 note->data,
+						 pattern_mode,
 						 x0, x1,
 						 y,
 						 delay_counter, offset_counter,
@@ -275,9 +323,17 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   if(source != NULL){
     g_object_unref(source);
   }
+  
+  if(template != NULL){
+    g_object_unref(template);
+  }
 
   g_list_free_full(start_note,
 		   (GDestroyNotify) g_object_unref);
+  
+  if(fx_notation_audio != NULL){
+    g_object_unref(fx_notation_audio);
+  }
   
   if(fx_notation_audio_processor != NULL){
     g_object_unref(fx_notation_audio_processor);
@@ -299,6 +355,7 @@ void
 ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
 					      AgsAudioSignal *source,
 					      AgsNote *note,
+					      gboolean pattern_mode,
 					      guint x0, guint x1,
 					      guint y,
 					      gdouble delay_counter, guint64 offset_counter,
@@ -344,6 +401,7 @@ void
 ags_fx_notation_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
 					 AgsAudioSignal *source,
 					 AgsNote *note,
+					 gboolean pattern_mode,
 					 guint x0, guint x1,
 					 guint y,
 					 gdouble delay_counter, guint64 offset_counter,
@@ -358,6 +416,7 @@ ags_fx_notation_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_a
     AGS_FX_NOTATION_AUDIO_SIGNAL_GET_CLASS(fx_notation_audio_signal)->stream_feed(fx_notation_audio_signal,
 										  source,
 										  note,
+										  pattern_mode,
 										  x0, x1,
 										  y,
 										  delay_counter, offset_counter,

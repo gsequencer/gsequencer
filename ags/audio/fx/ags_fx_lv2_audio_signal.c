@@ -42,6 +42,7 @@ void ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall);
 void ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
 					 AgsAudioSignal *source,
 					 AgsNote *note,
+					 gboolean pattern_mode,
 					 guint x0, guint x1,
 					 guint y,
 					 gdouble delay_counter, guint64 offset_counter,
@@ -341,13 +342,14 @@ ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall)
 
 void
 ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
-				     AgsAudioSignal *source,
-				     AgsNote *note,
-				     guint x0, guint x1,
-				     guint y,
-				     gdouble delay_counter, guint64 offset_counter,
-				     guint frame_count,
-				     gdouble delay, guint buffer_size)
+				    AgsAudioSignal *source,
+				    AgsNote *note,
+				    gboolean pattern_mode,
+				    guint x0, guint x1,
+				    guint y,
+				    gdouble delay_counter, guint64 offset_counter,
+				    guint frame_count,
+				    gdouble delay, guint buffer_size)
 {
   AgsAudio *audio;
   AgsFxLv2Audio *fx_lv2_audio;
@@ -562,10 +564,10 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 
 void
 ags_fx_lv2_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audio_signal,
-				       AgsAudioSignal *source,
-				       AgsNote *note,
-				       guint x0, guint x1,
-				       guint y)
+				      AgsAudioSignal *source,
+				      AgsNote *note,
+				      guint x0, guint x1,
+				      guint y)
 {
   AgsAudio *audio;
   AgsFxLv2Audio *fx_lv2_audio;
