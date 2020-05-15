@@ -126,6 +126,11 @@ struct _AgsMachine
   guint bank_0;
   guint bank_1;
 
+  guint audio_channels;
+
+  guint output_pads;
+  guint input_pads;
+  
   AgsAudio *audio;
 
   GList *active_playback;

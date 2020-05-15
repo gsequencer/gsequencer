@@ -6429,11 +6429,11 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 				       doc);
 
     /* set parameter */
-    message->n_params = 2;
+    message->n_params = 4;
 
-    message->parameter_name = (gchar **) malloc(3 * sizeof(gchar *));
+    message->parameter_name = (gchar **) malloc(5 * sizeof(gchar *));
     message->value = g_new0(GValue,
-			    2);
+			    4);
 
     /* audio channels */
     message->parameter_name[0] = "audio-channels";
@@ -6451,8 +6451,24 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     g_value_set_uint(&(message->value[1]),
 		     audio_channels_old);
 
+    /* output pads */
+    message->parameter_name[2] = "output-pads";
+    
+    g_value_init(&(message->value[2]),
+		 G_TYPE_UINT);
+    g_value_set_uint(&(message->value[2]),
+		     output_pads);
+
+    /* input pads */
+    message->parameter_name[3] = "input-pads";
+    
+    g_value_init(&(message->value[3]),
+		 G_TYPE_UINT);
+    g_value_set_uint(&(message->value[3]),
+		     input_pads);
+    
     /* terminate string vector */
-    message->parameter_name[2] = NULL;
+    message->parameter_name[4] = NULL;
     
     /* add message */
     ags_message_delivery_add_message_envelope(message_delivery,
@@ -7685,11 +7701,11 @@ ags_audio_real_set_pads(AgsAudio *audio,
 				       NULL,
 				       doc);
     /* set parameter */
-    message->n_params = 3;
+    message->n_params = 4;
 
-    message->parameter_name = (gchar *) malloc(4 * sizeof(gchar *));
+    message->parameter_name = (gchar *) malloc(5 * sizeof(gchar *));
     message->value = g_new0(GValue,
-			    3);
+			    4);
 
     /* channel type */
     message->parameter_name[0] = "channel-type";
@@ -7715,8 +7731,16 @@ ags_audio_real_set_pads(AgsAudio *audio,
     g_value_set_uint(&(message->value[2]),
 		     pads_old);
 
+    /* audio channels */
+    message->parameter_name[3] = "audio-channels";
+    
+    g_value_init(&(message->value[3]),
+		 G_TYPE_UINT);
+    g_value_set_uint(&(message->value[3]),
+		     audio_channels);
+
     /* terminate string vector */
-    message->parameter_name[3] = NULL;
+    message->parameter_name[4] = NULL;
     
     /* add message */
     ags_message_delivery_add_message_envelope(message_delivery,
