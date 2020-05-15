@@ -1529,7 +1529,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
       
       for(i = 0; i < input_pads; i++){
 	/* create AgsPad's if necessary or resize */
-	if(audio_audio_channels >= audio_channels &&
+	if(audio_audio_channels > 0 &&
 	   i < audio_input_pads){
 	  channel = ags_channel_nth(start_channel, i * audio_audio_channels);
 	}else{
@@ -1580,7 +1580,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 
       for(i = 0; i < output_pads; i++){
 	/* create AgsPad's if necessary or resize */
-	if(audio_audio_channels >= audio_channels &&
+	if(audio_audio_channels > 0 &&
 	   i < audio_output_pads){
 	  channel = ags_channel_nth(start_channel, i * audio_audio_channels);
 	}else{
@@ -1833,10 +1833,10 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 
     /* grow input */
     if(machine->input != NULL){
-      if(channel_type == AGS_TYPE_INPUT){
+      if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
 	for(i = pads_old; i < pads; i++){
 	  /* instantiate pad */
-	  if(audio_audio_channels >= audio_channels &&
+	  if(audio_audio_channels > 0 &&
 	     i < audio_input_pads){
 	    input = ags_channel_nth(start_input, i * audio_audio_channels);
 	  }else{
@@ -1880,10 +1880,10 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
     
     /* grow output */
     if(machine->output != NULL){
-      if(channel_type == AGS_TYPE_OUTPUT){
+      if(g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
 	for(i = pads_old; i < pads; i++){
 	  /* instantiate pad */
-	  if(audio_audio_channels >= audio_channels &&
+	  if(audio_audio_channels > 0 &&
 	     i < audio_output_pads){
 	    output = ags_channel_nth(start_output, i * audio_audio_channels);
 	  }else{

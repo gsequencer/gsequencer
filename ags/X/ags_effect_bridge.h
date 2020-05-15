@@ -71,6 +71,11 @@ struct _AgsEffectBridge
   guint samplerate;
   guint buffer_size;
   guint format;
+
+  guint audio_channels;
+
+  guint output_pads;
+  guint input_pads;
     
   AgsAudio *audio;
   

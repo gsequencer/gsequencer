@@ -380,8 +380,18 @@ ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
   effect_bridge->flags = 0;
 
   effect_bridge->name = NULL;
+
   effect_bridge->version = AGS_EFFECT_BRIDGE_DEFAULT_VERSION;
   effect_bridge->build_id = AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID;
+
+  effect_bridge->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  effect_bridge->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  effect_bridge->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  
+  effect_bridge->audio_channels = 0;
+
+  effect_bridge->output_pads = 0;
+  effect_bridge->input_pads = 0;
 
   effect_bridge->audio = NULL;
 
@@ -1104,6 +1114,8 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
 
     g_list_free(start_list);
   }
+
+  effect_bridge->audio_channels = new_size;
 }
 
 /**
@@ -1142,9 +1154,11 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 
   AgsAudio *audio;
   AgsChannel *start_output, *start_input;
-  AgsChannel *current, *next_pad, *nth_current;
+  AgsChannel *current;
 
   guint audio_channels;
+  guint audio_audio_channels;
+  guint audio_input_pads, audio_output_pads;
   guint i;
   
   audio = effect_bridge->audio;
@@ -1153,28 +1167,34 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
     return;
   }
 
+  audio_channels = effect_bridge->audio_channels;
+
+  start_output = NULL;
+  start_input = NULL;
+  
+  audio_audio_channels = 0;
+
+  audio_input_pads = 0;
+  audio_output_pads = 0;
+
   g_object_get(audio,
-	       "audio-channels", &audio_channels,
 	       "output", &start_output,
 	       "input", &start_input,
+	       "audio-channels", &audio_audio_channels,
+	       "input-pads", &audio_input_pads,
+	       "output-pads", &audio_output_pads,
 	       NULL);
   
   if(new_size > old_size){
-    if(channel_type == AGS_TYPE_OUTPUT){
-      nth_current = ags_channel_nth(start_output,
-				    old_size * audio_channels);
-
-    }else{
-      nth_current = ags_channel_nth(start_input,
-				    old_size * audio_channels);
-    }
-
-    current = nth_current;
-
-    next_pad = NULL;
-    
-    for(i = 0; i < new_size - old_size && current != NULL; i++){
-      if(channel_type == AGS_TYPE_OUTPUT){
+    for(i = 0; i < new_size - old_size; i++){
+      if(g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
+	if(audio_audio_channels > 0 &&
+	   i < new_size){
+	  current = ags_channel_nth(start_output, i * audio_audio_channels);
+	}else{
+	  current = NULL;
+	}
+	
 	if(effect_bridge->output_pad_type != G_TYPE_NONE){
 	  effect_pad = g_object_new(effect_bridge->output_pad_type,
 				    "channel", current,
@@ -1185,6 +1205,13 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 			    GTK_WIDGET(effect_pad));
 	}
       }else{
+	if(audio_audio_channels > 0 &&
+	   i < audio_input_pads){
+	  current = ags_channel_nth(start_input, i * audio_audio_channels);
+	}else{
+	  current = NULL;
+	}
+	
 	if(effect_bridge->input_pad_type != G_TYPE_NONE){
 	  effect_pad = g_object_new(effect_bridge->input_pad_type,
 				    "channel", current,
@@ -1195,17 +1222,14 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 			    GTK_WIDGET(effect_pad));
 	}
       }
-
-      /* iterate */
-      next_pad = ags_channel_next_pad(current);
-
-      g_object_unref(current);
-
-      current = next_pad;
     }
 
-    if(next_pad != NULL){
-      g_object_unref(next_pad);
+    if(start_output != NULL){
+      g_object_unref(start_output);
+    }
+
+    if(start_input != NULL){
+      g_object_unref(start_input);
     }
     
     /* connect and show */
@@ -1266,6 +1290,12 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 
   if(start_input != NULL){  
     g_object_unref(start_input);
+  }
+
+  if(g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
+    effect_bridge->output_pads = new_size;
+  }else{
+    effect_bridge->input_pads = new_size;
   }
 }
 
