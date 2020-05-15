@@ -549,6 +549,10 @@ ags_line_init(AgsLine *line)
   
   line->indicator = NULL;
 
+  line->plugin = NULL;
+
+  line->queued_drawing = NULL;
+  
   /* forwarded callbacks */
   g_signal_connect_after(line, "stop",
 			 G_CALLBACK(ags_line_stop_callback), NULL);
@@ -852,6 +856,92 @@ ags_line_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(list_start);
+}
+
+/**
+ * ags_line_plugin_alloc:
+ * @play_container: the #AgsRecallContainer
+ * @recall_container: the #AgsRecallContainer
+ * @plugin_name: the plugin name
+ * @filename: the filename as string
+ * @effect: the effect as string
+ * 
+ * Allocate #AgsLinePlugin-struct.
+ * 
+ * Returns: the newly allocated #AgsLinePlugin-struct
+ * 
+ * Since: 3.3.0
+ */
+AgsLinePlugin*
+ags_line_plugin_alloc(AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			     gchar *plugin_name,
+			     gchar *filename,
+			     gchar *effect)
+{
+  AgsLinePlugin *line_plugin;
+
+  line_plugin = (AgsLinePlugin *) g_malloc(sizeof(AgsLinePlugin));
+
+  line_plugin->play_container = play_container;
+
+  if(play_container != NULL){
+    g_object_ref(play_container);
+  }
+
+  line_plugin->recall_container = recall_container;
+  
+  if(recall_container != NULL){
+    g_object_ref(recall_container);
+  }
+  
+  line_plugin->plugin_name = g_strdup(plugin_name);
+
+  line_plugin->filename = g_strdup(filename);
+  line_plugin->effect = g_strdup(effect);
+
+  line_plugin->control_type_name = NULL;
+
+  line_plugin->control_count = 0;
+  
+  return(line_plugin);
+}
+
+/**
+ * ags_line_plugin_free:
+ * @line_plugin: the #AgsLinePlugin-struct
+ * 
+ * Free @line_plugin.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_line_plugin_free(AgsLinePlugin *line_plugin)
+{
+  if(line_plugin == NULL){
+    return;
+  }
+
+  if(line_plugin->play_container != NULL){
+    g_object_unref(line_plugin->play_container);
+  }
+
+  if(line_plugin->recall_container != NULL){
+    g_object_unref(line_plugin->recall_container);
+  }
+  
+  if(line_plugin->filename != NULL){
+    g_free(line_plugin->filename);
+  }
+
+  if(line_plugin->effect != NULL){
+    g_free(line_plugin->effect);
+  }
+
+  if(line_plugin->control_type_name != NULL){
+    g_list_free(line_plugin->control_type_name);
+  }
+  
+  g_free(line_plugin);
 }
 
 /**

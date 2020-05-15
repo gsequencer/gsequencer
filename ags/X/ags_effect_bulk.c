@@ -777,6 +777,7 @@ ags_effect_bulk_show(GtkWidget *widget)
  * ags_effect_bulk_plugin_alloc:
  * @play_container: the #AgsRecallContainer
  * @recall_container: the #AgsRecallContainer
+ * @plugin_name: the plugin name
  * @filename: the filename as string
  * @effect: the effect as string
  * 
@@ -788,12 +789,13 @@ ags_effect_bulk_show(GtkWidget *widget)
  */
 AgsEffectBulkPlugin*
 ags_effect_bulk_plugin_alloc(AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			     gchar *plugin_name,
 			     gchar *filename,
 			     gchar *effect)
 {
   AgsEffectBulkPlugin *effect_bulk_plugin;
 
-  effect_bulk_plugin = (AgsEffectBulkPlugin *) malloc(sizeof(AgsEffectBulkPlugin));
+  effect_bulk_plugin = (AgsEffectBulkPlugin *) g_malloc(sizeof(AgsEffectBulkPlugin));
 
   effect_bulk_plugin->play_container = play_container;
 
@@ -807,6 +809,8 @@ ags_effect_bulk_plugin_alloc(AgsRecallContainer *play_container, AgsRecallContai
     g_object_ref(recall_container);
   }
   
+  effect_bulk_plugin->plugin_name = g_strdup(plugin_name);
+
   effect_bulk_plugin->filename = g_strdup(filename);
   effect_bulk_plugin->effect = g_strdup(effect);
 
@@ -841,18 +845,18 @@ ags_effect_bulk_plugin_free(AgsEffectBulkPlugin *effect_bulk_plugin)
   }
   
   if(effect_bulk_plugin->filename != NULL){
-    free(effect_bulk_plugin->filename);
+    g_free(effect_bulk_plugin->filename);
   }
 
   if(effect_bulk_plugin->effect != NULL){
-    free(effect_bulk_plugin->effect);
+    g_free(effect_bulk_plugin->effect);
   }
 
   if(effect_bulk_plugin->control_type_name != NULL){
     g_list_free(effect_bulk_plugin->control_type_name);
   }
   
-  free(effect_bulk_plugin);
+  g_free(effect_bulk_plugin);
 }
 
 void
@@ -896,6 +900,7 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
   
   /* alloc effect bulk plugin */
   effect_bulk_plugin = ags_effect_bulk_plugin_alloc(play_container, recall_container,
+						    plugin_name,
 						    filename,
 						    effect);
   effect_bulk_plugin->control_type_name = control_type_name;
@@ -1314,6 +1319,7 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
 
   /* alloc effect bulk plugin */
   effect_bulk_plugin = ags_effect_bulk_plugin_alloc(play_container, recall_container,
+						    plugin_name,
 						    filename,
 						    effect);
   effect_bulk_plugin->control_type_name = control_type_name;
@@ -1807,6 +1813,7 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
   
   /* alloc effect bulk plugin */
   effect_bulk_plugin = ags_effect_bulk_plugin_alloc(play_container, recall_container,
+						    plugin_name,
 						    filename,
 						    effect);
   effect_bulk_plugin->control_type_name = control_type_name;

@@ -775,26 +775,36 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
 {
   AgsEffectLine *effect_line;
 
-  AgsChannel *channel, *next_channel, *nth_channel;
+  AgsAudio *audio;
+  AgsChannel *channel;
 
   GList *start_list, *list;
 
+  guint audio_audio_channels;
   guint i, j;  
+
+  audio = NULL;
+
+  audio_audio_channels = 0;
   
-  if(audio_channels > audio_channels_old){
-    nth_channel = ags_channel_nth(effect_pad->channel,
-				  audio_channels_old);
+  g_object_get(effect_pad->channel,
+	       "audio", &audio,
+	       NULL);
 
-    if(nth_channel == NULL){
-      return;
-    }
-
-    channel = nth_channel;
-
-    next_channel = NULL;
-    
+  g_object_get(audio,
+	       "audio-channels", &audio_audio_channels,
+	       NULL);
+  
+  if(audio_channels > audio_channels_old){    
     for(i = audio_channels_old; i < audio_channels;){
       for(j = audio_channels_old % effect_pad->cols; j < effect_pad->cols && i < audio_channels; j++, i++){
+	if(i < audio_audio_channels){
+	  channel = ags_channel_nth(effect_pad->channel,
+				    i);
+	}else{
+	  channel = NULL;
+	}
+
 	effect_line = (AgsEffectLine *) g_object_new(effect_line_type,
 						     "channel", channel,
 						     NULL);
@@ -806,19 +816,12 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
 			 0, 0);
 
 	/* iterate */
-	next_channel = ags_channel_next(channel);
-
-	g_object_unref(channel);
-
-	channel = next_channel;
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
     }
-
-    if(next_channel != NULL){
-      g_object_unref(next_channel);
-    }
   }else{
-
     start_list = gtk_container_get_children((GtkContainer *) effect_pad->table);
     list = g_list_nth(start_list,
 		      audio_channels);
@@ -831,6 +834,10 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
 
     g_list_free(start_list);
   }
+
+  if(audio != NULL){
+    g_object_unref(audio);
+  }    
 }
 
 /**

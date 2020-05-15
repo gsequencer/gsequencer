@@ -39,6 +39,8 @@ G_BEGIN_DECLS
 #define AGS_IS_EFFECT_LINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_EFFECT_LINE))
 #define AGS_EFFECT_LINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_EFFECT_LINE, AgsEffectLineClass))
 
+#define AGS_EFFECT_LINE_PLUGIN(ptr) ((AgsEffectLinePlugin *)(ptr))
+
 #define AGS_EFFECT_LINE_DEFAULT_VERSION "0.7.8"
 #define AGS_EFFECT_LINE_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23"
 
@@ -47,6 +49,7 @@ G_BEGIN_DECLS
 #define AGS_EFFECT_LINE_SEPARATOR_EFFECT "ags-effect-line-separator-effect"
 
 typedef struct _AgsEffectLine AgsEffectLine;
+typedef struct _AgsEffectLinePlugin AgsEffectLinePlugin;
 typedef struct _AgsEffectLineClass AgsEffectLineClass;
 
 typedef enum{
@@ -76,6 +79,8 @@ struct _AgsEffectLine
   GtkToggleButton *group;
   
   GtkTable *table;
+
+  GList *plugin;
 
   GList *queued_drawing;
 };
@@ -108,7 +113,28 @@ struct _AgsEffectLineClass
 	       GObject *recall_id);
 };
 
+struct _AgsEffectLinePlugin
+{  
+  AgsRecallContainer *play_container;
+  AgsRecallContainer *recall_container;
+
+  gchar *plugin_name;
+  
+  gchar *filename;
+  gchar *effect;
+  
+  GList *control_type_name;
+
+  guint control_count;
+};
+
 GType ags_effect_line_get_type(void);
+
+AgsEffectLinePlugin* ags_effect_line_plugin_alloc(AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+						  gchar *plugin_name,
+						  gchar *filename,
+						  gchar *effect);
+void ags_effect_line_plugin_free(AgsEffectLinePlugin *effect_line_plugin);
 
 void ags_effect_line_samplerate_changed(AgsEffectLine *effect_line,
 					guint samplerate, guint old_samplerate);

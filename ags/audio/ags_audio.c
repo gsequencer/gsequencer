@@ -51,6 +51,7 @@
 
 #include <ags/audio/fx/ags_fx_playback_audio_processor.h>
 #include <ags/audio/fx/ags_fx_pattern_audio_processor.h>
+#include <ags/audio/fx/ags_fx_notation_audio_processor.h>
 
 #include <libxml/tree.h>
 
@@ -6429,11 +6430,11 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 				       doc);
 
     /* set parameter */
-    message->n_params = 4;
+    message->n_params = 2;
 
-    message->parameter_name = (gchar **) malloc(5 * sizeof(gchar *));
+    message->parameter_name = (gchar **) malloc(3 * sizeof(gchar *));
     message->value = g_new0(GValue,
-			    4);
+			    2);
 
     /* audio channels */
     message->parameter_name[0] = "audio-channels";
@@ -6450,25 +6451,9 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 		 G_TYPE_UINT);
     g_value_set_uint(&(message->value[1]),
 		     audio_channels_old);
-
-    /* output pads */
-    message->parameter_name[2] = "output-pads";
-    
-    g_value_init(&(message->value[2]),
-		 G_TYPE_UINT);
-    g_value_set_uint(&(message->value[2]),
-		     output_pads);
-
-    /* input pads */
-    message->parameter_name[3] = "input-pads";
-    
-    g_value_init(&(message->value[3]),
-		 G_TYPE_UINT);
-    g_value_set_uint(&(message->value[3]),
-		     input_pads);
     
     /* terminate string vector */
-    message->parameter_name[4] = NULL;
+    message->parameter_name[2] = NULL;
     
     /* add message */
     ags_message_delivery_add_message_envelope(message_delivery,
@@ -7701,11 +7686,11 @@ ags_audio_real_set_pads(AgsAudio *audio,
 				       NULL,
 				       doc);
     /* set parameter */
-    message->n_params = 4;
+    message->n_params = 3;
 
-    message->parameter_name = (gchar *) malloc(5 * sizeof(gchar *));
+    message->parameter_name = (gchar *) malloc(4 * sizeof(gchar *));
     message->value = g_new0(GValue,
-			    4);
+			    3);
 
     /* channel type */
     message->parameter_name[0] = "channel-type";
@@ -7731,16 +7716,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
     g_value_set_uint(&(message->value[2]),
 		     pads_old);
 
-    /* audio channels */
-    message->parameter_name[3] = "audio-channels";
-    
-    g_value_init(&(message->value[3]),
-		 G_TYPE_UINT);
-    g_value_set_uint(&(message->value[3]),
-		     audio_channels);
-
     /* terminate string vector */
-    message->parameter_name[4] = NULL;
+    message->parameter_name[3] = NULL;
     
     /* add message */
     ags_message_delivery_add_message_envelope(message_delivery,
@@ -13287,6 +13264,7 @@ ags_audio_recall_done_callback(AgsRecall *recall,
   if(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING) &&
      (AGS_IS_COUNT_BEATS_AUDIO_RUN(recall) ||
       AGS_IS_FX_PATTERN_AUDIO_PROCESSOR(recall) ||
+      AGS_IS_FX_NOTATION_AUDIO_PROCESSOR(recall) ||
       AGS_IS_FX_PLAYBACK_AUDIO_PROCESSOR(recall))){
     sound_scope = ags_recall_get_sound_scope(recall);
 

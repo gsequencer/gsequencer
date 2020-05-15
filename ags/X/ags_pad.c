@@ -825,25 +825,41 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 {
   AgsLine *line;
 
-  AgsChannel *channel, *next_channel;
+  AgsAudio *audio;
+  AgsChannel *channel;
 
+  guint audio_audio_channels;
   guint i, j;
 
 #ifdef AGS_DEBUG
   g_message("ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n", audio_channels, audio_channels_old);
 #endif
+
+  audio = NULL;
+
+  audio_audio_channels = 0;
+  
+  g_object_get(pad->channel,
+	       "audio", &audio,
+	       NULL);
+
+  g_object_get(audio,
+	       "audio-channels", &audio_audio_channels,
+	       NULL);
   
   /* resize */
   if(audio_channels > audio_channels_old){
-    channel = ags_channel_nth(pad->channel,
-			      audio_channels_old);
-
-    next_channel = NULL;
-    
     /* create AgsLine */
     for(i = audio_channels_old; i < audio_channels;){
       for(j = audio_channels_old % pad->cols; j < pad->cols && i < audio_channels; j++, i++){
 	/* instantiate line */
+	if(i < audio_audio_channels){
+	  channel = ags_channel_nth(pad->channel,
+				    i);
+	}else{
+	  channel = NULL;
+	}
+	
 	line = (AgsLine *) g_object_new(line_type,
 					"pad", pad,
 					"channel", channel,
@@ -858,19 +874,10 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 			     j, floor(i / pad->cols),
 			     1, 1);
 	
-	/* iterate */
 	if(channel != NULL){
-	  next_channel = ags_channel_next(channel);
-
 	  g_object_unref(channel);
-
-	  channel = next_channel;
 	}
       }
-    }
-
-    if(next_channel != NULL){
-      g_object_unref(next_channel);
     }
   }else if(audio_channels < audio_channels_old){
     GList *list, *list_start;
@@ -894,6 +901,10 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
     }
 
     g_list_free(list_start);
+  }
+
+  if(audio != NULL){
+    g_object_unref(audio);
   }
 }
 

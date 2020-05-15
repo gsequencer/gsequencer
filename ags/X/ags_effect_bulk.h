@@ -46,9 +46,8 @@ G_BEGIN_DECLS
 #define AGS_EFFECT_BULK_COLUMNS_COUNT (4)
 
 typedef struct _AgsEffectBulk AgsEffectBulk;
-typedef struct _AgsEffectBulkClass AgsEffectBulkClass;
-
 typedef struct _AgsEffectBulkPlugin AgsEffectBulkPlugin;
+typedef struct _AgsEffectBulkClass AgsEffectBulkClass;
 
 typedef enum{
   AGS_EFFECT_BULK_MAPPED_RECALL       = 1,
@@ -131,6 +130,7 @@ struct _AgsEffectBulkPlugin
 GType ags_effect_bulk_get_type(void);
 
 AgsEffectBulkPlugin* ags_effect_bulk_plugin_alloc(AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+						  gchar *plugin_name,
 						  gchar *filename,
 						  gchar *effect);
 void ags_effect_bulk_plugin_free(AgsEffectBulkPlugin *effect_bulk_plugin);

@@ -508,6 +508,8 @@ ags_effect_line_init(AgsEffectLine *effect_line)
 		     FALSE, FALSE,
 		     0);
 
+  effect_line->plugin = NULL;
+
   effect_line->queued_drawing = NULL;
 }
 
@@ -753,6 +755,92 @@ ags_effect_line_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(list_start);
+}
+
+/**
+ * ags_effect_line_plugin_alloc:
+ * @play_container: the #AgsRecallContainer
+ * @recall_container: the #AgsRecallContainer
+ * @plugin_name: the plugin name
+ * @filename: the filename as string
+ * @effect: the effect as string
+ * 
+ * Allocate #AgsEffectLinePlugin-struct.
+ * 
+ * Returns: the newly allocated #AgsEffectLinePlugin-struct
+ * 
+ * Since: 3.0.0
+ */
+AgsEffectLinePlugin*
+ags_effect_line_plugin_alloc(AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			     gchar *plugin_name,
+			     gchar *filename,
+			     gchar *effect)
+{
+  AgsEffectLinePlugin *effect_line_plugin;
+
+  effect_line_plugin = (AgsEffectLinePlugin *) g_malloc(sizeof(AgsEffectLinePlugin));
+
+  effect_line_plugin->play_container = play_container;
+
+  if(play_container != NULL){
+    g_object_ref(play_container);
+  }
+
+  effect_line_plugin->recall_container = recall_container;
+  
+  if(recall_container != NULL){
+    g_object_ref(recall_container);
+  }
+  
+  effect_line_plugin->plugin_name = g_strdup(plugin_name);
+
+  effect_line_plugin->filename = g_strdup(filename);
+  effect_line_plugin->effect = g_strdup(effect);
+
+  effect_line_plugin->control_type_name = NULL;
+
+  effect_line_plugin->control_count = 0;
+  
+  return(effect_line_plugin);
+}
+
+/**
+ * ags_effect_line_plugin_free:
+ * @effect_line_plugin: the #AgsEffectLinePlugin-struct
+ * 
+ * Free @effect_line_plugin.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_effect_line_plugin_free(AgsEffectLinePlugin *effect_line_plugin)
+{
+  if(effect_line_plugin == NULL){
+    return;
+  }
+
+  if(effect_line_plugin->play_container != NULL){
+    g_object_unref(effect_line_plugin->play_container);
+  }
+
+  if(effect_line_plugin->recall_container != NULL){
+    g_object_unref(effect_line_plugin->recall_container);
+  }
+  
+  if(effect_line_plugin->filename != NULL){
+    g_free(effect_line_plugin->filename);
+  }
+
+  if(effect_line_plugin->effect != NULL){
+    g_free(effect_line_plugin->effect);
+  }
+
+  if(effect_line_plugin->control_type_name != NULL){
+    g_list_free(effect_line_plugin->control_type_name);
+  }
+  
+  g_free(effect_line_plugin);
 }
 
 /**
