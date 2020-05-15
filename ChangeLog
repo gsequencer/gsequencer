@@ -46,6 +46,7 @@ ags (3.3.0)
 	* TODO:JK: fixed AgsComplex support
 	* TODO:JK: extended user's handbook to cover OSC server preferences
 	* improved GObject-Introspection API
+	* fixed UI bug related to channel number mismatch
 
 ags (3.2.15)
 

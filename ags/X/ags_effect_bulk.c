@@ -254,7 +254,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The ::add-plugin signal notifies about added effect.
    * 
-   * Since: 3.0.0
+   * Since: 3.3.0
    */
   effect_bulk_signals[ADD_PLUGIN] =
     g_signal_new("add-plugin",
@@ -285,7 +285,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The ::remove-plugin signal notifies about removed effect.
    * 
-   * Since: 3.0.0
+   * Since: 3.3.0
    */
   effect_bulk_signals[REMOVE_PLUGIN] =
     g_signal_new("remove-plugin",
@@ -785,7 +785,7 @@ ags_effect_bulk_show(GtkWidget *widget)
  * 
  * Returns: the newly allocated #AgsEffectBulkPlugin-struct
  * 
- * Since: 3.0.0
+ * Since: 3.3.0
  */
 AgsEffectBulkPlugin*
 ags_effect_bulk_plugin_alloc(AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -797,17 +797,17 @@ ags_effect_bulk_plugin_alloc(AgsRecallContainer *play_container, AgsRecallContai
 
   effect_bulk_plugin = (AgsEffectBulkPlugin *) g_malloc(sizeof(AgsEffectBulkPlugin));
 
-  effect_bulk_plugin->play_container = play_container;
-
   if(play_container != NULL){
     g_object_ref(play_container);
   }
 
-  effect_bulk_plugin->recall_container = recall_container;
-  
+  effect_bulk_plugin->play_container = play_container;
+
   if(recall_container != NULL){
     g_object_ref(recall_container);
   }
+  
+  effect_bulk_plugin->recall_container = recall_container;
   
   effect_bulk_plugin->plugin_name = g_strdup(plugin_name);
 
@@ -827,7 +827,7 @@ ags_effect_bulk_plugin_alloc(AgsRecallContainer *play_container, AgsRecallContai
  * 
  * Free @effect_bulk_plugin.
  * 
- * Since: 3.0.0
+ * Since: 3.3.0
  */
 void
 ags_effect_bulk_plugin_free(AgsEffectBulkPlugin *effect_bulk_plugin)
@@ -878,8 +878,6 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
 
   AgsLadspaPlugin *ladspa_plugin;
 
-  GObject *output_soundcard;
-
   GList *start_recall;
   GList *start_list, *list;
   GList *start_plugin_port, *plugin_port;
@@ -893,8 +891,6 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
   guint i, j;
   guint k;
 
-  output_soundcard = NULL;
-  
   pads = 0;
   audio_channels = 0;
   
@@ -910,11 +906,10 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
 
   /* get audio properties */
   g_object_get(effect_bulk->audio,
-	       "output-soundcard", &output_soundcard,
 	       "audio-channels", &audio_channels,
 	       NULL);
   
-  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+  if(g_type_is_a(effect_bulk->channel_type, AGS_TYPE_OUTPUT)){
     g_object_get(effect_bulk->audio,
 		 "output-pads", &pads,
 		 NULL);
@@ -931,7 +926,7 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
   /* ags-fx-ladspa */
   start_recall = ags_fx_factory_create(effect_bulk->audio,
 				       effect_bulk_plugin->play_container, effect_bulk_plugin->recall_container,
-				       "ags-fx-ladspa",
+				       plugin_name,
 				       filename,
 				       effect,
 				       0, audio_channels,
@@ -1068,6 +1063,8 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
+						   "play-container", play_container,
+						   "recall-container", recall_container,
 						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
@@ -1269,10 +1266,6 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
 
   effect_bulk_plugin->control_count = control_count;
   
-  if(output_soundcard != NULL){
-    g_object_unref(output_soundcard);
-  }
-  
   g_list_free_full(start_plugin_port,
 		   g_object_unref);
 }
@@ -1296,8 +1289,6 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
 
   AgsDssiPlugin *dssi_plugin;
   
-  GObject *output_soundcard;
-
   GList *start_recall;
   GList *start_list, *list;
   GList *start_plugin_port, *plugin_port;
@@ -1311,8 +1302,6 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
   guint x, y;
   guint i, j;
   guint k;
-
-  output_soundcard = NULL;
   
   pads = 0;
   audio_channels = 0;
@@ -1329,7 +1318,6 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
 
   /* get audio properties */
   g_object_get(effect_bulk->audio,
-	       "output-soundcard", &output_soundcard,
 	       "audio-channels", &audio_channels,
 	       NULL);
   
@@ -1487,6 +1475,8 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
+						   "play-container", play_container,
+						   "recall-container", recall_container,
 						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
@@ -1706,8 +1696,6 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
   AgsLv2Manager *lv2_manager;
   AgsLv2Plugin *lv2_plugin;
   
-  GObject *output_soundcard;
-
   GList *start_recall;
   GList *start_list, *list;
   GList *start_plugin_port, *plugin_port;
@@ -1736,8 +1724,6 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
     
   lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
 
-  output_soundcard = NULL;
-  
   pads = 0;
   audio_channels = 0;
 
@@ -1823,7 +1809,6 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
 
   /* get audio properties */
   g_object_get(effect_bulk->audio,
-	       "output-soundcard", &output_soundcard,
 	       "audio-channels", &audio_channels,
 	       NULL);
 
@@ -1854,7 +1839,7 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
   /* ags-fx-lv2 */
   start_recall = ags_fx_factory_create(effect_bulk->audio,
 				       effect_bulk_plugin->play_container, effect_bulk_plugin->recall_container,
-				       "ags-fx-lv2",
+				       plugin_name,
 				       filename,
 				       effect,
 				       0, audio_channels,
@@ -1987,6 +1972,8 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
+						   "play-container", play_container,
+						   "recall-container", recall_container,
 						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
@@ -2276,7 +2263,7 @@ ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
  *
  * Add an effect by its filename and effect specifier.
  *
- * Since: 3.0.0
+ * Since: 3.3.0
  */
 void
 ags_effect_bulk_add_plugin(AgsEffectBulk *effect_bulk,
@@ -2559,7 +2546,7 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
  *
  * Remove an effect by its position.
  *
- * Since: 3.0.0
+ * Since: 3.3.0
  */
 void
 ags_effect_bulk_remove_plugin(AgsEffectBulk *effect_bulk,

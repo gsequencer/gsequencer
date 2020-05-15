@@ -104,11 +104,17 @@ struct _AgsLineClass
 
   void (*group_changed)(AgsLine *line);
   
-  GList* (*add_effect)(AgsLine *line,
-		       GList *control_type_name,
-		       gchar *filename,
-		       gchar *effect);
-  void (*remove_effect)(AgsLine *line,
+  void (*add_plugin)(AgsLine *line,
+		     GList *control_type_name,
+		     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+		     gchar *plugin_name,
+		     gchar *filename,
+		     gchar *effect,
+		     guint start_audio_channel, guint stop_audio_channel,
+		     guint start_pad, guint stop_pad,
+		     gint position,
+		     guint create_flags, guint recall_flags);
+  void (*remove_plugin)(AgsLine *line,
 			guint nth);
   
   void (*map_recall)(AgsLine *line,
@@ -153,11 +159,17 @@ void ags_line_set_channel(AgsLine *line, AgsChannel *channel);
 
 void ags_line_group_changed(AgsLine *line);
 
-GList* ags_line_add_effect(AgsLine *line,
-			   GList *control_type_name,
-			   gchar *filename,
-			   gchar *effect);
-void ags_line_remove_effect(AgsLine *line,
+void ags_line_add_plugin(AgsLine *line,
+			 GList *control_type_name,
+			 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			 gchar *plugin_name,
+			 gchar *filename,
+			 gchar *effect,
+			 guint start_audio_channel, guint stop_audio_channel,
+			 guint start_pad, guint stop_pad,
+			 gint position,
+			 guint create_flags, guint recall_flags);
+void ags_line_remove_plugin(AgsLine *line,
 			    guint nth);
 
 void ags_line_map_recall(AgsLine *line,

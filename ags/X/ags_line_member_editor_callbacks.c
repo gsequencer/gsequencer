@@ -185,38 +185,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	effect = ags_plugin_browser_get_plugin_effect(line_member_editor->plugin_browser);
 
 	if(line != NULL){
-	  AgsAddEffect *add_effect;
-
-	  GList *start_play, *start_recall;
-
-	  g_object_get(line->channel,
-		       "play", &start_play,
-		       "recall", &start_recall,
-		       NULL);
-	  
-	  if(ags_recall_find_recall_id_with_effect(start_play,
-						   NULL,
-						   filename,
-						   effect) == NULL &&
-	     ags_recall_find_recall_id_with_effect(start_recall,
-						   NULL,
-						   filename,
-						   effect) == NULL){
-	    ags_line_member_editor_plugin_browser_response_create_entry(line_member_editor,
-									filename, effect);
-	    
-	    /* add effect */
-	    add_effect = ags_add_effect_new(line->channel,
-					    filename,
-					    effect);
-	    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-					  (AgsTask *) add_effect);
-	  }
-
-	  g_list_free_full(start_play,
-			   g_object_unref);
-	  g_list_free_full(start_recall,
-			   g_object_unref);
+	  //TODO:JK: implement me
+//	  ags_line_add_plugin();
 	}
 	
 	g_free(filename);
@@ -265,38 +235,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	effect = ags_plugin_browser_get_plugin_effect(line_member_editor->plugin_browser);
 
 	if(effect_line != NULL){
-	  AgsAddEffect *add_effect;
-	  
-	  GList *start_play, *start_recall;
-
-	  g_object_get(effect_line->channel,
-		       "play", &start_play,
-		       "recall", &start_recall,
-		       NULL);
-
-	  if(ags_recall_find_recall_id_with_effect(start_play,
-						   NULL,
-						   filename,
-						   effect) == NULL &&
-	     ags_recall_find_recall_id_with_effect(start_recall,
-						   NULL,
-						   filename,
-						   effect) == NULL){
-	    ags_line_member_editor_plugin_browser_response_create_entry(line_member_editor,
-									filename, effect);
-
-	    /* add effect */
-	    add_effect = ags_add_effect_new(effect_line->channel,
-					    filename,
-					    effect);
-	    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-					  (AgsTask *) add_effect);
-	  }
-
-	  g_list_free_full(start_play,
-			   g_object_unref);
-	  g_list_free_full(start_recall,
-			   g_object_unref);
+	  //TODO:JK: implement me
+//	  ags_effect_line_add_plugin();
 	}
 	
 	g_free(filename);
@@ -389,21 +329,8 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
     /* iterate line member */
     if(line != NULL){
-      for(nth = 0; line_member != NULL; nth++){
-	children = gtk_container_get_children((GtkContainer *) GTK_CONTAINER(line_member->data));
-
-	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-	  gtk_widget_destroy(GTK_WIDGET(line_member->data));
-
-	  /* remove effect */
-	  ags_line_remove_effect(line,
-				 nth);
-	}
-
-	g_list_free(children);
-      
-	line_member = line_member->next;
-      }
+      //TODO:JK: implement me
+//	  ags_line_remove_plugin();      
     }
   }else{
     AgsEffectBridge *effect_bridge;
@@ -447,21 +374,8 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
     /* iterate line member */
     if(effect_line != NULL){
-      for(nth = 0; line_member != NULL; nth++){
-	children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
-
-	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-	  gtk_widget_destroy(GTK_WIDGET(line_member->data));
-	
-	  /* remove effect */
-	  ags_effect_line_remove_effect(effect_line,
-					nth);
-	}
-
-	g_list_free(children);
-	
-	line_member = line_member->next;
-      }
+      //TODO:JK: implement me
+//	  ags_effect_line_remove_plugin();
     }
   }
 
