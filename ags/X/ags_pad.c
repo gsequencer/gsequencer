@@ -838,14 +838,18 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
   audio = NULL;
 
   audio_audio_channels = 0;
-  
-  g_object_get(pad->channel,
-	       "audio", &audio,
-	       NULL);
 
-  g_object_get(audio,
-	       "audio-channels", &audio_audio_channels,
-	       NULL);
+  if(pad->channel != NULL){
+    g_object_get(pad->channel,
+		 "audio", &audio,
+		 NULL);
+  }
+  
+  if(audio != NULL){
+    g_object_get(audio,
+		 "audio-channels", &audio_audio_channels,
+		 NULL);
+  }
   
   /* resize */
   if(audio_channels > audio_channels_old){

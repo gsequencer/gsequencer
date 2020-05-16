@@ -786,14 +786,18 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
   audio = NULL;
 
   audio_audio_channels = 0;
-  
-  g_object_get(effect_pad->channel,
-	       "audio", &audio,
-	       NULL);
 
-  g_object_get(audio,
-	       "audio-channels", &audio_audio_channels,
-	       NULL);
+  if(effect_pad->channel != NULL){
+    g_object_get(effect_pad->channel,
+		 "audio", &audio,
+		 NULL);
+  }
+  
+  if(audio != NULL){
+    g_object_get(audio,
+		 "audio-channels", &audio_audio_channels,
+		 NULL);
+  }
   
   if(audio_channels > audio_channels_old){    
     for(i = audio_channels_old; i < audio_channels;){

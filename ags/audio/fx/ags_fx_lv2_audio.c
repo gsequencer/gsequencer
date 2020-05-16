@@ -1165,6 +1165,12 @@ ags_fx_lv2_audio_input_data_alloc()
 
   input_data->event_buffer = (snd_seq_event_t *) g_malloc(sizeof(snd_seq_event_t));
 
+  input_data->event_buffer->type = SND_SEQ_EVENT_NOTEON;
+
+  input_data->event_buffer->data.note.channel = 0;
+  input_data->event_buffer->data.note.note = 0;
+  input_data->event_buffer->data.note.velocity = 127;
+
   input_data->key_on = 0;
   
   return(input_data);
@@ -1551,8 +1557,11 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
   input_port_count = 0;
 
   has_event_port = FALSE;
+  event_port = 0;
+  
   has_atom_port = FALSE;
-
+  atom_port = 0;
+  
   control_port_count = 0;
 
   is_live_instrument = ags_fx_lv2_audio_test_flags(fx_lv2_audio, AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT);
@@ -1605,133 +1614,169 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
     plugin_port = plugin_port->next;
   }
 
+  g_rec_mutex_lock(recall_mutex);
+
+  fx_lv2_audio->output_port_count = output_port_count;
+  fx_lv2_audio->output_port = output_port;
+
+  fx_lv2_audio->input_port_count = input_port_count;
+  fx_lv2_audio->input_port = input_port;
+
+  fx_lv2_audio->has_event_port = has_event_port;
+  fx_lv2_audio->event_port = event_port;
+
+  fx_lv2_audio->has_atom_port = has_atom_port;
+  fx_lv2_audio->atom_port = atom_port;
+  
+  g_rec_mutex_unlock(recall_mutex);
+
   /*  */
-  if(!is_live_instrument &&
-     control_port_count > 0){
-    lv2_port = (AgsPort **) g_malloc((control_port_count + 1) * sizeof(AgsPort *));
+  if(is_live_instrument){
+    if(control_port_count > 0){
+      lv2_port = (AgsPort **) g_malloc((control_port_count + 1) * sizeof(AgsPort *));
 
-    plugin_port = start_plugin_port;
+      plugin_port = start_plugin_port;
     
-    for(nth = 0; nth < control_port_count && plugin_port != NULL;){
-      if(ags_plugin_port_test_flags(plugin_port->data,
-				    AGS_PLUGIN_PORT_CONTROL)){
-	AgsPluginPort *current_plugin_port;
+      for(nth = 0; nth < control_port_count && plugin_port != NULL;){
+	if(ags_plugin_port_test_flags(plugin_port->data,
+				      AGS_PLUGIN_PORT_CONTROL)){
+	  AgsPluginPort *current_plugin_port;
 
-	gchar *plugin_name;
-	gchar *specifier;
-	gchar *control_port;
+	  gchar *plugin_name;
+	  gchar *specifier;
+	  gchar *control_port;
 
-	guint port_index;
+	  guint port_index;
       
-	GValue default_value = {0,};
+	  GValue default_value = {0,};
 
-	GRecMutex *plugin_port_mutex;
+	  GRecMutex *plugin_port_mutex;
       
-	current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
+	  current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
 
-	/* get plugin port mutex */
-	plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
+	  /* get plugin port mutex */
+	  plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
 
-	/* plugin name, specifier and control port */
-	plugin_name = g_strdup_printf("lv2-<%s>", lv2_plugin->uri);
+	  /* plugin name, specifier and control port */
+	  plugin_name = g_strdup_printf("lv2-<%s>", lv2_plugin->uri);
 
-	specifier = NULL;
+	  specifier = NULL;
       
-	port_index = 0;
+	  port_index = 0;
 
-	g_object_get(current_plugin_port,
-		     "port-name", &specifier,
-		     "port-index", &port_index,
-		     NULL);
+	  g_object_get(current_plugin_port,
+		       "port-name", &specifier,
+		       "port-index", &port_index,
+		       NULL);
 
-	control_port = g_strdup_printf("%u/%u",
-				       nth,
-				       control_port_count);
+	  control_port = g_strdup_printf("%u/%u",
+					 nth,
+					 control_port_count);
 
-	/* default value */
-	g_value_init(&default_value,
-		     G_TYPE_FLOAT);
+	  /* default value */
+	  g_value_init(&default_value,
+		       G_TYPE_FLOAT);
       
-	g_rec_mutex_lock(plugin_port_mutex);
+	  g_rec_mutex_lock(plugin_port_mutex);
       
-	g_value_copy(current_plugin_port->default_value,
-		     &default_value);
+	  g_value_copy(current_plugin_port->default_value,
+		       &default_value);
       
-	g_rec_mutex_unlock(plugin_port_mutex);
+	  g_rec_mutex_unlock(plugin_port_mutex);
 
-	/* lv2 port */
-	lv2_port[nth] = g_object_new(AGS_TYPE_PORT,
-				     "plugin-name", plugin_name,
-				     "specifier", specifier,
-				     "control-port", control_port,
-				     "port-value-is-pointer", FALSE,
-				     "port-value-type", G_TYPE_FLOAT,
-				     NULL);
+	  /* lv2 port */
+	  lv2_port[nth] = g_object_new(AGS_TYPE_PORT,
+				       "plugin-name", plugin_name,
+				       "specifier", specifier,
+				       "control-port", control_port,
+				       "port-value-is-pointer", FALSE,
+				       "port-value-type", G_TYPE_FLOAT,
+				       NULL);
       
-	if(ags_plugin_port_test_flags(current_plugin_port,
-				      AGS_PLUGIN_PORT_OUTPUT)){
-	  ags_port_set_flags(lv2_port[nth], AGS_PORT_IS_OUTPUT);
+	  if(ags_plugin_port_test_flags(current_plugin_port,
+					AGS_PLUGIN_PORT_OUTPUT)){
+	    ags_port_set_flags(lv2_port[nth], AGS_PORT_IS_OUTPUT);
 	  
-	  ags_recall_set_flags((AgsRecall *) fx_lv2_audio,
-			       AGS_RECALL_HAS_OUTPUT_PORT);
+	    ags_recall_set_flags((AgsRecall *) fx_lv2_audio,
+				 AGS_RECALL_HAS_OUTPUT_PORT);
 	
-	}else{
-	  if(!ags_plugin_port_test_flags(current_plugin_port,
-					 AGS_PLUGIN_PORT_INTEGER) &&
-	     !ags_plugin_port_test_flags(current_plugin_port,
-					 AGS_PLUGIN_PORT_TOGGLED)){
-	    ags_port_set_flags(lv2_port[nth], AGS_PORT_INFINITE_RANGE);
-	  }
-	}
-	
-	g_object_set(lv2_port[nth],
-		     "plugin-port", current_plugin_port,
-		     NULL);
-
-	ags_port_util_load_lv2_conversion(lv2_port[nth],
-					  current_plugin_port);
-	
-	ags_port_safe_write_raw(lv2_port[nth],
-				&default_value);
-
-	ags_recall_add_port((AgsRecall *) fx_lv2_audio,
-			    lv2_port[nth]);
-      
-	/* connect port */
-	for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-	  AgsFxLv2AudioScopeData *scope_data;
-
-	  scope_data = fx_lv2_audio->scope_data[i];
-
-	  if(i == AGS_SOUND_SCOPE_PLAYBACK ||
-	     i == AGS_SOUND_SCOPE_NOTATION ||
-	     i == AGS_SOUND_SCOPE_MIDI){
-	    for(j = 0; j < scope_data->audio_channels; j++){
-	      AgsFxLv2AudioChannelData *channel_data;
-
-	      channel_data = scope_data->channel_data[j];
-	    
-	      ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-					   channel_data->lv2_handle[0],
-					   port_index,
-					   &(lv2_port[nth]->port_value.ags_port_float));
+	  }else{
+	    if(!ags_plugin_port_test_flags(current_plugin_port,
+					   AGS_PLUGIN_PORT_INTEGER) &&
+	       !ags_plugin_port_test_flags(current_plugin_port,
+					   AGS_PLUGIN_PORT_TOGGLED)){
+	      ags_port_set_flags(lv2_port[nth], AGS_PORT_INFINITE_RANGE);
 	    }
 	  }
+	
+	  g_object_set(lv2_port[nth],
+		       "plugin-port", current_plugin_port,
+		       NULL);
+
+	  ags_port_util_load_lv2_conversion(lv2_port[nth],
+					    current_plugin_port);
+	
+	  ags_port_safe_write_raw(lv2_port[nth],
+				  &default_value);
+
+	  ags_recall_add_port((AgsRecall *) fx_lv2_audio,
+			      lv2_port[nth]);
+      
+	  /* connect port */
+	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+	    AgsFxLv2AudioScopeData *scope_data;
+
+	    scope_data = fx_lv2_audio->scope_data[i];
+
+	    if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+	       i == AGS_SOUND_SCOPE_NOTATION ||
+	       i == AGS_SOUND_SCOPE_MIDI){
+	      for(j = 0; j < scope_data->audio_channels; j++){
+		AgsFxLv2AudioChannelData *channel_data;
+
+		channel_data = scope_data->channel_data[j];
+	    
+		ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+					     channel_data->lv2_handle[0],
+					     port_index,
+					     &(lv2_port[nth]->port_value.ags_port_float));
+	      }
+	    }
+	  }
+      
+	  g_free(plugin_name);
+	  g_free(specifier);
+	  g_free(control_port);
+
+	  g_value_unset(&default_value);
+
+	  nth++;
 	}
       
-	g_free(plugin_name);
-	g_free(specifier);
-	g_free(control_port);
-
-	g_value_unset(&default_value);
-
-	nth++;
+	plugin_port = plugin_port->next;      
       }
-      
-      plugin_port = plugin_port->next;      
-    }
 
-    lv2_port[nth] = NULL;
+      lv2_port[nth] = NULL;
+    }
+  }else{
+    for(j = 0; j < audio_channels; j++){
+      for(k = 0; k < input_pads; k++){
+	AgsChannel *input;
+
+	input = ags_channel_nth(start_input,
+				k * audio_channels + j);
+
+	recall_channel = ags_recall_template_find_provider(start_recall_channel, (GObject *) input);
+
+	if(recall_channel != NULL){
+	  ags_fx_lv2_channel_load_port(recall_channel->data);
+	}
+
+	if(input != NULL){
+	  g_object_unref(input);
+	}
+      }
+    }
   }
 
   /* set LV2 output */
@@ -1796,86 +1841,14 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
 					 atom_port,
 					 channel_data->atom_port);
 	  }
-	}
 
-	if(!is_live_instrument){	  
-	  for(k = 0; k < AGS_SEQUENCER_MAX_MIDI_KEYS; k++){
-	    AgsFxLv2AudioInputData *input_data;
-
-	    guint nth;
-	  
-	    input_data = channel_data->input_data[k];
-	  
-	    if(input_data->output == NULL &&
-	       output_port_count > 0 &&
-	       buffer_size > 0){
-	      input_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
-	    }
-	  
-	    if(input_data->input == NULL &&
-	       input_port_count > 0 &&
-	       buffer_size > 0){
-	      input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
-	    }
-
-	    for(nth = 0; nth < output_port_count; nth++){
-	      ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-					   channel_data->lv2_handle[0],
-					   output_port[nth],
-					   &(channel_data->output[nth]));
-	    }
-
-	    for(nth = 0; nth < input_port_count; nth++){
-	      ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-					   channel_data->lv2_handle[0],
-					   input_port[nth],
-					   &(channel_data->input[nth]));
-	    }
-
-	    if(has_event_port){
-	      input_data->event_port = ags_lv2_plugin_event_buffer_alloc(AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
-	    
-	      ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-					   input_data->lv2_handle[0],
-					   event_port,
-					   input_data->event_port);
-	    }
-
-	    if(has_atom_port){
-	      input_data->atom_port = ags_lv2_plugin_alloc_atom_sequence(AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
-	    
-	      ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-					   input_data->lv2_handle[0],
-					   atom_port,
-					   input_data->atom_port);
-	    }
-	  }
-	}
-      }
-    }
-  }  
-
-  if(!is_live_instrument){
-    for(j = 0; j < audio_channels; j++){
-      for(k = 0; k < input_pads; k++){
-	AgsChannel *input;
-
-	input = ags_channel_nth(start_input,
-				k * audio_channels + j);
-
-	recall_channel = ags_recall_template_find_provider(start_recall_channel, (GObject *) input);
-
-	if(recall_channel != NULL){
-	  ags_fx_lv2_channel_load_port(recall_channel->data);
-	}
-
-	if(input != NULL){
-	  g_object_unref(input);
+	  ags_base_plugin_activate((AgsBasePlugin *) lv2_plugin,
+				   channel_data->lv2_handle[0]);
 	}
       }
     }
   }
-
+  
   fx_lv2_audio->output_port_count = output_port_count;
   fx_lv2_audio->output_port = output_port;
 

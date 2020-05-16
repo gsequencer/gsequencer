@@ -1186,7 +1186,7 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 	       NULL);
   
   if(new_size > old_size){
-    for(i = 0; i < new_size - old_size; i++){
+    for(i = old_size; i < new_size; i++){
       if(g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
 	if(audio_audio_channels > 0 &&
 	   i < new_size){
@@ -1200,7 +1200,7 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 				    "channel", current,
 				    NULL);
 	  ags_effect_pad_resize_lines(effect_pad, effect_bridge->output_line_type,
-				      audio->audio_channels, 0);
+				      audio_channels, 0);
 	  gtk_container_add((GtkContainer *) effect_bridge->output,
 			    GTK_WIDGET(effect_pad));
 	}
@@ -1217,7 +1217,7 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 				    "channel", current,
 				    NULL);
 	  ags_effect_pad_resize_lines(effect_pad, effect_bridge->input_line_type,
-				      audio->audio_channels, 0);
+				      audio_channels, 0);
 	  gtk_container_add((GtkContainer *) effect_bridge->input,
 			    GTK_WIDGET(effect_pad));
 	}

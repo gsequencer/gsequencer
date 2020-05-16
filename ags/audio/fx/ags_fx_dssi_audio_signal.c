@@ -273,6 +273,7 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 
       input_data = channel_data->input_data[midi_note];
 
+      input_data->event_buffer->data.note.note = midi_note;      
       input_data->key_on += 1;
 
       g_rec_mutex_unlock(fx_dssi_audio_mutex);

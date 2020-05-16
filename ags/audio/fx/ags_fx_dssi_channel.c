@@ -153,8 +153,14 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
 
   GList *start_plugin_port, *plugin_port;
 
+  guint *output_port;
+  guint *input_port;
+
+  guint audio_channel;
   guint pad;
+  guint output_port_count, input_port_count;
   guint control_port_count;
+  guint buffer_size;
   guint nth;
   guint i, j;
   gboolean is_live_instrument;
@@ -203,13 +209,18 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
 
   input = NULL;
 
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  
   g_object_get(fx_dssi_channel,
 	       "source", &input,
+	       "buffer-size", &buffer_size,
 	       NULL);
 
+  audio_channel = 0;
   pad = 0;
 
   g_object_get(input,
+	       "audio-channel", &audio_channel,
 	       "pad", &pad,
 	       NULL);
   
@@ -218,6 +229,12 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
 
   dssi_plugin = fx_dssi_audio->dssi_plugin;
   
+  output_port_count = fx_dssi_audio->output_port_count;
+  output_port = fx_dssi_audio->output_port;
+
+  input_port_count = fx_dssi_audio->input_port_count;
+  input_port = fx_dssi_audio->input_port;
+
   g_rec_mutex_unlock(fx_dssi_audio_mutex);
 
   /* get DSSI port */
@@ -380,8 +397,56 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
     dssi_port[nth] = NULL;
   }
 
-  /* set DSSI port */
+  /* set DSSI output */
   g_rec_mutex_lock(fx_dssi_channel_mutex);
+
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    AgsFxDssiAudioScopeData *scope_data;
+
+    scope_data = fx_dssi_audio->scope_data[i];
+
+    if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+       i == AGS_SOUND_SCOPE_NOTATION ||
+       i == AGS_SOUND_SCOPE_MIDI){
+      AgsFxDssiAudioChannelData *channel_data;
+      AgsFxDssiAudioInputData *input_data;
+
+      guint nth;
+	  
+      channel_data = scope_data->channel_data[audio_channel];	
+
+      input_data = channel_data->input_data[pad];
+      
+      if(input_data->output == NULL &&
+	 output_port_count > 0 &&
+	 buffer_size > 0){
+	input_data->output = (LADSPA_Data *) g_malloc(output_port_count * buffer_size * sizeof(LADSPA_Data));
+      }
+	  
+      if(input_data->input == NULL &&
+	 input_port_count > 0 &&
+	 buffer_size > 0){
+	input_data->input = (LADSPA_Data *) g_malloc(input_port_count * buffer_size * sizeof(LADSPA_Data));
+      }
+
+      for(nth = 0; nth < output_port_count; nth++){
+	ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
+				     input_data->ladspa_handle,
+				     output_port[nth],
+				     &(input_data->output[nth]));
+      }
+
+      for(nth = 0; nth < input_port_count; nth++){
+	ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
+				     input_data->ladspa_handle,
+				     input_port[nth],
+				     &(input_data->input[nth]));
+      }
+
+      ags_base_plugin_activate((AgsBasePlugin *) dssi_plugin,
+			       input_data->ladspa_handle);
+    }
+  }  
 
   fx_dssi_channel->dssi_port = dssi_port;
   

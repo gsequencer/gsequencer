@@ -521,10 +521,14 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
   guint *output_port;
   guint *input_port;
   
+  guint audio_channel;
   guint pad;
-  guint output_port_count;
-  guint input_port_count;
+  guint output_port_count, input_port_count;
   guint control_port_count;
+  gboolean has_event_port;
+  guint event_port;  
+  gboolean has_atom_port;
+  guint atom_port;
   guint samplerate;
   guint buffer_size;
   guint nth;
@@ -584,9 +588,11 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 	       "source", &input,
 	       NULL);
 
+  audio_channel = 0;
   pad = 0;
 
   g_object_get(input,
+	       "audio-channel", &audio_channel,
 	       "pad", &pad,
 	       NULL);
   
@@ -595,6 +601,18 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 
   lv2_plugin = fx_lv2_audio->lv2_plugin;
   
+  output_port_count = fx_lv2_audio->output_port_count;
+  output_port = fx_lv2_audio->output_port;
+
+  input_port_count = fx_lv2_audio->input_port_count;
+  input_port = fx_lv2_audio->input_port;
+
+  has_event_port = fx_lv2_audio->has_event_port;
+  event_port = fx_lv2_audio->event_port;
+
+  has_atom_port = fx_lv2_audio->has_atom_port;
+  atom_port = fx_lv2_audio->atom_port;
+
   g_rec_mutex_unlock(fx_lv2_audio_mutex);
 
   /* get LV2 port */
@@ -763,6 +781,80 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 
       lv2_port[nth] = NULL;
     }
+
+    /* set LV2 output */
+    g_rec_mutex_lock(fx_lv2_channel_mutex);
+
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      AgsFxLv2AudioScopeData *scope_data;
+
+      scope_data = fx_lv2_audio->scope_data[i];
+
+      if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+	 i == AGS_SOUND_SCOPE_NOTATION ||
+	 i == AGS_SOUND_SCOPE_MIDI){
+	AgsFxLv2AudioChannelData *channel_data;
+	
+	channel_data = scope_data->channel_data[audio_channel];
+	
+	if(!is_live_instrument){	  
+	  AgsFxLv2AudioInputData *input_data;
+	    
+	  guint nth;
+	  
+	  input_data = channel_data->input_data[pad];
+	      
+	  if(input_data->output == NULL &&
+	     output_port_count > 0 &&
+	     buffer_size > 0){
+	    input_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
+	  }
+	  
+	  if(input_data->input == NULL &&
+	     input_port_count > 0 &&
+	     buffer_size > 0){
+	    input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
+	  }
+
+	  for(nth = 0; nth < output_port_count; nth++){
+	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+					 input_data->lv2_handle[0],
+					 output_port[nth],
+					 &(input_data->output[nth]));
+	  }
+
+	  for(nth = 0; nth < input_port_count; nth++){
+	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+					 input_data->lv2_handle[0],
+					 input_port[nth],
+					 &(input_data->input[nth]));
+	  }
+
+	  if(has_event_port){
+	    input_data->event_port = ags_lv2_plugin_event_buffer_alloc(AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
+	    
+	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+					 input_data->lv2_handle[0],
+					 event_port,
+					 input_data->event_port);
+	  }
+
+	  if(has_atom_port){
+	    input_data->atom_port = ags_lv2_plugin_alloc_atom_sequence(AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
+	    
+	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+					 input_data->lv2_handle[0],
+					 atom_port,
+					 input_data->atom_port);
+	  }
+
+	  ags_base_plugin_activate((AgsBasePlugin *) lv2_plugin,
+				   input_data->lv2_handle[0]);
+	}
+      }
+    }
+  
+    g_rec_mutex_unlock(fx_lv2_channel_mutex);
   }else{
     /* get control port count */
     plugin_port = start_plugin_port;
@@ -942,30 +1034,53 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
     g_rec_mutex_lock(fx_lv2_channel_mutex);
 
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      AgsFxLv2ChannelInputData *input_data;
+      AgsFxLv2AudioScopeData *scope_data;
 
-      input_data = fx_lv2_channel->input_data[i];
+      scope_data = fx_lv2_audio->scope_data[i];
 
-      if(input_data->output == NULL &&
-	 output_port_count > 0 &&
-	 buffer_size > 0){
-	input_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
-      }
+      if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+	 i == AGS_SOUND_SCOPE_NOTATION ||
+	 i == AGS_SOUND_SCOPE_MIDI){
+	AgsFxLv2AudioChannelData *channel_data;
+	
+	channel_data = scope_data->channel_data[audio_channel];
+	
+	if(!is_live_instrument){	  
+	  AgsFxLv2AudioInputData *input_data;
+	    
+	  guint nth;
 	  
-      if(input_data->input == NULL &&
-	 input_port_count > 0 &&
-	 buffer_size > 0){
-	input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
-      }
+	  input_data = channel_data->input_data[pad];
+	      
+	  if(input_data->output == NULL &&
+	     output_port_count > 0 &&
+	     buffer_size > 0){
+	    input_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
+	  }
+	  
+	  if(input_data->input == NULL &&
+	     input_port_count > 0 &&
+	     buffer_size > 0){
+	    input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
+	  }
 
-      for(nth = 0; nth < output_port_count; nth++){
-	ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-				     input_data->lv2_handle[0],
-				     output_port[nth],
-				     &(input_data->output[nth]));
-      }
-    }  
+	  for(nth = 0; nth < output_port_count; nth++){
+	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+					 input_data->lv2_handle[0],
+					 output_port[nth],
+					 &(input_data->output[nth]));
+	  }
 
+	  for(nth = 0; nth < input_port_count; nth++){
+	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+					 input_data->lv2_handle[0],
+					 input_port[nth],
+					 &(input_data->input[nth]));
+	  }
+	}
+      }
+    }
+  
     fx_lv2_channel->output_port_count = output_port_count;
     fx_lv2_channel->output_port = output_port;
 

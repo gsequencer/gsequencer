@@ -77,6 +77,12 @@ struct _AgsFxLv2Audio
   guint input_port_count;
   guint *input_port;
 
+  gboolean has_event_port;
+  guint event_port;
+  
+  gboolean has_atom_port;
+  guint atom_port;
+  
   guint bank;
   guint program;
 
