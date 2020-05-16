@@ -762,9 +762,7 @@ ags_equalizer10_resize_pads(AgsMachine *machine, GType type,
   audio = machine->audio;
 
   /* get some fields */
-  g_object_get(audio,
-	       "audio-channels", &audio_channels,
-	       NULL);
+  audio_channels = machine->audio_channels;
   
   /* check available */
   if(pads == pads_old ||
@@ -884,7 +882,7 @@ ags_equalizer10_input_map_recall(AgsEqualizer10 *equalizer10,
 	       "audio-channels", &audio_channels,
 	       NULL);
 
-  /* add to effect bridge */
+  /* add to machine */
   ags_fx_factory_create(AGS_MACHINE(equalizer10)->audio,
 			equalizer10->eq10_play_container, equalizer10->eq10_recall_container,
 			"ags-fx-eq10",

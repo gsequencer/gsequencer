@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -59,19 +59,19 @@ struct _AgsSpectrometer
   gchar *name;
   gchar *xml_type;
 
+  guint mapped_output_pad;
+  guint mapped_input_pad;
+
+  AgsRecallContainer *analyse_play_container;
+  AgsRecallContainer *analyse_recall_container;
+
   AgsCartesian *cartesian;
   GList *fg_plot;
 
-  GList *frequency_buffer_play_port;
-  GList *frequency_buffer_recall_port;
+  double *frequency;
 
-  GList *magnitude_buffer_play_port;
-  GList *magnitude_buffer_recall_port;
-
-  guint buffer_size;
-  
-  double *frequency_buffer;
-  double *magnitude_buffer;
+  double *magnitude_cache;
+  double *magnitude;
 };
 
 struct _AgsSpectrometerClass

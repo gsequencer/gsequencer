@@ -115,13 +115,12 @@ AgsPort* ags_equalizer10_find_specifier(GList *recall, gchar *specifier);
 
 void ags_equalizer10_remap_port(AgsEqualizer10 *equalizer10);
 
-void ags_equalizer10_bridge_input_map_recall(AgsEqualizer10 *equalizer10,
-					     guint audio_channel_start,
-					     guint input_pad_start);
-void ags_equalizer10_bridge_output_map_recall(AgsEqualizer10 *equalizer10,
-					      guint audio_channel_start,
-					      guint output_pad_start);
-
+void ags_equalizer10_input_map_recall(AgsEqualizer10 *equalizer10,
+				      guint audio_channel_start,
+				      guint input_pad_start);
+void ags_equalizer10_output_map_recall(AgsEqualizer10 *equalizer10,
+				       guint audio_channel_start,
+				       guint output_pad_start);
 
 AgsEqualizer10* ags_equalizer10_new(GObject *soundcard);
 
