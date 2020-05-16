@@ -13941,6 +13941,15 @@ ags_audio_real_stop(AgsAudio *audio,
     }
   }
 
+  list = recall_id;
+
+  while(list != NULL){
+    ags_audio_remove_recall_id(audio,
+			       (GObject *) list->data);
+    
+    list = list->next;
+  }
+
   /* remove audio from AgsAudioLoop */
   sequencer = ags_audio_check_scope(audio,
 				    (AGS_SOUND_SCOPE_SEQUENCER));
