@@ -543,30 +543,32 @@ ags_fx_lv2_audio_notify_samplerate_callback(GObject *gobject,
 					 &(channel_data->input[nth]));
 	  }
 
-	  for(iter = fx_lv2_audio->lv2_port; iter[0] != NULL; iter++){
-	    AgsPluginPort *plugin_port;
+	  if(fx_lv2_audio->lv2_port != NULL){
+	    for(iter = fx_lv2_audio->lv2_port; iter[0] != NULL; iter++){
+	      AgsPluginPort *plugin_port;
 
-	    guint port_index;
+	      guint port_index;
 
-	    plugin_port = NULL;
+	      plugin_port = NULL;
 	    
-	    port_index = 0;
+	      port_index = 0;
 	    
-	    g_object_get(iter[0],
-			 "plugin-port", &plugin_port,
-			 NULL);
+	      g_object_get(iter[0],
+			   "plugin-port", &plugin_port,
+			   NULL);
 
-	    g_object_get(plugin_port,
-			 "port-index", &port_index,
-			 NULL);
+	      g_object_get(plugin_port,
+			   "port-index", &port_index,
+			   NULL);
 	    
-	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-					 channel_data->lv2_handle[0],
-					 port_index,
-					 &(iter[0]->port_value.ags_port_float));
+	      ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+					   channel_data->lv2_handle[0],
+					   port_index,
+					   &(iter[0]->port_value.ags_port_float));
 
-	    if(plugin_port != NULL){
-	      g_object_unref(plugin_port);
+	      if(plugin_port != NULL){
+		g_object_unref(plugin_port);
+	      }
 	    }
 	  }
 	}

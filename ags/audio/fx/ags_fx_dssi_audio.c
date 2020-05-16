@@ -694,31 +694,33 @@ ags_fx_dssi_audio_set_audio_channels_callback(AgsAudio *audio,
 					   fx_dssi_audio->input_port[nth],
 					   &(channel_data->input[nth]));
 	    }
-	    
-	    for(iter = fx_dssi_audio->dssi_port; iter[0] != NULL; iter++){
-	      AgsPluginPort *plugin_port;
 
-	      guint port_index;
+	    if(fx_dssi_audio->dssi_port != NULL){
+	      for(iter = fx_dssi_audio->dssi_port; iter[0] != NULL; iter++){
+		AgsPluginPort *plugin_port;
 
-	      plugin_port = NULL;
-	    
-	      port_index = 0;
-	    
-	      g_object_get(iter[0],
-			   "plugin-port", &plugin_port,
-			   NULL);
+		guint port_index;
 
-	      g_object_get(plugin_port,
-			   "port-index", &port_index,
-			   NULL);
+		plugin_port = NULL;
 	    
-	      ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
-					   channel_data->ladspa_handle,
-					   port_index,
-					   &(iter[0]->port_value.ags_port_ladspa));
+		port_index = 0;
+	    
+		g_object_get(iter[0],
+			     "plugin-port", &plugin_port,
+			     NULL);
 
-	      if(plugin_port != NULL){
-		g_object_unref(plugin_port);
+		g_object_get(plugin_port,
+			     "port-index", &port_index,
+			     NULL);
+	    
+		ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
+					     channel_data->ladspa_handle,
+					     port_index,
+					     &(iter[0]->port_value.ags_port_ladspa));
+
+		if(plugin_port != NULL){
+		  g_object_unref(plugin_port);
+		}
 	      }
 	    }
 	  }

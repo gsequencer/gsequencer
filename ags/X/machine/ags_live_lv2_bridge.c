@@ -425,13 +425,13 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 		     FALSE, FALSE,
 		     0);
 
-  AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_output = (GtkWidget *) ags_effect_bulk_new(audio,
-													   AGS_TYPE_OUTPUT);
-  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_output)->flags |= (AGS_EFFECT_BULK_HIDE_BUTTONS |
-												   AGS_EFFECT_BULK_HIDE_ENTRIES |
-												   AGS_EFFECT_BULK_SHOW_LABELS);
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input = (GtkWidget *) ags_effect_bulk_new(audio,
+													  AGS_TYPE_INPUT);
+  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input)->flags |= (AGS_EFFECT_BULK_HIDE_BUTTONS |
+												  AGS_EFFECT_BULK_HIDE_ENTRIES |
+												  AGS_EFFECT_BULK_SHOW_LABELS);
   gtk_table_attach(table,
-		   (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_output,
+		   (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input,
 		   0, 1,
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
@@ -676,6 +676,15 @@ ags_live_lv2_bridge_finalize(GObject *gobject)
   AgsLiveLv2Bridge *live_lv2_bridge;
 
   live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(gobject);
+
+  g_object_disconnect(G_OBJECT(live_lv2_bridge),
+		      "any_signal::resize-audio-channels",
+		      G_CALLBACK(ags_live_lv2_bridge_resize_audio_channels),
+		      NULL,
+		      "any_signal::resize-pads",
+		      G_CALLBACK(ags_live_lv2_bridge_resize_pads),
+		      NULL,
+		      NULL);
   
   /* lv2 plugin */
   if(live_lv2_bridge->lv2_plugin != NULL){
@@ -743,7 +752,7 @@ ags_live_lv2_bridge_connect(AgsConnectable *connectable)
   effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge);
   
   list =
-    list_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(effect_bridge->bulk_output)->table);
+    list_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(effect_bridge->bulk_input)->table);
 
   while(list != NULL){
     bulk_member = list->data;
@@ -1301,6 +1310,7 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
   AgsEffectBulk *effect_bulk;
   AgsBulkMember *bulk_member;
   GtkListStore *model;
+  
   GtkTreeIter iter;
 
   AgsLv2Plugin *lv2_plugin;
