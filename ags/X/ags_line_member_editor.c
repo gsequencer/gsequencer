@@ -239,18 +239,22 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 
   line_member_editor = AGS_LINE_MEMBER_EDITOR(applicable);
 
+  gtk_container_foreach(line_member_editor->line_member,
+			(GtkCallback) gtk_widget_destroy,
+			NULL);
+  
   line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 							  AGS_TYPE_LINE_EDITOR);
 
   g_object_get(line_editor->channel,
-	       "recall", &start_recall,
+	       "play", &start_recall,
 	       NULL);
 
   recall = start_recall;
 
   while((recall = ags_recall_template_find_all_type(recall,
-						    AGS_TYPE_RECALL_LADSPA,
-						    AGS_TYPE_RECALL_LV2,
+						    AGS_TYPE_FX_LADSPA_CHANNEL,
+						    AGS_TYPE_FX_LV2_CHANNEL,
 						    G_TYPE_NONE)) != NULL){
     if(ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
       recall = recall->next;
@@ -258,19 +262,13 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
       continue;
     }
     
+    filename = NULL;
+    effect = NULL;    
+    
     g_object_get(G_OBJECT(recall->data),
 		 "filename", &filename,
+		 "effect", &effect,
 		 NULL);
-
-    if(AGS_IS_RECALL_LADSPA(recall->data)){
-      g_object_get(G_OBJECT(recall->data),
-		   "effect", &effect,
-		   NULL);
-    }else if(AGS_IS_RECALL_LV2(recall->data)){
-      g_object_get(G_OBJECT(recall->data),
-		   "uri", &effect,
-		   NULL);
-    }
     
     hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
     gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
@@ -283,24 +281,7 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 		       GTK_WIDGET(check_button),
 		       FALSE, FALSE,
 		       0);
-
-    filename = NULL;
-    effect = NULL;
     
-    g_object_get(G_OBJECT(recall->data),
-		 "filename", &filename,
-		 NULL);
-
-    if(AGS_IS_RECALL_LADSPA(recall->data)){
-      g_object_get(G_OBJECT(recall->data),
-		   "effect", &effect,
-		   NULL);
-    }else if(AGS_IS_RECALL_LV2(recall->data)){
-      g_object_get(G_OBJECT(recall->data),
-		   "uri", &effect,
-		   NULL);
-    }
-
     str = g_strdup_printf("%s - %s",
 			  filename,
 			  effect);

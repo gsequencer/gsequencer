@@ -2546,7 +2546,8 @@ ags_line_real_remove_plugin(AgsLine *line,
   while(recall != NULL){
     ags_audio_remove_recall(audio, recall->data,
 			    TRUE);
-    
+
+    recall = recall->next;
   }
 
   g_list_free_full(start_recall,
@@ -2563,6 +2564,7 @@ ags_line_real_remove_plugin(AgsLine *line,
     ags_audio_remove_recall(audio, recall->data,
 			    FALSE);
     
+    recall = recall->next;
   }
 
   g_list_free_full(start_recall,
@@ -2588,6 +2590,8 @@ ags_line_real_remove_plugin(AgsLine *line,
     if(channel != NULL){
       g_object_unref(channel);
     }
+
+    recall = recall->next;
   }
 
   g_list_free_full(start_recall,
@@ -2614,6 +2618,8 @@ ags_line_real_remove_plugin(AgsLine *line,
     if(channel != NULL){
       g_object_unref(channel);
     }
+
+    recall = recall->next;
   }
 
   g_list_free_full(start_recall,
@@ -2639,6 +2645,8 @@ ags_line_real_remove_plugin(AgsLine *line,
     if(channel != NULL){
       g_object_unref(channel);
     }
+
+    recall = recall->next;
   }
 
   g_list_free_full(start_recall,
@@ -2664,6 +2672,8 @@ ags_line_real_remove_plugin(AgsLine *line,
     if(channel != NULL){
       g_object_unref(channel);
     }
+
+    recall = recall->next;
   }
 
   g_list_free_full(start_recall,

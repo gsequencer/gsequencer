@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -115,6 +115,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
   gchar *plugin_name;
   gchar *filename, *effect;
 
+  gint position;
   gboolean has_bridge;
   gboolean is_output;  
   
@@ -128,6 +129,14 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
       machine = machine_editor->machine;
 
+      position = 0;
+
+      if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
+	 (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0 ||
+	 (AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+	position = 1;
+      }
+      
       if(AGS_IS_OUTPUT(line_editor->channel)){
 	is_output = TRUE;
       }else{
@@ -307,7 +316,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 			      effect,
 			      audio_channel, audio_channel + 1,
 			      pad, pad + 1,
-			      0,
+			      position,
 			      (AGS_FX_FACTORY_ADD), 0);
 	}
 	
@@ -369,13 +378,15 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 				     effect,
 				     audio_channel, audio_channel + 1,
 				     pad, pad + 1,
-				     0,
+				     position,
 				     (AGS_FX_FACTORY_ADD), 0);
 	}
 	
 	g_free(filename);
 	g_free(effect);
       }
+
+      ags_applicable_reset(AGS_APPLICABLE(line_member_editor));
     }
     break;      
   }
@@ -467,8 +478,6 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 	children = gtk_container_get_children((GtkContainer *) GTK_CONTAINER(line_member->data));
 
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-	  gtk_widget_destroy(GTK_WIDGET(line_member->data));
-
 	  /* remove effect */
 	  ags_line_remove_plugin(line,
 				 nth);
@@ -527,8 +536,6 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 	children = gtk_container_get_children((GtkContainer *) GTK_CONTAINER(line_member->data));
 
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-	  gtk_widget_destroy(GTK_WIDGET(line_member->data));
-
 	  /* remove effect */
 	  ags_effect_line_remove_plugin(effect_line,
 					nth);
@@ -542,6 +549,8 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
       line_member = line_member->next;
     }
   }
+
+  ags_applicable_reset(AGS_APPLICABLE(line_member_editor));
 
   g_list_free(start_line_member);
 }
