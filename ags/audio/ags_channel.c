@@ -2003,17 +2003,21 @@ ags_channel_dispose(GObject *gobject)
   dispose_recycling = FALSE;
 
   if(channel->audio != NULL){
-    if(((AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(channel->audio)->flags)) != 0 &&
+    AgsAudio *audio;
+
+    audio = AGS_AUDIO(channel->audio);
+
+    channel->audio = NULL;
+    
+    if(((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0 &&
 	AGS_IS_INPUT(channel) &&
 	channel->link == NULL) ||
-       ((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(channel->audio)->flags)) != 0 &&
+       ((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0 &&
 	AGS_IS_OUTPUT(channel))){
       dispose_recycling = TRUE;
     }
     
-    g_object_unref(channel->audio);
-
-    channel->audio = NULL;
+    g_object_unref(audio);
   }
 
   /* soundcard */
@@ -2055,16 +2059,11 @@ ags_channel_dispose(GObject *gobject)
     AgsPlayback *playback;
 
     playback = (AgsPlayback *) channel->playback;
-
-    //TODO:JK: stop threads
-    
-    g_object_set(playback,
-		 "channel", NULL,
-		 NULL);
-    //    g_object_run_dispose(playback);
-    g_object_unref(playback);
   
     channel->playback = NULL;
+
+    //TODO:JK: stop threads
+    g_object_run_dispose(playback);
   }
 
   /* recall id */

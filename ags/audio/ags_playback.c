@@ -446,9 +446,13 @@ ags_playback_dispose(GObject *gobject)
 
   /* channel */
   if(playback->channel != NULL){
-    g_object_unref(playback->channel);
+    AgsChannel *channel;
 
+    channel = playback->channel;
+    
     playback->channel = NULL;
+    
+    g_object_unref(channel);
   }
   
   /* channel thread */

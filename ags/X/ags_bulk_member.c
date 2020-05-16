@@ -1619,6 +1619,10 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
   }
 
   channel = start_channel;
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
   
   while(channel != NULL){
     GList *start_list;
@@ -1671,17 +1675,15 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
     /* iterate */
     next_channel = ags_channel_next(channel);
 
-    g_object_unref(channel);
-
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+    
     channel = next_channel;
   }
 
   if(start_channel != NULL){
     g_object_unref(start_channel);
-  }
-
-  if(channel != NULL){
-    g_object_unref(channel);
   }
 
   /* search audio */

@@ -853,9 +853,13 @@ ags_recycling_dispose(GObject *gobject)
   
   /* channel */
   if(recycling->channel != NULL){
-    g_object_unref(recycling->channel);
+    AgsChannel *channel;
 
+    channel = recycling->channel;
+    
     recycling->channel = NULL;
+    
+    g_object_unref(channel);
   }
 
   /* output soundcard */

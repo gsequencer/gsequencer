@@ -979,6 +979,9 @@ ags_lv2_turtle_parser_parse_names_predicate_object_list(AgsLv2TurtleParser *lv2_
   }
 
   if(is_instrument){
+    ags_base_plugin_set_flags(lv2_plugin,
+			      AGS_BASE_PLUGIN_IS_INSTRUMENT);
+    
     ags_lv2_plugin_set_flags(lv2_plugin,
 			     AGS_LV2_PLUGIN_IS_SYNTHESIZER);
   }
@@ -1989,6 +1992,9 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
   }
 
   if(is_instrument){
+    ags_base_plugin_set_flags(lv2_plugin,
+			      AGS_BASE_PLUGIN_IS_INSTRUMENT);
+
     ags_lv2_plugin_set_flags(lv2_plugin,
 			     AGS_LV2_PLUGIN_IS_SYNTHESIZER);
   }

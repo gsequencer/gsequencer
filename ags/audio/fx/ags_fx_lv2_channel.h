@@ -85,7 +85,7 @@ struct _AgsFxLv2ChannelInputData
   float *output;
   float *input;
 
-  LV2_Handle lv2_handle;
+  LV2_Handle *lv2_handle;
 };
 
 GType ags_fx_lv2_channel_get_type();

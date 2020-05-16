@@ -251,125 +251,132 @@ ags_fx_dssi_channel_load_port(AgsFxDssiChannel *fx_dssi_channel)
 
     plugin_port = start_plugin_port;
     
-    for(nth = 0; nth < control_port_count; nth++){
-      AgsPluginPort *current_plugin_port;
+    for(nth = 0; nth < control_port_count && plugin_port != NULL;){
+      if(ags_plugin_port_test_flags(plugin_port->data,
+				    AGS_PLUGIN_PORT_CONTROL)){
+	AgsPluginPort *current_plugin_port;
 
-      gchar *plugin_name;
-      gchar *specifier;
-      gchar *control_port;
+	gchar *plugin_name;
+	gchar *specifier;
+	gchar *control_port;
       
-      guint port_index;
+	guint port_index;
       
-      GValue default_value = {0,};
+	GValue default_value = {0,};
 
-      GRecMutex *plugin_port_mutex;
+	GRecMutex *plugin_port_mutex;
       
-      current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
+	current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
 
-      /* get plugin port mutex */
-      plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
+	/* get plugin port mutex */
+	plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
 
-      /* plugin name, specifier and control port */
-      plugin_name = g_strdup_printf("dssi-%u", dssi_plugin->unique_id);
+	/* plugin name, specifier and control port */
+	plugin_name = g_strdup_printf("dssi-%u", dssi_plugin->unique_id);
 
-      specifier = NULL;
+	specifier = NULL;
       
-      port_index = 0;
+	port_index = 0;
       
-      g_object_get(current_plugin_port,
-		   "port-name", &specifier,
-		   "port-index", &port_index,
-		   NULL);
+	g_object_get(current_plugin_port,
+		     "port-name", &specifier,
+		     "port-index", &port_index,
+		     NULL);
 
-      control_port = g_strdup_printf("%u/%u",
-				     nth,
-				     control_port_count);
+	control_port = g_strdup_printf("%u/%u",
+				       nth,
+				       control_port_count);
 
-      /* default value */
-      g_value_init(&default_value,
-		   G_TYPE_FLOAT);
+	/* default value */
+	g_value_init(&default_value,
+		     G_TYPE_FLOAT);
       
-      g_rec_mutex_lock(plugin_port_mutex);
+	g_rec_mutex_lock(plugin_port_mutex);
       
-      g_value_copy(current_plugin_port->default_value,
-		   &default_value);
+	g_value_copy(current_plugin_port->default_value,
+		     &default_value);
       
-      g_rec_mutex_unlock(plugin_port_mutex);
+	g_rec_mutex_unlock(plugin_port_mutex);
 
-      /* dssi port */
-      dssi_port[nth] = g_object_new(AGS_TYPE_PORT,
-				    "plugin-name", plugin_name,
-				    "specifier", specifier,
-				    "control-port", control_port,
-				    "port-value-is-pointer", FALSE,
-				    "port-value-type", G_TYPE_FLOAT,
-				    NULL);
-      ags_port_set_flags(dssi_port[nth], AGS_PORT_USE_LADSPA_FLOAT);
+	/* dssi port */
+	dssi_port[nth] = g_object_new(AGS_TYPE_PORT,
+				      "plugin-name", plugin_name,
+				      "specifier", specifier,
+				      "control-port", control_port,
+				      "port-value-is-pointer", FALSE,
+				      "port-value-type", G_TYPE_FLOAT,
+				      NULL);
+	ags_port_set_flags(dssi_port[nth], AGS_PORT_USE_LADSPA_FLOAT);
       
-      if(ags_plugin_port_test_flags(current_plugin_port,
-				    AGS_PLUGIN_PORT_OUTPUT)){
-	ags_port_set_flags(dssi_port[nth], AGS_PORT_IS_OUTPUT);
+	if(ags_plugin_port_test_flags(current_plugin_port,
+				      AGS_PLUGIN_PORT_OUTPUT)){
+	  ags_port_set_flags(dssi_port[nth], AGS_PORT_IS_OUTPUT);
 	  
-	ags_recall_set_flags((AgsRecall *) fx_dssi_channel,
-			     AGS_RECALL_HAS_OUTPUT_PORT);
+	  ags_recall_set_flags((AgsRecall *) fx_dssi_channel,
+			       AGS_RECALL_HAS_OUTPUT_PORT);
 	
-      }else{
-	if(!ags_plugin_port_test_flags(current_plugin_port,
-				       AGS_PLUGIN_PORT_INTEGER) &&
-	   !ags_plugin_port_test_flags(current_plugin_port,
-				       AGS_PLUGIN_PORT_TOGGLED)){
-	  ags_port_set_flags(dssi_port[nth], AGS_PORT_INFINITE_RANGE);
+	}else{
+	  if(!ags_plugin_port_test_flags(current_plugin_port,
+					 AGS_PLUGIN_PORT_INTEGER) &&
+	     !ags_plugin_port_test_flags(current_plugin_port,
+					 AGS_PLUGIN_PORT_TOGGLED)){
+	    ags_port_set_flags(dssi_port[nth], AGS_PORT_INFINITE_RANGE);
+	  }
 	}
-      }
 	
-      g_object_set(dssi_port[nth],
-		   "plugin-port", current_plugin_port,
-		   NULL);
+	g_object_set(dssi_port[nth],
+		     "plugin-port", current_plugin_port,
+		     NULL);
 
-      ags_port_util_load_ladspa_conversion(dssi_port[nth],
-					   current_plugin_port);
+	ags_port_util_load_ladspa_conversion(dssi_port[nth],
+					     current_plugin_port);
 	
-      ags_port_safe_write_raw(dssi_port[nth],
-			      &default_value);
+	ags_port_safe_write_raw(dssi_port[nth],
+				&default_value);
 
-      ags_recall_add_port((AgsRecall *) fx_dssi_channel,
-			  dssi_port[nth]);
+	ags_recall_add_port((AgsRecall *) fx_dssi_channel,
+			    dssi_port[nth]);
 
-      /* connect port */
-      for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-	AgsFxDssiAudioScopeData *scope_data;
+	/* connect port */
+	for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+	  AgsFxDssiAudioScopeData *scope_data;
 
-	scope_data = fx_dssi_audio->scope_data[i];
+	  scope_data = fx_dssi_audio->scope_data[i];
 
-	if(i == AGS_SOUND_SCOPE_PLAYBACK ||
-	   i == AGS_SOUND_SCOPE_NOTATION ||
-	   i == AGS_SOUND_SCOPE_MIDI){
-	  for(j = 0; j < scope_data->audio_channels; j++){
-	    AgsFxDssiAudioChannelData *channel_data;
+	  if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+	     i == AGS_SOUND_SCOPE_NOTATION ||
+	     i == AGS_SOUND_SCOPE_MIDI){
+	    for(j = 0; j < scope_data->audio_channels; j++){
+	      AgsFxDssiAudioChannelData *channel_data;
 
-	    channel_data = scope_data->channel_data[j];
+	      channel_data = scope_data->channel_data[j];
 
-	    if(pad < 128){
-	      AgsFxDssiAudioInputData *input_data;
+	      if(pad < 128){
+		AgsFxDssiAudioInputData *input_data;
 	  
-	      input_data = channel_data->input_data[pad];
+		input_data = channel_data->input_data[pad];
 
-	      ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
-					   input_data->ladspa_handle,
-					   port_index,
-					   &(dssi_port[nth]->port_value.ags_port_ladspa));
+		ags_base_plugin_connect_port((AgsBasePlugin *) dssi_plugin,
+					     input_data->ladspa_handle,
+					     port_index,
+					     &(dssi_port[nth]->port_value.ags_port_ladspa));
+	      }
 	    }
 	  }
 	}
+
+	g_free(plugin_name);
+	g_free(specifier);
+	g_free(control_port);
+
+	g_value_unset(&default_value);
+
+	nth++;
       }
 
-      g_free(plugin_name);
-      g_free(specifier);
-      g_free(control_port);
-
-      g_value_unset(&default_value);
+      plugin_port = plugin_port->next;
     }
-
+    
     dssi_port[nth] = NULL;
   }
 

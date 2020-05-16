@@ -117,7 +117,7 @@ struct _AgsFxLv2AudioChannelData
   gpointer event_port;
   gpointer atom_port;
   
-  LV2_Handle lv2_handle;
+  LV2_Handle *lv2_handle;
 
   AgsFxLv2AudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
 };
@@ -134,7 +134,7 @@ struct _AgsFxLv2AudioInputData
   gpointer event_port;
   gpointer atom_port;
 
-  LV2_Handle lv2_handle;
+  LV2_Handle *lv2_handle;
   
   snd_seq_event_t *event_buffer;
   guint key_on;

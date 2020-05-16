@@ -3136,9 +3136,13 @@ ags_audio_dispose(GObject *gobject)
 
   /* playback domain */
   if(audio->playback_domain != NULL){
-    g_object_run_dispose(audio->playback_domain);
+    AgsPlaybackDomain *playback_domain;
+
+    playback_domain = audio->playback_domain;
 
     audio->playback_domain = NULL;
+    
+    g_object_run_dispose(playback_domain);
   }
   
   /* notation */
