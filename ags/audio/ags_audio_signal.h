@@ -65,6 +65,7 @@ typedef enum{
   AGS_AUDIO_SIGNAL_FEED                 = 1 <<  5,
   AGS_AUDIO_SIGNAL_RECYCLED             = 1 <<  6,
   AGS_AUDIO_SIGNAL_STREAM               = 1 <<  7,
+  AGS_AUDIO_SIGNAL_SLICE_ALLOC          = 1 <<  8,            
 }AgsAudioSignalFlags;
 
 struct _AgsAudioSignal
@@ -146,6 +147,12 @@ void ags_audio_signal_unset_flags(AgsAudioSignal *audio_signal, guint flags);
 void* ags_stream_alloc(guint buffer_size,
 		       guint format);
 void ags_stream_free(void *buffer);
+
+void* ags_stream_slice_alloc(guint buffer_size,
+			     guint format);
+void ags_stream_slice_free(guint buffer_size,
+			   guint format,
+			   void *buffer);
 
 /* parent */
 GObject* ags_audio_signal_get_recycling(AgsAudioSignal *audio_signal);

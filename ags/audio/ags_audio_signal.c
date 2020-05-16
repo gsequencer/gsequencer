@@ -1658,9 +1658,25 @@ ags_audio_signal_finalize(GObject *gobject)
   }
 
   /* audio data */
-  g_list_free_full(audio_signal->stream,
-		   (GDestroyNotify) ags_stream_free);
+  if((AGS_AUDIO_SIGNAL_SLICE_ALLOC & (audio_signal->flags)) == 0){
+    g_list_free_full(audio_signal->stream,
+		     (GDestroyNotify) ags_stream_free);
+  }else{
+    GList *stream;
 
+    stream = audio_signal->stream;
+
+    while(stream != NULL){
+      ags_stream_slice_free(audio_signal->buffer_size,
+			    audio_signal->format,
+			    stream->data);
+      
+      stream = stream->next;
+    }
+    
+    g_list_free(audio_signal->stream);    
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_audio_signal_parent_class)->finalize(gobject);
 }
@@ -2078,6 +2094,153 @@ ags_stream_free(void *buffer)
   }
   
   free(buffer);
+}
+
+/**
+ * ags_stream_slice_alloc:
+ * @buffer_size: the buffer size
+ * @format: the format
+ *
+ * Allocs an audio buffer.
+ *
+ * Returns: the audio data array
+ *
+ * Since: 3.3.0
+ */
+void*
+ags_stream_slice_alloc(guint buffer_size,
+		       guint format)
+{
+  void *buffer;
+  guint word_size;
+  
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      buffer = (gint8 *) g_slice_alloc0(buffer_size * sizeof(gint8));
+      word_size = sizeof(gint8);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      buffer = (gint16 *) g_slice_alloc0(buffer_size * sizeof(gint16));
+      word_size = sizeof(gint16);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      buffer = (gint32 *) g_slice_alloc0(buffer_size * sizeof(gint32));
+      //NOTE:JK: The 24-bit linear samples use 32-bit physical space
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      buffer = (gint32 *) g_slice_alloc0(buffer_size * sizeof(gint32));
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      buffer = (gint64 *) g_slice_alloc0(buffer_size * sizeof(gint64));
+      word_size = sizeof(gint64);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      buffer = (gfloat *) g_slice_alloc0(buffer_size * sizeof(gfloat));
+      word_size = sizeof(gfloat);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      buffer = (gdouble *) g_slice_alloc0(buffer_size * sizeof(gdouble));
+      word_size = sizeof(gdouble);
+    }
+    break;
+  case AGS_SOUNDCARD_COMPLEX:
+    {
+      buffer = (AgsComplex *) g_slice_alloc0(buffer_size * sizeof(AgsComplex));
+    }
+    break;
+  default:
+    g_warning("ags_stream_slice_alloc(): unsupported word size");
+    return(NULL);
+  }
+
+  return(buffer);
+}
+
+/**
+ * ags_stream_slice_free:
+ * @buffer_size: the buffer size
+ * @format: the format
+ * @buffer: the buffer
+ *
+ * Frees an audio buffer.
+ *
+ * Since: 3.3.0
+ */
+void
+ags_stream_slice_free(guint buffer_size,
+		      guint format,
+		      void *buffer)
+{
+  guint word_size;
+
+  if(buffer == NULL){
+    return;
+  }
+  
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      word_size = sizeof(gint8);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      word_size = sizeof(gint16);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      //NOTE:JK: The 24-bit linear samples use 32-bit physical space
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      word_size = sizeof(gint64);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      word_size = sizeof(gfloat);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      word_size = sizeof(gdouble);
+    }
+    break;
+  case AGS_SOUNDCARD_COMPLEX:
+    {
+      word_size = 2 * sizeof(gdouble);
+    }
+    break;
+  default:
+    g_warning("ags_stream_slice_alloc(): unsupported word size");
+    return;
+  }
+
+  g_slice_free1(buffer_size * word_size,
+		buffer);
 }
 
 /**
@@ -3043,6 +3206,7 @@ ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
 
   void *buffer;
 
+  gboolean use_slice;
   guint buffer_size;
   guint format;
   
@@ -3065,14 +3229,23 @@ ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
 
   audio_signal->length += 1;
 
+  use_slice = ((AGS_AUDIO_SIGNAL_SLICE_ALLOC & (audio_signal->flags)) != 0) ? TRUE: FALSE;
+  
   g_rec_mutex_unlock(audio_signal_mutex);
 
   /* allocate stream and buffer */
   g_rec_mutex_lock(stream_mutex);
 
   stream = g_list_alloc();
-  buffer = ags_stream_alloc(buffer_size,
-			    format);
+
+  if(!use_slice){
+    buffer = ags_stream_alloc(buffer_size,
+			      format);
+  }else{
+    buffer = ags_stream_slice_alloc(buffer_size,
+				    format);
+  }
+  
   stream->data = buffer;
 
   if(audio_signal->stream_end != NULL){
@@ -3102,6 +3275,7 @@ ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
 void
 ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
 {
+  gboolean use_slice;
   guint buffer_size;
   guint format;
   guint old_length;
@@ -3128,6 +3302,8 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
 
   audio_signal->length = length;
 
+  use_slice = ((AGS_AUDIO_SIGNAL_SLICE_ALLOC & (audio_signal->flags)) != 0) ? TRUE: FALSE;  
+
   g_rec_mutex_unlock(audio_signal_mutex);
 
   /* resize stream */
@@ -3139,9 +3315,14 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
     stream = NULL;
 
     for(i = old_length; i < length; i++){
-      buffer = ags_stream_alloc(buffer_size,
-				format);
-
+      if(!use_slice){
+	buffer = ags_stream_alloc(buffer_size,
+				  format);
+      }else{
+	buffer = ags_stream_slice_alloc(buffer_size,
+					format);
+      }
+	
       stream = g_list_prepend(stream,
 			      buffer);
     }
