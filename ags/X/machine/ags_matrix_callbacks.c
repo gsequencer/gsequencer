@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -58,15 +58,11 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
     GtkToggleButton *toggle;
 
     if(GTK_TOGGLE_BUTTON(widget) != matrix->selected){
-      AgsPort *port;
-      
-      AgsCopyPatternAudio *recall_copy_pattern_audio, *play_copy_pattern_audio;
-
       GList *start_list, *list;
 
       gchar *str;
 
-      guint64 index1;
+      guint64 bank_index_1;
 
       toggle = matrix->selected;
       matrix->selected = NULL;
@@ -80,75 +76,98 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 
       /* calculate index 1 */
       str = gtk_button_get_label(matrix->selected);
-      index1 =
+      bank_index_1 =
 	AGS_MACHINE(matrix)->bank_1 = ((guint) g_ascii_strtoull(str, NULL, 10)) - 1;
 
-      /* play - set port */
+      /* play - ags-fx-pattern */
       g_object_get(AGS_MACHINE(matrix)->audio,
 		   "play", &start_list,
 		   NULL);
-      
-      list = ags_recall_find_type(start_list,
-				  AGS_TYPE_COPY_PATTERN_AUDIO);
+  
+      list = start_list;
 
-      if(list != NULL){
-	GValue value = {0,};
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_FX_PATTERN_AUDIO)) != NULL){
+	AgsFxPatternAudio *fx_pattern_audio;
+	AgsPort *port;
+    
+	fx_pattern_audio = AGS_FX_PATTERN_AUDIO(list->data);
 
-	g_value_init(&value,
-		     G_TYPE_FLOAT);
-	
-	g_value_set_float(&value,
-			  (gfloat) index1);
-
-	play_copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
-	g_object_get(play_copy_pattern_audio,
+	port = NULL;
+    
+	g_object_get(fx_pattern_audio,
 		     "bank-index-1", &port,
 		     NULL);
-	
-	ags_port_safe_write(port,
-			    &value);
 
-	g_object_unref(port);
-	
-	g_value_unset(&value);
+	if(port != NULL){
+	  GValue value = {0,};
+      
+	  g_value_init(&value,
+		       G_TYPE_FLOAT);
+
+	  g_value_set_float(&value,
+			    (gfloat) bank_index_1);
+      
+	  ags_port_safe_write(port,
+			      &value);
+      
+	  g_value_unset(&value);
+      
+	  g_object_unref(port);
+	}
+    
+	/* iterate */
+	list = list->next;
       }
 
       g_list_free_full(start_list,
 		       g_object_unref);
-      
-      /* recall - set port */
+
+      /* recall - ags-fx-pattern */
       g_object_get(AGS_MACHINE(matrix)->audio,
 		   "recall", &start_list,
 		   NULL);
-      
-      list = ags_recall_find_type(start_list,
-				  AGS_TYPE_COPY_PATTERN_AUDIO);
+  
+      list = start_list;
 
-      if(list != NULL){
-	GValue value = {0,};
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_FX_PATTERN_AUDIO)) != NULL){
+	AgsFxPatternAudio *fx_pattern_audio;
+	AgsPort *port;
+    
+	fx_pattern_audio = AGS_FX_PATTERN_AUDIO(list->data);
 
-	g_value_init(&value,
-		     G_TYPE_FLOAT);
-	
-	g_value_set_float(&value,
-			  (float) index1);
-
-	recall_copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
-	g_object_get(recall_copy_pattern_audio,
+	port = NULL;
+    
+	g_object_get(fx_pattern_audio,
 		     "bank-index-1", &port,
 		     NULL);
 
-	ags_port_safe_write(port,
-			    &value);
-
-	g_object_unref(port);
-
-	g_value_unset(&value);
-      }
+	if(port != NULL){
+	  GValue value = {0,};
       
+	  g_value_init(&value,
+		       G_TYPE_FLOAT);
+
+	  g_value_set_float(&value,
+			    (gfloat) bank_index_1);
+      
+	  ags_port_safe_write(port,
+			      &value);
+      
+	  g_value_unset(&value);
+      
+	  g_object_unref(port);
+	}
+    
+	/* iterate */
+	list = list->next;
+      }
+
       g_list_free_full(start_list,
 		       g_object_unref);
 
+      /* queue draw */
       gtk_widget_queue_draw((GtkWidget *) matrix->cell_pattern->drawing_area);
     }else{
       matrix->selected = NULL;
@@ -190,42 +209,48 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 void
 ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 {
-  AgsPort *port;
-  AgsCountBeatsAudio *count_beats_audio;
-
   GList *start_list, *list;
 
-  gboolean loop;  
+  gboolean loop;
 
   loop = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button));
 
-  /* play - count beats audio */
+  /* play - ags-fx-pattern */
   g_object_get(AGS_MACHINE(matrix)->audio,
 	       "play", &start_list,
 	       NULL);
   
   list = start_list;
-  
+
   while((list = ags_recall_find_type(list,
-				     AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
-    GValue value = {0,};
+				     AGS_TYPE_FX_PATTERN_AUDIO)) != NULL){
+    AgsFxPatternAudio *fx_pattern_audio;
+    AgsPort *port;
     
-    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-    g_object_get(count_beats_audio,
-		 "sequencer-loop", &port,
+    fx_pattern_audio = AGS_FX_PATTERN_AUDIO(list->data);
+
+    port = NULL;
+    
+    g_object_get(fx_pattern_audio,
+		 "loop", &port,
 		 NULL);
 
-    g_value_init(&value,
-		 G_TYPE_BOOLEAN);
-    g_value_set_boolean(&value,
-			loop);
+    if(port != NULL){
+      GValue value = {0,};
+      
+      g_value_init(&value,
+		   G_TYPE_BOOLEAN);
 
-    ags_port_safe_write(port,
-			&value);
-    
-    g_value_unset(&value);
-
-    g_object_unref(port);
+      g_value_set_boolean(&value,
+			  loop);
+      
+      ags_port_safe_write(port,
+			  &value);
+      
+      g_value_unset(&value);
+      
+      g_object_unref(port);
+    }
     
     /* iterate */
     list = list->next;
@@ -234,39 +259,49 @@ ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
   g_list_free_full(start_list,
 		   g_object_unref);
 
-  /* recall - count beats audio */
+  /* recall - ags-fx-pattern */
   g_object_get(AGS_MACHINE(matrix)->audio,
 	       "recall", &start_list,
 	       NULL);
-
+  
   list = start_list;
 
   while((list = ags_recall_find_type(list,
-				     AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
-    GValue value = {0,};
+				     AGS_TYPE_FX_PATTERN_AUDIO)) != NULL){
+    AgsFxPatternAudio *fx_pattern_audio;
+    AgsPort *port;
     
-    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-    g_object_get(count_beats_audio,
-		 "sequencer-loop", &port,
+    fx_pattern_audio = AGS_FX_PATTERN_AUDIO(list->data);
+
+    port = NULL;
+    
+    g_object_get(fx_pattern_audio,
+		 "loop", &port,
 		 NULL);
 
-    g_value_init(&value,
-		 G_TYPE_BOOLEAN);
-    g_value_set_boolean(&value,
-			loop);
+    if(port != NULL){
+      GValue value = {0,};
+      
+      g_value_init(&value,
+		   G_TYPE_BOOLEAN);
 
-    ags_port_safe_write(port,
-			&value);
-
-    g_value_unset(&value);
-
-    g_object_unref(port);
+      g_value_set_boolean(&value,
+			  loop);
+      
+      ags_port_safe_write(port,
+			  &value);
+      
+      g_value_unset(&value);
+      
+      g_object_unref(port);
+    }
     
     /* iterate */
     list = list->next;
   }
 
-  g_list_free(start_list);  
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 void

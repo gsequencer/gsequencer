@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2628,120 +2628,11 @@ ags_core_audio_devin_switch_buffer_flag(AgsCoreAudioDevin *core_audio_devin)
 void
 ags_core_audio_devin_adjust_delay_and_attack(AgsCoreAudioDevin *core_audio_devin)
 {
-  gdouble delay;
-  guint default_tact_frames;
-  guint delay_tact_frames;
-  guint default_period;
-  gint next_attack;
-  guint i;
-
-  GRecMutex *core_audio_devin_mutex;
-
   if(!AGS_IS_CORE_AUDIO_DEVIN(core_audio_devin)){
     return;
   }
 
-  /* get core_audio devin mutex */
-  core_audio_devin_mutex = AGS_CORE_AUDIO_DEVIN_GET_OBJ_MUTEX(core_audio_devin);
-  
-  /* get some initial values */
-  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(core_audio_devin));
-
-#ifdef AGS_DEBUG
-  g_message("delay : %f", delay);
-#endif
-  
-  g_rec_mutex_lock(core_audio_devin_mutex);
-
-  default_tact_frames = (guint) (delay * core_audio_devin->buffer_size);
-  delay_tact_frames = (guint) (floor(delay) * core_audio_devin->buffer_size);
-  default_period = (1.0 / AGS_SOUNDCARD_DEFAULT_PERIOD) * (default_tact_frames);
-
-  i = 0;
-  
-  core_audio_devin->attack[0] = (guint) floor(0.25 * core_audio_devin->buffer_size);
-  next_attack = (((core_audio_devin->attack[i] + default_tact_frames) / core_audio_devin->buffer_size) - delay) * core_audio_devin->buffer_size;
-
-  if(next_attack < 0){
-    next_attack = 0;
-  }
-
-  if(next_attack >= core_audio_devin->buffer_size){
-    next_attack = core_audio_devin->buffer_size - 1;
-  }
-  
-  /* check if delay drops for next attack */
-  if(next_attack < 0){
-    core_audio_devin->attack[i] = core_audio_devin->attack[i] - ((gdouble) next_attack / 2.0);
-
-    if(core_audio_devin->attack[i] < 0){
-      core_audio_devin->attack[i] = 0;
-    }
-    
-    if(core_audio_devin->attack[i] >= core_audio_devin->buffer_size){
-      core_audio_devin->attack[i] = core_audio_devin->buffer_size - 1;
-    }
-    
-    next_attack = next_attack + (next_attack / 2.0);
-
-    if(next_attack < 0){
-      next_attack = 0;
-    }
-
-    if(next_attack >= core_audio_devin->buffer_size){
-      next_attack = core_audio_devin->buffer_size - 1;
-    }
-  }
-  
-  for(i = 1; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    core_audio_devin->attack[i] = next_attack;
-    next_attack = (((core_audio_devin->attack[i] + default_tact_frames) / core_audio_devin->buffer_size) - delay) * core_audio_devin->buffer_size;
-
-    if(next_attack >= core_audio_devin->buffer_size){
-      next_attack = core_audio_devin->buffer_size - 1;
-    }
-    
-    /* check if delay drops for next attack */
-    if(next_attack < 0){
-      core_audio_devin->attack[i] = core_audio_devin->attack[i] - ((gdouble) next_attack / 2.0);
-
-      if(core_audio_devin->attack[i] < 0){
-	core_audio_devin->attack[i] = 0;
-      }
-
-      if(core_audio_devin->attack[i] >= core_audio_devin->buffer_size){
-	core_audio_devin->attack[i] = core_audio_devin->buffer_size - 1;
-      }
-    
-      next_attack = next_attack + (next_attack / 2.0);
-
-      if(next_attack < 0){
-	next_attack = 0;
-      }
-
-      if(next_attack >= core_audio_devin->buffer_size){
-	next_attack = core_audio_devin->buffer_size - 1;
-      }
-    }
-    
-#ifdef AGS_DEBUG
-    g_message("%d", core_audio_devin->attack[i]);
-#endif
-  }
-
-  core_audio_devin->attack[0] = core_audio_devin->attack[i - 2];
-  
-  for(i = 0; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD - 1; i++){
-    core_audio_devin->delay[i] = ((gdouble) (default_tact_frames + core_audio_devin->attack[i] - core_audio_devin->attack[i + 1])) / (gdouble) core_audio_devin->buffer_size;
-    
-#ifdef AGS_DEBUG
-    g_message("%f", core_audio_devin->delay[i]);
-#endif
-  }
-
-  core_audio_devin->delay[i] = ((gdouble) (default_tact_frames + core_audio_devin->attack[i] - core_audio_devin->attack[0])) / (gdouble) core_audio_devin->buffer_size;
-
-  g_rec_mutex_unlock(core_audio_devin_mutex);
+  ags_soundcard_util_adjust_delay_and_attack(core_audio_devin);
 }
 
 /**

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -100,54 +100,65 @@ ags_audiorec_keep_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
   
   GList *start_recall, *recall;
   
-  GValue playback_value = {0,};
-  GValue replace_value = {0,};
+  GValue capture_mode_value = {0,};
 
   if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
-    g_value_init(&playback_value,
-		 G_TYPE_BOOLEAN);
+    g_value_init(&capture_mode_value,
+		 G_TYPE_UINT64);
 
-    g_value_set_boolean(&playback_value,
-			FALSE);
-  
-    g_value_init(&replace_value,
-		 G_TYPE_BOOLEAN);
+    g_value_set_uint64(&capture_mode_value,
+		       AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_NONE);
 
-    g_value_set_boolean(&replace_value,
-			FALSE);
-
+    /* play context */
     g_object_get(AGS_MACHINE(audiorec)->audio,
 		 "play", &start_recall,
 		 NULL);
 
     recall = ags_recall_template_find_type(start_recall,
-					   AGS_TYPE_CAPTURE_WAVE_AUDIO);
+					   AGS_TYPE_FX_PLAYBACK_AUDIO);
 
     if(recall != NULL){
       g_object_get(recall->data,
-		   "playback", &port,
+		   "capture-mode", &port,
 		   NULL);
 
-      ags_port_safe_write(port,
-			  &playback_value);
+      if(port != NULL){
+	ags_port_safe_write(port,
+			    &capture_mode_value);
 
-      g_object_unref(port);
-      
-      g_object_get(recall->data,
-		   "replace", &port,
-		   NULL);
-
-      ags_port_safe_write(port,
-			  &replace_value);
-
-      g_object_unref(port);
+	g_object_unref(port);
+      }
     }
 
-    g_value_unset(&playback_value);
-    g_value_unset(&replace_value);
-  
     g_list_free_full(start_recall,
 		     g_object_unref);
+
+    /* recall context */
+    g_object_get(AGS_MACHINE(audiorec)->audio,
+		 "recall", &start_recall,
+		 NULL);
+
+    recall = ags_recall_template_find_type(start_recall,
+					   AGS_TYPE_FX_PLAYBACK_AUDIO);
+
+    if(recall != NULL){
+      g_object_get(recall->data,
+		   "capture-mode", &port,
+		   NULL);
+
+      if(port != NULL){
+	ags_port_safe_write(port,
+			    &capture_mode_value);
+
+	g_object_unref(port);
+      }
+    }
+
+    g_list_free_full(start_recall,
+		     g_object_unref);
+
+    /* unset value */
+    g_value_unset(&capture_mode_value);
   }
 }
 
@@ -158,54 +169,65 @@ ags_audiorec_replace_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
   
   GList *start_recall, *recall;
   
-  GValue playback_value = {0,};
-  GValue replace_value = {0,};
+  GValue capture_mode_value = {0,};
 
   if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
-    g_value_init(&playback_value,
-		 G_TYPE_BOOLEAN);
+    g_value_init(&capture_mode_value,
+		 G_TYPE_UINT64);
 
-    g_value_set_boolean(&playback_value,
-			TRUE);
-  
-    g_value_init(&replace_value,
-		 G_TYPE_BOOLEAN);
+    g_value_set_uint64(&capture_mode_value,
+		       AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_REPLACE);
 
-    g_value_set_boolean(&replace_value,
-			TRUE);
-
+    /* play context */
     g_object_get(AGS_MACHINE(audiorec)->audio,
 		 "play", &start_recall,
 		 NULL);
 
     recall = ags_recall_template_find_type(start_recall,
-					   AGS_TYPE_CAPTURE_WAVE_AUDIO);
+					   AGS_TYPE_FX_PLAYBACK_AUDIO);
 
     if(recall != NULL){
       g_object_get(recall->data,
-		   "playback", &port,
+		   "capture-mode", &port,
 		   NULL);
 
-      ags_port_safe_write(port,
-			  &playback_value);
+      if(port != NULL){
+	ags_port_safe_write(port,
+			    &capture_mode_value);
 
-      g_object_unref(port);
-
-      g_object_get(recall->data,
-		   "replace", &port,
-		   NULL);
-
-      ags_port_safe_write(port,
-			  &replace_value);
-
-      g_object_unref(port);
+	g_object_unref(port);
+      }
     }
 
-    g_value_unset(&playback_value);
-    g_value_unset(&replace_value);
-  
     g_list_free_full(start_recall,
 		     g_object_unref);
+
+    /* recall context */
+    g_object_get(AGS_MACHINE(audiorec)->audio,
+		 "recall", &start_recall,
+		 NULL);
+
+    recall = ags_recall_template_find_type(start_recall,
+					   AGS_TYPE_FX_PLAYBACK_AUDIO);
+
+    if(recall != NULL){
+      g_object_get(recall->data,
+		   "capture-mode", &port,
+		   NULL);
+
+      if(port != NULL){
+	ags_port_safe_write(port,
+			    &capture_mode_value);
+
+	g_object_unref(port);
+      }
+    }
+
+    g_list_free_full(start_recall,
+		     g_object_unref);
+
+    /* unset value */
+    g_value_unset(&capture_mode_value);
   }
 }
 
@@ -216,53 +238,64 @@ ags_audiorec_mix_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
   
   GList *start_recall, *recall;
   
-  GValue playback_value = {0,};
-  GValue replace_value = {0,};
+  GValue capture_mode_value = {0,};
 
   if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
-    g_value_init(&playback_value,
-		 G_TYPE_BOOLEAN);
+    g_value_init(&capture_mode_value,
+		 G_TYPE_UINT64);
 
-    g_value_set_boolean(&playback_value,
-			TRUE);
-  
-    g_value_init(&replace_value,
-		 G_TYPE_BOOLEAN);
+    g_value_set_uint64(&capture_mode_value,
+		       AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_MIX);
 
-    g_value_set_boolean(&replace_value,
-			FALSE);
-
+    /* play context */
     g_object_get(AGS_MACHINE(audiorec)->audio,
 		 "play", &start_recall,
 		 NULL);
 
     recall = ags_recall_template_find_type(start_recall,
-					   AGS_TYPE_CAPTURE_WAVE_AUDIO);
+					   AGS_TYPE_FX_PLAYBACK_AUDIO);
 
     if(recall != NULL){
       g_object_get(recall->data,
-		   "playback", &port,
+		   "capture-mode", &port,
 		   NULL);
 
-      ags_port_safe_write(port,
-			  &playback_value);
+      if(port != NULL){
+	ags_port_safe_write(port,
+			    &capture_mode_value);
 
-      g_object_unref(port);
-
-      g_object_get(recall->data,
-		   "replace", &port,
-		   NULL);
-
-      ags_port_safe_write(port,
-			  &replace_value);
-
-      g_object_unref(port);
+	g_object_unref(port);
+      }
     }
 
-    g_value_unset(&playback_value);
-    g_value_unset(&replace_value);
-  
     g_list_free_full(start_recall,
 		     g_object_unref);
+
+    /* recall context */
+    g_object_get(AGS_MACHINE(audiorec)->audio,
+		 "recall", &start_recall,
+		 NULL);
+
+    recall = ags_recall_template_find_type(start_recall,
+					   AGS_TYPE_FX_PLAYBACK_AUDIO);
+
+    if(recall != NULL){
+      g_object_get(recall->data,
+		   "capture-mode", &port,
+		   NULL);
+
+      if(port != NULL){
+	ags_port_safe_write(port,
+			    &capture_mode_value);
+
+	g_object_unref(port);
+      }
+    }
+
+    g_list_free_full(start_recall,
+		     g_object_unref);
+
+    /* unset value */
+    g_value_unset(&capture_mode_value);
   }
 }

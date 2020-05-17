@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,7 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
@@ -72,6 +73,15 @@ struct _AgsLv2Bridge
   
   guint mapped_output_pad;
   guint mapped_input_pad;
+
+  AgsRecallContainer *lv2_play_container;
+  AgsRecallContainer *lv2_recall_container;
+
+  AgsRecallContainer *envelope_play_container;
+  AgsRecallContainer *envelope_recall_container;
+
+  AgsRecallContainer *buffer_play_container;
+  AgsRecallContainer *buffer_recall_container;
 
   gchar *filename;
   gchar *effect;

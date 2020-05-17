@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -168,6 +168,9 @@ ags_panel_init(AgsPanel *panel)
   panel->name = NULL;
   panel->xml_type = "ags-panel";
 
+  panel->playback_play_container = ags_recall_container_new();
+  panel->playback_recall_container = ags_recall_container_new();
+  
   panel->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) panel)), (GtkWidget *) panel->vbox);
 
@@ -210,9 +213,38 @@ ags_panel_disconnect(AgsConnectable *connectable)
 void
 ags_panel_map_recall(AgsMachine *machine)
 {
-  AGS_MACHINE_CLASS(ags_panel_parent_class)->map_recall(machine);
+  AgsAudio *audio;
 
-  /* empty */
+  GList *start_recall;
+
+  gint position;
+  
+  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
+     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
+    return;
+  }
+
+  audio = machine->audio;
+
+  position = 0;
+  
+  /* ags-fx-playback */
+  start_recall = ags_fx_factory_create(audio,
+				       AGS_PANEL(machine)->playback_play_container, AGS_PANEL(machine)->playback_recall_container,
+				       "ags-fx-playback",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+  
+  /* call parent */
+  AGS_MACHINE_CLASS(ags_panel_parent_class)->map_recall(machine);
 }
 
 void

@@ -43,6 +43,49 @@ int ags_machine_popup_reposition_audio_response_callback(GtkWidget *widget, gint
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
 
 void
+ags_machine_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMachine *machine)
+{
+  AgsAudio *audio;
+  AgsPlaybackDomain *playback_domain;
+  
+  guint i;
+
+  static const guint staging_program[] = {
+    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
+  };
+  
+  if(old_parent != NULL){
+    return;
+  }
+
+  audio = machine->audio;
+
+  g_object_get(audio,
+	       "playback-domain", &playback_domain,
+	       NULL);
+
+  if(playback_domain != NULL){
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      AgsThread *audio_thread;
+	  
+      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							  i);
+
+      if(audio_thread != NULL){
+	ags_audio_thread_set_do_fx_staging(audio_thread, TRUE);
+	ags_audio_thread_set_staging_program(audio_thread,
+					     staging_program,
+					     1);
+	    
+	g_object_unref(audio_thread);
+      }
+    }
+    
+    g_object_unref(playback_domain);
+  }
+}
+
+void
 ags_machine_check_message_callback(GObject *application_context, AgsMachine *machine)
 {
   ags_machine_check_message(machine);
@@ -658,10 +701,171 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
 					   guint audio_channels, guint audio_channels_old,
 					   gpointer data)
 {
+  AgsAudio *audio;
+  AgsPlayback *playback;
+  AgsChannel *start_output;
+  AgsChannel *start_input;
+  AgsChannel *channel, *next_pad, *next_channel;
+
   GList *pad_list;
   GList *line_list;
   
   guint i;
+
+  static const guint staging_program[] = {
+    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
+  };
+
+  audio = machine->audio;
+
+  start_output = NULL;
+  start_input = NULL;
+
+  g_object_get(audio,
+	       "output", &start_output,
+	       "input", &start_input,
+	       NULL);
+
+  if(audio_channels > audio_channels_old){
+    /* AgsOutput */
+    channel = start_output;
+
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+
+    next_pad = NULL;
+    
+    while(channel != NULL){      
+      /* get some fields */
+      next_pad = ags_channel_next_pad(channel),
+      
+      next_channel = ags_channel_pad_nth(channel,
+					 audio_channels_old);
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+      
+      channel = next_channel;
+      
+      while(channel != next_pad){
+	/* fx engine */
+	g_object_get(channel,
+		     "playback", &playback,
+		     NULL);
+
+	if(playback != NULL){
+	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+	    AgsThread *channel_thread;
+	  
+	    channel_thread = ags_playback_get_channel_thread(playback,
+							     i);
+
+	    if(channel_thread != NULL){
+	      ags_channel_thread_set_do_fx_staging(channel_thread, TRUE);
+	      ags_channel_thread_set_staging_program(channel_thread,
+						     staging_program,
+						     1);
+	    
+	      g_object_unref(channel_thread);
+	    }
+	  }
+	
+	  g_object_unref(playback);
+	}
+	
+	/* iterate */
+	next_channel = ags_channel_next(channel);
+
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
+    }
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+
+    /* AgsInput */
+    channel = start_input;
+
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+
+    next_pad = NULL;
+    
+    while(channel != NULL){      
+      /* get some fields */
+      next_pad = ags_channel_next_pad(channel),
+      
+      next_channel = ags_channel_pad_nth(channel,
+					 audio_channels_old);
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+      
+      channel = next_channel;
+      
+      while(channel != next_pad){
+	/* fx engine */
+	g_object_get(channel,
+		     "playback", &playback,
+		     NULL);
+
+	if(playback != NULL){
+	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+	    AgsThread *channel_thread;
+	  
+	    channel_thread = ags_playback_get_channel_thread(playback,
+							     i);
+
+	    if(channel_thread != NULL){
+	      ags_channel_thread_set_do_fx_staging(channel_thread, TRUE);
+	      ags_channel_thread_set_staging_program(channel_thread,
+						     staging_program,
+						     1);
+	    
+	      g_object_unref(channel_thread);
+	    }
+	  }
+	
+	  g_object_unref(playback);
+	}
+	
+	/* iterate */
+	next_channel = ags_channel_next(channel);
+
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
+    }
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+  }
+   
+  /* unref */
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
   
   /* resize */
   if((AGS_MACHINE_CONNECTED & (machine->flags)) != 0){
@@ -706,11 +910,142 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
 }
 
 void
-ags_machine_resize_pads_callback(AgsMachine *machine, GType channel_type,
+ags_machine_resize_pads_callback(AgsMachine *machine,
+				 GType channel_type,
 				 guint pads, guint pads_old,
 				 gpointer data)
 {
+  AgsAudio *audio;
+  AgsPlayback *playback;
+  AgsChannel *start_output;
+  AgsChannel *start_input;
+  AgsChannel *channel, *next_pad, *next_channel;
+
   GList *pad_list;
+
+  guint audio_channels;
+  guint i;
+
+  static const guint staging_program[] = {
+    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
+  };
+
+  audio = machine->audio;
+
+  start_output = NULL;
+  start_input = NULL;
+  
+  audio_channels = 0;
+
+  if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+    if(pads > pads_old){
+      /* get some fields */
+      g_object_get(audio,
+		   "input", &start_input,
+		   "audio-channels", &audio_channels,
+		   NULL);
+
+      /* AgsOutput */
+      channel = ags_channel_pad_nth(start_input,
+				    pads_old);
+      
+      while(channel != NULL){
+	/* fx engine */
+	g_object_get(channel,
+		     "playback", &playback,
+		     NULL);
+
+	if(playback != NULL){
+	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+	    AgsThread *channel_thread;
+	  
+	    channel_thread = ags_playback_get_channel_thread(playback,
+							     i);
+
+	    if(channel_thread != NULL){
+	      ags_channel_thread_set_do_fx_staging(channel_thread, TRUE);
+	      ags_channel_thread_set_staging_program(channel_thread,
+						     staging_program,
+						     1);
+	    
+	      g_object_unref(channel_thread);
+	    }
+	  }
+	
+	  g_object_unref(playback);
+	}
+	
+	/* iterate */
+	next_channel = ags_channel_next(channel);
+
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(start_input != NULL){
+	g_object_unref(start_input);
+      }
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+    }
+  }else{
+    if(pads > pads_old){
+      /* get some fields */
+      g_object_get(audio,
+		   "output", &start_output,
+		   "audio-channels", &audio_channels,
+		   NULL);
+
+      /* AgsOutput */
+      channel = ags_channel_pad_nth(start_output,
+				    pads_old);
+      
+      while(channel != NULL){
+	/* fx engine */
+	g_object_get(channel,
+		     "playback", &playback,
+		     NULL);
+
+	if(playback != NULL){
+	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+	    AgsThread *channel_thread;
+	  
+	    channel_thread = ags_playback_get_channel_thread(playback,
+							     i);
+
+	    if(channel_thread != NULL){
+	      ags_channel_thread_set_do_fx_staging(channel_thread, TRUE);
+	      ags_channel_thread_set_staging_program(channel_thread,
+						     staging_program,
+						     1);
+	    
+	      g_object_unref(channel_thread);
+	    }
+	  }
+	
+	  g_object_unref(playback);
+	}
+	
+	/* iterate */
+	next_channel = ags_channel_next(channel);
+
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(start_output != NULL){
+	g_object_unref(start_output);
+      }
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+    }
+  }
   
   /* resize */
   if((AGS_MACHINE_CONNECTED & (machine->flags)) != 0){
@@ -805,11 +1140,29 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
   AgsChannel *channel;
   AgsRecycling *first_recycling, *last_recycling;
   AgsRecycling *recycling, *next_recycling, *end_recycling;
-  AgsAudioSignal *audio_signal; 
+  AgsAudioSignal *template, *audio_signal; 
   AgsRecallID *recall_id;
   AgsNote *play_note;
-
+  AgsFxPlaybackAudio *fx_playback_audio;
+  
   GObject *output_soundcard;
+
+  GList *start_recall, *recall;
+  
+  GRecMutex *recycling_mutex;
+
+  audio = NULL;
+  
+  channel = NULL;
+
+  first_recycling = NULL;
+  last_recycling = NULL;
+  
+  play_note = NULL;
+
+  fx_playback_audio = NULL;
+  
+  start_recall = NULL;
   
   g_object_get(playback,
 	       "channel", &channel,
@@ -819,6 +1172,16 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
   g_object_get(channel,
 	       "audio", &audio,
 	       NULL);
+
+  g_object_get(audio,
+	       "play", &start_recall,
+	       NULL);
+
+  recall = ags_recall_template_find_type(start_recall, AGS_TYPE_FX_PLAYBACK_AUDIO);
+
+  if(recall != NULL){
+    fx_playback_audio = recall->data;
+  }
   
   recall_id = ags_playback_get_recall_id(playback,
 					 AGS_SOUND_SCOPE_PLAYBACK);
@@ -836,81 +1199,67 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
 
   next_recycling = NULL;
   
-  while(recycling != end_recycling){
+  while(recycling != end_recycling){    
     g_object_get(recycling,
 		 "output-soundcard", &output_soundcard,
 		 NULL);
+
+    recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
+
+    g_rec_mutex_lock(recycling_mutex);
+
+    template = ags_audio_signal_get_template(recycling->audio_signal);
     
-    if(!ags_recall_global_get_rt_safe()){
-      /* instantiate audio signal */
-      audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
-					  (GObject *) recycling,
-					  (GObject *) recall_id);
-      g_object_set(audio_signal,
-		   "note", play_note,
-		   NULL);
+    g_rec_mutex_unlock(recycling_mutex);
 
-      /* add audio signal */
-      if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_PATTERN_MODE)){
-	ags_recycling_create_audio_signal_with_defaults(recycling,
-							audio_signal,
-							0.0, 0);
-      }else{
-	gdouble notation_delay;
-	guint buffer_size;
-	guint note_x0, note_x1;
+    /* instantiate audio signal */
+    audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
+					(GObject *) recycling,
+					(GObject *) recall_id);
+    ags_audio_signal_set_flags(audio_signal, (AGS_AUDIO_SIGNAL_FEED |
+					      AGS_AUDIO_SIGNAL_STREAM));
+    g_object_set(audio_signal,
+		 "template", template,
+		 "note", play_note,
+		 NULL);
 
-	notation_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
-
-	g_object_get(recycling,
-		     "buffer-size", &buffer_size,
-		     NULL);
-	
-	g_object_get(play_note,
-		     "x0", &note_x0,
-		     "x1", &note_x1,
-		     NULL);
-
-	ags_recycling_create_audio_signal_with_frame_count(recycling,
-							   audio_signal,
-							   (guint) (((gdouble) buffer_size * notation_delay) * (gdouble) (note_x1 - note_x0)),
-							   0.0, 0);
-      }
-      
-      audio_signal->stream_current = audio_signal->stream;
-      ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
-	
-      /*
-       * emit add_audio_signal on AgsRecycling
-       */
-      ags_recycling_add_audio_signal(recycling,
-				     audio_signal);
+    /* add audio signal */
+    if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_PATTERN_MODE)){
+      ags_recycling_create_audio_signal_with_defaults(recycling,
+						      audio_signal,
+						      0.0, 0);
     }else{
-      GList *start_list, *list;
+      gdouble notation_delay;
+      guint buffer_size;
+      guint note_x0, note_x1;
+
+      notation_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
 
       g_object_get(recycling,
-		   "audio-signal", &start_list,
+		   "buffer-size", &buffer_size,
 		   NULL);
-      
-      audio_signal = NULL;
-      list = ags_audio_signal_find_by_recall_id(start_list,
-						(GObject *) recall_id);
-	    
-      if(list != NULL){
-	audio_signal = list->data;
-
-	g_object_set(audio_signal,
-		     "note", play_note,
-		     NULL);
-      }
-
-      g_list_free_full(start_list,
-		       g_object_unref);
-
-      g_object_set(play_note,
-		   "rt-offset", 0,
+	
+      g_object_get(play_note,
+		   "x0", &note_x0,
+		   "x1", &note_x1,
 		   NULL);
+
+      ags_recycling_create_audio_signal_with_frame_count(recycling,
+							 audio_signal,
+							 (guint) (((gdouble) buffer_size * notation_delay) * (gdouble) (note_x1 - note_x0)),
+							 0.0, 0);
     }
+      
+    audio_signal->stream_current = audio_signal->stream;
+    ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
+
+    ags_fx_playback_audio_add_feed_audio_signal(fx_playback_audio, audio_signal);
+
+    /*
+     * emit add_audio_signal on AgsRecycling
+     */
+    ags_recycling_add_audio_signal(recycling,
+				   audio_signal);
 
     g_object_unref(output_soundcard);
     

@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_note.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_AUDIO_SIGNAL                (ags_audio_signal_get_type())
@@ -46,6 +48,10 @@ typedef struct _AgsAudioSignalClass AgsAudioSignalClass;
  * @AGS_AUDIO_SIGNAL_CONNECTED: indicates the audio signal was connected by calling #AgsConnectable::connect()
  * @AGS_AUDIO_SIGNAL_TEMPLATE: the audio signal acts as a template
  * @AGS_AUDIO_SIGNAL_RT_TEMPLATE: the audio signal acts as a realtime template
+ * @AGS_AUDIO_SIGNAL_MASTER: the audio signal needs master
+ * @AGS_AUDIO_SIGNAL_FEED: the audio signal needs feed
+ * @AGS_AUDIO_SIGNAL_RECYCLED: the audio signal is recycled
+ * @AGS_AUDIO_SIGNAL_STREAM: the audio signal needs stream
  * 
  * Enum values to control the behavior or indicate internal state of #AgsAudioSignal by
  * enable/disable as flags.
@@ -55,8 +61,11 @@ typedef enum{
   AGS_AUDIO_SIGNAL_CONNECTED            = 1 <<  1,
   AGS_AUDIO_SIGNAL_TEMPLATE             = 1 <<  2,
   AGS_AUDIO_SIGNAL_RT_TEMPLATE          = 1 <<  3,
-  //  AGS_AUDIO_SIGNAL_PLAY_DONE            = 1 <<  3,
-  //  AGS_AUDIO_SIGNAL_STANDALONE           = 1 <<  4,
+  AGS_AUDIO_SIGNAL_MASTER               = 1 <<  4,
+  AGS_AUDIO_SIGNAL_FEED                 = 1 <<  5,
+  AGS_AUDIO_SIGNAL_RECYCLED             = 1 <<  6,
+  AGS_AUDIO_SIGNAL_STREAM               = 1 <<  7,
+  AGS_AUDIO_SIGNAL_SLICE_ALLOC          = 1 <<  8,            
 }AgsAudioSignalFlags;
 
 struct _AgsAudioSignal
@@ -139,6 +148,12 @@ void* ags_stream_alloc(guint buffer_size,
 		       guint format);
 void ags_stream_free(void *buffer);
 
+void* ags_stream_slice_alloc(guint buffer_size,
+			     guint format);
+void ags_stream_slice_free(guint buffer_size,
+			   guint format,
+			   void *buffer);
+
 /* parent */
 GObject* ags_audio_signal_get_recycling(AgsAudioSignal *audio_signal);
 void ags_audio_signal_set_recycling(AgsAudioSignal *audio_signal, GObject *recycling);
@@ -183,9 +198,25 @@ void ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 void ags_audio_signal_feed(AgsAudioSignal *audio_signal,
 			   AgsAudioSignal *template,
 			   guint frame_count);
+void ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
+				    AgsAudioSignal *template,
+				    guint frame_count, guint old_frame_count,
+				    gboolean do_open, gboolean do_close);
+
+void ags_audio_signal_open_feed(AgsAudioSignal *audio_signal,
+				AgsAudioSignal *template,
+				guint frame_count, guint old_frame_count);
+void ags_audio_signal_continue_feed(AgsAudioSignal *audio_signal,
+				    AgsAudioSignal *template,
+				    guint frame_count, guint old_frame_count);
+void ags_audio_signal_close_feed(AgsAudioSignal *audio_signal,
+				 AgsAudioSignal *template,
+				 guint frame_count, guint old_frame_count);
 
 /* query */
 guint ags_audio_signal_get_length_till_current(AgsAudioSignal *audio_signal);
+gboolean ags_audio_signal_contains_note(AgsAudioSignal *audio_signal,
+					AgsNote *note);
 
 AgsAudioSignal* ags_audio_signal_get_template(GList *audio_signal);
 GList* ags_audio_signal_get_rt_template(GList *audio_signal);

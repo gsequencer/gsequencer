@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,8 +27,17 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+
 #include <ags/libags-gui.h>
 
 #include <ags/X/machine/ags_ffplayer_bulk_input.h>
+
+/* forwarded callbacks */
+void ags_ffplayer_bulk_input_resize_audio_channels_callback(AgsFFPlayerBulkInput *ffplayer_bulk_input,
+							    guint audio_channels, guint audio_channels_old,
+							    gpointer data);
+void ags_ffplayer_bulk_input_resize_pads_callback(AgsFFPlayerBulkInput *ffplayer_bulk_input, GType channel_type,
+						  guint pads, guint pads_old,
+						  gpointer data);
 
 #endif /*__AGS_FFPLAYER_BULK_INPUT_CALLBACKS_H__*/

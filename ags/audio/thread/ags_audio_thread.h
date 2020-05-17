@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sound_enums.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_AUDIO_THREAD                (ags_audio_thread_get_type())
@@ -37,6 +39,7 @@ G_BEGIN_DECLS
 #define AGS_AUDIO_THREAD_DEFAULT_JIFFIE (ceil(AGS_SOUNDCARD_DEFAULT_SAMPLERATE / AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK)
 
 typedef struct _AgsAudioThread AgsAudioThread;
+typedef struct _AgsAudioThreadScopeData AgsAudioThreadScopeData;
 typedef struct _AgsAudioThreadClass AgsAudioThreadClass;
 
 /**
@@ -74,6 +77,13 @@ struct _AgsAudioThread
   gint sound_scope;
   
   GList *sync_thread;
+
+  gboolean do_fx_staging;
+  
+  guint *staging_program;
+  guint staging_program_count;
+
+  AgsAudioThreadScopeData* scope_data[AGS_SOUND_SCOPE_LAST];
 };
 
 struct _AgsAudioThreadClass
@@ -81,8 +91,18 @@ struct _AgsAudioThreadClass
   AgsThreadClass thread;
 };
 
+struct _AgsAudioThreadScopeData
+{
+  volatile gboolean fx_done;
+  volatile guint fx_wait;
+  
+  GMutex fx_mutex;
+  GCond fx_cond;
+};
+
 GType ags_audio_thread_get_type();
 
+/* flags */
 gboolean ags_audio_thread_test_status_flags(AgsAudioThread *audio_thread, guint status_flags);
 void ags_audio_thread_set_status_flags(AgsAudioThread *audio_thread, guint status_flags);
 void ags_audio_thread_unset_status_flags(AgsAudioThread *audio_thread, guint status_flags);
@@ -90,6 +110,20 @@ void ags_audio_thread_unset_status_flags(AgsAudioThread *audio_thread, guint sta
 void ags_audio_thread_set_sound_scope(AgsAudioThread *audio_thread,
 				      gint sound_scope);
 
+AgsAudioThreadScopeData* ags_audio_thread_scope_data_alloc();
+void ags_audio_thread_scope_data_free(AgsAudioThreadScopeData *scope_data);
+
+/* staging */
+gboolean ags_audio_thread_get_do_fx_staging(AgsAudioThread *audio_thread);
+void ags_audio_thread_set_do_fx_staging(AgsAudioThread *audio_thread, gboolean do_fx_staging);
+
+guint* ags_audio_thread_get_staging_program(AgsAudioThread *audio_thread,
+					    guint *staging_program_count);
+void ags_audio_thread_set_staging_program(AgsAudioThread *audio_thread,
+					  guint *staging_program,
+					  guint staging_program_count);
+
+/* instantiate */
 AgsAudioThread* ags_audio_thread_new(GObject *default_output_soundcard,
 				     GObject *audio);
 

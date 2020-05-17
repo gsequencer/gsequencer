@@ -495,8 +495,8 @@ libags_thread_la_HEADERS_0 = $(libags_thread_h_sources) $(libags_thread_task_h_s
 libags_server_la_SOURCES = $(libags_server_c_sources) $(libags_server_security_c_sources) $(libags_server_controller_c_sources)
 libags_server_la_HEADERS_0 = $(libags_server_h_sources) $(libags_server_security_h_sources) $(libags_server_controller_h_sources)
 
-libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_osc_c_sources) $(libags_audio_osc_controller_c_sources) $(libags_audio_osc_xmlrpc_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_pulse_c_sources) $(libags_audio_core_audio_c_sources) $(libags_audio_audio_unit_c_sources) $(libags_audio_wasapi_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
-libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_osc_h_sources) $(libags_audio_osc_controller_h_sources) $(libags_audio_osc_xmlrpc_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_pulse_h_sources) $(libags_audio_core_audio_h_sources) $(libags_audio_audio_unit_h_sources) $(libags_audio_wasapi_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources)  $(libags_plugin_h_sources)
+libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_osc_c_sources) $(libags_audio_osc_controller_c_sources) $(libags_audio_osc_xmlrpc_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_pulse_c_sources) $(libags_audio_core_audio_c_sources) $(libags_audio_audio_unit_c_sources) $(libags_audio_wasapi_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources) $(libags_audio_fx_c_sources) $(libags_plugin_c_sources)
+libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_osc_h_sources) $(libags_audio_osc_controller_h_sources) $(libags_audio_osc_xmlrpc_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_pulse_h_sources) $(libags_audio_core_audio_h_sources) $(libags_audio_audio_unit_h_sources) $(libags_audio_wasapi_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources) $(libags_audio_fx_h_sources)$(libags_plugin_h_sources)
 
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
@@ -935,6 +935,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_fourier_transform_util.h \
 	ags/audio/ags_frequency_map.h \
 	ags/audio/ags_frequency_map_manager.h \
+	ags/audio/ags_fx_factory.h \
 	ags/audio/ags_generic_recall_channel_run.h \
 	ags/audio/ags_generic_recall_recycling.h \
 	ags/audio/ags_input.h \
@@ -948,6 +949,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_playback.h \
 	ags/audio/ags_playback_domain.h \
 	ags/audio/ags_port.h \
+	ags/audio/ags_port_util.h \
 	ags/audio/ags_preset.h \
 	ags/audio/ags_recall_audio.h \
 	ags/audio/ags_recall_audio_run.h \
@@ -999,6 +1001,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_fourier_transform_util.c \
 	ags/audio/ags_frequency_map.c \
 	ags/audio/ags_frequency_map_manager.c \
+	ags/audio/ags_fx_factory.c \
 	ags/audio/ags_generic_recall_channel_run.c \
 	ags/audio/ags_generic_recall_recycling.c \
 	ags/audio/ags_lfo_synth_util.c \
@@ -1011,6 +1014,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_playback.c \
 	ags/audio/ags_playback_domain.c \
 	ags/audio/ags_port.c \
+	ags/audio/ags_port_util.c \
 	ags/audio/ags_preset.c \
 	ags/audio/ags_recall_audio.c \
 	ags/audio/ags_recall_audio_run.c \
@@ -1569,6 +1573,161 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_volume_channel_run.c \
 	ags/audio/recall/ags_volume_recycling.c
 
+# libags-audio - fx
+deprecated_libags_audio_fx_h_sources =
+
+libags_audio_fx_h_sources = \
+	$(deprecated_libags_audio_fx_h_sources) \
+	ags/audio/fx/ags_fx_playback_audio.h \
+	ags/audio/fx/ags_fx_playback_audio_processor.h \
+	ags/audio/fx/ags_fx_playback_channel.h \
+	ags/audio/fx/ags_fx_playback_channel_processor.h \
+	ags/audio/fx/ags_fx_playback_recycling.h \
+	ags/audio/fx/ags_fx_playback_audio_signal.h \
+	ags/audio/fx/ags_fx_buffer_audio.h \
+	ags/audio/fx/ags_fx_buffer_audio_processor.h \
+	ags/audio/fx/ags_fx_buffer_channel.h \
+	ags/audio/fx/ags_fx_buffer_channel_processor.h \
+	ags/audio/fx/ags_fx_buffer_recycling.h \
+	ags/audio/fx/ags_fx_buffer_audio_signal.h \
+	ags/audio/fx/ags_fx_volume_audio.h \
+	ags/audio/fx/ags_fx_volume_audio_processor.h \
+	ags/audio/fx/ags_fx_volume_channel.h \
+	ags/audio/fx/ags_fx_volume_channel_processor.h \
+	ags/audio/fx/ags_fx_volume_recycling.h \
+	ags/audio/fx/ags_fx_volume_audio_signal.h \
+	ags/audio/fx/ags_fx_eq10_audio.h \
+	ags/audio/fx/ags_fx_eq10_audio_processor.h \
+	ags/audio/fx/ags_fx_eq10_channel.h \
+	ags/audio/fx/ags_fx_eq10_channel_processor.h \
+	ags/audio/fx/ags_fx_eq10_recycling.h \
+	ags/audio/fx/ags_fx_eq10_audio_signal.h \
+	ags/audio/fx/ags_fx_peak_audio.h \
+	ags/audio/fx/ags_fx_peak_audio_processor.h \
+	ags/audio/fx/ags_fx_peak_channel.h \
+	ags/audio/fx/ags_fx_peak_channel_processor.h \
+	ags/audio/fx/ags_fx_peak_recycling.h \
+	ags/audio/fx/ags_fx_peak_audio_signal.h \
+	ags/audio/fx/ags_fx_envelope_audio.h \
+	ags/audio/fx/ags_fx_envelope_audio_processor.h \
+	ags/audio/fx/ags_fx_envelope_channel.h \
+	ags/audio/fx/ags_fx_envelope_channel_processor.h \
+	ags/audio/fx/ags_fx_envelope_recycling.h \
+	ags/audio/fx/ags_fx_envelope_audio_signal.h \
+	ags/audio/fx/ags_fx_analyse_audio.h \
+	ags/audio/fx/ags_fx_analyse_audio_processor.h \
+	ags/audio/fx/ags_fx_analyse_channel.h \
+	ags/audio/fx/ags_fx_analyse_channel_processor.h \
+	ags/audio/fx/ags_fx_analyse_recycling.h \
+	ags/audio/fx/ags_fx_analyse_audio_signal.h \
+	ags/audio/fx/ags_fx_pattern_audio.h \
+	ags/audio/fx/ags_fx_pattern_audio_processor.h \
+	ags/audio/fx/ags_fx_pattern_channel.h \
+	ags/audio/fx/ags_fx_pattern_channel_processor.h \
+	ags/audio/fx/ags_fx_pattern_recycling.h \
+	ags/audio/fx/ags_fx_pattern_audio_signal.h \
+	ags/audio/fx/ags_fx_notation_audio.h \
+	ags/audio/fx/ags_fx_notation_audio_processor.h \
+	ags/audio/fx/ags_fx_notation_channel.h \
+	ags/audio/fx/ags_fx_notation_channel_processor.h \
+	ags/audio/fx/ags_fx_notation_recycling.h \
+	ags/audio/fx/ags_fx_notation_audio_signal.h \
+	ags/audio/fx/ags_fx_ladspa_audio.h \
+	ags/audio/fx/ags_fx_ladspa_audio_processor.h \
+	ags/audio/fx/ags_fx_ladspa_channel.h \
+	ags/audio/fx/ags_fx_ladspa_channel_processor.h \
+	ags/audio/fx/ags_fx_ladspa_recycling.h \
+	ags/audio/fx/ags_fx_ladspa_audio_signal.h \
+	ags/audio/fx/ags_fx_dssi_audio.h \
+	ags/audio/fx/ags_fx_dssi_audio_processor.h \
+	ags/audio/fx/ags_fx_dssi_channel.h \
+	ags/audio/fx/ags_fx_dssi_channel_processor.h \
+	ags/audio/fx/ags_fx_dssi_recycling.h \
+	ags/audio/fx/ags_fx_dssi_audio_signal.h \
+	ags/audio/fx/ags_fx_lv2_audio.h \
+	ags/audio/fx/ags_fx_lv2_audio_processor.h \
+	ags/audio/fx/ags_fx_lv2_channel.h \
+	ags/audio/fx/ags_fx_lv2_channel_processor.h \
+	ags/audio/fx/ags_fx_lv2_recycling.h \
+	ags/audio/fx/ags_fx_lv2_audio_signal.h
+
+deprecated_libags_audio_fx_c_sources =
+
+libags_audio_fx_c_sources = \
+	$(deprecated_libags_audio_fx_c_sources) \
+	ags/audio/fx/ags_fx_playback_audio.c \
+	ags/audio/fx/ags_fx_playback_audio_processor.c \
+	ags/audio/fx/ags_fx_playback_channel.c \
+	ags/audio/fx/ags_fx_playback_channel_processor.c \
+	ags/audio/fx/ags_fx_playback_recycling.c \
+	ags/audio/fx/ags_fx_playback_audio_signal.c \
+	ags/audio/fx/ags_fx_buffer_audio.c \
+	ags/audio/fx/ags_fx_buffer_audio_processor.c \
+	ags/audio/fx/ags_fx_buffer_channel.c \
+	ags/audio/fx/ags_fx_buffer_channel_processor.c \
+	ags/audio/fx/ags_fx_buffer_recycling.c \
+	ags/audio/fx/ags_fx_buffer_audio_signal.c \
+	ags/audio/fx/ags_fx_volume_audio.c \
+	ags/audio/fx/ags_fx_volume_audio_processor.c \
+	ags/audio/fx/ags_fx_volume_channel.c \
+	ags/audio/fx/ags_fx_volume_channel_processor.c \
+	ags/audio/fx/ags_fx_volume_recycling.c \
+	ags/audio/fx/ags_fx_volume_audio_signal.c \
+	ags/audio/fx/ags_fx_eq10_audio.c \
+	ags/audio/fx/ags_fx_eq10_audio_processor.c \
+	ags/audio/fx/ags_fx_eq10_channel.c \
+	ags/audio/fx/ags_fx_eq10_channel_processor.c \
+	ags/audio/fx/ags_fx_eq10_recycling.c \
+	ags/audio/fx/ags_fx_eq10_audio_signal.c \
+	ags/audio/fx/ags_fx_peak_audio.c \
+	ags/audio/fx/ags_fx_peak_audio_processor.c \
+	ags/audio/fx/ags_fx_peak_channel.c \
+	ags/audio/fx/ags_fx_peak_channel_processor.c \
+	ags/audio/fx/ags_fx_peak_recycling.c \
+	ags/audio/fx/ags_fx_peak_audio_signal.c \
+	ags/audio/fx/ags_fx_envelope_audio.c \
+	ags/audio/fx/ags_fx_envelope_audio_processor.c \
+	ags/audio/fx/ags_fx_envelope_channel.c \
+	ags/audio/fx/ags_fx_envelope_channel_processor.c \
+	ags/audio/fx/ags_fx_envelope_recycling.c \
+	ags/audio/fx/ags_fx_envelope_audio_signal.c \
+	ags/audio/fx/ags_fx_analyse_audio.c \
+	ags/audio/fx/ags_fx_analyse_audio_processor.c \
+	ags/audio/fx/ags_fx_analyse_channel.c \
+	ags/audio/fx/ags_fx_analyse_channel_processor.c \
+	ags/audio/fx/ags_fx_analyse_recycling.c \
+	ags/audio/fx/ags_fx_analyse_audio_signal.c \
+	ags/audio/fx/ags_fx_pattern_audio.c \
+	ags/audio/fx/ags_fx_pattern_audio_processor.c \
+	ags/audio/fx/ags_fx_pattern_channel.c \
+	ags/audio/fx/ags_fx_pattern_channel_processor.c \
+	ags/audio/fx/ags_fx_pattern_recycling.c \
+	ags/audio/fx/ags_fx_pattern_audio_signal.c \
+	ags/audio/fx/ags_fx_notation_audio.c \
+	ags/audio/fx/ags_fx_notation_audio_processor.c \
+	ags/audio/fx/ags_fx_notation_channel.c \
+	ags/audio/fx/ags_fx_notation_channel_processor.c \
+	ags/audio/fx/ags_fx_notation_recycling.c \
+	ags/audio/fx/ags_fx_notation_audio_signal.c \
+	ags/audio/fx/ags_fx_ladspa_audio.c \
+	ags/audio/fx/ags_fx_ladspa_audio_processor.c \
+	ags/audio/fx/ags_fx_ladspa_channel.c \
+	ags/audio/fx/ags_fx_ladspa_channel_processor.c \
+	ags/audio/fx/ags_fx_ladspa_recycling.c \
+	ags/audio/fx/ags_fx_ladspa_audio_signal.c \
+	ags/audio/fx/ags_fx_dssi_audio.c \
+	ags/audio/fx/ags_fx_dssi_audio_processor.c \
+	ags/audio/fx/ags_fx_dssi_channel.c \
+	ags/audio/fx/ags_fx_dssi_channel_processor.c \
+	ags/audio/fx/ags_fx_dssi_recycling.c \
+	ags/audio/fx/ags_fx_dssi_audio_signal.c \
+	ags/audio/fx/ags_fx_lv2_audio.c \
+	ags/audio/fx/ags_fx_lv2_audio_processor.c \
+	ags/audio/fx/ags_fx_lv2_channel.c \
+	ags/audio/fx/ags_fx_lv2_channel_processor.c \
+	ags/audio/fx/ags_fx_lv2_recycling.c \
+	ags/audio/fx/ags_fx_lv2_audio_signal.c
+
 # libags-audio - task
 deprecated_libags_audio_task_h_sources =
 
@@ -1620,6 +1779,8 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_reset_amplitude.h \
 	ags/audio/task/ags_reset_note.h \
 	ags/audio/task/ags_reset_peak.h \
+	ags/audio/task/ags_reset_fx_analyse.h \
+	ags/audio/task/ags_reset_fx_peak.h \
 	ags/audio/task/ags_set_muted.h
 
 if WITH_LIBINSTPATCH
@@ -1678,6 +1839,8 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_reset_amplitude.c \
 	ags/audio/task/ags_reset_note.c \
 	ags/audio/task/ags_reset_peak.c \
+	ags/audio/task/ags_reset_fx_analyse.c \
+	ags/audio/task/ags_reset_fx_peak.c \
 	ags/audio/task/ags_set_muted.c
 
 if WITH_LIBINSTPATCH

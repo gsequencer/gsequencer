@@ -38,6 +38,8 @@ G_BEGIN_DECLS
 #define AGS_IS_LINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LINE))
 #define AGS_LINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LINE, AgsLineClass))
 
+#define AGS_LINE_PLUGIN(ptr) ((AgsLinePlugin *)(ptr))
+
 #define AGS_LINE_DEFAULT_VERSION "0.7.0"
 #define AGS_LINE_DEFAULT_BUILD_ID "CEST 31-10-2015 19:49"
 
@@ -46,6 +48,7 @@ G_BEGIN_DECLS
 #define AGS_LINE_SEPARATOR_EFFECT "ags-line-separator-effect"
 
 typedef struct _AgsLine AgsLine;
+typedef struct _AgsLinePlugin AgsLinePlugin;
 typedef struct _AgsLineClass AgsLineClass;
 
 typedef enum{
@@ -81,6 +84,8 @@ struct _AgsLine
 
   GtkWidget *indicator;
 
+  GList *plugin;
+
   GList *queued_drawing;
 };
 
@@ -99,11 +104,17 @@ struct _AgsLineClass
 
   void (*group_changed)(AgsLine *line);
   
-  GList* (*add_effect)(AgsLine *line,
-		       GList *control_type_name,
-		       gchar *filename,
-		       gchar *effect);
-  void (*remove_effect)(AgsLine *line,
+  void (*add_plugin)(AgsLine *line,
+		     GList *control_type_name,
+		     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+		     gchar *plugin_name,
+		     gchar *filename,
+		     gchar *effect,
+		     guint start_audio_channel, guint stop_audio_channel,
+		     guint start_pad, guint stop_pad,
+		     gint position,
+		     guint create_flags, guint recall_flags);
+  void (*remove_plugin)(AgsLine *line,
 			guint nth);
   
   void (*map_recall)(AgsLine *line,
@@ -114,7 +125,28 @@ struct _AgsLineClass
 	       GList *recall_id, gint sound_scope);
 };
 
+struct _AgsLinePlugin
+{  
+  AgsRecallContainer *play_container;
+  AgsRecallContainer *recall_container;
+
+  gchar *plugin_name;
+  
+  gchar *filename;
+  gchar *effect;
+  
+  GList *control_type_name;
+
+  guint control_count;
+};
+
 GType ags_line_get_type(void);
+
+AgsLinePlugin* ags_line_plugin_alloc(AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				     gchar *plugin_name,
+				     gchar *filename,
+				     gchar *effect);
+void ags_line_plugin_free(AgsLinePlugin *line_plugin);
 
 void ags_line_samplerate_changed(AgsLine *line,
 				 guint samplerate, guint old_samplerate);
@@ -127,11 +159,17 @@ void ags_line_set_channel(AgsLine *line, AgsChannel *channel);
 
 void ags_line_group_changed(AgsLine *line);
 
-GList* ags_line_add_effect(AgsLine *line,
-			   GList *control_type_name,
-			   gchar *filename,
-			   gchar *effect);
-void ags_line_remove_effect(AgsLine *line,
+void ags_line_add_plugin(AgsLine *line,
+			 GList *control_type_name,
+			 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			 gchar *plugin_name,
+			 gchar *filename,
+			 gchar *effect,
+			 guint start_audio_channel, guint stop_audio_channel,
+			 guint start_pad, guint stop_pad,
+			 gint position,
+			 guint create_flags, guint recall_flags);
+void ags_line_remove_plugin(AgsLine *line,
 			    guint nth);
 
 void ags_line_map_recall(AgsLine *line,

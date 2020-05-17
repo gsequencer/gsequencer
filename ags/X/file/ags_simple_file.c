@@ -2677,7 +2677,9 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     audio_channels = g_ascii_strtoull(str,
 				      NULL,
 				      10);
-    gobject->audio->audio_channels = audio_channels;
+
+    ags_audio_set_audio_channels(gobject->audio,
+				 audio_channels, 0);
 
     xmlFree(str);
   }
@@ -2759,12 +2761,19 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 			   (xmlChar *) "ags-sf-effect-list",
 			   19)){
 	AgsEffectBulk *effect_bulk;
-	
+
+	AgsLadspaManager *ladspa_manager;
+	AgsLv2Manager *lv2_manager;
+
 	xmlNode *effect_list_child;
 
+	gchar *plugin_name;
 	xmlChar *filename, *effect;
-	
+
+	gint position;
+	gboolean is_ladspa, is_lv2;
 	gboolean is_output;
+	guint pads;
 
 	if(AGS_IS_LADSPA_BRIDGE(gobject) ||
 	   AGS_IS_DSSI_BRIDGE(gobject) ||
@@ -2780,10 +2789,14 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	str = xmlGetProp(child,
 			 "is-output");
 
+	pads = output_pads;
+	
 	if(str != NULL){
 	  if(!g_ascii_strcasecmp(str,
 				 "false")){
 	    is_output = FALSE;
+
+	    pads = input_pads;
 	  }
 
 	  xmlFree(str);
@@ -2795,15 +2808,41 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	  effect_bulk = (AgsEffectBulk *) AGS_EFFECT_BRIDGE(gobject->bridge)->bulk_input;
 	}
 
+	plugin_name = NULL;
+	
 	filename = xmlGetProp(child,
 			      "filename");
 	effect = xmlGetProp(child,
 			    "effect");
 
-	ags_effect_bulk_add_effect(effect_bulk,
+	position = 0;
+
+	if(AGS_IS_FFPLAYER(gobject)){
+	  position = 1;
+	}
+	
+	ladspa_manager = ags_ladspa_manager_get_instance();
+	lv2_manager = ags_lv2_manager_get_instance();
+	
+	is_ladspa = (ags_ladspa_manager_find_ladspa_plugin(ladspa_manager, filename, effect) != NULL) ? TRUE: FALSE;
+	is_lv2 = (g_strv_contains(lv2_manager->quick_scan_plugin_filename, filename) && g_strv_contains(lv2_manager->quick_scan_plugin_effect, effect)) ? TRUE: FALSE;
+
+	if(is_ladspa){
+	  plugin_name = "ags-fx-ladspa";
+	}else if(is_lv2){
+	  plugin_name = "ags-fx-lv2";
+	}
+	
+	ags_effect_bulk_add_plugin(effect_bulk,
 				   NULL,
+				   ags_recall_container_new(), ags_recall_container_new(),
+				   plugin_name,
 				   filename,
-				   effect);
+				   effect,
+				   0, audio_channels,
+				   0, pads,
+				   position,
+				   (AGS_FX_FACTORY_ADD), 0);
 
 	if(filename != NULL){
 	  xmlFree(filename);
@@ -3035,7 +3074,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   }
 
   if(AGS_IS_LADSPA_BRIDGE(gobject)){
-    ags_ladspa_bridge_load((AgsLadspaBridge *) gobject);
+    //empty
   }else if(AGS_IS_DSSI_BRIDGE(gobject)){
     ags_dssi_bridge_load((AgsDssiBridge *) gobject);
   }else if(AGS_IS_LIVE_DSSI_BRIDGE(gobject)){

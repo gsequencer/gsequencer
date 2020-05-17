@@ -57,20 +57,40 @@ void ags_line_connect(AgsConnectable *connectable);
 void ags_line_disconnect(AgsConnectable *connectable);
 
 void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
-GList* ags_line_add_ladspa_effect(AgsLine *line,
-				  GList *control_type_name,
-				  gchar *filename,
-				  gchar *effect);
-GList* ags_line_add_lv2_effect(AgsLine *line,
-			       GList *control_type_name,
-			       gchar *filename,
-			       gchar *effect);
-GList* ags_line_real_add_effect(AgsLine *line,
+
+void ags_line_add_ladspa_plugin(AgsLine *line,
 				GList *control_type_name,
+				AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				gchar *plugin_name,
 				gchar *filename,
-				gchar *effect);
-void ags_line_real_remove_effect(AgsLine *line,
+				gchar *effect,
+				guint start_audio_channel, guint stop_audio_channel,
+				guint start_pad, guint stop_pad,
+				gint position,
+				guint create_flags, guint recall_flags);
+void ags_line_add_lv2_plugin(AgsLine *line,
+			     GList *control_type_name,
+			     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			     gchar *plugin_name,
+			     gchar *filename,
+			     gchar *effect,
+			     guint start_audio_channel, guint stop_audio_channel,
+			     guint start_pad, guint stop_pad,
+			     gint position,
+			     guint create_flags, guint recall_flags);
+void ags_line_real_add_plugin(AgsLine *line,
+			      GList *control_type_name,
+			      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			      gchar *plugin_name,
+			      gchar *filename,
+			      gchar *effect,
+			      guint start_audio_channel, guint stop_audio_channel,
+			      guint start_pad, guint stop_pad,
+			      gint position,
+			      guint create_flags, guint recall_flags);
+void ags_line_real_remove_plugin(AgsLine *line,
 				 guint nth);
+
 void ags_line_real_map_recall(AgsLine *line,
 			      guint output_pad_start);
 GList* ags_line_real_find_port(AgsLine *line);
@@ -93,8 +113,8 @@ enum{
   FORMAT_CHANGED,
   SET_CHANNEL,
   GROUP_CHANGED,
-  ADD_EFFECT,
-  REMOVE_EFFECT,
+  ADD_PLUGIN,
+  REMOVE_PLUGIN,
   MAP_RECALL,
   FIND_PORT,
   STOP,
@@ -268,8 +288,8 @@ ags_line_class_init(AgsLineClass *line)
   line->set_channel = ags_line_real_set_channel;
   line->group_changed = NULL;
   
-  line->add_effect = ags_line_real_add_effect;
-  line->remove_effect = ags_line_real_remove_effect;
+  line->add_plugin = ags_line_real_add_plugin;
+  line->remove_plugin = ags_line_real_remove_plugin;
   
   line->map_recall = ags_line_real_map_recall;
   line->find_port = ags_line_real_find_port;
@@ -378,44 +398,50 @@ ags_line_class_init(AgsLineClass *line)
 		 G_TYPE_NONE, 0);
 
   /**
-   * AgsLine::add-effect:
+   * AgsLine::add-plugin:
    * @line: the #AgsLine to modify
-   * @control_type_name: the control #GType string representation
-   * @filename: the effect's filename
    * @effect: the effect's name
    *
-   * The ::add-effect signal notifies about added effect.
-   *
-   * Returns: a #GList-struct containing new #AgsPort objects
-   *
-   * Since: 3.0.0
+   * The ::add-plugin signal notifies about added effect.
+   * 
+   * Since: 3.3.0
    */
-  line_signals[ADD_EFFECT] =
-    g_signal_new("add-effect",
+  line_signals[ADD_PLUGIN] =
+    g_signal_new("add-plugin",
 		 G_TYPE_FROM_CLASS(line),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsLineClass, add_effect),
+		 G_STRUCT_OFFSET(AgsLineClass, add_plugin),
 		 NULL, NULL,
-		 ags_cclosure_marshal_POINTER__POINTER_STRING_STRING,
-		 G_TYPE_POINTER, 3,
+		 ags_cclosure_marshal_VOID__POINTER_OBJECT_OBJECT_STRING_STRING_STRING_UINT_UINT_UINT_UINT_INT_UINT_UINT,
+		 G_TYPE_NONE, 13,
 		 G_TYPE_POINTER,
+		 G_TYPE_OBJECT,
+		 G_TYPE_OBJECT,
 		 G_TYPE_STRING,
-		 G_TYPE_STRING);
+		 G_TYPE_STRING,
+		 G_TYPE_STRING,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT,
+		 G_TYPE_INT,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
 
   /**
-   * AgsLine::remove-effect:
+   * AgsLine::remove-plugin:
    * @line: the #AgsLine to modify
    * @nth: the nth effect
    *
-   * The ::remove-effect signal notifies about removed effect.
-   *
-   * Since: 3.0.0
+   * The ::remove-plugin signal notifies about removed effect.
+   * 
+   * Since: 3.3.0
    */
-  line_signals[REMOVE_EFFECT] =
-    g_signal_new("remove-effect",
+  line_signals[REMOVE_PLUGIN] =
+    g_signal_new("remove-plugin",
 		 G_TYPE_FROM_CLASS(line),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsLineClass, remove_effect),
+		 G_STRUCT_OFFSET(AgsLineClass, remove_plugin),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
@@ -549,6 +575,10 @@ ags_line_init(AgsLine *line)
   
   line->indicator = NULL;
 
+  line->plugin = NULL;
+
+  line->queued_drawing = NULL;
+  
   /* forwarded callbacks */
   g_signal_connect_after(line, "stop",
 			 G_CALLBACK(ags_line_stop_callback), NULL);
@@ -566,86 +596,86 @@ ags_line_set_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_SAMPLERATE:
-    {
-      guint samplerate, old_samplerate;
+  {
+    guint samplerate, old_samplerate;
       
-      samplerate = g_value_get_uint(value);
-      old_samplerate = line->samplerate;
+    samplerate = g_value_get_uint(value);
+    old_samplerate = line->samplerate;
 
-      if(samplerate == old_samplerate){
-	return;
-      }
-
-      line->samplerate = samplerate;
-
-      ags_line_samplerate_changed(line,
-				  samplerate, old_samplerate);
+    if(samplerate == old_samplerate){
+      return;
     }
-    break;
+
+    line->samplerate = samplerate;
+
+    ags_line_samplerate_changed(line,
+				samplerate, old_samplerate);
+  }
+  break;
   case PROP_BUFFER_SIZE:
-    {
-      guint buffer_size, old_buffer_size;
+  {
+    guint buffer_size, old_buffer_size;
       
-      buffer_size = g_value_get_uint(value);
-      old_buffer_size = line->buffer_size;
+    buffer_size = g_value_get_uint(value);
+    old_buffer_size = line->buffer_size;
 
-      if(buffer_size == old_buffer_size){
-	return;
-      }
-      
-      line->buffer_size = buffer_size;
-
-      ags_line_buffer_size_changed(line,
-				   buffer_size, old_buffer_size);
+    if(buffer_size == old_buffer_size){
+      return;
     }
-    break;
+      
+    line->buffer_size = buffer_size;
+
+    ags_line_buffer_size_changed(line,
+				 buffer_size, old_buffer_size);
+  }
+  break;
   case PROP_FORMAT:
-    {
-      guint format, old_format;
+  {
+    guint format, old_format;
       
-      format = g_value_get_uint(value);
-      old_format = line->format;
+    format = g_value_get_uint(value);
+    old_format = line->format;
 
-      if(format == old_format){
-	return;
-      }
-
-      line->format = format;
-
-      ags_line_format_changed(line,
-			      format, old_format);
+    if(format == old_format){
+      return;
     }
-    break;
+
+    line->format = format;
+
+    ags_line_format_changed(line,
+			    format, old_format);
+  }
+  break;
   case PROP_PAD:
-    {
-      GtkWidget *pad;
+  {
+    GtkWidget *pad;
 
-      pad = (GtkWidget *) g_value_get_object(value);
+    pad = (GtkWidget *) g_value_get_object(value);
 
-      if(line->pad == pad){
-	return;
-      }
+    if(line->pad == pad){
+      return;
+    }
 
-      if(line->pad != NULL){
-	g_object_unref(G_OBJECT(line->pad));
-      }
+    if(line->pad != NULL){
+      g_object_unref(G_OBJECT(line->pad));
+    }
 
-      if(pad != NULL){
-	g_object_ref(G_OBJECT(pad));
-      }
+    if(pad != NULL){
+      g_object_ref(G_OBJECT(pad));
+    }
       
-      line->pad = pad;
-    }
-    break;
+    line->pad = pad;
+  }
+  break;
   case PROP_CHANNEL:
-    {
-      AgsChannel *channel;
+  {
+    AgsChannel *channel;
 
-      channel = (AgsChannel *) g_value_get_object(value);
+    channel = (AgsChannel *) g_value_get_object(value);
 
-      ags_line_set_channel(line, channel);
-    }
-    break;
+    ags_line_set_channel(line, channel);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -664,35 +694,35 @@ ags_line_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_SAMPLERATE:
-    {
-      g_value_set_uint(value,
-		       line->samplerate);
-    }
-    break;
+  {
+    g_value_set_uint(value,
+		     line->samplerate);
+  }
+  break;
   case PROP_BUFFER_SIZE:
-    {
-      g_value_set_uint(value,
-		       line->buffer_size);
-    }
-    break;
+  {
+    g_value_set_uint(value,
+		     line->buffer_size);
+  }
+  break;
   case PROP_FORMAT:
-    {
-      g_value_set_uint(value,
-		       line->format);
-    }
-    break;
+  {
+    g_value_set_uint(value,
+		     line->format);
+  }
+  break;
   case PROP_PAD:
-    {
-      g_value_set_object(value,
-			 line->pad);
-    }
-    break;
+  {
+    g_value_set_object(value,
+		       line->pad);
+  }
+  break;
   case PROP_CHANNEL:
-    {
-      g_value_set_object(value,
-			 line->channel);
-    }
-    break;
+  {
+    g_value_set_object(value,
+		       line->channel);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -784,7 +814,7 @@ ags_line_connect(AgsConnectable *connectable)
   if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
     if((AGS_LINE_MAPPED_RECALL & (line->flags)) == 0){
       ags_line_map_recall(line,
-			 0);
+			  0);
     }
   }else{
     ags_line_find_port(line);
@@ -852,6 +882,92 @@ ags_line_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(list_start);
+}
+
+/**
+ * ags_line_plugin_alloc:
+ * @play_container: the #AgsRecallContainer
+ * @recall_container: the #AgsRecallContainer
+ * @plugin_name: the plugin name
+ * @filename: the filename as string
+ * @effect: the effect as string
+ * 
+ * Allocate #AgsLinePlugin-struct.
+ * 
+ * Returns: the newly allocated #AgsLinePlugin-struct
+ * 
+ * Since: 3.3.0
+ */
+AgsLinePlugin*
+ags_line_plugin_alloc(AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+		      gchar *plugin_name,
+		      gchar *filename,
+		      gchar *effect)
+{
+  AgsLinePlugin *line_plugin;
+
+  line_plugin = (AgsLinePlugin *) g_malloc(sizeof(AgsLinePlugin));
+
+  if(play_container != NULL){
+    g_object_ref(play_container);
+  }
+
+  line_plugin->play_container = play_container;
+  
+  if(recall_container != NULL){
+    g_object_ref(recall_container);
+  }
+
+  line_plugin->recall_container = recall_container;
+  
+  line_plugin->plugin_name = g_strdup(plugin_name);
+
+  line_plugin->filename = g_strdup(filename);
+  line_plugin->effect = g_strdup(effect);
+
+  line_plugin->control_type_name = NULL;
+
+  line_plugin->control_count = 0;
+  
+  return(line_plugin);
+}
+
+/**
+ * ags_line_plugin_free:
+ * @line_plugin: the #AgsLinePlugin-struct
+ * 
+ * Free @line_plugin.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_line_plugin_free(AgsLinePlugin *line_plugin)
+{
+  if(line_plugin == NULL){
+    return;
+  }
+
+  if(line_plugin->play_container != NULL){
+    g_object_unref(line_plugin->play_container);
+  }
+
+  if(line_plugin->recall_container != NULL){
+    g_object_unref(line_plugin->recall_container);
+  }
+  
+  if(line_plugin->filename != NULL){
+    g_free(line_plugin->filename);
+  }
+
+  if(line_plugin->effect != NULL){
+    g_free(line_plugin->effect);
+  }
+
+  if(line_plugin->control_type_name != NULL){
+    g_list_free(line_plugin->control_type_name);
+  }
+  
+  g_free(line_plugin);
 }
 
 /**
@@ -1018,35 +1134,80 @@ ags_line_group_changed(AgsLine *line)
   g_object_unref((GObject *) line);
 }
 
-GList*
-ags_line_add_ladspa_effect(AgsLine *line,
+void
+ags_line_add_ladspa_plugin(AgsLine *line,
 			   GList *control_type_name,
+			   AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			   gchar *plugin_name,
 			   gchar *filename,
-			   gchar *effect)
+			   gchar *effect,
+			   guint start_audio_channel, guint stop_audio_channel,
+			   guint start_pad, guint stop_pad,
+			   gint position,
+			   guint create_flags, guint recall_flags)
 {
   AgsLineMember *line_member;
   AgsEffectSeparator *separator;
-  GtkAdjustment *adjustment;
 
+  GtkAdjustment *adjustment;
+  AgsLinePlugin *line_plugin;
+
+  AgsAudio *audio;
+  
   AgsLadspaPlugin *ladspa_plugin;
 
-  GList *list;
-  GList *start_recall, *recall;
-  GList *play_port, *recall_port;
+  GList *start_recall;
+  GList *start_list, *list;
   GList *start_plugin_port, *plugin_port;
 
+  guint audio_channel;
+  guint pad;
   gdouble page, step;
   guint port_count;
+  guint control_count;
 
   guint x, y;
   guint k;
+
+  audio = NULL;
+
+  audio_channel = 0;
+
+  pad = 0;
+  
+  /* alloc line plugin */
+  line_plugin = ags_line_plugin_alloc(play_container, recall_container,
+				      plugin_name,
+				      filename,
+				      effect);
+  line_plugin->control_type_name = control_type_name;
+  
+  line->plugin = g_list_append(line->plugin,
+			       line_plugin);
+
+  g_object_get(line->channel,
+	       "audio", &audio,
+	       "audio-channel", &audio_channel,
+	       "pad", &pad,
+	       NULL);
   
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
 							filename, effect);
 
-  play_port = NULL;
-  recall_port = NULL;
+  /* ags-fx-ladspa */
+  start_recall = ags_fx_factory_create(audio,
+				       line_plugin->play_container, line_plugin->recall_container,
+				       plugin_name,
+				       filename,
+				       effect,
+				       audio_channel, audio_channel + 1,
+				       pad, pad + 1,
+				       position,
+				       create_flags, recall_flags);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
     
   /* retrieve position within table  */
   x = 0;
@@ -1061,74 +1222,13 @@ ags_line_add_ladspa_effect(AgsLine *line,
 
     list = list->next;
   }
-
-  /* play - find ports */
-  g_object_get(line->channel,
-	       "play", &start_recall,
-	       NULL);
-
-  /* get by effect */
-  recall = ags_recall_get_by_effect(start_recall,
-				    filename,
-				    effect);
-
-  g_list_free_full(start_recall,
-		   g_object_unref);
-  
-  start_recall = recall;
-  
-  if(recall == NULL){
-    return(NULL);
-  }
-
-  recall = g_list_last(start_recall);
-  g_object_get((GObject *) recall->data,
-	       "port", &play_port,
-	       NULL);
-
-  g_list_foreach(play_port,
-		 (GFunc) g_object_unref,
-		 NULL);
-  
-  /* check has output port */
-  g_list_free_full(start_recall,
-		   g_object_unref);
-  
-  /* recall - find ports */
-  g_object_get(line->channel,
-	       "recall", &start_recall,
-	       NULL);
-
-  /* get by effect */
-  recall = start_recall;
-  
-  start_recall = ags_recall_get_by_effect(start_recall,
-					  filename,
-					  effect);
-
-  g_list_free_full(recall,
-		   g_object_unref);
-  
-  recall = start_recall;
-  
-  if(recall == NULL){
-    return(NULL);
-  }
-
-  recall = g_list_last(start_recall);
-  g_object_get((GObject *) recall->data,
-	       "port", &recall_port,
-	       NULL);
-
-  g_list_foreach(recall_port,
-		 (GFunc) g_object_unref,
-		 NULL);
-
-  g_list_free_full(start_recall,
-		   g_object_unref);
   
   /* add separator */
   separator = ags_effect_separator_new();
+
+  separator->play_container = play_container;
+  separator->recall_container = recall_container;
+  
   g_object_set(separator,
 	       "text", effect,
 	       "filename", filename,
@@ -1151,6 +1251,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
   
   port_count = g_list_length(start_plugin_port);
   
+  control_count = 0;
+
   k = 0;
   
   while(plugin_port != NULL){
@@ -1172,6 +1274,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
       gboolean do_step_conversion;
 
       GRecMutex *plugin_port_mutex;
+
+      control_count++;
 
       disable_seemless = FALSE;
       do_step_conversion = FALSE;
@@ -1239,6 +1343,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
+						   "play-container", play_container,
+						   "recall-container", recall_container,
 						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
@@ -1617,43 +1723,156 @@ ags_line_add_ladspa_effect(AgsLine *line,
     k++;
   }
 
+  line_plugin->control_count = control_count;
+
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+  
   g_list_free_full(start_plugin_port,
 		   g_object_unref);
-
-  return(g_list_concat(play_port,
-		       recall_port));
 }
 
-GList*
-ags_line_add_lv2_effect(AgsLine *line,
+void
+ags_line_add_lv2_plugin(AgsLine *line,
 			GList *control_type_name,
+			AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			gchar *plugin_name,
 			gchar *filename,
-			gchar *effect)
+			gchar *effect,
+			guint start_audio_channel, guint stop_audio_channel,
+			guint start_pad, guint stop_pad,
+			gint position,
+			guint create_flags, guint recall_flags)
 {
   AgsLineMember *line_member;
   AgsEffectSeparator *separator;
-  GtkAdjustment *adjustment;
 
+  GtkAdjustment *adjustment;
+  AgsLinePlugin *line_plugin;
+
+  AgsAudio *audio;
+  
+  AgsLv2Manager *lv2_manager;
   AgsLv2Plugin *lv2_plugin;
 
-  GList *list;
-  GList *start_recall, *recall;
-  GList *play_port, *recall_port;
+  GList *start_recall;
+  GList *start_list, *list;
   GList *start_plugin_port, *plugin_port;
 
   gchar *uri;
   gchar *port_type_0, *port_type_1;
-  gchar *plugin_name;
   gchar *control_port;
 
+  gboolean is_lv2_plugin;
+
+  guint audio_channel;
+  guint pad;
   gdouble page, step;
   guint port_count;
+  guint control_count;
 
   guint x, y;
   guint k;
   
+  GRecMutex *lv2_manager_mutex;
   GRecMutex *base_plugin_mutex;
 
+  lv2_manager = ags_lv2_manager_get_instance();
+    
+  lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
+
+  audio = NULL;
+  
+  pad = 0;
+  audio_channel = 0;
+
+  /* make sure turtle is parsed */
+  g_rec_mutex_lock(lv2_manager_mutex);
+	      
+  is_lv2_plugin = ((lv2_manager->quick_scan_plugin_filename != NULL &&
+		    g_strv_contains(lv2_manager->quick_scan_plugin_filename,
+				    filename)) ||
+		   (lv2_manager->quick_scan_instrument_filename != NULL &&
+		    g_strv_contains(lv2_manager->quick_scan_instrument_filename,
+				    filename))) ? TRUE: FALSE;
+	      
+  g_rec_mutex_unlock(lv2_manager_mutex);
+
+  if(filename != NULL &&
+     effect != NULL &&
+     is_lv2_plugin){
+    AgsTurtle *manifest;
+    AgsTurtleManager *turtle_manager;
+    
+    gchar *path;
+    gchar *manifest_filename;
+
+    turtle_manager = ags_turtle_manager_get_instance();
+    
+    path = g_path_get_dirname(filename);
+
+    manifest_filename = g_strdup_printf("%s%c%s",
+					path,
+					G_DIR_SEPARATOR,
+					"manifest.ttl");
+
+    manifest = ags_turtle_manager_find(turtle_manager,
+				       manifest_filename);
+
+    if(manifest == NULL){
+      AgsLv2TurtleParser *lv2_turtle_parser;
+	
+      AgsTurtle **turtle;
+
+      guint n_turtle;
+
+      g_message("new turtle [Manifest] - %s", manifest_filename);
+	
+      manifest = ags_turtle_new(manifest_filename);
+      ags_turtle_load(manifest,
+		      NULL);
+      ags_turtle_manager_add(turtle_manager,
+			     (GObject *) manifest);
+
+      lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
+
+      n_turtle = 1;
+      turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
+
+      turtle[0] = manifest;
+      turtle[1] = NULL;
+	
+      ags_lv2_turtle_parser_parse(lv2_turtle_parser,
+				  turtle, n_turtle);
+    
+      g_object_run_dispose(lv2_turtle_parser);
+      g_object_unref(lv2_turtle_parser);
+	
+      g_object_unref(manifest);
+	
+      free(turtle);
+    }
+    
+    g_free(manifest_filename);
+  }
+  
+  /* alloc line plugin */
+  line_plugin = ags_line_plugin_alloc(play_container, recall_container,
+				      plugin_name,
+				      filename,
+				      effect);
+  line_plugin->control_type_name = control_type_name;
+  
+  line->plugin = g_list_append(line->plugin,
+			       line_plugin);  
+
+  g_object_get(line->channel,
+	       "audio", &audio,
+	       "audio-channel", &audio_channel,
+	       "pad", &pad,
+	       NULL);
+  
   /* load plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       filename, effect);
@@ -1661,9 +1880,27 @@ ags_line_add_lv2_effect(AgsLine *line,
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
 
-  play_port = NULL;
-  recall_port = NULL;
+  /* get uri */
+  g_rec_mutex_lock(base_plugin_mutex);
+
+  uri = g_strdup(lv2_plugin->uri);
   
+  g_rec_mutex_unlock(base_plugin_mutex);
+
+  /* ags-fx-lv2 */
+  start_recall = ags_fx_factory_create(audio,
+				       line_plugin->play_container, line_plugin->recall_container,
+				       plugin_name,
+				       filename,
+				       effect,
+				       audio_channel, audio_channel + 1,
+				       pad, pad + 1,
+				       position,
+				       create_flags, recall_flags);
+  
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+    
   /* retrieve position within table  */
   x = 0;
   y = 0;
@@ -1677,73 +1914,13 @@ ags_line_add_lv2_effect(AgsLine *line,
 
     list = list->next;
   }
-
-  /* play - find ports */
-  g_object_get(line->channel,
-	       "play", &start_recall,
-	       NULL);
-
-  /* get by effect */
-  recall = ags_recall_get_by_effect(start_recall,
-				    filename,
-				    effect);
-
-  g_list_free_full(start_recall,
-		   g_object_unref);
-  
-  start_recall = recall;
-  
-  if(recall == NULL){
-    return(NULL);
-  }
-
-  recall = g_list_last(start_recall);
-  g_object_get((GObject *) recall->data,
-	       "port", &play_port,
-	       NULL);
-
-  g_list_foreach(play_port,
-		 (GFunc) g_object_unref,
-		 NULL);
-  
-  g_list_free_full(start_recall,
-		   g_object_unref);
-  
-  /* recall - find ports */
-  g_object_get(line->channel,
-	       "recall", &start_recall,
-	       NULL);
-
-  /* get by effect */
-  recall = start_recall;
-  
-  start_recall = ags_recall_get_by_effect(start_recall,
-					  filename,
-					  effect);
-
-  g_list_free_full(recall,
-		   g_object_unref);
-  
-  recall = start_recall;
-  
-  if(recall == NULL){
-    return(NULL);
-  }
-
-  recall = g_list_last(start_recall);
-  g_object_get((GObject *) recall->data,
-	       "port", &recall_port,
-	       NULL);
-
-  g_list_foreach(recall_port,
-		 (GFunc) g_object_unref,
-		 NULL);
-
-  g_list_free_full(start_recall,
-		   g_object_unref);
   
   /* add separator */
   separator = ags_effect_separator_new();
+
+  separator->play_container = play_container;
+  separator->recall_container = recall_container;
+
   g_object_set(separator,
 	       "text", effect,
 	       "filename", filename,
@@ -1757,13 +1934,6 @@ ags_line_add_lv2_effect(AgsLine *line,
   
   y++;
   
-  /* get uri */
-  g_rec_mutex_lock(base_plugin_mutex);
-
-  uri = g_strdup(lv2_plugin->uri);
-	
-  g_rec_mutex_unlock(base_plugin_mutex);
-  
   /* load ports */
   g_object_get(lv2_plugin,
 	       "plugin-port", &start_plugin_port,
@@ -1772,6 +1942,8 @@ ags_line_add_lv2_effect(AgsLine *line,
   plugin_port = start_plugin_port;
   
   port_count = g_list_length(start_plugin_port);
+
+  control_count = 0;
   
   k = 0;
   
@@ -1793,6 +1965,8 @@ ags_line_add_lv2_effect(AgsLine *line,
       gboolean do_step_conversion;
 
       GRecMutex *plugin_port_mutex;
+
+      control_count++;
 
       disable_seemless = FALSE;
       do_step_conversion = FALSE;
@@ -1856,6 +2030,8 @@ ags_line_add_lv2_effect(AgsLine *line,
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
+						   "play-container", play_container,
+						   "recall-container", recall_container,
 						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
@@ -2208,353 +2384,358 @@ ags_line_add_lv2_effect(AgsLine *line,
     k++;
   }
 
+  line_plugin->control_count = control_count;
+
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+
   g_list_free_full(start_plugin_port,
 		   g_object_unref);
 
   g_free(uri);
-  
-  return(g_list_concat(play_port,
-		       recall_port));
-}
-
-GList*
-ags_line_real_add_effect(AgsLine *line,
-			 GList *control_type_name,
-			 gchar *filename,
-			 gchar *effect)
-{
-  AgsWindow *window;
-
-  AgsLadspaPlugin *ladspa_plugin;
-  AgsLv2Plugin *lv2_plugin;
-  
-  GList *port;
-
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line);
-  
-  /* load plugin */
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
-							filename, effect);
-  port = NULL;
-  
-  if(ladspa_plugin != NULL){
-    port = ags_line_add_ladspa_effect(line,
-				      control_type_name,
-				      filename,
-				      effect);
-  }else{
-    AgsLv2Manager *lv2_manager;
-
-    gboolean is_lv2_plugin;
-
-    GRecMutex *lv2_manager_mutex;
-
-    lv2_manager = ags_lv2_manager_get_instance();
-
-    lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
-    
-    g_rec_mutex_lock(lv2_manager_mutex);
-	      
-    is_lv2_plugin = ((lv2_manager->quick_scan_plugin_filename != NULL &&
-		      g_strv_contains(lv2_manager->quick_scan_plugin_filename,
-				      filename)) ||
-		     (lv2_manager->quick_scan_instrument_filename != NULL &&
-		      g_strv_contains(lv2_manager->quick_scan_instrument_filename,
-				      filename))) ? TRUE: FALSE;
-	      
-    g_rec_mutex_unlock(lv2_manager_mutex);
-
-    if(filename != NULL &&
-       effect != NULL &&
-       is_lv2_plugin){
-      AgsTurtle *manifest;
-      AgsTurtleManager *turtle_manager;
-    
-      gchar *path;
-      gchar *manifest_filename;
-
-      turtle_manager = ags_turtle_manager_get_instance();
-    
-      path = g_path_get_dirname(filename);
-
-      manifest_filename = g_strdup_printf("%s%c%s",
-					  path,
-					  G_DIR_SEPARATOR,
-					  "manifest.ttl");
-
-      manifest = ags_turtle_manager_find(turtle_manager,
-					 manifest_filename);
-
-      if(manifest == NULL){
-	AgsLv2TurtleParser *lv2_turtle_parser;
-	
-	AgsTurtle **turtle;
-
-	guint n_turtle;
-
-	if(!g_file_test(manifest_filename,
-			G_FILE_TEST_EXISTS)){
-	  goto ags_line_real_add_effect_FIND_LV2;
-	}
-
-	g_message("new turtle [Manifest] - %s", manifest_filename);
-	
-	manifest = ags_turtle_new(manifest_filename);
-	ags_turtle_load(manifest,
-			NULL);
-	ags_turtle_manager_add(turtle_manager,
-			       (GObject *) manifest);
-
-	lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
-
-	n_turtle = 1;
-	turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
-
-	turtle[0] = manifest;
-	turtle[1] = NULL;
-	
-	ags_lv2_turtle_parser_parse(lv2_turtle_parser,
-				    turtle, n_turtle);
-    
-	g_object_run_dispose(lv2_turtle_parser);
-	g_object_unref(lv2_turtle_parser);
-	
-	g_object_unref(manifest);
-	
-	free(turtle);
-      }
-    
-      g_free(manifest_filename);
-    }
-
-  ags_line_real_add_effect_FIND_LV2:
-    lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_manager,
-						 filename, effect);
-    
-    if(lv2_plugin != NULL){
-      port = ags_line_add_lv2_effect(line,
-				     control_type_name,
-				     filename,
-				     effect);
-    }
-  }
-
-  /*  */
-  ags_automation_toolbar_load_port(window->automation_window->automation_editor->automation_toolbar);
-
-  return(port);
-}
-
-/**
- * ags_line_add_effect:
- * @line: the #AgsLine
- * @control_type_name: the control #GType string representation
- * @filename: the filename of the plugin
- * @effect: the effect's name
- *
- * Add a line member.
- *
- * Returns: a #GList-struct containing new #AgsPort objects
- *
- * Since: 3.0.0 
- */
-GList*
-ags_line_add_effect(AgsLine *line,
-		    GList *control_type_name,
-		    gchar *filename,
-		    gchar *effect)
-{
-  GList *port;
-  
-  g_return_val_if_fail(AGS_IS_LINE(line), NULL);
-
-  g_object_ref((GObject *) line);
-  g_signal_emit(G_OBJECT(line),
-		line_signals[ADD_EFFECT], 0,
-		control_type_name,
-		filename,
-		effect,
-		&port);
-  g_object_unref((GObject *) line);
-  
-  return(port);
 }
 
 void
-ags_line_real_remove_effect(AgsLine *line,
-			    guint nth)
+ags_line_real_add_plugin(AgsLine *line,
+			 GList *control_type_name,
+			 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			 gchar *plugin_name,
+			 gchar *filename,
+			 gchar *effect,
+			 guint start_audio_channel, guint stop_audio_channel,
+			 guint start_pad, guint stop_pad,
+			 gint position,
+			 guint create_flags, guint recall_flags)
 {
-  AgsWindow *window;
-  
-  GList *control, *control_start;
-  GList *start_recall, *recall;
-  GList *start_port, *port;
-
-  gchar *filename, *effect;
-  
-  guint nth_effect, n_bulk;
-  guint i;
-  
-  GRecMutex *recall_mutex;
-
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line);
-    
-  /* get nth_effect */
-  g_object_get(line->channel,
-	       "play", &start_recall,
-	       NULL);
-  
-  recall = start_recall;
-  
-  nth_effect = 0;
-  n_bulk = 0;
-  
-  while((recall = ags_recall_template_find_all_type(recall,
-						    AGS_TYPE_RECALL_LADSPA,
-						    AGS_TYPE_RECALL_LV2,
-						    G_TYPE_NONE)) != NULL){
-    if(ags_recall_test_flags(recall->data, AGS_RECALL_TEMPLATE)){
-      nth_effect++;
+  if((AGS_FX_FACTORY_ADD & (create_flags)) != 0){
+    if(!g_ascii_strncasecmp(plugin_name,
+			    "ags-fx-ladspa",
+			    14)){
+      ags_line_add_ladspa_plugin(line,
+				 control_type_name,
+				 play_container, recall_container,
+				 plugin_name,
+				 filename,
+				 effect,
+				 start_audio_channel, stop_audio_channel,
+				 start_pad, stop_pad,
+				 position,
+				 create_flags, recall_flags);
+    }else if(!g_ascii_strncasecmp(plugin_name,
+				  "ags-fx-lv2",
+				  11)){
+      ags_line_add_lv2_plugin(line,
+			      control_type_name,
+			      play_container, recall_container,
+			      plugin_name,
+			      filename,
+			      effect,
+			      start_audio_channel, stop_audio_channel,
+			      start_pad, stop_pad,
+			      position,
+			      create_flags, recall_flags);
     }
-
-    if(ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
-      n_bulk++;
-    }
-
-    if(nth_effect - n_bulk == nth + 1){
-      break;
-    }
-    
-    recall = recall->next;
   }
-
-  if(recall == NULL){
-    g_list_free_full(start_recall,
-		     g_object_unref);
-    
-    return;
-  }
-  
-  nth_effect--;
-
-  /* get recall mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
-  
-  /* get filename and effect */
-  g_rec_mutex_lock(recall_mutex);
-
-  filename = g_strdup(AGS_RECALL(recall->data)->filename);
-  effect = g_strdup(AGS_RECALL(recall->data)->effect);
-
-  g_rec_mutex_unlock(recall_mutex);
-
-  /* destroy separator */
-  control_start =
-    control = gtk_container_get_children((GtkContainer *) line->expander->table);
-
-  while(control != NULL){
-    gchar *separator_filename;
-    gchar *separator_effect;
-    
-    if(AGS_IS_EFFECT_SEPARATOR(control->data)){
-      g_object_get(control->data,
-		   "filename", &separator_filename,
-		   "effect", &separator_effect,
-		   NULL);
-      
-      if(separator_filename != NULL &&
-	 separator_effect != NULL &&
-	 !g_strcmp0(filename,
-		    separator_filename) &&
-	 !g_strcmp0(effect,
-		    separator_effect)){
-	gtk_widget_destroy(control->data);
-      
-	break;
-      }
-    }
-    
-    control = control->next;
-  }
-  
-  g_list_free(control_start);
-  
-  /* destroy controls */
-  g_object_get(recall->data,
-	       "port", &start_port,
-	       NULL);
-  
-  port = start_port;
-  i = 0;
-  
-  while(port != NULL){
-    control_start =
-      control = gtk_container_get_children((GtkContainer *) line->expander->table);
-      
-    while(control != NULL){
-      if(AGS_IS_LINE_MEMBER(control->data) &&
-	 AGS_LINE_MEMBER(control->data)->port == port->data){
-	GtkWidget *child_widget;
-	
-	child_widget = gtk_bin_get_child(control->data);
-
-	/* collect specifier */
-	i++;
-
-	/* remove widget */
-	if(AGS_IS_LED(child_widget) ||
-	   AGS_IS_INDICATOR(child_widget)){
-	  g_hash_table_remove(ags_line_indicator_queue_draw,
-			      child_widget);
-	}
-	
-	ags_expander_remove(line->expander,
-			    control->data);
-
-	break;
-      }
-	
-      /* iterate */
-      control = control->next;
-    }
-
-    g_list_free(control_start);
-    
-    /* iterate */
-    port = port->next;
-  }
-
-  g_list_free_full(start_recall,
-		   g_object_unref);
-  g_list_free_full(start_port,
-		   g_object_unref);
-  
-  /* remove recalls */
-  ags_channel_remove_effect(line->channel,
-			    nth_effect);
-
-  /* reset automation editor */
-  ags_automation_toolbar_load_port(window->automation_window->automation_editor->automation_toolbar);
 }
 
 /**
- * ags_line_remove_effect:
- * @line: the #AgsLine
- * @nth: nth effect to remove
+ * ags_line_add_plugin:
+ * @line: the #AgsLine to modify
+ * @control_type_name: the #GList-struct containing string representation of a #GType
+ * @play_container: an #AgsRecallContainer to indetify what recall to use
+ * @recall_container: an #AgsRecallContainer to indetify what recall to use
+ * @plugin_name: the plugin identifier
+ * @filename: the effect's filename
+ * @effect: the effect's name
+ * @start_audio_channel: the first audio channel to apply
+ * @stop_audio_channel: the last audio channel to apply
+ * @start_pad: the first pad to apply
+ * @stop_pad: the last pad to apply
+ * @position: the position to insert the recall
+ * @create_flags: modify the behaviour of this function
+ * @recall_flags: flags to be set for #AgsRecall
  *
- * Remove a line member.
+ * Add an effect by its filename and effect specifier.
  *
  * Since: 3.0.0
  */
 void
-ags_line_remove_effect(AgsLine *line,
+ags_line_add_plugin(AgsLine *line,
+		    GList *control_type_name,
+		    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+		    gchar *plugin_name,
+		    gchar *filename,
+		    gchar *effect,
+		    guint start_audio_channel, guint stop_audio_channel,
+		    guint start_pad, guint stop_pad,
+		    gint position,
+		    guint create_flags, guint recall_flags)
+{
+  g_return_if_fail(AGS_IS_LINE(line));
+
+  g_object_ref((GObject *) line);
+  g_signal_emit(G_OBJECT(line),
+		line_signals[ADD_PLUGIN], 0,
+		control_type_name,
+		play_container, recall_container,
+		plugin_name,
+		filename,
+		effect,
+		start_audio_channel, stop_audio_channel,
+		start_pad, stop_pad,
+		position,
+		create_flags, recall_flags);
+  g_object_unref((GObject *) line);
+}
+
+void
+ags_line_real_remove_plugin(AgsLine *line,
+			    guint nth)
+{
+  AgsLinePlugin *line_plugin;
+
+  AgsAudio *audio;
+
+  GList *start_list, *list;
+  GList *start_recall, *recall;
+  
+  if(!AGS_IS_LINE(line)){
+    return;
+  }
+
+  audio = NULL;
+  
+  list = g_list_nth(line->plugin,
+		    nth);
+
+  if(list == NULL){
+    return;
+  }
+  
+  line_plugin = list->data;
+
+  g_object_get(line->channel,
+	       "audio", &audio,
+	       NULL);
+
+  /*  */  
+  line->plugin = g_list_remove(line->plugin,
+			       line_plugin);
+
+  /* AgsRecallAudio */
+  ags_audio_remove_recall(audio, ags_recall_container_get_recall_audio(line_plugin->play_container),
+			  TRUE);
+
+  ags_audio_remove_recall(audio, ags_recall_container_get_recall_audio(line_plugin->recall_container),
+			  FALSE);
+
+  /* AgsRecallAudioRun - play context */
+  g_object_get(line_plugin->play_container,
+	       "recall-audio-run", &start_recall,
+	       NULL);
+  
+  recall = start_recall;
+
+  while(recall != NULL){
+    ags_audio_remove_recall(audio, recall->data,
+			    TRUE);
+
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* AgsRecallAudioRun - recall context */
+  g_object_get(line_plugin->recall_container,
+	       "recall-audio-run", &start_recall,
+	       NULL);
+  
+  recall = start_recall;
+
+  while(recall != NULL){
+    ags_audio_remove_recall(audio, recall->data,
+			    FALSE);
+    
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* AgsRecallChannel - play context */
+  g_object_get(line_plugin->play_container,
+	       "recall-channel", &start_recall,
+	       NULL);
+  
+  recall = start_recall;
+
+  while(recall != NULL){
+    AgsChannel *channel;
+
+    g_object_get(recall->data,
+		 "source", &channel,
+		 NULL);
+    
+    ags_channel_remove_recall(channel, recall->data,
+			      TRUE);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* AgsRecallChannel - recall context */
+  g_object_get(line_plugin->recall_container,
+	       "recall-channel", &start_recall,
+	       NULL);
+  
+  recall = start_recall;
+
+  while(recall != NULL){
+    AgsChannel *channel;
+
+    g_object_get(recall->data,
+		 "source", &channel,
+		 NULL);
+    
+    ags_channel_remove_recall(channel, recall->data,
+			      FALSE);
+    
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+  
+  /* AgsRecallChannelRun - play context */
+  g_object_get(line_plugin->play_container,
+	       "recall-channel-run", &start_recall,
+	       NULL);
+  
+  recall = start_recall;
+
+  while(recall != NULL){
+    AgsChannel *channel;
+
+    g_object_get(recall->data,
+		 "source", &channel,
+		 NULL);
+    
+    ags_channel_remove_recall(channel, recall->data,
+			      TRUE);    
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* AgsRecallChannelRun - recall context */
+  g_object_get(line_plugin->recall_container,
+	       "recall-channel-run", &start_recall,
+	       NULL);
+  
+  recall = start_recall;
+
+  while(recall != NULL){
+    AgsChannel *channel;
+
+    g_object_get(recall->data,
+		 "source", &channel,
+		 NULL);
+    
+    ags_channel_remove_recall(channel, recall->data,
+			      FALSE);    
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* recall container */
+  ags_audio_remove_recall_container(audio, line_plugin->play_container);
+  ags_audio_remove_recall_container(audio, line_plugin->recall_container);
+
+  ags_channel_remove_recall_container(line->channel, line_plugin->play_container);
+  ags_channel_remove_recall_container(line->channel, line_plugin->recall_container);
+
+  /* destroy controls - expander table */
+  start_list = gtk_container_get_children(line->expander->table);
+
+  list = start_list;
+  
+  while(list != NULL){
+    if(AGS_IS_LINE_MEMBER(list->data) &&
+       AGS_LINE_MEMBER(list->data)->play_container == line_plugin->play_container){
+      GtkWidget *child_widget;
+
+      child_widget = gtk_bin_get_child(list->data);
+      
+      if(AGS_IS_INDICATOR(child_widget) ||
+	 AGS_IS_LED(child_widget)){
+	g_hash_table_remove(ags_line_indicator_queue_draw,
+			    child_widget);
+      }
+      
+      gtk_widget_destroy(list->data);
+    }else if(AGS_IS_EFFECT_SEPARATOR(list->data) &&
+	     AGS_EFFECT_SEPARATOR(list->data)->play_container == line_plugin->play_container){
+      gtk_widget_destroy(list->data);
+    }
+    
+    list = list->next;
+  }
+  
+  g_list_free(start_list);
+
+  /* unref */
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+  
+  /* free AgsLinePlugin */
+  ags_line_plugin_free(line_plugin);
+}
+
+/**
+ * ags_line_remove_plugin:
+ * @line: the #AgsLine to modify
+ * @nth: the nth effect to remove
+ *
+ * Remove an effect by its position.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_line_remove_plugin(AgsLine *line,
 		       guint nth)
 {
   g_return_if_fail(AGS_IS_LINE(line));
 
   g_object_ref((GObject *) line);
   g_signal_emit(G_OBJECT(line),
-		line_signals[REMOVE_EFFECT], 0,
+		line_signals[REMOVE_PLUGIN], 0,
 		nth);
   g_object_unref((GObject *) line);
 }
@@ -2788,171 +2969,6 @@ ags_line_check_message(AgsLine *line)
 		     NULL);
       }else if(!xmlStrncmp(xmlGetProp(root_node,
 				      "method"),
-			   "AgsChannel::add-effect",
-			   22)){
-	AgsMachine *machine;
-	AgsMachineEditor *machine_editor;
-	AgsLineMemberEditor *line_member_editor;
-	AgsPluginBrowser *plugin_browser;
-	  
-	GList *pad_editor, *pad_editor_start;
-	GList *line_editor, *line_editor_start;
-	GList *control_type_name;
-	  
-	gchar *filename, *effect;
-
-	gint position;
-	  
-	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
-				  "filename");
-	filename = g_value_get_string(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
-
-	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
-				  "effect");
-	effect = g_value_get_string(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
-
-	/* get machine and machine editor */
-	machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
-							 AGS_TYPE_MACHINE);
-	machine_editor = (AgsMachineEditor *) machine->properties;
-
-	/* get control type */
-	control_type_name = NULL;  
-
-	pad_editor_start = NULL;
-	line_editor_start = NULL;
-  
-	if(machine_editor != NULL){
-	  pad_editor_start = 
-	    pad_editor = gtk_container_get_children((GtkContainer *) machine_editor->input_editor->child);
-	  pad_editor = g_list_nth(pad_editor,
-				  channel->pad);
-    
-	  if(pad_editor != NULL){
-	    line_editor_start =
-	      line_editor = gtk_container_get_children((GtkContainer *) AGS_PAD_EDITOR(pad_editor->data)->line_editor);
-	    line_editor = g_list_nth(line_editor,
-				     channel->audio_channel);
-	  }else{
-	    line_editor = NULL;
-	  }
-
-	  if(line_editor != NULL){
-	    line_member_editor = AGS_LINE_EDITOR(line_editor->data)->member_editor;
-
-	    plugin_browser = line_member_editor->plugin_browser;
-
-	    if(plugin_browser != NULL &&
-	       plugin_browser->active_browser != NULL){
-	      GList *description, *description_start;
-	      GList *port_control, *port_control_start;
-
-	      gchar *controls;
-
-	      /* get plugin browser */
-	      description = 
-		description_start = NULL;
-	      port_control_start = NULL;
-		
-	      if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
-		description_start = 
-		  description = gtk_container_get_children((GtkContainer *) AGS_LADSPA_BROWSER(plugin_browser->active_browser)->description);
-	      }else if(AGS_IS_DSSI_BROWSER(plugin_browser->active_browser)){
-		description_start = 
-		  description = gtk_container_get_children((GtkContainer *) AGS_DSSI_BROWSER(plugin_browser->active_browser)->description);
-	      }else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
-		description_start = 
-		  description = gtk_container_get_children((GtkContainer *) AGS_LV2_BROWSER(plugin_browser->active_browser)->description);
-	      }else{
-		g_message("ags_line_callbacks.c unsupported plugin browser");
-	      }
-
-	      /* get port description */
-	      if(description != NULL){
-		description = g_list_last(description);
-	  
-		port_control_start =
-		  port_control = gtk_container_get_children(GTK_CONTAINER(description->data));
-	  
-		if(port_control != NULL){
-		  while(port_control != NULL){
-		    controls = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(port_control->data));
-
-		    if(!g_ascii_strncasecmp(controls,
-					    "led",
-					    4)){
-		      control_type_name = g_list_prepend(control_type_name,
-							 "AgsLed");
-		    }else if(!g_ascii_strncasecmp(controls,
-						  "vertical indicator",
-						  19)){
-		      control_type_name = g_list_prepend(control_type_name,
-							 "AgsVIndicator");
-		    }else if(!g_ascii_strncasecmp(controls,
-						  "horizontal indicator",
-						  19)){
-		      control_type_name = g_list_prepend(control_type_name,
-							 "AgsHIndicator");
-		    }else if(!g_ascii_strncasecmp(controls,
-						  "spin button",
-						  12)){
-		      control_type_name = g_list_prepend(control_type_name,
-							 "GtkSpinButton");
-		    }else if(!g_ascii_strncasecmp(controls,
-						  "dial",
-						  5)){
-		      control_type_name = g_list_prepend(control_type_name,
-							 "AgsDial");
-		    }else if(!g_ascii_strncasecmp(controls,
-						  "vertical scale",
-						  15)){
-		      control_type_name = g_list_prepend(control_type_name,
-							 "GtkVScale");
-		    }else if(!g_ascii_strncasecmp(controls,
-						  "horizontal scale",
-						  17)){
-		      control_type_name = g_list_prepend(control_type_name,
-							 "GtkHScale");
-		    }else if(!g_ascii_strncasecmp(controls,
-						  "check-button",
-						  13)){
-		      control_type_name = g_list_prepend(control_type_name,
-							 "GtkCheckButton");
-		    }else if(!g_ascii_strncasecmp(controls,
-						  "toggle button",
-						  14)){
-		      control_type_name = g_list_prepend(control_type_name,
-							 "GtkToggleButton");
-		    }
-	      
-		    port_control = port_control->next;
-		    port_control = port_control->next;
-		  }
-		}
-
-		/* free lists */
-		g_list_free(description_start);
-		g_list_free(port_control_start);
-	      }
-	    }
-      
-	    //      line_member_editor->plugin_browser;
-	  }
-	}else{
-	  control_type_name = NULL;
-	}
-	  
-	/* free lists */
-	g_list_free(pad_editor_start);
-	g_list_free(line_editor_start);
-	  
-	/* add effect */
-	ags_line_add_effect(line,
-			    control_type_name,
-			    filename,
-			    effect);
-      }else if(!xmlStrncmp(xmlGetProp(root_node,
-				      "method"),
 			   "AgsChannel::stop",
 			   18)){
 	GList *recall_id;
@@ -3123,10 +3139,10 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	if(range == 0.0 ||
 	   current->port_value_type == G_TYPE_BOOLEAN){
 	  if(peak != 0.0){
-	    average_peak = 10.0;
+	    average_peak = 1.0;
 	  }
 	}else{
-	  average_peak += ((1.0 / (range / peak)) * 10.0);
+	  average_peak += peak;
 	}
 
 	/* recall port */
@@ -3150,10 +3166,10 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	if(range == 0.0 ||
 	   current->port_value_type == G_TYPE_BOOLEAN){
 	  if(peak != 0.0){
-	    average_peak = 10.0;
+	    average_peak = 1.0;
 	  }
 	}else{
-	  average_peak += ((1.0 / (range / peak)) * 10.0);
+	  average_peak += peak;
 	}
       
 	/* apply */
@@ -3165,9 +3181,11 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	  g_object_get(child,
 		       "adjustment", &adjustment,
 		       NULL);
-	
+
+//	  g_message("%f", average_peak);
+	  
 	  gtk_adjustment_set_value(adjustment,
-				   average_peak);
+				   10.0 * average_peak);
 	}
       }
     

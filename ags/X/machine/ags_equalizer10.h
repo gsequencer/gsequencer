@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,7 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
@@ -49,6 +50,12 @@ struct _AgsEqualizer10
 
   gchar *name;
   gchar *xml_type;
+  
+  guint mapped_output_pad;
+  guint mapped_input_pad;
+
+  AgsRecallContainer *eq10_play_container;
+  AgsRecallContainer *eq10_recall_container;
 
   GtkScale *peak_28hz;
   GtkScale *peak_56hz;
@@ -105,6 +112,15 @@ struct _AgsEqualizer10Class
 GType ags_equalizer10_get_type(void);
 
 AgsPort* ags_equalizer10_find_specifier(GList *recall, gchar *specifier);
+
+void ags_equalizer10_remap_port(AgsEqualizer10 *equalizer10);
+
+void ags_equalizer10_input_map_recall(AgsEqualizer10 *equalizer10,
+				      guint audio_channel_start,
+				      guint input_pad_start);
+void ags_equalizer10_output_map_recall(AgsEqualizer10 *equalizer10,
+				       guint audio_channel_start,
+				       guint output_pad_start);
 
 AgsEqualizer10* ags_equalizer10_new(GObject *soundcard);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,9 +63,6 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 				   &iter)){
     AgsLadspaConversion *ladspa_conversion;
 
-    AgsChannel *start_input;
-    AgsChannel *channel, *next_channel;
-   
     GList *bulk_member, *bulk_member_start;
     GList *start_recall, *recall;
   
@@ -92,90 +89,51 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
     g_message("%d %d", bank, program);
 #endif
     
-    /* update ports */
-    g_object_get(AGS_MACHINE(dssi_bridge)->audio,
-		 "input", &start_input,
-		 NULL);
-
-    channel = start_input;
-
-    if(channel != NULL){
-      g_object_ref(channel);
-    }
-    
+    /* update ports */    
     port_descriptor = dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortDescriptors;
+
+    /* play context */
+    g_object_get(AGS_MACHINE(dssi_bridge)->audio,
+		 "play", &start_recall,
+		 NULL);
     
-    while(channel != NULL){
-      g_object_get(channel,
-		   "recall", &start_recall,
-		   NULL);
+    recall = start_recall;
+    
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_DSSI_AUDIO)) != NULL){
+      GList *start_port, *port;
       
-      recall = start_recall;
-
-      while((recall = ags_recall_find_type(recall, AGS_TYPE_RECALL_DSSI)) != NULL){
-	GList *start_port, *port;
-	
-	g_object_set(recall->data,
-		     "bank", bank,
-		     "program", program,
-		     NULL);
-
-	g_object_get(recall->data,
-		     "port", &start_port,
-		     NULL);
-	
-	for(i = 0; i < dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortCount; i++){
-	  if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
-	    if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
-	       LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
-	      specifier = dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortNames[i];
-
-	      port = start_port;
-
-	      while(port != NULL){
-		if(!g_strcmp0(AGS_PORT(port->data)->specifier,
-			      specifier)){
-		  GValue value = {0,};
-
-#ifdef AGS_DEBUG
-		  g_message("%s %f", specifier, dssi_bridge->port_values[i]);
-#endif
-		  
-		  g_value_init(&value,
-			       G_TYPE_FLOAT);
-		  
-		  g_value_set_float(&value,
-				    dssi_bridge->port_values[i]);
-		  ags_port_safe_write_raw(port->data,
-					  &value);
-		
-		  break;
-		}
-	
-		port = port->next;
-	      }
-	    }
-	  }
-	}
-
-	g_list_free_full(start_port,
-			 g_object_unref);
-
-	/* iterate */
-	recall = recall->next;
-      }
-
-      g_list_free_full(start_recall,
-		       g_object_unref);
+      ags_fx_dssi_audio_change_program(recall->data,
+				       bank,
+				       program);
       
       /* iterate */
-      next_channel = ags_channel_next(channel);
-
-      g_object_unref(channel);
-
-      channel = next_channel;
+      recall = recall->next;
     }
+    
+    g_list_free_full(start_recall,
+		     g_object_unref);
 
+    /* recall context */
+    g_object_get(AGS_MACHINE(dssi_bridge)->audio,
+		 "recall", &start_recall,
+		 NULL);
+    
+    recall = start_recall;
+    
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_DSSI_AUDIO)) != NULL){
+      GList *start_port, *port;
+      
+      ags_fx_dssi_audio_change_program(recall->data,
+				       bank,
+				       program);
+      
+      /* iterate */
+      recall = recall->next;
+    }
+    
+    g_list_free_full(start_recall,
+		     g_object_unref);
+      
     /* update UI */
     bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input)->table);
   
@@ -220,7 +178,7 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 	      //				  TRUE);
 	    }
 	    
-	    gtk_adjustment_set_value(AGS_DIAL(child_widget), val);
+	    gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment, val);
 	    gtk_widget_queue_draw((AgsDial *) child_widget);
 
 #ifdef AGS_DEBUG
@@ -235,10 +193,6 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 
 	bulk_member = bulk_member->next;
       }
-    }
-
-    if(start_input != NULL){
-      g_object_unref(start_input);
     }
     
     g_list_free(bulk_member_start);

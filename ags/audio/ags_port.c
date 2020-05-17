@@ -246,7 +246,7 @@ ags_port_class_init(AgsPortClass *port)
 				 i18n_pspec("port-value-size is the size of a single entry"),
 				 i18n_pspec("The port-value-size is the size of a single entry"),
 				 1,
-				 8,
+				 16,
 				 sizeof(gdouble),
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -1280,7 +1280,7 @@ ags_port_safe_read_raw(AgsPort *port, GValue *value)
     }else if(port->port_value_type == G_TYPE_OBJECT){
       data = port->port_value.ags_port_object;
     }else{
-      data = (gpointer) malloc(overall_size);
+      data = (gpointer) g_malloc(overall_size);
 
       if(port->port_value_type == G_TYPE_BOOLEAN){
 	memcpy(data, port->port_value.ags_port_boolean_ptr, overall_size);

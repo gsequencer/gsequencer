@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -77,6 +77,8 @@ enum{
   PROP_0,
   PROP_WIDGET_TYPE,
   PROP_WIDGET_LABEL,
+  PROP_PLAY_CONTAINER,
+  PROP_RECALL_CONTAINER,
   PROP_PLUGIN_NAME,
   PROP_FILENAME,
   PROP_EFFECT,
@@ -183,6 +185,38 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_WIDGET_LABEL,
+				  param_spec);
+
+  /**
+   * AgsLineMember:play-container:
+   *
+   * The play context recall container.
+   * 
+   * Since: 3.3.0
+   */
+  param_spec = g_param_spec_object("play-container",
+				   i18n_pspec("play container"),
+				   i18n_pspec("The play context recall container"),
+				   AGS_TYPE_RECALL_CONTAINER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAY_CONTAINER,
+				  param_spec);
+
+  /**
+   * AgsLineMember:recall-container:
+   *
+   * The recall context recall container.
+   * 
+   * Since: 3.3.0
+   */
+  param_spec = g_param_spec_object("recall-container",
+				   i18n_pspec("recall container"),
+				   i18n_pspec("The recall context recall container"),
+				   AGS_TYPE_RECALL_CONTAINER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_CONTAINER,
 				  param_spec);
 
   /**
@@ -495,10 +529,14 @@ ags_line_member_init(AgsLineMember *line_member)
 
   line_member->widget_label = NULL;
 
+  line_member->play_container = NULL;
+  line_member->recall_container = NULL;
+
+  line_member->plugin_name = NULL;
+
   line_member->filename = NULL;
   line_member->effect = NULL;
 
-  line_member->plugin_name = NULL;
   line_member->specifier = NULL;
 
   line_member->control_port = NULL;
@@ -695,6 +733,48 @@ ags_line_member_set_property(GObject *gobject,
       
       line_member->widget_label = g_strdup(label);
       ags_line_member_set_label(line_member, line_member->widget_label);
+    }
+    break;
+  case PROP_PLAY_CONTAINER:
+    {
+      AgsRecallContainer *play_container;
+      
+      play_container = (AgsRecallContainer *) g_value_get_object(value);
+
+      if(play_container == line_member->play_container){
+	return;
+      }
+
+      if(line_member->play_container != NULL){
+	g_object_unref(line_member->play_container);
+      }
+
+      if(play_container != NULL){
+	g_object_ref(play_container);
+      }
+
+      line_member->play_container = play_container;
+    }
+    break;
+  case PROP_RECALL_CONTAINER:
+    {
+      AgsRecallContainer *recall_container;
+      
+      recall_container = (AgsRecallContainer *) g_value_get_object(value);
+
+      if(recall_container == line_member->recall_container){
+	return;
+      }
+
+      if(line_member->recall_container != NULL){
+	g_object_unref(line_member->recall_container);
+      }
+
+      if(recall_container != NULL){
+	g_object_ref(recall_container);
+      }
+
+      line_member->recall_container = recall_container;
     }
     break;
   case PROP_PLUGIN_NAME:
@@ -949,6 +1029,16 @@ ags_line_member_get_property(GObject *gobject,
       g_value_set_string(value, line_member->widget_label);
     }
     break;
+  case PROP_PLAY_CONTAINER:
+    {
+      g_value_set_object(value, line_member->play_container);
+    }
+    break;
+  case PROP_RECALL_CONTAINER:
+    {
+      g_value_set_object(value, line_member->recall_container);
+    }
+    break;
   case PROP_PLUGIN_NAME:
     {
       g_value_set_string(value, line_member->plugin_name);
@@ -1029,10 +1119,19 @@ ags_line_member_finalize(GObject *gobject)
 
   g_free(line_member->widget_label);
 
+  if(line_member->play_container != NULL){
+    g_object_unref(line_member->play_container);
+  }
+
+  if(line_member->recall_container != NULL){
+    g_object_unref(line_member->recall_container);
+  }
+
+  g_free(line_member->plugin_name);
+
   g_free(line_member->filename);
   g_free(line_member->effect);
 
-  g_free(line_member->plugin_name);
   g_free(line_member->specifier);
 
   g_free(line_member->control_port);

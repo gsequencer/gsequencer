@@ -2650,10 +2650,14 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   GThread *main_loop_thread;
   
   GList *start_queue;
-
+  
   gchar *filename;
 
   guint i;
+
+  static const guint staging_program[] = {
+    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
+  };
   
   xorg_application_context = (AgsXorgApplicationContext *) application_context;
 
@@ -2737,6 +2741,11 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 
   /* AgsAudioLoop */
   audio_loop = (AgsThread *) ags_audio_loop_new();
+  ags_audio_loop_set_do_fx_staging(audio_loop, TRUE);
+  ags_audio_loop_set_staging_program(audio_loop,
+				     staging_program,
+				     1);
+  
   g_object_ref(audio_loop);
   
   application_context->main_loop = (GObject *) audio_loop;

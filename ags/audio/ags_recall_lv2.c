@@ -1052,22 +1052,8 @@ ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
     return;
   }
 
-  lv2_conversion = NULL;
-  
-  if(ags_plugin_port_test_flags(plugin_port,
-				AGS_PLUGIN_PORT_LOGARITHMIC)){
-    if(!AGS_IS_LV2_CONVERSION(lv2_conversion)){
-      lv2_conversion = ags_lv2_conversion_new();
-    }
-    
-    lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;
-  }
-
-  if(lv2_conversion != NULL){
-    g_object_set(port,
-		 "conversion", lv2_conversion,
-		 NULL);
-  }
+  ags_port_util_load_lv2_conversion(port,
+				    plugin_port);
 }
 
 /**

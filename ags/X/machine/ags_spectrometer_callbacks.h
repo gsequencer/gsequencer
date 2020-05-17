@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,14 +34,6 @@
 G_BEGIN_DECLS
 
 void ags_spectrometer_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsSpectrometer *spectrometer);
-
-void ags_spectrometer_resize_audio_channels_callback(AgsSpectrometer *spectrometer,
-						     guint audio_channels, guint audio_channels_old,
-						     gpointer data);
-void ags_spectrometer_resize_pads_callback(AgsSpectrometer *spectrometer,
-					   GType channel_type,
-					   guint pads, guint pads_old,
-					   gpointer data);
 
 G_END_DECLS
 

@@ -164,121 +164,22 @@ ags_drum_output_line_disconnect(AgsConnectable *connectable)
 void
 ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 {  
-  AgsRecycling *first_recycling;
-  AgsAudioSignal *audio_signal;
-
-  GObject *output_soundcard;
-
   /* call parent */
   AGS_LINE_CLASS(ags_drum_output_line_parent_class)->set_channel(line, channel);
-
-  if(channel != NULL){
-    ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_SEQUENCER |
-					    AGS_SOUND_ABILITY_NOTATION));
-
-    g_object_get(channel,
-		 "output-soundcard", &output_soundcard,
-		 "first-recycling", &first_recycling,
-		 NULL);
-
-    /* instantiate template audio signal */
-    audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
-					(GObject *) first_recycling,
-					NULL);
-    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-    ags_recycling_add_audio_signal(first_recycling,
-				   audio_signal);
-
-    if(output_soundcard != NULL){
-      g_object_unref(output_soundcard);
-    }
-
-    g_object_unref(first_recycling);
-  }
 }
 
 void
 ags_drum_output_line_map_recall(AgsLine *line,
 				guint output_pad_start)
 {
-  AgsAudio *audio;
-  AgsChannel *output;
-
-  guint input_pads;
-  guint audio_channels;
-
   if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0 ||
      (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
     return;
   }
 
-  output = line->channel;
-
-  /* get some fields */
-  g_object_get(output,
-	       "audio", &audio,
-	       NULL);
-
-  /* get some fields */
-  g_object_get(audio,
-	       "input-pads", &input_pads,
-	       "audio-channels", &audio_channels,
-	       NULL);
-  
-  /* remap for input */  
-  if(ags_recall_global_get_rt_safe() ||
-     ags_recall_global_get_performance_mode()){
-    /* ags-copy */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-copy",
-			      0, audio_channels, 
-			      0, input_pads,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_RECALL |
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-  }else{
-    /* ags-buffer */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-buffer",
-			      0, audio_channels, 
-			      0, input_pads,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_RECALL |
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-  }
-  
-  if(!(ags_recall_global_get_rt_safe() ||
-       ags_recall_global_get_performance_mode())){
-    guint pad, audio_channel;
-
-    /* get some fields */
-    g_object_get(output,
-		 "pad", &pad,
-		 "audio-channel", &audio_channel,
-		 NULL);
-
-    /* ags-stream */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-stream",
-			      audio_channel, audio_channel + 1,
-			      pad, pad + 1,
-			      (AGS_RECALL_FACTORY_OUTPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-  }
-
   /* call parent */
   AGS_LINE_CLASS(ags_drum_output_line_parent_class)->map_recall(line,
 								output_pad_start);
-
-  g_object_unref(audio);
 }
 
 /**

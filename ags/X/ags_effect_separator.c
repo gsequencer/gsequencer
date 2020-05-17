@@ -168,7 +168,12 @@ void
 ags_effect_separator_init(AgsEffectSeparator *effect_separator)
 {
   GtkSeparator *separator;
-  
+
+  effect_separator->play_container = NULL;
+  effect_separator->recall_container = NULL;
+
+  effect_separator->plugin_name = NULL;
+
   effect_separator->filename = NULL;
   effect_separator->effect = NULL;
 

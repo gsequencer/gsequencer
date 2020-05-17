@@ -129,7 +129,7 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
   /* volume indicator */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 					       "widget-type", AGS_TYPE_VINDICATOR,
-					       "plugin-name", "ags-peak",
+					       "plugin-name", "ags-fx-peak",
 					       "specifier", "./peak[0]",
 					       "control-port", "1/1",
 					       NULL);
@@ -148,9 +148,9 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
   /* volume */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 					       "widget-type", GTK_TYPE_VSCALE,
-					       "plugin-name", "ags-volume",
+					       "plugin-name", "ags-fx-volume",
 					       "specifier", "./volume[0]",
-					       "control-port", "1/1",
+					       "control-port", "2/2",
 					       NULL);
   ags_expander_add(AGS_LINE(mixer_input_line)->expander,
 		   GTK_WIDGET(line_member),
@@ -214,71 +214,70 @@ void
 ags_mixer_input_line_map_recall(AgsLine *line,
 				guint output_pad_start)
 {
+  AgsMixer *mixer;
   AgsAudio *audio;
   AgsChannel *source;
-  AgsRecallHandler *recall_handler;
 
-  AgsPeakChannelRun *recall_peak_channel_run, *play_peak_channel_run;
-
-  GList *list;
+  GList *start_recall;
 
   guint pad, audio_channel;
-
+  gint position;
+  
   if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0 ||
      (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
     return;
   }
 
+  mixer = (AgsMixer *) gtk_widget_get_ancestor(line,
+					       AGS_TYPE_MIXER);
+  
+  audio = AGS_MACHINE(mixer)->audio;
+
   source = line->channel;
 
+  position = 0;
+  
   /* get some fields */
   g_object_get(source,
-	       "audio", &audio,
 	       "pad", &pad,
 	       "audio-channel", &audio_channel,
 	       NULL);
 
-  /* ags-peak */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-peak",
-			    audio_channel, audio_channel + 1, 
-			    pad, pad + 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       mixer->volume_play_container, mixer->volume_recall_container,
+				       "ags-fx-volume",
+				       NULL,
+				       NULL,
+				       audio_channel, audio_channel + 1,
+				       pad, pad + 1,
+				       position,
+				       (AGS_FX_FACTORY_REMAP),
+				       0);
 
-  /* ags-mute */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-mute",
-			    audio_channel, audio_channel + 1,
-			    pad, pad + 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
-  
-  /* ags-volume */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-volume",
-			    audio_channel, audio_channel + 1,
-			    pad, pad + 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* unref */
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-peak */
+  start_recall = ags_fx_factory_create(audio,
+				       mixer->peak_play_container, mixer->peak_recall_container,
+				       "ags-fx-peak",
+				       NULL,
+				       NULL,
+				       audio_channel, audio_channel + 1,
+				       pad, pad + 1,
+				       position,
+				       (AGS_FX_FACTORY_REMAP),
+				       0);
+
+  /* unref */
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
   /* call parent */
   AGS_LINE_CLASS(ags_mixer_input_line_parent_class)->map_recall(line,
 								output_pad_start);
-
-  g_object_unref(audio);  
 }
 
 /**

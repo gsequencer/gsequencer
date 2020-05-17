@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -142,6 +142,12 @@ ags_mixer_init(AgsMixer *mixer)
   /*  */
   mixer->name = NULL;
   mixer->xml_type = "ags-mixer";
+
+  mixer->volume_play_container = ags_recall_container_new();
+  mixer->volume_recall_container = ags_recall_container_new();
+
+  mixer->peak_play_container = ags_recall_container_new();
+  mixer->peak_recall_container = ags_recall_container_new();
   
   /* input */
   mixer->input_pad = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -179,9 +185,54 @@ ags_mixer_disconnect(AgsConnectable *connectable)
 void
 ags_mixer_map_recall(AgsMachine *machine)
 {
-  AGS_MACHINE_CLASS(ags_mixer_parent_class)->map_recall(machine);
+  AgsAudio *audio;
+
+  GList *start_recall, *recall;
+
+  gint position;
+
+  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
+     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
+    return;
+  }
   
-  /* empty */
+  audio = machine->audio;
+
+  position = 0;
+
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       AGS_MIXER(machine)->volume_play_container, AGS_MIXER(machine)->volume_recall_container,
+				       "ags-fx-volume",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+
+  /* ags-fx-peak */
+  start_recall = ags_fx_factory_create(audio,
+				       AGS_MIXER(machine)->peak_play_container, AGS_MIXER(machine)->peak_recall_container,
+				       "ags-fx-peak",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* call parent */
+  AGS_MACHINE_CLASS(ags_mixer_parent_class)->map_recall(machine);  
 }
 
 /**

@@ -853,9 +853,13 @@ ags_recycling_dispose(GObject *gobject)
   
   /* channel */
   if(recycling->channel != NULL){
-    g_object_unref(recycling->channel);
+    AgsChannel *channel;
 
+    channel = recycling->channel;
+    
     recycling->channel = NULL;
+    
+    g_object_unref(channel);
   }
 
   /* output soundcard */
@@ -2112,8 +2116,25 @@ void
 ags_recycling_add_audio_signal(AgsRecycling *recycling,
 			       AgsAudioSignal *audio_signal)
 {
+  GRecMutex *recycling_mutex;
+  
   g_return_if_fail(AGS_IS_RECYCLING(recycling) &&
 		   AGS_IS_AUDIO_SIGNAL(audio_signal));
+
+  /* get recycling mutex */  
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
+
+  /* get audio signal */
+  g_rec_mutex_lock(recycling_mutex);
+
+  if(g_list_find(recycling->audio_signal,
+		 audio_signal) != NULL){
+    g_rec_mutex_unlock(recycling_mutex);
+
+    return;
+  }
+    
+  g_rec_mutex_unlock(recycling_mutex);
   
   /* emit signal */
   g_object_ref(G_OBJECT(recycling));

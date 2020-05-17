@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,6 +63,7 @@ enum{
   PROP_START_CHANNEL,
   PROP_BASE_NOTE,
   PROP_COUNT,
+  PROP_REQUESTED_FRAME_COUNT,
 };
 
 GType
@@ -183,6 +184,24 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
   g_object_class_install_property(gobject,
 				  PROP_COUNT,
 				  param_spec);
+
+  /**
+   * AgsApplySynth:requested-frame-count:
+   *
+   * The frame count of audio signal to apply.
+   * 
+   * Since: 3.3.0
+   */
+  param_spec = g_param_spec_uint("requested-frame-count",
+				 i18n_pspec("requested frame count"),
+				 i18n_pspec("The requested frame count to apply"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_REQUESTED_FRAME_COUNT,
+				  param_spec);
   
   /* AgsTaskClass */
   task = (AgsTaskClass *) apply_synth;
@@ -197,6 +216,8 @@ ags_apply_synth_init(AgsApplySynth *apply_synth)
 
   apply_synth->start_channel = NULL;
   apply_synth->count = 0;
+
+  apply_synth->requested_frame_count = 0;
 }
 
 void
@@ -262,6 +283,11 @@ ags_apply_synth_set_property(GObject *gobject,
       apply_synth->count = g_value_get_uint(value);
     }
     break;
+  case PROP_REQUESTED_FRAME_COUNT:
+    {
+      apply_synth->requested_frame_count = g_value_get_uint(value);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -297,6 +323,11 @@ ags_apply_synth_get_property(GObject *gobject,
   case PROP_COUNT:
     {
       g_value_set_uint(value, apply_synth->count);
+    }
+    break;
+  case PROP_REQUESTED_FRAME_COUNT:
+    {
+      g_value_set_uint(value, apply_synth->requested_frame_count);
     }
     break;
   default:
@@ -364,10 +395,12 @@ ags_apply_synth_launch(AgsTask *task)
   GList *rt_template_start, *rt_template;
 
   gchar *str;
-
+  
   gdouble base_note;
   gdouble note;
   guint count;
+  guint requested_frame_count;
+  guint buffer_size;
   guint i;
   
   apply_synth = AGS_APPLY_SYNTH(task);
@@ -382,6 +415,10 @@ ags_apply_synth_launch(AgsTask *task)
   base_note = apply_synth->base_note;
   count = apply_synth->count;
 
+  requested_frame_count = apply_synth->requested_frame_count;
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  
   /* get some fields */
   g_object_get(channel,
 	       "audio", &audio,
@@ -425,6 +462,15 @@ ags_apply_synth_launch(AgsTask *task)
 				  (GObject *) audio_signal,
 				  note);
 
+      g_object_get(audio_signal,
+		   "buffer-size", &buffer_size,
+		   NULL);
+      
+      g_object_set(audio_signal,
+		   "length", (guint) ceil(requested_frame_count / buffer_size),
+		   "frame-count", requested_frame_count,
+		   NULL);
+
       rt_template = 
 	rt_template_start = ags_audio_signal_get_rt_template(list_start);
 
@@ -432,7 +478,16 @@ ags_apply_synth_launch(AgsTask *task)
 	ags_synth_generator_compute(synth_generator,
 				    rt_template->data,
 				    note);
-	  
+
+	g_object_get(rt_template->data,
+		     "buffer-size", &buffer_size,
+		     NULL);
+	
+	g_object_set(rt_template->data,
+		     "length", (guint) ceil(requested_frame_count / buffer_size),
+		     "frame-count", requested_frame_count,
+		     NULL);
+
 	rt_template = rt_template->next;
       }
 

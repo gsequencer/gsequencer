@@ -1,3 +1,47 @@
+ags (3.3.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented staging program of AgsAudioLoop, AgsAudioThread and AgsChannelThread
+	* implemented ags_fx_factory.[ch]
+	* implemented AgsFxPlaybackAudio, AgsFxPlaybackAudioProcessor, AgsFxPlaybackChannel,
+	  AgsFxPlaybackChannelProcessor, AgsFxPlaybackRecycling and AgsFxPlaybackAudioSignal
+	* implemented AgsFxBufferAudio, AgsFxBufferAudioProcessor, AgsFxBufferChannel,
+	  AgsFxBufferChannelProcessor, AgsFxBufferRecycling and AgsFxBufferAudioSignal
+	* implemented AgsFxNotationAudio, AgsFxNotationAudioProcessor, AgsFxNotationChannel,
+	  AgsFxNotationChannelProcessor, AgsFxNotationRecycling and AgsFxNotationAudioSignal
+	* implemented AgsFxPatternAudio, AgsFxPatternAudioProcessor, AgsFxPatternChannel,
+	  AgsFxPatternChannelProcessor, AgsFxPatternRecycling and AgsFxPatternAudioSignal
+	* implemented AgsFxLadspaAudio, AgsFxLadspaAudioProcessor, AgsFxLadspaChannel,
+	  AgsFxLadspaChannelProcessor, AgsFxLadspaRecycling and AgsFxLadspaAudioSignal
+	* implemented AgsFxDssiAudio, AgsFxDssiAudioProcessor, AgsFxDssiChannel,
+	  AgsFxDssiChannelProcessor, AgsFxDssiRecycling and AgsFxDssiAudioSignal
+	* implemented AgsFxLv2Audio, AgsFxLv2AudioProcessor, AgsFxLv2Channel,
+	  AgsFxLv2ChannelProcessor, AgsFxLv2Recycling and AgsFxLv2AudioSignal
+	* implemented AgsFxVolumeAudio, AgsFxVolumeAudioProcessor, AgsFxVolumeChannel,
+	  AgsFxVolumeChannelProcessor, AgsFxVolumeRecycling and AgsFxVolumeAudioSignal
+	* implemented AgsFxPeakAudio, AgsFxPeakAudioProcessor, AgsFxPeakChannel,
+	  AgsFxPeakChannelProcessor, AgsFxPeakRecycling and AgsFxPeakAudioSignal
+	* implemented AgsFxAnalyseAudio, AgsFxAnalyseAudioProcessor, AgsFxAnalyseChannel,
+	  AgsFxAnalyseChannelProcessor, AgsFxAnalyseRecycling and AgsFxAnalyseAudioSignal
+	* implemented AgsFxEnvelopeAudio, AgsFxEnvelopeAudioProcessor, AgsFxEnvelopeChannel,
+	  AgsFxEnvelopeChannelProcessor, AgsFxEnvelopeRecycling and AgsFxEnvelopeAudioSignal
+	* implemented AgsFxEq10Audio, AgsFxEq10AudioProcessor, AgsFxEq10Channel,
+	  AgsFxEq10ChannelProcessor, AgsFxEq10Recycling and AgsFxEq10AudioSignal
+	* implemented ags_audio_insert_recall() and ags_channel_insert_recall()
+	* implemented AgsResetFxPeak task
+	* implemented AgsResetFxAnalyse task
+	* implemented ags_audio_loop_get_do_fx_staging() and ags_audio_loop_set_do_fx_staging()
+	* implemented ags_audio_loop_get_staging_program() and ags_audio_loop_set_staging_program()
+	* implemented ags_audio_thread_get_do_fx_staging() and ags_audio_thread_set_do_fx_staging()
+	* implemented ags_audio_thread_get_staging_program() and ags_audio_thread_set_staging_program()
+	* implemented ags_audio_thread_scope_data_alloc() and ags_audio_thread_scope_data_free()
+	* implemented ags_channel_thread_get_do_fx_staging() and ags_channel_thread_set_do_fx_staging()
+	* implemented ags_channel_thread_get_staging_program() and ags_channel_thread_set_staging_program()
+	* implemented ags_audio_test_staging_completed(), ags_audio_set_staging_completed() and ags_audio_unset_staging_completed()
+	* implemented ags_channel_test_staging_completed(), ags_channel_set_staging_completed() and ags_channel_unset_staging_completed()
+	* improved GObject-Introspection API
+	* fixed UI bug related to channel number mismatch
+
 ags (3.2.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

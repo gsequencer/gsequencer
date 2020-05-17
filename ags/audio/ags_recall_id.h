@@ -82,6 +82,10 @@ void ags_recall_id_unset_state_flags(AgsRecallID *recall_id, guint state_flags);
 
 gboolean ags_recall_id_check_state_flags(AgsRecallID *recall_id, guint state_flags);
 
+/* properties */
+AgsRecyclingContext* ags_recall_id_get_recycling_context(AgsRecallID *recall_id);
+void ags_recall_id_set_recycling_context(AgsRecallID *recall_id, AgsRecyclingContext *recycling_context);
+
 /* query recycling context */
 AgsRecallID* ags_recall_id_find_recycling_context(GList *recall_id,
 						  AgsRecyclingContext *recycling_context);

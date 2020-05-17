@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1006,14 +1006,16 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     AgsRecallID *recall_id;
     AgsRecyclingContext *recycling_context;
     
-    AgsCountBeatsAudio *play_count_beats_audio;
-    AgsCountBeatsAudioRun *play_count_beats_audio_run;
+    AgsFxPatternAudio *play_fx_pattern_audio;
+    AgsFxPatternAudioProcessor *play_fx_pattern_audio_processor;
 
-    GList *list_start, *list;
+    GList *start_list, *list;
     GList *start_recall, *recall;
     
     guint offset;
     guint64 active_led_new;
+
+    GRecMutex *play_fx_pattern_audio_processor_mutex;
     
     machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						     AGS_TYPE_MACHINE);
@@ -1027,10 +1029,10 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     /* get some recalls */
     recall_id = NULL;
     g_object_get(audio,
-		 "recall-id", &list_start,
+		 "recall-id", &start_list,
 		 NULL);
 
-    list = list_start;
+    list = start_list;
     
     while(list != NULL){
       AgsRecyclingContext *current;
@@ -1039,9 +1041,9 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 		   "recycling-context", &current,
 		   NULL);
 
+      g_object_unref(current);
+
       if(current != NULL){
-	g_object_unref(current);
-	
 	g_object_get(current,
 		     "parent", &current,
 		     NULL);
@@ -1058,29 +1060,29 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 		       "play", &start_recall,
 		       NULL);
 
-	  play_count_beats_audio = NULL;
-	  play_count_beats_audio_run = NULL;
+	  play_fx_pattern_audio = NULL;
+	  play_fx_pattern_audio_processor = NULL;
     
 	  recall = ags_recall_find_type(start_recall,
-					AGS_TYPE_COUNT_BEATS_AUDIO);
+					AGS_TYPE_FX_PATTERN_AUDIO);
     
 	  if(recall != NULL){
-	    play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(recall->data);
+	    play_fx_pattern_audio = AGS_FX_PATTERN_AUDIO(recall->data);
 	  }
     
 	  recall = ags_recall_find_type_with_recycling_context(start_recall,
-							       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+							       AGS_TYPE_FX_PATTERN_AUDIO_PROCESSOR,
 							       (GObject *) recall_id->recycling_context);
     
 	  if(recall != NULL){
-	    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
+	    play_fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(recall->data);
 	  }
 
 	  g_list_free_full(start_recall,
 			   g_object_unref);
 
-	  if(play_count_beats_audio == NULL ||
-	     play_count_beats_audio_run == NULL){
+	  if(play_fx_pattern_audio == NULL ||
+	     play_fx_pattern_audio_processor == NULL){
 	    recall_id = NULL;
 	  }else{
 	    break;
@@ -1091,7 +1093,7 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
       list = list->next;
     }
 
-    g_list_free_full(list_start,
+    g_list_free_full(start_list,
 		     g_object_unref);
     
     if(recall_id == NULL){
@@ -1099,9 +1101,13 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     }
 
     /* active led */
-    g_object_get(play_count_beats_audio_run,
-		 "sequencer-counter", &active_led_new,
-		 NULL);
+    play_fx_pattern_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_fx_pattern_audio_processor);
+
+    g_rec_mutex_lock(play_fx_pattern_audio_processor_mutex);
+
+    active_led_new = play_fx_pattern_audio_processor->offset_counter;
+    
+    g_rec_mutex_unlock(play_fx_pattern_audio_processor_mutex);
 
     cell_pattern->active_led = (guint) (active_led_new % cell_pattern->n_cols);
     ags_led_array_unset_all((AgsLedArray *) cell_pattern->hled_array);

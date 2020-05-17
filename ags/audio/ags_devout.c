@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/audio/ags_devout.h>
 
 #include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_soundcard_util.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/task/ags_tic_device.h>
@@ -4540,116 +4541,11 @@ ags_devout_switch_buffer_flag(AgsDevout *devout)
 void
 ags_devout_adjust_delay_and_attack(AgsDevout *devout)
 {
-  gdouble delay;
-  guint default_tact_frames;
-  guint delay_tact_frames;
-  guint default_period;
-  gint next_attack;
-  guint i;
-
-  GRecMutex *devout_mutex;
-
   if(!AGS_IS_DEVOUT(devout)){
     return;
   }
-  
-  /* get devout mutex */
-  devout_mutex = AGS_DEVOUT_GET_OBJ_MUTEX(devout);
 
-  /* get some initial values */
-  delay = ags_devout_get_absolute_delay(AGS_SOUNDCARD(devout));
-
-#ifdef AGS_DEBUG
-  g_message("delay : %f", delay);
-#endif
-  
-  g_rec_mutex_lock(devout_mutex);
-
-  default_tact_frames = (guint) (delay * devout->buffer_size);
-  delay_tact_frames = (guint) (floor(delay) * devout->buffer_size);
-  default_period = (1.0 / AGS_SOUNDCARD_DEFAULT_PERIOD) * (default_tact_frames);
-
-  i = 0;
-  
-  devout->attack[0] = (guint) floor(0.25 * devout->buffer_size);
-  next_attack = (((devout->attack[i] + default_tact_frames) / devout->buffer_size) - delay) * devout->buffer_size;
-
-  if(next_attack >= devout->buffer_size){
-    next_attack = devout->buffer_size - 1;
-  }
-  
-  /* check if delay drops for next attack */
-  if(next_attack < 0){
-    devout->attack[i] = devout->attack[i] - ((gdouble) next_attack / 2.0);
-
-    if(devout->attack[i] < 0){
-      devout->attack[i] = 0;
-    }
-    
-    if(devout->attack[i] >= devout->buffer_size){
-      devout->attack[i] = devout->buffer_size - 1;
-    }
-    
-    next_attack = next_attack + (next_attack / 2.0);
-
-    if(next_attack < 0){
-      next_attack = 0;
-    }
-
-    if(next_attack >= devout->buffer_size){
-      next_attack = devout->buffer_size - 1;
-    }
-  }
-  
-  for(i = 1; i < (int)  2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    devout->attack[i] = next_attack;
-    next_attack = (((devout->attack[i] + default_tact_frames) / devout->buffer_size) - delay) * devout->buffer_size;
-
-    if(next_attack >= devout->buffer_size){
-      next_attack = devout->buffer_size - 1;
-    }
-    
-    /* check if delay drops for next attack */
-    if(next_attack < 0){
-      devout->attack[i] = devout->attack[i] - ((gdouble) next_attack / 2.0);
-
-      if(devout->attack[i] < 0){
-	devout->attack[i] = 0;
-      }
-
-      if(devout->attack[i] >= devout->buffer_size){
-	devout->attack[i] = devout->buffer_size - 1;
-      }
-    
-      next_attack = next_attack + (next_attack / 2.0);
-      
-      if(next_attack < 0){
-	next_attack = 0;
-      }
-
-      if(next_attack >= devout->buffer_size){
-	next_attack = devout->buffer_size - 1;
-      }
-    }
-    
-#ifdef AGS_DEBUG
-    g_message("%d", devout->attack[i]);
-#endif
-  }
-
-  devout->attack[0] = devout->attack[i - 2];
-  
-  for(i = 0; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD - 1; i++){
-    devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i] - devout->attack[i + 1])) / (gdouble) devout->buffer_size;
-    
-#ifdef AGS_DEBUG
-    g_message("%f", devout->delay[i]);
-#endif
-  }
-
-  devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i] - devout->attack[0])) / (gdouble) devout->buffer_size;
-
-  g_rec_mutex_unlock(devout_mutex);
+  ags_soundcard_util_adjust_delay_and_attack(devout);
 }
 
 /**

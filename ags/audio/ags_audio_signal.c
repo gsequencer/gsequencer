@@ -1658,9 +1658,25 @@ ags_audio_signal_finalize(GObject *gobject)
   }
 
   /* audio data */
-  g_list_free_full(audio_signal->stream,
-		   (GDestroyNotify) ags_stream_free);
+  if((AGS_AUDIO_SIGNAL_SLICE_ALLOC & (audio_signal->flags)) == 0){
+    g_list_free_full(audio_signal->stream,
+		     (GDestroyNotify) ags_stream_free);
+  }else{
+    GList *stream;
 
+    stream = audio_signal->stream;
+
+    while(stream != NULL){
+      ags_stream_slice_free(audio_signal->buffer_size,
+			    audio_signal->format,
+			    stream->data);
+      
+      stream = stream->next;
+    }
+    
+    g_list_free(audio_signal->stream);    
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_audio_signal_parent_class)->finalize(gobject);
 }
@@ -2078,6 +2094,153 @@ ags_stream_free(void *buffer)
   }
   
   free(buffer);
+}
+
+/**
+ * ags_stream_slice_alloc:
+ * @buffer_size: the buffer size
+ * @format: the format
+ *
+ * Allocs an audio buffer.
+ *
+ * Returns: the audio data array
+ *
+ * Since: 3.3.0
+ */
+void*
+ags_stream_slice_alloc(guint buffer_size,
+		       guint format)
+{
+  void *buffer;
+  guint word_size;
+  
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      buffer = (gint8 *) g_slice_alloc0(buffer_size * sizeof(gint8));
+      word_size = sizeof(gint8);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      buffer = (gint16 *) g_slice_alloc0(buffer_size * sizeof(gint16));
+      word_size = sizeof(gint16);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      buffer = (gint32 *) g_slice_alloc0(buffer_size * sizeof(gint32));
+      //NOTE:JK: The 24-bit linear samples use 32-bit physical space
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      buffer = (gint32 *) g_slice_alloc0(buffer_size * sizeof(gint32));
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      buffer = (gint64 *) g_slice_alloc0(buffer_size * sizeof(gint64));
+      word_size = sizeof(gint64);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      buffer = (gfloat *) g_slice_alloc0(buffer_size * sizeof(gfloat));
+      word_size = sizeof(gfloat);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      buffer = (gdouble *) g_slice_alloc0(buffer_size * sizeof(gdouble));
+      word_size = sizeof(gdouble);
+    }
+    break;
+  case AGS_SOUNDCARD_COMPLEX:
+    {
+      buffer = (AgsComplex *) g_slice_alloc0(buffer_size * sizeof(AgsComplex));
+    }
+    break;
+  default:
+    g_warning("ags_stream_slice_alloc(): unsupported word size");
+    return(NULL);
+  }
+
+  return(buffer);
+}
+
+/**
+ * ags_stream_slice_free:
+ * @buffer_size: the buffer size
+ * @format: the format
+ * @buffer: the buffer
+ *
+ * Frees an audio buffer.
+ *
+ * Since: 3.3.0
+ */
+void
+ags_stream_slice_free(guint buffer_size,
+		      guint format,
+		      void *buffer)
+{
+  guint word_size;
+
+  if(buffer == NULL){
+    return;
+  }
+  
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      word_size = sizeof(gint8);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      word_size = sizeof(gint16);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      //NOTE:JK: The 24-bit linear samples use 32-bit physical space
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      word_size = sizeof(gint64);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      word_size = sizeof(gfloat);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      word_size = sizeof(gdouble);
+    }
+    break;
+  case AGS_SOUNDCARD_COMPLEX:
+    {
+      word_size = 2 * sizeof(gdouble);
+    }
+    break;
+  default:
+    g_warning("ags_stream_slice_alloc(): unsupported word size");
+    return;
+  }
+
+  g_slice_free1(buffer_size * word_size,
+		buffer);
 }
 
 /**
@@ -2991,6 +3154,44 @@ ags_audio_signal_get_length_till_current(AgsAudioSignal *audio_signal)
 }
 
 /**
+ * ags_audio_signal_contains_note:
+ * @audio_signal: the #AgsAudioSignal
+ * @note: the #AgsNote
+ *
+ * Check if @audio_signal contains @note.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ *
+ * Since: 3.3.0
+ */
+gboolean
+ags_audio_signal_contains_note(AgsAudioSignal *audio_signal,
+			       AgsNote *note)
+{
+  gboolean success;
+
+  GRecMutex *audio_signal_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(FALSE);
+  }
+
+  /* get audio signal mutex */
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
+
+  success = FALSE;
+  
+  /* check note */
+  g_rec_mutex_lock(audio_signal_mutex);
+
+  success = (g_list_find(audio_signal->note, note) != NULL) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(audio_signal_mutex);
+
+  return(success);
+}
+
+/**
  * ags_audio_signal_add_stream:
  * @audio_signal: the #AgsAudioSignal
  *
@@ -3005,6 +3206,7 @@ ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
 
   void *buffer;
 
+  gboolean use_slice;
   guint buffer_size;
   guint format;
   
@@ -3027,14 +3229,23 @@ ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
 
   audio_signal->length += 1;
 
+  use_slice = ((AGS_AUDIO_SIGNAL_SLICE_ALLOC & (audio_signal->flags)) != 0) ? TRUE: FALSE;
+  
   g_rec_mutex_unlock(audio_signal_mutex);
 
   /* allocate stream and buffer */
   g_rec_mutex_lock(stream_mutex);
 
   stream = g_list_alloc();
-  buffer = ags_stream_alloc(buffer_size,
-			    format);
+
+  if(!use_slice){
+    buffer = ags_stream_alloc(buffer_size,
+			      format);
+  }else{
+    buffer = ags_stream_slice_alloc(buffer_size,
+				    format);
+  }
+  
   stream->data = buffer;
 
   if(audio_signal->stream_end != NULL){
@@ -3064,6 +3275,7 @@ ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
 void
 ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
 {
+  gboolean use_slice;
   guint buffer_size;
   guint format;
   guint old_length;
@@ -3090,6 +3302,8 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
 
   audio_signal->length = length;
 
+  use_slice = ((AGS_AUDIO_SIGNAL_SLICE_ALLOC & (audio_signal->flags)) != 0) ? TRUE: FALSE;  
+
   g_rec_mutex_unlock(audio_signal_mutex);
 
   /* resize stream */
@@ -3101,9 +3315,14 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
     stream = NULL;
 
     for(i = old_length; i < length; i++){
-      buffer = ags_stream_alloc(buffer_size,
-				format);
-
+      if(!use_slice){
+	buffer = ags_stream_alloc(buffer_size,
+				  format);
+      }else{
+	buffer = ags_stream_slice_alloc(buffer_size,
+					format);
+      }
+	
       stream = g_list_prepend(stream,
 			      buffer);
     }
@@ -3313,33 +3532,55 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
 		      AgsAudioSignal *template,
 		      guint frame_count)
 {
-  GObject *output_soundcard;
-  
-  GList *list_start, *list;
-  GList *stream, *template_stream;
+  ags_audio_signal_feed_extended(audio_signal,
+				 template,
+				 frame_count, 0,
+				 TRUE, TRUE);
+}
 
-  guint template_samplerate, samplerate;
-  guint template_buffer_size, buffer_size;
-  guint template_format, format;
+/**
+ * ags_audio_signal_feed_extended:
+ * @audio_signal: the #AgsAudioSignal
+ * @template: the template #AgsAudioSignal
+ * @frame_count: the new frame count
+ * @old_frame_count: the old frame count
+ * @do_open: open feed
+ * @do_close: close feed
+ * 
+ * Feed audio signal to grow upto frame count.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
+			       AgsAudioSignal *template,
+			       guint frame_count, guint old_frame_count,
+			       gboolean do_open, gboolean do_close)
+{
+  GList *stream, *template_stream;
+  
   gdouble delay;
   guint attack;
   guint old_length;
-  guint old_frame_count;
-  guint last_frame, old_last_frame;
+  guint old_last_frame;
+  guint last_frame;
   guint loop_start, loop_end;
-  guint new_last_frame;
-  guint new_loop_start, new_loop_end;
   guint template_length;
-  guint loop_length;
-  guint loop_frame_count;
+  guint template_last_frame;
+  guint template_loop_start, template_loop_end;
+  guint template_loop_length;
+  guint template_loop_frame_count;
+  guint template_samplerate, samplerate;
+  guint template_buffer_size, buffer_size;
+  guint template_format, format;
+  guint copy_mode;
   guint n_frames;
   guint copy_n_frames;
-  guint nth_loop;
   guint i, j;
-  guint copy_mode;
   gboolean initial_reset;
-  
+
   GRecMutex *audio_signal_mutex;
+  GRecMutex *audio_signal_stream_mutex;
   GRecMutex *template_mutex;
   GRecMutex *template_stream_mutex;
 
@@ -3347,64 +3588,67 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
      !AGS_IS_AUDIO_SIGNAL(template)){
     return;
   }
-  
+
   /* get audio signal mutex */  
-  template_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(template);
   audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
+  audio_signal_stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal);
   
+  template_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(template);
   template_stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(template);
 
-  /* get some fields */
-  g_rec_mutex_lock(template_mutex);
-
-  output_soundcard = template->output_soundcard;
-  
-  template_samplerate = template->samplerate;
-  template_buffer_size = template->buffer_size;
-  template_format = template->format;
-
-  last_frame = template->last_frame;
-  loop_start = template->loop_start;
-  loop_end = template->loop_end;
-
-  template_length = template->length;
-  
-  g_rec_mutex_unlock(template_mutex);
-
-  /* get some fields */
+  /* audio signal - get some fields */
   g_rec_mutex_lock(audio_signal_mutex);
 
   buffer_size = audio_signal->buffer_size;
   format = audio_signal->format;
 
   samplerate = audio_signal->samplerate;
-  delay = audio_signal->delay;
-  attack = audio_signal->attack;
+  delay = 0.0; // audio_signal->delay;
+  attack = 0; // audio_signal->attack; is for parent
   
   old_length = audio_signal->length;
   old_last_frame = audio_signal->last_frame;
-  old_frame_count = old_last_frame + (old_length * audio_signal->buffer_size) - audio_signal->first_frame;
 
   g_rec_mutex_unlock(audio_signal_mutex);
-  
-  /* resize */
-  if(loop_end > loop_start){
-    loop_length = loop_end - loop_start;
-    
-    if((frame_count - loop_start) > (last_frame - loop_end) &&
-       last_frame >= loop_end){
-      loop_frame_count = (frame_count - loop_start) - (last_frame - loop_end);
-    }else{
-      loop_frame_count = loop_length;
-    }
-    
-    ags_audio_signal_stream_safe_resize(audio_signal,
-					(guint) ceil(frame_count / buffer_size));
-  }else{
-    loop_frame_count = 0;
 
-    ags_audio_signal_stream_safe_resize(audio_signal,
-					(guint) ceil(frame_count / buffer_size));
+  /* template - get some fields */
+  g_rec_mutex_lock(template_mutex);
+  
+  template_samplerate = template->samplerate;
+  template_buffer_size = template->buffer_size;
+  template_format = template->format;
+
+  template_last_frame = template->last_frame;
+  template_loop_start = template->loop_start;
+  template_loop_end = template->loop_end;
+
+  template_length = template->length;
+  
+  g_rec_mutex_unlock(template_mutex);
+
+  /* resize */
+  template_loop_length = 0;
+  template_loop_frame_count = 0;
+
+  if(template_loop_end > template_loop_start){
+    template_loop_length = template_loop_end - template_loop_start;
+    
+    if((frame_count - template_loop_start) > (template_last_frame - template_loop_end) &&
+       template_last_frame >= template_loop_end){
+      template_loop_frame_count = (frame_count - template_loop_start) - (template_last_frame - template_loop_end);
+    }else{
+      template_loop_frame_count = template_loop_length;
+    }
+
+    if(old_length < (guint) floor((attack + frame_count) / buffer_size) + 1){
+      ags_audio_signal_stream_safe_resize(audio_signal,
+					  (guint) floor((attack + frame_count) / buffer_size) + 1);
+    }
+  }else{
+    if(old_length < (guint) floor((attack + frame_count) / buffer_size) + 1){
+      ags_audio_signal_stream_safe_resize(audio_signal,
+					  (guint) floor((attack + frame_count) / buffer_size) + 1);
+    }
   }
   
   if(template_buffer_size != buffer_size ||
@@ -3415,50 +3659,41 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
   }
 
   /* apply delay and attack */
-  new_last_frame = (((guint)(delay *
-			     buffer_size) +
-		     attack +
-		     last_frame) %
-		    buffer_size);
-  new_loop_start = ((guint) (delay *
-			     buffer_size) +
-		    attack +
-		    loop_start);
-  new_loop_end = ((guint)(delay *
-			  buffer_size) +
-		  attack +
-		  loop_end);
+  loop_start = ((guint) (delay * (gdouble) buffer_size) + attack + template_loop_start);
+  loop_end = ((guint) (delay * (gdouble) buffer_size) + attack + template_loop_end);
 
-  new_last_frame = ((guint) (delay * buffer_size) + frame_count + attack) % buffer_size;
+  last_frame = ((guint) (delay * buffer_size) + attack + frame_count) % buffer_size;
 
   g_object_set(audio_signal,
-	       "last-frame", new_last_frame,
+	       "last-frame", last_frame,
 	       NULL);
   
   if(template_length == 0){
+    g_warning("empty template");
+
     return;
   }
   
-  /* loop related copying */
+  /* copy mode */
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
  						  ags_audio_buffer_util_format_from_soundcard(template_format));
 
   /* generic copying */
+  g_rec_mutex_lock(template_stream_mutex);
+  g_rec_mutex_lock(audio_signal_stream_mutex);
+
   stream = g_list_nth(audio_signal->stream,
 		      (guint) ((delay * buffer_size) + attack) / buffer_size);
-  
-  g_rec_mutex_lock(template_stream_mutex);
-  
   template_stream = template->stream;
-
+  
   initial_reset = TRUE;
   
-  for(i = 0, j = attack, nth_loop = 0; i < frame_count && stream != NULL && template_stream != NULL;){    
+  for(i = 0, j = attack; i < frame_count && stream != NULL && template_stream != NULL;){    
     /* compute count of frames to copy */
     copy_n_frames = buffer_size;
 
     if(loop_start < loop_end &&
-       i + copy_n_frames < loop_start + loop_frame_count){
+       i + copy_n_frames < loop_start + template_loop_frame_count){
       if(j + copy_n_frames > loop_end){
 	copy_n_frames = loop_end - j;
       }
@@ -3476,15 +3711,18 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
       copy_n_frames = frame_count - i;
     }
 
+    //NOTE:JK: caused some data not present
+#if 0
     if(initial_reset &&
        i + copy_n_frames >= old_frame_count){
       copy_n_frames = old_frame_count - i;
       
       initial_reset = FALSE;
     }
+#endif
     
     /* copy */
-    if(i >= old_frame_count){
+    if(i + copy_n_frames >= old_frame_count){
       ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, i % buffer_size,
 						  template_stream->data, 1, j % buffer_size,
 						  copy_n_frames, copy_mode);
@@ -3502,13 +3740,11 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
 
     if(loop_start < loop_end){
       if(j + copy_n_frames == loop_end &&
-	 i + copy_n_frames < loop_start + loop_frame_count){
+	 (!do_close || i + copy_n_frames < loop_start + template_loop_frame_count)){
 	template_stream = g_list_nth(template->stream,
 				     floor(loop_start / buffer_size));
 	
 	j = loop_start;
-	
-	nth_loop++;
       }else{
 	j += copy_n_frames;
       }
@@ -3516,8 +3752,75 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
       j += copy_n_frames;
     }
   }
-
+  
+  g_rec_mutex_unlock(audio_signal_stream_mutex);
   g_rec_mutex_unlock(template_stream_mutex);
+}
+
+/**
+ * ags_audio_signal_open_feed:
+ * @audio_signal: the #AgsAudioSignal
+ * @template: the template #AgsAudioSignal
+ * @frame_count: the new frame count
+ * @old_frame_count: the old frame count
+ * 
+ * Feed audio signal to grow upto frame count.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_audio_signal_open_feed(AgsAudioSignal *audio_signal,
+			   AgsAudioSignal *template,
+			   guint frame_count, guint old_frame_count)
+{
+  ags_audio_signal_feed_extended(audio_signal,
+				 template,
+				 frame_count, old_frame_count,
+				 TRUE, FALSE);
+}
+
+/**
+ * ags_audio_signal_continue_feed:
+ * @audio_signal: the #AgsAudioSignal
+ * @template: the template #AgsAudioSignal
+ * @frame_count: the new frame count
+ * @old_frame_count: the old frame count
+ * 
+ * Feed audio signal to grow upto frame count.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_audio_signal_continue_feed(AgsAudioSignal *audio_signal,
+			       AgsAudioSignal *template,
+			       guint frame_count, guint old_frame_count)
+{
+  ags_audio_signal_feed_extended(audio_signal,
+				 template,
+				 frame_count, old_frame_count,
+				 FALSE, FALSE);
+}
+
+/**
+ * ags_audio_signal_close_feed:
+ * @audio_signal: the #AgsAudioSignal
+ * @template: the template #AgsAudioSignal
+ * @frame_count: the new frame count
+ * @old_frame_count: the old frame count
+ * 
+ * Feed audio signal to grow upto frame count.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_audio_signal_close_feed(AgsAudioSignal *audio_signal,
+			    AgsAudioSignal *template,
+			    guint frame_count, guint old_frame_count)
+{
+  ags_audio_signal_feed_extended(audio_signal,
+				 template,
+				 frame_count, old_frame_count,
+				 FALSE, TRUE);
 }
 
 /**

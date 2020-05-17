@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -73,10 +73,14 @@ struct _AgsLineMember
   GType widget_type;
   gchar *widget_label;
 
+  AgsRecallContainer *play_container;
+  AgsRecallContainer *recall_container;
+
+  gchar *plugin_name;
+
   gchar *filename;
   gchar *effect;
 
-  gchar *plugin_name;
   gchar *specifier;
 
   gchar *control_port;

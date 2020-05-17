@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -102,18 +102,20 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 							gint response,
 							AgsLineMemberEditor *line_member_editor)
 {
-  AgsWindow *window;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
-  
-  AgsApplicationContext *application_context;
-  
+  AgsPluginBrowser *plugin_browser;
+    
   GList *pad, *pad_start;
   GList *list, *list_start;
+  GList *control_type_name;
 
+  gchar *plugin_type;
+  gchar *plugin_name;
   gchar *filename, *effect;
 
+  gint position;
   gboolean has_bridge;
   gboolean is_output;  
   
@@ -127,10 +129,14 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
       machine = machine_editor->machine;
 
-      window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
+      position = 0;
 
-      application_context = ags_application_context_get_instance();
-
+      if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
+	 (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0 ||
+	 (AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+	position = 1;
+      }
+      
       if(AGS_IS_OUTPUT(line_editor->channel)){
 	is_output = TRUE;
       }else{
@@ -142,6 +148,119 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
       }else{
 	has_bridge = FALSE;
       }
+
+      plugin_browser = AGS_PLUGIN_BROWSER(line_member_editor->plugin_browser);
+
+      plugin_type = gtk_combo_box_text_get_active_text(plugin_browser->plugin_type);
+      plugin_name = NULL;
+
+      if(!g_ascii_strncasecmp(plugin_type,
+			      "ladspa",
+			      7)){
+	plugin_name = "ags-fx-ladspa";
+      }else if(!g_ascii_strncasecmp(plugin_type,
+				    "lv2",
+				    4)){
+	plugin_name = "ags-fx-lv2";
+      }
+
+      /* get control type */
+      control_type_name = NULL;  
+
+      if(plugin_browser != NULL &&
+	 plugin_browser->active_browser != NULL){
+	GList *description, *description_start;
+	GList *port_control, *port_control_start;
+
+	gchar *controls;
+
+	/* get plugin browser */
+	description = 
+	  description_start = NULL;
+	port_control_start = NULL;
+		
+	if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
+	  description_start = 
+	    description = gtk_container_get_children((GtkContainer *) AGS_LADSPA_BROWSER(plugin_browser->active_browser)->description);
+	}else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
+	  description_start = 
+	    description = gtk_container_get_children((GtkContainer *) AGS_LV2_BROWSER(plugin_browser->active_browser)->description);
+	}else{
+	  g_message("ags_line_callbacks.c unsupported plugin browser");
+	}
+
+	/* get port description */
+	if(description != NULL){
+	  description = g_list_last(description);
+	  
+	  port_control_start =
+	    port_control = gtk_container_get_children(GTK_CONTAINER(description->data));
+	  
+	  if(port_control != NULL){
+	    while(port_control != NULL){
+	      controls = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(port_control->data));
+
+	      if(!g_ascii_strncasecmp(controls,
+				      "led",
+				      4)){
+		control_type_name = g_list_prepend(control_type_name,
+						   "AgsLed");
+	      }else if(!g_ascii_strncasecmp(controls,
+					    "vertical indicator",
+					    19)){
+		control_type_name = g_list_prepend(control_type_name,
+						   "AgsVIndicator");
+	      }else if(!g_ascii_strncasecmp(controls,
+					    "horizontal indicator",
+					    19)){
+		control_type_name = g_list_prepend(control_type_name,
+						   "AgsHIndicator");
+	      }else if(!g_ascii_strncasecmp(controls,
+					    "spin button",
+					    12)){
+		control_type_name = g_list_prepend(control_type_name,
+						   "GtkSpinButton");
+	      }else if(!g_ascii_strncasecmp(controls,
+					    "dial",
+					    5)){
+		control_type_name = g_list_prepend(control_type_name,
+						   "AgsDial");
+	      }else if(!g_ascii_strncasecmp(controls,
+					    "vertical scale",
+					    15)){
+		control_type_name = g_list_prepend(control_type_name,
+						   "GtkVScale");
+	      }else if(!g_ascii_strncasecmp(controls,
+					    "horizontal scale",
+					    17)){
+		control_type_name = g_list_prepend(control_type_name,
+						   "GtkHScale");
+	      }else if(!g_ascii_strncasecmp(controls,
+					    "check-button",
+					    13)){
+		control_type_name = g_list_prepend(control_type_name,
+						   "GtkCheckButton");
+	      }else if(!g_ascii_strncasecmp(controls,
+					    "toggle button",
+					    14)){
+		control_type_name = g_list_prepend(control_type_name,
+						   "GtkToggleButton");
+	      }
+	      
+	      port_control = port_control->next;
+	      port_control = port_control->next;
+	    }
+	  }
+
+	  /* free lists */
+	  g_list_free(description_start);
+	  g_list_free(port_control_start);
+	}
+      }
+
+      /* retrieve plugin */
+      filename = ags_plugin_browser_get_plugin_filename(line_member_editor->plugin_browser);
+      effect = ags_plugin_browser_get_plugin_effect(line_member_editor->plugin_browser);
       
       if(!has_bridge){	
 	AgsLine *line;
@@ -180,43 +299,25 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
 	g_list_free(pad_start);
 
-	/* retrieve plugin */
-	filename = ags_plugin_browser_get_plugin_filename(line_member_editor->plugin_browser);
-	effect = ags_plugin_browser_get_plugin_effect(line_member_editor->plugin_browser);
-
 	if(line != NULL){
-	  AgsAddEffect *add_effect;
-
-	  GList *start_play, *start_recall;
+	  guint audio_channel;
+	  guint pad;
 
 	  g_object_get(line->channel,
-		       "play", &start_play,
-		       "recall", &start_recall,
+		       "audio-channel", &audio_channel,
+		       "pad", &pad,
 		       NULL);
 	  
-	  if(ags_recall_find_recall_id_with_effect(start_play,
-						   NULL,
-						   filename,
-						   effect) == NULL &&
-	     ags_recall_find_recall_id_with_effect(start_recall,
-						   NULL,
-						   filename,
-						   effect) == NULL){
-	    ags_line_member_editor_plugin_browser_response_create_entry(line_member_editor,
-									filename, effect);
-	    
-	    /* add effect */
-	    add_effect = ags_add_effect_new(line->channel,
-					    filename,
-					    effect);
-	    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-					  (AgsTask *) add_effect);
-	  }
-
-	  g_list_free_full(start_play,
-			   g_object_unref);
-	  g_list_free_full(start_recall,
-			   g_object_unref);
+	  ags_line_add_plugin(line,
+			      control_type_name,
+			      ags_recall_container_new(), ags_recall_container_new(),
+			      plugin_name,
+			      filename,
+			      effect,
+			      audio_channel, audio_channel + 1,
+			      pad, pad + 1,
+			      position,
+			      (AGS_FX_FACTORY_ADD), 0);
 	}
 	
 	g_free(filename);
@@ -260,48 +361,32 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
 	g_list_free(pad_start);
 
-	/* retrieve plugin */
-	filename = ags_plugin_browser_get_plugin_filename(line_member_editor->plugin_browser);
-	effect = ags_plugin_browser_get_plugin_effect(line_member_editor->plugin_browser);
-
 	if(effect_line != NULL){
-	  AgsAddEffect *add_effect;
-	  
-	  GList *start_play, *start_recall;
+	  guint audio_channel;
+	  guint pad;
 
 	  g_object_get(effect_line->channel,
-		       "play", &start_play,
-		       "recall", &start_recall,
+		       "audio-channel", &audio_channel,
+		       "pad", &pad,
 		       NULL);
 
-	  if(ags_recall_find_recall_id_with_effect(start_play,
-						   NULL,
-						   filename,
-						   effect) == NULL &&
-	     ags_recall_find_recall_id_with_effect(start_recall,
-						   NULL,
-						   filename,
-						   effect) == NULL){
-	    ags_line_member_editor_plugin_browser_response_create_entry(line_member_editor,
-									filename, effect);
-
-	    /* add effect */
-	    add_effect = ags_add_effect_new(effect_line->channel,
-					    filename,
-					    effect);
-	    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-					  (AgsTask *) add_effect);
-	  }
-
-	  g_list_free_full(start_play,
-			   g_object_unref);
-	  g_list_free_full(start_recall,
-			   g_object_unref);
+	  ags_effect_line_add_plugin(effect_line,
+				     control_type_name,
+				     ags_recall_container_new(), ags_recall_container_new(),
+				     plugin_name,
+				     filename,
+				     effect,
+				     audio_channel, audio_channel + 1,
+				     pad, pad + 1,
+				     position,
+				     (AGS_FX_FACTORY_ADD), 0);
 	}
 	
 	g_free(filename);
 	g_free(effect);
       }
+
+      ags_applicable_reset(AGS_APPLICABLE(line_member_editor));
     }
     break;      
   }
@@ -389,19 +474,19 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
     /* iterate line member */
     if(line != NULL){
-      for(nth = 0; line_member != NULL; nth++){
+      for(nth = 0; line_member != NULL;){
 	children = gtk_container_get_children((GtkContainer *) GTK_CONTAINER(line_member->data));
 
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-	  gtk_widget_destroy(GTK_WIDGET(line_member->data));
-
 	  /* remove effect */
-	  ags_line_remove_effect(line,
+	  ags_line_remove_plugin(line,
 				 nth);
 	}
 
 	g_list_free(children);
-      
+
+	nth++;
+	
 	line_member = line_member->next;
       }
     }
@@ -447,23 +532,25 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
     /* iterate line member */
     if(effect_line != NULL){
-      for(nth = 0; line_member != NULL; nth++){
-	children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
+      for(nth = 0; line_member != NULL;){
+	children = gtk_container_get_children((GtkContainer *) GTK_CONTAINER(line_member->data));
 
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-	  gtk_widget_destroy(GTK_WIDGET(line_member->data));
-	
 	  /* remove effect */
-	  ags_effect_line_remove_effect(effect_line,
+	  ags_effect_line_remove_plugin(effect_line,
 					nth);
 	}
 
 	g_list_free(children);
-	
-	line_member = line_member->next;
+
+	nth++;
       }
+	
+      line_member = line_member->next;
     }
   }
+
+  ags_applicable_reset(AGS_APPLICABLE(line_member_editor));
 
   g_list_free(start_line_member);
 }

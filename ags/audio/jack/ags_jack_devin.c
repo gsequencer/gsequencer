@@ -2771,116 +2771,11 @@ ags_jack_devin_switch_buffer_flag(AgsJackDevin *jack_devin)
 void
 ags_jack_devin_adjust_delay_and_attack(AgsJackDevin *jack_devin)
 {
-  gdouble delay;
-  guint default_tact_frames;
-  guint delay_tact_frames;
-  guint default_period;
-  gint next_attack;
-  guint i;
-
-  GRecMutex *jack_devin_mutex;
-
   if(!AGS_IS_JACK_DEVIN(jack_devin)){
     return;
   }
 
-  /* get jack devin mutex */
-  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
-  
-  /* get some initial values */
-  delay = ags_jack_devin_get_absolute_delay(AGS_SOUNDCARD(jack_devin));
-
-#ifdef AGS_DEBUG
-  g_message("delay : %f", delay);
-#endif
-  
-  g_rec_mutex_lock(jack_devin_mutex);
-
-  default_tact_frames = (guint) (delay * jack_devin->buffer_size);
-  delay_tact_frames = (guint) (floor(delay) * jack_devin->buffer_size);
-  default_period = (1.0 / AGS_SOUNDCARD_DEFAULT_PERIOD) * (default_tact_frames);
-
-  i = 0;
-  
-  jack_devin->attack[0] = (guint) floor(0.25 * jack_devin->buffer_size);
-  next_attack = (((jack_devin->attack[i] + default_tact_frames) / jack_devin->buffer_size) - delay) * jack_devin->buffer_size;
-
-  if(next_attack >= jack_devin->buffer_size){
-    next_attack = jack_devin->buffer_size - 1;
-  }
-  
-  /* check if delay drops for next attack */
-  if(next_attack < 0){
-    jack_devin->attack[i] = jack_devin->attack[i] - ((gdouble) next_attack / 2.0);
-
-    if(jack_devin->attack[i] < 0){
-      jack_devin->attack[i] = 0;
-    }
-    
-    if(jack_devin->attack[i] >= jack_devin->buffer_size){
-      jack_devin->attack[i] = jack_devin->buffer_size - 1;
-    }
-    
-    next_attack = next_attack + (next_attack / 2.0);
-    
-    if(next_attack < 0){
-      next_attack = 0;
-    }
-
-    if(next_attack >= jack_devin->buffer_size){
-      next_attack = jack_devin->buffer_size - 1;
-    }
-  }
-  
-  for(i = 1; i < (int)  2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    jack_devin->attack[i] = next_attack;
-    next_attack = (((jack_devin->attack[i] + default_tact_frames) / jack_devin->buffer_size) - delay) * jack_devin->buffer_size;
-
-    if(next_attack >= jack_devin->buffer_size){
-      next_attack = jack_devin->buffer_size - 1;
-    }
-    
-    /* check if delay drops for next attack */
-    if(next_attack < 0){
-      jack_devin->attack[i] = jack_devin->attack[i] - ((gdouble) next_attack / 2.0);
-
-      if(jack_devin->attack[i] < 0){
-	jack_devin->attack[i] = 0;
-      }
-
-      if(jack_devin->attack[i] >= jack_devin->buffer_size){
-	jack_devin->attack[i] = jack_devin->buffer_size - 1;
-      }
-    
-      next_attack = next_attack + (next_attack / 2.0);
-    
-      if(next_attack < 0){
-	next_attack = 0;
-      }
-
-      if(next_attack >= jack_devin->buffer_size){
-	next_attack = jack_devin->buffer_size - 1;
-      }
-    }
-    
-#ifdef AGS_DEBUG
-    g_message("%d", jack_devin->attack[i]);
-#endif
-  }
-
-  jack_devin->attack[0] = jack_devin->attack[i - 2];
-  
-  for(i = 0; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD - 1; i++){
-    jack_devin->delay[i] = ((gdouble) (default_tact_frames + jack_devin->attack[i] - jack_devin->attack[i + 1])) / (gdouble) jack_devin->buffer_size;
-    
-#ifdef AGS_DEBUG
-    g_message("%f", jack_devin->delay[i]);
-#endif
-  }
-
-  jack_devin->delay[i] = ((gdouble) (default_tact_frames + jack_devin->attack[i] - jack_devin->attack[0])) / (gdouble) jack_devin->buffer_size;
-
-  g_rec_mutex_unlock(jack_devin_mutex);
+  ags_soundcard_util_adjust_delay_and_attack(jack_devin);
 }
 
 /**

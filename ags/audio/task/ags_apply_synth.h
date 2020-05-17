@@ -50,6 +50,8 @@ struct _AgsApplySynth
 
   gdouble base_note;
   guint count;
+
+  guint requested_frame_count;
 };
 
 struct _AgsApplySynthClass

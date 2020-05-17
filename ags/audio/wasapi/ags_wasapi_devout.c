@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -3254,120 +3254,11 @@ ags_wasapi_devout_switch_buffer_flag(AgsWasapiDevout *wasapi_devout)
 void
 ags_wasapi_devout_adjust_delay_and_attack(AgsWasapiDevout *wasapi_devout)
 {
-  gdouble delay;
-  guint default_tact_frames;
-  guint delay_tact_frames;
-  guint default_period;
-  gint next_attack;
-  guint i;
-
-  GRecMutex *wasapi_devout_mutex;
-
   if(!AGS_IS_WASAPI_DEVOUT(wasapi_devout)){
     return;
   }
 
-  /* get wasapi devout mutex */
-  wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
-  
-  /* get some initial values */
-  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(wasapi_devout));
-
-#ifdef AGS_DEBUG
-  g_message("delay : %f", delay);
-#endif
-  
-  g_rec_mutex_lock(wasapi_devout_mutex);
-
-  default_tact_frames = (guint) (delay * wasapi_devout->buffer_size);
-  delay_tact_frames = (guint) (floor(delay) * wasapi_devout->buffer_size);
-  default_period = (1.0 / AGS_SOUNDCARD_DEFAULT_PERIOD) * (default_tact_frames);
-
-  i = 0;
-  
-  wasapi_devout->attack[0] = (guint) floor(0.25 * wasapi_devout->buffer_size);
-  next_attack = (((wasapi_devout->attack[i] + default_tact_frames) / wasapi_devout->buffer_size) - delay) * wasapi_devout->buffer_size;
-
-  if(next_attack < 0){
-    next_attack = 0;
-  }
-
-  if(next_attack >= wasapi_devout->buffer_size){
-    next_attack = wasapi_devout->buffer_size - 1;
-  }
-  
-  /* check if delay drops for next attack */
-  if(next_attack < 0){
-    wasapi_devout->attack[i] = wasapi_devout->attack[i] - ((gdouble) next_attack / 2.0);
-
-    if(wasapi_devout->attack[i] < 0){
-      wasapi_devout->attack[i] = 0;
-    }
-    
-    if(wasapi_devout->attack[i] >= wasapi_devout->buffer_size){
-      wasapi_devout->attack[i] = wasapi_devout->buffer_size - 1;
-    }
-    
-    next_attack = next_attack + (next_attack / 2.0);
-
-    if(next_attack < 0){
-      next_attack = 0;
-    }
-
-    if(next_attack >= wasapi_devout->buffer_size){
-      next_attack = wasapi_devout->buffer_size - 1;
-    }
-  }
-  
-  for(i = 1; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    wasapi_devout->attack[i] = next_attack;
-    next_attack = (((wasapi_devout->attack[i] + default_tact_frames) / wasapi_devout->buffer_size) - delay) * wasapi_devout->buffer_size;
-
-    if(next_attack >= wasapi_devout->buffer_size){
-      next_attack = wasapi_devout->buffer_size - 1;
-    }
-    
-    /* check if delay drops for next attack */
-    if(next_attack < 0){
-      wasapi_devout->attack[i] = wasapi_devout->attack[i] - ((gdouble) next_attack / 2.0);
-
-      if(wasapi_devout->attack[i] < 0){
-	wasapi_devout->attack[i] = 0;
-      }
-
-      if(wasapi_devout->attack[i] >= wasapi_devout->buffer_size){
-	wasapi_devout->attack[i] = wasapi_devout->buffer_size - 1;
-      }
-    
-      next_attack = next_attack + (next_attack / 2.0);
-
-      if(next_attack < 0){
-	next_attack = 0;
-      }
-
-      if(next_attack >= wasapi_devout->buffer_size){
-	next_attack = wasapi_devout->buffer_size - 1;
-      }
-    }
-    
-#ifdef AGS_DEBUG
-    g_message("%d", wasapi_devout->attack[i]);
-#endif
-  }
-
-  wasapi_devout->attack[0] = wasapi_devout->attack[i - 2];
-  
-  for(i = 0; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD - 1; i++){
-    wasapi_devout->delay[i] = ((gdouble) (default_tact_frames + wasapi_devout->attack[i] - wasapi_devout->attack[i + 1])) / (gdouble) wasapi_devout->buffer_size;
-    
-#ifdef AGS_DEBUG
-    g_message("%f", wasapi_devout->delay[i]);
-#endif
-  }
-
-  wasapi_devout->delay[i] = ((gdouble) (default_tact_frames + wasapi_devout->attack[i] - wasapi_devout->attack[0])) / (gdouble) wasapi_devout->buffer_size;
-
-  g_rec_mutex_unlock(wasapi_devout_mutex);
+  ags_soundcard_util_adjust_delay_and_attack(wasapi_devout);
 }
 
 /**

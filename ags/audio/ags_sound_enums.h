@@ -120,6 +120,7 @@ typedef enum{
  * @AGS_SOUND_STAGING_DONE: done
  * @AGS_SOUND_STAGING_REMOVE: remove
  * @AGS_SOUND_STAGING_RESET: reset
+ * @AGS_SOUND_STAGING_FX: fx staging
  * 
  * Enum values to stage the specified action.
  */
@@ -140,6 +141,7 @@ typedef enum{
   AGS_SOUND_STAGING_DONE                = 1 << 13,
   AGS_SOUND_STAGING_REMOVE              = 1 << 14,
   AGS_SOUND_STAGING_RESET               = 1 << 15,
+  AGS_SOUND_STAGING_FX                  = 1 << 16,
 }AgsSoundStagingFlags;
 
 /**

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,3 +18,29 @@
  */
 
 #include <ags/X/machine/ags_ffplayer_bulk_input_callbacks.h>
+
+void
+ags_ffplayer_bulk_input_resize_audio_channels_callback(AgsFFPlayerBulkInput *ffplayer_bulk_input,
+						       guint audio_channels, guint audio_channels_old,
+						       gpointer data)
+{
+  if(audio_channels > audio_channels_old){
+    ags_ffplayer_bulk_input_input_map_recall(ffplayer_bulk_input,
+					     audio_channels_old,
+					     0);
+  }
+}
+
+void
+ags_ffplayer_bulk_input_resize_pads_callback(AgsFFPlayerBulkInput *ffplayer_bulk_input, GType channel_type,
+					     guint pads, guint pads_old,
+					     gpointer data)
+{
+  if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+    if(pads > pads_old){
+      ags_ffplayer_bulk_input_input_map_recall(ffplayer_bulk_input,
+					       0,
+					       pads_old);
+    }
+  }
+}

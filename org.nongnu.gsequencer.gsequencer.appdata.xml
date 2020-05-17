@@ -35,6 +35,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.3.0" date="2020-05-07">
+      <description>
+	<p>Refactored GSequencer to use new fx recalls to do audio processing.</p>
+      </description>
+    </release>
+
     <release version="3.2.15" date="2020-04-16">
       <description>
 	<p>Minor improvements.</p>

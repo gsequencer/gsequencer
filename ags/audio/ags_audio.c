@@ -49,6 +49,10 @@
 
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 
+#include <ags/audio/fx/ags_fx_playback_audio_processor.h>
+#include <ags/audio/fx/ags_fx_pattern_audio_processor.h>
+#include <ags/audio/fx/ags_fx_notation_audio_processor.h>
+
 #include <libxml/tree.h>
 
 #include <stdlib.h>
@@ -1617,7 +1621,9 @@ ags_audio_init(AgsAudio *audio)
   audio->flags = 0;
   audio->ability_flags = 0;
   audio->behaviour_flags = 0;
-  memset(audio->staging_flags, 0, (AGS_SOUND_SCOPE_LAST + 1) * sizeof(guint));
+  memset(audio->staging_flags, 0, AGS_SOUND_SCOPE_LAST * sizeof(guint));
+
+  memset(audio->staging_completed, FALSE, AGS_SOUND_SCOPE_LAST * sizeof(gboolean));
 
   /* audio mutex */
   g_rec_mutex_init(&(audio->obj_mutex));
@@ -3130,9 +3136,13 @@ ags_audio_dispose(GObject *gobject)
 
   /* playback domain */
   if(audio->playback_domain != NULL){
-    g_object_run_dispose(audio->playback_domain);
+    AgsPlaybackDomain *playback_domain;
+
+    playback_domain = audio->playback_domain;
 
     audio->playback_domain = NULL;
+    
+    g_object_run_dispose(playback_domain);
   }
   
   /* notation */
@@ -5037,6 +5047,130 @@ ags_audio_unset_staging_flags(AgsAudio *audio, gint sound_scope,
 }
 
 /**
+ * ags_audio_test_staging_completed:
+ * @audio: the #AgsAudio
+ * @sound_scope: the #AgsSoundScope to test
+ *
+ * Test @sound_scope to be completed on @audio.
+ * 
+ * Returns: %TRUE if completed, otherwise %FALSE
+ *
+ * Since: 3.3.0
+ */
+gboolean
+ags_audio_test_staging_completed(AgsAudio *audio, gint sound_scope)
+{
+  guint i;
+  gboolean success;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(FALSE);
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  /* test staging completed */
+  success = FALSE;
+  
+  g_rec_mutex_lock(audio_mutex);
+
+  if(sound_scope < 0){
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      if(!audio->staging_completed[i]){
+	break;
+      }
+    }
+
+    if(i == AGS_SOUND_SCOPE_LAST){
+      success = TRUE;
+    }
+  }else if(sound_scope < AGS_SOUND_SCOPE_LAST){
+    success = audio->staging_completed[sound_scope];
+  }
+
+  g_rec_mutex_unlock(audio_mutex);
+
+  return(success);
+}
+
+/**
+ * ags_audio_set_staging_flags:
+ * @audio: the #AgsAudio
+ * @sound_scope: the #AgsSoundScope to apply, or -1 to apply to all
+ * 
+ * Set @sound_scope to be completed.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_audio_set_staging_completed(AgsAudio *audio, gint sound_scope)
+{
+  guint i;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  /* test staging completed */  
+  g_rec_mutex_lock(audio_mutex);
+
+  if(sound_scope < 0){
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      audio->staging_completed[i] = TRUE;
+    }
+  }else if(sound_scope < AGS_SOUND_SCOPE_LAST){
+    audio->staging_completed[sound_scope] = TRUE;
+  }
+
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_unset_staging_flags:
+ * @audio: the #AgsAudio
+ * @sound_scope: the #AgsSoundScope to apply, or -1 to apply to all
+ * 
+ * Unset @sound_scope to be completed.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_audio_unset_staging_completed(AgsAudio *audio, gint sound_scope)
+{
+  guint i;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  /* test staging completed */  
+  g_rec_mutex_lock(audio_mutex);
+
+  if(sound_scope < 0){
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      audio->staging_completed[i] = FALSE;
+    }
+  }else if(sound_scope < AGS_SOUND_SCOPE_LAST){
+    audio->staging_completed[sound_scope] = FALSE;
+  }
+
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
  * ags_audio_get_audio_name:
  * @audio: the #AgsAudio
  * 
@@ -5369,7 +5503,7 @@ ags_audio_set_audio_channels_grow(AgsAudio *audio,
   
   /* get audio mutex */
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
-
+  
   /* get some fields */  
   g_object_get(audio,
 	       "samplerate", &samplerate,
@@ -5380,7 +5514,7 @@ ags_audio_set_audio_channels_grow(AgsAudio *audio,
 	       "input-soundcard", &input_soundcard,
 	       NULL);
   
-  if(channel_type == AGS_TYPE_OUTPUT){
+  if(g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
     g_object_get(audio,
 		 "output", &start,
 		 "output-pads", &pads,
@@ -5419,16 +5553,25 @@ ags_audio_set_audio_channels_grow(AgsAudio *audio,
 					    "format", format,
 					    NULL);
       g_object_ref(channel);
+      
+      /* set indices */
+      channel->pad = j;
+      channel->audio_channel = i;
+      channel->line = j * audio_channels + i;
 
       playback = (AgsPlayback *) channel->playback;
       g_object_set(playback,
 		   "playback-domain", playback_domain,
 		   NULL);
-	
+
       if(add_pattern){
 	AgsPattern *pattern;
 
 	pattern = ags_pattern_new();
+	g_object_set(pattern,
+		     "channel", channel,
+		     NULL);
+	
 	g_object_set(channel,
 		     "pattern", pattern,
 		     NULL);
@@ -5499,11 +5642,6 @@ ags_audio_set_audio_channels_grow(AgsAudio *audio,
 
 	g_rec_mutex_unlock(prev_pad_mutex);
       }
-
-      /* set indices */
-      channel->pad = j;
-      channel->audio_channel = i;
-      channel->line = j * audio_channels + i;
 
       /* reset nested AgsRecycling tree */
       if(add_recycling){
@@ -6109,6 +6247,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
 	  g_object_unref(playback);
 	  
+	  ags_channel_set_ability_flags(channel, ability_flags);
+	  
 	  /* iterate */
 	  next_channel = ags_channel_next(channel);
 
@@ -6152,6 +6292,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 					   (GObject *) playback, AGS_TYPE_INPUT);
 
 	  g_object_unref(playback);
+
+	  ags_channel_set_ability_flags(channel, ability_flags);
 
 	  /* iterate */
 	  next_channel = ags_channel_next(channel);
@@ -6313,7 +6455,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 		 G_TYPE_UINT);
     g_value_set_uint(&(message->value[1]),
 		     audio_channels_old);
-
+    
     /* terminate string vector */
     message->parameter_name[2] = NULL;
     
@@ -6495,7 +6637,7 @@ ags_audio_set_pads_grow(AgsAudio *audio,
 	       "playback-domain", &playback_domain,
 	       NULL);
   
-  if(channel_type == AGS_TYPE_OUTPUT){
+  if(g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
     g_object_get(audio,
 		 "output", &start,
 		 NULL);
@@ -6521,6 +6663,11 @@ ags_audio_set_pads_grow(AgsAudio *audio,
 					    NULL);
       g_object_ref(channel);
 
+      /* set indices */
+      channel->pad = j;
+      channel->audio_channel = i;
+      channel->line = j * audio_channels + i;
+
       playback = (AgsPlayback *) channel->playback;
       g_object_set(playback,
 		   "playback-domain", playback_domain,
@@ -6530,6 +6677,10 @@ ags_audio_set_pads_grow(AgsAudio *audio,
 	AgsPattern *pattern;
 
 	pattern = ags_pattern_new();
+	g_object_set(pattern,
+		     "channel", channel,
+		     NULL);
+
 	g_object_set(channel,
 		     "pattern", pattern,
 		     NULL);
@@ -6596,11 +6747,6 @@ ags_audio_set_pads_grow(AgsAudio *audio,
 	  
 	g_rec_mutex_unlock(prev_pad_mutex);
       }
-
-      /* set indices */
-      channel->pad = j;
-      channel->audio_channel = i;
-      channel->line = j * audio_channels + i;
 
       /* reset nested AgsRecycling tree */
       if(add_recycling){
@@ -7138,6 +7284,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
 	    g_object_unref(playback);
 	    
+	    ags_channel_set_ability_flags(channel, ability_flags);
+      
 	    /* iterate */
 	    next_channel = ags_channel_next(channel);
 
@@ -7363,6 +7511,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	
 	    g_object_unref(playback);
 	    
+	    ags_channel_set_ability_flags(channel, ability_flags);
+      
 	    /* iterate */
 	    next_channel = ags_channel_next(channel);
 
@@ -11628,8 +11778,8 @@ ags_audio_set_recall(AgsAudio *audio, GList *recall)
  * Since: 3.0.0
  */
 void
-ags_audio_add_recall(AgsAudio *audio,
-		     GObject *recall, gboolean play_context)
+ags_audio_add_recall(AgsAudio *audio, GObject *recall,
+		     gboolean play_context)
 {
   gboolean success;
   
@@ -11691,6 +11841,83 @@ ags_audio_add_recall(AgsAudio *audio,
 }
 
 /**
+ * ags_audio_insert_recall:
+ * @audio: the #AgsAudio
+ * @recall: the #AgsRecall
+ * @play_context: if %TRUE play context, else if %FALSE recall context
+ * @position: the position
+ *
+ * Insert @recall at @position in @audio's @play_context.
+ *
+ * Since: 3.3.0
+ */
+void
+ags_audio_insert_recall(AgsAudio *audio, GObject *recall,
+			gboolean play_context,
+			gint position)
+{
+  gboolean success;
+  
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  success = FALSE;
+  
+  if(play_context){
+    GRecMutex *play_mutex;
+
+    /* get play mutex */
+    play_mutex = AGS_AUDIO_GET_PLAY_MUTEX(audio);
+
+    /* add recall */
+    g_rec_mutex_lock(play_mutex);
+    
+    if(g_list_find(audio->play, recall) == NULL){
+      success = TRUE;
+
+      g_object_ref(G_OBJECT(recall));
+    
+      audio->play = g_list_insert(audio->play,
+				  recall,
+				  position);
+    }
+
+    g_rec_mutex_unlock(play_mutex);
+  }else{
+    GRecMutex *recall_mutex;
+
+    /* get recall mutex */
+    recall_mutex = AGS_AUDIO_GET_RECALL_MUTEX(audio);
+
+    /* add recall */
+    g_rec_mutex_lock(recall_mutex);
+
+    if(g_list_find(audio->recall, recall) == NULL){
+      success = TRUE;
+      
+      g_object_ref(G_OBJECT(recall));
+    
+      audio->recall = g_list_insert(audio->recall,
+				    recall,
+				    position);
+    }
+
+    g_rec_mutex_unlock(recall_mutex);
+  }
+
+  if(success){
+    if(AGS_IS_RECALL_AUDIO(recall) ||
+       AGS_IS_RECALL_AUDIO_RUN(recall)){
+      g_object_set(recall,
+		   "audio", audio,
+		   NULL);
+    }
+  }
+}
+
+/**
  * ags_audio_remove_recall:
  * @audio: the #AgsAudio
  * @recall: the #AgsRecall
@@ -11701,7 +11928,8 @@ ags_audio_add_recall(AgsAudio *audio,
  * Since: 3.0.0
  */
 void
-ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play_context)
+ags_audio_remove_recall(AgsAudio *audio, GObject *recall,
+			gboolean play_context)
 {
   gboolean success;
   
@@ -11954,8 +12182,8 @@ ags_audio_real_duplicate_recall(AgsAudio *audio,
 #endif
 
     /* set appropriate sound scope */
-    copy_recall->sound_scope = sound_scope;
-      
+    ags_recall_set_sound_scope(copy_recall, sound_scope);
+    
     /* append to AgsAudio */
     ags_audio_add_recall(audio,
 			 (GObject *) copy_recall,
@@ -12457,25 +12685,28 @@ ags_audio_real_play_recall(AgsAudio *audio,
   }
 
   /* automate and play  */
-  staging_flags = staging_mask & staging_flags;
+  if((AGS_SOUND_STAGING_FX & (staging_flags)) == 0){
+    staging_flags = staging_flags & staging_mask;
   
-  if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0){
-    while(list != NULL){
-      recall = AGS_RECALL(list->data);
+    if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0){
+      while(list != NULL){
+	recall = AGS_RECALL(list->data);
       
-      /* play stages */
-      if(AGS_IS_RECALL_AUDIO(recall)){
-	ags_recall_set_staging_flags(recall,
-				     AGS_SOUND_STAGING_AUTOMATE);
-	ags_recall_unset_staging_flags(recall,
+	/* play stages */
+	if(AGS_IS_RECALL_AUDIO(recall)){
+	  ags_recall_set_staging_flags(recall,
 				       AGS_SOUND_STAGING_AUTOMATE);
-      }
+	  ags_recall_unset_staging_flags(recall,
+					 AGS_SOUND_STAGING_AUTOMATE);
+	}
       
-      list = list->next;
+	list = list->next;
+      }
     }
-  }
 
-  staging_flags &= (~AGS_SOUND_STAGING_AUTOMATE);
+    staging_flags = staging_flags & (~AGS_SOUND_STAGING_AUTOMATE);
+  }
+  
   list = list_start;
 
   while((list = ags_recall_find_recycling_context(list,
@@ -13034,8 +13265,11 @@ ags_audio_recall_done_callback(AgsRecall *recall,
 
   gint sound_scope;
   
-  if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall) &&
-     !ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING)){
+  if(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING) &&
+     (AGS_IS_COUNT_BEATS_AUDIO_RUN(recall) ||
+      AGS_IS_FX_PATTERN_AUDIO_PROCESSOR(recall) ||
+      AGS_IS_FX_NOTATION_AUDIO_PROCESSOR(recall) ||
+      AGS_IS_FX_PLAYBACK_AUDIO_PROCESSOR(recall))){
     sound_scope = ags_recall_get_sound_scope(recall);
 
     application_context = ags_application_context_get_instance();
@@ -13085,8 +13319,7 @@ ags_audio_real_start(AgsAudio *audio,
 				      AGS_SOUND_STAGING_RUN_INIT_INTER |
 				      AGS_SOUND_STAGING_RUN_INIT_POST);
   
-  if(!ags_audio_test_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING) ||
-     sound_scope >= AGS_SOUND_SCOPE_LAST){
+  if(sound_scope >= AGS_SOUND_SCOPE_LAST){
     return(NULL);
   }
 
@@ -13710,6 +13943,15 @@ ags_audio_real_stop(AgsAudio *audio,
 	output_playback = output_playback->next;
       }
     }
+  }
+
+  list = recall_id;
+
+  while(list != NULL){
+    ags_audio_remove_recall_id(audio,
+			       (GObject *) list->data);
+    
+    list = list->next;
   }
 
   /* remove audio from AgsAudioLoop */

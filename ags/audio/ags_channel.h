@@ -99,6 +99,8 @@ struct _AgsChannel
   guint behaviour_flags;
   guint staging_flags[AGS_SOUND_SCOPE_LAST];
 
+  gboolean staging_completed[AGS_SOUND_SCOPE_LAST];
+  
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;
@@ -231,6 +233,10 @@ void ags_channel_set_staging_flags(AgsChannel *channel, gint sound_scope,
 void ags_channel_unset_staging_flags(AgsChannel *channel, gint sound_scope,
 				     guint staging_flags);
 
+gboolean ags_channel_test_staging_completed(AgsChannel *channel, gint sound_scope);
+void ags_channel_set_staging_completed(AgsChannel *channel, gint sound_scope);
+void ags_channel_unset_staging_completed(AgsChannel *channel, gint sound_scope);
+
 /* parent */
 GObject* ags_channel_get_audio(AgsChannel *channel);
 void ags_channel_set_audio(AgsChannel *channel, GObject *audio);
@@ -334,8 +340,13 @@ void ags_channel_set_play(AgsChannel *channel, GList *play);
 GList* ags_channel_get_recall(AgsChannel *channel);
 void ags_channel_set_recall(AgsChannel *channel, GList *recall);
 
-void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play_context);
-void ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play_context);
+void ags_channel_add_recall(AgsChannel *channel, GObject *recall,
+			    gboolean play_context);
+void ags_channel_insert_recall(AgsChannel *channel, GObject *recall,
+			       gboolean play_context,
+			       gint position);
+void ags_channel_remove_recall(AgsChannel *channel, GObject *recall,
+			       gboolean play_context);
 
 /* add/remove effect */
 GList* ags_channel_add_effect(AgsChannel *channel,

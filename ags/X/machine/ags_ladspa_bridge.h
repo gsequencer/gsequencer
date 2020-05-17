@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,7 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
@@ -66,8 +67,11 @@ struct _AgsLadspaBridge
 
   gchar *xml_type;
   
-  guint mapped_output;
-  guint mapped_input;
+  guint mapped_output_pad;
+  guint mapped_input_pad;
+
+  AgsRecallContainer *ladspa_play_container;
+  AgsRecallContainer *ladspa_recall_container;
 
   gchar *filename;
   gchar *effect;
@@ -81,7 +85,12 @@ struct _AgsLadspaBridgeClass
 
 GType ags_ladspa_bridge_get_type(void);
 
-void ags_ladspa_bridge_load(AgsLadspaBridge *ladspa_bridge);
+void ags_ladspa_bridge_input_map_recall(AgsLadspaBridge *ladspa_bridge,
+					guint audio_channel_start,
+					guint input_pad_start);
+void ags_ladspa_bridge_output_map_recall(AgsLadspaBridge *ladspa_bridge,
+					 guint audio_channel_start,
+					 guint output_pad_start);
 
 AgsLadspaBridge* ags_ladspa_bridge_new(GObject *soundcard,
 				       gchar *filename,

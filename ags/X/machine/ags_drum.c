@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,11 +45,16 @@ void ags_drum_disconnect(AgsConnectable *connectable);
 
 void ags_drum_show(GtkWidget *widget);
 void ags_drum_show_all(GtkWidget *widget);
-void ags_drum_map_recall(AgsMachine *machine);
 
-void ags_drum_resize_pads(AgsDrum *drum, GType gtype,
+void ags_drum_resize_audio_channels(AgsMachine *machine,
+				    guint audio_channels, guint audio_channels_old,
+				    gpointer data);
+void ags_drum_resize_pads(AgsMachine *machine,
+			  GType channel_type,
 			  guint pads, guint pads_old,
 			  gpointer data);
+
+void ags_drum_map_recall(AgsMachine *machine);
 
 /**
  * SECTION:ags_drum
@@ -174,6 +179,8 @@ ags_drum_init(AgsDrum *drum)
 				      AGS_SOUND_ABILITY_NOTATION));
   ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_PATTERN_MODE |
 					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
+
+  
   g_object_set(audio,
 	       "min-audio-channels", 1,
 	       "min-output-pads", 1,
@@ -206,6 +213,9 @@ ags_drum_init(AgsDrum *drum)
   					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
   /* audio resize */
+  g_signal_connect_after(G_OBJECT(drum), "resize-audio-channels",
+			 G_CALLBACK(ags_drum_resize_audio_channels), NULL);
+
   g_signal_connect_after(G_OBJECT(drum), "resize-pads",
 			 G_CALLBACK(ags_drum_resize_pads), NULL);
 
@@ -214,6 +224,27 @@ ags_drum_init(AgsDrum *drum)
 
   drum->name = NULL;
   drum->xml_type = "ags-drum";
+
+  drum->playback_play_container = ags_recall_container_new();
+  drum->playback_recall_container = ags_recall_container_new();
+
+  drum->pattern_play_container = ags_recall_container_new();
+  drum->pattern_recall_container = ags_recall_container_new();
+
+  drum->notation_play_container = ags_recall_container_new();
+  drum->notation_recall_container = ags_recall_container_new();
+
+  drum->volume_play_container = ags_recall_container_new();
+  drum->volume_recall_container = ags_recall_container_new();
+
+  drum->envelope_play_container = ags_recall_container_new();
+  drum->envelope_recall_container = ags_recall_container_new();
+
+  drum->peak_play_container = ags_recall_container_new();
+  drum->peak_recall_container = ags_recall_container_new();
+
+  drum->buffer_play_container = ags_recall_container_new();
+  drum->buffer_recall_container = ags_recall_container_new();
 
   /* create widgets */
   drum->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
@@ -356,7 +387,17 @@ ags_drum_init(AgsDrum *drum)
 
 void
 ags_drum_finalize(GObject *gobject)
-{  
+{
+  g_object_disconnect(gobject,
+		      "any_signal::resize-audio-channels",
+		      G_CALLBACK(ags_drum_resize_audio_channels),
+		      NULL,
+		      "any_signal::resize-pads",
+		      G_CALLBACK(ags_drum_resize_pads),
+		      NULL,
+		      NULL);
+
+  /* call parent */
   G_OBJECT_CLASS(ags_drum_parent_class)->finalize(gobject);
 }
 
@@ -492,244 +533,49 @@ ags_drum_show_all(GtkWidget *widget)
 }
 
 void
-ags_drum_map_recall(AgsMachine *machine)
+ags_drum_resize_audio_channels(AgsMachine *machine,
+			       guint audio_channels, guint audio_channels_old,
+			       gpointer data)
 {
-  AgsWindow *window;
-  
-  AgsAudio *audio;
-
-  AgsDelayAudio *play_delay_audio;
-  AgsDelayAudioRun *play_delay_audio_run;
-  AgsCountBeatsAudio *play_count_beats_audio;
-  AgsCountBeatsAudioRun *play_count_beats_audio_run;
-  AgsCopyPatternAudio *recall_copy_pattern_audio;
-  AgsCopyPatternAudioRun *recall_copy_pattern_audio_run;
-  AgsRecordMidiAudio *recall_record_midi_audio;
-  AgsRecordMidiAudioRun *recall_record_midi_audio_run;
-  AgsPlayNotationAudio *recall_notation_audio;
-  AgsPlayNotationAudioRun *recall_notation_audio_run;
-
-  GList *start_play, *play;
-  GList *start_recall, *recall;
-  
-  GValue value = {0,};
-
-  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
-     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
-    return;
-  }
-  
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						 AGS_TYPE_WINDOW);
-  
-  audio = machine->audio;
-
-  /* ags-delay */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-delay",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
-
-  g_object_get(audio,
-	       "play", &start_play,
-	       NULL);
-
-  play = ags_recall_find_type(start_play,
-			      AGS_TYPE_DELAY_AUDIO_RUN);
-
-  if(play != NULL){
-    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(play->data);
-    //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
-  }else{
-    play_delay_audio_run = NULL;
-  }
-
-  g_list_free_full(start_play,
-		   g_object_unref);
-  
-  /* ags-count-beats */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-count-beats",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
-  
-  g_object_get(audio,
-	       "play", &start_play,
-	       NULL);
-
-  play = ags_recall_find_type(start_play,
-			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
-
-  if(play != NULL){
-    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(play->data);
-
-    /* set dependency */  
-    g_object_set(G_OBJECT(play_count_beats_audio_run),
-		 "delay-audio-run", play_delay_audio_run,
-		 NULL);
-    ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      (gint64) 16 * gtk_spin_button_get_value(window->navigation->position_tact),
-		      AGS_SEEK_SET);
-
-    /* notation loop */
-    g_value_init(&value, G_TYPE_BOOLEAN);
-    
-    g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
-    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
-			&value);
-
-    g_value_unset(&value);
-    g_value_init(&value, G_TYPE_UINT64);
-
-    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_left_tact));
-    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_start,
-			&value);
-
-    g_value_reset(&value);
-
-    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_right_tact));
-    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_end,
-			&value);
-  }else{
-    play_count_beats_audio_run = NULL;
-  }
-
-  g_list_free_full(start_play,
-		   g_object_unref);
-  
-  /* ags-copy-pattern */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-copy-pattern",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_REMAP |
-			     AGS_RECALL_FACTORY_RECALL),
-			    0);
-
-  g_object_get(audio,
-	       "recall", &start_recall,
-	       NULL);
-
-  recall = ags_recall_find_type(start_recall,
-				AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
-
-  if(recall != NULL){
-    recall_copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall->data);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_copy_pattern_audio_run),
-		 "delay-audio-run", play_delay_audio_run,
-		 "count-beats-audio-run", play_count_beats_audio_run,
-		 NULL);
-  }
-
-  g_list_free_full(start_recall,
-		   g_object_unref);
-  
-  /* ags-record-midi */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-record-midi",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
-
-  g_object_get(audio,
-	       "play", &start_play,
-	       NULL);
-
-  play = ags_recall_find_type(start_play,
-			      AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
-
-  if(play != NULL){
-    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(play->data);
-    
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_record_midi_audio_run),
-		 "delay-audio-run", play_delay_audio_run,
-		 NULL);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_record_midi_audio_run),
-		 "count-beats-audio-run", play_count_beats_audio_run,
-		 NULL);
-  }  
-
-  g_list_free_full(start_play,
-		   g_object_unref);
-  
-  /* ags-play-notation */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-play-notation",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
-
-  g_object_get(audio,
-	       "play", &start_play,
-	       NULL);
-
-  play = ags_recall_find_type(start_play,
-			      AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
-
-  if(play != NULL){
-    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(play->data);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_notation_audio_run),
-		 "delay-audio-run", play_delay_audio_run,
-		 NULL);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_notation_audio_run),
-		 "count-beats-audio-run", play_count_beats_audio_run,
-		 NULL);
-  }
-
-  g_list_free_full(start_play,
-		   g_object_unref);
-  
-  /* call parent */
-  AGS_MACHINE_CLASS(ags_drum_parent_class)->map_recall(machine);
+  //empty
 }
 
 void
-ags_drum_resize_pads(AgsDrum *drum, GType gtype,
+ags_drum_resize_pads(AgsMachine *machine,
+		     GType channel_type,
 		     guint pads, guint pads_old,
 		     gpointer data)
 {
-  if(gtype == AGS_TYPE_INPUT){
-    AgsDrumInputPad *drum_input_pad;
+  AgsDrum *drum;
+  AgsDrumInputPad *drum_input_pad;
+  
+  GList *start_list;
 
-    if(pads_old < pads){
+  drum = AGS_DRUM(machine);
+  
+  if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+    if(pads > pads_old){
       /* reset edit button */
       if(pads_old == 0){
 	GtkToggleButton *selected_edit_button;
 
-	drum->selected_pad = AGS_DRUM_INPUT_PAD(gtk_container_get_children((GtkContainer *) drum->input_pad)->data);
-	AGS_MACHINE(drum)->selected_input_pad = (GtkWidget *) drum->selected_pad;
+	start_list = gtk_container_get_children((GtkContainer *) drum->input_pad);
 
-	drum->selected_edit_button = drum->selected_pad->edit;
-	gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
+	drum_input_pad = NULL;
+
+	if(start_list != NULL){
+	  drum_input_pad = AGS_DRUM_INPUT_PAD(start_list->data);
+	}
+	
+	drum->selected_pad = drum_input_pad;
+	AGS_MACHINE(drum)->selected_input_pad = (GtkWidget *) drum_input_pad;
+
+	if(drum->selected_pad != NULL){
+	  drum->selected_edit_button = drum->selected_pad->edit;
+	  gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
+	}
+
+	g_list_free(start_list);
       }
     }else{
       /* destroy AgsPad's */
@@ -737,19 +583,179 @@ ags_drum_resize_pads(AgsDrum *drum, GType gtype,
 	drum->selected_pad = NULL;
 	drum->selected_edit_button = NULL;
       }else{
+	guint pad;
+	
 	drum_input_pad = AGS_DRUM_INPUT_PAD(gtk_widget_get_ancestor(GTK_WIDGET(drum->selected_edit_button),
 								    AGS_TYPE_PAD));
 
-	if(drum_input_pad->pad.channel->pad > pads){
-	  drum->selected_pad = AGS_DRUM_INPUT_PAD(gtk_container_get_children((GtkContainer *) drum->input_pad)->data);
-	  AGS_MACHINE(drum)->selected_input_pad = (GtkWidget *) drum->selected_pad;
+	g_object_get(AGS_PAD(drum_input_pad)->channel,
+		     "pad", &pad,
+		     NULL);
+	
+	if(pad > pads){
+	  start_list = gtk_container_get_children((GtkContainer *) drum->input_pad);
+
+	  drum_input_pad = NULL;
+
+	  if(start_list != NULL){
+	    drum_input_pad = AGS_DRUM_INPUT_PAD(start_list->data);
+	  }
 	  
-	  drum->selected_edit_button = drum->selected_pad->edit;
-	  gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
+	  drum->selected_pad = drum_input_pad;
+	  AGS_MACHINE(drum)->selected_input_pad = (GtkWidget *) drum_input_pad;
+	  
+	  if(drum->selected_pad != NULL){
+	    drum->selected_edit_button = drum->selected_pad->edit;
+	    gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
+	  }
+	  
+	  g_list_free(start_list);
 	}
       }
     }
-  }  
+  }else{
+    if(pads > pads_old){
+      //empty
+    }
+  }
+}
+
+void
+ags_drum_map_recall(AgsMachine *machine)
+{
+  AgsDrum *drum;
+  
+  AgsAudio *audio;
+
+  GList *start_recall, *recall;
+
+  gint position;
+  
+  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
+     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
+    return;
+  }
+
+  drum = AGS_DRUM(machine);
+  
+  audio = machine->audio;
+
+  position = 0;
+  
+  /* ags-fx-playback */
+  start_recall = ags_fx_factory_create(audio,
+				       drum->playback_play_container, drum->playback_recall_container,
+				       "ags-fx-playback",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-pattern */
+  start_recall = ags_fx_factory_create(audio,
+				       drum->pattern_play_container, drum->pattern_recall_container,
+				       "ags-fx-pattern",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-notation */
+  start_recall = ags_fx_factory_create(audio,
+				       drum->notation_play_container, drum->notation_recall_container,
+				       "ags-fx-notation",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
+
+  recall = ags_recall_template_find_type(start_recall, AGS_TYPE_FX_NOTATION_AUDIO);
+
+  if(recall != NULL){
+    ags_fx_notation_audio_set_pattern_mode(recall->data,
+					   TRUE);
+  }
+  
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       drum->volume_play_container, drum->volume_recall_container,
+				       "ags-fx-volume",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-envelope */
+  start_recall = ags_fx_factory_create(audio,
+				       drum->envelope_play_container, drum->envelope_recall_container,
+				       "ags-fx-envelope",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-peak */
+  start_recall = ags_fx_factory_create(audio,
+				       drum->peak_play_container, drum->peak_recall_container,
+				       "ags-fx-peak",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-buffer */
+  start_recall = ags_fx_factory_create(audio,
+				       drum->buffer_play_container, drum->buffer_recall_container,
+				       "ags-fx-buffer",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+  
+  /* call parent */
+  AGS_MACHINE_CLASS(ags_drum_parent_class)->map_recall(machine);
 }
 
 /**

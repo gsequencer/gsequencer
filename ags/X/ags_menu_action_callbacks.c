@@ -430,9 +430,10 @@ ags_menu_action_add_panel_callback(GtkWidget *menu_item, gpointer data)
 		     FALSE, FALSE,
 		     0);
 
-  AGS_MACHINE(panel)->audio->audio_channels = 2;
-
   ags_connectable_connect(AGS_CONNECTABLE(panel));
+
+  ags_audio_set_audio_channels(AGS_MACHINE(panel)->audio,
+			       2, 0);
   
   ags_audio_set_pads(AGS_MACHINE(panel)->audio,
 		     AGS_TYPE_INPUT,
@@ -476,7 +477,8 @@ ags_menu_action_add_mixer_callback(GtkWidget *menu_item, gpointer data)
 
   ags_connectable_connect(AGS_CONNECTABLE(mixer));
 
-  AGS_MACHINE(mixer)->audio->audio_channels = 2;
+  ags_audio_set_audio_channels(AGS_MACHINE(mixer)->audio,
+			       2, 0);
 
   ags_audio_set_pads(AGS_MACHINE(mixer)->audio,
 		     AGS_TYPE_INPUT,
@@ -520,7 +522,8 @@ ags_menu_action_add_spectrometer_callback(GtkWidget *menu_item, gpointer data)
 
   ags_connectable_connect(AGS_CONNECTABLE(spectrometer));
 
-  AGS_MACHINE(spectrometer)->audio->audio_channels = 2;
+  ags_audio_set_audio_channels(AGS_MACHINE(spectrometer)->audio,
+			       2, 0);
 
   ags_audio_set_pads(AGS_MACHINE(spectrometer)->audio,
 		     AGS_TYPE_INPUT,
@@ -564,7 +567,8 @@ ags_menu_action_add_equalizer_callback(GtkWidget *menu_item, gpointer data)
 
   ags_connectable_connect(AGS_CONNECTABLE(equalizer10));
 
-  AGS_MACHINE(equalizer10)->audio->audio_channels = 2;
+  ags_audio_set_audio_channels(AGS_MACHINE(equalizer10)->audio,
+			       2, 0);
 
   ags_audio_set_pads(AGS_MACHINE(equalizer10)->audio,
 		     AGS_TYPE_INPUT,
@@ -610,7 +614,8 @@ ags_menu_action_add_drum_callback(GtkWidget *menu_item, gpointer data)
   ags_connectable_connect(AGS_CONNECTABLE(drum));
 
   /* */
-  AGS_MACHINE(drum)->audio->audio_channels = 2;
+  ags_audio_set_audio_channels(AGS_MACHINE(drum)->audio,
+			       2, 0);
 
   /* AgsDrumInputPad */
   ags_audio_set_pads(AGS_MACHINE(drum)->audio,
@@ -658,7 +663,8 @@ ags_menu_action_add_matrix_callback(GtkWidget *menu_item, gpointer data)
   ags_connectable_connect(AGS_CONNECTABLE(matrix));
 
   /* */
-  AGS_MACHINE(matrix)->audio->audio_channels = 1;
+  ags_audio_set_audio_channels(AGS_MACHINE(matrix)->audio,
+			       1, 0);
 
   /* AgsMatrixInputPad */
   ags_audio_set_pads(AGS_MACHINE(matrix)->audio,
@@ -704,7 +710,8 @@ ags_menu_action_add_synth_callback(GtkWidget *menu_item, gpointer data)
 
   ags_connectable_connect(AGS_CONNECTABLE(synth));
 
-  AGS_MACHINE(synth)->audio->audio_channels = 1;
+  ags_audio_set_audio_channels(AGS_MACHINE(synth)->audio,
+			       1, 0);
 
   ags_audio_set_pads(AGS_MACHINE(synth)->audio,
 		     AGS_TYPE_INPUT,
@@ -748,7 +755,8 @@ ags_menu_action_add_fm_synth_callback(GtkWidget *menu_item, gpointer data)
 
   ags_connectable_connect(AGS_CONNECTABLE(fm_synth));
 
-  AGS_MACHINE(fm_synth)->audio->audio_channels = 1;
+  ags_audio_set_audio_channels(AGS_MACHINE(fm_synth)->audio,
+			       1, 0);
 
   ags_audio_set_pads(AGS_MACHINE(fm_synth)->audio,
 		     AGS_TYPE_INPUT,
@@ -792,7 +800,8 @@ ags_menu_action_add_syncsynth_callback(GtkWidget *menu_item, gpointer data)
 
   ags_connectable_connect(AGS_CONNECTABLE(syncsynth));
 
-  AGS_MACHINE(syncsynth)->audio->audio_channels = 1;
+  ags_audio_set_audio_channels(AGS_MACHINE(syncsynth)->audio,
+			       1, 0);
   
   ags_audio_set_pads(AGS_MACHINE(syncsynth)->audio,
 		     AGS_TYPE_INPUT,
@@ -836,7 +845,8 @@ ags_menu_action_add_fm_syncsynth_callback(GtkWidget *menu_item, gpointer data)
 
   ags_connectable_connect(AGS_CONNECTABLE(fm_syncsynth));
 
-  AGS_MACHINE(fm_syncsynth)->audio->audio_channels = 1;
+  ags_audio_set_audio_channels(AGS_MACHINE(fm_syncsynth)->audio,
+			       1, 0);
   
   ags_audio_set_pads(AGS_MACHINE(fm_syncsynth)->audio,
 		     AGS_TYPE_INPUT,
@@ -881,7 +891,8 @@ ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data)
 
   ags_connectable_connect(AGS_CONNECTABLE(ffplayer));
 
-  AGS_MACHINE(ffplayer)->audio->audio_channels = 2;
+  ags_audio_set_audio_channels(AGS_MACHINE(ffplayer)->audio,
+			       2, 0);
   
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio,
 		     AGS_TYPE_INPUT,
@@ -926,7 +937,8 @@ ags_menu_action_add_pitch_sampler_callback(GtkWidget *menu_item, gpointer data)
 
   ags_connectable_connect(AGS_CONNECTABLE(pitch_sampler));
 
-  AGS_MACHINE(pitch_sampler)->audio->audio_channels = 2;
+  ags_audio_set_audio_channels(AGS_MACHINE(pitch_sampler)->audio,
+			       2, 0);
   
   ags_audio_set_pads(AGS_MACHINE(pitch_sampler)->audio,
 		     AGS_TYPE_INPUT,
@@ -970,7 +982,8 @@ ags_menu_action_add_audiorec_callback(GtkWidget *menu_item, gpointer data)
 
   ags_connectable_connect(AGS_CONNECTABLE(audiorec));
 
-  AGS_MACHINE(audiorec)->audio->audio_channels = 2;
+  ags_audio_set_audio_channels(AGS_MACHINE(audiorec)->audio,
+			       2, 0);
   
   ags_audio_set_pads(AGS_MACHINE(audiorec)->audio,
 		     AGS_TYPE_INPUT,
@@ -1024,7 +1037,8 @@ ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
   ags_connectable_connect(AGS_CONNECTABLE(ladspa_bridge));
 
   /* */
-  AGS_MACHINE(ladspa_bridge)->audio->audio_channels = 2;
+  ags_audio_set_audio_channels(AGS_MACHINE(ladspa_bridge)->audio,
+			       2, 0);
 
   /*  */
   ags_audio_set_pads(AGS_MACHINE(ladspa_bridge)->audio,
@@ -1033,9 +1047,6 @@ ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
   ags_audio_set_pads(AGS_MACHINE(ladspa_bridge)->audio,
 		     AGS_TYPE_OUTPUT,
 		     1, 0);
-
-  /*  */
-  ags_ladspa_bridge_load(ladspa_bridge);
 
   /* */
   gtk_widget_show_all(GTK_WIDGET(ladspa_bridge));
@@ -1082,10 +1093,10 @@ ags_menu_action_add_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
   /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(dssi_bridge));
   
-  /* */
-  AGS_MACHINE(dssi_bridge)->audio->audio_channels = 2;
-
   /*  */
+  ags_audio_set_audio_channels(AGS_MACHINE(dssi_bridge)->audio,
+			       2, 0);
+
   ags_audio_set_pads(AGS_MACHINE(dssi_bridge)->audio,
 		     AGS_TYPE_INPUT,
 		     128, 0);
@@ -1241,7 +1252,8 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
   ags_connectable_connect(AGS_CONNECTABLE(lv2_bridge));
   
   /*  */
-  AGS_MACHINE(lv2_bridge)->audio->audio_channels = 2;
+  ags_audio_set_audio_channels(AGS_MACHINE(lv2_bridge)->audio,
+			       2, 0);
 
   /*  */
   if(lv2_plugin != NULL){
@@ -1309,7 +1321,8 @@ ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer dat
   ags_connectable_connect(AGS_CONNECTABLE(live_dssi_bridge));
 
   /* */
-  AGS_MACHINE(live_dssi_bridge)->audio->audio_channels = 2;
+  ags_audio_set_audio_channels(AGS_MACHINE(live_dssi_bridge)->audio,
+			       2, 0);
 
   /*  */
   ags_audio_set_pads(AGS_MACHINE(live_dssi_bridge)->audio,
@@ -1439,7 +1452,8 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
   ags_connectable_connect(AGS_CONNECTABLE(live_lv2_bridge));
   
   /*  */
-  AGS_MACHINE(live_lv2_bridge)->audio->audio_channels = 2;
+  ags_audio_set_audio_channels(AGS_MACHINE(live_lv2_bridge)->audio,
+			       2, 0);
 
   /*  */
   if(lv2_plugin != NULL){

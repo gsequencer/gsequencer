@@ -318,7 +318,7 @@ ags_lv2_cache_turtle_free(AgsLv2CacheTurtle *lv2_cache_turtle)
 }
 
 /**
- * ags_lv2_cache_turtle_free:
+ * ags_lv2_cache_turtle_find:
  * @lv2_cache_turtle: a #GList-struct containing #AgsLv2CacheTurtle-struct
  * @turtle_filename: the .ttl filename
  * 

@@ -270,6 +270,19 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->play_audio = NULL;
 
   audio_loop->sync_thread = NULL;
+
+  /* staging program */
+  audio_loop->do_fx_staging = FALSE;
+
+  audio_loop->staging_program = g_malloc(3 * sizeof(guint));
+
+  audio_loop->staging_program[0] = (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
+				    AGS_SOUND_STAGING_AUTOMATE |
+				    AGS_SOUND_STAGING_RUN_PRE);
+  audio_loop->staging_program[1] = (AGS_SOUND_STAGING_RUN_INTER);
+  audio_loop->staging_program[2] = (AGS_SOUND_STAGING_RUN_POST);
+
+  audio_loop->staging_program_count = 3;
 }
 
 void
@@ -878,26 +891,20 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
       }
     
       if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
-#if 1
-	ags_channel_recursive_run_stage(channel,
-					sound_scope, (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
-						      AGS_SOUND_STAGING_AUTOMATE |
-						      AGS_SOUND_STAGING_RUN_PRE));
+	guint *staging_program;
+	
+	guint staging_program_count;
+	guint nth;
 
-	ags_channel_recursive_run_stage(channel,
-					sound_scope, (AGS_SOUND_STAGING_RUN_INTER));
+	staging_program = ags_audio_loop_get_staging_program(audio_loop,
+							     &staging_program_count);
+	
+	for(nth = 0; nth < staging_program_count; nth++){
+	  ags_channel_recursive_run_stage(channel,
+					  sound_scope, staging_program[nth]);
+	}
 
-	ags_channel_recursive_run_stage(channel,
-					sound_scope, (AGS_SOUND_STAGING_RUN_POST |
-						      AGS_SOUND_STAGING_DO_FEEDBACK |
-						      AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));
-#else
-	ags_channel_recursive_run_stage(channel,
-					sound_scope, (AGS_SOUND_STAGING_AUTOMATE |
-						      AGS_SOUND_STAGING_RUN_PRE |
-						      AGS_SOUND_STAGING_RUN_INTER |
-						      AGS_SOUND_STAGING_RUN_POST));
-#endif
+	g_free(staging_program);
 
 	g_list_free_full(recall_id,
 			 g_object_unref);
@@ -1093,14 +1100,41 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
   play_audio = start_play_audio;
 
   while(play_audio != NULL){
+    AgsChannel *start_output;
+    AgsChannel *output, *next;
+    
     playback_domain = (AgsPlaybackDomain *) play_audio->data;
 
     audio = NULL;
+    
     g_object_get(playback_domain,
 		 "audio", &audio,
 		 NULL);
     
     /* play */
+    start_output = NULL;
+
+    g_object_get(audio,
+		 "output", &start_output,
+		 NULL);
+
+
+    if(start_output != NULL){
+      output = start_output;
+      g_object_ref(output);
+
+      while(output != NULL){
+	ags_channel_unset_staging_completed(output, sound_scope);
+
+	/* iterate */
+	next = ags_channel_next(output);
+
+	g_object_unref(output);
+	
+	output = next;
+      }
+    }
+
     if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
       /* super threaded */
       ags_audio_loop_play_audio_super_threaded(audio_loop,
@@ -1113,26 +1147,20 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	}
 	
 	if((recall_id = ags_audio_check_scope(audio, sound_scope)) != NULL){
-#if 1
-	  ags_audio_recursive_run_stage(audio,
-					sound_scope, (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
-						      AGS_SOUND_STAGING_AUTOMATE |
-						      AGS_SOUND_STAGING_RUN_PRE));
+	  guint *staging_program;
+	
+	  guint staging_program_count;
+	  guint nth;
 
-	  ags_audio_recursive_run_stage(audio,
-					sound_scope, (AGS_SOUND_STAGING_RUN_INTER));
+	  staging_program = ags_audio_loop_get_staging_program(audio_loop,
+							       &staging_program_count);
+	
+	  for(nth = 0; nth < staging_program_count; nth++){
+	    ags_audio_recursive_run_stage(audio,
+					  sound_scope, staging_program[nth]);
+	  }
 
-	  ags_audio_recursive_run_stage(audio,
-					sound_scope, (AGS_SOUND_STAGING_RUN_POST |
-						      AGS_SOUND_STAGING_DO_FEEDBACK |
-						      AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));
-#else
-	  ags_audio_recursive_run_stage(audio,
-					sound_scope, (AGS_SOUND_STAGING_AUTOMATE |
-						      AGS_SOUND_STAGING_RUN_PRE |
-						      AGS_SOUND_STAGING_RUN_INTER |
-						      AGS_SOUND_STAGING_RUN_POST));
-#endif
+	  g_free(staging_program);
 	  
 	  g_list_free_full(recall_id,
 			   g_object_unref);
@@ -1140,7 +1168,13 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
       }
     }
 
-    g_object_unref(audio);
+    if(audio != NULL){
+      g_object_unref(audio);
+    }
+    
+    if(start_output != NULL){
+      g_object_unref(start_output);
+    }
     
     /* iterate */
     play_audio = play_audio->next;
@@ -1570,6 +1604,157 @@ ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
   if(playback != NULL){
     g_object_unref(playback);
   }
+}
+
+/**
+ * ags_audio_loop_get_do_fx_staging:
+ * @audio_loop: the #AgsAudioLoop
+ * 
+ * Get do fx staging.
+ * 
+ * Returns: %TRUE if set, otherwise %FALSE
+ * 
+ * Since: 3.3.0
+ */
+gboolean
+ags_audio_loop_get_do_fx_staging(AgsAudioLoop *audio_loop)
+{
+  gboolean do_fx_staging;
+  
+  GRecMutex *thread_mutex;
+  
+  if(!AGS_IS_AUDIO_LOOP(audio_loop)){
+    return(FALSE);
+  }
+  
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
+  
+  /* get do fx staging */
+  g_rec_mutex_lock(thread_mutex);
+  
+  do_fx_staging = audio_loop->do_fx_staging;
+  
+  g_rec_mutex_unlock(thread_mutex);
+  
+  return(do_fx_staging);
+}
+
+/**
+ * ags_audio_loop_set_do_fx_staging:
+ * @audio_loop: the #AgsAudioLoop
+ * @do_fx_staging: %TRUE if do fx staging, else %FALSE
+ * 
+ * Set do fx staging.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_audio_loop_set_do_fx_staging(AgsAudioLoop *audio_loop, gboolean do_fx_staging)
+{
+  GRecMutex *thread_mutex;
+
+  if(!AGS_IS_AUDIO_LOOP(audio_loop)){
+    return;
+  }
+
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
+
+  /* get do fx staging */
+  g_rec_mutex_lock(thread_mutex);
+
+  audio_loop->do_fx_staging = do_fx_staging;
+
+  g_rec_mutex_unlock(thread_mutex);
+}
+
+/**
+ * ags_audio_loop_get_staging_program:
+ * @audio_loop: the #AgsAudioLoop
+ * @staging_program_count: (out): the staging program count
+ * 
+ * Get staging program.
+ * 
+ * Returns: (transfer full): the staging program
+ * 
+ * Since: 3.3.0
+ */
+guint*
+ags_audio_loop_get_staging_program(AgsAudioLoop *audio_loop,
+				   guint *staging_program_count)
+{
+  guint *staging_program;
+
+  GRecMutex *thread_mutex;
+
+  if(!AGS_IS_AUDIO_LOOP(audio_loop)){
+    if(staging_program_count != NULL){
+      staging_program_count[0] = 0;
+    }
+    
+    return(NULL);
+  }
+
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
+
+  /* get staging program */
+  staging_program = NULL;
+
+  g_rec_mutex_lock(thread_mutex);
+
+  if(audio_loop->staging_program_count > 0){
+    staging_program = (guint *) g_malloc(audio_loop->staging_program_count * sizeof(guint));
+
+    memcpy(staging_program, audio_loop->staging_program, audio_loop->staging_program_count * sizeof(guint));
+  }
+
+  if(staging_program_count != NULL){
+    staging_program_count[0] = audio_loop->staging_program_count;
+  }
+
+  g_rec_mutex_unlock(thread_mutex);
+
+  return(staging_program);
+}
+
+/**
+ * ags_audio_loop_set_staging_program:
+ * @audio_loop: the #AgsAudioLoop
+ * @staging_program: (transfer none): the staging program
+ * @staging_program_count: the staging program count
+ * 
+ * Set staging program.
+ * 
+ * Since: 3.3.0
+ */
+void
+ags_audio_loop_set_staging_program(AgsAudioLoop *audio_loop,
+				   guint *staging_program,
+				   guint staging_program_count)
+{
+  GRecMutex *thread_mutex;
+
+  if(!AGS_IS_AUDIO_LOOP(audio_loop)){
+    return;
+  }
+
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
+
+  /* set staging program */
+  g_rec_mutex_lock(thread_mutex);
+
+  g_free(audio_loop->staging_program);
+  
+  if(staging_program_count > 0){
+    audio_loop->staging_program = (guint *) g_malloc(staging_program_count * sizeof(guint));
+
+    memcpy(audio_loop->staging_program, staging_program, staging_program_count * sizeof(guint));
+  }else{
+    audio_loop->staging_program = NULL;
+  }
+
+  audio_loop->staging_program_count = staging_program_count;
+  
+  g_rec_mutex_unlock(thread_mutex);
 }
 
 /**

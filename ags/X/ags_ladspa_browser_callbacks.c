@@ -126,6 +126,9 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 							gtk_combo_box_text_get_active_text(filename),
 							gtk_combo_box_text_get_active_text(effect));
 
+  plugin_so = NULL;
+  effect_index = 0;
+  
   g_object_get(ladspa_plugin,
 	       "plugin-so", &plugin_so,
 	       "effect-index", &effect_index,
