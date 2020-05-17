@@ -1567,17 +1567,17 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
   is_live_instrument = ags_fx_lv2_audio_test_flags(fx_lv2_audio, AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT);
   
   while(plugin_port != NULL){
+    guint port_index;
+
+    g_object_get(plugin_port->data,
+		 "port-index", &port_index,
+		 NULL);
+
     if(ags_plugin_port_test_flags(plugin_port->data,
 				  AGS_PLUGIN_PORT_CONTROL)){
       control_port_count++;
     }else if(ags_plugin_port_test_flags(plugin_port->data,
 					AGS_PLUGIN_PORT_AUDIO)){
-      guint port_index;
-
-      g_object_get(plugin_port->data,
-		   "port-index", &port_index,
-		   NULL);
-      
       if(ags_plugin_port_test_flags(plugin_port->data,
 				    AGS_PLUGIN_PORT_INPUT)){
 	if(input_port == NULL){
@@ -1600,7 +1600,12 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
 
 	output_port[output_port_count] = port_index;
 	output_port_count++;
-      }else if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_EVENT)){
+      }
+    }
+    
+    if(ags_plugin_port_test_flags(plugin_port->data,
+				  AGS_PLUGIN_PORT_INPUT)){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_EVENT)){
 	has_event_port = TRUE;
 
 	event_port = port_index;
@@ -1849,12 +1854,6 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
     }
   }
   
-  fx_lv2_audio->output_port_count = output_port_count;
-  fx_lv2_audio->output_port = output_port;
-
-  fx_lv2_audio->input_port_count = input_port_count;
-  fx_lv2_audio->input_port = input_port;
-
   fx_lv2_audio->lv2_port = lv2_port;
   
   g_rec_mutex_unlock(recall_mutex);

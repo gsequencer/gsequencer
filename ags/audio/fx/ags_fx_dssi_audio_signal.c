@@ -259,19 +259,23 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 
   if(midi_note >= 0 &&
      midi_note < 128){
+    AgsFxDssiAudioScopeData *scope_data;
+    AgsFxDssiAudioChannelData *channel_data;
+    AgsFxDssiAudioInputData *input_data;
+
+    g_rec_mutex_lock(fx_dssi_audio_mutex);
+
+    scope_data = fx_dssi_audio->scope_data[sound_scope];
+
+    channel_data = scope_data->channel_data[audio_channel];
+
+    input_data = channel_data->input_data[midi_note];
+
+    g_rec_mutex_unlock(fx_dssi_audio_mutex);
+
     if(delay_counter == 0.0 &&
        x0 == offset_counter){
-      AgsFxDssiAudioScopeData *scope_data;
-      AgsFxDssiAudioChannelData *channel_data;
-      AgsFxDssiAudioInputData *input_data;
-
       g_rec_mutex_lock(fx_dssi_audio_mutex);
-
-      scope_data = fx_dssi_audio->scope_data[sound_scope];
-
-      channel_data = scope_data->channel_data[audio_channel];
-
-      input_data = channel_data->input_data[midi_note];
 
       input_data->event_buffer->data.note.note = midi_note;      
       input_data->key_on += 1;
@@ -280,14 +284,7 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
     }    
     
     if(ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT)){
-      AgsFxDssiAudioScopeData *scope_data;
-      AgsFxDssiAudioChannelData *channel_data;
-      
       g_rec_mutex_lock(fx_dssi_audio_mutex);
-
-      scope_data = fx_dssi_audio->scope_data[sound_scope];
-
-      channel_data = scope_data->channel_data[audio_channel];
       
       if(channel_data->output != NULL){
 	ags_audio_buffer_util_clear_float(channel_data->output, fx_dssi_audio->output_port_count,
@@ -319,17 +316,7 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 
       g_rec_mutex_unlock(fx_dssi_audio_mutex);
     }else{
-      AgsFxDssiAudioScopeData *scope_data;
-      AgsFxDssiAudioChannelData *channel_data;
-      AgsFxDssiAudioInputData *input_data;
-
       g_rec_mutex_lock(fx_dssi_audio_mutex);
-
-      scope_data = fx_dssi_audio->scope_data[sound_scope];
-
-      channel_data = scope_data->channel_data[audio_channel];
-
-      input_data = channel_data->input_data[midi_note];
       
       if(input_data->output != NULL){
 	ags_audio_buffer_util_clear_float(input_data->output, fx_dssi_audio->output_port_count,

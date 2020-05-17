@@ -457,65 +457,66 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 
   if(midi_note >= 0 &&
      midi_note < 128){
+    AgsFxLv2AudioScopeData *scope_data;
+    AgsFxLv2AudioChannelData *channel_data;
+    AgsFxLv2AudioInputData *input_data;
+
+    g_rec_mutex_lock(fx_lv2_audio_mutex);
+
+    scope_data = fx_lv2_audio->scope_data[sound_scope];
+
+    channel_data = scope_data->channel_data[audio_channel];
+
+    input_data = channel_data->input_data[midi_note];
+
+    g_rec_mutex_unlock(fx_lv2_audio_mutex);
+
     if(delay_counter == 0.0 &&
        x0 == offset_counter){
-      AgsFxLv2AudioScopeData *scope_data;
-      AgsFxLv2AudioChannelData *channel_data;
-      AgsFxLv2AudioInputData *input_data;
-
       g_rec_mutex_lock(fx_lv2_audio_mutex);
-
-      scope_data = fx_lv2_audio->scope_data[sound_scope];
-
-      channel_data = scope_data->channel_data[audio_channel];
-
-      input_data = channel_data->input_data[midi_note];
       
       input_data->event_buffer->data.note.note = midi_note;
       input_data->key_on += 1;
 
-      if(is_live_instrument){
-	if(fx_lv2_audio->has_event_port){
-	  ags_lv2_plugin_event_buffer_append_midi(channel_data->event_port,
-						  AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						  input_data->event_buffer,
-						  1);
-	}
-
-	if(fx_lv2_audio->has_atom_port){
-	  ags_lv2_plugin_atom_sequence_append_midi(channel_data->atom_port,
-						   AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						   input_data->event_buffer,
-						   1);
-	}
-      }else{
-	if(fx_lv2_audio->has_event_port){
-	  ags_lv2_plugin_event_buffer_append_midi(input_data->event_port,
-						  AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						  input_data->event_buffer,
-						  1);
-	}
-
-	if(fx_lv2_audio->has_atom_port){
-	  ags_lv2_plugin_atom_sequence_append_midi(input_data->atom_port,
-						   AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
-						   input_data->event_buffer,
-						   1);
-	}
-      }
-      
       g_rec_mutex_unlock(fx_lv2_audio_mutex);
     }    
+
+    g_rec_mutex_lock(fx_lv2_audio_mutex);
     
-    if(ags_fx_lv2_audio_test_flags(fx_lv2_audio, AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT)){
-      AgsFxLv2AudioScopeData *scope_data;
-      AgsFxLv2AudioChannelData *channel_data;
-      
+    if(is_live_instrument){
+      if(fx_lv2_audio->has_event_port){
+	ags_lv2_plugin_event_buffer_append_midi(channel_data->event_port,
+						AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						input_data->event_buffer,
+						1);
+      }
+
+      if(fx_lv2_audio->has_atom_port){
+	ags_lv2_plugin_atom_sequence_append_midi(channel_data->atom_port,
+						 AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						 input_data->event_buffer,
+						 1);
+      }
+    }else{
+      if(fx_lv2_audio->has_event_port){
+	ags_lv2_plugin_event_buffer_append_midi(input_data->event_port,
+						AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						input_data->event_buffer,
+						1);
+      }
+
+      if(fx_lv2_audio->has_atom_port){
+	ags_lv2_plugin_atom_sequence_append_midi(input_data->atom_port,
+						 AGS_FX_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						 input_data->event_buffer,
+						 1);
+      }
+    }      
+
+    g_rec_mutex_unlock(fx_lv2_audio_mutex);
+    
+    if(is_live_instrument){
       g_rec_mutex_lock(fx_lv2_audio_mutex);
-
-      scope_data = fx_lv2_audio->scope_data[sound_scope];
-
-      channel_data = scope_data->channel_data[audio_channel];
       
       if(channel_data->output != NULL){
 	ags_audio_buffer_util_clear_float(channel_data->output, fx_lv2_audio->output_port_count,
@@ -540,19 +541,9 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 	  
       g_rec_mutex_unlock(source_stream_mutex);
 
-      g_rec_mutex_lock(fx_lv2_audio_mutex);
+      g_rec_mutex_unlock(fx_lv2_audio_mutex);
     }else{
-      AgsFxLv2AudioScopeData *scope_data;
-      AgsFxLv2AudioChannelData *channel_data;
-      AgsFxLv2AudioInputData *input_data;
-
       g_rec_mutex_lock(fx_lv2_audio_mutex);
-
-      scope_data = fx_lv2_audio->scope_data[sound_scope];
-
-      channel_data = scope_data->channel_data[audio_channel];
-
-      input_data = channel_data->input_data[midi_note];
       
       if(input_data->output != NULL){
 	ags_audio_buffer_util_clear_float(input_data->output, fx_lv2_audio->output_port_count,
