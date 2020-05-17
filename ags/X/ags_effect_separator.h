@@ -46,6 +46,11 @@ struct _AgsEffectSeparator
 {
   GtkHBox hbox;
 
+  AgsRecallContainer *play_container;
+  AgsRecallContainer *recall_container;
+
+  gchar *plugin_name;
+
   gchar *filename;
   gchar *effect;
 

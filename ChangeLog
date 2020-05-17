@@ -27,8 +27,6 @@ ags (3.3.0)
 	  AgsFxEnvelopeChannelProcessor, AgsFxEnvelopeRecycling and AgsFxEnvelopeAudioSignal
 	* implemented AgsFxEq10Audio, AgsFxEq10AudioProcessor, AgsFxEq10Channel,
 	  AgsFxEq10ChannelProcessor, AgsFxEq10Recycling and AgsFxEq10AudioSignal
-	* TODO:JK: implemented AgsFxLfoAudio, AgsFxLfoAudioProcessor, AgsFxLfoChannel,
-	  AgsFxLfoChannelProcessor, AgsFxLfoRecycling and AgsFxLfoAudioSignal
 	* implemented ags_audio_insert_recall() and ags_channel_insert_recall()
 	* implemented AgsResetFxPeak task
 	* implemented AgsResetFxAnalyse task
@@ -41,10 +39,6 @@ ags (3.3.0)
 	* implemented ags_channel_thread_get_staging_program() and ags_channel_thread_set_staging_program()
 	* implemented ags_audio_test_staging_completed(), ags_audio_set_staging_completed() and ags_audio_unset_staging_completed()
 	* implemented ags_channel_test_staging_completed(), ags_channel_set_staging_completed() and ags_channel_unset_staging_completed()
-	* TODO:JK: implemented Fx mutex per scope
-	* TODO:JK: fixed AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT/AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT in ags_fx_factory.c
-	* TODO:JK: fixed AgsComplex support
-	* TODO:JK: extended user's handbook to cover OSC server preferences
 	* improved GObject-Introspection API
 	* fixed UI bug related to channel number mismatch
 

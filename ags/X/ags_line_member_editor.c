@@ -250,8 +250,9 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 	       "play", &start_recall,
 	       NULL);
 
-  recall = start_recall;
-
+  recall = 
+    start_recall = g_list_reverse(start_recall);
+  
   while((recall = ags_recall_template_find_all_type(recall,
 						    AGS_TYPE_FX_LADSPA_CHANNEL,
 						    AGS_TYPE_FX_LV2_CHANNEL,

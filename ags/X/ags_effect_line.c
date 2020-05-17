@@ -1127,6 +1127,10 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
   
   /* add separator */
   separator = ags_effect_separator_new();
+
+  separator->play_container = play_container;
+  separator->recall_container = recall_container;
+
   g_object_set(separator,
 	       "text", effect,
 	       "filename", filename,
@@ -1837,6 +1841,10 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
   
   /* add separator */
   separator = ags_effect_separator_new();
+
+  separator->play_container = play_container;
+  separator->recall_container = recall_container;
+
   g_object_set(separator,
 	       "text", effect,
 	       "filename", filename,
@@ -2336,6 +2344,8 @@ ags_effect_line_real_add_plugin(AgsEffectLine *effect_line,
 				gint position,
 				guint create_flags, guint recall_flags)
 {
+  g_message("add");
+  
   if((AGS_FX_FACTORY_ADD & (create_flags)) != 0){
     if(!g_ascii_strncasecmp(plugin_name,
 			    "ags-fx-ladspa",
@@ -2427,9 +2437,6 @@ ags_effect_line_real_remove_plugin(AgsEffectLine *effect_line,
 
   GList *start_list, *list;
   GList *start_recall, *recall;
-
-  guint skip_control_count;
-  guint i;
   
   if(!AGS_IS_EFFECT_LINE(effect_line)){
     return;
@@ -2450,18 +2457,7 @@ ags_effect_line_real_remove_plugin(AgsEffectLine *effect_line,
 	       "audio", &audio,
 	       NULL);
 
-  /*  */
-  list = effect_line->plugin;
-
-  skip_control_count = 0;
-  
-  while(list != NULL && list->data != effect_line_plugin){
-    skip_control_count += AGS_EFFECT_LINE_PLUGIN(list->data);
-
-    /* iterate */
-    list = list->next;
-  }
-  
+  /*  */  
   effect_line->plugin = g_list_remove(effect_line->plugin,
 				      effect_line_plugin);
 
@@ -2627,17 +2623,21 @@ ags_effect_line_real_remove_plugin(AgsEffectLine *effect_line,
 
   list = start_list;
   
-  for(i = 0; i < skip_control_count;){
-    if(AGS_IS_LINE_MEMBER(list->data)){
-      i++;
+  while(list != NULL){
+    if(AGS_IS_LINE_MEMBER(list->data) &&
+       AGS_LINE_MEMBER(list->data)->play_container == effect_line_plugin->play_container){
+      if(AGS_IS_INDICATOR(list->data) ||
+	 AGS_IS_LED(list->data)){
+	g_hash_table_remove(ags_effect_line_indicator_queue_draw,
+			    list->data);
+      }
+
+      gtk_widget_destroy(list->data);
+    }else if(AGS_IS_EFFECT_SEPARATOR(list->data) &&
+	     AGS_EFFECT_SEPARATOR(list->data)->play_container == effect_line_plugin->play_container){
+      gtk_widget_destroy(list->data);
     }
     
-    list = list->next;
-  }
-  
-  for(i = 0; i < effect_line_plugin->control_count + 1; i++){
-    gtk_widget_destroy(list->data);
-
     list = list->next;
   }
   

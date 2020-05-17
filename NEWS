@@ -10,6 +10,12 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
+Overview of Changes in AGS 3.3.0
+================================
+
+* Implemented new ags-fx engine, replaced all existing recalls with fx counterpart.
+* Implemented staging program of AgsAudioLoop, AgsAudioThread and AgsChannelThread.
+
 Overview of Changes in AGS 3.0.0
 ================================
 

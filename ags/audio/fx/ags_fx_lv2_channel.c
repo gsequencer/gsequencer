@@ -1034,50 +1034,34 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
     g_rec_mutex_lock(fx_lv2_channel_mutex);
 
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      AgsFxLv2AudioScopeData *scope_data;
-
-      scope_data = fx_lv2_audio->scope_data[i];
-
-      if(i == AGS_SOUND_SCOPE_PLAYBACK ||
-	 i == AGS_SOUND_SCOPE_NOTATION ||
-	 i == AGS_SOUND_SCOPE_MIDI){
-	AgsFxLv2AudioChannelData *channel_data;
-	
-	channel_data = scope_data->channel_data[audio_channel];
-	
-	if(!is_live_instrument){	  
-	  AgsFxLv2AudioInputData *input_data;
-	    
-	  guint nth;
-	  
-	  input_data = channel_data->input_data[pad];
+      AgsFxLv2ChannelInputData *input_data;
+      
+      input_data = fx_lv2_channel->input_data[i];
 	      
-	  if(input_data->output == NULL &&
-	     output_port_count > 0 &&
-	     buffer_size > 0){
-	    input_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
-	  }
+      if(input_data->output == NULL &&
+	 output_port_count > 0 &&
+	 buffer_size > 0){
+	input_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
+      }
 	  
-	  if(input_data->input == NULL &&
-	     input_port_count > 0 &&
-	     buffer_size > 0){
-	    input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
-	  }
+      if(input_data->input == NULL &&
+	 input_port_count > 0 &&
+	 buffer_size > 0){
+	input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
+      }
 
-	  for(nth = 0; nth < output_port_count; nth++){
-	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-					 input_data->lv2_handle[0],
-					 output_port[nth],
-					 &(input_data->output[nth]));
-	  }
+      for(nth = 0; nth < output_port_count; nth++){
+	ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+				     input_data->lv2_handle[0],
+				     output_port[nth],
+				     &(input_data->output[nth]));
+      }
 
-	  for(nth = 0; nth < input_port_count; nth++){
-	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
-					 input_data->lv2_handle[0],
-					 input_port[nth],
-					 &(input_data->input[nth]));
-	  }
-	}
+      for(nth = 0; nth < input_port_count; nth++){
+	ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
+				     input_data->lv2_handle[0],
+				     input_port[nth],
+				     &(input_data->input[nth]));
       }
     }
   

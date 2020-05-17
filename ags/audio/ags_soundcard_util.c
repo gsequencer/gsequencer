@@ -69,6 +69,8 @@ ags_soundcard_util_get_obj_mutex(GObject *soundcard)
     obj_mutex = AGS_DEVIN_GET_OBJ_MUTEX(soundcard);
   }else if(AGS_IS_PULSE_DEVOUT(soundcard)){
     obj_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(soundcard);
+  }else if(AGS_IS_PULSE_DEVIN(soundcard)){
+    obj_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(soundcard);
   }else if(AGS_IS_JACK_DEVOUT(soundcard)){
     obj_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(soundcard);
   }else if(AGS_IS_JACK_DEVIN(soundcard)){
@@ -135,7 +137,7 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
     delay = AGS_PULSE_DEVOUT(soundcard)->delay;
   }else if(AGS_IS_PULSE_DEVIN(soundcard)){
     attack = AGS_PULSE_DEVIN(soundcard)->attack;
-    delay = AGS_PULSE_DEVOUT(soundcard)->delay;
+    delay = AGS_PULSE_DEVIN(soundcard)->delay;
   }else if(AGS_IS_JACK_DEVOUT(soundcard)){
     attack = AGS_JACK_DEVOUT(soundcard)->attack;
     delay = AGS_JACK_DEVOUT(soundcard)->delay;

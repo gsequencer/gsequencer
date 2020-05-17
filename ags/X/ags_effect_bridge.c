@@ -664,11 +664,12 @@ ags_effect_bridge_set_property(GObject *gobject,
 	    effect_line =
 	      start_effect_line = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(effect_pad->data)->table);
 
-	    ags_effect_pad_resize_lines(AGS_EFFECT_PAD(effect_pad->data), effect_bridge->output_line_type,
-					audio_channels, g_list_length(effect_line));
 	    g_object_set(G_OBJECT(effect_pad->data),
 			 "channel", output,
 			 NULL);
+
+	    ags_effect_pad_resize_lines(AGS_EFFECT_PAD(effect_pad->data), effect_bridge->output_line_type,
+					audio_channels, g_list_length(effect_line));
 
 	    g_list_free(start_effect_line);
 	    
@@ -693,6 +694,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 	      effect_pad = g_object_new(effect_bridge->output_pad_type,
 					"channel", output,
 					NULL);
+	      
 	      gtk_container_add((GtkContainer *) effect_bridge->output,
 				GTK_WIDGET(effect_pad));
 
@@ -737,12 +739,13 @@ ags_effect_bridge_set_property(GObject *gobject,
 	  while(effect_pad != NULL && input != NULL){
 	    effect_line =
 	      start_effect_line = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(effect_pad->data)->table);
-	    
-	    ags_effect_pad_resize_lines(AGS_EFFECT_PAD(effect_pad->data), effect_bridge->input_line_type,
-					audio_channels, g_list_length(effect_line));
+
 	    g_object_set(G_OBJECT(effect_pad->data),
 			 "channel", input,
 			 NULL);
+	    
+	    ags_effect_pad_resize_lines(AGS_EFFECT_PAD(effect_pad->data), effect_bridge->input_line_type,
+					audio_channels, g_list_length(effect_line));
 	    
 	    g_list_free(start_effect_line);
 
@@ -1177,13 +1180,15 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
   audio_input_pads = 0;
   audio_output_pads = 0;
 
-  g_object_get(audio,
-	       "output", &start_output,
-	       "input", &start_input,
-	       "audio-channels", &audio_audio_channels,
-	       "input-pads", &audio_input_pads,
-	       "output-pads", &audio_output_pads,
-	       NULL);
+  if(audio != NULL){
+    g_object_get(audio,
+		 "output", &start_output,
+		 "input", &start_input,
+		 "audio-channels", &audio_audio_channels,
+		 "input-pads", &audio_input_pads,
+		 "output-pads", &audio_output_pads,
+		 NULL);
+  }
   
   if(new_size > old_size){
     for(i = old_size; i < new_size; i++){

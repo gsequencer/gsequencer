@@ -1297,7 +1297,7 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
 
   AgsDssiPlugin *dssi_plugin;
   
-  GList *start_recall;
+  GList *start_recall, *recall;
   GList *start_list, *list;
   GList *start_plugin_port, *plugin_port;
 
@@ -1711,7 +1711,7 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
   AgsLv2Manager *lv2_manager;
   AgsLv2Plugin *lv2_plugin;
   
-  GList *start_recall;
+  GList *start_recall, *recall;
   GList *start_list, *list;
   GList *start_plugin_port, *plugin_port;
 
@@ -2328,9 +2328,6 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
 
   GList *start_list, *list;
   GList *start_recall, *recall;
-
-  guint skip_control_count;
-  guint i;
   
   if(!AGS_IS_EFFECT_BULK(effect_bulk)){
     return;
@@ -2347,18 +2344,7 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
   
   effect_bulk_plugin = list->data;
 
-  /*  */
-  list = effect_bulk->plugin;
-
-  skip_control_count = 0;
-  
-  while(list != NULL && list->data != effect_bulk_plugin){
-    skip_control_count += AGS_EFFECT_BULK_PLUGIN(list->data);
-
-    /* iterate */
-    list = list->next;
-  }
-  
+  /*  */  
   effect_bulk->plugin = g_list_remove(effect_bulk->plugin,
 				      effect_bulk_plugin);
 
@@ -2379,7 +2365,8 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
   while(recall != NULL){
     ags_audio_remove_recall(effect_bulk->audio, recall->data,
 			    TRUE);
-    
+
+    recall = recall->next;
   }
 
   g_list_free_full(start_recall,
@@ -2395,7 +2382,8 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
   while(recall != NULL){
     ags_audio_remove_recall(effect_bulk->audio, recall->data,
 			    FALSE);
-    
+
+    recall = recall->next;    
   }
 
   g_list_free_full(start_recall,
@@ -2421,6 +2409,8 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
     if(channel != NULL){
       g_object_unref(channel);
     }
+
+    recall = recall->next;
   }
 
   g_list_free_full(start_recall,
@@ -2447,6 +2437,8 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
     if(channel != NULL){
       g_object_unref(channel);
     }
+
+    recall = recall->next;
   }
 
   g_list_free_full(start_recall,
@@ -2472,6 +2464,8 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
     if(channel != NULL){
       g_object_unref(channel);
     }
+
+    recall = recall->next;
   }
 
   g_list_free_full(start_recall,
@@ -2497,6 +2491,8 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
     if(channel != NULL){
       g_object_unref(channel);
     }
+
+    recall = recall->next;
   }
 
   g_list_free_full(start_recall,
@@ -2547,12 +2543,24 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
   /* destroy controls - table */
   start_list = gtk_container_get_children(effect_bulk->table);
 
-  list = g_list_nth(start_list,
-		    skip_control_count);
-  
-  for(i = 0; i < effect_bulk_plugin->control_count; i++){
-    gtk_widget_destroy(list->data);
+  list = start_list;
 
+  while(list != NULL){
+    if(AGS_IS_BULK_MEMBER(list->data) &&
+       AGS_BULK_MEMBER(list->data)->play_container == effect_bulk_plugin->play_container){
+      GtkWidget *child_widget;
+
+      child_widget = gtk_bin_get_child(list->data);
+      
+      if(AGS_IS_INDICATOR(child_widget) ||
+	 AGS_IS_LED(child_widget)){
+	g_hash_table_remove(ags_effect_bulk_indicator_queue_draw,
+			    child_widget);
+      }
+      
+      gtk_widget_destroy(list->data);
+    }
+    
     list = list->next;
   }
   

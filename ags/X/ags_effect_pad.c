@@ -40,6 +40,8 @@ void ags_effect_pad_get_property(GObject *gobject,
 void ags_effect_pad_connect(AgsConnectable *connectable);
 void ags_effect_pad_disconnect(AgsConnectable *connectable);
 
+void ags_effect_pad_real_set_channel(AgsEffectPad *effect_pad, AgsChannel *channel);
+
 void ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType line_type,
 				      guint audio_channels, guint audio_channels_old);
 void ags_effect_pad_real_map_recall(AgsEffectPad *effect_pad);
@@ -210,6 +212,8 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
   effect_pad->buffer_size_changed = NULL;
   effect_pad->format_changed = NULL;
 
+  effect_pad->set_channel = ags_effect_pad_real_set_channel;
+  
   effect_pad->resize_lines = ags_effect_pad_real_resize_lines;
 
   effect_pad->map_recall = ags_effect_pad_real_map_recall;
