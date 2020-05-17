@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -395,9 +395,6 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 
   if(gtk_combo_box_get_active_iter(combo_box,
 				   &iter)){
-    AgsChannel *start_input;
-    AgsChannel *channel, *next_channel;
-
     AgsLv2Plugin *lv2_plugin;
     
     LV2_Programs_Interface *program_interface;
@@ -432,89 +429,48 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 				      bank,
 				      program);
 
-    /* update ports */
-    g_object_get(AGS_MACHINE(lv2_bridge)->audio,
-		 "input", &start_input,
-		 NULL);
-
-    channel = start_input;
-    
-    if(channel != NULL){
-      g_object_ref(channel);
-    }
-
-    next_channel = NULL;
-    
+    /* update ports */    
     g_object_get(lv2_plugin,
 		 "plugin-port", &start_plugin_port,
 		 NULL);
 
-    while(channel != NULL){
-      g_object_get(channel,
-		   "recall", &start_recall,
-		   NULL);
+    /* play context */
+    g_object_get(AGS_MACHINE(lv2_bridge)->audio,
+		 "play", &start_recall,
+		 NULL);
       
-      recall = start_recall;
+    recall = start_recall;
       
-      while((recall = ags_recall_find_type(recall, AGS_TYPE_RECALL_LV2)) != NULL){
-	AGS_RECALL_LV2(recall->data)->bank = (uint32_t) bank;
-	AGS_RECALL_LV2(recall->data)->program = (uint32_t) program;
-	
-	plugin_port = start_plugin_port;
-	
-	while(plugin_port != NULL){
-	  if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
-	    if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
-	      specifier = AGS_PLUGIN_PORT(plugin_port->data)->port_name;
-	      port = AGS_RECALL(recall->data)->port;
-	      
-	      while(port != NULL){
-		if(!g_strcmp0(AGS_PORT(port->data)->specifier,
-			      specifier)){
-		  GValue value = {0,};
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_LV2_AUDIO)) != NULL){
+      ags_fx_lv2_audio_change_program(recall->data,
+				      bank,
+				      program);
 
-#ifdef AGS_DEBUG
-		  g_message("%s %f", specifier, lv2_bridge->port_value[AGS_PLUGIN_PORT(plugin_port->data)->port_index]);
-#endif
-		  
-		  g_value_init(&value,
-			       G_TYPE_FLOAT);
-		  g_value_set_float(&value,
-				    lv2_bridge->port_value[AGS_PLUGIN_PORT(plugin_port->data)->port_index]);
-		  ags_port_safe_write_raw(port->data,
-					  &value);
-		
-		  break;
-		}
-	
-		port = port->next;
-	      }
-	    }
-	  }
-
-	  /* iterate */
-	  plugin_port = plugin_port->next;
-	}
-
-	/* iterate */
-	recall = recall->next;
-      }
-
-      g_list_free_full(start_recall,
-		       g_object_unref);
-      
       /* iterate */
-      next_channel = ags_channel_next(channel);
-
-      g_object_unref(channel);
-
-      channel = next_channel;
+      recall = recall->next;
     }
 
-    /* unref */
-    if(next_channel != NULL){
-      g_object_unref(next_channel);
+    g_list_free_full(start_recall,
+		     g_object_unref);
+
+    /* recall context */
+    g_object_get(AGS_MACHINE(lv2_bridge)->audio,
+		 "recall", &start_recall,
+		 NULL);
+      
+    recall = start_recall;
+      
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_LV2_AUDIO)) != NULL){
+      ags_fx_lv2_audio_change_program(recall->data,
+				      bank,
+				      program);
+
+      /* iterate */
+      recall = recall->next;
     }
+
+    g_list_free_full(start_recall,
+		     g_object_unref);
     
     /* update UI */
     bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input)->table);
@@ -585,11 +541,6 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
       
       /* iterate */
       plugin_port = plugin_port->next;
-    }
-
-    /* unref */
-    if(start_input != NULL){
-      g_object_unref(start_input);
     }
 
     g_list_free_full(start_plugin_port,

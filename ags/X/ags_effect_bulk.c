@@ -878,7 +878,7 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
 
   AgsLadspaPlugin *ladspa_plugin;
 
-  GList *start_recall;
+  GList *start_recall, *recall;
   GList *start_list, *list;
   GList *start_plugin_port, *plugin_port;
 
@@ -934,6 +934,14 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
 				       position,
 				       create_flags, recall_flags);
 
+  recall = start_recall;
+
+  while(recall != NULL){
+    ags_recall_set_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE);
+
+    recall = recall->next;
+  }
+  
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
   
@@ -1350,6 +1358,13 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
 				       position,
 				       create_flags, recall_flags);
   
+  recall = start_recall;
+
+  while(recall != NULL){
+    ags_recall_set_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE);
+
+    recall = recall->next;
+  }
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
@@ -1846,6 +1861,14 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
 				       0, pads,
 				       position,
 				       create_flags, recall_flags);
+
+  recall = start_recall;
+
+  while(recall != NULL){
+    ags_recall_set_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE);
+
+    recall = recall->next;
+  }
   
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);

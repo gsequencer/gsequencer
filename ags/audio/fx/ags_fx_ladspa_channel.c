@@ -114,7 +114,7 @@ ags_fx_ladspa_channel_init(AgsFxLadspaChannel *fx_ladspa_channel)
   AGS_RECALL(fx_ladspa_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_ladspa_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_ladspa_channel)->xml_type = "ags-fx-ladspa-channel";
-  
+
   fx_ladspa_channel->output_port_count = 0;
   fx_ladspa_channel->output_port = NULL;
   

@@ -294,7 +294,7 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       if(run_synth != NULL){
 	run_synth(channel_data->ladspa_handle,
 		  (unsigned long) (fx_dssi_audio->output_port_count * buffer_size),
-		  channel_data->input_data[midi_note]->event_buffer,
+		  input_data->event_buffer,
 		  1);
       }else if(run != NULL){
 	run(channel_data->ladspa_handle,

@@ -1543,7 +1543,7 @@ ags_bulk_member_find_specifier(GList *recall,
 
       continue;
     }
-
+    
     g_object_get(recall->data,
 		 "port", &start_port,
 		 NULL);

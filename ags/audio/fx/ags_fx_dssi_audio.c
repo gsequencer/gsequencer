@@ -130,7 +130,7 @@ ags_fx_dssi_audio_init(AgsFxDssiAudio *fx_dssi_audio)
   AGS_RECALL(fx_dssi_audio)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_dssi_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_dssi_audio)->xml_type = "ags-fx-dssi-audio";
-
+  
   fx_dssi_audio->flags = AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT;
   
   fx_dssi_audio->output_port_count = 0;

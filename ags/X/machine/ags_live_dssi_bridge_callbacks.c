@@ -59,11 +59,9 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
   if(gtk_combo_box_get_active_iter(combo_box,
 				   &iter)){
     AgsLadspaConversion *ladspa_conversion;
-
-    AgsChannel *channel;
    
     GList *bulk_member, *bulk_member_start;
-    GList *recall;
+    GList *start_recall, *recall;
     GList *port;
   
     gchar *name;
@@ -89,54 +87,47 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
     g_message("%d %d", bank, program);
 #endif
     
-    /* update ports */
-    channel = AGS_MACHINE(live_dssi_bridge)->audio->input;
-    port_descriptor = live_dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortDescriptors;
+    /* play context */
+    g_object_get(AGS_MACHINE(live_dssi_bridge)->audio,
+		 "play", &start_recall,
+		 NULL);
     
-    while(channel != NULL){
-      recall = channel->recall;
-
-      while((recall = ags_recall_find_type(recall, AGS_TYPE_PLAY_DSSI_AUDIO)) != NULL){
-	AGS_PLAY_DSSI_AUDIO(recall->data)->bank = (unsigned long) bank;
-	AGS_PLAY_DSSI_AUDIO(recall->data)->program = (unsigned long) program;
+    recall = start_recall;
+    
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_DSSI_AUDIO)) != NULL){
+      GList *start_port, *port;
       
-	for(i = 0; i < live_dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortCount; i++){
-	  if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
-	    if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
-	       LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
-	      specifier = live_dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortNames[i];
-	      port = AGS_RECALL(recall->data)->port;
-
-	      while(port != NULL){
-		if(!g_strcmp0(AGS_PORT(port->data)->specifier,
-			      specifier)){
-		  GValue value = {0,};
-
-#ifdef AGS_DEBUG
-		  g_message("%s %f", specifier, live_dssi_bridge->port_values[i]);
-#endif
-		  
-		  g_value_init(&value,
-			       G_TYPE_FLOAT);
-		  g_value_set_float(&value,
-				    live_dssi_bridge->port_values[i]);
-		  ags_port_safe_write_raw(port->data,
-					  &value);
-		
-		  break;
-		}
-	
-		port = port->next;
-	      }
-	    }
-	  }
-	}
+      ags_fx_dssi_audio_change_program(recall->data,
+				       bank,
+				       program);
       
-	recall = recall->next;
-      }
-
-      channel = channel->next;
+      /* iterate */
+      recall = recall->next;
     }
+    
+    g_list_free_full(start_recall,
+		     g_object_unref);
+
+    /* recall context */
+    g_object_get(AGS_MACHINE(live_dssi_bridge)->audio,
+		 "recall", &start_recall,
+		 NULL);
+    
+    recall = start_recall;
+    
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_DSSI_AUDIO)) != NULL){
+      GList *start_port, *port;
+      
+      ags_fx_dssi_audio_change_program(recall->data,
+				       bank,
+				       program);
+      
+      /* iterate */
+      recall = recall->next;
+    }
+    
+    g_list_free_full(start_recall,
+		     g_object_unref);
 
     /* update UI */
     bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input)->table);
