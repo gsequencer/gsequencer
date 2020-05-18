@@ -2151,7 +2151,7 @@ ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 				       AgsAudioSignal *audio_signal)
 {
   GRecMutex *recycling_mutex;
-
+  
   /* get recycling mutex */  
   recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
