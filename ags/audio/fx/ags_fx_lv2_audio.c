@@ -626,9 +626,6 @@ ags_fx_lv2_audio_notify_samplerate_callback(GObject *gobject,
   if(recall_container != NULL){
     g_object_unref(recall_container);
   }
-
-  g_list_free_full(start_recall_channel,
-		   g_object_unref);
 }
 
 void
@@ -873,9 +870,6 @@ ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
   if(recall_container != NULL){
     g_object_unref(recall_container);
   }
-
-  g_list_free_full(start_recall_channel,
-		   g_object_unref);
 }
 
 void
@@ -964,9 +958,6 @@ ags_fx_lv2_audio_set_pads_callback(AgsAudio *audio,
   if(recall_container != NULL){
     g_object_unref(recall_container);
   }
-
-  g_list_free_full(start_recall_channel,
-		   g_object_unref);
 }
 
 /**
@@ -1870,9 +1861,6 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
   if(recall_container != NULL){
     g_object_unref(recall_container);
   }
-
-  g_list_free_full(start_recall_channel,
-		   g_object_unref);
 
   g_list_free_full(start_plugin_port,
 		   (GDestroyNotify) g_object_unref);

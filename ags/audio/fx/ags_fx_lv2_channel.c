@@ -302,7 +302,7 @@ ags_fx_lv2_channel_notify_samplerate_callback(GObject *gobject,
     g_rec_mutex_unlock(base_plugin_mutex);
   }
 
-  /* reallocate buffer - apply buffer size */
+  /* reallocate buffer - apply samplerate */
   g_rec_mutex_lock(recall_mutex);
 
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){

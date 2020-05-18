@@ -5301,6 +5301,9 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
       fx_lv2_audio_processor = recall_audio_run->data;
       g_object_ref(fx_lv2_audio_processor);
     }
+
+    ags_fx_lv2_audio_load_plugin(fx_lv2_audio);
+    ags_fx_lv2_audio_load_port(fx_lv2_audio);
   }
 
   input = ags_channel_nth(start_input,
@@ -5408,6 +5411,7 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
       ags_connectable_connect(AGS_CONNECTABLE(fx_lv2_channel_processor));
 
       /* load */
+      ags_fx_lv2_channel_load_plugin(fx_lv2_channel);
       ags_fx_lv2_channel_load_port(fx_lv2_channel);
 
       /* iterate */
@@ -5654,6 +5658,7 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
       ags_connectable_connect(AGS_CONNECTABLE(fx_lv2_channel_processor));
 
       /* load */
+      ags_fx_lv2_channel_load_plugin(fx_lv2_channel);
       ags_fx_lv2_channel_load_port(fx_lv2_channel);
 
       /* iterate */

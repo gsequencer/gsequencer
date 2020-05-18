@@ -1,3 +1,11 @@
+ags (3.3.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing call to ags_fx_lv2_channel_load_plugin() in ags_fx_factory.c
+	* fixed restore from AgsSimpleFile
+	* fixed g_list_free_full() while transfer none
+	* minor bug-fixes
+
 ags (3.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

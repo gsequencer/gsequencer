@@ -947,7 +947,7 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
-
+  
   lv2_bridge = (AgsLv2Bridge *) machine;
 
   audio = machine->audio;
