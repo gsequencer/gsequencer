@@ -1,3 +1,10 @@
+ags (3.3.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential dead-lock related to ags-fx-ladspa and ags-fx-lv2
+	* fixed missing return value of ags_fx_factory_create()
+	* fixed reverse mapping of DSSI and LV2 plugins
+
 ags (3.3.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

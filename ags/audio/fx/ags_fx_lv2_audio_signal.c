@@ -450,8 +450,12 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 	       "midi-start-mapping", &midi_start_mapping,
 	       NULL);
 
-  midi_note = (y - audio_start_mapping + midi_start_mapping);
-
+  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
+    midi_note = (128 - y - 1 - audio_start_mapping + midi_start_mapping);
+  }else{
+    midi_note = (y - audio_start_mapping + midi_start_mapping);
+  }
+  
   copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
 

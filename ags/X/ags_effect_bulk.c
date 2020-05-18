@@ -2234,7 +2234,7 @@ ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
     AgsEffectBulkPlugin *effect_bulk_plugin;
 
     GList *start_list, *list;
-    GList *start_recall;
+    GList *start_recall, *recall;
 
     /* plugin_name */
     start_recall = ags_fx_factory_create(effect_bulk->audio,
@@ -2245,7 +2245,16 @@ ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
 					 start_audio_channel, stop_audio_channel,
 					 start_pad, stop_pad,
 					 position,
-					 create_flags, recall_flags);  
+					 create_flags, recall_flags);
+
+    recall = start_recall;
+
+    while(recall != NULL){
+      ags_recall_set_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE);
+
+      recall = recall->next;
+    }
+    
     /* unref */
     g_list_free_full(start_recall,
 		     (GDestroyNotify) g_object_unref);
