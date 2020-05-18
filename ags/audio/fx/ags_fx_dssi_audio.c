@@ -817,10 +817,6 @@ ags_fx_dssi_audio_set_pads_callback(AgsAudio *audio,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_dssi_audio);
 
   /* get DSSI plugin and port */
-  g_rec_mutex_lock(recall_mutex);
-  
-  g_rec_mutex_unlock(recall_mutex);
-
   is_live_instrument = ags_fx_dssi_audio_test_flags(fx_dssi_audio, AGS_FX_DSSI_AUDIO_LIVE_INSTRUMENT);
 
   if(is_live_instrument){
