@@ -854,33 +854,31 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
   /* resize */
   if(audio_channels > audio_channels_old){
     /* create AgsLine */
-    for(i = audio_channels_old; i < audio_channels;){
-      for(j = audio_channels_old % pad->cols; j < pad->cols && i < audio_channels; j++, i++){
-	/* instantiate line */
-	if(i < audio_audio_channels){
-	  channel = ags_channel_nth(pad->channel,
-				    i);
-	}else{
-	  channel = NULL;
-	}
+    for(i = audio_channels_old; i < audio_channels; i++){
+      /* instantiate line */
+      if(i < audio_audio_channels){
+	channel = ags_channel_nth(pad->channel,
+				  i);
+      }else{
+	channel = NULL;
+      }
 	
-	line = (AgsLine *) g_object_new(line_type,
-					"pad", pad,
-					"channel", channel,
-					NULL);
+      line = (AgsLine *) g_object_new(line_type,
+				      "pad", pad,
+				      "channel", channel,
+				      NULL);
 
-	if(channel != NULL){
-	  channel->line_widget = (GObject *) line;
-	}
+      if(channel != NULL){
+	channel->line_widget = (GObject *) line;
+      }
 
-	ags_expander_set_add(pad->expander_set,
-			     (GtkWidget *) line,
-			     j, floor(i / pad->cols),
-			     1, 1);
+      ags_expander_set_add(pad->expander_set,
+			   (GtkWidget *) line,
+			   i % pad->cols, floor(i / pad->cols),
+			   1, 1);
 	
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+      if(channel != NULL){
+	g_object_unref(channel);
       }
     }
   }else if(audio_channels < audio_channels_old){
