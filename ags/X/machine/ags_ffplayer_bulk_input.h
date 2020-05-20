@@ -65,6 +65,10 @@ struct _AgsFFPlayerBulkInputClass
 
 GType ags_ffplayer_bulk_input_get_type(void);
 
+void ags_ffplayer_bulk_input_input_map_recall(AgsFFPlayerBulkInput *ffplayer_bulk_input,
+					      guint audio_channel_start,
+					      guint input_pad_start);
+
 AgsFFPlayerBulkInput* ags_ffplayer_bulk_input_new(AgsAudio *audio,
 						  GType channel_type);
 

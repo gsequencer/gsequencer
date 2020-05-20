@@ -29,9 +29,6 @@ void ags_ffplayer_bulk_input_connect(AgsConnectable *connectable);
 void ags_ffplayer_bulk_input_disconnect(AgsConnectable *connectable);
 
 void ags_ffplayer_bulk_input_map_recall(AgsEffectBulk *effect_bulk);
-void ags_ffplayer_bulk_input_input_map_recall(AgsFFPlayerBulkInput *ffplayer_bulk_input,
-					      guint audio_channel_start,
-					      guint input_pad_start);
 
 /**
  * SECTION:ags_ffplayer_bulk_input
