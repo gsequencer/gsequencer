@@ -1315,8 +1315,11 @@ ags_osc_server_real_stop(AgsOscServer *osc_server)
   ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_TERMINATING);
   ags_osc_server_unset_flags(osc_server, AGS_OSC_SERVER_RUNNING);
 
+  //TODO:JK: this was disabled as a work-around
+#if 1
   g_thread_join(osc_server->listen_thread);
   g_thread_join(osc_server->dispatch_thread);
+#endif
   
   /* close fd */
   g_rec_mutex_lock(osc_server_mutex);

@@ -361,7 +361,9 @@ ags_osc_front_controller_delegate_thread(void *ptr)
     
     while(!g_atomic_int_get(&(osc_front_controller->do_reset)) &&
 	  ((time_now < time_next) &&
-	   (time_now < osc_front_controller->delegate_timeout))){
+	   (time_now < osc_front_controller->delegate_timeout)) &&
+	  ags_osc_front_controller_test_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING) &&
+	  time_now > 0){
       g_cond_wait_until(&(osc_front_controller->delegate_cond),
 			&(osc_front_controller->delegate_mutex),
 			osc_front_controller->delegate_timeout);
@@ -509,7 +511,15 @@ ags_osc_front_controller_delegate_thread(void *ptr)
     g_mutex_lock(&(osc_front_controller->delegate_mutex));
 
     if(osc_front_controller->message != NULL){
+      time_now = g_get_monotonic_time();
+
       time_next = AGS_OSC_MESSAGE(osc_front_controller->message)->tv_sec + AGS_OSC_MESSAGE(osc_front_controller->message)->tv_fraction / 4.294967296 * 1000.0;
+
+      if(time_next == -1){
+	time_next = time_now + 1;
+      }else if(time_next > time_now + G_TIME_SPAN_SECOND / 30){
+	time_next = time_now + G_TIME_SPAN_SECOND / 30;
+      }      
     }else{
       time_now = g_get_monotonic_time();
 
@@ -750,7 +760,10 @@ ags_osc_front_controller_real_stop_delegate(AgsOscFrontController *osc_front_con
   ags_osc_front_controller_unset_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING);
 
   /* join thread */
+  //TODO:JK: this was disabled as a work-around
+#if 1
   g_thread_join(osc_front_controller->delegate_thread);
+#endif
   
   ags_osc_front_controller_unset_flags(osc_front_controller, (AGS_OSC_FRONT_CONTROLLER_DELEGATE_TERMINATING |
 							      AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED));
