@@ -88,6 +88,13 @@ AgsPlot* ags_spectrometer_fg_plot_alloc(AgsSpectrometer *spectrometer,
 
 gboolean ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget);
 
+void ags_spectrometer_output_map_recall(AgsSpectrometer *spectrometer,
+					guint audio_channel_start,
+					guint output_pad_start);
+void ags_spectrometer_input_map_recall(AgsSpectrometer *spectrometer,
+				       guint audio_channel_start,
+				       guint input_pad_start);
+
 AgsSpectrometer* ags_spectrometer_new(GObject *soundcard);
 
 G_END_DECLS

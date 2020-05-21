@@ -35,6 +35,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.3.3" date="2020-05-19">
+      <description>
+	<p>Fixed infinite loop while removing AgsLineMember from AgsEffectLine.</p>
+      </description>
+    </release>
+
     <release version="3.3.2" date="2020-05-19">
       <description>
 	<p>Fixed potential dead-lock.</p>

@@ -121,6 +121,8 @@ AgsOscClient *osc_client;
 
 GObject *default_soundcard;
 
+GMainLoop *main_loop;
+
 gpointer
 ags_functional_osc_server_test_add_thread(gpointer data)
 {
@@ -135,7 +137,7 @@ ags_functional_osc_server_test_add_thread(gpointer data)
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
-    exit(CU_get_error());
+    g_thread_exit(GINT_TO_POINTER(CU_get_error()));
   }
 
   /* add a suite to the registry */
@@ -144,7 +146,7 @@ ags_functional_osc_server_test_add_thread(gpointer data)
   if(pSuite == NULL){
     CU_cleanup_registry();
     
-    exit(CU_get_error());
+    g_thread_exit(GINT_TO_POINTER(CU_get_error()));
   }
 
   /* add the tests to the suite */
@@ -155,9 +157,9 @@ ags_functional_osc_server_test_add_thread(gpointer data)
      (CU_add_test(pSuite, "test of AgsOscServer providing node controller", ags_functional_osc_server_test_node_controller) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscServer providing renew controller", ags_functional_osc_server_test_renew_controller) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscServer providing status controller", ags_functional_osc_server_test_status_controller) == NULL)){
-    CU_cleanup_registry();
-      
-    exit(CU_get_error());
+    CU_cleanup_registry();      
+
+    g_thread_exit(GINT_TO_POINTER(CU_get_error()));
   }
   
   /* Run all tests using the CUnit Basic interface */
@@ -166,7 +168,9 @@ ags_functional_osc_server_test_add_thread(gpointer data)
   
   CU_cleanup_registry();
   
-  exit(CU_get_error());
+  g_thread_exit(GINT_TO_POINTER(CU_get_error()));
+
+  return(NULL);
 }
 
 /* The suite initialization function.
@@ -292,6 +296,15 @@ ags_functional_osc_server_test_init_suite()
 
   ags_osc_client_connect(osc_client);
 
+  /* set work-around for arm */
+  g_object_set(osc_client->ip4_socket,
+	       "blocking", FALSE,
+	       NULL);
+
+  g_object_set(osc_client->ip6_socket,
+	       "blocking", FALSE,
+	       NULL);
+
   sleep(5);
   
   return(0);
@@ -308,6 +321,8 @@ ags_functional_osc_server_test_clean_suite()
 
   ags_osc_server_stop(osc_server);
 
+  g_main_loop_quit(main_loop);
+  
   return(0);
 }
 
@@ -607,15 +622,6 @@ ags_functional_osc_server_test_meter_controller()
   
   meter_packet_count = 0;
   i = 0;
-
-  /* set work-around for arm */
-  g_object_set(osc_client->ip4_socket,
-	       "blocking", FALSE,
-	       NULL);
-
-  g_object_set(osc_client->ip6_socket,
-	       "blocking", FALSE,
-	       NULL);
   
   while(!ags_time_timeout_expired(&start_time,
 				  &timeout_delay)){
@@ -657,15 +663,6 @@ ags_functional_osc_server_test_meter_controller()
   }
   
   CU_ASSERT(meter_packet_count >= AGS_FUNCTIONAL_OSC_SERVER_TEST_METER_PACKET_COUNT);
-
-  /* unset work-around for arm */
-  g_object_set(osc_client->ip4_socket,
-	       "blocking", TRUE,
-	       NULL);
-
-  g_object_set(osc_client->ip6_socket,
-	       "blocking", TRUE,
-	       NULL);
 
   /* disable meter */
   packet = (guchar *) malloc((4 + disable_peak_message_size) * sizeof(guchar));
@@ -723,7 +720,7 @@ ags_functional_osc_server_test_node_controller()
 				      buffer, buffer_length);
 
   CU_ASSERT(retval == TRUE);
-
+  
   /* read volume */
 #ifdef __APPLE__
   host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
@@ -848,14 +845,17 @@ ags_functional_osc_server_test_status_controller()
 int
 main(int argc, char **argv)
 {
+  int retval;
+  
   add_thread = g_thread_new("libags_audio.so - functional OSC server test",
 			    ags_functional_osc_server_test_add_thread,
 			    NULL);
 
-  g_main_loop_run(g_main_loop_new(g_main_context_default(),
-				  FALSE));
+  main_loop = g_main_loop_new(g_main_context_default(),
+			      TRUE);
+  g_main_loop_run(main_loop);
+
+  retval = GPOINTER_TO_INT(g_thread_join(add_thread));
   
-  g_thread_join(add_thread);
-  
-  return(-1);
+  return(retval);
 }

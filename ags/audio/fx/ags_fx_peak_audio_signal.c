@@ -32,7 +32,7 @@ void ags_fx_peak_audio_signal_init(AgsFxPeakAudioSignal *fx_peak_audio_signal);
 void ags_fx_peak_audio_signal_dispose(GObject *gobject);
 void ags_fx_peak_audio_signal_finalize(GObject *gobject);
 
-void ags_fx_peak_audio_signal_real_run_inter(AgsRecall *recall);
+void ags_fx_peak_audio_signal_run_inter(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_peak_audio_signal
@@ -96,7 +96,7 @@ ags_fx_peak_audio_signal_class_init(AgsFxPeakAudioSignalClass *fx_peak_audio_sig
   /* AgsRecallClass */
   recall = (AgsRecallClass *) fx_peak_audio_signal;
   
-  recall->run_inter = ags_fx_peak_audio_signal_real_run_inter;
+  recall->run_inter = ags_fx_peak_audio_signal_run_inter;
 }
 
 void
@@ -131,7 +131,7 @@ ags_fx_peak_audio_signal_finalize(GObject *gobject)
 }
 
 void
-ags_fx_peak_audio_signal_real_run_inter(AgsRecall *recall)
+ags_fx_peak_audio_signal_run_inter(AgsRecall *recall)
 {
   AgsFxPeakChannel *fx_peak_channel;
   AgsFxPeakChannelProcessor *fx_peak_channel_processor;
@@ -187,7 +187,7 @@ ags_fx_peak_audio_signal_real_run_inter(AgsRecall *recall)
      sound_scope >= 0 &&
      sound_scope < AGS_SOUND_SCOPE_LAST){
     fx_peak_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_peak_channel);
-    stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(fx_peak_channel);
+    stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
   
     g_rec_mutex_lock(fx_peak_channel_mutex);
     g_rec_mutex_lock(stream_mutex);

@@ -19,6 +19,8 @@
 
 #include <ags/lib/ags_solver_polynomial.h>
 
+#include <ags/lib/ags_string_util.h>
+
 #include <stdlib.h>
 #include <complex.h>
 

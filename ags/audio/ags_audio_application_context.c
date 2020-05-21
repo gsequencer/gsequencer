@@ -296,7 +296,7 @@ ags_audio_application_context_signal_handler(int signr)
     
     exit(-1);
   }else{
-    sigemptyset(&(ags_sigact.sa_mask));    
+    sigemptyset(&(ags_sigact.sa_mask));
   }
 #endif
 }
@@ -1823,6 +1823,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 
   task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
+#if 0  //NOTE:JK: huh zombies might come to here
   atexit(ags_audio_application_context_signal_cleanup);
 
   /* Ignore interactive and job-control signals.  */
@@ -1842,7 +1843,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
 #endif
 #endif
-
+#endif
+  
   /* get user information */
 #if defined AGS_W32API
   application_context = ags_application_context_get_instance();
