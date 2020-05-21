@@ -2,6 +2,8 @@ ags (3.3.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed missing includes
+	* fixed AgsSyncsynth and AgsFmSyncsynth missing requested frames
+	* fixed MIDI playback
 	* improved ags_functional_osc_server_test.c to run non-blocking OSC client
 
 ags (3.3.3)
