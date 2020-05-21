@@ -448,11 +448,13 @@ ags_fx_dssi_audio_notify_samplerate_callback(GObject *gobject,
 	  
 	  guint nth;
 
-	  if(deactivate != NULL){
+	  if(deactivate != NULL &&
+	     channel_data->ladspa_handle != NULL){
 	    deactivate(channel_data->ladspa_handle);
 	  }
 
-	  if(cleanup != NULL){
+	  if(cleanup != NULL &&
+	     channel_data->ladspa_handle != NULL){
 	    cleanup(channel_data->ladspa_handle);
 	  }	  
 
@@ -507,11 +509,13 @@ ags_fx_dssi_audio_notify_samplerate_callback(GObject *gobject,
 
 	    input_data = channel_data->input_data[k];
 
-	    if(deactivate != NULL){
+	    if(deactivate != NULL &&
+	       input_data->ladspa_handle != NULL){
 	      deactivate(input_data->ladspa_handle);
 	    }
 
-	    if(cleanup != NULL){
+	    if(cleanup != NULL &&
+	       input_data->ladspa_handle != NULL){
 	      cleanup(input_data->ladspa_handle);
 	    }
 
@@ -1020,11 +1024,13 @@ ags_fx_dssi_audio_channel_data_free(AgsFxDssiAudioChannelData *channel_data)
       g_rec_mutex_unlock(base_plugin_mutex);
     }
 
-    if(deactivate != NULL){
+    if(deactivate != NULL &&
+       channel_data->ladspa_handle != NULL){
       deactivate(channel_data->ladspa_handle);
     }
 
-    if(cleanup != NULL){
+    if(cleanup != NULL &&
+       channel_data->ladspa_handle != NULL){
       cleanup(channel_data->ladspa_handle);
     }
   }
@@ -1128,11 +1134,13 @@ ags_fx_dssi_audio_input_data_free(AgsFxDssiAudioInputData *input_data)
       g_rec_mutex_unlock(base_plugin_mutex);
     }
 
-    if(deactivate != NULL){
+    if(deactivate != NULL &&
+       input_data->ladspa_handle != NULL){
       deactivate(input_data->ladspa_handle);
     }
 
-    if(cleanup != NULL){
+    if(cleanup != NULL &&
+       input_data->ladspa_handle != NULL){
       cleanup(input_data->ladspa_handle);
     }
   }

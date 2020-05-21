@@ -310,11 +310,13 @@ ags_fx_lv2_channel_notify_samplerate_callback(GObject *gobject,
 
     input_data = fx_lv2_channel->input_data[i];
 
-    if(deactivate != NULL){
+    if(deactivate != NULL &&
+       input_data->lv2_handle != NULL){
       deactivate(input_data->lv2_handle[0]);
     }
 
-    if(cleanup != NULL){
+    if(cleanup != NULL &&
+       input_data->lv2_handle != NULL){
       cleanup(input_data->lv2_handle[0]);
     }
 
@@ -405,11 +407,13 @@ ags_fx_lv2_channel_input_data_free(AgsFxLv2ChannelInputData *input_data)
       g_rec_mutex_unlock(base_plugin_mutex);
     }
 
-    if(deactivate != NULL){
+    if(deactivate != NULL &&
+       input_data->lv2_handle != NULL){
       deactivate(input_data->lv2_handle[0]);
     }
 
-    if(cleanup != NULL){
+    if(cleanup != NULL &&
+       input_data->lv2_handle != NULL){
       cleanup(input_data->lv2_handle[0]);
     }
   }

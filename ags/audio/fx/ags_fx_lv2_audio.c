@@ -518,11 +518,13 @@ ags_fx_lv2_audio_notify_samplerate_callback(GObject *gobject,
 	  
 	  guint nth;
 
-	  if(deactivate != NULL){
+	  if(deactivate != NULL &&
+	     channel_data->lv2_handle != NULL){
 	    deactivate(channel_data->lv2_handle[0]);
 	  }
 
-	  if(cleanup != NULL){
+	  if(cleanup != NULL &&
+	     channel_data->lv2_handle != NULL){
 	    cleanup(channel_data->lv2_handle[0]);
 	  }	  
 
@@ -579,11 +581,13 @@ ags_fx_lv2_audio_notify_samplerate_callback(GObject *gobject,
 
 	    input_data = channel_data->input_data[k];
 
-	    if(deactivate != NULL){
+	    if(deactivate != NULL &&
+	       input_data->lv2_handle != NULL){
 	      deactivate(input_data->lv2_handle[0]);
 	    }
 
-	    if(cleanup != NULL){
+	    if(cleanup != NULL &&
+	       input_data->lv2_handle != NULL){
 	      cleanup(input_data->lv2_handle[0]);
 	    }
 
@@ -1106,11 +1110,13 @@ ags_fx_lv2_audio_channel_data_free(AgsFxLv2AudioChannelData *channel_data)
       g_rec_mutex_unlock(base_plugin_mutex);
     }
 
-    if(deactivate != NULL){
+    if(deactivate != NULL &&
+       channel_data->lv2_handle != NULL){
       deactivate(channel_data->lv2_handle[0]);
     }
 
-    if(cleanup != NULL){
+    if(cleanup != NULL &&
+       channel_data->lv2_handle != NULL){
       cleanup(channel_data->lv2_handle[0]);
     }
   }
