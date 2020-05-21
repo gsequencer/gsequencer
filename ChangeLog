@@ -1,3 +1,8 @@
+ags (3.3.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* further improved MIDI playback, set AgsAudioSignal length as doing ags_sound_resource_read_audio_signal()
+
 ags (3.3.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
