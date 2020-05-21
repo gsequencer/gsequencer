@@ -35,13 +35,20 @@ int ags_fx_peak_audio_signal_test_clean_suite();
 void ags_fx_peak_audio_signal_test_new();
 void ags_fx_peak_audio_signal_test_run_inter();
 
+AgsApplicationContext *application_context;
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
  */
 int
 ags_fx_peak_audio_signal_test_init_suite()
-{ 
+{
+  application_context = ags_audio_application_context_new();
+
+  ags_application_context_prepare(application_context);
+  ags_application_context_setup(application_context);
+  
   return(0);
 }
 
