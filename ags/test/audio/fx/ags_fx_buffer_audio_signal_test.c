@@ -200,13 +200,16 @@ ags_fx_buffer_audio_signal_test_run_inter()
   source = g_object_new(AGS_TYPE_AUDIO_SIGNAL,
 			NULL);
 
+  //NOTE:JK: survive all attempts
   ags_audio_signal_stream_resize(source,
-				 3);
+				 7);
   source->stream_current = source->stream;
 
   destination = g_object_new(AGS_TYPE_AUDIO_SIGNAL,
 			     NULL);
-
+  ags_audio_signal_set_flags(destination,
+			     AGS_AUDIO_SIGNAL_MASTER);
+  
   ags_audio_signal_stream_resize(destination,
 				 1);
   destination->stream_current = destination->stream;
@@ -240,15 +243,12 @@ ags_fx_buffer_audio_signal_test_run_inter()
   ags_recall_run_inter(fx_buffer_audio_signal);
 
   /* run inter - attempt #3 */
-  source->stream_current = NULL;
-
-  ags_recall_run_inter(fx_buffer_audio_signal);
-
-  /* run inter - attempt #4 */
   ags_recall_set_flags(fx_buffer_audio_signal, AGS_RECALL_INITIAL_RUN);
 
   destination = g_object_new(AGS_TYPE_AUDIO_SIGNAL,
 			     NULL);
+  ags_audio_signal_set_flags(destination,
+			     AGS_AUDIO_SIGNAL_MASTER);
   g_object_set(destination,
 	       "samplerate", 8000,
 	       NULL);
@@ -256,13 +256,19 @@ ags_fx_buffer_audio_signal_test_run_inter()
   ags_audio_signal_stream_resize(destination,
 				 1);
   destination->stream_current = destination->stream;
+  source->stream_current = source->stream;
 
   AGS_RECALL_AUDIO_SIGNAL(fx_buffer_audio_signal)->destination = destination;
   
   ags_recall_run_inter(fx_buffer_audio_signal);
 
-  /* run inter - attempt #5 */
+  /* run inter - attempt #4 */
   ags_recall_unset_flags(fx_buffer_audio_signal, AGS_RECALL_INITIAL_RUN);
+
+  ags_recall_run_inter(fx_buffer_audio_signal);
+
+  /* run inter - attempt #5 */
+  source->stream_current = NULL;
 
   ags_recall_run_inter(fx_buffer_audio_signal);
 }
