@@ -592,10 +592,6 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 	
 	/* replace template audio signal */
 	AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	g_object_set(AGS_AUDIO_SIGNAL(audio_signal->data),
-		     "recycling", recycling,
-		     NULL);
-
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal->data);
 	
