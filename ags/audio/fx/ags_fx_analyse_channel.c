@@ -516,7 +516,7 @@ ags_fx_analyse_channel_notify_buffer_size_callback(GObject *gobject,
 	       "samplerate", &samplerate,
 	       "buffer-size", &buffer_size,
 	       NULL);
-
+  
   /* realloc port - frequency */
   correction = (double) samplerate / (double) buffer_size;
     
@@ -537,6 +537,10 @@ ags_fx_analyse_channel_notify_buffer_size_callback(GObject *gobject,
     for(i = 0; i < buffer_size; i++){
       frequency->port_value.ags_port_double_ptr[i] = (double) i * (double) correction;
     }
+
+    g_object_set(frequency,
+		 "port-value-length", buffer_size,
+		 NULL);
     
     g_rec_mutex_unlock(port_mutex);
   }
@@ -555,6 +559,10 @@ ags_fx_analyse_channel_notify_buffer_size_callback(GObject *gobject,
     }else{
       fx_analyse_channel->magnitude->port_value.ags_port_double_ptr = NULL;
     }
+
+    g_object_set(magnitude,
+		 "port-value-length", buffer_size,
+		 NULL);
     
     g_rec_mutex_unlock(port_mutex);
   }

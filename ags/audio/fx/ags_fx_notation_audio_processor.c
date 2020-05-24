@@ -789,7 +789,7 @@ ags_fx_notation_audio_processor_run_inter(AgsRecall *recall)
     }
   }
 
-  if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_MIDI)){
+  if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_NOTATION)){
     if(parent_recycling_context == NULL){
       ags_fx_notation_audio_processor_record(fx_notation_audio_processor);
     }
@@ -1036,6 +1036,7 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 //      g_message(" `- added");
 
       if(key_mode == AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_RECORD){
+#if 0
 	g_object_ref(audio_signal);
 
 	g_rec_mutex_lock(fx_notation_audio_processor_mutex);
@@ -1044,6 +1045,7 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 									     audio_signal);
 
 	g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
+#endif
       }else if(key_mode == AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_FEED){
 	g_object_ref(audio_signal);
 
@@ -1439,7 +1441,7 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
     
     /* parse bytes */
     midi_iter = midi_buffer;
-
+    
     while(midi_iter < midi_buffer + buffer_length){
       if(ags_midi_util_is_key_on(midi_iter)){
 	/* check midi channel */
@@ -1546,7 +1548,7 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 			     (GDestroyNotify) g_object_unref);
 	  }
 	}
-	
+
 	midi_iter += 3;
       }else if(ags_midi_util_is_key_off(midi_iter)){
 	/* check midi channel */
@@ -1613,7 +1615,7 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 			     (GDestroyNotify) g_object_unref);
 	  }
 	}
-      
+
 	midi_iter += 3;
       }else if(ags_midi_util_is_key_pressure(midi_iter)){
 	midi_iter += 3;
@@ -1713,7 +1715,7 @@ ags_fx_notation_audio_processor_real_record(AgsFxNotationAudioProcessor *fx_nota
 		 "x1", &current_x1,
 		 NULL);
     
-    if(current_x1 < offset_counter){
+    if(current_x1 <= offset_counter + 1){
       g_object_set(recording_note->data,
 		   "x1", current_x1 + 1,
 		   NULL);

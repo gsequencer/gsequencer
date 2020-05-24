@@ -738,10 +738,10 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
     
     while(channel != NULL){      
       /* get some fields */
-      next_pad = ags_channel_next_pad(channel),
+      next_pad = ags_channel_next_pad(channel);
       
-      next_channel = ags_channel_pad_nth(channel,
-					 audio_channels_old);
+      next_channel = ags_channel_nth(channel,
+				     audio_channels_old);
 
       if(channel != NULL){
 	g_object_unref(channel);
@@ -749,7 +749,7 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
       
       channel = next_channel;
       
-      while(channel != next_pad){
+      while(channel != next_pad && channel != NULL){
 	/* fx engine */
 	g_object_get(channel,
 		     "playback", &playback,
@@ -803,18 +803,18 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
     
     while(channel != NULL){      
       /* get some fields */
-      next_pad = ags_channel_next_pad(channel),
-      
-      next_channel = ags_channel_pad_nth(channel,
-					 audio_channels_old);
+      next_pad = ags_channel_next_pad(channel);
 
+      next_channel = ags_channel_nth(channel,
+				     audio_channels_old);
+      
       if(channel != NULL){
 	g_object_unref(channel);
       }
       
       channel = next_channel;
       
-      while(channel != next_pad){
+      while(channel != next_pad && channel != NULL){
 	/* fx engine */
 	g_object_get(channel,
 		     "playback", &playback,

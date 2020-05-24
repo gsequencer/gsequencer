@@ -959,6 +959,7 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   GList *task;
   
   guint input_lines;
+  guint requested_frame_count;
   guint buffer_size;
   guint format;
   guint attack, frame_count;
@@ -1050,6 +1051,26 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   loop_start = (guint) gtk_spin_button_get_value_as_int(syncsynth->loop_start);
   loop_end = (guint) gtk_spin_button_get_value_as_int(syncsynth->loop_end);
 
+  requested_frame_count = 0;
+
+  while(list != NULL){
+    guint current_frame_count;
+
+    child_start = gtk_container_get_children(GTK_CONTAINER(list->data));
+
+    oscillator = AGS_OSCILLATOR(child_start->next->data);
+
+    current_frame_count = gtk_spin_button_get_value(oscillator->attack) + gtk_spin_button_get_value(oscillator->frame_count);
+
+    if(requested_frame_count < current_frame_count){
+      requested_frame_count = current_frame_count;
+    }
+    
+    list = list->next;
+  }
+
+  list = list_start;
+  
   synth_generator = start_synth_generator;
 
   while(list != NULL){
@@ -1125,6 +1146,9 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
     apply_synth = ags_apply_synth_new(synth_generator->data,
 				      start_input,
 				      start_frequency, input_lines);
+    g_object_set(apply_synth,
+		 "requested-frame-count", requested_frame_count,
+		 NULL);
         
     task = g_list_prepend(task,
 			  apply_synth);

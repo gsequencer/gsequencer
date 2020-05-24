@@ -1817,8 +1817,6 @@ ags_bulk_member_find_effect_and_specifier(GList *bulk_member,
 void
 ags_bulk_member_remap_bulk_port(AgsBulkMember *bulk_member)
 {
-  GList *bulk_port;
-  
   if(!AGS_IS_BULK_MEMBER(bulk_member)){
     return;
   }
@@ -1828,9 +1826,7 @@ ags_bulk_member_remap_bulk_port(AgsBulkMember *bulk_member)
 
   bulk_member->bulk_port = NULL;
 
-  bulk_port = ags_bulk_member_find_port(bulk_member);
-
-  g_list_free(bulk_port);
+  bulk_member->bulk_port = ags_bulk_member_find_port(bulk_member);
 }
 
 /**

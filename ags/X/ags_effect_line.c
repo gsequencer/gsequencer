@@ -2343,9 +2343,7 @@ ags_effect_line_real_add_plugin(AgsEffectLine *effect_line,
 				guint start_pad, guint stop_pad,
 				gint position,
 				guint create_flags, guint recall_flags)
-{
-  g_message("add");
-  
+{  
   if((AGS_FX_FACTORY_ADD & (create_flags)) != 0){
     if(!g_ascii_strncasecmp(plugin_name,
 			    "ags-fx-ladspa",

@@ -25,6 +25,7 @@
 #include <ags/plugin/ags_lv2_conversion.h>
 
 #include <ags/audio/ags_port.h>
+#include <ags/audio/ags_port_util.h>
 
 #if defined(AGS_W32API)
 #include <windows.h>

@@ -543,10 +543,10 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
 	g_list_free(children);
 
+	line_member = line_member->next;
+	
 	nth++;
       }
-	
-      line_member = line_member->next;
     }
   }
 

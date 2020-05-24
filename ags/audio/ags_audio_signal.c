@@ -3669,7 +3669,7 @@ ags_audio_signal_feed_extended(AgsAudioSignal *audio_signal,
 	       NULL);
   
   if(template_length == 0){
-    g_warning("empty template");
+//    g_warning("empty template");
 
     return;
   }

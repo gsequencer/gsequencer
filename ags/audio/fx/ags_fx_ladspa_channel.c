@@ -307,11 +307,13 @@ ags_fx_ladspa_channel_notify_samplerate_callback(GObject *gobject,
 
     input_data = fx_ladspa_channel->input_data[i];
 
-    if(deactivate != NULL){
+    if(deactivate != NULL &&
+       input_data->ladspa_handle != NULL){
       deactivate(input_data->ladspa_handle);
     }
 
-    if(cleanup != NULL){
+    if(cleanup != NULL &&
+       input_data->ladspa_handle != NULL){
       cleanup(input_data->ladspa_handle);
     }
 
@@ -402,11 +404,13 @@ ags_fx_ladspa_channel_input_data_free(AgsFxLadspaChannelInputData *input_data)
       g_rec_mutex_unlock(base_plugin_mutex);
     }
 
-    if(deactivate != NULL){
+    if(deactivate != NULL &&
+       input_data->ladspa_handle != NULL){
       deactivate(input_data->ladspa_handle);
     }
 
-    if(cleanup != NULL){
+    if(cleanup != NULL &&
+       input_data->ladspa_handle != NULL){
       cleanup(input_data->ladspa_handle);
     }
   }

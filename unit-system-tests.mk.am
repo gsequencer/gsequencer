@@ -1321,433 +1321,433 @@ ags_check_system_volume_channel_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_
 ags_check_system_fx_analyse_audio_test_SOURCES = ags/test/audio/fx/ags_fx_analyse_audio_test.c
 ags_check_system_fx_analyse_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_analyse_audio_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_analyse_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_analyse_audio_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx analyse audio processor unit test
 ags_check_system_fx_analyse_audio_processor_test_SOURCES = ags/test/audio/fx/ags_fx_analyse_audio_processor_test.c
 ags_check_system_fx_analyse_audio_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_analyse_audio_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_analyse_audio_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_analyse_audio_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx analyse channel unit test
 ags_check_system_fx_analyse_channel_test_SOURCES = ags/test/audio/fx/ags_fx_analyse_channel_test.c
 ags_check_system_fx_analyse_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_analyse_channel_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_analyse_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_analyse_channel_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx analyse channel processor unit test
 ags_check_system_fx_analyse_channel_processor_test_SOURCES = ags/test/audio/fx/ags_fx_analyse_channel_processor_test.c
 ags_check_system_fx_analyse_channel_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_analyse_channel_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_analyse_channel_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_analyse_channel_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx analyse recycling unit test
 ags_check_system_fx_analyse_recycling_test_SOURCES = ags/test/audio/fx/ags_fx_analyse_recycling_test.c
 ags_check_system_fx_analyse_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_analyse_recycling_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_analyse_recycling_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_analyse_recycling_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx analyse audio signal unit test
 ags_check_system_fx_analyse_audio_signal_test_SOURCES = ags/test/audio/fx/ags_fx_analyse_audio_signal_test.c
 ags_check_system_fx_analyse_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_analyse_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_analyse_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_analyse_audio_signal_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx buffer audio unit test
 ags_check_system_fx_buffer_audio_test_SOURCES = ags/test/audio/fx/ags_fx_buffer_audio_test.c
 ags_check_system_fx_buffer_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_buffer_audio_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_buffer_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_buffer_audio_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx buffer audio processor unit test
 ags_check_system_fx_buffer_audio_processor_test_SOURCES = ags/test/audio/fx/ags_fx_buffer_audio_processor_test.c
 ags_check_system_fx_buffer_audio_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_buffer_audio_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_buffer_audio_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_buffer_audio_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx buffer channel unit test
 ags_check_system_fx_buffer_channel_test_SOURCES = ags/test/audio/fx/ags_fx_buffer_channel_test.c
 ags_check_system_fx_buffer_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_buffer_channel_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_buffer_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_buffer_channel_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx buffer channel processor unit test
 ags_check_system_fx_buffer_channel_processor_test_SOURCES = ags/test/audio/fx/ags_fx_buffer_channel_processor_test.c
 ags_check_system_fx_buffer_channel_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_buffer_channel_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_buffer_channel_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_buffer_channel_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx buffer recycling unit test
 ags_check_system_fx_buffer_recycling_test_SOURCES = ags/test/audio/fx/ags_fx_buffer_recycling_test.c
 ags_check_system_fx_buffer_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_buffer_recycling_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_buffer_recycling_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_buffer_recycling_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx buffer audio signal unit test
 ags_check_system_fx_buffer_audio_signal_test_SOURCES = ags/test/audio/fx/ags_fx_buffer_audio_signal_test.c
 ags_check_system_fx_buffer_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_buffer_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_buffer_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_buffer_audio_signal_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx dssi audio unit test
 ags_check_system_fx_dssi_audio_test_SOURCES = ags/test/audio/fx/ags_fx_dssi_audio_test.c
 ags_check_system_fx_dssi_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_dssi_audio_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_dssi_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_dssi_audio_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx dssi audio processor unit test
 ags_check_system_fx_dssi_audio_processor_test_SOURCES = ags/test/audio/fx/ags_fx_dssi_audio_processor_test.c
 ags_check_system_fx_dssi_audio_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_dssi_audio_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_dssi_audio_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_dssi_audio_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx dssi channel unit test
 ags_check_system_fx_dssi_channel_test_SOURCES = ags/test/audio/fx/ags_fx_dssi_channel_test.c
 ags_check_system_fx_dssi_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_dssi_channel_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_dssi_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_dssi_channel_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx dssi channel processor unit test
 ags_check_system_fx_dssi_channel_processor_test_SOURCES = ags/test/audio/fx/ags_fx_dssi_channel_processor_test.c
 ags_check_system_fx_dssi_channel_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_dssi_channel_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_dssi_channel_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_dssi_channel_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx dssi recycling unit test
 ags_check_system_fx_dssi_recycling_test_SOURCES = ags/test/audio/fx/ags_fx_dssi_recycling_test.c
 ags_check_system_fx_dssi_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_dssi_recycling_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_dssi_recycling_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_dssi_recycling_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx dssi audio signal unit test
 ags_check_system_fx_dssi_audio_signal_test_SOURCES = ags/test/audio/fx/ags_fx_dssi_audio_signal_test.c
 ags_check_system_fx_dssi_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_dssi_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_dssi_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_dssi_audio_signal_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx envelope audio unit test
 ags_check_system_fx_envelope_audio_test_SOURCES = ags/test/audio/fx/ags_fx_envelope_audio_test.c
 ags_check_system_fx_envelope_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_envelope_audio_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_envelope_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_envelope_audio_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx envelope audio processor unit test
 ags_check_system_fx_envelope_audio_processor_test_SOURCES = ags/test/audio/fx/ags_fx_envelope_audio_processor_test.c
 ags_check_system_fx_envelope_audio_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_envelope_audio_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_envelope_audio_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_envelope_audio_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx envelope channel unit test
 ags_check_system_fx_envelope_channel_test_SOURCES = ags/test/audio/fx/ags_fx_envelope_channel_test.c
 ags_check_system_fx_envelope_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_envelope_channel_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_envelope_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_envelope_channel_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx envelope channel processor unit test
 ags_check_system_fx_envelope_channel_processor_test_SOURCES = ags/test/audio/fx/ags_fx_envelope_channel_processor_test.c
 ags_check_system_fx_envelope_channel_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_envelope_channel_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_envelope_channel_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_envelope_channel_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx envelope recycling unit test
 ags_check_system_fx_envelope_recycling_test_SOURCES = ags/test/audio/fx/ags_fx_envelope_recycling_test.c
 ags_check_system_fx_envelope_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_envelope_recycling_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_envelope_recycling_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_envelope_recycling_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx envelope audio signal unit test
 ags_check_system_fx_envelope_audio_signal_test_SOURCES = ags/test/audio/fx/ags_fx_envelope_audio_signal_test.c
 ags_check_system_fx_envelope_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_envelope_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_envelope_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_envelope_audio_signal_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx ladspa audio unit test
 ags_check_system_fx_ladspa_audio_test_SOURCES = ags/test/audio/fx/ags_fx_ladspa_audio_test.c
 ags_check_system_fx_ladspa_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_ladspa_audio_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_ladspa_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_ladspa_audio_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx ladspa audio processor unit test
 ags_check_system_fx_ladspa_audio_processor_test_SOURCES = ags/test/audio/fx/ags_fx_ladspa_audio_processor_test.c
 ags_check_system_fx_ladspa_audio_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_ladspa_audio_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_ladspa_audio_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_ladspa_audio_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx ladspa channel unit test
 ags_check_system_fx_ladspa_channel_test_SOURCES = ags/test/audio/fx/ags_fx_ladspa_channel_test.c
 ags_check_system_fx_ladspa_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_ladspa_channel_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_ladspa_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_ladspa_channel_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx ladspa channel processor unit test
 ags_check_system_fx_ladspa_channel_processor_test_SOURCES = ags/test/audio/fx/ags_fx_ladspa_channel_processor_test.c
 ags_check_system_fx_ladspa_channel_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_ladspa_channel_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_ladspa_channel_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_ladspa_channel_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx ladspa recycling unit test
 ags_check_system_fx_ladspa_recycling_test_SOURCES = ags/test/audio/fx/ags_fx_ladspa_recycling_test.c
 ags_check_system_fx_ladspa_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_ladspa_recycling_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_ladspa_recycling_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_ladspa_recycling_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx ladspa audio signal unit test
 ags_check_system_fx_ladspa_audio_signal_test_SOURCES = ags/test/audio/fx/ags_fx_ladspa_audio_signal_test.c
 ags_check_system_fx_ladspa_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_ladspa_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_ladspa_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_ladspa_audio_signal_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx lv2 audio unit test
 ags_check_system_fx_lv2_audio_test_SOURCES = ags/test/audio/fx/ags_fx_lv2_audio_test.c
 ags_check_system_fx_lv2_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_lv2_audio_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_lv2_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_lv2_audio_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx lv2 audio processor unit test
 ags_check_system_fx_lv2_audio_processor_test_SOURCES = ags/test/audio/fx/ags_fx_lv2_audio_processor_test.c
 ags_check_system_fx_lv2_audio_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_lv2_audio_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_lv2_audio_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_lv2_audio_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx lv2 channel unit test
 ags_check_system_fx_lv2_channel_test_SOURCES = ags/test/audio/fx/ags_fx_lv2_channel_test.c
 ags_check_system_fx_lv2_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_lv2_channel_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_lv2_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_lv2_channel_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx lv2 channel processor unit test
 ags_check_system_fx_lv2_channel_processor_test_SOURCES = ags/test/audio/fx/ags_fx_lv2_channel_processor_test.c
 ags_check_system_fx_lv2_channel_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_lv2_channel_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_lv2_channel_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_lv2_channel_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx lv2 recycling unit test
 ags_check_system_fx_lv2_recycling_test_SOURCES = ags/test/audio/fx/ags_fx_lv2_recycling_test.c
 ags_check_system_fx_lv2_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_lv2_recycling_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_lv2_recycling_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_lv2_recycling_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx lv2 audio signal unit test
 ags_check_system_fx_lv2_audio_signal_test_SOURCES = ags/test/audio/fx/ags_fx_lv2_audio_signal_test.c
 ags_check_system_fx_lv2_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_lv2_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_lv2_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_lv2_audio_signal_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx notation audio unit test
 ags_check_system_fx_notation_audio_test_SOURCES = ags/test/audio/fx/ags_fx_notation_audio_test.c
 ags_check_system_fx_notation_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_notation_audio_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_notation_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_notation_audio_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx notation audio processor unit test
 ags_check_system_fx_notation_audio_processor_test_SOURCES = ags/test/audio/fx/ags_fx_notation_audio_processor_test.c
 ags_check_system_fx_notation_audio_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_notation_audio_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_notation_audio_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_notation_audio_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx notation channel unit test
 ags_check_system_fx_notation_channel_test_SOURCES = ags/test/audio/fx/ags_fx_notation_channel_test.c
 ags_check_system_fx_notation_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_notation_channel_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_notation_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_notation_channel_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx notation channel processor unit test
 ags_check_system_fx_notation_channel_processor_test_SOURCES = ags/test/audio/fx/ags_fx_notation_channel_processor_test.c
 ags_check_system_fx_notation_channel_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_notation_channel_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_notation_channel_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_notation_channel_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx notation recycling unit test
 ags_check_system_fx_notation_recycling_test_SOURCES = ags/test/audio/fx/ags_fx_notation_recycling_test.c
 ags_check_system_fx_notation_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_notation_recycling_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_notation_recycling_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_notation_recycling_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx notation audio signal unit test
 ags_check_system_fx_notation_audio_signal_test_SOURCES = ags/test/audio/fx/ags_fx_notation_audio_signal_test.c
 ags_check_system_fx_notation_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_notation_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_notation_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_notation_audio_signal_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx pattern audio unit test
 ags_check_system_fx_pattern_audio_test_SOURCES = ags/test/audio/fx/ags_fx_pattern_audio_test.c
 ags_check_system_fx_pattern_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_pattern_audio_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_pattern_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_pattern_audio_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx pattern audio processor unit test
 ags_check_system_fx_pattern_audio_processor_test_SOURCES = ags/test/audio/fx/ags_fx_pattern_audio_processor_test.c
 ags_check_system_fx_pattern_audio_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_pattern_audio_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_pattern_audio_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_pattern_audio_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx pattern channel unit test
 ags_check_system_fx_pattern_channel_test_SOURCES = ags/test/audio/fx/ags_fx_pattern_channel_test.c
 ags_check_system_fx_pattern_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_pattern_channel_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_pattern_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_pattern_channel_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx pattern channel processor unit test
 ags_check_system_fx_pattern_channel_processor_test_SOURCES = ags/test/audio/fx/ags_fx_pattern_channel_processor_test.c
 ags_check_system_fx_pattern_channel_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_pattern_channel_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_pattern_channel_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_pattern_channel_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx pattern recycling unit test
 ags_check_system_fx_pattern_recycling_test_SOURCES = ags/test/audio/fx/ags_fx_pattern_recycling_test.c
 ags_check_system_fx_pattern_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_pattern_recycling_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_pattern_recycling_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_pattern_recycling_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx pattern audio signal unit test
 ags_check_system_fx_pattern_audio_signal_test_SOURCES = ags/test/audio/fx/ags_fx_pattern_audio_signal_test.c
 ags_check_system_fx_pattern_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_pattern_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_pattern_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_pattern_audio_signal_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx peak audio unit test
 ags_check_system_fx_peak_audio_test_SOURCES = ags/test/audio/fx/ags_fx_peak_audio_test.c
 ags_check_system_fx_peak_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_peak_audio_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_peak_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_peak_audio_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx peak audio processor unit test
 ags_check_system_fx_peak_audio_processor_test_SOURCES = ags/test/audio/fx/ags_fx_peak_audio_processor_test.c
 ags_check_system_fx_peak_audio_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_peak_audio_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_peak_audio_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_peak_audio_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx peak channel unit test
 ags_check_system_fx_peak_channel_test_SOURCES = ags/test/audio/fx/ags_fx_peak_channel_test.c
 ags_check_system_fx_peak_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_peak_channel_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_peak_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_peak_channel_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx peak channel processor unit test
 ags_check_system_fx_peak_channel_processor_test_SOURCES = ags/test/audio/fx/ags_fx_peak_channel_processor_test.c
 ags_check_system_fx_peak_channel_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_peak_channel_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_peak_channel_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_peak_channel_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx peak recycling unit test
 ags_check_system_fx_peak_recycling_test_SOURCES = ags/test/audio/fx/ags_fx_peak_recycling_test.c
 ags_check_system_fx_peak_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_peak_recycling_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_peak_recycling_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_peak_recycling_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx peak audio signal unit test
 ags_check_system_fx_peak_audio_signal_test_SOURCES = ags/test/audio/fx/ags_fx_peak_audio_signal_test.c
 ags_check_system_fx_peak_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_peak_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_peak_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_peak_audio_signal_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx playback audio unit test
 ags_check_system_fx_playback_audio_test_SOURCES = ags/test/audio/fx/ags_fx_playback_audio_test.c
 ags_check_system_fx_playback_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_playback_audio_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_playback_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_playback_audio_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx playback audio processor unit test
 ags_check_system_fx_playback_audio_processor_test_SOURCES = ags/test/audio/fx/ags_fx_playback_audio_processor_test.c
 ags_check_system_fx_playback_audio_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_playback_audio_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_playback_audio_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_playback_audio_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx playback channel unit test
 ags_check_system_fx_playback_channel_test_SOURCES = ags/test/audio/fx/ags_fx_playback_channel_test.c
 ags_check_system_fx_playback_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_playback_channel_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_playback_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_playback_channel_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx playback channel processor unit test
 ags_check_system_fx_playback_channel_processor_test_SOURCES = ags/test/audio/fx/ags_fx_playback_channel_processor_test.c
 ags_check_system_fx_playback_channel_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_playback_channel_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_playback_channel_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_playback_channel_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx playback recycling unit test
 ags_check_system_fx_playback_recycling_test_SOURCES = ags/test/audio/fx/ags_fx_playback_recycling_test.c
 ags_check_system_fx_playback_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_playback_recycling_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_playback_recycling_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_playback_recycling_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx playback audio signal unit test
 ags_check_system_fx_playback_audio_signal_test_SOURCES = ags/test/audio/fx/ags_fx_playback_audio_signal_test.c
 ags_check_system_fx_playback_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_playback_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_playback_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_playback_audio_signal_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx volume audio unit test
 ags_check_system_fx_volume_audio_test_SOURCES = ags/test/audio/fx/ags_fx_volume_audio_test.c
 ags_check_system_fx_volume_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_volume_audio_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_volume_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_volume_audio_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx volume audio processor unit test
 ags_check_system_fx_volume_audio_processor_test_SOURCES = ags/test/audio/fx/ags_fx_volume_audio_processor_test.c
 ags_check_system_fx_volume_audio_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_volume_audio_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_volume_audio_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_volume_audio_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx volume channel unit test
 ags_check_system_fx_volume_channel_test_SOURCES = ags/test/audio/fx/ags_fx_volume_channel_test.c
 ags_check_system_fx_volume_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_volume_channel_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_volume_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_volume_channel_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx volume channel processor unit test
 ags_check_system_fx_volume_channel_processor_test_SOURCES = ags/test/audio/fx/ags_fx_volume_channel_processor_test.c
 ags_check_system_fx_volume_channel_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_volume_channel_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_volume_channel_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_volume_channel_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx volume recycling unit test
 ags_check_system_fx_volume_recycling_test_SOURCES = ags/test/audio/fx/ags_fx_volume_recycling_test.c
 ags_check_system_fx_volume_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_volume_recycling_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_volume_recycling_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_volume_recycling_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx volume audio signal unit test
 ags_check_system_fx_volume_audio_signal_test_SOURCES = ags/test/audio/fx/ags_fx_volume_audio_signal_test.c
 ags_check_system_fx_volume_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_volume_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_volume_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_volume_audio_signal_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx eq10 audio unit test
 ags_check_system_fx_eq10_audio_test_SOURCES = ags/test/audio/fx/ags_fx_eq10_audio_test.c
 ags_check_system_fx_eq10_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_eq10_audio_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_eq10_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_eq10_audio_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx eq10 audio processor unit test
 ags_check_system_fx_eq10_audio_processor_test_SOURCES = ags/test/audio/fx/ags_fx_eq10_audio_processor_test.c
 ags_check_system_fx_eq10_audio_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_eq10_audio_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_eq10_audio_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_eq10_audio_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx eq10 channel unit test
 ags_check_system_fx_eq10_channel_test_SOURCES = ags/test/audio/fx/ags_fx_eq10_channel_test.c
 ags_check_system_fx_eq10_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_eq10_channel_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_eq10_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_eq10_channel_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx eq10 channel processor unit test
 ags_check_system_fx_eq10_channel_processor_test_SOURCES = ags/test/audio/fx/ags_fx_eq10_channel_processor_test.c
 ags_check_system_fx_eq10_channel_processor_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_eq10_channel_processor_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_eq10_channel_processor_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_eq10_channel_processor_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx eq10 recycling unit test
 ags_check_system_fx_eq10_recycling_test_SOURCES = ags/test/audio/fx/ags_fx_eq10_recycling_test.c
 ags_check_system_fx_eq10_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_eq10_recycling_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_eq10_recycling_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_eq10_recycling_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fx eq10 audio signal unit test
 ags_check_system_fx_eq10_audio_signal_test_SOURCES = ags/test/audio/fx/ags_fx_eq10_audio_signal_test.c
 ags_check_system_fx_eq10_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fx_eq10_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_fx_eq10_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+ags_check_system_fx_eq10_audio_signal_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # add audio unit test
 ags_check_system_add_audio_test_SOURCES = ags/test/audio/task/ags_add_audio_test.c

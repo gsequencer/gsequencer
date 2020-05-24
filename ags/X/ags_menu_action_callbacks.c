@@ -29,6 +29,7 @@
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_export_window.h>
+#include <ags/X/ags_machine_util.h>
 
 #include <ags/X/import/ags_midi_import_wizard.h>
 
@@ -403,610 +404,261 @@ ags_menu_action_add_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_add_panel_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsPanel *panel;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
-
-  GObject *default_soundcard;
   
   application_context = ags_application_context_get_instance();
 
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
   /* create panel */
-  panel = ags_panel_new(G_OBJECT(default_soundcard));
-
+  panel = ags_machine_util_new_panel();
+  
   add_audio = ags_add_audio_new(AGS_MACHINE(panel)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(panel),
-		     FALSE, FALSE,
-		     0);
-
-  ags_connectable_connect(AGS_CONNECTABLE(panel));
-
-  ags_audio_set_audio_channels(AGS_MACHINE(panel)->audio,
-			       2, 0);
-  
-  ags_audio_set_pads(AGS_MACHINE(panel)->audio,
-		     AGS_TYPE_INPUT,
-		     1, 0);
-  ags_audio_set_pads(AGS_MACHINE(panel)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);
-
-  gtk_widget_show_all(GTK_WIDGET(panel));
 }
 
 void
 ags_menu_action_add_mixer_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsMixer *mixer;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
-    
-  GObject *default_soundcard;
   
   application_context = ags_application_context_get_instance();
-
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   /* create mixer */
-  mixer = ags_mixer_new(G_OBJECT(default_soundcard));
+  mixer = ags_machine_util_new_mixer();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(mixer)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(mixer),
-		     FALSE, FALSE,
-		     0);
-
-  ags_connectable_connect(AGS_CONNECTABLE(mixer));
-
-  ags_audio_set_audio_channels(AGS_MACHINE(mixer)->audio,
-			       2, 0);
-
-  ags_audio_set_pads(AGS_MACHINE(mixer)->audio,
-		     AGS_TYPE_INPUT,
-		     8, 0);
-  ags_audio_set_pads(AGS_MACHINE(mixer)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);
-
-  gtk_widget_show_all(GTK_WIDGET(mixer));
 }
 
 void
 ags_menu_action_add_spectrometer_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsSpectrometer *spectrometer;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
     
-  GObject *default_soundcard;
-  
   application_context = ags_application_context_get_instance();
 
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
   /* create spectrometer */
-  spectrometer = ags_spectrometer_new(G_OBJECT(default_soundcard));
+  spectrometer = ags_machine_util_new_spectrometer();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(spectrometer)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(spectrometer),
-		     FALSE, FALSE,
-		     0);
-
-  ags_connectable_connect(AGS_CONNECTABLE(spectrometer));
-
-  ags_audio_set_audio_channels(AGS_MACHINE(spectrometer)->audio,
-			       2, 0);
-
-  ags_audio_set_pads(AGS_MACHINE(spectrometer)->audio,
-		     AGS_TYPE_INPUT,
-		     1, 0);
-  ags_audio_set_pads(AGS_MACHINE(spectrometer)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);
-
-  gtk_widget_show_all(GTK_WIDGET(spectrometer));
 }
 
 void
 ags_menu_action_add_equalizer_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsEqualizer10 *equalizer10;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
     
-  GObject *default_soundcard;
-  
   application_context = ags_application_context_get_instance();
 
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
   /* create equalizer10 */
-  equalizer10 = ags_equalizer10_new(G_OBJECT(default_soundcard));
+  equalizer10 = ags_machine_util_new_equalizer();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(equalizer10)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(equalizer10),
-		     FALSE, FALSE,
-		     0);
-
-  ags_connectable_connect(AGS_CONNECTABLE(equalizer10));
-
-  ags_audio_set_audio_channels(AGS_MACHINE(equalizer10)->audio,
-			       2, 0);
-
-  ags_audio_set_pads(AGS_MACHINE(equalizer10)->audio,
-		     AGS_TYPE_INPUT,
-		     1, 0);
-  ags_audio_set_pads(AGS_MACHINE(equalizer10)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);
-
-  gtk_widget_show_all(GTK_WIDGET(equalizer10));
 }
 
 void
 ags_menu_action_add_drum_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsDrum *drum;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
     
-  GObject *default_soundcard;
-  
   application_context = ags_application_context_get_instance();
 
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
   /* create drum */
-  drum = ags_drum_new(G_OBJECT(default_soundcard));
+  drum = ags_machine_util_new_drum();
   
   add_audio = ags_add_audio_new(AGS_MACHINE(drum)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(drum),
-		     FALSE, FALSE,
-		     0);
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(drum));
-
-  /* */
-  ags_audio_set_audio_channels(AGS_MACHINE(drum)->audio,
-			       2, 0);
-
-  /* AgsDrumInputPad */
-  ags_audio_set_pads(AGS_MACHINE(drum)->audio,
-		     AGS_TYPE_INPUT,
-		     8, 0);
-  ags_audio_set_pads(AGS_MACHINE(drum)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);
-
-  /* */
-  gtk_widget_show_all(GTK_WIDGET(drum));
 }
 
 void
 ags_menu_action_add_matrix_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsMatrix *matrix;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
 
-  GObject *default_soundcard;
-  
   application_context = ags_application_context_get_instance();
 
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
   /* create matrix */
-  matrix = ags_matrix_new(G_OBJECT(default_soundcard));
+  matrix = ags_machine_util_new_matrix();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(matrix)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-  
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(matrix),
-		     FALSE, FALSE,
-		     0);
-  
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(matrix));
-
-  /* */
-  ags_audio_set_audio_channels(AGS_MACHINE(matrix)->audio,
-			       1, 0);
-
-  /* AgsMatrixInputPad */
-  ags_audio_set_pads(AGS_MACHINE(matrix)->audio,
-		     AGS_TYPE_INPUT,
-		     78, 0);
-  ags_audio_set_pads(AGS_MACHINE(matrix)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);
-
-  /* */
-  gtk_widget_show_all(GTK_WIDGET(matrix));
 }
 
 void
 ags_menu_action_add_synth_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsSynth *synth;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
     
-  GObject *default_soundcard;
-  
   application_context = ags_application_context_get_instance();
 
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
   /* create synth */
-  synth = ags_synth_new(G_OBJECT(default_soundcard));
+  synth = ags_machine_util_new_synth();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(synth)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) synth,
-		     FALSE, FALSE,
-		     0);
-
-  ags_connectable_connect(AGS_CONNECTABLE(synth));
-
-  ags_audio_set_audio_channels(AGS_MACHINE(synth)->audio,
-			       1, 0);
-
-  ags_audio_set_pads(AGS_MACHINE(synth)->audio,
-		     AGS_TYPE_INPUT,
-		     2, 0);
-  ags_audio_set_pads(AGS_MACHINE(synth)->audio,
-		     AGS_TYPE_OUTPUT,
-		     78, 0);
-
-  gtk_widget_show_all((GtkWidget *) synth);
 }
 
 void
 ags_menu_action_add_fm_synth_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsFMSynth *fm_synth;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
     
-  GObject *default_soundcard;
-  
   application_context = ags_application_context_get_instance();
 
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
-  /* create fm_synth */
-  fm_synth = ags_fm_synth_new(G_OBJECT(default_soundcard));
+  /* create fm synth */
+  fm_synth = ags_machine_util_new_fm_synth();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(fm_synth)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) fm_synth,
-		     FALSE, FALSE,
-		     0);
-
-  ags_connectable_connect(AGS_CONNECTABLE(fm_synth));
-
-  ags_audio_set_audio_channels(AGS_MACHINE(fm_synth)->audio,
-			       1, 0);
-
-  ags_audio_set_pads(AGS_MACHINE(fm_synth)->audio,
-		     AGS_TYPE_INPUT,
-		     2, 0);
-  ags_audio_set_pads(AGS_MACHINE(fm_synth)->audio,
-		     AGS_TYPE_OUTPUT,
-		     78, 0);
-
-  gtk_widget_show_all((GtkWidget *) fm_synth);
 }
 
 void
 ags_menu_action_add_syncsynth_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsSyncsynth *syncsynth;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
   
-  GObject *default_soundcard;
-  
   application_context = ags_application_context_get_instance();
 
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
   /* create syncsynth */
-  syncsynth = ags_syncsynth_new(G_OBJECT(default_soundcard));
+  syncsynth = ags_machine_util_new_syncsynth();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(syncsynth)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) syncsynth,
-		     FALSE, FALSE,
-		     0);
-
-  ags_connectable_connect(AGS_CONNECTABLE(syncsynth));
-
-  ags_audio_set_audio_channels(AGS_MACHINE(syncsynth)->audio,
-			       1, 0);
-  
-  ags_audio_set_pads(AGS_MACHINE(syncsynth)->audio,
-		     AGS_TYPE_INPUT,
-		     78, 0);
-  ags_audio_set_pads(AGS_MACHINE(syncsynth)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);
-
-  gtk_widget_show_all((GtkWidget *) syncsynth);
 }
 
 void
 ags_menu_action_add_fm_syncsynth_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsFMSyncsynth *fm_syncsynth;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
   
-  GObject *default_soundcard;
-  
   application_context = ags_application_context_get_instance();
 
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
-  /* create fm_syncsynth */
-  fm_syncsynth = ags_fm_syncsynth_new(G_OBJECT(default_soundcard));
+  /* create fm syncsynth */
+  fm_syncsynth = ags_machine_util_new_fm_syncsynth();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(fm_syncsynth)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) fm_syncsynth,
-		     FALSE, FALSE,
-		     0);
-
-  ags_connectable_connect(AGS_CONNECTABLE(fm_syncsynth));
-
-  ags_audio_set_audio_channels(AGS_MACHINE(fm_syncsynth)->audio,
-			       1, 0);
-  
-  ags_audio_set_pads(AGS_MACHINE(fm_syncsynth)->audio,
-		     AGS_TYPE_INPUT,
-		     78, 0);
-  ags_audio_set_pads(AGS_MACHINE(fm_syncsynth)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);
-
-  gtk_widget_show_all((GtkWidget *) fm_syncsynth);
 }
 
 #ifdef AGS_WITH_LIBINSTPATCH
 void
 ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsFFPlayer *ffplayer;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
   
-  GObject *default_soundcard;
-  
   application_context = ags_application_context_get_instance();
-
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   /* create ffplayer */
-  ffplayer = ags_ffplayer_new(G_OBJECT(default_soundcard));
+  ffplayer = ags_machine_util_new_ffplayer();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(ffplayer)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) ffplayer,
-		     FALSE, FALSE,
-		     0);
-
-  ags_connectable_connect(AGS_CONNECTABLE(ffplayer));
-
-  ags_audio_set_audio_channels(AGS_MACHINE(ffplayer)->audio,
-			       2, 0);
-  
-  ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio,
-		     AGS_TYPE_INPUT,
-		     78, 0);
-  ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);  
-
-  gtk_widget_show_all((GtkWidget *) ffplayer);
 }
 #endif
 
 void
 ags_menu_action_add_pitch_sampler_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsPitchSampler *pitch_sampler;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
   
-  GObject *default_soundcard;
-  
   application_context = ags_application_context_get_instance();
-
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
-  /* create pitch_sampler */
-  pitch_sampler = ags_pitch_sampler_new(G_OBJECT(default_soundcard));
-
+  /* create pitch sampler */
+  pitch_sampler = ags_machine_util_new_pitch_sampler();
+  
   add_audio = ags_add_audio_new(AGS_MACHINE(pitch_sampler)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) pitch_sampler,
-		     FALSE, FALSE,
-		     0);
-
-  ags_connectable_connect(AGS_CONNECTABLE(pitch_sampler));
-
-  ags_audio_set_audio_channels(AGS_MACHINE(pitch_sampler)->audio,
-			       2, 0);
-  
-  ags_audio_set_pads(AGS_MACHINE(pitch_sampler)->audio,
-		     AGS_TYPE_INPUT,
-		     78, 0);
-  ags_audio_set_pads(AGS_MACHINE(pitch_sampler)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);  
-
-  gtk_widget_show_all((GtkWidget *) pitch_sampler);
 }
 
 void
 ags_menu_action_add_audiorec_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsAudiorec *audiorec;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
   
-  GObject *default_soundcard;
-  
   application_context = ags_application_context_get_instance();
-
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   /* create audiorec */
-  audiorec = ags_audiorec_new(G_OBJECT(default_soundcard));
+  audiorec = ags_machine_util_new_audiorec();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(audiorec)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) audiorec,
-		     FALSE, FALSE,
-		     0);
-
-  ags_connectable_connect(AGS_CONNECTABLE(audiorec));
-
-  ags_audio_set_audio_channels(AGS_MACHINE(audiorec)->audio,
-			       2, 0);
-  
-  ags_audio_set_pads(AGS_MACHINE(audiorec)->audio,
-		     AGS_TYPE_INPUT,
-		     1, 0);
-  ags_audio_set_pads(AGS_MACHINE(audiorec)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);  
-
-  gtk_widget_show_all((GtkWidget *) audiorec);
 }
 
 void
 ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsLadspaBridge *ladspa_bridge;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
 
-  GObject *default_soundcard;
-  
   gchar *filename, *effect;
   
   filename = g_object_get_data((GObject *) menu_item,
@@ -1015,55 +667,24 @@ ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
 			     AGS_MENU_ITEM_EFFECT_KEY);
   
   application_context = ags_application_context_get_instance();
-
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   /* create ladspa bridge */
-  ladspa_bridge = ags_ladspa_bridge_new(G_OBJECT(default_soundcard),
-					filename,
-					effect);
+  ladspa_bridge = ags_machine_util_new_ladspa_bridge(filename, effect);
   
   add_audio = ags_add_audio_new(AGS_MACHINE(ladspa_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(ladspa_bridge),
-		     FALSE, FALSE, 0);
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(ladspa_bridge));
-
-  /* */
-  ags_audio_set_audio_channels(AGS_MACHINE(ladspa_bridge)->audio,
-			       2, 0);
-
-  /*  */
-  ags_audio_set_pads(AGS_MACHINE(ladspa_bridge)->audio,
-		     AGS_TYPE_INPUT,
-		     1, 0);
-  ags_audio_set_pads(AGS_MACHINE(ladspa_bridge)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);
-
-  /* */
-  gtk_widget_show_all(GTK_WIDGET(ladspa_bridge));
 }
 
 void
 ags_menu_action_add_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsDssiBridge *dssi_bridge;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
 
-  GObject *default_soundcard;
-  
   gchar *filename, *effect;
 
   filename = g_object_get_data((GObject *) menu_item,
@@ -1072,58 +693,23 @@ ags_menu_action_add_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
 			     AGS_MENU_ITEM_EFFECT_KEY);
   
   application_context = ags_application_context_get_instance();
-
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   /* create dssi bridge */
-  dssi_bridge = ags_dssi_bridge_new(G_OBJECT(default_soundcard),
-				    filename,
-				    effect);
+  dssi_bridge = ags_machine_util_new_dssi_bridge(filename, effect);
   
   add_audio = ags_add_audio_new(AGS_MACHINE(dssi_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(dssi_bridge),
-		     FALSE, FALSE, 0);
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(dssi_bridge));
-  
-  /*  */
-  ags_audio_set_audio_channels(AGS_MACHINE(dssi_bridge)->audio,
-			       2, 0);
-
-  ags_audio_set_pads(AGS_MACHINE(dssi_bridge)->audio,
-		     AGS_TYPE_INPUT,
-		     128, 0);
-  ags_audio_set_pads(AGS_MACHINE(dssi_bridge)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);
-
-  /*  */
-  ags_dssi_bridge_load(dssi_bridge);
-
-  /* */
-  gtk_widget_show_all(GTK_WIDGET(dssi_bridge));
 }
 
 void
 ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsLv2Bridge *lv2_bridge;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
-
-  AgsLv2Plugin *lv2_plugin;
-
-  GObject *default_soundcard;
   
   gchar *filename, *effect;
     
@@ -1134,162 +720,22 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
   
   application_context = ags_application_context_get_instance();
 
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-
-  if(filename != NULL &&
-     effect != NULL){
-    AgsTurtle *manifest;
-    AgsTurtleManager *turtle_manager;
-    
-    gchar *path;
-    gchar *manifest_filename;
-
-    turtle_manager = ags_turtle_manager_get_instance();
-    
-    path = g_path_get_dirname(filename);
-
-    manifest_filename = g_strdup_printf("%s%c%s",
-					path,
-					G_DIR_SEPARATOR,
-					"manifest.ttl");
-
-    manifest = ags_turtle_manager_find(turtle_manager,
-				       manifest_filename);
-
-    if(manifest == NULL){
-      AgsLv2TurtleParser *lv2_turtle_parser;
-	
-      AgsTurtle **turtle;
-
-      guint n_turtle;
-
-      if(!g_file_test(manifest_filename,
-		      G_FILE_TEST_EXISTS)){
-	return;
-      }
-
-      g_message("new turtle [Manifest] - %s", manifest_filename);
-	
-      manifest = ags_turtle_new(manifest_filename);
-      ags_turtle_load(manifest,
-		      NULL);
-      ags_turtle_manager_add(turtle_manager,
-			     (GObject *) manifest);
-
-      lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
-
-      n_turtle = 1;
-      turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
-
-      turtle[0] = manifest;
-      turtle[1] = NULL;
-	
-      ags_lv2_turtle_parser_parse(lv2_turtle_parser,
-				  turtle, n_turtle);
-    
-      g_object_run_dispose(lv2_turtle_parser);
-      g_object_unref(lv2_turtle_parser);
-	
-      g_object_unref(manifest);
-	
-      free(turtle);
-    }
-    
-    g_free(manifest_filename);
-  }
-  
-  /* create lv2 bridge */    
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-					       filename, effect);
-
-  if(lv2_plugin == NULL){
-    return;
-  }
-  
-  lv2_bridge = ags_lv2_bridge_new(G_OBJECT(default_soundcard),
-				  filename,
-				  effect);
-  
-  if(lv2_plugin != NULL &&
-     (AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) != 0){
-    ags_audio_set_flags(AGS_MACHINE(lv2_bridge)->audio, (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-							 AGS_AUDIO_INPUT_HAS_RECYCLING |
-							 AGS_AUDIO_SYNC |
-							 AGS_AUDIO_ASYNC));
-    ags_audio_set_ability_flags(AGS_MACHINE(lv2_bridge)->audio, (AGS_SOUND_ABILITY_NOTATION));
-    ags_audio_set_behaviour_flags(AGS_MACHINE(lv2_bridge)->audio, (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT |
-								   AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING));
-    
-    g_object_set(AGS_MACHINE(lv2_bridge)->audio,
-		 "max-input-pads", 128,
-		 "audio-start-mapping", 0,
-		 "audio-end-mapping", 128,
-		 "midi-start-mapping", 0,
-		 "midi-end-mapping", 128,
-		 NULL);
-    
-    AGS_MACHINE(lv2_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
-				       AGS_MACHINE_REVERSE_NOTATION);
-
-    ags_machine_popup_add_connection_options((AgsMachine *) lv2_bridge,
-					     (AGS_MACHINE_POPUP_MIDI_DIALOG));
-
-    ags_machine_popup_add_edit_options((AgsMachine *) lv2_bridge,
-				       (AGS_MACHINE_POPUP_ENVELOPE));
-  }
+  /* create lv2 bridge */
+  lv2_bridge = ags_machine_util_new_lv2_bridge(filename, effect);
   
   add_audio = ags_add_audio_new(AGS_MACHINE(lv2_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(lv2_bridge),
-		     FALSE, FALSE, 0);
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(lv2_bridge));
-  
-  /*  */
-  ags_audio_set_audio_channels(AGS_MACHINE(lv2_bridge)->audio,
-			       2, 0);
-
-  /*  */
-  if(lv2_plugin != NULL){
-    if((AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) == 0){
-      ags_audio_set_pads(AGS_MACHINE(lv2_bridge)->audio,
-			 AGS_TYPE_INPUT,
-			 1, 0);
-    }else{
-      ags_audio_set_pads(AGS_MACHINE(lv2_bridge)->audio,
-			 AGS_TYPE_INPUT,
-			 128, 0);
-    }
-  }
-  
-  ags_audio_set_pads(AGS_MACHINE(lv2_bridge)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);
-
-  /*  */
-  ags_lv2_bridge_load(lv2_bridge);
-
-  /* */
-  gtk_widget_show_all(GTK_WIDGET(lv2_bridge));
 }
 
 void
 ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsLiveDssiBridge *live_dssi_bridge;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
-
-  GObject *default_soundcard;
   
   gchar *filename, *effect;
 
@@ -1299,44 +745,13 @@ ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer dat
 			     AGS_MENU_ITEM_EFFECT_KEY);
   
   application_context = ags_application_context_get_instance();
-
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   /* create live dssi bridge */
-  live_dssi_bridge = ags_live_dssi_bridge_new(G_OBJECT(default_soundcard),
-					      filename,
-					      effect);
+  live_dssi_bridge = ags_machine_util_new_live_dssi_bridge(filename, effect);
   
   add_audio = ags_add_audio_new(AGS_MACHINE(live_dssi_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(live_dssi_bridge),
-		     FALSE, FALSE, 0);
-  
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(live_dssi_bridge));
-
-  /* */
-  ags_audio_set_audio_channels(AGS_MACHINE(live_dssi_bridge)->audio,
-			       2, 0);
-
-  /*  */
-  ags_audio_set_pads(AGS_MACHINE(live_dssi_bridge)->audio,
-		     AGS_TYPE_INPUT,
-		     128, 0);
-  ags_audio_set_pads(AGS_MACHINE(live_dssi_bridge)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);
-
-  /*  */
-  ags_live_dssi_bridge_load(live_dssi_bridge);
-
-  /* */
-  gtk_widget_show_all(GTK_WIDGET(live_dssi_bridge));
 }
 
 void
@@ -1361,122 +776,13 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
 			     AGS_MENU_ITEM_EFFECT_KEY);
   
   application_context = ags_application_context_get_instance();
-
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
-  /* create live lv2 bridge */    
-  if(filename != NULL &&
-     effect != NULL){
-    AgsTurtle *manifest;
-    AgsTurtleManager *turtle_manager;
-    
-    gchar *path;
-    gchar *manifest_filename;
-
-    turtle_manager = ags_turtle_manager_get_instance();
-    
-    path = g_path_get_dirname(filename);
-
-    manifest_filename = g_strdup_printf("%s%c%s",
-					path,
-					G_DIR_SEPARATOR,
-					"manifest.ttl");
-
-    manifest = ags_turtle_manager_find(turtle_manager,
-				       manifest_filename);
-
-    if(manifest == NULL){
-      AgsLv2TurtleParser *lv2_turtle_parser;
-	
-      AgsTurtle **turtle;
-
-      guint n_turtle;
-
-      if(!g_file_test(manifest_filename,
-		      G_FILE_TEST_EXISTS)){
-	return;
-      }
-
-      g_message("new turtle [Manifest] - %s", manifest_filename);
-	
-      manifest = ags_turtle_new(manifest_filename);
-      ags_turtle_load(manifest,
-		      NULL);
-      ags_turtle_manager_add(turtle_manager,
-			     (GObject *) manifest);
-
-      lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
-
-      n_turtle = 1;
-      turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
-
-      turtle[0] = manifest;
-      turtle[1] = NULL;
-	
-      ags_lv2_turtle_parser_parse(lv2_turtle_parser,
-				  turtle, n_turtle);
-    
-      g_object_run_dispose(lv2_turtle_parser);
-      g_object_unref(lv2_turtle_parser);
-	
-      g_object_unref(manifest);
-	
-      free(turtle);
-    }
-    
-    g_free(manifest_filename);
-  }
-
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-					       filename, effect);
-
-  if(lv2_plugin == NULL){
-    return;
-  }
-  
-  live_lv2_bridge = ags_live_lv2_bridge_new(G_OBJECT(default_soundcard),
-					    filename,
-					    effect);
+  /* create live lv2 bridge */
+  live_lv2_bridge = ags_machine_util_new_live_lv2_bridge(filename, effect);
     
   add_audio = ags_add_audio_new(AGS_MACHINE(live_lv2_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
-
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(live_lv2_bridge),
-		     FALSE, FALSE, 0);
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(live_lv2_bridge));
-  
-  /*  */
-  ags_audio_set_audio_channels(AGS_MACHINE(live_lv2_bridge)->audio,
-			       2, 0);
-
-  /*  */
-  if(lv2_plugin != NULL){
-    if((AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) == 0){
-      ags_audio_set_pads(AGS_MACHINE(live_lv2_bridge)->audio,
-			 AGS_TYPE_INPUT,
-			 1, 0);
-    }else{
-      ags_audio_set_pads(AGS_MACHINE(live_lv2_bridge)->audio,
-			 AGS_TYPE_INPUT,
-			 128, 0);
-    }
-  }
-  
-  ags_audio_set_pads(AGS_MACHINE(live_lv2_bridge)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);
-
-  /*  */
-  ags_live_lv2_bridge_load(live_lv2_bridge);
-
-  /* */
-  gtk_widget_show_all(GTK_WIDGET(live_lv2_bridge));
 }
 
 void

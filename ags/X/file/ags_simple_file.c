@@ -21,6 +21,7 @@
 
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_machine_util.h>
 #include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_automation_editor.h>
@@ -121,6 +122,9 @@ void ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 					AgsWindow *window);
 void ags_simple_file_read_machine_list(AgsSimpleFile *simple_file, xmlNode *node, GList **machine);
 void ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachine **machine);
+void ags_simple_file_read_machine_resize_audio_channels(AgsMachine *machine,
+							guint new_size, guint old_size,
+							gpointer data);
 void ags_simple_file_read_machine_resize_pads(AgsMachine *machine,
 					      GType channel_type,
 					      guint new_size, guint old_size,
@@ -887,7 +891,8 @@ ags_simple_file_add_lookup(AgsSimpleFile *simple_file, GObject *file_lookup)
 void
 ags_simple_file_add_launch(AgsSimpleFile *simple_file, GObject *file_launch)
 {
-  if(simple_file == NULL || file_launch == NULL){
+  if(!AGS_IS_SIMPLE_FILE(simple_file) ||
+     file_launch == NULL){
     return;
   }
 
@@ -1960,6 +1965,18 @@ ags_simple_file_read_machine_list(AgsSimpleFile *simple_file, xmlNode *node, GLi
 }
 
 void
+ags_simple_file_read_machine_resize_audio_channels(AgsMachine *machine,
+						   guint new_size, guint old_size,
+						   gpointer data)
+{
+  gboolean *resized;
+
+  resized = data;
+
+  resized[0] = TRUE;
+}
+
+void
 ags_simple_file_read_machine_resize_pads(AgsMachine *machine,
 					 GType channel_type,
 					 guint new_size, guint old_size,
@@ -2003,6 +2020,8 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   
   guint audio_channels;
   guint output_pads, input_pads;
+  gboolean audio_channel_wait_data[1];
+  gboolean wait_audio_channel;
   gboolean wait_data[2];
   gboolean wait_output, wait_input;
   guint i;
@@ -2014,17 +2033,131 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   if(*machine != NULL){
     gobject = *machine;
   }else{
+    AgsApplicationContext *application_context;
+  
+    GList *start_list;
+
+    xmlChar *filename, *effect;
+
+
+    application_context = ags_application_context_get_instance();
+
     type_name = xmlGetProp(node,
 			   AGS_SIMPLE_FILE_TYPE_PROP);
 
-    if(type_name != NULL){
-      gobject = g_object_new(g_type_from_name(type_name),
-			     NULL);
+    filename = xmlGetProp(node,
+			  "plugin-file");
 
+    effect = xmlGetProp(node,
+			"effect");
+
+    if(effect != NULL &&
+       (!g_ascii_strncasecmp(type_name,
+			     "AgsLv2Bridge",
+			     13) ||
+	!g_ascii_strncasecmp(type_name,
+			     "AgsLiveLv2Bridge",
+			     17))){
+      xmlChar *version;
+      
+      guint major, minor, micro;
+      
+      /* fixup 3.2.7 */
+      version = xmlGetProp(simple_file->root_node,
+			   "version");
+    
+      major = 0;
+      minor = 0;
+      micro = 0;
+    
+      if(version != NULL){
+	sscanf(version, "%d.%d.%d",
+	       &major,
+	       &minor,
+	       &micro);
+
+	xmlFree(version);
+      }
+
+      if(major < 3 ||
+	 (major == 3 &&
+	  micro < 2) ||
+	 (major == 3 &&
+	  micro < 2 &&
+	  micro < 7)){
+	gchar *tmp;
+
+	tmp = NULL;
+      
+	if(!g_ascii_strncasecmp(effect, "\"\"\"", 3)){
+	  tmp = g_strndup(effect + 3,
+			  (gsize) (strlen(effect) - 6));
+	}else if(!g_ascii_strncasecmp(effect, "\"\"", 2)){
+	  tmp = g_strndup(effect + 2,
+			  (gsize) (strlen(effect) - 4));
+	}else if(!g_ascii_strncasecmp(effect, "'''", 3)){
+	  tmp = g_strndup(effect + 3,
+			  (gsize) (strlen(effect) - 6));
+	}else if(!g_ascii_strncasecmp(effect, "''", 2)){
+	  tmp = g_strndup(effect + 2,
+			  (gsize) (strlen(effect) - 4));
+	}else if(effect[0] = '"'){
+	  tmp = g_strndup(effect + 1,
+			  (gsize) (strlen(effect) - 2));
+	}else if(effect[0] == '\''){
+	  tmp = g_strndup(effect + 1,
+			  (gsize) (strlen(effect) - 2));
+	}
+
+	if(tmp != NULL){
+	  xmlFree(effect);
+
+	  effect = xmlStrdup(tmp);
+	  g_free(tmp);
+	}
+      }
+    }
+    
+    if(type_name != NULL){
+      gobject = ags_machine_util_new_by_type_name(type_name,
+						  filename, effect);
+      
       xmlFree(type_name);
     }
     
+    if(filename != NULL){
+      xmlFree(filename);
+    }
+
+    if(effect != NULL){
+      xmlFree(effect);
+    }
+
     *machine = gobject;
+
+    /* ref audio */
+    g_object_ref(gobject->audio);
+
+    /* add to sound provider */
+    start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+    g_list_foreach(start_list,
+		   (GFunc) g_object_unref,
+		   NULL);
+
+    g_object_ref(gobject->audio);
+    start_list = g_list_append(start_list,
+			       gobject->audio);
+    
+    ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
+				 start_list);
+    
+    /* AgsAudio */
+    ags_connectable_connect(AGS_CONNECTABLE(gobject->audio));
+
+    ags_xorg_application_context_task_timeout(application_context);
+
+    ags_ui_provider_check_message(AGS_UI_PROVIDER(application_context));
+    ags_ui_provider_clean_message(AGS_UI_PROVIDER(application_context));
   }
 
   if(gobject == NULL ||
@@ -2043,7 +2176,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   
   /* retrieve window */  
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
+  
   config = ags_config_get_instance();
   
   /* find soundcard */
@@ -2101,527 +2234,16 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   
   /* machine specific */
   if(AGS_IS_LADSPA_BRIDGE(gobject)){
-    xmlChar *filename, *effect;
-
-    filename = xmlGetProp(node,
-			  "plugin-file");
-
-    effect = xmlGetProp(node,
-			"effect");
-
-    g_object_set(gobject,
-		 "filename", filename,
-		 "effect", effect,
-		 NULL);
-
-    if(filename != NULL){
-      xmlFree(filename);
-    }
-
-    if(effect != NULL){
-      xmlFree(effect);
-    }
+    //empty
   }else if(AGS_IS_DSSI_BRIDGE(gobject)){
-    xmlChar *filename, *effect;
-
-    filename = xmlGetProp(node,
-			  "plugin-file");
-
-    effect = xmlGetProp(node,
-			"effect");
-
-    g_object_set(gobject,
-		 "filename", filename,
-		 "effect", effect,
-		 NULL);
-
-    if(filename != NULL){
-      xmlFree(filename);
-    }
-
-    if(effect != NULL){
-      xmlFree(effect);
-    }
+    //empty
   }else if(AGS_IS_LIVE_DSSI_BRIDGE(gobject)){
-    xmlChar *version;
-    xmlChar *filename, *effect;
-
-    guint major, minor, micro;
-
-    filename = xmlGetProp(node,
-			  "plugin-file");
-
-    effect = xmlGetProp(node,
-			"effect");
-
-    /* fixup 3.2.7 */
-    version = xmlGetProp(simple_file->root_node,
-			 "version");
-    
-    major = 0;
-    minor = 0;
-    micro = 0;
-    
-    if(version != NULL){
-      sscanf(version, "%d.%d.%d",
-	     &major,
-	     &minor,
-	     &micro);
-
-      xmlFree(version);
-    }
-
-    if(major < 3 ||
-       (major == 3 &&
-	micro < 2) ||
-       (major == 3 &&
-	micro < 2 &&
-	micro < 7)){
-      gchar *tmp;
-
-      tmp = NULL;
-      
-      if(!g_ascii_strncasecmp(effect, "\"\"\"", 3)){
-	tmp = g_strndup(effect + 3,
-			(gsize) (strlen(effect) - 6));
-      }else if(!g_ascii_strncasecmp(effect, "\"\"", 2)){
-	tmp = g_strndup(effect + 2,
-			(gsize) (strlen(effect) - 4));
-      }else if(!g_ascii_strncasecmp(effect, "'''", 3)){
-	tmp = g_strndup(effect + 3,
-			(gsize) (strlen(effect) - 6));
-      }else if(!g_ascii_strncasecmp(effect, "''", 2)){
-	tmp = g_strndup(effect + 2,
-			(gsize) (strlen(effect) - 4));
-      }else if(effect[0] = '"'){
-	tmp = g_strndup(effect + 1,
-			(gsize) (strlen(effect) - 2));
-      }else if(effect[0] == '\''){
-	tmp = g_strndup(effect + 1,
-			(gsize) (strlen(effect) - 2));
-      }
-
-      if(tmp != NULL){
-	xmlFree(effect);
-
-	effect = xmlStrdup(tmp);
-	g_free(tmp);
-      }
-    }
-
-    g_object_set(gobject,
-		 "filename", filename,
-		 "effect", effect,
-		 NULL);
-
-    if(filename != NULL){
-      xmlFree(filename);
-    }
-
-    if(effect != NULL){
-      xmlFree(effect);
-    }
+    //empty
   }else if(AGS_IS_LV2_BRIDGE(gobject)){
-    AgsLv2Plugin *lv2_plugin;
-
-    xmlChar *version;
-    xmlChar *filename, *effect;
-
-    guint major, minor, micro;
-
-    filename = xmlGetProp(node,
-			  "plugin-file");
-
-    effect = xmlGetProp(node,
-			"effect");
-
-    /* fixup 3.2.7 */
-    version = xmlGetProp(simple_file->root_node,
-			 "version");
-    
-    major = 0;
-    minor = 0;
-    micro = 0;
-    
-    if(version != NULL){
-      sscanf(version, "%d.%d.%d",
-	     &major,
-	     &minor,
-	     &micro);
-
-      xmlFree(version);
-    }
-
-    if(major < 3 ||
-       (major == 3 &&
-	micro < 2) ||
-       (major == 3 &&
-	micro < 2 &&
-	micro < 7)){
-      gchar *tmp;
-
-      tmp = NULL;
-      
-      if(!g_ascii_strncasecmp(effect, "\"\"\"", 3)){
-	tmp = g_strndup(effect + 3,
-			(gsize) (strlen(effect) - 6));
-      }else if(!g_ascii_strncasecmp(effect, "\"\"", 2)){
-	tmp = g_strndup(effect + 2,
-			(gsize) (strlen(effect) - 4));
-      }else if(!g_ascii_strncasecmp(effect, "'''", 3)){
-	tmp = g_strndup(effect + 3,
-			(gsize) (strlen(effect) - 6));
-      }else if(!g_ascii_strncasecmp(effect, "''", 2)){
-	tmp = g_strndup(effect + 2,
-			(gsize) (strlen(effect) - 4));
-      }else if(effect[0] = '"'){
-	tmp = g_strndup(effect + 1,
-			(gsize) (strlen(effect) - 2));
-      }else if(effect[0] == '\''){
-	tmp = g_strndup(effect + 1,
-			(gsize) (strlen(effect) - 2));
-      }
-
-      if(tmp != NULL){
-	xmlFree(effect);
-
-	effect = xmlStrdup(tmp);
-	g_free(tmp);
-      }
-    }
-
-    if(filename != NULL &&
-       effect != NULL){
-      AgsTurtle *manifest;
-      AgsTurtleManager *turtle_manager;
-    
-      gchar *path;
-      gchar *manifest_filename;
-
-      turtle_manager = ags_turtle_manager_get_instance();
-    
-      path = g_path_get_dirname(filename);
-
-      manifest_filename = g_strdup_printf("%s%c%s",
-					  path,
-					  G_DIR_SEPARATOR,
-					  "manifest.ttl");
-
-      manifest = ags_turtle_manager_find(turtle_manager,
-					 manifest_filename);
-
-      if(manifest == NULL){
-	AgsLv2TurtleParser *lv2_turtle_parser;
-	
-	AgsTurtle **turtle;
-
-	guint n_turtle;
-
-	if(!g_file_test(manifest_filename,
-			G_FILE_TEST_EXISTS)){
-	  return;
-	}
-
-	g_message("new turtle [Manifest] - %s", manifest_filename);
-	
-	manifest = ags_turtle_new(manifest_filename);
-	ags_turtle_load(manifest,
-			NULL);
-	ags_turtle_manager_add(turtle_manager,
-			       (GObject *) manifest);
-
-	lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
-
-	n_turtle = 1;
-	turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
-
-	turtle[0] = manifest;
-	turtle[1] = NULL;
-	
-	ags_lv2_turtle_parser_parse(lv2_turtle_parser,
-				    turtle, n_turtle);
-    
-	g_object_run_dispose(lv2_turtle_parser);
-	g_object_unref(lv2_turtle_parser);
-	
-	g_object_unref(manifest);
-	
-	free(turtle);
-      }
-    
-      g_free(manifest_filename);
-    }
-    
-    lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-						 filename, effect);
-
-    if(lv2_plugin != NULL &&
-       AGS_BASE_PLUGIN(lv2_plugin)->plugin_port == NULL){
-      AgsLv2TurtleParser *lv2_turtle_parser;
-	
-      AgsTurtle *manifest;
-      AgsTurtle **turtle;
-
-      guint n_turtle;
-
-      g_object_get(lv2_plugin,
-		   "manifest", &manifest,
-		   NULL);
-
-      lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
-
-      n_turtle = 1;
-      turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
-
-      turtle[0] = manifest;
-      turtle[1] = NULL;
-	
-      ags_lv2_turtle_parser_parse(lv2_turtle_parser,
-				  turtle, n_turtle);
-    
-      g_object_run_dispose(lv2_turtle_parser);
-      g_object_unref(lv2_turtle_parser);
-	
-      g_object_unref(manifest);
-	
-      free(turtle);
-    }
-      
-    if(lv2_plugin != NULL &&
-       (AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) != 0){
-      
-      ags_audio_set_flags(gobject->audio, (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-					   AGS_AUDIO_INPUT_HAS_RECYCLING |
-					   AGS_AUDIO_SYNC |
-					   AGS_AUDIO_ASYNC));
-      ags_audio_set_ability_flags(gobject->audio, (AGS_SOUND_ABILITY_NOTATION));
-      ags_audio_set_behaviour_flags(gobject->audio, (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
-      
-      gobject->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
-			 AGS_MACHINE_REVERSE_NOTATION);
-
-      ags_machine_popup_add_connection_options((AgsMachine *) gobject,
-					       (AGS_MACHINE_POPUP_MIDI_DIALOG));
-
-      ags_machine_popup_add_edit_options((AgsMachine *) gobject,
-					 (AGS_MACHINE_POPUP_ENVELOPE));
-    }
-
-    g_object_set(gobject,
-		 "filename", filename,
-		 "effect", effect,
-		 NULL);
-
-    if(filename != NULL){
-      xmlFree(filename);
-    }
-
-    if(effect != NULL){
-      xmlFree(effect);
-    }
+    //empty
   }else if(AGS_IS_LIVE_LV2_BRIDGE(gobject)){
-    AgsLv2Plugin *lv2_plugin;
-
-    xmlChar *version;
-    xmlChar *filename, *effect;
-
-    guint major, minor, micro;
-
-    filename = xmlGetProp(node,
-			  "plugin-file");
-
-    effect = xmlGetProp(node,
-			"effect");
-    
-    /* fixup 3.2.7 */
-    version = xmlGetProp(simple_file->root_node,
-			 "version");
-    
-    major = 0;
-    minor = 0;
-    micro = 0;
-    
-    if(version != NULL){
-      sscanf(version, "%d.%d.%d",
-	     &major,
-	     &minor,
-	     &micro);
-
-      xmlFree(version);
-    }
-
-    if(major < 3 ||
-       (major == 3 &&
-	micro < 2) ||
-       (major == 3 &&
-	micro < 2 &&
-	micro < 7)){
-      gchar *tmp;
-
-      tmp = NULL;
-      
-      if(!g_ascii_strncasecmp(effect, "\"\"\"", 3)){
-	tmp = g_strndup(effect + 3,
-			(gsize) (strlen(effect) - 6));
-      }else if(!g_ascii_strncasecmp(effect, "\"\"", 2)){
-	tmp = g_strndup(effect + 2,
-			(gsize) (strlen(effect) - 4));
-      }else if(!g_ascii_strncasecmp(effect, "'''", 3)){
-	tmp = g_strndup(effect + 3,
-			(gsize) (strlen(effect) - 6));
-      }else if(!g_ascii_strncasecmp(effect, "''", 2)){
-	tmp = g_strndup(effect + 2,
-			(gsize) (strlen(effect) - 4));
-      }else if(effect[0] = '"'){
-	tmp = g_strndup(effect + 1,
-			(gsize) (strlen(effect) - 2));
-      }else if(effect[0] == '\''){
-	tmp = g_strndup(effect + 1,
-			(gsize) (strlen(effect) - 2));
-      }
-
-      if(tmp != NULL){
-	xmlFree(effect);
-
-	effect = xmlStrdup(tmp);
-	g_free(tmp);
-      }
-    }
-
-    if(filename != NULL &&
-       effect != NULL){
-      AgsTurtle *manifest;
-      AgsTurtleManager *turtle_manager;
-    
-      gchar *path;
-      gchar *manifest_filename;
-
-      turtle_manager = ags_turtle_manager_get_instance();
-    
-      path = g_path_get_dirname(filename);
-
-      manifest_filename = g_strdup_printf("%s%c%s",
-					  path,
-					  G_DIR_SEPARATOR,
-					  "manifest.ttl");
-
-      manifest = ags_turtle_manager_find(turtle_manager,
-					 manifest_filename);
-
-      if(manifest == NULL){
-	AgsLv2TurtleParser *lv2_turtle_parser;
-	
-	AgsTurtle **turtle;
-
-	guint n_turtle;
-
-	if(!g_file_test(manifest_filename,
-			G_FILE_TEST_EXISTS)){
-	  return;
-	}
-
-	g_message("new turtle [Manifest] - %s", manifest_filename);
-	
-	manifest = ags_turtle_new(manifest_filename);
-	ags_turtle_load(manifest,
-			NULL);
-	ags_turtle_manager_add(turtle_manager,
-			       (GObject *) manifest);
-
-	lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
-
-	n_turtle = 1;
-	turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
-
-	turtle[0] = manifest;
-	turtle[1] = NULL;
-	
-	ags_lv2_turtle_parser_parse(lv2_turtle_parser,
-				    turtle, n_turtle);
-    
-	g_object_run_dispose(lv2_turtle_parser);
-	g_object_unref(lv2_turtle_parser);
-	
-	g_object_unref(manifest);
-	
-	free(turtle);
-      }
-    
-      g_free(manifest_filename);
-    }
-    
-    lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-						 filename, effect);
-
-    if(lv2_plugin != NULL &&
-       AGS_BASE_PLUGIN(lv2_plugin)->plugin_port == NULL){
-      AgsLv2TurtleParser *lv2_turtle_parser;
-	
-      AgsTurtle *manifest;
-      AgsTurtle **turtle;
-
-      guint n_turtle;
-
-      g_object_get(lv2_plugin,
-		   "manifest", &manifest,
-		   NULL);
-
-      lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
-
-      n_turtle = 1;
-      turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
-
-      turtle[0] = manifest;
-      turtle[1] = NULL;
-	
-      ags_lv2_turtle_parser_parse(lv2_turtle_parser,
-				  turtle, n_turtle);
-    
-      g_object_run_dispose(lv2_turtle_parser);
-      g_object_unref(lv2_turtle_parser);
-	
-      g_object_unref(manifest);
-	
-      free(turtle);
-    }
-  
-    if(lv2_plugin != NULL &&
-       (AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) != 0){
-      
-      ags_audio_set_flags(gobject->audio, (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-					   AGS_AUDIO_INPUT_HAS_RECYCLING |
-					   AGS_AUDIO_SYNC |
-					   AGS_AUDIO_ASYNC));
-      ags_audio_set_ability_flags(gobject->audio, (AGS_SOUND_ABILITY_NOTATION));
-      ags_audio_set_behaviour_flags(gobject->audio, (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
-      gobject->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
-			 AGS_MACHINE_REVERSE_NOTATION);
-
-      ags_machine_popup_add_connection_options((AgsMachine *) gobject,
-					       (AGS_MACHINE_POPUP_MIDI_DIALOG));
-
-      ags_machine_popup_add_edit_options((AgsMachine *) gobject,
-					 (AGS_MACHINE_POPUP_ENVELOPE));
-    }
-
-    g_object_set(gobject,
-		 "filename", filename,
-		 "effect", effect,
-		 NULL);
-
-    if(filename != NULL){
-      xmlFree(filename);
-    }
-
-    if(effect != NULL){
-      xmlFree(effect);
-    }
+    //empty
   }
-  
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(gobject),
-		     FALSE, FALSE,
-		     0);
 
   /* set name if available */
   str = xmlGetProp(node,
@@ -2651,22 +2273,26 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   if(str != NULL){
     xmlFree(str);
   }
-  
-  /* connect AgsMachine */
-  ags_connectable_connect(AGS_CONNECTABLE(gobject));
-  
+    
   /* retrieve channel allocation */
   output_pads = gobject->audio->output_pads;
   input_pads = gobject->audio->input_pads;
 
   audio_channels = gobject->audio->audio_channels;
   
+  wait_audio_channel = FALSE;
+
+  audio_channel_wait_data[0] = FALSE;
+
   wait_output = FALSE;
   wait_input = FALSE;
   
   wait_data[0] = FALSE;
   wait_data[1] = FALSE;
 
+  g_signal_connect_after(gobject, "resize-audio-channels", 
+			 G_CALLBACK(ags_simple_file_read_machine_resize_audio_channels), audio_channel_wait_data);
+  
   g_signal_connect_after(gobject, "resize-pads", 
 			 G_CALLBACK(ags_simple_file_read_machine_resize_pads), wait_data);
   
@@ -2681,6 +2307,8 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     ags_audio_set_audio_channels(gobject->audio,
 				 audio_channels, 0);
 
+    wait_audio_channel = TRUE;
+    
     xmlFree(str);
   }
 
@@ -2717,18 +2345,32 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   }
 
   /* dispatch */
-  while((wait_output && !wait_data[0]) ||
+#if 0
+  while((wait_audio_channel && !audio_channel_wait_data[0]) ||
+	(wait_output && !wait_data[0]) ||
 	(wait_input && !wait_data[1])){
     usleep(AGS_USEC_PER_SEC / 30);
     g_main_context_iteration(NULL,
 			     FALSE);
   }
+#endif
+  
+  g_object_disconnect(gobject,
+		      "any_signal::resize-audio-channels", 
+		      G_CALLBACK(ags_simple_file_read_machine_resize_audio_channels),
+		      audio_channel_wait_data,
+		      NULL);
 
   g_object_disconnect(gobject,
 		      "any_signal::resize-pads", 
 		      G_CALLBACK(ags_simple_file_read_machine_resize_pads),
 		      wait_data,
 		      NULL);
+
+  ags_xorg_application_context_task_timeout(application_context);
+
+  ags_ui_provider_check_message(AGS_UI_PROVIDER(application_context));
+  ags_ui_provider_clean_message(AGS_UI_PROVIDER(application_context));
 
   /* children */
   child = node->children;
@@ -3076,13 +2718,13 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   if(AGS_IS_LADSPA_BRIDGE(gobject)){
     //empty
   }else if(AGS_IS_DSSI_BRIDGE(gobject)){
-    ags_dssi_bridge_load((AgsDssiBridge *) gobject);
+    //empty
   }else if(AGS_IS_LIVE_DSSI_BRIDGE(gobject)){
-    ags_live_dssi_bridge_load((AgsLiveDssiBridge *) gobject);
+    //empty
   }else if(AGS_IS_LV2_BRIDGE(gobject)){
-    ags_lv2_bridge_load((AgsLv2Bridge *) gobject);
+    //empty
   }else if(AGS_IS_LIVE_LV2_BRIDGE(gobject)){
-    ags_live_lv2_bridge_load((AgsLiveLv2Bridge *) gobject);
+    //empty
   }
 
   /* retrieve midi mapping */
@@ -3137,18 +2779,6 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     
     xmlFree(str);
   }
-
-  gtk_widget_show_all((GtkWidget *) gobject);
-
-  /* add audio to soundcard */
-  start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
-
-  g_object_ref(G_OBJECT(gobject->audio));
-  list = g_list_append(start_list,
-		       gobject->audio);
-  
-  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
-			       list);
   
   /* children */
   child = node->children;
@@ -4881,11 +4511,16 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
       gboolean is_output;
 
       //      "./ancestor::*[self::ags-sf-machine][1]"
-	
+
+      machine = NULL;
+      
       file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
 									 node->parent->parent->parent->parent);
-      machine = file_id_ref->ref;
-    
+
+      if(file_id_ref != NULL){
+	machine = file_id_ref->ref;
+      }
+      
       if(!AGS_IS_MACHINE(machine)){
 	return;
       }

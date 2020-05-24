@@ -5301,6 +5301,9 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
       fx_lv2_audio_processor = recall_audio_run->data;
       g_object_ref(fx_lv2_audio_processor);
     }
+
+    ags_fx_lv2_audio_load_plugin(fx_lv2_audio);
+    ags_fx_lv2_audio_load_port(fx_lv2_audio);
   }
 
   input = ags_channel_nth(start_input,
@@ -5408,6 +5411,7 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
       ags_connectable_connect(AGS_CONNECTABLE(fx_lv2_channel_processor));
 
       /* load */
+      ags_fx_lv2_channel_load_plugin(fx_lv2_channel);
       ags_fx_lv2_channel_load_port(fx_lv2_channel);
 
       /* iterate */
@@ -5654,6 +5658,7 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
       ags_connectable_connect(AGS_CONNECTABLE(fx_lv2_channel_processor));
 
       /* load */
+      ags_fx_lv2_channel_load_plugin(fx_lv2_channel);
       ags_fx_lv2_channel_load_port(fx_lv2_channel);
 
       /* iterate */
@@ -5757,147 +5762,147 @@ ags_fx_factory_create(AgsAudio *audio,
   if(!g_ascii_strncasecmp(plugin_name,
 			  "ags-fx-buffer",
 			  14)){
-    ags_fx_factory_create_buffer(audio,
-				 play_container, recall_container,
-				 plugin_name,
-				 filename,
-				 effect,
-				 start_audio_channel, stop_audio_channel,
-				 start_pad, stop_pad,
-				 position,
-				 create_flags, recall_flags);
+    start_recall = ags_fx_factory_create_buffer(audio,
+						play_container, recall_container,
+						plugin_name,
+						filename,
+						effect,
+						start_audio_channel, stop_audio_channel,
+						start_pad, stop_pad,
+						position,
+						create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-playback",
 				16)){
-    ags_fx_factory_create_playback(audio,
-				   play_container, recall_container,
-				   plugin_name,
-				   filename,
-				   effect,
-				   start_audio_channel, stop_audio_channel,
-				   start_pad, stop_pad,
-				   position,
-				   create_flags, recall_flags);
+    start_recall = ags_fx_factory_create_playback(audio,
+						  play_container, recall_container,
+						  plugin_name,
+						  filename,
+						  effect,
+						  start_audio_channel, stop_audio_channel,
+						  start_pad, stop_pad,
+						  position,
+						  create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-volume",
 				14)){
-    ags_fx_factory_create_volume(audio,
-				 play_container, recall_container,
-				 plugin_name,
-				 filename,
-				 effect,
-				 start_audio_channel, stop_audio_channel,
-				 start_pad, stop_pad,
-				 position,
-				 create_flags, recall_flags);
+    start_recall = ags_fx_factory_create_volume(audio,
+						play_container, recall_container,
+						plugin_name,
+						filename,
+						effect,
+						start_audio_channel, stop_audio_channel,
+						start_pad, stop_pad,
+						position,
+						create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-peak",
 				12)){
-    ags_fx_factory_create_peak(audio,
-			       play_container, recall_container,
-			       plugin_name,
-			       filename,
-			       effect,
-			       start_audio_channel, stop_audio_channel,
-			       start_pad, stop_pad,
-			       position,
-			       create_flags, recall_flags);
+    start_recall = ags_fx_factory_create_peak(audio,
+					      play_container, recall_container,
+					      plugin_name,
+					      filename,
+					      effect,
+					      start_audio_channel, stop_audio_channel,
+					      start_pad, stop_pad,
+					      position,
+					      create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-eq10",
 				12)){
-    ags_fx_factory_create_eq10(audio,
-			       play_container, recall_container,
-			       plugin_name,
-			       filename,
-			       effect,
-			       start_audio_channel, stop_audio_channel,
-			       start_pad, stop_pad,
-			       position,
-			       create_flags, recall_flags);
+    start_recall = ags_fx_factory_create_eq10(audio,
+					      play_container, recall_container,
+					      plugin_name,
+					      filename,
+					      effect,
+					      start_audio_channel, stop_audio_channel,
+					      start_pad, stop_pad,
+					      position,
+					      create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-analyse",
 				15)){
-    ags_fx_factory_create_analyse(audio,
-				  play_container, recall_container,
-				  plugin_name,
-				  filename,
-				  effect,
-				  start_audio_channel, stop_audio_channel,
-				  start_pad, stop_pad,
-				  position,
-				  create_flags, recall_flags);
+    start_recall = ags_fx_factory_create_analyse(audio,
+						 play_container, recall_container,
+						 plugin_name,
+						 filename,
+						 effect,
+						 start_audio_channel, stop_audio_channel,
+						 start_pad, stop_pad,
+						 position,
+						 create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-envelope",
 				16)){
-    ags_fx_factory_create_envelope(audio,
-				   play_container, recall_container,
-				   plugin_name,
-				   filename,
-				   effect,
-				   start_audio_channel, stop_audio_channel,
-				   start_pad, stop_pad,
-				   position,
-				   create_flags, recall_flags);
+    start_recall = ags_fx_factory_create_envelope(audio,
+						  play_container, recall_container,
+						  plugin_name,
+						  filename,
+						  effect,
+						  start_audio_channel, stop_audio_channel,
+						  start_pad, stop_pad,
+						  position,
+						  create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-pattern",
 				15)){
-    ags_fx_factory_create_pattern(audio,
-				  play_container, recall_container,
-				  plugin_name,
-				  filename,
-				  effect,
-				  start_audio_channel, stop_audio_channel,
-				  start_pad, stop_pad,
-				  position,
-				  create_flags, recall_flags);
+    start_recall = ags_fx_factory_create_pattern(audio,
+						 play_container, recall_container,
+						 plugin_name,
+						 filename,
+						 effect,
+						 start_audio_channel, stop_audio_channel,
+						 start_pad, stop_pad,
+						 position,
+						 create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-notation",
 				16)){
-    ags_fx_factory_create_notation(audio,
-				   play_container, recall_container,
-				   plugin_name,
-				   filename,
-				   effect,
-				   start_audio_channel, stop_audio_channel,
-				   start_pad, stop_pad,
-				   position,
-				   create_flags, recall_flags);
+    start_recall = ags_fx_factory_create_notation(audio,
+						  play_container, recall_container,
+						  plugin_name,
+						  filename,
+						  effect,
+						  start_audio_channel, stop_audio_channel,
+						  start_pad, stop_pad,
+						  position,
+						  create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-ladspa",
 				14)){
-    ags_fx_factory_create_ladspa(audio,
-				 play_container, recall_container,
-				 plugin_name,
-				 filename,
-				 effect,
-				 start_audio_channel, stop_audio_channel,
-				 start_pad, stop_pad,
-				 position,
-				 create_flags, recall_flags);
+    start_recall = ags_fx_factory_create_ladspa(audio,
+						play_container, recall_container,
+						plugin_name,
+						filename,
+						effect,
+						start_audio_channel, stop_audio_channel,
+						start_pad, stop_pad,
+						position,
+						create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-dssi",
 				12)){
-    ags_fx_factory_create_dssi(audio,
-			       play_container, recall_container,
-			       plugin_name,
-			       filename,
-			       effect,
-			       start_audio_channel, stop_audio_channel,
-			       start_pad, stop_pad,
-			       position,
-			       create_flags, recall_flags);
+    start_recall = ags_fx_factory_create_dssi(audio,
+					      play_container, recall_container,
+					      plugin_name,
+					      filename,
+					      effect,
+					      start_audio_channel, stop_audio_channel,
+					      start_pad, stop_pad,
+					      position,
+					      create_flags, recall_flags);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-lv2",
 				11)){
-    ags_fx_factory_create_lv2(audio,
-			      play_container, recall_container,
-			      plugin_name,
-			      filename,
-			      effect,
-			      start_audio_channel, stop_audio_channel,
-			      start_pad, stop_pad,
-			      position,
-			      create_flags, recall_flags);
+    start_recall = ags_fx_factory_create_lv2(audio,
+					     play_container, recall_container,
+					     plugin_name,
+					     filename,
+					     effect,
+					     start_audio_channel, stop_audio_channel,
+					     start_pad, stop_pad,
+					     position,
+					     create_flags, recall_flags);
   }else{
     g_warning("no such plugin - %s", plugin_name);
   }

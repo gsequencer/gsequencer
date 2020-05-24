@@ -518,11 +518,13 @@ ags_fx_lv2_audio_notify_samplerate_callback(GObject *gobject,
 	  
 	  guint nth;
 
-	  if(deactivate != NULL){
+	  if(deactivate != NULL &&
+	     channel_data->lv2_handle != NULL){
 	    deactivate(channel_data->lv2_handle[0]);
 	  }
 
-	  if(cleanup != NULL){
+	  if(cleanup != NULL &&
+	     channel_data->lv2_handle != NULL){
 	    cleanup(channel_data->lv2_handle[0]);
 	  }	  
 
@@ -579,11 +581,13 @@ ags_fx_lv2_audio_notify_samplerate_callback(GObject *gobject,
 
 	    input_data = channel_data->input_data[k];
 
-	    if(deactivate != NULL){
+	    if(deactivate != NULL &&
+	       input_data->lv2_handle != NULL){
 	      deactivate(input_data->lv2_handle[0]);
 	    }
 
-	    if(cleanup != NULL){
+	    if(cleanup != NULL &&
+	       input_data->lv2_handle != NULL){
 	      cleanup(input_data->lv2_handle[0]);
 	    }
 
@@ -626,9 +630,6 @@ ags_fx_lv2_audio_notify_samplerate_callback(GObject *gobject,
   if(recall_container != NULL){
     g_object_unref(recall_container);
   }
-
-  g_list_free_full(start_recall_channel,
-		   g_object_unref);
 }
 
 void
@@ -873,9 +874,6 @@ ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
   if(recall_container != NULL){
     g_object_unref(recall_container);
   }
-
-  g_list_free_full(start_recall_channel,
-		   g_object_unref);
 }
 
 void
@@ -903,10 +901,6 @@ ags_fx_lv2_audio_set_pads_callback(AgsAudio *audio,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_lv2_audio);
 
   /* get LV2 plugin and port */
-  g_rec_mutex_lock(recall_mutex);
-  
-  g_rec_mutex_unlock(recall_mutex);
-
   is_live_instrument = ags_fx_lv2_audio_test_flags(fx_lv2_audio, AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT);
 
   if(is_live_instrument){
@@ -964,9 +958,6 @@ ags_fx_lv2_audio_set_pads_callback(AgsAudio *audio,
   if(recall_container != NULL){
     g_object_unref(recall_container);
   }
-
-  g_list_free_full(start_recall_channel,
-		   g_object_unref);
 }
 
 /**
@@ -1119,11 +1110,13 @@ ags_fx_lv2_audio_channel_data_free(AgsFxLv2AudioChannelData *channel_data)
       g_rec_mutex_unlock(base_plugin_mutex);
     }
 
-    if(deactivate != NULL){
+    if(deactivate != NULL &&
+       channel_data->lv2_handle != NULL){
       deactivate(channel_data->lv2_handle[0]);
     }
 
-    if(cleanup != NULL){
+    if(cleanup != NULL &&
+       channel_data->lv2_handle != NULL){
       cleanup(channel_data->lv2_handle[0]);
     }
   }
@@ -1870,9 +1863,6 @@ ags_fx_lv2_audio_load_port(AgsFxLv2Audio *fx_lv2_audio)
   if(recall_container != NULL){
     g_object_unref(recall_container);
   }
-
-  g_list_free_full(start_recall_channel,
-		   g_object_unref);
 
   g_list_free_full(start_plugin_port,
 		   (GDestroyNotify) g_object_unref);

@@ -430,15 +430,25 @@ ags_spectrometer_buffer_size_changed_callback(AgsMachine *machine,
   spectrometer = (AgsSpectrometer *) machine;
 
   if(buffer_size > 0){
-    spectrometer->magnitude_cache = (double *) g_realloc(spectrometer->magnitude_cache,
-							 buffer_size * sizeof(double));
-    ags_audio_buffer_util_clear_double(spectrometer->magnitude_cache, 1,
-				       buffer_size);
+    if(spectrometer->magnitude_cache == NULL){
+      spectrometer->magnitude_cache = (double *) g_malloc(buffer_size * sizeof(double));
+      ags_audio_buffer_util_clear_double(spectrometer->magnitude_cache, 1,
+					 buffer_size);
 
-    spectrometer->magnitude = (double *) g_realloc(spectrometer->magnitude,
-						   buffer_size * sizeof(double));
-    ags_audio_buffer_util_clear_double(spectrometer->magnitude, 1,
-				       buffer_size);
+      spectrometer->magnitude = (double *) g_malloc(buffer_size * sizeof(double));
+      ags_audio_buffer_util_clear_double(spectrometer->magnitude, 1,
+					 buffer_size);
+    }else{
+      spectrometer->magnitude_cache = (double *) g_realloc(spectrometer->magnitude_cache,
+							   buffer_size * sizeof(double));
+      ags_audio_buffer_util_clear_double(spectrometer->magnitude_cache, 1,
+					 buffer_size);
+
+      spectrometer->magnitude = (double *) g_realloc(spectrometer->magnitude,
+						     buffer_size * sizeof(double));
+      ags_audio_buffer_util_clear_double(spectrometer->magnitude, 1,
+					 buffer_size);
+    }
   }else{
     g_free(spectrometer->magnitude_cache);
     g_free(spectrometer->magnitude);
@@ -701,6 +711,7 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
 
     guint samplerate;
     guint buffer_size;
+    guint audio_buffer_size;
     gdouble nyquist;
     gdouble correction;
     gdouble frequency;
@@ -723,6 +734,16 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
 
     samplerate = AGS_MACHINE(spectrometer)->samplerate;
     buffer_size = AGS_MACHINE(spectrometer)->buffer_size;
+
+    audio_buffer_size = 0;
+    
+    g_object_get(AGS_MACHINE(spectrometer)->audio,
+		 "buffer-size", &audio_buffer_size,
+		 NULL);
+
+    if(buffer_size != audio_buffer_size){
+      return(TRUE);
+    }
     
     ags_audio_buffer_util_clear_double(spectrometer->magnitude, 1,
 				       buffer_size);

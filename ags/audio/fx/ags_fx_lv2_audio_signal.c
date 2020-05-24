@@ -314,7 +314,7 @@ ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall)
     
     g_rec_mutex_unlock(source_stream_mutex);
     
-    g_rec_mutex_lock(fx_lv2_channel_mutex);
+    g_rec_mutex_unlock(fx_lv2_channel_mutex);
   }
 
   if(source == NULL ||
@@ -450,8 +450,12 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 	       "midi-start-mapping", &midi_start_mapping,
 	       NULL);
 
-  midi_note = (y - audio_start_mapping + midi_start_mapping);
-
+  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
+    midi_note = (128 - y - 1 - audio_start_mapping + midi_start_mapping);
+  }else{
+    midi_note = (y - audio_start_mapping + midi_start_mapping);
+  }
+  
   copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
 
@@ -469,13 +473,14 @@ ags_fx_lv2_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_
 
     input_data = channel_data->input_data[midi_note];
 
+    input_data->event_buffer->data.note.note = midi_note;
+
     g_rec_mutex_unlock(fx_lv2_audio_mutex);
 
     if(delay_counter == 0.0 &&
        x0 == offset_counter){
       g_rec_mutex_lock(fx_lv2_audio_mutex);
       
-      input_data->event_buffer->data.note.note = midi_note;
       input_data->key_on += 1;
 
       g_rec_mutex_unlock(fx_lv2_audio_mutex);

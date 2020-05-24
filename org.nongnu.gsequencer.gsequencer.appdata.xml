@@ -35,7 +35,39 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
-    <release version="3.3.0" date="2020-05-07">
+    <release version="3.3.6" date="2020-05-22">
+      <description>
+	<p>Fixed potential SIGSEGV as modifying buffer-size of AgsSpectrometer.</p>
+      </description>
+    </release>
+
+    <release version="3.3.5" date="2020-05-22">
+      <description>
+	<p>More fixes to MIDI playback.</p>
+      </description>
+    </release>
+
+    <release version="3.3.4" date="2020-05-21">
+      <description>
+	<p>Fixed MIDI playback.</p>
+	<p>Fixed AgsSyncsynth and AgsFmSyncsynth playback.</p>
+      </description>
+    </release>
+
+    <release version="3.3.3" date="2020-05-19">
+      <description>
+	<p>Fixed infinite loop while removing AgsLineMember from AgsEffectLine.</p>
+      </description>
+    </release>
+    
+    <release version="3.3.2" date="2020-05-19">
+      <description>
+	<p>Fixed potential dead-lock.</p>
+	<p>Fixed reverse mapping of DSSI and LV2 plugins.</p>
+      </description>
+    </release>
+
+    <release version="3.3.0" date="2020-05-18">
       <description>
 	<p>Refactored GSequencer to use new fx recalls to do audio processing.</p>
       </description>
