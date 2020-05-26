@@ -114,8 +114,8 @@ static gpointer ags_delay_audio_parent_class = NULL;
 
 static guint delay_audio_signals[LAST_SIGNAL];
 
-static const gchar *ags_delay_audio_plugin_name = "ags-delay";
-static const gchar *ags_delay_audio_specifier[] = {
+const gchar *ags_delay_audio_plugin_name = "ags-delay";
+const gchar *ags_delay_audio_specifier[] = {
   "./bpm[0]",
   "./tact[0]",
   "./sequencer_delay[0]",
@@ -128,7 +128,7 @@ static const gchar *ags_delay_audio_specifier[] = {
   "./midi_duration[0]",
 };
 
-static const gchar *ags_delay_audio_control_port[] = {
+const gchar *ags_delay_audio_control_port[] = {
   "1/10",
   "2/10",
   "3/10",

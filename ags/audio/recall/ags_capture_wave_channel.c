@@ -47,11 +47,11 @@ void ags_capture_wave_channel_finalize(GObject *gobject);
 static gpointer ags_capture_wave_channel_parent_class = NULL;
 static AgsPluginInterface *ags_capture_wave_parent_plugin_interface;
 
-static const gchar *ags_capture_wave_channel_plugin_name = "ags-capture-wave";
-static const gchar *ags_capture_wave_channel_specifier[] = {
+const gchar *ags_capture_wave_channel_plugin_name = "ags-capture-wave";
+const gchar *ags_capture_wave_channel_specifier[] = {
   "./x-offset[0]", 
 };
-static const gchar *ags_capture_wave_channel_control_port[] = {
+const gchar *ags_capture_wave_channel_control_port[] = {
   "1/1",
 };
 

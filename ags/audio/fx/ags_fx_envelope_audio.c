@@ -38,13 +38,13 @@ void ags_fx_envelope_audio_finalize(GObject *gobject);
 
 static gpointer ags_fx_envelope_audio_parent_class = NULL;
 
-static const gchar *ags_fx_envelope_audio_plugin_name = "ags-fx-envelope";
+const gchar *ags_fx_envelope_audio_plugin_name = "ags-fx-envelope";
 
-static const gchar *ags_fx_envelope_audio_specifier[] = {
+const gchar *ags_fx_envelope_audio_specifier[] = {
   NULL,
 };
 
-static const gchar *ags_fx_envelope_audio_control_port[] = {
+const gchar *ags_fx_envelope_audio_control_port[] = {
   NULL,
 };
 

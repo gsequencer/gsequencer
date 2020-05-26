@@ -56,11 +56,11 @@ static gpointer ags_copy_channel_parent_class = NULL;
 static AgsMutableInterface *ags_copy_channel_parent_mutable_interface;
 static AgsPluginInterface *ags_copy_channel_parent_plugin_interface;
 
-static const gchar *ags_copy_channel_plugin_name = "ags-copy";
-static const gchar *ags_copy_channel_plugin_specifier[] = {
+const gchar *ags_copy_channel_plugin_name = "ags-copy";
+const gchar *ags_copy_channel_plugin_specifier[] = {
   "./muted[0]",
 };
-static const gchar *ags_copy_channel_plugin_control_port[] = {
+const gchar *ags_copy_channel_plugin_control_port[] = {
   "1/1",
 };
 

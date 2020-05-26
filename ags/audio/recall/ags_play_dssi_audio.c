@@ -83,10 +83,10 @@ enum{
 
 static gpointer ags_play_dssi_audio_parent_class = NULL;
 
-static const gchar *ags_play_dssi_audio_plugin_name = "ags-play-dssi";
-static const gchar *ags_play_dssi_audio_specifier[] = {
+const gchar *ags_play_dssi_audio_plugin_name = "ags-play-dssi";
+const gchar *ags_play_dssi_audio_specifier[] = {
 };
-static const gchar *ags_play_dssi_audio_control_port[] = {
+const gchar *ags_play_dssi_audio_control_port[] = {
 };
 
 GType

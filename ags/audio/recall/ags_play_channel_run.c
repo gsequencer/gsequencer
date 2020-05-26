@@ -78,7 +78,7 @@ enum{
 
 static gpointer ags_play_channel_run_parent_class = NULL;
 
-static const gchar *ags_play_channel_run_plugin_name = "ags-play";
+const gchar *ags_play_channel_run_plugin_name = "ags-play";
 
 GType
 ags_play_channel_run_get_type()

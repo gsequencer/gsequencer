@@ -52,11 +52,11 @@ enum{
 static gpointer ags_stream_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_stream_channel_parent_connectable_interface;
 
-static const gchar *ags_stream_channel_plugin_name = "ags-stream";
-static const gchar *ags_stream_channel_plugin_specifier[] = {
+const gchar *ags_stream_channel_plugin_name = "ags-stream";
+const gchar *ags_stream_channel_plugin_specifier[] = {
   "./auto-sense[0]",
 };
-static const gchar *ags_stream_channel_plugin_control_port[] = {
+const gchar *ags_stream_channel_plugin_control_port[] = {
   "1/1",
 };
 

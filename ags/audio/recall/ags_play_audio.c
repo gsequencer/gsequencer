@@ -58,11 +58,11 @@ enum{
 
 static gpointer ags_play_audio_parent_class = NULL;
 
-static const gchar *ags_play_audio_plugin_name = "ags-play";
-static const gchar *ags_play_audio_specifier[] = {
+const gchar *ags_play_audio_plugin_name = "ags-play";
+const gchar *ags_play_audio_specifier[] = {
   "./muted[0]",
 };
-static const gchar *ags_play_audio_control_port[] = {
+const gchar *ags_play_audio_control_port[] = {
   "1/1",
 };
 

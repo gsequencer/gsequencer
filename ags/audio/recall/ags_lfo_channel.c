@@ -67,8 +67,8 @@ enum{
 
 static gpointer ags_lfo_channel_parent_class = NULL;
 
-static const gchar *ags_lfo_channel_plugin_name = "ags-lfo";
-static const gchar *ags_lfo_channel_specifier[] = {
+const gchar *ags_lfo_channel_plugin_name = "ags-lfo";
+const gchar *ags_lfo_channel_specifier[] = {
   "./enabled[0]",
   "./lfo-wave[0]",
   "./lfo-freq[0]",
@@ -76,7 +76,7 @@ static const gchar *ags_lfo_channel_specifier[] = {
   "./lfo-depth[0]",
   "./lfo-tuning[0]"
 };
-static const gchar *ags_lfo_channel_control_port[] = {
+const gchar *ags_lfo_channel_control_port[] = {
   "1/6",
   "2/6",
   "3/6",

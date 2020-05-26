@@ -36,7 +36,7 @@ void ags_feed_channel_finalize(GObject *gobject);
 
 static gpointer ags_feed_channel_parent_class = NULL;
 
-static const gchar *ags_feed_channel_plugin_name = "ags-feed";
+const gchar *ags_feed_channel_plugin_name = "ags-feed";
 
 GType
 ags_feed_channel_get_type()

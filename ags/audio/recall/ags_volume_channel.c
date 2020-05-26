@@ -55,11 +55,11 @@ enum{
 
 static gpointer ags_volume_channel_parent_class = NULL;
 
-static const gchar *ags_volume_channel_plugin_name = "ags-volume";
-static const gchar *ags_volume_channel_specifier[] = {
+const gchar *ags_volume_channel_plugin_name = "ags-volume";
+const gchar *ags_volume_channel_specifier[] = {
   "./volume[0]"
 };
-static const gchar *ags_volume_channel_control_port[] = {
+const gchar *ags_volume_channel_control_port[] = {
   "1/1"
 };
 

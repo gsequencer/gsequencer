@@ -38,7 +38,7 @@ void ags_rt_stream_channel_finalize(GObject *gobject);
 
 static gpointer ags_rt_stream_channel_parent_class = NULL;
 
-static const gchar *ags_rt_stream_channel_plugin_name = "ags-rt-stream";
+const gchar *ags_rt_stream_channel_plugin_name = "ags-rt-stream";
 
 GType
 ags_rt_stream_channel_get_type()

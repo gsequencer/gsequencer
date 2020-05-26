@@ -74,8 +74,8 @@ enum{
 
 static gpointer ags_count_beats_audio_parent_class = NULL;
 
-static const gchar *ags_count_beats_audio_plugin_name = "ags-count-beats";
-static const gchar *ags_count_beats_audio_specifier[] = {
+const gchar *ags_count_beats_audio_plugin_name = "ags-count-beats";
+const gchar *ags_count_beats_audio_specifier[] = {
   "./sequencer_loop[0]",
   "./sequencer_loop_start[0]",
   "./sequencer_loop_end[0]",
@@ -89,7 +89,7 @@ static const gchar *ags_count_beats_audio_specifier[] = {
   "./midi_loop_start[0]",
   "./midi_loop_end[0]",
 };
-static const gchar *ags_count_beats_audio_control_port[] = {
+const gchar *ags_count_beats_audio_control_port[] = {
   "1/12",
   "2/12",
   "3/12",

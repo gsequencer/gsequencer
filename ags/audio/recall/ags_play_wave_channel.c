@@ -46,12 +46,12 @@ void ags_play_wave_channel_finalize(GObject *gobject);
 
 static gpointer ags_play_wave_channel_parent_class = NULL;
 
-static const gchar *ags_play_wave_channel_plugin_name = "ags-play-wave";
-static const gchar *ags_play_wave_channel_specifier[] = {
+const gchar *ags_play_wave_channel_plugin_name = "ags-play-wave";
+const gchar *ags_play_wave_channel_specifier[] = {
   "./do-playback[0]",
   "./x-offset[0]", 
 };
-static const gchar *ags_play_wave_channel_control_port[] = {
+const gchar *ags_play_wave_channel_control_port[] = {
   "1/2",
   "2/2",
 };

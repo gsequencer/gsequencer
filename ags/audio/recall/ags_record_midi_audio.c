@@ -56,8 +56,8 @@ enum{
 
 static gpointer ags_record_midi_audio_parent_class = NULL;
 
-static const gchar *ags_record_midi_audio_plugin_name = "ags-record-midi";
-static const gchar *ags_record_midi_audio_specifier[] = {
+const gchar *ags_record_midi_audio_plugin_name = "ags-record-midi";
+const gchar *ags_record_midi_audio_specifier[] = {
   "./playback[0]"
   "./record[0]",
   "./filename[0]",
@@ -65,7 +65,7 @@ static const gchar *ags_record_midi_audio_specifier[] = {
   "./tempo[0]",
   "./bpm[0]",
 };
-static const gchar *ags_record_midi_audio_control_port[] = {
+const gchar *ags_record_midi_audio_control_port[] = {
   "1/6",
   "2/6",
   "3/6",

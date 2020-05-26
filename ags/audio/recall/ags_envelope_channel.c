@@ -61,8 +61,8 @@ enum{
 
 static gpointer ags_envelope_channel_parent_class = NULL;
 
-static const gchar *ags_envelope_channel_plugin_name = "ags-envelope";
-static const gchar *ags_envelope_channel_specifier[] = {
+const gchar *ags_envelope_channel_plugin_name = "ags-envelope";
+const gchar *ags_envelope_channel_specifier[] = {
   "./use-note-length[0]",
   "./use-fixed-length[0]",
   "./fixed-length[0]",
@@ -73,7 +73,7 @@ static const gchar *ags_envelope_channel_specifier[] = {
   "./ratio[0]"
 };
 
-static const gchar *ags_envelope_channel_control_port[] = {
+const gchar *ags_envelope_channel_control_port[] = {
   "1/8",
   "2/8",
   "3/8",
