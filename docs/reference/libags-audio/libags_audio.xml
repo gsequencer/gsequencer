@@ -345,6 +345,135 @@
       <xi:include href="xml/ags_sound_resource.xml"/>
     </chapter>
 
+    <chapter id="audio-fx-playback">
+      <title>Fx Engine - playback and recording</title>
+      <para>
+	Multipurpose playback and recording or buffering of audio signals.
+      </para>
+
+      <xi:include href="xml/ags_fx_playback_audio.xml"/>
+      <xi:include href="xml/ags_fx_playback_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_playback_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_playback_channel.xml"/>
+      <xi:include href="xml/ags_fx_playback_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_playback_recycling.xml"/>      
+
+      <xi:include href="xml/ags_fx_buffer_audio.xml"/>
+      <xi:include href="xml/ags_fx_buffer_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_buffer_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_buffer_channel.xml"/>
+      <xi:include href="xml/ags_fx_buffer_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_buffer_recycling.xml"/>      
+
+    </chapter>
+
+    <chapter id="audio-fx-pattern-and-notation">
+      <title>Fx Engine - pattern and notation</title>
+      <para>
+	Pattern and notation based multipurpose playback, capture or feeding notes to audio
+	signals.
+      </para>
+
+      <xi:include href="xml/ags_fx_pattern_audio.xml"/>
+      <xi:include href="xml/ags_fx_pattern_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_pattern_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_pattern_channel.xml"/>
+      <xi:include href="xml/ags_fx_pattern_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_pattern_recycling.xml"/>
+
+      <xi:include href="xml/ags_fx_notation_audio.xml"/>
+      <xi:include href="xml/ags_fx_notation_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_notation_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_notation_channel.xml"/>
+      <xi:include href="xml/ags_fx_notation_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_notation_recycling.xml"/>
+
+      <para>
+	Plugins extending ags-fx-notation.
+      </para>
+
+      <xi:include href="xml/ags_fx_dssi_audio.xml"/>
+      <xi:include href="xml/ags_fx_dssi_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_dssi_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_dssi_channel.xml"/>
+      <xi:include href="xml/ags_fx_dssi_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_dssi_recycling.xml"/>
+
+      <xi:include href="xml/ags_fx_lv2_audio.xml"/>
+      <xi:include href="xml/ags_fx_lv2_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_lv2_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_lv2_channel.xml"/>
+      <xi:include href="xml/ags_fx_lv2_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_lv2_recycling.xml"/>      
+
+    </chapter>
+
+    <chapter id="audio-fx-peak-and-analyse">
+      <title>Fx Engine - peak and analyse</title>
+      <para>
+	Peak detection and analyse spectrum of audio data.
+      </para>
+
+      <xi:include href="xml/ags_fx_peak_audio.xml"/>
+      <xi:include href="xml/ags_fx_peak_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_peak_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_peak_channel.xml"/>
+      <xi:include href="xml/ags_fx_peak_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_peak_recycling.xml"/>
+
+      <xi:include href="xml/ags_fx_envelope_audio.xml"/>
+      <xi:include href="xml/ags_fx_envelope_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_envelope_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_envelope_channel.xml"/>
+      <xi:include href="xml/ags_fx_envelope_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_envelope_recycling.xml"/>
+
+    </chapter>
+
+    <chapter id="audio-fx-volume-and-envelope">
+      <title>Fx Engine - volume and envelope</title>
+      <para>
+	Volume adjustment or mute and envelope of audio data.
+      </para>
+
+      <xi:include href="xml/ags_fx_volume_audio.xml"/>
+      <xi:include href="xml/ags_fx_volume_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_volume_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_volume_channel.xml"/>
+      <xi:include href="xml/ags_fx_volume_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_volume_recycling.xml"/>
+
+      <xi:include href="xml/ags_fx_eq10_audio.xml"/>
+      <xi:include href="xml/ags_fx_eq10_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_eq10_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_eq10_channel.xml"/>
+      <xi:include href="xml/ags_fx_eq10_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_eq10_recycling.xml"/>
+
+      <xi:include href="xml/ags_fx_analyse_audio.xml"/>
+      <xi:include href="xml/ags_fx_analyse_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_analyse_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_analyse_channel.xml"/>
+      <xi:include href="xml/ags_fx_analyse_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_analyse_recycling.xml"/>
+
+    </chapter>
+
+    <chapter id="audio-fx-misc-plugins">
+      <title>Fx Engine - misc plugins</title>
+      <para>
+	Miscellaneous plugins to process audio data.
+      </para>
+
+      <xi:include href="xml/ags_fx_ladspa_audio.xml"/>
+      <xi:include href="xml/ags_fx_ladspa_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_ladspa_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_ladspa_channel.xml"/>
+      <xi:include href="xml/ags_fx_ladspa_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_ladspa_recycling.xml"/>      
+
+    </chapter>
+    
     <chapter id="audio-recall-fundamental-playback">
       <title>Recalls - fundamental playback</title>
       <para>

@@ -3540,7 +3540,7 @@ ags_channel_test_staging_completed(AgsChannel *channel, gint sound_scope)
 }
 
 /**
- * ags_channel_set_staging_flags:
+ * ags_channel_set_staging_completed:
  * @channel: the #AgsChannel
  * @sound_scope: the #AgsSoundScope to apply, or -1 to apply to all
  * 
@@ -3577,7 +3577,7 @@ ags_channel_set_staging_completed(AgsChannel *channel, gint sound_scope)
 }
 
 /**
- * ags_channel_unset_staging_flags:
+ * ags_channel_unset_staging_completed:
  * @channel: the #AgsChannel
  * @sound_scope: the #AgsSoundScope to apply, or -1 to apply to all
  * 

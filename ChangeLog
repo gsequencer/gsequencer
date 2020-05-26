@@ -1,3 +1,8 @@
+ags (3.3.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added missing gtk-doc of ags-fx recalls
+
 ags (3.3.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

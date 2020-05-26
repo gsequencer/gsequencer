@@ -189,6 +189,7 @@ GdkPixbuf GIcon GLoadableIcon
 GApplication GActionGroup GActionMap
 GtkApplication GActionGroup GActionMap
 AgsAudio AgsConnectable
+AgsRecallContainer AgsConnectable
 AgsPort AgsConnectable
 AgsChannel AgsConnectable
 GtkAction GtkBuildable
