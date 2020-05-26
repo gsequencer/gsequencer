@@ -46,9 +46,9 @@ void ags_fx_playback_audio_finalize(GObject *gobject);
 
 static gpointer ags_fx_playback_audio_parent_class = NULL;
 
-static const gchar *ags_fx_playback_audio_plugin_name = "ags-fx-playback";
+const gchar *ags_fx_playback_audio_plugin_name = "ags-fx-playback";
 
-static const gchar *ags_fx_playback_audio_specifier[] = {
+const gchar *ags_fx_playback_audio_specifier[] = {
   "./bpm[0]",
   "./tact[0]",
   "./delay[0]",
@@ -66,7 +66,7 @@ static const gchar *ags_fx_playback_audio_specifier[] = {
   NULL,
 };
 
-static const gchar *ags_fx_playback_audio_control_port[] = {
+const gchar *ags_fx_playback_audio_control_port[] = {
   "1/14",
   "2/14",
   "3/14",

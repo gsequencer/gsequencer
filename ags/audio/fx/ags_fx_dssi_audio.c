@@ -65,7 +65,7 @@ void ags_fx_dssi_audio_set_pads_callback(AgsAudio *audio,
 
 static gpointer ags_fx_dssi_audio_parent_class = NULL;
 
-static const gchar *ags_fx_dssi_audio_plugin_name = "ags-fx-dssi";
+const gchar *ags_fx_dssi_audio_plugin_name = "ags-fx-dssi";
 
 GType
 ags_fx_dssi_audio_get_type()

@@ -73,13 +73,13 @@ void ags_fx_lv2_audio_set_pads_callback(AgsAudio *audio,
 
 static gpointer ags_fx_lv2_audio_parent_class = NULL;
 
-static const gchar *ags_fx_lv2_audio_plugin_name = "ags-fx-lv2";
+const gchar *ags_fx_lv2_audio_plugin_name = "ags-fx-lv2";
 
-static const gchar *ags_fx_lv2_audio_specifier[] = {
+const gchar *ags_fx_lv2_audio_specifier[] = {
   NULL,
 };
 
-static const gchar *ags_fx_lv2_audio_control_port[] = {
+const gchar *ags_fx_lv2_audio_control_port[] = {
   NULL,
 };
 

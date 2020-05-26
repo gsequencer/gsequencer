@@ -40,7 +40,7 @@ void ags_fx_pattern_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_pattern_recycling_parent_class = NULL;
 
-static const gchar *ags_fx_pattern_recycling_plugin_name = "ags-fx-pattern";
+const gchar *ags_fx_pattern_recycling_plugin_name = "ags-fx-pattern";
 
 GType
 ags_fx_pattern_recycling_get_type()

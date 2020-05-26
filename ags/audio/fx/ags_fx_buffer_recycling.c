@@ -40,7 +40,7 @@ void ags_fx_buffer_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_buffer_recycling_parent_class = NULL;
 
-static const gchar *ags_fx_buffer_recycling_plugin_name = "ags-fx-buffer";
+const gchar *ags_fx_buffer_recycling_plugin_name = "ags-fx-buffer";
 
 GType
 ags_fx_buffer_recycling_get_type()

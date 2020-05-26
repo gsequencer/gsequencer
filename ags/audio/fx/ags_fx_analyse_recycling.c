@@ -40,7 +40,7 @@ void ags_fx_analyse_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_analyse_recycling_parent_class = NULL;
 
-static const gchar *ags_fx_analyse_recycling_plugin_name = "ags-fx-analyse";
+const gchar *ags_fx_analyse_recycling_plugin_name = "ags-fx-analyse";
 
 GType
 ags_fx_analyse_recycling_get_type()

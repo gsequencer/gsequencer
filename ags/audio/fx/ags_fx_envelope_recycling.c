@@ -40,7 +40,7 @@ void ags_fx_envelope_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_envelope_recycling_parent_class = NULL;
 
-static const gchar *ags_fx_envelope_recycling_plugin_name = "ags-fx-envelope";
+const gchar *ags_fx_envelope_recycling_plugin_name = "ags-fx-envelope";
 
 GType
 ags_fx_envelope_recycling_get_type()
