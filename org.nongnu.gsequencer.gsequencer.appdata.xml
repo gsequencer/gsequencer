@@ -35,6 +35,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.3.8" date="2020-05-27">
+      <description>
+	<p>Fixed AgsSpectrometer visualization.</p>
+      </description>
+    </release>
+
     <release version="3.3.6" date="2020-05-22">
       <description>
 	<p>Fixed potential SIGSEGV as modifying buffer-size of AgsSpectrometer.</p>

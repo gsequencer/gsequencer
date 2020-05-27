@@ -211,6 +211,7 @@
 	The fundamental recall types are related to effect processing.
       </para>
       
+      <xi:include href="xml/ags_fx_factory.xml"/>
       <xi:include href="xml/ags_recall_factory.xml"/>
       <xi:include href="xml/ags_playback_domain.xml"/>
       <xi:include href="xml/ags_playback.xml"/>
@@ -673,6 +674,8 @@
       <xi:include href="xml/ags_reset_amplitude.xml"/>
       <xi:include href="xml/ags_reset_note.xml"/>
       <xi:include href="xml/ags_reset_peak.xml"/>
+      <xi:include href="xml/ags_reset_fx_peak.xml"/>
+      <xi:include href="xml/ags_reset_fx_analyse.xml"/>
       <xi:include href="xml/ags_resize_audio.xml"/>
       <xi:include href="xml/ags_seek_soundcard.xml"/>
       <xi:include href="xml/ags_set_audio_channels.xml"/>
