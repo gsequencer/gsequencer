@@ -461,7 +461,7 @@ ags_fx_analyse_channel_notify_samplerate_callback(GObject *gobject,
 	       NULL);
 
   /* realloc port - frequency */
-  correction = (double) samplerate / (double) buffer_size;
+  correction = ((double) samplerate - buffer_size) / (double) buffer_size;
     
   if(frequency != NULL){
     port_mutex = AGS_PORT_GET_OBJ_MUTEX(frequency);

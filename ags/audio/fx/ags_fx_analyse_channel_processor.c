@@ -186,14 +186,16 @@ ags_fx_analyse_channel_processor_real_run_inter(AgsRecall *recall)
       g_rec_mutex_lock(port_mutex);
 
       ags_audio_buffer_util_clear_buffer(magnitude->port_value.ags_port_double_ptr, 1,
-					 buffer_size, AGS_AUDIO_BUFFER_UTIL_DOUBLE);	
-
+					 buffer_size, AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+      
       g_rec_mutex_unlock(port_mutex);
     }
 
     memset((void *) fx_analyse_channel->input_data[sound_scope]->out, 0, buffer_size * sizeof(double));
     
     fftw_execute(fx_analyse_channel->input_data[sound_scope]->plan);
+
+    memset((void *) fx_analyse_channel->input_data[sound_scope]->in, 0, buffer_size * sizeof(double));
 
     g_rec_mutex_unlock(fx_analyse_channel_mutex);
 

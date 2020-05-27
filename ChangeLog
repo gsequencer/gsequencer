@@ -1,7 +1,9 @@
 ags (3.3.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsSpectrometer plot and ags-fx-analyse missing clear of input data
 	* added missing gtk-doc of ags-fx recalls
+	* removed static storage class from ags-fx global strings
 
 ags (3.3.7)
 
