@@ -1932,21 +1932,45 @@ gboolean
 ags_devout_is_available(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
+  
+#ifdef AGS_WITH_ALSA
+  snd_pcm_t *handle;
 
   struct pollfd fds;
+#endif
 
   gboolean is_available;
+
+  GRecMutex *devout_mutex;
   
   devout = AGS_DEVOUT(soundcard);
+  
+  /* get devout mutex */
+  devout_mutex = AGS_DEVOUT_GET_OBJ_MUTEX(devout);  
 
-  fds.events = POLLOUT;
+#ifdef AGS_WITH_ALSA
+  /* check is starting */
+  g_rec_mutex_lock(devout_mutex);
+
+  handle = devout->out.alsa.handle;
   
-  snd_pcm_poll_descriptors(devout->out.alsa.handle, &fds, 1);
+  g_rec_mutex_unlock(devout_mutex);
+
+  if(handle != NULL){
+    fds.events = POLLOUT;
   
-  poll(&fds, 1, 0);
+    snd_pcm_poll_descriptors(handle, &fds, 1);
   
-  /* check available */
-  is_available = ((POLLOUT & (fds.revents)) != 0) ? TRUE: FALSE;
+    poll(&fds, 1, 0);
+  
+    /* check available */
+    is_available = ((POLLOUT & (fds.revents)) != 0) ? TRUE: FALSE;
+  }else{
+    is_available = FALSE;
+  }
+#else
+  is_available = FALSE;
+#endif
   
   return(is_available);
 }
