@@ -3242,6 +3242,8 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
 
 #ifdef AGS_WITH_ALSA  
   /* write ring buffer */
+//  g_message("read %d", devin->buffer_size);
+  
   devin->out.alsa.rc = snd_pcm_readi(devin->out.alsa.handle,
 				     devin->ring_buffer[devin->nth_ring_buffer],
 				     (snd_pcm_uframes_t) (devin->buffer_size));

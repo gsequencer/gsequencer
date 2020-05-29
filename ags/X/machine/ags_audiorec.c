@@ -736,13 +736,16 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
 
   audio = AGS_MACHINE(audiorec)->audio;
 
+  position = 0;
+
+  input_pads = 0;
+  audio_channels = 0;
+
   /* get some fields */
   g_object_get(audio,
 	       "input-pads", &input_pads,
 	       "audio-channels", &audio_channels,
 	       NULL);
-
-  position = 0;
 
   /* ags-fx-playback */
   start_recall = ags_fx_factory_create(audio,
@@ -986,8 +989,8 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
       g_object_unref(start_channel);
     }
 
-    if(next_channel != NULL){
-      g_object_unref(next_channel);
+    if(channel != NULL){
+      g_object_unref(channel);
     }
     
     g_list_free(list_start);

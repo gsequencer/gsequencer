@@ -3556,6 +3556,8 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   g_rec_mutex_lock(devout_mutex);
 
   /* write ring buffer */
+//  g_message("write %d", devout->buffer_size);
+  
   devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 				       devout->ring_buffer[devout->nth_ring_buffer],
 				       (snd_pcm_uframes_t) (devout->buffer_size));

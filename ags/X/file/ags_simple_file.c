@@ -20,6 +20,7 @@
 #include <ags/X/file/ags_simple_file.h>
 
 #include <ags/X/ags_ui_provider.h>
+#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine_util.h>
 #include <ags/X/ags_notation_editor.h>
