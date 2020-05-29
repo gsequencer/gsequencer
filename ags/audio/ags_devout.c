@@ -1933,12 +1933,20 @@ ags_devout_is_available(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
 
+  struct pollfd fds;
+
   gboolean is_available;
   
   devout = AGS_DEVOUT(soundcard);
 
+  fds.events = POLLOUT;
+  
+  snd_pcm_poll_descriptors(devout->out.alsa.handle, &fds, 1);
+  
+  poll(&fds, 1, 0);
+  
   /* check available */
-  is_available = g_atomic_int_get(&(devout->available));
+  is_available = ((POLLOUT & (fds.revents)) != 0) ? TRUE: FALSE;
   
   return(is_available);
 }
@@ -3171,6 +3179,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /*  */
   devout->out.alsa.handle = handle;
 
+#if 0
   i_stop = snd_pcm_poll_descriptors_count(devout->out.alsa.handle);
 
   if(i_stop > 0){
@@ -3197,6 +3206,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 				   GUINT_TO_POINTER(tag));
     }
   }
+#endif
 #endif
 
   devout->tact_counter = 0.0;

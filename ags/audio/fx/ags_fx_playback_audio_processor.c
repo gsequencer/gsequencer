@@ -1646,7 +1646,7 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
       ags_audio_buffer_util_clear_buffer(current_audio_signal->stream_current->data, 1,
 					 target_buffer_size, ags_audio_buffer_util_format_from_soundcard(target_format));
     
-      ags_audio_buffer_util_copy_buffer_to_buffer(current_audio_signal->stream_current, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(current_audio_signal->stream_current->data, 1, 0,
 						  data, audio_channels, input_soundcard_channel,
 						  target_buffer_size, target_copy_mode);
 

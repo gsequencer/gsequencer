@@ -856,6 +856,8 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
       if(plugin_descriptor->get_program != NULL){
 	for(i = 0; (program_descriptor = plugin_descriptor->get_program(dssi_bridge->ladspa_handle, i)) != NULL; i++){
 	  gtk_list_store_append(model, &iter);
+
+	  g_message("%s %s %s", program_descriptor->Name, program_descriptor->Bank, program_descriptor->Program);
 	  gtk_list_store_set(model, &iter,
 			     0, program_descriptor->Name,
 			     1, program_descriptor->Bank,
