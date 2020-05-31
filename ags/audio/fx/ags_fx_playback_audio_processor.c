@@ -1337,9 +1337,8 @@ ags_fx_playback_audio_processor_real_play(AgsFxPlaybackAudioProcessor *fx_playba
   }
 
   /* find wave - attempt #1 */
-  if((attack != 0 ||
-      frame_count != buffer_size) &&
-    relative_offset * floor((double) (x_offset + frame_count) / (double) relative_offset) > relative_offset * floor((double) (x_offset) / (double) relative_offset)){
+  if(attack != 0 ||
+     frame_count != buffer_size){
     ags_timestamp_set_ags_offset(timestamp,
 				 (guint64) (relative_offset * floor((double) (x_offset + frame_count) / (double) relative_offset)));
 
@@ -1742,9 +1741,8 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
     }
     
     /* find wave - attempt #1 */
-    if((attack != 0 ||
-	frame_count != buffer_size) &&
-       relative_offset * floor((double) (x_offset + frame_count) / (double) relative_offset) > relative_offset * floor((double) (x_offset) / (double) relative_offset)){
+    if(attack != 0 ||
+       frame_count != buffer_size){
       ags_timestamp_set_ags_offset(timestamp,
 				   (guint64) (relative_offset * floor((double) (x_offset + frame_count) / (double) relative_offset)));
 

@@ -35,6 +35,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.3.10" date="2020-05-31">
+      <description>
+	<p>More fixes to AgsAudiorec.</p>
+      </description>
+    </release>
+
     <release version="3.3.9" date="2020-05-29">
       <description>
 	<p>Fixed AgsAudiorec capture.</p>

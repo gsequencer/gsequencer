@@ -1,3 +1,8 @@
+ags (3.3.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-playback 2 wrong if conditions
+
 ags (3.3.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
