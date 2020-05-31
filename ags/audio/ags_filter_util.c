@@ -344,7 +344,123 @@ ags_filter_util_pitch_s16(gint16 *buffer,
     
   new_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
 						   AGS_SOUNDCARD_COMPLEX);
+
+
+
+  /* im mix buffer */
+  for(i = 0; i < buffer_length; i++){
+    complex z, im_z;
+    gdouble phase, im_phase;
+    guint start_x;
+
+    start_x = (i % (guint) floor(freq_period)) + freq_period * floor((double) i / freq_period);
+
+    im_phase = i % (guint) floor(im_freq / 4.0);
+
+    phase = ((base_freq / im_freq) + 1.0) * im_phase;
+
+#if 1
+    if(start_x + (guint) floor(phase) < buffer_length){
+      ptr_mix_buffer = mix_buffer + (start_x + (guint) floor(phase));
+    }else{
+      if((start_x + (guint) floor(phase)) - (guint) floor(freq_period) < buffer_length &&
+	 (start_x + (guint) floor(phase)) - (guint) floor(freq_period) > 0){
+	ptr_mix_buffer = mix_buffer + (start_x + (guint) floor(phase)) - (guint) floor(freq_period);
+      }else{
+	if(floor(phase) < buffer_length){
+	  ptr_mix_buffer = mix_buffer + (guint) floor(phase);
+	}else{
+	  ptr_mix_buffer = mix_buffer + buffer_length - 1;
+	}
+      }
+    }
+#else
+    ptr_mix_buffer = mix_buffer + i;
+#endif
+    
+    ptr_im_mix_buffer = im_mix_buffer + i;
+
+    /* write mix buffer */
+    ptr_ptr_mix_buffer = &ptr_mix_buffer;
+    
+    AGS_AUDIO_BUFFER_UTIL_S16_TO_COMPLEX(buffer[i], ptr_ptr_mix_buffer);
+
+    /* write im mix buffer */
+    z = ags_complex_get(ptr_mix_buffer);
+
+    im_z = z;
+
+    ags_complex_set(ptr_im_mix_buffer, im_z);
+  }
+
+  /* new mix buffer */
+  for(i = 0; i < buffer_length; i++){
+    complex new_z;
+    gdouble phase, im_phase, new_phase;    
+    guint start_x, im_start_x;
+
+    start_x = (i % (guint) floor(freq_period)) + freq_period * floor((double) i / freq_period);
+    im_start_x = (i % (guint) floor(im_freq_period)) + im_freq_period * floor((double) i / im_freq_period);
+
+    phase = i % (guint) floor(base_freq / 4.0);
+    im_phase = i % (guint) floor(im_freq / 4.0);
+    new_phase = i % (guint) floor(new_freq / 4.0);
+
+#if 1
+    if(start_x + (guint) floor(phase) < buffer_length){
+      ptr_mix_buffer = mix_buffer + (start_x + (guint) floor(phase));
+    }else{
+      if((start_x + (guint) floor(phase)) - (guint) floor(freq_period) < buffer_length &&
+	 (start_x + (guint) floor(phase)) - (guint) floor(freq_period) > 0){
+	ptr_mix_buffer = mix_buffer + (start_x + (guint) floor(phase)) - (guint) floor(freq_period);
+      }else{
+	if(floor(phase) < buffer_length){
+	  ptr_mix_buffer = mix_buffer + (guint) floor(phase);
+	}else{
+	  ptr_mix_buffer = mix_buffer + buffer_length - 1;
+	}
+      }
+    }
+
+    if(im_start_x + (guint) floor(im_phase) < buffer_length){
+      ptr_im_mix_buffer = im_mix_buffer + (im_start_x + (guint) floor(im_phase));
+    }else{
+      if((im_start_x + (guint) floor(im_phase)) - (guint) floor(im_freq_period) < buffer_length &&
+	 (im_start_x + (guint) floor(im_phase)) - (guint) floor(im_freq_period) > 0){
+	ptr_im_mix_buffer = im_mix_buffer + (im_start_x + (guint) floor(im_phase)) - (guint) floor(im_freq_period);
+      }else{
+	if(floor(im_phase) < buffer_length){
+	  ptr_im_mix_buffer = im_mix_buffer + (guint) floor(im_phase);
+	}else{
+	  ptr_im_mix_buffer = im_mix_buffer + buffer_length - 1;
+	}
+      }
+    }
+#else
+    ptr_mix_buffer = mix_buffer + i;
+    ptr_im_mix_buffer = im_mix_buffer + i;
+#endif
+    
+    ptr_new_mix_buffer = new_mix_buffer + i;
+
+    /* write new mix buffer */
+    t = 0.113; // ((gdouble) ((guint) floor(base_key) % 12) / 4.0);
+    
+    new_z = (1.0 - t) * ags_complex_get(ptr_im_mix_buffer) + (t * ags_complex_get(ptr_mix_buffer));
+
+    ags_complex_set(ptr_new_mix_buffer,
+		    new_z);
+  }
   
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    ptr_new_mix_buffer = new_mix_buffer + i;
+    ptr_buffer = buffer + i;
+
+    AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S16(ptr_new_mix_buffer, ptr_buffer);
+  }
+
+#if 0
   ptr_ptr_buffer = &ptr_buffer;
 
   ptr_ptr_mix_buffer = &ptr_mix_buffer;
@@ -358,11 +474,15 @@ ags_filter_util_pitch_s16(gint16 *buffer,
     
     offset = buffer + i;
     n = (gdouble) i;
-    
+
+#if 0    
     AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(offset, 1,
 						      n,
 						      buffer_length,
 						      ptr_ptr_mix_buffer);
+#else
+    AGS_AUDIO_BUFFER_UTIL_S16_TO_COMPLEX(offset[0], ptr_ptr_mix_buffer);
+#endif
   }
 
   /* compute intermediate mix buffer */
@@ -459,10 +579,14 @@ ags_filter_util_pitch_s16(gint16 *buffer,
     ptr_new_mix_buffer = new_mix_buffer + i;
     ptr_buffer = buffer + i;
 
+#if 0
     AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(ptr_new_mix_buffer, 1,
 						      n,
 						      buffer_length,
 						      ptr_ptr_buffer);
+#else
+    AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S16(ptr_new_mix_buffer, ptr_buffer);
+#endif
   }
 
   ags_stream_free(mix_buffer);
@@ -531,6 +655,7 @@ ags_filter_util_pitch_s16(gint16 *buffer,
       buffer[i] = sum;
     }    
   }
+#endif
 }
 
 /**
