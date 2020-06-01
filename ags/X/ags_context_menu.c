@@ -202,9 +202,15 @@ ags_context_menu_init(AgsContextMenu *context_menu)
 #ifdef AGS_WITH_LIBINSTPATCH
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("FPlayer"));
   gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("SF2 Synth"));
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
 #endif
 
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Sampler"));
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("SFZ Synth"));
   gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Audiorec"));
@@ -366,10 +372,18 @@ ags_context_menu_connect(AgsConnectable *connectable)
   g_signal_connect(G_OBJECT (list2->data), "activate",
 		   G_CALLBACK (ags_menu_action_add_ffplayer_callback), (gpointer) context_menu);
   list2 = list2->next;
+
+  g_signal_connect(G_OBJECT (list2->data), "activate",
+		   G_CALLBACK (ags_menu_action_add_sf2_synth_callback), (gpointer) context_menu);
+  list2 = list2->next;
 #endif
 
   g_signal_connect(G_OBJECT (list2->data), "activate",
 		   G_CALLBACK (ags_menu_action_add_pitch_sampler_callback), (gpointer) context_menu);
+  list2 = list2->next;
+
+  g_signal_connect(G_OBJECT (list2->data), "activate",
+		   G_CALLBACK (ags_menu_action_add_sfz_synth_callback), (gpointer) context_menu);
   list2 = list2->next;
 
   g_signal_connect(G_OBJECT (list2->data), "activate",

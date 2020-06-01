@@ -1,6 +1,8 @@
 ags (3.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented AgsSF2Synth
+	* TODO:JK: implemented AgsSFZSynth
 	* TODO:JK: implemented AgsSF2Generator
 	* TODO:JK: implemented AgsSFZGenerator
 	* TODO:JK: improved ags_filter_util.c

@@ -35,9 +35,11 @@
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
+#include <ags/X/machine/ags_sf2_synth.h>
 #endif
 
 #include <ags/X/machine/ags_pitch_sampler.h>
+#include <ags/X/machine/ags_sfz_synth.h>
 
 #include <ags/X/machine/ags_audiorec.h>
 
@@ -620,6 +622,60 @@ ags_machine_util_new_ffplayer()
 }
 
 /**
+ * ags_machine_util_new_sf2_synth:
+ * 
+ * Create #AgsSF2Synth.
+ * 
+ * returns: the newly instantiated #AgsSF2Synth
+ * 
+ * Since: 3.3.4
+ */
+GtkWidget*
+ags_machine_util_new_sf2_synth()
+{
+#ifdef AGS_WITH_LIBINSTPATCH
+  AgsWindow *window;
+  AgsSF2Synth *sf2_synth;
+
+  AgsApplicationContext *application_context;
+  
+  GObject *default_soundcard;
+  
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
+  /* create pitch sampler */
+  sf2_synth = ags_sf2_synth_new(G_OBJECT(default_soundcard));
+
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     (GtkWidget *) sf2_synth,
+		     FALSE, FALSE,
+		     0);
+
+  ags_connectable_connect(AGS_CONNECTABLE(sf2_synth));
+
+  ags_audio_set_audio_channels(AGS_MACHINE(sf2_synth)->audio,
+			       1, 0);
+  
+  ags_audio_set_pads(AGS_MACHINE(sf2_synth)->audio,
+		     AGS_TYPE_INPUT,
+		     128, 0);
+  ags_audio_set_pads(AGS_MACHINE(sf2_synth)->audio,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);  
+
+  gtk_widget_show_all((GtkWidget *) sf2_synth);
+
+  return((GtkWidget *) sf2_synth);
+#else
+  return(NULL);
+#endif
+}
+
+/**
  * ags_machine_util_new_pitch_sampler:
  * 
  * Create #AgsPitchSampler.
@@ -667,6 +723,56 @@ ags_machine_util_new_pitch_sampler()
   gtk_widget_show_all((GtkWidget *) pitch_sampler);
 
   return((GtkWidget *) pitch_sampler);
+}
+
+/**
+ * ags_machine_util_new_sfz_synth:
+ * 
+ * Create #AgsSFZSynth.
+ * 
+ * returns: the newly instantiated #AgsSFZSynth
+ * 
+ * Since: 3.3.4
+ */
+GtkWidget*
+ags_machine_util_new_sfz_synth()
+{
+  AgsWindow *window;
+  AgsSFZSynth *sfz_synth;
+
+  AgsApplicationContext *application_context;
+  
+  GObject *default_soundcard;
+  
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
+  /* create pitch sampler */
+  sfz_synth = ags_sfz_synth_new(G_OBJECT(default_soundcard));
+
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     (GtkWidget *) sfz_synth,
+		     FALSE, FALSE,
+		     0);
+
+  ags_connectable_connect(AGS_CONNECTABLE(sfz_synth));
+
+  ags_audio_set_audio_channels(AGS_MACHINE(sfz_synth)->audio,
+			       1, 0);
+  
+  ags_audio_set_pads(AGS_MACHINE(sfz_synth)->audio,
+		     AGS_TYPE_INPUT,
+		     128, 0);
+  ags_audio_set_pads(AGS_MACHINE(sfz_synth)->audio,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);  
+
+  gtk_widget_show_all((GtkWidget *) sfz_synth);
+
+  return((GtkWidget *) sfz_synth);
 }
 
 /**
@@ -1267,12 +1373,20 @@ ags_machine_util_new_by_type_name(gchar *machine_type_name,
     machine = ags_machine_util_new_fm_syncsynth();
   }else if(!g_ascii_strncasecmp(machine_type_name,
 				"AgsFFPlayer",
-				10)){
+				11)){
     machine = ags_machine_util_new_ffplayer();
+  }else if(!g_ascii_strncasecmp(machine_type_name,
+				"AgsSF2Synth",
+				12)){
+    machine = ags_machine_util_new_sf2_synth();
   }else if(!g_ascii_strncasecmp(machine_type_name,
 				"AgsPitchSampler",
 				16)){
     machine = ags_machine_util_new_pitch_sampler();
+  }else if(!g_ascii_strncasecmp(machine_type_name,
+				"AgsSFZSynth",
+				12)){
+    machine = ags_machine_util_new_sfz_synth();
   }else if(!g_ascii_strncasecmp(machine_type_name,
 				"AgsAudiorec",
 				12)){

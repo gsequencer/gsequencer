@@ -2312,6 +2312,8 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_pitch_sampler_callbacks.h \
 	ags/X/machine/ags_pitch_sampler_file.h \
 	ags/X/machine/ags_pitch_sampler_file_callbacks.h \
+	ags/X/machine/ags_sfz_synth.h \
+	ags/X/machine/ags_sfz_synth_callbacks.h \
 	ags/X/machine/ags_synth_callbacks.h \
 	ags/X/machine/ags_syncsynth.h \
 	ags/X/machine/ags_syncsynth_callbacks.h \
@@ -2404,6 +2406,8 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_pitch_sampler_callbacks.c \
 	ags/X/machine/ags_pitch_sampler_file.c \
 	ags/X/machine/ags_pitch_sampler_file_callbacks.c \
+	ags/X/machine/ags_sfz_synth.c \
+	ags/X/machine/ags_sfz_synth_callbacks.c \
 	ags/X/machine/ags_syncsynth.c \
 	ags/X/machine/ags_syncsynth_callbacks.c \
 	ags/X/machine/ags_synth.c \
