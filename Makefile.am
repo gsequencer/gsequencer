@@ -2333,7 +2333,9 @@ libgsequencer_machine_h_sources += \
 	ags/X/machine/ags_ffplayer_input_line_callbacks.h \
 	ags/X/machine/ags_ffplayer_input_line.h \
 	ags/X/machine/ags_ffplayer_input_pad_callbacks.h \
-	ags/X/machine/ags_ffplayer_input_pad.h
+	ags/X/machine/ags_ffplayer_input_pad.h \
+	ags/X/machine/ags_sf2_synth_callbacks.h \
+	ags/X/machine/ags_sf2_synth.h
 endif
 
 deprecated_libgsequencer_machine_c_sources =
@@ -2423,7 +2425,9 @@ libgsequencer_machine_c_sources += \
 	ags/X/machine/ags_ffplayer_input_line.c \
 	ags/X/machine/ags_ffplayer_input_line_callbacks.c \
 	ags/X/machine/ags_ffplayer_input_pad.c \
-	ags/X/machine/ags_ffplayer_input_pad_callbacks.c
+	ags/X/machine/ags_ffplayer_input_pad_callbacks.c \
+	ags/X/machine/ags_sf2_synth.c \
+	ags/X/machine/ags_sf2_synth_callbacks.c
 endif
 
 # libgsequencer - editor
