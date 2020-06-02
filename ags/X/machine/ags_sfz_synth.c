@@ -61,6 +61,8 @@ void ags_sfz_synth_output_map_recall(AgsSFZSynth *sfz_synth,
 static gpointer ags_sfz_synth_parent_class = NULL;
 static AgsConnectableInterface *ags_sfz_synth_parent_connectable_interface;
 
+GHashTable *ags_sfz_synth_sfz_loader_completed = NULL;
+
 GType
 ags_sfz_synth_get_type(void)
 {
@@ -134,7 +136,90 @@ ags_sfz_synth_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 {
+  AgsAudio *audio;
+  
+  g_signal_connect_after((GObject *) sfz_synth, "parent_set",
+			 G_CALLBACK(ags_sfz_synth_parent_set_callback), (gpointer) sfz_synth);
+
+  audio = AGS_MACHINE(sfz_synth)->audio;
+
+  ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
+			      AGS_AUDIO_ASYNC |
+			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_RECYCLING));
+  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_PLAYBACK |
+				      AGS_SOUND_ABILITY_NOTATION));
+  ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
+					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
+
+  g_object_set(audio,
+	       "min-audio-channels", 1,
+	       "min-output-pads", 1,
+	       "min-input-pads", 1,
+	       "max-input-pads", 128,
+	       "audio-start-mapping", 0,
+	       "audio-end-mapping", 128,
+	       "midi-start-mapping", 0,
+	       "midi-end-mapping", 128,
+	       NULL);
+  
+  AGS_MACHINE(sfz_synth)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
+				    AGS_MACHINE_REVERSE_NOTATION);
+  AGS_MACHINE(sfz_synth)->file_input_flags |= AGS_MACHINE_ACCEPT_SOUNDFONT2;
+
+  /* context menu */
+  ags_machine_popup_add_connection_options((AgsMachine *) sfz_synth,
+  					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
+
+  /* audio resize */
+  g_signal_connect_after(G_OBJECT(sfz_synth), "resize-audio-channels",
+			 G_CALLBACK(ags_sfz_synth_resize_audio_channels), NULL);
+
+  g_signal_connect_after(G_OBJECT(sfz_synth), "resize-pads",
+			 G_CALLBACK(ags_sfz_synth_resize_pads), NULL);
+
+  /* flags */
+  sfz_synth->flags = 0;
+
+  /* mapped IO */
+  sfz_synth->mapped_input_pad = 0;
+  sfz_synth->mapped_output_pad = 0;
+
+  sfz_synth->playback_play_container = ags_recall_container_new();
+  sfz_synth->playback_recall_container = ags_recall_container_new();
+
+  sfz_synth->notation_play_container = ags_recall_container_new();
+  sfz_synth->notation_recall_container = ags_recall_container_new();
+
+  sfz_synth->envelope_play_container = ags_recall_container_new();
+  sfz_synth->envelope_recall_container = ags_recall_container_new();
+
+  sfz_synth->buffer_play_container = ags_recall_container_new();
+  sfz_synth->buffer_recall_container = ags_recall_container_new();
+
+  /* context menu */
+  ags_machine_popup_add_edit_options((AgsMachine *) sfz_synth,
+				     (AGS_MACHINE_POPUP_ENVELOPE));
+  
+  /* name and xml type */
+  sfz_synth->name = NULL;
+  sfz_synth->xml_type = "ags-sfz-synth";
+
   //TODO:JK: implement me
+
+  /* dialog */
+  sfz_synth->open_dialog = NULL;
+
+  /* SFZ loader */
+  if(ags_sfz_synth_sfz_loader_completed == NULL){
+    ags_sfz_synth_sfz_loader_completed = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+							       NULL,
+							       NULL);
+  }
+
+  g_hash_table_insert(ags_sfz_synth_sfz_loader_completed,
+		      sfz_synth, ags_sfz_synth_sfz_loader_completed_timeout);
+  g_timeout_add(1000 / 4, (GSourceFunc) ags_sfz_synth_sfz_loader_completed_timeout, (gpointer) sfz_synth);
 }
 
 void
@@ -448,6 +533,29 @@ ags_sfz_synth_output_map_recall(AgsSFZSynth *sfz_synth,
 	       NULL);
   
   sfz_synth->mapped_output_pad = output_pads;
+}
+
+/**
+ * ags_sfz_synth_sfz_loader_completed_timeout:
+ * @sfz_synth: the #AgsSFZSynth
+ *
+ * Queue draw widget
+ *
+ * Returns: %TRUE if proceed poll completed, otherwise %FALSE
+ *
+ * Since: 3.4.0
+ */
+gboolean
+ags_sfz_synth_sfz_loader_completed_timeout(AgsSFZSynth *sfz_synth)
+{
+  if(g_hash_table_lookup(ags_sfz_synth_sfz_loader_completed,
+			 sfz_synth) != NULL){
+    //TODO:JK: implement me
+    
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 /**

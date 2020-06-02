@@ -75,6 +75,8 @@ struct _AgsSFZSynth
   GtkButton *open;
 
   AgsSFZLoader *sfz_loader;
+  
+  GtkWidget *open_dialog;
 };
 
 struct _AgsSFZSynthClass

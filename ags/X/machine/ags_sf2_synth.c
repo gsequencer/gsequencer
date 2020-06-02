@@ -61,6 +61,8 @@ void ags_sf2_synth_output_map_recall(AgsSF2Synth *sf2_synth,
 static gpointer ags_sf2_synth_parent_class = NULL;
 static AgsConnectableInterface *ags_sf2_synth_parent_connectable_interface;
 
+GHashTable *ags_sf2_synth_sf2_loader_completed = NULL;
+
 GType
 ags_sf2_synth_get_type(void)
 {
@@ -134,7 +136,186 @@ ags_sf2_synth_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 {
-  //TODO:JK: implement me
+  GtkHBox *sf2_hbox;
+  GtkHBox *sf2_file_hbox;
+  GtkHBox *sf2_preset_hbox;
+  GtkTreeView *sf2_bank_tree_view;
+  GtkTreeView *sf2_program_tree_view;
+  GtkTreeViewColumn *sf2_bank_column;
+  GtkTreeViewColumn *sf2_program_column;
+  GtkTreeViewColumn *sf2_preset_column;
+  
+  GtkCellRenderer *sf2_bank_renderer;
+  GtkCellRenderer *sf2_program_renderer;
+  GtkCellRenderer *sf2_preset_renderer;
+  
+  GtkListStore *sf2_bank;
+  GtkListStore *sf2_program;
+  
+  AgsAudio *audio;
+  
+  g_signal_connect_after((GObject *) sf2_synth, "parent_set",
+			 G_CALLBACK(ags_sf2_synth_parent_set_callback), (gpointer) sf2_synth);
+
+  audio = AGS_MACHINE(sf2_synth)->audio;
+
+  ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
+			      AGS_AUDIO_ASYNC |
+			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_RECYCLING));
+  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_PLAYBACK |
+				      AGS_SOUND_ABILITY_NOTATION));
+  ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
+					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
+
+  g_object_set(audio,
+	       "min-audio-channels", 1,
+	       "min-output-pads", 1,
+	       "min-input-pads", 1,
+	       "max-input-pads", 128,
+	       "audio-start-mapping", 0,
+	       "audio-end-mapping", 128,
+	       "midi-start-mapping", 0,
+	       "midi-end-mapping", 128,
+	       NULL);
+  
+  AGS_MACHINE(sf2_synth)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
+				    AGS_MACHINE_REVERSE_NOTATION);
+  AGS_MACHINE(sf2_synth)->file_input_flags |= AGS_MACHINE_ACCEPT_SOUNDFONT2;
+
+  /* context menu */
+  ags_machine_popup_add_connection_options((AgsMachine *) sf2_synth,
+  					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
+
+  /* audio resize */
+  g_signal_connect_after(G_OBJECT(sf2_synth), "resize-audio-channels",
+			 G_CALLBACK(ags_sf2_synth_resize_audio_channels), NULL);
+
+  g_signal_connect_after(G_OBJECT(sf2_synth), "resize-pads",
+			 G_CALLBACK(ags_sf2_synth_resize_pads), NULL);
+
+  /* flags */
+  sf2_synth->flags = 0;
+
+  /* mapped IO */
+  sf2_synth->mapped_input_pad = 0;
+  sf2_synth->mapped_output_pad = 0;
+
+  sf2_synth->playback_play_container = ags_recall_container_new();
+  sf2_synth->playback_recall_container = ags_recall_container_new();
+
+  sf2_synth->notation_play_container = ags_recall_container_new();
+  sf2_synth->notation_recall_container = ags_recall_container_new();
+
+  sf2_synth->envelope_play_container = ags_recall_container_new();
+  sf2_synth->envelope_recall_container = ags_recall_container_new();
+
+  sf2_synth->buffer_play_container = ags_recall_container_new();
+  sf2_synth->buffer_recall_container = ags_recall_container_new();
+
+  /* context menu */
+  ags_machine_popup_add_edit_options((AgsMachine *) sf2_synth,
+				     (AGS_MACHINE_POPUP_ENVELOPE));
+  
+  /* name and xml type */
+  sf2_synth->name = NULL;
+  sf2_synth->xml_type = "ags-sf2-synth";
+
+  /* SF2 */
+  sf2_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+			 0);
+  gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) sf2_synth)),
+		    (GtkWidget *) sf2_hbox);
+
+  /* file */
+  sf2_file_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+			      0);  
+  gtk_box_pack_start(GTK_BOX(sf2_hbox),
+		     GTK_WIDGET(sf2_file_hbox),
+		     FALSE, FALSE,
+		     0);
+
+  sf2_synth->filename = (GtkEntry *) gtk_entry_new();
+  gtk_box_pack_start((GtkBox *) sf2_file_hbox,
+		     (GtkWidget *) sf2_synth->filename,
+		     FALSE, FALSE,
+		     0);
+  
+  sf2_synth->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN);
+  gtk_box_pack_start((GtkBox *) sf2_file_hbox,
+		     (GtkWidget *) sf2_synth->open,
+		     FALSE, FALSE,
+		     0);
+
+  /* preset - bank and program */
+  sf2_preset_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_pack_start(GTK_BOX(sf2_hbox),
+		     GTK_WIDGET(sf2_preset_hbox),
+		     FALSE, FALSE,
+		     0);
+
+  sf2_bank_tree_view = gtk_tree_view_new();
+  gtk_box_pack_start((GtkBox *) sf2_preset_hbox,
+		     (GtkWidget *) sf2_bank_tree_view,
+		     FALSE, FALSE,
+		     0);
+  
+  sf2_bank_renderer = gtk_cell_renderer_text_new();
+
+  sf2_bank_column = gtk_tree_view_column_new_with_attributes("Bank",
+							     sf2_bank_renderer,
+							     NULL);
+  gtk_tree_view_append_column(sf2_bank_tree_view,
+			      sf2_bank_column);
+  
+  sf2_bank = gtk_list_store_new(1,
+				G_TYPE_INT);
+
+  gtk_tree_view_set_model(sf2_bank_tree_view,
+			  GTK_TREE_MODEL(sf2_bank));  
+  
+  sf2_program_tree_view = gtk_tree_view_new();
+  gtk_box_pack_start((GtkBox *) sf2_preset_hbox,
+		     (GtkWidget *) sf2_program_tree_view,
+		     FALSE, FALSE,
+		     0);
+
+  sf2_program_renderer = gtk_cell_renderer_text_new();
+  sf2_preset_renderer = gtk_cell_renderer_text_new();
+  
+  sf2_program_column = gtk_tree_view_column_new_with_attributes("program",
+								sf2_program_renderer,
+								NULL);
+  gtk_tree_view_append_column(sf2_program_tree_view,
+			      sf2_program_column);
+
+  sf2_preset_column = gtk_tree_view_column_new_with_attributes("preset",
+							       sf2_preset_renderer,
+							       NULL);
+  gtk_tree_view_append_column(sf2_program_tree_view,
+			      sf2_preset_column);
+  
+  sf2_program = gtk_list_store_new(2,
+				   G_TYPE_INT,
+				   G_TYPE_STRING);
+
+  gtk_tree_view_set_model(sf2_program_tree_view,
+			  GTK_TREE_MODEL(sf2_program));
+
+  /* dialog */
+  sf2_synth->open_dialog = NULL;
+
+  /* SF2 loader */
+  if(ags_sf2_synth_sf2_loader_completed == NULL){
+    ags_sf2_synth_sf2_loader_completed = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+							       NULL,
+							       NULL);
+  }
+
+  g_hash_table_insert(ags_sf2_synth_sf2_loader_completed,
+		      sf2_synth, ags_sf2_synth_sf2_loader_completed_timeout);
+  g_timeout_add(1000 / 4, (GSourceFunc) ags_sf2_synth_sf2_loader_completed_timeout, (gpointer) sf2_synth);
 }
 
 void
@@ -448,6 +629,29 @@ ags_sf2_synth_output_map_recall(AgsSF2Synth *sf2_synth,
 	       NULL);
   
   sf2_synth->mapped_output_pad = output_pads;
+}
+
+/**
+ * ags_sf2_synth_sf2_loader_completed_timeout:
+ * @sf2_synth: the #AgsSF2Synth
+ *
+ * Queue draw widget
+ *
+ * Returns: %TRUE if proceed poll completed, otherwise %FALSE
+ *
+ * Since: 3.4.0
+ */
+gboolean
+ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
+{
+  if(g_hash_table_lookup(ags_sf2_synth_sf2_loader_completed,
+			 sf2_synth) != NULL){
+    //TODO:JK: implement me
+    
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 /**

@@ -78,6 +78,8 @@ struct _AgsSF2Synth
 
   GtkTreeView *bank;
   GtkTreeView *program;
+
+  GtkWidget *open_dialog;
 };
 
 struct _AgsSF2SynthClass
