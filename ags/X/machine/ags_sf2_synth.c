@@ -139,12 +139,15 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   GtkHBox *sf2_hbox;
   GtkHBox *sf2_file_hbox;
   GtkHBox *sf2_preset_hbox;
+  GtkHBox *hbox;
   GtkTreeView *sf2_bank_tree_view;
   GtkTreeView *sf2_program_tree_view;
   GtkTreeViewColumn *sf2_bank_column;
   GtkTreeViewColumn *sf2_program_column;
   GtkTreeViewColumn *sf2_preset_column;
-  
+  GtkScrolledWindow *scrolled_window;
+  GtkLabel *label;
+    
   GtkCellRenderer *sf2_bank_renderer;
   GtkCellRenderer *sf2_program_renderer;
   GtkCellRenderer *sf2_preset_renderer;
@@ -236,12 +239,16 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		     0);
 
   sf2_synth->filename = (GtkEntry *) gtk_entry_new();
+  gtk_widget_set_valign(sf2_synth->filename,
+			GTK_ALIGN_START);
   gtk_box_pack_start((GtkBox *) sf2_file_hbox,
 		     (GtkWidget *) sf2_synth->filename,
 		     FALSE, FALSE,
 		     0);
   
   sf2_synth->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN);
+  gtk_widget_set_valign(sf2_synth->open,
+			GTK_ALIGN_START);
   gtk_box_pack_start((GtkBox *) sf2_file_hbox,
 		     (GtkWidget *) sf2_synth->open,
 		     FALSE, FALSE,
@@ -255,15 +262,31 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 		     FALSE, FALSE,
 		     0);
 
-  sf2_bank_tree_view = gtk_tree_view_new();
+  scrolled_window = gtk_scrolled_window_new(NULL,
+					    NULL);
+  gtk_widget_set_size_request(scrolled_window,
+			      AGS_SF2_SYNTH_BANK_WIDTH_REQUEST,
+			      AGS_SF2_SYNTH_BANK_HEIGHT_REQUEST);
+  gtk_scrolled_window_set_policy(scrolled_window,
+				 GTK_POLICY_AUTOMATIC,
+				 GTK_POLICY_ALWAYS);
   gtk_box_pack_start((GtkBox *) sf2_preset_hbox,
-		     (GtkWidget *) sf2_bank_tree_view,
+		     (GtkWidget *) scrolled_window,
 		     FALSE, FALSE,
 		     0);
   
+  sf2_synth->bank = 
+    sf2_bank_tree_view = gtk_tree_view_new();
+  gtk_container_add(scrolled_window,
+		    sf2_bank_tree_view);
+    
+  gtk_widget_set_size_request(sf2_bank_tree_view,
+			      AGS_SF2_SYNTH_BANK_WIDTH_REQUEST,
+			      AGS_SF2_SYNTH_BANK_HEIGHT_REQUEST);
+
   sf2_bank_renderer = gtk_cell_renderer_text_new();
 
-  sf2_bank_column = gtk_tree_view_column_new_with_attributes("Bank",
+  sf2_bank_column = gtk_tree_view_column_new_with_attributes(i18n("bank"),
 							     sf2_bank_renderer,
 							     NULL);
   gtk_tree_view_append_column(sf2_bank_tree_view,
@@ -275,22 +298,38 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   gtk_tree_view_set_model(sf2_bank_tree_view,
 			  GTK_TREE_MODEL(sf2_bank));  
   
-  sf2_program_tree_view = gtk_tree_view_new();
+  scrolled_window = gtk_scrolled_window_new(NULL,
+					    NULL);
+  gtk_widget_set_size_request(scrolled_window,
+			      AGS_SF2_SYNTH_PROGRAM_WIDTH_REQUEST,
+			      AGS_SF2_SYNTH_PROGRAM_HEIGHT_REQUEST);
+  gtk_scrolled_window_set_policy(scrolled_window,
+				 GTK_POLICY_AUTOMATIC,
+				 GTK_POLICY_ALWAYS);
   gtk_box_pack_start((GtkBox *) sf2_preset_hbox,
-		     (GtkWidget *) sf2_program_tree_view,
+		     (GtkWidget *) scrolled_window,
 		     FALSE, FALSE,
 		     0);
+
+  sf2_synth->program = 
+    sf2_program_tree_view = gtk_tree_view_new();
+  gtk_container_add(scrolled_window,
+		    sf2_program_tree_view);
+
+  gtk_widget_set_size_request(sf2_program_tree_view,
+			      AGS_SF2_SYNTH_PROGRAM_WIDTH_REQUEST,
+			      AGS_SF2_SYNTH_PROGRAM_HEIGHT_REQUEST);
 
   sf2_program_renderer = gtk_cell_renderer_text_new();
   sf2_preset_renderer = gtk_cell_renderer_text_new();
   
-  sf2_program_column = gtk_tree_view_column_new_with_attributes("program",
+  sf2_program_column = gtk_tree_view_column_new_with_attributes(i18n("program"),
 								sf2_program_renderer,
 								NULL);
   gtk_tree_view_append_column(sf2_program_tree_view,
 			      sf2_program_column);
 
-  sf2_preset_column = gtk_tree_view_column_new_with_attributes("preset",
+  sf2_preset_column = gtk_tree_view_column_new_with_attributes(i18n("preset"),
 							       sf2_preset_renderer,
 							       NULL);
   gtk_tree_view_append_column(sf2_program_tree_view,
@@ -303,6 +342,36 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   gtk_tree_view_set_model(sf2_program_tree_view,
 			  GTK_TREE_MODEL(sf2_program));
 
+  /* lower */
+  hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+		     0);
+  gtk_box_pack_start(GTK_BOX(sf2_hbox),
+		     GTK_WIDGET(hbox),
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new(i18n("lower"));
+  gtk_widget_set_valign(label,
+			GTK_ALIGN_START);
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+  
+  sf2_synth->lower = gtk_spin_button_new_with_range(-72.0,
+						    72.0,
+						    1.0);
+  gtk_widget_set_valign(sf2_synth->lower,
+			GTK_ALIGN_START);
+  gtk_spin_button_set_digits(sf2_synth->lower,
+			     2);
+  gtk_spin_button_set_value(sf2_synth->lower,
+			    -48.0);
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(sf2_synth->lower),
+		     FALSE, FALSE,
+		     0);  
+  
   /* dialog */
   sf2_synth->open_dialog = NULL;
 

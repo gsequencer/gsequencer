@@ -44,6 +44,12 @@ G_BEGIN_DECLS
 #define AGS_SF2_SYNTH_BASE_NOTE_MAX (72.0)
 #define AGS_SF2_SYNTH_BASE_NOTE_MIN (-72.0)
 
+#define AGS_SF2_SYNTH_BANK_HEIGHT_REQUEST (256)
+#define AGS_SF2_SYNTH_BANK_WIDTH_REQUEST (256)
+  
+#define AGS_SF2_SYNTH_PROGRAM_HEIGHT_REQUEST (256)
+#define AGS_SF2_SYNTH_PROGRAM_WIDTH_REQUEST (512)
+
 typedef struct _AgsSF2Synth AgsSF2Synth;
 typedef struct _AgsSF2SynthClass AgsSF2SynthClass;
 
@@ -79,6 +85,8 @@ struct _AgsSF2Synth
   GtkTreeView *bank;
   GtkTreeView *program;
 
+  GtkSpinButton *lower;
+  
   GtkWidget *open_dialog;
 };
 
