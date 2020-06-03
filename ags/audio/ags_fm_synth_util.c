@@ -544,107 +544,62 @@ ags_fm_synth_util_sin_complex(AgsComplex *buffer,
 			      gdouble lfo_freq, gdouble lfo_depth,
 			      gdouble tuning)
 {
-  AgsComplex c;
   AgsComplex *c_ptr;
   AgsComplex **c_ptr_ptr;
 
-  double *y_ptr;
   double y;
-  complex z0, z1;
 
   guint i_stop;
   guint i;
 
-  c_ptr = &c;
+  c_ptr = buffer;
   c_ptr_ptr = &c_ptr;
   
-  y_ptr = &y;
-
   i_stop = offset + n_frames;
 
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
   {
-    for(i = offset; i < i_stop; i++){
+    for(i = offset; i < i_stop; i++, c_ptr++){
       y  = (gdouble) (sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) * volume);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, n_frames,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      (creal(z0) + creal(z1)) + I * (cimag(z0) + cimag(z1)));
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
   case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
   {
-    for(i = offset; i < i_stop; i++){
+    for(i = offset; i < i_stop; i++, c_ptr++){
       y = (gdouble) (sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + ((((int) ceil(i) % (int) ceil(samplerate / lfo_freq)) * 2.0 * lfo_freq / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, n_frames,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
   case AGS_SYNTH_OSCILLATOR_TRIANGLE:
   {
-    for(i = offset; i < i_stop; i++){
+    for(i = offset; i < i_stop; i++, c_ptr++){
       y = (gdouble) (sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + (((i) * lfo_freq / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_freq / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, n_frames,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
   case AGS_SYNTH_OSCILLATOR_SQUARE:
   {
-    for(i = offset; i < i_stop; i++){
+    for(i = offset; i < i_stop; i++, c_ptr++){
       y = (gdouble) (sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, n_frames,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
   case AGS_SYNTH_OSCILLATOR_IMPULSE:
   {
-    for(i = offset; i < i_stop; i++){
+    for(i = offset; i < i_stop; i++, c_ptr++){
       y = (gdouble) (sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) * volume);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, n_frames,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
@@ -1180,13 +1135,10 @@ ags_fm_synth_util_sawtooth_complex(AgsComplex *buffer,
 				   gdouble lfo_freq, gdouble lfo_depth,
 				   gdouble tuning)
 {
-  AgsComplex c;
   AgsComplex *c_ptr;
   AgsComplex **c_ptr_ptr;
 
-  double *y_ptr;
   double y;
-  complex z0, z1;
 
   guint i_stop;
   guint i;
@@ -1194,96 +1146,54 @@ ags_fm_synth_util_sawtooth_complex(AgsComplex *buffer,
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
-  c_ptr = &c;
+  c_ptr = buffer;
   c_ptr_ptr = &c_ptr;
-  
-  y_ptr = &y;
 
   i_stop = offset + n_frames;
 
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
   {
-    for(i = offset; i < offset + n_frames; i++){
+    for(i = offset; i < offset + n_frames; i++, c_ptr++){
       y = (double) (((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate) - 1.0) * volume);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, i_stop - offset,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
   case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
   {
-    for(i = offset; i < offset + n_frames; i++){
+    for(i = offset; i < offset + n_frames; i++, c_ptr++){
       y = (double) (((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * (freq * exp2(tuning / 1200.0 + ((((int) ceil(i) % (int) ceil(samplerate / lfo_freq)) * 2.0 * lfo_freq / samplerate) - 1.0) * lfo_depth)) / samplerate) - 1.0) * volume);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, i_stop - offset,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
   case AGS_SYNTH_OSCILLATOR_TRIANGLE:
   {
-    for(i = offset; i < offset + n_frames; i++){
+    for(i = offset; i < offset + n_frames; i++, c_ptr++){
       y = (double) (((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * (freq * exp2(tuning / 1200.0 + (((i) * lfo_freq / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_freq / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / samplerate) - 1.0) * volume);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, i_stop - offset,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
   case AGS_SYNTH_OSCILLATOR_SQUARE:
   {
-    for(i = offset; i < offset + n_frames; i++){
+    for(i = offset; i < offset + n_frames; i++, c_ptr++){
       y = (double) (((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * (freq * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / samplerate) - 1.0) * volume);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, i_stop - offset,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
   case AGS_SYNTH_OSCILLATOR_IMPULSE:
   {
-    for(i = offset; i < offset + n_frames; i++){
+    for(i = offset; i < offset + n_frames; i++, c_ptr++){
       y = (double) (((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * (freq * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / samplerate) - 1.0) * volume);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, i_stop - offset,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
@@ -1820,13 +1730,10 @@ ags_fm_synth_util_triangle_complex(AgsComplex *buffer,
 				   gdouble lfo_freq, gdouble lfo_depth,
 				   gdouble tuning)
 {
-  AgsComplex c;
   AgsComplex *c_ptr;
   AgsComplex **c_ptr_ptr;
 
-  double *y_ptr;
   double y;
-  complex z0, z1;
 
   guint i_stop;
   guint i;
@@ -1834,96 +1741,54 @@ ags_fm_synth_util_triangle_complex(AgsComplex *buffer,
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
-  c_ptr = &c;
+  c_ptr = buffer;
   c_ptr_ptr = &c_ptr;
-  
-  y_ptr = &y;
 
   i_stop = offset + n_frames;
 
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
   {
-    for(i = offset; i < offset + n_frames; i++){
+    for(i = offset; i < offset + n_frames; i++, c_ptr++){
       y = (double) ((((phase + i) * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * volume);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, i_stop - offset,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
   case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
   {
-    for(i = offset; i < offset + n_frames; i++){
+    for(i = offset; i < offset + n_frames; i++, c_ptr++){
       y = (double) ((((phase + i) * (freq * exp2(tuning / 1200.0 + ((((int) ceil(i) % (int) ceil(samplerate / lfo_freq)) * 2.0 * lfo_freq / samplerate) - 1.0) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * (freq * exp2(tuning / 1200.0 + ((((int) ceil(i) % (int) ceil(samplerate / lfo_freq)) * 2.0 * lfo_freq / samplerate) - 1.0) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * volume);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, i_stop - offset,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
   case AGS_SYNTH_OSCILLATOR_TRIANGLE:
   {
-    for(i = offset; i < offset + n_frames; i++){
+    for(i = offset; i < offset + n_frames; i++, c_ptr++){
       y = (double) ((((phase + i) * (freq * exp2(tuning / 1200.0 + (((i) * lfo_freq / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_freq / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * (freq * exp2(tuning / 1200.0 + (((i) * lfo_freq / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_freq / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * volume);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, i_stop - offset,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
   case AGS_SYNTH_OSCILLATOR_SQUARE:
   {
-    for(i = offset; i < offset + n_frames; i++){
+    for(i = offset; i < offset + n_frames; i++, c_ptr++){
       y = (double) ((((phase + i) * (freq * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * (freq * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * volume);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, i_stop - offset,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
   case AGS_SYNTH_OSCILLATOR_IMPULSE:
   {
-    for(i = offset; i < offset + n_frames; i++){
+    for(i = offset; i < offset + n_frames; i++, c_ptr++){
       y = (double) ((((phase + i) * (freq * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * (freq * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * volume);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, i_stop - offset,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
@@ -3353,127 +3218,82 @@ ags_fm_synth_util_impulse_complex(AgsComplex *buffer,
 				  gdouble lfo_freq, gdouble lfo_depth,
 				  gdouble tuning)
 {
-  AgsComplex c;
   AgsComplex *c_ptr;
   AgsComplex **c_ptr_ptr;
 
-  double *y_ptr;
   double y;
-  complex z0, z1;
 
   guint i_stop;
   guint i;
 
-  c_ptr = &c;
+  c_ptr = buffer;
   c_ptr_ptr = &c_ptr;
   
-  y_ptr = &y;
-
   i_stop = offset + n_frames;
 
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
   {
-    for(i = offset; i < offset + n_frames; i++){
+    for(i = offset; i < offset + n_frames; i++, c_ptr++){
       if(sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
 	y = (1.0 * volume);
       }else{
 	y = (-1.0 * volume);
       }
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, i_stop - offset,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
   case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
   {
-    for(i = offset; i < offset + n_frames; i++){
+    for(i = offset; i < offset + n_frames; i++, c_ptr++){
       if(sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + ((((int) ceil(i) % (int) ceil(samplerate / lfo_freq)) * 2.0 * lfo_freq / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
 	y = (1.0 * volume);
       }else{
 	y = (-1.0 * volume);
       }
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, i_stop - offset,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
   case AGS_SYNTH_OSCILLATOR_TRIANGLE:
   {
-    for(i = offset; i < offset + n_frames; i++){
+    for(i = offset; i < offset + n_frames; i++, c_ptr++){
       if(sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + (((i) * lfo_freq / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_freq / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
 	y = (1.0 * volume);
       }else{
 	y = (-1.0 * volume);
       }
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, i_stop - offset,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
   case AGS_SYNTH_OSCILLATOR_SQUARE:
   {
-    for(i = offset; i < offset + n_frames; i++){
+    for(i = offset; i < offset + n_frames; i++, c_ptr++){
       if(sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
 	y = (1.0 * volume);
       }else{
 	y = (-1.0 * volume);
       }
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, i_stop - offset,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
   case AGS_SYNTH_OSCILLATOR_IMPULSE:
   {
-    for(i = offset; i < offset + n_frames; i++){
+    for(i = offset; i < offset + n_frames; i++, c_ptr++){
       if(sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
 	y = (1.0 * volume);
       }else{
 	y = (-1.0 * volume);
       }
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
-							   i - offset, i_stop - offset,
-							   c_ptr_ptr);
-
-      z0 = ags_complex_get(buffer + i);
-      z1 = ags_complex_get(c_ptr);
-
-      ags_complex_set(buffer + i,
-		      z0 + z1);
+      AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, c_ptr_ptr);
     }
   }
   break;
