@@ -1068,9 +1068,33 @@ ags_sf2_synth_generator_set_timestamp(AgsSF2SynthGenerator *sf2_synth_generator,
 }
 
 /**
- * ags_sf2_synth_generator_compute:
+ * ags_sf2_synth_generator_compute_instrument:
  * @sf2_synth_generator: the #AgsSF2SynthGenerator
  * @audio_signal: the #AgsAudioSignal
+ * @preset: the preset
+ * @instrument: the instrument
+ * @note: the note to compute
+ * 
+ * Compute instrument for @note.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_generator,
+					   GObject *audio_signal,
+					   gchar *preset,
+					   gchar *instrument,
+					   gdouble note)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_sf2_synth_generator_compute_midi_locale:
+ * @sf2_synth_generator: the #AgsSF2SynthGenerator
+ * @audio_signal: the #AgsAudioSignal
+ * @bank: the bank
+ * @program: the program
  * @note: the note to compute
  * 
  * Compute synth for @note.
@@ -1078,9 +1102,11 @@ ags_sf2_synth_generator_set_timestamp(AgsSF2SynthGenerator *sf2_synth_generator,
  * Since: 3.4.0
  */
 void
-ags_sf2_synth_generator_compute(AgsSF2SynthGenerator *sf2_synth_generator,
-				GObject *audio_signal,
-				gdouble note)
+ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_generator,
+					    GObject *audio_signal,
+					    gint bank,
+					    gint program,
+					    gdouble note)
 {
   //TODO:JK: implement me
 }

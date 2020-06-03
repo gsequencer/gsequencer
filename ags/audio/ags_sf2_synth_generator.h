@@ -116,9 +116,16 @@ AgsTimestamp* ags_sf2_synth_generator_get_timestamp(AgsSF2SynthGenerator *sf2_sy
 void ags_sf2_synth_generator_set_timestamp(AgsSF2SynthGenerator *sf2_synth_generator,
 					   AgsTimestamp *timestamp);
 
-void ags_sf2_synth_generator_compute(AgsSF2SynthGenerator *sf2_synth_generator,
-				     GObject *audio_signal,
-				     gdouble note);
+void ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_generator,
+						GObject *audio_signal,
+						gchar *preset,
+						gchar *instrument,
+						gdouble note);
+void ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_generator,
+						 GObject *audio_signal,
+						 gint bank,
+						 gint program,
+						 gdouble note);
 
 AgsSF2SynthGenerator* ags_sf2_synth_generator_new();
 
