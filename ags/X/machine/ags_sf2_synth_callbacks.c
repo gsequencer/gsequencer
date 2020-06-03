@@ -23,6 +23,9 @@
 
 #include <math.h>
 
+void ags_sf2_synth_open_dialog_response_callback(GtkWidget *widget, gint response,
+						 AgsMachine *machine);
+
 void
 ags_sf2_synth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsSF2Synth *sf2_synth)
 {
@@ -47,4 +50,57 @@ ags_sf2_synth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsS
 				       AGS_TYPE_SF2_SYNTH);
 
   g_free(str);
+}
+
+void
+ags_sf2_synth_destroy_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth)
+{
+  if(sf2_synth->open_dialog != NULL){
+    gtk_widget_destroy(sf2_synth->open_dialog);
+  }
+}
+
+void
+ags_sf2_synth_open_clicked_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth)
+{
+  GtkFileChooserDialog *file_chooser;
+
+  file_chooser = ags_machine_file_chooser_dialog_new(AGS_MACHINE(sf2_synth));
+  gtk_file_chooser_add_shortcut_folder_uri(GTK_FILE_CHOOSER(file_chooser),
+					   "file:///usr/share/sounds/sf2",
+					   NULL);
+  sf2_synth->open_dialog = (GtkWidget *) file_chooser;
+  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
+				       FALSE);
+
+  g_signal_connect((GObject *) file_chooser, "response",
+		   G_CALLBACK(ags_sf2_synth_open_dialog_response_callback), AGS_MACHINE(sf2_synth));
+
+  gtk_widget_show_all((GtkWidget *) file_chooser);
+}
+
+void
+ags_sf2_synth_open_dialog_response_callback(GtkWidget *widget, gint response,
+					   AgsMachine *machine)
+{
+  AgsSF2Synth *sf2_synth;
+
+  sf2_synth = AGS_SF2_SYNTH(machine);
+
+  if(response == GTK_RESPONSE_ACCEPT){
+    gchar *filename;
+
+    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
+
+    gtk_entry_set_text(sf2_synth->filename,
+		       filename);
+
+    ags_sf2_synth_open_filename(sf2_synth,
+				filename);
+  }
+
+  sf2_synth->open_dialog = NULL;
+  gtk_widget_destroy(widget);
+  
+  //TODO:JK: implement me
 }

@@ -35,6 +35,10 @@ G_BEGIN_DECLS
 
 void ags_sf2_synth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsSF2Synth *sf2_synth);
 
+void ags_sf2_synth_destroy_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_open_clicked_callback(GtkWidget *widget, AgsSF2Synth *sf2_synth);
+
 G_END_DECLS
 
 #endif /*__AGS_SF2_SYNTH_CALLBACKS_H__ */

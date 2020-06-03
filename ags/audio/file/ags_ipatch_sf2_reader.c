@@ -615,8 +615,11 @@ ags_ipatch_sf2_reader_load(AgsIpatchSF2Reader *ipatch_sf2_reader,
     return(FALSE);
   }
 
+  //NOTE:JK: work-around for old dead-lock in libinstpatch
+#if 0
   while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ipatch_sf2_reader->base))->mutex) != 0);
-
+#endif
+  
   return(TRUE);
 }
 
@@ -878,7 +881,10 @@ ags_ipatch_sf2_reader_get_preset_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
   }
   
   //FIXME:JK: still needed?
+  //NOTE:JK: work-around for old dead-lock in libinstpatch
+#if 0
   while(g_static_rec_mutex_unlock_full(((IpatchItem *) (sf2))->mutex) != 0);
+#endif
 #endif
   
   return(preset);
@@ -943,7 +949,10 @@ ags_ipatch_sf2_reader_get_instrument_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
   }
   
   //FIXME:JK: still needed?
+  //NOTE:JK: work-around for old dead-lock in libinstpatch
+#if 0
   while(g_static_rec_mutex_unlock_full(((IpatchItem *) (sf2))->mutex) != 0);
+#endif
 #endif
   
   return(instrument);
@@ -1008,7 +1017,10 @@ ags_ipatch_sf2_reader_get_sample_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
   }
   
   //FIXME:JK: still needed?
+  //NOTE:JK: work-around for old dead-lock in libinstpatch
+#if 0
   while(g_static_rec_mutex_unlock_full(((IpatchItem *) (sf2))->mutex) != 0);
+#endif
 #endif
   
   return(sample);
@@ -1098,7 +1110,10 @@ ags_ipatch_sf2_reader_get_instrument_by_preset_index(AgsIpatchSF2Reader *ipatch_
   }
 
   //FIXME:JK: still needed?
+  //NOTE:JK: work-around for old dead-lock in libinstpatch
+#if 0
   while(g_static_rec_mutex_unlock_full(((IpatchItem *) (sf2))->mutex) != 0);
+#endif
 #endif
 
   return(instrument_strv);
@@ -1211,7 +1226,10 @@ ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_
   }
 
   //FIXME:JK: still needed?
+  //NOTE:JK: work-around for old dead-lock in libinstpatch
+#if 0
   while(g_static_rec_mutex_unlock_full(((IpatchItem *) (sf2))->mutex) != 0);
+#endif
 #endif
 
   return(sample_strv);
@@ -1315,7 +1333,10 @@ ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index(AgsIpatchSF2Read
   }
 
   //FIXME:JK: still needed?
+  //NOTE:JK: work-around for old dead-lock in libinstpatch
+#if 0
   while(g_static_rec_mutex_unlock_full(((IpatchItem *) (sf2))->mutex) != 0);
+#endif
 #endif
 
   return(sample);

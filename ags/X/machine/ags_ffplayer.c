@@ -442,7 +442,6 @@ ags_ffplayer_finalize(GObject *gobject)
 void
 ags_ffplayer_connect(AgsConnectable *connectable)
 {
-  AgsWindow *window;
   AgsFFPlayer *ffplayer;
 
   GList *list;
@@ -454,8 +453,6 @@ ags_ffplayer_connect(AgsConnectable *connectable)
   ags_ffplayer_parent_connectable_interface->connect(connectable);
 
   ffplayer = AGS_FFPLAYER(connectable);
-
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ffplayer);
   
   g_signal_connect((GObject *) ffplayer, "destroy",
 		   G_CALLBACK(ags_ffplayer_destroy_callback), (gpointer) ffplayer);

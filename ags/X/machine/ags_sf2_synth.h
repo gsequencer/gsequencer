@@ -77,13 +77,18 @@ struct _AgsSF2Synth
   AgsRecallContainer *buffer_play_container;
   AgsRecallContainer *buffer_recall_container;
 
+  AgsAudioContainer *audio_container;
+
   GtkEntry *filename;
   GtkButton *open;
 
+  gint position;
+  GtkLabel *loading;
+
   AgsSF2Loader *sf2_loader;
 
-  GtkTreeView *bank;
-  GtkTreeView *program;
+  GtkTreeView *bank_tree_view;
+  GtkTreeView *program_tree_view;
 
   GtkSpinButton *lower;
   
@@ -100,9 +105,12 @@ GType ags_sf2_synth_get_type(void);
 void ags_sf2_synth_open_filename(AgsSF2Synth *sf2_synth,
 				 gchar *filename);
 
-void ags_sf2_synth_load_instrument(AgsSF2Synth *sf2_synth,
-				   gint bank,
-				   gint program);
+void ags_sf2_synth_load_bank(AgsSF2Synth *sf2_synth,
+			     gint bank);
+
+void ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
+				    gint bank,
+				    gint program);
 
 gboolean ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth);
 
