@@ -59,11 +59,11 @@ enum{
 static gpointer ags_mute_channel_parent_class = NULL;
 static AgsPluginInterface *ags_mute_channel_parent_plugin_interface;
 
-static const gchar *ags_mute_channel_plugin_name = "ags-mute";
-static const gchar *ags_mute_channel_specifier[] = {
+const gchar *ags_mute_channel_plugin_name = "ags-mute";
+const gchar *ags_mute_channel_specifier[] = {
   "./muted[0]",
 };
-static const gchar *ags_mute_channel_control_port[] = {
+const gchar *ags_mute_channel_control_port[] = {
   "1/1",
 };
 

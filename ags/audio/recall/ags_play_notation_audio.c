@@ -35,10 +35,10 @@ void ags_play_notation_audio_finalize(GObject *gobject);
 
 static gpointer ags_play_notation_audio_parent_class = NULL;
 
-static const gchar *ags_play_notation_audio_plugin_name = "ags-play-notation";
-static const gchar *ags_play_notation_audio_specifier[] = {
+const gchar *ags_play_notation_audio_plugin_name = "ags-play-notation";
+const gchar *ags_play_notation_audio_specifier[] = {
 };
-static const gchar *ags_play_notation_audio_control_port[] = {
+const gchar *ags_play_notation_audio_control_port[] = {
 };
 
 GType

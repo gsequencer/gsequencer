@@ -53,13 +53,13 @@ enum{
 
 static gpointer ags_play_wave_audio_parent_class = NULL;
 
-static const gchar *ags_play_wave_audio_plugin_name = "ags-play-wave";
-static const gchar *ags_play_wave_audio_specifier[] = {
+const gchar *ags_play_wave_audio_plugin_name = "ags-play-wave";
+const gchar *ags_play_wave_audio_specifier[] = {
   "./wave_loop[0]",
   "./wave_loop_start[0]",
   "./wave_loop_end[0]",
 };
-static const gchar *ags_play_wave_audio_control_port[] = {
+const gchar *ags_play_wave_audio_control_port[] = {
   "1/3",
   "2/3",
   "3/3",

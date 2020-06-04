@@ -63,8 +63,8 @@ enum{
 
 static gpointer ags_capture_wave_audio_parent_class = NULL;
 
-static const gchar *ags_capture_wave_audio_plugin_name = "ags-capture-wave";
-static const gchar *ags_capture_wave_audio_specifier[] = {
+const gchar *ags_capture_wave_audio_plugin_name = "ags-capture-wave";
+const gchar *ags_capture_wave_audio_specifier[] = {
   "./playback[0]",
   "./replace[0]",
   "./record[0]",
@@ -78,7 +78,7 @@ static const gchar *ags_capture_wave_audio_specifier[] = {
   "./wave_loop_end[0]",
 };
 
-static const gchar *ags_capture_wave_audio_control_port[] = {
+const gchar *ags_capture_wave_audio_control_port[] = {
   "1/11",
   "2/11",
   "3/11",

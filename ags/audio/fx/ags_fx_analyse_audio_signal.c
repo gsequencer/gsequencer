@@ -46,7 +46,7 @@ void ags_fx_analyse_audio_signal_real_run_inter(AgsRecall *recall);
 
 static gpointer ags_fx_analyse_audio_signal_parent_class = NULL;
 
-static const gchar *ags_fx_analyse_audio_signal_plugin_name = "ags-fx-analyse";
+const gchar *ags_fx_analyse_audio_signal_plugin_name = "ags-fx-analyse";
 
 GType
 ags_fx_analyse_audio_signal_get_type()

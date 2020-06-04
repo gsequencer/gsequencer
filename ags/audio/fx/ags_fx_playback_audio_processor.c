@@ -380,11 +380,11 @@ ags_fx_playback_audio_processor_seek(AgsSeekable *seekable,
 	       NULL);
 
   if(port != NULL){
-    g_value_init(&value, G_TYPE_DOUBLE);
+    g_value_init(&value, G_TYPE_UINT64);
 
     ags_port_safe_read(port, &value);
     
-    playback_duration = g_value_get_double(&value);
+    playback_duration = g_value_get_uint64(&value);
 
     g_value_unset(&value);
 	
@@ -892,13 +892,13 @@ ags_fx_playback_audio_processor_run_inter(AgsRecall *recall)
   
   /* play/record/feed/master */
   if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_WAVE)){
-    if(parent_recycling_context == NULL){
+    if(parent_recycling_context != NULL){
       ags_fx_playback_audio_processor_play(fx_playback_audio_processor);
     }
   }
 
   if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_WAVE)){
-    if(parent_recycling_context == NULL){
+    if(parent_recycling_context != NULL){
       ags_fx_playback_audio_processor_record(fx_playback_audio_processor);
     }
   }
@@ -1100,8 +1100,9 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
 		 NULL);
 
     ags_audio_signal_stream_resize(current_audio_signal,
-				   (guint) floor(delay) + 1);      
-	    
+				   2);
+    current_audio_signal->stream_current = current_audio_signal->stream;
+    
     g_rec_mutex_lock(fx_playback_audio_processor_mutex);
 
     if(data_mode == AGS_FX_PLAYBACK_AUDIO_PROCESSOR_DATA_MODE_PLAY){
@@ -1117,7 +1118,7 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
     ags_connectable_connect(AGS_CONNECTABLE(current_audio_signal));
     ags_recycling_add_audio_signal(recycling,
 				   current_audio_signal);
-
+    
     if(output_soundcard != NULL){
       g_object_unref(output_soundcard);
     }
@@ -1436,7 +1437,6 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
   g_object_get(fx_playback_audio_processor,
 	       "audio", &audio,
 	       "output-soundcard", &output_soundcard,
-	       "input-soundcard", &input_soundcard,
 	       "recall-audio", &fx_playback_audio,
 	       "audio-channel", &audio_channel,
 	       "recall-id", &recall_id,
@@ -1473,6 +1473,7 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
   input_soundcard_channel = -1;
   
   g_object_get(input,
+	       "input-soundcard", &input_soundcard,
 	       "input-soundcard-channel", &input_soundcard_channel,
 	       NULL);
 
@@ -1604,7 +1605,8 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 
       ags_audio_signal_stream_resize(current_audio_signal,
 				     2);
-
+      current_audio_signal->stream_current = current_audio_signal->stream;
+    
       g_rec_mutex_lock(fx_playback_audio_processor_mutex);
 
       fx_playback_audio_processor->capture_audio_signal = g_list_prepend(fx_playback_audio_processor->capture_audio_signal,
@@ -1643,7 +1645,7 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
       ags_audio_buffer_util_clear_buffer(current_audio_signal->stream_current->data, 1,
 					 target_buffer_size, ags_audio_buffer_util_format_from_soundcard(target_format));
     
-      ags_audio_buffer_util_copy_buffer_to_buffer(current_audio_signal->stream_current, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(current_audio_signal->stream_current->data, 1, 0,
 						  data, audio_channels, input_soundcard_channel,
 						  target_buffer_size, target_copy_mode);
 

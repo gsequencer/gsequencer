@@ -62,12 +62,12 @@ enum{
 static gpointer ags_copy_pattern_audio_parent_class = NULL;
 static AgsPluginInterface *ags_copy_pattern_audio_parent_plugin_interface;
 
-static const gchar *ags_copy_pattern_audio_plugin_name = "ags-copy-pattern";
-static const gchar *ags_copy_pattern_audio_specifier[] = {
+const gchar *ags_copy_pattern_audio_plugin_name = "ags-copy-pattern";
+const gchar *ags_copy_pattern_audio_specifier[] = {
   "./bank-index-0[0]",
   "./bank-index-1[0]"  
 };
-static const gchar *ags_copy_pattern_audio_control_port[] = {
+const gchar *ags_copy_pattern_audio_control_port[] = {
   "1/2",
   "2/2"
 };

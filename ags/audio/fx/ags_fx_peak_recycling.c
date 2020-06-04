@@ -40,7 +40,7 @@ void ags_fx_peak_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_peak_recycling_parent_class = NULL;
 
-static const gchar *ags_fx_peak_recycling_plugin_name = "ags-fx-peak";
+const gchar *ags_fx_peak_recycling_plugin_name = "ags-fx-peak";
 
 GType
 ags_fx_peak_recycling_get_type()

@@ -40,7 +40,7 @@ void ags_fx_ladspa_channel_processor_finalize(GObject *gobject);
 
 static gpointer ags_fx_ladspa_channel_processor_parent_class = NULL;
 
-static const gchar *ags_fx_ladspa_channel_processor_plugin_name = "ags-fx-ladspa";
+const gchar *ags_fx_ladspa_channel_processor_plugin_name = "ags-fx-ladspa";
 
 GType
 ags_fx_ladspa_channel_processor_get_type()

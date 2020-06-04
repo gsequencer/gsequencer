@@ -38,7 +38,7 @@ void ags_fx_notation_channel_finalize(GObject *gobject);
 
 static gpointer ags_fx_notation_channel_parent_class = NULL;
 
-static const gchar *ags_fx_notation_channel_plugin_name = "ags-fx-notation";
+const gchar *ags_fx_notation_channel_plugin_name = "ags-fx-notation";
 
 GType
 ags_fx_notation_channel_get_type()

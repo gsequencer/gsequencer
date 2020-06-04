@@ -38,13 +38,13 @@ void ags_fx_peak_audio_finalize(GObject *gobject);
 
 static gpointer ags_fx_peak_audio_parent_class = NULL;
 
-static const gchar *ags_fx_peak_audio_plugin_name = "ags-fx-peak";
+const gchar *ags_fx_peak_audio_plugin_name = "ags-fx-peak";
 
-static const gchar *ags_fx_peak_audio_specifier[] = {
+const gchar *ags_fx_peak_audio_specifier[] = {
   NULL,
 };
 
-static const gchar *ags_fx_peak_audio_control_port[] = {
+const gchar *ags_fx_peak_audio_control_port[] = {
   NULL,
 };
 

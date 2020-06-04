@@ -73,14 +73,14 @@ enum{
 static gpointer ags_analyse_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_analyse_channel_parent_connectable_interface;
 
-static const gchar *ags_analyse_channel_plugin_name = "ags-analyse";
-static const gchar *ags_analyse_channel_plugin_specifier[] = {
+const gchar *ags_analyse_channel_plugin_name = "ags-analyse";
+const gchar *ags_analyse_channel_plugin_specifier[] = {
   "./buffer-cleared[0]",
   "./buffer-computed[0]",
   "./frequency-buffer[0]",
   "./magnitude-buffer[0]",
 };
-static const gchar *ags_analyse_channel_plugin_control_port[] = {
+const gchar *ags_analyse_channel_plugin_control_port[] = {
   "1/4",
   "2/4",
   "3/4",

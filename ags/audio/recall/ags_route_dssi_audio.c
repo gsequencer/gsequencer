@@ -54,12 +54,12 @@ enum{
 
 static gpointer ags_route_dssi_audio_parent_class = NULL;
 
-static const gchar *ags_route_dssi_audio_plugin_name = "ags-route-dssi";
-static const gchar *ags_route_dssi_audio_specifier[] = {
+const gchar *ags_route_dssi_audio_plugin_name = "ags-route-dssi";
+const gchar *ags_route_dssi_audio_specifier[] = {
   "./notation-input[0]",
   "./sequencer-input[0]",
 };
-static const gchar *ags_route_dssi_audio_control_port[] = {
+const gchar *ags_route_dssi_audio_control_port[] = {
   "1/2",
   "2/2",
 };

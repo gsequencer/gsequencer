@@ -52,7 +52,7 @@ void ags_fx_ladspa_channel_notify_samplerate_callback(GObject *gobject,
 
 static gpointer ags_fx_ladspa_channel_parent_class = NULL;
 
-static const gchar *ags_fx_ladspa_channel_plugin_name = "ags-fx-ladspa";
+const gchar *ags_fx_ladspa_channel_plugin_name = "ags-fx-ladspa";
 
 GType
 ags_fx_ladspa_channel_get_type()

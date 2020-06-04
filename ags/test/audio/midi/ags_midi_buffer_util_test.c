@@ -88,7 +88,7 @@ void ags_midi_buffer_util_test_get_end_of_track();
 void ags_midi_buffer_util_test_put_seek_message();
 void ags_midi_buffer_util_test_decode();
 
-static const glong varlength[12][3] = {
+const glong varlength[12][3] = {
   {0x0, 0, 1},
   {0x1, 1, 1},
   {0x7f, 128 - 1, 1},
@@ -103,7 +103,7 @@ static const glong varlength[12][3] = {
   {0xffffff7f, 128 * 128 * 128 * 128 - 1, 4},
 };
 
-static const unsigned char *varlength_buffer[] = {
+const unsigned char *varlength_buffer[] = {
   "\x00",
   "\x01",
   "\x7f",

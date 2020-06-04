@@ -362,11 +362,11 @@ ags_fx_notation_audio_processor_seek(AgsSeekable *seekable,
 	       NULL);
 
   if(port != NULL){
-    g_value_init(&value, G_TYPE_DOUBLE);
+    g_value_init(&value, G_TYPE_UINT64);
 
     ags_port_safe_read(port, &value);
     
-    notation_duration = g_value_get_double(&value);
+    notation_duration = g_value_get_uint64(&value);
 
     g_value_unset(&value);
 	

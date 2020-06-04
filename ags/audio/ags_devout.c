@@ -1932,13 +1932,45 @@ gboolean
 ags_devout_is_available(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
+  
+#ifdef AGS_WITH_ALSA
+  snd_pcm_t *handle;
+
+  struct pollfd fds;
+#endif
 
   gboolean is_available;
+
+  GRecMutex *devout_mutex;
   
   devout = AGS_DEVOUT(soundcard);
+  
+  /* get devout mutex */
+  devout_mutex = AGS_DEVOUT_GET_OBJ_MUTEX(devout);  
 
-  /* check available */
-  is_available = g_atomic_int_get(&(devout->available));
+#ifdef AGS_WITH_ALSA
+  /* check is starting */
+  g_rec_mutex_lock(devout_mutex);
+
+  handle = devout->out.alsa.handle;
+  
+  g_rec_mutex_unlock(devout_mutex);
+
+  if(handle != NULL){
+    fds.events = POLLOUT;
+  
+    snd_pcm_poll_descriptors(handle, &fds, 1);
+  
+    poll(&fds, 1, 0);
+  
+    /* check available */
+    is_available = ((POLLOUT & (fds.revents)) != 0) ? TRUE: FALSE;
+  }else{
+    is_available = FALSE;
+  }
+#else
+  is_available = FALSE;
+#endif
   
   return(is_available);
 }
@@ -3171,6 +3203,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /*  */
   devout->out.alsa.handle = handle;
 
+#if 0
   i_stop = snd_pcm_poll_descriptors_count(devout->out.alsa.handle);
 
   if(i_stop > 0){
@@ -3197,6 +3230,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 				   GUINT_TO_POINTER(tag));
     }
   }
+#endif
 #endif
 
   devout->tact_counter = 0.0;
@@ -3556,6 +3590,8 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   g_rec_mutex_lock(devout_mutex);
 
   /* write ring buffer */
+//  g_message("write %d", devout->buffer_size);
+  
   devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 				       devout->ring_buffer[devout->nth_ring_buffer],
 				       (snd_pcm_uframes_t) (devout->buffer_size));

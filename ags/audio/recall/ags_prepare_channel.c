@@ -35,7 +35,7 @@ void ags_prepare_channel_finalize(GObject *gobject);
 
 static gpointer ags_prepare_channel_parent_class = NULL;
 
-static const gchar *ags_prepare_channel_plugin_name = "ags-prepare";
+const gchar *ags_prepare_channel_plugin_name = "ags-prepare";
 
 GType
 ags_prepare_channel_get_type()

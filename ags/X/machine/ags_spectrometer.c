@@ -826,56 +826,46 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
 
     while(fg_plot != NULL){
       completed = FALSE;
+
+      magnitude = 0.0;
+
+      frequency = 0.0;
+      gfrequency = 0.0;
       
-      for(j = 1, nth = 1; j < AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT && !completed; j++){
-	magnitude = 0.0;
-	k = 0;
-	
-	for(; nth < AGS_MACHINE(spectrometer)->buffer_size; k++){
-	  frequency = ((double) nth) / ((double) AGS_MACHINE(spectrometer)->buffer_size) * (nyquist);
+      for(i = 0, j = 1; i < AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT && j < buffer_size / 2; i++){
+	frequency = (double) j * correction;
 
-	  if(AGS_SPECTROMETER_DEFAULT_X_END >= 0.0 &&
-	     AGS_SPECTROMETER_DEFAULT_X_START < 0.0){
-	    gfrequency = (correction / 2.0) * (exp((((double) j) / (gdouble) AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT * ((AGS_SPECTROMETER_DEFAULT_X_END + AGS_SPECTROMETER_DEFAULT_X_START) / AGS_CARTESIAN_DEFAULT_X_STEP_WIDTH)) / 12.0) - 1.0);
-	  }else if(AGS_SPECTROMETER_DEFAULT_X_END >= 0.0 &&
-		   AGS_SPECTROMETER_DEFAULT_X_START >= 0.0){
-	    gfrequency = (correction / 2.0) * (exp((((double) j) / (gdouble) AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT * ((AGS_SPECTROMETER_DEFAULT_X_END - AGS_SPECTROMETER_DEFAULT_X_START) / AGS_CARTESIAN_DEFAULT_X_STEP_WIDTH)) / 12.0) - 1.0);
-	  }else{
-	    g_message("only positive frequencies allowed");
-	  }
-//	  gfrequency_next = (correction / 2.0) * (exp((((double) j + 1.0)) / 12.0) - 1.0);
-
-#if 1
-	  if(gfrequency > samplerate ||
-	     frequency > samplerate){
-	    completed = TRUE;
-
-	    break;
-	  }
-#endif
-	  
-#if 0
-	  g_message("freq=%f", frequency);
-	  g_message("gfreq=%f", gfrequency);
-#endif
-	  
-	  if(frequency < gfrequency){
-	    magnitude += spectrometer->magnitude[nth];
-
-	    nth++;
-	  }else{
-	    break;
-	  }
+	if(AGS_SPECTROMETER_DEFAULT_X_END >= 0.0 &&
+	   AGS_SPECTROMETER_DEFAULT_X_START < 0.0){
+	  gfrequency = (correction / 2.0) * (exp((((double) i) / (gdouble) AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT * ((AGS_SPECTROMETER_DEFAULT_X_END + AGS_SPECTROMETER_DEFAULT_X_START) / AGS_CARTESIAN_DEFAULT_X_STEP_WIDTH)) / 12.0) - 1.0);
+	}else if(AGS_SPECTROMETER_DEFAULT_X_END >= 0.0 &&
+		 AGS_SPECTROMETER_DEFAULT_X_START >= 0.0){
+	  gfrequency = (correction / 2.0) * (exp((((double) i) / (gdouble) AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT * ((AGS_SPECTROMETER_DEFAULT_X_END - AGS_SPECTROMETER_DEFAULT_X_START) / AGS_CARTESIAN_DEFAULT_X_STEP_WIDTH)) / 12.0) - 1.0);
+	}else{
+	  g_message("only positive frequencies allowed");
 	}
 
-#if 0
-	g_message("j=%d", j);
-#endif
+	magnitude = 0.0;
+	
+	for(k = 0; j < buffer_size / 2 && frequency < gfrequency; j++, k++){
+	  frequency = (double) j * correction;
+
+	  magnitude += spectrometer->magnitude[j];
+	}
+
+	if(magnitude < 0.0){
+	  magnitude *= -1.0;
+	}
 	
 	if(k != 0){
-	  AGS_PLOT(fg_plot->data)->point[j][1] = 20.0 * log10(((double) magnitude / (double) k) + 1.0) * AGS_SPECTROMETER_EXTRA_SCALE;
+	  AGS_PLOT(fg_plot->data)->point[i][1] = 20.0 * log10(((double) magnitude / (double) k) + 1.0) * AGS_SPECTROMETER_EXTRA_SCALE;
 	}else{
-	  AGS_PLOT(fg_plot->data)->point[j][1] = 0.0;
+	  AGS_PLOT(fg_plot->data)->point[i][1] = 0.0;
+	}
+
+	if(frequency > samplerate ||
+	   gfrequency > samplerate){
+	  break;
 	}
       }
 

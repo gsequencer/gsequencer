@@ -40,7 +40,7 @@ void ags_fx_volume_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_volume_recycling_parent_class = NULL;
 
-static const gchar *ags_fx_volume_recycling_plugin_name = "ags-fx-volume";
+const gchar *ags_fx_volume_recycling_plugin_name = "ags-fx-volume";
 
 GType
 ags_fx_volume_recycling_get_type()

@@ -59,11 +59,11 @@ enum{
 static gpointer ags_buffer_channel_parent_class = NULL;
 static AgsMutableInterface *ags_buffer_channel_parent_mutable_interface;
 
-static const gchar *ags_buffer_channel_plugin_name = "ags-buffer";
-static const gchar *ags_buffer_channel_plugin_specifier[] = {
+const gchar *ags_buffer_channel_plugin_name = "ags-buffer";
+const gchar *ags_buffer_channel_plugin_specifier[] = {
   "./muted[0]",
 };
-static const gchar *ags_buffer_channel_plugin_control_port[] = {
+const gchar *ags_buffer_channel_plugin_control_port[] = {
   "1/1",
 };
 

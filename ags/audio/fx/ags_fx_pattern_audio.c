@@ -52,9 +52,9 @@ void ags_fx_pattern_audio_notify_output_soundcard_callback(GObject *gobject,
 
 static gpointer ags_fx_pattern_audio_parent_class = NULL;
 
-static const gchar *ags_fx_pattern_audio_plugin_name = "ags-fx-pattern";
+const gchar *ags_fx_pattern_audio_plugin_name = "ags-fx-pattern";
 
-static const gchar *ags_fx_pattern_audio_specifier[] = {
+const gchar *ags_fx_pattern_audio_specifier[] = {
   "./bpm[0]",
   "./tact[0]",
   "./delay[0]",
@@ -67,7 +67,7 @@ static const gchar *ags_fx_pattern_audio_specifier[] = {
   NULL,
 };
 
-static const gchar *ags_fx_pattern_audio_control_port[] = {
+const gchar *ags_fx_pattern_audio_control_port[] = {
   "1/9",
   "2/9",
   "3/9",

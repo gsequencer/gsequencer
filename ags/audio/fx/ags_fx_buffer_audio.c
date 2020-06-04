@@ -38,7 +38,7 @@ void ags_fx_buffer_audio_finalize(GObject *gobject);
 
 static gpointer ags_fx_buffer_audio_parent_class = NULL;
 
-static const gchar *ags_fx_buffer_audio_plugin_name = "ags-fx-buffer";
+const gchar *ags_fx_buffer_audio_plugin_name = "ags-fx-buffer";
 
 GType
 ags_fx_buffer_audio_get_type()

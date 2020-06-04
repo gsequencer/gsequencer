@@ -57,11 +57,11 @@ enum{
 
 static gpointer ags_copy_pattern_channel_parent_class = NULL;
 
-static const gchar *ags_copy_pattern_channel_plugin_name = "ags-copy-pattern";
-static const gchar *ags_copy_pattern_channel_specifier[] = {
+const gchar *ags_copy_pattern_channel_plugin_name = "ags-copy-pattern";
+const gchar *ags_copy_pattern_channel_specifier[] = {
   "./pattern[0]"  
 };
-static const gchar *ags_copy_pattern_channel_control_port[] = {
+const gchar *ags_copy_pattern_channel_control_port[] = {
   "1/1"
 };
 

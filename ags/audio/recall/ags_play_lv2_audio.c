@@ -76,10 +76,10 @@ enum{
 
 static gpointer ags_play_lv2_audio_parent_class = NULL;
 
-static const gchar *ags_play_lv2_audio_plugin_name = "ags-play-lv2";
-static const gchar *ags_play_lv2_audio_specifier[] = {
+const gchar *ags_play_lv2_audio_plugin_name = "ags-play-lv2";
+const gchar *ags_play_lv2_audio_specifier[] = {
 };
-static const gchar *ags_play_lv2_audio_control_port[] = {
+const gchar *ags_play_lv2_audio_control_port[] = {
 };
 
 GType

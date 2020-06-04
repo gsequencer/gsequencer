@@ -5097,7 +5097,7 @@ ags_audio_test_staging_completed(AgsAudio *audio, gint sound_scope)
 }
 
 /**
- * ags_audio_set_staging_flags:
+ * ags_audio_set_staging_completed:
  * @audio: the #AgsAudio
  * @sound_scope: the #AgsSoundScope to apply, or -1 to apply to all
  * 
@@ -5134,7 +5134,7 @@ ags_audio_set_staging_completed(AgsAudio *audio, gint sound_scope)
 }
 
 /**
- * ags_audio_unset_staging_flags:
+ * ags_audio_unset_staging_completed:
  * @audio: the #AgsAudio
  * @sound_scope: the #AgsSoundScope to apply, or -1 to apply to all
  * 

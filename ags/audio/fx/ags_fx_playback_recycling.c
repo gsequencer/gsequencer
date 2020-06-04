@@ -57,7 +57,7 @@ void ags_fx_playback_recycling_remove_audio_signal_callback(AgsRecycling *recycl
 
 static gpointer ags_fx_playback_recycling_parent_class = NULL;
 
-static const gchar *ags_fx_playback_recycling_plugin_name = "ags-fx-playback";
+const gchar *ags_fx_playback_recycling_plugin_name = "ags-fx-playback";
 
 GType
 ags_fx_playback_recycling_get_type()

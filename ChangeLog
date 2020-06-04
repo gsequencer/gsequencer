@@ -1,3 +1,21 @@
+ags (3.3.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-playback 2 wrong if conditions
+
+ags (3.3.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsAudiorec's ags-fx-playback memory corruption
+
+ags (3.3.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsSpectrometer plot
+	* fixed ags-fx-analyse missing clear of input data
+	* added missing gtk-doc of ags-fx recalls
+	* removed static storage class from ags-fx global strings
+
 ags (3.3.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

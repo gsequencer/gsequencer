@@ -71,14 +71,14 @@ enum{
 static gpointer ags_peak_channel_parent_class = NULL;
 static AgsPluginInterface *ags_peak_channel_parent_plugin_interface;
 
-static const gchar *ags_peak_channel_plugin_name = "ags-peak";
-static const gchar *ags_peak_channel_plugin_specifier[] = {
+const gchar *ags_peak_channel_plugin_name = "ags-peak";
+const gchar *ags_peak_channel_plugin_specifier[] = {
   "./buffer-cleared[0]",
   "./buffer-computed[0]",
   "./scale-precision[0]",
   "./peak[0]",
 };
-static const gchar *ags_peak_channel_plugin_control_port[] = {
+const gchar *ags_peak_channel_plugin_control_port[] = {
   "1/4",
   "2/4",
   "3/4",

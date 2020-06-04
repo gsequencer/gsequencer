@@ -52,6 +52,7 @@ typedef struct _AgsAudioSignalClass AgsAudioSignalClass;
  * @AGS_AUDIO_SIGNAL_FEED: the audio signal needs feed
  * @AGS_AUDIO_SIGNAL_RECYCLED: the audio signal is recycled
  * @AGS_AUDIO_SIGNAL_STREAM: the audio signal needs stream
+ * @AGS_AUDIO_SIGNAL_SLICE_ALLOC: the audio signal allocates from slice
  * 
  * Enum values to control the behavior or indicate internal state of #AgsAudioSignal by
  * enable/disable as flags.
