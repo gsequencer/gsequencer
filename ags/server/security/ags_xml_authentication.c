@@ -1032,10 +1032,14 @@ ags_xml_authentication_is_session_active(AgsAuthentication *authentication,
 
       str = xmlGetProp(session_node,
 		       "last-active");
-
+      
+#if HAVE_GLIB_2_56
       last_active = g_date_time_new_from_iso8601(str,
 						 NULL);
-
+#else
+      last_active = g_date_time_new_from_unix_utc(g_get_real_time());
+#endif
+      
       xmlFree(str);
 
       session_timeout = ags_authentication_manager_get_session_timeout(authentication_manager);
