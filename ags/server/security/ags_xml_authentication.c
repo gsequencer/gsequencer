@@ -530,7 +530,7 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 	
 	date_time = g_date_time_new_now_utc();
 
-#if 0	
+#if HAVE_GLIB_2_62
 	str = g_date_time_format_iso8601(date_time);
 #else
 	str = g_date_time_format(date_time, "%Y-%m-%dT%H:%M:%SZ");
