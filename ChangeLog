@@ -5,8 +5,13 @@ ags (3.4.0)
 	* TODO:JK: implemented AgsSFZSynth
 	* TODO:JK: implemented AgsSF2Generator
 	* TODO:JK: implemented AgsSFZGenerator
-	* TODO:JK: improved ags_filter_util.c
-	* TODO:JK: improved AgsComplex support
+	* improved ags_filter_util.c
+	* improved AgsComplex support
+
+ags (3.3.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: improved GLib-2.0 compatibility of AgsServer
 
 ags (3.3.10)
 
