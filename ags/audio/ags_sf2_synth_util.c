@@ -20,7 +20,10 @@
 #include <ags/audio/ags_sf2_synth_util.h>
 
 #include <ags/audio/ags_synth_enums.h>
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+
+#include <ags/audio/file/ags_sound_resource.h>
 
 #include <math.h>
 #include <complex.h>
@@ -90,7 +93,113 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
 			   gboolean do_loop,
 			   gint loop_start, gint loop_end)
 {
-  //TODO:JK: implement me
+  void *sample_buffer;
+
+  gint8 *im_buffer;
+
+  gint midi_key;
+  guint frame_count;
+  gdouble base_key;
+  gdouble tuning;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint copy_mode;
+
+  guint i;
+  guint j;
+  guint k;
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(ipatch_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(ipatch_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  sample_buffer = ags_stream_alloc(source_frame_count,
+				   AGS_SOUNDCARD_DOUBLE);
+
+  ags_sound_resource_read(AGS_SOUND_RESOURCE(ipatch_sample),
+			  sample_buffer, 1,
+			  0,
+			  source_frame_count, AGS_SOUNDCARD_DOUBLE);
+
+  /* resample if needed */
+  frame_count = source_frame_count;
+  
+  if(source_samplerate != samplerate){
+    void *tmp_sample_buffer;
+
+    guint tmp_frame_count;
+
+    tmp_frame_count = (samplerate / source_samplerate) * source_frame_count;
+
+    tmp_sample_buffer = ags_stream_alloc(tmp_frame_count,
+					 AGS_SOUNDCARD_DOUBLE);
+
+    ags_audio_buffer_util_resample_with_buffer(sample_buffer, 1,
+					       AGS_AUDIO_BUFFER_UTIL_DOUBLE, source_samplerate,
+					       source_frame_count,
+					       samplerate,
+					       tmp_frame_count,
+					       tmp_sample_buffer);
+    
+    ags_stream_free(sample_buffer);
+
+    sample_buffer = tmp_sample_buffer;
+    
+    frame_count = tmp_frame_count;
+  }
+
+  /* format */
+  im_buffer = ags_stream_alloc(frame_count,
+			       AGS_SOUNDCARD_SIGNED_8_BIT);
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S8,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(im_buffer, 1, 0,
+					      sample_buffer, 1, 0,
+					      frame_count, copy_mode);
+
+  /* pitch */
+  midi_key = 60;
+  
+  g_object_get(ipatch_sample->sample,
+	       "root-note", &midi_key,
+	       NULL);
+  
+  base_key = (gdouble) midi_key - 21.0;
+
+  tuning = 100.0 * (note - base_key);
+  
+  ags_filter_util_pitch_s8(im_buffer,
+			   frame_count,
+			   samplerate,
+			   base_key,
+			   tuning);
+
+  for(i = offset, j = 0, k = offset; i < offset + n_frames; i++, j++){
+    buffer[j] = im_buffer[k];
+
+    if(do_loop){
+      if(k + 1 > loop_end){
+	k = loop_start;
+      }else{
+	k++;
+      }
+    }else{
+      k++;
+    }
+  }
+  
+  ags_stream_free(sample_buffer);
+  ags_stream_free(im_buffer);
 }
 
 /**
@@ -120,7 +229,113 @@ ags_sf2_synth_util_copy_s16(gint16 *buffer,
 			    gboolean do_loop,
 			    gint loop_start, gint loop_end)
 {
-  //TODO:JK: implement me
+  void *sample_buffer;
+
+  gint16 *im_buffer;
+
+  gint midi_key;
+  guint frame_count;
+  gdouble base_key;
+  gdouble tuning;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint copy_mode;
+
+  guint i;
+  guint j;
+  guint k;
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(ipatch_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(ipatch_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  sample_buffer = ags_stream_alloc(source_frame_count,
+				   AGS_SOUNDCARD_DOUBLE);
+
+  ags_sound_resource_read(AGS_SOUND_RESOURCE(ipatch_sample),
+			  sample_buffer, 1,
+			  0,
+			  source_frame_count, AGS_SOUNDCARD_DOUBLE);
+
+  /* resample if needed */
+  frame_count = source_frame_count;
+  
+  if(source_samplerate != samplerate){
+    void *tmp_sample_buffer;
+
+    guint tmp_frame_count;
+
+    tmp_frame_count = (samplerate / source_samplerate) * source_frame_count;
+
+    tmp_sample_buffer = ags_stream_alloc(tmp_frame_count,
+					 AGS_SOUNDCARD_DOUBLE);
+
+    ags_audio_buffer_util_resample_with_buffer(sample_buffer, 1,
+					       AGS_AUDIO_BUFFER_UTIL_DOUBLE, source_samplerate,
+					       source_frame_count,
+					       samplerate,
+					       tmp_frame_count,
+					       tmp_sample_buffer);
+    
+    ags_stream_free(sample_buffer);
+
+    sample_buffer = tmp_sample_buffer;
+    
+    frame_count = tmp_frame_count;
+  }
+
+  /* format */
+  im_buffer = ags_stream_alloc(frame_count,
+			       AGS_SOUNDCARD_SIGNED_16_BIT);
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S16,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(im_buffer, 1, 0,
+					      sample_buffer, 1, 0,
+					      frame_count, copy_mode);
+
+  /* pitch */
+  midi_key = 60;
+  
+  g_object_get(ipatch_sample->sample,
+	       "root-note", &midi_key,
+	       NULL);
+  
+  base_key = (gdouble) midi_key - 21.0;
+
+  tuning = 100.0 * (note - base_key);
+  
+  ags_filter_util_pitch_s16(im_buffer,
+			    frame_count,
+			    samplerate,
+			    base_key,
+			    tuning);
+
+  for(i = offset, j = 0, k = offset; i < offset + n_frames; i++, j++){
+    buffer[j] = im_buffer[k];
+
+    if(do_loop){
+      if(k + 1 > loop_end){
+	k = loop_start;
+      }else{
+	k++;
+      }
+    }else{
+      k++;
+    }
+  }
+  
+  ags_stream_free(sample_buffer);
+  ags_stream_free(im_buffer);
 }
 
 /**
@@ -150,7 +365,113 @@ ags_sf2_synth_util_copy_s24(gint32 *buffer,
 			    gboolean do_loop,
 			    gint loop_start, gint loop_end)
 {
-  //TODO:JK: implement me
+  void *sample_buffer;
+
+  gint32 *im_buffer;
+
+  gint midi_key;
+  guint frame_count;
+  gdouble base_key;
+  gdouble tuning;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint copy_mode;
+
+  guint i;
+  guint j;
+  guint k;
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(ipatch_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(ipatch_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  sample_buffer = ags_stream_alloc(source_frame_count,
+				   AGS_SOUNDCARD_DOUBLE);
+
+  ags_sound_resource_read(AGS_SOUND_RESOURCE(ipatch_sample),
+			  sample_buffer, 1,
+			  0,
+			  source_frame_count, AGS_SOUNDCARD_DOUBLE);
+
+  /* resample if needed */
+  frame_count = source_frame_count;
+  
+  if(source_samplerate != samplerate){
+    void *tmp_sample_buffer;
+
+    guint tmp_frame_count;
+
+    tmp_frame_count = (samplerate / source_samplerate) * source_frame_count;
+
+    tmp_sample_buffer = ags_stream_alloc(tmp_frame_count,
+					 AGS_SOUNDCARD_DOUBLE);
+
+    ags_audio_buffer_util_resample_with_buffer(sample_buffer, 1,
+					       AGS_AUDIO_BUFFER_UTIL_DOUBLE, source_samplerate,
+					       source_frame_count,
+					       samplerate,
+					       tmp_frame_count,
+					       tmp_sample_buffer);
+    
+    ags_stream_free(sample_buffer);
+
+    sample_buffer = tmp_sample_buffer;
+    
+    frame_count = tmp_frame_count;
+  }
+
+  /* format */
+  im_buffer = ags_stream_alloc(frame_count,
+			       AGS_SOUNDCARD_SIGNED_24_BIT);
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S24,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(im_buffer, 1, 0,
+					      sample_buffer, 1, 0,
+					      frame_count, copy_mode);
+
+  /* pitch */
+  midi_key = 60;
+  
+  g_object_get(ipatch_sample->sample,
+	       "root-note", &midi_key,
+	       NULL);
+  
+  base_key = (gdouble) midi_key - 21.0;
+
+  tuning = 100.0 * (note - base_key);
+  
+  ags_filter_util_pitch_s24(im_buffer,
+			    frame_count,
+			    samplerate,
+			    base_key,
+			    tuning);
+
+  for(i = offset, j = 0, k = offset; i < offset + n_frames; i++, j++){
+    buffer[j] = im_buffer[k];
+
+    if(do_loop){
+      if(k + 1 > loop_end){
+	k = loop_start;
+      }else{
+	k++;
+      }
+    }else{
+      k++;
+    }
+  }
+  
+  ags_stream_free(sample_buffer);
+  ags_stream_free(im_buffer);
 }
 
 /**
@@ -180,7 +501,113 @@ ags_sf2_synth_util_copy_s32(gint32 *buffer,
 			    gboolean do_loop,
 			    gint loop_start, gint loop_end)
 {
-  //TODO:JK: implement me
+  void *sample_buffer;
+
+  gint32 *im_buffer;
+
+  gint midi_key;
+  guint frame_count;
+  gdouble base_key;
+  gdouble tuning;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint copy_mode;
+
+  guint i;
+  guint j;
+  guint k;
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(ipatch_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(ipatch_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  sample_buffer = ags_stream_alloc(source_frame_count,
+				   AGS_SOUNDCARD_DOUBLE);
+
+  ags_sound_resource_read(AGS_SOUND_RESOURCE(ipatch_sample),
+			  sample_buffer, 1,
+			  0,
+			  source_frame_count, AGS_SOUNDCARD_DOUBLE);
+
+  /* resample if needed */
+  frame_count = source_frame_count;
+  
+  if(source_samplerate != samplerate){
+    void *tmp_sample_buffer;
+
+    guint tmp_frame_count;
+
+    tmp_frame_count = (samplerate / source_samplerate) * source_frame_count;
+
+    tmp_sample_buffer = ags_stream_alloc(tmp_frame_count,
+					 AGS_SOUNDCARD_DOUBLE);
+
+    ags_audio_buffer_util_resample_with_buffer(sample_buffer, 1,
+					       AGS_AUDIO_BUFFER_UTIL_DOUBLE, source_samplerate,
+					       source_frame_count,
+					       samplerate,
+					       tmp_frame_count,
+					       tmp_sample_buffer);
+    
+    ags_stream_free(sample_buffer);
+
+    sample_buffer = tmp_sample_buffer;
+    
+    frame_count = tmp_frame_count;
+  }
+
+  /* format */
+  im_buffer = ags_stream_alloc(frame_count,
+			       AGS_SOUNDCARD_SIGNED_32_BIT);
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S32,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(im_buffer, 1, 0,
+					      sample_buffer, 1, 0,
+					      frame_count, copy_mode);
+
+  /* pitch */
+  midi_key = 60;
+  
+  g_object_get(ipatch_sample->sample,
+	       "root-note", &midi_key,
+	       NULL);
+  
+  base_key = (gdouble) midi_key - 21.0;
+
+  tuning = 100.0 * (note - base_key);
+  
+  ags_filter_util_pitch_s32(im_buffer,
+			    frame_count,
+			    samplerate,
+			    base_key,
+			    tuning);
+
+  for(i = offset, j = 0, k = offset; i < offset + n_frames; i++, j++){
+    buffer[j] = im_buffer[k];
+
+    if(do_loop){
+      if(k + 1 > loop_end){
+	k = loop_start;
+      }else{
+	k++;
+      }
+    }else{
+      k++;
+    }
+  }
+  
+  ags_stream_free(sample_buffer);
+  ags_stream_free(im_buffer);
 }
 
 /**
@@ -210,7 +637,113 @@ ags_sf2_synth_util_copy_s64(gint64 *buffer,
 			    gboolean do_loop,
 			    gint loop_start, gint loop_end)
 {
-  //TODO:JK: implement me
+  void *sample_buffer;
+
+  gint64 *im_buffer;
+
+  gint midi_key;
+  guint frame_count;
+  gdouble base_key;
+  gdouble tuning;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint copy_mode;
+
+  guint i;
+  guint j;
+  guint k;
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(ipatch_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(ipatch_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  sample_buffer = ags_stream_alloc(source_frame_count,
+				   AGS_SOUNDCARD_DOUBLE);
+
+  ags_sound_resource_read(AGS_SOUND_RESOURCE(ipatch_sample),
+			  sample_buffer, 1,
+			  0,
+			  source_frame_count, AGS_SOUNDCARD_DOUBLE);
+
+  /* resample if needed */
+  frame_count = source_frame_count;
+  
+  if(source_samplerate != samplerate){
+    void *tmp_sample_buffer;
+
+    guint tmp_frame_count;
+
+    tmp_frame_count = (samplerate / source_samplerate) * source_frame_count;
+
+    tmp_sample_buffer = ags_stream_alloc(tmp_frame_count,
+					 AGS_SOUNDCARD_DOUBLE);
+
+    ags_audio_buffer_util_resample_with_buffer(sample_buffer, 1,
+					       AGS_AUDIO_BUFFER_UTIL_DOUBLE, source_samplerate,
+					       source_frame_count,
+					       samplerate,
+					       tmp_frame_count,
+					       tmp_sample_buffer);
+    
+    ags_stream_free(sample_buffer);
+
+    sample_buffer = tmp_sample_buffer;
+    
+    frame_count = tmp_frame_count;
+  }
+
+  /* format */
+  im_buffer = ags_stream_alloc(frame_count,
+			       AGS_SOUNDCARD_SIGNED_64_BIT);
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S64,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(im_buffer, 1, 0,
+					      sample_buffer, 1, 0,
+					      frame_count, copy_mode);
+
+  /* pitch */
+  midi_key = 60;
+  
+  g_object_get(ipatch_sample->sample,
+	       "root-note", &midi_key,
+	       NULL);
+  
+  base_key = (gdouble) midi_key - 21.0;
+
+  tuning = 100.0 * (note - base_key);
+  
+  ags_filter_util_pitch_s64(im_buffer,
+			    frame_count,
+			    samplerate,
+			    base_key,
+			    tuning);
+
+  for(i = offset, j = 0, k = offset; i < offset + n_frames; i++, j++){
+    buffer[j] = im_buffer[k];
+
+    if(do_loop){
+      if(k + 1 > loop_end){
+	k = loop_start;
+      }else{
+	k++;
+      }
+    }else{
+      k++;
+    }
+  }
+  
+  ags_stream_free(sample_buffer);
+  ags_stream_free(im_buffer);
 }
 
 /**
@@ -240,7 +773,113 @@ ags_sf2_synth_util_copy_float(gfloat *buffer,
 			      gboolean do_loop,
 			      gint loop_start, gint loop_end)
 {
-  //TODO:JK: implement me
+  void *sample_buffer;
+
+  gfloat *im_buffer;
+
+  gint midi_key;
+  guint frame_count;
+  gdouble base_key;
+  gdouble tuning;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint copy_mode;
+
+  guint i;
+  guint j;
+  guint k;
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(ipatch_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(ipatch_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  sample_buffer = ags_stream_alloc(source_frame_count,
+				   AGS_SOUNDCARD_DOUBLE);
+
+  ags_sound_resource_read(AGS_SOUND_RESOURCE(ipatch_sample),
+			  sample_buffer, 1,
+			  0,
+			  source_frame_count, AGS_SOUNDCARD_DOUBLE);
+
+  /* resample if needed */
+  frame_count = source_frame_count;
+  
+  if(source_samplerate != samplerate){
+    void *tmp_sample_buffer;
+
+    guint tmp_frame_count;
+
+    tmp_frame_count = (samplerate / source_samplerate) * source_frame_count;
+
+    tmp_sample_buffer = ags_stream_alloc(tmp_frame_count,
+					 AGS_SOUNDCARD_DOUBLE);
+
+    ags_audio_buffer_util_resample_with_buffer(sample_buffer, 1,
+					       AGS_AUDIO_BUFFER_UTIL_DOUBLE, source_samplerate,
+					       source_frame_count,
+					       samplerate,
+					       tmp_frame_count,
+					       tmp_sample_buffer);
+    
+    ags_stream_free(sample_buffer);
+
+    sample_buffer = tmp_sample_buffer;
+    
+    frame_count = tmp_frame_count;
+  }
+
+  /* format */
+  im_buffer = ags_stream_alloc(frame_count,
+			       AGS_SOUNDCARD_FLOAT);
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(im_buffer, 1, 0,
+					      sample_buffer, 1, 0,
+					      frame_count, copy_mode);
+
+  /* pitch */
+  midi_key = 60;
+  
+  g_object_get(ipatch_sample->sample,
+	       "root-note", &midi_key,
+	       NULL);
+  
+  base_key = (gdouble) midi_key - 21.0;
+
+  tuning = 100.0 * (note - base_key);
+  
+  ags_filter_util_pitch_float(im_buffer,
+			    frame_count,
+			    samplerate,
+			    base_key,
+			    tuning);
+
+  for(i = offset, j = 0, k = offset; i < offset + n_frames; i++, j++){
+    buffer[j] = im_buffer[k];
+
+    if(do_loop){
+      if(k + 1 > loop_end){
+	k = loop_start;
+      }else{
+	k++;
+      }
+    }else{
+      k++;
+    }
+  }
+  
+  ags_stream_free(sample_buffer);
+  ags_stream_free(im_buffer);
 }
 
 /**
@@ -270,7 +909,113 @@ ags_sf2_synth_util_copy_double(gdouble *buffer,
 			       gboolean do_loop,
 			       gint loop_start, gint loop_end)
 {
-  //TODO:JK: implement me
+  void *sample_buffer;
+
+  gdouble *im_buffer;
+
+  gint midi_key;
+  guint frame_count;
+  gdouble base_key;
+  gdouble tuning;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint copy_mode;
+
+  guint i;
+  guint j;
+  guint k;
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(ipatch_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(ipatch_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  sample_buffer = ags_stream_alloc(source_frame_count,
+				   AGS_SOUNDCARD_DOUBLE);
+
+  ags_sound_resource_read(AGS_SOUND_RESOURCE(ipatch_sample),
+			  sample_buffer, 1,
+			  0,
+			  source_frame_count, AGS_SOUNDCARD_DOUBLE);
+
+  /* resample if needed */
+  frame_count = source_frame_count;
+  
+  if(source_samplerate != samplerate){
+    void *tmp_sample_buffer;
+
+    guint tmp_frame_count;
+
+    tmp_frame_count = (samplerate / source_samplerate) * source_frame_count;
+
+    tmp_sample_buffer = ags_stream_alloc(tmp_frame_count,
+					 AGS_SOUNDCARD_DOUBLE);
+
+    ags_audio_buffer_util_resample_with_buffer(sample_buffer, 1,
+					       AGS_AUDIO_BUFFER_UTIL_DOUBLE, source_samplerate,
+					       source_frame_count,
+					       samplerate,
+					       tmp_frame_count,
+					       tmp_sample_buffer);
+    
+    ags_stream_free(sample_buffer);
+
+    sample_buffer = tmp_sample_buffer;
+    
+    frame_count = tmp_frame_count;
+  }
+
+  /* format */
+  im_buffer = ags_stream_alloc(frame_count,
+			       AGS_SOUNDCARD_DOUBLE);
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(im_buffer, 1, 0,
+					      sample_buffer, 1, 0,
+					      frame_count, copy_mode);
+
+  /* pitch */
+  midi_key = 60;
+  
+  g_object_get(ipatch_sample->sample,
+	       "root-note", &midi_key,
+	       NULL);
+  
+  base_key = (gdouble) midi_key - 21.0;
+
+  tuning = 100.0 * (note - base_key);
+  
+  ags_filter_util_pitch_double(im_buffer,
+			    frame_count,
+			    samplerate,
+			    base_key,
+			    tuning);
+
+  for(i = offset, j = 0, k = offset; i < offset + n_frames; i++, j++){
+    buffer[j] = im_buffer[k];
+
+    if(do_loop){
+      if(k + 1 > loop_end){
+	k = loop_start;
+      }else{
+	k++;
+      }
+    }else{
+      k++;
+    }
+  }
+  
+  ags_stream_free(sample_buffer);
+  ags_stream_free(im_buffer);
 }
 
 /**
@@ -300,5 +1045,111 @@ ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
 				gboolean do_loop,
 				gint loop_start, gint loop_end)
 {
-  //TODO:JK: implement me
+  void *sample_buffer;
+
+  AgsComplex *im_buffer;
+
+  gint midi_key;
+  guint frame_count;
+  gdouble base_key;
+  gdouble tuning;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint copy_mode;
+
+  guint i;
+  guint j;
+  guint k;
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(ipatch_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(ipatch_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  sample_buffer = ags_stream_alloc(source_frame_count,
+				   AGS_SOUNDCARD_DOUBLE);
+
+  ags_sound_resource_read(AGS_SOUND_RESOURCE(ipatch_sample),
+			  sample_buffer, 1,
+			  0,
+			  source_frame_count, AGS_SOUNDCARD_DOUBLE);
+
+  /* resample if needed */
+  frame_count = source_frame_count;
+  
+  if(source_samplerate != samplerate){
+    void *tmp_sample_buffer;
+
+    guint tmp_frame_count;
+
+    tmp_frame_count = (samplerate / source_samplerate) * source_frame_count;
+
+    tmp_sample_buffer = ags_stream_alloc(tmp_frame_count,
+					 AGS_SOUNDCARD_DOUBLE);
+
+    ags_audio_buffer_util_resample_with_buffer(sample_buffer, 1,
+					       AGS_AUDIO_BUFFER_UTIL_DOUBLE, source_samplerate,
+					       source_frame_count,
+					       samplerate,
+					       tmp_frame_count,
+					       tmp_sample_buffer);
+    
+    ags_stream_free(sample_buffer);
+
+    sample_buffer = tmp_sample_buffer;
+    
+    frame_count = tmp_frame_count;
+  }
+
+  /* format */
+  im_buffer = ags_stream_alloc(frame_count,
+			       AGS_SOUNDCARD_COMPLEX);
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_COMPLEX,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(im_buffer, 1, 0,
+					      sample_buffer, 1, 0,
+					      frame_count, copy_mode);
+
+  /* pitch */
+  midi_key = 60;
+  
+  g_object_get(ipatch_sample->sample,
+	       "root-note", &midi_key,
+	       NULL);
+  
+  base_key = (gdouble) midi_key - 21.0;
+
+  tuning = 100.0 * (note - base_key);
+  
+  ags_filter_util_pitch_complex(im_buffer,
+				frame_count,
+				samplerate,
+				base_key,
+				tuning);
+
+  for(i = offset, j = 0, k = offset; i < offset + n_frames; i++, j++){
+    buffer[j] = im_buffer[k];
+
+    if(do_loop){
+      if(k + 1 > loop_end){
+	k = loop_start;
+      }else{
+	k++;
+      }
+    }else{
+      k++;
+    }
+  }
+  
+  ags_stream_free(sample_buffer);
+  ags_stream_free(im_buffer);
 }

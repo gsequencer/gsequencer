@@ -11,7 +11,7 @@ ags (3.4.0)
 ags (3.3.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: improved GLib-2.0 compatibility of AgsServer
+	* improved GLib-2.0 compatibility of AgsServer
 
 ags (3.3.10)
 
