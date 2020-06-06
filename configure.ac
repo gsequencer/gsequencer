@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.3.11],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.3.12],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -352,7 +352,7 @@ AC_DEFINE([HAVE_GLIB_2_6], [1], [GLib 2.6 available])
 AC_DEFINE([HAVE_GLIB_2_44], [1], [GLib 2.44 available])
 AC_DEFINE([HAVE_GLIB_2_54], [1], [GLib 2.54 available])
 AC_DEFINE([HAVE_GLIB_2_56], [1], [GLib 2.56 available])
-AC_DEFINE([HAVE_GLIB_2_62], [1], [GLib 2.62 available])
+AC_DEFINE([HAVE_GLIB_2_62], [0], [GLib 2.62 available])
 
 GOBJECT_INTROSPECTION_CHECK([1.30.0])
 

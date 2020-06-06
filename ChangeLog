@@ -1,7 +1,12 @@
+ags (3.3.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added missing include string.h in ags_math_util.c
+
 ags (3.3.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: improved GLib-2.0 compatibility of AgsServer
+	* improved GLib-2.0 compatibility of AgsServer
 
 ags (3.3.10)
 

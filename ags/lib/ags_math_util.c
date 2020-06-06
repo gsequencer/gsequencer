@@ -19,6 +19,8 @@
 
 #include <ags/lib/ags_math_util.h>
 
+#include <string.h>
+
 /**
  * SECTION:ags_math_util
  * @short_description: math util
