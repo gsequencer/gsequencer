@@ -85,6 +85,7 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
  */
 void
 ags_sf2_synth_util_copy_s8(gint8 *buffer,
+			   guint buffer_size,
 			   AgsIpatchSample *ipatch_sample,
 			   gdouble note,
 			   gdouble volume,
@@ -184,7 +185,29 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
 			   base_key,
 			   tuning);
 
-  for(i = offset, j = 0, k = offset; i < offset + n_frames; i++, j++){
+  if(offset + (frame_count - loop_end) < n_frames){
+    if(offset >= loop_start){
+      if(offset > loop_end){
+	k = loop_start + ((offset - loop_start) % (loop_end - loop_start));
+      }else{
+	k = offset;
+      }
+    }else{
+      k = offset;
+    }    
+  }else{
+    if(offset >= loop_start){
+      if(offset > loop_end){
+	k = offset - ((loop_start + (loop_end - loop_start)) * floor(offset / (loop_start + (loop_end - loop_start))));
+      }else{
+	k = offset;
+      }
+    }else{
+      k = offset;
+    }    
+  }
+  
+  for(i = offset, j = 0; i < offset + n_frames && j < buffer_size; i++, j++){
     buffer[j] = im_buffer[k];
 
     if(do_loop){
@@ -205,6 +228,7 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
 /**
  * ags_sf2_synth_util_copy_s16:
  * @buffer: the audio buffer
+ * @buffer_size: the audio buffer size
  * @ipatch_sample: the #AgsIpatchSample
  * @note: the note
  * @volume: the volume of the sin wave
@@ -221,6 +245,7 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
  */
 void
 ags_sf2_synth_util_copy_s16(gint16 *buffer,
+			    guint buffer_size,
 			    AgsIpatchSample *ipatch_sample,
 			    gdouble note,
 			    gdouble volume,
@@ -320,7 +345,29 @@ ags_sf2_synth_util_copy_s16(gint16 *buffer,
 			    base_key,
 			    tuning);
 
-  for(i = offset, j = 0, k = offset; i < offset + n_frames; i++, j++){
+  if(offset + (frame_count - loop_end) < n_frames){
+    if(offset >= loop_start){
+      if(offset > loop_end){
+	k = loop_start + ((offset - loop_start) % (loop_end - loop_start));
+      }else{
+	k = offset;
+      }
+    }else{
+      k = offset;
+    }    
+  }else{
+    if(offset >= loop_start){
+      if(offset > loop_end){
+	k = offset - ((loop_start + (loop_end - loop_start)) * floor(offset / (loop_start + (loop_end - loop_start))));
+      }else{
+	k = offset;
+      }
+    }else{
+      k = offset;
+    }    
+  }
+  
+  for(i = offset, j = 0; i < offset + n_frames && j < buffer_size; i++, j++){
     buffer[j] = im_buffer[k];
 
     if(do_loop){
@@ -341,6 +388,7 @@ ags_sf2_synth_util_copy_s16(gint16 *buffer,
 /**
  * ags_sf2_synth_util_copy_s24:
  * @buffer: the audio buffer
+ * @buffer_size: the audio buffer size
  * @ipatch_sample: the #AgsIpatchSample
  * @note: the note
  * @volume: the volume of the sin wave
@@ -357,6 +405,7 @@ ags_sf2_synth_util_copy_s16(gint16 *buffer,
  */
 void
 ags_sf2_synth_util_copy_s24(gint32 *buffer,
+			    guint buffer_size,
 			    AgsIpatchSample *ipatch_sample,
 			    gdouble note,
 			    gdouble volume,
@@ -456,7 +505,29 @@ ags_sf2_synth_util_copy_s24(gint32 *buffer,
 			    base_key,
 			    tuning);
 
-  for(i = offset, j = 0, k = offset; i < offset + n_frames; i++, j++){
+  if(offset + (frame_count - loop_end) < n_frames){
+    if(offset >= loop_start){
+      if(offset > loop_end){
+	k = loop_start + ((offset - loop_start) % (loop_end - loop_start));
+      }else{
+	k = offset;
+      }
+    }else{
+      k = offset;
+    }    
+  }else{
+    if(offset >= loop_start){
+      if(offset > loop_end){
+	k = offset - ((loop_start + (loop_end - loop_start)) * floor(offset / (loop_start + (loop_end - loop_start))));
+      }else{
+	k = offset;
+      }
+    }else{
+      k = offset;
+    }    
+  }
+
+  for(i = offset, j = 0; i < offset + n_frames && j < buffer_size; i++, j++){
     buffer[j] = im_buffer[k];
 
     if(do_loop){
@@ -477,6 +548,7 @@ ags_sf2_synth_util_copy_s24(gint32 *buffer,
 /**
  * ags_sf2_synth_util_copy_s32:
  * @buffer: the audio buffer
+ * @buffer_size: the audio buffer size
  * @ipatch_sample: the #AgsIpatchSample
  * @note: the note
  * @volume: the volume of the sin wave
@@ -493,6 +565,7 @@ ags_sf2_synth_util_copy_s24(gint32 *buffer,
  */
 void
 ags_sf2_synth_util_copy_s32(gint32 *buffer,
+			    guint buffer_size,
 			    AgsIpatchSample *ipatch_sample,
 			    gdouble note,
 			    gdouble volume,
@@ -592,7 +665,29 @@ ags_sf2_synth_util_copy_s32(gint32 *buffer,
 			    base_key,
 			    tuning);
 
-  for(i = offset, j = 0, k = offset; i < offset + n_frames; i++, j++){
+  if(offset + (frame_count - loop_end) < n_frames){
+    if(offset >= loop_start){
+      if(offset > loop_end){
+	k = loop_start + ((offset - loop_start) % (loop_end - loop_start));
+      }else{
+	k = offset;
+      }
+    }else{
+      k = offset;
+    }    
+  }else{
+    if(offset >= loop_start){
+      if(offset > loop_end){
+	k = offset - ((loop_start + (loop_end - loop_start)) * floor(offset / (loop_start + (loop_end - loop_start))));
+      }else{
+	k = offset;
+      }
+    }else{
+      k = offset;
+    }    
+  }
+
+  for(i = offset, j = 0; i < offset + n_frames && j < buffer_size; i++, j++){
     buffer[j] = im_buffer[k];
 
     if(do_loop){
@@ -613,6 +708,7 @@ ags_sf2_synth_util_copy_s32(gint32 *buffer,
 /**
  * ags_sf2_synth_util_copy_s64:
  * @buffer: the audio buffer
+ * @buffer_size: the audio buffer size
  * @ipatch_sample: the #AgsIpatchSample
  * @note: the note
  * @volume: the volume of the sin wave
@@ -629,6 +725,7 @@ ags_sf2_synth_util_copy_s32(gint32 *buffer,
  */
 void
 ags_sf2_synth_util_copy_s64(gint64 *buffer,
+			    guint buffer_size,
 			    AgsIpatchSample *ipatch_sample,
 			    gdouble note,
 			    gdouble volume,
@@ -728,7 +825,29 @@ ags_sf2_synth_util_copy_s64(gint64 *buffer,
 			    base_key,
 			    tuning);
 
-  for(i = offset, j = 0, k = offset; i < offset + n_frames; i++, j++){
+  if(offset + (frame_count - loop_end) < n_frames){
+    if(offset >= loop_start){
+      if(offset > loop_end){
+	k = loop_start + ((offset - loop_start) % (loop_end - loop_start));
+      }else{
+	k = offset;
+      }
+    }else{
+      k = offset;
+    }    
+  }else{
+    if(offset >= loop_start){
+      if(offset > loop_end){
+	k = offset - ((loop_start + (loop_end - loop_start)) * floor(offset / (loop_start + (loop_end - loop_start))));
+      }else{
+	k = offset;
+      }
+    }else{
+      k = offset;
+    }    
+  }
+
+  for(i = offset, j = 0; i < offset + n_frames && j < buffer_size; i++, j++){
     buffer[j] = im_buffer[k];
 
     if(do_loop){
@@ -749,6 +868,7 @@ ags_sf2_synth_util_copy_s64(gint64 *buffer,
 /**
  * ags_sf2_synth_util_copy_float:
  * @buffer: the audio buffer
+ * @buffer_size: the audio buffer size
  * @ipatch_sample: the #AgsIpatchSample
  * @note: the note
  * @volume: the volume of the sin wave
@@ -765,6 +885,7 @@ ags_sf2_synth_util_copy_s64(gint64 *buffer,
  */
 void
 ags_sf2_synth_util_copy_float(gfloat *buffer,
+			      guint buffer_size,
 			      AgsIpatchSample *ipatch_sample,
 			      gdouble note,
 			      gdouble volume,
@@ -864,7 +985,29 @@ ags_sf2_synth_util_copy_float(gfloat *buffer,
 			    base_key,
 			    tuning);
 
-  for(i = offset, j = 0, k = offset; i < offset + n_frames; i++, j++){
+  if(offset + (frame_count - loop_end) < n_frames){
+    if(offset >= loop_start){
+      if(offset > loop_end){
+	k = loop_start + ((offset - loop_start) % (loop_end - loop_start));
+      }else{
+	k = offset;
+      }
+    }else{
+      k = offset;
+    }    
+  }else{
+    if(offset >= loop_start){
+      if(offset > loop_end){
+	k = offset - ((loop_start + (loop_end - loop_start)) * floor(offset / (loop_start + (loop_end - loop_start))));
+      }else{
+	k = offset;
+      }
+    }else{
+      k = offset;
+    }    
+  }
+
+  for(i = offset, j = 0; i < offset + n_frames && j < buffer_size; i++, j++){
     buffer[j] = im_buffer[k];
 
     if(do_loop){
@@ -885,6 +1028,7 @@ ags_sf2_synth_util_copy_float(gfloat *buffer,
 /**
  * ags_sf2_synth_util_copy_double:
  * @buffer: the audio buffer
+ * @buffer_size: the audio buffer size
  * @ipatch_sample: the #AgsIpatchSample
  * @note: the note
  * @volume: the volume of the sin wave
@@ -901,6 +1045,7 @@ ags_sf2_synth_util_copy_float(gfloat *buffer,
  */
 void
 ags_sf2_synth_util_copy_double(gdouble *buffer,
+			       guint buffer_size,
 			       AgsIpatchSample *ipatch_sample,
 			       gdouble note,
 			       gdouble volume,
@@ -1000,7 +1145,29 @@ ags_sf2_synth_util_copy_double(gdouble *buffer,
 			    base_key,
 			    tuning);
 
-  for(i = offset, j = 0, k = offset; i < offset + n_frames; i++, j++){
+  if(offset + (frame_count - loop_end) < n_frames){
+    if(offset >= loop_start){
+      if(offset > loop_end){
+	k = loop_start + ((offset - loop_start) % (loop_end - loop_start));
+      }else{
+	k = offset;
+      }
+    }else{
+      k = offset;
+    }    
+  }else{
+    if(offset >= loop_start){
+      if(offset > loop_end){
+	k = offset - ((loop_start + (loop_end - loop_start)) * floor(offset / (loop_start + (loop_end - loop_start))));
+      }else{
+	k = offset;
+      }
+    }else{
+      k = offset;
+    }    
+  }
+
+  for(i = offset, j = 0; i < offset + n_frames && j < buffer_size; i++, j++){
     buffer[j] = im_buffer[k];
 
     if(do_loop){
@@ -1021,6 +1188,7 @@ ags_sf2_synth_util_copy_double(gdouble *buffer,
 /**
  * ags_sf2_synth_util_copy_complex:
  * @buffer: the audio buffer
+ * @buffer_size: the audio buffer size
  * @ipatch_sample: the #AgsIpatchSample
  * @note: the note
  * @volume: the volume of the sin wave
@@ -1037,6 +1205,7 @@ ags_sf2_synth_util_copy_double(gdouble *buffer,
  */
 void
 ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
+				guint buffer_size,
 				AgsIpatchSample *ipatch_sample,
 				gdouble note,
 				gdouble volume,
@@ -1136,7 +1305,29 @@ ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
 				base_key,
 				tuning);
 
-  for(i = offset, j = 0, k = offset; i < offset + n_frames; i++, j++){
+  if(offset + (frame_count - loop_end) < n_frames){
+    if(offset >= loop_start){
+      if(offset > loop_end){
+	k = loop_start + ((offset - loop_start) % (loop_end - loop_start));
+      }else{
+	k = offset;
+      }
+    }else{
+      k = offset;
+    }    
+  }else{
+    if(offset >= loop_start){
+      if(offset > loop_end){
+	k = offset - ((loop_start + (loop_end - loop_start)) * floor(offset / (loop_start + (loop_end - loop_start))));
+      }else{
+	k = offset;
+      }
+    }else{
+      k = offset;
+    }    
+  }
+
+  for(i = offset, j = 0; i < offset + n_frames && j < buffer_size; i++, j++){
     buffer[j] = im_buffer[k];
 
     if(do_loop){
