@@ -9,6 +9,7 @@ ags (3.4.0)
 	* TODO:JK: implemented ags_sfz_synth_util.c
 	* improved ags_filter_util.c
 	* improved AgsComplex support
+	* added unit-tests
 
 ags (3.3.12)
 

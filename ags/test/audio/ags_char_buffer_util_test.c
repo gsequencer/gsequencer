@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2018 Joël Krähemann
+ * Copyright (C) 2018-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -183,18 +183,18 @@ main(int argc, char **argv)
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s8 to cbuffer", ags_char_buffer_util_test_copy_s8_to_cbuffer) == NULL) ||
      (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s16 to cbuffer", ags_char_buffer_util_test_copy_s16_to_cbuffer) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s16 to cbuffer", ags_char_buffer_util_test_copy_s24_to_cbuffer) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s16 to cbuffer", ags_char_buffer_util_test_copy_s32_to_cbuffer) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s16 to cbuffer", ags_char_buffer_util_test_copy_s64_to_cbuffer) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s16 to cbuffer", ags_char_buffer_util_test_copy_float_to_cbuffer) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s16 to cbuffer", ags_char_buffer_util_test_copy_double_to_cbuffer) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s16 to cbuffer", ags_char_buffer_util_test_copy_cbuffer_to_s8) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s16 to cbuffer", ags_char_buffer_util_test_copy_cbuffer_to_s16) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s16 to cbuffer", ags_char_buffer_util_test_copy_cbuffer_to_s24) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s16 to cbuffer", ags_char_buffer_util_test_copy_cbuffer_to_s32) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s16 to cbuffer", ags_char_buffer_util_test_copy_cbuffer_to_s64) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s16 to cbuffer", ags_char_buffer_util_test_copy_cbuffer_to_float) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s16 to cbuffer", ags_char_buffer_util_test_copy_cbuffer_to_double) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s24 to cbuffer", ags_char_buffer_util_test_copy_s24_to_cbuffer) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s32 to cbuffer", ags_char_buffer_util_test_copy_s32_to_cbuffer) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy s64 to cbuffer", ags_char_buffer_util_test_copy_s64_to_cbuffer) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy float to cbuffer", ags_char_buffer_util_test_copy_float_to_cbuffer) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy double to cbuffer", ags_char_buffer_util_test_copy_double_to_cbuffer) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy cbuffer to s8", ags_char_buffer_util_test_copy_cbuffer_to_s8) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy cbuffer to s16", ags_char_buffer_util_test_copy_cbuffer_to_s16) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy cbuffer to s24", ags_char_buffer_util_test_copy_cbuffer_to_s24) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy cbuffer to s32", ags_char_buffer_util_test_copy_cbuffer_to_s32) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy cbuffer to s64", ags_char_buffer_util_test_copy_cbuffer_to_s64) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy cbuffer to float", ags_char_buffer_util_test_copy_cbuffer_to_float) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy cbuffer to double", ags_char_buffer_util_test_copy_cbuffer_to_double) == NULL) ||
      (CU_add_test(pSuite, "test of ags_char_buffer_util.c copy buffer to buffer", ags_char_buffer_util_test_copy_buffer_to_buffer) == NULL)){
     CU_cleanup_registry();
       
