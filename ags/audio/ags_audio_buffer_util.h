@@ -565,6 +565,36 @@ void ags_audio_buffer_util_resample_with_buffer(void *buffer, guint channels,
 						guint target_buffer_length,
 						void *target_buffer);
 
+/* pong */
+void ags_audio_buffer_util_pong_s8(gint8 *destination, guint dchannels,
+				   gint8 *source, guint schannels,
+				   guint count);
+void ags_audio_buffer_util_pong_s16(gint16 *destination, guint dchannels,
+				    gint16 *source, guint schannels,
+				    guint count);
+void ags_audio_buffer_util_pong_s24(gint32 *destination, guint dchannels,
+				    gint32 *source, guint schannels,
+				    guint count);
+void ags_audio_buffer_util_pong_s32(gint32 *destination, guint dchannels,
+				    gint32 *source, guint schannels,
+				    guint count);
+void ags_audio_buffer_util_pong_s64(gint64 *destination, guint dchannels,
+				    gint64 *source, guint schannels,
+				    guint count);
+void ags_audio_buffer_util_pong_float(gfloat *destination, guint dchannels,
+				      gfloat *source, guint schannels,
+				      guint count);
+void ags_audio_buffer_util_pong_double(gdouble *destination, guint dchannels,
+				       gdouble *source, guint schannels,
+				       guint count);
+void ags_audio_buffer_util_pong_complex(AgsComplex *destination, guint dchannels,
+					AgsComplex *source, guint schannels,
+					guint count);
+
+void ags_audio_buffer_util_pong(void *destination, guint dchannels,
+				void *source, guint schannels,
+				guint count, guint format);
+
 /* copy 8 bit */
 void ags_audio_buffer_util_copy_s8_to_s8(gint8 *destination, guint dchannels,
 					 gint8 *source, guint schannels,

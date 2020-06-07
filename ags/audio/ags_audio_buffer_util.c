@@ -4795,6 +4795,877 @@ ags_audio_buffer_util_resample_with_buffer(void *buffer, guint channels,
 }
 
 /**
+ * ags_audio_buffer_util_pong_s8:
+ * @destination: the destination
+ * @dchannels: the destination channels
+ * @source: the source
+ * @schannels: the source channels
+ * @count: the count of frames
+ * 
+ * Pingpong copy @source to @destination.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_audio_buffer_util_pong_s8(gint8 *destination, guint dchannels,
+			      gint8 *source, guint schannels,
+			      guint count)
+{
+  guint limit;
+  gint current_dchannel, current_schannel;
+  guint i;
+
+  i = 0;
+
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      ags_v8s8 v_destination;
+      ags_v8s8 v_source;
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (ags_v8s8) {destination[0],
+				  destination[(current_dchannel = dchannels)],
+				  destination[(current_dchannel += dchannels)],
+				  destination[(current_dchannel += dchannels)],
+				  destination[(current_dchannel += dchannels)],
+				  destination[(current_dchannel += dchannels)],
+				  destination[(current_dchannel += dchannels)],
+				  destination[(current_dchannel += dchannels)]};
+      
+      v_source = (ags_v8s8) {source[0],
+			     source[(current_schannel -= schannels)],
+			     source[(current_schannel -= schannels)],
+			     source[(current_schannel -= schannels)],
+			     source[(current_schannel -= schannels)],
+			     source[(current_schannel -= schannels)],
+			     source[(current_schannel -= schannels)],
+			     source[(current_schannel -= schannels)]};
+
+      /* no scale, just copy */
+      v_destination += v_source;
+      
+      current_dchannel = 0;
+
+      destination[0] = v_destination[0];
+      destination[(current_dchannel = dchannels)] = v_destination[1];
+      destination[(current_dchannel += dchannels)] = v_destination[2];
+      destination[(current_dchannel += dchannels)] = v_destination[3];
+      destination[(current_dchannel += dchannels)] = v_destination[4];
+      destination[(current_dchannel += dchannels)] = v_destination[5];
+      destination[(current_dchannel += dchannels)] = v_destination[6];
+      destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#else  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      current_dchannel = 0;
+      current_schannel = 0;
+      
+      destination[0] = 0xff & ((gint16) (destination[0] + source[0]));      
+      destination[current_dchannel] = 0xff & ((gint16) (destination[(current_dchannel = dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xff & ((gint16) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xff & ((gint16) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xff & ((gint16) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xff & ((gint16) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xff & ((gint16) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xff & ((gint16) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#endif
+
+  for(; i < count; i++){
+    destination[0] = 0xff & ((gint16) (destination[0] + source[0]));
+
+    destination += dchannels;
+    source -= schannels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_pong_s16:
+ * @destination: the destination
+ * @dchannels: the destination channels
+ * @source: the source
+ * @schannels: the source channels
+ * @count: the count of frames
+ * 
+ * Pingpong copy @source to @destination.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_audio_buffer_util_pong_s16(gint16 *destination, guint dchannels,
+			       gint16 *source, guint schannels,
+			       guint count)
+{
+  guint limit;
+  gint current_dchannel, current_schannel;
+  guint i;
+
+  i = 0;
+
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      ags_v8s16 v_destination;
+      ags_v8s16 v_source;
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (ags_v8s16) {destination[0],
+				   destination[(current_dchannel = dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)]};
+      v_source = (ags_v8s16) {source[0],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)]};
+
+      /* no scale, just copy */
+      v_destination += v_source;
+
+      current_dchannel = 0;
+      
+      destination[0] = v_destination[0];
+      destination[(current_dchannel = dchannels)] = v_destination[1];
+      destination[(current_dchannel += dchannels)] = v_destination[2];
+      destination[(current_dchannel += dchannels)] = v_destination[3];
+      destination[(current_dchannel += dchannels)] = v_destination[4];
+      destination[(current_dchannel += dchannels)] = v_destination[5];
+      destination[(current_dchannel += dchannels)] = v_destination[6];
+      destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#else  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){      
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      destination[0] = (gint16) 0xffff & ((gint32) (destination[0] + source[0]));
+      destination[current_dchannel] = (gint16) 0xffff & ((gint32) (destination[(current_dchannel = dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = (gint16) 0xffff & ((gint32) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = (gint16) 0xffff & ((gint32) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = (gint16) 0xffff & ((gint32) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = (gint16) 0xffff & ((gint32) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = (gint16) 0xffff & ((gint32) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = (gint16) 0xffff & ((gint32) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#endif
+
+  for(; i < count; i++){
+    destination[0] = (gint16) 0xffff & ((gint32) (destination[0] + source[0]));
+
+    destination += dchannels;
+    source -= schannels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_pong_s24:
+ * @destination: the destination
+ * @dchannels: the destination channels
+ * @source: the source
+ * @schannels: the source channels
+ * @count: the count of frames
+ * 
+ * Pingpong copy @source to @destination.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_audio_buffer_util_pong_s24(gint32 *destination, guint dchannels,
+			       gint32 *source, guint schannels,
+			       guint count)
+{
+  guint limit;
+  gint current_dchannel, current_schannel;
+  guint i;
+
+  i = 0;
+
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      ags_v8s32 v_destination;
+      ags_v8s32 v_source;
+
+      current_dchannel = 0;
+      current_schannel = 0;
+      
+      v_destination = (ags_v8s32) {destination[0],
+				   destination[(current_dchannel = dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)]};
+
+      v_source = (ags_v8s32) {source[0],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)]};
+      
+      /* no scale, just copy */
+      v_destination += v_source;
+      
+      current_dchannel = 0;
+      
+      destination[0] = v_destination[0];
+      destination[(current_dchannel = dchannels)] = v_destination[1];
+      destination[(current_dchannel += dchannels)] = v_destination[2];
+      destination[(current_dchannel += dchannels)] = v_destination[3];
+      destination[(current_dchannel += dchannels)] = v_destination[4];
+      destination[(current_dchannel += dchannels)] = v_destination[5];
+      destination[(current_dchannel += dchannels)] = v_destination[6];
+      destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#else  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      destination[0] = 0xffffffff & ((gint32) (destination[0] + source[0]));
+      destination[current_dchannel] = 0xffffffff & ((gint32) (destination[(current_dchannel = dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffff & ((gint32) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffff & ((gint32) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffff & ((gint32) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffff & ((gint32) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffff & ((gint32) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffff & ((gint32) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#endif
+  
+  for(; i < count; i++){
+    destination[0] = 0xffffffff & ((gint32) (destination[0] + source[0]));
+
+    destination += dchannels;
+    source -= schannels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_pong_s32:
+ * @destination: the destination
+ * @dchannels: the destination channels
+ * @source: the source
+ * @schannels: the source channels
+ * @count: the count of frames
+ * 
+ * Pingpong copy @source to @destination.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_audio_buffer_util_pong_s32(gint32 *destination, guint dchannels,
+			       gint32 *source, guint schannels,
+			       guint count)
+{
+  guint limit;
+  gint current_dchannel, current_schannel;
+  guint i;
+
+  i = 0;
+  
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      ags_v8s32 v_destination;
+      ags_v8s32 v_source;
+
+      current_dchannel = 0;
+      current_schannel = 0;
+      
+      v_destination = (ags_v8s32) {destination[0],
+				   destination[(current_dchannel = dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)]};
+
+      v_source = (ags_v8s32) {source[0],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)]};
+
+      /* no scale, just copy */
+      v_destination += v_source;
+      
+      current_dchannel = 0;
+      
+      destination[0] = v_destination[0];
+      destination[(current_dchannel = dchannels)] = v_destination[1];
+      destination[(current_dchannel += dchannels)] = v_destination[2];
+      destination[(current_dchannel += dchannels)] = v_destination[3];
+      destination[(current_dchannel += dchannels)] = v_destination[4];
+      destination[(current_dchannel += dchannels)] = v_destination[5];
+      destination[(current_dchannel += dchannels)] = v_destination[6];
+      destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#else  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      destination[0] = 0xffffffff & ((gint64) (destination[0] + source[0]));
+      destination[current_dchannel] = 0xffffffff & ((gint64) (destination[(current_dchannel = dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffff & ((gint64) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffff & ((gint64) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffff & ((gint64) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffff & ((gint64) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffff & ((gint64) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffff & ((gint64) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#endif
+  
+  for(; i < count; i++){
+    destination[0] = 0xffffffff & ((gint64) (destination[0] + source[0]));
+
+    destination += dchannels;
+    source -= schannels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_pong_s64:
+ * @destination: the destination
+ * @dchannels: the destination channels
+ * @source: the source
+ * @schannels: the source channels
+ * @count: the count of frames
+ * 
+ * Pingpong copy @source to @destination.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_audio_buffer_util_pong_s64(gint64 *destination, guint dchannels,
+			       gint64 *source, guint schannels,
+			       guint count)
+{
+  guint limit;
+  gint current_dchannel, current_schannel;
+  guint i;
+
+  i = 0;  
+
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      ags_v8s64 v_destination;
+      ags_v8s64 v_source;
+
+      current_dchannel = 0;
+      current_schannel = 0;      
+
+      v_destination = (ags_v8s64) {destination[0],
+				   destination[(current_dchannel = dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)]};
+      
+      v_source = (ags_v8s64) {source[0],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)],
+			      source[(current_schannel -= schannels)]};
+
+      /* no scale, just copy */
+      v_destination += v_source;
+      
+      current_dchannel = 0;
+      
+      destination[0] = v_destination[0];
+      destination[(current_dchannel = dchannels)] = v_destination[1];
+      destination[(current_dchannel += dchannels)] = v_destination[2];
+      destination[(current_dchannel += dchannels)] = v_destination[3];
+      destination[(current_dchannel += dchannels)] = v_destination[4];
+      destination[(current_dchannel += dchannels)] = v_destination[5];
+      destination[(current_dchannel += dchannels)] = v_destination[6];
+      destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#else  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      destination[0] = 0xffffffffffffffff & ((gint64) (destination[0] + source[0]));
+      destination[current_dchannel] = 0xffffffffffffffff & ((gint64) (destination[(current_dchannel = dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffffffffffff & ((gint64) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffffffffffff & ((gint64) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffffffffffff & ((gint64) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffffffffffff & ((gint64) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffffffffffff & ((gint64) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+      destination[current_dchannel] = 0xffffffffffffffff & ((gint64) (destination[(current_dchannel += dchannels)] + source[(current_schannel -= schannels)]));
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#endif
+  
+  for(; i < count; i++){
+    destination[0] = 0xffffffffffffffff & ((gint64) (destination[0] + source[0]));
+
+    destination += dchannels;
+    source -= schannels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_pong_float:
+ * @destination: the destination
+ * @dchannels: the destination channels
+ * @source: the source
+ * @schannels: the source channels
+ * @count: the count of frames
+ * 
+ * Pingpong copy @source to @destination.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_audio_buffer_util_pong_float(gfloat *destination, guint dchannels,
+				 gfloat *source, guint schannels,
+				 guint count)
+{
+  guint limit;
+  gint current_dchannel, current_schannel;
+  guint i;
+
+  i = 0;
+  
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      ags_v8float v_destination;
+      ags_v8float v_source;
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (ags_v8float) {destination[0],
+				     destination[(current_dchannel = dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)]};
+      
+      v_source = (ags_v8float) {source[0],
+				source[(current_schannel -= schannels)],
+				source[(current_schannel -= schannels)],
+				source[(current_schannel -= schannels)],
+				source[(current_schannel -= schannels)],
+				source[(current_schannel -= schannels)],
+				source[(current_schannel -= schannels)],
+				source[(current_schannel -= schannels)]};
+
+      /* just copy */
+      v_destination += v_source;
+      
+      current_dchannel = 0;
+      
+      destination[0] = v_destination[0];
+      destination[(current_dchannel = dchannels)] = v_destination[1];
+      destination[(current_dchannel += dchannels)] = v_destination[2];
+      destination[(current_dchannel += dchannels)] = v_destination[3];
+      destination[(current_dchannel += dchannels)] = v_destination[4];
+      destination[(current_dchannel += dchannels)] = v_destination[5];
+      destination[(current_dchannel += dchannels)] = v_destination[6];
+      destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#else  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      destination[0] = (gfloat) ((gdouble) (destination[0] + (gdouble) (source[0])));
+      destination[current_dchannel] = (gfloat) ((gdouble) (destination[(current_dchannel = dchannels)] + (gdouble) (source[(current_schannel -= schannels)])));
+      destination[current_dchannel] = (gfloat) ((gdouble) (destination[(current_dchannel += dchannels)] + (gdouble) (source[(current_schannel -= schannels)])));
+      destination[current_dchannel] = (gfloat) ((gdouble) (destination[(current_dchannel += dchannels)] + (gdouble) (source[(current_schannel -= schannels)])));
+      destination[current_dchannel] = (gfloat) ((gdouble) (destination[(current_dchannel += dchannels)] + (gdouble) (source[(current_schannel -= schannels)])));
+      destination[current_dchannel] = (gfloat) ((gdouble) (destination[(current_dchannel += dchannels)] + (gdouble) (source[(current_schannel -= schannels)])));
+      destination[current_dchannel] = (gfloat) ((gdouble) (destination[(current_dchannel += dchannels)] + (gdouble) (source[(current_schannel -= schannels)])));
+      destination[current_dchannel] = (gfloat) ((gdouble) (destination[(current_dchannel += dchannels)] + (gdouble) (source[(current_schannel -= schannels)])));
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#endif
+  
+  for(; i < count; i++){
+    destination[0] = (gfloat) ((gdouble) (destination[0] + (gdouble) (source[0])));
+
+    destination += dchannels;
+    source -= schannels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_pong_double:
+ * @destination: the destination
+ * @dchannels: the destination channels
+ * @source: the source
+ * @schannels: the source channels
+ * @count: the count of frames
+ * 
+ * Pingpong copy @source to @destination.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_audio_buffer_util_pong_double(gdouble *destination, guint dchannels,
+				  gdouble *source, guint schannels,
+				  guint count)
+{
+  guint limit;
+  gint current_dchannel, current_schannel;
+  guint i;
+
+  i = 0;
+  
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      ags_v8double v_destination;
+      ags_v8double v_source;
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (ags_v8double) {destination[0],
+				      destination[(current_dchannel = dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)]};
+      
+      v_source = (ags_v8double) {source[0],
+				 source[(current_schannel -= schannels)],
+				 source[(current_schannel -= schannels)],
+				 source[(current_schannel -= schannels)],
+				 source[(current_schannel -= schannels)],
+				 source[(current_schannel -= schannels)],
+				 source[(current_schannel -= schannels)],
+				 source[(current_schannel -= schannels)]};
+
+      /* just copy */
+      v_destination += v_source;
+      
+      current_dchannel = 0;
+      
+      destination[0] = v_destination[0];
+      destination[(current_dchannel = dchannels)] = v_destination[1];
+      destination[(current_dchannel += dchannels)] = v_destination[2];
+      destination[(current_dchannel += dchannels)] = v_destination[3];
+      destination[(current_dchannel += dchannels)] = v_destination[4];
+      destination[(current_dchannel += dchannels)] = v_destination[5];
+      destination[(current_dchannel += dchannels)] = v_destination[6];
+      destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#else  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      destination[0] = ((gdouble) (destination[0] + (gdouble) (source[0])));
+      destination[current_dchannel] = ((gdouble) (destination[(current_dchannel = dchannels)] + (gdouble) (source[(current_schannel -= schannels)])));
+      destination[current_dchannel] = ((gdouble) (destination[(current_dchannel += dchannels)] + (gdouble) (source[(current_schannel -= schannels)])));
+      destination[current_dchannel] = ((gdouble) (destination[(current_dchannel += dchannels)] + (gdouble) (source[(current_schannel -= schannels)])));
+      destination[current_dchannel] = ((gdouble) (destination[(current_dchannel += dchannels)] + (gdouble) (source[(current_schannel -= schannels)])));
+      destination[current_dchannel] = ((gdouble) (destination[(current_dchannel += dchannels)] + (gdouble) (source[(current_schannel -= schannels)])));
+      destination[current_dchannel] = ((gdouble) (destination[(current_dchannel += dchannels)] + (gdouble) (source[(current_schannel -= schannels)])));
+      destination[current_dchannel] = ((gdouble) (destination[(current_dchannel += dchannels)] + (gdouble) (source[(current_schannel -= schannels)])));
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#endif
+  
+  for(; i < count; i++){
+    destination[0] = ((gdouble) ((destination[0]) + (gdouble) (source[0])));
+
+    destination += dchannels;
+    source -= schannels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_pong_complex:
+ * @destination: the destination
+ * @dchannels: the destination channels
+ * @source: the source
+ * @schannels: the source channels
+ * @count: the count of frames
+ * 
+ * Pingpong copy @source to @destination.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_audio_buffer_util_pong_complex(AgsComplex *destination, guint dchannels,
+				   AgsComplex *source, guint schannels,
+				   guint count)
+{
+  guint i;
+
+  i = 0;
+
+  for(; i < count; i++){
+    complex z0, z1;
+
+    z0 = ags_complex_get(destination);
+    z1 = ags_complex_get(source);
+
+    ags_complex_set(destination,
+		    z0 + z1);
+    
+    destination += dchannels;
+    source -= schannels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_pong:
+ * @destination: the destination
+ * @dchannels: the destination channels
+ * @source: the source
+ * @schannels: the source channels
+ * @count: the count of frames
+ * @format: the format
+ * 
+ * Pingpong copy @source to @destination.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_audio_buffer_util_pong(void *destination, guint dchannels,
+			   void *source, guint schannels,
+			   guint count, guint format)
+{
+  switch(format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+  {
+    ags_audio_buffer_util_pong_s8((gint8 *) destination, dchannels,
+				  (gint8 *) source, schannels,
+				  count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+  {
+    ags_audio_buffer_util_pong_s16((gint16 *) destination, dchannels,
+				   (gint16 *) source, schannels,
+				   count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+  {
+    ags_audio_buffer_util_pong_s24((gint32 *) destination, dchannels,
+				   (gint32 *) source, schannels,
+				   count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+  {
+    ags_audio_buffer_util_pong_s32((gint32 *) destination, dchannels,
+				   (gint32 *) source, schannels,
+				   count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+  {
+    ags_audio_buffer_util_pong_s64((gint64 *) destination, dchannels,
+				   (gint64 *) source, schannels,
+				   count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_audio_buffer_util_pong_float((gfloat *) destination, dchannels,
+				     (gfloat *) source, schannels,
+				     count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_audio_buffer_util_pong_double((gdouble *) destination, dchannels,
+				      (gdouble *) source, schannels,
+				      count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_audio_buffer_util_pong_complex((AgsComplex *) destination, dchannels,
+				       (AgsComplex *) source, schannels,
+				       count);
+  }
+  break;
+  default:
+    g_warning("ags_audio_buffer_util_pong() - unknown format");
+  }
+}
+
+/**
  * ags_audio_buffer_util_copy_s8_to_s8:
  * @destination: destination buffer
  * @dchannels: destination buffer's count of channels

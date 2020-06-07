@@ -5,6 +5,7 @@ ags (3.4.0)
 	* TODO:JK: implemented AgsSFZSynth
 	* TODO:JK: implemented AgsSF2Generator
 	* TODO:JK: implemented AgsSFZGenerator
+	* implemented pingpong copy in ags_audio_buffer_util.c
 	* TODO:JK: implemented ags_sf2_synth_util.c
 	* TODO:JK: implemented ags_sfz_synth_util.c
 	* improved ags_filter_util.c
@@ -4502,7 +4503,7 @@ ags (0.4.2-68)
 	* added `midi2xml` the MIDI file to XML parser
 
 
-Copyright (C) 2005-2019 Joël Krähemann
+Copyright (C) 2005-2020 Joël Krähemann
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3

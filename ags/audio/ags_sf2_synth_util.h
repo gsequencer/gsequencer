@@ -30,6 +30,13 @@
 
 G_BEGIN_DECLS
 
+typedef enum{
+  AGS_SF2_SYNTH_UTIL_LOOP_NONE,
+  AGS_SF2_SYNTH_UTIL_LOOP_STANDARD,
+  AGS_SF2_SYNTH_UTIL_LOOP_RELEASE,
+  AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG,
+}AgsSF2SynthUtilLoopMode;
+
 AgsIpatchSample* ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 									  gint bank,
 									  gint program,
@@ -45,7 +52,7 @@ void ags_sf2_synth_util_copy_s8(gint8 *buffer,
 				gdouble volume,
 				guint samplerate,
 				guint offset, guint n_frames,
-				gboolean do_loop,
+				guint loop_mode,
 				gint loop_start, gint loop_end);
 void ags_sf2_synth_util_copy_s16(gint16 *buffer,
 				 guint buffer_size,
@@ -54,7 +61,7 @@ void ags_sf2_synth_util_copy_s16(gint16 *buffer,
 				 gdouble volume,
 				 guint samplerate,
 				 guint offset, guint n_frames,
-				 gboolean do_loop,
+				 guint loop_mode,
 				 gint loop_start, gint loop_end);
 void ags_sf2_synth_util_copy_s24(gint32 *buffer,
 				 guint buffer_size,
@@ -63,7 +70,7 @@ void ags_sf2_synth_util_copy_s24(gint32 *buffer,
 				 gdouble volume,
 				 guint samplerate,
 				 guint offset, guint n_frames,
-				 gboolean do_loop,
+				 guint loop_mode,
 				 gint loop_start, gint loop_end);
 void ags_sf2_synth_util_copy_s32(gint32 *buffer,
 				 guint buffer_size,
@@ -72,7 +79,7 @@ void ags_sf2_synth_util_copy_s32(gint32 *buffer,
 				 gdouble volume,
 				 guint samplerate,
 				 guint offset, guint n_frames,
-				 gboolean do_loop,
+				 guint loop_mode,
 				 gint loop_start, gint loop_end);
 void ags_sf2_synth_util_copy_s64(gint64 *buffer,
 				 guint buffer_size,
@@ -81,7 +88,7 @@ void ags_sf2_synth_util_copy_s64(gint64 *buffer,
 				 gdouble volume,
 				 guint samplerate,
 				 guint offset, guint n_frames,
-				 gboolean do_loop,
+				 guint loop_mode,
 				 gint loop_start, gint loop_end);
 void ags_sf2_synth_util_copy_float(gfloat *buffer,
 				   guint buffer_size,
@@ -90,7 +97,7 @@ void ags_sf2_synth_util_copy_float(gfloat *buffer,
 				   gdouble volume,
 				   guint samplerate,
 				   guint offset, guint n_frames,
-				   gboolean do_loop,
+				   guint loop_mode,
 				   gint loop_start, gint loop_end);
 void ags_sf2_synth_util_copy_double(gdouble *buffer,
 				    guint buffer_size,
@@ -99,7 +106,7 @@ void ags_sf2_synth_util_copy_double(gdouble *buffer,
 				    gdouble volume,
 				    guint samplerate,
 				    guint offset, guint n_frames,
-				    gboolean do_loop,
+				    guint loop_mode,
 				    gint loop_start, gint loop_end);
 void ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
 				     guint buffer_size,
@@ -108,7 +115,7 @@ void ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
 				     gdouble volume,
 				     guint samplerate,
 				     guint offset, guint n_frames,
-				     gboolean do_loop,
+				     guint loop_mode,
 				     gint loop_start, gint loop_end);
 
 G_END_DECLS

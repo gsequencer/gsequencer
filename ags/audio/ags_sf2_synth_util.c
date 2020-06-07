@@ -75,9 +75,9 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @do_loop: the LFO's oscillator mode
- * @loop_start: the LFO's frequency
- * @loop_end: the LFO's depth
+ * @loop_mode: the loop mode
+ * @loop_start: loop start
+ * @loop_end: loop end
  * 
  * Generate Soundfont2 wave.
  * 
@@ -91,7 +91,7 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
 			   gdouble volume,
 			   guint samplerate,
 			   guint offset, guint n_frames,
-			   gboolean do_loop,
+			   guint loop_mode,
 			   gint loop_start, gint loop_end)
 {
   void *sample_buffer;
@@ -184,7 +184,7 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
 			   samplerate,
 			   base_key,
 			   tuning);
-  
+
   for(i = 0, j = 0, k = 0; i < offset + n_frames;){
     guint copy_n_frames;
 
@@ -201,43 +201,25 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
     
     if(offset + copy_n_frames > n_frames){
       copy_n_frames = n_frames - offset;
-
-      if(do_loop){
-	if(k >= loop_end){
-	  //nothing
-	}else{
-	  if(k + copy_n_frames > n_frames - offset){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+    }
+    
+    if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(k >= loop_end){
+	//nothing
+      }else{
+	if(k + copy_n_frames > n_frames - offset){
+	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
 	  
-	    set_loop_end = TRUE;
-	  }else{
-	    if(k + copy_n_frames > loop_end){
-	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	      set_loop_start = TRUE;
-	    }else{
-	      //nothing
-	    }
-	  }
-	}
-      }
-    }else{
-      if(do_loop){
-	if(k >= loop_end){
-	  //nothing
+	  set_loop_end = TRUE;
 	}else{
-	  if(k + copy_n_frames > n_frames - offset){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	    set_loop_end = TRUE;
-	  }else{
-	    if(k + copy_n_frames > loop_end){
-	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+	  if(k + copy_n_frames > loop_end){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
 
-	      set_loop_start = TRUE;
-	    }else{
-	      //nothing
-	    }
+	    set_loop_start = TRUE;
+	  }else{
+	    //nothing
 	  }
 	}
       }
@@ -270,7 +252,7 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
     }else{
       j = (j + copy_n_frames) % buffer_size;
     }
-    
+
     k += copy_n_frames;
     
     if(set_loop_start){
@@ -296,9 +278,9 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @do_loop: the LFO's oscillator mode
- * @loop_start: the LFO's frequency
- * @loop_end: the LFO's depth
+ * @loop_mode: the loop mode
+ * @loop_start: loop start
+ * @loop_end: loop end
  * 
  * Generate Soundfont2 wave.
  * 
@@ -312,7 +294,7 @@ ags_sf2_synth_util_copy_s16(gint16 *buffer,
 			    gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames,
-			    gboolean do_loop,
+			    guint loop_mode,
 			    gint loop_start, gint loop_end)
 {
   void *sample_buffer;
@@ -422,43 +404,25 @@ ags_sf2_synth_util_copy_s16(gint16 *buffer,
     
     if(offset + copy_n_frames > n_frames){
       copy_n_frames = n_frames - offset;
-
-      if(do_loop){
-	if(k >= loop_end){
-	  //nothing
-	}else{
-	  if(k + copy_n_frames > n_frames - offset){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+    }
+    
+    if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(k >= loop_end){
+	//nothing
+      }else{
+	if(k + copy_n_frames > n_frames - offset){
+	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
 	  
-	    set_loop_end = TRUE;
-	  }else{
-	    if(k + copy_n_frames > loop_end){
-	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	      set_loop_start = TRUE;
-	    }else{
-	      //nothing
-	    }
-	  }
-	}
-      }
-    }else{
-      if(do_loop){
-	if(k >= loop_end){
-	  //nothing
+	  set_loop_end = TRUE;
 	}else{
-	  if(k + copy_n_frames > n_frames - offset){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	    set_loop_end = TRUE;
-	  }else{
-	    if(k + copy_n_frames > loop_end){
-	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+	  if(k + copy_n_frames > loop_end){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
 
-	      set_loop_start = TRUE;
-	    }else{
-	      //nothing
-	    }
+	    set_loop_start = TRUE;
+	  }else{
+	    //nothing
 	  }
 	}
       }
@@ -517,9 +481,9 @@ ags_sf2_synth_util_copy_s16(gint16 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @do_loop: the LFO's oscillator mode
- * @loop_start: the LFO's frequency
- * @loop_end: the LFO's depth
+ * @loop_mode: the loop mode
+ * @loop_start: loop start
+ * @loop_end: loop end
  * 
  * Generate Soundfont2 wave.
  * 
@@ -533,7 +497,7 @@ ags_sf2_synth_util_copy_s24(gint32 *buffer,
 			    gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames,
-			    gboolean do_loop,
+			    guint loop_mode,
 			    gint loop_start, gint loop_end)
 {
   void *sample_buffer;
@@ -643,43 +607,25 @@ ags_sf2_synth_util_copy_s24(gint32 *buffer,
     
     if(offset + copy_n_frames > n_frames){
       copy_n_frames = n_frames - offset;
-
-      if(do_loop){
-	if(k >= loop_end){
-	  //nothing
-	}else{
-	  if(k + copy_n_frames > n_frames - offset){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+    }
+    
+    if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(k >= loop_end){
+	//nothing
+      }else{
+	if(k + copy_n_frames > n_frames - offset){
+	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
 	  
-	    set_loop_end = TRUE;
-	  }else{
-	    if(k + copy_n_frames > loop_end){
-	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	      set_loop_start = TRUE;
-	    }else{
-	      //nothing
-	    }
-	  }
-	}
-      }
-    }else{
-      if(do_loop){
-	if(k >= loop_end){
-	  //nothing
+	  set_loop_end = TRUE;
 	}else{
-	  if(k + copy_n_frames > n_frames - offset){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	    set_loop_end = TRUE;
-	  }else{
-	    if(k + copy_n_frames > loop_end){
-	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+	  if(k + copy_n_frames > loop_end){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
 
-	      set_loop_start = TRUE;
-	    }else{
-	      //nothing
-	    }
+	    set_loop_start = TRUE;
+	  }else{
+	    //nothing
 	  }
 	}
       }
@@ -738,9 +684,9 @@ ags_sf2_synth_util_copy_s24(gint32 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @do_loop: the LFO's oscillator mode
- * @loop_start: the LFO's frequency
- * @loop_end: the LFO's depth
+ * @loop_mode: the loop mode
+ * @loop_start: loop start
+ * @loop_end: loop end
  * 
  * Generate Soundfont2 wave.
  * 
@@ -754,7 +700,7 @@ ags_sf2_synth_util_copy_s32(gint32 *buffer,
 			    gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames,
-			    gboolean do_loop,
+			    guint loop_mode,
 			    gint loop_start, gint loop_end)
 {
   void *sample_buffer;
@@ -864,43 +810,25 @@ ags_sf2_synth_util_copy_s32(gint32 *buffer,
     
     if(offset + copy_n_frames > n_frames){
       copy_n_frames = n_frames - offset;
-
-      if(do_loop){
-	if(k >= loop_end){
-	  //nothing
-	}else{
-	  if(k + copy_n_frames > n_frames - offset){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+    }
+    
+    if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(k >= loop_end){
+	//nothing
+      }else{
+	if(k + copy_n_frames > n_frames - offset){
+	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
 	  
-	    set_loop_end = TRUE;
-	  }else{
-	    if(k + copy_n_frames > loop_end){
-	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	      set_loop_start = TRUE;
-	    }else{
-	      //nothing
-	    }
-	  }
-	}
-      }
-    }else{
-      if(do_loop){
-	if(k >= loop_end){
-	  //nothing
+	  set_loop_end = TRUE;
 	}else{
-	  if(k + copy_n_frames > n_frames - offset){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	    set_loop_end = TRUE;
-	  }else{
-	    if(k + copy_n_frames > loop_end){
-	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+	  if(k + copy_n_frames > loop_end){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
 
-	      set_loop_start = TRUE;
-	    }else{
-	      //nothing
-	    }
+	    set_loop_start = TRUE;
+	  }else{
+	    //nothing
 	  }
 	}
       }
@@ -959,9 +887,9 @@ ags_sf2_synth_util_copy_s32(gint32 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @do_loop: the LFO's oscillator mode
- * @loop_start: the LFO's frequency
- * @loop_end: the LFO's depth
+ * @loop_mode: the loop mode
+ * @loop_start: loop start
+ * @loop_end: loop end
  * 
  * Generate Soundfont2 wave.
  * 
@@ -975,7 +903,7 @@ ags_sf2_synth_util_copy_s64(gint64 *buffer,
 			    gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames,
-			    gboolean do_loop,
+			    guint loop_mode,
 			    gint loop_start, gint loop_end)
 {
   void *sample_buffer;
@@ -1085,43 +1013,25 @@ ags_sf2_synth_util_copy_s64(gint64 *buffer,
     
     if(offset + copy_n_frames > n_frames){
       copy_n_frames = n_frames - offset;
-
-      if(do_loop){
-	if(k >= loop_end){
-	  //nothing
-	}else{
-	  if(k + copy_n_frames > n_frames - offset){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+    }
+    
+    if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(k >= loop_end){
+	//nothing
+      }else{
+	if(k + copy_n_frames > n_frames - offset){
+	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
 	  
-	    set_loop_end = TRUE;
-	  }else{
-	    if(k + copy_n_frames > loop_end){
-	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	      set_loop_start = TRUE;
-	    }else{
-	      //nothing
-	    }
-	  }
-	}
-      }
-    }else{
-      if(do_loop){
-	if(k >= loop_end){
-	  //nothing
+	  set_loop_end = TRUE;
 	}else{
-	  if(k + copy_n_frames > n_frames - offset){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	    set_loop_end = TRUE;
-	  }else{
-	    if(k + copy_n_frames > loop_end){
-	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+	  if(k + copy_n_frames > loop_end){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
 
-	      set_loop_start = TRUE;
-	    }else{
-	      //nothing
-	    }
+	    set_loop_start = TRUE;
+	  }else{
+	    //nothing
 	  }
 	}
       }
@@ -1180,9 +1090,9 @@ ags_sf2_synth_util_copy_s64(gint64 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @do_loop: the LFO's oscillator mode
- * @loop_start: the LFO's frequency
- * @loop_end: the LFO's depth
+ * @loop_mode: the loop mode
+ * @loop_start: loop start
+ * @loop_end: loop end
  * 
  * Generate Soundfont2 wave.
  * 
@@ -1196,7 +1106,7 @@ ags_sf2_synth_util_copy_float(gfloat *buffer,
 			      gdouble volume,
 			      guint samplerate,
 			      guint offset, guint n_frames,
-			      gboolean do_loop,
+			      guint loop_mode,
 			      gint loop_start, gint loop_end)
 {
   void *sample_buffer;
@@ -1306,48 +1216,30 @@ ags_sf2_synth_util_copy_float(gfloat *buffer,
     
     if(offset + copy_n_frames > n_frames){
       copy_n_frames = n_frames - offset;
-
-      if(do_loop){
-	if(k >= loop_end){
-	  //nothing
-	}else{
-	  if(k + copy_n_frames > n_frames - offset){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+    }
+    
+    if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(k >= loop_end){
+	//nothing
+      }else{
+	if(k + copy_n_frames > n_frames - offset){
+	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
 	  
-	    set_loop_end = TRUE;
-	  }else{
-	    if(k + copy_n_frames > loop_end){
-	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	      set_loop_start = TRUE;
-	    }else{
-	      //nothing
-	    }
-	  }
-	}
-      }
-    }else{
-      if(do_loop){
-	if(k >= loop_end){
-	  //nothing
+	  set_loop_end = TRUE;
 	}else{
-	  if(k + copy_n_frames > n_frames - offset){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	    set_loop_end = TRUE;
-	  }else{
-	    if(k + copy_n_frames > loop_end){
-	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+	  if(k + copy_n_frames > loop_end){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
 
-	      set_loop_start = TRUE;
-	    }else{
-	      //nothing
-	    }
+	    set_loop_start = TRUE;
+	  }else{
+	    //nothing
 	  }
 	}
       }
     }
-    
+
     if(i % buffer_size + copy_n_frames >= buffer_size){
       copy_n_frames = copy_n_frames - ((i % buffer_size + copy_n_frames) - buffer_size);
       
@@ -1401,9 +1293,9 @@ ags_sf2_synth_util_copy_float(gfloat *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @do_loop: the LFO's oscillator mode
- * @loop_start: the LFO's frequency
- * @loop_end: the LFO's depth
+ * @loop_mode: the loop mode
+ * @loop_start: loop start
+ * @loop_end: loop end
  * 
  * Generate Soundfont2 wave.
  * 
@@ -1417,7 +1309,7 @@ ags_sf2_synth_util_copy_double(gdouble *buffer,
 			       gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames,
-			       gboolean do_loop,
+			       guint loop_mode,
 			       gint loop_start, gint loop_end)
 {
   void *sample_buffer;
@@ -1527,48 +1419,30 @@ ags_sf2_synth_util_copy_double(gdouble *buffer,
     
     if(offset + copy_n_frames > n_frames){
       copy_n_frames = n_frames - offset;
-
-      if(do_loop){
-	if(k >= loop_end){
-	  //nothing
-	}else{
-	  if(k + copy_n_frames > n_frames - offset){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+    }
+    
+    if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(k >= loop_end){
+	//nothing
+      }else{
+	if(k + copy_n_frames > n_frames - offset){
+	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
 	  
-	    set_loop_end = TRUE;
-	  }else{
-	    if(k + copy_n_frames > loop_end){
-	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	      set_loop_start = TRUE;
-	    }else{
-	      //nothing
-	    }
-	  }
-	}
-      }
-    }else{
-      if(do_loop){
-	if(k >= loop_end){
-	  //nothing
+	  set_loop_end = TRUE;
 	}else{
-	  if(k + copy_n_frames > n_frames - offset){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	    set_loop_end = TRUE;
-	  }else{
-	    if(k + copy_n_frames > loop_end){
-	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+	  if(k + copy_n_frames > loop_end){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
 
-	      set_loop_start = TRUE;
-	    }else{
-	      //nothing
-	    }
+	    set_loop_start = TRUE;
+	  }else{
+	    //nothing
 	  }
 	}
       }
     }
-    
+      
     if(i % buffer_size + copy_n_frames >= buffer_size){
       copy_n_frames = copy_n_frames - ((i % buffer_size + copy_n_frames) - buffer_size);
       
@@ -1622,9 +1496,9 @@ ags_sf2_synth_util_copy_double(gdouble *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @do_loop: the LFO's oscillator mode
- * @loop_start: the LFO's frequency
- * @loop_end: the LFO's depth
+ * @loop_mode: the loop mode
+ * @loop_start: loop start
+ * @loop_end: loop end
  * 
  * Generate Soundfont2 wave.
  * 
@@ -1638,7 +1512,7 @@ ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
 				gdouble volume,
 				guint samplerate,
 				guint offset, guint n_frames,
-				gboolean do_loop,
+				guint loop_mode,
 				gint loop_start, gint loop_end)
 {
   void *sample_buffer;
@@ -1748,43 +1622,25 @@ ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
     
     if(offset + copy_n_frames > n_frames){
       copy_n_frames = n_frames - offset;
-
-      if(do_loop){
-	if(k >= loop_end){
-	  //nothing
-	}else{
-	  if(k + copy_n_frames > n_frames - offset){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+    }
+    
+    if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(k >= loop_end){
+	//nothing
+      }else{
+	if(k + copy_n_frames > n_frames - offset){
+	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
 	  
-	    set_loop_end = TRUE;
-	  }else{
-	    if(k + copy_n_frames > loop_end){
-	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	      set_loop_start = TRUE;
-	    }else{
-	      //nothing
-	    }
-	  }
-	}
-      }
-    }else{
-      if(do_loop){
-	if(k >= loop_end){
-	  //nothing
+	  set_loop_end = TRUE;
 	}else{
-	  if(k + copy_n_frames > n_frames - offset){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	    set_loop_end = TRUE;
-	  }else{
-	    if(k + copy_n_frames > loop_end){
-	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+	  if(k + copy_n_frames > loop_end){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
 
-	      set_loop_start = TRUE;
-	    }else{
-	      //nothing
-	    }
+	    set_loop_start = TRUE;
+	  }else{
+	    //nothing
 	  }
 	}
       }
