@@ -198,7 +198,7 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
   }else{
     if(offset >= loop_start){
       if(offset > loop_end){
-	k = offset - ((loop_start + (loop_end - loop_start)) * floor(offset / (loop_start + (loop_end - loop_start))));
+	k = offset - (loop_start + ((loop_end - loop_start) * floor((offset - loop_start) / (loop_end - loop_start))));
       }else{
 	k = offset;
       }
@@ -358,7 +358,7 @@ ags_sf2_synth_util_copy_s16(gint16 *buffer,
   }else{
     if(offset >= loop_start){
       if(offset > loop_end){
-	k = offset - ((loop_start + (loop_end - loop_start)) * floor(offset / (loop_start + (loop_end - loop_start))));
+	k = offset - (loop_start + ((loop_end - loop_start) * floor((offset - loop_start) / (loop_end - loop_start))));
       }else{
 	k = offset;
       }
@@ -518,7 +518,7 @@ ags_sf2_synth_util_copy_s24(gint32 *buffer,
   }else{
     if(offset >= loop_start){
       if(offset > loop_end){
-	k = offset - ((loop_start + (loop_end - loop_start)) * floor(offset / (loop_start + (loop_end - loop_start))));
+	k = offset - (loop_start + ((loop_end - loop_start) * floor((offset - loop_start) / (loop_end - loop_start))));
       }else{
 	k = offset;
       }
@@ -678,7 +678,7 @@ ags_sf2_synth_util_copy_s32(gint32 *buffer,
   }else{
     if(offset >= loop_start){
       if(offset > loop_end){
-	k = offset - ((loop_start + (loop_end - loop_start)) * floor(offset / (loop_start + (loop_end - loop_start))));
+	k = offset - (loop_start + ((loop_end - loop_start) * floor((offset - loop_start) / (loop_end - loop_start))));
       }else{
 	k = offset;
       }
@@ -838,7 +838,7 @@ ags_sf2_synth_util_copy_s64(gint64 *buffer,
   }else{
     if(offset >= loop_start){
       if(offset > loop_end){
-	k = offset - ((loop_start + (loop_end - loop_start)) * floor(offset / (loop_start + (loop_end - loop_start))));
+	k = offset - (loop_start + ((loop_end - loop_start) * floor((offset - loop_start) / (loop_end - loop_start))));
       }else{
 	k = offset;
       }
@@ -998,7 +998,7 @@ ags_sf2_synth_util_copy_float(gfloat *buffer,
   }else{
     if(offset >= loop_start){
       if(offset > loop_end){
-	k = offset - ((loop_start + (loop_end - loop_start)) * floor(offset / (loop_start + (loop_end - loop_start))));
+	k = offset - (loop_start + ((loop_end - loop_start) * floor((offset - loop_start) / (loop_end - loop_start))));
       }else{
 	k = offset;
       }
@@ -1158,7 +1158,7 @@ ags_sf2_synth_util_copy_double(gdouble *buffer,
   }else{
     if(offset >= loop_start){
       if(offset > loop_end){
-	k = offset - ((loop_start + (loop_end - loop_start)) * floor(offset / (loop_start + (loop_end - loop_start))));
+	k = offset - (loop_start + ((loop_end - loop_start) * floor((offset - loop_start) / (loop_end - loop_start))));
       }else{
 	k = offset;
       }
@@ -1318,7 +1318,7 @@ ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
   }else{
     if(offset >= loop_start){
       if(offset > loop_end){
-	k = offset - ((loop_start + (loop_end - loop_start)) * floor(offset / (loop_start + (loop_end - loop_start))));
+	k = offset - (loop_start + ((loop_end - loop_start) * floor((offset - loop_start) / (loop_end - loop_start))));
       }else{
 	k = offset;
       }
