@@ -202,38 +202,42 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
     if(offset + copy_n_frames > n_frames){
       copy_n_frames = n_frames - offset;
 
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
+      if(do_loop){
+	if(k >= loop_end){
+	  //nothing
 	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    set_loop_start = TRUE;
+	  if(k + copy_n_frames > n_frames - offset){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+	  
+	    set_loop_end = TRUE;
 	  }else{
-	    //nothing
+	    if(k + copy_n_frames > loop_end){
+	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+
+	      set_loop_start = TRUE;
+	    }else{
+	      //nothing
+	    }
 	  }
 	}
       }
     }else{
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
+      if(do_loop){
+	if(k >= loop_end){
+	  //nothing
 	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    set_loop_start = TRUE;
+	  if(k + copy_n_frames > n_frames - offset){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+	  
+	    set_loop_end = TRUE;
 	  }else{
-	    //nothing
+	    if(k + copy_n_frames > loop_end){
+	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+
+	      set_loop_start = TRUE;
+	    }else{
+	      //nothing
+	    }
 	  }
 	}
       }
@@ -419,38 +423,42 @@ ags_sf2_synth_util_copy_s16(gint16 *buffer,
     if(offset + copy_n_frames > n_frames){
       copy_n_frames = n_frames - offset;
 
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
+      if(do_loop){
+	if(k >= loop_end){
+	  //nothing
 	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    set_loop_start = TRUE;
+	  if(k + copy_n_frames > n_frames - offset){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+	  
+	    set_loop_end = TRUE;
 	  }else{
-	    //nothing
+	    if(k + copy_n_frames > loop_end){
+	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+
+	      set_loop_start = TRUE;
+	    }else{
+	      //nothing
+	    }
 	  }
 	}
       }
     }else{
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
+      if(do_loop){
+	if(k >= loop_end){
+	  //nothing
 	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    set_loop_start = TRUE;
+	  if(k + copy_n_frames > n_frames - offset){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+	  
+	    set_loop_end = TRUE;
 	  }else{
-	    //nothing
+	    if(k + copy_n_frames > loop_end){
+	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+
+	      set_loop_start = TRUE;
+	    }else{
+	      //nothing
+	    }
 	  }
 	}
       }
@@ -636,38 +644,42 @@ ags_sf2_synth_util_copy_s24(gint32 *buffer,
     if(offset + copy_n_frames > n_frames){
       copy_n_frames = n_frames - offset;
 
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
+      if(do_loop){
+	if(k >= loop_end){
+	  //nothing
 	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    set_loop_start = TRUE;
+	  if(k + copy_n_frames > n_frames - offset){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+	  
+	    set_loop_end = TRUE;
 	  }else{
-	    //nothing
+	    if(k + copy_n_frames > loop_end){
+	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+
+	      set_loop_start = TRUE;
+	    }else{
+	      //nothing
+	    }
 	  }
 	}
       }
     }else{
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
+      if(do_loop){
+	if(k >= loop_end){
+	  //nothing
 	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    set_loop_start = TRUE;
+	  if(k + copy_n_frames > n_frames - offset){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+	  
+	    set_loop_end = TRUE;
 	  }else{
-	    //nothing
+	    if(k + copy_n_frames > loop_end){
+	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+
+	      set_loop_start = TRUE;
+	    }else{
+	      //nothing
+	    }
 	  }
 	}
       }
@@ -853,43 +865,47 @@ ags_sf2_synth_util_copy_s32(gint32 *buffer,
     if(offset + copy_n_frames > n_frames){
       copy_n_frames = n_frames - offset;
 
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
+      if(do_loop){
+	if(k >= loop_end){
+	  //nothing
 	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    set_loop_start = TRUE;
+	  if(k + copy_n_frames > n_frames - offset){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+	  
+	    set_loop_end = TRUE;
 	  }else{
-	    //nothing
+	    if(k + copy_n_frames > loop_end){
+	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+
+	      set_loop_start = TRUE;
+	    }else{
+	      //nothing
+	    }
 	  }
 	}
       }
     }else{
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
+      if(do_loop){
+	if(k >= loop_end){
+	  //nothing
 	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    set_loop_start = TRUE;
+	  if(k + copy_n_frames > n_frames - offset){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+	  
+	    set_loop_end = TRUE;
 	  }else{
-	    //nothing
+	    if(k + copy_n_frames > loop_end){
+	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+
+	      set_loop_start = TRUE;
+	    }else{
+	      //nothing
+	    }
 	  }
 	}
       }
     }
-
+    
     if(i % buffer_size + copy_n_frames >= buffer_size){
       copy_n_frames = copy_n_frames - ((i % buffer_size + copy_n_frames) - buffer_size);
       
@@ -1070,43 +1086,47 @@ ags_sf2_synth_util_copy_s64(gint64 *buffer,
     if(offset + copy_n_frames > n_frames){
       copy_n_frames = n_frames - offset;
 
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
+      if(do_loop){
+	if(k >= loop_end){
+	  //nothing
 	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    set_loop_start = TRUE;
+	  if(k + copy_n_frames > n_frames - offset){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+	  
+	    set_loop_end = TRUE;
 	  }else{
-	    //nothing
+	    if(k + copy_n_frames > loop_end){
+	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+
+	      set_loop_start = TRUE;
+	    }else{
+	      //nothing
+	    }
 	  }
 	}
       }
     }else{
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
+      if(do_loop){
+	if(k >= loop_end){
+	  //nothing
 	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    set_loop_start = TRUE;
+	  if(k + copy_n_frames > n_frames - offset){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+	  
+	    set_loop_end = TRUE;
 	  }else{
-	    //nothing
+	    if(k + copy_n_frames > loop_end){
+	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+
+	      set_loop_start = TRUE;
+	    }else{
+	      //nothing
+	    }
 	  }
 	}
       }
     }
-
+    
     if(i % buffer_size + copy_n_frames >= buffer_size){
       copy_n_frames = copy_n_frames - ((i % buffer_size + copy_n_frames) - buffer_size);
       
@@ -1287,43 +1307,47 @@ ags_sf2_synth_util_copy_float(gfloat *buffer,
     if(offset + copy_n_frames > n_frames){
       copy_n_frames = n_frames - offset;
 
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
+      if(do_loop){
+	if(k >= loop_end){
+	  //nothing
 	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    set_loop_start = TRUE;
+	  if(k + copy_n_frames > n_frames - offset){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+	  
+	    set_loop_end = TRUE;
 	  }else{
-	    //nothing
+	    if(k + copy_n_frames > loop_end){
+	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+
+	      set_loop_start = TRUE;
+	    }else{
+	      //nothing
+	    }
 	  }
 	}
       }
     }else{
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
+      if(do_loop){
+	if(k >= loop_end){
+	  //nothing
 	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    set_loop_start = TRUE;
+	  if(k + copy_n_frames > n_frames - offset){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+	  
+	    set_loop_end = TRUE;
 	  }else{
-	    //nothing
+	    if(k + copy_n_frames > loop_end){
+	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+
+	      set_loop_start = TRUE;
+	    }else{
+	      //nothing
+	    }
 	  }
 	}
       }
     }
-
+    
     if(i % buffer_size + copy_n_frames >= buffer_size){
       copy_n_frames = copy_n_frames - ((i % buffer_size + copy_n_frames) - buffer_size);
       
@@ -1504,43 +1528,47 @@ ags_sf2_synth_util_copy_double(gdouble *buffer,
     if(offset + copy_n_frames > n_frames){
       copy_n_frames = n_frames - offset;
 
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
+      if(do_loop){
+	if(k >= loop_end){
+	  //nothing
 	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    set_loop_start = TRUE;
+	  if(k + copy_n_frames > n_frames - offset){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+	  
+	    set_loop_end = TRUE;
 	  }else{
-	    //nothing
+	    if(k + copy_n_frames > loop_end){
+	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+
+	      set_loop_start = TRUE;
+	    }else{
+	      //nothing
+	    }
 	  }
 	}
       }
     }else{
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
+      if(do_loop){
+	if(k >= loop_end){
+	  //nothing
 	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    set_loop_start = TRUE;
+	  if(k + copy_n_frames > n_frames - offset){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+	  
+	    set_loop_end = TRUE;
 	  }else{
-	    //nothing
+	    if(k + copy_n_frames > loop_end){
+	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+
+	      set_loop_start = TRUE;
+	    }else{
+	      //nothing
+	    }
 	  }
 	}
       }
     }
-
+    
     if(i % buffer_size + copy_n_frames >= buffer_size){
       copy_n_frames = copy_n_frames - ((i % buffer_size + copy_n_frames) - buffer_size);
       
@@ -1721,43 +1749,47 @@ ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
     if(offset + copy_n_frames > n_frames){
       copy_n_frames = n_frames - offset;
 
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
+      if(do_loop){
+	if(k >= loop_end){
+	  //nothing
 	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    set_loop_start = TRUE;
+	  if(k + copy_n_frames > n_frames - offset){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+	  
+	    set_loop_end = TRUE;
 	  }else{
-	    //nothing
+	    if(k + copy_n_frames > loop_end){
+	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+
+	      set_loop_start = TRUE;
+	    }else{
+	      //nothing
+	    }
 	  }
 	}
       }
     }else{
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
+      if(do_loop){
+	if(k >= loop_end){
+	  //nothing
 	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    set_loop_start = TRUE;
+	  if(k + copy_n_frames > n_frames - offset){
+	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+	  
+	    set_loop_end = TRUE;
 	  }else{
-	    //nothing
+	    if(k + copy_n_frames > loop_end){
+	      copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
+
+	      set_loop_start = TRUE;
+	    }else{
+	      //nothing
+	    }
 	  }
 	}
       }
     }
-
+    
     if(i % buffer_size + copy_n_frames >= buffer_size){
       copy_n_frames = copy_n_frames - ((i % buffer_size + copy_n_frames) - buffer_size);
       
