@@ -8,6 +8,11 @@ ags (3.4.0)
 	* improved ags_filter_util.c
 	* improved AgsComplex support
 
+ags (3.3.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added missing include string.h in ags_math_util.c
+
 ags (3.3.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
