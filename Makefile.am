@@ -976,6 +976,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_soundcard_util.h \
 	ags/audio/ags_sf2_synth_generator.h \
 	ags/audio/ags_sf2_synth_util.h \
+	ags/audio/ags_sfz_synth_util.h \
 	ags/audio/ags_synth_generator.h \
 	ags/audio/ags_synth_util.h \
 	ags/audio/ags_track.h \
@@ -1044,6 +1045,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_soundcard_util.c \
 	ags/audio/ags_sf2_synth_generator.c \
 	ags/audio/ags_sf2_synth_util.c \
+	ags/audio/ags_sfz_synth_util.c \
 	ags/audio/ags_synth_generator.c \
 	ags/audio/ags_synth_util.c \
 	ags/audio/ags_track.c \
