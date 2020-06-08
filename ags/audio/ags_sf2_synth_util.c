@@ -78,6 +78,10 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
   IpatchIter pzone_iter;
   IpatchIter izone_iter;
 
+  gchar *matching_preset;
+  gchar *matching_instrument;
+  gchar *matching_sample;
+  
   GError *error;
 
   if(!AGS_IS_IPATCH(ipatch)){
@@ -86,6 +90,10 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 
   ipatch_sample = NULL;
   matching_sf2_sample = NULL;
+
+  matching_preset = NULL;
+  matching_instrument = NULL;
+  matching_sample = NULL;
   
   error = NULL;
   sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) ipatch->handle->file,
@@ -103,6 +111,10 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 				      NULL);
 
   if(sf2_preset != NULL){
+    if(preset != NULL){
+      matching_preset = ipatch_sf2_preset_get_name(sf2_preset);
+    }
+    
     pzone_list = ipatch_sf2_preset_get_zones(sf2_preset);
 
     ipatch_list_init_iter(pzone_list, &pzone_iter);
@@ -122,7 +134,11 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 	if(note_range->low <= midi_key &&
 	   note_range->high >= midi_key){
 	  sf2_instrument = (IpatchItem *) ipatch_sf2_pzone_get_inst(ipatch_iter_get(&pzone_iter));
-	
+
+	  if(instrument != NULL){
+	    matching_instrument = ipatch_sf2_inst_get_name(sf2_instrument);
+	  }
+	  
 	  izone_list = ipatch_sf2_inst_get_zones(sf2_instrument);
 
 	  if(izone_list != NULL){
@@ -166,6 +182,10 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
   if(matching_sf2_sample != NULL){
     GList *start_list, *list;
 
+    if(sample != NULL){
+      matching_sample = ipatch_sf2_sample_get_name(matching_sf2_sample);
+    }
+    
     list =
       start_list = ags_sound_container_get_resource_all(AGS_SOUND_CONTAINER(ipatch));
 
@@ -180,6 +200,18 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
     }
   }
 
+  if(preset != NULL){
+    preset[0] = matching_preset;
+  }
+
+  if(instrument != NULL){
+    instrument[0] = matching_instrument;
+  }
+
+  if(sample != NULL){
+    sample[0] = matching_sample;
+  }
+  
   return(ipatch_sample);
 }
 
