@@ -23,6 +23,7 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
+#include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
 
 #include <math.h>
@@ -61,9 +62,125 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 							 gchar **instrument,
 							 gchar **sample)
 {
-  //TODO:JK: implement me
+  AgsIpatchSample *ipatch_sample;
+  
+  IpatchSF2 *sf2;
+  IpatchSF2Preset *sf2_preset;
+  IpatchSF2Inst *sf2_instrument;
+  IpatchSF2Sample *sf2_sample, *first_sf2_sample;
+  IpatchSF2Sample *matching_sf2_sample;
+  IpatchItem *pzone;
+  IpatchItem *izone;
 
-  return(NULL);
+  IpatchList *pzone_list;
+  IpatchList *izone_list;
+
+  IpatchIter pzone_iter;
+  IpatchIter izone_iter;
+
+  GError *error;
+
+  if(!AGS_IS_IPATCH(ipatch)){
+    return(NULL);
+  }
+
+  ipatch_sample = NULL;
+  matching_sf2_sample = NULL;
+  
+  error = NULL;
+  sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) ipatch->handle->file,
+						    IPATCH_TYPE_SF2,
+						    &error);
+
+  if(error != NULL){
+    g_error_free(error);
+  }
+  
+  sf2_preset = ipatch_sf2_find_preset(sf2,
+				      NULL,
+				      bank,
+				      program,
+				      NULL);
+
+  if(sf2_preset != NULL){
+    pzone_list = ipatch_sf2_preset_get_zones(sf2_preset);
+
+    ipatch_list_init_iter(pzone_list, &pzone_iter);
+    
+    if(ipatch_iter_first(&pzone_iter) != NULL){
+      do{
+	IpatchRange *note_range;
+	
+	pzone = ipatch_iter_get(&pzone_iter);
+
+	g_object_get(pzone,
+		     "note-range", &note_range,
+		     NULL);
+
+	first_sf2_sample = NULL;
+	
+	if(note_range->low <= midi_key &&
+	   note_range->high >= midi_key){
+	  sf2_instrument = (IpatchItem *) ipatch_sf2_pzone_get_inst(ipatch_iter_get(&pzone_iter));
+	
+	  izone_list = ipatch_sf2_inst_get_zones(sf2_instrument);
+
+	  if(izone_list != NULL){
+	    ipatch_list_init_iter(izone_list, &izone_iter);
+
+	    if(ipatch_iter_first(&izone_iter) != NULL){      
+	      izone = ipatch_iter_get(&izone_iter);
+
+	      first_sf2_sample = ipatch_sf2_izone_get_sample(izone);
+	      
+	      do{
+		gint root_note;
+		
+		izone = ipatch_iter_get(&izone_iter);
+
+		sf2_sample = ipatch_sf2_izone_get_sample(izone);
+ 
+		g_object_get(sf2_sample,
+			     "root-note", &root_note,
+			     NULL);
+		
+		if(root_note == 60){
+		  matching_sf2_sample = sf2_sample;
+
+		  break;
+		}
+	      }while(ipatch_iter_next(&izone_iter) != NULL);
+	    }
+	  }
+
+	  if(matching_sf2_sample == NULL){
+	    matching_sf2_sample = first_sf2_sample;
+	  }
+	  
+	  break;
+	}
+      }while(ipatch_iter_next(&pzone_iter) != NULL);
+    }
+  }
+
+  if(matching_sf2_sample != NULL){
+    GList *start_list, *list;
+
+    list =
+      start_list = ags_sound_container_get_resource_all(AGS_SOUND_CONTAINER(ipatch));
+
+    while(list != NULL){
+      if(AGS_IPATCH_SAMPLE(list->data)->sample == matching_sf2_sample){
+	ipatch_sample = list->data;
+
+	break;
+      }
+      
+      list = list->next;
+    }
+  }
+
+  return(ipatch_sample);
 }
 
 /**

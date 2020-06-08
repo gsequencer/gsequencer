@@ -6,7 +6,7 @@ ags (3.4.0)
 	* TODO:JK: implemented AgsSF2Generator
 	* TODO:JK: implemented AgsSFZGenerator
 	* implemented pingpong copy in ags_audio_buffer_util.c
-	* TODO:JK: implemented ags_sf2_synth_util.c
+	* implemented ags_sf2_synth_util.c
 	* TODO:JK: implemented ags_sfz_synth_util.c
 	* improved ags_filter_util.c
 	* improved AgsComplex support
