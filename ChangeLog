@@ -12,6 +12,12 @@ ags (3.4.0)
 	* improved AgsComplex support
 	* added unit-tests
 
+ags (3.3.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added ags-fx-volume to AgsPanel
+	* improved automation editor to handle specifier equals NULL
+
 ags (3.3.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

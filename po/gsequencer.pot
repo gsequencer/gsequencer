@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.3.13\n"
+"Project-Id-Version: gsequencer 3.3.14\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-06-09 16:59+0200\n"
+"POT-Creation-Date: 2020-06-09 19:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -859,27 +859,27 @@ msgstr ""
 msgid "Opacity"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1310
+#: ags/X/editor/ags_automation_toolbar.c:1322
 #: ags/X/editor/ags_select_acceleration_dialog.c:188
 msgid "select accelerations"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1313
+#: ags/X/editor/ags_automation_toolbar.c:1325
 #: ags/X/editor/ags_ramp_acceleration_dialog.c:187
 msgid "ramp accelerations"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1316
+#: ags/X/editor/ags_automation_toolbar.c:1328
 #: ags/X/editor/ags_notation_toolbar.c:533 ags/X/editor/ags_wave_toolbar.c:437
 msgid "position cursor"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1322
+#: ags/X/editor/ags_automation_toolbar.c:1334
 #: ags/X/editor/ags_wave_toolbar.c:443
 msgid "enable all lines"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1325
+#: ags/X/editor/ags_automation_toolbar.c:1337
 #: ags/X/editor/ags_wave_toolbar.c:446
 msgid "disable all lines"
 msgstr ""
