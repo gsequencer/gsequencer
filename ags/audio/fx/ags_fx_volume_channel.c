@@ -53,7 +53,7 @@ static gpointer ags_fx_volume_channel_parent_class = NULL;
 
 const gchar *ags_fx_volume_channel_plugin_name = "ags-fx-volume";
 
-const gchar *ags_fx_volume_channel_specifier[] = {
+const gchar* ags_fx_volume_channel_specifier[] = {
   "./muted[0]",
   "./volume[0]",
   NULL,
@@ -164,14 +164,14 @@ ags_fx_volume_channel_init(AgsFxVolumeChannel *fx_volume_channel)
 
   /* muted */
   fx_volume_channel->muted = g_object_new(AGS_TYPE_PORT,
-					"plugin-name", ags_fx_volume_channel_plugin_name,
-					"specifier", ags_fx_volume_channel_specifier[0],
-					"control-port", ags_fx_volume_channel_control_port[0],
-					"port-value-is-pointer", FALSE,
-					"port-value-type", G_TYPE_FLOAT,
-					"port-value-size", sizeof(gfloat),
-					"port-value-length", 1,
-					NULL);
+					  "plugin-name", ags_fx_volume_channel_plugin_name,
+					  "specifier", ags_fx_volume_channel_specifier[0],
+					  "control-port", ags_fx_volume_channel_control_port[0],
+					  "port-value-is-pointer", FALSE,
+					  "port-value-type", G_TYPE_FLOAT,
+					  "port-value-size", sizeof(gfloat),
+					  "port-value-length", 1,
+					  NULL);
   
   fx_volume_channel->muted->port_value.ags_port_float = (gfloat) FALSE;
 
@@ -184,14 +184,14 @@ ags_fx_volume_channel_init(AgsFxVolumeChannel *fx_volume_channel)
 
   /* volume */
   fx_volume_channel->volume = g_object_new(AGS_TYPE_PORT,
-					"plugin-name", ags_fx_volume_channel_plugin_name,
-					"specifier", ags_fx_volume_channel_specifier[1],
-					"control-port", ags_fx_volume_channel_control_port[1],
-					"port-value-is-pointer", FALSE,
-					"port-value-type", G_TYPE_FLOAT,
-					"port-value-size", sizeof(gfloat),
-					"port-value-length", 1,
-					NULL);
+					   "plugin-name", ags_fx_volume_channel_plugin_name,
+					   "specifier", ags_fx_volume_channel_specifier[1],
+					   "control-port", ags_fx_volume_channel_control_port[1],
+					   "port-value-is-pointer", FALSE,
+					   "port-value-type", G_TYPE_FLOAT,
+					   "port-value-size", sizeof(gfloat),
+					   "port-value-length", 1,
+					   NULL);
   
   fx_volume_channel->volume->port_value.ags_port_float = (gfloat) 1.0;
 

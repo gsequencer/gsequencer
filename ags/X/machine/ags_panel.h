@@ -53,6 +53,9 @@ struct _AgsPanel
   AgsRecallContainer *playback_play_container;
   AgsRecallContainer *playback_recall_container;
   
+  AgsRecallContainer *volume_play_container;
+  AgsRecallContainer *volume_recall_container;
+
   GtkVBox *vbox;
 };
 

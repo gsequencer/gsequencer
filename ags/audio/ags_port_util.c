@@ -108,7 +108,7 @@ ags_port_util_load_ladspa_conversion(AgsPort *port,
  */
 void
 ags_port_util_load_lv2_conversion(AgsPort *port,
-				     AgsPluginPort *plugin_port)
+				  AgsPluginPort *plugin_port)
 {
   AgsLv2Conversion *lv2_conversion;
 

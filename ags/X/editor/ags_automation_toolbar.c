@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -613,8 +613,20 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
 		 "plugin-port", &plugin_port,
 		 NULL);
 
+    if(specifier == NULL){    
+      /* iterate */
+      port = port->next;
+
+      continue;
+    }
+    
+#ifdef HAVE_GLIB_2_44
     contains_control_name = g_strv_contains(collected_specifier,
 					    specifier);
+#else
+    contains_control_name = ags_strv_contains(collected_specifier,
+					      specifier);
+#endif
 
     if(plugin_port != NULL &&
        !contains_control_name){
