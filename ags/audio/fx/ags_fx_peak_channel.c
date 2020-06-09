@@ -431,7 +431,7 @@ ags_fx_peak_channel_get_peak_plugin_port()
     plugin_port = ags_plugin_port_new();
     g_object_ref(plugin_port);
     
-    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+    plugin_port->flags |= (AGS_PLUGIN_PORT_OUTPUT |
 			   AGS_PLUGIN_PORT_CONTROL);
 
     plugin_port->port_index = 0;

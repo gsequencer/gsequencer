@@ -19,6 +19,8 @@
 
 #include <ags/audio/fx/ags_fx_volume_channel.h>
 
+#include <ags/plugin/ags_plugin_port.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_volume_channel_class_init(AgsFxVolumeChannelClass *fx_volume_channel);
@@ -33,6 +35,9 @@ void ags_fx_volume_channel_get_property(GObject *gobject,
 					GParamSpec *param_spec);
 void ags_fx_volume_channel_dispose(GObject *gobject);
 void ags_fx_volume_channel_finalize(GObject *gobject);
+
+static AgsPluginPort* ags_fx_volume_channel_get_muted_plugin_port();
+static AgsPluginPort* ags_fx_volume_channel_get_volume_plugin_port();
 
 /**
  * SECTION:ags_fx_volume_channel
@@ -170,6 +175,10 @@ ags_fx_volume_channel_init(AgsFxVolumeChannel *fx_volume_channel)
   
   fx_volume_channel->muted->port_value.ags_port_float = (gfloat) FALSE;
 
+  g_object_set(fx_volume_channel->muted,
+	       "plugin-port", ags_fx_volume_channel_get_muted_plugin_port(),
+	       NULL);
+
   ags_recall_add_port((AgsRecall *) fx_volume_channel,
 		      fx_volume_channel->muted);
 
@@ -185,6 +194,10 @@ ags_fx_volume_channel_init(AgsFxVolumeChannel *fx_volume_channel)
 					NULL);
   
   fx_volume_channel->volume->port_value.ags_port_float = (gfloat) 1.0;
+
+  g_object_set(fx_volume_channel->volume,
+	       "plugin-port", ags_fx_volume_channel_get_volume_plugin_port(),
+	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_volume_channel,
 		      fx_volume_channel->volume);
@@ -350,6 +363,85 @@ ags_fx_volume_channel_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_volume_channel_parent_class)->finalize(gobject);
+}
+
+static AgsPluginPort*
+ags_fx_volume_channel_get_muted_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL |
+			   AGS_PLUGIN_PORT_TOGGLED);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      1.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_volume_channel_get_volume_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      1.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      2.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
 }
 
 /**
