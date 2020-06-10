@@ -12,6 +12,11 @@ ags (3.4.0)
 	* improved AgsComplex support
 	* added unit-tests
 
+ags (3.3.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-playback capture wrong offset as clearing while replacing mode
+
 ags (3.3.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

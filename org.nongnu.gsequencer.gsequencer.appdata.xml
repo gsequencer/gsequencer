@@ -35,6 +35,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.3.15" date="2020-06-10">
+      <description>
+	<p>Improved ags-fx-playback.</p>
+      </description>
+    </release>
+
     <release version="3.3.14" date="2020-06-09">
       <description>
 	<p>Improved automation editor.</p>

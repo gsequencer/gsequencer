@@ -1407,6 +1407,7 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
   gint input_soundcard_channel;
   guint64 relative_offset;
   guint64 x_offset;
+  guint64 x_buffer_offset_0, x_buffer_offset_1;
   guint attack;
   guint samplerate, target_samplerate, file_samplerate;
   guint buffer_size, target_buffer_size, file_buffer_size;
@@ -1414,6 +1415,7 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
   guint frame_count;
   guint target_copy_mode, file_copy_mode;
   guint capture_mode;
+  gboolean create_wave;
   gboolean found_buffer;
   
   GValue value = {0,};
@@ -1494,6 +1496,16 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
   attack = (x_offset % relative_offset) % target_buffer_size;
 
   frame_count = target_buffer_size - attack;
+
+  create_wave = FALSE;
+    
+  if(x_offset + frame_count > relative_offset * floor(x_offset / relative_offset) + relative_offset){
+    frame_count = relative_offset * floor((x_offset + frame_count) / relative_offset) - x_offset;
+
+    create_wave = TRUE;
+  }else if(x_offset + frame_count == relative_offset * floor(x_offset / relative_offset) + relative_offset){
+    create_wave = TRUE;
+  } 
 
   /* capture mode */
   capture_mode = AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_NONE;
@@ -1666,6 +1678,8 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 
     buffer = NULL;
 
+    x_buffer_offset_0 = x_offset - attack;
+
     found_buffer = FALSE;
     
     if(wave == NULL){
@@ -1679,7 +1693,7 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 		   "timestamp", &current_timestamp,
 		   NULL);
       ags_timestamp_set_ags_offset(current_timestamp,
-				   relative_offset * floor(x_offset / relative_offset));
+				   ags_timestamp_get_ags_offset(timestamp));
       
       ags_audio_add_wave(audio,
 			 (GObject *) current_wave);
@@ -1689,14 +1703,14 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
       current_wave = wave->data;
     
       buffer = ags_wave_find_point(current_wave,
-				   x_offset,
+				   x_buffer_offset_0,
 				   FALSE);
     }
   
     if(buffer == NULL){
       /* instantiate buffer */
       buffer = ags_buffer_new();
-      buffer->x = x_offset;
+      buffer->x = x_buffer_offset_0;
       
       ags_wave_add_buffer(current_wave,
 			  buffer,
@@ -1715,15 +1729,44 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
       buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(buffer);
 
       data = ags_soundcard_get_prev_buffer(AGS_SOUNDCARD(input_soundcard));
-  
-      attack = (x_offset % relative_offset) % target_buffer_size;
-  
+      
       g_rec_mutex_lock(buffer_mutex);
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(input_soundcard), data);
 
       if(found_buffer &&
 	 capture_mode == AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_REPLACE){
-	ags_audio_buffer_util_clear_buffer(buffer->data, 1,
+	void *data;
+
+	data = buffer->data;
+
+	switch(target_format){
+	case AGS_SOUNDCARD_SIGNED_8_BIT:
+	  data = ((gint8 *) data) + attack;
+	  break;
+	case AGS_SOUNDCARD_SIGNED_16_BIT:
+	  data = ((gint16 *) data) + attack;
+	  break;
+	case AGS_SOUNDCARD_SIGNED_24_BIT:
+	  data = ((gint32 *) data) + attack;
+	  break;
+	case AGS_SOUNDCARD_SIGNED_32_BIT:
+	  data = ((gint32 *) data) + attack;
+	  break;
+	case AGS_SOUNDCARD_SIGNED_64_BIT:
+	  data = ((gint64 *) data) + attack;
+	  break;
+	case AGS_SOUNDCARD_FLOAT:
+	  data = ((gfloat *) data) + attack;
+	  break;
+	case AGS_SOUNDCARD_DOUBLE:
+	  data = ((gdouble *) data) + attack;
+	  break;
+	case AGS_SOUNDCARD_COMPLEX:
+	  data = ((AgsComplex *) data) + attack;
+	  break;
+	}
+	
+	ags_audio_buffer_util_clear_buffer(data, 1,
 					   frame_count, ags_audio_buffer_util_format_from_soundcard(target_format));
       }
     
@@ -1742,7 +1785,7 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
     
     /* find wave - attempt #1 */
     if(attack != 0 ||
-       frame_count != buffer_size){
+       frame_count != target_buffer_size){
       ags_timestamp_set_ags_offset(timestamp,
 				   (guint64) (relative_offset * floor((double) (x_offset + frame_count) / (double) relative_offset)));
 
@@ -1751,6 +1794,8 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 
       buffer = NULL;
   
+      x_buffer_offset_1 = x_offset + frame_count;
+
       found_buffer = FALSE;
       
       if(wave == NULL){
@@ -1764,7 +1809,7 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 		     "timestamp", &current_timestamp,
 		     NULL);
 	ags_timestamp_set_ags_offset(current_timestamp,
-				     (guint64) (relative_offset * floor((double) (x_offset + frame_count) / (double) relative_offset)));
+				     ags_timestamp_get_ags_offset(timestamp));
       
 	ags_audio_add_wave(audio,
 			   (GObject *) current_wave);
@@ -1774,14 +1819,14 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 	current_wave = wave->data;
     
 	buffer = ags_wave_find_point(current_wave,
-				     x_offset + frame_count,
+				     x_buffer_offset_1,
 				     FALSE);
       }
   
       if(buffer == NULL){
 	/* instantiate buffer */
 	buffer = ags_buffer_new();
-	buffer->x = x_offset + frame_count;
+	buffer->x = x_buffer_offset_1;
       
 	ags_wave_add_buffer(current_wave,
 			    buffer,
@@ -1800,12 +1845,12 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 	if(found_buffer &&
 	   capture_mode == AGS_FX_PLAYBACK_AUDIO_CAPTURE_MODE_REPLACE){
 	  ags_audio_buffer_util_clear_buffer(buffer->data, 1,
-					     frame_count, ags_audio_buffer_util_format_from_soundcard(target_format));
+					     attack, ags_audio_buffer_util_format_from_soundcard(target_format));
 	}
     
 	ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
 						    data, audio_channels, (frame_count * audio_channels) + input_soundcard_channel,
-						    target_buffer_size - frame_count, target_copy_mode);
+						    attack, target_copy_mode);
 
 	ags_soundcard_unlock_buffer(AGS_SOUNDCARD(input_soundcard), data);
 	g_rec_mutex_unlock(buffer_mutex);
