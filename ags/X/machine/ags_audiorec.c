@@ -23,6 +23,8 @@
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
+#include <string.h>
+
 #include <ags/i18n.h>
 
 void ags_audiorec_class_init(AgsAudiorecClass *audiorec);
@@ -805,7 +807,8 @@ ags_audiorec_open_filename(AgsAudiorec *audiorec,
   AgsWaveLoader *wave_loader;
   
   if(!AGS_IS_AUDIOREC(audiorec) ||
-     filename == NULL){
+     filename == NULL ||
+     strlen(filename) == 0){
     return;
   }
 
