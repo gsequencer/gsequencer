@@ -758,7 +758,14 @@ ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
 				   output_port[nth],
 				   &(input_data->output[nth]));
     }
-  }  
+
+    for(nth = 0; nth < input_port_count; nth++){
+      ags_base_plugin_connect_port((AgsBasePlugin *) ladspa_plugin,
+				   input_data->ladspa_handle,
+				   input_port[nth],
+				   &(input_data->input[nth]));
+    }
+  }
 
   fx_ladspa_channel->output_port_count = output_port_count;
   fx_ladspa_channel->output_port = output_port;

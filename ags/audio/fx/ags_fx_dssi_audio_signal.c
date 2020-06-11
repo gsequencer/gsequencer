@@ -292,8 +292,8 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       g_rec_mutex_lock(fx_dssi_audio_mutex);
       
       if(channel_data->output != NULL){
-	ags_audio_buffer_util_clear_float(channel_data->output, fx_dssi_audio->output_port_count,
-					  buffer_size);
+	ags_audio_buffer_util_clear_float(channel_data->output, 1,
+					  fx_dssi_audio->output_port_count * buffer_size);
       }
 
       if(run_synth != NULL){
@@ -324,8 +324,8 @@ ags_fx_dssi_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       g_rec_mutex_lock(fx_dssi_audio_mutex);
       
       if(input_data->output != NULL){
-	ags_audio_buffer_util_clear_float(input_data->output, fx_dssi_audio->output_port_count,
-					  buffer_size);
+	ags_audio_buffer_util_clear_float(input_data->output, 1,
+					  fx_dssi_audio->output_port_count * buffer_size);
       }
 
       if(run_synth != NULL){
