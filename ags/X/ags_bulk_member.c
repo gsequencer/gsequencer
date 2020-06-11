@@ -1608,11 +1608,13 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
   recall_channel_port = NULL;
   
   /* search channels */
-  if(AGS_EFFECT_BULK(effect_bulk)->channel_type == AGS_TYPE_OUTPUT){
+  start_channel = NULL;
+  
+  if(g_type_is_a(AGS_EFFECT_BULK(effect_bulk)->channel_type, AGS_TYPE_OUTPUT)){
     g_object_get(audio,
 		 "output", &start_channel,
 		 NULL);
-  }else if(AGS_EFFECT_BULK(effect_bulk)->channel_type == AGS_TYPE_INPUT){
+  }else if(g_type_is_a(AGS_EFFECT_BULK(effect_bulk)->channel_type, AGS_TYPE_INPUT)){
     g_object_get(audio,
 		 "input", &start_channel,
 		 NULL);

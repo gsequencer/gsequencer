@@ -281,23 +281,23 @@ ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall)
     input_data = fx_lv2_channel->input_data[sound_scope];
 
     if(input_data->output != NULL){
-      ags_audio_buffer_util_clear_float(input_data->output, fx_lv2_channel->output_port_count,
-					buffer_size);
+      ags_audio_buffer_util_clear_float(input_data->output, 1,
+					fx_lv2_channel->output_port_count * buffer_size);
     }
 
     if(input_data->input != NULL){
-      ags_audio_buffer_util_clear_float(input_data->input, fx_lv2_channel->input_port_count,
-					buffer_size);
+      ags_audio_buffer_util_clear_float(input_data->input, 1,
+					fx_lv2_channel->input_port_count * buffer_size);
     }
 
     g_rec_mutex_lock(source_stream_mutex);
     
-    if(input_data->output != NULL &&
-       fx_lv2_channel->output_port_count >= 1 &&
+    if(input_data->input != NULL &&
+       fx_lv2_channel->input_port_count >= 1 &&
        source->stream_current != NULL){
       ags_audio_buffer_util_copy_buffer_to_buffer(input_data->input, fx_lv2_channel->input_port_count, 0,
 						  source->stream_current->data, 1, 0,
-						  buffer_size, copy_mode_out);
+						  buffer_size, copy_mode_in);
     }
 
     run(input_data->lv2_handle[0],
