@@ -15250,7 +15250,8 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 		   "audio", &audio,
 		   NULL);
 
-      start_output = NULL;
+      output = 
+	start_output = NULL;
 
       g_object_get(audio,
 		   "output", &start_output,

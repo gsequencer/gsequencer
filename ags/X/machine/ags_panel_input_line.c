@@ -321,6 +321,22 @@ ags_panel_input_line_map_recall(AgsLine *line,
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       panel->volume_play_container, panel->volume_recall_container,
+				       "ags-fx-volume",
+				       NULL,
+				       NULL,
+				       audio_channel, audio_channel + 1,
+				       pad, pad + 1,
+				       position,
+				       (AGS_FX_FACTORY_REMAP),
+				       0);
+
+  /* unref */
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
   /* call parent */
   AGS_LINE_CLASS(ags_panel_input_line_parent_class)->map_recall(line,
 								output_pad_start);

@@ -1050,6 +1050,8 @@ ags_lv2_turtle_parser_parse_names_predicate_object_list(AgsLv2TurtleParser *lv2_
 	  if(strlen(str) > 2){
 	    gchar *tmp;
 
+	    tmp = NULL;
+	    
 	    if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
 	      tmp = g_strndup(str + 3,
 			      (gsize) (strlen(str) - 6));
@@ -2232,6 +2234,8 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 	  if(strlen(str) > 2){
 	    gchar *tmp;
 
+	    tmp = NULL;
+	    
 	    if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
 	      tmp = g_strndup(str + 3,
 			      (gsize) (strlen(str) - 6));
@@ -2473,6 +2477,8 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 	if(str != NULL){
 	  gchar *tmp;
 
+	  tmp = NULL;
+	    
 	  if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
 	    tmp = g_strndup(str + 3,
 			    (gsize) (strlen(str) - 6));
@@ -3150,6 +3156,8 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 		      if(strlen(str) > 2){
 			gchar *tmp;
 
+			tmp = NULL;
+			
 			if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
 			  tmp = g_strndup(str + 3,
 					  (gsize) (strlen(str) - 6));
@@ -3234,6 +3242,8 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 		      if(strlen(str) > 2){
 			gchar *tmp;
 
+			tmp = NULL;
+			
 			if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
 			  tmp = g_strndup(str + 3,
 					  (gsize) (strlen(str) - 6));
@@ -3770,6 +3780,8 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 
 		      if(str != NULL){
 			gchar *tmp;
+
+			tmp = NULL;
 			
 			if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
 			  tmp = g_strndup(str + 3,
@@ -3942,7 +3954,9 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 	if(str != NULL){
 	  if(strlen(str) > 2){
 	    gchar *tmp;
-	      
+
+	    tmp = NULL;
+	    	      
 	    if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
 	      tmp = g_strndup(str + 3,
 			      (gsize) (strlen(str) - 6));
@@ -4026,6 +4040,8 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 	if(str != NULL){
 	  gchar *tmp;
 
+	  tmp = NULL;
+	    
 	  if(!g_ascii_strncasecmp(str, "\"\"\"", 3)){
 	    tmp = g_strndup(str + 3,
 			    (gsize) (strlen(str) - 6));

@@ -877,8 +877,20 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
 		   "plugin-port", &plugin_port,
 		   NULL);
 
+      if(specifier == NULL){
+	/* iterate */
+	port = port->next;
+
+	continue;
+      }
+
+#ifdef HAVE_GLIB_2_44
       contains_control_name = g_strv_contains(collected_specifier,
 					      specifier);
+#else
+      contains_control_name = ags_strv_contains(collected_specifier,
+						specifier);
+#endif
       
       if(plugin_port != NULL &&
 	 !contains_control_name){
@@ -927,7 +939,8 @@ ags_automation_meta_refresh(AgsAutomationMeta *automation_meta)
       if(plugin_port != NULL){
 	g_object_unref(plugin_port);
       }
-      
+
+      /* iterate */
       port = port->next;
     }
 

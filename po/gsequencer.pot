@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.3.10\n"
+"Project-Id-Version: gsequencer 3.3.16\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-05-31 17:06+0200\n"
+"POT-Creation-Date: 2020-06-11 13:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -64,7 +64,7 @@ msgid "line"
 msgstr ""
 
 #: ags/X/ags_automation_editor.c:514 ags/X/ags_connection_editor.c:444
-#: ags/X/ags_machine_editor.c:231 ags/X/machine/ags_audiorec.c:324
+#: ags/X/ags_machine_editor.c:231 ags/X/machine/ags_audiorec.c:326
 msgid "input"
 msgstr ""
 
@@ -208,7 +208,7 @@ msgid "About"
 msgstr ""
 
 #: ags/X/ags_dssi_browser.c:152 ags/X/ags_ladspa_browser.c:145
-#: ags/X/ags_lv2_browser.c:156 ags/X/machine/ags_audiorec.c:263
+#: ags/X/ags_lv2_browser.c:156 ags/X/machine/ags_audiorec.c:265
 msgid "filename: "
 msgstr ""
 
@@ -274,7 +274,7 @@ msgid "soundcard"
 msgstr ""
 
 #: ags/X/ags_export_soundcard.c:240 ags/X/export/ags_wave_export_dialog.c:208
-#: ags/X/machine/ags_audiorec.c:244 ags/X/machine/ags_pitch_sampler.c:242
+#: ags/X/machine/ags_audiorec.c:246 ags/X/machine/ags_pitch_sampler.c:242
 msgid "file"
 msgstr ""
 
@@ -859,27 +859,27 @@ msgstr ""
 msgid "Opacity"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1310
+#: ags/X/editor/ags_automation_toolbar.c:1322
 #: ags/X/editor/ags_select_acceleration_dialog.c:188
 msgid "select accelerations"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1313
+#: ags/X/editor/ags_automation_toolbar.c:1325
 #: ags/X/editor/ags_ramp_acceleration_dialog.c:187
 msgid "ramp accelerations"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1316
+#: ags/X/editor/ags_automation_toolbar.c:1328
 #: ags/X/editor/ags_notation_toolbar.c:533 ags/X/editor/ags_wave_toolbar.c:437
 msgid "position cursor"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1322
+#: ags/X/editor/ags_automation_toolbar.c:1334
 #: ags/X/editor/ags_wave_toolbar.c:443
 msgid "enable all lines"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1325
+#: ags/X/editor/ags_automation_toolbar.c:1337
 #: ags/X/editor/ags_wave_toolbar.c:446
 msgid "disable all lines"
 msgstr ""
@@ -1215,7 +1215,7 @@ msgstr ""
 msgid "sequence"
 msgstr ""
 
-#: ags/X/machine/ags_audiorec.c:285 ags/X/machine/ags_ffplayer.c:352
+#: ags/X/machine/ags_audiorec.c:287 ags/X/machine/ags_ffplayer.c:352
 #: ags/X/machine/ags_pitch_sampler.c:290
 msgid "loading ...  "
 msgstr ""
