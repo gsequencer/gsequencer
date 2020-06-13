@@ -121,7 +121,7 @@ ags_sfz_synth_generator_class_init(AgsSFZSynthGeneratorClass *sfz_synth_generato
    *
    * The assigned filename.
    * 
-   * Since: 3.0.0
+   * Since: 3.4.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename of audio container"),
@@ -1123,7 +1123,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 
   format = AGS_AUDIO_SIGNAL(audio_signal)->format;
 
-  volume = synth_generator->volume;
+  volume = 1.0;
 
   while(stream != NULL){
 

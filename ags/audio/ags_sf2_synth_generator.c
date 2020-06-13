@@ -683,7 +683,7 @@ ags_sf2_synth_generator_get_obj_mutex(AgsSF2SynthGenerator *sf2_synth_generator)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 3.0.0
+ * Since: 3.4.0
  */
 gboolean
 ags_sf2_synth_generator_test_flags(AgsSF2SynthGenerator *sf2_synth_generator, guint flags)
@@ -716,7 +716,7 @@ ags_sf2_synth_generator_test_flags(AgsSF2SynthGenerator *sf2_synth_generator, gu
  * 
  * Set @flags on @sf2_synth_generator.
  * 
- * Since: 3.0.0
+ * Since: 3.4.0
  */
 void
 ags_sf2_synth_generator_set_flags(AgsSF2SynthGenerator *sf2_synth_generator, guint flags)
@@ -745,7 +745,7 @@ ags_sf2_synth_generator_set_flags(AgsSF2SynthGenerator *sf2_synth_generator, gui
  * 
  * Unset @flags on @sf2_synth_generator.
  * 
- * Since: 3.0.0
+ * Since: 3.4.0
  */
 void
 ags_sf2_synth_generator_unset_flags(AgsSF2SynthGenerator *sf2_synth_generator, guint flags)
@@ -1570,7 +1570,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 
   format = AGS_AUDIO_SIGNAL(audio_signal)->format;
 
-  volume = synth_generator->volume;
+  volume = 1.0;
 
   while(stream != NULL){
 
@@ -1641,7 +1641,7 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 
   format = AGS_AUDIO_SIGNAL(audio_signal)->format;
 
-  volume = synth_generator->volume;
+  volume = 1.0;
 
   while(stream != NULL){
 

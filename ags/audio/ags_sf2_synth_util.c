@@ -2389,3 +2389,145 @@ ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
   ags_stream_free(sample_buffer);
   ags_stream_free(im_buffer);
 }
+
+/**
+ * ags_sf2_synth_util_copy:
+ * @buffer: the audio buffer
+ * @buffer_size: the buffer size
+ * @ipatch_sample: the #AgsIpatchSample
+ * @note: the note
+ * @volume: the volume of the sin wave
+ * @samplerate: the samplerate
+ * @audio_buffer_util_format: the audio data format
+ * @offset: start frame
+ * @n_frames: generate n frames
+ * @loop_mode: the loop mode
+ * @loop_start: the loop start
+ * @loop_end: the loop end
+ *
+ * Generate Soundfont2 wave.
+ *
+ * Since: 3.4.0
+ */
+void
+ags_sf2_synth_util_copy(void *buffer,
+			guint buffer_size,
+			AgsIpatchSample *ipatch_sample,
+			gdouble note,
+			gdouble volume,
+			guint samplerate, guint audio_buffer_util_format,
+			guint offset, guint n_frames,
+			guint loop_mode,
+			gint loop_start, gint loop_end)
+{
+  switch(audio_buffer_util_format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+  {
+    ags_sf2_synth_util_copy_s8((gint8 *) buffer,
+			       buffer_size,
+			       ipatch_sample,
+			       note,
+			       volume,
+			       samplerate,
+			       offset, n_frames,
+			       loop_mode,
+			       loop_start, loop_end);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+  {
+    ags_sf2_synth_util_copy_s16((gint16 *) buffer,
+				buffer_size,
+				ipatch_sample,
+				note,
+				volume,
+				samplerate,
+				offset, n_frames,
+				loop_mode,
+				loop_start, loop_end);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+  {
+    ags_sf2_synth_util_copy_s24((gint32 *) buffer,
+				buffer_size,
+				ipatch_sample,
+				note,
+				volume,
+				samplerate,
+				offset, n_frames,
+				loop_mode,
+				loop_start, loop_end);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+  {
+    ags_sf2_synth_util_copy_s32((gint32 *) buffer,
+				buffer_size,
+				ipatch_sample,
+				note,
+				volume,
+				samplerate,
+				offset, n_frames,
+				loop_mode,
+				loop_start, loop_end);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+  {
+    ags_sf2_synth_util_copy_s64((gint64 *) buffer,
+				buffer_size,
+				ipatch_sample,
+				note,
+				volume,
+				samplerate,
+				offset, n_frames,
+				loop_mode,
+				loop_start, loop_end);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_sf2_synth_util_copy_float((float *) buffer,
+				  buffer_size,
+				  ipatch_sample,
+				  note,
+				  volume,
+				  samplerate,
+				  offset, n_frames,
+				  loop_mode,
+				  loop_start, loop_end);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_sf2_synth_util_copy_double((double *) buffer,
+				   buffer_size,
+				   ipatch_sample,
+				   note,
+				   volume,
+				   samplerate,
+				   offset, n_frames,
+				   loop_mode,
+				   loop_start, loop_end);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_sf2_synth_util_copy_complex((AgsComplex *) buffer,
+				    buffer_size,
+				    ipatch_sample,
+				    note,
+				    volume,
+				    samplerate,
+				    offset, n_frames,
+				    loop_mode,
+				    loop_start, loop_end);
+  }
+  break;
+  default:
+  {
+    g_warning("ags_sf2_synth_util_copy() - unsupported format");
+  }
+  }
+}
