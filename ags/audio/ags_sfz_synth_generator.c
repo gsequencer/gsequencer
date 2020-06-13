@@ -1167,7 +1167,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 			    note,
 			    volume,
 			    samplerate, audio_buffer_util_format,
-			    current_attack, current_count,
+			    offset, frame_count,
 			    AGS_SFZ_SYNTH_UTIL_LOOP_NONE,
 			    0, 0);
 

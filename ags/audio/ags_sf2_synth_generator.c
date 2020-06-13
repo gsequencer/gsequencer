@@ -1535,6 +1535,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   
   GList *stream_start, *stream;
 
+  gchar *filename;
+  
   gdouble delay;
   guint attack;
   guint frame_count;
@@ -1549,6 +1551,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   guint current_attack, current_count;
   guint offset;
   guint i;
+
+  filename = sf2_synth_generator->filename;
   
   ipatch_sample = NULL;
 
@@ -1614,7 +1618,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 			    note,
 			    volume,
 			    samplerate, audio_buffer_util_format,
-			    current_attack, current_count,
+			    offset, frame_count,
 			    AGS_SF2_SYNTH_UTIL_LOOP_NONE,
 			    0, 0);
 
@@ -1659,6 +1663,8 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   
   GList *stream_start, *stream;
 
+  gchar *filename;
+  
   gdouble delay;
   guint attack;
   guint frame_count;
@@ -1674,6 +1680,8 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   guint offset;
   guint i;
   
+  filename = sf2_synth_generator->filename;
+
   ipatch_sample = NULL;
 
   //TODO:JK: implement me
@@ -1738,7 +1746,7 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 			    note,
 			    volume,
 			    samplerate, audio_buffer_util_format,
-			    current_attack, current_count,
+			    offset, frame_count,
 			    AGS_SF2_SYNTH_UTIL_LOOP_NONE,
 			    0, 0);
 
