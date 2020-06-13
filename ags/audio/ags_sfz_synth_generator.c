@@ -19,10 +19,13 @@
 
 #include <ags/audio/ags_sfz_synth_generator.h>
 
+#include <ags/audio/ags_diatonic_scale.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_sfz_synth_util.h>
 
+#include <ags/audio/file/ags_audio_container.h>
+#include <ags/audio/file/ags_audio_container_manager.h>
 #include <ags/audio/file/ags_sfz_sample.h>
 
 #include <math.h>
@@ -1084,10 +1087,19 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 				GObject *audio_signal,
 				gdouble note)
 {
-  AgsSFZSample *ipatch_sample;  
+  AgsAudioContainerManager *audio_container_manager;
+  AgsAudioContainer *audio_container;
+  AgsSFZSample *sfz_sample;  
+
+  GObject *output_soundcard;
   
+  GList *start_list, *list;
   GList *stream_start, *stream;
 
+  gchar *filename;
+
+  gint midi_key;
+  glong lower, upper;
   gdouble delay;
   guint attack;
   guint frame_count;
@@ -1103,10 +1115,171 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   guint offset;
   guint i;
   
-  ipatch_sample = NULL;
+  sfz_sample = NULL;
 
-  //TODO:JK: implement me
+
+  output_soundcard = NULL;
   
+  g_object_get(audio_signal,
+	       "output-soundcard", &output_soundcard,
+	       NULL);
+  
+  audio_container_manager = ags_audio_container_manager_get_instance();
+
+  filename = sfz_synth_generator->filename;
+  
+  audio_container = ags_audio_container_manager_find_audio_container(audio_container_manager,
+								     filename);
+
+  if(audio_container == NULL){    
+    audio_container = ags_audio_container_new(filename,
+					      NULL,
+					      NULL,
+					      NULL,
+					      output_soundcard,
+					      -1);
+    ags_audio_container_open(audio_container);
+  }
+
+  list = 
+    start_list = ags_audio_container_find_sound_resource(audio_container,
+							 NULL,
+							 NULL,
+							 NULL);
+
+  sfz_sample = NULL;
+  
+  if(list != NULL){
+    sfz_sample = list->data;
+  }
+  
+  midi_key = (gint) floor(note) + 69;
+
+  upper = -1;
+  lower = -1;
+  
+  while(list != NULL){
+    gchar *str;
+
+    glong hikey, lokey;
+    glong value;
+    int retval;
+    
+    hikey = 60;
+    lokey = 60;
+
+    /* hikey */
+    str = ags_sfz_group_lookup_control(AGS_SFZ_SAMPLE(list->data)->group,
+				       "hikey");
+
+    value = 0;
+    
+    if(str != NULL){
+      retval = sscanf(str, "%lu", &value);
+
+      if(retval <= 0){
+	glong tmp;
+	guint tmp_retval;
+	
+	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
+							 &tmp);
+
+	if(retval > 0){
+	  hikey = tmp;
+	}
+      }
+    }
+
+    /* lokey */
+    str = ags_sfz_group_lookup_control(AGS_SFZ_SAMPLE(list->data)->group,
+				       "lokey");
+
+    value = 0;
+    
+    if(str != NULL){
+      retval = sscanf(str, "%lu", &value);
+
+      if(retval <= 0){
+	glong tmp;
+	guint tmp_retval;
+	
+	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
+							 &tmp);
+
+	if(retval > 0){
+	  lokey = tmp;
+	}
+      }
+    }
+    
+    /* hikey */
+    str = ags_sfz_region_lookup_control(AGS_SFZ_SAMPLE(list->data)->region,
+					"hikey");
+
+    value = 0;
+    
+    if(str != NULL){
+      retval = sscanf(str, "%lu", &value);
+
+      if(retval <= 0){
+	glong tmp;
+	guint tmp_retval;
+	
+	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
+							 &tmp);
+
+	if(retval > 0){
+	  hikey = tmp;
+	}
+      }
+    }
+
+    /* lokey */
+    str = ags_sfz_region_lookup_control(AGS_SFZ_SAMPLE(list->data)->region,
+					"lokey");
+
+    value = 0;
+    
+    if(str != NULL){
+      retval = sscanf(str, "%lu", &value);
+
+      if(retval <= 0){
+	glong tmp;
+	guint tmp_retval;
+	
+	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
+							 &tmp);
+
+	if(retval > 0){
+	  lokey = tmp;
+	}
+      }
+    }
+    
+    if(lokey >= midi_key &&
+       hikey <= midi_key){
+      sfz_sample = list->data;
+
+      break;
+    }
+
+    if(lower == -1 ||
+       lower > lokey){
+      sfz_sample = list->data;
+
+      lower = lokey;
+    }
+
+    if(upper == -1 ||
+       upper < hikey){
+      sfz_sample = list->data;
+
+      upper = hikey;
+    }
+    
+    list = list->next;
+  }
+   
   delay = sfz_synth_generator->delay;
   attack = sfz_synth_generator->attack;
 
@@ -1163,7 +1336,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   for(i = attack; i < frame_count + attack && stream != NULL;){
     ags_sfz_synth_util_copy(stream->data,
 			    buffer_size,
-			    ipatch_sample,
+			    sfz_sample,
 			    note,
 			    volume,
 			    samplerate, audio_buffer_util_format,

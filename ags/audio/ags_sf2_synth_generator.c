@@ -23,6 +23,8 @@
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_sf2_synth_util.h>
 
+#include <ags/audio/file/ags_audio_container.h>
+#include <ags/audio/file/ags_audio_container_manager.h>
 #include <ags/audio/file/ags_ipatch_sample.h>
 
 #include <math.h>
@@ -1531,12 +1533,18 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 					   gchar *instrument,
 					   gdouble note)
 {
+  AgsAudioContainerManager *audio_container_manager;
+  AgsAudioContainer *audio_container;
   AgsIpatchSample *ipatch_sample;  
-  
+
+  GObject *output_soundcard;
+
+  GList *start_list, *list;
   GList *stream_start, *stream;
 
   gchar *filename;
-  
+
+  gint midi_key;
   gdouble delay;
   guint attack;
   guint frame_count;
@@ -1552,11 +1560,42 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   guint offset;
   guint i;
 
+  output_soundcard = NULL;
+  
+  g_object_get(audio_signal,
+	       "output-soundcard", &output_soundcard,
+	       NULL);
+  
+  audio_container_manager = ags_audio_container_manager_get_instance();
+
   filename = sf2_synth_generator->filename;
   
-  ipatch_sample = NULL;
+  audio_container = ags_audio_container_manager_find_audio_container(audio_container_manager,
+								     filename);
 
-  //TODO:JK: implement me
+  if(audio_container == NULL){    
+    audio_container = ags_audio_container_new(filename,
+					      preset,
+					      instrument,
+					      NULL,
+					      output_soundcard,
+					      -1);
+    ags_audio_container_open(audio_container);
+  }
+
+  list = 
+    start_list = ags_audio_container_find_sound_resource(audio_container,
+							 preset,
+							 instrument,
+							 NULL);
+
+  ipatch_sample = NULL;
+  
+  if(list != NULL){
+    ipatch_sample = list->data;
+  }
+  
+  midi_key = (gint) floor(note) + 69;
   
   delay = sf2_synth_generator->delay;
   attack = sf2_synth_generator->attack;
@@ -1659,12 +1698,17 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 					    gint program,
 					    gdouble note)
 {
+  AgsAudioContainerManager *audio_container_manager;
+  AgsAudioContainer *audio_container;
   AgsIpatchSample *ipatch_sample;  
+
+  GObject *output_soundcard;
   
   GList *stream_start, *stream;
 
   gchar *filename;
-  
+
+  gint midi_key;
   gdouble delay;
   guint attack;
   guint frame_count;
@@ -1679,12 +1723,39 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   guint current_attack, current_count;
   guint offset;
   guint i;
+
+  output_soundcard = NULL;
   
+  g_object_get(audio_signal,
+	       "output-soundcard", &output_soundcard,
+	       NULL);
+  
+  audio_container_manager = ags_audio_container_manager_get_instance();
+
   filename = sf2_synth_generator->filename;
 
-  ipatch_sample = NULL;
+  audio_container = ags_audio_container_manager_find_audio_container(audio_container_manager,
+								     filename);
 
-  //TODO:JK: implement me
+  if(audio_container == NULL){    
+    audio_container = ags_audio_container_new(filename,
+					      NULL,
+					      NULL,
+					      NULL,
+					      output_soundcard,
+					      -1);
+    ags_audio_container_open(audio_container);
+  }
+
+  midi_key = (gint) floor(note) + 69;
+  
+  ipatch_sample = ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(audio_container->sound_container,
+									   bank,
+									   program,
+									   midi_key,
+									   NULL,
+									   NULL,
+									   NULL);
   
   delay = sf2_synth_generator->delay;
   attack = sf2_synth_generator->attack;
