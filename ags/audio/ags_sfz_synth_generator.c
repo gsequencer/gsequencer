@@ -21,7 +21,9 @@
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
-#include <ags/audio/ags_filter_util.h>
+#include <ags/audio/ags_sfz_synth_util.h>
+
+#include <ags/audio/file/ags_sfz_sample.h>
 
 #include <math.h>
 
@@ -1082,6 +1084,8 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 				GObject *audio_signal,
 				gdouble note)
 {
+  AgsSFZSample *ipatch_sample;  
+  
   GList *stream_start, *stream;
 
   gdouble delay;
@@ -1092,7 +1096,17 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   gdouble samplerate;
   guint format;
   gdouble volume;
+  guint audio_buffer_util_format;
+  guint loop_mode;
+  gint loop_start, loop_end;
+  guint current_attack, current_count;
+  guint offset;
+  guint i;
+  
+  ipatch_sample = NULL;
 
+  //TODO:JK: implement me
+  
   delay = sfz_synth_generator->delay;
   attack = sfz_synth_generator->attack;
 
@@ -1125,13 +1139,54 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 
   volume = 1.0;
 
-  while(stream != NULL){
+  loop_mode = AGS_SFZ_SYNTH_UTIL_LOOP_NONE;
 
+  loop_start = 0;
+  loop_end = 0;
 
-    stream = stream->next;
-  }
+  current_attack = attack;
+  current_count = buffer_size;
   
-  //TODO:JK: implement me
+  if(attack < buffer_size){
+    current_count = buffer_size - attack;
+  }else{
+    stream = g_list_nth(stream_start,
+			(guint) floor((double) attack / (double) buffer_size));
+
+    current_count = buffer_size - (attack % buffer_size);
+  }
+
+  audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+
+  offset = 0;
+  
+  for(i = attack; i < frame_count + attack && stream != NULL;){
+    ags_sfz_synth_util_copy(stream->data,
+			    buffer_size,
+			    ipatch_sample,
+			    note,
+			    volume,
+			    samplerate, audio_buffer_util_format,
+			    current_attack, current_count,
+			    AGS_SFZ_SYNTH_UTIL_LOOP_NONE,
+			    0, 0);
+
+    offset += current_count;
+    i += current_count;
+
+    if(buffer_size > (current_attack + current_count)){
+      current_count = buffer_size - (current_attack + current_count);
+      current_attack = buffer_size - current_count;
+    }else{
+      current_count = buffer_size;
+      current_attack = 0;
+    }
+
+    if(i != 0 &&
+       i % buffer_size == 0){
+      stream = stream->next;
+    }
+  }  
 }
 
 /**

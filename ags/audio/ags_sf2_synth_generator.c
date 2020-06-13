@@ -21,7 +21,9 @@
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
-#include <ags/audio/ags_filter_util.h>
+#include <ags/audio/ags_sf2_synth_util.h>
+
+#include <ags/audio/file/ags_ipatch_sample.h>
 
 #include <math.h>
 
@@ -1529,6 +1531,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 					   gchar *instrument,
 					   gdouble note)
 {
+  AgsIpatchSample *ipatch_sample;  
+  
   GList *stream_start, *stream;
 
   gdouble delay;
@@ -1539,7 +1543,17 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   gdouble samplerate;
   guint format;
   gdouble volume;
+  guint audio_buffer_util_format;
+  guint loop_mode;
+  gint loop_start, loop_end;
+  guint current_attack, current_count;
+  guint offset;
+  guint i;
+  
+  ipatch_sample = NULL;
 
+  //TODO:JK: implement me
+  
   delay = sf2_synth_generator->delay;
   attack = sf2_synth_generator->attack;
 
@@ -1572,13 +1586,54 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 
   volume = 1.0;
 
-  while(stream != NULL){
+  loop_mode = AGS_SF2_SYNTH_UTIL_LOOP_NONE;
 
+  loop_start = 0;
+  loop_end = 0;
 
-    stream = stream->next;
+  current_attack = attack;
+  current_count = buffer_size;
+  
+  if(attack < buffer_size){
+    current_count = buffer_size - attack;
+  }else{
+    stream = g_list_nth(stream_start,
+			(guint) floor((double) attack / (double) buffer_size));
+
+    current_count = buffer_size - (attack % buffer_size);
   }
 
-  //TODO:JK: implement me
+  audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+
+  offset = 0;
+  
+  for(i = attack; i < frame_count + attack && stream != NULL;){
+    ags_sf2_synth_util_copy(stream->data,
+			    buffer_size,
+			    ipatch_sample,
+			    note,
+			    volume,
+			    samplerate, audio_buffer_util_format,
+			    current_attack, current_count,
+			    AGS_SF2_SYNTH_UTIL_LOOP_NONE,
+			    0, 0);
+
+    offset += current_count;
+    i += current_count;
+
+    if(buffer_size > (current_attack + current_count)){
+      current_count = buffer_size - (current_attack + current_count);
+      current_attack = buffer_size - current_count;
+    }else{
+      current_count = buffer_size;
+      current_attack = 0;
+    }
+
+    if(i != 0 &&
+       i % buffer_size == 0){
+      stream = stream->next;
+    }
+  }  
 }
 
 /**
@@ -1600,6 +1655,8 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 					    gint program,
 					    gdouble note)
 {
+  AgsIpatchSample *ipatch_sample;  
+  
   GList *stream_start, *stream;
 
   gdouble delay;
@@ -1610,7 +1667,17 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   gdouble samplerate;
   guint format;
   gdouble volume;
+  guint audio_buffer_util_format;
+  guint loop_mode;
+  gint loop_start, loop_end;
+  guint current_attack, current_count;
+  guint offset;
+  guint i;
+  
+  ipatch_sample = NULL;
 
+  //TODO:JK: implement me
+  
   delay = sf2_synth_generator->delay;
   attack = sf2_synth_generator->attack;
 
@@ -1643,13 +1710,54 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 
   volume = 1.0;
 
-  while(stream != NULL){
+  loop_mode = AGS_SF2_SYNTH_UTIL_LOOP_NONE;
 
+  loop_start = 0;
+  loop_end = 0;
 
-    stream = stream->next;
+  current_attack = attack;
+  current_count = buffer_size;
+  
+  if(attack < buffer_size){
+    current_count = buffer_size - attack;
+  }else{
+    stream = g_list_nth(stream_start,
+			(guint) floor((double) attack / (double) buffer_size));
+
+    current_count = buffer_size - (attack % buffer_size);
   }
 
-  //TODO:JK: implement me
+  audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+
+  offset = 0;
+  
+  for(i = attack; i < frame_count + attack && stream != NULL;){
+    ags_sf2_synth_util_copy(stream->data,
+			    buffer_size,
+			    ipatch_sample,
+			    note,
+			    volume,
+			    samplerate, audio_buffer_util_format,
+			    current_attack, current_count,
+			    AGS_SF2_SYNTH_UTIL_LOOP_NONE,
+			    0, 0);
+
+    offset += current_count;
+    i += current_count;
+
+    if(buffer_size > (current_attack + current_count)){
+      current_count = buffer_size - (current_attack + current_count);
+      current_attack = buffer_size - current_count;
+    }else{
+      current_count = buffer_size;
+      current_attack = 0;
+    }
+
+    if(i != 0 &&
+       i % buffer_size == 0){
+      stream = stream->next;
+    }
+  }  
 }
 
 /**
