@@ -1082,6 +1082,55 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 				GObject *audio_signal,
 				gdouble note)
 {
+  GList *stream_start, *stream;
+
+  gdouble delay;
+  guint attack;
+  guint frame_count;
+  guint buffer_size;
+  guint current_frame_count, requested_frame_count;
+  gdouble samplerate;
+  guint format;
+  gdouble volume;
+
+  delay = sfz_synth_generator->delay;
+  attack = sfz_synth_generator->attack;
+
+  frame_count = sfz_synth_generator->frame_count;
+  
+  buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
+
+  current_frame_count = AGS_AUDIO_SIGNAL(audio_signal)->length * buffer_size;
+  requested_frame_count = (guint) ceil(((floor(delay) * buffer_size + attack) + frame_count) / buffer_size) * buffer_size;
+  
+  if(current_frame_count < requested_frame_count){
+    ags_audio_signal_stream_resize((AgsAudioSignal *) audio_signal,
+				   ceil(requested_frame_count / buffer_size));
+  }
+
+  g_object_set(audio_signal,
+	       "loop-start", sfz_synth_generator->loop_start,
+	       "loop-end", sfz_synth_generator->loop_end,
+	       "last-frame", attack + frame_count,
+	       NULL);
+
+  /*  */
+  stream = 
+    stream_start = g_list_nth(AGS_AUDIO_SIGNAL(audio_signal)->stream,
+			      (guint) floor(delay));
+  
+  samplerate = AGS_AUDIO_SIGNAL(audio_signal)->samplerate;
+
+  format = AGS_AUDIO_SIGNAL(audio_signal)->format;
+
+  volume = synth_generator->volume;
+
+  while(stream != NULL){
+
+
+    stream = stream->next;
+  }
+  
   //TODO:JK: implement me
 }
 
