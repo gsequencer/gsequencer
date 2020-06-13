@@ -52,6 +52,10 @@ void ags_sf2_synth_generator_finalize(GObject *gobject);
 enum{
   PROP_0,
   PROP_FILENAME,
+  PROP_PRESET,
+  PROP_INSTRUMENT,
+  PROP_BANK,
+  PROP_PROGRAM,
   PROP_SAMPLERATE,
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
@@ -121,7 +125,7 @@ ags_sf2_synth_generator_class_init(AgsSF2SynthGeneratorClass *sf2_synth_generato
    *
    * The assigned filename.
    * 
-   * Since: 3.0.0
+   * Since: 3.4.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename of audio container"),
@@ -130,6 +134,74 @@ ags_sf2_synth_generator_class_init(AgsSF2SynthGeneratorClass *sf2_synth_generato
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILENAME,
+				  param_spec);
+
+  /**
+   * AgsSF2SynthGenerator:preset:
+   *
+   * The assigned preset.
+   * 
+   * Since: 3.4.0
+   */
+  param_spec = g_param_spec_string("preset",
+				   i18n_pspec("preset of audio container"),
+				   i18n_pspec("The preset of audio container"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PRESET,
+				  param_spec);
+
+  /**
+   * AgsSF2SynthGenerator:instrument:
+   *
+   * The assigned instrument.
+   * 
+   * Since: 3.4.0
+   */
+  param_spec = g_param_spec_string("instrument",
+				   i18n_pspec("instrument of audio container"),
+				   i18n_pspec("The instrument of audio container"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_INSTRUMENT,
+				  param_spec);
+
+  /**
+   * AgsSF2SynthGenerator:bank:
+   *
+   * The bank to be used.
+   * 
+   * Since: 3.4.0
+   */
+  param_spec = g_param_spec_int("bank",
+				i18n_pspec("using bank"),
+				i18n_pspec("The bank to be used"),
+				0,
+				G_MAXINT32,
+				AGS_SF2_SYNTH_GENERATOR_DEFAULT_BANK,
+				G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BANK,
+				  param_spec);
+
+  /**
+   * AgsSF2SynthGenerator:program:
+   *
+   * The program to be used.
+   * 
+   * Since: 3.4.0
+   */
+  param_spec = g_param_spec_int("program",
+				i18n_pspec("using program"),
+				i18n_pspec("The program to be used"),
+				0,
+				G_MAXINT32,
+				AGS_SF2_SYNTH_GENERATOR_DEFAULT_PROGRAM,
+				G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PROGRAM,
 				  param_spec);
 
   /**
@@ -289,6 +361,12 @@ ags_sf2_synth_generator_init(AgsSF2SynthGenerator *sf2_synth_generator)
 
   sf2_synth_generator->filename = NULL;
 
+  sf2_synth_generator->preset = NULL;
+  sf2_synth_generator->instrument = NULL;
+
+  sf2_synth_generator->bank = 0;
+  sf2_synth_generator->program = 0;
+
   /* presets */
   sf2_synth_generator->samplerate = ags_soundcard_helper_config_get_samplerate(config);
   sf2_synth_generator->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
@@ -336,6 +414,50 @@ ags_sf2_synth_generator_set_property(GObject *gobject,
     }
 
     sf2_synth_generator->filename = g_strdup(filename);
+  }
+  break;
+  case PROP_PRESET:
+  {
+    gchar *preset;
+
+    preset = (gchar *) g_value_get_string(value);
+
+    if(sf2_synth_generator->preset == preset){
+      return;
+    }
+      
+    if(sf2_synth_generator->preset != NULL){
+      g_free(sf2_synth_generator->preset);
+    }
+
+    sf2_synth_generator->preset = g_strdup(preset);
+  }
+  break;
+  case PROP_INSTRUMENT:
+  {
+    gchar *instrument;
+
+    instrument = (gchar *) g_value_get_string(value);
+
+    if(sf2_synth_generator->instrument == instrument){
+      return;
+    }
+      
+    if(sf2_synth_generator->instrument != NULL){
+      g_free(sf2_synth_generator->instrument);
+    }
+
+    sf2_synth_generator->instrument = g_strdup(instrument);
+  }
+  break;
+  case PROP_BANK:
+  {
+    sf2_synth_generator->bank = g_value_get_int(value);
+  }
+  break;
+  case PROP_PROGRAM:
+  {
+    sf2_synth_generator->program = g_value_get_int(value);
   }
   break;
   case PROP_SAMPLERATE:
@@ -446,6 +568,16 @@ ags_sf2_synth_generator_get_property(GObject *gobject,
     g_value_set_string(value, sf2_synth_generator->filename);
   }
   break;
+  case PROP_PRESET:
+  {
+    g_value_set_string(value, sf2_synth_generator->preset);
+  }
+  break;
+  case PROP_INSTRUMENT:
+  {
+    g_value_set_string(value, sf2_synth_generator->instrument);
+  }
+  break;
   case PROP_SAMPLERATE:
   {
     g_value_set_uint(value, sf2_synth_generator->samplerate);
@@ -543,6 +675,99 @@ ags_sf2_synth_generator_get_obj_mutex(AgsSF2SynthGenerator *sf2_synth_generator)
 }
 
 /**
+ * ags_sf2_synth_generator_test_flags:
+ * @sf2_synth_generator: the #AgsSF2SynthGenerator
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @sf2_synth_generator.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 3.0.0
+ */
+gboolean
+ags_sf2_synth_generator_test_flags(AgsSF2SynthGenerator *sf2_synth_generator, guint flags)
+{
+  gboolean retval;
+  
+  GRecMutex *sf2_synth_generator_mutex;
+
+  if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
+    return(FALSE);
+  }
+      
+  /* get sf2_synth_generator mutex */  
+  sf2_synth_generator_mutex = AGS_TASK_GET_OBJ_MUTEX(sf2_synth_generator);
+
+  /* test */
+  g_rec_mutex_lock(sf2_synth_generator_mutex);
+
+  retval = (flags & (sf2_synth_generator->flags)) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(sf2_synth_generator_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_sf2_synth_generator_set_flags:
+ * @sf2_synth_generator: the #AgsSF2SynthGenerator
+ * @flags: the flags
+ * 
+ * Set @flags on @sf2_synth_generator.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_sf2_synth_generator_set_flags(AgsSF2SynthGenerator *sf2_synth_generator, guint flags)
+{
+  GRecMutex *sf2_synth_generator_mutex;
+
+  if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
+    return;
+  }
+      
+  /* get sf2_synth_generator mutex */
+  sf2_synth_generator_mutex = AGS_TASK_GET_OBJ_MUTEX(sf2_synth_generator);
+
+  /* set */
+  g_rec_mutex_lock(sf2_synth_generator_mutex);
+
+  sf2_synth_generator->flags |= flags;
+  
+  g_rec_mutex_unlock(sf2_synth_generator_mutex);
+}
+
+/**
+ * ags_sf2_synth_generator_unset_flags:
+ * @sf2_synth_generator: the #AgsSF2SynthGenerator
+ * @flags: the flags
+ * 
+ * Unset @flags on @sf2_synth_generator.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_sf2_synth_generator_unset_flags(AgsSF2SynthGenerator *sf2_synth_generator, guint flags)
+{
+  GRecMutex *sf2_synth_generator_mutex;
+
+  if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
+    return;
+  }
+      
+  /* get sf2_synth_generator mutex */
+  sf2_synth_generator_mutex = AGS_TASK_GET_OBJ_MUTEX(sf2_synth_generator);
+
+  /* unset */
+  g_rec_mutex_lock(sf2_synth_generator_mutex);
+
+  sf2_synth_generator->flags &= (~flags);
+  
+  g_rec_mutex_unlock(sf2_synth_generator_mutex);
+}
+
+/**
  * ags_sf2_synth_generator_get_filename:
  * @sf2_synth_generator: the #AgsSF2SynthGenerator
  *
@@ -586,6 +811,194 @@ ags_sf2_synth_generator_set_filename(AgsSF2SynthGenerator *sf2_synth_generator, 
 
   g_object_set(sf2_synth_generator,
 	       "filename", filename,
+	       NULL);
+}
+
+/**
+ * ags_sf2_synth_generator_get_preset:
+ * @sf2_synth_generator: the #AgsSF2SynthGenerator
+ *
+ * Gets preset.
+ * 
+ * Returns: the preset
+ * 
+ * Since: 3.4.0
+ */
+gchar*
+ags_sf2_synth_generator_get_preset(AgsSF2SynthGenerator *sf2_synth_generator)
+{
+  gchar *preset;
+  
+  if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
+    return(NULL);
+  }
+
+  g_object_get(sf2_synth_generator,
+	       "preset", &preset,
+	       NULL);
+
+  return(preset);
+}
+
+/**
+ * ags_sf2_synth_generator_set_preset:
+ * @sf2_synth_generator: the #AgsSF2SynthGenerator
+ * @preset: the preset
+ * 
+ * Set preset.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_sf2_synth_generator_set_preset(AgsSF2SynthGenerator *sf2_synth_generator, gchar *preset)
+{
+  if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
+    return;
+  }
+
+  g_object_set(sf2_synth_generator,
+	       "preset", preset,
+	       NULL);
+}
+
+/**
+ * ags_sf2_synth_generator_get_instrument:
+ * @sf2_synth_generator: the #AgsSF2SynthGenerator
+ *
+ * Gets instrument.
+ * 
+ * Returns: the instrument
+ * 
+ * Since: 3.4.0
+ */
+gchar*
+ags_sf2_synth_generator_get_instrument(AgsSF2SynthGenerator *sf2_synth_generator)
+{
+  gchar *instrument;
+  
+  if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
+    return(NULL);
+  }
+
+  g_object_get(sf2_synth_generator,
+	       "instrument", &instrument,
+	       NULL);
+
+  return(instrument);
+}
+
+/**
+ * ags_sf2_synth_generator_set_instrument:
+ * @sf2_synth_generator: the #AgsSF2SynthGenerator
+ * @instrument: the instrument
+ * 
+ * Set instrument.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_sf2_synth_generator_set_instrument(AgsSF2SynthGenerator *sf2_synth_generator, gchar *instrument)
+{
+  if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
+    return;
+  }
+
+  g_object_set(sf2_synth_generator,
+	       "instrument", instrument,
+	       NULL);
+}
+
+/**
+ * ags_sf2_synth_generator_get_bank:
+ * @sf2_synth_generator: the #AgsSF2SynthGenerator
+ *
+ * Gets bank.
+ * 
+ * Returns: the bank
+ * 
+ * Since: 3.4.0
+ */
+gint
+ags_sf2_synth_generator_get_bank(AgsSF2SynthGenerator *sf2_synth_generator)
+{
+  gint bank;
+  
+  if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
+    return(0);
+  }
+
+  g_object_get(sf2_synth_generator,
+	       "bank", &bank,
+	       NULL);
+
+  return(bank);
+}
+
+/**
+ * ags_sf2_synth_generator_set_bank:
+ * @sf2_synth_generator: the #AgsSF2SynthGenerator
+ * @bank: the buffer size
+ * 
+ * Set buffer size.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_sf2_synth_generator_set_bank(AgsSF2SynthGenerator *sf2_synth_generator, gint bank)
+{
+  if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
+    return;
+  }
+
+  g_object_set(sf2_synth_generator,
+	       "bank", bank,
+	       NULL);
+}
+
+/**
+ * ags_sf2_synth_generator_get_program:
+ * @sf2_synth_generator: the #AgsSF2SynthGenerator
+ *
+ * Gets program.
+ * 
+ * Returns: the program
+ * 
+ * Since: 3.4.0
+ */
+gint
+ags_sf2_synth_generator_get_program(AgsSF2SynthGenerator *sf2_synth_generator)
+{
+  gint program;
+  
+  if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
+    return(0);
+  }
+
+  g_object_get(sf2_synth_generator,
+	       "program", &program,
+	       NULL);
+
+  return(program);
+}
+
+/**
+ * ags_sf2_synth_generator_set_program:
+ * @sf2_synth_generator: the #AgsSF2SynthGenerator
+ * @program: the buffer size
+ * 
+ * Set buffer size.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_sf2_synth_generator_set_program(AgsSF2SynthGenerator *sf2_synth_generator, gint program)
+{
+  if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
+    return;
+  }
+
+  g_object_set(sf2_synth_generator,
+	       "program", program,
 	       NULL);
 }
 
@@ -1065,6 +1478,36 @@ ags_sf2_synth_generator_set_timestamp(AgsSF2SynthGenerator *sf2_synth_generator,
   g_object_set(sf2_synth_generator,
 	       "timestamp", timestamp,
 	       NULL);
+}
+
+/**
+ * ags_sf2_synth_generator_compute_instrument:
+ * @sf2_synth_generator: the #AgsSF2SynthGenerator
+ * @audio_signal: the #AgsAudioSignal
+ * @note: the note to compute
+ * 
+ * Compute SF2 synth for @note.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_sf2_synth_generator_compute(AgsSF2SynthGenerator *sf2_synth_generator,
+				GObject *audio_signal,
+				gdouble note)
+{
+  if(ags_sf2_synth_generator_test_flags(sf2_synth_generator, AGS_SF2_SYNTH_GENERATOR_COMPUTE_INSTRUMENT)){
+    ags_sf2_synth_generator_compute_instrument(sf2_synth_generator,
+					       audio_signal,
+					       sf2_synth_generator->preset,
+					       sf2_synth_generator->instrument,
+					       note);
+  }else if(ags_sf2_synth_generator_test_flags(sf2_synth_generator, AGS_SF2_SYNTH_GENERATOR_COMPUTE_MIDI_LOCALE)){
+    ags_sf2_synth_generator_compute_midi_locale(sf2_synth_generator,
+						audio_signal,
+						sf2_synth_generator->bank,
+						sf2_synth_generator->program,
+						note);
+  }
 }
 
 /**

@@ -36,6 +36,9 @@ G_BEGIN_DECLS
 
 #define AGS_SF2_SYNTH_GENERATOR_GET_OBJ_MUTEX(obj) (&(((AgsSF2SynthGenerator *) obj)->obj_mutex))
 
+#define AGS_SF2_SYNTH_GENERATOR_DEFAULT_BANK (0)
+#define AGS_SF2_SYNTH_GENERATOR_DEFAULT_PROGRAM (0)
+
 #define AGS_SF2_SYNTH_GENERATOR_DEFAULT_SAMPLERATE ((guint) AGS_SOUNDCARD_DEFAULT_SAMPLERATE)
 #define AGS_SF2_SYNTH_GENERATOR_DEFAULT_BUFFER_SIZE (AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE)
 #define AGS_SF2_SYNTH_GENERATOR_DEFAULT_FORMAT (AGS_SOUNDCARD_DEFAULT_FORMAT)
@@ -45,6 +48,11 @@ G_BEGIN_DECLS
 
 typedef struct _AgsSF2SynthGenerator AgsSF2SynthGenerator;
 typedef struct _AgsSF2SynthGeneratorClass AgsSF2SynthGeneratorClass;
+
+typedef enum{
+  AGS_SF2_SYNTH_GENERATOR_COMPUTE_INSTRUMENT    = 1,
+  AGS_SF2_SYNTH_GENERATOR_COMPUTE_MIDI_LOCALE   = 1 <<  1,
+}AgsSF2SynthGeneratorFlags;
 
 struct _AgsSF2SynthGenerator
 {
@@ -56,6 +64,12 @@ struct _AgsSF2SynthGenerator
 
   gchar *filename;
 
+  gchar *preset;
+  gchar *instrument;
+
+  gint bank;
+  gint program;
+  
   guint samplerate;
   guint buffer_size;
   guint format;
@@ -82,8 +96,24 @@ GType ags_sf2_synth_generator_get_type();
 
 GRecMutex* ags_sf2_synth_generator_get_obj_mutex(AgsSF2SynthGenerator *sf2_synth_generator);
 
+gboolean ags_sf2_synth_generator_test_flags(AgsSF2SynthGenerator *sf2_synth_generator, guint flags);
+void ags_sf2_synth_generator_set_flags(AgsSF2SynthGenerator *sf2_synth_generator, guint flags);
+void ags_sf2_synth_generator_unset_flags(AgsSF2SynthGenerator *sf2_synth_generator, guint flags);
+
 gchar* ags_sf2_synth_generator_get_filename(AgsSF2SynthGenerator *sf2_synth_generator);
 void ags_sf2_synth_generator_set_filename(AgsSF2SynthGenerator *sf2_synth_generator, gchar *filename);
+
+gchar* ags_sf2_synth_generator_get_preset(AgsSF2SynthGenerator *sf2_synth_generator);
+void ags_sf2_synth_generator_set_preset(AgsSF2SynthGenerator *sf2_synth_generator, gchar *preset);
+
+gchar* ags_sf2_synth_generator_get_instrument(AgsSF2SynthGenerator *sf2_synth_generator);
+void ags_sf2_synth_generator_set_instrument(AgsSF2SynthGenerator *sf2_synth_generator, gchar *instrument);
+
+gint ags_sf2_synth_generator_get_bank(AgsSF2SynthGenerator *sf2_synth_generator);
+void ags_sf2_synth_generator_set_bank(AgsSF2SynthGenerator *sf2_synth_generator, gint bank);
+
+gint ags_sf2_synth_generator_get_program(AgsSF2SynthGenerator *sf2_synth_generator);
+void ags_sf2_synth_generator_set_program(AgsSF2SynthGenerator *sf2_synth_generator, gint program);
 
 guint ags_sf2_synth_generator_get_samplerate(AgsSF2SynthGenerator *sf2_synth_generator);
 void ags_sf2_synth_generator_set_samplerate(AgsSF2SynthGenerator *sf2_synth_generator, guint samplerate);
@@ -115,6 +145,10 @@ void ags_sf2_synth_generator_set_tuning(AgsSF2SynthGenerator *sf2_synth_generato
 AgsTimestamp* ags_sf2_synth_generator_get_timestamp(AgsSF2SynthGenerator *sf2_synth_generator);
 void ags_sf2_synth_generator_set_timestamp(AgsSF2SynthGenerator *sf2_synth_generator,
 					   AgsTimestamp *timestamp);
+
+void ags_sf2_synth_generator_compute(AgsSF2SynthGenerator *sf2_synth_generator,
+				     GObject *audio_signal,
+				     gdouble note);
 
 void ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_generator,
 						GObject *audio_signal,
