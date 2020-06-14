@@ -1606,13 +1606,27 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   if(list != NULL){
     ipatch_sample = list->data;
   }
-  
+
   midi_key = (gint) floor(note) + 69;
   
   delay = sf2_synth_generator->delay;
   attack = sf2_synth_generator->attack;
 
-  frame_count = sf2_synth_generator->frame_count;
+  frame_count = 0;
+  
+  if(ipatch_sample != NULL){
+    guint loop_start, loop_end;
+
+    ags_sound_resource_info(AGS_SOUND_RESOURCE(ipatch_sample),
+			    &frame_count,
+			    &loop_start, &loop_end);
+    
+    g_object_set(audio_signal,
+		 "loop-start", loop_start,
+		 "loop-end", loop_end,
+		 "last-frame", attack + frame_count,
+		 NULL);
+  }
   
   buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
 
@@ -1623,12 +1637,6 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
     ags_audio_signal_stream_resize((AgsAudioSignal *) audio_signal,
 				   ceil(requested_frame_count / buffer_size));
   }
-
-  g_object_set(audio_signal,
-	       "loop-start", sf2_synth_generator->loop_start,
-	       "loop-end", sf2_synth_generator->loop_end,
-	       "last-frame", attack + frame_count,
-	       NULL);
 
   /*  */
   stream = 
