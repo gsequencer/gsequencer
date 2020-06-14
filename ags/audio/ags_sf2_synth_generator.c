@@ -1581,6 +1581,9 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 					      output_soundcard,
 					      -1);
     ags_audio_container_open(audio_container);
+
+    ags_audio_container_manager_add_audio_container(audio_container_manager,
+						    audio_container);
   }
 
   list = 
@@ -1745,6 +1748,9 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 					      output_soundcard,
 					      -1);
     ags_audio_container_open(audio_container);
+
+    ags_audio_container_manager_add_audio_container(audio_container_manager,
+						    audio_container);
   }
 
   midi_key = (gint) floor(note) + 69;

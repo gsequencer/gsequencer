@@ -35,6 +35,8 @@ G_BEGIN_DECLS
 #define AGS_IS_AUDIO_FILE_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIO_FILE_MANAGER))
 #define AGS_AUDIO_FILE_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_AUDIO_FILE_MANAGER, AgsAudioFileManagerClass))
 
+#define AGS_AUDIO_FILE_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsAudioFileManager *) obj)->obj_mutex))
+
 typedef struct _AgsAudioFileManager AgsAudioFileManager;
 typedef struct _AgsAudioFileManagerClass AgsAudioFileManagerClass;
 
@@ -42,6 +44,8 @@ struct _AgsAudioFileManager
 {
   GObject gobject;
   
+  GRecMutex obj_mutex;
+
   GList *audio_file;
 };
 
@@ -51,6 +55,8 @@ struct _AgsAudioFileManagerClass
 };
 
 GType ags_audio_file_manager_get_type();
+
+GRecMutex* ags_audio_file_manager_get_obj_mutex(AgsAudioFileManager *audio_file_manager);
 
 void ags_audio_file_manager_add_audio_file(AgsAudioFileManager *audio_file_manager,
 					   GObject *audio_file);

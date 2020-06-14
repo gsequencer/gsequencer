@@ -1139,6 +1139,9 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 					      output_soundcard,
 					      -1);
     ags_audio_container_open(audio_container);
+
+    ags_audio_container_manager_add_audio_container(audio_container_manager,
+						    audio_container);
   }
 
   list = 

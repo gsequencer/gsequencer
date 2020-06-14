@@ -137,7 +137,12 @@ ags_audio_file_manager_set_property(GObject *gobject,
 {
   AgsAudioFileManager *audio_file_manager;
 
+  GRecMutex *audio_file_manager_mutex;
+
   audio_file_manager = AGS_AUDIO_FILE_MANAGER(gobject);
+
+  /* get audio file manager mutex */
+  audio_file_manager_mutex = AGS_AUDIO_FILE_MANAGER_GET_OBJ_MUTEX(audio_file_manager);
 
   switch(prop_id){
   case PROP_AUDIO_FILE:
@@ -165,13 +170,24 @@ ags_audio_file_manager_get_property(GObject *gobject,
 {
   AgsAudioFileManager *audio_file_manager;
 
+  GRecMutex *audio_file_manager_mutex;
+
   audio_file_manager = AGS_AUDIO_FILE_MANAGER(gobject);
+
+  /* get audio file manager mutex */
+  audio_file_manager_mutex = AGS_AUDIO_FILE_MANAGER_GET_OBJ_MUTEX(audio_file_manager);
 
   switch(prop_id){
   case PROP_AUDIO_FILE:
   {      
+    g_rec_mutex_lock(audio_file_manager_mutex);
+
     g_value_set_pointer(value,
-			g_list_copy(audio_file_manager->audio_file));
+			g_list_copy_deep(audio_file_manager->audio_file,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
+
+    g_rec_mutex_unlock(audio_file_manager_mutex);
   }
   break;
   default:
@@ -204,10 +220,17 @@ void
 ags_audio_file_manager_add_audio_file(AgsAudioFileManager *audio_file_manager,
 				      GObject *audio_file)
 {
+  GRecMutex *audio_file_manager_mutex;
+  
   if(!AGS_IS_AUDIO_FILE_MANAGER(audio_file_manager) ||
      !AGS_IS_AUDIO_FILE(audio_file)){
     return;
   }
+  
+  /* get audio file manager mutex */
+  audio_file_manager_mutex = AGS_AUDIO_FILE_MANAGER_GET_OBJ_MUTEX(audio_file_manager);
+
+  g_rec_mutex_lock(audio_file_manager_mutex);
 
   if(g_list_find(audio_file_manager->audio_file,
 		 audio_file) == NULL){
@@ -215,6 +238,8 @@ ags_audio_file_manager_add_audio_file(AgsAudioFileManager *audio_file_manager,
     audio_file_manager->audio_file = g_list_prepend(audio_file_manager->audio_file,
 						    audio_file);
   }
+
+  g_rec_mutex_unlock(audio_file_manager_mutex);
 }
 
 /**
@@ -230,10 +255,17 @@ void
 ags_audio_file_manager_remove_audio_file(AgsAudioFileManager *audio_file_manager,
 					 GObject *audio_file)
 {
+  GRecMutex *audio_file_manager_mutex;
+  
   if(!AGS_IS_AUDIO_FILE_MANAGER(audio_file_manager) ||
      !AGS_IS_AUDIO_FILE(audio_file)){
     return;
   }
+
+  /* get audio file manager mutex */
+  audio_file_manager_mutex = AGS_AUDIO_FILE_MANAGER_GET_OBJ_MUTEX(audio_file_manager);
+
+  g_rec_mutex_lock(audio_file_manager_mutex);
 
   if(g_list_find(audio_file_manager->audio_file,
 		 audio_file) != NULL){
@@ -241,6 +273,8 @@ ags_audio_file_manager_remove_audio_file(AgsAudioFileManager *audio_file_manager
     audio_file_manager->audio_file = g_list_remove(audio_file_manager->audio_file,
 						   audio_file);
   }
+
+  g_rec_mutex_unlock(audio_file_manager_mutex);
 }
 
 /**
@@ -262,14 +296,19 @@ ags_audio_file_manager_find_audio_file(AgsAudioFileManager *audio_file_manager,
   
   GList *start_list, *list;
   
+  GRecMutex *audio_file_manager_mutex;
+  
   if(!AGS_IS_AUDIO_FILE_MANAGER(audio_file_manager) ||
      filename == NULL){
     return(NULL);
   }
 
   g_object_get(audio_file_manager,
-	       "audio_file", &start_list,
+	       "audio-file", &start_list,
 	       NULL);
+
+  /* get audio file manager mutex */
+  audio_file_manager_mutex = AGS_AUDIO_FILE_MANAGER_GET_OBJ_MUTEX(audio_file_manager);
 
   audio_file = NULL;
   
@@ -286,7 +325,8 @@ ags_audio_file_manager_find_audio_file(AgsAudioFileManager *audio_file_manager,
     list = list->next;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
   
   return(audio_file);
 }
@@ -303,15 +343,15 @@ ags_audio_file_manager_find_audio_file(AgsAudioFileManager *audio_file_manager,
 AgsAudioFileManager*
 ags_audio_file_manager_get_instance()
 {
-  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  GMutex mutex = {0,};
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(ags_audio_file_manager == NULL){
     ags_audio_file_manager = ags_audio_file_manager_new();
   }
   
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(ags_audio_file_manager);
 }

@@ -35,6 +35,8 @@ G_BEGIN_DECLS
 #define AGS_IS_AUDIO_CONTAINER_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIO_CONTAINER_MANAGER))
 #define AGS_AUDIO_CONTAINER_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_AUDIO_CONTAINER_MANAGER, AgsAudioContainerManagerClass))
 
+#define AGS_AUDIO_CONTAINER_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsAudioContainerManager *) obj)->obj_mutex))
+
 typedef struct _AgsAudioContainerManager AgsAudioContainerManager;
 typedef struct _AgsAudioContainerManagerClass AgsAudioContainerManagerClass;
 
@@ -42,6 +44,8 @@ struct _AgsAudioContainerManager
 {
   GObject gobject;
   
+  GRecMutex obj_mutex;
+
   GList *audio_container;
 };
 
@@ -51,6 +55,8 @@ struct _AgsAudioContainerManagerClass
 };
 
 GType ags_audio_container_manager_get_type();
+
+GRecMutex* ags_audio_container_manager_get_obj_mutex(AgsAudioContainerManager *audio_container_manager);
 
 void ags_audio_container_manager_add_audio_container(AgsAudioContainerManager *audio_container_manager,
 						     GObject *audio_container);

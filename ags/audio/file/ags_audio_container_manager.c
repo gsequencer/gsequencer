@@ -126,6 +126,9 @@ ags_audio_container_manager_class_init(AgsAudioContainerManagerClass *audio_cont
 void
 ags_audio_container_manager_init(AgsAudioContainerManager *audio_container_manager)
 {
+  /* add audio container manager mutex */
+  g_rec_mutex_init(&(audio_container_manager->obj_mutex));
+  
   audio_container_manager->audio_container = NULL;
 }
 
@@ -137,7 +140,12 @@ ags_audio_container_manager_set_property(GObject *gobject,
 {
   AgsAudioContainerManager *audio_container_manager;
 
+  GRecMutex *audio_container_manager_mutex;
+
   audio_container_manager = AGS_AUDIO_CONTAINER_MANAGER(gobject);
+
+  /* get audio container manager mutex */
+  audio_container_manager_mutex = AGS_AUDIO_CONTAINER_MANAGER_GET_OBJ_MUTEX(audio_container_manager);
 
   switch(prop_id){
   case PROP_AUDIO_CONTAINER:
@@ -165,13 +173,24 @@ ags_audio_container_manager_get_property(GObject *gobject,
 {
   AgsAudioContainerManager *audio_container_manager;
 
+  GRecMutex *audio_container_manager_mutex;
+
   audio_container_manager = AGS_AUDIO_CONTAINER_MANAGER(gobject);
+
+  /* get audio container manager mutex */
+  audio_container_manager_mutex = AGS_AUDIO_CONTAINER_MANAGER_GET_OBJ_MUTEX(audio_container_manager);
 
   switch(prop_id){
   case PROP_AUDIO_CONTAINER:
   {      
+    g_rec_mutex_lock(audio_container_manager_mutex);
+    
     g_value_set_pointer(value,
-			g_list_copy(audio_container_manager->audio_container));
+			g_list_copy_deep(audio_container_manager->audio_container,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
+
+    g_rec_mutex_unlock(audio_container_manager_mutex);
   }
   break;
   default:
@@ -204,17 +223,26 @@ void
 ags_audio_container_manager_add_audio_container(AgsAudioContainerManager *audio_container_manager,
 						GObject *audio_container)
 {
+  GRecMutex *audio_container_manager_mutex;
+
   if(!AGS_IS_AUDIO_CONTAINER_MANAGER(audio_container_manager) ||
      !AGS_IS_AUDIO_CONTAINER(audio_container)){
     return;
   }
 
+  /* get audio container manager mutex */
+  audio_container_manager_mutex = AGS_AUDIO_CONTAINER_MANAGER_GET_OBJ_MUTEX(audio_container_manager);
+
+  g_rec_mutex_lock(audio_container_manager_mutex);
+    
   if(g_list_find(audio_container_manager->audio_container,
 		 audio_container) == NULL){
     g_object_ref(audio_container);
     audio_container_manager->audio_container = g_list_prepend(audio_container_manager->audio_container,
 							      audio_container);
   }
+
+  g_rec_mutex_unlock(audio_container_manager_mutex);
 }
 
 /**
@@ -230,17 +258,26 @@ void
 ags_audio_container_manager_remove_audio_container(AgsAudioContainerManager *audio_container_manager,
 						   GObject *audio_container)
 {
+  GRecMutex *audio_container_manager_mutex;
+
   if(!AGS_IS_AUDIO_CONTAINER_MANAGER(audio_container_manager) ||
      !AGS_IS_AUDIO_CONTAINER(audio_container)){
     return;
   }
 
+  /* get audio container manager mutex */
+  audio_container_manager_mutex = AGS_AUDIO_CONTAINER_MANAGER_GET_OBJ_MUTEX(audio_container_manager);
+
+  g_rec_mutex_lock(audio_container_manager_mutex);
+    
   if(g_list_find(audio_container_manager->audio_container,
 		 audio_container) != NULL){
     g_object_unref(audio_container);
     audio_container_manager->audio_container = g_list_remove(audio_container_manager->audio_container,
 							     audio_container);
   }
+
+  g_rec_mutex_unlock(audio_container_manager_mutex);
 }
 
 /**
@@ -262,15 +299,20 @@ ags_audio_container_manager_find_audio_container(AgsAudioContainerManager *audio
   
   GList *start_list, *list;
   
+  GRecMutex *audio_container_manager_mutex;
+
   if(!AGS_IS_AUDIO_CONTAINER_MANAGER(audio_container_manager) ||
      filename == NULL){
     return(NULL);
   }
 
   g_object_get(audio_container_manager,
-	       "audio_container", &start_list,
+	       "audio-container", &start_list,
 	       NULL);
 
+  /* get audio container manager mutex */
+  audio_container_manager_mutex = AGS_AUDIO_CONTAINER_MANAGER_GET_OBJ_MUTEX(audio_container_manager);
+    
   audio_container = NULL;
   
   list = start_list;
@@ -286,7 +328,8 @@ ags_audio_container_manager_find_audio_container(AgsAudioContainerManager *audio
     list = list->next;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
   
   return(audio_container);
 }
