@@ -295,6 +295,10 @@ ags_audio_file_manager_find_audio_file(AgsAudioFileManager *audio_file_manager,
   AgsAudioFile *audio_file;
   
   GList *start_list, *list;
+
+  gchar *current_filename;
+
+  gboolean success;
   
   GRecMutex *audio_file_manager_mutex;
   
@@ -313,10 +317,22 @@ ags_audio_file_manager_find_audio_file(AgsAudioFileManager *audio_file_manager,
   audio_file = NULL;
   
   list = start_list;
+
+  success = FALSE;
   
   while(list != NULL){
-    if(!g_strcmp0(AGS_AUDIO_FILE(list->data)->filename,
-		  filename)){
+    current_filename = NULL;
+
+    g_object_get(AGS_AUDIO_FILE(list->data),
+		 "filename", &current_filename,
+		 NULL);
+
+    success = (!g_strcmp0(current_filename,
+			  filename)) ? TRUE: FALSE;
+
+    g_free(current_filename);
+    
+    if(success){
       audio_file = list->data;
       
       break;
