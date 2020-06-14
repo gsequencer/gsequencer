@@ -1559,6 +1559,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   guint current_attack, current_count;
   guint offset;
   guint i;
+  
+  GRecMutex *audio_container_manager_mutex;
 
   output_soundcard = NULL;
   
@@ -1566,9 +1568,14 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 	       "output-soundcard", &output_soundcard,
 	       NULL);
   
+  filename = sf2_synth_generator->filename;
+
   audio_container_manager = ags_audio_container_manager_get_instance();
 
-  filename = sf2_synth_generator->filename;
+  /* get audio container manager mutex */
+  audio_container_manager_mutex = AGS_AUDIO_CONTAINER_MANAGER_GET_OBJ_MUTEX(audio_container_manager);
+  
+  g_rec_mutex_lock(audio_container_manager_mutex);
   
   audio_container = ags_audio_container_manager_find_audio_container(audio_container_manager,
 								     filename);
@@ -1585,6 +1592,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
     ags_audio_container_manager_add_audio_container(audio_container_manager,
 						    audio_container);
   }
+  
+  g_rec_mutex_unlock(audio_container_manager_mutex);
 
   list = 
     start_list = ags_audio_container_find_sound_resource(audio_container,
@@ -1679,6 +1688,10 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
        i % buffer_size == 0){
       stream = stream->next;
     }
+  }
+  
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
   }  
 }
 
@@ -1726,6 +1739,8 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   guint current_attack, current_count;
   guint offset;
   guint i;
+  
+  GRecMutex *audio_container_manager_mutex;
 
   output_soundcard = NULL;
   
@@ -1733,9 +1748,14 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 	       "output-soundcard", &output_soundcard,
 	       NULL);
   
+  filename = sf2_synth_generator->filename;
+  
   audio_container_manager = ags_audio_container_manager_get_instance();
 
-  filename = sf2_synth_generator->filename;
+  /* get audio container manager mutex */
+  audio_container_manager_mutex = AGS_AUDIO_CONTAINER_MANAGER_GET_OBJ_MUTEX(audio_container_manager);
+  
+  g_rec_mutex_lock(audio_container_manager_mutex);
 
   audio_container = ags_audio_container_manager_find_audio_container(audio_container_manager,
 								     filename);
@@ -1752,6 +1772,8 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
     ags_audio_container_manager_add_audio_container(audio_container_manager,
 						    audio_container);
   }
+  
+  g_rec_mutex_unlock(audio_container_manager_mutex);
 
   midi_key = (gint) floor(note) + 69;
   
@@ -1842,6 +1864,10 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
        i % buffer_size == 0){
       stream = stream->next;
     }
+  }  
+
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
   }  
 }
 

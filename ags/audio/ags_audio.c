@@ -26,6 +26,8 @@
 #include <ags/audio/ags_midi.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_synth_generator.h>
+#include <ags/audio/ags_sf2_synth_generator.h>
+#include <ags/audio/ags_sfz_synth_generator.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_playback_domain.h>
@@ -286,6 +288,8 @@ enum{
   PROP_INPUT,
   PROP_PRESET,
   PROP_SYNTH_GENERATOR,
+  PROP_SF2_SYNTH_GENERATOR,
+  PROP_SFZ_SYNTH_GENERATOR,
   PROP_PLAYBACK_DOMAIN,
   PROP_CURSOR,
   PROP_NOTATION,
@@ -1047,7 +1051,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:synth_generator: (type GList(AgsSynthGenerator)) (transfer full)
+   * AgsAudio:synth-generator: (type GList(AgsSynthGenerator)) (transfer full)
    *
    * The assigned #GList-struct containing #AgsSynthGenerator information.
    * 
@@ -1059,6 +1063,36 @@ ags_audio_class_init(AgsAudioClass *audio)
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SYNTH_GENERATOR,
+				  param_spec);
+
+  /**
+   * AgsAudio:sf2-synth-generator: (type GList(AgsSF2SynthGenerator)) (transfer full)
+   *
+   * The assigned #GList-struct containing #AgsSF2SynthGenerator information.
+   * 
+   * Since: 3.4.0
+   */
+  param_spec = g_param_spec_pointer("sf2-synth-generator",
+				    i18n_pspec("SF2 synth generator"),
+				    i18n_pspec("The SF2 synth generator"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SF2_SYNTH_GENERATOR,
+				  param_spec);
+
+  /**
+   * AgsAudio:sfz-synth-generator: (type GList(AgsSFZSynthGenerator)) (transfer full)
+   *
+   * The assigned #GList-struct containing #AgsSFZSynthGenerator information.
+   * 
+   * Since: 3.4.0
+   */
+  param_spec = g_param_spec_pointer("sfz-synth-generator",
+				    i18n_pspec("SFZ synth generator"),
+				    i18n_pspec("The SFZ synth generator"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SFZ_SYNTH_GENERATOR,
 				  param_spec);
   
   /**
@@ -1720,6 +1754,8 @@ ags_audio_init(AgsAudio *audio)
 
   /* synth generator */
   audio->synth_generator = NULL;
+  audio->sf2_synth_generator = NULL;
+  audio->sfz_synth_generator = NULL;
 
   /*
    * Storage objects
@@ -2207,6 +2243,26 @@ ags_audio_set_property(GObject *gobject,
 
     ags_audio_add_synth_generator(audio,
 				  (GObject *) synth_generator);
+  }
+  break;
+  case PROP_SF2_SYNTH_GENERATOR:
+  {
+    AgsSF2SynthGenerator *sf2_synth_generator;
+
+    sf2_synth_generator = (AgsSF2SynthGenerator *) g_value_get_pointer(value);
+
+    ags_audio_add_sf2_synth_generator(audio,
+				      (GObject *) sf2_synth_generator);
+  }
+  break;
+  case PROP_SFZ_SYNTH_GENERATOR:
+  {
+    AgsSFZSynthGenerator *sfz_synth_generator;
+
+    sfz_synth_generator = (AgsSFZSynthGenerator *) g_value_get_pointer(value);
+
+    ags_audio_add_sfz_synth_generator(audio,
+				      (GObject *) sfz_synth_generator);
   }
   break;
   case PROP_PLAYBACK_DOMAIN:
@@ -2873,6 +2929,30 @@ ags_audio_get_property(GObject *gobject,
     g_rec_mutex_unlock(audio_mutex);
   }
   break;
+  case PROP_SF2_SYNTH_GENERATOR:
+  {
+    g_rec_mutex_lock(audio_mutex);
+
+    g_value_set_pointer(value,
+			g_list_copy_deep(audio->sf2_synth_generator,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
+
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
+  case PROP_SFZ_SYNTH_GENERATOR:
+  {
+    g_rec_mutex_lock(audio_mutex);
+
+    g_value_set_pointer(value,
+			g_list_copy_deep(audio->sfz_synth_generator,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
+
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_PLAYBACK_DOMAIN:
   {
     g_rec_mutex_lock(audio_mutex);
@@ -3116,7 +3196,7 @@ ags_audio_dispose(GObject *gobject)
     audio->preset = NULL;
   }
 
-  /* synth_generator */
+  /* synth generator */
   if(audio->synth_generator != NULL){
     list = audio->synth_generator;
 
@@ -3134,6 +3214,42 @@ ags_audio_dispose(GObject *gobject)
     audio->synth_generator = NULL;
   }
 
+  /* sf2 synth generator */
+  if(audio->sf2_synth_generator != NULL){
+    list = audio->sf2_synth_generator;
+
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
+
+      list = list_next;
+    }
+  
+    g_list_free_full(audio->sf2_synth_generator,
+		     g_object_unref);
+
+    audio->sf2_synth_generator = NULL;
+  }
+
+  /* sfz synth generator */
+  if(audio->sfz_synth_generator != NULL){
+    list = audio->sfz_synth_generator;
+
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
+
+      list = list_next;
+    }
+  
+    g_list_free_full(audio->sfz_synth_generator,
+		     g_object_unref);
+
+    audio->sfz_synth_generator = NULL;
+  }
+  
   /* playback domain */
   if(audio->playback_domain != NULL){
     AgsPlaybackDomain *playback_domain;
@@ -3413,7 +3529,7 @@ ags_audio_finalize(GObject *gobject)
 		     g_object_unref);
   }
 
-  /* synth_generator */
+  /* synth generator */
   if(audio->synth_generator != NULL){
     list = audio->synth_generator;
 
@@ -3426,6 +3542,38 @@ ags_audio_finalize(GObject *gobject)
     }
 
     g_list_free_full(audio->synth_generator,
+		     g_object_unref);
+  }
+
+  /* sf2 synth generator */
+  if(audio->sf2_synth_generator != NULL){
+    list = audio->sf2_synth_generator;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "audio", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+
+    g_list_free_full(audio->sf2_synth_generator,
+		     g_object_unref);
+  }
+
+  /* sfz synth generator */
+  if(audio->sfz_synth_generator != NULL){
+    list = audio->sfz_synth_generator;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "audio", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+
+    g_list_free_full(audio->sfz_synth_generator,
 		     g_object_unref);
   }
   
@@ -10014,6 +10162,270 @@ ags_audio_remove_synth_generator(AgsAudio *audio,
     audio->synth_generator = g_list_remove(audio->synth_generator,
 					   synth_generator);
     g_object_unref(synth_generator);
+  }
+  
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_get_sf2_synth_generator:
+ * @audio: the #AgsAudio
+ * 
+ * Get SF2 synth generator.
+ * 
+ * Returns: (element-type AgsAudio.SF2SynthGenerator) (transfer full): the #GList-struct containing #AgsSF2SynthGenerator
+ * 
+ * Since: 3.4.0
+ */
+GList*
+ags_audio_get_sf2_synth_generator(AgsAudio *audio)
+{
+  GList *sf2_synth_generator;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "sf2-synth-generator", &sf2_synth_generator,
+	       NULL);
+
+  return(sf2_synth_generator);
+}
+
+/**
+ * ags_audio_set_sf2_synth_generator:
+ * @audio: the #AgsAudio
+ * @sf2_synth_generator: (element-type AgsAudio.SF2SynthGenerator) (transfer full): the #GList-struct containing #AgsSF2SynthGenerator
+ * 
+ * Set SF2 synth generator by replacing existing.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_audio_set_sf2_synth_generator(AgsAudio *audio, GList *sf2_synth_generator)
+{
+  GList *start_sf2_synth_generator;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+    
+  g_rec_mutex_lock(audio_mutex);
+
+  start_sf2_synth_generator = audio->sf2_synth_generator;
+  audio->sf2_synth_generator = sf2_synth_generator;
+  
+  g_rec_mutex_unlock(audio_mutex);
+
+  g_list_free_full(start_sf2_synth_generator,
+		   (GDestroyNotify) g_object_unref);
+}
+
+/**
+ * ags_audio_add_sf2_synth_generator:
+ * @audio: the #AgsAudio
+ * @sf2_synth_generator: an #AgsSF2SynthGenerator
+ *
+ * Adds a SF2 synth generator.
+ *
+ * Since: 3.4.0
+ */
+void
+ags_audio_add_sf2_synth_generator(AgsAudio *audio,
+				  GObject *sf2_synth_generator)
+{
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  /* add sf2_synth_generator */
+  g_rec_mutex_lock(audio_mutex);
+
+  if(g_list_find(audio->sf2_synth_generator,
+		 sf2_synth_generator) == NULL){
+    g_object_ref(sf2_synth_generator);
+    audio->sf2_synth_generator = g_list_prepend(audio->sf2_synth_generator,
+						sf2_synth_generator);
+  }
+  
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_remove_sf2_synth_generator:
+ * @audio: the #AgsAudio
+ * @sf2_synth_generator: an #AgsSF2SynthGenerator
+ *
+ * Removes a SF2 synth generator.
+ *
+ * Since: 3.4.0
+ */
+void
+ags_audio_remove_sf2_synth_generator(AgsAudio *audio,
+				     GObject *sf2_synth_generator)
+{
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  /* remove sf2_synth_generator */
+  g_rec_mutex_lock(audio_mutex);
+
+  if(g_list_find(audio->sf2_synth_generator,
+		 sf2_synth_generator) != NULL){
+    audio->sf2_synth_generator = g_list_remove(audio->sf2_synth_generator,
+					       sf2_synth_generator);
+    g_object_unref(sf2_synth_generator);
+  }
+  
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_get_sfz_synth_generator:
+ * @audio: the #AgsAudio
+ * 
+ * Get SFZ synth generator.
+ * 
+ * Returns: (element-type AgsAudio.SFZSynthGenerator) (transfer full): the #GList-struct containing #AgsSFZSynthGenerator
+ * 
+ * Since: 3.4.0
+ */
+GList*
+ags_audio_get_sfz_synth_generator(AgsAudio *audio)
+{
+  GList *sfz_synth_generator;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "sfz-synth-generator", &sfz_synth_generator,
+	       NULL);
+
+  return(sfz_synth_generator);
+}
+
+/**
+ * ags_audio_set_sfz_synth_generator:
+ * @audio: the #AgsAudio
+ * @sfz_synth_generator: (element-type AgsAudio.SFZSynthGenerator) (transfer full): the #GList-struct containing #AgsSFZSynthGenerator
+ * 
+ * Set SFZ synth generator by replacing existing.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_audio_set_sfz_synth_generator(AgsAudio *audio, GList *sfz_synth_generator)
+{
+  GList *start_sfz_synth_generator;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+    
+  g_rec_mutex_lock(audio_mutex);
+
+  start_sfz_synth_generator = audio->sfz_synth_generator;
+  audio->sfz_synth_generator = sfz_synth_generator;
+  
+  g_rec_mutex_unlock(audio_mutex);
+
+  g_list_free_full(start_sfz_synth_generator,
+		   (GDestroyNotify) g_object_unref);
+}
+
+/**
+ * ags_audio_add_sfz_synth_generator:
+ * @audio: the #AgsAudio
+ * @sfz_synth_generator: an #AgsSFZSynthGenerator
+ *
+ * Adds a SFZ synth generator.
+ *
+ * Since: 3.4.0
+ */
+void
+ags_audio_add_sfz_synth_generator(AgsAudio *audio,
+				  GObject *sfz_synth_generator)
+{
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_SFZ_SYNTH_GENERATOR(sfz_synth_generator)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  /* add sfz_synth_generator */
+  g_rec_mutex_lock(audio_mutex);
+
+  if(g_list_find(audio->sfz_synth_generator,
+		 sfz_synth_generator) == NULL){
+    g_object_ref(sfz_synth_generator);
+    audio->sfz_synth_generator = g_list_prepend(audio->sfz_synth_generator,
+						sfz_synth_generator);
+  }
+  
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_remove_sfz_synth_generator:
+ * @audio: the #AgsAudio
+ * @sfz_synth_generator: an #AgsSFZSynthGenerator
+ *
+ * Removes a SFZ synth generator.
+ *
+ * Since: 3.4.0
+ */
+void
+ags_audio_remove_sfz_synth_generator(AgsAudio *audio,
+				     GObject *sfz_synth_generator)
+{
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_SFZ_SYNTH_GENERATOR(sfz_synth_generator)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  /* remove sfz_synth_generator */
+  g_rec_mutex_lock(audio_mutex);
+
+  if(g_list_find(audio->sfz_synth_generator,
+		 sfz_synth_generator) != NULL){
+    audio->sfz_synth_generator = g_list_remove(audio->sfz_synth_generator,
+					       sfz_synth_generator);
+    g_object_unref(sfz_synth_generator);
   }
   
   g_rec_mutex_unlock(audio_mutex);

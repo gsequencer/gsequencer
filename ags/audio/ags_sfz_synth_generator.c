@@ -1113,8 +1113,10 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   gint loop_start, loop_end;
   guint current_attack, current_count;
   guint offset;
-  guint i;
+  guint i;  
   
+  GRecMutex *audio_container_manager_mutex;
+
   sfz_sample = NULL;
 
 
@@ -1123,10 +1125,15 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   g_object_get(audio_signal,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
-  
-  audio_container_manager = ags_audio_container_manager_get_instance();
 
   filename = sfz_synth_generator->filename;
+
+  audio_container_manager = ags_audio_container_manager_get_instance();
+
+  /* get audio container manager mutex */
+  audio_container_manager_mutex = AGS_AUDIO_CONTAINER_MANAGER_GET_OBJ_MUTEX(audio_container_manager);
+  
+  g_rec_mutex_lock(audio_container_manager_mutex);
   
   audio_container = ags_audio_container_manager_find_audio_container(audio_container_manager,
 								     filename);
@@ -1143,6 +1150,8 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
     ags_audio_container_manager_add_audio_container(audio_container_manager,
 						    audio_container);
   }
+
+  g_rec_mutex_unlock(audio_container_manager_mutex);
 
   list = 
     start_list = ags_audio_container_find_sound_resource(audio_container,
@@ -1362,6 +1371,10 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
        i % buffer_size == 0){
       stream = stream->next;
     }
+  }
+  
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
   }  
 }
 

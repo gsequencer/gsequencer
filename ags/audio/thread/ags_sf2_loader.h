@@ -46,11 +46,13 @@ typedef struct _AgsSF2LoaderClass AgsSF2LoaderClass;
 /**
  * AgsSF2LoaderFlags:
  * @AGS_SF2_LOADER_HAS_COMPLETED: has completed
+ * @AGS_SF2_LOADER_RUN_APPLY_SYNTH: run apply synth
  * 
  * Enum values to configure SF2 loader.
  */
 typedef enum{
-  AGS_SF2_LOADER_HAS_COMPLETED   = 1,
+  AGS_SF2_LOADER_HAS_COMPLETED      = 1,
+  AGS_SF2_LOADER_RUN_APPLY_SYNTH    = 1 <<  1,
 }AgsSF2LoaderFlags;
 
 struct _AgsSF2Loader
@@ -69,6 +71,9 @@ struct _AgsSF2Loader
 
   gchar *preset;
   gchar *instrument;
+
+  gdouble base_note;
+  guint count;
   
   AgsAudioContainer *audio_container;
 };

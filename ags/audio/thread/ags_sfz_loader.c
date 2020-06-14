@@ -19,19 +19,12 @@
 
 #include <ags/audio/thread/ags_sfz_loader.h>
 
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_diatonic_scale.h>
-#include <ags/audio/ags_filter_util.h>
-
 #include <ags/audio/file/ags_audio_container.h>
+#include <ags/audio/file/ags_audio_container_manager.h>
 #include <ags/audio/file/ags_sound_container.h>
-#include <ags/audio/file/ags_sound_resource.h>
 #include <ags/audio/file/ags_sfz_file.h>
-#include <ags/audio/file/ags_sfz_group.h>
-#include <ags/audio/file/ags_sfz_region.h>
+
+#include <ags/audio/task/ags_apply_sfz_synth.h>
 
 #include <ags/i18n.h>
 
@@ -182,6 +175,9 @@ ags_sfz_loader_init(AgsSFZLoader *sfz_loader)
   sfz_loader->audio = NULL;
 
   sfz_loader->filename = NULL;
+
+  sfz_loader->base_note = 0.0;
+  sfz_loader->count = 1;
 
   sfz_loader->audio_container = NULL;
 }
@@ -475,682 +471,102 @@ ags_sfz_loader_unset_flags(AgsSFZLoader *sfz_loader, guint flags)
 void*
 ags_sfz_loader_run(void *ptr)
 {
-  AgsChannel *start_input, *next_input, *input;
-  AgsSFZGroup *group;
-  AgsSFZRegion *region;      
+  AgsAudioContainerManager *audio_container_manager;
+
   AgsSFZLoader *sfz_loader;
   
   GObject *output_soundcard;
-
-  GList *start_audio_signal, *audio_signal;
-  GList *start_list, *list;
-
-  glong key, current_key;
-  glong hikey, lokey, current_hikey, current_lokey;
-  guint n_pads, current_pads;
-  guint n_audio_channels, current_audio_channels;
-  int retval;
-  guint j_stop;
-  guint i, j;
   
+  GRecMutex *audio_container_manager_mutex;
+
   sfz_loader = AGS_SFZ_LOADER(ptr);
+  
+  output_soundcard = NULL;  
 
   g_object_get(sfz_loader->audio,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
-  
-  sfz_loader->audio_container = ags_audio_container_new(sfz_loader->filename,
-							NULL,
-							NULL,
-							NULL,
-							output_soundcard,
-							-1);
-  ags_audio_container_open(sfz_loader->audio_container);
 
+  audio_container_manager = ags_audio_container_manager_get_instance();
+
+  /* get audio container manager mutex */
+  audio_container_manager_mutex = AGS_AUDIO_CONTAINER_MANAGER_GET_OBJ_MUTEX(audio_container_manager);
+  
+  g_rec_mutex_lock(audio_container_manager_mutex);
+
+  sfz_loader->audio_container = ags_audio_container_manager_find_audio_container(audio_container_manager,
+										 sfz_loader->filename);
+  
+  if(sfz_loader->audio_container == NULL){
+    sfz_loader->audio_container = ags_audio_container_new(sfz_loader->filename,
+							  NULL,
+							  NULL,
+							  NULL,
+							  output_soundcard,
+							  -1);
+    ags_audio_container_open(sfz_loader->audio_container);
+
+    ags_audio_container_manager_add_audio_container(audio_container_manager,
+						    sfz_loader->audio_container);
+  }
+  
+  g_rec_mutex_unlock(audio_container_manager_mutex);
+  
   /* select */
-  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(sfz_loader->audio_container->sound_container),
-					    0);
-  
-  g_object_get(sfz_loader->audio,
-	       "input", &start_input,
-	       "input-pads", &n_pads,
-	       "audio-channels", &n_audio_channels,
-	       NULL);
+  if(sfz_loader->audio_container->sound_container != NULL){
+    ags_sound_container_level_up(AGS_SOUND_CONTAINER(sfz_loader->audio_container->sound_container),
+				 5);
 
-  hikey = 0;
-  lokey = 0;
-  
-  ags_sfz_file_get_range(AGS_SFZ_FILE(sfz_loader->audio_container->sound_container),
-			 &lokey, &hikey);
-  
-  /* resize */
-  g_object_get(sfz_loader->audio_container->sound_container,
-	       "sample", &start_list,
-	       NULL);
+    ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(sfz_loader->audio_container->sound_container),
+					      0);
 
-  list = start_list;
-  current_audio_channels = n_audio_channels;
-  
-  while(list != NULL){
-    guint tmp;
-
-    ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(list->data),
-				   &tmp,
-				   NULL,
-				   NULL,
-				   NULL);
-
-    if(tmp > current_audio_channels){
-      current_audio_channels = tmp;
-    }
-    
-    /* iterate */
-    list = list->next;
+    AGS_IPATCH(sfz_loader->audio_container->sound_container)->nesting_level += 1;
   }
   
-  if(current_audio_channels > n_audio_channels){
-    n_audio_channels = current_audio_channels;
-    
-    ags_audio_set_audio_channels(sfz_loader->audio,
-				 n_audio_channels, 0);
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
   }
   
-  current_pads = hikey - lokey + 1;
-  
-  if(lokey <= hikey &&
-     current_pads > n_pads){
-    n_pads = current_pads;
+  if(ags_sfz_loader_test_flags(sfz_loader, AGS_SFZ_LOADER_RUN_APPLY_SYNTH)){
+    AgsChannel *start_channel;
     
-    ags_audio_set_pads(sfz_loader->audio,
-		       AGS_TYPE_INPUT,
-		       n_pads, 0);
-  }
-  
-  input = start_input;
+    AgsApplySFZSynth *apply_sfz_synth;
 
-  audio_signal = 
-    start_audio_signal = NULL;
+    AgsTaskLauncher *task_launcher;
     
-  j_stop = n_audio_channels;
-  
-  for(i = 0, j = 0; input != NULL;){
-    AgsRecycling *first_recycling;
+    AgsApplicationContext *application_context;
+    
+    GList *start_sfz_synth_generator, *sfz_synth_generator;
 
-    g_object_get(input,
-		 "first-recycling", &first_recycling,
+    application_context = ags_application_context_get_instance();
+
+    task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+    
+    start_sfz_synth_generator = NULL;
+
+    start_channel = NULL;
+    
+    g_object_get(sfz_loader->audio,
+		 "sfz-synth-generator", &start_sfz_synth_generator,
+		 "input", &start_channel,
 		 NULL);
 
-    list = start_list;
+    apply_sfz_synth = ags_apply_sfz_synth_new(start_sfz_synth_generator->data,
+					      start_channel,
+					      sfz_loader->base_note,
+					      sfz_loader->count);
 
-    while(list != NULL){
-      gchar *str_key, *str_pitch_keycenter;
-      gchar *str_lokey, *str_hikey;
-      
-      gboolean success;
-      
-      g_object_get(list->data,
-		   "group", &group,
-		   "region", &region,
-		   NULL);
-
-      /* group */
-      str_pitch_keycenter = ags_sfz_group_lookup_control(group,
-							 "pitch_keycenter");
-      
-      str_key = ags_sfz_group_lookup_control(group,
-					     "key");
-      
-      str_lokey = ags_sfz_group_lookup_control(group,
-					       "lokey");
-
-      str_hikey = ags_sfz_group_lookup_control(group,
-					       "hikey");
-
-      lokey = 0;
-      
-      if(str_lokey != NULL){	
-	retval = sscanf(str_lokey, "%lu", &current_lokey);
-
-	if(retval <= 0){
-	  retval = ags_diatonic_scale_note_to_midi_key(str_lokey,
-						       &current_lokey);
-
-	  if(retval > 0){
-	    lokey = current_lokey;
-	  }
-	}else{
-	  lokey = current_lokey;
-	}
-      }
-      
-      key = lokey + i;
-
-      success = FALSE;
-      
-      if(str_pitch_keycenter != NULL){
-	retval = sscanf(str_pitch_keycenter, "%lu", &current_key);
-
-	if(retval > 0){
-	  if(current_key == key){
-	    success = TRUE;
-	  }	  
-	}else{
-	  retval = ags_diatonic_scale_note_to_midi_key(str_pitch_keycenter,
-						       &current_key);
-	  
-	  if(retval > 0){
-	    if(current_key == key){
-	      success = TRUE;
-	    }
-	  }
-	}	
-      }
-
-      if(str_key != NULL){
-	retval = sscanf(str_key, "%lu", &current_key);
-
-	if(retval > 0){
-	  if(current_key == key){
-	    success = TRUE;
-	  }	  
-	}else{
-	  retval = ags_diatonic_scale_note_to_midi_key(str_key,
-						       &current_key);
-
-	  if(retval > 0){
-	    if(current_key == key){
-	      success = TRUE;
-	    }
-	  }
-	}	
-
-	if(success){
-	  g_free(str_pitch_keycenter);
-	  g_free(str_key);
-
-	  g_free(str_hikey);
-	  g_free(str_lokey);
-
-	  break;
-	}
-      }
-
-      if(str_hikey != NULL && str_lokey != NULL){
-	success = FALSE;
-	
-	retval = sscanf(str_hikey, "%lu", &current_hikey);
-
-	if(retval <= 0){
-	  retval = ags_diatonic_scale_note_to_midi_key(str_hikey,
-						       &current_hikey);
-
-	  if(retval > 0){
-	    if(current_key <= current_hikey){
-	      success = TRUE;
-	    }	  
-	  }
-	}else{
-	  if(current_key <= current_hikey){
-	    success = TRUE;
-	  }	  
-	}
-	
-	retval = sscanf(str_lokey, "%lu", &current_lokey);
-
-	if(retval <= 0){
-	  retval = ags_diatonic_scale_note_to_midi_key(str_lokey,
-						       &current_lokey);
-
-	  if(retval > 0){
-	    if(current_key >= current_lokey){
-	      success = TRUE;
-	    }else{
-	      success = FALSE;
-	    }	  
-	  }else{
-	    success = FALSE;
-	  }
-	}else{
-	  if(current_key >= current_lokey){
-	    success = TRUE;
-	  }else{
-	    success = FALSE;
-	  }	  
-	}
-
-	if(success){
-	  hikey = current_hikey;
-	  lokey = current_lokey;
-
-	  g_free(str_pitch_keycenter);
-	  g_free(str_key);
-
-	  g_free(str_hikey);
-	  g_free(str_lokey);
-
-	  break;
-	}
-      }
-
-      g_free(str_pitch_keycenter);
-      g_free(str_key);
-
-      g_free(str_hikey);
-      g_free(str_lokey);
-
-      /* region */
-      str_pitch_keycenter = ags_sfz_region_lookup_control(region,
-							  "pitch_keycenter");
-      
-      str_key = ags_sfz_region_lookup_control(region,
-					      "key");
-      
-      str_lokey = ags_sfz_region_lookup_control(region,
-						"lokey");
-
-      str_hikey = ags_sfz_region_lookup_control(region,
-						"hikey");
-
-      lokey = 0;
-      
-      if(str_lokey != NULL){	
-	retval = sscanf(str_lokey, "%lu", &current_lokey);
-
-	if(retval <= 0){
-	  retval = ags_diatonic_scale_note_to_midi_key(str_lokey,
-						       &current_lokey);
-
-	  if(retval > 0){
-	    lokey = current_lokey;
-	  }
-	}else{
-	  lokey = current_lokey;
-	}
-      }
-      
-      key = lokey + i;
-
-      success = FALSE;
-      
-      if(str_pitch_keycenter != NULL){
-	retval = sscanf(str_pitch_keycenter, "%lu", &current_key);
-
-	if(retval > 0){
-	  if(current_key == key){
-	    success = TRUE;
-	  }	  
-	}else{
-	  retval = ags_diatonic_scale_note_to_midi_key(str_pitch_keycenter,
-						       &current_key);
-	  
-	  if(retval > 0){
-	    if(current_key == key){
-	      success = TRUE;
-	    }
-	  }
-	}	
-      }
-
-      if(str_key != NULL){
-	retval = sscanf(str_key, "%lu", &current_key);
-
-	if(retval > 0){
-	  if(current_key == key){
-	    success = TRUE;
-	  }	  
-	}else{
-	  retval = ags_diatonic_scale_note_to_midi_key(str_key,
-						       &current_key);
-
-	  if(retval > 0){
-	    if(current_key == key){
-	      success = TRUE;
-	    }
-	  }
-	}	
-
-	if(success){
-	  g_free(str_pitch_keycenter);
-	  g_free(str_key);
-
-	  g_free(str_hikey);
-	  g_free(str_lokey);
-
-	  break;
-	}
-      }
-
-      if(str_hikey != NULL && str_lokey != NULL){
-	gboolean success;
-
-	success = FALSE;
-	
-	retval = sscanf(str_hikey, "%lu", &current_hikey);
-
-	if(retval <= 0){
-	  retval = ags_diatonic_scale_note_to_midi_key(str_hikey,
-						       &current_hikey);
-
-	  if(retval > 0){
-	    if(current_key <= current_hikey){
-	      success = TRUE;
-	    }	  
-	  }
-	}else{
-	  if(current_key <= current_hikey){
-	    success = TRUE;
-	  }	  
-	}
-	
-	retval = sscanf(str_lokey, "%lu", &current_lokey);
-
-	if(retval <= 0){
-	  retval = ags_diatonic_scale_note_to_midi_key(str_lokey,
-						       &current_lokey);
-
-	  if(retval > 0){
-	    if(current_key >= current_lokey){	      
-	      success = TRUE;
-	    }else{
-	      success = FALSE;
-	    }	  
-	  }else{
-	    success = FALSE;
-	  }
-	}else{
-	  if(current_key >= current_lokey){
-	    success = TRUE;
-	  }else{
-	    success = FALSE;
-	  }	  
-	}
-
-	if(success){
-	  hikey = current_hikey;
-	  lokey = current_lokey;
-
-	  g_free(str_pitch_keycenter);
-	  g_free(str_key);
-
-	  g_free(str_hikey);
-	  g_free(str_lokey);
-
-	  break;
-	}
-      }
-
-      g_free(str_pitch_keycenter);
-      g_free(str_key);
-
-      g_free(str_hikey);
-      g_free(str_lokey);
-      
-      /* iterate */
-      list = list->next;
-    }
+    ags_task_launcher_add_task(task_launcher,
+			       apply_sfz_synth);
     
-    if(j == 0 &&
-       list != NULL){
-      audio_signal = 
-	start_audio_signal = ags_sound_resource_read_audio_signal(AGS_SOUND_RESOURCE(list->data),
-								  output_soundcard,
-								  -1);
-    }
-
-    /* add audio signal as template to recycling */
-    audio_signal = g_list_nth(start_audio_signal,
-			      j);
-
-    if(audio_signal != NULL){
-      AgsAudioSignal *current_audio_signal;
-
-      GList *start_stream, *stream;
-      
-      gchar *str_key, *str_pitch_keycenter;
-      gchar *str_lokey;
-
-      guint samplerate;
-      guint buffer_size;
-      guint format;
-      guint loop_start, loop_end;
-      glong pitch_keycenter, current_pitch_keycenter;
-      guint x_offset;
-
-      /* key center */
-      g_object_get(list->data,
-		   "group", &group,
-		   "region", &region,
-		   NULL);
-
-      key = lokey + i;
-      pitch_keycenter = 49;
-      
-      /* group */
-      str_pitch_keycenter = ags_sfz_group_lookup_control(group,
-							 "pitch_keycenter");
-      
-      str_key = ags_sfz_group_lookup_control(group,
-					     "key");
-
-      if(str_pitch_keycenter != NULL){
-	retval = sscanf(str_pitch_keycenter, "%lu", &current_pitch_keycenter);
-
-	if(retval > 0){
-	  pitch_keycenter = current_pitch_keycenter;
-	}else{
-	  retval = ags_diatonic_scale_note_to_midi_key(str_pitch_keycenter,
-						       &current_key);
-
-	  if(retval > 0){
-	    pitch_keycenter = current_key;
-	  }
-	}
-      }else if(str_key != NULL){
-	retval = sscanf(str_key, "%lu", &current_pitch_keycenter);
-
-	if(retval > 0){
-	  pitch_keycenter = current_key;
-	}else{
-	  retval = ags_diatonic_scale_note_to_midi_key(str_key,
-						       &current_key);
-
-	  if(retval > 0){
-	    pitch_keycenter = current_key;
-	  }
-	}	
-      }
-
-      g_free(str_pitch_keycenter);
-      g_free(str_key);
-
-      /* region */
-      str_pitch_keycenter = ags_sfz_region_lookup_control(region,
-							  "pitch_keycenter");
-      
-      str_key = ags_sfz_region_lookup_control(region,
-					      "key");
-
-      if(str_pitch_keycenter != NULL){
-	retval = sscanf(str_pitch_keycenter, "%lu", &current_pitch_keycenter);
-
-	if(retval > 0){
-	  pitch_keycenter = current_pitch_keycenter;
-	}else{
-	  retval = ags_diatonic_scale_note_to_midi_key(str_pitch_keycenter,
-						       &current_key);
-
-	  if(retval > 0){
-	    pitch_keycenter = current_key;
-	  }
-	}		
-      }else if(str_key != NULL){
-	retval = sscanf(str_key, "%lu", &current_pitch_keycenter);
-
-	if(retval > 0){
-	  pitch_keycenter = current_key;
-	}else{
-	  retval = ags_diatonic_scale_note_to_midi_key(str_key,
-						       &current_key);
-
-	  if(retval > 0){
-	    pitch_keycenter = current_key;
-	  }
-	}	
-      }
-
-      g_free(str_pitch_keycenter);
-      g_free(str_key);
-      
-      /* loop start/end */
-      g_object_get(audio_signal->data,
-		   "samplerate", &samplerate,
-		   "buffer-size", &buffer_size,
-		   "format", &format,
-		   "loop-start", &loop_start,
-		   "loop-end", &loop_end,
-		   NULL);
-
-      /* create audio signal */
-      current_audio_signal = ags_audio_signal_new(output_soundcard,
-						  (GObject *) first_recycling,
-						  NULL);
-      current_audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-      
-      g_object_set(current_audio_signal,
-		   "loop-start", loop_start,
-		   "loop-end", loop_end,
-		   NULL);
-
-      ags_audio_signal_duplicate_stream(current_audio_signal,
-					audio_signal->data);
-      
-      /* pitch */
-      stream =
-	start_stream = current_audio_signal->stream;
-
-      x_offset = 0;
-
-      key -= lokey;
-
-      while(stream != NULL){
-	switch(format){
-	case AGS_SOUNDCARD_SIGNED_8_BIT:
-	{
-	  ags_filter_util_pitch_s8((gint8 *) stream->data,
-				   buffer_size,
-				   samplerate,
-				   pitch_keycenter - 48.0,
-				   ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	}
-	break;
-	case AGS_SOUNDCARD_SIGNED_16_BIT:
-	{
-	  ags_filter_util_pitch_s16((gint16 *) stream->data,
-				    buffer_size,
-				    samplerate,
-				    pitch_keycenter - 48.0,
-				    ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	}
-	break;
-	case AGS_SOUNDCARD_SIGNED_24_BIT:
-	{
-	  ags_filter_util_pitch_s24((gint32 *) stream->data,
-				    buffer_size,
-				    samplerate,
-				    pitch_keycenter - 48.0,
-				    ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	}
-	break;
-	case AGS_SOUNDCARD_SIGNED_32_BIT:
-	{
-	  ags_filter_util_pitch_s32((gint32 *) stream->data,
-				    buffer_size,
-				    samplerate,
-				    pitch_keycenter - 48.0,
-				    ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	}
-	break;
-	case AGS_SOUNDCARD_SIGNED_64_BIT:
-	{
-	  ags_filter_util_pitch_s64((gint64 *) stream->data,
-				    buffer_size,
-				    samplerate,
-				    pitch_keycenter - 48.0,
-				    ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	}
-	break;
-	case AGS_SOUNDCARD_FLOAT:
-	{
-	  ags_filter_util_pitch_float((gfloat *) stream->data,
-				      buffer_size,
-				      samplerate,
-				      pitch_keycenter - 48.0,
-				      ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	}
-	break;
-	case AGS_SOUNDCARD_DOUBLE:
-	{
-	  ags_filter_util_pitch_double((gdouble *) stream->data,
-				       buffer_size,
-				       samplerate,
-				       pitch_keycenter - 48.0,
-				       ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	}
-	break;
-	case AGS_SOUNDCARD_COMPLEX:
-	{
-	  ags_filter_util_pitch_complex((AgsComplex *) stream->data,
-					buffer_size,
-					samplerate,
-					pitch_keycenter - 48.0,
-					((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	}
-	break;
-	}	  
-
-	/* iterate */
-	x_offset += buffer_size;
-	
-	stream = stream->next;
-      }
-
-      /* add audio signal */
-      ags_recycling_add_audio_signal(first_recycling,
-				     current_audio_signal);
-    }else{
-      g_message("SFZ audio signal not found");
-    }
-
-    g_object_unref(first_recycling);
+    g_list_free_full(start_sfz_synth_generator,
+		     (GDestroyNotify) g_object_unref);
     
-    /* iterate */
-    if(j + 1 < j_stop){
-      j++;
-    }else{
-      g_list_free_full(start_audio_signal,
-		       g_object_unref);
-
-      audio_signal = 
-	start_audio_signal = NULL;
-
-      i++;
-      j = 0;
-
-      list = list->next;
+    if(start_channel != NULL){
+      g_object_unref(start_channel);
     }
-
-    next_input = ags_channel_next(input);
-
-    g_object_unref(input);
-
-    input = next_input;
   }
-  
-  g_object_unref(output_soundcard);
 
-  g_list_free_full(start_list,
-		   g_object_unref);
-  
   ags_sfz_loader_set_flags(sfz_loader,
 			   AGS_SFZ_LOADER_HAS_COMPLETED);
   
