@@ -84,7 +84,10 @@ check_PROGRAMS += \
 	ags_audio_buffer_util_test \
 	ags_char_buffer_util_test \
 	ags_filter_util_test \
+	ags_synth_util_test \
 	ags_fm_synth_util_test \
+	ags_sf2_synth_util_test \
+	ags_sfz_synth_util_test \
 	ags_fourier_transform_util_test \
 	ags_recall_test \
 	ags_recall_channel_test \
@@ -710,11 +713,29 @@ ags_filter_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(L
 ags_filter_util_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_filter_util_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
+# synth util unit test
+ags_synth_util_test_SOURCES = ags/test/audio/ags_synth_util_test.c
+ags_synth_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
+ags_synth_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_synth_util_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+
 # FM synth util unit test
 ags_fm_synth_util_test_SOURCES = ags/test/audio/ags_fm_synth_util_test.c
 ags_fm_synth_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_fm_synth_util_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_fm_synth_util_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+
+# SF2 synth util unit test
+ags_sf2_synth_util_test_SOURCES = ags/test/audio/ags_sf2_synth_util_test.c
+ags_sf2_synth_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
+ags_sf2_synth_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_sf2_synth_util_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+
+# SFZ synth util unit test
+ags_sfz_synth_util_test_SOURCES = ags/test/audio/ags_sfz_synth_util_test.c
+ags_sfz_synth_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
+ags_sfz_synth_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_sfz_synth_util_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fourier transform util unit test
 ags_fourier_transform_util_test_SOURCES = ags/test/audio/ags_fourier_transform_util_test.c
