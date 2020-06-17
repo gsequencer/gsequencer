@@ -151,11 +151,13 @@ void
 ags_ffplayer_init(AgsFFPlayer *ffplayer)
 {
   GtkVBox *vbox;
+  GtkVBox *synth_generator_vbox;
   GtkAlignment *alignment;
   GtkTable *table;
   GtkHBox *hbox;
   GtkHBox *filename_hbox;
   GtkVBox *piano_vbox;
+  GtkFrame *frame;
   GtkLabel *label;
   
   PangoAttrList *attr_list;
@@ -275,7 +277,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     FALSE, FALSE,
 		     0);
   
-  table = (GtkTable *) gtk_table_new(3, 2, FALSE);
+  table = (GtkTable *) gtk_table_new(4, 2, FALSE);
   gtk_container_add((GtkContainer *) alignment,
 		    (GtkWidget *) table);
   
@@ -398,13 +400,62 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     FALSE, FALSE,
 		     0);
 
+  /*  */
+  frame = (GtkFrame *) gtk_frame_new("Synth Generator");
+  gtk_table_attach(table, (GtkWidget *) frame,
+		   2, 3,
+		   0, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  synth_generator_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
+						  0);
+  gtk_container_add((GtkContainer *) frame,
+		    (GtkWidget *) synth_generator_vbox);
+  
+  ffplayer->synth_generator_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
+  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+		     (GtkWidget *) ffplayer->synth_generator_enabled,
+		     FALSE, FALSE,
+		     0);
+
+  ffplayer->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(-70.0,
+								     70.0,
+								     1.0);
+  gtk_spin_button_set_digits(ffplayer->lower,
+			     2);
+  gtk_spin_button_set_value(ffplayer->lower,
+			    -48.0);
+  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+		     (GtkWidget *) ffplayer->lower,
+		     FALSE, FALSE,
+		     0);
+  
+  ffplayer->key_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+									 128.0,
+									 1.0);
+  gtk_spin_button_set_value(ffplayer->key_count,
+			    78.0);
+  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+		     (GtkWidget *) ffplayer->key_count,
+		     FALSE, FALSE,
+		     0);
+
+  ffplayer->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
+  gtk_widget_set_valign(ffplayer->update,
+			GTK_ALIGN_END);
+  gtk_table_attach(table, (GtkWidget *) ffplayer->update,
+		   3, 4,
+		   0, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
   /* effect bridge */
   AGS_MACHINE(ffplayer)->bridge = (GtkContainer *) ags_ffplayer_bridge_new(audio);
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) AGS_MACHINE(ffplayer)->bridge,
 		     FALSE, FALSE,
 		     0);
-
   /* dialog */
   ffplayer->open_dialog = NULL;
 
