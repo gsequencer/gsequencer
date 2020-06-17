@@ -25,10 +25,17 @@
 
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
+#include <ags/audio/file/ags_sfz_group.h>
+#include <ags/audio/file/ags_sfz_region.h>
+#include <ags/audio/file/ags_sfz_sample.h>
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #include <math.h>
 #include <complex.h>
-#include <stdio.h>
+
 
 /**
  * SECTION:ags_sfz_synth_util
@@ -68,7 +75,8 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
 			   guint loop_mode,
 			   gint loop_start, gint loop_end)
 {
-  gchar *group_key, *region_key;
+  gchar *group_key;
+  gchar *region_key;
 
   void *sample_buffer;
 
@@ -113,7 +121,7 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
 			  sample_buffer, 1,
 			  0,
 			  source_frame_count, AGS_SOUNDCARD_DOUBLE);
-
+  
   /* resample if needed */
   frame_count = source_frame_count;
   
@@ -151,7 +159,7 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
   ags_audio_buffer_util_copy_buffer_to_buffer(im_buffer, 1, 0,
 					      sample_buffer, 1, 0,
 					      frame_count, copy_mode);
-
+  
   /* pitch */
   midi_key = 60;
 
@@ -177,10 +185,10 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
   
   region_key = ags_sfz_region_lookup_control(sfz_sample->region,
 					     "key");
-
+  
   if(region_key != NULL){
     int retval;
-    
+
     retval = sscanf(region_key, "%lu", &current_midi_key);
 
     if(retval <= 0){
