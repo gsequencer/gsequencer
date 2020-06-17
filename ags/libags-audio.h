@@ -102,6 +102,10 @@
 #include <ags/audio/ags_synth_enums.h>
 #include <ags/audio/ags_synth_generator.h>
 #include <ags/audio/ags_synth_util.h>
+#include <ags/audio/ags_sf2_synth_generator.h>
+#include <ags/audio/ags_sf2_synth_util.h>
+#include <ags/audio/ags_sfz_synth_generator.h>
+#include <ags/audio/ags_sfz_synth_util.h>
 #include <ags/audio/ags_track.h>
 #include <ags/audio/ags_wave.h>
 

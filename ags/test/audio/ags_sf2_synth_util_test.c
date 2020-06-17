@@ -134,11 +134,11 @@ main(int argc, char **argv)
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of ags_sf2_synth_util.c copy s8", ags_sf2_synth_util_test_copy_s8) == NULL) ||
      (CU_add_test(pSuite, "test of ags_sf2_synth_util.c copy s16", ags_sf2_synth_util_test_copy_s16) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_sf2_synth_util.c copy s16", ags_sf2_synth_util_test_copy_s24) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_sf2_synth_util.c copy s16", ags_sf2_synth_util_test_copy_s32) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_sf2_synth_util.c copy s16", ags_sf2_synth_util_test_copy_s64) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_sf2_synth_util.c copy s16", ags_sf2_synth_util_test_copy_float) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_sf2_synth_util.c copy s16", ags_sf2_synth_util_test_copy_double) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_sf2_synth_util.c copy s24", ags_sf2_synth_util_test_copy_s24) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_sf2_synth_util.c copy s32", ags_sf2_synth_util_test_copy_s32) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_sf2_synth_util.c copy s64", ags_sf2_synth_util_test_copy_s64) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_sf2_synth_util.c copy float", ags_sf2_synth_util_test_copy_float) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_sf2_synth_util.c copy double", ags_sf2_synth_util_test_copy_double) == NULL) ||
      (CU_add_test(pSuite, "test of ags_sf2_synth_util.c copy complex", ags_sf2_synth_util_test_copy_complex) == NULL)){
     CU_cleanup_registry();
       

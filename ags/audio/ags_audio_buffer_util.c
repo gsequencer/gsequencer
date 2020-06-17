@@ -13621,6 +13621,13 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
 					    count);
   }
   break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_COMPLEX:
+  {
+    ags_audio_buffer_util_copy_s8_to_complex((AgsComplex *) destination + doffset, dchannels,
+					     (gint8 *) source + soffset, schannels,
+					     count);
+  }
+  break;
 
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S8:
   {
@@ -13669,6 +13676,13 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
     ags_audio_buffer_util_copy_s16_to_double((gdouble *) destination + doffset, dchannels,
 					     (gint16 *) source + soffset, schannels,
 					     count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_COMPLEX:
+  {
+    ags_audio_buffer_util_copy_s16_to_complex((AgsComplex *) destination + doffset, dchannels,
+					      (gint16 *) source + soffset, schannels,
+					      count);
   }
   break;
 
@@ -13721,6 +13735,13 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
 					     count);
   }
   break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_COMPLEX:
+  {
+    ags_audio_buffer_util_copy_s24_to_complex((AgsComplex *) destination + doffset, dchannels,
+					      (gint32 *) source + soffset, schannels,
+					      count);
+  }
+  break;
 
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S8:
   {
@@ -13769,6 +13790,13 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
     ags_audio_buffer_util_copy_s32_to_double((gdouble *) destination + doffset, dchannels,
 					     (gint32 *) source + soffset, schannels,
 					     count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_COMPLEX:
+  {
+    ags_audio_buffer_util_copy_s32_to_complex((AgsComplex *) destination + doffset, dchannels,
+					      (gint32 *) source + soffset, schannels,
+					      count);
   }
   break;
 
@@ -13821,6 +13849,13 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
 					     count);
   }
   break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_COMPLEX:
+  {
+    ags_audio_buffer_util_copy_s64_to_complex((AgsComplex *) destination + doffset, dchannels,
+					      (gint64 *) source + soffset, schannels,
+					      count);
+  }
+  break;
 
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S8:
   {
@@ -13869,6 +13904,13 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
     ags_audio_buffer_util_copy_float_to_double((gdouble *) destination + doffset, dchannels,
 					       (gfloat *) source + soffset, schannels,
 					       count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_COMPLEX:
+  {
+    ags_audio_buffer_util_copy_float_to_complex((AgsComplex *) destination + doffset, dchannels,
+						(gfloat *) source + soffset, schannels,
+						count);
   }
   break;
 
@@ -13921,7 +13963,71 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
 						count);
   }
   break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_COMPLEX:
+  {
+    ags_audio_buffer_util_copy_double_to_complex((AgsComplex *) destination + doffset, dchannels,
+						 (gdouble *) source + soffset, schannels,
+						 count);
+  }
+  break;
 
+  case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S8:
+  {
+    ags_audio_buffer_util_copy_complex_to_s8((gint8 *) destination + doffset, dchannels,
+					     (AgsComplex *) source + soffset, schannels,
+					     count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S16:
+  {
+    ags_audio_buffer_util_copy_complex_to_s16((gint16 *) destination + doffset, dchannels,
+					      (AgsComplex *) source + soffset, schannels,
+					      count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S24:
+  {
+    ags_audio_buffer_util_copy_complex_to_s24((gint32 *) destination + doffset, dchannels,
+					      (AgsComplex *) source + soffset, schannels,
+					      count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S32:
+  {
+    ags_audio_buffer_util_copy_complex_to_s32((gint32 *) destination + doffset, dchannels,
+					      (AgsComplex *) source + soffset, schannels,
+					      count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S64:
+  {
+    ags_audio_buffer_util_copy_complex_to_s64((gint64 *) destination + doffset, dchannels,
+					      (AgsComplex *) source + soffset, schannels,
+					      count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_FLOAT:
+  {
+    ags_audio_buffer_util_copy_complex_to_float((gfloat *) destination + doffset, dchannels,
+						(AgsComplex *) source + soffset, schannels,
+						count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_DOUBLE:
+  {
+    ags_audio_buffer_util_copy_complex_to_double((gdouble *) destination + doffset, dchannels,
+						 (AgsComplex *) source + soffset, schannels,
+						 count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_COMPLEX:
+  {
+    ags_audio_buffer_util_copy_complex_to_complex((AgsComplex *) destination + doffset, dchannels,
+						  (AgsComplex *) source + soffset, schannels,
+						  count);
+  }
+  break;
+  
 #ifdef __APPLE__
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT32:
   {
@@ -13979,6 +14085,13 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
 						  count);
   }
   break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_FLOAT32:
+  {
+    ags_audio_buffer_util_copy_complex_to_float32((Float32 *) destination + doffset, dchannels,
+						  (AgsComplex *) source + soffset, schannels,
+						  count);
+  }
+  break;
     
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S8:
   {
@@ -14020,6 +14133,13 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
     ags_audio_buffer_util_copy_float32_to_float((gfloat *) destination + doffset, dchannels,
 						(Float32 *) source + soffset, schannels,
 						count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_COMPLEX:
+  {
+    ags_audio_buffer_util_copy_float32_to_complex((AgsComplex *) destination + doffset, dchannels,
+						  (Float32 *) source + soffset, schannels,
+						  count);
   }
   break;
 #endif    

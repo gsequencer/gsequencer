@@ -28,6 +28,7 @@
 
 #include <math.h>
 #include <complex.h>
+#include <stdio.h>
 
 /**
  * SECTION:ags_sfz_synth_util
@@ -88,6 +89,12 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
   guint k;
   guint l;
   gboolean pong_copy;
+
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
   
   ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_sample),
 			  &source_frame_count,
@@ -164,6 +171,8 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
 	midi_key = current_midi_key;
       }
     }
+
+    g_free(group_key);
   }
   
   region_key = ags_sfz_region_lookup_control(sfz_sample->region,
@@ -182,6 +191,8 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
 	midi_key = current_midi_key;
       }
     }
+
+    g_free(region_key);
   }
     
   base_key = (gdouble) midi_key - 21.0;
@@ -394,6 +405,12 @@ ags_sfz_synth_util_copy_s16(gint16 *buffer,
   guint k;
   guint l;
   gboolean pong_copy;
+
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
   
   ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_sample),
 			  &source_frame_count,
@@ -470,6 +487,8 @@ ags_sfz_synth_util_copy_s16(gint16 *buffer,
 	midi_key = current_midi_key;
       }
     }
+
+    g_free(group_key);
   }
   
   region_key = ags_sfz_region_lookup_control(sfz_sample->region,
@@ -488,6 +507,8 @@ ags_sfz_synth_util_copy_s16(gint16 *buffer,
 	midi_key = current_midi_key;
       }
     }
+
+    g_free(region_key);
   }
   
   base_key = (gdouble) midi_key - 21.0;
@@ -700,6 +721,12 @@ ags_sfz_synth_util_copy_s24(gint32 *buffer,
   guint k;
   guint l;
   gboolean pong_copy;
+
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
   
   ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_sample),
 			  &source_frame_count,
@@ -776,6 +803,8 @@ ags_sfz_synth_util_copy_s24(gint32 *buffer,
 	midi_key = current_midi_key;
       }
     }
+
+    g_free(group_key);
   }
   
   region_key = ags_sfz_region_lookup_control(sfz_sample->region,
@@ -794,6 +823,8 @@ ags_sfz_synth_util_copy_s24(gint32 *buffer,
 	midi_key = current_midi_key;
       }
     }
+
+    g_free(region_key);
   }
   
   base_key = (gdouble) midi_key - 21.0;
@@ -1007,6 +1038,12 @@ ags_sfz_synth_util_copy_s32(gint32 *buffer,
   guint l;
   gboolean pong_copy;
   
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
+
   ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_sample),
 			  &source_frame_count,
 			  NULL, NULL);
@@ -1082,6 +1119,8 @@ ags_sfz_synth_util_copy_s32(gint32 *buffer,
 	midi_key = current_midi_key;
       }
     }
+
+    g_free(group_key);
   }
   
   region_key = ags_sfz_region_lookup_control(sfz_sample->region,
@@ -1100,6 +1139,8 @@ ags_sfz_synth_util_copy_s32(gint32 *buffer,
 	midi_key = current_midi_key;
       }
     }
+
+    g_free(region_key);
   }
   
   base_key = (gdouble) midi_key - 21.0;
@@ -1312,6 +1353,12 @@ ags_sfz_synth_util_copy_s64(gint64 *buffer,
   guint k;
   guint l;
   gboolean pong_copy;
+
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
   
   ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_sample),
 			  &source_frame_count,
@@ -1388,6 +1435,8 @@ ags_sfz_synth_util_copy_s64(gint64 *buffer,
 	midi_key = current_midi_key;
       }
     }
+
+    g_free(group_key);
   }
   
   region_key = ags_sfz_region_lookup_control(sfz_sample->region,
@@ -1406,6 +1455,8 @@ ags_sfz_synth_util_copy_s64(gint64 *buffer,
 	midi_key = current_midi_key;
       }
     }
+
+    g_free(region_key);
   }
   
   base_key = (gdouble) midi_key - 21.0;
@@ -1618,6 +1669,12 @@ ags_sfz_synth_util_copy_float(gfloat *buffer,
   guint k;
   guint l;
   gboolean pong_copy;
+
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
   
   ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_sample),
 			  &source_frame_count,
@@ -1694,6 +1751,8 @@ ags_sfz_synth_util_copy_float(gfloat *buffer,
 	midi_key = current_midi_key;
       }
     }
+
+    g_free(group_key);
   }
   
   region_key = ags_sfz_region_lookup_control(sfz_sample->region,
@@ -1712,6 +1771,8 @@ ags_sfz_synth_util_copy_float(gfloat *buffer,
 	midi_key = current_midi_key;
       }
     }
+
+    g_free(region_key);
   }
   
   base_key = (gdouble) midi_key - 21.0;
@@ -1925,6 +1986,12 @@ ags_sfz_synth_util_copy_double(gdouble *buffer,
   guint l;
   gboolean pong_copy;
   
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
+
   ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_sample),
 			  &source_frame_count,
 			  NULL, NULL);
@@ -2000,6 +2067,8 @@ ags_sfz_synth_util_copy_double(gdouble *buffer,
 	midi_key = current_midi_key;
       }
     }
+
+    g_free(group_key);
   }
   
   region_key = ags_sfz_region_lookup_control(sfz_sample->region,
@@ -2018,6 +2087,8 @@ ags_sfz_synth_util_copy_double(gdouble *buffer,
 	midi_key = current_midi_key;
       }
     }
+
+    g_free(region_key);
   }
   
   base_key = (gdouble) midi_key - 21.0;
@@ -2230,6 +2301,12 @@ ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
   guint k;
   guint l;
   gboolean pong_copy;
+
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
   
   ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_sample),
 			  &source_frame_count,
@@ -2306,6 +2383,8 @@ ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
 	midi_key = current_midi_key;
       }
     }
+
+    g_free(group_key);
   }
   
   region_key = ags_sfz_region_lookup_control(sfz_sample->region,
@@ -2324,6 +2403,8 @@ ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
 	midi_key = current_midi_key;
       }
     }
+
+    g_free(region_key);
   }
   
   base_key = (gdouble) midi_key - 21.0;
