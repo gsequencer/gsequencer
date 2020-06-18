@@ -312,14 +312,24 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   AgsWindow *window;
 
   AgsAudio *audio;
-
+  AgsChannel *start_input;
+  
   AgsAudioContainer *audio_container;
 
+  AgsResizeAudio *resize_audio;
+  AgsApplySF2Synth *apply_sf2_synth;
   AgsOpenSf2Instrument *open_sf2_instrument;
 
   AgsApplicationContext *application_context;
+
+  gchar *preset_str;
+  gchar *instrument_str;
   
   gint position;
+  gdouble lower;
+  gdouble key_count;
+  guint audio_channels;
+  guint output_pads, input_pads;
   
   if((AGS_FFPLAYER_NO_LOAD & (ffplayer->flags)) != 0 ||
      ffplayer->audio_container == NULL||
@@ -333,6 +343,12 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   audio = AGS_MACHINE(ffplayer)->audio;
 
+  start_input = NULL;
+
+  g_object_get(audio,
+	       "input", &start_input,
+	       NULL);
+  
   /*  */
   audio_container = ffplayer->audio_container;
 
@@ -342,10 +358,12 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   /* load presets */
   position = gtk_combo_box_get_active(GTK_COMBO_BOX(ffplayer->preset));
-
+  
   if(position == -1){
     position = 0;
   }
+
+  preset_str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(ffplayer->preset));
   
   ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
 					    position);
@@ -358,22 +376,92 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
     position = 0;
   }
 
+  instrument_str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(ffplayer->instrument));
+  
   ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
   					    position);
 
   AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
 
-  /* open sf2 instrument */
-  open_sf2_instrument = ags_open_sf2_instrument_new(audio,
-						    AGS_IPATCH(audio_container->sound_container),
-						    NULL,
-						    NULL,
-						    NULL,
-						    0);
+  lower = gtk_spin_button_get_value(ffplayer->lower);
+  key_count = gtk_spin_button_get_value(ffplayer->key_count);
+
+  audio_channels = AGS_MACHINE(ffplayer)->audio_channels;
   
-  /* append task */
-  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-				(AgsTask *) open_sf2_instrument);
+  output_pads = AGS_MACHINE(ffplayer)->output_pads;
+  input_pads = AGS_MACHINE(ffplayer)->input_pads;
+  
+  /* open sf2 instrument */
+  if(gtk_toggle_button_get_active(ffplayer->synth_generator_enabled)){
+    GList *start_sf2_synth_generator, *sf2_synth_generator;
+    GList *start_sound_resource, *sound_resource;
+
+    guint requested_frame_count;
+    
+    resize_audio = ags_resize_audio_new(audio,
+					output_pads,
+					key_count,
+					audio_channels);
+      
+    /* append task */
+    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				  (AgsTask *) resize_audio);
+    
+    start_sf2_synth_generator = NULL;
+
+    g_object_get(audio,
+		 "sf2-synth-generator", &start_sf2_synth_generator,
+		 NULL);
+
+    requested_frame_count = 0;
+    
+    start_sound_resource = ags_audio_container_find_sound_resource(audio_container,
+								   preset_str,
+								   instrument_str,
+								   NULL);
+
+    if(start_sound_resource != NULL){
+      ags_sound_resource_info(AGS_SOUND_RESOURCE(start_sound_resource->data),
+			      &requested_frame_count,
+			      NULL, NULL);
+    }
+    
+    if(start_sf2_synth_generator != NULL){
+      g_object_set(start_sf2_synth_generator->data,
+		   "filename", audio_container->filename,
+		   "preset", audio_container->preset,
+		   "instrument", audio_container->instrument,
+		   "frame-count", requested_frame_count,
+		   NULL);
+      
+      apply_sf2_synth = ags_apply_sf2_synth_new(start_sf2_synth_generator->data,
+						start_input,
+						lower, (guint) key_count);
+      
+      g_object_set(apply_sf2_synth,
+		   "requested-frame-count", requested_frame_count,
+		   NULL);
+      
+      /* append task */
+      ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				    (AgsTask *) apply_sf2_synth);
+    } 
+  }else{
+    open_sf2_instrument = ags_open_sf2_instrument_new(audio,
+						      AGS_IPATCH(audio_container->sound_container),
+						      NULL,
+						      NULL,
+						      NULL,
+						      0);
+    
+    /* append task */
+    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				  (AgsTask *) open_sf2_instrument);
+  }  
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
 }
 
 gboolean

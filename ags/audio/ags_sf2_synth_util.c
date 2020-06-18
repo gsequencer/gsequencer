@@ -22,9 +22,12 @@
 #include <ags/audio/ags_synth_enums.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_filter_util.h>
 
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
+#include <ags/audio/file/ags_ipatch.h>
+#include <ags/audio/file/ags_ipatch_sample.h>
 
 #include <math.h>
 #include <complex.h>
@@ -275,6 +278,13 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
 
   sample_buffer = ags_stream_alloc(source_frame_count,
 				   AGS_SOUNDCARD_DOUBLE);
+
+  ags_stream_free(ipatch_sample->buffer);
+  
+  ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->audio_channels * source_frame_count,
+					   ipatch_sample->format);
+  
+  ipatch_sample->offset = 0;
 
   ags_sound_resource_read(AGS_SOUND_RESOURCE(ipatch_sample),
 			  sample_buffer, 1,
@@ -548,6 +558,13 @@ ags_sf2_synth_util_copy_s16(gint16 *buffer,
   sample_buffer = ags_stream_alloc(source_frame_count,
 				   AGS_SOUNDCARD_DOUBLE);
 
+  ags_stream_free(ipatch_sample->buffer);
+  
+  ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->audio_channels * source_frame_count,
+					   ipatch_sample->format);
+  
+  ipatch_sample->offset = 0;
+  
   ags_sound_resource_read(AGS_SOUND_RESOURCE(ipatch_sample),
 			  sample_buffer, 1,
 			  0,
@@ -601,7 +618,7 @@ ags_sf2_synth_util_copy_s16(gint16 *buffer,
   base_key = (gdouble) midi_key - 21.0;
 
   tuning = 100.0 * (note - base_key);
-  
+
   ags_filter_util_pitch_s16(im_buffer,
 			    frame_count,
 			    samplerate,
@@ -819,6 +836,13 @@ ags_sf2_synth_util_copy_s24(gint32 *buffer,
 
   sample_buffer = ags_stream_alloc(source_frame_count,
 				   AGS_SOUNDCARD_DOUBLE);
+
+  ags_stream_free(ipatch_sample->buffer);
+  
+  ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->audio_channels * source_frame_count,
+					   ipatch_sample->format);
+  
+  ipatch_sample->offset = 0;
 
   ags_sound_resource_read(AGS_SOUND_RESOURCE(ipatch_sample),
 			  sample_buffer, 1,
@@ -1092,6 +1116,13 @@ ags_sf2_synth_util_copy_s32(gint32 *buffer,
   sample_buffer = ags_stream_alloc(source_frame_count,
 				   AGS_SOUNDCARD_DOUBLE);
 
+  ags_stream_free(ipatch_sample->buffer);
+  
+  ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->audio_channels * source_frame_count,
+					   ipatch_sample->format);
+  
+  ipatch_sample->offset = 0;
+
   ags_sound_resource_read(AGS_SOUND_RESOURCE(ipatch_sample),
 			  sample_buffer, 1,
 			  0,
@@ -1363,6 +1394,13 @@ ags_sf2_synth_util_copy_s64(gint64 *buffer,
 
   sample_buffer = ags_stream_alloc(source_frame_count,
 				   AGS_SOUNDCARD_DOUBLE);
+
+  ags_stream_free(ipatch_sample->buffer);
+  
+  ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->audio_channels * source_frame_count,
+					   ipatch_sample->format);
+  
+  ipatch_sample->offset = 0;
 
   ags_sound_resource_read(AGS_SOUND_RESOURCE(ipatch_sample),
 			  sample_buffer, 1,
@@ -1636,6 +1674,13 @@ ags_sf2_synth_util_copy_float(gfloat *buffer,
   sample_buffer = ags_stream_alloc(source_frame_count,
 				   AGS_SOUNDCARD_DOUBLE);
 
+  ags_stream_free(ipatch_sample->buffer);
+  
+  ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->audio_channels * source_frame_count,
+					   ipatch_sample->format);
+  
+  ipatch_sample->offset = 0;
+
   ags_sound_resource_read(AGS_SOUND_RESOURCE(ipatch_sample),
 			  sample_buffer, 1,
 			  0,
@@ -1908,6 +1953,13 @@ ags_sf2_synth_util_copy_double(gdouble *buffer,
   sample_buffer = ags_stream_alloc(source_frame_count,
 				   AGS_SOUNDCARD_DOUBLE);
 
+  ags_stream_free(ipatch_sample->buffer);
+  
+  ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->audio_channels * source_frame_count,
+					   ipatch_sample->format);
+  
+  ipatch_sample->offset = 0;
+
   ags_sound_resource_read(AGS_SOUND_RESOURCE(ipatch_sample),
 			  sample_buffer, 1,
 			  0,
@@ -2179,6 +2231,13 @@ ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
 
   sample_buffer = ags_stream_alloc(source_frame_count,
 				   AGS_SOUNDCARD_DOUBLE);
+
+  ags_stream_free(ipatch_sample->buffer);
+  
+  ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->audio_channels * source_frame_count,
+					   ipatch_sample->format);
+  
+  ipatch_sample->offset = 0;
 
   ags_sound_resource_read(AGS_SOUND_RESOURCE(ipatch_sample),
 			  sample_buffer, 1,

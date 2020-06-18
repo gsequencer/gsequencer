@@ -25,6 +25,9 @@
 
 #include <ags/audio/file/ags_audio_container.h>
 #include <ags/audio/file/ags_audio_container_manager.h>
+#include <ags/audio/file/ags_sound_container.h>
+#include <ags/audio/file/ags_sound_resource.h>
+#include <ags/audio/file/ags_ipatch.h>
 #include <ags/audio/file/ags_ipatch_sample.h>
 
 #include <math.h>
@@ -1637,7 +1640,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
     ags_audio_signal_stream_resize((AgsAudioSignal *) audio_signal,
 				   ceil(requested_frame_count / buffer_size));
   }
-
+  
   /*  */
   stream = 
     stream_start = g_list_nth(AGS_AUDIO_SIGNAL(audio_signal)->stream,

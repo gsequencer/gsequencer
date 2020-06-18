@@ -124,6 +124,8 @@ void ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 void ags_ffplayer_load_preset(AgsFFPlayer *ffplayer);
 void ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer);
 
+void ags_ffplayer_update(AgsFFPlayer *ffplayer);
+
 gboolean ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer);
 
 AgsFFPlayer* ags_ffplayer_new(GObject *soundcard);

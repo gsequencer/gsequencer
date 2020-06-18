@@ -22,6 +22,8 @@
 #include <ags/audio/ags_synth_enums.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_diatonic_scale.h>
+#include <ags/audio/ags_filter_util.h>
 
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
@@ -116,6 +118,13 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
 
   sample_buffer = ags_stream_alloc(source_frame_count,
 				   AGS_SOUNDCARD_DOUBLE);
+
+  ags_stream_free(sfz_sample->buffer);
+  
+  sfz_sample->buffer = ags_stream_alloc(sfz_sample->audio_channels * source_frame_count,
+					   sfz_sample->format);
+  
+  sfz_sample->offset = 0;
 
   ags_sound_resource_read(AGS_SOUND_RESOURCE(sfz_sample),
 			  sample_buffer, 1,
@@ -433,6 +442,13 @@ ags_sfz_synth_util_copy_s16(gint16 *buffer,
   sample_buffer = ags_stream_alloc(source_frame_count,
 				   AGS_SOUNDCARD_DOUBLE);
 
+  ags_stream_free(sfz_sample->buffer);
+  
+  sfz_sample->buffer = ags_stream_alloc(sfz_sample->audio_channels * source_frame_count,
+					   sfz_sample->format);
+  
+  sfz_sample->offset = 0;
+
   ags_sound_resource_read(AGS_SOUND_RESOURCE(sfz_sample),
 			  sample_buffer, 1,
 			  0,
@@ -748,6 +764,13 @@ ags_sfz_synth_util_copy_s24(gint32 *buffer,
 
   sample_buffer = ags_stream_alloc(source_frame_count,
 				   AGS_SOUNDCARD_DOUBLE);
+
+  ags_stream_free(sfz_sample->buffer);
+  
+  sfz_sample->buffer = ags_stream_alloc(sfz_sample->audio_channels * source_frame_count,
+					   sfz_sample->format);
+  
+  sfz_sample->offset = 0;
 
   ags_sound_resource_read(AGS_SOUND_RESOURCE(sfz_sample),
 			  sample_buffer, 1,
@@ -1065,6 +1088,13 @@ ags_sfz_synth_util_copy_s32(gint32 *buffer,
   sample_buffer = ags_stream_alloc(source_frame_count,
 				   AGS_SOUNDCARD_DOUBLE);
 
+  ags_stream_free(sfz_sample->buffer);
+  
+  sfz_sample->buffer = ags_stream_alloc(sfz_sample->audio_channels * source_frame_count,
+					   sfz_sample->format);
+  
+  sfz_sample->offset = 0;
+
   ags_sound_resource_read(AGS_SOUND_RESOURCE(sfz_sample),
 			  sample_buffer, 1,
 			  0,
@@ -1380,6 +1410,13 @@ ags_sfz_synth_util_copy_s64(gint64 *buffer,
 
   sample_buffer = ags_stream_alloc(source_frame_count,
 				   AGS_SOUNDCARD_DOUBLE);
+
+  ags_stream_free(sfz_sample->buffer);
+  
+  sfz_sample->buffer = ags_stream_alloc(sfz_sample->audio_channels * source_frame_count,
+					   sfz_sample->format);
+  
+  sfz_sample->offset = 0;
 
   ags_sound_resource_read(AGS_SOUND_RESOURCE(sfz_sample),
 			  sample_buffer, 1,
@@ -1697,6 +1734,13 @@ ags_sfz_synth_util_copy_float(gfloat *buffer,
   sample_buffer = ags_stream_alloc(source_frame_count,
 				   AGS_SOUNDCARD_DOUBLE);
 
+  ags_stream_free(sfz_sample->buffer);
+  
+  sfz_sample->buffer = ags_stream_alloc(sfz_sample->audio_channels * source_frame_count,
+					   sfz_sample->format);
+  
+  sfz_sample->offset = 0;
+
   ags_sound_resource_read(AGS_SOUND_RESOURCE(sfz_sample),
 			  sample_buffer, 1,
 			  0,
@@ -2013,6 +2057,13 @@ ags_sfz_synth_util_copy_double(gdouble *buffer,
   sample_buffer = ags_stream_alloc(source_frame_count,
 				   AGS_SOUNDCARD_DOUBLE);
 
+  ags_stream_free(sfz_sample->buffer);
+  
+  sfz_sample->buffer = ags_stream_alloc(sfz_sample->audio_channels * source_frame_count,
+					   sfz_sample->format);
+  
+  sfz_sample->offset = 0;
+
   ags_sound_resource_read(AGS_SOUND_RESOURCE(sfz_sample),
 			  sample_buffer, 1,
 			  0,
@@ -2328,6 +2379,13 @@ ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
 
   sample_buffer = ags_stream_alloc(source_frame_count,
 				   AGS_SOUNDCARD_DOUBLE);
+
+  ags_stream_free(sfz_sample->buffer);
+  
+  sfz_sample->buffer = ags_stream_alloc(sfz_sample->audio_channels * source_frame_count,
+					   sfz_sample->format);
+  
+  sfz_sample->offset = 0;
 
   ags_sound_resource_read(AGS_SOUND_RESOURCE(sfz_sample),
 			  sample_buffer, 1,

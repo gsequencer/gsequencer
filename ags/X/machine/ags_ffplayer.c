@@ -166,6 +166,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   GtkAllocation allocation;
   
   AgsAudio *audio;
+  AgsSF2SynthGenerator *sf2_synth_generator;
   
   AgsConfig *config;
 
@@ -213,7 +214,14 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 	       "midi-start-mapping", 0,
 	       "midi-end-mapping", 128,
 	       NULL);
+
+  sf2_synth_generator = ags_sf2_synth_generator_new();
+  ags_sf2_synth_generator_set_flags(sf2_synth_generator,
+				    AGS_SF2_SYNTH_GENERATOR_COMPUTE_INSTRUMENT);
   
+  ags_audio_add_sf2_synth_generator(audio,
+				    (GObject *) sf2_synth_generator);
+
   AGS_MACHINE(ffplayer)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 				   AGS_MACHINE_REVERSE_NOTATION);
   AGS_MACHINE(ffplayer)->file_input_flags |= AGS_MACHINE_ACCEPT_SOUNDFONT2;
@@ -963,6 +971,12 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
 
     instrument++;
   }
+}
+
+void
+ags_ffplayer_update(AgsFFPlayer *ffplayer)
+{
+  //TODO:JK: implement me
 }
 
 /**
