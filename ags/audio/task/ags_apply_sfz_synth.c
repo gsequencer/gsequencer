@@ -384,7 +384,7 @@ ags_apply_sfz_synth_launch(AgsTask *task)
   AgsApplySFZSynth *apply_sfz_synth;
 
   AgsAudio *audio;
-  AgsChannel *channel, *next_channel, *input;
+  AgsChannel *channel, *next_pad, *input;
   AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;
   AgsSFZSynthGenerator *sfz_synth_generator;
@@ -502,11 +502,11 @@ ags_apply_sfz_synth_launch(AgsTask *task)
       g_object_unref(audio_signal);
       
       /* iterate */
-      next_channel = ags_channel_next(channel);
+      next_pad = ags_channel_next_pad(channel);
     
       g_object_unref(channel);
 
-      channel = next_channel;
+      channel = next_pad;
     }
   }
 

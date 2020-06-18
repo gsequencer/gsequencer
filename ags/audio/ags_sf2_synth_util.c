@@ -332,9 +332,18 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
   /* pitch */
   midi_key = 60;
   
-  g_object_get(ipatch_sample->sample,
-	       "root-note", &midi_key,
-	       NULL);
+  if(ipatch_sample->sample != NULL){
+    gint tmp_midi_key;
+    
+    g_object_get(ipatch_sample->sample,
+		 "root-note", &tmp_midi_key,
+		 NULL);
+
+    if(tmp_midi_key >= 0 &&
+       tmp_midi_key < 128){
+      midi_key = tmp_midi_key;
+    }
+  }
   
   base_key = (gdouble) midi_key - 21.0;
 
@@ -611,9 +620,18 @@ ags_sf2_synth_util_copy_s16(gint16 *buffer,
   /* pitch */
   midi_key = 60;
   
-  g_object_get(ipatch_sample->sample,
-	       "root-note", &midi_key,
-	       NULL);
+  if(ipatch_sample->sample != NULL){
+    gint tmp_midi_key;
+    
+    g_object_get(ipatch_sample->sample,
+		 "root-note", &tmp_midi_key,
+		 NULL);
+    
+    if(tmp_midi_key >= 0 &&
+       tmp_midi_key < 128){
+      midi_key = tmp_midi_key;
+    }
+  }
   
   base_key = (gdouble) midi_key - 21.0;
 
@@ -890,9 +908,18 @@ ags_sf2_synth_util_copy_s24(gint32 *buffer,
   /* pitch */
   midi_key = 60;
   
-  g_object_get(ipatch_sample->sample,
-	       "root-note", &midi_key,
-	       NULL);
+  if(ipatch_sample->sample != NULL){
+    gint tmp_midi_key;
+    
+    g_object_get(ipatch_sample->sample,
+		 "root-note", &tmp_midi_key,
+		 NULL);
+
+    if(tmp_midi_key >= 0 &&
+       tmp_midi_key < 128){
+      midi_key = tmp_midi_key;
+    }
+  }
   
   base_key = (gdouble) midi_key - 21.0;
 
@@ -1169,9 +1196,18 @@ ags_sf2_synth_util_copy_s32(gint32 *buffer,
   /* pitch */
   midi_key = 60;
   
-  g_object_get(ipatch_sample->sample,
-	       "root-note", &midi_key,
-	       NULL);
+  if(ipatch_sample->sample != NULL){
+    gint tmp_midi_key;
+    
+    g_object_get(ipatch_sample->sample,
+		 "root-note", &tmp_midi_key,
+		 NULL);
+
+    if(tmp_midi_key >= 0 &&
+       tmp_midi_key < 128){
+      midi_key = tmp_midi_key;
+    }
+  }
   
   base_key = (gdouble) midi_key - 21.0;
 
@@ -1448,9 +1484,18 @@ ags_sf2_synth_util_copy_s64(gint64 *buffer,
   /* pitch */
   midi_key = 60;
   
-  g_object_get(ipatch_sample->sample,
-	       "root-note", &midi_key,
-	       NULL);
+  if(ipatch_sample->sample != NULL){
+    gint tmp_midi_key;
+    
+    g_object_get(ipatch_sample->sample,
+		 "root-note", &tmp_midi_key,
+		 NULL);
+
+    if(tmp_midi_key >= 0 &&
+       tmp_midi_key < 128){
+      midi_key = tmp_midi_key;
+    }
+  }
   
   base_key = (gdouble) midi_key - 21.0;
 
@@ -1727,19 +1772,28 @@ ags_sf2_synth_util_copy_float(gfloat *buffer,
   /* pitch */
   midi_key = 60;
   
-  g_object_get(ipatch_sample->sample,
-	       "root-note", &midi_key,
-	       NULL);
+  if(ipatch_sample->sample != NULL){
+    gint tmp_midi_key;
+    
+    g_object_get(ipatch_sample->sample,
+		 "root-note", &tmp_midi_key,
+		 NULL);
+
+    if(tmp_midi_key >= 0 &&
+       tmp_midi_key < 128){
+      midi_key = tmp_midi_key;
+    }
+  }
   
   base_key = (gdouble) midi_key - 21.0;
 
   tuning = 100.0 * (note - base_key);
   
   ags_filter_util_pitch_float(im_buffer,
-			    frame_count,
-			    samplerate,
-			    base_key,
-			    tuning);
+			      frame_count,
+			      samplerate,
+			      base_key,
+			      tuning);
 
   pong_copy = FALSE;
   
@@ -2006,19 +2060,28 @@ ags_sf2_synth_util_copy_double(gdouble *buffer,
   /* pitch */
   midi_key = 60;
   
-  g_object_get(ipatch_sample->sample,
-	       "root-note", &midi_key,
-	       NULL);
+  if(ipatch_sample->sample != NULL){
+    gint tmp_midi_key;
+    
+    g_object_get(ipatch_sample->sample,
+		 "root-note", &tmp_midi_key,
+		 NULL);
+
+    if(tmp_midi_key >= 0 &&
+       tmp_midi_key < 128){
+      midi_key = tmp_midi_key;
+    }
+  }
   
   base_key = (gdouble) midi_key - 21.0;
 
   tuning = 100.0 * (note - base_key);
   
   ags_filter_util_pitch_double(im_buffer,
-			    frame_count,
-			    samplerate,
-			    base_key,
-			    tuning);
+			       frame_count,
+			       samplerate,
+			       base_key,
+			       tuning);
 
   pong_copy = FALSE;
   
@@ -2284,10 +2347,19 @@ ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
 
   /* pitch */
   midi_key = 60;
-  
-  g_object_get(ipatch_sample->sample,
-	       "root-note", &midi_key,
-	       NULL);
+
+  if(ipatch_sample->sample != NULL){
+    gint tmp_midi_key;
+    
+    g_object_get(ipatch_sample->sample,
+		 "root-note", &tmp_midi_key,
+		 NULL);
+
+    if(tmp_midi_key >= 0 &&
+       tmp_midi_key < 128){
+      midi_key = tmp_midi_key;
+    }
+  }
   
   base_key = (gdouble) midi_key - 21.0;
 

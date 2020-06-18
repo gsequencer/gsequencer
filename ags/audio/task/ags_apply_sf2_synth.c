@@ -384,7 +384,7 @@ ags_apply_sf2_synth_launch(AgsTask *task)
   AgsApplySF2Synth *apply_sf2_synth;
 
   AgsAudio *audio;
-  AgsChannel *channel, *next_channel, *input;
+  AgsChannel *channel, *next_pad, *input;
   AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;
   AgsSF2SynthGenerator *sf2_synth_generator;
@@ -456,7 +456,7 @@ ags_apply_sf2_synth_launch(AgsTask *task)
       }
 	
       /* compute audio signal */
-      note = apply_sf2_synth->base_note + i;
+      note = apply_sf2_synth->base_note + (gdouble) i;
 	
       ags_sf2_synth_generator_compute(sf2_synth_generator,
 				      (GObject *) audio_signal,
@@ -502,11 +502,11 @@ ags_apply_sf2_synth_launch(AgsTask *task)
       g_object_unref(audio_signal);
       
       /* iterate */
-      next_channel = ags_channel_next(channel);
+      next_pad = ags_channel_next_pad(channel);
     
       g_object_unref(channel);
 
-      channel = next_channel;
+      channel = next_pad;
     }
   }
 

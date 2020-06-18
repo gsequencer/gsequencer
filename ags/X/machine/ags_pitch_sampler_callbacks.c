@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -101,6 +101,12 @@ ags_pitch_sampler_file_control_changed_callback(AgsPitchSamplerFile *pitch_sampl
   if((AGS_PITCH_SAMPLER_AUTO_UPDATE & (pitch_sampler->flags)) != 0){
     ags_pitch_sampler_update(pitch_sampler);
   }
+}
+
+void
+ags_pitch_sampler_update_callback(GtkButton *button, AgsPitchSampler *pitch_sampler)
+{
+  ags_pitch_sampler_update(pitch_sampler);
 }
 
 void

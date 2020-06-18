@@ -90,6 +90,13 @@ struct _AgsPitchSampler
   gint position;
   GtkLabel *loading;
 
+  GtkCheckButton *enable_synth_generator;
+
+  GtkSpinButton *lower;
+  GtkSpinButton *key_count;
+
+  GtkButton *update;
+
   GtkCheckButton *enable_lfo;
     
   GtkSpinButton *lfo_freq;

@@ -98,7 +98,7 @@ struct _AgsFFPlayer
   GtkComboBoxText *preset;
   GtkComboBoxText *instrument;
 
-  GtkCheckButton *synth_generator_enabled;
+  GtkCheckButton *enable_synth_generator;
 
   GtkSpinButton *lower;
   GtkSpinButton *key_count;

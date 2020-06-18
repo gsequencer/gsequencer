@@ -1768,6 +1768,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_move_note.h \
 	ags/audio/task/ags_open_file.h \
 	ags/audio/task/ags_open_single_file.h \
+	ags/audio/task/ags_open_sfz_file.h \
 	ags/audio/task/ags_open_wave.h \
 	ags/audio/task/ags_remove_audio.h \
 	ags/audio/task/ags_remove_audio_signal.h \
@@ -1830,6 +1831,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_move_note.c \
 	ags/audio/task/ags_open_file.c \
 	ags/audio/task/ags_open_single_file.c \
+	ags/audio/task/ags_open_sfz_file.c \
 	ags/audio/task/ags_open_wave.c \
 	ags/audio/task/ags_remove_audio.c \
 	ags/audio/task/ags_remove_audio_signal.c \

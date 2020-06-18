@@ -233,7 +233,7 @@ ags_open_sf2_instrument_init(AgsOpenSf2Instrument *open_sf2_instrument)
 {
   open_sf2_instrument->audio = NULL;
 
-  open_sf2_instrument->instrument = NULL;
+  open_sf2_instrument->ipatch = NULL;
 
   open_sf2_instrument->filename = NULL;
 

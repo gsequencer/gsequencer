@@ -1,14 +1,14 @@
 ags (3.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented AgsSF2Synth
-	* TODO:JK: implemented AgsSFZSynth
 	* implemented AgsSF2Generator
 	* implemented AgsSFZGenerator
 	* implemented AgsAudioContainerManager and AgsAudioFileManager
 	* implemented pingpong copy in ags_audio_buffer_util.c
 	* implemented ags_sf2_synth_util.c
 	* implemented ags_sfz_synth_util.c
+	* extended AgsFFPlayer
+	* extended AgsPitchSampler
 	* improved ags_filter_util.c
 	* improved AgsComplex support
 	* added unit-tests

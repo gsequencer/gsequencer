@@ -389,6 +389,7 @@
 #include <ags/audio/task/ags_link_channel.h>
 #include <ags/audio/task/ags_move_note.h>
 #include <ags/audio/task/ags_open_file.h>
+#include <ags/audio/task/ags_open_sfz_file.h>
 #include <ags/audio/task/ags_open_sf2_instrument.h>
 #include <ags/audio/task/ags_open_sf2_sample.h>
 #include <ags/audio/task/ags_open_single_file.h>
