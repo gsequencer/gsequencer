@@ -948,7 +948,6 @@ libags_audio_h_sources = \
 	ags/audio/ags_pattern.h \
 	ags/audio/ags_playback.h \
 	ags/audio/ags_playback_domain.h \
-	ags/audio/ags_pm_synth_util.h \
 	ags/audio/ags_port.h \
 	ags/audio/ags_port_util.h \
 	ags/audio/ags_preset.h \
@@ -1023,7 +1022,6 @@ libags_audio_c_sources = \
 	ags/audio/ags_pattern.c \
 	ags/audio/ags_playback.c \
 	ags/audio/ags_playback_domain.c \
-	ags/audio/ags_pm_synth_util.c \
 	ags/audio/ags_port.c \
 	ags/audio/ags_port_util.c \
 	ags/audio/ags_preset.c \

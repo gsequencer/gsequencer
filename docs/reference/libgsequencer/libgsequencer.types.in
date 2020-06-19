@@ -22,6 +22,7 @@ ags_audiorec_get_type
 ags_automation_edit_box_get_type
 ags_automation_edit_get_type
 ags_automation_editor_get_type
+ags_automation_meta_get_type
 ags_automation_toolbar_get_type
 ags_automation_window_get_type
 ags_bulk_member_get_type
@@ -98,6 +99,7 @@ ags_move_note_dialog_get_type
 ags_navigation_get_type
 ags_notation_edit_get_type
 ags_notation_editor_get_type
+ags_notation_meta_get_type
 ags_notation_toolbar_get_type
 ags_osc_server_preferences_get_type
 ags_oscillator_get_type
@@ -132,6 +134,8 @@ ags_select_buffer_dialog_get_type
 ags_select_note_dialog_get_type
 ags_sequencer_editor_get_type
 ags_server_preferences_get_type
+ags_sf2_synth_get_type
+ags_sfz_synth_get_type
 ags_sheet_edit_get_type
 ags_sheet_editor_get_type
 ags_sheet_toolbar_get_type
@@ -155,6 +159,7 @@ ags_wave_edit_box_get_type
 ags_wave_edit_get_type
 ags_wave_editor_get_type
 ags_wave_export_dialog_get_type
+ags_wave_meta_get_type
 ags_wave_toolbar_get_type
 ags_wave_window_get_type
 ags_window_get_type
