@@ -1640,6 +1640,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
     ags_audio_signal_stream_resize((AgsAudioSignal *) audio_signal,
 				   ceil(requested_frame_count / buffer_size));
   }
+
+  ags_audio_signal_clear(audio_signal);
   
   /*  */
   stream = 

@@ -1856,6 +1856,8 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 				   ceil(requested_frame_count / buffer_size));
   }
 
+  ags_audio_signal_clear(audio_signal);
+  
   g_object_set(audio_signal,
 	       "loop-start", synth_generator->loop_start,
 	       "loop-end", synth_generator->loop_end,

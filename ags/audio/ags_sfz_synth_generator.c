@@ -1321,6 +1321,8 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 				   ceil(requested_frame_count / buffer_size));
   }
 
+  ags_audio_signal_clear(audio_signal);
+  
   /*  */
   stream = 
     stream_start = g_list_nth(AGS_AUDIO_SIGNAL(audio_signal)->stream,

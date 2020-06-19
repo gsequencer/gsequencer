@@ -3413,6 +3413,51 @@ ags_audio_signal_stream_safe_resize(AgsAudioSignal *audio_signal, guint length)
 }
 
 /**
+ * ags_audio_signal_clear:
+ * @audio_signal: the #AgsAudioSignal
+ * 
+ * Clear @audio_signal. 
+ *
+ * Since: 3.4.1
+ */
+void
+ags_audio_signal_clear(AgsAudioSignal *audio_signal)
+{
+  GList *stream;
+
+  guint buffer_size;
+  guint format;
+  
+  GRecMutex *audio_signal_stream_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  /* get audio signal mutex */
+  audio_signal_stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal);
+
+  g_object_get(audio_signal,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       NULL);
+
+  g_rec_mutex_lock(audio_signal_stream_mutex);
+
+  stream = audio_signal->stream;
+    
+  while(stream != NULL){
+    ags_audio_buffer_util_clear_buffer(stream->data, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+
+    /* iterate */
+    stream = stream->next;
+  }
+
+  g_rec_mutex_unlock(audio_signal_stream_mutex);
+}
+
+/**
  * ags_audio_signal_duplicate_stream:
  * @audio_signal: the #AgsAudioSignal
  * @template: the template #AgsAudioSignal
