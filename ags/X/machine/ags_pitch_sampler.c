@@ -146,6 +146,8 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   GtkVBox *control_vbox;
   GtkHBox *filename_hbox;
   GtkVBox *synth_generator_vbox;
+  GtkHBox *base_note_hbox;
+  GtkHBox *key_count_hbox;
   GtkTable *lfo_table;
   GtkFrame *frame;
   GtkLabel *label;
@@ -323,6 +325,20 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		     FALSE, FALSE,
 		     0);
 
+  /* base note */
+  base_note_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+					    0);
+  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+		     (GtkWidget *) base_note_hbox,
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new(i18n("base note"));
+  gtk_box_pack_start((GtkBox *) base_note_hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
+
   pitch_sampler->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(-70.0,
 								     70.0,
 								     1.0);
@@ -330,17 +346,31 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 			     2);
   gtk_spin_button_set_value(pitch_sampler->lower,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+  gtk_box_pack_start((GtkBox *) base_note_hbox,
 		     (GtkWidget *) pitch_sampler->lower,
 		     FALSE, FALSE,
 		     0);
   
+  /* key count */
+  key_count_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+					    0);
+  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+		     (GtkWidget *) key_count_hbox,
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new(i18n("key count"));
+  gtk_box_pack_start((GtkBox *) key_count_hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
+
   pitch_sampler->key_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 									 128.0,
 									 1.0);
   gtk_spin_button_set_value(pitch_sampler->key_count,
 			    78.0);
-  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+  gtk_box_pack_start((GtkBox *) key_count_hbox,
 		     (GtkWidget *) pitch_sampler->key_count,
 		     FALSE, FALSE,
 		     0);

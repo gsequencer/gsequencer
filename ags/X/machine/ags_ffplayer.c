@@ -157,6 +157,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   GtkHBox *filename_hbox;
   GtkVBox *piano_vbox;
   GtkVBox *synth_generator_vbox;
+  GtkHBox *base_note_hbox;
+  GtkHBox *key_count_hbox;
   GtkFrame *frame;
   GtkLabel *label;
   
@@ -427,6 +429,20 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     FALSE, FALSE,
 		     0);
 
+  /* base note */
+  base_note_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+					    0);
+  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+		     (GtkWidget *) base_note_hbox,
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new(i18n("base note"));
+  gtk_box_pack_start((GtkBox *) base_note_hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
+
   ffplayer->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(-70.0,
 								     70.0,
 								     1.0);
@@ -434,17 +450,31 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 			     2);
   gtk_spin_button_set_value(ffplayer->lower,
 			    0.0);
-  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+  gtk_box_pack_start((GtkBox *) base_note_hbox,
 		     (GtkWidget *) ffplayer->lower,
 		     FALSE, FALSE,
 		     0);
-  
+
+  /* key count */
+  key_count_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+					    0);
+  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+		     (GtkWidget *) key_count_hbox,
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new(i18n("key count"));
+  gtk_box_pack_start((GtkBox *) key_count_hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
+
   ffplayer->key_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 									 128.0,
 									 1.0);
   gtk_spin_button_set_value(ffplayer->key_count,
 			    78.0);
-  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+  gtk_box_pack_start((GtkBox *) key_count_hbox,
 		     (GtkWidget *) ffplayer->key_count,
 		     FALSE, FALSE,
 		     0);
