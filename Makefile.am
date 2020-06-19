@@ -974,14 +974,19 @@ libags_audio_h_sources = \
 	ags/audio/ags_sound_provider.h \
 	ags/audio/ags_sequencer_util.h \
 	ags/audio/ags_soundcard_util.h \
-	ags/audio/ags_sf2_synth_generator.h \
-	ags/audio/ags_sf2_synth_util.h \
 	ags/audio/ags_sfz_synth_generator.h \
 	ags/audio/ags_sfz_synth_util.h \
 	ags/audio/ags_synth_generator.h \
 	ags/audio/ags_synth_util.h \
 	ags/audio/ags_track.h \
 	ags/audio/ags_wave.h
+
+if WITH_LIBINSTPATCH
+libags_audio_h_sources += \
+	$(deprecated_libags_audio_h_sources) \
+	ags/audio/ags_sf2_synth_generator.h \
+	ags/audio/ags_sf2_synth_util.h
+endif
 
 deprecated_libags_audio_c_sources =
 
@@ -1044,14 +1049,19 @@ libags_audio_c_sources = \
 	ags/audio/ags_sound_provider.c \
 	ags/audio/ags_sequencer_util.c \
 	ags/audio/ags_soundcard_util.c \
-	ags/audio/ags_sf2_synth_generator.c \
-	ags/audio/ags_sf2_synth_util.c \
 	ags/audio/ags_sfz_synth_generator.c \
 	ags/audio/ags_sfz_synth_util.c \
 	ags/audio/ags_synth_generator.c \
 	ags/audio/ags_synth_util.c \
 	ags/audio/ags_track.c \
 	ags/audio/ags_wave.c
+
+if WITH_LIBINSTPATCH
+libags_audio_c_sources += \
+	$(deprecated_libags_audio_c_sources) \
+	ags/audio/ags_sf2_synth_generator.c \
+	ags/audio/ags_sf2_synth_util.c
+endif
 
 # libags-audio - thread
 deprecated_libags_audio_thread_h_sources =
@@ -1064,9 +1074,14 @@ libags_audio_thread_h_sources = \
 	ags/audio/thread/ags_sequencer_thread.h \
 	ags/audio/thread/ags_soundcard_thread.h \
 	ags/audio/thread/ags_export_thread.h \
-	ags/audio/thread/ags_sf2_loader.h \
 	ags/audio/thread/ags_sfz_loader.h \
 	ags/audio/thread/ags_wave_loader.h
+
+if WITH_LIBINSTPATCH
+libags_audio_thread_h_sources += \
+	$(deprecated_libags_audio_thread_h_sources) \
+	ags/audio/thread/ags_sf2_loader.h
+endif
 
 deprecated_libags_audio_thread_c_sources =
 
@@ -1078,9 +1093,14 @@ libags_audio_thread_c_sources = \
 	ags/audio/thread/ags_sequencer_thread.c \
 	ags/audio/thread/ags_soundcard_thread.c \
 	ags/audio/thread/ags_export_thread.c \
-	ags/audio/thread/ags_sf2_loader.c \
 	ags/audio/thread/ags_sfz_loader.c \
 	ags/audio/thread/ags_wave_loader.c
+
+if WITH_LIBINSTPATCH
+libags_audio_thread_c_sources += \
+	$(deprecated_libags_audio_thread_c_sources) \
+	ags/audio/thread/ags_sf2_loader.c
+endif
 
 # libags-audio - plugin
 deprecated_libags_plugin_h_sources =
@@ -1755,7 +1775,6 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_apply_presets.h \
 	ags/audio/task/ags_apply_sound_config.h \
 	ags/audio/task/ags_apply_synth.h \
-	ags/audio/task/ags_apply_sf2_synth.h \
 	ags/audio/task/ags_apply_sfz_synth.h \
 	ags/audio/task/ags_cancel_audio.h \
 	ags/audio/task/ags_cancel_channel.h \
@@ -1802,6 +1821,7 @@ libags_audio_task_h_sources = \
 
 if WITH_LIBINSTPATCH
 libags_audio_task_h_sources += \
+	ags/audio/task/ags_apply_sf2_synth.h \
 	ags/audio/task/ags_open_sf2_instrument.h \
 	ags/audio/task/ags_open_sf2_sample.h
 endif
@@ -1818,7 +1838,6 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_apply_presets.c \
 	ags/audio/task/ags_apply_sound_config.c \
 	ags/audio/task/ags_apply_synth.c \
-	ags/audio/task/ags_apply_sf2_synth.c \
 	ags/audio/task/ags_apply_sfz_synth.c \
 	ags/audio/task/ags_cancel_audio.c \
 	ags/audio/task/ags_cancel_channel.c \
@@ -1865,6 +1884,7 @@ libags_audio_task_c_sources = \
 
 if WITH_LIBINSTPATCH
 libags_audio_task_c_sources += \
+	ags/audio/task/ags_apply_sf2_synth.c \
 	ags/audio/task/ags_open_sf2_instrument.c \
 	ags/audio/task/ags_open_sf2_sample.c
 endif

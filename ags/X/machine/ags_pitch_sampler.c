@@ -1021,6 +1021,12 @@ ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
 
   application_context = ags_application_context_get_instance();
 
+  audio_container = pitch_sampler->audio_container;
+
+  if(audio_container == NULL){
+    return;
+  }
+
   audio = AGS_MACHINE(pitch_sampler)->audio;
 
   start_input = NULL;
@@ -1029,9 +1035,7 @@ ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
 	       "input", &start_input,
 	       NULL);
 
-  /*  */
-  audio_container = pitch_sampler->audio_container;
-  
+  /*  */  
   lower = gtk_spin_button_get_value(pitch_sampler->lower);
   key_count = gtk_spin_button_get_value(pitch_sampler->key_count);
 

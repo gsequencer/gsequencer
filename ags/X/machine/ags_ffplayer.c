@@ -1018,6 +1018,12 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
 
   application_context = ags_application_context_get_instance();
 
+  audio_container = ffplayer->audio_container;
+
+  if(audio_container == NULL){
+    return;
+  }
+  
   audio = AGS_MACHINE(ffplayer)->audio;
 
   start_input = NULL;
@@ -1027,7 +1033,6 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
 	       NULL);
 
   /*  */
-  audio_container = ffplayer->audio_container;
   
   preset_str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(ffplayer->preset));
   
