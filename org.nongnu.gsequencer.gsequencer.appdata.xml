@@ -35,6 +35,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.4.2" date="2020-06-20">
+      <description>
+	<p>Fixed potential division by zero in filter util.</p>
+      </description>
+    </release>
+
     <release version="3.4.1" date="2020-06-19">
       <description>
 	<p>Fixed missing clear synth generator.</p>

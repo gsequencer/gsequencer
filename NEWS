@@ -10,6 +10,15 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
+Overview of Changes in AGS 3.4.0
+================================
+
+* Implemented AgsSF2SynthGenerator and AgsSFZSynthGenerator allowing you
+  to pitch missing samples.
+* Extended functionality of AgsFFPlayer and AgsPitchSampler to use SF2 and SFZ
+  synth generators.
+* Refactored ags_filter_util.c.
+
 Overview of Changes in AGS 3.3.0
 ================================
 
