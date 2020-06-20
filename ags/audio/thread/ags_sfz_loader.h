@@ -47,12 +47,14 @@ typedef struct _AgsSFZLoaderClass AgsSFZLoaderClass;
  * AgsSFZLoaderFlags:
  * @AGS_SFZ_LOADER_DO_REPLACE: do replace audio signal
  * @AGS_SFZ_LOADER_HAS_COMPLETED: has completed
+ * @AGS_SFZ_LOADER_RUN_APPLY_SYNTH: run apply synth
  * 
  * Enum values to configure SFZ loader.
  */
 typedef enum{
-  AGS_SFZ_LOADER_DO_REPLACE      = 1,
-  AGS_SFZ_LOADER_HAS_COMPLETED   = 1 <<  1,
+  AGS_SFZ_LOADER_DO_REPLACE         = 1,
+  AGS_SFZ_LOADER_HAS_COMPLETED      = 1 <<  1,
+  AGS_SFZ_LOADER_RUN_APPLY_SYNTH    = 1 <<  2,
 }AgsSFZLoaderFlags;
 
 struct _AgsSFZLoader
@@ -68,6 +70,9 @@ struct _AgsSFZLoader
   AgsAudio *audio;
 
   gchar *filename;
+
+  gdouble base_note;
+  guint count;
   
   AgsAudioContainer *audio_container;
 };

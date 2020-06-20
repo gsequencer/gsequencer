@@ -98,6 +98,13 @@ struct _AgsFFPlayer
   GtkComboBoxText *preset;
   GtkComboBoxText *instrument;
 
+  GtkCheckButton *enable_synth_generator;
+
+  GtkSpinButton *lower;
+  GtkSpinButton *key_count;
+
+  GtkButton *update;
+  
   GtkWidget *open_dialog;
 };
 
@@ -116,6 +123,8 @@ void ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 
 void ags_ffplayer_load_preset(AgsFFPlayer *ffplayer);
 void ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer);
+
+void ags_ffplayer_update(AgsFFPlayer *ffplayer);
 
 gboolean ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer);
 

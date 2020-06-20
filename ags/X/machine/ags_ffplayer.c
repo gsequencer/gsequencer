@@ -156,6 +156,10 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   GtkHBox *hbox;
   GtkHBox *filename_hbox;
   GtkVBox *piano_vbox;
+  GtkVBox *synth_generator_vbox;
+  GtkHBox *base_note_hbox;
+  GtkHBox *key_count_hbox;
+  GtkFrame *frame;
   GtkLabel *label;
   
   PangoAttrList *attr_list;
@@ -164,6 +168,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   GtkAllocation allocation;
   
   AgsAudio *audio;
+  AgsSF2SynthGenerator *sf2_synth_generator;
   
   AgsConfig *config;
 
@@ -211,7 +216,14 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 	       "midi-start-mapping", 0,
 	       "midi-end-mapping", 128,
 	       NULL);
+
+  sf2_synth_generator = ags_sf2_synth_generator_new();
+  ags_sf2_synth_generator_set_flags(sf2_synth_generator,
+				    AGS_SF2_SYNTH_GENERATOR_COMPUTE_INSTRUMENT);
   
+  ags_audio_add_sf2_synth_generator(audio,
+				    (GObject *) sf2_synth_generator);
+
   AGS_MACHINE(ffplayer)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 				   AGS_MACHINE_REVERSE_NOTATION);
   AGS_MACHINE(ffplayer)->file_input_flags |= AGS_MACHINE_ACCEPT_SOUNDFONT2;
@@ -275,7 +287,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     FALSE, FALSE,
 		     0);
   
-  table = (GtkTable *) gtk_table_new(3, 2, FALSE);
+  table = (GtkTable *) gtk_table_new(4, 2, FALSE);
   gtk_container_add((GtkContainer *) alignment,
 		    (GtkWidget *) table);
   
@@ -398,13 +410,90 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     FALSE, FALSE,
 		     0);
 
+  /* synth generator */
+  frame = (GtkFrame *) gtk_frame_new(i18n("synth generator"));
+  gtk_table_attach(table, (GtkWidget *) frame,
+		   2, 3,
+		   0, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  synth_generator_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
+						  0);
+  gtk_container_add((GtkContainer *) frame,
+		    (GtkWidget *) synth_generator_vbox);
+  
+  ffplayer->enable_synth_generator = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
+  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+		     (GtkWidget *) ffplayer->enable_synth_generator,
+		     FALSE, FALSE,
+		     0);
+
+  /* base note */
+  base_note_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+					    0);
+  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+		     (GtkWidget *) base_note_hbox,
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new(i18n("base note"));
+  gtk_box_pack_start((GtkBox *) base_note_hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
+
+  ffplayer->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(-70.0,
+								     70.0,
+								     1.0);
+  gtk_spin_button_set_digits(ffplayer->lower,
+			     2);
+  gtk_spin_button_set_value(ffplayer->lower,
+			    0.0);
+  gtk_box_pack_start((GtkBox *) base_note_hbox,
+		     (GtkWidget *) ffplayer->lower,
+		     FALSE, FALSE,
+		     0);
+
+  /* key count */
+  key_count_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+					    0);
+  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+		     (GtkWidget *) key_count_hbox,
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new(i18n("key count"));
+  gtk_box_pack_start((GtkBox *) key_count_hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
+
+  ffplayer->key_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+									 128.0,
+									 1.0);
+  gtk_spin_button_set_value(ffplayer->key_count,
+			    78.0);
+  gtk_box_pack_start((GtkBox *) key_count_hbox,
+		     (GtkWidget *) ffplayer->key_count,
+		     FALSE, FALSE,
+		     0);
+
+  ffplayer->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
+  gtk_widget_set_valign(ffplayer->update,
+			GTK_ALIGN_END);
+  gtk_table_attach(table, (GtkWidget *) ffplayer->update,
+		   3, 4,
+		   0, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
   /* effect bridge */
   AGS_MACHINE(ffplayer)->bridge = (GtkContainer *) ags_ffplayer_bridge_new(audio);
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) AGS_MACHINE(ffplayer)->bridge,
 		     FALSE, FALSE,
 		     0);
-
   /* dialog */
   ffplayer->open_dialog = NULL;
 
@@ -442,7 +531,6 @@ ags_ffplayer_finalize(GObject *gobject)
 void
 ags_ffplayer_connect(AgsConnectable *connectable)
 {
-  AgsWindow *window;
   AgsFFPlayer *ffplayer;
 
   GList *list;
@@ -454,8 +542,6 @@ ags_ffplayer_connect(AgsConnectable *connectable)
   ags_ffplayer_parent_connectable_interface->connect(connectable);
 
   ffplayer = AGS_FFPLAYER(connectable);
-
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ffplayer);
   
   g_signal_connect((GObject *) ffplayer, "destroy",
 		   G_CALLBACK(ags_ffplayer_destroy_callback), (gpointer) ffplayer);
@@ -479,6 +565,9 @@ ags_ffplayer_connect(AgsConnectable *connectable)
 
   g_signal_connect((GObject *) ffplayer->hadjustment, "value_changed",
 		   G_CALLBACK(ags_ffplayer_hscrollbar_value_changed), (gpointer) ffplayer);
+
+  g_signal_connect((GObject *) ffplayer->update, "clicked",
+		   G_CALLBACK(ags_ffplayer_update_callback), (gpointer) ffplayer);
 }
 
 void
@@ -530,6 +619,12 @@ ags_ffplayer_disconnect(AgsConnectable *connectable)
   g_object_disconnect((GObject *) ffplayer->hadjustment,
 		      "any_signal::value_changed",
 		      G_CALLBACK(ags_ffplayer_hscrollbar_value_changed),
+		      (gpointer) ffplayer,
+		      NULL);
+
+  g_object_disconnect((GObject *) ffplayer->update,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_ffplayer_update_callback),
 		      (gpointer) ffplayer,
 		      NULL);
 }
@@ -914,6 +1009,149 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
 				   instrument[0]);
 
     instrument++;
+  }
+}
+
+/**
+ * ags_ffplayer_update:
+ * @ffplayer: the #AgsFFPlayer
+ * 
+ * Update @ffplayer.
+ * 
+ * Since: 3.4.0
+ */
+void
+ags_ffplayer_update(AgsFFPlayer *ffplayer)
+{
+  AgsAudio *audio;
+  AgsChannel *start_input;
+  
+  AgsAudioContainer *audio_container;
+
+  AgsResizeAudio *resize_audio;
+  AgsApplySF2Synth *apply_sf2_synth;
+  AgsOpenSf2Instrument *open_sf2_instrument;
+
+  AgsApplicationContext *application_context;
+
+  gchar *preset_str;
+  gchar *instrument_str;
+  
+  gdouble lower;
+  gdouble key_count;
+  guint audio_channels;
+  guint output_pads, input_pads;
+
+  if(!AGS_IS_FFPLAYER(ffplayer)){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+
+  audio_container = ffplayer->audio_container;
+
+  if(audio_container == NULL){
+    return;
+  }
+  
+  audio = AGS_MACHINE(ffplayer)->audio;
+
+  start_input = NULL;
+
+  g_object_get(audio,
+	       "input", &start_input,
+	       NULL);
+
+  /*  */
+  
+  preset_str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(ffplayer->preset));
+  
+  instrument_str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(ffplayer->instrument));
+
+  lower = gtk_spin_button_get_value(ffplayer->lower);
+  key_count = gtk_spin_button_get_value(ffplayer->key_count);
+
+  audio_channels = AGS_MACHINE(ffplayer)->audio_channels;
+  
+  output_pads = AGS_MACHINE(ffplayer)->output_pads;
+  input_pads = AGS_MACHINE(ffplayer)->input_pads;
+  
+  /* open sf2 instrument */
+  if(gtk_toggle_button_get_active(ffplayer->enable_synth_generator)){
+    GList *start_sf2_synth_generator, *sf2_synth_generator;
+    GList *start_sound_resource, *sound_resource;
+
+    guint requested_frame_count;
+    
+    resize_audio = ags_resize_audio_new(audio,
+					output_pads,
+					key_count,
+					audio_channels);
+      
+    /* append task */
+    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				  (AgsTask *) resize_audio);
+    
+    start_sf2_synth_generator = NULL;
+
+    g_object_get(audio,
+		 "sf2-synth-generator", &start_sf2_synth_generator,
+		 NULL);
+
+    requested_frame_count = 0;
+    
+    start_sound_resource = ags_audio_container_find_sound_resource(audio_container,
+								   preset_str,
+								   instrument_str,
+								   NULL);
+
+    if(start_sound_resource != NULL){
+      ags_sound_resource_info(AGS_SOUND_RESOURCE(start_sound_resource->data),
+			      &requested_frame_count,
+			      NULL, NULL);
+    }
+    
+    if(start_sf2_synth_generator != NULL){
+      g_object_set(start_sf2_synth_generator->data,
+		   "filename", audio_container->filename,
+		   "preset", audio_container->preset,
+		   "instrument", audio_container->instrument,
+		   "frame-count", requested_frame_count,
+		   NULL);
+      
+      apply_sf2_synth = ags_apply_sf2_synth_new(start_sf2_synth_generator->data,
+						start_input,
+						lower, (guint) key_count);
+      
+      g_object_set(apply_sf2_synth,
+		   "requested-frame-count", requested_frame_count,
+		   NULL);
+      
+      /* append task */
+      ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				    (AgsTask *) apply_sf2_synth);
+    }
+
+    g_list_free_full(start_sound_resource,
+		     (GDestroyNotify) g_object_unref);
+
+    g_list_free_full(start_sf2_synth_generator,
+		     (GDestroyNotify) g_object_unref);
+  }else{
+    open_sf2_instrument = ags_open_sf2_instrument_new(audio,
+						      AGS_IPATCH(audio_container->sound_container),
+						      NULL,
+						      NULL,
+						      NULL,
+						      0);
+    
+    /* append task */
+    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				  (AgsTask *) open_sf2_instrument);
+  }  
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
   }
 }
 

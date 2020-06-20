@@ -99,7 +99,10 @@ libags_audio_installcheck_programs += \
 	ags_check_system_audio_buffer_util_test \
 	ags_check_system_char_buffer_util_test \
 	ags_check_system_filter_util_test \
+	ags_check_system_synth_util_test \
 	ags_check_system_fm_synth_util_test \
+	ags_check_system_sf2_synth_util_test \
+	ags_check_system_sfz_synth_util_test \
 	ags_check_system_fourier_transform_util_test \
 	ags_check_system_recall_test \
 	ags_check_system_recall_channel_test \
@@ -799,12 +802,33 @@ ags_check_system_filter_util_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_filter_util_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_filter_util_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
+# synth util unit test
+ags_check_system_synth_util_test_SOURCES = ags/test/audio/ags_synth_util_test.c
+ags_check_system_synth_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
+ags_check_system_synth_util_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_synth_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_synth_util_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+
 # FM synth util unit test
 ags_check_system_fm_synth_util_test_SOURCES = ags/test/audio/ags_fm_synth_util_test.c
 ags_check_system_fm_synth_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_fm_synth_util_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_fm_synth_util_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_fm_synth_util_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+
+# SF2 synth util unit test
+ags_check_system_sf2_synth_util_test_SOURCES = ags/test/audio/ags_sf2_synth_util_test.c
+ags_check_system_sf2_synth_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
+ags_check_system_sf2_synth_util_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_sf2_synth_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_sf2_synth_util_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+
+# SFZ synth util unit test
+ags_check_system_sfz_synth_util_test_SOURCES = ags/test/audio/ags_sfz_synth_util_test.c
+ags_check_system_sfz_synth_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
+ags_check_system_sfz_synth_util_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_sfz_synth_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_sfz_synth_util_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # fourier transform util unit test
 ags_check_system_fourier_transform_util_test_SOURCES = ags/test/audio/ags_fourier_transform_util_test.c
@@ -2074,7 +2098,10 @@ ags-check-system-unit-tests: $(libags_installcheck_programs) $(libags_audio_inst
 	./ags_check_system_audio_buffer_util_test
 	./ags_check_system_char_buffer_util_test
 	./ags_check_system_filter_util_test
+	./ags_check_system_synth_util_test
 	./ags_check_system_fm_synth_util_test
+	./ags_check_system_sf2_synth_util_test
+	./ags_check_system_sfz_synth_util_test
 	./ags_check_system_fourier_transform_util_test
 	./ags_check_system_recall_test
 	./ags_check_system_recall_channel_test

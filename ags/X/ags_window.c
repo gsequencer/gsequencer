@@ -41,9 +41,11 @@
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
+#include <ags/X/machine/ags_sf2_synth.h>
 #endif
 
 #include <ags/X/machine/ags_pitch_sampler.h>
+#include <ags/X/machine/ags_sfz_synth.h>
 
 #include <ags/X/machine/ags_audiorec.h>
 #include <ags/X/machine/ags_ladspa_bridge.h>
@@ -532,11 +534,19 @@ ags_window_standard_machine_counter_alloc()
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
 							     AGS_TYPE_FFPLAYER, 0));
+
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_SF2_SYNTH, 0));
 #endif
 
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
 							     AGS_TYPE_PITCH_SAMPLER, 0));
+
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_SFZ_SYNTH, 0));
   
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,

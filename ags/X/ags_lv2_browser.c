@@ -177,8 +177,12 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 
   g_rec_mutex_lock(lv2_manager_mutex);
 
-  length = g_strv_length(lv2_manager->quick_scan_plugin_filename);
+  length = 0;
 
+  if(lv2_manager->quick_scan_plugin_filename != NULL){
+    length = g_strv_length(lv2_manager->quick_scan_plugin_filename);
+  }
+  
   for(i = 0; i < length; i++){
     gchar *filename, *effect;
     

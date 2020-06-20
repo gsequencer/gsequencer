@@ -39,19 +39,19 @@
 #define AGS_AUDIO_BUFFER_COMPLEX(ptr) ((AgsComplex *)(ptr))
 
 #define AGS_AUDIO_BUFFER_UTIL_S8_TO_COMPLEX(x_val, x_retval) { complex l_z; \
-    l_z = (x_val / G_MAX_INT8) + I * 0;					\
+    l_z = ((double) x_val / (double) G_MAXINT8) + I * 0;					\
     ags_complex_set(x_retval[0], l_z); }
 #define AGS_AUDIO_BUFFER_UTIL_S16_TO_COMPLEX(x_val, x_retval) { complex l_z; \
-    l_z = (x_val / G_MAX_INT16) + I * 0;				\
+    l_z = ((double) x_val / (double) G_MAXINT16) + I * 0;			\
     ags_complex_set(x_retval[0], l_z); }
 #define AGS_AUDIO_BUFFER_UTIL_S24_TO_COMPLEX(x_val, x_retval) { complex l_z; \
-    l_z = (x_val / (0xffffff - 1)) + I * 0;				\
+    l_z = ((double) x_val / (double) (0xffffff - 1)) + I * 0;				\
     ags_complex_set(x_retval[0], l_z); }
 #define AGS_AUDIO_BUFFER_UTIL_S32_TO_COMPLEX(x_val, x_retval) { complex l_z; \
-    l_z = (x_val / G_MAX_INT32) + I * 0;				\
+    l_z = ((double) x_val / (double) G_MAXINT32) + I * 0;				\
     ags_complex_set(x_retval[0], l_z); }
 #define AGS_AUDIO_BUFFER_UTIL_S64_TO_COMPLEX(x_val, x_retval) { complex l_z; \
-    l_z = (x_val / G_MAX_INT64) + I * 0;				\
+    l_z = ((double) x_val / (double) G_MAXINT64) + I * 0;				\
     ags_complex_set(x_retval[0], l_z); }
 #define AGS_AUDIO_BUFFER_UTIL_FLOAT_TO_COMPLEX(x_val, x_retval) { complex l_z; \
     l_z = (x_val) + I * 0;						\
@@ -62,19 +62,19 @@
 
 #define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S8(x_val, x_retval) { complex l_z; \
     l_z = ags_complex_get(x_val);					\
-    x_retval[0] = G_MAX_INT8 * creal(l_z); }
+    x_retval[0] = (gint8) ((double) G_MAXINT8 * creal(l_z)); }
 #define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S16(x_val, x_retval) { complex l_z; \
     l_z = ags_complex_get(x_val);					\
-    x_retval[0] = G_MAX_INT16 * creal(l_z); }
+    x_retval[0] = (gint16) ((double) G_MAXINT16 * creal(l_z)); }
 #define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S24(x_val, x_retval) { complex l_z; \
     l_z = ags_complex_get(x_val);					\
-    x_retval[0] = (0xffffff - 1) * creal(l_z); }
+    x_retval[0] = (gint32) ((double) (0xffffff - 1) * creal(l_z)); }
 #define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S32(x_val, x_retval) { complex l_z; \
     l_z = ags_complex_get(x_val);					\
-    x_retval[0] = G_MAX_INT32 * creal(l_z); }
+    x_retval[0] = (gint32) ((double) G_MAXINT32 * creal(l_z)); }
 #define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S64(x_val, x_retval) { complex l_z; \
     l_z = ags_complex_get(x_val);					\
-    x_retval[0] = G_MAX_INT64 * creal(l_z); }
+    x_retval[0] = (gint64) ((double) G_MAXINT64 * creal(l_z)); }
 #define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_FLOAT(x_val, x_retval) { complex l_z; \
     l_z = ags_complex_get(x_val);					\
     x_retval[0] = creal(l_z); }
@@ -564,6 +564,36 @@ void ags_audio_buffer_util_resample_with_buffer(void *buffer, guint channels,
 						guint target_samplerate,
 						guint target_buffer_length,
 						void *target_buffer);
+
+/* pong */
+void ags_audio_buffer_util_pong_s8(gint8 *destination, guint dchannels,
+				   gint8 *source, guint schannels,
+				   guint count);
+void ags_audio_buffer_util_pong_s16(gint16 *destination, guint dchannels,
+				    gint16 *source, guint schannels,
+				    guint count);
+void ags_audio_buffer_util_pong_s24(gint32 *destination, guint dchannels,
+				    gint32 *source, guint schannels,
+				    guint count);
+void ags_audio_buffer_util_pong_s32(gint32 *destination, guint dchannels,
+				    gint32 *source, guint schannels,
+				    guint count);
+void ags_audio_buffer_util_pong_s64(gint64 *destination, guint dchannels,
+				    gint64 *source, guint schannels,
+				    guint count);
+void ags_audio_buffer_util_pong_float(gfloat *destination, guint dchannels,
+				      gfloat *source, guint schannels,
+				      guint count);
+void ags_audio_buffer_util_pong_double(gdouble *destination, guint dchannels,
+				       gdouble *source, guint schannels,
+				       guint count);
+void ags_audio_buffer_util_pong_complex(AgsComplex *destination, guint dchannels,
+					AgsComplex *source, guint schannels,
+					guint count);
+
+void ags_audio_buffer_util_pong(void *destination, guint dchannels,
+				void *source, guint schannels,
+				guint count, guint format);
 
 /* copy 8 bit */
 void ags_audio_buffer_util_copy_s8_to_s8(gint8 *destination, guint dchannels,

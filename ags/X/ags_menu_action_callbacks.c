@@ -50,9 +50,11 @@
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
+#include <ags/X/machine/ags_sf2_synth.h>
 #endif
 
 #include <ags/X/machine/ags_pitch_sampler.h>
+#include <ags/X/machine/ags_sfz_synth.h>
 
 #include <ags/X/machine/ags_audiorec.h>
 
@@ -610,6 +612,25 @@ ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data)
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 }
+
+void
+ags_menu_action_add_sf2_synth_callback(GtkWidget *menu_item, gpointer data)
+{
+  AgsSF2Synth *sf2_synth;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+  
+  /* create SF2 synth */
+  sf2_synth = ags_machine_util_new_sf2_synth();
+  
+  add_audio = ags_add_audio_new(AGS_MACHINE(sf2_synth)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
 #endif
 
 void
@@ -627,6 +648,25 @@ ags_menu_action_add_pitch_sampler_callback(GtkWidget *menu_item, gpointer data)
   pitch_sampler = ags_machine_util_new_pitch_sampler();
   
   add_audio = ags_add_audio_new(AGS_MACHINE(pitch_sampler)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_menu_action_add_sfz_synth_callback(GtkWidget *menu_item, gpointer data)
+{
+  AgsSFZSynth *sfz_synth;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+  
+  /* create SFZ synth */
+  sfz_synth = ags_machine_util_new_sfz_synth();
+  
+  add_audio = ags_add_audio_new(AGS_MACHINE(sfz_synth)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 }

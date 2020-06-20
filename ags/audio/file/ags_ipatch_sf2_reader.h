@@ -92,7 +92,7 @@ struct _AgsIpatchSF2Reader
 
   guint *index_selected;
   gchar **name_selected;
-  	
+  
 #ifdef AGS_WITH_LIBINSTPATCH
   IpatchSF2Reader *reader;
 

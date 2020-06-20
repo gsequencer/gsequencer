@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -312,12 +312,9 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   AgsWindow *window;
 
   AgsAudio *audio;
-
+  AgsChannel *start_input;
+  
   AgsAudioContainer *audio_container;
-
-  AgsOpenSf2Instrument *open_sf2_instrument;
-
-  AgsApplicationContext *application_context;
   
   gint position;
   
@@ -327,12 +324,10 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
     return;
   }
   
-  application_context = ags_application_context_get_instance();
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ffplayer);
 
   audio = AGS_MACHINE(ffplayer)->audio;
-
+  
   /*  */
   audio_container = ffplayer->audio_container;
 
@@ -342,11 +337,11 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   /* load presets */
   position = gtk_combo_box_get_active(GTK_COMBO_BOX(ffplayer->preset));
-
+  
   if(position == -1){
     position = 0;
   }
-  
+
   ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
 					    position);
   AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
@@ -357,23 +352,14 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   if(position == -1){
     position = 0;
   }
-
+  
   ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
   					    position);
 
   AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
 
-  /* open sf2 instrument */
-  open_sf2_instrument = ags_open_sf2_instrument_new(audio,
-						    AGS_IPATCH(audio_container->sound_container),
-						    NULL,
-						    NULL,
-						    NULL,
-						    0);
-  
-  /* append task */
-  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-				(AgsTask *) open_sf2_instrument);
+  /* update */
+  ags_ffplayer_update(ffplayer);
 }
 
 gboolean
@@ -387,4 +373,10 @@ void
 ags_ffplayer_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsFFPlayer *ffplayer)
 {
   gtk_widget_queue_draw(ffplayer);
+}
+
+void
+ags_ffplayer_update_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
+{
+  ags_ffplayer_update(ffplayer);
 }

@@ -31,9 +31,11 @@
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
+#include <ags/X/machine/ags_sf2_synth.h>
 #endif
 
 #include <ags/X/machine/ags_pitch_sampler.h>
+#include <ags/X/machine/ags_sfz_synth.h>
 
 #include <ags/X/machine/ags_audiorec.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
@@ -189,8 +191,10 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 	 AGS_IS_FM_SYNCSYNTH(list->data) ||
 #ifdef AGS_WITH_LIBINSTPATCH
 	 AGS_IS_FFPLAYER(list->data) ||
+	 AGS_IS_SF2_SYNTH(list->data) ||
 #endif
 	 AGS_IS_PITCH_SAMPLER(list->data) ||
+	 AGS_IS_SFZ_SYNTH(list->data) ||
 	 AGS_IS_DSSI_BRIDGE(list->data) ||
 	 (AGS_IS_LV2_BRIDGE(list->data) && (AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(list->data)->flags)) != 0) ||
 	 AGS_IS_LIVE_DSSI_BRIDGE(list->data) ||

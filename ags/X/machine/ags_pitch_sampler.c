@@ -145,10 +145,15 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   GtkHBox *hbox;
   GtkVBox *control_vbox;
   GtkHBox *filename_hbox;
+  GtkVBox *synth_generator_vbox;
+  GtkHBox *base_note_hbox;
+  GtkHBox *key_count_hbox;
   GtkTable *lfo_table;
+  GtkFrame *frame;
   GtkLabel *label;
   
   AgsAudio *audio;
+  AgsSFZSynthGenerator *sfz_synth_generator;
 
   g_signal_connect_after((GObject *) pitch_sampler, "parent_set",
 			 G_CALLBACK(ags_pitch_sampler_parent_set_callback), (gpointer) pitch_sampler);
@@ -174,6 +179,11 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 	       "midi-start-mapping", 0,
 	       "midi-end-mapping", 128,
 	       NULL);
+
+  sfz_synth_generator = ags_sfz_synth_generator_new();
+  
+  ags_audio_add_sfz_synth_generator(audio,
+				    (GObject *) sfz_synth_generator);
   
   AGS_MACHINE(pitch_sampler)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 					AGS_MACHINE_REVERSE_NOTATION);
@@ -295,6 +305,83 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   gtk_widget_set_no_show_all((GtkWidget *) pitch_sampler->loading,
 			     TRUE);
   gtk_widget_hide((GtkWidget *) pitch_sampler->loading);
+
+
+  /* synth generator */
+  frame = (GtkFrame *) gtk_frame_new(i18n("synth generator"));
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) frame,
+		     FALSE, FALSE,
+		     0);
+
+  synth_generator_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
+						  0);
+  gtk_container_add((GtkContainer *) frame,
+		    (GtkWidget *) synth_generator_vbox);
+  
+  pitch_sampler->enable_synth_generator = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
+  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+		     (GtkWidget *) pitch_sampler->enable_synth_generator,
+		     FALSE, FALSE,
+		     0);
+
+  /* base note */
+  base_note_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+					    0);
+  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+		     (GtkWidget *) base_note_hbox,
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new(i18n("base note"));
+  gtk_box_pack_start((GtkBox *) base_note_hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
+
+  pitch_sampler->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(-70.0,
+								     70.0,
+								     1.0);
+  gtk_spin_button_set_digits(pitch_sampler->lower,
+			     2);
+  gtk_spin_button_set_value(pitch_sampler->lower,
+			    0.0);
+  gtk_box_pack_start((GtkBox *) base_note_hbox,
+		     (GtkWidget *) pitch_sampler->lower,
+		     FALSE, FALSE,
+		     0);
+  
+  /* key count */
+  key_count_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+					    0);
+  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+		     (GtkWidget *) key_count_hbox,
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new(i18n("key count"));
+  gtk_box_pack_start((GtkBox *) key_count_hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
+
+  pitch_sampler->key_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+									 128.0,
+									 1.0);
+  gtk_spin_button_set_value(pitch_sampler->key_count,
+			    78.0);
+  gtk_box_pack_start((GtkBox *) key_count_hbox,
+		     (GtkWidget *) pitch_sampler->key_count,
+		     FALSE, FALSE,
+		     0);
+
+  pitch_sampler->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
+  gtk_widget_set_valign(pitch_sampler->update,
+			GTK_ALIGN_END);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) pitch_sampler->update,
+		     FALSE, FALSE,
+		     0);
   
   /* other controls */
   
@@ -465,6 +552,10 @@ ags_pitch_sampler_connect(AgsConnectable *connectable)
   g_signal_connect(pitch_sampler->open, "clicked",
 		   G_CALLBACK(ags_pitch_sampler_open_callback), pitch_sampler);
 
+  /* update */
+  g_signal_connect(pitch_sampler->update, "clicked",
+		   G_CALLBACK(ags_pitch_sampler_update_callback), pitch_sampler);
+
   /* LFO */
   g_signal_connect_after((GObject *) pitch_sampler->enable_lfo, "toggled",
 			 G_CALLBACK(ags_pitch_sampler_enable_lfo_callback), pitch_sampler);
@@ -518,6 +609,13 @@ ags_pitch_sampler_disconnect(AgsConnectable *connectable)
   g_object_disconnect(pitch_sampler->open,
 		      "any_signal::clicked",
 		      G_CALLBACK(ags_pitch_sampler_open_callback),
+		      pitch_sampler,
+		      NULL);
+  
+  /* update */
+  g_object_disconnect(pitch_sampler->update,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_pitch_sampler_update_callback),
 		      pitch_sampler,
 		      NULL);
 
@@ -931,7 +1029,120 @@ ags_pitch_sampler_open_filename(AgsPitchSampler *pitch_sampler,
 void
 ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  AgsChannel *start_input;
+  
+  AgsAudioContainer *audio_container;
+
+  AgsResizeAudio *resize_audio;
+  AgsApplySFZSynth *apply_sfz_synth;
+  AgsOpenSFZFile *open_sfz_file;
+
+  AgsApplicationContext *application_context;
+  
+  gdouble lower;
+  gdouble key_count;
+  guint audio_channels;
+  guint output_pads, input_pads;
+
+  if(!AGS_IS_PITCH_SAMPLER(pitch_sampler)){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+
+  audio_container = pitch_sampler->audio_container;
+
+  if(audio_container == NULL){
+    return;
+  }
+
+  audio = AGS_MACHINE(pitch_sampler)->audio;
+
+  start_input = NULL;
+
+  g_object_get(audio,
+	       "input", &start_input,
+	       NULL);
+
+  /*  */  
+  lower = gtk_spin_button_get_value(pitch_sampler->lower);
+  key_count = gtk_spin_button_get_value(pitch_sampler->key_count);
+
+  audio_channels = AGS_MACHINE(pitch_sampler)->audio_channels;
+  
+  output_pads = AGS_MACHINE(pitch_sampler)->output_pads;
+  input_pads = AGS_MACHINE(pitch_sampler)->input_pads;
+  
+  /* open sfz file */
+  if(gtk_toggle_button_get_active(pitch_sampler->enable_synth_generator)){
+    GList *start_sfz_synth_generator, *sfz_synth_generator;
+    GList *start_sound_resource, *sound_resource;
+
+    guint requested_frame_count;
+    
+    resize_audio = ags_resize_audio_new(audio,
+					output_pads,
+					key_count,
+					audio_channels);
+      
+    /* append task */
+    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				  (AgsTask *) resize_audio);
+    
+    start_sfz_synth_generator = NULL;
+
+    g_object_get(audio,
+		 "sfz-synth-generator", &start_sfz_synth_generator,
+		 NULL);
+
+    requested_frame_count = 0;
+    
+    start_sound_resource = ags_audio_container_find_sound_resource(audio_container,
+								   NULL,
+								   NULL,
+								   NULL);
+
+    if(start_sound_resource != NULL){
+      ags_sound_resource_info(AGS_SOUND_RESOURCE(start_sound_resource->data),
+			      &requested_frame_count,
+			      NULL, NULL);
+    }
+    
+    if(start_sfz_synth_generator != NULL){
+      g_object_set(start_sfz_synth_generator->data,
+		   "filename", audio_container->filename,
+		   "frame-count", requested_frame_count,
+		   NULL);
+      
+      apply_sfz_synth = ags_apply_sfz_synth_new(start_sfz_synth_generator->data,
+						start_input,
+						lower, (guint) key_count);
+      
+      g_object_set(apply_sfz_synth,
+		   "requested-frame-count", requested_frame_count,
+		   NULL);
+      
+      /* append task */
+      ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				    (AgsTask *) apply_sfz_synth);
+    }
+
+    g_list_free_full(start_sound_resource,
+		     (GDestroyNotify) g_object_unref);
+
+    g_list_free_full(start_sfz_synth_generator,
+		     (GDestroyNotify) g_object_unref);
+  }else{
+    open_sfz_file = ags_open_sfz_file_new(audio,
+					  AGS_IPATCH(audio_container->sound_container),
+					  NULL,
+					  0);
+    
+    /* append task */
+    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				  (AgsTask *) open_sfz_file);
+  }  
 }
 
 /**

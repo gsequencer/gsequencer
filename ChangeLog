@@ -1,3 +1,29 @@
+ags (3.4.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential division by zero in ags_filter_util.c
+
+ags (3.4.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_audio_signal_clear()
+	* fixed missing clear during synth generator compute
+
+ags (3.4.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsSF2Generator
+	* implemented AgsSFZGenerator
+	* implemented AgsAudioContainerManager and AgsAudioFileManager
+	* implemented pingpong copy in ags_audio_buffer_util.c
+	* implemented ags_sf2_synth_util.c
+	* implemented ags_sfz_synth_util.c
+	* extended AgsFFPlayer
+	* extended AgsPitchSampler
+	* improved ags_filter_util.c
+	* improved AgsComplex support
+	* added unit-tests
+
 ags (3.3.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -4511,7 +4537,7 @@ ags (0.4.2-68)
 	* added `midi2xml` the MIDI file to XML parser
 
 
-Copyright (C) 2005-2019 Joël Krähemann
+Copyright (C) 2005-2020 Joël Krähemann
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3

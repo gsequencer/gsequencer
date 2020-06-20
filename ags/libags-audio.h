@@ -102,6 +102,10 @@
 #include <ags/audio/ags_synth_enums.h>
 #include <ags/audio/ags_synth_generator.h>
 #include <ags/audio/ags_synth_util.h>
+#include <ags/audio/ags_sf2_synth_generator.h>
+#include <ags/audio/ags_sf2_synth_util.h>
+#include <ags/audio/ags_sfz_synth_generator.h>
+#include <ags/audio/ags_sfz_synth_util.h>
 #include <ags/audio/ags_track.h>
 #include <ags/audio/ags_wave.h>
 
@@ -373,6 +377,8 @@
 #include <ags/audio/task/ags_apply_presets.h>
 #include <ags/audio/task/ags_apply_sound_config.h>
 #include <ags/audio/task/ags_apply_synth.h>
+#include <ags/audio/task/ags_apply_sf2_synth.h>
+#include <ags/audio/task/ags_apply_sfz_synth.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_cancel_channel.h>
 #include <ags/audio/task/ags_clear_audio_signal.h>
@@ -383,6 +389,7 @@
 #include <ags/audio/task/ags_link_channel.h>
 #include <ags/audio/task/ags_move_note.h>
 #include <ags/audio/task/ags_open_file.h>
+#include <ags/audio/task/ags_open_sfz_file.h>
 #include <ags/audio/task/ags_open_sf2_instrument.h>
 #include <ags/audio/task/ags_open_sf2_sample.h>
 #include <ags/audio/task/ags_open_single_file.h>

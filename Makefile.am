@@ -973,10 +973,19 @@ libags_audio_h_sources = \
 	ags/audio/ags_sound_provider.h \
 	ags/audio/ags_sequencer_util.h \
 	ags/audio/ags_soundcard_util.h \
+	ags/audio/ags_sfz_synth_generator.h \
+	ags/audio/ags_sfz_synth_util.h \
 	ags/audio/ags_synth_generator.h \
 	ags/audio/ags_synth_util.h \
 	ags/audio/ags_track.h \
 	ags/audio/ags_wave.h
+
+if WITH_LIBINSTPATCH
+libags_audio_h_sources += \
+	$(deprecated_libags_audio_h_sources) \
+	ags/audio/ags_sf2_synth_generator.h \
+	ags/audio/ags_sf2_synth_util.h
+endif
 
 deprecated_libags_audio_c_sources =
 
@@ -1038,10 +1047,19 @@ libags_audio_c_sources = \
 	ags/audio/ags_sound_provider.c \
 	ags/audio/ags_sequencer_util.c \
 	ags/audio/ags_soundcard_util.c \
+	ags/audio/ags_sfz_synth_generator.c \
+	ags/audio/ags_sfz_synth_util.c \
 	ags/audio/ags_synth_generator.c \
 	ags/audio/ags_synth_util.c \
 	ags/audio/ags_track.c \
 	ags/audio/ags_wave.c
+
+if WITH_LIBINSTPATCH
+libags_audio_c_sources += \
+	$(deprecated_libags_audio_c_sources) \
+	ags/audio/ags_sf2_synth_generator.c \
+	ags/audio/ags_sf2_synth_util.c
+endif
 
 # libags-audio - thread
 deprecated_libags_audio_thread_h_sources =
@@ -1054,9 +1072,14 @@ libags_audio_thread_h_sources = \
 	ags/audio/thread/ags_sequencer_thread.h \
 	ags/audio/thread/ags_soundcard_thread.h \
 	ags/audio/thread/ags_export_thread.h \
-	ags/audio/thread/ags_sf2_loader.h \
 	ags/audio/thread/ags_sfz_loader.h \
 	ags/audio/thread/ags_wave_loader.h
+
+if WITH_LIBINSTPATCH
+libags_audio_thread_h_sources += \
+	$(deprecated_libags_audio_thread_h_sources) \
+	ags/audio/thread/ags_sf2_loader.h
+endif
 
 deprecated_libags_audio_thread_c_sources =
 
@@ -1068,9 +1091,14 @@ libags_audio_thread_c_sources = \
 	ags/audio/thread/ags_sequencer_thread.c \
 	ags/audio/thread/ags_soundcard_thread.c \
 	ags/audio/thread/ags_export_thread.c \
-	ags/audio/thread/ags_sf2_loader.c \
 	ags/audio/thread/ags_sfz_loader.c \
 	ags/audio/thread/ags_wave_loader.c
+
+if WITH_LIBINSTPATCH
+libags_audio_thread_c_sources += \
+	$(deprecated_libags_audio_thread_c_sources) \
+	ags/audio/thread/ags_sf2_loader.c
+endif
 
 # libags-audio - plugin
 deprecated_libags_plugin_h_sources =
@@ -1136,7 +1164,9 @@ deprecated_libags_audio_file_h_sources =
 libags_audio_file_h_sources = \
 	$(deprecated_libags_audio_file_h_sources) \
 	ags/audio/file/ags_audio_container.h \
+	ags/audio/file/ags_audio_container_manager.h \
 	ags/audio/file/ags_audio_file.h \
+	ags/audio/file/ags_audio_file_manager.h \
 	ags/audio/file/ags_audio_file_link.h \
 	ags/audio/file/ags_sound_container.h \
 	ags/audio/file/ags_sound_resource.h \
@@ -1159,8 +1189,10 @@ deprecated_libags_audio_file_c_sources =
 
 libags_audio_file_c_sources = \
 	$(deprecated_libags_audio_file_c_sources) \
+	ags/audio/file/ags_audio_container_manager.c \
 	ags/audio/file/ags_audio_container.c \
 	ags/audio/file/ags_audio_file.c \
+	ags/audio/file/ags_audio_file_manager.c \
 	ags/audio/file/ags_audio_file_link.c \
 	ags/audio/file/ags_sound_container.c \
 	ags/audio/file/ags_sound_resource.c \
@@ -1741,6 +1773,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_apply_presets.h \
 	ags/audio/task/ags_apply_sound_config.h \
 	ags/audio/task/ags_apply_synth.h \
+	ags/audio/task/ags_apply_sfz_synth.h \
 	ags/audio/task/ags_cancel_audio.h \
 	ags/audio/task/ags_cancel_channel.h \
 	ags/audio/task/ags_clear_audio_signal.h \
@@ -1752,6 +1785,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_move_note.h \
 	ags/audio/task/ags_open_file.h \
 	ags/audio/task/ags_open_single_file.h \
+	ags/audio/task/ags_open_sfz_file.h \
 	ags/audio/task/ags_open_wave.h \
 	ags/audio/task/ags_remove_audio.h \
 	ags/audio/task/ags_remove_audio_signal.h \
@@ -1785,6 +1819,7 @@ libags_audio_task_h_sources = \
 
 if WITH_LIBINSTPATCH
 libags_audio_task_h_sources += \
+	ags/audio/task/ags_apply_sf2_synth.h \
 	ags/audio/task/ags_open_sf2_instrument.h \
 	ags/audio/task/ags_open_sf2_sample.h
 endif
@@ -1801,6 +1836,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_apply_presets.c \
 	ags/audio/task/ags_apply_sound_config.c \
 	ags/audio/task/ags_apply_synth.c \
+	ags/audio/task/ags_apply_sfz_synth.c \
 	ags/audio/task/ags_cancel_audio.c \
 	ags/audio/task/ags_cancel_channel.c \
 	ags/audio/task/ags_clear_audio_signal.c \
@@ -1812,6 +1848,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_move_note.c \
 	ags/audio/task/ags_open_file.c \
 	ags/audio/task/ags_open_single_file.c \
+	ags/audio/task/ags_open_sfz_file.c \
 	ags/audio/task/ags_open_wave.c \
 	ags/audio/task/ags_remove_audio.c \
 	ags/audio/task/ags_remove_audio_signal.c \
@@ -1845,6 +1882,7 @@ libags_audio_task_c_sources = \
 
 if WITH_LIBINSTPATCH
 libags_audio_task_c_sources += \
+	ags/audio/task/ags_apply_sf2_synth.c \
 	ags/audio/task/ags_open_sf2_instrument.c \
 	ags/audio/task/ags_open_sf2_sample.c
 endif
@@ -2312,6 +2350,8 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_pitch_sampler_callbacks.h \
 	ags/X/machine/ags_pitch_sampler_file.h \
 	ags/X/machine/ags_pitch_sampler_file_callbacks.h \
+	ags/X/machine/ags_sfz_synth.h \
+	ags/X/machine/ags_sfz_synth_callbacks.h \
 	ags/X/machine/ags_synth_callbacks.h \
 	ags/X/machine/ags_syncsynth.h \
 	ags/X/machine/ags_syncsynth_callbacks.h \
@@ -2333,7 +2373,9 @@ libgsequencer_machine_h_sources += \
 	ags/X/machine/ags_ffplayer_input_line_callbacks.h \
 	ags/X/machine/ags_ffplayer_input_line.h \
 	ags/X/machine/ags_ffplayer_input_pad_callbacks.h \
-	ags/X/machine/ags_ffplayer_input_pad.h
+	ags/X/machine/ags_ffplayer_input_pad.h \
+	ags/X/machine/ags_sf2_synth_callbacks.h \
+	ags/X/machine/ags_sf2_synth.h
 endif
 
 deprecated_libgsequencer_machine_c_sources =
@@ -2402,6 +2444,8 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_pitch_sampler_callbacks.c \
 	ags/X/machine/ags_pitch_sampler_file.c \
 	ags/X/machine/ags_pitch_sampler_file_callbacks.c \
+	ags/X/machine/ags_sfz_synth.c \
+	ags/X/machine/ags_sfz_synth_callbacks.c \
 	ags/X/machine/ags_syncsynth.c \
 	ags/X/machine/ags_syncsynth_callbacks.c \
 	ags/X/machine/ags_synth.c \
@@ -2423,7 +2467,9 @@ libgsequencer_machine_c_sources += \
 	ags/X/machine/ags_ffplayer_input_line.c \
 	ags/X/machine/ags_ffplayer_input_line_callbacks.c \
 	ags/X/machine/ags_ffplayer_input_pad.c \
-	ags/X/machine/ags_ffplayer_input_pad_callbacks.c
+	ags/X/machine/ags_ffplayer_input_pad_callbacks.c \
+	ags/X/machine/ags_sf2_synth.c \
+	ags/X/machine/ags_sf2_synth_callbacks.c
 endif
 
 # libgsequencer - editor

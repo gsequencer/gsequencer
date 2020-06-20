@@ -166,6 +166,8 @@ struct _AgsAudio
   GObject *playback_domain;
 
   GList *synth_generator;
+  GList *sf2_synth_generator;
+  GList *sfz_synth_generator;
 
   GList *cursor;
   
@@ -405,6 +407,18 @@ void ags_audio_set_synth_generator(AgsAudio *audio, GList *synth_generator);
 
 void ags_audio_add_synth_generator(AgsAudio *audio, GObject *synth_generator);
 void ags_audio_remove_synth_generator(AgsAudio *audio, GObject *synth_generator);
+
+GList* ags_audio_get_sf2_synth_generator(AgsAudio *audio);
+void ags_audio_set_sf2_synth_generator(AgsAudio *audio, GList *sf2_synth_generator);
+
+void ags_audio_add_sf2_synth_generator(AgsAudio *audio, GObject *sf2_synth_generator);
+void ags_audio_remove_sf2_synth_generator(AgsAudio *audio, GObject *sf2_synth_generator);
+
+GList* ags_audio_get_sfz_synth_generator(AgsAudio *audio);
+void ags_audio_set_sfz_synth_generator(AgsAudio *audio, GList *sfz_synth_generator);
+
+void ags_audio_add_sfz_synth_generator(AgsAudio *audio, GObject *sfz_synth_generator);
+void ags_audio_remove_sfz_synth_generator(AgsAudio *audio, GObject *sfz_synth_generator);
 
 GList* ags_audio_get_cursor(AgsAudio *audio);
 void ags_audio_set_cursor(AgsAudio *audio, GList *cursor);

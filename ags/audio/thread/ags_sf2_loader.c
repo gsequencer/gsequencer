@@ -21,8 +21,12 @@
 
 #include <ags/audio/ags_input.h>
 
+#include <ags/audio/file/ags_audio_container.h>
+#include <ags/audio/file/ags_audio_container_manager.h>
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_ipatch.h>
+
+#include <ags/audio/task/ags_apply_sf2_synth.h>
 
 #include <ags/i18n.h>
 
@@ -210,6 +214,9 @@ ags_sf2_loader_init(AgsSF2Loader *sf2_loader)
   sf2_loader->preset = NULL;
   sf2_loader->instrument = NULL;
   
+  sf2_loader->base_note = 0.0;
+  sf2_loader->count = 1;
+
   sf2_loader->audio_container = NULL;
 }
 
@@ -568,37 +575,100 @@ ags_sf2_loader_unset_flags(AgsSF2Loader *sf2_loader, guint flags)
 void*
 ags_sf2_loader_run(void *ptr)
 {
+  AgsAudioContainerManager *audio_container_manager;
+
   AgsSF2Loader *sf2_loader;
 
   GObject *output_soundcard;
-
-  GList *start_sf2, *sf2;
-
-  guint n_pads, current_pads;
-  guint n_audio_channels, current_audio_channels;
+  
+  GRecMutex *audio_container_manager_mutex;
 
   sf2_loader = AGS_SF2_LOADER(ptr);
 
+  output_soundcard = NULL;
+  
   g_object_get(sf2_loader->audio,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
 
-  sf2_loader->audio_container = ags_audio_container_new(sf2_loader->filename,
-							NULL,
-							NULL,
-							NULL,
-							output_soundcard,
-							-1);
-  ags_audio_container_open(sf2_loader->audio_container);
+  audio_container_manager = ags_audio_container_manager_get_instance();
+
+  /* get audio container manager mutex */
+  audio_container_manager_mutex = AGS_AUDIO_CONTAINER_MANAGER_GET_OBJ_MUTEX(audio_container_manager);
   
+  g_rec_mutex_lock(audio_container_manager_mutex);
+
+  sf2_loader->audio_container = ags_audio_container_manager_find_audio_container(audio_container_manager,
+										 sf2_loader->filename);
+  
+  if(sf2_loader->audio_container == NULL){
+    sf2_loader->audio_container = ags_audio_container_new(sf2_loader->filename,
+							  NULL,
+							  NULL,
+							  NULL,
+							  output_soundcard,
+							  -1);
+    ags_audio_container_open(sf2_loader->audio_container);
+  
+    ags_audio_container_manager_add_audio_container(audio_container_manager,
+						    sf2_loader->audio_container);
+  }
+  
+  g_rec_mutex_unlock(audio_container_manager_mutex);
+
   if(sf2_loader->audio_container->sound_container != NULL){
+    ags_sound_container_level_up(AGS_SOUND_CONTAINER(sf2_loader->audio_container->sound_container),
+				 5);
+    
     ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(sf2_loader->audio_container->sound_container),
 					      0);
 
     AGS_IPATCH(sf2_loader->audio_container->sound_container)->nesting_level += 1;
   }
 
-  g_object_unref(output_soundcard);
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+
+  if(ags_sf2_loader_test_flags(sf2_loader, AGS_SF2_LOADER_RUN_APPLY_SYNTH)){
+    AgsChannel *start_channel;
+    
+    AgsApplySF2Synth *apply_sf2_synth;
+
+    AgsTaskLauncher *task_launcher;
+    
+    AgsApplicationContext *application_context;
+    
+    GList *start_sf2_synth_generator, *sf2_synth_generator;
+
+    application_context = ags_application_context_get_instance();
+
+    task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+    
+    start_sf2_synth_generator = NULL;
+
+    start_channel = NULL;
+    
+    g_object_get(sf2_loader->audio,
+		 "sf2-synth-generator", &start_sf2_synth_generator,
+		 "input", &start_channel,
+		 NULL);
+
+    apply_sf2_synth = ags_apply_sf2_synth_new(start_sf2_synth_generator->data,
+					      start_channel,
+					      sf2_loader->base_note,
+					      sf2_loader->count);
+
+    ags_task_launcher_add_task(task_launcher,
+			       apply_sf2_synth);
+    
+    g_list_free_full(start_sf2_synth_generator,
+		     (GDestroyNotify) g_object_unref);
+    
+    if(start_channel != NULL){
+      g_object_unref(start_channel);
+    }
+  }
   
   ags_sf2_loader_set_flags(sf2_loader,
 			   AGS_SF2_LOADER_HAS_COMPLETED);

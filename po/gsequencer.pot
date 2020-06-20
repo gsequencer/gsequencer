@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.3.16\n"
+"Project-Id-Version: gsequencer 3.4.2\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-06-11 13:51+0200\n"
+"POT-Creation-Date: 2020-06-20 15:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -163,47 +163,55 @@ msgid "FPlayer"
 msgstr ""
 
 #: ags/X/ags_context_menu.c:207 ags/X/ags_menu_bar.c:204
+msgid "SF2 Synth"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:212 ags/X/ags_menu_bar.c:209
 msgid "Sampler"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:210 ags/X/ags_menu_bar.c:207
-msgid "Audiorec"
-msgstr ""
-
-#: ags/X/ags_context_menu.c:214 ags/X/ags_menu_bar.c:211
-msgid "Automation"
+#: ags/X/ags_context_menu.c:216 ags/X/ags_menu_bar.c:213
+msgid "SFZ Synth"
 msgstr ""
 
 #: ags/X/ags_context_menu.c:220 ags/X/ags_menu_bar.c:217
+msgid "Audiorec"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:224 ags/X/ags_menu_bar.c:221
+msgid "Automation"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:230 ags/X/ags_menu_bar.c:227
 msgid "Wave"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:229 ags/X/ags_menu_bar.c:226
+#: ags/X/ags_context_menu.c:239 ags/X/ags_menu_bar.c:236
 msgid "Preferences"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:239 ags/X/ags_machine.c:3422
-#: ags/X/ags_menu_bar.c:236
+#: ags/X/ags_context_menu.c:249 ags/X/ags_machine.c:3422
+#: ags/X/ags_menu_bar.c:246
 msgid "import"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:242 ags/X/ags_menu_bar.c:239
+#: ags/X/ags_context_menu.c:252 ags/X/ags_menu_bar.c:249
 msgid "export track"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:248 ags/X/ags_menu_bar.c:245
+#: ags/X/ags_context_menu.c:258 ags/X/ags_menu_bar.c:255
 msgid "playback"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:254 ags/X/ags_menu_bar.c:251
+#: ags/X/ags_context_menu.c:264 ags/X/ags_menu_bar.c:261
 msgid "_Help"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:260 ags/X/ags_menu_bar.c:257
+#: ags/X/ags_context_menu.c:270 ags/X/ags_menu_bar.c:267
 msgid "Online help"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:263 ags/X/ags_menu_bar.c:260
+#: ags/X/ags_context_menu.c:273 ags/X/ags_menu_bar.c:270
 msgid "About"
 msgstr ""
 
@@ -213,7 +221,7 @@ msgid "filename: "
 msgstr ""
 
 #: ags/X/ags_dssi_browser.c:181 ags/X/ags_ladspa_browser.c:188
-#: ags/X/ags_lv2_browser.c:220
+#: ags/X/ags_lv2_browser.c:224
 msgid "effect: "
 msgstr ""
 
@@ -274,7 +282,7 @@ msgid "soundcard"
 msgstr ""
 
 #: ags/X/ags_export_soundcard.c:240 ags/X/export/ags_wave_export_dialog.c:208
-#: ags/X/machine/ags_audiorec.c:246 ags/X/machine/ags_pitch_sampler.c:242
+#: ags/X/machine/ags_audiorec.c:246 ags/X/machine/ags_pitch_sampler.c:252
 msgid "file"
 msgstr ""
 
@@ -364,22 +372,22 @@ msgstr ""
 msgid "audio channel: "
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:240 ags/X/ags_lv2_browser_callbacks.c:273
+#: ags/X/ags_lv2_browser.c:244 ags/X/ags_lv2_browser_callbacks.c:273
 #: ags/X/ags_lv2_browser_callbacks.c:396
 msgid "Name"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:253 ags/X/ags_lv2_browser_callbacks.c:283
+#: ags/X/ags_lv2_browser.c:257 ags/X/ags_lv2_browser_callbacks.c:283
 #: ags/X/ags_lv2_browser_callbacks.c:405
 msgid "Homepage"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:266 ags/X/ags_lv2_browser_callbacks.c:293
+#: ags/X/ags_lv2_browser.c:270 ags/X/ags_lv2_browser_callbacks.c:293
 #: ags/X/ags_lv2_browser_callbacks.c:414
 msgid "M-Box"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:279 ags/X/ags_lv2_browser_callbacks.c:304
+#: ags/X/ags_lv2_browser.c:283 ags/X/ags_lv2_browser_callbacks.c:304
 #: ags/X/ags_lv2_browser_callbacks.c:423
 msgid "Ports"
 msgstr ""
@@ -638,6 +646,7 @@ msgstr ""
 #: ags/X/ags_property_editor.c:102 ags/X/editor/ags_envelope_editor.c:157
 #: ags/X/export/ags_machine_collection_entry.c:177
 #: ags/X/import/ags_track_collection_mapper.c:224
+#: ags/X/machine/ags_ffplayer.c:426 ags/X/machine/ags_pitch_sampler.c:322
 msgid "enabled"
 msgstr ""
 
@@ -927,7 +936,7 @@ msgid "pattern"
 msgstr ""
 
 #: ags/X/editor/ags_envelope_editor.c:167
-#: ags/X/editor/ags_pattern_envelope.c:239 ags/X/machine/ags_ffplayer.c:292
+#: ags/X/editor/ags_pattern_envelope.c:239 ags/X/machine/ags_ffplayer.c:304
 #: ags/X/machine/ags_live_lv2_bridge.c:1214 ags/X/machine/ags_lv2_bridge.c:1290
 msgid "preset"
 msgstr ""
@@ -979,7 +988,7 @@ msgstr ""
 msgid "Note:y"
 msgstr ""
 
-#: ags/X/editor/ags_machine_selection.c:134
+#: ags/X/editor/ags_machine_selection.c:136
 msgid "select machines"
 msgstr ""
 
@@ -1207,7 +1216,7 @@ msgid "instrument: "
 msgstr ""
 
 #: ags/X/import/ags_track_collection_mapper.c:340
-#: ags/X/machine/ags_ffplayer.c:307
+#: ags/X/machine/ags_ffplayer.c:319
 msgid "instrument"
 msgstr ""
 
@@ -1215,8 +1224,8 @@ msgstr ""
 msgid "sequence"
 msgstr ""
 
-#: ags/X/machine/ags_audiorec.c:287 ags/X/machine/ags_ffplayer.c:352
-#: ags/X/machine/ags_pitch_sampler.c:290
+#: ags/X/machine/ags_audiorec.c:287 ags/X/machine/ags_ffplayer.c:364
+#: ags/X/machine/ags_pitch_sampler.c:300
 msgid "loading ...  "
 msgstr ""
 
@@ -1306,6 +1315,24 @@ msgstr ""
 msgid "pressure"
 msgstr ""
 
+#: ags/X/machine/ags_ffplayer.c:414 ags/X/machine/ags_pitch_sampler.c:311
+msgid "synth generator"
+msgstr ""
+
+#: ags/X/machine/ags_ffplayer.c:440 ags/X/machine/ags_pitch_sampler.c:336
+msgid "base note"
+msgstr ""
+
+#: ags/X/machine/ags_ffplayer.c:466 ags/X/machine/ags_pitch_sampler.c:362
+msgid "key count"
+msgstr ""
+
+#: ags/X/machine/ags_ffplayer.c:482 ags/X/machine/ags_fm_syncsynth.c:259
+#: ags/X/machine/ags_fm_synth.c:191 ags/X/machine/ags_pitch_sampler.c:378
+#: ags/X/machine/ags_syncsynth.c:262 ags/X/machine/ags_synth.c:190
+msgid "update"
+msgstr ""
+
 #: ags/X/machine/ags_fm_oscillator.c:192 ags/X/machine/ags_fm_oscillator.c:336
 #: ags/X/machine/ags_oscillator.c:184
 msgid "sawtooth"
@@ -1351,22 +1378,17 @@ msgstr ""
 msgid "LFO frequency"
 msgstr ""
 
-#: ags/X/machine/ags_fm_oscillator.c:372 ags/X/machine/ags_pitch_sampler.c:357
+#: ags/X/machine/ags_fm_oscillator.c:372 ags/X/machine/ags_pitch_sampler.c:444
 msgid "LFO depth"
 msgstr ""
 
-#: ags/X/machine/ags_fm_oscillator.c:385 ags/X/machine/ags_pitch_sampler.c:378
+#: ags/X/machine/ags_fm_oscillator.c:385 ags/X/machine/ags_pitch_sampler.c:465
 msgid "LFO tuning"
 msgstr ""
 
 #: ags/X/machine/ags_fm_syncsynth.c:256 ags/X/machine/ags_fm_synth.c:188
 #: ags/X/machine/ags_syncsynth.c:259 ags/X/machine/ags_synth.c:187
 msgid "auto update"
-msgstr ""
-
-#: ags/X/machine/ags_fm_syncsynth.c:259 ags/X/machine/ags_fm_synth.c:191
-#: ags/X/machine/ags_syncsynth.c:262 ags/X/machine/ags_synth.c:190
-msgid "update"
 msgstr ""
 
 #: ags/X/machine/ags_fm_syncsynth.c:268 ags/X/machine/ags_fm_synth.c:200
@@ -1388,15 +1410,15 @@ msgstr ""
 msgid "show GUI"
 msgstr ""
 
-#: ags/X/machine/ags_pitch_sampler.c:309
+#: ags/X/machine/ags_pitch_sampler.c:396
 msgid "enable LFO"
 msgstr ""
 
-#: ags/X/machine/ags_pitch_sampler.c:317
+#: ags/X/machine/ags_pitch_sampler.c:404
 msgid "LFO freq"
 msgstr ""
 
-#: ags/X/machine/ags_pitch_sampler.c:338
+#: ags/X/machine/ags_pitch_sampler.c:425
 msgid "LFO phase"
 msgstr ""
 

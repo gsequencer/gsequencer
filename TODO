@@ -7,8 +7,10 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
+* TODO:JK: implemented AgsSF2Synth
+* TODO:JK: implemented AgsSFZSynth
 * TODO:JK: implemented AgsFxLfoAudio, AgsFxLfoAudioProcessor, AgsFxLfoChannel,
-AgsFxLfoChannelProcessor, AgsFxLfoRecycling and AgsFxLfoAudioSignal
+  AgsFxLfoChannelProcessor, AgsFxLfoRecycling and AgsFxLfoAudioSignal
 * TODO:JK: implemented Fx mutex per scope
 * TODO:JK: fixed AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT/AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT in ags_fx_factory.c
 * TODO:JK: fixed AgsComplex support

@@ -49,6 +49,8 @@ gboolean ags_ffplayer_drawing_area_button_press_callback(GtkWidget *widget, AgsF
 
 void ags_ffplayer_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsFFPlayer *ffplayer);
 
+void ags_ffplayer_update_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
+
 G_END_DECLS
 
 #endif /*__AGS_FFPLAYER_CALLBACKS_H__ */

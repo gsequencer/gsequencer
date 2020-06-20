@@ -308,7 +308,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
 				  param_spec);
 
   /**
-   * AgsAudioSignal:frequency:
+   * AgsSynthGenerator:frequency:
    *
    * The frequency to be used.
    * 
@@ -326,7 +326,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
 				  param_spec);
 
   /**
-   * AgsAudioSignal:phase:
+   * AgsSynthGenerator:phase:
    *
    * The phase to be used.
    * 
@@ -344,7 +344,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
 				  param_spec);
 
   /**
-   * AgsAudioSignal:volume:
+   * AgsSynthGenerator:volume:
    *
    * The volume to be used.
    * 
@@ -362,7 +362,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
 				  param_spec);
 
   /**
-   * AgsAudioSignal:lfo-depth:
+   * AgsSynthGenerator:lfo-depth:
    *
    * The LFO depth to be used.
    * 
@@ -380,7 +380,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
 				  param_spec);
 
   /**
-   * AgsAudioSignal:tuning:
+   * AgsSynthGenerator:tuning:
    *
    * The tuning to be used.
    * 
@@ -432,7 +432,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
 				  param_spec);
 
   /**
-   * AgsAudioSignal:fm-lfo-frequency:
+   * AgsSynthGenerator:fm-lfo-frequency:
    *
    * The fm LFO frequency to be used.
    * 
@@ -450,7 +450,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
 				  param_spec);
 
   /**
-   * AgsAudioSignal:fm-lfo-depth:
+   * AgsSynthGenerator:fm-lfo-depth:
    *
    * The fm LFO depth to be used.
    * 
@@ -468,7 +468,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
 				  param_spec);
 
   /**
-   * AgsAudioSignal:fm-tuning:
+   * AgsSynthGenerator:fm-tuning:
    *
    * The fm tuning to be used.
    * 
@@ -1855,7 +1855,7 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
     ags_audio_signal_stream_resize((AgsAudioSignal *) audio_signal,
 				   ceil(requested_frame_count / buffer_size));
   }
-
+  
   g_object_set(audio_signal,
 	       "loop-start", synth_generator->loop_start,
 	       "loop-end", synth_generator->loop_end,

@@ -3178,20 +3178,51 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
   GtkTreeModel *model;
   GtkTreeIter iter;
 
+  xmlChar *filename;
+  xmlChar *enable_synth_generator;
+  xmlChar *key_count;
+  xmlChar *base_note;
   xmlChar *str;
+
   gchar *value;
 
-  str = xmlGetProp(node,
-		   "filename");
+  filename = xmlGetProp(node,
+			"filename");
     
   gtk_entry_set_text(pitch_sampler->filename,
-		     str);
-  ags_pitch_sampler_open_filename(pitch_sampler,
-				  str);
+		     filename);
 
-  if(str != NULL){      
-    xmlFree(str);
+  enable_synth_generator = xmlGetProp(node,
+				      "enable-synth-generator");
+
+  key_count = xmlGetProp(node,
+			 "key-count");
+
+  base_note = xmlGetProp(node,
+			 "base-note");
+
+  if(enable_synth_generator != NULL &&
+     !g_ascii_strncasecmp(enable_synth_generator,
+			  "true",
+			  5)){
+    gtk_toggle_button_set_active(pitch_sampler->enable_synth_generator,
+				 TRUE);
   }
+
+  if(base_note != NULL){
+    gtk_spin_button_set_value(pitch_sampler->lower,
+			      g_ascii_strtod(base_note,
+					     NULL));
+  }
+
+  if(key_count != NULL){
+    gtk_spin_button_set_value(pitch_sampler->key_count,
+			      g_ascii_strtod(key_count,
+					     NULL));
+  }
+
+  ags_pitch_sampler_open_filename(pitch_sampler,
+				  filename);
 
   str = xmlGetProp(node,
 		   "lfo-freq");
@@ -3233,8 +3264,20 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
     xmlFree(str);
   }
 
-  if(pitch_sampler->audio_container == NULL){
-    return;
+  if(filename != NULL){      
+    xmlFree(filename);
+  }
+
+  if(enable_synth_generator != NULL){
+    xmlFree(enable_synth_generator);
+  }
+
+  if(key_count != NULL){
+    xmlFree(key_count);
+  }
+
+  if(base_note != NULL){
+    xmlFree(base_note);
   }
 }
 
@@ -3243,7 +3286,10 @@ void
 ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFFPlayer *ffplayer)
 {
   xmlChar *filename, *preset, *instrument;
-
+  xmlChar *enable_synth_generator;
+  xmlChar *key_count;
+  xmlChar *base_note;
+  
   filename = xmlGetProp(node,
 			"filename");
 
@@ -3253,12 +3299,41 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   instrument = xmlGetProp(node,
 			  "instrument");
 
+  enable_synth_generator = xmlGetProp(node,
+				      "enable-synth-generator");
+
+  key_count = xmlGetProp(node,
+			 "key-count");
+
+  base_note = xmlGetProp(node,
+			 "base-note");
+
+  if(enable_synth_generator != NULL &&
+     !g_ascii_strncasecmp(enable_synth_generator,
+			  "true",
+			  5)){
+    gtk_toggle_button_set_active(ffplayer->enable_synth_generator,
+				 TRUE);
+  }
+
+  if(base_note != NULL){
+    gtk_spin_button_set_value(ffplayer->lower,
+			      g_ascii_strtod(base_note,
+					     NULL));
+  }
+
+  if(key_count != NULL){
+    gtk_spin_button_set_value(ffplayer->key_count,
+			      g_ascii_strtod(key_count,
+					     NULL));
+  }
+  
   ffplayer->load_preset = g_strdup(preset);
   ffplayer->load_instrument = g_strdup(instrument);
-  
+    
   ags_ffplayer_open_filename(ffplayer,
 			     filename);
-
+  
   if(filename != NULL){
     xmlFree(filename);
   }
@@ -3269,6 +3344,18 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
 
   if(instrument != NULL){
     xmlFree(instrument);
+  }
+
+  if(enable_synth_generator != NULL){
+    xmlFree(enable_synth_generator);
+  }
+
+  if(key_count != NULL){
+    xmlFree(key_count);
+  }
+
+  if(base_note != NULL){
+    xmlFree(base_note);
   }
 }
 #endif
@@ -8330,7 +8417,7 @@ ags_simple_file_write_automation_port(AgsSimpleFile *simple_file, xmlNode *paren
 
 xmlNode*
 ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMachine *machine)
-{  
+{
   xmlNode *node;
   xmlNode *pad_list;    
 
@@ -8892,6 +8979,30 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		 pitch_sampler->audio_container->filename);
     }
 
+    if(gtk_toggle_button_get_active(pitch_sampler->enable_synth_generator)){
+      xmlNewProp(node,
+		 "enable-synth-generator",
+		 "true");
+    }
+
+    str = g_strdup_printf("%f",
+			  gtk_spin_button_get_value(pitch_sampler->lower));
+    
+    xmlNewProp(node,
+	       "base-note",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%f",
+			  gtk_spin_button_get_value(pitch_sampler->key_count));
+    
+    xmlNewProp(node,
+	       "key-count",
+	       str);
+
+    g_free(str);
+    
     str = g_strdup_printf("%f",
 			  gtk_spin_button_get_value(pitch_sampler->lfo_freq));
     
@@ -8955,6 +9066,30 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
       g_free(str);
     }
+
+    if(gtk_toggle_button_get_active(ffplayer->enable_synth_generator)){
+      xmlNewProp(node,
+		 "enable-synth-generator",
+		 "true");
+    }
+
+    str = g_strdup_printf("%f",
+			  gtk_spin_button_get_value(ffplayer->lower));
+    
+    xmlNewProp(node,
+	       "base-note",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%f",
+			  gtk_spin_button_get_value(ffplayer->key_count));
+    
+    xmlNewProp(node,
+	       "key-count",
+	       str);
+
+    g_free(str);
 #endif
   }else if(AGS_IS_AUDIOREC(machine)){
     AgsAudiorec *audiorec;

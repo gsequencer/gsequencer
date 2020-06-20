@@ -193,6 +193,8 @@ void ags_audio_signal_add_stream(AgsAudioSignal *audio_signal);
 void ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length);
 void ags_audio_signal_stream_safe_resize(AgsAudioSignal *audio_signal, guint length);
 
+void ags_audio_signal_clear(AgsAudioSignal *audio_signal);
+
 void ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 				       AgsAudioSignal *template);
 
