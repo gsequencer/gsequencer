@@ -1,3 +1,9 @@
+ags (3.4.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_audio_signal_clear()
+	* fixed missing clear during synth generator compute
+
 ags (3.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
