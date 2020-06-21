@@ -1,3 +1,8 @@
+ags (3.4.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing include in ags_xml_authentication.c and minor improvements
+
 ags (3.4.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

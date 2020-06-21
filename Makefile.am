@@ -15,7 +15,7 @@ ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 AM_CPPFLAGS = -std=gnu99
 
 if WITH_W32API
-AM_CPPFLAGS += -DAGS_W32API=1 -DHAVE_GLIB_2_6=1 -DHAVE_GLIB_2_44=1 -DHAVE_GLIB_2_54=1 -DAGS_LIBRARY_SUFFIX=\".dll\" -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -include $(top_srcdir)/ags/config.h -I$(top_srcdir) -I$(top_srcdir)/lib -I/usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/include-fixed -I/usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/include  -I/usr/x86_64-w64-mingw32/include -I/home/joelkraehemann/mingw64/target/include -I/home/joelkraehemann/mingw64/target/include/dssi -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
+AM_CPPFLAGS += -DAGS_W32API=1 -DAGS_LIBRARY_SUFFIX=\".dll\" -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -include $(top_srcdir)/ags/config.h -I$(top_srcdir) -I$(top_srcdir)/lib -I/usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/include-fixed -I/usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/include  -I/usr/x86_64-w64-mingw32/include -I/home/joelkraehemann/mingw64/target/include -I/home/joelkraehemann/mingw64/target/include/dssi -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
 AM_LDFLAGS = -no-undefined -L$(top_builddir)/lib -lgnu
 else
 if WITH_OSXAPI
