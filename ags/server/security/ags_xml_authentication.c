@@ -38,6 +38,8 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
+#include <ags/config.h>
+
 void ags_xml_authentication_class_init(AgsXmlAuthenticationClass *xml_authentication);
 void ags_xml_authentication_authentication_interface_init(AgsAuthenticationInterface *authentication);
 void ags_xml_authentication_init(AgsXmlAuthentication *xml_authentication);
@@ -541,7 +543,7 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 		   str);
 
 	g_date_time_unref(date_time);
-	
+
 	g_free(str);
       }
       
@@ -1037,7 +1039,33 @@ ags_xml_authentication_is_session_active(AgsAuthentication *authentication,
       last_active = g_date_time_new_from_iso8601(str,
 						 NULL);
 #else
-      last_active = g_date_time_new_from_unix_utc(g_get_real_time());
+      {
+	gint year;
+	gint month;
+	gint day;
+	gint hour;
+	gint minute;
+	gint second;
+
+	year = -1;
+	month = -1;
+	day = -1;
+	hour = -1;
+	minute = -1;
+	second = -1;
+
+	if(str != NULL){
+	  sscanf(str, "%4d-%2d-%2dT%2d:%2d:%2d", &year, &month, &day, &hour, &minute, &second);
+	}
+	
+	last_active = g_date_time_new(g_time_zone_new_utc(),
+				      year,
+				      month,
+				      day,
+				      hour,
+				      minute,
+				      second);
+      }
 #endif
       
       xmlFree(str);
