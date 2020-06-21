@@ -1,3 +1,9 @@
+ags (3.4.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed prototype of ags_audio_buffer_util_copy_float_to_complex()
+	* improved ags_audio_buffer_util.c dealing with AgsComplex
+
 ags (3.4.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

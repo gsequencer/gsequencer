@@ -21,8 +21,6 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_fourier_transform_util.h>
-
 #include <samplerate.h>
 
 #include <stdlib.h>
@@ -619,25 +617,25 @@ ags_audio_buffer_util_clear_complex(AgsComplex *buffer, guint channels,
       buffer[0].imag = 0.0;
 
       buffer[(current_channel = channels)].real = 0.0;
-      buffer[(current_channel = channels)].imag = 0.0;
+      buffer[(current_channel)].imag = 0.0;
 
       buffer[(current_channel += channels)].real = 0.0;
-      buffer[(current_channel += channels)].imag = 0.0;
+      buffer[(current_channel)].imag = 0.0;
 
       buffer[(current_channel += channels)].real = 0.0;
-      buffer[(current_channel += channels)].imag = 0.0;
+      buffer[(current_channel)].imag = 0.0;
 
       buffer[(current_channel += channels)].real = 0.0;
-      buffer[(current_channel += channels)].imag = 0.0;
+      buffer[(current_channel)].imag = 0.0;
 
       buffer[(current_channel += channels)].real = 0.0;
-      buffer[(current_channel += channels)].imag = 0.0;
+      buffer[(current_channel)].imag = 0.0;
 
       buffer[(current_channel += channels)].real = 0.0;
-      buffer[(current_channel += channels)].imag = 0.0;
+      buffer[(current_channel)].imag = 0.0;
 
       buffer[(current_channel += channels)].real = 0.0;
-      buffer[(current_channel += channels)].imag = 0.0;
+      buffer[(current_channel)].imag = 0.0;
 
       buffer += (current_channel + channels);
     }
@@ -4126,6 +4124,8 @@ ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
 				       guint buffer_length,
 				       guint target_samplerate)
 {
+  AgsComplex **ptr_ptr_ret_buffer;
+  AgsComplex *ptr_ret_buffer;
   AgsComplex *ret_buffer;
 
   complex **z_ptr_ptr;
@@ -4146,6 +4146,8 @@ ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
 
   ret_buffer = (AgsComplex *) malloc(channels * output_frames * sizeof(AgsComplex));
 
+  ptr_ptr_ret_buffer = &ptr_ret_buffer;
+  
   z_ptr = &z;
   z_ptr_ptr = &z_ptr;
   
@@ -4155,13 +4157,12 @@ ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
   for(i = 0, n = 0, delay = 0.0; i < output_frames; i++){
     /* get y */
     //TODO:JK: improve me
-    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_DOUBLE_FRAME(buffer + n, channels, n, buffer_length, y_ptr_ptr);
+    AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_DOUBLE(buffer + n, y_ptr);
 
     /* put z */
-    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, channels, i, output_frames, z_ptr_ptr);
+    ptr_ret_buffer = ret_buffer + i;
     
-    ags_complex_set(ret_buffer + i,
-		    z);
+    AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, ptr_ptr_ret_buffer);
     
     delay += delay_factor;
     
@@ -4637,6 +4638,9 @@ ags_audio_buffer_util_resample_complex_with_buffer(AgsComplex *buffer, guint cha
 						   guint target_buffer_length,
 						   AgsComplex *target_buffer)
 {
+  AgsComplex **ptr_ptr_target_buffer;
+  AgsComplex *ptr_target_buffer;
+  
   complex **z_ptr_ptr;
   complex *z_ptr;
   gdouble **y_ptr_ptr;
@@ -4653,6 +4657,8 @@ ags_audio_buffer_util_resample_complex_with_buffer(AgsComplex *buffer, guint cha
   
   output_frames = ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate);
 
+  ptr_ptr_target_buffer = &ptr_target_buffer;
+  
   z_ptr = &z;
   z_ptr_ptr = &z_ptr;
   
@@ -4662,13 +4668,12 @@ ags_audio_buffer_util_resample_complex_with_buffer(AgsComplex *buffer, guint cha
   for(i = 0, n = 0, delay = 0.0; i < output_frames && i < target_buffer_length; i++){
     /* get y */
     //TODO:JK: improve me
-    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_DOUBLE_FRAME(buffer + n, channels, n, buffer_length, y_ptr_ptr);
+    AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_DOUBLE(buffer + n, y_ptr);
 
     /* put z */
-    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, channels, i, output_frames, z_ptr_ptr);
+    ptr_target_buffer = target_buffer + i;
     
-    ags_complex_set(target_buffer + i,
-		    z);
+    AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(y, ptr_ptr_target_buffer);
     
     delay += delay_factor;
     
@@ -12815,10 +12820,8 @@ ags_audio_buffer_util_copy_s8_to_complex(AgsComplex *destination, guint dchannel
 
   for(; i < count; i++){
     complex z0, z1;
-    
-    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S8_FRAME(source, schannels,
-						     i, count,
-						     c_ptr_ptr);
+
+    AGS_AUDIO_BUFFER_UTIL_S8_TO_COMPLEX(source[0], c_ptr_ptr);
 
     z0 = ags_complex_get(destination);
     z1 = ags_complex_get(c_ptr);
@@ -12864,9 +12867,7 @@ ags_audio_buffer_util_copy_s16_to_complex(AgsComplex *destination, guint dchanne
   for(; i < count; i++){
     complex z0, z1;
     
-    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(source, schannels,
-						      i, count,
-						      c_ptr_ptr);
+    AGS_AUDIO_BUFFER_UTIL_S16_TO_COMPLEX(source[0], c_ptr_ptr);
 
     z0 = ags_complex_get(destination);
     z1 = ags_complex_get(c_ptr);
@@ -12912,9 +12913,7 @@ ags_audio_buffer_util_copy_s24_to_complex(AgsComplex *destination, guint dchanne
   for(; i < count; i++){
     complex z0, z1;
     
-    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S24_FRAME(source, schannels,
-						      i, count,
-						      c_ptr_ptr);
+    AGS_AUDIO_BUFFER_UTIL_S24_TO_COMPLEX(source[0], c_ptr_ptr);
 
     z0 = ags_complex_get(destination);
     z1 = ags_complex_get(c_ptr);
@@ -12960,9 +12959,7 @@ ags_audio_buffer_util_copy_s32_to_complex(AgsComplex *destination, guint dchanne
   for(; i < count; i++){
     complex z0, z1;
     
-    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S32_FRAME(source, schannels,
-						      i, count,
-						      c_ptr_ptr);
+    AGS_AUDIO_BUFFER_UTIL_S32_TO_COMPLEX(source[0], c_ptr_ptr);
 
     z0 = ags_complex_get(destination);
     z1 = ags_complex_get(c_ptr);
@@ -13008,9 +13005,7 @@ ags_audio_buffer_util_copy_s64_to_complex(AgsComplex *destination, guint dchanne
   for(; i < count; i++){
     complex z0, z1;
     
-    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S64_FRAME(source, schannels,
-						      i, count,
-						      c_ptr_ptr);
+    AGS_AUDIO_BUFFER_UTIL_S64_TO_COMPLEX(source[0], c_ptr_ptr);
 
     z0 = ags_complex_get(destination);
     z1 = ags_complex_get(c_ptr);
@@ -13037,7 +13032,7 @@ ags_audio_buffer_util_copy_s64_to_complex(AgsComplex *destination, guint dchanne
  */
 void
 ags_audio_buffer_util_copy_float_to_complex(AgsComplex *destination, guint dchannels,
-					    gdouble *source, guint schannels,
+					    gfloat *source, guint schannels,
 					    guint count)
 {
   AgsComplex *c_ptr;
@@ -13056,9 +13051,7 @@ ags_audio_buffer_util_copy_float_to_complex(AgsComplex *destination, guint dchan
   for(; i < count; i++){
     complex z0, z1;
     
-    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_FLOAT_FRAME(source, schannels,
-							i, count,
-							c_ptr_ptr);
+    AGS_AUDIO_BUFFER_UTIL_FLOAT_TO_COMPLEX(source[0], c_ptr_ptr);
 
     z0 = ags_complex_get(destination);
     z1 = ags_complex_get(c_ptr);
@@ -13104,9 +13097,7 @@ ags_audio_buffer_util_copy_double_to_complex(AgsComplex *destination, guint dcha
   for(; i < count; i++){
     complex z0, z1;
     
-    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(source, schannels,
-							 i, count,
-							 c_ptr_ptr);
+    AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(source[0], c_ptr_ptr);
 
     z0 = ags_complex_get(destination);
     z1 = ags_complex_get(c_ptr);
@@ -13160,9 +13151,7 @@ ags_audio_buffer_util_copy_float32_to_complex(AgsComplex *destination, guint dch
 
     f_value = source[0];
     
-    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_FLOAT_FRAME(f_ptr, 1,
-							i, count,
-							c_ptr_ptr);
+    AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(f_value, c_ptr_ptr);
 
     z0 = ags_complex_get(destination);
     z1 = ags_complex_get(c_ptr);
@@ -13230,7 +13219,6 @@ ags_audio_buffer_util_copy_complex_to_s8(gint8 *destination, guint dchannels,
 					 AgsComplex *source, guint schannels,
 					 guint count)
 {
-  gint8 **ptr_ptr;
   gint8 *ptr;
 
   gint8 value;
@@ -13239,14 +13227,11 @@ ags_audio_buffer_util_copy_complex_to_s8(gint8 *destination, guint dchannels,
   guint i;
 
   i = 0;
+  
+  ptr = &value;
 
   for(; i < count; i++){
-    ptr = &value;
-    ptr_ptr = &ptr;
-    
-    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S8_FRAME(source, schannels,
-						     i, count,
-						     ptr_ptr);
+    AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S8(source, ptr);
 
     destination[0] = 0xff & ((gint16) (destination[0] + value));      
     
@@ -13272,7 +13257,6 @@ ags_audio_buffer_util_copy_complex_to_s16(gint16 *destination, guint dchannels,
 					  AgsComplex *source, guint schannels,
 					  guint count)
 {
-  gint16 **ptr_ptr;
   gint16 *ptr;
 
   gint16 value;
@@ -13282,13 +13266,10 @@ ags_audio_buffer_util_copy_complex_to_s16(gint16 *destination, guint dchannels,
 
   i = 0;
 
-  for(; i < count; i++){
-    ptr = &value;    
-    ptr_ptr = &ptr;
+  ptr = &value;    
 
-    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(source, schannels,
-						      i, count,
-						      ptr_ptr);
+  for(; i < count; i++){
+    AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S16(source, ptr);
 
     destination[0] = (gint16) 0xffff & ((gint32) (destination[0] + value));
     
@@ -13314,7 +13295,6 @@ ags_audio_buffer_util_copy_complex_to_s24(gint32 *destination, guint dchannels,
 					  AgsComplex *source, guint schannels,
 					  guint count)
 {
-  gint32 **ptr_ptr;
   gint32 *ptr;
 
   gint32 value;
@@ -13324,13 +13304,10 @@ ags_audio_buffer_util_copy_complex_to_s24(gint32 *destination, guint dchannels,
 
   i = 0;
 
-  for(; i < count; i++){
-    ptr = &value;    
-    ptr_ptr = &ptr;
+  ptr = &value;    
 
-    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S24_FRAME(source, schannels,
-						      i, count,
-						      ptr_ptr);
+  for(; i < count; i++){
+    AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S24(source, ptr);
 
     destination[0] = 0xffffffff & ((gint32) (destination[0] + value));
     
@@ -13356,7 +13333,6 @@ ags_audio_buffer_util_copy_complex_to_s32(gint32 *destination, guint dchannels,
 					  AgsComplex *source, guint schannels,
 					  guint count)
 {
-  gint32 **ptr_ptr;
   gint32 *ptr;
 
   gint32 value;
@@ -13366,13 +13342,10 @@ ags_audio_buffer_util_copy_complex_to_s32(gint32 *destination, guint dchannels,
 
   i = 0;
 
-  for(; i < count; i++){
-    ptr = &value;    
-    ptr_ptr = &ptr;
+  ptr = &value;    
 
-    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S32_FRAME(source, schannels,
-						      i, count,
-						      ptr_ptr);
+  for(; i < count; i++){
+    AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S32(source, ptr);
 
     destination[0] = 0xffffffff & ((gint64) (destination[0] + value));
     
@@ -13398,7 +13371,6 @@ ags_audio_buffer_util_copy_complex_to_s64(gint64 *destination, guint dchannels,
 					  AgsComplex *source, guint schannels,
 					  guint count)
 {
-  gint64 **ptr_ptr;
   gint64 *ptr;
   
   gint64 value;
@@ -13408,13 +13380,10 @@ ags_audio_buffer_util_copy_complex_to_s64(gint64 *destination, guint dchannels,
 
   i = 0;
 
-  for(; i < count; i++){
-    ptr = &value;    
-    ptr_ptr = &ptr;
+  ptr = &value;    
 
-    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S64_FRAME(source, schannels,
-						      i, count,
-						      ptr_ptr);
+  for(; i < count; i++){
+    AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S64(source, ptr);
 
     destination[0] = 0xffffffffffffffff & ((gint64) (destination[0] + value));
     
@@ -13440,7 +13409,6 @@ ags_audio_buffer_util_copy_complex_to_float(gfloat *destination, guint dchannels
 					    AgsComplex *source, guint schannels,
 					    guint count)
 {
-  gfloat **ptr_ptr;
   gfloat *ptr;
   
   gfloat value;
@@ -13450,13 +13418,10 @@ ags_audio_buffer_util_copy_complex_to_float(gfloat *destination, guint dchannels
 
   i = 0;
 
-  for(; i < count; i++){
-    ptr = &value;    
-    ptr_ptr = &ptr;
+  ptr = &value;    
 
-    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_FLOAT_FRAME(source, schannels,
-							i, count,
-							ptr_ptr);
+  for(; i < count; i++){
+    AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_FLOAT(source, ptr);
 
     destination[0] = (gfloat) ((gdouble) (destination[0] + (gdouble) (value)));
     
@@ -13482,7 +13447,6 @@ ags_audio_buffer_util_copy_complex_to_double(gdouble *destination, guint dchanne
 					     AgsComplex *source, guint schannels,
 					     guint count)
 {
-  gdouble **ptr_ptr;
   gdouble *ptr;
   
   gdouble value;
@@ -13492,13 +13456,10 @@ ags_audio_buffer_util_copy_complex_to_double(gdouble *destination, guint dchanne
 
   i = 0;
 
-  for(; i < count; i++){
-    ptr = &value;    
-    ptr_ptr = &ptr;
+  ptr = &value;    
 
-    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_DOUBLE_FRAME(source, schannels,
-							 i, count,
-							 ptr_ptr);
+  for(; i < count; i++){
+    AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_DOUBLE(source, ptr);
 
     destination[0] = ((gdouble) ((destination[0]) + (value)));
     
@@ -13525,7 +13486,6 @@ ags_audio_buffer_util_copy_complex_to_float32(Float32 *destination, guint dchann
 					      AgsComplex *source, guint schannels,
 					      guint count)
 {
-  gdouble **ptr_ptr;
   gdouble *ptr;
   
   gdouble value;
@@ -13535,13 +13495,10 @@ ags_audio_buffer_util_copy_complex_to_float32(Float32 *destination, guint dchann
 
   i = 0;
 
-  for(; i < count; i++){
-    ptr = &value;    
-    ptr_ptr = &ptr;
+  ptr = &value;    
 
-    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_DOUBLE_FRAME(source, schannels,
-							 i, count,
-							 ptr_ptr);
+  for(; i < count; i++){
+    AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_DOUBLE(source, ptr);
 
     destination[0] = ((Float32) ((gdouble) (destination[0]) + (value)));
     
