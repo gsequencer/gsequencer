@@ -35,6 +35,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.4.5" date="2020-06-23">
+      <description>
+	<p>Improved filter util to use projection during 2nd pitch rewrite.</p>
+      </description>
+    </release>
+
     <release version="3.4.2" date="2020-06-20">
       <description>
 	<p>Fixed potential division by zero in filter util.</p>
