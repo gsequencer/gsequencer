@@ -282,7 +282,7 @@ ags_osc_renew_controller_test_set_data()
   
   GValue value = {0,};
   
-  static const unsigned char *mute_message = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsMuteChannel[0]/AgsPort[\"./muted[0]\"]:value\x00\x00\x00\x00\x00\x00";
+  static const unsigned char *mute_message = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsMuteChannel[0]/AgsPort[\"./muted[0]\"]:value\x00\x00\x00\x00\x00\x00\x00";
   static const unsigned char *magnitude_path = "/AgsSoundProvider/AgsAudio[\"test-spectrometer\"]/AgsInput[0-1]/AgsAnalyseChannel[0]/AgsPort[\"./magnitude-buffer[0]\"]:value";
 
   static const guint mute_message_size = 120;

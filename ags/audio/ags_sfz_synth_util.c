@@ -27,6 +27,7 @@
 
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
+#include <ags/audio/file/ags_sfz_file.h>
 #include <ags/audio/file/ags_sfz_group.h>
 #include <ags/audio/file/ags_sfz_region.h>
 #include <ags/audio/file/ags_sfz_sample.h>
@@ -122,7 +123,7 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
   ags_stream_free(sfz_sample->buffer);
   
   sfz_sample->buffer = ags_stream_alloc(sfz_sample->audio_channels * source_frame_count,
-					   sfz_sample->format);
+					sfz_sample->format);
   
   sfz_sample->offset = 0;
 
@@ -178,7 +179,7 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
   if(group_key != NULL){
     int retval;
     
-    retval = sscanf(group_key, "%lu", &current_midi_key);
+    retval = sscanf(group_key, "%d", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(group_key,
@@ -198,7 +199,7 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
   if(region_key != NULL){
     int retval;
 
-    retval = sscanf(region_key, "%lu", &current_midi_key);
+    retval = sscanf(region_key, "%d", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(region_key,
@@ -501,7 +502,7 @@ ags_sfz_synth_util_copy_s16(gint16 *buffer,
   if(group_key != NULL){
     int retval;
     
-    retval = sscanf(group_key, "%lu", &current_midi_key);
+    retval = sscanf(group_key, "%d", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(group_key,
@@ -521,7 +522,7 @@ ags_sfz_synth_util_copy_s16(gint16 *buffer,
   if(region_key != NULL){
     int retval;
     
-    retval = sscanf(region_key, "%lu", &current_midi_key);
+    retval = sscanf(region_key, "%d", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(region_key,
@@ -824,7 +825,7 @@ ags_sfz_synth_util_copy_s24(gint32 *buffer,
   if(group_key != NULL){
     int retval;
     
-    retval = sscanf(group_key, "%lu", &current_midi_key);
+    retval = sscanf(group_key, "%d", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(group_key,
@@ -844,7 +845,7 @@ ags_sfz_synth_util_copy_s24(gint32 *buffer,
   if(region_key != NULL){
     int retval;
     
-    retval = sscanf(region_key, "%lu", &current_midi_key);
+    retval = sscanf(region_key, "%d", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(region_key,
@@ -1147,7 +1148,7 @@ ags_sfz_synth_util_copy_s32(gint32 *buffer,
   if(group_key != NULL){
     int retval;
     
-    retval = sscanf(group_key, "%lu", &current_midi_key);
+    retval = sscanf(group_key, "%d", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(group_key,
@@ -1167,7 +1168,7 @@ ags_sfz_synth_util_copy_s32(gint32 *buffer,
   if(region_key != NULL){
     int retval;
     
-    retval = sscanf(region_key, "%lu", &current_midi_key);
+    retval = sscanf(region_key, "%d", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(region_key,
@@ -1470,7 +1471,7 @@ ags_sfz_synth_util_copy_s64(gint64 *buffer,
   if(group_key != NULL){
     int retval;
     
-    retval = sscanf(group_key, "%lu", &current_midi_key);
+    retval = sscanf(group_key, "%d", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(group_key,
@@ -1490,7 +1491,7 @@ ags_sfz_synth_util_copy_s64(gint64 *buffer,
   if(region_key != NULL){
     int retval;
     
-    retval = sscanf(region_key, "%lu", &current_midi_key);
+    retval = sscanf(region_key, "%d", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(region_key,
@@ -1793,7 +1794,7 @@ ags_sfz_synth_util_copy_float(gfloat *buffer,
   if(group_key != NULL){
     int retval;
     
-    retval = sscanf(group_key, "%lu", &current_midi_key);
+    retval = sscanf(group_key, "%d", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(group_key,
@@ -1813,7 +1814,7 @@ ags_sfz_synth_util_copy_float(gfloat *buffer,
   if(region_key != NULL){
     int retval;
     
-    retval = sscanf(region_key, "%lu", &current_midi_key);
+    retval = sscanf(region_key, "%d", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(region_key,
@@ -2116,7 +2117,7 @@ ags_sfz_synth_util_copy_double(gdouble *buffer,
   if(group_key != NULL){
     int retval;
     
-    retval = sscanf(group_key, "%lu", &current_midi_key);
+    retval = sscanf(group_key, "%d", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(group_key,
@@ -2136,7 +2137,7 @@ ags_sfz_synth_util_copy_double(gdouble *buffer,
   if(region_key != NULL){
     int retval;
     
-    retval = sscanf(region_key, "%lu", &current_midi_key);
+    retval = sscanf(region_key, "%d", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(region_key,
@@ -2439,7 +2440,7 @@ ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
   if(group_key != NULL){
     int retval;
     
-    retval = sscanf(group_key, "%lu", &current_midi_key);
+    retval = sscanf(group_key, "%d", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(group_key,
@@ -2459,7 +2460,7 @@ ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
   if(region_key != NULL){
     int retval;
     
-    retval = sscanf(region_key, "%lu", &current_midi_key);
+    retval = sscanf(region_key, "%d", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(region_key,
