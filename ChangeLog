@@ -1,3 +1,21 @@
+ags (3.4.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed string length of mute_message in ags_osc_renew_controller_test.c
+	* fixed sscanf call with wrong signed integer in ags_sfz_synth_util.c
+	* minor improvements
+
+ags (3.4.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_filter_util.c to use projection during 2nd pitch rewrite
+
+ags (3.4.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed prototype of ags_audio_buffer_util_copy_float_to_complex()
+	* improved ags_audio_buffer_util.c dealing with AgsComplex
+
 ags (3.4.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

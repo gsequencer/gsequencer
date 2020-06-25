@@ -1124,7 +1124,7 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
       g_object_ref(output);
 
       while(output != NULL){
-	ags_channel_unset_staging_completed(output, sound_scope);
+	ags_channel_unset_staging_completed(output, -1);
 
 	/* iterate */
 	next = ags_channel_next(output);

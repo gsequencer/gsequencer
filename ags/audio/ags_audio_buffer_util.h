@@ -835,7 +835,7 @@ void ags_audio_buffer_util_copy_s64_to_complex(AgsComplex *destination, guint dc
 					       guint count);
 
 void ags_audio_buffer_util_copy_float_to_complex(AgsComplex *destination, guint dchannels,
-						 gdouble *source, guint schannels,
+						 gfloat *source, guint schannels,
 						 guint count);
 
 void ags_audio_buffer_util_copy_double_to_complex(AgsComplex *destination, guint dchannels,

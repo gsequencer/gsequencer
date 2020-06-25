@@ -1380,6 +1380,11 @@ ags_lv2_turtle_scanner_load_read_directive(AgsLv2TurtleScanner *lv2_turtle_scann
 
   str = NULL;
 
+  rdf_prefix_id_str = NULL;
+  rdf_base_str = NULL;
+  rdf_sparql_prefix_str = NULL;
+  rdf_sparql_base_str = NULL;
+  
   look_ahead = *iter;
 
   /* skip blanks and comments */
