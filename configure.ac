@@ -350,6 +350,7 @@ AC_SUBST(GOBJECT_LIBS)
 
 AC_DEFINE([HAVE_GLIB_2_6], [1], [GLib 2.6 available])
 AC_DEFINE([HAVE_GLIB_2_44], [1], [GLib 2.44 available])
+AC_DEFINE([HAVE_GLIB_2_52], [1], [GLib 2.52 available])
 AC_DEFINE([HAVE_GLIB_2_54], [1], [GLib 2.54 available])
 AC_DEFINE([HAVE_GLIB_2_56], [1], [GLib 2.56 available])
 AC_DEFINE([HAVE_GLIB_2_62], [0], [GLib 2.62 available])
