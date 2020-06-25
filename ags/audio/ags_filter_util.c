@@ -68,7 +68,7 @@ ags_filter_util_pitch_s8(gint8 *buffer,
   /* frequency */
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
 
-  im_freq = base_freq + (1.0 / 144.0);
+  im_freq = 27.5 * exp2((2.0 * base_key) / 12.0);
 
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
 
@@ -301,7 +301,7 @@ ags_filter_util_pitch_s16(gint16 *buffer,
   /* frequency */
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
 
-  im_freq = base_freq + (1.0 / 144.0);
+  im_freq = 27.5 * exp2((2.0 * base_key) / 12.0);
   
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
 
@@ -534,7 +534,7 @@ ags_filter_util_pitch_s24(gint32 *buffer,
   /* frequency */
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
 
-  im_freq = base_freq + (1.0 / 144.0);
+  im_freq = 27.5 * exp2((2.0 * base_key) / 12.0);
 
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
 
@@ -767,7 +767,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
   /* frequency */
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
 
-  im_freq = base_freq + (1.0 / 144.0);
+  im_freq = 27.5 * exp2((2.0 * base_key) / 12.0);
 
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
 
@@ -1000,7 +1000,7 @@ ags_filter_util_pitch_s64(gint64 *buffer,
   /* frequency */
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
 
-  im_freq = base_freq + (1.0 / 144.0);
+  im_freq = 27.5 * exp2((2.0 * base_key) / 12.0);
 
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
 
@@ -1233,7 +1233,7 @@ ags_filter_util_pitch_float(gfloat *buffer,
   /* frequency */
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
 
-  im_freq = base_freq + (1.0 / 144.0);
+  im_freq = 27.5 * exp2((2.0 * base_key) / 12.0);
 
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
 
@@ -1466,7 +1466,7 @@ ags_filter_util_pitch_double(gdouble *buffer,
   /* frequency */
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
 
-  im_freq = base_freq + (1.0 / 144.0);
+  im_freq = 27.5 * exp2((2.0 * base_key) / 12.0);
 
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
 
@@ -1699,7 +1699,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
   /* frequency */
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
 
-  im_freq = base_freq + (1.0 / 144.0);
+  im_freq = 27.5 * exp2((2.0 * base_key) / 12.0);
 
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
 

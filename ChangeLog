@@ -1,3 +1,8 @@
+ags (3.4.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved pitch to use an octave as immediate frequency in ags_filter_util.c
+
 ags (3.4.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
