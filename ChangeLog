@@ -1,8 +1,7 @@
 ags (3.4.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed previous pitch to use immediate key as immediate
-	  frequency in ags_filter_util.c
+	* fixed arithmetic exception and improved base note of ags_filter_util.c
 
 ags (3.4.7)
 
