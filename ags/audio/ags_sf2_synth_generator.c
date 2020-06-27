@@ -1547,6 +1547,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 
   gchar *filename;
 
+  gint root_note;
   gint midi_key;
   gdouble delay;
   guint attack;
@@ -1610,7 +1611,9 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
     ipatch_sample = list->data;
   }
 
-  midi_key = (gint) floor(note) + 69;
+  root_note = 60;
+  
+  midi_key = (gint) floor(note) + 60;
   
   delay = sf2_synth_generator->delay;
   attack = sf2_synth_generator->attack;
@@ -1628,6 +1631,10 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 		 "loop-start", loop_start,
 		 "loop-end", loop_end,
 		 "last-frame", attack + frame_count,
+		 NULL);
+
+    g_object_get(ipatch_sample->sample,
+		 "root-note", &root_note,
 		 NULL);
   }
   
@@ -1679,7 +1686,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
     ags_sf2_synth_util_copy(stream->data,
 			    buffer_size,
 			    ipatch_sample,
-			    note,
+			    (gdouble) (root_note - 69) + note,
 			    volume,
 			    samplerate, audio_buffer_util_format,
 			    offset, frame_count,

@@ -65,9 +65,9 @@ ags_filter_util_pitch_s8(gint8 *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i;
-    
+  
   /* frequency */
-  base_freq = exp2(base_key / 12.0) * 440.0;
+  base_freq = exp2((base_key) / 12.0) * 440.0;
 
   im_key = (gdouble) ((gint) floor(tuning / 100.0) % 12);
   
@@ -76,18 +76,14 @@ ags_filter_util_pitch_s8(gint8 *buffer,
   }
 
   if(im_key == 0.0){
-    im_key = 0.2346;
+    im_key = 1.0;
   }
   
-  im_freq = exp2((im_key) / 12.0) * 440.0;
+  im_freq = exp2((base_key + im_key) / 12.0) * 440.0;
 
-  low_key = (gdouble) ((gint) floor(tuning / 100.0) % 12);
+  low_key = base_key - 12.0;
   
-  if(low_key < 0.0){
-    low_key += 12.0;
-  }
-  
-  low_freq = exp2((low_key - 60.0) / 12.0) * 440.0;
+  low_freq = exp2((low_key) / 12.0) * 440.0;
 
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
@@ -150,19 +146,19 @@ ags_filter_util_pitch_s8(gint8 *buffer,
     gdouble phase, im_phase;
     guint start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
     
-    if(im_freq_period != 0.0){
+    if(floor(im_freq_period) != 0.0){
       im_phase = i % (guint) floor(im_freq_period / 1.0);
     }else{
       im_phase = i;
     }
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       phase = i % (guint) floor(freq_period / 1.0);
     }else{
       phase = i;
@@ -202,19 +198,19 @@ ags_filter_util_pitch_s8(gint8 *buffer,
     gdouble phase, low_phase;
     guint start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
     
-    if(low_freq_period != 0.0){
+    if(floor(low_freq_period) != 0.0){
       low_phase = i % (guint) floor(low_freq_period / 1.0);
     }else{
       low_phase = i;
     }
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       phase = i % (guint) floor(freq_period / 1.0);
     }else{
       phase = i;
@@ -254,22 +250,22 @@ ags_filter_util_pitch_s8(gint8 *buffer,
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
 
-    if(im_freq_period != 0.0){
+    if(floor(im_freq_period) != 0.0){
       im_start_x = im_freq_period * floor((double) i / im_freq_period);
     }else{
-      im_start_x = i;
+      im_start_x = 0;
     }
 
-    if(low_freq_period != 0.0){
+    if(floor(low_freq_period) != 0.0){
       low_start_x = low_freq_period * floor((double) i / low_freq_period);
     }else{
-      low_start_x = i;
+      low_start_x = 0;
     }
 
     if(floor(freq_period) != 0.0){
@@ -345,7 +341,7 @@ ags_filter_util_pitch_s8(gint8 *buffer,
 
     /* write new mix buffer */
     if(ptr_mix_buffer->real != 0.0){
-      new_z = (1.0 / 6.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (5.0 / 6.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
+      new_z = (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
     }else{
       t = (im_freq_period / freq_period);
 
@@ -402,9 +398,9 @@ ags_filter_util_pitch_s16(gint16 *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i;
-    
+  
   /* frequency */
-  base_freq = exp2(base_key / 12.0) * 440.0;
+  base_freq = exp2((base_key) / 12.0) * 440.0;
 
   im_key = (gdouble) ((gint) floor(tuning / 100.0) % 12);
   
@@ -413,18 +409,14 @@ ags_filter_util_pitch_s16(gint16 *buffer,
   }
 
   if(im_key == 0.0){
-    im_key = 0.2346;
+    im_key = 1.0;
   }
   
-  im_freq = exp2((im_key) / 12.0) * 440.0;
+  im_freq = exp2((base_key + im_key) / 12.0) * 440.0;
 
-  low_key = (gdouble) ((gint) floor(tuning / 100.0) % 12);
+  low_key = base_key - 12.0;
   
-  if(low_key < 0.0){
-    low_key += 12.0;
-  }
-  
-  low_freq = exp2((low_key - 60.0) / 12.0) * 440.0;
+  low_freq = exp2((low_key) / 12.0) * 440.0;
 
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
@@ -487,19 +479,19 @@ ags_filter_util_pitch_s16(gint16 *buffer,
     gdouble phase, im_phase;
     guint start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
     
-    if(im_freq_period != 0.0){
+    if(floor(im_freq_period) != 0.0){
       im_phase = i % (guint) floor(im_freq_period / 1.0);
     }else{
       im_phase = i;
     }
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       phase = i % (guint) floor(freq_period / 1.0);
     }else{
       phase = i;
@@ -539,19 +531,19 @@ ags_filter_util_pitch_s16(gint16 *buffer,
     gdouble phase, low_phase;
     guint start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
     
-    if(low_freq_period != 0.0){
+    if(floor(low_freq_period) != 0.0){
       low_phase = i % (guint) floor(low_freq_period / 1.0);
     }else{
       low_phase = i;
     }
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       phase = i % (guint) floor(freq_period / 1.0);
     }else{
       phase = i;
@@ -591,22 +583,22 @@ ags_filter_util_pitch_s16(gint16 *buffer,
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
 
-    if(im_freq_period != 0.0){
+    if(floor(im_freq_period) != 0.0){
       im_start_x = im_freq_period * floor((double) i / im_freq_period);
     }else{
-      im_start_x = i;
+      im_start_x = 0;
     }
 
-    if(low_freq_period != 0.0){
+    if(floor(low_freq_period) != 0.0){
       low_start_x = low_freq_period * floor((double) i / low_freq_period);
     }else{
-      low_start_x = i;
+      low_start_x = 0;
     }
 
     if(floor(freq_period) != 0.0){
@@ -682,7 +674,7 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 
     /* write new mix buffer */
     if(ptr_mix_buffer->real != 0.0){
-      new_z = (1.0 / 6.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (5.0 / 6.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
+      new_z = (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
     }else{
       t = (im_freq_period / freq_period);
 
@@ -739,9 +731,9 @@ ags_filter_util_pitch_s24(gint32 *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i;
-    
+  
   /* frequency */
-  base_freq = exp2(base_key / 12.0) * 440.0;
+  base_freq = exp2((base_key) / 12.0) * 440.0;
 
   im_key = (gdouble) ((gint) floor(tuning / 100.0) % 12);
   
@@ -750,18 +742,14 @@ ags_filter_util_pitch_s24(gint32 *buffer,
   }
 
   if(im_key == 0.0){
-    im_key = 0.2346;
+    im_key = 1.0;
   }
   
-  im_freq = exp2((im_key) / 12.0) * 440.0;
+  im_freq = exp2((base_key + im_key) / 12.0) * 440.0;
 
-  low_key = (gdouble) ((gint) floor(tuning / 100.0) % 12);
+  low_key = base_key - 12.0;
   
-  if(low_key < 0.0){
-    low_key += 12.0;
-  }
-  
-  low_freq = exp2((low_key - 60.0) / 12.0) * 440.0;
+  low_freq = exp2((low_key) / 12.0) * 440.0;
 
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
@@ -824,19 +812,19 @@ ags_filter_util_pitch_s24(gint32 *buffer,
     gdouble phase, im_phase;
     guint start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
     
-    if(im_freq_period != 0.0){
+    if(floor(im_freq_period) != 0.0){
       im_phase = i % (guint) floor(im_freq_period / 1.0);
     }else{
       im_phase = i;
     }
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       phase = i % (guint) floor(freq_period / 1.0);
     }else{
       phase = i;
@@ -876,19 +864,19 @@ ags_filter_util_pitch_s24(gint32 *buffer,
     gdouble phase, low_phase;
     guint start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
     
-    if(low_freq_period != 0.0){
+    if(floor(low_freq_period) != 0.0){
       low_phase = i % (guint) floor(low_freq_period / 1.0);
     }else{
       low_phase = i;
     }
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       phase = i % (guint) floor(freq_period / 1.0);
     }else{
       phase = i;
@@ -928,22 +916,22 @@ ags_filter_util_pitch_s24(gint32 *buffer,
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
 
-    if(im_freq_period != 0.0){
+    if(floor(im_freq_period) != 0.0){
       im_start_x = im_freq_period * floor((double) i / im_freq_period);
     }else{
-      im_start_x = i;
+      im_start_x = 0;
     }
 
-    if(low_freq_period != 0.0){
+    if(floor(low_freq_period) != 0.0){
       low_start_x = low_freq_period * floor((double) i / low_freq_period);
     }else{
-      low_start_x = i;
+      low_start_x = 0;
     }
 
     if(floor(freq_period) != 0.0){
@@ -1019,7 +1007,7 @@ ags_filter_util_pitch_s24(gint32 *buffer,
 
     /* write new mix buffer */
     if(ptr_mix_buffer->real != 0.0){
-      new_z = (1.0 / 6.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (5.0 / 6.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
+      new_z = (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
     }else{
       t = (im_freq_period / freq_period);
 
@@ -1076,9 +1064,9 @@ ags_filter_util_pitch_s32(gint32 *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i;
-    
+  
   /* frequency */
-  base_freq = exp2(base_key / 12.0) * 440.0;
+  base_freq = exp2((base_key) / 12.0) * 440.0;
 
   im_key = (gdouble) ((gint) floor(tuning / 100.0) % 12);
   
@@ -1087,18 +1075,14 @@ ags_filter_util_pitch_s32(gint32 *buffer,
   }
 
   if(im_key == 0.0){
-    im_key = 0.2346;
+    im_key = 1.0;
   }
   
-  im_freq = exp2((im_key) / 12.0) * 440.0;
+  im_freq = exp2((base_key + im_key) / 12.0) * 440.0;
 
-  low_key = (gdouble) ((gint) floor(tuning / 100.0) % 12);
+  low_key = base_key - 12.0;
   
-  if(low_key < 0.0){
-    low_key += 12.0;
-  }
-  
-  low_freq = exp2((low_key - 60.0) / 12.0) * 440.0;
+  low_freq = exp2((low_key) / 12.0) * 440.0;
 
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
@@ -1161,19 +1145,19 @@ ags_filter_util_pitch_s32(gint32 *buffer,
     gdouble phase, im_phase;
     guint start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
     
-    if(im_freq_period != 0.0){
+    if(floor(im_freq_period) != 0.0){
       im_phase = i % (guint) floor(im_freq_period / 1.0);
     }else{
       im_phase = i;
     }
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       phase = i % (guint) floor(freq_period / 1.0);
     }else{
       phase = i;
@@ -1213,19 +1197,19 @@ ags_filter_util_pitch_s32(gint32 *buffer,
     gdouble phase, low_phase;
     guint start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
     
-    if(low_freq_period != 0.0){
+    if(floor(low_freq_period) != 0.0){
       low_phase = i % (guint) floor(low_freq_period / 1.0);
     }else{
       low_phase = i;
     }
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       phase = i % (guint) floor(freq_period / 1.0);
     }else{
       phase = i;
@@ -1265,22 +1249,22 @@ ags_filter_util_pitch_s32(gint32 *buffer,
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
 
-    if(im_freq_period != 0.0){
+    if(floor(im_freq_period) != 0.0){
       im_start_x = im_freq_period * floor((double) i / im_freq_period);
     }else{
-      im_start_x = i;
+      im_start_x = 0;
     }
 
-    if(low_freq_period != 0.0){
+    if(floor(low_freq_period) != 0.0){
       low_start_x = low_freq_period * floor((double) i / low_freq_period);
     }else{
-      low_start_x = i;
+      low_start_x = 0;
     }
 
     if(floor(freq_period) != 0.0){
@@ -1356,7 +1340,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
 
     /* write new mix buffer */
     if(ptr_mix_buffer->real != 0.0){
-      new_z = (1.0 / 6.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (5.0 / 6.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
+      new_z = (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
     }else{
       t = (im_freq_period / freq_period);
 
@@ -1413,9 +1397,9 @@ ags_filter_util_pitch_s64(gint64 *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i;
-    
+  
   /* frequency */
-  base_freq = exp2(base_key / 12.0) * 440.0;
+  base_freq = exp2((base_key) / 12.0) * 440.0;
 
   im_key = (gdouble) ((gint) floor(tuning / 100.0) % 12);
   
@@ -1424,18 +1408,14 @@ ags_filter_util_pitch_s64(gint64 *buffer,
   }
 
   if(im_key == 0.0){
-    im_key = 0.2346;
+    im_key = 1.0;
   }
   
-  im_freq = exp2((im_key) / 12.0) * 440.0;
+  im_freq = exp2((base_key + im_key) / 12.0) * 440.0;
 
-  low_key = (gdouble) ((gint) floor(tuning / 100.0) % 12);
+  low_key = base_key - 12.0;
   
-  if(low_key < 0.0){
-    low_key += 12.0;
-  }
-  
-  low_freq = exp2((low_key - 60.0) / 12.0) * 440.0;
+  low_freq = exp2((low_key) / 12.0) * 440.0;
 
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
@@ -1498,19 +1478,19 @@ ags_filter_util_pitch_s64(gint64 *buffer,
     gdouble phase, im_phase;
     guint start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
     
-    if(im_freq_period != 0.0){
+    if(floor(im_freq_period) != 0.0){
       im_phase = i % (guint) floor(im_freq_period / 1.0);
     }else{
       im_phase = i;
     }
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       phase = i % (guint) floor(freq_period / 1.0);
     }else{
       phase = i;
@@ -1550,19 +1530,19 @@ ags_filter_util_pitch_s64(gint64 *buffer,
     gdouble phase, low_phase;
     guint start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
     
-    if(low_freq_period != 0.0){
+    if(floor(low_freq_period) != 0.0){
       low_phase = i % (guint) floor(low_freq_period / 1.0);
     }else{
       low_phase = i;
     }
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       phase = i % (guint) floor(freq_period / 1.0);
     }else{
       phase = i;
@@ -1602,22 +1582,22 @@ ags_filter_util_pitch_s64(gint64 *buffer,
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
 
-    if(im_freq_period != 0.0){
+    if(floor(im_freq_period) != 0.0){
       im_start_x = im_freq_period * floor((double) i / im_freq_period);
     }else{
-      im_start_x = i;
+      im_start_x = 0;
     }
 
-    if(low_freq_period != 0.0){
+    if(floor(low_freq_period) != 0.0){
       low_start_x = low_freq_period * floor((double) i / low_freq_period);
     }else{
-      low_start_x = i;
+      low_start_x = 0;
     }
 
     if(floor(freq_period) != 0.0){
@@ -1693,7 +1673,7 @@ ags_filter_util_pitch_s64(gint64 *buffer,
 
     /* write new mix buffer */
     if(ptr_mix_buffer->real != 0.0){
-      new_z = (1.0 / 6.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (5.0 / 6.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
+      new_z = (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
     }else{
       t = (im_freq_period / freq_period);
 
@@ -1750,9 +1730,9 @@ ags_filter_util_pitch_float(gfloat *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i;
-    
+  
   /* frequency */
-  base_freq = exp2(base_key / 12.0) * 440.0;
+  base_freq = exp2((base_key) / 12.0) * 440.0;
 
   im_key = (gdouble) ((gint) floor(tuning / 100.0) % 12);
   
@@ -1761,18 +1741,14 @@ ags_filter_util_pitch_float(gfloat *buffer,
   }
 
   if(im_key == 0.0){
-    im_key = 0.2346;
+    im_key = 1.0;
   }
   
-  im_freq = exp2((im_key) / 12.0) * 440.0;
+  im_freq = exp2((base_key + im_key) / 12.0) * 440.0;
 
-  low_key = (gdouble) ((gint) floor(tuning / 100.0) % 12);
+  low_key = base_key - 12.0;
   
-  if(low_key < 0.0){
-    low_key += 12.0;
-  }
-  
-  low_freq = exp2((low_key - 60.0) / 12.0) * 440.0;
+  low_freq = exp2((low_key) / 12.0) * 440.0;
 
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
@@ -1835,19 +1811,19 @@ ags_filter_util_pitch_float(gfloat *buffer,
     gdouble phase, im_phase;
     guint start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
     
-    if(im_freq_period != 0.0){
+    if(floor(im_freq_period) != 0.0){
       im_phase = i % (guint) floor(im_freq_period / 1.0);
     }else{
       im_phase = i;
     }
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       phase = i % (guint) floor(freq_period / 1.0);
     }else{
       phase = i;
@@ -1887,19 +1863,19 @@ ags_filter_util_pitch_float(gfloat *buffer,
     gdouble phase, low_phase;
     guint start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
     
-    if(low_freq_period != 0.0){
+    if(floor(low_freq_period) != 0.0){
       low_phase = i % (guint) floor(low_freq_period / 1.0);
     }else{
       low_phase = i;
     }
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       phase = i % (guint) floor(freq_period / 1.0);
     }else{
       phase = i;
@@ -1939,22 +1915,22 @@ ags_filter_util_pitch_float(gfloat *buffer,
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
 
-    if(im_freq_period != 0.0){
+    if(floor(im_freq_period) != 0.0){
       im_start_x = im_freq_period * floor((double) i / im_freq_period);
     }else{
-      im_start_x = i;
+      im_start_x = 0;
     }
 
-    if(low_freq_period != 0.0){
+    if(floor(low_freq_period) != 0.0){
       low_start_x = low_freq_period * floor((double) i / low_freq_period);
     }else{
-      low_start_x = i;
+      low_start_x = 0;
     }
 
     if(floor(freq_period) != 0.0){
@@ -2030,7 +2006,7 @@ ags_filter_util_pitch_float(gfloat *buffer,
 
     /* write new mix buffer */
     if(ptr_mix_buffer->real != 0.0){
-      new_z = (1.0 / 6.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (5.0 / 6.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
+      new_z = (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
     }else{
       t = (im_freq_period / freq_period);
 
@@ -2087,9 +2063,9 @@ ags_filter_util_pitch_double(gdouble *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i;
-    
+  
   /* frequency */
-  base_freq = exp2(base_key / 12.0) * 440.0;
+  base_freq = exp2((base_key) / 12.0) * 440.0;
 
   im_key = (gdouble) ((gint) floor(tuning / 100.0) % 12);
   
@@ -2098,18 +2074,14 @@ ags_filter_util_pitch_double(gdouble *buffer,
   }
 
   if(im_key == 0.0){
-    im_key = 0.2346;
+    im_key = 1.0;
   }
   
-  im_freq = exp2((im_key) / 12.0) * 440.0;
+  im_freq = exp2((base_key + im_key) / 12.0) * 440.0;
 
-  low_key = (gdouble) ((gint) floor(tuning / 100.0) % 12);
+  low_key = base_key - 12.0;
   
-  if(low_key < 0.0){
-    low_key += 12.0;
-  }
-  
-  low_freq = exp2((low_key - 60.0) / 12.0) * 440.0;
+  low_freq = exp2((low_key) / 12.0) * 440.0;
 
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
@@ -2172,19 +2144,19 @@ ags_filter_util_pitch_double(gdouble *buffer,
     gdouble phase, im_phase;
     guint start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
     
-    if(im_freq_period != 0.0){
+    if(floor(im_freq_period) != 0.0){
       im_phase = i % (guint) floor(im_freq_period / 1.0);
     }else{
       im_phase = i;
     }
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       phase = i % (guint) floor(freq_period / 1.0);
     }else{
       phase = i;
@@ -2224,19 +2196,19 @@ ags_filter_util_pitch_double(gdouble *buffer,
     gdouble phase, low_phase;
     guint start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
     
-    if(low_freq_period != 0.0){
+    if(floor(low_freq_period) != 0.0){
       low_phase = i % (guint) floor(low_freq_period / 1.0);
     }else{
       low_phase = i;
     }
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       phase = i % (guint) floor(freq_period / 1.0);
     }else{
       phase = i;
@@ -2276,22 +2248,22 @@ ags_filter_util_pitch_double(gdouble *buffer,
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
 
-    if(im_freq_period != 0.0){
+    if(floor(im_freq_period) != 0.0){
       im_start_x = im_freq_period * floor((double) i / im_freq_period);
     }else{
-      im_start_x = i;
+      im_start_x = 0;
     }
 
-    if(low_freq_period != 0.0){
+    if(floor(low_freq_period) != 0.0){
       low_start_x = low_freq_period * floor((double) i / low_freq_period);
     }else{
-      low_start_x = i;
+      low_start_x = 0;
     }
 
     if(floor(freq_period) != 0.0){
@@ -2367,7 +2339,7 @@ ags_filter_util_pitch_double(gdouble *buffer,
 
     /* write new mix buffer */
     if(ptr_mix_buffer->real != 0.0){
-      new_z = (1.0 / 6.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (5.0 / 6.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
+      new_z = (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
     }else{
       t = (im_freq_period / freq_period);
 
@@ -2416,7 +2388,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 {
   AgsComplex *ptr_mix_buffer, *ptr_im_mix_buffer, *ptr_low_mix_buffer, *ptr_new_mix_buffer;
   AgsComplex *mix_buffer, *im_mix_buffer, *low_mix_buffer, *new_mix_buffer;
-  AgsComplex *ptr_buffer;
+  gint16 *ptr_buffer;
 
   gdouble im_key, low_key;
   gdouble base_freq, im_freq, low_freq, new_freq;
@@ -2424,9 +2396,9 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i;
-    
+  
   /* frequency */
-  base_freq = exp2(base_key / 12.0) * 440.0;
+  base_freq = exp2((base_key) / 12.0) * 440.0;
 
   im_key = (gdouble) ((gint) floor(tuning / 100.0) % 12);
   
@@ -2435,18 +2407,14 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
   }
 
   if(im_key == 0.0){
-    im_key = 0.2346;
+    im_key = 1.0;
   }
   
-  im_freq = exp2((im_key) / 12.0) * 440.0;
+  im_freq = exp2((base_key + im_key) / 12.0) * 440.0;
 
-  low_key = (gdouble) ((gint) floor(tuning / 100.0) % 12);
+  low_key = base_key - 12.0;
   
-  if(low_key < 0.0){
-    low_key += 12.0;
-  }
-  
-  low_freq = exp2((low_key - 60.0) / 12.0) * 440.0;
+  low_freq = exp2((low_key) / 12.0) * 440.0;
 
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
@@ -2509,19 +2477,19 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
     gdouble phase, im_phase;
     guint start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
     
-    if(im_freq_period != 0.0){
+    if(floor(im_freq_period) != 0.0){
       im_phase = i % (guint) floor(im_freq_period / 1.0);
     }else{
       im_phase = i;
     }
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       phase = i % (guint) floor(freq_period / 1.0);
     }else{
       phase = i;
@@ -2561,19 +2529,19 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
     gdouble phase, low_phase;
     guint start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
     
-    if(low_freq_period != 0.0){
+    if(floor(low_freq_period) != 0.0){
       low_phase = i % (guint) floor(low_freq_period / 1.0);
     }else{
       low_phase = i;
     }
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       phase = i % (guint) floor(freq_period / 1.0);
     }else{
       phase = i;
@@ -2613,22 +2581,22 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
-    if(freq_period != 0.0){
+    if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
-      start_x = i;
+      start_x = 0;
     }
 
-    if(im_freq_period != 0.0){
+    if(floor(im_freq_period) != 0.0){
       im_start_x = im_freq_period * floor((double) i / im_freq_period);
     }else{
-      im_start_x = i;
+      im_start_x = 0;
     }
 
-    if(low_freq_period != 0.0){
+    if(floor(low_freq_period) != 0.0){
       low_start_x = low_freq_period * floor((double) i / low_freq_period);
     }else{
-      low_start_x = i;
+      low_start_x = 0;
     }
 
     if(floor(freq_period) != 0.0){
@@ -2704,7 +2672,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 
     /* write new mix buffer */
     if(ptr_mix_buffer->real != 0.0){
-      new_z = (1.0 / 6.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (5.0 / 6.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
+      new_z = (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
     }else{
       t = (im_freq_period / freq_period);
 
@@ -2722,7 +2690,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 
     ags_complex_set(ptr_buffer, ags_complex_get(ptr_new_mix_buffer));
   }
-
+  
   ags_stream_free(mix_buffer);
 
   ags_stream_free(im_mix_buffer);
