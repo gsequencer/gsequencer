@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -495,7 +495,7 @@ ags_ipatch_sample_get_uuid(AgsConnectable *connectable)
 
   ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
 
-  /* get audio file mutex */
+  /* get ipatch sample mutex */
   ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
 
   /* get UUID */
@@ -654,6 +654,8 @@ ags_ipatch_sample_info(AgsSoundResource *sound_resource,
   guint sample_frame_count;
   guint sample_loop_start, sample_loop_end;
   
+  GRecMutex *ipatch_sample_mutex;
+
   ipatch_sample = AGS_IPATCH_SAMPLE(sound_resource);
 
   sample_frame_count = 0;
@@ -695,7 +697,12 @@ ags_ipatch_sample_set_presets(AgsSoundResource *sound_resource,
 
   gint sample_format;
   
+  GRecMutex *ipatch_sample_mutex;
+
   ipatch_sample = AGS_IPATCH_SAMPLE(sound_resource);
+
+  /* get ipatch sample mutex */
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
 
   if(channels > IPATCH_SAMPLE_MAX_CHANNELS){
     g_critical("max channels exceeded");
@@ -704,18 +711,23 @@ ags_ipatch_sample_set_presets(AgsSoundResource *sound_resource,
   }
   
 #ifdef AGS_WITH_LIBINSTPATCH
+  g_rec_mutex_lock(ipatch_sample_mutex);
+
+  //NOTE:JK: this won't work
+#if 0
   g_object_get(ipatch_sample->sample,
 	       "sample-format", &sample_format,
 	       NULL);
-
-  //NOTE:JK: this won't work
-//  sample_format &= (~IPATCH_SAMPLE_CHANNEL_MASK);
-//  sample_format |= (IPATCH_SAMPLE_CHANNEL_MASK & ((channels - 1) << IPATCH_SAMPLE_CHANNEL_SHIFT));
+  sample_format &= (~IPATCH_SAMPLE_CHANNEL_MASK);
+  sample_format |= (IPATCH_SAMPLE_CHANNEL_MASK & ((channels - 1) << IPATCH_SAMPLE_CHANNEL_SHIFT));
+#endif
   
   g_object_set(ipatch_sample->sample,
 	       "sample-rate", samplerate,
 //	       "sample-format", sample_format,
 	       NULL);
+  
+  g_rec_mutex_unlock(ipatch_sample_mutex);
 #endif
 
   g_object_set(ipatch_sample,

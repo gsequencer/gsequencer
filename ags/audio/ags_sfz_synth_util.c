@@ -225,7 +225,7 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
 
   pong_copy = FALSE;
   
-  for(i = 0, j = 0, k = 0, l = 0; i < offset + n_frames;){
+  for(i = 0, j = 0, k = 0, l = 0; i < n_frames;){
     guint copy_n_frames;
 
     gboolean set_loop_start;
@@ -548,7 +548,7 @@ ags_sfz_synth_util_copy_s16(gint16 *buffer,
 
   pong_copy = FALSE;
   
-  for(i = 0, j = 0, k = 0, l = 0; i < offset + n_frames;){
+  for(i = 0, j = 0, k = 0, l = 0; i < n_frames;){
     guint copy_n_frames;
 
     gboolean set_loop_start;
@@ -871,7 +871,7 @@ ags_sfz_synth_util_copy_s24(gint32 *buffer,
 
   pong_copy = FALSE;
   
-  for(i = 0, j = 0, k = 0, l = 0; i < offset + n_frames;){
+  for(i = 0, j = 0, k = 0, l = 0; i < n_frames;){
     guint copy_n_frames;
 
     gboolean set_loop_start;
@@ -1194,7 +1194,7 @@ ags_sfz_synth_util_copy_s32(gint32 *buffer,
 
   pong_copy = FALSE;
   
-  for(i = 0, j = 0, k = 0, l = 0; i < offset + n_frames;){
+  for(i = 0, j = 0, k = 0, l = 0; i < n_frames;){
     guint copy_n_frames;
 
     gboolean set_loop_start;
@@ -1517,7 +1517,7 @@ ags_sfz_synth_util_copy_s64(gint64 *buffer,
 
   pong_copy = FALSE;
   
-  for(i = 0, j = 0, k = 0, l = 0; i < offset + n_frames;){
+  for(i = 0, j = 0, k = 0, l = 0; i < n_frames;){
     guint copy_n_frames;
 
     gboolean set_loop_start;
@@ -1840,7 +1840,7 @@ ags_sfz_synth_util_copy_float(gfloat *buffer,
 
   pong_copy = FALSE;
   
-  for(i = 0, j = 0, k = 0, l = 0; i < offset + n_frames;){
+  for(i = 0, j = 0, k = 0, l = 0; i < n_frames;){
     guint copy_n_frames;
 
     gboolean set_loop_start;
@@ -2163,7 +2163,7 @@ ags_sfz_synth_util_copy_double(gdouble *buffer,
 
   pong_copy = FALSE;
   
-  for(i = 0, j = 0, k = 0, l = 0; i < offset + n_frames;){
+  for(i = 0, j = 0, k = 0, l = 0; i < n_frames;){
     guint copy_n_frames;
 
     gboolean set_loop_start;
@@ -2486,7 +2486,7 @@ ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
 
   pong_copy = FALSE;
   
-  for(i = 0, j = 0, k = 0, l = 0; i < offset + n_frames;){
+  for(i = 0, j = 0, k = 0, l = 0; i < n_frames;){
     guint copy_n_frames;
 
     gboolean set_loop_start;
