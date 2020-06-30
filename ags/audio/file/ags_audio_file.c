@@ -1325,6 +1325,7 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
   gboolean retval;
   
   GRecMutex *audio_file_mutex;
+  GRecMutex *sound_resource_mutex;
 
   if(!AGS_IS_AUDIO_FILE(audio_file)){
     return(FALSE);
@@ -1346,11 +1347,11 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
   retval = FALSE;
 
   if(data != NULL){
-    if(ags_audio_file_check_suffix(audio_file->filename)){
+    if(ags_audio_file_check_suffix(filename)){
       guint loop_start, loop_end;
 
       GError *error;
-
+      
       g_rec_mutex_lock(audio_file_mutex);
       
       sound_resource = 
@@ -1359,15 +1360,26 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
 
       g_rec_mutex_unlock(audio_file_mutex);
 
-      //TODO:JK: thread-safe way
-      AGS_SNDFILE(audio_file->sound_resource)->flags = AGS_SNDFILE_VIRTUAL;
+      /* get sndfile mutex */
+      sound_resource_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sound_resource);
+      
+      g_rec_mutex_lock(sound_resource_mutex);
+      
+      AGS_SNDFILE(sound_resource)->flags = AGS_SNDFILE_VIRTUAL;
+
+      g_rec_mutex_unlock(sound_resource_mutex);      
 
       if(ags_sound_resource_open(AGS_SOUND_RESOURCE(sound_resource),
 				 filename)){
+	g_rec_mutex_lock(sound_resource_mutex);
+	
 	AGS_SNDFILE(sound_resource)->pointer = g_base64_decode(data,
 							       &(AGS_SNDFILE(sound_resource)->length));
 	AGS_SNDFILE(sound_resource)->current = AGS_SNDFILE(audio_file->sound_resource)->pointer;
 
+	
+	g_rec_mutex_unlock(sound_resource_mutex);      
+	
 	ags_sound_resource_info(AGS_SOUND_RESOURCE(sound_resource),
 				&file_frame_count,
 				NULL, NULL);

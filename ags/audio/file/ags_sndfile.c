@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -835,8 +835,6 @@ ags_sndfile_open(AgsSoundResource *sound_resource,
   sndfile->info->format = 0;
   sndfile->info->channels = 0;
   sndfile->info->samplerate = 0;
-
-  g_rec_mutex_unlock(sndfile_mutex);
   
   if(!ags_sndfile_test_flags(sndfile, AGS_SNDFILE_VIRTUAL)){
     if(filename != NULL){
@@ -847,6 +845,8 @@ ags_sndfile_open(AgsSoundResource *sound_resource,
   }
   
   if(sndfile->file == NULL){
+    g_rec_mutex_unlock(sndfile_mutex);
+    
     return(FALSE);
   }
 
@@ -895,6 +895,8 @@ ags_sndfile_open(AgsSoundResource *sound_resource,
   }
   break;
   }
+
+  g_rec_mutex_unlock(sndfile_mutex);
   
   g_object_set(sndfile,
 	       "audio-channels", sndfile->info->channels,
@@ -917,7 +919,8 @@ ags_sndfile_rw_open(AgsSoundResource *sound_resource,
   AgsSndfile *sndfile;
   
   guint major_format;
-
+  gboolean success;
+    
   GRecMutex *sndfile_mutex;
 
   sndfile = AGS_SNDFILE(sound_resource);
@@ -953,7 +956,11 @@ ags_sndfile_rw_open(AgsSoundResource *sound_resource,
   if(g_str_has_suffix(filename, ".wav")){
     major_format = SF_FORMAT_WAV;
 
+    g_rec_mutex_lock(sndfile_mutex);
+    
     sndfile->info->format = major_format | SF_FORMAT_PCM_16;
+
+    g_rec_mutex_unlock(sndfile_mutex);
 
     g_object_set(sndfile,
 		 "format", AGS_SOUNDCARD_SIGNED_16_BIT,
@@ -961,7 +968,11 @@ ags_sndfile_rw_open(AgsSoundResource *sound_resource,
   }else if(g_str_has_suffix(filename, ".flac")){    
     major_format = SF_FORMAT_FLAC;
 
+    g_rec_mutex_lock(sndfile_mutex);
+    
     sndfile->info->format = major_format | SF_FORMAT_PCM_16;
+
+    g_rec_mutex_unlock(sndfile_mutex);
 
     g_object_set(sndfile,
 		 "format", AGS_SOUNDCARD_SIGNED_16_BIT,
@@ -969,7 +980,11 @@ ags_sndfile_rw_open(AgsSoundResource *sound_resource,
   }else if(g_str_has_suffix(filename, ".aiff")){    
     major_format = SF_FORMAT_AIFF;
 
+    g_rec_mutex_lock(sndfile_mutex);
+    
     sndfile->info->format = major_format | SF_FORMAT_PCM_16;
+
+    g_rec_mutex_unlock(sndfile_mutex);
 
     g_object_set(sndfile,
 		 "format", AGS_SOUNDCARD_SIGNED_16_BIT,
@@ -977,7 +992,11 @@ ags_sndfile_rw_open(AgsSoundResource *sound_resource,
   }else if(g_str_has_suffix(filename, ".ogg")){
     major_format = SF_FORMAT_OGG;
 
+    g_rec_mutex_lock(sndfile_mutex);
+    
     sndfile->info->format = major_format | SF_FORMAT_VORBIS;
+
+    g_rec_mutex_unlock(sndfile_mutex);
 
     g_object_set(sndfile,
 		 "format", AGS_SOUNDCARD_DOUBLE,
@@ -985,13 +1004,19 @@ ags_sndfile_rw_open(AgsSoundResource *sound_resource,
   }else{
     major_format = SF_FORMAT_WAV;
 
+    g_rec_mutex_lock(sndfile_mutex);
+    
     sndfile->info->format = major_format | SF_FORMAT_PCM_16;
+
+    g_rec_mutex_unlock(sndfile_mutex);
 
     g_object_set(sndfile,
 		 "format", AGS_SOUNDCARD_SIGNED_16_BIT,
 		 NULL);
   }
   
+  g_rec_mutex_lock(sndfile_mutex);
+    
   sndfile->info->frames = 0;
   sndfile->info->seekable = 0;
   sndfile->info->sections = 0;
@@ -1008,19 +1033,19 @@ ags_sndfile_rw_open(AgsSoundResource *sound_resource,
     sndfile->file = (SNDFILE *) sf_open_virtual(ags_sndfile_virtual_io, SFM_RDWR, sndfile->info, sndfile);
   }
 
+  success = (sndfile->file != NULL) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(sndfile_mutex);
+
   g_object_set(sndfile,
 	       "audio-channels", audio_channels,
 	       NULL);
-
-  if(sndfile->file == NULL){
-    return(FALSE);
-  }
 
 #ifdef AGS_DEBUG
   g_message("ags_sndfile_rw_open(): channels %d frames %d", sndfile->info->channels, sndfile->info->frames);
 #endif
 
-  return(TRUE);
+  return(success);
 }
 
 gboolean
@@ -1045,21 +1070,23 @@ ags_sndfile_info(AgsSoundResource *sound_resource,
     *loop_end = 0;
   }
   
+  g_rec_mutex_lock(sndfile_mutex);
+
   if(sndfile->info == NULL){
+    g_rec_mutex_unlock(sndfile_mutex);
+    
     if(frame_count != NULL){
-      *frame_count = 0;
+      frame_count[0] = 0;
     }
 
     return(FALSE);
   }
-  
-  g_rec_mutex_lock(sndfile_mutex);
 
   if(frame_count != NULL){
     if(sndfile->info != NULL){
-      *frame_count = sndfile->info->frames;
+      frame_count[0] = sndfile->info->frames;
     }else{
-      *frame_count = 0;
+      frame_count[0] = 0;
     }
   }
 
@@ -1077,14 +1104,23 @@ ags_sndfile_set_presets(AgsSoundResource *sound_resource,
 {
   AgsSndfile *sndfile;
 
+  GRecMutex *sndfile_mutex;
+
   sndfile = AGS_SNDFILE(sound_resource);
+
+  /* get sndfile mutex */
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   g_object_set(sndfile,
 	       "buffer-size", buffer_size,
 	       "format", format,
 	       NULL);
   
+  g_rec_mutex_lock(sndfile_mutex);
+
   if(sndfile->info == NULL){
+    g_rec_mutex_unlock(sndfile_mutex);
+
     return;
   }
 
@@ -1129,6 +1165,8 @@ ags_sndfile_set_presets(AgsSoundResource *sound_resource,
     }
     break;
   }
+  
+  g_rec_mutex_unlock(sndfile_mutex);
 }
 
 void
@@ -1147,7 +1185,11 @@ ags_sndfile_get_presets(AgsSoundResource *sound_resource,
   /* get sndfile mutex */
   sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
+  g_rec_mutex_lock(sndfile_mutex);
+
   if(sndfile->info == NULL){
+    g_rec_mutex_unlock(sndfile_mutex);
+
     if(channels != NULL){
       *channels = 0;
     }
@@ -1167,8 +1209,6 @@ ags_sndfile_get_presets(AgsSoundResource *sound_resource,
     return;
   }
   
-  g_rec_mutex_lock(sndfile_mutex);
-
   if(channels != NULL){
     *channels = sndfile->info->channels;
   }
@@ -1283,9 +1323,7 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 						  ags_audio_buffer_util_format_from_soundcard(sndfile->format));
-  
-  g_rec_mutex_unlock(sndfile_mutex);
-    
+      
   for(i = 0; i < frame_count && sndfile->offset + i < total_frame_count; ){
     sf_count_t retval;
     
@@ -1358,6 +1396,8 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
     
     i += read_count;
   }
+
+  g_rec_mutex_unlock(sndfile_mutex);
   
   return(frame_count);
 }
@@ -1401,8 +1441,6 @@ ags_sndfile_write(AgsSoundResource *sound_resource,
       break;
     }
   }
-  
-  g_rec_mutex_unlock(sndfile_mutex);
 
   if(do_write){
     multi_frames = frame_count * sndfile->info->channels;
@@ -1457,20 +1495,33 @@ ags_sndfile_write(AgsSoundResource *sound_resource,
     
     sndfile->offset += frame_count;
   }
+  
+  g_rec_mutex_unlock(sndfile_mutex);
 }
 
 void
 ags_sndfile_flush(AgsSoundResource *sound_resource)
 {
   AgsSndfile *sndfile;
+  
+  GRecMutex *sndfile_mutex;
    
   sndfile = AGS_SNDFILE(sound_resource);
 
+  /* get sndfile mutex */
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
+
+  g_rec_mutex_lock(sndfile_mutex);
+
   if(sndfile->file == NULL){
+    g_rec_mutex_unlock(sndfile_mutex);
+
     return;
   }
   
   sf_write_sync(sndfile->file);
+
+  g_rec_mutex_unlock(sndfile_mutex);
 }
 
 void
@@ -1531,9 +1582,9 @@ ags_sndfile_seek(AgsSoundResource *sound_resource,
     }
   }
 
-  g_rec_mutex_unlock(sndfile_mutex);
-
   retval = sf_seek(sndfile->file, sndfile->offset, SEEK_SET);
+
+  g_rec_mutex_unlock(sndfile_mutex);
 
   if(retval == -1){
     g_warning("seek failed");
@@ -1573,51 +1624,132 @@ ags_sndfile_close(AgsSoundResource *sound_resource)
 sf_count_t
 ags_sndfile_vio_get_filelen(void *user_data)
 {
-  return(AGS_SNDFILE(user_data)->length);
+  AgsSndfile *sndfile;
+
+  sf_count_t length;
+   
+  GRecMutex *sndfile_mutex;
+  
+  sndfile = AGS_SNDFILE(user_data);
+
+  /* get sndfile mutex */
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
+
+  g_rec_mutex_lock(sndfile_mutex);
+
+  length = AGS_SNDFILE(user_data)->length;
+
+  g_rec_mutex_unlock(sndfile_mutex);
+  
+  return(length);
 }
 
 sf_count_t
 ags_sndfile_vio_seek(sf_count_t offset, int whence, void *user_data)
 {
+  AgsSndfile *sndfile;
+
+  sf_count_t retval;
+  
+  GRecMutex *sndfile_mutex;
+
+  sndfile = AGS_SNDFILE(user_data);
+  
+  /* get sndfile mutex */
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
+
+  g_rec_mutex_lock(sndfile_mutex);
+
   switch(whence){
   case SEEK_CUR:
-    AGS_SNDFILE(user_data)->current += offset;
+    sndfile->current += offset;
     break;
   case SEEK_SET:
-    AGS_SNDFILE(user_data)->current = &(AGS_SNDFILE(user_data)->pointer[offset]);
+    sndfile->current = &(sndfile->pointer[offset]);
     break;
   case SEEK_END:
-    AGS_SNDFILE(user_data)->current = &(AGS_SNDFILE(user_data)->pointer[AGS_SNDFILE(user_data)->length - offset]);
+    sndfile->current = &(sndfile->pointer[sndfile->length - offset]);
     break;
   }
 
-  return(AGS_SNDFILE(user_data)->current - AGS_SNDFILE(user_data)->pointer);
+  retval = sndfile->current - sndfile->pointer;
+
+  g_rec_mutex_unlock(sndfile_mutex);
+  
+  return(retval);
 }
 
 sf_count_t
 ags_sndfile_vio_read(void *ptr, sf_count_t count, void *user_data)
 {
+  AgsSndfile *sndfile;
+
   guchar *retval;
+  
+  GRecMutex *sndfile_mutex;
 
-  retval = memcpy(ptr, AGS_SNDFILE(user_data)->current, count * sizeof(guchar));
+  sndfile = AGS_SNDFILE(user_data);
+  
+  /* get sndfile mutex */
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
-  return(retval - AGS_SNDFILE(user_data)->pointer);
+  g_rec_mutex_lock(sndfile_mutex);
+
+  retval = memcpy(ptr, sndfile->current, count * sizeof(guchar));
+
+  retval -= sndfile->pointer;
+  
+  g_rec_mutex_unlock(sndfile_mutex);
+
+  return(retval);
 }
 
 sf_count_t
 ags_sndfile_vio_write(const void *ptr, sf_count_t count, void *user_data)
 {
+  AgsSndfile *sndfile;
+
   guchar *retval;
 
-  retval = memcpy(AGS_SNDFILE(user_data)->current, ptr, count * sizeof(guchar));
+  GRecMutex *sndfile_mutex;
 
-  return(retval - AGS_SNDFILE(user_data)->pointer);
+  sndfile = AGS_SNDFILE(user_data);
+  
+  /* get sndfile mutex */
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
+
+  g_rec_mutex_lock(sndfile_mutex);
+
+  retval = memcpy(sndfile->current, ptr, count * sizeof(guchar));
+
+  retval -= sndfile->pointer;
+  
+  g_rec_mutex_unlock(sndfile_mutex);
+
+  return(retval);
 }
 
 sf_count_t
 ags_sndfile_vio_tell(const void *ptr, sf_count_t count, void *user_data)
 {
-  return(AGS_SNDFILE(user_data)->current - AGS_SNDFILE(user_data)->pointer);
+  AgsSndfile *sndfile;
+
+  sf_count_t retval;
+  
+  GRecMutex *sndfile_mutex;
+
+  sndfile = AGS_SNDFILE(user_data);
+  
+  /* get sndfile mutex */
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
+
+  g_rec_mutex_lock(sndfile_mutex);
+
+  retval = sndfile->current - sndfile->pointer;
+  
+  g_rec_mutex_unlock(sndfile_mutex);
+
+  return(retval);
 }
 
 /**
