@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -572,63 +572,117 @@ ags_ipatch_gig_reader_unset_flags(AgsIpatchGigReader *ipatch_gig_reader, guint f
   g_rec_mutex_unlock(ipatch_gig_reader_mutex);
 }
 
+/**
+ * ags_ipatch_gig_reader_load:
+ * @ipatch_gig_reader: the #AgsIpatchGigReader
+ * @handle: the #IpatchFileHandle
+ * 
+ * Load GIG file.
+ * 
+ * Returns: %TRUE on success, else %FALSE on failure
+ * 
+ * Since: 3.0.0
+ */
 gboolean
 ags_ipatch_gig_reader_load(AgsIpatchGigReader *ipatch_gig_reader,
 			   IpatchFileHandle *handle)
 {
+  IpatchDLSReader *reader;
+
+  GError *error;
+  
+  GRecMutex *ipatch_gig_reader_mutex;
+
   if(!AGS_IS_IPATCH_GIG_READER(ipatch_gig_reader)){
     return(FALSE);
   }
 
-  ipatch_gig_reader->reader = ipatch_dls_reader_new(handle);
+  /* get ipatch gig reader mutex */
+  ipatch_gig_reader_mutex = AGS_IPATCH_GIG_READER_GET_OBJ_MUTEX(ipatch_gig_reader);
 
-  ipatch_gig_reader->error = NULL;
-  ipatch_gig_reader->base = (IpatchBase *) ipatch_dls_reader_load(ipatch_gig_reader->reader,
-								  &(ipatch_gig_reader->error));
+  g_rec_mutex_lock(ipatch_gig_reader_mutex);
 
-  if(ipatch_gig_reader->error != NULL){
-    g_warning("%s", ipatch_gig_reader->error->message);
+  reader = 
+    ipatch_gig_reader->reader = ipatch_dls_reader_new(handle);
+
+  error = NULL;
+  ipatch_gig_reader->base = (IpatchBase *) ipatch_dls_reader_load(reader,
+								  &error);
+
+  g_rec_mutex_unlock(ipatch_gig_reader_mutex);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_rec_mutex_lock(ipatch_gig_reader_mutex);
+
+    ipatch_gig_reader->error = error;
+    
+    g_rec_mutex_unlock(ipatch_gig_reader_mutex);
     
     return(FALSE);
   }
+
+  g_rec_mutex_lock(ipatch_gig_reader_mutex);
   
-  ipatch_gig_reader->error = NULL;
+  error = NULL;
   ipatch_gig_reader->gig = (IpatchGig *) ipatch_convert_object_to_type((GObject *) handle->file,
 								       IPATCH_TYPE_GIG,
-								       &(ipatch_gig_reader->error));
+								       &error);
 
-  if(ipatch_gig_reader->error != NULL){
-    g_warning("%s", ipatch_gig_reader->error->message);
+  g_rec_mutex_unlock(ipatch_gig_reader_mutex);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_rec_mutex_lock(ipatch_gig_reader_mutex);
+
+    ipatch_gig_reader->error = error;
+    
+    g_rec_mutex_unlock(ipatch_gig_reader_mutex);
     
     return(FALSE);
   }
-
-  while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ipatch_gig_reader->base))->mutex) != 0);
 
   return(TRUE);
 }
 
+/**
+ * ags_ipatch_gig_reader_select_instrument:
+ * @ipatch_gig_reader: the #AgsIpatchGigReader
+ * @instrument_index: the instrument index
+ * 
+ * Select instrument.
+ * 
+ * Returns: %TRUE on success, else %FALSE on failure
+ * 
+ * Since: 3.0.0
+ */
 gboolean
 ags_ipatch_gig_reader_select_instrument(AgsIpatchGigReader *ipatch_gig_reader,
 					guint instrument_index)
 {
-#ifdef AGS_WITH_LIBINSTPATCH
   IpatchGig *gig;
   IpatchItem *ipatch_item;
   IpatchList *ipatch_list;
 
   IpatchIter instrument_iter;
-#endif
   
   gboolean success;
+
+  GRecMutex *ipatch_gig_reader_mutex;
 
   if(!AGS_IS_IPATCH_GIG_READER(ipatch_gig_reader)){
     return(FALSE);
   }
 
+  /* get ipatch gig reader mutex */
+  ipatch_gig_reader_mutex = AGS_IPATCH_GIG_READER_GET_OBJ_MUTEX(ipatch_gig_reader);
+
   success = FALSE;
 
-#ifdef AGS_WITH_LIBINSTPATCH
+  g_rec_mutex_lock(ipatch_gig_reader_mutex);
+
   gig = ipatch_gig_reader->gig;
 
   ipatch_list = ipatch_container_get_children((IpatchContainer *) gig, IPATCH_TYPE_DLS2_INST);
@@ -663,7 +717,8 @@ ags_ipatch_gig_reader_select_instrument(AgsIpatchGigReader *ipatch_gig_reader,
       ipatch_gig_reader->sample = NULL;
     }
   }
-#endif
+
+  g_rec_mutex_unlock(ipatch_gig_reader_mutex);
   
   return(success);
 }
@@ -672,23 +727,27 @@ gboolean
 ags_ipatch_gig_reader_select_sample(AgsIpatchGigReader *ipatch_gig_reader,
 				    guint sample_index)
 {
-#ifdef AGS_WITH_LIBINSTPATCH
   IpatchGig *gig;
   IpatchItem *ipatch_item;
   IpatchList *ipatch_list;
 
   IpatchIter sample_iter;
-#endif
   
   gboolean success;
+
+  GRecMutex *ipatch_gig_reader_mutex;
 
   if(!AGS_IS_IPATCH_GIG_READER(ipatch_gig_reader)){
     return(FALSE);
   }
 
+  /* get ipatch gig reader mutex */
+  ipatch_gig_reader_mutex = AGS_IPATCH_GIG_READER_GET_OBJ_MUTEX(ipatch_gig_reader);
+
   success = FALSE;
 
-#ifdef AGS_WITH_LIBINSTPATCH
+  g_rec_mutex_lock(ipatch_gig_reader_mutex);
+
   gig = ipatch_gig_reader->gig;
 
   ipatch_list = ipatch_dls2_inst_get_regions(ipatch_gig_reader->instrument);
@@ -719,7 +778,8 @@ ags_ipatch_gig_reader_select_sample(AgsIpatchGigReader *ipatch_gig_reader,
       ipatch_gig_reader->sample = (IpatchContainer *) ipatch_item;
     }
   }
-#endif
+  
+  g_rec_mutex_unlock(ipatch_gig_reader_mutex);
   
   return(success);
 }
@@ -737,25 +797,29 @@ ags_ipatch_gig_reader_select_sample(AgsIpatchGigReader *ipatch_gig_reader,
 gchar**
 ags_ipatch_gig_reader_get_instrument_all(AgsIpatchGigReader *ipatch_gig_reader)
 {
-#ifdef AGS_WITH_LIBINSTPATCH
   IpatchGig *gig;
   IpatchItem *ipatch_item;
   IpatchList *ipatch_list;
   
   IpatchIter instrument_iter;
-#endif
   
   gchar **instrument;
   
   guint i, i_stop;
+
+  GRecMutex *ipatch_gig_reader_mutex;
   
   if(!AGS_IS_IPATCH_GIG_READER(ipatch_gig_reader)){
     return(NULL);
   }
+
+  /* get ipatch gig reader mutex */
+  ipatch_gig_reader_mutex = AGS_IPATCH_GIG_READER_GET_OBJ_MUTEX(ipatch_gig_reader);
   
   instrument = NULL;
 
-#ifdef AGS_WITH_LIBINSTPATCH
+  g_rec_mutex_lock(ipatch_gig_reader_mutex);
+
   gig = ipatch_gig_reader->gig;
   
   ipatch_list = ipatch_container_get_children((IpatchContainer *) gig, IPATCH_TYPE_DLS2_INST);
@@ -786,10 +850,8 @@ ags_ipatch_gig_reader_get_instrument_all(AgsIpatchGigReader *ipatch_gig_reader)
       instrument[i] = NULL;
     }
   }
-  
-  //FIXME:JK: still needed?
-  while(g_static_rec_mutex_unlock_full(((IpatchItem *) (gig))->mutex) != 0);
-#endif
+    
+  g_rec_mutex_unlock(ipatch_gig_reader_mutex);
   
   return(instrument);
 }
@@ -807,25 +869,29 @@ ags_ipatch_gig_reader_get_instrument_all(AgsIpatchGigReader *ipatch_gig_reader)
 gchar**
 ags_ipatch_gig_reader_get_sample_all(AgsIpatchGigReader *ipatch_gig_reader)
 {
-#ifdef AGS_WITH_LIBINSTPATCH
   IpatchGig *gig;
   IpatchItem *ipatch_item;
   IpatchList *ipatch_list;
   
   IpatchIter sample_iter;
-#endif
   
   gchar **sample;
   
   guint i, i_stop;
+
+  GRecMutex *ipatch_gig_reader_mutex;
   
   if(!AGS_IS_IPATCH_GIG_READER(ipatch_gig_reader)){
     return(NULL);
   }
   
+  /* get ipatch gig reader mutex */
+  ipatch_gig_reader_mutex = AGS_IPATCH_GIG_READER_GET_OBJ_MUTEX(ipatch_gig_reader);
+
   sample = NULL;
 
-#ifdef AGS_WITH_LIBINSTPATCH
+  g_rec_mutex_lock(ipatch_gig_reader_mutex);
+
   gig = ipatch_gig_reader->gig;
   
   ipatch_list = ipatch_container_get_children(gig, IPATCH_TYPE_DLS2_SAMPLE);
@@ -858,10 +924,8 @@ ags_ipatch_gig_reader_get_sample_all(AgsIpatchGigReader *ipatch_gig_reader)
       sample[i] = NULL;
     }
   }
-  
-  //FIXME:JK: still needed?
-  while(g_static_rec_mutex_unlock_full(((IpatchItem *) (gig))->mutex) != 0);
-#endif
+
+  g_rec_mutex_unlock(ipatch_gig_reader_mutex);
   
   return(sample);
 }
@@ -881,7 +945,6 @@ gchar**
 ags_ipatch_gig_reader_get_sample_by_instrument_index(AgsIpatchGigReader *ipatch_gig_reader,
 						     guint instrument_index)
 {
-#ifdef AGS_WITH_LIBINSTPATCH
   IpatchGig *gig;
   IpatchContainer *instrument;
   
@@ -889,7 +952,6 @@ ags_ipatch_gig_reader_get_sample_by_instrument_index(AgsIpatchGigReader *ipatch_
   IpatchList *ipatch_list;
   
   IpatchIter instrument_iter, sample_iter;
-#endif
 
   gchar **sample;
 
@@ -897,13 +959,19 @@ ags_ipatch_gig_reader_get_sample_by_instrument_index(AgsIpatchGigReader *ipatch_
   guint j, j_stop;
   guint count;
 
+  GRecMutex *ipatch_gig_reader_mutex;
+
   if(!AGS_IS_IPATCH_GIG_READER(ipatch_gig_reader)){
     return(NULL);
   }
+
+  /* get ipatch gig reader mutex */
+  ipatch_gig_reader_mutex = AGS_IPATCH_GIG_READER_GET_OBJ_MUTEX(ipatch_gig_reader);
   
   sample = NULL;
+
+  g_rec_mutex_lock(ipatch_gig_reader_mutex);
   
-#ifdef AGS_WITH_LIBINSTPATCH
   gig = ipatch_gig_reader->gig;
   
   /* instruments */
@@ -951,10 +1019,8 @@ ags_ipatch_gig_reader_get_sample_by_instrument_index(AgsIpatchGigReader *ipatch_
       }
     }
   }
-
-  //FIXME:JK: still needed?
-  while(g_static_rec_mutex_unlock_full(((IpatchItem *) (gig))->mutex) != 0);
-#endif
+  
+  g_rec_mutex_unlock(ipatch_gig_reader_mutex);
 
   return(sample);
 }

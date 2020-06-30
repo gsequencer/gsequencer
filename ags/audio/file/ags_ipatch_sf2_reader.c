@@ -606,11 +606,11 @@ ags_ipatch_sf2_reader_load(AgsIpatchSF2Reader *ipatch_sf2_reader,
   reader = 
     ipatch_sf2_reader->reader = ipatch_sf2_reader_new(handle);
 
-  g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
-
   error = NULL;
   ipatch_sf2_reader->base = (IpatchBase *) ipatch_sf2_reader_load(reader,
 								  &error);
+
+  g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
 
   if(error != NULL){
     g_warning("%s", error->message);
@@ -623,11 +623,15 @@ ags_ipatch_sf2_reader_load(AgsIpatchSF2Reader *ipatch_sf2_reader,
         
     return(FALSE);
   }
+
+  g_rec_mutex_lock(ipatch_sf2_reader_mutex);
   
   error = NULL;
   ipatch_sf2_reader->sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) handle->file,
 								       IPATCH_TYPE_SF2,
 								       &error);
+
+  g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
 
   if(error != NULL){
     g_warning("%s", error->message);
@@ -646,7 +650,7 @@ ags_ipatch_sf2_reader_load(AgsIpatchSF2Reader *ipatch_sf2_reader,
 
 /**
  * ags_ipatch_sf2_reader_select_preset:
- * @ipatch_sf2_reader: the #AgsSF2Reader
+ * @ipatch_sf2_reader: the #AgsIpatchSF2Reader
  * @preset_index: the preset index
  * 
  * Select preset.
@@ -723,7 +727,7 @@ ags_ipatch_sf2_reader_select_preset(AgsIpatchSF2Reader *ipatch_sf2_reader,
 
 /**
  * ags_ipatch_sf2_reader_select_instrument:
- * @ipatch_sf2_reader: the #AgsSF2Reader
+ * @ipatch_sf2_reader: the #AgsIpatchSF2Reader
  * @instrument_index: the instrument index
  * 
  * Select instrument.
@@ -795,7 +799,7 @@ ags_ipatch_sf2_reader_select_instrument(AgsIpatchSF2Reader *ipatch_sf2_reader,
 
 /**
  * ags_ipatch_sf2_reader_select_sample:
- * @ipatch_sf2_reader: the #AgsSF2Reader
+ * @ipatch_sf2_reader: the #AgsIpatchSF2Reader
  * @sample_index: the sample index
  * 
  * Select sample.
@@ -860,7 +864,7 @@ ags_ipatch_sf2_reader_select_sample(AgsIpatchSF2Reader *ipatch_sf2_reader,
 
 /**
  * ags_ipatch_sf2_reader_get_preset_all:
- * @ipatch_sf2_reader: the #AgsSF2Reader
+ * @ipatch_sf2_reader: the #AgsIpatchSF2Reader
  * 
  * Get all preset names.
  * 
@@ -927,7 +931,7 @@ ags_ipatch_sf2_reader_get_preset_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
 
 /**
  * ags_ipatch_sf2_reader_get_instrument_all:
- * @ipatch_sf2_reader: the #AgsSF2Reader
+ * @ipatch_sf2_reader: the #AgsIpatchSF2Reader
  * 
  * Get all instrument names.
  * 
@@ -994,7 +998,7 @@ ags_ipatch_sf2_reader_get_instrument_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
 
 /**
  * ags_ipatch_sf2_reader_get_sample_all:
- * @ipatch_sf2_reader: the #AgsSF2Reader
+ * @ipatch_sf2_reader: the #AgsIpatchSF2Reader
  * 
  * Get all sample names.
  * 
@@ -1061,7 +1065,7 @@ ags_ipatch_sf2_reader_get_sample_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
 
 /**
  * ags_ipatch_sf2_reader_get_instrument_by_preset_index:
- * @ipatch_sf2_reader: the #AgsSF2Reader
+ * @ipatch_sf2_reader: the #AgsIpatchSF2Reader
  * @preset_index: the preset index
  * 
  * Get instrument by preset index.
@@ -1153,7 +1157,7 @@ ags_ipatch_sf2_reader_get_instrument_by_preset_index(AgsIpatchSF2Reader *ipatch_
 
 /**
  * ags_ipatch_sf2_reader_get_sample_by_preset_index:
- * @ipatch_sf2_reader: the #AgsSF2Reader
+ * @ipatch_sf2_reader: the #AgsIpatchSF2Reader
  * @preset_index: the preset index
  * 
  * Get sample by preset index.
@@ -1268,7 +1272,7 @@ ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_
 
 /**
  * ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index:
- * @ipatch_sf2_reader: the #AgsSF2Reader
+ * @ipatch_sf2_reader: the #AgsIpatchSF2Reader
  * @preset_index: the preset index
  * @instrument_index: the instrument index
  * 
