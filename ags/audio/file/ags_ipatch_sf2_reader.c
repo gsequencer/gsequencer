@@ -659,13 +659,11 @@ gboolean
 ags_ipatch_sf2_reader_select_preset(AgsIpatchSF2Reader *ipatch_sf2_reader,
 				    guint preset_index)
 {
-#ifdef AGS_WITH_LIBINSTPATCH
   IpatchSF2 *sf2;
   IpatchItem *ipatch_item;
   IpatchList *ipatch_list;
 
   IpatchIter preset_iter;
-#endif
   
   gboolean success;
   
@@ -680,7 +678,6 @@ ags_ipatch_sf2_reader_select_preset(AgsIpatchSF2Reader *ipatch_sf2_reader,
 
   success = FALSE;
 
-#ifdef AGS_WITH_LIBINSTPATCH
   g_rec_mutex_lock(ipatch_sf2_reader_mutex);
 
   sf2 = ipatch_sf2_reader->sf2;
@@ -720,7 +717,6 @@ ags_ipatch_sf2_reader_select_preset(AgsIpatchSF2Reader *ipatch_sf2_reader,
   }
   
   g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
-#endif
   
   return(success);
 }
@@ -740,13 +736,11 @@ gboolean
 ags_ipatch_sf2_reader_select_instrument(AgsIpatchSF2Reader *ipatch_sf2_reader,
 					guint instrument_index)
 {
-#ifdef AGS_WITH_LIBINSTPATCH
   IpatchSF2 *sf2;
   IpatchItem *ipatch_item;
   IpatchList *ipatch_list;
 
   IpatchIter instrument_iter;
-#endif
   
   gboolean success;
 
@@ -761,7 +755,6 @@ ags_ipatch_sf2_reader_select_instrument(AgsIpatchSF2Reader *ipatch_sf2_reader,
 
   success = FALSE;
 
-#ifdef AGS_WITH_LIBINSTPATCH
   g_rec_mutex_lock(ipatch_sf2_reader_mutex);
 
   sf2 = ipatch_sf2_reader->sf2;
@@ -796,7 +789,6 @@ ags_ipatch_sf2_reader_select_instrument(AgsIpatchSF2Reader *ipatch_sf2_reader,
   }
   
   g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
-#endif
   
   return(success);
 }
@@ -816,13 +808,11 @@ gboolean
 ags_ipatch_sf2_reader_select_sample(AgsIpatchSF2Reader *ipatch_sf2_reader,
 				    guint sample_index)
 {
-#ifdef AGS_WITH_LIBINSTPATCH
   IpatchSF2 *sf2;
   IpatchItem *ipatch_item;
   IpatchList *ipatch_list;
 
   IpatchIter sample_iter;
-#endif
   
   gboolean success;
 
@@ -837,7 +827,6 @@ ags_ipatch_sf2_reader_select_sample(AgsIpatchSF2Reader *ipatch_sf2_reader,
 
   success = FALSE;
 
-#ifdef AGS_WITH_LIBINSTPATCH
   g_rec_mutex_lock(ipatch_sf2_reader_mutex);
 
   sf2 = ipatch_sf2_reader->sf2;
@@ -865,7 +854,6 @@ ags_ipatch_sf2_reader_select_sample(AgsIpatchSF2Reader *ipatch_sf2_reader,
   }
   
   g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
-#endif
   
   return(success);
 }
@@ -883,13 +871,11 @@ ags_ipatch_sf2_reader_select_sample(AgsIpatchSF2Reader *ipatch_sf2_reader,
 gchar**
 ags_ipatch_sf2_reader_get_preset_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
 {
-#ifdef AGS_WITH_LIBINSTPATCH
   IpatchSF2 *sf2;
   IpatchItem *ipatch_item;
   IpatchList *ipatch_list;
   
   IpatchIter preset_iter;
-#endif
   
   gchar **preset;
   
@@ -906,7 +892,6 @@ ags_ipatch_sf2_reader_get_preset_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
   
   preset = NULL;
 
-#ifdef AGS_WITH_LIBINSTPATCH
   g_rec_mutex_lock(ipatch_sf2_reader_mutex);
 
   sf2 = ipatch_sf2_reader->sf2;
@@ -936,7 +921,6 @@ ags_ipatch_sf2_reader_get_preset_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
   }
   
   g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
-#endif
   
   return(preset);
 }
@@ -954,13 +938,11 @@ ags_ipatch_sf2_reader_get_preset_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
 gchar**
 ags_ipatch_sf2_reader_get_instrument_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
 {
-#ifdef AGS_WITH_LIBINSTPATCH
   IpatchSF2 *sf2;
   IpatchItem *ipatch_item;
   IpatchList *ipatch_list;
   
   IpatchIter instrument_iter;
-#endif
   
   gchar **instrument;
   
@@ -977,7 +959,6 @@ ags_ipatch_sf2_reader_get_instrument_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
   
   instrument = NULL;
 
-#ifdef AGS_WITH_LIBINSTPATCH
   g_rec_mutex_lock(ipatch_sf2_reader_mutex);
 
   sf2 = ipatch_sf2_reader->sf2;
@@ -1007,7 +988,6 @@ ags_ipatch_sf2_reader_get_instrument_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
   }
   
   g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
-#endif
   
   return(instrument);
 }
@@ -1025,13 +1005,11 @@ ags_ipatch_sf2_reader_get_instrument_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
 gchar**
 ags_ipatch_sf2_reader_get_sample_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
 {
-#ifdef AGS_WITH_LIBINSTPATCH
   IpatchSF2 *sf2;
   IpatchItem *ipatch_item;
   IpatchList *ipatch_list;
   
   IpatchIter sample_iter;
-#endif
   
   gchar **sample;
   
@@ -1048,7 +1026,6 @@ ags_ipatch_sf2_reader_get_sample_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
 
   sample = NULL;
 
-#ifdef AGS_WITH_LIBINSTPATCH
   g_rec_mutex_lock(ipatch_sf2_reader_mutex);
 
   sf2 = ipatch_sf2_reader->sf2;
@@ -1078,7 +1055,6 @@ ags_ipatch_sf2_reader_get_sample_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
   }
   
   g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
-#endif
   
   return(sample);
 }
@@ -1098,7 +1074,6 @@ gchar**
 ags_ipatch_sf2_reader_get_instrument_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_reader,
 						     guint preset_index)
 {
-#ifdef AGS_WITH_LIBINSTPATCH
   IpatchSF2 *sf2;
   IpatchContainer *preset;  
   IpatchContainer *instrument;
@@ -1107,7 +1082,6 @@ ags_ipatch_sf2_reader_get_instrument_by_preset_index(AgsIpatchSF2Reader *ipatch_
   IpatchList *ipatch_list;
   
   IpatchIter preset_iter, instrument_iter, sample_iter;
-#endif
 
   gchar **instrument_strv;
 
@@ -1127,7 +1101,6 @@ ags_ipatch_sf2_reader_get_instrument_by_preset_index(AgsIpatchSF2Reader *ipatch_
   
   instrument_strv = NULL;
   
-#ifdef AGS_WITH_LIBINSTPATCH
   g_rec_mutex_lock(ipatch_sf2_reader_mutex);
 
   sf2 = ipatch_sf2_reader->sf2;
@@ -1174,7 +1147,6 @@ ags_ipatch_sf2_reader_get_instrument_by_preset_index(AgsIpatchSF2Reader *ipatch_
   }
   
   g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
-#endif
 
   return(instrument_strv);
 }
@@ -1194,7 +1166,6 @@ gchar**
 ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_reader,
 						 guint preset_index)
 {
-#ifdef AGS_WITH_LIBINSTPATCH
   IpatchSF2 *sf2;
   IpatchContainer *preset;  
   IpatchContainer *instrument;
@@ -1203,7 +1174,6 @@ ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_
   IpatchList *ipatch_list;
   
   IpatchIter preset_iter, instrument_iter, sample_iter;
-#endif
 
   gchar **sample_strv;
 
@@ -1223,7 +1193,6 @@ ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_
   
   sample_strv = NULL;
   
-#ifdef AGS_WITH_LIBINSTPATCH
   g_rec_mutex_lock(ipatch_sf2_reader_mutex);
 
   sf2 = ipatch_sf2_reader->sf2;
@@ -1293,7 +1262,6 @@ ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_
   }
 
   g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
-#endif
 
   return(sample_strv);
 }
@@ -1314,7 +1282,6 @@ gchar**
 ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index(AgsIpatchSF2Reader *ipatch_sf2_reader,
 								guint preset_index, guint instrument_index)
 {
-#ifdef AGS_WITH_LIBINSTPATCH
   IpatchSF2 *sf2;
   IpatchContainer *preset;  
   IpatchContainer *instrument;
@@ -1323,7 +1290,6 @@ ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index(AgsIpatchSF2Read
   IpatchList *ipatch_list;
   
   IpatchIter preset_iter, instrument_iter, sample_iter;
-#endif
 
   gchar **sample;
 
@@ -1343,7 +1309,6 @@ ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index(AgsIpatchSF2Read
 
   sample = NULL;
   
-#ifdef AGS_WITH_LIBINSTPATCH
   g_rec_mutex_lock(ipatch_sf2_reader_mutex);
 
   sf2 = ipatch_sf2_reader->sf2;
@@ -1403,7 +1368,6 @@ ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index(AgsIpatchSF2Read
   }
 
   g_rec_mutex_unlock(ipatch_sf2_reader_mutex);
-#endif
 
   return(sample);
 }

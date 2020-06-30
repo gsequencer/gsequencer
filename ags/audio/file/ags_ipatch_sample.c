@@ -370,7 +370,6 @@ ags_ipatch_sample_set_property(GObject *gobject,
     break;
   case PROP_SAMPLE:
     {
-#ifdef AGS_WITH_LIBINSTPATCH
       IpatchContainer *sample;
 
       sample = g_value_get_object(value);
@@ -394,7 +393,6 @@ ags_ipatch_sample_set_property(GObject *gobject,
       ipatch_sample->sample = sample;
 
       g_rec_mutex_unlock(ipatch_sample_mutex);
-#endif
     }
     break;
   default:
@@ -663,13 +661,11 @@ ags_ipatch_sample_info(AgsSoundResource *sound_resource,
   sample_loop_start = 0;
   sample_loop_end = 0;
   
-#ifdef AGS_WITH_LIBINSTPATCH
   g_object_get(ipatch_sample->sample,
 	       "sample-size", &sample_frame_count,
 	       "loop-start", &sample_loop_start,
 	       "loop-end", &sample_loop_end,
 	       NULL);
-#endif
 
   if(frame_count != NULL){
     *frame_count = sample_frame_count;
@@ -710,7 +706,6 @@ ags_ipatch_sample_set_presets(AgsSoundResource *sound_resource,
     return;
   }
   
-#ifdef AGS_WITH_LIBINSTPATCH
   g_rec_mutex_lock(ipatch_sample_mutex);
 
   //NOTE:JK: this won't work
@@ -728,7 +723,6 @@ ags_ipatch_sample_set_presets(AgsSoundResource *sound_resource,
 	       NULL);
   
   g_rec_mutex_unlock(ipatch_sample_mutex);
-#endif
 
   g_object_set(ipatch_sample,
 	       "buffer-size", buffer_size,
@@ -745,36 +739,54 @@ ags_ipatch_sample_get_presets(AgsSoundResource *sound_resource,
 {
   AgsIpatchSample *ipatch_sample;
 
+  guint current_buffer_size;
+  guint current_format;
+
   gint sample_format;
   guint sample_channels;
   guint sample_samplerate;
 
+  GRecMutex *ipatch_sample_mutex;
+
   ipatch_sample = AGS_IPATCH_SAMPLE(sound_resource);
+
+  /* get ipatch sample mutex */
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
+
+  current_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  current_format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+
+  g_object_get(ipatch_sample,
+	       "buffer-size", &current_buffer_size,
+	       "format", &current_format,
+	       NULL);
   
   sample_format = 0;
   sample_samplerate = 0;
   
-#ifdef AGS_WITH_LIBINSTPATCH
+  g_rec_mutex_lock(ipatch_sample_mutex);
+
   g_object_get(ipatch_sample->sample,
 	       "sample-format", &sample_format,
 	       "sample-rate", &sample_samplerate,
 	       NULL);
-#endif
+
+  g_rec_mutex_unlock(ipatch_sample_mutex);
 
   if(channels != NULL){
-    *channels = IPATCH_SAMPLE_FORMAT_GET_CHANNEL_COUNT(sample_format);
+    channels[0] = IPATCH_SAMPLE_FORMAT_GET_CHANNEL_COUNT(sample_format);
   }
   
   if(samplerate != NULL){
-    *samplerate = sample_samplerate;
+    samplerate[0] = sample_samplerate;
   }
 
   if(buffer_size != NULL){
-    *buffer_size = ipatch_sample->buffer_size;
+    buffer_size[0] = current_buffer_size;
   }
 
   if(format != NULL){
-    *format = ipatch_sample->format;
+    format[0] = current_format;
   }
 }
 
@@ -791,17 +803,25 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
   
   GError *error;
   
+  GRecMutex *ipatch_sample_mutex;
+
   ipatch_sample = AGS_IPATCH_SAMPLE(sound_resource);
+
+  /* get ipatch sample mutex */
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
+
+  g_rec_mutex_lock(ipatch_sample_mutex);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 						  ags_audio_buffer_util_format_from_soundcard(ipatch_sample->format));
 
-#ifdef AGS_WITH_LIBINSTPATCH
   ags_sound_resource_info(sound_resource,
 			  &total_frame_count,
 			  NULL, NULL);
   
   if(ipatch_sample->offset >= total_frame_count){
+    g_rec_mutex_unlock(ipatch_sample_mutex);
+    
     return(0);
   }
 
@@ -895,9 +915,8 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
 					      frame_count, copy_mode);
 
   ipatch_sample->offset += frame_count;
-#else
-  frame_count = 0;
-#endif
+
+  g_rec_mutex_unlock(ipatch_sample_mutex);
 
   return(frame_count);
 }
@@ -914,7 +933,14 @@ ags_ipatch_sample_write(AgsSoundResource *sound_resource,
 
   GError *error;
 
+  GRecMutex *ipatch_sample_mutex;
+
   ipatch_sample = AGS_IPATCH_SAMPLE(sound_resource);
+
+  /* get ipatch sample mutex */
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
+
+  g_rec_mutex_lock(ipatch_sample_mutex);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(ipatch_sample->format),
 						  ags_audio_buffer_util_format_from_soundcard(format));
@@ -1001,6 +1027,8 @@ ags_ipatch_sample_write(AgsSoundResource *sound_resource,
   }
   
   ipatch_sample->offset += frame_count;
+
+  g_rec_mutex_unlock(ipatch_sample_mutex);
 }
 
 void
@@ -1016,12 +1044,19 @@ ags_ipatch_sample_seek(AgsSoundResource *sound_resource,
   AgsIpatchSample *ipatch_sample;
 
   guint total_frame_count;
+
+  GRecMutex *ipatch_sample_mutex;
   
   ipatch_sample = AGS_IPATCH_SAMPLE(sound_resource);
+
+  /* get ipatch sample mutex */
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
 
   ags_sound_resource_info(sound_resource,
 			  &total_frame_count,
 			  NULL, NULL);
+
+  g_rec_mutex_lock(ipatch_sample_mutex);
 
   if(whence == G_SEEK_CUR){
     if(frame_count >= 0){
@@ -1058,6 +1093,8 @@ ags_ipatch_sample_seek(AgsSoundResource *sound_resource,
       }
     }
   }
+
+  g_rec_mutex_unlock(ipatch_sample_mutex);
 }
 
 /**
