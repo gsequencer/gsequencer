@@ -2,6 +2,7 @@ ags (3.4.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved thread-safety of ags/audio/file/*.c
+	* improved ags_sf2_synth_util.c and ags_sfz_synth_util.c
 
 ags (3.4.9)
 

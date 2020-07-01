@@ -260,10 +260,8 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
   guint source_format;
   guint copy_mode;
 
-  guint i;
-  guint j;
-  guint k;
-  guint l;
+  guint i0, i1, i2;
+  gboolean success;
   gboolean pong_copy;
 
   source_frame_count = 0;
@@ -361,149 +359,126 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
 			   base_key,
 			   tuning);
 
+  success = FALSE;
   pong_copy = FALSE;
-  
-  for(i = 0, j = 0, k = 0, l = 0; i < n_frames;){
+
+  for(i0 = 0, i1 = 0, i2 = 0; i0 < n_frames && !success && i2 < buffer_size; ){
     guint copy_n_frames;
+    guint start_frame;
 
     gboolean set_loop_start;
     gboolean set_loop_end;
-    gboolean success;
+    gboolean do_copy;
     
     copy_n_frames = buffer_size;
 
     set_loop_start = FALSE;
     set_loop_end = FALSE;
 
-    success = FALSE;
+    do_copy = FALSE;
     
-    if(offset + copy_n_frames > n_frames){
-      copy_n_frames = n_frames - offset;
+    if(i0 + copy_n_frames > n_frames){
+      copy_n_frames = n_frames - i0;
     }
     
-    if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-       (loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	!pong_copy)){
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+       loop_start >= 0 &&
+       loop_end >= 0 &&
+       loop_start < loop_end){
+      /* can loop */
+      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+	if(i1 + copy_n_frames >= loop_end){
+	  copy_n_frames = loop_end - i1;
 	  
-	  set_loop_end = TRUE;
-	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
-	      set_loop_start = TRUE;
-	    }else{
-	      set_loop_end = TRUE;
-	    }
-	  }else{
-	    //nothing
-	  }
+	  set_loop_start = TRUE;
 	}
-      }
-    }else if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	     pong_copy){
-      if(k >= loop_end){
-	//nothing
       }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
-	}else{
-	  if(k - copy_n_frames < loop_start){
-	    copy_n_frames = copy_n_frames - (loop_start - (k - copy_n_frames));
+	if(!pong_copy){
+	  if(i1 + copy_n_frames >= loop_end){
+	    copy_n_frames = loop_end - i1;
 
-	    set_loop_start = TRUE;
-	  }else{
-	    //nothing
+	    set_loop_end = TRUE;
 	  }
-	}	
-      }
-    }
-
-    if(!pong_copy){
-      if(l + copy_n_frames >= buffer_size){
-	copy_n_frames = copy_n_frames - ((l + copy_n_frames) - buffer_size);
-      
-	if(i + copy_n_frames > offset){
-	  success = TRUE;
+	}else{
+	  if(i1 - copy_n_frames <= loop_start){
+	    copy_n_frames = i1 - loop_start;
+	    
+	    set_loop_start = TRUE;
+	  }
 	}
       }
     }else{
-      if(l - copy_n_frames < 0){
-	copy_n_frames = copy_n_frames + (l - copy_n_frames);
-      
-	if(i + copy_n_frames > offset){
-	  success = TRUE;
-	}
+      /* can't loop */
+      if(i1 + copy_n_frames > frame_count){
+	copy_n_frames = frame_count - i1;
+
+	success = TRUE;
       }
     }
-    
-    if(i + copy_n_frames > offset){
-      guint start_frame;
 
-      if(i < offset){
-	start_frame = (i + copy_n_frames) - offset;
-      }else{
-	start_frame = 0;
+    start_frame = 0;
+      
+    if(i0 + copy_n_frames > offset){
+      do_copy = TRUE;
+      
+      if(i0 < offset){
+	start_frame = (i0 + copy_n_frames) - offset;
       }
       
       if(!pong_copy){	
-	ags_audio_buffer_util_copy_s8_to_s8(buffer + l, 1,
-					    im_buffer + k, 1,
+	ags_audio_buffer_util_copy_s8_to_s8(buffer + i2, 1,
+					    im_buffer + i1, 1,
 					    copy_n_frames - start_frame);
       }else{
-	ags_audio_buffer_util_pong_s8(buffer + l, 1,
-				      im_buffer + k, 1,
+	ags_audio_buffer_util_pong_s8(buffer + i2, 1,
+				      im_buffer + i1, 1,
 				      copy_n_frames - start_frame);
       }
     }
 
-    if(success){
-      break;
-    }
-
-    i += copy_n_frames;
-
-    if(j + copy_n_frames < buffer_size){
-      j += copy_n_frames;
-    }else{
-      j = (j + copy_n_frames) % buffer_size;
-    }
-
-    if(!pong_copy){
-      k += copy_n_frames;
-    }else{
-      k -= copy_n_frames;
-    }
-
-    l += copy_n_frames;
-
-    if(l >= buffer_size){
-      l = 0;
-    }
+    i0 += copy_n_frames;
     
-    if(set_loop_start){
-      k = loop_start;
-
-      if(pong_copy){
-	pong_copy = FALSE;
+    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+       loop_start >= 0 &&
+       loop_end >= 0 &&
+       loop_start < loop_end){
+      /* can loop */
+      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+	if(set_loop_start){
+	  i1 = loop_start;
+	}else{
+	  i1 += copy_n_frames;
+	}
+      }else{
+	if(!pong_copy){
+	  if(set_loop_end){
+	    i1 = loop_end; 
+	    
+	    pong_copy = TRUE;
+	  }else{
+	    i1 += copy_n_frames;
+	  }
+	}else{
+	  if(set_loop_start){
+	    i1 = loop_start;
+	    
+	    pong_copy = FALSE;
+	  }else{
+	    i1 -= copy_n_frames;
+	  }
+	}
       }
-    }
-    
-    if(set_loop_end){
-      k = loop_end;
+    }else{
+      /* can't loop */
+      i1 += copy_n_frames;
+    }    
 
-      if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	 k + copy_n_frames < n_frames - offset){
-	pong_copy = TRUE;
-      }
+    if(do_copy){
+      i2 += (copy_n_frames - start_frame);
     }
   }
   
@@ -823,10 +798,8 @@ ags_sf2_synth_util_copy_s24(gint32 *buffer,
   guint source_format;
   guint copy_mode;
 
-  guint i;
-  guint j;
-  guint k;
-  guint l;
+  guint i0, i1, i2;
+  gboolean success;
   gboolean pong_copy;
   
   source_frame_count = 0;
@@ -924,149 +897,126 @@ ags_sf2_synth_util_copy_s24(gint32 *buffer,
 			    base_key,
 			    tuning);
 
+  success = FALSE;
   pong_copy = FALSE;
-  
-  for(i = 0, j = 0, k = 0, l = 0; i < n_frames;){
+
+  for(i0 = 0, i1 = 0, i2 = 0; i0 < n_frames && !success && i2 < buffer_size; ){
     guint copy_n_frames;
+    guint start_frame;
 
     gboolean set_loop_start;
     gboolean set_loop_end;
-    gboolean success;
+    gboolean do_copy;
     
     copy_n_frames = buffer_size;
 
     set_loop_start = FALSE;
     set_loop_end = FALSE;
 
-    success = FALSE;
+    do_copy = FALSE;
     
-    if(offset + copy_n_frames > n_frames){
-      copy_n_frames = n_frames - offset;
+    if(i0 + copy_n_frames > n_frames){
+      copy_n_frames = n_frames - i0;
     }
     
-    if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-       (loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	!pong_copy)){
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+       loop_start >= 0 &&
+       loop_end >= 0 &&
+       loop_start < loop_end){
+      /* can loop */
+      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+	if(i1 + copy_n_frames >= loop_end){
+	  copy_n_frames = loop_end - i1;
 	  
-	  set_loop_end = TRUE;
-	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
-	      set_loop_start = TRUE;
-	    }else{
-	      set_loop_end = TRUE;
-	    }
-	  }else{
-	    //nothing
-	  }
+	  set_loop_start = TRUE;
 	}
-      }
-    }else if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	     pong_copy){
-      if(k >= loop_end){
-	//nothing
       }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
-	}else{
-	  if(k - copy_n_frames < loop_start){
-	    copy_n_frames = copy_n_frames - (loop_start - (k - copy_n_frames));
+	if(!pong_copy){
+	  if(i1 + copy_n_frames >= loop_end){
+	    copy_n_frames = loop_end - i1;
 
-	    set_loop_start = TRUE;
-	  }else{
-	    //nothing
+	    set_loop_end = TRUE;
 	  }
-	}	
-      }
-    }
-
-    if(!pong_copy){
-      if(l + copy_n_frames >= buffer_size){
-	copy_n_frames = copy_n_frames - ((l + copy_n_frames) - buffer_size);
-      
-	if(i + copy_n_frames > offset){
-	  success = TRUE;
+	}else{
+	  if(i1 - copy_n_frames <= loop_start){
+	    copy_n_frames = i1 - loop_start;
+	    
+	    set_loop_start = TRUE;
+	  }
 	}
       }
     }else{
-      if(l - copy_n_frames < 0){
-	copy_n_frames = copy_n_frames + (l - copy_n_frames);
-      
-	if(i + copy_n_frames > offset){
-	  success = TRUE;
-	}
+      /* can't loop */
+      if(i1 + copy_n_frames > frame_count){
+	copy_n_frames = frame_count - i1;
+
+	success = TRUE;
       }
     }
-    
-    if(i + copy_n_frames > offset){
-      guint start_frame;
 
-      if(i < offset){
-	start_frame = (i + copy_n_frames) - offset;
-      }else{
-	start_frame = 0;
+    start_frame = 0;
+      
+    if(i0 + copy_n_frames > offset){
+      do_copy = TRUE;
+      
+      if(i0 < offset){
+	start_frame = (i0 + copy_n_frames) - offset;
       }
       
       if(!pong_copy){	
-	ags_audio_buffer_util_copy_s24_to_s24(buffer + l, 1,
-					      im_buffer + k, 1,
+	ags_audio_buffer_util_copy_s24_to_s24(buffer + i2, 1,
+					      im_buffer + i1, 1,
 					      copy_n_frames - start_frame);
       }else{
-	ags_audio_buffer_util_pong_s24(buffer + l, 1,
-				       im_buffer + k, 1,
+	ags_audio_buffer_util_pong_s24(buffer + i2, 1,
+				       im_buffer + i1, 1,
 				       copy_n_frames - start_frame);
       }
     }
 
-    if(success){
-      break;
-    }
-
-    i += copy_n_frames;
-
-    if(j + copy_n_frames < buffer_size){
-      j += copy_n_frames;
-    }else{
-      j = (j + copy_n_frames) % buffer_size;
-    }
-
-    if(!pong_copy){
-      k += copy_n_frames;
-    }else{
-      k -= copy_n_frames;
-    }
-
-    l += copy_n_frames;
-
-    if(l >= buffer_size){
-      l = 0;
-    }
+    i0 += copy_n_frames;
     
-    if(set_loop_start){
-      k = loop_start;
-
-      if(pong_copy){
-	pong_copy = FALSE;
+    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+       loop_start >= 0 &&
+       loop_end >= 0 &&
+       loop_start < loop_end){
+      /* can loop */
+      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+	if(set_loop_start){
+	  i1 = loop_start;
+	}else{
+	  i1 += copy_n_frames;
+	}
+      }else{
+	if(!pong_copy){
+	  if(set_loop_end){
+	    i1 = loop_end; 
+	    
+	    pong_copy = TRUE;
+	  }else{
+	    i1 += copy_n_frames;
+	  }
+	}else{
+	  if(set_loop_start){
+	    i1 = loop_start;
+	    
+	    pong_copy = FALSE;
+	  }else{
+	    i1 -= copy_n_frames;
+	  }
+	}
       }
-    }
-    
-    if(set_loop_end){
-      k = loop_end;
+    }else{
+      /* can't loop */
+      i1 += copy_n_frames;
+    }    
 
-      if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	 k + copy_n_frames < n_frames - offset){
-	pong_copy = TRUE;
-      }
+    if(do_copy){
+      i2 += (copy_n_frames - start_frame);
     }
   }
   
@@ -1117,10 +1067,8 @@ ags_sf2_synth_util_copy_s32(gint32 *buffer,
   guint source_format;
   guint copy_mode;
 
-  guint i;
-  guint j;
-  guint k;
-  guint l;
+  guint i0, i1, i2;
+  gboolean success;
   gboolean pong_copy;
   
   source_frame_count = 0;
@@ -1218,149 +1166,126 @@ ags_sf2_synth_util_copy_s32(gint32 *buffer,
 			    base_key,
 			    tuning);
 
+  success = FALSE;
   pong_copy = FALSE;
-  
-  for(i = 0, j = 0, k = 0, l = 0; i < n_frames;){
+
+  for(i0 = 0, i1 = 0, i2 = 0; i0 < n_frames && !success && i2 < buffer_size; ){
     guint copy_n_frames;
+    guint start_frame;
 
     gboolean set_loop_start;
     gboolean set_loop_end;
-    gboolean success;
+    gboolean do_copy;
     
     copy_n_frames = buffer_size;
 
     set_loop_start = FALSE;
     set_loop_end = FALSE;
 
-    success = FALSE;
+    do_copy = FALSE;
     
-    if(offset + copy_n_frames > n_frames){
-      copy_n_frames = n_frames - offset;
+    if(i0 + copy_n_frames > n_frames){
+      copy_n_frames = n_frames - i0;
     }
     
-    if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-       (loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	!pong_copy)){
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+       loop_start >= 0 &&
+       loop_end >= 0 &&
+       loop_start < loop_end){
+      /* can loop */
+      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+	if(i1 + copy_n_frames >= loop_end){
+	  copy_n_frames = loop_end - i1;
 	  
-	  set_loop_end = TRUE;
-	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
-	      set_loop_start = TRUE;
-	    }else{
-	      set_loop_end = TRUE;
-	    }
-	  }else{
-	    //nothing
-	  }
+	  set_loop_start = TRUE;
 	}
-      }
-    }else if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	     pong_copy){
-      if(k >= loop_end){
-	//nothing
       }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
-	}else{
-	  if(k - copy_n_frames < loop_start){
-	    copy_n_frames = copy_n_frames - (loop_start - (k - copy_n_frames));
+	if(!pong_copy){
+	  if(i1 + copy_n_frames >= loop_end){
+	    copy_n_frames = loop_end - i1;
 
-	    set_loop_start = TRUE;
-	  }else{
-	    //nothing
+	    set_loop_end = TRUE;
 	  }
-	}	
-      }
-    }
-
-    if(!pong_copy){
-      if(l + copy_n_frames >= buffer_size){
-	copy_n_frames = copy_n_frames - ((l + copy_n_frames) - buffer_size);
-      
-	if(i + copy_n_frames > offset){
-	  success = TRUE;
+	}else{
+	  if(i1 - copy_n_frames <= loop_start){
+	    copy_n_frames = i1 - loop_start;
+	    
+	    set_loop_start = TRUE;
+	  }
 	}
       }
     }else{
-      if(l - copy_n_frames < 0){
-	copy_n_frames = copy_n_frames + (l - copy_n_frames);
-      
-	if(i + copy_n_frames > offset){
-	  success = TRUE;
-	}
+      /* can't loop */
+      if(i1 + copy_n_frames > frame_count){
+	copy_n_frames = frame_count - i1;
+
+	success = TRUE;
       }
     }
-    
-    if(i + copy_n_frames > offset){
-      guint start_frame;
 
-      if(i < offset){
-	start_frame = (i + copy_n_frames) - offset;
-      }else{
-	start_frame = 0;
+    start_frame = 0;
+      
+    if(i0 + copy_n_frames > offset){
+      do_copy = TRUE;
+      
+      if(i0 < offset){
+	start_frame = (i0 + copy_n_frames) - offset;
       }
       
       if(!pong_copy){	
-	ags_audio_buffer_util_copy_s32_to_s32(buffer + l, 1,
-					      im_buffer + k, 1,
+	ags_audio_buffer_util_copy_s32_to_s32(buffer + i2, 1,
+					      im_buffer + i1, 1,
 					      copy_n_frames - start_frame);
       }else{
-	ags_audio_buffer_util_pong_s32(buffer + l, 1,
-				       im_buffer + k, 1,
+	ags_audio_buffer_util_pong_s32(buffer + i2, 1,
+				       im_buffer + i1, 1,
 				       copy_n_frames - start_frame);
       }
     }
 
-    if(success){
-      break;
-    }
-
-    i += copy_n_frames;
-
-    if(j + copy_n_frames < buffer_size){
-      j += copy_n_frames;
-    }else{
-      j = (j + copy_n_frames) % buffer_size;
-    }
-
-    if(!pong_copy){
-      k += copy_n_frames;
-    }else{
-      k -= copy_n_frames;
-    }
-
-    l += copy_n_frames;
-
-    if(l >= buffer_size){
-      l = 0;
-    }
+    i0 += copy_n_frames;
     
-    if(set_loop_start){
-      k = loop_start;
-
-      if(pong_copy){
-	pong_copy = FALSE;
+    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+       loop_start >= 0 &&
+       loop_end >= 0 &&
+       loop_start < loop_end){
+      /* can loop */
+      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+	if(set_loop_start){
+	  i1 = loop_start;
+	}else{
+	  i1 += copy_n_frames;
+	}
+      }else{
+	if(!pong_copy){
+	  if(set_loop_end){
+	    i1 = loop_end; 
+	    
+	    pong_copy = TRUE;
+	  }else{
+	    i1 += copy_n_frames;
+	  }
+	}else{
+	  if(set_loop_start){
+	    i1 = loop_start;
+	    
+	    pong_copy = FALSE;
+	  }else{
+	    i1 -= copy_n_frames;
+	  }
+	}
       }
-    }
-    
-    if(set_loop_end){
-      k = loop_end;
+    }else{
+      /* can't loop */
+      i1 += copy_n_frames;
+    }    
 
-      if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	 k + copy_n_frames < n_frames - offset){
-	pong_copy = TRUE;
-      }
+    if(do_copy){
+      i2 += (copy_n_frames - start_frame);
     }
   }
 
@@ -1411,10 +1336,8 @@ ags_sf2_synth_util_copy_s64(gint64 *buffer,
   guint source_format;
   guint copy_mode;
 
-  guint i;
-  guint j;
-  guint k;
-  guint l;
+  guint i0, i1, i2;
+  gboolean success;
   gboolean pong_copy;
   
   source_frame_count = 0;
@@ -1512,149 +1435,126 @@ ags_sf2_synth_util_copy_s64(gint64 *buffer,
 			    base_key,
 			    tuning);
 
+  success = FALSE;
   pong_copy = FALSE;
-  
-  for(i = 0, j = 0, k = 0, l = 0; i < n_frames;){
+
+  for(i0 = 0, i1 = 0, i2 = 0; i0 < n_frames && !success && i2 < buffer_size; ){
     guint copy_n_frames;
+    guint start_frame;
 
     gboolean set_loop_start;
     gboolean set_loop_end;
-    gboolean success;
+    gboolean do_copy;
     
     copy_n_frames = buffer_size;
 
     set_loop_start = FALSE;
     set_loop_end = FALSE;
 
-    success = FALSE;
+    do_copy = FALSE;
     
-    if(offset + copy_n_frames > n_frames){
-      copy_n_frames = n_frames - offset;
+    if(i0 + copy_n_frames > n_frames){
+      copy_n_frames = n_frames - i0;
     }
     
-    if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-       (loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	!pong_copy)){
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+       loop_start >= 0 &&
+       loop_end >= 0 &&
+       loop_start < loop_end){
+      /* can loop */
+      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+	if(i1 + copy_n_frames >= loop_end){
+	  copy_n_frames = loop_end - i1;
 	  
-	  set_loop_end = TRUE;
-	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
-	      set_loop_start = TRUE;
-	    }else{
-	      set_loop_end = TRUE;
-	    }
-	  }else{
-	    //nothing
-	  }
+	  set_loop_start = TRUE;
 	}
-      }
-    }else if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	     pong_copy){
-      if(k >= loop_end){
-	//nothing
       }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
-	}else{
-	  if(k - copy_n_frames < loop_start){
-	    copy_n_frames = copy_n_frames - (loop_start - (k - copy_n_frames));
+	if(!pong_copy){
+	  if(i1 + copy_n_frames >= loop_end){
+	    copy_n_frames = loop_end - i1;
 
-	    set_loop_start = TRUE;
-	  }else{
-	    //nothing
+	    set_loop_end = TRUE;
 	  }
-	}	
-      }
-    }
-
-    if(!pong_copy){
-      if(l + copy_n_frames >= buffer_size){
-	copy_n_frames = copy_n_frames - ((l + copy_n_frames) - buffer_size);
-      
-	if(i + copy_n_frames > offset){
-	  success = TRUE;
+	}else{
+	  if(i1 - copy_n_frames <= loop_start){
+	    copy_n_frames = i1 - loop_start;
+	    
+	    set_loop_start = TRUE;
+	  }
 	}
       }
     }else{
-      if(l - copy_n_frames < 0){
-	copy_n_frames = copy_n_frames + (l - copy_n_frames);
-      
-	if(i + copy_n_frames > offset){
-	  success = TRUE;
-	}
+      /* can't loop */
+      if(i1 + copy_n_frames > frame_count){
+	copy_n_frames = frame_count - i1;
+
+	success = TRUE;
       }
     }
-    
-    if(i + copy_n_frames > offset){
-      guint start_frame;
 
-      if(i < offset){
-	start_frame = (i + copy_n_frames) - offset;
-      }else{
-	start_frame = 0;
+    start_frame = 0;
+      
+    if(i0 + copy_n_frames > offset){
+      do_copy = TRUE;
+      
+      if(i0 < offset){
+	start_frame = (i0 + copy_n_frames) - offset;
       }
       
       if(!pong_copy){	
-	ags_audio_buffer_util_copy_s64_to_s64(buffer + l, 1,
-					      im_buffer + k, 1,
+	ags_audio_buffer_util_copy_s64_to_s64(buffer + i2, 1,
+					      im_buffer + i1, 1,
 					      copy_n_frames - start_frame);
       }else{
-	ags_audio_buffer_util_pong_s64(buffer + l, 1,
-				       im_buffer + k, 1,
+	ags_audio_buffer_util_pong_s64(buffer + i2, 1,
+				       im_buffer + i1, 1,
 				       copy_n_frames - start_frame);
       }
     }
 
-    if(success){
-      break;
-    }
-
-    i += copy_n_frames;
-
-    if(j + copy_n_frames < buffer_size){
-      j += copy_n_frames;
-    }else{
-      j = (j + copy_n_frames) % buffer_size;
-    }
-
-    if(!pong_copy){
-      k += copy_n_frames;
-    }else{
-      k -= copy_n_frames;
-    }
-
-    l += copy_n_frames;
-
-    if(l >= buffer_size){
-      l = 0;
-    }
+    i0 += copy_n_frames;
     
-    if(set_loop_start){
-      k = loop_start;
-
-      if(pong_copy){
-	pong_copy = FALSE;
+    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+       loop_start >= 0 &&
+       loop_end >= 0 &&
+       loop_start < loop_end){
+      /* can loop */
+      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+	if(set_loop_start){
+	  i1 = loop_start;
+	}else{
+	  i1 += copy_n_frames;
+	}
+      }else{
+	if(!pong_copy){
+	  if(set_loop_end){
+	    i1 = loop_end; 
+	    
+	    pong_copy = TRUE;
+	  }else{
+	    i1 += copy_n_frames;
+	  }
+	}else{
+	  if(set_loop_start){
+	    i1 = loop_start;
+	    
+	    pong_copy = FALSE;
+	  }else{
+	    i1 -= copy_n_frames;
+	  }
+	}
       }
-    }
-    
-    if(set_loop_end){
-      k = loop_end;
+    }else{
+      /* can't loop */
+      i1 += copy_n_frames;
+    }    
 
-      if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	 k + copy_n_frames < n_frames - offset){
-	pong_copy = TRUE;
-      }
+    if(do_copy){
+      i2 += (copy_n_frames - start_frame);
     }
   }
 
@@ -1705,10 +1605,8 @@ ags_sf2_synth_util_copy_float(gfloat *buffer,
   guint source_format;
   guint copy_mode;
 
-  guint i;
-  guint j;
-  guint k;
-  guint l;
+  guint i0, i1, i2;
+  gboolean success;
   gboolean pong_copy;
   
   source_frame_count = 0;
@@ -1806,149 +1704,126 @@ ags_sf2_synth_util_copy_float(gfloat *buffer,
 			      base_key,
 			      tuning);
 
+  success = FALSE;
   pong_copy = FALSE;
-  
-  for(i = 0, j = 0, k = 0, l = 0; i < n_frames;){
+
+  for(i0 = 0, i1 = 0, i2 = 0; i0 < n_frames && !success && i2 < buffer_size; ){
     guint copy_n_frames;
+    guint start_frame;
 
     gboolean set_loop_start;
     gboolean set_loop_end;
-    gboolean success;
+    gboolean do_copy;
     
     copy_n_frames = buffer_size;
 
     set_loop_start = FALSE;
     set_loop_end = FALSE;
 
-    success = FALSE;
+    do_copy = FALSE;
     
-    if(offset + copy_n_frames > n_frames){
-      copy_n_frames = n_frames - offset;
+    if(i0 + copy_n_frames > n_frames){
+      copy_n_frames = n_frames - i0;
     }
     
-    if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-       (loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	!pong_copy)){
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+       loop_start >= 0 &&
+       loop_end >= 0 &&
+       loop_start < loop_end){
+      /* can loop */
+      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+	if(i1 + copy_n_frames >= loop_end){
+	  copy_n_frames = loop_end - i1;
 	  
-	  set_loop_end = TRUE;
-	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
-	      set_loop_start = TRUE;
-	    }else{
-	      set_loop_end = TRUE;
-	    }
-	  }else{
-	    //nothing
-	  }
+	  set_loop_start = TRUE;
 	}
-      }
-    }else if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	     pong_copy){
-      if(k >= loop_end){
-	//nothing
       }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
-	}else{
-	  if(k - copy_n_frames < loop_start){
-	    copy_n_frames = copy_n_frames - (loop_start - (k - copy_n_frames));
+	if(!pong_copy){
+	  if(i1 + copy_n_frames >= loop_end){
+	    copy_n_frames = loop_end - i1;
 
-	    set_loop_start = TRUE;
-	  }else{
-	    //nothing
+	    set_loop_end = TRUE;
 	  }
-	}	
-      }
-    }
-
-    if(!pong_copy){
-      if(l + copy_n_frames >= buffer_size){
-	copy_n_frames = copy_n_frames - ((l + copy_n_frames) - buffer_size);
-      
-	if(i + copy_n_frames > offset){
-	  success = TRUE;
+	}else{
+	  if(i1 - copy_n_frames <= loop_start){
+	    copy_n_frames = i1 - loop_start;
+	    
+	    set_loop_start = TRUE;
+	  }
 	}
       }
     }else{
-      if(l - copy_n_frames < 0){
-	copy_n_frames = copy_n_frames + (l - copy_n_frames);
-      
-	if(i + copy_n_frames > offset){
-	  success = TRUE;
-	}
+      /* can't loop */
+      if(i1 + copy_n_frames > frame_count){
+	copy_n_frames = frame_count - i1;
+
+	success = TRUE;
       }
     }
-    
-    if(i + copy_n_frames > offset){
-      guint start_frame;
 
-      if(i < offset){
-	start_frame = (i + copy_n_frames) - offset;
-      }else{
-	start_frame = 0;
+    start_frame = 0;
+      
+    if(i0 + copy_n_frames > offset){
+      do_copy = TRUE;
+      
+      if(i0 < offset){
+	start_frame = (i0 + copy_n_frames) - offset;
       }
       
       if(!pong_copy){	
-	ags_audio_buffer_util_copy_float_to_float(buffer + l, 1,
-						  im_buffer + k, 1,
+	ags_audio_buffer_util_copy_float_to_float(buffer + i2, 1,
+						  im_buffer + i1, 1,
 						  copy_n_frames - start_frame);
       }else{
-	ags_audio_buffer_util_pong_float(buffer + l, 1,
-					 im_buffer + k, 1,
+	ags_audio_buffer_util_pong_float(buffer + i2, 1,
+					 im_buffer + i1, 1,
 					 copy_n_frames - start_frame);
       }
     }
 
-    if(success){
-      break;
-    }
-
-    i += copy_n_frames;
-
-    if(j + copy_n_frames < buffer_size){
-      j += copy_n_frames;
-    }else{
-      j = (j + copy_n_frames) % buffer_size;
-    }
-
-    if(!pong_copy){
-      k += copy_n_frames;
-    }else{
-      k -= copy_n_frames;
-    }
-
-    l += copy_n_frames;
-
-    if(l >= buffer_size){
-      l = 0;
-    }
+    i0 += copy_n_frames;
     
-    if(set_loop_start){
-      k = loop_start;
-
-      if(pong_copy){
-	pong_copy = FALSE;
+    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+       loop_start >= 0 &&
+       loop_end >= 0 &&
+       loop_start < loop_end){
+      /* can loop */
+      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+	if(set_loop_start){
+	  i1 = loop_start;
+	}else{
+	  i1 += copy_n_frames;
+	}
+      }else{
+	if(!pong_copy){
+	  if(set_loop_end){
+	    i1 = loop_end; 
+	    
+	    pong_copy = TRUE;
+	  }else{
+	    i1 += copy_n_frames;
+	  }
+	}else{
+	  if(set_loop_start){
+	    i1 = loop_start;
+	    
+	    pong_copy = FALSE;
+	  }else{
+	    i1 -= copy_n_frames;
+	  }
+	}
       }
-    }
-    
-    if(set_loop_end){
-      k = loop_end;
+    }else{
+      /* can't loop */
+      i1 += copy_n_frames;
+    }    
 
-      if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	 k + copy_n_frames < n_frames - offset){
-	pong_copy = TRUE;
-      }
+    if(do_copy){
+      i2 += (copy_n_frames - start_frame);
     }
   }
   
@@ -1999,10 +1874,8 @@ ags_sf2_synth_util_copy_double(gdouble *buffer,
   guint source_format;
   guint copy_mode;
 
-  guint i;
-  guint j;
-  guint k;
-  guint l;
+  guint i0, i1, i2;
+  gboolean success;
   gboolean pong_copy;
   
   source_frame_count = 0;
@@ -2100,149 +1973,126 @@ ags_sf2_synth_util_copy_double(gdouble *buffer,
 			       base_key,
 			       tuning);
 
+  success = FALSE;
   pong_copy = FALSE;
-  
-  for(i = 0, j = 0, k = 0, l = 0; i < n_frames;){
+
+  for(i0 = 0, i1 = 0, i2 = 0; i0 < n_frames && !success && i2 < buffer_size; ){
     guint copy_n_frames;
+    guint start_frame;
 
     gboolean set_loop_start;
     gboolean set_loop_end;
-    gboolean success;
+    gboolean do_copy;
     
     copy_n_frames = buffer_size;
 
     set_loop_start = FALSE;
     set_loop_end = FALSE;
 
-    success = FALSE;
+    do_copy = FALSE;
     
-    if(offset + copy_n_frames > n_frames){
-      copy_n_frames = n_frames - offset;
+    if(i0 + copy_n_frames > n_frames){
+      copy_n_frames = n_frames - i0;
     }
     
-    if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-       (loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	!pong_copy)){
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+       loop_start >= 0 &&
+       loop_end >= 0 &&
+       loop_start < loop_end){
+      /* can loop */
+      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+	if(i1 + copy_n_frames >= loop_end){
+	  copy_n_frames = loop_end - i1;
 	  
-	  set_loop_end = TRUE;
-	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
-	      set_loop_start = TRUE;
-	    }else{
-	      set_loop_end = TRUE;
-	    }
-	  }else{
-	    //nothing
-	  }
+	  set_loop_start = TRUE;
 	}
-      }
-    }else if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	     pong_copy){
-      if(k >= loop_end){
-	//nothing
       }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
-	}else{
-	  if(k - copy_n_frames < loop_start){
-	    copy_n_frames = copy_n_frames - (loop_start - (k - copy_n_frames));
+	if(!pong_copy){
+	  if(i1 + copy_n_frames >= loop_end){
+	    copy_n_frames = loop_end - i1;
 
-	    set_loop_start = TRUE;
-	  }else{
-	    //nothing
+	    set_loop_end = TRUE;
 	  }
-	}	
-      }
-    }
-
-    if(!pong_copy){
-      if(l + copy_n_frames >= buffer_size){
-	copy_n_frames = copy_n_frames - ((l + copy_n_frames) - buffer_size);
-      
-	if(i + copy_n_frames > offset){
-	  success = TRUE;
+	}else{
+	  if(i1 - copy_n_frames <= loop_start){
+	    copy_n_frames = i1 - loop_start;
+	    
+	    set_loop_start = TRUE;
+	  }
 	}
       }
     }else{
-      if(l - copy_n_frames < 0){
-	copy_n_frames = copy_n_frames + (l - copy_n_frames);
-      
-	if(i + copy_n_frames > offset){
-	  success = TRUE;
-	}
+      /* can't loop */
+      if(i1 + copy_n_frames > frame_count){
+	copy_n_frames = frame_count - i1;
+
+	success = TRUE;
       }
     }
-    
-    if(i + copy_n_frames > offset){
-      guint start_frame;
 
-      if(i < offset){
-	start_frame = (i + copy_n_frames) - offset;
-      }else{
-	start_frame = 0;
+    start_frame = 0;
+      
+    if(i0 + copy_n_frames > offset){
+      do_copy = TRUE;
+      
+      if(i0 < offset){
+	start_frame = (i0 + copy_n_frames) - offset;
       }
       
       if(!pong_copy){	
-	ags_audio_buffer_util_copy_double_to_double(buffer + l, 1,
-						    im_buffer + k, 1,
+	ags_audio_buffer_util_copy_double_to_double(buffer + i2, 1,
+						    im_buffer + i1, 1,
 						    copy_n_frames - start_frame);
       }else{
-	ags_audio_buffer_util_pong_double(buffer + l, 1,
-					  im_buffer + k, 1,
+	ags_audio_buffer_util_pong_double(buffer + i2, 1,
+					  im_buffer + i1, 1,
 					  copy_n_frames - start_frame);
       }
     }
 
-    if(success){
-      break;
-    }
-
-    i += copy_n_frames;
-
-    if(j + copy_n_frames < buffer_size){
-      j += copy_n_frames;
-    }else{
-      j = (j + copy_n_frames) % buffer_size;
-    }
-
-    if(!pong_copy){
-      k += copy_n_frames;
-    }else{
-      k -= copy_n_frames;
-    }
-
-    l += copy_n_frames;
-
-    if(l >= buffer_size){
-      l = 0;
-    }
+    i0 += copy_n_frames;
     
-    if(set_loop_start){
-      k = loop_start;
-
-      if(pong_copy){
-	pong_copy = FALSE;
+    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+       loop_start >= 0 &&
+       loop_end >= 0 &&
+       loop_start < loop_end){
+      /* can loop */
+      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+	if(set_loop_start){
+	  i1 = loop_start;
+	}else{
+	  i1 += copy_n_frames;
+	}
+      }else{
+	if(!pong_copy){
+	  if(set_loop_end){
+	    i1 = loop_end; 
+	    
+	    pong_copy = TRUE;
+	  }else{
+	    i1 += copy_n_frames;
+	  }
+	}else{
+	  if(set_loop_start){
+	    i1 = loop_start;
+	    
+	    pong_copy = FALSE;
+	  }else{
+	    i1 -= copy_n_frames;
+	  }
+	}
       }
-    }
-    
-    if(set_loop_end){
-      k = loop_end;
+    }else{
+      /* can't loop */
+      i1 += copy_n_frames;
+    }    
 
-      if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	 k + copy_n_frames < n_frames - offset){
-	pong_copy = TRUE;
-      }
+    if(do_copy){
+      i2 += (copy_n_frames - start_frame);
     }
   }
   
@@ -2293,10 +2143,8 @@ ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
   guint source_format;
   guint copy_mode;
 
-  guint i;
-  guint j;
-  guint k;
-  guint l;
+  guint i0, i1, i2;
+  gboolean success;
   gboolean pong_copy;
   
   source_frame_count = 0;
@@ -2394,149 +2242,126 @@ ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
 				base_key,
 				tuning);
 
+  success = FALSE;
   pong_copy = FALSE;
-  
-  for(i = 0, j = 0, k = 0, l = 0; i < offset + n_frames;){
+
+  for(i0 = 0, i1 = 0, i2 = 0; i0 < n_frames && !success && i2 < buffer_size; ){
     guint copy_n_frames;
+    guint start_frame;
 
     gboolean set_loop_start;
     gboolean set_loop_end;
-    gboolean success;
+    gboolean do_copy;
     
     copy_n_frames = buffer_size;
 
     set_loop_start = FALSE;
     set_loop_end = FALSE;
 
-    success = FALSE;
+    do_copy = FALSE;
     
-    if(offset + copy_n_frames > n_frames){
-      copy_n_frames = n_frames - offset;
+    if(i0 + copy_n_frames > n_frames){
+      copy_n_frames = n_frames - i0;
     }
     
-    if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-       loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-       (loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	!pong_copy)){
-      if(k >= loop_end){
-	//nothing
-      }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
+    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+       loop_start >= 0 &&
+       loop_end >= 0 &&
+       loop_start < loop_end){
+      /* can loop */
+      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+	if(i1 + copy_n_frames >= loop_end){
+	  copy_n_frames = loop_end - i1;
 	  
-	  set_loop_end = TRUE;
-	}else{
-	  if(k + copy_n_frames > loop_end){
-	    copy_n_frames = copy_n_frames - ((k + copy_n_frames) - loop_end);
-
-	    if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
-	      set_loop_start = TRUE;
-	    }else{
-	      set_loop_end = TRUE;
-	    }
-	  }else{
-	    //nothing
-	  }
+	  set_loop_start = TRUE;
 	}
-      }
-    }else if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	     pong_copy){
-      if(k >= loop_end){
-	//nothing
       }else{
-	if(k + copy_n_frames > n_frames - offset){
-	  copy_n_frames = copy_n_frames - ((k + copy_n_frames) - (n_frames - offset));
-	  
-	  set_loop_end = TRUE;
-	}else{
-	  if(k - copy_n_frames < loop_start){
-	    copy_n_frames = copy_n_frames - (loop_start - (k - copy_n_frames));
+	if(!pong_copy){
+	  if(i1 + copy_n_frames >= loop_end){
+	    copy_n_frames = loop_end - i1;
 
-	    set_loop_start = TRUE;
-	  }else{
-	    //nothing
+	    set_loop_end = TRUE;
 	  }
-	}	
-      }
-    }
-
-    if(!pong_copy){
-      if(l + copy_n_frames >= buffer_size){
-	copy_n_frames = copy_n_frames - ((l + copy_n_frames) - buffer_size);
-      
-	if(i + copy_n_frames > offset){
-	  success = TRUE;
+	}else{
+	  if(i1 - copy_n_frames <= loop_start){
+	    copy_n_frames = i1 - loop_start;
+	    
+	    set_loop_start = TRUE;
+	  }
 	}
       }
     }else{
-      if(l - copy_n_frames < 0){
-	copy_n_frames = copy_n_frames + (l - copy_n_frames);
-      
-	if(i + copy_n_frames > offset){
-	  success = TRUE;
-	}
+      /* can't loop */
+      if(i1 + copy_n_frames > frame_count){
+	copy_n_frames = frame_count - i1;
+
+	success = TRUE;
       }
     }
-    
-    if(i + copy_n_frames > offset){
-      guint start_frame;
 
-      if(i < offset){
-	start_frame = (i + copy_n_frames) - offset;
-      }else{
-	start_frame = 0;
+    start_frame = 0;
+      
+    if(i0 + copy_n_frames > offset){
+      do_copy = TRUE;
+      
+      if(i0 < offset){
+	start_frame = (i0 + copy_n_frames) - offset;
       }
       
       if(!pong_copy){	
-	ags_audio_buffer_util_copy_complex_to_complex(buffer + l, 1,
-						      im_buffer + k, 1,
+	ags_audio_buffer_util_copy_complex_to_complex(buffer + i2, 1,
+						      im_buffer + i1, 1,
 						      copy_n_frames - start_frame);
       }else{
-	ags_audio_buffer_util_pong_complex(buffer + l, 1,
-					   im_buffer + k, 1,
+	ags_audio_buffer_util_pong_complex(buffer + i2, 1,
+					   im_buffer + i1, 1,
 					   copy_n_frames - start_frame);
       }
     }
 
-    if(success){
-      break;
-    }
-
-    i += copy_n_frames;
-
-    if(j + copy_n_frames < buffer_size){
-      j += copy_n_frames;
-    }else{
-      j = (j + copy_n_frames) % buffer_size;
-    }
-
-    if(!pong_copy){
-      k += copy_n_frames;
-    }else{
-      k -= copy_n_frames;
-    }
-
-    l += copy_n_frames;
-
-    if(l >= buffer_size){
-      l = 0;
-    }
+    i0 += copy_n_frames;
     
-    if(set_loop_start){
-      k = loop_start;
-
-      if(pong_copy){
-	pong_copy = FALSE;
+    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+       loop_start >= 0 &&
+       loop_end >= 0 &&
+       loop_start < loop_end){
+      /* can loop */
+      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+	if(set_loop_start){
+	  i1 = loop_start;
+	}else{
+	  i1 += copy_n_frames;
+	}
+      }else{
+	if(!pong_copy){
+	  if(set_loop_end){
+	    i1 = loop_end; 
+	    
+	    pong_copy = TRUE;
+	  }else{
+	    i1 += copy_n_frames;
+	  }
+	}else{
+	  if(set_loop_start){
+	    i1 = loop_start;
+	    
+	    pong_copy = FALSE;
+	  }else{
+	    i1 -= copy_n_frames;
+	  }
+	}
       }
-    }
-    
-    if(set_loop_end){
-      k = loop_end;
+    }else{
+      /* can't loop */
+      i1 += copy_n_frames;
+    }    
 
-      if(loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG &&
-	 k + copy_n_frames < n_frames - offset){
-	pong_copy = TRUE;
-      }
+    if(do_copy){
+      i2 += (copy_n_frames - start_frame);
     }
   }
 
