@@ -243,14 +243,14 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
       copy_n_frames = n_frames - i0;
     }
     
-    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+    if((loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
        loop_start >= 0 &&
        loop_end >= 0 &&
        loop_start < loop_end){
       /* can loop */
-      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
 	if(i1 + copy_n_frames >= loop_end){
 	  copy_n_frames = loop_end - i1;
 	  
@@ -302,14 +302,14 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
 
     i0 += copy_n_frames;
     
-    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+    if((loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
        loop_start >= 0 &&
        loop_end >= 0 &&
        loop_start < loop_end){
       /* can loop */
-      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
 	if(set_loop_start){
 	  i1 = loop_start;
 	}else{
@@ -541,14 +541,14 @@ ags_sfz_synth_util_copy_s16(gint16 *buffer,
       copy_n_frames = n_frames - i0;
     }
     
-    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+    if((loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
        loop_start >= 0 &&
        loop_end >= 0 &&
        loop_start < loop_end){
       /* can loop */
-      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
 	if(i1 + copy_n_frames >= loop_end){
 	  copy_n_frames = loop_end - i1;
 	  
@@ -600,14 +600,14 @@ ags_sfz_synth_util_copy_s16(gint16 *buffer,
 
     i0 += copy_n_frames;
     
-    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+    if((loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
        loop_start >= 0 &&
        loop_end >= 0 &&
        loop_start < loop_end){
       /* can loop */
-      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
 	if(set_loop_start){
 	  i1 = loop_start;
 	}else{
@@ -839,14 +839,14 @@ ags_sfz_synth_util_copy_s24(gint32 *buffer,
       copy_n_frames = n_frames - i0;
     }
     
-    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+    if((loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
        loop_start >= 0 &&
        loop_end >= 0 &&
        loop_start < loop_end){
       /* can loop */
-      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
 	if(i1 + copy_n_frames >= loop_end){
 	  copy_n_frames = loop_end - i1;
 	  
@@ -898,14 +898,14 @@ ags_sfz_synth_util_copy_s24(gint32 *buffer,
 
     i0 += copy_n_frames;
     
-    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+    if((loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
        loop_start >= 0 &&
        loop_end >= 0 &&
        loop_start < loop_end){
       /* can loop */
-      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
 	if(set_loop_start){
 	  i1 = loop_start;
 	}else{
@@ -1137,14 +1137,14 @@ ags_sfz_synth_util_copy_s32(gint32 *buffer,
       copy_n_frames = n_frames - i0;
     }
     
-    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+    if((loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
        loop_start >= 0 &&
        loop_end >= 0 &&
        loop_start < loop_end){
       /* can loop */
-      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
 	if(i1 + copy_n_frames >= loop_end){
 	  copy_n_frames = loop_end - i1;
 	  
@@ -1196,14 +1196,14 @@ ags_sfz_synth_util_copy_s32(gint32 *buffer,
 
     i0 += copy_n_frames;
     
-    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+    if((loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
        loop_start >= 0 &&
        loop_end >= 0 &&
        loop_start < loop_end){
       /* can loop */
-      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
 	if(set_loop_start){
 	  i1 = loop_start;
 	}else{
@@ -1435,14 +1435,14 @@ ags_sfz_synth_util_copy_s64(gint64 *buffer,
       copy_n_frames = n_frames - i0;
     }
     
-    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+    if((loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
        loop_start >= 0 &&
        loop_end >= 0 &&
        loop_start < loop_end){
       /* can loop */
-      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
 	if(i1 + copy_n_frames >= loop_end){
 	  copy_n_frames = loop_end - i1;
 	  
@@ -1494,14 +1494,14 @@ ags_sfz_synth_util_copy_s64(gint64 *buffer,
 
     i0 += copy_n_frames;
     
-    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+    if((loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
        loop_start >= 0 &&
        loop_end >= 0 &&
        loop_start < loop_end){
       /* can loop */
-      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
 	if(set_loop_start){
 	  i1 = loop_start;
 	}else{
@@ -1733,14 +1733,14 @@ ags_sfz_synth_util_copy_float(gfloat *buffer,
       copy_n_frames = n_frames - i0;
     }
     
-    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+    if((loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
        loop_start >= 0 &&
        loop_end >= 0 &&
        loop_start < loop_end){
       /* can loop */
-      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
 	if(i1 + copy_n_frames >= loop_end){
 	  copy_n_frames = loop_end - i1;
 	  
@@ -1792,14 +1792,14 @@ ags_sfz_synth_util_copy_float(gfloat *buffer,
 
     i0 += copy_n_frames;
     
-    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+    if((loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
        loop_start >= 0 &&
        loop_end >= 0 &&
        loop_start < loop_end){
       /* can loop */
-      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
 	if(set_loop_start){
 	  i1 = loop_start;
 	}else{
@@ -2031,14 +2031,14 @@ ags_sfz_synth_util_copy_double(gdouble *buffer,
       copy_n_frames = n_frames - i0;
     }
     
-    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+    if((loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
        loop_start >= 0 &&
        loop_end >= 0 &&
        loop_start < loop_end){
       /* can loop */
-      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
 	if(i1 + copy_n_frames >= loop_end){
 	  copy_n_frames = loop_end - i1;
 	  
@@ -2090,14 +2090,14 @@ ags_sfz_synth_util_copy_double(gdouble *buffer,
 
     i0 += copy_n_frames;
     
-    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+    if((loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
        loop_start >= 0 &&
        loop_end >= 0 &&
        loop_start < loop_end){
       /* can loop */
-      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
 	if(set_loop_start){
 	  i1 = loop_start;
 	}else{
@@ -2329,14 +2329,14 @@ ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
       copy_n_frames = n_frames - i0;
     }
     
-    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+    if((loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
        loop_start >= 0 &&
        loop_end >= 0 &&
        loop_start < loop_end){
       /* can loop */
-      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
 	if(i1 + copy_n_frames >= loop_end){
 	  copy_n_frames = loop_end - i1;
 	  
@@ -2388,14 +2388,14 @@ ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
 
     i0 += copy_n_frames;
     
-    if((loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
-	loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+    if((loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
        loop_start >= 0 &&
        loop_end >= 0 &&
        loop_start < loop_end){
       /* can loop */
-      if(loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+      if(loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
 	if(set_loop_start){
 	  i1 = loop_start;
 	}else{
