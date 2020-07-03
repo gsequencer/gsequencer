@@ -289,6 +289,9 @@ ags_sfz_synth_generator_init(AgsSFZSynthGenerator *sfz_synth_generator)
 
   sfz_synth_generator->flags = 0;
 
+  /* sfz synth generator mutex */
+  g_rec_mutex_init(&(sfz_synth_generator->obj_mutex));
+
   /* config */
   config = ags_config_get_instance();
 

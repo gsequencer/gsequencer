@@ -363,6 +363,9 @@ ags_sf2_synth_generator_init(AgsSF2SynthGenerator *sf2_synth_generator)
 
   sf2_synth_generator->flags = 0;
 
+  /* sf2 synth generator mutex */
+  g_rec_mutex_init(&(sf2_synth_generator->obj_mutex));
+
   /* config */
   config = ags_config_get_instance();
 

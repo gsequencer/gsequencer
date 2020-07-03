@@ -1,3 +1,9 @@
+ags (3.4.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsSF2SynthGenerator and AgsSFZSynthGenerator to be faster
+	* improved thread-safety of AgsSynthGenerator, AgsSF2SynthGenerator and AgsSFZSynthGenerator
+
 ags (3.4.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
