@@ -1545,6 +1545,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   GList *start_list, *list;
   GList *stream_start, *stream;
 
+  void *buffer;
+  
   gchar *filename;
 
   gint root_note;
@@ -1560,8 +1562,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   guint audio_buffer_util_format;
   guint loop_mode;
   gint loop_start, loop_end;
-  guint current_attack, current_count;
-  guint offset;
+  guint copy_mode;
   guint i;
   
   GRecMutex *audio_container_manager_mutex;
@@ -1666,53 +1667,51 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   loop_start = 0;
   loop_end = 0;
 
-  current_attack = attack;
-  current_count = buffer_size;
-  
-  if(attack < buffer_size){
-    current_count = buffer_size - attack;
-  }else{
+  if(attack >= buffer_size){
     stream = g_list_nth(stream_start,
 			(guint) floor((double) attack / (double) buffer_size));
-
-    current_count = buffer_size - (attack % buffer_size);
   }
 
   audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
 
-  offset = 0;
+  buffer = ags_stream_alloc(frame_count,
+			    format);
+
+  ags_sf2_synth_util_copy(buffer,
+			  frame_count,
+			  ipatch_sample,
+			  (gdouble) (root_note - 69) + note,
+			  volume,
+			  samplerate, audio_buffer_util_format,
+			  0, frame_count,
+			  AGS_SF2_SYNTH_UTIL_LOOP_NONE,
+			  0, 0);
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
+						  audio_buffer_util_format);
   
-  for(i = attack; i < frame_count + attack && stream != NULL;){
-    ags_sf2_synth_util_copy(stream->data,
-			    buffer_size,
-			    ipatch_sample,
-			    (gdouble) (root_note - 69) + note,
-			    volume,
-			    samplerate, audio_buffer_util_format,
-			    offset, frame_count,
-			    AGS_SF2_SYNTH_UTIL_LOOP_NONE,
-			    0, 0);
+  for(i = 0; i < frame_count && stream != NULL;){
+    guint copy_count;
 
-    offset += current_count;
-    i += current_count;
+    copy_count = buffer_size;
 
-    if(buffer_size > (current_attack + current_count)){
-      current_count = buffer_size - (current_attack + current_count);
-      current_attack = buffer_size - current_count;
-    }else{
-      current_count = buffer_size;
-      current_attack = 0;
+    if(i + copy_count > frame_count){
+      copy_count = frame_count - i;
     }
 
-    if(i != 0 &&
-       i % buffer_size == 0){
-      stream = stream->next;
-    }
+    ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+						buffer, 1, i,
+						copy_count, copy_mode);
+    i += copy_count;
+
+    stream = stream->next;
   }
   
   if(output_soundcard != NULL){
     g_object_unref(output_soundcard);
   }  
+
+  ags_stream_free(buffer);
 }
 
 /**
@@ -1742,8 +1741,11 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   
   GList *stream_start, *stream;
 
+  void *buffer;
+
   gchar *filename;
 
+  gint root_note;
   gint midi_key;
   gdouble delay;
   guint attack;
@@ -1756,8 +1758,7 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   guint audio_buffer_util_format;
   guint loop_mode;
   gint loop_start, loop_end;
-  guint current_attack, current_count;
-  guint offset;
+  guint copy_mode;
   guint i;
   
   GRecMutex *audio_container_manager_mutex;
@@ -1794,22 +1795,14 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   }
   
   g_rec_mutex_unlock(audio_container_manager_mutex);
+  
+  root_note = 60;
 
   midi_key = (gint) floor(note) + 69;
-  
-  ipatch_sample = ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(audio_container->sound_container,
-									   bank,
-									   program,
-									   midi_key,
-									   NULL,
-									   NULL,
-									   NULL);
-  
+    
   delay = sf2_synth_generator->delay;
   attack = sf2_synth_generator->attack;
 
-  frame_count = sf2_synth_generator->frame_count;
-  
   buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
 
   current_frame_count = AGS_AUDIO_SIGNAL(audio_signal)->length * buffer_size;
@@ -1820,11 +1813,31 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 				   ceil(requested_frame_count / buffer_size));
   }
 
-  g_object_set(audio_signal,
-	       "loop-start", sf2_synth_generator->loop_start,
-	       "loop-end", sf2_synth_generator->loop_end,
-	       "last-frame", attack + frame_count,
-	       NULL);
+  ipatch_sample = ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(audio_container->sound_container,
+									   bank,
+									   program,
+									   midi_key,
+									   NULL,
+									   NULL,
+									   NULL);  
+
+  if(ipatch_sample != NULL){
+    guint loop_start, loop_end;
+
+    ags_sound_resource_info(AGS_SOUND_RESOURCE(ipatch_sample),
+			    &frame_count,
+			    &loop_start, &loop_end);
+    
+    g_object_set(audio_signal,
+		 "loop-start", loop_start,
+		 "loop-end", loop_end,
+		 "last-frame", attack + frame_count,
+		 NULL);
+
+    g_object_get(ipatch_sample->sample,
+		 "root-note", &root_note,
+		 NULL);
+  }
 
   /*  */
   stream = 
@@ -1841,54 +1854,53 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 
   loop_start = 0;
   loop_end = 0;
-
-  current_attack = attack;
-  current_count = buffer_size;
   
-  if(attack < buffer_size){
-    current_count = buffer_size - attack;
-  }else{
+  if(attack >= buffer_size){
     stream = g_list_nth(stream_start,
 			(guint) floor((double) attack / (double) buffer_size));
-
-    current_count = buffer_size - (attack % buffer_size);
   }
 
   audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
 
-  offset = 0;
-  
-  for(i = attack; i < frame_count + attack && stream != NULL;){
-    ags_sf2_synth_util_copy(stream->data,
-			    buffer_size,
-			    ipatch_sample,
-			    note,
-			    volume,
-			    samplerate, audio_buffer_util_format,
-			    offset, frame_count,
-			    AGS_SF2_SYNTH_UTIL_LOOP_NONE,
-			    0, 0);
+  buffer = ags_stream_alloc(frame_count,
+			    format);
 
-    offset += current_count;
-    i += current_count;
+  ags_sf2_synth_util_copy(buffer,
+			  frame_count,
+			  ipatch_sample,
+			  (gdouble) (root_note - 69) + note,
+			  volume,
+			  samplerate, audio_buffer_util_format,
+			  0, frame_count,
+			  AGS_SF2_SYNTH_UTIL_LOOP_NONE,
+			  0, 0);
 
-    if(buffer_size > (current_attack + current_count)){
-      current_count = buffer_size - (current_attack + current_count);
-      current_attack = buffer_size - current_count;
-    }else{
-      current_count = buffer_size;
-      current_attack = 0;
+  copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
+						  audio_buffer_util_format);
+
+  for(i = 0; i < frame_count && stream != NULL;){
+    guint copy_count;
+
+    copy_count = buffer_size;
+
+    if(i + copy_count > frame_count){
+      copy_count = frame_count - i;
     }
 
-    if(i != 0 &&
-       i % buffer_size == 0){
-      stream = stream->next;
-    }
+    ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+						buffer, 1, i,
+						copy_count, copy_mode);
+
+    i += copy_count;
+
+    stream = stream->next;
   }  
 
   if(output_soundcard != NULL){
     g_object_unref(output_soundcard);
   }  
+
+  ags_stream_free(buffer);
 }
 
 /**
