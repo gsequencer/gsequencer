@@ -1667,11 +1667,6 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   loop_start = 0;
   loop_end = 0;
 
-  if(attack >= buffer_size){
-    stream = g_list_nth(stream_start,
-			(guint) floor((double) attack / (double) buffer_size));
-  }
-
   audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
 
   buffer = ags_stream_alloc(frame_count,

@@ -1096,8 +1096,11 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   GList *start_list, *list;
   GList *stream_start, *stream;
 
+  void *buffer;
+
   gchar *filename;
 
+  gint root_note;
   gint midi_key;
   glong lower, upper;
   gdouble delay;
@@ -1111,8 +1114,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   guint audio_buffer_util_format;
   guint loop_mode;
   gint loop_start, loop_end;
-  guint current_attack, current_count;
-  guint offset;
+  guint copy_mode;
   guint i;  
   
   GRecMutex *audio_container_manager_mutex;
@@ -1296,10 +1298,19 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   attack = sfz_synth_generator->attack;
 
   frame_count = 0;
+
+  root_note = 60;
   
   if(sfz_sample != NULL){
+    gchar *str;
+
+    glong pitch_keycenter;
+    glong value;
+    int retval;
     guint loop_start, loop_end;
 
+    pitch_keycenter = 60;
+    
     ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_sample),
 			    &frame_count,
 			    &loop_start, &loop_end);
@@ -1309,6 +1320,52 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 		 "loop-end", loop_end,
 		 "last-frame", attack + frame_count,
 		 NULL);
+
+    /* pitch_keycenter */
+    str = ags_sfz_group_lookup_control(AGS_SFZ_SAMPLE(list->data)->group,
+				       "pitch_keycenter");
+    
+    value = 0;
+    
+    if(str != NULL){
+      retval = sscanf(str, "%lu", &value);
+
+      if(retval <= 0){
+	glong tmp;
+	guint tmp_retval;
+	
+	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
+							 &tmp);
+
+	if(retval > 0){
+	  pitch_keycenter = tmp;
+	}
+      }
+    }
+
+    /* pitch_keycenter */
+    str = ags_sfz_region_lookup_control(AGS_SFZ_SAMPLE(list->data)->region,
+					"hikey");
+
+    value = 0;
+    
+    if(str != NULL){
+      retval = sscanf(str, "%lu", &value);
+
+      if(retval <= 0){
+	glong tmp;
+	guint tmp_retval;
+	
+	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
+							 &tmp);
+
+	if(retval > 0){
+	  pitch_keycenter = tmp;
+	}
+      }
+    }
+
+    root_note = pitch_keycenter;
   }
   
   buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
@@ -1339,53 +1396,46 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   loop_start = 0;
   loop_end = 0;
 
-  current_attack = attack;
-  current_count = buffer_size;
-  
-  if(attack < buffer_size){
-    current_count = buffer_size - attack;
-  }else{
-    stream = g_list_nth(stream_start,
-			(guint) floor((double) attack / (double) buffer_size));
-
-    current_count = buffer_size - (attack % buffer_size);
-  }
-
   audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
 
-  offset = 0;
+  buffer = ags_stream_alloc(frame_count,
+			    format);
   
-  for(i = attack; i < frame_count + attack && stream != NULL;){
-    ags_sfz_synth_util_copy(stream->data,
-			    buffer_size,
-			    sfz_sample,
-			    note,
-			    volume,
-			    samplerate, audio_buffer_util_format,
-			    offset, frame_count,
-			    AGS_SFZ_SYNTH_UTIL_LOOP_NONE,
-			    0, 0);
+  ags_sfz_synth_util_copy(buffer,
+			  frame_count,
+			  sfz_sample,
+			  (gdouble) (root_note - 69) + note,
+			  volume,
+			  samplerate, audio_buffer_util_format,
+			  0, frame_count,
+			  AGS_SFZ_SYNTH_UTIL_LOOP_NONE,
+			  0, 0);
 
-    offset += current_count;
-    i += current_count;
+  copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
+						  audio_buffer_util_format);
+  
+  for(i = 0; i < frame_count && stream != NULL;){
+    guint copy_count;
 
-    if(buffer_size > (current_attack + current_count)){
-      current_count = buffer_size - (current_attack + current_count);
-      current_attack = buffer_size - current_count;
-    }else{
-      current_count = buffer_size;
-      current_attack = 0;
+    copy_count = buffer_size;
+
+    if(i + copy_count > frame_count){
+      copy_count = frame_count - i;
     }
 
-    if(i != 0 &&
-       i % buffer_size == 0){
-      stream = stream->next;
-    }
+    ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+						buffer, 1, i,
+						copy_count, copy_mode);
+    i += copy_count;
+
+    stream = stream->next;
   }
   
   if(output_soundcard != NULL){
     g_object_unref(output_soundcard);
   }  
+
+  ags_stream_free(buffer);
 }
 
 /**
