@@ -457,11 +457,11 @@ ags_apply_sfz_synth_launch(AgsTask *task)
 	
       /* compute audio signal */
       note = apply_sfz_synth->base_note + i;
-	
+      
       ags_sfz_synth_generator_compute(sfz_synth_generator,
 				      (GObject *) audio_signal,
 				      note);
-
+      
       g_object_get(audio_signal,
 		   "buffer-size", &buffer_size,
 		   NULL);
@@ -470,7 +470,7 @@ ags_apply_sfz_synth_launch(AgsTask *task)
 		   "length", (guint) ceil(requested_frame_count / buffer_size),
 		   "frame-count", requested_frame_count,
 		   NULL);
-
+      
       rt_template = 
 	rt_template_start = ags_audio_signal_get_rt_template(list_start);
 

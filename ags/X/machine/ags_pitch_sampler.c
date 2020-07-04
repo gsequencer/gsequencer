@@ -1135,7 +1135,7 @@ ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
 		     (GDestroyNotify) g_object_unref);
   }else{
     open_sfz_file = ags_open_sfz_file_new(audio,
-					  AGS_IPATCH(audio_container->sound_container),
+					  AGS_SFZ_FILE(audio_container->sound_container),
 					  NULL,
 					  0);
     

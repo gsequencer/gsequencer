@@ -98,7 +98,7 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
   guint i0, i1, i2;
   gboolean success;
   gboolean pong_copy;
-
+  
   source_frame_count = 0;
 
   source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;

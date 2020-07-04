@@ -71,6 +71,7 @@ enum{
   PROP_FRAME_COUNT,
   PROP_LOOP_START,
   PROP_LOOP_END,
+  PROP_VOLUME,
   PROP_BASE_KEY,
   PROP_TUNING,
   PROP_TIMESTAMP,
@@ -320,6 +321,60 @@ ags_sf2_synth_generator_class_init(AgsSF2SynthGeneratorClass *sf2_synth_generato
 				  param_spec);
 
   /**
+   * AgsSF2SynthGenerator:delay:
+   *
+   * The delay to be used.
+   * 
+   * Since: 3.4.11
+   */
+  param_spec = g_param_spec_double("delay",
+				   i18n_pspec("using delay"),
+				   i18n_pspec("The delay to be used"),
+				   0.0,
+				   65535.0,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DELAY,
+				  param_spec);
+
+  /**
+   * AgsSF2SynthGenerator:attack:
+   *
+   * The attack to be used.
+   * 
+   * Since: 3.4.11
+   */
+  param_spec = g_param_spec_uint("attack",
+				 i18n_pspec("apply attack"),
+				 i18n_pspec("To apply attack"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ATTACK,
+				  param_spec);
+
+  /**
+   * AgsSF2SynthGenerator:volume:
+   *
+   * The volume to be used.
+   * 
+   * Since: 3.4.11
+   */
+  param_spec = g_param_spec_double("volume",
+				   i18n_pspec("using volume"),
+				   i18n_pspec("The volume to be used"),
+				   0.0,
+				   2.0,
+				   AGS_SF2_SYNTH_GENERATOR_DEFAULT_VOLUME,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_VOLUME,
+				  param_spec);
+  
+  /**
    * AgsSF2SynthGenerator:tuning:
    *
    * The tuning to be used.
@@ -389,6 +444,8 @@ ags_sf2_synth_generator_init(AgsSF2SynthGenerator *sf2_synth_generator)
 
   sf2_synth_generator->delay = 0.0;
   sf2_synth_generator->attack = 0;
+
+  sf2_synth_generator->volume = AGS_SF2_SYNTH_GENERATOR_DEFAULT_VOLUME;
   
   sf2_synth_generator->base_key = AGS_SF2_SYNTH_GENERATOR_DEFAULT_BASE_KEY;
   sf2_synth_generator->tuning = AGS_SF2_SYNTH_GENERATOR_DEFAULT_TUNING;
@@ -576,6 +633,15 @@ ags_sf2_synth_generator_set_property(GObject *gobject,
     g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
+  case PROP_VOLUME:
+  {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
+    sf2_synth_generator->volume = g_value_get_double(value);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
+  }
+  break;
   case PROP_BASE_KEY:
   {
     g_rec_mutex_lock(sf2_synth_generator_mutex);
@@ -738,6 +804,15 @@ ags_sf2_synth_generator_get_property(GObject *gobject,
     g_rec_mutex_lock(sf2_synth_generator_mutex);
 
     g_value_set_uint(value, sf2_synth_generator->loop_end);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
+  }
+  break;
+  case PROP_VOLUME:
+  {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
+    g_value_set_double(value, sf2_synth_generator->volume);
 
     g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }

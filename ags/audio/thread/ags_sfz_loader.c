@@ -520,7 +520,7 @@ ags_sfz_loader_run(void *ptr)
     ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(sfz_loader->audio_container->sound_container),
 					      0);
 
-    AGS_IPATCH(sfz_loader->audio_container->sound_container)->nesting_level += 1;
+    AGS_SFZ_FILE(sfz_loader->audio_container->sound_container)->nesting_level += 1;
   }
   
   if(output_soundcard != NULL){

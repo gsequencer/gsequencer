@@ -732,6 +732,24 @@ ags_synth_generator_set_property(GObject *gobject,
       g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
+  case PROP_LFO_DEPTH:
+    {
+      g_rec_mutex_lock(synth_generator_mutex);
+
+      synth_generator->lfo_depth = g_value_get_double(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
+    }
+    break;
+  case PROP_TUNING:
+    {
+      g_rec_mutex_lock(synth_generator_mutex);
+
+      synth_generator->tuning = g_value_get_double(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
+    }
+    break;
   case PROP_FM_TUNING:
     {
       g_rec_mutex_lock(synth_generator_mutex);
@@ -889,6 +907,15 @@ ags_synth_generator_get_property(GObject *gobject,
       g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
+  case PROP_VOLUME:
+    {
+      g_rec_mutex_lock(synth_generator_mutex);
+
+      g_value_set_double(value, synth_generator->volume);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
+    }
+    break;
   case PROP_DO_LFO:
     {
       g_rec_mutex_lock(synth_generator_mutex);
@@ -921,6 +948,24 @@ ags_synth_generator_get_property(GObject *gobject,
       g_rec_mutex_lock(synth_generator_mutex);
 
       g_value_set_double(value, synth_generator->fm_lfo_frequency);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
+    }
+    break;
+  case PROP_LFO_DEPTH:
+    {
+      g_rec_mutex_lock(synth_generator_mutex);
+
+      g_value_set_double(value, synth_generator->lfo_depth);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
+    }
+    break;
+  case PROP_TUNING:
+    {
+      g_rec_mutex_lock(synth_generator_mutex);
+
+      g_value_set_double(value, synth_generator->tuning);
 
       g_rec_mutex_unlock(synth_generator_mutex);
     }

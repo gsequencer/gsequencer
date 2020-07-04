@@ -43,6 +43,8 @@ G_BEGIN_DECLS
 #define AGS_SF2_SYNTH_GENERATOR_DEFAULT_BUFFER_SIZE (AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE)
 #define AGS_SF2_SYNTH_GENERATOR_DEFAULT_FORMAT (AGS_SOUNDCARD_DEFAULT_FORMAT)
 
+#define AGS_SF2_SYNTH_GENERATOR_DEFAULT_VOLUME (1.0)
+
 #define AGS_SF2_SYNTH_GENERATOR_DEFAULT_BASE_KEY (-48.0)
 #define AGS_SF2_SYNTH_GENERATOR_DEFAULT_TUNING (0.0)
 
@@ -81,6 +83,8 @@ struct _AgsSF2SynthGenerator
   gdouble delay;
   guint attack;
 
+  gdouble volume;
+  
   gdouble base_key;
   gdouble tuning;
   

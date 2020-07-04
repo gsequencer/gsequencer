@@ -65,6 +65,7 @@ enum{
   PROP_FRAME_COUNT,
   PROP_LOOP_START,
   PROP_LOOP_END,
+  PROP_VOLUME,
   PROP_BASE_KEY,
   PROP_TUNING,
   PROP_TIMESTAMP,
@@ -245,6 +246,61 @@ ags_sfz_synth_generator_class_init(AgsSFZSynthGeneratorClass *sfz_synth_generato
 				  PROP_LOOP_END,
 				  param_spec);
 
+
+  /**
+   * AgsSFZSynthGenerator:delay:
+   *
+   * The delay to be used.
+   * 
+   * Since: 3.4.11
+   */
+  param_spec = g_param_spec_double("delay",
+				   i18n_pspec("using delay"),
+				   i18n_pspec("The delay to be used"),
+				   0.0,
+				   65535.0,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DELAY,
+				  param_spec);
+
+  /**
+   * AgsSFZSynthGenerator:attack:
+   *
+   * The attack to be used.
+   * 
+   * Since: 3.4.11
+   */
+  param_spec = g_param_spec_uint("attack",
+				 i18n_pspec("apply attack"),
+				 i18n_pspec("To apply attack"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ATTACK,
+				  param_spec);
+
+  /**
+   * AgsSFZSynthGenerator:volume:
+   *
+   * The volume to be used.
+   * 
+   * Since: 3.4.11
+   */
+  param_spec = g_param_spec_double("volume",
+				   i18n_pspec("using volume"),
+				   i18n_pspec("The volume to be used"),
+				   0.0,
+				   2.0,
+				   AGS_SFZ_SYNTH_GENERATOR_DEFAULT_VOLUME,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_VOLUME,
+				  param_spec);
+  
   /**
    * AgsSFZSynthGenerator:tuning:
    *
@@ -309,6 +365,8 @@ ags_sfz_synth_generator_init(AgsSFZSynthGenerator *sfz_synth_generator)
 
   sfz_synth_generator->delay = 0.0;
   sfz_synth_generator->attack = 0;
+
+  sfz_synth_generator->volume = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_VOLUME;
   
   sfz_synth_generator->base_key = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_BASE_KEY;
   sfz_synth_generator->tuning = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_TUNING;
@@ -428,6 +486,15 @@ ags_sfz_synth_generator_set_property(GObject *gobject,
     g_rec_mutex_lock(sfz_synth_generator_mutex);    
 
     sfz_synth_generator->loop_end = g_value_get_uint(value);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
+  }
+  break;
+  case PROP_VOLUME:
+  {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);
+
+    sfz_synth_generator->volume = g_value_get_double(value);
 
     g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
@@ -576,6 +643,15 @@ ags_sfz_synth_generator_get_property(GObject *gobject,
     g_rec_mutex_lock(sfz_synth_generator_mutex);    
 
     g_value_set_uint(value, sfz_synth_generator->loop_end);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
+  }
+  break;
+  case PROP_VOLUME:
+  {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);
+
+    g_value_set_double(value, sfz_synth_generator->volume);
 
     g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
@@ -1466,6 +1542,9 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
     guint loop_start, loop_end;
 
     pitch_keycenter = 60;
+
+    loop_start = 0;
+    loop_end = 0;
     
     ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_sample),
 			    &frame_count,
@@ -1478,7 +1557,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 		 NULL);
 
     /* pitch_keycenter */
-    str = ags_sfz_group_lookup_control(AGS_SFZ_SAMPLE(list->data)->group,
+    str = ags_sfz_group_lookup_control(sfz_sample->group,
 				       "pitch_keycenter");
     
     value = 0;
@@ -1500,7 +1579,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
     }
 
     /* pitch_keycenter */
-    str = ags_sfz_region_lookup_control(AGS_SFZ_SAMPLE(list->data)->region,
+    str = ags_sfz_region_lookup_control(sfz_sample->region,
 					"hikey");
 
     value = 0;
@@ -1578,6 +1657,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
 						  audio_buffer_util_format);
+  
   
   g_rec_mutex_lock(stream_mutex);
 

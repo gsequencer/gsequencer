@@ -1185,6 +1185,9 @@ ags_sfz_sample_info(AgsSoundResource *sound_resource,
   /* info */
   sample_frame_count = 0;
 
+  sample_loop_start = 0;
+  sample_loop_end = 0;
+  
   g_rec_mutex_lock(sfz_sample_mutex);
 
   if(sfz_sample->info != NULL){
@@ -1199,15 +1202,15 @@ ags_sfz_sample_info(AgsSoundResource *sound_resource,
 	       NULL);
 
   if(frame_count != NULL){
-    *frame_count = sample_frame_count;
+    frame_count[0] = sample_frame_count;
   }
   
   if(loop_start != NULL){
-    *loop_start = sample_loop_start;
+    loop_start[0] = sample_loop_start;
   }
 
   if(loop_end != NULL){
-    *loop_end = sample_loop_end;
+    loop_end[0] = sample_loop_end;
   }
   
   return(TRUE);
