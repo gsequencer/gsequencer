@@ -491,67 +491,120 @@ ags_sfz_synth_generator_get_property(GObject *gobject,
 {
   AgsSFZSynthGenerator *sfz_synth_generator;
 
+  GRecMutex *sfz_synth_generator_mutex;
+
   sfz_synth_generator = AGS_SFZ_SYNTH_GENERATOR(gobject);
+
+  /* get sfz synth generator mutex */
+  sfz_synth_generator_mutex = AGS_SFZ_SYNTH_GENERATOR_GET_OBJ_MUTEX(sfz_synth_generator);
   
   switch(prop_id){
   case PROP_FILENAME:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_string(value, sfz_synth_generator->filename);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_SAMPLERATE:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_uint(value, sfz_synth_generator->samplerate);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_BUFFER_SIZE:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_uint(value, sfz_synth_generator->buffer_size);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_FORMAT:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_uint(value, sfz_synth_generator->format);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_DELAY:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_double(value, sfz_synth_generator->delay);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_ATTACK:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_uint(value, sfz_synth_generator->attack);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_FRAME_COUNT:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_uint(value, sfz_synth_generator->frame_count);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_LOOP_START:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_uint(value, sfz_synth_generator->loop_start);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_LOOP_END:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_uint(value, sfz_synth_generator->loop_end);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_BASE_KEY:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_double(value, sfz_synth_generator->base_key);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_TUNING:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_double(value, sfz_synth_generator->tuning);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_TIMESTAMP:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_object(value, sfz_synth_generator->timestamp);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   default:
@@ -683,13 +736,22 @@ ags_sfz_synth_generator_set_samplerate(AgsSFZSynthGenerator *sfz_synth_generator
   guint old_samplerate;
   guint i;  
 
+  GRecMutex *sfz_synth_generator_mutex;
+
   if(!AGS_IS_SFZ_SYNTH_GENERATOR(sfz_synth_generator)){
     return;
   }
 
+  /* get sfz synth generator mutex */
+  sfz_synth_generator_mutex = AGS_SFZ_SYNTH_GENERATOR_GET_OBJ_MUTEX(sfz_synth_generator);
+
+  g_rec_mutex_lock(sfz_synth_generator_mutex);
+  
   old_samplerate = sfz_synth_generator->samplerate;
 
   if(old_samplerate == samplerate){
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
+
     return;
   }
   
@@ -699,6 +761,8 @@ ags_sfz_synth_generator_set_samplerate(AgsSFZSynthGenerator *sfz_synth_generator
   
   sfz_synth_generator->loop_start = samplerate * (sfz_synth_generator->loop_start / old_samplerate);
   sfz_synth_generator->loop_end = samplerate * (sfz_synth_generator->loop_end / old_samplerate);
+
+  g_rec_mutex_unlock(sfz_synth_generator_mutex);
 }
 
 /**
@@ -739,11 +803,20 @@ ags_sfz_synth_generator_get_buffer_size(AgsSFZSynthGenerator *sfz_synth_generato
 void
 ags_sfz_synth_generator_set_buffer_size(AgsSFZSynthGenerator *sfz_synth_generator, guint buffer_size)
 {
+  GRecMutex *sfz_synth_generator_mutex;
+
   if(!AGS_IS_SFZ_SYNTH_GENERATOR(sfz_synth_generator)){
     return;
   }
 
+  /* get sfz synth generator mutex */
+  sfz_synth_generator_mutex = AGS_SFZ_SYNTH_GENERATOR_GET_OBJ_MUTEX(sfz_synth_generator);
+
+  g_rec_mutex_lock(sfz_synth_generator_mutex);
+  
   sfz_synth_generator->buffer_size = buffer_size;
+
+  g_rec_mutex_unlock(sfz_synth_generator_mutex);
 }
 
 /**
@@ -784,11 +857,20 @@ ags_sfz_synth_generator_get_format(AgsSFZSynthGenerator *sfz_synth_generator)
 void
 ags_sfz_synth_generator_set_format(AgsSFZSynthGenerator *sfz_synth_generator, guint format)
 {
+  GRecMutex *sfz_synth_generator_mutex;
+
   if(!AGS_IS_SFZ_SYNTH_GENERATOR(sfz_synth_generator)){
     return;
   }
 
+  /* get sfz synth generator mutex */
+  sfz_synth_generator_mutex = AGS_SFZ_SYNTH_GENERATOR_GET_OBJ_MUTEX(sfz_synth_generator);
+
+  g_rec_mutex_lock(sfz_synth_generator_mutex);
+
   sfz_synth_generator->format = format;
+
+  g_rec_mutex_unlock(sfz_synth_generator_mutex);
 }
 
 /**
@@ -1154,6 +1236,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   gdouble delay;
   guint attack;
   guint frame_count;
+  guint length;
   guint buffer_size;
   guint current_frame_count, requested_frame_count;
   gdouble samplerate;
@@ -1165,10 +1248,22 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   guint copy_mode;
   guint i;  
   
-  GRecMutex *audio_container_manager_mutex;
+  GRecMutex *sfz_synth_generator_mutex;
+  GRecMutex *stream_mutex;
+  GRecMutex *audio_container_manager_mutex;  
+
+  if(!AGS_IS_SFZ_SYNTH_GENERATOR(sfz_synth_generator) ||
+     !AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  /* get sfz synth generator mutex */
+  sfz_synth_generator_mutex = AGS_SFZ_SYNTH_GENERATOR_GET_OBJ_MUTEX(sfz_synth_generator);
+
+  /* get stream mutex */
+  stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal);
 
   sfz_sample = NULL;
-
 
   output_soundcard = NULL;
   
@@ -1176,7 +1271,11 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
 
-  filename = sfz_synth_generator->filename;
+  filename = NULL;
+  
+  g_object_get(sfz_synth_generator,
+	       "filename", &filename,
+	       NULL);
 
   audio_container_manager = ags_audio_container_manager_get_instance();
 
@@ -1342,10 +1441,19 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
     list = list->next;
   }
    
-  delay = sfz_synth_generator->delay;
-  attack = sfz_synth_generator->attack;
+  delay = 0.0;
+  attack = 0;
 
   frame_count = 0;
+
+  volume = 1.0;
+  
+  g_object_get(sfz_synth_generator,
+	       "delay", &delay,
+	       "attack", &attack,
+	       "frame-count", &frame_count,
+	       "volume", &volume,
+	       NULL);
 
   root_note = 60;
   
@@ -1416,9 +1524,20 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
     root_note = pitch_keycenter;
   }
   
-  buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
+  buffer_size = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_BUFFER_SIZE;
+  samplerate = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_SAMPLERATE;
+  format = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_FORMAT;
 
-  current_frame_count = AGS_AUDIO_SIGNAL(audio_signal)->length * buffer_size;
+  length = 0;
+  
+  g_object_get(audio_signal,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       "samplerate", &samplerate,
+	       "length", &length,
+	       NULL);
+
+  current_frame_count = length * buffer_size;
   requested_frame_count = (guint) ceil(((floor(delay) * buffer_size + attack) + frame_count) / buffer_size) * buffer_size;
   
   if(current_frame_count < requested_frame_count){
@@ -1429,15 +1548,13 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   ags_audio_signal_clear(audio_signal);
   
   /*  */
+  g_rec_mutex_lock(stream_mutex);
+
   stream = 
     stream_start = g_list_nth(AGS_AUDIO_SIGNAL(audio_signal)->stream,
 			      (guint) floor(delay));
   
-  samplerate = AGS_AUDIO_SIGNAL(audio_signal)->samplerate;
-
-  format = AGS_AUDIO_SIGNAL(audio_signal)->format;
-
-  volume = 1.0;
+  g_rec_mutex_unlock(stream_mutex);
 
   loop_mode = AGS_SFZ_SYNTH_UTIL_LOOP_NONE;
 
@@ -1462,6 +1579,8 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
 						  audio_buffer_util_format);
   
+  g_rec_mutex_lock(stream_mutex);
+
   for(i = 0; i < frame_count && stream != NULL;){
     guint copy_count;
 
@@ -1479,9 +1598,13 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
     stream = stream->next;
   }
   
+  g_rec_mutex_unlock(stream_mutex);
+
   if(output_soundcard != NULL){
     g_object_unref(output_soundcard);
   }  
+
+  g_free(filename);
 
   ags_stream_free(buffer);
 }

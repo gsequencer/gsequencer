@@ -2112,7 +2112,7 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   g_rec_mutex_unlock(synth_generator_mutex);
 
   current_frame_count = length * buffer_size;
-  requested_frame_count = (guint) ceil((((floor(delay) + 1.0) * buffer_size + attack) + frame_count) / buffer_size) * buffer_size;
+  requested_frame_count = (guint) ceil(((floor(delay)* buffer_size + attack) + frame_count) / buffer_size) * buffer_size;
   
   if(current_frame_count < requested_frame_count){
     ags_audio_signal_stream_resize((AgsAudioSignal *) audio_signal,
