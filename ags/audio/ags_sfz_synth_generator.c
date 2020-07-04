@@ -326,7 +326,12 @@ ags_sfz_synth_generator_set_property(GObject *gobject,
 {
   AgsSFZSynthGenerator *sfz_synth_generator;
 
+  GRecMutex *sfz_synth_generator_mutex;
+
   sfz_synth_generator = AGS_SFZ_SYNTH_GENERATOR(gobject);
+
+  /* get sfz synth generator mutex */
+  sfz_synth_generator_mutex = AGS_SFZ_SYNTH_GENERATOR_GET_OBJ_MUTEX(sfz_synth_generator);
   
   switch(prop_id){
   case PROP_FILENAME:
@@ -335,7 +340,11 @@ ags_sfz_synth_generator_set_property(GObject *gobject,
 
     filename = (gchar *) g_value_get_string(value);
 
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     if(sfz_synth_generator->filename == filename){
+      g_rec_mutex_unlock(sfz_synth_generator_mutex);
+
       return;
     }
       
@@ -344,6 +353,8 @@ ags_sfz_synth_generator_set_property(GObject *gobject,
     }
 
     sfz_synth_generator->filename = g_strdup(filename);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_SAMPLERATE:
@@ -378,37 +389,65 @@ ags_sfz_synth_generator_set_property(GObject *gobject,
   break;
   case PROP_DELAY:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     sfz_synth_generator->delay = g_value_get_double(value);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_ATTACK:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     sfz_synth_generator->attack = g_value_get_uint(value);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_FRAME_COUNT:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     sfz_synth_generator->frame_count = g_value_get_uint(value);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_LOOP_START:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     sfz_synth_generator->loop_start = g_value_get_uint(value);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_LOOP_END:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     sfz_synth_generator->loop_end = g_value_get_uint(value);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_BASE_KEY:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     sfz_synth_generator->base_key = g_value_get_double(value);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_TUNING:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     sfz_synth_generator->tuning = g_value_get_double(value);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_TIMESTAMP:
@@ -417,7 +456,11 @@ ags_sfz_synth_generator_set_property(GObject *gobject,
 
     timestamp = (AgsTimestamp *) g_value_get_object(value);
 
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     if(sfz_synth_generator->timestamp == (GObject *) timestamp){
+      g_rec_mutex_unlock(sfz_synth_generator_mutex);
+
       return;
     }
 
@@ -430,6 +473,8 @@ ags_sfz_synth_generator_set_property(GObject *gobject,
     }
 
     sfz_synth_generator->timestamp = (GObject *) timestamp;
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   default:

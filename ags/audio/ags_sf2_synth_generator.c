@@ -406,16 +406,25 @@ ags_sf2_synth_generator_set_property(GObject *gobject,
 {
   AgsSF2SynthGenerator *sf2_synth_generator;
 
+  GRecMutex *sf2_synth_generator_mutex;
+
   sf2_synth_generator = AGS_SF2_SYNTH_GENERATOR(gobject);
+
+  /* get sf2 synth generator mutex */
+  sf2_synth_generator_mutex = AGS_SF2_SYNTH_GENERATOR_GET_OBJ_MUTEX(sf2_synth_generator);
   
   switch(prop_id){
   case PROP_FILENAME:
   {
     gchar *filename;
-
+    
     filename = (gchar *) g_value_get_string(value);
 
+    g_rec_mutex_lock(sf2_synth_generator_mutex);    
+
     if(sf2_synth_generator->filename == filename){
+      g_rec_mutex_unlock(sf2_synth_generator_mutex);
+      
       return;
     }
       
@@ -424,6 +433,8 @@ ags_sf2_synth_generator_set_property(GObject *gobject,
     }
 
     sf2_synth_generator->filename = g_strdup(filename);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_PRESET:
@@ -432,7 +443,11 @@ ags_sf2_synth_generator_set_property(GObject *gobject,
 
     preset = (gchar *) g_value_get_string(value);
 
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+    
     if(sf2_synth_generator->preset == preset){
+      g_rec_mutex_unlock(sf2_synth_generator_mutex);
+
       return;
     }
       
@@ -441,6 +456,8 @@ ags_sf2_synth_generator_set_property(GObject *gobject,
     }
 
     sf2_synth_generator->preset = g_strdup(preset);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_INSTRUMENT:
@@ -449,7 +466,11 @@ ags_sf2_synth_generator_set_property(GObject *gobject,
 
     instrument = (gchar *) g_value_get_string(value);
 
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+    
     if(sf2_synth_generator->instrument == instrument){
+      g_rec_mutex_unlock(sf2_synth_generator_mutex);
+
       return;
     }
       
@@ -458,16 +479,26 @@ ags_sf2_synth_generator_set_property(GObject *gobject,
     }
 
     sf2_synth_generator->instrument = g_strdup(instrument);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_BANK:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     sf2_synth_generator->bank = g_value_get_int(value);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_PROGRAM:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     sf2_synth_generator->program = g_value_get_int(value);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_SAMPLERATE:
@@ -502,37 +533,65 @@ ags_sf2_synth_generator_set_property(GObject *gobject,
   break;
   case PROP_DELAY:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     sf2_synth_generator->delay = g_value_get_double(value);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_ATTACK:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     sf2_synth_generator->attack = g_value_get_uint(value);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_FRAME_COUNT:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     sf2_synth_generator->frame_count = g_value_get_uint(value);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_LOOP_START:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     sf2_synth_generator->loop_start = g_value_get_uint(value);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_LOOP_END:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     sf2_synth_generator->loop_end = g_value_get_uint(value);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_BASE_KEY:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     sf2_synth_generator->base_key = g_value_get_double(value);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_TUNING:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     sf2_synth_generator->tuning = g_value_get_double(value);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_TIMESTAMP:
@@ -541,7 +600,11 @@ ags_sf2_synth_generator_set_property(GObject *gobject,
 
     timestamp = (AgsTimestamp *) g_value_get_object(value);
 
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     if(sf2_synth_generator->timestamp == (GObject *) timestamp){
+      g_rec_mutex_unlock(sf2_synth_generator_mutex);
+
       return;
     }
 
@@ -554,6 +617,8 @@ ags_sf2_synth_generator_set_property(GObject *gobject,
     }
 
     sf2_synth_generator->timestamp = (GObject *) timestamp;
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   default:
@@ -570,77 +635,138 @@ ags_sf2_synth_generator_get_property(GObject *gobject,
 {
   AgsSF2SynthGenerator *sf2_synth_generator;
 
+  GRecMutex *sf2_synth_generator_mutex;
+
   sf2_synth_generator = AGS_SF2_SYNTH_GENERATOR(gobject);
+
+  /* get sf2 synth generator mutex */
+  sf2_synth_generator_mutex = AGS_SF2_SYNTH_GENERATOR_GET_OBJ_MUTEX(sf2_synth_generator);
   
   switch(prop_id){
   case PROP_FILENAME:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     g_value_set_string(value, sf2_synth_generator->filename);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_PRESET:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     g_value_set_string(value, sf2_synth_generator->preset);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_INSTRUMENT:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     g_value_set_string(value, sf2_synth_generator->instrument);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_SAMPLERATE:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     g_value_set_uint(value, sf2_synth_generator->samplerate);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_BUFFER_SIZE:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     g_value_set_uint(value, sf2_synth_generator->buffer_size);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_FORMAT:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     g_value_set_uint(value, sf2_synth_generator->format);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_DELAY:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     g_value_set_double(value, sf2_synth_generator->delay);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_ATTACK:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     g_value_set_uint(value, sf2_synth_generator->attack);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_FRAME_COUNT:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     g_value_set_uint(value, sf2_synth_generator->frame_count);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_LOOP_START:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     g_value_set_uint(value, sf2_synth_generator->loop_start);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_LOOP_END:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     g_value_set_uint(value, sf2_synth_generator->loop_end);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_BASE_KEY:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     g_value_set_double(value, sf2_synth_generator->base_key);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_TUNING:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     g_value_set_double(value, sf2_synth_generator->tuning);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   case PROP_TIMESTAMP:
   {
+    g_rec_mutex_lock(sf2_synth_generator_mutex);
+
     g_value_set_object(value, sf2_synth_generator->timestamp);
+
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
   }
   break;
   default:
@@ -1053,13 +1179,22 @@ ags_sf2_synth_generator_set_samplerate(AgsSF2SynthGenerator *sf2_synth_generator
   guint old_samplerate;
   guint i;  
 
+  GRecMutex *sf2_synth_generator_mutex;
+
   if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
     return;
   }
 
+  /* get sf2 synth generator mutex */
+  sf2_synth_generator_mutex = AGS_SF2_SYNTH_GENERATOR_GET_OBJ_MUTEX(sf2_synth_generator);
+
+  g_rec_mutex_lock(sf2_synth_generator_mutex);
+
   old_samplerate = sf2_synth_generator->samplerate;
 
-  if(old_samplerate == samplerate){
+  if(old_samplerate == samplerate){  
+    g_rec_mutex_unlock(sf2_synth_generator_mutex);
+
     return;
   }
   
@@ -1069,6 +1204,8 @@ ags_sf2_synth_generator_set_samplerate(AgsSF2SynthGenerator *sf2_synth_generator
   
   sf2_synth_generator->loop_start = samplerate * (sf2_synth_generator->loop_start / old_samplerate);
   sf2_synth_generator->loop_end = samplerate * (sf2_synth_generator->loop_end / old_samplerate);
+  
+  g_rec_mutex_unlock(sf2_synth_generator_mutex);
 }
 
 /**
@@ -1109,11 +1246,20 @@ ags_sf2_synth_generator_get_buffer_size(AgsSF2SynthGenerator *sf2_synth_generato
 void
 ags_sf2_synth_generator_set_buffer_size(AgsSF2SynthGenerator *sf2_synth_generator, guint buffer_size)
 {
+  GRecMutex *sf2_synth_generator_mutex;
+
   if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
     return;
   }
 
+  /* get sf2 synth generator mutex */
+  sf2_synth_generator_mutex = AGS_SF2_SYNTH_GENERATOR_GET_OBJ_MUTEX(sf2_synth_generator);
+
+  g_rec_mutex_lock(sf2_synth_generator_mutex);
+
   sf2_synth_generator->buffer_size = buffer_size;
+
+  g_rec_mutex_unlock(sf2_synth_generator_mutex);
 }
 
 /**
@@ -1154,11 +1300,20 @@ ags_sf2_synth_generator_get_format(AgsSF2SynthGenerator *sf2_synth_generator)
 void
 ags_sf2_synth_generator_set_format(AgsSF2SynthGenerator *sf2_synth_generator, guint format)
 {
+  GRecMutex *sf2_synth_generator_mutex;
+
   if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
     return;
   }
 
+  /* get sf2 synth generator mutex */
+  sf2_synth_generator_mutex = AGS_SF2_SYNTH_GENERATOR_GET_OBJ_MUTEX(sf2_synth_generator);
+
+  g_rec_mutex_lock(sf2_synth_generator_mutex);
+
   sf2_synth_generator->format = format;
+
+  g_rec_mutex_unlock(sf2_synth_generator_mutex);
 }
 
 /**
@@ -1505,17 +1660,46 @@ ags_sf2_synth_generator_compute(AgsSF2SynthGenerator *sf2_synth_generator,
 				GObject *audio_signal,
 				gdouble note)
 {
+  if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator)){
+    return;
+  }
+  
   if(ags_sf2_synth_generator_test_flags(sf2_synth_generator, AGS_SF2_SYNTH_GENERATOR_COMPUTE_INSTRUMENT)){
+    gchar *preset;
+    gchar *instrument;
+
+    preset = NULL;
+    instrument = NULL;
+    
+    g_object_get(sf2_synth_generator,
+		 "preset", &preset,
+		 "instrument", &instrument,
+		 NULL);
+    
     ags_sf2_synth_generator_compute_instrument(sf2_synth_generator,
 					       audio_signal,
-					       sf2_synth_generator->preset,
-					       sf2_synth_generator->instrument,
+					       preset,
+					       instrument,
 					       note);
+
+    g_free(preset);
+    g_free(instrument);
   }else if(ags_sf2_synth_generator_test_flags(sf2_synth_generator, AGS_SF2_SYNTH_GENERATOR_COMPUTE_MIDI_LOCALE)){
+    gint program;
+    gint bank;
+
+    program = 0;
+    bank = 0;
+    
+    g_object_get(sf2_synth_generator,
+		 "program", &program,
+		 "bank", &bank,
+		 NULL);
+    
     ags_sf2_synth_generator_compute_midi_locale(sf2_synth_generator,
 						audio_signal,
-						sf2_synth_generator->bank,
-						sf2_synth_generator->program,
+						bank,
+						program,
 						note);
   }
 }
@@ -1558,6 +1742,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   guint attack;
   guint frame_count;
   guint buffer_size;
+  guint length;
   guint current_frame_count, requested_frame_count;
   gdouble samplerate;
   guint format;
@@ -1568,15 +1753,32 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   guint copy_mode;
   guint i;
   
+  GRecMutex *sf2_synth_generator_mutex;
+  GRecMutex *stream_mutex;
   GRecMutex *audio_container_manager_mutex;
+
+  if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator) ||
+     !AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  /* get sf2 synth generator mutex */
+  sf2_synth_generator_mutex = AGS_SF2_SYNTH_GENERATOR_GET_OBJ_MUTEX(sf2_synth_generator);
+
+  /* get stream mutex */
+  stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal);
 
   output_soundcard = NULL;
   
   g_object_get(audio_signal,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
+
+  filename = NULL;
   
-  filename = sf2_synth_generator->filename;
+  g_object_get(sf2_synth_generator,
+	       "filename", &filename,
+	       NULL);
 
   audio_container_manager = ags_audio_container_manager_get_instance();
 
@@ -1619,10 +1821,19 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   
   midi_key = (gint) floor(note) + 60;
   
-  delay = sf2_synth_generator->delay;
-  attack = sf2_synth_generator->attack;
+  delay = 0.0;
+  attack = 0;
 
   frame_count = 0;
+
+  volume = 1.0;
+  
+  g_object_get(sf2_synth_generator,
+	       "delay", &delay,
+	       "attack", &attack,
+	       "frame-count", &frame_count,
+	       "volume", &volume,
+	       NULL);
   
   if(ipatch_sample != NULL){
     guint loop_start, loop_end;
@@ -1641,10 +1852,21 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 		 "root-note", &root_note,
 		 NULL);
   }
-  
-  buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
 
-  current_frame_count = AGS_AUDIO_SIGNAL(audio_signal)->length * buffer_size;
+  buffer_size = AGS_SF2_SYNTH_GENERATOR_DEFAULT_BUFFER_SIZE;
+  samplerate = AGS_SF2_SYNTH_GENERATOR_DEFAULT_SAMPLERATE;
+  format = AGS_SF2_SYNTH_GENERATOR_DEFAULT_FORMAT;
+
+  length = 0;
+  
+  g_object_get(audio_signal,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       "samplerate", &samplerate,
+	       "length", &length,
+	       NULL);
+
+  current_frame_count = length * buffer_size;
   requested_frame_count = (guint) ceil(((floor(delay) * buffer_size + attack) + frame_count) / buffer_size) * buffer_size;
   
   if(current_frame_count < requested_frame_count){
@@ -1655,16 +1877,14 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   ags_audio_signal_clear(audio_signal);
   
   /*  */
+  g_rec_mutex_lock(stream_mutex);
+
   stream = 
     stream_start = g_list_nth(AGS_AUDIO_SIGNAL(audio_signal)->stream,
 			      (guint) floor(delay));
   
-  samplerate = AGS_AUDIO_SIGNAL(audio_signal)->samplerate;
-
-  format = AGS_AUDIO_SIGNAL(audio_signal)->format;
-
-  volume = 1.0;
-
+  g_rec_mutex_unlock(stream_mutex);
+  
   loop_mode = AGS_SF2_SYNTH_UTIL_LOOP_NONE;
 
   loop_start = 0;
@@ -1688,6 +1908,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
 						  audio_buffer_util_format);
   
+  g_rec_mutex_lock(stream_mutex);
+
   for(i = 0; i < frame_count && stream != NULL;){
     guint copy_count;
 
@@ -1705,10 +1927,14 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
     stream = stream->next;
   }
   
+  g_rec_mutex_unlock(stream_mutex);
+  
   if(output_soundcard != NULL){
     g_object_unref(output_soundcard);
   }  
 
+  g_free(filename);
+  
   ags_stream_free(buffer);
 }
 
@@ -1749,6 +1975,7 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   guint attack;
   guint frame_count;
   guint buffer_size;
+  guint length;
   guint current_frame_count, requested_frame_count;
   gdouble samplerate;
   guint format;
@@ -1759,15 +1986,32 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   guint copy_mode;
   guint i;
   
+  GRecMutex *sf2_synth_generator_mutex;
+  GRecMutex *stream_mutex;
   GRecMutex *audio_container_manager_mutex;
+
+  if(!AGS_IS_SF2_SYNTH_GENERATOR(sf2_synth_generator) ||
+     !AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  /* get sf2 synth generator mutex */
+  sf2_synth_generator_mutex = AGS_SF2_SYNTH_GENERATOR_GET_OBJ_MUTEX(sf2_synth_generator);
+
+  /* get stream mutex */
+  stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal);
 
   output_soundcard = NULL;
   
   g_object_get(audio_signal,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
+
+  filename = NULL;
   
-  filename = sf2_synth_generator->filename;
+  g_object_get(sf2_synth_generator,
+	       "filename", &filename,
+	       NULL);
   
   audio_container_manager = ags_audio_container_manager_get_instance();
 
@@ -1798,10 +2042,32 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 
   midi_key = (gint) floor(note) + 69;
     
-  delay = sf2_synth_generator->delay;
-  attack = sf2_synth_generator->attack;
+  delay = 0.0;
+  attack = 0;
 
-  buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
+  frame_count = 0;
+
+  volume = 1.0;
+  
+  g_object_get(sf2_synth_generator,
+	       "delay", &delay,
+	       "attack", &attack,
+	       "frame-count", &frame_count,
+	       "volume", &volume,
+	       NULL);
+
+  buffer_size = AGS_SF2_SYNTH_GENERATOR_DEFAULT_BUFFER_SIZE;
+  samplerate = AGS_SF2_SYNTH_GENERATOR_DEFAULT_SAMPLERATE;
+  format = AGS_SF2_SYNTH_GENERATOR_DEFAULT_FORMAT;
+
+  length = 0;
+  
+  g_object_get(audio_signal,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       "samplerate", &samplerate,
+	       "length", &length,
+	       NULL);
 
   current_frame_count = AGS_AUDIO_SIGNAL(audio_signal)->length * buffer_size;
   requested_frame_count = (guint) ceil(((floor(delay) * buffer_size + attack) + frame_count) / buffer_size) * buffer_size;
@@ -1838,16 +2104,14 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   }
 
   /*  */
+  g_rec_mutex_lock(stream_mutex);
+
   stream = 
     stream_start = g_list_nth(AGS_AUDIO_SIGNAL(audio_signal)->stream,
 			      (guint) floor(delay));
+
+  g_rec_mutex_unlock(stream_mutex);
   
-  samplerate = AGS_AUDIO_SIGNAL(audio_signal)->samplerate;
-
-  format = AGS_AUDIO_SIGNAL(audio_signal)->format;
-
-  volume = 1.0;
-
   loop_mode = AGS_SF2_SYNTH_UTIL_LOOP_NONE;
 
   loop_start = 0;
@@ -1876,6 +2140,8 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
 						  audio_buffer_util_format);
 
+  g_rec_mutex_lock(stream_mutex);
+
   for(i = 0; i < frame_count && stream != NULL;){
     guint copy_count;
 
@@ -1892,11 +2158,15 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
     i += copy_count;
 
     stream = stream->next;
-  }  
+  }
+  
+  g_rec_mutex_unlock(stream_mutex);
 
   if(output_soundcard != NULL){
     g_object_unref(output_soundcard);
   }  
+
+  g_free(filename);
 
   ags_stream_free(buffer);
 }
