@@ -893,7 +893,7 @@ ags_synth_generator_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(synth_generator_mutex);
 
-      g_value_set_boolean(value, synth_generator->do_flo);
+      g_value_set_boolean(value, synth_generator->do_lfo);
 
       g_rec_mutex_unlock(synth_generator_mutex);
     }
@@ -2005,7 +2005,9 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   guint current_frame_count, requested_frame_count;
   gboolean do_lfo;
   guint oscillator;
+  guint fm_lfo_oscillator;
   gdouble samplerate;
+  gdouble frequency;
   gdouble current_frequency;
   gdouble phase, volume;
   gdouble lfo_depth;
@@ -2027,13 +2029,18 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   gboolean synced;
 
   GRecMutex *synth_generator_mutex;
+  GRecMutex *stream_mutex;
 
-  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator) ||
+     !AGS_IS_AUDIO_SIGNAL(audio_signal)){
     return;
   }
 
   /* get synth generator mutex */
   synth_generator_mutex = AGS_SYNTH_GENERATOR_GET_OBJ_MUTEX(synth_generator);
+
+  /* get stream mutex */
+  stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal);
 
   delay = 0.0;
   attack = 0;
@@ -2046,7 +2053,24 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 
   loop_start = 0;
   loop_end = 0;
+
+  frequency = AGS_SYNTH_GENERATOR_DEFAULT_FREQUENCY;
+  phase = AGS_SYNTH_GENERATOR_DEFAULT_PHASE;
   
+  volume = 1.0;  
+
+  do_fm_synth = FALSE;
+
+  fm_lfo_oscillator = AGS_SYNTH_GENERATOR_DEFAULT_OSCILLATOR;
+  
+  lfo_depth = AGS_SYNTH_GENERATOR_DEFAULT_LFO_DEPTH;
+  tuning = AGS_SYNTH_GENERATOR_DEFAULT_TUNING;
+
+  fm_lfo_freq = AGS_SYNTH_GENERATOR_DEFAULT_FM_LFO_FREQUENCY;
+  fm_lfo_depth = AGS_SYNTH_GENERATOR_DEFAULT_FM_LFO_DEPTH;
+
+  fm_tuning = AGS_SYNTH_GENERATOR_DEFAULT_FM_TUNING;
+
   g_object_get(synth_generator,
 	       "delay", &delay,
 	       "attack", &attack,
@@ -2055,19 +2079,37 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 	       "do-lfo", &do_lfo,
 	       "loop-start", &loop_start,
 	       "loop-end", &loop_end,
+	       "frequency", &frequency,
+	       "phase", &phase,
+	       "volume", &volume,
+	       "do-fm-synth", &do_fm_synth,
+	       "fm-lfo-oscillator", &fm_lfo_oscillator,
+	       "lfo-depth", &lfo_depth,
+	       "tuning", &tuning,
+	       "fm-lfo-frequency", &fm_lfo_freq,
+	       "fm-lfo-depth", &fm_lfo_depth,
+	       "fm-tuning", &fm_tuning,
 	       NULL);
 
-  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  buffer_size = AGS_SYNTH_GENERATOR_DEFAULT_BUFFER_SIZE;
+  samplerate = AGS_SYNTH_GENERATOR_DEFAULT_SAMPLERATE;
+  format = AGS_SYNTH_GENERATOR_DEFAULT_FORMAT;
 
   length = 0;
   
   g_object_get(audio_signal,
 	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       "samplerate", &samplerate,
 	       "length", &length,
 	       NULL);
   
+  g_rec_mutex_lock(synth_generator_mutex);
+
   sync_point = synth_generator->sync_point;
   sync_point_count = synth_generator->sync_point_count;
+
+  g_rec_mutex_unlock(synth_generator_mutex);
 
   current_frame_count = length * buffer_size;
   requested_frame_count = (guint) ceil((((floor(delay) + 1.0) * buffer_size + attack) + frame_count) / buffer_size) * buffer_size;
@@ -2083,24 +2125,20 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 	       "last-frame", attack + frame_count,
 	       NULL);
   
-  /*  */
+  /*  */  
+  g_rec_mutex_lock(stream_mutex);
+
   stream = 
     stream_start = g_list_nth(AGS_AUDIO_SIGNAL(audio_signal)->stream,
 			      (guint) floor(delay));
+
+  g_rec_mutex_unlock(stream_mutex);
   
-  samplerate = AGS_AUDIO_SIGNAL(audio_signal)->samplerate;
+  current_frequency = (guint) ((double) frequency * exp2((double)((double) note + 48.0) / 12.0));
 
-  current_frequency = (guint) ((double) synth_generator->frequency * exp2((double)((double) note + 48.0) / 12.0));
+  current_phase = phase;
 
-  phase =
-    current_phase = synth_generator->phase;
-  volume = synth_generator->volume;
-
-  format = AGS_AUDIO_SIGNAL(audio_signal)->format;
   audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
-
-  lfo_depth = synth_generator->lfo_depth;
-  tuning = synth_generator->tuning;
 
   current_attack = attack;
   current_count = buffer_size;
@@ -2130,8 +2168,6 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
       }
     }
   }
-
-  do_fm_synth = synth_generator->do_fm_synth;
 
   fm_lfo_osc_mode = 0;
   
@@ -2163,14 +2199,11 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   break;
   }
   
-  fm_lfo_freq = synth_generator->fm_lfo_frequency;
-  fm_lfo_depth = synth_generator->fm_lfo_depth;
-
-  fm_tuning = synth_generator->fm_tuning;
-
   synced = FALSE;
   
   for(i = attack, j = 0; i < frame_count + attack && stream != NULL;){
+
+    g_rec_mutex_lock(stream_mutex);
 
     if(!do_fm_synth && !do_lfo){
 
@@ -2340,6 +2373,8 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 
     }
     
+    g_rec_mutex_unlock(stream_mutex);
+    
     if(current_frequency == 0.0){
       current_phase = (guint) ((offset + current_count) + phase);
     }else if(floor(samplerate / current_frequency) == 0){
@@ -2347,6 +2382,8 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
     }else{
       current_phase = (guint) ((offset + current_count) + phase) % (guint) floor(samplerate / current_frequency);
     }
+    
+    g_rec_mutex_lock(synth_generator_mutex);
     
     if(sync_point != NULL){
       if(floor(sync_point[j][0].real) > 0.0 &&
@@ -2356,6 +2393,8 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 	synced = TRUE;
       }
     }
+    
+    g_rec_mutex_unlock(synth_generator_mutex);
     
     offset += current_count;
     i += current_count;
@@ -2367,6 +2406,8 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
       current_count = buffer_size;
       current_attack = 0;
     }
+    
+    g_rec_mutex_lock(synth_generator_mutex);
     
     if(sync_point != NULL){
       if(j + 1 < sync_point_count &&
@@ -2395,6 +2436,8 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 	synced = FALSE;
       }
     }
+    
+    g_rec_mutex_unlock(synth_generator_mutex);
 
     if(i != 0 &&
        i % buffer_size == 0){
