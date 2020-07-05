@@ -1,3 +1,8 @@
+ags (3.4.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed prototype of widgets overriding GtkWidget::draw(), missing gboolean return value
+
 ags (3.4.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

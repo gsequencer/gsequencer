@@ -90,7 +90,7 @@ gboolean ags_dial_motion_notify(GtkWidget *widget,
 
 void ags_dial_send_configure(AgsDial *dial);
 
-void ags_dial_draw(AgsDial *dial, cairo_t *cr);
+gboolean ags_dial_draw(AgsDial *dial, cairo_t *cr);
 
 void ags_dial_adjustment_changed_callback(GtkAdjustment *adjustment,
 					  AgsDial *dial);
@@ -1667,7 +1667,7 @@ ags_dial_motion_notify(GtkWidget *widget,
  *
  * Since: 3.0.0
  */
-void
+gboolean
 ags_dial_draw(AgsDial *dial, cairo_t *cr)
 {
   GtkWidget *widget;
@@ -2097,6 +2097,8 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
   g_boxed_free(GDK_TYPE_RGBA, border_color);
   g_boxed_free(GDK_TYPE_RGBA, font_color);
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  return(FALSE);
 }
 
 /**

@@ -2164,7 +2164,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 {
   AgsComplex *ptr_mix_buffer, *ptr_im_mix_buffer, *ptr_low_mix_buffer, *ptr_new_mix_buffer;
   AgsComplex *mix_buffer, *im_mix_buffer, *low_mix_buffer, *new_mix_buffer;
-  gint16 *ptr_buffer;
+  AgsComplex *ptr_buffer;
 
   gdouble im_key, low_key;
   gdouble base_freq, im_freq, low_freq, new_freq;

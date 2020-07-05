@@ -51,7 +51,7 @@ void ags_cartesian_draw_putpixel(guchar *data,
 				 guint stride,
 				 int x, int y, unsigned long int pixel);
 
-void ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr);
+gboolean ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr);
 
 /**
  * SECTION:ags_cartesian
@@ -971,7 +971,7 @@ ags_cartesian_draw_putpixel(guchar *data,
   }
 }
 
-void
+gboolean
 ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
 {
   GtkWidget *widget;
@@ -1006,7 +1006,7 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
   
   /* entry point */
   if(!AGS_IS_CARTESIAN(cartesian)){
-    return;
+    return(FALSE);
   }
   
   widget = GTK_WIDGET(cartesian);
@@ -1726,6 +1726,8 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
   g_boxed_free(GDK_TYPE_RGBA, border_color);
 
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  return(FALSE);
 }
 
 /**

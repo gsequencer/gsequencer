@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,7 +29,7 @@
 
 void ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note);
 
-void
+gboolean
 ags_cell_pattern_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsCellPattern *cell_pattern)
 {
 //  cairo_surface_flush(cairo_get_target(cr));
@@ -50,6 +50,8 @@ ags_cell_pattern_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsCellPatt
   cairo_paint(cr);
   
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  return(FALSE);
 }
 
 gboolean

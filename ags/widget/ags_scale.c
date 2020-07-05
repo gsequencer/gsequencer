@@ -96,7 +96,7 @@ gboolean ags_scale_motion_notify(GtkWidget *widget,
 
 void ags_scale_send_configure(AgsScale *scale);
 
-void ags_scale_draw(AgsScale *scale, cairo_t *cr);
+gboolean ags_scale_draw(AgsScale *scale, cairo_t *cr);
 
 /**
  * SECTION:ags_scale
@@ -1259,7 +1259,7 @@ ags_scale_motion_notify(GtkWidget *widget,
   return(FALSE);
 }
 
-void
+gboolean
 ags_scale_draw(AgsScale *scale, cairo_t *cr)
 {
   PangoLayout *layout;
@@ -1355,6 +1355,8 @@ ags_scale_draw(AgsScale *scale, cairo_t *cr)
   //  cairo_paint(cr);
 
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  return(FALSE);
 }
 
 /**

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -78,10 +78,12 @@ void ags_notation_edit_drawing_area_motion_notify_select_note(AgsNotationEditor 
 							      AgsMachine *machine,
 							      GdkEventMotion *event);
 
-void
+gboolean
 ags_notation_edit_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsNotationEdit *notation_edit)
 {
   ags_notation_edit_draw(notation_edit, cr);
+
+  return(FALSE);
 }
 
 gboolean

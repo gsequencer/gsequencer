@@ -96,7 +96,7 @@ gboolean ags_level_motion_notify(GtkWidget *widget,
 
 void ags_level_send_configure(AgsLevel *level);
 
-void ags_level_draw(AgsLevel *level, cairo_t *cr);
+gboolean ags_level_draw(AgsLevel *level, cairo_t *cr);
 
 /**
  * SECTION:ags_level
@@ -1194,7 +1194,7 @@ ags_level_motion_notify(GtkWidget *widget,
   return(FALSE);
 }
 
-void
+gboolean
 ags_level_draw(AgsLevel *level, cairo_t *cr)
 {
   PangoLayout *layout;
@@ -1292,6 +1292,8 @@ ags_level_draw(AgsLevel *level, cairo_t *cr)
   //  cairo_paint(cr);
 
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  return(FALSE);
 }
 
 /**

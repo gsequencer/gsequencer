@@ -57,10 +57,12 @@ void ags_wave_edit_drawing_area_motion_notify_select_buffer(AgsWaveEditor *wave_
 							    AgsMachine *machine,
 							    GdkEventMotion *event);
 
-void
+gboolean
 ags_wave_edit_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsWaveEdit *wave_edit)
 {
   ags_wave_edit_draw(wave_edit, cr);
+
+  return(FALSE);
 }
 
 gboolean
