@@ -53,6 +53,7 @@
 /**
  * ags_sfz_synth_util_copy_s8:
  * @buffer: the audio buffer
+ * @buffer_size: the audio buffer size
  * @sfz_sample: the #AgsSFZSample
  * @note: the note
  * @volume: the volume of the sin wave
