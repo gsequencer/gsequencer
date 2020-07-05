@@ -59,7 +59,7 @@ const gchar* ags_fx_volume_channel_specifier[] = {
   NULL,
 };
 
-const gchar *ags_fx_volume_channel_control_port[] = {
+const gchar* ags_fx_volume_channel_control_port[] = {
   "1/2",
   "2/2",
   NULL,

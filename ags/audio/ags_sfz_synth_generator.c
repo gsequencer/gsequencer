@@ -1644,6 +1644,11 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 
   buffer = ags_stream_alloc(frame_count,
 			    format);
+
+  if(sfz_sample != NULL){
+    ags_sound_resource_seek(AGS_SOUND_RESOURCE(sfz_sample),
+			    0, G_SEEK_SET);
+  }
   
   ags_sfz_synth_util_copy(buffer,
 			  frame_count,

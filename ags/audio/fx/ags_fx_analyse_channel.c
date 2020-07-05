@@ -57,13 +57,13 @@ static gpointer ags_fx_analyse_channel_parent_class = NULL;
 
 const gchar *ags_fx_analyse_channel_plugin_name = "ags-fx-analyse";
 
-const gchar *ags_fx_analyse_channel_specifier[] = {
+const gchar* ags_fx_analyse_channel_specifier[] = {
   "./frequency[0]",
   "./magnitude[0]",
   NULL,
 };
 
-const gchar *ags_fx_analyse_channel_control_port[] = {
+const gchar* ags_fx_analyse_channel_control_port[] = {
   "1/2",
   "2/2",
   NULL,

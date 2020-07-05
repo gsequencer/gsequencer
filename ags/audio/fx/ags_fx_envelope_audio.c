@@ -40,11 +40,11 @@ static gpointer ags_fx_envelope_audio_parent_class = NULL;
 
 const gchar *ags_fx_envelope_audio_plugin_name = "ags-fx-envelope";
 
-const gchar *ags_fx_envelope_audio_specifier[] = {
+const gchar* ags_fx_envelope_audio_specifier[] = {
   NULL,
 };
 
-const gchar *ags_fx_envelope_audio_control_port[] = {
+const gchar* ags_fx_envelope_audio_control_port[] = {
   NULL,
 };
 
