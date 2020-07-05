@@ -1231,8 +1231,8 @@ ags_piano_draw(AgsPiano *piano, cairo_t *cr)
   x_start = 0;
   y_start = 0;
 
-//  cairo_surface_flush(cairo_get_target(cr));
-  cairo_push_group(cr);
+  //  cairo_surface_flush(cairo_get_target(cr));
+  //  cairo_push_group(cr);
   
   /* clear bg */
   gtk_render_background(piano_style_context,
@@ -1359,8 +1359,8 @@ ags_piano_draw(AgsPiano *piano, cairo_t *cr)
 
   g_free(active_key);
 
-  cairo_pop_group_to_source(cr);
-  cairo_paint(cr);
+  //  cairo_pop_group_to_source(cr);
+  //  cairo_paint(cr);
 
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
 }

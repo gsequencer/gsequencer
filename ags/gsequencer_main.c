@@ -158,6 +158,16 @@ main(int argc, char **argv)
   
   builtin_theme_disabled = FALSE;
 
+  /**/
+  LIBXML_TEST_VERSION;
+  xmlInitParser();
+  
+  //ao_initialize();
+
+  //  gdk_threads_enter();
+  //  g_thread_init(NULL);
+  gtk_init(&argc, &argv);
+
   config = NULL;
   
   priority = ags_priority_get_instance();  
@@ -351,16 +361,6 @@ main(int argc, char **argv)
   }
 #endif
   
-  /**/
-  LIBXML_TEST_VERSION;
-  xmlInitParser();
-  
-  //ao_initialize();
-
-  //  gdk_threads_enter();
-  //  g_thread_init(NULL);
-  gtk_init(&argc, &argv);
-
 #ifdef AGS_WITH_QUARTZ
   g_object_new(GTKOSX_TYPE_APPLICATION,
 	       NULL);

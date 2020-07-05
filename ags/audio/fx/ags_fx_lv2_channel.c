@@ -1067,6 +1067,9 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 				     input_port[nth],
 				     &(input_data->input[nth]));
       }
+      
+      ags_base_plugin_activate((AgsBasePlugin *) lv2_plugin,
+			       input_data->lv2_handle[0]);
     }
   
     fx_lv2_channel->output_port_count = output_port_count;
@@ -1074,7 +1077,7 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 
     fx_lv2_channel->input_port_count = input_port_count;
     fx_lv2_channel->input_port = input_port;
-  
+     
     g_rec_mutex_unlock(fx_lv2_channel_mutex);
   }
   

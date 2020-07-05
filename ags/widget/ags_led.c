@@ -272,8 +272,8 @@ ags_led_draw(AgsLed *led, cairo_t *cr)
   g_value_unset(&value);
 
   /*  */  
-//  cairo_surface_flush(cairo_get_target(cr));
-  cairo_push_group(cr);
+  //  cairo_surface_flush(cairo_get_target(cr));
+  //  cairo_push_group(cr);
 
   if((AGS_LED_ACTIVE & (led->flags)) != 0){
     /* active */
@@ -310,8 +310,8 @@ ags_led_draw(AgsLed *led, cairo_t *cr)
 		  (gdouble) allocation.width, (gdouble) allocation.height);
   cairo_stroke(cr);
 
-  cairo_pop_group_to_source(cr);
-  cairo_paint(cr);
+  //  cairo_pop_group_to_source(cr);
+  //  cairo_paint(cr);
 
   g_boxed_free(GDK_TYPE_RGBA, fg_color);
   g_boxed_free(GDK_TYPE_RGBA, bg_color);

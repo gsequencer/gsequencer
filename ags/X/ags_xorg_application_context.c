@@ -2807,8 +2807,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 
 #ifdef AGS_WITH_QUARTZ  
   app = gtkosx_application_get();
-  
-  gtk_widget_hide((GtkWidget *) window->menu_bar);
+
   gtkosx_application_set_menu_bar(app,
 				  window->menu_bar);
   

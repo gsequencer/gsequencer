@@ -215,8 +215,8 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
 
   padding = AGS_INDICATOR(vindicator)->segment_padding;
 
-//  cairo_surface_flush(cairo_get_target(cr));
-  cairo_push_group(cr);
+  //  cairo_surface_flush(cairo_get_target(cr));
+  //  cairo_push_group(cr);
 
   /* clear bg */
   gtk_render_background(vindicator_style_context,
@@ -264,8 +264,8 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
 
 //  printf("\n");
 
-  cairo_pop_group_to_source(cr);
-  cairo_paint(cr);
+  //  cairo_pop_group_to_source(cr);
+  //  cairo_paint(cr);
 
   g_boxed_free(GDK_TYPE_RGBA, fg_color);
   g_boxed_free(GDK_TYPE_RGBA, bg_color);

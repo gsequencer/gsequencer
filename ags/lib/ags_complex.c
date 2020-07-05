@@ -119,10 +119,10 @@ ags_complex_free(AgsComplex *ptr)
  *
  * Since: 3.0.0
  */
-complex
+double complex
 ags_complex_get(AgsComplex *ptr)
 {
-  complex z;
+  double complex z;
 
   z = ptr->real + I * ptr->imag;
 
@@ -139,7 +139,7 @@ ags_complex_get(AgsComplex *ptr)
  * Since: 3.0.0
  */
 void
-ags_complex_set(AgsComplex *ptr, complex z)
+ags_complex_set(AgsComplex *ptr, double complex z)
 {
   ptr->real = creal(z);
   ptr->imag = cimag(z);
