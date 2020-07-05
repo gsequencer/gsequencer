@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -959,13 +959,13 @@ ags_sfz_sample_open(AgsSoundResource *sound_resource,
   sfz_sample->info->channels = 0;
   sfz_sample->info->samplerate = 0;
 
-  g_rec_mutex_unlock(sfz_sample_mutex);
-  
   if(filename != NULL){
     sfz_sample->file = (SNDFILE *) sf_open(filename, SFM_READ, sfz_sample->info);
   }
   
   if(sfz_sample->file == NULL){
+    g_rec_mutex_unlock(sfz_sample_mutex);
+  
     return(FALSE);
   }
 
@@ -1014,6 +1014,8 @@ ags_sfz_sample_open(AgsSoundResource *sound_resource,
   }
   break;
   }
+
+  g_rec_mutex_unlock(sfz_sample_mutex);  
   
   g_object_set(sfz_sample,
 	       "filename", filename,
@@ -1037,7 +1039,8 @@ ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
   AgsSFZSample *sfz_sample;
   
   guint major_format;
-
+  gboolean success;
+  
   GRecMutex *sfz_sample_mutex;
 
   sfz_sample = AGS_SFZ_SAMPLE(sound_resource);
@@ -1073,7 +1076,11 @@ ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
   if(g_str_has_suffix(filename, ".wav")){
     major_format = SF_FORMAT_WAV;
 
+    g_rec_mutex_lock(sfz_sample_mutex);
+    
     sfz_sample->info->format = major_format | SF_FORMAT_PCM_16;
+
+    g_rec_mutex_unlock(sfz_sample_mutex);
 
     g_object_set(sfz_sample,
 		 "format", AGS_SOUNDCARD_SIGNED_16_BIT,
@@ -1081,7 +1088,11 @@ ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
   }else if(g_str_has_suffix(filename, ".flac")){    
     major_format = SF_FORMAT_FLAC;
 
+    g_rec_mutex_lock(sfz_sample_mutex);
+
     sfz_sample->info->format = major_format | SF_FORMAT_PCM_16;
+
+    g_rec_mutex_unlock(sfz_sample_mutex);
 
     g_object_set(sfz_sample,
 		 "format", AGS_SOUNDCARD_SIGNED_16_BIT,
@@ -1089,7 +1100,11 @@ ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
   }else if(g_str_has_suffix(filename, ".aiff")){    
     major_format = SF_FORMAT_AIFF;
 
+    g_rec_mutex_lock(sfz_sample_mutex);
+
     sfz_sample->info->format = major_format | SF_FORMAT_PCM_16;
+
+    g_rec_mutex_unlock(sfz_sample_mutex);
 
     g_object_set(sfz_sample,
 		 "format", AGS_SOUNDCARD_SIGNED_16_BIT,
@@ -1097,7 +1112,11 @@ ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
   }else if(g_str_has_suffix(filename, ".ogg")){
     major_format = SF_FORMAT_OGG;
 
+    g_rec_mutex_lock(sfz_sample_mutex);
+
     sfz_sample->info->format = major_format | SF_FORMAT_VORBIS;
+
+    g_rec_mutex_unlock(sfz_sample_mutex);
 
     g_object_set(sfz_sample,
 		 "format", AGS_SOUNDCARD_DOUBLE,
@@ -1105,13 +1124,19 @@ ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
   }else{
     major_format = SF_FORMAT_WAV;
 
+    g_rec_mutex_lock(sfz_sample_mutex);
+
     sfz_sample->info->format = major_format | SF_FORMAT_PCM_16;
+
+    g_rec_mutex_unlock(sfz_sample_mutex);
 
     g_object_set(sfz_sample,
 		 "format", AGS_SOUNDCARD_SIGNED_16_BIT,
 		 NULL);
   }
   
+  g_rec_mutex_lock(sfz_sample_mutex);
+
   sfz_sample->info->frames = 0;
   sfz_sample->info->seekable = 0;
   sfz_sample->info->sections = 0;
@@ -1124,20 +1149,20 @@ ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
     sfz_sample->file = (SNDFILE *) sf_open(filename, SFM_RDWR, sfz_sample->info);
   }
 
+  success = (sfz_sample->file != NULL) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(sfz_sample_mutex);
+
   g_object_set(sfz_sample,
 	       "filename", filename,
 	       "audio-channels", audio_channels,
 	       NULL);
 
-  if(sfz_sample->file == NULL){
-    return(FALSE);
-  }
-
 #ifdef AGS_DEBUG
   g_message("ags_sfz_sample_rw_open(): channels %d frames %d", sfz_sample->info->channels, sfz_sample->info->frames);
 #endif
 
-  return(TRUE);
+  return(success);
 }
 
 gboolean
@@ -1160,6 +1185,9 @@ ags_sfz_sample_info(AgsSoundResource *sound_resource,
   /* info */
   sample_frame_count = 0;
 
+  sample_loop_start = 0;
+  sample_loop_end = 0;
+  
   g_rec_mutex_lock(sfz_sample_mutex);
 
   if(sfz_sample->info != NULL){
@@ -1174,15 +1202,15 @@ ags_sfz_sample_info(AgsSoundResource *sound_resource,
 	       NULL);
 
   if(frame_count != NULL){
-    *frame_count = sample_frame_count;
+    frame_count[0] = sample_frame_count;
   }
   
   if(loop_start != NULL){
-    *loop_start = sample_loop_start;
+    loop_start[0] = sample_loop_start;
   }
 
   if(loop_end != NULL){
-    *loop_end = sample_loop_end;
+    loop_end[0] = sample_loop_end;
   }
   
   return(TRUE);
@@ -1199,14 +1227,23 @@ ags_sfz_sample_set_presets(AgsSoundResource *sound_resource,
 
   gint sample_format;
   
+  GRecMutex *sfz_sample_mutex;
+
   sfz_sample = AGS_SFZ_SAMPLE(sound_resource);
+
+  /* get sfz sample mutex */
+  sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
 
   g_object_set(sfz_sample,
 	       "buffer-size", buffer_size,
 	       "format", format,
 	       NULL);
   
+  g_rec_mutex_lock(sfz_sample_mutex);
+
   if(sfz_sample->info == NULL){
+    g_rec_mutex_unlock(sfz_sample_mutex);
+    
     return;
   }
 
@@ -1251,6 +1288,8 @@ ags_sfz_sample_set_presets(AgsSoundResource *sound_resource,
     }
     break;
   }
+
+  g_rec_mutex_unlock(sfz_sample_mutex);
 }
 
 void
@@ -1405,8 +1444,6 @@ ags_sfz_sample_read(AgsSoundResource *sound_resource,
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 						  ags_audio_buffer_util_format_from_soundcard(sfz_sample->format));
-  
-  g_rec_mutex_unlock(sfz_sample_mutex);
     
   for(i = 0; i < frame_count && sfz_sample->offset + i < total_frame_count; ){
     sf_count_t retval;
@@ -1476,6 +1513,8 @@ ags_sfz_sample_read(AgsSoundResource *sound_resource,
     
     i += read_count;
   }
+  
+  g_rec_mutex_unlock(sfz_sample_mutex);
 
   return(frame_count);
 }
@@ -1519,8 +1558,6 @@ ags_sfz_sample_write(AgsSoundResource *sound_resource,
       break;
     }
   }
-  
-  g_rec_mutex_unlock(sfz_sample_mutex);
 
   if(do_write){
     multi_frames = frame_count * sfz_sample->info->channels;
@@ -1575,6 +1612,8 @@ ags_sfz_sample_write(AgsSoundResource *sound_resource,
     
     sfz_sample->offset += frame_count;
   }
+  
+  g_rec_mutex_unlock(sfz_sample_mutex);
 }
 
 void
@@ -1582,13 +1621,24 @@ ags_sfz_sample_flush(AgsSoundResource *sound_resource)
 {
   AgsSFZSample *sfz_sample;
    
+  GRecMutex *sfz_sample_mutex;
+
   sfz_sample = AGS_SFZ_SAMPLE(sound_resource);
 
+  /* get sfz sample mutex */
+  sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
+
+  g_rec_mutex_lock(sfz_sample_mutex);
+
   if(sfz_sample->file == NULL){
+    g_rec_mutex_unlock(sfz_sample_mutex);
+
     return;
   }
   
   sf_write_sync(sfz_sample->file);
+
+  g_rec_mutex_unlock(sfz_sample_mutex);
 }
 
 void
@@ -1604,7 +1654,7 @@ ags_sfz_sample_seek(AgsSoundResource *sound_resource,
 
   sfz_sample = AGS_SFZ_SAMPLE(sound_resource);
 
-  /* get sfz_sample mutex */
+  /* get sfz sample mutex */
   sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
 
   ags_sound_resource_info(sound_resource,
@@ -1649,9 +1699,9 @@ ags_sfz_sample_seek(AgsSoundResource *sound_resource,
     }
   }
 
-  g_rec_mutex_unlock(sfz_sample_mutex);
-
   retval = sf_seek(sfz_sample->file, sfz_sample->offset, SEEK_SET);
+
+  g_rec_mutex_unlock(sfz_sample_mutex);
 
   if(retval == -1){
     g_warning("seek failed");
@@ -1670,13 +1720,15 @@ ags_sfz_sample_close(AgsSoundResource *sound_resource)
   /* get sfz sample mutex */
   sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
 
+  g_rec_mutex_lock(sfz_sample_mutex);
+
   if(sfz_sample->file == NULL){
+    g_rec_mutex_unlock(sfz_sample_mutex);
+    
     return;
   }
 
   sf_close(sfz_sample->file);
-
-  g_rec_mutex_lock(sfz_sample_mutex);
 
   if(sfz_sample->info != NULL){
     free(sfz_sample->info);

@@ -48,12 +48,12 @@ static gpointer ags_fx_volume_audio_parent_class = NULL;
 
 const gchar *ags_fx_volume_audio_plugin_name = "ags-fx-volume";
 
-const gchar *ags_fx_volume_audio_specifier[] = {
+const gchar* ags_fx_volume_audio_specifier[] = {
   "./muted[0]",
   NULL,
 };
 
-const gchar *ags_fx_volume_audio_control_port[] = {
+const gchar* ags_fx_volume_audio_control_port[] = {
   "1/1",
   NULL,
 };

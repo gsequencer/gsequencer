@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -957,7 +957,12 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
 	
 	sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
 
+	g_rec_mutex_lock(ipatch_mutex);
+	
 	sublevel_name[0] = g_strdup(ipatch->filename);
+
+	g_rec_mutex_unlock(ipatch_mutex);
+
 	sublevel_name[1] = NULL;
 
 	return(sublevel_name);
@@ -988,7 +993,12 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
 	
 	sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
 
+	g_rec_mutex_lock(ipatch_mutex);
+	
 	sublevel_name[0] = g_strdup(ipatch->filename);
+
+	g_rec_mutex_unlock(ipatch_mutex);
+	
 	sublevel_name[1] = NULL;
 
 	return(sublevel_name);
@@ -1024,7 +1034,12 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
 	
 	sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
 
+	g_rec_mutex_lock(ipatch_mutex);
+	
 	sublevel_name[0] = g_strdup(ipatch->filename);
+
+	g_rec_mutex_unlock(ipatch_mutex);
+	
 	sublevel_name[1] = NULL;
 
 	return(sublevel_name);

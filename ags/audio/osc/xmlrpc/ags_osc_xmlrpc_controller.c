@@ -1186,6 +1186,11 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
   xmlNode *osc_packet_node;
   xmlNode *response_root_node;
   xmlNode *response_redirect_node;
+
+#if HAVE_GLIB_2_52  
+#else  
+  AgsUUID *resource_uuid;
+#endif
   
   GBytes *request_body_data;
 
@@ -1241,8 +1246,17 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
   g_object_get(osc_xmlrpc_controller,
 	       "osc-xmlrpc-server", &osc_xmlrpc_server,
 	       NULL);
-  
+
+#if HAVE_GLIB_2_52  
   response_resource_id = g_uuid_string_random();	    
+#else
+  resource_uuid = ags_uuid_alloc();
+  ags_uuid_generate(resource_uuid);
+  
+  response_resource_id = ags_uuid_to_string(resource_uuid);
+
+  ags_uuid_free(resource_uuid);
+#endif
 
   osc_websocket_connection = ags_osc_websocket_connection_new(osc_xmlrpc_server);
   g_object_set(osc_websocket_connection,

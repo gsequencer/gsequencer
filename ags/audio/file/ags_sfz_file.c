@@ -381,7 +381,7 @@ ags_sfz_file_set_property(GObject *gobject,
 
   sfz_file = AGS_SFZ_FILE(gobject);
 
-  /* get audio file mutex */
+  /* get sfz file mutex */
   sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
 
   switch(prop_id){
@@ -518,7 +518,7 @@ ags_sfz_file_get_property(GObject *gobject,
 
   sfz_file = AGS_SFZ_FILE(gobject);
 
-  /* get audio file mutex */
+  /* get sfz file mutex */
   sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
 
   switch(prop_id){
@@ -853,7 +853,11 @@ ags_sfz_file_open(AgsSoundContainer *sound_container, gchar *filename)
   }
 
   /* check suffix */
+  g_rec_mutex_lock(sfz_file_mutex);
+
   sfz_file->filename = g_strdup(filename);
+
+  g_rec_mutex_unlock(sfz_file_mutex);
   
   if(!ags_sfz_file_check_suffix(filename)){
     g_message("unsupported suffix");
@@ -991,7 +995,12 @@ ags_sfz_file_get_sublevel_name(AgsSoundContainer *sound_container)
 	
     sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
 
+    g_rec_mutex_lock(sfz_file_mutex);
+    
     sublevel_name[0] = g_strdup(sfz_file->filename);
+
+    g_rec_mutex_unlock(sfz_file_mutex);
+
     sublevel_name[1] = NULL;
 
     return(sublevel_name);
@@ -1305,10 +1314,15 @@ ags_sfz_file_select_sample(AgsSFZFile *sfz_file,
   GList *start_list, *list;
 
   gboolean success;
+
+  GRecMutex *sfz_file_mutex;
   
   if(!AGS_IS_SFZ_FILE(sfz_file)){
     return(FALSE);
   }
+
+  /* get sfz file mutex */
+  sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
 
   success = FALSE;
 
@@ -1328,19 +1342,28 @@ ags_sfz_file_select_sample(AgsSFZFile *sfz_file,
 			sample_index);
 
       /* selected index and name */
-      sfz_file->index_selected[AGS_SFZ_LEVEL_SAMPLE] = sample_index;
-
-      g_free(sfz_file->name_selected[AGS_SFZ_LEVEL_SAMPLE]);
-
+      filename = NULL;
+      
       g_object_get(list->data,
 		   "filename", &filename,
 		   NULL);
+
+      g_rec_mutex_lock(sfz_file_mutex);
+      
+      sfz_file->index_selected[AGS_SFZ_LEVEL_SAMPLE] = sample_index;
+
+      g_free(sfz_file->name_selected[AGS_SFZ_LEVEL_SAMPLE]);
       
       sfz_file->name_selected[AGS_SFZ_LEVEL_SAMPLE] = filename;
 
       /* container */
       sfz_file->current_sample = (AgsSFZSample *) list->data;
+
+      g_rec_mutex_unlock(sfz_file_mutex);
     }
+
+    g_list_free_full(start_list,
+		     g_object_unref);
   }
   
   return(success);

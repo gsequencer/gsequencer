@@ -58,12 +58,12 @@ static gpointer ags_fx_peak_channel_parent_class = NULL;
 
 const gchar *ags_fx_peak_channel_plugin_name = "ags-fx-peak";
 
-const gchar *ags_fx_peak_channel_specifier[] = {
+const gchar* ags_fx_peak_channel_specifier[] = {
   "./peak[0]",
   NULL,
 };
 
-const gchar *ags_fx_peak_channel_control_port[] = {
+const gchar* ags_fx_peak_channel_control_port[] = {
   "1/1",
   NULL,
 };

@@ -1,3 +1,31 @@
+ags (3.4.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsSF2SynthGenerator and AgsSFZSynthGenerator to be faster
+	* improved thread-safety of AgsSynthGenerator, AgsSF2SynthGenerator and AgsSFZSynthGenerator
+	* minor improvements
+
+ags (3.4.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved thread-safety of ags/audio/file/*.c
+	* improved ags_sf2_synth_util.c and ags_sfz_synth_util.c
+
+ags (3.4.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_filter_util.c to use fmod() instead modulo to compute phase
+
+ags (3.4.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed arithmetic exception and improved base note of ags_filter_util.c
+
+ags (3.4.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved pitch to use an octave as immediate frequency in ags_filter_util.c
+
 ags (3.4.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

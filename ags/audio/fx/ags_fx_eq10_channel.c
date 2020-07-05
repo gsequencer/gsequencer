@@ -52,7 +52,7 @@ static gpointer ags_fx_eq10_channel_parent_class = NULL;
 
 const gchar *ags_fx_eq10_channel_plugin_name = "ags-fx-eq10";
 
-const gchar *ags_fx_eq10_channel_specifier[] = {
+const gchar* ags_fx_eq10_channel_specifier[] = {
   "./peak-28hz[0]",
   "./peak-56hz[0]",
   "./peak-112hz[0]",
@@ -67,7 +67,7 @@ const gchar *ags_fx_eq10_channel_specifier[] = {
   NULL,
 };
 
-const gchar *ags_fx_eq10_channel_control_port[] = {
+const gchar* ags_fx_eq10_channel_control_port[] = {
   "1/11",
   "2/11",
   "3/11",

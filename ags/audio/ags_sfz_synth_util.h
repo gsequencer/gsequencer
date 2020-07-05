@@ -109,6 +109,16 @@ void ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
 				     guint loop_mode,
 				     gint loop_start, gint loop_end);
 
+void ags_sfz_synth_util_copy(void *buffer,
+			     guint buffer_size,
+			     AgsSFZSample *sfz_sample,
+			     gdouble note,
+			     gdouble volume,
+			     guint samplerate, guint audio_buffer_util_format,
+			     guint offset, guint n_frames,
+			     guint loop_mode,
+			     gint loop_start, gint loop_end);
+
 G_END_DECLS
 
 #endif /*__AGS_SFZ_SYNTH_UTIL_H__*/

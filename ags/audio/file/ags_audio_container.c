@@ -1160,22 +1160,39 @@ ags_audio_container_find_sound_resource(AgsAudioContainer *audio_container,
 					gchar *instrument,
 					gchar *sample)
 {
+  GObject *sound_container;
+  
   GList *retval;
   
   gchar **strv;
 
   guint i;
+
+  GRecMutex *audio_container_mutex;
+
+  /* get audio container mutex */
+  audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(audio_container);
+
+  g_rec_mutex_lock(audio_container_mutex);
+
+  sound_container = audio_container->sound_container;
+
+  if(sound_container != NULL){
+    g_object_ref(sound_container);
+  }
   
-  ags_sound_container_level_up(AGS_SOUND_CONTAINER(audio_container->sound_container),
+  g_rec_mutex_unlock(audio_container_mutex);
+
+  ags_sound_container_level_up(AGS_SOUND_CONTAINER(sound_container),
 			       5);
 
   /* preset */
   if(preset != NULL){
-    strv = ags_sound_container_get_sublevel_name(AGS_SOUND_CONTAINER(audio_container->sound_container));
+    strv = ags_sound_container_get_sublevel_name(AGS_SOUND_CONTAINER(sound_container));
     i = ags_strv_index(strv,
 		       preset);
   
-    ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+    ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(sound_container),
 					      i);
 
     g_strfreev(strv);
@@ -1183,11 +1200,11 @@ ags_audio_container_find_sound_resource(AgsAudioContainer *audio_container,
 
   /* instrument */
   if(instrument != NULL){
-    strv = ags_sound_container_get_sublevel_name(AGS_SOUND_CONTAINER(audio_container->sound_container));
+    strv = ags_sound_container_get_sublevel_name(AGS_SOUND_CONTAINER(sound_container));
     i = ags_strv_index(strv,
 		       instrument);
   
-    ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+    ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(sound_container),
 					      i);
 
     g_strfreev(strv);
@@ -1195,17 +1212,21 @@ ags_audio_container_find_sound_resource(AgsAudioContainer *audio_container,
   
   /* sample */
   if(sample != NULL){
-    strv = ags_sound_container_get_sublevel_name(AGS_SOUND_CONTAINER(audio_container->sound_container));
+    strv = ags_sound_container_get_sublevel_name(AGS_SOUND_CONTAINER(sound_container));
     i = ags_strv_index(strv,
 		       sample);
   
-    ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+    ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(sound_container),
 					      i);
 
     g_strfreev(strv);
   }
 
-  retval = ags_sound_container_get_resource_current(AGS_SOUND_CONTAINER(audio_container->sound_container));
+  retval = ags_sound_container_get_resource_current(AGS_SOUND_CONTAINER(sound_container));
+
+  if(sound_container != NULL){
+    g_object_unref(sound_container);
+  }
   
   return(retval);
 }
@@ -1360,25 +1381,37 @@ gboolean
 ags_audio_container_open(AgsAudioContainer *audio_container)
 {
   GObject *sound_container;
+
+  gchar *filename;
+
+  gboolean success;
   
   GRecMutex *audio_container_mutex;
 
   if(!AGS_IS_AUDIO_CONTAINER(audio_container)){
     return(FALSE);
   }
+    
+#ifdef AGS_DEBUG
+  g_message("ags_audio_container_open: %s", audio_container->filename);
+#endif
 
   /* get audio container mutex */
   audio_container_mutex = AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(audio_container);
 
   sound_container = NULL;
-  
-#ifdef AGS_DEBUG
-  g_message("ags_audio_container_open: %s", audio_container->filename);
-#endif
 
-  if(g_file_test(audio_container->filename, G_FILE_TEST_EXISTS)){
-    if(ags_audio_container_check_suffix(audio_container->filename)){
-      if(ags_ipatch_check_suffix(audio_container->filename)){
+  filename = NULL;
+
+  g_object_get(audio_container,
+	       "filename", &filename,
+	       NULL);
+
+  success = FALSE;
+  
+  if(g_file_test(filename, G_FILE_TEST_EXISTS)){
+    if(ags_audio_container_check_suffix(filename)){
+      if(ags_ipatch_check_suffix(filename)){
 	/* ipatch sound resource */
 	g_rec_mutex_lock(audio_container_mutex);
 
@@ -1387,7 +1420,7 @@ ags_audio_container_open(AgsAudioContainer *audio_container)
 	g_object_ref(audio_container->sound_container);
 
 	g_rec_mutex_unlock(audio_container_mutex);
-      }else if(ags_sfz_file_check_suffix(audio_container->filename)){
+      }else if(ags_sfz_file_check_suffix(filename)){
 	/* SFZ file sound resource */
 	g_rec_mutex_lock(audio_container_mutex);
       
@@ -1399,15 +1432,21 @@ ags_audio_container_open(AgsAudioContainer *audio_container)
       }
 
       if(ags_sound_container_open(AGS_SOUND_CONTAINER(sound_container),
-				  audio_container->filename)){
-	return(TRUE);
+				  filename)){
+	success = TRUE;
       }
     }else{
       g_message("ags_audio_container_open: unknown file type");
     }
   }
+
+  if(sound_container != NULL){
+    g_object_unref(sound_container);
+  }
   
-  return(FALSE);
+  g_free(filename);
+  
+  return(success);
 }
 
 gboolean
@@ -1458,10 +1497,18 @@ ags_audio_container_close(AgsAudioContainer *audio_container)
 
   sound_container = audio_container->sound_container;
 
+  if(sound_container != NULL){
+    g_object_ref(sound_container);
+  }
+
   g_rec_mutex_unlock(audio_container_mutex);
 
   /* close */
   ags_sound_container_close(AGS_SOUND_CONTAINER(sound_container));
+
+  if(sound_container != NULL){
+    g_object_unref(sound_container);
+  }
 }
 
 /**
@@ -1482,8 +1529,11 @@ ags_audio_container_read(AgsAudioContainer *audio_container,
 			 GError **error)
 {
   GList *start_sound_resource;
+  
   void *buffer;
 
+  guint file_frame_count;
+  
   if(!AGS_IS_AUDIO_CONTAINER(audio_container)){
     return(NULL);
   }
@@ -1495,19 +1545,23 @@ ags_audio_container_read(AgsAudioContainer *audio_container,
   }
 
   ags_sound_resource_info(AGS_SOUND_RESOURCE(start_sound_resource->data),
-			  &(audio_container->file_frame_count),
+			  &file_frame_count,
 			  NULL, NULL);
+
+  g_object_set(audio_container,
+	       "file-frame-count", file_frame_count,
+	       NULL);
   
-  buffer = ags_stream_alloc(audio_container->file_frame_count,
+  buffer = ags_stream_alloc(file_frame_count,
 			    format);
 
   ags_sound_resource_read(AGS_SOUND_RESOURCE(start_sound_resource->data),
 			  buffer, 1,
 			  audio_channel,
-			  audio_container->file_frame_count, format);
+			  file_frame_count, format);
 
-#if 0
-#endif
+  g_list_free_full(start_sound_resource,
+		   (GDestroyNotify) g_object_unref);
   
   return(buffer);
 }
@@ -1555,7 +1609,8 @@ ags_audio_container_read_audio_signal(AgsAudioContainer *audio_container)
     sound_resource = sound_resource->next;
   }
 
-  g_list_free(start_sound_resource);
+  g_list_free_full(start_sound_resource,
+		   (GDestroyNotify) g_object_unref);
   
   audio_container->audio_signal = list;
 

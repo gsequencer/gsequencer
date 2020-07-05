@@ -303,8 +303,6 @@ ags_audio_container_manager_find_audio_container(AgsAudioContainerManager *audio
 
   gboolean success;
   
-  GRecMutex *audio_container_manager_mutex;
-
   if(!AGS_IS_AUDIO_CONTAINER_MANAGER(audio_container_manager) ||
      filename == NULL){
     return(NULL);
@@ -313,9 +311,6 @@ ags_audio_container_manager_find_audio_container(AgsAudioContainerManager *audio
   g_object_get(audio_container_manager,
 	       "audio-container", &start_list,
 	       NULL);
-
-  /* get audio container manager mutex */
-  audio_container_manager_mutex = AGS_AUDIO_CONTAINER_MANAGER_GET_OBJ_MUTEX(audio_container_manager);
     
   audio_container = NULL;
   

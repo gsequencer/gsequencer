@@ -50,7 +50,7 @@ static gpointer ags_fx_envelope_channel_parent_class = NULL;
 
 const gchar *ags_fx_envelope_channel_plugin_name = "ags-fx-envelope";
 
-const gchar *ags_fx_envelope_channel_specifier[] = {
+const gchar* ags_fx_envelope_channel_specifier[] = {
   "./fixed-length[0]",
   "./attack[0]",
   "./decay[0]",
@@ -60,7 +60,7 @@ const gchar *ags_fx_envelope_channel_specifier[] = {
   NULL,
 };
 
-const gchar *ags_fx_envelope_channel_control_port[] = {
+const gchar* ags_fx_envelope_channel_control_port[] = {
   "1/6",
   "2/6",
   "3/6",

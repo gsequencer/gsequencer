@@ -518,7 +518,8 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 	xmlAddChild(session_list_node,
 		    session_node);
 
-	current_security_token = g_uuid_string_random();
+	current_security_token = ags_xml_authentication_generate_token(xml_authentication,
+								       NULL);
 
 	xmlNodeSetContent(session_node,
 			  current_security_token);
@@ -817,7 +818,25 @@ gchar*
 ags_xml_authentication_generate_token(AgsAuthentication *authentication,
 				      GError **error)
 {
-  return(g_uuid_string_random());
+#if HAVE_GLIB_2_52
+#else
+  AgsUUID *uuid;
+#endif
+  
+  gchar *str;
+
+#if HAVE_GLIB_2_52
+  str = g_uuid_string_random();
+#else
+  uuid = ags_uuid_alloc();
+  ags_uuid_generate(uuid);
+
+  str = ags_uuid_to_string(uuid);
+
+  ags_uuid_free(uuid);
+#endif
+  
+  return(str);
 }
 
 gchar*

@@ -65,6 +65,7 @@ enum{
   PROP_FRAME_COUNT,
   PROP_LOOP_START,
   PROP_LOOP_END,
+  PROP_VOLUME,
   PROP_BASE_KEY,
   PROP_TUNING,
   PROP_TIMESTAMP,
@@ -245,6 +246,61 @@ ags_sfz_synth_generator_class_init(AgsSFZSynthGeneratorClass *sfz_synth_generato
 				  PROP_LOOP_END,
 				  param_spec);
 
+
+  /**
+   * AgsSFZSynthGenerator:delay:
+   *
+   * The delay to be used.
+   * 
+   * Since: 3.4.11
+   */
+  param_spec = g_param_spec_double("delay",
+				   i18n_pspec("using delay"),
+				   i18n_pspec("The delay to be used"),
+				   0.0,
+				   65535.0,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DELAY,
+				  param_spec);
+
+  /**
+   * AgsSFZSynthGenerator:attack:
+   *
+   * The attack to be used.
+   * 
+   * Since: 3.4.11
+   */
+  param_spec = g_param_spec_uint("attack",
+				 i18n_pspec("apply attack"),
+				 i18n_pspec("To apply attack"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ATTACK,
+				  param_spec);
+
+  /**
+   * AgsSFZSynthGenerator:volume:
+   *
+   * The volume to be used.
+   * 
+   * Since: 3.4.11
+   */
+  param_spec = g_param_spec_double("volume",
+				   i18n_pspec("using volume"),
+				   i18n_pspec("The volume to be used"),
+				   0.0,
+				   2.0,
+				   AGS_SFZ_SYNTH_GENERATOR_DEFAULT_VOLUME,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_VOLUME,
+				  param_spec);
+  
   /**
    * AgsSFZSynthGenerator:tuning:
    *
@@ -289,6 +345,9 @@ ags_sfz_synth_generator_init(AgsSFZSynthGenerator *sfz_synth_generator)
 
   sfz_synth_generator->flags = 0;
 
+  /* sfz synth generator mutex */
+  g_rec_mutex_init(&(sfz_synth_generator->obj_mutex));
+
   /* config */
   config = ags_config_get_instance();
 
@@ -306,6 +365,8 @@ ags_sfz_synth_generator_init(AgsSFZSynthGenerator *sfz_synth_generator)
 
   sfz_synth_generator->delay = 0.0;
   sfz_synth_generator->attack = 0;
+
+  sfz_synth_generator->volume = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_VOLUME;
   
   sfz_synth_generator->base_key = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_BASE_KEY;
   sfz_synth_generator->tuning = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_TUNING;
@@ -323,7 +384,12 @@ ags_sfz_synth_generator_set_property(GObject *gobject,
 {
   AgsSFZSynthGenerator *sfz_synth_generator;
 
+  GRecMutex *sfz_synth_generator_mutex;
+
   sfz_synth_generator = AGS_SFZ_SYNTH_GENERATOR(gobject);
+
+  /* get sfz synth generator mutex */
+  sfz_synth_generator_mutex = AGS_SFZ_SYNTH_GENERATOR_GET_OBJ_MUTEX(sfz_synth_generator);
   
   switch(prop_id){
   case PROP_FILENAME:
@@ -332,7 +398,11 @@ ags_sfz_synth_generator_set_property(GObject *gobject,
 
     filename = (gchar *) g_value_get_string(value);
 
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     if(sfz_synth_generator->filename == filename){
+      g_rec_mutex_unlock(sfz_synth_generator_mutex);
+
       return;
     }
       
@@ -341,6 +411,8 @@ ags_sfz_synth_generator_set_property(GObject *gobject,
     }
 
     sfz_synth_generator->filename = g_strdup(filename);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_SAMPLERATE:
@@ -375,37 +447,74 @@ ags_sfz_synth_generator_set_property(GObject *gobject,
   break;
   case PROP_DELAY:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     sfz_synth_generator->delay = g_value_get_double(value);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_ATTACK:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     sfz_synth_generator->attack = g_value_get_uint(value);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_FRAME_COUNT:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     sfz_synth_generator->frame_count = g_value_get_uint(value);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_LOOP_START:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     sfz_synth_generator->loop_start = g_value_get_uint(value);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_LOOP_END:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     sfz_synth_generator->loop_end = g_value_get_uint(value);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
+  }
+  break;
+  case PROP_VOLUME:
+  {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);
+
+    sfz_synth_generator->volume = g_value_get_double(value);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_BASE_KEY:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     sfz_synth_generator->base_key = g_value_get_double(value);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_TUNING:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     sfz_synth_generator->tuning = g_value_get_double(value);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_TIMESTAMP:
@@ -414,7 +523,11 @@ ags_sfz_synth_generator_set_property(GObject *gobject,
 
     timestamp = (AgsTimestamp *) g_value_get_object(value);
 
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     if(sfz_synth_generator->timestamp == (GObject *) timestamp){
+      g_rec_mutex_unlock(sfz_synth_generator_mutex);
+
       return;
     }
 
@@ -427,6 +540,8 @@ ags_sfz_synth_generator_set_property(GObject *gobject,
     }
 
     sfz_synth_generator->timestamp = (GObject *) timestamp;
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   default:
@@ -443,67 +558,129 @@ ags_sfz_synth_generator_get_property(GObject *gobject,
 {
   AgsSFZSynthGenerator *sfz_synth_generator;
 
+  GRecMutex *sfz_synth_generator_mutex;
+
   sfz_synth_generator = AGS_SFZ_SYNTH_GENERATOR(gobject);
+
+  /* get sfz synth generator mutex */
+  sfz_synth_generator_mutex = AGS_SFZ_SYNTH_GENERATOR_GET_OBJ_MUTEX(sfz_synth_generator);
   
   switch(prop_id){
   case PROP_FILENAME:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_string(value, sfz_synth_generator->filename);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_SAMPLERATE:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_uint(value, sfz_synth_generator->samplerate);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_BUFFER_SIZE:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_uint(value, sfz_synth_generator->buffer_size);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_FORMAT:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_uint(value, sfz_synth_generator->format);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_DELAY:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_double(value, sfz_synth_generator->delay);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_ATTACK:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_uint(value, sfz_synth_generator->attack);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_FRAME_COUNT:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_uint(value, sfz_synth_generator->frame_count);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_LOOP_START:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_uint(value, sfz_synth_generator->loop_start);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_LOOP_END:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_uint(value, sfz_synth_generator->loop_end);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
+  }
+  break;
+  case PROP_VOLUME:
+  {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);
+
+    g_value_set_double(value, sfz_synth_generator->volume);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_BASE_KEY:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_double(value, sfz_synth_generator->base_key);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_TUNING:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_double(value, sfz_synth_generator->tuning);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   case PROP_TIMESTAMP:
   {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
     g_value_set_object(value, sfz_synth_generator->timestamp);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
   break;
   default:
@@ -635,13 +812,22 @@ ags_sfz_synth_generator_set_samplerate(AgsSFZSynthGenerator *sfz_synth_generator
   guint old_samplerate;
   guint i;  
 
+  GRecMutex *sfz_synth_generator_mutex;
+
   if(!AGS_IS_SFZ_SYNTH_GENERATOR(sfz_synth_generator)){
     return;
   }
 
+  /* get sfz synth generator mutex */
+  sfz_synth_generator_mutex = AGS_SFZ_SYNTH_GENERATOR_GET_OBJ_MUTEX(sfz_synth_generator);
+
+  g_rec_mutex_lock(sfz_synth_generator_mutex);
+  
   old_samplerate = sfz_synth_generator->samplerate;
 
   if(old_samplerate == samplerate){
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
+
     return;
   }
   
@@ -651,6 +837,8 @@ ags_sfz_synth_generator_set_samplerate(AgsSFZSynthGenerator *sfz_synth_generator
   
   sfz_synth_generator->loop_start = samplerate * (sfz_synth_generator->loop_start / old_samplerate);
   sfz_synth_generator->loop_end = samplerate * (sfz_synth_generator->loop_end / old_samplerate);
+
+  g_rec_mutex_unlock(sfz_synth_generator_mutex);
 }
 
 /**
@@ -691,11 +879,20 @@ ags_sfz_synth_generator_get_buffer_size(AgsSFZSynthGenerator *sfz_synth_generato
 void
 ags_sfz_synth_generator_set_buffer_size(AgsSFZSynthGenerator *sfz_synth_generator, guint buffer_size)
 {
+  GRecMutex *sfz_synth_generator_mutex;
+
   if(!AGS_IS_SFZ_SYNTH_GENERATOR(sfz_synth_generator)){
     return;
   }
 
+  /* get sfz synth generator mutex */
+  sfz_synth_generator_mutex = AGS_SFZ_SYNTH_GENERATOR_GET_OBJ_MUTEX(sfz_synth_generator);
+
+  g_rec_mutex_lock(sfz_synth_generator_mutex);
+  
   sfz_synth_generator->buffer_size = buffer_size;
+
+  g_rec_mutex_unlock(sfz_synth_generator_mutex);
 }
 
 /**
@@ -736,11 +933,20 @@ ags_sfz_synth_generator_get_format(AgsSFZSynthGenerator *sfz_synth_generator)
 void
 ags_sfz_synth_generator_set_format(AgsSFZSynthGenerator *sfz_synth_generator, guint format)
 {
+  GRecMutex *sfz_synth_generator_mutex;
+
   if(!AGS_IS_SFZ_SYNTH_GENERATOR(sfz_synth_generator)){
     return;
   }
 
+  /* get sfz synth generator mutex */
+  sfz_synth_generator_mutex = AGS_SFZ_SYNTH_GENERATOR_GET_OBJ_MUTEX(sfz_synth_generator);
+
+  g_rec_mutex_lock(sfz_synth_generator_mutex);
+
   sfz_synth_generator->format = format;
+
+  g_rec_mutex_unlock(sfz_synth_generator_mutex);
 }
 
 /**
@@ -1096,13 +1302,17 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   GList *start_list, *list;
   GList *stream_start, *stream;
 
+  void *buffer;
+
   gchar *filename;
 
+  gint root_note;
   gint midi_key;
   glong lower, upper;
   gdouble delay;
   guint attack;
   guint frame_count;
+  guint length;
   guint buffer_size;
   guint current_frame_count, requested_frame_count;
   gdouble samplerate;
@@ -1111,14 +1321,25 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   guint audio_buffer_util_format;
   guint loop_mode;
   gint loop_start, loop_end;
-  guint current_attack, current_count;
-  guint offset;
+  guint copy_mode;
   guint i;  
   
-  GRecMutex *audio_container_manager_mutex;
+  GRecMutex *sfz_synth_generator_mutex;
+  GRecMutex *stream_mutex;
+  GRecMutex *audio_container_manager_mutex;  
+
+  if(!AGS_IS_SFZ_SYNTH_GENERATOR(sfz_synth_generator) ||
+     !AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  /* get sfz synth generator mutex */
+  sfz_synth_generator_mutex = AGS_SFZ_SYNTH_GENERATOR_GET_OBJ_MUTEX(sfz_synth_generator);
+
+  /* get stream mutex */
+  stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal);
 
   sfz_sample = NULL;
-
 
   output_soundcard = NULL;
   
@@ -1126,7 +1347,11 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
 
-  filename = sfz_synth_generator->filename;
+  filename = NULL;
+  
+  g_object_get(sfz_synth_generator,
+	       "filename", &filename,
+	       NULL);
 
   audio_container_manager = ags_audio_container_manager_get_instance();
 
@@ -1292,14 +1517,35 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
     list = list->next;
   }
    
-  delay = sfz_synth_generator->delay;
-  attack = sfz_synth_generator->attack;
+  delay = 0.0;
+  attack = 0;
 
   frame_count = 0;
+
+  volume = 1.0;
+  
+  g_object_get(sfz_synth_generator,
+	       "delay", &delay,
+	       "attack", &attack,
+	       "frame-count", &frame_count,
+	       "volume", &volume,
+	       NULL);
+
+  root_note = 60;
   
   if(sfz_sample != NULL){
+    gchar *str;
+
+    glong pitch_keycenter;
+    glong value;
+    int retval;
     guint loop_start, loop_end;
 
+    pitch_keycenter = 60;
+
+    loop_start = 0;
+    loop_end = 0;
+    
     ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_sample),
 			    &frame_count,
 			    &loop_start, &loop_end);
@@ -1309,11 +1555,68 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 		 "loop-end", loop_end,
 		 "last-frame", attack + frame_count,
 		 NULL);
+
+    /* pitch_keycenter */
+    str = ags_sfz_group_lookup_control(sfz_sample->group,
+				       "pitch_keycenter");
+    
+    value = 0;
+    
+    if(str != NULL){
+      retval = sscanf(str, "%lu", &value);
+
+      if(retval <= 0){
+	glong tmp;
+	guint tmp_retval;
+	
+	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
+							 &tmp);
+
+	if(retval > 0){
+	  pitch_keycenter = tmp;
+	}
+      }
+    }
+
+    /* pitch_keycenter */
+    str = ags_sfz_region_lookup_control(sfz_sample->region,
+					"hikey");
+
+    value = 0;
+    
+    if(str != NULL){
+      retval = sscanf(str, "%lu", &value);
+
+      if(retval <= 0){
+	glong tmp;
+	guint tmp_retval;
+	
+	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
+							 &tmp);
+
+	if(retval > 0){
+	  pitch_keycenter = tmp;
+	}
+      }
+    }
+
+    root_note = pitch_keycenter;
   }
   
-  buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
+  buffer_size = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_BUFFER_SIZE;
+  samplerate = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_SAMPLERATE;
+  format = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_FORMAT;
 
-  current_frame_count = AGS_AUDIO_SIGNAL(audio_signal)->length * buffer_size;
+  length = 0;
+  
+  g_object_get(audio_signal,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       "samplerate", &samplerate,
+	       "length", &length,
+	       NULL);
+
+  current_frame_count = length * buffer_size;
   requested_frame_count = (guint) ceil(((floor(delay) * buffer_size + attack) + frame_count) / buffer_size) * buffer_size;
   
   if(current_frame_count < requested_frame_count){
@@ -1324,68 +1627,71 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   ags_audio_signal_clear(audio_signal);
   
   /*  */
+  g_rec_mutex_lock(stream_mutex);
+
   stream = 
     stream_start = g_list_nth(AGS_AUDIO_SIGNAL(audio_signal)->stream,
 			      (guint) floor(delay));
   
-  samplerate = AGS_AUDIO_SIGNAL(audio_signal)->samplerate;
-
-  format = AGS_AUDIO_SIGNAL(audio_signal)->format;
-
-  volume = 1.0;
+  g_rec_mutex_unlock(stream_mutex);
 
   loop_mode = AGS_SFZ_SYNTH_UTIL_LOOP_NONE;
 
   loop_start = 0;
   loop_end = 0;
 
-  current_attack = attack;
-  current_count = buffer_size;
-  
-  if(attack < buffer_size){
-    current_count = buffer_size - attack;
-  }else{
-    stream = g_list_nth(stream_start,
-			(guint) floor((double) attack / (double) buffer_size));
-
-    current_count = buffer_size - (attack % buffer_size);
-  }
-
   audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
 
-  offset = 0;
-  
-  for(i = attack; i < frame_count + attack && stream != NULL;){
-    ags_sfz_synth_util_copy(stream->data,
-			    buffer_size,
-			    sfz_sample,
-			    note,
-			    volume,
-			    samplerate, audio_buffer_util_format,
-			    offset, frame_count,
-			    AGS_SFZ_SYNTH_UTIL_LOOP_NONE,
-			    0, 0);
+  buffer = ags_stream_alloc(frame_count,
+			    format);
 
-    offset += current_count;
-    i += current_count;
-
-    if(buffer_size > (current_attack + current_count)){
-      current_count = buffer_size - (current_attack + current_count);
-      current_attack = buffer_size - current_count;
-    }else{
-      current_count = buffer_size;
-      current_attack = 0;
-    }
-
-    if(i != 0 &&
-       i % buffer_size == 0){
-      stream = stream->next;
-    }
+  if(sfz_sample != NULL){
+    ags_sound_resource_seek(AGS_SOUND_RESOURCE(sfz_sample),
+			    0, G_SEEK_SET);
   }
   
+  ags_sfz_synth_util_copy(buffer,
+			  frame_count,
+			  sfz_sample,
+			  (gdouble) (root_note - 69) + note,
+			  volume,
+			  samplerate, audio_buffer_util_format,
+			  0, frame_count,
+			  AGS_SFZ_SYNTH_UTIL_LOOP_NONE,
+			  0, 0);
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
+						  audio_buffer_util_format);
+  
+  
+  g_rec_mutex_lock(stream_mutex);
+
+  for(i = 0; i < frame_count && stream != NULL;){
+    guint copy_count;
+
+    copy_count = buffer_size;
+
+    if(i + copy_count > frame_count){
+      copy_count = frame_count - i;
+    }
+
+    ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+						buffer, 1, i,
+						copy_count, copy_mode);
+    i += copy_count;
+
+    stream = stream->next;
+  }
+  
+  g_rec_mutex_unlock(stream_mutex);
+
   if(output_soundcard != NULL){
     g_object_unref(output_soundcard);
   }  
+
+  g_free(filename);
+
+  ags_stream_free(buffer);
 }
 
 /**

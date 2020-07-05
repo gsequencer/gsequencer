@@ -508,6 +508,9 @@ ags_synth_generator_init(AgsSynthGenerator *synth_generator)
   AgsConfig *config;
 
   synth_generator->flags = 0;
+  
+  /* synth generator mutex */
+  g_rec_mutex_init(&(synth_generator->obj_mutex));
 
   /* config */
   config = ags_config_get_instance();
@@ -565,7 +568,12 @@ ags_synth_generator_set_property(GObject *gobject,
 {
   AgsSynthGenerator *synth_generator;
 
+  GRecMutex *synth_generator_mutex;
+
   synth_generator = AGS_SYNTH_GENERATOR(gobject);
+
+  /* get synth generator mutex */
+  synth_generator_mutex = AGS_SYNTH_GENERATOR_GET_OBJ_MUTEX(synth_generator);
   
   switch(prop_id){
   case PROP_SAMPLERATE:
@@ -600,72 +608,155 @@ ags_synth_generator_set_property(GObject *gobject,
     break;
   case PROP_DELAY:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       synth_generator->delay = g_value_get_double(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_ATTACK:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       synth_generator->attack = g_value_get_uint(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_FRAME_COUNT:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       synth_generator->frame_count = g_value_get_uint(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_LOOP_START:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       synth_generator->loop_start = g_value_get_uint(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_LOOP_END:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       synth_generator->loop_end = g_value_get_uint(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_OSCILLATOR:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       synth_generator->oscillator = g_value_get_uint(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_FREQUENCY:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       synth_generator->frequency = g_value_get_double(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_PHASE:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       synth_generator->phase = g_value_get_double(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_VOLUME:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       synth_generator->volume = g_value_get_double(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
+    }
+    break;
+  case PROP_DO_LFO:
+    {
+      g_rec_mutex_lock(synth_generator_mutex);
+
+      synth_generator->do_lfo = g_value_get_boolean(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_DO_FM_SYNTH:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       synth_generator->do_fm_synth = g_value_get_boolean(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_FM_LFO_OSCILLATOR:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       synth_generator->fm_lfo_oscillator = g_value_get_uint(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_FM_LFO_FREQUENCY:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       synth_generator->fm_lfo_frequency = g_value_get_double(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_FM_LFO_DEPTH:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       synth_generator->fm_lfo_depth = g_value_get_double(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
+    }
+    break;
+  case PROP_LFO_DEPTH:
+    {
+      g_rec_mutex_lock(synth_generator_mutex);
+
+      synth_generator->lfo_depth = g_value_get_double(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
+    }
+    break;
+  case PROP_TUNING:
+    {
+      g_rec_mutex_lock(synth_generator_mutex);
+
+      synth_generator->tuning = g_value_get_double(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_FM_TUNING:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       synth_generator->fm_tuning = g_value_get_double(value);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_TIMESTAMP:
@@ -674,7 +765,11 @@ ags_synth_generator_set_property(GObject *gobject,
 
       timestamp = (AgsTimestamp *) g_value_get_object(value);
 
+      g_rec_mutex_lock(synth_generator_mutex);
+
       if(synth_generator->timestamp == (GObject *) timestamp){
+	g_rec_mutex_unlock(synth_generator_mutex);
+
 	return;
       }
 
@@ -687,6 +782,8 @@ ags_synth_generator_set_property(GObject *gobject,
       }
 
       synth_generator->timestamp = (GObject *) timestamp;
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   default:
@@ -703,92 +800,201 @@ ags_synth_generator_get_property(GObject *gobject,
 {
   AgsSynthGenerator *synth_generator;
 
+  GRecMutex *synth_generator_mutex;
+
   synth_generator = AGS_SYNTH_GENERATOR(gobject);
+
+  /* get synth generator mutex */
+  synth_generator_mutex = AGS_SYNTH_GENERATOR_GET_OBJ_MUTEX(synth_generator);
   
   switch(prop_id){
   case PROP_SAMPLERATE:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_uint(value, synth_generator->samplerate);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_BUFFER_SIZE:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_uint(value, synth_generator->buffer_size);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_FORMAT:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_uint(value, synth_generator->format);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_DELAY:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_double(value, synth_generator->delay);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_ATTACK:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_uint(value, synth_generator->attack);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_FRAME_COUNT:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_uint(value, synth_generator->frame_count);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_LOOP_START:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_uint(value, synth_generator->loop_start);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_LOOP_END:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_uint(value, synth_generator->loop_end);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_OSCILLATOR:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_uint(value, synth_generator->oscillator);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_FREQUENCY:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_double(value, synth_generator->frequency);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_PHASE:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_double(value, synth_generator->phase);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
+    }
+    break;
+  case PROP_VOLUME:
+    {
+      g_rec_mutex_lock(synth_generator_mutex);
+
+      g_value_set_double(value, synth_generator->volume);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
+    }
+    break;
+  case PROP_DO_LFO:
+    {
+      g_rec_mutex_lock(synth_generator_mutex);
+
+      g_value_set_boolean(value, synth_generator->do_lfo);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_DO_FM_SYNTH:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_boolean(value, synth_generator->do_fm_synth);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_FM_LFO_OSCILLATOR:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_uint(value, synth_generator->fm_lfo_oscillator);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_FM_LFO_FREQUENCY:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_double(value, synth_generator->fm_lfo_frequency);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
+    }
+    break;
+  case PROP_LFO_DEPTH:
+    {
+      g_rec_mutex_lock(synth_generator_mutex);
+
+      g_value_set_double(value, synth_generator->lfo_depth);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
+    }
+    break;
+  case PROP_TUNING:
+    {
+      g_rec_mutex_lock(synth_generator_mutex);
+
+      g_value_set_double(value, synth_generator->tuning);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_FM_LFO_DEPTH:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_double(value, synth_generator->fm_lfo_depth);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_FM_TUNING:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_double(value, synth_generator->fm_tuning);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   case PROP_TIMESTAMP:
     {
+      g_rec_mutex_lock(synth_generator_mutex);
+
       g_value_set_object(value, synth_generator->timestamp);
+
+      g_rec_mutex_unlock(synth_generator_mutex);
     }
     break;
   default:
@@ -873,13 +1079,22 @@ ags_synth_generator_set_samplerate(AgsSynthGenerator *synth_generator, guint sam
   guint old_samplerate;
   guint i;  
 
+  GRecMutex *synth_generator_mutex;
+
   if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
     return;
   }
 
+  /* get synth generator mutex */
+  synth_generator_mutex = AGS_SYNTH_GENERATOR_GET_OBJ_MUTEX(synth_generator);
+
+  g_rec_mutex_lock(synth_generator_mutex);
+  
   old_samplerate = synth_generator->samplerate;
 
   if(old_samplerate == samplerate){
+    g_rec_mutex_unlock(synth_generator_mutex);
+
     return;
   }
   
@@ -898,6 +1113,8 @@ ags_synth_generator_set_samplerate(AgsSynthGenerator *synth_generator, guint sam
     synth_generator->sync_point[i][0].real = samplerate * (synth_generator->sync_point[i][0].real / old_samplerate);
     synth_generator->sync_point[i][0].imag = samplerate * (synth_generator->sync_point[i][0].imag / old_samplerate);
   }
+  
+  g_rec_mutex_unlock(synth_generator_mutex);
 }
 
 /**
@@ -938,11 +1155,20 @@ ags_synth_generator_get_buffer_size(AgsSynthGenerator *synth_generator)
 void
 ags_synth_generator_set_buffer_size(AgsSynthGenerator *synth_generator, guint buffer_size)
 {
+  GRecMutex *synth_generator_mutex;
+  
   if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
     return;
   }
 
+  /* get synth generator mutex */
+  synth_generator_mutex = AGS_SYNTH_GENERATOR_GET_OBJ_MUTEX(synth_generator);
+
+  g_rec_mutex_lock(synth_generator_mutex);
+
   synth_generator->buffer_size = buffer_size;
+
+  g_rec_mutex_unlock(synth_generator_mutex);
 }
 
 /**
@@ -983,11 +1209,20 @@ ags_synth_generator_get_format(AgsSynthGenerator *synth_generator)
 void
 ags_synth_generator_set_format(AgsSynthGenerator *synth_generator, guint format)
 {
+  GRecMutex *synth_generator_mutex;
+  
   if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
     return;
   }
 
+  /* get synth generator mutex */
+  synth_generator_mutex = AGS_SYNTH_GENERATOR_GET_OBJ_MUTEX(synth_generator);
+
+  g_rec_mutex_lock(synth_generator_mutex);
+
   synth_generator->format = format;
+
+  g_rec_mutex_unlock(synth_generator_mutex);
 }
 
 /**
@@ -1810,10 +2045,14 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   guint attack;
   guint frame_count;
   guint buffer_size;
+  guint length;
+  gint loop_start, loop_end;
   guint current_frame_count, requested_frame_count;
   gboolean do_lfo;
   guint oscillator;
+  guint fm_lfo_oscillator;
   gdouble samplerate;
+  gdouble frequency;
   gdouble current_frequency;
   gdouble phase, volume;
   gdouble lfo_depth;
@@ -1834,22 +2073,91 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   gdouble fm_tuning;
   gboolean synced;
 
-  delay = synth_generator->delay;
-  attack = synth_generator->attack;
+  GRecMutex *synth_generator_mutex;
+  GRecMutex *stream_mutex;
 
-  frame_count = synth_generator->frame_count;
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator) ||
+     !AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  /* get synth generator mutex */
+  synth_generator_mutex = AGS_SYNTH_GENERATOR_GET_OBJ_MUTEX(synth_generator);
+
+  /* get stream mutex */
+  stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal);
+
+  delay = 0.0;
+  attack = 0;
+
+  frame_count = 0;
+
+  oscillator = AGS_SYNTH_GENERATOR_DEFAULT_OSCILLATOR;
   
-  buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
+  do_lfo = FALSE;
 
-  do_lfo = synth_generator->do_lfo;
+  loop_start = 0;
+  loop_end = 0;
 
-  oscillator = synth_generator->oscillator;
+  frequency = AGS_SYNTH_GENERATOR_DEFAULT_FREQUENCY;
+  phase = AGS_SYNTH_GENERATOR_DEFAULT_PHASE;
   
+  volume = 1.0;  
+
+  do_fm_synth = FALSE;
+
+  fm_lfo_oscillator = AGS_SYNTH_GENERATOR_DEFAULT_OSCILLATOR;
+  
+  lfo_depth = AGS_SYNTH_GENERATOR_DEFAULT_LFO_DEPTH;
+  tuning = AGS_SYNTH_GENERATOR_DEFAULT_TUNING;
+
+  fm_lfo_freq = AGS_SYNTH_GENERATOR_DEFAULT_FM_LFO_FREQUENCY;
+  fm_lfo_depth = AGS_SYNTH_GENERATOR_DEFAULT_FM_LFO_DEPTH;
+
+  fm_tuning = AGS_SYNTH_GENERATOR_DEFAULT_FM_TUNING;
+
+  g_object_get(synth_generator,
+	       "delay", &delay,
+	       "attack", &attack,
+	       "frame-count", &frame_count,
+	       "oscillator", &oscillator,
+	       "do-lfo", &do_lfo,
+	       "loop-start", &loop_start,
+	       "loop-end", &loop_end,
+	       "frequency", &frequency,
+	       "phase", &phase,
+	       "volume", &volume,
+	       "do-fm-synth", &do_fm_synth,
+	       "fm-lfo-oscillator", &fm_lfo_oscillator,
+	       "lfo-depth", &lfo_depth,
+	       "tuning", &tuning,
+	       "fm-lfo-frequency", &fm_lfo_freq,
+	       "fm-lfo-depth", &fm_lfo_depth,
+	       "fm-tuning", &fm_tuning,
+	       NULL);
+
+  buffer_size = AGS_SYNTH_GENERATOR_DEFAULT_BUFFER_SIZE;
+  samplerate = AGS_SYNTH_GENERATOR_DEFAULT_SAMPLERATE;
+  format = AGS_SYNTH_GENERATOR_DEFAULT_FORMAT;
+
+  length = 0;
+  
+  g_object_get(audio_signal,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       "samplerate", &samplerate,
+	       "length", &length,
+	       NULL);
+  
+  g_rec_mutex_lock(synth_generator_mutex);
+
   sync_point = synth_generator->sync_point;
   sync_point_count = synth_generator->sync_point_count;
 
-  current_frame_count = AGS_AUDIO_SIGNAL(audio_signal)->length * buffer_size;
-  requested_frame_count = (guint) ceil(((floor(delay) * buffer_size + attack) + frame_count) / buffer_size) * buffer_size;
+  g_rec_mutex_unlock(synth_generator_mutex);
+
+  current_frame_count = length * buffer_size;
+  requested_frame_count = (guint) ceil(((floor(delay)* buffer_size + attack) + frame_count) / buffer_size) * buffer_size;
   
   if(current_frame_count < requested_frame_count){
     ags_audio_signal_stream_resize((AgsAudioSignal *) audio_signal,
@@ -1857,29 +2165,25 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   }
   
   g_object_set(audio_signal,
-	       "loop-start", synth_generator->loop_start,
-	       "loop-end", synth_generator->loop_end,
+	       "loop-start", loop_start,
+	       "loop-end", loop_end,
 	       "last-frame", attack + frame_count,
 	       NULL);
   
-  /*  */
+  /*  */  
+  g_rec_mutex_lock(stream_mutex);
+
   stream = 
     stream_start = g_list_nth(AGS_AUDIO_SIGNAL(audio_signal)->stream,
 			      (guint) floor(delay));
+
+  g_rec_mutex_unlock(stream_mutex);
   
-  samplerate = AGS_AUDIO_SIGNAL(audio_signal)->samplerate;
+  current_frequency = (guint) ((double) frequency * exp2((double)((double) note + 48.0) / 12.0));
 
-  current_frequency = (guint) ((double) synth_generator->frequency * exp2((double)((double) note + 48.0) / 12.0));
+  current_phase = phase;
 
-  phase =
-    current_phase = synth_generator->phase;
-  volume = synth_generator->volume;
-
-  format = AGS_AUDIO_SIGNAL(audio_signal)->format;
   audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
-
-  lfo_depth = synth_generator->lfo_depth;
-  tuning = synth_generator->tuning;
 
   current_attack = attack;
   current_count = buffer_size;
@@ -1909,8 +2213,6 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
       }
     }
   }
-
-  do_fm_synth = synth_generator->do_fm_synth;
 
   fm_lfo_osc_mode = 0;
   
@@ -1942,14 +2244,11 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   break;
   }
   
-  fm_lfo_freq = synth_generator->fm_lfo_frequency;
-  fm_lfo_depth = synth_generator->fm_lfo_depth;
-
-  fm_tuning = synth_generator->fm_tuning;
-
   synced = FALSE;
   
   for(i = attack, j = 0; i < frame_count + attack && stream != NULL;){
+
+    g_rec_mutex_lock(stream_mutex);
 
     if(!do_fm_synth && !do_lfo){
 
@@ -2119,6 +2418,8 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 
     }
     
+    g_rec_mutex_unlock(stream_mutex);
+    
     if(current_frequency == 0.0){
       current_phase = (guint) ((offset + current_count) + phase);
     }else if(floor(samplerate / current_frequency) == 0){
@@ -2126,6 +2427,8 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
     }else{
       current_phase = (guint) ((offset + current_count) + phase) % (guint) floor(samplerate / current_frequency);
     }
+    
+    g_rec_mutex_lock(synth_generator_mutex);
     
     if(sync_point != NULL){
       if(floor(sync_point[j][0].real) > 0.0 &&
@@ -2135,6 +2438,8 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 	synced = TRUE;
       }
     }
+    
+    g_rec_mutex_unlock(synth_generator_mutex);
     
     offset += current_count;
     i += current_count;
@@ -2146,6 +2451,8 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
       current_count = buffer_size;
       current_attack = 0;
     }
+    
+    g_rec_mutex_lock(synth_generator_mutex);
     
     if(sync_point != NULL){
       if(j + 1 < sync_point_count &&
@@ -2174,6 +2481,8 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 	synced = FALSE;
       }
     }
+    
+    g_rec_mutex_unlock(synth_generator_mutex);
 
     if(i != 0 &&
        i % buffer_size == 0){
