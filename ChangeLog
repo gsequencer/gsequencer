@@ -1,3 +1,8 @@
+ags (3.4.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reverted some drawing operations in ags/widget/
+
 ags (3.4.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

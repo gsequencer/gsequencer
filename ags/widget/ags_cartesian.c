@@ -1218,7 +1218,7 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
   }
 
   /* push group */
-//  cairo_push_group(cr);
+  cairo_push_group(cr);
 
   {
     static const double dashes[] = {
@@ -1715,10 +1715,10 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
   g_free(font_name);
 
   /* pop group */
-  //  cairo_pop_group_to_source(cr);
+  cairo_pop_group_to_source(cr);
   
   /* paint */
-  //  cairo_paint(cr);
+  cairo_paint(cr);
 
   g_boxed_free(GDK_TYPE_RGBA, fg_color);
   g_boxed_free(GDK_TYPE_RGBA, fg_color_active);
