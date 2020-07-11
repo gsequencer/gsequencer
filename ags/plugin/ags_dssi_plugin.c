@@ -386,9 +386,11 @@ ags_dssi_plugin_connect_port(AgsBasePlugin *base_plugin,
   g_rec_mutex_unlock(base_plugin_mutex);
 
   /* connect port */
-  connect_port((LADSPA_Handle) plugin_handle,
-	       (unsigned long) port_index,
-	       (LADSPA_Data *) data_location);
+  if(plugin_handle != NULL){
+    connect_port((LADSPA_Handle) plugin_handle,
+		 (unsigned long) port_index,
+		 (LADSPA_Data *) data_location);
+  }
 }
 
 void

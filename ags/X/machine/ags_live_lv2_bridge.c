@@ -1086,90 +1086,92 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
 									       samplerate, buffer_size);
     }
 
-    if(live_lv2_bridge->port_value == NULL){
-      GList *start_plugin_port, *plugin_port;
+    if(lv2_bridge->lv2_handle != NULL){
+      if(live_lv2_bridge->port_value == NULL){
+	GList *start_plugin_port, *plugin_port;
       
-      guint port_count;
+	guint port_count;
 
-      port_count = g_list_length(AGS_BASE_PLUGIN(lv2_plugin)->plugin_port);
+	port_count = g_list_length(AGS_BASE_PLUGIN(lv2_plugin)->plugin_port);
 
-      if(port_count > 0){
-	live_lv2_bridge->port_value = (float *) malloc(port_count * sizeof(float));
-      }
-
-      g_object_get(lv2_plugin,
-		   "plugin-port", &start_plugin_port,
-		   NULL);
-      
-      plugin_port = start_plugin_port;
-      
-      while(plugin_port != NULL){
-	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
-	  if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
-	    plugin_descriptor->connect_port(live_lv2_bridge->lv2_handle[0],
-					    AGS_PLUGIN_PORT(plugin_port->data)->port_index,
-					    &(live_lv2_bridge->port_value[AGS_PLUGIN_PORT(plugin_port->data)->port_index]));
-	  }
+	if(port_count > 0){
+	  live_lv2_bridge->port_value = (float *) malloc(port_count * sizeof(float));
 	}
 
-	plugin_port = plugin_port->next;
-      }
-
-      g_list_free_full(start_plugin_port,
-		       g_object_unref);
-    }
-    
-    if(live_lv2_bridge->program == NULL){
-      GtkHBox *hbox;
-      GtkLabel *label;
+	g_object_get(lv2_plugin,
+		     "plugin-port", &start_plugin_port,
+		     NULL);
       
-      /* program */
-      hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-      gtk_box_pack_start((GtkBox *) live_lv2_bridge->vbox,
-			 (GtkWidget *) hbox,
-			 FALSE, FALSE,
-			 0);
-      gtk_box_reorder_child(GTK_BOX(live_lv2_bridge->vbox),
-			    GTK_WIDGET(hbox),
-			    0);
+	plugin_port = start_plugin_port;
+      
+	while(plugin_port != NULL){
+	  if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
+	    if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
+	      plugin_descriptor->connect_port(live_lv2_bridge->lv2_handle[0],
+					      AGS_PLUGIN_PORT(plugin_port->data)->port_index,
+					      &(live_lv2_bridge->port_value[AGS_PLUGIN_PORT(plugin_port->data)->port_index]));
+	    }
+	  }
+
+	  plugin_port = plugin_port->next;
+	}
+
+	g_list_free_full(start_plugin_port,
+			 g_object_unref);
+      }
+    
+      if(live_lv2_bridge->program == NULL){
+	GtkHBox *hbox;
+	GtkLabel *label;
+      
+	/* program */
+	hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+	gtk_box_pack_start((GtkBox *) live_lv2_bridge->vbox,
+			   (GtkWidget *) hbox,
+			   FALSE, FALSE,
+			   0);
+	gtk_box_reorder_child(GTK_BOX(live_lv2_bridge->vbox),
+			      GTK_WIDGET(hbox),
+			      0);
   
-      label = (GtkLabel *) gtk_label_new(i18n("program"));
-      gtk_box_pack_start((GtkBox *) hbox,
-			 (GtkWidget *) label,
-			 FALSE, FALSE,
-			 0);
+	label = (GtkLabel *) gtk_label_new(i18n("program"));
+	gtk_box_pack_start((GtkBox *) hbox,
+			   (GtkWidget *) label,
+			   FALSE, FALSE,
+			   0);
 
-      live_lv2_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
-      gtk_box_pack_start((GtkBox *) hbox,
-			 (GtkWidget *) live_lv2_bridge->program,
-			 FALSE, FALSE,
-			 0);
+	live_lv2_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
+	gtk_box_pack_start((GtkBox *) hbox,
+			   (GtkWidget *) live_lv2_bridge->program,
+			   FALSE, FALSE,
+			   0);
 
-      if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(live_lv2_bridge)->flags)) != 0){
-	g_signal_connect_after(G_OBJECT(live_lv2_bridge->program), "changed",
-			       G_CALLBACK(ags_live_lv2_bridge_program_changed_callback), live_lv2_bridge);
+	if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(live_lv2_bridge)->flags)) != 0){
+	  g_signal_connect_after(G_OBJECT(live_lv2_bridge->program), "changed",
+				 G_CALLBACK(ags_live_lv2_bridge_program_changed_callback), live_lv2_bridge);
+	}
+      
+	model = gtk_list_store_new(3,
+				   G_TYPE_STRING,
+				   G_TYPE_ULONG,
+				   G_TYPE_ULONG);
+      
+	gtk_combo_box_set_model(GTK_COMBO_BOX(live_lv2_bridge->program),
+				GTK_TREE_MODEL(model));
+      }else{
+	model = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(live_lv2_bridge->program)));
+      
+	gtk_list_store_clear(GTK_LIST_STORE(model));
       }
-      
-      model = gtk_list_store_new(3,
-				 G_TYPE_STRING,
-				 G_TYPE_ULONG,
-				 G_TYPE_ULONG);
-      
-      gtk_combo_box_set_model(GTK_COMBO_BOX(live_lv2_bridge->program),
-			      GTK_TREE_MODEL(model));
-    }else{
-      model = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(live_lv2_bridge->program)));
-      
-      gtk_list_store_clear(GTK_LIST_STORE(model));
-    }
     
-    for(i = 0; (program_descriptor = program_interface->get_program(live_lv2_bridge->lv2_handle[0], i)) != NULL; i++){
-      gtk_list_store_append(model, &iter);
-      gtk_list_store_set(model, &iter,
-			 0, program_descriptor->name,
-			 1, program_descriptor->bank,
-			 2, program_descriptor->program,
-			 -1);
+      for(i = 0; (program_descriptor = program_interface->get_program(live_lv2_bridge->lv2_handle[0], i)) != NULL; i++){
+	gtk_list_store_append(model, &iter);
+	gtk_list_store_set(model, &iter,
+			   0, program_descriptor->name,
+			   1, program_descriptor->bank,
+			   2, program_descriptor->program,
+			   -1);
+      }
     }
   }
 }

@@ -825,47 +825,49 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 		   NULL);
 
       dssi_bridge->port_values = (LADSPA_Data *) malloc(plugin_descriptor->LADSPA_Plugin->PortCount * sizeof(LADSPA_Data));
-      
-      for(i = 0; i < port_count; i++){
-	if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
-	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
-	     LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
-	    gchar *specifier;
+
+      if(dssi_bridge->ladspa_handle != NULL){
+	for(i = 0; i < port_count; i++){
+	  if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
+	    if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
+	       LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
+	      gchar *specifier;
 	    
-	    plugin_port = start_plugin_port;
- 	    specifier = plugin_descriptor->LADSPA_Plugin->PortNames[i];
+	      plugin_port = start_plugin_port;
+	      specifier = plugin_descriptor->LADSPA_Plugin->PortNames[i];
 
-	    while(plugin_port != NULL){
-	      if(!g_strcmp0(specifier,
-			    AGS_PLUGIN_PORT(plugin_port->data)->port_name)){
-		dssi_bridge->port_values[i] = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
+	      while(plugin_port != NULL){
+		if(!g_strcmp0(specifier,
+			      AGS_PLUGIN_PORT(plugin_port->data)->port_name)){
+		  dssi_bridge->port_values[i] = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
 
-		break;
+		  break;
+		}
+
+		plugin_port = plugin_port->next;
 	      }
-
-	      plugin_port = plugin_port->next;
-	    }
 	    
-	    plugin_descriptor->LADSPA_Plugin->connect_port(dssi_bridge->ladspa_handle,
-							   i,
-							   &(dssi_bridge->port_values[i]));
+	      plugin_descriptor->LADSPA_Plugin->connect_port(dssi_bridge->ladspa_handle,
+							     i,
+							     &(dssi_bridge->port_values[i]));
+	    }
+	  }
+	}
+      
+	if(plugin_descriptor->get_program != NULL){
+	  for(i = 0; (program_descriptor = plugin_descriptor->get_program(dssi_bridge->ladspa_handle, i)) != NULL; i++){
+	    gtk_list_store_append(model, &iter);
+
+	    g_message("%s %s %s", program_descriptor->Name, program_descriptor->Bank, program_descriptor->Program);
+	    gtk_list_store_set(model, &iter,
+			       0, program_descriptor->Name,
+			       1, program_descriptor->Bank,
+			       2, program_descriptor->Program,
+			       -1);
 	  }
 	}
       }
       
-      if(plugin_descriptor->get_program != NULL){
-	for(i = 0; (program_descriptor = plugin_descriptor->get_program(dssi_bridge->ladspa_handle, i)) != NULL; i++){
-	  gtk_list_store_append(model, &iter);
-
-	  g_message("%s %s %s", program_descriptor->Name, program_descriptor->Bank, program_descriptor->Program);
-	  gtk_list_store_set(model, &iter,
-			     0, program_descriptor->Name,
-			     1, program_descriptor->Bank,
-			     2, program_descriptor->Program,
-			     -1);
-	}
-      }
-
       g_list_free_full(start_plugin_port,
 		       g_object_unref);
     }

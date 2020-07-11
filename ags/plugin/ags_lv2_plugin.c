@@ -1273,9 +1273,11 @@ ags_lv2_plugin_connect_port(AgsBasePlugin *base_plugin,
   g_rec_mutex_unlock(base_plugin_mutex);
   
   /* connect port */
-  connect_port((LV2_Handle) plugin_handle,
-	       (uint32_t) port_index,
-	       (float *) data_location);
+  if(plugin_handle != NULL){
+    connect_port((LV2_Handle) plugin_handle,
+		 (uint32_t) port_index,
+		 (float *) data_location);
+  }
 }
 
 void
