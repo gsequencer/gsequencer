@@ -32,7 +32,7 @@ void ags_hindicator_get_preferred_height(GtkWidget *widget,
 void ags_hindicator_size_allocate(GtkWidget *widget,
 				  GtkAllocation *allocation);
 
-void ags_hindicator_draw(AgsHIndicator *indicator, cairo_t *cr);
+gboolean ags_hindicator_draw(AgsHIndicator *indicator, cairo_t *cr);
 
 /**
  * SECTION:ags_hindicator
@@ -145,7 +145,7 @@ ags_hindicator_size_allocate(GtkWidget *widget,
   GTK_WIDGET_CLASS(ags_hindicator_parent_class)->size_allocate(widget, allocation);
 }
 
-void
+gboolean
 ags_hindicator_draw(AgsHIndicator *hindicator, cairo_t *cr)
 {
   GtkWidget *widget;
@@ -173,7 +173,7 @@ ags_hindicator_draw(AgsHIndicator *hindicator, cairo_t *cr)
   adjustment = AGS_INDICATOR(hindicator)->adjustment;
 
   if(adjustment == NULL){
-    return;
+    return(FALSE);
   }
 
   gtk_widget_get_allocation(GTK_WIDGET(hindicator),
@@ -217,7 +217,7 @@ ags_hindicator_draw(AgsHIndicator *hindicator, cairo_t *cr)
 
   padding = AGS_INDICATOR(hindicator)->segment_padding;
 
-//  cairo_surface_flush(cairo_get_target(cr));
+  //  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
   /* clear bg */
@@ -270,6 +270,8 @@ ags_hindicator_draw(AgsHIndicator *hindicator, cairo_t *cr)
   g_boxed_free(GDK_TYPE_RGBA, border_color);
 
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  return(FALSE);
 }
 
 /**

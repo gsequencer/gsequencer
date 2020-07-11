@@ -250,8 +250,8 @@ ags_ladspa_plugin_instantiate(AgsBasePlugin *base_plugin,
 
   gpointer ptr;
 
-  LADSPA_Handle (*instantiate)(const struct _LADSPA_Descriptor *descriptor,
-			       unsigned long ramplerate);
+  LADSPA_Handle (*instantiate)(const LADSPA_Descriptor *descriptor,
+			       unsigned long samplerate);
   
   GRecMutex *base_plugin_mutex;
 
@@ -384,7 +384,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
   
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
-  LADSPA_PortRangeHint *range_hint;
+  const LADSPA_PortRangeHint *range_hint;
   LADSPA_PortRangeHintDescriptor hint_descriptor;
 
   unsigned long effect_index;
@@ -449,7 +449,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
     effect_index = base_plugin->effect_index;
 
     plugin_descriptor = 
-      base_plugin->plugin_descriptor = ladspa_descriptor((unsigned long) effect_index);
+      base_plugin->plugin_descriptor = (gpointer) ladspa_descriptor((unsigned long) effect_index);
 
     g_rec_mutex_unlock(base_plugin_mutex);
 
@@ -459,7 +459,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
       unique_id = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->UniqueID;
       
       port_count = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->PortCount;
-      port_descriptor = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->PortDescriptors;
+      port_descriptor = (gpointer) AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->PortDescriptors;
 
       g_rec_mutex_unlock(base_plugin_mutex);
 

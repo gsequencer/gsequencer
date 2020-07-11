@@ -35,6 +35,18 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.4.14" date="2020-07-10">
+      <description>
+	<p>Minor changes.</p>
+      </description>
+    </release>
+
+    <release version="3.4.13" date="2020-07-05">
+      <description>
+	<p>Improved stability.</p>
+      </description>
+    </release>
+
     <release version="3.4.11" date="2020-07-04">
       <description>
 	<p>Improved speed of AgsSF2SynthGenerator and AgsSFZSynthGenerator.</p>

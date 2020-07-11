@@ -78,10 +78,12 @@ void ags_automation_edit_drawing_area_motion_notify_select_acceleration(AgsAutom
 									AgsMachine *machine,
 									GdkEventMotion *event);
 
-void
+gboolean
 ags_automation_edit_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsAutomationEdit *automation_edit)
 {
   ags_automation_edit_draw(automation_edit, cr);
+
+  return(FALSE);
 }
 
 gboolean

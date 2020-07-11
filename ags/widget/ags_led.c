@@ -37,7 +37,7 @@ void ags_led_get_preferred_height(GtkWidget *widget,
 
 void ags_led_send_configure(AgsLed *led);
 
-void ags_led_draw(AgsLed *led, cairo_t *cr);
+gboolean ags_led_draw(AgsLed *led, cairo_t *cr);
 
 /**
  * SECTION:ags_led
@@ -222,7 +222,7 @@ ags_led_get_preferred_height(GtkWidget *widget,
     natural_height[0] = AGS_LED_DEFAULT_HEIGHT;
 }
 
-void
+gboolean
 ags_led_draw(AgsLed *led, cairo_t *cr)
 {
   GtkWidget *widget;
@@ -272,7 +272,7 @@ ags_led_draw(AgsLed *led, cairo_t *cr)
   g_value_unset(&value);
 
   /*  */  
-//  cairo_surface_flush(cairo_get_target(cr));
+  //  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
   if((AGS_LED_ACTIVE & (led->flags)) != 0){
@@ -318,6 +318,8 @@ ags_led_draw(AgsLed *led, cairo_t *cr)
   g_boxed_free(GDK_TYPE_RGBA, border_color);
   
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  return(FALSE);
 }
 
 /**

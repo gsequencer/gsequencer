@@ -1,3 +1,18 @@
+ags (3.4.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reverted some drawing operations in ags/widget/
+
+ags (3.4.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed prototype of widgets overriding GtkWidget::draw(), missing gboolean return value
+
+ags (3.4.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed issues encountered on Apple Mac OS X
+
 ags (3.4.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

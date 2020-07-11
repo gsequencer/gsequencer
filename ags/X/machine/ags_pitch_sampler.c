@@ -1298,7 +1298,7 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 	  
 	  g_free(str);
 
-	  str = g_strdup_printf("%d",
+	  str = g_strdup_printf("%ld",
 				pitch_keycenter);
 	  gtk_label_set_text(file->base_key,
 			     str);

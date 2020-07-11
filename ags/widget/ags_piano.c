@@ -92,7 +92,7 @@ gboolean ags_piano_key_release(GtkWidget *widget,
 gboolean ags_piano_motion_notify(GtkWidget *widget,
 				 GdkEventMotion *event);
 
-void ags_piano_draw(AgsPiano *piano, cairo_t *cr);
+gboolean ags_piano_draw(AgsPiano *piano, cairo_t *cr);
 
 void ags_piano_real_key_pressed(AgsPiano *piano,
 				gchar *note, gint key_code);
@@ -1174,7 +1174,7 @@ ags_piano_motion_notify(GtkWidget *widget,
   return(FALSE);
 }
 
-void
+gboolean
 ags_piano_draw(AgsPiano *piano, cairo_t *cr)
 {  
   GtkStyleContext *piano_style_context;
@@ -1198,7 +1198,7 @@ ags_piano_draw(AgsPiano *piano, cairo_t *cr)
   static const guint bitmap = 0x52a52a;
 
   if(!AGS_IS_PIANO(piano)){
-    return;
+    return(FALSE);
   }
 
   gtk_widget_get_allocation(piano,
@@ -1231,7 +1231,7 @@ ags_piano_draw(AgsPiano *piano, cairo_t *cr)
   x_start = 0;
   y_start = 0;
 
-//  cairo_surface_flush(cairo_get_target(cr));
+  //  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
   
   /* clear bg */
@@ -1363,6 +1363,8 @@ ags_piano_draw(AgsPiano *piano, cairo_t *cr)
   cairo_paint(cr);
 
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  return(FALSE);
 }
 
 /**

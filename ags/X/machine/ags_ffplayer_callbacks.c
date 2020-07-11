@@ -68,7 +68,7 @@ ags_ffplayer_destroy_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   }
 }
 
-void
+gboolean
 ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
 			   AgsFFPlayer *ffplayer)
 {
@@ -231,6 +231,8 @@ ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
   g_boxed_free(GDK_TYPE_RGBA, fg_color);
   g_boxed_free(GDK_TYPE_RGBA, bg_color);
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  return(FALSE);
 }
 
 void

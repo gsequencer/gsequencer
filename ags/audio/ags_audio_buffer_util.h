@@ -38,47 +38,47 @@
 #define AGS_AUDIO_BUFFER_DOUBLE(ptr) ((gdouble *)(ptr))
 #define AGS_AUDIO_BUFFER_COMPLEX(ptr) ((AgsComplex *)(ptr))
 
-#define AGS_AUDIO_BUFFER_UTIL_S8_TO_COMPLEX(x_val, x_retval) { complex l_z; \
+#define AGS_AUDIO_BUFFER_UTIL_S8_TO_COMPLEX(x_val, x_retval) { double complex l_z; \
     l_z = ((double) x_val / (double) G_MAXINT8) + I * 0;					\
     ags_complex_set(x_retval[0], l_z); }
-#define AGS_AUDIO_BUFFER_UTIL_S16_TO_COMPLEX(x_val, x_retval) { complex l_z; \
+#define AGS_AUDIO_BUFFER_UTIL_S16_TO_COMPLEX(x_val, x_retval) { double complex l_z; \
     l_z = ((double) x_val / (double) G_MAXINT16) + I * 0;			\
     ags_complex_set(x_retval[0], l_z); }
-#define AGS_AUDIO_BUFFER_UTIL_S24_TO_COMPLEX(x_val, x_retval) { complex l_z; \
+#define AGS_AUDIO_BUFFER_UTIL_S24_TO_COMPLEX(x_val, x_retval) { double complex l_z; \
     l_z = ((double) x_val / (double) (0xffffff - 1)) + I * 0;				\
     ags_complex_set(x_retval[0], l_z); }
-#define AGS_AUDIO_BUFFER_UTIL_S32_TO_COMPLEX(x_val, x_retval) { complex l_z; \
+#define AGS_AUDIO_BUFFER_UTIL_S32_TO_COMPLEX(x_val, x_retval) { double complex l_z; \
     l_z = ((double) x_val / (double) G_MAXINT32) + I * 0;				\
     ags_complex_set(x_retval[0], l_z); }
-#define AGS_AUDIO_BUFFER_UTIL_S64_TO_COMPLEX(x_val, x_retval) { complex l_z; \
+#define AGS_AUDIO_BUFFER_UTIL_S64_TO_COMPLEX(x_val, x_retval) { double complex l_z; \
     l_z = ((double) x_val / (double) G_MAXINT64) + I * 0;				\
     ags_complex_set(x_retval[0], l_z); }
-#define AGS_AUDIO_BUFFER_UTIL_FLOAT_TO_COMPLEX(x_val, x_retval) { complex l_z; \
+#define AGS_AUDIO_BUFFER_UTIL_FLOAT_TO_COMPLEX(x_val, x_retval) { double complex l_z; \
     l_z = (x_val) + I * 0;						\
     ags_complex_set(x_retval[0], l_z); }
-#define AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(x_val, x_retval) { complex l_z; \
+#define AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(x_val, x_retval) { double complex l_z; \
     l_z = (x_val) + I * 0;						\
     ags_complex_set(x_retval[0], l_z); }
 
-#define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S8(x_val, x_retval) { complex l_z; \
+#define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S8(x_val, x_retval) { double complex l_z; \
     l_z = ags_complex_get(x_val);					\
     x_retval[0] = (gint8) ((double) G_MAXINT8 * creal(l_z)); }
-#define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S16(x_val, x_retval) { complex l_z; \
+#define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S16(x_val, x_retval) { double complex l_z; \
     l_z = ags_complex_get(x_val);					\
     x_retval[0] = (gint16) ((double) G_MAXINT16 * creal(l_z)); }
-#define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S24(x_val, x_retval) { complex l_z; \
+#define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S24(x_val, x_retval) { double complex l_z; \
     l_z = ags_complex_get(x_val);					\
     x_retval[0] = (gint32) ((double) (0xffffff - 1) * creal(l_z)); }
-#define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S32(x_val, x_retval) { complex l_z; \
+#define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S32(x_val, x_retval) { double complex l_z; \
     l_z = ags_complex_get(x_val);					\
     x_retval[0] = (gint32) ((double) G_MAXINT32 * creal(l_z)); }
-#define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S64(x_val, x_retval) { complex l_z; \
+#define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_S64(x_val, x_retval) { double complex l_z; \
     l_z = ags_complex_get(x_val);					\
     x_retval[0] = (gint64) ((double) G_MAXINT64 * creal(l_z)); }
-#define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_FLOAT(x_val, x_retval) { complex l_z; \
+#define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_FLOAT(x_val, x_retval) { double complex l_z; \
     l_z = ags_complex_get(x_val);					\
     x_retval[0] = creal(l_z); }
-#define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_DOUBLE(x_val, x_retval) { complex l_z; \
+#define AGS_AUDIO_BUFFER_UTIL_COMPLEX_TO_DOUBLE(x_val, x_retval) { double complex l_z; \
     l_z = ags_complex_get(x_val);					\
     x_retval[0] = creal(l_z); }
 

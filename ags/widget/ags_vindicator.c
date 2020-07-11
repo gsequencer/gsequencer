@@ -32,7 +32,7 @@ void ags_vindicator_get_preferred_height(GtkWidget *widget,
 void ags_vindicator_size_allocate(GtkWidget *widget,
 				  GtkAllocation *allocation);
 
-void ags_vindicator_draw(AgsVIndicator *indicator, cairo_t *cr);
+gboolean ags_vindicator_draw(AgsVIndicator *indicator, cairo_t *cr);
 
 /**
  * SECTION:ags_vindicator
@@ -143,7 +143,7 @@ ags_vindicator_size_allocate(GtkWidget *widget,
   GTK_WIDGET_CLASS(ags_vindicator_parent_class)->size_allocate(widget, allocation);
 }
 
-void
+gboolean
 ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
 {
   GtkWidget *widget;
@@ -171,7 +171,7 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
   adjustment = AGS_INDICATOR(vindicator)->adjustment;
 
   if(adjustment == NULL){
-    return;
+    return(FALSE);
   }
   
   gtk_widget_get_allocation(GTK_WIDGET(vindicator),
@@ -215,7 +215,7 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
 
   padding = AGS_INDICATOR(vindicator)->segment_padding;
 
-//  cairo_surface_flush(cairo_get_target(cr));
+  //  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
   /* clear bg */
@@ -271,7 +271,9 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
   g_boxed_free(GDK_TYPE_RGBA, bg_color);
   g_boxed_free(GDK_TYPE_RGBA, border_color);
 
-  cairo_surface_mark_dirty(cairo_get_target(cr));
+//  cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  return(FALSE);
 }
 
 /**

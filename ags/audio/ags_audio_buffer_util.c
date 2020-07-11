@@ -1414,7 +1414,7 @@ ags_audio_buffer_util_envelope_complex(AgsComplex *buffer, guint channels,
   //TODO:JK: improve me
     
   for(; i < buffer_length; i++, current_volume = start_volume + i * ratio){
-    complex z;
+    double complex z;
 
     z = ags_complex_get(buffer) * current_volume;
     
@@ -2152,7 +2152,7 @@ ags_audio_buffer_util_volume_complex(AgsComplex *buffer, guint channels,
   //TODO:JK: improve me
 
   for(; i < buffer_length; i++){
-    complex z;
+    double complex z;
 
     z = ags_complex_get(buffer) * volume;
     ags_complex_set(buffer,
@@ -3600,7 +3600,7 @@ ags_audio_buffer_util_peak_complex(AgsComplex *buffer, guint channels,
   //TODO:JK: improve me
     
   for(; i < buffer_length; i++){
-    complex z;
+    double complex z;
 
     z = ags_complex_get(buffer);
     
@@ -4128,12 +4128,12 @@ ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
   AgsComplex *ptr_ret_buffer;
   AgsComplex *ret_buffer;
 
-  complex **z_ptr_ptr;
-  complex *z_ptr;
+  double complex **z_ptr_ptr;
+  double complex *z_ptr;
   gdouble **y_ptr_ptr;
   gdouble *y_ptr;
 
-  complex z;
+  double complex z;
   gdouble y;
   gdouble delay_factor;
   gdouble delay;
@@ -4641,12 +4641,12 @@ ags_audio_buffer_util_resample_complex_with_buffer(AgsComplex *buffer, guint cha
   AgsComplex **ptr_ptr_target_buffer;
   AgsComplex *ptr_target_buffer;
   
-  complex **z_ptr_ptr;
-  complex *z_ptr;
+  double complex **z_ptr_ptr;
+  double complex *z_ptr;
   gdouble **y_ptr_ptr;
   gdouble *y_ptr;
 
-  complex z;
+  double complex z;
   gdouble y;
   gdouble delay_factor;
   gdouble delay;
@@ -5577,7 +5577,7 @@ ags_audio_buffer_util_pong_complex(AgsComplex *destination, guint dchannels,
   i = 0;
 
   for(; i < count; i++){
-    complex z0, z1;
+    double complex z0, z1;
 
     z0 = ags_complex_get(destination);
     z1 = ags_complex_get(source);
@@ -12819,7 +12819,7 @@ ags_audio_buffer_util_copy_s8_to_complex(AgsComplex *destination, guint dchannel
   i = 0;
 
   for(; i < count; i++){
-    complex z0, z1;
+    double complex z0, z1;
 
     AGS_AUDIO_BUFFER_UTIL_S8_TO_COMPLEX(source[0], c_ptr_ptr);
 
@@ -12865,7 +12865,7 @@ ags_audio_buffer_util_copy_s16_to_complex(AgsComplex *destination, guint dchanne
   i = 0;
 
   for(; i < count; i++){
-    complex z0, z1;
+    double complex z0, z1;
     
     AGS_AUDIO_BUFFER_UTIL_S16_TO_COMPLEX(source[0], c_ptr_ptr);
 
@@ -12911,7 +12911,7 @@ ags_audio_buffer_util_copy_s24_to_complex(AgsComplex *destination, guint dchanne
   i = 0;
 
   for(; i < count; i++){
-    complex z0, z1;
+    double complex z0, z1;
     
     AGS_AUDIO_BUFFER_UTIL_S24_TO_COMPLEX(source[0], c_ptr_ptr);
 
@@ -12957,7 +12957,7 @@ ags_audio_buffer_util_copy_s32_to_complex(AgsComplex *destination, guint dchanne
   i = 0;
 
   for(; i < count; i++){
-    complex z0, z1;
+    double complex z0, z1;
     
     AGS_AUDIO_BUFFER_UTIL_S32_TO_COMPLEX(source[0], c_ptr_ptr);
 
@@ -13003,7 +13003,7 @@ ags_audio_buffer_util_copy_s64_to_complex(AgsComplex *destination, guint dchanne
   i = 0;
 
   for(; i < count; i++){
-    complex z0, z1;
+    double complex z0, z1;
     
     AGS_AUDIO_BUFFER_UTIL_S64_TO_COMPLEX(source[0], c_ptr_ptr);
 
@@ -13049,7 +13049,7 @@ ags_audio_buffer_util_copy_float_to_complex(AgsComplex *destination, guint dchan
   i = 0;
 
   for(; i < count; i++){
-    complex z0, z1;
+    double complex z0, z1;
     
     AGS_AUDIO_BUFFER_UTIL_FLOAT_TO_COMPLEX(source[0], c_ptr_ptr);
 
@@ -13095,7 +13095,7 @@ ags_audio_buffer_util_copy_double_to_complex(AgsComplex *destination, guint dcha
   i = 0;
 
   for(; i < count; i++){
-    complex z0, z1;
+    double complex z0, z1;
     
     AGS_AUDIO_BUFFER_UTIL_DOUBLE_TO_COMPLEX(source[0], c_ptr_ptr);
 
@@ -13147,7 +13147,7 @@ ags_audio_buffer_util_copy_float32_to_complex(AgsComplex *destination, guint dch
   i = 0;
 
   for(; i < count; i++){
-    complex z0, z1;
+    double complex z0, z1;
 
     f_value = source[0];
     
@@ -13189,7 +13189,7 @@ ags_audio_buffer_util_copy_complex_to_complex(AgsComplex *destination, guint dch
   i = 0;
 
   for(; i < count; i++){
-    complex z0, z1;
+    double complex z0, z1;
 
     z0 = ags_complex_get(destination);
     z1 = ags_complex_get(source);

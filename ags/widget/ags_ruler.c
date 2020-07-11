@@ -47,7 +47,7 @@ void ags_ruler_get_preferred_height(GtkWidget *widget,
 
 void ags_ruler_send_configure(AgsRuler *ruler);
 
-void ags_ruler_draw(AgsRuler *ruler, cairo_t *cr);
+gboolean ags_ruler_draw(AgsRuler *ruler, cairo_t *cr);
 
 /**
  * SECTION:ags_ruler
@@ -420,7 +420,7 @@ ags_ruler_get_preferred_height(GtkWidget *widget,
  *
  * draws the widget
  */
-void
+gboolean
 ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
 {
   GtkWidget *widget;
@@ -449,7 +449,7 @@ ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
   gtk_widget_get_allocation(widget,
 			    &allocation);
     
-//  cairo_surface_flush(cairo_get_target(cr));
+  //  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
   /* calculate base step */
@@ -600,6 +600,8 @@ ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
   cairo_paint(cr);
 
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  return(FALSE);
 }
 
 /**

@@ -171,17 +171,21 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
 
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Lv2"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_lv2_bridge_menu_new());
-  gtk_menu_shell_append((GtkMenuShell*) context_menu->live, (GtkWidget*) item);  
-
-  /* connect and show window */
-  ags_connectable_connect(AGS_CONNECTABLE(window));
-  gtk_widget_show_all(window);    
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->live, (GtkWidget*) item);      
 
 #ifdef AGS_WITH_QUARTZ
   app = gtkosx_application_get();
-  
+
+  gtk_widget_show_all(window->menu_bar);
   gtkosx_application_sync_menubar(app);
+
+  gtk_widget_set_no_show_all((GtkWidget *) window->menu_bar, TRUE);
+  gtk_widget_hide((GtkWidget *) window->menu_bar);
 #endif
+
+  /* connect and show window */
+  ags_connectable_connect(AGS_CONNECTABLE(window));
+  gtk_widget_show_all(window);
 }
 
 gboolean
