@@ -1086,7 +1086,7 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
 									       samplerate, buffer_size);
     }
 
-    if(lv2_bridge->lv2_handle != NULL){
+    if(live_lv2_bridge->lv2_handle != NULL){
       if(live_lv2_bridge->port_value == NULL){
 	GList *start_plugin_port, *plugin_port;
       
