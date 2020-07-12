@@ -97,7 +97,11 @@ struct _AgsUiProviderInterface
   GtkWidget* (*get_export_window)(AgsUiProvider *ui_provider);
   void (*set_export_window)(AgsUiProvider *ui_provider,
 			    GtkWidget *export_window);
-
+  
+  GtkWidget* (*get_online_help_window)(AgsUiProvider *ui_provider);
+  void (*set_online_help_window)(AgsUiProvider *ui_provider,
+				 GtkWidget *online_help_window);
+  
   GtkWidget* (*get_preferences)(AgsUiProvider *ui_provider);
   void (*set_preferences)(AgsUiProvider *ui_provider,
 			  GtkWidget *preferences);
@@ -186,6 +190,10 @@ void ags_ui_provider_set_sheet_window(AgsUiProvider *ui_provider,
 GtkWidget* ags_ui_provider_get_export_window(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_export_window(AgsUiProvider *ui_provider,
 				       GtkWidget *export_window);
+  
+GtkWidget* ags_ui_provider_get_online_help_window(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_online_help_window(AgsUiProvider *ui_provider,
+					    GtkWidget *online_help_window);
 
 GtkWidget* ags_ui_provider_get_preferences(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_preferences(AgsUiProvider *ui_provider,

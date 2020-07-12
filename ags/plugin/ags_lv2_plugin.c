@@ -1129,10 +1129,9 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     }
   }
 
-  /* alloc handle */
-  lv2_handle = (LV2_Handle *) malloc(sizeof(LV2_Handle));
+  lv2_handle = NULL;
 
-  lv2_handle[0] = NULL;
+  options = NULL;
   
   /* instantiate */
   rate = (double) samplerate;
@@ -1221,17 +1220,23 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     options[5].value = NULL;
     
     feature[options_feature_position]->data = options;
-    
-    /* set options */
-    ags_lv2_option_manager_lv2_options_set(lv2_handle[0],
-					   options);
   }
 
   if(instantiate != NULL){
+    /* alloc handle */
+    lv2_handle = (LV2_Handle *) malloc(sizeof(LV2_Handle));
+
     lv2_handle[0] = instantiate(plugin_descriptor,
 				rate,
 				path,
 				feature);
+    
+    /* set options */
+    if(lv2_handle[0] != NULL &&
+       options != NULL){
+      ags_lv2_option_manager_lv2_options_set(lv2_handle[0],
+					     options);
+    }
   }
   
   /*  */  
@@ -1273,7 +1278,8 @@ ags_lv2_plugin_connect_port(AgsBasePlugin *base_plugin,
   g_rec_mutex_unlock(base_plugin_mutex);
   
   /* connect port */
-  if(plugin_handle != NULL){
+  if(plugin_handle != NULL &&
+     connect_port != NULL){
     connect_port((LV2_Handle) plugin_handle,
 		 (uint32_t) port_index,
 		 (float *) data_location);
@@ -1299,7 +1305,8 @@ ags_lv2_plugin_activate(AgsBasePlugin *base_plugin,
   g_rec_mutex_unlock(base_plugin_mutex);
 
   /* activate */
-  if(activate != NULL){
+  if(plugin_handle != NULL &&
+     activate != NULL){
     activate((LV2_Handle) plugin_handle);
   }
 }
@@ -1323,7 +1330,8 @@ ags_lv2_plugin_deactivate(AgsBasePlugin *base_plugin,
   g_rec_mutex_unlock(base_plugin_mutex);
 
   /* deactivate */
-  if(deactivate != NULL){
+  if(plugin_handle != NULL &&
+     deactivate != NULL){
     deactivate((LV2_Handle) plugin_handle);
   }
 }
@@ -1350,8 +1358,11 @@ ags_lv2_plugin_run(AgsBasePlugin *base_plugin,
   g_rec_mutex_unlock(base_plugin_mutex);
 
   /* run */
-  run((LV2_Handle) plugin_handle,
-      (uint32_t) frame_count);
+  if(plugin_handle != NULL &&
+     run != NULL){
+    run((LV2_Handle) plugin_handle,
+	(uint32_t) frame_count);
+  }
 }
 
 void

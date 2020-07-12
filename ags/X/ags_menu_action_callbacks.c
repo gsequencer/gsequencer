@@ -21,15 +21,11 @@
 
 #include "config.h"
 
-#if defined(AGS_W32API) || defined(AGS_OSXAPI)
-#else
-#include <webkit2/webkit2.h>
-#endif
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_export_window.h>
 #include <ags/X/ags_machine_util.h>
+#include <ags/X/ags_online_help_window.h>
 
 #include <ags/X/import/ags_midi_import_wizard.h>
 
@@ -929,95 +925,21 @@ void
 ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data)
 {
   GtkWidget *online_help_window;
-
-#if defined(AGS_W32API) || defined(AGS_OSXAPI)
-#else
-  WebKitWebView *web_view;
-#endif
   
   AgsApplicationContext *application_context;
 
-  gchar *start_filename;
-#if defined(AGS_W32API)
-  gchar *app_dir;
-#endif
+  application_context = ags_application_context_get_instance();
 
-  start_filename = NULL;
-  
-#if defined AGS_W32API
-  app_dir = NULL;
-#endif
-  
-#if defined(AGS_W32API) || defined(AGS_OSXAPI)
-#else
-#if defined(AGS_ONLINE_HELP_START_FILENAME)
-  start_filename = g_strdup(AGS_ONLINE_HELP_START_FILENAME);
-#else
-  if((start_filename = getenv("AGS_ONLINE_HELP_START_FILENAME")) != NULL){
-    start_filename = g_strdup(start_filename);    
-  }else{
-#if defined (AGS_W32API)
-    application_context = ags_application_context_get_instance();
+  online_help_window = ags_ui_provider_get_online_help_window(AGS_UI_PROVIDER(application_context));
 
-    if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
-      app_dir = g_strndup(application_context->argv[0],
-			  strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
-    }
-  
-    start_filename = g_strdup_printf("%s\\share\\doc\\gsequencer-doc\\html\\index.html",
-				     g_get_current_dir());
-    
-    if(!g_file_test(start_filename,
-		    G_FILE_TEST_IS_REGULAR)){
-      g_free(start_filename);
+  if(online_help_window == NULL){
+    online_help_window = ags_online_help_window_new();
 
-      if(g_path_is_absolute(app_dir)){
-	start_filename = g_strdup_printf("%s\\%s",
-					 app_dir,
-					 "\\share\\doc\\gsequencer-doc\\html\\index.html");
-      }else{
-	start_filename = g_strdup_printf("%s\\%s\\%s",
-					 g_get_current_dir(),
-					 app_dir,
-					 "\\share\\doc\\gsequencer-doc\\html\\index.html");
-      }
-    }
-#else
-#if defined(AGS_WITH_SINGLE_DOCDIR)
-    start_filename = g_strdup_printf("file://%s/user-manual/index.html",
-				     DOCDIR);
-#else
-    start_filename = g_strdup_printf("file://%s/html/index.html",
-				     DOCDIR);
-#endif
-#endif
+    ags_ui_provider_set_online_help_window(AGS_UI_PROVIDER(application_context),
+					   online_help_window);
   }
-#endif /* defined(AGS_ONLINE_HELP_START_FILENAME) */
-#endif /* defined(AGS_W32API) || defined(AGS_OSXAPI) */
   
-  online_help_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-
-  g_object_set(online_help_window,
-	       "default-width", 800,
-	       "default-height", 600,
-	       NULL);
-  
-#if defined(AGS_W32API) || defined(AGS_OSXAPI)
-#else
-  web_view = WEBKIT_WEB_VIEW(webkit_web_view_new());
-  gtk_container_add(GTK_CONTAINER(online_help_window), GTK_WIDGET(web_view));
-
-  //FIXME:JK: hard-coded
-  webkit_web_view_load_uri(web_view, start_filename);
-#endif
-
   gtk_widget_show_all(online_help_window);
-
-  g_free(start_filename);
-
-#if defined AGS_W32API
-  g_free(app_dir);
-#endif
 }
 
 void

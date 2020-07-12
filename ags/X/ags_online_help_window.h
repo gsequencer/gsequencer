@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+#include <webkit2/webkit2.h>
+
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
@@ -42,16 +44,26 @@ G_BEGIN_DECLS
 typedef struct _AgsOnlineHelpWindow AgsOnlineHelpWindow;
 typedef struct _AgsOnlineHelpWindowClass AgsOnlineHelpWindowClass;
 
+typedef enum{
+  AGS_ONLINE_HELP_WINDOW_CONNECTED     = 1,
+}AgsOnlineHelpWindowFlags;
+
 struct _AgsOnlineHelpWindow
 {
   GtkWindow window;
 
+  guint flags;
+  
   GtkButton *home;
 
   GtkButton *next;
   GtkButton *prev;
 
   GtkEntry *location;
+
+  gchar *start_filename;
+  
+  WebKitWebView *web_view;  
 };
 
 struct _AgsOnlineHelpWindowClass

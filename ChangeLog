@@ -1,7 +1,8 @@
 ags (3.5.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented AgsOnlineHelpWindow
+	* implemented AgsOnlineHelpWindow
+	* implemented ?
 
 ags (3.4.14)
 

@@ -98,6 +98,8 @@ struct _AgsXorgApplicationContext
 
   GtkWidget *export_window;
 
+  GtkWidget *online_help_window;
+
   GtkWidget *preferences;
   
   GtkWidget *history_browser;

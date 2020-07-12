@@ -268,9 +268,13 @@ ags_ladspa_plugin_instantiate(AgsBasePlugin *base_plugin,
   g_rec_mutex_unlock(base_plugin_mutex);
 
   /* instantiate */
-  ptr = instantiate(ladspa_descriptor,
-		    (unsigned long) samplerate);
+  ptr = NULL;
 
+  if(instantiate != NULL){
+    ptr = instantiate(ladspa_descriptor,
+		      (unsigned long) samplerate);
+  }
+  
   return(ptr);
 }
 
@@ -297,7 +301,8 @@ ags_ladspa_plugin_connect_port(AgsBasePlugin *base_plugin,
   g_rec_mutex_unlock(base_plugin_mutex);
 
   /* connect port */
-  if(plugin_handle != NULL){
+  if(plugin_handle != NULL &&
+     connect_port != NULL){
     connect_port((LADSPA_Handle) plugin_handle,
 		 (unsigned long) port_index,
 		 (LADSPA_Data *) data_location);
@@ -322,7 +327,8 @@ ags_ladspa_plugin_activate(AgsBasePlugin *base_plugin,
   
   g_rec_mutex_unlock(base_plugin_mutex);
 
-  if(activate != NULL){
+  if(plugin_handle != NULL &&
+     activate != NULL){
     activate((LADSPA_Handle) plugin_handle);
   }
 }
@@ -345,7 +351,8 @@ ags_ladspa_plugin_deactivate(AgsBasePlugin *base_plugin,
   
   g_rec_mutex_unlock(base_plugin_mutex);
 
-  if(deactivate != NULL){
+  if(plugin_handle != NULL &&
+     deactivate != NULL){
     deactivate((LADSPA_Handle) plugin_handle);
   }
 }
@@ -370,9 +377,12 @@ ags_ladspa_plugin_run(AgsBasePlugin *base_plugin,
   run = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->run;
   
   g_rec_mutex_unlock(base_plugin_mutex);
-  
-  run((LADSPA_Handle) plugin_handle,
-      (unsigned long) frame_count);
+
+  if(plugin_handle != NULL &&
+     run != NULL){
+    run((LADSPA_Handle) plugin_handle,
+	(unsigned long) frame_count);
+  }
 }
 
 void

@@ -194,6 +194,9 @@ void ags_xorg_application_context_set_sheet_window(AgsUiProvider *ui_provider,
 GtkWidget* ags_xorg_application_context_get_export_window(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_export_window(AgsUiProvider *ui_provider,
 						    GtkWidget *widget);
+GtkWidget* ags_xorg_application_context_get_online_help_window(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_online_help_window(AgsUiProvider *ui_provider,
+							 GtkWidget *widget);
 GtkWidget* ags_xorg_application_context_get_preferences(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_preferences(AgsUiProvider *ui_provider,
 						  GtkWidget *widget);
@@ -518,6 +521,9 @@ ags_xorg_application_context_ui_provider_interface_init(AgsUiProviderInterface *
   ui_provider->get_export_window = ags_xorg_application_context_get_export_window;
   ui_provider->set_export_window = ags_xorg_application_context_set_export_window;
 
+  ui_provider->get_online_help_window = ags_xorg_application_context_get_online_help_window;
+  ui_provider->set_online_help_window = ags_xorg_application_context_set_online_help_window;
+
   ui_provider->get_preferences = ags_xorg_application_context_get_preferences;
   ui_provider->set_preferences = ags_xorg_application_context_set_preferences;
 
@@ -609,6 +615,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->sheet_window = NULL;
 
   xorg_application_context->export_window = NULL;
+
+  xorg_application_context->online_help_window = NULL;
 
   xorg_application_context->preferences = NULL;
   
@@ -2379,6 +2387,33 @@ ags_xorg_application_context_set_export_window(AgsUiProvider *ui_provider,
 
   /* set export window */
   xorg_application_context->export_window = widget;
+}
+
+GtkWidget*
+ags_xorg_application_context_get_online_help_window(AgsUiProvider *ui_provider)
+{
+  GtkWidget *online_help_window;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get online help window */
+  online_help_window = xorg_application_context->online_help_window;
+
+  return(online_help_window);
+}
+
+void
+ags_xorg_application_context_set_online_help_window(AgsUiProvider *ui_provider,
+						    GtkWidget *widget)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* set online help window */
+  xorg_application_context->online_help_window = widget;
 }
 
 GtkWidget*
