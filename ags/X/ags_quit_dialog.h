@@ -46,11 +46,33 @@ typedef enum{
   AGS_QUIT_DIALOG_CONNECTED     = 1,
 }AgsQuitDialogFlags;
 
+typedef enum{
+  AGS_QUIT_DIALOG_QUESTION_SAVE_FILE,
+  AGS_QUIT_DIALOG_QUESTION_EXPORT_WAVE,
+};
+
 struct _AgsQuitDialog
 {
   GtkDialog dialog;
 
   guint flags;
+
+  GtkCheckButton *accept_all;
+
+  GtkLabel *question;
+
+  guint current_question;  
+
+  GList *wave_export_machine;
+
+  guint nth_wave_export_machine;
+  
+  GtkButton *yes;
+  GtkButton *no;
+
+  GtkButton *cancel;
+
+  GtkDialog *confirm;
 };
 
 struct _AgsQuitDialogClass

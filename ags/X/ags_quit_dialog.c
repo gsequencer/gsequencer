@@ -20,11 +20,8 @@
 #include <ags/X/ags_quit_dialog.h>
 #include <ags/X/ags_quit_dialog_callbacks.h>
 
-#include <ags/X/ags_dialog.h>
-#include <ags/X/ags_navigation.h>
-#include <ags/X/ags_quit_soundcard.h>
-
 #include <stdlib.h>
+
 #include <ags/i18n.h>
 
 void ags_quit_dialog_class_init(AgsQuitDialogClass *quit_dialog);
@@ -126,6 +123,43 @@ ags_quit_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
 {
+  GtkVBox *vbox;
+  
+  quit_dialog->flags = 0;
+
+  vbox = gtk_dialog_get_content_area(quit_dialog);
+  
+  quit_dialog->accept_all = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("accept all"));
+  gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) quit_dialog->accept_all,
+		     FALSE, FALSE,
+		     0);
+
+  quit_dialog->question = (GtkLabel *) gtk_label_new(i18n("Do you want to safe before quit?"));
+  gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) quit_dialog->question,
+		     FALSE, FALSE,
+		     0);
+
+  quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_SAVE_FILE;
+  
+  quit_dialog->wave_export_machine = NULL;
+
+  quit_dialog->nth_wave_export_machine = 0;
+  
+  quit_dialog->yes = gtk_dialog_add_button(quit_dialog,
+					   "Yes",
+					   GTK_RESPONSE_YES);
+
+  quit_dialog->no = gtk_dialog_add_button(quit_dialog,
+					   "No",
+					   GTK_RESPONSE_NO);
+
+  quit_dialog->cancel = gtk_dialog_add_button(quit_dialog,
+					      "Cancel",
+					      GTK_RESPONSE_CANCEL);
+  
+  quit_dialog->confirm = NULL;
 }
 
 void
@@ -140,6 +174,9 @@ ags_quit_dialog_connect(AgsConnectable *connectable)
   }
 
   quit_dialog->flags |= AGS_QUIT_DIALOG_CONNECTED;
+
+  g_signal_connect(G_OBJECT(quit_dialog), "response",
+		   G_CALLBACK(ags_quit_dialog_response_callback), NULL);
 }
 
 void
@@ -154,6 +191,12 @@ ags_quit_dialog_disconnect(AgsConnectable *connectable)
   }
 
   quit_dialog->flags &= (~AGS_QUIT_DIALOG_CONNECTED);
+
+  g_object_disconnect(G_OBJECT(quit_dialog),
+		      "any_signal::response",
+		      G_CALLBACK(ags_quit_dialog_response_callback),
+		      NULL,
+		      NULL);
 }
 
 void
