@@ -23,6 +23,7 @@
 
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_quit_dialog.h>
 #include <ags/X/ags_export_window.h>
 #include <ags/X/ags_machine_util.h>
 #include <ags/X/ags_online_help_window.h>
@@ -387,47 +388,17 @@ ags_menu_action_export_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_quit_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
-  AgsWindow *window;
-  GtkDialog *dialog;
-  GtkWidget *cancel_button;
-  gint response;
+  AgsQuitDialog *quit_dialog;
 
-  application_context = ags_application_context_get_instance();
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  quit_dialog = ags_quit_dialog_new();
+  gtk_widget_show_all(quit_dialog);
+  
+  gtk_widget_grab_focus(quit_dialog->cancel);
+  
+  ags_connectable_connect(AGS_CONNECTABLE(quit_dialog));
 
-  /* ask the user if he wants save to a file */
-  dialog = (GtkDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
-						GTK_DIALOG_DESTROY_WITH_PARENT,
-						GTK_MESSAGE_QUESTION,
-						GTK_BUTTONS_YES_NO,
-						"Do you want to save '%s'?", window->name);
-  cancel_button = gtk_dialog_add_button(dialog,
-					GTK_STOCK_CANCEL,
-					GTK_RESPONSE_CANCEL);
-  gtk_widget_grab_focus(cancel_button);
-
-  response = gtk_dialog_run(dialog);
-
-  if(response == GTK_RESPONSE_YES){
-    AgsFile *file;
-
-    //TODO:JK: revise me
-    file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "filename", window->name,
-				    NULL);
-
-    ags_file_write(file);
-    g_object_unref(G_OBJECT(file));
-  }
-
-  if(response != GTK_RESPONSE_CANCEL){
-    ags_application_context_quit(AGS_APPLICATION_CONTEXT(application_context));
-  }else{
-    gtk_widget_destroy(GTK_WIDGET(dialog));
-  }
+  gtk_dialog_run(quit_dialog);
 }
-
 
 void
 ags_menu_action_add_callback(GtkWidget *menu_item, gpointer data)

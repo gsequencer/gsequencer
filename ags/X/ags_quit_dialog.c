@@ -20,6 +20,8 @@
 #include <ags/X/ags_quit_dialog.h>
 #include <ags/X/ags_quit_dialog_callbacks.h>
 
+#include <ags/X/machine/ags_audiorec.h>
+
 #include <stdlib.h>
 
 #include <ags/i18n.h>
@@ -135,17 +137,17 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
 		     FALSE, FALSE,
 		     0);
 
+  quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_SAVE_FILE;
+  
   quit_dialog->question = (GtkLabel *) gtk_label_new(i18n("Do you want to safe before quit?"));
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) quit_dialog->question,
 		     FALSE, FALSE,
 		     0);
 
-  quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_SAVE_FILE;
-  
-  quit_dialog->wave_export_machine = NULL;
-
   quit_dialog->nth_wave_export_machine = 0;
+
+  quit_dialog->wave_export_machine = NULL;
   
   quit_dialog->yes = gtk_dialog_add_button(quit_dialog,
 					   "Yes",
@@ -207,6 +209,186 @@ ags_quit_dialog_finalize(GObject *gobject)
   quit_dialog = (AgsQuitDialog *) gobject;
   
   G_OBJECT_CLASS(ags_quit_dialog_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_quit_dialog_fast_export:
+ * @quit_dialog: the #AgsQuitDialog
+ * @machine: the #AgsMachine
+ * 
+ * Fast export @quit_dialog.
+ * 
+ * Since: 3.5.0
+ */
+void
+ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
+			    AgsMachine *machine)
+{
+  AgsApplicationContext *application_context;
+
+  AgsBuffer *buffer;
+  AgsAudioFile *audio_file;
+
+  AgsTimestamp *timestamp;
+  
+  GObject *soundcard;
+
+  GList *start_wave, *end_wave, *wave;
+  
+  void *data;
+  
+  gchar *filename;
+  
+  guint default_offset;
+  guint64 start_frame, end_frame;
+  guint destination_offset, source_offset;
+  guint audio_channels;
+  guint copy_mode;
+  guint samplerate;
+  guint format;
+  guint source_format;
+  guint buffer_size;
+  guint i, j;
+
+  if(!AGS_IS_QUIT_DIALOG(quit_dialog) ||
+     !AGS_IS_MACHINE(machine)){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+
+  soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  /* get some fields */
+  g_object_get(machine->audio,
+	       "wave", &start_wave,
+	       "audio-channels", &audio_channels,
+	       "samplerate", &samplerate,
+	       "format", &format,
+	       "buffer-size", &buffer_size,	       
+	       NULL);
+
+  filename = NULL;
+
+  if(AGS_IS_AUDIOREC(machine)){
+    filename = gtk_entry_get_text(AGS_AUDIOREC(machine)->filename);
+  }
+  
+  if(g_file_test(filename,
+		 G_FILE_TEST_EXISTS)){
+    g_remove(filename);
+  }
+
+  audio_file = ags_audio_file_new(filename,
+				  soundcard,
+				  -1);
+
+  audio_file->file_audio_channels = audio_channels;
+  audio_file->file_samplerate = samplerate;  
+  
+  ags_audio_file_rw_open(audio_file,
+			 TRUE);
+
+  default_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+
+  timestamp = ags_timestamp_new();
+  timestamp->flags = AGS_TIMESTAMP_OFFSET;
+  
+  data = ags_stream_alloc(audio_channels * buffer_size,
+			  format);
+
+  start_frame = 0;
+  end_frame = 0;
+  
+  end_wave = g_list_last(start_wave);  
+
+  if(end_wave != NULL){
+    GList *end_buffer;
+
+    guint64 x;
+    
+    end_buffer = g_list_last(AGS_WAVE(end_wave->data)->buffer);
+
+    x = 0;
+    
+    if(end_buffer != NULL){
+      g_object_get(AGS_BUFFER(end_buffer->data),
+		   "x", &x,
+		   NULL);
+
+      end_frame = x;
+    }else{
+      x = ags_timestamp_get_ags_offset(AGS_WAVE(end_wave->data)->timestamp);
+
+      end_frame = x;
+    }
+  }
+  
+  for(i = start_frame; i + buffer_size < end_frame; ){
+    guint current_buffer_size;
+
+    GRecMutex *buffer_mutex;
+    
+    ags_timestamp_set_ags_offset(timestamp,
+				 default_offset * floor((gdouble) i / (gdouble) default_offset));
+    
+    ags_audio_buffer_util_clear_buffer(data, audio_channels,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+
+    current_buffer_size = buffer_size;
+    
+    if(i == start_frame){
+      source_offset = start_frame % buffer_size;
+
+      current_buffer_size -= source_offset;
+    }else{
+      source_offset = 0;
+    }
+    
+    for(j = 0; j < audio_channels; j++){
+      wave = ags_wave_find_near_timestamp(start_wave, j,
+					  timestamp);
+
+      if(wave == NULL){
+	continue;
+      }
+
+      buffer = ags_wave_find_point(wave->data,
+				   i,
+				   FALSE);
+      
+      if(buffer != NULL){
+	g_object_get(buffer,
+		     "format", &source_format,
+		     NULL);
+	
+	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+							ags_audio_buffer_util_format_from_soundcard(source_format));
+	
+	buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(buffer);
+
+	destination_offset = j;
+
+	g_rec_mutex_lock(buffer_mutex);
+      
+	ags_audio_buffer_util_copy_buffer_to_buffer(data, audio_channels, destination_offset,
+						    buffer->data, 1, source_offset,
+						    current_buffer_size, copy_mode);
+
+	g_rec_mutex_unlock(buffer_mutex);
+      }
+    }
+    
+    ags_audio_file_write(audio_file,
+			 data,
+			 current_buffer_size,
+			 format);
+    
+    i += buffer_size;
+  }
+  
+  ags_audio_file_flush(audio_file);
+  ags_audio_file_close(audio_file);
 }
 
 /**

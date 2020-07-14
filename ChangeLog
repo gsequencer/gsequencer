@@ -2,7 +2,7 @@ ags (3.5.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsOnlineHelpWindow
-	* implemented ?
+	* implemented AgsQuitDialog
 
 ags (3.4.14)
 

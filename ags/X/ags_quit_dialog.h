@@ -30,6 +30,8 @@
 
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_machine.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_QUIT_DIALOG                (ags_quit_dialog_get_type())
@@ -49,7 +51,7 @@ typedef enum{
 typedef enum{
   AGS_QUIT_DIALOG_QUESTION_SAVE_FILE,
   AGS_QUIT_DIALOG_QUESTION_EXPORT_WAVE,
-};
+}AgsQuitDialogQuestion;
 
 struct _AgsQuitDialog
 {
@@ -59,13 +61,11 @@ struct _AgsQuitDialog
 
   GtkCheckButton *accept_all;
 
+  guint current_question;
   GtkLabel *question;
 
-  guint current_question;  
-
-  GList *wave_export_machine;
-
   guint nth_wave_export_machine;
+  GList *wave_export_machine;
   
   GtkButton *yes;
   GtkButton *no;
@@ -81,6 +81,9 @@ struct _AgsQuitDialogClass
 };
 
 GType ags_quit_dialog_get_type(void);
+
+void ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
+				 AgsMachine *machine);
 
 AgsQuitDialog* ags_quit_dialog_new();
 
