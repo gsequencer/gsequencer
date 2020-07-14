@@ -118,6 +118,7 @@ ags_online_help_window_connectable_interface_init(AgsConnectableInterface *conne
 void
 ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 {
+#if defined(AGS_WITH_WEBKIT)
   GtkVBox *vbox;
   GtkHBox *navigation_hbox;
   GtkLabel *label;
@@ -247,6 +248,61 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 
   webkit_web_view_load_uri(online_help_window->web_view,
 			   start_filename);
+#else
+#if defined(AGS_WITH_POPPLER)
+  gchar *pdf_uri;
+
+  gint num_pages, i;
+  gdouble width, height;
+    
+  GError *error;
+  
+  pdf_uri = g_strdup(AGS_ONLINE_HELP_WINDOW_DEFAULT_PDF_URI);
+
+  error = NULL;
+  online_help_window->pdf_document = poppler_document_new_from_file(pdf_uri,
+								    NULL,
+								    &error);
+
+  num_pages = poppler_document_get_n_pages(online_help_window->pdf_document);
+
+  online_help_window->pdf_surface = cairo_ps_surface_create("output.ps",
+							    595, 842);
+  
+  cr = cairo_create(online_help_window->pdf_surface);
+  
+  for(i = 0; i < num_pages; i++){ 
+    page = poppler_document_get_page(online_help_window->pdf_document,
+				     i);
+    
+    if(page == NULL) {
+      g_warning("poppler fail: page not found\n");
+
+      break;
+    }
+    
+    poppler_page_get_size(page,
+			  &width, &height);
+
+    cairo_ps_surface_set_size(online_help_window->pdf_surface,
+			      width, height);
+
+    cairo_save(cr);
+    
+    poppler_page_render_for_printing(page, cr);
+
+    cairo_restore(cr);
+    
+    cairo_surface_show_page(online_help_window->pdf_surface);
+    
+    g_object_unref(page);
+  }
+
+  cairo_destroy (cr);
+
+  cairo_surface_finish(online_help_window->pdf_surface);
+#endif
+#endif
 }
 
 void

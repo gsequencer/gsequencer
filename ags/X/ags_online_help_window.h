@@ -25,7 +25,11 @@
 
 #include <gtk/gtk.h>
 
+#if defined(AGS_WITH_WEBKIT)
 #include <webkit2/webkit2.h>
+#endif
+
+#include <poppler.h>
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
@@ -40,6 +44,8 @@ G_BEGIN_DECLS
 #define AGS_IS_ONLINE_HELP_WINDOW(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_ONLINE_HELP_WINDOW))
 #define AGS_IS_ONLINE_HELP_WINDOW_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_ONLINE_HELP_WINDOW))
 #define AGS_ONLINE_HELP_WINDOW_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ONLINE_HELP_WINDOW, AgsOnlineHelpWindowClass))
+
+#define AGS_ONLINE_HELP_WINDOW_DEFAULT_PDF_URI "file:///usr/share/doc/gsequencer/user-manual.pdf"
 
 typedef struct _AgsOnlineHelpWindow AgsOnlineHelpWindow;
 typedef struct _AgsOnlineHelpWindowClass AgsOnlineHelpWindowClass;
@@ -63,7 +69,14 @@ struct _AgsOnlineHelpWindow
 
   gchar *start_filename;
   
-  WebKitWebView *web_view;  
+#if defined(AGS_WITH_WEBKIT)
+  WebKitWebView *web_view;
+#else
+  gpointer web_view;
+#endif
+  
+  PopplerDocument *pdf_document;
+  cairo_surface_t *pdf_surface;
 };
 
 struct _AgsOnlineHelpWindowClass
