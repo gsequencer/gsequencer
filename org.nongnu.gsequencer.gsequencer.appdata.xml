@@ -35,12 +35,19 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.5.0" date="2020-07-15">
+      <description>
+	<p>Implemented improved AgsQuitDialog.</p>
+	<p>Implemented improved AgsOnlineHelpWindow with navigation.</p>
+      </description>
+    </release>
+
     <release version="3.4.14" date="2020-07-10">
       <description>
 	<p>Minor changes.</p>
       </description>
     </release>
-
+    
     <release version="3.4.13" date="2020-07-05">
       <description>
 	<p>Improved stability.</p>

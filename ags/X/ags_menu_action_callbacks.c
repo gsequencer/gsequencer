@@ -21,15 +21,12 @@
 
 #include "config.h"
 
-#if defined(AGS_W32API) || defined(AGS_OSXAPI)
-#else
-#include <webkit2/webkit2.h>
-#endif
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_quit_dialog.h>
 #include <ags/X/ags_export_window.h>
 #include <ags/X/ags_machine_util.h>
+#include <ags/X/ags_online_help_window.h>
 
 #include <ags/X/import/ags_midi_import_wizard.h>
 
@@ -104,13 +101,13 @@ void
 ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint response, gpointer data)
 {
   if(response == GTK_RESPONSE_ACCEPT){
-#if defined(AGS_W32API)
+#if defined(AGS_W32API) || defined(AGS_OSXAPI)
     AgsApplicationContext *application_context;
 #endif
     
     char *filename;
     gchar *str;
-#if defined(AGS_W32API)
+#if defined(AGS_W32API) || defined(AGS_OSXAPI)
     gchar *app_dir;
 #endif
     
@@ -165,6 +162,40 @@ ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint 
 		    &pi);
     }
 #else
+#if defined(AGS_OSXAPI)
+    application_context = ags_application_context_get_instance();
+
+    if(strlen(application_context->argv[0]) > strlen("GSequencer-bin")){
+      app_dir = g_strndup(application_context->argv[0],
+			  strlen(application_context->argv[0]) - strlen("GSequencer-bin"));
+    }else{
+      app_dir = NULL;
+    }
+  
+    if(g_path_is_absolute(app_dir)){
+      str = g_strdup_printf("%s%s %s",
+			    app_dir,
+			    "GSequencer --filename",
+			    filename);
+    }else{
+      str = g_strdup_printf("%s/%s%s %s",
+			    g_get_current_dir(),
+			    app_dir,
+			    "GSequencer --filename",
+			    filename);
+    }
+    
+    g_free(app_dir);
+
+    g_spawn_command_line_async(str,
+			       &error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }    
+#else
     str = g_strdup_printf("gsequencer --filename %s",
 			  filename);
 
@@ -176,6 +207,7 @@ ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint 
 
       g_error_free(error);
     }
+#endif    
 #endif    
     
     g_free(filename);
@@ -356,47 +388,17 @@ ags_menu_action_export_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_quit_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
-  AgsWindow *window;
-  GtkDialog *dialog;
-  GtkWidget *cancel_button;
-  gint response;
+  AgsQuitDialog *quit_dialog;
 
-  application_context = ags_application_context_get_instance();
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  quit_dialog = ags_quit_dialog_new();
+  gtk_widget_show_all(quit_dialog);
+  
+  gtk_widget_grab_focus(quit_dialog->cancel);
+  
+  ags_connectable_connect(AGS_CONNECTABLE(quit_dialog));
 
-  /* ask the user if he wants save to a file */
-  dialog = (GtkDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
-						GTK_DIALOG_DESTROY_WITH_PARENT,
-						GTK_MESSAGE_QUESTION,
-						GTK_BUTTONS_YES_NO,
-						"Do you want to save '%s'?", window->name);
-  cancel_button = gtk_dialog_add_button(dialog,
-					GTK_STOCK_CANCEL,
-					GTK_RESPONSE_CANCEL);
-  gtk_widget_grab_focus(cancel_button);
-
-  response = gtk_dialog_run(dialog);
-
-  if(response == GTK_RESPONSE_YES){
-    AgsFile *file;
-
-    //TODO:JK: revise me
-    file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "filename", window->name,
-				    NULL);
-
-    ags_file_write(file);
-    g_object_unref(G_OBJECT(file));
-  }
-
-  if(response != GTK_RESPONSE_CANCEL){
-    ags_application_context_quit(AGS_APPLICATION_CONTEXT(application_context));
-  }else{
-    gtk_widget_destroy(GTK_WIDGET(dialog));
-  }
+  gtk_dialog_run(quit_dialog);
 }
-
 
 void
 ags_menu_action_add_callback(GtkWidget *menu_item, gpointer data)
@@ -929,95 +931,23 @@ void
 ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data)
 {
   GtkWidget *online_help_window;
-
-#if defined(AGS_W32API) || defined(AGS_OSXAPI)
-#else
-  WebKitWebView *web_view;
-#endif
   
   AgsApplicationContext *application_context;
 
-  gchar *start_filename;
-#if defined(AGS_W32API)
-  gchar *app_dir;
-#endif
+  application_context = ags_application_context_get_instance();
 
-  start_filename = NULL;
-  
-#if defined AGS_W32API
-  app_dir = NULL;
-#endif
-  
-#if defined(AGS_W32API) || defined(AGS_OSXAPI)
-#else
-#if defined(AGS_ONLINE_HELP_START_FILENAME)
-  start_filename = g_strdup(AGS_ONLINE_HELP_START_FILENAME);
-#else
-  if((start_filename = getenv("AGS_ONLINE_HELP_START_FILENAME")) != NULL){
-    start_filename = g_strdup(start_filename);    
-  }else{
-#if defined (AGS_W32API)
-    application_context = ags_application_context_get_instance();
+  online_help_window = ags_ui_provider_get_online_help_window(AGS_UI_PROVIDER(application_context));
 
-    if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
-      app_dir = g_strndup(application_context->argv[0],
-			  strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
-    }
-  
-    start_filename = g_strdup_printf("%s\\share\\doc\\gsequencer-doc\\html\\index.html",
-				     g_get_current_dir());
+  if(online_help_window == NULL){
+    online_help_window = ags_online_help_window_new();
     
-    if(!g_file_test(start_filename,
-		    G_FILE_TEST_IS_REGULAR)){
-      g_free(start_filename);
-
-      if(g_path_is_absolute(app_dir)){
-	start_filename = g_strdup_printf("%s\\%s",
-					 app_dir,
-					 "\\share\\doc\\gsequencer-doc\\html\\index.html");
-      }else{
-	start_filename = g_strdup_printf("%s\\%s\\%s",
-					 g_get_current_dir(),
-					 app_dir,
-					 "\\share\\doc\\gsequencer-doc\\html\\index.html");
-      }
-    }
-#else
-#if defined(AGS_WITH_SINGLE_DOCDIR)
-    start_filename = g_strdup_printf("file://%s/user-manual/index.html",
-				     DOCDIR);
-#else
-    start_filename = g_strdup_printf("file://%s/html/index.html",
-				     DOCDIR);
-#endif
-#endif
+    ags_connectable_connect(AGS_CONNECTABLE(online_help_window));
+    
+    ags_ui_provider_set_online_help_window(AGS_UI_PROVIDER(application_context),
+					   online_help_window);
   }
-#endif /* defined(AGS_ONLINE_HELP_START_FILENAME) */
-#endif /* defined(AGS_W32API) || defined(AGS_OSXAPI) */
   
-  online_help_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-
-  g_object_set(online_help_window,
-	       "default-width", 800,
-	       "default-height", 600,
-	       NULL);
-  
-#if defined(AGS_W32API) || defined(AGS_OSXAPI)
-#else
-  web_view = WEBKIT_WEB_VIEW(webkit_web_view_new());
-  gtk_container_add(GTK_CONTAINER(online_help_window), GTK_WIDGET(web_view));
-
-  //FIXME:JK: hard-coded
-  webkit_web_view_load_uri(web_view, start_filename);
-#endif
-
   gtk_widget_show_all(online_help_window);
-
-  g_free(start_filename);
-
-#if defined AGS_W32API
-  g_free(app_dir);
-#endif
 }
 
 void

@@ -1413,9 +1413,13 @@ ags_devout_get_device(AgsSoundcard *soundcard)
   g_rec_mutex_lock(devout_mutex);
 
   if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+#ifdef AGS_WITH_ALSA
     device = g_strdup(devout->out.alsa.device);
+#endif
   }else if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
+#ifdef AGS_WITH_OSS
     device = g_strdup(devout->out.oss.device);
+#endif
   }
 
   g_rec_mutex_unlock(devout_mutex);

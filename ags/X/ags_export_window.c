@@ -149,10 +149,24 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
 void
 ags_export_window_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
   connectable->is_ready = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
   connectable->is_connected = NULL;
   connectable->connect = ags_export_window_connect;
   connectable->disconnect = ags_export_window_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -452,7 +466,7 @@ ags_export_window_disconnect(AgsConnectable *connectable)
   export_window->flags &= (~AGS_EXPORT_WINDOW_CONNECTED);
 
   g_object_disconnect(G_OBJECT(export_window->add),
-		      "any_signal::add",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_export_window_add_export_soundcard_callback),
 		      export_window,
 		      NULL);

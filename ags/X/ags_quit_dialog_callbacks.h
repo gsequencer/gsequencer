@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,31 +17,28 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_API_CONFIG_H__
-#define __AGS_API_CONFIG_H__
+#ifndef __AGS_QUIT_DIALOG_CALLBACKS_H__
+#define __AGS_QUIT_DIALOG_CALLBACKS_H__
 
-#undef AGS_WITH_W32API
+#include <glib.h>
+#include <glib-object.h>
 
-#undef AGS_WITH_OSXAPI
+#include <gtk/gtk.h>
 
-#undef AGS_WITH_ALSA
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
-#undef AGS_WITH_OSS
+#include <ags/libags-gui.h>
 
-#undef AGS_WITH_CORE_AUDIO
+#include <ags/X/ags_quit_dialog.h>
 
-#undef AGS_WITH_JACK
+G_BEGIN_DECLS
 
-#undef AGS_WITH_PULSE
+void ags_quit_dialog_response_callback(GtkDialog *dialog,
+				       gint response_id,
+				       gpointer user_data);
 
-#undef AGS_WITH_WASAPI
 
-#undef AGS_WITH_LIBINSTPATCH
+G_END_DECLS
 
-#undef AGS_WITH_QUARTZ
-
-#undef AGS_WITH_WEBKIT
-
-#undef AGS_WITH_POPPLER
-
-#endif /*__AGS_API_CONFIG_H__*/
+#endif /*__AGS_QUIT_DIALOG_CALLBACKS_H__*/

@@ -657,6 +657,51 @@ ags_ui_provider_set_export_window(AgsUiProvider *ui_provider,
 }
 
 /**
+ * ags_ui_provider_get_online_help_window:
+ * @ui_provider: the #AgsUiProvider
+ * 
+ * Get online help window.
+ * 
+ * Returns: the #GtkWidget
+ * 
+ * Since: 3.5.0
+ */
+GtkWidget*
+ags_ui_provider_get_online_help_window(AgsUiProvider *ui_provider)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_UI_PROVIDER(ui_provider), NULL);
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_val_if_fail(ui_provider_interface->get_online_help_window, NULL);
+
+  return(ui_provider_interface->get_online_help_window(ui_provider));
+}
+
+/**
+ * ags_ui_provider_set_online_help_window:
+ * @ui_provider: the #AgsUiProvider
+ * @online_help_window: the #GtkWidget
+ * 
+ * Set online help window.
+ * 
+ * Since: 3.5.0
+ */
+void
+ags_ui_provider_set_online_help_window(AgsUiProvider *ui_provider,
+				       GtkWidget *online_help_window)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_if_fail(AGS_IS_UI_PROVIDER(ui_provider));
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_if_fail(ui_provider_interface->set_online_help_window);
+
+  ui_provider_interface->set_online_help_window(ui_provider,
+						online_help_window);
+}
+
+/**
  * ags_ui_provider_get_preferences:
  * @ui_provider: the #AgsUiProvider
  * 

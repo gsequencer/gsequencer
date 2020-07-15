@@ -357,9 +357,13 @@ ags_dssi_plugin_instantiate(AgsBasePlugin *base_plugin,
   g_rec_mutex_unlock(base_plugin_mutex);
 
   /* instantiate */
-  ptr = instantiate(ladspa_descriptor,
-		    (unsigned long) samplerate);
+  ptr = NULL;
 
+  if(instantiate != NULL){
+    ptr = instantiate(ladspa_descriptor,
+		      (unsigned long) samplerate);
+  }
+  
   return(ptr);
 }
 
@@ -386,9 +390,11 @@ ags_dssi_plugin_connect_port(AgsBasePlugin *base_plugin,
   g_rec_mutex_unlock(base_plugin_mutex);
 
   /* connect port */
-  connect_port((LADSPA_Handle) plugin_handle,
-	       (unsigned long) port_index,
-	       (LADSPA_Data *) data_location);
+  if(plugin_handle != NULL){
+    connect_port((LADSPA_Handle) plugin_handle,
+		 (unsigned long) port_index,
+		 (LADSPA_Data *) data_location);
+  }
 }
 
 void
@@ -409,7 +415,8 @@ ags_dssi_plugin_activate(AgsBasePlugin *base_plugin,
   
   g_rec_mutex_unlock(base_plugin_mutex);
 
-  if(activate != NULL){
+  if(plugin_handle != NULL &&
+     activate != NULL){
     activate((LADSPA_Handle) plugin_handle);
   }
 }
@@ -432,7 +439,8 @@ ags_dssi_plugin_deactivate(AgsBasePlugin *base_plugin,
   
   g_rec_mutex_unlock(base_plugin_mutex);
 
-  if(deactivate != NULL){
+  if(plugin_handle != NULL &&
+     deactivate != NULL){
     deactivate((LADSPA_Handle) plugin_handle);
   }
 }
@@ -462,15 +470,17 @@ ags_dssi_plugin_run(AgsBasePlugin *base_plugin,
   run = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->run;
   
   g_rec_mutex_unlock(base_plugin_mutex);
-  
-  if(run_synth != NULL){
-    run_synth((LADSPA_Handle) plugin_handle,
-	      (unsigned long) frame_count,
-	      seq_event,
-	      (unsigned long) 1);
-  }else{
-    run((LADSPA_Handle) plugin_handle,
-	(unsigned long) frame_count);
+
+  if(plugin_handle != NULL){
+    if(run_synth != NULL){
+      run_synth((LADSPA_Handle) plugin_handle,
+		(unsigned long) frame_count,
+		seq_event,
+		(unsigned long) 1);
+    }else{
+      run((LADSPA_Handle) plugin_handle,
+	  (unsigned long) frame_count);
+    }
   }
 }
 

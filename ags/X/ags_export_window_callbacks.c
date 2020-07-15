@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -72,6 +72,9 @@ ags_export_window_add_export_soundcard_callback(GtkWidget *button,
 
   /* show all */
   gtk_widget_show_all(GTK_WIDGET(hbox));
+
+  /* refresh card */
+  ags_export_soundcard_refresh_card(export_soundcard);
 }
 
 void
