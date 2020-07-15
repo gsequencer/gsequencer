@@ -940,7 +940,9 @@ ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data)
 
   if(online_help_window == NULL){
     online_help_window = ags_online_help_window_new();
-
+    
+    ags_connectable_connect(AGS_CONNECTABLE(online_help_window));
+    
     ags_ui_provider_set_online_help_window(AGS_UI_PROVIDER(application_context),
 					   online_help_window);
   }

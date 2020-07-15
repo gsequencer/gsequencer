@@ -40,6 +40,8 @@
 
 #undef AGS_WITH_QUARTZ
 
-#undef AGS_WITH_XMLRPC_C
+#undef AGS_WITH_WEBKIT
+
+#undef AGS_WITH_POPPLER
 
 #endif /*__AGS_API_CONFIG_H__*/

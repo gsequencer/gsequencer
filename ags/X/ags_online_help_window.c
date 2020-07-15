@@ -250,12 +250,52 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 			   start_filename);
 #else
 #if defined(AGS_WITH_POPPLER)
+  GtkVBox *vbox;
+
+  GtkAdjustment *vadjustment, *hadjustment;
+
+  cairo_t *cr;
+  
   gchar *pdf_uri;
 
   gint num_pages, i;
   gdouble width, height;
-    
+  gint max_width, max_height;
+  
   GError *error;
+
+  g_object_set(online_help_window,
+	       "title", i18n("online help"),
+	       NULL);
+
+  width = 800.0;
+  height = 600.0;
+  
+  g_object_set(online_help_window,
+	       "default-width", (gint) width,
+	       "default-height", (gint) height,
+	       NULL);
+
+  vbox = (GtkVBox *) gtk_vbox_new(FALSE,
+				  0);
+  gtk_container_add((GtkContainer *) online_help_window,
+		    (GtkWidget *) vbox);
+
+  vadjustment = g_object_new(GTK_TYPE_ADJUSTMENT,
+			     NULL);
+  hadjustment = g_object_new(GTK_TYPE_ADJUSTMENT,
+			     NULL);
+  
+  online_help_window->pdf_scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(hadjustment,
+											  vadjustment);
+  gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) online_help_window->pdf_scrolled_window,
+		     TRUE, TRUE,
+		     0);
+  
+  online_help_window->pdf_drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
+  gtk_container_add((GtkContainer *) online_help_window->pdf_scrolled_window,
+		    (GtkWidget *) online_help_window->pdf_drawing_area);
   
   pdf_uri = g_strdup(AGS_ONLINE_HELP_WINDOW_DEFAULT_PDF_URI);
 
@@ -266,41 +306,35 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 
   num_pages = poppler_document_get_n_pages(online_help_window->pdf_document);
 
-  online_help_window->pdf_surface = cairo_ps_surface_create("output.ps",
-							    595, 842);
-  
-  cr = cairo_create(online_help_window->pdf_surface);
-  
-  for(i = 0; i < num_pages; i++){ 
+  max_width = 0;
+  max_height = 0;
+
+  for(i = 0; i < num_pages; i++){
+    PopplerPage *page;
+    
     page = poppler_document_get_page(online_help_window->pdf_document,
 				     i);
     
     if(page == NULL) {
-      g_warning("poppler fail: page not found\n");
+      g_warning("poppler fail: page not found");
 
       break;
     }
-    
+
     poppler_page_get_size(page,
 			  &width, &height);
 
-    cairo_ps_surface_set_size(online_help_window->pdf_surface,
-			      width, height);
+    if(max_width < width){
+      max_width = width;
+    }
 
-    cairo_save(cr);
-    
-    poppler_page_render_for_printing(page, cr);
-
-    cairo_restore(cr);
-    
-    cairo_surface_show_page(online_help_window->pdf_surface);
+    max_height += height;
     
     g_object_unref(page);
   }
 
-  cairo_destroy (cr);
-
-  cairo_surface_finish(online_help_window->pdf_surface);
+  online_help_window->max_height = max_height;
+  online_help_window->max_width = max_width;
 #endif
 #endif
 }
@@ -318,6 +352,7 @@ ags_online_help_window_connect(AgsConnectable *connectable)
 
   online_help_window->flags |= AGS_ONLINE_HELP_WINDOW_CONNECTED;
 
+#if defined(AGS_WITH_WEBKIT)
   g_signal_connect(G_OBJECT(online_help_window->home), "clicked",
 		   G_CALLBACK(ags_online_help_window_home_callback), online_help_window);
 
@@ -326,6 +361,12 @@ ags_online_help_window_connect(AgsConnectable *connectable)
 
   g_signal_connect(G_OBJECT(online_help_window->prev), "clicked",
 		   G_CALLBACK(ags_online_help_window_prev_callback), online_help_window);
+#else
+#if defined(AGS_WITH_POPPLER)
+  g_signal_connect_after(G_OBJECT(online_help_window->pdf_drawing_area), "draw",
+			 G_CALLBACK(ags_online_help_window_pdf_drawing_area_draw_callback), online_help_window);
+#endif  
+#endif  
 }
 
 void
@@ -341,6 +382,7 @@ ags_online_help_window_disconnect(AgsConnectable *connectable)
 
   online_help_window->flags &= (~AGS_ONLINE_HELP_WINDOW_CONNECTED);
 
+#if defined(AGS_WITH_WEBKIT)
   g_object_disconnect(G_OBJECT(online_help_window->home),
 		      "any_signal::clicked",
 		      G_CALLBACK(ags_online_help_window_home_callback),
@@ -358,6 +400,15 @@ ags_online_help_window_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_online_help_window_prev_callback),
 		      online_help_window,
 		      NULL);
+#else
+#if defined(AGS_WITH_POPPLER)
+  g_object_disconnect(G_OBJECT(online_help_window->pdf_drawing_area),
+		      "any_signal::draw",
+		      G_CALLBACK(ags_online_help_window_pdf_drawing_area_draw_callback),
+		      online_help_window,
+		      NULL);
+#endif  
+#endif  
 }
 
 gboolean

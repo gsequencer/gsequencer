@@ -25,11 +25,15 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/config.h>
+
 #if defined(AGS_WITH_WEBKIT)
 #include <webkit2/webkit2.h>
 #endif
 
+#if defined(AGS_WITH_POPPLER)
 #include <poppler.h>
+#endif
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
@@ -46,6 +50,7 @@ G_BEGIN_DECLS
 #define AGS_ONLINE_HELP_WINDOW_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ONLINE_HELP_WINDOW, AgsOnlineHelpWindowClass))
 
 #define AGS_ONLINE_HELP_WINDOW_DEFAULT_PDF_URI "file:///usr/share/doc/gsequencer/user-manual.pdf"
+#define AGS_ONLINE_HELP_WINDOW_DEFAULT_IMAGE_DPI (150)
 
 typedef struct _AgsOnlineHelpWindow AgsOnlineHelpWindow;
 typedef struct _AgsOnlineHelpWindowClass AgsOnlineHelpWindowClass;
@@ -75,8 +80,13 @@ struct _AgsOnlineHelpWindow
   gpointer web_view;
 #endif
   
+  gint max_width;
+  gint max_height;
+  
+  GtkScrolledWindow *pdf_scrolled_window;
+  GtkWidget *pdf_drawing_area;
+  
   PopplerDocument *pdf_document;
-  cairo_surface_t *pdf_surface;
 };
 
 struct _AgsOnlineHelpWindowClass

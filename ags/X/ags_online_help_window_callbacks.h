@@ -33,9 +33,15 @@
 
 G_BEGIN_DECLS
 
+#if defined(AGS_WITH_WEBKIT)
 void ags_online_help_window_load_changed(WebKitWebView *web_view,
 					 WebKitLoadEvent load_event,
 					 AgsOnlineHelpWindow *online_help_window);
+#endif
+
+gboolean ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_area,
+							       cairo_t *cr,
+							       AgsOnlineHelpWindow *online_help_window);
 
 void ags_online_help_window_home_callback(GtkWidget *button,
 					  AgsOnlineHelpWindow *online_help_window);

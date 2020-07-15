@@ -148,6 +148,18 @@ AC_ARG_ENABLE(experimental, [AS_HELP_STRING([--enable-experimental],
 	      [],
 	      [enable_experimental=no])
 
+AC_ARG_WITH([webkit],
+	    [AS_HELP_STRING([--without-webkit],
+			    [disable support for webkit])],
+	    [],
+	    [with_webkit=yes])
+
+AC_ARG_WITH([poppler],
+	    [AS_HELP_STRING([--with-poppler],
+			    [enable support for poppler])],
+	    [],
+	    [with_poppler=no])
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP
@@ -413,11 +425,22 @@ PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.18.0])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
-AS_IF([test "x$enable_w32api" != xyes],
+AS_IF([test "x$with_webkit" != xno],
       [PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0 >= 2.10.0])
        AC_SUBST(WEBKITGTK_CFLAGS)
-       AC_SUBST(WEBKITGTK_LIBS)],
-       [])
+       AC_SUBST(WEBKITGTK_LIBS)
+       AC_DEFINE([AGS_WITH_WEBKIT], [1],
+       		 [Define if you have webkit])
+      ])
+      
+AS_IF([test "x$with_poppler" != xno],
+      [PKG_CHECK_MODULES([POPPLER], [poppler-glib >= 0.71.0])
+       AC_SUBST(POPPLER_CFLAGS)
+       AC_SUBST(POPPLER_LIBS)
+       AC_DEFINE([AGS_WITH_POPPLER], [1],
+       		 [Define if you have poppler])
+      ])
+
 
 AS_IF([test "x$enable_run_functional_tests" == xyes],
       [AC_MSG_NOTICE([run functional tests enabled])],
@@ -461,7 +484,7 @@ case "${host_os}" in
         build_mac=yes
         ;;
     *)
-        AC_MSG_ERROR(["OS $host_os is not supported"])
+        AC_MSG_NOTICE(["OS $host_os is not supported"])
         ;;
 esac
 
