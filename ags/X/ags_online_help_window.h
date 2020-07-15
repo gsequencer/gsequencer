@@ -86,7 +86,11 @@ struct _AgsOnlineHelpWindow
   GtkScrolledWindow *pdf_scrolled_window;
   GtkWidget *pdf_drawing_area;
   
+#if defined(AGS_WITH_POPPLER)
   PopplerDocument *pdf_document;
+#else
+  gpointer pdf_document;
+#endif
 };
 
 struct _AgsOnlineHelpWindowClass
