@@ -322,7 +322,7 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   if((pdf_uri = getenv("AGS_ONLINE_HELP_PDF_URI")) != NULL){
     pdf_uri = g_strdup(pdf_uri);
   }else{
-    pdf_uri = g_strdup_printf("file://%s%s", DESTDIR, "/doc/gsequencer/pdf/user-manual.pdf");
+    pdf_uri = g_strdup_printf("file://%s%s", DOCDIR, "/pdf/user-manual.pdf");
   }
 #endif
   
