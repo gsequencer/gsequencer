@@ -215,6 +215,10 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
 
 	list = list->next;
       }
+
+      quit_dialog->wave_export_machine = g_list_reverse(quit_dialog->wave_export_machine);
+
+      g_list_free(start_list);
     }
     
     if(quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_EXPORT_WAVE){
