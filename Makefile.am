@@ -464,8 +464,22 @@ userdocimages = \
 	$(top_srcdir)/docs/images/ags_select_buffers_dialog.png \
 	$(top_srcdir)/docs/images/ags_ramp_accelerations_dialog.png \
 	$(top_srcdir)/docs/images/ags-wave-toolbar.png \
-	$(top_srcdir)/docs/images/ags_wave_window_audiorec.png
-
+	$(top_srcdir)/docs/images/ags_wave_window_audiorec.png \
+	$(top_srcdir)/docs/images/adwaita/accessories-text-editor.png \
+	$(top_srcdir)/docs/images/adwaita/edit-clear-all.png \
+	$(top_srcdir)/docs/images/adwaita/edit-copy.png \
+	$(top_srcdir)/docs/images/adwaita/edit-cut.png \
+	$(top_srcdir)/docs/images/adwaita/edit-paste.png \
+	$(top_srcdir)/docs/images/adwaita/edit-select-all.png \
+	$(top_srcdir)/docs/images/adwaita/go-jump.png \
+	$(top_srcdir)/docs/images/adwaita/media-playback-start.png \
+	$(top_srcdir)/docs/images/adwaita/media-playback-stop.png \
+	$(top_srcdir)/docs/images/adwaita/media-seek-backward.png \
+	$(top_srcdir)/docs/images/adwaita/media-seek-forward.png \
+	$(top_srcdir)/docs/images/adwaita/media-skip-backward.png \
+	$(top_srcdir)/docs/images/adwaita/media-skip-forward.png \
+	$(top_srcdir)/docs/images/adwaita/object-flip-vertical.png \
+	$(top_srcdir)/docs/images/adwaita/system-run.png
 
 EXTRA_DIST += $(manpages) $(userdoc) $(userdocimages) $(devdoc) $(devdocimages) $(devdoclistings) $(oscdoc)
 

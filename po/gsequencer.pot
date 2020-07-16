@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.5.0\n"
+"Project-Id-Version: gsequencer 3.5.1\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-07-15 21:07+0200\n"
+"POT-Creation-Date: 2020-07-16 05:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -733,27 +733,27 @@ msgstr ""
 msgid "Lv2"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3354
+#: ags/X/ags_xorg_application_context.c:3388
 #: ags/audio/ags_audio_application_context.c:2141
 #: ags/audio/task/ags_apply_sound_config.c:894
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3364
+#: ags/X/ags_xorg_application_context.c:3398
 #: ags/audio/ags_audio_application_context.c:2151
 #: ags/audio/task/ags_apply_sound_config.c:904
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3606
+#: ags/X/ags_xorg_application_context.c:3640
 #: ags/audio/ags_audio_application_context.c:2393
 #: ags/audio/task/ags_apply_sound_config.c:1144
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3616
+#: ags/X/ags_xorg_application_context.c:3650
 #: ags/audio/ags_audio_application_context.c:2403
 #: ags/audio/task/ags_apply_sound_config.c:1154
 msgid "unknown sequencer backend - NULL"
@@ -1473,7 +1473,7 @@ msgstr ""
 msgid "bank"
 msgstr ""
 
-#: ags/X/ags_online_help_window.c:129 ags/X/ags_online_help_window.c:268
+#: ags/X/ags_online_help_window.c:129 ags/X/ags_online_help_window.c:270
 msgid "online help"
 msgstr ""
 
@@ -1481,14 +1481,14 @@ msgstr ""
 msgid "Place"
 msgstr ""
 
-#: ags/X/ags_quit_dialog.c:134
+#: ags/X/ags_quit_dialog.c:140
 msgid "accept all"
 msgstr ""
 
-#: ags/X/ags_quit_dialog.c:142
-msgid "Do you want to safe before quit?"
+#: ags/X/ags_quit_dialog.c:148
+msgid "Do you want to save before quit?"
 msgstr ""
 
-#: ags/X/ags_quit_dialog_callbacks.c:37
+#: ags/X/ags_quit_dialog_callbacks.c:51
 msgid "Do you want to fast export quit?"
 msgstr ""

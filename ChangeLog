@@ -1,8 +1,9 @@
 ags (3.5.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented poppler support in AgsOnlineHelpWindow
+	* implemented poppler PDF support of AgsOnlineHelpWindow
 	* fixed typo in ags_quit_dialog.c
+	* added pdf and install-pdf target to Makefile.am
 	* minor improvements
 
 ags (3.5.0)

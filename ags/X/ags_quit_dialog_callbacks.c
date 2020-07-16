@@ -22,10 +22,24 @@
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
+#include <ags/X/file/ags_simple_file.h>
+
 #include <ags/X/machine/ags_audiorec.h>
+
+#define _GNU_SOURCE
+#include <locale.h>
 
 #include <ags/i18n.h>
 
+static GMutex locale_mutex;
+
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+static char *locale_env;
+#else
+static locale_t c_locale;
+#endif
+
+static gboolean locale_initialized = FALSE;
 
 void
 ags_quit_dialog_response_callback(GtkDialog *dialog,
@@ -57,17 +71,63 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
 
     accept_all = gtk_toggle_button_get_active((GtkToggleButton *) quit_dialog->accept_all);
 
-    if(quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_SAVE_FILE){
-      AgsFile *file;
+    if(quit_dialog->current_question == AGS_QUIT_DIALOG_QUESTION_SAVE_FILE){      
+      AgsSimpleFile *simple_file;
 
       GList *start_list, *list;
-      
-      file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				      "filename", window->name,
-				      NULL);
 
-      ags_file_write(file);
-      g_object_unref(G_OBJECT(file));
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+#else
+      locale_t current;
+#endif
+
+      GError *error;
+
+      g_mutex_lock(&locale_mutex);
+
+      if(!locale_initialized){
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+	locale_env = getenv("LC_ALL");
+#else
+	c_locale = newlocale(LC_ALL_MASK, "C", (locale_t) 0);
+#endif
+    
+	locale_initialized = TRUE;
+      }
+
+      g_mutex_unlock(&locale_mutex);
+
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+      setlocale(LC_ALL, "C");
+#else
+      current = uselocale(c_locale);
+#endif
+
+      simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
+						   "filename", window->name,
+						   NULL);
+      
+      error = NULL;
+      ags_simple_file_rw_open(simple_file,
+			      TRUE,
+			      &error);
+
+      if(error != NULL){
+	g_message("%s", error->message);
+
+	g_error_free(error);
+      }
+    
+      ags_simple_file_write(simple_file);
+      ags_simple_file_close(simple_file);
+
+      g_object_unref(G_OBJECT(simple_file));
+
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+      setlocale(LC_ALL, locale_env);
+#else
+      uselocale(current);
+#endif
 
       list = 
 	start_list = gtk_container_get_children(window->machines);

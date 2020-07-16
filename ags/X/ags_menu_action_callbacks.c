@@ -66,10 +66,23 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
+#define _GNU_SOURCE
+#include <locale.h>
+
 #if defined __APPLE__ || AGS_W32API
 #else
 #include <X11/Xlib.h>
 #endif
+
+static GMutex locale_mutex;
+
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+static char *locale_env;
+#else
+static locale_t c_locale;
+#endif
+
+static gboolean locale_initialized = FALSE;
 
 void ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint response, gpointer data);
 
@@ -234,6 +247,31 @@ ags_menu_action_save_callback(GtkWidget *menu_item, gpointer data)
 	       "false")){
     AgsSimpleFile *simple_file;
 
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+#else
+    locale_t current;
+#endif
+
+    g_mutex_lock(&locale_mutex);
+
+    if(!locale_initialized){
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+      locale_env = getenv("LC_ALL");
+#else
+      c_locale = newlocale(LC_ALL_MASK, "C", (locale_t) 0);
+#endif
+    
+      locale_initialized = TRUE;
+    }
+
+    g_mutex_unlock(&locale_mutex);
+
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+    setlocale(LC_ALL, "C");
+#else
+    current = uselocale(c_locale);
+#endif
+
     simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
 						 "filename", window->name,
 						 NULL);
@@ -253,6 +291,12 @@ ags_menu_action_save_callback(GtkWidget *menu_item, gpointer data)
     ags_simple_file_close(simple_file);
 
     g_object_unref(G_OBJECT(simple_file));
+
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+    setlocale(LC_ALL, locale_env);
+#else
+    uselocale(current);
+#endif
   }else{
     AgsFile *file;
 
@@ -316,6 +360,31 @@ ags_menu_action_save_as_callback(GtkWidget *menu_item, gpointer data)
 		 "false")){
       AgsSimpleFile *simple_file;
 
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+#else
+      locale_t current;
+#endif
+
+      g_mutex_lock(&locale_mutex);
+
+      if(!locale_initialized){
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+	locale_env = getenv("LC_ALL");
+#else
+	c_locale = newlocale(LC_ALL_MASK, "C", (locale_t) 0);
+#endif
+    
+	locale_initialized = TRUE;
+      }
+
+      g_mutex_unlock(&locale_mutex);
+
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+      setlocale(LC_ALL, "C");
+#else
+      current = uselocale(c_locale);
+#endif
+
       simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
 						   "filename", filename,
 						   NULL);
@@ -335,6 +404,12 @@ ags_menu_action_save_as_callback(GtkWidget *menu_item, gpointer data)
       ags_simple_file_close(simple_file);
 
       g_object_unref(G_OBJECT(simple_file));
+
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+      setlocale(LC_ALL, locale_env);
+#else
+      uselocale(current);
+#endif
     }else{
       AgsFile *file;
 

@@ -86,6 +86,9 @@
 
 #include <math.h>
 
+#define _GNU_SOURCE
+#include <locale.h>
+
 #include <ags/i18n.h>
 
 void ags_xorg_application_context_signal_handler(int signr);
@@ -263,6 +266,16 @@ extern AgsApplicationContext *ags_application_context;
 #ifndef AGS_W32API
 struct sigaction ags_sigact;
 #endif
+
+static GMutex locale_mutex;
+
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+static char *locale_env;
+#else
+static locale_t c_locale;
+#endif
+
+static gboolean locale_initialized = FALSE;
 
 GType
 ags_xorg_application_context_get_type()
@@ -2976,6 +2989,11 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       gchar *buffer;
       guint buffer_length;
       
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+#else
+      locale_t current;
+#endif
+
       filename = AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i + 1];
 
       if(!g_file_test(filename,
@@ -2986,6 +3004,26 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
 	break;
       }
+
+      g_mutex_lock(&locale_mutex);
+
+      if(!locale_initialized){
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+	locale_env = getenv("LC_ALL");
+#else
+	c_locale = newlocale(LC_ALL_MASK, "C", (locale_t) 0);
+#endif
+    
+	locale_initialized = TRUE;
+      }
+
+      g_mutex_unlock(&locale_mutex);
+
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+      setlocale(LC_ALL, "C");
+#else
+      current = uselocale(c_locale);
+#endif
       
       simple_file = ags_simple_file_new();
       g_object_set(simple_file,
@@ -3006,7 +3044,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       if(xpath_context == NULL) {
 	g_warning("Error: unable to create new XPath context");
 
-	break;
+	goto ags_xorg_application_context_setup_RESTORE_LOCALE;
       }
 
       /* Evaluate xpath expression */
@@ -3014,9 +3052,10 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
       if(xpath_object == NULL) {
 	g_warning("Error: unable to evaluate xpath expression \"%s\"", xpath);
+
 	xmlXPathFreeContext(xpath_context); 
 
-	break;
+	goto ags_xorg_application_context_setup_RESTORE_LOCALE;
       }
 
       node = xpath_object->nodesetval->nodeTab;
@@ -3026,22 +3065,17 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 	if(node[j]->type == XML_ELEMENT_NODE){
 	  ags_config_clear(config);
 	  ags_simple_file_read_config(simple_file, node[j], &config);
-	  
-#if 0
-	  buffer = xmlNodeGetContent(node[j]);
-	  buffer_length = strlen(buffer);
-#endif
-	  
+	  	  
 	  break;
 	}
       }
       
-#if 0
-      if(buffer != NULL){
-	//	ags_config_clear(ags_config_get_instance());
-	ags_config_load_from_data(ags_config_get_instance(),
-				  buffer, buffer_length);
-      }
+    ags_xorg_application_context_setup_RESTORE_LOCALE:
+
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+      setlocale(LC_ALL, locale_env);
+#else
+      uselocale(current);
 #endif
       
       i++;
