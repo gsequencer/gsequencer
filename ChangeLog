@@ -1,7 +1,11 @@
+ags (3.5.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed pointer arithmetic type mismatch
+
 ags (3.5.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed missing expand and fill of WebView of online help
 
 ags (3.5.1)
 

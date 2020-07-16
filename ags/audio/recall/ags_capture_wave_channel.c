@@ -48,11 +48,13 @@ static gpointer ags_capture_wave_channel_parent_class = NULL;
 static AgsPluginInterface *ags_capture_wave_parent_plugin_interface;
 
 const gchar *ags_capture_wave_channel_plugin_name = "ags-capture-wave";
-const gchar *ags_capture_wave_channel_specifier[] = {
-  "./x-offset[0]", 
+const gchar* ags_capture_wave_channel_specifier[] = {
+  "./x-offset[0]",
+  NULL,
 };
-const gchar *ags_capture_wave_channel_control_port[] = {
+const gchar* ags_capture_wave_channel_control_port[] = {
   "1/1",
+  NULL,
 };
 
 enum{
