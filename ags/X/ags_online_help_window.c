@@ -315,9 +315,17 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 		  (GtkWidget *) online_help_window->pdf_hscrollbar,
 		  0, 1,
 		  1, 1);
-
-  pdf_uri = g_strdup(AGS_ONLINE_HELP_WINDOW_DEFAULT_PDF_URI);
-
+  
+#ifdef AGS_ONLINE_HELP_PDF_URI
+  pdf_uri = g_strdup(AGS_ONLINE_HELP_PDF_URI);
+#else
+  if((pdf_uri = getenv("AGS_ONLINE_HELP_PDF_URI")) != NULL){
+    pdf_uri = g_strdup(pdf_uri);
+  }else{
+    pdf_uri = g_strdup_printf("file://%s%s", DESTDIR, "/doc/gsequencer/pdf/user-manual.pdf");
+  }
+#endif
+  
   error = NULL;
   online_help_window->pdf_document = poppler_document_new_from_file(pdf_uri,
 								    NULL,

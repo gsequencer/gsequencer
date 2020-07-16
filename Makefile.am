@@ -2727,6 +2727,12 @@ html:
 	$(MAKE) -C $(top_srcdir)/docs/reference/libgsequencer
 	cd $(top_srcdir)
 
+pdf:
+	mkdir -p $(top_builddir)/pdf/
+	dblatex --pdf $(top_srcdir)/docs/usersBook.xml -o $(top_builddir)/pdf/user-manual.pdf
+	dblatex --pdf $(top_srcdir)/docs/developersBook.xml -o $(top_builddir)/pdf/developer-manual.pdf
+	dblatex --pdf $(top_srcdir)/docs/oscBook.xml -o $(top_builddir)/pdf/osc-manual.pdf
+
 sphinx:
 	mkdir -p $(top_builddir)/xml/
 	mkdir -p $(top_builddir)/sphinx/
@@ -2888,6 +2894,25 @@ if ENABLE_GTK_DOC
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html/* $(DESTDIR)/$(LIBGSEQUENCER_API_DIR)
 endif
 
+install-pdf-mkdir:
+if AGS_WITH_SINGLE_DOCDIR
+	mkdir -p $(DESTDIR)/$(docdir)/pdf
+else
+	mkdir -p $(DESTDIR)/$(docdir)/pdf
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/pdf
+endif
+
+install-pdf: install-pdf-mkdir
+if AGS_WITH_SINGLE_DOCDIR
+	install -c -p -m 644 $(top_builddir)/pdf/user-manual.pdf $(DESTDIR)/$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/developer-manual.pdf $(DESTDIR)/$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/osc-manual.pdf $(DESTDIR)/$(docdir)/pdf/
+else
+	install -c -p -m 644 $(top_builddir)/pdf/user-manual.pdf $(DESTDIR)/$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/developer-manual.pdf $(DESTDIR)/$(datadir)/doc/libags-audio-doc/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/osc-manual.pdf $(DESTDIR)/$(datadir)/doc/libags-audio-doc/pdf/
+endif
+
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(includedir)/ags/config.h
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
@@ -2929,6 +2954,7 @@ clean-local:
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/tmpl
 	rm -rf $(top_builddir)/html
+	rm -rf $(top_builddir)/pdf
 	rm -rf $(top_builddir)/xml
 	rm -rf $(top_builddir)/sphinx
 	rm -f $(top_builddir)/docs/reference/libags/Makefile
