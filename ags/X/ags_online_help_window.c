@@ -228,8 +228,8 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
     start_filename = g_strdup_printf("file://%s/user-manual/index.html",
 				     DOCDIR);
 #else
-    start_filename = g_strdup_printf("file://%s/html/index.html",
-				     DOCDIR);
+    start_filename = g_strdup_printf("file://%s/doc/gsequencer-doc/html/index.html",
+				     DESTDIR);
 #endif
 #endif
   }
@@ -238,7 +238,7 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   online_help_window->web_view = WEBKIT_WEB_VIEW(webkit_web_view_new());
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(online_help_window->web_view),
-		     FALSE, FALSE,
+		     TRUE, TRUE,
 		     0);
 
   g_signal_connect(GTK_WIDGET(online_help_window->web_view), "load-changed",
