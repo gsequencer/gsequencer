@@ -1,3 +1,10 @@
+ags (3.5.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented poppler support in AgsOnlineHelpWindow
+	* fixed typo in ags_quit_dialog.c
+	* minor improvements
+
 ags (3.5.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

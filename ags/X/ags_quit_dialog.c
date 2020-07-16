@@ -139,7 +139,7 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
 
   quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_SAVE_FILE;
   
-  quit_dialog->question = (GtkLabel *) gtk_label_new(i18n("Do you want to safe before quit?"));
+  quit_dialog->question = (GtkLabel *) gtk_label_new(i18n("Do you want to save before quit?"));
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) quit_dialog->question,
 		     FALSE, FALSE,

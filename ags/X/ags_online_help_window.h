@@ -82,8 +82,10 @@ struct _AgsOnlineHelpWindow
   
   gint max_width;
   gint max_height;
+
+  GtkVScrollbar *pdf_vscrollbar;
+  GtkHScrollbar *pdf_hscrollbar;
   
-  GtkScrolledWindow *pdf_scrolled_window;
   GtkWidget *pdf_drawing_area;
   
 #if defined(AGS_WITH_POPPLER)

@@ -71,7 +71,7 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
 
       list = 
 	start_list = gtk_container_get_children(window->machines);
-
+      
       while(list != NULL){
 	if(AGS_IS_AUDIOREC(list->data)){
 	  quit_dialog->wave_export_machine = g_list_prepend(quit_dialog->wave_export_machine,
@@ -80,6 +80,10 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
 
 	list = list->next;
       }
+
+      quit_dialog->wave_export_machine = g_list_reverse(quit_dialog->wave_export_machine);
+
+      g_list_free(start_list);
     }
 
     if(accept_all ||

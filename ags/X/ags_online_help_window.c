@@ -251,8 +251,10 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 #else
 #if defined(AGS_WITH_POPPLER)
   GtkVBox *vbox;
+  GtkGrid *grid;
 
   GtkAdjustment *vadjustment, *hadjustment;
+  GtkAllocation allocation;
 
   cairo_t *cr;
   
@@ -281,22 +283,39 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   gtk_container_add((GtkContainer *) online_help_window,
 		    (GtkWidget *) vbox);
 
-  vadjustment = g_object_new(GTK_TYPE_ADJUSTMENT,
-			     NULL);
-  hadjustment = g_object_new(GTK_TYPE_ADJUSTMENT,
-			     NULL);
-  
-  online_help_window->pdf_scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(hadjustment,
-											  vadjustment);
+  grid = gtk_grid_new();
   gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) online_help_window->pdf_scrolled_window,
+		     (GtkWidget *) grid,
 		     TRUE, TRUE,
 		     0);
   
   online_help_window->pdf_drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
-  gtk_container_add((GtkContainer *) online_help_window->pdf_scrolled_window,
-		    (GtkWidget *) online_help_window->pdf_drawing_area);
+  gtk_widget_set_vexpand(online_help_window->pdf_drawing_area,
+			 TRUE);
+  gtk_widget_set_hexpand(online_help_window->pdf_drawing_area,
+			 TRUE);
   
+  gtk_grid_attach(grid,
+		  (GtkWidget *) online_help_window->pdf_drawing_area,
+		  0, 0,
+		  1, 1);
+
+  vadjustment = gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.2, 1.0);
+
+  online_help_window->pdf_vscrollbar = gtk_vscrollbar_new(vadjustment);
+  gtk_grid_attach(grid,
+		  (GtkWidget *) online_help_window->pdf_vscrollbar,
+		  1, 0,
+		  1, 1);
+  
+  hadjustment = gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.2, 1.0);
+  
+  online_help_window->pdf_hscrollbar = gtk_hscrollbar_new(hadjustment);
+  gtk_grid_attach(grid,
+		  (GtkWidget *) online_help_window->pdf_hscrollbar,
+		  0, 1,
+		  1, 1);
+
   pdf_uri = g_strdup(AGS_ONLINE_HELP_WINDOW_DEFAULT_PDF_URI);
 
   error = NULL;
@@ -335,6 +354,25 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 
   online_help_window->max_height = max_height;
   online_help_window->max_width = max_width;
+  
+  gtk_widget_get_allocation(online_help_window->pdf_drawing_area,
+			    &allocation);
+
+  gtk_adjustment_configure(vadjustment,
+			   0.0,
+			   0.0,
+			   (double) online_help_window->max_height - (double) allocation.height,
+			   5.0,
+			   15.0,
+			   (double) 10.0);
+
+  gtk_adjustment_configure(hadjustment,
+			   0.0,
+			   0.0,
+			   (double) online_help_window->max_width - (double) allocation.width,
+			   5.0,
+			   15.0,
+			   (double) 100.0);
 #endif
 #endif
 }
@@ -365,6 +403,15 @@ ags_online_help_window_connect(AgsConnectable *connectable)
 #if defined(AGS_WITH_POPPLER)
   g_signal_connect_after(G_OBJECT(online_help_window->pdf_drawing_area), "draw",
 			 G_CALLBACK(ags_online_help_window_pdf_drawing_area_draw_callback), online_help_window);
+
+  g_signal_connect_after(G_OBJECT(online_help_window->pdf_drawing_area), "configure-event",
+			 G_CALLBACK(ags_online_help_window_pdf_drawing_area_configure_callback), online_help_window);
+
+  g_signal_connect_after(G_OBJECT(online_help_window->pdf_vscrollbar), "value-changed",
+			 G_CALLBACK(ags_online_help_window_pdf_vscrollbar_value_changed_callback), online_help_window);
+
+  g_signal_connect_after(G_OBJECT(online_help_window->pdf_hscrollbar), "value-changed",
+			 G_CALLBACK(ags_online_help_window_pdf_hscrollbar_value_changed_callback), online_help_window);
 #endif  
 #endif  
 }
@@ -405,6 +452,21 @@ ags_online_help_window_disconnect(AgsConnectable *connectable)
   g_object_disconnect(G_OBJECT(online_help_window->pdf_drawing_area),
 		      "any_signal::draw",
 		      G_CALLBACK(ags_online_help_window_pdf_drawing_area_draw_callback),
+		      online_help_window,
+		      "any_signal::configure-event",
+		      G_CALLBACK(ags_online_help_window_pdf_drawing_area_configure_callback),
+		      online_help_window,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(online_help_window->pdf_vscrollbar),
+		      "value-changed",
+		      G_CALLBACK(ags_online_help_window_pdf_vscrollbar_value_changed_callback),
+		      online_help_window,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(online_help_window->pdf_hscrollbar),
+		      "value-changed",
+		      G_CALLBACK(ags_online_help_window_pdf_hscrollbar_value_changed_callback),
 		      online_help_window,
 		      NULL);
 #endif  
