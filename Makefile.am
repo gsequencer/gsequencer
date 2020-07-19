@@ -2852,11 +2852,13 @@ endif
 install-html-mkdir:
 if AGS_WITH_SINGLE_DOCDIR
 	mkdir -p $(DESTDIR)/$(docdir)/images
+	mkdir -p $(DESTDIR)/$(docdir)/images/adwaita
 	mkdir -p $(DESTDIR)/$(docdir)/user-manual
 	mkdir -p $(DESTDIR)/$(docdir)/developer-manual
 	mkdir -p $(DESTDIR)/$(docdir)/osc-manual
 else
 	mkdir -p $(DESTDIR)/$(docdir)/images
+	mkdir -p $(DESTDIR)/$(docdir)/images/adwaita
 	mkdir -p $(DESTDIR)/$(docdir)/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html
