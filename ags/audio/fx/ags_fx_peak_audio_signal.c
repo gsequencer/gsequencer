@@ -204,6 +204,22 @@ ags_fx_peak_audio_signal_run_inter(AgsRecall *recall)
      source->stream_current == NULL){
     ags_recall_done(recall);
   }
+
+  if(fx_peak_channel != NULL){
+    g_object_unref(fx_peak_channel);
+  }
+
+  if(fx_peak_channel_processor != NULL){
+    g_object_unref(fx_peak_channel_processor);
+  }
+
+  if(fx_peak_recycling != NULL){
+    g_object_unref(fx_peak_recycling);
+  }
+
+  if(source != NULL){
+    g_object_unref(source);
+  }
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_peak_audio_signal_parent_class)->run_inter(recall);

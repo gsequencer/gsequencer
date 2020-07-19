@@ -1,3 +1,9 @@
+ags (3.5.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing call to AgsRecall::done() in ags_fx_notation_audio_signal.c
+	* fixed AgsFMSyncsynth missing restore of some fields
+
 ags (3.5.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
