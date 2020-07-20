@@ -135,6 +135,7 @@ void ags_simple_file_read_equalizer10_launch(AgsSimpleFile *simple_file, xmlNode
 void ags_simple_file_read_drum_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsDrum *drum);
 void ags_simple_file_read_matrix_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsMatrix *matrix);
 void ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsSyncsynth *syncsynth);
+void ags_simple_file_read_fm_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFMSyncsynth *fm_syncsynth);
 void ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsPitchSampler *pitch_sampler);
 #ifdef AGS_WITH_LIBINSTPATCH
 void ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFFPlayer *ffplayer);
@@ -3173,6 +3174,74 @@ ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node,
 }
 
 void
+ags_simple_file_read_fm_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFMSyncsynth *fm_syncsynth)
+{
+  GList *list, *list_start;
+  GList *child_start;
+
+  xmlChar *str;
+
+  gdouble tmp0, tmp1;
+  gdouble loop_upper;
+    
+  /* base note */
+  str = xmlGetProp(node,
+		   "base-note");
+
+  if(str != NULL){
+    gdouble base_note;
+
+    base_note = g_ascii_strtod(str,
+			       NULL);
+
+    if(base_note > AGS_FM_SYNCSYNTH_BASE_NOTE_MIN &&
+       base_note < AGS_FM_SYNCSYNTH_BASE_NOTE_MAX){
+      gtk_spin_button_set_value(fm_syncsynth->lower,
+				(gdouble) base_note);
+    }
+      
+    xmlFree(str);
+  }
+
+  /* set range of loop start and loop end */
+  ags_fm_syncsynth_reset_loop(fm_syncsynth);
+    
+  /* audio loop start */
+  str = xmlGetProp(node,
+		   "audio-loop-start");
+
+  if(str != NULL){
+    guint audio_loop_start;
+
+    audio_loop_start = g_ascii_strtoull(str,
+					NULL,
+					10);
+      
+    gtk_spin_button_set_value(fm_syncsynth->loop_start,
+			      (gdouble) audio_loop_start);
+      
+    xmlFree(str);
+  }
+
+  /* audio loop end */
+  str = xmlGetProp(node,
+		   "audio-loop-end");
+
+  if(str != NULL){
+    guint audio_loop_end;
+
+    audio_loop_end = g_ascii_strtoull(str,
+				      NULL,
+				      10);
+      
+    gtk_spin_button_set_value(fm_syncsynth->loop_end,
+			      (gdouble) audio_loop_end);
+      
+    xmlFree(str);
+  }
+}
+
+void
 ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsPitchSampler *pitch_sampler)
 {
   GtkTreeModel *model;
@@ -4005,6 +4074,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_simple_file_read_synth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsSynth *) machine);
   }else if(AGS_IS_SYNCSYNTH(machine)){
     ags_simple_file_read_syncsynth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsSyncsynth *) machine);
+  }else if(AGS_IS_FM_SYNCSYNTH(machine)){
+    ags_simple_file_read_fm_syncsynth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsFMSyncsynth *) machine);
   }else if(AGS_IS_PITCH_SAMPLER(machine)){
     ags_simple_file_read_pitch_sampler_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsPitchSampler *) machine);
 #ifdef AGS_WITH_LIBINSTPATCH

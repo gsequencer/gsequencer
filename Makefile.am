@@ -466,8 +466,24 @@ userdocimages = \
 	$(top_srcdir)/docs/images/ags-wave-toolbar.png \
 	$(top_srcdir)/docs/images/ags_wave_window_audiorec.png
 
+userdocadwaitaimages = \
+	$(top_srcdir)/docs/images/adwaita/accessories-text-editor.png \
+	$(top_srcdir)/docs/images/adwaita/edit-clear-all.png \
+	$(top_srcdir)/docs/images/adwaita/edit-copy.png \
+	$(top_srcdir)/docs/images/adwaita/edit-cut.png \
+	$(top_srcdir)/docs/images/adwaita/edit-paste.png \
+	$(top_srcdir)/docs/images/adwaita/edit-select-all.png \
+	$(top_srcdir)/docs/images/adwaita/go-jump.png \
+	$(top_srcdir)/docs/images/adwaita/media-playback-start.png \
+	$(top_srcdir)/docs/images/adwaita/media-playback-stop.png \
+	$(top_srcdir)/docs/images/adwaita/media-seek-backward.png \
+	$(top_srcdir)/docs/images/adwaita/media-seek-forward.png \
+	$(top_srcdir)/docs/images/adwaita/media-skip-backward.png \
+	$(top_srcdir)/docs/images/adwaita/media-skip-forward.png \
+	$(top_srcdir)/docs/images/adwaita/object-flip-vertical.png \
+	$(top_srcdir)/docs/images/adwaita/system-run.png
 
-EXTRA_DIST += $(manpages) $(userdoc) $(userdocimages) $(devdoc) $(devdocimages) $(devdoclistings) $(oscdoc)
+EXTRA_DIST += $(manpages) $(userdoc) $(userdocimages) $(userdocadwaitaimages) $(devdoc) $(devdocimages) $(devdoclistings) $(oscdoc)
 
 EXTRA_DIST += \
 	$(top_srcdir)/ags/server/security/ags_authentication.dtd \
@@ -2727,6 +2743,12 @@ html:
 	$(MAKE) -C $(top_srcdir)/docs/reference/libgsequencer
 	cd $(top_srcdir)
 
+pdf:
+	mkdir -p $(top_builddir)/pdf/
+	dblatex --pdf $(top_srcdir)/docs/usersBook.xml -o $(top_builddir)/pdf/user-manual.pdf
+	dblatex --pdf $(top_srcdir)/docs/developersBook.xml -o $(top_builddir)/pdf/developer-manual.pdf
+	dblatex --pdf $(top_srcdir)/docs/oscBook.xml -o $(top_builddir)/pdf/osc-manual.pdf
+
 sphinx:
 	mkdir -p $(top_builddir)/xml/
 	mkdir -p $(top_builddir)/sphinx/
@@ -2830,11 +2852,13 @@ endif
 install-html-mkdir:
 if AGS_WITH_SINGLE_DOCDIR
 	mkdir -p $(DESTDIR)/$(docdir)/images
+	mkdir -p $(DESTDIR)/$(docdir)/images/adwaita
 	mkdir -p $(DESTDIR)/$(docdir)/user-manual
 	mkdir -p $(DESTDIR)/$(docdir)/developer-manual
 	mkdir -p $(DESTDIR)/$(docdir)/osc-manual
 else
 	mkdir -p $(DESTDIR)/$(docdir)/images
+	mkdir -p $(DESTDIR)/$(docdir)/images/adwaita
 	mkdir -p $(DESTDIR)/$(docdir)/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html
@@ -2870,12 +2894,14 @@ endif
 install-html: install-html-mkdir install-html-links
 if AGS_WITH_SINGLE_DOCDIR
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
+	install -c -p -m 644 $(userdocadwaitaimages) $(DESTDIR)/$(docdir)/images/adwaita/
 	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(docdir)/images/
 	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/user-manual/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(docdir)/developer-manual/
 	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)/$(docdir)/osc-manual/
 else
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
+	install -c -p -m 644 $(userdocadwaitaimages) $(DESTDIR)/$(docdir)/images/adwaita/
 	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
 	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/html/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
@@ -2886,6 +2912,25 @@ if ENABLE_GTK_DOC
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/libags-audio-html/* $(DESTDIR)/$(LIBAGS_AUDIO_API_DIR)
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/libags-gui-html/* $(DESTDIR)/$(LIBAGS_GUI_API_DIR)
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html/* $(DESTDIR)/$(LIBGSEQUENCER_API_DIR)
+endif
+
+install-pdf-mkdir:
+if AGS_WITH_SINGLE_DOCDIR
+	mkdir -p $(DESTDIR)/$(docdir)/pdf
+else
+	mkdir -p $(DESTDIR)/$(docdir)/pdf
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/pdf
+endif
+
+install-pdf: install-pdf-mkdir
+if AGS_WITH_SINGLE_DOCDIR
+	install -c -p -m 644 $(top_builddir)/pdf/user-manual.pdf $(DESTDIR)/$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/developer-manual.pdf $(DESTDIR)/$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/osc-manual.pdf $(DESTDIR)/$(docdir)/pdf/
+else
+	install -c -p -m 644 $(top_builddir)/pdf/user-manual.pdf $(DESTDIR)/$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/developer-manual.pdf $(DESTDIR)/$(datadir)/doc/libags-audio-doc/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/osc-manual.pdf $(DESTDIR)/$(datadir)/doc/libags-audio-doc/pdf/
 endif
 
 uninstall-hook:
@@ -2929,6 +2974,7 @@ clean-local:
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/tmpl
 	rm -rf $(top_builddir)/html
+	rm -rf $(top_builddir)/pdf
 	rm -rf $(top_builddir)/xml
 	rm -rf $(top_builddir)/sphinx
 	rm -f $(top_builddir)/docs/reference/libags/Makefile

@@ -1,3 +1,36 @@
+ags (3.5.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing $(docdir)/images/adwaita
+
+ags (3.5.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing call to AgsRecall::done() in ags_fx_notation_audio_signal.c
+	* fixed AgsFMSyncsynth missing restore of some fields
+
+ags (3.5.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing Adwaita images in user's handbook
+
+ags (3.5.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed pointer arithmetic type mismatch
+
+ags (3.5.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+
+ags (3.5.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented poppler PDF support of AgsOnlineHelpWindow
+	* fixed typo in ags_quit_dialog.c
+	* added pdf and install-pdf target to Makefile.am
+	* minor improvements
+
 ags (3.5.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

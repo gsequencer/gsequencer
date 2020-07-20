@@ -58,6 +58,9 @@
 
 #include <stdlib.h>
 
+#define _GNU_SOURCE
+#include <locale.h>
+
 #include <ags/i18n.h>
 
 void ags_window_class_init(AgsWindowClass *window);
@@ -95,6 +98,16 @@ enum{
 
 static gpointer ags_window_parent_class = NULL;
 GHashTable *ags_window_load_file = NULL;
+
+static GMutex locale_mutex;
+
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+static char *locale_env;
+#else
+static locale_t c_locale;
+#endif
+
+static gboolean locale_initialized = FALSE;
 
 GType
 ags_window_get_type()
@@ -724,9 +737,34 @@ ags_window_load_file_timeout(AgsWindow *window)
 
       GError *error;
 
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+#else
+      locale_t current;
+#endif
+
       if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
 	return(TRUE);
       }
+
+      g_mutex_lock(&locale_mutex);
+
+      if(!locale_initialized){
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+	locale_env = getenv("LC_ALL");
+#else
+	c_locale = newlocale(LC_ALL_MASK, "C", (locale_t) 0);
+#endif
+    
+	locale_initialized = TRUE;
+      }
+
+      g_mutex_unlock(&locale_mutex);
+
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+      setlocale(LC_ALL, "C");
+#else
+      current = uselocale(c_locale);
+#endif
       
       simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
 						   "filename", window->filename,
@@ -754,6 +792,12 @@ ags_window_load_file_timeout(AgsWindow *window)
 			   str);
       
       window->filename = NULL;
+
+#if defined(AGS_OSXAPI) || defined(AGS_W32API)
+      setlocale(LC_ALL, locale_env);
+#else
+      uselocale(current);
+#endif
     }
 
     return(TRUE);

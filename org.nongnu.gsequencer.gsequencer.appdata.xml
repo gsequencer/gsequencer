@@ -35,6 +35,31 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.5.5" date="2020-07-19">
+      <description>
+	<p>Fixed memory-leak causing performance impact.</p>
+	<p>Fixed missing restore of some AgsFMSyncsynth controls.</p>
+      </description>
+    </release>
+
+    <release version="3.5.4" date="2020-07-18">
+      <description>
+	<p>Fixed missing icons in online help.</p>
+      </description>
+    </release>
+
+    <release version="3.5.2" date="2020-07-16">
+      <description>
+	<p>Fixed missing expand of WebView of online help.</p>
+      </description>
+    </release>
+    
+    <release version="3.5.1" date="2020-07-16">
+      <description>
+	<p>Minor improvements.</p>
+      </description>
+    </release>
+
     <release version="3.5.0" date="2020-07-15">
       <description>
 	<p>Implemented improved AgsQuitDialog.</p>

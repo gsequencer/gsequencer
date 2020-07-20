@@ -49,9 +49,6 @@ G_BEGIN_DECLS
 #define AGS_IS_ONLINE_HELP_WINDOW_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_ONLINE_HELP_WINDOW))
 #define AGS_ONLINE_HELP_WINDOW_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ONLINE_HELP_WINDOW, AgsOnlineHelpWindowClass))
 
-#define AGS_ONLINE_HELP_WINDOW_DEFAULT_PDF_URI "file:///usr/share/doc/gsequencer/user-manual.pdf"
-#define AGS_ONLINE_HELP_WINDOW_DEFAULT_IMAGE_DPI (150)
-
 typedef struct _AgsOnlineHelpWindow AgsOnlineHelpWindow;
 typedef struct _AgsOnlineHelpWindowClass AgsOnlineHelpWindowClass;
 
@@ -82,8 +79,10 @@ struct _AgsOnlineHelpWindow
   
   gint max_width;
   gint max_height;
+
+  GtkVScrollbar *pdf_vscrollbar;
+  GtkHScrollbar *pdf_hscrollbar;
   
-  GtkScrolledWindow *pdf_scrolled_window;
   GtkWidget *pdf_drawing_area;
   
 #if defined(AGS_WITH_POPPLER)

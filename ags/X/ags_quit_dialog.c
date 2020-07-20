@@ -22,6 +22,12 @@
 
 #include <ags/X/machine/ags_audiorec.h>
 
+#include <glib.h>
+#include <glib/gstdio.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include <stdlib.h>
 
 #include <ags/i18n.h>
@@ -139,7 +145,7 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
 
   quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_SAVE_FILE;
   
-  quit_dialog->question = (GtkLabel *) gtk_label_new(i18n("Do you want to safe before quit?"));
+  quit_dialog->question = (GtkLabel *) gtk_label_new(i18n("Do you want to save before quit?"));
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) quit_dialog->question,
 		     FALSE, FALSE,
@@ -260,6 +266,14 @@ ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
   soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   /* get some fields */
+  start_wave = NULL;
+  
+  audio_channels = 1;
+
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  
   g_object_get(machine->audio,
 	       "wave", &start_wave,
 	       "audio-channels", &audio_channels,
@@ -316,11 +330,11 @@ ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
 		   "x", &x,
 		   NULL);
 
-      end_frame = x;
+      end_frame = x + buffer_size;
     }else{
       x = ags_timestamp_get_ags_offset(AGS_WAVE(end_wave->data)->timestamp);
 
-      end_frame = x;
+      end_frame = x + buffer_size;
     }
   }
   

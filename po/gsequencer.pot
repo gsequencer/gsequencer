@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.5.0\n"
+"Project-Id-Version: gsequencer 3.5.6\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-07-15 21:07+0200\n"
+"POT-Creation-Date: 2020-07-19 18:32+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -102,7 +102,7 @@ msgid "Save as"
 msgstr ""
 
 #: ags/X/ags_context_menu.c:144 ags/X/ags_export_window.c:342
-#: ags/X/ags_machine.c:3381 ags/X/ags_menu_bar.c:141
+#: ags/X/ags_machine.c:3383 ags/X/ags_menu_bar.c:141
 msgid "export"
 msgstr ""
 
@@ -190,7 +190,7 @@ msgstr ""
 msgid "Preferences"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:249 ags/X/ags_machine.c:3422
+#: ags/X/ags_context_menu.c:249 ags/X/ags_machine.c:3424
 #: ags/X/ags_menu_bar.c:246
 msgid "import"
 msgstr ""
@@ -392,102 +392,102 @@ msgstr ""
 msgid "Ports"
 msgstr ""
 
-#: ags/X/ags_machine.c:2663 ags/X/machine/ags_audiorec_callbacks.c:64
+#: ags/X/ags_machine.c:2665 ags/X/machine/ags_audiorec_callbacks.c:64
 #: ags/X/machine/ags_pitch_sampler_callbacks.c:65
 msgid "Open audio files"
 msgstr ""
 
-#: ags/X/ags_machine.c:2671
+#: ags/X/ags_machine.c:2673
 msgid "open in new channel"
 msgstr ""
 
-#: ags/X/ags_machine.c:2676
+#: ags/X/ags_machine.c:2678
 msgid "overwrite existing links"
 msgstr ""
 
-#: ags/X/ags_machine.c:3187 ags/X/editor/ags_pattern_envelope.c:656
+#: ags/X/ags_machine.c:3189 ags/X/editor/ags_pattern_envelope.c:656
 msgid "move up"
 msgstr ""
 
-#: ags/X/ags_machine.c:3190 ags/X/editor/ags_pattern_envelope.c:663
+#: ags/X/ags_machine.c:3192 ags/X/editor/ags_pattern_envelope.c:663
 msgid "move down"
 msgstr ""
 
-#: ags/X/ags_machine.c:3193
+#: ags/X/ags_machine.c:3195
 msgid "hide"
 msgstr ""
 
-#: ags/X/ags_machine.c:3196
+#: ags/X/ags_machine.c:3198
 msgid "show"
 msgstr ""
 
-#: ags/X/ags_machine.c:3199
+#: ags/X/ags_machine.c:3201
 msgid "destroy"
 msgstr ""
 
-#: ags/X/ags_machine.c:3202 ags/X/ags_machine_callbacks.c:256
+#: ags/X/ags_machine.c:3204 ags/X/ags_machine_callbacks.c:256
 msgid "rename"
 msgstr ""
 
-#: ags/X/ags_machine.c:3205 ags/X/ags_machine_callbacks.c:320
+#: ags/X/ags_machine.c:3207 ags/X/ags_machine_callbacks.c:320
 msgid "rename audio"
 msgstr ""
 
-#: ags/X/ags_machine.c:3208 ags/X/ags_machine_callbacks.c:403
+#: ags/X/ags_machine.c:3210 ags/X/ags_machine_callbacks.c:403
 msgid "reposition audio"
 msgstr ""
 
-#: ags/X/ags_machine.c:3211 ags/X/ags_machine_editor.c:203
+#: ags/X/ags_machine.c:3213 ags/X/ags_machine_editor.c:203
 msgid "properties"
 msgstr ""
 
-#: ags/X/ags_machine.c:3214
+#: ags/X/ags_machine.c:3216
 msgid "sticky controls"
 msgstr ""
 
-#: ags/X/ags_machine.c:3280 ags/X/editor/ags_automation_meta.c:590
+#: ags/X/ags_machine.c:3282 ags/X/editor/ags_automation_meta.c:590
 #: ags/X/editor/ags_notation_meta.c:486 ags/X/editor/ags_pattern_envelope.c:225
 #: ags/X/machine/ags_drum_input_pad.c:159
 msgid "edit"
 msgstr ""
 
-#: ags/X/ags_machine.c:3291
+#: ags/X/ags_machine.c:3293
 msgid "copy pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:3301
+#: ags/X/ags_machine.c:3303
 msgid "paste pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:3311
+#: ags/X/ags_machine.c:3313
 msgid "envelope"
 msgstr ""
 
-#: ags/X/ags_machine.c:3340
+#: ags/X/ags_machine.c:3342
 msgid "connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:3351
+#: ags/X/ags_machine.c:3353
 msgid "audio connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:3361
+#: ags/X/ags_machine.c:3363
 msgid "MIDI dialog"
 msgstr ""
 
-#: ags/X/ags_machine.c:3392
+#: ags/X/ags_machine.c:3394
 msgid "MIDI export"
 msgstr ""
 
-#: ags/X/ags_machine.c:3402
+#: ags/X/ags_machine.c:3404
 msgid "Audio export"
 msgstr ""
 
-#: ags/X/ags_machine.c:3433
+#: ags/X/ags_machine.c:3435
 msgid "MIDI import"
 msgstr ""
 
-#: ags/X/ags_machine.c:3443
+#: ags/X/ags_machine.c:3445
 msgid "Audio import"
 msgstr ""
 
@@ -733,27 +733,27 @@ msgstr ""
 msgid "Lv2"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3354
+#: ags/X/ags_xorg_application_context.c:3388
 #: ags/audio/ags_audio_application_context.c:2141
 #: ags/audio/task/ags_apply_sound_config.c:894
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3364
+#: ags/X/ags_xorg_application_context.c:3398
 #: ags/audio/ags_audio_application_context.c:2151
 #: ags/audio/task/ags_apply_sound_config.c:904
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3606
+#: ags/X/ags_xorg_application_context.c:3640
 #: ags/audio/ags_audio_application_context.c:2393
 #: ags/audio/task/ags_apply_sound_config.c:1144
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3616
+#: ags/X/ags_xorg_application_context.c:3650
 #: ags/audio/ags_audio_application_context.c:2403
 #: ags/audio/task/ags_apply_sound_config.c:1154
 msgid "unknown sequencer backend - NULL"
@@ -1473,7 +1473,7 @@ msgstr ""
 msgid "bank"
 msgstr ""
 
-#: ags/X/ags_online_help_window.c:129 ags/X/ags_online_help_window.c:268
+#: ags/X/ags_online_help_window.c:129 ags/X/ags_online_help_window.c:270
 msgid "online help"
 msgstr ""
 
@@ -1481,14 +1481,14 @@ msgstr ""
 msgid "Place"
 msgstr ""
 
-#: ags/X/ags_quit_dialog.c:134
+#: ags/X/ags_quit_dialog.c:140
 msgid "accept all"
 msgstr ""
 
-#: ags/X/ags_quit_dialog.c:142
-msgid "Do you want to safe before quit?"
+#: ags/X/ags_quit_dialog.c:148
+msgid "Do you want to save before quit?"
 msgstr ""
 
-#: ags/X/ags_quit_dialog_callbacks.c:37
+#: ags/X/ags_quit_dialog_callbacks.c:51
 msgid "Do you want to fast export quit?"
 msgstr ""

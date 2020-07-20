@@ -43,6 +43,16 @@ gboolean ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_dr
 							       cairo_t *cr,
 							       AgsOnlineHelpWindow *online_help_window);
 
+gboolean ags_online_help_window_pdf_drawing_area_configure_callback(GtkWidget *pdf_drawing_area,
+								    GdkEvent  *event,
+								    AgsOnlineHelpWindow *online_help_window);
+
+void ags_online_help_window_pdf_vscrollbar_value_changed_callback(GtkRange *vscrollbar,
+								  AgsOnlineHelpWindow *online_help_window);
+
+void ags_online_help_window_pdf_hscrollbar_value_changed_callback(GtkRange *hscrollbar,
+								  AgsOnlineHelpWindow *online_help_window);
+
 void ags_online_help_window_home_callback(GtkWidget *button,
 					  AgsOnlineHelpWindow *online_help_window);
 

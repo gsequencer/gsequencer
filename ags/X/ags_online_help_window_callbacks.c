@@ -50,34 +50,19 @@ ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_are
   cairo_surface_t *pdf_surface;
 
   gdouble vvalue, hvalue;
+  gdouble voffset, hoffset;
   gint num_pages, i;
   gdouble width, height;
   gint current_width, current_height;
 
-  vadjustment = gtk_scrolled_window_get_vadjustment(online_help_window->pdf_scrolled_window);
-  hadjustment = gtk_scrolled_window_get_hadjustment(online_help_window->pdf_scrolled_window);
+  vadjustment = gtk_range_get_adjustment(online_help_window->pdf_vscrollbar);
+  hadjustment = gtk_range_get_adjustment(online_help_window->pdf_hscrollbar);
 
   vvalue = gtk_adjustment_get_value(vadjustment);
   hvalue = gtk_adjustment_get_value(hadjustment);
   
   gtk_widget_get_allocation(online_help_window->pdf_drawing_area,
 			    &allocation);
-
-  gtk_adjustment_configure(vadjustment,
-			   vvalue,
-			   0.0,
-			   online_help_window->max_height - (double) allocation.height,
-			   10.0,
-			   100.0,
-			   (double) allocation.height);
-
-  gtk_adjustment_configure(hadjustment,
-			   hvalue,
-			   0.0,
-			   online_help_window->max_width - (double) allocation.width,
-			   10.0,
-			   100.0,
-			   (double) allocation.width);
   
   num_pages = poppler_document_get_n_pages(online_help_window->pdf_document);
   
@@ -90,6 +75,8 @@ ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_are
 		  (double) allocation.width, (double) allocation.height);
 
   cairo_fill(cr);
+
+  voffset = 0.0;
   
   for(i = 0; i < num_pages; i++){
     PopplerPage *page;
@@ -113,18 +100,21 @@ ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_are
 					       height);
   
       pdf_cr = cairo_create(pdf_surface);
-    
+
+      hoffset = (-1.0 * hvalue);
+      voffset = (current_height - vvalue);
+            
       cairo_save(cr);
-    
+
       poppler_page_render(page,
 			  pdf_cr);
 
       cairo_restore(cr);
-
+    
       cairo_set_source_surface(cr,
 			       pdf_surface,
-			       gtk_adjustment_get_value(hadjustment),
-			       gtk_adjustment_get_value(vadjustment));
+			       hoffset,
+			       voffset);
       cairo_paint(cr);
     
       cairo_destroy(pdf_cr);
@@ -134,13 +124,69 @@ ags_online_help_window_pdf_drawing_area_draw_callback(GtkWidget *pdf_drawing_are
     }
 
     current_height += height;
-    
+
     g_object_unref(page);
-  }
-  
+
+    if(current_height > vvalue + allocation.height){
+      break;
+    }
+  }  
 #endif
 
   return(FALSE);
+}
+
+gboolean
+ags_online_help_window_pdf_drawing_area_configure_callback(GtkWidget *pdf_drawing_area,
+							   GdkEvent  *event,
+							   AgsOnlineHelpWindow *online_help_window)
+{
+#if defined(AGS_WITH_POPPLER)  
+  GtkAdjustment *vadjustment, *hadjustment;
+  GtkAllocation allocation;
+
+  vadjustment = gtk_range_get_adjustment(online_help_window->pdf_vscrollbar);
+  hadjustment = gtk_range_get_adjustment(online_help_window->pdf_hscrollbar);
+
+  gtk_widget_get_allocation(online_help_window->pdf_drawing_area,
+			    &allocation);
+
+  gtk_adjustment_configure(vadjustment,
+			   gtk_adjustment_get_value(vadjustment),
+			   0.0,
+			   online_help_window->max_height - (double) allocation.height,
+			   5.0,
+			   15.0,
+			   (double) 10.0);
+
+  gtk_adjustment_configure(hadjustment,
+			   gtk_adjustment_get_value(hadjustment),
+			   0.0,
+			   online_help_window->max_width - (double) allocation.width,
+			   5.0,
+			   15.0,
+			   (double) 10.0);
+#endif
+  
+  return(FALSE);
+}
+
+void
+ags_online_help_window_pdf_vscrollbar_value_changed_callback(GtkRange *vscrollbar,
+							     AgsOnlineHelpWindow *online_help_window)
+{
+#if defined(AGS_WITH_POPPLER)
+  gtk_widget_queue_draw(online_help_window->pdf_drawing_area);
+#endif  
+}
+
+void
+ags_online_help_window_pdf_hscrollbar_value_changed_callback(GtkRange *hscrollbar,
+							     AgsOnlineHelpWindow *online_help_window)
+{
+#if defined(AGS_WITH_POPPLER)  
+  gtk_widget_queue_draw(online_help_window->pdf_drawing_area);
+#endif
 }
 
 void
