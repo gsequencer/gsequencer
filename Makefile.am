@@ -464,7 +464,9 @@ userdocimages = \
 	$(top_srcdir)/docs/images/ags_select_buffers_dialog.png \
 	$(top_srcdir)/docs/images/ags_ramp_accelerations_dialog.png \
 	$(top_srcdir)/docs/images/ags-wave-toolbar.png \
-	$(top_srcdir)/docs/images/ags_wave_window_audiorec.png \
+	$(top_srcdir)/docs/images/ags_wave_window_audiorec.png
+
+userdocadwaitaimages = \
 	$(top_srcdir)/docs/images/adwaita/accessories-text-editor.png \
 	$(top_srcdir)/docs/images/adwaita/edit-clear-all.png \
 	$(top_srcdir)/docs/images/adwaita/edit-copy.png \
@@ -481,7 +483,7 @@ userdocimages = \
 	$(top_srcdir)/docs/images/adwaita/object-flip-vertical.png \
 	$(top_srcdir)/docs/images/adwaita/system-run.png
 
-EXTRA_DIST += $(manpages) $(userdoc) $(userdocimages) $(devdoc) $(devdocimages) $(devdoclistings) $(oscdoc)
+EXTRA_DIST += $(manpages) $(userdoc) $(userdocimages) $(userdocadwaitaimages) $(devdoc) $(devdocimages) $(devdoclistings) $(oscdoc)
 
 EXTRA_DIST += \
 	$(top_srcdir)/ags/server/security/ags_authentication.dtd \
@@ -2850,11 +2852,13 @@ endif
 install-html-mkdir:
 if AGS_WITH_SINGLE_DOCDIR
 	mkdir -p $(DESTDIR)/$(docdir)/images
+	mkdir -p $(DESTDIR)/$(docdir)/images/adwaita
 	mkdir -p $(DESTDIR)/$(docdir)/user-manual
 	mkdir -p $(DESTDIR)/$(docdir)/developer-manual
 	mkdir -p $(DESTDIR)/$(docdir)/osc-manual
 else
 	mkdir -p $(DESTDIR)/$(docdir)/images
+	mkdir -p $(DESTDIR)/$(docdir)/images/adwaita
 	mkdir -p $(DESTDIR)/$(docdir)/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html
@@ -2890,12 +2894,14 @@ endif
 install-html: install-html-mkdir install-html-links
 if AGS_WITH_SINGLE_DOCDIR
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
+	install -c -p -m 644 $(userdocadwaitaimages) $(DESTDIR)/$(docdir)/images/adwaita/
 	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(docdir)/images/
 	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/user-manual/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(docdir)/developer-manual/
 	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)/$(docdir)/osc-manual/
 else
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
+	install -c -p -m 644 $(userdocadwaitaimages) $(DESTDIR)/$(docdir)/images/adwaita/
 	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
 	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/html/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/

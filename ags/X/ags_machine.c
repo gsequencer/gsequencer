@@ -1061,6 +1061,8 @@ ags_machine_set_property(GObject *gobject,
       g_object_set(machine->menu_tool_button,
 		   "label", str,
 		   NULL);
+
+      g_free(str);
     }
     break;
   default:

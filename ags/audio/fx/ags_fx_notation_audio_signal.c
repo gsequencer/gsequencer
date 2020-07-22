@@ -174,6 +174,7 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   GValue value = {0,};
   
   GRecMutex *fx_notation_audio_processor_mutex;
+  GRecMutex *source_stream_mutex;
 
   if(!ags_recall_check_sound_scope(recall, AGS_SOUND_SCOPE_NOTATION)){
     ags_recall_done(recall);
@@ -195,6 +196,8 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 	       "source", &source,
 	       "parent", &fx_notation_recycling,
 	       NULL);
+
+  source_stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
 
   g_object_get(fx_notation_recycling,
 	       "parent", &fx_notation_channel_processor,
@@ -318,6 +321,11 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
     }
 
     note = note->next;
+  }
+
+  if(source == NULL ||
+     source->stream_current == NULL){
+    ags_recall_done(recall);
   }
   
   if(source != NULL){

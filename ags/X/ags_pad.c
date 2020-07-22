@@ -973,7 +973,7 @@ ags_pad_map_recall(AgsPad *pad, guint output_pad_start)
 GList*
 ags_pad_real_find_port(AgsPad *pad)
 {
-  GList *line;
+  GList *start_line, *line;
   
   GList *port, *tmp_port;
 
@@ -981,7 +981,8 @@ ags_pad_real_find_port(AgsPad *pad)
 
   /* find output ports */
   if(pad->expander_set != NULL){
-    line = gtk_container_get_children((GtkContainer *) pad->expander_set);
+    line =
+      start_line = gtk_container_get_children((GtkContainer *) pad->expander_set);
 
     while(line != NULL){
       tmp_port = ags_line_find_port(AGS_LINE(line->data));
@@ -995,6 +996,8 @@ ags_pad_real_find_port(AgsPad *pad)
 
       line = line->next;
     }
+
+    g_list_free(start_line);
   }
 
   return(port);
