@@ -44,4 +44,6 @@
 
 #undef AGS_WITH_POPPLER
 
+#undef AGS_WITH_GSTREAMER
+
 #endif /*__AGS_API_CONFIG_H__*/
