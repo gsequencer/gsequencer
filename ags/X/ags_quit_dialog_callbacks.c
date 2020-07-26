@@ -48,7 +48,7 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
 {
   AgsQuitDialog *quit_dialog;
 
-  gchar *fast_export_question = i18n("Do you want to fast export quit?");
+  gchar *fast_export_question = i18n("Do you want to fast export before quit?");
 
   quit_dialog = AGS_QUIT_DIALOG(dialog);
 

@@ -1,3 +1,8 @@
+ags (3.5.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio fast export
+
 ags (3.5.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

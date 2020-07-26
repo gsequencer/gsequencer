@@ -25,6 +25,12 @@
 
 #include <string.h>
 
+#include <glib.h>
+#include <glib/gstdio.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include <ags/i18n.h>
 
 void ags_audiorec_class_init(AgsAudiorecClass *audiorec);
@@ -818,6 +824,161 @@ ags_audiorec_open_filename(AgsAudiorec *audiorec,
 				      TRUE);
 
   ags_wave_loader_start(wave_loader);
+}
+
+/**
+ * ags_audiorec_fast_export:
+ * @audiorec: the #AgsAudiorec
+ * @filename: the filename
+ * @start_frame: the start frame
+ * @end_frame: the end frame
+ * 
+ * Fast export @audiorec.
+ * 
+ * Since: 3.5.7
+ */
+void
+ags_audiorec_fast_export(AgsAudiorec *audiorec,
+			 gchar *filename,
+			 guint64 start_frame, guint64 end_frame)
+{
+  AgsBuffer *buffer;
+  AgsAudioFile *audio_file;
+
+  AgsTimestamp *timestamp;
+
+  AgsApplicationContext *application_context;
+  
+  GObject *soundcard;
+
+  GList *start_wave, *end_wave, *wave;
+  
+  void *data;
+  
+  guint default_offset;
+  guint destination_offset, source_offset;
+  guint audio_channels;
+  guint copy_mode;
+  guint samplerate;
+  guint format;
+  guint source_format;
+  guint buffer_size;
+  guint i, j;
+
+  if(!AGS_IS_AUDIOREC(audiorec) ||
+     filename == NULL){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+
+  soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  /* get some fields */
+  start_wave = NULL;
+  
+  audio_channels = 1;
+
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  
+  g_object_get(AGS_MACHINE(audiorec)->audio,
+	       "wave", &start_wave,
+	       "audio-channels", &audio_channels,
+	       "samplerate", &samplerate,
+	       "format", &format,
+	       "buffer-size", &buffer_size,	       
+	       NULL);
+
+  if(g_file_test(filename,
+		 G_FILE_TEST_EXISTS)){
+    g_remove(filename);
+  }
+
+  audio_file = ags_audio_file_new(filename,
+				  soundcard,
+				  -1);
+
+  audio_file->file_audio_channels = audio_channels;
+  audio_file->file_samplerate = samplerate;  
+  
+  ags_audio_file_rw_open(audio_file,
+			 TRUE);
+
+  default_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+
+  timestamp = ags_timestamp_new();
+  timestamp->flags = AGS_TIMESTAMP_OFFSET;
+  
+  data = ags_stream_alloc(audio_channels * buffer_size,
+			  format);
+  
+  for(i = start_frame; i + buffer_size < end_frame; ){
+    guint current_buffer_size;
+
+    GRecMutex *buffer_mutex;
+    
+    ags_timestamp_set_ags_offset(timestamp,
+				 default_offset * floor((gdouble) i / (gdouble) default_offset));
+    
+    ags_audio_buffer_util_clear_buffer(data, audio_channels,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+
+    current_buffer_size = buffer_size;
+    
+    if(i == start_frame){
+      source_offset = start_frame % buffer_size;
+
+      current_buffer_size -= source_offset;
+    }else{
+      source_offset = 0;
+    }
+    
+    for(j = 0; j < audio_channels; j++){
+      wave = ags_wave_find_near_timestamp(start_wave, j,
+					  timestamp);
+
+      if(wave == NULL){
+	continue;
+      }
+
+      buffer = ags_wave_find_point(wave->data,
+				   i,
+				   FALSE);
+      
+      if(buffer != NULL){
+	g_object_get(buffer,
+		     "format", &source_format,
+		     NULL);
+	
+	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+							ags_audio_buffer_util_format_from_soundcard(source_format));
+	
+	buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(buffer);
+
+	destination_offset = j;
+
+	g_rec_mutex_lock(buffer_mutex);
+      
+	ags_audio_buffer_util_copy_buffer_to_buffer(data, audio_channels, destination_offset,
+						    buffer->data, 1, source_offset,
+						    current_buffer_size, copy_mode);
+
+	g_rec_mutex_unlock(buffer_mutex);
+      }
+    }
+    
+    ags_audio_file_write(audio_file,
+			 data,
+			 current_buffer_size,
+			 format);
+    
+    i += current_buffer_size;
+  }
+  
+  ags_audio_file_flush(audio_file);
+  ags_audio_file_close(audio_file);
 }
 
 /**
