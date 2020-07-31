@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,7 @@
 
 #include <ags/config.h>
 
-#ifdef AGS_WITH_PULSE
+#if defined(AGS_WITH_PULSE)
 #include <pulse/pulseaudio.h>
 #endif
 
@@ -102,7 +102,7 @@ struct _AgsPulsePort
   guint cache_offset;
   void **cache;
   
-#ifdef AGS_WITH_PULSE
+#if defined(AGS_WITH_PULSE)
   pa_stream *stream;
   pa_sample_spec *sample_spec;
   pa_buffer_attr *buffer_attr;

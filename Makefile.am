@@ -511,8 +511,8 @@ libags_thread_la_HEADERS_0 = $(libags_thread_h_sources) $(libags_thread_task_h_s
 libags_server_la_SOURCES = $(libags_server_c_sources) $(libags_server_security_c_sources) $(libags_server_controller_c_sources)
 libags_server_la_HEADERS_0 = $(libags_server_h_sources) $(libags_server_security_h_sources) $(libags_server_controller_h_sources)
 
-libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_osc_c_sources) $(libags_audio_osc_controller_c_sources) $(libags_audio_osc_xmlrpc_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_pulse_c_sources) $(libags_audio_core_audio_c_sources) $(libags_audio_audio_unit_c_sources) $(libags_audio_wasapi_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources) $(libags_audio_fx_c_sources) $(libags_plugin_c_sources)
-libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_osc_h_sources) $(libags_audio_osc_controller_h_sources) $(libags_audio_osc_xmlrpc_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_pulse_h_sources) $(libags_audio_core_audio_h_sources) $(libags_audio_audio_unit_h_sources) $(libags_audio_wasapi_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources) $(libags_audio_fx_h_sources)$(libags_plugin_h_sources)
+libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_osc_c_sources) $(libags_audio_osc_controller_c_sources) $(libags_audio_osc_xmlrpc_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_pulse_c_sources) $(libags_audio_core_audio_c_sources) $(libags_audio_audio_unit_c_sources) $(libags_audio_wasapi_c_sources) $(libags_audio_gstreamer_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources) $(libags_audio_fx_c_sources) $(libags_plugin_c_sources)
+libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_osc_h_sources) $(libags_audio_osc_controller_h_sources) $(libags_audio_osc_xmlrpc_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_pulse_h_sources) $(libags_audio_core_audio_h_sources) $(libags_audio_audio_unit_h_sources) $(libags_audio_wasapi_h_sources) $(libags_audio_gstreamer_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources) $(libags_audio_fx_h_sources)$(libags_plugin_h_sources)
 
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
@@ -1443,6 +1443,27 @@ libags_audio_audio_unit_c_sources = \
 	ags/audio/audio-unit/ags_audio_unit_devout.c \
 	ags/audio/audio-unit/ags_audio_unit_port.c \
 	ags/audio/audio-unit/ags_audio_unit_server.c
+
+# libags-audio - gstreamer
+deprecated_libags_audio_gstreamer_h_sources =
+
+libags_audio_gstreamer_h_sources = \
+	$(deprecated_libags_audio_gstreamer_h_sources) \
+	ags/audio/gstreamer/ags_gstreamer_client.h \
+	ags/audio/gstreamer/ags_gstreamer_devout.h \
+	ags/audio/gstreamer/ags_gstreamer_devin.h \
+	ags/audio/gstreamer/ags_gstreamer_port.h \
+	ags/audio/gstreamer/ags_gstreamer_server.h
+
+deprecated_libags_audio_gstreamer_c_sources =
+
+libags_audio_gstreamer_c_sources = \
+	$(deprecated_libags_audio_gstreamer_c_sources) \
+	ags/audio/gstreamer/ags_gstreamer_client.c \
+	ags/audio/gstreamer/ags_gstreamer_devout.c \
+	ags/audio/gstreamer/ags_gstreamer_devin.c \
+	ags/audio/gstreamer/ags_gstreamer_port.c \
+	ags/audio/gstreamer/ags_gstreamer_server.c
 
 # libags-audio - recall
 deprecated_libags_audio_recall_h_sources =
