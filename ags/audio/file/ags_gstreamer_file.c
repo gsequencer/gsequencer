@@ -103,7 +103,6 @@ enum{
   PROP_AUDIO_CHANNELS,
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
-  PROP_FILE,
 };
 
 static gpointer ags_gstreamer_file_parent_class = NULL;

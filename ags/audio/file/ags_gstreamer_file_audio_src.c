@@ -17,107 +17,107 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/file/ags_gstreamer_audio_src.h>
+#include <ags/audio/file/ags_gstreamer_file_audio_src.h>
 
 #include <ags/i18n.h>
 
-void ags_gstreamer_audio_src_class_init(AgsGstreamerAudioSrcClass *gstreamer_audio_src);
-void ags_gstreamer_audio_src_init(AgsGstreamerAudioSrc *gstreamer_audio_src);
-void ags_gstreamer_audio_src_dispose(GObject *gobject);
-void ags_gstreamer_audio_src_finalize(GObject *gobject);
+void ags_gstreamer_file_audio_src_class_init(AgsGstreamerFileAudioSrcClass *gstreamer_file_audio_src);
+void ags_gstreamer_file_audio_src_init(AgsGstreamerFileAudioSrc *gstreamer_file_audio_src);
+void ags_gstreamer_file_audio_src_dispose(GObject *gobject);
+void ags_gstreamer_file_audio_src_finalize(GObject *gobject);
 
 /**
- * SECTION:ags_gstreamer_audio_src
+ * SECTION:ags_gstreamer_file_audio_src
  * @short_description: gstreamer audio src
- * @title: AgsGstreamerAudioSrc
+ * @title: AgsGstreamerFileAudioSrc
  * @section_id:
- * @include: ags/audio/audio_src/ags_gstreamer_audio_src.h
+ * @include: ags/audio/audio_src/ags_gstreamer_file_audio_src.h
  *
- * #AgsGstreamerAudioSrc is the base object to ineract with libgstreamer-1.0 audio src.
+ * #AgsGstreamerFileAudioSrc is the base object to ineract with libgstreamer-1.0 audio src.
  */
 
-static gpointer ags_gstreamer_audio_src_parent_class = NULL;
+static gpointer ags_gstreamer_file_audio_src_parent_class = NULL;
 
 GType
-ags_gstreamer_audio_src_get_type()
+ags_gstreamer_file_audio_src_get_type()
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_gstreamer_audio_src = 0;
+    GType ags_type_gstreamer_file_audio_src = 0;
 
-    static const GTypeInfo ags_gstreamer_audio_src_info = {
-      sizeof (AgsGstreamerAudioSrcClass),
+    static const GTypeInfo ags_gstreamer_file_audio_src_info = {
+      sizeof (AgsGstreamerFileAudioSrcClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      (GClassInitFunc) ags_gstreamer_audio_src_class_init,
+      (GClassInitFunc) ags_gstreamer_file_audio_src_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsGstreamerAudioSrc),
+      sizeof (AgsGstreamerFileAudioSrc),
       0,    /* n_preallocs */
-      (GInstanceInitFunc) ags_gstreamer_audio_src_init,
+      (GInstanceInitFunc) ags_gstreamer_file_audio_src_init,
     };
 
-    ags_type_gstreamer_audio_src = g_type_register_static(G_TYPE_OBJECT,
-							  "AgsGstreamerAudioSrc",
-							  &ags_gstreamer_audio_src_info,
-							  0);
+    ags_type_gstreamer_file_audio_src = g_type_register_static(GST_TYPE_AUDIO_SRC,
+							       "AgsGstreamerFileAudioSrc",
+							       &ags_gstreamer_file_audio_src_info,
+							       0);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_gstreamer_audio_src);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_gstreamer_file_audio_src);
   }
 
   return g_define_type_id__volatile;
 }
 
 void
-ags_gstreamer_audio_src_class_init(AgsGstreamerAudioSrcClass *gstreamer_audio_src)
+ags_gstreamer_file_audio_src_class_init(AgsGstreamerFileAudioSrcClass *gstreamer_file_audio_src)
 {
   GObjectClass *gobject;
 
-  ags_gstreamer_audio_src_parent_class = g_type_class_peek_parent(gstreamer_audio_src);
+  ags_gstreamer_file_audio_src_parent_class = g_type_class_peek_parent(gstreamer_file_audio_src);
 
-  gobject = (GObjectClass *) gstreamer_audio_src;
+  gobject = (GObjectClass *) gstreamer_file_audio_src;
 
-  gobject->dispose = ags_gstreamer_audio_src_dispose;
-  gobject->finalize = ags_gstreamer_audio_src_finalize;
+  gobject->dispose = ags_gstreamer_file_audio_src_dispose;
+  gobject->finalize = ags_gstreamer_file_audio_src_finalize;
 }
 
 void
-ags_gstreamer_audio_src_init(AgsGstreamerAudioSrc *gstreamer_audio_src)
+ags_gstreamer_file_audio_src_init(AgsGstreamerFileAudioSrc *gstreamer_file_audio_src)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_gstreamer_audio_src_dispose(GObject *gobject)
+ags_gstreamer_file_audio_src_dispose(GObject *gobject)
 {
   /* call parent */
-  G_OBJECT_CLASS(ags_gstreamer_audio_src_parent_class)->dispose(gobject);
+  G_OBJECT_CLASS(ags_gstreamer_file_audio_src_parent_class)->dispose(gobject);
 }
 
 void
-ags_gstreamer_audio_src_finalize(GObject *gobject)
+ags_gstreamer_file_audio_src_finalize(GObject *gobject)
 {
   /* call parent */
-  G_OBJECT_CLASS(ags_gstreamer_audio_src_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(ags_gstreamer_file_audio_src_parent_class)->finalize(gobject);
 }
 
 /**
- * ags_gstreamer_audio_src_new:
+ * ags_gstreamer_file_audio_src_new:
  *
- * Creates a new instance of #AgsGstreamerAudioSrc.
+ * Creates a new instance of #AgsGstreamerFileAudioSrc.
  *
- * Returns: the new #AgsGstreamerAudioSrc.
+ * Returns: the new #AgsGstreamerFileAudioSrc.
  *
  * Since: 3.6.0
  */
-AgsGstreamerAudioSrc*
-ags_gstreamer_audio_src_new()
+AgsGstreamerFileAudioSrc*
+ags_gstreamer_file_audio_src_new()
 {
-  AgsGstreamerAudioSrc *gstreamer_audio_src;
+  AgsGstreamerFileAudioSrc *gstreamer_file_audio_src;
 
-  gstreamer_audio_src = (AgsGstreamerAudioSrc *) g_object_new(AGS_TYPE_GSTREAMER_AUDIO_SRC,
-							      NULL);
+  gstreamer_file_audio_src = (AgsGstreamerFileAudioSrc *) g_object_new(AGS_TYPE_GSTREAMER_FILE_AUDIO_SRC,
+								       NULL);
 
-  return(gstreamer_audio_src);
+  return(gstreamer_file_audio_src);
 }
