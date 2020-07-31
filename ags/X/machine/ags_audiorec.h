@@ -90,6 +90,10 @@ GType ags_audiorec_get_type(void);
 void ags_audiorec_open_filename(AgsAudiorec *audiorec,
 				gchar *filename);
 
+void ags_audiorec_fast_export(AgsAudiorec *audiorec,
+			      gchar *filename,
+			      guint64 start_frame, guint64 end_frame);
+
 gboolean ags_audiorec_wave_loader_completed_timeout(AgsAudiorec *audiorec);
 gboolean ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec);
 

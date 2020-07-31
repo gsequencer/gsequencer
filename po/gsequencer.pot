@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.5.6\n"
+"Project-Id-Version: gsequencer 3.5.8\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-07-19 18:32+0200\n"
+"POT-Creation-Date: 2020-07-31 09:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -64,7 +64,7 @@ msgid "line"
 msgstr ""
 
 #: ags/X/ags_automation_editor.c:514 ags/X/ags_connection_editor.c:444
-#: ags/X/ags_machine_editor.c:231 ags/X/machine/ags_audiorec.c:326
+#: ags/X/ags_machine_editor.c:231 ags/X/machine/ags_audiorec.c:332
 msgid "input"
 msgstr ""
 
@@ -216,7 +216,7 @@ msgid "About"
 msgstr ""
 
 #: ags/X/ags_dssi_browser.c:152 ags/X/ags_ladspa_browser.c:145
-#: ags/X/ags_lv2_browser.c:156 ags/X/machine/ags_audiorec.c:265
+#: ags/X/ags_lv2_browser.c:156 ags/X/machine/ags_audiorec.c:271
 msgid "filename: "
 msgstr ""
 
@@ -281,16 +281,16 @@ msgstr ""
 msgid "soundcard"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:240 ags/X/export/ags_wave_export_dialog.c:208
-#: ags/X/machine/ags_audiorec.c:246 ags/X/machine/ags_pitch_sampler.c:252
+#: ags/X/ags_export_soundcard.c:240 ags/X/export/ags_wave_export_dialog.c:210
+#: ags/X/machine/ags_audiorec.c:252 ags/X/machine/ags_pitch_sampler.c:252
 msgid "file"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:268 ags/X/export/ags_wave_export_dialog.c:225
+#: ags/X/ags_export_soundcard.c:268 ags/X/export/ags_wave_export_dialog.c:227
 msgid "open"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:275 ags/X/export/ags_wave_export_dialog.c:310
+#: ags/X/ags_export_soundcard.c:275 ags/X/export/ags_wave_export_dialog.c:312
 msgid "output format"
 msgstr ""
 
@@ -1200,15 +1200,15 @@ msgstr ""
 msgid "sequence: "
 msgstr ""
 
-#: ags/X/export/ags_wave_export_dialog.c:195
+#: ags/X/export/ags_wave_export_dialog.c:197
 msgid "Audio fast export"
 msgstr ""
 
-#: ags/X/export/ags_wave_export_dialog.c:239
+#: ags/X/export/ags_wave_export_dialog.c:241
 msgid "start tact"
 msgstr ""
 
-#: ags/X/export/ags_wave_export_dialog.c:266
+#: ags/X/export/ags_wave_export_dialog.c:268
 msgid "end tact"
 msgstr ""
 
@@ -1225,7 +1225,7 @@ msgstr ""
 msgid "sequence"
 msgstr ""
 
-#: ags/X/machine/ags_audiorec.c:287 ags/X/machine/ags_ffplayer.c:364
+#: ags/X/machine/ags_audiorec.c:293 ags/X/machine/ags_ffplayer.c:364
 #: ags/X/machine/ags_pitch_sampler.c:300 ags/X/machine/ags_sf2_synth.c:265
 msgid "loading ...  "
 msgstr ""
@@ -1490,5 +1490,5 @@ msgid "Do you want to save before quit?"
 msgstr ""
 
 #: ags/X/ags_quit_dialog_callbacks.c:51
-msgid "Do you want to fast export quit?"
+msgid "Do you want to fast export before quit?"
 msgstr ""
