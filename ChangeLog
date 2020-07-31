@@ -3,6 +3,16 @@ ags (3.6.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented GStreamer support?
 
+ags (3.5.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_audiorec_fast_export() current_buffer_size variable
+
+ags (3.5.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio fast export
+
 ags (3.5.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
