@@ -1204,8 +1204,8 @@ endif
 if WITH_GSTREAMER
 libags_audio_file_h_sources += \
 	ags/audio/file/ags_gstreamer_file.h \
-	ags/audio/file/ags_gstreamer_audio_src.h \
-	ags/audio/file/ags_gstreamer_audio_sink.h
+	ags/audio/file/ags_gstreamer_file_audio_src.h \
+	ags/audio/file/ags_gstreamer_file_audio_sink.h
 endif
 
 deprecated_libags_audio_file_c_sources =
@@ -1237,8 +1237,8 @@ endif
 if WITH_GSTREAMER
 libags_audio_file_c_sources += \
 	ags/audio/file/ags_gstreamer_file.c \
-	ags/audio/file/ags_gstreamer_audio_src.c \
-	ags/audio/file/ags_gstreamer_audio_sink.c
+	ags/audio/file/ags_gstreamer_file_audio_src.c \
+	ags/audio/file/ags_gstreamer_file_audio_sink.c
 endif
 
 # libags-audio - midi
