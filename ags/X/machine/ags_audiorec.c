@@ -934,6 +934,10 @@ ags_audiorec_fast_export(AgsAudiorec *audiorec,
     }else{
       source_offset = 0;
     }
+
+    if(default_offset * floor((gdouble) i / (gdouble) default_offset) < default_offset * floor((gdouble) (i + current_buffer_size) / (gdouble) default_offset)){
+      current_buffer_size = (default_offset * floor((gdouble) (i + current_buffer_size) / (gdouble) default_offset)) - i;
+    }
     
     for(j = 0; j < audio_channels; j++){
       wave = ags_wave_find_near_timestamp(start_wave, j,
