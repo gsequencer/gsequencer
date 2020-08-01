@@ -85,9 +85,11 @@ struct _AgsGstreamerFile
   GstElement *pipeline;
 
   GstElement *file_source;
+  GstElement *file_decoder;
   GstElement *data_sink;
 
   GstElement *data_source;
+  GstElement *file_encoder;
   GstElement *file_sink;
 };
 

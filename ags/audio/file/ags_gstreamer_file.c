@@ -315,6 +315,16 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
   gstreamer_file->pointer = NULL;
   gstreamer_file->current = NULL;
   gstreamer_file->length = 0;
+
+  gstreamer_file->pipeline = NULL;
+  
+  gstreamer_file->file_source = NULL;
+  gstreamer_file->file_decoder = NULL;
+  gstreamer_file->data_sink = NULL;
+  
+  gstreamer_file->data_source = NULL;
+  gstreamer_file->file_encoder = NULL;
+  gstreamer_file->file_sink = NULL;
 }
 
 void
