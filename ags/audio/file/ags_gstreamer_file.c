@@ -23,6 +23,8 @@
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/file/ags_sound_resource.h>
+#include <ags/audio/file/ags_gstreamer_file_audio_src.h>
+#include <ags/audio/file/ags_gstreamer_file_audio_sink.h>
 
 #include <string.h>
 
@@ -316,7 +318,8 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
   gstreamer_file->current = NULL;
   gstreamer_file->length = 0;
 
-  gstreamer_file->pipeline = NULL;
+  gstreamer_file->read_pipeline = NULL;
+  gstreamer_file->write_pipeline = NULL;
   
   gstreamer_file->file_source = NULL;
   gstreamer_file->file_decoder = NULL;
@@ -755,6 +758,11 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
 {
   AgsGstreamerFile *gstreamer_file;
 
+  GstElement *read_pipeline;
+  GstElement *file_source;
+  GstElement *file_decoder;
+  GstElement *data_sink;
+
   GRecMutex *gstreamer_file_mutex;
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
@@ -762,8 +770,50 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
   /* get gstreamer_file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
-  //TODO:JK: implement me
+  g_rec_mutex_lock(gstreamer_file_mutex);
 
+  if(gstreamer_file->read_pipeline != NULL){
+    g_rec_mutex_unlock(gstreamer_file_mutex);
+
+    return(FALSE);
+  }
+  
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+
+  /* read file */
+  read_pipeline = gst_pipeline_new("ro-pipeline");
+  
+  file_source = gst_element_factory_make("filesrc", "source");
+
+  g_object_set(file_source,
+	       "location", filename,
+	       NULL);
+  
+  file_decoder = gst_element_factory_make("decodebin2", "decoder");
+
+  data_sink = ags_gstreamer_file_audio_sink_new();
+  gst_element_set_name(data_sink, "sink");
+
+  gst_bin_add_many(GST_BIN(read_pipeline),
+		   file_source,
+		   file_decoder,
+		   data_sink,
+		   NULL);
+
+  gst_element_link(file_source, file_decoder);
+  gst_element_link(file_decoder, data_sink);
+
+  /* apply */
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  gstreamer_file->read_pipeline = read_pipeline;
+
+  gstreamer_file->file_source = file_source;
+  gstreamer_file->file_decoder = file_decoder;
+  gstreamer_file->data_sink = data_sink;
+  
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+  
   return(TRUE);
 }
 
@@ -775,6 +825,15 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 {
   AgsGstreamerFile *gstreamer_file;
   
+  GstElement *read_pipeline;
+  GstElement *write_pipeline;
+  GstElement *data_source;
+  GstElement *file_encoder;
+  GstElement *file_sink;
+  GstElement *file_source;
+  GstElement *file_decoder;
+  GstElement *data_sink;
+
   gboolean success;
     
   GRecMutex *gstreamer_file_mutex;
@@ -784,9 +843,85 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   /* get gstreamer_file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
-  success = FALSE;
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  if(gstreamer_file->read_pipeline != NULL ||
+     gstreamer_file->write_pipeline != NULL){  
+    g_rec_mutex_unlock(gstreamer_file_mutex);
+
+    return(FALSE);
+  }
+
+  if(!create &&
+     !g_file_test(filename,
+		  (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))){
+    g_rec_mutex_unlock(gstreamer_file_mutex);
+
+    return(FALSE);
+  }  
   
-  //TODO:JK: implement me
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+
+  success = TRUE;
+  
+  read_pipeline = gst_pipeline_new("rw-pipeline");
+  write_pipeline = gst_pipeline_new("rw-pipeline");
+
+  /* read file */
+  file_source = gst_element_factory_make("filesrc", "source");
+  g_object_set(file_source,
+	       "location", filename,
+	       NULL);
+  
+  file_decoder = gst_element_factory_make("decodebin2", "decoder");
+
+  data_sink = ags_gstreamer_file_audio_sink_new();
+  gst_element_set_name(data_sink, "sink");
+
+  gst_bin_add_many(GST_BIN(read_pipeline),
+		   file_source,
+		   file_decoder,
+		   data_sink,
+		   NULL);
+
+  gst_element_link(file_source, file_decoder);
+  gst_element_link(file_decoder, data_sink);
+
+  /* write file */
+  data_source = ags_gstreamer_file_audio_src_new();
+  gst_element_set_name(data_source, "source");
+  
+  file_encoder = gst_element_factory_make("encodebin", "encoder");
+
+  file_sink = gst_element_factory_make("filesink", "sink");
+  g_object_set(file_sink,
+	       "location", filename,
+	       NULL);
+
+  gst_bin_add_many(GST_BIN(write_pipeline),
+		   data_source,
+		   file_encoder,
+		   file_sink,
+		   NULL);
+
+  gst_element_link(data_source, file_encoder);
+  gst_element_link(file_encoder, file_sink);
+
+  /* apply */
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  gstreamer_file->read_pipeline = read_pipeline;
+  gstreamer_file->write_pipeline = write_pipeline;
+
+  gstreamer_file->file_source = file_source;
+  gstreamer_file->file_decoder = file_decoder;
+  gstreamer_file->data_sink = data_sink;
+
+  gstreamer_file->data_source = data_source;
+  gstreamer_file->file_encoder = file_encoder;
+  gstreamer_file->file_sink = file_sink;
+  
+  g_rec_mutex_unlock(gstreamer_file_mutex);
 
   return(success);
 }

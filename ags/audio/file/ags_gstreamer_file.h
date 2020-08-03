@@ -82,7 +82,8 @@ struct _AgsGstreamerFile
   guchar *current;
   gsize length;
 
-  GstElement *pipeline;
+  GstElement *read_pipeline;
+  GstElement *write_pipeline;
 
   GstElement *file_source;
   GstElement *file_decoder;
