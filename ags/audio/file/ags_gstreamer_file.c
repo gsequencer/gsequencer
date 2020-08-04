@@ -290,7 +290,7 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
 
   gstreamer_file->flags = 0;
 
-  /* add audio file mutex */
+  /* add gstreamer file mutex */
   g_rec_mutex_init(&(gstreamer_file->obj_mutex));  
 
   /* uuid */
@@ -791,7 +791,7 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
   
   file_decoder = gst_element_factory_make("decodebin2", "decoder");
 
-  data_sink = ags_gstreamer_file_audio_sink_new();
+  data_sink = (GstElement *) ags_gstreamer_file_audio_sink_new();
   gst_element_set_name(data_sink, "sink");
 
   gst_bin_add_many(GST_BIN(read_pipeline),
@@ -875,7 +875,7 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   
   file_decoder = gst_element_factory_make("decodebin2", "decoder");
 
-  data_sink = ags_gstreamer_file_audio_sink_new();
+  data_sink = (GstElement *) ags_gstreamer_file_audio_sink_new();
   gst_element_set_name(data_sink, "sink");
 
   gst_bin_add_many(GST_BIN(read_pipeline),
@@ -888,7 +888,7 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   gst_element_link(file_decoder, data_sink);
 
   /* write file */
-  data_source = ags_gstreamer_file_audio_src_new();
+  data_source = (GstElement *) ags_gstreamer_file_audio_src_new();
   gst_element_set_name(data_source, "source");
   
   file_encoder = gst_element_factory_make("encodebin", "encoder");

@@ -30,6 +30,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/file/ags_gstreamer_file.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_GSTREAMER_FILE_AUDIO_SRC                (ags_gstreamer_file_audio_src_get_type())
@@ -47,6 +49,10 @@ typedef struct _AgsGstreamerFileAudioSrcClass AgsGstreamerFileAudioSrcClass;
 struct _AgsGstreamerFileAudioSrc
 {
   GstAudioSrc audio_src;
+
+  GRecMutex obj_mutex;
+
+  AgsGstreamerFile *gstreamer_file;
 };
 
 struct _AgsGstreamerFileAudioSrcClass

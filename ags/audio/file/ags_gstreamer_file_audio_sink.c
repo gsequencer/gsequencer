@@ -26,6 +26,14 @@ void ags_gstreamer_file_audio_sink_init(AgsGstreamerFileAudioSink *gstreamer_fil
 void ags_gstreamer_file_audio_sink_dispose(GObject *gobject);
 void ags_gstreamer_file_audio_sink_finalize(GObject *gobject);
 
+gboolean ags_gstreamer_file_audio_sink_open(GstAudioSink *sink);
+gboolean ags_gstreamer_file_audio_sink_prepare(GstAudioSink *sink, GstAudioRingBufferSpec *spec);
+gboolean ags_gstreamer_file_audio_sink_unprepare(GstAudioSink *sink);
+gboolean ags_gstreamer_file_audio_sink_close(GstAudioSink *sink);
+gint ags_gstreamer_file_audio_sink_write(GstAudioSink *sink, gpointer data, guint length);
+guint ags_gstreamer_file_audio_sink_delay(GstAudioSink *sink);
+void ags_gstreamer_file_audio_sink_reset(GstAudioSink *sink);
+
 /**
  * SECTION:ags_gstreamer_file_audio_sink
  * @short_description: gstreamer audio sink
@@ -73,19 +81,34 @@ void
 ags_gstreamer_file_audio_sink_class_init(AgsGstreamerFileAudioSinkClass *gstreamer_file_audio_sink)
 {
   GObjectClass *gobject;
-
+  GstAudioSinkClass *audio_sink;
+  
   ags_gstreamer_file_audio_sink_parent_class = g_type_class_peek_parent(gstreamer_file_audio_sink);
 
   gobject = (GObjectClass *) gstreamer_file_audio_sink;
 
   gobject->dispose = ags_gstreamer_file_audio_sink_dispose;
   gobject->finalize = ags_gstreamer_file_audio_sink_finalize;
+
+  /* GstAudioSinkClass */
+  audio_sink = (GstAudioSinkClass *) gstreamer_file_audio_sink;
+  
+  audio_sink->open = ags_gstreamer_file_audio_sink_open;
+  audio_sink->prepare = ags_gstreamer_file_audio_sink_prepare;
+  audio_sink->unprepare = ags_gstreamer_file_audio_sink_unprepare;
+  audio_sink->close = ags_gstreamer_file_audio_sink_close;
+  audio_sink->write = ags_gstreamer_file_audio_sink_write;
+  audio_sink->delay = ags_gstreamer_file_audio_sink_delay;
+  audio_sink->reset = ags_gstreamer_file_audio_sink_reset;
 }
 
 void
 ags_gstreamer_file_audio_sink_init(AgsGstreamerFileAudioSink *gstreamer_file_audio_sink)
 {
-  //TODO:JK: implement me
+  /* add gstreamer file audio sink mutex */
+  g_rec_mutex_init(&(gstreamer_file_audio_sink->obj_mutex));  
+
+  gstreamer_file_audio_sink->gstreamer_file = NULL;
 }
 
 void
@@ -100,6 +123,60 @@ ags_gstreamer_file_audio_sink_finalize(GObject *gobject)
 {
   /* call parent */
   G_OBJECT_CLASS(ags_gstreamer_file_audio_sink_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_gstreamer_file_audio_sink_open(GstAudioSink *sink)
+{
+  //TODO:JK: implement me
+
+  return(TRUE);
+}
+
+gboolean
+ags_gstreamer_file_audio_sink_prepare(GstAudioSink *sink, GstAudioRingBufferSpec *spec)
+{
+  //TODO:JK: implement me
+
+  return(TRUE);
+}
+
+gboolean
+ags_gstreamer_file_audio_sink_unprepare(GstAudioSink *sink)
+{
+  //TODO:JK: implement me
+
+  return(TRUE);
+}
+
+gboolean
+ags_gstreamer_file_audio_sink_close(GstAudioSink *sink)
+{
+  //TODO:JK: implement me
+
+  return(TRUE);
+}
+
+gint
+ags_gstreamer_file_audio_sink_write(GstAudioSink *sink, gpointer data, guint length)
+{
+  //TODO:JK: implement me
+
+  return((gint) length);
+}
+
+guint
+ags_gstreamer_file_audio_sink_delay(GstAudioSink *sink)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+void
+ags_gstreamer_file_audio_sink_reset(GstAudioSink *sink)
+{
+  //TODO:JK: implement me
 }
 
 /**
