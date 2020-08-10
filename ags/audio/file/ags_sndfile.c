@@ -1063,11 +1063,11 @@ ags_sndfile_info(AgsSoundResource *sound_resource,
   sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   if(loop_start != NULL){
-    *loop_start = 0;
+    loop_start[0] = 0;
   }
 
   if(loop_end != NULL){
-    *loop_end = 0;
+    loop_end[0] = 0;
   }
   
   g_rec_mutex_lock(sndfile_mutex);
