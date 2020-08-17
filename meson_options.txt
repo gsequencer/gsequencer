@@ -1,0 +1,26 @@
+# Plugins
+# TODO: move all options here
+# The options can be reconfigured inside build dir using
+# ex. meson configure -Dalsa=false
+option('alsa', type: 'boolean', value: false,
+       description: 'Enable Lnux alsa build')
+option('w32api', type: 'boolean', value: false,
+       description: 'Enable Windows build')
+option('osxapi', type: 'boolean', value: false,
+       description: 'Enable OSX build')
+option('oss', type: 'boolean', value: false,
+       description: 'Enable OSS')
+option('core_audio', type: 'boolean', value: false,
+       description: 'Enable core audio (OSX)')
+option('jack', type: 'boolean', value: false,
+       description: 'Enable jack')
+option('pulse', type: 'boolean', value: false,
+       description: 'Enable pulse')
+option('wasapi', type: 'boolean', value: false,
+       description: 'Enable wasapi (Windows)')
+option('quartz', type: 'boolean', value: false,
+       description: 'Enable quartz')
+option('webkit', type: 'boolean', value: false,
+       description: 'Enable webkit')
+option('poppler', type: 'boolean', value: false,
+       description: 'Enable poppler')
