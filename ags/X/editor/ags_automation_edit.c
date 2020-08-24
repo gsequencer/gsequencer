@@ -1052,7 +1052,7 @@ ags_accessible_automation_edit_get_description(AtkAction *action,
     "add acceleration",
     "remove acceleration",
     "copy automation to clipboard",
-    "cut automation to clipbaord",
+    "cut automation to clipboard",
     "paste automation from clipboard",
   };
 
