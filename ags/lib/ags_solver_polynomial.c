@@ -470,11 +470,71 @@ ags_solver_polynomial_finalize(GObject *gobject)
 void
 ags_solver_polynomial_update(AgsSolverPolynomial *solver_polynomial)
 {
+  gchar **symbol;
+  gchar **exponent;
+
+  gchar *polynomial;
+  gchar *coefficient;
+
+  guint i;
+  
   if(!AGS_IS_SOLVER_POLYNOMIAL(solver_polynomial)){
     return;
   }
 
-  //TODO:JK: implement me
+  polynomial = NULL;
+
+  symbol = NULL;
+  exponent = NULL;
+  
+  coefficient = NULL;
+
+  g_object_get(solver_polynomial,
+	       "coefficient", &coefficient,
+	       "symbol", &symbol,
+	       "exponent", &exponent,
+	       NULL);
+  
+  if(coefficient != NULL){
+    polynomial = g_strdup(coefficient);
+  }
+
+  if(symbol != NULL){
+    for(i = 0; symbol[i] != NULL; i++){
+      if(polynomial == NULL){
+	if(exponent[i] != NULL &&
+	   strlen(exponent[i]) > 0){
+	  polynomial = g_strdup_printf("%s^(%s)",
+				       symbol[i],
+				       exponent[i]);
+	}else{
+	  polynomial = g_strdup(symbol[i]);
+	}
+      }else{
+	gchar *prev_polynomial;
+	
+	prev_polynomial = polynomial;  
+
+	polynomial = g_strdup_printf("%s%s^(%s)",
+				     polynomial,
+				     symbol[i],
+				     exponent[i]);
+
+	g_free(prev_polynomial);
+      }
+    }
+  }
+
+  g_object_set(solver_polynomial,
+	       "polynomial", polynomial,
+	       NULL);
+
+  g_strfreev(symbol);
+  g_strfreev(exponent);
+
+  g_free(coefficient);
+  
+  g_free(polynomial);
 }
 
 /**
@@ -492,6 +552,7 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
 {
   gchar **symbol;
   gchar **exponent;
+  gchar **coefficient_arr;
   
   gchar *coefficient;
   
@@ -512,17 +573,37 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
 
   solver_polynomial_mutex = AGS_SOLVER_POLYNOMIAL_GET_OBJ_MUTEX(solver_polynomial);
   
-  symbol = NULL;
-  exponent = NULL;
-
+  /* get base */
+  coefficient_arr = ags_math_util_find_coefficient_all(polynomial);
+  
   coefficient = NULL;
+  
+  switch(g_strv_length(coefficient_arr) <= 1){
+  case 1:
+  {
+    coefficient = g_strdup(coefficient_arr[0]);
+  }
+  case 0:
+  {
+    break;
+  }
+  default:
+  {
+    g_critical("malformed coefficient, expected only 1 got %d", g_strv_length(coefficient_arr));
+
+    g_strfreev(coefficient_arr);
+    
+    return;
+  }
+  }
+  
+  symbol = ags_math_util_find_symbol_all(polynomial);
+
+  symbol_count = g_strv_length(symbol);
+
+  exponent = ags_math_util_find_exponent_all(polynomial);
 
   exponent_value = NULL;
-  
-  symbol_count = 0;
-
-  /* get base */
-  //TODO:JK: implement me
 
   /* coefficient */
   z = 1.0 + I * 0.0;
@@ -542,7 +623,7 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
     }
   }
 
-  /* parse */
+  /* parse */  
   //TODO:JK: implement me
   
   /* apply */
@@ -561,6 +642,8 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
   solver_polynomial->exponent_value = exponent_value;
 
   g_rec_mutex_unlock(solver_polynomial_mutex);
+
+  g_strfreev(coefficient_arr);
 }
 
 /**
