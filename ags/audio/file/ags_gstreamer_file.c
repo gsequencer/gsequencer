@@ -305,7 +305,7 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
   gstreamer_file->audio_channel_written[0] = -1;
   
   gstreamer_file->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
-  gstreamer_file->format = AGS_SOUNDCARD_DOUBLE;
+  gstreamer_file->format = AGS_SOUNDCARD_SIGNED_16_BIT;
 
   gstreamer_file->offset = 0;
   gstreamer_file->buffer_offset = 0;
@@ -319,13 +319,18 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
   gstreamer_file->length = 0;
 
   gstreamer_file->read_pipeline = NULL;
+  gstreamer_file->read_pipeline_running = FALSE;
+
   gstreamer_file->write_pipeline = NULL;
+  gstreamer_file->write_pipeline_running = FALSE;
   
   gstreamer_file->file_source = NULL;
   gstreamer_file->file_decoder = NULL;
+  gstreamer_file->data_sink_convert = NULL;
   gstreamer_file->data_sink = NULL;
   
   gstreamer_file->data_source = NULL;
+  gstreamer_file->data_source_convert = NULL;
   gstreamer_file->file_encoder = NULL;
   gstreamer_file->file_sink = NULL;
 }
@@ -761,6 +766,7 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
   GstElement *read_pipeline;
   GstElement *file_source;
   GstElement *file_decoder;
+  GstElement *data_sink_convert;
   GstElement *data_sink;
 
   GRecMutex *gstreamer_file_mutex;
@@ -791,17 +797,21 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
   
   file_decoder = gst_element_factory_make("decodebin", "AGS file decoder");
 
+  data_sink_convert = gst_element_factory_make("audioconvert", "AGS data sink convert");
+
   data_sink = (GstElement *) ags_gstreamer_file_audio_sink_new();
   gst_element_set_name(data_sink, "AGS data sink");
 
   gst_bin_add_many(GST_BIN(read_pipeline),
 		   file_source,
 		   file_decoder,
+		   data_sink_convert,
 		   data_sink,
 		   NULL);
 
   gst_element_link(file_source, file_decoder);
-  gst_element_link(file_decoder, data_sink);
+  gst_element_link(file_decoder, data_sink_convert);
+  gst_element_link(data_sink_convert, data_sink);
 
   /* apply */
   g_rec_mutex_lock(gstreamer_file_mutex);
@@ -810,6 +820,7 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
 
   gstreamer_file->file_source = file_source;
   gstreamer_file->file_decoder = file_decoder;
+  gstreamer_file->data_sink_convert = data_sink_convert;
   gstreamer_file->data_sink = data_sink;
   
   g_rec_mutex_unlock(gstreamer_file_mutex);
@@ -827,11 +838,13 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   
   GstElement *read_pipeline;
   GstElement *write_pipeline;
+  GstElement *data_source_convert;
   GstElement *data_source;
   GstElement *file_encoder;
   GstElement *file_sink;
   GstElement *file_source;
   GstElement *file_decoder;
+  GstElement *data_sink_convert;
   GstElement *data_sink;
 
   gboolean success;
@@ -864,8 +877,8 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 
   success = TRUE;
   
-  read_pipeline = gst_pipeline_new("AGS rw-pipeline");
-  write_pipeline = gst_pipeline_new("AGS rw-pipeline");
+  read_pipeline = gst_pipeline_new("AGS rw-pipeline (read)");
+  write_pipeline = gst_pipeline_new("AGS rw-pipeline (write)");
 
   /* read file */
   file_source = gst_element_factory_make("filesrc", "AGS file source");
@@ -875,22 +888,28 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   
   file_decoder = gst_element_factory_make("decodebin", "AGS file decoder");
 
+  data_sink_convert = gst_element_factory_make("audioconvert", "AGS data sink convert");
+
   data_sink = (GstElement *) ags_gstreamer_file_audio_sink_new();
   gst_element_set_name(data_sink, "AGS data sink");
 
   gst_bin_add_many(GST_BIN(read_pipeline),
 		   file_source,
 		   file_decoder,
+		   data_sink_convert,
 		   data_sink,
 		   NULL);
 
   gst_element_link(file_source, file_decoder);
-  gst_element_link(file_decoder, data_sink);
+  gst_element_link(file_decoder, data_sink_convert);
+  gst_element_link(data_sink_convert, data_sink);
 
   /* write file */
   data_source = (GstElement *) ags_gstreamer_file_audio_src_new();
   gst_element_set_name(data_source, "AGS data source");
   
+  data_source_convert = gst_element_factory_make("audioconvert", "AGS data source convert");
+
   file_encoder = gst_element_factory_make("encodebin", "AGS file encoder");
 
   file_sink = gst_element_factory_make("filesink", "AGS file sink");
@@ -900,11 +919,13 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 
   gst_bin_add_many(GST_BIN(write_pipeline),
 		   data_source,
+		   data_source_convert,
 		   file_encoder,
 		   file_sink,
 		   NULL);
 
-  gst_element_link(data_source, file_encoder);
+  gst_element_link(data_source, data_source_convert);
+  gst_element_link(data_source_convert, file_encoder);
   gst_element_link(file_encoder, file_sink);
 
   /* apply */
@@ -915,9 +936,11 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 
   gstreamer_file->file_source = file_source;
   gstreamer_file->file_decoder = file_decoder;
+  gstreamer_file->data_sink_convert = data_sink_convert;
   gstreamer_file->data_sink = data_sink;
 
   gstreamer_file->data_source = data_source;
+  gstreamer_file->data_source_convert = data_source_convert;
   gstreamer_file->file_encoder = file_encoder;
   gstreamer_file->file_sink = file_sink;
   
@@ -991,10 +1014,6 @@ ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
   GstCaps *caps;
   GstStructure *s;
 
-  gint rate;
-  gint chnls;
-  guint buf_size;
-  
   GRecMutex *gstreamer_file_mutex;
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
@@ -1076,10 +1095,11 @@ ags_gstreamer_file_get_presets(AgsSoundResource *sound_resource,
   GstCaps *caps;
   GstStructure *s;
 
-  gint rate;
-  gint chnls;
-  guint buf_size;
-
+  gint current_samplerate;
+  gint current_channels;
+  guint current_buffer_size;
+  guint current_format;
+  
   GRecMutex *gstreamer_file_mutex;
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
@@ -1098,7 +1118,8 @@ ags_gstreamer_file_get_presets(AgsSoundResource *sound_resource,
   
   src_pad = GST_BASE_SRC_PAD(pipeline);
 
-  buf_size = gstreamer_file->buffer_size;
+  current_buffer_size = gstreamer_file->buffer_size;
+  current_format = gstreamer_file->format;
 
   g_rec_mutex_unlock(gstreamer_file_mutex);
 
@@ -1107,12 +1128,12 @@ ags_gstreamer_file_get_presets(AgsSoundResource *sound_resource,
 
   s = gst_caps_get_structure(caps, 0);
   
-  chnls = 0;
-  rate = 0;
+  current_channels = 0;
+  current_samplerate = 0;
 
   gst_structure_get(s,
-		    "channels", &chnls,
-		    "rate", &rate,
+		    "channels", &current_channels,
+		    "rate", &current_samplerate,
 		    NULL);  
 
   if(caps != NULL){
@@ -1124,19 +1145,19 @@ ags_gstreamer_file_get_presets(AgsSoundResource *sound_resource,
   }
 
   if(channels != NULL){
-    channels[0] = chnls;
+    channels[0] = current_channels;
   }
 
   if(samplerate != NULL){
-    samplerate[0] = rate;
+    samplerate[0] = current_samplerate;
   }
 
   if(buffer_size != NULL){
-    buffer_size[0] = buf_size;
+    buffer_size[0] = current_buffer_size;
   }
 
   if(format != NULL){
-    format[0] = AGS_SOUNDCARD_DOUBLE;
+    format[0] = current_format;
   }
 }
 
@@ -1147,15 +1168,38 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 			guint frame_count, guint format)
 {
   AgsGstreamerFile *gstreamer_file;
+  GstElement *pipeline;
 
+  gboolean is_running;
+  
   GRecMutex *gstreamer_file_mutex;
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
 
   /* get gstreamer_file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
+  
+  g_rec_mutex_lock(gstreamer_file_mutex);
 
+  pipeline = gstreamer_file->read_pipeline;
+
+  if(pipeline != NULL){
+    g_object_ref(pipeline);
+  }
+
+  is_running = gstreamer_file->read_pipeline_running;
+  
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+
+  if(!is_running){
+    gst_element_set_state(pipeline, GST_STATE_PLAYING);
+  }
+  
   //TODO:JK: implement me
+
+  if(pipeline != NULL){
+    g_object_unref(pipeline);
+  }
   
   return(frame_count);
 }
