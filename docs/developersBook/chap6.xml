@@ -68,8 +68,8 @@
   <itemizedlist mark="bullet">
     <listitem>
       <code>AgsChannel:link</code>
+      <code>recursive AgsChannel:first-recycling and AgsChannel:last-recycling as needed</code>
       <code>AgsRecycling:parent</code>
-      <code>recursive AgsRecycling:first-recycling and AgsRecycling:last-recycling as needed</code>
       <code>AgsRecycling:prev or AgsRecycling:next</code>
     </listitem>
   </itemizedlist>  
