@@ -83,13 +83,18 @@ struct _AgsGstreamerFile
   gsize length;
 
   GstElement *read_pipeline;
+  gboolean read_pipeline_running;
+  
   GstElement *write_pipeline;
+  gboolean write_pipeline_running;
 
   GstElement *file_source;
   GstElement *file_decoder;
+  GstElement *data_sink_convert;
   GstElement *data_sink;
 
   GstElement *data_source;
+  GstElement *data_source_convert;
   GstElement *file_encoder;
   GstElement *file_sink;
 };
