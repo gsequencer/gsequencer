@@ -14,29 +14,39 @@
 #include <ags/libags-audio.h>
 
 AgsApplicationContext *application_context;
-GList *soundcard;
 AgsAudio *audio;
 AgsNotation *notation;
 
+GObject *current_soundcard;
+
+GList *start_soundcard;
+
 guint audio_channels;
+guint output_pads, input_pads;
 guint i;
 
 /* get application context and soundcard */
 application_context = ags_application_context_get_instance();
-soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+current_soundcard = start_soundcard->data;
 
 /* creat audio and resize channels */
 audio_channels = 2;
 
-audio = ags_audio_new(soundcard->data);
+output_pads = 1;
+input_pads = 88;
+
+audio = ags_audio_new(current_soundcard);
 ags_audio_set_audio_channels(audio,
                              audio_channels);
 ags_audio_set_pads(audio,
                    AGS_TYPE_OUTPUT,
-                   1);
+                   output_pads);
 ags_audio_set_pads(audio,
                    AGS_TYPE_INPUT,
-                   1);
+                   input_pads);
 
 /* add notation */
 for(i = 0; i < audio_channels; i++){
@@ -45,3 +55,6 @@ for(i = 0; i < audio_channels; i++){
   ags_audio_add_notation(audio,
                          notation);
 }
+
+g_list_free_full(start_soundcard,
+		 (GDestroyNotify) g_object_unref);

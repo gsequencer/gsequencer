@@ -683,7 +683,7 @@ ags_math_util_find_coefficient(gchar *str)
   static const GRegex *coefficient_regex = NULL;
 
   static const gchar *literal_pattern = "(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)|([a-zA-Z][0-9]*)"; //NOTE:JK: match function and symbols
-  static const gchar *coefficient_pattern = "([ℯ𝜋𝑖∞])|([0-9]+(\\.[0-9]+)?)";
+  static const gchar *coefficient_pattern = "([ℯ𝜋𝑖∞]*)|([0-9]+(\\.[0-9]+)?)";
 
   if(str == NULL){
     return(NULL);
@@ -851,7 +851,7 @@ ags_math_util_find_coefficient_all(gchar *str)
   static const GRegex *coefficient_regex = NULL;
 
   static const gchar *literal_pattern = "(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)|([a-zA-Z][0-9]*)"; //NOTE:JK: match function and symbols
-  static const gchar *coefficient_pattern = "([ℯ𝜋𝑖∞])|([0-9]+(\\.[0-9]+)?)";
+  static const gchar *coefficient_pattern = "([ℯ𝜋𝑖∞]*)|([0-9]+(\\.[0-9]+)?)";
 
   if(str == NULL){
     return(NULL);

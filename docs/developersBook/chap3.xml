@@ -198,31 +198,6 @@
   </sect1>
 
   <sect1>
-    <title>Mutex and condition manager</title>
-    <para>
-      The AgsMutexManager and AgsConditionManager are singletons. You might want to retrieve an
-      instance by calling ags_mutex_manager_get_instance() or ags_condition_manager_get_instance().
-    </para>
-
-    <para>
-      To use the managers you call during instatiation of your object ags_mutex_manager_insert() by
-      providing the lock object and the initialized mutex. There is the ags_condition_manager_insert()
-      function available for conditions.
-    </para>
-
-    <para>
-      During finalization of your object you should remove the mutex of the manager. This is done
-      by calling ags_mutex_manager_remove() or ags_condition_manager_remove() for conditions.
-    </para>
-    
-    <para>
-      The benefit of providing these managers is, it can be used by interface implementations. For
-      instance AgsSoundcard derived objects can be reused by a generic procedure. Guaranteeing that
-      no concurrent access is performed by locking the mutex.
-    </para>
-  </sect1>
-
-  <sect1>
     <title>Async message delivery</title>
     <para>
       AgsMessageDelivery is a singleton. In order to get the instance of it call
