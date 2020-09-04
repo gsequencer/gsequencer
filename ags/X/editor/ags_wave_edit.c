@@ -728,7 +728,7 @@ ags_accessible_wave_edit_get_description(AtkAction *action,
     "move cursor small left",
     "move cursor small right",
     "copy wave to clipboard",
-    "cut wave to clipbaord",
+    "cut wave to clipboard",
     "paste wave from clipboard",
   };
 

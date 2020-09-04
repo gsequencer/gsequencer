@@ -44,9 +44,16 @@ void ags_math_util_find_term_parenthesis(gchar *str,
 					 guint *term_open_position_count, guint *term_close_position_count);
 
 gchar* ags_math_util_find_function(gchar *str);
+gchar** ags_math_util_find_function_all(gchar *str);
+
+gchar* ags_math_util_find_coefficient(gchar *str);
+gchar** ags_math_util_find_coefficient_all(gchar *str);
 
 gchar* ags_math_util_find_symbol(gchar *str);
 gchar** ags_math_util_find_symbol_all(gchar *str);
+
+gchar* ags_math_util_find_exponent(gchar *str);
+gchar** ags_math_util_find_exponent_all(gchar *str);
 
 gboolean ags_math_util_is_term(gchar *term);
 
