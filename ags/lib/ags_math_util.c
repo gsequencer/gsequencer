@@ -569,6 +569,292 @@ ags_math_util_find_term_parenthesis(gchar *str,
 }
 
 /**
+ * ags_math_util_match_sign:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ * 
+ * Match sign.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.6.0
+ */
+gboolean
+ags_math_util_match_sign(gchar *offset,
+			 gchar *end_ptr,
+			 gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+  
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    if(offset[0] == '-' || offset[0] == '+'){
+      match[0] = offset;
+      match[1] = offset + 1;
+
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_math_util_match_coefficient:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ * 
+ * Match coefficient including optional sign.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.6.0
+ */
+gboolean
+ags_math_util_match_coefficient(gchar *offset,
+				gchar *end_ptr,
+				gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gchar *iter;
+  gchar *iter_start_offset, *iter_end_offset;
+
+  gboolean has_sign;
+  gboolean has_numeric;
+  gboolean has_float;
+  gboolean success;
+  
+  match[0] = NULL;
+  match[1] = NULL;
+
+  has_sign = FALSE;
+  has_numeric = FALSE;
+  has_float = FALSE;
+  
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    iter = offset;
+
+    has_sign = ags_math_util_match_sign(offset,
+					end_ptr,
+					&iter_start_offset, &iter_end_offset);
+
+    if(has_sign){
+      iter = iter_end_offset;
+    }
+    
+    if(!strncmp(iter,
+		AGS_SYMBOLIC_EULER,
+		strlen(AGS_SYMBOLIC_EULER))){
+      match[0] = offset;
+      match[1] = iter + strlen(AGS_SYMBOLIC_EULER);
+
+      success = TRUE;
+    }else if(!strncmp(iter,
+		      AGS_SYMBOLIC_PI,
+		      strlen(AGS_SYMBOLIC_PI))){
+      match[0] = offset;
+      match[1] = iter + strlen(AGS_SYMBOLIC_PI);
+
+      success = TRUE;
+    }else if(!strncmp(iter,
+		      AGS_SYMBOLIC_PI,
+		      strlen(AGS_SYMBOLIC_PI))){
+      match[0] = offset;
+      match[1] = iter + strlen(AGS_SYMBOLIC_PI);
+
+      success = TRUE;
+    }else if(!strncmp(iter,
+		      AGS_SYMBOLIC_INFINIT,
+		      strlen(AGS_SYMBOLIC_INFINIT))){
+      match[0] = offset;
+      match[1] = iter + strlen(AGS_SYMBOLIC_INFINIT);
+
+      success = TRUE;
+    }else if(!strncmp(iter,
+		      AGS_SYMBOLIC_COMPLEX_UNIT,
+		      strlen(AGS_SYMBOLIC_COMPLEX_UNIT))){
+      match[0] = offset;
+      match[1] = iter + strlen(AGS_SYMBOLIC_COMPLEX_UNIT);
+
+      success = TRUE;
+    }else{
+      for(; iter < end_ptr; iter++){
+	if(iter[0] >= '0' && iter[0] <= '9'){
+	  has_numeric = TRUE;
+	}else{
+	  if(!has_float &&
+	     iter[0] = '.'){
+	    has_float = TRUE;
+	  }else{
+	    break;
+	  }
+	}
+      }
+
+      if(has_numeric){
+	match[0] = offset;
+	match[1] = iter;
+
+	success = TRUE;
+      }
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_math_util_match_symbol:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ * 
+ * Match symbol including optional sign.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.6.0
+ */
+gboolean
+ags_math_util_match_symbol(gchar *offset,
+			   gchar *end_ptr,
+			   gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gchar *iter;
+  gchar *iter_start_offset, *iter_end_offset;
+
+  gboolean has_sign;
+  gboolean has_subscript;
+  gboolean success;
+  
+  match[0] = NULL;
+  match[1] = NULL;
+
+  has_sign = FALSE;
+  has_subscript = FALSE;
+  
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    iter = offset;
+
+    has_sign = ags_math_util_match_sign(offset,
+					end_ptr,
+					&iter_start_offset, &iter_end_offset);
+
+    if(has_sign){
+      iter = iter_end_offset;
+    }
+
+    if((iter[0] >= 'a' && iter[0] <= 'z') ||
+       (iter[0] >= 'A' && iter[0] <= 'Z')){
+      success = TRUE;
+
+      iter++;
+
+      /* check subscript */
+      for(; iter < end_ptr; iter++){
+	gunichar subscript_x;
+
+	static const gunichar subscript_0 = g_utf8_get_char(AGS_SUBSCRIPT_0);
+	static const gunichar subscript_9 = g_utf8_get_char(AGS_SUBSCRIPT_9);
+
+	subscript_x = g_utf8_get_char(iter);
+	
+	if(subscript_x >= subscript_0 && subscript_x <= subscript_9){
+	  has_subscript = TRUE;
+	}else{
+	  break;
+	}
+      }
+
+      match[0] = offset;
+      match[1] = iter;
+
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+gboolean
+ags_math_util_match_exponent(gchar *offset,
+			     gchar *end_ptr,
+			     gchar **start_offset, gchar **end_offset)
+{
+  //TODO:JK: implement me
+  
+  return(FALSE);
+}
+
+gboolean
+ags_math_util_match_operator(gchar *offset,
+			     gchar *end_ptr,
+			     gchar **start_offset, gchar **end_offset)
+{
+  //TODO:JK: implement me
+  
+  return(FALSE);
+}
+
+gboolean
+ags_math_util_match_function(gchar *offset,
+			     gchar *end_ptr,
+			     gchar **start_offset, gchar **end_offset)
+{
+  //TODO:JK: implement me
+  
+  return(FALSE);
+}
+
+/**
  * ags_math_util_find_function:
  * @str: the string
  *  

@@ -30,6 +30,17 @@ G_BEGIN_DECLS
 #define AGS_SYMBOLIC_INFINIT "∞"
 #define AGS_SYMBOLIC_COMPLEX_UNIT "𝑖"
 
+#define AGS_SUBSCRIPT_0 "₀"
+#define AGS_SUBSCRIPT_1 "₁"
+#define AGS_SUBSCRIPT_2 "₂"
+#define AGS_SUBSCRIPT_3 "₃"
+#define AGS_SUBSCRIPT_4 "₄"
+#define AGS_SUBSCRIPT_5 "₅"
+#define AGS_SUBSCRIPT_6 "₆"
+#define AGS_SUBSCRIPT_7 "₇"
+#define AGS_SUBSCRIPT_8 "₈"
+#define AGS_SUBSCRIPT_9 "₉"
+
 void ags_math_util_find_parenthesis_all(gchar *str,
 					gint **open_position, gint **close_position,
 					guint *open_position_count, guint *close_position_count);
@@ -42,6 +53,25 @@ void ags_math_util_find_function_parenthesis(gchar *str,
 void ags_math_util_find_term_parenthesis(gchar *str,
 					 gint **term_open_position, gint **term_close_position,
 					 guint *term_open_position_count, guint *term_close_position_count);
+
+gboolean ags_math_util_match_sign(gchar *offset,
+				  gchar *end_ptr,
+				  gchar **start_offset, gchar **end_offset);
+gboolean ags_math_util_match_coefficient(gchar *offset,
+					 gchar *end_ptr,
+					 gchar **start_offset, gchar **end_offset);
+gboolean ags_math_util_match_symbol(gchar *offset,
+				    gchar *end_ptr,
+				    gchar **start_offset, gchar **end_offset);
+gboolean ags_math_util_match_exponent(gchar *offset,
+				      gchar *end_ptr,
+				      gchar **start_offset, gchar **end_offset);
+gboolean ags_math_util_match_operator(gchar *offset,
+				      gchar *end_ptr,
+				      gchar **start_offset, gchar **end_offset);
+gboolean ags_math_util_match_function(gchar *offset,
+				      gchar *end_ptr,
+				      gchar **start_offset, gchar **end_offset);
 
 gchar* ags_math_util_find_function(gchar *str);
 
