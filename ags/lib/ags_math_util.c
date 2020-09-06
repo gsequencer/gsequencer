@@ -784,30 +784,251 @@ ags_math_util_match_symbol(gchar *offset,
       iter = iter_end_offset;
     }
 
-    if((iter[0] >= 'a' && iter[0] <= 'z') ||
-       (iter[0] >= 'A' && iter[0] <= 'Z')){
-      success = TRUE;
+    if(!ags_math_util_match_function(offset,
+				     end_ptr,
+				     NULL, NULL)){
+      if((iter[0] >= 'a' && iter[0] <= 'z') ||
+	 (iter[0] >= 'A' && iter[0] <= 'Z')){
+	success = TRUE;
 
-      iter++;
+	iter++;
 
-      /* check subscript */
-      for(; iter < end_ptr; iter++){
-	gunichar subscript_x;
+	/* check subscript */
+	for(; iter < end_ptr; iter++){
+	  gunichar subscript_x;
 
-	static const gunichar subscript_0 = g_utf8_get_char(AGS_SUBSCRIPT_0);
-	static const gunichar subscript_9 = g_utf8_get_char(AGS_SUBSCRIPT_9);
+	  static const gunichar subscript_0 = g_utf8_get_char(AGS_SUBSCRIPT_0);
+	  static const gunichar subscript_9 = g_utf8_get_char(AGS_SUBSCRIPT_9);
 
-	subscript_x = g_utf8_get_char(iter);
+	  subscript_x = g_utf8_get_char(iter);
 	
-	if(subscript_x >= subscript_0 && subscript_x <= subscript_9){
-	  has_subscript = TRUE;
-	}else{
-	  break;
+	  if(subscript_x >= subscript_0 && subscript_x <= subscript_9){
+	    has_subscript = TRUE;
+	  }else{
+	    break;
+	  }
+	}
+
+	match[0] = offset;
+	match[1] = iter;
+
+	success = TRUE;
+      }
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_math_util_match_exponent:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ * 
+ * Match exponent with or without parenthesis.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.6.0
+ */
+gboolean
+ags_math_util_match_exponent(gchar *offset,
+			     gchar *end_ptr,
+			     gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gchar *iter;
+  gchar *iter_start_offset, *iter_end_offset;
+
+  gboolean has_coefficient;
+  gboolean has_symbol;
+  gboolean has_function;
+  gboolean success;
+  
+  match[0] = NULL;
+  match[1] = NULL;
+
+  has_coefficient = FALSE;
+  has_symbol = FALSE;  
+  has_function = FALSE;
+  
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    iter = offset;
+
+    if(iter[0] == '^'){
+      iter++;
+      
+      if(iter[0] == '('){
+	gint open_parenthesis;
+	
+	iter++;
+	
+	open_parenthesis = 1;
+
+	while(open_parenthesis > 0){
+	  if(iter[0] == '('){
+	    open_parenthesis++;
+
+	    iter++;
+	  }else if(iter[0] == ')'){
+	    open_parenthesis--;
+
+	    iter++;
+	  }else{
+	    gboolean tmp_has_coefficient;
+	    gboolean tmp_has_symbol;
+	    gboolean tmp_has_function;
+	    
+	    /* check coefficient */
+	    tmp_has_coefficient = ags_math_util_match_coefficient(iter,
+								  end_ptr,
+								  &iter_start_offset, &iter_end_offset);
+
+	    if(tmp_has_coefficient){
+	      iter = iter_end_offset;
+
+	      has_coefficient = TRUE;
+	    }
+
+	    /* check symbol */
+	    if(!tmp_has_coefficient){
+	      tmp_has_symbol = ags_math_util_match_symbol(iter,
+							  end_ptr,
+							  &iter_start_offset, &iter_end_offset);
+	    }
+	
+	    if(tmp_has_symbol){
+	      iter = iter_end_offset;
+
+	      has_symbol = TRUE;
+	    }
+
+	    /* check function */
+	    if(!tmp_has_coefficient &&
+	       !tmp_has_symbol){
+	      tmp_has_function = ags_math_util_match_function(iter,
+							      end_ptr,
+							      &iter_start_offset, &iter_end_offset);
+	    }
+	
+	    if(tmp_has_function){
+	      iter = iter_end_offset;
+
+	      has_function = TRUE;
+	    }
+
+	    /* skip anything else eg. operators and spaces */
+	    if(!(has_coefficient ||
+		 has_symbol ||
+		 has_function)){
+	      iter++;
+	    }
+	  }
+	}
+      }else{
+	/* check coefficient */
+	has_coefficient = ags_math_util_match_coefficient(iter,
+							  end_ptr,
+							  &iter_start_offset, &iter_end_offset);
+
+	if(has_coefficient){
+	  iter = iter_end_offset;
+	}
+
+	/* check symbol */
+	if(!has_coefficient){
+	  has_symbol = ags_math_util_match_symbol(iter,
+						  end_ptr,
+						  &iter_start_offset, &iter_end_offset);
+	}
+	
+	if(has_symbol){
+	  iter = iter_end_offset;
+	}
+
+	/* check function */
+	if(!has_coefficient &&
+	   !has_symbol){
+	  has_function = ags_math_util_match_function(iter,
+						      end_ptr,
+						      &iter_start_offset, &iter_end_offset);
+	}
+	
+	if(has_function){
+	  iter = iter_end_offset;
 	}
       }
 
+      if(has_coefficient ||
+	 has_symbol ||
+	 has_function){
+	match[0] = offset;
+	match[1] = iter;
+      }
+      
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_math_util_match_operator:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ * 
+ * Match operator.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.6.0
+ */
+gboolean
+ags_math_util_match_operator(gchar *offset,
+			     gchar *end_ptr,
+			     gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+  
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    if(offset[0] == '-' || offset[0] == '+' || offset[0] == '/' || offset[0] == '*'){
       match[0] = offset;
-      match[1] = iter;
+      match[1] = offset + 1;
 
       success = TRUE;
     }
@@ -824,34 +1045,244 @@ ags_math_util_match_symbol(gchar *offset,
   return(success);
 }
 
-gboolean
-ags_math_util_match_exponent(gchar *offset,
-			     gchar *end_ptr,
-			     gchar **start_offset, gchar **end_offset)
-{
-  //TODO:JK: implement me
-  
-  return(FALSE);
-}
-
-gboolean
-ags_math_util_match_operator(gchar *offset,
-			     gchar *end_ptr,
-			     gchar **start_offset, gchar **end_offset)
-{
-  //TODO:JK: implement me
-  
-  return(FALSE);
-}
-
+/**
+ * ags_math_util_match_function:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ * 
+ * Match function.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.6.0
+ */
 gboolean
 ags_math_util_match_function(gchar *offset,
 			     gchar *end_ptr,
 			     gchar **start_offset, gchar **end_offset)
 {
-  //TODO:JK: implement me
+  gchar* match[2];
+
+  gchar *iter;
+  gchar *iter_start_offset, *iter_end_offset;
+
+  gboolean is_function;
+  gboolean has_coefficient;
+  gboolean has_symbol;
+  gboolean has_function;
+  gboolean success;
   
-  return(FALSE);
+  match[0] = NULL;
+  match[1] = NULL;
+
+  is_function = FALSE;
+  
+  has_coefficient = FALSE;
+  has_symbol = FALSE;  
+  has_function = FALSE;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    iter = offset;
+
+    if(!strncmp(iter,
+		"log",
+		3)){
+      iter += 3;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "exp",
+		      3)){
+      iter += 3;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "sin",
+		      3)){
+      iter += 3;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "cos",
+		      3)){
+      iter += 3;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "tan",
+		      3)){
+      iter += 3;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "asin",
+		      3)){
+      iter += 3;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "acos",
+		      3)){
+      iter += 3;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "atan",
+		      3)){
+      iter += 3;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "floor",
+		      5)){
+      iter += 5;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "ceil",
+		      4)){
+      iter += 4;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "round",
+		      5)){
+      iter += 5;
+
+      is_function = TRUE;
+    }
+
+    if(is_function){
+      if(iter[0] == '('){
+	gint open_parenthesis;
+
+	iter++;
+	
+	open_parenthesis = 1;
+
+	while(open_parenthesis > 0){
+	  if(iter[0] == '('){
+	    open_parenthesis++;
+
+	    iter++;
+	  }else if(iter[0] == ')'){
+	    open_parenthesis--;
+
+	    iter++;
+	  }else{
+	    gboolean tmp_has_coefficient;
+	    gboolean tmp_has_symbol;
+	    gboolean tmp_has_function;
+	    
+	    /* check coefficient */
+	    tmp_has_coefficient = ags_math_util_match_coefficient(iter,
+								  end_ptr,
+								  &iter_start_offset, &iter_end_offset);
+
+	    if(tmp_has_coefficient){
+	      iter = iter_end_offset;
+
+	      has_coefficient = TRUE;
+	    }
+
+	    /* check symbol */
+	    if(!tmp_has_coefficient){
+	      tmp_has_symbol = ags_math_util_match_symbol(iter,
+							  end_ptr,
+							  &iter_start_offset, &iter_end_offset);
+	    }
+	
+	    if(tmp_has_symbol){
+	      iter = iter_end_offset;
+
+	      has_symbol = TRUE;
+	    }
+
+	    /* check function */
+	    if(!tmp_has_coefficient &&
+	       !tmp_has_symbol){
+	      tmp_has_function = ags_math_util_match_function(iter,
+							      end_ptr,
+							      &iter_start_offset, &iter_end_offset);
+	    }
+	
+	    if(tmp_has_function){
+	      iter = iter_end_offset;
+
+	      has_function = TRUE;
+	    }
+
+	    /* skip anything else eg. operators and spaces */
+	    if(!(has_coefficient ||
+		 has_symbol ||
+		 has_function)){
+	      iter++;
+	    }
+	  }
+	}
+      }else{
+	if(iter[0] == ' '){
+	  iter++;
+	  
+	  /* check coefficient */
+	  has_coefficient = ags_math_util_match_coefficient(iter,
+							    end_ptr,
+							    &iter_start_offset, &iter_end_offset);
+
+	  if(has_coefficient){
+	    iter = iter_end_offset;
+	  }
+
+	  /* check symbol */
+	  if(!has_coefficient){
+	    has_symbol = ags_math_util_match_symbol(iter,
+						    end_ptr,
+						    &iter_start_offset, &iter_end_offset);
+	  }
+	
+	  if(has_symbol){
+	    iter = iter_end_offset;
+	  }
+
+	  /* check function */
+	  if(!has_coefficient &&
+	     !has_symbol){
+	    has_function = ags_math_util_match_function(iter,
+							end_ptr,
+							&iter_start_offset, &iter_end_offset);
+	  }
+	
+	  if(has_function){
+	    iter = iter_end_offset;
+	  }
+	}
+      }
+    }
+    
+    if(is_function &&
+       (has_coefficient ||
+	has_symbol ||
+	has_function)){
+      match[0] = offset;
+      match[1] = iter;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
 }
 
 /**
