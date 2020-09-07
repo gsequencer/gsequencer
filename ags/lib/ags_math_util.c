@@ -784,7 +784,7 @@ ags_math_util_match_symbol(gchar *offset,
       iter = iter_end_offset;
     }
 
-    if(!ags_math_util_match_function(offset,
+    if(!ags_math_util_match_function(iter,
 				     end_ptr,
 				     NULL, NULL)){
       if((iter[0] >= 'a' && iter[0] <= 'z') ||
@@ -1283,6 +1283,597 @@ ags_math_util_match_function(gchar *offset,
   }
   
   return(success);
+}
+
+/**
+ * ags_math_util_coefficient_to_complex:
+ * @coefficient: the coefficient string
+ * @value: (out) (transfer none): return location of value
+ * 
+ * Compute @value from @coefficient.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.6.0
+ */
+gboolean
+ags_math_util_coefficient_to_complex(gchar *coefficient,
+				     AgsComplex *value)
+{
+  gchar *iter;
+  
+  AgsComplex *this_value;
+
+  double complex z;
+  double double_real_val, double_imag_val;
+  double double_val;
+  int int_real_val, int_imag_val;
+  int int_val;
+    
+  int retval;
+
+  gboolean has_sign;
+  gboolean success;
+  
+  z = 0.0 + I * 0.0;
+  
+  ags_complex_set(this_value,
+		  z);
+
+  success = FALSE;
+
+  if(coefficient == NULL){
+    if(value != NULL){
+      value->real = this_value->real;
+      value->imag = this_value->imag;
+    }
+
+    return(FALSE);
+  }
+
+  iter = coefficient;
+
+  has_sign = FALSE;
+  
+  if(iter[0] == '+' || iter[0] == '-'){
+    iter++;
+
+    has_sign = TRUE;
+  }
+
+  /* check double complex coefficient */
+  retval = sscanf(iter, "%f+𝑖*%f", &double_real_val, &double_imag_val);
+    
+  if(retval > 0){
+    z = double_real_val + I * double_imag_val;
+	
+    success = TRUE;
+  }
+
+  if(!success){
+    retval = sscanf(iter, "%f-𝑖*%f", &double_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = double_real_val - I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%f+𝑖*%f)", &double_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = double_real_val + I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%f-𝑖*%f)", &double_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = double_real_val - I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+    
+  /* check int real and double imaginary complex coefficient */
+  if(!success){
+    retval = sscanf(iter, "%d+𝑖*%f", &int_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = ((double) int_real_val) + I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+    
+  if(!success){
+    retval = sscanf(iter, "%d-𝑖*%f", &int_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = ((double) int_real_val) - I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%d+𝑖*%f)", &int_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = ((double) int_real_val) + I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%d-𝑖*%f)", &int_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = ((double) int_real_val) - I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+
+  /* check double real and int imaginary complex coefficient */
+  if(!success){
+    retval = sscanf(iter, "%f+𝑖*%d", &double_real_val, &int_imag_val);
+    
+    if(retval > 0){
+      z = double_real_val + I * ((double) int_imag_val);
+	
+      success = TRUE;
+    }
+  }
+    
+  if(!success){
+    retval = sscanf(iter, "%f-𝑖*%d", &double_real_val, &int_imag_val);
+    
+    if(retval > 0){
+      z = double_real_val - I * ((double) int_imag_val);
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%f+𝑖*%d)", &double_real_val, &int_imag_val);
+    
+    if(retval > 0){
+      z = double_real_val + I * ((double) int_imag_val);
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%f-𝑖*%d)", &double_real_val, &int_imag_val);
+    
+    if(retval > 0){
+      z = double_real_val - I * ((double) int_imag_val);
+	
+      success = TRUE;
+    }
+  }
+    
+  /* check pi real and double imaginary complex coefficient */
+  if(!success){
+    retval = sscanf(iter, "𝜋+𝑖*%f", &double_imag_val);
+    
+    if(retval > 0){
+      z = M_PI + I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+    
+  if(!success){
+    retval = sscanf(iter, "𝜋-𝑖*%f", &double_imag_val);
+    
+    if(retval > 0){
+      z = M_PI - I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }    
+    
+  if(!success){
+    retval = sscanf(iter, "(𝜋+𝑖*%f)", &double_imag_val);
+    
+    if(retval > 0){
+      z = M_PI + I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(𝜋-𝑖*%f)", &double_imag_val);
+    
+    if(retval > 0){
+      z = M_PI - I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+
+  /* check pi real and int imaginary complex coefficient */
+  if(!success){
+    retval = sscanf(iter, "𝜋+𝑖*%d", &int_imag_val);
+    
+    if(retval > 0){
+      z = M_PI + I * ((double) int_imag_val);
+	
+      success = TRUE;
+    }
+  }
+    
+  if(!success){
+    retval = sscanf(iter, "𝜋-𝑖*%d", &int_imag_val);
+    
+    if(retval > 0){
+      z = M_PI - I * ((double) int_imag_val);
+	
+      success = TRUE;
+    }
+  }    
+    
+  if(!success){
+    retval = sscanf(iter, "(𝜋+𝑖*%d)", &int_imag_val);
+    
+    if(retval > 0){
+      z = M_PI + I * ((double) int_imag_val);
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(𝜋-𝑖*%d)", &int_imag_val);
+    
+    if(retval > 0){
+      z = M_PI - I * ((double) int_imag_val);
+	
+      success = TRUE;
+    }
+  }
+
+  /* check double real and pi imaginary complex coefficient */
+  if(!success){
+    retval = sscanf(iter, "%f+𝑖*𝜋", &double_real_val);
+    
+    if(retval > 0){
+      z = double_real_val + I * M_PI;
+	
+      success = TRUE;
+    }
+  }
+    
+  if(!success){
+    retval = sscanf(iter, "%f-𝑖*𝜋", &double_real_val);
+    
+    if(retval > 0){
+      z = double_real_val - I * M_PI;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%f+𝑖*𝜋)", &double_real_val);
+    
+    if(retval > 0){
+      z = double_real_val + I * M_PI;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%f-𝑖*𝜋)", &double_real_val);
+    
+    if(retval > 0){
+      z = double_real_val - I * M_PI;
+	
+      success = TRUE;
+    }
+  }
+
+  /* check int real and pi imaginary complex coefficient */
+  if(!success){
+    retval = sscanf(iter, "%d+𝑖*𝜋", &int_real_val);
+    
+    if(retval > 0){
+      z = ((double) int_real_val) + I * M_PI;
+	
+      success = TRUE;
+    }
+  }
+    
+  if(!success){
+    retval = sscanf(iter, "%d-𝑖*𝜋", &int_real_val);
+    
+    if(retval > 0){
+      z = ((double) int_real_val) - I * M_PI;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%d+𝑖*𝜋)", &int_real_val);
+    
+    if(retval > 0){
+      z = ((double) int_real_val) + I * M_PI;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%d-𝑖*𝜋)", &int_real_val);
+    
+    if(retval > 0){
+      z = ((double) int_real_val) - I * M_PI;
+	
+      success = TRUE;
+    }
+  }
+
+  /* check euler real and double imaginary complex coefficient */
+  if(!success){
+    retval = sscanf(iter, "ℯ+𝑖*%f", &double_imag_val);
+    
+    if(retval > 0){
+      z = M_E + I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+    
+  if(!success){
+    retval = sscanf(iter, "ℯ-𝑖*%f", &double_imag_val);
+    
+    if(retval > 0){
+      z = M_E - I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }    
+    
+  if(!success){
+    retval = sscanf(iter, "(ℯ+𝑖*%f)", &double_imag_val);
+    
+    if(retval > 0){
+      z = M_E + I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(ℯ-𝑖*%f)", &double_imag_val);
+    
+    if(retval > 0){
+      z = M_E - I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+
+  /* check euler real and int imaginary complex coefficient */
+  if(!success){
+    retval = sscanf(iter, "ℯ+𝑖*%d", &int_imag_val);
+    
+    if(retval > 0){
+      z = M_E + I * ((double) int_imag_val);
+	
+      success = TRUE;
+    }
+  }
+    
+  if(!success){
+    retval = sscanf(iter, "ℯ-𝑖*%d", &int_imag_val);
+    
+    if(retval > 0){
+      z = M_E - I * ((double) int_imag_val);
+	
+      success = TRUE;
+    }
+  }    
+    
+  if(!success){
+    retval = sscanf(iter, "(ℯ+𝑖*%d)", &int_imag_val);
+    
+    if(retval > 0){
+      z = M_E + I * ((double) int_imag_val);
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(ℯ-𝑖*%d)", &int_imag_val);
+    
+    if(retval > 0){
+      z = M_E - I * ((double) int_imag_val);
+	
+      success = TRUE;
+    }
+  }
+  
+  /* check double real and euler imaginary complex coefficient */
+  if(!success){
+    retval = sscanf(iter, "%f+𝑖*ℯ", &double_real_val);
+    
+    if(retval > 0){
+      z = double_real_val + I * M_E;
+	
+      success = TRUE;
+    }
+  }
+    
+  if(!success){
+    retval = sscanf(iter, "%f-𝑖*ℯ", &double_real_val);
+    
+    if(retval > 0){
+      z = double_real_val - I * M_E;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%f+𝑖*ℯ)", &double_real_val);
+    
+    if(retval > 0){
+      z = double_real_val + I * M_E;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%f-𝑖*ℯ)", &double_real_val);
+    
+    if(retval > 0){
+      z = double_real_val - I * M_E;
+	
+      success = TRUE;
+    }
+  }
+    
+  /* check int real and euler imaginary complex coefficient */
+  if(!success){
+    retval = sscanf(iter, "%d+𝑖*ℯ", &int_real_val);
+    
+    if(retval > 0){
+      z = ((double) int_real_val) + I * M_E;
+	
+      success = TRUE;
+    }
+  }
+    
+  if(!success){
+    retval = sscanf(iter, "%d-𝑖*ℯ", &int_real_val);
+    
+    if(retval > 0){
+      z = ((double) int_real_val) - I * M_E;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%d+𝑖*ℯ)", &int_real_val);
+    
+    if(retval > 0){
+      z = ((double) int_real_val) + I * M_E;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%d-𝑖*ℯ)", &int_real_val);
+    
+    if(retval > 0){
+      z = ((double) int_real_val) - I * M_E;
+	
+      success = TRUE;
+    }
+  }
+
+  /* check floating point coefficient */
+  if(!success){
+    retval = sscanf(iter, "%f", &double_val);
+      
+    if(retval > 0){
+      z = double_val + I * 0.0;
+	
+      success = TRUE;
+    }
+  }
+    
+  /* check integer coefficient */
+  if(!success){
+    retval = sscanf(iter, "%d", &int_val);
+
+    if(retval > 0){
+      z = ((double) int_val) + I * 0.0;
+      
+      success = TRUE;
+    }
+  }
+
+  if(!success){  
+    if(!strncmp(iter,
+		AGS_SYMBOLIC_EULER,
+		strlen(AGS_SYMBOLIC_EULER))){
+      z = AGS_COMPLEX_M_E;
+
+      success = TRUE;
+    }else if(!strncmp(iter,
+		      AGS_SYMBOLIC_PI,
+		      strlen(AGS_SYMBOLIC_PI))){
+      z = AGS_COMPLEX_M_PI;
+
+      success = TRUE;
+    }else if(!strncmp(iter,
+		      AGS_SYMBOLIC_INFINIT,
+		      strlen(AGS_SYMBOLIC_INFINIT))){
+      //TODO:JK: implement me
+    }
+  }
+
+  if(success &&
+     has_sign &&
+     coefficient[0] == '-'){
+    z *= -1.0;
+  }
+
+  if(success){
+    ags_complex_set(this_value,
+		    z);
+  }
+  
+  if(value != NULL){
+    value->real = this_value->real;
+    value->imag = this_value->imag;
+  }
+
+  return(success);
+}
+
+/**
+ * ags_math_util_compute_coefficient_all:
+ * @coefficient: the coefficients as %NULL termiated string vector
+ * @value_count: (out) (transfer none): return location of value count 
+ * 
+ * Compute a string vector of coefficients.
+ * 
+ * Returns: the newly allocated #AgsComplex array of @value_count length, or %NULL
+ * 
+ * Since: 3.6.0
+ */
+AgsComplex*
+ags_math_util_multiply_coefficient_all(gchar **coefficient,
+				       guint *value_count)
+{
+  gchar **iter;
+  
+  guint count;
+
+  
+  //TODO:JK: implement me
+  
+  return(NULL);
 }
 
 /**

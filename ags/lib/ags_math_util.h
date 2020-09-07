@@ -73,6 +73,12 @@ gboolean ags_math_util_match_function(gchar *offset,
 				      gchar *end_ptr,
 				      gchar **start_offset, gchar **end_offset);
 
+gboolean ags_math_util_coefficient_to_complex(gchar *coefficient,
+					      AgsComplex *value);
+
+AgsComplex* ags_math_util_multiply_coefficient_all(gchar **coefficient,
+						   guint *value_count);
+
 gchar* ags_math_util_find_function(gchar *str);
 
 gchar* ags_math_util_find_symbol(gchar *str);
