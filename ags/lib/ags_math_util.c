@@ -640,6 +640,8 @@ ags_math_util_match_coefficient(gchar *offset,
   gchar *iter;
   gchar *iter_start_offset, *iter_end_offset;
 
+  int retval;
+
   gboolean has_sign;
   gboolean has_numeric;
   gboolean has_float;
@@ -666,59 +668,51 @@ ags_math_util_match_coefficient(gchar *offset,
     if(has_sign){
       iter = iter_end_offset;
     }
-    
-    if(!strncmp(iter,
-		AGS_SYMBOLIC_EULER,
-		strlen(AGS_SYMBOLIC_EULER))){
+
+    retval = sscanf(iter, "%f+𝑖*%f", &double_real_val, &double_imag_val);
+
+    if(retval > 0){
       match[0] = offset;
       match[1] = iter + strlen(AGS_SYMBOLIC_EULER);
 
-      success = TRUE;
-    }else if(!strncmp(iter,
-		      AGS_SYMBOLIC_PI,
-		      strlen(AGS_SYMBOLIC_PI))){
-      match[0] = offset;
-      match[1] = iter + strlen(AGS_SYMBOLIC_PI);
+      success = TRUE;      
+    }
+    
 
-      success = TRUE;
-    }else if(!strncmp(iter,
-		      AGS_SYMBOLIC_PI,
-		      strlen(AGS_SYMBOLIC_PI))){
-      match[0] = offset;
-      match[1] = iter + strlen(AGS_SYMBOLIC_PI);
-
-      success = TRUE;
-    }else if(!strncmp(iter,
-		      AGS_SYMBOLIC_INFINIT,
-		      strlen(AGS_SYMBOLIC_INFINIT))){
-      match[0] = offset;
-      match[1] = iter + strlen(AGS_SYMBOLIC_INFINIT);
-
-      success = TRUE;
-    }else if(!strncmp(iter,
-		      AGS_SYMBOLIC_COMPLEX_UNIT,
-		      strlen(AGS_SYMBOLIC_COMPLEX_UNIT))){
-      match[0] = offset;
-      match[1] = iter + strlen(AGS_SYMBOLIC_COMPLEX_UNIT);
-
-      success = TRUE;
-    }else{
-      for(; iter < end_ptr; iter++){
-	if(iter[0] >= '0' && iter[0] <= '9'){
-	  has_numeric = TRUE;
-	}else{
-	  if(!has_float &&
-	     iter[0] = '.'){
-	    has_float = TRUE;
-	  }else{
-	    break;
-	  }
-	}
-      }
-
-      if(has_numeric){
+    if(!success){
+      if(!strncmp(iter,
+		  AGS_SYMBOLIC_EULER,
+		  strlen(AGS_SYMBOLIC_EULER))){
 	match[0] = offset;
-	match[1] = iter;
+	match[1] = iter + strlen(AGS_SYMBOLIC_EULER);
+
+	success = TRUE;
+      }else if(!strncmp(iter,
+			AGS_SYMBOLIC_PI,
+			strlen(AGS_SYMBOLIC_PI))){
+	match[0] = offset;
+	match[1] = iter + strlen(AGS_SYMBOLIC_PI);
+
+	success = TRUE;
+      }else if(!strncmp(iter,
+			AGS_SYMBOLIC_PI,
+			strlen(AGS_SYMBOLIC_PI))){
+	match[0] = offset;
+	match[1] = iter + strlen(AGS_SYMBOLIC_PI);
+
+	success = TRUE;
+      }else if(!strncmp(iter,
+			AGS_SYMBOLIC_INFINIT,
+			strlen(AGS_SYMBOLIC_INFINIT))){
+	match[0] = offset;
+	match[1] = iter + strlen(AGS_SYMBOLIC_INFINIT);
+
+	success = TRUE;
+      }else if(!strncmp(iter,
+			AGS_SYMBOLIC_COMPLEX_UNIT,
+			strlen(AGS_SYMBOLIC_COMPLEX_UNIT))){
+	match[0] = offset;
+	match[1] = iter + strlen(AGS_SYMBOLIC_COMPLEX_UNIT);
 
 	success = TRUE;
       }
