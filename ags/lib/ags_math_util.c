@@ -642,18 +642,21 @@ ags_math_util_match_coefficient(gchar *offset,
   gchar *iter;
   gchar *look_ahead;
   gchar *iter_start_offset, *iter_end_offset;
-
-  int retval;
-
+  gchar *a_start_offset, *a_end_offset;
+  gchar *b_start_offset, *b_end_offset;
+  
   gboolean has_sign;
   gboolean has_parenthesis;
+  gboolean has_complex_operator;
   gboolean has_complex_a_sign;
   gboolean has_complex_a_numeric;
   gboolean has_complex_a_float;
+  gboolean has_complex_a_exponent;
   gboolean has_complex_a;
   gboolean has_complex_b_sign;
   gboolean has_complex_b_numeric;
   gboolean has_complex_b_float;
+  gboolean has_complex_b_exponent;
   gboolean has_complex_b;
   gboolean has_complex_i0;
   gboolean has_complex_i1;
@@ -664,17 +667,26 @@ ags_math_util_match_coefficient(gchar *offset,
   match[0] = NULL;
   match[1] = NULL;
 
+  a_start_offset = NULL;
+  a_end_offset = NULL;
+
+  b_start_offset = NULL;
+  b_end_offset = NULL;
+  
   has_sign = FALSE;
   has_parenthesis = FALSE;
+  has_complex_operator = FALSE;
 
   has_complex_a_sign = FALSE;
   has_complex_a_numeric = FALSE;
   has_complex_a_float = FALSE;
+  has_complex_a_exponent = FALSE;
   has_complex_a = FALSE;
   
   has_complex_b_sign = FALSE;
   has_complex_b_numeric = FALSE;
   has_complex_b_float = FALSE;
+  has_complex_b_exponent = FALSE;
   has_complex_b = FALSE;
 
   has_complex_i0 = FALSE;
@@ -713,9 +725,13 @@ ags_math_util_match_coefficient(gchar *offset,
 	if(look_ahead[0] == '+' ||
 	   look_ahead[0] == '-'){
 	  if(!has_complex_a_sign){
+	    a_start_offset = iter;
+	    
 	    has_complex_a_sign = TRUE;
 	  }else{
-	    if(has_complex_numeric){
+	    if(has_complex_a_numeric){
+	      a_end_offset = iter;
+	      
 	      has_complex_a = TRUE;
 
 	      look_ahead++;
@@ -726,11 +742,13 @@ ags_math_util_match_coefficient(gchar *offset,
 	      
 	      continue;
 	    }else{
+	      //failure
+	      
 	      break;
 	    }
 	  }
 	}
-
+	
 	if(look_ahead[0] >= '0' &&
 	   look_ahead[0] <= '9'){
 	  has_complex_a_numeric = TRUE;
@@ -740,21 +758,158 @@ ags_math_util_match_coefficient(gchar *offset,
 	  continue;
 	}
 
-	if(!has_compex_a_float &&
-	   look_ahead[0] == '.'){
-	  has_compex_a_float = TRUE;
+	if(look_ahead[0] == '.'){
+	  if(!has_compex_a_float){
+	    has_compex_a_float = TRUE;
 	  
+	    look_ahead++;
+
+	    continue;
+	  }else{
+	    a_start_offset = NULL;
+	    
+	    //failure
+	    
+	    break;
+	  }
+	}
+
+	if(look_ahead[0] == 'e' ||
+	   look_ahead[0] == 'E'){
+	  gchar *exp_look_ahead;
+
+	  exp_look_ahead = look_ahead + 1;
+	  
+	  if(exp_look_ahead < end_ptr &&
+	     exp_look_ahead[0] == '+' ||
+	     exp_look_ahead[0] == '-'){
+	    exp_look_ahead++;
+	  }
+
+	  for(; exp_look_ahead < end_ptr; exp_look_ahead++){
+	    if(exp_look_ahead[0] >= '0' &&
+	       exp_look_ahead[0] <= '9'){
+	      has_complex_a_exponent = TRUE;	      
+	    }else{
+	      break;
+	    }
+	  }
+
+	  if(has_complex_a_exponent){
+	    look_ahead = exp_look_ahead;
+
+	    continue;
+	  }else{
+	    //failure
+	    
+	    break;
+	  }
+	}
+
+	/* default */
+	//completed or failure
+
+	if(has_complex_a_numeric){
+	  a_end_offset = iter;
+	      
+	  has_complex_a = TRUE;
+	}
+	
+	break;
+      }
+      
+      /* check sign of b and i */
+      if(has_complex_operator &&
+	 !has_complex_b){
+	if(look_ahead[0] == '+' ||
+	   look_ahead[0] == '-'){
+	  if(!has_complex_b_sign){
+	    b_start_offset = NULL;
+	    
+	    has_complex_b_sign = TRUE;
+	  }else{
+	    if(has_complex_b_numeric){
+	      has_complex_b = TRUE;
+
+	      look_ahead++;
+	      
+	      continue;
+	    }else if(has_complex_i0){
+	      look_ahead++;
+	      
+	      continue;
+	    }else{
+	      //failure
+
+	      break;
+	    }
+	  }
+	}
+
+	if(look_ahead[0] >= '0' &&
+	   look_ahead[0] <= '9'){
+	  has_complex_b_numeric = TRUE;
+
 	  look_ahead++;
 
 	  continue;
 	}
+
+	if(look_ahead[0] == '.'){
+	  if(!has_compex_b_float){
+	    has_compex_b_float = TRUE;
+	  
+	    look_ahead++;
+
+	    continue;
+	  }else{
+	    //failure
+	    
+	    break;
+	  }
+	}
+
+	if(look_ahead[0] == 'e' ||
+	   look_ahead[0] == 'E'){
+	  gchar *exp_look_ahead;
+
+	  exp_look_ahead = look_ahead + 1;
+	  
+	  if(exp_look_ahead < end_ptr &&
+	     exp_look_ahead[0] == '+' ||
+	     exp_look_ahead[0] == '-'){
+	    exp_look_ahead++;
+	  }
+
+	  for(; exp_look_ahead < end_ptr; exp_look_ahead++){
+	    if(exp_look_ahead[0] >= '0' &&
+	       exp_look_ahead[0] <= '9'){
+	      has_complex_b_exponent = TRUE;	      
+	    }else{
+	      break;
+	    }
+	  }
+
+	  if(has_complex_b_exponent){
+	    look_ahead = exp_look_ahead;
+	  }else{
+	    //failure
+	    
+	    break;
+	  }
+	}
+
+	/* default */
+	//completed or failure
+
+	if(has_complex_b_numeric){
+	  b_end_offset = iter;
+	      
+	  has_complex_b = TRUE;
+	}
       }
 
-      if(has_complex_a &&
-	 !has_complex_b){
-      }
-
-      if(!has_complex_b &&
+      if(!has_complex_operator &&
 	 !has_complex_i0){
 	if(!strstr(look_ahead,
 		   AGS_SYMBOLIC_COMPLEX_UNIT,
@@ -767,9 +922,36 @@ ags_math_util_match_coefficient(gchar *offset,
 	}
       }
 
-      if(has_complex_a &&
+      if(has_complex_operator &&
 	 !has_complex_i1){
+	if(!strstr(look_ahead,
+		   AGS_SYMBOLIC_COMPLEX_UNIT,
+		   strlen(AGS_SYMBOLIC_COMPLEX_UNIT))){
+	  has_complex_i1 = TRUE;
+	  
+	  look_ahead += strlen(AGS_SYMBOLIC_COMPLEX_UNIT);
+	  
+	  continue;
+	}
       }
+      
+      if(look_ahead[0] == ')'){
+	if(has_parenthesis){
+	  look_ahead++;
+	}
+	
+	break;
+      }
+
+      if(!has_complex_operator &&
+	 (look_ahead[0] == '+' ||
+	  look_ahead[0] == '-')){
+	has_complex_operator = TRUE;
+
+	look_ahead++;
+      }
+      
+      break;
     }
     
     if(retval > 0){
