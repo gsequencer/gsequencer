@@ -824,7 +824,7 @@ ags_math_util_match_coefficient(gchar *offset,
 	if(look_ahead[0] == '+' ||
 	   look_ahead[0] == '-'){
 	  if(!has_complex_b_sign){
-	    b_start_offset = NULL;
+	    b_start_offset = iter;
 	    
 	    has_complex_b_sign = TRUE;
 	  }else{
@@ -863,6 +863,7 @@ ags_math_util_match_coefficient(gchar *offset,
 
 	    continue;
 	  }else{
+	    b_start_offset = NULL;
 	    //failure
 	    
 	    break;
@@ -953,12 +954,15 @@ ags_math_util_match_coefficient(gchar *offset,
       
       break;
     }
-    
-    if(retval > 0){
-      match[0] = offset;
-      match[1] = iter + retval;
 
-      success = TRUE;      
+    if((has_complex_i0 || has_complex_i1) &&
+       has_complex_a &&
+       has_complex_b){
+      success = TRUE;
+
+      match[0] = offset;
+      //TODO:JK: implement me
+//      match[1] = ;
     }
     
     if(!success){

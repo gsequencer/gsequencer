@@ -174,7 +174,7 @@ ags_osc_xmlrpc_controller_class_init(AgsOscXmlrpcControllerClass *osc_xmlrpc_con
   /**
    * AgsOscXmlrpcController:osc-xmlrpc-server:
    *
-   * The assigned #AgsOscServer
+   * The assigned #AgsOscXmlrpcServer
    * 
    * Since: 3.0.0
    */
