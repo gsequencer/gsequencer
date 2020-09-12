@@ -2050,7 +2050,7 @@ ags_fx_notation_audio_processor_real_counter_change(AgsFxNotationAudioProcessor 
     delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
   }
 
-  if(delay_counter + 1.0 >= delay){
+  if(delay_counter + 1.0 >= floor(delay)){
     g_rec_mutex_lock(fx_notation_audio_processor_mutex);
     
     fx_notation_audio_processor->current_delay_counter = 0.0;

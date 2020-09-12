@@ -2395,7 +2395,7 @@ ags_pulse_devout_tic(AgsSoundcard *soundcard)
 
   g_rec_mutex_unlock(pulse_devout_mutex);
 
-  if(delay_counter + 1.0 >= delay){
+  if(delay_counter + 1.0 >= floor(delay)){
     if(do_loop &&
        note_offset + 1 == loop_right){
       ags_soundcard_set_note_offset(soundcard,
