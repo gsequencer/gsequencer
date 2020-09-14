@@ -390,7 +390,7 @@ ags_fx_pattern_audio_signal_real_stream_feed(AgsFxPatternAudioSignal *fx_pattern
 			       frame_count + buffer_size, frame_count);
 #if 0
   }else if(offset_counter + 1 == x1 &&
-	   delay_counter + 1.0 >= delay){
+	   delay_counter + 1.0 >= floor(delay)){
     ags_audio_signal_close_feed(source,
 				template,
 				frame_count + buffer_size, frame_count);
