@@ -467,6 +467,89 @@ ags_dssi_manager_find_dssi_plugin(AgsDssiManager *dssi_manager,
 }
 
 /**
+ * ags_dssi_manager_find_dssi_plugin_with_fallback:
+ * @dssi_manager: the #AgsDssiManager
+ * @filename: the filename of the plugin
+ * @effect: the effect's name
+ *
+ * Lookup filename in loaded plugins.
+ *
+ * Returns: (transfer none): the matching #AgsDssiPlugin
+ *
+ * Since: 3.5.10
+ */
+AgsDssiPlugin*
+ags_dssi_manager_find_dssi_plugin_with_fallback(AgsDssiManager *dssi_manager,
+						gchar *filename, gchar *effect)
+{
+  AgsDssiPlugin *dssi_plugin;
+  
+  GList *start_list, *list;
+  
+  gchar *filename_suffix;
+  
+  gboolean success;  
+
+  GRecMutex *dssi_manager_mutex;
+  GRecMutex *base_plugin_mutex;
+
+  if(!AGS_DSSI_MANAGER(dssi_manager)){
+    return(NULL);
+  }
+  
+  /* get dssi manager mutex */
+  dssi_manager_mutex = AGS_DSSI_MANAGER_GET_OBJ_MUTEX(dssi_manager);
+
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(dssi_manager,
+						  filename, effect);
+
+  if(dssi_plugin == NULL){
+    filename_suffix = strrchr(filename, "/");
+    
+    /* collect */
+    g_rec_mutex_lock(dssi_manager_mutex);
+
+    list = 
+      start_list = g_list_copy(dssi_manager->dssi_plugin);
+
+    g_rec_mutex_unlock(dssi_manager_mutex);
+
+    success = FALSE;
+  
+    while(list != NULL){
+      dssi_plugin = AGS_DSSI_PLUGIN(list->data);
+
+      /* get base plugin mutex */
+      base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
+
+      /* check filename and effect */
+      g_rec_mutex_lock(base_plugin_mutex);
+
+      success = (g_str_has_suffix(AGS_BASE_PLUGIN(dssi_plugin)->filename,
+				  filename_suffix) &&
+		 !g_strcmp0(AGS_BASE_PLUGIN(dssi_plugin)->effect,
+			    effect)) ? TRUE: FALSE;
+    
+      g_rec_mutex_unlock(base_plugin_mutex);
+    
+      if(success){
+	break;
+      }
+
+      list = list->next;
+    }
+
+    g_list_free(start_list);
+
+    if(!success){
+      dssi_plugin = NULL;
+    }
+  }
+  
+  return(dssi_plugin);
+}
+
+/**
  * ags_dssi_manager_load_blacklist:
  * @dssi_manager: the #AgsDssiManager
  * @blacklist_filename: the filename as string

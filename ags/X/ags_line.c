@@ -2408,6 +2408,34 @@ ags_line_real_add_plugin(AgsLine *line,
 			 gint position,
 			 guint create_flags, guint recall_flags)
 {
+  AgsBasePlugin *base_plugin;
+
+  gchar *fallback_filename;
+
+  base_plugin = NULL;
+
+  fallback_filename = NULL;
+  
+  if(!g_ascii_strncasecmp(plugin_name,
+			  "ags-fx-ladspa",
+			  14)){   
+    base_plugin = ags_ladspa_manager_find_ladspa_plugin_with_fallback(ags_ladspa_manager_get_instance(),
+								      filename, effect);
+  }else if(!g_ascii_strncasecmp(plugin_name,
+				"ags-fx-lv2",
+				11)){
+    base_plugin = ags_lv2_manager_find_lv2_plugin_with_fallback(ags_lv2_manager_get_instance(),
+								filename, effect);
+  }
+
+  if(base_plugin != NULL){
+    g_object_get(base_plugin,
+		 "filename", &fallback_filename,
+		 NULL);
+  }else{
+    fallback_filename = g_strdup(filename);
+  }
+
   if((AGS_FX_FACTORY_ADD & (create_flags)) != 0){
     if(!g_ascii_strncasecmp(plugin_name,
 			    "ags-fx-ladspa",
@@ -2416,7 +2444,7 @@ ags_line_real_add_plugin(AgsLine *line,
 				 control_type_name,
 				 play_container, recall_container,
 				 plugin_name,
-				 filename,
+				 fallback_filename,
 				 effect,
 				 start_audio_channel, stop_audio_channel,
 				 start_pad, stop_pad,
@@ -2429,7 +2457,7 @@ ags_line_real_add_plugin(AgsLine *line,
 			      control_type_name,
 			      play_container, recall_container,
 			      plugin_name,
-			      filename,
+			      fallback_filename,
 			      effect,
 			      start_audio_channel, stop_audio_channel,
 			      start_pad, stop_pad,
@@ -2437,6 +2465,8 @@ ags_line_real_add_plugin(AgsLine *line,
 			      create_flags, recall_flags);
     }
   }
+
+  g_free(fallback_filename);
 }
 
 /**
