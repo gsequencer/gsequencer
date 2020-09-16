@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/lib/ags_complex.h>
+
 G_BEGIN_DECLS
 
 #define AGS_SYMBOLIC_EULER "ℯ"

@@ -820,8 +820,6 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
   solver_polynomial->exponent_value = exponent_value;
 
   g_rec_mutex_unlock(solver_polynomial_mutex);
-
-  g_strfreev(coefficient_arr);
 }
 
 /**
