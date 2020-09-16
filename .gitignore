@@ -1,6 +1,7 @@
 *~
 autom4te.cache
 ABOUT-NLS
+build*/
 confdefs.h
 conftest.dir
 configure

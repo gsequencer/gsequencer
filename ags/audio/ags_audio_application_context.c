@@ -213,7 +213,7 @@ extern AgsApplicationContext *ags_application_context;
 
 //TODO:JK: implement get functions
 #ifndef AGS_W32API
-struct sigaction ags_sigact;
+static struct sigaction ags_sigact;
 #endif
 
 GType
