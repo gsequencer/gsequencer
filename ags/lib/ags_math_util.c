@@ -759,8 +759,8 @@ ags_math_util_match_coefficient(gchar *offset,
 	}
 
 	if(look_ahead[0] == '.'){
-	  if(!has_compex_a_float){
-	    has_compex_a_float = TRUE;
+	  if(!has_complex_a_float){
+	    has_complex_a_float = TRUE;
 	  
 	    look_ahead++;
 
@@ -856,8 +856,8 @@ ags_math_util_match_coefficient(gchar *offset,
 	}
 
 	if(look_ahead[0] == '.'){
-	  if(!has_compex_b_float){
-	    has_compex_b_float = TRUE;
+	  if(!has_complex_b_float){
+	    has_complex_b_float = TRUE;
 	  
 	    look_ahead++;
 
@@ -912,9 +912,9 @@ ags_math_util_match_coefficient(gchar *offset,
 
       if(!has_complex_operator &&
 	 !has_complex_i0){
-	if(!strstr(look_ahead,
-		   AGS_SYMBOLIC_COMPLEX_UNIT,
-		   strlen(AGS_SYMBOLIC_COMPLEX_UNIT))){
+	if(!g_ascii_strncasecmp(look_ahead,
+				AGS_SYMBOLIC_COMPLEX_UNIT,
+				strlen(AGS_SYMBOLIC_COMPLEX_UNIT))){
 	  has_complex_i0 = TRUE;
 	  
 	  look_ahead += strlen(AGS_SYMBOLIC_COMPLEX_UNIT);
@@ -925,9 +925,9 @@ ags_math_util_match_coefficient(gchar *offset,
 
       if(has_complex_operator &&
 	 !has_complex_i1){
-	if(!strstr(look_ahead,
-		   AGS_SYMBOLIC_COMPLEX_UNIT,
-		   strlen(AGS_SYMBOLIC_COMPLEX_UNIT))){
+	if(!g_ascii_strncasecmp(look_ahead,
+				AGS_SYMBOLIC_COMPLEX_UNIT,
+				strlen(AGS_SYMBOLIC_COMPLEX_UNIT))){
 	  has_complex_i1 = TRUE;
 	  
 	  look_ahead += strlen(AGS_SYMBOLIC_COMPLEX_UNIT);
@@ -1085,9 +1085,18 @@ ags_math_util_match_symbol(gchar *offset,
 	for(; iter < end_ptr; iter++){
 	  gunichar subscript_x;
 
-	  static const gunichar subscript_0 = g_utf8_get_char(AGS_SUBSCRIPT_0);
-	  static const gunichar subscript_9 = g_utf8_get_char(AGS_SUBSCRIPT_9);
+	  static gunichar subscript_0;
+	  static gunichar subscript_9;
 
+	  static gboolean subscript_set = FALSE;
+
+	  if(!subscript_set){
+	    subscript_0 = g_utf8_get_char(AGS_SUBSCRIPT_0);
+	    subscript_9 = g_utf8_get_char(AGS_SUBSCRIPT_9);
+
+	    subscript_set = TRUE;
+	  }
+	  
 	  subscript_x = g_utf8_get_char(iter);
 	
 	  if(subscript_x >= subscript_0 && subscript_x <= subscript_9){
@@ -1181,7 +1190,11 @@ ags_math_util_match_exponent(gchar *offset,
 	    gboolean tmp_has_coefficient;
 	    gboolean tmp_has_symbol;
 	    gboolean tmp_has_function;
-	    
+
+	    tmp_has_coefficient = FALSE;
+	    tmp_has_symbol = FALSE;
+	    tmp_has_function = FALSE;
+
 	    /* check coefficient */
 	    tmp_has_coefficient = ags_math_util_match_coefficient(iter,
 								  end_ptr,
@@ -1467,6 +1480,10 @@ ags_math_util_match_function(gchar *offset,
 	    gboolean tmp_has_coefficient;
 	    gboolean tmp_has_symbol;
 	    gboolean tmp_has_function;
+
+	    tmp_has_coefficient = FALSE;
+	    tmp_has_symbol = FALSE;
+	    tmp_has_function = FALSE;
 	    
 	    /* check coefficient */
 	    tmp_has_coefficient = ags_math_util_match_coefficient(iter,
@@ -1590,7 +1607,7 @@ ags_math_util_coefficient_to_complex(gchar *coefficient,
 {
   gchar *start_iter, *iter;
   
-  AgsComplex *this_value;
+  AgsComplex this_value;
 
   double complex z;
   double double_real_val, double_imag_val;
@@ -1605,15 +1622,15 @@ ags_math_util_coefficient_to_complex(gchar *coefficient,
   
   z = 0.0 + I * 0.0;
   
-  ags_complex_set(this_value,
+  ags_complex_set(&this_value,
 		  z);
 
   success = FALSE;
 
   if(coefficient == NULL){
     if(value != NULL){
-      value->real = this_value->real;
-      value->imag = this_value->imag;
+      value->real = this_value.real;
+      value->imag = this_value.imag;
     }
 
     return(FALSE);
@@ -1914,15 +1931,15 @@ ags_math_util_coefficient_to_complex(gchar *coefficient,
   }
   
   if(success){
-    ags_complex_set(this_value,
+    ags_complex_set(&this_value,
 		    z);
   }
   
   g_free(start_iter);
 
   if(value != NULL){
-    value->real = this_value->real;
-    value->imag = this_value->imag;
+    value->real = this_value.real;
+    value->imag = this_value.imag;
   }
 
   return(success);
