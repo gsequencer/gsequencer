@@ -85,6 +85,9 @@ gchar** ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager);
 AgsLv2Plugin* ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
 					      gchar *filename,
 					      gchar *effect);
+AgsLv2Plugin* ags_lv2_manager_find_lv2_plugin_with_fallback(AgsLv2Manager *lv2_manager,
+							    gchar *filename,
+							    gchar *effect);
 
 void ags_lv2_manager_load_blacklist(AgsLv2Manager *lv2_manager,
 				    gchar *blacklist_filename);
