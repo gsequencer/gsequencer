@@ -1,3 +1,8 @@
+ags (3.5.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing reset of notation edit's horizont scrollbar after zoom changed
+
 ags (3.5.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
