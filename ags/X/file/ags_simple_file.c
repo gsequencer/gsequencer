@@ -5186,6 +5186,8 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
     filename = g_strdup(&(str[7]));
     xmlFree(str);
 
+    g_message("%s", filename);
+    
     /* audio channel to read */
     file_channel = 0;
 

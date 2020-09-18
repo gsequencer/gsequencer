@@ -5963,7 +5963,8 @@ ags_audio_set_audio_channels_shrink(AgsAudio *audio,
 
   GRecMutex *audio_mutex;
 
-  if(!AGS_IS_AUDIO(audio)){
+  if(!AGS_IS_AUDIO(audio) ||
+     audio_channels == audio_channels_old){
     return;
   }
   
@@ -6003,41 +6004,41 @@ ags_audio_set_audio_channel_shrink0:
 
   channel = start;
 
-  if(i < pads){
-    for(i = 0; ; i++){
-      for(j = 0; j < audio_channels -1; j++){
-	channel->pad = i;
-	channel->audio_channel = j;
-	channel->line = i * audio_channels + j;
-
-	channel = channel->next;
-      }
-
+  for(i = 0; ; i++){
+    for(j = 0; j < audio_channels -1; j++){
       channel->pad = i;
       channel->audio_channel = j;
       channel->line = i * audio_channels + j;
 
-      channel0 = channel->next;
-	
-      for(; j < audio_channels_old; j++){
-	channel1 = channel0->next;
-      
-	g_object_run_dispose((GObject *) channel0);
-	g_object_unref((GObject *) channel0);
-
-	channel0 = channel1;
-      }
-
-      channel->next = channel1;
-
-      if(channel1 != NULL){
-	channel1->prev = channel;
-      }else{
-	break;
-      }
-	
-      channel = channel1;
+      channel = channel->next;
     }
+
+    channel->pad = i;
+    channel->audio_channel = j;
+    channel->line = i * audio_channels + j;
+
+    channel0 = channel->next;
+
+    j++;
+      
+    for(; j < audio_channels_old; j++){
+      channel1 = channel0->next;
+      
+      g_object_run_dispose((GObject *) channel0);
+      g_object_unref((GObject *) channel0);
+
+      channel0 = channel1;
+    }
+
+    channel->next = channel1;
+
+    if(channel1 != NULL){
+      channel1->prev = channel;
+    }else{
+      break;
+    }
+	
+    channel = channel1;
   }
 
   if(first_run){
