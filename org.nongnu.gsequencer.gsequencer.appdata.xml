@@ -35,6 +35,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.5.11" date="2020-09-18">
+      <description>
+	<p>Fixed shrink audio channels.</p>
+      </description>
+    </release>
+
     <release version="3.5.10" date="2020-09-16">
       <description>
 	<p>Implemented plugin filename fallback to different location.</p>

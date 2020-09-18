@@ -1,7 +1,7 @@
 ags (3.5.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed shrink audio channels
+	* fixed shrink audio channels by removing i < pads
 
 ags (3.5.10)
 

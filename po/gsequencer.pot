@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.5.10\n"
+"Project-Id-Version: gsequencer 3.5.11\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-09-16 18:34+0200\n"
+"POT-Creation-Date: 2020-09-18 05:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -364,11 +364,11 @@ msgstr ""
 msgid "first link line"
 msgstr ""
 
-#: ags/X/ags_link_editor_callbacks.c:184
+#: ags/X/ags_link_editor_callbacks.c:185
 msgid "select audio file"
 msgstr ""
 
-#: ags/X/ags_link_editor_callbacks.c:199
+#: ags/X/ags_link_editor_callbacks.c:200
 msgid "audio channel: "
 msgstr ""
 
