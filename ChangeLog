@@ -5,6 +5,16 @@ ags (3.6.0)
 	* implemented AgsComplex support in ags_fourier_transform_util.[ch]
 	* improved the developer's manual
 
+ags (3.5.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing reset of notation edit's horizont scrollbar after zoom changed
+
+ags (3.5.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed shrink audio channels by removing i < pads
+
 ags (3.5.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
