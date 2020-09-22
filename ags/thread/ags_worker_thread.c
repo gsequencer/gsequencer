@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -79,6 +79,28 @@ ags_worker_thread_get_type()
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_worker_thread_status_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_WORKER_THREAD_STATUS_RUNNING, "AGS_WORKER_THREAD_STATUS_RUNNING", "worker-thread-status-running" },
+      { AGS_WORKER_THREAD_STATUS_RUN_WAIT, "AGS_WORKER_THREAD_STATUS_RUN_WAIT", "worker-thread-status-run-wait" },
+      { AGS_WORKER_THREAD_STATUS_RUN_DONE, "AGS_WORKER_THREAD_STATUS_RUN_DONE", "worker-thread-status-run-done" },
+      { AGS_WORKER_THREAD_STATUS_RUN_SYNC, "AGS_WORKER_THREAD_STATUS_RUN_SYNC", "worker-thread-status-run-sync" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsWorkerThreadStatusFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void

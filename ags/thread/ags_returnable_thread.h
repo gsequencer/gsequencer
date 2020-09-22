@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,7 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_RETURNABLE_THREAD                (ags_returnable_thread_get_type())
+#define AGS_TYPE_RETURNABLE_THREAD_FLAGS          (ags_returnable_thread_flags_get_type())
 #define AGS_RETURNABLE_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RETURNABLE_THREAD, AgsReturnableThread))
 #define AGS_RETURNABLE_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_RETURNABLE_THREAD, AgsReturnableThreadClass))
 #define AGS_IS_RETURNABLE_THREAD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_RETURNABLE_THREAD))
@@ -78,6 +79,7 @@ struct _AgsReturnableThreadClass
 };
 
 GType ags_returnable_thread_get_type();
+GType ags_returnable_thread_flags_get_type();
 
 gboolean ags_returnable_thread_test_flags(AgsReturnableThread *returnable_thread, guint flags);
 void ags_returnable_thread_set_flags(AgsReturnableThread *returnable_thread, guint flags);

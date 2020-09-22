@@ -101,6 +101,27 @@ ags_thread_pool_get_type()
   return g_define_type_id__volatile;
 }
 
+
+GType
+ags_thread_pool_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_THREAD_POOL_RUNNING, "AGS_THREAD_POOL_RUNNING", "thread-pool-running" },
+      { AGS_THREAD_POOL_RT_SETUP, "AGS_THREAD_POOL_RT_SETUP", "thread-pool-rt-setup" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsThreadPoolFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
 {

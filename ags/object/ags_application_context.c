@@ -153,8 +153,8 @@ ags_application_context_flags_get_type()
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
       { AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY, "AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY", "application-context-added-to-registry" },
-      { AGS_APPLICATION_CONTEXT_, "AGS_APPLICATION_CONTEXT_CONNECTED", "application-context-connected" },
-      { AGS_APPLICATION_CONTEXT_, "AGS_APPLICATION_CONTEXT_TYPES_REGISTERED", "application-context-types-registered" },
+      { AGS_APPLICATION_CONTEXT_CONNECTED, "AGS_APPLICATION_CONTEXT_CONNECTED", "application-context-connected" },
+      { AGS_APPLICATION_CONTEXT_TYPES_REGISTERED, "AGS_APPLICATION_CONTEXT_TYPES_REGISTERED", "application-context-types-registered" },
       { 0, NULL, NULL }
     };
 

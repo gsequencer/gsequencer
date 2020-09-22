@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -142,6 +142,100 @@ ags_thread_get_type()
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_thread_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_THREAD_ADDED_TO_REGISTRY, "AGS_THREAD_ADDED_TO_REGISTRY", "thread-added-to-registry" },
+      { AGS_THREAD_CONNECTED, "AGS_THREAD_CONNECTED", "thread-connected" },
+      { AGS_THREAD_UNREF_ON_EXIT, "AGS_THREAD_UNREF_ON_EXIT", "thread-unref-on-exit" },
+      { AGS_THREAD_IMMEDIATE_SYNC, "AGS_THREAD_IMMEDIATE_SYNC", "thread-immediate-sync" },
+      { AGS_THREAD_INTERMEDIATE_PRE_SYNC, "AGS_THREAD_INTERMEDIATE_PRE_SYNC", "thread-intermediate-pre-sync" },
+      { AGS_THREAD_INTERMEDIATE_POST_SYNC, "AGS_THREAD_INTERMEDIATE_POST_SYNC", "thread-intermediate-post-sync" },
+      { AGS_THREAD_START_SYNCED_FREQ, "AGS_THREAD_START_SYNCED_FREQ", "thread-start-synced-freq" },
+      { AGS_THREAD_MARK_SYNCED, "AGS_THREAD_MARK_SYNCED", "thread-mark-synced" },
+      { AGS_THREAD_TIME_ACCOUNTING, "AGS_THREAD_TIME_ACCOUNTING", "thread-time-accounting" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsThreadFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
+GType
+ags_thread_status_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_THREAD_STATUS_RT_SETUP, "AGS_THREAD_STATUS_RT_SETUP", "thread-status-rt-setup" },
+      { AGS_THREAD_STATUS_INITIAL_SYNC, "AGS_THREAD_STATUS_INITIAL_SYNC", "thread-status-initial-sync" },
+      { AGS_THREAD_STATUS_INITIAL_RUN, "AGS_THREAD_STATUS_INITIAL_RUN", "thread-status-initial-run" },
+      { AGS_THREAD_STATUS_IS_CHAOS_TREE, "AGS_THREAD_STATUS_IS_CHAOS_TREE", "thread-status-is-chaos-tree" },
+      { AGS_THREAD_STATUS_START_WAIT, "AGS_THREAD_STATUS_START_WAIT", "thread-status-start-wait" },
+      { AGS_THREAD_STATUS_START_DONE, "AGS_THREAD_STATUS_START_DONE", "thread-status-start-done" },
+      { AGS_THREAD_STATUS_READY, "AGS_THREAD_STATUS_READY", "thread-status-ready" },
+      { AGS_THREAD_STATUS_WAITING, "AGS_THREAD_STATUS_WAITING", "thread-status-waiting" },
+      { AGS_THREAD_STATUS_RUNNING, "AGS_THREAD_STATUS_RUNNING", "thread-status-running" },
+      { AGS_THREAD_STATUS_LOCKED, "AGS_THREAD_STATUS_LOCKED", "thread-status-locked" },
+      { AGS_THREAD_STATUS_BUSY, "AGS_THREAD_STATUS_BUSY", "thread-status-busy" },
+      { AGS_THREAD_STATUS_SYNCED, "AGS_THREAD_STATUS_SYNCED", "thread-status-synced" },
+      { AGS_THREAD_STATUS_SYNCED_FREQ, "AGS_THREAD_STATUS_SYNCED_FREQ", "thread-status-synced-freq" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsThreadStatusFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
+GType
+ags_thread_sync_tic_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_THREAD_SYNC_TIC_WAIT_0, "AGS_THREAD_SYNC_TIC_WAIT_0", "thread-sync-tic-wait-0" },
+      { AGS_THREAD_SYNC_TIC_DONE_0, "AGS_THREAD_SYNC_TIC_DONE_0", "thread-sync-tic-done-0" },
+      { AGS_THREAD_SYNC_TIC_WAIT_1, "AGS_THREAD_SYNC_TIC_WAIT_1", "thread-sync-tic-wait-1" },
+      { AGS_THREAD_SYNC_TIC_DONE_1, "AGS_THREAD_SYNC_TIC_DONE_1", "thread-sync-tic-done-1" },
+      { AGS_THREAD_SYNC_TIC_WAIT_2, "AGS_THREAD_SYNC_TIC_WAIT_2", "thread-sync-tic-wait-2" },
+      { AGS_THREAD_SYNC_TIC_DONE_2, "AGS_THREAD_SYNC_TIC_DONE_2", "thread-sync-tic-done-2" },
+      { AGS_THREAD_SYNC_TIC_WAIT_3, "AGS_THREAD_SYNC_TIC_WAIT_3", "thread-sync-tic-wait-3" },
+      { AGS_THREAD_SYNC_TIC_DONE_3, "AGS_THREAD_SYNC_TIC_DONE_3", "thread-sync-tic-done-3" },
+      { AGS_THREAD_SYNC_TIC_WAIT_4, "AGS_THREAD_SYNC_TIC_WAIT_4", "thread-sync-tic-wait-4" },
+      { AGS_THREAD_SYNC_TIC_DONE_4, "AGS_THREAD_SYNC_TIC_DONE_4", "thread-sync-tic-done-4" },
+      { AGS_THREAD_SYNC_TIC_WAIT_5, "AGS_THREAD_SYNC_TIC_WAIT_5", "thread-sync-tic-wait-5" },
+      { AGS_THREAD_SYNC_TIC_DONE_5, "AGS_THREAD_SYNC_TIC_DONE_5", "thread-sync-tic-done-5" },
+      { AGS_THREAD_SYNC_TIC_WAIT_6, "AGS_THREAD_SYNC_TIC_WAIT_6", "thread-sync-tic-wait-6" },
+      { AGS_THREAD_SYNC_TIC_DONE_6, "AGS_THREAD_SYNC_TIC_DONE_6", "thread-sync-tic-done-6" },
+      { AGS_THREAD_SYNC_TIC_WAIT_7, "AGS_THREAD_SYNC_TIC_WAIT_7", "thread-sync-tic-wait-7" },
+      { AGS_THREAD_SYNC_TIC_DONE_7, "AGS_THREAD_SYNC_TIC_DONE_7", "thread-sync-tic-done-7" },
+      { AGS_THREAD_SYNC_TIC_WAIT_8, "AGS_THREAD_SYNC_TIC_WAIT_8", "thread-sync-tic-wait-8" },
+      { AGS_THREAD_SYNC_TIC_DONE_8, "AGS_THREAD_SYNC_TIC_DONE_8", "thread-sync-tic-done-8" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsThreadSyncTicFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void

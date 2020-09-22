@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -117,6 +117,26 @@ ags_task_launcher_get_type()
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_task_launcher_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_TASK_LAUNCHER_ADDED_TO_REGISTRY, "AGS_TASK_LAUNCHER_ADDED_TO_REGISTRY", "task-launcher-added-to-registry" },
+      { AGS_TASK_LAUNCHER_CONNECTED, "AGS_TASK_LAUNCHER_CONNECTED", "task-launcher-connected" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsTaskLauncherFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void

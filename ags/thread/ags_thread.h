@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,6 +31,9 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_THREAD                (ags_thread_get_type())
+#define AGS_TYPE_THREAD_FLAGS          (ags_thread_flags_get_type())
+#define AGS_TYPE_THREAD_STATUS_FLAGS   (ags_thread_status_flags_get_type())
+#define AGS_TYPE_THREAD_SYNC_TIC_FLAGS (ags_thread_sync_tic_flags_get_type())
 #define AGS_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_THREAD, AgsThread))
 #define AGS_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_THREAD, AgsThreadClass))
 #define AGS_IS_THREAD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_THREAD))
@@ -224,6 +227,9 @@ struct _AgsThreadClass
 };
 
 GType ags_thread_get_type();
+GType ags_thread_flags_get_type();
+GType ags_thread_status_flags_get_type();
+GType ags_thread_sync_tic_flags_get_type();
 
 gboolean ags_thread_global_get_use_sync_counter();
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,7 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_THREAD_POOL                (ags_thread_pool_get_type())
+#define AGS_TYPE_THREAD_POOL_FLAGS          (ags_thread_pool_flags_get_type())
 #define AGS_THREAD_POOL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_THREAD_POOL, AgsThreadPool))
 #define AGS_THREAD_POOL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_THREAD_POOL, AgsThreadPoolClass))
 #define AGS_IS_THREAD_POOL(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_THREAD_POOL))
@@ -88,6 +89,7 @@ struct _AgsThreadPoolClass
 };
 
 GType ags_thread_pool_get_type();
+GType ags_thread_pool_flags_get_type();
 
 AgsThread* ags_thread_pool_pull(AgsThreadPool *thread_pool);
 

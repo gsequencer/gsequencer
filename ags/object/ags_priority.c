@@ -121,7 +121,7 @@ ags_priority_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_PRIORITY_, "AGS_PRIORITY_CONNECTED", "priority-connected" },
+      { AGS_PRIORITY_CONNECTED, "AGS_PRIORITY_CONNECTED", "priority-connected" },
       { 0, NULL, NULL }
     };
 

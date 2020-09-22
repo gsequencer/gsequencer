@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,8 @@
 
 #include <ags/lib/ags_uuid.h>
 
-#include <pthread.h>
-
 #define AGS_TYPE_TASK_COMPLETION                (ags_task_completion_get_type())
+#define AGS_TYPE_TASK_COMPLETION_FLAGS          (ags_task_completion_flags_get_type())
 #define AGS_TASK_COMPLETION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TASK_COMPLETION, AgsTaskCompletion))
 #define AGS_TASK_COMPLETION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_TASK_COMPLETION, AgsTaskCompletionClass))
 #define AGS_IS_TASK_COMPLETION(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_TASK_COMPLETION))
@@ -82,6 +81,7 @@ struct _AgsTaskCompletionClass
 };
 
 GType ags_task_completion_get_type();
+GType ags_task_completion_flags_get_type();
 
 gboolean ags_task_completion_test_flags(AgsTaskCompletion *task_completion, guint flags);
 void ags_task_completion_set_flags(AgsTaskCompletion *task_completion, guint flags);
