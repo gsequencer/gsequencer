@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#define AGS_TYPE_BYTE_ORDER          (ags_byte_order_get_type())
+
 G_BEGIN_DECLS
 
 /**
@@ -36,6 +38,8 @@ typedef enum{
   AGS_BYTE_ORDER_LE,
   AGS_BYTE_ORDER_BE,
 }AgsByteOrder;
+
+GType ags_byte_order_get_type();
 
 gboolean ags_endian_host_is_le();
 gboolean ags_endian_host_is_be();

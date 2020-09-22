@@ -25,12 +25,12 @@
 
 #include <ags/libags.h>
 
-#define AGS_SOUND_ABILITY_FLAGS_GET_TYPE       (ags_sound_ability_flags_get_type())
-#define AGS_SOUND_BEHAVIOUR_FLAGS_GET_TYPE     (ags_sound_behaviour_flags_get_type())
-#define AGS_SOUND_SCOPE_GET_TYPE               (ags_sound_scope_get_type())
-#define AGS_SOUND_STAGING_FLAGS_GET_TYPE       (ags_sound_staging_flags_get_type())
-#define AGS_SOUND_STATE_FLAGS_GET_TYPE         (ags_sound_state_flags_get_type())
-#define AGS_SOUND_KEY_FORMAT_GET_TYPE          (ags_sound_key_format_flags_get_type())
+#define AGS_TYPE_SOUND_ABILITY_FLAGS       (ags_sound_ability_flags_get_type())
+#define AGS_TYPE_SOUND_BEHAVIOUR_FLAGS     (ags_sound_behaviour_flags_get_type())
+#define AGS_TYPE_SOUND_SCOPE               (ags_sound_scope_get_type())
+#define AGS_TYPE_SOUND_STAGING_FLAGS       (ags_sound_staging_flags_get_type())
+#define AGS_TYPE_SOUND_STATE_FLAGS         (ags_sound_state_flags_get_type())
+#define AGS_TYPE_SOUND_KEY_FORMAT          (ags_sound_key_format_get_type())
 
 G_BEGIN_DECLS
 

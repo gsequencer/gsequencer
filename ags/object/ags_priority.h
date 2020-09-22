@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,7 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_PRIORITY                (ags_priority_get_type ())
+#define AGS_TYPE_PRIORITY_FLAGS          (ags_priority_flags_get_type())
 #define AGS_PRIORITY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PRIORITY, AgsPriority))
 #define AGS_PRIORITY_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PRIORITY, AgsPriorityClass))
 #define AGS_IS_PRIORITY(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_PRIORITY))
@@ -88,6 +89,7 @@ struct _AgsPriorityClass
 };
 
 GType ags_priority_get_type();
+GType ags_priority_flags_get_type();
 
 void ags_priority_load_defaults(AgsPriority *priority);
 void ags_priority_load_from_file(AgsPriority *priority, gchar *filename);

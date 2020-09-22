@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,7 @@
 
 #include <ags/libags.h>
 
-#define AGS_SYNTH_OSCILLATOR_MODE_GET_TYPE               (ags_sound_scope_get_type())
+#define AGS_TYPE_SYNTH_OSCILLATOR_MODE               (ags_synth_oscillator_mode_get_type())
 
 G_BEGIN_DECLS
 

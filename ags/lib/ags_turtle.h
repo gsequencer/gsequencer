@@ -28,6 +28,7 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_TURTLE                (ags_turtle_get_type())
+#define AGS_TYPE_TURTLE_FLAGS          (ags_turtle_flags_get_type())
 #define AGS_TURTLE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TURTLE, AgsTurtle))
 #define AGS_TURTLE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TURTLE, AgsTurtleClass))
 #define AGS_IS_TURTLE(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_TURTLE))
@@ -78,6 +79,7 @@ struct _AgsTurtleClass
 };
 
 GType ags_turtle_get_type(void);
+GType ags_turtle_flags_get_type();
 
 /* iri, pname, label and langtag */
 gchar* ags_turtle_read_iriref(gchar *offset,

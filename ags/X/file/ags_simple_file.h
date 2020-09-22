@@ -31,6 +31,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <unistd.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SIMPLE_FILE                (ags_simple_file_get_type())
