@@ -110,23 +110,23 @@ ags_sound_staging_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_CHECK_RT_DATA", "sound-staging-check-rt-data" },
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_RUN_INIT_PRE", "sound-staging-run-init-pre" },
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_RUN_INIT_INTER", "sound-staging-run-init-inter" },
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_RUN_INIT_POST", "sound-staging-run-init-post" },
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_FEED_INPUT_QUEUE", "sound-staging-feed-input-queue" },
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_AUTOMATE", "sound-staging-automate" },
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_RUN_PRE", "sound-staging-run-pre" },
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_RUN_INTER", "sound-staging-run-inter" },
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_RUN_POST", "sound-staging-run-post" },
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_DO_FEEDBACK", "sound-staging-do-feedback" },
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE", "sound-staging-feed-output-queue" },
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_FINI", "sound-staging-fini" },
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_CANCEL", "sound-staging-cancel" },
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_DONE", "sound-staging-done" },
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_REMOVE", "sound-staging-remove" },
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_RESET", "sound-staging-reset" },
-      { AGS_SOUND_STAGING_, "AGS_SOUND_STAGING_FX", "sound-staging-fx" },
+      { AGS_SOUND_STAGING_CHECK_RT_DATA, "AGS_SOUND_STAGING_CHECK_RT_DATA", "sound-staging-check-rt-data" },
+      { AGS_SOUND_STAGING_RUN_INIT_PRE, "AGS_SOUND_STAGING_RUN_INIT_PRE", "sound-staging-run-init-pre" },
+      { AGS_SOUND_STAGING_RUN_INIT_INTER, "AGS_SOUND_STAGING_RUN_INIT_INTER", "sound-staging-run-init-inter" },
+      { AGS_SOUND_STAGING_RUN_INIT_POST, "AGS_SOUND_STAGING_RUN_INIT_POST", "sound-staging-run-init-post" },
+      { AGS_SOUND_STAGING_FEED_INPUT_QUEUE, "AGS_SOUND_STAGING_FEED_INPUT_QUEUE", "sound-staging-feed-input-queue" },
+      { AGS_SOUND_STAGING_AUTOMATE, "AGS_SOUND_STAGING_AUTOMATE", "sound-staging-automate" },
+      { AGS_SOUND_STAGING_RUN_PRE, "AGS_SOUND_STAGING_RUN_PRE", "sound-staging-run-pre" },
+      { AGS_SOUND_STAGING_RUN_INTER, "AGS_SOUND_STAGING_RUN_INTER", "sound-staging-run-inter" },
+      { AGS_SOUND_STAGING_RUN_POST, "AGS_SOUND_STAGING_RUN_POST", "sound-staging-run-post" },
+      { AGS_SOUND_STAGING_DO_FEEDBACK, "AGS_SOUND_STAGING_DO_FEEDBACK", "sound-staging-do-feedback" },
+      { AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE, "AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE", "sound-staging-feed-output-queue" },
+      { AGS_SOUND_STAGING_FINI, "AGS_SOUND_STAGING_FINI", "sound-staging-fini" },
+      { AGS_SOUND_STAGING_CANCEL, "AGS_SOUND_STAGING_CANCEL", "sound-staging-cancel" },
+      { AGS_SOUND_STAGING_DONE, "AGS_SOUND_STAGING_DONE", "sound-staging-done" },
+      { AGS_SOUND_STAGING_REMOVE, "AGS_SOUND_STAGING_REMOVE", "sound-staging-remove" },
+      { AGS_SOUND_STAGING_RESET, "AGS_SOUND_STAGING_RESET", "sound-staging-reset" },
+      { AGS_SOUND_STAGING_FX, "AGS_SOUND_STAGING_FX", "sound-staging-fx" },
       { 0, NULL, NULL }
     };
 
@@ -148,7 +148,7 @@ ags_sound_state_flags_get_type()
       { AGS_SOUND_STATE_IS_WAITING, "AGS_SOUND_STATE_IS-WAITING", "sound-state-is-waiting" },
       { AGS_SOUND_STATE_IS_ACTIVE, "AGS_SOUND_STATE_IS_ACTIVE", "sound-state-is-active" },
       { AGS_SOUND_STATE_IS_PROCESSING, "AGS_SOUND_STATE_IS_PROCESSING", "sound-state-is-processing" },
-      { AGS_SOUND_STATE_IS_, "AGS_SOUND_STATE_IS_TERMINATING", "sound-state-is-terminating" },
+      { AGS_SOUND_STATE_IS_TERMINATING, "AGS_SOUND_STATE_IS_TERMINATING", "sound-state-is-terminating" },
       { 0, NULL, NULL }
     };
 

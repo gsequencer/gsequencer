@@ -1032,6 +1032,8 @@ deprecated_libags_audio_c_sources =
 
 libags_audio_c_sources = \
 	$(deprecated_libags_audio_c_sources) \
+	ags/audio/ags_sound_enums.c \
+	ags/audio/ags_synth_enums.c \
 	ags/audio/ags_acceleration.c \
 	ags/audio/ags_audio.c \
 	ags/audio/ags_audio_application_context.c \

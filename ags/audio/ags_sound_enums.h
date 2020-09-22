@@ -34,13 +34,6 @@
 
 G_BEGIN_DECLS
 
-GType ags_sound_ability_flags_get_type();
-GType ags_sound_behaviour_flags_get_type();
-GType ags_sound_scope_get_type();
-GType ags_sound_staging_flags_get_type();
-GType ags_sound_state_flags_get_type();
-GType ags_sound_key_format_get_type();
-
 /**
  * AgsSoundAbilityFlags: 
  * @AGS_SOUND_ABILITY_PLAYBACK: playback ability
@@ -185,6 +178,13 @@ typedef enum{
   AGS_SOUND_KEY_FORMAT_16TH,
   AGS_SOUND_KEY_FORMAT_256TH,
 }AgsSoundKeyFormat;
+
+GType ags_sound_ability_flags_get_type();
+GType ags_sound_behaviour_flags_get_type();
+GType ags_sound_scope_get_type();
+GType ags_sound_staging_flags_get_type();
+GType ags_sound_state_flags_get_type();
+GType ags_sound_key_format_get_type();
 
 G_END_DECLS
 

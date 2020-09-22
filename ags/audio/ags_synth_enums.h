@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#define AGS_SYNTH_OSCILLATOR_MODE_GET_TYPE               (ags_sound_scope_get_type())
+
 G_BEGIN_DECLS
 
 /**
@@ -46,6 +48,8 @@ typedef enum{
   AGS_SYNTH_OSCILLATOR_IMPULSE,
   AGS_SYNTH_OSCILLATOR_LAST,
 }AgsSynthOscillatorMode;
+
+GType ags_synth_oscillator_mode_get_type();
 
 G_END_DECLS
 
