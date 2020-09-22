@@ -25,10 +25,24 @@
 
 #include <ags/libags.h>
 
+#define AGS_SOUND_ABILITY_FLAGS_GET_TYPE       (ags_sound_ability_flags_get_type())
+#define AGS_SOUND_BEHAVIOUR_FLAGS_GET_TYPE     (ags_sound_behaviour_flags_get_type())
+#define AGS_SOUND_SCOPE_GET_TYPE               (ags_sound_scope_get_type())
+#define AGS_SOUND_STAGING_FLAGS_GET_TYPE       (ags_sound_staging_flags_get_type())
+#define AGS_SOUND_STATE_FLAGS_GET_TYPE         (ags_sound_state_flags_get_type())
+#define AGS_SOUND_KEY_FORMAT_GET_TYPE          (ags_sound_key_format_flags_get_type())
+
 G_BEGIN_DECLS
 
+GType ags_sound_ability_flags_get_type();
+GType ags_sound_behaviour_flags_get_type();
+GType ags_sound_scope_get_type();
+GType ags_sound_staging_flags_get_type();
+GType ags_sound_state_flags_get_type();
+GType ags_sound_key_format_get_type();
+
 /**
- * AgsSoundAbilityFlags:
+ * AgsSoundAbilityFlags: 
  * @AGS_SOUND_ABILITY_PLAYBACK: playback ability
  * @AGS_SOUND_ABILITY_SEQUENCER: sequenecer ability
  * @AGS_SOUND_ABILITY_NOTATION: notation abilitiy
@@ -159,6 +173,18 @@ typedef enum{
   AGS_SOUND_STATE_IS_PROCESSING               = 1 <<  2,
   AGS_SOUND_STATE_IS_TERMINATING              = 1 <<  3,
 }AgsSoundStateFlags;
+
+/**
+ * AgsSoundKeyFormat:
+ * @AGS_SOUND_KEY_FORMAT_16TH: key format 16th
+ * @AGS_SOUND_KEY_FORMAT_256TH: key format 256th
+ * 
+ * Enum values to specify key format.
+ */
+typedef enum{
+  AGS_SOUND_KEY_FORMAT_16TH,
+  AGS_SOUND_KEY_FORMAT_256TH,
+}AgsSoundKeyFormat;
 
 G_END_DECLS
 

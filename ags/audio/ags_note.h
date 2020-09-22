@@ -40,7 +40,7 @@ G_BEGIN_DECLS
 
 #define AGS_NOTE_DEFAULT_TICKS_PER_QUARTER_NOTE (16.0)
 
-  typedef struct _AgsNote AgsNote;
+typedef struct _AgsNote AgsNote;
 typedef struct _AgsNoteClass AgsNoteClass;
 
 /**
@@ -71,6 +71,7 @@ struct _AgsNote
   GObject gobject;
 
   guint flags;
+  guint key_format;
 
   GRecMutex obj_mutex;
   
