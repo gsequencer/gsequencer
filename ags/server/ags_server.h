@@ -32,6 +32,7 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SERVER                (ags_server_get_type())
+#define AGS_TYPE_SERVER_FLAGS          (ags_server_flags_get_type())
 #define AGS_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SERVER, AgsServer))
 #define AGS_SERVER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SERVER, AgsServerClass))
 #define AGS_IS_SERVER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_SERVER))
@@ -140,6 +141,7 @@ struct _AgsServerInfo
 };
 
 GType ags_server_get_type();
+GType ags_server_flags_get_type();
 
 gboolean ags_server_test_flags(AgsServer *server, guint flags);
 void ags_server_set_flags(AgsServer *server, guint flags);

@@ -117,6 +117,7 @@ ags_xml_password_store_open_filename
 ags_xml_password_store_find_login
 ags_xml_password_store_new
 ags_security_context_get_type
+ags_security_context_mode_get_type
 ags_security_context_parse_business_group
 ags_security_context_get_business_group
 ags_security_context_add_server_context
@@ -130,6 +131,7 @@ ags_business_group_manager_remove_business_group
 ags_business_group_manager_get_instance
 ags_business_group_manager_new
 ags_server_get_type
+ags_server_flags_get_type
 ags_server_test_flags
 ags_server_set_flags
 ags_server_unset_flags
@@ -141,6 +143,7 @@ ags_server_stop
 ags_server_listen
 ags_server_new
 ags_registry_get_type
+ags_registry_flags_get_type
 ags_registry_entry_alloc
 ags_registry_entry_free
 ags_registry_add_entry
