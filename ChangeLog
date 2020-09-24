@@ -5,6 +5,11 @@ ags (3.6.0)
 	* implemented AgsComplex support in ags_fourier_transform_util.[ch]
 	* improved the developer's manual
 
+ags (3.5.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsDssiBridge accessing integer as string
+
 ags (3.5.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
