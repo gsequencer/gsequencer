@@ -23,6 +23,7 @@
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_menu_bar.h>
+#include <ags/X/ags_navigation.h>
 
 #include <math.h>
 
@@ -459,7 +460,12 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
 void
 ags_matrix_map_recall(AgsMachine *machine)
 {
+  AgsNavigation *navigation;
+  AgsMatrix *matrix;
+  
   AgsAudio *audio;
+
+  AgsApplicationContext *application_context;
 
   GList *start_recall, *recall;
 
@@ -470,13 +476,19 @@ ags_matrix_map_recall(AgsMachine *machine)
     return;
   }
   
+  application_context = ags_application_context_get_instance();
+
+  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
+
+  matrix = AGS_MATRIX(machine);
+  
   audio = machine->audio;
 
   position = 0;
   
   /* ags-fx-playback */
   start_recall = ags_fx_factory_create(audio,
-				       AGS_MATRIX(machine)->playback_play_container, AGS_MATRIX(machine)->playback_recall_container,
+				       matrix->playback_play_container, matrix->playback_recall_container,
 				       "ags-fx-playback",
 				       NULL,
 				       NULL,
@@ -491,7 +503,7 @@ ags_matrix_map_recall(AgsMachine *machine)
 
   /* ags-fx-pattern */
   start_recall = ags_fx_factory_create(audio,
-				       AGS_MATRIX(machine)->pattern_play_container, AGS_MATRIX(machine)->pattern_recall_container,
+				       matrix->pattern_play_container, matrix->pattern_recall_container,
 				       "ags-fx-pattern",
 				       NULL,
 				       NULL,
@@ -506,7 +518,7 @@ ags_matrix_map_recall(AgsMachine *machine)
 
   /* ags-fx-notation */
   start_recall = ags_fx_factory_create(audio,
-				       AGS_MATRIX(machine)->notation_play_container, AGS_MATRIX(machine)->notation_recall_container,
+				       matrix->notation_play_container, matrix->notation_recall_container,
 				       "ags-fx-notation",
 				       NULL,
 				       NULL,
@@ -515,12 +527,81 @@ ags_matrix_map_recall(AgsMachine *machine)
 				       position,
 				       (AGS_FX_FACTORY_ADD),
 				       0);
+  
+  recall = start_recall;
 
-  recall = ags_recall_template_find_type(start_recall, AGS_TYPE_FX_NOTATION_AUDIO);
+  while((recall = ags_recall_template_find_type(recall, AGS_TYPE_FX_NOTATION_AUDIO)) != NULL){
+    AgsPort *port;
 
-  if(recall != NULL){
+    GValue value = G_VALUE_INIT;
+
     ags_fx_notation_audio_set_pattern_mode(recall->data,
 					   TRUE);
+
+    /* loop */
+    port = NULL;
+    
+    g_object_get(recall->data,
+		 "loop", &port,
+		 NULL);
+
+    g_value_init(&value,
+		 G_TYPE_BOOLEAN);
+
+    g_value_set_boolean(&value,
+			gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
+
+    ags_port_safe_write(port,
+			&value);
+
+    if(port != NULL){
+      g_object_unref(port);
+    }
+    
+    /* loop start */
+    port = NULL;
+    
+    g_object_get(recall->data,
+		 "loop-start", &port,
+		 NULL);
+
+    g_value_unset(&value);
+    g_value_init(&value,
+		 G_TYPE_UINT64);
+
+    g_value_set_uint64(&value,
+		       16 * gtk_spin_button_get_value_as_int(navigation->loop_left_tact));
+
+    ags_port_safe_write(port,
+			&value);
+
+    if(port != NULL){
+      g_object_unref(port);
+    }
+    
+    /* loop end */
+    port = NULL;
+    
+    g_object_get(recall->data,
+		 "loop-end", &port,
+		 NULL);
+
+    g_value_unset(&value);
+    g_value_init(&value,
+		 G_TYPE_UINT64);
+
+    g_value_set_uint64(&value,
+		       16 * gtk_spin_button_get_value_as_int(navigation->loop_right_tact));
+
+    ags_port_safe_write(port,
+			&value);
+
+    if(port != NULL){
+      g_object_unref(port);
+    }
+
+    /* iterate */
+    recall = recall->next;
   }
 
   g_list_free_full(start_recall,
@@ -528,7 +609,7 @@ ags_matrix_map_recall(AgsMachine *machine)
 
   /* ags-fx-envelope */
   start_recall = ags_fx_factory_create(audio,
-				       AGS_MATRIX(machine)->envelope_play_container, AGS_MATRIX(machine)->envelope_recall_container,
+				       matrix->envelope_play_container, matrix->envelope_recall_container,
 				       "ags-fx-envelope",
 				       NULL,
 				       NULL,
@@ -543,7 +624,7 @@ ags_matrix_map_recall(AgsMachine *machine)
 
   /* ags-fx-buffer */
   start_recall = ags_fx_factory_create(audio,
-				       AGS_MATRIX(machine)->buffer_play_container, AGS_MATRIX(machine)->buffer_recall_container,
+				       matrix->buffer_play_container, matrix->buffer_recall_container,
 				       "ags-fx-buffer",
 				       NULL,
 				       NULL,
@@ -557,11 +638,11 @@ ags_matrix_map_recall(AgsMachine *machine)
 		   (GDestroyNotify) g_object_unref);
   
   /* depending on destination */
-  ags_matrix_input_map_recall(AGS_MATRIX(machine),
+  ags_matrix_input_map_recall(matrix,
 			      0);
 
   /* depending on destination */
-  ags_matrix_output_map_recall(AGS_MATRIX(machine),
+  ags_matrix_output_map_recall(matrix,
 			       0);
 
   AGS_MACHINE_CLASS(ags_matrix_parent_class)->map_recall(machine);

@@ -22,6 +22,7 @@
 
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_navigation.h>
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
@@ -578,11 +579,14 @@ ags_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
 void
 ags_dssi_bridge_map_recall(AgsMachine *machine)
 {
+  AgsNavigation *navigation;
   AgsDssiBridge *dssi_bridge;
   
   AgsAudio *audio;
 
-  GList *start_recall;
+  AgsApplicationContext *application_context;
+
+  GList *start_play, *start_recall, *recall;
   
   gint position;  
 
@@ -590,6 +594,10 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
+
+  application_context = ags_application_context_get_instance();
+
+  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
 
   dssi_bridge = (AgsDssiBridge *) machine;
   
@@ -609,6 +617,94 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
 			     position,
 			     (AGS_FX_FACTORY_ADD), 0);
 
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+
+  recall = NULL;
+
+  if(start_play != NULL &&
+     start_recall != NULL){
+    recall = g_list_concat(start_play,
+			   start_recall);
+  }
+  
+  while((recall = ags_recall_template_find_type(recall, AGS_TYPE_FX_NOTATION_AUDIO)) != NULL){
+    AgsPort *port;
+
+    GValue value = G_VALUE_INIT;
+    
+    /* loop */
+    port = NULL;
+    
+    g_object_get(recall->data,
+		 "loop", &port,
+		 NULL);
+
+    g_value_init(&value,
+		 G_TYPE_BOOLEAN);
+
+    g_value_set_boolean(&value,
+			gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
+
+    ags_port_safe_write(port,
+			&value);
+
+    if(port != NULL){
+      g_object_unref(port);
+    }
+    
+    /* loop start */
+    port = NULL;
+    
+    g_object_get(recall->data,
+		 "loop-start", &port,
+		 NULL);
+
+    g_value_unset(&value);
+    g_value_init(&value,
+		 G_TYPE_UINT64);
+
+    g_value_set_uint64(&value,
+		       16 * gtk_spin_button_get_value_as_int(navigation->loop_left_tact));
+
+    ags_port_safe_write(port,
+			&value);
+
+    if(port != NULL){
+      g_object_unref(port);
+    }
+    
+    /* loop end */
+    port = NULL;
+    
+    g_object_get(recall->data,
+		 "loop-end", &port,
+		 NULL);
+
+    g_value_unset(&value);
+    g_value_init(&value,
+		 G_TYPE_UINT64);
+
+    g_value_set_uint64(&value,
+		       16 * gtk_spin_button_get_value_as_int(navigation->loop_right_tact));
+
+    ags_port_safe_write(port,
+			&value);
+
+    if(port != NULL){
+      g_object_unref(port);
+    }
+
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_play,
+		   (GDestroyNotify) g_object_unref);
+  
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+  
   /* ags-fx-envelope */
   start_recall = ags_fx_factory_create(audio,
 				       dssi_bridge->envelope_play_container, dssi_bridge->envelope_recall_container,

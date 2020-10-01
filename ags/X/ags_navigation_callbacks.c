@@ -347,7 +347,7 @@ ags_navigation_loop_callback(GtkWidget *widget,
     if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
 #ifdef AGS_DEBUG
-      g_message("found machine to loop!\n");
+      g_message("found machine to loop!");
 #endif
       
       audio = machine->audio;
