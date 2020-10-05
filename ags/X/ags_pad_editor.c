@@ -480,7 +480,7 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *start_channel)
 
     next_channel = NULL;
     
-    while(channel != next_pad){
+    while(channel != next_pad && channel != NULL){
       /* instantiate line editor */
       line_editor = ags_line_editor_new(NULL);
       line_editor->editor_type_count = pad_editor->editor_type_count;

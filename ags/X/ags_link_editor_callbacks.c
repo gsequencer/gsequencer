@@ -88,8 +88,9 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, Ag
 			       0, g_strdup_printf("file://%s", filename),
 			       1, NULL,
 			       -1);
-	    gtk_combo_box_set_active_iter(link_editor->combo,
-					  &iter);
+	    //FIXME:JK: 
+	    //	    gtk_combo_box_set_active_iter(link_editor->combo,
+	    //				  &iter);
 
 	    g_free(filename);
 

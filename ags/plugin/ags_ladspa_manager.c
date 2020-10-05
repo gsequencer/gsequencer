@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -467,6 +467,89 @@ ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
     ladspa_plugin = NULL;
   }
 
+  return(ladspa_plugin);
+}
+
+/**
+ * ags_ladspa_manager_find_ladspa_plugin_with_fallback:
+ * @ladspa_manager: the #AgsLadspaManager
+ * @filename: the filename of the plugin
+ * @effect: the effect's name
+ *
+ * Lookup filename in loaded plugins.
+ *
+ * Returns: (transfer none): the #AgsLadspaPlugin
+ *
+ * Since: 3.5.10
+ */
+AgsLadspaPlugin*
+ags_ladspa_manager_find_ladspa_plugin_with_fallback(AgsLadspaManager *ladspa_manager,
+						    gchar *filename, gchar *effect)
+{
+  AgsLadspaPlugin *ladspa_plugin;
+
+  GList *start_list, *list;
+
+  gchar *filename_suffix;
+  
+  gboolean success;  
+
+  GRecMutex *ladspa_manager_mutex;
+  GRecMutex *base_plugin_mutex;
+
+  if(!AGS_IS_LADSPA_MANAGER(ladspa_manager)){
+    return(NULL);
+  }
+  
+  /* get ladspa manager mutex */
+  ladspa_manager_mutex = AGS_LADSPA_MANAGER_GET_OBJ_MUTEX(ladspa_manager);
+
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ladspa_manager,
+							filename, effect);
+
+  if(ladspa_plugin == NULL){
+    filename_suffix = strrchr(filename, "/");
+    
+    /* collect */
+    g_rec_mutex_lock(ladspa_manager_mutex);
+
+    list = 
+      start_list = g_list_copy(ladspa_manager->ladspa_plugin);
+
+    g_rec_mutex_unlock(ladspa_manager_mutex);
+
+    success = FALSE;
+  
+    while(list != NULL){
+      ladspa_plugin = AGS_LADSPA_PLUGIN(list->data);
+
+      /* get base plugin mutex */
+      base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(ladspa_plugin);
+
+      /* check filename and effect */
+      g_rec_mutex_lock(base_plugin_mutex);
+
+      success = (g_str_has_suffix(AGS_BASE_PLUGIN(ladspa_plugin)->filename,
+				  filename_suffix) &&
+		 !g_strcmp0(AGS_BASE_PLUGIN(ladspa_plugin)->effect,
+			    effect)) ? TRUE: FALSE;
+    
+      g_rec_mutex_unlock(base_plugin_mutex);
+    
+      if(success){
+	break;
+      }
+
+      list = list->next;
+    }
+
+    g_list_free(start_list);
+
+    if(!success){
+      ladspa_plugin = NULL;
+    }
+  }
+  
   return(ladspa_plugin);
 }
 

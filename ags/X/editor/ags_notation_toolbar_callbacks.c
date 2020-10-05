@@ -258,6 +258,8 @@ ags_notation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsNotationToolbar *n
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
 
   /* reset notation edit */
+  ags_notation_edit_reset_hscrollbar(notation_edit);
+
   gtk_range_set_value(GTK_RANGE(notation_edit->hscrollbar),
 		      gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)) * old_zoom_factor / zoom_factor);
   

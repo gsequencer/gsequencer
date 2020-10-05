@@ -47,7 +47,7 @@ ags_pad_editor_resize_audio_channels_callback(AgsMachine *machine,
 
     next_channel = NULL;
     
-    while(channel != next_pad){
+    while(channel != next_pad && channel != NULL){
       /* instantiate line editor */
       line_editor = ags_line_editor_new(channel);
       line_editor->editor_type_count = pad_editor->editor_type_count;

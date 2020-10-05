@@ -3,6 +3,26 @@ ags (3.6.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented GStreamer support?
 
+ags (3.5.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsDssiBridge accessing integer as string
+
+ags (3.5.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing reset of notation edit's horizont scrollbar after zoom changed
+
+ags (3.5.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed shrink audio channels by removing i < pads
+
+ags (3.5.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented fallback path of plugins
+
 ags (3.5.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
