@@ -3153,16 +3153,13 @@ AgsMachine*
 ags_machine_new(GObject *soundcard)
 {
   AgsMachine *machine;
-  GValue value;
 
   machine = (AgsMachine *) g_object_new(AGS_TYPE_MACHINE,
 					NULL);
   
-  g_value_init(&value, G_TYPE_OBJECT);
-  g_value_set_object(&value, soundcard);
-  g_object_set_property(G_OBJECT(machine->audio),
-			"soundcard", &value);
-  g_value_unset(&value);
+  g_object_set(machine->audio,
+	       "output-soundcard", soundcard,
+	       NULL);
 
   return(machine);
 }
