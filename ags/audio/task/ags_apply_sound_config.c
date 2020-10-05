@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,10 @@
 #include <ags/audio/task/ags_apply_sound_config.h>
 
 #include <ags/libags.h>
+
+#include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2_plugin.h>
+#include <ags/plugin/ags_lv2_option_manager.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_devout.h>
@@ -288,6 +292,8 @@ ags_apply_sound_config_launch(AgsTask *task)
   AgsPulseServer *pulse_server;
   AgsCoreAudioServer *core_audio_server;
 
+  AgsLv2Manager *lv2_manager;
+  
   AgsThread *audio_loop;
   AgsThread *soundcard_thread;
   AgsThread *export_thread;
@@ -302,6 +308,7 @@ ags_apply_sound_config_launch(AgsTask *task)
   GObject *soundcard;
   GObject *sequencer;
 
+  GList *start_lv2_plugin, *lv2_plugin;
   GList *start_sound_server, *sound_server;
   GList *start_orig_soundcard, *orig_soundcard;
   GList *start_orig_sequencer, *orig_sequencer;
@@ -344,7 +351,7 @@ ags_apply_sound_config_launch(AgsTask *task)
     ags_config_load_from_data(config,
 			      apply_sound_config->config_data, -1);
   }
-
+  
   jack_server = NULL;
   pulse_server = NULL;
   core_audio_server = NULL;
@@ -1250,6 +1257,73 @@ ags_apply_sound_config_launch(AgsTask *task)
   ags_main_loop_change_frequency(AGS_MAIN_LOOP(audio_loop),
 				 frequency);
   
+  /* lv2 */
+  lv2_manager = ags_lv2_manager_get_instance();
+  
+  lv2_plugin = 
+    start_lv2_plugin = ags_lv2_manager_get_lv2_plugin(lv2_manager);
+
+  while(lv2_plugin != NULL){
+    LV2_Feature **feature;
+    
+    feature = AGS_LV2_PLUGIN(lv2_plugin->data)->feature;
+
+    if(feature != NULL){
+      for(; feature[0] != NULL; feature++){
+	if(feature[0]->URI == LV2_OPTIONS__options){
+	  LV2_Options_Option *options;
+
+	  guint i;
+	  
+	  options = feature[0]->data;
+
+	  for(i = 0; ; i++){
+	    if(options[i].context == 0 &&
+	       options[i].subject == 0 &&
+	       options[i].key == 0 &&
+	       options[i].size == 0 &&
+	       options[i].type == 0 &&
+	       options[i].value == NULL){
+	      break;
+	    }
+	    
+	    if(options[i].key == ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+							     LV2_PARAMETERS__sampleRate)){
+	      ((float *) options[i].value)[0] = (float) samplerate;
+	    }
+	    
+	    if(options[i].key == ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+							     LV2_BUF_SIZE__minBlockLength)){
+	      ((float *) options[i].value)[0] = (float) buffer_size;
+	    }
+	    
+	    if(options[i].key == ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+							     LV2_BUF_SIZE__maxBlockLength)){
+	      ((float *) options[i].value)[0] = (float) buffer_size;
+	    }
+	    
+	    if(options[i].key == ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+							     LV2_BUF_SIZE__boundedBlockLength)){
+	      ((float *) options[i].value)[0] = (float) buffer_size;
+	    }
+
+	    if(options[i].key == ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+							     LV2_BUF_SIZE__fixedBlockLength)){
+	      ((float *) options[i].value)[0] = (float) buffer_size;
+	    }
+	  }
+	  
+	  break;
+	}
+      }
+    }
+    
+    lv2_plugin = lv2_plugin->next;
+  }
+  
+  g_list_free_full(start_lv2_plugin,
+		   (GDestroyNotify) g_object_unref);
+
   /* reset audio's soundcard */
   audio = start_audio;
 

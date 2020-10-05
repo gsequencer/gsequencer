@@ -104,6 +104,8 @@ void ags_lv2_manager_load_preset(AgsLv2Manager *lv2_manager,
 void ags_lv2_manager_quick_scan_default_directory(AgsLv2Manager *lv2_manager);
 void ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager);
 
+GList* ags_lv2_manager_get_lv2_plugin(AgsLv2Manager *lv2_manager);
+
 /*  */
 AgsLv2Manager* ags_lv2_manager_get_instance();
 

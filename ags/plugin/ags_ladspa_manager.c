@@ -766,6 +766,41 @@ ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
 }
 
 /**
+ * ags_ladspa_manager_get_ladspa_plugin:
+ * @ladspa_manager: the #AgsLadspaManager
+ *
+ * Get ladspa plugin.
+ *
+ * Returns: (transfer full): the #GList-struct containing #AgsLadspaPlugin
+ *
+ * Since: 3.5.15
+ */
+GList*
+ags_ladspa_manager_get_ladspa_plugin(AgsLadspaManager *ladspa_manager)
+{
+  GList *ladspa_plugin;
+  
+  GRecMutex *ladspa_manager_mutex;
+
+  if(!AGS_IS_LADSPA_MANAGER(ladspa_manager)){
+    return(NULL);
+  }
+  
+  /* get ladspa manager mutex */
+  ladspa_manager_mutex = AGS_LADSPA_MANAGER_GET_OBJ_MUTEX(ladspa_manager);
+  
+  g_rec_mutex_lock(ladspa_manager_mutex);
+
+  ladspa_plugin = g_list_copy_deep(ladspa_manager->ladspa_plugin,
+				   (GCopyFunc) g_object_ref,
+				   NULL);
+  
+  g_rec_mutex_unlock(ladspa_manager_mutex);
+
+  return(ladspa_plugin);
+}
+
+/**
  * ags_ladspa_manager_get_instance:
  *
  * Get instance.

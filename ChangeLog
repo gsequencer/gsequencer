@@ -1,3 +1,9 @@
+ags (3.5.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed NULL pointer of ags_ui_provider_get_navigation()
+	* fixed missing update of LV2_Options_Option after configuration changed
+
 ags (3.5.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
