@@ -24,6 +24,7 @@
 #include <ags/i18n.h>
 
 void ags_fx_volume_channel_class_init(AgsFxVolumeChannelClass *fx_volume_channel);
+void ags_fx_volume_channel_mutable_interface_init(AgsMutableInterface *mutable);
 void ags_fx_volume_channel_init(AgsFxVolumeChannel *fx_volume_channel);
 void ags_fx_volume_channel_set_property(GObject *gobject,
 					guint prop_id,
@@ -35,6 +36,8 @@ void ags_fx_volume_channel_get_property(GObject *gobject,
 					GParamSpec *param_spec);
 void ags_fx_volume_channel_dispose(GObject *gobject);
 void ags_fx_volume_channel_finalize(GObject *gobject);
+
+void ags_fx_volume_channel_set_muted(AgsMutable *mutable, gboolean muted);
 
 static AgsPluginPort* ags_fx_volume_channel_get_muted_plugin_port();
 static AgsPluginPort* ags_fx_volume_channel_get_volume_plugin_port();
@@ -91,10 +94,20 @@ ags_fx_volume_channel_get_type()
       (GInstanceInitFunc) ags_fx_volume_channel_init,
     };
 
+    static const GInterfaceInfo ags_mutable_interface_info = {
+      (GInterfaceInitFunc) ags_mute_audio_mutable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_fx_volume_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 							"AgsFxVolumeChannel",
 							&ags_fx_volume_channel_info,
 							0);
+
+    g_type_add_interface_static(ags_type_fx_volume_channel,
+				AGS_TYPE_MUTABLE,
+				&ags_mutable_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_fx_volume_channel);
   }
@@ -152,6 +165,12 @@ ags_fx_volume_channel_class_init(AgsFxVolumeChannelClass *fx_volume_channel)
   g_object_class_install_property(gobject,
 				  PROP_VOLUME,
 				  param_spec);
+}
+
+void
+ags_fx_volume_channel_mutable_interface_init(AgsMutableInterface *mutable)
+{
+  mutable->set_muted = ags_fx_volume_channel_set_muted;
 }
 
 void
@@ -363,6 +382,30 @@ ags_fx_volume_channel_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_volume_channel_parent_class)->finalize(gobject);
+}
+
+void
+ags_fx_volume_channel_set_muted(AgsMutable *mutable, gboolean muted)
+{
+  AgsPort *port;
+  
+  GValue value = {0,};
+
+  g_object_get(G_OBJECT(mutable),
+	       "muted", &port,
+	       NULL);
+  
+  g_value_init(&value,
+	       G_TYPE_FLOAT);
+
+  g_value_set_float(&value,
+		    (muted ? 1.0: 0.0));
+
+  ags_port_safe_write(port,
+		      &value);
+
+  g_value_unset(&value);
+  g_object_unref(port);
 }
 
 static AgsPluginPort*
