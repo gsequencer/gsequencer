@@ -19,6 +19,8 @@
 
 #include <ags/audio/fx/ags_fx_volume_audio.h>
 
+#include <ags/plugin/ags_plugin_port.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_volume_audio_class_init(AgsFxVolumeAudioClass *fx_volume_audio);
@@ -89,7 +91,7 @@ ags_fx_volume_audio_get_type()
     };
 
     static const GInterfaceInfo ags_mutable_interface_info = {
-      (GInterfaceInitFunc) ags_mute_audio_mutable_interface_init,
+      (GInterfaceInitFunc) ags_fx_volume_audio_mutable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };

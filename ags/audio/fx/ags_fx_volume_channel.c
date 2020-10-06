@@ -95,7 +95,7 @@ ags_fx_volume_channel_get_type()
     };
 
     static const GInterfaceInfo ags_mutable_interface_info = {
-      (GInterfaceInitFunc) ags_mute_audio_mutable_interface_init,
+      (GInterfaceInitFunc) ags_fx_volume_channel_mutable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
