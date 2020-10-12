@@ -1231,6 +1231,9 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
       read_count = frame_count - i;
     }
 
+    /* signal */
+    g_mutex_lock(&(gstreamer_file_audio_sink->wakeup_mutex));
+
     ags_gstreamer_file_audio_sink_unset_status_flags(gstreamer_file_audio_sink, AGS_GSTREAMER_FILE_AUDIO_SINK_STATUS_WAIT);
 
     g_cond_signal(&(gstreamer_file_audio_sink->wakeup_cond));
@@ -1276,15 +1279,109 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
 			 guint frame_count, guint format)
 {
   AgsGstreamerFile *gstreamer_file;
+  AgsGstreamerFileAudioSrc *gstreamer_file_audio_src;
+
+  GstElement *pipeline;
+
+  guint total_frame_count;
+  guint read_count;
+  guint copy_mode;
+  guint i;
+  gboolean is_running;
   
-  GRecMutex *gstreamer_file_mutex;
+  GRecMutex *gstreamer_file_mutex;  
+  GRecMutex *gstreamer_file_audio_src_mutex;
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
 
   /* get gstreamer_file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
+  
+  g_rec_mutex_lock(gstreamer_file_mutex);
 
-  //TODO:JK: implement me
+  gstreamer_file_audio_src = gstreamer_file->data_src;
+  
+  pipeline = gstreamer_file->read_pipeline;
+
+  if(pipeline != NULL){
+    g_object_ref(pipeline);
+  }
+
+  is_running = gstreamer_file->read_pipeline_running;
+  
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+
+  gstreamer_file_audio_src_mutex = AGS_GSTREAMER_FILE_AUDIO_SRC_GET_OBJ_MUTEX(gstreamer_file_audio_src);
+
+  if(!is_running){
+    gst_element_set_state(pipeline, GST_STATE_PLAYING);
+  }
+
+  g_mutex_lock(&(gstreamer_file_audio_src->wakeup_mutex));
+
+  total_frame_count = 0;
+  
+  ags_sound_resource_info(sound_resource,
+			  &total_frame_count,
+			  NULL, NULL);
+
+  g_rec_mutex_lock(gstreamer_file_audio_src_mutex);
+
+  read_count = gstreamer_file_audio_src->buffer_size;
+  
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+						  ags_audio_buffer_util_format_from_soundcard(gstreamer_file_audio_src->format));
+
+  g_rec_mutex_unlock(gstreamer_file_audio_src_mutex);
+
+  for(i = 0; i < frame_count && gstreamer_file->offset + i < total_frame_count; ){
+    if(gstreamer_file->offset + read_count > total_frame_count){
+      read_count = total_frame_count - gstreamer_file->offset;
+    }
+
+    if(i + read_count > frame_count){
+      read_count = frame_count - i;
+    }
+
+    while(!ags_gstreamer_file_audio_src_test_status_flags(gstreamer_file_audio_src, AGS_GSTREAMER_FILE_AUDIO_SRC_STATUS_CLEAN)){
+      g_thread_yield();
+    }
+
+    /* write buffer */
+    g_rec_mutex_lock(gstreamer_file_audio_src_mutex);
+
+    ags_audio_buffer_util_copy_buffer_to_buffer(gstreamer_file_audio_src->buffer, gstreamer_file_audio_src->audio_channels, audio_channel,
+						dbuffer, daudio_channels, (i * daudio_channels),
+						read_count, copy_mode);
+  
+    g_rec_mutex_unlock(gstreamer_file_audio_src_mutex);
+
+    ags_gstreamer_file_audio_src_unset_status_flags(gstreamer_file_audio_src, AGS_GSTREAMER_FILE_AUDIO_SRC_STATUS_CLEAN);
+
+    /* signal */
+    g_mutex_lock(&(gstreamer_file_audio_src->wakeup_mutex));
+    
+    ags_gstreamer_file_audio_src_unset_status_flags(gstreamer_file_audio_src, AGS_GSTREAMER_FILE_AUDIO_SRC_STATUS_WAIT);
+
+    g_cond_signal(&(gstreamer_file_audio_src->wakeup_cond));
+
+    g_mutex_unlock(&(gstreamer_file_audio_src->wakeup_mutex));
+
+    /* increase offset */
+    g_rec_mutex_lock(gstreamer_file_mutex);
+
+    gstreamer_file->offset += read_count;
+
+    g_rec_mutex_unlock(gstreamer_file_mutex);
+    
+    i += read_count;
+  }
+
+  if(pipeline != NULL){
+    g_object_unref(pipeline);
+  }
+  
+  return(frame_count);
 }
 
 void

@@ -46,13 +46,42 @@ G_BEGIN_DECLS
 typedef struct _AgsGstreamerFileAudioSrc AgsGstreamerFileAudioSrc;
 typedef struct _AgsGstreamerFileAudioSrcClass AgsGstreamerFileAudioSrcClass;
 
+/**
+ * @AGS_GSTREAMER_FILE_AUDIO_SRC_STATUS_DONE: sync done read data
+ * @AGS_GSTREAMER_FILE_AUDIO_SRC_STATUS_WAIT: sync wait read data
+ * @AGS_GSTREAMER_FILE_AUDIO_SRC_STATUS_CLEAN: clean read data
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsGstreamerFileAudioSrc by
+ * enable/disable as flags.
+ */
+typedef enum{
+  AGS_GSTREAMER_FILE_AUDIO_SRC_STATUS_DONE     = 1,
+  AGS_GSTREAMER_FILE_AUDIO_SRC_STATUS_WAIT     = 1 << 1,
+  AGS_GSTREAMER_FILE_AUDIO_SRC_STATUS_CLEAN    = 1 << 2,
+}AgsGstreamerFileAudioSrcStatusFlags;
+
 struct _AgsGstreamerFileAudioSrc
 {
   GstAudioSrc audio_src;
 
+  guint status_flags;
+
   GRecMutex obj_mutex;
 
   AgsGstreamerFile *gstreamer_file;
+
+  GMutex wakeup_mutex;
+  GCond wakeup_cond;
+  
+  guint audio_channels;
+
+  guint buffer_size;
+  guint format;
+  
+  gdouble *buffer;
+
+  gint ring_buffer_samplerate;
+  gint ring_buffer_channels;
 };
 
 struct _AgsGstreamerFileAudioSrcClass
@@ -61,6 +90,10 @@ struct _AgsGstreamerFileAudioSrcClass
 };
 
 GType ags_gstreamer_file_audio_src_get_type();
+
+gboolean ags_gstreamer_file_audio_src_test_status_flags(AgsGstreamerFileAudioSrc *gstreamer_file_audio_src, guint status_flags);
+void ags_gstreamer_file_audio_src_set_status_flags(AgsGstreamerFileAudioSrc *gstreamer_file_audio_src, guint status_flags);
+void ags_gstreamer_file_audio_src_unset_status_flags(AgsGstreamerFileAudioSrc *gstreamer_file_audio_src, guint status_flags);
 
 AgsGstreamerFileAudioSrc* ags_gstreamer_file_audio_src_new();
 

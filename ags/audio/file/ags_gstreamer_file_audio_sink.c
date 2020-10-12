@@ -57,8 +57,7 @@ static GstStaticPadTemplate ags_gstreamer_file_audio_sink_src_template = GST_STA
 														   "format = (string) F64LE, "
 														   "layout = (string) { interleaved }, "
 														   "rate = " GST_AUDIO_RATE_RANGE ", "
-														   "channels = " GST_AUDIO_CHANNELS_RANGE)
-												  );
+														   "channels = " GST_AUDIO_CHANNELS_RANGE));
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 static GstStaticPadTemplate ags_gstreamer_file_audio_sink_src_template = GST_STATIC_PAD_TEMPLATE ("src",
 												  GST_PAD_SRC,
@@ -67,8 +66,7 @@ static GstStaticPadTemplate ags_gstreamer_file_audio_sink_src_template = GST_STA
 														   "format = (string) F64BE, "
 														   "layout = (string) { interleaved }, "
 														   "rate = " GST_AUDIO_RATE_RANGE ", "
-														   "channels = " GST_AUDIO_CHANNELS_RANGE)
-												  );
+														   "channels = " GST_AUDIO_CHANNELS_RANGE));
 #else
 static GstStaticPadTemplate ags_gstreamer_file_audio_sink_src_template = GST_STATIC_PAD_TEMPLATE ("src",
 												  GST_PAD_SRC,
@@ -77,8 +75,7 @@ static GstStaticPadTemplate ags_gstreamer_file_audio_sink_src_template = GST_STA
 														   "format = (string) F64LE, "
 														   "layout = (string) { interleaved }, "
 														   "rate = " GST_AUDIO_RATE_RANGE ", "
-														   "channels = " GST_AUDIO_CHANNELS_RANGE)
-												  );
+														   "channels = " GST_AUDIO_CHANNELS_RANGE));
 #endif
 
 GType
