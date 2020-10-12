@@ -1112,7 +1112,7 @@ ags_audio_thread_set_sound_scope(AgsAudioThread *audio_thread,
 }
 
 /**
- * ags_audio_thread_scope_data_free:
+ * ags_audio_thread_scope_data_alloc:
  * 
  * Allocate the #AgsAudioThreadScopeData-struct.
  * 

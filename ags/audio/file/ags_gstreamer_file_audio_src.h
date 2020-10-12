@@ -47,6 +47,7 @@ typedef struct _AgsGstreamerFileAudioSrc AgsGstreamerFileAudioSrc;
 typedef struct _AgsGstreamerFileAudioSrcClass AgsGstreamerFileAudioSrcClass;
 
 /**
+ * AgsGstreamerFileAudioSrcStatusFlags:
  * @AGS_GSTREAMER_FILE_AUDIO_SRC_STATUS_DONE: sync done read data
  * @AGS_GSTREAMER_FILE_AUDIO_SRC_STATUS_WAIT: sync wait read data
  * @AGS_GSTREAMER_FILE_AUDIO_SRC_STATUS_CLEAN: clean read data

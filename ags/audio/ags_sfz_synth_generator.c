@@ -1185,7 +1185,7 @@ ags_sfz_synth_generator_set_base_key(AgsSFZSynthGenerator *sfz_synth_generator, 
 }
 
 /**
- * ags_sfz_synth_generator_get_base_key:
+ * ags_sfz_synth_generator_get_tuning:
  * @sfz_synth_generator: the #AgsSFZSynthGenerator
  *
  * Gets tuning.

@@ -1627,7 +1627,7 @@ ags_sf2_synth_generator_set_base_key(AgsSF2SynthGenerator *sf2_synth_generator, 
 }
 
 /**
- * ags_sf2_synth_generator_get_base_key:
+ * ags_sf2_synth_generator_get_tuning:
  * @sf2_synth_generator: the #AgsSF2SynthGenerator
  *
  * Gets tuning.
@@ -1721,7 +1721,7 @@ ags_sf2_synth_generator_set_timestamp(AgsSF2SynthGenerator *sf2_synth_generator,
 }
 
 /**
- * ags_sf2_synth_generator_compute_instrument:
+ * ags_sf2_synth_generator_compute:
  * @sf2_synth_generator: the #AgsSF2SynthGenerator
  * @audio_signal: the #AgsAudioSignal
  * @note: the note to compute

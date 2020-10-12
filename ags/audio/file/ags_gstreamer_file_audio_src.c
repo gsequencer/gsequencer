@@ -122,10 +122,10 @@ ags_gstreamer_file_audio_src_class_init(AgsGstreamerFileAudioSrcClass *gstreamer
   gobject->finalize = ags_gstreamer_file_audio_src_finalize;
 
   /* GstElementClass */
-  element = (GstElementClass *) gstreamer_file_audio_sink;
+  element = (GstElementClass *) gstreamer_file_audio_src;
   
   gst_element_class_add_static_pad_template(element,
-					    &ags_gstreamer_file_audio_sink_src_template);
+					    &ags_gstreamer_file_audio_src_src_template);
 
   /* GstAudioSrcClass */
   audio_src = (GstAudioSrcClass *) gstreamer_file_audio_src;
@@ -159,17 +159,17 @@ ags_gstreamer_file_audio_src_init(AgsGstreamerFileAudioSrc *gstreamer_file_audio
 
   gstreamer_file_audio_src->gstreamer_file = NULL;
 
-  gstreamer_file_audio_sink->audio_channels = 1;
+  gstreamer_file_audio_src->audio_channels = 1;
 
-  gstreamer_file_audio_sink->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
-  gstreamer_file_audio_sink->format = AGS_SOUNDCARD_DOUBLE;
+  gstreamer_file_audio_src->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  gstreamer_file_audio_src->format = AGS_SOUNDCARD_DOUBLE;
 
-  gstreamer_file_audio_sink->buffer = ags_stream_alloc(gstreamer_file_audio_sink->audio_channels * gstreamer_file_audio_sink->buffer_size,
-						       gstreamer_file_audio_sink->format);
+  gstreamer_file_audio_src->buffer = ags_stream_alloc(gstreamer_file_audio_src->audio_channels * gstreamer_file_audio_src->buffer_size,
+						      gstreamer_file_audio_src->format);
 
-  blocksize = gstreamer_file_audio_sink->audio_channels * gstreamer_file_audio_sink->buffer_size * sizeof(gdouble);
+  blocksize = gstreamer_file_audio_src->audio_channels * gstreamer_file_audio_src->buffer_size * sizeof(gdouble);
   
-  g_object_set(gstreamer_file_audio_sink,
+  g_object_set(gstreamer_file_audio_src,
 	       "blocksize", blocksize,
 	       NULL);
 }
@@ -319,6 +319,93 @@ void
 ags_gstreamer_file_audio_src_reset(GstAudioSrc *src)
 {
   //TODO:JK: implement me
+}
+
+/**
+ * ags_gstreamer_file_audio_src_test_status_flags:
+ * @gstreamer_file_audio_src: the #AgsGstreamerFileAudioSrc
+ * @status_flags: status flags
+ * 
+ * Test @status_flags of @gstreamer_file_audio_src.
+ * 
+ * Returns: %TRUE if status flags set, otherwise %FALSE
+ * 
+ * Since: 3.6.0
+ */
+gboolean
+ags_gstreamer_file_audio_src_test_status_flags(AgsGstreamerFileAudioSrc *gstreamer_file_audio_src, guint status_flags)
+{
+  gboolean retval;
+
+  GRecMutex *gstreamer_file_audio_src_mutex;
+
+  if(!AGS_IS_GSTREAMER_FILE_AUDIO_SRC(gstreamer_file_audio_src)){
+    return(FALSE);
+  }
+  
+  gstreamer_file_audio_src_mutex = AGS_GSTREAMER_FILE_AUDIO_SRC_GET_OBJ_MUTEX(gstreamer_file_audio_src);
+
+  g_rec_mutex_lock(gstreamer_file_audio_src_mutex);
+
+  retval = (status_flags & (gstreamer_file_audio_src->status_flags)) ? TRUE: FALSE;
+  
+  g_rec_mutex_unlock(gstreamer_file_audio_src_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_gstreamer_file_audio_src_set_status_flags:
+ * @gstreamer_file_audio_src: the #AgsGstreamerFileAudioSrc
+ * @status_flags: status flags
+ * 
+ * Set @status_flags of @gstreamer_file_audio_src.
+ * 
+ * Since: 3.6.0
+ */
+void
+ags_gstreamer_file_audio_src_set_status_flags(AgsGstreamerFileAudioSrc *gstreamer_file_audio_src, guint status_flags)
+{
+  GRecMutex *gstreamer_file_audio_src_mutex;
+
+  if(!AGS_IS_GSTREAMER_FILE_AUDIO_SRC(gstreamer_file_audio_src)){
+    return;
+  }
+  
+  gstreamer_file_audio_src_mutex = AGS_GSTREAMER_FILE_AUDIO_SRC_GET_OBJ_MUTEX(gstreamer_file_audio_src);
+
+  g_rec_mutex_lock(gstreamer_file_audio_src_mutex);
+
+  gstreamer_file_audio_src->status_flags |= status_flags;
+  
+  g_rec_mutex_unlock(gstreamer_file_audio_src_mutex);
+}
+
+/**
+ * ags_gstreamer_file_audio_src_unset_status_flags:
+ * @gstreamer_file_audio_src: the #AgsGstreamerFileAudioSrc
+ * @status_flags: status flags
+ * 
+ * Unset @status_flags of @gstreamer_file_audio_src.
+ * 
+ * Since: 3.6.0
+ */
+void
+ags_gstreamer_file_audio_src_unset_status_flags(AgsGstreamerFileAudioSrc *gstreamer_file_audio_src, guint status_flags)
+{
+  GRecMutex *gstreamer_file_audio_src_mutex;
+
+  if(!AGS_IS_GSTREAMER_FILE_AUDIO_SRC(gstreamer_file_audio_src)){
+    return;
+  }
+  
+  gstreamer_file_audio_src_mutex = AGS_GSTREAMER_FILE_AUDIO_SRC_GET_OBJ_MUTEX(gstreamer_file_audio_src);
+
+  g_rec_mutex_lock(gstreamer_file_audio_src_mutex);
+
+  gstreamer_file_audio_src->status_flags &= (~status_flags);
+  
+  g_rec_mutex_unlock(gstreamer_file_audio_src_mutex);
 }
 
 /**

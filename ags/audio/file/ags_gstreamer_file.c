@@ -1205,8 +1205,6 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
   }
 
-  g_mutex_lock(&(gstreamer_file_audio_sink->wakeup_mutex));
-
   total_frame_count = 0;
   
   ags_sound_resource_info(sound_resource,
@@ -1283,11 +1281,11 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
 
   GstElement *pipeline;
 
-  guint total_frame_count;
-  guint read_count;
+  guint write_count;
   guint copy_mode;
   guint i;
   gboolean is_running;
+  gboolean do_write;
   
   GRecMutex *gstreamer_file_mutex;  
   GRecMutex *gstreamer_file_audio_src_mutex;
@@ -1299,7 +1297,7 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
   
   g_rec_mutex_lock(gstreamer_file_mutex);
 
-  gstreamer_file_audio_src = gstreamer_file->data_src;
+  gstreamer_file_audio_src = gstreamer_file->data_source;
   
   pipeline = gstreamer_file->read_pipeline;
 
@@ -1317,42 +1315,48 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
   }
 
-  g_mutex_lock(&(gstreamer_file_audio_src->wakeup_mutex));
+  g_rec_mutex_lock(gstreamer_file_mutex);
 
-  total_frame_count = 0;
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(gstreamer_file->format),
+						  ags_audio_buffer_util_format_from_soundcard(format));
   
-  ags_sound_resource_info(sound_resource,
-			  &total_frame_count,
-			  NULL, NULL);
+  ags_audio_buffer_util_copy_buffer_to_buffer(gstreamer_file->buffer, gstreamer_file->audio_channels, audio_channel,
+					      sbuffer, saudio_channels, audio_channel,
+					      frame_count, copy_mode);
 
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+  
   g_rec_mutex_lock(gstreamer_file_audio_src_mutex);
 
-  read_count = gstreamer_file_audio_src->buffer_size;
-  
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  ags_audio_buffer_util_format_from_soundcard(gstreamer_file_audio_src->format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(gstreamer_file_audio_src->format),
+						  ags_audio_buffer_util_format_from_soundcard(gstreamer_file->format));
 
   g_rec_mutex_unlock(gstreamer_file_audio_src_mutex);
 
-  for(i = 0; i < frame_count && gstreamer_file->offset + i < total_frame_count; ){
-    if(gstreamer_file->offset + read_count > total_frame_count){
-      read_count = total_frame_count - gstreamer_file->offset;
-    }
+  gstreamer_file->audio_channel_written[audio_channel] = frame_count;
+  do_write = TRUE;
 
-    if(i + read_count > frame_count){
-      read_count = frame_count - i;
+  for(i = 0; i < gstreamer_file->audio_channels; i++){
+    if(gstreamer_file->audio_channel_written[i] == -1){
+      do_write = FALSE;
+      
+      break;
     }
+  }
 
+  if(do_write){
     while(!ags_gstreamer_file_audio_src_test_status_flags(gstreamer_file_audio_src, AGS_GSTREAMER_FILE_AUDIO_SRC_STATUS_CLEAN)){
       g_thread_yield();
     }
 
+    write_count = frame_count * gstreamer_file->audio_channels;
+    
     /* write buffer */
     g_rec_mutex_lock(gstreamer_file_audio_src_mutex);
 
-    ags_audio_buffer_util_copy_buffer_to_buffer(gstreamer_file_audio_src->buffer, gstreamer_file_audio_src->audio_channels, audio_channel,
-						dbuffer, daudio_channels, (i * daudio_channels),
-						read_count, copy_mode);
+    ags_audio_buffer_util_copy_buffer_to_buffer(gstreamer_file_audio_src->buffer, 1, 0,
+						sbuffer, 1, 0,
+						write_count, copy_mode);
   
     g_rec_mutex_unlock(gstreamer_file_audio_src_mutex);
 
@@ -1367,21 +1371,21 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
 
     g_mutex_unlock(&(gstreamer_file_audio_src->wakeup_mutex));
 
+    for(i = 0; i < gstreamer_file->audio_channels; i++){
+      gstreamer_file->audio_channel_written[i] = -1;
+    }
+
     /* increase offset */
     g_rec_mutex_lock(gstreamer_file_mutex);
 
-    gstreamer_file->offset += read_count;
+    gstreamer_file->offset += write_count;
 
     g_rec_mutex_unlock(gstreamer_file_mutex);
-    
-    i += read_count;
-  }
-
-  if(pipeline != NULL){
-    g_object_unref(pipeline);
   }
   
-  return(frame_count);
+  if(pipeline != NULL){
+    g_object_unref(pipeline);
+  }  
 }
 
 void
