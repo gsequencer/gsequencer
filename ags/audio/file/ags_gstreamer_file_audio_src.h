@@ -23,8 +23,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/config.h>
-
 #include <gst/gst.h>
 #include <gst/audio/gstaudiosrc.h>
 

@@ -19,6 +19,9 @@
 
 #include <ags/audio/file/ags_gstreamer_file_audio_src.h>
 
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_audio_buffer_util.h>
+
 #include <ags/i18n.h>
 
 void ags_gstreamer_file_audio_src_class_init(AgsGstreamerFileAudioSrcClass *gstreamer_file_audio_src);
