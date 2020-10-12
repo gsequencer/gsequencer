@@ -42,7 +42,7 @@ void ags_gstreamer_file_audio_sink_reset(GstAudioSink *sink);
  * @short_description: gstreamer audio sink
  * @title: AgsGstreamerFileAudioSink
  * @section_id:
- * @include: ags/audio/audio_sink/ags_gstreamer_file_audio_sink.h
+ * @include: ags/audio/file/ags_gstreamer_file_audio_sink.h
  *
  * #AgsGstreamerFileAudioSink is the base object to ineract with libgstreamer-1.0 audio sink.
  */
@@ -54,7 +54,7 @@ static GstStaticPadTemplate ags_gstreamer_file_audio_sink_src_template = GST_STA
 												  GST_PAD_SRC,
 												  GST_PAD_ALWAYS,
 												  GST_STATIC_CAPS ("audio/x-raw, "
-														   "format = (string) F64LE, "
+														   "format = (string) { F64LE }, "
 														   "layout = (string) { interleaved }, "
 														   "rate = " GST_AUDIO_RATE_RANGE ", "
 														   "channels = " GST_AUDIO_CHANNELS_RANGE));
@@ -63,7 +63,7 @@ static GstStaticPadTemplate ags_gstreamer_file_audio_sink_src_template = GST_STA
 												  GST_PAD_SRC,
 												  GST_PAD_ALWAYS,
 												  GST_STATIC_CAPS ("audio/x-raw, "
-														   "format = (string) F64BE, "
+														   "format = (string) { F64BE }, "
 														   "layout = (string) { interleaved }, "
 														   "rate = " GST_AUDIO_RATE_RANGE ", "
 														   "channels = " GST_AUDIO_CHANNELS_RANGE));
@@ -72,7 +72,7 @@ static GstStaticPadTemplate ags_gstreamer_file_audio_sink_src_template = GST_STA
 												  GST_PAD_SRC,
 												  GST_PAD_ALWAYS,
 												  GST_STATIC_CAPS ("audio/x-raw, "
-														   "format = (string) F64LE, "
+														   "format = (string) { F64LE }, "
 														   "layout = (string) { interleaved }, "
 														   "rate = " GST_AUDIO_RATE_RANGE ", "
 														   "channels = " GST_AUDIO_CHANNELS_RANGE));
@@ -126,9 +126,11 @@ ags_gstreamer_file_audio_sink_class_init(AgsGstreamerFileAudioSinkClass *gstream
   /* GstElementClass */
   element = (GstElementClass *) gstreamer_file_audio_sink;
   
+#if 0
   gst_element_class_add_static_pad_template(element,
 					    &ags_gstreamer_file_audio_sink_src_template);
-
+#endif
+  
   /* GstAudioSinkClass */
   audio_sink = (GstAudioSinkClass *) gstreamer_file_audio_sink;
   

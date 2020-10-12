@@ -43,7 +43,7 @@ void ags_gstreamer_file_audio_src_reset(GstAudioSrc *src);
  * @short_description: gstreamer audio src
  * @title: AgsGstreamerFileAudioSrc
  * @section_id:
- * @include: ags/audio/audio_src/ags_gstreamer_file_audio_src.h
+ * @include: ags/audio/file/ags_gstreamer_file_audio_src.h
  *
  * #AgsGstreamerFileAudioSrc is the base object to ineract with libgstreamer-1.0 audio src.
  */
@@ -55,7 +55,7 @@ static GstStaticPadTemplate ags_gstreamer_file_audio_src_src_template = GST_STAT
 												 GST_PAD_SRC,
 												 GST_PAD_ALWAYS,
 												 GST_STATIC_CAPS ("audio/x-raw, "
-														  "format = (string) F64LE, "
+														  "format = (string) { F64LE }, "
 														  "layout = (string) { interleaved }, "
 														  "rate = " GST_AUDIO_RATE_RANGE ", "
 														  "channels = " GST_AUDIO_CHANNELS_RANGE));
@@ -64,7 +64,7 @@ static GstStaticPadTemplate ags_gstreamer_file_audio_src_src_template = GST_STAT
 												 GST_PAD_SRC,
 												 GST_PAD_ALWAYS,
 												 GST_STATIC_CAPS ("audio/x-raw, "
-														  "format = (string) F64BE, "
+														  "format = (string) { F64BE }, "
 														  "layout = (string) { interleaved }, "
 														  "rate = " GST_AUDIO_RATE_RANGE ", "
 														  "channels = " GST_AUDIO_CHANNELS_RANGE));
@@ -73,7 +73,7 @@ static GstStaticPadTemplate ags_gstreamer_file_audio_src_src_template = GST_STAT
 												 GST_PAD_SRC,
 												 GST_PAD_ALWAYS,
 												 GST_STATIC_CAPS ("audio/x-raw, "
-														  "format = (string) F64LE, "
+														  "format = (string) { F64LE }, "
 														  "layout = (string) { interleaved }, "
 														  "rate = " GST_AUDIO_RATE_RANGE ", "
 														  "channels = " GST_AUDIO_CHANNELS_RANGE));
@@ -126,10 +126,12 @@ ags_gstreamer_file_audio_src_class_init(AgsGstreamerFileAudioSrcClass *gstreamer
 
   /* GstElementClass */
   element = (GstElementClass *) gstreamer_file_audio_src;
-  
+
+#if 0
   gst_element_class_add_static_pad_template(element,
 					    &ags_gstreamer_file_audio_src_src_template);
-
+#endif
+  
   /* GstAudioSrcClass */
   audio_src = (GstAudioSrcClass *) gstreamer_file_audio_src;
   
