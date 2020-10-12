@@ -789,8 +789,7 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
   /* read file */
   read_pipeline = gst_pipeline_new("AGS ro-pipeline");
   
-  file_source = gst_element_factory_make("filesrc", "AGS file source");
-
+  file_source = gst_element_factory_make("filesrc", "AGS file source");  
   g_object_set(file_source,
 	       "location", filename,
 	       NULL);
