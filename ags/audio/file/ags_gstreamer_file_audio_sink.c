@@ -223,6 +223,8 @@ ags_gstreamer_file_audio_sink_prepare(GstAudioSink *sink, GstAudioRingBufferSpec
   
   if(gstreamer_file_audio_sink->ring_buffer_channels != gstreamer_file_audio_sink->audio_channels){
     gstreamer_file_audio_sink->audio_channels = gstreamer_file_audio_sink->ring_buffer_channels;
+
+    ags_stream_free(gstreamer_file_audio_sink->buffer);
     
     gstreamer_file_audio_sink->buffer = ags_stream_alloc(gstreamer_file_audio_sink->audio_channels * gstreamer_file_audio_sink->buffer_size,
 							 gstreamer_file_audio_sink->format);
@@ -235,6 +237,8 @@ ags_gstreamer_file_audio_sink_prepare(GstAudioSink *sink, GstAudioRingBufferSpec
   g_object_set(gstreamer_file_audio_sink,
 	       "blocksize", blocksize,
 	       NULL);
+
+  ags_gstreamer_file_audio_sink_unset_status_flags(gstreamer_file_audio_sink, AGS_GSTREAMER_FILE_AUDIO_SINK_STATUS_DIRTY);
 
   return(TRUE);
 }
@@ -301,6 +305,8 @@ ags_gstreamer_file_audio_sink_write(GstAudioSink *sink, gpointer data, guint len
 					      available_multi_frame_count);
 
   g_rec_mutex_unlock(gstreamer_file_audio_sink_mutex);
+
+  ags_gstreamer_file_audio_sink_set_status_flags(gstreamer_file_audio_sink, AGS_GSTREAMER_FILE_AUDIO_SINK_STATUS_DIRTY);
 
   return((gint) length);
 }

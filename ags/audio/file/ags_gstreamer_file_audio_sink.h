@@ -49,6 +49,7 @@ typedef struct _AgsGstreamerFileAudioSinkClass AgsGstreamerFileAudioSinkClass;
 /**
  * @AGS_GSTREAMER_FILE_AUDIO_SINK_STATUS_DONE: sync done write data
  * @AGS_GSTREAMER_FILE_AUDIO_SINK_STATUS_WAIT: sync wait write data
+ * @AGS_GSTREAMER_FILE_AUDIO_SINK_STATUS_DIRTY: dirty write data
  *
  * Enum values to control the behavior or indicate internal state of #AgsGstreamerFileAudioSink by
  * enable/disable as flags.
@@ -56,6 +57,7 @@ typedef struct _AgsGstreamerFileAudioSinkClass AgsGstreamerFileAudioSinkClass;
 typedef enum{
   AGS_GSTREAMER_FILE_AUDIO_SINK_STATUS_DONE = 1,
   AGS_GSTREAMER_FILE_AUDIO_SINK_STATUS_WAIT = 1 << 1,
+  AGS_GSTREAMER_FILE_AUDIO_SINK_STATUS_DIRTY = 1 << 2,
 }AgsGstreamerFileAudioSinkStatusFlags;
 
 struct _AgsGstreamerFileAudioSink

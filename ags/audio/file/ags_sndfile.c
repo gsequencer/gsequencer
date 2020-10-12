@@ -1286,6 +1286,8 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
   /* get sndfile mutex */
   sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
+  total_frame_count = 0;
+
   ags_sound_resource_info(sound_resource,
 			  &total_frame_count,
 			  NULL, NULL);
