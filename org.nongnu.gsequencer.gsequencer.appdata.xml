@@ -35,6 +35,25 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.5.16" date="2020-10-05">
+      <description>
+	<p>Fixed missing AgsMutable interface of ags-fx-volume.</p>
+      </description>
+    </release>
+
+    <release version="3.5.15" date="2020-10-05">
+      <description>
+	<p>Fixed NULL pointer dereference while setting initial loop.</p>
+	<p>Fixed missing update of LV2_Options_Option after config changed.</p>
+      </description>
+    </release>
+
+    <release version="3.5.14" date="2020-09-26">
+      <description>
+	<p>Fixed missing initial loop, loop start and loop end set of instruments.</p>
+      </description>
+    </release>
+
     <release version="3.5.13" date="2020-09-24">
       <description>
 	<p>Fixed AgsDssiBridge accessing integer as string.</p>

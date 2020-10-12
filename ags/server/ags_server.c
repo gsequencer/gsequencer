@@ -834,16 +834,33 @@ void
 ags_server_add_controller(AgsServer *server,
 			  GObject *controller)
 {
+  gboolean success;
+  
+  GRecMutex *server_mutex;
+
   if(!AGS_IS_SERVER(server) ||
      !AGS_IS_CONTROLLER(controller)){
     return;
   }
 
+  /* get server mutex */
+  server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
+
+  success = FALSE;
+  
+  g_rec_mutex_lock(server_mutex);
+
   if(g_list_find(server->controller, controller) == NULL){
+    success = TRUE;
+
     g_object_ref(controller);
     server->controller = g_list_prepend(server->controller,
 					controller);
+  }
+  
+  g_rec_mutex_unlock(server_mutex);
 
+  if(success){
     g_object_set(controller,
 		 "server", server,
 		 NULL);
@@ -863,20 +880,37 @@ void
 ags_server_remove_controller(AgsServer *server,
 			     GObject *controller)
 {
+  gboolean success;
+  
+  GRecMutex *server_mutex;
+
   if(!AGS_IS_SERVER(server) ||
      !AGS_IS_CONTROLLER(controller)){
     return;
   }
 
+  /* get server mutex */
+  server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
+
+  success = FALSE;
+  
+  g_rec_mutex_lock(server_mutex);
+
   if(g_list_find(server->controller, controller) != NULL){
+    success = TRUE;
+    
     server->controller = g_list_remove(server->controller,
 				       controller);
 
+    g_object_unref(controller);
+  }
+
+  g_rec_mutex_unlock(server_mutex);
+
+  if(success){
     g_object_set(controller,
 		 "server", NULL,
 		 NULL);
-
-    g_object_unref(controller);
   }
 }
 

@@ -76,6 +76,8 @@ void ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
 				  gchar *filename);
 void ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager);
 
+GList* ags_ladspa_manager_get_ladspa_plugin(AgsLadspaManager *ladspa_manager);
+
 /*  */
 AgsLadspaManager* ags_ladspa_manager_get_instance();
 

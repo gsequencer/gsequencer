@@ -762,6 +762,41 @@ ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager)
 }
 
 /**
+ * ags_dssi_manager_get_dssi_plugin:
+ * @dssi_manager: the #AgsDssiManager
+ *
+ * Get dssi plugin.
+ *
+ * Returns: (transfer full): the #GList-struct containing #AgsDssiPlugin
+ *
+ * Since: 3.5.15
+ */
+GList*
+ags_dssi_manager_get_dssi_plugin(AgsDssiManager *dssi_manager)
+{
+  GList *dssi_plugin;
+  
+  GRecMutex *dssi_manager_mutex;
+
+  if(!AGS_IS_DSSI_MANAGER(dssi_manager)){
+    return(NULL);
+  }
+  
+  /* get dssi manager mutex */
+  dssi_manager_mutex = AGS_DSSI_MANAGER_GET_OBJ_MUTEX(dssi_manager);
+  
+  g_rec_mutex_lock(dssi_manager_mutex);
+
+  dssi_plugin = g_list_copy_deep(dssi_manager->dssi_plugin,
+				 (GCopyFunc) g_object_ref,
+				 NULL);
+  
+  g_rec_mutex_unlock(dssi_manager_mutex);
+
+  return(dssi_plugin);
+}
+
+/**
  * ags_dssi_manager_get_instance:
  *
  * Get instance.

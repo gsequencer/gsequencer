@@ -800,6 +800,7 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 			  gchar *lv2_path,
 			  gchar *filename)
 {
+  //TODO:JK: implement me
 }
 
 /**
@@ -817,6 +818,7 @@ ags_lv2_manager_load_preset(AgsLv2Manager *lv2_manager,
 			    AgsLv2Plugin *lv2_plugin,
 			    AgsTurtle *preset)
 {
+  //TODO:JK: implement me
 }
 
 gint
@@ -1225,6 +1227,41 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 
     lv2_path++;
   }
+}
+
+/**
+ * ags_lv2_manager_get_lv2_plugin:
+ * @lv2_manager: the #AgsLv2Manager
+ *
+ * Get lv2 plugin.
+ *
+ * Returns: (transfer full): the #GList-struct containing #AgsLv2Plugin
+ *
+ * Since: 3.5.15
+ */
+GList*
+ags_lv2_manager_get_lv2_plugin(AgsLv2Manager *lv2_manager)
+{
+  GList *lv2_plugin;
+  
+  GRecMutex *lv2_manager_mutex;
+
+  if(!AGS_IS_LV2_MANAGER(lv2_manager)){
+    return(NULL);
+  }
+  
+  /* get lv2 manager mutex */
+  lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
+  
+  g_rec_mutex_lock(lv2_manager_mutex);
+
+  lv2_plugin = g_list_copy_deep(lv2_manager->lv2_plugin,
+				(GCopyFunc) g_object_ref,
+				NULL);
+  
+  g_rec_mutex_unlock(lv2_manager_mutex);
+
+  return(lv2_plugin);
 }
 
 /**

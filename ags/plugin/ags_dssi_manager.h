@@ -75,6 +75,8 @@ void ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
 				gchar *filename);
 void ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager);
 
+GList* ags_dssi_manager_get_dssi_plugin(AgsDssiManager *dssi_manager);
+
 /*  */
 AgsDssiManager* ags_dssi_manager_get_instance();
 

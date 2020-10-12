@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -795,16 +795,33 @@ void
 ags_osc_server_add_connection(AgsOscServer *osc_server,
 			      GObject *osc_connection)
 {
+  gboolean success;
+
+  GRecMutex *osc_server_mutex;
+
   if(!AGS_IS_OSC_SERVER(osc_server) ||
      !AGS_IS_OSC_CONNECTION(osc_connection)){
     return;
   }
 
+  /* get osc_server mutex */
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
+
+  success = FALSE;
+  
+  g_rec_mutex_lock(osc_server_mutex);
+
   if(g_list_find(osc_server->connection, osc_connection) == NULL){
+    success = TRUE;
+    
     g_object_ref(osc_connection);
     osc_server->connection = g_list_prepend(osc_server->connection,
 					    osc_connection);
+  }
 
+  g_rec_mutex_unlock(osc_server_mutex);
+
+  if(success){
     g_object_set(osc_connection,
 		 "osc-server", osc_server,
 		 NULL);
@@ -824,19 +841,37 @@ void
 ags_osc_server_remove_connection(AgsOscServer *osc_server,
 				 GObject *osc_connection)
 {
+  gboolean success;
+  
+  GRecMutex *osc_server_mutex;
+
   if(!AGS_IS_OSC_SERVER(osc_server) ||
      !AGS_IS_OSC_CONNECTION(osc_connection)){
     return;
   }
 
+  /* get osc_server mutex */
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
+
+  success = FALSE;
+  
+  g_rec_mutex_lock(osc_server_mutex);
+
   if(g_list_find(osc_server->connection, osc_connection) != NULL){
+    success = TRUE;
+    
     osc_server->connection = g_list_remove(osc_server->connection,
 					   osc_connection);
+
+    g_object_unref(osc_connection);
+  }
+  
+  g_rec_mutex_unlock(osc_server_mutex);
+
+  if(success){
     g_object_set(osc_connection,
 		 "osc-server", NULL,
 		 NULL);
-
-    g_object_unref(osc_connection);
   }
 }
 
@@ -853,16 +888,33 @@ void
 ags_osc_server_add_controller(AgsOscServer *osc_server,
 			      GObject *osc_controller)
 {
+  gboolean success;
+  
+  GRecMutex *osc_server_mutex;
+
   if(!AGS_IS_OSC_SERVER(osc_server) ||
      !AGS_IS_OSC_CONTROLLER(osc_controller)){
     return;
   }
 
+  /* get osc_server mutex */
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
+
+  success = FALSE;
+  
+  g_rec_mutex_lock(osc_server_mutex);
+
   if(g_list_find(osc_server->controller, osc_controller) == NULL){
+    success = TRUE;
+    
     g_object_ref(osc_controller);
     osc_server->controller = g_list_prepend(osc_server->controller,
 					    osc_controller);
+  }
+  
+  g_rec_mutex_unlock(osc_server_mutex);
 
+  if(success){
     g_object_set(osc_controller,
 		 "osc-server", osc_server,
 		 NULL);
@@ -882,20 +934,37 @@ void
 ags_osc_server_remove_controller(AgsOscServer *osc_server,
 				 GObject *osc_controller)
 {
+  gboolean success;
+  
+  GRecMutex *osc_server_mutex;
+
   if(!AGS_IS_OSC_SERVER(osc_server) ||
      !AGS_IS_OSC_CONTROLLER(osc_controller)){
     return;
   }
 
+  /* get osc_server mutex */
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
+
+  success = FALSE;
+  
+  g_rec_mutex_lock(osc_server_mutex);
+
   if(g_list_find(osc_server->controller, osc_controller) != NULL){
+    success = TRUE;
+    
     osc_server->controller = g_list_remove(osc_server->controller,
 					   osc_controller);
 
+    g_object_unref(osc_controller);
+  }
+  
+  g_rec_mutex_unlock(osc_server_mutex);
+
+  if(success){
     g_object_set(osc_controller,
 		 "osc-server", NULL,
 		 NULL);
-
-    g_object_unref(osc_controller);
   }
 }
 

@@ -5,6 +5,25 @@ ags (3.6.0)
 	* implemented AgsComplex support in ags_fourier_transform_util.[ch]
 	* improved the developer's manual
 
+ags (3.5.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing AgsMutable interface of ags-fx-volume
+	* improved thread-safety of AgsServer
+	* improved thread-safety of AgsOscServer
+
+ags (3.5.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed NULL pointer of ags_ui_provider_get_navigation()
+	* fixed missing update of LV2_Options_Option after configuration changed
+
+ags (3.5.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed initial loop set of AgsDrum, AgsMatrix, AgsFFPlayer, AgsPitchSampler,
+	  AgsAudiorec, AgsDssiBridge, AgsLiveDssiBridge, AgsLv2Bridge and AgsLiveLv2Bridge
+
 ags (3.5.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
