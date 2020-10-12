@@ -1755,6 +1755,29 @@ ags_sndfile_vio_tell(const void *ptr, sf_count_t count, void *user_data)
 }
 
 /**
+ * ags_sndfile_check_suffix:
+ * @filename: the filename
+ * 
+ * Check suffix.
+ * 
+ * Returns: %TRUE if suffix supported, else %FALSE
+ * 
+ * Since: 3.6.0
+ */
+gboolean
+ags_sndfile_check_suffix(gchar *filename)
+{
+  if(g_str_has_suffix(filename, ".wav") ||
+     g_str_has_suffix(filename, ".ogg") ||
+     g_str_has_suffix(filename, ".flac") ||
+     g_str_has_suffix(filename, ".aiff")){
+    return(TRUE);
+  }
+
+  return(FALSE);
+}
+
+/**
  * ags_sndfile_new:
  *
  * Creates a new instance of #AgsSndfile.

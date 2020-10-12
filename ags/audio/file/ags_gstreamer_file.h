@@ -108,6 +108,8 @@ gboolean ags_gstreamer_file_test_flags(AgsGstreamerFile *gstreamer_file, guint f
 void ags_gstreamer_file_set_flags(AgsGstreamerFile *gstreamer_file, guint flags);
 void ags_gstreamer_file_unset_flags(AgsGstreamerFile *gstreamer_file, guint flags);
 
+gboolean ags_gstreamer_file_check_suffix(gchar *filename);
+
 AgsGstreamerFile* ags_gstreamer_file_new();
 
 G_END_DECLS
