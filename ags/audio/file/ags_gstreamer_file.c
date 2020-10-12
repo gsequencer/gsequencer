@@ -1168,6 +1168,7 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 {
   AgsGstreamerFile *gstreamer_file;
   AgsGstreamerFileAudioSink *gstreamer_file_audio_sink;
+
   GstElement *pipeline;
 
   guint total_frame_count;
@@ -1216,6 +1217,9 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 
   read_count = gstreamer_file_audio_sink->buffer_size;
   
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+						  ags_audio_buffer_util_format_from_soundcard(gstreamer_file_audio_sink->format));
+
   g_rec_mutex_unlock(gstreamer_file_audio_sink_mutex);
 
   for(i = 0; i < frame_count && gstreamer_file->offset + i < total_frame_count; ){
@@ -1246,9 +1250,6 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 
     /* read buffer */
     g_rec_mutex_lock(gstreamer_file_audio_sink_mutex);
-
-    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						    ags_audio_buffer_util_format_from_soundcard(gstreamer_file_audio_sink->format));
 
     ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, (i * daudio_channels),
 						gstreamer_file_audio_sink->buffer, gstreamer_file_audio_sink->audio_channels, audio_channel,
