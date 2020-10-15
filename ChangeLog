@@ -1,7 +1,7 @@
 ags (3.6.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented GStreamer support?
+	* implemented GStreamer support
 	* implemented AgsComplex support in ags_fourier_transform_util.[ch]
 	* improved the developer's manual
 

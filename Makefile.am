@@ -2745,8 +2745,8 @@ gsequencerheaders = \
 gsequencer_c_sources = \
 	ags/gsequencer_main.c
 
-midi2xml_CFLAGS += -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
-midi2xml_LDFLAGS += $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(LIBINSTPATCH_LIBS) $(W32API_LIBS)
+midi2xml_CFLAGS += -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
+midi2xml_LDFLAGS += $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(W32API_LIBS)
 midi2xml_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 if WITH_W32API

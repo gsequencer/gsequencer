@@ -124,6 +124,9 @@
 #include <ags/audio/file/ags_audio_container.h>
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_audio_file_link.h>
+#ifdef AGS_WITH_GSTREAMER
+#include <ags/audio/file/ags_gstreamer_file.h>
+#endif
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/audio/file/ags_ipatch.h>
 #include <ags/audio/file/ags_ipatch_gig_reader.h>

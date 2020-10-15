@@ -23,9 +23,10 @@
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/file/ags_sound_resource.h>
-#include <ags/audio/file/ags_gstreamer_file_audio_src.h>
-#include <ags/audio/file/ags_gstreamer_file_audio_sink.h>
 
+#include <gst/gst.h>
+#include <gst/audio/gstaudiosink.h>
+#include <gst/audio/gstaudiosrc.h>
 #include <gst/app/gstappsink.h>
 
 #include <string.h>
