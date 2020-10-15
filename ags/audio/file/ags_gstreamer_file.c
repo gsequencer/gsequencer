@@ -342,7 +342,7 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
   gstreamer_file->file_encoder = NULL;
   gstreamer_file->file_sink = NULL;
 
-  gstreamer_file->remaining_frame_count = 0;
+  gstreamer_file->prev_frame_count = 0;
   
   gstreamer_file->last_sample = NULL;
 }
@@ -1182,120 +1182,58 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
     GstMapInfo info;
 
     guint copy_frame_count;
-    guint remaining_frame_count;
+    guint prev_frame_count;
 
     g_rec_mutex_lock(gstreamer_file_mutex);
 
-    remaining_frame_count = gstreamer_file->remaining_frame_count;
+    prev_frame_count = gstreamer_file->prev_frame_count;
+    
+    sample = gstreamer_file->last_sample;
     
     g_rec_mutex_unlock(gstreamer_file_mutex);
     
     /* pull sample */
-    if(remaining_frame_count != 0 &&
-       remaining_frame_count < frame_count){
+    if(sample != NULL){
       /* attempt #0 */
-      g_rec_mutex_lock(gstreamer_file_mutex);
-
-      sample = gstreamer_file->last_sample;
-
-      g_rec_mutex_unlock(gstreamer_file_mutex);
-
-      if(sample != NULL){
-	buffer = gst_sample_get_buffer(sample);
+      buffer = gst_sample_get_buffer(sample);
       
-	gst_buffer_map(buffer,
-		       &info, GST_MAP_READ);
-      
-	ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, read_frame_count,
-						    info.data, saudio_channels, saudio_channels * remaining_frame_count + audio_channel,
-						    remaining_frame_count, copy_mode);
+      gst_buffer_map(buffer,
+		     &info, GST_MAP_READ);
 
-	gst_buffer_unmap(buffer,
-			 &info);
-      
-	read_frame_count += remaining_frame_count;
+      if(read_frame_count + (info.size / saudio_channels / sizeof(gdouble)) < frame_count){
+	copy_frame_count = (info.size / saudio_channels / sizeof(gdouble));
+      }else{
+	copy_frame_count = frame_count - read_frame_count;
       }
 
-      read_frame_count += remaining_frame_count;
+      if(prev_frame_count + copy_frame_count > (info.size / saudio_channels / sizeof(gdouble))){
+	copy_frame_count = (info.size / saudio_channels / sizeof(gdouble)) - prev_frame_count;
+      }
+      
+      ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, daudio_channels * read_frame_count,
+						  info.data, saudio_channels, saudio_channels * prev_frame_count + audio_channel,
+						  copy_frame_count, copy_mode);
 
-      gst_sample_unref(sample);
+      gst_buffer_unmap(buffer,
+		       &info);
+      
+      read_frame_count += copy_frame_count;
 
       g_rec_mutex_lock(gstreamer_file_mutex);
-      
-      gstreamer_file->remaining_frame_count = 0;
-    
-      g_rec_mutex_unlock(gstreamer_file_mutex);
-      
-      /* attempt #1 */
-      sample = gst_app_sink_pull_sample(audio_sink);
 
-      if(sample != NULL){
-	buffer = gst_sample_get_buffer(sample);
-      
-	gst_buffer_map(buffer,
-		       &info, GST_MAP_READ);
-      
-	if(read_frame_count + info.size < frame_count){
-	  copy_frame_count = info.size;
-	}else{
-	  copy_frame_count = frame_count - read_frame_count;
-	}
+      if(prev_frame_count + copy_frame_count >= (info.size / saudio_channels / sizeof(gdouble))){
+	gstreamer_file->prev_frame_count = 0;
+    
+	gstreamer_file->last_sample = NULL;
 	
-	ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, read_frame_count,
-						    info.data, saudio_channels, audio_channel,
-						    copy_frame_count, copy_mode);
+	gst_sample_unref(sample);
+      }else{
+	gstreamer_file->prev_frame_count += copy_frame_count;
 
-	gst_buffer_unmap(buffer,
-			 &info);
-      
-	if(read_frame_count + info.size >= frame_count){
-	  g_rec_mutex_lock(gstreamer_file_mutex);
-      
-	  gstreamer_file->remaining_frame_count = read_frame_count + info.size - frame_count;
-    
-	  g_rec_mutex_unlock(gstreamer_file_mutex);
-	}
-
-	read_frame_count += copy_frame_count;
+	gstreamer_file->last_sample = sample;
       }
-    }else if(remaining_frame_count != 0 &&
-	     remaining_frame_count > frame_count){
-      /* attempt #0 */
-      g_rec_mutex_lock(gstreamer_file_mutex);
-
-      sample = gstreamer_file->last_sample;
-
+      
       g_rec_mutex_unlock(gstreamer_file_mutex);
-
-      if(sample != NULL){
-	buffer = gst_sample_get_buffer(sample);
-      
-	gst_buffer_map(buffer,
-		       &info, GST_MAP_READ);
-      
-	if(read_frame_count + info.size < frame_count){
-	  copy_frame_count = info.size;
-	}else{
-	  copy_frame_count = frame_count - read_frame_count;
-	}
-
-	ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, read_frame_count,
-						    info.data, saudio_channels, saudio_channels * remaining_frame_count + audio_channel,
-						    copy_frame_count, copy_mode);
-
-	gst_buffer_unmap(buffer,
-			 &info);
-      
-	if(read_frame_count + info.size >= frame_count){
-	  g_rec_mutex_lock(gstreamer_file_mutex);
-      
-	  gstreamer_file->remaining_frame_count = read_frame_count + info.size - frame_count;
-    
-	  g_rec_mutex_unlock(gstreamer_file_mutex);
-	}      
-
-	read_frame_count += copy_frame_count;
-      }
     }else{
       /* attempt #0 */
       sample = gst_app_sink_pull_sample(audio_sink);
@@ -1306,46 +1244,48 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 	gst_buffer_map(buffer,
 		       &info, GST_MAP_READ);
 
-	if(read_frame_count + info.size < frame_count){
-	  copy_frame_count = info.size;
+	if(read_frame_count + (info.size / saudio_channels / sizeof(gdouble)) < frame_count){
+	  copy_frame_count = (info.size / saudio_channels / sizeof(gdouble));
 	}else{
 	  copy_frame_count = frame_count - read_frame_count;
 	}
 
-	ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, read_frame_count,
+	if(prev_frame_count + copy_frame_count > (info.size / saudio_channels / sizeof(gdouble))){
+	  copy_frame_count = (info.size / saudio_channels / sizeof(gdouble)) - prev_frame_count;
+	}
+
+	ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, daudio_channels * read_frame_count,
 						    info.data, saudio_channels, audio_channel,
 						    copy_frame_count, copy_mode);
 
 	gst_buffer_unmap(buffer,
 			 &info);
       
-	if(read_frame_count + info.size >= frame_count){
-	  g_rec_mutex_lock(gstreamer_file_mutex);
-      
-	  gstreamer_file->remaining_frame_count = read_frame_count + info.size - frame_count;
-    
-	  g_rec_mutex_unlock(gstreamer_file_mutex);
-	}else{
-	  g_rec_mutex_lock(gstreamer_file_mutex);
-      
-	  gstreamer_file->remaining_frame_count = 0;
-    
-	  g_rec_mutex_unlock(gstreamer_file_mutex);
-	}
-
 	read_frame_count += copy_frame_count;
+	
+	g_rec_mutex_lock(gstreamer_file_mutex);
+
+	if(copy_frame_count >= (info.size / saudio_channels / sizeof(gdouble))){
+	  gstreamer_file->prev_frame_count = 0;
+    
+	  gstreamer_file->last_sample = NULL;
+	
+	  gst_sample_unref(sample);
+	}else{
+	  gstreamer_file->prev_frame_count += copy_frame_count;
+
+	  gstreamer_file->last_sample = sample;
+	}
+      
+	g_rec_mutex_unlock(gstreamer_file_mutex);
+      }else{
+	break;
       }
     }
-
-    g_rec_mutex_lock(gstreamer_file_mutex);
-
-    gstreamer_file->last_sample = sample;
-    
-    g_rec_mutex_unlock(gstreamer_file_mutex);
   }
   
 #if 0
-  g_message("%d %d", gstreamer_file->offset, read_frame_count);
+  g_message("%d -> %d + %d", total_frame_count, gstreamer_file->offset, read_frame_count);
 #endif
   
   g_rec_mutex_lock(gstreamer_file_mutex);
@@ -1412,7 +1352,7 @@ ags_gstreamer_file_seek(AgsSoundResource *sound_resource,
   if(gstreamer_file->last_sample != NULL){
     gst_sample_unref(gstreamer_file->last_sample);
 
-    gstreamer_file->remaining_frame_count = 0;
+    gstreamer_file->prev_frame_count = 0;
     
     gstreamer_file->last_sample = NULL;
   }

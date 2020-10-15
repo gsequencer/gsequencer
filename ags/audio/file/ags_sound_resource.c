@@ -755,6 +755,10 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
       }
       //      g_message("read %d[%d-%d]: %d", read_count, i, i_stop, num_read);
 
+      if(num_read == 0){
+	break;
+      }
+      
       ags_wave_add_buffer(wave,
 			  buffer,
 			  FALSE);

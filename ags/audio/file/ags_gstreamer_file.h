@@ -95,7 +95,7 @@ struct _AgsGstreamerFile
   GstElement *file_encoder;
   GstElement *file_sink;
 
-  guint remaining_frame_count;
+  guint prev_frame_count;
   
   GstSample *last_sample;
 };
