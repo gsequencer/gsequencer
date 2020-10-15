@@ -90,10 +90,10 @@ struct _AgsGstreamerFile
   GstElement *video_sink;
   GstElement *audio_sink;
 
-  GstElement *data_source;
-  GstElement *data_source_convert;
-  GstElement *file_encoder;
-  GstElement *file_sink;
+  GstElement *audio_src;
+  GstElement *audio_src_convert;
+  GstElement *audio_file_encoder;
+  GstElement *audio_file_sink;
 
   guint prev_frame_count;
   

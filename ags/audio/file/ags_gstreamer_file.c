@@ -338,10 +338,10 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
   gstreamer_file->audio_sink = NULL;
   gstreamer_file->video_sink = NULL;
   
-  gstreamer_file->data_source = NULL;
-  gstreamer_file->data_source_convert = NULL;
-  gstreamer_file->file_encoder = NULL;
-  gstreamer_file->file_sink = NULL;
+  gstreamer_file->audio_src = NULL;
+  gstreamer_file->audio_src_convert = NULL;
+  gstreamer_file->audio_file_encoder = NULL;
+  gstreamer_file->audio_file_sink = NULL;
 
   gstreamer_file->prev_frame_count = 0;
   
@@ -1409,7 +1409,8 @@ ags_gstreamer_file_check_suffix(gchar *filename)
   if(g_str_has_suffix(filename, ".aac") ||
      g_str_has_suffix(filename, ".mp3") ||
      g_str_has_suffix(filename, ".mp4") ||
-     g_str_has_suffix(filename, ".mkv")){
+     g_str_has_suffix(filename, ".mkv") ||
+     g_str_has_suffix(filename, ".webm")){
     return(TRUE);
   }
 

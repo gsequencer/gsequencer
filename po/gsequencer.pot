@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.5.16\n"
+"Project-Id-Version: gsequencer 3.6.0\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-10-07 11:59+0200\n"
+"POT-Creation-Date: 2020-10-15 16:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1453,19 +1453,19 @@ msgstr ""
 msgid "The assigned OSC XMLRPC server"
 msgstr ""
 
-#: ags/server/ags_registry.c:132 ags/server/controller/ags_controller.c:116
+#: ags/server/ags_registry.c:152 ags/server/controller/ags_controller.c:116
 msgid "assigned server"
 msgstr ""
 
-#: ags/server/ags_registry.c:133 ags/server/controller/ags_controller.c:117
+#: ags/server/ags_registry.c:153 ags/server/controller/ags_controller.c:117
 msgid "The assigned server"
 msgstr ""
 
-#: ags/server/security/ags_security_context.c:121
+#: ags/server/security/ags_security_context.c:144
 msgid "certificates as string"
 msgstr ""
 
-#: ags/server/security/ags_security_context.c:122
+#: ags/server/security/ags_security_context.c:145
 msgid "The certificates as string"
 msgstr ""
 
