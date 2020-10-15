@@ -314,7 +314,7 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
   gstreamer_file->audio_channel_written[0] = -1;
   
   gstreamer_file->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
-  gstreamer_file->format = AGS_SOUNDCARD_SIGNED_16_BIT;
+  gstreamer_file->format = AGS_SOUNDCARD_DOUBLE;
 
   gstreamer_file->offset = 0;
   gstreamer_file->buffer_offset = 0;
@@ -820,7 +820,9 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
   
   playbin = gst_element_factory_make("playbin", "AGS playbin");
 
+#if 0  
   blocksize = buffer_size * audio_channels * sizeof(gdouble);
+#endif
   
   audio_sink = gst_element_factory_make("appsink", "AGS audio sink");
   
@@ -908,9 +910,11 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
   
   g_rec_mutex_unlock(gstreamer_file_mutex);
 
+#if 0
   gst_base_sink_set_blocksize(audio_sink,
 			      blocksize);
-
+#endif
+  
   state_change_retval = gst_element_set_state(read_pipeline,
 					      GST_STATE_PLAYING);
 
@@ -994,6 +998,8 @@ ags_gstreamer_file_info(AgsSoundResource *sound_resource,
   
   gst_element_query_duration(read_pipeline,
 			     GST_FORMAT_TIME, &duration);
+
+//  g_message("format %d", info.finfo->format);
   
   current_frame_count = GST_CLOCK_TIME_TO_FRAMES(duration, GST_AUDIO_INFO_RATE(&info));
   
@@ -1038,11 +1044,13 @@ ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
 	       "format", format,
 	       NULL);
   
+#if 0
   blocksize = buffer_size * channels * sizeof(gdouble);
 
   gst_base_sink_set_blocksize(audio_sink,
 			      blocksize);
-
+#endif
+  
   //TODO:JK: implement me
 }
 
@@ -1124,6 +1132,7 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
   guint blocksize;
   guint saudio_channels;
   guint buffer_size;
+  guint source_format;
   guint64 offset;
   guint total_frame_count;
   guint read_frame_count;
@@ -1139,12 +1148,13 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
   /* get source audio channels */
   saudio_channels = 1;
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   
   ags_gstreamer_file_get_presets(sound_resource,
 				 &saudio_channels,
 				 NULL,
 				 &buffer_size,
-				 NULL);
+				 &source_format);
   
   /* get some fields */
   g_rec_mutex_lock(gstreamer_file_mutex);
@@ -1159,13 +1169,11 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 			  &total_frame_count,
 			  NULL, NULL);
 
-  blocksize = gst_base_sink_get_blocksize(audio_sink);
-
   /* read */
   read_frame_count = 0;
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+						  ags_audio_buffer_util_format_from_soundcard(source_format));
 
   for(read_frame_count = 0; read_frame_count < frame_count && offset + read_frame_count < total_frame_count;){
     GstSample *sample;
@@ -1199,7 +1207,7 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 		       &info, GST_MAP_READ);
       
 	ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, read_frame_count,
-						    info.data, saudio_channels, audio_channel,
+						    info.data, saudio_channels, saudio_channels * remaining_frame_count + audio_channel,
 						    remaining_frame_count, copy_mode);
 
 	gst_buffer_unmap(buffer,
@@ -1272,7 +1280,7 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 	}
 
 	ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, read_frame_count,
-						    info.data, saudio_channels, audio_channel,
+						    info.data, saudio_channels, saudio_channels * remaining_frame_count + audio_channel,
 						    copy_frame_count, copy_mode);
 
 	gst_buffer_unmap(buffer,
@@ -1315,6 +1323,12 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 	  g_rec_mutex_lock(gstreamer_file_mutex);
       
 	  gstreamer_file->remaining_frame_count = read_frame_count + info.size - frame_count;
+    
+	  g_rec_mutex_unlock(gstreamer_file_mutex);
+	}else{
+	  g_rec_mutex_lock(gstreamer_file_mutex);
+      
+	  gstreamer_file->remaining_frame_count = 0;
     
 	  g_rec_mutex_unlock(gstreamer_file_mutex);
 	}
