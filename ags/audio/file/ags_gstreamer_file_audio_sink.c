@@ -29,6 +29,9 @@ void ags_gstreamer_file_audio_sink_init(AgsGstreamerFileAudioSink *gstreamer_fil
 void ags_gstreamer_file_audio_sink_dispose(GObject *gobject);
 void ags_gstreamer_file_audio_sink_finalize(GObject *gobject);
 
+gboolean ags_gstreamer_file_audio_sink_set_caps(GstBaseSink *sink,
+						GstCaps *caps);
+
 gboolean ags_gstreamer_file_audio_sink_open(GstAudioSink *sink);
 gboolean ags_gstreamer_file_audio_sink_prepare(GstAudioSink *sink, GstAudioRingBufferSpec *spec);
 gboolean ags_gstreamer_file_audio_sink_unprepare(GstAudioSink *sink);
@@ -114,6 +117,7 @@ ags_gstreamer_file_audio_sink_class_init(AgsGstreamerFileAudioSinkClass *gstream
 {
   GObjectClass *gobject;
   GstElementClass *element;
+  GstBaseSinkClass *base_sink;
   GstAudioSinkClass *audio_sink;
   
   ags_gstreamer_file_audio_sink_parent_class = g_type_class_peek_parent(gstreamer_file_audio_sink);
@@ -128,6 +132,11 @@ ags_gstreamer_file_audio_sink_class_init(AgsGstreamerFileAudioSinkClass *gstream
   
   gst_element_class_add_static_pad_template(element,
 					    &ags_gstreamer_file_audio_sink_sink_template);
+  
+  /* GstBaseSinkClass */
+  base_sink = (GstAudioSinkClass *) gstreamer_file_audio_sink;
+
+  base_sink->set_caps = ags_gstreamer_file_audio_sink_set_caps;
   
   /* GstAudioSinkClass */
   audio_sink = (GstAudioSinkClass *) gstreamer_file_audio_sink;
@@ -188,6 +197,33 @@ ags_gstreamer_file_audio_sink_finalize(GObject *gobject)
 {
   /* call parent */
   G_OBJECT_CLASS(ags_gstreamer_file_audio_sink_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_gstreamer_file_audio_sink_set_caps(GstBaseSink *sink,
+				       GstCaps *caps)
+{
+  AgsGstreamerFileAudioSink *gstreamer_file_audio_sink;
+
+  gboolean success;
+  
+  GRecMutex *gstreamer_file_audio_sink_mutex;
+  
+  gstreamer_file_audio_sink = (AgsGstreamerFileAudioSink *) sink;
+
+  gstreamer_file_audio_sink_mutex = AGS_GSTREAMER_FILE_AUDIO_SINK_GET_OBJ_MUTEX(gstreamer_file_audio_sink);
+
+  success = FALSE;
+
+  g_rec_mutex_lock(gstreamer_file_audio_sink_mutex);
+
+  if(gst_audio_info_from_caps(&(gstreamer_file_audio_sink->info), caps)){
+    success = TRUE;
+  }
+  
+  g_rec_mutex_unlock(gstreamer_file_audio_sink_mutex);
+
+  return(success);
 }
 
 gboolean
@@ -265,7 +301,7 @@ ags_gstreamer_file_audio_sink_write(GstAudioSink *sink, gpointer data, guint len
   guint available_multi_frame_count;
   
   GRecMutex *gstreamer_file_audio_sink_mutex;
-  
+
   gstreamer_file_audio_sink = (AgsGstreamerFileAudioSink *) sink;
 
   gstreamer_file_audio_sink_mutex = AGS_GSTREAMER_FILE_AUDIO_SINK_GET_OBJ_MUTEX(gstreamer_file_audio_sink);

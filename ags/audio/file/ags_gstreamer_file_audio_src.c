@@ -29,6 +29,9 @@ void ags_gstreamer_file_audio_src_init(AgsGstreamerFileAudioSrc *gstreamer_file_
 void ags_gstreamer_file_audio_src_dispose(GObject *gobject);
 void ags_gstreamer_file_audio_src_finalize(GObject *gobject);
 
+gboolean ags_gstreamer_file_audio_src_set_caps(GstBaseSrc *src,
+					       GstCaps *caps);
+
 gboolean ags_gstreamer_file_audio_src_open(GstAudioSrc *src);
 gboolean ags_gstreamer_file_audio_src_prepare(GstAudioSrc *src, GstAudioRingBufferSpec *spec);
 gboolean ags_gstreamer_file_audio_src_unprepare(GstAudioSrc *src);
@@ -115,6 +118,7 @@ ags_gstreamer_file_audio_src_class_init(AgsGstreamerFileAudioSrcClass *gstreamer
 {
   GObjectClass *gobject;
   GstElementClass *element;
+  GstBaseSrcClass *base_src;
   GstAudioSrcClass *audio_src;
 
   ags_gstreamer_file_audio_src_parent_class = g_type_class_peek_parent(gstreamer_file_audio_src);
@@ -129,6 +133,11 @@ ags_gstreamer_file_audio_src_class_init(AgsGstreamerFileAudioSrcClass *gstreamer
 
   gst_element_class_add_static_pad_template(element,
 					    &ags_gstreamer_file_audio_src_src_template);
+
+  /* GstBaseSrcClass */
+  base_src = (GstAudioSrcClass *) gstreamer_file_audio_src;
+
+  base_src->set_caps = ags_gstreamer_file_audio_src_set_caps;
   
   /* GstAudioSrcClass */
   audio_src = (GstAudioSrcClass *) gstreamer_file_audio_src;
@@ -189,6 +198,33 @@ ags_gstreamer_file_audio_src_finalize(GObject *gobject)
 {
   /* call parent */
   G_OBJECT_CLASS(ags_gstreamer_file_audio_src_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_gstreamer_file_audio_src_set_caps(GstBaseSrc *src,
+				      GstCaps *caps)
+{
+  AgsGstreamerFileAudioSrc *gstreamer_file_audio_src;
+
+  gboolean success;
+  
+  GRecMutex *gstreamer_file_audio_src_mutex;
+  
+  gstreamer_file_audio_src = (AgsGstreamerFileAudioSrc *) src;
+
+  gstreamer_file_audio_src_mutex = AGS_GSTREAMER_FILE_AUDIO_SRC_GET_OBJ_MUTEX(gstreamer_file_audio_src);
+
+  success = FALSE;
+
+  g_rec_mutex_lock(gstreamer_file_audio_src_mutex);
+
+  if(gst_audio_info_from_caps(&(gstreamer_file_audio_src->info), caps)){
+    success = TRUE;
+  }
+  
+  g_rec_mutex_unlock(gstreamer_file_audio_src_mutex);
+
+  return(success);
 }
 
 gboolean

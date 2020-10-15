@@ -86,15 +86,18 @@ struct _AgsGstreamerFile
   GstElement *write_pipeline;
   gboolean write_pipeline_running;
 
-  GstElement *file_source;
-  GstElement *file_decoder;
-  GstElement *data_sink_convert;
-  GstElement *data_sink;
+  GstElement *playbin;
+  GstElement *video_sink;
+  GstElement *audio_sink;
 
   GstElement *data_source;
   GstElement *data_source_convert;
   GstElement *file_encoder;
   GstElement *file_sink;
+
+  guint remaining_frame_count;
+  
+  GstSample *last_sample;
 };
 
 struct _AgsGstreamerFileClass

@@ -26,6 +26,8 @@
 #include <ags/audio/file/ags_gstreamer_file_audio_src.h>
 #include <ags/audio/file/ags_gstreamer_file_audio_sink.h>
 
+#include <gst/app/gstappsink.h>
+
 #include <string.h>
 
 #include <ags/i18n.h>
@@ -106,6 +108,13 @@ enum{
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
 };
+
+/* playbin flags */
+typedef enum {
+  GST_PLAY_FLAG_VIDEO         = (1 << 0), /* We want video output */
+  GST_PLAY_FLAG_AUDIO         = (1 << 1), /* We want audio output */
+  GST_PLAY_FLAG_TEXT          = (1 << 2)  /* We want subtitle output */
+}GstPlayFlags;
 
 static gpointer ags_gstreamer_file_parent_class = NULL;
 static AgsSoundResourceInterface *ags_gstreamer_file_parent_sound_resource_interface;
@@ -323,16 +332,19 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
 
   gstreamer_file->write_pipeline = NULL;
   gstreamer_file->write_pipeline_running = FALSE;
-  
-  gstreamer_file->file_source = NULL;
-  gstreamer_file->file_decoder = NULL;
-  gstreamer_file->data_sink_convert = NULL;
-  gstreamer_file->data_sink = NULL;
+
+  gstreamer_file->playbin = NULL;
+  gstreamer_file->audio_sink = NULL;
+  gstreamer_file->video_sink = NULL;
   
   gstreamer_file->data_source = NULL;
   gstreamer_file->data_source_convert = NULL;
   gstreamer_file->file_encoder = NULL;
   gstreamer_file->file_sink = NULL;
+
+  gstreamer_file->remaining_frame_count = 0;
+  
+  gstreamer_file->last_sample = NULL;
 }
 
 void
@@ -764,11 +776,21 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
   AgsGstreamerFile *gstreamer_file;
 
   GstElement *read_pipeline;
-  GstElement *file_source;
-  GstElement *file_decoder;
-  GstElement *data_sink_convert;
-  GstElement *data_sink;
+  GstElement *playbin;
+  GstElement *audio_sink;
+  GstElement *video_sink;
 
+  gchar *file_uri;
+  gchar *caps;
+  
+  GstState current_state;
+  GstStateChangeReturn state_change_retval;
+
+  guint buffer_size;
+  guint audio_channels;
+  gint flags;
+  guint blocksize;
+  
   GRecMutex *gstreamer_file_mutex;
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
@@ -783,46 +805,122 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
 
     return(FALSE);
   }
+
+  audio_channels = gstreamer_file->audio_channels;
+  
+  buffer_size = gstreamer_file->buffer_size;
   
   g_rec_mutex_unlock(gstreamer_file_mutex);
 
   /* read file */
   read_pipeline = gst_pipeline_new("AGS ro-pipeline");
+
+  gst_element_set_state(read_pipeline,
+			GST_STATE_NULL);
   
-  file_source = gst_element_factory_make("filesrc", "AGS file source");  
-  g_object_set(file_source,
-	       "location", filename,
+  playbin = gst_element_factory_make("playbin", "AGS playbin");
+
+  blocksize = buffer_size * audio_channels * sizeof(gdouble);
+  
+  audio_sink = gst_element_factory_make("appsink", "AGS audio sink");
+  
+  g_object_set(audio_sink,
+	       "sync", FALSE,
 	       NULL);
   
-  file_decoder = gst_element_factory_make("decodebin", "AGS file decoder");
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+  caps = g_strdup_printf("audio/x-raw, format = (string) { F64LE }, layout= (string) { interleaved }, channels = %s, rate= %s",
+			 GST_AUDIO_CHANNELS_RANGE,
+			 GST_AUDIO_RATE_RANGE);
+#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+  caps = g_strdup_printf("audio/x-raw, format = (string) { F64BE }, layout= (string) { interleaved }, channels = %s, rate= %s",
+			 GST_AUDIO_CHANNELS_RANGE,
+			 GST_AUDIO_RATE_RANGE);
+#else
+  caps = g_strdup_printf("audio/x-raw, format = (string) { F64LE }, layout= (string) { interleaved }, channels = %s, rate= %s",
+			 GST_AUDIO_CHANNELS_RANGE,
+			 GST_AUDIO_RATE_RANGE);
+#endif
 
-  data_sink_convert = gst_element_factory_make("audioconvert", "AGS data sink convert");
+  g_object_set(audio_sink,
+	       "caps", gst_caps_from_string(caps),
+	       NULL);
 
-  data_sink = (GstElement *) ags_gstreamer_file_audio_sink_new();
-  gst_element_set_name(data_sink, "AGS data sink");
+  g_free(caps);
+
+  video_sink = gst_element_factory_make("fakesink", "AGS video sink");
+  g_object_set(video_sink,
+	       "sync", FALSE,
+	       NULL);
+
+  file_uri = NULL;
+  
+  if(filename != NULL){
+    if(g_path_is_absolute(filename)){
+      file_uri = g_strdup_printf("file://%s",
+				 filename);
+    }else{
+      gchar *current_dir;
+
+      current_dir = g_get_current_dir();
+
+      file_uri = g_strdup_printf("file://%s/%s",
+				 current_dir,
+				 filename);
+
+      g_free(current_dir);
+    }
+  }
+  
+  g_object_set(playbin,
+	       "uri", file_uri,
+	       "audio-sink", audio_sink,
+	       "video-sink", video_sink,
+	       NULL);
+
+  g_free(file_uri);
+
+  g_object_get(playbin,
+	       "flags", &flags,
+	       NULL);
+
+  flags |= GST_PLAY_FLAG_AUDIO;
+  flags &= (~GST_PLAY_FLAG_VIDEO);
+  flags &= (~GST_PLAY_FLAG_TEXT);
+  
+  g_object_set(playbin,
+	       "flags", flags,
+	       NULL);
 
   gst_bin_add_many(GST_BIN(read_pipeline),
-		   file_source,
-		   file_decoder,
-		   data_sink_convert,
-		   data_sink,
+		   playbin,
 		   NULL);
-
-  gst_element_link(file_source, file_decoder);
-  gst_element_link(file_decoder, data_sink_convert);
-  gst_element_link(data_sink_convert, data_sink);
-
-  /* apply */
+  
+  /* apply */  
   g_rec_mutex_lock(gstreamer_file_mutex);
 
   gstreamer_file->read_pipeline = read_pipeline;
+  gstreamer_file->read_pipeline_running = TRUE;
 
-  gstreamer_file->file_source = file_source;
-  gstreamer_file->file_decoder = file_decoder;
-  gstreamer_file->data_sink_convert = data_sink_convert;
-  gstreamer_file->data_sink = data_sink;
+  gstreamer_file->playbin = playbin;
+  gstreamer_file->audio_sink = audio_sink;
+  gstreamer_file->video_sink = video_sink;
   
   g_rec_mutex_unlock(gstreamer_file_mutex);
+
+  gst_base_sink_set_blocksize(audio_sink,
+			      blocksize);
+
+  state_change_retval = gst_element_set_state(read_pipeline,
+					      GST_STATE_PLAYING);
+
+  if(state_change_retval == GST_STATE_CHANGE_FAILURE){
+    g_critical("unable to start AGS ro-pipeline");
+  }else{
+    do{
+      gst_element_get_state(GST_ELEMENT(read_pipeline), &current_state, NULL, 4000);
+    }while(current_state != GST_STATE_PLAYING);
+  }
   
   return(TRUE);
 }
@@ -833,118 +931,12 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 			   guint audio_channels, guint samplerate,
 			   gboolean create)
 {
-  AgsGstreamerFile *gstreamer_file;
-  
-  GstElement *read_pipeline;
-  GstElement *write_pipeline;
-  GstElement *data_source_convert;
-  GstElement *data_source;
-  GstElement *file_encoder;
-  GstElement *file_sink;
-  GstElement *file_source;
-  GstElement *file_decoder;
-  GstElement *data_sink_convert;
-  GstElement *data_sink;
-
   gboolean success;
-    
-  GRecMutex *gstreamer_file_mutex;
 
-  gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
+  success = FALSE;
 
-  /* get gstreamer_file mutex */
-  gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
-
-  g_rec_mutex_lock(gstreamer_file_mutex);
-
-  if(gstreamer_file->read_pipeline != NULL ||
-     gstreamer_file->write_pipeline != NULL){  
-    g_rec_mutex_unlock(gstreamer_file_mutex);
-
-    return(FALSE);
-  }
-
-  if(!create &&
-     !g_file_test(filename,
-		  (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))){
-    g_rec_mutex_unlock(gstreamer_file_mutex);
-
-    return(FALSE);
-  }  
+  //TODO:JK: implement me
   
-  g_rec_mutex_unlock(gstreamer_file_mutex);
-
-  success = TRUE;
-  
-  read_pipeline = gst_pipeline_new("AGS rw-pipeline (read)");
-  write_pipeline = gst_pipeline_new("AGS rw-pipeline (write)");
-
-  /* read file */
-  file_source = gst_element_factory_make("filesrc", "AGS file source");
-  g_object_set(file_source,
-	       "location", filename,
-	       NULL);
-  
-  file_decoder = gst_element_factory_make("decodebin", "AGS file decoder");
-
-  data_sink_convert = gst_element_factory_make("audioconvert", "AGS data sink convert");
-
-  data_sink = (GstElement *) ags_gstreamer_file_audio_sink_new();
-  gst_element_set_name(data_sink, "AGS data sink");
-
-  gst_bin_add_many(GST_BIN(read_pipeline),
-		   file_source,
-		   file_decoder,
-		   data_sink_convert,
-		   data_sink,
-		   NULL);
-
-  gst_element_link(file_source, file_decoder);
-  gst_element_link(file_decoder, data_sink_convert);
-  gst_element_link(data_sink_convert, data_sink);
-
-  /* write file */
-  data_source = (GstElement *) ags_gstreamer_file_audio_src_new();
-  gst_element_set_name(data_source, "AGS data source");
-  
-  data_source_convert = gst_element_factory_make("audioconvert", "AGS data source convert");
-
-  file_encoder = gst_element_factory_make("encodebin", "AGS file encoder");
-
-  file_sink = gst_element_factory_make("filesink", "AGS file sink");
-  g_object_set(file_sink,
-	       "location", filename,
-	       NULL);
-
-  gst_bin_add_many(GST_BIN(write_pipeline),
-		   data_source,
-		   data_source_convert,
-		   file_encoder,
-		   file_sink,
-		   NULL);
-
-  gst_element_link(data_source, data_source_convert);
-  gst_element_link(data_source_convert, file_encoder);
-  gst_element_link(file_encoder, file_sink);
-
-  /* apply */
-  g_rec_mutex_lock(gstreamer_file_mutex);
-
-  gstreamer_file->read_pipeline = read_pipeline;
-  gstreamer_file->write_pipeline = write_pipeline;
-
-  gstreamer_file->file_source = file_source;
-  gstreamer_file->file_decoder = file_decoder;
-  gstreamer_file->data_sink_convert = data_sink_convert;
-  gstreamer_file->data_sink = data_sink;
-
-  gstreamer_file->data_source = data_source;
-  gstreamer_file->data_source_convert = data_source_convert;
-  gstreamer_file->file_encoder = file_encoder;
-  gstreamer_file->file_sink = file_sink;
-  
-  g_rec_mutex_unlock(gstreamer_file_mutex);
-
   return(success);
 }
 
@@ -954,15 +946,22 @@ ags_gstreamer_file_info(AgsSoundResource *sound_resource,
 			guint *loop_start, guint *loop_end)
 {
   AgsGstreamerFile *gstreamer_file;
-  GstElement *pipeline;
-  
-  gint frames;
+
+  GstElement *read_pipeline;
+  GstElement *audio_sink;
+  GstPad *sink_pad;
+  GstCaps *current_caps;
+
+  GstAudioInfo info;
+
+  gint64 duration;
+  guint current_frame_count;
   
   GRecMutex *gstreamer_file_mutex;
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
 
-  /* get gstreamer_file mutex */
+  /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
   if(loop_start != NULL){
@@ -972,29 +971,34 @@ ags_gstreamer_file_info(AgsSoundResource *sound_resource,
   if(loop_end != NULL){
     loop_end[0] = 0;
   }
-
-  /* get pipeline */
+  
+  /* get read pipeline */
   g_rec_mutex_lock(gstreamer_file_mutex);
 
-  pipeline = gstreamer_file->read_pipeline;
-
-  if(pipeline != NULL){
-    g_object_ref(pipeline);
-  }
+  read_pipeline = gstreamer_file->read_pipeline;
+  
+  audio_sink = gstreamer_file->audio_sink;
   
   g_rec_mutex_unlock(gstreamer_file_mutex);
 
-  /* query */
-  frames = 0;
+  /* query */  
+  sink_pad = gst_element_get_static_pad(audio_sink,
+					"sink");
   
-  gst_element_query_duration(pipeline, GST_FORMAT_DEFAULT, &frames);
+  current_caps = gst_pad_get_current_caps(sink_pad);
 
-  if(pipeline != NULL){
-    g_object_unref(pipeline);
-  }
+  gst_audio_info_from_caps(&info,
+			   current_caps);
 
+  duration = 0;
+  
+  gst_element_query_duration(read_pipeline,
+			     GST_FORMAT_TIME, &duration);
+  
+  current_frame_count = GST_CLOCK_TIME_TO_FRAMES(duration, GST_AUDIO_INFO_RATE(&info));
+  
   if(frame_count != NULL){
-    frame_count[0] = frames;
+    frame_count[0] = current_frame_count;
   }
   
   return(TRUE);
@@ -1008,11 +1012,12 @@ ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
 			       guint format)
 {
   AgsGstreamerFile *gstreamer_file;
-  GstElement *read_pipeline, *write_pipeline;
-  GstPad *src_pad, *sink_pad;
-  GstCaps *caps;
-  GstStructure *s;
 
+  GstElement *audio_sink;
+
+  guint audio_channels;
+  guint blocksize;
+  
   GRecMutex *gstreamer_file_mutex;
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
@@ -1020,65 +1025,25 @@ ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
   /* get gstreamer_file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
-  /* get pipeline */
   g_rec_mutex_lock(gstreamer_file_mutex);
 
-  read_pipeline = gstreamer_file->read_pipeline;
+  audio_sink = gstreamer_file->audio_sink;
 
-  if(read_pipeline != NULL){
-    g_object_ref(read_pipeline);
-  }
-
-  write_pipeline = gstreamer_file->write_pipeline;
-
-  if(write_pipeline != NULL){
-    g_object_ref(write_pipeline);
-  }
-  
-  src_pad = GST_BASE_SRC_PAD(read_pipeline);
-  sink_pad = GST_BASE_SINK_PAD(write_pipeline);
+  audio_channels = channels;
   
   g_rec_mutex_unlock(gstreamer_file_mutex);
-
+  
   g_object_set(gstreamer_file,
 	       "buffer-size", buffer_size,
 	       "format", format,
 	       NULL);
-
-  /* get caps */
-  caps = gst_pad_get_allowed_caps(src_pad);
-
-  s = gst_caps_get_structure(caps, 0);
   
-  gst_structure_set(s,
-		    "channels", channels,
-		    "rate", samplerate,
-		    NULL);
+  blocksize = buffer_size * channels * sizeof(gdouble);
 
-  if(caps != NULL){
-    gst_caps_unref(caps);
-  }
-  
-  caps = gst_pad_get_allowed_caps(sink_pad);
+  gst_base_sink_set_blocksize(audio_sink,
+			      blocksize);
 
-  s = gst_caps_get_structure(caps, 0);
-  
-  gst_structure_set(s,
-		    "channels", channels,
-		    "rate", samplerate,
-		    NULL);
-
-  if(caps != NULL){
-    gst_caps_unref(caps);
-  }
-  
-  if(read_pipeline != NULL){
-    g_object_unref(read_pipeline);
-  }
-
-  if(write_pipeline != NULL){
-    g_object_unref(write_pipeline);
-  }
+  //TODO:JK: implement me
 }
 
 void
@@ -1088,11 +1053,13 @@ ags_gstreamer_file_get_presets(AgsSoundResource *sound_resource,
 			       guint *buffer_size,
 			       guint *format)
 {
-  AgsGstreamerFile *gstreamer_file;   
-  GstElement *pipeline;
-  GstPad *src_pad;
-  GstCaps *caps;
-  GstStructure *s;
+  AgsGstreamerFile *gstreamer_file;
+
+  GstElement *audio_sink;
+  GstPad *sink_pad;
+  GstCaps *current_caps;
+  
+  GstAudioInfo info;
 
   gint current_samplerate;
   gint current_channels;
@@ -1106,49 +1073,33 @@ ags_gstreamer_file_get_presets(AgsSoundResource *sound_resource,
   /* get gstreamer_file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
-  /* get pipeline */
+  /* get buffer size and format */
   g_rec_mutex_lock(gstreamer_file_mutex);
 
-  pipeline = gstreamer_file->read_pipeline;
-
-  if(pipeline != NULL){
-    g_object_ref(pipeline);
-  }
+  audio_sink = gstreamer_file->audio_sink;
   
-  src_pad = GST_BASE_SRC_PAD(pipeline);
-
   current_buffer_size = gstreamer_file->buffer_size;
   current_format = gstreamer_file->format;
 
   g_rec_mutex_unlock(gstreamer_file_mutex);
 
-  /* get caps */
-  caps = gst_pad_get_allowed_caps(src_pad);
-
-  s = gst_caps_get_structure(caps, 0);
+  sink_pad = gst_element_get_static_pad(audio_sink,
+					"sink");
   
-  current_channels = 0;
-  current_samplerate = 0;
+  current_caps = gst_pad_get_current_caps(sink_pad);
+  
+  gst_audio_info_from_caps(&info,
+			   current_caps);
 
-  gst_structure_get(s,
-		    "channels", &current_channels,
-		    "rate", &current_samplerate,
-		    NULL);  
-
-  if(caps != NULL){
-    gst_caps_unref(caps);
-  }
-
-  if(pipeline != NULL){
-    g_object_unref(pipeline);
-  }
-
+  current_channels = info.channels;
+  current_samplerate = info.rate;
+  
   if(channels != NULL){
-    channels[0] = current_channels;
+    channels[0] = (current_channels >= 0) ? current_channels: 0;
   }
 
   if(samplerate != NULL){
-    samplerate[0] = current_samplerate;
+    samplerate[0] = (current_samplerate >= 0) ? current_samplerate: 0;
   }
 
   if(buffer_size != NULL){
@@ -1167,107 +1118,229 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 			guint frame_count, guint format)
 {
   AgsGstreamerFile *gstreamer_file;
-  AgsGstreamerFileAudioSink *gstreamer_file_audio_sink;
 
-  GstElement *pipeline;
+  GstElement *audio_sink;
 
+  guint blocksize;
+  guint saudio_channels;
+  guint buffer_size;
+  guint64 offset;
   guint total_frame_count;
-  guint read_count;
+  guint read_frame_count;
   guint copy_mode;
-  guint i;
-  gboolean is_running;
   
-  GRecMutex *gstreamer_file_mutex;  
-  GRecMutex *gstreamer_file_audio_sink_mutex;
+  GRecMutex *gstreamer_file_mutex;
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
 
   /* get gstreamer_file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
+
+  /* get source audio channels */
+  saudio_channels = 1;
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   
+  ags_gstreamer_file_get_presets(sound_resource,
+				 &saudio_channels,
+				 NULL,
+				 &buffer_size,
+				 NULL);
+  
+  /* get some fields */
   g_rec_mutex_lock(gstreamer_file_mutex);
 
-  gstreamer_file_audio_sink = gstreamer_file->data_sink;
-  
-  pipeline = gstreamer_file->read_pipeline;
+  audio_sink = gstreamer_file->audio_sink;
 
-  if(pipeline != NULL){
-    g_object_ref(pipeline);
-  }
-
-  is_running = gstreamer_file->read_pipeline_running;
+  offset = gstreamer_file->offset;
   
   g_rec_mutex_unlock(gstreamer_file_mutex);
 
-  gstreamer_file_audio_sink_mutex = AGS_GSTREAMER_FILE_AUDIO_SINK_GET_OBJ_MUTEX(gstreamer_file_audio_sink);
-
-  if(!is_running){
-    gst_element_set_state(pipeline, GST_STATE_PLAYING);
-  }
-
-  total_frame_count = 0;
-  
-  ags_sound_resource_info(sound_resource,
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(sound_resource),
 			  &total_frame_count,
 			  NULL, NULL);
 
-  g_rec_mutex_lock(gstreamer_file_audio_sink_mutex);
+  blocksize = gst_base_sink_get_blocksize(audio_sink);
 
-  read_count = gstreamer_file_audio_sink->buffer_size;
-  
+  /* read */
+  read_frame_count = 0;
+
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  ags_audio_buffer_util_format_from_soundcard(gstreamer_file_audio_sink->format));
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
 
-  g_rec_mutex_unlock(gstreamer_file_audio_sink_mutex);
+  for(read_frame_count = 0; read_frame_count < frame_count && offset + read_frame_count < total_frame_count;){
+    GstSample *sample;
+    GstBuffer *buffer;
 
-  for(i = 0; i < frame_count && gstreamer_file->offset + i < total_frame_count; ){
-    if(gstreamer_file->offset + read_count > total_frame_count){
-      read_count = total_frame_count - gstreamer_file->offset;
-    }
+    GstMapInfo info;
 
-    if(i + read_count > frame_count){
-      read_count = frame_count - i;
-    }
+    guint copy_frame_count;
+    guint remaining_frame_count;
 
-    /* signal */
-    g_mutex_lock(&(gstreamer_file_audio_sink->wakeup_mutex));
-
-    ags_gstreamer_file_audio_sink_unset_status_flags(gstreamer_file_audio_sink, AGS_GSTREAMER_FILE_AUDIO_SINK_STATUS_WAIT);
-
-    g_cond_signal(&(gstreamer_file_audio_sink->wakeup_cond));
-
-    g_mutex_unlock(&(gstreamer_file_audio_sink->wakeup_mutex));
-
-    while(!ags_gstreamer_file_audio_sink_test_status_flags(gstreamer_file_audio_sink, AGS_GSTREAMER_FILE_AUDIO_SINK_STATUS_DIRTY)){
-      g_thread_yield();
-    }
-
-    /* increase offset */
     g_rec_mutex_lock(gstreamer_file_mutex);
 
-    gstreamer_file->offset += read_count;
-
-    g_rec_mutex_unlock(gstreamer_file_mutex);
-
-    /* read buffer */
-    g_rec_mutex_lock(gstreamer_file_audio_sink_mutex);
-
-    ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, (i * daudio_channels),
-						gstreamer_file_audio_sink->buffer, gstreamer_file_audio_sink->audio_channels, audio_channel,
-						read_count, copy_mode);
-  
-    g_rec_mutex_unlock(gstreamer_file_audio_sink_mutex);
-
-    ags_gstreamer_file_audio_sink_unset_status_flags(gstreamer_file_audio_sink, AGS_GSTREAMER_FILE_AUDIO_SINK_STATUS_DIRTY);
+    remaining_frame_count = gstreamer_file->remaining_frame_count;
     
-    i += read_count;
-  }
+    g_rec_mutex_unlock(gstreamer_file_mutex);
+    
+    /* pull sample */
+    if(remaining_frame_count != 0 &&
+       remaining_frame_count < frame_count){
+      /* attempt #0 */
+      g_rec_mutex_lock(gstreamer_file_mutex);
 
-  if(pipeline != NULL){
-    g_object_unref(pipeline);
+      sample = gstreamer_file->last_sample;
+
+      g_rec_mutex_unlock(gstreamer_file_mutex);
+
+      if(sample != NULL){
+	buffer = gst_sample_get_buffer(sample);
+      
+	gst_buffer_map(buffer,
+		       &info, GST_MAP_READ);
+      
+	ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, read_frame_count,
+						    info.data, saudio_channels, audio_channel,
+						    remaining_frame_count, copy_mode);
+
+	gst_buffer_unmap(buffer,
+			 &info);
+      
+	read_frame_count += remaining_frame_count;
+      }
+
+      read_frame_count += remaining_frame_count;
+
+      gst_sample_unref(sample);
+
+      g_rec_mutex_lock(gstreamer_file_mutex);
+      
+      gstreamer_file->remaining_frame_count = 0;
+    
+      g_rec_mutex_unlock(gstreamer_file_mutex);
+      
+      /* attempt #1 */
+      sample = gst_app_sink_pull_sample(audio_sink);
+
+      if(sample != NULL){
+	buffer = gst_sample_get_buffer(sample);
+      
+	gst_buffer_map(buffer,
+		       &info, GST_MAP_READ);
+      
+	if(read_frame_count + info.size < frame_count){
+	  copy_frame_count = info.size;
+	}else{
+	  copy_frame_count = frame_count - read_frame_count;
+	}
+	
+	ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, read_frame_count,
+						    info.data, saudio_channels, audio_channel,
+						    copy_frame_count, copy_mode);
+
+	gst_buffer_unmap(buffer,
+			 &info);
+      
+	if(read_frame_count + info.size >= frame_count){
+	  g_rec_mutex_lock(gstreamer_file_mutex);
+      
+	  gstreamer_file->remaining_frame_count = read_frame_count + info.size - frame_count;
+    
+	  g_rec_mutex_unlock(gstreamer_file_mutex);
+	}
+
+	read_frame_count += copy_frame_count;
+      }
+    }else if(remaining_frame_count != 0 &&
+	     remaining_frame_count > frame_count){
+      /* attempt #0 */
+      g_rec_mutex_lock(gstreamer_file_mutex);
+
+      sample = gstreamer_file->last_sample;
+
+      g_rec_mutex_unlock(gstreamer_file_mutex);
+
+      if(sample != NULL){
+	buffer = gst_sample_get_buffer(sample);
+      
+	gst_buffer_map(buffer,
+		       &info, GST_MAP_READ);
+      
+	if(read_frame_count + info.size < frame_count){
+	  copy_frame_count = info.size;
+	}else{
+	  copy_frame_count = frame_count - read_frame_count;
+	}
+
+	ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, read_frame_count,
+						    info.data, saudio_channels, audio_channel,
+						    copy_frame_count, copy_mode);
+
+	gst_buffer_unmap(buffer,
+			 &info);
+      
+	if(read_frame_count + info.size >= frame_count){
+	  g_rec_mutex_lock(gstreamer_file_mutex);
+      
+	  gstreamer_file->remaining_frame_count = read_frame_count + info.size - frame_count;
+    
+	  g_rec_mutex_unlock(gstreamer_file_mutex);
+	}      
+
+	read_frame_count += copy_frame_count;
+      }
+    }else{
+      /* attempt #0 */
+      sample = gst_app_sink_pull_sample(audio_sink);
+
+      if(sample != NULL){
+	buffer = gst_sample_get_buffer(sample);
+      
+	gst_buffer_map(buffer,
+		       &info, GST_MAP_READ);
+
+	if(read_frame_count + info.size < frame_count){
+	  copy_frame_count = info.size;
+	}else{
+	  copy_frame_count = frame_count - read_frame_count;
+	}
+
+	ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, read_frame_count,
+						    info.data, saudio_channels, audio_channel,
+						    copy_frame_count, copy_mode);
+
+	gst_buffer_unmap(buffer,
+			 &info);
+      
+	if(read_frame_count + info.size >= frame_count){
+	  g_rec_mutex_lock(gstreamer_file_mutex);
+      
+	  gstreamer_file->remaining_frame_count = read_frame_count + info.size - frame_count;
+    
+	  g_rec_mutex_unlock(gstreamer_file_mutex);
+	}
+
+	read_frame_count += copy_frame_count;
+      }
+    }
+
+    g_rec_mutex_lock(gstreamer_file_mutex);
+
+    gstreamer_file->last_sample = sample;
+    
+    g_rec_mutex_unlock(gstreamer_file_mutex);
   }
   
-  return(frame_count);
+#if 0
+  g_message("%d %d", gstreamer_file->offset, read_frame_count);
+#endif
+  
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  gstreamer_file->offset += read_frame_count;
+  
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+  
+  return(read_frame_count);
 }
 
 void
@@ -1276,116 +1349,7 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
 			 guint audio_channel,
 			 guint frame_count, guint format)
 {
-  AgsGstreamerFile *gstreamer_file;
-  AgsGstreamerFileAudioSrc *gstreamer_file_audio_src;
-
-  GstElement *pipeline;
-
-  guint write_count;
-  guint copy_mode;
-  guint i;
-  gboolean is_running;
-  gboolean do_write;
-  
-  GRecMutex *gstreamer_file_mutex;  
-  GRecMutex *gstreamer_file_audio_src_mutex;
-
-  gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
-
-  /* get gstreamer_file mutex */
-  gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
-  
-  g_rec_mutex_lock(gstreamer_file_mutex);
-
-  gstreamer_file_audio_src = gstreamer_file->data_source;
-  
-  pipeline = gstreamer_file->read_pipeline;
-
-  if(pipeline != NULL){
-    g_object_ref(pipeline);
-  }
-
-  is_running = gstreamer_file->read_pipeline_running;
-  
-  g_rec_mutex_unlock(gstreamer_file_mutex);
-
-  gstreamer_file_audio_src_mutex = AGS_GSTREAMER_FILE_AUDIO_SRC_GET_OBJ_MUTEX(gstreamer_file_audio_src);
-
-  if(!is_running){
-    gst_element_set_state(pipeline, GST_STATE_PLAYING);
-  }
-
-  g_rec_mutex_lock(gstreamer_file_mutex);
-
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(gstreamer_file->format),
-						  ags_audio_buffer_util_format_from_soundcard(format));
-  
-  ags_audio_buffer_util_copy_buffer_to_buffer(gstreamer_file->buffer, gstreamer_file->audio_channels, audio_channel,
-					      sbuffer, saudio_channels, audio_channel,
-					      frame_count, copy_mode);
-
-  g_rec_mutex_unlock(gstreamer_file_mutex);
-  
-  g_rec_mutex_lock(gstreamer_file_audio_src_mutex);
-
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(gstreamer_file_audio_src->format),
-						  ags_audio_buffer_util_format_from_soundcard(gstreamer_file->format));
-
-  g_rec_mutex_unlock(gstreamer_file_audio_src_mutex);
-
-  gstreamer_file->audio_channel_written[audio_channel] = frame_count;
-  do_write = TRUE;
-
-  for(i = 0; i < gstreamer_file->audio_channels; i++){
-    if(gstreamer_file->audio_channel_written[i] == -1){
-      do_write = FALSE;
-      
-      break;
-    }
-  }
-
-  if(do_write){
-    while(!ags_gstreamer_file_audio_src_test_status_flags(gstreamer_file_audio_src, AGS_GSTREAMER_FILE_AUDIO_SRC_STATUS_CLEAN)){
-      g_thread_yield();
-    }
-
-    write_count = frame_count * gstreamer_file->audio_channels;
-    
-    /* write buffer */
-    g_rec_mutex_lock(gstreamer_file_audio_src_mutex);
-
-    ags_audio_buffer_util_copy_buffer_to_buffer(gstreamer_file_audio_src->buffer, 1, 0,
-						sbuffer, 1, 0,
-						write_count, copy_mode);
-  
-    g_rec_mutex_unlock(gstreamer_file_audio_src_mutex);
-
-    ags_gstreamer_file_audio_src_unset_status_flags(gstreamer_file_audio_src, AGS_GSTREAMER_FILE_AUDIO_SRC_STATUS_CLEAN);
-
-    /* signal */
-    g_mutex_lock(&(gstreamer_file_audio_src->wakeup_mutex));
-    
-    ags_gstreamer_file_audio_src_unset_status_flags(gstreamer_file_audio_src, AGS_GSTREAMER_FILE_AUDIO_SRC_STATUS_WAIT);
-
-    g_cond_signal(&(gstreamer_file_audio_src->wakeup_cond));
-
-    g_mutex_unlock(&(gstreamer_file_audio_src->wakeup_mutex));
-
-    for(i = 0; i < gstreamer_file->audio_channels; i++){
-      gstreamer_file->audio_channel_written[i] = -1;
-    }
-
-    /* increase offset */
-    g_rec_mutex_lock(gstreamer_file_mutex);
-
-    gstreamer_file->offset += write_count;
-
-    g_rec_mutex_unlock(gstreamer_file_mutex);
-  }
-  
-  if(pipeline != NULL){
-    g_object_unref(pipeline);
-  }  
+  //TODO:JK: implement me  
 }
 
 void
@@ -1408,6 +1372,15 @@ ags_gstreamer_file_seek(AgsSoundResource *sound_resource,
 			gint64 frame_count, gint whence)
 {
   AgsGstreamerFile *gstreamer_file;
+
+  GstElement *read_pipeline;
+  GstElement *audio_sink;
+  GstPad *sink_pad;
+  GstCaps *current_caps;
+
+  GstAudioInfo info;
+
+  gint64 time_nanoseconds;
   
   GRecMutex *gstreamer_file_mutex;
 
@@ -1416,7 +1389,38 @@ ags_gstreamer_file_seek(AgsSoundResource *sound_resource,
   /* get gstreamer_file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
-  //TODO:JK: implement me
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  read_pipeline = gstreamer_file->read_pipeline;
+
+  audio_sink = gstreamer_file->audio_sink;
+
+  if(gstreamer_file->last_sample != NULL){
+    gst_sample_unref(gstreamer_file->last_sample);
+
+    gstreamer_file->remaining_frame_count = 0;
+    
+    gstreamer_file->last_sample = NULL;
+  }
+
+  gstreamer_file->offset = frame_count;
+  
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+
+  /* query */  
+  sink_pad = gst_element_get_static_pad(audio_sink,
+					"sink");
+  
+  current_caps = gst_pad_get_current_caps(sink_pad);
+
+  gst_audio_info_from_caps(&info,
+			   current_caps);
+
+  time_nanoseconds = GST_FRAMES_TO_CLOCK_TIME(frame_count, GST_AUDIO_INFO_RATE(&info));
+  
+  gst_element_seek(read_pipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
+		   GST_SEEK_TYPE_SET, time_nanoseconds,
+		   GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
 }
 
 void

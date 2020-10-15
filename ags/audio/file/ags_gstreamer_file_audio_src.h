@@ -79,6 +79,8 @@ struct _AgsGstreamerFileAudioSrc
   
   gdouble *buffer;
 
+  GstAudioInfo info;
+  
   gint ring_buffer_samplerate;
   gint ring_buffer_channels;
 };
