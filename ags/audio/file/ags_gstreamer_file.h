@@ -89,11 +89,12 @@ struct _AgsGstreamerFile
   GstElement *playbin;
   GstElement *video_sink;
   GstElement *audio_sink;
+  GstElement *text_sink;
 
   GstElement *audio_src;
   GstElement *audio_src_convert;
-  GstElement *audio_file_encoder;
-  GstElement *audio_file_sink;
+  GstElement *video_file_encoder;
+  GstElement *video_file_sink;
 
   guint prev_frame_count;
   
@@ -112,6 +113,15 @@ void ags_gstreamer_file_set_flags(AgsGstreamerFile *gstreamer_file, guint flags)
 void ags_gstreamer_file_unset_flags(AgsGstreamerFile *gstreamer_file, guint flags);
 
 gboolean ags_gstreamer_file_check_suffix(gchar *filename);
+
+void ags_gstreamer_file_create_aac_video_pipeline(AgsGstreamerFile *gstreamer_file);
+void ags_gstreamer_file_create_mp3_video_pipeline(AgsGstreamerFile *gstreamer_file);
+void ags_gstreamer_file_create_mp4_video_pipeline(AgsGstreamerFile *gstreamer_file);
+void ags_gstreamer_file_create_mkv_video_pipeline(AgsGstreamerFile *gstreamer_file);
+void ags_gstreamer_file_create_webm_video_pipeline(AgsGstreamerFile *gstreamer_file);
+void ags_gstreamer_file_create_mpeg_video_pipeline(AgsGstreamerFile *gstreamer_file);
+
+gboolean ags_gstreamer_file_detect_video(AgsGstreamerFile *gstreamer_file);
 
 AgsGstreamerFile* ags_gstreamer_file_new();
 
