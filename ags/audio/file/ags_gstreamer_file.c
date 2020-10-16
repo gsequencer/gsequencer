@@ -105,6 +105,7 @@ void ags_gstreamer_file_close(AgsSoundResource *sound_resource);
 
 enum{
   PROP_0,
+  PROP_FILENAME,
   PROP_AUDIO_CHANNELS,
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
@@ -190,6 +191,22 @@ ags_gstreamer_file_class_init(AgsGstreamerFileClass *gstreamer_file)
 
   /* properties */
   /**
+   * AgsGstreamerFile:filename:
+   *
+   * The assigned filename.
+   * 
+   * Since: 3.6.0
+   */
+  param_spec = g_param_spec_string("filename",
+				   i18n_pspec("filename of audio file"),
+				   i18n_pspec("The filename of audio file"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILENAME,
+				  param_spec);
+
+  /**
    * AgsGstreamerFile:audio-channels:
    *
    * The audio channels to be used.
@@ -243,7 +260,6 @@ ags_gstreamer_file_class_init(AgsGstreamerFileClass *gstreamer_file)
 				  PROP_FORMAT,
 				  param_spec);
 }
-
 
 void
 ags_gstreamer_file_connectable_interface_init(AgsConnectableInterface *connectable)
@@ -320,6 +336,8 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
   gstreamer_file->offset = 0;
   gstreamer_file->buffer_offset = 0;
 
+  gstreamer->filename = NULL;
+  
   gstreamer_file->full_buffer = NULL;
   gstreamer_file->buffer = ags_stream_alloc(gstreamer_file->audio_channels * gstreamer_file->buffer_size,
 					    gstreamer_file->format);
@@ -365,6 +383,29 @@ ags_gstreamer_file_set_property(GObject *gobject,
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
   switch(prop_id){
+  case PROP_FILENAME:
+    {
+      gchar *filename;
+
+      filename = (gchar *) g_value_get_string(value);
+
+      g_rec_mutex_lock(gstreamer_file_mutex);
+
+      if(gstreamer_file->filename == filename){
+	g_rec_mutex_unlock(gstreamer_file_mutex);
+
+	return;
+      }
+      
+      if(gstreamer_file->filename != NULL){
+	g_free(gstreamer_file->filename);
+      }
+
+      gstreamer_file->filename = g_strdup(filename);
+
+      g_rec_mutex_unlock(gstreamer_file_mutex);
+    }
+    break;
   case PROP_AUDIO_CHANNELS:
   {
     guint audio_channels;
@@ -468,6 +509,15 @@ ags_gstreamer_file_get_property(GObject *gobject,
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
   
   switch(prop_id){
+  case PROP_FILENAME:
+    {
+      g_rec_mutex_lock(gstreamer_file_mutex);
+
+      g_value_set_string(value, gstreamer_file->filename);
+
+      g_rec_mutex_unlock(gstreamer_file_mutex);
+    }
+    break;
   case PROP_AUDIO_CHANNELS:
   {
     g_rec_mutex_lock(gstreamer_file_mutex);
@@ -904,6 +954,8 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
   gstreamer_file->playbin = playbin;
   gstreamer_file->audio_sink = audio_sink;
   gstreamer_file->video_sink = video_sink;
+
+  gstreamer_file->filename = g_strdup(filename);
   
   g_rec_mutex_unlock(gstreamer_file_mutex);
   
@@ -1075,13 +1127,15 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   gstreamer_file->video_sink = video_sink;
   gstreamer_file->text_sink = text_sink;
   
+  gstreamer_file->filename = g_strdup(filename);
+
   g_rec_mutex_unlock(gstreamer_file_mutex);
   
   state_change_retval = gst_element_set_state(read_pipeline,
 					      GST_STATE_PLAYING);
 
   if(state_change_retval == GST_STATE_CHANGE_FAILURE){
-    g_critical("unable to start AGS ro-pipeline");
+    g_critical("unable to start AGS rw-pipeline (read)");
   }else{
     do{
       gst_element_get_state(GST_ELEMENT(read_pipeline), &current_state, NULL, 4000);
@@ -1116,7 +1170,28 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 
   g_free(caps);
   
-  //TODO:JK: implement me
+  /* apply */  
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  gstreamer_file->write_pipeline = write_pipeline;
+  gstreamer_file->write_pipeline_running = TRUE;
+
+  gstreamer_file->audio_src = audio_src;
+
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+  
+  ags_gstreamer_file_detect_video(gstreamer_file);
+
+  state_change_retval = gst_element_set_state(write_pipeline,
+					      GST_STATE_PLAYING);
+
+  if(state_change_retval == GST_STATE_CHANGE_FAILURE){
+    g_critical("unable to start AGS rw-pipeline (write)");
+  }else{
+    do{
+      gst_element_get_state(GST_ELEMENT(write_pipeline), &current_state, NULL, 4000);
+    }while(current_state != GST_STATE_PLAYING);
+  }
   
   return(success);
 }
@@ -1573,8 +1648,8 @@ ags_gstreamer_file_close(AgsSoundResource *sound_resource)
 gboolean
 ags_gstreamer_file_check_suffix(gchar *filename)
 {
-  if(g_str_has_suffix(filename, ".aac") ||
-     g_str_has_suffix(filename, ".mp3") ||
+  if(g_str_has_suffix(filename, ".mp3") ||
+     g_str_has_suffix(filename, ".aac") ||
      g_str_has_suffix(filename, ".mp4") ||
      g_str_has_suffix(filename, ".mkv") ||
      g_str_has_suffix(filename, ".webm") ||
@@ -1584,20 +1659,6 @@ ags_gstreamer_file_check_suffix(gchar *filename)
   }
 
   return(FALSE);
-}
-
-/**
- * ags_gstreamer_file_create_aac_video_pipeline:
- * @gstreamer_file: the #AgsGstreamerFile
- * 
- * Create aac video pipeline.
- * 
- * Since: 3.6.0
- */
-void
-ags_gstreamer_file_create_aac_video_pipeline(AgsGstreamerFile *gstreamer_file)
-{
-  //TODO:JK: implement me
 }
 
 /**
@@ -1611,6 +1672,28 @@ ags_gstreamer_file_create_aac_video_pipeline(AgsGstreamerFile *gstreamer_file)
 void
 ags_gstreamer_file_create_mp3_video_pipeline(AgsGstreamerFile *gstreamer_file)
 {
+  if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
+    return;
+  }
+
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_gstreamer_file_create_aac_video_pipeline:
+ * @gstreamer_file: the #AgsGstreamerFile
+ * 
+ * Create aac video pipeline.
+ * 
+ * Since: 3.6.0
+ */
+void
+ags_gstreamer_file_create_aac_video_pipeline(AgsGstreamerFile *gstreamer_file)
+{
+  if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -1625,6 +1708,10 @@ ags_gstreamer_file_create_mp3_video_pipeline(AgsGstreamerFile *gstreamer_file)
 void
 ags_gstreamer_file_create_mp4_video_pipeline(AgsGstreamerFile *gstreamer_file);
 {
+  if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -1639,6 +1726,10 @@ ags_gstreamer_file_create_mp4_video_pipeline(AgsGstreamerFile *gstreamer_file);
 void
 ags_gstreamer_file_create_mkv_video_pipeline(AgsGstreamerFile *gstreamer_file);
 {
+  if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -1653,6 +1744,10 @@ ags_gstreamer_file_create_mkv_video_pipeline(AgsGstreamerFile *gstreamer_file);
 void
 ags_gstreamer_file_create_webm_video_pipeline(AgsGstreamerFile *gstreamer_file);
 {
+  if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -1667,6 +1762,10 @@ ags_gstreamer_file_create_webm_video_pipeline(AgsGstreamerFile *gstreamer_file);
 void
 ags_gstreamer_file_create_mpeg_video_pipeline(AgsGstreamerFile *gstreamer_file);
 {
+  if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -1681,12 +1780,39 @@ ags_gstreamer_file_create_mpeg_video_pipeline(AgsGstreamerFile *gstreamer_file);
 gboolean
 ags_gstreamer_file_detect_video(AgsGstreamerFile *gstreamer_file);
 {
+  gchar *filename;
+  
   gboolean success;
 
-  success = FALSE;
+  if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
+    return(FALSE);
+  }
   
-  //TODO:JK: implement me
+  success = FALSE;
 
+  filename = NULL;
+  
+  g_object_get(gstreamer_file,
+	       "filename", &filename,
+	       NULL);
+
+  if(g_str_has_suffix(filename, ".mp3")){
+    ags_gstreamer_file_create_mp3_video_pipeline(gstreamer_file);
+  }else if(g_str_has_suffix(filename, ".aac")){
+    ags_gstreamer_file_create_aac_video_pipeline(gstreamer_file);
+  }else if(g_str_has_suffix(filename, ".mp4")){
+    ags_gstreamer_file_create_mp4_video_pipeline(gstreamer_file);
+  }else if(g_str_has_suffix(filename, ".mkv")){
+    ags_gstreamer_file_create_mkv_video_pipeline(gstreamer_file);
+  }else if(g_str_has_suffix(filename, ".webm")){
+    ags_gstreamer_file_create_webm_video_pipeline(gstreamer_file);
+  }else if(g_str_has_suffix(filename, ".mpg") ||
+	   g_str_has_suffix(filename, ".mpeg")){
+    ags_gstreamer_file_create_mpeg_video_pipeline(gstreamer_file);
+  }
+
+  g_free(filename);
+  
   return(success);
 }
 

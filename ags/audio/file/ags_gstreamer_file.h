@@ -64,6 +64,8 @@ struct _AgsGstreamerFile
 
   AgsUUID *uuid;
 
+  gchar *filename;
+  
   guint audio_channels;
   gint64 *audio_channel_written;
   
@@ -92,7 +94,6 @@ struct _AgsGstreamerFile
   GstElement *text_sink;
 
   GstElement *audio_src;
-  GstElement *audio_src_convert;
   GstElement *video_file_encoder;
   GstElement *video_file_sink;
 
@@ -114,8 +115,8 @@ void ags_gstreamer_file_unset_flags(AgsGstreamerFile *gstreamer_file, guint flag
 
 gboolean ags_gstreamer_file_check_suffix(gchar *filename);
 
-void ags_gstreamer_file_create_aac_video_pipeline(AgsGstreamerFile *gstreamer_file);
 void ags_gstreamer_file_create_mp3_video_pipeline(AgsGstreamerFile *gstreamer_file);
+void ags_gstreamer_file_create_aac_video_pipeline(AgsGstreamerFile *gstreamer_file);
 void ags_gstreamer_file_create_mp4_video_pipeline(AgsGstreamerFile *gstreamer_file);
 void ags_gstreamer_file_create_mkv_video_pipeline(AgsGstreamerFile *gstreamer_file);
 void ags_gstreamer_file_create_webm_video_pipeline(AgsGstreamerFile *gstreamer_file);
