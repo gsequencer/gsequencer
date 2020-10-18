@@ -25,6 +25,8 @@
 
 #include <gst/gst.h>
 
+#include <gst/pbutils/pbutils.h>
+
 #include <ags/libags.h>
 
 G_BEGIN_DECLS
@@ -38,6 +40,8 @@ G_BEGIN_DECLS
 
 #define AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(obj) (&(((AgsGstreamerFile *) obj)->obj_mutex))
 
+#define AGS_GSTREAMER_FILE_DEFAULT_DISCOVERER_TIMEOUT (3 * GST_SECOND)
+  
 typedef struct _AgsGstreamerFile AgsGstreamerFile;
 typedef struct _AgsGstreamerFileClass AgsGstreamerFileClass;
 
@@ -93,6 +97,9 @@ struct _AgsGstreamerFile
   GstElement *audio_sink;
   GstElement *text_sink;
 
+  GstEncodingProfile *encoding_profile;
+  
+  GstElement *rw_playsink;
   GstElement *audio_src;
   GstElement *video_file_encoder;
   GstElement *video_file_sink;
@@ -115,14 +122,14 @@ void ags_gstreamer_file_unset_flags(AgsGstreamerFile *gstreamer_file, guint flag
 
 gboolean ags_gstreamer_file_check_suffix(gchar *filename);
 
-void ags_gstreamer_file_create_mp3_video_pipeline(AgsGstreamerFile *gstreamer_file);
-void ags_gstreamer_file_create_aac_video_pipeline(AgsGstreamerFile *gstreamer_file);
-void ags_gstreamer_file_create_mp4_video_pipeline(AgsGstreamerFile *gstreamer_file);
-void ags_gstreamer_file_create_mkv_video_pipeline(AgsGstreamerFile *gstreamer_file);
-void ags_gstreamer_file_create_webm_video_pipeline(AgsGstreamerFile *gstreamer_file);
-void ags_gstreamer_file_create_mpeg_video_pipeline(AgsGstreamerFile *gstreamer_file);
+GstEncodingProfile* ags_gstreamer_file_create_mp3_encoding_profile(AgsGstreamerFile *gstreamer_file);
+GstEncodingProfile* ags_gstreamer_file_create_aac_encoding_profile(AgsGstreamerFile *gstreamer_file);
+GstEncodingProfile* ags_gstreamer_file_create_mp4_encoding_profile(AgsGstreamerFile *gstreamer_file);
+GstEncodingProfile* ags_gstreamer_file_create_mkv_encoding_profile(AgsGstreamerFile *gstreamer_file);
+GstEncodingProfile* ags_gstreamer_file_create_webm_encoding_profile(AgsGstreamerFile *gstreamer_file);
+GstEncodingProfile* ags_gstreamer_file_create_mpeg_encoding_profile(AgsGstreamerFile *gstreamer_file);
 
-gboolean ags_gstreamer_file_detect_video(AgsGstreamerFile *gstreamer_file);
+gboolean ags_gstreamer_file_detect_encoding_profile(AgsGstreamerFile *gstreamer_file);
 
 AgsGstreamerFile* ags_gstreamer_file_new();
 

@@ -336,7 +336,7 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
   gstreamer_file->offset = 0;
   gstreamer_file->buffer_offset = 0;
 
-  gstreamer->filename = NULL;
+  gstreamer_file->filename = NULL;
   
   gstreamer_file->full_buffer = NULL;
   gstreamer_file->buffer = ags_stream_alloc(gstreamer_file->audio_channels * gstreamer_file->buffer_size,
@@ -356,9 +356,8 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
   gstreamer_file->audio_sink = NULL;
   gstreamer_file->video_sink = NULL;
   gstreamer_file->text_sink = NULL;
-  
+
   gstreamer_file->audio_src = NULL;
-  gstreamer_file->audio_src_convert = NULL;
   gstreamer_file->video_file_encoder = NULL;
   gstreamer_file->video_file_sink = NULL;
 
@@ -987,6 +986,11 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   GstElement *video_sink;
   GstElement *text_sink;
 
+  GstElement *rw_playbin;
+  GstElement *audio_src;
+  GstElement *video_file_encoder;
+  GstElement *video_file_sink;
+  
   gchar *file_uri;
   gchar *caps;
   
@@ -994,7 +998,6 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   GstStateChangeReturn state_change_retval;
 
   guint buffer_size;
-  guint audio_channels;
   gint flags;
 
   gboolean success;
@@ -1015,8 +1018,6 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 
     return(FALSE);
   }
-
-  audio_channels = gstreamer_file->audio_channels;
   
   buffer_size = gstreamer_file->buffer_size;
   
@@ -1055,8 +1056,12 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 
   g_free(caps);
 
+#if 0
   caps = g_strdup("video/x-raw, format: { AYUV64, ARGB64, GBRA_12LE, GBRA_12BE, Y412_LE, Y412_BE, A444_10LE, GBRA_10LE, A444_10BE, GBRA_10BE, A422_10LE, A422_10BE, A420_10LE, A420_10BE, RGB10A2_LE, BGR10A2_LE, Y410, GBRA, ABGR, VUYA, BGRA, AYUV, ARGB, RGBA, A420, Y444_16LE, Y444_16BE, v216, P016_LE, P016_BE, Y444_12LE, GBR_12LE, Y444_12BE, GBR_12BE, I422_12LE, I422_12BE, Y212_LE, Y212_BE, I420_12LE, I420_12BE, P012_LE, P012_BE, Y444_10LE, GBR_10LE, Y444_10BE, GBR_10BE, r210, I422_10LE, I422_10BE, NV16_10LE32, Y210, v210, UYVP, I420_10LE, I420_10BE, P010_10LE, NV12_10LE32, NV12_10LE40, P010_10BE, Y444, GBR, NV24, xBGR, BGRx, xRGB, RGBx, BGR, IYU2, v308, RGB, Y42B, NV61, NV16, VYUY, UYVY, YVYU, YUY2, I420, YV12, NV21, NV12, NV12_64Z32, NV12_4L4, NV12_32L32, Y41B, IYU1, YVU9, YUV9, RGB16, BGR16, RGB15, BGR15, RGB8P, GRAY16_LE, GRAY16_BE, GRAY10_LE32, GRAY8 }, width: [ 1, 2147483647 ], height: [ 1, 2147483647 ], framerate: [ 0/1, 2147483647/1 ]");
-
+#else
+  caps = g_strdup("ANY");
+#endif
+  
   video_sink = gst_element_factory_make("appsink", "AGS video sink");
   g_object_set(video_sink,
 	       "sync", FALSE,
@@ -1147,7 +1152,7 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 
   gst_element_set_state(write_pipeline,
 			GST_STATE_NULL);
-    
+
   audio_src = gst_element_factory_make("appsrc", "AGS audio source");
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
@@ -1169,6 +1174,8 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 	       NULL);
 
   g_free(caps);
+
+  ags_gstreamer_file_detect_encoding_profile(gstreamer_file);
   
   /* apply */  
   g_rec_mutex_lock(gstreamer_file_mutex);
@@ -1180,8 +1187,6 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 
   g_rec_mutex_unlock(gstreamer_file_mutex);
   
-  ags_gstreamer_file_detect_video(gstreamer_file);
-
   state_change_retval = gst_element_set_state(write_pipeline,
 					      GST_STATE_PLAYING);
 
@@ -1662,156 +1667,347 @@ ags_gstreamer_file_check_suffix(gchar *filename)
 }
 
 /**
- * ags_gstreamer_file_create_mp3_video_pipeline:
+ * ags_gstreamer_file_create_mp3_encoding_profile:
  * @gstreamer_file: the #AgsGstreamerFile
  * 
- * Create aac video pipeline.
+ * Create mp3 rw pipeline.
+ * 
+ * Returns: the new #GstEncodingProfile
  * 
  * Since: 3.6.0
  */
-void
-ags_gstreamer_file_create_mp3_video_pipeline(AgsGstreamerFile *gstreamer_file)
+GstEncodingProfile*
+ags_gstreamer_file_create_mp3_encoding_profile(AgsGstreamerFile *gstreamer_file)
 {
+  GstEncodingProfile *container_profile;
+  
+  GstCaps *caps;
+  
   if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
-    return;
+    return(NULL);
   }
 
-  //TODO:JK: implement me
+  caps = gst_caps_from_string("application/mpeg");
+  container_profile = gst_encoding_container_profile_new(NULL,
+							 NULL,
+							 caps,
+							 NULL);
+  gst_caps_unref(caps);
+  
+  caps = gst_caps_from_string("audio/mpeg,mpegversion=1,layer=3");
+  gst_encoding_container_profile_add_profile(container_profile,
+					     (GstEncodingProfile*) gst_encoding_audio_profile_new(caps, NULL, NULL, 0));
+  gst_caps_unref(caps);
+
+  return(container_profile);
 }
 
 /**
- * ags_gstreamer_file_create_aac_video_pipeline:
+ * ags_gstreamer_file_create_aac_encoding_profile:
  * @gstreamer_file: the #AgsGstreamerFile
  * 
- * Create aac video pipeline.
+ * Create aac rw pipeline.
+ * 
+ * Returns: the new #GstEncodingProfile
  * 
  * Since: 3.6.0
  */
-void
-ags_gstreamer_file_create_aac_video_pipeline(AgsGstreamerFile *gstreamer_file)
+GstEncodingProfile*
+ags_gstreamer_file_create_aac_encoding_profile(AgsGstreamerFile *gstreamer_file)
 {
-  if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
-    return;
-  }
+  GstEncodingProfile *container_profile;
 
-  //TODO:JK: implement me
+  GstCaps *caps;
+    
+  if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
+    return(NULL);
+  }  
+
+  caps = gst_caps_from_string("application/mpeg");
+  container_profile = gst_encoding_container_profile_new(NULL,
+							 NULL,
+							 caps,
+							 NULL);
+  gst_caps_unref(caps);
+  
+  caps = gst_caps_from_string("audio/mpeg,mpegversion=4");
+  gst_encoding_container_profile_add_profile(container_profile,
+					     (GstEncodingProfile*) gst_encoding_audio_profile_new(caps, NULL, NULL, 0));
+  gst_caps_unref(caps);
+
+  return(container_profile);
 }
 
 /**
- * ags_gstreamer_file_create_mp4_video_pipeline:
+ * ags_gstreamer_file_create_mp4_encoding_profile:
  * @gstreamer_file: the #AgsGstreamerFile
  * 
- * Create aac video pipeline.
+ * Create mp4 rw pipeline.
+ * 
+ * Returns: the new #GstEncodingProfile
  * 
  * Since: 3.6.0
  */
-void
-ags_gstreamer_file_create_mp4_video_pipeline(AgsGstreamerFile *gstreamer_file);
+GstEncodingProfile*
+ags_gstreamer_file_create_mp4_encoding_profile(AgsGstreamerFile *gstreamer_file)
 {
+  GstEncodingProfile *container_profile;
+  
+  GstCaps *caps;
+  
   if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
-    return;
-  }
+    return(NULL);
+  }  
 
-  //TODO:JK: implement me
+  caps = gst_caps_from_string("application/quicktime,variant=iso");
+  container_profile = gst_encoding_container_profile_new(NULL,
+							 NULL,
+							 caps,
+							 NULL);
+  gst_caps_unref(caps);
+  
+  caps = gst_caps_from_string("audio/mpeg,mpegversion=4");
+  gst_encoding_container_profile_add_profile(container_profile,
+					     (GstEncodingProfile*) gst_encoding_audio_profile_new(caps, NULL, NULL, 0));
+  gst_caps_unref(caps);
+
+  caps = gst_caps_from_string("video/x-h264");
+  gst_encoding_container_profile_add_profile(container_profile,
+					     (GstEncodingProfile*) gst_encoding_video_profile_new(caps, NULL, NULL, 0));
+  gst_caps_unref(caps);
+
+  return(container_profile);
 }
 
 /**
- * ags_gstreamer_file_create_mkv_video_pipeline:
+ * ags_gstreamer_file_create_mkv_encoding_profile:
  * @gstreamer_file: the #AgsGstreamerFile
  * 
- * Create aac video pipeline.
+ * Create mkv rw pipeline.
+ * 
+ * Returns: the new #GstEncodingProfile
  * 
  * Since: 3.6.0
  */
-void
-ags_gstreamer_file_create_mkv_video_pipeline(AgsGstreamerFile *gstreamer_file);
+GstEncodingProfile*
+ags_gstreamer_file_create_mkv_encoding_profile(AgsGstreamerFile *gstreamer_file)
 {
-  if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
-    return;
-  }
+  GstEncodingProfile *container_profile;
 
-  //TODO:JK: implement me
+  GstCaps *caps;
+  
+  if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
+    return(NULL);
+  }
+  
+  caps = gst_caps_from_string("application/mkv");
+  container_profile = gst_encoding_container_profile_new(NULL,
+							 NULL,
+							 caps,
+							 NULL);
+  gst_caps_unref(caps);
+  
+  caps = gst_caps_from_string("audio/x-flac");
+  gst_encoding_container_profile_add_profile(container_profile,
+					     (GstEncodingProfile*) gst_encoding_audio_profile_new(caps, NULL, NULL, 0));
+  gst_caps_unref(caps);
+
+  caps = gst_caps_from_string("video/x-h264");
+  gst_encoding_container_profile_add_profile(container_profile,
+					     (GstEncodingProfile*) gst_encoding_video_profile_new(caps, NULL, NULL, 0));
+  gst_caps_unref(caps);
+
+  return(container_profile);
 }
 
 /**
- * ags_gstreamer_file_create_webm_video_pipeline:
+ * ags_gstreamer_file_create_webm_encoding_profile:
  * @gstreamer_file: the #AgsGstreamerFile
  * 
- * Create aac video pipeline.
+ * Create webm rw pipeline.
+ * 
+ * Returns: the new #GstEncodingProfile
  * 
  * Since: 3.6.0
  */
-void
-ags_gstreamer_file_create_webm_video_pipeline(AgsGstreamerFile *gstreamer_file);
+GstEncodingProfile*
+ags_gstreamer_file_create_webm_encoding_profile(AgsGstreamerFile *gstreamer_file)
 {
-  if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
-    return;
-  }
+  GstEncodingProfile *container_profile;
 
-  //TODO:JK: implement me
+  GstCaps *caps;
+  
+  if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
+    return(NULL);
+  }
+  
+  caps = gst_caps_from_string("application/webm");
+  container_profile = gst_encoding_container_profile_new(NULL,
+							 NULL,
+							 caps,
+							 NULL);
+  gst_caps_unref(caps);
+  
+  caps = gst_caps_from_string("audio/x-vorbis");
+  gst_encoding_container_profile_add_profile(container_profile,
+					     (GstEncodingProfile*) gst_encoding_audio_profile_new(caps, NULL, NULL, 0));
+  gst_caps_unref(caps);
+
+  caps = gst_caps_from_string("video/x-vp9");
+  gst_encoding_container_profile_add_profile(container_profile,
+					     (GstEncodingProfile*) gst_encoding_video_profile_new(caps, NULL, NULL, 0));
+  gst_caps_unref(caps);
+
+  return(container_profile);
 }
 
 /**
- * ags_gstreamer_file_create_mpeg_video_pipeline:
+ * ags_gstreamer_file_create_mpeg_encoding_profile:
  * @gstreamer_file: the #AgsGstreamerFile
  * 
- * Create aac video pipeline.
+ * Create mpeg rw pipeline.
+ * 
+ * Returns: the new #GstEncodingProfile
  * 
  * Since: 3.6.0
  */
-void
-ags_gstreamer_file_create_mpeg_video_pipeline(AgsGstreamerFile *gstreamer_file);
+GstEncodingProfile*
+ags_gstreamer_file_create_mpeg_encoding_profile(AgsGstreamerFile *gstreamer_file)
 {
-  if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
-    return;
-  }
+  GstEncodingProfile *container_profile;
 
-  //TODO:JK: implement me
+  GstCaps *caps;
+  
+  if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
+    return(NULL);
+  }
+  
+  caps = gst_caps_from_string("application/mpegts");
+  container_profile = gst_encoding_container_profile_new(NULL,
+							 NULL,
+							 caps,
+							 NULL);
+  gst_caps_unref(caps);
+  
+  caps = gst_caps_from_string("audio/x-ac3");
+  gst_encoding_container_profile_add_profile(container_profile,
+					     (GstEncodingProfile*) gst_encoding_audio_profile_new(caps, NULL, NULL, 0));
+  gst_caps_unref(caps);
+
+  caps = gst_caps_from_string("video/mpeg");
+  gst_encoding_container_profile_add_profile(container_profile,
+					     (GstEncodingProfile*) gst_encoding_video_profile_new(caps, NULL, NULL, 0));
+  gst_caps_unref(caps);
+
+  return(container_profile);
 }
 
 /**
- * ags_gstreamer_file_detect_video:
+ * ags_gstreamer_file_detect_encoding_profile:
  * @gstreamer_file: the #AgsGstreamerFile
  * 
- * Detect video and create video pipeline.
+ * Detect rw and create rw pipeline.
  * 
  * Since: 3.6.0
  */
 gboolean
-ags_gstreamer_file_detect_video(AgsGstreamerFile *gstreamer_file);
+ags_gstreamer_file_detect_encoding_profile(AgsGstreamerFile *gstreamer_file)
 {
+  GstDiscoverer *discoverer;
+  GstEncodingProfile *encoding_profile;
+
+  GstDiscovererInfo *info;
+  
   gchar *filename;
+  gchar *file_uri;
   
   gboolean success;
 
+  GError *error;
+  
+  GRecMutex *gstreamer_file_mutex;
+  
   if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
     return(FALSE);
   }
-  
+
+  /* get gstreamer_file mutex */
+  gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
+
   success = FALSE;
 
   filename = NULL;
+  file_uri = NULL;
   
   g_object_get(gstreamer_file,
 	       "filename", &filename,
 	       NULL);
 
-  if(g_str_has_suffix(filename, ".mp3")){
-    ags_gstreamer_file_create_mp3_video_pipeline(gstreamer_file);
-  }else if(g_str_has_suffix(filename, ".aac")){
-    ags_gstreamer_file_create_aac_video_pipeline(gstreamer_file);
-  }else if(g_str_has_suffix(filename, ".mp4")){
-    ags_gstreamer_file_create_mp4_video_pipeline(gstreamer_file);
-  }else if(g_str_has_suffix(filename, ".mkv")){
-    ags_gstreamer_file_create_mkv_video_pipeline(gstreamer_file);
-  }else if(g_str_has_suffix(filename, ".webm")){
-    ags_gstreamer_file_create_webm_video_pipeline(gstreamer_file);
-  }else if(g_str_has_suffix(filename, ".mpg") ||
-	   g_str_has_suffix(filename, ".mpeg")){
-    ags_gstreamer_file_create_mpeg_video_pipeline(gstreamer_file);
-  }
+  if(filename != NULL){
+    if(g_path_is_absolute(filename)){
+      file_uri = g_strdup_printf("file://%s",
+				 filename);
+    }else{
+      gchar *current_dir;
 
+      current_dir = g_get_current_dir();
+
+      file_uri = g_strdup_printf("file://%s/%s",
+				 current_dir,
+				 filename);
+
+      g_free(current_dir);
+    }
+  }
+  
+  error = NULL;
+  discoverer = gst_discoverer_new(AGS_GSTREAMER_FILE_DEFAULT_DISCOVERER_TIMEOUT,
+				  &error);
+
+  if(error != NULL){
+    g_critical("%s", error->message);
+    
+    g_error_free(error);
+  }
+  
+  error = NULL;
+  info = gst_discoverer_discover_uri(discoverer,
+				     file_uri,
+				     &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+    
+    g_error_free(error);
+  }
+  
+  encoding_profile = gst_encoding_profile_from_discoverer(info);
+
+  if(encoding_profile == NULL){
+    if(g_str_has_suffix(filename, ".mp3")){
+      encoding_profile = ags_gstreamer_file_create_mp3_encoding_profile(gstreamer_file);
+    }else if(g_str_has_suffix(filename, ".aac")){
+      encoding_profile = ags_gstreamer_file_create_aac_encoding_profile(gstreamer_file);
+    }else if(g_str_has_suffix(filename, ".mp4")){
+      encoding_profile = ags_gstreamer_file_create_mp4_encoding_profile(gstreamer_file);
+    }else if(g_str_has_suffix(filename, ".mkv")){
+      encoding_profile = ags_gstreamer_file_create_mkv_encoding_profile(gstreamer_file);
+    }else if(g_str_has_suffix(filename, ".webm")){
+      encoding_profile = ags_gstreamer_file_create_webm_encoding_profile(gstreamer_file);
+    }else if(g_str_has_suffix(filename, ".mpg") ||
+	     g_str_has_suffix(filename, ".mpeg")){
+      encoding_profile = ags_gstreamer_file_create_mpeg_encoding_profile(gstreamer_file);
+    }
+  }
+    
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  gstreamer_file->encoding_profile = encoding_profile;
+    
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+  
   g_free(filename);
+  g_free(file_uri);
   
   return(success);
 }
