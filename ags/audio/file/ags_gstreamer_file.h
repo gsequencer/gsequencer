@@ -99,7 +99,9 @@ struct _AgsGstreamerFile
 
   GstEncodingProfile *encoding_profile;
   
-  GstElement *rw_playsink;
+  GstElement *rw_playbin;
+  GstElement *rw_video_sink;
+  GstElement *rw_audio_sink;
   GstElement *audio_src;
   GstElement *video_file_encoder;
   GstElement *video_file_sink;

@@ -357,6 +357,8 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
   gstreamer_file->video_sink = NULL;
   gstreamer_file->text_sink = NULL;
 
+  gstreamer_file->rw_playbin = NULL;
+  gstreamer_file->rw_video_sink = NULL;
   gstreamer_file->audio_src = NULL;
   gstreamer_file->video_file_encoder = NULL;
   gstreamer_file->video_file_sink = NULL;
@@ -987,9 +989,13 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   GstElement *text_sink;
 
   GstElement *rw_playbin;
+  GstElement *rw_video_sink;
+  GstElement *rw_audio_sink;
   GstElement *audio_src;
   GstElement *video_file_encoder;
   GstElement *video_file_sink;
+  
+  GstEncodingProfile *encoding_profile;
   
   gchar *file_uri;
   gchar *caps;
@@ -1103,8 +1109,6 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 	       "video-sink", video_sink,
 	       NULL);
 
-  g_free(file_uri);
-
   g_object_get(playbin,
 	       "flags", &flags,
 	       NULL);
@@ -1153,6 +1157,21 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   gst_element_set_state(write_pipeline,
 			GST_STATE_NULL);
 
+  rw_playbin = gst_element_factory_make("playbin", "AGS rw-playbin");
+
+  rw_video_sink = gst_element_factory_make("autovideosink", "AGS rw-video sink");
+
+  rw_audio_sink = gst_element_factory_make("fakesink", "AGS rw-audio sink");
+  g_object_set(rw_audio_sink,
+	       "sync", FALSE,
+	       NULL);
+
+  g_object_set(rw_playbin,
+	       "uri", file_uri,
+	       "audio-sink", rw_audio_sink,
+	       "video-sink", rw_video_sink,
+	       NULL);
+
   audio_src = gst_element_factory_make("appsrc", "AGS audio source");
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
@@ -1175,7 +1194,51 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 
   g_free(caps);
 
+  video_file_encoder = gst_element_factory_make("encodebin", "AGS encode bin");
+
   ags_gstreamer_file_detect_encoding_profile(gstreamer_file);
+
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  encoding_profile = gstreamer_file->encoding_profile;
+
+  if(encoding_profile != NULL){
+    g_object_ref(encoding_profile);
+  }
+  
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+
+  g_object_set(video_file_encoder,
+	       "profile", encoding_profile,
+	       NULL);
+
+  if(encoding_profile != NULL){
+    g_object_unref(encoding_profile);
+  }
+  
+  video_file_sink = gst_element_factory_make("filesink", "AGS file sink");  
+
+  g_object_set(video_file_sink,
+	       "location", filename,
+	       NULL);
+  
+  g_free(file_uri);
+
+  gst_bin_add_many(GST_BIN(write_pipeline),
+		   playbin,
+		   audio_src,
+		   video_file_encoder,
+		   video_file_sink,
+		   NULL);
+  
+  gst_element_link(rw_video_sink,
+		   video_file_encoder);
+
+  gst_element_link(audio_src,
+		   video_file_encoder);
+
+  gst_element_link(video_file_encoder,  
+		   video_file_sink);
   
   /* apply */  
   g_rec_mutex_lock(gstreamer_file_mutex);
@@ -1183,7 +1246,12 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   gstreamer_file->write_pipeline = write_pipeline;
   gstreamer_file->write_pipeline_running = TRUE;
 
+  gstreamer_file->rw_playbin = rw_playbin;
+  gstreamer_file->rw_video_sink = rw_video_sink;
+  gstreamer_file->rw_audio_sink = rw_audio_sink;
   gstreamer_file->audio_src = audio_src;
+  gstreamer_file->video_file_encoder = video_file_encoder;
+  gstreamer_file->video_file_sink = video_file_sink;
 
   g_rec_mutex_unlock(gstreamer_file_mutex);
   
