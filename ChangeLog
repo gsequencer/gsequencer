@@ -4,6 +4,7 @@ ags (3.6.0)
 	* implemented GStreamer support
 	* implemented AgsComplex support in ags_fourier_transform_util.[ch]
 	* improved the developer's manual
+	* fixed AgsWaveExportDialog missing delete-event callback
 
 ags (3.5.16)
 

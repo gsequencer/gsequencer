@@ -1225,7 +1225,7 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   g_free(file_uri);
 
   gst_bin_add_many(GST_BIN(write_pipeline),
-		   playbin,
+		   rw_playbin,
 		   audio_src,
 		   video_file_encoder,
 		   video_file_sink,
@@ -1810,6 +1810,7 @@ ags_gstreamer_file_seek(AgsSoundResource *sound_resource,
   AgsGstreamerFile *gstreamer_file;
 
   GstElement *read_pipeline;
+  GstElement *write_pipeline;
   GstElement *audio_sink;
   GstPad *sink_pad;
   GstCaps *current_caps;
@@ -1829,6 +1830,16 @@ ags_gstreamer_file_seek(AgsSoundResource *sound_resource,
 
   read_pipeline = gstreamer_file->read_pipeline;
 
+  if(read_pipeline != NULL){
+    g_object_ref(read_pipeline);
+  }
+  
+  write_pipeline = gstreamer_file->write_pipeline;
+
+  if(write_pipeline != NULL){
+    g_object_ref(write_pipeline);
+  }
+  
   audio_sink = gstreamer_file->audio_sink;
 
   if(gstreamer_file->last_sample != NULL){
@@ -1857,6 +1868,20 @@ ags_gstreamer_file_seek(AgsSoundResource *sound_resource,
   gst_element_seek(read_pipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
 		   GST_SEEK_TYPE_SET, time_nanoseconds,
 		   GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
+
+  if(write_pipeline != NULL){
+    gst_element_seek(write_pipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
+		     GST_SEEK_TYPE_SET, time_nanoseconds,
+		     GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
+  }
+
+  if(read_pipeline != NULL){
+    g_object_unref(read_pipeline);
+  }
+
+  if(write_pipeline != NULL){
+    g_object_unref(read_pipeline);
+  }
 }
 
 void

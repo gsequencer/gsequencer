@@ -442,6 +442,9 @@ ags_wave_export_dialog_connect(AgsConnectable *connectable)
 
   wave_export_dialog->flags |= AGS_WAVE_EXPORT_DIALOG_CONNECTED;
 
+  g_signal_connect((GObject *) wave_export_dialog, "delete-event",
+		   G_CALLBACK(ags_wave_export_dialog_delete_event), (gpointer) wave_export_dialog);
+  
   g_signal_connect(G_OBJECT(wave_export_dialog->file_chooser_button), "clicked",
 		   G_CALLBACK(ags_wave_export_dialog_file_chooser_button_callback), wave_export_dialog);
   
