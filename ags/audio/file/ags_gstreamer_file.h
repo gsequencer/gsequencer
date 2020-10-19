@@ -103,6 +103,8 @@ struct _AgsGstreamerFile
   GstElement *rw_video_sink;
   GstElement *rw_audio_sink;
   GstElement *audio_src;
+  GstElement *video_queue;
+  GstElement *audio_queue;
   GstElement *video_file_encoder;
   GstElement *video_file_sink;
 
