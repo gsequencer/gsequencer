@@ -1175,17 +1175,17 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   audio_src = gst_element_factory_make("appsrc", "AGS audio source");
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-  caps = g_strdup_printf("audio/x-raw, format = (string) { F64LE }, layout= (string) { interleaved }, channels = %s, rate= %s",
-			 GST_AUDIO_CHANNELS_RANGE,
-			 GST_AUDIO_RATE_RANGE);
+  caps = g_strdup_printf("audio/x-raw, format = (string) { F64LE }, layout= (string) { interleaved }, channels = (int) [ %d ], rate= (int) [ %d ]",
+			 audio_channels,
+			 samplerate);
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-  caps = g_strdup_printf("audio/x-raw, format = (string) { F64BE }, layout= (string) { interleaved }, channels = %s, rate= %s",
-			 GST_AUDIO_CHANNELS_RANGE,
-			 GST_AUDIO_RATE_RANGE);
+  caps = g_strdup_printf("audio/x-raw, format = (string) { F64BE }, layout= (string) { interleaved }, channels = (int) [ %d ], rate= (int) [ %d ]",
+			 audio_channels,
+			 samplerate);
 #else
-  caps = g_strdup_printf("audio/x-raw, format = (string) { F64LE }, layout= (string) { interleaved }, channels = %s, rate= %s",
-			 GST_AUDIO_CHANNELS_RANGE,
-			 GST_AUDIO_RATE_RANGE);
+  caps = g_strdup_printf("audio/x-raw, format = (string) { F64LE }, layout= (string) { interleaved }, channels = (int) [ %d ], rate= (int) [ %d ]",
+			 audio_channels,
+			 samplerate);
 #endif
 
   g_object_set(audio_src,
@@ -1344,7 +1344,9 @@ ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
 {
   AgsGstreamerFile *gstreamer_file;
 
-  GstElement *audio_sink;
+  GstElement *audio_src;
+
+  gchar *caps;
 
   guint audio_channels;
   
@@ -1357,9 +1359,9 @@ ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
 
   g_rec_mutex_lock(gstreamer_file_mutex);
 
-  audio_sink = gstreamer_file->audio_sink;
+  audio_src = gstreamer_file->audio_src;
 
-  audio_channels = channels;
+  gstreamer_file->audio_channels = channels;
   
   g_rec_mutex_unlock(gstreamer_file_mutex);
   
@@ -1368,7 +1370,25 @@ ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
 	       "format", format,
 	       NULL);
     
-  //TODO:JK: implement me
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+  caps = g_strdup_printf("audio/x-raw, format = (string) { F64LE }, layout= (string) { interleaved }, channels = (int) [ %d ], rate= (int) [ %d ]",
+			 channels,
+			 samplerate);
+#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+  caps = g_strdup_printf("audio/x-raw, format = (string) { F64BE }, layout= (string) { interleaved }, channels = (int) [ %d ], rate= (int) [ %d ]",
+			 channels,
+			 samplerate);
+#else
+  caps = g_strdup_printf("audio/x-raw, format = (string) { F64LE }, layout= (string) { interleaved }, channels = (int) [ %d ], rate= (int) [ %d ]",
+			 channels,
+			 samplerate);
+#endif
+
+  g_object_set(audio_src,
+	       "caps", gst_caps_from_string(caps),
+	       NULL);
+
+  g_free(caps);
 }
 
 void
@@ -1619,7 +1639,153 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
 			 guint audio_channel,
 			 guint frame_count, guint format)
 {
-  //TODO:JK: implement me  
+  AgsGstreamerFile *gstreamer_file;
+
+  GstElement *audio_src;
+  GstBuffer *current_buffer;
+  GstMemory *memory;  
+  GstMapInfo info;
+  
+  guint daudio_channels;
+  guint buffer_size;
+  guint destination_format;
+  guint word_size;
+  guint copy_mode;
+  guint i;
+  gboolean do_write;
+
+  GRecMutex *gstreamer_file_mutex;
+   
+  gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
+
+  /* get gstreamer_file mutex */
+  gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
+
+  /* get source audio channels */
+  daudio_channels = 1;
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  destination_format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  
+  ags_gstreamer_file_get_presets(sound_resource,
+				 &daudio_channels,
+				 NULL,
+				 &buffer_size,
+				 &destination_format);
+
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  audio_src = gstreamer_file->audio_src;
+
+  if(audio_src != NULL){
+    g_object_ref(audio_src);
+  }
+
+  current_buffer = gstreamer_file->current_buffer;
+
+  if(current_buffer != NULL){
+    g_object_ref(current_buffer);
+  }
+  
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+
+  word_size = sizeof(gdouble);
+  
+  switch(destination_format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      word_size = sizeof(gchar);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      word_size = sizeof(gint16);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      word_size = sizeof(gint64);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      word_size = sizeof(gfloat);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      word_size = sizeof(gdouble);
+    }
+    break;
+  }
+  
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(destination_format),
+						  ags_audio_buffer_util_format_from_soundcard(format));
+
+  if(current_buffer == NULL){
+    current_buffer = gst_buffer_new();
+    memory = gst_allocator_alloc(NULL,
+				 buffer_size * word_size,
+				 NULL);
+
+    gst_buffer_insert_memory(current_buffer,
+			     -1,
+			     memory);
+  }
+
+  gst_buffer_map(current_buffer,
+		 &info, GST_MAP_WRITE);
+  
+  ags_audio_buffer_util_copy_buffer_to_buffer(info.data, daudio_channels, audio_channel,
+					      sbuffer, saudio_channels, saudio_channels * frame_count,
+					      frame_count, copy_mode);
+
+  gst_buffer_unmap(current_buffer,
+		   &info);
+
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  gstreamer_file->audio_channel_written[audio_channel] = frame_count;
+  do_write = TRUE;
+
+  for(i = 0; i < gstreamer_file->audio_channels; i++){
+    if(gstreamer_file->audio_channel_written[i] == -1){
+      do_write = FALSE;
+      
+      break;
+    }
+  }
+
+  if(do_write){
+    GstFlowReturn flow_retval;
+    
+    g_signal_emit_by_name(audio_src, "push-buffer", current_buffer, &flow_retval);
+
+    gstreamer_file->offset += frame_count;
+
+    gstreamer_file->current_buffer = NULL;
+    
+    if(current_buffer != NULL){
+      gst_buffer_unref(current_buffer);
+    }    
+  }else{
+    gstreamer_file->current_buffer = current_buffer;
+  }
+  
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+
+  if(audio_src != NULL){
+    g_object_unref(audio_src);
+  }
 }
 
 void
@@ -1698,6 +1864,10 @@ ags_gstreamer_file_close(AgsSoundResource *sound_resource)
 {
   AgsGstreamerFile *gstreamer_file;
    
+  GstElement *read_pipeline, *write_pipeline;
+
+  gboolean read_pipeline_running, write_pipeline_running;
+  
   GRecMutex *gstreamer_file_mutex;
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
@@ -1705,7 +1875,81 @@ ags_gstreamer_file_close(AgsSoundResource *sound_resource)
   /* get gstreamer_file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
-  //TODO:JK: implement me
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  read_pipeline = gstreamer_file->read_pipeline;
+  read_pipeline_running = gstreamer_file->read_pipeline_running;
+
+  write_pipeline = gstreamer_file->write_pipeline;
+  write_pipeline_running = gstreamer_file->write_pipeline_running;
+  
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+
+  if(read_pipeline_running){
+    gst_element_set_state(read_pipeline, GST_STATE_NULL);
+  }
+  
+  if(write_pipeline_running){
+    gst_element_set_state(write_pipeline, GST_STATE_NULL);
+  }
+
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  if(gstreamer_file->read_pipeline != NULL){
+    g_object_unref(gstreamer_file->read_pipeline);
+  }
+  
+  gstreamer_file->read_pipeline = NULL;
+  gstreamer_file->read_pipeline_running = FALSE;
+
+  if(gstreamer_file->write_pipeline != NULL){
+    g_object_unref(gstreamer_file->write_pipeline);
+  }
+
+  gstreamer_file->write_pipeline = NULL;
+  gstreamer_file->write_pipeline_running = FALSE;
+
+  if(gstreamer_file->playbin != NULL){
+    g_object_unref(gstreamer_file->playbin);
+  }
+
+  if(gstreamer_file->video_sink != NULL){
+    g_object_unref(gstreamer_file->video_sink);
+  }
+
+  if(gstreamer_file->audio_sink != NULL){
+    g_object_unref(gstreamer_file->audio_sink);
+  }
+
+  if(gstreamer_file->text_sink != NULL){
+    g_object_unref(gstreamer_file->text_sink);
+  }
+
+  if(gstreamer_file->rw_playbin != NULL){
+    g_object_unref(gstreamer_file->rw_playbin);
+  }
+
+  if(gstreamer_file->rw_video_sink != NULL){
+    g_object_unref(gstreamer_file->rw_video_sink);
+  }
+
+  if(gstreamer_file->rw_audio_sink != NULL){
+    g_object_unref(gstreamer_file->rw_audio_sink);
+  }
+
+  if(gstreamer_file->audio_src != NULL){
+    g_object_unref(gstreamer_file->audio_src);
+  }
+
+  if(gstreamer_file->video_file_encoder != NULL){
+    g_object_unref(gstreamer_file->video_file_encoder);
+  }
+
+  if(gstreamer_file->video_file_sink != NULL){
+    g_object_unref(gstreamer_file->video_file_sink);
+  }
+  
+  g_rec_mutex_unlock(gstreamer_file_mutex);
 }
 
 /**

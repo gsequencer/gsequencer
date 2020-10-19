@@ -109,6 +109,7 @@ struct _AgsGstreamerFile
   guint prev_frame_count;
   
   GstSample *last_sample;
+  GstBuffer *current_buffer;
 };
 
 struct _AgsGstreamerFileClass
