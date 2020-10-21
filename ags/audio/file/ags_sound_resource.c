@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -733,7 +733,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 	num_read = ags_sound_resource_read(AGS_SOUND_RESOURCE(sound_resource),
 					   data, 1,
 					   i,
-					   (guint) ((double) read_count / (double) samplerate * (double) target_samplerate), format);
+					   buffer_size, format);
 
 	ags_audio_buffer_util_clear_buffer(target_data, 1,
 					   target_buffer_size, ags_audio_buffer_util_format_from_soundcard(format));

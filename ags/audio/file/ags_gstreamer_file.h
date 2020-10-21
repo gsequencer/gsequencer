@@ -72,7 +72,8 @@ struct _AgsGstreamerFile
   
   guint audio_channels;
   gint64 *audio_channel_written;
-  
+
+  guint samplerate;
   guint buffer_size;
   guint format;
 
@@ -99,18 +100,28 @@ struct _AgsGstreamerFile
 
   GstEncodingProfile *encoding_profile;
   
-  GstElement *rw_playbin;
-  GstElement *rw_video_sink;
-  GstElement *rw_audio_sink;
-  GstElement *audio_src;
-  GstElement *video_queue;
-  GstElement *audio_queue;
-  GstElement *video_file_encoder;
-  GstElement *video_file_sink;
+  GstElement *rw_video_app_src;
+  GstElement *rw_audio_app_src;
+  GstElement *rw_text_app_src;
+  GstElement *rw_audio_tee;
+  GstElement *rw_video_file_sink_queue;
+  GstElement *rw_audio_file_sink_queue;
+  GstElement *rw_text_file_sink_queue;
+  GstElement *rw_audio_convert;
+  GstElement *rw_audio_resample;
+  GstElement *rw_audio_mixer;
+  GstElement *rw_file_encoder;
+  GstElement *rw_file_sink;
+  GstElement *rw_audio_app_sink_queue;
+  GstElement *rw_audio_app_sink;
 
   guint prev_frame_count;
   
   GstSample *last_sample;
+
+  guint source_id;
+  
+  GList *rw_buffer;
   GstBuffer *current_buffer;
 };
 

@@ -978,7 +978,7 @@ ags_audiorec_fast_export(AgsAudiorec *audiorec,
 
   if(g_file_test(filename,
 		 G_FILE_TEST_EXISTS)){
-    //    g_remove(filename);
+    g_remove(filename);
   }
 
   audio_file = ags_audio_file_new(filename,
