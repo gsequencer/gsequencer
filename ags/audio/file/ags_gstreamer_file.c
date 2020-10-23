@@ -352,14 +352,14 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
 
   config = ags_config_get_instance();
 
-  gstreamer_file->audio_channels = 1;
+  gstreamer_file->audio_channels = AGS_GSTREAMER_FILE_DEFAULT_AUDIO_CHANNELS;
   gstreamer_file->audio_channel_written = (gint64 *) malloc(gstreamer_file->audio_channels * sizeof(gint64));
 
   gstreamer_file->audio_channel_written[0] = -1;
   
   gstreamer_file->samplerate = ags_soundcard_helper_config_get_samplerate(config);
   gstreamer_file->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
-  gstreamer_file->format = AGS_SOUNDCARD_DOUBLE;
+  gstreamer_file->format = AGS_GSTREAMER_FILE_DEFAULT_FORMAT;
 
   gstreamer_file->offset = 0;
   gstreamer_file->buffer_offset = 0;
@@ -2116,7 +2116,7 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
   guint destination_format;
   guint word_size;
   guint copy_frame_count;
-  guint buffer_offset;
+  guint dbuffer_offset, sbuffer_offset;
   guint copy_mode;
   guint i, i_stop, j;
   gboolean do_write;
@@ -2129,7 +2129,7 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
   /* get source audio channels */
-  daudio_channels = 1;
+  daudio_channels = AGS_GSTREAMER_FILE_DEFAULT_AUDIO_CHANNELS;
 
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
@@ -2153,8 +2153,8 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
 
   start_rw_current_buffer = g_list_copy(gstreamer_file->rw_current_buffer);
 
-  buffer_offset = gstreamer_file->audio_channel_written[audio_channel];
-  
+  dbuffer_offset = gstreamer_file->audio_channel_written[audio_channel];
+
   g_rec_mutex_unlock(gstreamer_file_mutex);
 
   word_size = sizeof(gdouble);
@@ -2204,14 +2204,16 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
   
   rw_current_buffer = start_rw_current_buffer;
 
-  if(frame_count * daudio_channels * word_size > AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE){
+  sbuffer_offset = 0;  
+
+  if(frame_count * daudio_channels * word_size > AGS_GSTREAMER_FILE_CHUNK_SIZE(daudio_channels, sizeof(gdouble))){
     copy_frame_count = frame_count;
     
     i_stop = 1;
   }else{
-    copy_frame_count = AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE;
+    copy_frame_count = AGS_GSTREAMER_FILE_CHUNK_SIZE(daudio_channels, sizeof(gdouble));
     
-    i_stop = (guint) ceil(AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE / (double) (frame_count * daudio_channels * word_size));
+    i_stop = (guint) ceil(AGS_GSTREAMER_FILE_CHUNK_SIZE(daudio_channels, sizeof(gdouble)) / (double) (frame_count * daudio_channels * word_size));
   }
       
   for(i = 0; i < i_stop; i++){  
@@ -2225,18 +2227,12 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
     
     g_rec_mutex_lock(gstreamer_file_mutex);
     
-    if(daudio_channels * word_size * (gstreamer_file->audio_channel_written[audio_channel] + copy_frame_count) > AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE){
-      if(AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE % (daudio_channels * word_size) == 0){
-	copy_frame_count = (gstreamer_file->audio_channel_written[audio_channel] + copy_frame_count) - (AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE / (daudio_channels * word_size));
-      }else{
-	if((AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE / (daudio_channels * word_size)) < 1.0 / daudio_channels * daudio_channel){
-	  copy_frame_count = (gstreamer_file->audio_channel_written[audio_channel] + copy_frame_count) - (AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE / (daudio_channels * word_size));
-	}else{
-	  copy_frame_count = (gstreamer_file->audio_channel_written[audio_channel] + copy_frame_count) - (AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE / (daudio_channels * word_size)) + 1;
-	}
-      }
+    if(daudio_channels * word_size * (gstreamer_file->audio_channel_written[audio_channel] + copy_frame_count) > AGS_GSTREAMER_FILE_CHUNK_SIZE(daudio_channels, sizeof(gdouble))){
+      copy_frame_count = (gstreamer_file->audio_channel_written[audio_channel] + copy_frame_count) - (AGS_GSTREAMER_FILE_CHUNK_SIZE(daudio_channels, sizeof(gdouble)) / (daudio_channels * word_size));
       
       remaining_copy_frame_count = frame_count - copy_frame_count;
+
+      i_stop++;
     }
     
     g_rec_mutex_unlock(gstreamer_file_mutex);
@@ -2249,7 +2245,9 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
     
     if(current_buffer == NULL){
       current_buffer = gst_buffer_new_and_alloc(AGS_GSTREAMER_FILE_CHUNK_SIZE);
-    
+
+      dbuffer_offset = 0;
+      
       /* Set its timestamp and duration */
       GST_BUFFER_TIMESTAMP(current_buffer) = gst_util_uint64_scale(offset, GST_SECOND, samplerate);
       GST_BUFFER_DURATION(current_buffer) = gst_util_uint64_scale(frame_count, GST_SECOND, samplerate);
@@ -2266,17 +2264,13 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
 		   &info, GST_MAP_WRITE);
 
     if(info.data != NULL){
-      ags_audio_buffer_util_copy_buffer_to_buffer(info.data, daudio_channels, audio_channel + buffer_offset,
-						  sbuffer, saudio_channels, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(info.data, daudio_channels, audio_channel + dbuffer_offset,
+						  sbuffer, saudio_channels, sbuffer_offset,
 						  copy_frame_count, copy_mode);
     }
 
     gst_buffer_unmap(current_buffer,
 		     &info);
-
-    if(remaining_copy_frame_count > 0){
-    }
-
     
     g_rec_mutex_lock(gstreamer_file_mutex);
 
@@ -2285,7 +2279,7 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
     do_write = TRUE;
 
     for(j = 0; j < gstreamer_file->audio_channels; j++){
-      if(daudio_channels * word_size * gstreamer_file->audio_channel_written[j] < AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE){
+      if(daudio_channels * word_size * gstreamer_file->audio_channel_written[j] < AGS_GSTREAMER_FILE_CHUNK_SIZE(daudio_channels, sizeof(gdouble))){
 	do_write = FALSE;
       
 	break;
@@ -2311,16 +2305,19 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
       gstreamer_file->rw_current_buffer = NULL;
 
       for(j = 0; j < gstreamer_file->audio_channels; j++){
-	gstreamer_file->audio_channel_written[j] = (buffer_offset + frame_count) - frame_count;
+	gstreamer_file->audio_channel_written[j] = (dbuffer_offset + frame_count) - frame_count;
       }
   
       g_rec_mutex_unlock(gstreamer_file_mutex);
     }
 
     /* iterate */
-    rw_current_buffer = rw_current_buffer->next;
-
-    buffer_offset += copy_frame_count;
+    if(rw_current_buffer != NULL){
+      rw_current_buffer = rw_current_buffer->next;
+    }
+        
+    dbuffer_offset += copy_frame_count;
+    sbuffer_offset += copy_frame_count;
   }
 
   if(rw_audio_app_src != NULL){
