@@ -95,7 +95,7 @@ void ags_gstreamer_file_seek(AgsSoundResource *sound_resource,
 void ags_gstreamer_file_close(AgsSoundResource *sound_resource);
 
 gboolean ags_gstreamer_file_seek_data(GstElement *source, guint64 position, AgsGstreamerFile *gstreamer_file);
-gboolean ags_gstreamer_file_push_data(AgsGstreamerFile *gstreamer_file);
+void* ags_gstreamer_file_rw_thread_run(void *ptr);
 
 void ags_gstreamer_file_start_feed(GstElement *source, guint size, AgsGstreamerFile *gstreamer_file);
 void ags_gstreamer_file_stop_feed(GstElement *source, AgsGstreamerFile *gstreamer_file);
@@ -405,7 +405,7 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
   
   gstreamer_file->last_sample = NULL;
 
-  gstreamer_file->source_id = 0;
+  gstreamer_file->rw_thread = NULL;
 
   gstreamer_file->rw_buffer = NULL;
   gstreamer_file->current_buffer = NULL;
@@ -1051,6 +1051,15 @@ ags_gstreamer_file_seek_data(GstElement *source, guint64 position, AgsGstreamerF
   //  ags_sound_resource_seek(AGS_SOUND_RESOURCE(gstreamer_file), position, G_SEEK_SET);
 
   return(TRUE);
+}
+
+void*
+ags_gstreamer_file_rw_thread_run(void *ptr)
+{
+  
+  g_thread_exit(NULL);
+
+  return(NULL);
 }
 
 gboolean

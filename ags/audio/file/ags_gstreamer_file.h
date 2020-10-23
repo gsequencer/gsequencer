@@ -119,7 +119,7 @@ struct _AgsGstreamerFile
   
   GstSample *last_sample;
 
-  guint source_id;
+  GThread *rw_thread;
   
   GList *rw_buffer;
   GstBuffer *current_buffer;
