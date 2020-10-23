@@ -40,6 +40,9 @@ G_BEGIN_DECLS
 
 #define AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(obj) (&(((AgsGstreamerFile *) obj)->obj_mutex))
 
+#define AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE (1024)
+
+#define AGS_GSTREAMER_FILE_DEFAULT_FLUSH_IDLE (4)
 #define AGS_GSTREAMER_FILE_DEFAULT_DISCOVERER_TIMEOUT (3 * GST_SECOND)
   
 typedef struct _AgsGstreamerFile AgsGstreamerFile;
@@ -92,7 +95,7 @@ struct _AgsGstreamerFile
   
   GstElement *write_pipeline;
   gboolean write_pipeline_running;
-
+  gboolean write_pipeline_need_data;
   GstElement *playbin;
   GstElement *video_sink;
   GstElement *audio_sink;
@@ -121,8 +124,10 @@ struct _AgsGstreamerFile
 
   GThread *rw_thread;
   
-  GList *rw_buffer;
   GstBuffer *current_buffer;
+
+  GList *rw_buffer;
+  GList *rw_current_buffer;
 };
 
 struct _AgsGstreamerFileClass

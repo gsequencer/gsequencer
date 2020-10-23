@@ -30,6 +30,7 @@
 #include <gst/app/gstappsink.h>
 #include <gst/app/gstappsrc.h>
 
+#include <math.h>
 #include <string.h>
 
 #include <ags/i18n.h>
@@ -125,8 +126,6 @@ typedef enum{
   GST_PLAY_FLAG_AUDIO         = (1 << 1), /* We want audio output */
   GST_PLAY_FLAG_TEXT          = (1 << 2)  /* We want subtitle output */
 }GstPlayFlags;
-
-#define AGS_GSTREAMER_FILE_CHUNK_SIZE (1024)
 
 static gpointer ags_gstreamer_file_parent_class = NULL;
 static AgsSoundResourceInterface *ags_gstreamer_file_parent_sound_resource_interface;
@@ -380,6 +379,7 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
 
   gstreamer_file->write_pipeline = NULL;
   gstreamer_file->write_pipeline_running = FALSE;
+  gstreamer_file->write_pipeline_need_data = FALSE;
 
   gstreamer_file->playbin = NULL;
   gstreamer_file->audio_sink = NULL;
@@ -407,8 +407,10 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
 
   gstreamer_file->rw_thread = NULL;
 
-  gstreamer_file->rw_buffer = NULL;
   gstreamer_file->current_buffer = NULL;
+
+  gstreamer_file->rw_buffer = NULL;
+  gstreamer_file->rw_current_buffer = NULL;
 }
 
 void
@@ -1056,56 +1058,93 @@ ags_gstreamer_file_seek_data(GstElement *source, guint64 position, AgsGstreamerF
 void*
 ags_gstreamer_file_rw_thread_run(void *ptr)
 {
+  AgsGstreamerFile *gstreamer_file;
+
+  GstElement *rw_audio_app_src;
+
+  gboolean need_data;
+  gboolean is_running;
   
-  g_thread_exit(NULL);
-
-  return(NULL);
-}
-
-gboolean
-ags_gstreamer_file_push_data(AgsGstreamerFile *gstreamer_file)
-{
-  GList *buffer;
-
   GRecMutex *gstreamer_file_mutex;
+
+  gstreamer_file = AGS_GSTREAMER_FILE(ptr);
 
   /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
-  g_message("push_data()");
-
   g_rec_mutex_lock(gstreamer_file_mutex);
 
-  buffer = g_list_last(gstreamer_file->rw_buffer);
+  rw_audio_app_src = gstreamer_file->rw_audio_app_src;
+
+  if(rw_audio_app_src != NULL){
+    g_object_ref(rw_audio_app_src);
+  }
+  
+  is_running = (gstreamer_file->write_pipeline_running) ? TRUE: FALSE;
 
   g_rec_mutex_unlock(gstreamer_file_mutex);
-
-  if(buffer != NULL){
-    GstFlowReturn flow_retval;
-
-    g_message("push-buffer");
-    
-    
-    g_signal_emit_by_name(gstreamer_file->rw_audio_app_src,
-			  "push-buffer",
-			  buffer->data,
-			  &flow_retval);    
-
-    gst_buffer_unref(buffer->data);
-
+  
+  while(is_running){
+    /* test write pipeline need data */
     g_rec_mutex_lock(gstreamer_file_mutex);
-    
-    gstreamer_file->rw_buffer = g_list_remove(gstreamer_file->rw_buffer,
-					      buffer->data);
+
+    need_data = (gstreamer_file->write_pipeline_need_data) ? TRUE: FALSE;
 
     g_rec_mutex_unlock(gstreamer_file_mutex);
 
-    if(flow_retval != GST_FLOW_OK){
-      return(FALSE);
-    }
-  }
+    if(need_data){
+      GList *rw_buffer;
+
+      gpointer data;
+
+      GstFlowReturn flow_retval;
+
+      g_rec_mutex_lock(gstreamer_file_mutex);
+
+      rw_buffer = g_list_last(gstreamer_file->rw_buffer);
+
+      data = (rw_buffer != NULL) ? rw_buffer->data; NULL;
+      
+      g_rec_mutex_unlock(gstreamer_file_mutex);
+
+      if(data != NULL){
+	g_message("push-buffer");    
     
-  return(TRUE);
+	g_signal_emit_by_name(rw_audio_app_src,
+			      "push-buffer",
+			      data,
+			      &flow_retval);    
+
+	gst_buffer_unref(data);
+
+	g_rec_mutex_lock(gstreamer_file_mutex);
+    
+	gstreamer_file->rw_buffer = g_list_remove(gstreamer_file->rw_buffer,
+						  data);
+
+	g_rec_mutex_unlock(gstreamer_file_mutex);
+
+	if(flow_retval != GST_FLOW_OK){
+	  g_warning("push buffer flow not ok");
+	}
+      }
+    }
+    
+    /* test write pipeline running */
+    g_rec_mutex_lock(gstreamer_file_mutex);
+
+    is_running = (gstreamer_file->write_pipeline_running) ? TRUE: FALSE;
+
+    g_rec_mutex_unlock(gstreamer_file_mutex);
+  }
+
+  if(rw_audio_app_src != NULL){
+    g_object_unref(rw_audio_app_src);
+  }
+  
+  g_thread_exit(NULL);
+
+  return(NULL);
 }
 
 void
@@ -1118,13 +1157,11 @@ ags_gstreamer_file_start_feed(GstElement *source, guint size, AgsGstreamerFile *
   /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
-  //  g_rec_mutex_lock(gstreamer_file_mutex);
+  g_rec_mutex_lock(gstreamer_file_mutex);
 
-  if(gstreamer_file->source_id == 0){
-    gstreamer_file->source_id = g_idle_add((GSourceFunc) ags_gstreamer_file_push_data, gstreamer_file);
-  }
+  gstreamer_file->write_pipeline_need_data = TRUE;
 
-  //  g_rec_mutex_unlock(gstreamer_file_mutex);
+  g_rec_mutex_unlock(gstreamer_file_mutex);
 }
 
 void
@@ -1135,15 +1172,11 @@ ags_gstreamer_file_stop_feed(GstElement *source, AgsGstreamerFile *gstreamer_fil
   /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
-  //  g_rec_mutex_lock(gstreamer_file_mutex);
+  g_rec_mutex_lock(gstreamer_file_mutex);
 
-  if(gstreamer_file->source_id != 0){
-    g_source_remove(gstreamer_file->source_id);
+  gstreamer_file->write_pipeline_need_data = FALSE;
 
-    gstreamer_file->source_id = 0;
-  }
-
-  //  g_rec_mutex_unlock(gstreamer_file_mutex);
+  g_rec_mutex_unlock(gstreamer_file_mutex);
 }
 
 gboolean
@@ -1181,6 +1214,8 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   GstPad *rw_file_encoder_audio_pad, *audio_app_sink_queue_sink_pad;
   
   GstBus *bus;
+
+  GThread *rw_thread;
   
   GstEncodingProfile *encoding_profile;
   
@@ -1372,6 +1407,17 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   gst_element_set_state(write_pipeline,
 			GST_STATE_NULL);
 
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  gstreamer_file->write_pipeline_running = TRUE;
+  gstreamer_file->write_pipeline_need_data = FALSE;
+
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+  
+  rw_thread = g_thread_new("Advanced Gtk+ Sequencer - gstreamer file rw thread",
+			   ags_gstreamer_file_rw_thread_run,
+			   gstreamer_file);
+
   rw_video_app_src = gst_element_factory_make("fakesrc", "AGS rw video source");
   rw_audio_app_src = gst_element_factory_make("appsrc", "AGS rw audio source");
   rw_text_app_src = gst_element_factory_make("fakesrc", "AGS rw text source");
@@ -1539,7 +1585,6 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   g_rec_mutex_lock(gstreamer_file_mutex);
 
   gstreamer_file->write_pipeline = write_pipeline;
-  gstreamer_file->write_pipeline_running = TRUE;
 
   gstreamer_file->rw_video_app_src = rw_video_app_src;
   gstreamer_file->rw_audio_app_src = rw_audio_app_src;
@@ -1556,6 +1601,8 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   gstreamer_file->rw_audio_app_sink_queue = rw_audio_app_sink_queue;
   gstreamer_file->rw_audio_app_sink = rw_audio_app_sink;
 
+  gstreamer_file->rw_thread = rw_thread;
+  
   g_rec_mutex_unlock(gstreamer_file_mutex);
 		       
   g_usleep(4000);
@@ -2059,19 +2106,19 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
   AgsGstreamerFile *gstreamer_file;
 
   GstElement *rw_audio_app_src;
-  GstBuffer *current_buffer;
-  GstMemory *memory;  
-  
-  GstMapInfo info;
 
+  GList *start_rw_current_buffer, *rw_current_buffer;
+  
   guint samplerate;
   guint64 offset;
   guint daudio_channels;
   guint buffer_size;
   guint destination_format;
   guint word_size;
+  guint copy_frame_count;
+  guint buffer_offset;
   guint copy_mode;
-  guint i;
+  guint i, i_stop, j;
   gboolean do_write;
 
   GRecMutex *gstreamer_file_mutex;
@@ -2102,9 +2149,11 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
     g_object_ref(rw_audio_app_src);
   }
 
-  current_buffer = gstreamer_file->current_buffer;
-  
   offset = gstreamer_file->offset;
+
+  start_rw_current_buffer = g_list_copy(gstreamer_file->rw_current_buffer);
+
+  buffer_offset = gstreamer_file->audio_channel_written[audio_channel];
   
   g_rec_mutex_unlock(gstreamer_file_mutex);
 
@@ -2151,77 +2200,143 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(destination_format),
 						  ags_audio_buffer_util_format_from_soundcard(format));
 
-  if(current_buffer == NULL){
-    current_buffer = gst_buffer_new_and_alloc(AGS_GSTREAMER_FILE_CHUNK_SIZE);
-    
-    /* Set its timestamp and duration */
-    GST_BUFFER_TIMESTAMP(current_buffer) = gst_util_uint64_scale(offset, GST_SECOND, samplerate);
-    GST_BUFFER_DURATION(current_buffer) = gst_util_uint64_scale(frame_count, GST_SECOND, samplerate);
-  }
-
-  gst_buffer_map(current_buffer,
-		 &info, GST_MAP_WRITE);
-
-  if(info.data != NULL){
-    //    ags_audio_buffer_util_copy_buffer_to_buffer(info.data, daudio_channels, audio_channel,
-    //						sbuffer, saudio_channels, saudio_channels * frame_count,
-    //						frame_count, copy_mode);
-  }
-
-#if 1
-  gst_buffer_unmap(current_buffer,
-		   &info);
-#endif
+  start_rw_current_buffer = g_list_reverse(start_rw_current_buffer);
   
-  g_rec_mutex_lock(gstreamer_file_mutex);
+  rw_current_buffer = start_rw_current_buffer;
 
-  gstreamer_file->audio_channel_written[audio_channel] = frame_count;
-  do_write = TRUE;
-
-  for(i = 0; i < gstreamer_file->audio_channels; i++){
-    if(gstreamer_file->audio_channel_written[i] == -1){
-      do_write = FALSE;
-      
-      break;
-    }
-  }
-
-  g_message("write");
-  
-  if(do_write){    
-#if 0
-    GstFlowReturn flow_retval;
+  if(frame_count * daudio_channels * word_size > AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE){
+    copy_frame_count = frame_count;
     
-    g_signal_emit_by_name(rw_audio_app_src, "push-buffer", current_buffer, &flow_retval);
-#else
-    gstreamer_file->rw_buffer = g_list_prepend(gstreamer_file->rw_buffer,
-					       current_buffer);
-#endif
-
-    g_message("do write");
-    
-    gstreamer_file->offset += frame_count;
-
-    gstreamer_file->current_buffer = NULL;
-
-    for(i = 0; i < gstreamer_file->audio_channels; i++){
-      gstreamer_file->audio_channel_written[i] = -1;
-    }
+    i_stop = 1;
   }else{
-    gstreamer_file->current_buffer = current_buffer;
+    copy_frame_count = AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE;
+    
+    i_stop = (guint) ceil(AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE / (double) (frame_count * daudio_channels * word_size));
   }
+      
+  for(i = 0; i < i_stop; i++){  
+    GstBuffer *current_buffer;
   
-  g_rec_mutex_unlock(gstreamer_file_mutex);
+    GstMapInfo info;
+
+    guint remaining_copy_frame_count;
+
+    remaining_copy_frame_count = 0;
+    
+    g_rec_mutex_lock(gstreamer_file_mutex);
+    
+    if(daudio_channels * word_size * (gstreamer_file->audio_channel_written[audio_channel] + copy_frame_count) > AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE){
+      if(AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE % (daudio_channels * word_size) == 0){
+	copy_frame_count = (gstreamer_file->audio_channel_written[audio_channel] + copy_frame_count) - (AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE / (daudio_channels * word_size));
+      }else{
+	if((AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE / (daudio_channels * word_size)) < 1.0 / daudio_channels * daudio_channel){
+	  copy_frame_count = (gstreamer_file->audio_channel_written[audio_channel] + copy_frame_count) - (AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE / (daudio_channels * word_size));
+	}else{
+	  copy_frame_count = (gstreamer_file->audio_channel_written[audio_channel] + copy_frame_count) - (AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE / (daudio_channels * word_size)) + 1;
+	}
+      }
+      
+      remaining_copy_frame_count = frame_count - copy_frame_count;
+    }
+    
+    g_rec_mutex_unlock(gstreamer_file_mutex);
+
+    current_buffer = NULL;
+    
+    if(rw_current_buffer != NULL){
+      current_buffer = rw_current_buffer->data;
+    }
+    
+    if(current_buffer == NULL){
+      current_buffer = gst_buffer_new_and_alloc(AGS_GSTREAMER_FILE_CHUNK_SIZE);
+    
+      /* Set its timestamp and duration */
+      GST_BUFFER_TIMESTAMP(current_buffer) = gst_util_uint64_scale(offset, GST_SECOND, samplerate);
+      GST_BUFFER_DURATION(current_buffer) = gst_util_uint64_scale(frame_count, GST_SECOND, samplerate);
+
+      g_rec_mutex_lock(gstreamer_file_mutex);
+
+      start_rw_current_buffer = g_list_prepend(gstreamer_file->rw_current_buffer,
+					       current_buffer);
+      
+      g_rec_mutex_unlock(gstreamer_file_mutex);
+    }
+
+    gst_buffer_map(current_buffer,
+		   &info, GST_MAP_WRITE);
+
+    if(info.data != NULL){
+      ags_audio_buffer_util_copy_buffer_to_buffer(info.data, daudio_channels, audio_channel + buffer_offset,
+						  sbuffer, saudio_channels, 0,
+						  copy_frame_count, copy_mode);
+    }
+
+    gst_buffer_unmap(current_buffer,
+		     &info);
+
+    if(remaining_copy_frame_count > 0){
+    }
+
+    
+    g_rec_mutex_lock(gstreamer_file_mutex);
+
+    gstreamer_file->audio_channel_written[audio_channel] += chunk_count;
+    
+    do_write = TRUE;
+
+    for(j = 0; j < gstreamer_file->audio_channels; j++){
+      if(daudio_channels * word_size * gstreamer_file->audio_channel_written[j] < AGS_GSTREAMER_FILE_DEFAULT_CHUNK_SIZE){
+	do_write = FALSE;
+      
+	break;
+      }
+    }
+  
+    g_rec_mutex_unlock(gstreamer_file_mutex);
+
+    g_message("write");
+  
+    if(do_write){    
+      g_message("do write");
+
+      g_rec_mutex_lock(gstreamer_file_mutex);
+      
+      gstreamer_file->rw_buffer = g_list_prepend(gstreamer_file->rw_buffer,
+						 current_buffer);
+    
+      gstreamer_file->offset += frame_count;
+
+      g_list_free(gstreamer_file->rw_current_buffer);
+
+      gstreamer_file->rw_current_buffer = NULL;
+
+      for(j = 0; j < gstreamer_file->audio_channels; j++){
+	gstreamer_file->audio_channel_written[j] = (buffer_offset + frame_count) - frame_count;
+      }
+  
+      g_rec_mutex_unlock(gstreamer_file_mutex);
+    }
+
+    /* iterate */
+    rw_current_buffer = rw_current_buffer->next;
+
+    buffer_offset += copy_frame_count;
+  }
 
   if(rw_audio_app_src != NULL){
     g_object_unref(rw_audio_app_src);
   }
+
+  g_list_free(rw_current_buffer);
 }
 
 void
 ags_gstreamer_file_flush(AgsSoundResource *sound_resource)
 {
   AgsGstreamerFile *gstreamer_file;
+
+  gboolean has_data;
+  gboolean is_running;
   
   GRecMutex *gstreamer_file_mutex;
    
@@ -2230,7 +2345,23 @@ ags_gstreamer_file_flush(AgsSoundResource *sound_resource)
   /* get gstreamer_file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
-  //TODO:JK: implement me
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  has_data = (gstreamer_file->rw_buffer != NULL) ? TRUE: FALSE;
+  is_running = (gstreamer_file->write_pipeline_running) ? TRUE: FALSE;
+
+  g_rec_mutex_unlock(gstreamer_file_mutex);
+
+  while(has_data && is_running){
+    g_usleep(AGS_GSTREAMER_FILE_DEFAULT_FLUSH_IDLE);
+
+    g_rec_mutex_lock(gstreamer_file_mutex);
+
+    has_data = (gstreamer_file->rw_buffer != NULL) ? TRUE: FALSE;
+    is_running = (gstreamer_file->write_pipeline_running) ? TRUE: FALSE;
+
+    g_rec_mutex_unlock(gstreamer_file_mutex);    
+  }
 }
 
 void
@@ -2362,11 +2493,11 @@ ags_gstreamer_file_close(AgsSoundResource *sound_resource)
   gstreamer_file->read_pipeline_running = FALSE;
 
   if(gstreamer_file->write_pipeline != NULL){
-    //    g_object_unref(gstreamer_file->write_pipeline);
+    g_object_unref(gstreamer_file->write_pipeline);
   }
 
-  //  gstreamer_file->write_pipeline = NULL;
-  //  gstreamer_file->write_pipeline_running = FALSE;
+  gstreamer_file->write_pipeline = NULL;
+  gstreamer_file->write_pipeline_running = FALSE;
 
   if(gstreamer_file->playbin != NULL){
     g_object_unref(gstreamer_file->playbin);
@@ -2387,26 +2518,26 @@ ags_gstreamer_file_close(AgsSoundResource *sound_resource)
   //FIXME:JK: improve it
 
   if(gstreamer_file->rw_audio_app_src != NULL){
-    //    g_object_unref(gstreamer_file->rw_audio_app_src);
+    g_object_unref(gstreamer_file->rw_audio_app_src);
   }
 
   //FIXME:JK: improve it
 
   if(gstreamer_file->rw_file_encoder != NULL){
-    //    g_object_unref(gstreamer_file->rw_file_encoder);
+    g_object_unref(gstreamer_file->rw_file_encoder);
   }
 
   if(gstreamer_file->rw_file_sink != NULL){
-    //    g_object_unref(gstreamer_file->rw_file_sink);
+    g_object_unref(gstreamer_file->rw_file_sink);
   }
 
   //FIXME:JK: improve it
-  //  gstreamer_file->last_sample = NULL;
+  gstreamer_file->last_sample = NULL;
 
-  //  gstreamer_file->source_id = 0;
+  gstreamer_file->source_id = 0;
 
-  //  gstreamer_file->rw_buffer = NULL;
-  //  gstreamer_file->current_buffer = NULL;
+  gstreamer_file->rw_buffer = NULL;
+  gstreamer_file->current_buffer = NULL;
   
   g_rec_mutex_unlock(gstreamer_file_mutex);
 }
