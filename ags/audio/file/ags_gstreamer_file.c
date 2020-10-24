@@ -1119,10 +1119,18 @@ ags_gstreamer_file_rw_thread_run(void *ptr)
       g_rec_mutex_unlock(gstreamer_file_mutex);
 
       if(data != NULL){
+	GstMapInfo info;
+	
+	gst_buffer_map(data,
+		       &info, GST_MAP_WRITE);
+
 	g_signal_emit_by_name(rw_audio_app_src,
 			      "push-buffer",
 			      data,
 			      &flow_retval);    
+
+	gst_buffer_unmap(data,
+			 &info);
 
 	g_rec_mutex_lock(gstreamer_file_mutex);
     
@@ -2179,13 +2187,16 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
 		   &info, GST_MAP_WRITE);
 
     if(info.data != NULL){
+      ags_audio_buffer_util_clear_buffer(info.data + (daudio_channels * dbuffer_offset * word_size), 1,
+					 copy_frame_count, ags_audio_buffer_util_format_from_soundcard(destination_format));
+
       ags_audio_buffer_util_copy_buffer_to_buffer(info.data, daudio_channels, audio_channel + dbuffer_offset,
 						  sbuffer, saudio_channels, sbuffer_offset,
 						  copy_frame_count, copy_mode);
     }
 
     gst_buffer_unmap(current_buffer,
-		     &info);
+    		     &info);
     
     g_rec_mutex_lock(gstreamer_file_mutex);
 

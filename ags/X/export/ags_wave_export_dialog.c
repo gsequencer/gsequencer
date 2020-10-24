@@ -578,10 +578,10 @@ ags_wave_export_dialog_apply(AgsApplicable *applicable)
   end_frame = ((16.0 * end_tact) / (16.0 * delay_factor * bpm / 60.0)) * samplerate + buffer_size;  
 
   if(AGS_IS_AUDIOREC(machine)){
-    gchar *filename;
+    if(filename == NULL){
+      filename = gtk_entry_get_text(AGS_AUDIOREC(machine)->filename);
+    }
     
-    filename = gtk_entry_get_text(AGS_AUDIOREC(machine)->filename);
-  
     ags_audiorec_fast_export(machine,
 			     filename,
 			     start_frame, end_frame);

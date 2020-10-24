@@ -1127,6 +1127,8 @@ ags_audiorec_fast_export(AgsAudiorec *audiorec,
   fast_export_thread = g_thread_new("Advanced Gtk+ Sequencer - fast export",
 				    ags_audiorec_fast_export_run,
 				    fast_export);
+
+  g_thread_join(fast_export_thread);
 }
 
 /**
