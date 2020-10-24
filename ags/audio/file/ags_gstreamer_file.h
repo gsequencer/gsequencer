@@ -41,9 +41,9 @@ G_BEGIN_DECLS
 #define AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(obj) (&(((AgsGstreamerFile *) obj)->obj_mutex))
 
 #define AGS_GSTREAMER_FILE_DEFAULT_AUDIO_CHANNELS (1)
-#define AGS_GSTREAMER_FILE_DEFAULT_FORMAT (AGS_SOUNDCARD_DOUBLE)
+#define AGS_GSTREAMER_FILE_DEFAULT_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
 
-#define AGS_GSTREAMER_FILE_CHUNK_SIZE(cc, ss) (cc * 64 * ss)
+#define AGS_GSTREAMER_FILE_CHUNK_FRAME_COUNT(cc) (cc * 256)
 
 #define AGS_GSTREAMER_FILE_DEFAULT_FLUSH_IDLE (4)
 #define AGS_GSTREAMER_FILE_DEFAULT_DISCOVERER_TIMEOUT (3 * GST_SECOND)
@@ -99,6 +99,7 @@ struct _AgsGstreamerFile
   GstElement *write_pipeline;
   gboolean write_pipeline_running;
   gboolean write_pipeline_need_data;
+
   GstElement *playbin;
   GstElement *video_sink;
   GstElement *audio_sink;
