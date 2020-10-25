@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.6.0\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-10-15 16:53+0200\n"
+"POT-Creation-Date: 2020-10-25 03:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -64,7 +64,7 @@ msgid "line"
 msgstr ""
 
 #: ags/X/ags_automation_editor.c:514 ags/X/ags_connection_editor.c:444
-#: ags/X/ags_machine_editor.c:231 ags/X/machine/ags_audiorec.c:333
+#: ags/X/ags_machine_editor.c:231 ags/X/machine/ags_audiorec.c:345
 msgid "input"
 msgstr ""
 
@@ -216,7 +216,7 @@ msgid "About"
 msgstr ""
 
 #: ags/X/ags_dssi_browser.c:152 ags/X/ags_ladspa_browser.c:145
-#: ags/X/ags_lv2_browser.c:156 ags/X/machine/ags_audiorec.c:272
+#: ags/X/ags_lv2_browser.c:156 ags/X/machine/ags_audiorec.c:284
 msgid "filename: "
 msgstr ""
 
@@ -282,7 +282,7 @@ msgid "soundcard"
 msgstr ""
 
 #: ags/X/ags_export_soundcard.c:240 ags/X/export/ags_wave_export_dialog.c:210
-#: ags/X/machine/ags_audiorec.c:253 ags/X/machine/ags_pitch_sampler.c:253
+#: ags/X/machine/ags_audiorec.c:265 ags/X/machine/ags_pitch_sampler.c:253
 msgid "file"
 msgstr ""
 
@@ -547,6 +547,14 @@ msgstr ""
 msgid "notation"
 msgstr ""
 
+#: ags/X/ags_online_help_window.c:129 ags/X/ags_online_help_window.c:270
+msgid "online help"
+msgstr ""
+
+#: ags/X/ags_online_help_window.c:171
+msgid "Place"
+msgstr ""
+
 #: ags/X/ags_osc_server_preferences.c:145
 msgid "Note: the fields below are applied immediately"
 msgstr ""
@@ -648,6 +656,18 @@ msgstr ""
 #: ags/X/import/ags_track_collection_mapper.c:224
 #: ags/X/machine/ags_ffplayer.c:427 ags/X/machine/ags_pitch_sampler.c:323
 msgid "enabled"
+msgstr ""
+
+#: ags/X/ags_quit_dialog.c:140
+msgid "accept all"
+msgstr ""
+
+#: ags/X/ags_quit_dialog.c:148
+msgid "Do you want to save before quit?"
+msgstr ""
+
+#: ags/X/ags_quit_dialog_callbacks.c:51
+msgid "Do you want to fast export before quit?"
 msgstr ""
 
 #: ags/X/ags_resize_editor.c:152 ags/X/ags_soundcard_editor.c:300
@@ -1225,7 +1245,7 @@ msgstr ""
 msgid "sequence"
 msgstr ""
 
-#: ags/X/machine/ags_audiorec.c:294 ags/X/machine/ags_ffplayer.c:365
+#: ags/X/machine/ags_audiorec.c:306 ags/X/machine/ags_ffplayer.c:365
 #: ags/X/machine/ags_pitch_sampler.c:301 ags/X/machine/ags_sf2_synth.c:265
 msgid "loading ...  "
 msgstr ""
@@ -1394,8 +1414,8 @@ msgid "auto update"
 msgstr ""
 
 #: ags/X/machine/ags_fm_syncsynth.c:268 ags/X/machine/ags_fm_synth.c:200
-#: ags/X/machine/ags_syncsynth.c:271 ags/X/machine/ags_synth.c:199
-#: ags/X/machine/ags_sf2_synth.c:373
+#: ags/X/machine/ags_sf2_synth.c:373 ags/X/machine/ags_syncsynth.c:271
+#: ags/X/machine/ags_synth.c:199
 msgid "lower"
 msgstr ""
 
@@ -1427,6 +1447,10 @@ msgstr ""
 
 #: ags/X/machine/ags_pitch_sampler_file.c:191
 msgid "base key"
+msgstr ""
+
+#: ags/X/machine/ags_sf2_synth.c:306
+msgid "bank"
 msgstr ""
 
 #: ags/audio/osc/ags_osc_response.c:167
@@ -1467,28 +1491,4 @@ msgstr ""
 
 #: ags/server/security/ags_security_context.c:145
 msgid "The certificates as string"
-msgstr ""
-
-#: ags/X/machine/ags_sf2_synth.c:306
-msgid "bank"
-msgstr ""
-
-#: ags/X/ags_online_help_window.c:129 ags/X/ags_online_help_window.c:270
-msgid "online help"
-msgstr ""
-
-#: ags/X/ags_online_help_window.c:171
-msgid "Place"
-msgstr ""
-
-#: ags/X/ags_quit_dialog.c:140
-msgid "accept all"
-msgstr ""
-
-#: ags/X/ags_quit_dialog.c:148
-msgid "Do you want to save before quit?"
-msgstr ""
-
-#: ags/X/ags_quit_dialog_callbacks.c:51
-msgid "Do you want to fast export before quit?"
 msgstr ""
