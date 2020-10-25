@@ -448,7 +448,7 @@ AS_IF([test "x$with_poppler" != xno],
       ])
 
 AS_IF([test "x$with_gstreamer" != xno],
-      [PKG_CHECK_MODULES([GSTREAMER], [gstreamer-1.0 >= 1.16.0 gstreamer-audio-1.0 >= 1.16.0 gstreamer-video-1.0 gstreamer-app-1.0 gstreamer-pbutils-1.0 >= 1.16.0])
+      [PKG_CHECK_MODULES([GSTREAMER], [gstreamer-1.0 >= 1.14.0 gstreamer-audio-1.0 >= 1.14.0 gstreamer-video-1.0 >= 1.14.0 gstreamer-app-1.0 >= 1.14.0 gstreamer-pbutils-1.0 >= 1.14.0])
        AC_SUBST(GSTREAMER_CFLAGS)
        AC_SUBST(GSTREAMER_LIBS)
        AC_DEFINE([AGS_WITH_GSTREAMER], [1],
