@@ -18,6 +18,10 @@ interactive_test_dependencies = [
   compiler.find_library('m', required: true),
 ]
 
+if get_option('gstreamer')
+  interactive_test_dependencies += gstreamer_dependency + gstreamer_audio_dependency + gstreamer_video_dependency + gstreamer_app_dependency + gstreamer_pbutils_dependency
+endif
+
 sources = [
   'ags_functional_test_util.c',
   'gsequencer_setup_util.c',

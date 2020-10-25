@@ -224,6 +224,10 @@ static_test_dependencies = [
   dl_dependency,
 ]
 
+if get_option('gstreamer')
+  static_test_dependencies += gstreamer_dependency + gstreamer_audio_dependency + gstreamer_video_dependency + gstreamer_app_dependency + gstreamer_pbutils_dependency
+endif
+
 foreach static_test : static_tests
   source = ['@0@.c'.format(static_test)]
   if static_test.contains('/')

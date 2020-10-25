@@ -1047,7 +1047,7 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
   
   GError *error;
 
-  gchar *authors[] = { "Joël Krähemann", NULL }; 
+  gchar *authors[] = { "Joël Krähemann", "Daniel Maksymow", NULL }; 
 
   license_filename = NULL;
   logo_filename = NULL;

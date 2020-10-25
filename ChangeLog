@@ -3,6 +3,7 @@ ags (3.6.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented GStreamer support
 	* implemented AgsComplex support in ags_fourier_transform_util.[ch]
+	* implemented some get type functions of enum values
 	* improved the developer's manual
 	* fixed AgsWaveExportDialog missing delete-event callback
 	* minor improvements

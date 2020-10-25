@@ -311,6 +311,10 @@ if get_option('webkit')
   x_dependencies += webkit_dependency
 endif
 
+if get_option('gstreamer')
+  x_dependencies += gstreamer_dependency + gstreamer_audio_dependency + gstreamer_video_dependency + gstreamer_app_dependency + gstreamer_pbutils_dependency
+endif
+
 libx = static_library('x',
                       x_sources,
                       c_args: x_compiler_flags,

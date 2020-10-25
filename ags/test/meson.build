@@ -19,6 +19,10 @@ interactive_test_dependencies = [
   compiler.find_library('m', required: true),
 ]
 
+if get_option('gstreamer')
+  interactive_test_dependencies += gstreamer_dependency + gstreamer_audio_dependency + gstreamer_video_dependency + gstreamer_app_dependency + gstreamer_pbutils_dependency
+endif
+
 foreach interactive_test : interactive_tests
   source = ['@0@.c'.format(interactive_test)]
   executable(

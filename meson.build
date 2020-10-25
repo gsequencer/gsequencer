@@ -32,6 +32,13 @@ endif
 if get_option('webkit')
   webkit_dependency = dependency('webkit2gtk-4.0')
 endif
+if get_option('gstreamer')
+  gstreamer_dependency = dependency('gstreamer-1.0')
+  gstreamer_audio_dependency = dependency('gstreamer-audio-1.0')
+  gstreamer_video_dependency = dependency('gstreamer-video-1.0')
+  gstreamer_app_dependency = dependency('gstreamer-app-1.0')
+  gstreamer_pbutils_dependency = dependency('gstreamer-pbutils-1.0')
+endif
 m_dependency = compiler.find_library('m', required: true)
 dl_dependency = compiler.find_library('dl', required: true)
 crypt_dependency =   compiler.find_library('crypt', required: true)

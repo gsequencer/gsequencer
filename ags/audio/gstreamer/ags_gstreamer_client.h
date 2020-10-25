@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_PULSE_CLIENT_H__
-#define __AGS_PULSE_CLIENT_H__
+#ifndef __AGS_GSTREAMER_CLIENT_H__
+#define __AGS_GSTREAMER_CLIENT_H__
 
 #include <glib.h>
 #include <glib-object.h>

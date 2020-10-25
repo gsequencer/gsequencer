@@ -389,6 +389,10 @@ if get_option('pulse')
   audio_dependencies += dependency('libpulse')
 endif
 
+if get_option('gstreamer')
+  audio_dependencies += gstreamer_dependency + gstreamer_audio_dependency + gstreamer_video_dependency + gstreamer_app_dependency + gstreamer_pbutils_dependency
+endif
+
 libaudio = static_library('audio',
                         audio_sources,
                         c_args: compiler_flags,
