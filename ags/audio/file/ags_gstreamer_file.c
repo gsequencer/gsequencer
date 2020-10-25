@@ -1267,8 +1267,6 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
-  success = FALSE;
-
   g_rec_mutex_lock(gstreamer_file_mutex);
 
   if(gstreamer_file->write_pipeline != NULL){
@@ -1280,6 +1278,8 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   buffer_size = gstreamer_file->buffer_size;
   
   g_rec_mutex_unlock(gstreamer_file_mutex);
+
+  success = TRUE;
 
   g_object_set(gstreamer_file,
 	       "filename", filename,
@@ -1341,7 +1341,13 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
      !rw_audio_convert || !rw_audio_resample || !rw_audio_mixer ||
      !rw_audio_file_sink_queue ||
      !rw_file_encoder || !rw_file_sink){
+    g_rec_mutex_lock(gstreamer_file_mutex);
+    
     gstreamer_file->write_pipeline_running = FALSE;
+
+    g_rec_mutex_unlock(gstreamer_file_mutex);
+
+    success = FALSE;
     
     g_critical("not all elements of pipeline could be created");
   }
@@ -1492,7 +1498,13 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 					      GST_STATE_PLAYING);
 
   if(state_change_retval == GST_STATE_CHANGE_FAILURE){
+    g_rec_mutex_lock(gstreamer_file_mutex);
+    
     gstreamer_file->write_pipeline_running = FALSE;
+
+    g_rec_mutex_unlock(gstreamer_file_mutex);
+
+    success = FALSE;
     
     g_critical("unable to start AGS rw-pipeline (write)");
   }else{
@@ -1503,7 +1515,7 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 #endif
   }
   
-  return(TRUE);
+  return(success);
 }
 
 gboolean
