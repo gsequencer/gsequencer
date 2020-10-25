@@ -412,7 +412,9 @@ ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file)
   gstreamer_file->current_buffer = NULL;
 
   gstreamer_file->rw_buffer = NULL;
+  gstreamer_file->rw_info = NULL;
   gstreamer_file->rw_current_buffer = NULL;
+  gstreamer_file->rw_current_info = NULL;
 }
 
 void
@@ -954,15 +956,15 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
 	       NULL);
   
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-  caps = g_strdup_printf("audio/x-raw, format = (string) { F64LE }, layout = (string) { interleaved }, channels = %s, rate = %s",
+  caps = g_strdup_printf("audio/x-raw, format = (string) { S16LE }, layout = (string) { interleaved }, channels = %s, rate = %s",
 			 GST_AUDIO_CHANNELS_RANGE,
 			 GST_AUDIO_RATE_RANGE);
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-  caps = g_strdup_printf("audio/x-raw, format = (string) { F64BE }, layout = (string) { interleaved }, channels = %s, rate = %s",
+  caps = g_strdup_printf("audio/x-raw, format = (string) { S16BE }, layout = (string) { interleaved }, channels = %s, rate = %s",
 			 GST_AUDIO_CHANNELS_RANGE,
 			 GST_AUDIO_RATE_RANGE);
 #else
-  caps = g_strdup_printf("audio/x-raw, format = (string) { F64LE }, layout = (string) { interleaved }, channels = %s, rate = %s",
+  caps = g_strdup_printf("audio/x-raw, format = (string) { S16LE }, layout = (string) { interleaved }, channels = %s, rate = %s",
 			 GST_AUDIO_CHANNELS_RANGE,
 			 GST_AUDIO_RATE_RANGE);
 #endif
@@ -1104,7 +1106,9 @@ ags_gstreamer_file_rw_thread_run(void *ptr)
 
     if(need_data &&
        rw_audio_app_src != NULL){
-      GList *rw_buffer;
+      GstMapInfo *info;
+
+      GList *rw_buffer, *rw_info;
 
       gpointer data;
 
@@ -1115,27 +1119,29 @@ ags_gstreamer_file_rw_thread_run(void *ptr)
       rw_buffer = g_list_last(gstreamer_file->rw_buffer);
 
       data = (rw_buffer != NULL) ? rw_buffer->data: NULL;
+
+      rw_info = g_list_last(gstreamer_file->rw_info);
+
+      info = (rw_info != NULL) ? rw_info->data: NULL;
       
       g_rec_mutex_unlock(gstreamer_file_mutex);
 
-      if(data != NULL){
-	GstMapInfo info;
-	
-	gst_buffer_map(data,
-		       &info, GST_MAP_WRITE);
-
+      if(data != NULL &&
+	 info != NULL){	
 	g_signal_emit_by_name(rw_audio_app_src,
 			      "push-buffer",
 			      data,
 			      &flow_retval);    
 
 	gst_buffer_unmap(data,
-			 &info);
+			 info);
 
 	g_rec_mutex_lock(gstreamer_file_mutex);
     
 	gstreamer_file->rw_buffer = g_list_remove(gstreamer_file->rw_buffer,
 						  data);
+	gstreamer_file->rw_info = g_list_remove(gstreamer_file->rw_info,
+						info);
 
 	g_rec_mutex_unlock(gstreamer_file_mutex);
 
@@ -1374,17 +1380,17 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   }
   
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-  caps = g_strdup_printf("audio/x-raw, format = (string) { F64LE }, layout = (string) { interleaved }, channels = (int) %d, channel-mask = (bitmask) %#018lx, rate = (int) %d",
+  caps = g_strdup_printf("audio/x-raw, format = (string) { S16LE }, layout = (string) { interleaved }, channels = (int) %d, channel-mask = (bitmask) %#018lx, rate = (int) %d",
 			 audio_channels,
 			 channel_mask,
 			 samplerate);
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-  caps = g_strdup_printf("audio/x-raw, format = (string) { F64BE }, layout = (string) { interleaved }, channels = (int) %d, channel-mask = (bitmask) %#018lx, rate = (int) %d",
+  caps = g_strdup_printf("audio/x-raw, format = (string) { S16BE }, layout = (string) { interleaved }, channels = (int) %d, channel-mask = (bitmask) %#018lx, rate = (int) %d",
 			 audio_channels,
 			 channel_mask,
 			 samplerate);
 #else
-  caps = g_strdup_printf("audio/x-raw, format = (string) { F64LE }, layout = (string) { interleaved }, channels = (int) %d, channel-mask = (bitmask) %#018lx, rate = (int) %d",
+  caps = g_strdup_printf("audio/x-raw, format = (string) { S16LE }, layout = (string) { interleaved }, channels = (int) %d, channel-mask = (bitmask) %#018lx, rate = (int) %d",
 			 audio_channels,
 			 channel_mask,
 			 samplerate);
@@ -1699,15 +1705,15 @@ ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
 
   if(rw_audio_app_src != NULL){
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-    caps = g_strdup_printf("audio/x-raw, format = (string) { F64LE }, layout= (string) { interleaved }, channels = (int) %d, rate= (int) %d",
+    caps = g_strdup_printf("audio/x-raw, format = (string) { S16LE }, layout= (string) { interleaved }, channels = (int) %d, rate= (int) %d",
 			   channels,
 			   samplerate);
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-    caps = g_strdup_printf("audio/x-raw, format = (string) { F64BE }, layout= (string) { interleaved }, channels = (int) %d, rate= (int) %d",
+    caps = g_strdup_printf("audio/x-raw, format = (string) { S16BE }, layout= (string) { interleaved }, channels = (int) %d, rate= (int) %d",
 			   channels,
 			   samplerate);
 #else
-    caps = g_strdup_printf("audio/x-raw, format = (string) { F64LE }, layout= (string) { interleaved }, channels = (int) %d, rate= (int) %d",
+    caps = g_strdup_printf("audio/x-raw, format = (string) { S16LE }, layout= (string) { interleaved }, channels = (int) %d, rate= (int) %d",
 			   channels,
 			   samplerate);
 #endif
@@ -2016,6 +2022,7 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
   GstElement *rw_audio_app_src;
 
   GList *start_rw_current_buffer, *rw_current_buffer;
+  GList *start_rw_current_info, *rw_current_info;
   
   guint samplerate;
   guint64 offset;
@@ -2060,6 +2067,7 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
   offset = gstreamer_file->offset;
 
   start_rw_current_buffer = g_list_copy(gstreamer_file->rw_current_buffer);
+  start_rw_current_info = g_list_copy(gstreamer_file->rw_current_info);
 
   dbuffer_offset = gstreamer_file->audio_channel_written[audio_channel];
 
@@ -2109,8 +2117,10 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
 						  ags_audio_buffer_util_format_from_soundcard(format));
 
   start_rw_current_buffer = g_list_reverse(start_rw_current_buffer);
+  start_rw_current_info = g_list_reverse(start_rw_current_info);
   
   rw_current_buffer = start_rw_current_buffer;
+  rw_current_info = start_rw_current_info;
 
   sbuffer_offset = 0;  
 
@@ -2131,7 +2141,7 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
   for(i = 0; i < i_stop; i++){  
     GstBuffer *current_buffer;
   
-    GstMapInfo info;
+    GstMapInfo *info;
 
     guint remaining_copy_frame_count;
 
@@ -2154,10 +2164,18 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
     if(rw_current_buffer != NULL){
       current_buffer = rw_current_buffer->data;
     }
+
+    info = NULL;
+
+    if(rw_current_info != NULL){
+      info = rw_current_info->data;
+    }
     
     if(current_buffer == NULL){
-      current_buffer = gst_buffer_new_and_alloc(AGS_GSTREAMER_FILE_CHUNK_FRAME_COUNT(daudio_channels) * sizeof(gint16));
+      info = g_malloc(sizeof(GstMapInfo));
       
+      current_buffer = gst_buffer_new_and_alloc(AGS_GSTREAMER_FILE_CHUNK_FRAME_COUNT(daudio_channels) * sizeof(gint16));
+
       dbuffer_offset = 0;
       
       /* Set its timestamp and duration */
@@ -2169,10 +2187,19 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
       GST_BUFFER_OFFSET(current_buffer) = gstreamer_file->offset;
       GST_BUFFER_OFFSET_END(current_buffer) = gstreamer_file->offset + (AGS_GSTREAMER_FILE_CHUNK_FRAME_COUNT(daudio_channels) / daudio_channels);
 
+      gst_buffer_map(current_buffer,
+		     info, GST_MAP_WRITE);      
+
       gstreamer_file->rw_current_buffer = g_list_prepend(gstreamer_file->rw_current_buffer,
 							 current_buffer);
+      gstreamer_file->rw_current_info = g_list_prepend(gstreamer_file->rw_current_info,
+						       info);
       
       g_rec_mutex_unlock(gstreamer_file_mutex);
+
+      ags_audio_buffer_util_clear_buffer(info->data, 1,
+					 AGS_GSTREAMER_FILE_CHUNK_FRAME_COUNT(daudio_channels), ags_audio_buffer_util_format_from_soundcard(destination_format));
+
     }else{
       if(copy_frame_count == AGS_GSTREAMER_FILE_CHUNK_FRAME_COUNT(daudio_channels) / daudio_channels){
 	dbuffer_offset = 0;
@@ -2183,20 +2210,12 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
       }
     }
 
-    gst_buffer_map(current_buffer,
-		   &info, GST_MAP_WRITE);
-
-    if(info.data != NULL){
-      ags_audio_buffer_util_clear_buffer(info.data + (daudio_channels * dbuffer_offset * word_size), 1,
-					 copy_frame_count, ags_audio_buffer_util_format_from_soundcard(destination_format));
-
-      ags_audio_buffer_util_copy_buffer_to_buffer(info.data, daudio_channels, audio_channel + dbuffer_offset,
-						  sbuffer, saudio_channels, sbuffer_offset,
+    if(info != NULL &&
+       info->data != NULL){
+      ags_audio_buffer_util_copy_buffer_to_buffer(info->data, daudio_channels, (daudio_channels * dbuffer_offset) + audio_channel,
+						  sbuffer, saudio_channels, saudio_channels * sbuffer_offset,
 						  copy_frame_count, copy_mode);
     }
-
-    gst_buffer_unmap(current_buffer,
-    		     &info);
     
     g_rec_mutex_lock(gstreamer_file_mutex);
 
@@ -2215,13 +2234,15 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
     g_rec_mutex_unlock(gstreamer_file_mutex);
   
     if(do_write){
-      GList *start_list;
+      GList *start_list, *start_info;
       
       g_rec_mutex_lock(gstreamer_file_mutex);
 
       start_list = g_list_reverse(gstreamer_file->rw_current_buffer);
+      start_info = g_list_reverse(gstreamer_file->rw_current_info);
 
       gstreamer_file->rw_current_buffer = NULL;
+      gstreamer_file->rw_current_info = NULL;
 
       if(start_list != NULL){
 	if(gstreamer_file->rw_buffer == NULL){
@@ -2229,6 +2250,15 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
 	}else{
 	  gstreamer_file->rw_buffer = g_list_concat(gstreamer_file->rw_buffer,
 						    start_list);
+	}
+      }
+      
+      if(start_info != NULL){
+	if(gstreamer_file->rw_info == NULL){
+	  gstreamer_file->rw_info = start_info;
+	}else{
+	  gstreamer_file->rw_info = g_list_concat(gstreamer_file->rw_info,
+						  start_info);
 	}
       }
       
@@ -2246,6 +2276,10 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
     /* iterate */
     if(rw_current_buffer != NULL){
       rw_current_buffer = rw_current_buffer->next;
+    }
+
+    if(rw_current_info != NULL){
+      rw_current_info = rw_current_info->next;
     }
     
     dbuffer_offset += copy_frame_count;    

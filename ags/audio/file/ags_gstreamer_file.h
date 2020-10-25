@@ -131,7 +131,9 @@ struct _AgsGstreamerFile
   GstBuffer *current_buffer;
 
   GList *rw_buffer;
+  GList *rw_info;
   GList *rw_current_buffer;
+  GList *rw_current_info;
 };
 
 struct _AgsGstreamerFileClass
