@@ -2072,7 +2072,7 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
   guint buffer_size;
   guint destination_format;
   guint word_size;
-  guint copy_frame_count;
+  guint orig_copy_frame_count, copy_frame_count;
   guint dbuffer_offset, sbuffer_offset;
   guint copy_mode;
   guint i, i_stop, j;
@@ -2179,6 +2179,8 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
     
     i_stop = 1;
   }
+
+  orig_copy_frame_count = copy_frame_count;
   
   for(i = 0; i < i_stop; i++){  
     GstBuffer *current_buffer;
@@ -2223,12 +2225,12 @@ ags_gstreamer_file_write(AgsSoundResource *sound_resource,
       /* Set its timestamp and duration */
       g_rec_mutex_lock(gstreamer_file_mutex);
 
-      GST_BUFFER_TIMESTAMP(current_buffer) = gst_util_uint64_scale(gstreamer_file->offset, GST_SECOND, samplerate);
+      GST_BUFFER_TIMESTAMP(current_buffer) = gst_util_uint64_scale(offset + (i * orig_copy_frame_count), GST_SECOND, samplerate);
       GST_BUFFER_DURATION(current_buffer) = gst_util_uint64_scale(AGS_GSTREAMER_FILE_CHUNK_FRAME_COUNT(daudio_channels) / daudio_channels, GST_SECOND, samplerate);
 
-      GST_BUFFER_OFFSET(current_buffer) = gstreamer_file->offset;
-      GST_BUFFER_OFFSET_END(current_buffer) = gstreamer_file->offset + (AGS_GSTREAMER_FILE_CHUNK_FRAME_COUNT(daudio_channels) / daudio_channels);
-
+      GST_BUFFER_OFFSET(current_buffer) = offset + (i * orig_copy_frame_count);
+      GST_BUFFER_OFFSET_END(current_buffer) = offset + (i * orig_copy_frame_count) + (AGS_GSTREAMER_FILE_CHUNK_FRAME_COUNT(daudio_channels) / daudio_channels);
+      
       gst_buffer_map(current_buffer,
 		     info, GST_MAP_WRITE);      
 
@@ -2564,11 +2566,48 @@ ags_gstreamer_file_check_suffix(gchar *filename)
      g_str_has_suffix(filename, ".mkv") ||
      g_str_has_suffix(filename, ".webm") ||
      g_str_has_suffix(filename, ".mpg") ||
-     g_str_has_suffix(filename, ".mpeg")){
+     g_str_has_suffix(filename, ".mpeg") ||
+     g_str_has_suffix(filename, ".wav")){
     return(TRUE);
   }
 
   return(FALSE);
+}
+
+/**
+ * ags_gstreamer_file_create_wav_encoding_profile:
+ * @gstreamer_file: the #AgsGstreamerFile
+ * 
+ * Create wav rw pipeline.
+ * 
+ * Returns: the new #GstEncodingProfile
+ * 
+ * Since: 3.6.0
+ */
+GstEncodingProfile*
+ags_gstreamer_file_create_wav_encoding_profile(AgsGstreamerFile *gstreamer_file)
+{
+  GstEncodingProfile *container_profile;
+  
+  GstCaps *caps;
+  
+  if(!AGS_IS_GSTREAMER_FILE(gstreamer_file)){
+    return(NULL);
+  }
+
+  caps = gst_caps_from_string("audio/x-rf64");
+  container_profile = gst_encoding_container_profile_new(NULL,
+							 NULL,
+							 caps,
+							 NULL);
+  gst_caps_unref(caps);
+  
+  caps = gst_caps_from_string("audio/x-raw");
+  gst_encoding_container_profile_add_profile(container_profile,
+					     (GstEncodingProfile*) gst_encoding_audio_profile_new(caps, NULL, NULL, 0));
+  gst_caps_unref(caps);
+
+  return(container_profile);
 }
 
 /**
@@ -2903,6 +2942,8 @@ ags_gstreamer_file_detect_encoding_profile(AgsGstreamerFile *gstreamer_file)
     }else if(g_str_has_suffix(filename, ".mpg") ||
 	     g_str_has_suffix(filename, ".mpeg")){
       encoding_profile = ags_gstreamer_file_create_mpeg_encoding_profile(gstreamer_file);
+    }else if(g_str_has_suffix(filename, ".wav")){
+      encoding_profile = ags_gstreamer_file_create_wav_encoding_profile(gstreamer_file);
     }
   }
 
