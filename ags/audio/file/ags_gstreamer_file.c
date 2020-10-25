@@ -1677,6 +1677,7 @@ ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
   gchar *caps;
 
   guint audio_channels;
+  gint64 channel_mask;
   
   GRecMutex *gstreamer_file_mutex;
 
@@ -1704,17 +1705,58 @@ ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
 	       NULL);
 
   if(rw_audio_app_src != NULL){
+    channel_mask = -2;
+
+    switch(audio_channels){
+    case 2:
+      {
+	channel_mask = (1 << GST_AUDIO_CHANNEL_POSITION_FRONT_LEFT) |
+	  (1 << GST_AUDIO_CHANNEL_POSITION_FRONT_RIGHT);
+      }
+      break;
+    case 3:
+      {
+	channel_mask = (1 << GST_AUDIO_CHANNEL_POSITION_FRONT_LEFT) |
+	  (1 << GST_AUDIO_CHANNEL_POSITION_FRONT_RIGHT) |
+	  (1 << GST_AUDIO_CHANNEL_POSITION_LFE1);
+      }
+      break;
+    case 6:
+      {
+	channel_mask = (1 << GST_AUDIO_CHANNEL_POSITION_FRONT_LEFT) |
+	  (1 << GST_AUDIO_CHANNEL_POSITION_FRONT_RIGHT) |
+	  (1 << GST_AUDIO_CHANNEL_POSITION_FRONT_CENTER) |
+	  (1 << GST_AUDIO_CHANNEL_POSITION_SIDE_LEFT) |
+	  (1 << GST_AUDIO_CHANNEL_POSITION_SIDE_RIGHT) |
+	  (1 << GST_AUDIO_CHANNEL_POSITION_LFE1);
+      }
+      break;
+    case 8:
+      {
+	//TODO:JK: implement me
+      }
+      break;
+    case 10:
+      {
+	//TODO:JK: implement me
+      }
+      break;
+    }
+
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
     caps = g_strdup_printf("audio/x-raw, format = (string) { S16LE }, layout= (string) { interleaved }, channels = (int) %d, rate= (int) %d",
 			   channels,
+			   channel_mask,
 			   samplerate);
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
     caps = g_strdup_printf("audio/x-raw, format = (string) { S16BE }, layout= (string) { interleaved }, channels = (int) %d, rate= (int) %d",
 			   channels,
+			   channel_mask,
 			   samplerate);
 #else
     caps = g_strdup_printf("audio/x-raw, format = (string) { S16LE }, layout= (string) { interleaved }, channels = (int) %d, rate= (int) %d",
 			   channels,
+			   channel_mask,
 			   samplerate);
 #endif
 
