@@ -1,3 +1,9 @@
+ags (3.6.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed gtk-doc
+	* additional audio file formats of AgsExportSoundcard and AgsWaveExportDialog
+
 ags (3.6.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

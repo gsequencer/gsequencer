@@ -35,6 +35,18 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.6.1" date="2020-10-25">
+      <description>
+	<p>Minor improvements.</p>
+      </description>
+    </release>
+
+    <release version="3.6.0" date="2020-10-25">
+      <description>
+	<p>Implemented gstreamer file IO.</p>
+      </description>
+    </release>
+
     <release version="3.5.16" date="2020-10-05">
       <description>
 	<p>Fixed missing AgsMutable interface of ags-fx-volume.</p>

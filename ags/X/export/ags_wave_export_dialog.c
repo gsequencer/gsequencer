@@ -328,6 +328,18 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 				 AGS_WAVE_EXPORT_DIALOG_FORMAT_AIFF);
   gtk_combo_box_text_append_text(wave_export_dialog->output_format,
 				 AGS_WAVE_EXPORT_DIALOG_FORMAT_OGG);
+  gtk_combo_box_text_append_text(wave_export_dialog->output_format,
+				 AGS_WAVE_EXPORT_DIALOG_FORMAT_MP3);
+  gtk_combo_box_text_append_text(wave_export_dialog->output_format,
+				 AGS_WAVE_EXPORT_DIALOG_FORMAT_AAC);
+  gtk_combo_box_text_append_text(wave_export_dialog->output_format,
+				 AGS_WAVE_EXPORT_DIALOG_FORMAT_MP4);
+  gtk_combo_box_text_append_text(wave_export_dialog->output_format,
+				 AGS_WAVE_EXPORT_DIALOG_FORMAT_MKV);
+  gtk_combo_box_text_append_text(wave_export_dialog->output_format,
+				 AGS_WAVE_EXPORT_DIALOG_FORMAT_WEBM);
+  gtk_combo_box_text_append_text(wave_export_dialog->output_format,
+				 AGS_WAVE_EXPORT_DIALOG_FORMAT_MPEG);
 
   gtk_combo_box_set_active((GtkComboBox *) wave_export_dialog->output_format,
 			   0);

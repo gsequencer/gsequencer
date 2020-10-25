@@ -60,8 +60,10 @@ AGS_APPLICATION_CONTEXT_GET_CLASS
 AGS_IS_APPLICATION_CONTEXT
 AGS_IS_APPLICATION_CONTEXT_CLASS
 AGS_TYPE_APPLICATION_CONTEXT
+AGS_TYPE_APPLICATION_CONTEXT_FLAGS
 AgsApplicationContext
 AgsApplicationContextClass
+ags_application_context_flags_get_type
 ags_application_context_get_type
 </SECTION>
 
@@ -271,7 +273,6 @@ AGS_COMPLEX_M_PI
 ags_complex_alloc
 ags_complex_copy
 ags_complex_free
-ags_complex_get
 ags_complex_set
 <SUBSECTION Public>
 AGS_TYPE_COMPLEX
@@ -492,6 +493,9 @@ AgsByteOrder
 ags_endian_host_is_le
 ags_endian_host_is_be
 ags_endian_swap_float
+<SUBSECTION Public>
+AGS_TYPE_BYTE_ORDER
+ags_byte_order_get_type
 </SECTION>
 
 <SECTION>
@@ -536,8 +540,10 @@ AGS_FILE_GET_CLASS
 AGS_IS_FILE
 AGS_IS_FILE_CLASS
 AGS_TYPE_FILE
+AGS_TYPE_FILE_FLAGS
 AgsFile
 AgsFileClass
+ags_file_flags_get_type
 ags_file_get_type
 </SECTION>
 
@@ -850,10 +856,28 @@ AGS_SYMBOLIC_EULER
 AGS_SYMBOLIC_PI
 AGS_SYMBOLIC_INFINIT
 AGS_SYMBOLIC_COMPLEX_UNIT
+AGS_SUBSCRIPT_0
+AGS_SUBSCRIPT_1
+AGS_SUBSCRIPT_2
+AGS_SUBSCRIPT_3
+AGS_SUBSCRIPT_4
+AGS_SUBSCRIPT_5
+AGS_SUBSCRIPT_6
+AGS_SUBSCRIPT_7
+AGS_SUBSCRIPT_8
+AGS_SUBSCRIPT_9
 ags_math_util_find_parenthesis_all
 ags_math_util_find_exponent_parenthesis
 ags_math_util_find_function_parenthesis
 ags_math_util_find_term_parenthesis
+ags_math_util_match_sign
+ags_math_util_match_coefficient
+ags_math_util_match_symbol
+ags_math_util_match_exponent
+ags_math_util_match_operator
+ags_math_util_match_function
+ags_math_util_coefficient_to_complex
+ags_math_util_multiply_coefficient_all
 ags_math_util_find_function
 ags_math_util_find_symbol
 ags_math_util_find_symbol_all
@@ -1081,8 +1105,10 @@ AGS_PRIORITY
 AGS_PRIORITY_CLASS
 AGS_PRIORITY_GET_CLASS
 AGS_TYPE_PRIORITY
+AGS_TYPE_PRIORITY_FLAGS
 AgsPriority
 AgsPriorityClass
+ags_priority_flags_get_type
 ags_priority_get_type
 </SECTION>
 
@@ -1110,8 +1136,10 @@ AGS_REGISTRY
 AGS_REGISTRY_CLASS
 AGS_REGISTRY_GET_CLASS
 AGS_TYPE_REGISTRY
+AGS_TYPE_REGISTRY_FLAGS
 AgsRegistry
 AgsRegistryClass
+ags_registry_flags_get_type
 ags_registry_get_type
 </SECTION>
 
@@ -1135,8 +1163,10 @@ AGS_RETURNABLE_THREAD
 AGS_RETURNABLE_THREAD_CLASS
 AGS_RETURNABLE_THREAD_GET_CLASS
 AGS_TYPE_RETURNABLE_THREAD
+AGS_TYPE_RETURNABLE_THREAD_FLAGS
 AgsReturnableThread
 AgsReturnableThreadClass
+ags_returnable_thread_flags_get_type
 ags_returnable_thread_get_type
 </SECTION>
 
@@ -1158,9 +1188,11 @@ AGS_SECURITY_CONTEXT
 AGS_SECURITY_CONTEXT_CLASS
 AGS_SECURITY_CONTEXT_GET_CLASS
 AGS_TYPE_SECURITY_CONTEXT
+AGS_TYPE_SECURITY_CONTEXT_MODE
 AgsSecurityContext
 AgsSecurityContextClass
 ags_security_context_get_type
+ags_security_context_mode_get_type
 </SECTION>
 
 <SECTION>
@@ -1175,8 +1207,10 @@ AGS_SEEKABLE
 AGS_SEEKABLE_GET_INTERFACE
 AGS_SEEKABLE_INTERFACE
 AGS_TYPE_SEEKABLE
+AGS_TYPE_SEEK_TYPE
 AgsSeekable
 AgsSeekableInterface
+ags_seek_type_get_type
 ags_seekable_get_type
 </SECTION>
 
@@ -1264,8 +1298,10 @@ AGS_SERVER
 AGS_SERVER_CLASS
 AGS_SERVER_GET_CLASS
 AGS_TYPE_SERVER
+AGS_TYPE_SERVER_FLAGS
 AgsServer
 AgsServerClass
+ags_server_flags_get_type
 ags_server_get_type
 </SECTION>
 
@@ -1500,8 +1536,12 @@ AGS_SOUNDCARD
 AGS_SOUNDCARD_GET_INTERFACE
 AGS_SOUNDCARD_INTERFACE
 AGS_TYPE_SOUNDCARD
+AGS_TYPE_SOUNDCARD_CAPABILITY
+AGS_TYPE_SOUNDCARD_FORMAT
 AgsSoundcard
 AgsSoundcardInterface
+ags_soundcard_capability_get_type
+ags_soundcard_format_get_type
 ags_soundcard_get_type
 </SECTION>
 
@@ -1553,6 +1593,7 @@ ags_tactable_get_type
 <SECTION>
 <FILE>ags_task</FILE>
 <TITLE>AgsTask</TITLE>
+AGS_TYPE_TASK_FLAGS
 AGS_TASK_GET_OBJ_MUTEX
 AgsTaskFlags
 ags_task_test_flags
@@ -1590,8 +1631,10 @@ AGS_TASK_COMPLETION
 AGS_TASK_COMPLETION_CLASS
 AGS_TASK_COMPLETION_GET_CLASS
 AGS_TYPE_TASK_COMPLETION
+AGS_TYPE_TASK_COMPLETION_FLAGS
 AgsTaskCompletion
 AgsTaskCompletionClass
+ags_task_completion_flags_get_type
 ags_task_completion_get_type
 </SECTION>
 
@@ -1618,8 +1661,10 @@ AGS_TASK_LAUNCHER
 AGS_TASK_LAUNCHER_CLASS
 AGS_TASK_LAUNCHER_GET_CLASS
 AGS_TYPE_TASK_LAUNCHER
+AGS_TYPE_TASK_LAUNCHER_FLAGS
 AgsTaskLauncher
 AgsTaskLauncherClass
+ags_task_launcher_flags_get_type
 ags_task_launcher_get_type
 </SECTION>
 
@@ -1698,9 +1743,15 @@ AGS_THREAD
 AGS_THREAD_CLASS
 AGS_THREAD_GET_CLASS
 AGS_TYPE_THREAD
+AGS_TYPE_THREAD_FLAGS
+AGS_TYPE_THREAD_STATUS_FLAGS
+AGS_TYPE_THREAD_SYNC_TIC_FLAGS
 AgsThread
 AgsThreadClass
+ags_thread_flags_get_type
 ags_thread_get_type
+ags_thread_status_flags_get_type
+ags_thread_sync_tic_flags_get_type
 </SECTION>
 
 <SECTION>
@@ -1718,8 +1769,10 @@ AGS_THREAD_APPLICATION_CONTEXT
 AGS_THREAD_APPLICATION_CONTEXT_CLASS
 AGS_THREAD_APPLICATION_CONTEXT_GET_CLASS
 AGS_TYPE_THREAD_APPLICATION_CONTEXT
+AGS_TYPE_THREAD_APPLICATION_CONTEXT_FLAGS
 AgsThreadApplicationContext
 AgsThreadApplicationContextClass
+ags_thread_application_context_flags_get_type
 ags_thread_application_context_get_type
 </SECTION>
 
@@ -1739,8 +1792,10 @@ AGS_THREAD_POOL
 AGS_THREAD_POOL_CLASS
 AGS_THREAD_POOL_GET_CLASS
 AGS_TYPE_THREAD_POOL
+AGS_TYPE_THREAD_POOL_FLAGS
 AgsThreadPool
 AgsThreadPoolClass
+ags_thread_pool_flags_get_type
 ags_thread_pool_get_type
 </SECTION>
 
@@ -1773,8 +1828,10 @@ AGS_TIMESTAMP
 AGS_TIMESTAMP_CLASS
 AGS_TIMESTAMP_GET_CLASS
 AGS_TYPE_TIMESTAMP
+AGS_TYPE_TIMESTAMP_FLAGS
 AgsTimestamp
 AgsTimestampClass
+ags_timestamp_flags_get_type
 ags_timestamp_get_type
 </SECTION>
 
@@ -1855,8 +1912,10 @@ AGS_TURTLE
 AGS_TURTLE_CLASS
 AGS_TURTLE_GET_CLASS
 AGS_TYPE_TURTLE
+AGS_TYPE_TURTLE_FLAGS
 AgsTurtle
 AgsTurtleClass
+ags_turtle_flags_get_type
 ags_turtle_get_type
 </SECTION>
 
@@ -1912,12 +1971,14 @@ ags_worker_thread_new
 AGS_IS_WORKER_THREAD
 AGS_IS_WORKER_THREAD_CLASS
 AGS_TYPE_WORKER_THREAD
+AGS_TYPE_WORKER_THREAD_STATUS_FLAGS
 AGS_WORKER_THREAD
 AGS_WORKER_THREAD_CLASS
 AGS_WORKER_THREAD_GET_CLASS
 AgsWorkerThread
 AgsWorkerThreadClass
 ags_worker_thread_get_type
+ags_worker_thread_status_flags_get_type
 </SECTION>
 
 <SECTION>

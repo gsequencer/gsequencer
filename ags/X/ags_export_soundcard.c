@@ -293,6 +293,18 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 				 AGS_EXPORT_SOUNDCARD_FORMAT_AIFF);
   gtk_combo_box_text_append_text(export_soundcard->output_format,
 				 AGS_EXPORT_SOUNDCARD_FORMAT_OGG);
+  gtk_combo_box_text_append_text(export_soundcard->output_format,
+				 AGS_EXPORT_SOUNDCARD_FORMAT_MP3);
+  gtk_combo_box_text_append_text(export_soundcard->output_format,
+				 AGS_EXPORT_SOUNDCARD_FORMAT_AAC);
+  gtk_combo_box_text_append_text(export_soundcard->output_format,
+				 AGS_EXPORT_SOUNDCARD_FORMAT_MP4);
+  gtk_combo_box_text_append_text(export_soundcard->output_format,
+				 AGS_EXPORT_SOUNDCARD_FORMAT_MKV);
+  gtk_combo_box_text_append_text(export_soundcard->output_format,
+				 AGS_EXPORT_SOUNDCARD_FORMAT_WEBM);
+  gtk_combo_box_text_append_text(export_soundcard->output_format,
+				 AGS_EXPORT_SOUNDCARD_FORMAT_MPEG);
 
   gtk_combo_box_set_active((GtkComboBox *) export_soundcard->output_format,
 			   0);
