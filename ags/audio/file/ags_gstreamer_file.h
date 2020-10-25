@@ -149,6 +149,7 @@ void ags_gstreamer_file_unset_flags(AgsGstreamerFile *gstreamer_file, guint flag
 
 gboolean ags_gstreamer_file_check_suffix(gchar *filename);
 
+GstEncodingProfile* ags_gstreamer_file_create_wav_encoding_profile(AgsGstreamerFile *gstreamer_file);
 GstEncodingProfile* ags_gstreamer_file_create_mp3_encoding_profile(AgsGstreamerFile *gstreamer_file);
 GstEncodingProfile* ags_gstreamer_file_create_aac_encoding_profile(AgsGstreamerFile *gstreamer_file);
 GstEncodingProfile* ags_gstreamer_file_create_mp4_encoding_profile(AgsGstreamerFile *gstreamer_file);
