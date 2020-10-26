@@ -92,6 +92,7 @@ struct _AgsLv2PortPreset
 };
 
 GType ags_lv2_preset_get_type(void);
+GType ags_lv2_preset_flags_get_type();
 
 AgsLv2PortPreset* ags_lv2_port_preset_alloc(gchar *port_symbol,
 					    GType port_type);

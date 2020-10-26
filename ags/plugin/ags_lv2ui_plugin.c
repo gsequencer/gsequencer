@@ -129,6 +129,29 @@ ags_lv2ui_plugin_get_type (void)
   return g_define_type_id__volatile;
 }
 
+GType
+ags_lv2ui_plugin_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_LV2UI_PLUGIN_IS_SYNTHESIZER, "AGS_LV2UI_PLUGIN_IS_SYNTHESIZER", "lv2ui-plugin-is-synthesizer" },
+      { AGS_LV2UI_PLUGIN_GTK2, "AGS_LV2UI_PLUGIN_GTK2", "lv2ui-plugin-gtk2" },
+      { AGS_LV2UI_PLUGIN_GTK3, "AGS_LV2UI_PLUGIN_GTK3", "lv2ui-plugin-gtk3" },
+      { AGS_LV2UI_PLUGIN_QT4, "AGS_LV2UI_PLUGIN_QT4", "lv2ui-plugin-qt4" },
+      { AGS_LV2UI_PLUGIN_QT5, "AGS_LV2UI_PLUGIN_QT5", "lv2ui-plugin-qt5" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsLv2uiPluginFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
 {

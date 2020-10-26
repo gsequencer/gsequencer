@@ -85,6 +85,7 @@ struct _AgsLv2uiPluginClass
 };
 
 GType ags_lv2ui_plugin_get_type(void);
+GType ags_lv2ui_plugin_flags_get_type();
 
 gboolean ags_lv2ui_plugin_test_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags);
 void ags_lv2ui_plugin_set_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags);

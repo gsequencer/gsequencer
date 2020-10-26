@@ -42,6 +42,16 @@ typedef struct _AgsLv2TurtleScanner AgsLv2TurtleScanner;
 typedef struct _AgsLv2TurtleScannerClass AgsLv2TurtleScannerClass;
 typedef struct _AgsLv2CacheTurtle AgsLv2CacheTurtle;
 
+/**
+ * AgsLv2TurtleScannerStatusFlags:
+ * @AGS_LV2_TURTLE_SCANNER_A: scanner a verb
+ * @AGS_LV2_TURTLE_SCANNER_SEEALSO: scanner see also
+ * @AGS_LV2_TURTLE_SCANNER_BINARY: scanner binary
+ * @AGS_LV2_TURTLE_SCANNER_NAME: scanner name
+ * 
+ * Enum values to indicate internal state of #AgsLv2TurtleScanner by
+ * enable/disable as status flags.
+ */
 typedef enum{
   AGS_LV2_TURTLE_SCANNER_A             = 1,
   AGS_LV2_TURTLE_SCANNER_SEEALSO       = 1 <<  2,
@@ -89,6 +99,7 @@ struct _AgsLv2CacheTurtle
 };
 
 GType ags_lv2_turtle_scanner_get_type(void);
+GType ags_lv2_turtle_scanner_status_flags_get_type();
 
 AgsLv2CacheTurtle* ags_lv2_cache_turtle_alloc(AgsLv2CacheTurtle *parent,
 					      gchar *turtle_filename);
