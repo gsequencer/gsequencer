@@ -149,6 +149,27 @@ ags_lv2_plugin_get_type (void)
   return g_define_type_id__volatile;
 }
 
+GType
+ags_lv2_plugin_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_LV2_PLUGIN_IS_SYNTHESIZER, "AGS_LV2_PLUGIN_IS_SYNTHESIZER", "lv2-plugin-is-synthesizer" },
+      { AGS_LV2_PLUGIN_NEEDS_WORKER, "AGS_LV2_PLUGIN_NEEDS_WORKER", "lv2-plugin-needs-worker" },
+      { AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE, "AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE", "lv2-plugin-has-program-interface" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsLv2PluginFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
 {

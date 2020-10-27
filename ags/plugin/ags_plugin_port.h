@@ -108,6 +108,7 @@ struct _AgsPluginPortClass
 };
 
 GType ags_plugin_port_get_type(void);
+GType ags_plugin_port_flags_get_type();
 
 GRecMutex* ags_plugin_port_get_obj_mutex(AgsPluginPort *plugin_port);
 
