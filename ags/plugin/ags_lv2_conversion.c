@@ -96,7 +96,7 @@ ags_lv2_conversion_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_LV2_CONVERSION_SAMPLERATE, "AGS_LV2_CONVERSION_SAMPLERATE", "lv2-conversion-samplerate" },
+      { AGS_LV2_CONVERSION_LOGARITHMIC, "AGS_LV2_CONVERSION_LOGARITHMIC", "lv2-conversion-logarithmic" },
       { 0, NULL, NULL }
     };
 
