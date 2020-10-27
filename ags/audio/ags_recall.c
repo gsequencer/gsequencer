@@ -6665,7 +6665,9 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 
 	success = ((GObject *) current_audio == provider) ? TRUE: FALSE;
 
-	g_object_unref(current_audio);
+	if(current_audio != NULL){
+	  g_object_unref(current_audio);
+	}
 	
 	if(success){
 	  return(recall);
@@ -6677,8 +6679,10 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 
 	success = ((GObject *) current_audio == provider) ? TRUE: FALSE;
 
-	g_object_unref(current_audio);
-
+	if(current_audio != NULL){
+	  g_object_unref(current_audio);
+	}
+	
 	if(success){
 	  return(recall);
 	}
@@ -6691,7 +6695,9 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 
 	success = ((GObject *) current_channel == provider) ? TRUE: FALSE;
 
-	g_object_unref(current_channel);
+	if(current_channel != NULL){
+	  g_object_unref(current_channel);
+	}
 	
 	if(success){
 	  return(recall);
@@ -6703,8 +6709,10 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 
 	success = ((GObject *) current_channel == provider) ? TRUE: FALSE;
 
-	g_object_unref(current_channel);
-
+	if(current_channel != NULL){
+	  g_object_unref(current_channel);
+	}
+	
 	if(success){
 	  return(recall);
 	}
@@ -6717,7 +6725,9 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 
 	success = ((GObject *) current_recycling == provider) ? TRUE: FALSE;
 
-	g_object_unref(current_recycling);
+	if(current_recycling != NULL){
+	  g_object_unref(current_recycling);
+	}
 	
 	if(success){
 	  return(recall);
@@ -6731,7 +6741,9 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 
 	success = ((GObject *) current_audio_signal == provider) ? TRUE: FALSE;
 
-	g_object_unref(current_audio_signal);
+	if(current_audio_signal != NULL){
+	  g_object_unref(current_audio_signal);
+	}
 	
 	if(success){
 	  return(recall);

@@ -1138,7 +1138,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   
   if(initial_call){
     /* some options */
-    options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));
+    options = (LV2_Options_Option *) malloc(7 * sizeof(LV2_Options_Option));
 
     /* samplerate */
     options[0].context = LV2_OPTIONS_INSTANCE;
@@ -1219,6 +1219,15 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     options[5].type = 0;
     options[5].value = NULL;
     
+    /* zeroed */
+    options[6].context = 0;
+    options[6].subject = 0;
+    options[6].key = 0;
+    
+    options[6].size = 0;
+    options[6].type = 0;
+    options[6].value = NULL;
+
     feature[options_feature_position]->data = options;
   }
 

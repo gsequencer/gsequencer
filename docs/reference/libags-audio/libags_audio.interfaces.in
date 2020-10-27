@@ -69,7 +69,7 @@ AgsFxLadspaChannel AgsConnectable
 AgsFxPatternChannel AgsConnectable
 AgsFxPeakChannel AgsConnectable
 AgsFxPlaybackChannel AgsConnectable
-AgsFxVolumeChannel AgsConnectable
+AgsFxVolumeChannel AgsConnectable AgsMutable
 AgsLfoChannel AgsConnectable
 AgsLoopChannel AgsConnectable
 AgsMuteChannel AgsConnectable AgsMutable
@@ -160,7 +160,7 @@ AgsFxLadspaAudio AgsConnectable
 AgsFxPatternAudio AgsConnectable
 AgsFxPeakAudio AgsConnectable
 AgsFxPlaybackAudio AgsConnectable
-AgsFxVolumeAudio AgsConnectable
+AgsFxVolumeAudio AgsConnectable AgsMutable
 AgsMuteAudio AgsConnectable AgsMutable
 AgsPlayAudio AgsConnectable AgsMutable
 AgsPlayDssiAudio AgsConnectable
@@ -228,6 +228,12 @@ AgsCoreAudioServer AgsConnectable AgsSoundServer
 AgsDevin AgsConnectable AgsSoundcard
 AgsDevout AgsConnectable AgsSoundcard
 AgsFifoout AgsConnectable AgsSoundcard
+AgsGstreamerClient AgsConnectable
+AgsGstreamerDevin AgsConnectable AgsSoundcard
+AgsGstreamerDevout AgsConnectable AgsSoundcard
+AgsGstreamerFile AgsConnectable AgsSoundResource
+AgsGstreamerPort AgsConnectable
+AgsGstreamerServer AgsConnectable AgsSoundServer
 AgsIpatchDLS2Reader AgsConnectable
 AgsIpatch AgsConnectable AgsSoundContainer
 AgsIpatchGigReader AgsConnectable

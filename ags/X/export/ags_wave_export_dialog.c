@@ -328,6 +328,18 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 				 AGS_WAVE_EXPORT_DIALOG_FORMAT_AIFF);
   gtk_combo_box_text_append_text(wave_export_dialog->output_format,
 				 AGS_WAVE_EXPORT_DIALOG_FORMAT_OGG);
+  gtk_combo_box_text_append_text(wave_export_dialog->output_format,
+				 AGS_WAVE_EXPORT_DIALOG_FORMAT_MP3);
+  gtk_combo_box_text_append_text(wave_export_dialog->output_format,
+				 AGS_WAVE_EXPORT_DIALOG_FORMAT_AAC);
+  gtk_combo_box_text_append_text(wave_export_dialog->output_format,
+				 AGS_WAVE_EXPORT_DIALOG_FORMAT_MP4);
+  gtk_combo_box_text_append_text(wave_export_dialog->output_format,
+				 AGS_WAVE_EXPORT_DIALOG_FORMAT_MKV);
+  gtk_combo_box_text_append_text(wave_export_dialog->output_format,
+				 AGS_WAVE_EXPORT_DIALOG_FORMAT_WEBM);
+  gtk_combo_box_text_append_text(wave_export_dialog->output_format,
+				 AGS_WAVE_EXPORT_DIALOG_FORMAT_MPEG);
 
   gtk_combo_box_set_active((GtkComboBox *) wave_export_dialog->output_format,
 			   0);
@@ -442,6 +454,9 @@ ags_wave_export_dialog_connect(AgsConnectable *connectable)
 
   wave_export_dialog->flags |= AGS_WAVE_EXPORT_DIALOG_CONNECTED;
 
+  g_signal_connect((GObject *) wave_export_dialog, "delete-event",
+		   G_CALLBACK(ags_wave_export_dialog_delete_event), (gpointer) wave_export_dialog);
+  
   g_signal_connect(G_OBJECT(wave_export_dialog->file_chooser_button), "clicked",
 		   G_CALLBACK(ags_wave_export_dialog_file_chooser_button_callback), wave_export_dialog);
   
@@ -575,10 +590,10 @@ ags_wave_export_dialog_apply(AgsApplicable *applicable)
   end_frame = ((16.0 * end_tact) / (16.0 * delay_factor * bpm / 60.0)) * samplerate + buffer_size;  
 
   if(AGS_IS_AUDIOREC(machine)){
-    gchar *filename;
+    if(filename == NULL){
+      filename = gtk_entry_get_text(AGS_AUDIOREC(machine)->filename);
+    }
     
-    filename = gtk_entry_get_text(AGS_AUDIOREC(machine)->filename);
-  
     ags_audiorec_fast_export(machine,
 			     filename,
 			     start_frame, end_frame);

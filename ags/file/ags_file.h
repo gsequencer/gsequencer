@@ -25,9 +25,12 @@
 
 #include <libxml/tree.h>
 
+#include <unistd.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_FILE                (ags_file_get_type())
+#define AGS_TYPE_FILE_FLAGS          (ags_file_flags_get_type())
 #define AGS_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE, AgsFile))
 #define AGS_FILE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FILE, AgsFileClass))
 #define AGS_IS_FILE(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_FILE))
@@ -141,6 +144,7 @@ struct _AgsFileClass
 };
 
 GType ags_file_get_type(void);
+GType ags_file_flags_get_type();
 
 gchar* ags_file_str2md5(gchar *content, guint content_length);
 

@@ -19,9 +19,12 @@
 
 #include <ags/audio/fx/ags_fx_volume_audio.h>
 
+#include <ags/plugin/ags_plugin_port.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_volume_audio_class_init(AgsFxVolumeAudioClass *fx_volume_audio);
+void ags_fx_volume_audio_mutable_interface_init(AgsMutableInterface *mutable);
 void ags_fx_volume_audio_init(AgsFxVolumeAudio *fx_volume_audio);
 void ags_fx_volume_audio_set_property(GObject *gobject,
 				      guint prop_id,
@@ -33,6 +36,10 @@ void ags_fx_volume_audio_get_property(GObject *gobject,
 				      GParamSpec *param_spec);
 void ags_fx_volume_audio_dispose(GObject *gobject);
 void ags_fx_volume_audio_finalize(GObject *gobject);
+
+void ags_fx_volume_audio_set_muted(AgsMutable *mutable, gboolean muted);
+
+static AgsPluginPort* ags_fx_volume_audio_get_muted_plugin_port();
 
 /**
  * SECTION:ags_fx_volume_audio
@@ -83,10 +90,20 @@ ags_fx_volume_audio_get_type()
       (GInstanceInitFunc) ags_fx_volume_audio_init,
     };
 
+    static const GInterfaceInfo ags_mutable_interface_info = {
+      (GInterfaceInitFunc) ags_fx_volume_audio_mutable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_fx_volume_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 						      "AgsFxVolumeAudio",
 						      &ags_fx_volume_audio_info,
 						      0);
+
+    g_type_add_interface_static(ags_type_fx_volume_audio,
+				AGS_TYPE_MUTABLE,
+				&ags_mutable_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_fx_volume_audio);
   }
@@ -131,6 +148,12 @@ ags_fx_volume_audio_class_init(AgsFxVolumeAudioClass *fx_volume_audio)
 }
 
 void
+ags_fx_volume_audio_mutable_interface_init(AgsMutableInterface *mutable)
+{
+  mutable->set_muted = ags_fx_volume_audio_set_muted;
+}
+
+void
 ags_fx_volume_audio_init(AgsFxVolumeAudio *fx_volume_audio)
 {
   AGS_RECALL(fx_volume_audio)->name = "ags-fx-volume";
@@ -150,6 +173,10 @@ ags_fx_volume_audio_init(AgsFxVolumeAudio *fx_volume_audio)
 					NULL);
   
   fx_volume_audio->muted->port_value.ags_port_float = (gfloat) FALSE;
+
+  g_object_set(fx_volume_audio->muted,
+	       "plugin-port", ags_fx_volume_audio_get_muted_plugin_port(),
+	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_volume_audio,
 		      fx_volume_audio->muted);
@@ -267,6 +294,70 @@ ags_fx_volume_audio_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_volume_audio_parent_class)->finalize(gobject);
+}
+
+void
+ags_fx_volume_audio_set_muted(AgsMutable *mutable, gboolean muted)
+{
+  AgsPort *port;
+  
+  GValue value = {0,};
+
+  g_object_get(G_OBJECT(mutable),
+	       "muted", &port,
+	       NULL);
+  
+  g_value_init(&value,
+	       G_TYPE_FLOAT);
+
+  g_value_set_float(&value,
+		    (muted ? 1.0: 0.0));
+
+  ags_port_safe_write(port,
+		      &value);
+
+  g_value_unset(&value);
+  g_object_unref(port);
+}
+
+static AgsPluginPort*
+ags_fx_volume_audio_get_muted_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL |
+			   AGS_PLUGIN_PORT_TOGGLED);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      1.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
 }
 
 /**

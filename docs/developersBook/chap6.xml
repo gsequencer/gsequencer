@@ -58,7 +58,22 @@
       <code language="C">AgsChannel* ags_channel_next_with_recycling(AgsChannel*)</code>
     </listitem>
   </itemizedlist>  
-  
+
+  <para>
+    Following object fields are changed during linking. Further a new AgsRecycling might be instantiated to be provided as
+    <code>first_recycling</code> and <code>last_recycling</code> of specified AgsInput eg. if it is NULL. So this input has got its
+    very own recycling as specified by <code>AGS_AUDIO_INPUT_HAS_RECYCLING</code>:
+  </para>
+
+  <itemizedlist mark="bullet">
+    <listitem>
+      <code>AgsChannel:link</code>
+      <code>recursive AgsChannel:first-recycling and AgsChannel:last-recycling as needed</code>
+      <code>AgsRecycling:parent</code>
+      <code>AgsRecycling:prev or AgsRecycling:next</code>
+    </listitem>
+  </itemizedlist>  
+
   <sect1>
     <title>The pattern</title>
     <para>

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -135,6 +135,31 @@ ags_server_get_type()
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_server_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_SERVER_STARTED, "AGS_SERVER_STARTED", "server-started" },
+      { AGS_SERVER_RUNNING, "AGS_SERVER_RUNNING", "server-running" },
+      { AGS_SERVER_TERMINATING, "AGS_SERVER_TERMINATING", "server-terminating" },
+      { AGS_SERVER_INET4, "AGS_SERVER_INET4", "server-inet4" },
+      { AGS_SERVER_INET6, "AGS_SERVER_INET6", "server-inet6" },
+      { AGS_SERVER_ANY_ADDRESS, "AGS_SERVER_ANY_ADDRESS", "server-any-address" },
+      { AGS_SERVER_AUTO_START, "AGS_SERVER_AUTO_START", "server-auto-start" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsServerFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void
@@ -809,16 +834,33 @@ void
 ags_server_add_controller(AgsServer *server,
 			  GObject *controller)
 {
+  gboolean success;
+  
+  GRecMutex *server_mutex;
+
   if(!AGS_IS_SERVER(server) ||
      !AGS_IS_CONTROLLER(controller)){
     return;
   }
 
+  /* get server mutex */
+  server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
+
+  success = FALSE;
+  
+  g_rec_mutex_lock(server_mutex);
+
   if(g_list_find(server->controller, controller) == NULL){
+    success = TRUE;
+
     g_object_ref(controller);
     server->controller = g_list_prepend(server->controller,
 					controller);
+  }
+  
+  g_rec_mutex_unlock(server_mutex);
 
+  if(success){
     g_object_set(controller,
 		 "server", server,
 		 NULL);
@@ -838,20 +880,37 @@ void
 ags_server_remove_controller(AgsServer *server,
 			     GObject *controller)
 {
+  gboolean success;
+  
+  GRecMutex *server_mutex;
+
   if(!AGS_IS_SERVER(server) ||
      !AGS_IS_CONTROLLER(controller)){
     return;
   }
 
+  /* get server mutex */
+  server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
+
+  success = FALSE;
+  
+  g_rec_mutex_lock(server_mutex);
+
   if(g_list_find(server->controller, controller) != NULL){
+    success = TRUE;
+    
     server->controller = g_list_remove(server->controller,
 				       controller);
 
+    g_object_unref(controller);
+  }
+
+  g_rec_mutex_unlock(server_mutex);
+
+  if(success){
     g_object_set(controller,
 		 "server", NULL,
 		 NULL);
-
-    g_object_unref(controller);
   }
 }
 

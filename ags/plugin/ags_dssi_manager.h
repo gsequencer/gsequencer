@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,6 +64,8 @@ void ags_dssi_manager_set_default_path(gchar** default_path);
 gchar** ags_dssi_manager_get_filenames(AgsDssiManager *dssi_manager);
 AgsDssiPlugin* ags_dssi_manager_find_dssi_plugin(AgsDssiManager *dssi_manager,
 						 gchar *filename, gchar *effect);
+AgsDssiPlugin* ags_dssi_manager_find_dssi_plugin_with_fallback(AgsDssiManager *dssi_manager,
+							       gchar *filename, gchar *effect);
 
 void ags_dssi_manager_load_blacklist(AgsDssiManager *dssi_manager,
 				     gchar *blacklist_filename);
@@ -72,6 +74,8 @@ void ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
 				gchar *dssi_path,
 				gchar *filename);
 void ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager);
+
+GList* ags_dssi_manager_get_dssi_plugin(AgsDssiManager *dssi_manager);
 
 /*  */
 AgsDssiManager* ags_dssi_manager_get_instance();

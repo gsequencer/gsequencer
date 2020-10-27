@@ -480,8 +480,6 @@ ags_wave_loader_run(void *ptr)
   g_object_get(wave_loader->audio,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
-
-  g_object_unref(output_soundcard);
   
   wave_loader->audio_file = ags_audio_file_new(wave_loader->filename,
 					       output_soundcard,
@@ -514,7 +512,6 @@ ags_wave_loader_run(void *ptr)
   g_object_get(wave_loader->audio,
 	       "input-pads", &n_pads,
 	       "audio-channels", &n_audio_channels,
-	       "output-soundcard", &output_soundcard,
 	       NULL);
 
   ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(wave_loader->audio_file->sound_resource),
@@ -569,6 +566,10 @@ ags_wave_loader_run(void *ptr)
     }
     
     g_list_free(start_wave);
+  }
+  
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
   }
   
   ags_wave_loader_set_flags(wave_loader,

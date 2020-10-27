@@ -99,6 +99,8 @@ gboolean ags_sndfile_test_flags(AgsSndfile *sndfile, guint flags);
 void ags_sndfile_set_flags(AgsSndfile *sndfile, guint flags);
 void ags_sndfile_unset_flags(AgsSndfile *sndfile, guint flags);
 
+gboolean ags_sndfile_check_suffix(gchar *filename);
+
 AgsSndfile* ags_sndfile_new();
 
 G_END_DECLS

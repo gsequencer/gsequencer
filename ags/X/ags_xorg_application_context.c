@@ -264,7 +264,7 @@ extern AgsApplicationContext *ags_application_context;
 
 //TODO:JK: implement get functions
 #ifndef AGS_W32API
-struct sigaction ags_sigact;
+static struct sigaction ags_sigact;
 #endif
 
 static GMutex locale_mutex;
@@ -2853,6 +2853,8 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
     xorg_application_context->window = g_object_new(AGS_TYPE_WINDOW,
 						    NULL);
 
+  xorg_application_context->navigation = window->navigation;
+  
 #ifdef AGS_WITH_QUARTZ  
   app = gtkosx_application_get();
 

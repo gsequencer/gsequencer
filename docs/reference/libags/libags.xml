@@ -31,6 +31,7 @@
     <xi:include href="xml/ags_complex.xml"/>
     <xi:include href="xml/ags_conversion.xml"/>
     <xi:include href="xml/ags_endian.xml"/>
+    <xi:include href="xml/ags_math_util.xml"/>
     <xi:include href="xml/ags_function.xml"/>
     <xi:include href="xml/ags_solver_matrix.xml"/>
     <xi:include href="xml/ags_solver_vector.xml"/>

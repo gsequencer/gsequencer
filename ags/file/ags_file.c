@@ -138,6 +138,30 @@ ags_file_get_type (void)
   return g_define_type_id__volatile;
 }
 
+GType
+ags_file_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_FILE_READ, "AGS_FILE_READ", "file-read" },
+      { AGS_FILE_READ_AUDIO_SIGNAL, "AGS_FILE_READ_AUDIO_SIGNAL", "file-read-audio-signal" },
+      { AGS_FILE_READ_EMBEDDED_AUDIO, "AGS_FILE_READ_EMBEDDED_AUDIO", "file-read-embedded-audio" },
+      { AGS_FILE_WRITE, "AGS_FILE_WRITE", "file-write" },
+      { AGS_FILE_WRITE_AUDIO_SIGNAL, "AGS_FILE_WRITE_AUDIO_SIGNAL", "file-write-audio-signal" },
+      { AGS_FILE_WRITE_EMBEDDED_AUDIO, "AGS_FILE_WRITE_EMBEDDED_AUDIO", "file-write-embedded-audio" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsFileFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_file_class_init(AgsFileClass *file)
 {

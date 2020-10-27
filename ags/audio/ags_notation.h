@@ -78,6 +78,7 @@ struct _AgsNotation
   GObject gobject;
 
   guint flags;
+  guint key_format;
 
   GRecMutex obj_mutex;
 

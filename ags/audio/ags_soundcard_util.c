@@ -34,6 +34,11 @@
 #include <ags/audio/wasapi/ags_wasapi_devout.h>
 #include <ags/audio/wasapi/ags_wasapi_devin.h>
 
+#if defined(AGS_WITH_GSTREAMER)
+#include <ags/audio/gstreamer/ags_gstreamer_devout.h>
+#include <ags/audio/gstreamer/ags_gstreamer_devin.h>
+#endif
+
 #include <math.h>
 
 /**
@@ -83,6 +88,12 @@ ags_soundcard_util_get_obj_mutex(GObject *soundcard)
     obj_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(soundcard);
   }else if(AGS_IS_WASAPI_DEVIN(soundcard)){
     obj_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(soundcard);
+#if defined(AGS_WITH_GSTREAMER)
+  }else if(AGS_IS_GSTREAMER_DEVOUT(soundcard)){
+    obj_mutex = AGS_GSTREAMER_DEVOUT_GET_OBJ_MUTEX(soundcard);
+  }else if(AGS_IS_GSTREAMER_DEVIN(soundcard)){
+    obj_mutex = AGS_GSTREAMER_DEVIN_GET_OBJ_MUTEX(soundcard);
+#endif
   }else{
     g_warning("unknown soundcard implementation");
   }
@@ -156,6 +167,14 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
   }else if(AGS_IS_WASAPI_DEVIN(soundcard)){
     attack = AGS_WASAPI_DEVIN(soundcard)->attack;
     delay = AGS_WASAPI_DEVIN(soundcard)->delay;
+#if defined(AGS_WITH_GSTREAMER)
+  }else if(AGS_IS_GSTREAMER_DEVOUT(soundcard)){
+    attack = AGS_GSTREAMER_DEVOUT(soundcard)->attack;
+    delay = AGS_GSTREAMER_DEVOUT(soundcard)->delay;
+  }else if(AGS_IS_GSTREAMER_DEVIN(soundcard)){
+    attack = AGS_GSTREAMER_DEVIN(soundcard)->attack;
+    delay = AGS_GSTREAMER_DEVIN(soundcard)->delay;
+#endif
   }else{
     g_warning("unknown soundcard implementation");
 

@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.5.9],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.6.1],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -159,6 +159,12 @@ AC_ARG_WITH([poppler],
 			    [enable support for poppler])],
 	    [],
 	    [with_poppler=no])
+
+AC_ARG_WITH([gstreamer],
+	    [AS_HELP_STRING([--without-gstreamer],
+			    [disable support for gstreamer])],
+	    [],
+	    [with_gstreamer=yes])
 
 # Checks for programs.
 AC_PROG_CC
@@ -441,6 +447,14 @@ AS_IF([test "x$with_poppler" != xno],
        		 [Define if you have poppler])
       ])
 
+AS_IF([test "x$with_gstreamer" != xno],
+      [PKG_CHECK_MODULES([GSTREAMER], [gstreamer-1.0 >= 1.16.0 gstreamer-audio-1.0 >= 1.16.0 gstreamer-video-1.0 gstreamer-app-1.0 gstreamer-pbutils-1.0 >= 1.16.0])
+       AC_SUBST(GSTREAMER_CFLAGS)
+       AC_SUBST(GSTREAMER_LIBS)
+       AC_DEFINE([AGS_WITH_GSTREAMER], [1],
+       		 [Define if you have gstreamer])
+      ])
+AM_CONDITIONAL([WITH_GSTREAMER], [test "x$with_gstreamer" == xyes])
 
 AS_IF([test "x$enable_run_functional_tests" == xyes],
       [AC_MSG_NOTICE([run functional tests enabled])],

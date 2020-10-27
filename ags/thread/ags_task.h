@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,7 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_TASK                (ags_task_get_type())
+#define AGS_TYPE_TASK_FLAGS                (ags_task_flags_get_type())
 #define AGS_TASK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TASK, AgsTask))
 #define AGS_TASK_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TASK, AgsTaskClass))
 #define AGS_IS_TASK(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_TASK))

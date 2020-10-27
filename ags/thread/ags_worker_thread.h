@@ -26,6 +26,7 @@
 #include <ags/thread/ags_thread.h>
 
 #define AGS_TYPE_WORKER_THREAD                (ags_worker_thread_get_type())
+#define AGS_TYPE_WORKER_THREAD_STATUS_FLAGS   (ags_worker_thread_status_flags_get_type())
 #define AGS_WORKER_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_WORKER_THREAD, AgsWorkerThread))
 #define AGS_WORKER_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_WORKER_THREAD, AgsWorkerThreadClass))
 #define AGS_IS_WORKER_THREAD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_WORKER_THREAD))
@@ -45,7 +46,7 @@ typedef struct _AgsWorkerThreadClass AgsWorkerThreadClass;
  * @AGS_WORKER_THREAD_STATUS_RUN_SYNC: do sync
  *
  * Enum values to control the behavior or indicate internal state of #AgsWorkerThread by
- * enable/disable as sync_flags.
+ * enable/disable as status flags.
  */
 typedef enum{
   AGS_WORKER_THREAD_STATUS_RUNNING    = 1,
@@ -74,6 +75,7 @@ struct _AgsWorkerThreadClass
 };
 
 GType ags_worker_thread_get_type();
+GType ags_worker_thread_status_flags_get_type();
 
 gboolean ags_worker_thread_test_status_flags(AgsWorkerThread *worker_thread, guint status_flags);
 void ags_worker_thread_set_status_flags(AgsWorkerThread *worker_thread, guint status_flags);

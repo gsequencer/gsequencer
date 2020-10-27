@@ -107,6 +107,27 @@ ags_returnable_thread_get_type()
   return g_define_type_id__volatile;
 }
 
+GType
+ags_returnable_thread_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_RETURNABLE_THREAD_IN_USE, "AGS_RETURNABLE_THREAD_IN_USE", "returnable-thread-in-use" },
+      { AGS_RETURNABLE_THREAD_RESET, "AGS_RETURNABLE_THREAD_RESET", "returnable-thread-reset" },
+      { AGS_RETURNABLE_THREAD_RUN_ONCE, "AGS_RETURNABLE_THREAD_RUN_ONCE", "returnable-thread-run-once" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsReturnableThreadFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
 {

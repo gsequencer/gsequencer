@@ -569,6 +569,1408 @@ ags_math_util_find_term_parenthesis(gchar *str,
 }
 
 /**
+ * ags_math_util_match_sign:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ * 
+ * Match sign.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.6.0
+ */
+gboolean
+ags_math_util_match_sign(gchar *offset,
+			 gchar *end_ptr,
+			 gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+  
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    if(offset[0] == '-' || offset[0] == '+'){
+      match[0] = offset;
+      match[1] = offset + 1;
+
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_math_util_match_coefficient:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ * 
+ * Match coefficient including optional sign.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.6.0
+ */
+gboolean
+ags_math_util_match_coefficient(gchar *offset,
+				gchar *end_ptr,
+				gchar **start_offset, gchar **end_offset)
+{
+  GMatchInfo *complex_number_match_info;
+
+  gchar* match[2];
+
+  gchar *iter;
+  gchar *look_ahead;
+  gchar *iter_start_offset, *iter_end_offset;
+  gchar *a_start_offset, *a_end_offset;
+  gchar *b_start_offset, *b_end_offset;
+  
+  gboolean has_sign;
+  gboolean has_parenthesis;
+  gboolean has_complex_operator;
+  gboolean has_complex_a_sign;
+  gboolean has_complex_a_numeric;
+  gboolean has_complex_a_float;
+  gboolean has_complex_a_exponent;
+  gboolean has_complex_a;
+  gboolean has_complex_b_sign;
+  gboolean has_complex_b_numeric;
+  gboolean has_complex_b_float;
+  gboolean has_complex_b_exponent;
+  gboolean has_complex_b;
+  gboolean has_complex_i0;
+  gboolean has_complex_i1;
+  gboolean has_numeric;
+  gboolean has_float;
+  gboolean success;
+
+  match[0] = NULL;
+  match[1] = NULL;
+
+  a_start_offset = NULL;
+  a_end_offset = NULL;
+
+  b_start_offset = NULL;
+  b_end_offset = NULL;
+  
+  has_sign = FALSE;
+  has_parenthesis = FALSE;
+  has_complex_operator = FALSE;
+
+  has_complex_a_sign = FALSE;
+  has_complex_a_numeric = FALSE;
+  has_complex_a_float = FALSE;
+  has_complex_a_exponent = FALSE;
+  has_complex_a = FALSE;
+  
+  has_complex_b_sign = FALSE;
+  has_complex_b_numeric = FALSE;
+  has_complex_b_float = FALSE;
+  has_complex_b_exponent = FALSE;
+  has_complex_b = FALSE;
+
+  has_complex_i0 = FALSE;
+  has_complex_i1 = FALSE;
+
+  has_numeric = FALSE;
+  has_float = FALSE;
+  
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    iter = offset;
+
+    if(offset[0] == '('){
+      has_parenthesis = TRUE;
+
+      iter++;
+    }
+
+    if(!has_parenthesis){
+      if((offset[0] == '+' ||
+	  offset[0] == '-') &&
+	offset[1] == '('){
+	has_sign = TRUE;
+	has_parenthesis = TRUE;
+
+	iter += 2;
+      }
+    }
+    
+    for(look_ahead = iter; look_ahead < end_ptr;){
+      /* check sign of a and i */
+      if(!has_complex_a){
+	if(look_ahead[0] == '+' ||
+	   look_ahead[0] == '-'){
+	  if(!has_complex_a_sign){
+	    a_start_offset = iter;
+	    
+	    has_complex_a_sign = TRUE;
+	  }else{
+	    if(has_complex_a_numeric){
+	      a_end_offset = iter;
+	      
+	      has_complex_a = TRUE;
+
+	      look_ahead++;
+	      
+	      continue;
+	    }else if(has_complex_i0){
+	      look_ahead++;
+	      
+	      continue;
+	    }else{
+	      //failure
+	      
+	      break;
+	    }
+	  }
+	}
+	
+	if(look_ahead[0] >= '0' &&
+	   look_ahead[0] <= '9'){
+	  has_complex_a_numeric = TRUE;
+
+	  look_ahead++;
+
+	  continue;
+	}
+
+	if(look_ahead[0] == '.'){
+	  if(!has_complex_a_float){
+	    has_complex_a_float = TRUE;
+	  
+	    look_ahead++;
+
+	    continue;
+	  }else{
+	    a_start_offset = NULL;
+	    
+	    //failure
+	    
+	    break;
+	  }
+	}
+
+	if(look_ahead[0] == 'e' ||
+	   look_ahead[0] == 'E'){
+	  gchar *exp_look_ahead;
+
+	  exp_look_ahead = look_ahead + 1;
+	  
+	  if(exp_look_ahead < end_ptr &&
+	     exp_look_ahead[0] == '+' ||
+	     exp_look_ahead[0] == '-'){
+	    exp_look_ahead++;
+	  }
+
+	  for(; exp_look_ahead < end_ptr; exp_look_ahead++){
+	    if(exp_look_ahead[0] >= '0' &&
+	       exp_look_ahead[0] <= '9'){
+	      has_complex_a_exponent = TRUE;	      
+	    }else{
+	      break;
+	    }
+	  }
+
+	  if(has_complex_a_exponent){
+	    look_ahead = exp_look_ahead;
+
+	    continue;
+	  }else{
+	    //failure
+	    
+	    break;
+	  }
+	}
+
+	/* default */
+	//completed or failure
+
+	if(has_complex_a_numeric){
+	  a_end_offset = iter;
+	      
+	  has_complex_a = TRUE;
+	}
+	
+	break;
+      }
+      
+      /* check sign of b and i */
+      if(has_complex_operator &&
+	 !has_complex_b){
+	if(look_ahead[0] == '+' ||
+	   look_ahead[0] == '-'){
+	  if(!has_complex_b_sign){
+	    b_start_offset = iter;
+	    
+	    has_complex_b_sign = TRUE;
+	  }else{
+	    if(has_complex_b_numeric){
+	      has_complex_b = TRUE;
+
+	      look_ahead++;
+	      
+	      continue;
+	    }else if(has_complex_i0){
+	      look_ahead++;
+	      
+	      continue;
+	    }else{
+	      //failure
+
+	      break;
+	    }
+	  }
+	}
+
+	if(look_ahead[0] >= '0' &&
+	   look_ahead[0] <= '9'){
+	  has_complex_b_numeric = TRUE;
+
+	  look_ahead++;
+
+	  continue;
+	}
+
+	if(look_ahead[0] == '.'){
+	  if(!has_complex_b_float){
+	    has_complex_b_float = TRUE;
+	  
+	    look_ahead++;
+
+	    continue;
+	  }else{
+	    b_start_offset = NULL;
+	    //failure
+	    
+	    break;
+	  }
+	}
+
+	if(look_ahead[0] == 'e' ||
+	   look_ahead[0] == 'E'){
+	  gchar *exp_look_ahead;
+
+	  exp_look_ahead = look_ahead + 1;
+	  
+	  if(exp_look_ahead < end_ptr &&
+	     exp_look_ahead[0] == '+' ||
+	     exp_look_ahead[0] == '-'){
+	    exp_look_ahead++;
+	  }
+
+	  for(; exp_look_ahead < end_ptr; exp_look_ahead++){
+	    if(exp_look_ahead[0] >= '0' &&
+	       exp_look_ahead[0] <= '9'){
+	      has_complex_b_exponent = TRUE;	      
+	    }else{
+	      break;
+	    }
+	  }
+
+	  if(has_complex_b_exponent){
+	    look_ahead = exp_look_ahead;
+	  }else{
+	    //failure
+	    
+	    break;
+	  }
+	}
+
+	/* default */
+	//completed or failure
+
+	if(has_complex_b_numeric){
+	  b_end_offset = iter;
+	      
+	  has_complex_b = TRUE;
+	}
+      }
+
+      if(!has_complex_operator &&
+	 !has_complex_i0){
+	if(!g_ascii_strncasecmp(look_ahead,
+				AGS_SYMBOLIC_COMPLEX_UNIT,
+				strlen(AGS_SYMBOLIC_COMPLEX_UNIT))){
+	  has_complex_i0 = TRUE;
+	  
+	  look_ahead += strlen(AGS_SYMBOLIC_COMPLEX_UNIT);
+	  
+	  continue;
+	}
+      }
+
+      if(has_complex_operator &&
+	 !has_complex_i1){
+	if(!g_ascii_strncasecmp(look_ahead,
+				AGS_SYMBOLIC_COMPLEX_UNIT,
+				strlen(AGS_SYMBOLIC_COMPLEX_UNIT))){
+	  has_complex_i1 = TRUE;
+	  
+	  look_ahead += strlen(AGS_SYMBOLIC_COMPLEX_UNIT);
+	  
+	  continue;
+	}
+      }
+      
+      if(look_ahead[0] == ')'){
+	if(has_parenthesis){
+	  look_ahead++;
+	}
+	
+	break;
+      }
+
+      if(!has_complex_operator &&
+	 (look_ahead[0] == '+' ||
+	  look_ahead[0] == '-')){
+	has_complex_operator = TRUE;
+
+	look_ahead++;
+      }
+      
+      break;
+    }
+
+    if((has_complex_i0 || has_complex_i1) &&
+       has_complex_a &&
+       has_complex_b){
+      success = TRUE;
+
+      match[0] = offset;
+      //TODO:JK: implement me
+//      match[1] = ;
+    }
+    
+    if(!success){
+      has_sign = ags_math_util_match_sign(offset,
+					  end_ptr,
+					  &iter_start_offset, &iter_end_offset);
+
+      if(has_sign){
+	iter = iter_end_offset;
+      }
+      
+      if(!strncmp(iter,
+		  AGS_SYMBOLIC_EULER,
+		  strlen(AGS_SYMBOLIC_EULER))){
+	match[0] = offset;
+	match[1] = iter + strlen(AGS_SYMBOLIC_EULER);
+
+	success = TRUE;
+      }else if(!strncmp(iter,
+			AGS_SYMBOLIC_PI,
+			strlen(AGS_SYMBOLIC_PI))){
+	match[0] = offset;
+	match[1] = iter + strlen(AGS_SYMBOLIC_PI);
+
+	success = TRUE;
+      }else if(!strncmp(iter,
+			AGS_SYMBOLIC_PI,
+			strlen(AGS_SYMBOLIC_PI))){
+	match[0] = offset;
+	match[1] = iter + strlen(AGS_SYMBOLIC_PI);
+
+	success = TRUE;
+      }else if(!strncmp(iter,
+			AGS_SYMBOLIC_INFINIT,
+			strlen(AGS_SYMBOLIC_INFINIT))){
+	match[0] = offset;
+	match[1] = iter + strlen(AGS_SYMBOLIC_INFINIT);
+
+	success = TRUE;
+      }else if(!strncmp(iter,
+			AGS_SYMBOLIC_COMPLEX_UNIT,
+			strlen(AGS_SYMBOLIC_COMPLEX_UNIT))){
+	match[0] = offset;
+	match[1] = iter + strlen(AGS_SYMBOLIC_COMPLEX_UNIT);
+
+	success = TRUE;
+      }
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_math_util_match_symbol:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ * 
+ * Match symbol including optional sign.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.6.0
+ */
+gboolean
+ags_math_util_match_symbol(gchar *offset,
+			   gchar *end_ptr,
+			   gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gchar *iter;
+  gchar *iter_start_offset, *iter_end_offset;
+
+  gboolean has_sign;
+  gboolean has_subscript;
+  gboolean success;
+  
+  match[0] = NULL;
+  match[1] = NULL;
+
+  has_sign = FALSE;
+  has_subscript = FALSE;
+  
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    iter = offset;
+
+    has_sign = ags_math_util_match_sign(offset,
+					end_ptr,
+					&iter_start_offset, &iter_end_offset);
+
+    if(has_sign){
+      iter = iter_end_offset;
+    }
+
+    if(!ags_math_util_match_function(iter,
+				     end_ptr,
+				     NULL, NULL)){
+      if((iter[0] >= 'a' && iter[0] <= 'z') ||
+	 (iter[0] >= 'A' && iter[0] <= 'Z')){
+	success = TRUE;
+
+	iter++;
+
+	/* check subscript */
+	for(; iter < end_ptr; iter++){
+	  gunichar subscript_x;
+
+	  static gunichar subscript_0;
+	  static gunichar subscript_9;
+
+	  static gboolean subscript_set = FALSE;
+
+	  if(!subscript_set){
+	    subscript_0 = g_utf8_get_char(AGS_SUBSCRIPT_0);
+	    subscript_9 = g_utf8_get_char(AGS_SUBSCRIPT_9);
+
+	    subscript_set = TRUE;
+	  }
+	  
+	  subscript_x = g_utf8_get_char(iter);
+	
+	  if(subscript_x >= subscript_0 && subscript_x <= subscript_9){
+	    has_subscript = TRUE;
+	  }else{
+	    break;
+	  }
+	}
+
+	match[0] = offset;
+	match[1] = iter;
+
+	success = TRUE;
+      }
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_math_util_match_exponent:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ * 
+ * Match exponent with or without parenthesis.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.6.0
+ */
+gboolean
+ags_math_util_match_exponent(gchar *offset,
+			     gchar *end_ptr,
+			     gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gchar *iter;
+  gchar *iter_start_offset, *iter_end_offset;
+
+  gboolean has_coefficient;
+  gboolean has_symbol;
+  gboolean has_function;
+  gboolean success;
+  
+  match[0] = NULL;
+  match[1] = NULL;
+
+  has_coefficient = FALSE;
+  has_symbol = FALSE;  
+  has_function = FALSE;
+  
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    iter = offset;
+
+    if(iter[0] == '^'){
+      iter++;
+      
+      if(iter[0] == '('){
+	gint open_parenthesis;
+	
+	iter++;
+	
+	open_parenthesis = 1;
+
+	while(open_parenthesis > 0){
+	  if(iter[0] == '('){
+	    open_parenthesis++;
+
+	    iter++;
+	  }else if(iter[0] == ')'){
+	    open_parenthesis--;
+
+	    iter++;
+	  }else{
+	    gboolean tmp_has_coefficient;
+	    gboolean tmp_has_symbol;
+	    gboolean tmp_has_function;
+
+	    tmp_has_coefficient = FALSE;
+	    tmp_has_symbol = FALSE;
+	    tmp_has_function = FALSE;
+
+	    /* check coefficient */
+	    tmp_has_coefficient = ags_math_util_match_coefficient(iter,
+								  end_ptr,
+								  &iter_start_offset, &iter_end_offset);
+
+	    if(tmp_has_coefficient){
+	      iter = iter_end_offset;
+
+	      has_coefficient = TRUE;
+	    }
+
+	    /* check symbol */
+	    if(!tmp_has_coefficient){
+	      tmp_has_symbol = ags_math_util_match_symbol(iter,
+							  end_ptr,
+							  &iter_start_offset, &iter_end_offset);
+	    }
+	
+	    if(tmp_has_symbol){
+	      iter = iter_end_offset;
+
+	      has_symbol = TRUE;
+	    }
+
+	    /* check function */
+	    if(!tmp_has_coefficient &&
+	       !tmp_has_symbol){
+	      tmp_has_function = ags_math_util_match_function(iter,
+							      end_ptr,
+							      &iter_start_offset, &iter_end_offset);
+	    }
+	
+	    if(tmp_has_function){
+	      iter = iter_end_offset;
+
+	      has_function = TRUE;
+	    }
+
+	    /* skip anything else eg. operators and spaces */
+	    if(!(has_coefficient ||
+		 has_symbol ||
+		 has_function)){
+	      iter++;
+	    }
+	  }
+	}
+      }else{
+	/* check coefficient */
+	has_coefficient = ags_math_util_match_coefficient(iter,
+							  end_ptr,
+							  &iter_start_offset, &iter_end_offset);
+
+	if(has_coefficient){
+	  iter = iter_end_offset;
+	}
+
+	/* check symbol */
+	if(!has_coefficient){
+	  has_symbol = ags_math_util_match_symbol(iter,
+						  end_ptr,
+						  &iter_start_offset, &iter_end_offset);
+	}
+	
+	if(has_symbol){
+	  iter = iter_end_offset;
+	}
+
+	/* check function */
+	if(!has_coefficient &&
+	   !has_symbol){
+	  has_function = ags_math_util_match_function(iter,
+						      end_ptr,
+						      &iter_start_offset, &iter_end_offset);
+	}
+	
+	if(has_function){
+	  iter = iter_end_offset;
+	}
+      }
+
+      if(has_coefficient ||
+	 has_symbol ||
+	 has_function){
+	match[0] = offset;
+	match[1] = iter;
+      }
+      
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_math_util_match_operator:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ * 
+ * Match operator.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.6.0
+ */
+gboolean
+ags_math_util_match_operator(gchar *offset,
+			     gchar *end_ptr,
+			     gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gboolean success;
+  
+  match[0] = NULL;
+  match[1] = NULL;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    if(offset[0] == '-' || offset[0] == '+' || offset[0] == '/' || offset[0] == '*'){
+      match[0] = offset;
+      match[1] = offset + 1;
+
+      success = TRUE;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_math_util_match_function:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ * @start_offset: (out) (transfer none): points to start offset of matched, otherwise %NULL
+ * @end_offset: (out) (transfer none): points to end offset of matched, otherwise %NULL
+ * 
+ * Match function.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.6.0
+ */
+gboolean
+ags_math_util_match_function(gchar *offset,
+			     gchar *end_ptr,
+			     gchar **start_offset, gchar **end_offset)
+{
+  gchar* match[2];
+
+  gchar *iter;
+  gchar *iter_start_offset, *iter_end_offset;
+
+  gboolean is_function;
+  gboolean has_coefficient;
+  gboolean has_symbol;
+  gboolean has_function;
+  gboolean success;
+  
+  match[0] = NULL;
+  match[1] = NULL;
+
+  is_function = FALSE;
+  
+  has_coefficient = FALSE;
+  has_symbol = FALSE;  
+  has_function = FALSE;
+
+  success = FALSE;
+
+  if(offset != NULL &&
+     end_ptr != NULL &&
+     offset < end_ptr){
+    iter = offset;
+
+    if(!strncmp(iter,
+		"log",
+		3)){
+      iter += 3;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "exp",
+		      3)){
+      iter += 3;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "sin",
+		      3)){
+      iter += 3;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "cos",
+		      3)){
+      iter += 3;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "tan",
+		      3)){
+      iter += 3;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "asin",
+		      3)){
+      iter += 3;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "acos",
+		      3)){
+      iter += 3;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "atan",
+		      3)){
+      iter += 3;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "floor",
+		      5)){
+      iter += 5;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "ceil",
+		      4)){
+      iter += 4;
+
+      is_function = TRUE;
+    }else if(!strncmp(iter,
+		      "round",
+		      5)){
+      iter += 5;
+
+      is_function = TRUE;
+    }
+
+    if(is_function){
+      if(iter[0] == '('){
+	gint open_parenthesis;
+
+	iter++;
+	
+	open_parenthesis = 1;
+
+	while(open_parenthesis > 0){
+	  if(iter[0] == '('){
+	    open_parenthesis++;
+
+	    iter++;
+	  }else if(iter[0] == ')'){
+	    open_parenthesis--;
+
+	    iter++;
+	  }else{
+	    gboolean tmp_has_coefficient;
+	    gboolean tmp_has_symbol;
+	    gboolean tmp_has_function;
+
+	    tmp_has_coefficient = FALSE;
+	    tmp_has_symbol = FALSE;
+	    tmp_has_function = FALSE;
+	    
+	    /* check coefficient */
+	    tmp_has_coefficient = ags_math_util_match_coefficient(iter,
+								  end_ptr,
+								  &iter_start_offset, &iter_end_offset);
+
+	    if(tmp_has_coefficient){
+	      iter = iter_end_offset;
+
+	      has_coefficient = TRUE;
+	    }
+
+	    /* check symbol */
+	    if(!tmp_has_coefficient){
+	      tmp_has_symbol = ags_math_util_match_symbol(iter,
+							  end_ptr,
+							  &iter_start_offset, &iter_end_offset);
+	    }
+	
+	    if(tmp_has_symbol){
+	      iter = iter_end_offset;
+
+	      has_symbol = TRUE;
+	    }
+
+	    /* check function */
+	    if(!tmp_has_coefficient &&
+	       !tmp_has_symbol){
+	      tmp_has_function = ags_math_util_match_function(iter,
+							      end_ptr,
+							      &iter_start_offset, &iter_end_offset);
+	    }
+	
+	    if(tmp_has_function){
+	      iter = iter_end_offset;
+
+	      has_function = TRUE;
+	    }
+
+	    /* skip anything else eg. operators and spaces */
+	    if(!(has_coefficient ||
+		 has_symbol ||
+		 has_function)){
+	      iter++;
+	    }
+	  }
+	}
+      }else{
+	if(iter[0] == ' '){
+	  iter++;
+	  
+	  /* check coefficient */
+	  has_coefficient = ags_math_util_match_coefficient(iter,
+							    end_ptr,
+							    &iter_start_offset, &iter_end_offset);
+
+	  if(has_coefficient){
+	    iter = iter_end_offset;
+	  }
+
+	  /* check symbol */
+	  if(!has_coefficient){
+	    has_symbol = ags_math_util_match_symbol(iter,
+						    end_ptr,
+						    &iter_start_offset, &iter_end_offset);
+	  }
+	
+	  if(has_symbol){
+	    iter = iter_end_offset;
+	  }
+
+	  /* check function */
+	  if(!has_coefficient &&
+	     !has_symbol){
+	    has_function = ags_math_util_match_function(iter,
+							end_ptr,
+							&iter_start_offset, &iter_end_offset);
+	  }
+	
+	  if(has_function){
+	    iter = iter_end_offset;
+	  }
+	}
+      }
+    }
+    
+    if(is_function &&
+       (has_coefficient ||
+	has_symbol ||
+	has_function)){
+      match[0] = offset;
+      match[1] = iter;
+    }
+  }
+
+  if(start_offset != NULL){
+    start_offset[0] = match[0];
+  }
+  
+  if(end_offset != NULL){
+    end_offset[0] = match[1];
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_math_util_coefficient_to_complex:
+ * @coefficient: the coefficient string
+ * @value: (out) (transfer none): return location of value
+ * 
+ * Compute @value from @coefficient.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.6.0
+ */
+gboolean
+ags_math_util_coefficient_to_complex(gchar *coefficient,
+				     AgsComplex *value)
+{
+  gchar *start_iter, *iter;
+  
+  AgsComplex this_value;
+
+  double complex z;
+  double double_real_val, double_imag_val;
+  double double_val;
+  int int_real_val, int_imag_val;
+  int int_val;
+    
+  int retval;
+
+  gboolean has_sign;
+  gboolean success;
+  
+  z = 0.0 + I * 0.0;
+  
+  ags_complex_set(&this_value,
+		  z);
+
+  success = FALSE;
+
+  if(coefficient == NULL){
+    if(value != NULL){
+      value->real = this_value.real;
+      value->imag = this_value.imag;
+    }
+
+    return(FALSE);
+  }
+
+  iter =
+    start_iter = g_strdup(coefficient);
+
+  has_sign = FALSE;
+  
+  /*  */
+  if(!success){  
+    if(!strncmp(iter,
+		AGS_SYMBOLIC_INFINIT,
+		strlen(AGS_SYMBOLIC_INFINIT))){
+      //TODO:JK: implement me
+    }
+  }
+
+  /* check double complex coefficient */
+  retval = sscanf(iter, "%f+𝑖*%f", &double_real_val, &double_imag_val);
+    
+  if(retval > 0){
+    z = double_real_val + I * double_imag_val;
+	
+    success = TRUE;
+  }
+
+  if(!success){
+    retval = sscanf(iter, "%f-𝑖*%f", &double_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = double_real_val - (I * double_imag_val);
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "-%f+𝑖*%f", &double_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = (-1.0 * double_real_val) + I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "-%f-𝑖*%f", &double_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = (-1.0 * double_real_val) - (I * double_imag_val);
+	
+      success = TRUE;
+    }
+  }
+  
+  /* check int real and double imaginary complex coefficient */
+  if(!success){
+    retval = sscanf(iter, "%d+𝑖*%f", &int_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = ((double) int_real_val) + I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+    
+  if(!success){
+    retval = sscanf(iter, "%d-𝑖*%f", &int_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = ((double) int_real_val) - (I * double_imag_val);
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "-%d+𝑖*%f", &int_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = (-1.0 * (double) int_real_val) + I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "-%d-𝑖*%f", &int_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = (-1.0 * (double) int_real_val) - (I * double_imag_val);
+	
+      success = TRUE;
+    }
+  }
+
+  /* check double real and int imaginary complex coefficient */
+  if(!success){
+    retval = sscanf(iter, "%f+𝑖*%d", &double_real_val, &int_imag_val);
+    
+    if(retval > 0){
+      z = double_real_val + I * ((double) int_imag_val);
+	
+      success = TRUE;
+    }
+  }
+    
+  if(!success){
+    retval = sscanf(iter, "%f-𝑖*%d", &double_real_val, &int_imag_val);
+    
+    if(retval > 0){
+      z = double_real_val - (I * ((double) int_imag_val));
+	
+      success = TRUE;
+    }
+  }
+    
+  if(!success){
+    retval = sscanf(iter, "-%f+𝑖*%d", &double_real_val, &int_imag_val);
+    
+    if(retval > 0){
+      z = (-1.0 * double_real_val) + I * ((double) int_imag_val);
+	
+      success = TRUE;
+    }
+  }
+    
+  if(!success){
+    retval = sscanf(iter, "-%f-𝑖*%d", &double_real_val, &int_imag_val);
+    
+    if(retval > 0){
+      z = (-1.0 * double_real_val) - (I * ((double) int_imag_val));
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    if(iter[0] == '+' || iter[0] == '-'){
+      iter++;
+
+      has_sign = TRUE;
+    }
+  }
+  
+  /* check double complex coefficient with parenthesis */
+  if(!success){
+    retval = sscanf(iter, "(%f+𝑖*%f)", &double_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = double_real_val + I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%f-𝑖*%f)", &double_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = double_real_val - (I * double_imag_val);
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(-%f+𝑖*%f)", &double_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = (-1.0 * double_real_val) + I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(-%f-𝑖*%f)", &double_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = (-1.0 * double_real_val) - (I * double_imag_val);
+	
+      success = TRUE;
+    }
+  }
+
+  /* check int real and double imaginary complex coefficient with parenthesis */
+  if(!success){
+    retval = sscanf(iter, "(%d+𝑖*%f)", &int_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = ((double) int_real_val) + I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%d-𝑖*%f)", &int_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = ((double) int_real_val) - (I * double_imag_val);
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(-%d+𝑖*%f)", &int_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = (-1.0 * (double) int_real_val) + I * double_imag_val;
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(-%d-𝑖*%f)", &int_real_val, &double_imag_val);
+    
+    if(retval > 0){
+      z = (-1.0 * (double) int_real_val) - (I * double_imag_val);
+	
+      success = TRUE;
+    }
+  }
+
+  /* check double real and int imaginary complex coefficient with parenthesis */
+  if(!success){
+    retval = sscanf(iter, "(%f+𝑖*%d)", &double_real_val, &int_imag_val);
+    
+    if(retval > 0){
+      z = double_real_val + I * ((double) int_imag_val);
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(%f-𝑖*%d)", &double_real_val, &int_imag_val);
+    
+    if(retval > 0){
+      z = double_real_val - (I * ((double) int_imag_val));
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(-%f+𝑖*%d)", &double_real_val, &int_imag_val);
+    
+    if(retval > 0){
+      z = (-1.0 * double_real_val) + (I * ((double) int_imag_val));
+	
+      success = TRUE;
+    }
+  }
+
+  if(!success){
+    retval = sscanf(iter, "(-%f-𝑖*%d)", &double_real_val, &int_imag_val);
+    
+    if(retval > 0){
+      z = (-1.0 * double_real_val) - (I * ((double) int_imag_val));
+	
+      success = TRUE;
+    }
+  }
+
+  /* check floating point coefficient */
+  if(!success){
+    retval = sscanf(iter, "%f", &double_val);
+      
+    if(retval > 0){
+      z = double_val + I * 0.0;
+	
+      success = TRUE;
+    }
+  }
+    
+  /* check integer coefficient */
+  if(!success){
+    retval = sscanf(iter, "%d", &int_val);
+
+    if(retval > 0){
+      z = ((double) int_val) + I * 0.0;
+      
+      success = TRUE;
+    }
+  }
+
+  if(success &&
+     has_sign &&
+     start_iter[0] == '-'){
+    z *= -1.0;
+  }
+  
+  if(success){
+    ags_complex_set(&this_value,
+		    z);
+  }
+  
+  g_free(start_iter);
+
+  if(value != NULL){
+    value->real = this_value.real;
+    value->imag = this_value.imag;
+  }
+
+  return(success);
+}
+
+/**
+ * ags_math_util_compute_coefficient_all:
+ * @coefficient: the coefficients as %NULL termiated string vector
+ * @value_count: (out) (transfer none): return location of value count 
+ * 
+ * Compute a string vector of coefficients.
+ * 
+ * Returns: the newly allocated #AgsComplex array of @value_count length, or %NULL
+ * 
+ * Since: 3.6.0
+ */
+AgsComplex*
+ags_math_util_multiply_coefficient_all(gchar **coefficient,
+				       guint *value_count)
+{
+  gchar **iter;
+  
+  guint count;
+
+  
+  //TODO:JK: implement me
+  
+  return(NULL);
+}
+
+/**
  * ags_math_util_find_function:
  * @str: the string
  *  
@@ -816,7 +2218,7 @@ ags_math_util_find_symbol_all(gchar *str)
   GMatchInfo *function_match_info;
   GMatchInfo *literal_match_info;
   
-  gchar **literals;
+  gchar **symbol_arr;
 
   gchar *current_literal;
 
@@ -835,7 +2237,7 @@ ags_math_util_find_symbol_all(gchar *str)
     return(NULL);
   }
   
-  literals = NULL;
+  symbol_arr = NULL;
 
   n_literals = 0;
     
@@ -925,28 +2327,28 @@ ags_math_util_find_symbol_all(gchar *str)
 	tmp_literal = g_match_info_fetch(literal_match_info,
 					 0);
 	
-	if(literals == NULL){
-	  literals = (gchar **) g_malloc(2 * sizeof(gchar *));
+	if(symbol_arr == NULL){
+	  symbol_arr = (gchar **) g_malloc(2 * sizeof(gchar *));
 
-	  literals[0] = g_strdup(tmp_literal);
-	  literals[1] = NULL;
+	  symbol_arr[0] = g_strdup(tmp_literal);
+	  symbol_arr[1] = NULL;
 
 #ifdef AGS_DEBUG	    
-	  g_message("found %s", literals[0]);
+	  g_message("found %s", symbol_arr[0]);
 #endif
 	  
 	  n_literals++;
 	}else{
-	  if(!g_strv_contains(literals,
+	  if(!g_strv_contains(symbol_arr,
 			      tmp_literal)){
-	    literals = (gchar **) g_realloc(literals,
-					    (n_literals + 2) * sizeof(gchar *));
+	    symbol_arr = (gchar **) g_realloc(symbol_arr,
+					      (n_literals + 2) * sizeof(gchar *));
 
-	    literals[n_literals] = g_strdup(tmp_literal);
-	    literals[n_literals + 1] = NULL;
+	    symbol_arr[n_literals] = g_strdup(tmp_literal);
+	    symbol_arr[n_literals + 1] = NULL;
 
 #ifdef AGS_DEBUG	    
-	    g_message("found %s", literals[n_literals]);
+	    g_message("found %s", symbol_arr[n_literals]);
 #endif
 	    
 	    n_literals++;
@@ -996,28 +2398,28 @@ ags_math_util_find_symbol_all(gchar *str)
       tmp_literal = g_match_info_fetch(literal_match_info,
 				       0);
 	
-      if(literals == NULL){
-	literals = (gchar **) g_malloc(2 * sizeof(gchar *));
+      if(symbol_arr == NULL){
+	symbol_arr = (gchar **) g_malloc(2 * sizeof(gchar *));
 
-	literals[0] = g_strdup(tmp_literal);
-	literals[1] = NULL;
+	symbol_arr[0] = g_strdup(tmp_literal);
+	symbol_arr[1] = NULL;
 
 #ifdef AGS_DEBUG	    
-	g_message("found %s", literals[0]);
+	g_message("found %s", symbol_arr[0]);
 #endif
 	  
 	n_literals++;
       }else{
-	if(!g_strv_contains(literals,
+	if(!g_strv_contains(symbol_arr,
 			    tmp_literal)){
-	  literals = (gchar **) g_realloc(literals,
-					  (n_literals + 2) * sizeof(gchar *));
+	  symbol_arr = (gchar **) g_realloc(symbol_arr,
+					    (n_literals + 2) * sizeof(gchar *));
 
-	  literals[n_literals] = g_strdup(tmp_literal);
-	  literals[n_literals + 1] = NULL;
+	  symbol_arr[n_literals] = g_strdup(tmp_literal);
+	  symbol_arr[n_literals + 1] = NULL;
 
 #ifdef AGS_DEBUG	    
-	  g_message("found %s", literals[n_literals]);
+	  g_message("found %s", symbol_arr[n_literals]);
 #endif
 	    
 	  n_literals++;
@@ -1033,7 +2435,7 @@ ags_math_util_find_symbol_all(gchar *str)
     g_free(current_literal);
   }
 
-  return(literals);
+  return(symbol_arr);
 }
 
 /**
@@ -1127,7 +2529,7 @@ ags_math_util_split_polynomial(gchar *polynomial,
   static const gchar *numeric_pattern = "^[\\s]*([0-9]+(\\.[0-9]+)?)";
   
   /* groups: #1 constants */
-  static const gchar *constants_pattern = "^[\\s]*([ℯ𝜋𝑖])";
+  static const gchar *constants_pattern = "^[\\s]*([ℯ𝜋𝑖∞])";
 
   /* groups: #1 exponent operator, #2 exponent */
   static const gchar *exponent_pattern = "^[\\s]*(\\^)[\\s]*(\\([^)(]*+(?:(?R)[^)(]*)*+\\))";

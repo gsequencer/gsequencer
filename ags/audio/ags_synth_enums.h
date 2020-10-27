@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#define AGS_TYPE_SYNTH_OSCILLATOR_MODE               (ags_synth_oscillator_mode_get_type())
+
 G_BEGIN_DECLS
 
 /**
@@ -46,6 +48,8 @@ typedef enum{
   AGS_SYNTH_OSCILLATOR_IMPULSE,
   AGS_SYNTH_OSCILLATOR_LAST,
 }AgsSynthOscillatorMode;
+
+GType ags_synth_oscillator_mode_get_type();
 
 G_END_DECLS
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -91,6 +91,29 @@ ags_security_context_get_type()
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_security_context_mode_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_SECURITY_CONTEXT_RPC_READ, "AGS_SECURITY_CONTEXT_RPC_READ", "security-context-rpc-read" },
+      { AGS_SECURITY_CONTEXT_RPC_WRITE, "AGS_SECURITY_CONTEXT_RPC_WRITE", "security-context-rpc-write" },
+      { AGS_SECURITY_CONTEXT_RPC_EXECUTE, "AGS_SECURITY_CONTEXT_RPC_EXECUTE", "security-context-rpc-execute" },
+      { AGS_SECURITY_CONTEXT_ACCOUNT_READ, "AGS_SECURITY_CONTEXT_ACCOUNT_READ", "security-context-account-read" },
+      { AGS_SECURITY_CONTEXT_ACCOUNT_WRITE, "AGS_SECURITY_CONTEXT_ACCOUNT_WRITE", "security-context-account-write" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsSecurityContextMode"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void

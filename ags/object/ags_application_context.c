@@ -145,6 +145,27 @@ ags_application_context_get_type()
   return g_define_type_id__volatile;
 }
 
+GType
+ags_application_context_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY, "AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY", "application-context-added-to-registry" },
+      { AGS_APPLICATION_CONTEXT_CONNECTED, "AGS_APPLICATION_CONTEXT_CONNECTED", "application-context-connected" },
+      { AGS_APPLICATION_CONTEXT_TYPES_REGISTERED, "AGS_APPLICATION_CONTEXT_TYPES_REGISTERED", "application-context-types-registered" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsApplicationContextFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_application_context_class_init(AgsApplicationContextClass *application_context)
 {

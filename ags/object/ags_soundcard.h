@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SOUNDCARD                    (ags_soundcard_get_type())
+#define AGS_TYPE_SOUNDCARD_FORMAT             (ags_soundcard_format_get_type())
+#define AGS_TYPE_SOUNDCARD_CAPABILITY         (ags_soundcard_capability_get_type())
 #define AGS_SOUNDCARD(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOUNDCARD, AgsSoundcard))
 #define AGS_SOUNDCARD_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_SOUNDCARD, AgsSoundcardInterface))
 #define AGS_IS_SOUNDCARD(obj)                 (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_SOUNDCARD))
@@ -223,6 +225,8 @@ struct _AgsSoundcardInterface
 };
 
 GType ags_soundcard_get_type();
+GType ags_soundcard_format_get_type();
+GType ags_soundcard_capability_get_type();
 
 void ags_soundcard_set_device(AgsSoundcard *soundcard,
 			      gchar *card_id);

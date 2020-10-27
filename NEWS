@@ -10,6 +10,13 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
+Overview of Changes in AGS 3.6.0
+================================
+
+* Implemented AgsGstreamerFile capable of reading or writing common media file
+  types like MP3, MP4, MKV and WEBM.
+* Started to implement get type functions of enum values.
+
 Overview of Changes in AGS 3.4.0
 ================================
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -591,6 +591,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
   guint copy_mode;
   guint64 relative_offset;
   guint64 x_point_offset;
+  guint64 current_offset;
   guint frame_count;
   guint audio_channels;
   guint target_samplerate, samplerate;
@@ -685,26 +686,27 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 			      wave);
     
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * target_samplerate;
-        
-    frame_count = target_buffer_size;
-
+    
     x_point_offset = x_offset;
       
-    success = TRUE;
+    current_offset = 0;
     
-    while(success){
+    while(current_offset < frame_count){
       AgsBuffer *buffer;
-      
+
+      guint read_count;
       guint num_read;
       gboolean create_wave;
       
       create_wave = FALSE;
-      
-      if(x_point_offset + frame_count > relative_offset * floor(x_point_offset / relative_offset) + relative_offset){
-	frame_count = relative_offset * floor((x_point_offset + frame_count) / relative_offset) - x_point_offset;
+
+      read_count = target_buffer_size;
+  
+      if(x_point_offset + read_count > relative_offset * floor(x_point_offset / relative_offset) + relative_offset){
+	read_count = relative_offset * floor((x_point_offset + read_count) / relative_offset) - x_point_offset;
 
 	create_wave = TRUE;
-      }else if(x_point_offset + frame_count == relative_offset * floor(x_point_offset / relative_offset) + relative_offset){
+      }else if(x_point_offset + read_count == relative_offset * floor(x_point_offset / relative_offset) + relative_offset){
 	create_wave = TRUE;
       }
       
@@ -744,17 +746,19 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 
 	ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
 						    target_data, 1, 0,
-						    frame_count, copy_mode);
-
-	num_read = (guint) (ceil((double) num_read / (double) buffer_size * (double) frame_count));
+						    target_buffer_size, copy_mode);
       }else{
 	num_read = ags_sound_resource_read(AGS_SOUND_RESOURCE(sound_resource),
 					   buffer->data, 1,
 					   i,
-					   frame_count, target_format);
+					   read_count, target_format);
       }
-      //      g_message("read %d[%d-%d]: %d", frame_count, i, i_stop, num_read);
+      //      g_message("read %d[%d-%d]: %d", read_count, i, i_stop, num_read);
 
+      if(num_read == 0){
+	break;
+      }
+      
       ags_wave_add_buffer(wave,
 			  buffer,
 			  FALSE);
@@ -774,24 +778,19 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 		     "timestamp", &timestamp,
 		     NULL);
 	ags_timestamp_set_ags_offset(timestamp,
-				     (guint64) relative_offset * floor((x_point_offset + frame_count) / relative_offset));
+				     (guint64) relative_offset * floor((x_point_offset + read_count) / relative_offset));
 	
 	g_object_unref(timestamp);
 
 	start_list = ags_wave_add(start_list,
 				  wave);
+
       }
-      
+            
       /* iterate */
-      x_point_offset += frame_count;
+      x_point_offset += read_count;
 
-      if(num_read < frame_count){
-	success = FALSE;
-      }
-
-      if(frame_count != target_buffer_size){
-	frame_count = target_buffer_size;
-      }
+      current_offset += num_read;
     }
   }
   

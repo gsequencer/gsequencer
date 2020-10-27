@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #define AGS_TYPE_TIMESTAMP                (ags_timestamp_get_type())
+#define AGS_TYPE_TIMESTAMP_FLAGS          (ags_timestamp_flags_get_type())
 #define AGS_TIMESTAMP(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TIMESTAMP, AgsTimestamp))
 #define AGS_TIMESTAMP_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TIMESTAMP, AgsTimestampClass))
 #define AGS_IS_TIMESTAMP(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_TIMESTAMP))
@@ -77,6 +78,7 @@ struct _AgsTimestampClass
 };
 
 GType ags_timestamp_get_type(void);
+GType ags_timestamp_flags_get_type(void);
 
 /* flags */
 gboolean ags_timestamp_test_flags(AgsTimestamp *timestamp,

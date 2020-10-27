@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,6 +64,9 @@ void ags_ladspa_manager_set_default_path(gchar** default_path);
 gchar** ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager);
 AgsLadspaPlugin* ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
 						       gchar *filename, gchar *effect);
+AgsLadspaPlugin* ags_ladspa_manager_find_ladspa_plugin_with_fallback(AgsLadspaManager *ladspa_manager,
+								     gchar *filename, gchar *effect);
+
 
 void ags_ladspa_manager_load_blacklist(AgsLadspaManager *ladspa_manager,
 				       gchar *blacklist_filename);
@@ -72,6 +75,8 @@ void ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
 				  gchar *ladspa_path,
 				  gchar *filename);
 void ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager);
+
+GList* ags_ladspa_manager_get_ladspa_plugin(AgsLadspaManager *ladspa_manager);
 
 /*  */
 AgsLadspaManager* ags_ladspa_manager_get_instance();

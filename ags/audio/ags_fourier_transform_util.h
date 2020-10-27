@@ -254,7 +254,10 @@ void ags_fourier_transform_util_compute_stft_float(gfloat *buffer, guint channel
 						   AgsComplex **retval);
 void ags_fourier_transform_util_compute_stft_double(gdouble *buffer, guint channels,
 						    guint buffer_length,
-						    AgsComplex **retval);
+ 						    AgsComplex **retval);
+void ags_fourier_transform_util_compute_stft_complex(AgsComplex *buffer, guint channels,
+						     guint buffer_length,
+						     AgsComplex **retval);
 
 void ags_fourier_transform_util_inverse_stft_s8(AgsComplex *buffer, guint channels,
 						guint buffer_length,
@@ -277,6 +280,9 @@ void ags_fourier_transform_util_inverse_stft_float(AgsComplex *buffer, guint cha
 void ags_fourier_transform_util_inverse_stft_double(AgsComplex *buffer, guint channels,
 						    guint buffer_length,
 						    gdouble **retval);
+void ags_fourier_transform_util_inverse_stft_complex(AgsComplex *buffer, guint channels,
+						     guint buffer_length,
+						     AgsComplex **retval);
 
 G_END_DECLS
 

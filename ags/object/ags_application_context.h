@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,9 +29,12 @@
 
 #include <ags/object/ags_config.h>
 
+#include <unistd.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_APPLICATION_CONTEXT                (ags_application_context_get_type())
+#define AGS_TYPE_APPLICATION_CONTEXT_FLAGS          (ags_application_context_flags_get_type())
 #define AGS_APPLICATION_CONTEXT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPLICATION_CONTEXT, AgsApplicationContext))
 #define AGS_APPLICATION_CONTEXT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_APPLICATION_CONTEXT, AgsApplicationContextClass))
 #define AGS_IS_APPLICATION_CONTEXT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_APPLICATION_CONTEXT))
@@ -116,6 +119,7 @@ struct _AgsApplicationContextClass
 };
 
 GType ags_application_context_get_type();
+GType ags_application_context_flags_get_type();
 
 gboolean ags_application_context_test_flags(AgsApplicationContext *application_context, guint flags);
 void ags_application_context_set_flags(AgsApplicationContext *application_context, guint flags);

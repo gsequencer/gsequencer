@@ -86,3 +86,12 @@ ags_wave_export_dialog_cancel_callback(GtkWidget *widget, AgsWaveExportDialog *w
 
   return(0);
 }
+
+gboolean
+ags_wave_export_dialog_delete_event(GtkWidget *widget, GdkEventAny *event,
+				    AgsWaveExportDialog *wave_export_dialog)
+{
+  wave_export_dialog->machine->wave_export_dialog = NULL;
+
+  return(TRUE);
+}

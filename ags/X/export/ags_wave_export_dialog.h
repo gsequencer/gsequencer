@@ -45,6 +45,13 @@ G_BEGIN_DECLS
 #define AGS_WAVE_EXPORT_DIALOG_FORMAT_FLAC "flac"
 #define AGS_WAVE_EXPORT_DIALOG_FORMAT_AIFF "aiff"
 #define AGS_WAVE_EXPORT_DIALOG_FORMAT_OGG "ogg"
+#define AGS_WAVE_EXPORT_DIALOG_FORMAT_OGG "ogg"
+#define AGS_WAVE_EXPORT_DIALOG_FORMAT_MP3 "mp3"
+#define AGS_WAVE_EXPORT_DIALOG_FORMAT_AAC "aac"
+#define AGS_WAVE_EXPORT_DIALOG_FORMAT_MP4 "mp4"
+#define AGS_WAVE_EXPORT_DIALOG_FORMAT_MKV "mkv"
+#define AGS_WAVE_EXPORT_DIALOG_FORMAT_WEBM "webm"
+#define AGS_WAVE_EXPORT_DIALOG_FORMAT_MPEG "mpg"
 
 typedef struct _AgsWaveExportDialog AgsWaveExportDialog;
 typedef struct _AgsWaveExportDialogClass AgsWaveExportDialogClass;

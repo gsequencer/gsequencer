@@ -365,6 +365,50 @@ ags_fourier_transform_util_compute_stft_double(gdouble *buffer, guint channels,
 }
 
 /**
+ * ags_fourier_transform_util_compute_stft_complex:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @retval: the return location of result
+ * 
+ * Compute fourier transform of @buffer.
+ * 
+ * Since: 3.6.0
+ */
+void
+ags_fourier_transform_util_compute_stft_complex(AgsComplex *buffer, guint channels,
+						guint buffer_length,
+						AgsComplex **retval)
+{
+  guint n;
+  guint i, i_stop;
+
+  if(buffer == NULL ||
+     retval == NULL ||
+     retval[0] == NULL){
+    return;
+  }
+
+  i_stop = channels * buffer_length;
+  
+  for(i = 0, n = 0; i < i_stop; i += channels, n++){
+    complex z;
+    gdouble h;
+    gdouble k;
+    gdouble r;
+
+    k = (gdouble) n;
+    r = (gdouble) n;
+
+    h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);
+    
+    z = (ags_complex_get(buffer + i) * M_PI) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r);
+
+    ags_complex_set(retval[0] + i, z);
+  }
+}
+
+/**
  * ags_fourier_transform_util_inverse_stft_s8:
  * @buffer: the complex data
  * @channels: number of audio channels
@@ -665,5 +709,48 @@ ags_fourier_transform_util_inverse_stft_double(AgsComplex *buffer, guint channel
     y = (z * cexp(I * 2.0 * M_PI * k * n));
 
     retval[0][i] = y / M_PI;
+  }
+}
+
+/**
+ * ags_fourier_transform_util_inverse_stft_complex:
+ * @buffer: the complex data
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @retval: the return location of result
+ * 
+ * Compute inverse fourier transform of @buffer.
+ * 
+ * Since: 3.6.0
+ */
+void
+ags_fourier_transform_util_inverse_stft_complex(AgsComplex *buffer, guint channels,
+						guint buffer_length,
+						AgsComplex **retval)
+{
+  guint n;
+  guint i, i_stop;
+
+  if(buffer == NULL ||
+     retval == NULL ||
+     retval[0] == NULL){
+    return;
+  }
+
+  i_stop = channels * buffer_length;
+  
+  for(i = 0, n = 0; i < i_stop; i += channels, n++){
+    complex z;
+    gdouble k;
+    gdouble y;
+
+    z = ags_complex_get(&(buffer[n]));
+
+    k = (gdouble) n;
+
+    y = (z * cexp(I * 2.0 * M_PI * k * n));
+
+    retval[0][i].real = y / M_PI;
+    retval[0][i].imag = 0.0;
   }
 }

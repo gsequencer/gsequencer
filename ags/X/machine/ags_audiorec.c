@@ -22,6 +22,7 @@
 
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_navigation.h>
 
 #include <string.h>
 
@@ -60,6 +61,8 @@ void ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
 				   guint audio_channel_start,
 				   guint input_pad_start);
 
+void* ags_audiorec_fast_export_run(void *ptr);
+
 /**
  * SECTION:ags_audiorec
  * @short_description: record audio data
@@ -75,6 +78,16 @@ static AgsConnectableInterface *ags_audiorec_parent_connectable_interface;
 
 GHashTable *ags_audiorec_wave_loader_completed = NULL;
 GHashTable *ags_audiorec_indicator_queue_draw = NULL;
+
+struct _AgsAudiorecFastExport
+{
+  AgsAudio *audio;
+
+  guint64 start_frame;
+  guint64 end_frame;
+  
+  AgsAudioFile *audio_file;  
+};
 
 GType
 ags_audiorec_get_type(void)
@@ -628,7 +641,12 @@ ags_audiorec_resize_pads(AgsMachine *machine,
 void
 ags_audiorec_map_recall(AgsMachine *machine)
 {
+  AgsNavigation *navigation;
+  AgsAudiorec *audiorec;
+  
   AgsAudio *audio;
+
+  AgsApplicationContext *application_context;
 
   GList *start_recall, *recall;
 
@@ -639,13 +657,19 @@ ags_audiorec_map_recall(AgsMachine *machine)
     return;
   }
 
+  application_context = ags_application_context_get_instance();
+
+  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
+
+  audiorec = AGS_AUDIOREC(machine);
+  
   audio = machine->audio;
 
   position = 0;
   
   /* ags-fx-playback */
   start_recall = ags_fx_factory_create(audio,
-				       AGS_AUDIOREC(machine)->playback_play_container, AGS_AUDIOREC(machine)->playback_recall_container,
+				       audiorec->playback_play_container, audiorec->playback_recall_container,
 				       "ags-fx-playback",
 				       NULL,
 				       NULL,
@@ -655,12 +679,85 @@ ags_audiorec_map_recall(AgsMachine *machine)
 				       (AGS_FX_FACTORY_ADD),
 				       0);
 
+  recall = start_recall;
+
+  while((recall = ags_recall_template_find_type(recall, AGS_TYPE_FX_PLAYBACK_AUDIO)) != NULL){
+    AgsPort *port;
+
+    GValue value = G_VALUE_INIT;
+    
+    /* loop */
+    port = NULL;
+    
+    g_object_get(recall->data,
+		 "loop", &port,
+		 NULL);
+
+    g_value_init(&value,
+		 G_TYPE_BOOLEAN);
+
+    g_value_set_boolean(&value,
+			gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
+
+    ags_port_safe_write(port,
+			&value);
+
+    if(port != NULL){
+      g_object_unref(port);
+    }
+    
+    /* loop start */
+    port = NULL;
+    
+    g_object_get(recall->data,
+		 "loop-start", &port,
+		 NULL);
+
+    g_value_unset(&value);
+    g_value_init(&value,
+		 G_TYPE_UINT64);
+
+    g_value_set_uint64(&value,
+		       16 * gtk_spin_button_get_value_as_int(navigation->loop_left_tact));
+
+    ags_port_safe_write(port,
+			&value);
+
+    if(port != NULL){
+      g_object_unref(port);
+    }
+    
+    /* loop end */
+    port = NULL;
+    
+    g_object_get(recall->data,
+		 "loop-end", &port,
+		 NULL);
+
+    g_value_unset(&value);
+    g_value_init(&value,
+		 G_TYPE_UINT64);
+
+    g_value_set_uint64(&value,
+		       16 * gtk_spin_button_get_value_as_int(navigation->loop_right_tact));
+
+    ags_port_safe_write(port,
+			&value);
+
+    if(port != NULL){
+      g_object_unref(port);
+    }
+
+    /* iterate */
+    recall = recall->next;
+  }
+
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
   /* ags-fx-peak */
   start_recall = ags_fx_factory_create(audio,
-				       AGS_AUDIOREC(machine)->peak_play_container, AGS_AUDIOREC(machine)->peak_recall_container,
+				       audiorec->peak_play_container, audiorec->peak_recall_container,
 				       "ags-fx-peak",
 				       NULL,
 				       NULL,
@@ -675,7 +772,7 @@ ags_audiorec_map_recall(AgsMachine *machine)
 
   /* ags-fx-buffer */
   start_recall = ags_fx_factory_create(audio,
-				       AGS_AUDIOREC(machine)->buffer_play_container, AGS_AUDIOREC(machine)->buffer_recall_container,
+				       audiorec->buffer_play_container, audiorec->buffer_recall_container,
 				       "ags-fx-buffer",
 				       NULL,
 				       NULL,
@@ -826,35 +923,22 @@ ags_audiorec_open_filename(AgsAudiorec *audiorec,
   ags_wave_loader_start(wave_loader);
 }
 
-/**
- * ags_audiorec_fast_export:
- * @audiorec: the #AgsAudiorec
- * @filename: the filename
- * @start_frame: the start frame
- * @end_frame: the end frame
- * 
- * Fast export @audiorec.
- * 
- * Since: 3.5.7
- */
-void
-ags_audiorec_fast_export(AgsAudiorec *audiorec,
-			 gchar *filename,
-			 guint64 start_frame, guint64 end_frame)
+void*
+ags_audiorec_fast_export_run(void *ptr)
 {
+  AgsAudio *audio;
   AgsBuffer *buffer;
   AgsAudioFile *audio_file;
 
   AgsTimestamp *timestamp;
 
-  AgsApplicationContext *application_context;
-  
-  GObject *soundcard;
+  struct _AgsAudiorecFastExport *fast_export;
 
   GList *start_wave, *end_wave, *wave;
   
   void *data;
   
+  guint64 start_frame, end_frame;  
   guint default_offset;
   guint destination_offset, source_offset;
   guint audio_channels;
@@ -865,47 +949,23 @@ ags_audiorec_fast_export(AgsAudiorec *audiorec,
   guint buffer_size;
   guint i, j;
 
-  if(!AGS_IS_AUDIOREC(audiorec) ||
-     filename == NULL){
-    return;
-  }
+  fast_export = ptr;
 
-  application_context = ags_application_context_get_instance();
+  audio = fast_export->audio;
 
-  soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  start_frame = fast_export->start_frame;
+  end_frame = fast_export->end_frame;
 
-  /* get some fields */
-  start_wave = NULL;
+  audio_file = fast_export->audio_file;
   
-  audio_channels = 1;
-
-  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  
-  g_object_get(AGS_MACHINE(audiorec)->audio,
+  g_object_get(audio,
 	       "wave", &start_wave,
 	       "audio-channels", &audio_channels,
 	       "samplerate", &samplerate,
 	       "format", &format,
 	       "buffer-size", &buffer_size,	       
-	       NULL);
-
-  if(g_file_test(filename,
-		 G_FILE_TEST_EXISTS)){
-    g_remove(filename);
-  }
-
-  audio_file = ags_audio_file_new(filename,
-				  soundcard,
-				  -1);
-
-  audio_file->file_audio_channels = audio_channels;
-  audio_file->file_samplerate = samplerate;  
+	       NULL);  
   
-  ags_audio_file_rw_open(audio_file,
-			 TRUE);
-
   default_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 
   timestamp = ags_timestamp_new();
@@ -983,6 +1043,92 @@ ags_audiorec_fast_export(AgsAudiorec *audiorec,
   
   ags_audio_file_flush(audio_file);
   ags_audio_file_close(audio_file);
+
+  g_thread_exit(NULL);
+
+  return(NULL);
+}
+
+/**
+ * ags_audiorec_fast_export:
+ * @audiorec: the #AgsAudiorec
+ * @filename: the filename
+ * @start_frame: the start frame
+ * @end_frame: the end frame
+ * 
+ * Fast export @audiorec.
+ * 
+ * Since: 3.5.7
+ */
+void
+ags_audiorec_fast_export(AgsAudiorec *audiorec,
+			 gchar *filename,
+			 guint64 start_frame, guint64 end_frame)
+{
+  AgsAudioFile *audio_file;
+
+  AgsApplicationContext *application_context;
+  
+  GObject *soundcard;
+
+  GThread *fast_export_thread;
+  
+  struct _AgsAudiorecFastExport *fast_export;  
+
+  guint audio_channels;
+  guint samplerate;
+  guint buffer_size;
+
+  if(!AGS_IS_AUDIOREC(audiorec) ||
+     filename == NULL){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+
+  soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  /* get some fields */
+  audio_channels = 1;
+
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  
+  g_object_get(AGS_MACHINE(audiorec)->audio,
+	       "audio-channels", &audio_channels,
+	       "samplerate", &samplerate,
+	       "buffer-size", &buffer_size,	       
+	       NULL);
+
+  if(g_file_test(filename,
+		 G_FILE_TEST_EXISTS)){
+    g_remove(filename);
+  }
+
+  audio_file = ags_audio_file_new(filename,
+				  soundcard,
+				  -1);
+
+  audio_file->file_audio_channels = audio_channels;
+  audio_file->file_samplerate = samplerate;  
+  
+  ags_audio_file_rw_open(audio_file,
+			 TRUE);
+
+  fast_export = g_malloc(sizeof(struct _AgsAudiorecFastExport));
+
+  fast_export->audio = AGS_MACHINE(audiorec)->audio;
+
+  fast_export->start_frame = start_frame;
+  fast_export->end_frame = end_frame;
+
+  fast_export->audio_file = audio_file;
+
+  fast_export_thread = g_thread_new("Advanced Gtk+ Sequencer - fast export",
+				    ags_audiorec_fast_export_run,
+				    fast_export);
+
+  g_thread_join(fast_export_thread);
 }
 
 /**

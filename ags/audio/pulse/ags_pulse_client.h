@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,7 @@
 
 #include <ags/config.h>
 
-#ifdef AGS_WITH_PULSE
+#if defined(AGS_WITH_PULSE)
 #include <pulse/pulseaudio.h>
 #include <pulse/stream.h>
 #include <pulse/error.h>
@@ -79,7 +79,7 @@ struct _AgsPulseClient
   gchar *client_uuid;
   gchar *client_name;
 
-#ifdef AGS_WITH_PULSE
+#if defined(AGS_WITH_PULSE)
   pa_context *context;
 #else
   gpointer context;

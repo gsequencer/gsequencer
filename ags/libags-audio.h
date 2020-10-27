@@ -124,6 +124,9 @@
 #include <ags/audio/file/ags_audio_container.h>
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_audio_file_link.h>
+#ifdef AGS_WITH_GSTREAMER
+#include <ags/audio/file/ags_gstreamer_file.h>
+#endif
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/audio/file/ags_ipatch.h>
 #include <ags/audio/file/ags_ipatch_gig_reader.h>
@@ -197,6 +200,15 @@
 #include <ags/audio/pulse/ags_pulse_devin.h>
 #include <ags/audio/pulse/ags_pulse_port.h>
 #include <ags/audio/pulse/ags_pulse_server.h>
+
+/* audio gstreamer */
+#ifdef AGS_WITH_GSTREAMER
+#include <ags/audio/gstreamer/ags_gstreamer_client.h>
+#include <ags/audio/gstreamer/ags_gstreamer_devout.h>
+#include <ags/audio/gstreamer/ags_gstreamer_devin.h>
+#include <ags/audio/gstreamer/ags_gstreamer_port.h>
+#include <ags/audio/gstreamer/ags_gstreamer_server.h>
+#endif
 
 /* audio jack */
 #include <ags/audio/jack/ags_jack_client.h>

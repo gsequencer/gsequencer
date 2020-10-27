@@ -1063,11 +1063,11 @@ ags_sndfile_info(AgsSoundResource *sound_resource,
   sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   if(loop_start != NULL){
-    *loop_start = 0;
+    loop_start[0] = 0;
   }
 
   if(loop_end != NULL){
-    *loop_end = 0;
+    loop_end[0] = 0;
   }
   
   g_rec_mutex_lock(sndfile_mutex);
@@ -1285,6 +1285,8 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
 
   /* get sndfile mutex */
   sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
+
+  total_frame_count = 0;
 
   ags_sound_resource_info(sound_resource,
 			  &total_frame_count,
@@ -1750,6 +1752,29 @@ ags_sndfile_vio_tell(const void *ptr, sf_count_t count, void *user_data)
   g_rec_mutex_unlock(sndfile_mutex);
 
   return(retval);
+}
+
+/**
+ * ags_sndfile_check_suffix:
+ * @filename: the filename
+ * 
+ * Check suffix.
+ * 
+ * Returns: %TRUE if suffix supported, else %FALSE
+ * 
+ * Since: 3.6.0
+ */
+gboolean
+ags_sndfile_check_suffix(gchar *filename)
+{
+  if(g_str_has_suffix(filename, ".wav") ||
+     g_str_has_suffix(filename, ".ogg") ||
+     g_str_has_suffix(filename, ".flac") ||
+     g_str_has_suffix(filename, ".aiff")){
+    return(TRUE);
+  }
+
+  return(FALSE);
 }
 
 /**

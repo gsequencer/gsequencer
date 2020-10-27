@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,10 @@
 
 #include <gdk/gdk.h>
 #include <pango/pangocairo.h>
+
+#if defined(AGS_WITH_GSTREAMER)
+#include <gst/gst.h>
+#endif
 
 #include <gtk/gtk.h>
 
@@ -164,6 +168,10 @@ main(int argc, char **argv)
   
   //ao_initialize();
 
+#if defined(AGS_WITH_GSTREAMER)
+  gst_init (&argc, &argv);
+#endif
+  
   //  gdk_threads_enter();
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);

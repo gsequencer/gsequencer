@@ -1112,7 +1112,7 @@ ags_audio_thread_set_sound_scope(AgsAudioThread *audio_thread,
 }
 
 /**
- * ags_audio_thread_scope_data_free:
+ * ags_audio_thread_scope_data_alloc:
  * 
  * Allocate the #AgsAudioThreadScopeData-struct.
  * 
@@ -1190,7 +1190,7 @@ ags_audio_thread_get_do_fx_staging(AgsAudioThread *audio_thread)
 /**
  * ags_audio_thread_set_do_fx_staging:
  * @audio_thread: the #AgsAudioThread
- * @do_fx_staging: %TRUE if do fx staging, else %FALSe
+ * @do_fx_staging: %TRUE if do fx staging, else %FALSE
  * 
  * Set do fx staging.
  * 

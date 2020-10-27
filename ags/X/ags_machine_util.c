@@ -1312,7 +1312,7 @@ ags_machine_util_new_live_lv2_bridge(gchar *filename, gchar *effect)
 }
 
 /**
- * ags_machine_util_new_live_lv2_bridge:
+ * ags_machine_util_new_by_type_name:
  * @machine_type_name: the machine type name
  * @filename: the filename
  * @effect: the effect

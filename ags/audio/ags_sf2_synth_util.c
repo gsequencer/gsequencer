@@ -221,6 +221,7 @@ ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 /**
  * ags_sf2_synth_util_copy_s8:
  * @buffer: the audio buffer
+ * @buffer_size: the audio buffer size
  * @ipatch_sample: the #AgsIpatchSample
  * @note: the note
  * @volume: the volume of the sin wave

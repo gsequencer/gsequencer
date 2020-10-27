@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,26 @@
  *
  * Some common routines dealing with endiannes.
  */
+
+GType
+ags_byte_order_get_type()
+{
+  static volatile gsize g_enum_type_id__volatile;
+
+  if(g_once_init_enter (&g_enum_type_id__volatile)){
+    static const GEnumValue values[] = {
+      { AGS_BYTE_ORDER_LE, "AGS_BYTE_ORDER_LE", "byte-order-le" },
+      { AGS_BYTE_ORDER_BE, "AGS_BYTE_ORDER_BE", "byte-order-be" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsByteOrder"), values);
+
+    g_once_init_leave (&g_enum_type_id__volatile, g_enum_type_id);
+  }
+  
+  return g_enum_type_id__volatile;
+}
 
 /**
  * ags_endian_host_is_le:

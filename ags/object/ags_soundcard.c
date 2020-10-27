@@ -60,6 +60,53 @@ ags_soundcard_get_type()
   return g_define_type_id__volatile;
 }
 
+GType
+ags_soundcard_format_get_type()
+{
+  static volatile gsize g_enum_type_id__volatile;
+
+  if(g_once_init_enter (&g_enum_type_id__volatile)){
+    static const GEnumValue values[] = {
+      { AGS_SOUNDCARD_SIGNED_8_BIT, "AGS_SOUNDCARD_SIGNED_8_BIT", "soundcard-signed-8-bit" },
+      { AGS_SOUNDCARD_SIGNED_16_BIT, "AGS_SOUNDCARD_SIGNED_16_BIT", "soundcard-signed-16-bit" },
+      { AGS_SOUNDCARD_SIGNED_24_BIT, "AGS_SOUNDCARD_SIGNED_24_BIT", "soundcard-signed-24-bit" },
+      { AGS_SOUNDCARD_SIGNED_32_BIT, "AGS_SOUNDCARD_SIGNED_32_BIT", "soundcard-signed-32-bit" },
+      { AGS_SOUNDCARD_SIGNED_64_BIT, "AGS_SOUNDCARD_SIGNED_64_BIT", "soundcard-signed-64-bit" },
+      { AGS_SOUNDCARD_FLOAT, "AGS_SOUNDCARD_FLOAT", "soundcard-float" },
+      { AGS_SOUNDCARD_DOUBLE, "AGS_SOUNDCARD_DOUBLE", "soundcard-double" },
+      { AGS_SOUNDCARD_COMPLEX, "AGS_SOUNDCARD_COMPLEX", "soundcard-complex" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsSoundcardFormat"), values);
+
+    g_once_init_leave (&g_enum_type_id__volatile, g_enum_type_id);
+  }
+  
+  return g_enum_type_id__volatile;
+}
+
+GType
+ags_soundcard_capability_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_SOUNDCARD_CAPABILITY_PLAYBACK, "AGS_SOUNDCARD_CAPABILITY_PLAYBACK", "soundcard-capability-playback" },
+      { AGS_SOUNDCARD_CAPABILITY_CAPTURE, "AGS_SOUNDCARD_CAPABILITY_CAPTURE", "soundcard-capability-capture" },
+      { AGS_SOUNDCARD_CAPABILITY_DUPLEX, "AGS_SOUNDCARD_CAPABILITY_DUPLEX", "soundcard-capability-duplex" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsSoundcardCapability"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 GQuark
 ags_soundcard_error_quark()
 {

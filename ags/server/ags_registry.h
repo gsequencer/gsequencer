@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,7 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_REGISTRY                (ags_registry_get_type())
+#define AGS_TYPE_REGISTRY_FLAGS          (ags_registry_flags_get_type())
 #define AGS_REGISTRY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_REGISTRY, AgsRegistry))
 #define AGS_REGISTRY_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_REGISTRY, AgsRegistryClass))
 #define AGS_IS_REGISTRY(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_REGISTRY))
@@ -87,6 +88,7 @@ struct _AgsRegistryEntry
 };
 
 GType ags_registry_get_type();
+GType ags_registry_flags_get_type();
 
 AgsRegistryEntry* ags_registry_entry_alloc();
 void ags_registry_entry_free(AgsRegistryEntry *registry_entry);

@@ -43,6 +43,12 @@ G_BEGIN_DECLS
 #define AGS_EXPORT_SOUNDCARD_FORMAT_FLAC "flac"
 #define AGS_EXPORT_SOUNDCARD_FORMAT_AIFF "aiff"
 #define AGS_EXPORT_SOUNDCARD_FORMAT_OGG "ogg"
+#define AGS_EXPORT_SOUNDCARD_FORMAT_MP3 "mp3"
+#define AGS_EXPORT_SOUNDCARD_FORMAT_AAC "aac"
+#define AGS_EXPORT_SOUNDCARD_FORMAT_MP4 "mp4"
+#define AGS_EXPORT_SOUNDCARD_FORMAT_MKV "mkv"
+#define AGS_EXPORT_SOUNDCARD_FORMAT_WEBM "webm"
+#define AGS_EXPORT_SOUNDCARD_FORMAT_MPEG "mpg"
  
 typedef struct _AgsExportSoundcard AgsExportSoundcard;
 typedef struct _AgsExportSoundcardClass AgsExportSoundcardClass;

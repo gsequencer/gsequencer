@@ -25,10 +25,17 @@
 
 #include <ags/libags.h>
 
+#define AGS_TYPE_SOUND_ABILITY_FLAGS       (ags_sound_ability_flags_get_type())
+#define AGS_TYPE_SOUND_BEHAVIOUR_FLAGS     (ags_sound_behaviour_flags_get_type())
+#define AGS_TYPE_SOUND_SCOPE               (ags_sound_scope_get_type())
+#define AGS_TYPE_SOUND_STAGING_FLAGS       (ags_sound_staging_flags_get_type())
+#define AGS_TYPE_SOUND_STATE_FLAGS         (ags_sound_state_flags_get_type())
+#define AGS_TYPE_SOUND_KEY_FORMAT          (ags_sound_key_format_get_type())
+
 G_BEGIN_DECLS
 
 /**
- * AgsSoundAbilityFlags:
+ * AgsSoundAbilityFlags: 
  * @AGS_SOUND_ABILITY_PLAYBACK: playback ability
  * @AGS_SOUND_ABILITY_SEQUENCER: sequenecer ability
  * @AGS_SOUND_ABILITY_NOTATION: notation abilitiy
@@ -55,12 +62,12 @@ typedef enum{
  * @AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT: defaults to input
  * @AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: chained to output
  * @AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT: chained to input
- * @AGS_SOUND_BEHAVIOUR_PERSISTENT: persistend
- * @AGS_SOUND_BEHAVIOUR_PERSISTENT_PLAYBACK: persistend playback
- * @AGS_SOUND_BEHAVIOUR_PERSISTENT_NOTATION: persistend notation
- * @AGS_SOUND_BEHAVIOUR_PERSISTENT_SEQUENCER: persistend sequencer
- * @AGS_SOUND_BEHAVIOUR_PERSISTENT_WAVE: persistend wave
- * @AGS_SOUND_BEHAVIOUR_PERSISTENT_MIDI: persistend MIDI
+ * @AGS_SOUND_BEHAVIOUR_PERSISTENT: persistent
+ * @AGS_SOUND_BEHAVIOUR_PERSISTENT_PLAYBACK: persistent playback
+ * @AGS_SOUND_BEHAVIOUR_PERSISTENT_NOTATION: persistent notation
+ * @AGS_SOUND_BEHAVIOUR_PERSISTENT_SEQUENCER: persistent sequencer
+ * @AGS_SOUND_BEHAVIOUR_PERSISTENT_WAVE: persistent wave
+ * @AGS_SOUND_BEHAVIOUR_PERSISTENT_MIDI: persistent MIDI
  * @AGS_SOUND_BEHAVIOUR_PROPAGATE_DONE: propagate done
  * 
  * Enum values to describe behaviour.
@@ -159,6 +166,25 @@ typedef enum{
   AGS_SOUND_STATE_IS_PROCESSING               = 1 <<  2,
   AGS_SOUND_STATE_IS_TERMINATING              = 1 <<  3,
 }AgsSoundStateFlags;
+
+/**
+ * AgsSoundKeyFormat:
+ * @AGS_SOUND_KEY_FORMAT_16TH: key format 16th
+ * @AGS_SOUND_KEY_FORMAT_256TH: key format 256th
+ * 
+ * Enum values to specify key format.
+ */
+typedef enum{
+  AGS_SOUND_KEY_FORMAT_16TH,
+  AGS_SOUND_KEY_FORMAT_256TH,
+}AgsSoundKeyFormat;
+
+GType ags_sound_ability_flags_get_type();
+GType ags_sound_behaviour_flags_get_type();
+GType ags_sound_scope_get_type();
+GType ags_sound_staging_flags_get_type();
+GType ags_sound_state_flags_get_type();
+GType ags_sound_key_format_get_type();
 
 G_END_DECLS
 

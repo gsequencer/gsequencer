@@ -25,6 +25,7 @@
 
 #include <ags/audio/file/ags_sound_resource.h>
 #include <ags/audio/file/ags_sndfile.h>
+#include <ags/audio/file/ags_gstreamer_file.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -990,10 +991,8 @@ ags_audio_file_unset_flags(AgsAudioFile *audio_file, guint flags)
 gboolean
 ags_audio_file_check_suffix(gchar *filename)
 {
-  if(g_str_has_suffix(filename, ".wav") ||
-     g_str_has_suffix(filename, ".ogg") ||
-     g_str_has_suffix(filename, ".flac") ||
-     g_str_has_suffix(filename, ".aiff")){
+  if(ags_sndfile_check_suffix(filename) ||
+     ags_gstreamer_file_check_suffix(filename)){
     return(TRUE);
   }
 
@@ -1179,7 +1178,7 @@ ags_audio_file_open(AgsAudioFile *audio_file)
   retval = FALSE;
   
   if(g_file_test(filename, G_FILE_TEST_EXISTS)){
-    if(ags_audio_file_check_suffix(filename)){
+    if(ags_sndfile_check_suffix(filename)){
       g_rec_mutex_lock(audio_file_mutex);
       
       sound_resource = 
@@ -1212,8 +1211,41 @@ ags_audio_file_open(AgsAudioFile *audio_file)
 
 	retval = TRUE;
       }
+    }else if(ags_gstreamer_file_check_suffix(filename)){
+      g_rec_mutex_lock(audio_file_mutex);
+      
+      sound_resource = 
+	audio_file->sound_resource = (GObject *) ags_gstreamer_file_new();
+      g_object_ref(audio_file->sound_resource);
+
+      g_rec_mutex_unlock(audio_file_mutex);
+    
+      if(ags_sound_resource_open(AGS_SOUND_RESOURCE(sound_resource),
+				 filename)){
+	//FIXME:JK: this call should occure just before reading frames because of the new iterate functions of an AgsPlayable
+	ags_sound_resource_info(AGS_SOUND_RESOURCE(sound_resource),
+				&file_frame_count,
+				NULL, NULL);
+
+	g_object_set(audio_file,
+		     "file-frame-count", file_frame_count,
+		     NULL);
+
+	ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sound_resource),
+				       &file_audio_channels,
+				       &file_samplerate,
+				       NULL,
+				       NULL);
+
+	g_object_set(audio_file,
+		     "file-audio-channels", file_audio_channels,
+		     "file-samplerate", file_samplerate,
+		     NULL);
+
+	retval = TRUE;
+      }
     }else{
-      g_message("ags_audio_file_open: unknown file type\n");
+      g_message("ags_audio_file_open: unknown file type");
     }
   }
 
@@ -1274,7 +1306,7 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
 
   retval = FALSE;
   
-  if(ags_audio_file_check_suffix(audio_file->filename)){
+  if(ags_sndfile_check_suffix(audio_file->filename)){
     GError *error;
     guint loop_start, loop_end;
 
@@ -1293,8 +1325,27 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
 				  create)){
       retval = TRUE;
     }
+  }else if(ags_gstreamer_file_check_suffix(audio_file->filename)){
+    GError *error;
+    guint loop_start, loop_end;
+
+    /* sound resource */
+    g_rec_mutex_lock(audio_file_mutex);
+
+    sound_resource = 
+      audio_file->sound_resource = (GObject *) ags_gstreamer_file_new();
+    g_object_ref(audio_file->sound_resource);
+
+    g_rec_mutex_unlock(audio_file_mutex);
+
+    if(ags_sound_resource_rw_open(AGS_SOUND_RESOURCE(sound_resource),
+				  filename,
+				  file_audio_channels, file_samplerate,
+				  create)){
+      retval = TRUE;
+    }
   }else{
-    g_message("ags_audio_file_open: unknown file type\n");
+    g_message("ags_audio_file_open: unknown file type");
   }
 
   g_free(filename);
@@ -1347,7 +1398,7 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
   retval = FALSE;
 
   if(data != NULL){
-    if(ags_audio_file_check_suffix(filename)){
+    if(ags_sndfile_check_suffix(filename)){
       guint loop_start, loop_end;
 
       GError *error;
@@ -1401,8 +1452,23 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
 
 	retval = TRUE;
       }
+    }else if(ags_gstreamer_file_check_suffix(filename)){
+      guint loop_start, loop_end;
+
+      GError *error;
+      
+      g_rec_mutex_lock(audio_file_mutex);
+      
+      sound_resource = 
+	audio_file->sound_resource = (GObject *) ags_gstreamer_file_new();
+
+      g_object_ref(audio_file->sound_resource);
+
+      g_rec_mutex_unlock(audio_file_mutex);
+
+      //TODO:JK: implement me
     }else{
-      g_message("ags_audio_file_open: unknown file type\n");
+      g_message("ags_audio_file_open: unknown file type");
     }
   }
 
