@@ -69,6 +69,7 @@ struct _AgsLv2ConversionClass
 };
 
 GType ags_lv2_conversion_get_type(void);
+GType ags_lv2_conversion_flags_get_type();
 
 gboolean ags_lv2_conversion_test_flags(AgsLv2Conversion *lv2_conversion, guint flags);
 void ags_lv2_conversion_set_flags(AgsLv2Conversion *lv2_conversion, guint flags);

@@ -90,6 +90,28 @@ ags_ladspa_conversion_get_type(void)
   return g_define_type_id__volatile;
 }
 
+GType
+ags_ladspa_conversion_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_LADSPA_CONVERSION_SAMPLERATE, "AGS_LADSPA_CONVERSION_SAMPLERATE", "ladspa-conversion-samplerate" },
+      { AGS_LADSPA_CONVERSION_BOUNDED_BELOW, "AGS_LADSPA_CONVERSION_BOUNDED_BELOW", "ladspa-conversion-bounded-below" },
+      { AGS_LADSPA_CONVERSION_BOUNDED_ABOVE, "AGS_LADSPA_CONVERSION_BOUNDED_ABOVE", "ladspa-conversion-bounded-above" },
+      { AGS_LADSPA_CONVERSION_LOGARITHMIC, "AGS_LADSPA_CONVERSION_LOGARITHMIC", "ladspa-conversion-logarithmic" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsLadspaConversionFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_ladspa_conversion_class_init(AgsLadspaConversionClass *ladspa_conversion)
 {

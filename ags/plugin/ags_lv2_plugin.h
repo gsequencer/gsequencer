@@ -117,6 +117,7 @@ struct _AgsLv2PluginClass
 };
 
 GType ags_lv2_plugin_get_type(void);
+GType ags_lv2_plugin_flags_get_type();
 
 gboolean ags_lv2_plugin_test_flags(AgsLv2Plugin *lv2_plugin, guint flags);
 void ags_lv2_plugin_set_flags(AgsLv2Plugin *lv2_plugin, guint flags);

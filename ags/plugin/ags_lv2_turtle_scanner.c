@@ -178,6 +178,28 @@ ags_lv2_turtle_scanner_get_type (void)
   return g_define_type_id__volatile;
 }
 
+GType
+ags_lv2_turtle_scanner_status_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_LV2_TURTLE_SCANNER_A, "AGS_LV2_TURTLE_SCANNER_IS_SYNTHESIZER", "lv2-turtle-scanner-a" },
+      { AGS_LV2_TURTLE_SCANNER_SEEALSO, "AGS_LV2_TURTLE_SCANNER_IS_SYNTHESIZER", "lv2-turtle-scanner-seealso" },
+      { AGS_LV2_TURTLE_SCANNER_BINARY, "AGS_LV2_TURTLE_SCANNER_IS_SYNTHESIZER", "lv2-turtle-scanner-binary" },
+      { AGS_LV2_TURTLE_SCANNER_NAME, "AGS_LV2_TURTLE_SCANNER_NAME", "lv2-turtle-scanner-name" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsLv2TurtleScannerStatusFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_lv2_turtle_scanner_class_init(AgsLv2TurtleScannerClass *lv2_turtle_scanner)
 {

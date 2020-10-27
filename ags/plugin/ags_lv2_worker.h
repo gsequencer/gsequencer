@@ -87,6 +87,7 @@ struct _AgsLv2WorkerResponseData
 };
 
 GType ags_lv2_worker_get_type(void);
+GType ags_lv2_worker_flags_get_type();
 
 gboolean ags_lv2_worker_test_flags(AgsLv2Worker *lv2_worker, guint flags);
 void ags_lv2_worker_set_flags(AgsLv2Worker *lv2_worker, guint flags);

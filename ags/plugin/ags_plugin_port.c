@@ -94,6 +94,39 @@ ags_plugin_port_get_type (void)
   return g_define_type_id__volatile;
 }
 
+GType
+ags_plugin_port_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_PLUGIN_PORT_ATOM, "AGS_PLUGIN_PORT_ATOM", "plugin-port-atom" },
+      { AGS_PLUGIN_PORT_AUDIO, "AGS_PLUGIN_PORT_AUDIO", "plugin-port-audio" },
+      { AGS_PLUGIN_PORT_CONTROL, "AGS_PLUGIN_PORT_CONTROL", "plugin-port-control" },
+      { AGS_PLUGIN_PORT_MIDI, "AGS_PLUGIN_PORT_MIDI", "plugin-port-midi" },
+      { AGS_PLUGIN_PORT_EVENT, "AGS_PLUGIN_PORT_EVENT", "plugin-port-event" },
+      { AGS_PLUGIN_PORT_OUTPUT, "AGS_PLUGIN_PORT_OUTPUT", "plugin-port-output" },
+      { AGS_PLUGIN_PORT_INPUT, "AGS_PLUGIN_PORT_INPUT", "plugin-port-input" },
+      { AGS_PLUGIN_PORT_TOGGLED, "AGS_PLUGIN_PORT_TOGGLED", "plugin-port-toggled" },
+      { AGS_PLUGIN_PORT_ENUMERATION, "AGS_PLUGIN_PORT_ENUMERATION", "plugin-port-enumeration" },
+      { AGS_PLUGIN_PORT_LOGARITHMIC, "AGS_PLUGIN_PORT_LOGARITHMIC", "plugin-port-logarithmic" },
+      { AGS_PLUGIN_PORT_INTEGER, "AGS_PLUGIN_PORT_INTEGER", "plugin-port-integer" },
+      { AGS_PLUGIN_PORT_SAMPLERATE, "AGS_PLUGIN_PORT_SAMPLERATE", "plugin-port-samplerate" },
+      { AGS_PLUGIN_PORT_BOUNDED_BELOW, "AGS_PLUGIN_PORT_BOUNDED_BELOW", "plugin-port-bounded-below" },
+      { AGS_PLUGIN_PORT_BOUNDED_ABOVE, "AGS_PLUGIN_PORT_BOUNDED_ABOVE", "plugin-port-bounded-above" },
+      { AGS_PLUGIN_PORT_UI_NOTIFICATION, "AGS_PLUGIN_PORT_UI_NOTIFICATION", "plugin-port-ui-notification" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsPluginPortFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
 {

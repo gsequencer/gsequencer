@@ -111,6 +111,7 @@ struct _AgsBasePluginClass
 };
 
 GType ags_base_plugin_get_type(void);
+GType ags_base_plugin_flags_get_type();
 
 GRecMutex* ags_base_plugin_get_obj_mutex(AgsBasePlugin *base_plugin);
 
