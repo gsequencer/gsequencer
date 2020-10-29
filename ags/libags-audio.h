@@ -56,6 +56,7 @@
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_devin.h>
 #include <ags/audio/ags_diatonic_scale.h>
+#include <ags/audio/ags_fast_pitch_util.h>
 #include <ags/audio/ags_fifoout.h>
 #include <ags/audio/ags_filter_util.h>
 #include <ags/audio/ags_fm_synth_util.h>

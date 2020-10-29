@@ -24,6 +24,7 @@ static_tests = [
   'ags_functional_audio_test',
   'ags_functional_fourier_transform_test',
   'ags_functional_pitch_test',
+  'ags_functional_fast_pitch_test',
   'ags_input_test',
   'ags_midiin_test',
   'ags_midi_test',

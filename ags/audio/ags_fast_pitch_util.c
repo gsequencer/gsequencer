@@ -27,13 +27,13 @@
 #include <complex.h>
 
 /**
- * SECTION:ags_filter_util
- * @short_description: filter util
- * @title: AgsFilterUtil
+ * SECTION:ags_fast_pitch_util
+ * @short_description: fast pitch util
+ * @title: AgsFastPitchUtil
  * @section_id:
- * @include: ags/audio/ags_filter_util.h
+ * @include: ags/audio/ags_fast_pitch_util.h
  *
- * Utility functions to compute filters.
+ * Utility functions to pitch.
  */
 
 /**
@@ -64,7 +64,7 @@ ags_fast_pitch_util_compute_s8(gint8 *buffer,
   gdouble offset_factor, im_offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
-  guint i;
+  guint i, j;
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -141,10 +141,14 @@ ags_fast_pitch_util_compute_s8(gint8 *buffer,
   }
 
   /* im mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gint8 z, mix_z, im_z;
     gdouble phase, im_phase;
     guint start_x;
+
+    if(j >= im_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -177,7 +181,7 @@ ags_fast_pitch_util_compute_s8(gint8 *buffer,
     z = mix_buffer[i];
     mix_z = ptr_mix_buffer[0];
 
-    t = (im_freq_period / freq_period);
+    t = ((j / im_offset_factor) - j) / (freq_period - im_freq_period);
     
     im_z = (1.0 - t) * z + (t * mix_z);
     
@@ -185,10 +189,14 @@ ags_fast_pitch_util_compute_s8(gint8 *buffer,
   }
 
   /* low mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gint8 z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
+
+    if(j >= low_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -221,7 +229,7 @@ ags_fast_pitch_util_compute_s8(gint8 *buffer,
     z = mix_buffer[i];
     mix_z = ptr_mix_buffer[0];
 
-    t = (low_freq_period / freq_period);
+    t = low_freq_period / freq_period;
     
     low_z = (1.0 - t) * z + (t * mix_z);
     
@@ -229,10 +237,14 @@ ags_fast_pitch_util_compute_s8(gint8 *buffer,
   }
   
   /* new mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gint8 new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
+
+    if(j >= new_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -308,12 +320,10 @@ ags_fast_pitch_util_compute_s8(gint8 *buffer,
     ptr_new_mix_buffer = new_mix_buffer + i;
 
     /* write new mix buffer */
-    if(ptr_mix_buffer->real != 0.0){
+    if(ptr_mix_buffer[0] != 0){
       new_z = (1.0 / 2.0) * (new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_im_mix_buffer[0] / im_freq_period) / (ptr_mix_buffer[0] / freq_period)) + (1.0 / 2.0) * (new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_low_mix_buffer[0] / low_freq_period) / (ptr_mix_buffer[0] / freq_period));
     }else{
-      t = (im_freq_period / freq_period);
-
-      new_z = (1.0 - t) * ptr_mix_buffer[0] + (t * ptr_im_mix_buffer[0]);
+      new_z = 0;
     }
     
     ptr_new_mix_buffer[0] = new_z;
@@ -364,7 +374,7 @@ ags_fast_pitch_util_compute_s16(gint16 *buffer,
   gdouble offset_factor, im_offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
-  guint i;
+  guint i, j;
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -441,11 +451,15 @@ ags_fast_pitch_util_compute_s16(gint16 *buffer,
   }
 
   /* im mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gint16 z, mix_z, im_z;
     gdouble phase, im_phase;
     guint start_x;
 
+    if(j >= im_freq_period){
+      j = 0;
+    }
+    
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
     }else{
@@ -477,7 +491,7 @@ ags_fast_pitch_util_compute_s16(gint16 *buffer,
     z = mix_buffer[i];
     mix_z = ptr_mix_buffer[0];
 
-    t = (im_freq_period / freq_period);
+    t = ((j / im_offset_factor) - j) / (freq_period - im_freq_period);
     
     im_z = (1.0 - t) * z + (t * mix_z);
     
@@ -485,10 +499,14 @@ ags_fast_pitch_util_compute_s16(gint16 *buffer,
   }
 
   /* low mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gint16 z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
+
+    if(j >= low_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -521,7 +539,7 @@ ags_fast_pitch_util_compute_s16(gint16 *buffer,
     z = mix_buffer[i];
     mix_z = ptr_mix_buffer[0];
 
-    t = (low_freq_period / freq_period);
+    t = low_freq_period / freq_period;
     
     low_z = (1.0 - t) * z + (t * mix_z);
     
@@ -529,10 +547,14 @@ ags_fast_pitch_util_compute_s16(gint16 *buffer,
   }
   
   /* new mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gint16 new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
+
+    if(j >= new_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -608,12 +630,10 @@ ags_fast_pitch_util_compute_s16(gint16 *buffer,
     ptr_new_mix_buffer = new_mix_buffer + i;
 
     /* write new mix buffer */
-    if(ptr_mix_buffer->real != 0.0){
+    if(ptr_mix_buffer[0] != 0){
       new_z = (1.0 / 2.0) * (new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_im_mix_buffer[0] / im_freq_period) / (ptr_mix_buffer[0] / freq_period)) + (1.0 / 2.0) * (new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_low_mix_buffer[0] / low_freq_period) / (ptr_mix_buffer[0] / freq_period));
     }else{
-      t = (im_freq_period / freq_period);
-
-      new_z = (1.0 - t) * ptr_mix_buffer[0] + (t * ptr_im_mix_buffer[0]);
+      new_z = 0;
     }
     
     ptr_new_mix_buffer[0] = new_z;
@@ -664,7 +684,7 @@ ags_fast_pitch_util_compute_s24(gint32 *buffer,
   gdouble offset_factor, im_offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
-  guint i;
+  guint i, j;
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -741,10 +761,14 @@ ags_fast_pitch_util_compute_s24(gint32 *buffer,
   }
 
   /* im mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gint32 z, mix_z, im_z;
     gdouble phase, im_phase;
     guint start_x;
+
+    if(j >= im_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -777,7 +801,7 @@ ags_fast_pitch_util_compute_s24(gint32 *buffer,
     z = mix_buffer[i];
     mix_z = ptr_mix_buffer[0];
 
-    t = (im_freq_period / freq_period);
+    t = ((j / im_offset_factor) - j) / (freq_period - im_freq_period);
     
     im_z = (1.0 - t) * z + (t * mix_z);
     
@@ -785,10 +809,14 @@ ags_fast_pitch_util_compute_s24(gint32 *buffer,
   }
 
   /* low mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gint32 z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
+
+    if(j >= low_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -821,7 +849,7 @@ ags_fast_pitch_util_compute_s24(gint32 *buffer,
     z = mix_buffer[i];
     mix_z = ptr_mix_buffer[0];
 
-    t = (low_freq_period / freq_period);
+    t = low_freq_period / freq_period;
     
     low_z = (1.0 - t) * z + (t * mix_z);
     
@@ -829,10 +857,14 @@ ags_fast_pitch_util_compute_s24(gint32 *buffer,
   }
   
   /* new mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gint32 new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
+
+    if(j >= new_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -908,12 +940,10 @@ ags_fast_pitch_util_compute_s24(gint32 *buffer,
     ptr_new_mix_buffer = new_mix_buffer + i;
 
     /* write new mix buffer */
-    if(ptr_mix_buffer->real != 0.0){
+    if(ptr_mix_buffer[0] != 0){
       new_z = (1.0 / 2.0) * (new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_im_mix_buffer[0] / im_freq_period) / (ptr_mix_buffer[0] / freq_period)) + (1.0 / 2.0) * (new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_low_mix_buffer[0] / low_freq_period) / (ptr_mix_buffer[0] / freq_period));
     }else{
-      t = (im_freq_period / freq_period);
-
-      new_z = (1.0 - t) * ptr_mix_buffer[0] + (t * ptr_im_mix_buffer[0]);
+      new_z = 0;
     }
     
     ptr_new_mix_buffer[0] = new_z;
@@ -964,7 +994,7 @@ ags_fast_pitch_util_compute_s32(gint32 *buffer,
   gdouble offset_factor, im_offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
-  guint i;
+  guint i, j;
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -1041,10 +1071,14 @@ ags_fast_pitch_util_compute_s32(gint32 *buffer,
   }
 
   /* im mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gint32 z, mix_z, im_z;
     gdouble phase, im_phase;
     guint start_x;
+
+    if(j >= im_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -1077,7 +1111,7 @@ ags_fast_pitch_util_compute_s32(gint32 *buffer,
     z = mix_buffer[i];
     mix_z = ptr_mix_buffer[0];
 
-    t = (im_freq_period / freq_period);
+    t = ((j / im_offset_factor) - j) / (freq_period - im_freq_period);
     
     im_z = (1.0 - t) * z + (t * mix_z);
     
@@ -1085,10 +1119,14 @@ ags_fast_pitch_util_compute_s32(gint32 *buffer,
   }
 
   /* low mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gint32 z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
+
+    if(j >= low_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -1121,7 +1159,7 @@ ags_fast_pitch_util_compute_s32(gint32 *buffer,
     z = mix_buffer[i];
     mix_z = ptr_mix_buffer[0];
 
-    t = (low_freq_period / freq_period);
+    t = low_freq_period / freq_period;
     
     low_z = (1.0 - t) * z + (t * mix_z);
     
@@ -1129,10 +1167,14 @@ ags_fast_pitch_util_compute_s32(gint32 *buffer,
   }
   
   /* new mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gint32 new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
+
+    if(j >= new_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -1208,12 +1250,10 @@ ags_fast_pitch_util_compute_s32(gint32 *buffer,
     ptr_new_mix_buffer = new_mix_buffer + i;
 
     /* write new mix buffer */
-    if(ptr_mix_buffer->real != 0.0){
+    if(ptr_mix_buffer[0] != 0){
       new_z = (1.0 / 2.0) * (new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_im_mix_buffer[0] / im_freq_period) / (ptr_mix_buffer[0] / freq_period)) + (1.0 / 2.0) * (new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_low_mix_buffer[0] / low_freq_period) / (ptr_mix_buffer[0] / freq_period));
     }else{
-      t = (im_freq_period / freq_period);
-
-      new_z = (1.0 - t) * ptr_mix_buffer[0] + (t * ptr_im_mix_buffer[0]);
+      new_z = 0;
     }
     
     ptr_new_mix_buffer[0] = new_z;
@@ -1264,7 +1304,7 @@ ags_fast_pitch_util_compute_s64(gint64 *buffer,
   gdouble offset_factor, im_offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
-  guint i;
+  guint i, j;
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -1341,10 +1381,14 @@ ags_fast_pitch_util_compute_s64(gint64 *buffer,
   }
 
   /* im mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gint64 z, mix_z, im_z;
     gdouble phase, im_phase;
     guint start_x;
+
+    if(j >= im_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -1377,7 +1421,7 @@ ags_fast_pitch_util_compute_s64(gint64 *buffer,
     z = mix_buffer[i];
     mix_z = ptr_mix_buffer[0];
 
-    t = (im_freq_period / freq_period);
+    t = ((j / im_offset_factor) - j) / (freq_period - im_freq_period);
     
     im_z = (1.0 - t) * z + (t * mix_z);
     
@@ -1385,7 +1429,7 @@ ags_fast_pitch_util_compute_s64(gint64 *buffer,
   }
 
   /* low mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gint64 z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
@@ -1421,18 +1465,22 @@ ags_fast_pitch_util_compute_s64(gint64 *buffer,
     z = mix_buffer[i];
     mix_z = ptr_mix_buffer[0];
 
-    t = (low_freq_period / freq_period);
-    
+    t = low_freq_period / freq_period;
+
     low_z = (1.0 - t) * z + (t * mix_z);
     
     ptr_low_mix_buffer[0] = low_z;
   }
   
   /* new mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gint64 new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
+
+    if(j >= new_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -1508,12 +1556,10 @@ ags_fast_pitch_util_compute_s64(gint64 *buffer,
     ptr_new_mix_buffer = new_mix_buffer + i;
 
     /* write new mix buffer */
-    if(ptr_mix_buffer->real != 0.0){
+    if(ptr_mix_buffer[0] = 0){
       new_z = (1.0 / 2.0) * (new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_im_mix_buffer[0] / im_freq_period) / (ptr_mix_buffer[0] / freq_period)) + (1.0 / 2.0) * (new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_low_mix_buffer[0] / low_freq_period) / (ptr_mix_buffer[0] / freq_period));
     }else{
-      t = (im_freq_period / freq_period);
-
-      new_z = (1.0 - t) * ptr_mix_buffer[0] + (t * ptr_im_mix_buffer[0]);
+      new_z = 0;
     }
     
     ptr_new_mix_buffer[0] = new_z;
@@ -1564,7 +1610,7 @@ ags_fast_pitch_util_compute_float(gfloat *buffer,
   gdouble offset_factor, im_offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
-  guint i;
+  guint i, j;
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -1641,10 +1687,14 @@ ags_fast_pitch_util_compute_float(gfloat *buffer,
   }
 
   /* im mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gfloat z, mix_z, im_z;
     gdouble phase, im_phase;
     guint start_x;
+
+    if(j >= im_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -1677,7 +1727,7 @@ ags_fast_pitch_util_compute_float(gfloat *buffer,
     z = mix_buffer[i];
     mix_z = ptr_mix_buffer[0];
 
-    t = (im_freq_period / freq_period);
+    t = ((j / im_offset_factor) - j) / (freq_period - im_freq_period);
     
     im_z = (1.0 - t) * z + (t * mix_z);
     
@@ -1685,10 +1735,14 @@ ags_fast_pitch_util_compute_float(gfloat *buffer,
   }
 
   /* low mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gfloat z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
+
+    if(j >= low_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -1721,7 +1775,7 @@ ags_fast_pitch_util_compute_float(gfloat *buffer,
     z = mix_buffer[i];
     mix_z = ptr_mix_buffer[0];
 
-    t = (low_freq_period / freq_period);
+    t = low_freq_period / freq_period;
     
     low_z = (1.0 - t) * z + (t * mix_z);
     
@@ -1729,10 +1783,14 @@ ags_fast_pitch_util_compute_float(gfloat *buffer,
   }
   
   /* new mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gfloat new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
+
+    if(j >= new_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -1808,12 +1866,10 @@ ags_fast_pitch_util_compute_float(gfloat *buffer,
     ptr_new_mix_buffer = new_mix_buffer + i;
 
     /* write new mix buffer */
-    if(ptr_mix_buffer->real != 0.0){
+    if(ptr_mix_buffer[0] != 0.0){
       new_z = (1.0 / 2.0) * (new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_im_mix_buffer[0] / im_freq_period) / (ptr_mix_buffer[0] / freq_period)) + (1.0 / 2.0) * (new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_low_mix_buffer[0] / low_freq_period) / (ptr_mix_buffer[0] / freq_period));
     }else{
-      t = (im_freq_period / freq_period);
-
-      new_z = (1.0 - t) * ptr_mix_buffer[0] + (t * ptr_im_mix_buffer[0]);
+      new_z = 0.0;
     }
     
     ptr_new_mix_buffer[0] = new_z;
@@ -1864,7 +1920,7 @@ ags_fast_pitch_util_compute_double(gdouble *buffer,
   gdouble offset_factor, im_offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
-  guint i;
+  guint i, j;
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -1941,10 +1997,14 @@ ags_fast_pitch_util_compute_double(gdouble *buffer,
   }
 
   /* im mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gfloat z, mix_z, im_z;
     gdouble phase, im_phase;
     guint start_x;
+
+    if(j >= im_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -1977,7 +2037,7 @@ ags_fast_pitch_util_compute_double(gdouble *buffer,
     z = mix_buffer[i];
     mix_z = ptr_mix_buffer[0];
 
-    t = (im_freq_period / freq_period);
+    t = ((j / im_offset_factor) - j) / (freq_period - im_freq_period);
     
     im_z = (1.0 - t) * z + (t * mix_z);
     
@@ -1985,10 +2045,14 @@ ags_fast_pitch_util_compute_double(gdouble *buffer,
   }
 
   /* low mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gdouble z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
+
+    if(j >= low_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -2021,18 +2085,22 @@ ags_fast_pitch_util_compute_double(gdouble *buffer,
     z = mix_buffer[i];
     mix_z = ptr_mix_buffer[0];
 
-    t = (low_freq_period / freq_period);
-    
+    t = low_freq_period / freq_period;
+        
     low_z = (1.0 - t) * z + (t * mix_z);
     
     ptr_low_mix_buffer[0] = low_z;
   }
   
   /* new mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gdouble new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
+
+    if(j >= new_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -2108,12 +2176,10 @@ ags_fast_pitch_util_compute_double(gdouble *buffer,
     ptr_new_mix_buffer = new_mix_buffer + i;
 
     /* write new mix buffer */
-    if(ptr_mix_buffer->real != 0.0){
+    if(ptr_mix_buffer[0] != 0.0){
       new_z = (1.0 / 2.0) * (new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_im_mix_buffer[0] / im_freq_period) / (ptr_mix_buffer[0] / freq_period)) + (1.0 / 2.0) * (new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_low_mix_buffer[0] / low_freq_period) / (ptr_mix_buffer[0] / freq_period));
     }else{
-      t = (im_freq_period / freq_period);
-
-      new_z = (1.0 - t) * ptr_mix_buffer[0] + (t * ptr_im_mix_buffer[0]);
+      new_z = 0.0;
     }
     
     ptr_new_mix_buffer[0] = new_z;
@@ -2164,7 +2230,7 @@ ags_fast_pitch_util_compute_complex(AgsComplex *buffer,
   gdouble offset_factor, im_offset_factor, low_offset_factor, new_offset_factor;
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
-  guint i;
+  guint i, j;
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -2241,10 +2307,14 @@ ags_fast_pitch_util_compute_complex(AgsComplex *buffer,
   }
 
   /* im mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     gdouble z, mix_z, im_z;
     gdouble phase, im_phase;
     guint start_x;
+
+    if(j >= im_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -2277,7 +2347,7 @@ ags_fast_pitch_util_compute_complex(AgsComplex *buffer,
     z = ags_complex_get(mix_buffer + i);
     mix_z = ags_complex_get(ptr_mix_buffer);
 
-    t = (im_freq_period / freq_period);
+    t = ((j / im_offset_factor) - j) / (freq_period - im_freq_period);
     
     im_z = (1.0 - t) * z + (t * mix_z);
     
@@ -2285,10 +2355,14 @@ ags_fast_pitch_util_compute_complex(AgsComplex *buffer,
   }
 
   /* low mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     double complex z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
+
+    if(j >= low_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -2321,7 +2395,7 @@ ags_fast_pitch_util_compute_complex(AgsComplex *buffer,
     z = ags_complex_get(mix_buffer + i);
     mix_z = ags_complex_get(ptr_mix_buffer);
 
-    t = (low_freq_period / freq_period);
+    t = low_freq_period / freq_period;
     
     low_z = (1.0 - t) * z + (t * mix_z);
     
@@ -2329,10 +2403,14 @@ ags_fast_pitch_util_compute_complex(AgsComplex *buffer,
   }
   
   /* new mix buffer */
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
     double complex new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
+
+    if(j >= new_freq_period){
+      j = 0;
+    }
 
     if(floor(freq_period) != 0.0){
       start_x = freq_period * floor((double) i / freq_period);
@@ -2411,9 +2489,7 @@ ags_fast_pitch_util_compute_complex(AgsComplex *buffer,
     if(ptr_mix_buffer->real != 0.0){
       new_z = (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_im_mix_buffer) / im_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)) + (1.0 / 2.0) * (new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period));
     }else{
-      t = (im_freq_period / freq_period);
-
-      new_z = (1.0 - t) * ags_complex_get(ptr_mix_buffer) + (t * ags_complex_get(ptr_im_mix_buffer));
+      new_z = 0.0 + I * 0.0;
     }
     
     ags_complex_set(ptr_new_mix_buffer,

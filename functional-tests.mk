@@ -21,6 +21,7 @@ check_PROGRAMS += \
 	ags_functional_server_test \
 	ags_functional_audio_test \
 	ags_functional_pitch_test \
+	ags_functional_fast_pitch_test \
 	ags_functional_fourier_transform_test \
 	ags_functional_osc_server_test \
 	ags_functional_osc_xmlrpc_server_test \
@@ -67,6 +68,12 @@ ags_functional_pitch_test_SOURCES = ags/test/audio/ags_functional_pitch_test.c
 ags_functional_pitch_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
 ags_functional_pitch_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_functional_pitch_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional fast pitch test
+ags_functional_fast_pitch_test_SOURCES = ags/test/audio/ags_functional_fast_pitch_test.c
+ags_functional_fast_pitch_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_functional_fast_pitch_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_fast_pitch_test_LDADD = $(gsequencer_functional_test_LDADD)
 
 # functional fourier transform test
 ags_functional_fourier_transform_test_SOURCES = ags/test/audio/ags_functional_fourier_transform_test.c
