@@ -80,6 +80,7 @@ struct _AgsBufferClass
 };
 
 GType ags_buffer_get_type();
+GType ags_buffer_flags_get_type();
 
 GRecMutex* ags_buffer_get_obj_mutex(AgsBuffer *buffer);
 

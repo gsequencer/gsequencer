@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -188,6 +188,7 @@ struct _AgsDevoutClass
 };
 
 GType ags_devout_get_type();
+GType ags_devout_flags_get_type();
 
 GQuark ags_devout_error_quark();
 

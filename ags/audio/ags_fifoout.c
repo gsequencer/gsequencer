@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
-  * Copyright (C) 2005-2019 Joël Krähemann
+  * Copyright (C) 2005-2020 Joël Krähemann
   *
   * This file is part of GSequencer.
   *
@@ -225,6 +225,36 @@ ags_fifoout_get_type (void)
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_fifoout_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_FIFOOUT_ADDED_TO_REGISTRY, "AGS_FIFOOUT_ADDED_TO_REGISTRY", "fifoout-added-to-registry" },
+      { AGS_FIFOOUT_CONNECTED, "AGS_FIFOOUT_CONNECTED", "fifoout-connected" },
+      { AGS_FIFOOUT_BUFFER0, "AGS_FIFOOUT_BUFFER0", "fifoout-buffer0" },
+      { AGS_FIFOOUT_BUFFER1, "AGS_FIFOOUT_BUFFER1", "fifoout-buffer1" },
+      { AGS_FIFOOUT_BUFFER2, "AGS_FIFOOUT_BUFFER2", "fifoout-buffer2" },
+      { AGS_FIFOOUT_BUFFER3, "AGS_FIFOOUT_BUFFER3", "fifoout-buffer3" },
+      { AGS_FIFOOUT_ATTACK_FIRST, "AGS_FIFOOUT_ATTACK_FIRST", "fifoout-attack-first" },
+      { AGS_FIFOOUT_PLAY, "AGS_FIFOOUT_PLAY", "fifoout-play" },
+      { AGS_FIFOOUT_SHUTDOWN, "AGS_FIFOOUT_SHUTDOWN", "fifoout-shutdown" },
+      { AGS_FIFOOUT_START_PLAY, "AGS_FIFOOUT_START_PLAY", "fifoout-start-play" },
+      { AGS_FIFOOUT_NONBLOCKING, "AGS_FIFOOUT_NONBLOCKING", "fifoout-nonblocking" },
+      { AGS_FIFOOUT_INITIALIZED, "AGS_FIFOOUT_INITIALIZED", "fifoout-initialized" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsFifooutFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
 }
 
 void

@@ -264,6 +264,38 @@ ags_devin_get_type (void)
   return g_define_type_id__volatile;
 }
 
+GType
+ags_devin_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_DEVIN_ADDED_TO_REGISTRY, "AGS_DEVIN_ADDED_TO_REGISTRY", "devin-added-to-registry" },
+      { AGS_DEVIN_CONNECTED, "AGS_DEVIN_CONNECTED", "devin-connected" },
+      { AGS_DEVIN_BUFFER0, "AGS_DEVIN_BUFFER0", "devin-buffer0" },
+      { AGS_DEVIN_BUFFER1, "AGS_DEVIN_BUFFER1", "devin-buffer1" },
+      { AGS_DEVIN_BUFFER2, "AGS_DEVIN_BUFFER2", "devin-buffer2" },
+      { AGS_DEVIN_BUFFER3, "AGS_DEVIN_BUFFER3", "devin-buffer3" },
+      { AGS_DEVIN_ATTACK_FIRST, "AGS_DEVIN_ATTACK_FIRST", "devin-attack-first" },
+      { AGS_DEVIN_RECORD, "AGS_DEVIN_RECORD", "devin-record" },
+      { AGS_DEVIN_OSS, "AGS_DEVIN_OSS", "devin-oss" },
+      { AGS_DEVIN_ALSA, "AGS_DEVIN_ALSA", "devin-alsa" },
+      { AGS_DEVIN_SHUTDOWN, "AGS_DEVIN_SHUTDOWN", "devin-shutdown" },
+      { AGS_DEVIN_START_RECORD, "AGS_DEVIN_START_RECORD", "devin-start-record" },
+      { AGS_DEVIN_NONBLOCKING, "AGS_DEVIN_NONBLOCKING", "devin-nonblocking" },
+      { AGS_DEVIN_INITIALIZED, "AGS_DEVIN_INITIALIZED", "devin-initialized" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsDevinFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_devin_class_init(AgsDevinClass *devin)
 {

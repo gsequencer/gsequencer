@@ -108,6 +108,7 @@ struct _AgsAutomationClass
 };
 
 GType ags_automation_get_type(void);
+GType ags_automation_flags_get_type(void);
 
 GRecMutex* ags_automation_get_obj_mutex(AgsAutomation *automation);
 

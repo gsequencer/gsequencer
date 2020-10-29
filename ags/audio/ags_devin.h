@@ -181,6 +181,7 @@ struct _AgsDevinClass
 };
 
 GType ags_devin_get_type();
+GType ags_devin_flags_get_type();
 
 GQuark ags_devin_error_quark();
 

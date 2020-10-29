@@ -350,6 +350,39 @@ ags_audio_get_type (void)
   return g_define_type_id__volatile;
 }
 
+GType
+ags_audio_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_AUDIO_ADDED_TO_REGISTRY, "AGS_AUDIO_ADDED_TO_REGISTRY", "audio-added-to-registry" },
+      { AGS_AUDIO_CONNECTED, "AGS_AUDIO_CONNECTED", "audio-connected" },
+      { AGS_AUDIO_NO_OUTPUT, "AGS_AUDIO_NO_OUTPUT", "audio-no-output" },
+      { AGS_AUDIO_NO_INPUT, "AGS_AUDIO_NO_INPUT", "audio-no-input" },
+      { AGS_AUDIO_SYNC, "AGS_AUDIO_SYNC", "audio-sync" },
+      { AGS_AUDIO_ASYNC, "AGS_AUDIO_ASYNC", "audio-async" },
+      { AGS_AUDIO_OUTPUT_HAS_RECYCLING, "AGS_AUDIO_OUTPUT_HAS_RECYCLING", "audio-output-has-recycling" },
+      { AGS_AUDIO_OUTPUT_HAS_SYNTH, "AGS_AUDIO_OUTPUT_HAS_SYNTH", "audio-output-has-synth" },
+      { AGS_AUDIO_INPUT_HAS_RECYCLING, "AGS_AUDIO_INPUT_HAS_RECYCLING", "audio-input-has-recycling" },
+      { AGS_AUDIO_INPUT_HAS_SYNTH, "AGS_AUDIO_INPUT_HAS_SYNTH", "audio-input-has-synth" },
+      { AGS_AUDIO_INPUT_HAS_FILE, "AGS_AUDIO_INPUT_HAS_FILE", "audio-input-has-file" },
+      { AGS_AUDIO_CAN_NEXT_ACTIVE, "AGS_AUDIO_CAN_NEXT_ACTIVE", "audio-can-next-active" },
+      { AGS_AUDIO_SKIP_OUTPUT, "AGS_AUDIO_SKIP_OUTPUT", "audio-skip-output" },
+      { AGS_AUDIO_SKIP_INPUT, "AGS_AUDIO_SKIP_INPUT", "audio-skip-input" },
+      { AGS_AUDIO_BYPASS, "AGS_AUDIO_BYPASS", "audio-bypass" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsAudioFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_audio_class_init(AgsAudioClass *audio)
 {

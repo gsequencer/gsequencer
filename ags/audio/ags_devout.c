@@ -283,6 +283,38 @@ ags_devout_get_type (void)
   return g_define_type_id__volatile;
 }
 
+GType
+ags_devout_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_DEVOUT_ADDED_TO_REGISTRY, "AGS_DEVOUT_ADDED_TO_REGISTRY", "devout-added-to-registry" },
+      { AGS_DEVOUT_CONNECTED, "AGS_DEVOUT_CONNECTED", "devout-connected" },
+      { AGS_DEVOUT_BUFFER0, "AGS_DEVOUT_BUFFER0", "devout-buffer0" },
+      { AGS_DEVOUT_BUFFER1, "AGS_DEVOUT_BUFFER1", "devout-buffer1" },
+      { AGS_DEVOUT_BUFFER2, "AGS_DEVOUT_BUFFER2", "devout-buffer2" },
+      { AGS_DEVOUT_BUFFER3, "AGS_DEVOUT_BUFFER3", "devout-buffer3" },
+      { AGS_DEVOUT_ATTACK_FIRST, "AGS_DEVOUT_ATTACK_FIRST", "devout-attack-first" },
+      { AGS_DEVOUT_PLAY, "AGS_DEVOUT_PLAY", "devout-play" },
+      { AGS_DEVOUT_OSS, "AGS_DEVOUT_OSS", "devout-oss" },
+      { AGS_DEVOUT_ALSA, "AGS_DEVOUT_ALSA", "devout-alsa" },
+      { AGS_DEVOUT_SHUTDOWN, "AGS_DEVOUT_SHUTDOWN", "devout-shutdown" },
+      { AGS_DEVOUT_START_PLAY, "AGS_DEVOUT_START_PLAY", "devout-start-play" },
+      { AGS_DEVOUT_NONBLOCKING, "AGS_DEVOUT_NONBLOCKING", "devout-nonblocking" },
+      { AGS_DEVOUT_INITIALIZED, "AGS_DEVOUT_INITIALIZED", "devout-initialized" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsDevoutFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_devout_class_init(AgsDevoutClass *devout)
 {
