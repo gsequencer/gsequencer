@@ -3,6 +3,8 @@ ags (3.6.2)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented ags_fast_pitch_util.[ch]
 	* implemented some get type functions of enum values
+	* refactored ags_sf2_synth_util.c
+	* refactored ags_sfz_synth_util.c
 
 ags (3.6.1)
 
