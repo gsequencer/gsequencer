@@ -257,9 +257,11 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
   GtkAllocation allocation;
 
   cairo_t *cr;
-  
-  gchar *pdf_uri;
 
+  gchar *data;
+  gchar *pdf_filename;
+
+  gsize length;
   gint num_pages, i;
   gdouble width, height;
   gint max_width, max_height;
@@ -315,19 +317,62 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 		  (GtkWidget *) online_help_window->pdf_hscrollbar,
 		  0, 1,
 		  1, 1);
-  
-#ifdef AGS_ONLINE_HELP_PDF_URI
-  pdf_uri = g_strdup(AGS_ONLINE_HELP_PDF_URI);
+
+#ifdef AGS_ONLINE_HELP_PDF_FILENAME
+  pdf_filename = g_strdup(AGS_ONLINE_HELP_PDF_FILENAME);
 #else
-  if((pdf_uri = getenv("AGS_ONLINE_HELP_PDF_URI")) != NULL){
-    pdf_uri = g_strdup(pdf_uri);
+  if((pdf_filename = getenv("AGS_ONLINE_HELP_PDF_FILENAME")) != NULL){
+    pdf_filename = g_strdup(pdf_filename);
   }else{
-    pdf_uri = g_strdup_printf("file://%s%s", DOCDIR, "/pdf/user-manual.pdf");
+#if defined (AGS_W32API)
+    AgsApplicationContext *application_context;
+    
+    gchar *app_dir;
+    
+    application_context = ags_application_context_get_instance();
+
+    app_dir = NULL;
+
+    if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
+      app_dir = g_strndup(application_context->argv[0],
+			  strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
+    }
+  
+    pdf_filename = g_strdup_printf("%s\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual.pdf",
+				   g_get_current_dir());
+    
+    if(!g_file_test(pdf_filename,
+		    G_FILE_TEST_IS_REGULAR)){
+      g_free(pdf_filename);
+
+      if(g_path_is_absolute(app_dir)){
+	pdf_filename = g_strdup_printf("%s\\%s",
+				       app_dir,
+				       "\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual.pdf");
+      }else{
+	pdf_filename = g_strdup_printf("%s\\%s\\%s",
+				       g_get_current_dir(),
+				       app_dir,
+				       "\\share\\doc\\gsequencer-doc\\pdf\\ags-user-manual.pdf");
+      }
+    }
+
+    g_free(app_dir);
+#else  
+    pdf_filename = g_strdup_printf("%s%s", DOCDIR, "/pdf/user-manual.pdf");
+#endif
   }
 #endif
+
+  error = NULL;
+  g_file_get_contents(pdf_filename,
+		      &data,
+		      &length,
+		      &error);
   
   error = NULL;
-  online_help_window->pdf_document = poppler_document_new_from_file(pdf_uri,
+  online_help_window->pdf_document = poppler_document_new_from_data(data,
+								    length,
 								    NULL,
 								    &error);
 
