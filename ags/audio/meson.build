@@ -20,6 +20,7 @@ audio_sources = files(
   'ags_devin.c',
   'ags_devout.c',
   'ags_diatonic_scale.c',
+  'ags_fast_pitch_util.c',
   'ags_fifoout.c',
   'ags_filter_util.c',
   'ags_fm_synth_util.c',
