@@ -67,6 +67,7 @@ audio_sources = files(
   'ags_sf2_synth_util.c',
   'ags_sfz_synth_generator.c',
   'ags_sfz_synth_util.c',
+  'ags_sound_enums.c',
   'ags_soundcard_util.c',
   'ags_sound_provider.c',
   'ags_synth_generator.c',
