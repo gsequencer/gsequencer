@@ -1,6 +1,7 @@
 ags (3.6.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added some getter/setter to AgsPiano
 	* minor improvements
 
 ags (3.6.5)

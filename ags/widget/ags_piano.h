@@ -121,6 +121,14 @@ struct _AgsPianoClass
 
 GType ags_piano_get_type(void);
 
+void ags_piano_set_button_state(AgsPiano *piano,
+				guint button_state);
+guint ags_piano_get_button_state(AgsPiano *piano);
+
+void ags_piano_set_layout(AgsPiano *piano,
+			  guint layout);
+guint ags_piano_get_layout(AgsPiano *piano);
+
 /* getter and setter */
 void ags_piano_set_base_note(AgsPiano *piano,
 			     gchar *base_note);

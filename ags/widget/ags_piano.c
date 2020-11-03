@@ -1368,6 +1368,86 @@ ags_piano_draw(AgsPiano *piano, cairo_t *cr)
 }
 
 /**
+ * ags_piano_set_button_state:
+ * @piano: the #AgsPiano
+ * @button_state: the #AgsPianoButtonState-enum
+ * 
+ * Set @button_state of @piano.
+ * 
+ * Since: 3.6.6
+ */
+void
+ags_piano_set_button_state(AgsPiano *piano,
+			   guint button_state)
+{
+  if(!AGS_IS_PIANO(piano)){
+    return;
+  }
+
+  piano->button_state = button_state;
+}
+
+/**
+ * ags_piano_get_button_state:
+ * @piano: the #AgsPiano
+ * 
+ * Get mouse button state of @piano.
+ * 
+ * Returns: the button state
+ * 
+ * Since: 3.6.6
+ */
+guint
+ags_piano_get_button_state(AgsPiano *piano)
+{
+  if(!AGS_IS_PIANO(piano)){
+    return(0);
+  }
+
+  return(piano->button_state);
+}
+
+/**
+ * ags_piano_set_layout:
+ * @piano: the #AgsPiano
+ * @layout: the #AgsPianoButtonState-enum
+ * 
+ * Set @layout of @piano.
+ * 
+ * Since: 3.6.6
+ */
+void
+ags_piano_set_layout(AgsPiano *piano,
+		     guint layout)
+{
+  if(!AGS_IS_PIANO(piano)){
+    return;
+  }
+
+  piano->layout = layout;
+}
+
+/**
+ * ags_piano_get_layout:
+ * @piano: the #AgsPiano
+ * 
+ * Get vertical or horizontal layout of @piano.
+ * 
+ * Returns: the layout
+ * 
+ * Since: 3.6.6
+ */
+guint
+ags_piano_get_layout(AgsPiano *piano)
+{
+  if(!AGS_IS_PIANO(piano)){
+    return(0);
+  }
+
+  return(piano->layout);
+}
+
+/**
  * ags_piano_set_base_note:
  * @piano: the #AgsPiano
  * @base_note: the base note
