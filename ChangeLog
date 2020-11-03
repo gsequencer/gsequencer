@@ -1,3 +1,8 @@
+ags (3.7.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* migrated to pcre2
+
 ags (3.6.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
