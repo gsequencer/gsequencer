@@ -35,6 +35,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.6.7" date="2020-11-04">
+      <description>
+	<p>Fixed pthread remains.</p>
+      </description>
+    </release>
+
     <release version="3.6.6" date="2020-11-03">
       <description>
 	<p>Added some getter/setter functions to AgsPiano.</p>

@@ -359,13 +359,13 @@ ags_audio_container_manager_get_instance()
 {
   static GMutex mutex = {0,};
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(ags_audio_container_manager == NULL){
     ags_audio_container_manager = ags_audio_container_manager_new();
   }
   
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(ags_audio_container_manager);
 }
