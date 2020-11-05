@@ -1829,7 +1829,8 @@ ags_line_member_chained_event(AgsLineMember *line_member)
 	    list_line_member_start = gtk_container_get_children((GtkContainer *) AGS_LINE(list_line->data)->expander->table);
 
 	  while(list_line_member != NULL){
-	    if(!g_strcmp0(line_member->specifier,
+	    if(AGS_IS_LINE_MEMBER(list_line_member->data) &&
+	       !g_strcmp0(line_member->specifier,
 			  AGS_LINE_MEMBER(list_line_member->data)->specifier)){
 	      AGS_LINE_MEMBER(list_line_member->data)->flags |= AGS_LINE_MEMBER_BLOCK_CHAINED;
 

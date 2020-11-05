@@ -276,6 +276,10 @@ ags_notebook_remove_tab
 ags_notebook_remove_tab_with_data
 ags_notebook_new
 ags_piano_get_type
+ags_piano_set_button_state
+ags_piano_get_button_state
+ags_piano_set_layout
+ags_piano_get_layout
 ags_piano_set_base_note
 ags_piano_get_base_note
 ags_piano_set_base_key_code
