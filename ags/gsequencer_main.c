@@ -191,6 +191,8 @@ main(int argc, char **argv)
 			strlen(argv[0]) - strlen("\\gsequencer.exe"));
   }
 
+  putenv(g_strdup_printf("GIO_EXTRA_MODULES=%s\\lib\\gio\\modules", app_dir));
+
   putenv(g_strdup_printf("XDG_DATA_DIRS=%s\\share", app_dir));
   putenv(g_strdup_printf("XDG_CONFIG_HOME=%s\\etc", app_dir));
 
@@ -204,6 +206,9 @@ main(int argc, char **argv)
   if(getenv("GTK_THEME") == NULL){
     putenv(g_strdup("GTK_THEME=BlueMenta"));
   }
+
+  putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s\\lib\\gstreamer-1.0", app_dir));
+  putenv(g_strdup_printf("GST_PLUGIN_SCANNER=%s\\libexec\\gstreamer-1.0\\gst-plugin-scanner.exe", app_dir));
 #else
   uid = getuid();
   pw = getpwuid(uid);

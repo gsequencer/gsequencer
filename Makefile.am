@@ -971,6 +971,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_devout.h \
 	ags/audio/ags_devin.h \
 	ags/audio/ags_diatonic_scale.h \
+	ags/audio/ags_fast_pitch_util.h \
 	ags/audio/ags_filter_util.h \
 	ags/audio/ags_fifoout.h \
 	ags/audio/ags_fm_synth_util.h \
@@ -1048,6 +1049,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_devin.c \
 	ags/audio/ags_diatonic_scale.c \
 	ags/audio/ags_input.c \
+	ags/audio/ags_fast_pitch_util.c \
 	ags/audio/ags_filter_util.c \
 	ags/audio/ags_fifoout.c \
 	ags/audio/ags_fm_synth_util.c \

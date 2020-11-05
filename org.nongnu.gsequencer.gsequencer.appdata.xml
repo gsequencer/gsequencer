@@ -35,6 +35,32 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.6.5" date="2020-11-01">
+      <description>
+	<p>Added Gstreamer env variables on mingw64.</p>
+      </description>
+    </release>
+
+    <release version="3.6.4" date="2020-10-31">
+      <description>
+	<p>Fixed missing return value of AgsWindow's button_press_event() callback</p>
+      </description>
+    </release>
+
+    <release version="3.6.3" date="2020-10-31">
+      <description>
+	<p>Fixed pthread remains.</p>	
+      </description>
+    </release>
+
+    <release version="3.6.2" date="2020-10-29">
+      <description>
+	<p>Implemented fast pitch.</p>	
+	<p>Refactored ags_sf2_synth_util.c.</p>
+	<p>Refactored ags_sfz_synth_util.c.</p>
+      </description>
+    </release>
+
     <release version="3.6.1" date="2020-10-25">
       <description>
 	<p>Minor improvements.</p>

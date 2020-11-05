@@ -166,6 +166,33 @@ ags_audio_signal_get_type(void)
   return g_define_type_id__volatile;
 }
 
+GType
+ags_audio_signal_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_AUDIO_SIGNAL_ADDED_TO_REGISTRY, "AGS_AUDIO_SIGNAL_ADDED_TO_REGISTRY", "audio-signal-added-to-registry" },
+      { AGS_AUDIO_SIGNAL_CONNECTED, "AGS_AUDIO_SIGNAL_CONNECTED", "audio-signal-connected" },
+      { AGS_AUDIO_SIGNAL_TEMPLATE, "AGS_AUDIO_SIGNAL_template", "audio-signal-template" },
+      { AGS_AUDIO_SIGNAL_RT_TEMPLATE, "AGS_AUDIO_SIGNAL_RT_TEMPLATE", "audio-signal-rt-template" },
+      { AGS_AUDIO_SIGNAL_MASTER, "AGS_AUDIO_SIGNAL_MASTER", "audio-signal-master" },
+      { AGS_AUDIO_SIGNAL_FEED, "AGS_AUDIO_SIGNAL_FEED", "audio-signal-feed" },
+      { AGS_AUDIO_SIGNAL_RECYCLED, "AGS_AUDIO_SIGNAL_RECYCLED", "audio-signal-recycled" },
+      { AGS_AUDIO_SIGNAL_STREAM, "AGS_AUDIO_SIGNAL_STREAM", "audio-signal-stream" },
+      { AGS_AUDIO_SIGNAL_SLICE_ALLOC, "AGS_AUDIO_SIGNAL_SLICE_ALLOC", "audio-signal-slice-alloc" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsAudioSignalFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 {

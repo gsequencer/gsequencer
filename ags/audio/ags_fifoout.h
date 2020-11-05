@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -149,6 +149,7 @@ struct _AgsFifooutClass
 };
 
 GType ags_fifoout_get_type();
+GType ags_fifoout_flags_get_type();
 
 GQuark ags_fifoout_error_quark();
 

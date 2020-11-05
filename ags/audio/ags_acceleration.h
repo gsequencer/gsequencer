@@ -80,6 +80,7 @@ struct _AgsAccelerationClass
 };
 
 GType ags_acceleration_get_type();
+GType ags_acceleration_flags_get_type();
 
 GRecMutex* ags_acceleration_get_obj_mutex(AgsAcceleration *acceleration);
 

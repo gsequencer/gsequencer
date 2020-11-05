@@ -207,6 +207,7 @@ struct _AgsChannelClass
 };
 
 GType ags_channel_get_type();
+GType ags_channel_flags_get_type();
 
 GQuark ags_channel_error_quark();
 

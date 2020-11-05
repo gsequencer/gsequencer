@@ -85,6 +85,31 @@ ags_acceleration_get_type()
   return g_define_type_id__volatile;
 }
 
+GType
+ags_acceleration_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_ACCELERATION_DEFAULT_START, "AGS_ACCELERATION_DEFAULT_START", "acceleration-default-start" },
+      { AGS_ACCELERATION_DEFAULT_END, "AGS_ACCELERATION_DEFAULT_END", "acceleration-default-end" },
+      { AGS_ACCELERATION_GUI, "AGS_ACCELERATION_GUI", "acceleration-gui" },
+      { AGS_ACCELERATION_RUNTIME, "AGS_ACCELERATION_RUNTIME", "acceleration-runtime" },
+      { AGS_ACCELERATION_HUMAN_READABLE, "AGS_ACCELERATION_HUMAN_READABLE", "acceleration-human-readable" },
+      { AGS_ACCELERATION_DEFAULT_LENGTH, "AGS_ACCELERATION_DEFAULT_LENGTH", "acceleration-default-length" },
+      { AGS_ACCELERATION_IS_SELECTED, "AGS_ACCELERATION_IS_SELECTED", "acceleration-is-selected" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsAccelerationFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void 
 ags_acceleration_class_init(AgsAccelerationClass *acceleration)
 {

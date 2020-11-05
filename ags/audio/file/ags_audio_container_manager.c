@@ -357,7 +357,7 @@ ags_audio_container_manager_find_audio_container(AgsAudioContainerManager *audio
 AgsAudioContainerManager*
 ags_audio_container_manager_get_instance()
 {
-  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex = {0,};
 
   pthread_mutex_lock(&mutex);
 

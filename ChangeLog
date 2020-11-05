@@ -1,3 +1,26 @@
+ags (3.6.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added gstreamer environment variables for mingw64
+
+ags (3.6.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing return value of ags_window_button_press_event()
+
+ags (3.6.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed pthread remains
+
+ags (3.6.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_fast_pitch_util.[ch]
+	* implemented some get type functions of enum values
+	* refactored ags_sf2_synth_util.c
+	* refactored ags_sfz_synth_util.c
+
 ags (3.6.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

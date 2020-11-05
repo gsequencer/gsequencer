@@ -135,6 +135,7 @@ struct _AgsAudioSignalClass
 };
 
 GType ags_audio_signal_get_type();
+GType ags_audio_signal_flags_get_type();
 
 GRecMutex* ags_audio_signal_get_obj_mutex(AgsAudioSignal *audio_signal);
 

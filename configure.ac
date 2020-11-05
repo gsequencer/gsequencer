@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.6.1],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.6.5],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -448,7 +448,7 @@ AS_IF([test "x$with_poppler" != xno],
       ])
 
 AS_IF([test "x$with_gstreamer" != xno],
-      [PKG_CHECK_MODULES([GSTREAMER], [gstreamer-1.0 >= 1.14.0 gstreamer-audio-1.0 >= 1.14.0 gstreamer-video-1.0 >= 1.14.0 gstreamer-app-1.0 >= 1.14.0 gstreamer-pbutils-1.0 >= 1.14.0])
+      [PKG_CHECK_MODULES([GSTREAMER], [gstreamer-1.0 >= 1.6.0 gstreamer-audio-1.0 >= 1.6.0 gstreamer-video-1.0 >= 1.6.0 gstreamer-app-1.0 >= 1.6.0 gstreamer-pbutils-1.0 >= 1.6.0])
        AC_SUBST(GSTREAMER_CFLAGS)
        AC_SUBST(GSTREAMER_LIBS)
        AC_DEFINE([AGS_WITH_GSTREAMER], [1],

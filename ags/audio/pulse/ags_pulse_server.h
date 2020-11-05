@@ -66,11 +66,10 @@ struct _AgsPulseServer
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   volatile gboolean running;
-  pthread_t *thread;
+  GThread *thread;
   
   AgsApplicationContext *application_context;
 

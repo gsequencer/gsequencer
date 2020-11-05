@@ -38,7 +38,7 @@ void ags_window_setup_completed_callback(AgsApplicationContext *application_cont
 
 gboolean ags_window_delete_event_callback(GtkWidget *widget, gpointer data);
 
-void ags_window_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsWindow *window);
+gboolean ags_window_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsWindow *window);
 
 G_END_DECLS
 

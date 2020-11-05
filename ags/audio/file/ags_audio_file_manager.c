@@ -359,7 +359,7 @@ ags_audio_file_manager_find_audio_file(AgsAudioFileManager *audio_file_manager,
 AgsAudioFileManager*
 ags_audio_file_manager_get_instance()
 {
-  GMutex mutex = {0,};
+  static GMutex mutex = {0,};
 
   g_mutex_lock(&mutex);
 

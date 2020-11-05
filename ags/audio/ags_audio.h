@@ -246,6 +246,7 @@ struct _AgsAudioClass
 };
 
 GType ags_audio_get_type();
+GType ags_audio_flags_get_type();
 
 GRecMutex* ags_audio_get_obj_mutex(AgsAudio *audio);
 GRecMutex* ags_audio_get_play_mutex(AgsAudio *audio);
