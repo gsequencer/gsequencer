@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -277,6 +277,46 @@ ags_scrolled_piano_allocate_viewport(GtkWidget *widget)
 
   gtk_widget_size_allocate((GtkWidget *) scrolled_piano->viewport,
 			   &child_allocation);
+}
+
+/**
+ * ags_scrolled_piano_get_viewport:
+ * @scrolled_piano: the #AgsScrolledPiano
+ * 
+ * Get viewport of @scrolled_piano.
+ * 
+ * Returns: the #GtkViewport
+ *
+ * Since: 3.6.8
+ */
+GtkViewPort*
+ags_scrolled_piano_get_viewport(AgsScrolledPiano *scrolled_piano)
+{
+  if(!AGS_IS_SCROLLED_PIANO(scrolled_piano)){
+    return(NULL);
+  }
+  
+  return(scrolled_piano->viewport);
+}
+
+/**
+ * ags_scrolled_piano_get_piano:
+ * @scrolled_piano: the #AgsScrolledPiano
+ * 
+ * Get viewport of @scrolled_piano.
+ * 
+ * Returns: the #AgsPiano
+ *
+ * Since: 3.6.8
+ */
+AgsPiano*
+ags_scrolled_piano_get_piano(AgsScrolledPiano *scrolled_piano)
+{
+  if(!AGS_IS_SCROLLED_PIANO(scrolled_piano)){
+    return(NULL);
+  }
+  
+  return(scrolled_piano->piano);
 }
 
 /**
