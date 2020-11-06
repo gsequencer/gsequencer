@@ -289,7 +289,7 @@ ags_scrolled_piano_allocate_viewport(GtkWidget *widget)
  *
  * Since: 3.6.8
  */
-GtkViewPort*
+GtkViewport*
 ags_scrolled_piano_get_viewport(AgsScrolledPiano *scrolled_piano)
 {
   if(!AGS_IS_SCROLLED_PIANO(scrolled_piano)){

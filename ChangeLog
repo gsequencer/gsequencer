@@ -2,6 +2,8 @@ ags (3.6.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* added some getter of AgsScrolledPiano
+	* fixed AgsWindow delete-event callback to use AgsQuitDialog
+	* improved ags_gstreamer_file.c to create microsoft windows compatible URI
 
 ags (3.6.7)
 

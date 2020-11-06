@@ -58,7 +58,7 @@ struct _AgsScrolledPianoClass
 
 GType ags_scrolled_piano_get_type(void);
 
-GtkViewPort* ags_scrolled_piano_get_viewport(AgsScrolledPiano *scrolled_piano);
+GtkViewport* ags_scrolled_piano_get_viewport(AgsScrolledPiano *scrolled_piano);
 
 AgsPiano* ags_scrolled_piano_get_piano(AgsScrolledPiano *scrolled_piano);
 
