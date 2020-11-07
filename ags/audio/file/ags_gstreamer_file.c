@@ -982,6 +982,46 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
 
   file_uri = NULL;
   
+#if defined (AGS_W32API)
+  if(filename != NULL){
+    gchar *w32_filename;
+    gchar **w32_split;
+
+    w32_split = g_strsplit(filename, "\\", -1);
+
+    w32_filename = g_strjoinv("/",
+			      w32_split);
+
+    g_strfreev(w32_split);
+    
+    if(g_path_is_absolute(filename)){
+      file_uri = g_strdup_printf("file:///%s",
+				 w32_filename);
+    }else{
+      gchar *current_dir;
+      gchar *w32_current_dir;
+      gchar **w32_dir_split;
+
+      current_dir = g_get_current_dir();
+
+      w32_dir_split = g_strsplit(current_dir, "\\", -1);
+
+      w32_current_dir = g_strjoinv("/",
+				   w32_dir_split);
+      
+      file_uri = g_strdup_printf("file:///%s/%s",
+				 w32_current_dir,
+				 w32_filename);
+
+      g_strfreev(w32_dir_split);
+
+      g_free(w32_current_dir);
+      g_free(current_dir);
+    }
+
+    g_free(w32_filename);
+  }  
+#else
   if(filename != NULL){
     if(g_path_is_absolute(filename)){
       file_uri = g_strdup_printf("file://%s",
@@ -998,6 +1038,7 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
       g_free(current_dir);
     }
   }
+#endif
   
   g_object_set(playbin,
 	       "uri", file_uri,
@@ -1289,6 +1330,46 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
   /* read file */
   file_uri = NULL;
   
+#if defined (AGS_W32API)
+  if(filename != NULL){
+    gchar *w32_filename;
+    gchar **w32_split;
+
+    w32_split = g_strsplit(filename, "\\", -1);
+
+    w32_filename = g_strjoinv("/",
+			      w32_split);
+
+    g_strfreev(w32_split);
+    
+    if(g_path_is_absolute(filename)){
+      file_uri = g_strdup_printf("file:///%s",
+				 w32_filename);
+    }else{
+      gchar *current_dir;
+      gchar *w32_current_dir;
+      gchar **w32_dir_split;
+
+      current_dir = g_get_current_dir();
+
+      w32_dir_split = g_strsplit(current_dir, "\\", -1);
+
+      w32_current_dir = g_strjoinv("/",
+				   w32_dir_split);
+      
+      file_uri = g_strdup_printf("file:///%s/%s",
+				 w32_current_dir,
+				 w32_filename);
+
+      g_strfreev(w32_dir_split);
+
+      g_free(w32_current_dir);
+      g_free(current_dir);
+    }
+
+    g_free(w32_filename);
+  }  
+#else
   if(filename != NULL){
     if(g_path_is_absolute(filename)){
       file_uri = g_strdup_printf("file://%s",
@@ -1305,7 +1386,8 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
       g_free(current_dir);
     }
   }
-
+#endif
+  
   //TODO:JK: implement me
   
   /* write file */

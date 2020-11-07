@@ -25,6 +25,7 @@
 #include <gtkosxapplication.h>
 #endif
 
+#include <ags/X/ags_quit_dialog.h>
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_context_menu.h>
 #include <ags/X/ags_menu_action_callbacks.h>
@@ -191,91 +192,16 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
 gboolean
 ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
 {
-  AgsWindow *window;
-  GtkDialog *dialog;
-  GtkWidget *cancel_button;
+  AgsQuitDialog *quit_dialog;
 
-  AgsApplicationContext *application_context;
+  quit_dialog = ags_quit_dialog_new();
+  gtk_widget_show_all(quit_dialog);
   
-  gint response;
+  gtk_widget_grab_focus(quit_dialog->cancel);
   
-  window = AGS_WINDOW(widget);
+  ags_connectable_connect(AGS_CONNECTABLE(quit_dialog));
 
-  application_context = ags_application_context_get_instance();
-
-  /* ask the user if he wants save to a file */
-  dialog = (GtkDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
-						GTK_DIALOG_DESTROY_WITH_PARENT,
-						GTK_MESSAGE_QUESTION,
-						GTK_BUTTONS_YES_NO,
-						"Do you want to save '%s'?", window->name);
-  cancel_button = gtk_dialog_add_button(dialog,
-					GTK_STOCK_CANCEL,
-					GTK_RESPONSE_CANCEL);
-  gtk_widget_grab_focus(cancel_button);
-
-  response = gtk_dialog_run(dialog);
-
-  if(response == GTK_RESPONSE_YES){
-    if(g_strcmp0(ags_config_get_value(ags_config_get_instance(),
-				      AGS_CONFIG_GENERIC,
-				      "simple-file"),
-		 "false")){
-      AgsSimpleFile *simple_file;
-
-      GError *error;
-      
-      simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						   "filename", window->name,
-						   NULL);
-      
-      error = NULL;
-      ags_simple_file_rw_open(simple_file,
-			      TRUE,
-			      &error);
-
-      if(error != NULL){
-	g_message("%s", error->message);
-
-	g_error_free(error);
-      }
-      
-      ags_simple_file_write(simple_file);
-      ags_simple_file_close(simple_file);
-      
-      g_object_unref(G_OBJECT(simple_file));
-    }else{
-      AgsFile *file;
-
-      GError *error;
-      
-      file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				      "filename", window->name,
-				      NULL);
-      
-      error = NULL;
-      ags_file_rw_open(file,
-		       TRUE,
-		       &error);
-
-      if(error != NULL){
-	g_message("%s", error->message);
-
-	g_error_free(error);
-      }
-      
-      ags_file_write(file);
-      ags_file_close(file);
-      
-      g_object_unref(G_OBJECT(file));
-    }
-  }
-
-  if(response != GTK_RESPONSE_CANCEL){
-    ags_application_context_quit(application_context);
-  }else{
-    gtk_widget_destroy(GTK_WIDGET(dialog));
-  }
+  gtk_dialog_run(quit_dialog);
 
   return(TRUE);
 }

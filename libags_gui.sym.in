@@ -259,6 +259,8 @@ ags_led_set_active
 ags_led_unset_active
 ags_led_new
 ags_scrolled_piano_get_type
+ags_scrolled_piano_get_viewport
+ags_scrolled_piano_get_piano
 ags_scrolled_piano_new
 ags_hled_array_get_type
 ags_hled_array_new
