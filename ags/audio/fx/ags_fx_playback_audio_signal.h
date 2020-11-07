@@ -43,6 +43,8 @@ typedef struct _AgsFxPlaybackAudioSignalClass AgsFxPlaybackAudioSignalClass;
 struct _AgsFxPlaybackAudioSignal
 {
   AgsRecallAudioSignal recall_audio_signal;
+
+  gboolean *sub_block_processed;
 };
 
 struct _AgsFxPlaybackAudioSignalClass
