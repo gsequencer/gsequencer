@@ -3,6 +3,7 @@ ags (3.6.9)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented lock-free ags-fx-playback
 	* fixed missing call to ags_soundcard_lock() and ags_soundcard_unlock() in ags_devout.c
+	* fixed reallocation of AgsAudioSignal stream data while setting samplerate, buffer size and format
 	* improved midi2xml_main.c to check valid file stream pointer
 
 ags (3.6.8)
