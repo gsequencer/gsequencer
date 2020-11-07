@@ -1126,8 +1126,10 @@ ags_simple_file_real_write(AgsSimpleFile *simple_file)
   //  xmlSaveFormatFileEnc(simple_file->filename, simple_file->doc, "UTF-8", 1);
   xmlDocDumpFormatMemoryEnc(simple_file->doc, &(simple_file->buffer), &size, simple_file->encoding, TRUE);
 
-  fwrite(simple_file->buffer, size, sizeof(xmlChar), simple_file->out);
-  fflush(simple_file->out);
+  if(simple_file->out != NULL){
+    fwrite(simple_file->buffer, size, sizeof(xmlChar), simple_file->out);
+    fflush(simple_file->out);
+  }
 }
 
 
