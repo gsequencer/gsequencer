@@ -35,6 +35,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.6.9" date="2020-11-07">
+      <description>
+	<p>Many bug-fixes to configure AgsAudioSignal.</p>
+	<p>Implemented lock-free ags-fx-playback.</p>
+	<p>Fixed missing mutex.</p>
+      </description>
+    </release>
+
     <release version="3.6.8" date="2020-11-06">
       <description>
 	<p>Fixed AgsWindow delete-event callback to use AgsQuitDialog.</p>
