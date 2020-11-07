@@ -2624,11 +2624,17 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
 
 #ifdef AGS_WITH_OSS    
   /* fill ring buffer */
+  ags_soundcard_lock_buffer(soundcard,
+			    devout->buffer[nth_buffer]);
+
   ags_devout_oss_play_fill_ring_buffer(devout->buffer[nth_buffer],
 				       devout->format,
 				       devout->ring_buffer[devout->nth_ring_buffer],
 				       devout->pcm_channels,
 				       devout->buffer_size);
+
+  ags_soundcard_unlock_buffer(soundcard,
+			      devout->buffer[nth_buffer]);
 
   /* wait until available */
   poll_timeout = g_get_monotonic_time() + (G_USEC_PER_SEC * (1.0 / (gdouble) devout->samplerate * (gdouble) devout->buffer_size));
@@ -3602,9 +3608,15 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 #ifdef AGS_WITH_ALSA
 
   /* fill ring buffer */
+  ags_soundcard_lock_buffer(soundcard,
+			    devout->buffer[nth_buffer]);
+  
   ags_devout_alsa_play_fill_ring_buffer(devout->buffer[nth_buffer], devout->format,
 					devout->ring_buffer[devout->nth_ring_buffer],
 					devout->pcm_channels, devout->buffer_size);
+
+  ags_soundcard_unlock_buffer(soundcard,
+			      devout->buffer[nth_buffer]);
 
   /* wait until available */
   poll_timeout = g_get_monotonic_time() + (G_USEC_PER_SEC * (1.0 / (gdouble) devout->samplerate * (gdouble) devout->buffer_size));
