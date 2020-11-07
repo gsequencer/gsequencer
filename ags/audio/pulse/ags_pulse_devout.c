@@ -3114,7 +3114,7 @@ ags_pulse_devout_trylock_sub_block(AgsSoundcard *soundcard,
   }
 
   if(sub_block_mutex != NULL){
-    if(g_rec_mutex_trylock(sub_block_mutex) == 0){
+    if(g_rec_mutex_trylock(sub_block_mutex)){
       success = TRUE;
     }
   }

@@ -1,7 +1,7 @@
 ags (3.6.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed 
+	* implemented lock-free ags-fx-playback
 	* improved midi2xml_main.c to check valid file stream pointer
 
 ags (3.6.8)
