@@ -133,6 +133,16 @@ EXTRA_DIST = config.rpath \
 	ags/server/security/AUTHORS \
 	ags/audio/AUTHORS \
 	ags/audio/recall/AUTHORS \
+	ags/test/X/examples/ags-loop-000.xml \
+	ags/test/X/examples/ags-loop-001.xml \
+	ags/test/X/examples/ags-loop-002.xml \
+	ags/test/X/examples/ags-loop-003.xml \
+	ags/test/X/examples/ags-loop-004.xml \
+	ags/test/X/examples/ags-loop-005.xml \
+	ags/test/X/examples/ags-loop-006.xml \
+	ags/test/X/examples/ags-loop-007.xml \
+	ags/test/X/examples/ags-loop-008.xml \
+	ags/test/X/examples/ags-loop-010.xml \
 	docs/images/README \
 	gsequencer.share/icons/README \
 	gsequencer.share/images/README

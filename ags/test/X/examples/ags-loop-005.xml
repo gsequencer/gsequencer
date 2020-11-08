@@ -1,0 +1,902 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ags-simple-file xmlns:agssf="http://nongnu.org/gsequencer/ns/ags-simple-file" id="47a9f2f2-7d9c-11ea-ba20-85a091346da4" version="3.2.13" build-id="Wed Nov  6 18:28:15 UTC 2019">
+  <ags-sf-config id="47a9f2f3-7d9c-11ea-ba20-85a091346da4" version="0.7.0" build-id="CEST 13-10-2015 01:19"><![CDATA[[generic]
+disable-feature=experimental
+autosave-thread=false
+segmentation=4/4
+engine-mode=performance
+rt-safe=true
+gui-scale=1.0
+
+[soundcard-0]
+backend=alsa
+capability=playback
+buffer-size=1024
+pcm-channels=2
+format=16
+samplerate=44100
+device=default
+
+[recall]
+auto-sense=true
+
+[thread]
+model=super-threaded
+super-threaded-scope=audio
+lock-global=ags-thread
+lock-parent=ags-recycling-thread
+thread-pool-max-unused-threads=4
+max-precision=250
+
+[osc-server]
+auto-start=false
+any-address=false
+enable-ip4=false
+ip4-address=127.0.0.1
+enable-ip6=false
+ip6-address=::1
+server-port=9000
+monitor-timeout=0.033333
+]]></ags-sf-config>
+  <ags-sf-window filename="../../ags-loop-005.xml" bpm="145.000000" loop="true" loop-start="0.000000" loop-end="4.000000">
+    <ags-sf-machine-list>
+      <ags-sf-machine id="47a9f2f4-7d9c-11ea-ba20-85a091346da4" type="AgsPanel" name="Default 0" soundcard-device="default" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="1">
+        <ags-sf-pad-list is-output="false">
+          <ags-sf-pad id="47a9f2f5-7d9c-11ea-ba20-85a091346da4" nth-pad="0" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f2f6-7d9c-11ea-ba20-85a091346da4" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='47a9f313-7d9c-11ea-ba20-85a091346da4']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkCheckButton" value="false" specifier="./muted[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f2f7-7d9c-11ea-ba20-85a091346da4" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='47a9f314-7d9c-11ea-ba20-85a091346da4']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkCheckButton" value="false" specifier="./muted[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+      </ags-sf-machine>
+      <ags-sf-machine id="47a9f2fa-7d9c-11ea-ba20-85a091346da4" type="AgsMixer" name="Default 0" soundcard-device="default" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="8">
+        <ags-sf-pad-list is-output="false">
+          <ags-sf-pad id="47a9f2fb-7d9c-11ea-ba20-85a091346da4" nth-pad="0" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f2fc-7d9c-11ea-ba20-85a091346da4" nth-line="0" soundcard-device="default" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="0.800000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f2fd-7d9c-11ea-ba20-85a091346da4" nth-line="1" soundcard-device="default" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="0.800000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f2fe-7d9c-11ea-ba20-85a091346da4" nth-pad="1" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f2ff-7d9c-11ea-ba20-85a091346da4" nth-line="2" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='47a9f34a-7d9c-11ea-ba20-85a091346da4']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="0.725000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f300-7d9c-11ea-ba20-85a091346da4" nth-line="3" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='47a9f34b-7d9c-11ea-ba20-85a091346da4']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="0.725000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f301-7d9c-11ea-ba20-85a091346da4" nth-pad="2" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f302-7d9c-11ea-ba20-85a091346da4" nth-line="4" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='47a9f35d-7d9c-11ea-ba20-85a091346da4']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="0.450000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f303-7d9c-11ea-ba20-85a091346da4" nth-line="5" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='47a9f35e-7d9c-11ea-ba20-85a091346da4']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="0.450000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f304-7d9c-11ea-ba20-85a091346da4" nth-pad="3" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f305-7d9c-11ea-ba20-85a091346da4" nth-line="6" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='47a9f370-7d9c-11ea-ba20-85a091346da4']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="0.850000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f306-7d9c-11ea-ba20-85a091346da4" nth-line="7" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='47a9f371-7d9c-11ea-ba20-85a091346da4']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="0.850000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f307-7d9c-11ea-ba20-85a091346da4" nth-pad="4" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f308-7d9c-11ea-ba20-85a091346da4" nth-line="8" soundcard-device="default" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f309-7d9c-11ea-ba20-85a091346da4" nth-line="9" soundcard-device="default" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f30a-7d9c-11ea-ba20-85a091346da4" nth-pad="5" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f30b-7d9c-11ea-ba20-85a091346da4" nth-line="10" soundcard-device="default" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f30c-7d9c-11ea-ba20-85a091346da4" nth-line="11" soundcard-device="default" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f30d-7d9c-11ea-ba20-85a091346da4" nth-pad="6" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f30e-7d9c-11ea-ba20-85a091346da4" nth-line="12" soundcard-device="default" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f30f-7d9c-11ea-ba20-85a091346da4" nth-line="13" soundcard-device="default" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f310-7d9c-11ea-ba20-85a091346da4" nth-pad="7" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f311-7d9c-11ea-ba20-85a091346da4" nth-line="14" soundcard-device="default" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f312-7d9c-11ea-ba20-85a091346da4" nth-line="15" soundcard-device="default" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-pad-list is-output="true">
+          <ags-sf-pad nth-pad="0">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f313-7d9c-11ea-ba20-85a091346da4" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='47a9f2f6-7d9c-11ea-ba20-85a091346da4']"/>
+              <ags-sf-line id="47a9f314-7d9c-11ea-ba20-85a091346da4" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='47a9f2f7-7d9c-11ea-ba20-85a091346da4']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+      </ags-sf-machine>
+      <ags-sf-machine id="47a9f315-7d9c-11ea-ba20-85a091346da4" type="AgsDrum" name="Default 0" soundcard-device="default" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="17" length="16">
+        <ags-sf-pad-list is-output="false">
+          <ags-sf-pad id="47a9f316-7d9c-11ea-ba20-85a091346da4" nth-pad="0" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f317-7d9c-11ea-ba20-85a091346da4" nth-line="0" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Amp_Clap_1.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f318-7d9c-11ea-ba20-85a091346da4" nth-line="1" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Amp_Clap_1.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f319-7d9c-11ea-ba20-85a091346da4" nth-pad="1" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f31a-7d9c-11ea-ba20-85a091346da4" nth-line="2" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/CHH_1.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="0.325000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f31b-7d9c-11ea-ba20-85a091346da4" nth-line="3" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/CHH_1.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="0.325000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f31c-7d9c-11ea-ba20-85a091346da4" nth-pad="2" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f31d-7d9c-11ea-ba20-85a091346da4" nth-line="4" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Clap_1.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f31e-7d9c-11ea-ba20-85a091346da4" nth-line="5" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Clap_1.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f31f-7d9c-11ea-ba20-85a091346da4" nth-pad="3" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f320-7d9c-11ea-ba20-85a091346da4" nth-line="6" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/FX_Chh_01.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f321-7d9c-11ea-ba20-85a091346da4" nth-line="7" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/FX_Chh_01.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f322-7d9c-11ea-ba20-85a091346da4" nth-pad="4" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f323-7d9c-11ea-ba20-85a091346da4" nth-line="8" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/HardHse_K_02.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="0.500000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f324-7d9c-11ea-ba20-85a091346da4" nth-line="9" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/HardHse_K_02.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="0.500000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f325-7d9c-11ea-ba20-85a091346da4" nth-pad="5" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f326-7d9c-11ea-ba20-85a091346da4" nth-line="10" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/HardHse_K_03_B.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="0.425000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f327-7d9c-11ea-ba20-85a091346da4" nth-line="11" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/HardHse_K_03_B.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="0.425000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f328-7d9c-11ea-ba20-85a091346da4" nth-pad="6" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f329-7d9c-11ea-ba20-85a091346da4" nth-line="12" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_CHH_01.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f32a-7d9c-11ea-ba20-85a091346da4" nth-line="13" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_CHH_01.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f32b-7d9c-11ea-ba20-85a091346da4" nth-pad="7" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f32c-7d9c-11ea-ba20-85a091346da4" nth-line="14" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_CHH_02.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f32d-7d9c-11ea-ba20-85a091346da4" nth-line="15" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_CHH_02.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f32e-7d9c-11ea-ba20-85a091346da4" nth-pad="8" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f32f-7d9c-11ea-ba20-85a091346da4" nth-line="16" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_Hse_OHH_1.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f330-7d9c-11ea-ba20-85a091346da4" nth-line="17" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/Hard_Hse_OHH_1.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f331-7d9c-11ea-ba20-85a091346da4" nth-pad="9" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f332-7d9c-11ea-ba20-85a091346da4" nth-line="18" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_BD_1.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f333-7d9c-11ea-ba20-85a091346da4" nth-line="19" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_BD_1.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f334-7d9c-11ea-ba20-85a091346da4" nth-pad="10" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f335-7d9c-11ea-ba20-85a091346da4" nth-line="20" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_HH_1.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f336-7d9c-11ea-ba20-85a091346da4" nth-line="21" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_HH_1.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f337-7d9c-11ea-ba20-85a091346da4" nth-pad="11" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f338-7d9c-11ea-ba20-85a091346da4" nth-line="22" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_HH_2.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f339-7d9c-11ea-ba20-85a091346da4" nth-line="23" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_HH_2.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f33a-7d9c-11ea-ba20-85a091346da4" nth-pad="12" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f33b-7d9c-11ea-ba20-85a091346da4" nth-line="24" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_SN_1.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f33c-7d9c-11ea-ba20-85a091346da4" nth-line="25" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/PowR_SN_1.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f33d-7d9c-11ea-ba20-85a091346da4" nth-pad="13" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f33e-7d9c-11ea-ba20-85a091346da4" nth-line="26" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/emptySample.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f33f-7d9c-11ea-ba20-85a091346da4" nth-line="27" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/emptySample.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f340-7d9c-11ea-ba20-85a091346da4" nth-pad="14" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f341-7d9c-11ea-ba20-85a091346da4" nth-line="28" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/xFX_6.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f342-7d9c-11ea-ba20-85a091346da4" nth-line="29" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/xFX_6.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f343-7d9c-11ea-ba20-85a091346da4" nth-pad="15" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f344-7d9c-11ea-ba20-85a091346da4" nth-line="30" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/yFX_3.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f345-7d9c-11ea-ba20-85a091346da4" nth-line="31" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/yFX_3.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="47a9f346-7d9c-11ea-ba20-85a091346da4" nth-pad="16" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f347-7d9c-11ea-ba20-85a091346da4" nth-line="32" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/yFX_8.flac" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="47a9f348-7d9c-11ea-ba20-85a091346da4" nth-line="33" soundcard-device="default" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/HardElectro1/yFX_8.flac" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-pad-list is-output="true">
+          <ags-sf-pad id="47a9f349-7d9c-11ea-ba20-85a091346da4" nth-pad="0" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f34a-7d9c-11ea-ba20-85a091346da4" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='47a9f2ff-7d9c-11ea-ba20-85a091346da4']"/>
+              <ags-sf-line id="47a9f34b-7d9c-11ea-ba20-85a091346da4" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='47a9f300-7d9c-11ea-ba20-85a091346da4']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-notation-list>
+          <ags-sf-notation channel="0">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-note x0="0" x1="1" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="1" x1="2" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="2" x1="3" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="3" x1="4" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="4" x1="5" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="5" x1="6" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="6" x1="7" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="7" x1="8" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="8" x1="9" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="9" x1="10" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="10" x1="11" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="11" x1="12" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="12" x1="13" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="13" x1="14" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="14" x1="15" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="15" x1="16" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="16" x1="17" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="17" x1="18" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="18" x1="19" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="19" x1="20" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="20" x1="21" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="21" x1="22" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="22" x1="23" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="23" x1="24" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="24" x1="25" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="25" x1="26" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="26" x1="27" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="27" x1="28" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="28" x1="29" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="29" x1="30" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="30" x1="31" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="31" x1="32" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="32" x1="33" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="33" x1="34" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="34" x1="35" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="35" x1="36" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="36" x1="37" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="37" x1="38" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="38" x1="39" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="39" x1="40" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="40" x1="41" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="41" x1="42" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="42" x1="43" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="43" x1="44" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="44" x1="45" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="45" x1="46" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="46" x1="47" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="47" x1="48" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="48" x1="49" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="49" x1="50" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="50" x1="51" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="51" x1="52" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="52" x1="53" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="53" x1="54" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="54" x1="55" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="55" x1="56" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="56" x1="57" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="57" x1="58" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="58" x1="59" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="58" x1="59" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="59" x1="60" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="60" x1="61" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="61" x1="62" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="63" x1="64" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+          </ags-sf-notation>
+          <ags-sf-notation channel="1">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-note x0="0" x1="1" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="1" x1="2" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="2" x1="3" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="3" x1="4" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="4" x1="5" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="5" x1="6" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="6" x1="7" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="7" x1="8" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="8" x1="9" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="9" x1="10" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="10" x1="11" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="11" x1="12" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="12" x1="13" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="13" x1="14" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="14" x1="15" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="15" x1="16" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="16" x1="17" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="17" x1="18" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="18" x1="19" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="19" x1="20" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="20" x1="21" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="21" x1="22" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="22" x1="23" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="23" x1="24" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="24" x1="25" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="25" x1="26" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="26" x1="27" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="27" x1="28" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="28" x1="29" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="29" x1="30" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="30" x1="31" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="31" x1="32" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="32" x1="33" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="33" x1="34" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="34" x1="35" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="35" x1="36" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="36" x1="37" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="37" x1="38" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="38" x1="39" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="39" x1="40" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="40" x1="41" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="41" x1="42" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="42" x1="43" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="43" x1="44" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="44" x1="45" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="45" x1="46" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="46" x1="47" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="47" x1="48" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="48" x1="49" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="49" x1="50" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="50" x1="51" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="51" x1="52" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="52" x1="53" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="53" x1="54" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="54" x1="55" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="55" x1="56" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="56" x1="57" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="57" x1="58" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="58" x1="59" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="58" x1="59" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="59" x1="60" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="60" x1="61" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="61" x1="62" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="63" x1="64" y="1" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+          </ags-sf-notation>
+          <ags-sf-notation channel="0">
+            <ags-sf-timestamp offset="1024"/>
+          </ags-sf-notation>
+          <ags-sf-notation channel="1">
+            <ags-sf-timestamp offset="1024"/>
+          </ags-sf-notation>
+        </ags-sf-notation-list>
+      </ags-sf-machine>
+      <ags-sf-machine id="47a9f34c-7d9c-11ea-ba20-85a091346da4" type="AgsSyncsynth" name="Default 0" soundcard-device="default" bank_0="0" bank_1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="16" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="0" base-note="-48.000000" audio-loop-start="800" audio-loop-end="1604">
+        <ags-sf-pad-list is-output="true">
+          <ags-sf-pad nth-pad="0">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f35d-7d9c-11ea-ba20-85a091346da4" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='47a9f302-7d9c-11ea-ba20-85a091346da4']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="1">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f35e-7d9c-11ea-ba20-85a091346da4" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='47a9f303-7d9c-11ea-ba20-85a091346da4']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-oscillator-list>
+          <ags-oscillator wave="3" attack="0.000000" length="1603.636364" frequency="220.000000" phase="0.000000" volume="0.175000" sync="false" sync-point="0.000000 0.000000 0.000000 0.000000 0.000000 0.000000"/>
+          <ags-oscillator wave="0" attack="0.000000" length="1603.636364" frequency="440.000000" phase="0.000000" volume="0.075000" sync="true" sync-point="5.000000 128.000000 9.000000 52.000000 17.000000 128.000000"/>
+        </ags-oscillator-list>
+        <ags-sf-notation-list>
+          <ags-sf-notation channel="0">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-note x0="0" x1="1" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="0" x1="1" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="1" x1="2" y="3" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="1" x1="2" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="2" x1="3" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="2" x1="3" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="3" x1="4" y="3" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="3" x1="4" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="4" x1="5" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="4" x1="5" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="5" x1="6" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="5" x1="6" y="6" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="6" x1="7" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="6" x1="7" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="7" x1="8" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="7" x1="8" y="7" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="8" x1="9" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="8" x1="9" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="9" x1="10" y="3" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="9" x1="10" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="10" x1="11" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="10" x1="11" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="11" x1="12" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="11" x1="12" y="6" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="12" x1="13" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="12" x1="13" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="13" x1="14" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="13" x1="14" y="7" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="14" x1="15" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="14" x1="15" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="15" x1="16" y="6" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="15" x1="16" y="8" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="16" x1="17" y="3" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="16" x1="17" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="17" x1="18" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="17" x1="18" y="6" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="18" x1="19" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="18" x1="19" y="7" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="19" x1="20" y="6" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="19" x1="20" y="8" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="20" x1="21" y="7" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="20" x1="21" y="9" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="21" x1="22" y="8" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="21" x1="22" y="10" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="22" x1="23" y="9" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="22" x1="23" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="23" x1="24" y="10" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="23" x1="24" y="12" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="24" x1="25" y="3" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="24" x1="25" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="25" x1="26" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="25" x1="26" y="6" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="26" x1="27" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="26" x1="27" y="7" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="27" x1="28" y="6" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="27" x1="28" y="8" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="28" x1="29" y="7" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="28" x1="29" y="9" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="29" x1="30" y="8" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="29" x1="30" y="10" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="30" x1="31" y="9" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="30" x1="31" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="31" x1="32" y="10" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="31" x1="32" y="12" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="32" x1="33" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="32" x1="33" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="33" x1="34" y="3" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="33" x1="34" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="34" x1="35" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="34" x1="35" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="35" x1="36" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="35" x1="36" y="6" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="36" x1="37" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="36" x1="37" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="37" x1="38" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="37" x1="38" y="7" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="38" x1="39" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="38" x1="39" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="39" x1="40" y="6" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="39" x1="40" y="8" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="40" x1="41" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="40" x1="41" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="41" x1="42" y="7" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="41" x1="42" y="9" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="42" x1="43" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="42" x1="43" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="43" x1="44" y="8" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="43" x1="44" y="10" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="44" x1="45" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="44" x1="45" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="45" x1="46" y="9" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="45" x1="46" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="46" x1="47" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="46" x1="47" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="47" x1="48" y="10" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="47" x1="48" y="12" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="48" x1="49" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="48" x1="49" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="49" x1="50" y="3" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="49" x1="50" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="50" x1="51" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="50" x1="51" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="51" x1="52" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="51" x1="52" y="6" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="52" x1="53" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="52" x1="53" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="53" x1="54" y="3" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="53" x1="54" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="54" x1="55" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="54" x1="55" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="55" x1="56" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="55" x1="56" y="7" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="56" x1="57" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="56" x1="57" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="57" x1="58" y="6" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="57" x1="58" y="8" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="58" x1="59" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="58" x1="59" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="59" x1="60" y="7" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="59" x1="60" y="9" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="60" x1="61" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="60" x1="61" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="61" x1="62" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="61" x1="62" y="6" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="62" x1="63" y="11" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="62" x1="63" y="13" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="63" x1="64" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="63" x1="64" y="7" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+          </ags-sf-notation>
+          <ags-sf-notation channel="0">
+            <ags-sf-timestamp offset="1024"/>
+          </ags-sf-notation>
+        </ags-sf-notation-list>
+      </ags-sf-machine>
+      <ags-sf-machine id="47a9f35f-7d9c-11ea-ba20-85a091346da4" type="AgsFMSyncsynth" name="Default 0" soundcard-device="default" bank_0="0" bank_1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="16" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="0" base-note="-38.000000" audio-loop-start="800" audio-loop-end="1604">
+        <ags-sf-pad-list is-output="true">
+          <ags-sf-pad nth-pad="0">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f370-7d9c-11ea-ba20-85a091346da4" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='47a9f305-7d9c-11ea-ba20-85a091346da4']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="1">
+            <ags-sf-line-list>
+              <ags-sf-line id="47a9f371-7d9c-11ea-ba20-85a091346da4" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='47a9f306-7d9c-11ea-ba20-85a091346da4']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-fm-oscillator-list>
+          <ags-fm-oscillator wave="0" attack="0.000000" length="1603.636364" frequency="220.000000" phase="0.000000" volume="0.100000" sync="false" sync-point="0.000000 0.000000 0.000000 0.000000 0.000000 0.000000" fm-lfo-wave="4" fm-lfo-frequency="6.075000" fm-lfo-depth="0.065000" fm-tuning="0.000000"/>
+          <ags-fm-oscillator wave="0" attack="0.000000" length="1603.636364" frequency="110.000000" phase="0.000000" volume="0.150000" sync="false" sync-point="0.000000 0.000000 0.000000 0.000000 0.000000 0.000000" fm-lfo-wave="3" fm-lfo-frequency="8.000000" fm-lfo-depth="0.250000" fm-tuning="0.000000"/>
+          <ags-fm-oscillator wave="0" attack="0.000000" length="1603.636364" frequency="220.000000" phase="0.000000" volume="0.200000" sync="false" sync-point="0.000000 0.000000 0.000000 0.000000 0.000000 0.000000" fm-lfo-wave="2" fm-lfo-frequency="6.125000" fm-lfo-depth="0.150000" fm-tuning="0.000000"/>
+        </ags-fm-oscillator-list>
+        <ags-sf-notation-list>
+          <ags-sf-notation channel="0">
+            <ags-sf-timestamp offset="0"/>
+            <ags-sf-note x0="0" x1="2" y="13" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="2" x1="4" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="4" x1="6" y="13" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="6" x1="8" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="8" x1="10" y="11" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="10" x1="12" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="12" x1="14" y="9" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="14" x1="16" y="3" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="16" x1="18" y="13" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="18" x1="20" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="20" x1="22" y="13" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="22" x1="24" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="24" x1="26" y="13" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="26" x1="28" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="28" x1="30" y="10" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="30" x1="32" y="3" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="32" x1="34" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="34" x1="36" y="4" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="36" x1="38" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="38" x1="40" y="3" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="40" x1="42" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="42" x1="44" y="3" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="44" x1="46" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="46" x1="48" y="7" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="48" x1="50" y="13" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="50" x1="52" y="10" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="52" x1="54" y="13" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="54" x1="56" y="11" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="56" x1="58" y="13" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="58" x1="60" y="12" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="60" x1="62" y="13" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="62" x1="64" y="9" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+          </ags-sf-notation>
+        </ags-sf-notation-list>
+      </ags-sf-machine>
+    </ags-sf-machine-list>
+    <ags-sf-notation-editor zoom="1:8">
+      <ags-sf-property-list>
+        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='47a9f315-7d9c-11ea-ba20-85a091346da4']"/>
+        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='47a9f34c-7d9c-11ea-ba20-85a091346da4']"/>
+        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='47a9f35f-7d9c-11ea-ba20-85a091346da4']"/>
+      </ags-sf-property-list>
+    </ags-sf-notation-editor>
+    <ags-sf-automation-editor zoom="1:1"/>
+    <ags-sf-wave-editor zoom="1:1"/>
+  </ags-sf-window>
+</ags-simple-file>

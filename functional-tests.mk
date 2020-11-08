@@ -37,7 +37,17 @@ check_PROGRAMS += \
 	ags_functional_synth_test \
 	ags_functional_ffplayer_test \
 	ags_functional_notation_edit_test \
-	ags_functional_audio_config_test
+	ags_functional_audio_config_test \
+	ags_functional_loop_000_xml_test \
+	ags_functional_loop_001_xml_test \
+	ags_functional_loop_002_xml_test \
+	ags_functional_loop_003_xml_test \
+	ags_functional_loop_004_xml_test \
+	ags_functional_loop_005_xml_test \
+	ags_functional_loop_006_xml_test \
+	ags_functional_loop_007_xml_test \
+	ags_functional_loop_008_xml_test \
+	ags_functional_loop_010_xml_test
 
 # functional test util library
 libgsequencer_test_la_SOURCES = ags/test/X/gsequencer_setup_util.c ags/test/X/gsequencer_setup_util.h ags/test/X/ags_functional_test_util.c ags/test/X/ags_functional_test_util.h ags/test/X/libgsequencer.h
@@ -183,3 +193,73 @@ ags_functional_audio_config_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2
 ags_functional_audio_config_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
 ags_functional_audio_config_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_functional_audio_config_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional loop 000 XML test
+ags_functional_loop_000_xml_test_SOURCES = ags/test/X/ags_functional_loop_000_xml_test.c
+ags_functional_loop_000_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_loop_000_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
+ags_functional_loop_000_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_loop_000_xml_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional loop 001 XML test
+ags_functional_loop_001_xml_test_SOURCES = ags/test/X/ags_functional_loop_001_xml_test.c
+ags_functional_loop_001_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_loop_001_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
+ags_functional_loop_001_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_loop_001_xml_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional loop 002 XML test
+ags_functional_loop_002_xml_test_SOURCES = ags/test/X/ags_functional_loop_002_xml_test.c
+ags_functional_loop_002_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_loop_002_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
+ags_functional_loop_002_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_loop_002_xml_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional loop 003 XML test
+ags_functional_loop_003_xml_test_SOURCES = ags/test/X/ags_functional_loop_003_xml_test.c
+ags_functional_loop_003_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_loop_003_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
+ags_functional_loop_003_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_loop_003_xml_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional loop 004 XML test
+ags_functional_loop_004_xml_test_SOURCES = ags/test/X/ags_functional_loop_004_xml_test.c
+ags_functional_loop_004_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_loop_004_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
+ags_functional_loop_004_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_loop_004_xml_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional loop 005 XML test
+ags_functional_loop_005_xml_test_SOURCES = ags/test/X/ags_functional_loop_005_xml_test.c
+ags_functional_loop_005_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_loop_005_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
+ags_functional_loop_005_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_loop_005_xml_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional loop 006 XML test
+ags_functional_loop_006_xml_test_SOURCES = ags/test/X/ags_functional_loop_006_xml_test.c
+ags_functional_loop_006_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_loop_006_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
+ags_functional_loop_006_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_loop_006_xml_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional loop 007 XML test
+ags_functional_loop_007_xml_test_SOURCES = ags/test/X/ags_functional_loop_007_xml_test.c
+ags_functional_loop_007_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_loop_007_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
+ags_functional_loop_007_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_loop_007_xml_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional loop 008 XML test
+ags_functional_loop_008_xml_test_SOURCES = ags/test/X/ags_functional_loop_008_xml_test.c
+ags_functional_loop_008_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_loop_008_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
+ags_functional_loop_008_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_loop_008_xml_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional loop 010 XML test
+ags_functional_loop_010_xml_test_SOURCES = ags/test/X/ags_functional_loop_010_xml_test.c
+ags_functional_loop_010_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_loop_010_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
+ags_functional_loop_010_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_loop_010_xml_test_LDADD = $(gsequencer_functional_test_LDADD)
