@@ -706,6 +706,8 @@ ags_lv2_turtle_parser_parse_names_predicate_object_list(AgsLv2TurtleParser *lv2_
   gboolean is_plugin;
   gboolean is_instrument;
 
+  GRecMutex *lv2_manager_mutex;
+
   if(node == NULL){
     return;
   }
@@ -740,6 +742,9 @@ ags_lv2_turtle_parser_parse_names_predicate_object_list(AgsLv2TurtleParser *lv2_
   }
 
   lv2_manager = ags_lv2_manager_get_instance();
+
+  /* get lv2 manager mutex */
+  lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
 
   lv2_plugin = NULL;
   is_plugin = FALSE;
@@ -842,9 +847,13 @@ ags_lv2_turtle_parser_parse_names_predicate_object_list(AgsLv2TurtleParser *lv2_
   /* plugin create instance */
   if(is_plugin){
     GList *list;
-      
+
+    g_rec_mutex_lock(lv2_manager_mutex);
+    
     list = ags_lv2_plugin_find_uri(lv2_manager->lv2_plugin,
 				   subject_iriref);
+
+    g_rec_mutex_unlock(lv2_manager_mutex);
 
     if(list != NULL){
       lv2_plugin = list->data;
@@ -963,8 +972,12 @@ ags_lv2_turtle_parser_parse_names_predicate_object_list(AgsLv2TurtleParser *lv2_
 		   "turtle", turtle[n_turtle - 1],
 		   NULL);
 	
+      g_rec_mutex_lock(lv2_manager_mutex);
+      
       lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
 					       lv2_plugin);
+
+      g_rec_mutex_unlock(lv2_manager_mutex);
 
       g_object_set(lv2_turtle_parser,
 		   "plugin", lv2_plugin,
@@ -1594,6 +1607,9 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
   gboolean is_instrument;
   gboolean is_preset;
     
+  GRecMutex *lv2_manager_mutex;
+  GRecMutex *lv2ui_manager_mutex;
+
   if(node == NULL){
     return;
   }
@@ -1678,6 +1694,10 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
   lv2_manager = ags_lv2_manager_get_instance();
   lv2ui_manager = ags_lv2ui_manager_get_instance();
   lv2_preset_manager = ags_lv2_preset_manager_get_instance();
+
+  /* get lv2 manager mutex */
+  lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
+  lv2ui_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2ui_manager);
 
   lv2_plugin = NULL;
   lv2ui_plugin = NULL;
@@ -1854,9 +1874,13 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
   /* plugin create instance */
   if(is_plugin){
     GList *list;
-      
+
+    g_rec_mutex_lock(lv2_manager_mutex);
+    
     list = ags_lv2_plugin_find_uri(lv2_manager->lv2_plugin,
 				   subject_iriref);
+
+    g_rec_mutex_unlock(lv2_manager_mutex);
 
     if(list != NULL){
       lv2_plugin = list->data;
@@ -1977,9 +2001,13 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 		     "turtle", turtle[n_turtle - 1],
 		     NULL);
       }
-	
+
+      g_rec_mutex_lock(lv2_manager_mutex);
+
       lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
 					       lv2_plugin);
+
+      g_rec_mutex_unlock(lv2_manager_mutex);
 
       g_object_set(lv2_turtle_parser,
 		   "plugin", lv2_plugin,
@@ -2003,9 +2031,13 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 
   if(is_ui_plugin){
     GList *list;
-      
+
+    g_rec_mutex_lock(lv2ui_manager_mutex);
+
     list = ags_lv2ui_plugin_find_gui_uri(lv2ui_manager->lv2ui_plugin,
 					 subject_iriref);
+
+    g_rec_mutex_unlock(lv2ui_manager_mutex);
 
     if(list != NULL){
       lv2ui_plugin = list->data;
@@ -2110,8 +2142,13 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 				  "ui-filename", filename,
 				  "gui-uri", subject_iriref,
 				  NULL);
+
+      g_rec_mutex_lock(lv2ui_manager_mutex);
+
       lv2ui_manager->lv2ui_plugin = g_list_prepend(lv2ui_manager->lv2ui_plugin,
 						   lv2ui_plugin);
+
+      g_rec_mutex_unlock(lv2ui_manager_mutex);
 
       if(ags_lv2_manager_global_get_preserve_turtle()){
 	g_object_set(lv2ui_plugin,
