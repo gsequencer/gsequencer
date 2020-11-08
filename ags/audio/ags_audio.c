@@ -7800,21 +7800,31 @@ ags_audio_real_set_pads(AgsAudio *audio,
 		       "channel", &current,
 		       NULL);
 
-	  g_object_get(current,
-		       "line", &current_line,
-		       NULL);
-
-	  if(current_line >= pads * audio_channels &&
-	     AGS_IS_PLAYBACK(playback)){
+	  //FIXME:JK: ugly code
+	  if(current == NULL){
 	    /* remove playback */
 	    ags_playback_domain_remove_playback(playback_domain,
 						(GObject *) playback, AGS_TYPE_INPUT);
 	    
 	    g_object_run_dispose((GObject *) playback);
 	    g_object_unref((GObject *) playback);
-	  }
+	  }else{
+	    g_object_get(current,
+			 "line", &current_line,
+			 NULL);
 
-	  g_object_unref(current);
+	    if(current_line >= pads * audio_channels &&
+	       AGS_IS_PLAYBACK(playback)){
+	      /* remove playback */
+	      ags_playback_domain_remove_playback(playback_domain,
+						  (GObject *) playback, AGS_TYPE_INPUT);
+	    
+	      g_object_run_dispose((GObject *) playback);
+	      g_object_unref((GObject *) playback);
+	    }
+
+	    g_object_unref(current);
+	  }
 	  
 	  /* iterate */
 	  list = list->next;

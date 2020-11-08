@@ -1,3 +1,8 @@
+ags (3.6.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed memory corruption in Ags*DssiBridge and Ags*Lv2Bridge
+
 ags (3.6.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

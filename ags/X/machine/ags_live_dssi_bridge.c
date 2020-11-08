@@ -591,7 +591,8 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 
   AgsApplicationContext *application_context;
 
-  GList *start_play, *start_recall, *recall;
+  GList *start_play, *start_recall;
+  GList *start_list, *list;
 
   gint position;  
   
@@ -625,15 +626,17 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
 
-  recall = NULL;
+  list =
+    start_list = NULL;
 
   if(start_play != NULL &&
      start_recall != NULL){
-    recall = g_list_concat(start_play,
-			   start_recall);
+    list =
+      start_list = g_list_concat(start_play,
+				 start_recall);
   }
   
-  while((recall = ags_recall_template_find_type(recall, AGS_TYPE_FX_NOTATION_AUDIO)) != NULL){
+  while((list = ags_recall_template_find_type(list, AGS_TYPE_FX_NOTATION_AUDIO)) != NULL){
     AgsPort *port;
 
     GValue value = G_VALUE_INIT;
@@ -641,7 +644,7 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
     /* loop */
     port = NULL;
     
-    g_object_get(recall->data,
+    g_object_get(list->data,
 		 "loop", &port,
 		 NULL);
 
@@ -661,7 +664,7 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
     /* loop start */
     port = NULL;
     
-    g_object_get(recall->data,
+    g_object_get(list->data,
 		 "loop-start", &port,
 		 NULL);
 
@@ -682,7 +685,7 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
     /* loop end */
     port = NULL;
     
-    g_object_get(recall->data,
+    g_object_get(list->data,
 		 "loop-end", &port,
 		 NULL);
 
@@ -701,13 +704,10 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
     }
 
     /* iterate */
-    recall = recall->next;
+    list = list->next;
   }
 
-  g_list_free_full(start_play,
-		   (GDestroyNotify) g_object_unref);
-  
-  g_list_free_full(start_recall,
+  g_list_free_full(start_list,
 		   (GDestroyNotify) g_object_unref);
 
   /* ags-fx-envelope */
