@@ -1,3 +1,8 @@
+ags (3.6.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented concurrent running tests using gnu parallel
+
 ags (3.6.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
