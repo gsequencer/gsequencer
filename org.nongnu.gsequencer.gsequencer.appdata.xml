@@ -35,6 +35,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.6.14" date="2020-11-09">
+      <description>
+	<p>Fixed AgsPlayback cleanup.</p>
+      </description>
+    </release>
+
     <release version="3.6.10" date="2020-11-08">
       <description>
 	<p>Fixed memory corruption in Ags*DssiBridge and Ags*Lv2Bridge.</p>
