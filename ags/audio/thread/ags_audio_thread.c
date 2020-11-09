@@ -829,6 +829,8 @@ ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
 
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_thread);
 
+  channel = NULL;
+  
   g_object_get(playback,
 	       "channel", &channel,
 	       NULL);
@@ -908,7 +910,9 @@ ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
   }
 
   /* unref */
-  g_object_unref(channel);
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
 }
 
 void
@@ -933,6 +937,8 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
   
   g_rec_mutex_unlock(thread_mutex);
 
+  channel = NULL;
+  
   g_object_get(playback,
 	       "channel", &channel,
 	       NULL);
@@ -1014,7 +1020,9 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
   }
 
   /* unref */
-  g_object_unref(channel);
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
 }
 
 /**

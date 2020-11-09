@@ -1205,6 +1205,9 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
 				     msg);
 
   sleep(5);
+
+  response_headers = NULL;
+  response_body = NULL;
   
   g_object_get(msg,
 	       "response-headers", &response_headers,
@@ -1257,8 +1260,12 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
 
   CU_ASSERT(root_node != NULL);
 
-  child = root_node->children;
+  child = NULL;
 
+  if(root_node != NULL){
+    child = root_node->children;
+  }
+  
   resource_id = NULL;
   
   while(child != NULL){
@@ -1366,6 +1373,9 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
 
   status = soup_session_send_message(soup_session,
 				     msg);
+
+  response_headers = NULL;
+  response_body = NULL;
 
   g_object_get(msg,
 	       "response-headers", &response_headers,
