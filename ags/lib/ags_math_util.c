@@ -19,6 +19,7 @@
 
 #include <ags/lib/ags_math_util.h>
 
+#include <stdio.h>
 #include <string.h>
 
 /**
