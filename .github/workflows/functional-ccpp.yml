@@ -24,6 +24,6 @@ jobs:
     - name: make install
       run: sudo make install
     - name: make ags-parallel-integration-unit-test
-      run: ags-parallel-integration-unit-test
+      run: make ags-parallel-integration-unit-test
     - name: make ags-parallel-integration-functional-test
       run: make ags-parallel-integration-functional-test
