@@ -6532,56 +6532,6 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     audio->output_lines = audio_channels * audio->output_pads;
 
     g_rec_mutex_unlock(audio_mutex);
-
-    /* shrink output playback domain */
-    g_object_get(playback_domain,
-		 "output-playback", &start_list,
-		 NULL);
-    
-    for(j = 0; j < output_pads; j++){
-      list = g_list_nth(start_list,
-			(j + 1) * audio_channels);
-      
-      for(i = 0; i < audio_channels_old - audio_channels && list != NULL; i++){
-	playback = list->data;
-
-	if(AGS_IS_PLAYBACK(playback)){
-	  ags_playback_domain_remove_playback(playback_domain,
-					      (GObject *) playback, AGS_TYPE_OUTPUT);
-	}
-	
-	/* iterate */
-	list = list->next;
-      }
-    }
-
-    g_list_free_full(start_list,
-		     g_object_unref);
-
-    /* shrink input playback domain */
-    g_object_get(playback_domain,
-		 "input-playback", &start_list,
-		 NULL);
-    
-    for(j = 0; j < input_pads; j++){
-      list = g_list_nth(start_list,
-			(j + 1) * audio_channels);
-      
-      for(i = 0; i < audio_channels_old - audio_channels; i++){
-	playback = list->data;
-
-	if(AGS_IS_PLAYBACK(playback)){
-	  ags_playback_domain_remove_playback(playback_domain,
-					      (GObject *) playback, AGS_TYPE_INPUT);
-	}
-	
-	/* iterate */
-	list = list->next;
-      }
-    }
-
-    g_list_free_full(start_list,
-		     g_object_unref);
   }
 
   /* unref */
@@ -7518,34 +7468,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	audio->output = NULL;
 
 	g_rec_mutex_unlock(audio_mutex);
-
-	/* remove playback */
-	g_object_get(playback_domain,
-		     "output-playback", &start_list,
-		     NULL);
-
-	list = start_list;
-
-	while(list != NULL){
-	  AgsPlayback *playback;
-
-	  playback = (AgsPlayback *) list->data;
-
-	  if(AGS_IS_PLAYBACK(playback)){
-	    /* remove playback */
-	    ags_playback_domain_remove_playback(playback_domain,
-						(GObject *) playback, AGS_TYPE_OUTPUT);
-
-	    g_object_run_dispose((GObject *) playback);
-	    g_object_unref((GObject *) playback);
-	  }
-	  
-	  /* iterate */
-	  list = list->next;
-	}
-
-	g_list_free_full(start_list,
-			 g_object_unref);
       }else if(pads < output_pads){
 	GList *start_list, *list;
 
@@ -7557,48 +7479,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
 					AGS_TYPE_OUTPUT,
 					pads);
 	
-	/* remove playback */
-	g_object_get(playback_domain,
-		     "output-playback", &start_list,
-		     NULL);
-
-	list = start_list;
-	
-	while(list != NULL){
-	  AgsChannel *current;
-	  AgsPlayback *playback;
-
-	  guint current_line;
-
-	  playback = (AgsPlayback *) list->data;
-
-	  g_object_get(playback,
-		       "channel", &current,
-		       NULL);
-
-	  g_object_get(current,
-		       "line", &current_line,
-		       NULL);
-
-	  if(current_line >= pads * audio_channels &&
-	     AGS_IS_PLAYBACK(playback)){
-	    /* remove playback */
-	    ags_playback_domain_remove_playback(playback_domain,
-						(GObject *) playback, AGS_TYPE_OUTPUT);
-	    
-	    g_object_run_dispose((GObject *) playback);
-	    g_object_unref((GObject *) playback);
-	  }
-
-	  g_object_unref(current);
-	  
-	  /* iterate */
-	  list = list->next;
-	}
-
-	g_list_free_full(start_list,
-			 g_object_unref);
-
 	ags_audio_set_pads_unlink(audio,
 				  AGS_TYPE_OUTPUT,
 				  pads);
@@ -7745,34 +7625,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	audio->input = NULL;  
 
 	g_rec_mutex_unlock(audio_mutex);
-
-	/* remove playback */
-	g_object_get(playback_domain,
-		     "input-playback", &start_list,
-		     NULL);
-	
-	list = start_list;
-
-	while(list != NULL){
-	  AgsPlayback *playback;
-
-	  playback = (AgsPlayback *) list->data;
-
-	  if(AGS_IS_PLAYBACK(playback)){
-	    /* remove playback */
-	    ags_playback_domain_remove_playback(playback_domain,
-						(GObject *) playback, AGS_TYPE_INPUT);
-
-	    g_object_run_dispose((GObject *) playback);
-	    g_object_unref((GObject *) playback);
-	  }
-	  
-	  /* iterate */
-	  list = list->next;
-	}
-
-	g_list_free_full(start_list,
-			 g_object_unref);
       }else if(pads < pads_old){
 	GList *start_list, *list;
 
@@ -7780,59 +7632,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	ags_audio_set_pads_shrink_automation(audio,
 					     AGS_TYPE_INPUT,
 					     pads);
-		
-	/* remove playback */
-	g_object_get(playback_domain,
-		     "input-playback", &start_list,
-		     NULL);
-
-	list = start_list;
-	  
-	while(list != NULL){
-	  AgsChannel *current;
-	  AgsPlayback *playback;
-
-	  guint current_line;
-
-	  playback = (AgsPlayback *) list->data;
-
-	  g_object_get(playback,
-		       "channel", &current,
-		       NULL);
-
-	  //FIXME:JK: ugly code
-	  if(current == NULL){
-	    /* remove playback */
-	    ags_playback_domain_remove_playback(playback_domain,
-						(GObject *) playback, AGS_TYPE_INPUT);
-	    
-	    g_object_run_dispose((GObject *) playback);
-	    g_object_unref((GObject *) playback);
-	  }else{
-	    g_object_get(current,
-			 "line", &current_line,
-			 NULL);
-
-	    if(current_line >= pads * audio_channels &&
-	       AGS_IS_PLAYBACK(playback)){
-	      /* remove playback */
-	      ags_playback_domain_remove_playback(playback_domain,
-						  (GObject *) playback, AGS_TYPE_INPUT);
-	    
-	      g_object_run_dispose((GObject *) playback);
-	      g_object_unref((GObject *) playback);
-	    }
-
-	    g_object_unref(current);
-	  }
-	  
-	  /* iterate */
-	  list = list->next;
-	}
-
-	g_list_free_full(start_list,
-			 g_object_unref);
-
+	
 	ags_audio_set_pads_unlink(audio,
 				  AGS_TYPE_INPUT,
 				  pads);

@@ -2025,7 +2025,10 @@ ags_check_system_xorg_application_context_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_xorg_application_context_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_xorg_application_context_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lags_gui -L$(DESTDIR)/$(libdir)/gsequencer/ -lgsequencer -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 
-ags-check-system-unit-tests: $(libags_installcheck_programs) $(libags_audio_installcheck_programs) $(libgsequencer_installcheck_programs)
+ags-parallel-check-system-unit-test: $(libags_installcheck_programs) $(libags_audio_installcheck_programs) $(libgsequencer_installcheck_programs)
+	parallel -j 10 < ags_check_system_unit_programs
+
+ags-check-system-unit-test: $(libags_installcheck_programs) $(libags_audio_installcheck_programs) $(libgsequencer_installcheck_programs)
 	./ags_check_system_buffer_util_test
 	./ags_check_system_complex_test
 	./ags_check_system_conversion_test
@@ -2282,6 +2285,7 @@ ags-check-system-unit-tests: $(libags_installcheck_programs) $(libags_audio_inst
 	./ags_check_system_fx_eq10_channel_test
 	./ags_check_system_fx_eq10_channel_processor_test
 	./ags_check_system_fx_eq10_recycling_test
+	./ags_check_system_xorg_application_context_test
 
 # WITH_SYSTEM_TESTS
 endif

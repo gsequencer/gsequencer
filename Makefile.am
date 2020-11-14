@@ -113,6 +113,8 @@ EXTRA_DIST = config.rpath \
 	README \
 	ags_example.xml \
 	midi2xml.1 \
+	ags_check_system_unit_programs \
+	ags_check_system_functional_programs \
 	ags_authentication_test.xml \
 	ags_business_group_test.xml \
 	ags_certificate_test.xml \
@@ -2778,10 +2780,16 @@ endif
 midi2xml_SOURCES = ags/midi2xml_main.c
 
 ags-integration-unit-test: 
-	$(MAKE) -C $(top_srcdir) -f unit-system-tests.mk ags-check-system-unit-tests
+	$(MAKE) -C $(top_srcdir) -f unit-system-tests.mk ags-check-system-unit-test
+
+ags-parallel-integration-unit-test: 
+	$(MAKE) -C $(top_srcdir) -f unit-system-tests.mk ags-parallel-check-system-unit-test
 
 ags-integration-functional-test: 
 	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-check-system-functional-test
+
+ags-parallel-integration-functional-test: 
+	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-parallel-check-system-functional-test
 
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool

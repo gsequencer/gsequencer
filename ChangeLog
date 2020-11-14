@@ -1,3 +1,25 @@
+ags (3.6.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_playback_dispose()
+	* disabled parallel server tests
+	* minor improvements
+
+ags (3.6.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed automake
+
+ags (3.6.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented concurrent running tests using gnu parallel
+
+ags (3.6.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added 10 functional integration XML file setup test
+
 ags (3.6.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

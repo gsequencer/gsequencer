@@ -282,6 +282,12 @@ ags_check_system_functional_loop_010_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" 
 ags_check_system_functional_loop_010_xml_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_functional_loop_010_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
 
+ags-parallel-check-system-functional-test: $(installcheck_programs)
+	xvfb-run --server-args="-screen 0 1920x1080x24" -a ./ags_check_system_functional_server_test
+	xvfb-run --server-args="-screen 0 1920x1080x24" -a ./ags_check_system_functional_osc_server_test
+	xvfb-run --server-args="-screen 0 1920x1080x24" -a ./ags_check_system_functional_osc_xmlrpc_server_test
+	parallel -j 10 < ags_check_system_functional_programs
+
 ags-check-system-functional-test: $(installcheck_programs)
 	./ags_check_system_functional_server_test
 	./ags_check_system_functional_audio_test
