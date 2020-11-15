@@ -429,6 +429,8 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 
   automation_edit->ruler = ags_ruler_new();
   g_object_set(automation_edit->ruler,
+	       "height-request", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
+	       "font-size",  (guint) (gui_scale_factor * automation_edit->ruler->font_size),
 	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),

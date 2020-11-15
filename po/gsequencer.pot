@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.6.14\n"
+"Project-Id-Version: gsequencer 3.6.15\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-11-09 19:34+0100\n"
+"POT-Creation-Date: 2020-11-15 05:59+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,30 +45,30 @@ msgstr ""
 msgid "stop"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:273
+#: ags/X/ags_automation_editor.c:261
 msgid "automation"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:313 ags/X/ags_preferences.c:182
+#: ags/X/ags_automation_editor.c:301 ags/X/ags_preferences.c:182
 msgid "audio"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:407 ags/X/ags_connection_editor.c:424
+#: ags/X/ags_automation_editor.c:394 ags/X/ags_connection_editor.c:424
 #: ags/X/ags_machine_editor.c:224
 msgid "output"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:432 ags/X/ags_automation_editor.c:539
-#: ags/X/ags_wave_editor.c:309
+#: ags/X/ags_automation_editor.c:419 ags/X/ags_automation_editor.c:525
+#: ags/X/ags_wave_editor.c:297
 msgid "line"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:514 ags/X/ags_connection_editor.c:444
+#: ags/X/ags_automation_editor.c:500 ags/X/ags_connection_editor.c:444
 #: ags/X/ags_machine_editor.c:231 ags/X/machine/ags_audiorec.c:345
 msgid "input"
 msgstr ""
 
-#: ags/X/ags_bulk_member.c:729 ags/X/machine/ags_dssi_bridge.c:375
+#: ags/X/ags_bulk_member.c:709 ags/X/machine/ags_dssi_bridge.c:375
 #: ags/X/machine/ags_live_dssi_bridge.c:378
 msgid "Plugin file not present"
 msgstr ""
@@ -267,7 +267,7 @@ msgid "group"
 msgstr ""
 
 #: ags/X/ags_effect_line.c:992 ags/X/ags_effect_line.c:998
-#: ags/X/ags_line.c:1083 ags/X/ags_line.c:1089 ags/X/ags_notation_editor.c:334
+#: ags/X/ags_line.c:1083 ags/X/ags_line.c:1089 ags/X/ags_notation_editor.c:321
 msgid "channel"
 msgstr ""
 
@@ -543,7 +543,7 @@ msgstr ""
 msgid "loop R"
 msgstr ""
 
-#: ags/X/ags_notation_editor.c:302
+#: ags/X/ags_notation_editor.c:289
 msgid "notation"
 msgstr ""
 
@@ -714,7 +714,7 @@ msgstr ""
 msgid "WASAPI buffer size"
 msgstr ""
 
-#: ags/X/ags_wave_editor.c:271 ags/X/machine/ags_fm_oscillator.c:158
+#: ags/X/ags_wave_editor.c:259 ags/X/machine/ags_fm_oscillator.c:158
 #: ags/X/machine/ags_oscillator.c:152
 msgid "wave"
 msgstr ""
@@ -733,29 +733,29 @@ msgstr ""
 msgid "Lv2"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3390
+#: ags/X/ags_xorg_application_context.c:3413
 #: ags/audio/ags_audio_application_context.c:2141
-#: ags/audio/task/ags_apply_sound_config.c:901
+#: ags/audio/task/ags_apply_sound_config.c:902
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3400
+#: ags/X/ags_xorg_application_context.c:3423
 #: ags/audio/ags_audio_application_context.c:2151
-#: ags/audio/task/ags_apply_sound_config.c:911
+#: ags/audio/task/ags_apply_sound_config.c:912
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3642
+#: ags/X/ags_xorg_application_context.c:3665
 #: ags/audio/ags_audio_application_context.c:2393
-#: ags/audio/task/ags_apply_sound_config.c:1151
+#: ags/audio/task/ags_apply_sound_config.c:1152
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3652
+#: ags/X/ags_xorg_application_context.c:3675
 #: ags/audio/ags_audio_application_context.c:2403
-#: ags/audio/task/ags_apply_sound_config.c:1161
+#: ags/audio/task/ags_apply_sound_config.c:1162
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 

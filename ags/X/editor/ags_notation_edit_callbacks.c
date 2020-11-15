@@ -19,6 +19,7 @@
 
 #include <ags/X/editor/ags_notation_edit_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_notation_editor.h>
 
 #include <math.h>
@@ -964,28 +965,15 @@ ags_notation_edit_vscrollbar_value_changed(GtkRange *range, AgsNotationEdit *not
 void
 ags_notation_edit_hscrollbar_value_changed(GtkRange *range, AgsNotationEdit *notation_edit)
 {
-  AgsConfig *config;
-
-  gchar *str;
+  AgsApplicationContext *application_context;
   
   gdouble gui_scale_factor;
   gdouble value;
 
-  config = ags_config_get_instance();
-  
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   value = gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)) / (guint) (gui_scale_factor * 64.0);
   gtk_adjustment_set_value(notation_edit->ruler->adjustment,

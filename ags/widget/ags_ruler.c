@@ -65,6 +65,7 @@ enum{
   PROP_LARGE_STEP,
   PROP_SMALL_STEP,
   PROP_ADJUSTMENT,
+  PROP_FONT_SIZE,
 };
 
 static gpointer ags_ruler_parent_class = NULL;
@@ -124,6 +125,31 @@ ags_ruler_class_init(AgsRulerClass *ruler)
   widget->show = ags_ruler_show;
 
   /* properties */
+  /**
+   * AgsRuler:font-size:
+   *
+   * The font size.
+   * 
+   * Since: 3.6.15
+   */
+  param_spec = g_param_spec_uint("font-size",
+				 "font size",
+				 "The font size",
+				 0,
+				 G_MAXUINT,
+				 AGS_RULER_FONT_SIZE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FONT_SIZE,
+				  param_spec);
+
+  /**
+   * AgsRuler:adjustment:
+   *
+   * The adjustment.
+   * 
+   * Since: 3.0.0
+   */
   param_spec = g_param_spec_object("adjustment",
 				   "assigned adjustment",
 				   "The adjustment it is assigned with",
@@ -222,6 +248,11 @@ ags_ruler_set_property(GObject *gobject,
   ruler = AGS_RULER(gobject);
 
   switch(prop_id){
+  case PROP_FONT_SIZE:
+  {
+    ruler->font_size = g_value_get_uint(value);
+  }
+  break;
   case PROP_STEP:
   {
     ruler->step = g_value_get_uint(value);
@@ -274,6 +305,11 @@ ags_ruler_get_property(GObject *gobject,
   ruler = AGS_RULER(gobject);
 
   switch(prop_id){
+  case PROP_FONT_SIZE:
+  {
+    g_value_set_uint(value, ruler->font_size);
+  }
+  break;
   case PROP_STEP:
   {
     g_value_set_uint(value, ruler->step);
@@ -410,8 +446,21 @@ ags_ruler_get_preferred_height(GtkWidget *widget,
 			       gint *minimal_height,
 			       gint *natural_height)
 {
-  minimal_height[0] =
-    natural_height[0] = (gint) AGS_RULER_DEFAULT_HEIGHT;
+  gint height_request;
+
+  height_request = -1;
+
+  g_object_get(widget,
+	       "height-request", &height_request,
+	       NULL);
+
+  if(height_request != -1){
+    minimal_height[0] =
+      natural_height[0] = height_request;
+  }else{
+    minimal_height[0] =
+      natural_height[0] = (gint) AGS_RULER_DEFAULT_HEIGHT;
+  }
 }
 
 /**
@@ -602,6 +651,54 @@ ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
 
   return(FALSE);
+}
+
+/**
+ * ags_ruler_get_font_size:
+ * @ruler: the #AgsRuler
+ * 
+ * Get font size of @ruler.
+ * 
+ * Returns: the font size
+ * 
+ * Since: 3.6.15
+ */
+guint
+ags_ruler_get_font_size(AgsRuler *ruler)
+{
+  guint font_size;
+
+  if(!AGS_IS_RULER(ruler)){
+    return(0);
+  }
+
+  g_object_get(ruler,
+	       "font-size", &font_size,
+	       NULL);
+
+  return(font_size);
+}
+
+/**
+ * ags_ruler_set_font_size:
+ * @ruler: the #AgsRuler
+ * @font_size: the font size
+ * 
+ * Set font size of @ruler.
+ * 
+ * Since: 3.6.15
+ */
+void
+ags_ruler_set_font_size(AgsRuler *ruler,
+		   guint font_size)
+{
+  if(!AGS_IS_RULER(ruler)){
+    return;
+  }
+
+  g_object_set(ruler,
+	       "font-size", font_size,
+	       NULL);
 }
 
 /**

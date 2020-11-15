@@ -19,6 +19,7 @@
 
 #include <ags/X/editor/ags_automation_edit_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_automation_editor.h>
 
 #include <math.h>
@@ -104,12 +105,10 @@ ags_automation_edit_drawing_area_button_press_position_cursor(AgsAutomationEdito
 							      AgsMachine *machine,
 							      GdkEventButton *event)
 {
-  AgsConfig *config;
-
+  AgsApplicationContext *application_context;
+  
   GtkAllocation allocation;
     
-  gchar *str;
-  
   gdouble gui_scale_factor;
   double zoom_factor;
   gdouble c_range;
@@ -117,21 +116,10 @@ ags_automation_edit_drawing_area_button_press_position_cursor(AgsAutomationEdito
   gdouble value, step;
   gdouble upper, lower, step_count;
 
-  config = ags_config_get_instance();
-  
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
     
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
 			    &allocation);
@@ -180,10 +168,8 @@ ags_automation_edit_drawing_area_button_press_add_acceleration(AgsAutomationEdit
   GtkAdjustment *hscrollbar_adjustment;
     
   GtkAllocation allocation;
-    
-  AgsConfig *config;
 
-  gchar *str;
+  AgsApplicationContext *application_context;  
   
   gdouble gui_scale_factor;
   double zoom_factor;
@@ -192,21 +178,10 @@ ags_automation_edit_drawing_area_button_press_add_acceleration(AgsAutomationEdit
   gdouble value, step;
   gdouble upper, lower, step_count;
     
-  config = ags_config_get_instance();
-  
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
 			    &allocation);
@@ -335,12 +310,10 @@ ags_automation_edit_drawing_area_button_release_position_cursor(AgsAutomationEdi
 {
   GtkAdjustment *vscrollbar_adjustment;
   GtkAdjustment *hscrollbar_adjustment;
-
-  AgsConfig *config;
+  
+  AgsApplicationContext *application_context;
 
   GtkAllocation allocation;
-    
-  gchar *str;
   
   gdouble gui_scale_factor;
   double zoom_factor;
@@ -349,21 +322,10 @@ ags_automation_edit_drawing_area_button_release_position_cursor(AgsAutomationEdi
   gdouble value, step;
   gdouble upper, lower, step_count;
 
-  config = ags_config_get_instance();
-  
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
 			    &allocation);
@@ -412,12 +374,10 @@ ags_automation_edit_drawing_area_button_release_add_acceleration(AgsAutomationEd
   GtkAdjustment *hscrollbar_adjustment;
 
   AgsAcceleration *acceleration;
-    
-  AgsConfig *config;
+
+  AgsApplicationContext *application_context;
 
   GtkAllocation allocation;
-
-  gchar *str;
   
   gdouble gui_scale_factor;
   double zoom_factor;
@@ -427,21 +387,10 @@ ags_automation_edit_drawing_area_button_release_add_acceleration(AgsAutomationEd
   gdouble upper, lower, step_count;
   guint new_x;
     
-  config = ags_config_get_instance();
-  
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
 			    &allocation);
@@ -504,11 +453,9 @@ ags_automation_edit_drawing_area_button_release_delete_acceleration(AgsAutomatio
   GtkAdjustment *vscrollbar_adjustment;
   GtkAdjustment *hscrollbar_adjustment;
 
-  AgsConfig *config;
-
+  AgsApplicationContext *application_context;
+   
   GtkAllocation allocation;
-    
-  gchar *str;
   
   gdouble gui_scale_factor;
   double zoom_factor;
@@ -519,21 +466,10 @@ ags_automation_edit_drawing_area_button_release_delete_acceleration(AgsAutomatio
   guint x;
   gdouble y;
 
-  config = ags_config_get_instance();
-  
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
 			    &allocation);
@@ -582,11 +518,9 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(AgsAutomatio
   GtkAdjustment *vscrollbar_adjustment;
   GtkAdjustment *hscrollbar_adjustment;
 
-  AgsConfig *config;
-
+  AgsApplicationContext *application_context;
+   
   GtkAllocation allocation;
-
-  gchar *str;
   
   gdouble gui_scale_factor;
   double zoom_factor;
@@ -597,21 +531,10 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(AgsAutomatio
   guint x0, x1;
   gdouble y0, y1;
     
-  config = ags_config_get_instance();
-  
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
 			    &allocation);
@@ -731,11 +654,9 @@ ags_automation_edit_drawing_area_motion_notify_position_cursor(AgsAutomationEdit
   GtkAdjustment *vscrollbar_adjustment;
   GtkAdjustment *hscrollbar_adjustment;
 
-  AgsConfig *config;
-
+  AgsApplicationContext *application_context;
+   
   GtkAllocation allocation;
-
-  gchar *str;
   
   gdouble gui_scale_factor;
   double zoom_factor;
@@ -744,21 +665,10 @@ ags_automation_edit_drawing_area_motion_notify_position_cursor(AgsAutomationEdit
   gdouble value, step;
   gdouble upper, lower, step_count;
 
-  config = ags_config_get_instance();
-  
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
 			    &allocation);
@@ -812,11 +722,9 @@ ags_automation_edit_drawing_area_motion_notify_add_acceleration(AgsAutomationEdi
 
   AgsAcceleration *acceleration;
     
-  AgsConfig *config;
-
+  AgsApplicationContext *application_context;
+   
   GtkAllocation allocation;
-
-  gchar *str;
   
   gdouble gui_scale_factor;
   double zoom_factor;
@@ -824,22 +732,11 @@ ags_automation_edit_drawing_area_motion_notify_add_acceleration(AgsAutomationEdi
   guint g_range;
   gdouble value, step;
   gdouble upper, lower, step_count;
-    
-  config = ags_config_get_instance();
-  
+
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
 			    &allocation);
@@ -1304,28 +1201,15 @@ ags_automation_edit_vscrollbar_value_changed(GtkRange *range, AgsAutomationEdit 
 void
 ags_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEdit *automation_edit)
 {
-  AgsConfig *config;
-
-  gchar *str;
-  
+  AgsApplicationContext *application_context;
+     
   gdouble gui_scale_factor;
   gdouble value;
 
-  config = ags_config_get_instance();
-  
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   value = gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar)) / (guint) (gui_scale_factor * 64.0);
   gtk_adjustment_set_value(automation_edit->ruler->adjustment,

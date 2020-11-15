@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/X/editor/ags_notation_edit.h>
 #include <ags/X/editor/ags_notation_edit_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_notation_editor.h>
 
 #include <gdk/gdkkeysyms.h>
@@ -210,9 +211,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   
   GtkAdjustment *adjustment;
 
-  AgsConfig *config;
-
-  gchar *str;
+  AgsApplicationContext *application_context;
   
   gdouble gui_scale_factor;
 
@@ -224,21 +223,10 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   notation_edit->button_mask = 0;
   notation_edit->key_mask = 0;
 
-  config = ags_config_get_instance();
-  
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
   
   notation_edit->note_offset = 0;
   notation_edit->note_offset_absolute = 0;
@@ -263,6 +251,8 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 
   notation_edit->ruler = ags_ruler_new();
   g_object_set(notation_edit->ruler,
+	       "height-request", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
+	       "font-size",  (guint) (gui_scale_factor * notation_edit->ruler->font_size),
 	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),

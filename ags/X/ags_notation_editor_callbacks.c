@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,8 @@
  */
 
 #include <ags/X/ags_notation_editor_callbacks.h>
+
+#include <ags/X/ags_ui_provider.h>
 
 void
 ags_notation_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,

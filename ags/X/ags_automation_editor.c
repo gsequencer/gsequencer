@@ -20,6 +20,7 @@
 #include <ags/X/ags_automation_editor.h>
 #include <ags/X/ags_automation_editor_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
 #include <ags/X/editor/ags_scrolled_automation_edit_box.h>
@@ -205,9 +206,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   GtkAdjustment *adjustment;
 
-  AgsConfig *config;
-
-  gchar *str;
+  AgsApplicationContext *application_context;
   
   gdouble gui_scale_factor;
   
@@ -217,21 +216,10 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   automation_editor->version = AGS_AUTOMATION_EDITOR_DEFAULT_VERSION;
   automation_editor->build_id = AGS_AUTOMATION_EDITOR_DEFAULT_BUILD_ID;
 
-  config = ags_config_get_instance();
+  application_context = ags_application_context_get_instance();
 
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   /* offset */
   automation_editor->tact_counter = 0;
@@ -334,13 +322,12 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   /* audio - ruler */
   automation_editor->audio_ruler = ags_ruler_new();
   g_object_set(automation_editor->audio_ruler,
+	       "height-request", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
+	       "font-size",  (guint) (gui_scale_factor * automation_editor->audio_ruler->font_size),
 	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
 	       NULL);
-  gtk_widget_set_size_request((GtkWidget *) automation_editor->audio_ruler,
-			      -1,
-			      (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT));
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->audio_ruler,
 		   1, 2,
@@ -440,10 +427,9 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* output - ruler */
   automation_editor->output_ruler = ags_ruler_new();
-  gtk_widget_set_size_request((GtkWidget *) automation_editor->output_ruler,
-			      -1,
-			      (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT));
   g_object_set(automation_editor->output_ruler,
+	       "height-request", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
+	       "font-size",  (guint) (gui_scale_factor * automation_editor->output_ruler->font_size),
 	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
@@ -547,10 +533,9 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* input - ruler */
   automation_editor->input_ruler = ags_ruler_new();
-  gtk_widget_set_size_request((GtkWidget *) automation_editor->input_ruler,
-			      -1,
-			      (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT));
   g_object_set(automation_editor->input_ruler,
+	       "height-request", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
+	       "font-size",  (guint) (gui_scale_factor * automation_editor->input_ruler->font_size),
 	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
@@ -1078,8 +1063,8 @@ void
 ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine)
 {  
   AgsMachine *old_machine;
-  
-  AgsConfig *config;
+
+  AgsApplicationContext *application_context;
 
   GList *list_start, *list;
   GList *tab;
@@ -1109,21 +1094,10 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 			NULL);
   }
 
-  config = ags_config_get_instance();
+  application_context = ags_application_context_get_instance();
 
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   /* get audio mutex */
   audio_mutex = NULL;

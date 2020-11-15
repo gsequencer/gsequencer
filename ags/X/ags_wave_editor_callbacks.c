@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,8 @@
  */
 
 #include <ags/X/ags_wave_editor_callbacks.h>
+
+#include <ags/X/ags_ui_provider.h>
 
 gboolean
 ags_wave_editor_edit_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsWaveEditor *wave_editor)
@@ -44,29 +46,16 @@ ags_wave_editor_vscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_ed
 void
 ags_wave_editor_hscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_editor)
 {
-  AgsConfig *config;
-
+  AgsApplicationContext *application_context;
+   
   GList *list_start, *list;
 
-  gchar *str;
-  
   gdouble gui_scale_factor;
 
-  config = ags_config_get_instance();
-  
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
   
   gtk_adjustment_set_value(wave_editor->ruler->adjustment,
 			   gtk_range_get_value(range) / (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH));
@@ -95,29 +84,16 @@ ags_wave_editor_hscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_ed
 void
 ags_wave_editor_wave_edit_hscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_editor)
 {
-  AgsConfig *config;
-
+  AgsApplicationContext *application_context;
+  
   GList *list_start, *list;
-
-  gchar *str;
   
   gdouble gui_scale_factor;
 
-  config = ags_config_get_instance();
-  
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   gtk_adjustment_set_value(wave_editor->ruler->adjustment,
 			   gtk_range_get_value(range) / (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH));
