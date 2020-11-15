@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,8 @@
  */
 
 #include <ags/X/ags_automation_editor_callbacks.h>
+
+#include <ags/X/ags_ui_provider.h>
 
 gboolean
 ags_automation_editor_audio_edit_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsAutomationEditor *automation_editor)
@@ -60,29 +62,16 @@ ags_automation_editor_audio_vscrollbar_value_changed(GtkRange *range, AgsAutomat
 void
 ags_automation_editor_audio_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor)
 {
-  AgsConfig *config;
-
-  GList *list_start, *list;
-  
-  gchar *str;
+  AgsApplicationContext *application_context;
+   
+  GList *list_start, *list;  
   
   gdouble gui_scale_factor;
 
-  config = ags_config_get_instance();
-  
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   gtk_adjustment_set_value(automation_editor->audio_ruler->adjustment,
 			   gtk_range_get_value(range) / (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH));
@@ -122,29 +111,16 @@ ags_automation_editor_output_vscrollbar_value_changed(GtkRange *range, AgsAutoma
 void
 ags_automation_editor_output_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor)
 {
-  AgsConfig *config;
+  AgsApplicationContext *application_context; 
 
   GList *list_start, *list;
-
-  gchar *str;
   
   gdouble gui_scale_factor;
 
-  config = ags_config_get_instance();
-  
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   gtk_adjustment_set_value(automation_editor->output_ruler->adjustment,
 			   gtk_range_get_value(range) / (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH));
@@ -183,29 +159,16 @@ ags_automation_editor_input_vscrollbar_value_changed(GtkRange *range, AgsAutomat
 void
 ags_automation_editor_input_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor)
 {
-  AgsConfig *config;
-
+  AgsApplicationContext *application_context;
+   
   GList *list_start, *list;
-
-  gchar *str;
   
   gdouble gui_scale_factor;
 
-  config = ags_config_get_instance();
-  
+  application_context = ags_application_context_get_instance();
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   gtk_adjustment_set_value(automation_editor->input_ruler->adjustment,
 			   gtk_range_get_value(range) / (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH));
@@ -233,11 +196,7 @@ ags_automation_editor_audio_automation_edit_hscrollbar_value_changed(GtkRange *r
   AgsAutomationEdit *automation_edit;
   
   GList *list_start, *list;
-
-  gchar *str;
   
-  gdouble gui_scale_factor;
-
   if((AGS_AUTOMATION_EDITOR_RESET_AUDIO_HSCROLLBAR & (automation_editor->flags)) != 0){
     return;
   }

@@ -2691,6 +2691,8 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   AgsMessageQueue *message_queue;
   AgsMessageQueue *audio_message_queue;
 
+  AgsConfig *config;
+  
   GMainContext *server_main_context;
   GMainContext *audio_main_context;
   GMainContext *osc_server_main_context;
@@ -2700,7 +2702,9 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   GList *start_queue;
   
   gchar *filename;
-
+  gchar *str;
+  
+  gdouble gui_scale_factor;  
   guint i;
 
   static const guint staging_program[] = {
@@ -2721,6 +2725,25 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
       break;
     }
   }
+  
+  config = ags_config_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
+  ags_ui_provider_set_gui_scale_factor(AGS_UI_PROVIDER(application_context),
+				       gui_scale_factor);
   
   /* call parent */
   //  AGS_APPLICATION_CONTEXT_CLASS(ags_xorg_application_context_parent_class)->prepare(application_context);

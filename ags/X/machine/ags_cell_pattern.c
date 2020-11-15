@@ -203,12 +203,12 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
   GtkAdjustment *adjustment;
   AgsLed *led;
 
-  AgsConfig *config;
+  AgsApplicationContext *application_context;
 
-  gchar *str;
-  
   gdouble gui_scale_factor;
   guint i;
+
+  application_context = ags_application_context_get_instance();
 
   g_object_set(cell_pattern,
 	       "can-focus", TRUE,
@@ -221,21 +221,8 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
 
   cell_pattern->key_mask = 0;
 
-  config = ags_config_get_instance();
-  
-  /* cell */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   cell_pattern->cell_width = (guint) (gui_scale_factor * AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH);
   cell_pattern->cell_height = (guint) (gui_scale_factor * AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT);

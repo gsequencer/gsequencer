@@ -225,9 +225,7 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   GtkScrolledWindow *scrolled_window;
   GtkTable *table;
 
-  AgsConfig *config;
-
-  gchar *str;
+  AgsApplicationContext *application_context;
   
   gdouble gui_scale_factor;
 
@@ -237,21 +235,10 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   notation_editor->version = AGS_NOTATION_EDITOR_DEFAULT_VERSION;
   notation_editor->build_id = AGS_NOTATION_EDITOR_DEFAULT_BUILD_ID;
 
-  config = ags_config_get_instance();
+  application_context = ags_application_context_get_instance();
 
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   /* offset */
   notation_editor->tact_counter = 0;

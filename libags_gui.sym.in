@@ -76,6 +76,8 @@ ags_level_get_normalized_volume
 ags_level_value_changed
 ags_level_new
 ags_ruler_get_type
+ags_ruler_get_font_size
+ags_ruler_set_font_size
 ags_ruler_get_step
 ags_ruler_set_step
 ags_ruler_get_large_step

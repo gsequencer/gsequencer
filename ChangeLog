@@ -1,3 +1,10 @@
+ags (3.6.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented property and getter/setter of AgsRuler font-size
+	* fixed gui-scale factor applied to AgsRuler
+	* refactored gui-scale factor read from ags_ui_provider_get_gui_scale_factor() instead from AgsConfig
+
 ags (3.6.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

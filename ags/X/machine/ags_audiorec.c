@@ -490,10 +490,8 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 				   gpointer data)
 {
   AgsAudiorec *audiorec;
-  
-  AgsConfig *config;
-  
-  gchar *str;
+
+  AgsApplicationContext *application_context;
 
   gdouble gui_scale_factor;  
   guint i;
@@ -502,23 +500,12 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
     (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
   };
   
-  config = ags_config_get_instance();
+  application_context = ags_application_context_get_instance();
 
   audiorec = AGS_AUDIOREC(machine);
 
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){	  
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
       
   if(audio_channels > audio_channels_old){    
     /* recall */
@@ -576,9 +563,7 @@ ags_audiorec_resize_pads(AgsMachine *machine,
 {
   AgsAudiorec *audiorec;
 
-  AgsConfig *config;    
-
-  gchar *str;
+  AgsApplicationContext *application_context;
 
   gdouble gui_scale_factor;  
   
@@ -586,23 +571,12 @@ ags_audiorec_resize_pads(AgsMachine *machine,
     (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
   };
 
-  config = ags_config_get_instance();
+  application_context = ags_application_context_get_instance();
 
   audiorec = AGS_AUDIOREC(machine);
   
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
   
   if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
     if(pads > pads_old){
