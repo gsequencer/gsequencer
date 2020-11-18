@@ -20,6 +20,8 @@
 #include <ags/audio/ags_playback.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_note.h>
 
@@ -439,6 +441,9 @@ ags_playback_dispose(GObject *gobject)
 
   /* playback domain */
   if(playback->playback_domain != NULL){
+    ags_playback_domain_remove_playback(playback->playback_domain,
+					playback, ((AGS_IS_OUTPUT(playback->channel)) ? AGS_TYPE_OUTPUT: AGS_TYPE_INPUT));
+    
     g_object_unref(playback->playback_domain);
 
     playback->playback_domain = NULL;

@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.6.5],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.6.15],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -177,7 +177,7 @@ AC_PROG_INSTALL
 
 # libtool
 LT_PREREQ([2.4.2])
-LT_INIT
+LT_INIT([win32-dll])
 AC_SUBST([LIBTOOL_DEPS])
 AC_ENABLE_SHARED
 

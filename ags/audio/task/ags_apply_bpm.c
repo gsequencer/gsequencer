@@ -522,7 +522,7 @@ ags_apply_bpm_application_context(AgsApplyBpm *apply_bpm, AgsApplicationContext 
  *
  * Create a new instance of #AgsApplyBpm.
  *
- * Returns: the new #AgsApplyBp
+ * Returns: the new #AgsApplyBpm
  *
  * Since: 3.0.0
  */

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -301,6 +301,8 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 
   wave_edit->ruler = ags_ruler_new();
   g_object_set(wave_edit->ruler,
+	       "height-request", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
+	       "font-size",  (guint) (gui_scale_factor * wave_edit->ruler->font_size),
 	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),

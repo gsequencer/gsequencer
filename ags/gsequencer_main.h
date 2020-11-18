@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,8 +34,6 @@
 #include <unistd.h>
 
 //#include <ao/ao.h>
-
-#include <pthread.h>
 
 #include <sys/types.h>
 

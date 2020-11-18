@@ -880,7 +880,7 @@ ags_level_get_preferred_height(GtkWidget *widget,
   AgsLevel *level;
 
   level = AGS_LEVEL(widget);
-
+  
   if(level->layout == AGS_LEVEL_LAYOUT_VERTICAL){
     minimal_height[0] =
       natural_height[0] = level->level_height;

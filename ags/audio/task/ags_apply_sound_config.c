@@ -24,6 +24,7 @@
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_plugin.h>
 #include <ags/plugin/ags_lv2_option_manager.h>
+#include <ags/plugin/ags_lv2_urid_manager.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_devout.h>

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -57,6 +57,10 @@ struct _AgsScrolledPianoClass
 };
 
 GType ags_scrolled_piano_get_type(void);
+
+GtkViewport* ags_scrolled_piano_get_viewport(AgsScrolledPiano *scrolled_piano);
+
+AgsPiano* ags_scrolled_piano_get_piano(AgsScrolledPiano *scrolled_piano);
 
 AgsScrolledPiano* ags_scrolled_piano_new();
 

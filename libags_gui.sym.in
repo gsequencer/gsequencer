@@ -76,6 +76,8 @@ ags_level_get_normalized_volume
 ags_level_value_changed
 ags_level_new
 ags_ruler_get_type
+ags_ruler_get_font_size
+ags_ruler_set_font_size
 ags_ruler_get_step
 ags_ruler_set_step
 ags_ruler_get_large_step
@@ -259,6 +261,8 @@ ags_led_set_active
 ags_led_unset_active
 ags_led_new
 ags_scrolled_piano_get_type
+ags_scrolled_piano_get_viewport
+ags_scrolled_piano_get_piano
 ags_scrolled_piano_new
 ags_hled_array_get_type
 ags_hled_array_new
@@ -276,6 +280,10 @@ ags_notebook_remove_tab
 ags_notebook_remove_tab_with_data
 ags_notebook_new
 ags_piano_get_type
+ags_piano_set_button_state
+ags_piano_get_button_state
+ags_piano_set_layout
+ags_piano_get_layout
 ags_piano_set_base_note
 ags_piano_get_base_note
 ags_piano_set_base_key_code

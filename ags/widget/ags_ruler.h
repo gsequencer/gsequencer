@@ -70,6 +70,10 @@ struct _AgsRulerClass
 GType ags_ruler_get_type();
 
 /* properties */
+guint ags_ruler_get_font_size(AgsRuler *ruler);
+void ags_ruler_set_font_size(AgsRuler *ruler,
+			     guint font_size);
+
 guint ags_ruler_get_step(AgsRuler *ruler);
 void ags_ruler_set_step(AgsRuler *ruler,
 			guint step);

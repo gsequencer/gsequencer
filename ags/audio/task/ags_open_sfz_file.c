@@ -19,6 +19,7 @@
 
 #include <ags/audio/task/ags_open_sfz_file.h>
 
+#include <ags/audio/ags_diatonic_scale.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>

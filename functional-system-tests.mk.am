@@ -52,7 +52,17 @@ installcheck_programs = \
 	ags_check_system_functional_synth_test \
 	ags_check_system_functional_ffplayer_test \
 	ags_check_system_functional_notation_edit_test \
-	ags_check_system_functional_audio_config_test
+	ags_check_system_functional_audio_config_test \
+	ags_check_system_functional_loop_000_xml_test \
+	ags_check_system_functional_loop_001_xml_test \
+	ags_check_system_functional_loop_002_xml_test \
+	ags_check_system_functional_loop_003_xml_test \
+	ags_check_system_functional_loop_004_xml_test \
+	ags_check_system_functional_loop_005_xml_test \
+	ags_check_system_functional_loop_006_xml_test \
+	ags_check_system_functional_loop_007_xml_test \
+	ags_check_system_functional_loop_008_xml_test \
+	ags_check_system_functional_loop_010_xml_test
 
 noinst_PROGRAMS += $(installcheck_programs)
 
@@ -202,6 +212,82 @@ ags_check_system_functional_audio_config_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" 
 ags_check_system_functional_audio_config_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_functional_audio_config_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
 
+# functional loop 000 xml test
+ags_check_system_functional_loop_000_xml_test_SOURCES = ags/test/X/ags_functional_loop_000_xml_test.c
+ags_check_system_functional_loop_000_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_check_system_functional_loop_000_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_000_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_000_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 001 xml test
+ags_check_system_functional_loop_001_xml_test_SOURCES = ags/test/X/ags_functional_loop_001_xml_test.c
+ags_check_system_functional_loop_001_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_check_system_functional_loop_001_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_001_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_001_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 002 xml test
+ags_check_system_functional_loop_002_xml_test_SOURCES = ags/test/X/ags_functional_loop_002_xml_test.c
+ags_check_system_functional_loop_002_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_check_system_functional_loop_002_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_002_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_002_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 003 xml test
+ags_check_system_functional_loop_003_xml_test_SOURCES = ags/test/X/ags_functional_loop_003_xml_test.c
+ags_check_system_functional_loop_003_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_check_system_functional_loop_003_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_003_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_003_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 004 xml test
+ags_check_system_functional_loop_004_xml_test_SOURCES = ags/test/X/ags_functional_loop_004_xml_test.c
+ags_check_system_functional_loop_004_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_check_system_functional_loop_004_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_004_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_004_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 005 xml test
+ags_check_system_functional_loop_005_xml_test_SOURCES = ags/test/X/ags_functional_loop_005_xml_test.c
+ags_check_system_functional_loop_005_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_check_system_functional_loop_005_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_005_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_005_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 006 xml test
+ags_check_system_functional_loop_006_xml_test_SOURCES = ags/test/X/ags_functional_loop_006_xml_test.c
+ags_check_system_functional_loop_006_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_check_system_functional_loop_006_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_006_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_006_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 007 xml test
+ags_check_system_functional_loop_007_xml_test_SOURCES = ags/test/X/ags_functional_loop_007_xml_test.c
+ags_check_system_functional_loop_007_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_check_system_functional_loop_007_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_007_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_007_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 008 xml test
+ags_check_system_functional_loop_008_xml_test_SOURCES = ags/test/X/ags_functional_loop_008_xml_test.c
+ags_check_system_functional_loop_008_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_check_system_functional_loop_008_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_008_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_008_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional loop 010 xml test
+ags_check_system_functional_loop_010_xml_test_SOURCES = ags/test/X/ags_functional_loop_010_xml_test.c
+ags_check_system_functional_loop_010_xml_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_check_system_functional_loop_010_xml_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES) $(AGS_FEATURES)
+ags_check_system_functional_loop_010_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_loop_010_xml_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+ags-parallel-check-system-functional-test: $(installcheck_programs)
+	xvfb-run --server-args="-screen 0 1920x1080x24" -a ./ags_check_system_functional_server_test
+	xvfb-run --server-args="-screen 0 1920x1080x24" -a ./ags_check_system_functional_osc_server_test
+	xvfb-run --server-args="-screen 0 1920x1080x24" -a ./ags_check_system_functional_osc_xmlrpc_server_test
+	parallel -j 10 < ags_check_system_functional_programs
+
 ags-check-system-functional-test: $(installcheck_programs)
 	./ags_check_system_functional_server_test
 	./ags_check_system_functional_audio_test
@@ -223,6 +309,16 @@ ags-check-system-functional-test: $(installcheck_programs)
 	./ags_check_system_functional_ffplayer_test
 	./ags_check_system_functional_notation_edit_test
 	./ags_check_system_functional_audio_config_test
+	./ags_check_system_functional_loop_000_xml_test
+	./ags_check_system_functional_loop_001_xml_test
+	./ags_check_system_functional_loop_002_xml_test
+	./ags_check_system_functional_loop_003_xml_test
+	./ags_check_system_functional_loop_004_xml_test
+	./ags_check_system_functional_loop_005_xml_test
+	./ags_check_system_functional_loop_006_xml_test
+	./ags_check_system_functional_loop_007_xml_test
+	./ags_check_system_functional_loop_008_xml_test
+	./ags_check_system_functional_loop_010_xml_test
 
 # WITH_SYSTEM_TESTS
 endif
