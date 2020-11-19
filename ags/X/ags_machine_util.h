@@ -45,6 +45,7 @@ GtkWidget* ags_machine_util_new_sf2_synth();
 GtkWidget* ags_machine_util_new_pitch_sampler();
 GtkWidget* ags_machine_util_new_sfz_synth();
 GtkWidget* ags_machine_util_new_audiorec();
+GtkWidget* ags_machine_util_new_desk();
 GtkWidget* ags_machine_util_new_ladspa_bridge(gchar *filename, gchar *effect);
 GtkWidget* ags_machine_util_new_dssi_bridge(gchar *filename, gchar *effect);
 GtkWidget* ags_machine_util_new_lv2_bridge(gchar *filename, gchar *effect);

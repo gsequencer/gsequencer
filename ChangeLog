@@ -1,7 +1,7 @@
 ags (3.7.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* migrated to pcre2
+	* implemented new machine AgsDesk
 
 ags (3.6.15)
 

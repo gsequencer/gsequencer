@@ -963,10 +963,10 @@ ags_dial_size_allocate(GtkWidget *widget,
 
   guint min_width;
 
-  dial = AGS_DIAL(widget);
-
   g_return_if_fail(AGS_IS_DIAL(widget));
   g_return_if_fail(allocation != NULL);
+
+  dial = AGS_DIAL(widget);
 
   min_width = 2 * (dial->button_width + dial->radius + dial->outline_strength + 2) + (dial->margin_left + dial->margin_right);
   

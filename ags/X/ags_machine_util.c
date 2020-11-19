@@ -42,6 +42,7 @@
 #include <ags/X/machine/ags_sfz_synth.h>
 
 #include <ags/X/machine/ags_audiorec.h>
+#include <ags/X/machine/ags_desk.h>
 
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
@@ -826,6 +827,56 @@ ags_machine_util_new_audiorec()
 }
 
 /**
+ * ags_machine_util_new_desk:
+ * 
+ * Create #AgsDesk.
+ * 
+ * returns: the newly instantiated #AgsDesk
+ * 
+ * Since: 3.7.0
+ */
+GtkWidget*
+ags_machine_util_new_desk()
+{
+  AgsWindow *window;
+  AgsDesk *desk;
+
+  AgsApplicationContext *application_context;
+  
+  GObject *default_soundcard;
+  
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
+  /* create desk */
+  desk = ags_desk_new(G_OBJECT(default_soundcard));
+
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     (GtkWidget *) desk,
+		     FALSE, FALSE,
+		     0);
+
+  ags_connectable_connect(AGS_CONNECTABLE(desk));
+
+  ags_audio_set_audio_channels(AGS_MACHINE(desk)->audio,
+			       2, 0);
+  
+  ags_audio_set_pads(AGS_MACHINE(desk)->audio,
+		     AGS_TYPE_INPUT,
+		     1, 0);
+  ags_audio_set_pads(AGS_MACHINE(desk)->audio,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);  
+
+  gtk_widget_show_all((GtkWidget *) desk);
+
+  return((GtkWidget *) desk);
+}
+
+/**
  * ags_machine_util_new_ladspa_bridge:
  * @filename: the filename
  * @effect: the effect
@@ -1391,6 +1442,10 @@ ags_machine_util_new_by_type_name(gchar *machine_type_name,
 				"AgsAudiorec",
 				12)){
     machine = ags_machine_util_new_audiorec();
+  }else if(!g_ascii_strncasecmp(machine_type_name,
+				"AgsDesk",
+				8)){
+    machine = ags_machine_util_new_desk();
   }else if(!g_ascii_strncasecmp(machine_type_name,
 				"AgsLadspaBridge",
 				16)){
