@@ -120,7 +120,8 @@ ags_message_envelope_test_get_parameter()
 
   n_params = 2;
   
-  value = g_new0(2 * sizeof(GValue));
+  value = g_new0(GValue,
+		 2);
 
   parameter_name = (gchar **) g_malloc(3 * sizeof(gchar *));
 

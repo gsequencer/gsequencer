@@ -340,7 +340,7 @@ ags_message_queue_get_sender_namespace(AgsMessageQueue *message_queue)
     return(NULL);
   }
   
-  g_object_set(message_queue,
+  g_object_get(message_queue,
 	       "sender-namespace", &sender_namespace,
 	       NULL);
 
@@ -388,7 +388,7 @@ ags_message_queue_get_recipient_namespace(AgsMessageQueue *message_queue)
     return(NULL);
   }
   
-  g_object_set(message_queue,
+  g_object_get(message_queue,
 	       "recipient-namespace", &recipient_namespace,
 	       NULL);
 
