@@ -31,6 +31,7 @@ check_PROGRAMS += \
 	ags_message_queue_test \
 	ags_returnable_thread_test \
 	ags_task_test \
+	ags_task_launcher_test \
 	ags_thread_test \
 	ags_thread_pool_test \
 	ags_worker_thread_test \
@@ -429,6 +430,12 @@ ags_task_test_SOURCES = ags/test/thread/ags_task_test.c
 ags_task_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_task_test_LDFLAGS = -lcunit -lm -pthread -lrt $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 ags_task_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# task launcher unit test
+ags_task_launcher_test_SOURCES = ags/test/thread/ags_task_launcher_test.c
+ags_task_launcher_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_task_launcher_test_LDFLAGS = -lcunit -lm -pthread -lrt $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+ags_task_launcher_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # thread unit test
 ags_thread_test_SOURCES = ags/test/thread/ags_thread_test.c

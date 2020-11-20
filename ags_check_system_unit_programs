@@ -21,6 +21,7 @@
 ./ags_check_system_message_queue_test
 ./ags_check_system_returnable_thread_test
 ./ags_check_system_task_test
+./ags_check_system_task_launcher_test
 ./ags_check_system_thread_test
 ./ags_check_system_thread_pool_test
 ./ags_check_system_worker_thread_test

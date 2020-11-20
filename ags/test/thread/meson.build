@@ -10,8 +10,12 @@ static_tests = [
   'ags_destroy_worker_test',
 #  'ags_functional_thread_test', TODO: missing header?
   'ags_generic_main_loop_test',
+  'ags_message_delivery_test',
+  'ags_message_envelope_test',
+  'ags_message_queue_test',
   'ags_returnable_thread_test',
   'ags_task_test',
+  'ags_task_launcher_test',
   'ags_thread_pool_test',
   'ags_thread_test',
   'ags_worker_thread_test',

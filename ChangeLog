@@ -1,6 +1,9 @@
 ags (3.6.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_message_delivery_query_message() accessing GList as instance
+	* fixed ags_task_launcher_remove_cyclic_task() wrong parameter to g_list_find() within if condition
+	* implemented additional getter/setter
 	* added unit-tests
 	* minor improvements
 
