@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -237,6 +237,10 @@ ags_server_application_context_init(AgsServerApplicationContext *server_applicat
   g_object_ref(log);
   
   /* server application context */  
+  server_application_context->main_loop = NULL;
+
+  server_application_context->task_launcher = NULL;
+
   server_application_context->thread_pool = NULL;
 
   server_application_context->worker = NULL;

@@ -1,3 +1,9 @@
+ags (3.6.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added unit-tests
+	* minor improvements
+
 ags (3.6.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

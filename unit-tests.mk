@@ -23,6 +23,7 @@ check_PROGRAMS += \
 	ags_config_test \
 	ags_connectable_test \
 	ags_soundcard_test \
+	ags_concurrency_provider_test \
 	ags_destroy_worker_test \
 	ags_returnable_thread_test \
 	ags_task_test \
@@ -376,6 +377,12 @@ ags_soundcard_test_SOURCES = ags/test/object/ags_soundcard_test.c
 ags_soundcard_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
 ags_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_soundcard_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# concurrency provider unit test
+ags_concurrency_provider_test_SOURCES = ags/test/thread/ags_concurrency_provider_test.c
+ags_concurrency_provider_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_concurrency_provider_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_concurrency_provider_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # destroy worker unit test
 ags_destroy_worker_test_SOURCES = ags/test/thread/ags_destroy_worker_test.c

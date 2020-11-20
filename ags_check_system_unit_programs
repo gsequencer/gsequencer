@@ -14,6 +14,7 @@
 ./ags_check_system_config_test
 ./ags_check_system_connectable_test
 ./ags_check_system_soundcard_test
+./ags_check_system_concurrency_provider_test
 ./ags_check_system_destroy_worker_test
 ./ags_check_system_returnable_thread_test
 ./ags_check_system_task_test
