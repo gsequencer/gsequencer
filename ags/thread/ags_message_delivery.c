@@ -564,7 +564,7 @@ ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
   start_list = NULL;
   
   while(message_queue != NULL){
-    list = ags_message_queue_query_message(message_queue,
+    list = ags_message_queue_query_message(message_queue->data,
 					   xpath);
 
     if(list != NULL){

@@ -110,7 +110,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsConcurrencyProviderTest", ags_generic_main_loop_test_init_suite, ags_generic_main_loop_test_clean_suite);
+  pSuite = CU_add_suite("AgsGenericMainLoopTest", ags_generic_main_loop_test_init_suite, ags_generic_main_loop_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -119,7 +119,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsConcurrencyProvider run", ags_generic_main_loop_test_run) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsGenericMainLoop run", ags_generic_main_loop_test_run) == NULL)){
     CU_cleanup_registry();
       
     return CU_get_error();
