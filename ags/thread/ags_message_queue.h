@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -57,6 +57,18 @@ struct _AgsMessageQueueClass
 };
 
 GType ags_message_queue_get_type();
+
+void ags_message_queue_set_sender_namespace(AgsMessageQueue *message_queue,
+					    gchar *sender_namespace);
+gchar* ags_message_queue_get_sender_namespace(AgsMessageQueue *message_queue);
+
+void ags_message_queue_set_recipient_namespace(AgsMessageQueue *message_queue,
+					       gchar *recipient_namespace);
+gchar* ags_message_queue_get_recipient_namespace(AgsMessageQueue *message_queue);
+
+void ags_message_queue_set_message_envelope(AgsMessageQueue *message_queue,
+					    GList *message_envelope);
+GList* ags_message_queue_get_message_envelope(AgsMessageQueue *message_queue);
 
 void ags_message_queue_add_message_envelope(AgsMessageQueue *message_queue,
 					    GObject *message_envelope);

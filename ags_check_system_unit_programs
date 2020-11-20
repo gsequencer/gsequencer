@@ -17,6 +17,8 @@
 ./ags_check_system_concurrency_provider_test
 ./ags_check_system_destroy_worker_test
 ./ags_check_system_message_delivery_test
+./ags_check_system_message_envelope_test
+./ags_check_system_message_queue_test
 ./ags_check_system_returnable_thread_test
 ./ags_check_system_task_test
 ./ags_check_system_thread_test

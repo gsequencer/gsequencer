@@ -131,6 +131,68 @@ ags_message_delivery_finalize(GObject *gobject)
 }
 
 /**
+ * ags_message_delivery_set_message_queue:
+ * @message_delivery: the #AgsMessageDelivery
+ * @message_queue: (element-type Ags.MessageQueue) (transfer full): the #GList-struct containing #AgsMessageQueue
+ * 
+ * Set @message_queue of @message_delivery.
+ * 
+ * Since: 3.6.16
+ */
+void
+ags_message_delivery_set_message_queue(AgsMessageDelivery *message_delivery,
+				       GList *message_queue)
+{  
+  GRecMutex *message_delivery_mutex;
+
+  if(!AGS_IS_MESSAGE_DELIVERY(message_delivery)){
+    return;
+  }
+
+  /* get message delivery mutex */
+  message_delivery_mutex = AGS_MESSAGE_DELIVERY_GET_OBJ_MUTEX(message_delivery);
+
+  g_rec_mutex_lock(message_delivery_mutex);
+
+  message_delivery->message_queue = message_queue;
+  
+  g_rec_mutex_unlock(message_delivery_mutex);
+}
+
+/**
+ * ags_message_delivery_get_message_queue:
+ * @message_delivery: the #AgsMessageDelivery
+ * 
+ * Get message queue of @message_delivery.
+ * 
+ * Returns: (element-type Ags.MessageQueue) (transfer none): the #GList-struct containing #AgsMessageQueue
+ * 
+ * Since: 3.6.16
+ */
+GList*
+ags_message_delivery_get_message_queue(AgsMessageDelivery *message_delivery)
+{
+  GList *message_queue;
+  
+  GRecMutex *message_delivery_mutex;
+
+  if(!AGS_IS_MESSAGE_DELIVERY(message_delivery)){
+    return(NULL);
+  }
+
+  /* get message delivery mutex */
+  message_delivery_mutex = AGS_MESSAGE_DELIVERY_GET_OBJ_MUTEX(message_delivery);
+
+  g_rec_mutex_lock(message_delivery_mutex);
+
+  message_queue = message_delivery->message_queue;
+  
+  g_rec_mutex_unlock(message_delivery_mutex);
+
+  return(message_queue);
+}
+
+/**
  * ags_message_delivery_add_message_queue:
  * @message_delivery: the #AgsMessageDelivery
  * @message_queue: the #AgsMessageQueue

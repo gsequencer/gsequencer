@@ -27,6 +27,8 @@ check_PROGRAMS += \
 	ags_destroy_worker_test \
 	ags_generic_main_loop_test \
 	ags_message_delivery_test \
+	ags_message_envelope_test \
+	ags_message_queue_test \
 	ags_returnable_thread_test \
 	ags_task_test \
 	ags_thread_test \
@@ -403,6 +405,18 @@ ags_message_delivery_test_SOURCES = ags/test/thread/ags_message_delivery_test.c
 ags_message_delivery_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_message_delivery_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_message_delivery_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# message envelope unit test
+ags_message_envelope_test_SOURCES = ags/test/thread/ags_message_envelope_test.c
+ags_message_envelope_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_message_envelope_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_message_envelope_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# message queue unit test
+ags_message_queue_test_SOURCES = ags/test/thread/ags_message_queue_test.c
+ags_message_queue_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_message_queue_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_message_queue_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # returnable thread unit test
 ags_returnable_thread_test_SOURCES = ags/test/thread/ags_returnable_thread_test.c

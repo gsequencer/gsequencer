@@ -42,6 +42,8 @@ libags_installcheck_programs = \
 	ags_check_system_destroy_worker_test \
 	ags_check_system_generic_main_loop_test \
 	ags_check_system_message_delivery_test \
+	ags_check_system_message_envelope_test \
+	ags_check_system_message_queue_test \
 	ags_check_system_returnable_thread_test \
 	ags_check_system_task_test \
 	ags_check_system_thread_test \
@@ -440,6 +442,20 @@ ags_check_system_message_delivery_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GO
 ags_check_system_message_delivery_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_message_delivery_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_message_delivery_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# message envelope unit test
+ags_check_system_message_envelope_test_SOURCES = ags/test/thread/ags_message_envelope_test.c
+ags_check_system_message_envelope_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_check_system_message_envelope_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_message_envelope_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_message_envelope_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# message queue unit test
+ags_check_system_message_queue_test_SOURCES = ags/test/thread/ags_message_queue_test.c
+ags_check_system_message_queue_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_check_system_message_queue_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_message_queue_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_message_queue_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # returnable thread unit test
 ags_check_system_returnable_thread_test_SOURCES = ags/test/thread/ags_returnable_thread_test.c
@@ -2073,6 +2089,8 @@ ags-check-system-unit-test: $(libags_installcheck_programs) $(libags_audio_insta
 	./ags_check_system_destroy_worker_test
 	./ags_check_system_generic_main_loop_test
 	./ags_check_system_message_delivery_test
+	./ags_check_system_message_envelope_test
+	./ags_check_system_message_queue_test
 	./ags_check_system_returnable_thread_test
 	./ags_check_system_task_test
 	./ags_check_system_thread_test

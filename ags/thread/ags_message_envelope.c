@@ -523,6 +523,42 @@ ags_message_envelope_get_parameter(AgsMessageEnvelope *message_envelope,
 }
 
 /**
+ * ags_message_envelope_set_parameter:
+ * @message_envelope: the #AgsMessageEnvelope
+ * @n_params: parameter count
+ * @parameter_name: (transfer full): %NULL terminated string vector containing parameter name
+ * @value: (transfer full): #GValue-struct array containing values
+ * 
+ * Set parameters.
+ * 
+ * Since: 3.6.16
+ */
+void
+ags_message_envelope_set_parameter(AgsMessageEnvelope *message_envelope,
+				   guint n_params,
+				   gchar **parameter_name, GValue *value)
+{
+  GRecMutex *message_envelope_mutex;
+  
+  if(!AGS_IS_MESSAGE_ENVELOPE(message_envelope)){
+    return;
+  }
+
+  message_envelope_mutex = AGS_MESSAGE_ENVELOPE_GET_OBJ_MUTEX(message_envelope);
+
+  /* set parameter */
+  g_rec_mutex_lock(message_envelope_mutex);
+
+  message_envelope->n_params = n_params;
+
+  message_envelope->parameter_name = parameter_name;
+
+  message_envelope->value = value;
+  
+  g_rec_mutex_unlock(message_envelope_mutex);
+}
+
+/**
  * ags_message_envelope_new:
  * @sender: the #GObject as sender
  * @recipient: the #GObject as recipient

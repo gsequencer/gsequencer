@@ -300,6 +300,164 @@ ags_message_queue_finalize(GObject *gobject)
 }
 
 /**
+ * ags_message_queue_set_sender_namespace:
+ * @message_queue: the #AgsMessageQueue
+ * @sender_namespace: the sender namespace
+ * 
+ * Set @sender_namespace of @message_queue.
+ * 
+ * Since: 3.6.16
+ */
+void
+ags_message_queue_set_sender_namespace(AgsMessageQueue *message_queue,
+				       gchar *sender_namespace)
+{
+  if(!AGS_IS_MESSAGE_QUEUE(message_queue)){
+    return;
+  }
+  
+  g_object_set(message_queue,
+	       "sender-namespace", sender_namespace,
+	       NULL);
+}
+
+/**
+ * ags_message_queue_get_sender_namespace:
+ * @message_queue: the #AgsMessageQueue
+ * 
+ * Get sender namespace of @message_queue.
+ * 
+ * Returns: (transfer full): the sender namespace
+ * 
+ * Since: 3.6.16
+ */
+gchar*
+ags_message_queue_get_sender_namespace(AgsMessageQueue *message_queue)
+{
+  gchar *sender_namespace;
+  
+  if(!AGS_IS_MESSAGE_QUEUE(message_queue)){
+    return(NULL);
+  }
+  
+  g_object_set(message_queue,
+	       "sender-namespace", &sender_namespace,
+	       NULL);
+
+  return(sender_namespace);
+}
+
+/**
+ * ags_message_queue_set_recipient_namespace:
+ * @message_queue: the #AgsMessageQueue
+ * @recipient_namespace: the recipient namespace
+ * 
+ * Set @recipient_namespace of @message_queue.
+ * 
+ * Since: 3.6.16
+ */
+void
+ags_message_queue_set_recipient_namespace(AgsMessageQueue *message_queue,
+					  gchar *recipient_namespace)
+{
+  if(!AGS_IS_MESSAGE_QUEUE(message_queue)){
+    return;
+  }
+  
+  g_object_set(message_queue,
+	       "recipient-namespace", recipient_namespace,
+	       NULL);
+}
+
+/**
+ * ags_message_queue_get_recipient_namespace:
+ * @message_queue: the #AgsMessageQueue
+ * 
+ * Get recipient namespace of @message_queue.
+ * 
+ * Returns: (transfer full): the recipient namespace
+ * 
+ * Since: 3.6.16
+ */
+gchar*
+ags_message_queue_get_recipient_namespace(AgsMessageQueue *message_queue)
+{
+  gchar *recipient_namespace;
+  
+  if(!AGS_IS_MESSAGE_QUEUE(message_queue)){
+    return(NULL);
+  }
+  
+  g_object_set(message_queue,
+	       "recipient-namespace", &recipient_namespace,
+	       NULL);
+
+  return(recipient_namespace);
+}
+
+/**
+ * ags_message_queue_set_message_envelope:
+ * @message_queue: the #AgsMessageQueue
+ * @message_envelope: (element-type Ags.MessageEnvelope) (transfer full): the #GList-struct containing #AgsMessageEnvelope
+ * 
+ * Set @message_envelope of @message_queue.
+ * 
+ * Since: 3.6.16
+ */
+void
+ags_message_queue_set_message_envelope(AgsMessageQueue *message_queue,
+				       GList *message_envelope)
+{  
+  GRecMutex *message_queue_mutex;
+
+  if(!AGS_IS_MESSAGE_QUEUE(message_queue)){
+    return;
+  }
+
+  /* get message queue mutex */
+  message_queue_mutex = AGS_MESSAGE_QUEUE_GET_OBJ_MUTEX(message_queue);
+
+  g_rec_mutex_lock(message_queue_mutex);
+
+  message_queue->message_envelope = message_envelope;
+  
+  g_rec_mutex_unlock(message_queue_mutex);
+}
+
+/**
+ * ags_message_queue_get_message_envelope:
+ * @message_queue: the #AgsMessageQueue
+ * 
+ * Get message envelope of @message_queue.
+ * 
+ * Returns: (element-type Ags.MessageEnvelope) (transfer none): the #GList-struct containing #AgsMessageEnvelope
+ * 
+ * Since: 3.6.16
+ */
+GList*
+ags_message_queue_get_message_envelope(AgsMessageQueue *message_queue)
+{
+  GList *message_envelope;
+  
+  GRecMutex *message_queue_mutex;
+
+  if(!AGS_IS_MESSAGE_QUEUE(message_queue)){
+    return(NULL);
+  }
+
+  /* get message queue mutex */
+  message_queue_mutex = AGS_MESSAGE_QUEUE_GET_OBJ_MUTEX(message_queue);
+
+  g_rec_mutex_lock(message_queue_mutex);
+
+  message_envelope = message_queue->message_envelope;
+  
+  g_rec_mutex_unlock(message_queue_mutex);
+
+  return(message_envelope);
+}
+
+/**
  * ags_message_queue_add_message_envelope:
  * @message_queue: the #AgsMessageQueue
  * @message_envelope: the #AgsMessageEnvelope
