@@ -67,9 +67,9 @@ ags_concurrency_provider_test_get_main_loop()
   
   CU_ASSERT(ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(thread_application_context)) == NULL);
 
-  thread_application_context->main_loop = ags_generic_main_loop_new();
+  AGS_APPLICATION_CONTEXT(thread_application_context)->main_loop = ags_generic_main_loop_new();
   
-  CU_ASSERT(ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(thread_application_context)) == thread_application_context->main_loop);
+  CU_ASSERT(ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(thread_application_context)) == AGS_APPLICATION_CONTEXT(thread_application_context)->main_loop);
 }
 
 void
@@ -84,7 +84,7 @@ ags_concurrency_provider_test_set_main_loop()
 
   ags_concurrency_provider_set_main_loop(AGS_CONCURRENCY_PROVIDER(thread_application_context), main_loop);
 
-  CU_ASSERT(thread_application_context->main_loop == main_loop);
+  CU_ASSERT(AGS_APPLICATION_CONTEXT(thread_application_context)->main_loop == main_loop);
 }
 
 void
@@ -96,9 +96,9 @@ ags_concurrency_provider_test_get_task_launcher()
   
   CU_ASSERT(ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(thread_application_context)) == NULL);
 
-  thread_application_context->task_launcher = ags_task_launcher_new();
+  AGS_APPLICATION_CONTEXT(thread_application_context)->task_launcher = ags_task_launcher_new();
   
-  CU_ASSERT(ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(thread_application_context)) == thread_application_context->task_launcher);
+  CU_ASSERT(ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(thread_application_context)) == AGS_APPLICATION_CONTEXT(thread_application_context)->task_launcher);
 }
 
 void
@@ -109,11 +109,11 @@ ags_concurrency_provider_test_set_task_launcher()
   
   thread_application_context = ags_thread_application_context_new();
   
-  task_launcher = ags_generic_main_loop_new();
+  task_launcher = ags_task_launcher_new();
 
   ags_concurrency_provider_set_task_launcher(AGS_CONCURRENCY_PROVIDER(thread_application_context), task_launcher);
 
-  CU_ASSERT(thread_application_context->task_launcher == task_launcher);
+  CU_ASSERT(AGS_APPLICATION_CONTEXT(thread_application_context)->task_launcher == task_launcher);
 }
 
 void
@@ -125,7 +125,7 @@ ags_concurrency_provider_test_get_thread_pool()
   
   CU_ASSERT(ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(thread_application_context)) == NULL);
 
-  thread_application_context->thread_pool = ags_thread_pool_new();
+  thread_application_context->thread_pool = ags_thread_pool_new(NULL);
   
   CU_ASSERT(ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(thread_application_context)) == thread_application_context->thread_pool);
 }
@@ -138,7 +138,7 @@ ags_concurrency_provider_test_set_thread_pool()
   
   thread_application_context = ags_thread_application_context_new();
   
-  thread_pool = ags_generic_main_loop_new();
+  thread_pool = ags_thread_pool_new(NULL);
 
   ags_concurrency_provider_set_thread_pool(AGS_CONCURRENCY_PROVIDER(thread_application_context), thread_pool);
 
@@ -149,8 +149,12 @@ void
 ags_concurrency_provider_test_get_worker()
 {
   AgsThreadApplicationContext *thread_application_context;
-  GList *start_worker;
 
+  GList *start_worker, *worker;
+  GList *copy_start_worker, *copy_worker;
+
+  guint i;
+  
   thread_application_context = ags_thread_application_context_new();
 
   start_worker = NULL;
@@ -165,8 +169,18 @@ ags_concurrency_provider_test_get_worker()
   CU_ASSERT(ags_concurrency_provider_get_worker(AGS_CONCURRENCY_PROVIDER(thread_application_context)) == NULL);
 
   thread_application_context->worker = start_worker;
+
+  copy_start_worker = ags_concurrency_provider_get_worker(AGS_CONCURRENCY_PROVIDER(thread_application_context));
+
+  worker = start_worker;
+  copy_worker = copy_start_worker;
+
+  for(i = 0; worker != NULL && copy_worker != NULL && worker->data == copy_worker->data; i++){
+    worker = worker->next;
+    copy_worker = copy_worker->next;
+  }
   
-  CU_ASSERT(ags_concurrency_provider_get_worker(AGS_CONCURRENCY_PROVIDER(thread_application_context)) == start_worker);
+  CU_ASSERT(i == 3);
 }
 
 void
@@ -211,14 +225,14 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsConcurrencyProvider get main loop", ags_concurrency_providery_test_get_main_loop) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsConcurrencyProvider set main loop", ags_concurrency_providery_test_set_main_loop) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsConcurrencyProvider get task launcher", ags_concurrency_providery_test_get_task_launcher) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsConcurrencyProvider set task launcher", ags_concurrency_providery_test_set_task_launcher) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsConcurrencyProvider get thread pool", ags_concurrency_providery_test_get_thread_pool) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsConcurrencyProvider set thread pool", ags_concurrency_providery_test_set_thread_pool) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsConcurrencyProvider get worker", ags_concurrency_providery_test_get_worker) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsConcurrencyProvider set worker", ags_concurrency_providery_test_set_worker) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsConcurrencyProvider get main loop", ags_concurrency_provider_test_get_main_loop) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsConcurrencyProvider set main loop", ags_concurrency_provider_test_set_main_loop) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsConcurrencyProvider get task launcher", ags_concurrency_provider_test_get_task_launcher) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsConcurrencyProvider set task launcher", ags_concurrency_provider_test_set_task_launcher) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsConcurrencyProvider get thread pool", ags_concurrency_provider_test_get_thread_pool) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsConcurrencyProvider set thread pool", ags_concurrency_provider_test_set_thread_pool) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsConcurrencyProvider get worker", ags_concurrency_provider_test_get_worker) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsConcurrencyProvider set worker", ags_concurrency_provider_test_set_worker) == NULL)){
     CU_cleanup_registry();
       
     return CU_get_error();

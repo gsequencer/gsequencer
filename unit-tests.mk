@@ -25,6 +25,7 @@ check_PROGRAMS += \
 	ags_soundcard_test \
 	ags_concurrency_provider_test \
 	ags_destroy_worker_test \
+	ags_generic_main_loop_test \
 	ags_returnable_thread_test \
 	ags_task_test \
 	ags_thread_test \
@@ -389,6 +390,12 @@ ags_destroy_worker_test_SOURCES = ags/test/thread/ags_destroy_worker_test.c
 ags_destroy_worker_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_destroy_worker_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_destroy_worker_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# generic main loop unit test
+ags_generic_main_loop_test_SOURCES = ags/test/thread/ags_generic_main_loop_test.c
+ags_generic_main_loop_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_generic_main_loop_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_generic_main_loop_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # returnable thread unit test
 ags_returnable_thread_test_SOURCES = ags/test/thread/ags_returnable_thread_test.c

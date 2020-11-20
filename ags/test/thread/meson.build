@@ -6,6 +6,7 @@
 # without any warranty.
 
 static_tests = [
+  'ags_concurrency_provider_test',
   'ags_destroy_worker_test',
 #  'ags_functional_thread_test', TODO: missing header?
   'ags_returnable_thread_test',

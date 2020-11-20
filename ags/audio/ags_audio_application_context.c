@@ -427,10 +427,6 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   g_object_ref(log);
   
   /* Audio application context */  
-  audio_application_context->main_loop = NULL;
-
-  audio_application_context->task_launcher = NULL;
-  
   audio_application_context->thread_pool = NULL;
 
   audio_application_context->worker = NULL;

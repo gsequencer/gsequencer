@@ -258,10 +258,6 @@ ags_thread_application_context_init(AgsThreadApplicationContext *thread_applicat
   g_object_ref(log);
   
   /* Thread application context */  
-  thread_application_context->main_loop = NULL;
-
-  thread_application_context->task_launcher = NULL;
-
   thread_application_context->thread_pool = NULL;
  
   thread_application_context->worker = NULL;

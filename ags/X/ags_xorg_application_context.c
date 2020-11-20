@@ -587,10 +587,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   g_object_ref(log);
   
   /* Xorg application context */  
-  xorg_application_context->main_loop = NULL;
-
-  xorg_application_context->task_launcher = NULL;
-
   xorg_application_context->thread_pool = NULL;
 
   xorg_application_context->worker = NULL;
