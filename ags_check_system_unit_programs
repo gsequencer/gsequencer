@@ -30,6 +30,7 @@
 ./ags_check_system_file_test
 ./ags_check_system_file_id_ref_test
 ./ags_check_system_file_launch_test
+./ags_check_system_file_link_test
 ./ags_check_system_file_lookup_test
 ./ags_check_system_server_application_context_test
 ./ags_check_system_server_test

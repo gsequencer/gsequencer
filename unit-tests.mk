@@ -40,6 +40,7 @@ check_PROGRAMS += \
 	ags_file_test \
 	ags_file_id_ref_test \
 	ags_file_launch_test \
+	ags_file_link_test \
 	ags_file_lookup_test \
 	ags_server_application_context_test \
 	ags_server_test \
@@ -486,6 +487,12 @@ ags_file_launch_test_SOURCES = ags/test/file/ags_file_launch_test.c
 ags_file_launch_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_file_launch_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_file_launch_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# file link unit test
+ags_file_link_test_SOURCES = ags/test/file/ags_file_link_test.c
+ags_file_link_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_file_link_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_file_link_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # file lookup unit test
 ags_file_lookup_test_SOURCES = ags/test/file/ags_file_lookup_test.c

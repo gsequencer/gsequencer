@@ -542,4 +542,8 @@ ags_file_id_ref_get_type
 ags_file_id_ref_resolved
 ags_file_id_ref_new
 ags_file_link_get_type
+ags_file_link_set_filename
+ags_file_link_get_filename
+ags_file_link_set_data
+ags_file_link_get_data
 ags_file_link_new

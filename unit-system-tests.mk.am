@@ -55,6 +55,7 @@ libags_installcheck_programs = \
 	ags_check_system_file_test \
 	ags_check_system_file_id_ref_test \
 	ags_check_system_file_launch_test \
+	ags_check_system_file_link_test \
 	ags_check_system_file_lookup_test \
 	ags_check_system_server_application_context_test \
 	ags_check_system_server_test \
@@ -536,6 +537,13 @@ ags_check_system_file_launch_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT
 ags_check_system_file_launch_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_file_launch_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_file_launch_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# file link unit test
+ags_check_system_file_link_test_SOURCES = ags/test/file/ags_file_link_test.c
+ags_check_system_file_link_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_check_system_file_link_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_file_link_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_file_link_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # file lookup unit test
 ags_check_system_file_lookup_test_SOURCES = ags/test/file/ags_file_lookup_test.c
@@ -2126,6 +2134,7 @@ ags-check-system-unit-test: $(libags_installcheck_programs) $(libags_audio_insta
 	./ags_check_system_file_test
 	./ags_check_system_file_id_ref_test
 	./ags_check_system_file_launch_test
+	./ags_check_system_file_link_test
 	./ags_check_system_file_lookup_test
 	./ags_check_system_server_application_context_test
 	./ags_check_system_server_test

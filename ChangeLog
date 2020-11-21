@@ -1,3 +1,8 @@
+ags (3.6.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented additional getter/setter
+
 ags (3.6.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

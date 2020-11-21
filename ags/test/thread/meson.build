@@ -16,8 +16,10 @@ static_tests = [
   'ags_returnable_thread_test',
   'ags_task_test',
   'ags_task_launcher_test',
+  'ags_thread_application_context_test',
   'ags_thread_pool_test',
   'ags_thread_test',
+  'ags_timestamp_test',
   'ags_worker_thread_test',
 ]
 
