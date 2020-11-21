@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -412,6 +412,102 @@ ags_file_link_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 	      node);
 
   return(node);
+}
+
+/**
+ * ags_file_link_set_filename:
+ * @file_link: the #AgsFileLink
+ * @filename: the filename
+ * 
+ * Set @filename of @file_link.
+ * 
+ * Since: 3.6.17
+ */
+void
+ags_file_link_set_filename(AgsFileLink *file_link,
+			   gchar *filename)
+{
+  if(!AGS_IS_FILE_LINK(file_link)){
+    return;
+  }
+
+  g_object_set(file_link,
+	       "filename", filename,
+	       NULL);
+}
+
+/**
+ * ags_file_link_get_filename:
+ * @file_link: the #AgsFileLink
+ * 
+ * Get filename of @file_link.
+ * 
+ * Returns: (transfer full): the filename
+ * 
+ * Since: 3.6.17
+ */
+gchar*
+ags_file_link_get_filename(AgsFileLink *file_link)
+{
+  gchar *filename;
+  
+  if(!AGS_IS_FILE_LINK(file_link)){
+    return(NULL);
+  }
+
+  g_object_get(file_link,
+	       "filename", &filename,
+	       NULL);
+
+  return(filename);
+}
+
+/**
+ * ags_file_link_set_data:
+ * @file_link: the #AgsFileLink
+ * @data: the data
+ * 
+ * Set @data of @file_link.
+ * 
+ * Since: 3.6.17
+ */
+void
+ags_file_link_set_data(AgsFileLink *file_link,
+		       gchar *data)
+{
+  if(!AGS_IS_FILE_LINK(file_link)){
+    return;
+  }
+
+  g_object_set(file_link,
+	       "data", data,
+	       NULL);
+}
+
+/**
+ * ags_file_link_get_data:
+ * @file_link: the #AgsFileLink
+ * 
+ * Get data of @file_link.
+ * 
+ * Returns: (transfer full): the data
+ * 
+ * Since: 3.6.17
+ */
+gchar*
+ags_file_link_get_data(AgsFileLink *file_link)
+{
+  gchar *data;
+  
+  if(!AGS_IS_FILE_LINK(file_link)){
+    return(NULL);
+  }
+
+  g_object_get(file_link,
+	       "data", &data,
+	       NULL);
+
+  return(data);
 }
 
 /**

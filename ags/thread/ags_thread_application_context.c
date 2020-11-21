@@ -259,7 +259,7 @@ ags_thread_application_context_init(AgsThreadApplicationContext *thread_applicat
   
   /* Thread application context */  
   thread_application_context->thread_pool = NULL;
-
+ 
   thread_application_context->worker = NULL;
 }
 

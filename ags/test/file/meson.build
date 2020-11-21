@@ -9,6 +9,7 @@ static_tests = [
   'ags_file_id_ref_test',
   'ags_file_launch_test',
   'ags_file_lookup_test',
+  'ags_file_link_test',
   'ags_file_test',
 ]
 

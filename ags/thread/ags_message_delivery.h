@@ -55,6 +55,10 @@ struct _AgsMessageDeliveryClass
 
 GType ags_message_delivery_get_type();
 
+void ags_message_delivery_set_message_queue(AgsMessageDelivery *message_delivery,
+					    GList *message_queue);
+GList* ags_message_delivery_get_message_queue(AgsMessageDelivery *message_delivery);
+
 void ags_message_delivery_add_message_queue(AgsMessageDelivery *message_delivery,
 					    GObject *message_queue);
 void ags_message_delivery_remove_message_queue(AgsMessageDelivery *message_delivery,

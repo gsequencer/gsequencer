@@ -183,8 +183,8 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
 
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
 
   putenv("LADSPA_PATH=\"\"");
   putenv("DSSI_PATH=\"\"");
