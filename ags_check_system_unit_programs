@@ -23,7 +23,9 @@
 ./ags_check_system_task_test
 ./ags_check_system_task_launcher_test
 ./ags_check_system_thread_test
+./ags_check_system_thread_application_context_test
 ./ags_check_system_thread_pool_test
+./ags_check_system_timestamp_test
 ./ags_check_system_worker_thread_test
 ./ags_check_system_file_test
 ./ags_check_system_file_id_ref_test

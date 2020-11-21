@@ -48,7 +48,9 @@ libags_installcheck_programs = \
 	ags_check_system_task_test \
 	ags_check_system_task_launcher_test \
 	ags_check_system_thread_test \
+	ags_check_system_thread_application_context_test \
 	ags_check_system_thread_pool_test \
+	ags_check_system_timestamp_test \
 	ags_check_system_worker_thread_test \
 	ags_check_system_file_test \
 	ags_check_system_file_id_ref_test \
@@ -486,12 +488,26 @@ ags_check_system_thread_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_thread_test_LDFLAGS = -lcunit -lm -pthread -lrt $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 ags_check_system_thread_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
+# thread application context unit test
+ags_check_system_thread_application_context_test_SOURCES = ags/test/thread/ags_thread_application_context_test.c
+ags_check_system_thread_application_context_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_check_system_thread_application_context_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_thread_application_context_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_thread_application_context_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
 # thread pool unit test
 ags_check_system_thread_pool_test_SOURCES = ags/test/thread/ags_thread_pool_test.c
 ags_check_system_thread_pool_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_check_system_thread_pool_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_thread_pool_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_thread_pool_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# timestamp unit test
+ags_check_system_timestamp_test_SOURCES = ags/test/thread/ags_timestamp_test.c
+ags_check_system_timestamp_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_check_system_timestamp_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_timestamp_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_timestamp_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # worker thread unit test
 ags_check_system_worker_thread_test_SOURCES = ags/test/thread/ags_worker_thread_test.c
@@ -2103,7 +2119,9 @@ ags-check-system-unit-test: $(libags_installcheck_programs) $(libags_audio_insta
 	./ags_check_system_task_test
 	./ags_check_system_task_launcher_test
 	./ags_check_system_thread_test
+	./ags_check_system_thread_application_context_test
 	./ags_check_system_thread_pool_test
+	./ags_check_system_timestamp_test
 	./ags_check_system_worker_thread_test
 	./ags_check_system_file_test
 	./ags_check_system_file_id_ref_test

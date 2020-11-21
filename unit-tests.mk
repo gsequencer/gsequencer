@@ -33,7 +33,9 @@ check_PROGRAMS += \
 	ags_task_test \
 	ags_task_launcher_test \
 	ags_thread_test \
+	ags_thread_application_context_test \
 	ags_thread_pool_test \
+	ags_timestamp_test \
 	ags_worker_thread_test \
 	ags_file_test \
 	ags_file_id_ref_test \
@@ -443,11 +445,23 @@ ags_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP
 ags_thread_test_LDFLAGS = -lcunit -lm -pthread -lrt $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 ags_thread_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
+# thread application context unit test
+ags_thread_application_context_test_SOURCES = ags/test/thread/ags_thread_application_context_test.c
+ags_thread_application_context_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_thread_application_context_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_thread_application_context_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
 # thread pool unit test
 ags_thread_pool_test_SOURCES = ags/test/thread/ags_thread_pool_test.c
 ags_thread_pool_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_thread_pool_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_thread_pool_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# timestamp unit test
+ags_timestamp_test_SOURCES = ags/test/thread/ags_timestamp_test.c
+ags_timestamp_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_timestamp_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_timestamp_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # worker thread unit test
 ags_worker_thread_test_SOURCES = ags/test/thread/ags_worker_thread_test.c
