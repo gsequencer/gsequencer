@@ -2,6 +2,7 @@ ags (3.6.17)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented additional getter/setter
+	* added unit-tests
 
 ags (3.6.16)
 

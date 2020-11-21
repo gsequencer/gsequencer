@@ -660,6 +660,246 @@ ags_file_finalize(GObject *gobject)
 }
 
 /**
+ * ags_file_set_filename:
+ * @file: the #AgsFile
+ * @filename: the filename
+ * 
+ * Set @filename of @file.
+ * 
+ * Since: 3.6.17
+ */
+void
+ags_file_set_filename(AgsFile *file,
+		      gchar *filename)
+{
+  if(!AGS_IS_FILE(file)){
+    return;
+  }
+
+  g_object_set(file,
+	       "filename", filename,
+	       NULL);
+}
+
+/**
+ * ags_file_get_filename:
+ * @file: the #AgsFile
+ * 
+ * Get filename of @file.
+ * 
+ * Returns: (transfer full): the filename
+ * 
+ * Since: 3.6.17
+ */
+gchar*
+ags_file_get_filename(AgsFile *file)
+{
+  gchar *filename;
+  
+  if(!AGS_IS_FILE(file)){
+    return(NULL);
+  }
+
+  g_object_get(file,
+	       "filename", &filename,
+	       NULL);
+
+  return(filename);
+}
+
+/**
+ * ags_file_set_encoding:
+ * @file: the #AgsFile
+ * @encoding: the encoding
+ * 
+ * Set @encoding of @file.
+ * 
+ * Since: 3.6.17
+ */
+void
+ags_file_set_encoding(AgsFile *file,
+		      gchar *encoding)
+{
+  if(!AGS_IS_FILE(file)){
+    return;
+  }
+
+  g_object_set(file,
+	       "encoding", encoding,
+	       NULL);
+}
+
+/**
+ * ags_file_get_encoding:
+ * @file: the #AgsFile
+ * 
+ * Get encoding of @file.
+ * 
+ * Returns: (transfer full): the encoding
+ * 
+ * Since: 3.6.17
+ */
+gchar*
+ags_file_get_encoding(AgsFile *file)
+{
+  gchar *encoding;
+  
+  if(!AGS_IS_FILE(file)){
+    return(NULL);
+  }
+
+  g_object_get(file,
+	       "encoding", &encoding,
+	       NULL);
+
+  return(encoding);
+}
+
+/**
+ * ags_file_set_audio_format:
+ * @file: the #AgsFile
+ * @audio_format: the audio format
+ * 
+ * Set @audio_format of @file.
+ * 
+ * Since: 3.6.17
+ */
+void
+ags_file_set_audio_format(AgsFile *file,
+			  gchar *audio_format)
+{
+  if(!AGS_IS_FILE(file)){
+    return;
+  }
+
+  g_object_set(file,
+	       "audio-format", audio_format,
+	       NULL);
+}
+
+/**
+ * ags_file_get_audio_format:
+ * @file: the #AgsFile
+ * 
+ * Get audio format of @file.
+ * 
+ * Returns: (transfer full): the audio format
+ * 
+ * Since: 3.6.17
+ */
+gchar*
+ags_file_get_audio_format(AgsFile *file)
+{
+  gchar *audio_format;
+  
+  if(!AGS_IS_FILE(file)){
+    return(NULL);
+  }
+
+  g_object_get(file,
+	       "audio-format", &audio_format,
+	       NULL);
+
+  return(audio_format);
+}
+
+/**
+ * ags_file_set_audio_encoding:
+ * @file: the #AgsFile
+ * @audio_encoding: the audio encoding
+ * 
+ * Set @audio_encoding of @file.
+ * 
+ * Since: 3.6.17
+ */
+void
+ags_file_set_audio_encoding(AgsFile *file,
+			    gchar *audio_encoding)
+{
+  if(!AGS_IS_FILE(file)){
+    return;
+  }
+
+  g_object_set(file,
+	       "audio-encoding", audio_encoding,
+	       NULL);
+}
+
+/**
+ * ags_file_get_audio_encoding:
+ * @file: the #AgsFile
+ * 
+ * Get audio encoding of @file.
+ * 
+ * Returns: (transfer full): the audio encoding
+ * 
+ * Since: 3.6.17
+ */
+gchar*
+ags_file_get_audio_encoding(AgsFile *file)
+{
+  gchar *audio_encoding;
+  
+  if(!AGS_IS_FILE(file)){
+    return(NULL);
+  }
+
+  g_object_get(file,
+	       "audio-encoding", &audio_encoding,
+	       NULL);
+
+  return(audio_encoding);
+}
+
+/**
+ * ags_file_set_xml_doc:
+ * @file: the #AgsFile
+ * @xml_doc: (transfer full): the #xmlDoc-struct
+ * 
+ * Set @xml_doc of @file.
+ * 
+ * Since: 3.6.17
+ */
+void
+ags_file_set_xml_doc(AgsFile *file,
+		     xmlDoc *xml_doc)
+{
+  if(!AGS_IS_FILE(file)){
+    return;
+  }
+
+  g_object_set(file,
+	       "xml-doc", xml_doc,
+	       NULL);
+}
+
+/**
+ * ags_file_get_xml_doc:
+ * @file: the #AgsFile
+ * 
+ * Get xml doc of @file.
+ * 
+ * Returns: (transfer none): the #xmlDoc-struct
+ * 
+ * Since: 3.6.17
+ */
+xmlDoc*
+ags_file_get_xml_doc(AgsFile *file)
+{
+  xmlDoc *xml_doc;
+  
+  if(!AGS_IS_FILE(file)){
+    return(NULL);
+  }
+
+  g_object_get(file,
+	       "xml-doc", &xml_doc,
+	       NULL);
+
+  return(xml_doc);
+}
+
+/**
  * ags_file_str2md5:
  * @content: the string buffer
  * @content_length: the length of the string
