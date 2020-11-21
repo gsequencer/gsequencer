@@ -158,7 +158,7 @@
     </sect2>
 
     <sect2>
-      <title>LADSPA browser dialog</title>
+      <title>Plugin browser dialog</title>
       <mediaobject>
 	<imageobject>
 	  <imagedata fileref="../images/ags_ladspa_browser.png" />
