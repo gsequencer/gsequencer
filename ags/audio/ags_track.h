@@ -62,7 +62,8 @@ struct _AgsTrack
 
   guint64 x;
 
-  unsigned char *smf_buffer;
+  guchar *smf_buffer;
+  guint allocated_smf_buffer_length;
   guint smf_buffer_length;
 };
 
@@ -90,6 +91,11 @@ void ags_track_set_x(AgsTrack *track, guint64 x);
 
 gpointer ags_track_get_smf_buffer(AgsTrack *track,
 				  guint *smf_buffer_length);
+
+gpointer ags_track_alloc_smf_buffer(AgsTrack *track,
+				    guint smf_buffer_length);
+gpointer ags_track_realloc_smf_buffer(AgsTrack *track,
+				      guint smf_buffer_length);
 
 AgsTrack* ags_track_duplicate(AgsTrack *track);
 

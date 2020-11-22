@@ -149,6 +149,8 @@ ags_track_init(AgsTrack *track)
   track->x = 0;
 
   track->smf_buffer = NULL;
+  track->allocated_smf_buffer_length = 0;
+  track->smf_buffer_length = 0;
 }
 
 void
@@ -567,6 +569,89 @@ ags_track_duplicate(AgsTrack *track)
   g_rec_mutex_unlock(track_mutex);
 
   return(track_copy);
+}
+
+/**
+ * ags_track_alloc_smf_buffer:
+ * @track: the #AgsTrack
+ * @smf_buffer_length: SMF buffer length
+ * 
+ * Allocate SMF buffer of @track.
+ * 
+ * Returns: the newly allocated SMF buffer
+ * 
+ * Since: 3.6.17
+ */
+gpointer
+ags_track_alloc_smf_buffer(AgsTrack *track,
+			   guint smf_buffer_length)
+{
+  guchar *smf_buffer;
+
+  GRecMutex *track_mutex;
+
+  if(!AGS_IS_TRACK(track) ||
+     smf_buffer_length == 0){
+    return(NULL);
+  }
+  
+  /* get track mutex */
+  track_mutex = AGS_TRACK_GET_OBJ_MUTEX(track);
+  
+  smf_buffer = NULL;
+
+  g_rec_mutex_lock(track_mutex);
+
+  if(track->smf_buffer == NULL){
+    smf_buffer =
+      track->smf_buffer = (guchar *) g_malloc(smf_buffer_length * sizeof(guchar));
+  }
+  
+  g_rec_mutex_lock(track_mutex);
+
+  return(smf_buffer);
+}
+
+/**
+ * ags_track_realloc_smf_buffer:
+ * @track: the #AgsTrack
+ * @smf_buffer_length: SMF buffer length
+ * 
+ * Reallocate SMF buffer of @track.
+ * 
+ * Returns: the reallocated SMF buffer
+ * 
+ * Since: 3.6.17
+ */
+gpointer
+ags_track_realloc_smf_buffer(AgsTrack *track,
+			     guint smf_buffer_length)
+{
+  guchar *smf_buffer;
+
+  GRecMutex *track_mutex;
+
+  if(!AGS_IS_TRACK(track) ||
+     smf_buffer_length == 0){
+    return(NULL);
+  }
+  
+  /* get track mutex */
+  track_mutex = AGS_TRACK_GET_OBJ_MUTEX(track);
+  
+  smf_buffer = NULL;
+
+  g_rec_mutex_lock(track_mutex);
+
+  if(track->smf_buffer != NULL){
+    smf_buffer =
+      track->smf_buffer = (guchar *) g_realloc(track->smf_buffer,
+					       smf_buffer_length * sizeof(guchar));
+  }
+  
+  g_rec_mutex_lock(track_mutex);
+
+  return(smf_buffer);
 }
 
 /**
