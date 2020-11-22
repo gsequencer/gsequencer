@@ -117,13 +117,42 @@
 	  </listitem>
 	  <listitem>
 	    <para>
-	      Synth - is a software synthesizer supporting variable oscillator count.
+	      Synth - is a software synthesizer supporting variable oscillator count. Use with Matrix.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      FM Synth - is a frequency modulation software synthesizer supporting variable oscillator count.
+	      Use with Matrix.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      Syncsynth - is a software synthesizer supporting variable oscillator count. Use with notation
+	      editor.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      FM Syncsynth - is a frequency modulation software synthesizer supporting variable oscillator count.
+	      Use with notation editor.
 	    </para>
 	  </listitem>
 	  <listitem>
 	    <para>
 	      FFPlayer - may be used to open Soundfont2 audio file container format in order to do
 	      notation.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      Sampler - may be used to open SFZ audio file container format in order to do
+	      notation.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      Audiorec - can be used to edit wave form or capture audio from your microphone
 	    </para>
 	  </listitem>
 	</itemizedlist>
