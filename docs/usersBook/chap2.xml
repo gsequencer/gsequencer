@@ -264,8 +264,8 @@
   <sect1>
     <title>Envelope dialog</title>
     <para>
-      The envelope dialog allows you to display and display envlope information assigned either as preset
-      or to a specific note.
+      The envelope dialog allows you to edit envelope information as presets. These presets
+      can be assigned to a specific note.
     </para>
 
     <sect2>

@@ -1,9 +1,10 @@
 ags (3.6.17)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented missing functions in AgsMidi and AgsTrack
+	* implemented missing functions of AgsTrack
 	* implemented additional getter/setter
 	* added unit-tests
+	* minor improvements
 
 ags (3.6.16)
 
