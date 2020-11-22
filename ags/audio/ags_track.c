@@ -605,6 +605,8 @@ ags_track_alloc_smf_buffer(AgsTrack *track,
   if(track->smf_buffer == NULL){
     smf_buffer =
       track->smf_buffer = (guchar *) g_malloc(smf_buffer_length * sizeof(guchar));
+
+    track->allocated_smf_buffer_length = smf_buffer_length;
   }
   
   g_rec_mutex_lock(track_mutex);
@@ -647,6 +649,8 @@ ags_track_realloc_smf_buffer(AgsTrack *track,
     smf_buffer =
       track->smf_buffer = (guchar *) g_realloc(track->smf_buffer,
 					       smf_buffer_length * sizeof(guchar));
+
+    track->allocated_smf_buffer_length = smf_buffer_length;
   }
   
   g_rec_mutex_lock(track_mutex);
