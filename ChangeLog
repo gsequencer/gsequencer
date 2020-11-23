@@ -1,3 +1,8 @@
+ags (3.6.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_fx_envelope_audio_signal.c
+
 ags (3.6.17)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

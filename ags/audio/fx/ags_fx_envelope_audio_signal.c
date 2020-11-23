@@ -275,9 +275,11 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	       "format", &format,
 	       NULL);
 
-  g_object_get(channel,
-	       "audio", &audio,
-	       NULL);
+  if(channel != NULL){
+    g_object_get(channel,
+		 "audio", &audio,
+		 NULL);
+  }
   
   is_pattern = ags_audio_test_behaviour_flags(audio,
 					      AGS_SOUND_BEHAVIOUR_PATTERN_MODE);
@@ -294,10 +296,13 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
   delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
 
   start_list = NULL;
-  g_object_get(audio,
-	       "recall", &start_list,
-	       NULL);
 
+  if(audio != NULL){
+    g_object_get(audio,
+		 "recall", &start_list,
+		 NULL);
+  }
+  
   if(!is_sequencer){
     GRecMutex *mutex;
 

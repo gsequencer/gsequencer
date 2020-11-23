@@ -35,6 +35,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.6.18" date="2020-11-23">
+      <description>
+	<p>Minor improvements.</p>
+      </description>
+    </release>
+
     <release version="3.6.17" date="2020-11-23">
       <description>
 	<p>Fixes to ags-fx-envelope.</p>
