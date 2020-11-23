@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.6.16\n"
+"Project-Id-Version: gsequencer 3.6.17\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-11-20 21:15+0100\n"
+"POT-Creation-Date: 2020-11-23 07:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -503,6 +503,10 @@ msgstr ""
 msgid "resize channels"
 msgstr ""
 
+#: ags/X/ags_midi_dialog.c:185
+msgid "MIDI connection"
+msgstr ""
+
 #: ags/X/ags_midi_dialog.c:210
 msgid "midi channel"
 msgstr ""
@@ -615,7 +619,11 @@ msgstr ""
 msgid "max precision of threads [Hz]"
 msgstr ""
 
-#: ags/X/ags_plugin_browser.c:158
+#: ags/X/ags_plugin_browser.c:147
+msgid "Plugin browser"
+msgstr ""
+
+#: ags/X/ags_plugin_browser.c:161
 msgid "Plugin type:"
 msgstr ""
 

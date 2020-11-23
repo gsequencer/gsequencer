@@ -165,8 +165,8 @@ ags_fx_envelope_audio_signal_get_volume(gdouble volume, gdouble ratio,
   }else{
     current_volume = volume + (ratio * (current_x - start_x));
 
-    g_message("envelope get volume %f %f -> %f", volume, ratio, current_volume);
 #if 0
+    g_message("envelope get volume %f %f -> %f", volume, ratio, current_volume);
 #endif
       
     return(current_volume);

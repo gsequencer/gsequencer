@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -913,7 +913,292 @@ ags_pattern_envelope_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_pattern_envelope_apply(AgsApplicable *applicable)
 {
-  /* empty */
+  AgsEnvelopeDialog *envelope_dialog;
+  AgsPatternEnvelope *pattern_envelope;
+  
+  AgsMachine *machine;
+
+  AgsAudio *audio;
+  AgsChannel *start_input, *input, *next_input;
+  
+  GList *start_preset, *preset;
+
+  guint audio_channels;
+  
+  pattern_envelope = AGS_PATTERN_ENVELOPE(applicable);
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
+								  AGS_TYPE_ENVELOPE_DIALOG);
+
+  machine = envelope_dialog->machine;
+
+  audio = machine->audio;
+  
+  start_input = NULL;
+  
+  start_preset = NULL;
+
+  audio_channels = 0;
+  
+  g_object_get(audio,
+	       "input", &start_input,
+	       "preset", &start_preset,
+	       "audio-channels", &audio_channels,
+	       NULL);
+
+  /* unset all envelope */
+  if(start_input != NULL){
+    input = start_input;
+    g_object_ref(input);
+
+    while(input != NULL){
+      GList *start_pattern, *pattern;
+      
+      start_pattern = NULL;
+	      
+      g_object_get(input,
+		   "pattern", &start_pattern,
+		   NULL);
+
+      pattern = start_pattern;
+
+      while(pattern != NULL){
+	guint length;
+	guint k;
+	
+	ags_pattern_get_dim(pattern->data,
+			    NULL,
+			    NULL,
+			    &length);
+
+	for(k = 0; k < length; k++){
+	  AgsNote *note;
+
+	  note = ags_pattern_get_note(pattern->data,
+				      k);
+		  
+	  if(note != NULL){
+	    ags_note_unset_flags(note,
+				 AGS_NOTE_ENVELOPE);
+	  }
+	}
+	
+	pattern = pattern->next;
+      }
+
+      /* iterate */
+      next_input = ags_channel_next(input);
+
+      g_object_unref(input);
+
+      input = next_input;
+    }
+  }
+
+  /* apply envelope */
+  preset = start_preset;
+
+  while(preset != NULL){
+    AgsPreset *current_preset;
+
+    gchar *scope;
+
+    guint pad_start;
+    guint pad_end;
+    guint audio_channel_start;
+    guint audio_channel_end;
+    guint x_start;
+    guint x_end;
+
+    GValue attack = G_VALUE_INIT;
+    GValue decay = G_VALUE_INIT;
+    GValue sustain = G_VALUE_INIT;
+    GValue release = G_VALUE_INIT;
+    GValue ratio = G_VALUE_INIT;
+
+    GError *error;
+    
+    current_preset = preset->data;
+
+    scope = NULL;
+    
+    g_object_get(current_preset,
+		 "scope", &scope,
+		 NULL);
+
+    if(!g_strcmp0(scope,
+		  "ags-envelope")){
+      gboolean success;
+
+      success = TRUE;
+
+      audio_channel_start = 0;
+      audio_channel_end = 0;
+
+      pad_start = 0;
+      pad_end = 0;
+
+      x_start = 0;
+      x_end = 0;
+      
+      g_object_get(current_preset,
+		   "audio-channel-start", &audio_channel_start,
+		   "audio-channel-end", &audio_channel_end,
+		   "pad-start", &pad_start,
+		   "pad-end", &pad_end,
+		   "x-start", &x_start,
+		   "x-end", &x_end,
+		   NULL);
+      
+      g_value_init(&attack, AGS_TYPE_COMPLEX);
+	
+      error = NULL;
+      ags_preset_get_parameter(current_preset,
+			       "attack", &attack,
+			       &error);
+
+      if(error != NULL){
+	success = FALSE;
+
+	g_error_free(error);
+      }
+
+      g_value_init(&decay, AGS_TYPE_COMPLEX);
+
+      error = NULL;
+      ags_preset_get_parameter(current_preset,
+			       "decay", &decay,
+			       &error);
+
+      if(error != NULL){
+	success = FALSE;
+
+	g_error_free(error);
+      }
+
+      g_value_init(&sustain, AGS_TYPE_COMPLEX);
+	
+      error = NULL;
+      ags_preset_get_parameter(current_preset,
+			       "sustain", &sustain,
+			       &error);
+
+      if(error != NULL){
+	success = FALSE;
+
+	g_error_free(error);
+      }
+	
+      g_value_init(&release, AGS_TYPE_COMPLEX);
+	
+      error = NULL;
+      ags_preset_get_parameter(current_preset,
+			       "release", &release,
+			       &error);
+
+      if(error != NULL){
+	success = FALSE;
+
+	g_error_free(error);
+      }
+
+      g_value_init(&ratio, AGS_TYPE_COMPLEX);
+	
+      error = NULL;
+      ags_preset_get_parameter(current_preset,
+			       "ratio", &ratio,
+			       &error);
+
+      if(error != NULL){
+	success = FALSE;
+
+	g_error_free(error);
+      }
+
+      if(success){
+	guint i, i_start, i_stop;
+	guint j, j_start, j_stop;
+	guint k, k_start, k_stop;
+	  
+	i_start = pad_start;
+	i_stop = pad_end + 1;
+	  
+	j_start = audio_channel_start;
+	j_stop = audio_channel_end + 1;
+	  
+	k_start = x_start;
+	k_stop = x_end + 1;
+	  
+	for(i = i_start; i < i_stop; i++){
+	  for(j = j_start; j < j_stop; j++){
+	    AgsChannel *channel;
+	  
+	    GList *start_pattern, *pattern;
+	      
+	    channel = ags_channel_nth(start_input,
+				      i * audio_channels + j);
+
+	    start_pattern = NULL;
+	      
+	    g_object_get(channel,
+			 "pattern", &start_pattern,
+			 NULL);
+
+	    pattern = start_pattern;
+
+	    while(pattern != NULL){
+	      for(k = k_start; k < k_stop; k++){
+		AgsNote *note;
+		  		  
+		note = ags_pattern_get_note(pattern->data,
+					    k);
+		  
+		if(note != NULL){
+		  g_object_set(note,
+			       "attack", g_value_get_boxed(&attack),
+			       "decay", g_value_get_boxed(&decay),
+			       "sustain", g_value_get_boxed(&sustain),
+			       "release", g_value_get_boxed(&release),
+			       "ratio", g_value_get_boxed(&ratio),
+			       NULL);
+		    
+		  ags_note_set_flags(note,
+				     AGS_NOTE_ENVELOPE);
+
+		  g_object_unref(note);
+		}
+	      }
+		
+	      pattern = pattern->next;
+	    }
+
+	    if(channel != NULL){
+	      g_object_unref(channel);
+	    }
+	      
+	    g_list_free_full(start_pattern,
+			     g_object_unref);
+	  }
+	}
+      }
+
+      g_value_unset(&attack);
+      g_value_unset(&decay);
+      g_value_unset(&sustain);
+      g_value_unset(&release);
+      g_value_unset(&ratio);
+    }
+    
+    g_free(scope);
+
+    preset = preset->next;
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+  
+  g_list_free_full(start_preset,
+		   g_object_unref);      
 }
 
 void
@@ -1166,7 +1451,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   
   AgsComplex *val;
   
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
   
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope) ||
      preset_name == NULL){
@@ -1201,6 +1486,30 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   ags_audio_add_preset(audio,
 		       (GObject *) preset);
 
+
+  /*  */
+  g_value_init(&value,
+	       G_TYPE_UINT);
+  g_value_set_uint(&value,
+		   0);
+
+  ags_preset_add_parameter(preset,
+			   "pad-start", &value);
+  ags_preset_add_parameter(preset,
+			   "pad-end", &value);
+
+  ags_preset_add_parameter(preset,
+			   "audio-channel-start", &value);
+  ags_preset_add_parameter(preset,
+			   "audio-channel-end", &value);
+
+  ags_preset_add_parameter(preset,
+			   "x-start", &value);
+  ags_preset_add_parameter(preset,
+			   "x-end", &value);
+
+  g_value_unset(&value);
+  
   /* preset - ratio */
   val = ags_complex_alloc();
   ags_complex_set(val,
@@ -1333,7 +1642,7 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
   guint pad_start, pad_end;
   guint x_start, x_end;
   
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;
   
@@ -1619,7 +1928,7 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
   gdouble offset;
   gboolean do_plot;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;
   

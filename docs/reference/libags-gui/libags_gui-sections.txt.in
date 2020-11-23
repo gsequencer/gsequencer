@@ -528,6 +528,10 @@ AgsPianoButtonState
 AgsPianoLayout
 AgsPianoAction
 AgsPianoOctave
+ags_piano_set_button_state
+ags_piano_get_button_state
+ags_piano_set_layout
+ags_piano_get_layout
 ags_piano_set_base_note
 ags_piano_get_base_note
 ags_piano_set_base_key_code
@@ -701,6 +705,8 @@ AGS_RULER_DEFAULT_HEIGHT
 AGS_RULER_DEFAULT_STEP
 AGS_RULER_DEFAULT_LARGE_STEP
 AGS_RULER_DEFAULT_SMALL_STEP
+ags_ruler_get_font_size
+ags_ruler_set_font_size
 ags_ruler_get_step
 ags_ruler_set_step
 ags_ruler_get_large_step
@@ -801,6 +807,8 @@ ags_scrolled_level_box_get_type
 <SECTION>
 <FILE>ags_scrolled_piano</FILE>
 <TITLE>AgsScrolledPiano</TITLE>
+ags_scrolled_piano_get_viewport
+ags_scrolled_piano_get_piano
 ags_scrolled_piano_new
 <SUBSECTION Public>
 AGS_IS_SCROLLED_PIANO

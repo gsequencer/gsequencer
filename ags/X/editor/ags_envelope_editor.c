@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -931,7 +931,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   
   AgsComplex *val;
   
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
   
   if(!AGS_IS_ENVELOPE_EDITOR(envelope_editor) ||
      preset_name == NULL){
@@ -1096,7 +1096,7 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
   
   complex z;
   
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;
   

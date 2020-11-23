@@ -510,6 +510,16 @@ AGS_FILE_DEFAULT_AUDIO_ENCODING
 AgsFileFlags
 AGS_FILE_ERROR
 AgsFileError
+ags_file_set_filename
+ags_file_get_filename
+ags_file_set_encoding
+ags_file_get_encoding
+ags_file_set_audio_format
+ags_file_get_audio_format
+ags_file_set_audio_encoding
+ags_file_get_audio_encoding
+ags_file_set_xml_doc
+ags_file_get_xml_doc
 ags_file_str2md5
 ags_file_add_id_ref
 ags_file_find_id_ref_by_node
@@ -593,6 +603,10 @@ ags_file_launch_get_type
 AGS_FILE_LINK_GET_OBJ_MUTEX
 AGS_FILE_LINK_DEFAULT_VERSION
 AGS_FILE_LINK_DEFAULT_BUILD_ID
+ags_file_link_set_filename
+ags_file_link_get_filename
+ags_file_link_set_data
+ags_file_link_get_data
 ags_file_link_new
 <SUBSECTION Public>
 AGS_FILE_LINK
@@ -890,6 +904,8 @@ ags_math_util_split_sum
 <FILE>ags_message_delivery</FILE>
 <TITLE>AgsMessageDelivery</TITLE>
 AGS_MESSAGE_DELIVERY_GET_OBJ_MUTEX
+ags_message_delivery_set_message_queue
+ags_message_delivery_get_message_queue
 ags_message_delivery_add_message_queue
 ags_message_delivery_remove_message_queue
 ags_message_delivery_find_sender_namespace
@@ -939,6 +955,12 @@ ags_message_envelope_get_type
 <FILE>ags_message_queue</FILE>
 <TITLE>AgsMessageQueue</TITLE>
 AGS_MESSAGE_QUEUE_GET_OBJ_MUTEX
+ags_message_queue_set_sender_namespace
+ags_message_queue_get_sender_namespace
+ags_message_queue_set_recipient_namespace
+ags_message_queue_get_recipient_namespace
+ags_message_queue_set_message_envelope
+ags_message_queue_get_message_envelope
 ags_message_queue_add_message_envelope
 ags_message_queue_remove_message_envelope
 ags_message_queue_find_sender

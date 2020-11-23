@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -127,7 +127,7 @@ ags_envelope_editor_attack_x_callback(GtkWidget *range, AgsEnvelopeEditor *envel
 
   gdouble attack_x;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;
 
@@ -182,7 +182,7 @@ ags_envelope_editor_attack_y_callback(GtkWidget *range, AgsEnvelopeEditor *envel
 
   gdouble attack_y;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;
 
@@ -237,7 +237,7 @@ ags_envelope_editor_decay_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelo
 
   gdouble decay_x;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;  
 
@@ -292,7 +292,7 @@ ags_envelope_editor_decay_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelo
 
   gdouble decay_y;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;  
 
@@ -347,7 +347,7 @@ ags_envelope_editor_sustain_x_callback(GtkWidget *range, AgsEnvelopeEditor *enve
 
   gdouble sustain_x;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;  
 
@@ -402,7 +402,7 @@ ags_envelope_editor_sustain_y_callback(GtkWidget *range, AgsEnvelopeEditor *enve
 
   gdouble sustain_y;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;  
 
@@ -457,7 +457,7 @@ ags_envelope_editor_release_x_callback(GtkWidget *range, AgsEnvelopeEditor *enve
 
   gdouble release_x;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;  
 
@@ -512,7 +512,7 @@ ags_envelope_editor_release_y_callback(GtkWidget *range, AgsEnvelopeEditor *enve
 
   gdouble release_y;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;  
 
@@ -567,7 +567,7 @@ ags_envelope_editor_ratio_callback(GtkWidget *range, AgsEnvelopeEditor *envelope
 
   gdouble ratio;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;  
 

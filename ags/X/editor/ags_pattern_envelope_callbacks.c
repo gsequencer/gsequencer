@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -121,7 +121,7 @@ ags_pattern_envelope_audio_channel_start_callback(GtkWidget *spin_button,
 {
   AgsPreset *preset;
   
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   guint audio_channel_start;
 
@@ -157,7 +157,7 @@ ags_pattern_envelope_audio_channel_end_callback(GtkWidget *spin_button,
 
   guint audio_channel_end;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
     return;
@@ -191,7 +191,7 @@ ags_pattern_envelope_pad_start_callback(GtkWidget *spin_button,
   
   guint pad_start;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
     return;
@@ -225,7 +225,7 @@ ags_pattern_envelope_pad_end_callback(GtkWidget *spin_button,
   
   guint pad_end;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
     return;
@@ -259,7 +259,7 @@ ags_pattern_envelope_x_start_callback(GtkWidget *spin_button,
   
   guint x_start;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
     return;
@@ -293,7 +293,7 @@ ags_pattern_envelope_x_end_callback(GtkWidget *spin_button,
   
   guint x_end;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
     return;
@@ -329,7 +329,7 @@ ags_pattern_envelope_attack_x_callback(GtkWidget *range,
 
   gdouble attack_x;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;
 
@@ -385,7 +385,7 @@ ags_pattern_envelope_attack_y_callback(GtkWidget *range,
 
   gdouble attack_y;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;
 
@@ -441,7 +441,7 @@ ags_pattern_envelope_decay_x_callback(GtkWidget *range,
 
   gdouble decay_x;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;
   
@@ -497,7 +497,7 @@ ags_pattern_envelope_decay_y_callback(GtkWidget *range,
 
   gdouble decay_y;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;
   
@@ -553,7 +553,7 @@ ags_pattern_envelope_sustain_x_callback(GtkWidget *range,
 
   gdouble sustain_x;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;
   
@@ -609,7 +609,7 @@ ags_pattern_envelope_sustain_y_callback(GtkWidget *range,
 
   gdouble sustain_y;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;
   
@@ -665,7 +665,7 @@ ags_pattern_envelope_release_x_callback(GtkWidget *range,
 
   gdouble release_x;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;
   
@@ -721,7 +721,7 @@ ags_pattern_envelope_release_y_callback(GtkWidget *range,
 
   gdouble release_y;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;
 
@@ -777,7 +777,7 @@ ags_pattern_envelope_ratio_callback(GtkWidget *range,
 
   gdouble ratio;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;
   
