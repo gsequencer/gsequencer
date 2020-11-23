@@ -3104,7 +3104,6 @@ clean-local:
 	rm -f docs/reference/libgsequencer/libgsequencer.hierarchy
 	rm -f docs/reference/libgsequencer/libgsequencer.prerequisites
 	rm -f docs/reference/libgsequencer/libgsequencer.signals
-	./clean-gtk-doc.sh
 
 gen-symbols-ags:
 	rm -f libags.sym.in
