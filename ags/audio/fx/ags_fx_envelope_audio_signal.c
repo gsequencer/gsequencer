@@ -217,6 +217,7 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 
   recall_id = NULL;
   recycling_context = NULL;
+  parent_recycling_context = NULL;
   
   fx_envelope_channel = NULL;
   fx_envelope_channel_processor = NULL;
@@ -245,9 +246,11 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	       "recycling-context", &recycling_context,
 	       NULL);
 
-  g_object_get(recycling_context,
-	       "parent", &parent_recycling_context,
-	       NULL);
+  if(recycling_context != NULL){
+    g_object_get(recycling_context,
+		 "parent", &parent_recycling_context,
+		 NULL);
+  }
   
   g_object_get(fx_envelope_recycling,
 	       "parent", &fx_envelope_channel_processor,
