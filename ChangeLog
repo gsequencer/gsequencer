@@ -1,6 +1,8 @@
 ags (3.6.17)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags-fx-envelope to query ags-fx-pattern and ags-fx-notation for offset
+	* improved ags-fx-envelope to query AgsAudio for pattern mode
 	* implemented missing functions of AgsTrack
 	* implemented additional getter/setter
 	* added unit-tests
