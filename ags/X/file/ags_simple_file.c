@@ -201,6 +201,8 @@ void ags_simple_file_read_automation_fixup_1_0_to_1_3(AgsSimpleFile *simple_file
 
 void ags_simple_file_read_automation_list_fixup_1_0_to_1_3(AgsSimpleFile *simple_file, xmlNode *node, GList **automation);
 void ags_simple_file_read_preset_list(AgsSimpleFile *simple_file, xmlNode *node, GList **preset);
+void ags_simple_file_read_preset_launch(AgsFileLaunch *file_launch,
+					AgsPreset *preset);
 void ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset **preset);
 
 xmlNode* ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *parent, AgsConfig *config);
@@ -7638,6 +7640,21 @@ ags_simple_file_read_preset_list(AgsSimpleFile *simple_file, xmlNode *node, GLis
 }
 
 void
+ags_simple_file_read_preset_launch(AgsFileLaunch *file_launch,
+				   AgsPreset *preset)
+{
+  AgsMachine *machine;
+  
+  AgsFileIdRef *file_id_ref;
+  
+  file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(file_launch->file,
+								     file_launch->node->parent->parent);
+  machine = file_id_ref->ref;
+
+  ags_machine_reset_pattern_envelope(machine);
+}
+
+void
 ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset **preset)
 {
   AgsMachine *machine;
@@ -7645,6 +7662,7 @@ ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset
   AgsPreset *gobject;
 
   AgsFileIdRef *file_id_ref;
+  AgsFileLaunch *file_launch;
 
   xmlNode *child;
   
@@ -7808,6 +7826,16 @@ ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset
 
     child = child->next;
   }
+
+  /* launch pattern */
+  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+					       "node", node,
+					       "file", simple_file,
+					       NULL);
+  g_signal_connect(G_OBJECT(file_launch), "start",
+		   G_CALLBACK(ags_simple_file_read_preset_launch), gobject);
+  ags_simple_file_add_launch(simple_file,
+			     (GObject *) file_launch);
 }
 
 xmlNode*
