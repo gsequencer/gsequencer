@@ -74,7 +74,7 @@ ags_automation_editor_audio_hscrollbar_value_changed(GtkRange *range, AgsAutomat
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   gtk_adjustment_set_value(automation_editor->audio_ruler->adjustment,
-			   gtk_range_get_value(range) / (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH));
+			   gui_scale_factor * (gtk_range_get_value(range) / (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH)));
   gtk_widget_queue_draw(GTK_WIDGET(automation_editor->audio_ruler));
     
   /* automation edit */
@@ -123,7 +123,7 @@ ags_automation_editor_output_hscrollbar_value_changed(GtkRange *range, AgsAutoma
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   gtk_adjustment_set_value(automation_editor->output_ruler->adjustment,
-			   gtk_range_get_value(range) / (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH));
+			   gui_scale_factor * (gtk_range_get_value(range) / (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH)));
   gtk_widget_queue_draw(GTK_WIDGET(automation_editor->output_ruler));
   
   /* automation edit */
@@ -171,7 +171,7 @@ ags_automation_editor_input_hscrollbar_value_changed(GtkRange *range, AgsAutomat
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   gtk_adjustment_set_value(automation_editor->input_ruler->adjustment,
-			   gtk_range_get_value(range) / (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH));
+			   gui_scale_factor * (gtk_range_get_value(range) / (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH)));
   gtk_widget_queue_draw(GTK_WIDGET(automation_editor->input_ruler));
   
   /* automation edit */

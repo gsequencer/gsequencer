@@ -1213,7 +1213,7 @@ ags_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEdit 
 
   value = gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar)) / (guint) (gui_scale_factor * 64.0);
   gtk_adjustment_set_value(automation_edit->ruler->adjustment,
-			   value);
+			   gui_scale_factor * value);
   gtk_widget_queue_draw((GtkWidget *) automation_edit->ruler);
   
   /* queue draw */

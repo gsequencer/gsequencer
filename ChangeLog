@@ -1,3 +1,10 @@
+ags (3.6.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed gui-scale factor applied to AgsNotationEdit
+	* fixed gui-scale factor applied to AgsAutomationEdit
+	* fixed gui-scale factor applied to AgsWaveEdit
+
 ags (3.6.20)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

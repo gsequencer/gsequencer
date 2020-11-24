@@ -527,11 +527,14 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
 
   GtkAdjustment *vscrollbar_adjustment, *hscrollbar_adjustment;
 
+  AgsApplicationContext *application_context;
+
   GtkAllocation wave_edit_box_allocation;
   GtkAllocation viewport_allocation;
   
   GList *list_start, *list;
-
+  
+  gdouble gui_scale_factor;
   gdouble old_h_upper;
   gdouble v_upper, h_upper;
   double zoom_factor, zoom;
@@ -539,6 +542,11 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
   guint map_width;
   
   wave_toolbar = wave_editor->wave_toolbar;
+
+  application_context = ags_application_context_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   /* reset vertical scrollbar */
   gtk_widget_get_allocation(GTK_WIDGET(wave_editor->scrolled_wave_edit_box->wave_edit_box),
@@ -573,7 +581,8 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
 
   zoom_correction = 1.0 / 16;
 
-  map_width = ((double) AGS_WAVE_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+//  map_width = (gui_scale_factor * (double) AGS_WAVE_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+  map_width = (gui_scale_factor * 64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction;
   h_upper = map_width - wave_edit_box_allocation.width;
 
   if(h_upper < 0.0){
