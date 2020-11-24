@@ -977,7 +977,7 @@ ags_notation_edit_hscrollbar_value_changed(GtkRange *range, AgsNotationEdit *not
 
   value = gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)) / (guint) (gui_scale_factor * 64.0);
   gtk_adjustment_set_value(notation_edit->ruler->adjustment,
-			   gui_scale_factor * value);
+			   value);
   gtk_widget_queue_draw((GtkWidget *) notation_edit->ruler);
   
   /* queue draw */

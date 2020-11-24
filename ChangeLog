@@ -1,3 +1,8 @@
+ags (3.6.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed upper of AgsNotationEditor's AgsRuler
+
 ags (3.6.21)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
