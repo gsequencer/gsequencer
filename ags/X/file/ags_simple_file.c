@@ -4070,8 +4070,12 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_simple_file_read_equalizer10_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsEqualizer10 *) machine);
   }else if(AGS_IS_DRUM(machine)){
     ags_simple_file_read_drum_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsDrum *) machine);
+
+    ags_machine_reset_pattern_envelope(machine);
   }else if(AGS_IS_MATRIX(machine)){
     ags_simple_file_read_matrix_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsMatrix *) machine);
+
+    ags_machine_reset_pattern_envelope(machine);
   }else if(AGS_IS_SYNTH(machine)){
     ags_simple_file_read_synth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsSynth *) machine);
   }else if(AGS_IS_SYNCSYNTH(machine)){
@@ -7645,6 +7649,7 @@ ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset
   AgsPreset *gobject;
 
   AgsFileIdRef *file_id_ref;
+  AgsFileLaunch *file_launch;
 
   xmlNode *child;
   

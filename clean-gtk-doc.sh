@@ -1,6 +1,6 @@
 #!/bin/bash
 # 
-# Copyright (C) 2005-2018 Joël Krähemann
+# Copyright (C) 2005-2020 Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -10,6 +10,7 @@
 rm -rf docs/reference/libags-audio/.libs/
 rm -f docs/reference/libags-audio/html-build.stamp
 rm -f docs/reference/libags-audio/html.stamp
+rm -f docs/reference/libags-audio/libags_audio.actions
 rm -f docs/reference/libags-audio/libags_audio-decl-list.txt
 rm -f docs/reference/libags-audio/libags_audio-decl-list.txt.bak
 rm -f docs/reference/libags-audio/libags_audio-decl.txt
@@ -29,6 +30,7 @@ rm -f docs/reference/libags-audio/sgml.stamp
 rm -rf docs/reference/libags-gui/.libs/
 rm -f docs/reference/libags-gui/html-build.stamp
 rm -f docs/reference/libags-gui/html.stamp
+rm -f docs/reference/libags-gui/libags_gui.actions
 rm -f docs/reference/libags-gui/libags_gui-decl-list.txt
 rm -f docs/reference/libags-gui/libags_gui-decl.txt
 rm -f docs/reference/libags-gui/libags_gui-undeclared.txt
@@ -43,6 +45,7 @@ rm -f docs/reference/libags-gui/setup-build.stamp
 rm -f docs/reference/libags-gui/sgml-build.stamp
 rm -f docs/reference/libags-gui/sgml.stamp
 rm -rf docs/reference/libags/.libs/
+rm -f docs/reference/libags/libags.actions
 rm -f docs/reference/libags/html-build.stamp
 rm -f docs/reference/libags/html.stamp
 rm -f docs/reference/libags/libags-decl-list.txt
@@ -76,3 +79,4 @@ rm -f docs/reference/libgsequencer/scan-build.stamp
 rm -f docs/reference/libgsequencer/setup-build.stamp
 rm -f docs/reference/libgsequencer/sgml-build.stamp
 rm -f docs/reference/libgsequencer/sgml.stamp
+rm -f docs/reference/libgsequencer/libgsequencer.actions

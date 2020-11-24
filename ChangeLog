@@ -1,8 +1,39 @@
+ags (3.6.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed upper of AgsNotationEditor's AgsRuler
+
+ags (3.6.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed gui-scale factor applied to AgsNotationEdit
+	* fixed gui-scale factor applied to AgsAutomationEdit
+	* fixed gui-scale factor applied to AgsWaveEdit
+
+ags (3.6.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing restore of pattern envelope
+
+ags (3.6.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements
+
+ags (3.6.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_fx_envelope_audio_signal.c
+
 ags (3.6.17)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags-fx-envelope to query ags-fx-pattern and ags-fx-notation for offset
+	* improved ags-fx-envelope to query AgsAudio for pattern mode
+	* implemented missing functions of AgsTrack
 	* implemented additional getter/setter
 	* added unit-tests
+	* minor improvements
 
 ags (3.6.16)
 

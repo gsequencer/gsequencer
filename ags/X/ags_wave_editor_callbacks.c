@@ -58,7 +58,7 @@ ags_wave_editor_hscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_ed
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
   
   gtk_adjustment_set_value(wave_editor->ruler->adjustment,
-			   gtk_range_get_value(range) / (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH));
+			   gui_scale_factor * (gtk_range_get_value(range) / (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH)));
   gtk_widget_queue_draw(GTK_WIDGET(wave_editor->ruler));
     
   /* wave edit */

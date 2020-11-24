@@ -19,11 +19,15 @@
 
 #include <ags/audio/fx/ags_fx_envelope_audio_signal.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/fx/ags_fx_envelope_channel.h>
 #include <ags/audio/fx/ags_fx_envelope_channel_processor.h>
 #include <ags/audio/fx/ags_fx_envelope_recycling.h>
+#include <ags/audio/fx/ags_fx_pattern_audio_processor.h>
+#include <ags/audio/fx/ags_fx_notation_audio_processor.h>
 
 #include <complex.h>
 
@@ -172,15 +176,22 @@ ags_fx_envelope_audio_signal_get_volume(gdouble volume, gdouble ratio,
 void
 ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 {
+  AgsAudio *audio;
+  AgsChannel *channel;
   AgsAudioSignal *template, *source;
   AgsFxEnvelopeChannel *fx_envelope_channel;
   AgsFxEnvelopeChannelProcessor *fx_envelope_channel_processor;
   AgsFxEnvelopeRecycling *fx_envelope_recycling;
+  AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
+  AgsFxNotationAudioProcessor *fx_notation_audio_processor;
   AgsPort *fixed_length;
   AgsPort *attack, *decay, *sustain, *release, *ratio;
+  AgsRecallID *recall_id;
+  AgsRecyclingContext *parent_recycling_context, *recycling_context;
   
   GObject *output_soundcard;
 
+  GList *start_list, *list;
   GList *start_note, *note;
 
   AgsComplex cattack, cdecay, csustain, crelease, cratio;
@@ -190,15 +201,24 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
   guint length;
   guint buffer_size;
   guint format;
-
+  gboolean is_pattern;
+  gboolean is_sequencer;
+  
   GRecMutex *stream_mutex;
   GRecMutex *attack_mutex, *decay_mutex, *sustain_mutex, *release_mutex, *ratio_mutex;
 
   output_soundcard = NULL;
 
+  audio = NULL;
+  channel = NULL;
+  
   template = NULL;
   source = NULL;
 
+  recall_id = NULL;
+  recycling_context = NULL;
+  parent_recycling_context = NULL;
+  
   fx_envelope_channel = NULL;
   fx_envelope_channel_processor = NULL;
   fx_envelope_recycling = NULL;
@@ -212,8 +232,6 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
   ratio = NULL;
   
   start_note = NULL;
-
-  length = 0;
   
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
@@ -221,8 +239,19 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
   g_object_get(recall,
 	       "parent", &fx_envelope_recycling,
 	       "source", &source,
+	       "recall-id", &recall_id,
 	       NULL);
 
+  g_object_get(recall_id,
+	       "recycling-context", &recycling_context,
+	       NULL);
+
+  if(recycling_context != NULL){
+    g_object_get(recycling_context,
+		 "parent", &parent_recycling_context,
+		 NULL);
+  }
+  
   g_object_get(fx_envelope_recycling,
 	       "parent", &fx_envelope_channel_processor,
 	       NULL);
@@ -232,6 +261,7 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	       NULL);
 
   g_object_get(fx_envelope_channel,
+	       "source", &channel,
 	       "fixed-length", &fixed_length,
 	       "attack", &attack,
 	       "decay", &decay,
@@ -248,11 +278,81 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	       "format", &format,
 	       NULL);
 
+  if(channel != NULL){
+    g_object_get(channel,
+		 "audio", &audio,
+		 NULL);
+  }
+  
+  is_pattern = ags_audio_test_behaviour_flags(audio,
+					      AGS_SOUND_BEHAVIOUR_PATTERN_MODE);
+  
+  is_sequencer = ags_recall_id_check_sound_scope(recall_id,
+						 AGS_SOUND_SCOPE_SEQUENCER);
+
+  fx_notation_audio_processor = NULL;
+  fx_pattern_audio_processor = NULL;
+    
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
   delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
   
   delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
 
+  start_list = NULL;
+
+  if(audio != NULL){
+    g_object_get(audio,
+		 "recall", &start_list,
+		 NULL);
+  }
+  
+  if(!is_sequencer){
+    GRecMutex *mutex;
+
+    list = ags_recall_find_type_with_recycling_context(start_list,
+						       AGS_TYPE_FX_NOTATION_AUDIO_PROCESSOR, recycling_context);
+
+    if(list != NULL){
+      fx_notation_audio_processor = list->data;
+    }
+
+    if(fx_notation_audio_processor != NULL){
+      mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
+
+      g_rec_mutex_lock(mutex);
+
+      note_offset = fx_notation_audio_processor->offset_counter;
+      delay_counter = fx_notation_audio_processor->delay_counter;
+      
+      g_rec_mutex_unlock(mutex);
+    }
+  }else{
+    GRecMutex *mutex;
+    
+    list = ags_recall_find_type_with_recycling_context(start_list,
+						       AGS_TYPE_FX_PATTERN_AUDIO_PROCESSOR, recycling_context);
+
+    if(list != NULL){
+      fx_pattern_audio_processor = list->data;
+    }
+
+    if(fx_pattern_audio_processor != NULL){
+      mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_pattern_audio_processor);
+
+      g_rec_mutex_lock(mutex);
+
+      note_offset = fx_pattern_audio_processor->offset_counter;
+      delay_counter = fx_pattern_audio_processor->delay_counter;
+      
+      g_rec_mutex_unlock(mutex);
+    }
+  }
+
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
+  
+  length = (guint) floor(delay);
+  
   if(template != NULL){
     g_object_get(template,
 		 "length", &length,
@@ -316,12 +416,28 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	  g_rec_mutex_unlock(note_mutex);
 	  
 	  /* get frame count */
-	  frame_count = (x1 - x0) * (delay * buffer_size);
+	  if(!is_pattern){
+	    frame_count = (x1 - x0) * (delay * buffer_size);
+	  }else{
+	    frame_count = length * buffer_size;
+	  }
 
+#if 0
+	  g_message("frame-count: %d", frame_count);
+#endif
+	  
 	  offset = 0;
-      
-	  current_frame = ((note_offset - x0 - 1) * delay + delay_counter) * buffer_size;
 
+	  if(note_offset >= x0){
+	    current_frame = ((note_offset - x0) * delay + delay_counter) * buffer_size;
+	  }else{
+	    current_frame = 0;
+	  }
+	  
+#if 0
+	  g_message("current-frame: %d", current_frame);
+#endif
+	  
 	  /* special case release - #0 key offset bigger than note offset */
 	  if(x1 < note_offset){
 	    envelope_current_x = cattack.real + cdecay.real;
@@ -590,8 +706,16 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
   if(source == NULL ||
      source->stream_current == NULL){
     ags_recall_done(recall);
+  }  
+
+  if(audio != NULL){
+    g_object_unref(audio);
   }
-  
+
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
+
   if(output_soundcard != NULL){
     g_object_unref(output_soundcard);
   }
@@ -602,6 +726,18 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 
   if(source != NULL){
     g_object_unref(source);
+  }
+
+  if(recall_id != NULL){
+    g_object_unref(recall_id);
+  }
+
+  if(recycling_context != NULL){
+    g_object_unref(recycling_context);
+  }
+
+  if(parent_recycling_context != NULL){
+    g_object_unref(parent_recycling_context);
   }
   
   if(fx_envelope_channel != NULL){

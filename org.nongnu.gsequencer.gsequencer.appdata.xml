@@ -35,6 +35,43 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.6.22" date="2020-11-24">
+      <description>
+	<p>Fixed upper of AgsNotationEditor's AgsRuler.</p>
+      </description>
+    </release>
+
+    <release version="3.6.21" date="2020-11-24">
+      <description>
+	<p>Improved notation, automation and wave editor to do proper GUI scale.</p>
+      </description>
+    </release>
+
+    <release version="3.6.20" date="2020-11-23">
+      <description>
+	<p>Fixed missing restore of pattern envelope.</p>
+      </description>
+    </release>
+    
+    <release version="3.6.19" date="2020-11-23">
+      <description>
+	<p>Minor improvements.</p>
+      </description>
+    </release>
+
+    <release version="3.6.18" date="2020-11-23">
+      <description>
+	<p>Minor improvements.</p>
+      </description>
+    </release>
+
+    <release version="3.6.17" date="2020-11-23">
+      <description>
+	<p>Fixes to ags-fx-envelope.</p>
+	<p>Minor improvements.</p>
+      </description>
+    </release>
+
     <release version="3.6.16" date="2020-11-20">
       <description>
 	<p>Minor improvements.</p>

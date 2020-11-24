@@ -143,6 +143,9 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 
   plugin_browser->flags = 0;
 
+  gtk_window_set_title((GtkWindow *) plugin_browser,
+		       i18n("Plugin browser"));
+
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(plugin_browser)),
 		     GTK_WIDGET(vbox),

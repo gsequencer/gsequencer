@@ -1030,7 +1030,7 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
   
   zoom_correction = 1.0 / 16;
 
-  map_width = ((double) AGS_NOTATION_EDITOR_MAX_CONTROLS * notation_edit->control_width * zoom * zoom_correction);
+  map_width = ((double) notation_edit->control_width * (double) AGS_NOTATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
   upper = map_width - allocation.width;
 
   if(upper < 0.0){    
@@ -1046,7 +1046,7 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
   notation_edit->ruler->scale_precision = 1.0 / zoom;
 
   gtk_adjustment_set_upper(notation_edit->ruler->adjustment,
-			   upper / notation_edit->control_width);
+			   upper);
 
   /* reset value */
   if(old_upper != 0.0){

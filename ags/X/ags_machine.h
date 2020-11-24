@@ -203,6 +203,8 @@ struct _AgsMachineAutomationPort
 
 GType ags_machine_get_type(void);
 
+void ags_machine_reset_pattern_envelope(AgsMachine *machine);
+
 AgsMachineAutomationPort* ags_machine_automation_port_alloc(GType channel_type, gchar *control_name);
 void ags_machine_automation_port_free(AgsMachineAutomationPort *automation_port);
 

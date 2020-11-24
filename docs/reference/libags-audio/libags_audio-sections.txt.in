@@ -41,6 +41,7 @@ AGS_IS_ACCELERATION_CLASS
 AGS_TYPE_ACCELERATION
 AgsAcceleration
 AgsAccelerationClass
+ags_acceleration_flags_get_type
 ags_acceleration_get_type
 </SECTION>
 
@@ -505,6 +506,7 @@ AGS_IS_AUDIO_CLASS
 AGS_TYPE_AUDIO
 AgsAudio
 AgsAudioClass
+ags_audio_flags_get_type
 ags_audio_get_type
 </SECTION>
 
@@ -922,6 +924,7 @@ AGS_IS_AUDIO_SIGNAL_CLASS
 AGS_TYPE_AUDIO_SIGNAL
 AgsAudioSignal
 AgsAudioSignalClass
+ags_audio_signal_flags_get_type
 ags_audio_signal_get_type
 </SECTION>
 
@@ -1180,6 +1183,7 @@ AGS_IS_AUTOMATION_CLASS
 AGS_TYPE_AUTOMATION
 AgsAutomation
 AgsAutomationClass
+ags_automation_flags_get_type
 ags_automation_get_type
 </SECTION>
 
@@ -1235,6 +1239,7 @@ AGS_IS_BASE_PLUGIN_CLASS
 AGS_TYPE_BASE_PLUGIN
 AgsBasePlugin
 AgsBasePluginClass
+ags_base_plugin_flags_get_type
 ags_base_plugin_get_type
 </SECTION>
 
@@ -1270,6 +1275,7 @@ AGS_IS_BUFFER_CLASS
 AGS_TYPE_BUFFER
 AgsBuffer
 AgsBufferClass
+ags_buffer_flags_get_type
 ags_buffer_get_type
 </SECTION>
 
@@ -1566,6 +1572,7 @@ AGS_IS_CHANNEL_CLASS
 AGS_TYPE_CHANNEL
 AgsChannel
 AgsChannelClass
+ags_channel_flags_get_type
 ags_channel_get_type
 </SECTION>
 
@@ -2086,6 +2093,7 @@ AGS_IS_DEVIN_CLASS
 AGS_TYPE_DEVIN
 AgsDevin
 AgsDevinClass
+ags_devin_flags_get_type
 ags_devin_get_type
 </SECTION>
 
@@ -2116,6 +2124,7 @@ AGS_IS_DEVOUT_CLASS
 AGS_TYPE_DEVOUT
 AgsDevout
 AgsDevoutClass
+ags_devout_flags_get_type
 ags_devout_get_type
 </SECTION>
 
@@ -2336,6 +2345,19 @@ ags_export_thread_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_fast_pitch_util</FILE>
+AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE
+ags_fast_pitch_util_compute_s8
+ags_fast_pitch_util_compute_s16
+ags_fast_pitch_util_compute_s24
+ags_fast_pitch_util_compute_s32
+ags_fast_pitch_util_compute_s64
+ags_fast_pitch_util_compute_float
+ags_fast_pitch_util_compute_double
+ags_fast_pitch_util_compute_complex
+</SECTION>
+
+<SECTION>
 <FILE>ags_feed_audio_signal</FILE>
 <TITLE>AgsFeedAudioSignal</TITLE>
 ags_feed_audio_signal_new
@@ -2425,6 +2447,7 @@ AGS_IS_FIFOOUT_CLASS
 AGS_TYPE_FIFOOUT
 AgsFifoout
 AgsFifooutClass
+ags_fifoout_flags_get_type
 ags_fifoout_get_type
 </SECTION>
 
@@ -4456,6 +4479,7 @@ AGS_LADSPA_CONVERSION_GET_CLASS
 AGS_TYPE_LADSPA_CONVERSION
 AgsLadspaConversion
 AgsLadspaConversionClass
+ags_ladspa_conversion_flags_get_type
 ags_ladspa_conversion_get_type
 </SECTION>
 
@@ -4684,6 +4708,7 @@ AGS_LV2_CONVERSION_GET_CLASS
 AGS_TYPE_LV2_CONVERSION
 AgsLv2Conversion
 AgsLv2ConversionClass
+ags_lv2_conversion_flags_get_type
 ags_lv2_conversion_get_type
 </SECTION>
 
@@ -4825,6 +4850,7 @@ AGS_LV2_PLUGIN_GET_CLASS
 AGS_TYPE_LV2_PLUGIN
 AgsLv2Plugin
 AgsLv2PluginClass
+ags_lv2_plugin_flags_get_type
 ags_lv2_plugin_get_type
 </SECTION>
 
@@ -4850,6 +4876,7 @@ AGS_LV2_PRESET_GET_CLASS
 AGS_TYPE_LV2_PRESET
 AgsLv2Preset
 AgsLv2PresetClass
+ags_lv2_preset_flags_get_type
 ags_lv2_preset_get_type
 </SECTION>
 
@@ -4913,6 +4940,7 @@ AGS_TYPE_LV2_TURTLE_SCANNER
 AgsLv2TurtleScanner
 AgsLv2TurtleScannerClass
 ags_lv2_turtle_scanner_get_type
+ags_lv2_turtle_scanner_status_flags_get_type
 </SECTION>
 
 <SECTION>
@@ -4987,6 +5015,7 @@ AGS_LV2_WORKER_GET_CLASS
 AGS_TYPE_LV2_WORKER
 AgsLv2Worker
 AgsLv2WorkerClass
+ags_lv2_worker_flags_get_type
 ags_lv2_worker_get_type
 </SECTION>
 
@@ -5054,6 +5083,7 @@ AGS_LV2UI_PLUGIN_GET_CLASS
 AGS_TYPE_LV2UI_PLUGIN
 AgsLv2uiPlugin
 AgsLv2uiPluginClass
+ags_lv2ui_plugin_flags_get_type
 ags_lv2ui_plugin_get_type
 </SECTION>
 
@@ -6800,6 +6830,7 @@ AGS_PLUGIN_PORT_GET_CLASS
 AGS_TYPE_PLUGIN_PORT
 AgsPluginPort
 AgsPluginPortClass
+ags_plugin_port_flags_get_type
 ags_plugin_port_get_type
 </SECTION>
 
@@ -8912,6 +8943,8 @@ ags_track_sort_func
 ags_track_get_x
 ags_track_set_x
 ags_track_get_smf_buffer
+ags_track_alloc_smf_buffer
+ags_track_realloc_smf_buffer
 ags_track_duplicate
 ags_track_new
 <SUBSECTION Public>
