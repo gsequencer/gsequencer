@@ -6,9 +6,9 @@
 # without any warranty.
 
 interactive_tests = [
-  'cartesian',
-  'polynomals_test',
-  'scale_test',
+#  'cartesian',
+#  'polynomals_test',
+#  'scale_test',
 ]
 
 interactive_test_dependencies = [

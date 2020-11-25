@@ -128,6 +128,7 @@ libags = library('ags',
   c_args: compiler_flags,
   include_directories: [includes],
   dependencies: libags_dependencies,
+  install: true,
 )
 
 libags_thread_sources = files(
@@ -160,6 +161,7 @@ libags_thread = library('ags_thread',
   link_with: [
     libags,
   ]
+  install: true,
 )
 
 libags_server_sources = files(
@@ -202,6 +204,7 @@ libags_server = library('libags_server',
     libags,
     libags_thread,
   ]
+  install: true,
 )
 
 libags_audio_sources = files(
@@ -642,6 +645,7 @@ libags_audio = library('ags_audio',
     libags_thread,
     libags_server,
   ]
+  install: true,
 )
 
 libags_gui_sources = files(
@@ -684,6 +688,7 @@ libags_gui = library('ags_gui',
   c_args: compiler_flags,
   include_directories: [includes],
   dependencies: libags_gui_dependencies,
+  install: true,
 )
 
 libgsequencer_sources = files(
@@ -1022,6 +1027,7 @@ libgsequencer = library('gsequencer',
     libags_audio,
     libags_gui,
   ]
+  install: true,
 )
 
 gsequencer_dependencies = [
