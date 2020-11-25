@@ -19,7 +19,11 @@ interactive_test_dependencies = [
 ]
 
 if get_option('gstreamer')
-  interactive_test_dependencies += gstreamer_dependency + gstreamer_audio_dependency + gstreamer_video_dependency + gstreamer_app_dependency + gstreamer_pbutils_dependency
+  interactive_test_dependencies += gstreamer_dependency
+  interactive_test_dependencies += gstreamer_audio_dependency
+  interactive_test_dependencies += gstreamer_video_dependency
+  interactive_test_dependencies += gstreamer_app_dependency
+  interactive_test_dependencies += gstreamer_pbutils_dependency
 endif
 
 libgsequencer_test_sources = [

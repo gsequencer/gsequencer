@@ -290,7 +290,6 @@ libagsaudio_audio_file_headers = [
   'ags/audio/file/ags_audio_file.h',
   'ags/audio/file/ags_audio_file_link.h',
   'ags/audio/file/ags_audio_file_manager.h',
-  'ags/audio/file/ags_gstreamer_file.h',
   'ags/audio/file/ags_ipatch.h',
   'ags/audio/file/ags_ipatch_dls2_reader.h',
   'ags/audio/file/ags_ipatch_gig_reader.h',
@@ -304,6 +303,12 @@ libagsaudio_audio_file_headers = [
   'ags/audio/file/ags_sound_container.h',
   'ags/audio/file/ags_sound_resource.h',
 ]
+
+if get_option('gstreamer')
+libagsaudio_audio_file_gstreamer_headers = [
+  'ags/audio/file/ags_gstreamer_file.h',
+]
+endif
 
 libagsaudio_audio_fx_headers = [
   'ags/audio/fx/ags_fx_analyse_audio.h',
@@ -380,6 +385,7 @@ libagsaudio_audio_fx_headers = [
   'ags/audio/fx/ags_fx_volume_recycling.h',
 ]
 
+if get_option('gstreamer')
 libagsaudio_audio_gstreamer_headers = [
   'ags/audio/gstreamer/ags_gstreamer_client.h',
   'ags/audio/gstreamer/ags_gstreamer_devin.h',
@@ -387,6 +393,7 @@ libagsaudio_audio_gstreamer_headers = [
   'ags/audio/gstreamer/ags_gstreamer_port.h',
   'ags/audio/gstreamer/ags_gstreamer_server.h',
 ]
+endif
 
 libagsaudio_audio_jack_headers = [
   'ags/audio/jack/ags_jack_client.h',
@@ -656,13 +663,23 @@ install_headers(libagsthread_headers, install_dir: gsequencer_includedir / 'ags/
 install_headers(libagsserver_headers, install_dir: gsequencer_includedir / 'ags/server')
 install_headers(libagsserver_controller_headers, install_dir: gsequencer_includedir / 'ags/server/controller')
 install_headers(libagsserver_security_headers, install_dir: gsequencer_includedir / 'ags/server/security')
+
 install_headers(libagsaudio_plugin_headers, install_dir: gsequencer_includedir / 'ags/plugin')
 install_headers(libagsaudio_audio_headers, install_dir: gsequencer_includedir / 'ags/audio')
 install_headers(libagsaudio_audio_audio_unit_headers, install_dir: gsequencer_includedir / 'ags/audio/audio-unit')
 install_headers(libagsaudio_audio_core_audio_headers, install_dir: gsequencer_includedir / 'ags/audio/core-audio')
 install_headers(libagsaudio_audio_file_headers, install_dir: gsequencer_includedir / 'ags/audio/file')
+
+if get_option('gstreamer')
+install_headers(libagsaudio_audio_file_gstreamer_headers, install_dir: gsequencer_includedir / 'ags/audio/file')
+endif
+
 install_headers(libagsaudio_audio_fx_headers, install_dir: gsequencer_includedir / 'ags/audio/fx')
-install_headers(libagsaudio_audio_gstreamer_headers, install_dir: gsequencer_includedir / 'ags/audio/gstreamer')
+
+if get_option('gstreamer')
+  install_headers(libagsaudio_audio_gstreamer_headers, install_dir: gsequencer_includedir / 'ags/audio/gstreamer')
+endif
+
 install_headers(libagsaudio_audio_jack_headers, install_dir: gsequencer_includedir / 'ags/audio/jack')
 install_headers(libagsaudio_audio_midi_headers, install_dir: gsequencer_includedir / 'ags/audio/midi')
 install_headers(libagsaudio_audio_osc_headers, install_dir: gsequencer_includedir / 'ags/audio/osc')
@@ -673,6 +690,7 @@ install_headers(libagsaudio_audio_recall_headers, install_dir: gsequencer_includ
 install_headers(libagsaudio_audio_task_headers, install_dir: gsequencer_includedir / 'ags/audio/task')
 install_headers(libagsaudio_audio_thread_headers, install_dir: gsequencer_includedir / 'ags/audio/thread')
 install_headers(libagsaudio_audio_wasapi_headers, install_dir: gsequencer_includedir / 'ags/audio/wasapi')
+
 install_headers(libagsgui_headers, install_dir: gsequencer_includedir / 'ags/widget')
 
 install_headers('ags/libags.h', 'ags/libags-audio.h', 'ags/libags-gui.h', install_dir: gsequencer_includedir / 'ags')

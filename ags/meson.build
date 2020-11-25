@@ -594,6 +594,11 @@ libags_audio_sources = files(
 
 if get_option('gstreamer')
 libags_audio_sources += files(
+    'audio/gstreamer/ags_gstreamer_client.c',
+    'audio/gstreamer/ags_gstreamer_server.c',
+    'audio/gstreamer/ags_gstreamer_devout.c',
+    'audio/gstreamer/ags_gstreamer_port.c',
+    'audio/gstreamer/ags_gstreamer_devin.c',
     'audio/file/ags_gstreamer_file.c',
   )
 endif
@@ -620,7 +625,11 @@ if get_option('pulse')
 endif
 
 if get_option('gstreamer')
-  libags_audio_dependencies += gstreamer_dependency + gstreamer_audio_dependency + gstreamer_video_dependency + gstreamer_app_dependency + gstreamer_pbutils_dependency
+  libags_audio_dependencies += gstreamer_dependency
+  libags_audio_dependencies += gstreamer_audio_dependency
+  libags_audio_dependencies += gstreamer_video_dependency
+  libags_audio_dependencies += gstreamer_app_dependency
+  libags_audio_dependencies += gstreamer_pbutils_dependency
 endif
 
 libags_audio = library('ags_audio',
@@ -986,7 +995,11 @@ if get_option('poppler')
 endif
 
 if get_option('gstreamer')
-  libgsequencer_dependencies += gstreamer_dependency + gstreamer_audio_dependency + gstreamer_video_dependency + gstreamer_app_dependency + gstreamer_pbutils_dependency
+  libgsequencer_dependencies += gstreamer_dependency
+  libgsequencer_dependencies += gstreamer_audio_dependency
+  libgsequencer_dependencies += gstreamer_video_dependency
+  libgsequencer_dependencies += gstreamer_app_dependency
+  libgsequencer_dependencies += gstreamer_pbutils_dependency
 endif
 
 libgsequencer = library('gsequencer',
@@ -1020,8 +1033,18 @@ midi2xml_dependencies = [
 
 
 if get_option('gstreamer')
-  gsequencer_dependencies += gstreamer_dependency + gstreamer_audio_dependency + gstreamer_video_dependency + gstreamer_app_dependency + gstreamer_pbutils_dependency
+  gsequencer_dependencies += gstreamer_dependency
+  gsequencer_dependencies += gstreamer_audio_dependency
+  gsequencer_dependencies += gstreamer_video_dependency
+  gsequencer_dependencies += gstreamer_app_dependency
+  gsequencer_dependencies += gstreamer_pbutils_dependency
+  midi2xml_dependencies += gstreamer_dependency
+  midi2xml_dependencies += gstreamer_audio_dependency
+  midi2xml_dependencies += gstreamer_video_dependency
+  midi2xml_dependencies += gstreamer_app_dependency
+  midi2xml_dependencies += gstreamer_pbutils_dependency
 endif
+
 
 gsequencer_sources = files(
   'gsequencer_main.c'
