@@ -26,3 +26,9 @@ option('webkit', type: 'boolean', value: false,
        description: 'Enable webkit')
 option('poppler', type: 'boolean', value: false,
        description: 'Enable poppler')
+
+option('gtk_doc', type: 'boolean', value: 'false',
+       description : 'Build API reference and tools documentation')
+
+option('introspection', type: 'feature', value: 'auto', yield: true,
+       description : 'Build introspection data (requires gobject-introspection)')
