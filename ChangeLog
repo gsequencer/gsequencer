@@ -1,3 +1,8 @@
+ags (3.6.24)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing meson build files
+
 ags (3.6.23)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

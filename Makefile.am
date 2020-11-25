@@ -190,6 +190,11 @@ EXTRA_DIST += \
 	clean-gtk-doc.sh
 
 EXTRA_DIST += \
+	docs/reference/libags-gui/meson.build \
+	docs/reference/libags-audio/meson.build \
+	docs/reference/libgsequencer/meson.build \
+	docs/reference/libags/meson.build \
+	docs/reference/meson.build \
 	ags/test/X/meson.build \
 	ags/test/audio/meson.build \
 	ags/test/plugin/meson.build \
@@ -200,6 +205,7 @@ EXTRA_DIST += \
 	ags/test/server/meson.build \
 	ags/test/file/meson.build \
 	po/meson.build \
+	ags/meson.build \
 	meson.build \
 	meson_options.txt
 
