@@ -8,7 +8,7 @@
 project('gsequencer', 'c',
         license: 'GPL3',
         default_options: ['c_std=gnu99'],
-        version: '3.5.8')
+        version: '3.6.23')
 
 compiler = meson.get_compiler('c')
 # TODO: all dependencies have to be defined here globally
