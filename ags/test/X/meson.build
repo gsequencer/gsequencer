@@ -22,14 +22,14 @@ if get_option('gstreamer')
   interactive_test_dependencies += gstreamer_dependency + gstreamer_audio_dependency + gstreamer_video_dependency + gstreamer_app_dependency + gstreamer_pbutils_dependency
 endif
 
-sources = [
+libgsequencer_test_sources = [
   'ags_functional_test_util.c',
   'gsequencer_setup_util.c',
 ]
 
-libtest = static_library(
-  'testutils',
-  sources,
+libgsequencer_test = static_library(
+  'libgsequencer_test',
+  libgsequencer_test_sources,
   c_args: [compiler_flags, srcdir_def],
   include_directories: [includes],
   dependencies: [interactive_test_dependencies],
@@ -66,17 +66,12 @@ foreach interactive_test : interactive_tests
     include_directories: [includes],
     dependencies: [interactive_test_dependencies],
     link_with: [
-      libtest,
-      libobject,
-      libthread,
-      libx,
-      libaudio,
-      liblib,
-      libutil,
-      libplugin,
-      libserver,
-      libfile,
-      libwidget,
+      libags,
+      libags_thread,
+      libags_server,
+      libags_audio,
+      libgsequencer,
+      libgsequencer_test,
       ]
     )
 endforeach

@@ -32,7 +32,7 @@ foreach interactive_test : interactive_tests
     include_directories: [includes],
     dependencies: [interactive_test_dependencies],
     link_with: [
-      libwidget,
+      libags_gui,
     ]
   )
 endforeach

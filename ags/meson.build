@@ -53,7 +53,11 @@ ags_config.set('AGS_WITH_LIBINSTPATCH', true)
 configure_file(output: 'config.h', configuration: ags_config)
 
 common_dependencies = [
+  m_dependency,
   glib_dependency,
+  gobject_dependency,
+  gthread_dependency,
+  gio_dependency,
   xml2_dependency,
   compiler.find_library('uuid', required: true),
 ]
@@ -113,6 +117,7 @@ libags_sources = files(
 
 libags_dependencies = [
   common_dependencies,
+  crypt_dependency,
 ]
 
 libags = library('ags',
@@ -149,6 +154,9 @@ libags_thread = library('ags_thread',
   c_args: compiler_flags,
   include_directories: [includes],
   dependencies: libags_thread_dependencies,
+  link_with: [
+    libags,
+  ]
 )
 
 libags_server_sources = files(
@@ -182,14 +190,41 @@ libags_server_dependencies = [
   crypt_dependency,
 ]
 
-libserver = library('libags_server',
+libags_server = library('libags_server',
   libags_server_sources,
   c_args: compiler_flags,
   include_directories: [includes],
   dependencies: libags_server_dependencies,
+  link_with: [
+    libags,
+    libags_thread,
+  ]
 )
 
 libags_audio_sources = files(
+  'plugin/ags_base_plugin.c',
+  'plugin/ags_dssi_manager.c',
+  'plugin/ags_dssi_plugin.c',
+  'plugin/ags_ladspa_conversion.c',
+  'plugin/ags_ladspa_manager.c',
+  'plugin/ags_ladspa_plugin.c',
+  'plugin/ags_lv2_conversion.c',
+  'plugin/ags_lv2_event_manager.c',
+  'plugin/ags_lv2_log_manager.c',
+  'plugin/ags_lv2_manager.c',
+  'plugin/ags_lv2_option_manager.c',
+  'plugin/ags_lv2_plugin.c',
+  'plugin/ags_lv2_preset.c',
+  'plugin/ags_lv2_preset_manager.c',
+  'plugin/ags_lv2_turtle_parser.c',
+  'plugin/ags_lv2_turtle_scanner.c',
+  'plugin/ags_lv2ui_manager.c',
+  'plugin/ags_lv2ui_plugin.c',
+  'plugin/ags_lv2_urid_manager.c',
+  'plugin/ags_lv2_uri_map_manager.c',
+  'plugin/ags_lv2_worker.c',
+  'plugin/ags_lv2_worker_manager.c',
+  'plugin/ags_plugin_port.c',
   'audio/ags_acceleration.c',
   'audio/ags_audio_application_context.c',
   'audio/ags_audio_buffer_util.c',
@@ -553,12 +588,19 @@ libags_audio_sources = files(
   'audio/wasapi/ags_wasapi_devout.c',
 )
 
+if get_option('gstreamer')
+libags_audio_sources += files(
+    'audio/file/ags_gstreamer_file.c',
+  )
+endif
+
 libags_audio_dependencies = [
+  common_dependencies,
+  dl_dependency,
   soup_dependency,
   instpatch_dependency,
   samplerate_dependency,
   fftw3_dependency,
-  m_dependency,
 ]
 
 if get_option('alsa')
@@ -582,36 +624,41 @@ libags_audio = library('ags_audio',
   c_args: compiler_flags,
   include_directories: [includes],
   dependencies: libags_audio_dependencies,
+  link_with: [
+    libags,
+    libags_thread,
+    libags_server,
+  ]
 )
 
 libags_gui_sources = files(
-  'ags_cartesian.c',
-  'ags_container.c',
-  'ags_dial.c',
-  'ags_expander.c',
-  'ags_expander_set.c',
-  'ags_hindicator.c',
-  'ags_hled_array.c',
-  'ags_hlevel_box.c',
-  'ags_hscale_box.c',
-  'ags_indicator.c',
-  'ags_led_array.c',
-  'ags_led.c',
-  'ags_level_box.c',
-  'ags_level.c',
-  'ags_notebook.c',
-  'ags_piano.c',
-  'ags_ruler.c',
-  'ags_scale_box.c',
-  'ags_scale.c',
-  'ags_scrolled_level_box.c',
-  'ags_scrolled_piano.c',
-  'ags_scrolled_scale_box.c',
-  'ags_vindicator.c',
-  'ags_vled_array.c',
-  'ags_vlevel_box.c',
-  'ags_vscale_box.c',
-  'ags_widget_marshal.c',
+  'widget/ags_cartesian.c',
+  'widget/ags_container.c',
+  'widget/ags_dial.c',
+  'widget/ags_expander.c',
+  'widget/ags_expander_set.c',
+  'widget/ags_hindicator.c',
+  'widget/ags_hled_array.c',
+  'widget/ags_hlevel_box.c',
+  'widget/ags_hscale_box.c',
+  'widget/ags_indicator.c',
+  'widget/ags_led_array.c',
+  'widget/ags_led.c',
+  'widget/ags_level_box.c',
+  'widget/ags_level.c',
+  'widget/ags_notebook.c',
+  'widget/ags_piano.c',
+  'widget/ags_ruler.c',
+  'widget/ags_scale_box.c',
+  'widget/ags_scale.c',
+  'widget/ags_scrolled_level_box.c',
+  'widget/ags_scrolled_piano.c',
+  'widget/ags_scrolled_scale_box.c',
+  'widget/ags_vindicator.c',
+  'widget/ags_vled_array.c',
+  'widget/ags_vlevel_box.c',
+  'widget/ags_vscale_box.c',
+  'widget/ags_widget_marshal.c',
 )
 
 libags_gui_dependencies = [
@@ -812,7 +859,7 @@ libgsequencer_sources = files(
   'X/export/ags_midi_export_wizard_callbacks.c',
   'X/export/ags_wave_export_dialog.c',
   'X/export/ags_wave_export_dialog_callbacks.c',
-  'file/ags_simple_file.c',
+  'X/file/ags_simple_file.c',
   'X/import/ags_midi_import_wizard.c',
   'X/import/ags_midi_import_wizard_callbacks.c',
   'X/import/ags_track_collection.c',
@@ -943,6 +990,13 @@ libgsequencer = library('gsequencer',
   c_args: libgsequencer_compiler_flags,
   include_directories: [includes],
   dependencies: libgsequencer_dependencies,
+  link_with: [
+    libags,
+    libags_thread,
+    libags_server,
+    libags_audio,
+    libags_gui,
+  ]
 )
 
 gsequencer_dependencies = [
@@ -970,13 +1024,15 @@ gsequencer_sources = files(
 )
 
 gsequencer = executable(
-  meson.project_name(),
+  'gsequencer',
   gsequencer_sources,
   c_args: compiler_flags,
   include_directories: [includes],
   dependencies: [gsequencer_dependencies],
   link_with: [
     libags,
+    libags_thread,
+    libags_server,
     libags_audio,
     libags_gui,
     libgsequencer,
@@ -989,7 +1045,7 @@ midi2xml_sources = files(
 )
 
 midi2xml = executable(
-  meson.project_name(),
+  'midi2xml',
   midi2xml_sources,
   c_args: compiler_flags,
   include_directories: [includes],

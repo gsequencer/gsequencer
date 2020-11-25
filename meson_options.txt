@@ -3,7 +3,7 @@
 # The options can be reconfigured inside build dir using
 # ex. meson configure -Dalsa=false
 option('alsa', type: 'boolean', value: false,
-       description: 'Enable Lnux alsa build')
+       description: 'Enable Linux alsa build')
 option('w32api', type: 'boolean', value: false,
        description: 'Enable Windows build')
 option('osxapi', type: 'boolean', value: false,

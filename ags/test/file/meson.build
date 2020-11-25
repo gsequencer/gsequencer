@@ -33,10 +33,7 @@ foreach static_test : static_tests
     include_directories: [includes],
     dependencies: [static_test_dependencies],
     link_with: [
-      libfile,
-      liblib,
-      libobject,
-      libutil,
+      libags,
     ]
   )
 

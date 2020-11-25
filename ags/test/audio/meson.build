@@ -243,14 +243,10 @@ foreach static_test : static_tests
     include_directories: [includes],
     dependencies: [static_test_dependencies],
     link_with: [
-      libaudio,
-      libthread,
-      libobject,
-      liblib,
-      libutil,
-      libplugin,
-      libserver,
-      libfile,
+      libags,
+      libags_thread,
+      libags_server,
+      libags_audio,
     ]
   )
 
