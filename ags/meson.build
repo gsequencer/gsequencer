@@ -160,7 +160,7 @@ libags_thread = library('ags_thread',
   dependencies: libags_thread_dependencies,
   link_with: [
     libags,
-  ]
+  ],
   install: true,
 )
 
@@ -203,7 +203,7 @@ libags_server = library('libags_server',
   link_with: [
     libags,
     libags_thread,
-  ]
+  ],
   install: true,
 )
 
@@ -644,7 +644,7 @@ libags_audio = library('ags_audio',
     libags,
     libags_thread,
     libags_server,
-  ]
+  ],
   install: true,
 )
 
@@ -1026,7 +1026,7 @@ libgsequencer = library('gsequencer',
     libags_server,
     libags_audio,
     libags_gui,
-  ]
+  ],
   install: true,
 )
 
