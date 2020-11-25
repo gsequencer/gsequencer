@@ -199,20 +199,11 @@ EXTRA_DIST += \
 	ags/test/meson.build \
 	ags/test/server/meson.build \
 	ags/test/file/meson.build \
-	ags/X/meson.build \
-	ags/audio/meson.build \
-	ags/plugin/meson.build \
-	ags/widget/meson.build \
-	ags/thread/meson.build \
-	ags/lib/meson.build \
-	ags/object/meson.build \
-	ags/util/meson.build \
-	ags/meson.build \
-	ags/server/meson.build \
-	ags/file/meson.build \
 	po/meson.build \
 	meson.build \
-	meson_options.txt
+	meson_options.txt \
+	build_docs.sh \
+	install_manual.sh
 
 EXTRA_DIST += \
 	lv2/lv2plug.in/ns/lv2ext/lv2_programs.h

@@ -32,3 +32,9 @@ option('gtk_doc', type: 'boolean', value: 'false',
 
 option('introspection', type: 'feature', value: 'auto', yield: true,
        description : 'Build introspection data (requires gobject-introspection)')
+
+option('man_pages', type: 'boolean', value: 'false',
+       description : 'Build man pages for installed tools')
+
+option('online_help', type: 'boolean', value: 'false',
+       description : 'Build online help')
