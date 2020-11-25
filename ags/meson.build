@@ -979,6 +979,14 @@ libgsequencer_dependencies = [
   dl_dependency,
 ]
 
+if get_option('jack')
+  libgsequencer_dependencies += jack_dependency
+endif
+
+if get_option('pulse')
+  libgsequencer_dependencies += pulse_dependency
+endif
+
 libgsequencer_compiler_flags = compiler_flags
 if get_option('poppler')
   libgsequencer_dependencies += poppler_dependency
@@ -1045,6 +1053,13 @@ if get_option('gstreamer')
   midi2xml_dependencies += gstreamer_pbutils_dependency
 endif
 
+if get_option('jack')
+  gsequencer_dependencies += jack_dependency
+endif
+
+if get_option('pulse')
+  gsequencer_dependencies += pulse_dependency
+endif
 
 gsequencer_sources = files(
   'gsequencer_main.c'

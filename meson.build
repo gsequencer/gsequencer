@@ -40,6 +40,9 @@ endif
 if get_option('jack')
   jack_dependency = dependency('jack')
 endif
+if get_option('pulse')
+  pulse_dependency = dependency('libpulse-mainloop-glib')
+endif
 if get_option('poppler')
   poppler_dependency = dependency('poppler-glib')
 endif
