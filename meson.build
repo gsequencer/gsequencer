@@ -796,10 +796,19 @@ developer_doc_images = [
 
 if get_option('online_help') and xsltproc.found()
   env = environment()
-  
-  run_command('build_docs.sh', env: env)
 
-  meson.add_install_script('install_manual.sh', gsequencer_docdir, env: env)
+  user_manual_dir = join_paths(meson.project_build_root(), 'html/user-manual/')
+  developer_manual_dir = join_paths(meson.project_build_root(), 'html/developer-manual/')
+  osc_manual_dir = join_paths(meson.project_build_root(), 'html/osc-manual/')
+
+  run_target('ags-user-docs', command: [ xsltproc, '--nonet', '--xinclude', '-o', user_manual_dir,  'http://docbook.sourceforge.net/release/xsl/current/htmlhelp/htmlhelp.xsl', 'docs/usersBook.xml' ])
+  run_target('ags-developer-docs', command: [ xsltproc, '--nonet', '--xinclude', '-o', developer_manual_dir, 'http://docbook.sourceforge.net/release/xsl/current/htmlhelp/htmlhelp.xsl', 'docs/developersBook.xml' ])
+  run_target('ags-osc-docs', command: [ xsltproc, '--nonet', '--xinclude', '-o', osc_manual_dir, 'http://docbook.sourceforge.net/release/xsl/current/htmlhelp/htmlhelp.xsl', 'docs/oscBook.xml' ])
+
+  install_subdir(meson.project_build_root() / 'html/user-manual', install_dir: gsequencer_docdir)
+  install_subdir(meson.project_build_root() / 'html/developer-manual', install_dir: gsequencer_docdir)
+  install_subdir(meson.project_build_root() / 'html/osc-manual', install_dir: gsequencer_docdir)
+  
   install_data(user_doc_images, install_dir: gsequencer_docdir / 'images')
   install_data(user_doc_images_adwaita, install_dir: gsequencer_docdir / 'images/adwaita')
   install_data(developer_doc_images, install_dir: gsequencer_docdir / 'images')

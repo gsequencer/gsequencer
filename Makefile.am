@@ -201,9 +201,7 @@ EXTRA_DIST += \
 	ags/test/file/meson.build \
 	po/meson.build \
 	meson.build \
-	meson_options.txt \
-	build_docs.sh \
-	install_manual.sh
+	meson_options.txt
 
 EXTRA_DIST += \
 	lv2/lv2plug.in/ns/lv2ext/lv2_programs.h
