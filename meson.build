@@ -1,5 +1,5 @@
 # Copyright (C) 2020 Daniel Maksymow
-# 
+# 1
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved.  This file is offered as-is,
@@ -9,6 +9,14 @@ project('gsequencer', 'c',
         license: 'GPL3',
         default_options: ['c_std=gnu99'],
         version: '3.6.23')
+
+gsequencer_prefix = get_option('prefix')
+gsequencer_includedir = join_paths(gsequencer_prefix, get_option('includedir'))
+gsequencer_libdir = join_paths(gsequencer_prefix, get_option('libdir'))
+gsequencer_datadir = join_paths(gsequencer_prefix, get_option('datadir'))
+gsequencer_localedir = join_paths(gsequencer_prefix, get_option('localedir'))
+gsequencer_applicationsdir = join_paths(gsequencer_datadir, 'applications')
+gsequencer_appdatadir = join_paths(gsequencer_datadir, 'metainfo')
 
 gnome = import('gnome')
 

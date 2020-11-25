@@ -1,16 +1,13 @@
+fs = import('fs')
+
+private_headers = []
+content_files = []
+images = []
+
+types_conf = configuration_data()
+
 if get_option('gtk_doc')
   configure_file(input: 'version.xml.in', output: 'version.xml', configuration: version_conf)
-
-  # gtk-markdown-to-docbook uses pandoc
-  pandoc = find_program('pandoc', required: true)
-  expand_md = find_program('gtk-markdown-to-docbook')
-  expand_md_targets = []
-  foreach t : expand_content_md_files
-    expand_md_targets += custom_target(t,
-                                       input: [ t ],
-                                       output: [ fs.replace_suffix(t, '.xml') ],
-                                       command: [ expand_md, '@INPUT@', '@OUTPUT@'])
-  endforeach
 
   gnome.gtkdoc('libags-audio',
                mode: 'none',
@@ -18,10 +15,10 @@ if get_option('gtk_doc')
                src_dir: [
                  includes,
                ],
-               dependencies: libgtk_dep,
+               dependencies: libags_audio,
                gobject_typesfile: configure_file(
-                 input: 'libags.types.in',
-                 output: 'libags.types',
+                 input: 'libags_audio.types.in',
+                 output: 'libags_audio.types',
                  configuration: types_conf,
                ),
                scan_args: [
@@ -40,7 +37,7 @@ if get_option('gtk_doc')
                  '--extra-dir=@0@'.format(gdkpixbuf_docpath),
 		 '--extra-dir=../libags',
                ],
-               content_files: content_files + expand_md_targets,
+               content_files: content_files,
                html_assets: images,
                install: true)
 endif

@@ -1,16 +1,13 @@
-if get_option('gtk_doc')
-  configure_file(input: 'version.xml.in', output: 'version.xml', configuration: version_conf)
+fs = import('fs')
 
-  # gtk-markdown-to-docbook uses pandoc
-  pandoc = find_program('pandoc', required: true)
-  expand_md = find_program('gtk-markdown-to-docbook')
-  expand_md_targets = []
-  foreach t : expand_content_md_files
-    expand_md_targets += custom_target(t,
-                                       input: [ t ],
-                                       output: [ fs.replace_suffix(t, '.xml') ],
-                                       command: [ expand_md, '@INPUT@', '@OUTPUT@'])
-  endforeach
+private_headers = []
+content_files = []
+images = []
+
+types_conf = configuration_data()
+
+if get_option('gtk_doc')
+#  configure_file(input: 'version.xml.in', output: 'version.xml', configuration: version_conf)
 
   gnome.gtkdoc('libags',
                mode: 'none',
@@ -18,7 +15,7 @@ if get_option('gtk_doc')
                src_dir: [
                  includes,
                ],
-               dependencies: libgtk_dep,
+               dependencies: libags,
                gobject_typesfile: configure_file(
                  input: 'libags.types.in',
                  output: 'libags.types',
@@ -39,7 +36,7 @@ if get_option('gtk_doc')
                  '--extra-dir=@0@'.format(cairo_docpath),
                  '--extra-dir=@0@'.format(gdkpixbuf_docpath),
                ],
-               content_files: content_files + expand_md_targets,
+               content_files: content_files,
                html_assets: images,
                install: true)
 endif

@@ -171,15 +171,19 @@ EXTRA_DIST += \
 	functional-system-tests.mk.in
 
 EXTRA_DIST += \
+	docs/reference/libags/version.xml.in \
 	docs/reference/libags/libags-sections.txt.in \
 	docs/reference/libags/libags.types.in \
 	docs/reference/libags/libags.interfaces.in \
+	docs/reference/libags-audio/version.xml.in \
 	docs/reference/libags-audio/libags_audio-sections.txt.in \
 	docs/reference/libags-audio/libags_audio.types.in \
 	docs/reference/libags-audio/libags_audio.interfaces.in \
+	docs/reference/libags-gui/version.xml.in \
 	docs/reference/libags-gui/libags_gui-sections.txt.in \
 	docs/reference/libags-gui/libags_gui.types.in \
 	docs/reference/libags-gui/libags_gui.interfaces.in \
+	docs/reference/libgsequencer/version.xml.in \
 	docs/reference/libgsequencer/libgsequencer-sections.txt.in \
 	docs/reference/libgsequencer/libgsequencer.types.in \
 	docs/reference/libgsequencer/libgsequencer.interfaces.in \
