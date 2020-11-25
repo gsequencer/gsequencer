@@ -60,10 +60,6 @@ m_dependency = compiler.find_library('m', required: true)
 dl_dependency = compiler.find_library('dl', required: true)
 crypt_dependency =   compiler.find_library('crypt', required: true)
 
-#destdir = get_option('DESTDIR')
-add_project_arguments('-DDESTDIR="@0@"'.format(get_option('prefix')),
-                      language:'c')
-
 includes = include_directories(
   '.'
   )
@@ -697,6 +693,59 @@ install_headers(libagsaudio_audio_wasapi_headers, install_dir: gsequencer_includ
 install_headers(libagsgui_headers, install_dir: gsequencer_includedir / 'ags/widget')
 
 install_headers('ags/libags.h', 'ags/libags-audio.h', 'ags/libags-gui.h', install_dir: gsequencer_includedir / 'ags')
+
+install_data(join_paths(meson.source_root(), 'COPYING'),
+             install_dir: join_paths(get_option('datadir'),
+                                     meson.project_name(), 'license'),
+	     rename: 'GPL-3')
+
+install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'ags.xpm'),
+             install_dir: join_paths(get_option('datadir'),
+                                     meson.project_name(), 'icons'))
+install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'ags.png'),
+             install_dir: join_paths(get_option('datadir'),
+                                     meson.project_name(), 'icons'))
+install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'jumper.png'),
+             install_dir: join_paths(get_option('datadir'),
+                                     meson.project_name(), 'icons'))
+
+install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'gsequencer-32x32.png'),
+             install_dir: join_paths(get_option('datadir'),
+                                     'icons', 'hicolor', '32x32', 'apps'),
+	     rename: 'gsequencer.png')
+install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'gsequencer-48x48.png'),
+             install_dir: join_paths(get_option('datadir'),
+                                     'icons', 'hicolor', '48x48', 'apps'),
+	     rename: 'gsequencer.png')
+install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'gsequencer-64x64.png'),
+             install_dir: join_paths(get_option('datadir'),
+                                     'icons', 'hicolor', '64x64', 'apps'),
+	     rename: 'gsequencer.png')
+install_data(join_paths(meson.source_root(), 'gsequencer.share', 'icons', 'gsequencer-128x128.png'),
+             install_dir: join_paths(get_option('datadir'),
+                                     'icons', 'hicolor', '128x128', 'apps'),
+	     rename: 'gsequencer.png')
+
+install_data(join_paths(meson.source_root(), 'org.nongnu.gsequencer.gsequencer.appdata.xml'),
+             install_dir: join_paths(get_option('datadir'),
+                                     'metainfo'))
+
+install_data(join_paths(meson.source_root(), 'ags', 'X', 'file', 'ags_simple_file.dtd'),
+             install_dir: join_paths(get_option('datadir'),
+                                     'xml', 'gsequencer', 'schema', 'dtd', meson.project_version()))	     
+install_data(join_paths(meson.source_root(), 'ags', 'audio', 'midi', 'ags_midi_file.dtd'),
+             install_dir: join_paths(get_option('datadir'),
+                                     'xml', 'gsequencer', 'schema', 'dtd', meson.project_version()))
+install_data(join_paths(meson.source_root(), 'ags', 'audio', 'osc', 'ags_osc_file.dtd'),
+             install_dir: join_paths(get_option('datadir'),
+                                     'xml', 'gsequencer', 'schema', 'dtd', meson.project_version()))
+
+install_data(join_paths(meson.source_root(), 'ags.xsl'),
+             install_dir: join_paths(get_option('datadir'),
+                                     'xml', 'gsequencer', 'stylesheet', 'ags-xsl', 'midi-xml'))
+install_data(join_paths(meson.source_root(), 'ags-simple.xsl'),
+             install_dir: join_paths(get_option('datadir'),
+                                     'xml', 'gsequencer', 'stylesheet', 'ags-xsl', 'midi-xml'))
 
 xsltproc = find_program('xsltproc', required: false)
 if get_option('man_pages') and not xsltproc.found()

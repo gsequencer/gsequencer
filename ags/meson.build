@@ -27,8 +27,19 @@ else
 endif
 define_template = '-D@0@="@1@"'
 # TODO: this is needed only by plugin
+
+add_project_arguments(define_template.format('DESTDIR', gsequencer_datadir),
+                      language:'c')
+add_project_arguments(define_template.format('DOCDIR', gsequencer_docdir),
+                      language:'c')
+add_project_arguments(define_template.format('PACKAGE_VERSION',
+                                             meson.project_version()),
+                      language: 'c')
 add_project_arguments(define_template.format('AGS_LIBRARY_SUFFIX',
                                              dynamic_library_suffix),
+                      language: 'c')
+add_project_arguments(define_template.format('AGS_VECTORIZED_BUILTIN_FUNCTIONS',
+                                             '1'),
                       language: 'c')
 
 ags_config = configuration_data({
@@ -128,6 +139,7 @@ libags = library('ags',
   c_args: compiler_flags,
   include_directories: [includes],
   dependencies: libags_dependencies,
+  version: '3.0.0',
   install: true,
 )
 
@@ -161,6 +173,7 @@ libags_thread = library('ags_thread',
   link_with: [
     libags,
   ],
+  version: '3.0.0',
   install: true,
 )
 
@@ -204,6 +217,7 @@ libags_server = library('libags_server',
     libags,
     libags_thread,
   ],
+  version: '3.0.0',
   install: true,
 )
 
@@ -645,6 +659,7 @@ libags_audio = library('ags_audio',
     libags_thread,
     libags_server,
   ],
+  version: '3.0.0',
   install: true,
 )
 
@@ -688,6 +703,7 @@ libags_gui = library('ags_gui',
   c_args: compiler_flags,
   include_directories: [includes],
   dependencies: libags_gui_dependencies,
+  version: '3.0.0',
   install: true,
 )
 
@@ -995,8 +1011,6 @@ endif
 libgsequencer_compiler_flags = compiler_flags
 if get_option('poppler')
   libgsequencer_dependencies += poppler_dependency
-  libgsequencer_compiler_flags += define_template.format('DOCDIR',
-                                             get_option('datadir'))
 endif
 
 if get_option('webkit')
@@ -1108,6 +1122,13 @@ midi2xml = executable(
 install_data(join_paths(meson.source_root(), 'gsequencer.share/styles/ags.css'),
              install_dir: join_paths(get_option('datadir'),
                                      meson.project_name(), 'styles'))
+
+install_data(join_paths(meson.source_root(), 'gsequencer.share/images/ags.png'),
+             install_dir: join_paths(get_option('datadir'),
+                                     meson.project_name(), 'images'))
+install_data(join_paths(meson.source_root(), 'gsequencer.share/images/gsequencer-800x450.png'),
+             install_dir: join_paths(get_option('datadir'),
+                                     meson.project_name(), 'images'))
 
 libags_headers = [
   'util/ags_id_generator.h',
