@@ -730,6 +730,11 @@ install_data(join_paths(meson.source_root(), 'org.nongnu.gsequencer.gsequencer.a
              install_dir: join_paths(get_option('datadir'),
                                      'metainfo'))
 
+install_data(join_paths(meson.source_root(), 'application-x-gsequencer.xml'),
+             install_dir: join_paths(get_option('datadir'),
+                                     'mime', 'packages'),
+             rename: 'gsequencer.xml')
+
 install_data(join_paths(meson.source_root(), 'ags', 'X', 'file', 'ags_simple_file.dtd'),
              install_dir: join_paths(get_option('datadir'),
                                      'xml', 'gsequencer', 'schema', 'dtd', meson.project_version()))	     
@@ -746,6 +751,41 @@ install_data(join_paths(meson.source_root(), 'ags.xsl'),
 install_data(join_paths(meson.source_root(), 'ags-simple.xsl'),
              install_dir: join_paths(get_option('datadir'),
                                      'xml', 'gsequencer', 'stylesheet', 'ags-xsl', 'midi-xml'))
+
+pkgconfig_conf_data = configuration_data()
+pkgconfig_conf_data.set('prefix', gsequencer_prefix)
+pkgconfig_conf_data.set('exec_prefix', '${prefix}')
+pkgconfig_conf_data.set('libdir', '${prefix}/lib')
+pkgconfig_conf_data.set('includedir', '${prefix}/include')
+pkgconfig_conf_data.set('PACKAGE_VERSION', meson.project_version())
+
+configure_file(input: 'libags.pc.in', output: 'libags.pc',
+  configuration: pkgconfig_conf_data,
+  install: true,
+  install_dir: gsequencer_libdir / 'pkgconfig')
+
+configure_file(input: 'libags_audio.pc.in', output: 'libags_audio.pc',
+  configuration: pkgconfig_conf_data,
+  install: true,
+  install_dir: gsequencer_libdir / 'pkgconfig')
+
+configure_file(input: 'libags_gui.pc.in', output: 'libags_gui.pc',
+  configuration: pkgconfig_conf_data,
+  install: true,
+  install_dir: gsequencer_libdir / 'pkgconfig')
+
+configure_file(input: 'libgsequencer.pc.in', output: 'libgsequencer.pc',
+  configuration: pkgconfig_conf_data,
+  install: true,
+  install_dir: gsequencer_libdir / 'pkgconfig')
+
+desktop_conf_data = configuration_data()
+desktop_conf_data.set('datadir', gsequencer_datadir)
+
+configure_file(input: 'gsequencer.desktop.in', output: 'gsequencer.desktop',
+  configuration: desktop_conf_data,
+  install: true,
+  install_dir: gsequencer_datadir / 'applications')
 
 xsltproc = find_program('xsltproc', required: false)
 if get_option('man_pages') and not xsltproc.found()
@@ -783,6 +823,9 @@ if get_option('man_pages') and xsltproc.found()
       install: true,
       install_dir: join_paths(get_option('mandir'), 'man@0@'.format(man_section)))
   endforeach
+else
+install_man(join_paths(meson.source_root(), 'gsequencer.1'))
+install_man(join_paths(meson.source_root(), 'midi2xml.1'))
 endif
 
 user_doc_images = [
