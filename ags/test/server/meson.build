@@ -43,10 +43,9 @@ foreach static_test : static_tests
     include_directories: [includes],
     dependencies: [static_test_dependencies],
     link_with: [
-      liblib,
-      libobject,
-      libthread,
-      libserver,
+      libags,
+      libags_thread,
+      libags_server,
     ]
   )
 

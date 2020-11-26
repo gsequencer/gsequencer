@@ -226,7 +226,11 @@ static_test_dependencies = [
 ]
 
 if get_option('gstreamer')
-  static_test_dependencies += gstreamer_dependency + gstreamer_audio_dependency + gstreamer_video_dependency + gstreamer_app_dependency + gstreamer_pbutils_dependency
+  static_test_dependencies += gstreamer_dependency
+  static_test_dependencies += gstreamer_audio_dependency
+  static_test_dependencies += gstreamer_video_dependency
+  static_test_dependencies += gstreamer_app_dependency
+  static_test_dependencies += gstreamer_pbutils_dependency
 endif
 
 foreach static_test : static_tests
@@ -243,14 +247,10 @@ foreach static_test : static_tests
     include_directories: [includes],
     dependencies: [static_test_dependencies],
     link_with: [
-      libaudio,
-      libthread,
-      libobject,
-      liblib,
-      libutil,
-      libplugin,
-      libserver,
-      libfile,
+      libags,
+      libags_thread,
+      libags_server,
+      libags_audio,
     ]
   )
 

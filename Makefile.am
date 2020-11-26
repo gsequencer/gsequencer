@@ -171,21 +171,30 @@ EXTRA_DIST += \
 	functional-system-tests.mk.in
 
 EXTRA_DIST += \
+	docs/reference/libags/version.xml.in \
 	docs/reference/libags/libags-sections.txt.in \
 	docs/reference/libags/libags.types.in \
 	docs/reference/libags/libags.interfaces.in \
+	docs/reference/libags-audio/version.xml.in \
 	docs/reference/libags-audio/libags_audio-sections.txt.in \
 	docs/reference/libags-audio/libags_audio.types.in \
 	docs/reference/libags-audio/libags_audio.interfaces.in \
+	docs/reference/libags-gui/version.xml.in \
 	docs/reference/libags-gui/libags_gui-sections.txt.in \
 	docs/reference/libags-gui/libags_gui.types.in \
 	docs/reference/libags-gui/libags_gui.interfaces.in \
+	docs/reference/libgsequencer/version.xml.in \
 	docs/reference/libgsequencer/libgsequencer-sections.txt.in \
 	docs/reference/libgsequencer/libgsequencer.types.in \
 	docs/reference/libgsequencer/libgsequencer.interfaces.in \
 	clean-gtk-doc.sh
 
 EXTRA_DIST += \
+	docs/reference/libags-gui/meson.build \
+	docs/reference/libags-audio/meson.build \
+	docs/reference/libgsequencer/meson.build \
+	docs/reference/libags/meson.build \
+	docs/reference/meson.build \
 	ags/test/X/meson.build \
 	ags/test/audio/meson.build \
 	ags/test/plugin/meson.build \
@@ -195,18 +204,8 @@ EXTRA_DIST += \
 	ags/test/meson.build \
 	ags/test/server/meson.build \
 	ags/test/file/meson.build \
-	ags/X/meson.build \
-	ags/audio/meson.build \
-	ags/plugin/meson.build \
-	ags/widget/meson.build \
-	ags/thread/meson.build \
-	ags/lib/meson.build \
-	ags/object/meson.build \
-	ags/util/meson.build \
-	ags/meson.build \
-	ags/server/meson.build \
-	ags/file/meson.build \
 	po/meson.build \
+	ags/meson.build \
 	meson.build \
 	meson_options.txt
 
