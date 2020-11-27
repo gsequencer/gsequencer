@@ -995,8 +995,11 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
 
   GtkAdjustment *adjustment;
 
+  AgsApplicationContext *application_context;
+  
   GtkAllocation allocation;
 
+  gdouble gui_scale_factor;
   double zoom_factor, zoom;
   double zoom_correction;
   guint map_width;
@@ -1012,6 +1015,11 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
   if(notation_editor->selected_machine == NULL){
     return;
   }
+
+  application_context = ags_application_context_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   notation_toolbar = notation_editor->notation_toolbar;
 
@@ -1030,7 +1038,7 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
   
   zoom_correction = 1.0 / 16;
 
-  map_width = ((double) notation_edit->control_width * (double) AGS_NOTATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+  map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
   upper = map_width - allocation.width;
 
   if(upper < 0.0){    

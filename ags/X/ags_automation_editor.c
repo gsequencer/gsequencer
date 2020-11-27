@@ -823,7 +823,7 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
   zoom_correction = 1.0 / 16;
 
 //  map_width = (gui_scale_factor * (double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
-  map_width = ((gui_scale_factor * 64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
+  map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
   h_upper = map_width - automation_edit_box_allocation.width;
 
   if(h_upper < 0.0){
@@ -926,7 +926,7 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
   zoom_correction = 1.0 / 16;
 
 //  map_width = (gui_scale_factor * (double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
-  map_width = ((gui_scale_factor * 64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
+  map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
   h_upper = map_width - automation_edit_box_allocation.width;
 
   if(h_upper < 0.0){
@@ -1030,7 +1030,7 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
   zoom_correction = 1.0 / 16;
 
 //  map_width = (gui_scale_factor * (double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
-  map_width = ((gui_scale_factor * 64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
+  map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
   h_upper = map_width - automation_edit_box_allocation.width;
 
   if(h_upper < 0.0){

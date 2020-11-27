@@ -8,7 +8,7 @@
 project('gsequencer', 'c',
         license: 'GPL3',
         default_options: ['c_std=gnu99'],
-        version: '3.6.27')
+        version: '3.6.29')
 
 gsequencer_prefix = get_option('prefix')
 gsequencer_includedir = join_paths(gsequencer_prefix, get_option('includedir'))
