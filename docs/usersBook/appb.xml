@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding="utf-8"?>
 
-<!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
+<!-- Copyright (C) 2005-2020 Jo\u00EBl Kr\u00E4hemann -->
 <!-- Permission is granted to copy, distribute and/or modify this document -->
 <!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
 <!-- or any later version published by the Free Software Foundation; -->
@@ -8,9 +8,68 @@
 <!-- A copy of the license is included in the section entitled "GNU -->
 <!-- Free Documentation License". -->
 
-<appendix xmlns="http://docbook.org/ns/docbook" version="5.0">
+<appendix xmlns="http://docbook.org/ns/docbook"
+	  xmlns:xlink="http://www.w3.org/1999/xlink">
   <title>Resources</title>
-  <para>
+
+  <variablelist>
+    <title>Websites</title>
+    <varlistentry><term><filename>Swami</filename></term>
+    <listitem>
+      <para>
+	Soundfont editor - <link xlink:href="http://www.swamiproject.org" xlink:show="new">http://www.swamiproject.org</link>
+      </para>
+    </listitem>
+    </varlistentry>
+
+    <varlistentry><term><filename>Musescore</filename></term>
+    <listitem>
+      <para>
+	Sheet music - <link xlink:href="http://musescore.org" xlink:show="new">http://musescore.org</link>
+      </para>
+    </listitem>
+    </varlistentry>
+
+    <varlistentry><term><filename>Calf Studio Gear</filename></term>
+    <listitem>
+      <para>
+	LV2 plugins - <link xlink:href="http://calf-studio-gear.org/" xlink:show="new">http://calf-studio-gear.org/</link>
+      </para>
+    </listitem>
+    </varlistentry>
+    
+    <varlistentry><term><filename>Linux Studio Plugins</filename></term>
+    <listitem>
+      <para>
+	LV2 plugins - <link xlink:href="http://lsp-plug.in/" xlink:show="new">http://lsp-plug.in/</link>
+      </para>
+    </listitem>
+    </varlistentry>
+
+    <varlistentry><term><filename>Analog Modelling Synthesizer</filename></term>
+    <listitem>
+      <para>
+	LV2 plugins - <link xlink:href="http://amsynth.github.io/" xlink:show="new">http://amsynth.github.io/</link>
+      </para>
+    </listitem>
+    </varlistentry>
+
+    <varlistentry><term><filename>XSynth DSSI</filename></term>
+    <listitem>
+      <para>
+	DSSI plugins - <link xlink:href="http://smbolton.com/xsynth-dssi.html" xlink:show="new">http://smbolton.com/xsynth-dssi.html</link>
+      </para>
+    </listitem>
+    </varlistentry>
+
+    <varlistentry><term><filename>Computer Music Toolkit</filename></term>
+    <listitem>
+      <para>
+	LADSPA plugins - <link xlink:href="http://www.ladspa.org/cmt/overview.html" xlink:show="new">http://www.ladspa.org/cmt/overview.html</link>
+      </para>
+    </listitem>
+    </varlistentry>
+  </variablelist>
+    
     <!-- TODO:JK: write some content -->
-  </para>
 </appendix>

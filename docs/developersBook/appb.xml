@@ -38,6 +38,14 @@
     </listitem>
     </varlistentry>
 
+    <varlistentry><term><filename>Gstreamer</filename></term>
+    <listitem>
+      <para>
+	Multimedia framework - <link xlink:href="http://gstreamer.freedesktop.org/" xlink:show="new">http://gstreamer.freedesktop.org/</link>
+      </para>
+    </listitem>
+    </varlistentry>
+
     <varlistentry><term><filename>Libsndfile</filename></term>
     <listitem>
       <para>
