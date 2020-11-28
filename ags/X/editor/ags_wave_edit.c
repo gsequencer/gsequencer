@@ -1086,7 +1086,7 @@ ags_wave_edit_reset_hscrollbar(AgsWaveEdit *wave_edit)
   wave_edit->ruler->scale_precision = 1.0 / zoom;
 
   gtk_adjustment_set_upper(wave_edit->ruler->adjustment,
-			   upper / wave_edit->control_width);
+			   upper);
 
   /* reset value */
   if(old_upper != 0.0){
