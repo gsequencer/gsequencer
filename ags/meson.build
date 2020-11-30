@@ -65,7 +65,7 @@ configure_file(output: 'config.h', configuration: ags_config)
 configure_file(output: 'ags_config.h', configuration: ags_config,
   install: true,
   install_dir: gsequencer_includedir / 'ags')
-  
+
 common_dependencies = [
   m_dependency,
   glib_dependency,
@@ -73,7 +73,7 @@ common_dependencies = [
   gthread_dependency,
   gio_dependency,
   xml2_dependency,
-  compiler.find_library('uuid', required: true),
+  uuid_dependency,
 ]
 
 compiler_flags = []
@@ -87,7 +87,7 @@ libags_sources = files(
   'util/ags_destroy_util.c',
   'util/ags_id_generator.c',
   'util/ags_list_util.c',
-  'util/ags_soundcard_helper.c',  
+  'util/ags_soundcard_helper.c',
   'lib/ags_buffer_util.c',
   'lib/ags_complex.c',
   'lib/ags_conversion.c',
@@ -627,6 +627,7 @@ libags_audio_dependencies = [
   instpatch_dependency,
   samplerate_dependency,
   fftw3_dependency,
+  lv2_dependency,
 ]
 
 if get_option('alsa')
@@ -1713,5 +1714,6 @@ if build_gir
   libags_gui_dep_sources += libags_gui_gir
 endif
 
-
-subdir('test')
+if gsequencer_debug
+  subdir('test')
+endif

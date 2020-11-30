@@ -7,8 +7,10 @@
 
 project('gsequencer', 'c',
         license: 'GPL3',
-        default_options: ['c_std=gnu99'],
+        default_options: [ 'buildtype=debug', 'c_std=gnu99'],
         version: '3.6.29')
+
+gsequencer_debug = get_option('buildtype').contains('debug')
 
 gsequencer_prefix = get_option('prefix')
 gsequencer_includedir = join_paths(gsequencer_prefix, get_option('includedir'))
@@ -28,7 +30,6 @@ glib_dependency = dependency('glib-2.0', version: '>= 2.56.0')
 gobject_dependency = dependency('gobject-2.0', version: '>= 2.56.0')
 gthread_dependency = dependency('gthread-2.0', version: '>= 2.56.0')
 gio_dependency = dependency('gio-2.0', version: '>= 2.56.0')
-cunit_dependency = dependency('cunit')
 xml2_dependency = dependency('libxml-2.0')
 soup_dependency = dependency('libsoup-2.4')
 instpatch_dependency = dependency('libinstpatch-1.0')
@@ -36,6 +37,8 @@ samplerate_dependency = dependency('samplerate')
 fftw3_dependency = dependency('fftw3')
 if get_option('alsa')
   alsa_dependency = dependency('alsa')
+# TODO: provide a special rules to recognize ladspa dependencies
+#  ladspa_dependency = dependency('ladspa')
 endif
 if get_option('jack')
   jack_dependency = dependency('jack')
@@ -56,9 +59,14 @@ if get_option('gstreamer')
   gstreamer_app_dependency = dependency('gstreamer-app-1.0')
   gstreamer_pbutils_dependency = dependency('gstreamer-pbutils-1.0')
 endif
+if gsequencer_debug
+  cunit_dependency = dependency('cunit')
+endif
 m_dependency = compiler.find_library('m', required: true)
 dl_dependency = compiler.find_library('dl', required: true)
-crypt_dependency =   compiler.find_library('crypt', required: true)
+crypt_dependency = compiler.find_library('crypt', required: true)
+uuid_dependency = compiler.find_library('uuid', required: true)
+lv2_dependency = dependency('lv2')
 
 includes = include_directories(
   '.'
