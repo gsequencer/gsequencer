@@ -7,9 +7,10 @@
 
 project('gsequencer', 'c',
         license: 'GPL3',
-        default_options: [ 'buildtype=debug', 'c_std=gnu99'],
+        default_options: [ 'buildtype=release', 'c_std=gnu99'],
         version: '3.6.29')
 
+#note:jk: specify --buildtype=debug if needed
 gsequencer_debug = get_option('buildtype').contains('debug')
 
 gsequencer_prefix = get_option('prefix')
