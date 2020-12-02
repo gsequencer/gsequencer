@@ -146,6 +146,26 @@ struct _AgsFileClass
 GType ags_file_get_type(void);
 GType ags_file_flags_get_type();
 
+void ags_file_set_filename(AgsFile *file,
+			   gchar *filename);
+gchar* ags_file_get_filename(AgsFile *file);
+
+void ags_file_set_encoding(AgsFile *file,
+			   gchar *encoding);
+gchar* ags_file_get_encoding(AgsFile *file);
+
+void ags_file_set_audio_format(AgsFile *file,
+			       gchar *audio_format);
+gchar* ags_file_get_audio_format(AgsFile *file);
+
+void ags_file_set_audio_encoding(AgsFile *file,
+				 gchar *audio_encoding);
+gchar* ags_file_get_audio_encoding(AgsFile *file);
+
+void ags_file_set_xml_doc(AgsFile *file,
+			  xmlDoc *xml_doc);
+xmlDoc* ags_file_get_xml_doc(AgsFile *file);
+
 gchar* ags_file_str2md5(gchar *content, guint content_length);
 
 void ags_file_add_id_ref(AgsFile *file, GObject *id_ref);

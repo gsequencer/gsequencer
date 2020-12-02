@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,6 +64,14 @@ struct _AgsFileLinkClass
 };
 
 GType ags_file_link_get_type();
+
+void ags_file_link_set_filename(AgsFileLink *file_link,
+				gchar *filename);
+gchar* ags_file_link_get_filename(AgsFileLink *file_link);
+
+void ags_file_link_set_data(AgsFileLink *file_link,
+			    gchar *data);
+gchar* ags_file_link_get_data(AgsFileLink *file_link);
 
 AgsFileLink* ags_file_link_new();
 

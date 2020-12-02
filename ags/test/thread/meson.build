@@ -6,12 +6,20 @@
 # without any warranty.
 
 static_tests = [
+  'ags_concurrency_provider_test',
   'ags_destroy_worker_test',
 #  'ags_functional_thread_test', TODO: missing header?
+  'ags_generic_main_loop_test',
+  'ags_message_delivery_test',
+  'ags_message_envelope_test',
+  'ags_message_queue_test',
   'ags_returnable_thread_test',
   'ags_task_test',
+  'ags_task_launcher_test',
+  'ags_thread_application_context_test',
   'ags_thread_pool_test',
   'ags_thread_test',
+  'ags_timestamp_test',
   'ags_worker_thread_test',
 ]
 
@@ -36,9 +44,8 @@ foreach static_test : static_tests
     include_directories: [includes],
     dependencies: [static_test_dependencies],
     link_with: [
-      liblib,
-      libobject,
-      libthread,
+      libags,
+      libags_thread,
     ]
   )
 

@@ -798,7 +798,7 @@ ags_task_launcher_remove_cyclic_task(AgsTaskLauncher *task_launcher,
 
   g_rec_mutex_lock(task_launcher_mutex);
 
-  if(g_list_find(task_launcher->task, cyclic_task) != NULL){
+  if(g_list_find(task_launcher->cyclic_task, cyclic_task) != NULL){
     task_launcher->cyclic_task = g_list_remove(task_launcher->cyclic_task,
 					       cyclic_task);
     g_object_unref(cyclic_task);

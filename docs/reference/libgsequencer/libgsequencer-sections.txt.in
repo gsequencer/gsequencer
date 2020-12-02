@@ -64,6 +64,7 @@ ags_audio_preferences_stop_jack_callback
 <FILE>ags_audiorec</FILE>
 <TITLE>AgsAudiorec</TITLE>
 ags_audiorec_open_filename
+ags_audiorec_fast_export
 ags_audiorec_wave_loader_completed_timeout
 ags_audiorec_indicator_queue_draw_timeout
 ags_audiorec_new
@@ -987,6 +988,12 @@ AGS_EXPORT_SOUNDCARD_FORMAT_WAV
 AGS_EXPORT_SOUNDCARD_FORMAT_FLAC
 AGS_EXPORT_SOUNDCARD_FORMAT_AIFF
 AGS_EXPORT_SOUNDCARD_FORMAT_OGG
+AGS_EXPORT_SOUNDCARD_FORMAT_MP3
+AGS_EXPORT_SOUNDCARD_FORMAT_AAC
+AGS_EXPORT_SOUNDCARD_FORMAT_MP4
+AGS_EXPORT_SOUNDCARD_FORMAT_MKV
+AGS_EXPORT_SOUNDCARD_FORMAT_WEBM
+AGS_EXPORT_SOUNDCARD_FORMAT_MPEG
 AgsExportSoundcardFlags
 ags_export_soundcard_set_backend
 ags_export_soundcard_refresh_card
@@ -2616,6 +2623,35 @@ ags_notation_toolbar_opacity_callback
 </SECTION>
 
 <SECTION>
+<FILE>ags_online_help_window</FILE>
+<TITLE>AgsOnlineHelpWindow</TITLE>
+AgsOnlineHelpWindowFlags
+ags_online_help_window_new
+<SUBSECTION Public>
+AGS_IS_ONLINE_HELP_WINDOW
+AGS_IS_ONLINE_HELP_WINDOW_CLASS
+AGS_ONLINE_HELP_WINDOW
+AGS_ONLINE_HELP_WINDOW_CLASS
+AGS_ONLINE_HELP_WINDOW_GET_CLASS
+AGS_TYPE_ONLINE_HELP_WINDOW
+AgsOnlineHelpWindow
+AgsOnlineHelpWindowClass
+ags_online_help_window_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_online_help_window_callbacks</FILE>
+ags_online_help_window_load_changed
+ags_online_help_window_pdf_drawing_area_draw_callback
+ags_online_help_window_pdf_drawing_area_configure_callback
+ags_online_help_window_pdf_vscrollbar_value_changed_callback
+ags_online_help_window_pdf_hscrollbar_value_changed_callback
+ags_online_help_window_home_callback
+ags_online_help_window_next_callback
+ags_online_help_window_prev_callback
+</SECTION>
+
+<SECTION>
 <FILE>ags_osc_server_preferences</FILE>
 <TITLE>AgsOscServerPreferences</TITLE>
 AgsOscServerPreferencesFlags
@@ -3263,6 +3299,30 @@ AGS_TYPE_PROPERTY_LISTING_EDITOR
 AgsPropertyListingEditor
 AgsPropertyListingEditorClass
 ags_property_listing_editor_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_quit_dialog</FILE>
+<TITLE>AgsQuitDialog</TITLE>
+AgsQuitDialogFlags
+AgsQuitDialogQuestion
+ags_quit_dialog_fast_export
+ags_quit_dialog_new
+<SUBSECTION Public>
+AGS_IS_QUIT_DIALOG
+AGS_IS_QUIT_DIALOG_CLASS
+AGS_QUIT_DIALOG
+AGS_QUIT_DIALOG_CLASS
+AGS_QUIT_DIALOG_GET_CLASS
+AGS_TYPE_QUIT_DIALOG
+AgsQuitDialog
+AgsQuitDialogClass
+ags_quit_dialog_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_quit_dialog_callbacks</FILE>
+ags_quit_dialog_response_callback
 </SECTION>
 
 <SECTION>
@@ -4002,6 +4062,8 @@ ags_ui_provider_get_sheet_window
 ags_ui_provider_set_sheet_window
 ags_ui_provider_get_export_window
 ags_ui_provider_set_export_window
+ags_ui_provider_get_online_help_window
+ags_ui_provider_set_online_help_window
 ags_ui_provider_get_preferences
 ags_ui_provider_set_preferences
 ags_ui_provider_get_history_browser
@@ -4192,6 +4254,12 @@ AGS_WAVE_EXPORT_DIALOG_FORMAT_WAV
 AGS_WAVE_EXPORT_DIALOG_FORMAT_FLAC
 AGS_WAVE_EXPORT_DIALOG_FORMAT_AIFF
 AGS_WAVE_EXPORT_DIALOG_FORMAT_OGG
+AGS_WAVE_EXPORT_DIALOG_FORMAT_MP3
+AGS_WAVE_EXPORT_DIALOG_FORMAT_AAC
+AGS_WAVE_EXPORT_DIALOG_FORMAT_MP4
+AGS_WAVE_EXPORT_DIALOG_FORMAT_MKV
+AGS_WAVE_EXPORT_DIALOG_FORMAT_WEBM
+AGS_WAVE_EXPORT_DIALOG_FORMAT_MPEG
 AgsWaveExportDialogFlags
 ags_wave_export_dialog_update_duration
 ags_wave_export_dialog_new
@@ -4215,6 +4283,7 @@ ags_wave_export_dialog_end_tact_callback
 ags_wave_export_dialog_apply_callback
 ags_wave_export_dialog_ok_callback
 ags_wave_export_dialog_cancel_callback
+ags_wave_export_dialog_delete_event
 </SECTION>
 
 <SECTION>

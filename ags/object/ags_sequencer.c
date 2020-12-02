@@ -278,7 +278,7 @@ ags_sequencer_play(AgsSequencer *sequencer,
  * @sequencer: the #AgsSequencer
  * @error: an error that may occure
  *
- * Initializes the sequencer for recordback.
+ * Initializes the sequencer for recording.
  *
  * Since: 3.0.0
  */

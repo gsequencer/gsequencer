@@ -285,7 +285,7 @@ ags_scrolled_piano_allocate_viewport(GtkWidget *widget)
  * 
  * Get viewport of @scrolled_piano.
  * 
- * Returns: the #GtkViewport
+ * Returns: (transfer none): the #GtkViewport
  *
  * Since: 3.6.8
  */
@@ -305,7 +305,7 @@ ags_scrolled_piano_get_viewport(AgsScrolledPiano *scrolled_piano)
  * 
  * Get viewport of @scrolled_piano.
  * 
- * Returns: the #AgsPiano
+ * Returns: (transfer none): the #AgsPiano
  *
  * Since: 3.6.8
  */

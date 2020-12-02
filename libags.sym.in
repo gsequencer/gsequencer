@@ -507,6 +507,16 @@ ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER_POINTER
 ags_cclosure_marshal_OBJECT__OBJECT_OBJECT
 ags_file_get_type
 ags_file_flags_get_type
+ags_file_set_filename
+ags_file_get_filename
+ags_file_set_encoding
+ags_file_get_encoding
+ags_file_set_audio_format
+ags_file_get_audio_format
+ags_file_set_audio_encoding
+ags_file_get_audio_encoding
+ags_file_set_xml_doc
+ags_file_get_xml_doc
 ags_file_str2md5
 ags_file_add_id_ref
 ags_file_find_id_ref_by_node
@@ -542,4 +552,8 @@ ags_file_id_ref_get_type
 ags_file_id_ref_resolved
 ags_file_id_ref_new
 ags_file_link_get_type
+ags_file_link_set_filename
+ags_file_link_get_filename
+ags_file_link_set_data
+ags_file_link_get_data
 ags_file_link_new

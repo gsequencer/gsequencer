@@ -182,7 +182,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   GtkHBox *hbox;
   
   gtk_window_set_title((GtkWindow *) midi_dialog,
-		       g_strdup("MIDI connection"));
+		       i18n("MIDI connection"));
 
   midi_dialog->flags = 0;
 

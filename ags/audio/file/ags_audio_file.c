@@ -25,7 +25,10 @@
 
 #include <ags/audio/file/ags_sound_resource.h>
 #include <ags/audio/file/ags_sndfile.h>
+
+#ifdef AGS_WITH_GSTREAMER
 #include <ags/audio/file/ags_gstreamer_file.h>
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -991,8 +994,12 @@ ags_audio_file_unset_flags(AgsAudioFile *audio_file, guint flags)
 gboolean
 ags_audio_file_check_suffix(gchar *filename)
 {
-  if(ags_sndfile_check_suffix(filename) ||
-     ags_gstreamer_file_check_suffix(filename)){
+  if(ags_sndfile_check_suffix(filename)
+#ifdef AGS_WITH_GSTREAMER
+     || ags_gstreamer_file_check_suffix(filename)
+#endif
+    ){
+    
     return(TRUE);
   }
 
@@ -1211,6 +1218,7 @@ ags_audio_file_open(AgsAudioFile *audio_file)
 
 	retval = TRUE;
       }
+#ifdef AGS_WITH_GSTREAMER
     }else if(ags_gstreamer_file_check_suffix(filename)){
       g_rec_mutex_lock(audio_file_mutex);
       
@@ -1244,6 +1252,7 @@ ags_audio_file_open(AgsAudioFile *audio_file)
 
 	retval = TRUE;
       }
+#endif
     }else{
       g_message("ags_audio_file_open: unknown file type");
     }
@@ -1325,6 +1334,7 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
 				  create)){
       retval = TRUE;
     }
+#ifdef AGS_WITH_GSTREAMER
   }else if(ags_gstreamer_file_check_suffix(audio_file->filename)){
     GError *error;
     guint loop_start, loop_end;
@@ -1344,6 +1354,7 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
 				  create)){
       retval = TRUE;
     }
+#endif
   }else{
     g_message("ags_audio_file_open: unknown file type");
   }
@@ -1452,6 +1463,7 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
 
 	retval = TRUE;
       }
+#ifdef AGS_WITH_GSTREAMER
     }else if(ags_gstreamer_file_check_suffix(filename)){
       guint loop_start, loop_end;
 
@@ -1467,6 +1479,7 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
       g_rec_mutex_unlock(audio_file_mutex);
 
       //TODO:JK: implement me
+#endif
     }else{
       g_message("ags_audio_file_open: unknown file type");
     }

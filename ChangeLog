@@ -3,6 +3,87 @@ ags (3.7.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented new machine AgsDesk
 
+ags (3.6.29)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed gui-scale factor applied to AgsNotationEdit, AgsAutomationEdit and AgsWaveEdit
+
+ags (3.6.28)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing meson build files
+
+ags (3.6.27)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing meson build files
+
+ags (3.6.26)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing meson build files
+
+ags (3.6.25)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing meson build files
+
+ags (3.6.24)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing meson build files
+
+ags (3.6.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved meson build
+
+ags (3.6.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed upper of AgsNotationEditor's AgsRuler
+
+ags (3.6.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed gui-scale factor applied to AgsNotationEdit
+	* fixed gui-scale factor applied to AgsAutomationEdit
+	* fixed gui-scale factor applied to AgsWaveEdit
+
+ags (3.6.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing restore of pattern envelope
+
+ags (3.6.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements
+
+ags (3.6.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_fx_envelope_audio_signal.c
+
+ags (3.6.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags-fx-envelope to query ags-fx-pattern and ags-fx-notation for offset
+	* improved ags-fx-envelope to query AgsAudio for pattern mode
+	* implemented missing functions of AgsTrack
+	* implemented additional getter/setter
+	* added unit-tests
+	* minor improvements
+
+ags (3.6.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_message_delivery_query_message() accessing GList as instance
+	* fixed ags_task_launcher_remove_cyclic_task() wrong parameter to g_list_find() within if condition
+	* implemented additional getter/setter
+	* added unit-tests
+	* minor improvements
+
 ags (3.6.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

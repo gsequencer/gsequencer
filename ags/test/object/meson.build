@@ -8,8 +8,8 @@
 static_tests = [
   'ags_application_context_test',
   'ags_config_test',
-  'ags_connectable_test',
-  'ags_soundcard_test',
+#  'ags_connectable_test',
+#  'ags_soundcard_test',
 ]
 
 static_test_dependencies = [
@@ -34,14 +34,10 @@ foreach static_test : static_tests
     include_directories: [includes],
     dependencies: [static_test_dependencies],
     link_with: [
-      liblib,
-      libobject,
-      libaudio,
-      libutil,
-      libthread,
-      libplugin,
-      libserver,
-      libfile,
+      libags,
+      libags_thread,
+      libags_server,
+      libags_audio,
     ]
   )
 

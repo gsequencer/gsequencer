@@ -324,7 +324,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   g_object_set(automation_editor->audio_ruler,
 	       "height-request", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
 	       "font-size",  (guint) (gui_scale_factor * automation_editor->audio_ruler->font_size),
-	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
+	       "step", (guint) (AGS_RULER_DEFAULT_STEP),
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
 	       NULL);
@@ -430,7 +430,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   g_object_set(automation_editor->output_ruler,
 	       "height-request", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
 	       "font-size",  (guint) (gui_scale_factor * automation_editor->output_ruler->font_size),
-	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
+	       "step", (guint) (AGS_RULER_DEFAULT_STEP),
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
 	       NULL);
@@ -536,7 +536,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   g_object_set(automation_editor->input_ruler,
 	       "height-request", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
 	       "font-size",  (guint) (gui_scale_factor * automation_editor->input_ruler->font_size),
-	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
+	       "step", (guint) (AGS_RULER_DEFAULT_STEP),
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
 	       NULL);
@@ -764,6 +764,8 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
 {
   AgsAutomationToolbar *automation_toolbar;
 
+  AgsApplicationContext *application_context;
+
   GtkAdjustment *audio_vscrollbar_adjustment;
   GtkAdjustment *audio_hscrollbar_adjustment;
 
@@ -771,7 +773,8 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
   GtkAllocation viewport_allocation;
   
   GList *list_start, *list;
-
+  
+  gdouble gui_scale_factor;
   gdouble old_h_upper;
   gdouble v_upper, h_upper;
   double zoom_factor, zoom;
@@ -779,6 +782,11 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
   guint map_width;
 
   automation_toolbar = automation_editor->automation_toolbar;
+
+  application_context = ags_application_context_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   /* audio */
   gtk_widget_get_allocation(GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box),
@@ -814,7 +822,8 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
 
   zoom_correction = 1.0 / 16;
 
-  map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+//  map_width = (gui_scale_factor * (double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+  map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
   h_upper = map_width - automation_edit_box_allocation.width;
 
   if(h_upper < 0.0){
@@ -861,11 +870,14 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
   GtkAdjustment *output_vscrollbar_adjustment;
   GtkAdjustment *output_hscrollbar_adjustment;
   
+  AgsApplicationContext *application_context;
+  
   GtkAllocation automation_edit_box_allocation;
   GtkAllocation viewport_allocation;
   
   GList *list_start, *list;
   
+  gdouble gui_scale_factor;
   gdouble old_h_upper;
   gdouble v_upper, h_upper;
   double zoom_factor, zoom;
@@ -873,6 +885,11 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
   guint map_width;
 
   automation_toolbar = automation_editor->automation_toolbar;
+
+  application_context = ags_application_context_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   /* output */
   gtk_widget_get_allocation(GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->automation_edit_box),
@@ -908,7 +925,8 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
 
   zoom_correction = 1.0 / 16;
 
-  map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+//  map_width = (gui_scale_factor * (double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+  map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
   h_upper = map_width - automation_edit_box_allocation.width;
 
   if(h_upper < 0.0){
@@ -956,11 +974,14 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
   GtkAdjustment *input_vscrollbar_adjustment;
   GtkAdjustment *input_hscrollbar_adjustment;
   
+  AgsApplicationContext *application_context;
+  
   GtkAllocation automation_edit_box_allocation;
   GtkAllocation viewport_allocation;
 
   GList *list_start, *list;
   
+  gdouble gui_scale_factor;
   gdouble old_h_upper;
   gdouble v_upper, h_upper;
   double zoom_factor, zoom;
@@ -968,6 +989,11 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
   guint map_width;
   
   automation_toolbar = automation_editor->automation_toolbar;
+
+  application_context = ags_application_context_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   /* input */
   gtk_widget_get_allocation(GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->automation_edit_box),
@@ -1003,7 +1029,8 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
 
   zoom_correction = 1.0 / 16;
 
-  map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+//  map_width = (gui_scale_factor * (double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+  map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
   h_upper = map_width - automation_edit_box_allocation.width;
 
   if(h_upper < 0.0){

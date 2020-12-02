@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -913,7 +913,25 @@ ags_pattern_envelope_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_pattern_envelope_apply(AgsApplicable *applicable)
 {
-  /* empty */
+  AgsEnvelopeDialog *envelope_dialog;
+  AgsPatternEnvelope *pattern_envelope;
+  
+  AgsMachine *machine;
+
+  AgsAudio *audio;
+  AgsChannel *start_input, *input, *next_input;
+  
+  GList *start_preset, *preset;
+
+  guint audio_channels;
+  
+  pattern_envelope = AGS_PATTERN_ENVELOPE(applicable);
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
+								  AGS_TYPE_ENVELOPE_DIALOG);
+
+  machine = envelope_dialog->machine;
+
+  ags_machine_reset_pattern_envelope(machine);
 }
 
 void
@@ -1166,7 +1184,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   
   AgsComplex *val;
   
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
   
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope) ||
      preset_name == NULL){
@@ -1201,6 +1219,30 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   ags_audio_add_preset(audio,
 		       (GObject *) preset);
 
+
+  /*  */
+  g_value_init(&value,
+	       G_TYPE_UINT);
+  g_value_set_uint(&value,
+		   0);
+
+  ags_preset_add_parameter(preset,
+			   "pad-start", &value);
+  ags_preset_add_parameter(preset,
+			   "pad-end", &value);
+
+  ags_preset_add_parameter(preset,
+			   "audio-channel-start", &value);
+  ags_preset_add_parameter(preset,
+			   "audio-channel-end", &value);
+
+  ags_preset_add_parameter(preset,
+			   "x-start", &value);
+  ags_preset_add_parameter(preset,
+			   "x-end", &value);
+
+  g_value_unset(&value);
+  
   /* preset - ratio */
   val = ags_complex_alloc();
   ags_complex_set(val,
@@ -1333,7 +1375,7 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
   guint pad_start, pad_end;
   guint x_start, x_end;
   
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;
   
@@ -1619,7 +1661,7 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
   gdouble offset;
   gboolean do_plot;
 
-  GValue value = {0,};
+  GValue value = G_VALUE_INIT;
 
   GError *error;
   

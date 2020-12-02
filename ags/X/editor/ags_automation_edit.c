@@ -431,7 +431,7 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   g_object_set(automation_edit->ruler,
 	       "height-request", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
 	       "font-size",  (guint) (gui_scale_factor * automation_edit->ruler->font_size),
-	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
+	       "step", (guint) (AGS_RULER_DEFAULT_STEP),
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
 	       "no-show-all", TRUE,
@@ -1310,7 +1310,7 @@ ags_automation_edit_reset_vscrollbar(AgsAutomationEdit *automation_edit)
   AgsAutomationEditor *automation_editor;
 
   GtkAdjustment *adjustment;
-
+  
   GtkAllocation allocation;
   
   double varea_height;
@@ -1336,7 +1336,7 @@ ags_automation_edit_reset_vscrollbar(AgsAutomationEdit *automation_edit)
   /* upper */
   old_upper = gtk_adjustment_get_upper(adjustment); 
 
-  varea_height = automation_edit->step_count * automation_edit->control_height;
+  varea_height = (automation_edit->step_count * automation_edit->control_height);
   upper = varea_height - allocation.height;
 
   if(upper < 0.0){
@@ -1360,9 +1360,12 @@ ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit)
   AgsAutomationToolbar *automation_toolbar;
 
   GtkAdjustment *adjustment;
+  
+  AgsApplicationContext *application_context;
 
   GtkAllocation allocation;
   
+  gdouble gui_scale_factor;
   double zoom_factor, zoom;
   double zoom_correction;
   guint map_width;
@@ -1381,6 +1384,11 @@ ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit)
 
   automation_toolbar = automation_editor->automation_toolbar;
 
+  application_context = ags_application_context_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+
   /* adjustment and allocation */
   adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->hscrollbar));
 
@@ -1396,7 +1404,8 @@ ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit)
   
   zoom_correction = 1.0 / 16;
 
-  map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+//  map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+  map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
   upper = map_width - allocation.width;
 
   if(upper < 0.0){    
@@ -1412,7 +1421,7 @@ ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit)
   automation_edit->ruler->scale_precision = 1.0 / zoom;
 
   gtk_adjustment_set_upper(automation_edit->ruler->adjustment,
-			   upper / automation_edit->control_width);
+			   upper);
 
   /* reset value */
   if(old_upper != 0.0){
@@ -1552,7 +1561,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
   
   map_height = (gdouble) height;
 
-  control_width = (gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH);
+  control_width = (gint) (gui_scale_factor * (gdouble) AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH) * (tact / (gui_scale_factor * tact));
   i = control_width - (guint) x_offset % control_width;
   
   cairo_set_source_rgba(cr,
@@ -1657,6 +1666,7 @@ void
 ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *cr)
 {
   AgsAutomationEditor *automation_editor;
+  AgsAutomationToolbar *automation_toolbar;
 
   GtkStyleContext *automation_edit_style_context;
 
@@ -1665,6 +1675,8 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
   GdkRGBA *fg_color_active;
 
   gdouble gui_scale_factor;
+  gdouble tact;
+  guint control_width;
   double position;
   double x, y;
   double width, height;
@@ -1684,6 +1696,8 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
   if(automation_editor->selected_machine == NULL){
     return;
   }
+
+  automation_toolbar = automation_editor->automation_toolbar;
   
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
@@ -1699,8 +1713,12 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
   fg_color_active = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
+  tact = exp2((double) gtk_combo_box_get_active(automation_toolbar->zoom) - 2.0);
+
   /* get offset and dimensions */
-  position = ((double) automation_edit->note_offset) * ((double) automation_edit->control_width);
+  control_width = (gint) (gui_scale_factor * (gdouble) AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH) * (tact / (gui_scale_factor * tact));
+
+  position = ((double) automation_edit->note_offset) * ((double) control_width);
   
   y = 0.0;
   x = (position) - (gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar)));
@@ -2009,8 +2027,8 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   gdouble val, step;
   gdouble upper, lower, step_count;
   gdouble c_range;
-  guint x, y;
-  guint a_x, b_x;
+  gint x, y;
+  gint a_x, b_x;
   gdouble a_y, b_y;
   double width, height;
 
@@ -2103,7 +2121,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
     
     width = ((double) b_x - a_x);
   }else{
-    width = 1.0;
+    width = ((double) allocation.width) - x;
   }
 
   height = allocation.height - y;
@@ -2121,10 +2139,10 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   x /= zoom_factor;
   
   width /= zoom_factor;
-  
+
   /* clip */
   if(x < 0.0){
-    if(x + width < 0.0){
+    if(x + width < 0.0){      
       g_boxed_free(GDK_TYPE_RGBA, fg_color);
       g_boxed_free(GDK_TYPE_RGBA, fg_color_selected);
 
@@ -2244,7 +2262,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 		    selected_width, selected_height);
     cairo_fill(cr);
   }
-
+  
   g_boxed_free(GDK_TYPE_RGBA, fg_color);
   g_boxed_free(GDK_TYPE_RGBA, fg_color_selected);
 }

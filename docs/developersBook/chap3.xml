@@ -70,16 +70,15 @@
     <title>Threads in general</title>
     <para>
       Within thread tree context you have to take care not to hang it up with a dead-lock.
-      Usually you have to use the :start_queue to start threads. Protect it with :start_mutex.
+      Usually you have to use the :start_queue to start threads.
       Alternatively you may want to use <code language="C">void ags_thread_start(AgsThread*)</code>.
-      The :start_cond notifies about thread being started.
+      Use :start_cond, which is protect it with :start_mutex, to notify about running thread.
     </para>
 
     <para>
       The following example creates a thread and does add an other thread to :start_queue.
       This causes it to be started as well. Note you want to access :start_queue using :start_mutex
-      to avoid data races. But there is a convience function which does it for
-      you.
+      to avoid data races. But there is a convience function which does it for you.
     </para>
 
     <example>

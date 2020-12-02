@@ -969,8 +969,11 @@ ags_wave_edit_reset_vscrollbar(AgsWaveEdit *wave_edit)
 
   GtkAdjustment *adjustment;
 
+  AgsApplicationContext *application_context;
+  
   GtkAllocation allocation;
   
+  gdouble gui_scale_factor;
   double varea_height;
   gdouble upper, old_upper;
   
@@ -980,6 +983,11 @@ ags_wave_edit_reset_vscrollbar(AgsWaveEdit *wave_edit)
 
   wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
 							  AGS_TYPE_WAVE_EDITOR);
+
+  application_context = ags_application_context_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   if(wave_editor->selected_machine == NULL){
     return;
@@ -993,7 +1001,7 @@ ags_wave_edit_reset_vscrollbar(AgsWaveEdit *wave_edit)
   /* upper */
   old_upper = gtk_adjustment_get_upper(adjustment); 
 
-  varea_height = wave_edit->step_count * wave_edit->control_height;
+  varea_height = (wave_edit->step_count * wave_edit->control_height);
   upper = varea_height - allocation.height;
 
   if(upper < 0.0){
@@ -1018,8 +1026,11 @@ ags_wave_edit_reset_hscrollbar(AgsWaveEdit *wave_edit)
 
   GtkAdjustment *adjustment;
 
+  AgsApplicationContext *application_context;
+  
   GtkAllocation allocation;
 
+  gdouble gui_scale_factor;
   double zoom_factor, zoom;
   double zoom_correction;
   guint map_width;
@@ -1031,6 +1042,11 @@ ags_wave_edit_reset_hscrollbar(AgsWaveEdit *wave_edit)
 
   wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
 							  AGS_TYPE_WAVE_EDITOR);
+
+  application_context = ags_application_context_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   if(wave_editor->selected_machine == NULL){
     return;
@@ -1053,7 +1069,8 @@ ags_wave_edit_reset_hscrollbar(AgsWaveEdit *wave_edit)
   
   zoom_correction = 1.0 / 16;
 
-  map_width = ((double) AGS_WAVE_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+//  map_width = ((double) AGS_WAVE_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+  map_width = (gui_scale_factor * 64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction;
   upper = map_width - allocation.width;
 
   if(upper < 0.0){    
@@ -1069,7 +1086,7 @@ ags_wave_edit_reset_hscrollbar(AgsWaveEdit *wave_edit)
   wave_edit->ruler->scale_precision = 1.0 / zoom;
 
   gtk_adjustment_set_upper(wave_edit->ruler->adjustment,
-			   upper / wave_edit->control_width);
+			   upper);
 
   /* reset value */
   if(old_upper != 0.0){
@@ -1204,7 +1221,7 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit, cairo_t *cr)
   
   map_height = (gdouble) height;
 
-  control_width = (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH);
+  control_width = (gint) (gui_scale_factor * (gdouble) AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH);
   i = control_width - (guint) x_offset % control_width;
   
   cairo_set_source_rgba(cr,
@@ -1309,6 +1326,7 @@ void
 ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr)
 {
   AgsWaveEditor *wave_editor;
+  AgsWaveToolbar *wave_toolbar;
 
   GtkStyleContext *wave_edit_style_context;
 
@@ -1317,6 +1335,8 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr)
   GdkRGBA *fg_color_active;
 
   gdouble gui_scale_factor;
+  gdouble tact;
+  guint control_width;
   double position;
   double x, y;
   double width, height;
@@ -1337,6 +1357,8 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr)
     return;
   }
 
+  wave_toolbar = wave_editor->wave_toolbar;
+
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
@@ -1351,8 +1373,12 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr)
   fg_color_active = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
+  tact = exp2((double) gtk_combo_box_get_active(wave_toolbar->zoom) - 2.0);
+
   /* get offset and dimensions */
-  position = ((double) wave_edit->note_offset) * ((double) wave_edit->control_width);
+  control_width = (gint) (gui_scale_factor * (gdouble) AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH);
+
+  position = ((double) wave_edit->note_offset) * ((double) control_width);
   
   y = 0.0;
   x = (position) - (gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar)));
@@ -1617,6 +1643,8 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 
   unsigned char *image_data, *bg_data;
   
+  gdouble gui_scale_factor;
+  gdouble tact;
   guint samplerate;
   guint buffer_size;
   guint format;
@@ -1648,6 +1676,9 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   application_context = ags_application_context_get_instance();
   
   wave_toolbar = wave_editor->wave_toolbar;
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   /* style context */
   wave_edit_style_context = gtk_widget_get_style_context(GTK_WIDGET(wave_edit->drawing_area));
@@ -1684,6 +1715,8 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
 
   delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
+
+  tact = exp2((double) gtk_combo_box_get_active(wave_toolbar->zoom) - 2.0);
   
   /* get visisble region */
   x0 = gtk_range_get_value(GTK_RANGE(wave_edit->hscrollbar));
@@ -1703,8 +1736,8 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 
   x_cut = x0;
 
-  if(((((double) (x) / samplerate * (bpm / 60.0) / delay_factor) * 64.0)) / zoom_factor - x_cut < 0.0 ||
-     ((((double) (x) / samplerate * (bpm / 60.0) / delay_factor) * 64.0)) / zoom_factor - x_cut > allocation.width){
+  if(((((double) (x) / samplerate * (bpm / 60.0) / delay_factor) * (gui_scale_factor * 64.0))) / zoom_factor - x_cut < 0.0 ||
+     ((((double) (x) / samplerate * (bpm / 60.0) / delay_factor) * (gui_scale_factor * 64.0))) / zoom_factor - x_cut > allocation.width){
     g_boxed_free(GDK_TYPE_RGBA, fg_color);
     g_boxed_free(GDK_TYPE_RGBA, fg_color_selected);
 
@@ -1796,9 +1829,9 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
     y1 = (((y1 + 1.0) * height) / 2.0);
     
     cairo_move_to(cr,
-		  ((((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * 64.0)) / zoom_factor - x_cut, y0);
+		  ((((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * (gui_scale_factor * 64.0))) / zoom_factor - x_cut, y0);
     cairo_line_to(cr,
-		  ((((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * 64.0)) / zoom_factor - x_cut, y1);
+		  ((((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * (gui_scale_factor * 64.0))) / zoom_factor - x_cut, y1);
     cairo_stroke(cr);
   }  
   
@@ -1865,9 +1898,9 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
       y1 = (((y1 + 1.0) * height) / 2.0);
     
       cairo_move_to(cr,
-		    ((((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * 64.0)) / zoom_factor - x_cut, y0);
+		    ((((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * (gui_scale_factor * 64.0))) / zoom_factor - x_cut, y0);
       cairo_line_to(cr,
-		    ((((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * 64.0)) / zoom_factor - x_cut, y1);
+		    ((((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * (gui_scale_factor * 64.0))) / zoom_factor - x_cut, y1);
       cairo_stroke(cr);
     }  
   }
@@ -1891,6 +1924,8 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit, cairo_t *cr)
 
   AgsTimestamp *current_timestamp;    
 
+  AgsApplicationContext *application_context;
+
   GObject *soundcard;
   
   GtkAllocation allocation;
@@ -1898,6 +1933,7 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit, cairo_t *cr)
   GList *start_list_wave, *list_wave;
   GList *start_list_buffer, *list_buffer;
 
+  gdouble gui_scale_factor;
   double zoom, zoom_factor;
   gdouble delay_factor;
   gdouble opacity;
@@ -1918,11 +1954,16 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit, cairo_t *cr)
     return;
   }
 
+  application_context = ags_application_context_get_instance();
+  
   wave_window = (AgsWaveWindow *) gtk_widget_get_ancestor((GtkWidget *) wave_editor,
 							  AGS_TYPE_WAVE_WINDOW);
   window = (AgsWindow *) wave_window->parent_window;  
 
   wave_toolbar = wave_editor->wave_toolbar;
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
   
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
 			    &allocation);
@@ -1984,7 +2025,7 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit, cairo_t *cr)
     
     offset = ags_timestamp_get_ags_offset(current_timestamp);
     
-    if(((((double) (offset) / samplerate * (bpm / 60.0) / delay_factor) * 64.0)) / zoom_factor - x_cut > allocation.width){
+    if(((((double) (offset) / samplerate * (bpm / 60.0) / delay_factor) * (gui_scale_factor * 64.0))) / zoom_factor - x_cut > allocation.width){
       break;
     }
 

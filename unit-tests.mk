@@ -23,15 +23,24 @@ check_PROGRAMS += \
 	ags_config_test \
 	ags_connectable_test \
 	ags_soundcard_test \
+	ags_concurrency_provider_test \
 	ags_destroy_worker_test \
+	ags_generic_main_loop_test \
+	ags_message_delivery_test \
+	ags_message_envelope_test \
+	ags_message_queue_test \
 	ags_returnable_thread_test \
 	ags_task_test \
+	ags_task_launcher_test \
 	ags_thread_test \
+	ags_thread_application_context_test \
 	ags_thread_pool_test \
+	ags_timestamp_test \
 	ags_worker_thread_test \
 	ags_file_test \
 	ags_file_id_ref_test \
 	ags_file_launch_test \
+	ags_file_link_test \
 	ags_file_lookup_test \
 	ags_server_application_context_test \
 	ags_server_test \
@@ -377,11 +386,41 @@ ags_soundcard_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIB
 ags_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_soundcard_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
+# concurrency provider unit test
+ags_concurrency_provider_test_SOURCES = ags/test/thread/ags_concurrency_provider_test.c
+ags_concurrency_provider_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_concurrency_provider_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_concurrency_provider_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
 # destroy worker unit test
 ags_destroy_worker_test_SOURCES = ags/test/thread/ags_destroy_worker_test.c
 ags_destroy_worker_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_destroy_worker_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_destroy_worker_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# generic main loop unit test
+ags_generic_main_loop_test_SOURCES = ags/test/thread/ags_generic_main_loop_test.c
+ags_generic_main_loop_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_generic_main_loop_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_generic_main_loop_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# message delivery unit test
+ags_message_delivery_test_SOURCES = ags/test/thread/ags_message_delivery_test.c
+ags_message_delivery_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_message_delivery_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_message_delivery_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# message envelope unit test
+ags_message_envelope_test_SOURCES = ags/test/thread/ags_message_envelope_test.c
+ags_message_envelope_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_message_envelope_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_message_envelope_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# message queue unit test
+ags_message_queue_test_SOURCES = ags/test/thread/ags_message_queue_test.c
+ags_message_queue_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_message_queue_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_message_queue_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # returnable thread unit test
 ags_returnable_thread_test_SOURCES = ags/test/thread/ags_returnable_thread_test.c
@@ -395,17 +434,35 @@ ags_task_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_C
 ags_task_test_LDFLAGS = -lcunit -lm -pthread -lrt $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 ags_task_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
+# task launcher unit test
+ags_task_launcher_test_SOURCES = ags/test/thread/ags_task_launcher_test.c
+ags_task_launcher_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_task_launcher_test_LDFLAGS = -lcunit -lm -pthread -lrt $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+ags_task_launcher_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
 # thread unit test
 ags_thread_test_SOURCES = ags/test/thread/ags_thread_test.c
 ags_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_thread_test_LDFLAGS = -lcunit -lm -pthread -lrt $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 ags_thread_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
+# thread application context unit test
+ags_thread_application_context_test_SOURCES = ags/test/thread/ags_thread_application_context_test.c
+ags_thread_application_context_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_thread_application_context_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_thread_application_context_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
 # thread pool unit test
 ags_thread_pool_test_SOURCES = ags/test/thread/ags_thread_pool_test.c
 ags_thread_pool_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_thread_pool_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_thread_pool_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# timestamp unit test
+ags_timestamp_test_SOURCES = ags/test/thread/ags_timestamp_test.c
+ags_timestamp_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_timestamp_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_timestamp_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # worker thread unit test
 ags_worker_thread_test_SOURCES = ags/test/thread/ags_worker_thread_test.c
@@ -430,6 +487,12 @@ ags_file_launch_test_SOURCES = ags/test/file/ags_file_launch_test.c
 ags_file_launch_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_file_launch_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_file_launch_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# file link unit test
+ags_file_link_test_SOURCES = ags/test/file/ags_file_link_test.c
+ags_file_link_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_file_link_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_file_link_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # file lookup unit test
 ags_file_lookup_test_SOURCES = ags/test/file/ags_file_lookup_test.c
