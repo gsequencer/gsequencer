@@ -29,6 +29,8 @@
 
 #include <ags/thread/ags_thread_pool.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_THREAD_APPLICATION_CONTEXT                (ags_thread_application_context_get_type())
 #define AGS_TYPE_THREAD_APPLICATION_CONTEXT_FLAGS          (ags_thread_application_context_flags_get_type())
 #define AGS_THREAD_APPLICATION_CONTEXT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_THREAD_APPLICATION_CONTEXT, AgsThreadApplicationContext))
@@ -79,5 +81,7 @@ GType ags_thread_application_context_flags_get_type();
 void ags_thread_application_context_register_types(AgsApplicationContext *application_context);
 
 AgsThreadApplicationContext* ags_thread_application_context_new();
+
+G_END_DECLS
 
 #endif /*__AGS_THREAD_APPLICATION_CONTEXT_H__*/

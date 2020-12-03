@@ -65,4 +65,6 @@ void ags_file_launch_start(AgsFileLaunch *file_launch);
 /* */
 AgsFileLaunch* ags_file_launch_new();
 
+G_END_DECLS
+
 #endif /*__AGS_FILE_LAUNCH_H__*/

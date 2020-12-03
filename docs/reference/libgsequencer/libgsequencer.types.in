@@ -30,8 +30,9 @@ ags_cell_pattern_get_type
 ags_connection_editor_get_type
 ags_context_menu_get_type
 ags_crop_note_dialog_get_type
+ags_desk_file_chooser_get_type
 ags_desk_get_type
-ags_desk_input_pad_get_type
+ags_desk_pad_get_type
 ags_drum_get_type
 ags_drum_input_line_get_type
 ags_drum_input_pad_get_type

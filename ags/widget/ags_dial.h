@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_DIAL                (ags_dial_get_type())
 #define AGS_DIAL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DIAL, AgsDial))
 #define AGS_DIAL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_DIAL, AgsDialClass))
@@ -147,5 +149,7 @@ void ags_dial_set_value(AgsDial *dial,
 
 /* instantiate */
 AgsDial* ags_dial_new();
+
+G_END_DECLS
 
 #endif /*__AGS_DIAL_H__*/

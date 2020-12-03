@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_DESK_INPUT_PAD_CALLBACKS_H__
-#define __AGS_DESK_INPUT_PAD_CALLBACKS_H__
+#ifndef __AGS_DESK_PAD_CALLBACKS_H__
+#define __AGS_DESK_PAD_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -30,6 +30,16 @@
 #include <ags/libags-gui.h>
 
 #include <ags/X/machine/ags_desk.h>
-#include <ags/X/machine/ags_desk_input_pad.h>
+#include <ags/X/machine/ags_desk_pad.h>
 
-#endif /*__AGS_DESK_INPUT_PAD_CALLBACKS_H__*/
+void ags_desk_pad_play_callback(GtkButton *button, AgsDeskPad *desk_pad);
+void ags_desk_pad_grab_filename_callback(GtkButton *button, AgsDeskPad *desk_pad);
+
+void ags_desk_pad_volume_callback(GtkRange *scale, AgsDeskPad *desk_pad);
+
+void ags_desk_pad_move_up_callback(GtkButton *button, AgsDeskPad *desk_pad);
+void ags_desk_pad_move_down_callback(GtkButton *button, AgsDeskPad *desk_pad);
+void ags_desk_pad_add_callback(GtkButton *button, AgsDeskPad *desk_pad);
+void ags_desk_pad_remove_callback(GtkButton *button, AgsDeskPad *desk_pad);
+
+#endif /*__AGS_DESK_PAD_CALLBACKS_H__*/

@@ -1,3 +1,19 @@
+ags (3.7.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed meson build
+
+ags (3.7.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed libgsequencer gtk-doc
+
+ags (3.7.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_fast_pitch_util.c to do loudness correction
+	* minor improvements
+
 ags (3.6.29)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

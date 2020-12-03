@@ -25,8 +25,12 @@
 
 #include <gtk/gtk.h>
 
+G_BEGIN_DECLS
+
 void ags_container_add_all(GtkContainer *container,
 			   GList *list);
+
+G_END_DECLS
 
 #endif /*__AGS_CONTAINER_H__*/
 

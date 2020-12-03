@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_TIMESTAMP                (ags_timestamp_get_type())
 #define AGS_TYPE_TIMESTAMP_FLAGS          (ags_timestamp_flags_get_type())
 #define AGS_TIMESTAMP(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TIMESTAMP, AgsTimestamp))
@@ -99,5 +101,7 @@ void ags_timestamp_set_ags_offset(AgsTimestamp *timestamp,
 
 /* */
 AgsTimestamp* ags_timestamp_new();
+
+G_END_DECLS
 
 #endif /*__AGS_TIMESTAMP_H__*/

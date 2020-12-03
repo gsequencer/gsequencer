@@ -2396,8 +2396,9 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_cell_pattern.h \
 	ags/X/machine/ags_desk_callbacks.h \
 	ags/X/machine/ags_desk.h \
-	ags/X/machine/ags_desk_input_pad_callbacks.h \
-	ags/X/machine/ags_desk_input_pad.h \
+	ags/X/machine/ags_desk_file_chooser.h \
+	ags/X/machine/ags_desk_pad_callbacks.h \
+	ags/X/machine/ags_desk_pad.h \
 	ags/X/machine/ags_drum_callbacks.h \
 	ags/X/machine/ags_drum.h \
 	ags/X/machine/ags_drum_input_line_callbacks.h \
@@ -2490,8 +2491,9 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_cell_pattern_callbacks.c \
 	ags/X/machine/ags_desk_callbacks.c \
 	ags/X/machine/ags_desk.c \
-	ags/X/machine/ags_desk_input_pad_callbacks.c \
-	ags/X/machine/ags_desk_input_pad.c \
+	ags/X/machine/ags_desk_file_chooser.c \
+	ags/X/machine/ags_desk_pad_callbacks.c \
+	ags/X/machine/ags_desk_pad.c \
 	ags/X/machine/ags_drum.c \
 	ags/X/machine/ags_drum_callbacks.c \
 	ags/X/machine/ags_drum_input_line.c \
@@ -3172,7 +3174,10 @@ update-po: check-gettext
 	else \
 		rm $(srcdir)/po/POTFILES.in ; \
 		touch $(srcdir)/po/POTFILES.in ; \
+		rm $(srcdir)/po/POTFILES.in.in ; \
+		touch $(srcdir)/po/POTFILES.in.in ; \
 		cat $(srcdir)/license-notice-gnu-gpl-3-0+-sym.txt >> $(srcdir)/po/POTFILES.in.in ; \
+		echo -e -n "\n" >> $(srcdir)/po/POTFILES.in.in ; \
 		cat $(srcdir)/po/POTFILES.in.2 >> $(srcdir)/po/POTFILES.in.in ; \
 		mv $(srcdir)/po/POTFILES.in.2 $(srcdir)/po/POTFILES.in ; \
 	fi

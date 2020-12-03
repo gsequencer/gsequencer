@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 #include <gtk/gtk.h>
 
 #include <ags/widget/ags_level_box.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SCROLLED_LEVEL_BOX                (ags_scrolled_level_box_get_type())
 #define AGS_SCROLLED_LEVEL_BOX(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCROLLED_LEVEL_BOX, AgsScrolledLevelBox))
@@ -59,5 +61,7 @@ struct _AgsScrolledLevelBoxClass
 GType ags_scrolled_level_box_get_type(void);
 
 AgsScrolledLevelBox* ags_scrolled_level_box_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SCROLLED_LEVEL_BOX_H__*/

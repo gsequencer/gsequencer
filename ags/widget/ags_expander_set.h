@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_EXPANDER_SET                (ags_expander_set_get_type())
 #define AGS_EXPANDER_SET(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EXPANDER_SET, AgsExpanderSet))
 #define AGS_EXPANDER_SET_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_EXPANDER_SET, AgsExpanderSetClass))
@@ -93,5 +95,7 @@ void ags_expander_set_remove(AgsExpanderSet *expander_set,
 			     GtkWidget *widget);
 
 AgsExpanderSet* ags_expander_set_new(guint width, guint height);
+
+G_END_DECLS
 
 #endif /*__AGS_EXPANDER_SET_H__*/

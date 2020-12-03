@@ -29,6 +29,8 @@
 #include <AudioToolbox/AudioToolbox.h>
 #endif
 
+G_BEGIN_DECLS
+
 #define AGS_AUDIO_BUFFER_S8(ptr) ((gint8 *)(ptr))
 #define AGS_AUDIO_BUFFER_S16(ptr) ((gint16 *)(ptr))
 #define AGS_AUDIO_BUFFER_S24(ptr) ((gint32 *)(ptr))
@@ -883,5 +885,7 @@ void ags_audio_buffer_util_copy_complex_to_float32(Float32 *destination, guint d
 void ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, guint doffset,
 						 void *source, guint schannels, guint soffset,
 						 guint count, guint mode);
+
+G_END_DECLS
 
 #endif /*__AGS_AUDIO_BUFFER_UTIL_H__*/

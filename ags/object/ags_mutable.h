@@ -39,12 +39,12 @@ struct _AgsMutableInterface
 {
   GTypeInterface ginterface;
 
-  void (*set_muted)(AgsMutable *mutable, gboolean muted);
+  void (*set_muted)(AgsMutable *agsmutable, gboolean muted);
 };
 
 GType ags_mutable_get_type();
 
-void ags_mutable_set_muted(AgsMutable *mutable, gboolean muted);
+void ags_mutable_set_muted(AgsMutable *agsmutable, gboolean muted);
 
 G_END_DECLS
 

@@ -27,6 +27,8 @@
 
 #include "ags_indicator.h"
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_HINDICATOR                (ags_hindicator_get_type())
 #define AGS_HINDICATOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_HINDICATOR, AgsHIndicator))
 #define AGS_HINDICATOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_HINDICATOR, AgsHIndicatorClass))
@@ -53,5 +55,7 @@ struct _AgsHIndicatorClass
 GType ags_hindicator_get_type(void);
 
 AgsHIndicator* ags_hindicator_new();
+
+G_END_DECLS
 
 #endif /*__AGS_HINDICATOR_H__*/

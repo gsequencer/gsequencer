@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,7 +18,12 @@
  */
 
 #include <ags/X/machine/ags_desk.h>
+#include <ags/X/machine/ags_desk_file_chooser.h>
 #include <ags/X/machine/ags_desk_callbacks.h>
+
+#include <ags/X/ags_ui_provider.h>
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_navigation.h>
 
 #include <ags/i18n.h>
 
@@ -28,6 +33,20 @@ void ags_desk_init(AgsDesk *desk);
 void ags_desk_finalize(GObject *gobject);
 
 void ags_desk_map_recall(AgsMachine *machine);
+
+void ags_desk_resize_audio_channels(AgsMachine *machine,
+				    guint audio_channels, guint audio_channels_old,
+				    gpointer data);
+void ags_desk_resize_pads(AgsMachine *machine, GType channel_type,
+			  guint pads, guint pads_old,
+			  gpointer data);
+
+void ags_desk_output_map_recall(AgsDesk *desk,
+				guint audio_channel_start,
+				guint output_pad_start);
+void ags_desk_input_map_recall(AgsDesk *desk,
+			       guint audio_channel_start,
+			       guint input_pad_start);
 
 void ags_desk_connect(AgsConnectable *connectable);
 void ags_desk_disconnect(AgsConnectable *connectable);
@@ -100,6 +119,9 @@ ags_desk_class_init(AgsDeskClass *desk)
 
   gobject->finalize = ags_desk_finalize;
 
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) desk;
+
   /*  */
   machine = (AgsMachineClass *) desk;
 
@@ -121,9 +143,39 @@ ags_desk_init(AgsDesk *desk)
   GtkHBox *hbox;
   GtkAlignment *alignment;
   GtkHBox *balance_hbox;
+  GtkHBox *file_hbox;
+  GtkAlignment *file_alignment;
   
+  AgsAudio *audio;
+
+  gint baseline_allocation;
+  
+  g_signal_connect_after((GObject *) desk, "parent_set",
+			 G_CALLBACK(ags_desk_parent_set_callback), (gpointer) desk);
+
+  audio = AGS_MACHINE(desk)->audio;
+
+  ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
+			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_RECYCLING));
+  
+  AGS_MACHINE(desk)->flags |= (AGS_MACHINE_IS_WAVE_PLAYER);
+
+  /* audio resize */
+  g_signal_connect_after(G_OBJECT(desk), "resize-audio-channels",
+			 G_CALLBACK(ags_desk_resize_audio_channels), NULL);
+
+  g_signal_connect_after(G_OBJECT(desk), "resize-pads",
+			 G_CALLBACK(ags_desk_resize_pads), NULL);
+
   desk->name = NULL;
   desk->xml_type = "ags-desk";
+
+  desk->playback_play_container = ags_recall_container_new();
+  desk->playback_recall_container = ags_recall_container_new();
+
+  desk->buffer_play_container = ags_recall_container_new();
+  desk->buffer_recall_container = ags_recall_container_new();
 
   /* create widgets */
   desk->vbox = (GtkVBox *) gtk_vbox_new(FALSE,
@@ -139,7 +191,7 @@ ags_desk_init(AgsDesk *desk)
 		     0);
 
   /* left pad */
-  desk->left_pad = ags_desk_input_pad_new(NULL);
+  desk->left_pad = ags_desk_pad_new();
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) desk->left_pad,
 		     FALSE, FALSE,
@@ -188,20 +240,34 @@ ags_desk_init(AgsDesk *desk)
 		     0);
 
   /* left pad */
-  desk->right_pad = ags_desk_input_pad_new(NULL);
+  desk->right_pad = ags_desk_pad_new();
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) desk->right_pad,
 		     FALSE, FALSE,
 		     0);
 
   /* file chooser */
-  desk->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
-  gtk_widget_set_size_request((GtkWidget *) desk->file_chooser,
-			      -1, 400);
+  file_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
   gtk_box_pack_start((GtkBox *) desk->vbox,
-		     (GtkWidget *) desk->file_chooser,
-		     FALSE, FALSE,
+		     (GtkWidget *) file_hbox,
+		     TRUE, TRUE,
 		     0);
+
+  file_alignment = gtk_alignment_new(0.0,
+				     0.0,
+				     0.0,
+				     0.0);
+  gtk_box_pack_start((GtkBox *) file_hbox,
+		     (GtkWidget *) file_alignment,
+		     TRUE, TRUE,
+		     0);
+
+  desk->file_chooser = ags_desk_file_chooser_new();
+  gtk_widget_set_size_request(desk->file_chooser,
+			      800, 480);
+  gtk_container_add((GtkContainer *) file_alignment,
+		    (GtkWidget *) desk->file_chooser);
 }
 
 void
@@ -225,6 +291,9 @@ ags_desk_connect(AgsConnectable *connectable)
 
   /* call parent */
   ags_desk_parent_connectable_interface->connect(connectable);
+
+  ags_connectable_connect(AGS_CONNECTABLE(desk->left_pad));
+  ags_connectable_connect(AGS_CONNECTABLE(desk->right_pad));
 }
 
 void
@@ -242,14 +311,297 @@ ags_desk_disconnect(AgsConnectable *connectable)
 
   /* call parent */
   ags_desk_parent_connectable_interface->disconnect(connectable);
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(desk->left_pad));
+  ags_connectable_disconnect(AGS_CONNECTABLE(desk->right_pad));
+}
+
+void
+ags_desk_resize_audio_channels(AgsMachine *machine,
+			       guint audio_channels, guint audio_channels_old,
+			       gpointer data)
+{
+  AgsDesk *desk;
+
+  desk = AGS_DESK(machine);
+  
+  if(audio_channels > audio_channels_old){    
+    /* recall */
+    if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
+      ags_desk_input_map_recall(desk,
+				audio_channels_old,
+				0);
+
+      ags_desk_output_map_recall(desk,
+				 audio_channels_old,
+				 0);
+    }    
+  }
+}
+
+void
+ags_desk_resize_pads(AgsMachine *machine,
+		     GType channel_type,
+		     guint pads, guint pads_old,
+		     gpointer data)
+{
+  AgsDesk *desk;
+
+  desk = AGS_DESK(machine);
+  
+  if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+    if(pads > pads_old){
+      /* depending on destination */
+      ags_desk_input_map_recall(desk,
+				0,
+				pads_old);
+    }else{
+      desk->mapped_input_pad = pads;
+    }
+  }else{
+    if(pads > pads_old){
+      /* depending on destination */
+      ags_desk_output_map_recall(desk,
+				 0,
+				 pads_old);
+    }else{
+      desk->mapped_output_pad = pads;
+    }
+  }
 }
 
 void
 ags_desk_map_recall(AgsMachine *machine)
-{
+{  
+  AgsNavigation *navigation;
+  AgsDesk *desk;
+  
+  AgsAudio *audio;
+
+  AgsApplicationContext *application_context;
+
+  GList *start_recall, *recall;
+
+  gint position;
+
+  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
+     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+
+  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
+
+  desk = AGS_DESK(machine);
+  
+  audio = machine->audio;
+
+  position = 0;
+  
+  /* ags-fx-playback */
+  start_recall = ags_fx_factory_create(audio,
+				       desk->playback_play_container, desk->playback_recall_container,
+				       "ags-fx-playback",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
+
+  recall = start_recall;
+
+  while((recall = ags_recall_template_find_type(recall, AGS_TYPE_FX_PLAYBACK_AUDIO)) != NULL){
+    AgsPort *port;
+
+    GValue value = G_VALUE_INIT;
+    
+    /* loop */
+    port = NULL;
+    
+    g_object_get(recall->data,
+		 "loop", &port,
+		 NULL);
+
+    g_value_init(&value,
+		 G_TYPE_BOOLEAN);
+
+    g_value_set_boolean(&value,
+			gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
+
+    ags_port_safe_write(port,
+			&value);
+
+    if(port != NULL){
+      g_object_unref(port);
+    }
+    
+    /* loop start */
+    port = NULL;
+    
+    g_object_get(recall->data,
+		 "loop-start", &port,
+		 NULL);
+
+    g_value_unset(&value);
+    g_value_init(&value,
+		 G_TYPE_UINT64);
+
+    g_value_set_uint64(&value,
+		       16 * gtk_spin_button_get_value_as_int(navigation->loop_left_tact));
+
+    ags_port_safe_write(port,
+			&value);
+
+    if(port != NULL){
+      g_object_unref(port);
+    }
+    
+    /* loop end */
+    port = NULL;
+    
+    g_object_get(recall->data,
+		 "loop-end", &port,
+		 NULL);
+
+    g_value_unset(&value);
+    g_value_init(&value,
+		 G_TYPE_UINT64);
+
+    g_value_set_uint64(&value,
+		       16 * gtk_spin_button_get_value_as_int(navigation->loop_right_tact));
+
+    ags_port_safe_write(port,
+			&value);
+
+    if(port != NULL){
+      g_object_unref(port);
+    }
+
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-buffer */
+  start_recall = ags_fx_factory_create(audio,
+				       desk->buffer_play_container, desk->buffer_recall_container,
+				       "ags-fx-buffer",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+  
+  /* depending on destination */
+  ags_desk_input_map_recall(machine,
+			    0,
+			    0);
+
+  /* depending on destination */
+  ags_desk_output_map_recall(machine,
+			     0,
+			     0);
 
   /* call parent */
-  AGS_MACHINE_CLASS(ags_desk_parent_class)->map_recall(machine);
+  AGS_MACHINE_CLASS(ags_desk_parent_class)->map_recall(machine);  
+}
+
+void
+ags_desk_output_map_recall(AgsDesk *desk,
+			   guint audio_channel_start,
+			   guint output_pad_start)
+{  
+  AgsAudio *audio;
+
+  guint output_pads;
+
+  if(desk->mapped_output_pad > output_pad_start){
+    return;
+  }
+
+  audio = AGS_MACHINE(desk)->audio;
+  
+  /* get some fields */
+  g_object_get(audio,
+	       "output-pads", &output_pads,
+	       NULL);
+  
+  desk->mapped_output_pad = output_pads;
+}
+
+void
+ags_desk_input_map_recall(AgsDesk *desk,
+			  guint audio_channel_start,
+			  guint input_pad_start)
+{
+  AgsAudio *audio;
+
+  GList *start_recall;
+
+  guint input_pads;
+  guint audio_channels;
+  gint position;
+
+  if(desk->mapped_input_pad > input_pad_start){
+    return;
+  }
+
+  audio = AGS_MACHINE(desk)->audio;
+
+  position = 0;
+
+  input_pads = 0;
+  audio_channels = 0;
+
+  /* get some fields */
+  g_object_get(audio,
+	       "input-pads", &input_pads,
+	       "audio-channels", &audio_channels,
+	       NULL);
+
+  /* ags-fx-playback */
+  start_recall = ags_fx_factory_create(audio,
+				       desk->playback_play_container, desk->playback_recall_container,
+				       "ags-fx-playback",
+				       NULL,
+				       NULL,
+				       audio_channel_start, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP),
+				       0);
+
+  /* unref */
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-buffer */
+  start_recall = ags_fx_factory_create(audio,
+				       desk->buffer_play_container, desk->buffer_recall_container,
+				       "ags-fx-buffer",
+				       NULL,
+				       NULL,
+				       audio_channel_start, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP),
+				       0);
+
+  /* unref */
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+  
+  desk->mapped_input_pad = input_pads;
 }
 
 /**
@@ -271,7 +623,7 @@ ags_desk_new(GObject *soundcard)
 				  NULL);
 
   g_object_set(G_OBJECT(AGS_MACHINE(desk)->audio),
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       NULL);
 
   return(desk);

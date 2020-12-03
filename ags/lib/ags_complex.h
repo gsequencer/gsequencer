@@ -48,8 +48,8 @@ AgsComplex* ags_complex_alloc();
 gpointer ags_complex_copy(AgsComplex *ptr);
 void ags_complex_free(AgsComplex *ptr);
 
-double complex ags_complex_get(AgsComplex *ptr);
-void ags_complex_set(AgsComplex *ptr, double complex z);
+double _Complex ags_complex_get(AgsComplex *ptr);
+void ags_complex_set(AgsComplex *ptr, double _Complex z);
 
 G_END_DECLS
 

@@ -54,6 +54,7 @@
 #include <ags/X/machine/ags_sfz_synth.h>
 
 #include <ags/X/machine/ags_audiorec.h>
+#include <ags/X/machine/ags_desk.h>
 
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
@@ -763,6 +764,25 @@ ags_menu_action_add_audiorec_callback(GtkWidget *menu_item, gpointer data)
   audiorec = ags_machine_util_new_audiorec();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(audiorec)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_menu_action_add_desk_callback(GtkWidget *menu_item, gpointer data)
+{
+  AgsDesk *desk;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+  
+  /* create desk */
+  desk = ags_machine_util_new_desk();
+
+  add_audio = ags_add_audio_new(AGS_MACHINE(desk)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 }
