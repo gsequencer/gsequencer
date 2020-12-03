@@ -542,8 +542,6 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SNDFILE_CFLAGS = @SNDFILE_CFLAGS@
 SNDFILE_LIBS = @SNDFILE_LIBS@
-SOUNDTOUCH_CFLAGS = @SOUNDTOUCH_CFLAGS@
-SOUNDTOUCH_LIBS = @SOUNDTOUCH_LIBS@
 STRIP = @STRIP@
 USE_NLS = @USE_NLS@
 UUID_CFLAGS = @UUID_CFLAGS@
@@ -791,9 +789,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/./gtk-doc.make $(am__con
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu docs/reference/libags-audio/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign docs/reference/libags-audio/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu docs/reference/libags-audio/Makefile
+	  $(AUTOMAKE) --foreign docs/reference/libags-audio/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \

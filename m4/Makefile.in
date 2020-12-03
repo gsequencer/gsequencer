@@ -293,8 +293,6 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SNDFILE_CFLAGS = @SNDFILE_CFLAGS@
 SNDFILE_LIBS = @SNDFILE_LIBS@
-SOUNDTOUCH_CFLAGS = @SOUNDTOUCH_CFLAGS@
-SOUNDTOUCH_LIBS = @SOUNDTOUCH_LIBS@
 STRIP = @STRIP@
 USE_NLS = @USE_NLS@
 UUID_CFLAGS = @UUID_CFLAGS@
@@ -421,9 +419,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu m4/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign m4/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu m4/Makefile
+	  $(AUTOMAKE) --foreign m4/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \

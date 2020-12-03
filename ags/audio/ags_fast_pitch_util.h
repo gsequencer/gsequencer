@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_FILTER_UTIL_H__
-#define __AGS_FILTER_UTIL_H__
+#ifndef __AGS_FAST_PITCH_UTIL_H__
+#define __AGS_FAST_PITCH_UTIL_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -72,4 +72,4 @@ void ags_fast_pitch_util_compute_complex(AgsComplex *buffer,
 
 G_END_DECLS
 
-#endif /*__AGS_FILTER_UTIL_H__*/
+#endif /*__AGS_FAST_PITCH_UTIL_H__*/
