@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.6.29\n"
+"Project-Id-Version: gsequencer 3.7.0\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-11-27 22:10+0100\n"
+"POT-Creation-Date: 2020-12-03 16:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -179,39 +179,43 @@ msgid "Audiorec"
 msgstr ""
 
 #: ags/X/ags_context_menu.c:224 ags/X/ags_menu_bar.c:221
+msgid "Desk"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:229 ags/X/ags_menu_bar.c:226
 msgid "Automation"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:230 ags/X/ags_menu_bar.c:227
+#: ags/X/ags_context_menu.c:235 ags/X/ags_menu_bar.c:232
 msgid "Wave"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:239 ags/X/ags_menu_bar.c:236
+#: ags/X/ags_context_menu.c:244 ags/X/ags_menu_bar.c:241
 msgid "Preferences"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:249 ags/X/ags_machine.c:3713
-#: ags/X/ags_menu_bar.c:246
+#: ags/X/ags_context_menu.c:254 ags/X/ags_machine.c:3713
+#: ags/X/ags_menu_bar.c:251
 msgid "import"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:252 ags/X/ags_menu_bar.c:249
+#: ags/X/ags_context_menu.c:257 ags/X/ags_menu_bar.c:254
 msgid "export track"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:258 ags/X/ags_menu_bar.c:255
+#: ags/X/ags_context_menu.c:263 ags/X/ags_menu_bar.c:260
 msgid "playback"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:264 ags/X/ags_menu_bar.c:261
+#: ags/X/ags_context_menu.c:269 ags/X/ags_menu_bar.c:266
 msgid "_Help"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:270 ags/X/ags_menu_bar.c:267
+#: ags/X/ags_context_menu.c:275 ags/X/ags_menu_bar.c:272
 msgid "Online help"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:273 ags/X/ags_menu_bar.c:270
+#: ags/X/ags_context_menu.c:278 ags/X/ags_menu_bar.c:275
 msgid "About"
 msgstr ""
 
@@ -551,6 +555,14 @@ msgstr ""
 msgid "notation"
 msgstr ""
 
+#: ags/X/ags_online_help_window.c:129 ags/X/ags_online_help_window.c:272
+msgid "online help"
+msgstr ""
+
+#: ags/X/ags_online_help_window.c:171
+msgid "Place"
+msgstr ""
+
 #: ags/X/ags_osc_server_preferences.c:145
 msgid "Note: the fields below are applied immediately"
 msgstr ""
@@ -656,6 +668,18 @@ msgstr ""
 #: ags/X/import/ags_track_collection_mapper.c:224
 #: ags/X/machine/ags_ffplayer.c:427 ags/X/machine/ags_pitch_sampler.c:323
 msgid "enabled"
+msgstr ""
+
+#: ags/X/ags_quit_dialog.c:140
+msgid "accept all"
+msgstr ""
+
+#: ags/X/ags_quit_dialog.c:148
+msgid "Do you want to save before quit?"
+msgstr ""
+
+#: ags/X/ags_quit_dialog_callbacks.c:51
+msgid "Do you want to fast export before quit?"
 msgstr ""
 
 #: ags/X/ags_resize_editor.c:152 ags/X/ags_soundcard_editor.c:300
@@ -1238,16 +1262,24 @@ msgstr ""
 msgid "loading ...  "
 msgstr ""
 
-#: ags/X/machine/ags_desk.c:170
+#: ags/X/machine/ags_desk.c:222
 msgid "left"
 msgstr ""
 
-#: ags/X/machine/ags_desk.c:184
+#: ags/X/machine/ags_desk.c:236
 msgid "right"
 msgstr ""
 
-#: ags/X/machine/ags_desk_input_pad.c:163
+#: ags/X/machine/ags_desk_pad.c:186
 msgid "grab"
+msgstr ""
+
+#: ags/X/machine/ags_desk_pad.c:262
+msgid "filename"
+msgstr ""
+
+#: ags/X/machine/ags_desk_pad.c:271
+msgid "selected"
 msgstr ""
 
 #: ags/X/machine/ags_drum.c:279
@@ -1402,8 +1434,8 @@ msgid "auto update"
 msgstr ""
 
 #: ags/X/machine/ags_fm_syncsynth.c:268 ags/X/machine/ags_fm_synth.c:200
-#: ags/X/machine/ags_syncsynth.c:271 ags/X/machine/ags_synth.c:199
-#: ags/X/machine/ags_sf2_synth.c:373
+#: ags/X/machine/ags_sf2_synth.c:373 ags/X/machine/ags_syncsynth.c:271
+#: ags/X/machine/ags_synth.c:199
 msgid "lower"
 msgstr ""
 
@@ -1435,6 +1467,10 @@ msgstr ""
 
 #: ags/X/machine/ags_pitch_sampler_file.c:191
 msgid "base key"
+msgstr ""
+
+#: ags/X/machine/ags_sf2_synth.c:306
+msgid "bank"
 msgstr ""
 
 #: ags/audio/osc/ags_osc_response.c:167
@@ -1475,28 +1511,4 @@ msgstr ""
 
 #: ags/server/security/ags_security_context.c:145
 msgid "The certificates as string"
-msgstr ""
-
-#: ags/X/machine/ags_sf2_synth.c:306
-msgid "bank"
-msgstr ""
-
-#: ags/X/ags_online_help_window.c:129 ags/X/ags_online_help_window.c:272
-msgid "online help"
-msgstr ""
-
-#: ags/X/ags_online_help_window.c:171
-msgid "Place"
-msgstr ""
-
-#: ags/X/ags_quit_dialog.c:140
-msgid "accept all"
-msgstr ""
-
-#: ags/X/ags_quit_dialog.c:148
-msgid "Do you want to save before quit?"
-msgstr ""
-
-#: ags/X/ags_quit_dialog_callbacks.c:51
-msgid "Do you want to fast export before quit?"
 msgstr ""

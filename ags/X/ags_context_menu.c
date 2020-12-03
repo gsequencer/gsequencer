@@ -220,8 +220,10 @@ ags_context_menu_init(AgsContextMenu *context_menu)
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Audiorec"));
   gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
 
+#if 0
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Desk"));
   gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+#endif
   
   /* automation */
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Automation"));
@@ -401,9 +403,11 @@ ags_context_menu_connect(AgsConnectable *connectable)
 		   G_CALLBACK (ags_menu_action_add_audiorec_callback), (gpointer) context_menu);
   list2 = list2->next;
 
+#if 0
   g_signal_connect(G_OBJECT (list2->data), "activate",
 		   G_CALLBACK (ags_menu_action_add_desk_callback), (gpointer) context_menu);
   list2 = list2->next;
+#endif
   
   /* ladspa */
   list3_start = 

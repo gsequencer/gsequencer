@@ -1,7 +1,6 @@
 ags (3.7.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented new machine AgsDesk?
 	* improved ags_fast_pitch_util.c to do loudness correction
 	* minor improvements
 

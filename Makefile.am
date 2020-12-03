@@ -3174,7 +3174,10 @@ update-po: check-gettext
 	else \
 		rm $(srcdir)/po/POTFILES.in ; \
 		touch $(srcdir)/po/POTFILES.in ; \
+		rm $(srcdir)/po/POTFILES.in.in ; \
+		touch $(srcdir)/po/POTFILES.in.in ; \
 		cat $(srcdir)/license-notice-gnu-gpl-3-0+-sym.txt >> $(srcdir)/po/POTFILES.in.in ; \
+		echo -e -n "\n" >> $(srcdir)/po/POTFILES.in.in ; \
 		cat $(srcdir)/po/POTFILES.in.2 >> $(srcdir)/po/POTFILES.in.in ; \
 		mv $(srcdir)/po/POTFILES.in.2 $(srcdir)/po/POTFILES.in ; \
 	fi
