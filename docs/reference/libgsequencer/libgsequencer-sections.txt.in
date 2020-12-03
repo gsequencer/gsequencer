@@ -492,25 +492,49 @@ ags_desk_resize_pads_callback
 </SECTION>
 
 <SECTION>
-<FILE>ags_desk_input_pad</FILE>
-<TITLE>AgsDeskInputPad</TITLE>
-AgsDeskInputPadFlags
-ags_desk_input_pad_new
+<FILE>ags_desk_file_chooser</FILE>
+<TITLE>AgsDeskFileChooser</TITLE>
+ags_desk_file_chooser_new
 <SUBSECTION Public>
-AGS_DESK_INPUT_PAD
-AGS_DESK_INPUT_PAD_CLASS
-AGS_DESK_INPUT_PAD_GET_CLASS
-AGS_IS_DESK_INPUT_PAD
-AGS_IS_DESK_INPUT_PAD_CLASS
-AGS_TYPE_DESK_INPUT_PAD
-AgsDeskInputPad
-AgsDeskInputPadClass
-ags_desk_input_pad_get_type
+AGS_DESK_FILE_CHOOSER
+AGS_DESK_FILE_CHOOSER_CLASS
+AGS_DESK_FILE_CHOOSER_GET_CLASS
+AGS_IS_DESK_FILE_CHOOSER
+AGS_IS_DESK_FILE_CHOOSER_CLASS
+AGS_TYPE_DESK_FILE_CHOOSER
+AgsDeskFileChooser
+AgsDeskFileChooserClass
+ags_desk_file_chooser_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_desk_input_pad_callbacks</FILE>
+<FILE>ags_desk_pad</FILE>
+<TITLE>AgsDeskPad</TITLE>
+AgsDeskPadFlags
+ags_desk_pad_add_filename
+ags_desk_pad_remove_nth_filename
+ags_desk_pad_new
+<SUBSECTION Public>
+AGS_DESK_PAD
+AGS_DESK_PAD_CLASS
+AGS_DESK_PAD_GET_CLASS
+AGS_IS_DESK_PAD
+AGS_IS_DESK_PAD_CLASS
+AGS_TYPE_DESK_PAD
+AgsDeskPad
+AgsDeskPadClass
+ags_desk_pad_get_type
+</SECTION>
 
+<SECTION>
+<FILE>ags_desk_pad_callbacks</FILE>
+ags_desk_pad_play_callback
+ags_desk_pad_grab_filename_callback
+ags_desk_pad_volume_callback
+ags_desk_pad_move_up_callback
+ags_desk_pad_move_down_callback
+ags_desk_pad_add_callback
+ags_desk_pad_remove_callback
 </SECTION>
 
 <SECTION>
@@ -1848,6 +1872,7 @@ AgsMachineConnectionOptions
 AgsMachineExportOptions
 AgsMachineImportOptions
 AgsMachineAutomationPort
+ags_machine_reset_pattern_envelope
 ags_machine_automation_port_alloc
 ags_machine_automation_port_free
 ags_machine_automation_port_find_channel_type_with_control_name
@@ -2089,6 +2114,7 @@ ags_machine_util_new_sf2_synth
 ags_machine_util_new_pitch_sampler
 ags_machine_util_new_sfz_synth
 ags_machine_util_new_audiorec
+ags_machine_util_new_desk
 ags_machine_util_new_ladspa_bridge
 ags_machine_util_new_dssi_bridge
 ags_machine_util_new_lv2_bridge
@@ -2196,6 +2222,7 @@ ags_menu_action_add_sf2_synth_callback
 ags_menu_action_add_pitch_sampler_callback
 ags_menu_action_add_sfz_synth_callback
 ags_menu_action_add_audiorec_callback
+ags_menu_action_add_desk_callback
 ags_menu_action_add_ladspa_bridge_callback
 ags_menu_action_add_dssi_bridge_callback
 ags_menu_action_add_lv2_bridge_callback
