@@ -27,6 +27,8 @@
 
 #include <ags/thread/ags_worker_thread.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_DESTROY_WORKER                (ags_destroy_worker_get_type())
 #define AGS_DESTROY_WORKER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DESTROY_WORKER, AgsDestroyWorker))
 #define AGS_DESTROY_WORKER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_DESTROY_WORKER, AgsDestroyWorkerClass))
@@ -82,5 +84,7 @@ void ags_destroy_worker_add(AgsDestroyWorker *destroy_worker,
 AgsDestroyWorker* ags_destroy_worker_get_instance();
 
 AgsDestroyWorker* ags_destroy_worker_new();
+
+G_END_DECLS
 
 #endif /*__AGS_DESTROY_WORKER_H__*/

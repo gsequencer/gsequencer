@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_LED                (ags_led_get_type())
 #define AGS_LED(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LED, AgsLed))
 #define AGS_LED_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LED, AgsLedClass))
@@ -62,5 +64,7 @@ void ags_led_set_active(AgsLed *led);
 void ags_led_unset_active(AgsLed *led);
 
 AgsLed* ags_led_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LED_H__*/

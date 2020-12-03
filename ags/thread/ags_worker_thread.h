@@ -25,6 +25,8 @@
 
 #include <ags/thread/ags_thread.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_WORKER_THREAD                (ags_worker_thread_get_type())
 #define AGS_TYPE_WORKER_THREAD_STATUS_FLAGS   (ags_worker_thread_status_flags_get_type())
 #define AGS_WORKER_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_WORKER_THREAD, AgsWorkerThread))
@@ -86,5 +88,7 @@ void* ags_woker_thread_do_poll_loop(void *ptr);
 void ags_worker_thread_do_poll(AgsWorkerThread *worker_thread);
 
 AgsWorkerThread* ags_worker_thread_new();
+
+G_END_DECLS
 
 #endif /*__AGS_WORKER_THREAD_H__*/

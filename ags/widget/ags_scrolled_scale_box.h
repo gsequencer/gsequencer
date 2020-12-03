@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 #include <gtk/gtk.h>
 
 #include <ags/widget/ags_scale_box.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SCROLLED_SCALE_BOX                (ags_scrolled_scale_box_get_type())
 #define AGS_SCROLLED_SCALE_BOX(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCROLLED_SCALE_BOX, AgsScrolledScaleBox))
@@ -59,5 +61,7 @@ struct _AgsScrolledScaleBoxClass
 GType ags_scrolled_scale_box_get_type(void);
 
 AgsScrolledScaleBox* ags_scrolled_scale_box_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SCROLLED_SCALE_BOX_H__*/

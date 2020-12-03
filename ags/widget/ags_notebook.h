@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_NOTEBOOK                (ags_notebook_get_type())
 #define AGS_NOTEBOOK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTEBOOK, AgsNotebook))
 #define AGS_NOTEBOOK_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_NOTEBOOK, AgsNotebookClass))
@@ -116,5 +118,7 @@ void ags_notebook_remove_tab_with_data(AgsNotebook *notebook,
 				       gpointer data);
 
 AgsNotebook* ags_notebook_new();
+
+G_END_DECLS
 
 #endif /*__AGS_NOTEBOOK_H__*/

@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_INDICATOR                (ags_indicator_get_type())
 #define AGS_INDICATOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_INDICATOR, AgsIndicator))
 #define AGS_INDICATOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_INDICATOR, AgsIndicatorClass))
@@ -84,5 +86,7 @@ void ags_indicator_set_adjustment(AgsIndicator *indicator,
 
 /* instantiate */
 AgsIndicator* ags_indicator_new();
+
+G_END_DECLS
 
 #endif /*__AGS_INDICATOR_H__*/

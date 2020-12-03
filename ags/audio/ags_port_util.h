@@ -29,10 +29,14 @@
 
 #include <ags/audio/ags_port.h>
 
+G_BEGIN_DECLS
+
 void ags_port_util_load_ladspa_conversion(AgsPort *port,
 					  AgsPluginPort *plugin_port);
 
 void ags_port_util_load_lv2_conversion(AgsPort *port,
 				       AgsPluginPort *plugin_port);
+
+G_END_DECLS
 
 #endif /*__AGS_PORT_UTIL_H__*/

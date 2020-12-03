@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 #include <gtk/gtk.h>
 
 #include "ags_indicator.h"
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_VINDICATOR                (ags_vindicator_get_type())
 #define AGS_VINDICATOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_VINDICATOR, AgsVIndicator))
@@ -54,6 +56,6 @@ GType ags_vindicator_get_type(void);
 
 AgsVIndicator* ags_vindicator_new();
 
+G_END_DECLS
+
 #endif /*__AGS_VINDICATOR_H__*/
-
-

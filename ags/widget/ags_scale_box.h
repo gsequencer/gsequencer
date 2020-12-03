@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SCALE_BOX                (ags_scale_box_get_type())
 #define AGS_SCALE_BOX(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCALE_BOX, AgsScaleBox))
@@ -60,5 +62,7 @@ struct _AgsScaleBoxClass
 GType ags_scale_box_get_type(void);
 
 AgsScaleBox* ags_scale_box_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SCALE_BOX_H__*/

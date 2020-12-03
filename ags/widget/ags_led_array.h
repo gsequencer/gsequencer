@@ -27,6 +27,8 @@
 
 #include "ags_led.h"
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_LED_ARRAY                (ags_led_array_get_type())
 #define AGS_LED_ARRAY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LED_ARRAY, AgsLedArray))
 #define AGS_LED_ARRAY_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LED_ARRAY, AgsLedArrayClass))
@@ -86,5 +88,7 @@ void ags_led_array_set_nth(AgsLedArray *led_array,
 
 /* instantiate */
 AgsLedArray* ags_led_array_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LED_ARRAY_H__*/

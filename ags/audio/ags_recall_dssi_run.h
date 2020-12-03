@@ -32,6 +32,8 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_RECALL_DSSI_RUN                (ags_recall_dssi_run_get_type())
 #define AGS_RECALL_DSSI_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_DSSI_RUN, AgsRecallDssiRun))
 #define AGS_RECALL_DSSI_RUN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RECALL_DSSI_RUN, AgsRecallDssiRunClass))
@@ -72,5 +74,7 @@ struct _AgsRecallDssiRunClass
 GType ags_recall_dssi_run_get_type();
 
 AgsRecallDssiRun* ags_recall_dssi_run_new(AgsAudioSignal *source);
+
+G_END_DECLS
 
 #endif /*__AGS_RECALL_DSSI_RUN_H__*/

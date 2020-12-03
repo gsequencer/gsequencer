@@ -27,6 +27,8 @@
 
 #include <gtk/gtk.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_CARTESIAN                (ags_cartesian_get_type())
 #define AGS_CARTESIAN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CARTESIAN, AgsCartesian))
 #define AGS_CARTESIAN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CARTESIAN, AgsCartesianClass))
@@ -483,5 +485,7 @@ void ags_cartesian_fill_label(AgsCartesian *cartesian,
 
 /* instantiate */
 AgsCartesian* ags_cartesian_new();
+
+G_END_DECLS
 
 #endif /*__AGS_CARTESIAN_H__*/

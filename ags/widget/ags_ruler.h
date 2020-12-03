@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_RULER                (ags_ruler_get_type())
 #define AGS_RULER(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_RULER, AgsRuler))
 #define AGS_RULER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_RULER, AgsRulerClass))
@@ -92,5 +94,7 @@ void ags_ruler_set_adjustment(AgsRuler *ruler,
 
 /* instantiate */
 AgsRuler* ags_ruler_new();
+
+G_END_DECLS
 
 #endif /*__AGS_RULER_H__*/

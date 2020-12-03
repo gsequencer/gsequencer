@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,8 @@
 
 #include "ags_led_array.h"
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_VLED_ARRAY                (ags_vled_array_get_type())
 #define AGS_VLED_ARRAY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_VLED_ARRAY, AgsVLedArray))
 #define AGS_VLED_ARRAY_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_VLED_ARRAY, AgsVLedArrayClass))
@@ -50,5 +52,7 @@ struct _AgsVLedArrayClass
 GType ags_vled_array_get_type(void);
 
 AgsVLedArray* ags_vled_array_new();
+
+G_END_DECLS
 
 #endif /*__AGS_VLED_ARRAY_H__*/

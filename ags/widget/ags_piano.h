@@ -27,6 +27,8 @@
 
 #include <ags/widget/ags_piano_keys.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_PIANO                (ags_piano_get_type())
 #define AGS_PIANO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PIANO, AgsPiano))
 #define AGS_PIANO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PIANO, AgsPianoClass))
@@ -166,5 +168,7 @@ gint* ags_piano_get_active_key(AgsPiano *piano,
 
 /* instantiate */
 AgsPiano* ags_piano_new();
+
+G_END_DECLS
 
 #endif /*__AGS_PIANO_H__*/

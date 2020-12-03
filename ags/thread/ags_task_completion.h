@@ -25,6 +25,8 @@
 
 #include <ags/lib/ags_uuid.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_TASK_COMPLETION                (ags_task_completion_get_type())
 #define AGS_TYPE_TASK_COMPLETION_FLAGS          (ags_task_completion_flags_get_type())
 #define AGS_TASK_COMPLETION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TASK_COMPLETION, AgsTaskCompletion))
@@ -91,6 +93,8 @@ void ags_task_completion_complete(AgsTaskCompletion *task_completion);
 
 AgsTaskCompletion* ags_task_completion_new(GObject *task,
 					   gpointer data);
+
+G_END_DECLS
 
 #endif /*__AGS_TASK_COMPLETION_H__*/
 

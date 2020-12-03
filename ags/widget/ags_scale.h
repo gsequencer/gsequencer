@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SCALE                (ags_scale_get_type())
 #define AGS_SCALE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCALE, AgsScale))
 #define AGS_SCALE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SCALE, AgsScaleClass))
@@ -143,5 +145,7 @@ void ags_scale_value_changed(AgsScale *scale,
 
 /* instantiate */
 AgsScale* ags_scale_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SCALE_H__*/

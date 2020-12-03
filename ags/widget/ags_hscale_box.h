@@ -27,6 +27,8 @@
 
 #include <ags/widget/ags_scale_box.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_HSCALE_BOX                (ags_hscale_box_get_type())
 #define AGS_HSCALE_BOX(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_HSCALE_BOX, AgsHScaleBox))
 #define AGS_HSCALE_BOX_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_HSCALE_BOX, AgsHScaleBoxClass))
@@ -50,5 +52,7 @@ struct _AgsHScaleBoxClass
 GType ags_hscale_box_get_type(void);
 
 AgsHScaleBox* ags_hscale_box_new();
+
+G_END_DECLS
 
 #endif /*__AGS_HSCALE_BOX_H__*/
