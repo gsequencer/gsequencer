@@ -86,7 +86,8 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
 
   gint8 *im_buffer;
 
-  gint midi_key, current_midi_key;
+  gint key;
+  gint pitch_keycenter;
   guint frame_count;
   gdouble base_key;
   gdouble tuning;
@@ -170,50 +171,17 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
 					      frame_count, copy_mode);
   
   /* pitch */
-  midi_key = 60;
+  key = ags_sfz_sample_get_key(sfz_sample);
+  pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
 
-  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
-					   "key");
-
-  if(group_key != NULL){
-    int retval;
-    
-    retval = sscanf(group_key, "%d", &current_midi_key);
-
-    if(retval <= 0){
-      retval = ags_diatonic_scale_note_to_midi_key(group_key,
-						   &current_midi_key);
-
-      if(retval > 0){
-	midi_key = current_midi_key;
-      }
-    }
-
-    g_free(group_key);
+  if(key >= 0){
+    base_key = (gdouble) key - 22.0;
+  }else if(pitch_keycenter >= 0){
+    base_key = (gdouble) pitch_keycenter - 22.0;
+  }else{
+    base_key = 48.0;
   }
   
-  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
-					     "key");
-  
-  if(region_key != NULL){
-    int retval;
-
-    retval = sscanf(region_key, "%d", &current_midi_key);
-
-    if(retval <= 0){
-      retval = ags_diatonic_scale_note_to_midi_key(region_key,
-						   &current_midi_key);
-
-      if(retval > 0){
-	midi_key = current_midi_key;
-      }
-    }
-
-    g_free(region_key);
-  }
-    
-  base_key = (gdouble) midi_key - 21.0;
-
   tuning = 100.0 * (note - base_key);
   
   ags_fast_pitch_util_compute_s8(im_buffer,
@@ -384,7 +352,8 @@ ags_sfz_synth_util_copy_s16(gint16 *buffer,
 
   gint16 *im_buffer;
 
-  gint midi_key, current_midi_key;
+  gint key;
+  gint pitch_keycenter;
   guint frame_count;
   gdouble base_key;
   gdouble tuning;
@@ -468,49 +437,16 @@ ags_sfz_synth_util_copy_s16(gint16 *buffer,
 					      frame_count, copy_mode);
 
   /* pitch */
-  midi_key = 60;
-  
-  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
-					   "key");
+  key = ags_sfz_sample_get_key(sfz_sample);
+  pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
 
-  if(group_key != NULL){
-    int retval;
-    
-    retval = sscanf(group_key, "%d", &current_midi_key);
-
-    if(retval <= 0){
-      retval = ags_diatonic_scale_note_to_midi_key(group_key,
-						   &current_midi_key);
-
-      if(retval > 0){
-	midi_key = current_midi_key;
-      }
-    }
-
-    g_free(group_key);
+  if(key >= 0){
+    base_key = (gdouble) key - 22.0;
+  }else if(pitch_keycenter >= 0){
+    base_key = (gdouble) pitch_keycenter - 22.0;
+  }else{
+    base_key = 48.0;
   }
-  
-  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
-					     "key");
-
-  if(region_key != NULL){
-    int retval;
-    
-    retval = sscanf(region_key, "%d", &current_midi_key);
-
-    if(retval <= 0){
-      retval = ags_diatonic_scale_note_to_midi_key(region_key,
-						   &current_midi_key);
-
-      if(retval > 0){
-	midi_key = current_midi_key;
-      }
-    }
-
-    g_free(region_key);
-  }
-  
-  base_key = (gdouble) midi_key - 21.0;
 
   tuning = 100.0 * (note - base_key);
   
@@ -682,7 +618,8 @@ ags_sfz_synth_util_copy_s24(gint32 *buffer,
 
   gint32 *im_buffer;
 
-  gint midi_key, current_midi_key;
+  gint key;
+  gint pitch_keycenter;
   guint frame_count;
   gdouble base_key;
   gdouble tuning;
@@ -766,49 +703,16 @@ ags_sfz_synth_util_copy_s24(gint32 *buffer,
 					      frame_count, copy_mode);
 
   /* pitch */
-  midi_key = 60;
-  
-  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
-					   "key");
+  key = ags_sfz_sample_get_key(sfz_sample);
+  pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
 
-  if(group_key != NULL){
-    int retval;
-    
-    retval = sscanf(group_key, "%d", &current_midi_key);
-
-    if(retval <= 0){
-      retval = ags_diatonic_scale_note_to_midi_key(group_key,
-						   &current_midi_key);
-
-      if(retval > 0){
-	midi_key = current_midi_key;
-      }
-    }
-
-    g_free(group_key);
+  if(key >= 0){
+    base_key = (gdouble) key - 22.0;
+  }else if(pitch_keycenter >= 0){
+    base_key = (gdouble) pitch_keycenter - 22.0;
+  }else{
+    base_key = 48.0;
   }
-  
-  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
-					     "key");
-
-  if(region_key != NULL){
-    int retval;
-    
-    retval = sscanf(region_key, "%d", &current_midi_key);
-
-    if(retval <= 0){
-      retval = ags_diatonic_scale_note_to_midi_key(region_key,
-						   &current_midi_key);
-
-      if(retval > 0){
-	midi_key = current_midi_key;
-      }
-    }
-
-    g_free(region_key);
-  }
-  
-  base_key = (gdouble) midi_key - 21.0;
 
   tuning = 100.0 * (note - base_key);
   
@@ -980,7 +884,8 @@ ags_sfz_synth_util_copy_s32(gint32 *buffer,
 
   gint32 *im_buffer;
 
-  gint midi_key, current_midi_key;
+  gint key;
+  gint pitch_keycenter;
   guint frame_count;
   gdouble base_key;
   gdouble tuning;
@@ -1064,49 +969,16 @@ ags_sfz_synth_util_copy_s32(gint32 *buffer,
 					      frame_count, copy_mode);
 
   /* pitch */
-  midi_key = 60;
-  
-  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
-					   "key");
+  key = ags_sfz_sample_get_key(sfz_sample);
+  pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
 
-  if(group_key != NULL){
-    int retval;
-    
-    retval = sscanf(group_key, "%d", &current_midi_key);
-
-    if(retval <= 0){
-      retval = ags_diatonic_scale_note_to_midi_key(group_key,
-						   &current_midi_key);
-
-      if(retval > 0){
-	midi_key = current_midi_key;
-      }
-    }
-
-    g_free(group_key);
+  if(key >= 0){
+    base_key = (gdouble) key - 22.0;
+  }else if(pitch_keycenter >= 0){
+    base_key = (gdouble) pitch_keycenter - 22.0;
+  }else{
+    base_key = 48.0;
   }
-  
-  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
-					     "key");
-
-  if(region_key != NULL){
-    int retval;
-    
-    retval = sscanf(region_key, "%d", &current_midi_key);
-
-    if(retval <= 0){
-      retval = ags_diatonic_scale_note_to_midi_key(region_key,
-						   &current_midi_key);
-
-      if(retval > 0){
-	midi_key = current_midi_key;
-      }
-    }
-
-    g_free(region_key);
-  }
-  
-  base_key = (gdouble) midi_key - 21.0;
 
   tuning = 100.0 * (note - base_key);
   
@@ -1278,7 +1150,8 @@ ags_sfz_synth_util_copy_s64(gint64 *buffer,
 
   gint64 *im_buffer;
 
-  gint midi_key, current_midi_key;
+  gint key;
+  gint pitch_keycenter;
   guint frame_count;
   gdouble base_key;
   gdouble tuning;
@@ -1362,49 +1235,16 @@ ags_sfz_synth_util_copy_s64(gint64 *buffer,
 					      frame_count, copy_mode);
 
   /* pitch */
-  midi_key = 60;
-  
-  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
-					   "key");
+  key = ags_sfz_sample_get_key(sfz_sample);
+  pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
 
-  if(group_key != NULL){
-    int retval;
-    
-    retval = sscanf(group_key, "%d", &current_midi_key);
-
-    if(retval <= 0){
-      retval = ags_diatonic_scale_note_to_midi_key(group_key,
-						   &current_midi_key);
-
-      if(retval > 0){
-	midi_key = current_midi_key;
-      }
-    }
-
-    g_free(group_key);
+  if(key >= 0){
+    base_key = (gdouble) key - 22.0;
+  }else if(pitch_keycenter >= 0){
+    base_key = (gdouble) pitch_keycenter - 22.0;
+  }else{
+    base_key = 48.0;
   }
-  
-  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
-					     "key");
-
-  if(region_key != NULL){
-    int retval;
-    
-    retval = sscanf(region_key, "%d", &current_midi_key);
-
-    if(retval <= 0){
-      retval = ags_diatonic_scale_note_to_midi_key(region_key,
-						   &current_midi_key);
-
-      if(retval > 0){
-	midi_key = current_midi_key;
-      }
-    }
-
-    g_free(region_key);
-  }
-  
-  base_key = (gdouble) midi_key - 21.0;
 
   tuning = 100.0 * (note - base_key);
   
@@ -1576,7 +1416,8 @@ ags_sfz_synth_util_copy_float(gfloat *buffer,
 
   gfloat *im_buffer;
 
-  gint midi_key, current_midi_key;
+  gint key;
+  gint pitch_keycenter;
   guint frame_count;
   gdouble base_key;
   gdouble tuning;
@@ -1660,49 +1501,16 @@ ags_sfz_synth_util_copy_float(gfloat *buffer,
 					      frame_count, copy_mode);
 
   /* pitch */
-  midi_key = 60;
-  
-  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
-					   "key");
+  key = ags_sfz_sample_get_key(sfz_sample);
+  pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
 
-  if(group_key != NULL){
-    int retval;
-    
-    retval = sscanf(group_key, "%d", &current_midi_key);
-
-    if(retval <= 0){
-      retval = ags_diatonic_scale_note_to_midi_key(group_key,
-						   &current_midi_key);
-
-      if(retval > 0){
-	midi_key = current_midi_key;
-      }
-    }
-
-    g_free(group_key);
+  if(key >= 0){
+    base_key = (gdouble) key - 22.0;
+  }else if(pitch_keycenter >= 0){
+    base_key = (gdouble) pitch_keycenter - 22.0;
+  }else{
+    base_key = 48.0;
   }
-  
-  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
-					     "key");
-
-  if(region_key != NULL){
-    int retval;
-    
-    retval = sscanf(region_key, "%d", &current_midi_key);
-
-    if(retval <= 0){
-      retval = ags_diatonic_scale_note_to_midi_key(region_key,
-						   &current_midi_key);
-
-      if(retval > 0){
-	midi_key = current_midi_key;
-      }
-    }
-
-    g_free(region_key);
-  }
-  
-  base_key = (gdouble) midi_key - 21.0;
 
   tuning = 100.0 * (note - base_key);
   
@@ -1874,7 +1682,8 @@ ags_sfz_synth_util_copy_double(gdouble *buffer,
 
   gdouble *im_buffer;
 
-  gint midi_key, current_midi_key;
+  gint key;
+  gint pitch_keycenter;
   guint frame_count;
   gdouble base_key;
   gdouble tuning;
@@ -1958,49 +1767,16 @@ ags_sfz_synth_util_copy_double(gdouble *buffer,
 					      frame_count, copy_mode);
 
   /* pitch */
-  midi_key = 60;
-  
-  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
-					   "key");
+  key = ags_sfz_sample_get_key(sfz_sample);
+  pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
 
-  if(group_key != NULL){
-    int retval;
-    
-    retval = sscanf(group_key, "%d", &current_midi_key);
-
-    if(retval <= 0){
-      retval = ags_diatonic_scale_note_to_midi_key(group_key,
-						   &current_midi_key);
-
-      if(retval > 0){
-	midi_key = current_midi_key;
-      }
-    }
-
-    g_free(group_key);
+  if(key >= 0){
+    base_key = (gdouble) key - 22.0;
+  }else if(pitch_keycenter >= 0){
+    base_key = (gdouble) pitch_keycenter - 22.0;
+  }else{
+    base_key = 48.0;
   }
-  
-  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
-					     "key");
-
-  if(region_key != NULL){
-    int retval;
-    
-    retval = sscanf(region_key, "%d", &current_midi_key);
-
-    if(retval <= 0){
-      retval = ags_diatonic_scale_note_to_midi_key(region_key,
-						   &current_midi_key);
-
-      if(retval > 0){
-	midi_key = current_midi_key;
-      }
-    }
-
-    g_free(region_key);
-  }
-  
-  base_key = (gdouble) midi_key - 21.0;
 
   tuning = 100.0 * (note - base_key);
   
@@ -2172,7 +1948,8 @@ ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
 
   AgsComplex *im_buffer;
 
-  gint midi_key, current_midi_key;
+  gint key;
+  gint pitch_keycenter;
   guint frame_count;
   gdouble base_key;
   gdouble tuning;
@@ -2256,49 +2033,16 @@ ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
 					      frame_count, copy_mode);
 
   /* pitch */
-  midi_key = 60;
-  
-  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
-					   "key");
+  key = ags_sfz_sample_get_key(sfz_sample);
+  pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
 
-  if(group_key != NULL){
-    int retval;
-    
-    retval = sscanf(group_key, "%d", &current_midi_key);
-
-    if(retval <= 0){
-      retval = ags_diatonic_scale_note_to_midi_key(group_key,
-						   &current_midi_key);
-
-      if(retval > 0){
-	midi_key = current_midi_key;
-      }
-    }
-
-    g_free(group_key);
+  if(key >= 0){
+    base_key = (gdouble) key - 22.0;
+  }else if(pitch_keycenter >= 0){
+    base_key = (gdouble) pitch_keycenter - 22.0;
+  }else{
+    base_key = 48.0;
   }
-  
-  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
-					     "key");
-
-  if(region_key != NULL){
-    int retval;
-    
-    retval = sscanf(region_key, "%d", &current_midi_key);
-
-    if(retval <= 0){
-      retval = ags_diatonic_scale_note_to_midi_key(region_key,
-						   &current_midi_key);
-
-      if(retval > 0){
-	midi_key = current_midi_key;
-      }
-    }
-
-    g_free(region_key);
-  }
-  
-  base_key = (gdouble) midi_key - 21.0;
 
   tuning = 100.0 * (note - base_key);
   

@@ -684,7 +684,7 @@ ags_sf2_loader_run(void *ptr)
  * 
  * Get audio of @sf2_loader.
  * 
- * Returns: the assigned #AgsAudio
+ * Returns: (transfer full): the assigned #AgsAudio
  * 
  * Since: 3.2.0
  */
@@ -732,7 +732,7 @@ ags_sf2_loader_set_audio(AgsSF2Loader *sf2_loader,
  * 
  * Get filename of @sf2_loader.
  * 
- * Returns: the assigned filename
+ * Returns: (transfer full): the assigned filename
  * 
  * Since: 3.2.0
  */
@@ -780,7 +780,7 @@ ags_sf2_loader_set_filename(AgsSF2Loader *sf2_loader,
  * 
  * Get preset of @sf2_loader.
  * 
- * Returns: the assigned preset
+ * Returns: (transfer full): the assigned preset
  * 
  * Since: 3.2.0
  */
@@ -828,7 +828,7 @@ ags_sf2_loader_set_preset(AgsSF2Loader *sf2_loader,
  * 
  * Get instrument of @sf2_loader.
  * 
- * Returns: the assigned instrument
+ * Returns: (transfer full): the assigned instrument
  * 
  * Since: 3.2.0
  */

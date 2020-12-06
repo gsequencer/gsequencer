@@ -284,7 +284,7 @@ ags_audio_file_manager_remove_audio_file(AgsAudioFileManager *audio_file_manager
  * 
  * Find audio file by @filename.
  *
- * Returns: the matching #AgsAudioFile if found, otherwise %NULL
+ * Returns: (transfer none): the matching #AgsAudioFile if found, otherwise %NULL
  * 
  * Since: 3.4.0
  */
@@ -352,7 +352,7 @@ ags_audio_file_manager_find_audio_file(AgsAudioFileManager *audio_file_manager,
  * 
  * Get ags audio file manager instance.
  *
- * Returns: the #AgsAudioFileManager singleton
+ * Returns: (transfer none): the #AgsAudioFileManager singleton
  * 
  * Since: 3.4.0
  */

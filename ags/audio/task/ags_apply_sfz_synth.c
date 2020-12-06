@@ -430,7 +430,7 @@ ags_apply_sfz_synth_launch(AgsTask *task)
   if(channel != NULL){
     g_object_ref(channel);
 
-    for(i = 0; channel != NULL && i < apply_sfz_synth->count; i++){
+    for(i = 0; channel != NULL && i < count; i++){
       /* get some fields */
       g_object_get(channel,
 		   "first-recycling", &first_recycling,
@@ -456,7 +456,7 @@ ags_apply_sfz_synth_launch(AgsTask *task)
       }
 	
       /* compute audio signal */
-      note = apply_sfz_synth->base_note + i;
+      note = base_note + (gdouble) i + 48.0;
       
       ags_sfz_synth_generator_compute(sfz_synth_generator,
 				      (GObject *) audio_signal,

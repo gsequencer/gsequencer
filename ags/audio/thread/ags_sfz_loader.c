@@ -629,7 +629,7 @@ ags_sfz_loader_set_audio(AgsSFZLoader *sfz_loader,
  * 
  * Get filename of @sfz_loader.
  * 
- * Returns: the assigned filename
+ * Returns: (transfer full): the assigned filename
  * 
  * Since: 3.2.0
  */
@@ -677,7 +677,7 @@ ags_sfz_loader_set_filename(AgsSFZLoader *sfz_loader,
  * 
  * Get audio container of @sfz_loader.
  * 
- * Returns: the assigned #AgsAudioContainer
+ * Returns: (transfer full): the assigned #AgsAudioContainer
  * 
  * Since: 3.2.0
  */
