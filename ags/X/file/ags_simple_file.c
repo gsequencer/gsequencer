@@ -3254,8 +3254,28 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
   xmlChar *key_count;
   xmlChar *base_note;
   xmlChar *str;
+  xmlChar *version;
 
   gchar *value;
+      
+  guint major, minor, micro;
+      
+  /* fixup 3.7.3 */
+  version = xmlGetProp(simple_file->root_node,
+		       "version");
+    
+  major = 0;
+  minor = 0;
+  micro = 0;
+    
+  if(version != NULL){
+    sscanf(version, "%d.%d.%d",
+	   &major,
+	   &minor,
+	   &micro);
+
+    xmlFree(version);
+  }
 
   filename = xmlGetProp(node,
 			"filename");
@@ -3281,9 +3301,20 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
   }
 
   if(base_note != NULL){
-    gtk_spin_button_set_value(pitch_sampler->lower,
-			      g_ascii_strtod(base_note,
-					     NULL));
+    if(major < 3 ||
+       (major == 3 &&
+	minor < 7) ||
+       (major == 3 &&
+	minor == 7 &&
+	micro < 3)){
+      gtk_spin_button_set_value(pitch_sampler->lower,
+				g_ascii_strtod(base_note,
+					       NULL) - 48.0);
+    }else{
+      gtk_spin_button_set_value(pitch_sampler->lower,
+				g_ascii_strtod(base_note,
+					       NULL));
+    }
   }
 
   if(key_count != NULL){
@@ -3360,6 +3391,26 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   xmlChar *enable_synth_generator;
   xmlChar *key_count;
   xmlChar *base_note;
+  xmlChar *version;
+
+  guint major, minor, micro;
+      
+  /* fixup 3.7.3 */
+  version = xmlGetProp(simple_file->root_node,
+		       "version");
+    
+  major = 0;
+  minor = 0;
+  micro = 0;
+    
+  if(version != NULL){
+    sscanf(version, "%d.%d.%d",
+	   &major,
+	   &minor,
+	   &micro);
+
+    xmlFree(version);
+  }
   
   filename = xmlGetProp(node,
 			"filename");
@@ -3388,9 +3439,20 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   }
 
   if(base_note != NULL){
-    gtk_spin_button_set_value(ffplayer->lower,
-			      g_ascii_strtod(base_note,
-					     NULL));
+    if(major < 3 ||
+       (major == 3 &&
+	minor < 7) ||
+       (major == 3 &&
+	minor == 7 &&
+	micro < 3)){
+      gtk_spin_button_set_value(ffplayer->lower,
+				g_ascii_strtod(base_note,
+					       NULL) - 48.0);
+    }else{
+      gtk_spin_button_set_value(ffplayer->lower,
+				g_ascii_strtod(base_note,
+					       NULL));
+    }
   }
 
   if(key_count != NULL){

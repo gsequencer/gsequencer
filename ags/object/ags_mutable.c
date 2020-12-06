@@ -76,8 +76,8 @@ ags_mutable_set_muted(AgsMutable *agsmutable, gboolean muted)
 {
   AgsMutableInterface *mutable_interface;
 
-  g_return_if_fail(AGS_IS_MUTABLE(mutable));
-  mutable_interface = AGS_MUTABLE_GET_INTERFACE(mutable);
+  g_return_if_fail(AGS_IS_MUTABLE(agsmutable));
+  mutable_interface = AGS_MUTABLE_GET_INTERFACE(agsmutable);
   g_return_if_fail(mutable_interface->set_muted);
-  mutable_interface->set_muted(mutable, muted);
+  mutable_interface->set_muted(agsmutable, muted);
 }

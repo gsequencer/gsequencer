@@ -1,6 +1,7 @@
 ags (3.7.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* changed base key to lower of AgsPitchSampler and AgsFFPlayer
 	* improved SF2 support to select nearest sample
 	* improved SFZ support
 
