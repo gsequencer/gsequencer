@@ -1,5 +1,5 @@
 # Copyright (C) 2020 Daniel Maksymow, Joël Krähemann
-# 
+#
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved.  This file is offered as-is,
@@ -25,7 +25,8 @@ gsequencer_docdir = join_paths(gsequencer_prefix, get_option('datadir'), 'doc', 
 gnome = import('gnome')
 
 compiler = meson.get_compiler('c')
-# TODO: all dependencies have to be defined here globally
+# REMINDER: all dependencies have to be defined here globally
+# Just to prevent double check
 gtk_dependency = dependency('gtk+-3.0')
 glib_dependency = dependency('glib-2.0', version: '>= 2.56.0')
 gobject_dependency = dependency('gobject-2.0', version: '>= 2.56.0')
@@ -38,8 +39,7 @@ samplerate_dependency = dependency('samplerate')
 fftw3_dependency = dependency('fftw3')
 if get_option('alsa')
   alsa_dependency = dependency('alsa')
-# TODO: provide a special rules to recognize ladspa dependencies
-#  ladspa_dependency = dependency('ladspa')
+  compiler.check_header('ladspa.h', required: true)
 endif
 if get_option('jack')
   jack_dependency = dependency('jack')
