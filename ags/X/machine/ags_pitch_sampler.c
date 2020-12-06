@@ -334,19 +334,19 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new(i18n("base note"));
+  label = (GtkLabel *) gtk_label_new(i18n("lower"));
   gtk_box_pack_start((GtkBox *) base_note_hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   pitch_sampler->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(-70.0,
-								     70.0,
-								     1.0);
+									  70.0,
+									  1.0);
   gtk_spin_button_set_digits(pitch_sampler->lower,
 			     2);
   gtk_spin_button_set_value(pitch_sampler->lower,
-			    0.0);
+			    -48.0);
   gtk_box_pack_start((GtkBox *) base_note_hbox,
 		     (GtkWidget *) pitch_sampler->lower,
 		     FALSE, FALSE,

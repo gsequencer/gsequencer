@@ -1427,6 +1427,9 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
     
     list = list->next;
   }
+
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
    
   delay = 0.0;
   attack = 0;
@@ -1441,6 +1444,22 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 	       "frame-count", &frame_count,
 	       "volume", &volume,
 	       NULL);
+
+  if(sfz_sample != NULL){
+    guint loop_start, loop_end;
+
+    loop_start = 0;
+    loop_end = 0;
+    
+    ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_sample),
+			    NULL,
+			    &loop_start, &loop_end);
+    
+    g_object_set(audio_signal,
+		 "loop-start", loop_start,
+		 "loop-end", loop_end,
+		 NULL);
+  }
   
   buffer_size = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_BUFFER_SIZE;
   samplerate = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_SAMPLERATE;

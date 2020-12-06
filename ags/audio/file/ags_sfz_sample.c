@@ -1911,7 +1911,7 @@ ags_sfz_sample_get_key(AgsSFZSample *sfz_sample)
  * ags_sfz_sample_get_hikey:
  * @sfz_sample: the #AgsSFZSample
  * 
- * Get key of @sfz_sample.
+ * Get high key of @sfz_sample.
  * 
  * Returns: the key
  *
@@ -1983,7 +1983,7 @@ ags_sfz_sample_get_hikey(AgsSFZSample *sfz_sample)
  * ags_sfz_sample_get_lokey:
  * @sfz_sample: the #AgsSFZSample
  * 
- * Get key of @sfz_sample.
+ * Get low key of @sfz_sample.
  * 
  * Returns: the key
  *
@@ -2055,7 +2055,7 @@ ags_sfz_sample_get_lokey(AgsSFZSample *sfz_sample)
  * ags_sfz_sample_get_pitch_keycenter:
  * @sfz_sample: the #AgsSFZSample
  * 
- * Get key of @sfz_sample.
+ * Get pitch key-center of @sfz_sample.
  * 
  * Returns: the key
  *
@@ -2121,6 +2121,222 @@ ags_sfz_sample_get_pitch_keycenter(AgsSFZSample *sfz_sample)
   }
 
   return(pitch_keycenter);
+}
+
+/**
+ * ags_sfz_sample_get_loop_mode:
+ * @sfz_sample: the #AgsSFZSample
+ * 
+ * Get key of @sfz_sample.
+ * 
+ * Returns: the key
+ *
+ * Since: 3.7.3
+ */
+guint
+ags_sfz_sample_get_loop_mode(AgsSFZSample *sfz_sample)
+{
+  gchar *group_key, *region_key;
+
+  guint loop_mode;
+  
+  if(!AGS_IS_SFZ_SAMPLE(sfz_sample)){
+    return(-1);
+  }
+
+  loop_mode = AGS_SFZ_SAMPLE_LOOP_ONE_SHOT;
+  
+  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
+					   "loop_mode");
+    
+  if(group_key != NULL){
+    guint current_loop_mode;
+    int retval;
+    
+    retval = sscanf(group_key, "%ul", &current_loop_mode);
+
+    if(retval > 0){
+      loop_mode = current_loop_mode;
+    }else{
+      retval = ags_diatonic_scale_note_to_midi_key(group_key,
+						   &current_loop_mode);
+
+      if(retval > 0){
+	loop_mode = current_loop_mode;
+      }
+    }
+
+    g_free(group_key);
+  }
+
+  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
+					     "loop_mode");
+  
+  if(region_key != NULL){
+    guint current_loop_mode;
+    int retval;
+    
+    retval = sscanf(region_key, "%ul", &current_loop_mode);
+
+    if(retval > 0){
+      loop_mode = current_loop_mode;
+    }else{
+      retval = ags_diatonic_scale_note_to_midi_key(region_key,
+						   &current_loop_mode);
+      
+      if(retval > 0){
+	loop_mode = current_loop_mode;
+      }
+    }
+
+    g_free(region_key);
+  }
+
+  return(loop_mode);
+}
+
+/**
+ * ags_sfz_sample_get_loop_start:
+ * @sfz_sample: the #AgsSFZSample
+ * 
+ * Get key of @sfz_sample.
+ * 
+ * Returns: the key
+ *
+ * Since: 3.7.3
+ */
+guint
+ags_sfz_sample_get_loop_start(AgsSFZSample *sfz_sample)
+{
+  gchar *group_key, *region_key;
+
+  guint loop_start;
+  
+  if(!AGS_IS_SFZ_SAMPLE(sfz_sample)){
+    return(-1);
+  }
+
+  loop_start = 0;
+  
+  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
+					   "loop_start");
+    
+  if(group_key != NULL){
+    guint current_loop_start;
+    int retval;
+    
+    retval = sscanf(group_key, "%ul", &current_loop_start);
+
+    if(retval > 0){
+      loop_start = current_loop_start;
+    }else{
+      retval = ags_diatonic_scale_note_to_midi_key(group_key,
+						   &current_loop_start);
+
+      if(retval > 0){
+	loop_start = current_loop_start;
+      }
+    }
+
+    g_free(group_key);
+  }
+
+  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
+					     "loop_start");
+  
+  if(region_key != NULL){
+    guint current_loop_start;
+    int retval;
+    
+    retval = sscanf(region_key, "%ul", &current_loop_start);
+
+    if(retval > 0){
+      loop_start = current_loop_start;
+    }else{
+      retval = ags_diatonic_scale_note_to_midi_key(region_key,
+						   &current_loop_start);
+      
+      if(retval > 0){
+	loop_start = current_loop_start;
+      }
+    }
+
+    g_free(region_key);
+  }
+
+  return(loop_start);
+}
+
+/**
+ * ags_sfz_sample_get_loop_end:
+ * @sfz_sample: the #AgsSFZSample
+ * 
+ * Get key of @sfz_sample.
+ * 
+ * Returns: the key
+ *
+ * Since: 3.7.3
+ */
+guint
+ags_sfz_sample_get_loop_end(AgsSFZSample *sfz_sample)
+{
+  gchar *group_key, *region_key;
+
+  guint loop_end;
+  
+  if(!AGS_IS_SFZ_SAMPLE(sfz_sample)){
+    return(-1);
+  }
+
+  loop_end = 0;
+  
+  group_key = ags_sfz_group_lookup_control(sfz_sample->group,
+					   "loop_end");
+    
+  if(group_key != NULL){
+    guint current_loop_end;
+    int retval;
+    
+    retval = sscanf(group_key, "%ul", &current_loop_end);
+
+    if(retval > 0){
+      loop_end = current_loop_end;
+    }else{
+      retval = ags_diatonic_scale_note_to_midi_key(group_key,
+						   &current_loop_end);
+
+      if(retval > 0){
+	loop_end = current_loop_end;
+      }
+    }
+
+    g_free(group_key);
+  }
+
+  region_key = ags_sfz_region_lookup_control(sfz_sample->region,
+					     "loop_end");
+  
+  if(region_key != NULL){
+    guint current_loop_end;
+    int retval;
+    
+    retval = sscanf(region_key, "%ul", &current_loop_end);
+
+    if(retval > 0){
+      loop_end = current_loop_end;
+    }else{
+      retval = ags_diatonic_scale_note_to_midi_key(region_key,
+						   &current_loop_end);
+      
+      if(retval > 0){
+	loop_end = current_loop_end;
+      }
+    }
+
+    g_free(region_key);
+  }
+
+  return(loop_end);
 }
 
 /**
