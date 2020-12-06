@@ -2443,6 +2443,8 @@ ags_track_sort_func
 ags_track_get_x
 ags_track_set_x
 ags_track_get_smf_buffer
+ags_track_alloc_smf_buffer
+ags_track_realloc_smf_buffer
 ags_track_duplicate
 ags_track_new
 ags_wave_get_type
@@ -3101,6 +3103,13 @@ ags_sfz_sample_get_type
 ags_sfz_sample_test_flags
 ags_sfz_sample_set_flags
 ags_sfz_sample_unset_flags
+ags_sfz_sample_get_key
+ags_sfz_sample_get_hikey
+ags_sfz_sample_get_lokey
+ags_sfz_sample_get_pitch_keycenter
+ags_sfz_sample_get_loop_mode
+ags_sfz_sample_get_loop_start
+ags_sfz_sample_get_loop_end
 ags_sfz_sample_new
 ags_sndfile_get_type
 ags_sndfile_test_flags

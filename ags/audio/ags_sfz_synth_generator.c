@@ -1279,7 +1279,7 @@ ags_sfz_synth_generator_set_timestamp(AgsSFZSynthGenerator *sfz_synth_generator,
 }
 
 /**
- * ags_sfz_synth_generator_compute_instrument:
+ * ags_sfz_synth_generator_compute:
  * @sfz_synth_generator: the #AgsSFZSynthGenerator
  * @audio_signal: the #AgsAudioSignal
  * @note: the note to compute
@@ -1306,7 +1306,6 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 
   gchar *filename;
 
-  gint root_note;
   gint midi_key;
   glong lower, upper;
   gdouble delay;
@@ -1402,96 +1401,8 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
     glong value;
     int retval;
     
-    hikey = 60;
-    lokey = 60;
-
-    /* hikey */
-    str = ags_sfz_group_lookup_control(AGS_SFZ_SAMPLE(list->data)->group,
-				       "hikey");
-
-    value = 0;
-    
-    if(str != NULL){
-      retval = sscanf(str, "%lu", &value);
-
-      if(retval <= 0){
-	glong tmp;
-	guint tmp_retval;
-	
-	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
-							 &tmp);
-
-	if(retval > 0){
-	  hikey = tmp;
-	}
-      }
-    }
-
-    /* lokey */
-    str = ags_sfz_group_lookup_control(AGS_SFZ_SAMPLE(list->data)->group,
-				       "lokey");
-
-    value = 0;
-    
-    if(str != NULL){
-      retval = sscanf(str, "%lu", &value);
-
-      if(retval <= 0){
-	glong tmp;
-	guint tmp_retval;
-	
-	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
-							 &tmp);
-
-	if(retval > 0){
-	  lokey = tmp;
-	}
-      }
-    }
-    
-    /* hikey */
-    str = ags_sfz_region_lookup_control(AGS_SFZ_SAMPLE(list->data)->region,
-					"hikey");
-
-    value = 0;
-    
-    if(str != NULL){
-      retval = sscanf(str, "%lu", &value);
-
-      if(retval <= 0){
-	glong tmp;
-	guint tmp_retval;
-	
-	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
-							 &tmp);
-
-	if(retval > 0){
-	  hikey = tmp;
-	}
-      }
-    }
-
-    /* lokey */
-    str = ags_sfz_region_lookup_control(AGS_SFZ_SAMPLE(list->data)->region,
-					"lokey");
-
-    value = 0;
-    
-    if(str != NULL){
-      retval = sscanf(str, "%lu", &value);
-
-      if(retval <= 0){
-	glong tmp;
-	guint tmp_retval;
-	
-	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
-							 &tmp);
-
-	if(retval > 0){
-	  lokey = tmp;
-	}
-      }
-    }
+    hikey = ags_sfz_sample_get_hikey(list->data);
+    lokey = ags_sfz_sample_get_lokey(list->data);
     
     if(lokey >= midi_key &&
        hikey <= midi_key){
@@ -1516,6 +1427,9 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
     
     list = list->next;
   }
+
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
    
   delay = 0.0;
   attack = 0;
@@ -1531,76 +1445,20 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 	       "volume", &volume,
 	       NULL);
 
-  root_note = 60;
-  
   if(sfz_sample != NULL){
-    gchar *str;
-
-    glong pitch_keycenter;
-    glong value;
-    int retval;
     guint loop_start, loop_end;
-
-    pitch_keycenter = 60;
 
     loop_start = 0;
     loop_end = 0;
     
     ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_sample),
-			    &frame_count,
+			    NULL,
 			    &loop_start, &loop_end);
     
     g_object_set(audio_signal,
 		 "loop-start", loop_start,
 		 "loop-end", loop_end,
-		 "last-frame", attack + frame_count,
 		 NULL);
-
-    /* pitch_keycenter */
-    str = ags_sfz_group_lookup_control(sfz_sample->group,
-				       "pitch_keycenter");
-    
-    value = 0;
-    
-    if(str != NULL){
-      retval = sscanf(str, "%lu", &value);
-
-      if(retval <= 0){
-	glong tmp;
-	guint tmp_retval;
-	
-	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
-							 &tmp);
-
-	if(retval > 0){
-	  pitch_keycenter = tmp;
-	}
-      }
-    }
-
-    /* pitch_keycenter */
-    str = ags_sfz_region_lookup_control(sfz_sample->region,
-					"hikey");
-
-    value = 0;
-    
-    if(str != NULL){
-      retval = sscanf(str, "%lu", &value);
-
-      if(retval <= 0){
-	glong tmp;
-	guint tmp_retval;
-	
-	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
-							 &tmp);
-
-	if(retval > 0){
-	  pitch_keycenter = tmp;
-	}
-      }
-    }
-
-    root_note = pitch_keycenter;
   }
   
   buffer_size = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_BUFFER_SIZE;
@@ -1653,7 +1511,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   ags_sfz_synth_util_copy(buffer,
 			  frame_count,
 			  sfz_sample,
-			  (gdouble) (root_note - 69) + note,
+			  (gdouble) note,
 			  volume,
 			  samplerate, audio_buffer_util_format,
 			  0, frame_count,

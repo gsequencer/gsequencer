@@ -1811,8 +1811,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   
   gchar *filename;
 
-  gint root_note;
-  gint midi_key;
+  gint midi_key, matching_midi_key;
   gdouble delay;
   guint attack;
   guint frame_count;
@@ -1892,9 +1891,69 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
     ipatch_sample = list->data;
   }
 
-  root_note = 60;
-  
   midi_key = (gint) floor(note) + 60;
+
+  matching_midi_key = -1;
+  
+  while(list != NULL){
+    gint current_midi_key;
+    
+    g_object_get(AGS_IPATCH_SAMPLE(list->data)->sample,
+		 "root-note", &current_midi_key,
+		 NULL);
+
+    if(current_midi_key == midi_key){
+      ipatch_sample = list->data;
+      
+      matching_midi_key = current_midi_key;
+
+      break;
+    }
+
+    if(matching_midi_key == -1){
+      ipatch_sample = list->data;
+      
+      matching_midi_key = current_midi_key;
+      
+      list = list->next;
+      
+      continue;
+    }
+
+    if(matching_midi_key < midi_key &&
+       current_midi_key < midi_key){
+      if(current_midi_key > matching_midi_key){
+	ipatch_sample = list->data;
+      
+	matching_midi_key = current_midi_key;	
+      }
+    }else if(matching_midi_key < midi_key &&
+	     current_midi_key > midi_key){
+      if(current_midi_key - midi_key < midi_key - matching_midi_key){
+	ipatch_sample = list->data;
+      
+	matching_midi_key = current_midi_key;
+      }
+    }else if(matching_midi_key > midi_key &&
+	     current_midi_key < midi_key){
+      if(midi_key - current_midi_key < matching_midi_key - midi_key){
+	ipatch_sample = list->data;
+      
+	matching_midi_key = current_midi_key;
+      }
+    }else{
+      if(current_midi_key < matching_midi_key){
+	ipatch_sample = list->data;
+      
+	matching_midi_key = current_midi_key;
+      }
+    }
+    
+    list = list->next;
+  }
+  
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
   
   delay = 0.0;
   attack = 0;
@@ -1913,6 +1972,9 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   if(ipatch_sample != NULL){
     guint loop_start, loop_end;
 
+    loop_start = 0;
+    loop_end = 0;
+    
     ags_sound_resource_info(AGS_SOUND_RESOURCE(ipatch_sample),
 			    &frame_count,
 			    &loop_start, &loop_end);
@@ -1921,10 +1983,6 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 		 "loop-start", loop_start,
 		 "loop-end", loop_end,
 		 "last-frame", attack + frame_count,
-		 NULL);
-
-    g_object_get(ipatch_sample->sample,
-		 "root-note", &root_note,
 		 NULL);
   }
 
@@ -1973,7 +2031,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   ags_sf2_synth_util_copy(buffer,
 			  frame_count,
 			  ipatch_sample,
-			  (gdouble) (root_note - 69) + note,
+			  (gdouble) note,
 			  volume,
 			  samplerate, audio_buffer_util_format,
 			  0, frame_count,
@@ -2044,7 +2102,6 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 
   gchar *filename;
 
-  gint root_note;
   gint midi_key;
   gdouble delay;
   guint attack;
@@ -2113,8 +2170,6 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   
   g_rec_mutex_unlock(audio_container_manager_mutex);
   
-  root_note = 60;
-
   midi_key = (gint) floor(note) + 69;
     
   delay = 0.0;
@@ -2172,10 +2227,6 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 		 "loop-end", loop_end,
 		 "last-frame", attack + frame_count,
 		 NULL);
-
-    g_object_get(ipatch_sample->sample,
-		 "root-note", &root_note,
-		 NULL);
   }
 
   /*  */
@@ -2205,7 +2256,7 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   ags_sf2_synth_util_copy(buffer,
 			  frame_count,
 			  ipatch_sample,
-			  (gdouble) (root_note - 69) + note,
+			  (gdouble) note,
 			  volume,
 			  samplerate, audio_buffer_util_format,
 			  0, frame_count,

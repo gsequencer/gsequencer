@@ -54,6 +54,21 @@ typedef enum{
   AGS_SFZ_SAMPLE_CONNECTED            = 1 <<  1,
 }AgsSFZSampleFlags;
 
+/**
+ * AgsSFZSampleLoopMode:
+ * @AGS_SFZ_SAMPLE_LOOP_ONE_SHOT: one shot
+ * @AGS_SFZ_SAMPLE_LOOP_CONINUOUS: loop continuous
+ * @AGS_SFZ_SAMPLE_LOOP_SUSTAIN: loop sustain
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsSFZSample by
+ * enable/disable as flags.
+ */
+typedef enum{
+  AGS_SFZ_SAMPLE_LOOP_ONE_SHOT,
+  AGS_SFZ_SAMPLE_LOOP_CONTINUOUS,
+  AGS_SFZ_SAMPLE_LOOP_SUSTAIN,
+}AgsSFZSampleLoopMode;
+
 struct _AgsSFZSample
 {
   GObject gobject;
@@ -102,6 +117,17 @@ GType ags_sfz_sample_get_type();
 gboolean ags_sfz_sample_test_flags(AgsSFZSample *sfz_sample, guint flags);
 void ags_sfz_sample_set_flags(AgsSFZSample *sfz_sample, guint flags);
 void ags_sfz_sample_unset_flags(AgsSFZSample *sfz_sample, guint flags);
+
+gint ags_sfz_sample_get_key(AgsSFZSample *sfz_sample);
+
+gint ags_sfz_sample_get_hikey(AgsSFZSample *sfz_sample);
+gint ags_sfz_sample_get_lokey(AgsSFZSample *sfz_sample);
+
+gint ags_sfz_sample_get_pitch_keycenter(AgsSFZSample *sfz_sample);
+
+guint ags_sfz_sample_get_loop_mode(AgsSFZSample *sfz_sample);
+guint ags_sfz_sample_get_loop_start(AgsSFZSample *sfz_sample);
+guint ags_sfz_sample_get_loop_end(AgsSFZSample *sfz_sample);
 
 /* instantiate */
 AgsSFZSample* ags_sfz_sample_new();

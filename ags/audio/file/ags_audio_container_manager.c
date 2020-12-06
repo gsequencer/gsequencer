@@ -287,7 +287,7 @@ ags_audio_container_manager_remove_audio_container(AgsAudioContainerManager *aud
  * 
  * Find audio container by @filename.
  *
- * Returns: the matching #AgsAudioContainer if found, otherwise %NULL
+ * Returns: (transfer none): the matching #AgsAudioContainer if found, otherwise %NULL
  * 
  * Since: 3.4.0
  */
@@ -350,7 +350,7 @@ ags_audio_container_manager_find_audio_container(AgsAudioContainerManager *audio
  * 
  * Get ags audio container manager instance.
  *
- * Returns: the #AgsAudioContainerManager singleton
+ * Returns: (transfer none): the #AgsAudioContainerManager singleton
  * 
  * Since: 3.4.0
  */

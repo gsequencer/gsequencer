@@ -430,13 +430,19 @@ ags_apply_sfz_synth_launch(AgsTask *task)
   if(channel != NULL){
     g_object_ref(channel);
 
-    for(i = 0; channel != NULL && i < apply_sfz_synth->count; i++){
+    for(i = 0; channel != NULL && i < count; i++){
       /* get some fields */
+      first_recycling = NULL;
+
       g_object_get(channel,
 		   "first-recycling", &first_recycling,
 		   NULL);
 	
       /* get template */
+      output_soundcard = NULL;
+
+      list_start = NULL;
+
       g_object_get(first_recycling,
 		   "output-soundcard", &output_soundcard,
 		   "audio-signal", &list_start,
@@ -456,12 +462,14 @@ ags_apply_sfz_synth_launch(AgsTask *task)
       }
 	
       /* compute audio signal */
-      note = apply_sfz_synth->base_note + i;
+      note = base_note + (gdouble) i + 48.0;
       
       ags_sfz_synth_generator_compute(sfz_synth_generator,
 				      (GObject *) audio_signal,
 				      note);
       
+      buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
       g_object_get(audio_signal,
 		   "buffer-size", &buffer_size,
 		   NULL);
@@ -478,6 +486,8 @@ ags_apply_sfz_synth_launch(AgsTask *task)
 	ags_sfz_synth_generator_compute(sfz_synth_generator,
 					rt_template->data,
 					note);
+	
+	buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 	
 	g_object_get(rt_template->data,
 		     "buffer-size", &buffer_size,

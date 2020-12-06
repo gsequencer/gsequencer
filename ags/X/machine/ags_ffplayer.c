@@ -438,7 +438,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new(i18n("base note"));
+  label = (GtkLabel *) gtk_label_new(i18n("lower"));
   gtk_box_pack_start((GtkBox *) base_note_hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
@@ -450,7 +450,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   gtk_spin_button_set_digits(ffplayer->lower,
 			     2);
   gtk_spin_button_set_value(ffplayer->lower,
-			    0.0);
+			    -48.0);
   gtk_box_pack_start((GtkBox *) base_note_hbox,
 		     (GtkWidget *) ffplayer->lower,
 		     FALSE, FALSE,
