@@ -66,7 +66,7 @@ configure_file(output: 'ags_config.h', configuration: ags_config,
   install: true,
   install_dir: gsequencer_includedir / 'ags')
 
-common_dependencies = [
+common_dependencies += [
   m_dependency,
   glib_dependency,
   gobject_dependency,
