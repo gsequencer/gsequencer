@@ -114,9 +114,13 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
 {
   gdouble *delay;
   guint *attack;
+  
   gdouble absolute_delay;
+  gdouble corrected_delay;
   guint buffer_size;
   guint default_tact_frames;
+  guint total_correct_frame_count;
+  gdouble correct_frame_count;
   guint i;
 
   GRecMutex *obj_mutex;
@@ -184,14 +188,20 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
   }
 
   default_tact_frames = absolute_delay * buffer_size;
+
+  total_correct_frame_count = ((guint) AGS_SOUNDCARD_DEFAULT_PERIOD * default_tact_frames) % buffer_size;
+
+  correct_frame_count = (gdouble) total_correct_frame_count / AGS_SOUNDCARD_DEFAULT_PERIOD;
+
+  corrected_delay = absolute_delay + (correct_frame_count / buffer_size);
   
-  attack[0] = 0; // (guint) floor((2.0 * M_PI / (4.0 * buffer_size)) * buffer_size);
-  delay[0] = absolute_delay;
+  attack[0] = 0;
+  delay[0] = corrected_delay;
   
   for(i = 1; i < AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
     gint64 current_attack;
 
-    current_attack = (default_tact_frames - buffer_size + attack[i - 1]) - (floor(absolute_delay) * buffer_size);
+    current_attack = (default_tact_frames - buffer_size + attack[i - 1]) - (floor(corrected_delay) * buffer_size);
 
     if(current_attack >= buffer_size){
       attack[i] = buffer_size - 1;
@@ -201,7 +211,7 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
       attack[i] = current_attack;
     }
     
-    delay[i] = absolute_delay;
+    delay[i] = corrected_delay;
   }
   
   for(; i < 2 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
@@ -217,7 +227,7 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
       attack[i] = current_attack;
     }
 
-    delay[i] = absolute_delay;
+    delay[i] = corrected_delay;
   }
 
   g_rec_mutex_unlock(obj_mutex);  
