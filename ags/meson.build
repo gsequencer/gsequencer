@@ -25,30 +25,52 @@ elif host_machine.system() == 'windows'
 else
   error('add support to other os systems')
 endif
-define_template = '-D@0@="@1@"'
+define_int_template = '-D@0@=@1@'
+define_str_template = '-D@0@="@1@"'
 # TODO: this is needed only by plugin
 
-add_project_arguments(define_template.format('DESTDIR', gsequencer_datadir),
+add_project_arguments(define_str_template.format('DESTDIR', gsequencer_datadir),
                       language:'c')
-add_project_arguments(define_template.format('DOCDIR', gsequencer_docdir),
+add_project_arguments(define_str_template.format('DOCDIR', gsequencer_docdir),
                       language:'c')
-add_project_arguments(define_template.format('PACKAGE',
+add_project_arguments(define_str_template.format('PACKAGE',
                                              'gsequencer'),
                       language: 'c')
-add_project_arguments(define_template.format('PACKAGE_VERSION',
+add_project_arguments(define_str_template.format('PACKAGE_VERSION',
                                              meson.project_version()),
                       language: 'c')
-add_project_arguments(define_template.format('PACKAGE_BUGREPORT',
+add_project_arguments(define_str_template.format('PACKAGE_BUGREPORT',
                                              'jkraehemann@gmail.com'),
                       language: 'c')
-add_project_arguments(define_template.format('PACKAGE_NAME',
+add_project_arguments(define_str_template.format('PACKAGE_NAME',
                                              'gsequencer'),
                       language: 'c')
-add_project_arguments(define_template.format('AGS_LIBRARY_SUFFIX',
+add_project_arguments(define_str_template.format('AGS_LIBRARY_SUFFIX',
                                              dynamic_library_suffix),
                       language: 'c')
-add_project_arguments(define_template.format('AGS_VECTORIZED_BUILTIN_FUNCTIONS',
-                                             '1'),
+add_project_arguments(define_int_template.format('AGS_VECTORIZED_BUILTIN_FUNCTIONS',
+                                             1),
+                      language: 'c')
+add_project_arguments(define_int_template.format('PACKAGE_NAME',
+                                             'gsequencer'),
+                      language: 'c')
+add_project_arguments(define_int_template.format('HAVE_ATK_2_12',
+                                             1),
+                      language: 'c')
+add_project_arguments(define_int_template.format('HAVE_GLIB_2_44',
+                                             1),
+                      language: 'c')
+add_project_arguments(define_int_template.format('HAVE_GLIB_2_52',
+                                             1),
+                      language: 'c')
+add_project_arguments(define_int_template.format('HAVE_GLIB_2_56',
+                                             1),
+                      language: 'c')
+add_project_arguments(define_int_template.format('HAVE_GLIB_2_6',
+                                             1),
+                      language: 'c')
+add_project_arguments(define_int_template.format('HAVE_GLIB_2_62',
+                                             1),
                       language: 'c')
 
 ags_config = configuration_data({
