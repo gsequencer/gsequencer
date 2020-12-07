@@ -362,7 +362,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
 				       audio_channel, audio_channel + 1,
 				       pad, pad + 1,
 				       position,
-				       (AGS_FX_FACTORY_REMAP),
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
 				       0);
 
   /* unref */
@@ -378,7 +378,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
 				       audio_channel, audio_channel + 1,
 				       pad, pad + 1,
 				       position,
-				       (AGS_FX_FACTORY_REMAP),
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
 				       0);
 
   /* unref */
@@ -394,7 +394,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
 				       audio_channel, audio_channel + 1,
 				       pad, pad + 1,
 				       position,
-				       (AGS_FX_FACTORY_REMAP),
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
 				       0);
 
   /* unref */
@@ -410,7 +410,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
 				       audio_channel, audio_channel + 1,
 				       pad, pad + 1,
 				       position,
-				       (AGS_FX_FACTORY_REMAP),
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
 				       0);
 
   /* unref */
@@ -426,7 +426,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
 				       audio_channel, audio_channel + 1,
 				       pad, pad + 1,
 				       position,
-				       (AGS_FX_FACTORY_REMAP),
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
 				       0);
 
   /* unref */
@@ -442,7 +442,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
 				       audio_channel, audio_channel + 1,
 				       pad, pad + 1,
 				       position,
-				       (AGS_FX_FACTORY_REMAP),
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
 				       0);
 
   /* unref */
@@ -458,7 +458,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
 				       audio_channel, audio_channel + 1,
 				       pad, pad + 1,
 				       position,
-				       (AGS_FX_FACTORY_REMAP),
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
 				       0);
 
   /* unref */

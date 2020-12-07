@@ -1,3 +1,10 @@
+ags (3.7.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed effect processors on output e.g. in AgsLine
+	* improved ags_soundcard_util_adjust_delay_and_attack() to correct attack within AGS_SOUNDCARD_DEFAULT_PERIOD
+	* improved ags_fx_factory.c to respect chained to output or input
+
 ags (3.7.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

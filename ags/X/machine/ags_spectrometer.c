@@ -489,7 +489,7 @@ ags_spectrometer_map_recall(AgsMachine *machine)
 			0, 0,
 			0, 0,
 			position,
-			(AGS_FX_FACTORY_ADD), 0);
+			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT), 0);
 
   /* depending on destination */
   ags_spectrometer_input_map_recall(spectrometer,
@@ -544,7 +544,7 @@ ags_spectrometer_input_map_recall(AgsSpectrometer *spectrometer,
 			audio_channel_start, audio_channels,
 			input_pad_start, input_pads,
 			position,
-			(AGS_FX_FACTORY_REMAP), 0);
+			(AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
   
   spectrometer->mapped_input_pad = input_pads;
 }
