@@ -204,8 +204,8 @@
 #include <ags/X/machine/ags_cell_pattern_callbacks.h>
 #include <ags/X/machine/ags_desk.h>
 #include <ags/X/machine/ags_desk_callbacks.h>
-#include <ags/X/machine/ags_desk_input_pad.h>
-#include <ags/X/machine/ags_desk_input_pad_callbacks.h>
+#include <ags/X/machine/ags_desk_pad.h>
+#include <ags/X/machine/ags_desk_pad_callbacks.h>
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_drum_callbacks.h>
 #include <ags/X/machine/ags_drum_input_line.h>
