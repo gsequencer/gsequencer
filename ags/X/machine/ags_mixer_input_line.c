@@ -252,7 +252,7 @@ ags_mixer_input_line_map_recall(AgsLine *line,
 				       audio_channel, audio_channel + 1,
 				       pad, pad + 1,
 				       position,
-				       (AGS_FX_FACTORY_REMAP),
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
 				       0);
 
   /* unref */
@@ -268,9 +268,9 @@ ags_mixer_input_line_map_recall(AgsLine *line,
 				       audio_channel, audio_channel + 1,
 				       pad, pad + 1,
 				       position,
-				       (AGS_FX_FACTORY_REMAP),
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
 				       0);
-
+  
   /* unref */
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);

@@ -244,7 +244,7 @@ ags_panel_map_recall(AgsMachine *machine)
 				       0, 0,
 				       0, 0,
 				       position,
-				       (AGS_FX_FACTORY_ADD),
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
 				       0);
 
   g_list_free_full(start_recall,
@@ -259,7 +259,7 @@ ags_panel_map_recall(AgsMachine *machine)
 				       0, 0,
 				       0, 0,
 				       position,
-				       (AGS_FX_FACTORY_ADD),
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
 				       0);
 
   g_list_free_full(start_recall,

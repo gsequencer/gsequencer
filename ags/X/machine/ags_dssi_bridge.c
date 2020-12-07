@@ -616,7 +616,7 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
 			     0, 0,
 			     0, 0,
 			     position,
-			     (AGS_FX_FACTORY_ADD), 0);
+			     (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT), 0);
 
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
@@ -714,7 +714,7 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
 				       0, 0,
 				       0, 0,
 				       position,
-				       (AGS_FX_FACTORY_ADD), 0);
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT), 0);
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
@@ -728,7 +728,7 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
 				       0, 0,
 				       0, 0,
 				       position,
-				       (AGS_FX_FACTORY_ADD), 0);
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT), 0);
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
@@ -787,7 +787,7 @@ ags_dssi_bridge_input_map_recall(AgsDssiBridge *dssi_bridge,
 			     audio_channel_start, audio_channels,
 			     input_pad_start, input_pads,
 			     position,
-			     (AGS_FX_FACTORY_REMAP), 0);
+			     (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
 
   /* ags-fx-envelope */
   start_recall = ags_fx_factory_create(audio,
@@ -798,7 +798,7 @@ ags_dssi_bridge_input_map_recall(AgsDssiBridge *dssi_bridge,
 				       audio_channel_start, audio_channels,
 				       input_pad_start, input_pads,
 				       position,
-				       (AGS_FX_FACTORY_REMAP), 0);
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
@@ -812,7 +812,7 @@ ags_dssi_bridge_input_map_recall(AgsDssiBridge *dssi_bridge,
 				       audio_channel_start, audio_channels,
 				       input_pad_start, input_pads,
 				       position,
-				       (AGS_FX_FACTORY_REMAP), 0);
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);

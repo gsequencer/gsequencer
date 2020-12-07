@@ -557,7 +557,7 @@ ags_syncsynth_map_recall(AgsMachine *machine)
 				       0, 0,
 				       0, 0,
 				       position,
-				       (AGS_FX_FACTORY_ADD),
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
 				       0);
 
   g_list_free_full(start_recall,
@@ -572,7 +572,7 @@ ags_syncsynth_map_recall(AgsMachine *machine)
 				       0, 0,
 				       0, 0,
 				       position,
-				       (AGS_FX_FACTORY_ADD),
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
 				       0);
 
   g_list_free_full(start_recall,
@@ -587,7 +587,7 @@ ags_syncsynth_map_recall(AgsMachine *machine)
 				       0, 0,
 				       0, 0,
 				       position,
-				       (AGS_FX_FACTORY_ADD),
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
 				       0);
 
   g_list_free_full(start_recall,
@@ -602,7 +602,7 @@ ags_syncsynth_map_recall(AgsMachine *machine)
 				       0, 0,
 				       0, 0,
 				       position,
-				       (AGS_FX_FACTORY_ADD),
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
 				       0);
 
   g_list_free_full(start_recall,
@@ -661,7 +661,7 @@ ags_syncsynth_input_map_recall(AgsSyncsynth *syncsynth,
 				       audio_channel_start, audio_channels,
 				       input_pad_start, input_pads,
 				       position,
-				       (AGS_FX_FACTORY_REMAP), 0);
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
@@ -675,7 +675,7 @@ ags_syncsynth_input_map_recall(AgsSyncsynth *syncsynth,
 				       audio_channel_start, audio_channels,
 				       input_pad_start, input_pads,
 				       position,
-				       (AGS_FX_FACTORY_REMAP), 0);
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
@@ -689,7 +689,7 @@ ags_syncsynth_input_map_recall(AgsSyncsynth *syncsynth,
 				       audio_channel_start, audio_channels,
 				       input_pad_start, input_pads,
 				       position,
-				       (AGS_FX_FACTORY_REMAP), 0);
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
@@ -703,7 +703,7 @@ ags_syncsynth_input_map_recall(AgsSyncsynth *syncsynth,
 				       audio_channel_start, audio_channels,
 				       input_pad_start, input_pads,
 				       position,
-				       (AGS_FX_FACTORY_REMAP), 0);
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);

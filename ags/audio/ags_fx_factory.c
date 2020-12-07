@@ -117,6 +117,11 @@
  * Factory function to instantiate fx recalls.
  */
 
+gint ags_fx_factory_get_output_position(AgsAudio *audio,
+					gint position);
+gint ags_fx_factory_get_input_position(AgsAudio *audio,
+				       gint position);
+
 /* declaration */
 GList* ags_fx_factory_create_playback(AgsAudio *audio,
 				      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -238,6 +243,62 @@ GList* ags_fx_factory_create_lv2(AgsAudio *audio,
 				 gint position,
 				 guint create_flags, guint recall_flags);
 
+gint
+ags_fx_factory_get_output_position(AgsAudio *audio,
+				   gint position)
+{
+  GList *start_recall, *recall;
+  
+  gint output_position;
+  guint i;
+
+  recall = 
+    start_recall = ags_audio_get_play(audio);
+  
+  output_position = 0;
+
+  for(i = 0; i < position && recall != NULL; i++){
+    if(ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT)){
+      output_position++;
+    }
+    
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+  
+  return(output_position);
+}
+
+gint
+ags_fx_factory_get_input_position(AgsAudio *audio,
+				  gint position)
+{
+  GList *start_recall, *recall;
+  
+  gint input_position;
+  guint i;
+
+  recall = 
+    start_recall = ags_audio_get_play(audio);
+  
+  input_position = 0;
+
+  for(i = 0; i < position && recall != NULL; i++){
+    if(!ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT)){
+      input_position++;
+    }
+    
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+  
+  return(input_position);
+}
+
 /* implementation */
 GList*
 ags_fx_factory_create_playback(AgsAudio *audio,
@@ -264,6 +325,7 @@ ags_fx_factory_create_playback(AgsAudio *audio,
   
   GList *start_recall;
 
+  gint channel_position;
   guint audio_channels;
   guint i, j;
   
@@ -282,6 +344,16 @@ ags_fx_factory_create_playback(AgsAudio *audio,
 	       "input", &start_input,
 	       "audio-channels", &audio_channels,
 	       NULL);
+
+  channel_position = 0;
+  
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    channel_position = ags_fx_factory_get_output_position(audio,
+							  position);
+  }else{
+    channel_position = ags_fx_factory_get_input_position(audio,
+							 position);
+  }
   
   /* audio - play context */
   fx_playback_audio = NULL;
@@ -403,7 +475,7 @@ ags_fx_factory_create_playback(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_playback_channel,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_playback_channel);
       
@@ -434,7 +506,7 @@ ags_fx_factory_create_playback(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_playback_channel_processor,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_playback_channel_processor);
 
@@ -593,7 +665,7 @@ ags_fx_factory_create_playback(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_playback_channel,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_playback_channel);
 
@@ -624,7 +696,7 @@ ags_fx_factory_create_playback(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_playback_channel_processor,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_playback_channel_processor);
 
@@ -714,6 +786,7 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
   
   GList *start_recall;
 
+  gint channel_position;
   guint audio_channels;
   guint i, j;
 
@@ -732,6 +805,16 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
 	       "input", &start_input,
 	       "audio-channels", &audio_channels,
 	       NULL);
+
+  channel_position = 0;
+  
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    channel_position = ags_fx_factory_get_output_position(audio,
+							  position);
+  }else{
+    channel_position = ags_fx_factory_get_input_position(audio,
+							 position);
+  }
   
   /* audio - play context */
   fx_buffer_audio = NULL;
@@ -841,7 +924,7 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_buffer_channel,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_buffer_channel);
       
@@ -868,7 +951,7 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_buffer_channel_processor,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_buffer_channel_processor);
 
@@ -1030,7 +1113,7 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_buffer_channel,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_buffer_channel);
       
@@ -1061,7 +1144,7 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_buffer_channel_processor,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_buffer_channel_processor);
 
@@ -1151,6 +1234,7 @@ ags_fx_factory_create_volume(AgsAudio *audio,
   
   GList *start_recall;
 
+  gint channel_position;
   guint audio_channels;
   guint i, j;
   
@@ -1169,6 +1253,16 @@ ags_fx_factory_create_volume(AgsAudio *audio,
 	       "input", &start_input,
 	       "audio-channels", &audio_channels,
 	       NULL);
+
+  channel_position = 0;
+  
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    channel_position = ags_fx_factory_get_output_position(audio,
+							  position);
+  }else{
+    channel_position = ags_fx_factory_get_input_position(audio,
+							 position);
+  }
   
   /* audio - play context */
   fx_volume_audio = NULL;
@@ -1287,7 +1381,7 @@ ags_fx_factory_create_volume(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_volume_channel,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_volume_channel);
       
@@ -1318,7 +1412,7 @@ ags_fx_factory_create_volume(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_volume_channel_processor,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_volume_channel_processor);
 
@@ -1477,7 +1571,7 @@ ags_fx_factory_create_volume(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_volume_channel,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_volume_channel);
 
@@ -1508,7 +1602,7 @@ ags_fx_factory_create_volume(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_volume_channel_processor,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_volume_channel_processor);
 
@@ -1587,6 +1681,7 @@ ags_fx_factory_create_peak(AgsAudio *audio,
   
   GList *start_recall;
 
+  gint channel_position;
   guint audio_channels;
   guint i, j;
   
@@ -1606,6 +1701,16 @@ ags_fx_factory_create_peak(AgsAudio *audio,
 	       "audio-channels", &audio_channels,
 	       NULL);
   
+  channel_position = 0;
+  
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    channel_position = ags_fx_factory_get_output_position(audio,
+							  position);
+  }else{
+    channel_position = ags_fx_factory_get_input_position(audio,
+							 position);
+  }
+
   /* audio - play context */
   fx_peak_audio = NULL;
   fx_peak_audio_processor = NULL;
@@ -1723,7 +1828,7 @@ ags_fx_factory_create_peak(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_peak_channel,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_peak_channel);
 
@@ -1754,7 +1859,7 @@ ags_fx_factory_create_peak(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_peak_channel_processor,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_peak_channel_processor);
 
@@ -1903,7 +2008,7 @@ ags_fx_factory_create_peak(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_peak_channel,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_peak_channel);
 
@@ -1934,7 +2039,7 @@ ags_fx_factory_create_peak(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_peak_channel_processor,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_peak_channel_processor);
 
@@ -2024,6 +2129,7 @@ ags_fx_factory_create_eq10(AgsAudio *audio,
   
   GList *start_recall;
 
+  gint channel_position;
   guint audio_channels;
   guint i, j;
   
@@ -2042,6 +2148,16 @@ ags_fx_factory_create_eq10(AgsAudio *audio,
 	       "input", &start_input,
 	       "audio-channels", &audio_channels,
 	       NULL);
+
+  channel_position = 0;
+  
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    channel_position = ags_fx_factory_get_output_position(audio,
+							  position);
+  }else{
+    channel_position = ags_fx_factory_get_input_position(audio,
+							 position);
+  }
   
   /* audio - play context */
   fx_eq10_audio = NULL;
@@ -2160,7 +2276,7 @@ ags_fx_factory_create_eq10(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_eq10_channel,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_eq10_channel);
 
@@ -2191,7 +2307,7 @@ ags_fx_factory_create_eq10(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_eq10_channel_processor,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_eq10_channel_processor);
 
@@ -2350,7 +2466,7 @@ ags_fx_factory_create_eq10(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_eq10_channel,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_eq10_channel);
 
@@ -2381,7 +2497,7 @@ ags_fx_factory_create_eq10(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_eq10_channel_processor,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_eq10_channel_processor);
 
@@ -2471,6 +2587,7 @@ ags_fx_factory_create_analyse(AgsAudio *audio,
   
   GList *start_recall;
 
+  gint channel_position;
   guint audio_channels;
   guint i, j;
   
@@ -2489,7 +2606,17 @@ ags_fx_factory_create_analyse(AgsAudio *audio,
 	       "input", &start_input,
 	       "audio-channels", &audio_channels,
 	       NULL);
+
+  channel_position = 0;
   
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    channel_position = ags_fx_factory_get_output_position(audio,
+							  position);
+  }else{
+    channel_position = ags_fx_factory_get_input_position(audio,
+							 position);
+  }
+
   /* audio - play context */
   fx_analyse_audio = NULL;
   fx_analyse_audio_processor = NULL;
@@ -2607,7 +2734,7 @@ ags_fx_factory_create_analyse(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_analyse_channel,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_analyse_channel);
       
@@ -2638,7 +2765,7 @@ ags_fx_factory_create_analyse(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_analyse_channel_processor,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_analyse_channel_processor);
       
@@ -2797,7 +2924,7 @@ ags_fx_factory_create_analyse(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_analyse_channel,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_analyse_channel);
 
@@ -2828,7 +2955,7 @@ ags_fx_factory_create_analyse(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_analyse_channel_processor,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_analyse_channel_processor);
 
@@ -2918,6 +3045,7 @@ ags_fx_factory_create_envelope(AgsAudio *audio,
   
   GList *start_recall;
 
+  gint channel_position;
   guint audio_channels;
   guint i, j;
   
@@ -2937,6 +3065,16 @@ ags_fx_factory_create_envelope(AgsAudio *audio,
 	       "audio-channels", &audio_channels,
 	       NULL);
   
+  channel_position = 0;
+  
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    channel_position = ags_fx_factory_get_output_position(audio,
+							  position);
+  }else{
+    channel_position = ags_fx_factory_get_input_position(audio,
+							 position);
+  }
+
   /* audio - play context */
   fx_envelope_audio = NULL;
   fx_envelope_audio_processor = NULL;
@@ -3054,7 +3192,7 @@ ags_fx_factory_create_envelope(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_envelope_channel,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_envelope_channel);
 
@@ -3085,7 +3223,7 @@ ags_fx_factory_create_envelope(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_envelope_channel_processor,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_envelope_channel_processor);
 
@@ -3244,7 +3382,7 @@ ags_fx_factory_create_envelope(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_envelope_channel,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_envelope_channel);
 
@@ -3275,7 +3413,7 @@ ags_fx_factory_create_envelope(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_envelope_channel_processor,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_envelope_channel_processor);
 
@@ -3365,6 +3503,7 @@ ags_fx_factory_create_pattern(AgsAudio *audio,
   
   GList *start_recall;
 
+  gint channel_position;
   guint audio_channels;
   guint i, j;
   
@@ -3384,6 +3523,16 @@ ags_fx_factory_create_pattern(AgsAudio *audio,
 	       "audio-channels", &audio_channels,
 	       NULL);
   
+  channel_position = 0;
+  
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    channel_position = ags_fx_factory_get_output_position(audio,
+							  position);
+  }else{
+    channel_position = ags_fx_factory_get_input_position(audio,
+							 position);
+  }
+
   /* audio - play context */
   fx_pattern_audio = NULL;
   fx_pattern_audio_processor = NULL;
@@ -3491,7 +3640,7 @@ ags_fx_factory_create_pattern(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_pattern_channel,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_pattern_channel);
 
@@ -3518,7 +3667,7 @@ ags_fx_factory_create_pattern(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_pattern_channel_processor,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_pattern_channel_processor);
 
@@ -3666,7 +3815,7 @@ ags_fx_factory_create_pattern(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_pattern_channel,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_pattern_channel);
 
@@ -3693,7 +3842,7 @@ ags_fx_factory_create_pattern(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_pattern_channel_processor,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_pattern_channel_processor);
 
@@ -3783,6 +3932,7 @@ ags_fx_factory_create_notation(AgsAudio *audio,
   
   GList *start_recall;
 
+  gint channel_position;
   guint audio_channels;
   guint i, j;
 
@@ -3801,6 +3951,16 @@ ags_fx_factory_create_notation(AgsAudio *audio,
 	       "input", &start_input,
 	       "audio-channels", &audio_channels,
 	       NULL);
+
+  channel_position = 0;
+  
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    channel_position = ags_fx_factory_get_output_position(audio,
+							  position);
+  }else{
+    channel_position = ags_fx_factory_get_input_position(audio,
+							 position);
+  }
 
   /* audio - play context */
   fx_notation_audio = NULL;
@@ -3915,7 +4075,7 @@ ags_fx_factory_create_notation(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_notation_channel,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_notation_channel);
       
@@ -3944,7 +4104,7 @@ ags_fx_factory_create_notation(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_notation_channel_processor,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_notation_channel_processor);
 
@@ -4100,7 +4260,7 @@ ags_fx_factory_create_notation(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_notation_channel,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_notation_channel);
 
@@ -4129,7 +4289,7 @@ ags_fx_factory_create_notation(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_notation_channel_processor,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_notation_channel_processor);
 
@@ -4205,8 +4365,8 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
 			     gint position,
 			     guint create_flags, guint recall_flags)
 {
-  AgsChannel *start_input;
-  AgsChannel *input;
+  AgsChannel *start_input, *start_output;
+  AgsChannel *input, *output;
   AgsChannel *channel, *next_channel;
 
   AgsFxLadspaAudio *fx_ladspa_audio;
@@ -4219,6 +4379,7 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
   
   GList *start_recall;
 
+  gint channel_position;
   guint audio_channels;
   guint i, j;
   
@@ -4230,14 +4391,28 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
   }
   
   start_recall = NULL;
+
+  output = NULL;
+  input = NULL;
   
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
 	       "input-sequencer", &input_sequencer,
+	       "output", &start_output,
 	       "input", &start_input,
 	       "audio-channels", &audio_channels,
 	       NULL);
   
+  channel_position = 0;
+  
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    channel_position = ags_fx_factory_get_output_position(audio,
+							  position);
+  }else{
+    channel_position = ags_fx_factory_get_input_position(audio,
+							 position);
+  }
+
   /* audio - play context */
   fx_ladspa_audio = NULL;
   fx_ladspa_audio_processor = NULL;
@@ -4321,11 +4496,18 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
   }
 
   /* channel - play context */
-  input = ags_channel_nth(start_input,
-			  start_pad * audio_channels);
-
-  channel = input;
-
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    output = ags_channel_nth(start_output,
+			     start_pad * audio_channels);
+    
+    channel = output;
+  }else{
+    input = ags_channel_nth(start_input,
+			    start_pad * audio_channels);
+    
+    channel = input;
+  }
+  
   if(channel != NULL){
     g_object_ref(channel);
   }
@@ -4361,7 +4543,7 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_ladspa_channel,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_ladspa_channel);
 
@@ -4394,7 +4576,7 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_ladspa_channel_processor,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_ladspa_channel_processor);
 
@@ -4523,8 +4705,17 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
   }
 
   /* channel - recall context */
-  input = ags_channel_nth(start_input,
-			  start_pad * audio_channels);
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    output = ags_channel_nth(start_output,
+			     start_pad * audio_channels);
+    
+    channel = output;
+  }else{
+    input = ags_channel_nth(start_input,
+			    start_pad * audio_channels);
+    
+    channel = input;
+  }
 
   channel = input;
 
@@ -4563,7 +4754,7 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_ladspa_channel,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_ladspa_channel);
 
@@ -4596,7 +4787,7 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_ladspa_channel_processor,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_ladspa_channel_processor);
 
@@ -4650,6 +4841,14 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
     g_object_unref(input_sequencer);
   }
   
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(output != NULL){
+    g_object_unref(output);
+  }
+  
   if(start_input != NULL){
     g_object_unref(start_input);
   }
@@ -4690,6 +4889,7 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
   
   GList *start_recall;
 
+  gint channel_position;
   guint audio_channels;
   guint i, j;
   
@@ -4708,6 +4908,16 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 	       "input", &start_input,
 	       "audio-channels", &audio_channels,
 	       NULL);
+
+  channel_position = 0;
+  
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    channel_position = ags_fx_factory_get_output_position(audio,
+							  position);
+  }else{
+    channel_position = ags_fx_factory_get_input_position(audio,
+							 position);
+  }
 
   /* audio - play context */
   fx_dssi_audio = NULL;
@@ -4838,7 +5048,7 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_dssi_channel,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_dssi_channel);
 
@@ -4869,7 +5079,7 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_dssi_channel_processor,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_dssi_channel_processor);
 
@@ -5040,7 +5250,7 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_dssi_channel,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_dssi_channel);
       
@@ -5071,7 +5281,7 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_dssi_channel_processor,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_dssi_channel_processor);
 
@@ -5167,6 +5377,7 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
   
   GList *start_recall;
 
+  gint channel_position;
   guint audio_channels;
   guint i, j;
   gboolean is_instrument;
@@ -5194,6 +5405,16 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
 	       "audio-channels", &audio_channels,
 	       NULL);
   
+  channel_position = 0;
+  
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    channel_position = ags_fx_factory_get_output_position(audio,
+							  position);
+  }else{
+    channel_position = ags_fx_factory_get_input_position(audio,
+							 position);
+  }
+
   /* audio - play context */
   fx_lv2_audio = NULL;
   fx_lv2_audio_processor = NULL;
@@ -5359,7 +5580,7 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_lv2_channel,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_lv2_channel);
 
@@ -5401,7 +5622,7 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_lv2_channel_processor,
 				TRUE,
-				position);
+				channel_position);
       ags_recall_container_add(play_container,
 			       fx_lv2_channel_processor);
 
@@ -5606,7 +5827,7 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_lv2_channel,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_lv2_channel);
 
@@ -5648,7 +5869,7 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
 
       ags_channel_insert_recall(channel, (GObject *) fx_lv2_channel_processor,
 				FALSE,
-				position);
+				channel_position);
       ags_recall_container_add(recall_container,
 			       fx_lv2_channel_processor);
       

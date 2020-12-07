@@ -1043,7 +1043,8 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
   AgsEffectLinePlugin *effect_line_plugin;
   
   AgsAudio *audio;
-
+  AgsChannel *channel;
+  
   AgsLadspaPlugin *ladspa_plugin;
 
   AgsRecallHandler *recall_handler;
@@ -1062,10 +1063,15 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
   guint k;
 
   audio = NULL;
-
+  channel = NULL;
+  
   audio_channel = 0;
 
   pad = 0;
+
+  g_object_get(effect_line,
+	       "channel", &channel,
+	       NULL);
   
   /* alloc effect_line plugin */
   effect_line_plugin = ags_effect_line_plugin_alloc(play_container, recall_container,
@@ -1077,7 +1083,7 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
   effect_line->plugin = g_list_append(effect_line->plugin,
 				      effect_line_plugin);
 
-  g_object_get(effect_line->channel,
+  g_object_get(channel,
 	       "audio", &audio,
 	       "audio-channel", &audio_channel,
 	       "pad", &pad,
@@ -1096,7 +1102,7 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
 				       audio_channel, audio_channel + 1,
 				       pad, pad + 1,
 				       position,
-				       create_flags, recall_flags);
+				       create_flags | (AGS_IS_OUTPUT(channel) ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT), recall_flags);
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
@@ -1645,6 +1651,10 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
     g_object_unref(audio);
   }
 
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
+
   g_list_free_full(start_plugin_port,
 		   g_object_unref);
 }
@@ -1668,6 +1678,7 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
   AgsEffectLinePlugin *effect_line_plugin;
 
   AgsAudio *audio;
+  AgsChannel *channel;
   
   AgsLv2Manager *lv2_manager;
   AgsLv2Plugin *lv2_plugin;
@@ -1697,9 +1708,14 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
   lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
 
   audio = NULL;
+  channel = NULL;
   
   pad = 0;
   audio_channel = 0;
+
+  g_object_get(effect_line,
+	       "channel", &channel,
+	       NULL);
 
   /* make sure turtle is parsed */
   g_rec_mutex_lock(lv2_manager_mutex);
@@ -1781,7 +1797,7 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
   effect_line->plugin = g_list_append(effect_line->plugin,
 			       effect_line_plugin);  
 
-  g_object_get(effect_line->channel,
+  g_object_get(channel,
 	       "audio", &audio,
 	       "audio-channel", &audio_channel,
 	       "pad", &pad,
@@ -1810,7 +1826,7 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
 				       audio_channel, audio_channel + 1,
 				       pad, pad + 1,
 				       position,
-				       create_flags, recall_flags);
+				       create_flags | (AGS_IS_OUTPUT(channel) ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT), recall_flags);
   
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
@@ -2324,6 +2340,10 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
 
   if(audio != NULL){
     g_object_unref(audio);
+  }
+
+  if(channel != NULL){
+    g_object_unref(channel);
   }
 
   g_list_free_full(start_plugin_port,

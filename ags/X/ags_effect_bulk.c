@@ -932,7 +932,7 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
 				       0, audio_channels,
 				       0, pads,
 				       position,
-				       create_flags, recall_flags);
+				       create_flags | (g_type_is_a(effect_bulk->channel_type, AGS_TYPE_OUTPUT) ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT), recall_flags);
 
   recall = start_recall;
 
@@ -1356,7 +1356,7 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
 				       0, audio_channels,
 				       0, pads,
 				       position,
-				       create_flags, recall_flags);
+				       create_flags | (g_type_is_a(effect_bulk->channel_type, AGS_TYPE_OUTPUT) ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT), recall_flags);
   
   recall = start_recall;
 
@@ -1860,7 +1860,7 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
 				       0, audio_channels,
 				       0, pads,
 				       position,
-				       create_flags, recall_flags);
+				       create_flags | (g_type_is_a(effect_bulk->channel_type, AGS_TYPE_OUTPUT) ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT), recall_flags);
 
   recall = start_recall;
 
@@ -2278,7 +2278,7 @@ ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
 					 start_audio_channel, stop_audio_channel,
 					 start_pad, stop_pad,
 					 position,
-					 create_flags, recall_flags);
+					 create_flags | (g_type_is_a(effect_bulk->channel_type, AGS_TYPE_OUTPUT) ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT), recall_flags);
 
     recall = start_recall;
 
