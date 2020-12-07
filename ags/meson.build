@@ -32,8 +32,17 @@ add_project_arguments(define_template.format('DESTDIR', gsequencer_datadir),
                       language:'c')
 add_project_arguments(define_template.format('DOCDIR', gsequencer_docdir),
                       language:'c')
+add_project_arguments(define_template.format('PACKAGE',
+                                             'gsequencer'),
+                      language: 'c')
 add_project_arguments(define_template.format('PACKAGE_VERSION',
                                              meson.project_version()),
+                      language: 'c')
+add_project_arguments(define_template.format('PACKAGE_BUGREPORT',
+                                             'jkraehemann@gmail.com'),
+                      language: 'c')
+add_project_arguments(define_template.format('PACKAGE_NAME',
+                                             'gsequencer'),
                       language: 'c')
 add_project_arguments(define_template.format('AGS_LIBRARY_SUFFIX',
                                              dynamic_library_suffix),
@@ -43,20 +52,60 @@ add_project_arguments(define_template.format('AGS_VECTORIZED_BUILTIN_FUNCTIONS',
                       language: 'c')
 
 ags_config = configuration_data({
-  'AGS_WITH_W32API' : get_option('w32api'),
-  'AGS_WITH_OSXAPI' : get_option('osxapi'),
-  'AGS_WITH_ALSA' : get_option('alsa'),
-  'AGS_WITH_OSS' : get_option('oss'),
-  'AGS_WITH_CORE_AUDIO' : get_option('core_audio'),
-  'AGS_WITH_JACK' : get_option('jack'),
-  'AGS_WITH_PULSE' : get_option('pulse'),
-  'AGS_WITH_WASAPI' : get_option('wasapi'),
-  'AGS_WITH_LIBINSTPATCH' : false,
-  'AGS_WITH_QUARTZ' : get_option('quartz'),
-  'AGS_WITH_WEBKIT' : get_option('webkit'),
-  'AGS_WITH_GSTREAMER' : get_option('gstreamer'),
-  'AGS_WITH_POPPLER' : get_option('poppler'),
+  'AGS_WITH_LIBINSTPATCH' : true,
+  'AGS_STRIP_RT_EVENTS' : true,
+  'AGS_WITH_PUBLIC_LIBGSEQUENCER' : true,
+  'AGS_WITH_RT' : true,
+  'AGS_WITH_X11' : true,
                                  })
+
+if get_option('w32api')
+ags_config.set('AGS_WITH_W32API', true)
+endif
+
+if get_option('osxapi')
+ags_config.set('AGS_WITH_OSXAPI', true)
+endif
+
+if get_option('alsa')
+ags_config.set('AGS_WITH_ALSA', true)
+endif
+
+if get_option('oss')
+ags_config.set('AGS_WITH_OSS', true)
+endif
+
+if get_option('core_audio')
+ags_config.set('AGS_WITH_CORE_AUDIO', true)
+endif
+
+if get_option('jack')
+ags_config.set('AGS_WITH_JACK', true)
+endif
+
+if get_option('pulse')
+ags_config.set('AGS_WITH_PULSE', true)
+endif
+
+if get_option('wasapi')
+ags_config.set('AGS_WITH_WASAPI', true)
+endif
+
+if get_option('quartz')
+ags_config.set('AGS_WITH_QUARTZ', true)
+endif
+
+if get_option('gstreamer')
+ags_config.set('AGS_WITH_GSTREAMER', true)
+endif
+
+if get_option('webkit')
+ags_config.set('AGS_WITH_WEBKIT', true)
+endif
+
+if get_option('poppler')
+ags_config.set('AGS_WITH_POPPLER', true)
+endif
 
 # TODO: it looks like this must be mandatory
 ags_config.set('AGS_WITH_LIBINSTPATCH', true)
