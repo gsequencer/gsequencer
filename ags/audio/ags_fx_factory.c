@@ -4392,7 +4392,10 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
   
   start_recall = NULL;
 
+  start_output = NULL;
   output = NULL;
+
+  start_input = NULL;
   input = NULL;
   
   g_object_get(audio,
@@ -4717,8 +4720,6 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
     channel = input;
   }
 
-  channel = input;
-
   if(channel != NULL){
     g_object_ref(channel);
   }
@@ -4875,8 +4876,8 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 			   gint position,
 			   guint create_flags, guint recall_flags)
 {
-  AgsChannel *start_input;
-  AgsChannel *input;
+  AgsChannel *start_input, *start_output;
+  AgsChannel *input, *output;
   AgsChannel *channel, *next_channel;
 
   AgsFxDssiAudio *fx_dssi_audio;
@@ -4901,10 +4902,17 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
   }
   
   start_recall = NULL;
+
+  start_output = NULL;
+  output = NULL;
+
+  start_input = NULL;
+  input = NULL;
   
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
 	       "input-sequencer", &input_sequencer,
+	       "output", &start_output,
 	       "input", &start_input,
 	       "audio-channels", &audio_channels,
 	       NULL);
@@ -5006,11 +5014,19 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
     }
   }
 
-  input = ags_channel_nth(start_input,
-			  start_pad * audio_channels);
-
-  channel = input;
-
+  /* channel - play context */
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    output = ags_channel_nth(start_output,
+			     start_pad * audio_channels);
+    
+    channel = output;
+  }else{
+    input = ags_channel_nth(start_input,
+			    start_pad * audio_channels);
+    
+    channel = input;
+  }
+  
   if(channel != NULL){
     g_object_ref(channel);
   }
@@ -5212,10 +5228,17 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
   }
 
   /* channel - recall context */
-  input = ags_channel_nth(start_input,
-			  start_pad * audio_channels);
-
-  channel = input;
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    output = ags_channel_nth(start_output,
+			     start_pad * audio_channels);
+    
+    channel = output;
+  }else{
+    input = ags_channel_nth(start_input,
+			    start_pad * audio_channels);
+    
+    channel = input;
+  }
 
   if(channel != NULL){
     g_object_ref(channel);
@@ -5334,6 +5357,14 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
     g_object_unref(input_sequencer);
   }
   
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(output != NULL){
+    g_object_unref(output);
+  }
+  
   if(start_input != NULL){
     g_object_unref(start_input);
   }
@@ -5360,8 +5391,8 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
 			  gint position,
 			  guint create_flags, guint recall_flags)
 {
-  AgsChannel *start_input;
-  AgsChannel *input;
+  AgsChannel *start_input, *start_output;
+  AgsChannel *input, *output;
   AgsChannel *channel, *next_channel;
 
   AgsFxLv2Audio *fx_lv2_audio;
@@ -5397,10 +5428,17 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
   is_instrument = ags_base_plugin_test_flags((AgsBasePlugin *) lv2_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT);
 
   start_recall = NULL;
+
+  start_output = NULL;
+  output = NULL;
+
+  start_input = NULL;
+  input = NULL;
   
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
 	       "input-sequencer", &input_sequencer,
+	       "output", &start_output,
 	       "input", &start_input,
 	       "audio-channels", &audio_channels,
 	       NULL);
@@ -5527,11 +5565,19 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
     ags_fx_lv2_audio_load_port(fx_lv2_audio);
   }
 
-  input = ags_channel_nth(start_input,
-			  start_pad * audio_channels);
-
-  channel = input;
-
+  /* channel - play context */
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    output = ags_channel_nth(start_output,
+			     start_pad * audio_channels);
+    
+    channel = output;
+  }else{
+    input = ags_channel_nth(start_input,
+			    start_pad * audio_channels);
+    
+    channel = input;
+  }
+  
   if(channel != NULL){
     g_object_ref(channel);
   }
@@ -5778,10 +5824,17 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
   }
 
   /* channel - recall context */
-  input = ags_channel_nth(start_input,
-			  start_pad * audio_channels);
-
-  channel = input;
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    output = ags_channel_nth(start_output,
+			     start_pad * audio_channels);
+    
+    channel = output;
+  }else{
+    input = ags_channel_nth(start_input,
+			    start_pad * audio_channels);
+    
+    channel = input;
+  }
 
   if(channel != NULL){
     g_object_ref(channel);
@@ -5921,6 +5974,14 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
 
   if(input_sequencer != NULL){
     g_object_unref(input_sequencer);
+  }
+  
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(output != NULL){
+    g_object_unref(output);
   }
   
   if(start_input != NULL){

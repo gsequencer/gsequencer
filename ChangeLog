@@ -1,3 +1,8 @@
+ags (3.7.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed effect processors on output e.g. in AgsLine
+
 ags (3.7.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
