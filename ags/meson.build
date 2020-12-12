@@ -133,7 +133,7 @@ endif
 ags_config.set('AGS_WITH_LIBINSTPATCH', true)
 
 configure_file(output: 'config.h', configuration: ags_config)
-configure_file(output: 'ags_config.h', configuration: ags_config,
+configure_file(output: 'ags_api_config.h', configuration: ags_config,
   install: true,
   install_dir: gsequencer_includedir / 'ags')
 

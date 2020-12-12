@@ -12,7 +12,7 @@ AC_INIT([gsequencer],[3.7.6],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
-AC_CONFIG_HEADERS([ags/ags_config.h])
+AC_CONFIG_HEADERS([ags/ags_api_config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_USE_SYSTEM_EXTENSIONS([_GNU_SOURCE])
 

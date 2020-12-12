@@ -105,7 +105,7 @@ EXTRA_DIST = config.rpath \
 	COPYING.docs \
 	COPYING.stk-4.3 \
 	ags/config.h.in \
-	ags/ags_config.h.in \
+	ags/ags_api_config.h.in \
 	gtk-doc.make \
 	gsequencer.share \
 	aclocal.m4 \
@@ -2852,7 +2852,7 @@ install-compress-changelog:
 
 install-data-local:
 	mkdir -p $(DESTDIR)/$(includedir)/ags
-	install -c -p -m 644 $(top_builddir)/ags/ags_config.h $(DESTDIR)/$(includedir)/ags/config.h
+	install -c -p -m 644 $(top_builddir)/ags/ags_api_config.h $(DESTDIR)/$(includedir)/ags/ags_api_config.h
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
 	mkdir -p $(DESTDIR)/$(datadir)/icons/hicolor/32x32/apps
 	mkdir -p $(DESTDIR)/$(datadir)/icons/hicolor/48x48/apps

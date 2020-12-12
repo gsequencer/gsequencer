@@ -25,7 +25,7 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/config.h>
+#include <ags/ags_api_config.h>
 
 #if defined(AGS_WITH_WEBKIT)
 #include <webkit2/webkit2.h>
