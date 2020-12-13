@@ -1701,7 +1701,7 @@ ags_sndfile_vio_read(void *ptr, sf_count_t count, void *user_data)
 
   retval = (guchar *) memcpy(ptr, sndfile->current, count * sizeof(guchar));
 
-  num_read = retval - sndfile->pointer;
+  num_read = (sf_count_t) (retval - sndfile->pointer);
   
   g_rec_mutex_unlock(sndfile_mutex);
 
@@ -1728,7 +1728,7 @@ ags_sndfile_vio_write(const void *ptr, sf_count_t count, void *user_data)
 
   retval = (guchar *) memcpy(sndfile->current, ptr, count * sizeof(guchar));
 
-  num_read = retval - sndfile->pointer;
+  num_read = (sf_count_t) (retval - sndfile->pointer);
   
   g_rec_mutex_unlock(sndfile_mutex);
 

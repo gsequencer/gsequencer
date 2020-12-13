@@ -1138,7 +1138,8 @@ ags_audio_container_check_suffix(gchar *filename)
   if(ags_sfz_file_check_suffix(filename)
 #ifdef AGS_WITH_LIBINSTPATCH
      || ags_ipatch_check_suffix(filename)
-#endif){
+#endif
+    ){
     return(TRUE);
   }
 
