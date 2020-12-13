@@ -1339,6 +1339,7 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
 #ifdef AGS_WITH_GSTREAMER
   }else if(ags_gstreamer_file_check_suffix(audio_file->filename)){
     GError *error;
+
     guint loop_start, loop_end;
 
     /* sound resource */
