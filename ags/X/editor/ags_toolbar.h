@@ -101,12 +101,12 @@ struct _AgsToolbar
   GtkToolbar toolbar;
 
   guint flags;
-  guint edit_tool;
-  guint edit_action;
+  guint tool;
+  guint action;
 
   AgsUUID *uuid;
 
-  GtkToggleToolButton *selected_edit_mode;
+  GtkToggleToolButton *selected_tool;
 
   GtkToggleToolButton *position;
   GtkToggleToolButton *edit;
@@ -154,6 +154,14 @@ GType ags_toolbar_get_type(void);
 gboolean ags_toolbar_test_flags(AgsToolbar *toolbar, guint flags);
 void ags_toolbar_set_flags(AgsToolbar *toolbar, guint flags);
 void ags_toolbar_unset_flags(AgsToolbar *toolbar, guint flags);
+
+gboolean ags_toolbar_test_edit_tool(AgsToolbar *toolbar, guint edit_tool);
+void ags_toolbar_set_edit_tool(AgsToolbar *toolbar, guint edit_tool);
+void ags_toolbar_unset_edit_tool(AgsToolbar *toolbar, guint edit_tool);
+
+gboolean ags_toolbar_test_edit_action(AgsToolbar *toolbar, guint edit_action);
+void ags_toolbar_set_edit_action(AgsToolbar *toolbar, guint edit_action);
+void ags_toolbar_unset_edit_action(AgsToolbar *toolbar, guint edit_action);
 
 GtkMenu* ags_toolbar_tool_popup_new(AgsToolbar *toolbar);
 

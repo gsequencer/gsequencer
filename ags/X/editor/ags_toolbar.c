@@ -126,6 +126,12 @@ void
 ags_toolbar_init(AgsToolbar *toolbar)
 {
   toolbar->flags = 0;
+  toolbar->tool = 0;
+  toolbar->action = 0;
+
+  /* uuid */
+  audio->uuid = ags_uuid_alloc();
+  ags_uuid_generate(audio->uuid);
 
   //TODO:JK: implement me
 }
@@ -351,6 +357,158 @@ ags_toolbar_unset_flags(AgsToolbar *toolbar, guint flags)
 
   /* unset flags */
   toolbar->flags &= (~flags);
+}
+
+/**
+ * ags_toolbar_test_tool:
+ * @toolbar: the #AgsToolbar
+ * @tool: the tool
+ *
+ * Test @tool to be set on @toolbar.
+ * 
+ * Returns: %TRUE if tool are set, else %FALSE
+ *
+ * Since: 3.7.9
+ */
+gboolean
+ags_toolbar_test_tool(AgsToolbar *toolbar, guint tool)
+{
+  gboolean retval;  
+  
+  if(!AGS_IS_TOOLBAR(toolbar)){
+    return(FALSE);
+  }
+    
+  /* test */
+  retval = (tool & (toolbar->tool)) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_toolbar_set_tool:
+ * @toolbar: the #AgsToolbar
+ * @tool: see enum AgsToolbarTool
+ *
+ * Enable a feature of #AgsToolbar.
+ *
+ * Since: 3.7.9
+ */
+void
+ags_toolbar_set_tool(AgsToolbar *toolbar, guint tool)
+{
+  gint position;
+  
+  if(!AGS_IS_TOOLBAR(toolbar)){
+    return;
+  }
+
+  position = 0;
+
+  if((AGS_TOOLBAR_TOOL_POSITION & tool) != 0){
+    toolbar->position = (GtkToggleToolButton *) gtk_toggle_tool_button_new();
+    g_object_set(toolbar->position,
+		 "label", i18n("Position"),
+		 "icon-name", "ags-generic-position",
+		 NULL);
+    gtk_toolbar_insert((GtkToolbar *) toolbar,
+		       (GtkWidget *) toolbar->position,
+		       position);
+    
+    position++;
+  }else if((AGS_TOOLBAR_TOOL_POSITION & (toolbar->tool)) != 0){
+
+    position++;
+  }
+  
+  /* set tool */
+  toolbar->tool |= tool;
+}
+    
+/**
+ * ags_toolbar_unset_tool:
+ * @toolbar: the #AgsToolbar
+ * @tool: see enum AgsToolbarTool
+ *
+ * Disable a feature of AgsToolbar.
+ *
+ * Since: 3.7.9
+ */
+void
+ags_toolbar_unset_tool(AgsToolbar *toolbar, guint tool)
+{  
+  if(!AGS_IS_TOOLBAR(toolbar)){
+    return;
+  }
+
+  /* unset tool */
+  toolbar->tool &= (~tool);
+}
+
+/**
+ * ags_toolbar_test_action:
+ * @toolbar: the #AgsToolbar
+ * @action: the action
+ *
+ * Test @action to be set on @toolbar.
+ * 
+ * Returns: %TRUE if action are set, else %FALSE
+ *
+ * Since: 3.7.9
+ */
+gboolean
+ags_toolbar_test_action(AgsToolbar *toolbar, guint action)
+{
+  gboolean retval;  
+  
+  if(!AGS_IS_TOOLBAR(toolbar)){
+    return(FALSE);
+  }
+    
+  /* test */
+  retval = (action & (toolbar->action)) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_toolbar_set_action:
+ * @toolbar: the #AgsToolbar
+ * @action: see enum AgsToolbarAction
+ *
+ * Enable a feature of #AgsToolbar.
+ *
+ * Since: 3.7.9
+ */
+void
+ags_toolbar_set_action(AgsToolbar *toolbar, guint action)
+{
+  if(!AGS_IS_TOOLBAR(toolbar)){
+    return;
+  }
+
+  /* set action */
+  toolbar->action |= action;
+}
+    
+/**
+ * ags_toolbar_unset_action:
+ * @toolbar: the #AgsToolbar
+ * @action: see enum AgsToolbarAction
+ *
+ * Disable a feature of AgsToolbar.
+ *
+ * Since: 3.7.9
+ */
+void
+ags_toolbar_unset_action(AgsToolbar *toolbar, guint action)
+{  
+  if(!AGS_IS_TOOLBAR(toolbar)){
+    return;
+  }
+
+  /* unset action */
+  toolbar->action &= (~action);
 }
 
 /**
