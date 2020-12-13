@@ -3021,7 +3021,7 @@ else
 endif
 
 uninstall-hook:
-	rm -rf $(DESTDIR)/$(includedir)/ags/config.h
+	rm -rf $(DESTDIR)/$(includedir)/ags/ags_api_config.h
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
 	rm -rf $(DESTDIR)/$(docdir)
 	rm -rf $(DESTDIR)/$(datadir)/xml/gsequencer
