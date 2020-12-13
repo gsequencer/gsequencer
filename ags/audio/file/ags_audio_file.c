@@ -19,6 +19,8 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_wave.h>
 #include <ags/audio/ags_audio_buffer_util.h>

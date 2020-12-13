@@ -19,6 +19,8 @@
 
 #include <ags/audio/file/ags_audio_container.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_wave.h>
 #include <ags/audio/ags_audio_buffer_util.h>
@@ -26,7 +28,10 @@
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
 
+#ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/audio/file/ags_ipatch.h>
+#endif
+
 #include <ags/audio/file/ags_sfz_file.h>
 
 #include <ags/i18n.h>
@@ -1130,10 +1135,10 @@ ags_audio_container_unset_flags(AgsAudioContainer *audio_container, guint flags)
 gboolean
 ags_audio_container_check_suffix(gchar *filename)
 {
-  if(g_str_has_suffix(filename, ".sf2") ||
-     g_str_has_suffix(filename, ".gig") ||
-     g_str_has_suffix(filename, ".dls") ||
-     g_str_has_suffix(filename, ".sfz")){
+  if(ags_sfz_file_check_suffix(filename)
+#ifdef AGS_WITH_LIBINSTPATCH
+     || ags_ipatch_check_suffix(filename)
+#endif){
     return(TRUE);
   }
 
@@ -1411,23 +1416,14 @@ ags_audio_container_open(AgsAudioContainer *audio_container)
   
   if(g_file_test(filename, G_FILE_TEST_EXISTS)){
     if(ags_audio_container_check_suffix(filename)){
-      if(ags_ipatch_check_suffix(filename)){
-	/* ipatch sound resource */
-	g_rec_mutex_lock(audio_container_mutex);
-
-	sound_container = 
-	  audio_container->sound_container = (GObject *) ags_ipatch_new();
-	g_object_ref(audio_container->sound_container);
-
-	g_rec_mutex_unlock(audio_container_mutex);
-      }else if(ags_sfz_file_check_suffix(filename)){
+      if(ags_sfz_file_check_suffix(filename)){
 	/* SFZ file sound resource */
 	g_rec_mutex_lock(audio_container_mutex);
       
 	sound_container = 
 	  audio_container->sound_container = (GObject *) ags_sfz_file_new();
 	g_object_ref(audio_container->sound_container);
-      
+	
 	g_rec_mutex_unlock(audio_container_mutex);
       }
 
@@ -1435,6 +1431,17 @@ ags_audio_container_open(AgsAudioContainer *audio_container)
 				  filename)){
 	success = TRUE;
       }
+#ifdef AGS_WITH_LIBINSTPATCH
+    }else if(ags_ipatch_check_suffix(filename)){
+      /* ipatch sound resource */
+      g_rec_mutex_lock(audio_container_mutex);
+
+      sound_container = 
+	audio_container->sound_container = (GObject *) ags_ipatch_new();
+      g_object_ref(audio_container->sound_container);
+
+      g_rec_mutex_unlock(audio_container_mutex);
+#endif
     }else{
       g_message("ags_audio_container_open: unknown file type");
     }
