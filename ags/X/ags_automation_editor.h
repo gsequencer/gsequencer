@@ -80,7 +80,7 @@ struct _AgsAutomationEditor
 
   guint chunk_duration;
 
-  GtkHPaned *paned;
+  GtkPaned *paned;
   
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;
@@ -92,22 +92,22 @@ struct _AgsAutomationEditor
   AgsRuler *audio_ruler;
   AgsScrolledScaleBox *audio_scrolled_scale_box;
   AgsScrolledAutomationEditBox *audio_scrolled_automation_edit_box;
-  GtkVScrollbar *audio_vscrollbar;
-  GtkHScrollbar *audio_hscrollbar;
+  GtkScrollbar *audio_vscrollbar;
+  GtkScrollbar *audio_hscrollbar;
   
   AgsNotebook *output_notebook;
   AgsRuler *output_ruler;
   AgsScrolledScaleBox *output_scrolled_scale_box;
   AgsScrolledAutomationEditBox *output_scrolled_automation_edit_box;
-  GtkVScrollbar *output_vscrollbar;
-  GtkHScrollbar *output_hscrollbar;
+  GtkScrollbar *output_vscrollbar;
+  GtkScrollbar *output_hscrollbar;
 
   AgsNotebook *input_notebook;
   AgsRuler *input_ruler;
   AgsScrolledScaleBox *input_scrolled_scale_box;
   AgsScrolledAutomationEditBox *input_scrolled_automation_edit_box;
-  GtkVScrollbar *input_vscrollbar;
-  GtkHScrollbar *input_hscrollbar;
+  GtkScrollbar *input_vscrollbar;
+  GtkScrollbar *input_hscrollbar;
 
   AgsAutomationEdit *focused_automation_edit;
 
