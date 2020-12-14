@@ -27,6 +27,9 @@
 #include <ags/X/editor/ags_select_note_dialog.h>
 #include <ags/X/editor/ags_position_notation_cursor_dialog.h>
 
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+
 #include <ags/i18n.h>
 
 void ags_toolbar_class_init(AgsToolbarClass *toolbar);
@@ -49,6 +52,8 @@ void ags_toolbar_connect_connection(AgsConnectable *connectable,
 				    GObject *connection);
 void ags_toolbar_disconnect_connection(AgsConnectable *connectable,
 				       GObject *connection);
+
+static gpointer ags_toolbar_parent_class = NULL;
 
 /**
  * SECTION:ags_toolbar
@@ -103,7 +108,7 @@ ags_toolbar_get_type(void)
 void
 ags_toolbar_class_init(AgsToolbarClass *toolbar)
 {
-  /* empty */
+  ags_toolbar_parent_class = g_type_class_peek_parent(toolbar);
 }
 
 void
@@ -1365,7 +1370,7 @@ ags_toolbar_set_option(AgsToolbar *toolbar, guint option)
   if((AGS_TOOLBAR_HAS_ZOOM & option) != 0 &&
      toolbar->zoom == NULL){
     GtkToolItem *tool_item;
-    GtkHBox *hbox;
+    GtkBox *box;
     GtkLabel *label;
 
     tool_item = gtk_tool_item_new();
@@ -1373,14 +1378,14 @@ ags_toolbar_set_option(AgsToolbar *toolbar, guint option)
 		       (GtkWidget *) tool_item,
 		       position);
     
-    hbox = gtk_hbox_new(FALSE,
-			0);
+    box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+		      0);
     gtk_container_add((GtkContainer *) tool_item,
-		      (GtkWidget *) hbox);
+		      (GtkWidget *) box);
 
 
     label = (GtkLabel *) gtk_label_new(i18n("Zoom"));
-    gtk_box_pack_start(hbox,
+    gtk_box_pack_start(box,
 		       (GtkWidget *) label,
 		       FALSE, FALSE,
 		       0);
@@ -1389,7 +1394,7 @@ ags_toolbar_set_option(AgsToolbar *toolbar, guint option)
     toolbar->zoom = ags_zoom_combo_box_new();
     gtk_combo_box_set_active(GTK_COMBO_BOX(toolbar->zoom),
 			     2);
-    gtk_box_pack_start(hbox,
+    gtk_box_pack_start(box,
 		       (GtkWidget *) toolbar->zoom,
 		       FALSE, FALSE,
 		       0);
@@ -1401,7 +1406,7 @@ ags_toolbar_set_option(AgsToolbar *toolbar, guint option)
   if((AGS_TOOLBAR_HAS_OPACITY & option) != 0 &&
      toolbar->opacity == NULL){
     GtkToolItem *tool_item;
-    GtkHBox *hbox;
+    GtkBox *box;
     GtkLabel *label;
 
     tool_item = gtk_tool_item_new();
@@ -1409,13 +1414,13 @@ ags_toolbar_set_option(AgsToolbar *toolbar, guint option)
 		       (GtkWidget *) tool_item,
 		       -1);
 
-    hbox = gtk_hbox_new(FALSE,
-			0);
+    box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+		      0);
     gtk_container_add((GtkContainer *) tool_item,
-		      (GtkWidget *) hbox);
+		      (GtkWidget *) box);
 
     label = (GtkLabel *) gtk_label_new(i18n("Opacity"));
-    gtk_box_pack_start(hbox,
+    gtk_box_pack_start(box,
 		       (GtkWidget *) label,
 		       FALSE, FALSE,
 		       0);
@@ -1423,7 +1428,7 @@ ags_toolbar_set_option(AgsToolbar *toolbar, guint option)
     toolbar->opacity = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.001);
     gtk_spin_button_set_digits(toolbar->opacity, 4);
     gtk_spin_button_set_value(toolbar->opacity, 1.0);
-    gtk_box_pack_start(hbox,
+    gtk_box_pack_start(box,
 		       (GtkWidget *) toolbar->opacity,
 		       FALSE, FALSE,
 		       0);
@@ -1435,7 +1440,7 @@ ags_toolbar_set_option(AgsToolbar *toolbar, guint option)
   if((AGS_TOOLBAR_HAS_PORT & option) != 0 &&
      toolbar->port == NULL){
     GtkToolItem *tool_item;
-    GtkHBox *hbox;
+    GtkBox *box;
     GtkLabel *label;
 
     GtkCellRenderer *cell_renderer_toggle;
@@ -1447,13 +1452,13 @@ ags_toolbar_set_option(AgsToolbar *toolbar, guint option)
 		       (GtkWidget *) tool_item,
 		       position);
 
-    hbox = gtk_hbox_new(FALSE,
-			0);
+    box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+		      0);
     gtk_container_add((GtkContainer *) tool_item,
-		      (GtkWidget *) hbox);
+		      (GtkWidget *) box);
     
     label = (GtkLabel *) gtk_label_new(i18n("Port"));
-    gtk_box_pack_start(hbox,
+    gtk_box_pack_start(box,
 		       (GtkWidget *) label,
 		       FALSE, FALSE,
 		       0);
@@ -1486,7 +1491,7 @@ ags_toolbar_set_option(AgsToolbar *toolbar, guint option)
 				   "text", 2,
 				   NULL);
   
-    gtk_box_pack_start(hbox,
+    gtk_box_pack_start(box,
 		       (GtkWidget *) toolbar->port,
 		       FALSE, FALSE,
 		       0);

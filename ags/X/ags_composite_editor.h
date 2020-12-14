@@ -31,6 +31,7 @@
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
+#include <ags/X/ags_composite_view.h>
 
 #include <ags/X/editor/ags_toolbar.h>
 #include <ags/X/editor/ags_machine_selector.h>
@@ -79,7 +80,14 @@ struct _AgsCompositeEditor
   GtkHPaned *paned;
   
   AgsMachineSelector *machine_selector;
-  AgsMachine *selected_machine;  
+  AgsMachine *selected_machine;
+
+  AgsCompositeView *selected_view;
+
+  AgsCompositeView *notation_view;
+  AgsCompositeView *sheet_view;
+  AgsCompositeView *automation_view;
+  AgsCompositeView *wave_view;
 };
 
 struct _AgsCompositeEditorClass
@@ -100,26 +108,6 @@ void ags_composite_editor_paste(AgsCompositeEditor *composite_editor);
 void ags_composite_editor_copy(AgsCompositeEditor *composite_editor);
 void ags_composite_editor_cut(AgsCompositeEditor *composite_editor);
 void ags_composite_editor_invert(AgsCompositeEditor *composite_editor);
-
-/* notation */
-void ags_composite_editor_notation_add_note(AgsCompositeEditor *composite_editor,
-					    AgsNote *note);
-
-void ags_composite_editor_notation_delete_note(AgsCompositeEditor *composite_editor,
-					       guint x, guint y);
-
-void ags_composite_editor_notation_select_region(AgsCompositeEditor *composite_editor,
-						 guint x0, guint y0,
-						 guint x1, guint y1);
-
-void ags_composite_editor_notation_do_feedback(AgsCompositeEditor *composite_editor);
-
-void ags_composite_editor_notation_start_play_key(AgsCompositeEditor *composite_editor,
-						  gint key_code);
-void ags_composite_editor_notation_stop_play_key(AgsCompositeEditor *composite_editor,
-						 gint key_code);
-
-void ags_composite_editor_notation_select_all(AgsCompositeEditor *composite_editor);
 
 /* instantiate */
 AgsCompositeEditor* ags_composite_editor_new();

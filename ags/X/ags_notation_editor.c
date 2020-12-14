@@ -194,12 +194,12 @@ ags_notation_editor_class_init(AgsNotationEditorClass *notation_editor)
   widget->show = ags_notation_editor_show;
   widget->show_all = ags_notation_editor_show_all;
   
-  /* AgsEditorClass */
+  /* AgsNotationEditorClass */
   notation_editor->machine_changed = ags_notation_editor_real_machine_changed;
 
   /* signals */
   /**
-   * AgsEditor::machine-changed:
+   * AgsNotationEditor::machine-changed:
    * @editor: the object to change machine.
    * @machine: the #AgsMachine to set
    *

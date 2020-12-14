@@ -2632,8 +2632,6 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_sheet_edit_callbacks.h \
 	ags/X/editor/ags_sheet_toolbar.h \
 	ags/X/editor/ags_sheet_toolbar_callbacks.h \
-	ags/X/editor/ags_toolbar.h \
-	ags/X/editor/ags_toolbar_callbacks.h \
 	ags/X/editor/ags_vautomation_edit_box.h \
 	ags/X/editor/ags_vwave_edit_box.h \
 	ags/X/editor/ags_wave_edit_callbacks.h \
@@ -2698,8 +2696,6 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_sheet_edit_callbacks.c \
 	ags/X/editor/ags_sheet_toolbar.c \
 	ags/X/editor/ags_sheet_toolbar_callbacks.c \
-	ags/X/editor/ags_toolbar.c \
-	ags/X/editor/ags_toolbar_callbacks.c \
 	ags/X/editor/ags_vautomation_edit_box.c \
 	ags/X/editor/ags_vwave_edit_box.c \
 	ags/X/editor/ags_wave_edit.c \
