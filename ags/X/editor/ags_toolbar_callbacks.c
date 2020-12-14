@@ -19,52 +19,363 @@
 
 #include <ags/X/editor/ags_toolbar_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_composite_editor.h>
+#include <ags/X/ags_notation_editor.h>
+#include <ags/X/ags_sheet_window.h>
+#include <ags/X/ags_sheet_editor.h>
+#include <ags/X/ags_automation_window.h>
+#include <ags/X/ags_automation_editor.h>
+#include <ags/X/ags_wave_window.h>
+#include <ags/X/ags_wave_editor.h>
+
 void
 ags_toolbar_position_callback(GtkToolButton *button, AgsToolbar *toolbar)
 {
-  //TODO:JK: implement me
+  if(toolbar->block_selected_tool){
+    return;
+  }
+
+  toolbar->block_selected_tool = TRUE;
+
+  ags_toolbar_set_selected_tool(toolbar,
+				(GtkToggleToolButton *) button);
+  
+  toolbar->block_selected_tool = FALSE;
 }
 
 void
 ags_toolbar_edit_callback(GtkToolButton *button, AgsToolbar *toolbar)
 {
-  //TODO:JK: implement me
+  if(toolbar->block_selected_tool){
+    return;
+  }
+
+  toolbar->block_selected_tool = TRUE;
+
+  ags_toolbar_set_selected_tool(toolbar,
+				(GtkToggleToolButton *) button);
+  
+  toolbar->block_selected_tool = FALSE;
 }
 
 void
 ags_toolbar_clear_callback(GtkToolButton *button, AgsToolbar *toolbar)
 {
-  //TODO:JK: implement me
+  if(toolbar->block_selected_tool){
+    return;
+  }
+
+  toolbar->block_selected_tool = TRUE;
+
+  ags_toolbar_set_selected_tool(toolbar,
+				(GtkToggleToolButton *) button);
+  
+  toolbar->block_selected_tool = FALSE;
 }
 
 void
 ags_toolbar_select_callback(GtkToolButton *button, AgsToolbar *toolbar)
 {
-  //TODO:JK: implement me
+  if(toolbar->block_selected_tool){
+    return;
+  }
+
+  toolbar->block_selected_tool = TRUE;
+
+  ags_toolbar_set_selected_tool(toolbar,
+				(GtkToggleToolButton *) button);
+  
+  toolbar->block_selected_tool = FALSE;
 }
 
 void
 ags_toolbar_invert_callback(GtkToolButton *button, AgsToolbar *toolbar)
 {
-  //TODO:JK: implement me
+  AgsCompositeEditor *composite_editor;
+  AgsNotationEditor *notation_editor;
+  AgsSheetEditor *sheet_editor;
+  AgsAutomationEditor *automation_editor;
+  AgsWaveEditor *wave_editor;
+
+  AgsApplicationContext *application_context;
+
+  gboolean success;
+  
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  
+  notation_editor = NULL;
+  sheet_editor = NULL;
+  automation_editor = NULL;
+  wave_editor = NULL;
+
+  success = FALSE;
+  
+  if(composite_editor != NULL){
+    ags_composite_editor_invert(composite_editor);
+    
+    success = TRUE;
+  }else{
+    notation_editor = gtk_widget_get_ancestor(toolbar,
+					      AGS_TYPE_NOTATION_EDITOR);
+
+    if(notation_editor != NULL){
+      ags_notation_editor_invert(notation_editor);
+      
+      success = TRUE;
+    }else{
+      sheet_editor = gtk_widget_get_ancestor(toolbar,
+					     AGS_TYPE_SHEET_EDITOR);
+    }
+
+    if(sheet_editor != NULL){
+      g_warning("invert not supported");
+      
+      success = TRUE;
+    }else{
+      if(notation_editor == NULL){
+	automation_editor = gtk_widget_get_ancestor(toolbar,
+						    AGS_TYPE_AUTOMATION_EDITOR);
+      }
+    }
+
+    if(automation_editor != NULL){
+      g_warning("invert not supported");
+      
+      success = TRUE;
+    }else{
+      if(notation_editor == NULL &&
+	 sheet_editor == NULL){
+	wave_editor = gtk_widget_get_ancestor(toolbar,
+					      AGS_TYPE_WAVE_EDITOR);
+      }
+    }
+
+    if(wave_editor != NULL){
+      g_warning("invert not supported");
+      
+      success = TRUE;
+    }
+  }
 }
 
 void
 ags_toolbar_copy_callback(GtkToolButton *button, AgsToolbar *toolbar)
 {
-  //TODO:JK: implement me
+  AgsCompositeEditor *composite_editor;
+  AgsNotationEditor *notation_editor;
+  AgsSheetEditor *sheet_editor;
+  AgsAutomationEditor *automation_editor;
+  AgsWaveEditor *wave_editor;
+
+  AgsApplicationContext *application_context;
+
+  gboolean success;
+  
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  
+  notation_editor = NULL;
+  sheet_editor = NULL;
+  automation_editor = NULL;
+  wave_editor = NULL;
+
+  success = FALSE;
+  
+  if(composite_editor != NULL){
+    ags_composite_editor_copy(composite_editor);
+    
+    success = TRUE;
+  }else{
+    notation_editor = gtk_widget_get_ancestor(toolbar,
+					      AGS_TYPE_NOTATION_EDITOR);
+
+    if(notation_editor != NULL){
+      ags_notation_editor_copy(notation_editor);
+      
+      success = TRUE;
+    }else{
+      sheet_editor = gtk_widget_get_ancestor(toolbar,
+					     AGS_TYPE_SHEET_EDITOR);
+    }
+
+    if(sheet_editor != NULL){
+      ags_sheet_editor_copy(sheet_editor);
+      
+      success = TRUE;
+    }else{
+      if(notation_editor == NULL){
+	automation_editor = gtk_widget_get_ancestor(toolbar,
+						    AGS_TYPE_AUTOMATION_EDITOR);
+      }
+    }
+
+    if(automation_editor != NULL){
+      ags_automation_editor_copy(automation_editor);
+      
+      success = TRUE;
+    }else{
+      if(notation_editor == NULL &&
+	 sheet_editor == NULL){
+	wave_editor = gtk_widget_get_ancestor(toolbar,
+					      AGS_TYPE_WAVE_EDITOR);
+      }
+    }
+
+    if(wave_editor != NULL){
+      ags_wave_editor_copy(wave_editor);
+      
+      success = TRUE;
+    }
+  }
 }
 
 void
 ags_toolbar_cut_callback(GtkToolButton *button, AgsToolbar *toolbar)
 {
-  //TODO:JK: implement me
+  AgsCompositeEditor *composite_editor;
+  AgsNotationEditor *notation_editor;
+  AgsSheetEditor *sheet_editor;
+  AgsAutomationEditor *automation_editor;
+  AgsWaveEditor *wave_editor;
+
+  AgsApplicationContext *application_context;
+
+  gboolean success;
+  
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  
+  notation_editor = NULL;
+  sheet_editor = NULL;
+  automation_editor = NULL;
+  wave_editor = NULL;
+
+  success = FALSE;
+  
+  if(composite_editor != NULL){
+    ags_composite_editor_cut(composite_editor);
+    
+    success = TRUE;
+  }else{
+    notation_editor = gtk_widget_get_ancestor(toolbar,
+					      AGS_TYPE_NOTATION_EDITOR);
+
+    if(notation_editor != NULL){
+      ags_notation_editor_cut(notation_editor);
+      
+      success = TRUE;
+    }else{
+      sheet_editor = gtk_widget_get_ancestor(toolbar,
+					     AGS_TYPE_SHEET_EDITOR);
+    }
+
+    if(sheet_editor != NULL){
+      ags_sheet_editor_cut(sheet_editor);
+      
+      success = TRUE;
+    }else{
+      if(notation_editor == NULL){
+	automation_editor = gtk_widget_get_ancestor(toolbar,
+						    AGS_TYPE_AUTOMATION_EDITOR);
+      }
+    }
+
+    if(automation_editor != NULL){
+      ags_automation_editor_cut(automation_editor);
+      
+      success = TRUE;
+    }else{
+      if(notation_editor == NULL &&
+	 sheet_editor == NULL){
+	wave_editor = gtk_widget_get_ancestor(toolbar,
+					      AGS_TYPE_WAVE_EDITOR);
+      }
+    }
+
+    if(wave_editor != NULL){
+      ags_wave_editor_cut(wave_editor);
+      
+      success = TRUE;
+    }
+  }
 }
 
 void
 ags_toolbar_paste_callback(GtkToolButton *button, AgsToolbar *toolbar)
 {
-  //TODO:JK: implement me
+  AgsCompositeEditor *composite_editor;
+  AgsNotationEditor *notation_editor;
+  AgsSheetEditor *sheet_editor;
+  AgsAutomationEditor *automation_editor;
+  AgsWaveEditor *wave_editor;
+
+  AgsApplicationContext *application_context;
+
+  gboolean success;
+  
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  
+  notation_editor = NULL;
+  sheet_editor = NULL;
+  automation_editor = NULL;
+  wave_editor = NULL;
+
+  success = FALSE;
+  
+  if(composite_editor != NULL){
+    ags_composite_editor_paste(composite_editor);
+    
+    success = TRUE;
+  }else{
+    notation_editor = gtk_widget_get_ancestor(toolbar,
+					      AGS_TYPE_NOTATION_EDITOR);
+
+    if(notation_editor != NULL){
+      ags_notation_editor_paste(notation_editor);
+      
+      success = TRUE;
+    }else{
+      sheet_editor = gtk_widget_get_ancestor(toolbar,
+					     AGS_TYPE_SHEET_EDITOR);
+    }
+
+    if(sheet_editor != NULL){
+      ags_sheet_editor_paste(sheet_editor);
+      
+      success = TRUE;
+    }else{
+      if(notation_editor == NULL){
+	automation_editor = gtk_widget_get_ancestor(toolbar,
+						    AGS_TYPE_AUTOMATION_EDITOR);
+      }
+    }
+
+    if(automation_editor != NULL){
+      ags_automation_editor_paste(automation_editor);
+      
+      success = TRUE;
+    }else{
+      if(notation_editor == NULL &&
+	 sheet_editor == NULL){
+	wave_editor = gtk_widget_get_ancestor(toolbar,
+					      AGS_TYPE_WAVE_EDITOR);
+      }
+    }
+
+    if(wave_editor != NULL){
+      ags_wave_editor_paste(wave_editor);
+      
+      success = TRUE;
+    }
+  }
 }
 
 void

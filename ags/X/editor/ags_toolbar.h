@@ -38,6 +38,9 @@ G_BEGIN_DECLS
 #define AGS_IS_TOOLBAR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TOOLBAR))
 #define AGS_TOOLBAR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_TOOLBAR, AgsToolbarClass))
 
+#define AGS_TOOLBAR_DEFAULT_VERSION "3.7.9"
+#define AGS_TOOLBAR_DEFAULT_BUILD_ID "Mon Dec 14 15:29:38 UTC 2020"
+
 #define AGS_TOOLBAR_DIALOG_SCOPE_COUNT (5)
 
 #define AGS_TOOLBAR_SCOPE_COMMON "common"
@@ -129,9 +132,13 @@ struct _AgsToolbar
   guint tool;
   guint action;
   guint option;
+  
+  gchar *version;
+  gchar *build_id;
 
   AgsUUID *uuid;
 
+  gboolean block_selected_tool;
   GtkToggleToolButton *selected_tool;
 
   GtkToggleToolButton *position;
@@ -200,6 +207,9 @@ void ags_toolbar_unset_option(AgsToolbar *toolbar, guint option);
 GtkMenu* ags_toolbar_paste_popup_new(guint paste_mode);
 GtkMenu* ags_toolbar_menu_tool_popup_new(gchar **dialog,
 					 GValue *value);
+
+void ags_toolbar_set_selected_tool(AgsToolbar *toolbar,
+				   GtkToggleToolButton *selected_tool);
 
 void ags_toolbar_scope_create_and_connect(AgsToolbar *toolbar,
 					  gchar *scope);

@@ -136,10 +136,14 @@ ags_toolbar_init(AgsToolbar *toolbar)
   toolbar->action = 0;
   toolbar->option = 0;
 
+  toolbar->version = g_strdup(AGS_TOOLBAR_DEFAULT_VERSION);
+  toolbar->build_id = g_strdup(AGS_TOOLBAR_DEFAULT_BUILD_ID);
+  
   /* uuid */
   toolbar->uuid = ags_uuid_alloc();
   ags_uuid_generate(toolbar->uuid);
 
+  toolbar->block_selected_tool = FALSE;
   toolbar->selected_tool = NULL;
 
   toolbar->position = NULL;
@@ -1714,6 +1718,43 @@ ags_toolbar_menu_tool_popup_new(gchar **dialog,
 }
 
 /**
+ * ags_toolbar_set_selected_tool:
+ * @toolbar: the #AgsToolbar
+ * @selected_tool: the #GtkToggleToolButton
+ * 
+ * Set @selected_tool of @toolbar.
+ *
+ * Since: 3.7.9
+ */
+void
+ags_toolbar_change_selected_tool(AgsToolbar *toolbar,
+				 GtkToggleToolButton *selected_tool)
+{
+  if(!AGS_IS_TOOLBAR(toolbar)){
+    return;
+  }
+  
+  if(toolbar->selected_tool != selected_tool){
+    GtkToggleToolButton *old_selected_tool;
+
+    old_selected_tool = toolbar->selected_tool;
+    
+    toolbar->selected_tool = selected_tool;
+    
+    if(old_selected_tool != NULL){
+      gtk_toggle_tool_button_set_active(old_selected_tool,
+					FALSE);
+    }
+  }else{
+    if(selected_tool != NULL &&
+       !gtk_toggle_tool_button_get_active(selected_tool)){
+      gtk_toggle_tool_button_set_active(selected_tool,
+					TRUE);
+    }
+  }
+}
+
+/**
  * ags_toolbar_scope_create_and_connect:
  * @toolbar: the #AgsToolbar
  * @scope: the scope
@@ -1835,6 +1876,9 @@ ags_toolbar_scope_create_and_connect(AgsToolbar *toolbar,
       ags_connectable_connect_connection(AGS_CONNECTABLE(toolbar),
 					 toolbar->opacity);
       
+      gtk_toggle_tool_button_set_active(toolbar->position,
+					TRUE);
+      
       success = TRUE;
     }else if(!g_strcmp0(scope,
 			AGS_TOOLBAR_SCOPE_SHEET)){
@@ -1922,6 +1966,9 @@ ags_toolbar_scope_create_and_connect(AgsToolbar *toolbar,
       ags_connectable_connect_connection(AGS_CONNECTABLE(toolbar),
 					 toolbar->opacity);
 
+      gtk_toggle_tool_button_set_active(toolbar->position,
+					TRUE);
+
       success = TRUE;
     }else if(!g_strcmp0(scope,
 			AGS_TOOLBAR_SCOPE_WAVE)){
@@ -1938,7 +1985,7 @@ ags_toolbar_scope_create_and_connect(AgsToolbar *toolbar,
       /* static initializers */
       if(!initialized){
 	wave_menu_tool_value = (GValue *) g_new0(GValue,
-						     2);
+						 2);
 
 	g_value_init(wave_menu_tool_value,
 		     G_TYPE_UINT);
@@ -1994,6 +2041,9 @@ ags_toolbar_scope_create_and_connect(AgsToolbar *toolbar,
 
       ags_connectable_connect_connection(AGS_CONNECTABLE(toolbar),
 					 toolbar->opacity);
+
+      gtk_toggle_tool_button_set_active(toolbar->position,
+					TRUE);
 
       success = TRUE;
     }
