@@ -70,8 +70,11 @@ struct _AgsCompositeView
   
   GtkWidget *edit_control;  
   GtkWidget *edit;
-  
+
+  gboolean block_vscrollbar;
   GtkScrollbar *vscrollbar;
+
+  gboolean block_hscrollbar;
   GtkScrollbar *hscrollbar;
 
   GtkWidget *edit_meta;
@@ -83,6 +86,10 @@ struct _AgsCompositeViewClass
 };
 
 GType ags_composite_view_get_type(void);
+
+gboolean ags_composite_view_test_flags(AgsCompositeView *composite_view, guint flags);
+void ags_composite_view_set_flags(AgsCompositeView *composite_view, guint flags);
+void ags_composite_view_unset_flags(AgsCompositeView *composite_view, guint flags);
 
 /* instantiate */
 AgsCompositeView* ags_composite_view_new();

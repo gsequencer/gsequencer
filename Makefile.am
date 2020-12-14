@@ -2062,6 +2062,10 @@ libgsequencer_h_sources = \
 	ags/X/ags_audio_preferences.h \
 	ags/X/ags_bulk_member_callbacks.h \
 	ags/X/ags_bulk_member.h \
+	ags/X/ags_composite_editor.h \
+	ags/X/ags_composite_editor_callbacks.h \
+	ags/X/ags_composite_view.h \
+	ags/X/ags_composite_view_callbacks.h \
 	ags/X/ags_connection_editor_callbacks.h \
 	ags/X/ags_connection_editor.h \
 	ags/X/ags_context_menu.h \
@@ -2185,6 +2189,10 @@ libgsequencer_c_sources = \
 	ags/X/ags_audio_preferences_callbacks.c \
 	ags/X/ags_bulk_member.c \
 	ags/X/ags_bulk_member_callbacks.c \
+	ags/X/ags_composite_editor.c \
+	ags/X/ags_composite_editor_callbacks.c \
+	ags/X/ags_composite_view.c \
+	ags/X/ags_composite_view_callbacks.c \
 	ags/X/ags_connection_editor_callbacks.c \
 	ags/X/ags_connection_editor.c \
 	ags/X/ags_context_menu.c \
@@ -2632,6 +2640,8 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_sheet_edit_callbacks.h \
 	ags/X/editor/ags_sheet_toolbar.h \
 	ags/X/editor/ags_sheet_toolbar_callbacks.h \
+	ags/X/editor/ags_toolbar.h \
+	ags/X/editor/ags_toolbar_callbacks.h \
 	ags/X/editor/ags_vautomation_edit_box.h \
 	ags/X/editor/ags_vwave_edit_box.h \
 	ags/X/editor/ags_wave_edit_callbacks.h \
@@ -2696,6 +2706,8 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_sheet_edit_callbacks.c \
 	ags/X/editor/ags_sheet_toolbar.c \
 	ags/X/editor/ags_sheet_toolbar_callbacks.c \
+	ags/X/editor/ags_toolbar.c \
+	ags/X/editor/ags_toolbar_callbacks.c \
 	ags/X/editor/ags_vautomation_edit_box.c \
 	ags/X/editor/ags_vwave_edit_box.c \
 	ags/X/editor/ags_wave_edit.c \

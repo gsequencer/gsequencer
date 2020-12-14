@@ -849,7 +849,7 @@ ags_toolbar_disconnect_connection(AgsConnectable *connectable,
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 gboolean
 ags_toolbar_test_flags(AgsToolbar *toolbar, guint flags)
@@ -873,7 +873,7 @@ ags_toolbar_test_flags(AgsToolbar *toolbar, guint flags)
  *
  * Enable a feature of #AgsToolbar.
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 void
 ags_toolbar_set_flags(AgsToolbar *toolbar, guint flags)
@@ -893,7 +893,7 @@ ags_toolbar_set_flags(AgsToolbar *toolbar, guint flags)
  *
  * Disable a feature of AgsToolbar.
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 void
 ags_toolbar_unset_flags(AgsToolbar *toolbar, guint flags)
@@ -915,7 +915,7 @@ ags_toolbar_unset_flags(AgsToolbar *toolbar, guint flags)
  * 
  * Returns: %TRUE if tool are set, else %FALSE
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 gboolean
 ags_toolbar_test_tool(AgsToolbar *toolbar, guint tool)
@@ -939,7 +939,7 @@ ags_toolbar_test_tool(AgsToolbar *toolbar, guint tool)
  *
  * Enable a feature of #AgsToolbar.
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 void
 ags_toolbar_set_tool(AgsToolbar *toolbar, guint tool)
@@ -1031,7 +1031,7 @@ ags_toolbar_set_tool(AgsToolbar *toolbar, guint tool)
  *
  * Disable a feature of AgsToolbar.
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 void
 ags_toolbar_unset_tool(AgsToolbar *toolbar, guint tool)
@@ -1083,7 +1083,7 @@ ags_toolbar_unset_tool(AgsToolbar *toolbar, guint tool)
  * 
  * Returns: %TRUE if action are set, else %FALSE
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 gboolean
 ags_toolbar_test_action(AgsToolbar *toolbar, guint action)
@@ -1107,7 +1107,7 @@ ags_toolbar_test_action(AgsToolbar *toolbar, guint action)
  *
  * Enable a feature of #AgsToolbar.
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 void
 ags_toolbar_set_action(AgsToolbar *toolbar, guint action)
@@ -1223,7 +1223,7 @@ ags_toolbar_set_action(AgsToolbar *toolbar, guint action)
  *
  * Disable a feature of AgsToolbar.
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 void
 ags_toolbar_unset_action(AgsToolbar *toolbar, guint action)
@@ -1277,7 +1277,7 @@ ags_toolbar_unset_action(AgsToolbar *toolbar, guint action)
  * 
  * Returns: %TRUE if option are set, else %FALSE
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 gboolean
 ags_toolbar_test_option(AgsToolbar *toolbar, guint option)
@@ -1301,7 +1301,7 @@ ags_toolbar_test_option(AgsToolbar *toolbar, guint option)
  *
  * Enable a feature of #AgsToolbar.
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 void
 ags_toolbar_set_option(AgsToolbar *toolbar, guint option)
@@ -1512,7 +1512,7 @@ ags_toolbar_set_option(AgsToolbar *toolbar, guint option)
  *
  * Disable a feature of AgsToolbar.
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 void
 ags_toolbar_unset_option(AgsToolbar *toolbar, guint option)
@@ -1555,7 +1555,7 @@ ags_toolbar_unset_option(AgsToolbar *toolbar, guint option)
  *
  * Returns: a new #GtkMenu
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 GtkMenu*
 ags_toolbar_paste_popup_new(guint paste_mode)
@@ -1604,7 +1604,7 @@ ags_toolbar_paste_popup_new(guint paste_mode)
  *
  * Returns: a new #GtkMenu
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 GtkMenu*
 ags_toolbar_menu_tool_popup_new(gchar **dialog,
@@ -1729,11 +1729,11 @@ ags_toolbar_menu_tool_popup_new(gchar **dialog,
  * 
  * Set @selected_tool of @toolbar.
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 void
-ags_toolbar_change_selected_tool(AgsToolbar *toolbar,
-				 GtkToggleToolButton *selected_tool)
+ags_toolbar_set_selected_tool(AgsToolbar *toolbar,
+			      GtkToggleToolButton *selected_tool)
 {
   if(!AGS_IS_TOOLBAR(toolbar)){
     return;
@@ -1766,7 +1766,7 @@ ags_toolbar_change_selected_tool(AgsToolbar *toolbar,
  * 
  * Create and connect @scope of @toolbar.
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 void
 ags_toolbar_scope_create_and_connect(AgsToolbar *toolbar,
@@ -2062,7 +2062,7 @@ ags_toolbar_scope_create_and_connect(AgsToolbar *toolbar,
  *
  * Returns: a new #AgsToolbar
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 AgsToolbar*
 ags_toolbar_new()

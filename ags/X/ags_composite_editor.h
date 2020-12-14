@@ -45,7 +45,7 @@ G_BEGIN_DECLS
 #define AGS_IS_COMPOSITE_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_COMPOSITE_EDITOR))
 #define AGS_COMPOSITE_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_COMPOSITE_EDITOR, AgsCompositeEditorClass))
   
-#define AGS_COMPOSITE_EDITOR_DEFAULT_VERSION "3.7.9"
+#define AGS_COMPOSITE_EDITOR_DEFAULT_VERSION "3.8.0"
 #define AGS_COMPOSITE_EDITOR_DEFAULT_BUILD_ID "Mon Dec 14 15:29:38 UTC 2020"
 
 typedef struct _AgsCompositeEditor AgsCompositeEditor;
@@ -99,6 +99,10 @@ struct _AgsCompositeEditorClass
 };
 
 GType ags_composite_editor_get_type(void);
+
+gboolean ags_composite_editor_test_flags(AgsCompositeEditor *composite_editor, guint flags);
+void ags_composite_editor_set_flags(AgsCompositeEditor *composite_editor, guint flags);
+void ags_composite_editor_unset_flags(AgsCompositeEditor *composite_editor, guint flags);
 
 void ags_composite_editor_machine_changed(AgsCompositeEditor *composite_editor,
 					  AgsMachine *machine);

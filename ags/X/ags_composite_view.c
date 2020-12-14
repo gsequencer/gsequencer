@@ -136,6 +136,22 @@ ags_composite_view_init(AgsCompositeView *composite_view)
   /* uuid */
   composite_view->uuid = ags_uuid_alloc();
   ags_uuid_generate(composite_view->uuid);
+
+  /* widgets */
+  composite_view->edit_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						    0);
+  gtk_box_pack_start((GtkBox *) composite_view,
+		     (GtkWidget *) composite_view->edit_box,
+		     FALSE, FALSE,
+		     0);
+
+  composite_view->edit_grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_pack_start(composite_view->edit_box,
+		     (GtkWidget *) composite_view->edit_grid,
+		     FALSE, FALSE,
+		     0);
+
+  //TODO:JK: implement me
 }
 
 AgsUUID*
@@ -296,13 +312,79 @@ ags_composite_view_disconnect(AgsConnectable *connectable)
 }
 
 /**
+ * ags_composite_view_test_flags:
+ * @composite_view: the #AgsCompositeView
+ * @flags: the flags
+ *
+ * Test @flags to be set on @composite_view.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 3.8.0
+ */
+gboolean
+ags_composite_view_test_flags(AgsCompositeView *composite_view, guint flags)
+{
+  gboolean retval;  
+  
+  if(!AGS_IS_COMPOSITE_VIEW(composite_view)){
+    return(FALSE);
+  }
+    
+  /* test */
+  retval = (flags & (composite_view->flags)) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_composite_view_set_flags:
+ * @composite_view: the #AgsCompositeView
+ * @flags: see enum AgsCompositeViewFlags
+ *
+ * Enable a feature of #AgsCompositeView.
+ *
+ * Since: 3.8.0
+ */
+void
+ags_composite_view_set_flags(AgsCompositeView *composite_view, guint flags)
+{
+  if(!AGS_IS_COMPOSITE_VIEW(composite_view)){
+    return;
+  }
+
+  /* set flags */
+  composite_view->flags |= flags;
+}
+    
+/**
+ * ags_composite_view_unset_flags:
+ * @composite_view: the #AgsCompositeView
+ * @flags: see enum AgsCompositeViewFlags
+ *
+ * Disable a feature of AgsCompositeView.
+ *
+ * Since: 3.8.0
+ */
+void
+ags_composite_view_unset_flags(AgsCompositeView *composite_view, guint flags)
+{  
+  if(!AGS_IS_COMPOSITE_VIEW(composite_view)){
+    return;
+  }
+
+  /* unset flags */
+  composite_view->flags &= (~flags);
+}
+
+/**
  * ags_composite_view_new:
  *
  * Create a new #AgsCompositeView.
  *
  * Returns: a new #AgsCompositeView
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 AgsCompositeView*
 ags_composite_view_new()

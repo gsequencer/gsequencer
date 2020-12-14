@@ -119,7 +119,7 @@ ags_composite_editor_class_init(AgsCompositeEditorClass *composite_editor)
    *
    * The ::machine-changed signal notifies about changed machine.
    * 
-   * Since: 3.7.9
+   * Since: 3.8.0
    */
   composite_editor_signals[MACHINE_CHANGED] =
     g_signal_new("machine-changed",
@@ -327,6 +327,72 @@ ags_composite_editor_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
+/**
+ * ags_composite_editor_test_flags:
+ * @composite_editor: the #AgsCompositeEditor
+ * @flags: the flags
+ *
+ * Test @flags to be set on @composite_editor.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 3.8.0
+ */
+gboolean
+ags_composite_editor_test_flags(AgsCompositeEditor *composite_editor, guint flags)
+{
+  gboolean retval;  
+  
+  if(!AGS_IS_COMPOSITE_EDITOR(composite_editor)){
+    return(FALSE);
+  }
+    
+  /* test */
+  retval = (flags & (composite_editor->flags)) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_composite_editor_set_flags:
+ * @composite_editor: the #AgsCompositeEditor
+ * @flags: see enum AgsCompositeEditorFlags
+ *
+ * Enable a feature of #AgsCompositeEditor.
+ *
+ * Since: 3.8.0
+ */
+void
+ags_composite_editor_set_flags(AgsCompositeEditor *composite_editor, guint flags)
+{
+  if(!AGS_IS_COMPOSITE_EDITOR(composite_editor)){
+    return;
+  }
+
+  /* set flags */
+  composite_editor->flags |= flags;
+}
+    
+/**
+ * ags_composite_editor_unset_flags:
+ * @composite_editor: the #AgsCompositeEditor
+ * @flags: see enum AgsCompositeEditorFlags
+ *
+ * Disable a feature of AgsCompositeEditor.
+ *
+ * Since: 3.8.0
+ */
+void
+ags_composite_editor_unset_flags(AgsCompositeEditor *composite_editor, guint flags)
+{  
+  if(!AGS_IS_COMPOSITE_EDITOR(composite_editor)){
+    return;
+  }
+
+  /* unset flags */
+  composite_editor->flags &= (~flags);
+}
+
 void
 ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 					  AgsMachine *machine)
@@ -341,7 +407,7 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
  *
  * Is emitted as machine changed of composite_editor.
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 void
 ags_composite_editor_machine_changed(AgsCompositeEditor *composite_editor,
@@ -357,13 +423,69 @@ ags_composite_editor_machine_changed(AgsCompositeEditor *composite_editor,
 }
 
 /**
+ * ags_composite_editor_paste:
+ * @composite_editor: the #AgsCompositeEditor
+ *
+ * Paste to @composite_editor from clipboard.
+ * 
+ * Since: 3.8.0
+ */
+void
+ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_composite_editor_copy:
+ * @composite_editor: the #AgsCompositeEditor
+ * 
+ * Copy to clipboard from @composite_editor.
+ * 
+ * Since: 3.8.0
+ */
+void
+ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_composite_editor_cut:
+ * @composite_editor: the #AgsCompositeEditor
+ * 
+ * Copy to clipboard from @composite_editor.
+ * 
+ * Since: 3.8.0
+ */
+void
+ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_composite_editor_invert:
+ * @composite_editor: the #AgsCompositeEditor
+ * 
+ * Invert selected region of @composite_editor.
+ * 
+ * Since: 3.8.0
+ */
+void
+ags_composite_editor_invert(AgsCompositeEditor *composite_editor)
+{
+  //TODO:JK: implement me
+}
+
+/**
  * ags_composite_editor_new:
  *
  * Create a new #AgsCompositeEditor.
  *
  * Returns: a new #AgsCompositeEditor
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 AgsCompositeEditor*
 ags_composite_editor_new()
