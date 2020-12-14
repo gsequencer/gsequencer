@@ -38,6 +38,8 @@ G_BEGIN_DECLS
 #define AGS_IS_TOOLBAR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TOOLBAR))
 #define AGS_TOOLBAR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_TOOLBAR, AgsToolbarClass))
 
+#define AGS_TOOLBAR_EDITOR_COUNT (4)
+
 typedef enum{
   AGS_TOOLBAR_ADDED_TO_REGISTRY     = 1,
   AGS_TOOLBAR_CONNECTED             = 1 << 1,
@@ -58,11 +60,17 @@ typedef enum{
 }AgsToolbarAction;
 
 typedef enum{
+  AGS_TOOLBAR_PASTE_MATCH_AUDIO_CHANNEL  = 1,
+  AGS_TOOLBAR_PASTE_MATCH_LINE           = 1 <<  1,
+  AGS_TOOLBAR_PASTE_NO_DUPLICATES        = 1 <<  2,
+}AgsToolbarPasteMode;
+
+typedef enum{
   AGS_TOOLBAR_HAS_MENU_TOOL      = 1,
   AGS_TOOLBAR_HAS_ZOOM           = 1 <<  1,
   AGS_TOOLBAR_HAS_OPACITY        = 1 <<  2,
   AGS_TOOLBAR_HAS_PORT           = 1 <<  3,
-}AgsToolbarMenuOptions;
+}AgsToolbarOption;
 
 typedef enum{
   AGS_TOOLBAR_ZOOM_4_1,
@@ -101,9 +109,16 @@ struct _AgsToolbar
   GtkToolbar toolbar;
 
   guint flags;
+
   guint tool;
   guint action;
+  guint option;
 
+  guint notation_dialog;
+  guint sheet_dialog;
+  guint automation_dialog;
+  guint wave_dialog;
+  
   AgsUUID *uuid;
 
   GtkToggleToolButton *selected_tool;
@@ -113,21 +128,25 @@ struct _AgsToolbar
   GtkToggleToolButton *clear;
   GtkToggleToolButton *select;
 
-  GtkMenuToolButton *menu_tool;
-  GtkMenu *tool_popup;
+  GtkToolButton *invert;
+  GtkToolButton *copy;
+  GtkToolButton *cut;
 
-  guint selected_zoom;
+  guint paste_mode;
+  GtkMenuToolButton *paste;
+  GtkMenu *paste_popup;
+
+  gchar **menu_tool_dialog;
+  GValue *menu_tool_value;
+  GtkMenuToolButton *menu_tool;
+  GtkMenu *menu_tool_popup;
 
   GtkComboBox *port;
 
-  GtkComboBoxText *zoom;
+  gint selected_zoom;
+  GtkComboBox *zoom;
 
   GtkSpinButton *opacity;
-
-  guint notation_dialog;
-  guint sheet_dialog;
-  guint automation_dialog;
-  guint wave_dialog;
   
   GtkDialog *move_note;
   GtkDialog *crop_note;  
@@ -155,15 +174,21 @@ gboolean ags_toolbar_test_flags(AgsToolbar *toolbar, guint flags);
 void ags_toolbar_set_flags(AgsToolbar *toolbar, guint flags);
 void ags_toolbar_unset_flags(AgsToolbar *toolbar, guint flags);
 
-gboolean ags_toolbar_test_edit_tool(AgsToolbar *toolbar, guint edit_tool);
-void ags_toolbar_set_edit_tool(AgsToolbar *toolbar, guint edit_tool);
-void ags_toolbar_unset_edit_tool(AgsToolbar *toolbar, guint edit_tool);
+gboolean ags_toolbar_test_tool(AgsToolbar *toolbar, guint tool);
+void ags_toolbar_set_tool(AgsToolbar *toolbar, guint tool);
+void ags_toolbar_unset_tool(AgsToolbar *toolbar, guint tool);
 
-gboolean ags_toolbar_test_edit_action(AgsToolbar *toolbar, guint edit_action);
-void ags_toolbar_set_edit_action(AgsToolbar *toolbar, guint edit_action);
-void ags_toolbar_unset_edit_action(AgsToolbar *toolbar, guint edit_action);
+gboolean ags_toolbar_test_action(AgsToolbar *toolbar, guint action);
+void ags_toolbar_set_action(AgsToolbar *toolbar, guint action);
+void ags_toolbar_unset_action(AgsToolbar *toolbar, guint action);
 
-GtkMenu* ags_toolbar_tool_popup_new(AgsToolbar *toolbar);
+gboolean ags_toolbar_test_option(AgsToolbar *toolbar, guint option);
+void ags_toolbar_set_option(AgsToolbar *toolbar, guint option);
+void ags_toolbar_unset_option(AgsToolbar *toolbar, guint option);
+
+GtkMenu* ags_toolbar_paste_popup_new(guint paste_mode);
+GtkMenu* ags_toolbar_menu_tool_popup_new(gchar **dialog,
+					 GValue *value);
 
 AgsToolbar* ags_toolbar_new();
 
