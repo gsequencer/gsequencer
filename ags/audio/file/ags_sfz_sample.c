@@ -19,6 +19,7 @@
 
 #include <ags/audio/file/ags_sfz_sample.h>
 
+#include <ags/audio/ags_diatonic_scale.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 

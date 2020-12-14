@@ -19,6 +19,8 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_wave.h>
 #include <ags/audio/ags_audio_buffer_util.h>
@@ -1337,6 +1339,7 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
 #ifdef AGS_WITH_GSTREAMER
   }else if(ags_gstreamer_file_check_suffix(audio_file->filename)){
     GError *error;
+
     guint loop_start, loop_end;
 
     /* sound resource */

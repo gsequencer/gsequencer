@@ -31,7 +31,7 @@ void ags_animation_window_class_init(AgsAnimationWindowClass *animation_window);
 void ags_animation_window_init(AgsAnimationWindow *animation_window);
 void ags_animation_window_show(GtkWidget *widget);
 
-gboolean ags_animation_window_draw(AgsAnimationWindow *animation_window, cairo_t *cr);
+gboolean ags_animation_window_draw(GtkWidget *widget, cairo_t *cr);
 
 static gpointer ags_animation_window_parent_class = NULL;
 
@@ -200,12 +200,15 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
 void
 ags_animation_window_show(GtkWidget *widget)
 {
+  /* call parent */
   GTK_WIDGET_CLASS(ags_animation_window_parent_class)->show(widget);
 }
 
 gboolean
-ags_animation_window_draw(AgsAnimationWindow *animation_window, cairo_t *cr)
+ags_animation_window_draw(GtkWidget *widget, cairo_t *cr)
 {
+  AgsAnimationWindow *animation_window;
+  
   AgsLog *log;
 
   PangoLayout *layout;
@@ -223,10 +226,8 @@ ags_animation_window_draw(AgsAnimationWindow *animation_window, cairo_t *cr)
   guint i, i_stop;
 
   GRecMutex *log_mutex;
-  
-  if(!AGS_IS_ANIMATION_WINDOW(animation_window)){
-    return(FALSE);
-  }
+
+  animation_window = AGS_ANIMATION_WINDOW(widget);
 
   log = ags_log_get_instance();
 

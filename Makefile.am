@@ -19,7 +19,7 @@ AM_CPPFLAGS += -DAGS_W32API=1 -DAGS_LIBRARY_SUFFIX=\".dll\" -DAGS_VECTORIZED_BUI
 AM_LDFLAGS = -no-undefined -L$(top_builddir)/lib -lgnu
 else
 if WITH_OSXAPI
-AM_CPPFLAGS += -fnested-functions -DAGS_OSXAPI=1 -I/usr/include -I/opt/local/include -I/opt/local/include/dssi -DAGS_LIBRARY_SUFFIX=\".dylib\"
+AM_CPPFLAGS += -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -DAGS_OSXAPI=1 -I/usr/include -I/opt/local/include -I/opt/local/include/dssi -DAGS_LIBRARY_SUFFIX=\".dylib\"
 else
 AM_CPPFLAGS += -include errno.h -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -I/usr/include -DAGS_LIBRARY_SUFFIX=\".so\" -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
 endif
@@ -105,7 +105,7 @@ EXTRA_DIST = config.rpath \
 	COPYING.docs \
 	COPYING.stk-4.3 \
 	ags/config.h.in \
-	ags/ags_config.h.in \
+	ags/ags_api_config.h.in \
 	gtk-doc.make \
 	gsequencer.share \
 	aclocal.m4 \
@@ -577,7 +577,7 @@ if WITH_W32API
 libags_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags.dll.a
 else
 if WITH_OSXAPI
-libags_la_LDFLAGS += -export-symbols libags.sym -Wl,-install_name,libags.dylib
+libags_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags.sym -Wl,-install_name,libags.dylib
 else
 libags_la_LDFLAGS += -export-symbols libags.sym -Wl,-soname,libags.so
 libags_la_LIBADD += -ldl -lcrypt
@@ -593,7 +593,7 @@ if WITH_W32API
 libags_thread_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_thread.dll.a
 else
 if WITH_OSXAPI
-libags_thread_la_LDFLAGS += -export-symbols libags_thread.sym -Wl,-install_name,libags_thread.dylib
+libags_thread_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags_thread.sym -Wl,-install_name,libags_thread.dylib
 else
 libags_thread_la_LDFLAGS += -export-symbols libags_thread.sym -Wl,-soname,libags_thread.so
 libags_thread_la_LIBADD += -ldl -lcrypt
@@ -609,7 +609,7 @@ if WITH_W32API
 libags_server_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_server.dll.a
 else
 if WITH_OSXAPI
-libags_server_la_LDFLAGS += -export-symbols libags_server.sym -Wl,-install_name,libags_server.dylib
+libags_server_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags_server.sym -Wl,-install_name,libags_server.dylib
 else
 libags_server_la_LDFLAGS += -export-symbols libags_server.sym -Wl,-soname,libags_server.so
 libags_server_la_LIBADD += -ldl -lcrypt
@@ -625,7 +625,7 @@ if WITH_W32API
 libags_audio_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_audio.dll.a
 else
 if WITH_OSXAPI
-libags_audio_la_LDFLAGS += -export-symbols libags_audio.sym -Wl,-install_name,libags_audio.dylib
+libags_audio_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags_audio.sym -Wl,-install_name,libags_audio.dylib
 else
 libags_audio_la_LDFLAGS += -export-symbols libags_audio.sym -Wl,-soname,libags_audio.so
 libags_audio_la_LIBADD += -ldl
@@ -641,7 +641,7 @@ if WITH_W32API
 libags_gui_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_gui.dll.a
 else
 if WITH_OSXAPI
-libags_gui_la_LDFLAGS += -export-symbols libags_gui.sym -Wl,-install_name,libags_gui.dylib
+libags_gui_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags_gui.sym -Wl,-install_name,libags_gui.dylib
 else
 libags_gui_la_LDFLAGS += -export-symbols libags_gui.sym -Wl,-soname,libags_gui.so
 libags_gui_la_LIBADD += -ldl
@@ -657,6 +657,7 @@ if WITH_W32API
 libgsequencer_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libgsequencer.dll.a
 else
 if WITH_OSXAPI
+libgsequencer_la_LDFLAGS += -Wl,-headerpad_max_install_names -Wl,-install_name,libgsequencer.dylib
 else
 libgsequencer_la_LIBADD += -ldl
 endif
@@ -2851,7 +2852,7 @@ install-compress-changelog:
 
 install-data-local:
 	mkdir -p $(DESTDIR)/$(includedir)/ags
-	install -c -p -m 644 $(top_builddir)/ags/ags_config.h $(DESTDIR)/$(includedir)/ags/config.h
+	install -c -p -m 644 $(top_builddir)/ags/ags_api_config.h $(DESTDIR)/$(includedir)/ags/ags_api_config.h
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
 	mkdir -p $(DESTDIR)/$(datadir)/icons/hicolor/32x32/apps
 	mkdir -p $(DESTDIR)/$(datadir)/icons/hicolor/48x48/apps
@@ -3020,7 +3021,7 @@ else
 endif
 
 uninstall-hook:
-	rm -rf $(DESTDIR)/$(includedir)/ags/config.h
+	rm -rf $(DESTDIR)/$(includedir)/ags/ags_api_config.h
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
 	rm -rf $(DESTDIR)/$(docdir)
 	rm -rf $(DESTDIR)/$(datadir)/xml/gsequencer

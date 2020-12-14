@@ -1687,6 +1687,8 @@ ags_sndfile_vio_read(void *ptr, sf_count_t count, void *user_data)
   AgsSndfile *sndfile;
 
   guchar *retval;
+
+  sf_count_t num_read;
   
   GRecMutex *sndfile_mutex;
 
@@ -1699,11 +1701,11 @@ ags_sndfile_vio_read(void *ptr, sf_count_t count, void *user_data)
 
   retval = (guchar *) memcpy(ptr, sndfile->current, count * sizeof(guchar));
 
-  retval -= sndfile->pointer;
+  num_read = (sf_count_t) (retval - sndfile->pointer);
   
   g_rec_mutex_unlock(sndfile_mutex);
 
-  return((sf_count_t) retval);
+  return(num_read);
 }
 
 sf_count_t
@@ -1713,6 +1715,8 @@ ags_sndfile_vio_write(const void *ptr, sf_count_t count, void *user_data)
 
   guchar *retval;
 
+  sf_count_t num_read;
+  
   GRecMutex *sndfile_mutex;
 
   sndfile = AGS_SNDFILE(user_data);
@@ -1724,11 +1728,11 @@ ags_sndfile_vio_write(const void *ptr, sf_count_t count, void *user_data)
 
   retval = (guchar *) memcpy(sndfile->current, ptr, count * sizeof(guchar));
 
-  retval -= sndfile->pointer;
+  num_read = (sf_count_t) (retval - sndfile->pointer);
   
   g_rec_mutex_unlock(sndfile_mutex);
 
-  return((sf_count_t) retval);
+  return(num_read);
 }
 
 sf_count_t

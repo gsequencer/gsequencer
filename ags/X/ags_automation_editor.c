@@ -79,6 +79,27 @@ enum{
 
 enum{
   PROP_0,
+  PROP_MACHINE_SELECTOR,
+  PROP_SELECTED_MACHINE,
+  PROP_TOOLBAR,
+  PROP_NOTEBOOK,
+  PROP_AUDIO_RULER,
+  PROP_AUDIO_SCROLLED_SCALE_BOX,
+  PROP_AUDIO_SCROLLED_AUTOMATION_EDIT_BOX,
+  PROP_AUDIO_VSCROLLBAR,
+  PROP_AUDIO_HSCROLLBAR,
+  PROP_OUTPUT_NOTEBOOK,
+  PROP_OUTPUT_SCROLLED_SCALE_BOX,
+  PROP_OUTPUT_SCROLLED_AUTOMATION_EDIT_BOX,
+  PROP_OUTPUT_VSCROLLBAR,
+  PROP_OUTPUT_HSCROLLBAR,
+  PROP_INPUT_NOTEBOOK,
+  PROP_INPUT_SCROLLED_SCALE_BOX,
+  PROP_INPUT_SCROLLED_AUTOMATION_EDIT_BOX,
+  PROP_INPUT_VSCROLLBAR,
+  PROP_INPUT_HSCROLLBAR,
+  PROP_FOCUSED_AUTOMATION_EDIT,
+  PROP_AUTOMATION_META,
 };
 
 static gpointer ags_automation_editor_parent_class = NULL;
@@ -121,7 +142,7 @@ ags_automation_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_automation_editor = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_automation_editor = g_type_register_static(GTK_TYPE_BOX,
 							"AgsAutomationEditor", &ags_automation_editor_info,
 							0);
     
@@ -209,6 +230,9 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   AgsApplicationContext *application_context;
   
   gdouble gui_scale_factor;
+
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(automation_editor),
+				 GTK_ORIENTATION_VERTICAL);
   
   automation_editor->flags = (AGS_AUTOMATION_EDITOR_PASTE_MATCH_LINE |
 			      AGS_AUTOMATION_EDITOR_PASTE_NO_DUPLICATES);

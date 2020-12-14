@@ -1,3 +1,24 @@
+ags (3.7.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements
+
+ags (3.7.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed config header mess
+	* fixed effect processors on output e.g. in AgsLine
+
+ags (3.7.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed test device
+
+ags (3.7.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed meson optional build
+
 ags (3.7.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/config.h>
+#include <ags/ags_api_config.h>
 
 #if defined(AGS_WITH_GSTREAMER)
 #include <gst/gst.h>
