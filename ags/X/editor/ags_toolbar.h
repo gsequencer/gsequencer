@@ -40,6 +40,15 @@ G_BEGIN_DECLS
 
 #define AGS_TOOLBAR_DIALOG_SCOPE_COUNT (5)
 
+#define AGS_TOOLBAR_SCOPE_COMMON "common"
+#define AGS_TOOLBAR_SCOPE_NOTATION "notation"
+#define AGS_TOOLBAR_SCOPE_SHEET "sheet"
+#define AGS_TOOLBAR_SCOPE_AUTOMATION "automation"
+#define AGS_TOOLBAR_SCOPE_WAVE "wave"
+
+typedef struct _AgsToolbar AgsToolbar;
+typedef struct _AgsToolbarClass AgsToolbarClass;
+
 typedef enum{
   AGS_TOOLBAR_ADDED_TO_REGISTRY     = 1,
   AGS_TOOLBAR_CONNECTED             = 1 << 1,
@@ -121,11 +130,6 @@ struct _AgsToolbar
   guint action;
   guint option;
 
-  guint notation_dialog;
-  guint sheet_dialog;
-  guint automation_dialog;
-  guint wave_dialog;
-  
   AgsUUID *uuid;
 
   GtkToggleToolButton *selected_tool;
@@ -155,19 +159,19 @@ struct _AgsToolbar
 
   GtkSpinButton *opacity;
   
-  GtkDialog *move_note;
-  GtkDialog *crop_note;  
-  GtkDialog *select_note;
-  GtkDialog *position_notation_cursor;
+  GtkDialog *notation_move_note;
+  GtkDialog *notation_crop_note;  
+  GtkDialog *notation_select_note;
+  GtkDialog *notation_position_cursor;
   
-  GtkDialog *position_sheet_cursor;
+  GtkDialog *sheet_position_cursor;
   
-  GtkDialog *select_acceleration;
-  GtkDialog *ramp_acceleration;
-  GtkDialog *position_automation_cursor;
+  GtkDialog *automation_select_acceleration;
+  GtkDialog *automation_ramp_acceleration;
+  GtkDialog *automation_position_cursor;
 
-  GtkDialog *select_buffer;
-  GtkDialog *position_wave_cursor;
+  GtkDialog *wave_select_buffer;
+  GtkDialog *wave_position_cursor;
 };
 
 struct _AgsToolbarClass
@@ -196,6 +200,9 @@ void ags_toolbar_unset_option(AgsToolbar *toolbar, guint option);
 GtkMenu* ags_toolbar_paste_popup_new(guint paste_mode);
 GtkMenu* ags_toolbar_menu_tool_popup_new(gchar **dialog,
 					 GValue *value);
+
+void ags_toolbar_scope_create_and_connect(AgsToolbar *toolbar,
+					  gchar *scope);
 
 AgsToolbar* ags_toolbar_new();
 
