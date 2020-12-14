@@ -45,6 +45,10 @@ void ags_toolbar_xml_parse(AgsConnectable *connectable,
 gboolean ags_toolbar_is_connected(AgsConnectable *connectable);
 void ags_toolbar_connect(AgsConnectable *connectable);
 void ags_toolbar_disconnect(AgsConnectable *connectable);
+void ags_toolbar_connect_connection(AgsConnectable *connectable,
+				    GObject *connection);
+void ags_toolbar_disconnect_connection(AgsConnectable *connectable,
+				       GObject *connection);
 
 /**
  * SECTION:ags_toolbar
@@ -120,8 +124,8 @@ ags_toolbar_connectable_interface_init(AgsConnectableInterface *connectable)
   connectable->connect = ags_toolbar_connect;
   connectable->disconnect = ags_toolbar_disconnect;
 
-  connectable->connect_connection = NULL;
-  connectable->disconnect_connection = NULL;
+  connectable->connect_connection = ags_toolbar_connect_connection;
+  connectable->disconnect_connection = ags_toolbar_disconnect_connection;
 }
 
 void
@@ -339,6 +343,262 @@ ags_toolbar_disconnect(AgsConnectable *connectable)
   toolbar->flags &= (~AGS_TOOLBAR_CONNECTED);
 
   //TODO:JK: implement me
+}
+
+void
+ags_toolbar_connect_connection(AgsConnectable *connectable,
+			       GObject *connection)
+{
+  AgsToolbar *toolbar;
+  
+  toolbar = AGS_TOOLBAR(connectable);
+
+  if(toolbar->position == connection){
+    g_signal_connect_after(connection, "clicked",
+			   G_CALLBACK(ags_toolbar_position_callback), toolbar);
+  }
+
+  if(toolbar->edit == connection){
+    g_signal_connect_after(connection, "clicked",
+			   G_CALLBACK(ags_toolbar_edit_callback), toolbar);
+  }
+
+  if(toolbar->clear == connection){
+    g_signal_connect_after(connection, "clicked",
+			   G_CALLBACK(ags_toolbar_position_callback), toolbar);
+  }
+
+  if(toolbar->select == connection){
+    g_signal_connect_after(connection, "clicked",
+			   G_CALLBACK(ags_toolbar_select_callback), toolbar);
+  }
+
+  if(toolbar->invert == connection){
+    g_signal_connect_after(connection, "clicked",
+			   G_CALLBACK(ags_toolbar_invert_callback), toolbar);
+  }
+
+  if(toolbar->copy == connection){
+    g_signal_connect_after(connection, "clicked",
+			   G_CALLBACK(ags_toolbar_copy_callback), toolbar);
+  }
+
+  if(toolbar->cut == connection){
+    g_signal_connect_after(connection, "clicked",
+			   G_CALLBACK(ags_toolbar_cut_callback), toolbar);
+  }
+
+  if(toolbar->paste == connection){
+    GList *start_list, *list;
+    
+    g_signal_connect_after(connection, "clicked",
+			   G_CALLBACK(ags_toolbar_paste_callback), toolbar);
+
+    list = 
+      start_list = gtk_container_get_children(GTK_CONTAINER(toolbar->past_popup));
+
+    if((AGS_TOOLBAR_PASTE_MATCH_AUDIO_CHANNEL & (toolbar->paste_mode)) != 0){
+      g_signal_connect_after(list->data, "activate",
+			     G_CALLBACK(ags_toolbar_match_audio_channel_callback), toolbar);
+
+      list = list->next;
+    }
+
+    if((AGS_TOOLBAR_PASTE_MATCH_LINE & (toolbar->paste_mode)) != 0){
+      g_signal_connect_after(list->data, "activate",
+			     G_CALLBACK(ags_toolbar_match_line_callback), toolbar);
+
+      list = list->next;
+    }
+
+    if((AGS_TOOLBAR_PASTE_NO_DUPLICATES & (toolbar->paste_mode)) != 0){
+      g_signal_connect_after(list->data, "activate",
+			     G_CALLBACK(ags_toolbar_no_duplicates_callback), toolbar);
+
+      list = list->next;
+    }
+    
+    g_list_free(start_list);
+  }
+
+  if(toolbar->menu_tool == connection){
+    GList *start_list, *list;
+
+    guint i, j;
+
+    list = 
+      start_list = gtk_container_get_children(GTK_CONTAINER(toolbar->menu_tool_popup));
+
+    if(toolbar->menu_tool_dialog != NULL &&
+       toolbar->menu_tool_value != NULL) {
+      for(i = 0, j = 0; i < AGS_TOOLBAR_DIALOG_SCOPE_COUNT; i++){
+	guint current_value;
+
+	if(toolbar->menu_tool_dialog[j] != NULL){
+	  current_value = g_value_get_uint(toolbar->menu_tool_value + j);
+	
+	  if(!g_strcmp0(toolbar->menu_tool_dialog[j],
+			"common")){
+	    if((AGS_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_AUDIO_CHANNELS & current_value) != 0){
+	      g_signal_connect_after(list->data, "activate",
+				     G_CALLBACK(ags_toolbar_menu_tool_popup_enable_all_audio_channels_callback), toolbar);
+
+	      list = list->next;
+	    }
+
+	    if((AGS_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_AUDIO_CHANNELS & current_value) != 0){
+	      g_signal_connect_after(list->data, "activate",
+				     G_CALLBACK(ags_toolbar_menu_tool_popup_disable_all_audio_channels_callback), toolbar);
+
+	      list = list->next;
+	    }
+
+	    if((AGS_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_LINES & current_value) != 0){
+	      g_signal_connect_after(list->data, "activate",
+				     G_CALLBACK(ags_toolbar_menu_tool_popup_enable_all_lines_callback), toolbar);
+
+	      list = list->next;
+	    }
+
+	    if((AGS_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_LINES & current_value) != 0){
+	      g_signal_connect_after(list->data, "activate",
+				     G_CALLBACK(ags_toolbar_menu_tool_popup_disable_all_lines_callback), toolbar);
+
+	      list = list->next;
+	    }
+	  
+	    j++;	
+	  }else if(!g_strcmp0(dialog[j],
+			      "notation")){
+	    if((AGS_TOOLBAR_NOTATION_DIALOG_MOVE_NOTE & current_value) != 0){
+	      g_signal_connect_after(list->data, "activate",
+				     G_CALLBACK(ags_toolbar_menu_tool_popup_notation_move_note_callback), toolbar);
+
+	      list = list->next;
+	    }else if((AGS_TOOLBAR_NOTATION_DIALOG_CROP_NOTE & current_value) != 0){
+	      g_signal_connect_after(list->data, "activate",
+				     G_CALLBACK(ags_toolbar_menu_tool_popup_notation_crop_note_callback), toolbar);
+
+	      list = list->next;
+	    }else if((AGS_TOOLBAR_NOTATION_DIALOG_SELECT_NOTE & current_value) != 0){
+	      g_signal_connect_after(list->data, "activate",
+				     G_CALLBACK(ags_toolbar_menu_tool_popup_notation_select_note_callback), toolbar);
+
+	      list = list->next;
+	    }else if((AGS_TOOLBAR_NOTATION_DIALOG_POSITION_CURSOR & current_value) != 0){
+	      g_signal_connect_after(list->data, "activate",
+				     G_CALLBACK(ags_toolbar_menu_tool_popup_notation_position_cursor_callback), toolbar);
+
+	      list = list->next;
+	    }
+	  
+	    j++;
+	  }else if(!g_strcmp0(dialog[j],
+			      "sheet")){	
+	    if((AGS_TOOLBAR_SHEET_DIALOG_POSITION_CURSOR & current_value) != 0){
+	      g_signal_connect_after(list->data, "activate",
+				     G_CALLBACK(ags_toolbar_menu_tool_popup_sheet_position_cursor_callback), toolbar);
+
+	      list = list->next;
+	    }
+	  
+	    j++;
+	  }else if(!g_strcmp0(dialog[j],
+			      "automation")){
+	    if((AGS_TOOLBAR_AUTOMATION_DIALOG_SELECT_ACCELERATION & current_value) != 0){
+	      g_signal_connect_after(list->data, "activate",
+				     G_CALLBACK(ags_toolbar_menu_tool_popup_automation_select_acceleration_callback), toolbar);
+
+	      list = list->next;
+	    }else if((AGS_TOOLBAR_AUTOMATION_DIALOG_RAMP_ACCELERATION & current_value) != 0){
+	      g_signal_connect_after(list->data, "activate",
+				     G_CALLBACK(ags_toolbar_menu_tool_popup_automation_ramp_acceleration_callback), toolbar);
+
+	      list = list->next;
+	    }else if((AGS_TOOLBAR_AUTOMATION_DIALOG_POSITION_CURSOR & current_value) != 0){
+	      g_signal_connect_after(list->data, "activate",
+				     G_CALLBACK(ags_toolbar_menu_tool_popup_automation_position_cursor_callback), toolbar);
+
+	      list = list->next;
+	    }
+	
+	    j++;
+	  }else if(!g_strcmp0(dialog[j],
+			      "wave")){
+	    if((AGS_TOOLBAR_WAVE_DIALOG_SELECT_BUFFER & current_value) != 0){
+	      g_signal_connect_after(list->data, "activate",
+				     G_CALLBACK(ags_toolbar_menu_tool_popup_wave_select_buffer_callback), toolbar);
+
+	      list = list->next;
+	    }else if((AGS_TOOLBAR_WAVE_DIALOG_POSITION_CURSOR & current_value) != 0){
+	      g_signal_connect_after(list->data, "activate",
+				     G_CALLBACK(ags_toolbar_menu_tool_popup_wave_position_cursor_callback), toolbar);
+
+	      list = list->next;
+	    }
+	
+	    j++;
+	  }else{
+	    g_warning("unknown dialog");
+	  }
+	}
+      }
+    }
+    
+    g_list_free(start_list);
+  }
+
+  if(toolbar->zoom == connection){
+    g_signal_connect_after(connection, "changed",
+			   G_CALLBACK(ags_toolbar_zoom_callback), toolbar);
+  }
+
+  if(toolbar->opacity == connection){
+    g_signal_connect_after(connection, "value-changed",
+			   G_CALLBACK(ags_toolbar_opacity_callback), toolbar);
+  }
+}
+
+void
+ags_toolbar_disconnect_connection(AgsConnectable *connectable,
+				  GObject *connection)
+{
+  AgsToolbar *toolbar;
+  
+  toolbar = AGS_TOOLBAR(connectable);
+
+  if(toolbar->position == connection){
+  }
+
+  if(toolbar->edit == connection){
+  }
+
+  if(toolbar->clear == connection){
+  }
+
+  if(toolbar->select == connection){
+  }
+
+  if(toolbar->invert == connection){
+  }
+
+  if(toolbar->copy == connection){
+  }
+
+  if(toolbar->cut == connection){
+  }
+
+  if(toolbar->paste == connection){
+  }
+
+  if(toolbar->menu_tool == connection){
+  }
+
+  if(toolbar->zoom == connection){
+  }
+
+  if(toolbar->opacity == connection){
+  }
 }
 
 /**
@@ -1115,14 +1375,41 @@ ags_toolbar_tool_popup_new(gchar **dialog,
 
   if(dialog != NULL &&
      value != NULL){
-    for(i = 0, j = 0; i < AGS_TOOLBAR_EDITOR_COUNT; i++){
+    for(i = 0, j = 0; i < AGS_TOOLBAR_DIALOG_SCOPE_COUNT; i++){
       guint current_value;
 
       if(dialog[j] != NULL){
 	current_value = g_value_get_uint(value + j);
 	
 	if(!g_strcmp0(dialog[j],
-		      "notation")){
+		      "common")){
+	  if((AGS_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_AUDIO_CHANNELS & current_value) != 0){
+	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("enable all audio channels"));
+	    gtk_menu_shell_append((GtkMenuShell *) tool_popup,
+				  (GtkWidget *) item);
+	  }
+
+	  if((AGS_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_AUDIO_CHANNELS & current_value) != 0){
+	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("disable all audio channels"));
+	    gtk_menu_shell_append((GtkMenuShell *) tool_popup,
+				  (GtkWidget *) item);
+	  }
+
+	  if((AGS_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_LINES & current_value) != 0){
+	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("enable all lines"));
+	    gtk_menu_shell_append((GtkMenuShell *) tool_popup,
+				  (GtkWidget *) item);
+	  }
+
+	  if((AGS_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_LINES & current_value) != 0){
+	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("disable all lines"));
+	    gtk_menu_shell_append((GtkMenuShell *) tool_popup,
+				  (GtkWidget *) item);
+	  }
+	  
+	  j++;	
+	}else if(!g_strcmp0(dialog[j],
+			    "notation")){
 	  if((AGS_TOOLBAR_NOTATION_DIALOG_MOVE_NOTE & current_value) != 0){
 	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("move notes"));
 	    gtk_menu_shell_append((GtkMenuShell *) tool_popup,
