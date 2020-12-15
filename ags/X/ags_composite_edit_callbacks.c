@@ -17,28 +17,34 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_COMPOSITE_VIEW_CALLBACKS_H__
-#define __AGS_COMPOSITE_VIEW_CALLBACKS_H__
+#include <ags/X/ags_composite_edit_callbacks.h>
 
-#include <glib.h>
-#include <glib-object.h>
+void
+ags_composite_edit_vscrollbar_callback(GtkRange *scrollbar,
+				       AgsCompositeEdit *composite_edit)
+{
+  if(composite_edit->block_vscrollbar){
+    return;
+  }
 
-#include <gtk/gtk.h>
+  composite_edit->block_vscrollbar = TRUE;
+  
+  //TODO:JK: implement me
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
+  composite_edit->block_vscrollbar = FALSE;
+}
 
-#include <ags/libags-gui.h>
+void
+ags_composite_edit_hscrollbar_callback(GtkRange *scrollbar,
+				       AgsCompositeEdit *composite_edit)
+{
+  if(composite_edit->block_hscrollbar){
+    return;
+  }
 
-#include <ags/X/ags_composite_view.h>
+  composite_edit->block_hscrollbar = TRUE;
+  
+  //TODO:JK: implement me
 
-G_BEGIN_DECLS
-
-void ags_composite_view_vscrollbar_callback(GtkRange *scrollbar,
-					    AgsCompositeView *composite_view);
-void ags_composite_view_hscrollbar_callback(GtkRange *scrollbar,
-					    AgsCompositeView *composite_view);
-
-G_END_DECLS
-
-#endif /*__AGS_COMPOSITE_VIEW_CALLBACKS_H__*/
+  composite_edit->block_hscrollbar = FALSE;
+}
