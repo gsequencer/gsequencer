@@ -39,6 +39,9 @@ G_BEGIN_DECLS
 #define AGS_IS_COMPOSITE_EDIT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_COMPOSITE_EDIT))
 #define AGS_COMPOSITE_EDIT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_COMPOSITE_EDIT, AgsCompositeEditClass))
 
+#define AGS_COMPOSITE_EDIT_DEFAULT_SEGMENT_WIDTH (64.0)
+#define AGS_COMPOSITE_EDIT_DEFAULT_SEGMENT_HEIGHT (128.0)
+
 typedef struct _AgsCompositeEdit AgsCompositeEdit;
 typedef struct _AgsCompositeEditClass AgsCompositeEditClass;
 
@@ -70,14 +73,16 @@ struct _AgsCompositeEdit
 
   AgsUUID *uuid;
 
-  GtkPaned *edit_paned;
+  GtkPaned *composite_paned;
 
-  GtkBox *edit_box;
+  GtkBox *composite_box;
 
-  GtkGrid *edit_grid;
+  GtkGrid *composite_grid;
 
   guint channel_selector_mode;
   AgsNotebook *channel_selector;
+
+  GtkBox *edit_box;
   
   GtkWidget *edit_control;  
   GtkWidget *edit;
@@ -88,6 +93,7 @@ struct _AgsCompositeEdit
   gboolean block_hscrollbar;
   GtkScrollbar *hscrollbar;
 
+  GtkScrolledWindow *scrolled_edit_meta;
   GtkWidget *edit_meta;
 };
 

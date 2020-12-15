@@ -157,10 +157,14 @@ ags_composite_editor_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_composite_editor_init(AgsCompositeEditor *composite_editor)
 {
+  GtkViewport *viewport;
+  GtkScrolledWindow *scrolled_window;
+
   gtk_orientable_set_orientation(GTK_ORIENTABLE(composite_editor),
 				 GTK_ORIENTATION_VERTICAL);
 
   composite_editor->flags = 0;
+  composite_editor->edit = 0;
 
   composite_editor->version = g_strdup(AGS_COMPOSITE_EDITOR_DEFAULT_VERSION);
   composite_editor->build_id = g_strdup(AGS_COMPOSITE_EDITOR_DEFAULT_BUILD_ID);
@@ -168,6 +172,36 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
   /* uuid */
   composite_editor->uuid = ags_uuid_alloc();
   ags_uuid_generate(composite_editor->uuid);
+
+  /* widgets */
+  composite_editor->toolbar = ags_toolbar_new();
+  gtk_box_pack_start((GtkBox *) composite_editor,
+		     (GtkWidget *) composite_editor->toolbar,
+		     FALSE, FALSE,
+		     0);
+
+  /* paned */
+  composite_editor->paned = (GtkPaned *) gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
+  gtk_box_pack_start((GtkBox *) composite_editor,
+		     (GtkWidget *) composite_editor->paned,
+		     FALSE, FALSE,
+		     0);
+
+  /* machine selector */
+  composite_editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
+						    "homogeneous", FALSE,
+						    "spacing", 0,
+						    NULL);
+  gtk_label_set_label(composite_editor->machine_selector->label,
+		      i18n("composite selector"));
+  
+  composite_editor->machine_selector->popup = ags_machine_selector_popup_new(composite_editor->machine_selector);
+  g_object_set(composite_editor->machine_selector->menu_button,
+	       "menu", composite_editor->machine_selector->popup,
+	       NULL);
+  
+  gtk_container_add((GtkContainer *) scrolled_window,
+		    (GtkWidget *) composite_editor->machine_selector);
 }
 
 AgsUUID*

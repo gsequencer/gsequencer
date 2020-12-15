@@ -42,9 +42,9 @@ add_project_arguments(define_str_template.format('PACKAGE_VERSION',
 add_project_arguments(define_str_template.format('PACKAGE_BUGREPORT',
                                              'jkraehemann@gmail.com'),
                       language: 'c')
-add_project_arguments(define_str_template.format('PACKAGE_NAME',
-                                             'gsequencer'),
-                      language: 'c')
+#add_project_arguments(define_str_template.format('PACKAGE_NAME',
+#                                             'gsequencer'),
+#                      language: 'c')
 add_project_arguments(define_str_template.format('AGS_LIBRARY_SUFFIX',
                                              dynamic_library_suffix),
                       language: 'c')
