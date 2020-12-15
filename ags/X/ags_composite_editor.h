@@ -77,7 +77,7 @@ struct _AgsCompositeEditor
 
   AgsToolbar *toolbar;
   
-  GtkHPaned *paned;
+  GtkPaned *paned;
   
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;

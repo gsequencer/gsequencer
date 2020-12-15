@@ -125,25 +125,42 @@ ags_composite_view_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_composite_view_init(AgsCompositeView *composite_view)
 {
+  GtkScrolledWindow *scrolled_edit_meta;
+  GtkAdjustment *adjustment;
+  
+  AgsApplicationContext *application_context;
+
+  gdouble gui_scale_factor;
+
   gtk_orientable_set_orientation(GTK_ORIENTABLE(composite_view),
 				 GTK_ORIENTATION_VERTICAL);
   
   composite_view->flags = 0;
+  composite_view->scrollbar = 0;
 
   composite_view->version = NULL;
   composite_view->build_id = NULL;
+
+  application_context = ags_application_context_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   /* uuid */
   composite_view->uuid = ags_uuid_alloc();
   ags_uuid_generate(composite_view->uuid);
 
   /* widgets */
-  composite_view->edit_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-						    0);
+  composite_view->edit_paned = (GtkPaned *) gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
   gtk_box_pack_start((GtkBox *) composite_view,
-		     (GtkWidget *) composite_view->edit_box,
+		     (GtkWidget *) composite_view->edit_paned,
 		     FALSE, FALSE,
 		     0);
+  
+  composite_view->edit_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						    0);
+  gtk_paned_add1(composite_view->edit_paned,
+		 composite_view->edit_box);
 
   composite_view->edit_grid = (GtkGrid *) gtk_grid_new();
   gtk_box_pack_start(composite_view->edit_box,
@@ -151,7 +168,53 @@ ags_composite_view_init(AgsCompositeView *composite_view)
 		     FALSE, FALSE,
 		     0);
 
-  //TODO:JK: implement me
+  composite_view->channel_selector = ags_notebook_new();
+  gtk_grid_attach(composite_view->edit_grid,
+		  (GtkWidget *) composite_view->channel_selector,
+		  1, 0,
+		  1, 1);
+  
+  composite_view->edit_control = NULL;
+  composite_view->edit = NULL;
+  
+  composite_view->block_vscrollbar = FALSE;
+
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gui_scale_factor * AGS_COMPOSITE_VIEW_DEFAULT_SEGMENT_HEIGHT), 1.0);
+  composite_view->vscrollbar = gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
+						 adjustment);
+
+  gtk_widget_set_valign((GtkWidget *) composite_view->vscrollbar,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) composite_view->vscrollbar,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(composite_view->edit_grid,
+		  (GtkWidget *) composite_view->vscrollbar,
+		  2, 2,
+		  1, 1);
+  
+  composite_view->block_hscrollbar = FALSE;
+
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gui_scale_factor * AGS_COMPOSITE_VIEW_DEFAULT_SEGMENT_WIDTH), 1.0);
+  composite_view->hscrollbar = gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
+						 adjustment);
+
+  gtk_widget_set_valign((GtkWidget *) composite_view->hscrollbar,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) composite_view->hscrollbar,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(composite_view->edit_grid,
+		  (GtkWidget *) composite_view->hscrollbar,
+		  1, 3,
+		  1, 1);		    
+
+  scrolled_edit_meta = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
+								     NULL);
+  gtk_paned_add1(composite_view->edit_paned,
+		 composite_view->scrolled_edit_meta);
+  
+  composite_view->edit_meta = NULL;
 }
 
 AgsUUID*

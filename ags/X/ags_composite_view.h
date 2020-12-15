@@ -39,6 +39,9 @@ G_BEGIN_DECLS
 #define AGS_IS_COMPOSITE_VIEW_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_COMPOSITE_VIEW))
 #define AGS_COMPOSITE_VIEW_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_COMPOSITE_VIEW, AgsCompositeViewClass))
 
+#define AGS_COMPOSITE_VIEW_DEFAULT_SEGMENT_HEIGHT (128.0)
+#define AGS_COMPOSITE_VIEW_DEFAULT_SEGMENT_WIDTH (64.0)
+
 typedef struct _AgsCompositeView AgsCompositeView;
 typedef struct _AgsCompositeViewClass AgsCompositeViewClass;
 
@@ -52,6 +55,12 @@ typedef enum{
   AGS_COMPOSITE_VIEW_SCROLLBAR_VERTICAL       = 1 <<  1,
 }AgsCompositeViewScrollbar;
 
+typedef enum{
+  AGS_COMPOSITE_VIEW_CHANNEL_SELECTOR_AUDIO_CHANNEL,
+  AGS_COMPOSITE_VIEW_CHANNEL_SELECTOR_OUTPUT_LINE,
+  AGS_COMPOSITE_VIEW_CHANNEL_SELECTOR_INPUT_LINE,
+}AgsCompositeViewChannelSelectorMode;
+
 struct _AgsCompositeView
 {
   GtkBox box;
@@ -64,11 +73,16 @@ struct _AgsCompositeView
 
   AgsUUID *uuid;
 
-  GtkBox *edit_box;
-
-  GtkGrid *edit_grid;
+  GtkPaned *edit_paned;
   
-  GtkWidget *edit_control;  
+  GtkBox *edit_box;
+  
+  GtkGrid *edit_grid;
+
+  guint channel_selector_mode;
+  AgsNotebook *channel_selector;
+  
+  GtkWidget *edit_control;
   GtkWidget *edit;
 
   gboolean block_vscrollbar;
