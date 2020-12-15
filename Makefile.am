@@ -2064,8 +2064,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_bulk_member.h \
 	ags/X/ags_composite_editor.h \
 	ags/X/ags_composite_editor_callbacks.h \
-	ags/X/ags_composite_view.h \
-	ags/X/ags_composite_view_callbacks.h \
+	ags/X/ags_composite_edit.h \
+	ags/X/ags_composite_edit_callbacks.h \
 	ags/X/ags_connection_editor_callbacks.h \
 	ags/X/ags_connection_editor.h \
 	ags/X/ags_context_menu.h \
@@ -2191,8 +2191,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_bulk_member_callbacks.c \
 	ags/X/ags_composite_editor.c \
 	ags/X/ags_composite_editor_callbacks.c \
-	ags/X/ags_composite_view.c \
-	ags/X/ags_composite_view_callbacks.c \
+	ags/X/ags_composite_edit.c \
+	ags/X/ags_composite_edit_callbacks.c \
 	ags/X/ags_connection_editor_callbacks.c \
 	ags/X/ags_connection_editor.c \
 	ags/X/ags_context_menu.c \
