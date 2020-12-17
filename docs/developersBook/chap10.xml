@@ -10,152 +10,41 @@
 
 <chapter xmlns="http://docbook.org/ns/docbook"
 	 xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
-  <title>AgsRecall implementations</title>
+  <title>Advanced Gtk+ Sequencer's fx engine</title>
   <para>
     There a well know set of recalls described here. Additionally you might
     want to take advantage of recalls interfacing plugin APIs like LADSPA, DSSI
     or LV2. You can instantiate them simply with
-    <code language="C">GList* ags_recall_factory_create(AgsAudio*, AgsRecallContainer*, AgsRecallContainer, gchar*, guint, guint, guint, guint, guint, guint)</code>
+    <code language="C">GList* ags_fx_factory_create(AgsAudio*, AgsRecallContainer*, AgsRecallContainer*, gchar*, gchar *, gchar *, guint, guint, guint, guint, gint, guint, guint)</code>
   </para>
 
   <variablelist>    
     <varlistentry>
       <term>
-	<code>ags-delay</code>
-      </term>
-      <listitem>
-	<para>
-	  The delay until next tic, it loops endless.
-	</para>
-      </listitem>
-    </varlistentry>
-    
-    <varlistentry>
-      <term>
-	<code>ags-count-beats</code>
-      </term>
-      <listitem>
-	<para>
-	  Keep track of what beat you are playing by counting them, may loop endless.
-	</para>
-      </listitem>
-    </varlistentry>
-    
-    <varlistentry>
-      <term>
-	<code>ags-stream</code>
-      </term>
-      <listitem>
-	<para>
-	  Streams your audio data of AgsAudioSignal.
-	</para>
-      </listitem>
-    </varlistentry>
-    
-    <varlistentry>
-      <term>
-	<code>ags-loop</code>
-      </term>
-      <listitem>
-	<para>
-	  Allocate audio signals within a loop. Used to produce destination buffers. Listens
-	  to AgsCountBeatsAudioRun::sequencer_loop
-	</para>
-      </listitem>
-    </varlistentry>
-    
-    <varlistentry>
-      <term>
-	<code>ags-play-master</code>
-      </term>
-      <listitem>
-	<para>
-	  Master playback to soundcard, stops if no more producers streaming.
-	</para>
-      </listitem>
-    </varlistentry>
-    
-    <varlistentry>
-      <term>
-	<code>ags-copy</code>
-      </term>
-      <listitem>
-	<para>
-	  Copy audio data from one audio signal to an other.
-	</para>
-      </listitem>
-    </varlistentry>
-    
-    <varlistentry>
-      <term>
-	<code>ags-buffer</code>
+	<code>ags-fx-buffer</code>
       </term>
       <listitem>
 	<para>
 	  Buffer audio data, produces new destination as on source occurs
-	  AgsAudioSignal::add_audio_signal.
+	  AgsAudioSignal::add_audio_signal().	  
 	</para>
       </listitem>
     </varlistentry>
 
     <varlistentry>
       <term>
-	<code>ags-play</code>
+	<code>ags-fx-playback</code>
       </term>
       <listitem>
 	<para>
-	  Simple playback.
+	  Play or capture audio data and store it in wave objects.
 	</para>
       </listitem>
     </varlistentry>
 
     <varlistentry>
       <term>
-	<code>ags-copy-pattern</code>
-      </term>
-      <listitem>
-	<para>
-	  Copy audio data based on boolean patterns.
-	</para>
-      </listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term>
-	<code>ags-play-notation</code>
-      </term>
-      <listitem>
-	<para>
-	  Copy audio data based on notation.
-	</para>
-      </listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term>
-	<code>ags-peak</code>
-      </term>
-      <listitem>
-	<para>
-	  Calculate peak of audio data.
-	</para>
-      </listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term>
-	<code>ags-mute</code>
-      </term>
-      <listitem>
-	<para>
-	  Mutes your audio data.
-	</para>
-      </listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term>
-	<code>ags-volume</code>
+	<code>ags-fx-volume</code>
       </term>
       <listitem>
 	<para>
@@ -166,7 +55,29 @@
 
     <varlistentry>
       <term>
-	<code>ags-analyse</code>
+	<code>ags-fx-peak</code>
+      </term>
+      <listitem>
+	<para>
+	  Calculate peak of audio data.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<code>ags-fx-eq10</code>
+      </term>
+      <listitem>
+	<para>
+	  Adjust 10 band equalizer.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<code>ags-fx-analyse</code>
       </term>
       <listitem>
 	<para>
@@ -177,18 +88,40 @@
 
     <varlistentry>
       <term>
-	<code>ags-eq10</code>
+	<code>ags-fx-envelope</code>
       </term>
       <listitem>
 	<para>
-	  Adjust 10 band equalizer.
+	  Apply envelope data per piano roll note or pattern note.
 	</para>
       </listitem>
     </varlistentry>
-    
+
     <varlistentry>
       <term>
-	<code>ags-ladspa</code>
+	<code>ags-fx-pattern</code>
+      </term>
+      <listitem>
+	<para>
+	  Play audio data based on boolean patterns.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<code>ags-fx-notation</code>
+      </term>
+      <listitem>
+	<para>
+	  Play, capture and feed audio data based on notation.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<code>ags-fx-ladspa</code>
       </term>
       <listitem>
 	<para>
@@ -199,7 +132,7 @@
 
     <varlistentry>
       <term>
-	<code>ags-dssi</code>
+	<code>ags-fx-dssi</code>
       </term>
       <listitem>
 	<para>
@@ -210,88 +143,11 @@
 
     <varlistentry>
       <term>
-	<code>ags-lv2</code>
+	<code>ags-fx-lv2</code>
       </term>
       <listitem>
 	<para>
 	  Interface LV2 plugins.
-	</para>
-      </listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term>
-	<code>ags-route-dssi</code>
-      </term>
-      <listitem>
-	<para>
-	  Route notation into DSSI plugin.
-	</para>
-      </listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term>
-	<code>ags-route-lv2</code>
-      </term>
-      <listitem>
-	<para>
-	  Route notation into LV2 plugin.
-	</para>
-      </listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term>
-	<code>ags-play-dssi</code>
-      </term>
-      <listitem>
-	<para>
-	  Play DSSI plugin.
-	</para>
-      </listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term>
-	<code>ags-play-lv2</code>
-      </term>
-      <listitem>
-	<para>
-	  Play LV2 plugin.
-	</para>
-      </listitem>
-    </varlistentry>
-    
-    <varlistentry>
-      <term>
-	<code>ags-record-midi</code>
-      </term>
-      <listitem>
-	<para>
-	  Record MIDI data and convert to notation.
-	</para>
-      </listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term>
-	<code>ags-play-wave</code>
-      </term>
-      <listitem>
-	<para>
-	  Play wave objects.
-	</para>
-      </listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term>
-	<code>ags-capture-wave</code>
-      </term>
-      <listitem>
-	<para>
-	  Capture audio date and store it in wave objects.
 	</para>
       </listitem>
     </varlistentry>
