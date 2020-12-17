@@ -1,6 +1,7 @@
 ags (3.7.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* updated developer's doc chap10.xml to cover ags_fx_factory_create()
 	* deprecated ags/audio/recall
 	* deprecated ags/audio/ags_recall_ladspa.h and ags/audio/ags_recall_ladspa_run.h
 	* deprecated ags/audio/ags_recall_dssi.h and ags/audio/ags_recall_dssi_run.h
