@@ -50,8 +50,10 @@ struct _AgsBufferChannelRunClass
   AgsRecallChannelRunClass recall_channel_run;
 };
 
+G_DEPRECATED_FOR(ags_fx_buffer_channel_processor_get_type)
 GType ags_buffer_channel_run_get_type();
 
+G_DEPRECATED_FOR(ags_fx_buffer_channel_processor_new)
 AgsBufferChannelRun* ags_buffer_channel_run_new(AgsChannel *destination,
 						AgsChannel *source);
 

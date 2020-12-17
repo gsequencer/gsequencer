@@ -60,8 +60,10 @@ struct _AgsRecordMidiAudioClass
   AgsRecallAudioClass recall_audio;
 };
 
+G_DEPRECATED
 GType ags_record_midi_audio_get_type();
 
+G_DEPRECATED
 AgsRecordMidiAudio* ags_record_midi_audio_new(AgsAudio *audio);
 
 G_END_DECLS

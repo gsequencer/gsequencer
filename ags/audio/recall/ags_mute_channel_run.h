@@ -50,8 +50,10 @@ struct _AgsMuteChannelRunClass
   AgsRecallChannelRunClass recall_channel_run;
 };
 
+G_DEPRECATED
 GType ags_mute_channel_run_get_type();
 
+G_DEPRECATED
 AgsMuteChannelRun* ags_mute_channel_run_new(AgsChannel *source);
 
 G_END_DECLS

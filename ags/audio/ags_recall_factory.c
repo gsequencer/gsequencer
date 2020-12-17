@@ -9351,6 +9351,8 @@ ags_recall_factory_create_route_lv2(AgsAudio *audio,
  *
  * Returns: (element-type AgsAudio.Recall) (transfer full): The #GList-struct containing #AgsRecall
  * 
+ * Deprecated: 3.4.0: deprecated by new ags-fx engine, check <ags/audio/ags_fx_factory.h>.
+ * 
  * Since: 3.0.0
  */
 GList*
@@ -9654,6 +9656,8 @@ ags_recall_factory_create(AgsAudio *audio,
  * Create a new instance of #AgsRecallFactory
  *
  * Returns: the new #AgsRecallFactory
+ * 
+ * Deprecated: 3.4.0: deprecated by new ags-fx engine, check <ags/audio/ags_fx_factory.h>.
  * 
  * Since: 3.0.0
  */

@@ -50,8 +50,10 @@ struct _AgsRtStreamRecyclingClass
   AgsRecallRecyclingClass recall_recycling;
 };
 
+G_DEPRECATED
 GType ags_rt_stream_recycling_get_type();
 
+G_DEPRECATED
 AgsRtStreamRecycling* ags_rt_stream_recycling_new(AgsRecycling *source);
  
 G_END_DECLS

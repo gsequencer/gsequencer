@@ -50,8 +50,10 @@ struct _AgsPrepareAudioSignalClass
   AgsRecallAudioSignalClass recall_audio_signal;
 };
 
+G_DEPRECATED
 GType ags_prepare_audio_signal_get_type();
 
+G_DEPRECATED
 AgsPrepareAudioSignal* ags_prepare_audio_signal_new(AgsAudioSignal *source);
 
 G_END_DECLS

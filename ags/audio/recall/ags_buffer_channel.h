@@ -53,8 +53,10 @@ struct _AgsBufferChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
+G_DEPRECATED_FOR(ags_fx_buffer_channel_get_type)
 GType ags_buffer_channel_get_type();
 
+G_DEPRECATED_FOR(ags_fx_buffer_channel_new)
 AgsBufferChannel* ags_buffer_channel_new(AgsChannel *destination,
 					 AgsChannel *source);
 

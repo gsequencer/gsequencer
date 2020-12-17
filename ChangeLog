@@ -6,6 +6,15 @@ ags (3.8.0)
 	* TODO:JK: implemented AgsToolbar
 	* fixed deprecated Gtk+-3.0 symbols?
 
+ags (3.7.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* updated developer's doc chap10.xml to cover ags_fx_factory_create()
+	* deprecated ags/audio/recall
+	* deprecated ags/audio/ags_recall_ladspa.h and ags/audio/ags_recall_ladspa_run.h
+	* deprecated ags/audio/ags_recall_dssi.h and ags/audio/ags_recall_dssi_run.h
+	* deprecated ags/audio/ags_recall_lv2.h and ags/audio/ags_recall_lv2_run.h
+
 ags (3.7.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

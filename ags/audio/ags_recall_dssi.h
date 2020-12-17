@@ -66,17 +66,23 @@ struct _AgsRecallDssiClass
   AgsRecallChannelClass recall_channel;
 };
 
+G_DEPRECATED
 GType ags_recall_dssi_get_type();
 
+G_DEPRECATED
 void ags_recall_dssi_load(AgsRecallDssi *recall_dssi);
+G_DEPRECATED
 GList* ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi);
+G_DEPRECATED
 void ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
 				     GObject *port,
 				     gpointer plugin_port);
 
+G_DEPRECATED
 GList* ags_recall_dssi_find(GList *recall,
 			    gchar *filename, gchar *effect);
 
+G_DEPRECATED
 AgsRecallDssi* ags_recall_dssi_new(AgsChannel *source,
 				   gchar *filename,
 				   gchar *effect,

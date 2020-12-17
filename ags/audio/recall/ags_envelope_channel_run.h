@@ -50,8 +50,10 @@ struct _AgsEnvelopeChannelRunClass
   AgsRecallChannelRunClass recall_channel_run;
 };
 
+G_DEPRECATED_FOR(ags_fx_envelope_channel_processor_get_type)
 GType ags_envelope_channel_run_get_type();
 
+G_DEPRECATED_FOR(ags_fx_envelope_channel_processor_new)
 AgsEnvelopeChannelRun* ags_envelope_channel_run_new(AgsChannel *source);
 
 G_END_DECLS

@@ -64,8 +64,10 @@ struct _AgsRecordMidiAudioRunClass
   AgsRecallAudioRunClass recall_audio_run;
 };
 
+G_DEPRECATED
 GType ags_record_midi_audio_run_get_type();
 
+G_DEPRECATED
 AgsRecordMidiAudioRun* ags_record_midi_audio_run_new(AgsAudio *audio,
 						     AgsDelayAudioRun *delay_audio_run,
 						     AgsCountBeatsAudioRun *count_beats_audio_run);

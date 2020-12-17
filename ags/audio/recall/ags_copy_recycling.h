@@ -50,8 +50,10 @@ struct _AgsCopyRecyclingClass
   AgsRecallRecyclingClass recall_recycling;
 };
 
+G_DEPRECATED
 GType ags_copy_recycling_get_type();
 
+G_DEPRECATED
 AgsCopyRecycling* ags_copy_recycling_new(AgsRecycling *destination,
 					 AgsRecycling *source);
 

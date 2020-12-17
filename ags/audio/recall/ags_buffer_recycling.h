@@ -50,8 +50,10 @@ struct _AgsBufferRecyclingClass
   AgsRecallRecyclingClass recall_recycling;
 };
 
+G_DEPRECATED_FOR(ags_fx_buffer_recycling_get_type)
 GType ags_buffer_recycling_get_type();
 
+G_DEPRECATED_FOR(ags_fx_buffer_recycling_new)
 AgsBufferRecycling* ags_buffer_recycling_new(AgsRecycling *destination,
 					     AgsRecycling *source);
 

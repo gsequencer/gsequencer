@@ -50,8 +50,10 @@ struct _AgsAnalyseChannelRunClass
   AgsRecallChannelRunClass recall_channel_run;
 };
 
+G_DEPRECATED_FOR(ags_fx_analyse_channel_processor_get_type)
 GType ags_analyse_channel_run_get_type();
 
+G_DEPRECATED_FOR(ags_fx_analyse_channel_processor_new)
 AgsAnalyseChannelRun* ags_analyse_channel_run_new(AgsChannel *source);
 
 G_END_DECLS

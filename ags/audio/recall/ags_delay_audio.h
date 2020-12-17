@@ -68,13 +68,19 @@ struct _AgsDelayAudioClass
   void (*midi_duration_changed)(AgsDelayAudio *delay_audio);
 };
 
+G_DEPRECATED
 GType ags_delay_audio_get_type();
 
+G_DEPRECATED
 void ags_delay_audio_sequencer_duration_changed(AgsDelayAudio *delay_audio);
+G_DEPRECATED
 void ags_delay_audio_notation_duration_changed(AgsDelayAudio *delay_audio);
+G_DEPRECATED
 void ags_delay_audio_wave_duration_changed(AgsDelayAudio *delay_audio);
+G_DEPRECATED
 void ags_delay_audio_midi_duration_changed(AgsDelayAudio *delay_audio);
 
+G_DEPRECATED
 AgsDelayAudio* ags_delay_audio_new(AgsAudio *audio);
 
 G_END_DECLS

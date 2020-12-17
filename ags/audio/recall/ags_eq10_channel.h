@@ -64,8 +64,10 @@ struct _AgsEq10ChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
+G_DEPRECATED_FOR(ags_fx_eq10_channel_get_type)
 GType ags_eq10_channel_get_type();
 
+G_DEPRECATED_FOR(ags_fx_eq10_channel_new)
 AgsEq10Channel* ags_eq10_channel_new(AgsChannel *source);
 
 G_END_DECLS

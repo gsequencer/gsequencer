@@ -63,8 +63,10 @@ struct _AgsPlayNotationAudioRunClass
   AgsRecallAudioRunClass recall_audio_run;
 };
 
+G_DEPRECATED_FOR(ags_fx_notation_audio_processor_get_type)
 GType ags_play_notation_audio_run_get_type();
 
+G_DEPRECATED_FOR(ags_fx_notation_audio_processor_new)
 AgsPlayNotationAudioRun* ags_play_notation_audio_run_new(AgsAudio *audio,
 							 AgsDelayAudioRun *delay_audio_run,
 							 AgsCountBeatsAudioRun *count_beats_audio_run);

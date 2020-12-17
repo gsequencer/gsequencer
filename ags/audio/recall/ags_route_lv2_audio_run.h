@@ -65,8 +65,10 @@ struct _AgsRouteLv2AudioRunClass
   AgsRecallAudioRunClass recall_audio_run;
 };
 
+G_DEPRECATED
 GType ags_route_lv2_audio_run_get_type();
 
+G_DEPRECATED
 AgsRouteLv2AudioRun* ags_route_lv2_audio_run_new(AgsAudio *audio);
 
 G_END_DECLS

@@ -52,8 +52,10 @@ struct _AgsPeakAudioSignalClass
   AgsRecallAudioSignalClass recall_audio_signal;
 };
 
+G_DEPRECATED_FOR(ags_fx_peak_audio_signal_get_type)
 GType ags_peak_audio_signal_get_type();
 
+G_DEPRECATED_FOR(ags_fx_peak_audio_signal_new)
 AgsPeakAudioSignal* ags_peak_audio_signal_new(AgsAudioSignal *source);
 
 G_END_DECLS

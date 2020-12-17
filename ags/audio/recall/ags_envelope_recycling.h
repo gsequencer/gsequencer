@@ -50,8 +50,10 @@ struct _AgsEnvelopeRecyclingClass
   AgsRecallRecyclingClass recall_recycling;
 };
 
+G_DEPRECATED_FOR(ags_fx_envelope_recycling_get_type)
 GType ags_envelope_recycling_get_type();
 
+G_DEPRECATED_FOR(ags_fx_envelope_recycling_new)
 AgsEnvelopeRecycling* ags_envelope_recycling_new(AgsRecycling *source);
 
 G_END_DECLS

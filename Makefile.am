@@ -246,6 +246,7 @@ CLEANFILES = \
 	docs/listings/file_property.c \
 	docs/listings/file_read.c \
 	docs/listings/file_write.c \
+	docs/listings/fx_factory.c \
 	docs/listings/linking_prerequisites.c \
 	docs/listings/linking_safe.c \
 	docs/listings/linking_unsafe.c \
@@ -438,6 +439,7 @@ devdoclistings = \
 	docs/listings/file_property.c.in \
 	docs/listings/file_read.c.in \
 	docs/listings/file_write.c.in \
+	docs/listings/fx_factory.c.in \
 	docs/listings/linking_prerequisites.c.in \
 	docs/listings/linking_safe.c.in \
 	docs/listings/linking_unsafe.c.in \

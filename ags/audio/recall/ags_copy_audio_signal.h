@@ -50,8 +50,10 @@ struct _AgsCopyAudioSignalClass
   AgsRecallAudioSignalClass recall_audio_signal;
 };
 
+G_DEPRECATED
 GType ags_copy_audio_signal_get_type();
 
+G_DEPRECATED
 AgsCopyAudioSignal* ags_copy_audio_signal_new(AgsAudioSignal *destination,
 					      AgsAudioSignal *source);
 

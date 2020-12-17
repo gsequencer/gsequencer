@@ -53,8 +53,10 @@ struct _AgsPlayAudioClass
   AgsRecallAudioClass recall_audio;
 };
 
+G_DEPRECATED
 GType ags_play_audio_get_type();
 
+G_DEPRECATED
 AgsPlayAudio* ags_play_audio_new(AgsAudio *audio);
 
 G_END_DECLS

@@ -74,8 +74,10 @@ struct _AgsRecallLv2RunClass
   AgsRecallAudioSignalClass recall_audio_signal;
 };
 
+G_DEPRECATED
 GType ags_recall_lv2_run_get_type();
 
+G_DEPRECATED
 AgsRecallLv2Run* ags_recall_lv2_run_new(AgsAudioSignal *source);
 
 G_END_DECLS
