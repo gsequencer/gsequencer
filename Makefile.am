@@ -354,17 +354,50 @@ EXTRA_DIST += \
 	libags_audio.sym \
 	libags_gui.sym
 
-EXTRA_DIST += docs/reference/libags/git.mk docs/reference/libags/gtk-doc.make docs/reference/libags/Makefile.am docs/reference/libags/Makefile.in
-EXTRA_DIST += docs/reference/libags/libags-overrides.txt docs/reference/libags/libags-sections.txt docs/reference/libags/libags.types docs/reference/libags/libags.xml
+EXTRA_DIST += \
+	docs/reference/libags/git.mk \
+	docs/reference/libags/gtk-doc.make \
+	docs/reference/libags/Makefile.am \
+	docs/reference/libags/Makefile.in
 
-EXTRA_DIST += docs/reference/libags-audio/git.mk docs/reference/libags-audio/gtk-doc.make docs/reference/libags-audio/Makefile.am docs/reference/libags-audio/Makefile.in
-EXTRA_DIST += docs/reference/libags-audio/libags_audio-overrides.txt  docs/reference/libags-audio/libags_audio-sections.txt docs/reference/libags-audio/libags_audio.types docs/reference/libags-audio/libags_audio.xml
+EXTRA_DIST += \
+	docs/reference/libags/libags-overrides.txt \
+	docs/reference/libags/libags-sections.txt \
+	docs/reference/libags/libags.types \
+	docs/reference/libags/libags.xml
 
-EXTRA_DIST += docs/reference/libags-gui/git.mk docs/reference/libags-gui/gtk-doc.make docs/reference/libags-gui/Makefile.am docs/reference/libags-gui/Makefile.in
-EXTRA_DIST += docs/reference/libags-gui/libags_gui-overrides.txt docs/reference/libags-gui/libags_gui-sections.txt docs/reference/libags-gui/libags_gui.types docs/reference/libags-gui/libags_gui.xml
+EXTRA_DIST += \
+	docs/reference/libags-audio/git.mk \
+	docs/reference/libags-audio/gtk-doc.make \
+	docs/reference/libags-audio/Makefile.am \
+	docs/reference/libags-audio/Makefile.in
 
-EXTRA_DIST += docs/reference/libgsequencer/git.mk docs/reference/libgsequencer/gtk-doc.make docs/reference/libgsequencer/Makefile.am docs/reference/libgsequencer/Makefile.in
-EXTRA_DIST += docs/reference/libgsequencer/libgsequencer-overrides.txt docs/reference/libgsequencer/libgsequencer.xml
+EXTRA_DIST += \
+	docs/reference/libags-audio/libags_audio-overrides.txt \
+	docs/reference/libags-audio/libags_audio-sections.txt \
+	docs/reference/libags-audio/libags_audio.types \
+	docs/reference/libags-audio/libags_audio.xml
+
+EXTRA_DIST += \
+	docs/reference/libags-gui/git.mk \
+	docs/reference/libags-gui/gtk-doc.make \
+	docs/reference/libags-gui/Makefile.am \
+	docs/reference/libags-gui/Makefile.in
+
+EXTRA_DIST += \
+	docs/reference/libags-gui/libags_gui-overrides.txt \
+	docs/reference/libags-gui/libags_gui-sections.txt \
+	docs/reference/libags-gui/libags_gui.types \
+	docs/reference/libags-gui/libags_gui.xml
+
+EXTRA_DIST += docs/reference/libgsequencer/git.mk \
+	docs/reference/libgsequencer/gtk-doc.make \
+	docs/reference/libgsequencer/Makefile.am \
+	docs/reference/libgsequencer/Makefile.in
+
+EXTRA_DIST += \
+	docs/reference/libgsequencer/libgsequencer-overrides.txt \
+	docs/reference/libgsequencer/libgsequencer.xml
 
 # EXTRA_DIST += docs/reference/libgsequencer
 
