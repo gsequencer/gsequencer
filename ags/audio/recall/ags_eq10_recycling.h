@@ -50,8 +50,10 @@ struct _AgsEq10RecyclingClass
   AgsRecallRecyclingClass recall_recycling;
 };
 
+G_DEPRECATED_FOR(ags_fx_eq10_recycling_get_type)
 GType ags_eq10_recycling_get_type();
 
+G_DEPRECATED_FOR(ags_fx_eq10_recycling_new)
 AgsEq10Recycling* ags_eq10_recycling_new(AgsRecycling *source);
 
 G_END_DECLS

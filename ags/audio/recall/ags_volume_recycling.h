@@ -50,8 +50,10 @@ struct _AgsVolumeRecyclingClass
   AgsRecallRecyclingClass recall_recycling;
 };
 
+G_DEPRECATED_FOR(ags_fx_volume_recycling_get_type)
 GType ags_volume_recycling_get_type();
 
+G_DEPRECATED_FOR(ags_fx_volume_recycling_new)
 AgsVolumeRecycling* ags_volume_recycling_new(AgsRecycling *source);
 
 G_END_DECLS

@@ -56,8 +56,10 @@ struct _AgsCaptureWaveAudioRunClass
   AgsRecallAudioRunClass recall_audio_run;
 };
 
+G_DEPRECATED
 GType ags_capture_wave_audio_run_get_type();
 
+G_DEPRECATED
 AgsCaptureWaveAudioRun* ags_capture_wave_audio_run_new(AgsAudio *audio);
 
 G_END_DECLS

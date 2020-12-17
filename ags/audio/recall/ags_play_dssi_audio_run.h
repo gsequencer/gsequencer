@@ -87,10 +87,13 @@ struct _AgsPlayDssiAudioRunClass
   AgsRecallAudioRunClass recall_audio_run;
 };
 
+G_DEPRECATED
 GType ags_play_dssi_audio_run_get_type();
 
+G_DEPRECATED
 void ags_play_dssi_audio_run_load_ports(AgsPlayDssiAudioRun *play_dssi_audio_run);
 
+G_DEPRECATED
 AgsPlayDssiAudioRun* ags_play_dssi_audio_run_new(AgsAudio *audio,
 						 AgsDelayAudioRun *delay_audio_run,
 						 AgsCountBeatsAudioRun *count_beats_audio_run);

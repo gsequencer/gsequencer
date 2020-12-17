@@ -66,14 +66,18 @@ struct _AgsPeakChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
+G_DEPRECATED_FOR(ags_fx_peak_channel_get_type)
 GType ags_peak_channel_get_type();
 
+G_DEPRECATED
 void ags_peak_channel_buffer_add(AgsPeakChannel *peak_channel,
 				 void *buffer,
 				 guint samplerate, guint buffer_size, guint format);
 
+G_DEPRECATED
 void ags_peak_channel_retrieve_peak_internal(AgsPeakChannel *peak_channel);
 
+G_DEPRECATED_FOR(ags_fx_peak_channel_new)
 AgsPeakChannel* ags_peak_channel_new(AgsChannel *source);
 
 G_END_DECLS

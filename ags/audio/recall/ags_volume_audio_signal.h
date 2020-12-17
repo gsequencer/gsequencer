@@ -50,8 +50,10 @@ struct _AgsVolumeAudioSignalClass
   AgsRecallAudioSignalClass recall_audio_signal;
 };
 
+G_DEPRECATED_FOR(ags_fx_volume_audio_signal_get_type)
 GType ags_volume_audio_signal_get_type();
 
+G_DEPRECATED_FOR(ags_fx_volume_audio_signal_new)
 AgsVolumeAudioSignal* ags_volume_audio_signal_new(AgsAudioSignal *source);
 
 G_END_DECLS

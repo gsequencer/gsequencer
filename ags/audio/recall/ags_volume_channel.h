@@ -53,8 +53,10 @@ struct _AgsVolumeChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
+G_DEPRECATED_FOR(ags_fx_volume_channel_get_type)
 GType ags_volume_channel_get_type();
 
+G_DEPRECATED_FOR(ags_fx_volume_channel_new)
 AgsVolumeChannel* ags_volume_channel_new(AgsChannel *source);
 
 G_END_DECLS

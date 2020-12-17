@@ -74,6 +74,7 @@ struct _AgsRecallFactoryClass
 
 GType ags_recall_factory_get_type();
 
+G_DEPRECATED_FOR(ags_fx_factory_create)
 GList* ags_recall_factory_create(AgsAudio *audio,
 				 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 				 gchar *plugin_name,
@@ -82,6 +83,7 @@ GList* ags_recall_factory_create(AgsAudio *audio,
 				 guint create_flags, guint recall_flags);
 
 /*  */
+G_DEPRECATED
 AgsRecallFactory* ags_recall_factory_new();
 
 G_END_DECLS

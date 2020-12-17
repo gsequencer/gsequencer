@@ -54,8 +54,10 @@ struct _AgsLoopChannelRunClass
   AgsRecallChannelRunClass recall_channel_run;
 };
 
+G_DEPRECATED
 GType ags_loop_channel_run_get_type();
 
+G_DEPRECATED
 AgsLoopChannelRun* ags_loop_channel_run_new(AgsChannel *source,
 					    AgsCountBeatsAudioRun *count_beats_audio_run);
 

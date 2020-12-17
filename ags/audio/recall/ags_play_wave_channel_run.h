@@ -57,8 +57,10 @@ struct _AgsPlayWaveChannelRunClass
   AgsRecallChannelRunClass recall_channel_run;
 };
 
+G_DEPRECATED
 GType ags_play_wave_channel_run_get_type();
 
+G_DEPRECATED
 AgsPlayWaveChannelRun* ags_play_wave_channel_run_new(AgsChannel *source);
 
 G_END_DECLS

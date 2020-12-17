@@ -100,36 +100,50 @@ struct _AgsCountBeatsAudioRunClass
 		    guint nth_run);
 };
 
+G_DEPRECATED
 GType ags_count_beats_audio_run_get_type();
 
+G_DEPRECATED
 void ags_count_beats_audio_run_sequencer_start(AgsCountBeatsAudioRun *count_beats_audio_run,
 					       guint nth_run);
+G_DEPRECATED
 void ags_count_beats_audio_run_sequencer_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
 					      guint nth_run);
+G_DEPRECATED
 void ags_count_beats_audio_run_sequencer_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
 					      guint nth_run);
 
+G_DEPRECATED
 void ags_count_beats_audio_run_notation_start(AgsCountBeatsAudioRun *count_beats_audio_run,
 					      guint nth_run);
+G_DEPRECATED
 void ags_count_beats_audio_run_notation_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
 					     guint nth_run);
+G_DEPRECATED
 void ags_count_beats_audio_run_notation_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
 					     guint nth_run);
 
+G_DEPRECATED
 void ags_count_beats_audio_run_wave_start(AgsCountBeatsAudioRun *count_beats_audio_run,
 					  guint nth_run);
+G_DEPRECATED
 void ags_count_beats_audio_run_wave_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
 					 guint nth_run);
+G_DEPRECATED
 void ags_count_beats_audio_run_wave_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
 					 guint nth_run);
 
+G_DEPRECATED
 void ags_count_beats_audio_run_midi_start(AgsCountBeatsAudioRun *count_beats_audio_run,
 					  guint nth_run);
+G_DEPRECATED
 void ags_count_beats_audio_run_midi_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
 					 guint nth_run);
+G_DEPRECATED
 void ags_count_beats_audio_run_midi_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
 					 guint nth_run);
 
+G_DEPRECATED
 AgsCountBeatsAudioRun* ags_count_beats_audio_run_new(AgsAudio *audio,
 						     AgsDelayAudioRun *delay_audio_run);
 

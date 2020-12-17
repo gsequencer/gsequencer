@@ -50,8 +50,10 @@ struct _AgsLfoChannelRunClass
   AgsRecallChannelRunClass recall_channel_run;
 };
 
+G_DEPRECATED
 GType ags_lfo_channel_run_get_type();
 
+G_DEPRECATED
 AgsLfoChannelRun* ags_lfo_channel_run_new(AgsChannel *source);
 
 G_END_DECLS

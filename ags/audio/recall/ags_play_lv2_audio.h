@@ -90,22 +90,34 @@ struct _AgsPlayLv2AudioClass
   AgsRecallAudioClass recall_audio;
 };
 
+G_DEPRECATED
 GType ags_play_lv2_audio_get_type();
 
+G_DEPRECATED
 gboolean ags_play_lv2_audio_test_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags);
+
+G_DEPRECATED
 void ags_play_lv2_audio_set_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags);
+
+G_DEPRECATED
 void ags_play_lv2_audio_unset_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags);
 
+G_DEPRECATED
 void ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio);
 
+G_DEPRECATED
 GList* ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio);
+
+G_DEPRECATED
 void ags_play_lv2_audio_load_conversion(AgsPlayLv2Audio *play_lv2_audio,
 					GObject *port,
 					GObject *plugin_port);
 
+G_DEPRECATED
 GList* ags_play_lv2_audio_find(GList *recall,
 			       gchar *filename, gchar *uri);
 
+G_DEPRECATED
 AgsPlayLv2Audio* ags_play_lv2_audio_new(AgsAudio *audio);
 
 G_END_DECLS

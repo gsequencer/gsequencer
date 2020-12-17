@@ -50,8 +50,10 @@ struct _AgsPlayRecyclingClass
   AgsRecallRecyclingClass recall_recycling;
 };
 
+G_DEPRECATED_FOR(ags_fx_playback_recycling_get_type)
 GType ags_play_recycling_get_type();
 
+G_DEPRECATED_FOR(ags_fx_playback_recycling_new)
 AgsPlayRecycling* ags_play_recycling_new(AgsRecycling *source);
 
 G_END_DECLS

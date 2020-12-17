@@ -50,8 +50,10 @@ struct _AgsMuteAudioRunClass
   AgsRecallAudioRunClass recall_audio_run;
 };
 
+G_DEPRECATED
 GType ags_mute_audio_run_get_type();
 
+G_DEPRECATED
 AgsMuteAudioRun* ags_mute_audio_run_new(AgsAudio *audio);
 
 G_END_DECLS

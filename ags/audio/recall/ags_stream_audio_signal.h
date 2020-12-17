@@ -52,8 +52,10 @@ struct _AgsStreamAudioSignalClass
   AgsRecallAudioSignalClass recall_audio_signal;
 };
 
+G_DEPRECATED
 GType ags_stream_audio_signal_get_type();
 
+G_DEPRECATED
 AgsStreamAudioSignal* ags_stream_audio_signal_new(AgsAudioSignal *source);
 
 G_END_DECLS

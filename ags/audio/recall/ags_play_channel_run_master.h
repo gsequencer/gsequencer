@@ -67,12 +67,19 @@ struct _AgsPlayChannelRunMasterClass
   AgsRecallChannelRunClass recall_channel_run;
 };
 
+G_DEPRECATED
 GType ags_play_channel_run_master_get_type();
 
+G_DEPRECATED
 gboolean ags_play_channel_run_master_test_flags(AgsPlayChannelRunMaster *play_channel_run_master, guint flags);
+
+G_DEPRECATED
 void ags_play_channel_run_master_set_flags(AgsPlayChannelRunMaster *play_channel_run_master, guint flags);
+
+G_DEPRECATED
 void ags_play_channel_run_master_unset_flags(AgsPlayChannelRunMaster *play_channel_run_master, guint flags);
 
+G_DEPRECATED
 AgsPlayChannelRunMaster* ags_play_channel_run_master_new(AgsChannel *source);
 
 G_END_DECLS

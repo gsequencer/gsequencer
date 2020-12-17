@@ -67,8 +67,10 @@ struct _AgsCountBeatsAudioClass
   AgsRecallAudioClass recall_audio;
 };
 
+G_DEPRECATED
 GType ags_count_beats_audio_get_type();
 
+G_DEPRECATED
 AgsCountBeatsAudio* ags_count_beats_audio_new(AgsAudio *audio);
 
 G_END_DECLS
