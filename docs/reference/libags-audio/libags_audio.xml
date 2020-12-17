@@ -222,7 +222,6 @@
       </para>
       
       <xi:include href="xml/ags_fx_factory.xml"/>
-      <xi:include href="xml/ags_recall_factory.xml"/>
       <xi:include href="xml/ags_playback_domain.xml"/>
       <xi:include href="xml/ags_playback.xml"/>
       <xi:include href="xml/ags_recall_id.xml"/>
@@ -488,167 +487,6 @@
 
     </chapter>
     
-    <chapter id="audio-recall-fundamental-playback">
-      <title>Recalls - fundamental playback</title>
-      <para>
-	For playback fundamental recalls like output to soundcard, copy or buffer and stream
-	audio signals.
-      </para>
-      
-      <xi:include href="xml/ags_play_audio.xml"/>
-      <xi:include href="xml/ags_play_channel.xml"/>
-      <xi:include href="xml/ags_play_channel_run.xml"/>
-      <xi:include href="xml/ags_play_channel_run_master.xml"/>
-      <xi:include href="xml/ags_play_recycling.xml"/>
-      <xi:include href="xml/ags_play_audio_signal.xml"/>
-
-      <xi:include href="xml/ags_mute_audio.xml"/>
-      <xi:include href="xml/ags_mute_audio_run.xml"/>
-      <xi:include href="xml/ags_mute_channel.xml"/>
-      <xi:include href="xml/ags_mute_channel_run.xml"/>
-      <xi:include href="xml/ags_mute_recycling.xml"/>
-      <xi:include href="xml/ags_mute_audio_signal.xml"/>
-
-      <xi:include href="xml/ags_buffer_channel.xml"/>
-      <xi:include href="xml/ags_buffer_channel_run.xml"/>
-      <xi:include href="xml/ags_buffer_recycling.xml"/>
-      <xi:include href="xml/ags_buffer_audio_signal.xml"/>
-
-      <xi:include href="xml/ags_copy_channel.xml"/>
-      <xi:include href="xml/ags_copy_channel_run.xml"/>
-      <xi:include href="xml/ags_copy_recycling.xml"/>
-      <xi:include href="xml/ags_copy_audio_signal.xml"/>
-
-      <xi:include href="xml/ags_rt_stream_channel.xml"/>
-      <xi:include href="xml/ags_rt_stream_channel_run.xml"/>
-      <xi:include href="xml/ags_rt_stream_recycling.xml"/>
-      <xi:include href="xml/ags_rt_stream_audio_signal.xml"/>
-
-      <xi:include href="xml/ags_stream_channel.xml"/>
-      <xi:include href="xml/ags_stream_channel_run.xml"/>
-      <xi:include href="xml/ags_stream_recycling.xml"/>
-      <xi:include href="xml/ags_stream_audio_signal.xml"/>
-
-      <xi:include href="xml/ags_feed_audio_signal.xml"/>
-      <xi:include href="xml/ags_feed_channel.xml"/>
-      <xi:include href="xml/ags_feed_channel_run.xml"/>
-      <xi:include href="xml/ags_feed_recycling.xml"/>
-
-      <xi:include href="xml/ags_loop_channel.xml"/>
-      <xi:include href="xml/ags_loop_channel_run.xml"/>
-
-      <xi:include href="xml/ags_prepare_channel.xml"/>
-      <xi:include href="xml/ags_prepare_channel_run.xml"/>
-      <xi:include href="xml/ags_prepare_recycling.xml"/>
-      <xi:include href="xml/ags_prepare_audio_signal.xml"/>
-    </chapter>
-
-    <chapter id="audio-recall-counters">
-      <title>Recalls - counters</title>
-      <para>
-	Recall counters.
-      </para>
-      
-      <xi:include href="xml/ags_delay_audio.xml"/>
-      <xi:include href="xml/ags_delay_audio_run.xml"/>
-
-      <xi:include href="xml/ags_count_beats_audio.xml"/>
-      <xi:include href="xml/ags_count_beats_audio_run.xml"/>
-    </chapter>
-
-    <chapter id="audio-recall-volume">
-      <title>Recalls - volume</title>
-      <para>
-	Recalls having effect on volume.
-      </para>
-      
-      <xi:include href="xml/ags_volume_channel.xml"/>
-      <xi:include href="xml/ags_volume_channel_run.xml"/>
-      <xi:include href="xml/ags_volume_recycling.xml"/>
-      <xi:include href="xml/ags_volume_audio_signal.xml"/>
-
-      <xi:include href="xml/ags_envelope_channel.xml"/>
-      <xi:include href="xml/ags_envelope_channel_run.xml"/>
-      <xi:include href="xml/ags_envelope_recycling.xml"/>
-      <xi:include href="xml/ags_envelope_audio_signal.xml"/>
-
-      <xi:include href="xml/ags_eq10_audio_signal.xml"/>
-      <xi:include href="xml/ags_eq10_channel.xml"/>
-      <xi:include href="xml/ags_eq10_channel_run.xml"/>
-      <xi:include href="xml/ags_eq10_recycling.xml"/>
-
-      <xi:include href="xml/ags_lfo_channel.xml"/>
-      <xi:include href="xml/ags_lfo_channel_run.xml"/>
-      <xi:include href="xml/ags_lfo_recycling.xml"/>
-      <xi:include href="xml/ags_lfo_audio_signal.xml"/>
-    </chapter>
-    
-    <chapter id="audio-recall-meter">
-      <title>Recalls - meters</title>
-      <para>
-	Recalls computing peak or frequency spectrum.
-      </para>
-      
-      <xi:include href="xml/ags_analyse_channel.xml"/>
-      <xi:include href="xml/ags_analyse_channel_run.xml"/>
-      <xi:include href="xml/ags_analyse_recycling.xml"/>
-      <xi:include href="xml/ags_analyse_audio_signal.xml"/>
-
-      <xi:include href="xml/ags_peak_channel.xml"/>
-      <xi:include href="xml/ags_peak_channel_run.xml"/>
-      <xi:include href="xml/ags_peak_recycling.xml"/>
-      <xi:include href="xml/ags_peak_audio_signal.xml"/>
-    </chapter>
-
-    <chapter id="audio-recall-data-structures">
-      <title>Recalls - data structures</title>
-      <para>
-	Recalls interacting with data structures like patter, notation and wave.
-      </para>
-      
-      <xi:include href="xml/ags_copy_pattern_audio.xml"/>
-      <xi:include href="xml/ags_copy_pattern_audio_run.xml"/>
-      <xi:include href="xml/ags_copy_pattern_channel.xml"/>
-      <xi:include href="xml/ags_copy_pattern_channel_run.xml"/>
-
-      <xi:include href="xml/ags_play_notation_audio.xml"/>
-      <xi:include href="xml/ags_play_notation_audio_run.xml"/>
-
-      <xi:include href="xml/ags_record_midi_audio.xml"/>
-      <xi:include href="xml/ags_record_midi_audio_run.xml"/>
-
-      <xi:include href="xml/ags_play_wave_audio.xml"/>
-      <xi:include href="xml/ags_play_wave_audio_run.xml"/>
-      <xi:include href="xml/ags_play_wave_channel.xml"/>
-      <xi:include href="xml/ags_play_wave_channel_run.xml"/>
-
-      <xi:include href="xml/ags_capture_wave_audio.xml"/>
-      <xi:include href="xml/ags_capture_wave_audio_run.xml"/>
-      <xi:include href="xml/ags_capture_wave_channel.xml"/>
-      <xi:include href="xml/ags_capture_wave_channel_run.xml"/>
-    </chapter>
-
-    <chapter id="audio-recall-plugins">
-      <title>Recalls - plugins</title>
-
-      <xi:include href="xml/ags_recall_ladspa.xml"/>
-      <xi:include href="xml/ags_recall_ladspa_run.xml"/>
-
-      <xi:include href="xml/ags_recall_dssi.xml"/>
-      <xi:include href="xml/ags_recall_dssi_run.xml"/>
-      <xi:include href="xml/ags_route_dssi_audio.xml"/>
-      <xi:include href="xml/ags_route_dssi_audio_run.xml"/>
-      <xi:include href="xml/ags_play_dssi_audio.xml"/>
-      <xi:include href="xml/ags_play_dssi_audio_run.xml"/>
-
-      <xi:include href="xml/ags_recall_lv2.xml"/>
-      <xi:include href="xml/ags_recall_lv2_run.xml"/>
-      <xi:include href="xml/ags_route_lv2_audio.xml"/>
-      <xi:include href="xml/ags_route_lv2_audio_run.xml"/>
-      <xi:include href="xml/ags_play_lv2_audio.xml"/>
-      <xi:include href="xml/ags_play_lv2_audio_run.xml"/>
-    </chapter>
-    
     <chapter id="audio-task">
       <title>Audio tasks - Data exchanged between Audio and GUI</title>
       <para>
@@ -711,19 +549,23 @@
       <xi:include href="xml/ags_toggle_pattern_bit.xml"/>
     </chapter>
   </part>
+
+  <index id="api-index-full">
+    <title>API Index</title>
+    <xi:include href="xml/api-index-full.xml"><xi:fallback /></xi:include>
+  </index>
   
+  <index id="api-index-deprecated" role="deprecated">
+    <title>Index of deprecated API</title>
+    <xi:include href="xml/api-index-deprecated.xml"><xi:fallback /></xi:include>
+  </index>
+  
+  <xi:include href="xml/annotation-glossary.xml"><xi:fallback /></xi:include>
+
   <part label="appendix">
-    <index id="api-index-full">
-      <title>API Index</title>
-      <xi:include href="xml/api-index-full.xml"><xi:fallback /></xi:include>
-    </index>
-
-    <index id="deprecated-api-index" role="deprecated">
-      <title>Index of deprecated API</title>
-      <xi:include href="xml/api-index-deprecated.xml"><xi:fallback /></xi:include>
-    </index>
-
-    <xi:include href="xml/annotation-glossary.xml"><xi:fallback /></xi:include>
+    <title>Tree Index</title>
+    
+    <xi:include href="xml/tree_index.sgml"><xi:fallback /></xi:include>
   </part>
   
 </book>
