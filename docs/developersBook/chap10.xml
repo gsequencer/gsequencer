@@ -18,6 +18,13 @@
     <code language="C">GList* ags_fx_factory_create(AgsAudio*, AgsRecallContainer*, AgsRecallContainer*, gchar*, gchar *, gchar *, guint, guint, guint, guint, gint, guint, guint)</code>
   </para>
 
+  <example>
+    <title>Using ags_fx_factory_create()</title>
+    <programlisting language="C">
+<xi:include href="../listings/fx_factory.c" parse="text" />
+    </programlisting>
+  </example>
+
   <variablelist>    
     <varlistentry>
       <term>
