@@ -61,8 +61,10 @@ struct _AgsRecallLadspaRunClass
   AgsRecallAudioSignalClass recall_audio_signal;
 };
 
+G_DEPRECATED
 GType ags_recall_ladspa_run_get_type();
 
+G_DEPRECATED
 AgsRecallLadspaRun* ags_recall_ladspa_run_new(AgsAudioSignal *source);
 
 G_END_DECLS

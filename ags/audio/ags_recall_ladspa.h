@@ -64,17 +64,23 @@ struct _AgsRecallLadspaClass
   AgsRecallChannelClass recall_channel;
 };
 
+G_DEPRECATED
 GType ags_recall_ladspa_get_type();
 
+G_DEPRECATED
 void ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa);
+G_DEPRECATED
 GList* ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa);
+G_DEPRECATED
 void ags_recall_ladspa_load_conversion(AgsRecallLadspa *recall_ladspa,
 				       GObject *port,
 				       gpointer plugin_port);
 
+G_DEPRECATED
 GList* ags_recall_ladspa_find(GList *recall,
 			      gchar *filename, gchar *effect);
 
+G_DEPRECATED
 AgsRecallLadspa* ags_recall_ladspa_new(AgsChannel *source,
 				       gchar *filename,
 				       gchar *effect,
