@@ -67,12 +67,19 @@ struct _AgsPlayChannelRunClass
   AgsRecallChannelRunClass recall_channel_run;
 };
 
+G_DEPRECATED
 GType ags_play_channel_run_get_type();
 
+G_DEPRECATED
 gboolean ags_play_channel_run_test_flags(AgsPlayChannelRun *play_channel_run, guint flags);
+
+G_DEPRECATED
 void ags_play_channel_run_set_flags(AgsPlayChannelRun *play_channel_run, guint flags);
+
+G_DEPRECATED
 void ags_play_channel_run_unset_flags(AgsPlayChannelRun *play_channel_run, guint flags);
 
+G_DEPRECATED
 AgsPlayChannelRun* ags_play_channel_run_new(AgsChannel *source,
 					    GObject *stream_channel_run);
 

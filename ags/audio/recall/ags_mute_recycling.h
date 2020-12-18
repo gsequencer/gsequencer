@@ -50,8 +50,10 @@ struct _AgsMuteRecyclingClass
   AgsRecallRecyclingClass recall_recycling;
 };
 
+G_DEPRECATED
 GType ags_mute_recycling_get_type();
 
+G_DEPRECATED
 AgsMuteRecycling* ags_mute_recycling_new(AgsRecycling *source);
 
 G_END_DECLS

@@ -59,8 +59,10 @@ struct _AgsCopyPatternAudioRunClass
   AgsRecallAudioRunClass recall_audio_run;
 };
 
+G_DEPRECATED_FOR(ags_fx_pattern_audio_processor_get_type)
 GType ags_copy_pattern_audio_run_get_type();
 
+G_DEPRECATED_FOR(ags_fx_pattern_audio_processor_new)
 AgsCopyPatternAudioRun* ags_copy_pattern_audio_run_new(AgsAudio *audio,
 						       AgsDelayAudioRun *delay_audio_run,
 						       AgsCountBeatsAudioRun *count_beats_audio_run);

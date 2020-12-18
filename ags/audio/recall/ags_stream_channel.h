@@ -53,8 +53,10 @@ struct _AgsStreamChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
+G_DEPRECATED
 GType ags_stream_channel_get_type();
 
+G_DEPRECATED
 AgsStreamChannel* ags_stream_channel_new(AgsChannel *source);
 
 G_END_DECLS

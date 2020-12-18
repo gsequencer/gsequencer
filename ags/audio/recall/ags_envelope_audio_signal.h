@@ -52,8 +52,10 @@ struct _AgsEnvelopeAudioSignalClass
   AgsRecallAudioSignalClass recall_audio_signal;
 };
 
+G_DEPRECATED_FOR(ags_fx_envelope_audio_signal_get_type)
 GType ags_envelope_audio_signal_get_type();
 
+G_DEPRECATED_FOR(ags_fx_envelope_audio_signal_new)
 AgsEnvelopeAudioSignal* ags_envelope_audio_signal_new(AgsAudioSignal *source);
 
 G_END_DECLS

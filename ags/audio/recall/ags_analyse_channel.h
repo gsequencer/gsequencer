@@ -77,14 +77,18 @@ struct _AgsAnalyseChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
+G_DEPRECATED_FOR(ags_fx_analyse_channel_get_type)
 GType ags_analyse_channel_get_type();
 
+G_DEPRECATED
 void ags_analyse_channel_buffer_add(AgsAnalyseChannel *analyse_channel,
 				    void *buffer,
 				    guint samplerate, guint buffer_size, guint format);
 
+G_DEPRECATED
 void ags_analyse_channel_retrieve_frequency_and_magnitude(AgsAnalyseChannel *analyse_channel);
 
+G_DEPRECATED_FOR(ags_fx_analyse_channel_new)
 AgsAnalyseChannel* ags_analyse_channel_new(AgsChannel *source);
 
 G_END_DECLS

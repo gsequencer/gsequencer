@@ -50,8 +50,10 @@ struct _AgsCopyChannelRunClass
   AgsRecallChannelRunClass recall_channel_run;
 };
 
+G_DEPRECATED
 GType ags_copy_channel_run_get_type();
 
+G_DEPRECATED
 AgsCopyChannelRun* ags_copy_channel_run_new(AgsChannel *destination,
 					    AgsChannel *source);
 

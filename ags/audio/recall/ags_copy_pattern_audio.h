@@ -57,8 +57,10 @@ struct _AgsCopyPatternAudioClass
   AgsRecallAudioClass recall_audio;
 };
 
+G_DEPRECATED_FOR(ags_fx_pattern_audio_get_type)
 GType ags_copy_pattern_audio_get_type();
 
+G_DEPRECATED_FOR(ags_fx_pattern_audio_new)
 AgsCopyPatternAudio* ags_copy_pattern_audio_new(AgsAudio *audio,
 						guint bank_index_0,
 						guint bank_index_1);

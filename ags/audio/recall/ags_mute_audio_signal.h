@@ -50,8 +50,10 @@ struct _AgsMuteAudioSignalClass
   AgsRecallAudioSignalClass recall_audio_signal;
 };
 
+G_DEPRECATED
 GType ags_mute_audio_signal_get_type();
 
+G_DEPRECATED
 AgsMuteAudioSignal* ags_mute_audio_signal_new(AgsAudioSignal *source);
 
 G_END_DECLS

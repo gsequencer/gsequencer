@@ -52,8 +52,10 @@ struct _AgsCopyPatternChannelRunClass
   AgsRecallChannelRunClass recall_channel_run;
 };
 
+G_DEPRECATED_FOR(ags_fx_pattern_channel_processor_get_type)
 GType ags_copy_pattern_channel_run_get_type();
 
+G_DEPRECATED_FOR(ags_fx_pattern_channel_processor_new)
 AgsCopyPatternChannelRun* ags_copy_pattern_channel_run_new(AgsChannel *destination,
 							   AgsChannel *source);
 

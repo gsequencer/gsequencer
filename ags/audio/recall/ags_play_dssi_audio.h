@@ -66,18 +66,25 @@ struct _AgsPlayDssiAudioClass
   AgsRecallAudioClass recall_audio;
 };
 
+G_DEPRECATED
 GType ags_play_dssi_audio_get_type();
 
+G_DEPRECATED
 void ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio);
 
+G_DEPRECATED
 GList* ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio);
+
+G_DEPRECATED
 void ags_play_dssi_audio_load_conversion(AgsPlayDssiAudio *play_dssi_audio,
 					 GObject *port,
 					 GObject *plugin_port);
 
+G_DEPRECATED
 GList* ags_play_dssi_audio_find(GList *recall,
 				gchar *filename, gchar *effect);
 
+G_DEPRECATED
 AgsPlayDssiAudio* ags_play_dssi_audio_new(AgsAudio *audio);
 
 G_END_DECLS

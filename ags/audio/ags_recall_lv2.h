@@ -91,21 +91,30 @@ struct _AgsRecallLv2Class
   AgsRecallChannelClass recall_channel;
 };
 
+G_DEPRECATED
 GType ags_recall_lv2_get_type();
 
+G_DEPRECATED
 gboolean ags_recall_lv2_test_flags(AgsRecallLv2 *recall_lv2, guint flags);
+G_DEPRECATED
 void ags_recall_lv2_set_flags(AgsRecallLv2 *recall_lv2, guint flags);
+G_DEPRECATED
 void ags_recall_lv2_unset_flags(AgsRecallLv2 *recall_lv2, guint flags);
 
+G_DEPRECATED
 void ags_recall_lv2_load(AgsRecallLv2 *recall_lv2);
+G_DEPRECATED
 GList* ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2);
+G_DEPRECATED
 void ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
 				    GObject *port,
 				    gpointer plugin_port);
 
+G_DEPRECATED
 GList* ags_recall_lv2_find(GList *recall,
 			   gchar *filename, gchar *effect);
 
+G_DEPRECATED
 AgsRecallLv2* ags_recall_lv2_new(AgsChannel *source,
 				 AgsTurtle *turtle,
 				 gchar *filename,

@@ -88,36 +88,50 @@ struct _AgsDelayAudioRunClass
 		     gdouble delay, guint attack);
 };
 
+G_DEPRECATED
 GType ags_delay_audio_run_get_type();
 
+G_DEPRECATED
 void ags_delay_audio_run_sequencer_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 						gdouble delay, guint attack);
+G_DEPRECATED
 void ags_delay_audio_run_sequencer_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 					       gdouble delay, guint attack);
+G_DEPRECATED
 void ags_delay_audio_run_sequencer_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 					 gdouble delay, guint attack);
 
+G_DEPRECATED
 void ags_delay_audio_run_notation_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 					       gdouble delay, guint attack);
+G_DEPRECATED
 void ags_delay_audio_run_notation_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 					      gdouble delay, guint attack);
+G_DEPRECATED
 void ags_delay_audio_run_notation_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 					gdouble delay, guint attack);
 
+G_DEPRECATED
 void ags_delay_audio_run_wave_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 					   gdouble delay, guint attack);
+G_DEPRECATED
 void ags_delay_audio_run_wave_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 					  gdouble delay, guint attack);
+G_DEPRECATED
 void ags_delay_audio_run_wave_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 				    gdouble delay, guint attack);
 
+G_DEPRECATED
 void ags_delay_audio_run_midi_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 					   gdouble delay, guint attack);
+G_DEPRECATED
 void ags_delay_audio_run_midi_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 					  gdouble delay, guint attack);
+G_DEPRECATED
 void ags_delay_audio_run_midi_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 				    gdouble delay, guint attack);
 
+G_DEPRECATED
 AgsDelayAudioRun* ags_delay_audio_run_new(AgsAudio *audio);
 
 G_END_DECLS

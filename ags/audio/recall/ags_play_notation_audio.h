@@ -48,8 +48,10 @@ struct _AgsPlayNotationAudioClass
   AgsRecallAudioClass recall_audio;
 };
 
+G_DEPRECATED_FOR(ags_fx_notation_audio_get_type)
 GType ags_play_notation_audio_get_type();
 
+G_DEPRECATED_FOR(ags_fx_notation_audio_new)
 AgsPlayNotationAudio* ags_play_notation_audio_new(AgsAudio *audio);
 
 G_END_DECLS

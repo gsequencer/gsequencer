@@ -54,8 +54,10 @@ struct _AgsCaptureWaveChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
+G_DEPRECATED
 GType ags_capture_wave_channel_get_type();
 
+G_DEPRECATED
 AgsCaptureWaveChannel* ags_capture_wave_channel_new(AgsChannel *source);
 
 G_END_DECLS
