@@ -6,6 +6,16 @@ ags (3.8.0)
 	* TODO:JK: implemented AgsToolbar
 	* fixed deprecated Gtk+-3.0 symbols?
 
+ags (3.7.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved API reference and fixed namespace
+
+ags (3.7.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed broken API Reference Manual of libags_audio.so
+
 ags (3.7.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -121,7 +121,7 @@ ags_automation_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_automation_editor = g_type_register_static(GTK_TYPE_BOX,
+    ags_type_automation_editor = g_type_register_static(GTK_TYPE_VBOX,
 							"AgsAutomationEditor", &ags_automation_editor_info,
 							0);
     
@@ -209,9 +209,6 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   AgsApplicationContext *application_context;
   
   gdouble gui_scale_factor;
-
-  gtk_orientable_set_orientation(GTK_ORIENTABLE(automation_editor),
-				 GTK_ORIENTATION_VERTICAL);
   
   automation_editor->flags = (AGS_AUTOMATION_EDITOR_PASTE_MATCH_LINE |
 			      AGS_AUTOMATION_EDITOR_PASTE_NO_DUPLICATES);

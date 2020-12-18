@@ -8,7 +8,7 @@
 project('gsequencer', 'c',
         license: 'GPL3',
         default_options: [ 'buildtype=release', 'c_std=gnu99'],
-        version: '3.7.9')
+        version: '3.7.10')
 
 #note:jk: specify --buildtype=debug if needed
 gsequencer_debug = get_option('buildtype').contains('debug')
@@ -27,6 +27,7 @@ gnome = import('gnome')
 compiler = meson.get_compiler('c')
 # REMINDER: all dependencies have to be defined here globally
 # Just to prevent double check
+common_dependencies = []
 gtk_dependency = dependency('gtk+-3.0')
 glib_dependency = dependency('glib-2.0', version: '>= 2.56.0')
 gobject_dependency = dependency('gobject-2.0', version: '>= 2.56.0')
@@ -40,6 +41,7 @@ fftw3_dependency = dependency('fftw3')
 if get_option('alsa')
   alsa_dependency = dependency('alsa')
   compiler.check_header('ladspa.h', required: true)
+  dssi_dependency = dependency('dssi')
 endif
 if get_option('jack')
   jack_dependency = dependency('jack')
