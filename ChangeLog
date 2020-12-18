@@ -1,3 +1,9 @@
+ags (3.7.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_pattern_dispose() to unset fields
+	* minor code improvements
+
 ags (3.7.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

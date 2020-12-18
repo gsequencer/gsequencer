@@ -742,9 +742,12 @@ ags_input_remove_synth_generator(AgsInput *input,
     return;
   }
 
-  input->synth_generator = g_list_remove(input->synth_generator,
-					 synth_generator);
-  g_object_unref(synth_generator);
+  if(g_list_find(input->synth_generator,
+		 synth_generator) != NULL){
+    input->synth_generator = g_list_remove(input->synth_generator,
+					   synth_generator);
+    g_object_unref(synth_generator);
+  }
 }
 
 /**
