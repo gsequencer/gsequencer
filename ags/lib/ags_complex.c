@@ -145,3 +145,46 @@ ags_complex_set(AgsComplex *ptr, double complex z)
   ptr->imag = cimag(z);
 }
 
+/**
+ * ags_complex_get:
+ * @ptr: the #AgsComplex
+ * @real: (out): the real part
+ * @imag: (out): the imaginary part
+ * 
+ * Get complex number.
+ *
+ * Returns: number as complex data type
+ *
+ * Since: 3.7.11
+ */
+void
+ags_complex_get_term(AgsComplex *ptr,
+		     gdouble *real,
+		     gdouble *imag)
+{
+  if(real != NULL){
+    real[0] = ptr->real;
+  }
+
+  if(imag != NULL){
+    imag[0] = ptr->imag;
+  }
+}
+
+/**
+ * ags_complex_set:
+ * @ptr: the #AgsComplex
+ * @real: the real part
+ * @imag: the imaginary part
+ * 
+ * Set complex number.
+ *
+ * Since: 3.7.11
+ */
+void ags_complex_set_term(AgsComplex *ptr,
+			  gdouble real,
+			  gdouble imag)
+{
+  ptr->real = real;
+  ptr->imag = imag;
+}

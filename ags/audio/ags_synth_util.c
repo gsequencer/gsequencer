@@ -26,6 +26,16 @@
 #include <complex.h>
 
 /**
+ * SECTION:ags_synth_util
+ * @short_description: synth util
+ * @title: AgsSynthUtil
+ * @section_id:
+ * @include: ags/audio/ags_synth_util.h
+ *
+ * Utility functions to compute synths.
+ */
+
+/**
  * ags_synth_util_get_xcross_count_s8:
  * @buffer: the buffer containing audio data
  * @buffer_size: the buffer size

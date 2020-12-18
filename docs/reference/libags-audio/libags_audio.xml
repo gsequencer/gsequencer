@@ -434,12 +434,12 @@
       <xi:include href="xml/ags_fx_peak_channel_processor.xml"/>
       <xi:include href="xml/ags_fx_peak_recycling.xml"/>
 
-      <xi:include href="xml/ags_fx_envelope_audio.xml"/>
-      <xi:include href="xml/ags_fx_envelope_audio_processor.xml"/>
-      <xi:include href="xml/ags_fx_envelope_audio_signal.xml"/>
-      <xi:include href="xml/ags_fx_envelope_channel.xml"/>
-      <xi:include href="xml/ags_fx_envelope_channel_processor.xml"/>
-      <xi:include href="xml/ags_fx_envelope_recycling.xml"/>
+      <xi:include href="xml/ags_fx_analyse_audio.xml"/>
+      <xi:include href="xml/ags_fx_analyse_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_analyse_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_analyse_channel.xml"/>
+      <xi:include href="xml/ags_fx_analyse_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_analyse_recycling.xml"/>
 
     </chapter>
 
@@ -463,12 +463,12 @@
       <xi:include href="xml/ags_fx_eq10_channel_processor.xml"/>
       <xi:include href="xml/ags_fx_eq10_recycling.xml"/>
 
-      <xi:include href="xml/ags_fx_analyse_audio.xml"/>
-      <xi:include href="xml/ags_fx_analyse_audio_processor.xml"/>
-      <xi:include href="xml/ags_fx_analyse_audio_signal.xml"/>
-      <xi:include href="xml/ags_fx_analyse_channel.xml"/>
-      <xi:include href="xml/ags_fx_analyse_channel_processor.xml"/>
-      <xi:include href="xml/ags_fx_analyse_recycling.xml"/>
+      <xi:include href="xml/ags_fx_envelope_audio.xml"/>
+      <xi:include href="xml/ags_fx_envelope_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_envelope_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_envelope_channel.xml"/>
+      <xi:include href="xml/ags_fx_envelope_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_envelope_recycling.xml"/>
 
     </chapter>
 

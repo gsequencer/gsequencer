@@ -443,10 +443,6 @@ ags_playback_dispose(GObject *gobject)
   if(playback->playback_domain != NULL){
     ags_playback_domain_remove_playback(playback->playback_domain,
 					playback, ((AGS_IS_OUTPUT(playback->channel)) ? AGS_TYPE_OUTPUT: AGS_TYPE_INPUT));
-    
-    g_object_unref(playback->playback_domain);
-
-    playback->playback_domain = NULL;
   }
 
   /* channel */
