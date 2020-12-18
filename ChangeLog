@@ -6,10 +6,18 @@ ags (3.8.0)
 	* TODO:JK: implemented AgsToolbar
 	* fixed deprecated Gtk+-3.0 symbols?
 
+ags (3.7.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_pattern_dispose() to unset fields
+	* minor code improvements
+
 ags (3.7.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* improved API reference and fixed namespace
+	* implemented ags_complex_get_term() and ags_complex_set_term() to query by real and imaginary part
+	* improved API reference and fixed namespace and object tree
+	* improved API reference and fixed missing sections
 
 ags (3.7.10)
 

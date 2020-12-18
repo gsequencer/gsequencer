@@ -547,6 +547,8 @@ ags_pattern_dispose(GObject *gobject)
   /* channel */
   if(pattern->channel != NULL){
     g_object_unref(G_OBJECT(pattern->channel));
+
+    pattern->channel = NULL;
   }
 
   /* timestamp */
@@ -554,6 +556,8 @@ ags_pattern_dispose(GObject *gobject)
     g_object_run_dispose(G_OBJECT(pattern->timestamp));
     
     g_object_unref(G_OBJECT(pattern->timestamp));
+
+    pattern->timestamp = NULL;
   }
 
   /* port */

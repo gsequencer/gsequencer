@@ -42,7 +42,7 @@
 
 /**
  * SECTION:ags_sfz_synth_util
- * @short_description: frequency modulation synth util
+ * @short_description: SFZ synth util
  * @title: AgsSFZSynthUtil
  * @section_id:
  * @include: ags/audio/ags_sfz_synth_util.h

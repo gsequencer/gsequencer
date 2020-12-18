@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.7.10\n"
+"Project-Id-Version: gsequencer 3.7.12\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-12-17 17:07+0100\n"
+"POT-Creation-Date: 2020-12-18 21:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -429,15 +429,15 @@ msgstr ""
 msgid "destroy"
 msgstr ""
 
-#: ags/X/ags_machine.c:3493 ags/X/ags_machine_callbacks.c:256
+#: ags/X/ags_machine.c:3493 ags/X/ags_machine_callbacks.c:259
 msgid "rename"
 msgstr ""
 
-#: ags/X/ags_machine.c:3496 ags/X/ags_machine_callbacks.c:320
+#: ags/X/ags_machine.c:3496 ags/X/ags_machine_callbacks.c:323
 msgid "rename audio"
 msgstr ""
 
-#: ags/X/ags_machine.c:3499 ags/X/ags_machine_callbacks.c:403
+#: ags/X/ags_machine.c:3499 ags/X/ags_machine_callbacks.c:406
 msgid "reposition audio"
 msgstr ""
 
@@ -871,32 +871,35 @@ msgstr ""
 
 #: ags/X/editor/ags_automation_toolbar.c:127
 #: ags/X/editor/ags_notation_toolbar.c:123 ags/X/editor/ags_sheet_toolbar.c:109
-#: ags/X/editor/ags_wave_toolbar.c:126
+#: ags/X/editor/ags_toolbar.c:960 ags/X/editor/ags_wave_toolbar.c:126
 msgid "Position"
 msgstr ""
 
 #: ags/X/editor/ags_automation_toolbar.c:165
 #: ags/X/editor/ags_notation_toolbar.c:162 ags/X/editor/ags_sheet_toolbar.c:180
-#: ags/X/editor/ags_wave_toolbar.c:139
+#: ags/X/editor/ags_toolbar.c:1011 ags/X/editor/ags_wave_toolbar.c:139
 msgid "Select"
 msgstr ""
 
 #: ags/X/editor/ags_automation_toolbar.c:235
-#: ags/X/editor/ags_notation_toolbar.c:246 ags/X/editor/ags_wave_toolbar.c:203
+#: ags/X/editor/ags_notation_toolbar.c:246 ags/X/editor/ags_toolbar.c:1355
+#: ags/X/editor/ags_wave_toolbar.c:203
 msgid "Tool"
 msgstr ""
 
 #: ags/X/editor/ags_automation_toolbar.c:263
-#: ags/X/editor/ags_notation_toolbar.c:274 ags/X/editor/ags_wave_toolbar.c:232
+#: ags/X/editor/ags_notation_toolbar.c:274 ags/X/editor/ags_toolbar.c:1387
+#: ags/X/editor/ags_wave_toolbar.c:232
 msgid "Zoom"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:289
+#: ags/X/editor/ags_automation_toolbar.c:289 ags/X/editor/ags_toolbar.c:1460
 msgid "Port"
 msgstr ""
 
 #: ags/X/editor/ags_automation_toolbar.c:339
-#: ags/X/editor/ags_notation_toolbar.c:299 ags/X/editor/ags_wave_toolbar.c:257
+#: ags/X/editor/ags_notation_toolbar.c:299 ags/X/editor/ags_toolbar.c:1422
+#: ags/X/editor/ags_wave_toolbar.c:257
 msgid "Opacity"
 msgstr ""
 
@@ -911,22 +914,24 @@ msgid "ramp accelerations"
 msgstr ""
 
 #: ags/X/editor/ags_automation_toolbar.c:1328
-#: ags/X/editor/ags_notation_toolbar.c:533 ags/X/editor/ags_wave_toolbar.c:437
+#: ags/X/editor/ags_notation_toolbar.c:533 ags/X/editor/ags_toolbar.c:1670
+#: ags/X/editor/ags_toolbar.c:1679 ags/X/editor/ags_toolbar.c:1696
+#: ags/X/editor/ags_toolbar.c:1709 ags/X/editor/ags_wave_toolbar.c:437
 msgid "position cursor"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1334
+#: ags/X/editor/ags_automation_toolbar.c:1334 ags/X/editor/ags_toolbar.c:1643
 #: ags/X/editor/ags_wave_toolbar.c:443
 msgid "enable all lines"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1337
+#: ags/X/editor/ags_automation_toolbar.c:1337 ags/X/editor/ags_toolbar.c:1649
 #: ags/X/editor/ags_wave_toolbar.c:446
 msgid "disable all lines"
 msgstr ""
 
 #: ags/X/editor/ags_crop_note_dialog.c:185
-#: ags/X/editor/ags_notation_toolbar.c:527
+#: ags/X/editor/ags_notation_toolbar.c:527 ags/X/editor/ags_toolbar.c:1662
 msgid "crop notes"
 msgstr ""
 
@@ -1046,7 +1051,7 @@ msgid "shift piano"
 msgstr ""
 
 #: ags/X/editor/ags_move_note_dialog.c:185
-#: ags/X/editor/ags_notation_toolbar.c:524
+#: ags/X/editor/ags_notation_toolbar.c:524 ags/X/editor/ags_toolbar.c:1658
 msgid "move notes"
 msgstr ""
 
@@ -1067,27 +1072,29 @@ msgid "current note: "
 msgstr ""
 
 #: ags/X/editor/ags_notation_toolbar.c:205 ags/X/editor/ags_sheet_toolbar.c:208
+#: ags/X/editor/ags_toolbar.c:1570
 msgid "match audio channel"
 msgstr ""
 
 #: ags/X/editor/ags_notation_toolbar.c:212 ags/X/editor/ags_sheet_toolbar.c:215
+#: ags/X/editor/ags_toolbar.c:1588
 msgid "no duplicates"
 msgstr ""
 
-#: ags/X/editor/ags_notation_toolbar.c:234
+#: ags/X/editor/ags_notation_toolbar.c:234 ags/X/editor/ags_toolbar.c:1145
 msgid "Invert"
 msgstr ""
 
 #: ags/X/editor/ags_notation_toolbar.c:530
-#: ags/X/editor/ags_select_note_dialog.c:184
+#: ags/X/editor/ags_select_note_dialog.c:184 ags/X/editor/ags_toolbar.c:1666
 msgid "select notes"
 msgstr ""
 
-#: ags/X/editor/ags_notation_toolbar.c:539
+#: ags/X/editor/ags_notation_toolbar.c:539 ags/X/editor/ags_toolbar.c:1631
 msgid "enable all audio channels"
 msgstr ""
 
-#: ags/X/editor/ags_notation_toolbar.c:542
+#: ags/X/editor/ags_notation_toolbar.c:542 ags/X/editor/ags_toolbar.c:1637
 msgid "disable all audio channels"
 msgstr ""
 
@@ -1221,6 +1228,38 @@ msgstr ""
 
 #: ags/X/editor/ags_sheet_toolbar.c:158
 msgid "1/32"
+msgstr ""
+
+#: ags/X/editor/ags_toolbar.c:977
+msgid "Edit"
+msgstr ""
+
+#: ags/X/editor/ags_toolbar.c:994
+msgid "Clear"
+msgstr ""
+
+#: ags/X/editor/ags_toolbar.c:1163
+msgid "Copy"
+msgstr ""
+
+#: ags/X/editor/ags_toolbar.c:1181
+msgid "Cut"
+msgstr ""
+
+#: ags/X/editor/ags_toolbar.c:1199
+msgid "Paste"
+msgstr ""
+
+#: ags/X/editor/ags_toolbar.c:1688
+msgid "select acceleration"
+msgstr ""
+
+#: ags/X/editor/ags_toolbar.c:1692
+msgid "ramp acceleration"
+msgstr ""
+
+#: ags/X/editor/ags_toolbar.c:1705
+msgid "select buffer"
 msgstr ""
 
 #: ags/X/editor/ags_wave_toolbar.c:434

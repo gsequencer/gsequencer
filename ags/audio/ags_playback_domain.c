@@ -658,6 +658,10 @@ ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
       g_object_ref(playback);
       playback_domain->output_playback = g_list_append(playback_domain->output_playback,
 						       playback);
+
+      g_object_set(playback,
+		   "playback-domain", playback_domain,
+		   NULL);
     }      
   }else if(g_type_is_a(channel_type,
 		       AGS_TYPE_INPUT)){
@@ -666,6 +670,10 @@ ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
       g_object_ref(playback);
       playback_domain->input_playback = g_list_append(playback_domain->input_playback,
 						      playback);
+
+      g_object_set(playback,
+		   "playback-domain", playback_domain,
+		   NULL);
     }
   }
 
@@ -701,14 +709,30 @@ ags_playback_domain_remove_playback(AgsPlaybackDomain *playback_domain,
   
   if(g_type_is_a(channel_type,
 		 AGS_TYPE_OUTPUT)){
-    playback_domain->output_playback = g_list_remove(playback_domain->output_playback,
-						     playback);
-    g_object_unref(playback);
+    if(g_list_find(playback_domain->output_playback,
+		   playback) != NULL){
+      playback_domain->output_playback = g_list_remove(playback_domain->output_playback,
+						       playback);
+      
+      g_object_set(playback,
+		   "playback-domain", NULL,
+		   NULL);
+      
+      g_object_unref(playback);
+    }
   }else if(g_type_is_a(channel_type,
 		       AGS_TYPE_INPUT)){
-    playback_domain->input_playback = g_list_remove(playback_domain->input_playback,
-						    playback);
-    g_object_unref(playback);
+    if(g_list_find(playback_domain->input_playback,
+		   playback) != NULL){
+      playback_domain->input_playback = g_list_remove(playback_domain->input_playback,
+						      playback);
+      
+      g_object_set(playback,
+		   "playback-domain", NULL,
+		   NULL);
+
+      g_object_unref(playback);
+    }
   }
   
   g_rec_mutex_unlock(playback_domain_mutex);

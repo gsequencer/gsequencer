@@ -51,6 +51,13 @@ void ags_complex_free(AgsComplex *ptr);
 double _Complex ags_complex_get(AgsComplex *ptr);
 void ags_complex_set(AgsComplex *ptr, double _Complex z);
 
+void ags_complex_get_term(AgsComplex *ptr,
+			  gdouble *real,
+			  gdouble *imag);
+void ags_complex_set_term(AgsComplex *ptr,
+			  gdouble real,
+			  gdouble imag);
+
 G_END_DECLS
 
 #endif /*__AGS_COMPLEX__*/

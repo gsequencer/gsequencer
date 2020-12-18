@@ -45,6 +45,8 @@ ags_complex_copy
 ags_complex_free
 ags_complex_get
 ags_complex_set
+ags_complex_get_term
+ags_complex_set_term
 ags_solver_vector_get_type
 ags_solver_vector_insert_polynomial
 ags_solver_vector_remove_polynomial
