@@ -34,7 +34,7 @@
 
 /**
  * SECTION:ags_sf2_synth_util
- * @short_description: frequency modulation synth util
+ * @short_description: SF2 synth util
  * @title: AgsSF2SynthUtil
  * @section_id:
  * @include: ags/audio/ags_sf2_synth_util.h

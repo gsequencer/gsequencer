@@ -24,6 +24,16 @@
 
 #include <ags/audio/ags_sound_enums.h>
 
+/**
+ * SECTION:ags_sound_enums
+ * @short_description: sound enumerations
+ * @title: AgsSoundEnums
+ * @section_id:
+ * @include: ags/audio/ags_sound_enums.h
+ *
+ * Enumerations related to sound.
+ */
+
 GType
 ags_sound_ability_flags_get_type()
 {
