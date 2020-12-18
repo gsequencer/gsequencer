@@ -27,6 +27,7 @@ gnome = import('gnome')
 compiler = meson.get_compiler('c')
 # REMINDER: all dependencies have to be defined here globally
 # Just to prevent double check
+common_dependencies = []
 gtk_dependency = dependency('gtk+-3.0')
 glib_dependency = dependency('glib-2.0', version: '>= 2.56.0')
 gobject_dependency = dependency('gobject-2.0', version: '>= 2.56.0')
@@ -40,6 +41,7 @@ fftw3_dependency = dependency('fftw3')
 if get_option('alsa')
   alsa_dependency = dependency('alsa')
   compiler.check_header('ladspa.h', required: true)
+  dssi_dependency = dependency('dssi')
 endif
 if get_option('jack')
   jack_dependency = dependency('jack')
