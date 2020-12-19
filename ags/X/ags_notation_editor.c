@@ -252,7 +252,7 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   notation_editor->soundcard = NULL;
 
   /* notation toolbar */
-  notation_editor->notation_toolbar = ags_notation_toolbar_new();
+  notation_editor->notation_toolbar = ags_composite_notation_toolbar_new();
   gtk_box_pack_start((GtkBox *) notation_editor,
 		     (GtkWidget *) notation_editor->notation_toolbar,
 		     FALSE, FALSE,

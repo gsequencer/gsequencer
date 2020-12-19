@@ -188,6 +188,19 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
 		     0);
 
   /* machine selector */
+  viewport = (GtkViewport *) gtk_viewport_new(NULL,
+					      NULL);
+  g_object_set(viewport,
+	       "shadow-type", GTK_SHADOW_NONE,
+	       NULL);
+  gtk_paned_pack1((GtkPaned *) composite_editor->paned,
+		  (GtkWidget *) viewport,
+		  FALSE, TRUE);
+
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  gtk_container_add(GTK_CONTAINER(viewport),
+		    GTK_WIDGET(scrolled_window));
+
   composite_editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
 						    "homogeneous", FALSE,
 						    "spacing", 0,

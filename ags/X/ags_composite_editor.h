@@ -33,7 +33,7 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_composite_edit.h>
 
-#include <ags/X/editor/ags_toolbar.h>
+#include <ags/X/editor/ags_composite_toolbar.h>
 #include <ags/X/editor/ags_machine_selector.h>
 
 G_BEGIN_DECLS
@@ -75,7 +75,7 @@ struct _AgsCompositeEditor
 
   AgsUUID *uuid;
 
-  AgsToolbar *toolbar;
+  AgsCompositeToolbar *toolbar;
   
   GtkPaned *paned;
   
