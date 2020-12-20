@@ -1,4 +1,4 @@
-ags (3.7.12)
+ags (3.7.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented ags_playback_domain_insert_playback()
