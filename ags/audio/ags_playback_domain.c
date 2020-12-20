@@ -692,9 +692,9 @@ ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
  * Since: 3.7.13
  */
 void
-ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
-				 GObject *playback, GType channel_type,
-				 gint position)
+ags_playback_domain_insert_playback(AgsPlaybackDomain *playback_domain,
+				    GObject *playback, GType channel_type,
+				    gint position)
 {
   GRecMutex *playback_domain_mutex;
   
