@@ -22,7 +22,7 @@
   <title>The automation window</title>
   <mediaobject>
     <imageobject>
-      <imagedata fileref="../images/ags_automation_window_drum.png" />
+      <imagedata width="100%" scalefit="1" fileref="../images/ags_automation_window_drum.png" />
     </imageobject>
     <caption>
       <para>
@@ -89,7 +89,7 @@
     <title>Automation toolbar</title>
     <mediaobject>
       <imageobject>
-	<imagedata fileref="../images/ags-automation-toolbar.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags-automation-toolbar.png" />
       </imageobject>
       <caption>
 	<para>
@@ -179,7 +179,7 @@
       <title>Position cursor</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_position_automation_cursor_dialog.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_position_automation_cursor_dialog.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -216,7 +216,7 @@
       <title>Select accelerations</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_select_accelerations_dialog.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_select_accelerations_dialog.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -272,7 +272,7 @@
       <title>Ramp accelerations</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_ramp_accelerations_dialog.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_ramp_accelerations_dialog.png" />
 	</imageobject>
 	<caption>
 	  <para>

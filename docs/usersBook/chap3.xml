@@ -44,7 +44,7 @@
     <title>Toolbar</title>
     <mediaobject>
       <imageobject>
-	<imagedata fileref="../images/ags-toolbar.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags-toolbar.png" />
       </imageobject>
       <caption>
 	<para>
@@ -142,7 +142,7 @@
       <title>Position cursor</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_position_notation_cursor_dialog.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_position_notation_cursor_dialog.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -185,7 +185,7 @@
       <title>Move notes</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_move_notes_dialog.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_move_notes_dialog.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -242,7 +242,7 @@
       <title>Crop notes</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_crop_notes_dialog.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_crop_notes_dialog.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -307,7 +307,7 @@
       <title>Select notes</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_select_notes_dialog.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_select_notes_dialog.png" />
 	</imageobject>
 	<caption>
 	  <para>

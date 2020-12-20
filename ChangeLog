@@ -1,6 +1,11 @@
 ags (3.7.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_playback_domain_insert_playback()
+
+ags (3.7.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed ags_pattern_dispose() to unset fields
 	* minor code improvements
 

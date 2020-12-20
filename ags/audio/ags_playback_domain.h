@@ -93,6 +93,9 @@ AgsThread* ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_doma
 /* add and remove */
 void ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
 				      GObject *playback, GType channel_type);
+void ags_playback_domain_insert_playback(AgsPlaybackDomain *playback_domain,
+					 GObject *playback, GType channel_type,
+					 gint position);
 void ags_playback_domain_remove_playback(AgsPlaybackDomain *playback_domain,
 					 GObject *playback, GType channel_type);
 

@@ -5741,8 +5741,9 @@ ags_audio_set_audio_channels_grow(AgsAudio *audio,
       channel->line = j * audio_channels + i;
 
       playback = (AgsPlayback *) channel->playback;
-      ags_playback_domain_add_playback(playback_domain,
-				       (GObject *) playback, channel_type);
+      ags_playback_domain_insert_playback(playback_domain,
+					  (GObject *) playback, channel_type,
+					  channel->line);
 
       if(add_pattern){
 	AgsPattern *pattern;
@@ -6786,8 +6787,9 @@ ags_audio_set_pads_grow(AgsAudio *audio,
       channel->line = j * audio_channels + i;
 
       playback = (AgsPlayback *) channel->playback;
-      ags_playback_domain_add_playback(playback_domain,
-				       (GObject *) playback, channel_type);
+      ags_playback_domain_insert_playback(playback_domain,
+					  (GObject *) playback, channel_type,
+					  channel->line);
 
       if(add_pattern){
 	AgsPattern *pattern;
