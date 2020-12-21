@@ -299,17 +299,17 @@ if get_option('online_help') and xsltproc.found()
   developer_manual_dir = join_paths(meson.project_build_root(), 'html/developer-manual/')
   osc_manual_dir = join_paths(meson.project_build_root(), 'html/osc-manual/')
 
-  run_target('ags-user-docs', command: [ xsltproc, '--nonet', '--xinclude', '--stringparam', 'html.stylesheet', '"style.css"', '-o', user_manual_dir,  'http://docbook.sourceforge.net/release/xsl/current/htmlhelp/htmlhelp.xsl', 'docs/usersBook.xml' ])
-  run_target('ags-developer-docs', command: [ xsltproc, '--nonet', '--xinclude', '--stringparam', 'html.stylesheet', '"style.css"', '-o', developer_manual_dir, 'http://docbook.sourceforge.net/release/xsl/current/htmlhelp/htmlhelp.xsl', 'docs/developersBook.xml' ])
-  run_target('ags-osc-docs', command: [ xsltproc, '--nonet', '--xinclude', '--stringparam', 'html.stylesheet', '"style.css"', '-o', osc_manual_dir, 'http://docbook.sourceforge.net/release/xsl/current/htmlhelp/htmlhelp.xsl', 'docs/oscBook.xml' ])
+  run_target('ags-user-docs', command: [ xsltproc, '--nonet', '--xinclude', '--stringparam', 'html.stylesheet', '"custom.css"', '--stringparam', 'htmlhelp.show.menu', '"1"', '--stringparam', 'suppress.navigation', '"0"', '-o', user_manual_dir,  'http://docbook.sourceforge.net/release/xsl/current/htmlhelp/htmlhelp.xsl', 'docs/usersBook.xml' ])
+  run_target('ags-developer-docs', command: [ xsltproc, '--nonet', '--xinclude', '--stringparam', 'html.stylesheet', '"custom.css"', '--stringparam', 'htmlhelp.show.menu', '"1"', '--stringparam', 'suppress.navigation', '"0"', '-o', developer_manual_dir, 'http://docbook.sourceforge.net/release/xsl/current/htmlhelp/htmlhelp.xsl', 'docs/developersBook.xml' ])
+  run_target('ags-osc-docs', command: [ xsltproc, '--nonet', '--xinclude', '--stringparam', 'html.stylesheet', '"custom.css"', '--stringparam', 'htmlhelp.show.menu', '"1"', '--stringparam', 'suppress.navigation', '"0"', '-o', osc_manual_dir, 'http://docbook.sourceforge.net/release/xsl/current/htmlhelp/htmlhelp.xsl', 'docs/oscBook.xml' ])
 
   install_subdir(meson.project_build_root() / 'html/user-manual', install_dir: gsequencer_docdir)
   install_subdir(meson.project_build_root() / 'html/developer-manual', install_dir: gsequencer_docdir)
   install_subdir(meson.project_build_root() / 'html/osc-manual', install_dir: gsequencer_docdir)
 
-  install_data(['docs/style.css'], install_dir: gsequencer_docdir / 'user-manual')
-  install_data(['docs/style.css'], install_dir: gsequencer_docdir / 'developer-manual')
-  install_data(['docs/style.css'], install_dir: gsequencer_docdir / 'osc-manual')
+  install_data(['docs/custom.css'], install_dir: gsequencer_docdir / 'user-manual')
+  install_data(['docs/custom.css'], install_dir: gsequencer_docdir / 'developer-manual')
+  install_data(['docs/custom.css'], install_dir: gsequencer_docdir / 'osc-manual')
 
   install_data(user_doc_images, install_dir: gsequencer_docdir / 'images')
   install_data(user_doc_images_adwaita, install_dir: gsequencer_docdir / 'images/adwaita')
