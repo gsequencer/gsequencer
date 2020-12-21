@@ -6414,6 +6414,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	if(channel != NULL){
 	  g_object_ref(channel);
 	}
+
+	next_channel = NULL;
 	
 	for(j = 0; j < audio_channels - audio_channels_old; j++){
 	  ags_channel_set_ability_flags(channel, ability_flags);
@@ -6421,8 +6423,10 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	  /* iterate */
 	  next_channel = ags_channel_next(channel);
 
-	  g_object_unref(channel);
-
+	  if(channel != NULL){
+	    g_object_unref(channel);
+	  }
+	  
 	  channel = next_channel;
 	}
 
@@ -6454,14 +6458,18 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	  g_object_ref(channel);
 	}
 	
+	next_channel = NULL;
+	
 	for(j = 0; j < audio_channels - audio_channels_old; j++){
 	  ags_channel_set_ability_flags(channel, ability_flags);
 	  
 	  /* iterate */
 	  next_channel = ags_channel_next(channel);
 
-	  g_object_unref(channel);
-
+	  if(channel != NULL){
+	    g_object_unref(channel);
+	  }
+	  
 	  channel = next_channel;
 	}
 
@@ -7394,13 +7402,17 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	    /* iterate */
 	    next_channel = ags_channel_next(channel);
 
-	    g_object_unref(channel);
-
+	    if(channel != NULL){
+	      g_object_unref(channel);
+	    }
+	    
 	    channel = next_channel;
 	  }
 	}
 
-	g_object_unref(start_channel);
+	if(start_channel != NULL){
+	  g_object_unref(start_channel);
+	}
       }else if(pads == 0){	
 	GList *start_list, *list;
       
@@ -7538,13 +7550,17 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	    /* iterate */
 	    next_channel = ags_channel_next(channel);
 
-	    g_object_unref(channel);
-
+	    if(channel != NULL){
+	      g_object_unref(channel);
+	    }
+	    
 	    channel = next_channel;
 	  }
 	}
 
-	g_object_unref(start_channel);
+	if(start_channel != NULL){
+	  g_object_unref(start_channel);
+	}
       }else if(pads == 0){
 	GList *start_list, *list;
 	
