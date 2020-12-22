@@ -1,3 +1,8 @@
+ags (3.7.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed literal comparision in ags_apply_sound_config.c
+
 ags (3.7.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
