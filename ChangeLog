@@ -3,7 +3,7 @@ ags (3.8.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented AgsCompositeEditor
 	* TODO:JK: implemented AgsCompositeEdit
-	* TODO:JK: implemented AgsToolbar
+	* TODO:JK: implemented AgsCompositeToolbar
 	* fixed deprecated Gtk+-3.0 symbols?
 
 ags (3.7.16)
