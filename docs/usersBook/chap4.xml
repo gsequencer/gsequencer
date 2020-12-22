@@ -20,7 +20,7 @@
   <title>The navigation</title>
   <mediaobject>
     <imageobject>
-      <imagedata fileref="../images/ags_navigation.png" />
+      <imagedata width="100%" scalefit="1" fileref="../images/ags_navigation.png" />
     </imageobject>
     <caption>
       <para>

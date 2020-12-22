@@ -1,3 +1,24 @@
+ags (3.7.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements
+
+ags (3.7.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added htmlhelp navigation and custom.css
+
+ags (3.7.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed compiler error
+
+ags (3.7.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_playback_domain_insert_playback()
+	* improved user's handbook images with default width
+
 ags (3.7.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

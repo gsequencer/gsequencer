@@ -415,6 +415,9 @@ manpages = \
 	gsequencer.1.xml \
 	midi2xml.1.xml
 
+EXTRA_DIST += \
+	docs/custom.css
+
 userdoc = \
 	docs/usersBook.xml \
 	docs/appa.xml \
@@ -2849,9 +2852,9 @@ html:
 	mkdir -p $(top_builddir)/html/developer-docs
 	mkdir -p $(top_builddir)/html/user-docs
 	mkdir -p $(top_builddir)/html/osc-docs
-	xsltproc --output $(top_builddir)/html/user-docs/ --xinclude $(HTMLHELP_XSL) $(top_srcdir)/docs/usersBook.xml
-	xsltproc --output $(top_builddir)/html/developer-docs/ --xinclude $(HTMLHELP_XSL) $(top_srcdir)/docs/developersBook.xml
-	xsltproc --output $(top_builddir)/html/osc-docs/ --xinclude $(HTMLHELP_XSL) $(top_srcdir)/docs/oscBook.xml
+	xsltproc --output $(top_builddir)/html/user-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_srcdir)/docs/usersBook.xml
+	xsltproc --output $(top_builddir)/html/developer-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_srcdir)/docs/developersBook.xml
+	xsltproc --output $(top_builddir)/html/osc-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_srcdir)/docs/oscBook.xml
 	mkdir -p $(top_srcdir)/docs/reference/libags/libags-html
 	mkdir -p $(top_srcdir)/docs/reference/libags-audio/libags-audio-html
 	mkdir -p $(top_srcdir)/docs/reference/libags-gui/libags-gui-html
@@ -3021,6 +3024,9 @@ if AGS_WITH_SINGLE_DOCDIR
 	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/user-manual/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(docdir)/developer-manual/
 	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)/$(docdir)/osc-manual/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(docdir)/developer-manual/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(docdir)/user-manual/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(docdir)/osc-manual/
 else
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
 	install -c -p -m 644 $(userdocadwaitaimages) $(DESTDIR)/$(docdir)/images/adwaita/
@@ -3028,6 +3034,9 @@ else
 	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/html/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
 	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(docdir)/html/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server/
 endif
 if ENABLE_GTK_DOC
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/libags-html/* $(DESTDIR)/$(LIBAGS_API_DIR)

@@ -84,7 +84,7 @@
       <title>Output tab</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_machine_properties-output.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_machine_properties-output.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -106,7 +106,7 @@
       <title>Input tab</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_machine_properties-input.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_machine_properties-input.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -124,7 +124,7 @@
       <title>Link input tab</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_machine_properties-link_input.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_machine_properties-link_input.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -143,7 +143,7 @@
       <title>Resize channels tab</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_machine_properties-resize_channels.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_machine_properties-resize_channels.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -161,7 +161,7 @@
       <title>Plugin browser dialog</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_ladspa_browser.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_ladspa_browser.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -189,7 +189,7 @@
       <title>Audio connection output line</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_audio_connection_output_line.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_audio_connection_output_line.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -208,7 +208,7 @@
       <title>Audio connection output bulk</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_audio_connection_output_bulk.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_audio_connection_output_bulk.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -226,7 +226,7 @@
       <title>Audio connection input line</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_audio_connection_input_line.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_audio_connection_input_line.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -245,7 +245,7 @@
       <title>Audio connection input bulk</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_audio_connection_input_bulk.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_audio_connection_input_bulk.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -272,7 +272,7 @@
       <title>Envelope editor</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_machine_envelope_editor.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_machine_envelope_editor.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -290,7 +290,7 @@
       <title>Envelope info</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_machine_envelope_info.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_machine_envelope_info.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -308,7 +308,7 @@
       <title>Envelope pattern</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_machine_envelope_pattern.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_machine_envelope_pattern.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -329,7 +329,7 @@
     <title>MIDI dialog</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_midi_dialog.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_midi_dialog.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -347,7 +347,7 @@
     <title>Panel</title>
     <mediaobject>
       <imageobject>
-	<imagedata fileref="../images/ags_panel.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_panel.png" />
       </imageobject>
       <caption>
 	<para>
@@ -370,7 +370,7 @@
     <title>Mixer</title>
     <mediaobject>
       <imageobject>
-	<imagedata fileref="../images/ags_mixer.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_mixer.png" />
       </imageobject>
       <caption>
 	<para>
@@ -393,7 +393,7 @@
     <title>Spectrometer</title>
     <mediaobject>
       <imageobject>
-	<imagedata fileref="../images/ags_spectrometer.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_spectrometer.png" />
       </imageobject>
       <caption>
 	<para>
@@ -410,7 +410,7 @@
     <title>Equalizer10</title>
     <mediaobject>
       <imageobject>
-	<imagedata fileref="../images/ags_equalizer10.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_equalizer10.png" />
       </imageobject>
       <caption>
 	<para>
@@ -427,7 +427,7 @@
     <title>Drum</title>
     <mediaobject>
       <imageobject>
-	<imagedata fileref="../images/ags_drum.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_drum.png" />
       </imageobject>
       <caption>
 	<para>
@@ -576,7 +576,7 @@
     <title>Matrix</title>
     <mediaobject>
       <imageobject>
-	<imagedata fileref="../images/ags_matrix.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_matrix.png" />
       </imageobject>
       <caption>
 	<para>
@@ -707,7 +707,7 @@
     <title>Synth</title>
     <mediaobject>
       <imageobject>
-	<imagedata fileref="../images/ags_synth.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_synth.png" />
       </imageobject>
       <caption>
 	<para>
@@ -726,7 +726,7 @@
     <title>FM Synth</title>
     <mediaobject>
       <imageobject>
-	<imagedata fileref="../images/ags_fm_synth.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_fm_synth.png" />
       </imageobject>
       <caption>
 	<para>
@@ -745,7 +745,7 @@
     <title>Syncsynth</title>
     <mediaobject>
       <imageobject>
-	<imagedata fileref="../images/ags_syncsynth.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_syncsynth.png" />
       </imageobject>
       <caption>
 	<para>
@@ -765,7 +765,7 @@
     <title>FM Syncsynth</title>
     <mediaobject>
       <imageobject>
-	<imagedata fileref="../images/ags_fm_syncsynth.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_fm_syncsynth.png" />
       </imageobject>
       <caption>
 	<para>
@@ -785,7 +785,7 @@
     <title>FFPlayer</title>
     <mediaobject>
       <imageobject>
-	<imagedata fileref="../images/ags_ffplayer.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_ffplayer.png" />
       </imageobject>
       <caption>
 	<para>
@@ -809,7 +809,7 @@
     <title>Sampler</title>
     <mediaobject>
       <imageobject>
-	<imagedata fileref="../images/ags_pitch_sampler.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_pitch_sampler.png" />
       </imageobject>
       <caption>
 	<para>
@@ -858,7 +858,7 @@
     <title>Audiorec</title>
     <mediaobject>
       <imageobject>
-	<imagedata fileref="../images/ags_audiorec.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags_audiorec.png" />
       </imageobject>
       <caption>
 	<para>
