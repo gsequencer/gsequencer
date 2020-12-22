@@ -1271,7 +1271,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 
     if(feature != NULL){
       for(; feature[0] != NULL; feature++){
-	if(feature[0]->URI == LV2_OPTIONS__options){
+	if(!g_strcmp0(feature[0]->URI, LV2_OPTIONS__options)){
 	  LV2_Options_Option *options;
 
 	  guint i;

@@ -6,6 +6,11 @@ ags (3.8.0)
 	* TODO:JK: implemented AgsCompositeToolbar
 	* fixed deprecated Gtk+-3.0 symbols?
 
+ags (3.7.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed literal comparision in ags_apply_sound_config.c
+
 ags (3.7.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
