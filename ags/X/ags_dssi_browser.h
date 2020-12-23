@@ -47,31 +47,31 @@ typedef enum{
 }AgsDssiBrowserFlags;
 struct _AgsDssiBrowser
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
   
   gchar *path;
 
-  GtkHBox *plugin;
+  GtkBox *plugin;
 
   GtkComboBox *filename;
   GtkComboBox *effect;
 
-  GtkVBox *description;
+  GtkBox *description;
 
   GtkLabel *label;
   GtkLabel *maker;
   GtkLabel *copyright;
 
-  GtkTable *port_table;
+  GtkGrid *port_grid;
   
   GtkWidget *preview;
 };
 
 struct _AgsDssiBrowserClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_dssi_browser_get_type(void);

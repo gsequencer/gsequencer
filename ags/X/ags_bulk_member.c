@@ -578,12 +578,14 @@ ags_bulk_member_set_property(GObject *gobject,
 		     "button-width", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_WIDTH),
 		     "button-height", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_HEIGHT),
 		     NULL);
-      }else if(GTK_IS_VSCALE(new_child)){
-	gtk_widget_set_size_request(new_child,
-				    gui_scale_factor * 16, gui_scale_factor * 100);
-      }else if(GTK_IS_HSCALE(new_child)){
-	gtk_widget_set_size_request(new_child,
-				    gui_scale_factor * 100, gui_scale_factor * 16);
+      }else if(GTK_IS_SCALE(new_child)){
+	if(gtk_orientable_get_orientation(GTK_ORIENTABLE(new_child)) == GTK_ORIENTATION_VERTICAL){
+	  gtk_widget_set_size_request(new_child,
+				      gui_scale_factor * 16, gui_scale_factor * 100);
+	}else{
+	  gtk_widget_set_size_request(new_child,
+				      gui_scale_factor * 100, gui_scale_factor * 16);
+	}
       }else if(AGS_IS_VINDICATOR(new_child)){
 	g_object_set(new_child,
 		     "segment-width", (guint) (gui_scale_factor * AGS_VINDICATOR_DEFAULT_SEGMENT_WIDTH),
@@ -608,7 +610,7 @@ ags_bulk_member_set_property(GObject *gobject,
     break;
   case PROP_WIDGET_LABEL:
     {
-      gchar *label;
+      const gchar *label;
 
       label = g_value_get_string(value);
 
@@ -668,7 +670,7 @@ ags_bulk_member_set_property(GObject *gobject,
     break;
   case PROP_PLUGIN_NAME:
     {
-      gchar *plugin_name;
+      const gchar *plugin_name;
 
       plugin_name = g_value_get_string(value);
 
@@ -686,7 +688,7 @@ ags_bulk_member_set_property(GObject *gobject,
   case PROP_FILENAME:
     {
       gchar *str;
-      gchar *filename;
+      const gchar *filename;
 
       filename = g_value_get_string(value);
 
@@ -720,7 +722,7 @@ ags_bulk_member_set_property(GObject *gobject,
     break;
   case PROP_EFFECT:
     {
-      gchar *effect;
+      const gchar *effect;
 
       effect = g_value_get_string(value);
 
@@ -737,7 +739,7 @@ ags_bulk_member_set_property(GObject *gobject,
     break;
   case PROP_SPECIFIER:
     {
-      gchar *specifier;
+      const gchar *specifier;
 
       specifier = g_value_get_string(value);
 
@@ -763,7 +765,7 @@ ags_bulk_member_set_property(GObject *gobject,
     break;
   case PROP_CONTROL_PORT:
     {
-      gchar *control_port;
+      const gchar *control_port;
 
       control_port = g_value_get_string(value);
 
@@ -798,8 +800,6 @@ ags_bulk_member_set_property(GObject *gobject,
     break;
   case PROP_STEP_COUNT:
     {
-      GtkWidget *child;
-      
       gdouble step_count;
 
       step_count = g_value_get_double(value);
@@ -1086,12 +1086,9 @@ ags_bulk_member_connect(AgsConnectable *connectable)
   if(bulk_member->widget_type == AGS_TYPE_DIAL){
     g_signal_connect_after(GTK_WIDGET(control), "value-changed",
 			   G_CALLBACK(ags_bulk_member_dial_changed_callback), bulk_member);
-  }else if(bulk_member->widget_type == GTK_TYPE_VSCALE){
+  }else if(g_type_is_a(bulk_member->widget_type, GTK_TYPE_SCALE)){
     g_signal_connect_after(GTK_WIDGET(control), "value-changed",
 			   G_CALLBACK(ags_bulk_member_vscale_changed_callback), bulk_member);
-  }else if(bulk_member->widget_type == GTK_TYPE_HSCALE){
-    g_signal_connect_after(GTK_WIDGET(control), "value-changed",
-			   G_CALLBACK(ags_bulk_member_hscale_changed_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_SPIN_BUTTON){
     g_signal_connect_after(GTK_WIDGET(control), "value-changed",
 			   G_CALLBACK(ags_bulk_member_spin_button_changed_callback), bulk_member);
@@ -1130,16 +1127,10 @@ ags_bulk_member_disconnect(AgsConnectable *connectable)
 			G_CALLBACK(ags_bulk_member_dial_changed_callback),
 			bulk_member,
 			NULL);
-  }else if(bulk_member->widget_type == GTK_TYPE_VSCALE){
+  }else if(g_type_is_a(bulk_member->widget_type, GTK_TYPE_SCALE)){
     g_object_disconnect(GTK_WIDGET(control),
 			"any_signal::value-changed",
 			G_CALLBACK(ags_bulk_member_vscale_changed_callback),
-			bulk_member,
-			NULL);
-  }else if(bulk_member->widget_type == GTK_TYPE_HSCALE){
-    g_object_disconnect(GTK_WIDGET(control),
-			"any_signal::value-changed",
-			G_CALLBACK(ags_bulk_member_hscale_changed_callback),
 			bulk_member,
 			NULL);
   }else if(bulk_member->widget_type == GTK_TYPE_SPIN_BUTTON){
@@ -1347,10 +1338,6 @@ ags_bulk_member_change_port_all(AgsBulkMember *bulk_member,
 	  success = FALSE;
 	    
 	  if(AGS_IS_DIAL(gtk_bin_get_child(GTK_BIN(bulk_member)))){
-	    AgsDial *dial;
-
-	    dial = (AgsDial *) gtk_bin_get_child(GTK_BIN(bulk_member));
-
 	    success = TRUE;
 	  }else{
 	    g_warning("unsupported child type in conversion");
@@ -1390,10 +1377,6 @@ ags_bulk_member_change_port_all(AgsBulkMember *bulk_member,
 	  success = FALSE;
 	    
 	  if(AGS_IS_DIAL(gtk_bin_get_child(GTK_BIN(bulk_member)))){
-	    AgsDial *dial;
-
-	    dial = (AgsDial *) gtk_bin_get_child(GTK_BIN(bulk_member));
-
 	    success = TRUE;
 	  }else{
 	    g_warning("unsupported child type in conversion");
@@ -1449,12 +1432,7 @@ void
 ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 				 gpointer port_data)
 {
-  AgsWindow *window;
-  
   AgsApplicationContext *application_context;
-  
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) bulk_member,
-						 AGS_TYPE_WINDOW);
   
   application_context = ags_application_context_get_instance();
 
@@ -1471,11 +1449,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
   }
 
   if((AGS_BULK_MEMBER_RESET_BY_TASK & (bulk_member->flags)) != 0){
-    AgsEffectBulk *effect_bulk;
     AgsTask *task;
-
-    effect_bulk = (AgsEffectBulk *) gtk_widget_get_ancestor(GTK_WIDGET(bulk_member),
-							    AGS_TYPE_EFFECT_BULK);
     
     task = (AgsTask *) g_object_new(bulk_member->task_type,
 				    bulk_member->control_port, port_data,

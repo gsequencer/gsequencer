@@ -83,7 +83,7 @@ ags_dssi_browser_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_dssi_browser = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_dssi_browser = g_type_register_static(GTK_TYPE_BOX,
 						   "AgsDssiBrowser", &ags_dssi_browser_info,
 						   0);
 
@@ -127,38 +127,38 @@ ags_dssi_browser_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 {
-  GtkTable *table;
   GtkComboBoxText *combo_box;
   GtkLabel *label;
 
   AgsDssiManager *dssi_manager;
   
-  GList *list;
-
-  gchar *str;
   gchar **filenames, **filenames_start;
+
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(dssi_browser),
+				 GTK_ORIENTATION_VERTICAL);
 
   dssi_browser->flags = 0;
   
   dssi_manager = ags_dssi_manager_get_instance();
   
   /* plugin */
-  dssi_browser->plugin = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(dssi_browser),
-		     GTK_WIDGET(dssi_browser->plugin),
+  dssi_browser->plugin = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						0);
+  gtk_box_pack_start((GtkBox *) dssi_browser,
+		     (GtkWidget *) dssi_browser->plugin,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("filename: "));
-  gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start((GtkBox *) dssi_browser->plugin,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   dssi_browser->filename = (GtkComboBox *) gtk_combo_box_text_new();
   combo_box = (GtkComboBoxText *) dssi_browser->filename;
-  gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
-		     GTK_WIDGET(combo_box),
+  gtk_box_pack_start((GtkBox *) dssi_browser->plugin,
+		     (GtkWidget *) combo_box,
 		     FALSE, FALSE,
 		     0);
 
@@ -179,22 +179,23 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
   g_strfreev(filenames_start);
 
   label = (GtkLabel *) gtk_label_new(i18n("effect: "));
-  gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start((GtkBox *) dssi_browser->plugin,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   dssi_browser->effect = (GtkComboBox *) gtk_combo_box_text_new();
   combo_box = (GtkComboBoxText *) dssi_browser->effect;
-  gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
-		     GTK_WIDGET(combo_box),
+  gtk_box_pack_start((GtkBox *) dssi_browser->plugin,
+		     (GtkWidget *) combo_box,
 		     FALSE, FALSE,
 		     0);
 
   /* description */
-  dssi_browser->description = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(dssi_browser),
-		     GTK_WIDGET(dssi_browser->description),
+  dssi_browser->description = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+						     0);
+  gtk_box_pack_start((GtkBox *) dssi_browser,
+		     (GtkWidget *) dssi_browser->description,
 		     FALSE, FALSE,
 		     0);
 
@@ -203,8 +204,8 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 				      "xalign", 0.0,
 				      "label", i18n("Label: "),
 				      NULL);
-  gtk_box_pack_start(GTK_BOX(dssi_browser->description),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start((GtkBox *) dssi_browser->description,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
@@ -213,8 +214,8 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 				      "xalign", 0.0,
 				      "label", i18n("Maker: "),
 				      NULL);
-  gtk_box_pack_start(GTK_BOX(dssi_browser->description),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start((GtkBox *) dssi_browser->description,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
@@ -223,8 +224,8 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 				      "xalign", 0.0,
 				      "label", i18n("Copyright: "),
 				      NULL);
-  gtk_box_pack_start(GTK_BOX(dssi_browser->description),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start((GtkBox *) dssi_browser->description,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
@@ -232,16 +233,14 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 				    "xalign", 0.0,
 				    "label", i18n("Ports: "),
 				    NULL);
-  gtk_box_pack_start(GTK_BOX(dssi_browser->description),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start((GtkBox *) dssi_browser->description,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
   
-  dssi_browser->port_table =   
-    table = (GtkTable *) gtk_table_new(256, 2,
-				       FALSE);
-  gtk_box_pack_start(GTK_BOX(dssi_browser->description),
-		     GTK_WIDGET(table),
+  dssi_browser->port_grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_pack_start((GtkBox *) dssi_browser->description,
+		     (GtkWidget *) dssi_browser->port_grid,
 		     FALSE, FALSE,
 		     0);
 
@@ -282,13 +281,13 @@ ags_dssi_browser_disconnect(AgsConnectable *connectable)
   dssi_browser->flags &= (~AGS_DSSI_BROWSER_CONNECTED);
 
   g_object_disconnect(G_OBJECT(dssi_browser->filename),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_dssi_browser_plugin_filename_callback),
 		      dssi_browser,
 		      NULL);
   
   g_object_disconnect(G_OBJECT(dssi_browser->effect),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_dssi_browser_plugin_effect_callback),
 		      dssi_browser,
 		      NULL);

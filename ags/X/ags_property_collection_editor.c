@@ -122,26 +122,26 @@ ags_property_collection_editor_applicable_interface_init(AgsApplicableInterface 
 void
 ags_property_collection_editor_init(AgsPropertyCollectionEditor *property_collection_editor)
 {
-  GtkAlignment *alignment;
-
   property_collection_editor->flags = 0;
+
+  property_collection_editor->child_type = G_TYPE_NONE;
+
+  property_collection_editor->child_strv = NULL;
+  property_collection_editor->child_value = NULL;
   
-  property_collection_editor->child = (GtkVBox *) gtk_vbox_new(FALSE, 16);
+  property_collection_editor->child = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+							     16);
   gtk_box_pack_start(GTK_BOX(property_collection_editor),
 		     GTK_WIDGET(property_collection_editor->child),
 		     TRUE, TRUE,
 		     0);
 
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.0,
-						 0.0, 0.0);
-  gtk_box_pack_start(GTK_BOX(property_collection_editor),
-		     GTK_WIDGET(alignment),
+  property_collection_editor->add_collection = (GtkButton *) gtk_button_new_from_icon_name("list-add",
+											   GTK_ICON_SIZE_BUTTON);
+  gtk_box_pack_start(property_collection_editor,
+		     (GtkWidget * ) property_collection_editor->add_collection,
 		     FALSE, FALSE,
 		     0);
-
-  property_collection_editor->add_collection = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(property_collection_editor->add_collection));
 }
 
 void
@@ -196,7 +196,8 @@ ags_property_collection_editor_apply(AgsApplicable *applicable)
 {
   AgsPropertyCollectionEditor *property_collection_editor;
   GtkWidget *child;
-  GList *list, *list_start;
+
+  GList *start_list, *list;
 
   property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(applicable);
 
@@ -204,17 +205,18 @@ ags_property_collection_editor_apply(AgsApplicable *applicable)
     return;
   }
 
-  list_start = 
-    list = gtk_container_get_children(GTK_CONTAINER(property_collection_editor->child));
+  list =
+    start_list = gtk_container_get_children(GTK_CONTAINER(property_collection_editor->child));
 
   while(list != NULL){
     child = GTK_WIDGET(g_object_get_data(G_OBJECT(list->data), "AgsChild"));
+
     ags_applicable_apply(AGS_APPLICABLE(child));
 
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void
@@ -226,8 +228,8 @@ ags_property_collection_editor_reset(AgsApplicable *applicable)
 /**
  * ags_property_collection_editor_new:
  * @child_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
- * @child_parameter_count: child parameter count
- * @child_parameter: child parameter
+ * @child_strv: child string vector
+ * @child_value: child value
  *
  * Creates an #AgsPropertyCollectionEditor
  *
@@ -237,8 +239,8 @@ ags_property_collection_editor_reset(AgsApplicable *applicable)
  */
 AgsPropertyCollectionEditor*
 ags_property_collection_editor_new(GType child_type,
-				   guint child_parameter_count,
-				   GParameter *child_parameter)
+				   gchar **child_strv,
+				   GValue *child_value)
 {
   AgsPropertyCollectionEditor *property_collection_editor;
 
@@ -246,8 +248,8 @@ ags_property_collection_editor_new(GType child_type,
 									    NULL);
 
   property_collection_editor->child_type = child_type;
-  property_collection_editor->child_parameter_count = child_parameter_count;
-  property_collection_editor->child_parameter = child_parameter;
+  property_collection_editor->child_strv = child_strv;
+  property_collection_editor->child_value = child_value;
   
   return(property_collection_editor);
 }

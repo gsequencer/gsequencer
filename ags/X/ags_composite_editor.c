@@ -174,7 +174,7 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
   ags_uuid_generate(composite_editor->uuid);
 
   /* widgets */
-  composite_editor->toolbar = ags_toolbar_new();
+  composite_editor->toolbar = ags_composite_toolbar_new();
   gtk_box_pack_start((GtkBox *) composite_editor,
 		     (GtkWidget *) composite_editor->toolbar,
 		     FALSE, FALSE,

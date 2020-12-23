@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,8 +19,6 @@
 
 #include <ags/X/ags_property_collection_editor_callbacks.h>
 
-#include <ags/libags.h>
-
 void
 ags_property_collection_editor_add_collection_callback(GtkButton *button,
 						       AgsPropertyCollectionEditor *property_collection_editor)
@@ -37,9 +35,10 @@ ags_property_collection_editor_add_collection_callback(GtkButton *button,
 		     0);
 
   //FIXME:JK: deprecated function
-  collection = (GtkWidget *) g_object_newv(property_collection_editor->child_type,
-					   property_collection_editor->child_parameter_count,
-					   property_collection_editor->child_parameter);
+  collection = (GtkWidget *) g_object_new_with_properties(property_collection_editor->child_type,
+							  g_strv_length(property_collection_editor->child_strv),
+							  property_collection_editor->child_strv,
+							  property_collection_editor->child_value);
   g_object_set_data(G_OBJECT(table), "AgsChild", collection);
   gtk_table_attach(table,
 		   GTK_WIDGET(collection),

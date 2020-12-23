@@ -38,14 +38,6 @@
 void ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor);
 void ags_automation_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_automation_editor_init(AgsAutomationEditor *automation_editor);
-void ags_automation_editor_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
-void ags_automation_editor_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
 void ags_automation_editor_connect(AgsConnectable *connectable);
 void ags_automation_editor_disconnect(AgsConnectable *connectable);
 void ags_automation_editor_finalize(GObject *gobject);
@@ -150,15 +142,10 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
   GObjectClass *gobject;
   GtkWidgetClass *widget;
 
-  GParamSpec *param_spec;
-
   ags_automation_editor_parent_class = g_type_class_peek_parent(automation_editor);
 
   /* GObjectClass */
   gobject = (GObjectClass *) automation_editor;
-
-  gobject->set_property = ags_automation_editor_set_property;
-  gobject->get_property = ags_automation_editor_get_property;
 
   gobject->finalize = ags_automation_editor_finalize;
   
@@ -721,40 +708,6 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 }
 
 void
-ags_automation_editor_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec)
-{
-  AgsAutomationEditor *automation_editor;
-
-  automation_editor = AGS_AUTOMATION_EDITOR(gobject);
-
-  switch(prop_id){
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_automation_editor_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec)
-{
-  AgsAutomationEditor *automation_editor;
-
-  automation_editor = AGS_AUTOMATION_EDITOR(gobject);
-
-  switch(prop_id){
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
 ags_automation_editor_connect(AgsConnectable *connectable)
 {
   AgsAutomationEditor *automation_editor;
@@ -852,10 +805,6 @@ ags_automation_editor_disconnect(AgsConnectable *connectable)
 void
 ags_automation_editor_finalize(GObject *gobject)
 {
-  AgsAutomationEditor *automation_editor;
-
-  automation_editor = AGS_AUTOMATION_EDITOR(gobject);
-
   /* call parent */
   G_OBJECT_CLASS(ags_automation_editor_parent_class)->finalize(gobject);
 }
@@ -865,8 +814,6 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
 {
   AgsAutomationToolbar *automation_toolbar;
 
-  AgsApplicationContext *application_context;
-
   GtkAdjustment *audio_vscrollbar_adjustment;
   GtkAdjustment *audio_hscrollbar_adjustment;
 
@@ -875,19 +822,13 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
   
   GList *list_start, *list;
   
-  gdouble gui_scale_factor;
   gdouble old_h_upper;
   gdouble v_upper, h_upper;
-  double zoom_factor, zoom;
+  double zoom;
   double zoom_correction;
   guint map_width;
 
   automation_toolbar = automation_editor->automation_toolbar;
-
-  application_context = ags_application_context_get_instance();
-
-  /* scale factor */
-  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   /* audio */
   gtk_widget_get_allocation(GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box),
@@ -971,26 +912,18 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
   GtkAdjustment *output_vscrollbar_adjustment;
   GtkAdjustment *output_hscrollbar_adjustment;
   
-  AgsApplicationContext *application_context;
-  
   GtkAllocation automation_edit_box_allocation;
   GtkAllocation viewport_allocation;
   
   GList *list_start, *list;
   
-  gdouble gui_scale_factor;
   gdouble old_h_upper;
   gdouble v_upper, h_upper;
-  double zoom_factor, zoom;
+  double zoom;
   double zoom_correction;
   guint map_width;
 
   automation_toolbar = automation_editor->automation_toolbar;
-
-  application_context = ags_application_context_get_instance();
-
-  /* scale factor */
-  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   /* output */
   gtk_widget_get_allocation(GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->automation_edit_box),
@@ -1075,26 +1008,18 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
   GtkAdjustment *input_vscrollbar_adjustment;
   GtkAdjustment *input_hscrollbar_adjustment;
   
-  AgsApplicationContext *application_context;
-  
   GtkAllocation automation_edit_box_allocation;
   GtkAllocation viewport_allocation;
 
   GList *list_start, *list;
   
-  gdouble gui_scale_factor;
   gdouble old_h_upper;
   gdouble v_upper, h_upper;
-  double zoom_factor, zoom;
+  double zoom;
   double zoom_correction;
   guint map_width;
   
   automation_toolbar = automation_editor->automation_toolbar;
-
-  application_context = ags_application_context_get_instance();
-
-  /* scale factor */
-  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   /* input */
   gtk_widget_get_allocation(GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->automation_edit_box),

@@ -119,7 +119,7 @@ ags_context_menu_init(AgsContextMenu *context_menu)
 
   context_menu->flags = 0;
  
-  item = (GtkImageMenuItem *) gtk_tearoff_menu_item_new();
+  item = (GtkMenuItem *) gtk_tearoff_menu_item_new();
   gtk_menu_shell_append((GtkMenuShell*) context_menu, (GtkWidget*) item);
   
   /* File */
@@ -297,7 +297,7 @@ ags_context_menu_connect(AgsConnectable *connectable)
   
   /* File */
   list0 =
-    list0_start = gtk_container_get_children(context_menu);
+    list0_start = gtk_container_get_children((GtkContainer *) context_menu);
   list0 = list0->next;
 
   list1_start = 

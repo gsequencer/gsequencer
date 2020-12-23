@@ -163,7 +163,7 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
   composite_edit->composite_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						    0);
   gtk_paned_add1(composite_edit->composite_paned,
-		 composite_edit->composite_box);
+		 (GtkWidget *) composite_edit->composite_box);
 
   /* composite grid */
   composite_edit->composite_grid = (GtkGrid *) gtk_grid_new();
@@ -195,8 +195,8 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
   composite_edit->block_vscrollbar = FALSE;
 
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gui_scale_factor * AGS_COMPOSITE_EDIT_DEFAULT_SEGMENT_HEIGHT), 1.0);
-  composite_edit->vscrollbar = gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
-						 adjustment);
+  composite_edit->vscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
+								  adjustment);
 
   gtk_widget_set_valign((GtkWidget *) composite_edit->vscrollbar,
 			GTK_ALIGN_FILL);
@@ -212,8 +212,8 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
   composite_edit->block_hscrollbar = FALSE;
 
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gui_scale_factor * AGS_COMPOSITE_EDIT_DEFAULT_SEGMENT_WIDTH), 1.0);
-  composite_edit->hscrollbar = gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
-						 adjustment);
+  composite_edit->hscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
+								  adjustment);
 
   gtk_widget_set_valign((GtkWidget *) composite_edit->hscrollbar,
 			GTK_ALIGN_FILL);
@@ -231,8 +231,8 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
   g_object_set(viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
-  gtk_paned_add1(composite_edit->composite_paned,
-		 viewport);
+  gtk_paned_add2(composite_edit->composite_paned,
+		 (GtkWidget *) viewport);
   
   composite_edit->scrolled_edit_meta = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
 										     NULL);

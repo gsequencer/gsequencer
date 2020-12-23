@@ -53,10 +53,11 @@ struct _AgsPropertyCollectionEditor
   guint flags;
   
   GType child_type;
-  guint child_parameter_count;
-  GParameter *child_parameter;
 
-  GtkVBox *child;
+  gchar **child_strv;
+  GValue *child_value;
+
+  GtkBox *child;
 
   GtkButton *add_collection;
 };
@@ -69,8 +70,8 @@ struct _AgsPropertyCollectionEditorClass
 GType ags_property_collection_editor_get_type();
 
 AgsPropertyCollectionEditor* ags_property_collection_editor_new(GType child_type,
-								guint child_parameter_count,
-								GParameter *child_parameter);
+								gchar **child_strv,
+								GValue *child_value);
 
 G_END_DECLS
 
