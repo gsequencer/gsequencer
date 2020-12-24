@@ -60,7 +60,7 @@ typedef enum{
 
 struct _AgsEffectLine
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
 
@@ -78,7 +78,7 @@ struct _AgsEffectLine
   GtkLabel *label;
   GtkToggleButton *group;
   
-  GtkTable *table;
+  GtkGrid *grid;
 
   GList *plugin;
 
@@ -87,7 +87,7 @@ struct _AgsEffectLine
 
 struct _AgsEffectLineClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 
   void (*samplerate_changed)(AgsEffectLine *effect_line,
 			     guint samplerate, guint old_samplerate);

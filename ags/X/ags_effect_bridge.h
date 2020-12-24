@@ -59,7 +59,7 @@ typedef enum{
 
 struct _AgsEffectBridge
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
 
@@ -96,7 +96,7 @@ struct _AgsEffectBridge
 
 struct _AgsEffectBridgeClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 
   void (*samplerate_changed)(AgsEffectBridge *effect_bridge,
 			     guint samplerate, guint old_samplerate);

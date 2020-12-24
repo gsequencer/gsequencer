@@ -48,25 +48,27 @@ typedef enum{
 
 struct _AgsLv2Browser
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
   
   gchar *path;
 
-  GtkHBox *plugin;
+  GtkBox *plugin;
 
   GtkComboBox *filename;
   GtkComboBox *effect;
 
-  GtkVBox *description;
+  GtkBox *description;
+
+  GtkGrid *port_grid;
 
   GtkWidget *preview;
 };
 
 struct _AgsLv2BrowserClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_lv2_browser_get_type(void);

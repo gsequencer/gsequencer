@@ -161,7 +161,7 @@ ags_line_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_line = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_line = g_type_register_static(GTK_TYPE_BOX,
 					   "AgsLine", &ags_line_info,
 					   0);
 
@@ -521,6 +521,9 @@ ags_line_init(AgsLine *line)
   AgsApplicationContext *application_context;
   AgsConfig *config;
 
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(line),
+				 GTK_ORIENTATION_HORIZONTAL);  
+
   application_context = ags_application_context_get_instance();
 
   g_signal_connect(application_context, "check-message",
@@ -563,11 +566,8 @@ ags_line_init(AgsLine *line)
 		     FALSE, FALSE,
 		     0);
 
-  line->expander = ags_expander_new(1, 1);
-  gtk_table_set_row_spacings(line->expander->table,
-			     2);
-  gtk_table_set_col_spacings(line->expander->table,
-			     2);
+  line->expander = ags_expander_new(1,
+				    1);
   gtk_box_pack_start(GTK_BOX(line),
 		     GTK_WIDGET(line->expander),
 		     TRUE, TRUE,
@@ -1506,7 +1506,7 @@ ags_line_add_ladspa_plugin(AgsLine *line,
 	control_value = default_value;
 
 	if(ladspa_conversion != NULL){
-	  control_value = ags_conversion_convert(ladspa_conversion,
+	  control_value = ags_conversion_convert((AgsConversion *) ladspa_conversion,
 						 default_value,
 						 TRUE);
 	}
@@ -1596,7 +1596,7 @@ ags_line_add_ladspa_plugin(AgsLine *line,
 	control_value = default_value;
 
 	if(ladspa_conversion != NULL){
-	  control_value = ags_conversion_convert(ladspa_conversion,
+	  control_value = ags_conversion_convert((AgsConversion *) ladspa_conversion,
 						 default_value,
 						 TRUE);
 	}
@@ -1686,7 +1686,7 @@ ags_line_add_ladspa_plugin(AgsLine *line,
 	control_value = default_value;
 
 	if(ladspa_conversion != NULL){
-	  control_value = ags_conversion_convert(ladspa_conversion,
+	  control_value = ags_conversion_convert((AgsConversion *) ladspa_conversion,
 						 default_value,
 						 TRUE);
 	}
@@ -1758,7 +1758,6 @@ ags_line_add_lv2_plugin(AgsLine *line,
   AgsLineMember *line_member;
   AgsEffectSeparator *separator;
 
-  GtkAdjustment *adjustment;
   AgsLinePlugin *line_plugin;
 
   AgsAudio *audio;
@@ -1768,12 +1767,10 @@ ags_line_add_lv2_plugin(AgsLine *line,
   AgsLv2Plugin *lv2_plugin;
 
   GList *start_recall;
-  GList *start_list, *list;
+  GList *list;
   GList *start_plugin_port, *plugin_port;
 
   gchar *uri;
-  gchar *port_type_0, *port_type_1;
-  gchar *control_port;
 
   gboolean is_lv2_plugin;
 
@@ -1833,8 +1830,8 @@ ags_line_add_lv2_plugin(AgsLine *line,
 					G_DIR_SEPARATOR,
 					"manifest.ttl");
 
-    manifest = ags_turtle_manager_find(turtle_manager,
-				       manifest_filename);
+    manifest = (AgsTurtle *) ags_turtle_manager_find(turtle_manager,
+						     manifest_filename);
 
     if(manifest == NULL){
       AgsLv2TurtleParser *lv2_turtle_parser;
@@ -1862,7 +1859,7 @@ ags_line_add_lv2_plugin(AgsLine *line,
       ags_lv2_turtle_parser_parse(lv2_turtle_parser,
 				  turtle, n_turtle);
     
-      g_object_run_dispose(lv2_turtle_parser);
+      g_object_run_dispose((GObject *) lv2_turtle_parser);
       g_object_unref(lv2_turtle_parser);
 	
       g_object_unref(manifest);
@@ -2177,7 +2174,7 @@ ags_line_add_lv2_plugin(AgsLine *line,
 	control_value = default_value;
 
 	if(lv2_conversion != NULL){
-	  control_value = ags_conversion_convert(lv2_conversion,
+	  control_value = ags_conversion_convert((AgsConversion *) lv2_conversion,
 						 default_value,
 						 TRUE);
 	}
@@ -2267,7 +2264,7 @@ ags_line_add_lv2_plugin(AgsLine *line,
 	control_value = default_value;
 
 	if(lv2_conversion != NULL){
-	  control_value = ags_conversion_convert(lv2_conversion,
+	  control_value = ags_conversion_convert((AgsConversion *) lv2_conversion,
 						 default_value,
 						 TRUE);
 	}
@@ -2357,7 +2354,7 @@ ags_line_add_lv2_plugin(AgsLine *line,
 	control_value = default_value;
 
 	if(lv2_conversion != NULL){
-	  control_value = ags_conversion_convert(lv2_conversion,
+	  control_value = ags_conversion_convert((AgsConversion *) lv2_conversion,
 						 default_value,
 						 TRUE);
 	}
@@ -2439,13 +2436,13 @@ ags_line_real_add_plugin(AgsLine *line,
   if(!g_ascii_strncasecmp(plugin_name,
 			  "ags-fx-ladspa",
 			  14)){   
-    base_plugin = ags_ladspa_manager_find_ladspa_plugin_with_fallback(ags_ladspa_manager_get_instance(),
-								      filename, effect);
+    base_plugin = (AgsBasePlugin *) ags_ladspa_manager_find_ladspa_plugin_with_fallback(ags_ladspa_manager_get_instance(),
+											filename, effect);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-lv2",
 				11)){
-    base_plugin = ags_lv2_manager_find_lv2_plugin_with_fallback(ags_lv2_manager_get_instance(),
-								filename, effect);
+    base_plugin = (AgsBasePlugin *) ags_lv2_manager_find_lv2_plugin_with_fallback(ags_lv2_manager_get_instance(),
+										  filename, effect);
   }
 
   if(base_plugin != NULL){
@@ -2574,10 +2571,10 @@ ags_line_real_remove_plugin(AgsLine *line,
 			       line_plugin);
 
   /* AgsRecallAudio */
-  ags_audio_remove_recall(audio, ags_recall_container_get_recall_audio(line_plugin->play_container),
+  ags_audio_remove_recall(audio, (GObject *) ags_recall_container_get_recall_audio(line_plugin->play_container),
 			  TRUE);
 
-  ags_audio_remove_recall(audio, ags_recall_container_get_recall_audio(line_plugin->recall_container),
+  ags_audio_remove_recall(audio, (GObject *) ags_recall_container_get_recall_audio(line_plugin->recall_container),
 			  FALSE);
 
   /* AgsRecallAudioRun - play context */
@@ -2588,7 +2585,7 @@ ags_line_real_remove_plugin(AgsLine *line,
   recall = start_recall;
 
   while(recall != NULL){
-    ags_audio_remove_recall(audio, recall->data,
+    ags_audio_remove_recall(audio, (GObject *) recall->data,
 			    TRUE);
 
     recall = recall->next;
@@ -2605,7 +2602,7 @@ ags_line_real_remove_plugin(AgsLine *line,
   recall = start_recall;
 
   while(recall != NULL){
-    ags_audio_remove_recall(audio, recall->data,
+    ags_audio_remove_recall(audio, (GObject *) recall->data,
 			    FALSE);
     
     recall = recall->next;
@@ -2628,7 +2625,7 @@ ags_line_real_remove_plugin(AgsLine *line,
 		 "source", &channel,
 		 NULL);
     
-    ags_channel_remove_recall(channel, recall->data,
+    ags_channel_remove_recall(channel, (GObject *) recall->data,
 			      TRUE);
 
     if(channel != NULL){
@@ -2655,7 +2652,7 @@ ags_line_real_remove_plugin(AgsLine *line,
 		 "source", &channel,
 		 NULL);
     
-    ags_channel_remove_recall(channel, recall->data,
+    ags_channel_remove_recall(channel, (GObject *) recall->data,
 			      FALSE);
     
 
@@ -2683,7 +2680,7 @@ ags_line_real_remove_plugin(AgsLine *line,
 		 "source", &channel,
 		 NULL);
     
-    ags_channel_remove_recall(channel, recall->data,
+    ags_channel_remove_recall(channel, (GObject *) recall->data,
 			      TRUE);    
 
     if(channel != NULL){
@@ -2710,7 +2707,7 @@ ags_line_real_remove_plugin(AgsLine *line,
 		 "source", &channel,
 		 NULL);
     
-    ags_channel_remove_recall(channel, recall->data,
+    ags_channel_remove_recall(channel, (GObject *) recall->data,
 			      FALSE);    
 
     if(channel != NULL){
@@ -2724,14 +2721,14 @@ ags_line_real_remove_plugin(AgsLine *line,
 		   (GDestroyNotify) g_object_unref);
 
   /* recall container */
-  ags_audio_remove_recall_container(audio, line_plugin->play_container);
-  ags_audio_remove_recall_container(audio, line_plugin->recall_container);
+  ags_audio_remove_recall_container(audio, (GObject *) line_plugin->play_container);
+  ags_audio_remove_recall_container(audio, (GObject *) line_plugin->recall_container);
 
-  ags_channel_remove_recall_container(line->channel, line_plugin->play_container);
-  ags_channel_remove_recall_container(line->channel, line_plugin->recall_container);
+  ags_channel_remove_recall_container(line->channel, (GObject *) line_plugin->play_container);
+  ags_channel_remove_recall_container(line->channel, (GObject *) line_plugin->recall_container);
 
   /* destroy controls - expander table */
-  start_list = gtk_container_get_children(line->expander->table);
+  start_list = gtk_container_get_children((GtkContainer *) line->expander->table);
 
   list = start_list;
   
@@ -2970,11 +2967,11 @@ ags_line_check_message(AgsLine *line)
     root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
       
     if(!xmlStrncmp(root_node->name,
-		   "ags-command",
+		   BAD_CAST "ags-command",
 		   12)){
       if(!xmlStrncmp(xmlGetProp(root_node,
 				"method"),
-		     "AgsChannel::set-samplerate",
+		     BAD_CAST "AgsChannel::set-samplerate",
 		     27)){
 	guint samplerate;
 	gint position;
@@ -2989,7 +2986,7 @@ ags_line_check_message(AgsLine *line)
 		     NULL);
       }else if(!xmlStrncmp(xmlGetProp(root_node,
 				      "method"),
-			   "AgsChannel::set-buffer-size",
+			   BAD_CAST "AgsChannel::set-buffer-size",
 			   28)){
 	guint buffer_size;
 	gint position;
@@ -3004,7 +3001,7 @@ ags_line_check_message(AgsLine *line)
 		     NULL);
       }else if(!xmlStrncmp(xmlGetProp(root_node,
 				      "method"),
-			   "AgsChannel::set-format",
+			   BAD_CAST "AgsChannel::set-format",
 			   23)){
 	guint format;
 	gint position;
@@ -3019,7 +3016,7 @@ ags_line_check_message(AgsLine *line)
 		     NULL);
       }else if(!xmlStrncmp(xmlGetProp(root_node,
 				      "method"),
-			   "AgsChannel::stop",
+			   BAD_CAST "AgsChannel::stop",
 			   18)){
 	GList *recall_id;
 

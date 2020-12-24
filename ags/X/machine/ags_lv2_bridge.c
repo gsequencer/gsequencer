@@ -732,7 +732,7 @@ ags_lv2_bridge_connect(AgsConnectable *connectable)
   effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge);
   
   list =
-    list_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(effect_bridge->bulk_input)->table);
+    list_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(effect_bridge->bulk_input)->grid);
 
   while(list != NULL){
     bulk_member = list->data;
@@ -811,7 +811,7 @@ ags_lv2_bridge_disconnect(AgsConnectable *connectable)
   effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge);
   
   list =
-    list_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(effect_bridge->bulk_input)->table);
+    list_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(effect_bridge->bulk_input)->grid);
 
   while(list != NULL){
     bulk_member = list->data;

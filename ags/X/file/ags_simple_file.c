@@ -3973,7 +3973,7 @@ ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *nod
 	  }
 	}
 	
-	list_start = gtk_container_get_children(GTK_CONTAINER(effect_bulk->table));
+	list_start = gtk_container_get_children(GTK_CONTAINER(effect_bulk->grid));
 	list = list_start;
 
 	while(list != NULL){
@@ -5867,7 +5867,7 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 		      xmlFree(str);
 		      
 		      list =
-			list_start = gtk_container_get_children((GtkContainer *) gobject->table);
+			list_start = gtk_container_get_children((GtkContainer *) gobject->grid);
 
 		      while(list != NULL){
 			if(AGS_IS_LINE_MEMBER(list->data)){
@@ -8445,7 +8445,7 @@ ags_simple_file_write_effect_list(AgsSimpleFile *simple_file, xmlNode *parent, A
   effect = NULL;
     
   list =
-    list_start = gtk_container_get_children((GtkContainer *) effect_bulk->table);
+    list_start = gtk_container_get_children((GtkContainer *) effect_bulk->grid);
     
   while(list != NULL){
     if(AGS_IS_BULK_MEMBER(list->data)){
@@ -10222,8 +10222,8 @@ ags_simple_file_write_effect_pad(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 
 
   /* children */
-  if(effect_pad->table != NULL){
-    list = gtk_container_get_children((GtkContainer *) effect_pad->table);
+  if(effect_pad->grid != NULL){
+    list = gtk_container_get_children((GtkContainer *) effect_pad->grid);
 
     if(ags_simple_file_write_effect_line_list(simple_file,
 					      node,
@@ -10385,7 +10385,7 @@ ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, A
   effect = NULL;
 
   list_start = 
-    list = gtk_container_get_children((GtkContainer *) effect_line->table);
+    list = gtk_container_get_children((GtkContainer *) effect_line->grid);
 
   while(list != NULL){
     if(AGS_IS_LINE_MEMBER(list->data)){

@@ -34,14 +34,13 @@ ags_export_window_add_export_soundcard_callback(GtkWidget *button,
 						AgsExportWindow *export_window)
 {
   AgsExportSoundcard *export_soundcard;
-  GtkHBox *hbox;
-  GtkAlignment *alignment;
+  GtkBox *hbox;
   GtkButton *remove_button;
   
   /* create GtkHBox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_box_pack_start((GtkBox *) export_window->export_soundcard,
+  hbox = (GtkHBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				 0);
+  gtk_box_pack_start(export_window->export_soundcard,
 		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
@@ -49,23 +48,19 @@ ags_export_window_add_export_soundcard_callback(GtkWidget *button,
   /* instantiate export soundcard */
   export_soundcard = (AgsExportSoundcard *) g_object_new(AGS_TYPE_EXPORT_SOUNDCARD,
 							 NULL);
-  gtk_box_pack_start((GtkBox *) hbox,
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) export_soundcard,
 		     FALSE, FALSE,
 		     0);
   ags_connectable_connect(AGS_CONNECTABLE(export_soundcard));
     
-  /* remove button */
-  alignment = (GtkAlignment *) gtk_alignment_new(0.5, 1.0,
-						 0.0, 0.0);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) alignment,
+  /* remove button */    
+  remove_button = (GtkButton *) gtk_button_new_from_icon_name("list-remove",
+							      GTK_ICON_SIZE_BUTTON);
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) remove_button,
 		     FALSE, FALSE,
 		     0);
-    
-  remove_button = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-  gtk_container_add((GtkContainer *) alignment,
-		    (GtkWidget *) remove_button);
     
   g_signal_connect(G_OBJECT(remove_button), "clicked",
 		   G_CALLBACK(ags_export_window_remove_export_soundcard_callback), export_window);
@@ -81,10 +76,10 @@ void
 ags_export_window_remove_export_soundcard_callback(GtkWidget *button,
 						   AgsExportWindow *export_window)
 {
-  GtkHBox *hbox;
+  GtkBox *hbox;
 
-  hbox = (GtkHBox *) gtk_widget_get_ancestor(button,
-					     GTK_TYPE_HBOX);
+  hbox = (GtkBox *) gtk_widget_get_ancestor(button,
+					    GTK_TYPE_BOX);
   gtk_widget_destroy(GTK_WIDGET(hbox));
 }
 
@@ -143,7 +138,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
@@ -167,7 +162,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     GList *task;
     GList *list;
     
-    gchar *filename;
+    const gchar *filename;
 
     gboolean file_exists;
     gboolean live_performance;
@@ -307,11 +302,9 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       guint format;
       
       gdouble delay;
-      gdouble delay_factor;
       
       /* create task */
       delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(default_soundcard));
-      delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(default_soundcard));
 
       /*  */
       tic = (gtk_spin_button_get_value(export_window->tact) + 1) * (16.0 * delay);

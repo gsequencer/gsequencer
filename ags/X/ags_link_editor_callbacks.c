@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -169,7 +169,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 	}
       }
     }else{
-      GtkHBox *hbox;
+      GtkBox *hbox;
       GtkLabel *label;
       GtkSpinButton *spin_button;
       gchar *str, *tmp;
@@ -185,20 +185,20 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
       link_editor->file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("select audio file"),
 										       (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) link_editor),
 										       GTK_FILE_CHOOSER_ACTION_OPEN,
-										       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-										       GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+										       "_Cancel", GTK_RESPONSE_CANCEL,
+										       "_Open", GTK_RESPONSE_ACCEPT,
 										       NULL);
       gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(link_editor->file_chooser),
 					   FALSE);
 
       /* extra widget */
-      hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				      0);
+      hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				    0);
       gtk_file_chooser_set_extra_widget((GtkFileChooser *) link_editor->file_chooser,
 					(GtkWidget *) hbox);
 
       label = (GtkLabel *) gtk_label_new(i18n("audio channel: "));
-      gtk_box_pack_start((GtkBox *) hbox,
+      gtk_box_pack_start(hbox,
 			 (GtkWidget *) label,
 			 FALSE, FALSE,
 			 0);
@@ -208,7 +208,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 								     1.0);
       g_object_set_data((GObject *) link_editor->file_chooser,
 			AGS_LINK_EDITOR_OPEN_SPIN_BUTTON, spin_button);
-      gtk_box_pack_start((GtkBox *) hbox,
+      gtk_box_pack_start(hbox,
 			 (GtkWidget *) spin_button,
 			 FALSE, FALSE,
 			 0);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -49,11 +49,11 @@ typedef enum{
 
 struct _AgsLineMemberEditor
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
   
-  GtkVBox *line_member;
+  GtkBox *line_member;
 
   GtkButton *add;
   GtkMenu *popup;
@@ -65,7 +65,7 @@ struct _AgsLineMemberEditor
 
 struct _AgsLineMemberEditorClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_line_member_editor_get_type(void);

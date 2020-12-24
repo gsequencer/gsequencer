@@ -44,7 +44,7 @@ typedef struct _AgsEffectSeparatorClass AgsEffectSeparatorClass;
 
 struct _AgsEffectSeparator
 {
-  GtkHBox hbox;
+  GtkBox box;
 
   AgsRecallContainer *play_container;
   AgsRecallContainer *recall_container;
@@ -59,7 +59,7 @@ struct _AgsEffectSeparator
 
 struct _AgsEffectSeparatorClass
 {
-  GtkHBoxClass hbox;
+  GtkBoxClass box;
 };
 
 GType ags_effect_separator_get_type(void);

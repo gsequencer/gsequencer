@@ -48,7 +48,7 @@ typedef enum{
 
 struct _AgsInputCollectionEditor
 {
-  GtkTable table;
+  GtkGrid grid;
 
   guint flags;
   
@@ -57,13 +57,13 @@ struct _AgsInputCollectionEditor
   GtkSpinButton *first_line;
   GtkSpinButton *count;
   
-  GtkComboBoxText *soundcard;
+  GtkComboBox *soundcard;
   GtkSpinButton *audio_channel;
 };
 
 struct _AgsInputCollectionEditorClass
 {
-  GtkTableClass table;
+  GtkGridClass grid;
 };
 
 GType ags_input_collection_editor_get_type();

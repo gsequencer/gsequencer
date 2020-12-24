@@ -97,7 +97,7 @@ ags_link_collection_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_link_collection_editor = g_type_register_static(GTK_TYPE_TABLE,
+    ags_type_link_collection_editor = g_type_register_static(GTK_TYPE_GRID,
 							     "AgsLinkCollectionEditor",
 							     &ags_link_collection_editor_info,
 							     0);
@@ -166,7 +166,6 @@ ags_link_collection_editor_applicable_interface_init(AgsApplicableInterface *app
 void
 ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 {
-  GtkAlignment *alignment;
   GtkLabel *label;
 
   GtkCellRenderer *cell_renderer;
@@ -182,41 +181,45 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 
   link_collection_editor->channel_type = G_TYPE_NONE;
   
-  gtk_table_resize(GTK_TABLE(link_collection_editor),
-		   4, 2);
-  gtk_table_set_row_spacings(GTK_TABLE(link_collection_editor),
-			     4);
-  gtk_table_set_col_spacings(GTK_TABLE(link_collection_editor),
-			     2);
-
   /* link */
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(GTK_TABLE(link_collection_editor),
-		   GTK_WIDGET(alignment),
-		   0, 1,
-		   0, 1,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
-
   label = (GtkLabel *) gtk_label_new(i18n("link"));
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(label));
 
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(GTK_TABLE(link_collection_editor),
-		   GTK_WIDGET(alignment),
-		   1, 2,
-		   0, 1,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
+  gtk_label_set_yalign(label,
+		       0.5);
+
+  gtk_widget_set_valign(label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_vexpand(label,
+			 TRUE);
+  gtk_widget_set_hexpand(label,
+			 TRUE);
+  
+  gtk_grid_attach((GtkGrid *) link_collection_editor,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
 
   link_collection_editor->link = (GtkComboBox *) gtk_combo_box_new();
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(link_collection_editor->link));
+
+  gtk_widget_set_valign(label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_vexpand(label,
+			 TRUE);
+  gtk_widget_set_hexpand(label,
+			 TRUE);
+  
+  gtk_grid_attach((GtkGrid *) link_collection_editor,
+		  (GtkWidget *) link_collection_editor->link,
+		  1, 0,
+		  1, 1);
 		    
-  model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+  model = gtk_list_store_new(2,
+			     G_TYPE_STRING,
+			     G_TYPE_POINTER);
 		    
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
@@ -237,83 +240,73 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 			  GTK_TREE_MODEL(model));
 
   /* first line */
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(GTK_TABLE(link_collection_editor),
-		   GTK_WIDGET(alignment),
-		   0, 1,
-		   1, 2,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
-
   label = (GtkLabel *) gtk_label_new(i18n("first line"));
-  gtk_container_add(GTK_CONTAINER(alignment), GTK_WIDGET(label));
 
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(GTK_TABLE(link_collection_editor),
-		   GTK_WIDGET(alignment),
-		   1, 2,
-		   1, 2,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
-  
+  gtk_widget_set_valign(label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_vexpand(label,
+			 TRUE);
+  gtk_widget_set_hexpand(label,
+			 TRUE);
+
+  gtk_grid_attach((GtkGrid *) link_collection_editor,
+		  (GtkWidget *) label,
+		   0, 1,
+		   1, 1);
+
   link_collection_editor->first_line = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(link_collection_editor->first_line));
+  gtk_grid_attach((GtkGrid *) link_collection_editor,
+		  (GtkWidget *) link_collection_editor->first_line,
+		  1, 1,
+		  1, 1);
 
   /* first link line */
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(GTK_TABLE(link_collection_editor),
-		   GTK_WIDGET(alignment),
-		   0, 1,
-		   2, 3,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-
-		   0, 0);
-
   label = (GtkLabel *) gtk_label_new(i18n("first link line"));
-  gtk_container_add(GTK_CONTAINER(alignment), GTK_WIDGET(label));
 
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(GTK_TABLE(link_collection_editor),
-		   GTK_WIDGET(alignment),
-		   1, 2,
-		   2, 3,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
-  
+  gtk_widget_set_valign(label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_vexpand(label,
+			 TRUE);
+  gtk_widget_set_hexpand(label,
+			 TRUE);
+
+  gtk_grid_attach((GtkGrid *) link_collection_editor,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+
   link_collection_editor->first_link = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(link_collection_editor->first_link));
+  gtk_grid_attach((GtkGrid *) link_collection_editor,
+		  (GtkWidget *) link_collection_editor->first_link,
+		  1, 2,
+		  1, 1);
 
   /* count */
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(GTK_TABLE(link_collection_editor),
-		   GTK_WIDGET(alignment),
-		   0, 1,
-		   3, 4,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
-
   label = (GtkLabel *) gtk_label_new(i18n("count"));
-  gtk_container_add(GTK_CONTAINER(alignment), GTK_WIDGET(label));
 
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(GTK_TABLE(link_collection_editor),
-		   GTK_WIDGET(alignment),
-		   1, 2,
-		   3, 4,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
-  
+  gtk_widget_set_valign(label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_vexpand(label,
+			 TRUE);
+  gtk_widget_set_hexpand(label,
+			 TRUE);
+
+  gtk_grid_attach((GtkGrid *) link_collection_editor,
+		  (GtkWidget *) label,
+		  0, 3,
+		  1, 1);
+
   link_collection_editor->count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(link_collection_editor->count));
+  gtk_grid_attach((GtkGrid *) link_collection_editor,
+		  (GtkWidget *) link_collection_editor->count,
+		  1, 3,
+		  1, 1);
 }
 
 void
@@ -429,7 +422,6 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 
   if(gtk_combo_box_get_active_iter(link_collection_editor->link,
 				   &iter)){
-    AgsWindow *window;
     AgsMachine *machine, *link_machine;
     AgsMachineEditor *machine_editor;
 
@@ -453,9 +445,7 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     machine = machine_editor->machine;
     audio = machine->audio;
 
-    /* get window and application_context  */
-    window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
-  
+    /* get application_context */
     application_context = ags_application_context_get_instance();
 
     /* get first line */

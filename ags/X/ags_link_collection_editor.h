@@ -48,7 +48,7 @@ typedef enum{
 
 struct _AgsLinkCollectionEditor
 {
-  GtkTable table;
+  GtkGrid grid;
 
   guint flags;
   
@@ -62,7 +62,7 @@ struct _AgsLinkCollectionEditor
 
 struct _AgsLinkCollectionEditorClass
 {
-  GtkTableClass table;
+  GtkGridClass grid;
 };
 
 GType ags_link_collection_editor_get_type();

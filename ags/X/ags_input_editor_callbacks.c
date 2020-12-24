@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,8 +46,6 @@ ags_input_editor_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, A
     channel = line_editor->channel;
   
     if(channel != NULL){
-      GtkTreeIter iter;
-
       audio = AGS_AUDIO(channel->audio);
 
       if(audio != NULL){

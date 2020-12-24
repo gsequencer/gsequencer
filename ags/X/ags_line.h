@@ -60,7 +60,7 @@ typedef enum{
 
 struct _AgsLine
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
 
@@ -91,7 +91,7 @@ struct _AgsLine
 
 struct _AgsLineClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 
   void (*samplerate_changed)(AgsLine *line,
 			     guint samplerate, guint old_samplerate);

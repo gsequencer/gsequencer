@@ -56,7 +56,7 @@ typedef enum{
 
 struct _AgsLineEditor
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
 
@@ -76,7 +76,7 @@ struct _AgsLineEditor
 
 struct _AgsLineEditorClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_line_editor_get_type(void);

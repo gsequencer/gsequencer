@@ -84,7 +84,7 @@ ags_generic_preferences_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_generic_preferences = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_generic_preferences = g_type_register_static(GTK_TYPE_BOX,
 							  "AgsGenericPreferences", &ags_generic_preferences_info,
 							  0);
     
@@ -138,51 +138,54 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   GtkHBox *hbox;
   GtkLabel *label;
 
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(generic_preferences),
+				 GTK_ORIENTATION_VERTICAL);
+
   generic_preferences->autosave_thread = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("autosave thread"));
-  gtk_box_pack_start(GTK_BOX(generic_preferences),
-		     GTK_WIDGET(generic_preferences->autosave_thread),
+  gtk_box_pack_start((GtkBox *) generic_preferences,
+		     (GtkWidget *) generic_preferences->autosave_thread,
 		     FALSE, FALSE,
 		     0);
-
+		     
   /* segmentation */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_box_pack_start(GTK_BOX(generic_preferences),
-		     GTK_WIDGET(hbox),
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_pack_start((GtkBox *) generic_preferences,
+		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("segmentation"));
-  gtk_box_pack_start(GTK_BOX(hbox),
+  gtk_box_pack_start(hbox,
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
   
-  generic_preferences->segmentation = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_combo_box_set_model((GtkComboBox *) generic_preferences->segmentation,
+  generic_preferences->segmentation = (GtkComboBox *) gtk_combo_box_text_new();
+  gtk_combo_box_set_model(generic_preferences->segmentation,
 			  (GtkTreeModel *) ags_generic_preferences_create_segmentation());
   gtk_combo_box_set_active(GTK_COMBO_BOX(generic_preferences->segmentation),
 			   2);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(generic_preferences->segmentation),
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) generic_preferences->segmentation,
 		     FALSE, FALSE,
 		     0);
 
   /* engine mode */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_box_pack_start(GTK_BOX(generic_preferences),
-		     GTK_WIDGET(hbox),
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_pack_start((GtkBox *) generic_preferences,
+		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("engine mode"));
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
-  generic_preferences->engine_mode = (GtkComboBoxText *) gtk_combo_box_text_new();
+  generic_preferences->engine_mode = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_combo_box_text_append_text(generic_preferences->engine_mode,
 				 "deterministic");
   gtk_combo_box_text_append_text(generic_preferences->engine_mode,
@@ -190,29 +193,29 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_combo_box_set_active(GTK_COMBO_BOX(generic_preferences->engine_mode),
 			   0);
   
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(generic_preferences->engine_mode),
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) generic_preferences->engine_mode,
 		     FALSE, FALSE,
 		     0);
 
   /* rt-safe */
   generic_preferences->rt_safe = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("rt-safe"));
-  gtk_box_pack_start(GTK_BOX(generic_preferences),
-		     GTK_WIDGET(generic_preferences->rt_safe),
+  gtk_box_pack_start((GtkBox *) generic_preferences,
+		     (GtkWidget *) generic_preferences->rt_safe,
 		     FALSE, FALSE,
 		     0);
 
   /* GUI scale factor */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_box_pack_start(GTK_BOX(generic_preferences),
-		     GTK_WIDGET(hbox),
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_pack_start((GtkBox *) generic_preferences,
+		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("GUI scale factor"));
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
@@ -226,8 +229,8 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_combo_box_set_active(GTK_COMBO_BOX(generic_preferences->gui_scale),
 			   0);
   
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(generic_preferences->gui_scale),
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) generic_preferences->gui_scale,
 		     FALSE, FALSE,
 		     0);
 }

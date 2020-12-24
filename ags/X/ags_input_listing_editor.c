@@ -104,6 +104,7 @@ ags_input_listing_editor_get_type()
 void
 ags_input_listing_editor_class_init(AgsInputListingEditorClass *input_listing_editor)
 {
+  ags_input_listing_editor_parent_class = g_type_class_peek_parent(input_listing_editor);
 }
 
 void
@@ -309,7 +310,7 @@ ags_input_listing_editor_add_children(AgsInputListingEditor *input_listing_edito
 				      gboolean connect)
 {
   AgsPadEditor *pad_editor;
-  GtkVBox *vbox;
+  GtkBox *vbox;
 
   AgsChannel *start_channel;
   AgsChannel *channel, *next_pad, *nth_channel;
@@ -327,9 +328,10 @@ ags_input_listing_editor_add_children(AgsInputListingEditor *input_listing_edito
 
   /* instantiate pad editor vbox */
   if(nth == 0){
-    input_listing_editor->child = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(input_listing_editor),
-		       GTK_WIDGET(input_listing_editor->child),
+    input_listing_editor->child = (GtkBox *) gtk_vbox_new(GTK_ORIENTATION_VERTICAL,
+							  0);
+    gtk_box_pack_start((GtkBox *) input_listing_editor,
+		       (GtkWidget *) input_listing_editor->child,
 		       FALSE, FALSE,
 		       0);
   }
@@ -366,8 +368,8 @@ ags_input_listing_editor_add_children(AgsInputListingEditor *input_listing_edito
 		 "channel", channel,
 		 NULL);
     
-    gtk_box_pack_start(GTK_BOX(input_listing_editor->child),
-		       GTK_WIDGET(pad_editor),
+    gtk_box_pack_start((GtkBox *) input_listing_editor->child,
+		       (GtkWidget *) pad_editor,
 		       FALSE, FALSE,
 		       0);
 

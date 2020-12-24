@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -88,7 +88,7 @@ ags_export_soundcard_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_export_soundcard = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_export_soundcard = g_type_register_static(GTK_TYPE_BOX,
 						       "AgsExportSoundcard", &ags_export_soundcard_info,
 						       0);
     
@@ -149,16 +149,18 @@ void
 ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 {
   GtkHBox *hbox;
-  GtkTable *table;
+  GtkGrid *grid;
   GtkLabel *label;
+
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(export_soundcard),
+				 GTK_ORIENTATION_VERTICAL);
 
   export_soundcard->flags = 0;
 
-  /* table */
-  table = (GtkTable *) gtk_table_new(4, 2,
-				     FALSE);
-  gtk_box_pack_start(GTK_BOX(export_soundcard),
-		     GTK_WIDGET(table),
+  /* grid */
+  grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_pack_start((GtkBox *) export_soundcard,
+		     (GtkWidget *) grid,
 		     FALSE, FALSE,
 		     0);
 
@@ -167,20 +169,28 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 				    "label", i18n("backend"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
 
   export_soundcard->backend = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_table_attach(table,
-		   GTK_WIDGET(export_soundcard->backend),
-		   1, 2,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_halign((GtkWidget *) export_soundcard->backend,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) export_soundcard->backend,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		   (GtkWidget *) export_soundcard->backend,
+		   0, 2,
+		   1, 1);
   
 #ifdef AGS_WITH_WASAPI
   gtk_combo_box_text_append_text(export_soundcard->backend,
@@ -220,20 +230,28 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 				    "label", i18n("soundcard"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
 
   export_soundcard->card = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_table_attach(table,
-		   GTK_WIDGET(export_soundcard->card),
-		   1, 2,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_halign((GtkWidget *) export_soundcard->card,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) export_soundcard->card,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) export_soundcard->card,
+		  1, 1,
+		  1, 1);
 
   
   /* filename */
@@ -241,33 +259,45 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   2, 3,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
 
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(hbox),
-		   1, 2,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand((GtkWidget *) label,
+			 TRUE);
+  gtk_widget_set_vexpand((GtkWidget *) label,
+			 TRUE);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+  
+  hbox = (GtkHBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				 0);
+  
+  gtk_widget_set_halign((GtkWidget *) hbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) hbox,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) hbox,
+		  1, 2,
+		  1, 1);
 
   export_soundcard->filename = (GtkEntry *) gtk_entry_new();
   gtk_entry_set_text(export_soundcard->filename,
 		     "out.wav");
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(export_soundcard->filename),
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) export_soundcard->filename,
 		     TRUE, TRUE,
 		     0);
 
   export_soundcard->file_chooser_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(export_soundcard->file_chooser_button),
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) export_soundcard->file_chooser_button,
 		     TRUE, TRUE,
 		     0);
 
@@ -276,12 +306,20 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   3, 4,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
+
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand((GtkWidget *) label,
+			 TRUE);
+  gtk_widget_set_vexpand((GtkWidget *) label,
+			 TRUE);
+
+  gtk_grid_attach(grid,
+		   (GtkWidget *) label,
+		   0, 3,
+		   1, 1);
 
   export_soundcard->output_format = (GtkComboBoxText *) gtk_combo_box_text_new();
 
@@ -308,12 +346,16 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 
   gtk_combo_box_set_active((GtkComboBox *) export_soundcard->output_format,
 			   0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(export_soundcard->output_format),
-		   1, 2,
-		   3, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_halign((GtkWidget *) export_soundcard->output_format,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) export_soundcard->output_format,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) export_soundcard->output_format,
+		  1, 3,
+		  1, 1);
 }
 
 void

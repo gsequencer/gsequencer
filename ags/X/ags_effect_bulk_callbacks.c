@@ -74,22 +74,23 @@ ags_effect_bulk_remove_callback(GtkWidget *button,
 void
 ags_effect_bulk_plugin_browser_response_create_entry(AgsEffectBulk *effect_bulk,
 						     gchar *filename, gchar *effect){
-  GtkHBox *hbox;
+  GtkBox *hbox;
   GtkCheckButton *check_button;
   GtkLabel *label;
 
   gchar *str;
     
   /* create entry */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(effect_bulk->bulk_member),
-		     GTK_WIDGET(hbox),
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_pack_start(effect_bulk->bulk_member,
+		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
       
   check_button = (GtkCheckButton *) gtk_check_button_new();
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(check_button),
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) check_button,
 		     FALSE, FALSE,
 		     0);
 
@@ -97,8 +98,8 @@ ags_effect_bulk_plugin_browser_response_create_entry(AgsEffectBulk *effect_bulk,
 			filename,
 			effect);
   label = (GtkLabel *) gtk_label_new(str);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 

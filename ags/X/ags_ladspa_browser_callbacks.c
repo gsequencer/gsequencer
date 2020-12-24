@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -99,13 +99,13 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 					  AgsLadspaBrowser *ladspa_browser)
 {
   GtkComboBoxText *filename, *effect;
-  GtkTable *table;
+  GtkGrid *grid;
 
   AgsLadspaPlugin *ladspa_plugin;
 
   GList *child, *child_start;
 
-  gchar *str, *tmp;
+  gchar *str;
 
   guint effect_index;
   guint port_count;
@@ -114,7 +114,7 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 
   void *plugin_so;
   LADSPA_Descriptor *plugin_descriptor;
-  LADSPA_PortDescriptor *port_descriptor;
+  const LADSPA_PortDescriptor *port_descriptor;
 
   GRecMutex *base_plugin_mutex;
 
@@ -177,10 +177,10 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
     /* update ui - port information */
     port_count = plugin_descriptor->PortCount;
 
-    table = ladspa_browser->port_table;
+    grid = ladspa_browser->port_grid;
     
     child_start = 
-      child = gtk_container_get_children(GTK_CONTAINER(table));
+      child = gtk_container_get_children(GTK_CONTAINER(grid));
     
     while(child != NULL){
       gtk_widget_destroy(GTK_WIDGET(child->data));
@@ -205,22 +205,22 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 					"xalign", 0.0,
 					"label", str,
 					NULL);
-      gtk_table_attach_defaults(table,
-				GTK_WIDGET(label),
-				0, 1,
-				y, y + 1);
+      gtk_grid_attach(grid,
+		      (GtkWidget *) label,
+		      0, y,
+		      1, 1);
 
-      gtk_table_attach_defaults(table,
-				GTK_WIDGET(ags_ladspa_browser_combo_box_controls_new()),
-				1, 2,
-				y, y + 1);
+      gtk_grid_attach(grid,
+		      (GtkWidget *) ags_ladspa_browser_combo_box_controls_new(),
+		      1, y,
+		      1, 1);
 
       y++;
     }
 
     g_rec_mutex_unlock(base_plugin_mutex);
 
-    gtk_widget_show_all((GtkWidget *) table);
+    gtk_widget_show_all((GtkWidget *) grid);
   }else{
     /* update ui - empty */
     str = g_strdup_printf("%s: ",
@@ -245,10 +245,10 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
     g_free(str);
 
     /* update ui - no ports */
-    table = ladspa_browser->port_table;
+    grid = ladspa_browser->port_grid;
     
     child_start = 
-      child = gtk_container_get_children(GTK_CONTAINER(table));
+      child = gtk_container_get_children(GTK_CONTAINER(grid));
     
     while(child != NULL){
       gtk_widget_destroy(GTK_WIDGET(child->data));

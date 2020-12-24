@@ -60,7 +60,7 @@ typedef enum{
 
 struct _AgsEffectBulk
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
 
@@ -75,8 +75,8 @@ struct _AgsEffectBulk
   GtkButton *add;
   GtkButton *remove;
 
-  GtkVBox *bulk_member;
-  GtkTable *table;
+  GtkBox *bulk_member;
+  GtkGrid *grid;
 
   GList *plugin;
   GtkDialog *plugin_browser;
@@ -86,7 +86,7 @@ struct _AgsEffectBulk
 
 struct _AgsEffectBulkClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 
   void (*add_plugin)(AgsEffectBulk *effect_bulk,
 		     GList *control_type_name,

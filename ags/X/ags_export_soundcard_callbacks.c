@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,12 +21,12 @@
 
 #include <ags/X/ags_export_window.h>
 
+#include <ags/i18n.h>
+
 void
 ags_export_soundcard_backend_callback(GtkWidget *combo_box,
 				      AgsExportSoundcard *export_soundcard)
 {
-  AgsExportWindow *export_window;
-
   AgsApplicationContext *application_context;
 
   GList *start_soundcard, *soundcard;
@@ -35,9 +35,6 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
   gchar *device;
 
   gboolean found_card;
-  
-  export_window = (AgsExportWindow *) gtk_widget_get_ancestor(GTK_WIDGET(export_soundcard),
-							      AGS_TYPE_EXPORT_WINDOW);
 
   application_context = ags_application_context_get_instance();
 
@@ -172,8 +169,6 @@ void
 ags_export_soundcard_card_callback(GtkWidget *combo_box,
 				   AgsExportSoundcard *export_soundcard)
 {
-  AgsExportWindow *export_window;
-
   AgsApplicationContext *application_context;
 
   GList *start_soundcard, *soundcard;
@@ -182,9 +177,6 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
   gchar *device;
 
   gboolean found_card;
-  
-  export_window = (AgsExportWindow *) gtk_widget_get_ancestor(GTK_WIDGET(export_soundcard),
-							      AGS_TYPE_EXPORT_WINDOW);
 
   application_context = ags_application_context_get_instance();
 
@@ -325,8 +317,8 @@ ags_export_soundcard_file_chooser_button_callback(GtkWidget *file_chooser_button
   file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("Export to file ...",
 								      GTK_WINDOW(export_window),
 								      GTK_FILE_CHOOSER_ACTION_SAVE,
-								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-								      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+								      i18n("_Cancel"), GTK_RESPONSE_CANCEL,
+								      i18n("_Open"), GTK_RESPONSE_ACCEPT,
 								      NULL);
   if(gtk_dialog_run(GTK_DIALOG(file_chooser)) == GTK_RESPONSE_ACCEPT){
     char *filename;

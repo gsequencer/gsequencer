@@ -51,20 +51,20 @@ typedef enum{
 
 struct _AgsInputEditor
 {
-  GtkHBox hbox;
+  GtkBox box;
 
   guint flags;
   
   gchar *version;
   gchar *build_id;
 
-  GtkComboBoxText *soundcard;
+  GtkComboBox *soundcard;
   GtkSpinButton *audio_channel;
 };
 
 struct _AgsInputEditorClass
 {
-  GtkHBoxClass hbox;
+  GtkBoxClass box;
 };
 
 GType ags_input_editor_get_type(void);

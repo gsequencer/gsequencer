@@ -64,22 +64,23 @@ void
 ags_line_member_editor_plugin_browser_response_create_entry(AgsLineMemberEditor *line_member_editor,
 							    gchar *filename, gchar *effect)
 {
-  GtkHBox *hbox;
+  GtkBox *hbox;
   GtkCheckButton *check_button;
   GtkLabel *label;
 
   gchar *str;
   
   /* create entry */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
-		     GTK_WIDGET(hbox),
+  hbox = (GtkBox *) gtk_hbox_new(GTK_ORIENTATION_HORIZONTAL,
+				 0);
+  gtk_box_pack_start(line_member_editor->line_member,
+		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
       
   check_button = (GtkCheckButton *) gtk_check_button_new();
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(check_button),
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) check_button,
 		     FALSE, FALSE,
 		     0);
 
@@ -88,8 +89,8 @@ ags_line_member_editor_plugin_browser_response_create_entry(AgsLineMemberEditor 
 			effect);
     
   label = (GtkLabel *) gtk_label_new(str);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
   gtk_widget_show_all((GtkWidget *) hbox);
@@ -343,7 +344,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
 	if(pad != NULL){
 	  list_start =
-	    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(pad->data)->table);
+	    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(pad->data)->grid);
 
 	  while(list != NULL){
 	    if(AGS_EFFECT_LINE(list->data)->channel == line_editor->channel){
@@ -512,7 +513,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
     if(pad != NULL){
       list_start =
-	list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(pad->data)->table);
+	list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(pad->data)->grid);
 
       while(list != NULL){
 	if(AGS_EFFECT_LINE(list->data)->channel == line_editor->channel){

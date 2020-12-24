@@ -619,12 +619,14 @@ ags_line_member_set_property(GObject *gobject,
 		     "button-width", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_WIDTH),
 		     "button-height", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_HEIGHT),
 		     NULL);
-      }else if(GTK_IS_VSCALE(new_child)){
-	gtk_widget_set_size_request(new_child,
-				    gui_scale_factor * 16, gui_scale_factor * 100);
-      }else if(GTK_IS_HSCALE(new_child)){
-	gtk_widget_set_size_request(new_child,
-				    gui_scale_factor * 100, gui_scale_factor * 16);
+      }else if(GTK_IS_SCALE(new_child)){
+	if(gtk_orientable_get_orientation(GTK_ORIENTABLE(new_child)) == GTK_ORIENTATION_VERTICAL){
+	  gtk_widget_set_size_request(new_child,
+				      gui_scale_factor * 16, gui_scale_factor * 100);
+	}else{
+	  gtk_widget_set_size_request(new_child,
+				      gui_scale_factor * 100, gui_scale_factor * 16);
+	}
       }else if(AGS_IS_VINDICATOR(new_child)){
 	g_object_set(new_child,
 		     "segment-width", (guint) (gui_scale_factor * AGS_VINDICATOR_DEFAULT_SEGMENT_WIDTH),
@@ -658,7 +660,7 @@ ags_line_member_set_property(GObject *gobject,
       }else if(GTK_IS_SPIN_BUTTON(new_child)){
 	GtkAdjustment *new_adjustment;
 
-	new_adjustment = gtk_spin_button_get_adjustment(GTK_RANGE(new_child));
+	new_adjustment = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(new_child));
 
 	gtk_adjustment_set_lower(new_adjustment,
 				 gtk_adjustment_get_lower(adjustment));
@@ -680,7 +682,7 @@ ags_line_member_set_property(GObject *gobject,
 	gtk_adjustment_set_value(new_adjustment,
 				 gtk_adjustment_get_value(adjustment));
 
-	gtk_widget_queue_draw((AgsDial *) new_child);
+	gtk_widget_queue_draw((GtkWidget *) new_child);
       }else if(GTK_IS_TOGGLE_BUTTON(new_child)){
 	gtk_toggle_button_set_active((GtkToggleButton *) new_child,
 				     active);
@@ -698,7 +700,7 @@ ags_line_member_set_property(GObject *gobject,
     break;
   case PROP_WIDGET_LABEL:
     {
-      gchar *label;
+      const gchar *label;
 
       label = g_value_get_string(value);
 
@@ -758,7 +760,7 @@ ags_line_member_set_property(GObject *gobject,
     break;
   case PROP_PLUGIN_NAME:
     {
-      gchar *plugin_name;
+      const gchar *plugin_name;
 
       plugin_name = g_value_get_string(value);
 
@@ -771,7 +773,7 @@ ags_line_member_set_property(GObject *gobject,
     break;
   case PROP_FILENAME:
     {
-      gchar *filename;
+      const gchar *filename;
 
       filename = g_value_get_string(value);
 
@@ -801,7 +803,7 @@ ags_line_member_set_property(GObject *gobject,
     break;
   case PROP_EFFECT:
     {
-      gchar *effect;
+      const gchar *effect;
 
       effect = g_value_get_string(value);
 
@@ -814,7 +816,7 @@ ags_line_member_set_property(GObject *gobject,
     break;
   case PROP_SPECIFIER:
     {
-      gchar *specifier;
+      const gchar *specifier;
 
       specifier = g_value_get_string(value);
 
@@ -827,7 +829,7 @@ ags_line_member_set_property(GObject *gobject,
     break;
   case PROP_CONTROL_PORT:
     {
-      gchar *control_port;
+      const gchar *control_port;
 
       control_port = g_value_get_string(value);
 
@@ -858,8 +860,6 @@ ags_line_member_set_property(GObject *gobject,
     break;
   case PROP_STEP_COUNT:
     {
-      GtkWidget *child;
-      
       gdouble step_count;
 
       step_count = g_value_get_double(value);
@@ -1188,12 +1188,9 @@ ags_line_member_connect(AgsConnectable *connectable)
   if(line_member->widget_type == AGS_TYPE_DIAL){
     g_signal_connect_after(GTK_WIDGET(control), "value-changed",
 			   G_CALLBACK(ags_line_member_dial_changed_callback), line_member);
-  }else if(line_member->widget_type == GTK_TYPE_VSCALE){
+  }else if(g_type_is_a(line_member->widget_type, GTK_TYPE_SCALE)){
     g_signal_connect_after(GTK_WIDGET(control), "value-changed",
-			   G_CALLBACK(ags_line_member_vscale_changed_callback), line_member);
-  }else if(line_member->widget_type == GTK_TYPE_HSCALE){
-    g_signal_connect_after(GTK_WIDGET(control), "value-changed",
-			   G_CALLBACK(ags_line_member_hscale_changed_callback), line_member);
+			   G_CALLBACK(ags_line_member_scale_changed_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_SPIN_BUTTON){
     g_signal_connect_after(GTK_WIDGET(control), "value-changed",
 			   G_CALLBACK(ags_line_member_spin_button_changed_callback), line_member);
@@ -1232,16 +1229,10 @@ ags_line_member_disconnect(AgsConnectable *connectable)
 			G_CALLBACK(ags_line_member_dial_changed_callback),
 			line_member,
 			NULL);
-  }else if(line_member->widget_type == GTK_TYPE_VSCALE){
+  }else if(g_type_is_a(line_member->widget_type, GTK_TYPE_SCALE)){
     g_object_disconnect(GTK_WIDGET(control),
 			"any_signal::value-changed",
-			G_CALLBACK(ags_line_member_vscale_changed_callback),
-			line_member,
-			NULL);
-  }else if(line_member->widget_type == GTK_TYPE_HSCALE){
-    g_object_disconnect(GTK_WIDGET(control),
-			"any_signal::value-changed",
-			G_CALLBACK(ags_line_member_hscale_changed_callback),
+			G_CALLBACK(ags_line_member_scale_changed_callback),
 			line_member,
 			NULL);
   }else if(line_member->widget_type == GTK_TYPE_SPIN_BUTTON){
@@ -1412,9 +1403,6 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 	port_val = val;
 	
 	if(line_member->conversion != NULL){
-	  gdouble upper, lower, range, step;
-	  gdouble c_upper, c_lower, c_range;
-
 	  gboolean success;
 
 	  success = FALSE;
@@ -1477,14 +1465,9 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
   }
 
   if((AGS_LINE_MEMBER_RESET_BY_TASK & (line_member->flags)) != 0){
-    AgsWindow *window;
-
     AgsTask *task;
 
     AgsApplicationContext *application_context;
-
-    window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) line_member,
-						   AGS_TYPE_WINDOW);
   
     application_context = ags_application_context_get_instance();
 
@@ -1576,9 +1559,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
   AgsPort *audio_port, *channel_port;
   AgsPort *recall_audio_port, *recall_channel_port;
 
-  GList *recall;
   GList *port;
-  GList *list_start;
+  GList *start_list;
   
   gchar *specifier;
 
@@ -1622,24 +1604,24 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
     
   /* play context */
   g_object_get(channel,
-	       "play", &list_start,
+	       "play", &start_list,
 	       NULL);
 
-  channel_port = ags_line_member_find_specifier(list_start,
+  channel_port = ags_line_member_find_specifier(start_list,
 						specifier);
 
-  g_list_free_full(list_start,
+  g_list_free_full(start_list,
 		   g_object_unref);  
 
   /* recall context */
   g_object_get(channel,
-	       "recall", &list_start,
+	       "recall", &start_list,
 	       NULL);
     
-  recall_channel_port = ags_line_member_find_specifier(list_start,
+  recall_channel_port = ags_line_member_find_specifier(start_list,
 						       specifier);
 
-  g_list_free_full(list_start,
+  g_list_free_full(start_list,
 		   g_object_unref);
 
   if(channel_port != NULL){
@@ -1655,28 +1637,28 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
   /* search audio */
   if(channel_port == NULL &&
      recall_channel_port == NULL){
-    GList *list_start;
+    GList *start_list;
 
     /* play context */
     g_object_get(audio,
-		 "play", &list_start,
+		 "play", &start_list,
 		 NULL);
 
-    audio_port = ags_line_member_find_specifier(list_start,
+    audio_port = ags_line_member_find_specifier(start_list,
 						specifier);
 
-    g_list_free_full(list_start,
+    g_list_free_full(start_list,
 		     g_object_unref);
 
     /* recall context */
     g_object_get(audio,
-		 "recall", &list_start,
+		 "recall", &start_list,
 		 NULL);
 
-    recall_audio_port = ags_line_member_find_specifier(list_start,
+    recall_audio_port = ags_line_member_find_specifier(start_list,
 						       specifier);
 
-    g_list_free_full(list_start,
+    g_list_free_full(start_list,
 		     g_object_unref);
 
     if(audio_port != NULL){
@@ -1856,12 +1838,12 @@ ags_line_member_chained_event(AgsLineMember *line_member)
 							      AGS_TYPE_EFFECT_LINE);
       
       list_effect_line =
-	list_effect_line_start = gtk_container_get_children(GTK_CONTAINER(effect_pad->table));
+	list_effect_line_start = gtk_container_get_children(GTK_CONTAINER(effect_pad->grid));
 
       while((list_effect_line = ags_effect_line_find_next_grouped(list_effect_line)) != NULL){
 	if(list_effect_line->data != effect_line){
 	  list_line_member =
-	    list_line_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_LINE(list_effect_line->data)->table);
+	    list_line_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_LINE(list_effect_line->data)->grid);
 
 	  while(list_line_member != NULL){
 	    if(!g_strcmp0(line_member->specifier,

@@ -93,7 +93,7 @@ ags_line_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_line_editor = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_line_editor = g_type_register_static(GTK_TYPE_BOX,
 						  "AgsLineEditor", &ags_line_editor_info,
 						  0);
 
@@ -166,6 +166,9 @@ ags_line_editor_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_line_editor_init(AgsLineEditor *line_editor)
 {
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(line_editor),
+				 GTK_ORIENTATION_VERTICAL);
+
   line_editor->flags = 0;
   
   line_editor->version = AGS_LINE_EDITOR_DEFAULT_VERSION;

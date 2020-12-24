@@ -83,7 +83,7 @@ ags_input_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_input_editor = g_type_register_static(GTK_TYPE_HBOX,
+    ags_type_input_editor = g_type_register_static(GTK_TYPE_BOX,
 						   "AgsInputEditor", &ags_input_editor_info,
 						   0);
 
@@ -127,6 +127,9 @@ ags_input_editor_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_input_editor_init(AgsInputEditor *input_editor)
 {
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(input_editor),
+				 GTK_ORIENTATION_HORIZONTAL);
+  
   g_signal_connect_after((GObject *) input_editor, "parent_set",
 			 G_CALLBACK(ags_input_editor_parent_set_callback), (gpointer) input_editor);
 
@@ -264,8 +267,6 @@ ags_input_editor_reset(AgsApplicable *applicable)
     
     GObject *input_soundcard, *current;
 
-    GList *list;
-    
     gint i;
     gboolean found;
 
