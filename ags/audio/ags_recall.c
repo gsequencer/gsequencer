@@ -3872,6 +3872,67 @@ ags_recall_remove_recall_dependency(AgsRecall *recall, AgsRecallDependency *reca
 }
 
 /**
+ * ags_recall_get_port:
+ * @recall: the #AgsRecall
+ * 
+ * Get port.
+ * 
+ * Returns: (element-type AgsAudio.Port) (transfer full): the #GList-struct containig #AgsPort
+ * 
+ * Since: 3.7.18
+ */
+GList*
+ags_recall_get_port(AgsRecall *recall)
+{
+  GList *port;
+
+  if(!AGS_IS_RECALL(recall)){
+    return(NULL);
+  }
+
+  g_object_get(recall,
+	       "port", &port,
+	       NULL);
+
+  return(port);
+}
+
+/**
+ * ags_recall_set_port:
+ * @recall: the #AgsRecall
+ * @port: (element-type AgsAudio.Port) (transfer full): the #GList-struct containing #AgsPort
+ * 
+ * Set port by replacing existing.
+ * 
+ * Since: 3.7.18
+ */
+void
+ags_recall_set_port(AgsRecall *recall,
+		    GList *port)
+{
+  GList *start_port;
+  
+  GRecMutex *recall_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+    
+  g_rec_mutex_lock(recall_mutex);
+
+  start_port = recall->port;
+  recall->port = port;
+  
+  g_rec_mutex_unlock(recall_mutex);
+
+  g_list_free_full(start_port,
+		   (GDestroyNotify) g_object_unref);
+}
+
+/**
  * ags_recall_add_port:
  * @recall: the #AgsRecall
  * @port: the #AgsPort

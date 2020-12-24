@@ -206,6 +206,7 @@ EXTRA_DIST += \
 	ags/test/file/meson.build \
 	po/meson.build \
 	ags/meson.build \
+	listing_script.py \
 	meson.build \
 	meson_options.txt
 
@@ -246,6 +247,7 @@ CLEANFILES = \
 	docs/listings/file_property.c \
 	docs/listings/file_read.c \
 	docs/listings/file_write.c \
+	docs/listings/find_port.c \
 	docs/listings/fx_factory.c \
 	docs/listings/linking_prerequisites.c \
 	docs/listings/linking_safe.c \
