@@ -610,7 +610,7 @@ ags_bulk_member_set_property(GObject *gobject,
     break;
   case PROP_WIDGET_LABEL:
     {
-      const gchar *label;
+      gchar *label;
 
       label = g_value_get_string(value);
 
@@ -670,7 +670,7 @@ ags_bulk_member_set_property(GObject *gobject,
     break;
   case PROP_PLUGIN_NAME:
     {
-      const gchar *plugin_name;
+      gchar *plugin_name;
 
       plugin_name = g_value_get_string(value);
 
@@ -688,7 +688,7 @@ ags_bulk_member_set_property(GObject *gobject,
   case PROP_FILENAME:
     {
       gchar *str;
-      const gchar *filename;
+      gchar *filename;
 
       filename = g_value_get_string(value);
 
@@ -722,7 +722,7 @@ ags_bulk_member_set_property(GObject *gobject,
     break;
   case PROP_EFFECT:
     {
-      const gchar *effect;
+      gchar *effect;
 
       effect = g_value_get_string(value);
 
@@ -739,7 +739,7 @@ ags_bulk_member_set_property(GObject *gobject,
     break;
   case PROP_SPECIFIER:
     {
-      const gchar *specifier;
+      gchar *specifier;
 
       specifier = g_value_get_string(value);
 
@@ -765,7 +765,7 @@ ags_bulk_member_set_property(GObject *gobject,
     break;
   case PROP_CONTROL_PORT:
     {
-      const gchar *control_port;
+      gchar *control_port;
 
       control_port = g_value_get_string(value);
 

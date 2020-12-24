@@ -139,7 +139,6 @@ void
 ags_machine_class_init(AgsMachineClass *machine)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
 
   GParamSpec *param_spec;
 
@@ -239,9 +238,6 @@ ags_machine_class_init(AgsMachineClass *machine)
   g_object_class_install_property(gobject,
 				  PROP_MACHINE_NAME,
 				  param_spec);
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) machine;
 
   /* AgsMachineClass */
   machine->samplerate_changed = NULL;
@@ -432,7 +428,7 @@ ags_machine_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_machine_init(AgsMachine *machine)
 {
-  GtkVBox *vbox;
+  GtkBox *vbox;
   GtkFrame *frame;
 
   AgsApplicationContext *application_context;
@@ -461,8 +457,8 @@ ags_machine_init(AgsMachine *machine)
   machine->bank_0 = 0;
   machine->bank_1 = 0;
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-				  0);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
   
   frame = (GtkFrame *) gtk_frame_new(NULL);
   gtk_container_add((GtkContainer *) machine,
@@ -735,7 +731,6 @@ ags_machine_set_property(GObject *gobject,
 
       if(machine->audio != NULL){
 	GList *pad;
-	GList *list;
 
 	g_object_unref(G_OBJECT(machine->audio));
 
@@ -1125,9 +1120,7 @@ ags_machine_finalize(GObject *gobject)
   
   AgsApplicationContext *application_context;
   
-  GList *list, *list_start;
-
-  char *str;
+  GList *start_list;
 
   application_context = ags_application_context_get_instance();
 
@@ -1150,15 +1143,15 @@ ags_machine_finalize(GObject *gobject)
 
   /* remove from sound provider */
   list =
-    list_start = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+    start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
-  list_start = g_list_remove(list_start,
+  start_list = g_list_remove(start_list,
 			     machine->audio);
   ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
-			       list_start);
+			       start_list);
 
   g_object_unref(machine->audio);
-  g_list_foreach(list_start,
+  g_list_foreach(start_list,
 		 (GFunc) g_object_unref,
 		 NULL);
   
@@ -2618,8 +2611,6 @@ ags_machine_set_run_extended(AgsMachine *machine,
 			     gboolean run,
 			     gboolean sequencer, gboolean notation, gboolean wave, gboolean midi)
 {
-  AgsWindow *window;
-
   AgsApplicationContext *application_context;
 
   GList *start_list;
@@ -2630,8 +2621,6 @@ ags_machine_set_run_extended(AgsMachine *machine,
     return;
   }
   
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
-
   application_context = ags_application_context_get_instance();
 
   no_soundcard = FALSE;
@@ -2767,17 +2756,12 @@ ags_machine_set_run_extended(AgsMachine *machine,
 GtkListStore*
 ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
 {
-  AgsWindow *window;
-  
   AgsApplicationContext *application_context;
 
   GtkListStore *model;
 
   GList *start_list, *list;
   GtkTreeIter iter;
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						 AGS_TYPE_WINDOW);
 
   application_context = ags_application_context_get_instance();
   
@@ -2833,8 +2817,6 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
 GtkListStore*
 ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
 {
-  AgsWindow *window;
-  
   AgsApplicationContext *application_context;
 
   GtkListStore *model;
@@ -2842,14 +2824,7 @@ ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
   GList *start_list, *list;
   GtkTreeIter iter;
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						 AGS_TYPE_WINDOW);
-
-  if(window != NULL){
-    application_context = ags_application_context_get_instance();
-  }else{
-    application_context = NULL;
-  }
+  application_context = ags_application_context_get_instance();
   
   model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
 
@@ -2992,14 +2967,10 @@ ags_machine_open_files(AgsMachine *machine,
 		       gboolean overwrite_channels,
 		       gboolean create_channels)
 {
-  AgsWindow *window;
-
   AgsOpenFile *open_file;
 
   AgsApplicationContext *application_context;
-  
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
-  
+    
   application_context = ags_application_context_get_instance();
 
   /* instantiate open file task */

@@ -215,7 +215,7 @@ ags_effect_separator_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
-      const gchar *filename;
+      gchar *filename;
       
       filename = g_value_get_string(value);
 
@@ -228,7 +228,7 @@ ags_effect_separator_set_property(GObject *gobject,
     break;
   case PROP_EFFECT:
     {
-      const gchar *effect;
+      gchar *effect;
       
       effect = g_value_get_string(value);
 
@@ -241,7 +241,7 @@ ags_effect_separator_set_property(GObject *gobject,
     break;
   case PROP_TEXT:
     {
-      const gchar *text;
+      gchar *text;
       
       text = g_value_get_string(value);
 

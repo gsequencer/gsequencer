@@ -162,7 +162,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     GList *task;
     GList *list;
     
-    const gchar *filename;
+    gchar *filename;
 
     gboolean file_exists;
     gboolean live_performance;
