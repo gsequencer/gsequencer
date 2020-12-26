@@ -202,6 +202,29 @@
       The following signals are triggered during playback ::play, ::tact and ::done - 
       ::cancel and ::remove during termination.
     </para>
+
+    <sect2>
+      <title>Get port of recall</title>
+      <para>
+	Ports are accessed as <code language="C">GList*</code> from recall by accessing AgsRecall:port property.
+      </para>
+
+      <para>
+	Below an example shows howto instantiate an application context implementation, obtain it by its generic function
+	<code language="C">ags_application_context_get_instance()</code> and create an audio object with ags-fx recalls.
+      </para>
+
+      <para>
+	The recalls port &quot;./volume[0]&quot; is modified by <code language="C">ags_port_safe_write(AgsPort*, GValue*)</code>.
+      </para>
+
+      <example>
+	<title>Modify recall port</title>
+	<programlisting language="C">
+<xi:include href="../listings/find_port.c" parse="text" />
+	</programlisting>
+      </example>
+    </sect2>
   </sect1>
 
   <sect1>

@@ -5,7 +5,16 @@ ags (3.8.0)
 	* TODO:JK: implemented AgsCompositeEdit
 	* TODO:JK: implemented AgsCompositeToolbar
 	* fixed deprecated Gtk+-3.0 symbols?
-	* fixed const gchar?
+
+ags (3.7.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing listing of developer manual
+
+ags (3.7.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved developer manual
 
 ags (3.7.17)
 

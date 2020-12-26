@@ -21,12 +21,16 @@ AgsApplicationContext *application_context;
 GObject *current_soundcard;
 
 GList *start_soundcard;
-GList *start_recall;
+GList *start_recall, *recall;
+GList *start_port, *port;
 
 guint audio_channels;
 guint output_pads, input_pads;
+gfloat volume;
 
 ags_audio_application_context_new();
+
+application_context = ags_application_context_get_instance();
 
 /* get application context and soundcard */
 application_context = ags_application_context_get_instance();
@@ -39,7 +43,7 @@ current_soundcard = start_soundcard->data;
 audio_channels = 2;
 
 output_pads = 1;
-input_pads = 88;
+input_pads = 1;
 
 audio = ags_audio_new(current_soundcard);
 ags_audio_set_audio_channels(audio,
@@ -50,24 +54,6 @@ ags_audio_set_pads(audio,
 ags_audio_set_pads(audio,
                    AGS_TYPE_INPUT,
                    input_pads);
-
-/* add ags-fx-notation */
-play_container = ags_recall_container_new();
-recall_container = ags_recall_container_new();
-
-start_recall = ags_fx_factory_create(audio,
-				     play_container, recall_container,
-				     "ags-fx-notation",
-				     NULL,
-				     NULL,
-				     0, 0,
-				     0, 0,
-				     0,
-				     (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
-				     0);
-
-g_list_free_full(start_recall,
-		 (GDestroyNotify) g_object_unref);
 
 /* add ags-fx-volume */
 play_container = ags_recall_container_new();
@@ -83,6 +69,39 @@ start_recall = ags_fx_factory_create(audio,
 				     0,
 				     (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
 				     0);
+
+recall = start_recall;
+
+volume = 0.75;
+
+while(recall != NULL){
+  start_port = NULL;
+  g_object_get(recall->data,
+	       "port", &start_port,
+	       NULL);
+
+  port = ags_port_find_specifier(start_port,
+				 "./volume[0]");
+
+  if(port != NULL){
+    GValue value = G_VALUE_INIT;
+
+    g_value_init(&value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(&value,
+		      volume);
+    
+    ags_port_safe_write(port->data,
+			&value);
+  }
+
+  g_list_free_full(start_port,
+		   (GDestroyNotify) g_object_unref);
+  
+  /* iterate */
+  recall = recall->next;
+}
 
 g_list_free_full(start_recall,
 		 (GDestroyNotify) g_object_unref);
