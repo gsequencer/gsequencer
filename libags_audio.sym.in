@@ -2606,6 +2606,8 @@ ags_recall_get_recall_dependency
 ags_recall_set_recall_dependency
 ags_recall_add_recall_dependency
 ags_recall_remove_recall_dependency
+ags_recall_get_port
+ags_recall_set_port
 ags_recall_add_port
 ags_recall_remove_port
 ags_recall_get_children

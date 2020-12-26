@@ -125,6 +125,7 @@ EXTRA_DIST = config.rpath \
 	ags_functional_osc_xmlrpc_server_test_password_store.xml \
 	ags_functional_notation_edit_test.xml \
 	ags_functional_audio_config_test.xml \
+	pot_exclude.txt \
 	m4/Makefile.am \
 	m4/Makefile.in \
 	po/POTFILES.in.in \
@@ -206,6 +207,7 @@ EXTRA_DIST += \
 	ags/test/file/meson.build \
 	po/meson.build \
 	ags/meson.build \
+	listing_script.py \
 	meson.build \
 	meson_options.txt
 
@@ -246,6 +248,7 @@ CLEANFILES = \
 	docs/listings/file_property.c \
 	docs/listings/file_read.c \
 	docs/listings/file_write.c \
+	docs/listings/find_port.c \
 	docs/listings/fx_factory.c \
 	docs/listings/linking_prerequisites.c \
 	docs/listings/linking_safe.c \
@@ -475,6 +478,7 @@ devdoclistings = \
 	docs/listings/file_property.c.in \
 	docs/listings/file_read.c.in \
 	docs/listings/file_write.c.in \
+	docs/listings/find_port.c.in \
 	docs/listings/fx_factory.c.in \
 	docs/listings/linking_prerequisites.c.in \
 	docs/listings/linking_safe.c.in \
@@ -3213,7 +3217,7 @@ check-gettext:
 	"'checking whether to use NLS... yes'!" ; exit 1 ; fi
 
 update-po: check-gettext
-	@find $(srcdir)/ags/{util,lib,object,thread,file,server,plugin,audio,widget,X}/ -path $(srcdir)/ags/audio/audio-unit -prune -o -name "*.c" -print | sort > $(srcdir)/po/POTFILES.in.2 ; \
+	@find $(srcdir)/ags/{util,lib,object,thread,file,server,plugin,audio,widget,X}/ -name "*.c" -print | grep -vZf $(srcdir)/pot_exclude.txt | sort > $(srcdir)/po/POTFILES.in.2 ; \
 	if diff $(srcdir)/po/POTFILES.in $(srcdir)/po/POTFILES.in.2 >/dev/null 2>&1 ; then \
 		rm -f $(srcdir)/po/POTFILES.in.2 ; \
 	else \
