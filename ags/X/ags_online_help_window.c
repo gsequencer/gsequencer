@@ -119,8 +119,8 @@ void
 ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 {
 #if defined(AGS_WITH_WEBKIT)
-  GtkVBox *vbox;
-  GtkHBox *navigation_hbox;
+  GtkBox *vbox;
+  GtkBox *navigation_hbox;
   GtkLabel *label;
   
   gchar *start_filename;
@@ -134,14 +134,14 @@ ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window)
 	       "default-height", 600,
 	       NULL);
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-				  0);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
   gtk_container_add((GtkContainer *) online_help_window,
 		    (GtkWidget *) vbox);
 
   /* navigation */
-  navigation_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-					     0);
+  navigation_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+					   0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) navigation_hbox,
 		     FALSE, FALSE,
