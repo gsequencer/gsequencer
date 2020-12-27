@@ -211,7 +211,7 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 
   machine_editor->notebook =
     notebook = (GtkNotebook *) gtk_notebook_new();
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(machine_editor),
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) machine_editor),
 		     (GtkWidget *) notebook,
 		     TRUE, TRUE,
 		     0);
@@ -252,23 +252,20 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 			   (GtkWidget *) gtk_label_new(i18n("resize channels")));
 
   /* GtkButton's in GtkDialog->action_area  */
-  machine_editor->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(machine_editor),
-		     (GtkWidget *) machine_editor->apply,
-		     FALSE, FALSE,
-		     0);
+  machine_editor->apply = (GtkButton *) gtk_button_new_with_label(i18n("_Apply"));
+  gtk_dialog_add_action_widget((GtkDialog *) machine_editor,
+			       (GtkWidget *) machine_editor->apply,
+			       GTK_RESPONSE_NONE);
 
-  machine_editor->ok = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OK);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(machine_editor),
-		     (GtkWidget *) machine_editor->ok,
-		     FALSE, FALSE,
-		     0);
+  machine_editor->ok = (GtkButton *) gtk_button_new_with_label(i18n("_OK"));
+  gtk_dialog_add_action_widget((GtkDialog *) machine_editor,
+			       (GtkWidget *) machine_editor->ok,
+			       GTK_RESPONSE_NONE);
 
-  machine_editor->cancel = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(machine_editor),
-		     (GtkWidget *) machine_editor->cancel,
-		     FALSE, FALSE,
-		     0);
+  machine_editor->cancel = (GtkButton *) gtk_button_new_with_label("_Cancel");
+  gtk_dialog_add_action_widget((GtkDialog *) machine_editor,
+			       (GtkWidget *) machine_editor->cancel,
+			       GTK_RESPONSE_NONE);
 }
 
 void
@@ -454,32 +451,32 @@ ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
 
   /* AgsOutput */
   machine_editor->output_editor = ags_listing_editor_new(AGS_TYPE_OUTPUT);
-  gtk_scrolled_window_add_with_viewport(machine_editor->output_scrolled_window,
-					(GtkWidget *) machine_editor->output_editor);
+  gtk_container_add((GtkContainer *) machine_editor->output_scrolled_window,
+		    (GtkWidget *) machine_editor->output_editor);
 
   /* AgsInput */
   machine_editor->input_editor = ags_listing_editor_new(AGS_TYPE_INPUT);
-  gtk_scrolled_window_add_with_viewport(machine_editor->input_scrolled_window,
-					(GtkWidget *) machine_editor->input_editor);
+  gtk_container_add((GtkContainer *) machine_editor->input_scrolled_window,
+		    (GtkWidget *) machine_editor->input_editor);
 
   /* AgsOutput link editor */
   machine_editor->output_link_editor = ags_property_collection_editor_new(AGS_TYPE_LINK_COLLECTION_EDITOR,
 									  1,
 									  output_link_editor_child_parameter);
-  gtk_scrolled_window_add_with_viewport(machine_editor->output_link_editor_scrolled_window,
-					(GtkWidget *) machine_editor->output_link_editor);
+  gtk_container_add((GtkContainer *) machine_editor->output_link_editor_scrolled_window,
+		    (GtkWidget *) machine_editor->output_link_editor);
 
   /* AgsInput link editor */
   machine_editor->input_link_editor = ags_property_collection_editor_new(AGS_TYPE_LINK_COLLECTION_EDITOR,
 									 1,
 									 input_link_editor_child_parameter);
-  gtk_scrolled_window_add_with_viewport(machine_editor->input_link_editor_scrolled_window,
-					(GtkWidget *) machine_editor->input_link_editor);
+  gtk_container_add((GtkContainer *) machine_editor->input_link_editor_scrolled_window,
+		    (GtkWidget *) machine_editor->input_link_editor);
 
   /* resize editor */
   machine_editor->resize_editor = ags_resize_editor_new();
-  gtk_scrolled_window_add_with_viewport(machine_editor->resize_editor_scrolled_window,
-					(GtkWidget *) machine_editor->resize_editor);
+  gtk_container_add((GtkContainer *) machine_editor->resize_editor_scrolled_window,
+		    (GtkWidget *) machine_editor->resize_editor);
 }
 
 void

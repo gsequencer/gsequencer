@@ -72,8 +72,9 @@ ags_machine_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMac
 							  i);
 
       if(audio_thread != NULL){
-	ags_audio_thread_set_do_fx_staging(audio_thread, TRUE);
-	ags_audio_thread_set_staging_program(audio_thread,
+	ags_audio_thread_set_do_fx_staging((AgsAudioThread *) audio_thread,
+					   TRUE);
+	ags_audio_thread_set_staging_program((AgsAudioThread *) audio_thread,
 					     staging_program,
 					     1);
 	    
@@ -94,13 +95,21 @@ ags_machine_check_message_callback(GObject *application_context, AgsMachine *mac
 int
 ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine)
 {
-  AgsWindow *window = AGS_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET(handle_box)));
-
   if(event->button == 3){
-    gtk_menu_popup (GTK_MENU (machine->popup),
-                    NULL, NULL, NULL, NULL,
-                    event->button, event->time);
+    gtk_menu_popup_at_widget(GTK_MENU(machine->popup),
+			     handle_box,
+			     GDK_GRAVITY_SOUTH_EAST,
+			     GDK_GRAVITY_NORTH_WEST,
+			     NULL);
   }else if(event->button == 1){
+    AgsWindow *window;
+
+    AgsApplicationContext *application_context;
+
+    application_context = ags_application_context_get_instance();
+    
+    window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+    
     window->selected = machine;
   }
 
@@ -110,9 +119,10 @@ ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, 
 void
 ags_machine_popup_move_up_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
-  GValue val={0,};
+  GValue val = G_VALUE_INIT;
 
-  g_value_init (&val, G_TYPE_INT);
+  g_value_init(&val,
+	       G_TYPE_INT);
 
   gtk_container_child_get_property(GTK_CONTAINER(gtk_widget_get_parent(GTK_WIDGET(machine))),
 				   GTK_WIDGET(machine),
@@ -259,15 +269,13 @@ ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machin
     dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("rename"),
 						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(machine)),
 						       GTK_DIALOG_DESTROY_WITH_PARENT,
-						       GTK_STOCK_OK,
-						       GTK_RESPONSE_ACCEPT,
-						       GTK_STOCK_CANCEL,
-						       GTK_RESPONSE_REJECT,
+						       "_OK", GTK_RESPONSE_ACCEPT,
+						       "_Cancel", GTK_RESPONSE_REJECT,
 						       NULL);
 
   entry = (GtkEntry *) gtk_entry_new();
   gtk_entry_set_text(entry, machine->machine_name);
-  gtk_box_pack_start(gtk_dialog_get_content_area(dialog),
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(dialog),
 		     (GtkWidget *) entry,
 		     FALSE, FALSE,
 		     0);
@@ -323,10 +331,8 @@ ags_machine_popup_rename_audio_activate_callback(GtkWidget *widget, AgsMachine *
     dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("rename audio"),
 						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(machine)),
 						       GTK_DIALOG_DESTROY_WITH_PARENT,
-						       GTK_STOCK_OK,
-						       GTK_RESPONSE_ACCEPT,
-						       GTK_STOCK_CANCEL,
-						       GTK_RESPONSE_REJECT,
+						       "_OK", GTK_RESPONSE_ACCEPT,
+						       "_Cancel", GTK_RESPONSE_REJECT,
 						       NULL);
 
   g_object_get(audio,
@@ -406,10 +412,8 @@ ags_machine_popup_reposition_audio_activate_callback(GtkWidget *widget, AgsMachi
     dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("reposition audio"),
 						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(machine)),
 						       GTK_DIALOG_DESTROY_WITH_PARENT,
-						       GTK_STOCK_OK,
-						       GTK_RESPONSE_ACCEPT,
-						       GTK_STOCK_CANCEL,
-						       GTK_RESPONSE_REJECT,
+						       "_OK", GTK_RESPONSE_ACCEPT,
+						       "_Cancel", GTK_RESPONSE_REJECT,
 						       NULL);
 
   if(position >= 0){
@@ -766,8 +770,9 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
 							     i);
 
 	    if(channel_thread != NULL){
-	      ags_channel_thread_set_do_fx_staging(channel_thread, TRUE);
-	      ags_channel_thread_set_staging_program(channel_thread,
+	      ags_channel_thread_set_do_fx_staging((AgsChannelThread *) channel_thread,
+						   TRUE);
+	      ags_channel_thread_set_staging_program((AgsChannelThread *) channel_thread,
 						     staging_program,
 						     1);
 	    
@@ -831,8 +836,9 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
 							     i);
 
 	    if(channel_thread != NULL){
-	      ags_channel_thread_set_do_fx_staging(channel_thread, TRUE);
-	      ags_channel_thread_set_staging_program(channel_thread,
+	      ags_channel_thread_set_do_fx_staging((AgsChannelThread *) channel_thread,
+						   TRUE);
+	      ags_channel_thread_set_staging_program((AgsChannelThread *) channel_thread,
 						     staging_program,
 						     1);
 	    
@@ -922,7 +928,7 @@ ags_machine_resize_pads_callback(AgsMachine *machine,
   AgsPlayback *playback;
   AgsChannel *start_output;
   AgsChannel *start_input;
-  AgsChannel *channel, *next_pad, *next_channel;
+  AgsChannel *channel, *next_channel;
 
   GList *pad_list;
 
@@ -966,8 +972,9 @@ ags_machine_resize_pads_callback(AgsMachine *machine,
 							     i);
 
 	    if(channel_thread != NULL){
-	      ags_channel_thread_set_do_fx_staging(channel_thread, TRUE);
-	      ags_channel_thread_set_staging_program(channel_thread,
+	      ags_channel_thread_set_do_fx_staging((AgsChannelThread *) channel_thread,
+						   TRUE);
+	      ags_channel_thread_set_staging_program((AgsChannelThread *) channel_thread,
 						     staging_program,
 						     1);
 	    
@@ -1020,8 +1027,9 @@ ags_machine_resize_pads_callback(AgsMachine *machine,
 							     i);
 
 	    if(channel_thread != NULL){
-	      ags_channel_thread_set_do_fx_staging(channel_thread, TRUE);
-	      ags_channel_thread_set_staging_program(channel_thread,
+	      ags_channel_thread_set_do_fx_staging((AgsChannelThread *) channel_thread,
+						   TRUE);
+	      ags_channel_thread_set_staging_program((AgsChannelThread *) channel_thread,
 						     staging_program,
 						     1);
 	    

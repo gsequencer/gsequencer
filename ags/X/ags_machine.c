@@ -1142,8 +1142,7 @@ ags_machine_finalize(GObject *gobject)
 		      NULL);
 
   /* remove from sound provider */
-  list =
-    start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+  start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
   start_list = g_list_remove(start_list,
 			     machine->audio);
@@ -1764,7 +1763,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
   GList *list_output_pad_next, *list_output_pad_next_start;
   GList *list_input_pad_next, *list_input_pad_next_start;
 
-  guint i, j;
+  guint i;
 
   audio = machine->audio;
 
@@ -1777,8 +1776,6 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
   if(audio_channels > audio_channels_old){
     /* grow lines */
     AgsPad *pad;
-
-    GList *list, *list_start;
 
     guint input_pads, output_pads;
     guint audio_audio_channels;
@@ -1944,14 +1941,14 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	}
       }else{
 	if(machine->input != NULL){
-	  GList *list_input_line, *list_input_line_start;
+	  GList *start_list_input_line, *list_input_line;
 
 	  list_input_pad = list_input_pad_start;
 
 	  while(list_input_pad != NULL){
-	    list_input_line_start =
-	      list_input_line = g_list_reverse(gtk_container_get_children(GTK_CONTAINER(AGS_PAD(list_input_pad->data)->expander_set)));
-	    list_input_line = g_list_nth(list_input_line,
+	    start_list_input_line = g_list_reverse(gtk_container_get_children(GTK_CONTAINER(AGS_PAD(list_input_pad->data)->expander_set)));
+	    
+	    list_input_line = g_list_nth(start_list_input_line,
 					 audio_channels_old);
 	    
 	    while(list_input_line != NULL){
@@ -1960,7 +1957,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	      list_input_line = list_input_line->next;
 	    }
 
-	    g_list_free(list_input_line_start);
+	    g_list_free(start_list_input_line);
 	    
 	    list_input_pad = list_input_pad->next;
 	  }
@@ -1968,21 +1965,23 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	
 	/* AgsOutput */
 	if(machine->output != NULL){
-	  GList *list_output_line, *list_output_line_start;
+	  GList *start_list_output_line, *list_output_line;
 	  
 	  list_output_pad = list_output_pad_start;
 	  
 	  while(list_output_pad != NULL){
-	    list_output_line_start = 
-	      list_output_line = g_list_reverse(gtk_container_get_children(GTK_CONTAINER(AGS_PAD(list_output_pad->data)->expander_set)));
-	    list_output_line = g_list_nth(list_output_line,
-					 audio_channels_old);
+	    start_list_output_line = g_list_reverse(gtk_container_get_children(GTK_CONTAINER(AGS_PAD(list_output_pad->data)->expander_set)));
+	    
+	    list_output_line = g_list_nth(start_list_output_line,
+					  audio_channels_old);
 	    
 	    while(list_output_line != NULL){
 	      gtk_widget_show_all(GTK_WIDGET(list_output_line->data));
 
 	      list_output_line = list_output_line->next;
 	    }	    
+
+	    g_list_free(start_list_output_line);
 	    
 	    list_output_pad = list_output_pad->next;
 	  }
@@ -2095,7 +2094,7 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
   guint audio_channels;
   guint audio_audio_channels;
   guint audio_input_pads, audio_output_pads;
-  guint i, j;
+  guint i;
 
   audio = machine->audio;
 
@@ -2932,20 +2931,30 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
   file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open audio files"),
 								      (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) machine),
 								      GTK_FILE_CHOOSER_ACTION_OPEN,
-								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+								      "_OK", GTK_RESPONSE_ACCEPT,
+								      "_Cancel", GTK_RESPONSE_CANCEL,
 								      NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), TRUE);
 
   check_button = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("open in new channel"));
-  gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
-  gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(file_chooser)), (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data((GObject *) file_chooser, "create", (gpointer) check_button);
+  gtk_toggle_button_set_active((GtkToggleButton *) check_button,
+			       TRUE);
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(file_chooser)),
+		     (GtkWidget *) check_button,
+		     FALSE, FALSE,
+		     0);
+  g_object_set_data((GObject *) file_chooser,
+		    "create", (gpointer) check_button);
 
   check_button = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("overwrite existing links"));
-  gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
-  gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(file_chooser)), (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data((GObject *) file_chooser, "overwrite", (gpointer) check_button);
+  gtk_toggle_button_set_active((GtkToggleButton *) check_button,
+			       TRUE);
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(file_chooser)),
+		     (GtkWidget *) check_button,
+		     FALSE, FALSE,
+		     0);
+  g_object_set_data((GObject *) file_chooser,
+		    "overwrite", (gpointer) check_button);
 
   return(file_chooser);
 }
@@ -3182,7 +3191,7 @@ ags_machine_copy_pattern(AgsMachine *machine)
   /* write to clipboard */
   xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
   gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
-			 buffer, size);
+			 (gchar *) buffer, size);
   gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
   
   xmlFreeDoc(clipboard);
@@ -3230,11 +3239,11 @@ ags_machine_check_message(AgsMachine *machine)
     root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
       
     if(!xmlStrncmp(root_node->name,
-		   "ags-command",
+		   BAD_CAST "ags-command",
 		   12)){
       if(!xmlStrncmp(xmlGetProp(root_node,
 				"method"),
-		     "AgsAudio::set-samplerate",
+		     BAD_CAST "AgsAudio::set-samplerate",
 		     25)){
 	guint samplerate;
 	gint position;
@@ -3249,7 +3258,7 @@ ags_machine_check_message(AgsMachine *machine)
 		     NULL);
       }else if(!xmlStrncmp(xmlGetProp(root_node,
 				      "method"),
-			   "AgsAudio::set-buffer-size",
+			   BAD_CAST "AgsAudio::set-buffer-size",
 			   26)){
 	guint buffer_size;
 	gint position;
@@ -3264,7 +3273,7 @@ ags_machine_check_message(AgsMachine *machine)
 		     NULL);
       }else if(!xmlStrncmp(xmlGetProp(root_node,
 				      "method"),
-			   "AgsAudio::set-format",
+			   BAD_CAST "AgsAudio::set-format",
 			   21)){
 	guint format;
 	gint position;
@@ -3279,7 +3288,7 @@ ags_machine_check_message(AgsMachine *machine)
 		     NULL);
       }else if(!xmlStrncmp(xmlGetProp(root_node,
 				      "method"),
-			   "AgsAudio::set-audio-channels",
+			   BAD_CAST "AgsAudio::set-audio-channels",
 			   29)){
 	guint audio_channels, audio_channels_old;
 	gint position;
@@ -3297,7 +3306,7 @@ ags_machine_check_message(AgsMachine *machine)
 					  audio_channels, audio_channels_old);
       }else if(!xmlStrncmp(xmlGetProp(root_node,
 				      "method"),
-			   "AgsAudio::set-pads",
+			   BAD_CAST "AgsAudio::set-pads",
 			   19)){
 	GType channel_type;
 	  
@@ -3322,7 +3331,7 @@ ags_machine_check_message(AgsMachine *machine)
 				pads, pads_old);
       }else if(!xmlStrncmp(xmlGetProp(root_node,
 				      "method"),
-			   "AgsAudio::stop",
+			   BAD_CAST "AgsAudio::stop",
 			   15)){
 	GList *recall_id;
 
@@ -3375,11 +3384,11 @@ ags_machine_check_message(AgsMachine *machine)
       root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
       
       if(!xmlStrncmp(root_node->name,
-		     "ags-command",
+		     BAD_CAST "ags-command",
 		     12)){
 	if(!xmlStrncmp(xmlGetProp(root_node,
 				  "method"),
-		       "AgsChannel::stop",
+		       BAD_CAST "AgsChannel::stop",
 		       18)){
 	  ags_machine_playback_set_active(machine,
 					  playback,
@@ -3597,8 +3606,6 @@ ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_o
   GtkMenu *connection;
   GtkMenuItem *item;
 
-  gchar *str;
-
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("connection"));
   gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
   gtk_widget_show((GtkWidget *) item);
@@ -3638,8 +3645,6 @@ ags_machine_popup_add_export_options(AgsMachine *machine, guint export_options)
   GtkMenu *export;
   GtkMenuItem *item;
 
-  gchar *str;
-
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("export"));
   gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
   gtk_widget_show((GtkWidget *) item);
@@ -3678,8 +3683,6 @@ ags_machine_popup_add_import_options(AgsMachine *machine, guint import_options)
 {
   GtkMenu *import;
   GtkMenuItem *item;
-
-  gchar *str;
 
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("import"));
   gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
