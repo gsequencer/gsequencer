@@ -5582,6 +5582,11 @@ ags_channel_reset_recycling_recursive(AgsChannel *input,
   }
 
   /* get audio and audio channel */
+  audio = NULL;
+
+  audio_channel = 0;
+  line = 0;
+  
   g_object_get(input,
 	       "audio", &audio,
 	       "audio-channel", &audio_channel,
@@ -5589,6 +5594,8 @@ ags_channel_reset_recycling_recursive(AgsChannel *input,
 	       NULL);
 
   /* get output */
+  output = NULL;
+  
   g_object_get(audio,
 	       "output", &output,
 	       NULL);
@@ -5814,6 +5821,11 @@ ags_channel_reset_recycling_reset_recycling_context_down_input(AgsChannel *curre
   }
 
   /* get current audio */
+  current_audio = NULL;
+
+  audio_channel = 0;
+  line = 0;
+  
   g_object_get(current_output,
 	       "audio", &current_audio,
 	       "audio-channel", &audio_channel,
@@ -5821,6 +5833,8 @@ ags_channel_reset_recycling_reset_recycling_context_down_input(AgsChannel *curre
 	       NULL);
 
   /* get some fields */
+  current_input = NULL;
+  
   g_object_get(current_audio,
 	       "input", &current_input,
 	       NULL);
@@ -5835,6 +5849,8 @@ ags_channel_reset_recycling_reset_recycling_context_down_input(AgsChannel *curre
       
     while(current_input != NULL){
       /* get recall id - input */
+      start_recall_id = NULL;
+      
       g_object_get(current_input,
 		   "recall-id", &start_recall_id,
 		   NULL);
@@ -5850,6 +5866,8 @@ ags_channel_reset_recycling_reset_recycling_context_down_input(AgsChannel *curre
 
 	current_recall_id = recall_id->data;
 
+	current_recycling_context = NULL;
+	
 	g_object_get(current_recall_id,
 		     "recycling-context", &current_recycling_context,
 		     NULL);
@@ -5894,6 +5912,8 @@ ags_channel_reset_recycling_reset_recycling_context_down_input(AgsChannel *curre
     current_input = nth_input;
       
     /* get recall id - input */
+    start_recall_id = NULL;
+    
     g_object_get(current_input,
 		 "recall-id", &start_recall_id,
 		 NULL);
@@ -5908,6 +5928,8 @@ ags_channel_reset_recycling_reset_recycling_context_down_input(AgsChannel *curre
       AgsRecyclingContext *current_recycling_context;
 	
       current_recall_id = recall_id->data;
+
+      current_recycling_context = NULL;
       
       g_object_get(current_recall_id,
 		   "recycling-context", &current_recycling_context,
@@ -6040,6 +6062,11 @@ ags_channel_reset_recycling_emit_changed(AgsChannel *start_channel, AgsChannel *
   }
 
   /* get audio and audio channel */
+  audio = NULL;
+
+  audio_channel = 0;
+  line = 0;
+  
   g_object_get(input,
 	       "audio", &audio,
 	       "audio-channel", &audio_channel,
@@ -6047,6 +6074,8 @@ ags_channel_reset_recycling_emit_changed(AgsChannel *start_channel, AgsChannel *
 	       NULL);
 
   /* get output */
+  output = NULL;
+  
   g_object_get(audio,
 	       "output", &output,
 	       NULL);
@@ -12660,6 +12689,14 @@ ags_channel_recursive_set_property_down_input(AgsChannel *channel,
       g_object_unref(input);
     }
   }
+
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
 }
 
 /**
@@ -12726,6 +12763,8 @@ ags_channel_recursive_setup_run_stage_up(AgsChannel *channel,
     return;
   }
 
+  current_audio = NULL;
+  
   current_channel = channel;
 
   if(current_channel != NULL){
@@ -12765,6 +12804,8 @@ ags_channel_recursive_setup_run_stage_up(AgsChannel *channel,
 		     g_object_unref);
       
     /* get current audio */
+    current_audio = NULL;
+    
     g_object_get(current_channel,
 		 "audio", &current_audio,
 		 NULL);
@@ -12791,6 +12832,9 @@ ags_channel_recursive_setup_run_stage_up(AgsChannel *channel,
 		     g_object_unref);
 
     /* get some fields */
+    audio_channel = 0;
+    line = 0;
+    
     g_object_get(current_channel,
 		 "audio-channel", &audio_channel,
 		 "line", &line,
@@ -12801,14 +12845,18 @@ ags_channel_recursive_setup_run_stage_up(AgsChannel *channel,
       g_object_unref(current_channel);
     }
 
+    current_channel = NULL;
+    
     g_object_get(current_audio,
 		 "output", &current_channel,
 		 NULL);
       
     if(ags_audio_test_flags(current_audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING)){
       /* unref current audio */
-      g_object_unref(current_audio);
-
+      if(current_audio != NULL){
+	g_object_unref(current_audio);
+      }
+      
       if(current_channel != NULL){
 	g_object_unref(current_channel);
       }
@@ -12856,8 +12904,10 @@ ags_channel_recursive_setup_run_stage_up(AgsChannel *channel,
 		     g_object_unref);
 
     /* unref current audio */
-    g_object_unref(current_audio);
-      
+    if(current_audio != NULL){
+      g_object_unref(current_audio);
+    }
+    
     /* iterate */
     current_link = ags_channel_get_link(current_channel);
 
@@ -12866,8 +12916,8 @@ ags_channel_recursive_setup_run_stage_up(AgsChannel *channel,
     current_channel = current_link;
   }
 
-  if(current_link != NULL){
-    g_object_unref(current_link);
+  if(current_channel != NULL){
+    g_object_unref(current_channel);
   }
 }
   
@@ -12922,6 +12972,11 @@ ags_channel_recursive_setup_run_stage_down(AgsChannel *channel,
 		   g_object_unref);
 
   /* get current audio */
+  current_audio = NULL;
+
+  audio_channel = 0;
+  line = 0;
+  
   g_object_get(channel,
 	       "audio", &current_audio,
 	       "audio-channel", &audio_channel,
@@ -12949,6 +13004,8 @@ ags_channel_recursive_setup_run_stage_down(AgsChannel *channel,
 		   g_object_unref);
     
   /* get some fields */
+  start_input = NULL;
+  
   g_object_get(current_audio,
 	       "input", &start_input,
 	       NULL);
@@ -12973,7 +13030,9 @@ ags_channel_recursive_setup_run_stage_down(AgsChannel *channel,
       current_input = nth_input;
 	
       first_with_recycling = ags_channel_first_with_recycling(current_input);
-	
+
+      first_recycling = NULL;
+      
       g_object_get(first_with_recycling,
 		   "first-recycling", &first_recycling,
 		   NULL);
@@ -12988,6 +13047,8 @@ ags_channel_recursive_setup_run_stage_down(AgsChannel *channel,
 				  line);
 
       current_input = nth_input;
+
+      first_recycling = NULL;
 	
       g_object_get(current_input,
 		   "first-recycling", &first_recycling,
@@ -13005,6 +13066,8 @@ ags_channel_recursive_setup_run_stage_down(AgsChannel *channel,
       if(position >= 0){
 	GList *child_start;
 
+	child_start = NULL;
+	
 	g_object_get(recycling_context,
 		     "child", &child_start,
 		     NULL);
@@ -13044,11 +13107,12 @@ ags_channel_recursive_setup_run_stage_down(AgsChannel *channel,
 	
       while(current_input != NULL){
 	gint position;
+
+	first_recycling = NULL;
+	last_recycling = NULL;
 	  
 	g_object_get(current_input,
 		     "first-recycling", &first_recycling,
-		     NULL);
-	g_object_get(current_input,
 		     "last-recycling", &last_recycling,
 		     NULL);
 
@@ -13091,6 +13155,9 @@ ags_channel_recursive_setup_run_stage_down(AgsChannel *channel,
 	
       next_pad = NULL;
 
+      first_recycling = NULL;
+      last_recycling = NULL;
+
       g_object_get(current_input,
 		   "first-recycling", &first_recycling,
 		   "last-recycling", &last_recycling,
@@ -13131,6 +13198,8 @@ ags_channel_recursive_setup_run_stage_down(AgsChannel *channel,
       current_input = nth_input;
 	
       for(i = 0; i < length;){
+	first_recycling = NULL;
+
 	g_object_get(current_input,
 		     "first-recycling", &first_recycling,
 		     NULL);
@@ -13243,6 +13312,11 @@ ags_channel_recursive_setup_run_stage_down_input(AgsChannel *channel,
   }
     
   /* get some fields */
+  current_audio = NULL;
+
+  audio_channel = 0;
+  line = 0;
+  
   g_object_get(channel,
 	       "audio", &current_audio,
 	       "line", &line,
@@ -13254,6 +13328,8 @@ ags_channel_recursive_setup_run_stage_down_input(AgsChannel *channel,
   }
 
   /* get some fields */
+  start_input = NULL;
+  
   g_object_get(current_audio,
 	       "input", &start_input,
 	       NULL);
@@ -13382,6 +13458,8 @@ ags_channel_recursive_prepare_run_stage_up(AgsChannel *channel,
     return;
   }
 
+  current_audio = NULL;
+  
   current_channel = channel;
 
   if(current_channel != NULL){
@@ -13427,6 +13505,8 @@ ags_channel_recursive_prepare_run_stage_up(AgsChannel *channel,
 		     g_object_unref);
       
     /* get current audio */
+    current_audio = NULL;
+    
     g_object_get(current_channel,
 		 "audio", &current_audio,
 		 NULL);
@@ -13439,6 +13519,10 @@ ags_channel_recursive_prepare_run_stage_up(AgsChannel *channel,
 							     recycling_context);
 
     /* duplicate */
+    pad = 0;
+    audio_channel = 0;
+    line = 0;
+    
     g_object_get(current_channel,
 		 "pad", &pad,
 		 "audio-channel", &audio_channel,
@@ -13467,6 +13551,9 @@ ags_channel_recursive_prepare_run_stage_up(AgsChannel *channel,
 		     g_object_unref);
 
     /* get some fields */
+    audio_channel = 0;
+    line = 0;
+
     g_object_get(current_channel,
 		 "audio-channel", &audio_channel,
 		 "line", &line,
@@ -13477,6 +13564,8 @@ ags_channel_recursive_prepare_run_stage_up(AgsChannel *channel,
       g_object_unref(current_channel);
     }
 
+    current_channel = NULL;
+    
     g_object_get(current_audio,
 		 "output", &current_channel,
 		 NULL);
@@ -13605,6 +13694,11 @@ ags_channel_recursive_prepare_run_stage_down(AgsChannel *channel,
 		   g_object_unref);
 
   /* get current audio */
+  current_audio = NULL;
+
+  audio_channel = 0;
+  line = 0;
+  
   g_object_get(channel,
 	       "audio", &current_audio,
 	       "audio-channel", &audio_channel,
@@ -13619,6 +13713,10 @@ ags_channel_recursive_prepare_run_stage_down(AgsChannel *channel,
 							   recycling_context);
 
   /* duplicate - audio */
+  pad = 0;
+  audio_channel = 0;
+  line = 0;
+
   g_object_get(channel,
 	       "pad", &pad,
 	       "audio-channel", &audio_channel,
@@ -13647,6 +13745,8 @@ ags_channel_recursive_prepare_run_stage_down(AgsChannel *channel,
 		   g_object_unref);
 
   /* get some fields */
+  start_input = NULL;
+  
   g_object_get(current_audio,
 	       "input", &start_input,
 	       NULL);
@@ -13668,7 +13768,9 @@ ags_channel_recursive_prepare_run_stage_down(AgsChannel *channel,
       current_input = nth_input;
 	
       first_with_recycling = ags_channel_first_with_recycling(current_input);
-	
+
+      first_recycling = NULL;
+      
       g_object_get(first_with_recycling,
 		   "first-recycling", &first_recycling,
 		   NULL);
@@ -13683,6 +13785,8 @@ ags_channel_recursive_prepare_run_stage_down(AgsChannel *channel,
 				  line);
 
       current_input = nth_input;
+
+      first_recycling = NULL;
 
       g_object_get(current_input,
 		   "first-recycling", &first_recycling,
@@ -13700,6 +13804,8 @@ ags_channel_recursive_prepare_run_stage_down(AgsChannel *channel,
       if(position >= 0){
 	GList *child_start;
 
+	child_start = NULL;
+	
 	g_object_get(recycling_context,
 		     "child", &child_start,
 		     NULL);
@@ -13782,6 +13888,11 @@ ags_channel_recursive_prepare_run_stage_down_input(AgsChannel *channel,
   }
     
   /* get some fields */
+  current_audio = NULL;
+
+  audio_channel = 0;
+  line = 0;
+
   g_object_get(channel,
 	       "audio", &current_audio,
 	       "line", &line,
@@ -13934,6 +14045,8 @@ ags_channel_recursive_do_run_stage_up(AgsChannel *channel,
     return;
   }
 
+  current_audio = NULL;
+  
   current_channel = channel;
 
   if(current_channel != NULL){
@@ -13980,6 +14093,8 @@ ags_channel_recursive_do_run_stage_up(AgsChannel *channel,
 		     g_object_unref);
 
     /* get current audio */
+    current_audio = NULL;
+    
     g_object_get(current_channel,
 		 "audio", &current_audio,
 		 NULL);
@@ -14013,6 +14128,9 @@ ags_channel_recursive_do_run_stage_up(AgsChannel *channel,
 		     g_object_unref);
       
     /* get some fields */
+    audio_channel = 0;
+    line = 0;
+    
     g_object_get(current_channel,
 		 "audio-channel", &audio_channel,
 		 "line", &line,
@@ -14023,6 +14141,8 @@ ags_channel_recursive_do_run_stage_up(AgsChannel *channel,
       g_object_unref(current_channel);
     }
 
+    current_channel = NULL;
+    
     g_object_get(current_audio,
 		 "output", &current_channel,
 		 NULL);
@@ -14152,6 +14272,11 @@ ags_channel_recursive_do_run_stage_down(AgsChannel *channel,
 		   g_object_unref);
 
   /* get current audio */
+  current_audio = NULL;
+  
+  audio_channel = 0;
+  line = 0;
+
   g_object_get(channel,
 	       "audio", &current_audio,
 	       "audio-channel", &audio_channel,
@@ -14187,6 +14312,8 @@ ags_channel_recursive_do_run_stage_down(AgsChannel *channel,
 		   g_object_unref);
 
   /* get some fields */
+  start_input = NULL;
+  
   g_object_get(current_audio,
 	       "input", &start_input,
 	       NULL);
@@ -14208,7 +14335,9 @@ ags_channel_recursive_do_run_stage_down(AgsChannel *channel,
       current_input = nth_input;
 	
       first_with_recycling = ags_channel_first_with_recycling(current_input);
-	  
+
+      first_recycling = NULL;
+      
       g_object_get(first_with_recycling,
 		   "first-recycling", &first_recycling,
 		   NULL);
@@ -14224,6 +14353,8 @@ ags_channel_recursive_do_run_stage_down(AgsChannel *channel,
 
       current_input = nth_input;
 
+      first_recycling = NULL;
+      
       g_object_get(current_input,
 		   "first-recycling", &first_recycling,
 		   NULL);
@@ -14240,6 +14371,8 @@ ags_channel_recursive_do_run_stage_down(AgsChannel *channel,
       if(position >= 0){
 	GList *child_start;
 
+	child_start = NULL;
+	
 	g_object_get(recycling_context,
 		     "child", &child_start,
 		     NULL);
@@ -14321,6 +14454,11 @@ ags_channel_recursive_do_run_stage_down_input(AgsChannel *channel,
   }
     
   /* get some fields */
+  current_audio = NULL;
+  
+  audio_channel = 0;
+  line = 0;
+
   g_object_get(channel,
 	       "audio", &current_audio,
 	       "line", &line,
@@ -14332,6 +14470,8 @@ ags_channel_recursive_do_run_stage_down_input(AgsChannel *channel,
   }
 
   /* get some fields */
+  start_input = NULL;
+  
   g_object_get(current_audio,
 	       "input", &start_input,
 	       NULL);
@@ -14479,6 +14619,8 @@ ags_channel_recursive_cleanup_run_stage_up(AgsChannel *channel,
     return;
   }
 
+  current_audio = NULL;
+  
   current_channel = channel;
 
   if(current_channel != NULL){
@@ -14535,6 +14677,8 @@ ags_channel_recursive_cleanup_run_stage_up(AgsChannel *channel,
 		     g_object_unref);
       
     /* get current audio */
+    current_audio = NULL;
+    
     g_object_get(current_channel,
 		 "audio", &current_audio,
 		 NULL);
@@ -14578,6 +14722,9 @@ ags_channel_recursive_cleanup_run_stage_up(AgsChannel *channel,
 		     g_object_unref);
 
     /* get some fields */
+    audio_channel = 0;
+    line = 0;
+    
     g_object_get(current_channel,
 		 "audio-channel", &audio_channel,
 		 "line", &line,
@@ -14588,6 +14735,8 @@ ags_channel_recursive_cleanup_run_stage_up(AgsChannel *channel,
       g_object_unref(current_channel);
     }
 
+    current_channel = NULL;
+    
     g_object_get(current_audio,
 		 "output", &current_channel,
 		 NULL);
@@ -14749,6 +14898,11 @@ ags_channel_recursive_cleanup_run_stage_down(AgsChannel *channel,
 		   g_object_unref);
 
   /* get current audio */
+  current_audio = NULL;
+
+  audio_channel = 0;
+  line = 0;
+
   g_object_get(channel,
 	       "audio", &current_audio,
 	       "audio-channel", &audio_channel,
@@ -14794,6 +14948,8 @@ ags_channel_recursive_cleanup_run_stage_down(AgsChannel *channel,
 		   g_object_unref);
 
   /* get some fields */
+  start_input = NULL;
+  
   g_object_get(current_audio,
 	       "input", &start_input,
 	       NULL);
@@ -14816,7 +14972,9 @@ ags_channel_recursive_cleanup_run_stage_down(AgsChannel *channel,
       current_input = nth_input;
 	
       first_with_recycling = ags_channel_first_with_recycling(current_input);
-	  
+
+      first_recycling = NULL;
+      
       g_object_get(first_with_recycling,
 		   "first-recycling", &first_recycling,
 		   NULL);
@@ -14832,6 +14990,8 @@ ags_channel_recursive_cleanup_run_stage_down(AgsChannel *channel,
 
       current_input = nth_input;
 
+      first_recycling = NULL;
+      
       g_object_get(current_input,
 		   "first-recycling", &first_recycling,
 		   NULL);
@@ -14848,6 +15008,8 @@ ags_channel_recursive_cleanup_run_stage_down(AgsChannel *channel,
       if(position >= 0){
 	GList *child_start;
 
+	child_start = NULL;
+	
 	g_object_get(recycling_context,
 		     "child", &child_start,
 		     NULL);
@@ -14949,6 +15111,11 @@ ags_channel_recursive_cleanup_run_stage_down_input(AgsChannel *channel,
   }
     
   /* get some fields */
+  current_audio = NULL;
+
+  audio_channel = 0;
+  line = 0;
+
   g_object_get(channel,
 	       "audio", &current_audio,
 	       "line", &line,
@@ -14960,6 +15127,8 @@ ags_channel_recursive_cleanup_run_stage_down_input(AgsChannel *channel,
   }
 
   /* get some fields */
+  start_input = NULL;
+  
   g_object_get(current_audio,
 	       "input", &start_input,
 	       NULL);    
@@ -15132,6 +15301,8 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     
     GList *iter;
 
+    recycling = NULL;
+    
     g_object_get(channel,
 		 "first-recycling", &recycling,
 		 NULL);
