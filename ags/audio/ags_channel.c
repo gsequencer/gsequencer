@@ -4575,6 +4575,12 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
     GObject *soundcard;
     
     guint current_audio_channel, current_line;
+
+    audio = NULL;
+    current_audio = NULL;
+
+    start_output = NULL;
+    start_input = NULL;
     
     if(AGS_IS_OUTPUT(channel)){
       /* get audio */
@@ -4639,6 +4645,8 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 
     if(current_channel != NULL){
       /* get some fields */
+      current_audio = NULL;
+      
       g_object_get(current_channel,
 		   "audio", &current_audio,
 		   NULL);
@@ -4692,12 +4700,26 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 	g_object_unref(current_audio);
 	
 	if(current_channel != NULL){
+	  if(current_audio != NULL){
+	    g_object_unref(current_audio);
+	  }
+	  
 	  /* get audio */
+	  current_audio = NULL;
+	  
 	  g_object_get(current_channel,
 		       "audio", &current_audio,
 		       NULL);
 	}
       }
+    }
+
+    if(audio != NULL){
+      g_object_unref(audio);
+    }
+
+    if(current_audio != NULL){
+      g_object_unref(current_audio);
     }
 
     if(current_link != NULL){

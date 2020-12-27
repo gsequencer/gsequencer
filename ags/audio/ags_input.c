@@ -621,6 +621,7 @@ ags_input_next_active(AgsInput *input,
     
     /* check recycling */
     recycling = first_recycling;
+    g_object_ref(recycling);
     
     while(recycling != end_recycling){
       /* get audio signal */
@@ -684,6 +685,10 @@ ags_input_next_active(AgsInput *input,
 
     if(end_recycling != NULL){
       g_object_unref(end_recycling);
+    }
+
+    if(recycling != NULL){
+      g_object_unref(recycling);
     }
 
     if(retval != NULL){
