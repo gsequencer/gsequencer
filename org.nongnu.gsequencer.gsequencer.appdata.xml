@@ -35,12 +35,18 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.7.20" date="2020-12-27">
+      <description>
+	<p>Fixed ags-fx-envelope be explicite about floating point arithmetic.</p>
+      </description>
+    </release>
+
     <release version="3.7.19" date="2020-12-25">
       <description>
 	<p>Fixed missing listing of developer's handbook.</p>
       </description>
     </release>
-
+    
     <release version="3.7.18" date="2020-12-24">
       <description>
 	<p>Improved developer's handbook.</p>

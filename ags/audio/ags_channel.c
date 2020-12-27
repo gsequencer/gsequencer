@@ -12548,7 +12548,8 @@ ags_channel_recursive_set_property_setv(AgsChannel *channel,
 void
 ags_channel_recursive_set_property_down(AgsChannel *channel,
 					gint n_params,
-					     gchar **parameter_name, GValue *value){
+					gchar **parameter_name, GValue *value)
+{
   if(channel == NULL){
     return;
   }
