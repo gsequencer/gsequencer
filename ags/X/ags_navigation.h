@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,14 +54,15 @@ typedef enum{
 
 struct _AgsNavigation
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
 
   GObject *soundcard;
   gdouble start_tact;
   gdouble note_offset;
-  
+
+  GtkImage *expander_image;
   GtkToggleButton *expander;
 
   GtkSpinButton *bpm;
@@ -91,7 +92,7 @@ struct _AgsNavigation
 
 struct _AgsNavigationClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 
   void (*change_position)(AgsNavigation *navigation,
 			  gdouble tact);

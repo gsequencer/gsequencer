@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,17 +47,17 @@ typedef enum{
 
 struct _AgsMidiPreferences
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
   
-  GtkVBox *sequencer_editor;
+  GtkBox *sequencer_editor;
   GtkButton *add;
 };
 
 struct _AgsMidiPreferencesClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_midi_preferences_get_type(void);

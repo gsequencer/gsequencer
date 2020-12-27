@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,35 +26,36 @@ void
 ags_navigation_expander_callback(GtkWidget *widget,
 				 AgsNavigation *navigation)
 {
-  GtkArrow *arrow;
+  GtkImage *image;
 
-  GList *list;
+  GList *start_list;
 
-  guint arrow_type;
+  gchar *icon_name;
   
-  list = gtk_container_get_children((GtkContainer *) widget);
-  arrow = (GtkArrow *) list->data;
-  g_list_free(list);
+  start_list = gtk_container_get_children((GtkContainer *) widget);
+  image = (GtkImage *) start_list->data;
+  g_list_free(start_list);
 
-  list = gtk_container_get_children((GtkContainer *) navigation);
-  widget = (GtkWidget *) list->next->data;
-  g_list_free(list);
+  start_list = gtk_container_get_children((GtkContainer *) navigation);
+  widget = (GtkWidget *) start_list->next->data;
+  g_list_free(start_list);
 
-  g_object_get(arrow,
-	       "arrow-type", &arrow_type,
+  g_object_get(image,
+	       "icon-name", &icon_name,
 	       NULL);
   
-  if(arrow_type == GTK_ARROW_DOWN){
+  if(!g_strcmp0("down",
+		icon_name)){
     gtk_widget_hide(widget);
 
-    g_object_set(arrow,
-		 "arrow-type", GTK_ARROW_RIGHT,
+    g_object_set(image,
+		 "icon-name", "up",
 		 NULL);
   }else{
     gtk_widget_show_all(widget);
 
-    g_object_set(arrow,
-		 "arrow-type", GTK_ARROW_DOWN,
+    g_object_set(image,
+		 "icon-name", "down",
 		 NULL);
   }
 }
@@ -70,7 +71,7 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   application_context = ags_application_context_get_instance();
 
   /* get task thread */
-  apply_bpm = ags_apply_bpm_new(application_context,
+  apply_bpm = ags_apply_bpm_new((GObject *) application_context,
 				gtk_spin_button_get_value(navigation->bpm));
   
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),

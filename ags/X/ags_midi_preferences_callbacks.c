@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,8 @@
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_sequencer_editor.h>
 
+#include <ags/i18n.h>
+
 #include <ags/config.h>
 
 void
@@ -37,20 +39,16 @@ ags_midi_preferences_parent_set_callback(GtkWidget *widget, GtkWidget *old_paren
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(midi_preferences),
 							   AGS_TYPE_PREFERENCES);
 
-  midi_preferences->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_end((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(preferences)),
-		   (GtkWidget *) midi_preferences->add,
-		   TRUE, FALSE,
-		   0);  
+  midi_preferences->add = (GtkButton *) gtk_button_new_with_label("_Add");
+  gtk_dialog_add_action_widget((GtkDialog *) preferences,
+			       (GtkWidget *) midi_preferences->add,
+			       GTK_RESPONSE_NONE);
 }
 
 void
 ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_preferences)
 {
-  AgsPreferences *preferences;
   AgsSequencerEditor *sequencer_editor;
-
-  AgsSequencerThread *sequencer_thread;
 
   AgsThread *main_loop;
   
@@ -59,9 +57,6 @@ ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_pr
   GObject *sequencer;
 
   GList *start_list, *list;
-
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(midi_preferences),
-							   AGS_TYPE_PREFERENCES);
 
   application_context = ags_application_context_get_instance();
 
@@ -108,9 +103,6 @@ ags_midi_preferences_remove_sequencer_editor_callback(GtkWidget *button,
 						      AgsMidiPreferences *midi_preferences)
 {
   AgsSequencerEditor *sequencer_editor;
-
-  GList *list;
-  GObject *sequencer;
   
   sequencer_editor = (AgsSequencerEditor *) gtk_widget_get_ancestor(button,
 								    AGS_TYPE_SEQUENCER_EDITOR);
