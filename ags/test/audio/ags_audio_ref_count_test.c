@@ -30,8 +30,36 @@
 int ags_audio_ref_count_test_init_suite();
 int ags_audio_ref_count_test_clean_suite();
 
+void ags_audio_ref_count_test_create_audio_tree();
+void ags_audio_ref_count_test_link_audio_tree();
+
+void ags_audio_ref_count_test_set_link();
 void ags_audio_ref_count_test_recursive_set_property();
 void ags_audio_ref_count_test_recursive_run_stage();
+
+#define AGS_AUDIO_REF_COUNT_TEST_PANEL_AUDIO_CHANNELS (2)
+#define AGS_AUDIO_REF_COUNT_TEST_PANEL_OUTPUT_PADS (1)
+#define AGS_AUDIO_REF_COUNT_TEST_PANEL_INPUT_PADS (1)
+
+#define AGS_AUDIO_REF_COUNT_TEST_MIXER0_AUDIO_CHANNELS (2)
+#define AGS_AUDIO_REF_COUNT_TEST_MIXER0_OUTPUT_PADS (1)
+#define AGS_AUDIO_REF_COUNT_TEST_MIXER0_INPUT_PADS (1)
+
+#define AGS_AUDIO_REF_COUNT_TEST_MIXER1_AUDIO_CHANNELS (2)
+#define AGS_AUDIO_REF_COUNT_TEST_MIXER1_OUTPUT_PADS (1)
+#define AGS_AUDIO_REF_COUNT_TEST_MIXER1_INPUT_PADS (8)
+
+#define AGS_AUDIO_REF_COUNT_TEST_DRUM0_AUDIO_CHANNELS (1)
+#define AGS_AUDIO_REF_COUNT_TEST_DRUM0_OUTPUT_PADS (2)
+#define AGS_AUDIO_REF_COUNT_TEST_DRUM0_INPUT_PADS (16)
+
+#define AGS_AUDIO_REF_COUNT_TEST_DRUM1_AUDIO_CHANNELS (2)
+#define AGS_AUDIO_REF_COUNT_TEST_DRUM1_OUTPUT_PADS (1)
+#define AGS_AUDIO_REF_COUNT_TEST_DRUM1_INPUT_PADS (16)
+
+#define AGS_AUDIO_REF_COUNT_TEST_DRUM2_AUDIO_CHANNELS (2)
+#define AGS_AUDIO_REF_COUNT_TEST_DRUM2_OUTPUT_PADS (2)
+#define AGS_AUDIO_REF_COUNT_TEST_DRUM2_INPUT_PADS (16)
 
 #define AGS_AUDIO_REF_COUNT_TEST_CONFIG "[generic]\n"	\
   "autosave-thread=false\n"				\
@@ -59,6 +87,7 @@ void ags_audio_ref_count_test_recursive_run_stage();
   "\n"
 
 AgsAudioApplicationContext *audio_application_context;
+AgsAudio *panel, *mixer0, *mixer1, *drum0, *drum1, *drum2;
 
 GHashTable *object_ref_count;
 
@@ -120,19 +149,359 @@ ags_audio_ref_count_test_init_suite()
  */
 int
 ags_audio_ref_count_test_clean_suite()
-{  
+{
   return(0);
+}
+
+void
+ags_audio_ref_count_test_create_audio_tree()
+{
+  AgsAddAudio *add_audio;
+
+  guint ref_count;
+  
+  /* panel */
+  panel = ags_audio_new(audio_application_context->soundcard->data);
+  ags_audio_set_flags(panel,
+		      (AGS_AUDIO_SYNC));
+  ags_audio_set_audio_channels(panel,
+			       AGS_AUDIO_REF_COUNT_TEST_PANEL_AUDIO_CHANNELS, 0);
+
+  ags_audio_set_pads(panel,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_REF_COUNT_TEST_PANEL_OUTPUT_PADS, 0);
+  ags_audio_set_pads(panel,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_REF_COUNT_TEST_PANEL_INPUT_PADS, 0);
+
+  add_audio = ags_add_audio_new(panel);
+  ags_task_launch(add_audio);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(panel)->ref_count));
+  g_hash_table_insert(object_ref_count,
+		      "/AgsSoundProvider/AgsAudio[0]",
+		      GUINT_TO_POINTER(ref_count));
+  
+  /* mixer #0 */
+  mixer0 = ags_audio_new(audio_application_context->soundcard->data);
+  ags_audio_set_flags(mixer0,
+		      (AGS_AUDIO_ASYNC));
+  ags_audio_set_audio_channels(mixer0,
+			       AGS_AUDIO_REF_COUNT_TEST_MIXER0_AUDIO_CHANNELS, 0);
+
+  ags_audio_set_pads(mixer0,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_REF_COUNT_TEST_MIXER0_OUTPUT_PADS, 0);
+  ags_audio_set_pads(mixer0,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_REF_COUNT_TEST_MIXER0_INPUT_PADS, 0);
+
+  add_audio = ags_add_audio_new(mixer0);
+  ags_task_launch(add_audio);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
+  g_hash_table_insert(object_ref_count,
+		      "/AgsSoundProvider/AgsAudio[1]",
+		      GUINT_TO_POINTER(ref_count));
+
+  /* mixer #1 */
+  mixer1 = ags_audio_new(audio_application_context->soundcard->data);
+  ags_audio_set_flags(mixer1,
+		      (AGS_AUDIO_ASYNC));
+  ags_audio_set_audio_channels(mixer1,
+			       AGS_AUDIO_REF_COUNT_TEST_MIXER1_AUDIO_CHANNELS, 0);
+
+  ags_audio_set_pads(mixer1,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_REF_COUNT_TEST_MIXER1_OUTPUT_PADS, 0);
+  ags_audio_set_pads(mixer1,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_REF_COUNT_TEST_MIXER1_INPUT_PADS, 0);
+
+  add_audio = ags_add_audio_new(mixer1);
+  ags_task_launch(add_audio);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
+  g_hash_table_insert(object_ref_count,
+		      "/AgsSoundProvider/AgsAudio[2]",
+		      GUINT_TO_POINTER(ref_count));
+
+  /* drum #0 */
+  drum0 = ags_audio_new(audio_application_context->soundcard->data);
+  ags_audio_set_flags(drum0,
+		      (AGS_AUDIO_SYNC | AGS_AUDIO_ASYNC | AGS_AUDIO_OUTPUT_HAS_RECYCLING | AGS_AUDIO_INPUT_HAS_RECYCLING));
+  ags_audio_set_audio_channels(drum0,
+			       AGS_AUDIO_REF_COUNT_TEST_DRUM0_AUDIO_CHANNELS, 0);
+
+  ags_audio_set_pads(drum0,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_REF_COUNT_TEST_DRUM0_OUTPUT_PADS, 0);
+  ags_audio_set_pads(drum0,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_REF_COUNT_TEST_DRUM0_INPUT_PADS, 0);
+
+  add_audio = ags_add_audio_new(drum0);
+  ags_task_launch(add_audio);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
+  g_hash_table_insert(object_ref_count,
+		      "/AgsSoundProvider/AgsAudio[3]",
+		      GUINT_TO_POINTER(ref_count));
+
+  /* drum #1 */
+  drum1 = ags_audio_new(audio_application_context->soundcard->data);
+  ags_audio_set_flags(drum1,
+		      (AGS_AUDIO_SYNC | AGS_AUDIO_ASYNC | AGS_AUDIO_OUTPUT_HAS_RECYCLING | AGS_AUDIO_INPUT_HAS_RECYCLING));
+  ags_audio_set_audio_channels(drum1,
+			       AGS_AUDIO_REF_COUNT_TEST_DRUM1_AUDIO_CHANNELS, 0);
+
+  ags_audio_set_pads(drum1,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_REF_COUNT_TEST_DRUM1_OUTPUT_PADS, 0);
+  ags_audio_set_pads(drum1,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_REF_COUNT_TEST_DRUM1_INPUT_PADS, 0);
+
+  add_audio = ags_add_audio_new(drum1);
+  ags_task_launch(add_audio);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
+  g_hash_table_insert(object_ref_count,
+		      "/AgsSoundProvider/AgsAudio[4]",
+		      GUINT_TO_POINTER(ref_count));
+
+  /* drum #2 */
+  drum2 = ags_audio_new(audio_application_context->soundcard->data);
+  ags_audio_set_flags(drum2,
+		      (AGS_AUDIO_SYNC | AGS_AUDIO_ASYNC | AGS_AUDIO_OUTPUT_HAS_RECYCLING | AGS_AUDIO_INPUT_HAS_RECYCLING));
+  ags_audio_set_audio_channels(drum2,
+			       AGS_AUDIO_REF_COUNT_TEST_DRUM2_AUDIO_CHANNELS, 0);
+
+  ags_audio_set_pads(drum2,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_REF_COUNT_TEST_DRUM2_OUTPUT_PADS, 0);
+  ags_audio_set_pads(drum2,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_REF_COUNT_TEST_DRUM2_INPUT_PADS, 0);
+
+  add_audio = ags_add_audio_new(drum2);
+  ags_task_launch(add_audio);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
+  g_hash_table_insert(object_ref_count,
+		      "/AgsSoundProvider/AgsAudio[5]",
+		      GUINT_TO_POINTER(ref_count));
+}
+
+void
+ags_audio_ref_count_test_link_audio_tree()
+{  
+  GError *error;
+  
+  /* link */
+  error = NULL;
+  ags_channel_set_link(panel->input,
+		       mixer0->output,
+		       &error);
+  error = NULL;
+  ags_channel_set_link(panel->input->next,
+		       mixer0->output->next,
+		       &error);
+  
+  error = NULL;
+  ags_channel_set_link(mixer0->input,
+		       mixer1->output,
+		       &error);
+  error = NULL;
+  ags_channel_set_link(mixer0->input->next,
+		       mixer1->output->next,
+		       &error);
+
+  error = NULL;
+  ags_channel_set_link(mixer1->input,
+		       drum0->output,
+		       &error);
+  error = NULL;
+  ags_channel_set_link(mixer1->input->next,
+		       drum0->output->next,
+		       &error);
+
+  error = NULL;
+  ags_channel_set_link(mixer1->input->next->next,
+		       drum1->output->next,
+		       &error);
+  error = NULL;
+  ags_channel_set_link(mixer1->input->next->next->next,
+		       drum1->output->next,
+		       &error);
+  
+  error = NULL;
+  ags_channel_set_link(mixer1->input->next->next->next->next,
+		       drum2->output->next,
+		       &error);
+  error = NULL;
+  ags_channel_set_link(mixer1->input->next->next->next->next->next,
+		       drum2->output->next,
+		       &error);
+}
+
+void
+ags_audio_ref_count_test_set_link()
+{
+  guint ref_count;
+  
+  GError *error;
+  
+  if(audio_application_context->audio != NULL){
+    g_list_foreach(audio_application_context->audio,
+		   (GFunc) g_object_run_dispose,
+		   NULL);
+    g_list_free_full(audio_application_context->audio,
+		     (GDestroyNotify) g_object_unref);
+  }
+  
+  audio_application_context->audio = NULL;
+  
+  ags_audio_ref_count_test_create_audio_tree();
+
+  /* panel */
+  error = NULL;
+  ags_channel_set_link(panel->input,
+		       mixer0->output,
+		       &error);
+  error = NULL;
+  ags_channel_set_link(panel->input->next,
+		       mixer0->output->next,
+		       &error);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(panel)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[0]")) == ref_count);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[1]")) == ref_count);
+  
+  /* mixer */
+  error = NULL;
+  ags_channel_set_link(mixer0->input,
+		       mixer1->output,
+		       &error);
+  error = NULL;
+  ags_channel_set_link(mixer0->input->next,
+		       mixer1->output->next,
+		       &error);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[1]")) == ref_count);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[2]")) == ref_count);
+
+  /* drum #0 */
+  error = NULL;
+  ags_channel_set_link(mixer1->input,
+		       drum0->output,
+		       &error);
+  error = NULL;
+  ags_channel_set_link(mixer1->input->next,
+		       drum0->output->next,
+		       &error);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[2]")) == ref_count);
+
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[3]")) == ref_count);
+  
+  /* drum #1 */
+  error = NULL;
+  ags_channel_set_link(mixer1->input->next->next,
+		       drum1->output->next,
+		       &error);
+  error = NULL;
+  ags_channel_set_link(mixer1->input->next->next->next,
+		       drum1->output->next,
+		       &error);
+  
+  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[2]")) == ref_count);
+
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[4]")) == ref_count);
+
+  /* drum #2 */
+  error = NULL;
+  ags_channel_set_link(mixer1->input->next->next->next->next,
+		       drum2->output->next,
+		       &error);
+  error = NULL;
+  ags_channel_set_link(mixer1->input->next->next->next->next->next,
+		       drum2->output->next,
+		       &error);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[2]")) == ref_count);
+
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[5]")) == ref_count);
 }
 
 void
 ags_audio_ref_count_test_recursive_set_property()
 {
+  guint ref_count;
+  
+  GError *error;
+
+  if(audio_application_context->audio != NULL){
+    g_list_foreach(audio_application_context->audio,
+		   (GFunc) g_object_run_dispose,
+		   NULL);
+    g_list_free_full(audio_application_context->audio,
+		     (GDestroyNotify) g_object_unref);
+  }
+  
+  audio_application_context->audio = NULL;
+  
+  ags_audio_ref_count_test_create_audio_tree();
+  ags_audio_ref_count_test_link_audio_tree();
+
+  
   //TODO:JK: implement me
 }
 
 void
 ags_audio_ref_count_test_recursive_run_stage()
 {
+  guint ref_count;
+  
+  GError *error;
+
+  if(audio_application_context->audio != NULL){
+    g_list_foreach(audio_application_context->audio,
+		   (GFunc) g_object_run_dispose,
+		   NULL);
+    g_list_free_full(audio_application_context->audio,
+		     (GDestroyNotify) g_object_unref);
+  }
+  
+  audio_application_context->audio = NULL;
+  
+  ags_audio_ref_count_test_create_audio_tree();
+  ags_audio_ref_count_test_link_audio_tree();
+
   //TODO:JK: implement me
 }
 
@@ -156,7 +525,8 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of audio objects ref count after recursive set property", ags_audio_ref_count_test_recursive_set_property) == NULL) ||
+  if((CU_add_test(pSuite, "test of audio objects ref count after set link", ags_audio_ref_count_test_set_link) == NULL) ||
+     (CU_add_test(pSuite, "test of audio objects ref count after recursive set property", ags_audio_ref_count_test_recursive_set_property) == NULL) ||
      (CU_add_test(pSuite, "test of audio objects ref count after recursive run stage", ags_audio_ref_count_test_recursive_run_stage) == NULL)){
       CU_cleanup_registry();
       
