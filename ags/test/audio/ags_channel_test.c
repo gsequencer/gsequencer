@@ -159,7 +159,7 @@ ags_channel_test_finalize()
     /* instantiate play */
     recall = ags_recall_channel_new();
     g_object_set(recall,
-		 "source\0", channel,
+		 "source", channel,
 		 NULL);
 
     /* add play to channel */
@@ -173,7 +173,7 @@ ags_channel_test_finalize()
     /* instantiate recall */
     recall = ags_recall_channel_new();
     g_object_set(recall,
-		 "source\0", channel,
+		 "source", channel,
 		 NULL);
 
     /* add recall to channel */
@@ -354,7 +354,7 @@ ags_channel_test_duplicate_recall()
   recall_id = ags_recall_id_new(NULL);
   recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
-	       "recycling-context\0", recycling_context,
+	       "recycling-context", recycling_context,
 	       NULL);
 
   /* duplicate recall */
@@ -388,13 +388,13 @@ ags_channel_test_duplicate_recall()
   
   recycling_context = ags_recycling_context_new(0);
   g_object_set(recycling_context,
-	       "parent\0", parent_recycling_context,
+	       "parent", parent_recycling_context,
 	       NULL);
 
   recall_id = ags_recall_id_new(NULL);
   recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
-	       "recycling-context\0", recycling_context,
+	       "recycling-context", recycling_context,
 	       NULL);
 
   /* duplicate recall */
@@ -440,7 +440,7 @@ ags_channel_test_init_recall()
   recall_id = ags_recall_id_new(NULL);
   recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
-	       "recycling-context\0", recycling_context,
+	       "recycling-context", recycling_context,
 	       NULL);
   ags_channel_add_recall_id(channel,
 			    recall_id);
@@ -455,7 +455,7 @@ ags_channel_test_init_recall()
   list = channel->play;
 
   while(list != NULL){
-    g_signal_connect(G_OBJECT(list->data), "run-init-pre\0",
+    g_signal_connect(G_OBJECT(list->data), "run-init-pre",
 		     G_CALLBACK(ags_channel_test_run_init_pre_recall_callback), NULL);
 
     list = list->next;
@@ -486,7 +486,7 @@ ags_channel_test_resolve_recall()
 			 slave_recall_channel_run,
 			 TRUE);
 
-  g_signal_connect(G_OBJECT(slave_recall_channel_run), "resolve-dependency\0",
+  g_signal_connect(G_OBJECT(slave_recall_channel_run), "resolve-dependency",
 		   G_CALLBACK(ags_channel_test_resolve_recall_callback), NULL);
 
   /* instantiate recycling context and recall id */
@@ -495,12 +495,12 @@ ags_channel_test_resolve_recall()
   recall_id = ags_recall_id_new(NULL);
   recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
-	       "recycling-context\0", recycling_context,
+	       "recycling-context", recycling_context,
 	       NULL);
   
   /* setup recalls */
   g_object_set(slave_recall_channel_run,
-	       "recall-id\0", recall_id,
+	       "recall-id", recall_id,
 	       NULL);
 
   /* resolve recall */
@@ -536,8 +536,8 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
 
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -545,7 +545,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsChannelTest\0", ags_channel_test_init_suite, ags_channel_test_clean_suite);
+  pSuite = CU_add_suite("AgsChannelTest", ags_channel_test_init_suite, ags_channel_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -554,14 +554,14 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsChannel dispose\0", ags_channel_test_dispose) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsChannel finalize\0", ags_channel_test_finalize) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsChannel add recall\0", ags_channel_test_add_recall) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsChannel add recall container\0", ags_channel_test_add_recall_container) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsChannel add recall id\0", ags_channel_test_add_recall_id) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsChannel add duplicate recall\0", ags_channel_test_duplicate_recall) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsChannel add resolve recall\0", ags_channel_test_resolve_recall) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsChannel add init recall\0", ags_channel_test_init_recall) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsChannel dispose", ags_channel_test_dispose) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel finalize", ags_channel_test_finalize) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel add recall", ags_channel_test_add_recall) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel add recall container", ags_channel_test_add_recall_container) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel add recall id", ags_channel_test_add_recall_id) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel add duplicate recall", ags_channel_test_duplicate_recall) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel add resolve recall", ags_channel_test_resolve_recall) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel add init recall", ags_channel_test_init_recall) == NULL)){
       CU_cleanup_registry();
       
       return CU_get_error();
