@@ -599,6 +599,8 @@ ags_audio_ref_count_test_recursive_set_property()
 void
 ags_audio_ref_count_test_recursive_run_stage()
 {
+  GList *start_recall_id, *recall_id;
+
   guint ref_count;
   
   GError *error;
@@ -616,7 +618,132 @@ ags_audio_ref_count_test_recursive_run_stage()
   ags_audio_ref_count_test_create_audio_tree();
   ags_audio_ref_count_test_link_audio_tree();
 
-  //TODO:JK: implement me
+  /* attempt #0 - start */
+#if 0
+  //NOTE:JK: needs another thread
+  recall_id = ags_audio_start(drum0,
+			      AGS_SOUND_SCOPE_SEQUENCER);
+#endif
+  
+  recall_id = ags_audio_start(drum1,
+			      AGS_SOUND_SCOPE_SEQUENCER);
+
+#if 0
+  //NOTE:JK: needs another thread
+  recall_id = ags_audio_start(drum2,
+			      AGS_SOUND_SCOPE_SEQUENCER);
+#endif
+  
+#if 0
+  //NOTE:JK: needs another thread
+  ags_channel_recursive_run_stage(drum0->output,
+				  AGS_SOUND_SCOPE_SEQUENCER, (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX));
+  ags_channel_recursive_run_stage(drum0->output->next,
+				  AGS_SOUND_SCOPE_SEQUENCER, (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX));
+#endif
+  
+  ags_channel_recursive_run_stage(drum1->output,
+				  AGS_SOUND_SCOPE_SEQUENCER, (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX));
+  ags_channel_recursive_run_stage(drum1->output->next,
+				  AGS_SOUND_SCOPE_SEQUENCER, (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX));
+
+#if 0
+  //NOTE:JK: needs another thread
+  ags_channel_recursive_run_stage(drum1->output,
+				  AGS_SOUND_SCOPE_SEQUENCER, (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX));
+  ags_channel_recursive_run_stage(drum1->output->next,
+				  AGS_SOUND_SCOPE_SEQUENCER, (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX));
+#endif
+  
+  ref_count = g_atomic_int_get(&(G_OBJECT(panel)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[0]")) == ref_count);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[1]")) == ref_count);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[2]")) == ref_count);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[3]")) == ref_count);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
+
+  g_message("%d -> %d", GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[4]")), ref_count);
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[4]")) == ref_count);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[5]")) == ref_count);
+
+  /* attempt #1 - stop */
+#if 0
+  //NOTE:JK: needs another thread
+  ags_audio_set_staging_completed(drum0, AGS_SOUND_SCOPE_SEQUENCER);
+
+  ags_channel_set_staging_completed(drum0->output, AGS_SOUND_SCOPE_SEQUENCER);
+  ags_channel_set_staging_completed(drum0->output->next, AGS_SOUND_SCOPE_SEQUENCER);
+#endif
+  
+  ags_audio_set_staging_completed(drum1, AGS_SOUND_SCOPE_SEQUENCER);
+
+  ags_channel_set_staging_completed(drum1->output, AGS_SOUND_SCOPE_SEQUENCER);
+  ags_channel_set_staging_completed(drum1->output->next, AGS_SOUND_SCOPE_SEQUENCER);
+
+#if 0
+  //NOTE:JK: needs another thread
+  ags_audio_set_staging_completed(drum2, AGS_SOUND_SCOPE_SEQUENCER);
+
+  ags_channel_set_staging_completed(drum2->output, AGS_SOUND_SCOPE_SEQUENCER);
+  ags_channel_set_staging_completed(drum2->output->next, AGS_SOUND_SCOPE_SEQUENCER);
+#endif
+  
+#if 0
+  //NOTE:JK: needs another thread
+  start_recall_id = ags_audio_check_scope(drum0, AGS_SOUND_SCOPE_SEQUENCER);
+  ags_audio_stop(drum0,
+		 start_recall_id, AGS_SOUND_SCOPE_SEQUENCER);
+#endif
+  
+  start_recall_id = ags_audio_check_scope(drum1, AGS_SOUND_SCOPE_SEQUENCER);
+  ags_audio_stop(drum1,
+		 start_recall_id, AGS_SOUND_SCOPE_SEQUENCER);
+
+#if 0
+  //NOTE:JK: needs another thread
+  start_recall_id = ags_audio_check_scope(drum2, AGS_SOUND_SCOPE_SEQUENCER);
+  ags_audio_stop(drum2,
+		 start_recall_id, AGS_SOUND_SCOPE_SEQUENCER);
+#endif
+  
+  ref_count = g_atomic_int_get(&(G_OBJECT(panel)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[0]")) == ref_count);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[1]")) == ref_count);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[2]")) == ref_count);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[3]")) == ref_count);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
+
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[4]")) == ref_count);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
+  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[5]")) == ref_count);
 }
 
 int

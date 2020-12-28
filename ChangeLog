@@ -2,7 +2,8 @@ ags (3.7.20)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed ags-fx-envelope be explicite about floating point arithmetic
-	* fixed ref count in ags_audio_set_link()
+	* fixed ref count in ags_channel_set_link()
+	* fixed ref count in ags_channel_recursive_run_stage() and related
 	* fixed ref count in ags_input_next_active()
 	* minor improvements
 

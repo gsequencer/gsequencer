@@ -11533,13 +11533,17 @@ ags_channel_real_start(AgsChannel *channel,
   }
 
   /* get some fields */
+  audio = NULL;
+  
   g_object_get(channel,
 	       "audio", &audio,
 	       NULL);
 
   /* test input has recycling */
   if(!ags_audio_test_flags(audio, AGS_AUDIO_INPUT_HAS_RECYCLING)){
-    g_object_unref(audio);
+    if(audio != NULL){
+      g_object_unref(audio);
+    }
     
     return(NULL);
   }
@@ -11846,8 +11850,10 @@ ags_channel_real_start(AgsChannel *channel,
     }
   }
 
-  g_object_unref(audio);
-
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+  
   g_object_unref(playback_domain);
 
   g_object_unref(first_recycling);
@@ -13455,6 +13461,10 @@ ags_channel_recursive_setup_run_stage_down_input(AgsChannel *channel,
   }
 
   /* unref */
+  if(current_audio != NULL){
+    g_object_unref(current_audio);
+  }
+
   if(start_input != NULL){
     g_object_unref(start_input);
   }
@@ -14042,6 +14052,10 @@ ags_channel_recursive_prepare_run_stage_down_input(AgsChannel *channel,
   }
 
   /* unref */
+  if(current_audio != NULL){
+    g_object_unref(current_audio);
+  }
+
   if(start_input != NULL){
     g_object_unref(start_input);
   }
@@ -14611,6 +14625,10 @@ ags_channel_recursive_do_run_stage_down_input(AgsChannel *channel,
   }
 
   /* unref */
+  if(current_audio != NULL){
+    g_object_unref(current_audio);
+  }
+
   if(start_input != NULL){
     g_object_unref(start_input);
   }
@@ -15286,6 +15304,10 @@ ags_channel_recursive_cleanup_run_stage_down_input(AgsChannel *channel,
     }
   }
 
+  if(current_audio != NULL){
+    g_object_unref(current_audio);
+  }
+
   if(start_input != NULL){
     g_object_unref(start_input);
   }
@@ -15496,8 +15518,8 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	g_object_unref(audio);
       }
     
-      if(output != NULL){
-	g_object_unref(output);
+      if(start_output != NULL){
+	g_object_unref(start_output);
       }
     }else{
       while(!ags_channel_test_staging_completed(channel, sound_scope));

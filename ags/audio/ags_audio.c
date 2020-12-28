@@ -14077,6 +14077,8 @@ ags_audio_real_stop(AgsAudio *audio,
     while(output_playback != NULL){
       playback = AGS_PLAYBACK(output_playback->data);
 
+      channel = NULL;
+      
       g_object_get(playback,
 		   "channel", &channel,
 		   NULL);
@@ -14090,7 +14092,9 @@ ags_audio_real_stop(AgsAudio *audio,
 	g_object_unref(channel_thread);
       }
 
-      g_object_unref(channel);
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
       
       /* iterate */
       output_playback = output_playback->next;
@@ -14133,6 +14137,8 @@ ags_audio_real_stop(AgsAudio *audio,
       while(output_playback != NULL){
 	playback = AGS_PLAYBACK(output_playback->data);
 
+	channel = NULL;
+	
 	g_object_get(playback,
 		     "channel", &channel,
 		     NULL);
@@ -14146,8 +14152,10 @@ ags_audio_real_stop(AgsAudio *audio,
 	  g_object_unref(channel_thread);
 	}
 
-	g_object_unref(channel);
-      
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
+	
 	/* iterate */
 	output_playback = output_playback->next;
       }
