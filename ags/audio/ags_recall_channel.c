@@ -466,7 +466,14 @@ ags_recall_channel_automate(AgsRecall *recall)
   gboolean return_prev_on_failure;
 
   GRecMutex *audio_mutex;
+
+  audio = NULL;
+  channel = NULL;  
+
+  soundcard = NULL;
   
+  port_start = NULL;
+
   g_object_get(recall,
 	       "source", &channel,
 	       NULL);
@@ -482,6 +489,14 @@ ags_recall_channel_automate(AgsRecall *recall)
   if(audio->automation_port == NULL){  
     g_rec_mutex_unlock(audio_mutex);
 
+    if(audio != NULL){
+      g_object_unref(audio);
+    }
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+    
     return;
   }
   
@@ -606,12 +621,18 @@ ags_recall_channel_automate(AgsRecall *recall)
     port = port->next;
   }
 
-  g_object_unref(channel);
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
 
-  g_object_unref(audio);
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
 
-  g_object_unref(soundcard);
-
+  if(soundcard != NULL){
+    g_object_unref(soundcard);
+  }
+  
   g_list_free_full(port_start,
 		   g_object_unref);
 }

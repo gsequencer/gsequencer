@@ -83,6 +83,7 @@ check_PROGRAMS += \
 	ags_midiin_test \
 	ags_audio_test \
 	ags_audio_ref_count_test \
+	ags_fx_ref_count_test \
 	ags_playback_domain_test \
 	ags_playback_test \
 	ags_preset_test \
@@ -716,6 +717,12 @@ ags_audio_ref_count_test_SOURCES = ags/test/audio/ags_audio_ref_count_test.c
 ags_audio_ref_count_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
 ags_audio_ref_count_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_audio_ref_count_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# fx ref count unit test
+ags_fx_ref_count_test_SOURCES = ags/test/audio/ags_fx_ref_count_test.c
+ags_fx_ref_count_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_fx_ref_count_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_fx_ref_count_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
 # playback domain unit test
 ags_playback_domain_test_SOURCES = ags/test/audio/ags_playback_domain_test.c

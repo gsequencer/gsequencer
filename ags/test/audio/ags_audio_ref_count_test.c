@@ -672,8 +672,6 @@ ags_audio_ref_count_test_recursive_run_stage()
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[3]")) == ref_count);
 
   ref_count = g_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
-
-  g_message("%d -> %d", GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[4]")), ref_count);
   
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(object_ref_count, "/AgsSoundProvider/AgsAudio[4]")) == ref_count);
 
