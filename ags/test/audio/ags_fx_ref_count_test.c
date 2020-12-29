@@ -147,6 +147,9 @@ AgsRecallContainer *drum2_peak_recall_container;
 AgsRecallContainer *drum2_buffer_play_container;
 AgsRecallContainer *drum2_buffer_recall_container;
 
+AgsRecallID *drum0_recall_id, *drum1_recall_id, *drum2_recall_id;
+AgsRecyclingContext *drum0_recycling_context, *drum1_recycling_context, *drum2_recycling_context;
+
 GHashTable *object_ref_count;
 
 /* The suite initialization function.
@@ -214,12 +217,37 @@ ags_fx_ref_count_test_clean_suite()
 void
 ags_fx_ref_count_test_create_audio_tree()
 {
+  AgsChannel *current_channel;
   AgsAddAudio *add_audio;
 
   GList *start_recall, *recall;
 
   gint position;
   guint ref_count;
+
+  drum0_recall_id = ags_recall_id_new();
+  drum0_recall_id->sound_scope = AGS_SOUND_SCOPE_SEQUENCER;
+  
+  drum0_recycling_context = ags_recycling_context_new(0);
+  g_object_set(drum0_recall_id,
+	       "recycling-context", drum0_recycling_context,
+	       NULL);
+
+  drum1_recall_id = ags_recall_id_new();
+  drum1_recall_id->sound_scope = AGS_SOUND_SCOPE_SEQUENCER;
+
+  drum1_recycling_context = ags_recycling_context_new(0);
+  g_object_set(drum1_recall_id,
+	       "recycling-context", drum1_recycling_context,
+	       NULL);
+
+  drum2_recall_id = ags_recall_id_new();
+  drum2_recall_id->sound_scope = AGS_SOUND_SCOPE_SEQUENCER;
+
+  drum2_recycling_context = ags_recycling_context_new(0);
+  g_object_set(drum2_recall_id,
+	       "recycling-context", drum2_recycling_context,
+	       NULL);
 
   position = 0;
   
@@ -276,6 +304,51 @@ ags_fx_ref_count_test_create_audio_tree()
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
+  ags_audio_duplicate_recall(panel,
+			     drum0_recall_id,
+			     0, 0,
+			     0);
+
+  ags_audio_duplicate_recall(panel,
+			     drum1_recall_id,
+			     0, 0,
+			     0);
+
+  ags_audio_duplicate_recall(panel,
+			     drum2_recall_id,
+			     0, 0,
+			     0);
+
+  current_channel = panel->output;
+
+  while(current_channel != NULL){
+    ags_channel_duplicate_recall(current_channel,
+				 drum0_recall_id);
+    
+    ags_channel_duplicate_recall(current_channel,
+				 drum1_recall_id);
+
+    ags_channel_duplicate_recall(current_channel,
+				 drum2_recall_id);
+
+    current_channel = current_channel->next;
+  }
+
+  current_channel = panel->input;
+
+  while(current_channel != NULL){
+    ags_channel_duplicate_recall(current_channel,
+				 drum0_recall_id);
+    
+    ags_channel_duplicate_recall(current_channel,
+				 drum1_recall_id);
+
+    ags_channel_duplicate_recall(current_channel,
+				 drum2_recall_id);
+
+    current_channel = current_channel->next;
+  }
+  
   ref_count = g_atomic_int_get(&(G_OBJECT(panel)->ref_count));
   g_hash_table_insert(object_ref_count,
 		      "/AgsSoundProvider/AgsAudio[0]",
@@ -335,6 +408,51 @@ ags_fx_ref_count_test_create_audio_tree()
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
+  ags_audio_duplicate_recall(mixer0,
+			     drum0_recall_id,
+			     0, 0,
+			     0);
+
+  ags_audio_duplicate_recall(mixer0,
+			     drum1_recall_id,
+			     0, 0,
+			     0);
+
+  ags_audio_duplicate_recall(mixer0,
+			     drum2_recall_id,
+			     0, 0,
+			     0);
+
+  current_channel = mixer0->output;
+
+  while(current_channel != NULL){
+    ags_channel_duplicate_recall(current_channel,
+				 drum0_recall_id);
+    
+    ags_channel_duplicate_recall(current_channel,
+				 drum1_recall_id);
+
+    ags_channel_duplicate_recall(current_channel,
+				 drum2_recall_id);
+
+    current_channel = current_channel->next;
+  }
+
+  current_channel = mixer0->input;
+
+  while(current_channel != NULL){
+    ags_channel_duplicate_recall(current_channel,
+				 drum0_recall_id);
+    
+    ags_channel_duplicate_recall(current_channel,
+				 drum1_recall_id);
+
+    ags_channel_duplicate_recall(current_channel,
+				 drum2_recall_id);
+
+    current_channel = current_channel->next;
+  }
+  
   ref_count = g_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
   g_hash_table_insert(object_ref_count,
 		      "/AgsSoundProvider/AgsAudio[1]",
@@ -392,6 +510,51 @@ ags_fx_ref_count_test_create_audio_tree()
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
+
+  ags_audio_duplicate_recall(mixer1,
+			     drum0_recall_id,
+			     0, 0,
+			     0);
+
+  ags_audio_duplicate_recall(mixer1,
+			     drum1_recall_id,
+			     0, 0,
+			     0);
+
+  ags_audio_duplicate_recall(mixer1,
+			     drum2_recall_id,
+			     0, 0,
+			     0);
+
+  current_channel = mixer1->output;
+
+  while(current_channel != NULL){
+    ags_channel_duplicate_recall(current_channel,
+				 drum0_recall_id);
+    
+    ags_channel_duplicate_recall(current_channel,
+				 drum1_recall_id);
+
+    ags_channel_duplicate_recall(current_channel,
+				 drum2_recall_id);
+
+    current_channel = current_channel->next;
+  }
+
+  current_channel = mixer1->input;
+
+  while(current_channel != NULL){
+    ags_channel_duplicate_recall(current_channel,
+				 drum0_recall_id);
+    
+    ags_channel_duplicate_recall(current_channel,
+				 drum1_recall_id);
+
+    ags_channel_duplicate_recall(current_channel,
+				 drum2_recall_id);
+
+    current_channel = current_channel->next;
+  }
 
   ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
   g_hash_table_insert(object_ref_count,
@@ -541,6 +704,29 @@ ags_fx_ref_count_test_create_audio_tree()
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
+  ags_audio_duplicate_recall(drum0,
+			     drum0_recall_id,
+			     0, 0,
+			     0);
+
+  current_channel = drum0->output;
+
+  while(current_channel != NULL){
+    ags_channel_duplicate_recall(current_channel,
+				 drum0_recall_id);
+    
+    current_channel = current_channel->next;
+  }
+
+  current_channel = drum0->input;
+
+  while(current_channel != NULL){
+    ags_channel_duplicate_recall(current_channel,
+				 drum0_recall_id);
+    
+    current_channel = current_channel->next;
+  }
+  
   ref_count = g_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
   g_hash_table_insert(object_ref_count,
 		      "/AgsSoundProvider/AgsAudio[3]",
@@ -688,6 +874,29 @@ ags_fx_ref_count_test_create_audio_tree()
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
+
+  ags_audio_duplicate_recall(drum1,
+			     drum1_recall_id,
+			     0, 0,
+			     0);
+
+  current_channel = drum1->output;
+
+  while(current_channel != NULL){
+    ags_channel_duplicate_recall(current_channel,
+				 drum1_recall_id);
+
+    current_channel = current_channel->next;
+  }
+
+  current_channel = drum1->input;
+
+  while(current_channel != NULL){
+    ags_channel_duplicate_recall(current_channel,
+				 drum1_recall_id);
+
+    current_channel = current_channel->next;
+  }
 
   ref_count = g_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
   g_hash_table_insert(object_ref_count,
@@ -837,6 +1046,29 @@ ags_fx_ref_count_test_create_audio_tree()
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
+  ags_audio_duplicate_recall(drum2,
+			     drum2_recall_id,
+			     0, 0,
+			     0);
+
+  current_channel = drum2->output;
+
+  while(current_channel != NULL){
+    ags_channel_duplicate_recall(current_channel,
+				 drum2_recall_id);
+
+    current_channel = current_channel->next;
+  }
+
+  current_channel = drum2->input;
+
+  while(current_channel != NULL){
+    ags_channel_duplicate_recall(current_channel,
+				 drum2_recall_id);
+
+    current_channel = current_channel->next;
+  }
+
   ref_count = g_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
   g_hash_table_insert(object_ref_count,
 		      "/AgsSoundProvider/AgsAudio[5]",
@@ -899,8 +1131,6 @@ void
 ags_fx_ref_count_test_play_recall()
 {
   AgsChannel *current_channel;
-  AgsRecallID *drum0_recall_id, *drum1_recall_id, *drum2_recall_id;
-  AgsRecyclingContext *drum0_recycling_context, *drum1_recycling_context, *drum2_recycling_context;
 
   guint ref_count;
 
@@ -916,30 +1146,6 @@ ags_fx_ref_count_test_play_recall()
   
   ags_fx_ref_count_test_create_audio_tree();
   ags_fx_ref_count_test_link_audio_tree();
-
-  drum0_recall_id = ags_recall_id_new();
-  drum0_recall_id->sound_scope = AGS_SOUND_SCOPE_SEQUENCER;
-  
-  drum0_recycling_context = ags_recycling_context_new(0);
-  g_object_set(drum0_recall_id,
-	       "recycling-context", drum0_recycling_context,
-	       NULL);
-
-  drum1_recall_id = ags_recall_id_new();
-  drum1_recall_id->sound_scope = AGS_SOUND_SCOPE_SEQUENCER;
-
-  drum1_recycling_context = ags_recycling_context_new(0);
-  g_object_set(drum1_recall_id,
-	       "recycling-context", drum1_recycling_context,
-	       NULL);
-
-  drum2_recall_id = ags_recall_id_new();
-  drum2_recall_id->sound_scope = AGS_SOUND_SCOPE_SEQUENCER;
-
-  drum2_recycling_context = ags_recycling_context_new(0);
-  g_object_set(drum2_recall_id,
-	       "recycling-context", drum2_recycling_context,
-	       NULL);
 
   ags_audio_play_recall(drum0,
 			drum0_recall_id, (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER));
