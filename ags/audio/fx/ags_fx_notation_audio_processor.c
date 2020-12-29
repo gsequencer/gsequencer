@@ -1211,6 +1211,8 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
   GRecMutex *fx_notation_audio_processor_mutex;
 
   fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
+
+  audio = NULL;
   
   g_object_get(fx_notation_audio_processor,
 	       "audio", &audio,
@@ -1264,7 +1266,9 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
 		     (GDestroyNotify) g_object_unref);
   }
 
-  g_object_unref(audio);
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
   
   g_list_free_full(start_notation,
 		   (GDestroyNotify) g_object_unref);  

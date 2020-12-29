@@ -124,6 +124,8 @@ ags_output_find_first_input_recycling(AgsOutput *output)
   }
   
   /* get some fields */
+  audio = NULL;
+  
   g_object_get(output,
 	       "audio", &audio,
 	       "audio-channel", &audio_channel,
@@ -166,11 +168,13 @@ ags_output_find_first_input_recycling(AgsOutput *output)
   }
   
   /* unref */
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+  
   if(start_input != NULL){
     g_object_unref(start_input);
   }
-
-  g_object_unref(audio);
   
   return(recycling);
 }
@@ -200,6 +204,8 @@ ags_output_find_last_input_recycling(AgsOutput *output)
   }
 
   /* get some fields */
+  audio = NULL;
+  
   g_object_get(output,
 	       "audio", &audio,
 	       "audio-channel", &audio_channel,
@@ -242,6 +248,10 @@ ags_output_find_last_input_recycling(AgsOutput *output)
   }
   
   /* unref */
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+
   if(start_input != NULL){
     g_object_unref(start_input);
   }

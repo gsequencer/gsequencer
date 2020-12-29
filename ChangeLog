@@ -7,6 +7,9 @@ ags (3.7.20)
 	* fixed ref count in ags_channel_set_link()
 	* fixed ref count in ags_channel_recursive_run_stage() and related
 	* fixed ref count in ags_input_next_active()
+	* added ags_audio_ref_count_test.c
+	* added ags_fx_ref_count_test.c
+	* added ags_audio_application_context_ref_count_test.c
 	* minor improvements
 
 ags (3.7.19)

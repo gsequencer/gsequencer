@@ -496,6 +496,8 @@ ags_audio_thread_run(AgsThread *thread)
   audio_thread = AGS_AUDIO_THREAD(thread);  
 
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
+
+  audio = NULL;
   
   g_object_get(audio_thread,
 	       "audio", &audio,
@@ -556,18 +558,17 @@ ags_audio_thread_run(AgsThread *thread)
     if(ags_playback_test_flags(playback->data, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
       ags_audio_thread_play_channel_super_threaded(audio_thread, playback->data);
     }else{
+      channel = NULL;
+      
       g_object_get(playback->data,
 		   "channel", &channel,
 		   NULL);
-
-      g_object_unref(channel);
       
       if(sound_scope >= 0){
 	if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK ||
 	   ags_playback_get_recall_id((AgsPlayback *) playback, sound_scope) == NULL){
-	  playback = playback->next;
 	  
-	  continue;
+	  goto ags_audio_thread_run_NO_PLAYBACK;
 	}
 	
 	if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
@@ -617,6 +618,12 @@ ags_audio_thread_run(AgsThread *thread)
 	  }
 	}
       }
+    }
+
+  ags_audio_thread_run_NO_PLAYBACK:
+
+    if(channel != NULL){
+      g_object_unref(channel);
     }
     
     playback = playback->next;
@@ -762,8 +769,10 @@ ags_audio_thread_run(AgsThread *thread)
   }
 
   /* unref */
-  g_object_unref(audio);
-
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+  
   g_object_unref(playback_domain);
 }
 
