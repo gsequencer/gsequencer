@@ -13513,6 +13513,8 @@ ags_audio_recall_done_callback(AgsRecall *recall,
 
     ags_task_launcher_add_task(task_launcher,
 			       cancel_audio);
+
+    g_object_unref(cancel_audio);
   }
 }
 

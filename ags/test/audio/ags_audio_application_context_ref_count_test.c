@@ -36,7 +36,8 @@ void ags_audio_application_context_ref_count_test_link_audio_tree();
 void ags_audio_application_context_ref_count_test_launch_callback(AgsTask *task,
 								  gpointer user_data);
 
-void ags_audio_application_context_ref_count_test_playback();
+void ags_audio_application_context_ref_count_test_playback_audio();
+void ags_audio_application_context_ref_count_test_playback_channel();
 
 #define AGS_AUDIO_APPLICATION_CONTEXT_REF_COUNT_TEST_PANEL_AUDIO_CHANNELS (2)
 #define AGS_AUDIO_APPLICATION_CONTEXT_REF_COUNT_TEST_PANEL_OUTPUT_PADS (1)
@@ -62,8 +63,11 @@ void ags_audio_application_context_ref_count_test_playback();
 #define AGS_AUDIO_APPLICATION_CONTEXT_REF_COUNT_TEST_DRUM2_OUTPUT_PADS (2)
 #define AGS_AUDIO_APPLICATION_CONTEXT_REF_COUNT_TEST_DRUM2_INPUT_PADS (16)
 
-#define AGS_AUDIO_APPLICATION_CONTEXT_REF_COUNT_TEST_PLAYBACK_DURATION (16 * G_USEC_PER_SEC)
 #define AGS_AUDIO_APPLICATION_CONTEXT_REF_COUNT_TEST_SOUNDCARD_TIMEOUT (5 * G_USEC_PER_SEC)
+
+#define AGS_AUDIO_APPLICATION_CONTEXT_REF_COUNT_TEST_PLAYBACK_AUDIO_DURATION (16 * G_USEC_PER_SEC)
+
+#define AGS_AUDIO_APPLICATION_CONTEXT_REF_COUNT_TEST_PLAYBACK_CHANNEL_DURATION (4 * G_USEC_PER_SEC)
 
 #define AGS_AUDIO_APPLICATION_CONTEXT_REF_COUNT_TEST_CONFIG "[generic]\n"	\
   "autosave-thread=false\n"				\
@@ -558,6 +562,16 @@ ags_audio_application_context_ref_count_test_create_audio_tree()
 		      "/AgsSoundProvider/AgsAudio[3]",
 		      GUINT_TO_POINTER(ref_count));
 
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum0->input)->ref_count));
+  g_hash_table_insert(initial_object_ref_count,
+		      "/AgsSoundProvider/AgsAudio[3]/AgsInput[0]",
+		      GUINT_TO_POINTER(ref_count));
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum0->input->next)->ref_count));
+  g_hash_table_insert(initial_object_ref_count,
+		      "/AgsSoundProvider/AgsAudio[3]/AgsInput[1]",
+		      GUINT_TO_POINTER(ref_count));
+
   /* drum #1 */
   drum1 = ags_audio_new(audio_application_context->soundcard->data);
   ags_audio_set_flags(drum1,
@@ -933,6 +947,16 @@ ags_audio_application_context_ref_count_test_launch_callback(AgsTask *task,
 		      "/AgsSoundProvider/AgsAudio[3]",
 		      GUINT_TO_POINTER(ref_count));
 
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum0->input)->ref_count));
+  g_hash_table_insert(object_ref_count,
+		      "/AgsSoundProvider/AgsAudio[3]/AgsInput[0]",
+		      GUINT_TO_POINTER(ref_count));
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum0->input->next)->ref_count));
+  g_hash_table_insert(object_ref_count,
+		      "/AgsSoundProvider/AgsAudio[3]/AgsInput[1]",
+		      GUINT_TO_POINTER(ref_count));
+
   ref_count = g_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
   g_hash_table_insert(object_ref_count,
 		      "/AgsSoundProvider/AgsAudio[4]",
@@ -945,7 +969,7 @@ ags_audio_application_context_ref_count_test_launch_callback(AgsTask *task,
 }
 
 void
-ags_audio_application_context_ref_count_test_playback()
+ags_audio_application_context_ref_count_test_playback_audio()
 {
   AgsStartAudio *start_audio;
   AgsStartSoundcard *start_soundcard;
@@ -959,8 +983,6 @@ ags_audio_application_context_ref_count_test_playback()
   
   guint ref_count;
   
-  GError *error;
-
   if(audio_application_context->audio != NULL){
     g_list_foreach(audio_application_context->audio,
 		   (GFunc) g_object_run_dispose,
@@ -1014,7 +1036,7 @@ ags_audio_application_context_ref_count_test_playback()
 		   g_object_unref);
 
   /* test ref count */
-  g_usleep(AGS_AUDIO_APPLICATION_CONTEXT_REF_COUNT_TEST_PLAYBACK_DURATION);
+  g_usleep(AGS_AUDIO_APPLICATION_CONTEXT_REF_COUNT_TEST_PLAYBACK_AUDIO_DURATION);
   
   /* create cancel task */
   start_list = NULL;
@@ -1068,27 +1090,112 @@ ags_audio_application_context_ref_count_test_playback()
   ref_count = g_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
 
   CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(initial_object_ref_count, "/AgsSoundProvider/AgsAudio[5]")) == ref_count);  
+  
+  /* unref */
+  g_object_unref(task_launcher);
+}
 
-  g_message("!!!");
+void
+ags_audio_application_context_ref_count_test_playback_channel()
+{
+  AgsStartChannel *start_channel;
+  AgsStartSoundcard *start_soundcard;
+  AgsCancelChannel *cancel_channel;
+  
+  AgsTaskLauncher *task_launcher;
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(panel)->ref_count));
-  g_message("%d -> %d", GPOINTER_TO_UINT(g_hash_table_lookup(initial_object_ref_count, "/AgsSoundProvider/AgsAudio[0]")), ref_count);  
+  GObject *soundcard;
+  
+  GList *start_list;
+  
+  guint ref_count;
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer0)->ref_count));
-  g_message("%d -> %d", GPOINTER_TO_UINT(g_hash_table_lookup(initial_object_ref_count, "/AgsSoundProvider/AgsAudio[1]")), ref_count);  
+  if(audio_application_context->audio != NULL){
+    g_list_foreach(audio_application_context->audio,
+		   (GFunc) g_object_run_dispose,
+		   NULL);
+    g_list_free_full(audio_application_context->audio,
+		     (GDestroyNotify) g_object_unref);
+  }
+  
+  audio_application_context->audio = NULL;
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(mixer1)->ref_count));
-  g_message("%d -> %d", GPOINTER_TO_UINT(g_hash_table_lookup(initial_object_ref_count, "/AgsSoundProvider/AgsAudio[2]")), ref_count);  
+  soundcard = audio_application_context->soundcard->data;
+
+  ags_audio_application_context_ref_count_test_create_audio_tree();
+  ags_audio_application_context_ref_count_test_link_audio_tree();
+
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(audio_application_context));
+
+  /* create start task */
+  start_list = NULL;
+  
+  start_channel = ags_start_channel_new(drum0->input,
+					AGS_SOUND_SCOPE_PLAYBACK);
+  start_list = g_list_prepend(start_list,
+			      start_channel);
+
+  start_channel = ags_start_channel_new(drum0->input->next,
+					AGS_SOUND_SCOPE_PLAYBACK);
+  start_list = g_list_prepend(start_list,
+			      start_channel);
+
+  /* start soundcard */
+  start_soundcard = ags_start_soundcard_new(audio_application_context);
+  start_list = g_list_prepend(start_list,
+			      start_soundcard);
+
+  g_signal_connect_after(start_soundcard, "launch",
+			 G_CALLBACK(ags_audio_application_context_ref_count_test_launch_callback), NULL);
+
+  /* launch */
+  start_list = g_list_reverse(start_list);
+
+  ags_task_launcher_add_task_all(task_launcher,
+				 start_list);
+
+  g_list_free_full(start_list,
+		   g_object_unref);
+
+  /* test ref count */
+  g_usleep(AGS_AUDIO_APPLICATION_CONTEXT_REF_COUNT_TEST_PLAYBACK_CHANNEL_DURATION);
+
+  /* create cancel task */
+  start_list = NULL;
+  
+  cancel_channel = ags_cancel_channel_new(drum0->input,
+					  AGS_SOUND_SCOPE_PLAYBACK);
+  start_list = g_list_prepend(start_list,
+			      cancel_channel);
+
+  cancel_channel = ags_cancel_channel_new(drum0->input->next,
+					  AGS_SOUND_SCOPE_PLAYBACK);
+  start_list = g_list_prepend(start_list,
+			      cancel_channel);
+
+  ags_task_launcher_add_task_all(task_launcher,
+				 start_list);
+
+  g_list_free_full(start_list,
+		   g_object_unref);
+
+  /* test ref count */
+  g_usleep(AGS_AUDIO_APPLICATION_CONTEXT_REF_COUNT_TEST_SOUNDCARD_TIMEOUT);
+
+  CU_ASSERT(ags_soundcard_is_playing(AGS_SOUNDCARD(soundcard)) == FALSE);
   
   ref_count = g_atomic_int_get(&(G_OBJECT(drum0)->ref_count));
-  g_message("%d -> %d", GPOINTER_TO_UINT(g_hash_table_lookup(initial_object_ref_count, "/AgsSoundProvider/AgsAudio[3]")), ref_count);  
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum1)->ref_count));
-  g_message("%d -> %d", GPOINTER_TO_UINT(g_hash_table_lookup(initial_object_ref_count, "/AgsSoundProvider/AgsAudio[4]")), ref_count);  
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(initial_object_ref_count, "/AgsSoundProvider/AgsAudio[3]")) == ref_count);
 
-  ref_count = g_atomic_int_get(&(G_OBJECT(drum2)->ref_count));
-  g_message("%d -> %d", GPOINTER_TO_UINT(g_hash_table_lookup(initial_object_ref_count, "/AgsSoundProvider/AgsAudio[5]")), ref_count);  
-  
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum0->input)->ref_count));  
+
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(initial_object_ref_count, "/AgsSoundProvider/AgsAudio[3]/AgsInput[0]")) == ref_count);
+
+  ref_count = g_atomic_int_get(&(G_OBJECT(drum0->input->next)->ref_count));
+
+  CU_ASSERT(GPOINTER_TO_UINT(g_hash_table_lookup(initial_object_ref_count, "/AgsSoundProvider/AgsAudio[3]/AgsInput[1]")) == ref_count);  
+
   /* unref */
   g_object_unref(task_launcher);
 }
@@ -1113,11 +1220,12 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of audio application context objects ref count while playback", ags_audio_application_context_ref_count_test_playback) == NULL)){
-      CU_cleanup_registry();
+  if((CU_add_test(pSuite, "test of audio application context objects ref count while playback audio", ags_audio_application_context_ref_count_test_playback_audio) == NULL) ||
+    (CU_add_test(pSuite, "test of audio application context objects ref count while playback channel", ags_audio_application_context_ref_count_test_playback_channel) == NULL)){
+    CU_cleanup_registry();
       
-      return CU_get_error();
-    }
+    return CU_get_error();
+  }
   
   /* Run all tests using the CUnit Basic interface */
   CU_basic_set_mode(CU_BRM_VERBOSE);

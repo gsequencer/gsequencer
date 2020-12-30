@@ -11609,6 +11609,8 @@ ags_channel_recall_done_callback(AgsRecall *recall,
 
       ags_task_launcher_add_task(task_launcher,
 				 cancel_channel);
+
+      g_object_unref(cancel_channel);
     }
   }
 }
