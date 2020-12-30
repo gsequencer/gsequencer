@@ -4502,6 +4502,10 @@ ags_channel_check_loop(AgsChannel *output,
 	       "link", &link,
 	       NULL);
 
+  if(link == NULL){
+    return(FALSE);
+  }
+  
   g_object_get(link,
 	       "audio", &current_audio,
 	       "audio-channel", &current_audio_channel,
@@ -4512,6 +4516,8 @@ ags_channel_check_loop(AgsChannel *output,
 
   if(!audio_matches){
     AgsChannel *current_start_output, *current_output;
+
+    current_start_output = NULL;
     
     g_object_get(current_audio,
 		 "output", &current_start_output,
@@ -4667,18 +4673,18 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
     }
     
     return;
-  }else{
-    if(old_link_link == NULL){
-      if(old_channel_link != NULL){
-	g_object_unref(old_channel_link);
-      }
-
-      if(old_link_link != NULL){
-	g_object_unref(old_link_link);
-      }
-
-      return;
+  }
+  
+  if(old_link_link == channel){
+    if(old_channel_link != NULL){
+      g_object_unref(old_channel_link);
     }
+
+    if(old_link_link != NULL){
+      g_object_unref(old_link_link);
+    }
+
+    return;
   }
 
   /* check for a loop */
@@ -4720,7 +4726,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
       g_object_unref(audio);
     }
     
-    if(audio_matches){
+    if(audio_matches){      
       if(error != NULL){
 	g_set_error(error,
 		    AGS_CHANNEL_ERROR,
@@ -5210,7 +5216,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
     
     GValue *value;
 
-    static const gchar **parameter_name = {
+    static const gchar* parameter_name[] = {
       "output-soundcard",
       "output-soundcard-channel",
       NULL,      
@@ -5238,7 +5244,6 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
     /* allocate parameter name and value */
     n_params = 2;
     
-    parameter_name = (gchar **) malloc((n_params + 1) * sizeof(gchar *));
     value = g_new0(GValue,
 		   n_params);
 
