@@ -513,15 +513,6 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 void
 ags_ffplayer_finalize(GObject *gobject)
 {
-  g_object_disconnect(gobject,
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_ffplayer_resize_audio_channels),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_ffplayer_resize_pads),
-		      NULL,
-		      NULL);
-
   g_hash_table_remove(ags_ffplayer_sf2_loader_completed,
 		      gobject);
 

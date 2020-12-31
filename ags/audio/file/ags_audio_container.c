@@ -1426,23 +1426,23 @@ ags_audio_container_open(AgsAudioContainer *audio_container)
 	g_object_ref(audio_container->sound_container);
 	
 	g_rec_mutex_unlock(audio_container_mutex);
+#ifdef AGS_WITH_LIBINSTPATCH
+      }else if(ags_ipatch_check_suffix(filename)){
+	/* ipatch sound resource */
+	g_rec_mutex_lock(audio_container_mutex);
+
+	sound_container = 
+	  audio_container->sound_container = (GObject *) ags_ipatch_new();
+	g_object_ref(audio_container->sound_container);
+
+	g_rec_mutex_unlock(audio_container_mutex);
+#endif
       }
 
       if(ags_sound_container_open(AGS_SOUND_CONTAINER(sound_container),
 				  filename)){
 	success = TRUE;
       }
-#ifdef AGS_WITH_LIBINSTPATCH
-    }else if(ags_ipatch_check_suffix(filename)){
-      /* ipatch sound resource */
-      g_rec_mutex_lock(audio_container_mutex);
-
-      sound_container = 
-	audio_container->sound_container = (GObject *) ags_ipatch_new();
-      g_object_ref(audio_container->sound_container);
-
-      g_rec_mutex_unlock(audio_container_mutex);
-#endif
     }else{
       g_message("ags_audio_container_open: unknown file type");
     }

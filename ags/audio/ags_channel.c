@@ -4654,10 +4654,14 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 		 NULL);
   }
 
+  old_channel_link_mutex = NULL;
+  
   if(old_channel_link != NULL){
     old_channel_link_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(old_channel_link);
   }
 
+  old_link_link_mutex = NULL;
+  
   if(old_link_link != NULL){
     old_link_link_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(old_link_link);
   }
@@ -4766,11 +4770,6 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 
   if(channel != NULL &&
      old_channel_link != NULL){
-    GRecMutex *old_channel_link_mutex;
-
-    /* get old channel link mutex */
-    old_channel_link_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(old_channel_link);
-
     /* reset link */
     g_rec_mutex_lock(old_channel_link_mutex);
     
@@ -4792,11 +4791,6 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
   /* ref count */
   if(link != NULL &&
      old_link_link != NULL){
-    GRecMutex *old_link_link_mutex;
-
-    /* get old link link mutex */
-    old_link_link_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(old_link_link);
-
     /* reset link */
     g_rec_mutex_lock(old_link_link_mutex);
 
@@ -5035,12 +5029,12 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
       AgsRecycling *first_recycling, *last_recycling;
       
       /* get some fields */
-      g_rec_mutex_lock(link_mutex);
+      g_rec_mutex_lock(old_channel_link_mutex);
 
       first_recycling = old_channel_link->first_recycling;
       last_recycling = old_channel_link->last_recycling;
 
-      g_rec_mutex_unlock(link_mutex);
+      g_rec_mutex_unlock(old_channel_link_mutex);
 
       /* reset */
       ags_channel_reset_recycling(old_channel_link,
@@ -5121,12 +5115,12 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
       AgsRecycling *first_recycling, *last_recycling;
       
       /* get some fields */
-      g_rec_mutex_lock(link_mutex);
+      g_rec_mutex_lock(old_link_link_mutex);
 
       first_recycling = old_link_link->first_recycling;
       last_recycling = old_link_link->last_recycling;
 
-      g_rec_mutex_unlock(link_mutex);
+      g_rec_mutex_unlock(old_link_link_mutex);
 
       /* reset */
       ags_channel_reset_recycling(old_link_link,
@@ -5601,6 +5595,10 @@ ags_channel_reset_recycling_recursive_output(AgsChannel *output,
   g_object_get(output,
 	       "audio", &audio,
 	       NULL);
+
+  if(audio == NULL){
+    return;
+  }
   
   /* get audio mutex */
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
@@ -6672,13 +6670,13 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	g_rec_mutex_unlock(current_mutex);	
       }
 
-      if(current != NULL){
-	g_object_unref(current);
-      }
-
       if(audio != NULL){
 	g_object_unref(audio);
       }
+    }
+
+    if(current != NULL){
+      g_object_unref(current);
     }
     
     /* apply parent */
