@@ -5006,7 +5006,7 @@ ags (0.4.2-68)
 	* added `midi2xml` the MIDI file to XML parser
 
 
-Copyright (C) 2005-2020 Joël Krähemann
+Copyright (C) 2005-2021 Joël Krähemann
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
