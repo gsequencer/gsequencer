@@ -1,3 +1,8 @@
+ags (3.7.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potentially unitialized pointer
+
 ags (3.7.20)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
