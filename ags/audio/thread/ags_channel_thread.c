@@ -473,9 +473,13 @@ ags_channel_thread_run(AgsThread *thread)
 
   channel_thread = AGS_CHANNEL_THREAD(thread);
 
+  channel = NULL;
+  
   g_object_get(channel_thread,
 	       "channel", &channel,
 	       NULL);
+
+  playback = NULL;
   
   g_object_get(channel,
 	       "playback", &playback,
@@ -529,13 +533,15 @@ ags_channel_thread_run(AgsThread *thread)
       }
     }
   }else{
-    for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
-      if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK ||
-	 ags_playback_get_recall_id(playback, sound_scope) == NULL){
+    gint nth_sound_scope;
+    
+    for(nth_sound_scope = 0; nth_sound_scope < AGS_SOUND_SCOPE_LAST; nth_sound_scope++){
+      if(nth_sound_scope == AGS_SOUND_SCOPE_PLAYBACK ||
+	 ags_playback_get_recall_id(playback, nth_sound_scope) == NULL){
 	continue;
       }
 
-      if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
+      if((recall_id = ags_channel_check_scope(channel, nth_sound_scope)) != NULL){
 	guint *staging_program;
 	
 	guint staging_program_count;
@@ -546,7 +552,7 @@ ags_channel_thread_run(AgsThread *thread)
 	
 	for(nth = 0; nth < staging_program_count; nth++){
 	  ags_channel_recursive_run_stage(channel,
-					  sound_scope, staging_program[nth]);
+					  nth_sound_scope, staging_program[nth]);
 	}
 
 	g_free(staging_program);
@@ -569,9 +575,13 @@ ags_channel_thread_run(AgsThread *thread)
   g_mutex_unlock(&(channel_thread->done_mutex));
 
   /* unref */
-  g_object_unref(channel);
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
 
-  g_object_unref(playback);
+  if(playback != NULL){
+    g_object_unref(playback);
+  }
 }
 
 void

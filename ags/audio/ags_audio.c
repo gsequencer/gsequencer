@@ -13609,6 +13609,8 @@ ags_audio_real_start(AgsAudio *audio,
 
       if(current_recall_id == NULL){
 	/* get some fields */
+	channel = NULL;
+	
 	g_object_get(playback,
 		     "channel", &channel,
 		     NULL);
@@ -13773,6 +13775,8 @@ ags_audio_real_start(AgsAudio *audio,
 
 	if(current_recall_id == NULL){
 	  /* get some fields */
+	  channel = NULL;
+	  
 	  g_object_get(playback,
 		       "channel", &channel,
 		       NULL);
