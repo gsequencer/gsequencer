@@ -328,7 +328,7 @@ ags_audio_ref_count_test_link_audio_tree()
 
   error = NULL;
   ags_channel_set_link(mixer1->input->next->next,
-		       drum1->output->next,
+		       drum1->output,
 		       &error);
   error = NULL;
   ags_channel_set_link(mixer1->input->next->next->next,
@@ -337,7 +337,7 @@ ags_audio_ref_count_test_link_audio_tree()
   
   error = NULL;
   ags_channel_set_link(mixer1->input->next->next->next->next,
-		       drum2->output->next,
+		       drum2->output,
 		       &error);
   error = NULL;
   ags_channel_set_link(mixer1->input->next->next->next->next->next,

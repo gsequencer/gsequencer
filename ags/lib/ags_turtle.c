@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -4485,9 +4485,9 @@ ags_turtle_load_read_blank_node(AgsTurtle *turtle,
 		      g_ascii_strdown(rdf_blank_node_label,
 				      -1));
 
-    g_free(rdf_blank_node_label);
-      
     *iter = look_ahead + strlen(rdf_blank_node_label);
+    
+    g_free(rdf_blank_node_label);      
   }else{
     rdf_anon_node = ags_turtle_load_read_anon(turtle,
 					      buffer, buffer_length,
