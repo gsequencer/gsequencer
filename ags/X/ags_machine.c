@@ -1139,15 +1139,6 @@ ags_machine_finalize(GObject *gobject)
 		      machine,
 		      NULL);
 
-  g_object_disconnect(gobject,
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_machine_resize_audio_channels_callback),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_machine_resize_pads_callback),
-		      NULL,
-		      NULL);
-
   /* remove from sound provider */
   list =
     list_start = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));

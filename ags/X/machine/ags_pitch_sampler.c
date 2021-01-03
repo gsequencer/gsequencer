@@ -502,15 +502,6 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 void
 ags_pitch_sampler_finalize(GObject *gobject)
 {
-  g_object_disconnect(gobject,
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_pitch_sampler_resize_audio_channels),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_pitch_sampler_resize_pads),
-		      NULL,
-		      NULL);
-
   g_hash_table_remove(ags_pitch_sampler_sfz_loader_completed,
 		      gobject);
 
