@@ -174,7 +174,7 @@ ags_recall_audio_run_connectable_interface_init(AgsConnectableInterface *connect
 
 void
 ags_recall_audio_run_init(AgsRecallAudioRun *recall_audio_run)
-{
+{  
   g_signal_connect_after(recall_audio_run, "notify::recall-container",
 			 G_CALLBACK(ags_recall_audio_run_notify_recall_container_callback), NULL);
 
@@ -343,7 +343,7 @@ ags_recall_audio_run_finalize(GObject *gobject)
   AgsRecallAudioRun *recall_audio_run;
 
   recall_audio_run = AGS_RECALL_AUDIO_RUN(gobject);
-
+  
   if(AGS_RECALL(gobject)->recall_container != NULL){
     AgsRecallContainer *recall_container;
 
@@ -363,7 +363,7 @@ ags_recall_audio_run_finalize(GObject *gobject)
   if(recall_audio_run->recall_audio != NULL){
     g_object_unref(G_OBJECT(recall_audio_run->recall_audio));
   }
-
+  
   /* call parent */
   G_OBJECT_CLASS(ags_recall_audio_run_parent_class)->finalize(gobject);
 }
@@ -419,6 +419,10 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
   recall_audio_run = AGS_RECALL_AUDIO_RUN(recall);
 
   /* get some fields */
+  audio = NULL;
+
+  recall_audio = NULL;
+  
   g_object_get(recall_audio_run,
 	       "audio", &audio,
 	       "recall-audio", &recall_audio,

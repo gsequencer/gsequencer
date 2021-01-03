@@ -914,7 +914,7 @@ ags_recycling_dispose(GObject *gobject)
     list = list->next;
   }
   
-  g_list_free_full(recycling->audio_signal,
+  g_list_free_full(start_list,
 		   g_object_unref);
 
   /* call parent */

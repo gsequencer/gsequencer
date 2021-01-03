@@ -390,15 +390,6 @@ ags_drum_init(AgsDrum *drum)
 void
 ags_drum_finalize(GObject *gobject)
 {
-  g_object_disconnect(gobject,
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_drum_resize_audio_channels),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_drum_resize_pads),
-		      NULL,
-		      NULL);
-
   /* call parent */
   G_OBJECT_CLASS(ags_drum_parent_class)->finalize(gobject);
 }

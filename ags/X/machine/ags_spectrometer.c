@@ -274,18 +274,6 @@ ags_spectrometer_finalize(GObject *gobject)
 
   spectrometer = (AgsSpectrometer *) gobject;
 
-  g_object_disconnect(spectrometer,
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_spectrometer_resize_audio_channels_callback),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_spectrometer_resize_pads_callback),
-		      NULL,
-		      "any_signal::buffer-size-changed",
-		      G_CALLBACK(ags_spectrometer_buffer_size_changed_callback),
-		      NULL,
-		      NULL);
-
   g_hash_table_remove(ags_spectrometer_cartesian_queue_draw,
 		      spectrometer->cartesian);
   

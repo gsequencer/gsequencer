@@ -882,12 +882,8 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
       /* not super threaded */
       sound_scope = AGS_SOUND_SCOPE_PLAYBACK;
       
-      if(ags_playback_get_recall_id(playback, sound_scope) == NULL){
-	g_object_unref(channel);
-	
-	play_channel = play_channel->next;
-	
-	continue;
+      if(ags_playback_get_recall_id(playback, sound_scope) == NULL){	
+	goto ags_audio_loop_play_channel_NO_PLAYBACK;
       }
     
       if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
@@ -912,7 +908,8 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 #if 0
     }
 #endif
-
+  ags_audio_loop_play_channel_NO_PLAYBACK:
+    
     if(channel != NULL){
       g_object_unref(channel);
     }
@@ -1148,32 +1145,30 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
     }else{
       /* not super threaded */
       for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
-	if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK){
-	  continue;
-	}
+	if(sound_scope != AGS_SOUND_SCOPE_PLAYBACK){
+	  if((recall_id = ags_audio_check_scope(audio, sound_scope)) != NULL){
+	    guint *staging_program;
 	
-	if((recall_id = ags_audio_check_scope(audio, sound_scope)) != NULL){
-	  guint *staging_program;
-	
-	  guint staging_program_count;
-	  guint nth;
+	    guint staging_program_count;
+	    guint nth;
 
-	  staging_program = ags_audio_loop_get_staging_program(audio_loop,
-							       &staging_program_count);
+	    staging_program = ags_audio_loop_get_staging_program(audio_loop,
+								 &staging_program_count);
 	
-	  for(nth = 0; nth < staging_program_count; nth++){
-	    ags_audio_recursive_run_stage(audio,
-					  sound_scope, staging_program[nth]);
-	  }
+	    for(nth = 0; nth < staging_program_count; nth++){
+	      ags_audio_recursive_run_stage(audio,
+					    sound_scope, staging_program[nth]);
+	    }
 
-	  g_free(staging_program);
+	    g_free(staging_program);
 	  
-	  g_list_free_full(recall_id,
-			   g_object_unref);
+	    g_list_free_full(recall_id,
+			     g_object_unref);
+	  }
 	}
       }
     }
-
+    
     if(audio != NULL){
       g_object_unref(audio);
     }

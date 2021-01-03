@@ -134,15 +134,6 @@ ags_ffplayer_bulk_input_finalize(GObject *gobject)
 
   ffplayer_bulk_input = (AgsFFPlayerBulkInput *) gobject;
 
-  g_object_disconnect(gobject,
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_ffplayer_bulk_input_resize_audio_channels_callback),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_ffplayer_bulk_input_resize_pads_callback),
-		      NULL,
-		      NULL);
-
   /* call parent */
   G_OBJECT_CLASS(ags_ffplayer_bulk_input_parent_class)->finalize(gobject);
 }

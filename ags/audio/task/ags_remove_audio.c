@@ -248,22 +248,26 @@ ags_remove_audio_launch(AgsTask *task)
   list =
     start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
-  if(g_list_find(list,
+  if(g_list_find(start_list,
 		 remove_audio->audio) != NULL){
+    g_list_foreach(start_list,
+		   (GFunc) g_object_unref,
+		   NULL);
+
     /* remove to sound provider */
-    list = g_list_remove(list,
-			 remove_audio->audio);
+    start_list = g_list_remove(start_list,
+			       remove_audio->audio);
     ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
-				 list);
+				 start_list);
 
     /* AgsAudio */
     ags_connectable_disconnect(AGS_CONNECTABLE(remove_audio->audio));
 
     g_object_unref(remove_audio->audio);
+  }else{
+    g_list_free_full(start_list,
+		     (GDestroyNotify) g_object_unref);
   }
-
-  g_list_free_full(start_list,
-		   g_object_unref);
 }
 
 /**
