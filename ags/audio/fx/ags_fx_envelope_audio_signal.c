@@ -429,7 +429,7 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	  offset = 0;
 
 	  if(note_offset >= x0){
-	    current_frame = ((note_offset - x0) * delay + delay_counter) * buffer_size;
+	    current_frame = (guint) floor(((gdouble) (note_offset - x0) * delay + delay_counter) * buffer_size);
 	  }else{
 	    current_frame = 0;
 	  }
@@ -491,8 +491,8 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	  envelope_x1 = cattack.real;
 	  envelope_y1 = cattack.imag + cratio.imag;
 
-	  envelope_start_frame = (envelope_current_x + envelope_x0) * frame_count;
-	  envelope_end_frame = (envelope_current_x + envelope_x0 + envelope_x1) * frame_count;
+	  envelope_start_frame = (guint) floor((envelope_current_x + envelope_x0) * (double) frame_count);
+	  envelope_end_frame = (guint) floor((envelope_current_x + envelope_x0 + envelope_x1) * (double) frame_count);
 
 #if 0
 	  g_message("attack - first-frame: %d -> %d::%d", offset, envelope_start_frame, envelope_end_frame);
@@ -542,8 +542,8 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	  envelope_x1 = cdecay.real;
 	  envelope_y1 = cdecay.imag + cratio.imag;
 
-	  envelope_start_frame = (envelope_current_x + envelope_x0) * frame_count;
-	  envelope_end_frame = (envelope_current_x + envelope_x0 + envelope_x1) * frame_count;
+	  envelope_start_frame = (guint) floor((envelope_current_x + envelope_x0) * (double) frame_count);
+	  envelope_end_frame = (guint) floor((envelope_current_x + envelope_x0 + envelope_x1) * (double) frame_count);
 
 #if 0
 	  g_message("decay - first-frame: %d -> %d::%d", offset, envelope_start_frame, envelope_end_frame);
@@ -593,8 +593,8 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	  envelope_x1 = csustain.real;
 	  envelope_y1 = csustain.imag + cratio.imag;
 
-	  envelope_start_frame = (envelope_current_x + envelope_x0) * frame_count;
-	  envelope_end_frame = (envelope_current_x + envelope_x0 + envelope_x1) * frame_count;
+	  envelope_start_frame = (guint) floor((envelope_current_x + envelope_x0) * (double) frame_count);
+	  envelope_end_frame = (guint) floor((envelope_current_x + envelope_x0 + envelope_x1) * (double) frame_count);
 
 #if 0
 	  g_message("sustain - first-frame: %d -> %d::%d", offset, envelope_start_frame, envelope_end_frame);
@@ -644,8 +644,8 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 	  envelope_x1 = crelease.real;
 	  envelope_y1 = crelease.imag + cratio.imag;
 
-	  envelope_start_frame = (envelope_current_x + envelope_x0) * frame_count;
-	  envelope_end_frame = (envelope_current_x + envelope_x0 + envelope_x1) * frame_count;
+	  envelope_start_frame = (guint) floor((envelope_current_x + envelope_x0) * (double) frame_count);
+	  envelope_end_frame = (guint) floor((envelope_current_x + envelope_x0 + envelope_x1) * (double) frame_count);
     
 #if 0
 	  g_message("release - first-frame: %d -> %d::%d", offset, envelope_start_frame, envelope_end_frame);

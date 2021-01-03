@@ -24,6 +24,16 @@
 
 #include <ags/audio/ags_synth_enums.h>
 
+/**
+ * SECTION:ags_synth_enums
+ * @short_description: synth enumerations
+ * @title: AgsSynthEnums
+ * @section_id:
+ * @include: ags/audio/ags_synth_enums.h
+ *
+ * Enumerations related to synth.
+ */
+
 GType
 ags_synth_oscillator_mode_get_type()
 {

@@ -494,15 +494,6 @@ ags_equalizer10_finalize(GObject *gobject)
 
   equalizer10 = (AgsEqualizer10 *) gobject;
 
-  g_object_disconnect(G_OBJECT(equalizer10),
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_equalizer10_resize_audio_channels),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_equalizer10_resize_pads),
-		      NULL,
-		      NULL);
-
   g_list_free_full(equalizer10->peak_28hz_play_port,
 		   g_object_unref);
 

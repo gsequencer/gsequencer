@@ -636,10 +636,11 @@ SCANGOBJ_OPTIONS = --cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIB
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
 # SCAN_OPTIONS=--rebuild-types --rebuild-sections
+SCAN_OPTIONS = --deprecated-guards="G_DISABLE_DEPRECATED"
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
-MKDB_OPTIONS = --xml-mode --output-format=xml --name-space=libgsequencer --module=libgsequencer
+MKDB_OPTIONS = --xml-mode --output-format=xml --name-space=ags --module=libgsequencer
 
 # Extra options to supply to gtkdoc-mkhtml
 MKHTML_OPTIONS = 

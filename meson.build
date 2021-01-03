@@ -8,7 +8,7 @@
 project('gsequencer', 'c',
         license: 'GPL3',
         default_options: [ 'buildtype=release', 'c_std=gnu99'],
-        version: '3.7.9')
+        version: '3.7.22')
 
 #note:jk: specify --buildtype=debug if needed
 gsequencer_debug = get_option('buildtype').contains('debug')
@@ -27,6 +27,7 @@ gnome = import('gnome')
 compiler = meson.get_compiler('c')
 # REMINDER: all dependencies have to be defined here globally
 # Just to prevent double check
+common_dependencies = []
 gtk_dependency = dependency('gtk+-3.0')
 glib_dependency = dependency('glib-2.0', version: '>= 2.56.0')
 gobject_dependency = dependency('gobject-2.0', version: '>= 2.56.0')
@@ -40,6 +41,7 @@ fftw3_dependency = dependency('fftw3')
 if get_option('alsa')
   alsa_dependency = dependency('alsa')
   compiler.check_header('ladspa.h', required: true)
+  dssi_dependency = dependency('dssi')
 endif
 if get_option('jack')
   jack_dependency = dependency('jack')
@@ -171,6 +173,8 @@ configure_file(input: 'gsequencer.desktop.in', output: 'gsequencer.desktop',
   install_dir: gsequencer_datadir / 'applications')
 
 xsltproc = find_program('xsltproc', required: false)
+python_exe = find_program('python3', 'python', required: false)
+
 if get_option('man_pages') and not xsltproc.found()
   error('No xsltproc found, but man pages were explicitly enabled')
 endif
@@ -199,9 +203,9 @@ if get_option('man_pages') and xsltproc.found()
       command: [
         xsltproc,
         xsltproc_flags,
-	  '-o', '@OUTPUT@',
-	  'http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl',
-	  '@INPUT@',
+	'-o', '@OUTPUT@',
+	'http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl',
+	'@INPUT@',
       ],
       install: true,
       install_dir: join_paths(get_option('mandir'), 'man@0@'.format(man_section)))
@@ -290,21 +294,64 @@ developer_doc_images = [
   'docs/images/AGS_linking.png',
 ]
 
-if get_option('online_help') and xsltproc.found()
+if get_option('online_help') and xsltproc.found() and python_exe.found()
   env = environment()
 
   user_manual_dir = join_paths(meson.project_build_root(), 'html/user-manual/')
   developer_manual_dir = join_paths(meson.project_build_root(), 'html/developer-manual/')
   osc_manual_dir = join_paths(meson.project_build_root(), 'html/osc-manual/')
 
-  run_target('ags-user-docs', command: [ xsltproc, '--nonet', '--xinclude', '-o', user_manual_dir,  'http://docbook.sourceforge.net/release/xsl/current/htmlhelp/htmlhelp.xsl', 'docs/usersBook.xml' ])
-  run_target('ags-developer-docs', command: [ xsltproc, '--nonet', '--xinclude', '-o', developer_manual_dir, 'http://docbook.sourceforge.net/release/xsl/current/htmlhelp/htmlhelp.xsl', 'docs/developersBook.xml' ])
-  run_target('ags-osc-docs', command: [ xsltproc, '--nonet', '--xinclude', '-o', osc_manual_dir, 'http://docbook.sourceforge.net/release/xsl/current/htmlhelp/htmlhelp.xsl', 'docs/oscBook.xml' ])
+  listing_files = [
+    'add_pattern.c',
+    'application_mutex.c',
+    'audio.c',
+    'audio_application_context.c',
+    'complete_example.c',
+    'config.c',
+    'effects_echo_audio.c',
+    'effects_echo_audio_run.c',
+    'effects_echo_channel.c',
+    'effects_echo_channel_run.c',
+    'effects_recall_container.c',
+    'file_property.c',
+    'file_read.c',
+    'file_write.c',
+    'find_port.c',
+    'fx_factory.c',
+    'linking_prerequisites.c',
+    'linking_safe.c',
+    'linking_unsafe.c',
+    'notation_clipboard.c',
+    'pcm_info.c',
+    'port.c',
+    'pull_thread.c',
+    'recycling.c',
+    'start_thread.c',
+    'thread_application_context.c',
+    'thread_obj_mutex.c',
+  ]
+
+  listing_script = join_paths(meson.source_root(), 'listing_script.py')
+
+  foreach listing: listing_files
+    source = '@0@/docs/listings/@1@.in'.format(meson.source_root(), listing)
+    destination = '@0@/docs/listings/@1@'.format(meson.source_root(), listing)
+
+    run_command(python_exe, listing_script, source, destination)
+  endforeach
+
+  run_target('ags-user-docs', command: [ xsltproc, '--nonet', '--xinclude', '--stringparam', 'html.stylesheet', '"custom.css"', '--stringparam', 'htmlhelp.show.menu', '"1"', '--stringparam', 'suppress.navigation', '"0"', '-o', user_manual_dir,  'http://docbook.sourceforge.net/release/xsl/current/htmlhelp/htmlhelp.xsl', 'docs/usersBook.xml' ])
+  run_target('ags-developer-docs', command: [ xsltproc, '--nonet', '--xinclude', '--stringparam', 'html.stylesheet', '"custom.css"', '--stringparam', 'htmlhelp.show.menu', '"1"', '--stringparam', 'suppress.navigation', '"0"', '-o', developer_manual_dir, 'http://docbook.sourceforge.net/release/xsl/current/htmlhelp/htmlhelp.xsl', 'docs/developersBook.xml' ])
+  run_target('ags-osc-docs', command: [ xsltproc, '--nonet', '--xinclude', '--stringparam', 'html.stylesheet', '"custom.css"', '--stringparam', 'htmlhelp.show.menu', '"1"', '--stringparam', 'suppress.navigation', '"0"', '-o', osc_manual_dir, 'http://docbook.sourceforge.net/release/xsl/current/htmlhelp/htmlhelp.xsl', 'docs/oscBook.xml' ])
 
   install_subdir(meson.project_build_root() / 'html/user-manual', install_dir: gsequencer_docdir)
   install_subdir(meson.project_build_root() / 'html/developer-manual', install_dir: gsequencer_docdir)
   install_subdir(meson.project_build_root() / 'html/osc-manual', install_dir: gsequencer_docdir)
-  
+
+  install_data(['docs/custom.css'], install_dir: gsequencer_docdir / 'user-manual')
+  install_data(['docs/custom.css'], install_dir: gsequencer_docdir / 'developer-manual')
+  install_data(['docs/custom.css'], install_dir: gsequencer_docdir / 'osc-manual')
+
   install_data(user_doc_images, install_dir: gsequencer_docdir / 'images')
   install_data(user_doc_images_adwaita, install_dir: gsequencer_docdir / 'images/adwaita')
   install_data(developer_doc_images, install_dir: gsequencer_docdir / 'images')

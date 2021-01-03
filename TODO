@@ -1,4 +1,4 @@
-Copyright (C) 2005-2020 Joël Krähemann
+Copyright (C) 2005-2021 Joël Krähemann
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
@@ -7,7 +7,6 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
-* TODO:JK: fixed AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT/AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT in ags_fx_factory.c
 * TODO:JK: implemented AgsUiOscRenewController
 * TODO:JK: implemented AgsConnectableFlags
 * TODO:JK: implemented AgsSF2Synth
@@ -27,7 +26,6 @@ Free Documentation License".
 * TODO:JK: implemented ags-modify-synth-generator recall
 * TODO:JK: updated developer's handbook
 * TODO:JK: check recall id cleanup
-* TODO:JK: implemented AgsSoundContainer manager
 * TODO:JK: added unit-tests
 * TODO:JK: implement ::seek() of AgsMidiParser and AgsOscParser
 * TODO:JK: implement ::seek() of AgsMidiBuilder and AgsOscBuilder
@@ -36,7 +34,6 @@ Free Documentation License".
 * TODO:JK: removed ags_id_generator.[ch]
 * TODO:JK: improved ags-feed recall thread-safety
 * TODO:JK: improved ags_audio_signal_feed() reduce over-head
-* TODO:JK: improved AgsApplySynth thread-safety
 * TODO:JK: refactored AgsAutomationEditor to be more light-weight
 * TODO:JK: implemented AgsConnectable:disconnect() to all implementing objects
 * TODO:JK: implemented AgsScaleArea properties
@@ -48,7 +45,6 @@ Free Documentation License".
 * TODO:JK: implement VST support
 * TODO:JK: implement AudioUnit support on Apple Mac OS X
 * TODO:JK: implement UI configuration of plugins, loading at runtime
-* TODO:JK: implement AgsFunction
 * TODO:JK: implement AgsDesk a better jukebox as mixing desk
 * TODO:JK: implement file bundle embedding plugins and audio data
 * TODO:JK: fix AgsAudio typo

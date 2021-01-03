@@ -62,7 +62,7 @@
       <title>Export to PCM audio file</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_export_window.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_export_window.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -176,7 +176,7 @@
 	<title>Generic</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata fileref="../images/ags_generic_preferences.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_generic_preferences.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -195,7 +195,7 @@
 	<title>Audio</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata fileref="../images/ags_audio_preferences.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_audio_preferences.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -230,7 +230,7 @@
 	<title>MIDI</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata fileref="../images/ags_midi_preferences.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_midi_preferences.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -254,7 +254,7 @@
 	<title>Performance</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata fileref="../images/ags_performance_preferences.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_performance_preferences.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -293,7 +293,7 @@
 	<title>Step #1 - file chooser</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata fileref="../images/ags_midi_import_wizard_no1.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_midi_import_wizard_no1.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -311,7 +311,7 @@
 	<title>Step #2 - mapping</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata fileref="../images/ags_midi_import_wizard_no2.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_midi_import_wizard_no2.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -341,7 +341,7 @@
 	<title>Step #1 - select machines</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata fileref="../images/ags_midi_export_wizard_no1.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_midi_export_wizard_no1.png" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -359,7 +359,7 @@
 	<title>Step #2 - file chooser</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata fileref="../images/ags_midi_export_wizard_no2.png" />
+	    <imagedata width="100%" scalefit="1" fileref="../images/ags_midi_export_wizard_no2.png" />
 	  </imageobject>
 	  <caption>
 	    <para>

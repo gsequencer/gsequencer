@@ -20,7 +20,7 @@
   <title>The wave window</title>
   <mediaobject>
     <imageobject>
-      <imagedata fileref="../images/ags_wave_window_audiorec.png" />
+      <imagedata width="100%" scalefit="1" fileref="../images/ags_wave_window_audiorec.png" />
     </imageobject>
     <caption>
       <para>
@@ -71,7 +71,7 @@
     <title>Wave toolbar</title>
     <mediaobject>
       <imageobject>
-	<imagedata fileref="../images/ags-wave-toolbar.png" />
+	<imagedata width="100%" scalefit="1" fileref="../images/ags-wave-toolbar.png" />
       </imageobject>
       <caption>
 	<para>
@@ -147,7 +147,7 @@
       <title>Position cursor</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_position_wave_cursor_dialog.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_position_wave_cursor_dialog.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -184,7 +184,7 @@
       <title>Select buffers</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_select_buffers_dialog.png" />
+	  <imagedata width="100%" scalefit="1" fileref="../images/ags_select_buffers_dialog.png" />
 	</imageobject>
 	<caption>
 	  <para>

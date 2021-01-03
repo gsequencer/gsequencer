@@ -67,6 +67,9 @@
 ./ags_check_system_fifoout_test
 ./ags_check_system_midiin_test
 ./ags_check_system_audio_test
+./ags_check_system_audio_ref_count_test
+./ags_check_system_fx_ref_count_test
+./ags_check_system_audio_application_context_ref_count_test
 ./ags_check_system_playback_domain_test
 ./ags_check_system_playback_test
 ./ags_check_system_preset_test

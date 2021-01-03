@@ -1,3 +1,83 @@
+ags (3.7.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_turtle_read_blank_node() access after free
+
+ags (3.7.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potentially unitialized pointer
+
+ags (3.7.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-envelope be explicite about floating point arithmetic
+	* fixed ref count in ags_audio_automate()
+	* fixed ref count in ags_channel_automate()
+	* fixed ref count in ags_channel_set_link()
+	* fixed ref count in ags_channel_recursive_run_stage() and related
+	* fixed ref count in ags_input_next_active()
+	* fixed ref count in ags_audio_recall_done_callback()
+	* fixed ref count in ags_channel_recall_done_callback()
+	* added ags_audio_ref_count_test.c
+	* added ags_fx_ref_count_test.c
+	* added ags_audio_application_context_ref_count_test.c
+	* minor improvements
+
+ags (3.7.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing listing of developer manual
+
+ags (3.7.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved developer manual
+
+ags (3.7.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed literal comparision in ags_apply_sound_config.c
+
+ags (3.7.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements
+
+ags (3.7.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added htmlhelp navigation and custom.css
+
+ags (3.7.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed compiler error
+
+ags (3.7.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_playback_domain_insert_playback()
+	* improved user's handbook images with default width
+
+ags (3.7.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_pattern_dispose() to unset fields
+	* minor code improvements
+
+ags (3.7.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_complex_get_term() and ags_complex_set_term() to query by real and imaginary part
+	* improved API reference and fixed namespace and object tree
+	* improved API reference and fixed missing sections
+
+ags (3.7.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed broken API Reference Manual of libags_audio.so
+
 ags (3.7.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -4936,7 +5016,7 @@ ags (0.4.2-68)
 	* added `midi2xml` the MIDI file to XML parser
 
 
-Copyright (C) 2005-2020 Joël Krähemann
+Copyright (C) 2005-2021 Joël Krähemann
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3

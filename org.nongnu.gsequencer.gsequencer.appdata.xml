@@ -35,12 +35,72 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.7.22" date="2021-01-03">
+      <description>
+	<p>Fixed AgsTurtle accessing string after free.</p>
+      </description>
+    </release>
+
+    <release version="3.7.21" date="2021-01-02">
+      <description>
+	<p>Fixed potential unitiailized pointer.</p>
+      </description>
+    </release>
+
+    <release version="3.7.20" date="2021-01-02">
+      <description>
+	<p>Fixed ags-fx-envelope be explicite about floating point arithmetic.</p>
+      </description>
+    </release>
+
+    <release version="3.7.19" date="2020-12-25">
+      <description>
+	<p>Fixed missing listing of developer's handbook.</p>
+      </description>
+    </release>
+    
+    <release version="3.7.18" date="2020-12-24">
+      <description>
+	<p>Improved developer's handbook.</p>
+      </description>
+    </release>
+
+    <release version="3.7.17" date="2020-12-22">
+      <description>
+	<p>Minor improvements.</p>
+      </description>
+    </release>
+
+    <release version="3.7.16" date="2020-12-21">
+      <description>
+	<p>Minor improvements.</p>
+      </description>
+    </release>
+
+    <release version="3.7.15" date="2020-12-20">
+      <description>
+	<p>Added CSS style to htmlhelp books.</p>
+      </description>
+    </release>
+
+    <release version="3.7.14" date="2020-12-20">
+      <description>
+	<p>Minor improvements.</p>
+      </description>
+    </release>
+
+    <release version="3.7.13" date="2020-12-20">
+      <description>
+	<p>Improved user's book images to have default width 1920 pixels.</p>
+      </description>
+    </release>
+
     <release version="3.7.9" date="2020-12-17">
       <description>
 	<p>Updated developer's book chap10.xml.</p>
       </description>
     </release>
-
+    
     <release version="3.7.8" date="2020-12-13">
       <description>
 	<p>Minor improvements.</p>

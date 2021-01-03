@@ -8,8 +8,10 @@
 static_tests = [
   'ags_acceleration_test',
   'ags_audio_application_context_test',
+  'ags_audio_application_context_ref_count_test',
   'ags_audio_buffer_util_test',
   'ags_audio_signal_test',
+  'ags_audio_ref_count_test',
   'ags_audio_test',
   'ags_automation_test',
   'ags_buffer_test',
@@ -25,6 +27,7 @@ static_tests = [
   'ags_functional_fourier_transform_test',
   'ags_functional_pitch_test',
   'ags_functional_fast_pitch_test',
+  'ags_fx_ref_count_test',
   'ags_input_test',
   'ags_midiin_test',
   'ags_midi_test',

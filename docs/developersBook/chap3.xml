@@ -153,28 +153,7 @@
     </para>
     </sect2>
   </sect1>
-  
-  <sect1>
-    <title>Poll for file descriptors</title>
-    <para>
-      The AgsPollingThread polls your file descriptors. Since it is derived by AgsThread it runs
-      tic based like other threads.
-    </para>
-
-    <para>
-      Call ags_polling_thread_add_poll_fd() and pass an AgsPollFd to it, in order to poll a resource.
-      Note the resource won&apos;t be polled unless the thread was started by calling
-      <code language="C">void ags_thread_start(AgsThread*)</code>. The ::dispatch signal notifies about
-      a ressource to be ready for Input/Output.
-    </para>
-    
-    <para>
-      To stop poll a resource either remove the poll file descriptor by calling
-      <code language="C">void ags_polling_thread_remove_poll_fd(AgsPollingThread*, GObject*)</code>. Or
-      just stop the polling thread by ags_thread_stop() so any resource won&apos;t be polled.
-    </para>
-  </sect1>
-    
+      
   <sect1>
     <title>Launching tasks</title>
     <para>

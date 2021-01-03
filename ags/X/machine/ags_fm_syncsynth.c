@@ -332,18 +332,6 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 void
 ags_fm_syncsynth_finalize(GObject *gobject)
 {
-  g_object_disconnect(gobject,
-		      "any_signal::samplerate-changed",
-		      G_CALLBACK(ags_fm_syncsynth_samplerate_changed_callback),
-		      NULL,
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_fm_syncsynth_resize_audio_channels),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_fm_syncsynth_resize_pads),
-		      NULL,
-		      NULL);
-
   /* call parent */
   G_OBJECT_CLASS(ags_fm_syncsynth_parent_class)->finalize(gobject);
 }

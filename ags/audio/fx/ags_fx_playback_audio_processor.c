@@ -1123,6 +1123,10 @@ ags_fx_playback_audio_processor_real_data_put(AgsFxPlaybackAudioProcessor *fx_pl
       g_object_unref(output_soundcard);
     }
 
+    if(audio != NULL){
+      g_object_unref(audio);
+    }
+
     if(start_input != NULL){
       g_object_unref(start_input);
     }

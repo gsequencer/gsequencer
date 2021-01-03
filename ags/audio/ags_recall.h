@@ -287,6 +287,9 @@ void ags_recall_add_recall_dependency(AgsRecall *recall,
 void ags_recall_remove_recall_dependency(AgsRecall *recall,
 					 AgsRecallDependency *recall_dependency);
 
+GList* ags_recall_get_port(AgsRecall *recall);
+void ags_recall_set_port(AgsRecall *recall, GList *port);
+
 void ags_recall_add_port(AgsRecall *recall,
 			 AgsPort *port);
 void ags_recall_remove_port(AgsRecall *recall,

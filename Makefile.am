@@ -125,6 +125,7 @@ EXTRA_DIST = config.rpath \
 	ags_functional_osc_xmlrpc_server_test_password_store.xml \
 	ags_functional_notation_edit_test.xml \
 	ags_functional_audio_config_test.xml \
+	pot_exclude.txt \
 	m4/Makefile.am \
 	m4/Makefile.in \
 	po/POTFILES.in.in \
@@ -206,6 +207,7 @@ EXTRA_DIST += \
 	ags/test/file/meson.build \
 	po/meson.build \
 	ags/meson.build \
+	listing_script.py \
 	meson.build \
 	meson_options.txt
 
@@ -246,6 +248,7 @@ CLEANFILES = \
 	docs/listings/file_property.c \
 	docs/listings/file_read.c \
 	docs/listings/file_write.c \
+	docs/listings/find_port.c \
 	docs/listings/fx_factory.c \
 	docs/listings/linking_prerequisites.c \
 	docs/listings/linking_safe.c \
@@ -354,17 +357,50 @@ EXTRA_DIST += \
 	libags_audio.sym \
 	libags_gui.sym
 
-EXTRA_DIST += docs/reference/libags/git.mk docs/reference/libags/gtk-doc.make docs/reference/libags/Makefile.am docs/reference/libags/Makefile.in
-EXTRA_DIST += docs/reference/libags/libags-overrides.txt docs/reference/libags/libags-sections.txt docs/reference/libags/libags.types docs/reference/libags/libags.xml
+EXTRA_DIST += \
+	docs/reference/libags/git.mk \
+	docs/reference/libags/gtk-doc.make \
+	docs/reference/libags/Makefile.am \
+	docs/reference/libags/Makefile.in
 
-EXTRA_DIST += docs/reference/libags-audio/git.mk docs/reference/libags-audio/gtk-doc.make docs/reference/libags-audio/Makefile.am docs/reference/libags-audio/Makefile.in
-EXTRA_DIST += docs/reference/libags-audio/libags_audio-overrides.txt  docs/reference/libags-audio/libags_audio-sections.txt docs/reference/libags-audio/libags_audio.types docs/reference/libags-audio/libags_audio.xml
+EXTRA_DIST += \
+	docs/reference/libags/libags-overrides.txt \
+	docs/reference/libags/libags-sections.txt \
+	docs/reference/libags/libags.types \
+	docs/reference/libags/libags.xml
 
-EXTRA_DIST += docs/reference/libags-gui/git.mk docs/reference/libags-gui/gtk-doc.make docs/reference/libags-gui/Makefile.am docs/reference/libags-gui/Makefile.in
-EXTRA_DIST += docs/reference/libags-gui/libags_gui-overrides.txt docs/reference/libags-gui/libags_gui-sections.txt docs/reference/libags-gui/libags_gui.types docs/reference/libags-gui/libags_gui.xml
+EXTRA_DIST += \
+	docs/reference/libags-audio/git.mk \
+	docs/reference/libags-audio/gtk-doc.make \
+	docs/reference/libags-audio/Makefile.am \
+	docs/reference/libags-audio/Makefile.in
 
-EXTRA_DIST += docs/reference/libgsequencer/git.mk docs/reference/libgsequencer/gtk-doc.make docs/reference/libgsequencer/Makefile.am docs/reference/libgsequencer/Makefile.in
-EXTRA_DIST += docs/reference/libgsequencer/libgsequencer-overrides.txt docs/reference/libgsequencer/libgsequencer.xml
+EXTRA_DIST += \
+	docs/reference/libags-audio/libags_audio-overrides.txt \
+	docs/reference/libags-audio/libags_audio-sections.txt \
+	docs/reference/libags-audio/libags_audio.types \
+	docs/reference/libags-audio/libags_audio.xml
+
+EXTRA_DIST += \
+	docs/reference/libags-gui/git.mk \
+	docs/reference/libags-gui/gtk-doc.make \
+	docs/reference/libags-gui/Makefile.am \
+	docs/reference/libags-gui/Makefile.in
+
+EXTRA_DIST += \
+	docs/reference/libags-gui/libags_gui-overrides.txt \
+	docs/reference/libags-gui/libags_gui-sections.txt \
+	docs/reference/libags-gui/libags_gui.types \
+	docs/reference/libags-gui/libags_gui.xml
+
+EXTRA_DIST += docs/reference/libgsequencer/git.mk \
+	docs/reference/libgsequencer/gtk-doc.make \
+	docs/reference/libgsequencer/Makefile.am \
+	docs/reference/libgsequencer/Makefile.in
+
+EXTRA_DIST += \
+	docs/reference/libgsequencer/libgsequencer-overrides.txt \
+	docs/reference/libgsequencer/libgsequencer.xml
 
 # EXTRA_DIST += docs/reference/libgsequencer
 
@@ -381,6 +417,9 @@ doc_DATA = README ags_example.xml
 manpages = \
 	gsequencer.1.xml \
 	midi2xml.1.xml
+
+EXTRA_DIST += \
+	docs/custom.css
 
 userdoc = \
 	docs/usersBook.xml \
@@ -439,6 +478,7 @@ devdoclistings = \
 	docs/listings/file_property.c.in \
 	docs/listings/file_read.c.in \
 	docs/listings/file_write.c.in \
+	docs/listings/find_port.c.in \
 	docs/listings/fx_factory.c.in \
 	docs/listings/linking_prerequisites.c.in \
 	docs/listings/linking_safe.c.in \
@@ -2816,9 +2856,9 @@ html:
 	mkdir -p $(top_builddir)/html/developer-docs
 	mkdir -p $(top_builddir)/html/user-docs
 	mkdir -p $(top_builddir)/html/osc-docs
-	xsltproc --output $(top_builddir)/html/user-docs/ --xinclude $(HTMLHELP_XSL) $(top_srcdir)/docs/usersBook.xml
-	xsltproc --output $(top_builddir)/html/developer-docs/ --xinclude $(HTMLHELP_XSL) $(top_srcdir)/docs/developersBook.xml
-	xsltproc --output $(top_builddir)/html/osc-docs/ --xinclude $(HTMLHELP_XSL) $(top_srcdir)/docs/oscBook.xml
+	xsltproc --output $(top_builddir)/html/user-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_srcdir)/docs/usersBook.xml
+	xsltproc --output $(top_builddir)/html/developer-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_srcdir)/docs/developersBook.xml
+	xsltproc --output $(top_builddir)/html/osc-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_srcdir)/docs/oscBook.xml
 	mkdir -p $(top_srcdir)/docs/reference/libags/libags-html
 	mkdir -p $(top_srcdir)/docs/reference/libags-audio/libags-audio-html
 	mkdir -p $(top_srcdir)/docs/reference/libags-gui/libags-gui-html
@@ -2988,6 +3028,9 @@ if AGS_WITH_SINGLE_DOCDIR
 	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/user-manual/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(docdir)/developer-manual/
 	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)/$(docdir)/osc-manual/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(docdir)/developer-manual/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(docdir)/user-manual/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(docdir)/osc-manual/
 else
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
 	install -c -p -m 644 $(userdocadwaitaimages) $(DESTDIR)/$(docdir)/images/adwaita/
@@ -2995,6 +3038,9 @@ else
 	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/html/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
 	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(docdir)/html/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server/
 endif
 if ENABLE_GTK_DOC
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/libags-html/* $(DESTDIR)/$(LIBAGS_API_DIR)
@@ -3171,7 +3217,7 @@ check-gettext:
 	"'checking whether to use NLS... yes'!" ; exit 1 ; fi
 
 update-po: check-gettext
-	@find $(srcdir)/ags/{util,lib,object,thread,file,server,plugin,audio,widget,X}/ -path $(srcdir)/ags/audio/audio-unit -prune -o -name "*.c" -print | sort > $(srcdir)/po/POTFILES.in.2 ; \
+	@find $(srcdir)/ags/{util,lib,object,thread,file,server,plugin,audio,widget,X}/ -name "*.c" -print | grep -vZf $(srcdir)/pot_exclude.txt | sort > $(srcdir)/po/POTFILES.in.2 ; \
 	if diff $(srcdir)/po/POTFILES.in $(srcdir)/po/POTFILES.in.2 >/dev/null 2>&1 ; then \
 		rm -f $(srcdir)/po/POTFILES.in.2 ; \
 	else \

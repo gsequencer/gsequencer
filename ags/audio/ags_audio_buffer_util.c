@@ -29,6 +29,16 @@
 #include <complex.h>
 
 /**
+ * SECTION:ags_audio_buffer_util
+ * @short_description: audio buffer util
+ * @title: AgsAudioBufferUtil
+ * @section_id:
+ * @include: ags/audio/ags_audio_buffer_util.h
+ *
+ * Utility functions to process audio buffer.
+ */
+
+/**
  * ags_audio_buffer_util_format_from_soundcard:
  * @soundcard_format: the soundcard bit mode
  *

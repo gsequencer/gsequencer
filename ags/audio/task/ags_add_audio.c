@@ -261,22 +261,26 @@ ags_add_audio_launch(AgsTask *task)
   g_return_if_fail(AGS_IS_SOUND_PROVIDER(application_context));
   g_return_if_fail(AGS_IS_AUDIO(add_audio->audio));
   
-  /* ref audio */
-  g_object_ref(add_audio->audio);
-
   /* add to sound provider */
   start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
-  g_list_foreach(start_list,
-		 (GFunc) g_object_unref,
-		 NULL);
 
-  g_object_ref(add_audio->audio);
-  start_list = g_list_append(start_list,
-			     add_audio->audio);
+  if(g_list_find(start_list,
+		 add_audio->audio) == NULL){
+    g_list_foreach(start_list,
+		   (GFunc) g_object_unref,
+		   NULL);
+
+    g_object_ref(add_audio->audio);
+    start_list = g_list_append(start_list,
+			       add_audio->audio);
     
-  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
-			       start_list);
-    
+    ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
+				 start_list);
+  }else{
+    g_list_free_full(start_list,
+		     (GDestroyNotify) g_object_unref);
+  }
+  
   /* AgsAudio */
   ags_connectable_connect(AGS_CONNECTABLE(add_audio->audio));
 }

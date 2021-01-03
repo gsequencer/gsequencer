@@ -345,6 +345,7 @@ ags_link_channel_launch(AgsTask *task)
 		 NULL);
   }
 
+#if 0
   /* unlink first */
   //NOTE:JK: may be we want to improve this
   ags_channel_set_link(channel, NULL,
@@ -352,6 +353,7 @@ ags_link_channel_launch(AgsTask *task)
 
   ags_channel_set_link(link, NULL,
   		       NULL);
+#endif
   
   /* link channel */
   ags_channel_set_link(channel, link,

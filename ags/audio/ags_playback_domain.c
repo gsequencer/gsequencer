@@ -658,6 +658,10 @@ ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
       g_object_ref(playback);
       playback_domain->output_playback = g_list_append(playback_domain->output_playback,
 						       playback);
+
+      g_object_set(playback,
+		   "playback-domain", playback_domain,
+		   NULL);
     }      
   }else if(g_type_is_a(channel_type,
 		       AGS_TYPE_INPUT)){
@@ -666,6 +670,70 @@ ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
       g_object_ref(playback);
       playback_domain->input_playback = g_list_append(playback_domain->input_playback,
 						      playback);
+
+      g_object_set(playback,
+		   "playback-domain", playback_domain,
+		   NULL);
+    }
+  }
+
+  g_rec_mutex_unlock(playback_domain_mutex);
+}
+
+/**
+ * ags_playback_domain_insert_playback:
+ * @playback_domain: the #AgsPlaybackDomain
+ * @playback: the #AgsPlayback
+ * @channel_type: either an AGS_TYPE_OUTPUT or AGS_TYPE_INPUT
+ * @position: the position
+ * 
+ * Add @playback for @channel_type to @playback_domain at @position.
+ * 
+ * Since: 3.7.13
+ */
+void
+ags_playback_domain_insert_playback(AgsPlaybackDomain *playback_domain,
+				    GObject *playback, GType channel_type,
+				    gint position)
+{
+  GRecMutex *playback_domain_mutex;
+  
+  if(!AGS_IS_PLAYBACK_DOMAIN(playback_domain) ||
+     !AGS_IS_PLAYBACK(playback)){
+    return;
+  }
+
+  /* get playback domain mutex */
+  playback_domain_mutex = AGS_PLAYBACK_DOMAIN_GET_OBJ_MUTEX(playback_domain);
+
+  /* append */
+  g_rec_mutex_lock(playback_domain_mutex);
+  
+  if(g_type_is_a(channel_type,
+		 AGS_TYPE_OUTPUT)){    
+    if(g_list_find(playback_domain->output_playback,
+		   playback) == NULL){
+      g_object_ref(playback);
+      playback_domain->output_playback = g_list_insert(playback_domain->output_playback,
+						       playback,
+						       position);
+
+      g_object_set(playback,
+		   "playback-domain", playback_domain,
+		   NULL);
+    }      
+  }else if(g_type_is_a(channel_type,
+		       AGS_TYPE_INPUT)){
+    if(g_list_find(playback_domain->input_playback,
+		   playback) == NULL){
+      g_object_ref(playback);
+      playback_domain->input_playback = g_list_insert(playback_domain->input_playback,
+						      playback,
+						      position);
+
+      g_object_set(playback,
+		   "playback-domain", playback_domain,
+		   NULL);
     }
   }
 
@@ -701,14 +769,30 @@ ags_playback_domain_remove_playback(AgsPlaybackDomain *playback_domain,
   
   if(g_type_is_a(channel_type,
 		 AGS_TYPE_OUTPUT)){
-    playback_domain->output_playback = g_list_remove(playback_domain->output_playback,
-						     playback);
-    g_object_unref(playback);
+    if(g_list_find(playback_domain->output_playback,
+		   playback) != NULL){
+      playback_domain->output_playback = g_list_remove(playback_domain->output_playback,
+						       playback);
+      
+      g_object_set(playback,
+		   "playback-domain", NULL,
+		   NULL);
+      
+      g_object_unref(playback);
+    }
   }else if(g_type_is_a(channel_type,
 		       AGS_TYPE_INPUT)){
-    playback_domain->input_playback = g_list_remove(playback_domain->input_playback,
-						    playback);
-    g_object_unref(playback);
+    if(g_list_find(playback_domain->input_playback,
+		   playback) != NULL){
+      playback_domain->input_playback = g_list_remove(playback_domain->input_playback,
+						      playback);
+      
+      g_object_set(playback,
+		   "playback-domain", NULL,
+		   NULL);
+
+      g_object_unref(playback);
+    }
   }
   
   g_rec_mutex_unlock(playback_domain_mutex);
