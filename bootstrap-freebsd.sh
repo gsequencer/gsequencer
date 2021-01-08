@@ -11,23 +11,39 @@
 # title:           bootstrap FreeBSD build
 # description:     This script bootstraps the build directory. The purpose is
 #                  to copy, strip or substitute files.
-#                  to generated files.
 # author:          Joël Krähemann
 # date:            Fri Jan  8 08:02:47 UTC 2021
 # version:         v0.1.0
 # usage:           bash bootstrap-freebsd.sh
+# dependencies:    tail, sed, gzip
 # ==============================================================================
+
+PACKAGE="gsequencer"
+PACKAGE_VERSION="3.7.22"
+PACKAGE_BUGREPORT="jkraehemann@gmail.com"
+PACKAGE_NAME="Advanced Gtk+ Sequencer"
+PACKAGE_STRING="${PACKAGE_NAME} version ${PACKAGE_VERSION}"
+PACKAGE_TARNAME="${PACKAGE}-${PACKAGE_VERSION}.tar.gz"
+PACKAGE_URL="http://nongnu.org/gsequencer"
 
 prefix="/usr/local"
 datadir="${prefix}/share"
 
 srcdir="./"
+builddir="./"
 
 if [ ! -z "$SRCDIR" ]
 then
     srcdir=$SRCDIR
 else
     srcdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+fi
+
+if [ ! -z "$BUILDDIR" ]
+then
+    builddir=$BUILDDIR
+else
+    builddir="$( pwd )"
 fi
 
 while [[ "$#" -gt 0 ]]; do
@@ -129,4 +145,26 @@ tail -n +10 $srcdir/docs/listings/thread_obj_mutex.c.in > docs/listings/thread_o
 # generate gsequencer.desktop
 echo "generating gsequencer.desktop"
 
-$(sed -e "s,\@datadir\@,${datadir},g" < "${srcdir}/gsequencer.desktop.in" > "gsequencer.desktop")
+sed -e "s,\@datadir\@,${datadir},g" < "${srcdir}/gsequencer.desktop.in" > "gsequencer.desktop"
+
+# compress changelog
+echo "compress changelog"
+
+gzip -9 -c $srcdir/ChangeLog > changelog.gz
+
+# generate entities
+echo "ags documentation entities"
+
+mkdir -p docs/developersBook/xml/
+
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" > docs/developersBook/xml/agsdocsentities.ent
+echo -e -n "\n" >> docs/developersBook/xml/agsdocsentities.ent
+
+echo "<!ENTITY package \"${PACKAGE}\">" >> docs/developersBook/xml/agsdocsentities.ent
+echo "<!ENTITY package_version \"${PACKAGE_VERSION}\">" >> docs/developersBook/xml/agsdocsentities.ent
+echo "<!ENTITY package_bugreport \"${PACKAGE_BUGREPORT}\">" >> docs/developersBook/xml/agsdocsentities.ent
+echo "<!ENTITY package_name \"${PACKAGE_NAME}\">" >> docs/developersBook/xml/agsdocsentities.ent
+echo "<!ENTITY package_string \"${PACKAGE_STRING}\">" >> docs/developersBook/xml/agsdocsentities.ent
+echo "<!ENTITY package_tarname \"${PACKAGE_TARNAME}\">" >> docs/developersBook/xml/agsdocsentities.ent
+echo "<!ENTITY package_url \"${PACKAGE_URL}\">" >> docs/developersBook/xml/agsdocsentities.ent
+echo "<!ENTITY package_buildddir \"${builddir}\">" >> docs/developersBook/xml/agsdocsentities.ent
