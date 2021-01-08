@@ -86,7 +86,7 @@ echo "generating po/POTFILES.in"
 mkdir -p po
 tail -n +19 $srcdir/po/POTFILES.in.in > po/POTFILES.in
 
-# copy documentation listings
+# copy documentation
 echo "generating resources for API Reference Manual"
 
 mkdir -p docs/reference/libags/{xml,libags-html}/
@@ -110,7 +110,7 @@ tail -n +19 $srcdir/docs/reference/libgsequencer/libgsequencer-sections.txt.in >
 tail -n +19 $srcdir/docs/reference/libgsequencer/libgsequencer.types.in > docs/reference/libgsequencer/libgsequencer.types
 tail -n +19 $srcdir/docs/reference/libgsequencer/libgsequencer.interfaces.in > docs/reference/libgsequencer/libgsequencer.interfaces
 
-# copy documentation listings
+# copy documentation listings and create directories
 echo "generating code listings"
 
 mkdir -p docs/listings/
@@ -142,6 +142,17 @@ tail -n +10 $srcdir/docs/listings/recycling.c.in > docs/listings/recycling.c
 tail -n +10 $srcdir/docs/listings/start_thread.c.in > docs/listings/start_thread.c
 tail -n +10 $srcdir/docs/listings/thread_application_context.c.in > docs/listings/thread_application_context.c
 tail -n +10 $srcdir/docs/listings/thread_obj_mutex.c.in > docs/listings/thread_obj_mutex.c
+
+echo "create html directories"
+
+mkdir -p html/
+mkdir -p html/developer-docs
+mkdir -p html/user-docs
+mkdir -p html/osc-docs
+
+echo "create pdf directories"
+
+mkdir -p pdf/
 
 # generate gsequencer.desktop
 echo "generating gsequencer.desktop"
@@ -199,6 +210,13 @@ echo "<!ENTITY package_tarname \"${PACKAGE_TARNAME}\">" >> docs/oscBook/xml/agsd
 echo "<!ENTITY package_url \"${PACKAGE_URL}\">" >> docs/oscBook/xml/agsdocentities.ent
 echo "<!ENTITY package_buildddir \"${builddir}\">" >> docs/oscBook/xml/agsdocentities.ent
 
+# CSS file
+echo "copy docs/custom.css"
+
+cp $srcdir/docs/custom.css html/developersBook/
+cp $srcdir/docs/custom.css html/usersBook/
+cp $srcdir/docs/custom.css html/oscBook/
+
 if [ $(readlink -f ${builddir}) != "${srcdir}" ]
 then
     echo "copy XML files"
@@ -209,11 +227,11 @@ then
     cp $srcdir/docs/developersBook/*.xml docs/developersBook/
     cp $srcdir/docs/oscBook/*.xml docs/oscBook/
 
-    cp $srcdir/reference/docs/libags/libags.xml docs/reference/libags/
+    cp $srcdir/docs/reference/libags/libags.xml docs/reference/libags/
     
-    cp $srcdir/reference/docs/libags-audio/libags_audio.xml docs/reference/libags-audio/
+    cp $srcdir/docs/reference/libags-audio/libags_audio.xml docs/reference/libags-audio/
 
-    cp $srcdir/reference/docs/libags-gui/libags_gui.xml docs/reference/libags-gui/
+    cp $srcdir/docs/reference/libags-gui/libags_gui.xml docs/reference/libags-gui/
 
-    cp $srcdir/reference/docs/libgsequencer/libgsequencer.xml docs/reference/libgsequencer/
+    cp $srcdir/docs/reference/libgsequencer/libgsequencer.xml docs/reference/libgsequencer/
 fi

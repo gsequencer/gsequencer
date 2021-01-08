@@ -86,7 +86,7 @@ echo "generating po/POTFILES.in"
 mkdir -p po
 tail -n +19 $srcdir/po/POTFILES.in.in > po/POTFILES.in
 
-# copy documentation listings
+# copy documentation
 echo "generating resources for API Reference Manual"
 
 mkdir -p docs/reference/libags/{xml,libags-html}/
@@ -209,6 +209,13 @@ echo "<!ENTITY package_string \"${PACKAGE_STRING}\">" >> docs/oscBook/xml/agsdoc
 echo "<!ENTITY package_tarname \"${PACKAGE_TARNAME}\">" >> docs/oscBook/xml/agsdocentities.ent
 echo "<!ENTITY package_url \"${PACKAGE_URL}\">" >> docs/oscBook/xml/agsdocentities.ent
 echo "<!ENTITY package_buildddir \"${builddir}\">" >> docs/oscBook/xml/agsdocentities.ent
+
+# CSS file
+echo "copy docs/custom.css"
+
+cp $srcdir/docs/custom.css html/developersBook/
+cp $srcdir/docs/custom.css html/usersBook/
+cp $srcdir/docs/custom.css html/oscBook/
 
 if [ $(readlink -f ${builddir}) != "${srcdir}" ]
 then
