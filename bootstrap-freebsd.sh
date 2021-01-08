@@ -89,22 +89,23 @@ tail -n +19 $srcdir/po/POTFILES.in.in > po/POTFILES.in
 # copy documentation listings
 echo "generating resources for API Reference Manual"
 
-mkdir -p docs/reference/libags
+mkdir -p docs/reference/libags/{xml,libags-html}/
+mkdir -p docs/reference/libags-audio/{xml,libags-audio-html}/
+mkdir -p docs/reference/libags-gui/{xml,libags-gui-html}/
+mkdir -p docs/reference/libgsequencer/{xml,libgsequencer-html}/
+
 tail -n +19 $srcdir/docs/reference/libags/libags-sections.txt.in > docs/reference/libags/libags-sections.txt
 tail -n +19 $srcdir/docs/reference/libags/libags.types.in > docs/reference/libags/libags.types
 tail -n +19 $srcdir/docs/reference/libags/libags.interfaces.in > docs/reference/libags/libags.interfaces
 
-mkdir -p docs/reference/libags-audio
 tail -n +19 $srcdir/docs/reference/libags-audio/libags_audio-sections.txt.in > docs/reference/libags-audio/libags_audio-sections.txt
 tail -n +19 $srcdir/docs/reference/libags-audio/libags_audio.types.in > docs/reference/libags-audio/libags_audio.types
 tail -n +19 $srcdir/docs/reference/libags-audio/libags_audio.interfaces.in > docs/reference/libags-audio/libags_audio.interfaces
 
-mkdir -p docs/reference/libags-gui
 tail -n +19 $srcdir/docs/reference/libags-gui/libags_gui-sections.txt.in > docs/reference/libags-gui/libags_gui-sections.txt
 tail -n +19 $srcdir/docs/reference/libags-gui/libags_gui.types.in > docs/reference/libags-gui/libags_gui.types
 tail -n +19 $srcdir/docs/reference/libags-gui/libags_gui.interfaces.in > docs/reference/libags-gui/libags_gui.interfaces
 
-mkdir -p docs/reference/libgsequencer
 tail -n +19 $srcdir/docs/reference/libgsequencer/libgsequencer-sections.txt.in > docs/reference/libgsequencer/libgsequencer-sections.txt
 tail -n +19 $srcdir/docs/reference/libgsequencer/libgsequencer.types.in > docs/reference/libgsequencer/libgsequencer.types
 tail -n +19 $srcdir/docs/reference/libgsequencer/libgsequencer.interfaces.in > docs/reference/libgsequencer/libgsequencer.interfaces
@@ -155,19 +156,48 @@ gzip -9 -c $srcdir/ChangeLog > changelog.gz
 # generate entities
 echo "ags documentation entities"
 
+mkdir -p docs/usersBook/xml/
 mkdir -p docs/developersBook/xml/
+mkdir -p docs/oscBook/xml/
 
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" > docs/developersBook/xml/agsdocsentities.ent
-echo -e -n "\n" >> docs/developersBook/xml/agsdocsentities.ent
+# users book
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" > docs/usersBook/xml/agsdocentities.ent
+echo -e -n "\n" >> docs/usersBook/xml/agsdocentities.ent
 
-echo "<!ENTITY package \"${PACKAGE}\">" >> docs/developersBook/xml/agsdocsentities.ent
-echo "<!ENTITY package_version \"${PACKAGE_VERSION}\">" >> docs/developersBook/xml/agsdocsentities.ent
-echo "<!ENTITY package_bugreport \"${PACKAGE_BUGREPORT}\">" >> docs/developersBook/xml/agsdocsentities.ent
-echo "<!ENTITY package_name \"${PACKAGE_NAME}\">" >> docs/developersBook/xml/agsdocsentities.ent
-echo "<!ENTITY package_string \"${PACKAGE_STRING}\">" >> docs/developersBook/xml/agsdocsentities.ent
-echo "<!ENTITY package_tarname \"${PACKAGE_TARNAME}\">" >> docs/developersBook/xml/agsdocsentities.ent
-echo "<!ENTITY package_url \"${PACKAGE_URL}\">" >> docs/developersBook/xml/agsdocsentities.ent
-echo "<!ENTITY package_buildddir \"${builddir}\">" >> docs/developersBook/xml/agsdocsentities.ent
+echo "<!ENTITY package \"${PACKAGE}\">" >> docs/usersBook/xml/agsdocentities.ent
+echo "<!ENTITY package_version \"${PACKAGE_VERSION}\">" >> docs/usersBook/xml/agsdocentities.ent
+echo "<!ENTITY package_bugreport \"${PACKAGE_BUGREPORT}\">" >> docs/usersBook/xml/agsdocentities.ent
+echo "<!ENTITY package_name \"${PACKAGE_NAME}\">" >> docs/usersBook/xml/agsdocentities.ent
+echo "<!ENTITY package_string \"${PACKAGE_STRING}\">" >> docs/usersBook/xml/agsdocentities.ent
+echo "<!ENTITY package_tarname \"${PACKAGE_TARNAME}\">" >> docs/usersBook/xml/agsdocentities.ent
+echo "<!ENTITY package_url \"${PACKAGE_URL}\">" >> docs/usersBook/xml/agsdocentities.ent
+echo "<!ENTITY package_buildddir \"${builddir}\">" >> docs/usersBook/xml/agsdocentities.ent
+
+# developers book
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" > docs/developersBook/xml/agsdocentities.ent
+echo -e -n "\n" >> docs/developersBook/xml/agsdocentities.ent
+
+echo "<!ENTITY package \"${PACKAGE}\">" >> docs/developersBook/xml/agsdocentities.ent
+echo "<!ENTITY package_version \"${PACKAGE_VERSION}\">" >> docs/developersBook/xml/agsdocentities.ent
+echo "<!ENTITY package_bugreport \"${PACKAGE_BUGREPORT}\">" >> docs/developersBook/xml/agsdocentities.ent
+echo "<!ENTITY package_name \"${PACKAGE_NAME}\">" >> docs/developersBook/xml/agsdocentities.ent
+echo "<!ENTITY package_string \"${PACKAGE_STRING}\">" >> docs/developersBook/xml/agsdocentities.ent
+echo "<!ENTITY package_tarname \"${PACKAGE_TARNAME}\">" >> docs/developersBook/xml/agsdocentities.ent
+echo "<!ENTITY package_url \"${PACKAGE_URL}\">" >> docs/developersBook/xml/agsdocentities.ent
+echo "<!ENTITY package_buildddir \"${builddir}\">" >> docs/developersBook/xml/agsdocentities.ent
+
+# osc book
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" > docs/oscBook/xml/agsdocentities.ent
+echo -e -n "\n" >> docs/oscBook/xml/agsdocentities.ent
+
+echo "<!ENTITY package \"${PACKAGE}\">" >> docs/oscBook/xml/agsdocentities.ent
+echo "<!ENTITY package_version \"${PACKAGE_VERSION}\">" >> docs/oscBook/xml/agsdocentities.ent
+echo "<!ENTITY package_bugreport \"${PACKAGE_BUGREPORT}\">" >> docs/oscBook/xml/agsdocentities.ent
+echo "<!ENTITY package_name \"${PACKAGE_NAME}\">" >> docs/oscBook/xml/agsdocentities.ent
+echo "<!ENTITY package_string \"${PACKAGE_STRING}\">" >> docs/oscBook/xml/agsdocentities.ent
+echo "<!ENTITY package_tarname \"${PACKAGE_TARNAME}\">" >> docs/oscBook/xml/agsdocentities.ent
+echo "<!ENTITY package_url \"${PACKAGE_URL}\">" >> docs/oscBook/xml/agsdocentities.ent
+echo "<!ENTITY package_buildddir \"${builddir}\">" >> docs/oscBook/xml/agsdocentities.ent
 
 if [ $(readlink -f ${builddir}) != "${srcdir}" ]
 then
@@ -178,4 +208,12 @@ then
     cp $srcdir/docs/usersBook/*.xml docs/usersBook/
     cp $srcdir/docs/developersBook/*.xml docs/developersBook/
     cp $srcdir/docs/oscBook/*.xml docs/oscBook/
+
+    cp $srcdir/reference/docs/libags/libags.xml docs/reference/libags/
+    
+    cp $srcdir/reference/docs/libags-audio/libags_audio.xml docs/reference/libags-audio/
+
+    cp $srcdir/reference/docs/libags-gui/libags_gui.xml docs/reference/libags-gui/
+
+    cp $srcdir/reference/docs/libgsequencer/libgsequencer.xml docs/reference/libgsequencer/
 fi

@@ -5,7 +5,7 @@
   <!ENTITY libagsaudioso "libags_audio.so">
   <!ENTITY libagsso "libags.so">
   <!ENTITY chap2 "chapter 2">
-  <!ENTITY % agsdocentities SYSTEM "docs/developersBook/xml/agsdocentities.ent">
+  <!ENTITY % agsdocentities SYSTEM "xml/agsdocentities.ent">
   %agsdocentities;
 ]>
 

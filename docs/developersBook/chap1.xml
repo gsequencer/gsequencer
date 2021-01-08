@@ -5,7 +5,7 @@
   <!ENTITY libagsaudioso "libags_audio.so">
   <!ENTITY libagsso "libags.so">
   <!ENTITY chap1 "chapter 1">
-  <!ENTITY % agsdocentities SYSTEM "docs/developersBook/xml/agsdocentities.ent">
+  <!ENTITY % agsdocentities SYSTEM "xml/agsdocentities.ent">
   %agsdocentities;
 ]>
 
@@ -50,7 +50,7 @@
     <example>
       <title>Thread application context</title>
       <programlisting language="C">
-<xi:include href="../docs/listings/thread_application_context.c" parse="text" />
+<xi:include href="../listings/thread_application_context.c" parse="text" />
       </programlisting>
     </example>
 
@@ -64,7 +64,7 @@
     <example>
       <title>Audio application context</title>
       <programlisting language="C">
-<xi:include href="../docs/listings/audio_application_context.c" parse="text" />
+<xi:include href="../listings/audio_application_context.c" parse="text" />
       </programlisting>
     </example>
   </sect1>
@@ -96,7 +96,7 @@
     <example>
       <title>Get config value</title>
       <programlisting language="C">
-<xi:include href="../docs/listings/config.c" parse="text" />
+<xi:include href="../listings/config.c" parse="text" />
       </programlisting>
     </example>
   </sect1>
@@ -111,7 +111,7 @@
     <example>
       <title>The application context :file property</title>
       <programlisting language="C">
-<xi:include href="../docs/listings/file_property.c" parse="text" />
+<xi:include href="../listings/file_property.c" parse="text" />
       </programlisting>
     </example>
   </sect1>

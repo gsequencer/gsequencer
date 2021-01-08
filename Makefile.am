@@ -2839,44 +2839,33 @@ libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool
 
 gsequencer.1: gsequencer.1.xml
-	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_srcdir) http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl gsequencer.1.xml
+	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_builddir) http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl gsequencer.1.xml
 
 midi2xml.1: midi2xml.1.xml
-	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_srcdir)/ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl midi2xml.1.xml
-
-gsequencer.desktop: gsequencer.desktop.in
-if FREEBSD
-	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < $(top_srcdir)/gsequencer.desktop.in > $(top_builddir)/gsequencer.desktop
-else
-	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
-endif
+	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_builddir)/ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl midi2xml.1.xml
 
 html:
 	mkdir -p $(top_builddir)/html/
 	mkdir -p $(top_builddir)/html/developer-docs
 	mkdir -p $(top_builddir)/html/user-docs
 	mkdir -p $(top_builddir)/html/osc-docs
-	xsltproc --output $(top_builddir)/html/user-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_srcdir)/docs/usersBook.xml
-	xsltproc --output $(top_builddir)/html/developer-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_srcdir)/docs/developersBook.xml
-	xsltproc --output $(top_builddir)/html/osc-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_srcdir)/docs/oscBook.xml
-	mkdir -p $(top_srcdir)/docs/reference/libags/libags-html
-	mkdir -p $(top_srcdir)/docs/reference/libags-audio/libags-audio-html
-	mkdir -p $(top_srcdir)/docs/reference/libags-gui/libags-gui-html
-	mkdir -p $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html
-	$(MAKE) -C $(top_srcdir)/docs/reference/libags
-	cd $(top_srcdir)
-	$(MAKE) -C $(top_srcdir)/docs/reference/libags-audio
-	cd $(top_srcdir)
-	$(MAKE) -C $(top_srcdir)/docs/reference/libags-gui
-	cd $(top_srcdir)
-	$(MAKE) -C $(top_srcdir)/docs/reference/libgsequencer
-	cd $(top_srcdir)
+	xsltproc --output $(top_builddir)/html/user-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_builddir)/docs/usersBook.xml
+	xsltproc --output $(top_builddir)/html/developer-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_builddir)/docs/developersBook.xml
+	xsltproc --output $(top_builddir)/html/osc-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_builddir)/docs/oscBook.xml
+	$(MAKE) -C $(top_builddir)/docs/reference/libags
+	cd $(top_builddir)
+	$(MAKE) -C $(top_builddir)/docs/reference/libags-audio
+	cd $(top_builddir)
+	$(MAKE) -C $(top_builddir)/docs/reference/libags-gui
+	cd $(top_builddir)
+	$(MAKE) -C $(top_builddir)/docs/reference/libgsequencer
+	cd $(top_builddir)
 
 pdf:
 	mkdir -p $(top_builddir)/pdf/
-	dblatex --pdf $(top_srcdir)/docs/usersBook.xml -o $(top_builddir)/pdf/user-manual.pdf
-	dblatex --pdf $(top_srcdir)/docs/developersBook.xml -o $(top_builddir)/pdf/developer-manual.pdf
-	dblatex --pdf $(top_srcdir)/docs/oscBook.xml -o $(top_builddir)/pdf/osc-manual.pdf
+	dblatex --pdf $(top_builddir)/docs/usersBook.xml -o $(top_builddir)/pdf/user-manual.pdf
+	dblatex --pdf $(top_builddir)/docs/developersBook.xml -o $(top_builddir)/pdf/developer-manual.pdf
+	dblatex --pdf $(top_builddir)/docs/oscBook.xml -o $(top_builddir)/pdf/osc-manual.pdf
 
 sphinx:
 	mkdir -p $(top_builddir)/xml/
