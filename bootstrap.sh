@@ -9,7 +9,7 @@
 
 # ==============================================================================
 # title:           bootstrap build
-# description:     This script bootstrapss the build directory. The purpose is
+# description:     This script bootstraps the build directory. The purpose is
 #                  to copy, strip or substitute files.
 #                  to generated files.
 # author:          Joël Krähemann
