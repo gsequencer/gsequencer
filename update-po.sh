@@ -18,17 +18,6 @@
 # dependencies:    find, grep, sort, diff, cat, sed
 # ==============================================================================
 
-PACKAGE="gsequencer"
-PACKAGE_VERSION="3.7.22"
-PACKAGE_BUGREPORT="jkraehemann@gmail.com"
-PACKAGE_NAME="Advanced Gtk+ Sequencer"
-PACKAGE_STRING="${PACKAGE_NAME} version ${PACKAGE_VERSION}"
-PACKAGE_TARNAME="${PACKAGE}-${PACKAGE_VERSION}.tar.gz"
-PACKAGE_URL="http://nongnu.org/gsequencer"
-
-prefix="/usr/local"
-datadir="${prefix}/share"
-
 srcdir="./"
 builddir="./"
 

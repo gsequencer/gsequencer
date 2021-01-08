@@ -213,6 +213,10 @@ echo "<!ENTITY package_buildddir \"${builddir}\">" >> docs/oscBook/xml/agsdocent
 # CSS file
 echo "copy docs/custom.css"
 
+mkdir -p html/usersBook/
+mkdir -p html/developersBook/
+mkdir -p html/oscBook/
+
 cp $srcdir/docs/custom.css html/developersBook/
 cp $srcdir/docs/custom.css html/usersBook/
 cp $srcdir/docs/custom.css html/oscBook/

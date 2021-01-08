@@ -546,37 +546,37 @@ AS_IF([test "x$enable_upstream_gtk_doc" != xno],
 [AS_IF([test "x$GOBJECT_API_DOC" != x],
       [AC_SUBST(GOBJECT_API_DOC, $GOBJECT_API_DOC)
        AC_MSG_NOTICE([GOBJECT_API_DOC = $GOBJECT_API_DOC])],
-      [AC_SUBST(GOBJECT_API_DOC, '\/usr\/share\/doc\/libglib2.0-doc\/gobject')
+      [AC_SUBST(GOBJECT_API_DOC, '/usr/share/doc/libglib2.0-doc/gobject')
        AC_MSG_NOTICE([GOBJECT_API_DOC = $GOBJECT_API_DOC])])
 
 AS_IF([test "x$GTK_API_DOC" != x],
       [AC_SUBST(GTK_API_DOC, $GTK_API_DOC)
        AC_MSG_NOTICE([GTK_API_DOC = $GTK_API_DOC])],
-      [AC_SUBST(GTK_API_DOC, '\/usr\/share\/doc\/libgtk-3-doc\/gtk3')
+      [AC_SUBST(GTK_API_DOC, '/usr/share/doc/libgtk-3-doc/gtk3')
        AC_MSG_NOTICE([GTK_API_DOC = $GTK_API_DOC])])
 
 AS_IF([test "x$LIBAGS_API_DOC" != x],
       [AC_SUBST(LIBAGS_API_DOC, $LIBAGS_API_DOC)
        AC_MSG_NOTICE([LIBAGS_API_DOC = $LIBAGS_API_DOC])],
-      [AC_SUBST(LIBAGS_API_DOC, '\/usr\/share\/doc\/libags-doc\/api')
+      [AC_SUBST(LIBAGS_API_DOC, '/usr/share/doc/libags-doc/api')
        AC_MSG_NOTICE([LIBAGS_API_DOC = $LIBAGS_API_DOC])])
 
 AS_IF([test "x$LIBAGS_AUDIO_API_DOC" != x],
       [AC_SUBST(LIBAGS_AUDIO_API_DOC, $LIBAGS_AUDIO_API_DOC)
        AC_MSG_NOTICE([LIBAGS_AUDIO_API_DOC = $LIBAGS_AUDIO_API_DOC])],
-      [AC_SUBST(LIBAGS_AUDIO_API_DOC, '\/usr\/share\/doc\/libags-audio-doc\/api')
+      [AC_SUBST(LIBAGS_AUDIO_API_DOC, '/usr/share/doc/libags-audio-doc/api')
        AC_MSG_NOTICE([LIBAGS_AUDIO_API_DOC = $LIBAGS_AUDIO_API_DOC])])
 
 AS_IF([test "x$LIBAGS_GUI_API_DOC" != x],
       [AC_SUBST(LIBAGS_GUI_API_DOC, $LIBAGS_GUI_API_DOC)
        AC_MSG_NOTICE([LIBAGS_GUI_API_DOC = $LIBAGS_GUI_API_DOC])],
-      [AC_SUBST(LIBAGS_GUI_API_DOC, '\/usr\/share\/doc\/libags-gui-doc\/api')
+      [AC_SUBST(LIBAGS_GUI_API_DOC, '/usr/share/doc/libags-gui-doc/api')
        AC_MSG_NOTICE([LIBAGS_GUI_API_DOC = $LIBAGS_GUI_API_DOC])])
 
 AS_IF([test "x$LIBGSEQUENCER_API_DOC" != x],
       [AC_SUBST(LIBGSEQUENCER_API_DOC, $LIBGSEQUENCER_API_DOC)
        AC_MSG_NOTICE([LIBGSEQUENCER_API_DOC = $LIBGSEQUENCER_API_DOC])],
-      [AC_SUBST(LIBGSEQUENCER_API_DOC, '\/usr\/share\/doc\/libgsequencer-doc\/api')
+      [AC_SUBST(LIBGSEQUENCER_API_DOC, '/usr/share/doc/libgsequencer-doc/api')
        AC_MSG_NOTICE([LIBGSEQUENCER_API_DOC = $LIBGSEQUENCER_API_DOC])])
 
 AS_IF([test "x$LIBAGS_API_DIR" != x],
@@ -607,37 +607,37 @@ AS_IF([test "x$LIBGSEQUENCER_API_DIR" != x],
 AS_IF([test "x$GOBJECT_API_DOC" != x],
       [AC_SUBST(GOBJECT_API_DOC, $GOBJECT_API_DOC)
        AC_MSG_NOTICE([GOBJECT_API_DOC = $GOBJECT_API_DOC])],
-      [AC_SUBST(GOBJECT_API_DOC, '\.\.\/gobject')
+      [AC_SUBST(GOBJECT_API_DOC, '../gobject')
        AC_MSG_NOTICE([GOBJECT_API_DOC = $GOBJECT_API_DOC])])
 
 AS_IF([test "x$GTK_API_DOC" != x],
       [AC_SUBST(GTK_API_DOC, $GTK_API_DOC)
        AC_MSG_NOTICE([GTK_API_DOC = $GTK_API_DOC])],
-      [AC_SUBST(GTK_API_DOC, '\.\.\/gtk3')
+      [AC_SUBST(GTK_API_DOC, '../gtk3')
        AC_MSG_NOTICE([GTK_API_DOC = $GTK_API_DOC])])
 
 AS_IF([test "x$LIBAGS_API_DOC" != x],
       [AC_SUBST(LIBAGS_API_DOC, $LIBAGS_API_DOC)
        AC_MSG_NOTICE([LIBAGS_API_DOC = $LIBAGS_API_DOC])],
-      [AC_SUBST(LIBAGS_API_DOC, '\.\.\/libags')
+      [AC_SUBST(LIBAGS_API_DOC, '../libags')
        AC_MSG_NOTICE([LIBAGS_API_DOC = $LIBAGS_API_DOC])])
 
 AS_IF([test "x$LIBAGS_AUDIO_API_DOC" != x],
       [AC_SUBST(LIBAGS_AUDIO_API_DOC, $LIBAGS_AUDIO_API_DOC)
        AC_MSG_NOTICE([LIBAGS_AUDIO_API_DOC = $LIBAGS_AUDIO_API_DOC])],
-      [AC_SUBST(LIBAGS_AUDIO_API_DOC, '\.\.\/libags_audio')
+      [AC_SUBST(LIBAGS_AUDIO_API_DOC, '../libags_audio')
        AC_MSG_NOTICE([LIBAGS_AUDIO_API_DOC = $LIBAGS_AUDIO_API_DOC])])
 
 AS_IF([test "x$LIBAGS_GUI_API_DOC" != x],
       [AC_SUBST(LIBAGS_GUI_API_DOC, $LIBAGS_GUI_API_DOC)
        AC_MSG_NOTICE([LIBAGS_GUI_API_DOC = $LIBAGS_GUI_API_DOC])],
-      [AC_SUBST(LIBAGS_GUI_API_DOC, '\.\.\/libags_gui')
+      [AC_SUBST(LIBAGS_GUI_API_DOC, '../libags_gui')
        AC_MSG_NOTICE([LIBAGS_GUI_API_DOC = $LIBAGS_GUI_API_DOC])])
 
 AS_IF([test "x$LIBGSEQUENCER_API_DOC" != x],
       [AC_SUBST(LIBGSEQUENCER_API_DOC, $LIBGSEQUENCER_API_DOC)
        AC_MSG_NOTICE([LIBGSEQUENCER_API_DOC = $LIBGSEQUENCER_API_DOC])],
-      [AC_SUBST(LIBGSEQUENCER_API_DOC, '\.\.\/libgsequencer')
+      [AC_SUBST(LIBGSEQUENCER_API_DOC, '../libgsequencer')
        AC_MSG_NOTICE([LIBGSEQUENCER_API_DOC = $LIBGSEQUENCER_API_DOC])])
 
 AS_IF([test "x$LIBAGS_API_DIR" != x],

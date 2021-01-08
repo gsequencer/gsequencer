@@ -11,7 +11,6 @@
 # title:           clean build
 # description:     This script cleans the build directory. The purpose is to
 #                  remove files.
-#                  to generated files.
 # author:          Joël Krähemann
 # date:            Fri Jan  8 08:02:47 UTC 2021
 # version:         v0.1.0
