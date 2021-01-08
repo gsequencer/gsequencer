@@ -169,7 +169,7 @@ echo "<!ENTITY package_tarname \"${PACKAGE_TARNAME}\">" >> docs/developersBook/x
 echo "<!ENTITY package_url \"${PACKAGE_URL}\">" >> docs/developersBook/xml/agsdocsentities.ent
 echo "<!ENTITY package_buildddir \"${builddir}\">" >> docs/developersBook/xml/agsdocsentities.ent
 
-if [ $builddir != "./" ] && [ $builddir != "${srcdir}" ]
+if [ $(readlink -f ${builddir}) != "${srcdir}" ]
 then
     echo "copy XML files"
 
