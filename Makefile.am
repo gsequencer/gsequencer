@@ -3206,19 +3206,7 @@ check-gettext:
 	"'checking whether to use NLS... yes'!" ; exit 1 ; fi
 
 update-po: check-gettext
-	@find $(srcdir)/ags/{util,lib,object,thread,file,server,plugin,audio,widget,X}/ -name "*.c" -print | grep -vZf $(srcdir)/pot_exclude.txt | sort > $(srcdir)/po/POTFILES.in.2 ; \
-	if diff $(srcdir)/po/POTFILES.in $(srcdir)/po/POTFILES.in.2 >/dev/null 2>&1 ; then \
-		rm -f $(srcdir)/po/POTFILES.in.2 ; \
-	else \
-		rm $(srcdir)/po/POTFILES.in ; \
-		touch $(srcdir)/po/POTFILES.in ; \
-		rm $(srcdir)/po/POTFILES.in.in ; \
-		touch $(srcdir)/po/POTFILES.in.in ; \
-		cat $(srcdir)/license-notice-gnu-gpl-3-0+-sym.txt >> $(srcdir)/po/POTFILES.in.in ; \
-		echo -e -n "\n" >> $(srcdir)/po/POTFILES.in.in ; \
-		cat $(srcdir)/po/POTFILES.in.2 >> $(srcdir)/po/POTFILES.in.in ; \
-		mv $(srcdir)/po/POTFILES.in.2 $(srcdir)/po/POTFILES.in ; \
-	fi
+	$(SHELL) ./update-po.sh
 	cd po && $(MAKE) $(AM_MAKEFLAGS) update-po
 
 update-gmo: check-gettext

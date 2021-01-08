@@ -20,6 +20,7 @@ po/stamp-po
 po/remove-potcdate.sin
 po/insert-header.sin
 po/\*.po
+po/*.gmo
 po/ChangeLog
 po/Makevars.template
 po/POTFILES.in
