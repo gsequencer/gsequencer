@@ -18,6 +18,17 @@
 # usage:           bash clean.sh
 # ==============================================================================
 
+rm -f gsequencer.desktop
+rm -f libags.sym
+rm -f libags_audio.sym
+rm -f libags_gui.sym
+rm -f libags_server.sym
+rm -f libags_thread.sym
+rm -f changelog.gz
+
+rm -f ags/object/ags_marshallers.list
+rm -f ags/widget/ags_widget_marshallers.list
+
 rm -f docs/listings/add_pattern.c
 rm -f docs/listings/application_mutex.c
 rm -f docs/listings/audio.c
@@ -45,3 +56,18 @@ rm -f docs/listings/recycling.c
 rm -f docs/listings/start_thread.c
 rm -f docs/listings/thread_application_context.c
 rm -f docs/listings/thread_obj_mutex.c
+
+rm -rf docs/developersBook/xml/
+
+rm -f docs/reference/libags-audio/libags_audio-sections.txt
+rm -f docs/reference/libags-audio/libags_audio.interfaces
+rm -f docs/reference/libags-audio/libags_audio.types
+rm -f docs/reference/libags-gui/libags_gui-sections.txt
+rm -f docs/reference/libags-gui/libags_gui.interfaces
+rm -f docs/reference/libags-gui/libags_gui.types
+rm -f docs/reference/libags/libags-sections.txt
+rm -f docs/reference/libags/libags.interfaces
+rm -f docs/reference/libags/libags.types
+rm -f docs/reference/libgsequencer/libgsequencer-sections.txt
+rm -f docs/reference/libgsequencer/libgsequencer.interfaces
+rm -f docs/reference/libgsequencer/libgsequencer.types
