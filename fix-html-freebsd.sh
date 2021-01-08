@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # 
 # Copyright (C) 2005-2021 Joël Krähemann
 # 
@@ -72,13 +72,13 @@ then
     libgsequencer_api_doc=$LIBGSEQUENCER_API_DOC
 fi
 
-$( find $(top_builddir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i '' -e "s@../gobject@$(gobject_api_doc)@g" {} \; )
-$( find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i '' -e "s@../gobject@$(gobject_api_doc)@g" {} \; )
-$( find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i '' -e "s@../libags-html@$(libags_api_doc)@g" {} \; )
-$( find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i '' -e "s@../gobject@$(gobject_api_doc)@g" {} \; )
-$( find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i '' -e "s@../gtk3@$(gtk_api_doc)@g" {} \; )
-$( find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e "s@../gobject@$(gobject_api_doc)@g" {} \; )
-$( find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e "s@../gtk3@$(gtk_api_doc)@g" {} \; )
-$( find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e "s@../libags-html@$(libags_api_doc)@g" {} \; )
-$( find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e "s@../libags-audio-html@$(libags_audio_api_doc)@g" {} \; )
-$( find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e "s@../libags-gui-html@$(libags_gui_api_doc)@g" {} \; )
+$( find ${builddir}/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i '' -e "s@../gobject@${gobject_api_doc}@g" {} \; )
+$( find ${builddir}/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i '' -e "s@../gobject@${gobject_api_doc}@g" {} \; )
+$( find ${builddir}/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i '' -e "s@../libags-html@${libags_api_doc}@g" {} \; )
+$( find ${builddir}/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i '' -e "s@../gobject@${gobject_api_doc}@g" {} \; )
+$( find ${builddir}/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i '' -e "s@../gtk3@${gtk_api_doc}@g" {} \; )
+$( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e "s@../gobject@${gobject_api_doc}@g" {} \; )
+$( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e "s@../gtk3@${gtk_api_doc}@g" {} \; )
+$( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e "s@../libags-html@${libags_api_doc}@g" {} \; )
+$( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e "s@../libags-audio-html@${libags_audio_api_doc}@g" {} \; )
+$( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e "s@../libags-gui-html@${libags_gui_api_doc}@g" {} \; )

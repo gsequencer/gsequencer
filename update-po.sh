@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # 
 # Copyright (C) 2005-2021 Joël Krähemann
 # 
