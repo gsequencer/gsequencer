@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE book
+[
+  <!ENTITY libagsthreadso "libags_thread.so">
+  <!ENTITY libagsaudioso "libags_audio.so">
+  <!ENTITY libagsso "libags.so">
+  <!ENTITY chap2 "chapter 2">
+  <!ENTITY % agsdocentities SYSTEM "docs/developersBook/xml/agsdocentities.ent">
+  %agsdocentities;
+]>
 
 <!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
 <!-- Permission is granted to copy, distribute and/or modify this document -->

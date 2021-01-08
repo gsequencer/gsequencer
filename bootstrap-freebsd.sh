@@ -168,3 +168,14 @@ echo "<!ENTITY package_string \"${PACKAGE_STRING}\">" >> docs/developersBook/xml
 echo "<!ENTITY package_tarname \"${PACKAGE_TARNAME}\">" >> docs/developersBook/xml/agsdocsentities.ent
 echo "<!ENTITY package_url \"${PACKAGE_URL}\">" >> docs/developersBook/xml/agsdocsentities.ent
 echo "<!ENTITY package_buildddir \"${builddir}\">" >> docs/developersBook/xml/agsdocsentities.ent
+
+if [ $builddir != "./" ] && [ $builddir != "${srcdir}" ]
+then
+    echo "copy XML files"
+
+    cp $srcdir/docs/{usersBook,developersBook,oscBook,appa}.xml docs/
+    
+    cp $srcdir/docs/usersBook/*.xml docs/usersBook/
+    cp $srcdir/docs/developersBook/*.xml docs/developersBook/
+    cp $srcdir/docs/oscBook/*.xml docs/oscBook/
+fi
