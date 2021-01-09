@@ -18,16 +18,19 @@
 # You should have received a copy of the GNU General Public License
 # along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
 
-AC_DEFUN([LIBAGS_MARSHALLERS],
+AC_DEFUN([AGS_DOCS_BOOKS],
 [
-  AC_MSG_NOTICE([generating ags/object/ags_marshallers.list])
-  `mkdir -p ags/object/`
-  `tail -n +19 $srcdir/ags/object/ags_marshallers.list.in > ags/object/ags_marshallers.list`
-])
-
-AC_DEFUN([LIBAGS_GUI_MARSHALLERS],
-[
-  AC_MSG_NOTICE([generating ags/widget/ags_widget_marshallers.list])
-  `mkdir -p ags/widget/`
-  `tail -n +19 $srcdir/ags/widget/ags_widget_marshallers.list.in > ags/widget/ags_widget_marshallers.list`
+  AC_MSG_NOTICE([generating docs/listings/*])
+  `mkdir -p $PWD/html`
+  `mkdir -p $PWD/html/user-manual`
+  `mkdir -p $PWD/html/developer-manual`
+  `mkdir -p $PWD/html/osc-manual`
+  `mkdir -p $PWD/pdf`
+  `cp -n $srcdir/docs/usersBook.xml $PWD/docs/ &2> /dev/null`
+  `cp -n $srcdir/docs/developersBook.xml $PWD/docs/ &2> /dev/null`
+  `cp -n $srcdir/docs/oscBook.xml $PWD/docs/ &2> /dev/null`
+  `cp -n $srcdir/docs/appa.xml $PWD/docs/ &2> /dev/null`
+  `cp $srcdir/docs/custom.css $PWD/html/user-manual/`
+  `cp $srcdir/docs/custom.css $PWD/html/developer-manual/`
+  `cp $srcdir/docs/custom.css $PWD/html/osc-manual/`
 ])

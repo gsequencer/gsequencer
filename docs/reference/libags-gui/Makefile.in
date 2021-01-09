@@ -142,8 +142,12 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = docs/reference/libags-gui
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ags-bootstrap-freebsd.m4 \
-	$(top_srcdir)/m4/ags-bootstrap.m4 $(top_srcdir)/m4/gettext.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ags-docs-api.m4 \
+	$(top_srcdir)/m4/ags-docs-books.m4 \
+	$(top_srcdir)/m4/ags-listings.m4 \
+	$(top_srcdir)/m4/ags-marshallers.m4 \
+	$(top_srcdir)/m4/ags-potfiles.m4 \
+	$(top_srcdir)/m4/ags-symbols.m4 $(top_srcdir)/m4/gettext.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/intlmacosx.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
 	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \

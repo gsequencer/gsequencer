@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.7.22],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.7.23],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -534,6 +534,7 @@ LIBAGS_GUI_MARSHALLERS([])
 
 AGS_DEVELOPER_BOOK_LISTINGS([])
 
+AGS_DOCS_BOOKS([])
 AGS_DOCS_API([])
 
 AS_IF([test "x$HTMLHELP_XSL" != x],

@@ -493,96 +493,96 @@ devdoclistings = \
 	docs/listings/thread_application_context.c.in
 
 devdocimages = \
-	$(top_srcdir)/docs/images/AGS_iterator.png \
-	$(top_srcdir)/docs/images/AGS_recall_lifecycle.png \
-	$(top_srcdir)/docs/images/AGS_super-threaded.png \
-	$(top_srcdir)/docs/images/AGS_linking.png
+	docs/images/AGS_iterator.png \
+	docs/images/AGS_recall_lifecycle.png \
+	docs/images/AGS_super-threaded.png \
+	docs/images/AGS_linking.png
 
 userdocimages = \
-	$(top_srcdir)/docs/images/ags_audiorec.png \
-	$(top_srcdir)/docs/images/ags-automation-toolbar.png \
-	$(top_srcdir)/docs/images/ags_automation_window_drum.png \
-	$(top_srcdir)/docs/images/ags_equalizer10.png \
-	$(top_srcdir)/docs/images/ags_export_window.png \
-	$(top_srcdir)/docs/images/ags_machine_properties-input.png \
-	$(top_srcdir)/docs/images/ags_machine_properties-resize_channels.png \
-	$(top_srcdir)/docs/images/ags_navigation.png \
-	$(top_srcdir)/docs/images/ags_audio_preferences.png \
-	$(top_srcdir)/docs/images/ags_audio_connection_output_bulk.png \
-	$(top_srcdir)/docs/images/ags_audio_connection_output_line.png \
-	$(top_srcdir)/docs/images/ags_audio_connection_input_bulk.png \
-	$(top_srcdir)/docs/images/ags_audio_connection_input_line.png \
-	$(top_srcdir)/docs/images/ags_midi_dialog.png \
-	$(top_srcdir)/docs/images/ags_midi_export_wizard_no1.png \
-	$(top_srcdir)/docs/images/ags_midi_export_wizard_no2.png \
-	$(top_srcdir)/docs/images/ags_midi_import_wizard_no1.png \
-	$(top_srcdir)/docs/images/ags_midi_import_wizard_no2.png \
-	$(top_srcdir)/docs/images/ags_midi_preferences.png \
-	$(top_srcdir)/docs/images/ags_ffplayer.png \
-	$(top_srcdir)/docs/images/ags_fm_synth.png \
-	$(top_srcdir)/docs/images/ags_fm_syncsynth.png \
-	$(top_srcdir)/docs/images/ags_ladspa_browser.png \
-	$(top_srcdir)/docs/images/ags_machine_properties-link_input.png \
-	$(top_srcdir)/docs/images/ags_matrix.png \
-	$(top_srcdir)/docs/images/ags_panel.png \
-	$(top_srcdir)/docs/images/ags_spectrometer.png \
-	$(top_srcdir)/docs/images/ags_synth.png \
-	$(top_srcdir)/docs/images/ags_syncsynth.png \
-	$(top_srcdir)/docs/images/ags-toolbar.png \
-	$(top_srcdir)/docs/images/ags_drum.png \
-	$(top_srcdir)/docs/images/ags_generic_preferences.png \
-	$(top_srcdir)/docs/images/ags_machine_properties-output.png \
-	$(top_srcdir)/docs/images/ags_mixer.png \
-	$(top_srcdir)/docs/images/ags_pitch_sampler.png \
-	$(top_srcdir)/docs/images/ags_performance_preferences.png \
-	$(top_srcdir)/docs/images/ags_server_preferences.png \
-	$(top_srcdir)/docs/images/ags_machine_envelope_editor.png \
-	$(top_srcdir)/docs/images/ags_machine_envelope_info.png \
-	$(top_srcdir)/docs/images/ags_machine_envelope_pattern.png \
-	$(top_srcdir)/docs/images/ags_move_notes_dialog.png \
-	$(top_srcdir)/docs/images/ags_crop_notes_dialog.png \
-	$(top_srcdir)/docs/images/ags_position_notation_cursor_dialog.png \
-	$(top_srcdir)/docs/images/ags_position_automation_cursor_dialog.png \
-	$(top_srcdir)/docs/images/ags_position_wave_cursor_dialog.png \
-	$(top_srcdir)/docs/images/ags_select_notes_dialog.png \
-	$(top_srcdir)/docs/images/ags_select_accelerations_dialog.png \
-	$(top_srcdir)/docs/images/ags_select_buffers_dialog.png \
-	$(top_srcdir)/docs/images/ags_ramp_accelerations_dialog.png \
-	$(top_srcdir)/docs/images/ags-wave-toolbar.png \
-	$(top_srcdir)/docs/images/ags_wave_window_audiorec.png
+	docs/images/ags_audiorec.png \
+	docs/images/ags-automation-toolbar.png \
+	docs/images/ags_automation_window_drum.png \
+	docs/images/ags_equalizer10.png \
+	docs/images/ags_export_window.png \
+	docs/images/ags_machine_properties-input.png \
+	docs/images/ags_machine_properties-resize_channels.png \
+	docs/images/ags_navigation.png \
+	docs/images/ags_audio_preferences.png \
+	docs/images/ags_audio_connection_output_bulk.png \
+	docs/images/ags_audio_connection_output_line.png \
+	docs/images/ags_audio_connection_input_bulk.png \
+	docs/images/ags_audio_connection_input_line.png \
+	docs/images/ags_midi_dialog.png \
+	docs/images/ags_midi_export_wizard_no1.png \
+	docs/images/ags_midi_export_wizard_no2.png \
+	docs/images/ags_midi_import_wizard_no1.png \
+	docs/images/ags_midi_import_wizard_no2.png \
+	docs/images/ags_midi_preferences.png \
+	docs/images/ags_ffplayer.png \
+	docs/images/ags_fm_synth.png \
+	docs/images/ags_fm_syncsynth.png \
+	docs/images/ags_ladspa_browser.png \
+	docs/images/ags_machine_properties-link_input.png \
+	docs/images/ags_matrix.png \
+	docs/images/ags_panel.png \
+	docs/images/ags_spectrometer.png \
+	docs/images/ags_synth.png \
+	docs/images/ags_syncsynth.png \
+	docs/images/ags-toolbar.png \
+	docs/images/ags_drum.png \
+	docs/images/ags_generic_preferences.png \
+	docs/images/ags_machine_properties-output.png \
+	docs/images/ags_mixer.png \
+	docs/images/ags_pitch_sampler.png \
+	docs/images/ags_performance_preferences.png \
+	docs/images/ags_server_preferences.png \
+	docs/images/ags_machine_envelope_editor.png \
+	docs/images/ags_machine_envelope_info.png \
+	docs/images/ags_machine_envelope_pattern.png \
+	docs/images/ags_move_notes_dialog.png \
+	docs/images/ags_crop_notes_dialog.png \
+	docs/images/ags_position_notation_cursor_dialog.png \
+	docs/images/ags_position_automation_cursor_dialog.png \
+	docs/images/ags_position_wave_cursor_dialog.png \
+	docs/images/ags_select_notes_dialog.png \
+	docs/images/ags_select_accelerations_dialog.png \
+	docs/images/ags_select_buffers_dialog.png \
+	docs/images/ags_ramp_accelerations_dialog.png \
+	docs/images/ags-wave-toolbar.png \
+	docs/images/ags_wave_window_audiorec.png
 
 userdocadwaitaimages = \
-	$(top_srcdir)/docs/images/adwaita/accessories-text-editor.png \
-	$(top_srcdir)/docs/images/adwaita/edit-clear-all.png \
-	$(top_srcdir)/docs/images/adwaita/edit-copy.png \
-	$(top_srcdir)/docs/images/adwaita/edit-cut.png \
-	$(top_srcdir)/docs/images/adwaita/edit-paste.png \
-	$(top_srcdir)/docs/images/adwaita/edit-select-all.png \
-	$(top_srcdir)/docs/images/adwaita/go-jump.png \
-	$(top_srcdir)/docs/images/adwaita/media-playback-start.png \
-	$(top_srcdir)/docs/images/adwaita/media-playback-stop.png \
-	$(top_srcdir)/docs/images/adwaita/media-seek-backward.png \
-	$(top_srcdir)/docs/images/adwaita/media-seek-forward.png \
-	$(top_srcdir)/docs/images/adwaita/media-skip-backward.png \
-	$(top_srcdir)/docs/images/adwaita/media-skip-forward.png \
-	$(top_srcdir)/docs/images/adwaita/object-flip-vertical.png \
-	$(top_srcdir)/docs/images/adwaita/system-run.png
+	docs/images/adwaita/accessories-text-editor.png \
+	docs/images/adwaita/edit-clear-all.png \
+	docs/images/adwaita/edit-copy.png \
+	docs/images/adwaita/edit-cut.png \
+	docs/images/adwaita/edit-paste.png \
+	docs/images/adwaita/edit-select-all.png \
+	docs/images/adwaita/go-jump.png \
+	docs/images/adwaita/media-playback-start.png \
+	docs/images/adwaita/media-playback-stop.png \
+	docs/images/adwaita/media-seek-backward.png \
+	docs/images/adwaita/media-seek-forward.png \
+	docs/images/adwaita/media-skip-backward.png \
+	docs/images/adwaita/media-skip-forward.png \
+	docs/images/adwaita/object-flip-vertical.png \
+	docs/images/adwaita/system-run.png
 
 EXTRA_DIST += $(manpages) $(userdoc) $(userdocimages) $(userdocadwaitaimages) $(devdoc) $(devdocimages) $(devdoclistings) $(oscdoc)
 
 EXTRA_DIST += \
-	$(top_srcdir)/ags/server/security/ags_authentication.dtd \
-	$(top_srcdir)/ags/server/security/ags_business_group.dtd \
-	$(top_srcdir)/ags/server/security/ags_certificate.dtd \
-	$(top_srcdir)/ags/server/security/ags_password_store.dtd \
-	$(top_srcdir)/ags/audio/midi/ags_midi_file.dtd \
-	$(top_srcdir)/ags/audio/osc/ags_osc_file.dtd \
-	$(top_srcdir)/ags/file/ags_file.dtd \
-	$(top_srcdir)/ags/X/file/ags_simple_file.dtd \
-	$(top_srcdir)/ags.xsl \
-	$(top_srcdir)/ags-simple.xsl \
-	$(top_srcdir)/ags/object/ags_marshallers.list.in \
-	$(top_srcdir)/ags/widget/ags_widget_marshallers.list.in
+	ags/server/security/ags_authentication.dtd \
+	ags/server/security/ags_business_group.dtd \
+	ags/server/security/ags_certificate.dtd \
+	ags/server/security/ags_password_store.dtd \
+	ags/audio/midi/ags_midi_file.dtd \
+	ags/audio/osc/ags_osc_file.dtd \
+	ags/file/ags_file.dtd \
+	ags/X/file/ags_simple_file.dtd \
+	ags.xsl \
+	ags-simple.xsl \
+	ags/object/ags_marshallers.list.in \
+	ags/widget/ags_widget_marshallers.list.in
 
 # conditional objects
 
@@ -2839,14 +2839,14 @@ libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool
 
 gsequencer.1: gsequencer.1.xml
-	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_srcdir) http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl gsequencer.1.xml
+	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_builddir) http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $(top_srcdir)/gsequencer.1.xml
 
 midi2xml.1: midi2xml.1.xml
-	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_srcdir)/ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl midi2xml.1.xml
+	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_builddir)/ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $(top_srcdir)/midi2xml.1.xml
 
 gsequencer.desktop: gsequencer.desktop.in
 if FREEBSD
-	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < $(top_srcdir)/gsequencer.desktop.in > $(top_builddir)/gsequencer.desktop
+	$(AM_V_GEN)sed -i '' -e 's,\@datadir\@,$(datadir),g' < $(top_srcdir)/gsequencer.desktop.in > $(top_builddir)/gsequencer.desktop
 else
 	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
 endif
@@ -2856,153 +2856,155 @@ html:
 	mkdir -p $(top_builddir)/html/developer-docs
 	mkdir -p $(top_builddir)/html/user-docs
 	mkdir -p $(top_builddir)/html/osc-docs
-	xsltproc --output $(top_builddir)/html/user-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_srcdir)/docs/usersBook.xml
-	xsltproc --output $(top_builddir)/html/developer-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_srcdir)/docs/developersBook.xml
-	xsltproc --output $(top_builddir)/html/osc-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_srcdir)/docs/oscBook.xml
-	mkdir -p $(top_srcdir)/docs/reference/libags/libags-html
-	mkdir -p $(top_srcdir)/docs/reference/libags-audio/libags-audio-html
-	mkdir -p $(top_srcdir)/docs/reference/libags-gui/libags-gui-html
-	mkdir -p $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html
-	$(MAKE) -C $(top_srcdir)/docs/reference/libags
-	cd $(top_srcdir)
-	$(MAKE) -C $(top_srcdir)/docs/reference/libags-audio
-	cd $(top_srcdir)
-	$(MAKE) -C $(top_srcdir)/docs/reference/libags-gui
-	cd $(top_srcdir)
-	$(MAKE) -C $(top_srcdir)/docs/reference/libgsequencer
-	cd $(top_srcdir)
+	xsltproc --output $(top_builddir)/html/user-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_builddir)/docs/usersBook.xml
+	xsltproc --output $(top_builddir)/html/developer-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_builddir)/docs/developersBook.xml
+	xsltproc --output $(top_builddir)/html/osc-docs/ --xinclude --stringparam html.stylesheet "custom.css" --stringparam htmlhelp.show.menu "1" --stringparam suppress.navigation "0" $(HTMLHELP_XSL) $(top_builddir)/docs/oscBook.xml
+	mkdir -p $(top_builddir)/docs/reference/libags/libags-html
+	mkdir -p $(top_builddir)/docs/reference/libags-audio/libags-audio-html
+	mkdir -p $(top_builddir)/docs/reference/libags-gui/libags-gui-html
+	mkdir -p $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html
+	$(MAKE) -C $(top_builddir)/docs/reference/libags
+	cd $(top_builddir)
+	$(MAKE) -C $(top_builddir)/docs/reference/libags-audio
+	cd $(top_builddir)
+	$(MAKE) -C $(top_builddir)/docs/reference/libags-gui
+	cd $(top_builddir)
+	$(MAKE) -C $(top_builddir)/docs/reference/libgsequencer
+	cd $(top_builddir)
 
 pdf:
 	mkdir -p $(top_builddir)/pdf/
-	dblatex --pdf $(top_srcdir)/docs/usersBook.xml -o $(top_builddir)/pdf/user-manual.pdf
-	dblatex --pdf $(top_srcdir)/docs/developersBook.xml -o $(top_builddir)/pdf/developer-manual.pdf
-	dblatex --pdf $(top_srcdir)/docs/oscBook.xml -o $(top_builddir)/pdf/osc-manual.pdf
+	dblatex --pdf $(top_builddir)/docs/usersBook.xml -o $(top_builddir)/pdf/user-manual.pdf
+	dblatex --pdf $(top_builddir)/docs/developersBook.xml -o $(top_builddir)/pdf/developer-manual.pdf
+	dblatex --pdf $(top_builddir)/docs/oscBook.xml -o $(top_builddir)/pdf/osc-manual.pdf
 
 sphinx:
 	mkdir -p $(top_builddir)/xml/
 	mkdir -p $(top_builddir)/sphinx/
-	xmllint --xinclude $(top_srcdir)/docs/usersBook.xml --output $(top_builddir)/xml/usersBook.xml
-	xmllint --xinclude $(top_srcdir)/docs/developersBook.xml --output $(top_builddir)/xml/developersBook.xml
-	xmllint --xinclude $(top_srcdir)/docs/oscBook.xml --output $(top_builddir)/xml/oscBook.xml
+	xmllint --xinclude $(top_builddir)/docs/usersBook.xml --output $(top_builddir)/xml/usersBook.xml
+	xmllint --xinclude $(top_builddir)/docs/developersBook.xml --output $(top_builddir)/xml/developersBook.xml
+	xmllint --xinclude $(top_builddir)/docs/oscBook.xml --output $(top_builddir)/xml/oscBook.xml
 	pandoc -f docbook $(top_builddir)/xml/usersBook.xml -o $(top_builddir)/sphinx/usersBook.rst
 	pandoc -f docbook $(top_builddir)/xml/developersBook.xml -o $(top_builddir)/sphinx/developersBook.rst
 	pandoc -f docbook $(top_builddir)/xml/oscBook.xml -o $(top_builddir)/sphinx/oscBook.rst
 
+install-changelog:
+	mkdir -p $(DESTDIR)$(docdir)/
+	install -c -p -m 644 $(top_srcdir)/ChangeLog $(DESTDIR)$(docdir)/changelog
+
 install-compress-changelog:
-	rm -f $(DESTDIR)/$(docdir)/changelog
-	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(docdir)/changelog.gz
+	mkdir -p $(DESTDIR)$(docdir)/
+	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)$(docdir)/changelog.gz
 
 install-data-local:
-	mkdir -p $(DESTDIR)/$(includedir)/ags
-	install -c -p -m 644 $(top_builddir)/ags/ags_api_config.h $(DESTDIR)/$(includedir)/ags/ags_api_config.h
-	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
-	mkdir -p $(DESTDIR)/$(datadir)/icons/hicolor/32x32/apps
-	mkdir -p $(DESTDIR)/$(datadir)/icons/hicolor/48x48/apps
-	mkdir -p $(DESTDIR)/$(datadir)/icons/hicolor/64x64/apps
-	mkdir -p $(DESTDIR)/$(datadir)/icons/hicolor/128x128/apps
-	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images
-	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/styles
-	mkdir -p $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)
-	mkdir -p $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml
-	mkdir -p $(DESTDIR)/$(datadir)/mime/packages
-	mkdir -p $(DESTDIR)/$(datadir)/metainfo
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/jumper.png $(DESTDIR)/$(datadir)/gsequencer/icons/jumper.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.png $(DESTDIR)/$(datadir)/gsequencer/icons/ags.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-32x32.png $(DESTDIR)/$(datadir)/icons/hicolor/32x32/apps/gsequencer.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-48x48.png $(DESTDIR)/$(datadir)/icons/hicolor/48x48/apps/gsequencer.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-64x64.png $(DESTDIR)/$(datadir)/icons/hicolor/64x64/apps/gsequencer.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-128x128.png $(DESTDIR)/$(datadir)/icons/hicolor/128x128/apps/gsequencer.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/gsequencer-800x450.png $(DESTDIR)/$(datadir)/gsequencer/images/gsequencer-800x450.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/styles/ags.css $(DESTDIR)/$(datadir)/gsequencer/styles/ags.css
-	install -c -p -m 644 $(top_srcdir)/ags/X/file/ags_simple_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
-	install -c -p -m 644 $(top_srcdir)/ags/audio/midi/ags_midi_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
-	install -c -p -m 644 $(top_srcdir)/ags/audio/osc/ags_osc_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
-	install -c -p -m 644 $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
-	install -c -p -m 644 $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
-	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
-	install -c -p -m 644 $(top_srcdir)/application-x-gsequencer.xml $(DESTDIR)/$(datadir)/mime/packages/gsequencer.xml
-	install -c -p -m 644 $(top_srcdir)/org.nongnu.gsequencer.gsequencer.appdata.xml $(DESTDIR)/$(datadir)/metainfo/
-	mkdir -p $(DESTDIR)/$(docdir)/
-	install -c -p -m 644 $(top_srcdir)/ChangeLog $(DESTDIR)/$(docdir)/changelog
+	mkdir -p $(DESTDIR)$(includedir)/ags
+	install -c -p -m 644 $(top_builddir)/ags/ags_api_config.h $(DESTDIR)$(includedir)/ags/ags_api_config.h
+	mkdir -p $(DESTDIR)$(datadir)/gsequencer/icons
+	mkdir -p $(DESTDIR)$(datadir)/icons/hicolor/32x32/apps
+	mkdir -p $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps
+	mkdir -p $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps
+	mkdir -p $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps
+	mkdir -p $(DESTDIR)$(datadir)/gsequencer/images
+	mkdir -p $(DESTDIR)$(datadir)/gsequencer/styles
+	mkdir -p $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)
+	mkdir -p $(DESTDIR)$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml
+	mkdir -p $(DESTDIR)$(datadir)/mime/packages
+	mkdir -p $(DESTDIR)$(datadir)/metainfo
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)$(datadir)/gsequencer/icons/ags.xpm
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/jumper.png $(DESTDIR)$(datadir)/gsequencer/icons/jumper.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.png $(DESTDIR)$(datadir)/gsequencer/icons/ags.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-32x32.png $(DESTDIR)$(datadir)/icons/hicolor/32x32/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-48x48.png $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-64x64.png $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-128x128.png $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)$(datadir)/gsequencer/images/ags.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/gsequencer-800x450.png $(DESTDIR)$(datadir)/gsequencer/images/gsequencer-800x450.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/styles/ags.css $(DESTDIR)$(datadir)/gsequencer/styles/ags.css
+	install -c -p -m 644 $(top_srcdir)/ags/X/file/ags_simple_file.dtd $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
+	install -c -p -m 644 $(top_srcdir)/ags/audio/midi/ags_midi_file.dtd $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
+	install -c -p -m 644 $(top_srcdir)/ags/audio/osc/ags_osc_file.dtd $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
+	install -c -p -m 644 $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
+	install -c -p -m 644 $(top_srcdir)/ags.xsl $(DESTDIR)$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
+	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
+	install -c -p -m 644 $(top_srcdir)/application-x-gsequencer.xml $(DESTDIR)$(datadir)/mime/packages/gsequencer.xml
+	install -c -p -m 644 $(top_srcdir)/org.nongnu.gsequencer.gsequencer.appdata.xml $(DESTDIR)$(datadir)/metainfo/
 
 fix-local-html:
-	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-audio-html/$(LIBAGS_AUDIO_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-gui-html/$(LIBAGS_GUI_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-audio-html/$(LIBAGS_AUDIO_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-gui-html/$(LIBAGS_GUI_API_DOC)/g' {} \;
 
 fix-local-html-bsd:
-	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/libags-audio-html/$(LIBAGS_AUDIO_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/libags-gui-html/$(LIBAGS_GUI_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/libags-audio-html/$(LIBAGS_AUDIO_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/libags-gui-html/$(LIBAGS_GUI_API_DOC)/g' {} \;
 
 fix-online-books-html:
-	find $(top_srcdir)/html/ -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\/usr\/share\/icons\/Adwaita\/32x32\/actions/..\/images/g' {} \;
-	find $(top_srcdir)/html/ -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\/usr\/share\/icons\/Adwaita\/32x32\/apps/..\/images/g' {} \;
+	find $(top_builddir)/html/ -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\/usr\/share\/icons\/Adwaita\/32x32\/actions/..\/images/g' {} \;
+	find $(top_builddir)/html/ -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\/usr\/share\/icons\/Adwaita\/32x32\/apps/..\/images/g' {} \;
 
 fix-online-html:
-	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-html/\.\.\/libags/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gtk3/https\:\/\/developer\.gnome\.org\/gtk3\/stable/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gtk3/https\:\/\/developer\.gnome\.org\/gtk3\/stable/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-html/\.\.\/libags/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-audio-html/\.\.\/libags-audio/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-gui-html/\.\.\/libags-gui/g' {} \;
+	find $(top_builddir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
+	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
+	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-html/\.\.\/libags/g' {} \;
+	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
+	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gtk3/https\:\/\/developer\.gnome\.org\/gtk3\/stable/g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gtk3/https\:\/\/developer\.gnome\.org\/gtk3\/stable/g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-html/\.\.\/libags/g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-audio-html/\.\.\/libags-audio/g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-gui-html/\.\.\/libags-gui/g' {} \;
 
 install-html-mkdir-links:
 	echo "creating upstream API reference manual directory [$(AGS_WITH_UPSTREAM_GTK_DOC)]"
 if AGS_WITH_UPSTREAM_GTK_DOC
 if ENABLE_GTK_DOC
-	mkdir -p $(DESTDIR)/$(LIBAGS_API_DIR)
-	mkdir -p $(DESTDIR)/$(LIBAGS_AUDIO_API_DIR)
-	mkdir -p $(DESTDIR)/$(LIBAGS_GUI_API_DIR)
-	mkdir -p $(DESTDIR)/$(LIBGSEQUENCER_API_DIR)
+	mkdir -p $(DESTDIR)$(LIBAGS_API_DIR)
+	mkdir -p $(DESTDIR)$(LIBAGS_AUDIO_API_DIR)
+	mkdir -p $(DESTDIR)$(LIBAGS_GUI_API_DIR)
+	mkdir -p $(DESTDIR)$(LIBGSEQUENCER_API_DIR)
 endif
 endif
 
 install-html-mkdir:
 if AGS_WITH_SINGLE_DOCDIR
-	mkdir -p $(DESTDIR)/$(docdir)/images
-	mkdir -p $(DESTDIR)/$(docdir)/images/adwaita
-	mkdir -p $(DESTDIR)/$(docdir)/user-manual
-	mkdir -p $(DESTDIR)/$(docdir)/developer-manual
-	mkdir -p $(DESTDIR)/$(docdir)/osc-manual
+	mkdir -p $(DESTDIR)$(docdir)/images
+	mkdir -p $(DESTDIR)$(docdir)/images/adwaita
+	mkdir -p $(DESTDIR)$(docdir)/user-manual
+	mkdir -p $(DESTDIR)$(docdir)/developer-manual
+	mkdir -p $(DESTDIR)$(docdir)/osc-manual
 else
-	mkdir -p $(DESTDIR)/$(docdir)/images
-	mkdir -p $(DESTDIR)/$(docdir)/images/adwaita
-	mkdir -p $(DESTDIR)/$(docdir)/html
-	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images
-	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html
-	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server
+	mkdir -p $(DESTDIR)$(docdir)/images
+	mkdir -p $(DESTDIR)$(docdir)/images/adwaita
+	mkdir -p $(DESTDIR)$(docdir)/html
+	mkdir -p $(DESTDIR)$(datadir)/doc/libags-audio-doc/images
+	mkdir -p $(DESTDIR)$(datadir)/doc/libags-audio-doc/html
+	mkdir -p $(DESTDIR)$(datadir)/doc/libags-audio-doc/osc-server
 if ENABLE_GTK_DOC
-	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
+	mkdir -p $(DESTDIR)$(datadir)/gtk-doc/html
 endif
 endif
 if AGS_WITH_UPSTREAM_GTK_DOC
 else
 if ENABLE_GTK_DOC
-	mkdir -p $(DESTDIR)/$(LIBAGS_API_DIR)
-	mkdir -p $(DESTDIR)/$(LIBAGS_AUDIO_API_DIR)
-	mkdir -p $(DESTDIR)/$(LIBAGS_GUI_API_DIR)
-	mkdir -p $(DESTDIR)/$(LIBGSEQUENCER_API_DIR)
+	mkdir -p $(DESTDIR)$(LIBAGS_API_DIR)
+	mkdir -p $(DESTDIR)$(LIBAGS_AUDIO_API_DIR)
+	mkdir -p $(DESTDIR)$(LIBAGS_GUI_API_DIR)
+	mkdir -p $(DESTDIR)$(LIBGSEQUENCER_API_DIR)
 endif
 endif
 
@@ -3012,112 +3014,112 @@ if AGS_WITH_SINGLE_DOCDIR
 else
 if AGS_WITH_UPSTREAM_GTK_DOC
 if ENABLE_GTK_DOC
-	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
-	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
-	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
+	ln -s ../../doc/libags-doc/api $(DESTDIR)$(datadir)/gtk-doc/html/libags
+	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)$(datadir)/gtk-doc/html/libags_audio
+	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)$(datadir)/gtk-doc/html/libags_gui
+	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)$(datadir)/gtk-doc/html/libgsequencer
 endif
 endif
 endif
 
 install-html: install-html-mkdir install-html-links
 if AGS_WITH_SINGLE_DOCDIR
-	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
-	install -c -p -m 644 $(userdocadwaitaimages) $(DESTDIR)/$(docdir)/images/adwaita/
-	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(docdir)/images/
-	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/user-manual/
-	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(docdir)/developer-manual/
-	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)/$(docdir)/osc-manual/
-	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(docdir)/developer-manual/
-	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(docdir)/user-manual/
-	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(docdir)/osc-manual/
+	install -c -p -m 644 $(userdocimages) $(DESTDIR)$(docdir)/images/
+	install -c -p -m 644 $(userdocadwaitaimages) $(DESTDIR)$(docdir)/images/adwaita/
+	install -c -p -m 644 $(devdocimages) $(DESTDIR)$(docdir)/images/
+	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)$(docdir)/user-manual/
+	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)$(docdir)/developer-manual/
+	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)$(docdir)/osc-manual/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)$(docdir)/developer-manual/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)$(docdir)/user-manual/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)$(docdir)/osc-manual/
 else
-	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
-	install -c -p -m 644 $(userdocadwaitaimages) $(DESTDIR)/$(docdir)/images/adwaita/
-	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
-	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/html/
-	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
-	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server/
-	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(docdir)/html/
-	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
-	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server/
+	install -c -p -m 644 $(userdocimages) $(DESTDIR)$(docdir)/images/
+	install -c -p -m 644 $(userdocadwaitaimages) $(DESTDIR)$(docdir)/images/adwaita/
+	install -c -p -m 644 $(devdocimages) $(DESTDIR)$(datadir)/doc/libags-audio-doc/images/
+	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)$(docdir)/html/
+	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)$(datadir)/doc/libags-audio-doc/html/
+	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)$(datadir)/doc/libags-audio-doc/osc-server/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)$(docdir)/html/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)$(datadir)/doc/libags-audio-doc/html/
+	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)$(datadir)/doc/libags-audio-doc/osc-server/
 endif
 if ENABLE_GTK_DOC
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/libags-html/* $(DESTDIR)/$(LIBAGS_API_DIR)
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/libags-audio-html/* $(DESTDIR)/$(LIBAGS_AUDIO_API_DIR)
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/libags-gui-html/* $(DESTDIR)/$(LIBAGS_GUI_API_DIR)
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html/* $(DESTDIR)/$(LIBGSEQUENCER_API_DIR)
+	install -c -p -m 644 $(top_builddir)/docs/reference/libags/libags-html/* $(DESTDIR)$(LIBAGS_API_DIR)
+	install -c -p -m 644 $(top_builddir)/docs/reference/libags-audio/libags-audio-html/* $(DESTDIR)$(LIBAGS_AUDIO_API_DIR)
+	install -c -p -m 644 $(top_builddir)/docs/reference/libags-gui/libags-gui-html/* $(DESTDIR)$(LIBAGS_GUI_API_DIR)
+	install -c -p -m 644 $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html/* $(DESTDIR)$(LIBGSEQUENCER_API_DIR)
 endif
 
 install-pdf-mkdir:
 if AGS_WITH_SINGLE_DOCDIR
-	mkdir -p $(DESTDIR)/$(docdir)/pdf
+	mkdir -p $(DESTDIR)$(docdir)/pdf
 else
-	mkdir -p $(DESTDIR)/$(docdir)/pdf
-	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/pdf
+	mkdir -p $(DESTDIR)$(docdir)/pdf
+	mkdir -p $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf
 endif
 
 install-pdf: install-pdf-mkdir
 if AGS_WITH_SINGLE_DOCDIR
-	install -c -p -m 644 $(top_builddir)/pdf/user-manual.pdf $(DESTDIR)/$(docdir)/pdf/
-	install -c -p -m 644 $(top_builddir)/pdf/developer-manual.pdf $(DESTDIR)/$(docdir)/pdf/
-	install -c -p -m 644 $(top_builddir)/pdf/osc-manual.pdf $(DESTDIR)/$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/user-manual.pdf $(DESTDIR)$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/developer-manual.pdf $(DESTDIR)$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/osc-manual.pdf $(DESTDIR)$(docdir)/pdf/
 else
-	install -c -p -m 644 $(top_builddir)/pdf/user-manual.pdf $(DESTDIR)/$(docdir)/pdf/
-	install -c -p -m 644 $(top_builddir)/pdf/developer-manual.pdf $(DESTDIR)/$(datadir)/doc/libags-audio-doc/pdf/
-	install -c -p -m 644 $(top_builddir)/pdf/osc-manual.pdf $(DESTDIR)/$(datadir)/doc/libags-audio-doc/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/user-manual.pdf $(DESTDIR)$(docdir)/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/developer-manual.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
+	install -c -p -m 644 $(top_builddir)/pdf/osc-manual.pdf $(DESTDIR)$(datadir)/doc/libags-audio-doc/pdf/
 endif
 
 uninstall-hook:
-	rm -rf $(DESTDIR)/$(includedir)/ags/ags_api_config.h
-	rm -rf $(DESTDIR)/$(datadir)/gsequencer
-	rm -rf $(DESTDIR)/$(docdir)
-	rm -rf $(DESTDIR)/$(datadir)/xml/gsequencer
+	rm -rf $(DESTDIR)$(includedir)/ags/ags_api_config.h
+	rm -rf $(DESTDIR)$(datadir)/gsequencer
+	rm -rf $(DESTDIR)$(docdir)
+	rm -rf $(DESTDIR)$(datadir)/xml/gsequencer
 if AGS_WITH_SINGLE_DOCDIR
 else
-	rm -rf $(DESTDIR)/$(datadir)/doc/libags-doc
-	rm -rf $(DESTDIR)/$(datadir)/doc/libags-audio-doc
-	rm -rf $(DESTDIR)/$(datadir)/doc/libags-gui-doc
-	rm -rf $(DESTDIR)/$(datadir)/doc/libgsequencer-doc
-	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
-	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
-	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
+	rm -rf $(DESTDIR)$(datadir)/doc/libags-doc
+	rm -rf $(DESTDIR)$(datadir)/doc/libags-audio-doc
+	rm -rf $(DESTDIR)$(datadir)/doc/libags-gui-doc
+	rm -rf $(DESTDIR)$(datadir)/doc/libgsequencer-doc
+	rm -rf $(DESTDIR)$(datadir)/gtk-doc/html/libags
+	rm -rf $(DESTDIR)$(datadir)/gtk-doc/html/libags_audio
+	rm -rf $(DESTDIR)$(datadir)/gtk-doc/html/libags_gui
+	rm -rf $(DESTDIR)$(datadir)/gtk-doc/html/libgsequencer
 endif
-	rm -f $(DESTDIR)/$(datadir)/icons/hicolor/32x32/apps/gsequencer.png
-	rm -f $(DESTDIR)/$(datadir)/icons/hicolor/48x48/apps/gsequencer.png
-	rm -f $(DESTDIR)/$(datadir)/icons/hicolor/64x64/apps/gsequencer.png
-	rm -f $(DESTDIR)/$(datadir)/icons/hicolor/128x128/apps/gsequencer.png
-	rm -f $(DESTDIR)/$(datadir)/mime/packages/gsequencer.xml
-	rm -f $(DESTDIR)/$(datadir)/metainfo/org.nongnu.gsequencer.gsequencer.appdata.xml
-	rm -f $(DESTDIR)/$(pkgconfigdir)/libags.pc
-	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_audio.pc
-	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_gui.pc
-	rm -f $(DESTDIR)/$(pkgconfigdir)/libgsequencer.pc
+	rm -f $(DESTDIR)$(datadir)/icons/hicolor/32x32/apps/gsequencer.png
+	rm -f $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps/gsequencer.png
+	rm -f $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps/gsequencer.png
+	rm -f $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps/gsequencer.png
+	rm -f $(DESTDIR)$(datadir)/mime/packages/gsequencer.xml
+	rm -f $(DESTDIR)$(datadir)/metainfo/org.nongnu.gsequencer.gsequencer.appdata.xml
+	rm -f $(DESTDIR)$(pkgconfigdir)/libags.pc
+	rm -f $(DESTDIR)$(pkgconfigdir)/libags_audio.pc
+	rm -f $(DESTDIR)$(pkgconfigdir)/libags_gui.pc
+	rm -f $(DESTDIR)$(pkgconfigdir)/libgsequencer.pc
 
 clean-local:
-	rm -rf $(top_srcdir)/docs/reference/libags/xml
-	rm -rf $(top_srcdir)/docs/reference/libags/libags-html
-	rm -rf $(top_srcdir)/docs/reference/libags/tmpl
-	rm -rf $(top_srcdir)/docs/reference/libags-audio/xml
-	rm -rf $(top_srcdir)/docs/reference/libags-audio/libags-audio-html
-	rm -rf $(top_srcdir)/docs/reference/libags-audio/tmpl
-	rm -rf $(top_srcdir)/docs/reference/libags-gui/xml
-	rm -rf $(top_srcdir)/docs/reference/libags-gui/libags-gui-html
-	rm -rf $(top_srcdir)/docs/reference/libags-gui/tmpl
-	rm -rf $(top_srcdir)/docs/reference/libgsequencer/xml
-	rm -rf $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html
-	rm -rf $(top_srcdir)/docs/reference/libgsequencer/tmpl
-	rm -rf $(top_builddir)/html
-	rm -rf $(top_builddir)/pdf
-	rm -rf $(top_builddir)/xml
-	rm -rf $(top_builddir)/sphinx
-	rm -f $(top_builddir)/docs/reference/libags/Makefile
-	rm -f $(top_builddir)/docs/reference/libags-audio/Makefile
-	rm -f $(top_builddir)/docs/reference/libags-gui/Makefile
-	rm -f $(top_builddir)/docs/reference/libgsequencer/Makefile
-	rm -f $(top_builddir)/unit-system-tests.mk
-	rm -f $(top_builddir)/functional-system-tests.mk
+	rm -rf docs/reference/libags/xml
+	rm -rf docs/reference/libags/libags-html
+	rm -rf docs/reference/libags/tmpl
+	rm -rf docs/reference/libags-audio/xml
+	rm -rf docs/reference/libags-audio/libags-audio-html
+	rm -rf docs/reference/libags-audio/tmpl
+	rm -rf docs/reference/libags-gui/xml
+	rm -rf docs/reference/libags-gui/libags-gui-html
+	rm -rf docs/reference/libags-gui/tmpl
+	rm -rf docs/reference/libgsequencer/xml
+	rm -rf docs/reference/libgsequencer/libgsequencer-html
+	rm -rf docs/reference/libgsequencer/tmpl
+	rm -rf html
+	rm -rf pdf
+	rm -rf xml
+	rm -rf sphinx
+	rm -f docs/reference/libags/Makefile
+	rm -f docs/reference/libags-audio/Makefile
+	rm -f docs/reference/libags-gui/Makefile
+	rm -f docs/reference/libgsequencer/Makefile
+	rm -f unit-system-tests.mk
+	rm -f functional-system-tests.mk
 	rm -f docs/reference/libags-audio/libags_audio-decl-list.txt
 	rm -f docs/reference/libags-audio/libags_audio-decl.txt
 	rm -f docs/reference/libags-audio/libags_audio-undeclared.txt
