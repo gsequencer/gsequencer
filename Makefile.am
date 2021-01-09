@@ -1,4 +1,4 @@
-#Copyright (C) 2005-2020 Joel Kraehemann
+#Copyright (C) 2005-2021 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -128,6 +128,7 @@ EXTRA_DIST = config.rpath \
 	pot_exclude.txt \
 	m4/Makefile.am \
 	m4/Makefile.in \
+	po/POTFILES.in \
 	po/POTFILES.in.in \
 	po/gsequencer.pot-header \
 	ags/i18n.h \
@@ -231,7 +232,6 @@ CLEANFILES = \
 	libags_server.sym \
 	libags_audio.sym \
 	libags_gui.sym \
-	po/POTFILES.in \
 	ags/object/ags_marshallers.list \
 	ags/widget/ags_widget_marshallers.list \
 	docs/listings/add_pattern.c \
@@ -3219,20 +3219,7 @@ check-gettext:
 	"'checking whether to use NLS... yes'!" ; exit 1 ; fi
 
 update-po: check-gettext
-	@find $(srcdir)/ags/{util,lib,object,thread,file,server,plugin,audio,widget,X}/ -name "*.c" -print | grep -vZf $(srcdir)/pot_exclude.txt | sort > $(srcdir)/po/POTFILES.in.2 ; \
-	if diff $(srcdir)/po/POTFILES.in $(srcdir)/po/POTFILES.in.2 >/dev/null 2>&1 ; then \
-		rm -f $(srcdir)/po/POTFILES.in.2 ; \
-	else \
-		rm $(srcdir)/po/POTFILES.in ; \
-		touch $(srcdir)/po/POTFILES.in ; \
-		rm $(srcdir)/po/POTFILES.in.in ; \
-		touch $(srcdir)/po/POTFILES.in.in ; \
-		cat $(srcdir)/license-notice-gnu-gpl-3-0+-sym.txt >> $(srcdir)/po/POTFILES.in.in ; \
-		echo -e -n "\n" >> $(srcdir)/po/POTFILES.in.in ; \
-		cat $(srcdir)/po/POTFILES.in.2 >> $(srcdir)/po/POTFILES.in.in ; \
-		mv $(srcdir)/po/POTFILES.in.2 $(srcdir)/po/POTFILES.in ; \
-	fi
-	cd po && $(MAKE) $(AM_MAKEFLAGS) update-po
+	cd po && $(MAKE) $(AM_MAKEFLAGS) POTFILES gsequencer.pot update-po
 
 update-gmo: check-gettext
 	cd po && $(MAKE) $(AM_MAKEFLAGS) update-gmo
