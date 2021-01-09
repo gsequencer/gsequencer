@@ -238,6 +238,7 @@ CLEANFILES = \
 	libags_server.sym \
 	libags_audio.sym \
 	libags_gui.sym \
+	changelog.gz \
 	po/POTFILES.in \
 	ags/object/ags_marshallers.list \
 	ags/widget/ags_widget_marshallers.list \
@@ -3080,6 +3081,9 @@ clean-local:
 	rm -rf $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html
 	rm -rf $(top_builddir)/docs/reference/libgsequencer/tmpl
 	rm -rf $(top_builddir)/html
+	rm -rf $(top_builddir)/docs/usersBook/xml
+	rm -rf $(top_builddir)/docs/developersBook/xml
+	rm -rf $(top_builddir)/docs/oscBook/xml
 	rm -rf $(top_builddir)/pdf
 	rm -rf $(top_builddir)/xml
 	rm -rf $(top_builddir)/sphinx

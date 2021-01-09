@@ -56,7 +56,9 @@ rm -f docs/listings/start_thread.c
 rm -f docs/listings/thread_application_context.c
 rm -f docs/listings/thread_obj_mutex.c
 
+rm -rf docs/usersBook/xml/
 rm -rf docs/developersBook/xml/
+rm -rf docs/oscBook/xml/
 
 rm -f docs/reference/libags-audio/libags_audio-sections.txt
 rm -f docs/reference/libags-audio/libags_audio.interfaces
