@@ -46,11 +46,29 @@ else
     builddir="$( pwd )"
 fi
 
+prefix_set=0
+datadir_set=0
+
 while [[ "$#" -gt 0 ]]; do
     case $1 in
-        --prefix) prefix="$2"; shift ;;
-        --datadir) datadir="$2"; shift ;;
-        *) echo "Unknown parameter passed: $1"; exit 1 ;;
+        --prefix)
+	    prefix="$2"
+	    prefix_set=1
+	    shift
+
+	    if [ "${datadir_set}" -eq 0 ]
+	    then
+		datadir="${prefix}/share"
+	    fi
+	    ;;
+        --datadir)
+	    datadir="$2"
+	    datadir_set=1
+	    shift
+	    ;;
+        *)
+	    echo "Unknown parameter passed: $1"
+	    ;;
     esac
     shift
 done
@@ -84,7 +102,7 @@ tail -n +19 $srcdir/ags/widget/ags_widget_marshallers.list.in > ags/widget/ags_w
 echo "generating po/POTFILES.in"
 
 mkdir -p po
-tail -n +19 $srcdir/po/POTFILES.in.in > po/POTFILES.in
+tail -n +19 $srcdir/po/POTFILES.in.in > $srcdir/po/POTFILES.in
 
 # copy documentation
 echo "generating resources for API Reference Manual"
@@ -146,9 +164,9 @@ tail -n +10 $srcdir/docs/listings/thread_obj_mutex.c.in > docs/listings/thread_o
 echo "create html directories"
 
 mkdir -p html/
-mkdir -p html/developer-docs
-mkdir -p html/user-docs
-mkdir -p html/osc-docs
+mkdir -p html/user-manual/
+mkdir -p html/developer-manual/
+mkdir -p html/osc-manual/
 
 echo "create pdf directories"
 
@@ -213,13 +231,9 @@ echo "<!ENTITY package_buildddir \"${builddir}\">" >> docs/oscBook/xml/agsdocent
 # CSS file
 echo "copy docs/custom.css"
 
-mkdir -p html/usersBook/
-mkdir -p html/developersBook/
-mkdir -p html/oscBook/
-
-cp $srcdir/docs/custom.css html/developersBook/
-cp $srcdir/docs/custom.css html/usersBook/
-cp $srcdir/docs/custom.css html/oscBook/
+cp $srcdir/docs/custom.css html/user-manual/
+cp $srcdir/docs/custom.css html/developer-manual/
+cp $srcdir/docs/custom.css html/osc-manual/
 
 if [ $(readlink -f ${builddir}) != "${srcdir}" ]
 then
@@ -239,3 +253,5 @@ then
 
     cp $srcdir/docs/reference/libgsequencer/libgsequencer.xml docs/reference/libgsequencer/
 fi
+
+exit 0

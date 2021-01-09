@@ -207,7 +207,14 @@ EXTRA_DIST += \
 	ags/test/file/meson.build \
 	po/meson.build \
 	ags/meson.build \
-	listing_script.py \
+	bootstrap.sh \
+	bootstrap-freebsd.sh \
+	clean-files.sh \
+	fix-html.sh \
+	fix-html-freebsd.sh \
+	fix-online-html.sh \
+	fix-online-html-freebsd.sh \
+	meson-html.sh \
 	meson.build \
 	meson_options.txt
 

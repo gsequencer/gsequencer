@@ -70,3 +70,5 @@ rm -f docs/reference/libags/libags.types
 rm -f docs/reference/libgsequencer/libgsequencer-sections.txt
 rm -f docs/reference/libgsequencer/libgsequencer.interfaces
 rm -f docs/reference/libgsequencer/libgsequencer.types
+
+exit 0

@@ -22,11 +22,11 @@ AM_GNU_GETTEXT_VERSION([0.19.8])
 # options
 AC_ARG_VAR(HTMLHELP_XSL, path to Docbook XML htmlhelp XSL file)
 
-AC_ARG_VAR(GOBJECT_API_DOC, escaped path for use with sed to GObject API Reference Manual)
-AC_ARG_VAR(GTK_API_DOC, escaped path for use with sed to Gtk-3 API Reference Manual)
-AC_ARG_VAR(LIBAGS_API_DOC, escaped path for use with sed to Libags API Reference Manual)
-AC_ARG_VAR(LIBAGS_AUDIO_API_DOC, escaped path for use with sed to Libags-audio API Reference Manual)
-AC_ARG_VAR(LIBAGS_GUI_API_DOC, escaped path for use with sed to Libags-gui API Reference Manual)
+AC_ARG_VAR(GOBJECT_API_DOC, path for use with sed to GObject API Reference Manual)
+AC_ARG_VAR(GTK_API_DOC, path for use with sed to Gtk-3 API Reference Manual)
+AC_ARG_VAR(LIBAGS_API_DOC, path for use with sed to Libags API Reference Manual)
+AC_ARG_VAR(LIBAGS_AUDIO_API_DOC, path for use with sed to Libags-audio API Reference Manual)
+AC_ARG_VAR(LIBAGS_GUI_API_DOC, path for use with sed to Libags-gui API Reference Manual)
 
 AC_ARG_VAR(LIBAGS_API_DIR, install path of Libags API Reference Manual)
 AC_ARG_VAR(LIBAGS_AUDIO_API_DIR, install path of Libags-audio API Reference Manual)

@@ -31,3 +31,5 @@ $( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.htm
 $( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e "s@../libags-html@../libags@g" {} \; )
 $( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e "s@../libags-audio-html@../libags-audio@g" {} \; )
 $( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e "s@../libags-gui-html@$../libags-gui@g" {} \; )
+
+exit 0

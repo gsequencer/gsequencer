@@ -82,3 +82,5 @@ $( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.htm
 $( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i "s@../libags-html@${libags_api_doc}@g" {} \; )
 $( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i "s@../libags-audio-html@${libags_audio_api_doc}@g" {} \; )
 $( find ${builddir}/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i "s@../libags-gui-html@${libags_gui_api_doc}@g" {} \; )
+
+exit 0
