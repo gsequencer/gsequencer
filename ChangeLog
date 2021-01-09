@@ -1,3 +1,8 @@
+ags (3.7.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added bootstrap*.sh, you should invoke it before any build commands
+
 ags (3.7.22)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

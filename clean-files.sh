@@ -17,7 +17,8 @@
 # usage:           bash clean.sh
 # ==============================================================================
 
-rm -f gsequencer.desktop
+# rm -f gsequencer.desktop
+
 rm -f libags.sym
 rm -f libags_audio.sym
 rm -f libags_gui.sym
@@ -60,15 +61,22 @@ rm -rf docs/usersBook/xml/
 rm -rf docs/developersBook/xml/
 rm -rf docs/oscBook/xml/
 
-rm -f docs/reference/libags-audio/libags_audio-sections.txt
-rm -f docs/reference/libags-audio/libags_audio.interfaces
-rm -f docs/reference/libags-audio/libags_audio.types
-rm -f docs/reference/libags-gui/libags_gui-sections.txt
-rm -f docs/reference/libags-gui/libags_gui.interfaces
-rm -f docs/reference/libags-gui/libags_gui.types
+rm -rf html
+rm -rf pdf
+
+rm -rf docs/reference/libags/xml
 rm -f docs/reference/libags/libags-sections.txt
 rm -f docs/reference/libags/libags.interfaces
 rm -f docs/reference/libags/libags.types
+rm -rf docs/reference/libags-audio/xml
+rm -f docs/reference/libags-audio/libags_audio-sections.txt
+rm -f docs/reference/libags-audio/libags_audio.interfaces
+rm -f docs/reference/libags-audio/libags_audio.types
+rm -rf docs/reference/libags-gui/xml
+rm -f docs/reference/libags-gui/libags_gui-sections.txt
+rm -f docs/reference/libags-gui/libags_gui.interfaces
+rm -f docs/reference/libags-gui/libags_gui.types
+rm -rf docs/reference/libgsequencer/xml
 rm -f docs/reference/libgsequencer/libgsequencer-sections.txt
 rm -f docs/reference/libgsequencer/libgsequencer.interfaces
 rm -f docs/reference/libgsequencer/libgsequencer.types

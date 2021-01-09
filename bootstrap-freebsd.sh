@@ -19,7 +19,7 @@
 # ==============================================================================
 
 PACKAGE="gsequencer"
-PACKAGE_VERSION="3.7.22"
+PACKAGE_VERSION="3.7.23"
 PACKAGE_BUGREPORT="jkraehemann@gmail.com"
 PACKAGE_NAME="Advanced Gtk+ Sequencer"
 PACKAGE_STRING="${PACKAGE_NAME} version ${PACKAGE_VERSION}"

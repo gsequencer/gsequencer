@@ -100,6 +100,8 @@ LIBGSEQUENCER_API_DIR = @LIBGSEQUENCER_API_DIR@
 
 libgsequencer_LTLIBRARIES = libgsequencer.la
 
+dist_noinst_SCRIPTS = bootstrap.sh
+
 EXTRA_DIST = config.rpath \
 	COPYING.server \
 	COPYING.docs \
@@ -3068,31 +3070,32 @@ endif
 	rm -f $(DESTDIR)$(pkgconfigdir)/libgsequencer.pc
 
 clean-local:
-	rm -rf $(top_builddir)/docs/reference/libags/xml
-	rm -rf $(top_builddir)/docs/reference/libags/libags-html
-	rm -rf $(top_builddir)/docs/reference/libags/tmpl
-	rm -rf $(top_builddir)/docs/reference/libags-audio/xml
-	rm -rf $(top_builddir)/docs/reference/libags-audio/libags-audio-html
-	rm -rf $(top_builddir)/docs/reference/libags-audio/tmpl
-	rm -rf $(top_builddir)/docs/reference/libags-gui/xml
-	rm -rf $(top_builddir)/docs/reference/libags-gui/libags-gui-html
-	rm -rf $(top_builddir)/docs/reference/libags-gui/tmpl
-	rm -rf $(top_builddir)/docs/reference/libgsequencer/xml
-	rm -rf $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html
-	rm -rf $(top_builddir)/docs/reference/libgsequencer/tmpl
-	rm -rf $(top_builddir)/html
-	rm -rf $(top_builddir)/docs/usersBook/xml
-	rm -rf $(top_builddir)/docs/developersBook/xml
-	rm -rf $(top_builddir)/docs/oscBook/xml
-	rm -rf $(top_builddir)/pdf
-	rm -rf $(top_builddir)/xml
-	rm -rf $(top_builddir)/sphinx
-	rm -f $(top_builddir)/docs/reference/libags/Makefile
-	rm -f $(top_builddir)/docs/reference/libags-audio/Makefile
-	rm -f $(top_builddir)/docs/reference/libags-gui/Makefile
-	rm -f $(top_builddir)/docs/reference/libgsequencer/Makefile
-	rm -f $(top_builddir)/unit-system-tests.mk
-	rm -f $(top_builddir)/functional-system-tests.mk
+	$(SHELL) clean-files.sh
+	rm -rf docs/reference/libags/xml
+	rm -rf docs/reference/libags/libags-html
+	rm -rf docs/reference/libags/tmpl
+	rm -rf docs/reference/libags-audio/xml
+	rm -rf docs/reference/libags-audio/libags-audio-html
+	rm -rf docs/reference/libags-audio/tmpl
+	rm -rf docs/reference/libags-gui/xml
+	rm -rf docs/reference/libags-gui/libags-gui-html
+	rm -rf docs/reference/libags-gui/tmpl
+	rm -rf docs/reference/libgsequencer/xml
+	rm -rf docs/reference/libgsequencer/libgsequencer-html
+	rm -rf docs/reference/libgsequencer/tmpl
+	rm -rf html
+	rm -rf docs/usersBook/xml
+	rm -rf docs/developersBook/xml
+	rm -rf docs/oscBook/xml
+	rm -rf pdf
+	rm -rf xml
+	rm -rf sphinx
+	rm -f docs/reference/libags/Makefile
+	rm -f docs/reference/libags-audio/Makefile
+	rm -f docs/reference/libags-gui/Makefile
+	rm -f docs/reference/libgsequencer/Makefile
+	rm -f unit-system-tests.mk
+	rm -f functional-system-tests.mk
 	rm -f docs/reference/libags-audio/libags_audio-decl-list.txt
 	rm -f docs/reference/libags-audio/libags_audio-decl.txt
 	rm -f docs/reference/libags-audio/libags_audio-undeclared.txt

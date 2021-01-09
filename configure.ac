@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.7.22],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.7.23],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -190,6 +190,47 @@ AC_SUBST([MIDI2XML_LDFLAGS])
 AC_SUBST([LIBGSEQUENCER_TEST_LIBADD])
 
 AC_SUBST([GSEQUENCER_FUNCTIONAL_TEST_LDADD])
+
+AC_CANONICAL_HOST
+
+build_gnu=no
+build_linux=no
+build_windows=no
+build_mac=no
+build_freebsd=no
+
+# Detect the target system
+case "${host_os}" in
+    gnu*)
+        build_gnu=yes
+        ;;
+    linux*)
+        build_linux=yes
+        ;;
+    freebsd*)
+        build_freebsd=yes
+        ;;
+    cygwin*|mingw*)
+        build_windows=yes
+        ;;
+    darwin*)
+        build_mac=yes
+        ;;
+    *)
+        AC_MSG_NOTICE(["OS $host_os is not supported"])
+        ;;
+esac
+
+# Pass the conditionals to automake
+AM_CONDITIONAL([GNU], [test "$build_gnu" = "yes"])
+AM_CONDITIONAL([LINUX], [test "$build_linux" = "yes"])
+AM_CONDITIONAL([FREEBSD], [test "$build_freebsd" = "yes"])
+AM_CONDITIONAL([WINDOWS], [test "$build_windows" = "yes"])
+AM_CONDITIONAL([OSX], [test "$build_mac" = "yes"])
+
+AS_IF([test "x$build_freebsd" != xno],
+      [AGS_BOOTSTRAP_FREEBSD([])],
+      [AGS_BOOTSTRAP([])])
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lX11':
@@ -472,44 +513,6 @@ AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify atexit clock_gettime floor memmove memset pow putenv realpath regcomp setlocale sqrt strchr strdup strerror strrchr strstr strtoul])
 
-AC_CANONICAL_HOST
-
-build_gnu=no
-build_linux=no
-build_windows=no
-build_mac=no
-build_freebsd=no
-
-# Detect the target system
-case "${host_os}" in
-    gnu*)
-        build_gnu=yes
-        ;;
-    linux*)
-        build_linux=yes
-        ;;
-    freebsd*)
-        build_freebsd=yes
-        ;;
-    cygwin*|mingw*)
-        build_windows=yes
-        ;;
-    darwin*)
-        build_mac=yes
-        ;;
-    *)
-        AC_MSG_NOTICE(["OS $host_os is not supported"])
-        ;;
-esac
-
-# Pass the conditionals to automake
-AM_CONDITIONAL([GNU], [test "$build_gnu" = "yes"])
-AM_CONDITIONAL([LINUX], [test "$build_linux" = "yes"])
-AM_CONDITIONAL([FREEBSD], [test "$build_freebsd" = "yes"])
-AM_CONDITIONAL([WINDOWS], [test "$build_windows" = "yes"])
-AM_CONDITIONAL([OSX], [test "$build_mac" = "yes"])
-
-
 # check for gtk-doc
 m4_ifdef([GTK_DOC_CHECK], [
 GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
@@ -520,21 +523,6 @@ AM_CONDITIONAL([ENABLE_GTK_DOC], false)
 AM_CONDITIONAL([WITH_SYSTEM_TESTS], [test "x$enable_run_system_tests" == xyes])
 AM_CONDITIONAL([WITH_VST3], [test "x$enable_vst3" == xyes])
 AM_CONDITIONAL([WITH_EXPERIMENTAL], [test "x$enable_experimental" == xyes])
-
-AGS_POTFILES([])
-
-LIBAGS_SYMBOLS([])
-LIBAGS_THREAD_SYMBOLS([])
-LIBAGS_SERVER_SYMBOLS([])
-LIBAGS_AUDIO_SYMBOLS([])
-LIBAGS_GUI_SYMBOLS([])
-
-LIBAGS_MARSHALLERS([])
-LIBAGS_GUI_MARSHALLERS([])
-
-AGS_DEVELOPER_BOOK_LISTINGS([])
-
-AGS_DOCS_API([])
 
 AS_IF([test "x$HTMLHELP_XSL" != x],
       [AC_SUBST(HTMLHELP_XSL, $HTMLHELP_XSL)
