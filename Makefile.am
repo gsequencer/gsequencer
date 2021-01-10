@@ -2845,11 +2845,7 @@ midi2xml.1: midi2xml.1.xml
 	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_builddir)/ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $(top_srcdir)/midi2xml.1.xml
 
 gsequencer.desktop: gsequencer.desktop.in
-if FREEBSD
-	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < $(top_srcdir)/gsequencer.desktop.in > $(top_builddir)/gsequencer.desktop
-else
-	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
-endif
+	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' $(top_srcdir)/gsequencer.desktop.in > $(top_builddir)/gsequencer.desktop
 
 html:
 	mkdir -p $(top_builddir)/html/
@@ -2930,44 +2926,44 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/org.nongnu.gsequencer.gsequencer.appdata.xml $(DESTDIR)$(datadir)/metainfo/
 
 fix-local-html:
-	find $(top_builddir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-audio-html/$(LIBAGS_AUDIO_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-gui-html/$(LIBAGS_GUI_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-html@$(LIBAGS_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gtk3@$(GTK_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gtk3@$(GTK_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-html@$(LIBAGS_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-audio-html@$(LIBAGS_AUDIO_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-gui-html@$(LIBAGS_GUI_API_DOC)@g' {} \;
 
 fix-local-html-bsd:
-	find $(top_builddir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/libags-audio-html/$(LIBAGS_AUDIO_API_DOC)/g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/libags-gui-html/$(LIBAGS_GUI_API_DOC)/g' {} \;
+	find $(top_builddir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../libags-html@$(LIBAGS_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../gtk3@$(GTK_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../gobject@$(GOBJECT_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../gtk3@$(GTK_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../libags-html@$(LIBAGS_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../libags-audio-html@$(LIBAGS_AUDIO_API_DOC)@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's@../libags-gui-html@$(LIBAGS_GUI_API_DOC)@g' {} \;
 
 fix-online-books-html:
 	find $(top_builddir)/html/ -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\/usr\/share\/icons\/Adwaita\/32x32\/actions/..\/images/g' {} \;
 	find $(top_builddir)/html/ -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\/usr\/share\/icons\/Adwaita\/32x32\/apps/..\/images/g' {} \;
 
 fix-online-html:
-	find $(top_builddir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
-	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
-	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-html/\.\.\/libags/g' {} \;
-	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
-	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gtk3/https\:\/\/developer\.gnome\.org\/gtk3\/stable/g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gtk3/https\:\/\/developer\.gnome\.org\/gtk3\/stable/g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-html/\.\.\/libags/g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-audio-html/\.\.\/libags-audio/g' {} \;
-	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-gui-html/\.\.\/libags-gui/g' {} \;
+	find $(top_builddir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@https://developer.gnome.org/gobject/stable@g' {} \;
+	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@https://developer.gnome.org/gobject/stable@g' {} \;
+	find $(top_builddir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-html@../libags@g' {} \;
+	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@https://developer.gnome.org/gobject/stable@g' {} \;
+	find $(top_builddir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gtk3@https://developer.gnome.org/gtk3/stable@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gobject@https://developer.gnome.org/gobject/stable@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../gtk3@https://developer.gnome.org/gtk3/stable@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-html@../libags@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-audio-html@../libags-audio@g' {} \;
+	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-gui-html@../libags-gui@g' {} \;
 
 install-html-mkdir-links:
 	echo "creating upstream API reference manual directory [$(AGS_WITH_UPSTREAM_GTK_DOC)]"
