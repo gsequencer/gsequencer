@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2020 Joël Krähemann
+# Copyright (C) 2005-2021 Joël Krähemann
 #
 # This file is part of GSequencer.
 #
@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-01-09 02:40+0000\n"
+"POT-Creation-Date: 2021-01-11 20:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1327,7 +1327,7 @@ msgstr "programme"
 
 #: ags/X/machine/ags_equalizer10.c:190
 msgid "28Hz"
-msgstr 28Hz""
+msgstr "28Hz"
 
 #: ags/X/machine/ags_equalizer10.c:216
 msgid "56Hz"
