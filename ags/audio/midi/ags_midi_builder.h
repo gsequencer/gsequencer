@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -318,6 +318,8 @@ void ags_midi_builder_open_filename(AgsMidiBuilder *midi_builder,
 				    gchar *filename);
 
 guchar* ags_midi_builder_get_data(AgsMidiBuilder *midi_builder);
+guchar* ags_midi_builder_get_data_with_length(AgsMidiBuilder *midi_builder,
+					      guint *length);
 void ags_midi_builder_write(AgsMidiBuilder *midi_builder);
 
 /* instantiate */

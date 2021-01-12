@@ -180,6 +180,11 @@ void ags_osc_builder_append_value(AgsOscBuilder *osc_builder,
 void ags_osc_builder_build(AgsOscBuilder *osc_builder);
 
 /*  */
+guchar* ags_osc_builder_get_data(AgsOscBuilder *osc_builder);
+guchar* ags_osc_builder_get_data_with_length(AgsOscBuilder *osc_builder,
+					     guint *length);
+
+/*  */
 AgsOscBuilder* ags_osc_builder_new();
 
 G_END_DECLS

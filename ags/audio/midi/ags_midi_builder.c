@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -3214,7 +3214,7 @@ ags_midi_builder_open_filename(AgsMidiBuilder *midi_builder,
  * ags_midi_builder_get_data:
  * @midi_builder: the #AgsMidiBuilder
  * 
- * Get data of @midi_builder.
+ * Get SMF data of @midi_builder.
  * 
  * Returns: the SMF data
  * 
@@ -3228,6 +3228,55 @@ ags_midi_builder_get_data(AgsMidiBuilder *midi_builder)
   }
 
   return(midi_builder->data);
+}
+
+/**
+ * ags_midi_builder_get_data_with_length:
+ * @midi_builder: the #AgsMidiBuilder
+ * @length: (out): the length of data
+ *
+ * Get SMF data of @midi_builder.
+ * 
+ * Returns: (transfer full): the MIDI data as array
+ * 
+ * Since: 3.7.24
+ */
+guchar*
+ags_midi_builder_get_data_with_length(AgsMidiBuilder *midi_builder,
+				      guint *length)
+{
+  guchar *data;
+  
+  GRecMutex *midi_builder_mutex;
+  
+  if(!AGS_IS_MIDI_BUILDER(midi_builder)){
+    if(length != NULL){
+      length[0] = NULL;
+    }
+    
+    return(NULL);
+  }
+
+  /* get midi builder mutex */
+  midi_builder_mutex = AGS_MIDI_BUILDER_GET_OBJ_MUTEX(midi_builder);
+
+  g_rec_mutex_lock(midi_builder_mutex);
+
+  data = NULL;
+
+  if(midi_builder->data != NULL){
+    data = (guchar *) g_malloc(ret_length * sizeof(guchar));
+
+    memcpy(data, midi_builder->data, ret_length * sizeof(guchar));
+  }  
+
+  if(length != NULL){
+    length[0] = midi_builder->length;
+  }
+
+  g_rec_mutex_unlock(midi_builder_mutex);
+  
+  return(data);
 }
 
 /**
