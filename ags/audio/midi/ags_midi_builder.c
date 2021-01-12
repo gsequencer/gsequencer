@@ -3265,9 +3265,9 @@ ags_midi_builder_get_data_with_length(AgsMidiBuilder *midi_builder,
   data = NULL;
 
   if(midi_builder->data != NULL){
-    data = (guchar *) g_malloc(ret_length * sizeof(guchar));
+    data = (guchar *) g_malloc(midi_builder->length * sizeof(guchar));
 
-    memcpy(data, midi_builder->data, ret_length * sizeof(guchar));
+    memcpy(data, midi_builder->data, midi_builder->length * sizeof(guchar));
   }  
 
   if(length != NULL){

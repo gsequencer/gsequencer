@@ -1,3 +1,9 @@
+ags (3.7.24)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added getters of AgsMidiBuilder and AgsOscBuilder of data field
+	* added French language support in libgsequencer
+
 ags (3.7.23)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

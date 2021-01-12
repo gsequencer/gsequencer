@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Daniel Maksymow, Joël Krähemann
+# Copyright (C) 2020,2021 Daniel Maksymow, Joël Krähemann
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -8,7 +8,7 @@
 project('gsequencer', 'c',
         license: 'GPL3',
         default_options: [ 'buildtype=release', 'c_std=gnu99'],
-        version: '3.7.23')
+        version: '3.7.24')
 
 #note:jk: specify --buildtype=debug if needed
 gsequencer_debug = get_option('buildtype').contains('debug')
