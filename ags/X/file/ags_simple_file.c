@@ -3176,6 +3176,31 @@ ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node,
 }
 
 void
+ags_simple_file_read_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFMSynth *fm_synth)
+{
+  xmlChar *str;
+    
+  /* base note */
+  str = xmlGetProp(node,
+		   "base-note");
+
+  if(str != NULL){
+    gdouble base_note;
+
+    base_note = g_ascii_strtod(str,
+			       NULL);
+
+    if(base_note > AGS_FM_SYNTH_BASE_NOTE_MIN &&
+       base_note < AGS_FM_SYNTH_BASE_NOTE_MAX){
+      gtk_spin_button_set_value(fm_synth->lower,
+				(gdouble) base_note);
+    }
+      
+    xmlFree(str);
+  }
+}
+
+void
 ags_simple_file_read_fm_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFMSyncsynth *fm_syncsynth)
 {
   GList *list, *list_start;
@@ -4142,6 +4167,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_simple_file_read_synth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsSynth *) machine);
   }else if(AGS_IS_SYNCSYNTH(machine)){
     ags_simple_file_read_syncsynth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsSyncsynth *) machine);
+  }else if(AGS_IS_FM_SYNTH(machine)){
+    ags_simple_file_read_fm_synth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsFMSynth *) machine);
   }else if(AGS_IS_FM_SYNCSYNTH(machine)){
     ags_simple_file_read_fm_syncsynth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsFMSyncsynth *) machine);
   }else if(AGS_IS_PITCH_SAMPLER(machine)){
