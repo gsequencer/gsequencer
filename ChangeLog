@@ -1,7 +1,8 @@
 ags (3.7.25)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed AgsSimpleFile bank-0 and bank-1 XML attribute
+	* fixed AgsSimpleFile bank-0 and bank-1 XML attribute of AgsDrum and AgsMatrix
+	* fixed AgsSimpleFile lower XML attribute of AgsFMSynth
 
 ags (3.7.24)
 
