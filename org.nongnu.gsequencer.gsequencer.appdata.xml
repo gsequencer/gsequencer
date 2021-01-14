@@ -35,6 +35,13 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.7.25" date="2021-01-14">
+      <description>
+	<p>Fixed lower XML parsing of AgsFMSynth.</p>
+	<p>Fixed bank-0 and bank-1 XML parsing of AgsDrum and AgsMatrix.</p>
+      </description>
+    </release>
+
     <release version="3.7.24" date="2021-01-12">
       <description>
 	<p>Added French language support.</p>
