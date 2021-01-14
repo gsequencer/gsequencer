@@ -8658,7 +8658,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 				     machine->bank_0);
   
   xmlNewProp(node,
-	     (xmlChar *) "bank_0",
+	     (xmlChar *) "bank-0",
 	     str);
 
   g_free(str);
@@ -8667,7 +8667,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 				    machine->bank_1);
   
   xmlNewProp(node,
-	     (xmlChar *) "bank_1",
+	     (xmlChar *) "bank-1",
 	     str);
 
   g_free(str);

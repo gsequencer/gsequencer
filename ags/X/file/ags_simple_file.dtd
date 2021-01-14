@@ -65,8 +65,8 @@
 	  midi-device             CDATA     #IMPLIED
 	  soundcard-device        CDATA     #IMPLIED
 	  program                 CDATA     #IMPLIED
-	  bank_0                  NMTOKEN   0
-	  bank_1                  NMTOKEN   0
+	  bank-0                  NMTOKEN   0
+	  bank-1                  NMTOKEN   0
 	  loop                    CDATA     "false"
 	  length                  CDATA     #IMPLIED
 	  reverse-mapping         CDATA     "false"
