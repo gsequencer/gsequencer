@@ -32,9 +32,9 @@
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_sound_enums.h>
 
-#define AGS_TYPE_FX_FACTORY_CREATE_FLAGS       (ags_fx_factory_create_flags_get_type())
-
 G_BEGIN_DECLS
+
+#define AGS_TYPE_FX_FACTORY_CREATE_FLAGS       (ags_fx_factory_create_flags_get_type())
 
 /**
  * AgsFxFactoryCreateFlags:

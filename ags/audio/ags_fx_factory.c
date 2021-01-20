@@ -265,7 +265,9 @@ ags_fx_factory_create_flags_get_type()
 
     g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
   }
-
+  
+  return g_flags_type_id__volatile;
+}
 
 gint
 ags_fx_factory_get_output_position(AgsAudio *audio,

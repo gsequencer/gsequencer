@@ -210,6 +210,55 @@ ags_recall_get_type(void)
   return g_define_type_id__volatile;
 }
 
+GType
+ags_recall_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_RECALL_ADDED_TO_REGISTRY, "AGS_RECALL_ADDED_TO_REGISTRY", "recall-added-to-registry" },
+      { AGS_RECALL_CONNECTED, "AGS_RECALL_CONNECTED", "recall-connected" },
+      { AGS_RECALL_TEMPLATE, "AGS_RECALL_TEMPLATE", "recall-template" },
+      { AGS_RECALL_DEFAULT_TEMPLATE, "AGS_RECALL_DEFAULT_TEMPLATE", "recall-default-template" },
+      { AGS_RECALL_HAS_OUTPUT_PORT, "AGS_RECALL_HAS_OUTPUT_PORT", "recall-has-output-port" },
+      { AGS_RECALL_BYPASS, "AGS_RECALL_BYPASS", "recall-bypass" },
+      { AGS_RECALL_INITIAL_RUN, "AGS_RECALL_INITIAL_RUN", "recall-initial-run" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsRecallFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
+GType
+ags_recall_notify_dependency_mode_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_RECALL_NOTIFY_RUN, "AGS_RECALL_NOTIFY_RUN", "recall-notify-run" },
+      { AGS_RECALL_NOTIFY_AUDIO, "AGS_RECALL_NOTIFY_AUDIO", "recall-notify-audio" },
+      { AGS_RECALL_NOTIFY_AUDIO_RUN, "AGS_RECALL_NOTIFY_AUDIO_RUN", "recall-notify-audio-run" },
+      { AGS_RECALL_NOTIFY_CHANNEL, "AGS_RECALL_NOTIFY_CHANNEL", "recall-notify-channel" },
+      { AGS_RECALL_NOTIFY_CHANNEL_RUN, "AGS_RECALL_NOTIFY_CHANNEL_RUN", "recall-notify-channel-run" },
+      { AGS_RECALL_NOTIFY_RECALL, "AGS_RECALL_NOTIFY_RECALL", "recall-notify-recall" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsRecallNotifyDependencyMode"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+  
+  return g_flags_type_id__volatile;
+}
+
 void
 ags_recall_class_init(AgsRecallClass *recall)
 {
