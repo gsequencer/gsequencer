@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -242,6 +242,30 @@ GList* ags_fx_factory_create_lv2(AgsAudio *audio,
 				 guint start_pad, guint stop_pad,
 				 gint position,
 				 guint create_flags, guint recall_flags);
+
+GType
+ags_fx_factory_create_flags_get_type()
+{
+  static volatile gsize g_flags_type_id__volatile;
+
+  if(g_once_init_enter (&g_flags_type_id__volatile)){
+    static const GFlagsValue values[] = {
+      { AGS_FX_FACTORY_CREATE_OUTPUT, "AGS_FX_FACTORY_CREATE_OUTPUT", "fx-factory-create-output" },
+      { AGS_FX_FACTORY_CREATE_INPUT, "AGS_FX_FACTORY_CREATE_INPUT", "fx-factory-create-input" },
+      { AGS_FX_FACTORY_CREATE_REMAP, "AGS_FX_FACTORY_CREATE_REMAP", "fx-factory-create-remap" },
+      { AGS_FX_FACTORY_CREATE_ADD, "AGS_FX_FACTORY_CREATE_ADD", "fx-factory-create-add" },
+      { AGS_FX_FACTORY_CREATE_PLAY, "AGS_FX_FACTORY_CREATE_PLAY", "fx-factory-create-play" },
+      { AGS_FX_FACTORY_CREATE_RECALL, "AGS_FX_FACTORY_CREATE_RECALL", "fx-factory-create-recall" },
+      { AGS_FX_FACTORY_CREATE_BULK, "AGS_FX_FACTORY_CREATE_BULK", "fx-factory-create-bulk" },
+      { AGS_FX_FACTORY_CREATE_LIVE, "AGS_FX_FACTORY_CREATE_LIVE", "fx-factory-create-live" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsFxFactoryCreateFlags"), values);
+
+    g_once_init_leave (&g_flags_type_id__volatile, g_flags_type_id);
+  }
+
 
 gint
 ags_fx_factory_get_output_position(AgsAudio *audio,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,8 @@
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_sound_enums.h>
 
+#define AGS_TYPE_FX_FACTORY_CREATE_FLAGS       (ags_fx_factory_create_flags_get_type())
+
 G_BEGIN_DECLS
 
 /**
@@ -57,6 +59,8 @@ typedef enum{
   AGS_FX_FACTORY_BULK      = 1 << 6,
   AGS_FX_FACTORY_LIVE      = 1 << 7,
 }AgsFxFactoryCreateFlags;
+
+GType ags_fx_factory_create_flags_get_type();
 
 GList* ags_fx_factory_create(AgsAudio *audio,
 			     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
