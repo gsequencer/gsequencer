@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -112,8 +112,8 @@ struct _AgsApplicationContextClass
 
   void (*register_types)(AgsApplicationContext *application_context);
 
-  void (*read)(GObject *file, xmlNodePtr node, GObject **gobject);
-  xmlNodePtr (*write)(GObject *file, xmlNodePtr parent, GObject *gobject);
+  void (*read)(GObject *file, xmlNode *node, GObject **gobject);
+  xmlNode* (*write)(GObject *file, xmlNode *parent, GObject *gobject);
 
   void (*quit)(AgsApplicationContext *application_context);
 };

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -257,6 +257,9 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
 
   application_context->register_types = ags_application_context_real_register_types;
   
+  application_context->read = NULL;
+  application_context->write = NULL;
+
   application_context->quit = ags_application_context_real_quit;
 
   /* signals */

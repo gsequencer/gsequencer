@@ -25,16 +25,29 @@
   <screenshots>
     <screenshot type="default">
       <caption>GSequencer's main window</caption>
-      <image>https://directory.fsf.org/w/images/9/95/Gsequencer-main-window.png</image>
+      <image>https://directory.fsf.org/w/images/2/26/Gsequencer-piano-roll-with-drum.png</image>
     </screenshot>
     <screenshot>
-      <image>https://directory.fsf.org/w/images/7/79/Gsequencer-automation-window.png</image>
+      <caption>GSequencer's automation window</caption>
+      <image>https://directory.fsf.org/w/images/4/4f/Gsequencer-automation-mixer.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>GSequencer's wave window</caption>
+      <image>https://directory.fsf.org/w/images/3/34/Gsequencer-wave-audiorec.png</image>
     </screenshot>
   </screenshots>
 
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.7.25" date="2021-01-14">
+      <description>
+	<p>Fixed oscillator doesn't auto-update after restore from XML</p>
+	<p>Updated GSequencer screenshots in AppStream XML</p>
+	<p>minor improvements.</p>
+      </description>
+    </release>
+
     <release version="3.7.25" date="2021-01-14">
       <description>
 	<p>Fixed lower XML parsing of AgsFMSynth.</p>

@@ -97,6 +97,8 @@ ags_oscillator_class_init(AgsOscillatorClass *oscillator)
 
   ags_oscillator_parent_class = g_type_class_peek_parent(oscillator);
 
+  oscillator->control_changed = NULL;
+  
   /* signals */
   /**
    * AgsOscillator::control-change:
