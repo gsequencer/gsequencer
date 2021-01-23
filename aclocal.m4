@@ -1681,11 +1681,13 @@ AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
 m4_include([m4/ags-docs-api.m4])
+m4_include([m4/ags-docs-books.m4])
 m4_include([m4/ags-listings.m4])
 m4_include([m4/ags-marshallers.m4])
 m4_include([m4/ags-potfiles.m4])
 m4_include([m4/ags-symbols.m4])
 m4_include([m4/gettext.m4])
+m4_include([m4/host-cpu-c-abi.m4])
 m4_include([m4/iconv.m4])
 m4_include([m4/intlmacosx.m4])
 m4_include([m4/lib-ld.m4])

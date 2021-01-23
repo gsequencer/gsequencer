@@ -1,3 +1,44 @@
+ags (3.7.27)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AppStream XML
+
+ags (3.7.26)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented get_type() functions of AgsFxFactoryCreateFlags, AgsRecallFlags and AgsRecallNotifyDependencyMode
+	* fixed missing initialization of ::read() and ::write() of AgsApplicationContextClass
+	* fixed missing call to ags_connectable_connect() for AgsOscillator and AgsFMOscillator in ags_simple_file.c
+	* fixed missing connect to control-changed for AgsOscillator and AgsFMOscillator in ags_simple_file.c
+
+ags (3.7.25)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsSimpleFile bank-0 and bank-1 XML attribute of AgsDrum and AgsMatrix
+	* fixed AgsSimpleFile lower XML attribute of AgsFMSynth
+
+ags (3.7.24)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added getters of AgsMidiBuilder and AgsOscBuilder of data field
+	* added French language support in libgsequencer
+
+ags (3.7.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* m4/gettext.m4: Upgrade to gettext-0.20.1.
+	* m4/host-cpu-c-abi.m4: New file, from gettext-0.20.1.
+	* m4/iconv.m4: Upgrade to gettext-0.20.1.
+	* m4/intlmacosx.m4: Upgrade to gettext-0.20.1.
+	* m4/lib-ld.m4: Upgrade to gettext-0.20.1.
+	* m4/lib-link.m4: Upgrade to gettext-0.20.1.
+	* m4/lib-prefix.m4: Upgrade to gettext-0.20.1.
+	* m4/nls.m4: Upgrade to gettext-0.20.1.
+	* m4/po.m4: Upgrade to gettext-0.20.1.
+	* m4/progtest.m4: Upgrade to gettext-0.20.1.
+	* m4/Makefile.am (EXTRA_DIST): Add the new files.
+	* configure.ac (AM_GNU_GETTEXT_VERSION): Bump to 0.20.
+
 ags (3.7.22)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

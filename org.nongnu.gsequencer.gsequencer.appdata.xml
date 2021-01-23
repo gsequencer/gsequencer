@@ -25,16 +25,54 @@
   <screenshots>
     <screenshot type="default">
       <caption>GSequencer's main window</caption>
-      <image>https://directory.fsf.org/w/images/9/95/Gsequencer-main-window.png</image>
+      <image>https://directory.fsf.org/w/images/2/26/Gsequencer-piano-roll-with-drum.png</image>
     </screenshot>
     <screenshot>
-      <image>https://directory.fsf.org/w/images/7/79/Gsequencer-automation-window.png</image>
+      <caption>GSequencer's automation window</caption>
+      <image>https://directory.fsf.org/w/images/4/4f/Gsequencer-automation-mixer.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>GSequencer's wave window</caption>
+      <image>https://directory.fsf.org/w/images/3/34/Gsequencer-wave-audiorec.png</image>
     </screenshot>
   </screenshots>
 
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.7.27" date="2021-01-23">
+      <description>
+	<p>Fixed AppStream XML</p>
+      </description>
+    </release>
+
+    <release version="3.7.26" date="2021-01-23">
+      <description>
+	<p>Fixed oscillator doesn't auto-update after restore from XML</p>
+	<p>Updated GSequencer screenshots in AppStream XML</p>
+	<p>minor improvements.</p>
+      </description>
+    </release>
+
+    <release version="3.7.25" date="2021-01-14">
+      <description>
+	<p>Fixed lower XML parsing of AgsFMSynth.</p>
+	<p>Fixed bank-0 and bank-1 XML parsing of AgsDrum and AgsMatrix.</p>
+      </description>
+    </release>
+
+    <release version="3.7.24" date="2021-01-12">
+      <description>
+	<p>Added French language support.</p>
+      </description>
+    </release>
+
+    <release version="3.7.23" date="2021-01-10">
+      <description>
+	<p>Added German language support.</p>
+      </description>
+    </release>
+
     <release version="3.7.22" date="2021-01-03">
       <description>
 	<p>Fixed AgsTurtle accessing string after free.</p>

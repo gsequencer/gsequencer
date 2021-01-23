@@ -50,7 +50,9 @@
 #include <ags/X/machine/ags_fm_synth.h>
 #include <ags/X/machine/ags_fm_synth_input_line.h>
 #include <ags/X/machine/ags_syncsynth.h>
+#include <ags/X/machine/ags_syncsynth_callbacks.h>
 #include <ags/X/machine/ags_fm_syncsynth.h>
+#include <ags/X/machine/ags_fm_syncsynth_callbacks.h>
 #include <ags/X/machine/ags_oscillator.h>
 #include <ags/X/machine/ags_fm_oscillator.h>
 
@@ -2529,6 +2531,11 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	  while(list != NULL){
 	    ags_syncsynth_add_oscillator((AgsSyncsynth *) gobject,
 					 list->data);
+	    
+	    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+	    g_signal_connect((GObject *) list->data, "control-changed",
+			     G_CALLBACK(ags_syncsynth_oscillator_control_changed_callback), (gpointer) gobject);
 
 	    list = list->next;
 	  }
@@ -2567,6 +2574,11 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	  while(list != NULL){
 	    ags_fm_syncsynth_add_fm_oscillator((AgsFMSyncsynth *) gobject,
 					       list->data);
+
+	    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+	    g_signal_connect((GObject *) list->data, "control-changed",
+			     G_CALLBACK(ags_fm_syncsynth_fm_oscillator_control_changed_callback), (gpointer) gobject);
 
 	    list = list->next;
 	  }
@@ -3170,6 +3182,31 @@ ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node,
       
     gtk_spin_button_set_value(syncsynth->loop_end,
 			      (gdouble) audio_loop_end);
+      
+    xmlFree(str);
+  }
+}
+
+void
+ags_simple_file_read_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFMSynth *fm_synth)
+{
+  xmlChar *str;
+    
+  /* base note */
+  str = xmlGetProp(node,
+		   "base-note");
+
+  if(str != NULL){
+    gdouble base_note;
+
+    base_note = g_ascii_strtod(str,
+			       NULL);
+
+    if(base_note > AGS_FM_SYNTH_BASE_NOTE_MIN &&
+       base_note < AGS_FM_SYNTH_BASE_NOTE_MAX){
+      gtk_spin_button_set_value(fm_synth->lower,
+				(gdouble) base_note);
+    }
       
     xmlFree(str);
   }
@@ -4142,6 +4179,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_simple_file_read_synth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsSynth *) machine);
   }else if(AGS_IS_SYNCSYNTH(machine)){
     ags_simple_file_read_syncsynth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsSyncsynth *) machine);
+  }else if(AGS_IS_FM_SYNTH(machine)){
+    ags_simple_file_read_fm_synth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsFMSynth *) machine);
   }else if(AGS_IS_FM_SYNCSYNTH(machine)){
     ags_simple_file_read_fm_syncsynth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsFMSyncsynth *) machine);
   }else if(AGS_IS_PITCH_SAMPLER(machine)){
@@ -5120,12 +5159,16 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 			   15)){	
 	if(AGS_IS_SYNTH_INPUT_LINE(gobject)){
 	  ags_simple_file_read_oscillator(simple_file, child, &(AGS_SYNTH_INPUT_LINE(gobject)->oscillator));
+
+	  ags_connectable_connect(AGS_CONNECTABLE(AGS_SYNTH_INPUT_LINE(gobject)->oscillator));
 	}
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-fm-oscillator",
 			   17)){	
 	if(AGS_IS_FM_SYNTH_INPUT_LINE(gobject)){
 	  ags_simple_file_read_fm_oscillator(simple_file, child, &(AGS_FM_SYNTH_INPUT_LINE(gobject)->fm_oscillator));
+
+	  ags_connectable_connect(AGS_CONNECTABLE(AGS_FM_SYNTH_INPUT_LINE(gobject)->fm_oscillator));
 	}
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-property-list",
@@ -8631,7 +8674,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 				     machine->bank_0);
   
   xmlNewProp(node,
-	     (xmlChar *) "bank_0",
+	     (xmlChar *) "bank-0",
 	     str);
 
   g_free(str);
@@ -8640,7 +8683,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 				    machine->bank_1);
   
   xmlNewProp(node,
-	     (xmlChar *) "bank_1",
+	     (xmlChar *) "bank-1",
 	     str);
 
   g_free(str);

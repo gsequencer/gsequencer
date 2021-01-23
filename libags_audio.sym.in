@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2020 Joël Krähemann
+# Copyright (C) 2005-2021 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -1932,6 +1932,7 @@ ags_midi_builder_from_xml_doc
 ags_midi_builder_build
 ags_midi_builder_open_filename
 ags_midi_builder_get_data
+ags_midi_builder_get_data_with_length
 ags_midi_builder_write
 ags_midi_builder_new
 ags_midi_builder_new_from_filename
@@ -2559,10 +2560,13 @@ ags_fast_pitch_util_compute_complex
 ags_recall_factory_get_type
 ags_recall_factory_create
 ags_recall_factory_new
+ags_fx_factory_create_flags_get_type
 ags_fx_factory_create
 ags_recall_lv2_run_get_type
 ags_recall_lv2_run_new
 ags_recall_get_type
+ags_recall_flags_get_type
+ags_recall_notify_dependency_mode_get_type
 ags_recall_global_set_omit_event
 ags_recall_global_get_children_lock_free
 ags_recall_global_get_omit_event
@@ -2893,6 +2897,8 @@ ags_osc_builder_append_bundle
 ags_osc_builder_append_message
 ags_osc_builder_append_value
 ags_osc_builder_build
+ags_osc_builder_get_data
+ags_osc_builder_get_data_with_length
 ags_osc_builder_new
 ags_osc_response_get_type
 ags_osc_response_test_flags

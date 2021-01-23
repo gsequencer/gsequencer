@@ -101,6 +101,8 @@ ags_fm_oscillator_class_init(AgsFMOscillatorClass *fm_oscillator)
 
   ags_fm_oscillator_parent_class = g_type_class_peek_parent(fm_oscillator);
 
+  fm_oscillator->control_changed = NULL;
+
   /* signals */
   /**
    * AgsFMOscillator::control-change:

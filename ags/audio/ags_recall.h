@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,8 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_RECALL                (ags_recall_get_type())
+#define AGS_TYPE_RECALL_FLAGS          (ags_recall_flags_get_type())
+#define AGS_TYPE_RECALL_NOTIFY_DEPENDENCY_MODE (ags_recall_notify_dependency_mode_get_type())
 #define AGS_RECALL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL, AgsRecall))
 #define AGS_RECALL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RECALL, AgsRecallClass))
 #define AGS_IS_RECALL(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_RECALL))
@@ -207,6 +209,9 @@ struct _AgsRecallHandler
 };
 
 GType ags_recall_get_type();
+
+GType ags_recall_flags_get_type();
+GType ags_recall_notify_dependency_mode_get_type();
 
 void ags_recall_global_set_omit_event(gboolean omit_event);
 
