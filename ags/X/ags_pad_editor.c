@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -97,7 +97,7 @@ ags_pad_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_pad_editor = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_pad_editor = g_type_register_static(GTK_TYPE_BOX,
 						 "AgsPadEditor", &ags_pad_editor_info,
 						 0);
 
@@ -163,6 +163,9 @@ ags_pad_editor_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_pad_editor_init(AgsPadEditor *pad_editor)
 {
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(pad_editor),
+				 GTK_ORIENTATION_VERTICAL);  
+
   pad_editor->flags = 0;
   
   pad_editor->version = AGS_PAD_EDITOR_DEFAULT_VERSION;
@@ -465,7 +468,8 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *start_channel)
 
     g_free(str);
     
-    pad_editor->line_editor = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+    pad_editor->line_editor = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+						     0);
     gtk_container_add(GTK_CONTAINER(pad_editor->line_editor_expander),
 		      GTK_WIDGET(pad_editor->line_editor));
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -49,7 +49,7 @@ typedef enum{
 
 struct _AgsPropertyEditor
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
 
@@ -58,7 +58,7 @@ struct _AgsPropertyEditor
 
 struct _AgsPropertyEditorClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 
   void (*apply)(AgsPropertyEditor *property_editor);
 };

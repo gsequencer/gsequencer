@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -83,7 +83,7 @@ ags_sequencer_editor_get_type(void)
       NULL, /* interface_data */
     };
     
-    ags_type_sequencer_editor = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_sequencer_editor = g_type_register_static(GTK_TYPE_BOX,
 						       "AgsSequencerEditor", &ags_sequencer_editor_info,
 						       0);
     
@@ -127,17 +127,20 @@ ags_sequencer_editor_applicable_interface_init(AgsApplicableInterface *applicabl
 void
 ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 {
-  GtkTable *table;
+  GtkGrid *grid;
   GtkLabel *label;
+
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(sequencer_editor),
+				 GTK_ORIENTATION_VERTICAL);  
 
   sequencer_editor->flags = 0;
   
   sequencer_editor->sequencer = NULL;
   sequencer_editor->sequencer_thread = NULL;
   
-  table = (GtkTable *) gtk_table_new(3, 8, FALSE);
+  grid = (GtkGrid *) gtk_grid_new();
   gtk_box_pack_start(GTK_BOX(sequencer_editor),
-		     GTK_WIDGET(table),
+		     GTK_WIDGET(grid),
 		     FALSE, FALSE,
 		     2);
 
@@ -146,20 +149,28 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 				    "label", i18n("backend"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign(label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 0,
+		  1, 1);
 
   sequencer_editor->backend = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_table_attach(table,
-		   GTK_WIDGET(sequencer_editor->backend),
-		   1, 2,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign(sequencer_editor->backend,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(sequencer_editor->backend,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(sequencer_editor->backend),
+		  1, 0,
+		  1, 1);
 
   gtk_combo_box_text_append_text(sequencer_editor->backend,
 				 "jack");
@@ -182,55 +193,71 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 				    "label", i18n("MIDI card"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign(label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 1,
+		  1, 1);
 
   sequencer_editor->card = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_table_attach(table,
-		   GTK_WIDGET(sequencer_editor->card),
-		   1, 2,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign(sequencer_editor->card,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(sequencer_editor->card,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(sequencer_editor->card),
+		  1, 1,
+		  1, 1);
 
   /* jack */
   sequencer_editor->jack_hbox = NULL;
   sequencer_editor->add_jack = NULL;
   sequencer_editor->remove_jack = NULL;
 
-  sequencer_editor->jack_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-							 0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(sequencer_editor->jack_hbox),
-		   2, 3,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  sequencer_editor->jack_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						       0);
+  
+  gtk_widget_set_valign(sequencer_editor->jack_hbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(sequencer_editor->jack_hbox,
+			GTK_ALIGN_FILL);
 
-  sequencer_editor->add_jack = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(sequencer_editor->jack_hbox),
+		  2, 1,
+		  1, 1);
+
+  sequencer_editor->add_jack = (GtkButton *) gtk_button_new_with_label(i18n("_Add"));
   gtk_box_pack_start((GtkBox *) sequencer_editor->jack_hbox,
 		     (GtkWidget *) sequencer_editor->add_jack,
 		     FALSE, FALSE,
 		     0);
   
-  sequencer_editor->remove_jack = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  sequencer_editor->remove_jack = (GtkButton *) gtk_button_new_with_label(i18n("_Remove"));
   gtk_box_pack_start((GtkBox *) sequencer_editor->jack_hbox,
 		     (GtkWidget *) sequencer_editor->remove_jack,
 		     FALSE, FALSE,
 		     0);
   
   /*  */
-  sequencer_editor->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-  gtk_table_attach(table,
+  sequencer_editor->remove = (GtkButton *) gtk_button_new_with_label(i18n("_Remove"));
+
+  gtk_widget_set_valign(sequencer_editor->remove,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(sequencer_editor->remove,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
 		   GTK_WIDGET(sequencer_editor->remove),
-		   2, 3,
-		   7, 8,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+		   2, 7,
+		   1, 1);
 }
 
 void
@@ -318,12 +345,11 @@ ags_sequencer_editor_apply(AgsApplicable *applicable)
     
   AgsConfig *config;
 
-  GList *tasks;
   GList *list;	
 
   gchar *sequencer_group;
   gchar *backend;
-  char *device, *str;
+  char *device;
 
   gint nth;
   gboolean use_jack, use_alsa, use_oss;
@@ -414,14 +440,13 @@ ags_sequencer_editor_apply(AgsApplicable *applicable)
 void
 ags_sequencer_editor_reset(AgsApplicable *applicable)
 {
-  AgsPreferences *preferences;
   AgsSequencerEditor *sequencer_editor;
 
   GObject *sequencer;
 
   GList *card_id, *card_id_start, *card_name, *card_name_start;
 
-  gchar *backend, *device, *str, *tmp;
+  gchar *backend, *device, *tmp;
 
   guint nth;
   gboolean use_alsa;
@@ -549,8 +574,6 @@ void
 ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
 				gchar *device)
 {
-  AgsPreferences *preferences;
-
   AgsJackServer *jack_server;
   AgsJackMidiin *jack_midiin;
 
@@ -562,9 +585,6 @@ ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
   GList *start_sound_server, *sound_server;
   GList *start_sequencer;
   GList *card_name, *card_uri;
-
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
-							   AGS_TYPE_PREFERENCES);
 
   application_context = ags_application_context_get_instance();
   
@@ -644,8 +664,6 @@ void
 ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
 				   gchar *device)
 {
-  AgsPreferences *preferences;
- 
   AgsJackMidiin *jack_midiin;
 
   AgsApplicationContext *application_context;
@@ -653,10 +671,6 @@ ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
 
   GList *start_sound_server, *sound_server;
   GList *start_sequencer, *sequencer;
-  GList *card_id;
-
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
-							   AGS_TYPE_PREFERENCES);
 
   application_context = ags_application_context_get_instance();
   
@@ -767,8 +781,6 @@ void
 ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
 				   GObject *sequencer)
 {
-  AgsPreferences *preferences;
-
   AgsThread *main_loop;
   AgsThread *sequencer_thread;
 
@@ -781,9 +793,6 @@ ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
     return;
   }
   
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
-							   AGS_TYPE_PREFERENCES);
-
   application_context = ags_application_context_get_instance();
 
   if(AGS_IS_MIDIIN(sequencer)){
@@ -839,63 +848,22 @@ void
 ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
 				      GObject *sequencer)
 {
-  AgsPreferences *preferences;
-
-  AgsThread *main_loop;
-  AgsThread *sequencer_thread;
-
   AgsApplicationContext *application_context;
 
   if(AGS_IS_JACK_MIDIIN(sequencer)){
     return;
   }
   
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
-							   AGS_TYPE_PREFERENCES);
-
   application_context = ags_application_context_get_instance();
-
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
     
   if(sequencer == sequencer_editor->sequencer){
     sequencer_editor->sequencer = NULL;
   }
-
-#if 0
-  if(sequencer != NULL){
-    GList *tmp;
-
-    tmp = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
-    
-    ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
-				     g_list_remove(tmp,
-						   sequencer));
-    g_object_unref(sequencer);
-
-    g_list_free_full(tmp,
-		     g_object_unref);
-  }
-#endif
-  
-#if 0
-  if(sequencer_editor->sequencer_thread != NULL){
-    ags_thread_stop((AgsThread *) sequencer_editor->sequencer_thread);
-
-    ags_thread_remove_child(main_loop,
-			    (AgsThread *) sequencer_editor->sequencer_thread);
-    
-    //    g_object_unref(sequencer_editor->sequencer_thread);
-    
-    sequencer_editor->sequencer_thread = NULL;
-  }
-#endif
 }
 
 void
 ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor)
 {
-  AgsPreferences *preferences;
-
   AgsJackMidiin *jack_midiin;
 
   AgsApplicationContext *application_context;
@@ -903,9 +871,6 @@ ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor)
   GList *start_sound_server, *sound_server;
   GList *start_sequencer, *sequencer;
   GList *card_id;
-
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
-							   AGS_TYPE_PREFERENCES);
 
   application_context = ags_application_context_get_instance();
 
@@ -960,19 +925,9 @@ ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor)
 void
 ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor)
 {
-  AgsPreferences *preferences;
-
   AgsMidiin *midiin;
 
-  AgsApplicationContext *application_context;
-
-  GList *list;
   GList *card_id;
-
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
-							   AGS_TYPE_PREFERENCES);
-
-  application_context = ags_application_context_get_instance();
   
   /*  */
   midiin = g_object_new(AGS_TYPE_MIDIIN,
@@ -1009,20 +964,10 @@ ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor)
 void
 ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor)
 {
-  AgsPreferences *preferences;
-
   AgsMidiin *midiin;
 
-  AgsApplicationContext *application_context;
-
-  GList *list;
   GList *card_id;
-  
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
-							   AGS_TYPE_PREFERENCES);
-
-  application_context = ags_application_context_get_instance();
-  
+    
   /*  */  
   midiin = g_object_new(AGS_TYPE_MIDIIN,
 			NULL);

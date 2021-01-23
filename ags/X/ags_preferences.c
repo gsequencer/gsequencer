@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -143,8 +143,6 @@ ags_preferences_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_preferences_init(AgsPreferences *preferences)
 {
-  GtkButton *button;
-
   gchar *str;
 
   preferences->flags = 0;
@@ -164,36 +162,36 @@ ags_preferences_init(AgsPreferences *preferences)
 		    GTK_WIDGET(preferences->notebook));
 
   preferences->generic_preferences = ags_generic_preferences_new();
-  gtk_widget_set_hexpand(preferences->generic_preferences,
+  gtk_widget_set_hexpand((GtkWidget *) preferences->generic_preferences,
 			 TRUE);
-  gtk_widget_set_vexpand(preferences->generic_preferences,
+  gtk_widget_set_vexpand((GtkWidget *) preferences->generic_preferences,
 			 TRUE);
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->generic_preferences),
 			   gtk_label_new(i18n("generic")));
 
   preferences->audio_preferences = ags_audio_preferences_new();
-  gtk_widget_set_hexpand(preferences->audio_preferences,
+  gtk_widget_set_hexpand((GtkWidget *) preferences->audio_preferences,
 			 TRUE);
-  gtk_widget_set_vexpand(preferences->audio_preferences,
+  gtk_widget_set_vexpand((GtkWidget *) preferences->audio_preferences,
 			 TRUE);
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->audio_preferences),
 			   gtk_label_new(i18n("audio")));
 
   preferences->midi_preferences = ags_midi_preferences_new();
-  gtk_widget_set_hexpand(preferences->midi_preferences,
+  gtk_widget_set_hexpand((GtkWidget *) preferences->midi_preferences,
 			 TRUE);
-  gtk_widget_set_vexpand(preferences->midi_preferences,
+  gtk_widget_set_vexpand((GtkWidget *) preferences->midi_preferences,
 			 TRUE);
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->midi_preferences),
 			   gtk_label_new(i18n("midi")));
 
   preferences->performance_preferences = ags_performance_preferences_new();
-  gtk_widget_set_hexpand(preferences->performance_preferences,
+  gtk_widget_set_hexpand((GtkWidget *) preferences->performance_preferences,
 			 TRUE);
-  gtk_widget_set_vexpand(preferences->performance_preferences,
+  gtk_widget_set_vexpand((GtkWidget *) preferences->performance_preferences,
 			 TRUE);
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->performance_preferences),
@@ -204,9 +202,9 @@ ags_preferences_init(AgsPreferences *preferences)
 			     "disable-feature");
   
   preferences->osc_server_preferences = ags_osc_server_preferences_new();
-  gtk_widget_set_hexpand(preferences->osc_server_preferences,
+  gtk_widget_set_hexpand((GtkWidget *) preferences->osc_server_preferences,
 			 TRUE);
-  gtk_widget_set_vexpand(preferences->osc_server_preferences,
+  gtk_widget_set_vexpand((GtkWidget *) preferences->osc_server_preferences,
 			 TRUE);
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->osc_server_preferences),
@@ -225,15 +223,15 @@ ags_preferences_init(AgsPreferences *preferences)
   }
   
   gtk_dialog_add_action_widget(GTK_DIALOG(preferences),
-			       gtk_button_new_from_stock(GTK_STOCK_APPLY),
+			       gtk_button_new_with_label(i18n("_Apply")),
 			       GTK_RESPONSE_APPLY);
 
   gtk_dialog_add_action_widget(GTK_DIALOG(preferences),
-			       gtk_button_new_from_stock(GTK_STOCK_CANCEL),
+			       gtk_button_new_with_label(i18n("_Cancel")),
 			       GTK_RESPONSE_CANCEL);
 
   gtk_dialog_add_action_widget(GTK_DIALOG(preferences),
-			       gtk_button_new_from_stock(GTK_STOCK_OK),
+			       gtk_button_new_with_label(i18n("_OK")),
 			       GTK_RESPONSE_OK);
 }
 
@@ -300,15 +298,11 @@ ags_preferences_apply(AgsApplicable *applicable)
   AgsApplicationContext *application_context;
   AgsConfig *config;
 
-  gchar *filename;
-
-  gchar **argv;
-
   preferences = AGS_PREFERENCES(applicable);
   
   application_context = ags_application_context_get_instance();
 
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   config = ags_config_get_instance();
 
@@ -365,7 +359,8 @@ ags_preferences_show(GtkWidget *widget)
   GList *list, *list_start;
 
   GTK_WIDGET_CLASS(ags_preferences_parent_class)->show(widget);
-  
+
+#if 0  
   list_start = 
     list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_action_area(GTK_DIALOG(widget)));
   list = g_list_nth(list,
@@ -378,6 +373,7 @@ ags_preferences_show(GtkWidget *widget)
   }
 
   g_list_free(list_start);
+#endif
 }
 
 void
@@ -387,6 +383,7 @@ ags_preferences_show_all(GtkWidget *widget)
 
   GTK_WIDGET_CLASS(ags_preferences_parent_class)->show_all(widget);
 
+#if 0  
   list_start = 
     list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_action_area(GTK_DIALOG(widget)));
   list = g_list_nth(list,
@@ -399,8 +396,8 @@ ags_preferences_show_all(GtkWidget *widget)
   }
 
   g_list_free(list_start);
+#endif
 }
-
 
 /**
  * ags_preferences_new:

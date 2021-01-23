@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -59,7 +59,7 @@ typedef enum{
 
 struct _AgsPad
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
 
@@ -86,7 +86,7 @@ struct _AgsPad
 
 struct _AgsPadClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 
   void (*samplerate_changed)(AgsPad *pad,
 			     guint samplerate, guint old_samplerate);

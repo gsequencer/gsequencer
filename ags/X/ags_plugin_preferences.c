@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -71,7 +71,7 @@ ags_plugin_preferences_get_type(void)
       NULL, /* interface_data */
     };
     
-    ags_type_plugin_preferences = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_plugin_preferences = g_type_register_static(GTK_TYPE_BOX,
 							 "AgsPluginPreferences", &ags_plugin_preferences_info,
 							 0);
     
@@ -103,6 +103,9 @@ ags_plugin_preferences_connectable_interface_init(AgsConnectableInterface *conne
 void
 ags_plugin_preferences_init(AgsPluginPreferences *plugin_preferences)
 {
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(plugin_preferences),
+				 GTK_ORIENTATION_VERTICAL);  
+
   //TODO:JK: implement me
 }
 

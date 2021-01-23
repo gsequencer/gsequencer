@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,7 +32,7 @@ ags_preferences_delete_event_callback(GtkWidget *widget, GdkEventAny *event,
 
   application_context = ags_application_context_get_instance();
   
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   window->preferences = NULL;
   
   return(FALSE);
@@ -70,7 +70,7 @@ ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer 
 
       application_context = ags_application_context_get_instance();
   
-      window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+      window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
       AGS_PREFERENCES(dialog)->flags |= AGS_PREFERENCES_SHUTDOWN;
 
@@ -87,6 +87,7 @@ ags_preferences_notebook_switch_page_callback(GtkNotebook *notebook,
 					      guint page_n,
 					      AgsPreferences *preferences)
 {
+#if 0  
   GList *list, *list_start;
 
   list_start = 
@@ -107,4 +108,5 @@ ags_preferences_notebook_switch_page_callback(GtkNotebook *notebook,
   }else if(page_n == 2){
     gtk_widget_show((GtkWidget *) preferences->midi_preferences->add);
   }
+#endif
 }

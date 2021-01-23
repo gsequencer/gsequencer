@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -62,10 +62,6 @@ struct _AgsPluginBrowser
   GtkWidget *dssi_browser;
   GtkWidget *ladspa_browser;
   GtkWidget *vst_browser;
-  
-  GtkButton *apply;
-  GtkButton *ok;
-  GtkButton *cancel;
 };
 
 struct _AgsPluginBrowserClass

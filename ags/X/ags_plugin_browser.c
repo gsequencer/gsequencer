@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -135,24 +135,24 @@ ags_plugin_browser_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 {
-  GtkVBox *vbox;
-  GtkHBox *hbox;
+  GtkBox *vbox;
+  GtkBox *hbox;
   GtkLabel *label;
   
-  GList *list;
-
   plugin_browser->flags = 0;
 
   gtk_window_set_title((GtkWindow *) plugin_browser,
 		       i18n("Plugin browser"));
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
   gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(plugin_browser)),
 		     GTK_WIDGET(vbox),
 		     FALSE, FALSE,
 		     0);
   
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
@@ -195,14 +195,9 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 
   /* action area */
   gtk_dialog_add_buttons((GtkDialog *) plugin_browser,
-			 GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-			 GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+			 i18n("_OK"), GTK_RESPONSE_ACCEPT,
+			 i18n("_Cancel"), GTK_RESPONSE_REJECT,
 			 NULL);
-
-  list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_action_area((GtkDialog *) plugin_browser));
-  plugin_browser->ok = GTK_BUTTON(list->data);
-  plugin_browser->cancel = GTK_BUTTON(list->next->data);
-  g_list_free(list);
 }
 
 void
@@ -237,12 +232,9 @@ ags_plugin_browser_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->lv2_browser));
   ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->ladspa_browser));
 
-  /* AgsPluginBrowser buttons */
-  g_signal_connect((GObject *) plugin_browser->ok, "clicked",
-		   G_CALLBACK(ags_plugin_browser_ok_callback), (gpointer) plugin_browser);
-
-  g_signal_connect((GObject *) plugin_browser->cancel, "clicked",
-		   G_CALLBACK(ags_plugin_browser_cancel_callback), (gpointer) plugin_browser);
+  /* AgsPluginBrowser response */
+  g_signal_connect((GObject *) plugin_browser, "response",
+		   G_CALLBACK(ags_plugin_browser_response_callback), NULL);
 }
 
 void
@@ -268,16 +260,10 @@ ags_plugin_browser_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect(AGS_CONNECTABLE(plugin_browser->ladspa_browser));
 
   /* AgsPluginBrowser buttons */
-  g_object_disconnect((GObject *) plugin_browser->ok,
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_plugin_browser_ok_callback),
-		      (gpointer) plugin_browser,
-		      NULL);
-
-  g_object_disconnect((GObject *) plugin_browser->cancel,
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_plugin_browser_cancel_callback),
-		      (gpointer) plugin_browser,
+  g_object_disconnect((GObject *) plugin_browser,
+		      "any_signal::response",
+		      G_CALLBACK(ags_plugin_browser_response_callback),
+		      NULL,
 		      NULL);
 }
 

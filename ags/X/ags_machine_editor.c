@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -429,25 +429,37 @@ ags_machine_editor_reset(AgsApplicable *applicable)
 void
 ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
 {
-  GParameter *output_link_editor_child_parameter;
-  GParameter *input_link_editor_child_parameter;
+  gchar **output_link_editor_child_strv;
+  gchar **input_link_editor_child_strv;
+
+  GValue *output_link_editor_child_value;
+  GValue *input_link_editor_child_value;
 
   /* output */
-  output_link_editor_child_parameter = g_new0(GParameter, 1);
+  output_link_editor_child_strv = (gchar **) g_malloc(2 * sizeof(gchar *));
 
-  output_link_editor_child_parameter[0].name = "channel-type";
+  output_link_editor_child_strv[0] = g_strdup("channel-type");
+  output_link_editor_child_strv[1] = NULL;
 
-  g_value_init(&(output_link_editor_child_parameter[0].value), G_TYPE_GTYPE);
-  g_value_set_gtype(&(output_link_editor_child_parameter[0].value), AGS_TYPE_OUTPUT);
+  output_link_editor_child_value = g_new0(GValue,
+					  1);
+
+  g_value_init(output_link_editor_child_value, G_TYPE_GTYPE);
+  g_value_set_gtype(output_link_editor_child_value,
+		    AGS_TYPE_OUTPUT);
 
   /* input */
-  input_link_editor_child_parameter = g_new0(GParameter, 1);
+  input_link_editor_child_strv = (gchar **) g_malloc(2 * sizeof(gchar *));
 
-  input_link_editor_child_parameter[0].name = "channel-type";
+  input_link_editor_child_strv[0] = g_strdup("channel-type");
+  input_link_editor_child_strv[1] = NULL;
+  
+  input_link_editor_child_value = g_new0(GValue,
+					 1);
 
-  g_value_init(&(input_link_editor_child_parameter[0].value), G_TYPE_GTYPE);
-  g_value_set_gtype(&(input_link_editor_child_parameter[0].value), AGS_TYPE_INPUT);
-
+  g_value_init(input_link_editor_child_value, G_TYPE_GTYPE);
+  g_value_set_gtype(input_link_editor_child_value,
+		    AGS_TYPE_INPUT);
 
   /* AgsOutput */
   machine_editor->output_editor = ags_listing_editor_new(AGS_TYPE_OUTPUT);
@@ -461,15 +473,15 @@ ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
 
   /* AgsOutput link editor */
   machine_editor->output_link_editor = ags_property_collection_editor_new(AGS_TYPE_LINK_COLLECTION_EDITOR,
-									  1,
-									  output_link_editor_child_parameter);
+									  output_link_editor_child_strv,
+									  output_link_editor_child_value);
   gtk_container_add((GtkContainer *) machine_editor->output_link_editor_scrolled_window,
 		    (GtkWidget *) machine_editor->output_link_editor);
 
   /* AgsInput link editor */
   machine_editor->input_link_editor = ags_property_collection_editor_new(AGS_TYPE_LINK_COLLECTION_EDITOR,
-									 1,
-									 input_link_editor_child_parameter);
+									 input_link_editor_child_strv,
+									 input_link_editor_child_value);
   gtk_container_add((GtkContainer *) machine_editor->input_link_editor_scrolled_window,
 		    (GtkWidget *) machine_editor->input_link_editor);
 

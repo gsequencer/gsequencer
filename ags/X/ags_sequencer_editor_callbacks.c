@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -61,15 +61,10 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 {
   GObject *sequencer;
 
-  GtkTreeIter current;
-  
   gchar *str;
   gchar *card;
 
   gboolean use_alsa;
-  guint channels, channels_min, channels_max;
-  guint rate, rate_min, rate_max;
-  guint buffer_size, buffer_size_min, buffer_size_max;
 
   sequencer = sequencer_editor->sequencer;
 

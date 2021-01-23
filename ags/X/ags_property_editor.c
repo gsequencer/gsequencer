@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -66,7 +66,7 @@ ags_property_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_property_editor = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_property_editor = g_type_register_static(GTK_TYPE_BOX,
 						      "AgsPropertyEditor", &ags_property_editor_info,
 						      0);
     
@@ -97,6 +97,9 @@ ags_property_editor_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_property_editor_init(AgsPropertyEditor *property_editor)
 {
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(property_editor),
+				 GTK_ORIENTATION_VERTICAL);  
+    
   property_editor->flags = 0;
 
   property_editor->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
