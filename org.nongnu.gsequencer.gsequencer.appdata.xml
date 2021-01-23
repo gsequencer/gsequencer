@@ -40,7 +40,13 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
-    <release version="3.7.25" date="2021-01-14">
+    <release version="3.7.27" date="2021-01-23">
+      <description>
+	<p>Fixed AppStream XML</p>
+      </description>
+    </release>
+
+    <release version="3.7.26" date="2021-01-23">
       <description>
 	<p>Fixed oscillator doesn't auto-update after restore from XML</p>
 	<p>Updated GSequencer screenshots in AppStream XML</p>
