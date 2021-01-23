@@ -156,15 +156,15 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
   quit_dialog->wave_export_machine = NULL;
   
   quit_dialog->yes = gtk_dialog_add_button(quit_dialog,
-					   "Yes",
+					   i18n("Yes"),
 					   GTK_RESPONSE_YES);
 
   quit_dialog->no = gtk_dialog_add_button(quit_dialog,
-					   "No",
-					   GTK_RESPONSE_NO);
+					  i18n("No"),
+					  GTK_RESPONSE_NO);
 
   quit_dialog->cancel = gtk_dialog_add_button(quit_dialog,
-					      "Cancel",
+					      i18n("Cancel"),
 					      GTK_RESPONSE_CANCEL);
   
   quit_dialog->confirm = NULL;

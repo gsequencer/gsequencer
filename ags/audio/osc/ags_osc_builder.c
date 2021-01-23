@@ -1338,6 +1338,77 @@ ags_osc_builder_build(AgsOscBuilder *osc_builder)
 }
 
 /**
+ * ags_osc_builder_get_data:
+ * @osc_builder: the #AgsOscBuilder
+ * 
+ * Get OSC data of @osc_builder.
+ * 
+ * Returns: the OSC data
+ * 
+ * Since: 3.7.24
+ */
+guchar*
+ags_osc_builder_get_data(AgsOscBuilder *osc_builder)
+{  
+  if(!AGS_IS_OSC_BUILDER(osc_builder)){
+    return(NULL);
+  }
+
+  return(osc_builder->data);
+}
+
+/**
+ * ags_osc_builder_get_data_with_length:
+ * @osc_builder: the #AgsOscBuilder
+ * @length: (out): the length of data
+ *
+ * Get OSC data of @osc_builder.
+ * 
+ * Returns: (transfer full): the OSC data as array
+ * 
+ * Since: 3.7.24
+ */
+guchar*
+ags_osc_builder_get_data_with_length(AgsOscBuilder *osc_builder,
+				     guint *length)
+{
+  guchar *data;
+  
+  GRecMutex *osc_builder_mutex;
+  
+  if(!AGS_IS_OSC_BUILDER(osc_builder)){
+    if(length != NULL){
+      length[0] = NULL;
+    }
+    
+    return(NULL);
+  }
+
+  /* get osc builder mutex */
+  osc_builder_mutex = AGS_OSC_BUILDER_GET_OBJ_MUTEX(osc_builder);
+
+  g_rec_mutex_lock(osc_builder_mutex);
+
+  data = NULL;
+
+  if(osc_builder->data != NULL){
+    data = (guchar *) g_malloc(osc_builder->length * sizeof(guchar));
+
+    if(osc_builder->length > 0){
+      memcpy(data, osc_builder->data, osc_builder->length * sizeof(guchar));
+    }
+  }  
+
+  if(length != NULL){
+    length[0] = osc_builder->length;
+  }
+
+  g_rec_mutex_unlock(osc_builder_mutex);
+  
+  return(data);
+}
+
+/**
  * ags_osc_builder_new:
  * 
  * Creates a new instance of #AgsOscBuilder

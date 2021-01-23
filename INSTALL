@@ -9,6 +9,15 @@ are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.  This file is offered as-is,
 without warranty of any kind.
 
+Bootstrap Build Directory
+=========================
+
+   In order to be able to build with recommended setup, you need to
+invoke ./bootstrap.sh first.
+
+   The bootstrap.sh takes --prefix /usr and --datadir /usr/share
+as arguments.
+
 Basic Installation
 ==================
 

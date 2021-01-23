@@ -1,14 +1,16 @@
-#Copyright (C) 2005-2020 Joel Kraehemann
+#Copyright (C) 2005-2021 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 
-EXTRA_DIST = \
+EXTRA_DIST = host-cpu-c-abi.m4 \
 	ags-docs-api.m4 \
+	ags-docs-books.m4 \
 	ags-listings.m4 \
 	ags-marshallers.m4 \
+	ags-potfiles.m4 \
 	ags-symbols.m4 \
 	codeset.m4 \
 	extern-inline.m4 \
