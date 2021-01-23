@@ -250,14 +250,14 @@ ags_fx_factory_create_flags_get_type()
 
   if(g_once_init_enter (&g_flags_type_id__volatile)){
     static const GFlagsValue values[] = {
-      { AGS_FX_FACTORY_CREATE_OUTPUT, "AGS_FX_FACTORY_CREATE_OUTPUT", "fx-factory-create-output" },
-      { AGS_FX_FACTORY_CREATE_INPUT, "AGS_FX_FACTORY_CREATE_INPUT", "fx-factory-create-input" },
-      { AGS_FX_FACTORY_CREATE_REMAP, "AGS_FX_FACTORY_CREATE_REMAP", "fx-factory-create-remap" },
-      { AGS_FX_FACTORY_CREATE_ADD, "AGS_FX_FACTORY_CREATE_ADD", "fx-factory-create-add" },
-      { AGS_FX_FACTORY_CREATE_PLAY, "AGS_FX_FACTORY_CREATE_PLAY", "fx-factory-create-play" },
-      { AGS_FX_FACTORY_CREATE_RECALL, "AGS_FX_FACTORY_CREATE_RECALL", "fx-factory-create-recall" },
-      { AGS_FX_FACTORY_CREATE_BULK, "AGS_FX_FACTORY_CREATE_BULK", "fx-factory-create-bulk" },
-      { AGS_FX_FACTORY_CREATE_LIVE, "AGS_FX_FACTORY_CREATE_LIVE", "fx-factory-create-live" },
+      { AGS_FX_FACTORY_OUTPUT, "AGS_FX_FACTORY_OUTPUT", "fx-factory-output" },
+      { AGS_FX_FACTORY_INPUT, "AGS_FX_FACTORY_INPUT", "fx-factory-input" },
+      { AGS_FX_FACTORY_REMAP, "AGS_FX_FACTORY_REMAP", "fx-factory-remap" },
+      { AGS_FX_FACTORY_ADD, "AGS_FX_FACTORY_ADD", "fx-factory-add" },
+      { AGS_FX_FACTORY_PLAY, "AGS_FX_FACTORY_PLAY", "fx-factory-play" },
+      { AGS_FX_FACTORY_RECALL, "AGS_FX_FACTORY_RECALL", "fx-factory-recall" },
+      { AGS_FX_FACTORY_BULK, "AGS_FX_FACTORY_BULK", "fx-factory-bulk" },
+      { AGS_FX_FACTORY_LIVE, "AGS_FX_FACTORY_LIVE", "fx-factory-live" },
       { 0, NULL, NULL }
     };
 

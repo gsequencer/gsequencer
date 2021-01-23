@@ -50,7 +50,9 @@
 #include <ags/X/machine/ags_fm_synth.h>
 #include <ags/X/machine/ags_fm_synth_input_line.h>
 #include <ags/X/machine/ags_syncsynth.h>
+#include <ags/X/machine/ags_syncsynth_callbacks.h>
 #include <ags/X/machine/ags_fm_syncsynth.h>
+#include <ags/X/machine/ags_fm_syncsynth_callbacks.h>
 #include <ags/X/machine/ags_oscillator.h>
 #include <ags/X/machine/ags_fm_oscillator.h>
 
@@ -2529,6 +2531,11 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	  while(list != NULL){
 	    ags_syncsynth_add_oscillator((AgsSyncsynth *) gobject,
 					 list->data);
+	    
+	    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+	    g_signal_connect((GObject *) list->data, "control-changed",
+			     G_CALLBACK(ags_syncsynth_oscillator_control_changed_callback), (gpointer) gobject);
 
 	    list = list->next;
 	  }
@@ -2567,6 +2574,11 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	  while(list != NULL){
 	    ags_fm_syncsynth_add_fm_oscillator((AgsFMSyncsynth *) gobject,
 					       list->data);
+
+	    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+	    g_signal_connect((GObject *) list->data, "control-changed",
+			     G_CALLBACK(ags_fm_syncsynth_fm_oscillator_control_changed_callback), (gpointer) gobject);
 
 	    list = list->next;
 	  }
@@ -5147,12 +5159,16 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 			   15)){	
 	if(AGS_IS_SYNTH_INPUT_LINE(gobject)){
 	  ags_simple_file_read_oscillator(simple_file, child, &(AGS_SYNTH_INPUT_LINE(gobject)->oscillator));
+
+	  ags_connectable_connect(AGS_CONNECTABLE(AGS_SYNTH_INPUT_LINE(gobject)->oscillator));
 	}
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-fm-oscillator",
 			   17)){	
 	if(AGS_IS_FM_SYNTH_INPUT_LINE(gobject)){
 	  ags_simple_file_read_fm_oscillator(simple_file, child, &(AGS_FM_SYNTH_INPUT_LINE(gobject)->fm_oscillator));
+
+	  ags_connectable_connect(AGS_CONNECTABLE(AGS_FM_SYNTH_INPUT_LINE(gobject)->fm_oscillator));
 	}
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-property-list",
