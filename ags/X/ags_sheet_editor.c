@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,13 +40,13 @@ void ags_sheet_editor_real_machine_changed(AgsSheetEditor *sheet_editor,
 					   AgsMachine *machine);
 
 enum{
-     MACHINE_CHANGED,
-     LAST_SIGNAL,
+  MACHINE_CHANGED,
+  LAST_SIGNAL,
 };
 
 enum{
-     PROP_0,
-     PROP_SOUNDCARD,
+  PROP_0,
+  PROP_SOUNDCARD,
 };
 
 static gpointer ags_sheet_editor_parent_class = NULL;
@@ -72,24 +72,24 @@ ags_sheet_editor_get_type(void)
     GType ags_type_sheet_editor = 0;
 
     static const GTypeInfo ags_sheet_editor_info = {
-						    sizeof (AgsSheetEditorClass),
-						    NULL, /* base_init */
-						    NULL, /* base_finalize */
-						    (GClassInitFunc) ags_sheet_editor_class_init,
-						    NULL, /* class_finalize */
-						    NULL, /* class_data */
-						    sizeof (AgsSheetEditor),
-						    0,    /* n_preallocs */
-						    (GInstanceInitFunc) ags_sheet_editor_init,
+      sizeof (AgsSheetEditorClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_sheet_editor_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (AgsSheetEditor),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_sheet_editor_init,
     };
 
     static const GInterfaceInfo ags_connectable_interface_info = {
-								  (GInterfaceInitFunc) ags_sheet_editor_connectable_interface_init,
-								  NULL, /* interface_finalize */
-								  NULL, /* interface_data */
+      (GInterfaceInitFunc) ags_sheet_editor_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
     };
 
-    ags_type_sheet_editor = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_sheet_editor = g_type_register_static(GTK_TYPE_BOX,
 						   "AgsSheetEditor", &ags_sheet_editor_info,
 						   0);
     
@@ -172,6 +172,9 @@ ags_sheet_editor_class_init(AgsSheetEditorClass *sheet_editor)
 void
 ags_sheet_editor_init(AgsSheetEditor *sheet_editor)
 {
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(sheet_editor),
+				 GTK_ORIENTATION_VERTICAL);  
+
   //TODO:JK: implement me
 }
 

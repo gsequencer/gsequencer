@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -62,7 +62,7 @@ typedef enum{
 
 struct _AgsSheetEditor
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
 
@@ -90,7 +90,7 @@ struct _AgsSheetEditor
 
 struct _AgsSheetEditorClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 
   void (*machine_changed)(AgsSheetEditor *sheet_editor, AgsMachine *machine);
 };

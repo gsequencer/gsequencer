@@ -66,7 +66,7 @@ ags_property_collection_editor_add_collection_callback(GtkButton *button,
   g_signal_connect_after(G_OBJECT(remove_collection), "clicked",
 			 G_CALLBACK(ags_property_collection_editor_remove_collection_callback), grid);
 
-  ags_connecgrid_connect(AGS_CONNECGRID(collection));
+  ags_connectable_connect(AGS_CONNECTABLE(collection));
 
   gtk_widget_show_all(GTK_WIDGET(grid));
 }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,7 +44,7 @@ typedef struct _AgsServerPreferencesClass AgsServerPreferencesClass;
 
 struct _AgsServerPreferences
 {
-  GtkVBox vbox;
+  GtkBox vbox;
 
   GtkCheckButton *start;
 
@@ -57,7 +57,7 @@ struct _AgsServerPreferences
 
 struct _AgsServerPreferencesClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass vbox;
 };
 
 GType ags_server_preferences_get_type(void);

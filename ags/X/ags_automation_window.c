@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -129,7 +129,7 @@ void
 ags_automation_window_init(AgsAutomationWindow *automation_window)
 {
   g_object_set(G_OBJECT(automation_window),
-	       "title", "edit automation",
+	       "title", i18n("edit automation"),
 	       NULL);
 
   automation_window->flags = 0;

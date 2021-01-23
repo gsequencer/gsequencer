@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -122,7 +122,7 @@ ags_wave_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_wave_editor = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_wave_editor = g_type_register_static(GTK_TYPE_BOX,
 						  "AgsWaveEditor", &ags_wave_editor_info,
 						  0);
     
@@ -199,9 +199,9 @@ void
 ags_wave_editor_init(AgsWaveEditor *wave_editor)
 {
   GtkViewport *viewport;
-  GtkHBox *hbox;
+  GtkBox *hbox;
   GtkScrolledWindow *scrolled_window;  
-  GtkTable *table;
+  GtkGrid *grid;
   
   GtkStyleContext *style_context;
   
@@ -210,6 +210,9 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   AgsApplicationContext *application_context;
   
   gdouble gui_scale_factor;
+
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(wave_editor),
+				 GTK_ORIENTATION_VERTICAL);  
 
   wave_editor->flags = AGS_WAVE_EDITOR_PASTE_MATCH_LINE;
 
@@ -231,7 +234,7 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 		     (GtkWidget *) wave_editor->wave_toolbar,
 		     FALSE, FALSE, 0);
 
-  wave_editor->paned = (GtkHPaned *) gtk_hpaned_new();
+  wave_editor->paned = (GtkPaned *) gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
   gtk_box_pack_start((GtkBox *) wave_editor,
 		     (GtkWidget *) wave_editor->paned,
 		     TRUE, TRUE, 0);
@@ -263,14 +266,15 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 	       "menu", wave_editor->machine_selector->popup,
 	       NULL);
   
-  gtk_scrolled_window_add_with_viewport(scrolled_window, (GtkWidget *) wave_editor->machine_selector);
+  gtk_container_add((GtkContainer *) scrolled_window,
+		    (GtkWidget *) wave_editor->machine_selector);
 
   /* selected machine */
   wave_editor->selected_machine = NULL;
 
-  /* table */
-  hbox = gtk_hbox_new(FALSE,
-		      0);
+  /* grid */
+  hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+		     0);
   gtk_paned_pack2((GtkPaned *) wave_editor->paned,
 		  (GtkWidget *) hbox,
 		  TRUE,
@@ -286,9 +290,9 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 		     TRUE, TRUE,
 		     0);
 
-  table = (GtkTable *) gtk_table_new(4, 3, FALSE);
+  grid = (GtkGrid *) gtk_grid_new();
   gtk_container_add(GTK_CONTAINER(viewport),
-		    GTK_WIDGET(table));
+		    GTK_WIDGET(grid));
   
   /* notebook */
   wave_editor->notebook = g_object_new(AGS_TYPE_NOTEBOOK,
@@ -296,7 +300,7 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 				       "spacing", 0,
 				       "prefix", i18n("line"),
 				       NULL);
-  gtk_table_attach(table,
+  gtk_grid_attach(grid,
 		   (GtkWidget *) wave_editor->notebook,
 		   0, 3,
 		   0, 1,
@@ -312,17 +316,26 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
 	       NULL);
-  gtk_table_attach(table,
-		   (GtkWidget *) wave_editor->ruler,
-		   1, 2,
-		   1, 2,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL,
-		   0, 0);
 
+  gtk_widget_set_valign((GtkWidget *) wave_editor->ruler,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) wave_editor->ruler,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_hexpand((GtkWidget *) wave_editor->ruler,
+			 TRUE);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) wave_editor->ruler,
+		  1, 1,
+		  1, 1);
 
   /* level */
   wave_editor->scrolled_level_box = ags_scrolled_level_box_new();
-  gtk_widget_set_vexpand(wave_editor->scrolled_level_box->viewport, TRUE);
+
+  gtk_widget_set_vexpand((GtkWidget *) wave_editor->scrolled_level_box->viewport,
+			 TRUE);
+  
   g_object_set(wave_editor->scrolled_level_box,
 	       "margin-top", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
 	       NULL);
@@ -339,12 +352,18 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 			      (gint) (gui_scale_factor * AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_WIDTH),
 			      -1);
 
-  gtk_table_attach(table,
-		   (GtkWidget *) wave_editor->scrolled_level_box,
-		   0, 1,
-		   2, 3,
-		   GTK_FILL, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+  gtk_widget_set_valign((GtkWidget *) wave_editor->scrolled_level_box,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) wave_editor->scrolled_level_box,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) wave_editor->scrolled_level_box,
+			 TRUE);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) wave_editor->scrolled_level_box,
+		  0, 2,
+		  1, 1);
 
   /* wave edit */
   wave_editor->scrolled_wave_edit_box = ags_scrolled_wave_edit_box_new();
@@ -356,12 +375,20 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   gtk_container_add(GTK_CONTAINER(wave_editor->scrolled_wave_edit_box->viewport),
 		    GTK_WIDGET(wave_editor->scrolled_wave_edit_box->wave_edit_box));
 
-  gtk_table_attach(table,
-		   (GtkWidget *) wave_editor->scrolled_wave_edit_box,
-		   1, 2,
-		   2, 3,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+  gtk_widget_set_valign((GtkWidget *) wave_editor->scrolled_wave_edit_box,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) wave_editor->scrolled_wave_edit_box,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) wave_editor->scrolled_wave_edit_box,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) wave_editor->scrolled_wave_edit_box,
+			 TRUE);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) wave_editor->scrolled_wave_edit_box,
+		  1, 2,
+		  1, 1);
 
   gtk_widget_set_events(GTK_WIDGET(wave_editor->scrolled_wave_edit_box->viewport), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
@@ -373,38 +400,51 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   
   /* scrollbars */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_HEIGHT), 1.0);
-  wave_editor->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
-  gtk_table_attach(table,
+
+  wave_editor->vscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
+							       adjustment);
+
+  gtk_widget_set_valign((GtkWidget *) wave_editor->vscrollbar,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) wave_editor->vscrollbar,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
 		   (GtkWidget *) wave_editor->vscrollbar,
-		   2, 3,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+		   2, 2,
+		   1, 1);
 
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH), 1.0);
-  wave_editor->hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
-  gtk_table_attach(table,
+  
+  wave_editor->hscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
+							       adjustment);
+
+  gtk_widget_set_valign((GtkWidget *) wave_editor->hscrollbar,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) wave_editor->hscrollbar,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
 		   (GtkWidget *) wave_editor->hscrollbar,
-		   1, 2,
-		   3, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+		   1, 3,
+		   1, 1);
 
   /* focused wave edit */
   wave_editor->focused_wave_edit = NULL;
 
   /* wave meta */
   wave_editor->wave_meta = ags_wave_meta_new();
-  g_object_set(wave_editor->wave_meta,
-	       "valign", GTK_ALIGN_START,
-	       NULL);  
+
+  gtk_widget_set_valign(wave_editor->wave_meta,
+			GTK_ALIGN_START);  
+
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) wave_editor->wave_meta,
 		     FALSE, FALSE,
 		     0);
 
   /* style context */
-  style_context = gtk_widget_get_style_context(wave_editor);
+  style_context = gtk_widget_get_style_context((GtkWidget *) wave_editor);
   gtk_style_context_add_class(style_context,
 			      "editor");
 }
@@ -566,9 +606,9 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
   gtk_adjustment_set_upper(vscrollbar_adjustment,
 			   v_upper);
 
-  gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(wave_editor->scrolled_wave_edit_box->viewport),
+  gtk_adjustment_set_upper(gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(wave_editor->scrolled_wave_edit_box->viewport)),
 			   v_upper);
-  gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(wave_editor->scrolled_level_box->viewport),
+  gtk_adjustment_set_upper(gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(wave_editor->scrolled_level_box->viewport)),
 			   v_upper);
 
   /* reset horizontal scrollbar */
@@ -623,7 +663,7 @@ ags_wave_editor_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_wave_editor_parent_class)->show(widget);
 
-  gtk_widget_hide(AGS_WAVE_EDITOR(widget)->wave_meta);
+  gtk_widget_hide((GtkWidget *) AGS_WAVE_EDITOR(widget)->wave_meta);
 }
 
 void
@@ -1023,8 +1063,6 @@ ags_wave_editor_paste_wave_all(AgsWaveEditor *wave_editor,
   guint64 current_x;
   gint i;
 
-  GRecMutex *audio_mutex;
-    
   first_x = -1;
 
   /*  */
@@ -1069,12 +1107,12 @@ ags_wave_editor_paste_wave_all(AgsWaveEditor *wave_editor,
       while(child != NULL){
 	if(child->type == XML_ELEMENT_NODE){
 	  if(!xmlStrncmp(child->name,
-			 "buffer",
+			 BAD_CAST "buffer",
 			 5)){
 	    guint64 tmp;
 
 	    tmp = g_ascii_strtoull(xmlGetProp(child,
-					      "x"),
+					      BAD_CAST "x"),
 				   NULL,
 				   10);
 
@@ -1088,7 +1126,7 @@ ags_wave_editor_paste_wave_all(AgsWaveEditor *wave_editor,
       }
 
       x_boundary = g_ascii_strtoull(xmlGetProp(wave_node,
-					       "x-boundary"),
+					       BAD_CAST "x-boundary"),
 				    NULL,
 				    10);
 
@@ -1122,12 +1160,12 @@ ags_wave_editor_paste_wave_all(AgsWaveEditor *wave_editor,
       while(child != NULL){
 	if(child->type == XML_ELEMENT_NODE){
 	  if(!xmlStrncmp(child->name,
-			 "buffer",
+			 BAD_CAST "buffer",
 			 5)){
 	    guint64 tmp;
 
 	    tmp = g_ascii_strtoull(xmlGetProp(child,
-					      "x"),
+					      BAD_CAST "x"),
 				   NULL,
 				   10);
 
@@ -1188,14 +1226,14 @@ ags_wave_editor_paste_wave(AgsWaveEditor *wave_editor,
   while(wave_list_node != NULL){
     if(wave_list_node->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(wave_list_node->name,
-		     "wave-list",
+		     BAD_CAST "wave-list",
 		     14)){
 	wave_node = wave_list_node->children;
 	  
 	while(wave_node != NULL){
 	  if(wave_node->type == XML_ELEMENT_NODE){
 	    if(!xmlStrncmp(wave_node->name,
-			   "wave",
+			   BAD_CAST "wave",
 			   9)){
 	      guint64 offset;
 		
@@ -1205,10 +1243,10 @@ ags_wave_editor_paste_wave(AgsWaveEditor *wave_editor,
 	      while(timestamp_node != NULL){
 		if(timestamp_node->type == XML_ELEMENT_NODE){
 		  if(!xmlStrncmp(timestamp_node->name,
-				 "timestamp",
+				 BAD_CAST "timestamp",
 				 10)){
 		    offset = g_ascii_strtoull(xmlGetProp(timestamp_node,
-							 "offset"),
+							 BAD_CAST "offset"),
 					      NULL,
 					      10);
 		      
@@ -1361,7 +1399,7 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
     /* iterate xml tree */
     while(audio_node != NULL){
       if(audio_node->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp("audio", audio_node->name, 6)){
+	if(!xmlStrncmp(BAD_CAST "audio", audio_node->name, 6)){
 	  wave_node = audio_node->children;
 	
 	  //	  g_message("paste");
@@ -1406,8 +1444,6 @@ ags_wave_editor_copy(AgsWaveEditor *wave_editor)
   AgsMachine *machine;
   AgsNotebook *notebook;
   
-  AgsWave *wave;
-
   xmlDoc *clipboard;
   xmlNode *audio_node, *wave_list_node, *wave_node;
 
@@ -1482,7 +1518,7 @@ ags_wave_editor_copy(AgsWaveEditor *wave_editor)
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
-			   buffer, size);
+			   (gchar *) buffer, size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
 
     xmlFreeDoc(clipboard);
@@ -1495,8 +1531,6 @@ ags_wave_editor_cut(AgsWaveEditor *wave_editor)
   AgsMachine *machine;
   AgsNotebook *notebook;
   
-  AgsWave *wave;
-
   xmlDoc *clipboard;
   xmlNode *audio_node;
   xmlNode *wave_list_node, *wave_node;
@@ -1574,7 +1608,7 @@ ags_wave_editor_cut(AgsWaveEditor *wave_editor)
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
-			   buffer, size);
+			   (gchar *) buffer, size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
 
     xmlFreeDoc(clipboard);

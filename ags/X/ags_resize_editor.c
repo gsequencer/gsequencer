@@ -139,11 +139,11 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
 		     0);
 
   /* audio channels */
-  label = (GtkLabel *) gtk_label_new(i18n("audio channels"));
+  label = (GtkLabel *) gtk_label_new(i18n("audio channels count"));
 
-  gtk_widget_set_valign(label,
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
@@ -153,9 +153,9 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
 
   resize_editor->audio_channels = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1024.0, 1.0);
 
-  gtk_widget_set_valign(resize_editor->audio_channels,
+  gtk_widget_set_valign((GtkWidget *) resize_editor->audio_channels,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(resize_editor->audio_channels,
+  gtk_widget_set_halign((GtkWidget *) resize_editor->audio_channels,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
@@ -164,11 +164,11 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
 		  1, 1);
 
   /* output pads */
-  label = (GtkLabel *) gtk_label_new(i18n("outputs"));
+  label = (GtkLabel *) gtk_label_new(i18n("output pads count"));
 
-  gtk_widget_set_valign(label,
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
@@ -178,9 +178,9 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
 
   resize_editor->output_pads = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1024.0, 1.0);
 
-  gtk_widget_set_valign(resize_editor->output_pads,
+  gtk_widget_set_valign((GtkWidget *) resize_editor->output_pads,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(resize_editor->output_pads,
+  gtk_widget_set_halign((GtkWidget *) resize_editor->output_pads,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
@@ -189,11 +189,11 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
 		   1, 1);
 
   /* input pads */
-  label = (GtkLabel *) gtk_label_new(i18n("inputs"));
+  label = (GtkLabel *) gtk_label_new(i18n("input pads count"));
 
-  gtk_widget_set_valign(label,
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(label,
+  gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
@@ -203,9 +203,9 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
 
   resize_editor->input_pads = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1024.0, 1.0);
 
-  gtk_widget_set_valign(resize_editor->input_pads,
+  gtk_widget_set_valign((GtkWidget *) resize_editor->input_pads,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign(resize_editor->input_pads,
+  gtk_widget_set_halign((GtkWidget *) resize_editor->input_pads,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
