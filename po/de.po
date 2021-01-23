@@ -1,0 +1,1523 @@
+# GSequencer - Advanced GTK Sequencer 
+# Copyright (C) 2005-2021 Joël Krähemann
+#
+# This file is part of GSequencer.
+#
+# GSequencer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# GSequencer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: gsequencer 3.7.24\n"
+"Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
+"POT-Creation-Date: 2021-01-14 07:03+0100\n"
+"PO-Revision-Date: 2021-01-03 08:52+0100\n"
+"Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
+"Language-Team: Deutsch <jkraehemann@gmail.com>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ags/X/ags_audio_preferences.c:188
+msgid "JACK driver"
+msgstr "JACK Treiber"
+
+#: ags/X/ags_audio_preferences.c:204
+msgid "JACK server"
+msgstr "JACK Dienst"
+
+#: ags/X/ags_audio_preferences.c:220
+msgid "start"
+msgstr "starten"
+
+#: ags/X/ags_audio_preferences.c:226
+msgid "stop"
+msgstr "anhalten"
+
+#: ags/X/ags_automation_editor.c:261
+msgid "automation"
+msgstr "Automation"
+
+#: ags/X/ags_automation_editor.c:301 ags/X/ags_preferences.c:182
+msgid "audio"
+msgstr "Audio"
+
+#: ags/X/ags_automation_editor.c:394 ags/X/ags_connection_editor.c:424
+#: ags/X/ags_machine_editor.c:224
+msgid "output"
+msgstr "Ausgang"
+
+#: ags/X/ags_automation_editor.c:419 ags/X/ags_automation_editor.c:525
+#: ags/X/ags_wave_editor.c:297
+msgid "line"
+msgstr "Line"
+
+#: ags/X/ags_automation_editor.c:500 ags/X/ags_connection_editor.c:444
+#: ags/X/ags_machine_editor.c:231 ags/X/machine/ags_audiorec.c:345
+msgid "input"
+msgstr "Eingang"
+
+#: ags/X/ags_bulk_member.c:709 ags/X/machine/ags_dssi_bridge.c:375
+#: ags/X/machine/ags_live_dssi_bridge.c:378
+msgid "Plugin file not present"
+msgstr "Plugin Datei nicht vorhanden"
+
+#: ags/X/ags_connection_editor.c:206
+msgid "connections"
+msgstr "Verbindungen"
+
+#: ags/X/ags_connection_editor.c:459
+msgid "connect output"
+msgstr "Ausgang verbinden"
+
+#: ags/X/ags_connection_editor.c:473
+msgid "connect input"
+msgstr "Eingang verbinden"
+
+#: ags/X/ags_context_menu.c:126 ags/X/ags_menu_bar.c:123
+msgid "_File"
+msgstr "_Datei"
+
+#: ags/X/ags_context_menu.c:132 ags/X/ags_menu_bar.c:129
+msgid "_Open"
+msgstr "_Öffnen"
+
+#: ags/X/ags_context_menu.c:135 ags/X/ags_menu_bar.c:132
+msgid "_Save"
+msgstr "_Speichern"
+
+#: ags/X/ags_context_menu.c:138 ags/X/ags_menu_bar.c:135
+msgid "Save as"
+msgstr "Speichern unter"
+
+#: ags/X/ags_context_menu.c:144 ags/X/ags_export_window.c:342
+#: ags/X/ags_machine.c:3663 ags/X/ags_menu_bar.c:141
+msgid "export"
+msgstr "exportieren"
+
+#: ags/X/ags_context_menu.c:150 ags/X/ags_menu_bar.c:147
+msgid "_Quit"
+msgstr "Beenden"
+
+#: ags/X/ags_context_menu.c:154 ags/X/ags_menu_bar.c:151
+msgid "_Edit"
+msgstr "_Bearbeiten"
+
+#: ags/X/ags_context_menu.c:166 ags/X/ags_menu_bar.c:163
+msgid "Add"
+msgstr "Hinzufügen"
+
+#: ags/X/ags_context_menu.c:172 ags/X/ags_menu_bar.c:169
+msgid "Panel"
+msgstr "Panel"
+
+#: ags/X/ags_context_menu.c:175 ags/X/ags_menu_bar.c:172
+msgid "Mixer"
+msgstr "Mixer"
+
+#: ags/X/ags_context_menu.c:178 ags/X/ags_menu_bar.c:175
+msgid "Spectrometer"
+msgstr "Spectrometer"
+
+#: ags/X/ags_context_menu.c:181 ags/X/ags_menu_bar.c:178
+msgid "Equalizer"
+msgstr "Equalizer"
+
+#: ags/X/ags_context_menu.c:184 ags/X/ags_menu_bar.c:181
+msgid "Drum"
+msgstr "Drum"
+
+#: ags/X/ags_context_menu.c:187 ags/X/ags_menu_bar.c:184
+msgid "Matrix"
+msgstr "Matrix"
+
+#: ags/X/ags_context_menu.c:190 ags/X/ags_menu_bar.c:187
+msgid "Synth"
+msgstr "Synth"
+
+#: ags/X/ags_context_menu.c:193 ags/X/ags_menu_bar.c:190
+msgid "FM Synth"
+msgstr "FM Synth"
+
+#: ags/X/ags_context_menu.c:196 ags/X/ags_menu_bar.c:193
+msgid "Syncsynth"
+msgstr "Syncsynth"
+
+#: ags/X/ags_context_menu.c:199 ags/X/ags_menu_bar.c:196
+msgid "FM Syncsynth"
+msgstr "FM Syncsynth"
+
+#: ags/X/ags_context_menu.c:203 ags/X/ags_menu_bar.c:200
+msgid "FPlayer"
+msgstr "FPlayer"
+
+#: ags/X/ags_context_menu.c:207 ags/X/ags_menu_bar.c:204
+msgid "SF2 Synth"
+msgstr "SF2 Synth"
+
+#: ags/X/ags_context_menu.c:212 ags/X/ags_menu_bar.c:209
+msgid "Sampler"
+msgstr "Sampler"
+
+#: ags/X/ags_context_menu.c:216 ags/X/ags_menu_bar.c:213
+msgid "SFZ Synth"
+msgstr "SFZ Synth"
+
+#: ags/X/ags_context_menu.c:220 ags/X/ags_menu_bar.c:217
+msgid "Audiorec"
+msgstr "Audiorec"
+
+#: ags/X/ags_context_menu.c:224 ags/X/ags_menu_bar.c:221
+msgid "Desk"
+msgstr "Desk"
+
+#: ags/X/ags_context_menu.c:229 ags/X/ags_menu_bar.c:226
+msgid "Automation"
+msgstr "Automation"
+
+#: ags/X/ags_context_menu.c:235 ags/X/ags_menu_bar.c:232
+msgid "Wave"
+msgstr "Wellenform"
+
+#: ags/X/ags_context_menu.c:244 ags/X/ags_menu_bar.c:241
+msgid "Preferences"
+msgstr "Einstellungen"
+
+#: ags/X/ags_context_menu.c:254 ags/X/ags_machine.c:3704
+#: ags/X/ags_menu_bar.c:251
+msgid "import"
+msgstr "importieren"
+
+#: ags/X/ags_context_menu.c:257 ags/X/ags_menu_bar.c:254
+msgid "export track"
+msgstr "Track exportieren"
+
+#: ags/X/ags_context_menu.c:263 ags/X/ags_menu_bar.c:260
+msgid "playback"
+msgstr "abspielen"
+
+#: ags/X/ags_context_menu.c:269 ags/X/ags_menu_bar.c:266
+msgid "_Help"
+msgstr "_Hilfe"
+
+#: ags/X/ags_context_menu.c:275 ags/X/ags_menu_bar.c:272
+msgid "Online help"
+msgstr "Online Hilfe"
+
+#: ags/X/ags_context_menu.c:278 ags/X/ags_menu_bar.c:275
+msgid "About"
+msgstr "Über"
+
+#: ags/X/ags_dssi_browser.c:152 ags/X/ags_ladspa_browser.c:145
+#: ags/X/ags_lv2_browser.c:156 ags/X/machine/ags_audiorec.c:284
+msgid "filename: "
+msgstr "Dateiname: "
+
+#: ags/X/ags_dssi_browser.c:181 ags/X/ags_ladspa_browser.c:188
+#: ags/X/ags_lv2_browser.c:224
+msgid "effect: "
+msgstr "Effect: "
+
+#: ags/X/ags_dssi_browser.c:204 ags/X/ags_ladspa_browser.c:210
+msgid "Label: "
+msgstr "Label: "
+
+#: ags/X/ags_dssi_browser.c:214 ags/X/ags_ladspa_browser.c:220
+msgid "Maker: "
+msgstr "Hersteller: "
+
+#: ags/X/ags_dssi_browser.c:224 ags/X/ags_ladspa_browser.c:230
+msgid "Copyright: "
+msgstr "Copyright: "
+
+#: ags/X/ags_dssi_browser.c:233 ags/X/ags_ladspa_browser.c:239
+msgid "Ports: "
+msgstr "Ports: "
+
+#: ags/X/ags_dssi_browser_callbacks.c:147
+#: ags/X/ags_dssi_browser_callbacks.c:224
+#: ags/X/ags_ladspa_browser_callbacks.c:150
+#: ags/X/ags_ladspa_browser_callbacks.c:227
+msgid "Label"
+msgstr "Label"
+
+#: ags/X/ags_dssi_browser_callbacks.c:156
+#: ags/X/ags_dssi_browser_callbacks.c:231
+#: ags/X/ags_ladspa_browser_callbacks.c:159
+#: ags/X/ags_ladspa_browser_callbacks.c:234
+msgid "Maker"
+msgstr "Hersteller"
+
+#: ags/X/ags_dssi_browser_callbacks.c:165
+#: ags/X/ags_dssi_browser_callbacks.c:238
+#: ags/X/ags_ladspa_browser_callbacks.c:168
+#: ags/X/ags_ladspa_browser_callbacks.c:241
+msgid "Copyright"
+msgstr "Copyright"
+
+#: ags/X/ags_effect_line.c:534 ags/X/ags_line.c:559
+msgid "group"
+msgstr "Gruppe"
+
+#: ags/X/ags_effect_line.c:992 ags/X/ags_effect_line.c:998
+#: ags/X/ags_line.c:1083 ags/X/ags_line.c:1089 ags/X/ags_notation_editor.c:321
+msgid "channel"
+msgstr "Kanal"
+
+#: ags/X/ags_export_soundcard.c:167 ags/X/ags_sequencer_editor.c:146
+#: ags/X/ags_soundcard_editor.c:159
+msgid "backend"
+msgstr "Backend"
+
+#: ags/X/ags_export_soundcard.c:220 ags/X/ags_input_collection_editor.c:243
+#: ags/X/ags_output_collection_editor.c:243 ags/X/ags_soundcard_editor.c:214
+msgid "soundcard"
+msgstr "Soundkarte"
+
+#: ags/X/ags_export_soundcard.c:240 ags/X/export/ags_wave_export_dialog.c:210
+#: ags/X/machine/ags_audiorec.c:265 ags/X/machine/ags_pitch_sampler.c:253
+msgid "file"
+msgstr "datei"
+
+#: ags/X/ags_export_soundcard.c:268 ags/X/export/ags_wave_export_dialog.c:227
+msgid "open"
+msgstr "öffnen"
+
+#: ags/X/ags_export_soundcard.c:275 ags/X/export/ags_wave_export_dialog.c:312
+msgid "output format"
+msgstr "ausgabe format"
+
+#: ags/X/ags_export_window.c:186
+msgid "export to audio data"
+msgstr "exportiere in audio daten"
+
+#: ags/X/ags_export_window.c:208
+msgid "live export"
+msgstr "live export"
+
+#: ags/X/ags_export_window.c:220 ags/X/ags_navigation.c:298
+msgid "exclude sequencers"
+msgstr "ausschliessen der Sequenzern"
+
+#: ags/X/ags_export_window.c:236
+msgid "mode"
+msgstr "Modus"
+
+#: ags/X/ags_export_window.c:263
+msgid "tact"
+msgstr "Takt"
+
+#: ags/X/ags_export_window.c:285
+msgid "time"
+msgstr "Zeit"
+
+#: ags/X/ags_generic_preferences.c:141
+msgid "autosave thread"
+msgstr "automatisches Speichern"
+
+#: ags/X/ags_generic_preferences.c:155
+msgid "segmentation"
+msgstr "Segmentierung"
+
+#: ags/X/ags_generic_preferences.c:179
+msgid "engine mode"
+msgstr "Engine Modus"
+
+#: ags/X/ags_generic_preferences.c:199
+msgid "rt-safe"
+msgstr "RT-Sicher"
+
+#: ags/X/ags_generic_preferences.c:213
+msgid "GUI scale factor"
+msgstr "GUI Skalierungs faktor"
+
+#: ags/X/ags_input_collection_editor.c:195
+#: ags/X/ags_link_collection_editor.c:249
+#: ags/X/ags_output_collection_editor.c:195
+msgid "first line"
+msgstr ""
+
+#: ags/X/ags_input_collection_editor.c:219
+#: ags/X/ags_link_collection_editor.c:302
+#: ags/X/ags_output_collection_editor.c:219
+msgid "count"
+msgstr "Anzahl"
+
+#: ags/X/ags_input_collection_editor.c:265
+#: ags/X/ags_output_collection_editor.c:265
+#: ags/X/editor/ags_envelope_info.c:216
+msgid "audio channel"
+msgstr "Audio Kanal"
+
+#: ags/X/ags_link_collection_editor.c:202
+msgid "link"
+msgstr "Verknüpfung"
+
+#: ags/X/ags_link_collection_editor.c:276
+msgid "first link line"
+msgstr "Erste Verknüpfung mit Line"
+
+#: ags/X/ags_link_editor_callbacks.c:185
+msgid "select audio file"
+msgstr ""
+
+#: ags/X/ags_link_editor_callbacks.c:200
+msgid "audio channel: "
+msgstr "Audio Kanal: "
+
+#: ags/X/ags_lv2_browser.c:244 ags/X/ags_lv2_browser_callbacks.c:273
+#: ags/X/ags_lv2_browser_callbacks.c:396
+msgid "Name"
+msgstr "Name"
+
+#: ags/X/ags_lv2_browser.c:257 ags/X/ags_lv2_browser_callbacks.c:283
+#: ags/X/ags_lv2_browser_callbacks.c:405
+msgid "Homepage"
+msgstr "Homepage"
+
+#: ags/X/ags_lv2_browser.c:270 ags/X/ags_lv2_browser_callbacks.c:293
+#: ags/X/ags_lv2_browser_callbacks.c:414
+msgid "M-Box"
+msgstr "M-Box"
+
+#: ags/X/ags_lv2_browser.c:283 ags/X/ags_lv2_browser_callbacks.c:304
+#: ags/X/ags_lv2_browser_callbacks.c:423
+msgid "Ports"
+msgstr "Ports"
+
+#: ags/X/ags_machine.c:2948 ags/X/machine/ags_audiorec_callbacks.c:64
+#: ags/X/machine/ags_pitch_sampler_callbacks.c:65
+msgid "Open audio files"
+msgstr "Öffne Audio-Dateien"
+
+#: ags/X/ags_machine.c:2956
+msgid "open in new channel"
+msgstr "In einem neuen Kanal öffnen"
+
+#: ags/X/ags_machine.c:2961
+msgid "overwrite existing links"
+msgstr "Überschreibe bestehende Verknüpfungen"
+
+#: ags/X/ags_machine.c:3469 ags/X/editor/ags_pattern_envelope.c:656
+msgid "move up"
+msgstr "Nach oben verschieben"
+
+#: ags/X/ags_machine.c:3472 ags/X/editor/ags_pattern_envelope.c:663
+msgid "move down"
+msgstr "Nach unten verschieben"
+
+#: ags/X/ags_machine.c:3475
+msgid "hide"
+msgstr "verstecken"
+
+#: ags/X/ags_machine.c:3478
+msgid "show"
+msgstr "einblenden"
+
+#: ags/X/ags_machine.c:3481
+msgid "destroy"
+msgstr "zerstören"
+
+#: ags/X/ags_machine.c:3484 ags/X/ags_machine_callbacks.c:259
+msgid "rename"
+msgstr "unbenennen"
+
+#: ags/X/ags_machine.c:3487 ags/X/ags_machine_callbacks.c:323
+msgid "rename audio"
+msgstr "Audio unbenennen"
+
+#: ags/X/ags_machine.c:3490 ags/X/ags_machine_callbacks.c:406
+msgid "reposition audio"
+msgstr "Audio neu positionieren"
+
+#: ags/X/ags_machine.c:3493 ags/X/ags_machine_editor.c:203
+msgid "properties"
+msgstr "Einstellungen"
+
+#: ags/X/ags_machine.c:3496
+msgid "sticky controls"
+msgstr "klebrige Steuerelemente"
+
+#: ags/X/ags_machine.c:3562 ags/X/editor/ags_automation_meta.c:590
+#: ags/X/editor/ags_notation_meta.c:486 ags/X/editor/ags_pattern_envelope.c:225
+#: ags/X/machine/ags_drum_input_pad.c:159
+msgid "edit"
+msgstr "bearbeiten"
+
+#: ags/X/ags_machine.c:3573
+msgid "copy pattern"
+msgstr "Muster kopieren"
+
+#: ags/X/ags_machine.c:3583
+msgid "paste pattern"
+msgstr "Muster einfügen"
+
+#: ags/X/ags_machine.c:3593
+msgid "envelope"
+msgstr "Envelope"
+
+#: ags/X/ags_machine.c:3622
+msgid "connection"
+msgstr "Verbindung"
+
+#: ags/X/ags_machine.c:3633
+msgid "audio connection"
+msgstr "Audioverbindung"
+
+#: ags/X/ags_machine.c:3643
+msgid "MIDI dialog"
+msgstr "MIDI Dialog"
+
+#: ags/X/ags_machine.c:3674
+msgid "MIDI export"
+msgstr "MIDI exportieren"
+
+#: ags/X/ags_machine.c:3684
+msgid "Audio export"
+msgstr "Audio exportieren"
+
+#: ags/X/ags_machine.c:3715
+msgid "MIDI import"
+msgstr "MIDI importieren"
+
+#: ags/X/ags_machine.c:3725
+msgid "Audio import"
+msgstr "Audio importieren"
+
+#: ags/X/ags_machine_editor.c:239
+msgid "link output"
+msgstr "Ausgabe verknüpfen"
+
+#: ags/X/ags_machine_editor.c:246
+msgid "link input"
+msgstr "Eingabe verknüpfen"
+
+#: ags/X/ags_machine_editor.c:252
+msgid "resize channels"
+msgstr "Kanal grösse anpassen"
+
+#: ags/X/ags_midi_dialog.c:185
+msgid "MIDI connection"
+msgstr "MIDI Verbindung"
+
+#: ags/X/ags_midi_dialog.c:210
+msgid "midi channel"
+msgstr "MIDI Kanal"
+
+#: ags/X/ags_midi_dialog.c:253
+msgid "audio start mapping"
+msgstr "Audio Anfang Zuweisung"
+
+#: ags/X/ags_midi_dialog.c:275
+msgid "audio end mapping"
+msgstr "Audio Ende Zuweisung"
+
+#: ags/X/ags_midi_dialog.c:297
+msgid "midi start mapping"
+msgstr "MIDI Anfang Zuweisung"
+
+#: ags/X/ags_midi_dialog.c:319
+msgid "midi end mapping"
+msgstr "MIDI Ende Zuweisung"
+
+#: ags/X/ags_midi_dialog.c:355
+msgid "midi device"
+msgstr "MIDI Gerät"
+
+#: ags/X/ags_navigation.c:203
+msgid "bpm"
+msgstr "BPM"
+
+#: ags/X/ags_navigation.c:243 ags/X/machine/ags_drum.c:310
+msgid "loop"
+msgstr "schleifen"
+
+#: ags/X/ags_navigation.c:276
+msgid "loop L"
+msgstr "Schleife L"
+
+#: ags/X/ags_navigation.c:282
+msgid "loop R"
+msgstr "Schleife R"
+
+#: ags/X/ags_notation_editor.c:289
+msgid "notation"
+msgstr "Notation"
+
+#: ags/X/ags_online_help_window.c:129 ags/X/ags_online_help_window.c:272
+msgid "online help"
+msgstr "Online Hilfe"
+
+#: ags/X/ags_online_help_window.c:171
+msgid "Place"
+msgstr "Ort"
+
+#: ags/X/ags_osc_server_preferences.c:145
+msgid "Note: the fields below are applied immediately"
+msgstr "Hinweis: die Felder unten, werden sofort zugewiesen"
+
+#: ags/X/ags_osc_server_preferences.c:162
+msgid "auto-start OSC server"
+msgstr "Automatischer start des OSC Dienst"
+
+#: ags/X/ags_osc_server_preferences.c:180
+msgid "start OSC server"
+msgstr "Starte OSC Dienst"
+
+#: ags/X/ags_osc_server_preferences.c:186
+msgid "stop OSC server"
+msgstr "Stoppe OSC Dienst"
+
+#: ags/X/ags_osc_server_preferences.c:193
+msgid "listen on any address"
+msgstr "Horche auf jeder Adresse"
+
+#: ags/X/ags_osc_server_preferences.c:202
+msgid "enable IPv4"
+msgstr "IPv4 einschalten"
+
+#: ags/X/ags_osc_server_preferences.c:212
+msgid "IPv4 address"
+msgstr "IPv4 Adresse"
+
+#: ags/X/ags_osc_server_preferences.c:233
+msgid "enable IPv6"
+msgstr "IPv6 einschalten"
+
+#: ags/X/ags_osc_server_preferences.c:243
+msgid "IPv6 address"
+msgstr "IPv6 Adresse"
+
+#: ags/X/ags_osc_server_preferences.c:265 ags/X/ags_server_preferences.c:171
+msgid "port"
+msgstr "Port"
+
+#: ags/X/ags_osc_server_preferences.c:291
+msgid "monitor timeout"
+msgstr "Monitoring Timeout"
+
+#: ags/X/ags_pad_editor.c:461
+msgid "pad"
+msgstr "Bündel"
+
+#: ags/X/ags_performance_preferences.c:134
+msgid "Auto-sense on stream"
+msgstr "Automatischer Sinn des Stroms"
+
+#: ags/X/ags_performance_preferences.c:141
+msgid "Super threaded - audio"
+msgstr "Super threaded - audio"
+
+#: ags/X/ags_performance_preferences.c:148
+msgid "Super threaded - channel"
+msgstr "Super threaded - channel"
+
+#: ags/X/ags_performance_preferences.c:162
+msgid "thread pool - max unused threads"
+msgstr "Thread Pool - maximum unbenützte Threads"
+
+#: ags/X/ags_performance_preferences.c:184
+msgid "max precision of threads [Hz]"
+msgstr "Maximale Präzision der Threads [Hz]"
+
+#: ags/X/ags_plugin_browser.c:147
+msgid "Plugin browser"
+msgstr "Plugin Browser"
+
+#: ags/X/ags_plugin_browser.c:161
+msgid "Plugin type:"
+msgstr "Plugin Art:"
+
+#: ags/X/ags_preferences.c:155
+msgid "preferences"
+msgstr "Einstellungen"
+
+#: ags/X/ags_preferences.c:173
+msgid "generic"
+msgstr "Generisch"
+
+#: ags/X/ags_preferences.c:191
+msgid "midi"
+msgstr "MIDI"
+
+#: ags/X/ags_preferences.c:200
+msgid "performance"
+msgstr "Leistung"
+
+#: ags/X/ags_preferences.c:213
+msgid "OSC server"
+msgstr "OSC Dienst"
+
+#: ags/X/ags_preferences.c:224
+msgid "server"
+msgstr "Dienst"
+
+#: ags/X/ags_property_editor.c:102 ags/X/editor/ags_envelope_editor.c:157
+#: ags/X/export/ags_machine_collection_entry.c:177
+#: ags/X/import/ags_track_collection_mapper.c:224
+#: ags/X/machine/ags_ffplayer.c:427 ags/X/machine/ags_pitch_sampler.c:323
+msgid "enabled"
+msgstr "eingeschaltet"
+
+#: ags/X/ags_quit_dialog.c:140
+msgid "accept all"
+msgstr "akzeptiere alle"
+
+#: ags/X/ags_quit_dialog.c:148
+msgid "Do you want to save before quit?"
+msgstr "Möchtest du speichern vor dem schliessen?"
+
+#: ags/X/ags_quit_dialog.c:159
+msgid "Yes"
+msgstr "Ja"
+
+#: ags/X/ags_quit_dialog.c:163
+msgid "No"
+msgstr "Nein"
+
+#: ags/X/ags_quit_dialog.c:167
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: ags/X/ags_quit_dialog_callbacks.c:51
+msgid "Do you want to fast export before quit?"
+msgstr "Möchtest du eine Schnell-Export machen vor dem schliessen?"
+
+#: ags/X/ags_resize_editor.c:152 ags/X/ags_soundcard_editor.c:300
+msgid "audio channels"
+msgstr "Audio Kanäle"
+
+#: ags/X/ags_resize_editor.c:179
+msgid "outputs"
+msgstr "Ausgang"
+
+#: ags/X/ags_resize_editor.c:206
+msgid "inputs"
+msgstr "Eingang"
+
+#: ags/X/ags_sequencer_editor.c:182
+msgid "MIDI card"
+msgstr "MIDI Karte"
+
+#: ags/X/ags_server_preferences.c:137
+msgid "start server"
+msgstr "Starte Dienst"
+
+#: ags/X/ags_server_preferences.c:149
+msgid "address"
+msgstr "Adresse"
+
+#: ags/X/ags_server_preferences.c:193
+msgid "username"
+msgstr "Benutzername"
+
+#: ags/X/ags_server_preferences.c:215
+msgid "password"
+msgstr "Passwort"
+
+#: ags/X/ags_soundcard_editor.c:264
+msgid "capability"
+msgstr "Fähigkeit"
+
+#: ags/X/ags_soundcard_editor.c:324
+msgid "samplerate"
+msgstr "Wiederholrate"
+
+#: ags/X/ags_soundcard_editor.c:347
+msgid "buffer size"
+msgstr "Puffer grösse"
+
+#: ags/X/ags_soundcard_editor.c:371
+msgid "format"
+msgstr "Format"
+
+#: ags/X/ags_soundcard_editor.c:406
+msgid "use cache"
+msgstr "benutze Zwischenspeicher"
+
+#: ags/X/ags_soundcard_editor.c:420
+msgid "cache buffer size"
+msgstr "Zwischenspeicher Puffer grösse"
+
+#: ags/X/ags_soundcard_editor.c:465
+msgid "WASAPI share mode"
+msgstr "WASAPI Teilungs Modus"
+
+#: ags/X/ags_soundcard_editor.c:493
+msgid "WASAPI buffer size"
+msgstr "WASAPI Puffer grösse"
+
+#: ags/X/ags_wave_editor.c:259 ags/X/machine/ags_fm_oscillator.c:158
+#: ags/X/machine/ags_oscillator.c:152
+msgid "wave"
+msgstr "Wellenform"
+
+#: ags/X/ags_window_callbacks.c:122 ags/X/ags_window_callbacks.c:150
+msgid "LADSPA"
+msgstr "LADSPA"
+
+#: ags/X/ags_window_callbacks.c:126 ags/X/ags_window_callbacks.c:141
+#: ags/X/ags_window_callbacks.c:154 ags/X/ags_window_callbacks.c:169
+msgid "DSSI"
+msgstr "DSSI"
+
+#: ags/X/ags_window_callbacks.c:130 ags/X/ags_window_callbacks.c:145
+#: ags/X/ags_window_callbacks.c:158 ags/X/ags_window_callbacks.c:173
+msgid "Lv2"
+msgstr "Lv2"
+
+#: ags/X/ags_xorg_application_context.c:3413
+#: ags/audio/ags_audio_application_context.c:2141
+#: ags/audio/task/ags_apply_sound_config.c:902
+#, c-format
+msgid "unknown soundcard backend - %s"
+msgstr "unbekannte Soundkarten Schnittstelle - %s"
+
+#: ags/X/ags_xorg_application_context.c:3423
+#: ags/audio/ags_audio_application_context.c:2151
+#: ags/audio/task/ags_apply_sound_config.c:912
+msgid "unknown soundcard backend - NULL"
+msgstr "unbekannte Soundkarten Schnittstelle - NULL"
+
+#: ags/X/ags_xorg_application_context.c:3665
+#: ags/audio/ags_audio_application_context.c:2393
+#: ags/audio/task/ags_apply_sound_config.c:1152
+#, c-format
+msgid "unknown sequencer backend - %s"
+msgstr "unbekannte Sequenzer Schnittstelle - %s"
+
+#: ags/X/ags_xorg_application_context.c:3675
+#: ags/audio/ags_audio_application_context.c:2403
+#: ags/audio/task/ags_apply_sound_config.c:1162
+msgid "unknown sequencer backend - NULL"
+msgstr "unbekannte Sequenzer Schnittstelle - NULL"
+
+#: ags/X/editor/ags_automation_meta.c:120 ags/X/editor/ags_notation_meta.c:119
+#: ags/X/editor/ags_wave_meta.c:119
+msgid "machine type: "
+msgstr "Maschinen Typ: "
+
+#: ags/X/editor/ags_automation_meta.c:141 ags/X/editor/ags_notation_meta.c:140
+#: ags/X/editor/ags_wave_meta.c:140
+msgid "machine name: "
+msgstr "Machinen Name: "
+
+#: ags/X/editor/ags_automation_meta.c:162 ags/X/editor/ags_notation_meta.c:161
+#: ags/X/editor/ags_wave_meta.c:161
+msgid "audio channels: "
+msgstr "Audio Kanäle: "
+
+#: ags/X/editor/ags_automation_meta.c:183 ags/X/editor/ags_notation_meta.c:182
+#: ags/X/editor/ags_wave_meta.c:182
+msgid "output pads: "
+msgstr "Ausgangs Bündel: "
+
+#: ags/X/editor/ags_automation_meta.c:204 ags/X/editor/ags_notation_meta.c:203
+#: ags/X/editor/ags_wave_meta.c:203
+msgid "input pads: "
+msgstr "Eingangs Bündel: "
+
+#: ags/X/editor/ags_automation_meta.c:225 ags/X/editor/ags_notation_meta.c:224
+#: ags/X/editor/ags_wave_meta.c:224
+msgid "editor tool: "
+msgstr "Schreibwerkzeug: "
+
+#: ags/X/editor/ags_automation_meta.c:246 ags/X/editor/ags_notation_meta.c:245
+#: ags/X/editor/ags_wave_meta.c:245
+msgid "active audio channel: "
+msgstr "Aktiver Audio Kanal: "
+
+#: ags/X/editor/ags_automation_meta.c:268
+msgid "active port: "
+msgstr "Aktiver Port: "
+
+#: ags/X/editor/ags_automation_meta.c:290
+msgid "focused port: "
+msgstr "Fokusierter Port: "
+
+#: ags/X/editor/ags_automation_meta.c:311
+msgid "range upper: "
+msgstr "Bereich Obergrenze: "
+
+#: ags/X/editor/ags_automation_meta.c:332
+msgid "range lower: "
+msgstr "Bereich Untergrenze: "
+
+#: ags/X/editor/ags_automation_meta.c:353 ags/X/editor/ags_notation_meta.c:267
+#: ags/X/editor/ags_wave_meta.c:267
+msgid "cursor x-position: "
+msgstr "Wagenlauf x-Position: "
+
+#: ags/X/editor/ags_automation_meta.c:374 ags/X/editor/ags_notation_meta.c:288
+msgid "cursor y-position: "
+msgstr "Wagenlauf y-Position: "
+
+#: ags/X/editor/ags_automation_meta.c:395
+msgid "current acceleration: "
+msgstr "momentane Beschleunigung: "
+
+#: ags/X/editor/ags_automation_meta.c:588 ags/X/editor/ags_notation_meta.c:484
+#: ags/X/editor/ags_wave_meta.c:428
+msgid "position"
+msgstr "positionieren"
+
+#: ags/X/editor/ags_automation_meta.c:592 ags/X/editor/ags_notation_meta.c:488
+msgid "clear"
+msgstr "löschen"
+
+#: ags/X/editor/ags_automation_meta.c:594 ags/X/editor/ags_notation_meta.c:490
+#: ags/X/editor/ags_wave_meta.c:430
+msgid "select"
+msgstr "auswählen"
+
+#: ags/X/editor/ags_automation_toolbar.c:127
+#: ags/X/editor/ags_notation_toolbar.c:123 ags/X/editor/ags_sheet_toolbar.c:109
+#: ags/X/editor/ags_wave_toolbar.c:126
+msgid "Position"
+msgstr "positionieren"
+
+#: ags/X/editor/ags_automation_toolbar.c:165
+#: ags/X/editor/ags_notation_toolbar.c:162 ags/X/editor/ags_sheet_toolbar.c:180
+#: ags/X/editor/ags_wave_toolbar.c:139
+msgid "Select"
+msgstr ""
+
+#: ags/X/editor/ags_automation_toolbar.c:235
+#: ags/X/editor/ags_notation_toolbar.c:246 ags/X/editor/ags_wave_toolbar.c:203
+msgid "Tool"
+msgstr "Werkzeug"
+
+#: ags/X/editor/ags_automation_toolbar.c:263
+#: ags/X/editor/ags_notation_toolbar.c:274 ags/X/editor/ags_wave_toolbar.c:232
+msgid "Zoom"
+msgstr "Zoom"
+
+#: ags/X/editor/ags_automation_toolbar.c:289
+msgid "Port"
+msgstr "Port"
+
+#: ags/X/editor/ags_automation_toolbar.c:339
+#: ags/X/editor/ags_notation_toolbar.c:299 ags/X/editor/ags_wave_toolbar.c:257
+msgid "Opacity"
+msgstr "Deckungskraft"
+
+#: ags/X/editor/ags_automation_toolbar.c:1322
+#: ags/X/editor/ags_select_acceleration_dialog.c:188
+msgid "select accelerations"
+msgstr "Beschleuningungen auswählen"
+
+#: ags/X/editor/ags_automation_toolbar.c:1325
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:187
+msgid "ramp accelerations"
+msgstr "Beschleunigungen auframpen"
+
+#: ags/X/editor/ags_automation_toolbar.c:1328
+#: ags/X/editor/ags_notation_toolbar.c:533 ags/X/editor/ags_wave_toolbar.c:437
+msgid "position cursor"
+msgstr "positioniere Wagenlauf"
+
+#: ags/X/editor/ags_automation_toolbar.c:1334
+#: ags/X/editor/ags_wave_toolbar.c:443
+msgid "enable all lines"
+msgstr "Alle Lines einschalten"
+
+#: ags/X/editor/ags_automation_toolbar.c:1337
+#: ags/X/editor/ags_wave_toolbar.c:446
+msgid "disable all lines"
+msgstr "Alle Lines ausschalten"
+
+#: ags/X/editor/ags_crop_note_dialog.c:185
+#: ags/X/editor/ags_notation_toolbar.c:527
+msgid "crop notes"
+msgstr "Noten scheren"
+
+#: ags/X/editor/ags_crop_note_dialog.c:195
+#: ags/X/editor/ags_move_note_dialog.c:204
+msgid "absolute"
+msgstr "absolut"
+
+#: ags/X/editor/ags_crop_note_dialog.c:203
+msgid "in-place"
+msgstr "vor Ort"
+
+#: ags/X/editor/ags_crop_note_dialog.c:211
+msgid "do resize"
+msgstr "grösse ändern"
+
+#: ags/X/editor/ags_crop_note_dialog.c:225
+msgid "crop note"
+msgstr "Noten scheren"
+
+#: ags/X/editor/ags_crop_note_dialog.c:250
+msgid "padding note"
+msgstr "Noten Abstand"
+
+#: ags/X/editor/ags_envelope_dialog.c:174
+msgid "Envelope"
+msgstr "Envelope"
+
+#: ags/X/editor/ags_envelope_dialog.c:200
+msgid "editor"
+msgstr "Editor"
+
+#: ags/X/editor/ags_envelope_dialog.c:211
+msgid "info"
+msgstr "Information"
+
+#: ags/X/editor/ags_envelope_dialog.c:453 ags/X/machine/ags_drum.c:301
+msgid "pattern"
+msgstr "Muster"
+
+#: ags/X/editor/ags_envelope_editor.c:167
+#: ags/X/editor/ags_pattern_envelope.c:239 ags/X/machine/ags_ffplayer.c:305
+#: ags/X/machine/ags_live_lv2_bridge.c:1311 ags/X/machine/ags_lv2_bridge.c:1390
+#: ags/X/machine/ags_sf2_synth.c:351
+msgid "preset"
+msgstr "Voreinstellung"
+
+#: ags/X/editor/ags_envelope_editor.c:282
+#: ags/X/editor/ags_pattern_envelope.c:453
+#: ags/X/machine/ags_fm_oscillator.c:215 ags/X/machine/ags_oscillator.c:207
+msgid "attack"
+msgstr "Angriff"
+
+#: ags/X/editor/ags_envelope_editor.c:324
+#: ags/X/editor/ags_pattern_envelope.c:495
+msgid "decay"
+msgstr "Zunahme"
+
+#: ags/X/editor/ags_envelope_editor.c:366
+#: ags/X/editor/ags_pattern_envelope.c:537
+msgid "sustain"
+msgstr "Erhalten"
+
+#: ags/X/editor/ags_envelope_editor.c:408
+#: ags/X/editor/ags_pattern_envelope.c:579
+msgid "release"
+msgstr "Loslassen"
+
+#: ags/X/editor/ags_envelope_editor.c:450
+#: ags/X/editor/ags_pattern_envelope.c:621
+msgid "ratio"
+msgstr "Verhältnis"
+
+#: ags/X/editor/ags_envelope_editor_callbacks.c:48
+#: ags/X/editor/ags_pattern_envelope_callbacks.c:1049
+msgid "preset name"
+msgstr "Voreinstellungsname"
+
+#: ags/X/editor/ags_envelope_info.c:209 ags/X/editor/ags_pattern_envelope.c:232
+msgid "plot"
+msgstr "plotten"
+
+#: ags/X/editor/ags_envelope_info.c:223
+msgid "Note:x0"
+msgstr "Note:x0"
+
+#: ags/X/editor/ags_envelope_info.c:230
+msgid "Note:x1"
+msgstr "Note:x1"
+
+#: ags/X/editor/ags_envelope_info.c:237
+msgid "Note:y"
+msgstr "Note:y"
+
+#: ags/X/editor/ags_machine_selection.c:136
+msgid "select machines"
+msgstr "Maschinen auswählen"
+
+#: ags/X/editor/ags_machine_selector.c:445
+msgid "add index"
+msgstr "Index hinzufügen"
+
+#: ags/X/editor/ags_machine_selector.c:448
+msgid "remove index"
+msgstr "Index entfernen"
+
+#: ags/X/editor/ags_machine_selector.c:451
+msgid "link index"
+msgstr "Index verknüpfen"
+
+#: ags/X/editor/ags_machine_selector.c:455
+msgid "reverse mapping"
+msgstr "Mapping umkehren"
+
+#: ags/X/editor/ags_machine_selector.c:462
+msgid "shift piano"
+msgstr "Klavier schieben"
+
+#: ags/X/editor/ags_move_note_dialog.c:185
+#: ags/X/editor/ags_notation_toolbar.c:524
+msgid "move notes"
+msgstr "Noten bewegen"
+
+#: ags/X/editor/ags_move_note_dialog.c:196
+msgid "relative"
+msgstr "relativ"
+
+#: ags/X/editor/ags_move_note_dialog.c:218
+msgid "move x"
+msgstr "bewege x"
+
+#: ags/X/editor/ags_move_note_dialog.c:243
+msgid "move y"
+msgstr "bewege y"
+
+#: ags/X/editor/ags_notation_meta.c:309
+msgid "current note: "
+msgstr "momentane Note"
+
+#: ags/X/editor/ags_notation_toolbar.c:205 ags/X/editor/ags_sheet_toolbar.c:208
+msgid "match audio channel"
+msgstr "übereinstimme Audiokanal"
+
+#: ags/X/editor/ags_notation_toolbar.c:212 ags/X/editor/ags_sheet_toolbar.c:215
+msgid "no duplicates"
+msgstr "keine Duplikate"
+
+#: ags/X/editor/ags_notation_toolbar.c:234
+msgid "Invert"
+msgstr "Invertieren"
+
+#: ags/X/editor/ags_notation_toolbar.c:530
+#: ags/X/editor/ags_select_note_dialog.c:184
+msgid "select notes"
+msgstr "Noten auswählen"
+
+#: ags/X/editor/ags_notation_toolbar.c:539
+msgid "enable all audio channels"
+msgstr "Alle Audiokanäle einschalten"
+
+#: ags/X/editor/ags_notation_toolbar.c:542
+msgid "disable all audio channels"
+msgstr "Alle Audiokanäle ausschalten"
+
+#: ags/X/editor/ags_pattern_envelope.c:246
+#: ags/X/editor/ags_pattern_envelope.c:307
+msgid "audio channel start"
+msgstr "Audiokanal Anfang"
+
+#: ags/X/editor/ags_pattern_envelope.c:253
+#: ags/X/editor/ags_pattern_envelope.c:330
+msgid "audio channel end"
+msgstr "Audiokanal Ende"
+
+#: ags/X/editor/ags_pattern_envelope.c:260
+#: ags/X/editor/ags_pattern_envelope.c:353
+msgid "pad start"
+msgstr "Bündel Anfang"
+
+#: ags/X/editor/ags_pattern_envelope.c:267
+#: ags/X/editor/ags_pattern_envelope.c:376
+msgid "pad end"
+msgstr "Bündel Ende"
+
+#: ags/X/editor/ags_pattern_envelope.c:274
+#: ags/X/editor/ags_pattern_envelope.c:399
+msgid "x start"
+msgstr "x Anfang"
+
+#: ags/X/editor/ags_pattern_envelope.c:281
+#: ags/X/editor/ags_pattern_envelope.c:422
+msgid "x end"
+msgstr "x Ende"
+
+#: ags/X/editor/ags_position_automation_cursor_dialog.c:190
+msgid "position automation cursor"
+msgstr "positioniere Wagenlauf"
+
+#: ags/X/editor/ags_position_automation_cursor_dialog.c:200
+#: ags/X/editor/ags_position_notation_cursor_dialog.c:197
+#: ags/X/editor/ags_position_wave_cursor_dialog.c:200
+msgid "set focus"
+msgstr "setze Fokus"
+
+#: ags/X/editor/ags_position_automation_cursor_dialog.c:216
+#: ags/X/editor/ags_position_notation_cursor_dialog.c:213
+#: ags/X/editor/ags_position_wave_cursor_dialog.c:216
+msgid "position x"
+msgstr "positioniere x"
+
+#: ags/X/editor/ags_position_notation_cursor_dialog.c:187
+msgid "position notation cursor"
+msgstr "positioniere Notation's Wagenlauf"
+
+#: ags/X/editor/ags_position_notation_cursor_dialog.c:238
+msgid "position y"
+msgstr "positioniere y"
+
+#: ags/X/editor/ags_position_wave_cursor_dialog.c:190
+msgid "position wave cursor"
+msgstr "positioniere Wellenform Wakenlauf"
+
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:212
+msgid "ramp x0"
+msgstr "x0 rampen"
+
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:239
+msgid "ramp y0"
+msgstr "y0 rampen"
+
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:264
+msgid "ramp x1"
+msgstr "x1 rampen"
+
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:291
+msgid "ramp y1"
+msgstr "y1 rampen"
+
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:316
+msgid "ramp step count"
+msgstr "Rampen Schrittanzahl"
+
+#: ags/X/editor/ags_select_acceleration_dialog.c:199
+#: ags/X/editor/ags_select_buffer_dialog.c:198
+#: ags/X/editor/ags_select_note_dialog.c:194
+msgid "copy selection"
+msgstr "kopiere Auswahl"
+
+#: ags/X/editor/ags_select_acceleration_dialog.c:230
+#: ags/X/editor/ags_select_buffer_dialog.c:214
+#: ags/X/editor/ags_select_note_dialog.c:210
+msgid "select x0"
+msgstr "x0 auswählen"
+
+#: ags/X/editor/ags_select_acceleration_dialog.c:257
+#: ags/X/editor/ags_select_buffer_dialog.c:241
+#: ags/X/editor/ags_select_note_dialog.c:260
+msgid "select x1"
+msgstr "x1 auswählen"
+
+#: ags/X/editor/ags_select_buffer_dialog.c:187
+msgid "select buffers"
+msgstr "selektioniere Puffer"
+
+#: ags/X/editor/ags_select_note_dialog.c:235
+msgid "select y0"
+msgstr "y0 selektionieren"
+
+#: ags/X/editor/ags_select_note_dialog.c:285
+msgid "select y1"
+msgstr "y1 selektionieren"
+
+#: ags/X/editor/ags_sheet_toolbar.c:123
+msgid "1/1"
+msgstr "1/1"
+
+#: ags/X/editor/ags_sheet_toolbar.c:130
+msgid "1/2"
+msgstr "1/2"
+
+#: ags/X/editor/ags_sheet_toolbar.c:137
+msgid "1/4"
+msgstr "1/4"
+
+#: ags/X/editor/ags_sheet_toolbar.c:144
+msgid "1/8"
+msgstr "1/8"
+
+#: ags/X/editor/ags_sheet_toolbar.c:151
+msgid "1/16"
+msgstr "1/16"
+
+#: ags/X/editor/ags_sheet_toolbar.c:158
+msgid "1/32"
+msgstr "1/32"
+
+#: ags/X/editor/ags_wave_toolbar.c:434
+msgid "select audio data"
+msgstr "selektioniere Audiodaten"
+
+#: ags/X/export/ags_machine_collection_entry.c:220
+#: ags/X/import/ags_track_collection_mapper.c:253
+msgid "sequence: "
+msgstr "Sequenz: "
+
+#: ags/X/export/ags_wave_export_dialog.c:197
+msgid "Audio fast export"
+msgstr "Audio schnell Export"
+
+#: ags/X/export/ags_wave_export_dialog.c:241
+msgid "start tact"
+msgstr "Startakt"
+
+#: ags/X/export/ags_wave_export_dialog.c:268
+msgid "end tact"
+msgstr "End-Takt"
+
+#: ags/X/import/ags_track_collection_mapper.c:243
+msgid "instrument: "
+msgstr "Instrument: "
+
+#: ags/X/import/ags_track_collection_mapper.c:340
+#: ags/X/machine/ags_ffplayer.c:320
+msgid "instrument"
+msgstr "Instrument"
+
+#: ags/X/import/ags_track_collection_mapper.c:373
+msgid "sequence"
+msgstr "Sequenz"
+
+#: ags/X/machine/ags_audiorec.c:306 ags/X/machine/ags_ffplayer.c:365
+#: ags/X/machine/ags_pitch_sampler.c:301 ags/X/machine/ags_sf2_synth.c:265
+msgid "loading ...  "
+msgstr "lade ... "
+
+#: ags/X/machine/ags_desk.c:222
+msgid "left"
+msgstr "links"
+
+#: ags/X/machine/ags_desk.c:236
+msgid "right"
+msgstr "rechts"
+
+#: ags/X/machine/ags_desk_pad.c:186
+msgid "grab"
+msgstr "ziehen"
+
+#: ags/X/machine/ags_desk_pad.c:262
+msgid "filename"
+msgstr "Dateiname"
+
+#: ags/X/machine/ags_desk_pad.c:271
+msgid "selected"
+msgstr "ausgewählt"
+
+#: ags/X/machine/ags_drum.c:279
+msgid "kit"
+msgstr "Kit"
+
+#: ags/X/machine/ags_drum.c:290
+msgid "default"
+msgstr "default"
+
+#: ags/X/machine/ags_drum.c:317
+msgid "run"
+msgstr "lauf"
+
+#: ags/X/machine/ags_drum.c:375 ags/X/machine/ags_fm_oscillator.c:226
+#: ags/X/machine/ags_oscillator.c:214
+msgid "length"
+msgstr "Länge"
+
+#: ags/X/machine/ags_drum_input_pad_callbacks.c:50
+msgid "Open File"
+msgstr "Öffne Datei"
+
+#: ags/X/machine/ags_drum_input_pad_callbacks.c:68
+msgid "channel: "
+msgstr "Kanal: "
+
+#: ags/X/machine/ags_dssi_bridge.c:303 ags/X/machine/ags_live_dssi_bridge.c:306
+#: ags/X/machine/ags_live_lv2_bridge.c:1232 ags/X/machine/ags_lv2_bridge.c:1311
+#: ags/X/machine/ags_sf2_synth.c:344
+msgid "program"
+msgstr "Programm"
+
+#: ags/X/machine/ags_equalizer10.c:190
+msgid "28Hz"
+msgstr "28Hz"
+
+#: ags/X/machine/ags_equalizer10.c:216
+msgid "56Hz"
+msgstr "56Hz"
+
+#: ags/X/machine/ags_equalizer10.c:242
+msgid "112Hz"
+msgstr "112Hz"
+
+#: ags/X/machine/ags_equalizer10.c:268
+msgid "224Hz"
+msgstr "224Hz"
+
+#: ags/X/machine/ags_equalizer10.c:294
+msgid "448Hz"
+msgstr "448Hz"
+
+#: ags/X/machine/ags_equalizer10.c:320
+msgid "896Hz"
+msgstr "896Hz"
+
+#: ags/X/machine/ags_equalizer10.c:346
+msgid "1792Hz"
+msgstr "1792Hz"
+
+#: ags/X/machine/ags_equalizer10.c:372
+msgid "3584Hz"
+msgstr "3584Hz"
+
+#: ags/X/machine/ags_equalizer10.c:398
+msgid "7168Hz"
+msgstr "7168Hz"
+
+#: ags/X/machine/ags_equalizer10.c:424
+msgid "14336Hz"
+msgstr "14336Hz"
+
+#: ags/X/machine/ags_equalizer10.c:450
+msgid "pressure"
+msgstr "Druck"
+
+#: ags/X/machine/ags_ffplayer.c:415 ags/X/machine/ags_pitch_sampler.c:312
+msgid "synth generator"
+msgstr "Synth Generator"
+
+#: ags/X/machine/ags_ffplayer.c:441 ags/X/machine/ags_fm_syncsynth.c:268
+#: ags/X/machine/ags_fm_synth.c:200 ags/X/machine/ags_pitch_sampler.c:337
+#: ags/X/machine/ags_sf2_synth.c:373 ags/X/machine/ags_syncsynth.c:271
+#: ags/X/machine/ags_synth.c:199
+msgid "lower"
+msgstr "nieder Grenze"
+
+#: ags/X/machine/ags_ffplayer.c:467 ags/X/machine/ags_pitch_sampler.c:363
+msgid "key count"
+msgstr "Ton Anzahl"
+
+#: ags/X/machine/ags_ffplayer.c:483 ags/X/machine/ags_fm_syncsynth.c:259
+#: ags/X/machine/ags_fm_synth.c:191 ags/X/machine/ags_pitch_sampler.c:379
+#: ags/X/machine/ags_syncsynth.c:262 ags/X/machine/ags_synth.c:190
+msgid "update"
+msgstr "aktualisieren"
+
+#: ags/X/machine/ags_fm_oscillator.c:192 ags/X/machine/ags_fm_oscillator.c:336
+#: ags/X/machine/ags_oscillator.c:184
+msgid "sawtooth"
+msgstr "sawtooth"
+
+#: ags/X/machine/ags_fm_oscillator.c:197 ags/X/machine/ags_fm_oscillator.c:341
+#: ags/X/machine/ags_oscillator.c:189
+msgid "square"
+msgstr "square"
+
+#: ags/X/machine/ags_fm_oscillator.c:202 ags/X/machine/ags_fm_oscillator.c:346
+#: ags/X/machine/ags_oscillator.c:194
+msgid "triangle"
+msgstr "triangle"
+
+#: ags/X/machine/ags_fm_oscillator.c:207 ags/X/machine/ags_fm_oscillator.c:351
+#: ags/X/machine/ags_oscillator.c:199
+msgid "impulse"
+msgstr "impulse"
+
+#: ags/X/machine/ags_fm_oscillator.c:234 ags/X/machine/ags_oscillator.c:221
+msgid "phase"
+msgstr "phase"
+
+#: ags/X/machine/ags_fm_oscillator.c:242 ags/X/machine/ags_oscillator.c:228
+#: ags/X/machine/ags_pitch_sampler_file.c:169
+msgid "frequency"
+msgstr "Frequenz"
+
+#: ags/X/machine/ags_fm_oscillator.c:255 ags/X/machine/ags_oscillator.c:240
+msgid "volume"
+msgstr "Lautstärke"
+
+#: ags/X/machine/ags_fm_oscillator.c:264 ags/X/machine/ags_oscillator.c:249
+msgid "sync"
+msgstr "synchronisieren"
+
+#: ags/X/machine/ags_fm_oscillator.c:303
+msgid "LFO wave"
+msgstr "LFO Welle"
+
+#: ags/X/machine/ags_fm_oscillator.c:359
+msgid "LFO frequency"
+msgstr "LFO Frequenz"
+
+#: ags/X/machine/ags_fm_oscillator.c:372 ags/X/machine/ags_pitch_sampler.c:445
+msgid "LFO depth"
+msgstr "LFO Tiefe"
+
+#: ags/X/machine/ags_fm_oscillator.c:385 ags/X/machine/ags_pitch_sampler.c:466
+msgid "LFO tuning"
+msgstr "LFO Tuning"
+
+#: ags/X/machine/ags_fm_syncsynth.c:256 ags/X/machine/ags_fm_synth.c:188
+#: ags/X/machine/ags_syncsynth.c:259 ags/X/machine/ags_synth.c:187
+msgid "auto update"
+msgstr "automatische Aktualisierung"
+
+#: ags/X/machine/ags_fm_syncsynth.c:293
+#: ags/X/machine/ags_pitch_sampler_file.c:214 ags/X/machine/ags_syncsynth.c:296
+msgid "loop start"
+msgstr "schleifen Anfang"
+
+#: ags/X/machine/ags_fm_syncsynth.c:313
+#: ags/X/machine/ags_pitch_sampler_file.c:237 ags/X/machine/ags_syncsynth.c:316
+msgid "loop end"
+msgstr "schleifen Ende"
+
+#: ags/X/machine/ags_live_lv2_bridge.c:451 ags/X/machine/ags_lv2_bridge.c:430
+msgid "show GUI"
+msgstr "zeige GUI"
+
+#: ags/X/machine/ags_pitch_sampler.c:397
+msgid "enable LFO"
+msgstr "einschalten LFO"
+
+#: ags/X/machine/ags_pitch_sampler.c:405
+msgid "LFO freq"
+msgstr "LFO Frequenz"
+
+#: ags/X/machine/ags_pitch_sampler.c:426
+msgid "LFO phase"
+msgstr "LFO Phase"
+
+#: ags/X/machine/ags_pitch_sampler_file.c:191
+msgid "base key"
+msgstr "Grundton"
+
+#: ags/X/machine/ags_sf2_synth.c:306
+msgid "bank"
+msgstr "Bank"
+
+#: ags/audio/osc/ags_osc_response.c:167
+msgid "assigned OSC message"
+msgstr ""
+
+#: ags/audio/osc/ags_osc_response.c:168
+msgid "The assigned OSC message"
+msgstr ""
+
+#: ags/audio/osc/controller/ags_osc_controller.c:117
+msgid "assigned osc server"
+msgstr ""
+
+#: ags/audio/osc/controller/ags_osc_controller.c:118
+msgid "The assigned osc server"
+msgstr ""
+
+#: ags/audio/osc/xmlrpc/ags_osc_xmlrpc_controller.c:182
+msgid "assigned OSC XMLRPC server"
+msgstr ""
+
+#: ags/audio/osc/xmlrpc/ags_osc_xmlrpc_controller.c:183
+msgid "The assigned OSC XMLRPC server"
+msgstr ""
+
+#: ags/server/ags_registry.c:152 ags/server/controller/ags_controller.c:116
+msgid "assigned server"
+msgstr ""
+
+#: ags/server/ags_registry.c:153 ags/server/controller/ags_controller.c:117
+msgid "The assigned server"
+msgstr ""
+
+#: ags/server/security/ags_security_context.c:144
+msgid "certificates as string"
+msgstr ""
+
+#: ags/server/security/ags_security_context.c:145
+msgid "The certificates as string"
+msgstr ""

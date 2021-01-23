@@ -1,4 +1,4 @@
-/* Copyright (C) 2005-2018 Joël Krähemann
+/* Copyright (C) 2005-2021 Joël Krähemann
  * Permission is granted to copy, distribute and/or modify this document
  * under the terms of the GNU Free Documentation License, Version 1.3
  * or any later version published by the Free Software Foundation;
@@ -21,13 +21,16 @@ setup_master(AgsApplicationContext *application_context)
 {
   AgsAudio *audio;
   AgsChannel *channel;
+  AgsRecallContainer *playback_play_container;
+  AgsRecallContainer *playback_recall_container;
   
   GObject *soundcard;
 
   GList *list;
-  GList *recall;
-  
+  GList *start_recall, *recall;
+
   guint n_audio_channels, n_output_pads, n_input_pads;
+  gint position;
   
   /* get soundcard */
   list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
@@ -51,34 +54,38 @@ setup_master(AgsApplicationContext *application_context)
                      AGS_TYPE_INPUT,
                      n_input_pads);
 
-  /* add ags-play-master recall */
-  ags_recall_factory_create(audio,
-                            NULL, NULL,
-                            "ags-play-master",
-                            0, n_audio_channels,
-                            0, n_output_pads,
-                            (AGS_RECALL_FACTORY_INPUT,
-                             AGS_RECALL_FACTORY_PLAY |
-                             AGS_RECALL_FACTORY_ADD),
-                            0);
+  /* create recall container */
+  position = 0;
   
-  /* set audio channel on play channel */
+  playback_play_container = ags_recall_container_new();
+  playback_recall_container = ags_recall_container_new();
+  
+  start_recall = ags_fx_factory_create(audio,
+				       playback_play_container, playback_recall_container,
+				       "ags-fx-playback",
+				       NULL,
+				       NULL,
+				       0, n_audio_channels,
+				       0, n_output_pads,
+				       position,
+				       (AGS_FX_FACTORY_ADD |
+					AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+  
+  /* set output soundcard channel on ags-fx-playback */
   channel = audio->output;
   
   while(channel != NULL){
     recall = channel->play;
 
     while((recall = ags_recall_template_find_type(recall,
-                                                  AGS_TYPE_PLAY_CHANNEL)) != NULL){
-      GValue audio_channel_value = {0,};
-
-      play_channel = AGS_PLAY_CHANNEL(recall->data);
-
-      g_value_init(&audio_channel_value, G_TYPE_UINT64);
-      g_value_set_uint64(&audio_channel_value,
-                         channel->audio_channel);
-      ags_port_safe_write(play_channel->audio_channel,
-                          &audio_channel_value);
+                                                  AGS_TYPE_FX_PLAYBACK_CHANNEL)) != NULL){
+      g_object_set(recall->data,
+		   "output-soundcard-channel", channel->audio_channel,
+		   NULL);
 
       recall = recall->next;
     }
@@ -96,6 +103,10 @@ setup_slave(AgsApplicationContext *application_context)
   AgsChannel *channel;
   AgsAudioSignal *audio_signal;
   AgsPattern *pattern;
+  AgsRecallContainer *pattern_play_container;
+  AgsRecallContainer *pattern_recall_container;  
+  AgsRecallContainer *buffer_play_container;
+  AgsRecallContainer *buffer_recall_container;
 
   AgsDelayAudioRun *play_delay_audio_run;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
@@ -103,9 +114,10 @@ setup_slave(AgsApplicationContext *application_context)
   GObject *soundcard;
 
   GList *list;
-  GList *recall;
-  
+  GList *start_recall, *recall;
+
   guint n_audio_channels, n_output_pads, n_input_pads;
+  gint position;
   gdouble volume;
   guint current_phase, prev_phase;
   guint i, j, k;
@@ -156,13 +168,7 @@ setup_slave(AgsApplicationContext *application_context)
   for(i = 0; i < n_input_pads; i++){
     for(j = 0; j < n_audio_channels; j++){
       /* pattern */
-      pattern = ags_pattern_new();
-      ags_pattern_set_dim(pattern,
-                          1,
-                          1,
-                          16);
-      ags_channel_add_pattern(channel,
-                              pattern);
+      pattern = channel->pattern->data;
 
       for(k = 0; k < 16;){
         ags_pattern_toggle_bit(pattern,
@@ -175,9 +181,11 @@ setup_slave(AgsApplicationContext *application_context)
 
       /* sound */
       audio_signal = ags_audio_signal_new();
+      ags_audio_signal_set_flags(audio_signal,
+				 AGS_AUDIO_SIGNAL_TEMPLATE);
       ags_audio_signal_stream_resize(audio_signal,
                                      5);
-
+      
       stream = audio_signal->stream;
 
       current_phase = 0;
@@ -196,100 +204,52 @@ setup_slave(AgsApplicationContext *application_context)
         stream = stream->next;
         k++;
       }
+
+      ags_recycling_add_audio_signal(channel->first_recycling,
+				     audio_signal);
       
       channel = channel->next;
     }
   }
   
-  /* add ags-delay recall */
-  ags_recall_factory_create(audio,
-                            NULL, NULL,
-                            "ags-delay",
-                            0, 0,
-                            0, 0,
-                            (AGS_RECALL_FACTORY_OUTPUT |
-                             AGS_RECALL_FACTORY_ADD |
-                             AGS_RECALL_FACTORY_PLAY),
-                            0);
+  /* create recall container */
+  position = 0;
 
-  recall = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
+  pattern_play_container = ags_recall_container_new();
+  pattern_recall_container = ags_recall_container_new();
 
-  if(recall != NULL){
-    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(recall->data);
-  }
-  
-  /* ags-count-beats */
-  ags_recall_factory_create(audio,
-                            NULL, NULL,
-                            "ags-count-beats",
-                            0, 0,
-                            0, 0,
-                            (AGS_RECALL_FACTORY_OUTPUT |
-                             AGS_RECALL_FACTORY_ADD |
-                             AGS_RECALL_FACTORY_PLAY),
-                            0);
-  
-  recall = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+  buffer_play_container = ags_recall_container_new();
+  buffer_recall_container = ags_recall_container_new();
 
-  if(recall != NULL){
-    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
+  /* ags-fx-pattern */
+  start_recall = ags_fx_factory_create(audio,
+				       pattern_play_container, pattern_recall_container,
+				       "ags-fx-pattern",
+				       NULL,
+				       NULL,
+				       0, n_audio_channels,
+				       0, n_input_pads,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
 
-    /* set dependency */  
-    g_object_set(G_OBJECT(play_count_beats_audio_run),
-                 "delay-audio-run", play_delay_audio_run,
-                 NULL);
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
-    /* make it loop */
-    g_value_init(&value,
-                 G_TYPE_BOOLEAN);
-    g_value_set_boolean(&value, gtk_toggle_button_get_active(window->navigation->loop));
-    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
-                        &value);
-  }
+  /* ags-fx-buffer */
+  start_recall = ags_fx_factory_create(audio,
+				       buffer_play_container, buffer_recall_container,
+				       "ags-fx-buffer",
+				       NULL,
+				       NULL,
+				       0, n_audio_channels,
+				       0, n_input_pads,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
 
-  /* ags-copy-pattern */
-  ags_recall_factory_create(audio,
-                            NULL, NULL,
-                            "ags-copy-pattern",
-                            0, n_audio_channels,
-                            0, n_input_pads,
-                            (AGS_RECALL_FACTORY_INPUT |
-                             AGS_RECALL_FACTORY_ADD |
-                             AGS_RECALL_FACTORY_RECALL),
-                            0);
-
-  recall = ags_recall_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
-
-  if(recall != NULL){
-    recall_copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall->data);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_copy_pattern_audio_run),
-                 "delay-audio-run", play_delay_audio_run,
-                 "count-beats-audio-run", play_count_beats_audio_run,
-                 NULL);
-
-  }
-
-  /* set pattern object on port */
-  channel = ags_channel_pad_nth(audio->input, 0);
-      
-  for(i = 0; i < n_input_pads; i++){
-    for(j = 0; j < n_audio_channels; j++){
-      GList *list;
-      
-      recall = ags_recall_template_find_type(channel->recall, AGS_TYPE_COPY_PATTERN_CHANNEL);
-      copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(recall->data);
-
-      list = channel->pattern;
-      pattern = AGS_PATTERN(list->data);
-
-      copy_pattern_channel->pattern->port_value.ags_port_object = (GObject *) pattern;    
-      ags_portlet_set_port(AGS_PORTLET(pattern), copy_pattern_channel->pattern);
-          
-      channel = channel->next;
-    }
-  }
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
   return(audio);
 }
@@ -312,6 +272,10 @@ main(int argc, char **argv)
 
   /* create application context */
   application_context = ags_audio_application_context_new();
+  g_object_ref(audio_application_context);
+
+  ags_application_context_prepare(audio_application_context);
+  ags_application_context_setup(audio_application_context);
 
   task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
   
@@ -356,16 +320,15 @@ main(int argc, char **argv)
   start_audio = ags_start_audio_new(slave,
 				    AGS_SOUND_SCOPE_SEQUENCER);
 
-  /* start threads */
-  ags_thread_start(main_loop);
-
   /* launch task */
   sleep(3);
+
   ags_task_launcher_add_task(task_launcher,
 			     start_audio);
 
-  /* join main loop */
-  g_thread_join(main_loop->thread);
-
+  /* GLib's main loop */
+  g_main_loop_run(g_main_loop_new(NULL,
+				  FALSE));
+  
   return(0);
 }

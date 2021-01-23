@@ -1769,6 +1769,8 @@ ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
 	       "format", format,
 	       NULL);
 
+  audio_channels = channels;
+  
   if(rw_audio_app_src != NULL){
     channel_mask = -2;
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
+<!-- Copyright (C) 2005-2021 Jo\u00EBl Kr\u00E4hemann -->
 <!-- Permission is granted to copy, distribute and/or modify this document -->
 <!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
 <!-- or any later version published by the Free Software Foundation; -->
@@ -15,12 +15,26 @@
     So far we have seen the most important objects involved doing an audio processing
     tree. Now we want to do complete example putting all together. In this example we
     instantiate AgsAudioThread and AgsChannelThread to play a simple pattern. The sound
-    we use is generated using a sinus wave.
+    we use is generated using a sine wave.
   </para>
   
   <para>
     In order that the threads are used we provide an appropriate AgsConfig. Further we
-    define an AgsPattern and add the needed recalls to do playback using the AgsRecallFactory.
+    define an AgsPattern and add the needed recalls to do playback using the AgsFxFactory.
+  </para>
+
+  <para>
+    The example creates 2 different AgsAudio objects. One called master which does the
+    actual playback and a second called slave doing the sequencer work. Since the slave
+    is linked to the master, we only have to start slave, which initializes the audio
+    tree for playback.
+  </para>
+
+  <para>
+    Note, here thread-safety doesn't matter. If you need to do more complex work-flows,
+    you have to care about it. In practice you wouldn't make direct use of any struct
+    fields. Rather use the appropriate getter/setter functions and take care of owner
+    ship. 
   </para>
   
   <example>
