@@ -6,6 +6,19 @@ ags (3.8.0)
 	* TODO:JK: implemented AgsCompositeToolbar
 	* TODO:JK: fixed deprecated Gtk+-3.0 symbols
 
+ags (3.7.27)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AppStream XML
+
+ags (3.7.26)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented get_type() functions of AgsFxFactoryCreateFlags, AgsRecallFlags and AgsRecallNotifyDependencyMode
+	* fixed missing initialization of ::read() and ::write() of AgsApplicationContextClass
+	* fixed missing call to ags_connectable_connect() for AgsOscillator and AgsFMOscillator in ags_simple_file.c
+	* fixed missing connect to control-changed for AgsOscillator and AgsFMOscillator in ags_simple_file.c
+
 ags (3.7.25)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
