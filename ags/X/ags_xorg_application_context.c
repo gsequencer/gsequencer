@@ -4506,7 +4506,7 @@ ags_xorg_application_context_audio_main_loop_thread(GMainLoop *main_loop)
 #endif
   
   list = 
-    start_list = ags_sound_provider_get_osc_server(AGS_SERVICE_PROVIDER(application_context));
+    start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
 
   while(list != NULL){
     if(ags_osc_server_test_flags(list->data, AGS_OSC_SERVER_AUTO_START)){
