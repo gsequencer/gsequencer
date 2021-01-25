@@ -2597,9 +2597,6 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   GMainContext *audio_main_context;
   GMainContext *osc_server_main_context;
   GMainLoop *main_loop;
-  GThread *main_loop_thread;
-  
-  GList *start_queue;
   
   gchar *filename;
   gchar *str;
@@ -2766,18 +2763,19 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   ags_ui_provider_set_gui_ready(AGS_UI_PROVIDER(application_context),
 				TRUE);
   
-  widget = ags_animation_window_new();
+  widget = (GtkWidget *) ags_animation_window_new();
   ags_ui_provider_set_animation_window(AGS_UI_PROVIDER(application_context),
 				       widget);
   
   gtk_widget_show(widget);
 
   /* AgsWindow */
-  window =
-    xorg_application_context->window = g_object_new(AGS_TYPE_WINDOW,
-						    NULL);
+  window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW,
+				      NULL);
+  
+  xorg_application_context->window = (GtkWidget *) window;
 
-  xorg_application_context->navigation = window->navigation;
+  xorg_application_context->navigation = (GtkWidget *) window->navigation;
   
 #ifdef AGS_WITH_QUARTZ  
   app = gtkosx_application_get();
@@ -2912,9 +2910,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
       xmlChar *xpath;
 
-      gchar *buffer;
-      guint buffer_length;
-      
 #if defined(AGS_OSXAPI) || defined(AGS_W32API)
 #else
       locale_t current;
@@ -2962,7 +2957,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       ags_log_add_message(log,
 			  str);
 
-      xpath = "/ags-simple-file/ags-sf-config";
+      xpath = BAD_CAST "/ags-simple-file/ags-sf-config";
 
       /* Create xpath evaluation context */
       xpath_context = xmlXPathNewContext(simple_file->doc);
@@ -2985,7 +2980,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       }
 
       node = xpath_object->nodesetval->nodeTab;
-      buffer = NULL;
       
       for(j = 0; j < xpath_object->nodesetval->nodeNr; j++){
 	if(node[j]->type == XML_ELEMENT_NODE){
@@ -3408,9 +3402,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 			       "use-cache");
 
     if(str != NULL &&
-       !g_strncasecmp(str,
-		      "false",
-		      5)){
+       !g_ascii_strncasecmp(str,
+			    "false",
+			    5)){
       use_cache = FALSE;
     }
 
@@ -3501,8 +3495,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   sequencer_group = g_strdup("sequencer");
   
   for(i = 0; ; i++){
-    guint pcm_channels, buffer_size, samplerate, format;
-
     if(!g_key_file_has_group(config->key_file,
 			     sequencer_group)){
       if(i == 0){
@@ -3709,28 +3701,28 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     }
 
     /* ip4 and ip6 address */
-    str = ags_config_get_value(config,
+    ip4 = ags_config_get_value(config,
 			       server_group,
 			       "ip4-address");
 
-    if(str != NULL){
+    if(ip4 != NULL){
       g_object_set(server,
-		   "ip4", str,
+		   "ip4", ip4,
 		   NULL);
       
-      g_free(str);
+      g_free(ip4);
     }
 
-    str = ags_config_get_value(config,
+    ip6 = ags_config_get_value(config,
 			       server_group,
 			       "ip6-address");
 
-    if(str != NULL){
+    if(ip6 != NULL){
       g_object_set(server,
-		   "ip6", str,
+		   "ip6", ip6,
 		   NULL);
       
-      g_free(str);
+      g_free(ip6);
     }
 
     /* server port */
@@ -4206,17 +4198,10 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 
   AgsJackServer *jack_server;
 
-  AgsConfig *config;
-
   GList *core_audio_client;
   GList *jack_client;
   GList *start_list, *list;
 
-  gchar *filename;
-  gchar *str;
-
-  config = application_context->config;
-  
   /* free managers */
   ladspa_manager = ags_ladspa_manager_get_instance();
   g_object_unref(ladspa_manager);
