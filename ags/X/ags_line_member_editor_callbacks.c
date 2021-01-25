@@ -131,6 +131,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
       position = 0;
 
+      //NOTE:JK: related to ags-fx-buffer
       if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
 	 (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0 ||
 	 (AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
@@ -317,7 +318,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 			      audio_channel, audio_channel + 1,
 			      pad, pad + 1,
 			      position,
-			      (AGS_FX_FACTORY_ADD), 0);
+			      (AGS_FX_FACTORY_ADD | (is_output ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT)), 0);
 	}
 	
 	g_free(filename);
@@ -379,7 +380,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 				     audio_channel, audio_channel + 1,
 				     pad, pad + 1,
 				     position,
-				     (AGS_FX_FACTORY_ADD), 0);
+				     (AGS_FX_FACTORY_ADD | (is_output ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT)), 0);
 	}
 	
 	g_free(filename);
