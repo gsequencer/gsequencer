@@ -1,3 +1,8 @@
+ags (3.7.29)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsThread fields start_mutex and start_cond wrong type
+
 ags (3.7.28)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

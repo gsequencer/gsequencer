@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -204,8 +204,8 @@ struct _AgsThread
 
   GList *start_queue;
   
-  GMutex *start_mutex;
-  GCond *start_cond;
+  GMutex start_mutex;
+  GCond start_cond;
   
   AgsThread *parent;
 
