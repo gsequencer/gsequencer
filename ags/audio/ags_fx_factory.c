@@ -278,6 +278,10 @@ ags_fx_factory_get_output_position(AgsAudio *audio,
   gint output_position;
   guint i;
 
+  if(position == -1){
+    return(-1);
+  }
+  
   recall = 
     start_recall = ags_audio_get_play(audio);
   
@@ -305,6 +309,10 @@ ags_fx_factory_get_input_position(AgsAudio *audio,
   
   gint input_position;
   guint i;
+
+  if(position == -1){
+    return(-1);
+  }
 
   recall = 
     start_recall = ags_audio_get_play(audio);

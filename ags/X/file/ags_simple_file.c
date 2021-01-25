@@ -2463,8 +2463,13 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 
 	position = 0;
 
-	if(AGS_IS_FFPLAYER(gobject)){
-	  position = 1;
+	//NOTE:JK: related to ags-fx-buffer
+	if(!is_output){
+	  if((AGS_MACHINE_IS_SEQUENCER & (gobject->flags)) != 0 ||
+	     (AGS_MACHINE_IS_SYNTHESIZER & (gobject->flags)) != 0 ||
+	     (AGS_MACHINE_IS_WAVE_PLAYER & (gobject->flags)) != 0){
+	    position = 1;
+	  }
 	}
 	
 	ladspa_manager = ags_ladspa_manager_get_instance();
@@ -2488,7 +2493,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 				   0, audio_channels,
 				   0, pads,
 				   position,
-				   (AGS_FX_FACTORY_ADD), 0);
+				   (AGS_FX_FACTORY_ADD | (is_output ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT)), 0);
 
 	if(filename != NULL){
 	  xmlFree(filename);
@@ -4655,6 +4660,7 @@ ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsL
 void
 ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **line)
 {
+  AgsMachine *machine;
   AgsPad *pad;
   GObject *gobject;
 
@@ -4679,6 +4685,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
   guint nth_line;
   guint i;
   guint major, minor, micro;
+  gboolean is_output;
   gboolean do_fixup_3_2_7;
 
   GRecMutex *lv2_manager_mutex;
@@ -4715,13 +4722,23 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
     do_fixup_3_2_7 = TRUE;
   }
   
+  machine = NULL;
   pad = NULL;
+
+  file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
+								     node->parent->parent->parent->parent);
+    
+  if(AGS_IS_MACHINE(file_id_ref->ref)){
+    machine = file_id_ref->ref;
+  }
   
   if(line != NULL &&
      line[0] != NULL){
     gobject = G_OBJECT(line[0]);
 
     nth_line = AGS_LINE(gobject)->channel->line;
+
+    is_output = AGS_IS_OUTPUT(AGS_LINE(gobject)->channel) ? TRUE: FALSE;
   }else{
     GList *list_start, *list;
     
@@ -4766,24 +4783,13 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	list = list->next;
       }
 
+      is_output = AGS_IS_OUTPUT(AGS_LINE(gobject)->channel) ? TRUE: FALSE;
+
       if(list_start != NULL){
 	g_list_free(list_start);
       }
     }else{
-      AgsMachine *machine;
-
-      gboolean is_output;
-
       //      "./ancestor::*[self::ags-sf-machine][1]"
-
-      machine = NULL;
-      
-      file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
-									 node->parent->parent->parent->parent);
-
-      if(file_id_ref != NULL){
-	machine = file_id_ref->ref;
-      }
       
       if(!AGS_IS_MACHINE(machine)){
 	return;
@@ -4903,9 +4909,12 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 			   14)){
 	      xmlNode *effect_child;
 
+	      gchar *plugin_name;
 	      xmlChar *filename, *effect;
 
 	      gboolean is_lv2_plugin;
+
+	      plugin_name = NULL;
 	      
 	      filename = xmlGetProp(effect_list_child,
 				    "filename");
@@ -4924,6 +4933,12 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	      
 	      g_rec_mutex_unlock(lv2_manager_mutex);
 
+	      if(is_lv2_plugin){
+		plugin_name = "ags-fx-lv2";
+	      }else{
+		plugin_name = "ags-fx-ladspa";
+	      }
+	      
 	      if(is_lv2_plugin &&
 		 do_fixup_3_2_7){
 		gchar *tmp;
@@ -4959,7 +4974,9 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	      }
 	      
 	      if(filename != NULL &&
-		 effect != NULL){
+		 strlen(filename) > 0 &&
+		 effect != NULL &&
+		 strlen(effect) > 0){
 		if(is_lv2_plugin){
 		  AgsTurtle *manifest;
 		  AgsTurtleManager *turtle_manager;
@@ -5027,25 +5044,51 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 		   g_list_find_custom(mapped_effect,
 				      effect,
 				      (GCompareFunc) g_strcmp0) == NULL){
+		  gint position;
+
+		  position = 0;
+
+		  //NOTE:JK: related to ags-fx-buffer
+		  if(!is_output){
+		    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
+		       (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0 ||
+		       (AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+		      position = 1;
+		    }
+		  }
+		  
 		  mapped_filename = g_list_prepend(mapped_filename,
-						   filename);
+						   g_strdup(filename));
 		  mapped_effect = g_list_prepend(mapped_effect,
-						 effect);
+						 g_strdup(effect));
 
 		  if(AGS_IS_LINE(gobject)){
-		    GList *recall_list;
-		    
-		    recall_list = ags_channel_add_effect(AGS_LINE(gobject)->channel,
-							 filename,
-							 effect);
-		    g_list_free(recall_list);
+		    ags_line_add_plugin(gobject,
+					NULL,
+					ags_recall_container_new(), ags_recall_container_new(),
+					plugin_name,
+					filename,
+					effect,
+					AGS_LINE(gobject)->channel->audio_channel, AGS_LINE(gobject)->channel->audio_channel + 1,
+					AGS_LINE(gobject)->channel->pad, AGS_LINE(gobject)->channel->pad + 1,
+					position,
+					(AGS_FX_FACTORY_ADD | (is_output ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT)), 0);
 		  }else if(AGS_IS_CHANNEL(gobject)){
-		    GList *recall_list;
+		    GList *start_recall;
 
-		    recall_list = ags_channel_add_effect((AgsChannel *) gobject,
+		    start_recall = ags_fx_factory_create(AGS_CHANNEL(gobject)->audio,
+							 ags_recall_container_new(), ags_recall_container_new(),
+							 plugin_name,
 							 filename,
-							 effect);
-		    g_list_free(recall_list);
+							 effect,
+							 AGS_CHANNEL(gobject)->audio_channel, AGS_CHANNEL(gobject)->audio_channel + 1,
+							 AGS_CHANNEL(gobject)->pad, AGS_CHANNEL(gobject)->pad + 1,
+							 position,
+							 (AGS_FX_FACTORY_ADD | (AGS_IS_OUTPUT(gobject) ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT)), 0);
+
+		    /* unref */
+		    g_list_free_full(start_recall,
+				     (GDestroyNotify) g_object_unref);
 		  }
 		}
 	      }
@@ -5152,6 +5195,11 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 
 	  effect_list_child = effect_list_child->next;
 	}
+
+	g_list_free_full(mapped_filename,
+			 g_free);
+	g_list_free_full(mapped_effect,
+			 g_free);
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-oscillator",
 			   15)){	
@@ -5716,9 +5764,11 @@ ags_simple_file_read_effect_line_list(AgsSimpleFile *simple_file, xmlNode *node,
 void
 ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectLine **effect_line)
 {
+  AgsMachine *machine;
   AgsEffectLine *gobject;
 
   AgsFileLaunch *file_launch;
+  AgsFileIdRef *file_id_ref;
 
   AgsLv2Manager *lv2_manager;  
 
@@ -5728,6 +5778,7 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
   xmlChar *str;
 
   guint major, minor, micro;
+  gboolean is_output;
   gboolean do_fixup_3_2_7;
 
   GRecMutex *lv2_manager_mutex;
@@ -5741,6 +5792,8 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
   lv2_manager = ags_lv2_manager_get_instance();
 
   lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
+
+  is_output = AGS_IS_OUTPUT(AGS_EFFECT_LINE(gobject)->channel) ? TRUE: FALSE;
   
   /* fixup 3.2.7 */
   do_fixup_3_2_7 = FALSE;
@@ -5770,6 +5823,15 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
     do_fixup_3_2_7 = TRUE;
   }
 
+  machine = NULL;
+
+  file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
+								     node->parent->parent->parent->parent);
+    
+  if(AGS_IS_MACHINE(file_id_ref->ref)){
+    machine = file_id_ref->ref;
+  }
+  
   /* children */
   child = node->children;
 
@@ -5780,8 +5842,13 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 		     19)){
 	xmlNode *effect_list_child;
 
+	GList *mapped_filename, *mapped_effect;
+	
 	/* effect list children */
 	effect_list_child = child->children;
+
+	mapped_filename = NULL;
+	mapped_effect = NULL;
 
 	while(effect_list_child != NULL){
 	  if(effect_list_child->type == XML_ELEMENT_NODE){
@@ -5791,6 +5858,7 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 	      xmlNode *effect_child;
 	      
 	      xmlChar *filename, *effect;
+	      gchar *plugin_name;
 
 	      gboolean is_lv2_plugin;
 
@@ -5810,6 +5878,12 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 						filename))) ? TRUE: FALSE;
 	      
 	      g_rec_mutex_unlock(lv2_manager_mutex);
+
+	      if(is_lv2_plugin){
+		plugin_name = "ags-fx-lv2";
+	      }else{
+		plugin_name = "ags-fx-ladspa";
+	      }
 
 	      if(is_lv2_plugin &&
 		 do_fixup_3_2_7){
@@ -5845,6 +5919,126 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 		}
 	      }
 
+	      if(filename != NULL &&
+		 strlen(filename) > 0 &&
+		 effect != NULL &&
+		 strlen(effect) > 0){
+		if(is_lv2_plugin){
+		  AgsTurtle *manifest;
+		  AgsTurtleManager *turtle_manager;
+    
+		  gchar *path;
+		  gchar *manifest_filename;
+
+		  turtle_manager = ags_turtle_manager_get_instance();
+    
+		  path = g_path_get_dirname(filename);
+
+		  manifest_filename = g_strdup_printf("%s%c%s",
+						      path,
+						      G_DIR_SEPARATOR,
+						      "manifest.ttl");
+
+		  manifest = ags_turtle_manager_find(turtle_manager,
+						     manifest_filename);
+
+		  if(manifest == NULL){
+		    AgsLv2TurtleParser *lv2_turtle_parser;
+	
+		    AgsTurtle **turtle;
+
+		    guint n_turtle;
+
+		    if(!g_file_test(manifest_filename,
+				    G_FILE_TEST_EXISTS)){
+		      return;
+		    }
+
+		    g_message("new turtle [Manifest] - %s", manifest_filename);
+	
+		    manifest = ags_turtle_new(manifest_filename);
+		    ags_turtle_load(manifest,
+				    NULL);
+		    ags_turtle_manager_add(turtle_manager,
+					   (GObject *) manifest);
+
+		    lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
+
+		    n_turtle = 1;
+		    turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
+
+		    turtle[0] = manifest;
+		    turtle[1] = NULL;
+	
+		    ags_lv2_turtle_parser_parse(lv2_turtle_parser,
+						turtle, n_turtle);
+    
+		    g_object_run_dispose(lv2_turtle_parser);
+		    g_object_unref(lv2_turtle_parser);
+	
+		    g_object_unref(manifest);
+	
+		    free(turtle);
+		  }
+    
+		  g_free(manifest_filename);
+		}
+
+		if(g_list_find_custom(mapped_filename,
+				      filename,
+				      (GCompareFunc) g_strcmp0) == NULL ||
+		   g_list_find_custom(mapped_effect,
+				      effect,
+				      (GCompareFunc) g_strcmp0) == NULL){
+		  gint position;
+
+		  position = 0;
+
+		  //NOTE:JK: related to ags-fx-buffer
+		  if(!is_output){
+		    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
+		       (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0 ||
+		       (AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+		      position = 1;
+		    }
+		  }
+		  
+		  mapped_filename = g_list_prepend(mapped_filename,
+						   g_strdup(filename));
+		  mapped_effect = g_list_prepend(mapped_effect,
+						 g_strdup(effect));
+
+		  if(AGS_IS_EFFECT_LINE(gobject)){
+		    ags_effect_line_add_plugin(gobject,
+					       NULL,
+					       ags_recall_container_new(), ags_recall_container_new(),
+					       plugin_name,
+					       filename,
+					       effect,
+					       AGS_LINE(gobject)->channel->audio_channel, AGS_LINE(gobject)->channel->audio_channel + 1,
+					       AGS_LINE(gobject)->channel->pad, AGS_LINE(gobject)->channel->pad + 1,
+					       position,
+					       (AGS_FX_FACTORY_ADD | (is_output ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT)), 0);
+		  }else if(AGS_IS_CHANNEL(gobject)){
+		    GList *start_recall;
+
+		    start_recall = ags_fx_factory_create(AGS_CHANNEL(gobject)->audio,
+							 ags_recall_container_new(), ags_recall_container_new(),
+							 plugin_name,
+							 filename,
+							 effect,
+							 AGS_CHANNEL(gobject)->audio_channel, AGS_CHANNEL(gobject)->audio_channel + 1,
+							 AGS_CHANNEL(gobject)->pad, AGS_CHANNEL(gobject)->pad + 1,
+							 position,
+							 (AGS_FX_FACTORY_ADD | (is_output ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT)), 0);
+
+		    /* unref */
+		    g_list_free_full(start_recall,
+				     (GDestroyNotify) g_object_unref);
+		  }
+		}
+	      }
+
 	      /* effect list children */
 	      effect_child = child->children;
 
@@ -5854,13 +6048,10 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 				 (xmlChar *) "ags-sf-control",
 				 15)){
 		    AgsLineMember *line_member;
-		    GtkWidget *child_widget;
 
 		    GList *list_start, *list;
 		    
 		    xmlChar *specifier;
-
-		    gdouble val;
 
 		    specifier = xmlGetProp(effect_child,
 					   "specifier");
@@ -5898,54 +6089,38 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 			g_free(tmp);
 		      }
 		    }
-		    
-		    str = xmlGetProp(effect_child,
-				     "value");
 
-		    if(str != NULL){
-		      val = g_ascii_strtod(str,
-					   NULL);
-		      xmlFree(str);
-		      
-		      list =
-			list_start = gtk_container_get_children((GtkContainer *) gobject->grid);
+		    list =
+		      list_start = gtk_container_get_children((GtkContainer *) gobject->table);
 
-		      while(list != NULL){
-			if(AGS_IS_LINE_MEMBER(list->data)){
-			  line_member = AGS_LINE_MEMBER(list->data);
+		    while(list != NULL){
+		      if(AGS_IS_LINE_MEMBER(list->data)){
+			line_member = AGS_LINE_MEMBER(list->data);
 			
-			  if(!g_strcmp0(line_member->filename,
+			if(((filename == NULL && effect == NULL) ||
+			    (strlen(filename) == 0 && strlen(effect) == 0) ||
+			    (!g_strcmp0(line_member->filename,
 					filename) &&
 			     !g_strcmp0(line_member->effect,
-					effect) &&
-			     !g_strcmp0(line_member->specifier,
-					specifier)){
-			    child_widget = gtk_bin_get_child((GtkBin *) line_member);
-
-			    if(GTK_IS_RANGE(child_widget)){
-			      gtk_range_set_value(GTK_RANGE(child_widget),
-						  val);
-			    }else if(GTK_IS_SPIN_BUTTON(child_widget)){
-			      gtk_spin_button_set_value(GTK_SPIN_BUTTON(child_widget),
-							val);
-			    }else if(AGS_IS_DIAL(child_widget)){
-			      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
-						       val);
-			      gtk_widget_queue_draw((GtkWidget *) child_widget);
-			    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-			      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
-							   ((val != 0.0) ? TRUE: FALSE));
-			    }else{
-			      g_warning("ags_simple_file_read_effect_line() - unknown line member type");
-			    }
-			  
-			    break;
-			  }
+					effect))) &&
+			   !g_strcmp0(line_member->specifier,
+				      specifier)){
+			  ags_simple_file_read_line_member(simple_file,
+							   effect_child,
+							   line_member);
+			    
+			  break;
 			}
-
-			list = list->next;
 		      }
+
+		      list = list->next;
+		    }
+
+		    if(specifier != NULL){
+		      xmlFree(specifier);
+		    }
 		    
+		    if(list_start != NULL){
 		      g_list_free(list_start);
 		    }
 		  }
@@ -5953,7 +6128,7 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 
 		effect_child = effect_child->next;
 	      }
-
+	      
 	      if(filename != NULL){
 		xmlFree(filename);
 	      }
@@ -5966,6 +6141,11 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 
 	  effect_list_child = effect_list_child->next;
 	}
+
+	g_list_free_full(mapped_filename,
+			 g_free);
+	g_list_free_full(mapped_effect,
+			 g_free);
       }
     }
 
