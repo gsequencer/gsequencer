@@ -2107,7 +2107,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	}else if(!g_ascii_strncasecmp(effect, "''", 2)){
 	  tmp = g_strndup(effect + 2,
 			  (gsize) (strlen(effect) - 4));
-	}else if(effect[0] = '"'){
+	}else if(effect[0] == '"'){
 	  tmp = g_strndup(effect + 1,
 			  (gsize) (strlen(effect) - 2));
 	}else if(effect[0] == '\''){
@@ -3697,7 +3697,7 @@ ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node
     }else if(!g_ascii_strncasecmp(preset, "''", 2)){
       tmp = g_strndup(preset + 2,
 		      (gsize) (strlen(preset) - 4));
-    }else if(preset[0] = '"'){
+    }else if(preset[0] == '"'){
       tmp = g_strndup(preset + 1,
 		      (gsize) (strlen(preset) - 2));
     }else if(preset[0] == '\''){
@@ -3799,7 +3799,7 @@ ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode 
     }else if(!g_ascii_strncasecmp(preset, "''", 2)){
       tmp = g_strndup(preset + 2,
 		      (gsize) (strlen(preset) - 4));
-    }else if(preset[0] = '"'){
+    }else if(preset[0] == '"'){
       tmp = g_strndup(preset + 1,
 		      (gsize) (strlen(preset) - 2));
     }else if(preset[0] == '\''){
@@ -3951,7 +3951,7 @@ ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *nod
     }else if(!g_ascii_strncasecmp(effect, "''", 2)){
       tmp = g_strndup(effect + 2,
 		      (gsize) (strlen(effect) - 4));
-    }else if(effect[0] = '"'){
+    }else if(effect[0] == '"'){
       tmp = g_strndup(effect + 1,
 		      (gsize) (strlen(effect) - 2));
     }else if(effect[0] == '\''){
@@ -3999,7 +3999,7 @@ ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *nod
 	  }else if(!g_ascii_strncasecmp(specifier, "''", 2)){
 	    tmp = g_strndup(specifier + 2,
 			    (gsize) (strlen(specifier) - 4));
-	  }else if(specifier[0] = '"'){
+	  }else if(specifier[0] == '"'){
 	    tmp = g_strndup(specifier + 1,
 			    (gsize) (strlen(specifier) - 2));
 	  }else if(specifier[0] == '\''){
@@ -4959,7 +4959,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 		}else if(!g_ascii_strncasecmp(effect, "''", 2)){
 		  tmp = g_strndup(effect + 2,
 				  (gsize) (strlen(effect) - 4));
-		}else if(effect[0] = '"'){
+		}else if(effect[0] == '"'){
 		  tmp = g_strndup(effect + 1,
 				  (gsize) (strlen(effect) - 2));
 		}else if(effect[0] == '\''){
@@ -5130,7 +5130,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 		      }else if(!g_ascii_strncasecmp(specifier, "''", 2)){
 			tmp = g_strndup(specifier + 2,
 					(gsize) (strlen(specifier) - 4));
-		      }else if(specifier[0] = '"'){
+		      }else if(specifier[0] == '"'){
 			tmp = g_strndup(specifier + 1,
 					(gsize) (strlen(specifier) - 2));
 		      }else if(specifier[0] == '\''){
@@ -5905,7 +5905,7 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 		}else if(!g_ascii_strncasecmp(effect, "''", 2)){
 		  tmp = g_strndup(effect + 2,
 				  (gsize) (strlen(effect) - 4));
-		}else if(effect[0] = '"'){
+		}else if(effect[0] == '"'){
 		  tmp = g_strndup(effect + 1,
 				  (gsize) (strlen(effect) - 2));
 		}else if(effect[0] == '\''){
@@ -6076,7 +6076,7 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 		      }else if(!g_ascii_strncasecmp(specifier, "''", 2)){
 			tmp = g_strndup(specifier + 2,
 					(gsize) (strlen(specifier) - 4));
-		      }else if(specifier[0] = '"'){
+		      }else if(specifier[0] == '"'){
 			tmp = g_strndup(specifier + 1,
 					(gsize) (strlen(specifier) - 2));
 		      }else if(specifier[0] == '\''){
