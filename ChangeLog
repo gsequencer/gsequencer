@@ -1,6 +1,7 @@
 ags (3.7.30)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed deprecated code to restore plugins in ags_simple_file.c
 	* fixed wrong type cast with interface in ags_xorg_application_context.c
 
 ags (3.7.29)

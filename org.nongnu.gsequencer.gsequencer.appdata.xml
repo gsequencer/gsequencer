@@ -42,6 +42,7 @@
   <releases>
     <release version="3.7.30" date="2021-01-25">
       <description>
+	<p>Fixed LADSPA and Lv2 plugin restore as line member.</p>
 	<p>Minor improvements.</p>
       </description>
     </release>
