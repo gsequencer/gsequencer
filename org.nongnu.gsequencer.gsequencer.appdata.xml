@@ -40,6 +40,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.7.30" date="2021-01-25">
+      <description>
+	<p>Minor improvements.</p>
+      </description>
+    </release>
+
     <release version="3.7.29" date="2021-01-25">
       <description>
 	<p>Minor improvements.</p>

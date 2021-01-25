@@ -6,6 +6,11 @@ ags (3.8.0)
 	* TODO:JK: implemented AgsCompositeToolbar
 	* TODO:JK: fixed deprecated Gtk+-3.0 symbols
 
+ags (3.7.30)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong type cast with interface in ags_xorg_application_context.c
+
 ags (3.7.29)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
