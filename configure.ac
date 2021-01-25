@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.7.27],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.7.28],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -17,7 +17,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_USE_SYSTEM_EXTENSIONS([_GNU_SOURCE])
 
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.20])
+AM_GNU_GETTEXT_VERSION([0.19.8])
 
 # options
 AC_ARG_VAR(HTMLHELP_XSL, path to Docbook XML htmlhelp XSL file)
