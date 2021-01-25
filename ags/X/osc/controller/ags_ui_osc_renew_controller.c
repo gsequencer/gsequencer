@@ -434,15 +434,15 @@ ags_ui_osc_renew_controller_set_data_machine(AgsUiOscRenewController *ui_osc_ren
 	      xmlNode *root_node;
 
 	      /* specify message body */
-	      doc = xmlNewDoc("1.0");
+	      doc = xmlNewDoc(BAD_CAST "1.0");
 
 	      root_node = xmlNewNode(NULL,
-				     "ags-command");
+				     BAD_CAST "ags-command");
 	      xmlDocSetRootElement(doc, root_node);    
 
 	      xmlNewProp(root_node,
-			 "method",
-			 "AgsMachine:run::clicked");
+			 BAD_CAST "method",
+			 BAD_CAST "AgsMachine:run::clicked");
 
 	      /* add message */
 	      message = ags_message_envelope_new((GObject *) machine,
@@ -458,7 +458,7 @@ ags_ui_osc_renew_controller_set_data_machine(AgsUiOscRenewController *ui_osc_ren
 	      /* add message */
 	      ags_message_delivery_add_message_envelope(message_delivery,
 							"libgsequencer",
-							message);
+							(GObject *) message);
 	    }
 	  }
 	}
@@ -855,15 +855,15 @@ ags_ui_osc_renew_controller_real_set_data(AgsUiOscRenewController *ui_osc_renew_
       xmlNode *root_node;
 
       /* specify message body */
-      doc = xmlNewDoc("1.0");
+      doc = xmlNewDoc(BAD_CAST "1.0");
 
       root_node = xmlNewNode(NULL,
-			     "ags-command");
+			     BAD_CAST "ags-command");
       xmlDocSetRootElement(doc, root_node);    
 
       xmlNewProp(root_node,
-		 "method",
-		 "AgsUiOscRenewController::set-data");
+		 BAD_CAST "method",
+		 BAD_CAST "AgsUiOscRenewController::set-data");
 
       /* add message */
       message = ags_message_envelope_new((GObject *) ui_osc_renew_controller,
@@ -989,11 +989,11 @@ ags_ui_osc_renew_controller_check_message_callback(GObject *application_context,
     root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
       
     if(!xmlStrncmp(root_node->name,
-		   "ags-command",
+		   BAD_CAST "ags-command",
 		   12)){
       if(!xmlStrncmp(xmlGetProp(root_node,
-				"method"),
-		     "AgsUiOscRenewController::set-data",
+				BAD_CAST "method"),
+		     BAD_CAST "AgsUiOscRenewController::set-data",
 		     34)){
 	AgsOscConnection *osc_connection;
 	AgsOscResponse *osc_response;
