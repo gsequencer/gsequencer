@@ -6,6 +6,11 @@ ags (3.8.0)
 	* TODO:JK: implemented AgsCompositeToolbar
 	* TODO:JK: fixed deprecated Gtk+-3.0 symbols
 
+ags (3.7.31)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed broken if statement with string corruption of fixup 3.2.7 in ags_simple_file.c
+
 ags (3.7.30)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
