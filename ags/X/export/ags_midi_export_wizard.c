@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,7 +64,6 @@ static gpointer ags_midi_export_wizard_parent_class = NULL;
 
 enum{
   PROP_0,
-  PROP_MAIN_WINDOW,
 };
 
 GType
@@ -137,21 +136,6 @@ ags_midi_export_wizard_class_init(AgsMidiExportWizardClass *midi_export_wizard)
   gobject->get_property = ags_midi_export_wizard_get_property;
 
   /* properties */
-  /**
-   * AgsMidiExportWizard:main-window:
-   *
-   * The assigned #AgsWindow.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_object("main-window",
-				   i18n_pspec("assigned main window"),
-				   i18n_pspec("The assigned main window"),
-				   AGS_TYPE_WINDOW,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_MAIN_WINDOW,
-				  param_spec);
 
   /* GtkWidget */
   widget->show = ags_midi_export_wizard_show;
@@ -177,53 +161,43 @@ ags_midi_export_wizard_applicable_interface_init(AgsApplicableInterface *applica
 void
 ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 {
-  GtkAlignment *alignment;
-
   midi_export_wizard->flags = AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION;
-
-  midi_export_wizard->main_window = NULL;
 
   /* midi builder */
   midi_export_wizard->midi_builder = ags_midi_builder_new(NULL);
   midi_export_wizard->pulse_unit = AGS_MIDI_EXPORT_WIZARD_DEFAULT_PULSE_UNIT;
   
   /* machine collection */
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.0,
-						 1.0, 1.0);
-  gtk_widget_set_no_show_all((GtkWidget *) alignment,
-			     TRUE);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(midi_export_wizard),
-		     (GtkWidget*) alignment,
-		     TRUE, TRUE,
-		     0);
-
   midi_export_wizard->machine_collection = (GtkWidget *) ags_machine_collection_new(AGS_TYPE_MACHINE_COLLECTION_ENTRY,
 										    0,
+										    NULL,
 										    NULL);
-  gtk_container_add((GtkContainer *) alignment,
-		    midi_export_wizard->machine_collection);
-  
-  /* file chooser */
-  alignment = g_object_new(GTK_TYPE_ALIGNMENT,
-			   NULL);
-  gtk_widget_set_no_show_all((GtkWidget *) alignment,
+  gtk_widget_set_no_show_all((GtkWidget *) midi_export_wizard->machine_collection,
 			     TRUE);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(midi_export_wizard),
-		     (GtkWidget*) alignment,
+
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) midi_export_wizard),
+		     (GtkWidget*) midi_export_wizard->machine_collection,
 		     TRUE, TRUE,
 		     0);
   
+  /* file chooser */  
   midi_export_wizard->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_SAVE);
   gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(midi_export_wizard->file_chooser),
 				AGS_MIDI_EXPORT_WIZARD_DEFAULT_FILENAME);
-  gtk_container_add((GtkContainer *) alignment,
-		    midi_export_wizard->file_chooser);
+
+  gtk_widget_set_no_show_all((GtkWidget *) midi_export_wizard->file_chooser,
+			     TRUE);
+
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) midi_export_wizard),
+		     (GtkWidget*) midi_export_wizard->file_chooser,
+		     TRUE, TRUE,
+		     0);
   
   gtk_dialog_add_buttons((GtkDialog *) midi_export_wizard,
-			 GTK_STOCK_GO_BACK, GTK_RESPONSE_REJECT,
-			 GTK_STOCK_GO_FORWARD, GTK_RESPONSE_ACCEPT,
-			 GTK_STOCK_OK, GTK_RESPONSE_OK,
-			 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+			 i18n("_Back"), GTK_RESPONSE_REJECT,
+			 i18n("_Forward"), GTK_RESPONSE_ACCEPT,
+			 i18n("_OK"), GTK_RESPONSE_OK,
+			 i18n("_Cancel"), GTK_RESPONSE_CANCEL,
 			 NULL);
 }
 
@@ -238,27 +212,6 @@ ags_midi_export_wizard_set_property(GObject *gobject,
   midi_export_wizard = AGS_MIDI_EXPORT_WIZARD(gobject);
 
   switch(prop_id){
-  case PROP_MAIN_WINDOW:
-    {
-      AgsWindow *main_window;
-
-      main_window = (AgsWindow *) g_value_get_object(value);
-
-      if((AgsWindow *) midi_export_wizard->main_window == main_window){
-	return;
-      }
-
-      if(midi_export_wizard->main_window != NULL){
-	g_object_unref(midi_export_wizard->main_window);
-      }
-
-      if(main_window != NULL){
-	g_object_ref(main_window);
-      }
-
-      midi_export_wizard->main_window = (GtkWidget *) main_window;
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -276,11 +229,6 @@ ags_midi_export_wizard_get_property(GObject *gobject,
   midi_export_wizard = AGS_MIDI_EXPORT_WIZARD(gobject);
 
   switch(prop_id){
-  case PROP_MAIN_WINDOW:
-    {
-      g_value_set_object(value, midi_export_wizard->main_window);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -445,6 +393,88 @@ ags_midi_export_wizard_show(GtkWidget *widget)
     gtk_widget_show(gtk_widget_get_parent(midi_export_wizard->machine_collection));
     gtk_widget_show_all(midi_export_wizard->machine_collection);
   }
+}
+
+/**
+ * ags_midi_export_wizard_test_flags:
+ * @midi_export_wizard: the #AgsMidiExportWizard
+ * @flags: the flags
+ * 
+ * Test @flags of @midi_export_wizard.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.8.0
+ */
+gboolean
+ags_midi_export_wizard_test_flags(AgsMidiExportWizard *midi_export_wizard,
+				  guint flags)
+{
+  gboolean success;
+  
+  if(!AGS_IS_MIDI_EXPORT_WIZARD(midi_export_wizard)){
+    return(FALSE);
+  }
+
+  success = (flags & (midi_export_wizard->flags)) ? TRUE: FALSE;
+  
+  return(success);
+}
+
+/**
+ * ags_midi_export_wizard_set_flags:
+ * @midi_export_wizard: the #AgsMidiExportWizard
+ * @flags: the flags
+ * 
+ * Set @flags of @midi_export_wizard.
+ * 
+ * Since: 3.8.0
+ */
+void
+ags_midi_export_wizard_set_flags(AgsMidiExportWizard *midi_export_wizard,
+				 guint flags)
+{
+  if(!AGS_IS_MIDI_EXPORT_WIZARD(midi_export_wizard)){
+    return;
+  }
+
+  if((AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION & (flags)) != 0){
+    gtk_widget_show_all(midi_export_wizard->machine_collection);
+  }
+
+  if((AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER & (flags)) != 0){
+    gtk_widget_show_all(midi_export_wizard->file_chooser);
+  }
+
+  midi_export_wizard->flags |= flags;
+}
+
+/**
+ * ags_midi_export_wizard_unset_flags:
+ * @midi_export_wizard: the #AgsMidiExportWizard
+ * @flags: the flags
+ * 
+ * Unset @flags of @midi_export_wizard.
+ * 
+ * Since: 3.8.0
+ */
+void
+ags_midi_export_wizard_unset_flags(AgsMidiExportWizard *midi_export_wizard,
+				   guint flags)
+{
+  if(!AGS_IS_MIDI_EXPORT_WIZARD(midi_export_wizard)){
+    return;
+  }
+
+  if((AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION & (flags)) != 0){
+    gtk_widget_hide(midi_export_wizard->machine_collection);
+  }
+
+  if((AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER & (flags)) != 0){
+    gtk_widget_hide(midi_export_wizard->file_chooser);
+  }
+
+  midi_export_wizard->flags &= (~flags);
 }
 
 /**

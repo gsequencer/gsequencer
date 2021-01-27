@@ -586,7 +586,6 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
   g_message("%s", instrument);
   g_message("%s", sequence);
 
-  //FIXME:JK: deprecated
   track_collection_mapper = (AgsTrackCollectionMapper *) g_object_new_with_properties(track_collection->child_type,
 										      track_collection->child_n_properties,
 										      track_collection->child_strv,

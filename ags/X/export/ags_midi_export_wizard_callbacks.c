@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,41 +19,45 @@
 
 #include <ags/X/export/ags_midi_export_wizard_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
 void
 ags_midi_export_wizard_response_callback(GtkWidget *wizard, gint response, gpointer data)
 {
+  AgsWindow *window;    
   AgsMidiExportWizard *midi_export_wizard;
 
+  AgsApplicationContext *application_context;
+
   midi_export_wizard = (AgsMidiExportWizard *) wizard;
+
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   switch(response){
   case GTK_RESPONSE_REJECT:
     {
-      if((AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER & (midi_export_wizard->flags)) != 0){
+      if(ags_midi_export_wizard_test_flags(midi_export_wizard, AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER)){
 	/* show/hide */
-	gtk_widget_hide(gtk_widget_get_parent(midi_export_wizard->file_chooser));
-
-	gtk_widget_show(gtk_widget_get_parent(midi_export_wizard->machine_collection));
-	gtk_widget_show_all(midi_export_wizard->machine_collection);
-
-	midi_export_wizard->flags |= AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION;
-	midi_export_wizard->flags &= (~AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER);
+	ags_midi_export_wizard_unset_flags(midi_export_wizard,
+					   AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER);
+	
+	ags_midi_export_wizard_set_flags(midi_export_wizard,
+					 AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION);
       }
     }
     break;
   case GTK_RESPONSE_ACCEPT:
     {
-      if((AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION  & (midi_export_wizard->flags)) != 0){
+      if(ags_midi_export_wizard_test_flags(midi_export_wizard, AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION)){
 	/* show/hide */
-	midi_export_wizard->flags |= AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER;
-	midi_export_wizard->flags &= (~AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION);
-
-	gtk_widget_hide(gtk_widget_get_parent(midi_export_wizard->machine_collection));
-
-	gtk_widget_show(gtk_widget_get_parent(midi_export_wizard->file_chooser));
-	gtk_widget_show_all(midi_export_wizard->file_chooser);
+	ags_midi_export_wizard_unset_flags(midi_export_wizard,
+					   AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION);
+	
+	ags_midi_export_wizard_set_flags(midi_export_wizard,
+					 AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER);
       }
     }
     break;
@@ -65,7 +69,8 @@ ags_midi_export_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
   case GTK_RESPONSE_CLOSE:
   case GTK_RESPONSE_CANCEL:
     {
-      AGS_WINDOW(midi_export_wizard->main_window)->midi_export_wizard = NULL;
+      window->midi_export_wizard = NULL;
+      
       gtk_widget_destroy(wizard);
     }
     break;

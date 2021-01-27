@@ -325,6 +325,88 @@ ags_midi_import_wizard_show(GtkWidget *widget)
 }
 
 /**
+ * ags_midi_import_wizard_test_flags:
+ * @midi_import_wizard: the #AgsMidiImportWizard
+ * @flags: the flags
+ * 
+ * Test @flags of @midi_import_wizard.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.8.0
+ */
+gboolean
+ags_midi_import_wizard_test_flags(AgsMidiImportWizard *midi_import_wizard,
+				  guint flags)
+{
+  gboolean success;
+  
+  if(!AGS_IS_MIDI_IMPORT_WIZARD(midi_import_wizard)){
+    return(FALSE);
+  }
+
+  success = (flags & (midi_import_wizard->flags)) ? TRUE: FALSE;
+  
+  return(success);
+}
+
+/**
+ * ags_midi_import_wizard_set_flags:
+ * @midi_import_wizard: the #AgsMidiImportWizard
+ * @flags: the flags
+ * 
+ * Set @flags of @midi_import_wizard.
+ * 
+ * Since: 3.8.0
+ */
+void
+ags_midi_import_wizard_set_flags(AgsMidiImportWizard *midi_import_wizard,
+				 guint flags)
+{
+  if(!AGS_IS_MIDI_IMPORT_WIZARD(midi_import_wizard)){
+    return;
+  }
+
+  if((AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER & (flags)) != 0){
+    gtk_widget_show_all(midi_import_wizard->file_chooser);
+  }
+
+  if((AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION & (flags)) != 0){
+    gtk_widget_show_all(midi_import_wizard->track_collection);
+  }
+
+  midi_import_wizard->flags |= flags;
+}
+
+/**
+ * ags_midi_import_wizard_unset_flags:
+ * @midi_import_wizard: the #AgsMidiImportWizard
+ * @flags: the flags
+ * 
+ * Unset @flags of @midi_import_wizard.
+ * 
+ * Since: 3.8.0
+ */
+void
+ags_midi_import_wizard_unset_flags(AgsMidiImportWizard *midi_import_wizard,
+				   guint flags)
+{
+  if(!AGS_IS_MIDI_IMPORT_WIZARD(midi_import_wizard)){
+    return;
+  }
+
+  if((AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER & (flags)) != 0){
+    gtk_widget_hide(midi_import_wizard->file_chooser);
+  }
+
+  if((AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION & (flags)) != 0){
+    gtk_widget_hide(midi_import_wizard->track_collection);
+  }
+
+  midi_import_wizard->flags &= (~flags);
+}
+
+/**
  * ags_midi_import_wizard_new:
  *
  * Create a new instance of #AgsMidiImportWizard

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -48,7 +48,7 @@ typedef enum{
 
 struct _AgsMachineCollectionEntry
 {
-  GtkTable table;
+  GtkGrid grid;
 
   guint flags;
   
@@ -64,7 +64,7 @@ struct _AgsMachineCollectionEntry
 
 struct _AgsMachineCollectionEntryClass
 {
-  GtkTableClass table;
+  GtkGridClass grid;
 };
 
 GType ags_machine_collection_entry_get_type(void);

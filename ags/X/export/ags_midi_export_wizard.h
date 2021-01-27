@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,8 +64,6 @@ struct _AgsMidiExportWizard
 
   guint flags;
 
-  GtkWidget *main_window;
-
   AgsMidiBuilder *midi_builder;
   guint pulse_unit;
   
@@ -79,6 +77,13 @@ struct _AgsMidiExportWizardClass
 };
 
 GType ags_midi_export_wizard_get_type(void);
+
+gboolean ags_midi_export_wizard_test_flags(AgsMidiExportWizard *midi_export_wizard,
+					   guint flags);
+void ags_midi_export_wizard_set_flags(AgsMidiExportWizard *midi_export_wizard,
+				      guint flags);
+void ags_midi_export_wizard_unset_flags(AgsMidiExportWizard *midi_export_wizard,
+					guint flags);
 
 AgsMidiExportWizard* ags_midi_export_wizard_new(GtkWidget *main_window);
 

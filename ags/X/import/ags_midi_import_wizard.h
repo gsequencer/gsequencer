@@ -65,6 +65,13 @@ struct _AgsMidiImportWizardClass
 
 GType ags_midi_import_wizard_get_type(void);
 
+gboolean ags_midi_import_wizard_test_flags(AgsMidiImportWizard *midi_import_wizard,
+					   guint flags);
+void ags_midi_import_wizard_set_flags(AgsMidiImportWizard *midi_import_wizard,
+				      guint flags);
+void ags_midi_import_wizard_unset_flags(AgsMidiImportWizard *midi_import_wizard,
+					guint flags);
+
 AgsMidiImportWizard* ags_midi_import_wizard_new();
 
 G_END_DECLS

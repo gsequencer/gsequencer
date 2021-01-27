@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -48,20 +48,23 @@ typedef enum{
 
 struct _AgsMachineCollection
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
   
   GType child_type;
-  guint child_parameter_count;
-  GParameter *child_parameter;
 
-  GtkVBox *child;
+  guint child_n_properties;
+
+  gchar **child_strv;
+  GValue *child_value;
+
+  GtkBox *child;
 };
 
 struct _AgsMachineCollectionClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_machine_collection_get_type();
@@ -71,8 +74,9 @@ void ags_machine_collection_add_entry(AgsMachineCollection *machine_collection,
 				      GtkWidget *machine);
 
 AgsMachineCollection* ags_machine_collection_new(GType child_type,
-						 guint child_parameter_count,
-						 GParameter *child_parameter);
+						 guint child_n_properties,
+						 gchar **child_strv,
+						 GValue *child_value);
 
 G_END_DECLS
 
