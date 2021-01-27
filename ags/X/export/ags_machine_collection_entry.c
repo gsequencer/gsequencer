@@ -179,9 +179,9 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
 			GTK_ALIGN_FILL);
   
   gtk_grid_attach((GtkGrid *) machine_collection_entry,
-		   (GtkWidget *) machine_collection_entry->enabled,
-		   0, 0,
-		   4, 1);
+		  (GtkWidget *) machine_collection_entry->enabled,
+		  0, 0,
+		  4, 1);
 
   /* machine label */
   machine_collection_entry->label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -194,9 +194,9 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach((GtkGrid *) machine_collection_entry,
-		   (GtkWidget *) machine_collection_entry->label,
-		   0, 1,
-		   4, 1);
+		  (GtkWidget *) machine_collection_entry->label,
+		  0, 1,
+		  4, 1);
 
   machine_collection_entry->instrument = NULL;
   
@@ -212,9 +212,9 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach((GtkGrid *) machine_collection_entry,
-		   (GtkWidget *) label,
-		   0, 3,
-		   2, 1);
+		  (GtkWidget *) label,
+		  0, 3,
+		  2, 1);
 
   machine_collection_entry->sequence = (GtkEntry *) gtk_entry_new();
 
@@ -224,9 +224,9 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach((GtkGrid *) machine_collection_entry,
-		   (GtkWidget *) machine_collection_entry->sequence,
-		   2, 3,
-		   2, 1);
+		  (GtkWidget *) machine_collection_entry->sequence,
+		  2, 3,
+		  2, 1);
 }
 
 void

@@ -226,9 +226,9 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 			GTK_ALIGN_FILL);
   
   gtk_grid_attach((GtkGrid *) track_collection_mapper,
-		   (GtkWidget *) track_collection_mapper->enabled,
-		   0, 0,
-		   4, 1);
+		  (GtkWidget *) track_collection_mapper->enabled,
+		  0, 0,
+		  4, 1);
 
   /* info box */
   track_collection_mapper->info = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
@@ -240,9 +240,9 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach((GtkGrid *) track_collection_mapper,
-		   (GtkWidget *) track_collection_mapper->info,
-		   0, 1,
-		   4, 1);
+		  (GtkWidget *) track_collection_mapper->info,
+		  0, 1,
+		  4, 1);
 
   /* instrument */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -273,11 +273,12 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach((GtkGrid *) track_collection_mapper,
-		   (GtkWidget *) track_collection_mapper->machine_type,
-		   1, 2,
-		   1, 1);
+		  (GtkWidget *) track_collection_mapper->machine_type,
+		  1, 2,
+		  1, 1);
 
   /* audio channels */
+  //NOTE:JK: midi only knows 16 channels
   track_collection_mapper->audio_channels = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 16.0, 1.0);
   gtk_spin_button_set_value(track_collection_mapper->audio_channels,
 			    2.0);
@@ -288,9 +289,9 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach((GtkGrid *) track_collection_mapper,
-		   (GtkWidget *) track_collection_mapper->audio_channels,
-		   2, 2,
-		   1, 1);
+		  (GtkWidget *) track_collection_mapper->audio_channels,
+		  2, 2,
+		  1, 1);
 
   /* offset */
   track_collection_mapper->offset = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -303,9 +304,9 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach((GtkGrid *) track_collection_mapper,
-		   (GtkWidget *) track_collection_mapper->offset,
-		   3, 2,
-		   1, 1);
+		  (GtkWidget *) track_collection_mapper->offset,
+		  3, 2,
+		  1, 1);
 }
 
 void

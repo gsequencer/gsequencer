@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -188,7 +188,7 @@ ags_wave_export_dialog_applicable_interface_init(AgsApplicableInterface *applica
 void
 ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 {  
-  GtkHBox *hbox;
+  GtkBox *hbox;
   GtkLabel *label;
 
   wave_export_dialog->flags = 0;
@@ -200,9 +200,9 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   wave_export_dialog->machine = NULL;
 
   /* filename */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(wave_export_dialog)),
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTABLE_HORIZONTAL,
+				0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
 		     0);
@@ -211,7 +211,7 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
-  gtk_box_pack_start(GTK_BOX(hbox),
+  gtk_box_pack_start(hbox,
 		     GTK_WIDGET(label),
 		     TRUE, TRUE,
 		     0);
@@ -219,21 +219,21 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   wave_export_dialog->filename = (GtkEntry *) gtk_entry_new();
   gtk_entry_set_text(wave_export_dialog->filename,
 		     "out.wav");
-  gtk_box_pack_start(GTK_BOX(hbox),
+  gtk_box_pack_start(hbox,
 		     GTK_WIDGET(wave_export_dialog->filename),
 		     TRUE, TRUE,
 		     0);
 
   wave_export_dialog->file_chooser_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
-  gtk_box_pack_start(GTK_BOX(hbox),
+  gtk_box_pack_start(hbox,
 		     GTK_WIDGET(wave_export_dialog->file_chooser_button),
 		     TRUE, TRUE,
 		     0);
 
   /* start tact */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(wave_export_dialog)),
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTABLE_HORIZONTAL,
+				0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
 		     GTK_WIDGET(hbox),
   		     FALSE, FALSE,
   		     0);
@@ -258,9 +258,9 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   		     0);
   
   /* end tact */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(wave_export_dialog)),
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTABLE_HORIZONTAL,
+				0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
 		     GTK_WIDGET(hbox),
   		     FALSE, FALSE,
   		     0);
@@ -285,9 +285,9 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   		     0);
   
   /* duration */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(wave_export_dialog)),
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTABLE_HORIZONTAL,
+				0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
 		     GTK_WIDGET(hbox),
   		     FALSE, FALSE,
   		     0);
@@ -296,15 +296,15 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
-  gtk_box_pack_start(GTK_BOX(hbox),
+  gtk_box_pack_start(hbox,
 		     GTK_WIDGET(wave_export_dialog->duration),
 		     FALSE, FALSE,
 		     0);
 
   /* output format */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(wave_export_dialog)),
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTABLE_HORIZONTAL,
+				0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
 		     GTK_WIDGET(hbox),
   		     FALSE, FALSE,
   		     0);
@@ -313,7 +313,7 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
-  gtk_box_pack_start(GTK_BOX(hbox),
+  gtk_box_pack_start(hbox,
 		     GTK_WIDGET(label),
 		     TRUE, TRUE,
 		     0);
@@ -344,29 +344,23 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   gtk_combo_box_set_active((GtkComboBox *) wave_export_dialog->output_format,
 			   0);
 
-  gtk_box_pack_start(GTK_BOX(hbox),
+  gtk_box_pack_start(hbox,
 		     GTK_WIDGET(wave_export_dialog->output_format),
 		     FALSE, FALSE,
 		     0);
 
   /* GtkButton's in GtkDialog->action_area  */
-  wave_export_dialog->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(wave_export_dialog)),
-		     (GtkWidget *) wave_export_dialog->apply,
-		     FALSE, FALSE,
-		     0);
-  
-  wave_export_dialog->ok = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OK);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(wave_export_dialog)),
-		     (GtkWidget *) wave_export_dialog->ok,
-		     FALSE, FALSE,
-		     0);
-  
-  wave_export_dialog->cancel = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(wave_export_dialog)),
-		     (GtkWidget *) wave_export_dialog->cancel,
-		     FALSE, FALSE,
-		     0);
+  wave_export_dialog->apply = (GtkButton *) gtk_dialog_add_button((GtkDialog *) wave_export_dialog,
+								  i18n("_Apply"),
+								  GTK_RESPONSE_APPLY);
+
+  wave_export_dialog->ok = (GtkButton *) gtk_dialog_add_button((GtkDialog *) wave_export_dialog,
+							       i18n("_OK"),
+							       GTK_RESPONSE_OK);
+
+  wave_export_dialog->cancel = (GtkButton *) gtk_dialog_add_button((GtkDialog *) wave_export_dialog,
+								   i18n("_Cancel"),
+								   GTK_RESPONSE_CANCEL);
 }
 
 void
@@ -435,7 +429,8 @@ ags_wave_export_dialog_finalize(GObject *gobject)
   AgsWaveExportDialog *wave_export_dialog;
 
   wave_export_dialog = (AgsWaveExportDialog *) gobject;
-  
+
+  /* call parent */
   G_OBJECT_CLASS(ags_wave_export_dialog_parent_class)->finalize(gobject);
 }
 
@@ -443,8 +438,6 @@ void
 ags_wave_export_dialog_connect(AgsConnectable *connectable)
 {
   AgsWaveExportDialog *wave_export_dialog;
-
-  GList *list, *list_start;
 
   wave_export_dialog = AGS_WAVE_EXPORT_DIALOG(connectable);
 
@@ -480,8 +473,6 @@ void
 ags_wave_export_dialog_disconnect(AgsConnectable *connectable)
 {
   AgsWaveExportDialog *wave_export_dialog;
-
-  GList *list, *list_start;
 
   wave_export_dialog = AGS_WAVE_EXPORT_DIALOG(connectable);
 
@@ -594,7 +585,7 @@ ags_wave_export_dialog_apply(AgsApplicable *applicable)
       filename = gtk_entry_get_text(AGS_AUDIOREC(machine)->filename);
     }
     
-    ags_audiorec_fast_export(machine,
+    ags_audiorec_fast_export((AgsAudiorec *) machine,
 			     filename,
 			     start_frame, end_frame);
   }
