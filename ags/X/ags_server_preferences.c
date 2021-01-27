@@ -171,10 +171,8 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
   server_preferences->address = (GtkEntry *) gtk_entry_new();
   gtk_grid_attach(grid,
 		   GTK_WIDGET(server_preferences->address),
-		   1, 2,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+		   1, 1,
+		   1, 1);
   gtk_widget_set_sensitive((GtkWidget *) server_preferences->address,
 			   FALSE);
 

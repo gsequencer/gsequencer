@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,7 +46,7 @@ typedef struct _AgsTrackCollectionClass AgsTrackCollectionClass;
 
 struct _AgsTrackCollection
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   xmlDoc *midi_doc;
 
@@ -59,15 +59,18 @@ struct _AgsTrackCollection
   guint default_length;
   
   GType child_type;
-  guint child_parameter_count;
-  GParameter *child_parameter;
+  
+  guint child_n_properties;
 
-  GtkVBox *child;
+  gchar **child_strv;
+  GValue *child_value;
+
+  GtkBox *child;
 };
 
 struct _AgsTrackCollectionClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_track_collection_get_type();
@@ -78,8 +81,9 @@ void ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
 				     gchar *instrument, gchar *sequence);
 
 AgsTrackCollection* ags_track_collection_new(GType child_type,
-					     guint child_parameter_count,
-					     GParameter *child_parameter);
+					     guint child_n_properties,
+					     gchar **child_strv,
+					     GValue *child_value);
 
 G_END_DECLS
 

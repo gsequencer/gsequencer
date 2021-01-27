@@ -300,12 +300,19 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 				       "spacing", 0,
 				       "prefix", i18n("line"),
 				       NULL);
+
+  gtk_widget_set_valign((GtkWidget *) wave_editor->notebook,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) wave_editor->notebook,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_hexpand((GtkWidget *) wave_editor->notebook,
+			 TRUE);
+  
   gtk_grid_attach(grid,
 		   (GtkWidget *) wave_editor->notebook,
-		   0, 3,
-		   0, 1,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL,
-		   0, 0);
+		   0, 0,
+		   3, 1);
 
   /* ruler */
   wave_editor->ruler = ags_ruler_new();

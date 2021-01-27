@@ -19,6 +19,7 @@
 
 #include <ags/X/import/ags_midi_import_wizard_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
 #include <ags/X/import/ags_track_collection.h>
@@ -28,9 +29,16 @@
 void
 ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpointer data)
 {
+  AgsWindow *window;    
   AgsMidiImportWizard *midi_import_wizard;
 
+  AgsApplicationContext *application_context;
+  
   midi_import_wizard = (AgsMidiImportWizard *) wizard;
+
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   switch(response){
   case GTK_RESPONSE_REJECT:
@@ -87,7 +95,8 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
   case GTK_RESPONSE_CLOSE:
   case GTK_RESPONSE_CANCEL:
     {
-      AGS_WINDOW(midi_import_wizard->main_window)->midi_import_wizard = NULL;
+      window->midi_import_wizard = NULL;
+      
       gtk_widget_destroy(wizard);
     }
     break;

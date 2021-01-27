@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -6091,7 +6091,7 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 		    }
 
 		    list =
-		      list_start = gtk_container_get_children((GtkContainer *) gobject->table);
+		      list_start = gtk_container_get_children((GtkContainer *) gobject->grid);
 
 		    while(list != NULL){
 		      if(AGS_IS_LINE_MEMBER(list->data)){

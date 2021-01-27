@@ -914,9 +914,6 @@ ags_xorg_application_context_connect(AgsConnectable *connectable)
   }
 
   ags_xorg_application_context_parent_connectable_interface->connect(connectable);
-
-  /* get application context mutex */
-  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
     
   /* soundcard */
   soundcard = 
@@ -960,9 +957,6 @@ ags_xorg_application_context_disconnect(AgsConnectable *connectable)
   }
 
   ags_xorg_application_context_parent_connectable_interface->disconnect(connectable);
-
-  /* get application context mutex */
-  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
   
   /* soundcard */
   soundcard = 

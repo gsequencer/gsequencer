@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,7 +47,7 @@ typedef struct _AgsTrackCollectionMapperClass AgsTrackCollectionMapperClass;
 
 struct _AgsTrackCollectionMapper
 {
-  GtkTable table;
+  GtkGrid grid;
 
   gchar *instrument;
   gchar *sequence;
@@ -58,7 +58,7 @@ struct _AgsTrackCollectionMapper
   
   GtkCheckButton *enabled;
 
-  GtkVBox *info;
+  GtkBox *info;
   
   GtkComboBoxText *machine_type;
   GtkSpinButton *audio_channels;
@@ -67,7 +67,7 @@ struct _AgsTrackCollectionMapper
 
 struct _AgsTrackCollectionMapperClass
 {
-  GtkTableClass table;
+  GtkGridClass grid;
 };
 
 GType ags_track_collection_mapper_get_type(void);

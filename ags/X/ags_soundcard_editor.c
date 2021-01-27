@@ -2200,6 +2200,7 @@ ags_soundcard_editor_load_core_audio_card(AgsSoundcardEditor *soundcard_editor)
 
   GList *start_sound_server, *sound_server;
   GList *start_soundcard, *soundcard;
+  GList *card_id;
 
   if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
     return;
