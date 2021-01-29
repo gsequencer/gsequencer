@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,7 +47,7 @@ typedef enum{
 
 struct _AgsDeskPad
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
 
@@ -76,7 +76,7 @@ struct _AgsDeskPad
 
 struct _AgsDeskPadClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_desk_pad_get_type(void);

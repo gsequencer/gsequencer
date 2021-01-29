@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -140,11 +140,9 @@ ags_desk_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_desk_init(AgsDesk *desk)
 {
-  GtkHBox *hbox;
-  GtkAlignment *alignment;
-  GtkHBox *balance_hbox;
-  GtkHBox *file_hbox;
-  GtkAlignment *file_alignment;
+  GtkBox *hbox;
+  GtkBox *balance_hbox;
+  GtkBox *file_hbox;
   
   AgsAudio *audio;
 
@@ -178,13 +176,13 @@ ags_desk_init(AgsDesk *desk)
   desk->buffer_recall_container = ags_recall_container_new();
 
   /* create widgets */
-  desk->vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-					0);
+  desk->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				      0);
   gtk_container_add((GtkContainer*) gtk_bin_get_child((GtkBin *) desk),
 		    (GtkWidget *) desk->vbox);
 
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
   gtk_box_pack_start((GtkBox *) desk->vbox,
 		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
@@ -197,23 +195,16 @@ ags_desk_init(AgsDesk *desk)
 		     FALSE, FALSE,
 		     0);
 
-  /* console */
-  alignment = gtk_alignment_new(0.0,
-				0.0,
-				0.0,
-				0.0);
+  /* console */  
+  desk->console = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+					 0);
   gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) alignment,
+		     (GtkWidget *) desk->console,
 		     FALSE, FALSE,
 		     0);
   
-  desk->console = (GtkVBox *) gtk_vbox_new(FALSE,
-					   0);
-  gtk_container_add((GtkContainer *) alignment,
-		    (GtkWidget *) desk->console);
-  
-  balance_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-					  0);
+  balance_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+					0);
   gtk_box_pack_start((GtkBox *) desk->console,
 		     (GtkWidget *) balance_hbox,
 		     FALSE, FALSE,
@@ -225,7 +216,8 @@ ags_desk_init(AgsDesk *desk)
 		     FALSE, FALSE,
 		     0);
 
-  desk->balance = (GtkScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.1);
+  desk->balance = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,
+							-1.0, 1.0, 0.1);
   gtk_widget_set_size_request((GtkWidget *) desk->balance,
 			      200, -1);
   gtk_box_pack_start((GtkBox *) balance_hbox,
@@ -247,27 +239,20 @@ ags_desk_init(AgsDesk *desk)
 		     0);
 
   /* file chooser */
-  file_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
+  file_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				     0);
   gtk_box_pack_start((GtkBox *) desk->vbox,
 		     (GtkWidget *) file_hbox,
 		     TRUE, TRUE,
 		     0);
 
-  file_alignment = gtk_alignment_new(0.0,
-				     0.0,
-				     0.0,
-				     0.0);
+  desk->file_chooser = ags_desk_file_chooser_new();
+  gtk_widget_set_size_request((GtkWidget *) desk->file_chooser,
+			      800, 480);
   gtk_box_pack_start((GtkBox *) file_hbox,
-		     (GtkWidget *) file_alignment,
+		     (GtkWidget *) desk->file_chooser,
 		     TRUE, TRUE,
 		     0);
-
-  desk->file_chooser = ags_desk_file_chooser_new();
-  gtk_widget_set_size_request(desk->file_chooser,
-			      800, 480);
-  gtk_container_add((GtkContainer *) file_alignment,
-		    (GtkWidget *) desk->file_chooser);
 }
 
 void
@@ -503,12 +488,12 @@ ags_desk_map_recall(AgsMachine *machine)
 		   (GDestroyNotify) g_object_unref);
   
   /* depending on destination */
-  ags_desk_input_map_recall(machine,
+  ags_desk_input_map_recall((AgsDesk *) machine,
 			    0,
 			    0);
 
   /* depending on destination */
-  ags_desk_output_map_recall(machine,
+  ags_desk_output_map_recall((AgsDesk *) machine,
 			     0,
 			     0);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -164,7 +164,6 @@ ags_cell_pattern_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *ev
 gboolean
 ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsCellPattern *cell_pattern)
 {
-  AgsWindow *window;
   AgsMachine *machine;
   
   AgsAudio *audio;
@@ -179,9 +178,6 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
-						 AGS_TYPE_WINDOW);
 
   audio = machine->audio;
 
@@ -471,7 +467,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 void
 ags_cell_pattern_adjustment_value_changed_callback(GtkWidget *widget, AgsCellPattern *cell_pattern)
 {
-  gtk_widget_queue_draw(cell_pattern->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) cell_pattern->drawing_area);
 }
 
 void
@@ -490,8 +486,6 @@ ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note)
   gdouble delay;
   guint samplerate;
   
-  GValue value = {0,};
-
   channel = AGS_START_CHANNEL(task)->channel;
 
   /* get some fields */

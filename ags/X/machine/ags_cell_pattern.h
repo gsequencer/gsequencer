@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -72,7 +72,7 @@ typedef enum{
 
 struct _AgsCellPattern
 {
-  GtkTable table;
+  GtkGrid grid;
 
   guint flags;
   
@@ -98,7 +98,7 @@ struct _AgsCellPattern
 
 struct _AgsCellPatternClass
 {
-  GtkTableClass table;
+  GtkGridClass grid;
 };
 
 GType ags_cell_pattern_get_type(void);

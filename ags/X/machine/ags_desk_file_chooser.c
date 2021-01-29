@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -90,9 +90,9 @@ ags_desk_file_chooser_init(AgsDeskFileChooser *desk_file_chooser)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(desk_file_chooser),
 				 GTK_ORIENTATION_VERTICAL);
 
-  gtk_widget_set_hexpand(desk_file_chooser,
+  gtk_widget_set_hexpand((GtkWidget *) desk_file_chooser,
 			 TRUE);
-  gtk_widget_set_vexpand(desk_file_chooser,
+  gtk_widget_set_vexpand((GtkWidget *) desk_file_chooser,
 			 FALSE);
 }
 
