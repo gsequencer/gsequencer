@@ -2,6 +2,7 @@ ags (3.7.31)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed broken if statement with string corruption of fixup 3.2.7 in ags_simple_file.c
+	* updated developer's manual complete example listing and chap12.xml
 
 ags (3.7.30)
 
