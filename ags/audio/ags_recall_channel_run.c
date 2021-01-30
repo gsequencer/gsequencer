@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -250,8 +250,6 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
 void
 ags_recall_channel_run_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_recall_channel_run_connectable_parent_interface;
-
   ags_recall_channel_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_recall_channel_run_connect;
@@ -663,7 +661,7 @@ ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
     }
 
     g_list_free_full(list_start,
-		     g_object_unref);
+		     (GDestroyNotify) g_object_unref);
 
     /* recall channel */
     g_object_get(recall_container,
@@ -678,7 +676,7 @@ ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
     }
 
     g_list_free_full(list_start,
-		     g_object_unref);
+		     (GDestroyNotify) g_object_unref);
 
     if(recall_audio != NULL){
       g_object_unref(recall_audio);
@@ -829,7 +827,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
     next_recycling_context = (AgsRecyclingContext *) ags_recall_id_find_recycling_context(list_start,
 											  recall_id->recycling_context->parent);
     g_list_free_full(list_start,
-		     g_object_unref);
+		     (GDestroyNotify) g_object_unref);
   }
   
   if(destination != NULL &&
@@ -1199,7 +1197,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
       }
 
       g_list_free_full(list_start,
-		       g_object_unref);
+		       (GDestroyNotify) g_object_unref);
 
       /* iterate */
       source_next_recycling = ags_recycling_next(source_recycling);
@@ -1411,7 +1409,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
       }
 
       g_list_free_full(list_start,
-		       g_object_unref);
+		       (GDestroyNotify) g_object_unref);
 
       /* iterate */
       destination_next_recycling = ags_recycling_next(destination_recycling);

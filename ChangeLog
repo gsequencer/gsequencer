@@ -1,3 +1,8 @@
+ags (3.7.32)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed soundcard won't stop playback after unlink running machine
+
 ags (3.7.31)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
