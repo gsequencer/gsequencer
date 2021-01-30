@@ -1,7 +1,9 @@
 ags (3.7.32)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved thread-safety of pulseaudio
 	* fixed soundcard won't stop playback after unlink running machine
+	* fixed wrong mutex lock count in ags_pulse_port_cached_stream_request_callback()
 
 ags (3.7.31)
 

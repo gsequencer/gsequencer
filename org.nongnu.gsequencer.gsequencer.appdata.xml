@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Copyright 2018-2020 Joël Krähemann <jkraehemann@gmail.com> -->
+<!-- Copyright 2018-2021 Joël Krähemann <jkraehemann@gmail.com> -->
 <!-- Copying and distribution of this file, with or without modification, -->
 <!-- are permitted in any medium without royalty provided the copyright -->
 <!-- notice and this notice are preserved. This file is offered as-is, -->
@@ -40,6 +40,13 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.7.32" date="2021-01-30">
+      <description>
+	<p>Fixed ghost playback after unlink running machine.</p>
+	<p>Improved pulseaudio thread-safety.</p>
+      </description>
+    </release>
+
     <release version="3.7.30" date="2021-01-25">
       <description>
 	<p>Fixed LADSPA and Lv2 plugin restore as line member.</p>
