@@ -3161,7 +3161,7 @@ ags_midi_builder_build(AgsMidiBuilder *midi_builder)
   offset = midi_builder->data;
   
   if(offset != NULL &&
-     midi_builder->midi_header != NULL &
+     midi_builder->midi_header != NULL &&
      midi_builder->midi_header->data != NULL){
     memcpy(offset, midi_builder->midi_header->data, midi_builder->midi_header->length * sizeof(guchar));
     offset += midi_builder->midi_header->length;
@@ -3251,7 +3251,7 @@ ags_midi_builder_get_data_with_length(AgsMidiBuilder *midi_builder,
   
   if(!AGS_IS_MIDI_BUILDER(midi_builder)){
     if(length != NULL){
-      length[0] = NULL;
+      length[0] = 0;
     }
     
     return(NULL);

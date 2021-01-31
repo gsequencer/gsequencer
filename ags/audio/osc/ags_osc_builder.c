@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1378,7 +1378,7 @@ ags_osc_builder_get_data_with_length(AgsOscBuilder *osc_builder,
   
   if(!AGS_IS_OSC_BUILDER(osc_builder)){
     if(length != NULL){
-      length[0] = NULL;
+      length[0] = 0;
     }
     
     return(NULL);

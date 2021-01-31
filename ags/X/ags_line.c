@@ -3116,10 +3116,11 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	  continue;
 	}
 
+	plugin_port = NULL;
+	
 	g_object_get(current,
 		     "plugin-port", &plugin_port,
 		     NULL);
-	g_object_unref(plugin_port);
 	
 	if(plugin_port == NULL){
 	  list = list->next;
@@ -3140,6 +3141,8 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 
 	if(!success){
 	  list = list->next;
+
+	  g_object_unref(plugin_port);
 	
 	  continue;
 	}
@@ -3150,8 +3153,8 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	/* lower and upper */
 	g_rec_mutex_lock(plugin_port_mutex);
 	
-	lower = g_value_get_float(plugin_port->lower_value);
-	upper = g_value_get_float(plugin_port->upper_value);
+	lower = (gdouble) g_value_get_float(plugin_port->lower_value);
+	upper = (gdouble) g_value_get_float(plugin_port->upper_value);
       
 	g_rec_mutex_unlock(plugin_port_mutex);
 	
@@ -3173,7 +3176,7 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	ags_port_safe_read(current,
 			   &value);
       
-	peak = g_value_get_float(&value);
+	peak = (gdouble) g_value_get_float(&value);
 	g_value_unset(&value);
 
 	if(line_member->conversion != NULL){
@@ -3200,7 +3203,7 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	ags_port_safe_read(current,
 			   &value);
       
-	peak = g_value_get_float(&value);
+	peak = (gdouble) g_value_get_float(&value);
 	g_value_unset(&value);
 
 	if(line_member->conversion != NULL){
@@ -3225,6 +3228,8 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	    ags_led_set_active(AGS_LED(child));
 	  }
 	}else{
+	  adjustment = NULL;
+	  
 	  g_object_get(child,
 		       "adjustment", &adjustment,
 		       NULL);
@@ -3234,6 +3239,8 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	  gtk_adjustment_set_value(adjustment,
 				   10.0 * average_peak);
 	}
+
+	g_object_unref(plugin_port);
       }
     
       list = list->next;

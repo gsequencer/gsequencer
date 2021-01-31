@@ -6,10 +6,23 @@ ags (3.8.0)
 	* TODO:JK: implemented AgsCompositeToolbar
 	* TODO:JK: fixed deprecated Gtk+-3.0 symbols
 
+ags (3.7.33)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements
+
+ags (3.7.32)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved thread-safety of pulseaudio
+	* fixed soundcard won't stop playback after unlink running machine
+	* fixed wrong mutex lock count in ags_pulse_port_cached_stream_request_callback()
+
 ags (3.7.31)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed broken if statement with string corruption of fixup 3.2.7 in ags_simple_file.c
+	* updated developer's manual complete example listing and chap12.xml
 
 ags (3.7.30)
 

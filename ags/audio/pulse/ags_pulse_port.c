@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -245,7 +245,8 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
 
   guint word_size;
   guint fixed_size;
-
+  guint i;
+  
   /* flags */
   pulse_port->flags = 0;
 
@@ -280,11 +281,19 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   pulse_port->use_cache = TRUE;
   pulse_port->cache_buffer_size = AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE;
 
+  pulse_port->cache_mutex = (GRecMutex **) malloc(AGS_PULSE_PORT_DEFAULT_CACHE_COUNT * sizeof(GRecMutex *));
+    
+  for(i = 0; i < AGS_PULSE_PORT_DEFAULT_CACHE_COUNT; i++){
+    pulse_port->cache_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
+
+    g_rec_mutex_init(pulse_port->cache_mutex[i]);
+  }
+
   pulse_port->current_cache = 0;
   pulse_port->completed_cache = 0;
   pulse_port->cache_offset = 0;
 
-  pulse_port->cache = (void **) malloc(4 * sizeof(void *));
+  pulse_port->cache = (void **) malloc(AGS_PULSE_PORT_DEFAULT_CACHE_COUNT * sizeof(void *));
   
 #ifdef AGS_WITH_PULSE
   pulse_port->sample_spec = (pa_sample_spec *) malloc(sizeof(pa_sample_spec));
@@ -1171,7 +1180,8 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
   guint frame_size;
   
   GRecMutex *pulse_port_mutex;
-
+  GRecMutex *cache_mutex;
+  
   if(pulse_port == NULL){
     return;
   }
@@ -1272,6 +1282,10 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
     }else{
       played_cache = 0;
     }
+
+    cache_mutex = pulse_port->cache_mutex[played_cache];
+    
+    g_rec_mutex_lock(cache_mutex);
     
     n_bytes = 0;
     pa_stream_begin_write(stream,
@@ -1284,6 +1298,8 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
 		    NULL,
 		    0,
 		    PA_SEEK_RELATIVE);
+
+    g_rec_mutex_unlock(cache_mutex);
   }else{
     if(current_cache == 3){
       played_cache = 0;
@@ -1291,11 +1307,15 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
       played_cache = current_cache + 1;
     }
 
+    cache_mutex = pulse_port->cache_mutex[played_cache];
+
+    g_rec_mutex_lock(cache_mutex);
+
     pa_stream_peek(stream,
 		   &(pulse_port->cache[played_cache]),
 		   &frame_size);
 
-    g_rec_mutex_lock(pulse_port_mutex);
+    g_rec_mutex_unlock(cache_mutex);
   }
 
   /* seek current cache */
