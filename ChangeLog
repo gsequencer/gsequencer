@@ -1,6 +1,7 @@
 ags (3.7.33)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed functional test util gsequencer_setup_util.c mutex lock/unlock wrong pointer type
 	* minor improvements
 
 ags (3.7.32)
