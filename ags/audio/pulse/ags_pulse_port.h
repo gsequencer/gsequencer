@@ -42,6 +42,7 @@ G_BEGIN_DECLS
 
 #define AGS_PULSE_PORT_GET_OBJ_MUTEX(obj) (&(((AgsPulsePort *) obj)->obj_mutex))
 
+#define AGS_PULSE_PORT_DEFAULT_CACHE_COUNT (4)
 #define AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE (4096)
 
 typedef struct _AgsPulsePort AgsPulsePort;
@@ -96,6 +97,8 @@ struct _AgsPulsePort
 
   gboolean use_cache;
   guint cache_buffer_size;
+
+  GRecMutex **cache_mutex;
 
   guint current_cache;
   guint completed_cache;

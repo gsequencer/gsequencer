@@ -2249,8 +2249,8 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
 				  guint message_count,
 				  glong *delta_time)
 {
-  static gchar header[] = "MThd";
-  static gchar track[] = "MTrk";
+  static const gchar header[] = "MThd";
+  static const gchar track[] = "MTrk";
 
   guchar *offset;
   

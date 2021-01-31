@@ -1894,6 +1894,7 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
   GRecMutex *pulse_devout_mutex;
   GRecMutex *pulse_client_mutex;
   GRecMutex *pulse_port_mutex;
+  GRecMutex *cache_mutex;
   GMutex *callback_mutex;
   GMutex *callback_finish_mutex;
   
@@ -1988,7 +1989,7 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
     
     g_rec_mutex_unlock(pulse_port_mutex);
 
-    if(completed_cache == 3){
+    if(completed_cache == AGS_PULSE_PORT_DEFAULT_CACHE_COUNT - 1){
       write_cache = 0;
     }else{
       write_cache = completed_cache + 1;
@@ -2021,6 +2022,13 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
     g_rec_mutex_unlock(pulse_devout_mutex);
 
     buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(pulse_devout));
+
+    cache_mutex = pulse_port->cache_mutex[write_cache];
+    
+    g_rec_mutex_lock(cache_mutex);
+
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(pulse_devout),
+			      buffer);
     
     switch(format){
     case AGS_SOUNDCARD_SIGNED_16_BIT:
@@ -2066,6 +2074,11 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
       }
       break;
     }
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(pulse_devout),
+				buffer);
+    
+    g_rec_mutex_unlock(cache_mutex);
     
     /* seek cache */
     if(cache_offset + buffer_size >= cache_buffer_size){
