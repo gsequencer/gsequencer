@@ -362,16 +362,16 @@ ags_test_show_file_error(gchar *filename,
 {
   GtkDialog *dialog;
       
-  g_warning("could not parse file %s\0", filename);
+  g_warning("could not parse file %s", filename);
       
   dialog = gtk_message_dialog_new(NULL,
 				  0,
 				  GTK_MESSAGE_WARNING,
 				  GTK_BUTTONS_OK,
-				  "Failed to open '%s'\0",
+				  "Failed to open '%s'",
 				  filename);
   gtk_widget_show_all((GtkWidget *) dialog);
-  g_signal_connect(dialog, "response\0",
+  g_signal_connect(dialog, "response",
 		   G_CALLBACK(gtk_main_quit), NULL);
   gtk_main();
 }
@@ -417,10 +417,10 @@ ags_test_setup(int argc, char **argv)
   filename = NULL;
 
   ags_log_add_message(log,
-		      "Welcome to Advanced Gtk+ Sequencer\0");
+		      "Welcome to Advanced Gtk+ Sequencer");
   
   for(i = 0; i < argc; i++){
-    if(!strncmp(argv[i], "--filename\0", 11)){
+    if(!strncmp(argv[i], "--filename", 11)){
       AgsSimpleFile *simple_file;
 
       xmlXPathContext *xpath_context; 
@@ -435,7 +435,7 @@ ags_test_setup(int argc, char **argv)
       filename = argv[i + 1];
       simple_file = ags_simple_file_new();
       g_object_set(simple_file,
-		   "filename\0", filename,
+		   "filename", filename,
 		   NULL);
       ags_simple_file_open(simple_file,
 			   NULL);
@@ -446,7 +446,7 @@ ags_test_setup(int argc, char **argv)
       xpath_context = xmlXPathNewContext(simple_file->doc);
 
       if(xpath_context == NULL) {
-	g_warning("Error: unable to create new XPath context\0");
+	g_warning("Error: unable to create new XPath context");
 
 	break;
       }
@@ -455,7 +455,7 @@ ags_test_setup(int argc, char **argv)
       xpath_object = xmlXPathEval(xpath, xpath_context);
 
       if(xpath_object == NULL) {
-	g_warning("Error: unable to evaluate xpath expression \"%s\"\0", xpath);
+	g_warning("Error: unable to evaluate xpath expression \"%s\"", xpath);
 	xmlXPathFreeContext(xpath_context); 
 
 	break;
@@ -485,24 +485,24 @@ ags_test_setup(int argc, char **argv)
   /* load ladspa manager */
   ladspa_manager = ags_ladspa_manager_get_instance();
 
-  blacklist_filename = "ladspa.blacklist\0";
+  blacklist_filename = "ladspa.blacklist";
   ags_ladspa_manager_load_blacklist(ladspa_manager,
 				    blacklist_filename);
 
   ags_log_add_message(ags_log_get_instance(),
-		      "* Loading LADSPA plugins\0");
+		      "* Loading LADSPA plugins");
   
   ags_ladspa_manager_load_default_directory(ladspa_manager);
 
   /* load dssi manager */
   dssi_manager = ags_dssi_manager_get_instance();
 
-  blacklist_filename = "dssi_plugin.blacklist\0";
+  blacklist_filename = "dssi_plugin.blacklist";
   ags_dssi_manager_load_blacklist(dssi_manager,
 				  blacklist_filename);
 
   ags_log_add_message(ags_log_get_instance(),
-		      "* Loading DSSI plugins\0");
+		      "* Loading DSSI plugins");
 
   ags_dssi_manager_load_default_directory(dssi_manager);
 
@@ -510,24 +510,24 @@ ags_test_setup(int argc, char **argv)
   lv2_manager = ags_lv2_manager_get_instance();
   lv2_worker_manager = ags_lv2_worker_manager_get_instance();    
 
-  blacklist_filename = "lv2_plugin.blacklist\0";
+  blacklist_filename = "lv2_plugin.blacklist";
   ags_lv2_manager_load_blacklist(lv2_manager,
 				 blacklist_filename);
 
   ags_log_add_message(ags_log_get_instance(),
-		      "* Loading Lv2 plugins\0");
+		      "* Loading Lv2 plugins");
 
   ags_lv2_manager_load_default_directory(lv2_manager);
 
   /* load lv2ui manager */
   lv2ui_manager = ags_lv2ui_manager_get_instance();  
 
-  blacklist_filename = "lv2ui_plugin.blacklist\0";
+  blacklist_filename = "lv2ui_plugin.blacklist";
   ags_lv2ui_manager_load_blacklist(lv2ui_manager,
 				   blacklist_filename);
   
   ags_log_add_message(ags_log_get_instance(),
-		      "* Loading Lv2ui plugins\0");
+		      "* Loading Lv2ui plugins");
 
   ags_lv2ui_manager_load_default_directory(lv2ui_manager);
   
@@ -627,7 +627,7 @@ ags_test_launch_filename(gchar *filename)
   ags_thread_pool_start(thread_pool);
 
   /* wait for audio loop */
-  g_mutex_lock(&(audio_loop->start_mutex));
+  g_mutex_lock(audio_loop->start_mutex);
 
   if(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT)){
     ags_thread_unset_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE);
@@ -639,7 +639,7 @@ ags_test_launch_filename(gchar *filename)
     }
   }
     
-  g_mutex_unlock(&(audio_loop->start_mutex));
+  g_mutex_unlock(audio_loop->start_mutex);
     
   /* now start read task */
   simple_file_read = ags_simple_file_read_new(simple_file);
