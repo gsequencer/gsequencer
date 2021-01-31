@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+
+#include <ags/i18n.h>
 
 #define AGS_AUDIO_FILE_DEVOUT "AgsAudioFileDevout"
 #define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall"
@@ -95,8 +97,8 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files"),
 								      (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum),
 								      GTK_FILE_CHOOSER_ACTION_OPEN,
-								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
+								      i18n("_OK"), GTK_RESPONSE_ACCEPT,
+								      i18n("_Cancel"), GTK_RESPONSE_CANCEL, 
 								      NULL);
   gtk_file_chooser_add_shortcut_folder_uri(GTK_FILE_CHOOSER(file_chooser),
 					   "file:///usr/share/hydrogen/data/drumkits",
@@ -229,17 +231,13 @@ ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
 void
 ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
 {
-  AgsWindow *window;
-  
   AgsApplySequencerLength *apply_sequencer_length;
 
   AgsApplicationContext *application_context;
   
   gdouble length;
 
-  /* get window and application_context  */
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
-  
+  /* get application context */  
   application_context = ags_application_context_get_instance();
 
   /* task - apply length */
@@ -274,7 +272,7 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
       drum->selected0 = (GtkToggleButton*) widget;
 
       /* calculate index 0 */
-      str = gtk_button_get_label(drum->selected0);
+      str = gtk_button_get_label((GtkButton *) drum->selected0);
       bank_index_0 =
 	AGS_MACHINE(drum)->bank_0 = ((guint) str[0] - 'a');
 
@@ -400,7 +398,7 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
       drum->selected1 = (GtkToggleButton*) widget;
 
       /* calculate index 1 */
-      str = gtk_button_get_label(drum->selected1);
+      str = gtk_button_get_label((GtkButton *) drum->selected1);
       bank_index_1 =
 	AGS_MACHINE(drum)->bank_1 = ((guint) g_ascii_strtoull(str, NULL, 10)) - 1;
 

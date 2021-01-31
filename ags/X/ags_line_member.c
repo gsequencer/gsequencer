@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,6 +76,7 @@ enum{
 enum{
   PROP_0,
   PROP_WIDGET_TYPE,
+  PROP_WIDGET_ORIENTATION,
   PROP_WIDGET_LABEL,
   PROP_PLAY_CONTAINER,
   PROP_RECALL_CONTAINER,
@@ -171,6 +172,23 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  PROP_WIDGET_TYPE,
 				  param_spec);
 
+  /**
+   * AgsLineMember:widget-orientation:
+   *
+   * The widget orientation.
+   * 
+   * Since: 3.8.0
+   */
+  param_spec = g_param_spec_uint("widget-orientation",
+				 i18n_pspec("widget orientation"),
+				 i18n_pspec("widget orientation"),
+				 0, G_MAXUINT,
+				 GTK_ORIENTATION_VERTICAL,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WIDGET_ORIENTATION,
+				  param_spec);
+  
   /**
    * AgsLineMember:widget-label:
    *
@@ -500,6 +518,7 @@ ags_line_member_init(AgsLineMember *line_member)
   line_member->port_flags = 0;
   
   line_member->widget_type = AGS_TYPE_DIAL;
+  line_member->widget_orientation = GTK_ORIENTATION_VERTICAL;
   dial = (AgsDial *) g_object_new(AGS_TYPE_DIAL,
 				  "adjustment", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
 				  NULL);
