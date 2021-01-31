@@ -1,3 +1,45 @@
+ags (3.7.33)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements
+
+ags (3.7.32)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved thread-safety of pulseaudio
+	* fixed soundcard won't stop playback after unlink running machine
+	* fixed wrong mutex lock count in ags_pulse_port_cached_stream_request_callback()
+
+ags (3.7.31)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed broken if statement with string corruption of fixup 3.2.7 in ags_simple_file.c
+	* updated developer's manual complete example listing and chap12.xml
+
+ags (3.7.30)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed deprecated code to restore plugins in ags_simple_file.c
+	* fixed wrong type cast with interface in ags_xorg_application_context.c
+
+ags (3.7.29)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsThread fields start_mutex and start_cond wrong type
+
+ags (3.7.28)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* m4/gettext.m4: Downgrade to gettext-0.19.8.1.
+	* m4/iconv.m4: Downgrade to gettext-0.19.8.1.
+	* m4/lib-ld.m4: Downgrade to gettext-0.19.8.1.
+	* m4/lib-link.m4: Downgrade to gettext-0.19.8.1.
+	* m4/lib-prefix.m4: Downgrade to gettext-0.19.8.1.
+	* m4/nls.m4: Downgrade to gettext-0.19.8.1.
+	* m4/po.m4: Downgrade to gettext-0.19.8.1.
+	* m4/progtest.m4: Downgrade to gettext-0.19.8.1.
+	* configure.ac (AM_GNU_GETTEXT_VERSION): Bump to 0.19.8.
+
 ags (3.7.27)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

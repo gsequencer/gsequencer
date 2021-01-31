@@ -36,6 +36,13 @@
     fields. Rather use the appropriate getter/setter functions and take care of owner
     ship. 
   </para>
+
+  <para>
+    Usually, you wouldn't call directly
+    <code language="C">void ags_channel_set_link(AgsChannel*, AgsChannel*, GError**)</code>,
+    but rather use the AgsLinkChannel task and add it to the AgsTaskLauncher. Else,
+    everything is fine.
+  </para>
   
   <example>
     <title>Simple pattern sequencer with master playback</title>
