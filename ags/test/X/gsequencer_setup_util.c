@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -615,11 +615,11 @@ ags_test_launch_filename(gchar *filename)
   }
     
   /* start engine */  
-  g_mutex_lock(audio_loop->start_mutex);
+  g_mutex_lock(AGS_THREAD_GET_START_MUTEX(audio_loop));
     
   start_queue = NULL;
   
-  g_mutex_unlock(audio_loop->start_mutex);
+  g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(audio_loop));
 
   /* start audio loop and thread pool */
   ags_thread_start(audio_loop);
@@ -627,19 +627,19 @@ ags_test_launch_filename(gchar *filename)
   ags_thread_pool_start(thread_pool);
 
   /* wait for audio loop */
-  g_mutex_lock(audio_loop->start_mutex);
+  g_mutex_lock(AGS_THREAD_GET_START_MUTEX(audio_loop));
 
   if(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT)){
     ags_thread_unset_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE);
       
     while(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT) &&
 	  !ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE)){
-      g_cond_wait(&(audio_loop->start_cond),
-		  &(audio_loop->start_mutex));
+      g_cond_wait(AGS_THREAD_GET_START_COND(audio_loop),
+		  AGS_THREAD_GET_START_MUTEX(audio_loop));
     }
   }
     
-  g_mutex_unlock(audio_loop->start_mutex);
+  g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(audio_loop));
     
   /* now start read task */
   simple_file_read = ags_simple_file_read_new(simple_file);
