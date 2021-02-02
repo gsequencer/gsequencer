@@ -727,10 +727,10 @@ ags_live_lv2_bridge_scale_changed_callback(GtkWidget *scale, AgsLiveLv2Bridge *l
     return;
   }
 
-  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(vscale,
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(scale,
 							  AGS_TYPE_BULK_MEMBER);
 
-  g_object_get(vscale,
+  g_object_get(scale,
 	       "adjustment", &adjustment,
 	       NULL);
 
