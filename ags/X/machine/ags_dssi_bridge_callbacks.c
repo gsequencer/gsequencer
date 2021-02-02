@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -69,8 +69,6 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
     gchar *name;
     gchar *specifier;
     
-    LADSPA_PortDescriptor *port_descriptor;
-
     guint bank, program;
     unsigned long i;
 
@@ -89,9 +87,6 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
     g_message("%d %d", bank, program);
 #endif
     
-    /* update ports */    
-    port_descriptor = dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortDescriptors;
-
     /* play context */
     g_object_get(AGS_MACHINE(dssi_bridge)->audio,
 		 "play", &start_recall,
@@ -100,8 +95,6 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
     recall = start_recall;
     
     while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_DSSI_AUDIO)) != NULL){
-      GList *start_port, *port;
-      
       ags_fx_dssi_audio_change_program(recall->data,
 				       bank,
 				       program);
@@ -121,8 +114,6 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
     recall = start_recall;
     
     while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_DSSI_AUDIO)) != NULL){
-      GList *start_port, *port;
-      
       ags_fx_dssi_audio_change_program(recall->data,
 				       bank,
 				       program);
@@ -179,7 +170,7 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 	    }
 	    
 	    gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment, val);
-	    gtk_widget_queue_draw((AgsDial *) child_widget);
+	    gtk_widget_queue_draw(child_widget);
 
 #ifdef AGS_DEBUG
 	    g_message(" --- %f", dssi_bridge->port_values[i]);

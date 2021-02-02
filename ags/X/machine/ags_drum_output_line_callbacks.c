@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,9 +29,5 @@ ags_drum_output_line_resize_pads_callback(AgsDrum *drum, GType channel_type,
 					  guint pads_new, guint pads_old,
 					  AgsDrumOutputLine *output_line)
 {
-  AgsAudio *audio;
-
-  audio = AGS_MACHINE(drum)->audio;
-
   //TODO:JK: implement me
 }

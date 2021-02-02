@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,10 +38,10 @@ void
 ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_pad)
 {
   GtkFileChooserDialog *file_chooser;
-  GtkHBox *hbox;
+  GtkBox *hbox;
   GtkLabel *label;
   GtkSpinButton *spin_button;
-  GtkToggleButton *play;
+//  GtkToggleButton *play;
 
   if(drum_input_pad->file_chooser != NULL)
     return;
@@ -50,8 +50,8 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
     file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open File"),
 									(GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum_input_pad),
 									GTK_FILE_CHOOSER_ACTION_OPEN,
-									GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-									GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+									i18n("_Cancel"), GTK_RESPONSE_CANCEL,
+									i18n("_Open"), GTK_RESPONSE_ACCEPT,
 									NULL);
   gtk_file_chooser_add_shortcut_folder_uri(GTK_FILE_CHOOSER(file_chooser),
 					   "file:///usr/share/hydrogen/data/drumkits",
@@ -61,19 +61,20 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
   g_object_set_data((GObject *) file_chooser, (char *) g_type_name(AGS_TYPE_AUDIO_FILE), NULL);
   g_object_set_data((GObject *) file_chooser, AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME, NULL);
 
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(GTK_ORIENTATION_HORIZONTAL,
+				  0);
   gtk_file_chooser_set_extra_widget((GtkFileChooser *) file_chooser,
 				    (GtkWidget *) hbox);
   
   label = (GtkLabel *) gtk_label_new(i18n("channel: "));
-  gtk_box_pack_start((GtkBox *) hbox,
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   spin_button = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_AUDIO(AGS_PAD(drum_input_pad)->channel->audio)->audio_channels - 1, 1.0);
   g_object_set_data((GObject *) file_chooser, AGS_DRUM_INPUT_PAD_OPEN_SPIN_BUTTON, spin_button);
-  gtk_box_pack_start((GtkBox *) hbox,
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) spin_button,
 		     FALSE, FALSE,
 		     0);
@@ -102,8 +103,6 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
 void
 ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsDrumInputPad *drum_input_pad)
 {
-  AgsWindow *window;
-
   GtkFileChooserDialog *file_chooser;
   GtkSpinButton *spin_button;
 
@@ -118,9 +117,6 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   char *name0, *name1;
 
   application_context = ags_application_context_get_instance();
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) drum_input_pad,
-						 AGS_TYPE_WINDOW);
 
   file_chooser = drum_input_pad->file_chooser;
 
@@ -141,7 +137,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
     /* task */
     task = NULL;
     
-    if(gtk_toggle_button_get_active(AGS_PAD(drum_input_pad))){
+    if(gtk_toggle_button_get_active(AGS_PAD(drum_input_pad)->group)){
       AgsChannel *current, *next_pad, *next_current;
 
       guint i;

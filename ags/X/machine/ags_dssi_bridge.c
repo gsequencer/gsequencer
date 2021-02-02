@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -216,10 +216,10 @@ ags_dssi_bridge_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 {
-  GtkVBox *vbox;
-  GtkHBox *hbox;
+  GtkBox *vbox;
+  GtkBox *hbox;
   GtkLabel *label;
-  GtkTable *table;
+  GtkGrid *grid;
 
   AgsAudio *audio;
 
@@ -289,39 +289,41 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   dssi_bridge->port_values = NULL;
   dssi_bridge->dssi_descriptor = NULL;
   
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
   gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) dssi_bridge),
 		    (GtkWidget *) vbox);
 
   /* program */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_pack_start(vbox,
 		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("program"));
-  gtk_box_pack_start((GtkBox *) hbox,
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   dssi_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_box_pack_start((GtkBox *) hbox,
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) dssi_bridge->program,
 		     FALSE, FALSE,
 		     0);
 
   /* effect bridge */
   AGS_MACHINE(dssi_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
-  gtk_box_pack_start((GtkBox *) vbox,
+  gtk_box_pack_start(vbox,
 		     (GtkWidget *) AGS_MACHINE(dssi_bridge)->bridge,
 		     FALSE, FALSE,
 		     0);
   
-  table = (GtkTable *) gtk_table_new(1, 2, FALSE);
+  grid = (GtkGrid *) gtk_grid_new(1, 2, FALSE);
   gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge),
-		     (GtkWidget *) table,
+		     (GtkWidget *) grid,
 		     FALSE, FALSE,
 		     0);
 
@@ -330,12 +332,16 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input)->flags |= (AGS_EFFECT_BULK_HIDE_BUTTONS |
 											      AGS_EFFECT_BULK_HIDE_ENTRIES |
 											      AGS_EFFECT_BULK_SHOW_LABELS);
-  gtk_table_attach(table,
-		   AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input,
-		   0, 1,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input,
+		  0, 0,
+		  1, 1);
 }
 
 void
@@ -598,7 +604,7 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
 
   application_context = ags_application_context_get_instance();
 
-  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
+  navigation = (AgsNavigation *) ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
 
   dssi_bridge = (AgsDssiBridge *) machine;
   
@@ -859,7 +865,6 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
   DSSI_Descriptor *plugin_descriptor;
   DSSI_Program_Descriptor *program_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
-  LADSPA_PortRangeHintDescriptor hint_descriptor;
 
   unsigned long samplerate;
   unsigned long effect_index;

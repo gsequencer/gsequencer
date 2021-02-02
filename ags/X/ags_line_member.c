@@ -717,6 +717,25 @@ ags_line_member_set_property(GObject *gobject,
 			new_child);
     }
     break;
+  case PROP_WIDGET_ORIENTATION:
+    {
+      guint widget_orientation;
+
+      widget_orientation = g_value_get_uint(value);
+      
+      line_member->widget_orientation = widget_orientation;
+
+      child = gtk_bin_get_child(GTK_BIN(line_member));
+
+      if(GTK_IS_SCALE(child)){
+	gtk_orientable_set_orientation(GTK_ORIENTABLE(child),
+				       orientation);
+      }else if(AGS_IS_INDICATOR(child)){
+	gtk_orientable_set_orientation(GTK_ORIENTABLE(child),
+				       orientation);
+      }
+    }
+    break;
   case PROP_WIDGET_LABEL:
     {
       gchar *label;
@@ -929,7 +948,7 @@ ags_line_member_set_property(GObject *gobject,
 
 	  child = gtk_bin_get_child(GTK_BIN(line_member));
 
-	  //TODO:JK: add more types
+	  //TODO:JK: add more orientations
 
 	  if(AGS_IS_DIAL(child)){
 	    AGS_DIAL(child)->flags |= AGS_DIAL_SEEMLESS_MODE;
@@ -1020,6 +1039,11 @@ ags_line_member_get_property(GObject *gobject,
   case PROP_WIDGET_TYPE:
     {
       g_value_set_ulong(value, line_member->widget_type);
+    }
+    break;
+  case PROP_WIDGET_ORIENTATION:
+    {
+      g_value_set_uint(value, line_member->widget_orientation);
     }
     break;
   case PROP_WIDGET_LABEL:

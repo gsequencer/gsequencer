@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -58,7 +58,7 @@ ags_fm_syncsynth_samplerate_changed_callback(AgsMachine *machine,
   GList *start_list, *list;
 
   list = 
-    start_list = gtk_container_get_children(AGS_FM_SYNCSYNTH(machine)->fm_oscillator);
+    start_list = gtk_container_get_children((GtkContainer *) AGS_FM_SYNCSYNTH(machine)->fm_oscillator);
 
   while(list != NULL){
     AgsFMOscillator *fm_oscillator;
@@ -67,7 +67,7 @@ ags_fm_syncsynth_samplerate_changed_callback(AgsMachine *machine,
     
     guint i;
 
-    start_child = gtk_container_get_children(list->data);
+    start_child = gtk_container_get_children((GtkContainer *) list->data);
 
     child = ags_list_util_find_type(start_child,
 				    AGS_TYPE_FM_OSCILLATOR);

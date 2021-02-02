@@ -125,9 +125,9 @@ ags_equalizer10_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_equalizer10_init(AgsEqualizer10 *equalizer10)
 {
-  GtkVBox *vbox;
-  GtkHBox *hbox;
-  GtkVBox *control_vbox;
+  GtkBox *vbox;
+  GtkBox *hbox;
+  GtkBox *control_vbox;
   GtkLabel *label;
   
   g_signal_connect_after((GObject *) equalizer10, "parent_set",
@@ -155,300 +155,312 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
   equalizer10->eq10_play_container = ags_recall_container_new();
   equalizer10->eq10_recall_container = ags_recall_container_new();
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-				  0);
-  gtk_container_add((GtkContainer*) gtk_bin_get_child((GtkBin *) equalizer10), (GtkWidget *) vbox);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_container_add((GtkContainer*) gtk_bin_get_child((GtkBin *) equalizer10),
+		    (GtkWidget *) vbox);
 
   /* controls */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  4);
-  gtk_box_pack_start((GtkBox *) vbox,
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				4);
+  gtk_box_pack_start(vbox,
 		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
 
   /* peak 28 hz */
-  control_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-					  0);
-  gtk_box_pack_start((GtkBox *) hbox,
+  control_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
+			     0);
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) control_vbox,
 		     FALSE, FALSE,
 		     0);
 
-  equalizer10->peak_28hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
+  equalizer10->peak_28hz = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+								 0.0, 2.0, 0.01);
   gtk_range_set_inverted((GtkRange *) equalizer10->peak_28hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_28hz,
 		      1.0);
   gtk_widget_set_size_request((GtkWidget *) equalizer10->peak_28hz,
 			      -1, 100);
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) equalizer10->peak_28hz,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("28Hz"));
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   /* peak 56 hz */
-  control_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-					  0);
-  gtk_box_pack_start((GtkBox *) hbox,
+  control_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
+			     0);
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) control_vbox,
 		     FALSE, FALSE,
 		     0);
 
-  equalizer10->peak_56hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
+  equalizer10->peak_56hz = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+								 0.0, 2.0, 0.01);
   gtk_range_set_inverted((GtkRange *) equalizer10->peak_56hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_56hz,
 		      1.0);
   gtk_widget_set_size_request((GtkWidget *) equalizer10->peak_56hz,
 			      -1, 100);
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) equalizer10->peak_56hz,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("56Hz"));
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   /* peak 112 hz */
-  control_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-					  0);
-  gtk_box_pack_start((GtkBox *) hbox,
+  control_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
+			     0);
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) control_vbox,
 		     FALSE, FALSE,
 		     0);
 
-  equalizer10->peak_112hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
+  equalizer10->peak_112hz = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+								  0.0, 2.0, 0.01);
   gtk_range_set_inverted((GtkRange *) equalizer10->peak_112hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_112hz,
 		      1.0);
   gtk_widget_set_size_request((GtkWidget *) equalizer10->peak_112hz,
 			      -1, 100);
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) equalizer10->peak_112hz,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("112Hz"));
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   /* peak 224 hz */
-  control_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-					  0);
-  gtk_box_pack_start((GtkBox *) hbox,
+  control_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
+			     0);
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) control_vbox,
 		     FALSE, FALSE,
 		     0);
 
-  equalizer10->peak_224hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
+  equalizer10->peak_224hz = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+								  0.0, 2.0, 0.01);
   gtk_range_set_inverted((GtkRange *) equalizer10->peak_224hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_224hz,
 		      1.0);
   gtk_widget_set_size_request((GtkWidget *) equalizer10->peak_224hz,
 			      -1, 100);
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) equalizer10->peak_224hz,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("224Hz"));
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   /* peak 448 hz */
-  control_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-					  0);
-  gtk_box_pack_start((GtkBox *) hbox,
+  control_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
+			     0);
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) control_vbox,
 		     FALSE, FALSE,
 		     0);
 
-  equalizer10->peak_448hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
+  equalizer10->peak_448hz = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+								  0.0, 2.0, 0.01);
   gtk_range_set_inverted((GtkRange *) equalizer10->peak_448hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_448hz,
 		      1.0);
   gtk_widget_set_size_request((GtkWidget *) equalizer10->peak_448hz,
 			      -1, 100);
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) equalizer10->peak_448hz,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("448Hz"));
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   /* peak 896 hz */
-  control_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-					  0);
-  gtk_box_pack_start((GtkBox *) hbox,
+  control_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
+			     0);
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) control_vbox,
 		     FALSE, FALSE,
 		     0);
 
-  equalizer10->peak_896hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
+  equalizer10->peak_896hz = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+								  0.0, 2.0, 0.01);
   gtk_range_set_inverted((GtkRange *) equalizer10->peak_896hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_896hz,
 		      1.0);
   gtk_widget_set_size_request((GtkWidget *) equalizer10->peak_896hz,
 			      -1, 100);
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) equalizer10->peak_896hz,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("896Hz"));
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   /* peak 1792 hz */
-  control_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-					  0);
-  gtk_box_pack_start((GtkBox *) hbox,
+  control_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
+			     0);
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) control_vbox,
 		     FALSE, FALSE,
 		     0);
 
-  equalizer10->peak_1792hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
+  equalizer10->peak_1792hz = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+								   0.0, 2.0, 0.01);
   gtk_range_set_inverted((GtkRange *) equalizer10->peak_1792hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_1792hz,
 		      1.0);
   gtk_widget_set_size_request((GtkWidget *) equalizer10->peak_1792hz,
 			      -1, 100);
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) equalizer10->peak_1792hz,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("1792Hz"));
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   /* peak 3584 hz */
-  control_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-					  0);
-  gtk_box_pack_start((GtkBox *) hbox,
+  control_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
+			     0);
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) control_vbox,
 		     FALSE, FALSE,
 		     0);
 
-  equalizer10->peak_3584hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
+  equalizer10->peak_3584hz = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+								   0.0, 2.0, 0.01);
   gtk_range_set_inverted((GtkRange *) equalizer10->peak_3584hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_3584hz,
 		      1.0);
   gtk_widget_set_size_request((GtkWidget *) equalizer10->peak_3584hz,
 			      -1, 100);
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) equalizer10->peak_3584hz,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("3584Hz"));
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   /* peak 7168 hz */
-  control_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-					  0);
-  gtk_box_pack_start((GtkBox *) hbox,
+  control_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
+			     0);
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) control_vbox,
 		     FALSE, FALSE,
 		     0);
 
-  equalizer10->peak_7168hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
+  equalizer10->peak_7168hz = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+								   0.0, 2.0, 0.01);
   gtk_range_set_inverted((GtkRange *) equalizer10->peak_7168hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_7168hz,
 		      1.0);
   gtk_widget_set_size_request((GtkWidget *) equalizer10->peak_7168hz,
 			      -1, 100);
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) equalizer10->peak_7168hz,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("7168Hz"));
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   /* peak 14336 hz */
-  control_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-					  0);
-  gtk_box_pack_start((GtkBox *) hbox,
+  control_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
+			     0);
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) control_vbox,
 		     FALSE, FALSE,
 		     0);
 
-  equalizer10->peak_14336hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
+  equalizer10->peak_14336hz = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+								    0.0, 2.0, 0.01);
   gtk_range_set_inverted((GtkRange *) equalizer10->peak_14336hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_14336hz,
 		      1.0);
   gtk_widget_set_size_request((GtkWidget *) equalizer10->peak_14336hz,
 			      -1, 100);
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) equalizer10->peak_14336hz,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("14336Hz"));
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   /* pressure */
-  control_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-					  0);
-  gtk_box_pack_start((GtkBox *) hbox,
+  control_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,
+			     0);
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) control_vbox,
 		     FALSE, FALSE,
 		     0);
 
-  equalizer10->pressure = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
+  equalizer10->pressure = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+								0.0, 2.0, 0.01);
   gtk_range_set_inverted((GtkRange *) equalizer10->pressure,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->pressure,
 		      1.0);
   gtk_widget_set_size_request((GtkWidget *) equalizer10->pressure,
 			      -1, 100);
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) equalizer10->pressure,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("pressure"));
-  gtk_box_pack_start((GtkBox *) control_vbox,
+  gtk_box_pack_start(control_vbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
@@ -614,8 +626,6 @@ ags_equalizer10_disconnect(AgsConnectable *connectable)
 {
   AgsEqualizer10 *equalizer10;
 
-  int i;
-
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
     return;
   }
@@ -743,14 +753,10 @@ ags_equalizer10_resize_pads(AgsMachine *machine, GType type,
 {
   AgsEqualizer10 *equalizer10;
   
-  AgsAudio *audio;
-  
   guint audio_channels;
   gboolean grow;
 
   equalizer10 = (AgsEqualizer10 *) machine;
-
-  audio = machine->audio;
 
   /* get some fields */
   audio_channels = machine->audio_channels;
@@ -819,15 +825,18 @@ ags_equalizer10_map_recall(AgsMachine *machine)
   position = 0;
   
   /* add new controls */
-  ags_fx_factory_create(machine->audio,
-			equalizer10->eq10_play_container, equalizer10->eq10_recall_container,
-			"ags-fx-eq10",
-			NULL,
-			NULL,
-			0, 0,
-			0, 0,
-			position,
-			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT), 0);
+  start_recall = ags_fx_factory_create(audio,
+				       equalizer10->eq10_play_container, equalizer10->eq10_recall_container,
+				       "ags-fx-eq10",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT), 0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
   /* depending on destination */
   ags_equalizer10_input_map_recall(equalizer10,
@@ -874,16 +883,19 @@ ags_equalizer10_input_map_recall(AgsEqualizer10 *equalizer10,
 	       NULL);
 
   /* add to machine */
-  ags_fx_factory_create(AGS_MACHINE(equalizer10)->audio,
-			equalizer10->eq10_play_container, equalizer10->eq10_recall_container,
-			"ags-fx-eq10",
-			NULL,
-			NULL,
-			audio_channel_start, audio_channels,
-			input_pad_start, input_pads,
-			position,
-			(AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+  start_recall = ags_fx_factory_create(audio,
+				       equalizer10->eq10_play_container, equalizer10->eq10_recall_container,
+				       "ags-fx-eq10",
+				       NULL,
+				       NULL,
+				       audio_channel_start, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
   
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
   equalizer10->mapped_input_pad = input_pads;
 }
 
@@ -1038,8 +1050,8 @@ ags_equalizer10_remap_port(AgsEqualizer10 *equalizer10)
   for(i = 0; i < audio_channels && channel != NULL; i++){
     AgsPort *port;
 
-    GList *start_play, *play;
-    GList *start_recall, *recall;
+    GList *start_play;
+    GList *start_recall;
 
     g_object_get(channel,
 		 "play", &start_play,

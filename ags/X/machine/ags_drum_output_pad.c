@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -91,7 +91,6 @@ ags_drum_output_pad_get_type()
 void
 ags_drum_output_pad_class_init(AgsDrumOutputPadClass *drum_output_pad)
 {
-  GObjectClass *gobject;
   AgsPadClass *pad;
 
   ags_drum_output_pad_parent_class = g_type_class_peek_parent(drum_output_pad);
