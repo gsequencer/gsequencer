@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -72,10 +72,10 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 
       matrix->selected = (GtkToggleButton*) widget;
 
-      gtk_widget_queue_draw(matrix->cell_pattern->drawing_area);
+      gtk_widget_queue_draw((GtkWidget *) matrix->cell_pattern->drawing_area);
 
       /* calculate index 1 */
-      str = gtk_button_get_label(matrix->selected);
+      str = gtk_button_get_label((GtkButton *) matrix->selected);
       bank_index_1 =
 	AGS_MACHINE(matrix)->bank_1 = ((guint) g_ascii_strtoull(str, NULL, 10)) - 1;
 
@@ -183,8 +183,6 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 void
 ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 {
-  AgsWindow *window;
-
   AgsApplySequencerLength *apply_sequencer_length;
   
   AgsApplicationContext *application_context;
@@ -193,9 +191,6 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 
   application_context = ags_application_context_get_instance();
 
-  /* get window and application_context  */
-  window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(matrix));
-
   /* task - apply length */
   length = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button));
 
@@ -203,7 +198,7 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 							  length);
 
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-				(GObject *) apply_sequencer_length);
+				(AgsTask *) apply_sequencer_length);
 }
 
 void
