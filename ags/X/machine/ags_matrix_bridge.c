@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -113,7 +113,7 @@ ags_matrix_bridge_init(AgsMatrixBridge *matrix_bridge)
 {
   GtkFrame *frame;
   GtkExpander *expander;
-  GtkTable *table;
+  GtkGrid *grid;
 
   frame = (GtkFrame *) gtk_frame_new("input bridge");
   gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(matrix_bridge),
@@ -125,19 +125,22 @@ ags_matrix_bridge_init(AgsMatrixBridge *matrix_bridge)
   gtk_container_add((GtkContainer *) frame,
 		    (GtkWidget *) expander);
 
-  table = (GtkTable *) gtk_table_new(1, 2,
-				     FALSE);
+  grid = (GtkGrid *) gtk_grid_new();
   gtk_container_add((GtkContainer *) expander,
-		    (GtkWidget *)  table);
+		    (GtkWidget *)  grid);
 
   AGS_EFFECT_BRIDGE(matrix_bridge)->bulk_input = (GtkWidget *) ags_matrix_bulk_input_new(NULL,
 											 AGS_TYPE_INPUT);
-  gtk_table_attach(table,
-		   (GtkWidget *) AGS_EFFECT_BRIDGE(matrix_bridge)->bulk_input,
-		   0, 1,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) AGS_EFFECT_BRIDGE(matrix_bridge)->bulk_input,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(matrix_bridge)->bulk_input,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) AGS_EFFECT_BRIDGE(matrix_bridge)->bulk_input,
+		  0, 0,
+		  1, 1);
 }
 
 void

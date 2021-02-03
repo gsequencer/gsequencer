@@ -639,7 +639,18 @@ ags_line_member_set_property(GObject *gobject,
 		     "button-height", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_HEIGHT),
 		     NULL);
       }else if(GTK_IS_SCALE(new_child)){
-	if(gtk_orientable_get_orientation(GTK_ORIENTABLE(new_child)) == GTK_ORIENTATION_VERTICAL){
+	guint widget_orientation;
+
+	widget_orientation = GTK_ORIENTATION_VERTICAL;
+	
+	g_object_get(line_member,
+		     "widget-orientation", &widget_orientation,
+		     NULL);
+	
+	gtk_orientable_set_orientation(GTK_ORIENTABLE(new_child),
+				       widget_orientation);
+	
+	if(widget_orientation == GTK_ORIENTATION_VERTICAL){
 	  gtk_widget_set_size_request(new_child,
 				      gui_scale_factor * 16, gui_scale_factor * 100);
 	}else{
