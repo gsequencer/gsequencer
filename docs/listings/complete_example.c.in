@@ -140,6 +140,7 @@ AgsAudio*
 setup_slave(AgsApplicationContext *application_context)
 {
   AgsAudio *audio;
+  AgsPlaybackDomain *playback_domain;
   AgsChannel *channel;
   AgsChannel *start_input;
   AgsAudioSignal *audio_signal;
@@ -165,6 +166,10 @@ setup_slave(AgsApplicationContext *application_context)
   
   GValue value;
   
+  static const guint staging_program[] = {
+    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
+  };
+
   /* get soundcard */
   start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
@@ -180,6 +185,33 @@ setup_slave(AgsApplicationContext *application_context)
 					AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
 					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
 
+  /* set ags-fx staging */
+  playback_domain = NULL;
+  
+  g_object_get(audio,
+	       "playback-domain", &playback_domain,
+	       NULL);
+
+  if(playback_domain != NULL){
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      AgsThread *audio_thread;
+	  
+      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							  i);
+
+      if(audio_thread != NULL){
+	ags_audio_thread_set_do_fx_staging(audio_thread, TRUE);
+	ags_audio_thread_set_staging_program(audio_thread,
+					     staging_program,
+					     1);
+	    
+	g_object_unref(audio_thread);
+      }
+    }
+    
+    g_object_unref(playback_domain);
+  }
+  
   n_audio_channels = 2;
 
   n_output_pads = 1;
@@ -195,7 +227,7 @@ setup_slave(AgsApplicationContext *application_context)
                      AGS_TYPE_INPUT,
                      n_input_pads);
 
-  /* add pattern and generate sound */
+  /* set sequencer ability */
   channel = audio->output;
 
   while(channel != NULL){

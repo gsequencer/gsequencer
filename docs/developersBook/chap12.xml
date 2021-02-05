@@ -31,6 +31,13 @@
   </para>
 
   <para>
+    The slave owns the audio signal and has to provide audio processing threads for it.
+    This is done by <code language="C">AGS_AUDIO_OUTPUT_HAS_RECYCLING</code> flag. We
+    set the ags-fx staging flags and the staging program. We need to do this explicitely
+    in view of reverse compatibility to the deprecated recall engine.
+  </para>
+  
+  <para>
     Note, here thread-safety doesn't matter. If you need to do more complex work-flows,
     you have to care about it. In practice you wouldn't make direct use of any struct
     fields. Rather use the appropriate getter/setter functions and take care of owner
