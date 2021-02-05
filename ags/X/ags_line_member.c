@@ -663,12 +663,16 @@ ags_line_member_set_property(GObject *gobject,
 		     "segment-height", (guint) (gui_scale_factor * AGS_VINDICATOR_DEFAULT_SEGMENT_HEIGHT),
 		     "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
 		     NULL);
+
+	//FIXME:JK: make indicator orientable
       }else if(AGS_IS_HINDICATOR(new_child)){
 	g_object_set(new_child,
 		     "segment-width", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_WIDTH),
 		     "segment-height", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_HEIGHT),
 		     "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
 		     NULL);
+
+	//FIXME:JK: make indicator orientable
       }
 
       gtk_widget_queue_resize_no_redraw(new_child);
@@ -740,10 +744,20 @@ ags_line_member_set_property(GObject *gobject,
 
       if(GTK_IS_SCALE(child)){
 	gtk_orientable_set_orientation(GTK_ORIENTABLE(child),
-				       orientation);
+				       widget_orientation);
+	
+	if(widget_orientation == GTK_ORIENTATION_VERTICAL){
+	  gtk_widget_set_size_request(new_child,
+				      gui_scale_factor * 16, gui_scale_factor * 100);
+	}else{
+	  gtk_widget_set_size_request(new_child,
+				      gui_scale_factor * 100, gui_scale_factor * 16);
+	}
       }else if(AGS_IS_INDICATOR(child)){
 	gtk_orientable_set_orientation(GTK_ORIENTABLE(child),
-				       orientation);
+				       widget_orientation);
+
+	//FIXME:JK: make indicator orientable
       }
     }
     break;
