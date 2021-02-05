@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -56,7 +56,7 @@ struct _AgsPanel
   AgsRecallContainer *volume_play_container;
   AgsRecallContainer *volume_recall_container;
 
-  GtkVBox *vbox;
+  GtkBox *vbox;
 };
 
 struct _AgsPanelClass

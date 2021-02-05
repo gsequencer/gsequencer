@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -217,12 +217,8 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
   AgsPanelInputLine *panel_input_line;
 
-  AgsAudio *audio;
-
   GObject *output_soundcard;
   
-  GList *list;
-
   gchar *device;
   gchar *str;
 
@@ -290,7 +286,7 @@ ags_panel_input_line_map_recall(AgsLine *line,
     return;
   }
 
-  panel = (AgsPanel *) gtk_widget_get_ancestor(line,
+  panel = (AgsPanel *) gtk_widget_get_ancestor((GtkWidget *) line,
 					       AGS_TYPE_PANEL);
   
   audio = AGS_MACHINE(panel)->audio;

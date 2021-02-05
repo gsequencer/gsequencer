@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -103,7 +103,6 @@ void
 ags_panel_class_init(AgsPanelClass *panel)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
   AgsMachineClass *machine;
 
   ags_panel_parent_class = g_type_class_peek_parent(panel);
@@ -112,9 +111,6 @@ ags_panel_class_init(AgsPanelClass *panel)
   gobject = (GObjectClass *) panel;
 
   gobject->finalize = ags_panel_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) panel;
 
   /* AgsMachine */
   machine = (AgsMachineClass *) panel;
@@ -125,8 +121,6 @@ ags_panel_class_init(AgsPanelClass *panel)
 void
 ags_panel_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_panel_connectable_parent_interface;
-
   ags_panel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_panel_connect;
@@ -174,12 +168,17 @@ ags_panel_init(AgsPanel *panel)
   panel->volume_play_container = ags_recall_container_new();
   panel->volume_recall_container = ags_recall_container_new();
   
-  panel->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) panel)), (GtkWidget *) panel->vbox);
+  panel->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				       0);
+  gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) panel)),
+		    (GtkWidget *) panel->vbox);
 
   /* input */
   AGS_MACHINE(panel)->input = (GtkContainer *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) panel->vbox, (GtkWidget *) AGS_MACHINE(panel)->input, FALSE, FALSE, 0);
+  gtk_box_pack_start(panel->vbox,
+		     (GtkWidget *) AGS_MACHINE(panel)->input,
+		     FALSE, FALSE,
+		     0);
 }
 
 static void

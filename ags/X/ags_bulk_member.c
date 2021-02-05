@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -75,6 +75,7 @@ enum{
 enum{
   PROP_0,
   PROP_WIDGET_TYPE,
+  PROP_WIDGET_ORIENTATION,
   PROP_WIDGET_LABEL,
   PROP_PLAY_CONTAINER,
   PROP_RECALL_CONTAINER,
@@ -168,6 +169,24 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
   g_object_class_install_property(gobject,
 				  PROP_WIDGET_TYPE,
 				  param_spec);
+
+  /**
+   * AgsBulkMember:widget-orientation:
+   *
+   * The widget orientation.
+   * 
+   * Since: 3.8.0
+   */
+  param_spec = g_param_spec_uint("widget-orientation",
+				 i18n_pspec("widget orientation"),
+				 i18n_pspec("widget orientation"),
+				 0, G_MAXUINT,
+				 GTK_ORIENTATION_VERTICAL,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WIDGET_ORIENTATION,
+				  param_spec);
+  
 
   /**
    * AgsBulkMember:widget-label:
@@ -486,6 +505,7 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
   bulk_member->port_flags = 0;
   
   bulk_member->widget_type = AGS_TYPE_DIAL;
+  bulk_member->widget_orientation = GTK_ORIENTATION_VERTICAL;
   dial = (AgsDial *) g_object_new(AGS_TYPE_DIAL,
 				  "adjustment", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
 				  NULL);
@@ -544,11 +564,16 @@ ags_bulk_member_set_property(GObject *gobject,
     {
       GtkWidget *child, *new_child;
 
+      GtkAdjustment *adjustment;
+
       AgsApplicationContext *application_context;
 
       GType widget_type;
 
       gdouble gui_scale_factor;
+      gdouble lower_value, upper_value;
+      gdouble current_value;
+      gboolean active;
 
       widget_type = g_value_get_ulong(value);
 
@@ -560,6 +585,28 @@ ags_bulk_member_set_property(GObject *gobject,
 
       child = gtk_bin_get_child(GTK_BIN(bulk_member));
 
+      /* preserver previous range */
+      adjustment = NULL;
+      active = FALSE;
+    
+      if(GTK_IS_RANGE(child)){
+	adjustment = gtk_range_get_adjustment(GTK_RANGE(child));
+      }else if(GTK_IS_SPIN_BUTTON(child)){
+	adjustment = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(child));
+      }else if(AGS_IS_DIAL(child)){
+	adjustment = AGS_DIAL(child)->adjustment;
+      }else if(GTK_IS_TOGGLE_BUTTON(child)){
+	active = gtk_toggle_button_get_active((GtkToggleButton *) child);
+      }
+      
+      if(adjustment != NULL){
+	lower_value = gtk_adjustment_get_lower(adjustment);
+	upper_value = gtk_adjustment_get_upper(adjustment);
+	
+	current_value = gtk_adjustment_get_value(adjustment);
+      }
+
+      /* destroy old */
       if(child != NULL){
 	gtk_widget_destroy(child);
       }
@@ -579,7 +626,18 @@ ags_bulk_member_set_property(GObject *gobject,
 		     "button-height", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_HEIGHT),
 		     NULL);
       }else if(GTK_IS_SCALE(new_child)){
-	if(gtk_orientable_get_orientation(GTK_ORIENTABLE(new_child)) == GTK_ORIENTATION_VERTICAL){
+	guint widget_orientation;
+
+	widget_orientation = GTK_ORIENTATION_VERTICAL;
+	
+	g_object_get(bulk_member,
+		     "widget-orientation", &widget_orientation,
+		     NULL);
+	
+	gtk_orientable_set_orientation(GTK_ORIENTABLE(new_child),
+				       widget_orientation);
+
+	if(widget_orientation == GTK_ORIENTATION_VERTICAL){
 	  gtk_widget_set_size_request(new_child,
 				      gui_scale_factor * 16, gui_scale_factor * 100);
 	}else{
@@ -592,20 +650,103 @@ ags_bulk_member_set_property(GObject *gobject,
 		     "segment-height", (guint) (gui_scale_factor * AGS_VINDICATOR_DEFAULT_SEGMENT_HEIGHT),
 		     "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
 		     NULL);
+
+	//FIXME:JK: make indicator orientable
       }else if(AGS_IS_HINDICATOR(new_child)){
 	g_object_set(new_child,
 		     "segment-width", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_WIDTH),
 		     "segment-height", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_HEIGHT),
 		     "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
 		     NULL);
+
+	//FIXME:JK: make indicator orientable
       }
 	
       gtk_widget_queue_resize_no_redraw(new_child);
       gtk_widget_queue_draw(new_child);
 
+      /* set range */
+      if(GTK_IS_RANGE(new_child)){
+	GtkAdjustment *new_adjustment;
+
+	new_adjustment = gtk_range_get_adjustment(GTK_RANGE(new_child));
+	
+	gtk_adjustment_set_lower(new_adjustment,
+				 lower_value);
+	gtk_adjustment_set_upper(new_adjustment,
+				 upper_value);
+
+	gtk_adjustment_set_value(new_adjustment,
+				 current_value);
+      }else if(GTK_IS_SPIN_BUTTON(new_child)){
+	GtkAdjustment *new_adjustment;
+
+	new_adjustment = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(new_child));
+
+	gtk_adjustment_set_lower(new_adjustment,
+				 lower_value);
+	gtk_adjustment_set_upper(new_adjustment,
+				 upper_value);
+
+	gtk_adjustment_set_value(new_adjustment,
+				 current_value);
+      }else if(AGS_IS_DIAL(new_child)){
+	GtkAdjustment *new_adjustment;
+
+	new_adjustment = AGS_DIAL(new_child)->adjustment;
+
+	gtk_adjustment_set_lower(new_adjustment,
+				 lower_value);
+	gtk_adjustment_set_upper(new_adjustment,
+				 upper_value);
+
+	gtk_adjustment_set_value(new_adjustment,
+				 current_value);
+
+	gtk_widget_queue_draw((GtkWidget *) new_child);
+      }else if(GTK_IS_TOGGLE_BUTTON(new_child)){
+	gtk_toggle_button_set_active((GtkToggleButton *) new_child,
+				     active);
+      }else{
+	if(!(AGS_IS_INDICATOR(new_child) ||
+	     AGS_IS_LED(new_child))){
+	  g_warning("ags_bulk_member_set_property() - unknown child type %s", g_type_name(widget_type));
+	}
+      }
+
+      /* add */
       gtk_container_add(GTK_CONTAINER(bulk_member),
 			new_child);
 			
+    }
+    break;
+  case PROP_WIDGET_ORIENTATION:
+    {
+      guint widget_orientation;
+
+      widget_orientation = g_value_get_uint(value);
+      
+      bulk_member->widget_orientation = widget_orientation;
+
+      child = gtk_bin_get_child(GTK_BIN(bulk_member));
+
+      if(GTK_IS_SCALE(child)){
+	gtk_orientable_set_orientation(GTK_ORIENTABLE(child),
+				       widget_orientation);
+	
+	if(widget_orientation == GTK_ORIENTATION_VERTICAL){
+	  gtk_widget_set_size_request(new_child,
+				      gui_scale_factor * 16, gui_scale_factor * 100);
+	}else{
+	  gtk_widget_set_size_request(new_child,
+				      gui_scale_factor * 100, gui_scale_factor * 16);
+	}
+      }else if(AGS_IS_INDICATOR(child)){
+	gtk_orientable_set_orientation(GTK_ORIENTABLE(child),
+				       widget_orientation);
+
+	//FIXME:JK: make indicator orientable
+      }
     }
     break;
   case PROP_WIDGET_LABEL:
@@ -915,6 +1056,11 @@ ags_bulk_member_get_property(GObject *gobject,
   case PROP_WIDGET_TYPE:
     {
       g_value_set_ulong(value, bulk_member->widget_type);
+    }
+    break;
+  case PROP_WIDGET_ORIENTATION:
+    {
+      g_value_set_uint(value, bulk_member->widget_orientation);
     }
     break;
   case PROP_WIDGET_LABEL:

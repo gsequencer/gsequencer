@@ -131,14 +131,20 @@ void
 ags_panel_input_pad_init(AgsPanelInputPad *panel_input_pad)
 {
   AgsPad *pad;
-  GtkVBox *vbox;
+  GtkBox *vbox;
 
   pad = (AgsPad *) panel_input_pad;
   pad->cols = 1;
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) vbox, FALSE, TRUE, 0);
-  gtk_box_reorder_child((GtkBox *) pad, (GtkWidget *) vbox, 0);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_pack_start((GtkBox *) pad,
+		     (GtkWidget *) vbox,
+		     FALSE, TRUE,
+		     0);
+  gtk_box_reorder_child((GtkBox *) pad,
+			(GtkWidget *) vbox,
+			0);
 }
 
 void

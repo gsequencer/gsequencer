@@ -5,6 +5,7 @@ ags (3.8.0)
 	* TODO:JK: implemented AgsCompositeEdit
 	* TODO:JK: implemented AgsCompositeToolbar
 	* TODO:JK: fixed deprecated Gtk+-3.0 symbols
+	* FIXME:JK: make indicator orientable
 
 ags (3.7.33)
 

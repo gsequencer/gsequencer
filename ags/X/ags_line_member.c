@@ -587,7 +587,9 @@ ags_line_member_set_property(GObject *gobject,
    
       GType widget_type;
 
-      gdouble gui_scale_factor;      
+      gdouble gui_scale_factor;
+      gdouble lower_value, upper_value;
+      gdouble current_value;
       gboolean active;
       
       //TODO:JK: verify me
@@ -614,9 +616,12 @@ ags_line_member_set_property(GObject *gobject,
       }else if(GTK_IS_TOGGLE_BUTTON(child)){
 	active = gtk_toggle_button_get_active((GtkToggleButton *) child);
       }
-      
+
       if(adjustment != NULL){
-	g_object_ref(adjustment);
+	lower_value = gtk_adjustment_get_lower(adjustment);
+	upper_value = gtk_adjustment_get_upper(adjustment);
+	
+	current_value = gtk_adjustment_get_value(adjustment);
       }
       
       /* destroy old */
@@ -685,36 +690,36 @@ ags_line_member_set_property(GObject *gobject,
 	new_adjustment = gtk_range_get_adjustment(GTK_RANGE(new_child));
 	
 	gtk_adjustment_set_lower(new_adjustment,
-				 gtk_adjustment_get_lower(adjustment));
+				 lower_value);
 	gtk_adjustment_set_upper(new_adjustment,
-				 gtk_adjustment_get_upper(adjustment));
+				 upper_value);
 
 	gtk_adjustment_set_value(new_adjustment,
-				 gtk_adjustment_get_value(adjustment));
+				 current_value);
       }else if(GTK_IS_SPIN_BUTTON(new_child)){
 	GtkAdjustment *new_adjustment;
 
 	new_adjustment = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(new_child));
 
 	gtk_adjustment_set_lower(new_adjustment,
-				 gtk_adjustment_get_lower(adjustment));
+				 lower_value);
 	gtk_adjustment_set_upper(new_adjustment,
-				 gtk_adjustment_get_upper(adjustment));
+				 upper_value);
 
 	gtk_adjustment_set_value(new_adjustment,
-				 gtk_adjustment_get_value(adjustment));
+				 current_value);
       }else if(AGS_IS_DIAL(new_child)){
 	GtkAdjustment *new_adjustment;
 
 	new_adjustment = AGS_DIAL(new_child)->adjustment;
 
 	gtk_adjustment_set_lower(new_adjustment,
-				 gtk_adjustment_get_lower(adjustment));
+				 lower_value);
 	gtk_adjustment_set_upper(new_adjustment,
-				 gtk_adjustment_get_upper(adjustment));
+				 upper_value);
 
 	gtk_adjustment_set_value(new_adjustment,
-				 gtk_adjustment_get_value(adjustment));
+				 current_value);
 
 	gtk_widget_queue_draw((GtkWidget *) new_child);
       }else if(GTK_IS_TOGGLE_BUTTON(new_child)){

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,13 +29,13 @@
 gboolean
 ags_pattern_box_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsPatternBox *pattern_box)
 {
-  GList *list;
+  GList *start_list;
 
-  list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
-  gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
-						     pattern_box->cursor_x),
-		       GTK_STATE_PRELIGHT);
-  g_list_free(list);
+  start_list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
+  gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
+							   pattern_box->cursor_x),
+			     GTK_STATE_FLAG_PRELIGHT);
+  g_list_free(start_list);
   
   return(TRUE);
 }
@@ -43,19 +43,19 @@ ags_pattern_box_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsPattern
 gboolean
 ags_pattern_box_focus_out_callback(GtkWidget *widget, GdkEvent *event, AgsPatternBox *pattern_box)
 {
-  GList *list;
+  GList *start_list;
 
-  list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
+  start_list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 
-  if(!gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(list,
+  if(!gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(start_list,
 								       pattern_box->cursor_x - 1))){
-    gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
-						       pattern_box->cursor_x),
-			 GTK_STATE_NORMAL);
+    gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
+							     pattern_box->cursor_x),
+			       GTK_STATE_FLAG_NORMAL);
   }else{
-    gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
-						       pattern_box->cursor_x),
-			 GTK_STATE_ACTIVE);
+    gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
+							     pattern_box->cursor_x),
+			       GTK_STATE_FLAG_ACTIVE);
   }
   
   g_list_free(list);
@@ -69,11 +69,8 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   AgsMachine *machine;
   AgsLine *selected_line;
 
-  AgsPattern *pattern;
-  
   GList *list, *list_start;
   GList *line, *line_start;
-  GList *tasks;
   guint i, index0, index1, offset;
   
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
@@ -122,7 +119,6 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   /**/
   line_start = 
     line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(machine->selected_input_pad)->expander_set));
-  tasks = NULL;
 
   while((line = ags_line_find_next_grouped(line)) != NULL){
     GList *start_pattern, *pattern;
@@ -219,34 +215,34 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
   case GDK_KEY_leftarrow:
     {
       if(pattern_box->cursor_x > 0){
-	GList *list;
+	GList *start_list;
 	
 	pattern_box->cursor_x -= 1;
 
-	list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
+	start_list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 	
-	gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
-							   pattern_box->cursor_x),
-			     GTK_STATE_PRELIGHT);
+	gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
+								 pattern_box->cursor_x),
+				   GTK_STATE_FLAG_PRELIGHT);
 
-	if(!gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(list,
+	if(!gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(start_list,
 									     pattern_box->cursor_x + 1))){
-	  gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
-							     pattern_box->cursor_x + 1),
-			       GTK_STATE_NORMAL);
+	  gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
+								   pattern_box->cursor_x + 1),
+				     GTK_STATE_FLAG_NORMAL);
 	}else{
-	  gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
-							     pattern_box->cursor_x + 1),
-			       GTK_STATE_ACTIVE);
+	  gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
+								   pattern_box->cursor_x + 1),
+				     GTK_STATE_FLAG_ACTIVE);
 	}
 
-	if(gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(list,
+	if(gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(start_list,
 									    pattern_box->cursor_y * pattern_box->n_controls + pattern_box->cursor_x))){
 	  /* give audible feedback */
 	  ags_pad_play((AgsPad *) machine->selected_input_pad);
 	}
 	
-	g_list_free(list);
+	g_list_free(start_list);
       }
     }
     break;
@@ -254,34 +250,34 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
   case GDK_KEY_rightarrow:
     {
       if(pattern_box->cursor_x + 1 < pattern_box->n_controls){
-	GList *list;
+	GList *start_list;
 	
 	pattern_box->cursor_x += 1;
 
-	list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
+	start_list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 
-      	gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
-							   pattern_box->cursor_x),
-			     GTK_STATE_PRELIGHT);
+      	gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
+								 pattern_box->cursor_x),
+				   GTK_STATE_FLAG_PRELIGHT);
 	
-	if(!gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(list,
+	if(!gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(start_list,
 									     pattern_box->cursor_x - 1))){
-	  gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
-							     pattern_box->cursor_x - 1),
-			       GTK_STATE_NORMAL);
+	  gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
+								   pattern_box->cursor_x - 1),
+				     GTK_STATE_FLAG_NORMAL);
 	}else{	  
-	  gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
-							     pattern_box->cursor_x - 1),
-			       GTK_STATE_ACTIVE);
+	  gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
+								   pattern_box->cursor_x - 1),
+				     GTK_STATE_FLAG_ACTIVE);
 	}
 
-	if(gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(list,
+	if(gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(start_list,
 									    pattern_box->cursor_y * pattern_box->n_controls + pattern_box->cursor_x))){
 	  /* give audible feedback */
 	  ags_pad_play((AgsPad *) machine->selected_input_pad);
 	}
 	
-	g_list_free(list);
+	g_list_free(start_list);
       }
     }
     break;
@@ -289,24 +285,27 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
   case GDK_KEY_uparrow:
     {
       if(pattern_box->cursor_y > 0){
-	GList *list, *pad;
+	GList *start_pad;
+	GList *start_list;
 
 	pattern_box->cursor_y -= 1;
 
-	list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
+	start_list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
 
-      	gtk_button_clicked(g_list_nth_data(list,
+      	gtk_button_clicked(g_list_nth_data(start_list,
 					   pattern_box->cursor_y));
 
-	g_list_free(list);
+	g_list_free(start_list);
 
 	/* give audible feedback */
-	pad = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
+	start_pad = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 
-	if(gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(pad,
+	if(gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(start_pad,
 									    pattern_box->cursor_y * pattern_box->n_controls + pattern_box->cursor_x))){
 	  ags_pad_play((AgsPad *) machine->selected_input_pad);
 	}
+	
+	g_list_free(start_pad);	
       }
     }
     break;
@@ -314,23 +313,26 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
   case GDK_KEY_downarrow:
     {
       if(pattern_box->cursor_y + 1 < pattern_box->n_indices){
-	GList *list, *pad;
+	GList *start_pad;
+	GList *start_list;
 
-	list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
+	start_list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
 	pattern_box->cursor_y += 1;
 
-	gtk_button_clicked(g_list_nth_data(list,
+	gtk_button_clicked(g_list_nth_data(start_list,
 					   pattern_box->cursor_y));
 
-	g_list_free(list);
+	g_list_free(start_list);
 	
 	/* give audible feedback */
-	pad = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
+	start_pad = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 
-	if(gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(pad,
+	if(gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(start_pad,
 									    pattern_box->cursor_y * pattern_box->n_controls + pattern_box->cursor_x))){
 	  ags_pad_play((AgsPad *) machine->selected_input_pad);
 	}
+	
+	g_list_free(start_pad);	
       }
     }
     break;
@@ -341,7 +343,6 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
       AgsChannel *channel;
       
       GList *line, *line_start;
-      GList *tasks;
       
       guint i, j;
       guint offset;
@@ -357,7 +358,6 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 
       line_start = 
 	line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(machine->selected_input_pad)->expander_set));
-      tasks = NULL;
 
       while((line = ags_line_find_next_grouped(line)) != NULL){
 	GList *start_pattern, *pattern;
