@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -854,7 +854,7 @@ void
 ags_frequency_map_real_factorize(AgsFrequencyMap *frequency_map,
 				 AgsFrequencyMap *factorized_frequency_map)
 {
-  complex z;  
+  double _Complex z;  
   guint i;
 
   for(i = frequency_map->attack; i < frequency_map->frame_count; i++){
@@ -892,7 +892,7 @@ ags_frequency_map_real_compute_max_likelihood(AgsFrequencyMap *frequency_map,
 					      AgsComplex *source,
 					      AgsComplex **retval)
 {
-  complex z;
+  double _Complex z;
   guint i;
 
   for(i = 0; i < frequency_map->buffer_size; i++){

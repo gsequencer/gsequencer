@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -778,7 +778,7 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
 {
   AgsConfig *config;
   
-  complex z;
+  double _Complex z;
 
   audio_signal->flags = 0;
 

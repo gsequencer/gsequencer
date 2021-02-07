@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -274,7 +274,7 @@ ags_lfo_synth_util_sin_complex(AgsComplex *buffer,
 
   double *y_ptr;
   double y;
-  complex z0, z1;
+  double _Complex z0, z1;
 
   guint i_stop;
   guint i;
@@ -561,7 +561,7 @@ ags_lfo_synth_util_sawtooth_complex(AgsComplex *buffer,
 
   double *y_ptr;
   double y;
-  complex z0, z1;
+  double _Complex z0, z1;
 
   guint i_stop;
   guint i;
@@ -851,7 +851,7 @@ ags_lfo_synth_util_triangle_complex(AgsComplex *buffer,
 
   double *y_ptr;
   double y;
-  complex z0, z1;
+  double _Complex z0, z1;
 
   guint i_stop;
   guint i;
@@ -1148,7 +1148,7 @@ ags_lfo_synth_util_square_complex(AgsComplex *buffer,
 
   double *y_ptr;
   double y;
-  complex z0, z1;
+  double _Complex z0, z1;
 
   guint i_stop;
   guint i;
@@ -1446,7 +1446,7 @@ ags_lfo_synth_util_impulse_complex(AgsComplex *buffer,
 
   double *y_ptr;
   double y;
-  complex z0, z1;
+  double _Complex z0, z1;
 
   guint i_stop;
   guint i;
