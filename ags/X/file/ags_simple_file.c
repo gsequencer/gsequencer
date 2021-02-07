@@ -1548,6 +1548,9 @@ ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParame
     }else if(!g_strcmp0(type,
 			"AgsComplex")){
       AgsComplex z;
+
+      ags_complex_set(&z,
+		      0.0 + I * 0.0);
       
       g_value_init(&(pointer->value),
 		   AGS_TYPE_COMPLEX);
@@ -1683,6 +1686,9 @@ ags_simple_file_read_value(AgsSimpleFile *simple_file, xmlNode *node, GValue **v
     }else if(!g_strcmp0(type,
 			"AgsComplex")){
       AgsComplex z;
+
+      ags_complex_set(&z,
+		      0.0 + I * 0.0);
       
       g_value_init(current,
 		   AGS_TYPE_COMPLEX);
