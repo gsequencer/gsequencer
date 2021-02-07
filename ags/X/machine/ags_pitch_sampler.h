@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -80,7 +80,7 @@ struct _AgsPitchSampler
 
   AgsAudioContainer *audio_container;
 
-  GtkVBox *file;
+  GtkBox *file;
 
   GtkEntry *filename;
   GtkButton *open;

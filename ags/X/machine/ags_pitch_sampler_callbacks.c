@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -65,8 +65,8 @@ ags_pitch_sampler_open_callback(GtkButton *button, AgsPitchSampler *pitch_sample
     dialog = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open audio files"),
 								  (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) pitch_sampler),
 								  GTK_FILE_CHOOSER_ACTION_OPEN,
-								  GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-								  GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+								  i18n("_OK"), GTK_RESPONSE_ACCEPT,
+								  i18n("_Cancel"), GTK_RESPONSE_CANCEL,
 								  NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog),
 				       FALSE);
