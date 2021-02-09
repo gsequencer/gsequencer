@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2380,7 +2380,7 @@ ags_fast_pitch_util_compute_complex(AgsComplex *buffer,
 
   /* low mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
-    double complex z, mix_z, low_z;
+    double _Complex z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
 
@@ -2428,7 +2428,7 @@ ags_fast_pitch_util_compute_complex(AgsComplex *buffer,
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
-    double complex new_z;
+    double _Complex new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 

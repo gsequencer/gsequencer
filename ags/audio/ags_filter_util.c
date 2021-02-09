@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -145,7 +145,7 @@ ags_filter_util_pitch_s8(gint8 *buffer,
 
   /* im mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex z, mix_z, im_z;
+    double _Complex z, mix_z, im_z;
     gdouble phase, im_phase;
     guint start_x;
 
@@ -189,7 +189,7 @@ ags_filter_util_pitch_s8(gint8 *buffer,
 
   /* low mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex z, mix_z, low_z;
+    double _Complex z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
 
@@ -233,7 +233,7 @@ ags_filter_util_pitch_s8(gint8 *buffer,
   
   /* new mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex new_z;
+    double _Complex new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
@@ -447,7 +447,7 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 
   /* im mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex z, mix_z, im_z;
+    double _Complex z, mix_z, im_z;
     gdouble phase, im_phase;
     guint start_x;
 
@@ -491,7 +491,7 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 
   /* low mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex z, mix_z, low_z;
+    double _Complex z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
 
@@ -535,7 +535,7 @@ ags_filter_util_pitch_s16(gint16 *buffer,
   
   /* new mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex new_z;
+    double _Complex new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
@@ -749,7 +749,7 @@ ags_filter_util_pitch_s24(gint32 *buffer,
 
   /* im mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex z, mix_z, im_z;
+    double _Complex z, mix_z, im_z;
     gdouble phase, im_phase;
     guint start_x;
 
@@ -793,7 +793,7 @@ ags_filter_util_pitch_s24(gint32 *buffer,
 
   /* low mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex z, mix_z, low_z;
+    double _Complex z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
 
@@ -837,7 +837,7 @@ ags_filter_util_pitch_s24(gint32 *buffer,
   
   /* new mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex new_z;
+    double _Complex new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
@@ -1051,7 +1051,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
 
   /* im mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex z, mix_z, im_z;
+    double _Complex z, mix_z, im_z;
     gdouble phase, im_phase;
     guint start_x;
 
@@ -1095,7 +1095,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
 
   /* low mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex z, mix_z, low_z;
+    double _Complex z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
 
@@ -1139,7 +1139,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
   
   /* new mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex new_z;
+    double _Complex new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
@@ -1353,7 +1353,7 @@ ags_filter_util_pitch_s64(gint64 *buffer,
 
   /* im mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex z, mix_z, im_z;
+    double _Complex z, mix_z, im_z;
     gdouble phase, im_phase;
     guint start_x;
 
@@ -1397,7 +1397,7 @@ ags_filter_util_pitch_s64(gint64 *buffer,
 
   /* low mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex z, mix_z, low_z;
+    double _Complex z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
 
@@ -1441,7 +1441,7 @@ ags_filter_util_pitch_s64(gint64 *buffer,
   
   /* new mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex new_z;
+    double _Complex new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
@@ -1655,7 +1655,7 @@ ags_filter_util_pitch_float(gfloat *buffer,
 
   /* im mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex z, mix_z, im_z;
+    double _Complex z, mix_z, im_z;
     gdouble phase, im_phase;
     guint start_x;
 
@@ -1699,7 +1699,7 @@ ags_filter_util_pitch_float(gfloat *buffer,
 
   /* low mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex z, mix_z, low_z;
+    double _Complex z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
 
@@ -1743,7 +1743,7 @@ ags_filter_util_pitch_float(gfloat *buffer,
   
   /* new mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex new_z;
+    double _Complex new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
@@ -1957,7 +1957,7 @@ ags_filter_util_pitch_double(gdouble *buffer,
 
   /* im mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex z, mix_z, im_z;
+    double _Complex z, mix_z, im_z;
     gdouble phase, im_phase;
     guint start_x;
 
@@ -2001,7 +2001,7 @@ ags_filter_util_pitch_double(gdouble *buffer,
 
   /* low mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex z, mix_z, low_z;
+    double _Complex z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
 
@@ -2045,7 +2045,7 @@ ags_filter_util_pitch_double(gdouble *buffer,
   
   /* new mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex new_z;
+    double _Complex new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 
@@ -2259,7 +2259,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 
   /* im mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex z, mix_z, im_z;
+    double _Complex z, mix_z, im_z;
     gdouble phase, im_phase;
     guint start_x;
 
@@ -2303,7 +2303,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 
   /* low mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex z, mix_z, low_z;
+    double _Complex z, mix_z, low_z;
     gdouble phase, low_phase;
     guint start_x;
 
@@ -2347,7 +2347,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
   
   /* new mix buffer */
   for(i = 0; i < buffer_length; i++){
-    double complex new_z;
+    double _Complex new_z;
     gdouble phase, im_phase, low_phase, new_phase;    
     guint start_x, im_start_x, low_start_x;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2017 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -103,7 +103,7 @@ ags_complex_test_get()
 {
   AgsComplex a;
 
-  complex z;
+  double _Complex z;
   
   /* test x = 1.0 */
   a.real = 1.0;
@@ -143,7 +143,7 @@ ags_complex_test_set()
 {
   AgsComplex a;
 
-  complex z;
+  double _Complex z;
 
   /* test x = 1.0 */
   z = 1.0 + 0.0 * I;

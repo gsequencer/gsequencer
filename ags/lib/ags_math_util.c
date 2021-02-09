@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1610,7 +1610,7 @@ ags_math_util_coefficient_to_complex(gchar *coefficient,
   
   AgsComplex this_value;
 
-  double complex z;
+  double _Complex z;
   double double_real_val, double_imag_val;
   double double_val;
   int int_real_val, int_imag_val;
@@ -1651,7 +1651,7 @@ ags_math_util_coefficient_to_complex(gchar *coefficient,
     }
   }
 
-  /* check double complex coefficient */
+  /* check double _Complex coefficient */
   retval = sscanf(iter, "%f+𝑖*%f", &double_real_val, &double_imag_val);
     
   if(retval > 0){
@@ -1780,7 +1780,7 @@ ags_math_util_coefficient_to_complex(gchar *coefficient,
     }
   }
   
-  /* check double complex coefficient with parenthesis */
+  /* check double _Complex coefficient with parenthesis */
   if(!success){
     retval = sscanf(iter, "(%f+𝑖*%f)", &double_real_val, &double_imag_val);
     

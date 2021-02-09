@@ -1,3 +1,8 @@
+ags (3.7.34)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed complex type to double _Complex in many files
+
 ags (3.7.33)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

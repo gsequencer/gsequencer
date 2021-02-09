@@ -378,7 +378,7 @@ ags_note_class_init(AgsNoteClass *note)
 void
 ags_note_init(AgsNote *note)
 {
-  complex z;
+  double _Complex z;
   
   note->flags = 0;
 
