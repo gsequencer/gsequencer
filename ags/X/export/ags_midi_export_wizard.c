@@ -20,6 +20,7 @@
 #include <ags/X/export/ags_midi_export_wizard.h>
 #include <ags/X/export/ags_midi_export_wizard_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
 #include <ags/X/export/ags_machine_collection.h>
@@ -283,8 +284,10 @@ ags_midi_export_wizard_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_midi_export_wizard_apply(AgsApplicable *applicable)
 {
-  AgsWindow *window;
+  AgsNavigation *navigation;
   AgsMidiExportWizard *midi_export_wizard;
+
+  AgsApplicationContext *application_context;
 
   FILE *file;
 
@@ -300,10 +303,12 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
 
   midi_export_wizard = AGS_MIDI_EXPORT_WIZARD(applicable);
 
-  window = (AgsWindow *) midi_export_wizard->main_window;
+  application_context = ags_application_context_get_instance();
   
   /* retrieve BPM */
-  bpm = gtk_spin_button_get_value_as_int(window->navigation->bpm);
+  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
+  
+  bpm = gtk_spin_button_get_value_as_int(navigation->bpm);
   
   /* find tracks */
   list =

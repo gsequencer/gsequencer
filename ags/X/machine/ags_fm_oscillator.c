@@ -394,7 +394,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 }
 
 void
-ags_fm_oscillator_connect(AgsConnecgrid *connectable)
+ags_fm_oscillator_connect(AgsConnectable *connectable)
 {
   AgsFMOscillator *fm_oscillator;
 

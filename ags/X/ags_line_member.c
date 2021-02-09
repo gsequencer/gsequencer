@@ -617,6 +617,11 @@ ags_line_member_set_property(GObject *gobject,
 	active = gtk_toggle_button_get_active((GtkToggleButton *) child);
       }
 
+      lower_value = 0.0;
+      upper_value = 0.0;
+
+      current_value = 0.0;
+
       if(adjustment != NULL){
 	lower_value = gtk_adjustment_get_lower(adjustment);
 	upper_value = gtk_adjustment_get_upper(adjustment);
@@ -739,11 +744,21 @@ ags_line_member_set_property(GObject *gobject,
     break;
   case PROP_WIDGET_ORIENTATION:
     {
+      GtkWidget *child;
+
+      AgsApplicationContext *application_context;
+
+      gdouble gui_scale_factor;
       guint widget_orientation;
 
       widget_orientation = g_value_get_uint(value);
       
       line_member->widget_orientation = widget_orientation;
+
+      application_context = ags_application_context_get_instance();
+
+      /* scale factor */
+      gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
       child = gtk_bin_get_child(GTK_BIN(line_member));
 
@@ -752,10 +767,10 @@ ags_line_member_set_property(GObject *gobject,
 				       widget_orientation);
 	
 	if(widget_orientation == GTK_ORIENTATION_VERTICAL){
-	  gtk_widget_set_size_request(new_child,
+	  gtk_widget_set_size_request(child,
 				      gui_scale_factor * 16, gui_scale_factor * 100);
 	}else{
-	  gtk_widget_set_size_request(new_child,
+	  gtk_widget_set_size_request(child,
 				      gui_scale_factor * 100, gui_scale_factor * 16);
 	}
       }else if(AGS_IS_INDICATOR(child)){

@@ -321,7 +321,7 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 		     FALSE, FALSE,
 		     0);
   
-  grid = (GtkGrid *) gtk_grid_new(1, 2, FALSE);
+  grid = (GtkGrid *) gtk_grid_new();
   gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge),
 		     (GtkWidget *) grid,
 		     FALSE, FALSE,

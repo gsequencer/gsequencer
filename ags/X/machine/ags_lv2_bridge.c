@@ -826,13 +826,13 @@ ags_lv2_bridge_disconnect(AgsConnectable *connectable)
     }else if(bulk_member->widget_type == GTK_TYPE_VSCALE){
       g_object_disconnect(GTK_WIDGET(control),
 			  "any_signal::value-changed",
-			  G_CALLBACK(ags_lv2_bridge_vscale_changed_callback),
+			  G_CALLBACK(ags_lv2_bridge_scale_changed_callback),
 			  lv2_bridge,
 			  NULL);
     }else if(bulk_member->widget_type == GTK_TYPE_HSCALE){
       g_object_disconnect(GTK_WIDGET(control),
 			  "any_signal::value-changed",
-			  G_CALLBACK(ags_lv2_bridge_hscale_changed_callback),
+			  G_CALLBACK(ags_lv2_bridge_scale_changed_callback),
 			  lv2_bridge,
 			  NULL);
     }else if(bulk_member->widget_type == GTK_TYPE_SPIN_BUTTON){

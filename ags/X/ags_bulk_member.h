@@ -76,6 +76,7 @@ struct _AgsBulkMember
   GList *handler;
   
   GType widget_type;
+  guint widget_orientation;
   gchar *widget_label;
 
   AgsRecallContainer *play_container;

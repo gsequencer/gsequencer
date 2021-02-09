@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,8 @@
 #include <ags/audio/fx/ags_fx_lfo_channel.h>
 
 #include <ags/plugin/ags_plugin_port.h>
+
+#include <ags/audio/ags_synth_enums.h>
 
 #include <ags/i18n.h>
 
@@ -64,7 +66,7 @@ const gchar* ags_fx_lfo_channel_specifier[] = {
   "./lfo-freq[0]",
   "./lfo-phase[0]",
   "./lfo-depth[0]",
-  "./lfo-tuning[0]"
+  "./lfo-tuning[0]",
   NULL,
 };
 
@@ -74,7 +76,7 @@ const gchar* ags_fx_lfo_channel_control_port[] = {
   "3/6",
   "4/6",
   "5/6",
-  "6/6"
+  "6/6",
   NULL,
 };
 
@@ -542,28 +544,28 @@ ags_fx_lfo_channel_dispose(GObject *gobject)
   }
 
   /* lfo wave */
-  if(fx_lfo_channel->fx_lfo_wave != NULL){
-    g_object_unref(G_OBJECT(fx_lfo_channel->fx_lfo_wave));
+  if(fx_lfo_channel->lfo_wave != NULL){
+    g_object_unref(G_OBJECT(fx_lfo_channel->lfo_wave));
   }
 
   /* lfo freq */
-  if(fx_lfo_channel->fx_lfo_freq != NULL){
-    g_object_unref(G_OBJECT(fx_lfo_channel->fx_lfo_freq));
+  if(fx_lfo_channel->lfo_freq != NULL){
+    g_object_unref(G_OBJECT(fx_lfo_channel->lfo_freq));
   }
 
   /* lfo phase */
-  if(fx_lfo_channel->fx_lfo_phase != NULL){
-    g_object_unref(G_OBJECT(fx_lfo_channel->fx_lfo_phase));
+  if(fx_lfo_channel->lfo_phase != NULL){
+    g_object_unref(G_OBJECT(fx_lfo_channel->lfo_phase));
   }
 
   /* lfo depth */
-  if(fx_lfo_channel->fx_lfo_depth != NULL){
-    g_object_unref(G_OBJECT(fx_lfo_channel->fx_lfo_depth));
+  if(fx_lfo_channel->lfo_depth != NULL){
+    g_object_unref(G_OBJECT(fx_lfo_channel->lfo_depth));
   }
 
   /* lfo tuning */
-  if(fx_lfo_channel->fx_lfo_tuning != NULL){
-    g_object_unref(G_OBJECT(fx_lfo_channel->fx_lfo_tuning));
+  if(fx_lfo_channel->lfo_tuning != NULL){
+    g_object_unref(G_OBJECT(fx_lfo_channel->lfo_tuning));
   }
   
   /* call parent */
@@ -583,28 +585,28 @@ ags_fx_lfo_channel_finalize(GObject *gobject)
   }
 
   /* lfo wave */
-  if(fx_lfo_channel->fx_lfo_wave != NULL){
-    g_object_unref(G_OBJECT(fx_lfo_channel->fx_lfo_wave));
+  if(fx_lfo_channel->lfo_wave != NULL){
+    g_object_unref(G_OBJECT(fx_lfo_channel->lfo_wave));
   }
 
   /* lfo freq */
-  if(fx_lfo_channel->fx_lfo_freq != NULL){
-    g_object_unref(G_OBJECT(fx_lfo_channel->fx_lfo_freq));
+  if(fx_lfo_channel->lfo_freq != NULL){
+    g_object_unref(G_OBJECT(fx_lfo_channel->lfo_freq));
   }
 
   /* lfo phase */
-  if(fx_lfo_channel->fx_lfo_phase != NULL){
-    g_object_unref(G_OBJECT(fx_lfo_channel->fx_lfo_phase));
+  if(fx_lfo_channel->lfo_phase != NULL){
+    g_object_unref(G_OBJECT(fx_lfo_channel->lfo_phase));
   }
 
   /* lfo depth */
-  if(fx_lfo_channel->fx_lfo_depth != NULL){
-    g_object_unref(G_OBJECT(fx_lfo_channel->fx_lfo_depth));
+  if(fx_lfo_channel->lfo_depth != NULL){
+    g_object_unref(G_OBJECT(fx_lfo_channel->lfo_depth));
   }
 
   /* lfo tuning */
-  if(fx_lfo_channel->fx_lfo_tuning != NULL){
-    g_object_unref(G_OBJECT(fx_lfo_channel->fx_lfo_tuning));
+  if(fx_lfo_channel->lfo_tuning != NULL){
+    g_object_unref(G_OBJECT(fx_lfo_channel->lfo_tuning));
   }
 
   /* call parent */

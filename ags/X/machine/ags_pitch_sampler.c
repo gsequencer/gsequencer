@@ -286,7 +286,8 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		     FALSE, FALSE,
 		     0);
 
-  pitch_sampler->open = (GtkButton *) gtk_button_new_from_icon_name("document-open");
+  pitch_sampler->open = (GtkButton *) gtk_button_new_from_icon_name("document-open",
+								    GTK_ICON_SIZE_BUTTON);
   gtk_box_pack_start(filename_hbox,
 		     (GtkWidget *) pitch_sampler->open,
 		     FALSE, FALSE,
@@ -413,9 +414,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   gtk_grid_attach(lfo_grid,
 		   (GtkWidget *) label,
 		   1, 0,
-		   1, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+		   1, 1);
   
   pitch_sampler->lfo_freq = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_PITCH_SAMPLER_LFO_FREQ_MIN,
 									     AGS_PITCH_SAMPLER_LFO_FREQ_MAX,

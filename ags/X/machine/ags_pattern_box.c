@@ -839,7 +839,7 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 		   NULL);
       
       if(current_recycling_context != NULL){
-	g_object_get(current,
+	g_object_get(current_recycling_context,
 		     "parent", &parent_recycling_context,
 		     NULL);
 

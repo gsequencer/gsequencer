@@ -34,7 +34,8 @@ ags_pattern_box_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsPattern
   start_list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
   gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
 							   pattern_box->cursor_x),
-			     GTK_STATE_FLAG_PRELIGHT);
+			     GTK_STATE_FLAG_PRELIGHT,
+			     FALSE);
   g_list_free(start_list);
   
   return(TRUE);
@@ -51,14 +52,16 @@ ags_pattern_box_focus_out_callback(GtkWidget *widget, GdkEvent *event, AgsPatter
 								       pattern_box->cursor_x - 1))){
     gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
 							     pattern_box->cursor_x),
-			       GTK_STATE_FLAG_NORMAL);
+			       GTK_STATE_FLAG_NORMAL,
+			       FALSE);
   }else{
     gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
 							     pattern_box->cursor_x),
-			       GTK_STATE_FLAG_ACTIVE);
+			       GTK_STATE_FLAG_ACTIVE,
+			       FALSE);
   }
   
-  g_list_free(list);
+  g_list_free(start_list);
   
   return(TRUE);
 }
@@ -223,17 +226,20 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 	
 	gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
 								 pattern_box->cursor_x),
-				   GTK_STATE_FLAG_PRELIGHT);
+				   GTK_STATE_FLAG_PRELIGHT,
+				   FALSE);
 
 	if(!gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(start_list,
 									     pattern_box->cursor_x + 1))){
 	  gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
 								   pattern_box->cursor_x + 1),
-				     GTK_STATE_FLAG_NORMAL);
+				     GTK_STATE_FLAG_NORMAL,
+				     FALSE);
 	}else{
 	  gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
 								   pattern_box->cursor_x + 1),
-				     GTK_STATE_FLAG_ACTIVE);
+				     GTK_STATE_FLAG_ACTIVE,
+				     FALSE);
 	}
 
 	if(gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(start_list,
@@ -258,17 +264,20 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 
       	gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
 								 pattern_box->cursor_x),
-				   GTK_STATE_FLAG_PRELIGHT);
+				   GTK_STATE_FLAG_PRELIGHT,
+				   FALSE);
 	
 	if(!gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(start_list,
 									     pattern_box->cursor_x - 1))){
 	  gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
 								   pattern_box->cursor_x - 1),
-				     GTK_STATE_FLAG_NORMAL);
+				     GTK_STATE_FLAG_NORMAL,
+				     FALSE);
 	}else{	  
 	  gtk_widget_set_state_flags((GtkWidget *) g_list_nth_data(start_list,
 								   pattern_box->cursor_x - 1),
-				     GTK_STATE_FLAG_ACTIVE);
+				     GTK_STATE_FLAG_ACTIVE,
+				     FALSE);
 	}
 
 	if(gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(start_list,

@@ -173,9 +173,9 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
   /* enabled */
   machine_collection_entry->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
   
-  gtk_widget_set_valign((GtkWidget *) machine_collection_mapper->enabled,
+  gtk_widget_set_valign((GtkWidget *) machine_collection_entry->enabled,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign((GtkWidget *) machine_collection_mapper->enabled,
+  gtk_widget_set_halign((GtkWidget *) machine_collection_entry->enabled,
 			GTK_ALIGN_FILL);
   
   gtk_grid_attach((GtkGrid *) machine_collection_entry,
@@ -188,9 +188,9 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
 							      "xalign", 0.0,
 							      NULL);
 
-  gtk_widget_set_valign((GtkWidget *) machine_collection_mapper->label,
+  gtk_widget_set_valign((GtkWidget *) machine_collection_entry->label,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign((GtkWidget *) machine_collection_mapper->label,
+  gtk_widget_set_halign((GtkWidget *) machine_collection_entry->label,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach((GtkGrid *) machine_collection_entry,

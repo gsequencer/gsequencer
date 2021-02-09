@@ -246,7 +246,8 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 		     FALSE, FALSE,
 		     0);
 
-  fm_syncsynth->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
+  fm_syncsynth->add = (GtkButton *) gtk_button_new_from_icon_name("list-add",
+								  GTK_ICON_SIZE_BUTTON);
   gtk_box_pack_start(vbox,
 		     (GtkWidget *) fm_syncsynth->add,
 		     FALSE, FALSE,
@@ -360,9 +361,7 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
   gtk_grid_attach(grid,
 		  (GtkWidget *) label,
 		   0, 2,
-		   1, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+		   1, 1);
 
   fm_syncsynth->loop_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT, 1.0);
 

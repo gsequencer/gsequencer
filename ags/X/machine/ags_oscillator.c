@@ -211,7 +211,10 @@ ags_oscillator_init(AgsOscillator *oscillator)
 
   oscillator->attack = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   gtk_spin_button_set_value(oscillator->attack, 0.0);
-  gtk_grid_attach_defaults(grid, (GtkWidget *) oscillator->attack, 3, 4, 0, 1);
+  gtk_grid_attach(grid,
+		  (GtkWidget *) oscillator->attack,
+		  3, 0,
+		  1, 1);
 
   /* length */
   gtk_grid_attach(grid,

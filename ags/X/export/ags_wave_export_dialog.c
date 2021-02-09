@@ -200,7 +200,7 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   wave_export_dialog->machine = NULL;
 
   /* filename */
-  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTABLE_HORIZONTAL,
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
 		     GTK_WIDGET(hbox),
@@ -231,7 +231,7 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 		     0);
 
   /* start tact */
-  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTABLE_HORIZONTAL,
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
 		     GTK_WIDGET(hbox),
@@ -258,7 +258,7 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   		     0);
   
   /* end tact */
-  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTABLE_HORIZONTAL,
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
 		     GTK_WIDGET(hbox),
@@ -285,7 +285,7 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   		     0);
   
   /* duration */
-  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTABLE_HORIZONTAL,
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
 		     GTK_WIDGET(hbox),
@@ -302,7 +302,7 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 		     0);
 
   /* output format */
-  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTABLE_HORIZONTAL,
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area((GtkDialog *) wave_export_dialog)),
 		     GTK_WIDGET(hbox),

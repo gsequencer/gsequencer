@@ -20,6 +20,7 @@
 #include <ags/X/export/ags_machine_collection.h>
 #include <ags/X/export/ags_machine_collection_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
 #include <ags/X/export/ags_midi_export_wizard.h>
@@ -287,12 +288,18 @@ ags_machine_collection_reload(AgsMachineCollection *machine_collection)
   AgsWindow *window;
   AgsMidiExportWizard *midi_export_wizard;
   GtkWidget *parent;
+
+  AgsApplicationContext *application_context;
   
   GList *machine, *machine_start;
 
+  application_context = ags_application_context_get_instance();
+  
   midi_export_wizard = (AgsMidiExportWizard *) gtk_widget_get_ancestor((GtkWidget *) machine_collection,
 								       AGS_TYPE_MIDI_EXPORT_WIZARD);
-  window = (AgsWindow *) midi_export_wizard->main_window;
+
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   /* destroy old */
   parent = gtk_widget_get_parent(GTK_WIDGET(machine_collection->child));
@@ -330,9 +337,10 @@ ags_machine_collection_add_entry(AgsMachineCollection *machine_collection,
     return;
   }
 
-  machine_collection_mapper = (AgsMachineCollectionMapper *) g_object_new_with_properties(machine_collection->child_type,
-											  machine_collection->child_n_properties,
-											  machine_collection->child_strv,
+  machine_collection_entry = (AgsMachineCollectionEntry *) g_object_new_with_properties(machine_collection->child_type,
+											machine_collection->child_n_properties,
+											machine_collection->child_strv,
+											machine_collection->child_value);
   g_object_set(machine_collection_entry,
 	       "machine", machine,
 	       NULL);

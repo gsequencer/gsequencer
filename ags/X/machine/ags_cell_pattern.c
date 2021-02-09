@@ -199,7 +199,7 @@ void
 ags_cell_pattern_init(AgsCellPattern *cell_pattern)
 {
   GtkAdjustment *adjustment;
-o
+
   AgsApplicationContext *application_context;
 
   gdouble gui_scale_factor;

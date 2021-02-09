@@ -412,9 +412,7 @@ ags_drum_init(AgsDrum *drum)
   gtk_grid_attach(grid0,
 		   (GtkWidget *) drum->pattern_box,
 		   7, 0,
-		   1, 3,
-		   GTK_EXPAND, GTK_EXPAND,
-		   0, 0);  
+		   1, 3);  
 }
 
 void
