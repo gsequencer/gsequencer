@@ -8,6 +8,11 @@ ags (3.8.0)
 	* FIXME:JK: make indicator orientable
 	* FIXME:JK: make pitch sampler use ags-fx-lfo
 
+ags (3.7.34)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed complex type to double _Complex in many files
+
 ags (3.7.33)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -215,7 +215,7 @@ ags_solver_polynomial_error_quark()
 void
 ags_solver_polynomial_init(AgsSolverPolynomial *solver_polynomial)
 {
-  complex z;
+  double _Complex z;
 
   solver_polynomial->flags = 0;
   
@@ -300,7 +300,7 @@ ags_solver_polynomial_set_property(GObject *gobject,
   {
     gchar *symbol;
     
-    complex z;
+    double _Complex z;
 
     guint length;
 
@@ -566,7 +566,7 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
   AgsComplex coefficient_value;
   AgsComplex *exponent_value;
   
-  complex z;
+  double _Complex z;
 
   guint offset, current_offset;
   guint symbol_count;
@@ -845,7 +845,7 @@ ags_solver_polynomial_add(AgsSolverPolynomial *polynomial_a,
   gchar **symbol_a, **symbol_b;
   gchar **exponent_a, **exponent_b;
 
-  complex coefficient_a, coefficient_b;
+  double _Complex coefficient_a, coefficient_b;
 
   guint length;
   guint i;
@@ -1009,7 +1009,7 @@ ags_solver_polynomial_subtract(AgsSolverPolynomial *polynomial_a,
   gchar **symbol_a, **symbol_b;
   gchar **exponent_a, **exponent_b;
 
-  complex coefficient_a, coefficient_b;
+  double _Complex coefficient_a, coefficient_b;
 
   guint length;
   guint i;

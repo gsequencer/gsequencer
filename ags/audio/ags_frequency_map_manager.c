@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -524,7 +524,7 @@ ags_frequency_map_manager_load_default(AgsFrequencyMapManager *frequency_map_man
       k_stop = buffer_size;
 
       for(k = 0; k < k_stop; k++){
-	static const complex z = 1.0 + I * 0.0;
+	static const double _Complex z = 1.0 + I * 0.0;
 
 	ags_complex_set(&(factorized_frequency_map->buffer[k]),
 			z);

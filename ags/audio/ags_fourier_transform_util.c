@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,7 +76,7 @@ ags_fourier_transform_util_compute_stft_s8(gint8 *buffer, guint channels,
   i_stop = channels * buffer_length;
   
   for(i = 0, n = 0; i < i_stop; i += channels, n++){
-    complex z;
+    double _Complex z;
     gdouble h;
     gdouble k;
     gdouble r;
@@ -122,7 +122,7 @@ ags_fourier_transform_util_compute_stft_s16(gint16 *buffer, guint channels,
   i_stop = channels * buffer_length;
   
   for(i = 0, n = 0; i < i_stop; i += channels, n++){
-    complex z;
+    double _Complex z;
     gdouble h;
     gdouble k;
     gdouble r;
@@ -168,7 +168,7 @@ ags_fourier_transform_util_compute_stft_s24(gint32 *buffer, guint channels,
   i_stop = channels * buffer_length;
   
   for(i = 0, n = 0; i < i_stop; i += channels, n++){
-    complex z;
+    double _Complex z;
     gdouble h;
     gdouble k;
     gdouble r;
@@ -214,7 +214,7 @@ ags_fourier_transform_util_compute_stft_s32(gint32 *buffer, guint channels,
   i_stop = channels * buffer_length;
   
   for(i = 0, n = 0; i < i_stop; i += channels, n++){
-    complex z;
+    double _Complex z;
     gdouble h;
     gdouble k;
     gdouble r;
@@ -260,7 +260,7 @@ ags_fourier_transform_util_compute_stft_s64(gint64 *buffer, guint channels,
   i_stop = channels * buffer_length;
   
   for(i = 0, n = 0; i < i_stop; i += channels, n++){
-    complex z;
+    double _Complex z;
     gdouble h;
     gdouble k;
     gdouble r;
@@ -304,7 +304,7 @@ ags_fourier_transform_util_compute_stft_float(gfloat *buffer, guint channels,
   i_stop = channels * buffer_length;
   
   for(i = 0, n = 0; i < i_stop; i += channels, n++){
-    complex z;
+    double _Complex z;
     gdouble h;
     gdouble k;
     gdouble r;
@@ -348,7 +348,7 @@ ags_fourier_transform_util_compute_stft_double(gdouble *buffer, guint channels,
   i_stop = channels * buffer_length;
   
   for(i = 0, n = 0; i < i_stop; i += channels, n++){
-    complex z;
+    double _Complex z;
     gdouble h;
     gdouble k;
     gdouble r;
@@ -392,7 +392,7 @@ ags_fourier_transform_util_compute_stft_complex(AgsComplex *buffer, guint channe
   i_stop = channels * buffer_length;
   
   for(i = 0, n = 0; i < i_stop; i += channels, n++){
-    complex z;
+    double _Complex z;
     gdouble h;
     gdouble k;
     gdouble r;
@@ -438,7 +438,7 @@ ags_fourier_transform_util_inverse_stft_s8(AgsComplex *buffer, guint channels,
   i_stop = channels * buffer_length;
   
   for(i = 0, n = 0; i < i_stop; i += channels, n++){
-    complex z;
+    double _Complex z;
     gdouble k;
     gdouble y;
 
@@ -482,7 +482,7 @@ ags_fourier_transform_util_inverse_stft_s16(AgsComplex *buffer, guint channels,
   i_stop = channels * buffer_length;
   
   for(i = 0, n = 0; i < i_stop; i += channels, n++){
-    complex z;
+    double _Complex z;
     gdouble k;
     gdouble y;
 
@@ -526,7 +526,7 @@ ags_fourier_transform_util_inverse_stft_s24(AgsComplex *buffer, guint channels,
   i_stop = channels * buffer_length;
   
   for(i = 0, n = 0; i < i_stop; i += channels, n++){
-    complex z;
+    double _Complex z;
     gdouble k;
     gdouble y;
 
@@ -570,7 +570,7 @@ ags_fourier_transform_util_inverse_stft_s32(AgsComplex *buffer, guint channels,
   i_stop = channels * buffer_length;
   
   for(i = 0, n = 0; i < i_stop; i += channels, n++){
-    complex z;
+    double _Complex z;
     gdouble k;
     gdouble y;
 
@@ -614,7 +614,7 @@ ags_fourier_transform_util_inverse_stft_s64(AgsComplex *buffer, guint channels,
   i_stop = channels * buffer_length;
   
   for(i = 0, n = 0; i < i_stop; i += channels, n++){
-    complex z;
+    double _Complex z;
     gdouble k;
     gdouble y;
 
@@ -656,7 +656,7 @@ ags_fourier_transform_util_inverse_stft_float(AgsComplex *buffer, guint channels
   i_stop = channels * buffer_length;
   
   for(i = 0, n = 0; i < i_stop; i += channels, n++){
-    complex z;
+    double _Complex z;
     gdouble k;
     gdouble y;
 
@@ -698,7 +698,7 @@ ags_fourier_transform_util_inverse_stft_double(AgsComplex *buffer, guint channel
   i_stop = channels * buffer_length;
   
   for(i = 0, n = 0; i < i_stop; i += channels, n++){
-    complex z;
+    double _Complex z;
     gdouble k;
     gdouble y;
 
@@ -740,7 +740,7 @@ ags_fourier_transform_util_inverse_stft_complex(AgsComplex *buffer, guint channe
   i_stop = channels * buffer_length;
   
   for(i = 0, n = 0; i < i_stop; i += channels, n++){
-    complex z;
+    double _Complex z;
     gdouble k;
     gdouble y;
 
