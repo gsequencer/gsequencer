@@ -34,6 +34,7 @@ int ags_complex_test_clean_suite();
 void ags_complex_test_copy();
 void ags_complex_test_get();
 void ags_complex_test_set();
+void ags_complex_test_serialize();
 
 /* The suite initialization time.
  * Opens the temporary file used by the tests.
@@ -178,6 +179,47 @@ ags_complex_test_set()
 	    a.imag == 1.25);
 }
 
+void
+ags_complex_test_serialize()
+{
+  AgsComplex orig_c_value, c_value;
+
+  gchar *orig_str, *str;
+  
+  double _Complex orig_z, z;
+  int retval;
+  
+  orig_c_value = (AgsComplex) {
+    0.0,
+    0.0
+  };
+
+  c_value = (AgsComplex) {
+    0.0,
+    0.0
+  };
+  
+  orig_z = 0.25 + I * 1.0;
+  ags_complex_set(&orig_c_value,
+		  orig_z);
+
+  orig_str = g_strdup_printf("%lf %lf",
+			     orig_c_value.real, orig_c_value.imag);
+
+  retval = sscanf(orig_str, "%lf %lf", &(c_value.real), &(c_value.imag));
+
+  z = ags_complex_get(&c_value);
+
+  str = g_strdup_printf("%lf %lf",
+			c_value.real, c_value.imag);
+
+  CU_ASSERT(retval == 2);
+  CU_ASSERT(orig_z == z);
+  CU_ASSERT(orig_c_value.real == c_value.real &&
+	    orig_c_value.imag == c_value.imag);
+  CU_ASSERT(!g_strcmp0(orig_str, str));
+}
+
 int
 main(int argc, char **argv)
 {
@@ -200,7 +242,8 @@ main(int argc, char **argv)
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsComplex copy", ags_complex_test_copy) == NULL) ||
      (CU_add_test(pSuite, "test of AgsComplex get", ags_complex_test_get) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsComplex set", ags_complex_test_set) == NULL)){
+     (CU_add_test(pSuite, "test of AgsComplex set", ags_complex_test_set) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsComplex serialize", ags_complex_test_serialize) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();
