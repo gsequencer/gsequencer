@@ -1,3 +1,10 @@
+ags (3.7.35)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed use %lf instead of %Lf with string functions affecting envelope restore
+	* fixed use %lf instead of %f with string functions
+	* added ags_complex_test_serialize()
+
 ags (3.7.34)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
