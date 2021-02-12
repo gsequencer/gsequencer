@@ -23,6 +23,10 @@
 
 #include <samplerate.h>
 
+#if defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+#include <Accelerate/Accelerate.h>
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -793,7 +797,44 @@ ags_audio_buffer_util_envelope_s8(gint8 *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function using accelerate framework */
+  if(buffer_length > 8){
+    double v_current_volume[1];
+
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8, v_current_volume[0] = start_volume + i * ratio){
+      double v_buffer[8], ret_v_buffer[8];
+
+      current_channel = 0;
+      
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      vDSP_vmulD(v_buffer, 1, v_current_volume, 0, ret_v_buffer, 1, 8);
+
+      current_channel = 0;
+      
+      buffer[0] = (gint8) ret_v_buffer[0];
+      buffer[(current_channel = channels)] = (gint8) ret_v_buffer[1];
+      buffer[(current_channel += channels)] = (gint8) ret_v_buffer[2];
+      buffer[(current_channel += channels)] = (gint8) ret_v_buffer[3];
+      buffer[(current_channel += channels)] = (gint8) ret_v_buffer[4];
+      buffer[(current_channel += channels)] = (gint8) ret_v_buffer[5];
+      buffer[(current_channel += channels)] = (gint8) ret_v_buffer[6];
+      buffer[(current_channel += channels)] = (gint8) ret_v_buffer[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 8){
@@ -887,7 +928,44 @@ ags_audio_buffer_util_envelope_s16(gint16 *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function using accelerate framework */
+  if(buffer_length > 8){
+    double v_current_volume[1];
+
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8, v_current_volume[0] = start_volume + i * ratio){
+      double v_buffer[8], ret_v_buffer[8];
+
+      current_channel = 0;
+      
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      vDSP_vmulD(v_buffer, 1, v_current_volume, 0, ret_v_buffer, 1, 8);
+
+      current_channel = 0;
+      
+      buffer[0] = (gint16) ret_v_buffer[0];
+      buffer[(current_channel = channels)] = (gint16) ret_v_buffer[1];
+      buffer[(current_channel += channels)] = (gint16) ret_v_buffer[2];
+      buffer[(current_channel += channels)] = (gint16) ret_v_buffer[3];
+      buffer[(current_channel += channels)] = (gint16) ret_v_buffer[4];
+      buffer[(current_channel += channels)] = (gint16) ret_v_buffer[5];
+      buffer[(current_channel += channels)] = (gint16) ret_v_buffer[6];
+      buffer[(current_channel += channels)] = (gint16) ret_v_buffer[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 8){
@@ -981,7 +1059,44 @@ ags_audio_buffer_util_envelope_s24(gint32 *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function using accelerate framework */
+  if(buffer_length > 8){
+    double v_current_volume[1];
+
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8, v_current_volume[0] = start_volume + i * ratio){
+      double v_buffer[8], ret_v_buffer[8];
+
+      current_channel = 0;
+      
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      vDSP_vmulD(v_buffer, 1, v_current_volume, 0, ret_v_buffer, 1, 8);
+
+      current_channel = 0;
+      
+      buffer[0] = (gint32) ret_v_buffer[0];
+      buffer[(current_channel = channels)] = (gint32) ret_v_buffer[1];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[2];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[3];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[4];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[5];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[6];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 8){
@@ -1075,7 +1190,44 @@ ags_audio_buffer_util_envelope_s32(gint32 *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function using accelerate framework */
+  if(buffer_length > 8){
+    double v_current_volume[1];
+
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8, v_current_volume[0] = start_volume + i * ratio){
+      double v_buffer[8], ret_v_buffer[8];
+
+      current_channel = 0;
+      
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      vDSP_vmulD(v_buffer, 1, v_current_volume, 0, ret_v_buffer, 1, 8);
+
+      current_channel = 0;
+      
+      buffer[0] = (gint32) ret_v_buffer[0];
+      buffer[(current_channel = channels)] = (gint32) ret_v_buffer[1];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[2];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[3];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[4];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[5];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[6];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 8){
@@ -1169,7 +1321,44 @@ ags_audio_buffer_util_envelope_s64(gint64 *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function using accelerate framework */
+  if(buffer_length > 8){
+    double v_current_volume[1];
+
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8, v_current_volume[0] = start_volume + i * ratio){
+      double v_buffer[8], ret_v_buffer[8];
+
+      current_channel = 0;
+      
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      vDSP_vmulD(v_buffer, 1, v_current_volume, 0, ret_v_buffer, 1, 8);
+
+      current_channel = 0;
+      
+      buffer[0] = (gint64) ret_v_buffer[0];
+      buffer[(current_channel = channels)] = (gint64) ret_v_buffer[1];
+      buffer[(current_channel += channels)] = (gint64) ret_v_buffer[2];
+      buffer[(current_channel += channels)] = (gint64) ret_v_buffer[3];
+      buffer[(current_channel += channels)] = (gint64) ret_v_buffer[4];
+      buffer[(current_channel += channels)] = (gint64) ret_v_buffer[5];
+      buffer[(current_channel += channels)] = (gint64) ret_v_buffer[6];
+      buffer[(current_channel += channels)] = (gint64) ret_v_buffer[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 8){
@@ -1263,7 +1452,44 @@ ags_audio_buffer_util_envelope_float(gfloat *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function using accelerate framework */
+  if(buffer_length > 8){
+    double v_current_volume[1];
+
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8, v_current_volume[0] = start_volume + i * ratio){
+      double v_buffer[8], ret_v_buffer[8];
+
+      current_channel = 0;
+      
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      vDSP_vmulD(v_buffer, 1, v_current_volume, 0, ret_v_buffer, 1, 8);
+
+      current_channel = 0;
+      
+      buffer[0] = (gfloat) ret_v_buffer[0];
+      buffer[(current_channel = channels)] = (gfloat) ret_v_buffer[1];
+      buffer[(current_channel += channels)] = (gfloat) ret_v_buffer[2];
+      buffer[(current_channel += channels)] = (gfloat) ret_v_buffer[3];
+      buffer[(current_channel += channels)] = (gfloat) ret_v_buffer[4];
+      buffer[(current_channel += channels)] = (gfloat) ret_v_buffer[5];
+      buffer[(current_channel += channels)] = (gfloat) ret_v_buffer[6];
+      buffer[(current_channel += channels)] = (gfloat) ret_v_buffer[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 8){
@@ -1361,7 +1587,44 @@ ags_audio_buffer_util_envelope_double(gdouble *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function using accelerate framework */
+  if(buffer_length > 8){
+    double v_current_volume[1];
+
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8, v_current_volume[0] = start_volume + i * ratio){
+      double v_buffer[8], ret_v_buffer[8];
+
+      current_channel = 0;
+      
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      vDSP_vmulD(v_buffer, 1, v_current_volume, 0, ret_v_buffer, 1, 8);
+
+      current_channel = 0;
+      
+      buffer[0] = (gdouble) ret_v_buffer[0];
+      buffer[(current_channel = channels)] = (gdouble) ret_v_buffer[1];
+      buffer[(current_channel += channels)] = (gdouble) ret_v_buffer[2];
+      buffer[(current_channel += channels)] = (gdouble) ret_v_buffer[3];
+      buffer[(current_channel += channels)] = (gdouble) ret_v_buffer[4];
+      buffer[(current_channel += channels)] = (gdouble) ret_v_buffer[5];
+      buffer[(current_channel += channels)] = (gdouble) ret_v_buffer[6];
+      buffer[(current_channel += channels)] = (gdouble) ret_v_buffer[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 8){
@@ -1591,7 +1854,46 @@ ags_audio_buffer_util_volume_s8(gint8 *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function using accelerate framework */
+  if(buffer_length > 8){
+    double v_volume[1];
+
+    v_volume[0] = (double) volume;
+    
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      double v_buffer[8], ret_v_buffer[8];
+
+      current_channel = 0;
+      
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      vDSP_vmulD(v_buffer, 1, v_volume, 0, ret_v_buffer, 1, 8);
+
+      current_channel = 0;
+      
+      buffer[0] = (gint8) ret_v_buffer[0];
+      buffer[(current_channel = channels)] = (gint8) ret_v_buffer[1];
+      buffer[(current_channel += channels)] = (gint8) ret_v_buffer[2];
+      buffer[(current_channel += channels)] = (gint8) ret_v_buffer[3];
+      buffer[(current_channel += channels)] = (gint8) ret_v_buffer[4];
+      buffer[(current_channel += channels)] = (gint8) ret_v_buffer[5];
+      buffer[(current_channel += channels)] = (gint8) ret_v_buffer[6];
+      buffer[(current_channel += channels)] = (gint8) ret_v_buffer[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 8){
@@ -1677,7 +1979,46 @@ ags_audio_buffer_util_volume_s16(gint16 *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function using accelerate framework */
+  if(buffer_length > 8){
+    double v_volume[1];
+
+    v_volume[0] = (double) volume;
+    
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      double v_buffer[8], ret_v_buffer[8];
+
+      current_channel = 0;
+      
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      vDSP_vmulD(v_buffer, 1, v_volume, 0, ret_v_buffer, 1, 8);
+
+      current_channel = 0;
+      
+      buffer[0] = (gint16) ret_v_buffer[0];
+      buffer[(current_channel = channels)] = (gint16) ret_v_buffer[1];
+      buffer[(current_channel += channels)] = (gint16) ret_v_buffer[2];
+      buffer[(current_channel += channels)] = (gint16) ret_v_buffer[3];
+      buffer[(current_channel += channels)] = (gint16) ret_v_buffer[4];
+      buffer[(current_channel += channels)] = (gint16) ret_v_buffer[5];
+      buffer[(current_channel += channels)] = (gint16) ret_v_buffer[6];
+      buffer[(current_channel += channels)] = (gint16) ret_v_buffer[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 8){
@@ -1763,7 +2104,46 @@ ags_audio_buffer_util_volume_s24(gint32 *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function using accelerate framework */
+  if(buffer_length > 8){
+    double v_volume[1];
+
+    v_volume[0] = (double) volume;
+    
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      double v_buffer[8], ret_v_buffer[8];
+
+      current_channel = 0;
+      
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      vDSP_vmulD(v_buffer, 1, v_volume, 0, ret_v_buffer, 1, 8);
+
+      current_channel = 0;
+      
+      buffer[0] = (gint32) ret_v_buffer[0];
+      buffer[(current_channel = channels)] = (gint32) ret_v_buffer[1];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[2];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[3];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[4];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[5];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[6];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 8){
@@ -1849,7 +2229,46 @@ ags_audio_buffer_util_volume_s32(gint32 *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function using accelerate framework */
+  if(buffer_length > 8){
+    double v_volume[1];
+
+    v_volume[0] = (double) volume;
+    
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      double v_buffer[8], ret_v_buffer[8];
+
+      current_channel = 0;
+      
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      vDSP_vmulD(v_buffer, 1, v_volume, 0, ret_v_buffer, 1, 8);
+
+      current_channel = 0;
+      
+      buffer[0] = (gint32) ret_v_buffer[0];
+      buffer[(current_channel = channels)] = (gint32) ret_v_buffer[1];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[2];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[3];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[4];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[5];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[6];
+      buffer[(current_channel += channels)] = (gint32) ret_v_buffer[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 8){
@@ -1935,7 +2354,46 @@ ags_audio_buffer_util_volume_s64(gint64 *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function using accelerate framework */
+  if(buffer_length > 8){
+    double v_volume[1];
+
+    v_volume[0] = (double) volume;
+    
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      double v_buffer[8], ret_v_buffer[8];
+
+      current_channel = 0;
+      
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      vDSP_vmulD(v_buffer, 1, v_volume, 0, ret_v_buffer, 1, 8);
+
+      current_channel = 0;
+      
+      buffer[0] = (gint64) ret_v_buffer[0];
+      buffer[(current_channel = channels)] = (gint64) ret_v_buffer[1];
+      buffer[(current_channel += channels)] = (gint64) ret_v_buffer[2];
+      buffer[(current_channel += channels)] = (gint64) ret_v_buffer[3];
+      buffer[(current_channel += channels)] = (gint64) ret_v_buffer[4];
+      buffer[(current_channel += channels)] = (gint64) ret_v_buffer[5];
+      buffer[(current_channel += channels)] = (gint64) ret_v_buffer[6];
+      buffer[(current_channel += channels)] = (gint64) ret_v_buffer[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 8){
@@ -2022,6 +2480,45 @@ ags_audio_buffer_util_volume_float(gfloat *buffer, guint channels,
       buffer += (current_channel + channels);
     }
   }  
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function using accelerate framework */
+  if(buffer_length > 8){
+    double v_volume[1];
+
+    v_volume[0] = (double) volume;
+    
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      double v_buffer[8], ret_v_buffer[8];
+
+      current_channel = 0;
+      
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      vDSP_vmulD(v_buffer, 1, v_volume, 0, ret_v_buffer, 1, 8);
+
+      current_channel = 0;
+      
+      buffer[0] = (gfloat) ret_v_buffer[0];
+      buffer[(current_channel = channels)] = (gfloat) ret_v_buffer[1];
+      buffer[(current_channel += channels)] = (gfloat) ret_v_buffer[2];
+      buffer[(current_channel += channels)] = (gfloat) ret_v_buffer[3];
+      buffer[(current_channel += channels)] = (gfloat) ret_v_buffer[4];
+      buffer[(current_channel += channels)] = (gfloat) ret_v_buffer[5];
+      buffer[(current_channel += channels)] = (gfloat) ret_v_buffer[6];
+      buffer[(current_channel += channels)] = (gfloat) ret_v_buffer[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 8){
@@ -2108,6 +2605,45 @@ ags_audio_buffer_util_volume_double(gdouble *buffer, guint channels,
       buffer += (current_channel + channels);
     }
   }  
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function using accelerate framework */
+  if(buffer_length > 8){
+    double v_volume[1];
+
+    v_volume[0] = (double) volume;
+    
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      double v_buffer[8], ret_v_buffer[8];
+
+      current_channel = 0;
+      
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      vDSP_vmulD(v_buffer, 1, v_volume, 0, ret_v_buffer, 1, 8);
+
+      current_channel = 0;
+      
+      buffer[0] = (gdouble) ret_v_buffer[0];
+      buffer[(current_channel = channels)] = (gdouble) ret_v_buffer[1];
+      buffer[(current_channel += channels)] = (gdouble) ret_v_buffer[2];
+      buffer[(current_channel += channels)] = (gdouble) ret_v_buffer[3];
+      buffer[(current_channel += channels)] = (gdouble) ret_v_buffer[4];
+      buffer[(current_channel += channels)] = (gdouble) ret_v_buffer[5];
+      buffer[(current_channel += channels)] = (gdouble) ret_v_buffer[6];
+      buffer[(current_channel += channels)] = (gdouble) ret_v_buffer[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 8){
@@ -2380,7 +2916,122 @@ ags_audio_buffer_util_peak_s8(gint8 *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(buffer_length > 8){
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      double v_buffer[8], ret_v_buffer[8];
+      gboolean v_zero[8];
+      double v_result[8];
+      double v_factor[1];
+      
+      static const double v_one[1] = 1.0;
+
+      current_channel = 0;
+
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      v_factor[0] = 1.0 / ((double) G_MAXUINT8) * pressure_factor;
+      
+      vDSP_vmulD(v_buffer, 1, v_factor, 0, ret_v_buffer, 1, 8);
+
+      if(ret_v_buffer[0] == 0.0){
+	ret_v_buffer[0] = 1.0;
+
+	zero[0] = TRUE;
+      }
+
+      if(ret_v_buffer[1] == 0.0){
+	ret_v_buffer[1] = 1.0;
+	
+	zero[1] = TRUE;
+      }
+
+      if(ret_v_buffer[2] == 0.0){
+	ret_v_buffer[2] = 1.0;
+	
+	zero[2] = TRUE;
+      }
+
+      if(ret_v_buffer[3] == 0.0){
+	ret_v_buffer[3] = 1.0;
+	
+	zero[3] = TRUE;
+      }
+
+      if(ret_v_buffer[4] == 0.0){
+	ret_v_buffer[4] = 1.0;
+	
+	zero[4] = TRUE;
+      }
+
+      if(ret_v_buffer[5] == 0.0){
+	ret_v_buffer[5] = 1.0;
+	
+	zero[5] = TRUE;
+      }
+
+      if(ret_v_buffer[6] == 0.0){
+	ret_v_buffer[6] = 1.0;
+	
+	zero[6] = TRUE;
+      }
+
+      if(ret_v_buffer[7] == 0.0){
+	ret_v_buffer[7] = 1.0;
+	
+	zero[7] = TRUE;
+      }
+
+      vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+
+      if(v_zero[0]){
+	v_result[0] = 0.0;
+      }
+
+      if(v_zero[1]){
+	v_result[1] = 0.0;
+      }
+
+      if(v_zero[2]){
+	v_result[2] = 0.0;
+      }
+
+      if(v_zero[3]){
+	v_result[3] = 0.0;
+      }
+
+      if(v_zero[4]){
+	v_result[4] = 0.0;
+      }
+
+      if(v_zero[5]){
+	v_result[5] = 0.0;
+      }
+
+      if(v_zero[6]){
+	v_result[6] = 0.0;
+      }
+
+      if(v_zero[7]){
+	v_result[7] = 0.0;
+      }
+      
+      current_value += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 0){
@@ -2569,7 +3220,122 @@ ags_audio_buffer_util_peak_s16(gint16 *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(buffer_length > 8){
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      double v_buffer[8], ret_v_buffer[8];
+      gboolean v_zero[8];
+      double v_result[8];
+      double v_factor[1];
+      
+      static const double v_one[1] = 1.0;
+
+      current_channel = 0;
+
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      v_factor[0] = 1.0 / ((double) G_MAXUINT16) * pressure_factor;
+      
+      vDSP_vmulD(v_buffer, 1, v_factor, 0, ret_v_buffer, 1, 8);
+
+      if(ret_v_buffer[0] == 0.0){
+	ret_v_buffer[0] = 1.0;
+
+	zero[0] = TRUE;
+      }
+
+      if(ret_v_buffer[1] == 0.0){
+	ret_v_buffer[1] = 1.0;
+	
+	zero[1] = TRUE;
+      }
+
+      if(ret_v_buffer[2] == 0.0){
+	ret_v_buffer[2] = 1.0;
+	
+	zero[2] = TRUE;
+      }
+
+      if(ret_v_buffer[3] == 0.0){
+	ret_v_buffer[3] = 1.0;
+	
+	zero[3] = TRUE;
+      }
+
+      if(ret_v_buffer[4] == 0.0){
+	ret_v_buffer[4] = 1.0;
+	
+	zero[4] = TRUE;
+      }
+
+      if(ret_v_buffer[5] == 0.0){
+	ret_v_buffer[5] = 1.0;
+	
+	zero[5] = TRUE;
+      }
+
+      if(ret_v_buffer[6] == 0.0){
+	ret_v_buffer[6] = 1.0;
+	
+	zero[6] = TRUE;
+      }
+
+      if(ret_v_buffer[7] == 0.0){
+	ret_v_buffer[7] = 1.0;
+	
+	zero[7] = TRUE;
+      }
+
+      vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+
+      if(v_zero[0]){
+	v_result[0] = 0.0;
+      }
+
+      if(v_zero[1]){
+	v_result[1] = 0.0;
+      }
+
+      if(v_zero[2]){
+	v_result[2] = 0.0;
+      }
+
+      if(v_zero[3]){
+	v_result[3] = 0.0;
+      }
+
+      if(v_zero[4]){
+	v_result[4] = 0.0;
+      }
+
+      if(v_zero[5]){
+	v_result[5] = 0.0;
+      }
+
+      if(v_zero[6]){
+	v_result[6] = 0.0;
+      }
+
+      if(v_zero[7]){
+	v_result[7] = 0.0;
+      }
+      
+      current_value += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 0){
@@ -2758,7 +3524,122 @@ ags_audio_buffer_util_peak_s24(gint32 *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(buffer_length > 8){
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      double v_buffer[8], ret_v_buffer[8];
+      gboolean v_zero[8];
+      double v_result[8];
+      double v_factor[1];
+      
+      static const double v_one[1] = 1.0;
+
+      current_channel = 0;
+
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      v_factor[0] = 1.0 / ((double) 0xffffffff) * pressure_factor;
+      
+      vDSP_vmulD(v_buffer, 1, v_factor, 0, ret_v_buffer, 1, 8);
+
+      if(ret_v_buffer[0] == 0.0){
+	ret_v_buffer[0] = 1.0;
+
+	zero[0] = TRUE;
+      }
+
+      if(ret_v_buffer[1] == 0.0){
+	ret_v_buffer[1] = 1.0;
+	
+	zero[1] = TRUE;
+      }
+
+      if(ret_v_buffer[2] == 0.0){
+	ret_v_buffer[2] = 1.0;
+	
+	zero[2] = TRUE;
+      }
+
+      if(ret_v_buffer[3] == 0.0){
+	ret_v_buffer[3] = 1.0;
+	
+	zero[3] = TRUE;
+      }
+
+      if(ret_v_buffer[4] == 0.0){
+	ret_v_buffer[4] = 1.0;
+	
+	zero[4] = TRUE;
+      }
+
+      if(ret_v_buffer[5] == 0.0){
+	ret_v_buffer[5] = 1.0;
+	
+	zero[5] = TRUE;
+      }
+
+      if(ret_v_buffer[6] == 0.0){
+	ret_v_buffer[6] = 1.0;
+	
+	zero[6] = TRUE;
+      }
+
+      if(ret_v_buffer[7] == 0.0){
+	ret_v_buffer[7] = 1.0;
+	
+	zero[7] = TRUE;
+      }
+
+      vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+
+      if(v_zero[0]){
+	v_result[0] = 0.0;
+      }
+
+      if(v_zero[1]){
+	v_result[1] = 0.0;
+      }
+
+      if(v_zero[2]){
+	v_result[2] = 0.0;
+      }
+
+      if(v_zero[3]){
+	v_result[3] = 0.0;
+      }
+
+      if(v_zero[4]){
+	v_result[4] = 0.0;
+      }
+
+      if(v_zero[5]){
+	v_result[5] = 0.0;
+      }
+
+      if(v_zero[6]){
+	v_result[6] = 0.0;
+      }
+
+      if(v_zero[7]){
+	v_result[7] = 0.0;
+      }
+      
+      current_value += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 0){
@@ -2947,7 +3828,122 @@ ags_audio_buffer_util_peak_s32(gint32 *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(buffer_length > 8){
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      double v_buffer[8], ret_v_buffer[8];
+      gboolean v_zero[8];
+      double v_result[8];
+      double v_factor[1];
+      
+      static const double v_one[1] = 1.0;
+
+      current_channel = 0;
+
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      v_factor[0] = 1.0 / ((double) G_MAXUINT32) * pressure_factor;
+      
+      vDSP_vmulD(v_buffer, 1, v_factor, 0, ret_v_buffer, 1, 8);
+
+      if(ret_v_buffer[0] == 0.0){
+	ret_v_buffer[0] = 1.0;
+
+	zero[0] = TRUE;
+      }
+
+      if(ret_v_buffer[1] == 0.0){
+	ret_v_buffer[1] = 1.0;
+	
+	zero[1] = TRUE;
+      }
+
+      if(ret_v_buffer[2] == 0.0){
+	ret_v_buffer[2] = 1.0;
+	
+	zero[2] = TRUE;
+      }
+
+      if(ret_v_buffer[3] == 0.0){
+	ret_v_buffer[3] = 1.0;
+	
+	zero[3] = TRUE;
+      }
+
+      if(ret_v_buffer[4] == 0.0){
+	ret_v_buffer[4] = 1.0;
+	
+	zero[4] = TRUE;
+      }
+
+      if(ret_v_buffer[5] == 0.0){
+	ret_v_buffer[5] = 1.0;
+	
+	zero[5] = TRUE;
+      }
+
+      if(ret_v_buffer[6] == 0.0){
+	ret_v_buffer[6] = 1.0;
+	
+	zero[6] = TRUE;
+      }
+
+      if(ret_v_buffer[7] == 0.0){
+	ret_v_buffer[7] = 1.0;
+	
+	zero[7] = TRUE;
+      }
+
+      vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+
+      if(v_zero[0]){
+	v_result[0] = 0.0;
+      }
+
+      if(v_zero[1]){
+	v_result[1] = 0.0;
+      }
+
+      if(v_zero[2]){
+	v_result[2] = 0.0;
+      }
+
+      if(v_zero[3]){
+	v_result[3] = 0.0;
+      }
+
+      if(v_zero[4]){
+	v_result[4] = 0.0;
+      }
+
+      if(v_zero[5]){
+	v_result[5] = 0.0;
+      }
+
+      if(v_zero[6]){
+	v_result[6] = 0.0;
+      }
+
+      if(v_zero[7]){
+	v_result[7] = 0.0;
+      }
+      
+      current_value += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 0){
@@ -3136,7 +4132,122 @@ ags_audio_buffer_util_peak_s64(gint64 *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(buffer_length > 8){
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      double v_buffer[8], ret_v_buffer[8];
+      gboolean v_zero[8];
+      double v_result[8];
+      double v_factor[1];
+      
+      static const double v_one[1] = 1.0;
+
+      current_channel = 0;
+
+      v_buffer = (double *) {(double) buffer[0],
+			     (double) buffer[(current_channel = channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)],
+			     (double) buffer[(current_channel += channels)]};
+
+      v_factor[0] = 1.0 / ((double) G_MAXUINT64) * pressure_factor;
+      
+      vDSP_vmulD(v_buffer, 1, v_factor, 0, ret_v_buffer, 1, 8);
+
+      if(ret_v_buffer[0] == 0.0){
+	ret_v_buffer[0] = 1.0;
+
+	zero[0] = TRUE;
+      }
+
+      if(ret_v_buffer[1] == 0.0){
+	ret_v_buffer[1] = 1.0;
+	
+	zero[1] = TRUE;
+      }
+
+      if(ret_v_buffer[2] == 0.0){
+	ret_v_buffer[2] = 1.0;
+	
+	zero[2] = TRUE;
+      }
+
+      if(ret_v_buffer[3] == 0.0){
+	ret_v_buffer[3] = 1.0;
+	
+	zero[3] = TRUE;
+      }
+
+      if(ret_v_buffer[4] == 0.0){
+	ret_v_buffer[4] = 1.0;
+	
+	zero[4] = TRUE;
+      }
+
+      if(ret_v_buffer[5] == 0.0){
+	ret_v_buffer[5] = 1.0;
+	
+	zero[5] = TRUE;
+      }
+
+      if(ret_v_buffer[6] == 0.0){
+	ret_v_buffer[6] = 1.0;
+	
+	zero[6] = TRUE;
+      }
+
+      if(ret_v_buffer[7] == 0.0){
+	ret_v_buffer[7] = 1.0;
+	
+	zero[7] = TRUE;
+      }
+
+      vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+
+      if(v_zero[0]){
+	v_result[0] = 0.0;
+      }
+
+      if(v_zero[1]){
+	v_result[1] = 0.0;
+      }
+
+      if(v_zero[2]){
+	v_result[2] = 0.0;
+      }
+
+      if(v_zero[3]){
+	v_result[3] = 0.0;
+      }
+
+      if(v_zero[4]){
+	v_result[4] = 0.0;
+      }
+
+      if(v_zero[5]){
+	v_result[5] = 0.0;
+      }
+
+      if(v_zero[6]){
+	v_result[6] = 0.0;
+      }
+
+      if(v_zero[7]){
+	v_result[7] = 0.0;
+      }
+      
+      current_value += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 0){
@@ -3325,7 +4436,117 @@ ags_audio_buffer_util_peak_float(gfloat *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(buffer_length > 8){
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      double v_buffer[8], ret_v_buffer[8];
+      gboolean v_zero[8];
+      double v_result[8];
+      
+      static const double v_one[1] = 1.0;
+
+      current_channel = 0;
+
+      ret_v_buffer = (double *) {(double) buffer[0],
+				 (double) buffer[(current_channel = channels)],
+				 (double) buffer[(current_channel += channels)],
+				 (double) buffer[(current_channel += channels)],
+				 (double) buffer[(current_channel += channels)],
+				 (double) buffer[(current_channel += channels)],
+				 (double) buffer[(current_channel += channels)],
+				 (double) buffer[(current_channel += channels)]};
+
+      if(ret_v_buffer[0] == 0.0){
+	ret_v_buffer[0] = 1.0;
+
+	zero[0] = TRUE;
+      }
+
+      if(ret_v_buffer[1] == 0.0){
+	ret_v_buffer[1] = 1.0;
+	
+	zero[1] = TRUE;
+      }
+
+      if(ret_v_buffer[2] == 0.0){
+	ret_v_buffer[2] = 1.0;
+	
+	zero[2] = TRUE;
+      }
+
+      if(ret_v_buffer[3] == 0.0){
+	ret_v_buffer[3] = 1.0;
+	
+	zero[3] = TRUE;
+      }
+
+      if(ret_v_buffer[4] == 0.0){
+	ret_v_buffer[4] = 1.0;
+	
+	zero[4] = TRUE;
+      }
+
+      if(ret_v_buffer[5] == 0.0){
+	ret_v_buffer[5] = 1.0;
+	
+	zero[5] = TRUE;
+      }
+
+      if(ret_v_buffer[6] == 0.0){
+	ret_v_buffer[6] = 1.0;
+	
+	zero[6] = TRUE;
+      }
+
+      if(ret_v_buffer[7] == 0.0){
+	ret_v_buffer[7] = 1.0;
+	
+	zero[7] = TRUE;
+      }
+
+      vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+
+      if(v_zero[0]){
+	v_result[0] = 0.0;
+      }
+
+      if(v_zero[1]){
+	v_result[1] = 0.0;
+      }
+
+      if(v_zero[2]){
+	v_result[2] = 0.0;
+      }
+
+      if(v_zero[3]){
+	v_result[3] = 0.0;
+      }
+
+      if(v_zero[4]){
+	v_result[4] = 0.0;
+      }
+
+      if(v_zero[5]){
+	v_result[5] = 0.0;
+      }
+
+      if(v_zero[6]){
+	v_result[6] = 0.0;
+      }
+
+      if(v_zero[7]){
+	v_result[7] = 0.0;
+      }
+      
+      current_value += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 0){
@@ -3514,7 +4735,118 @@ ags_audio_buffer_util_peak_double(gdouble *buffer, guint channels,
 
       buffer += (current_channel + channels);
     }
-  }  
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(buffer_length > 8){
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      double ret_v_buffer[8];
+      gboolean v_zero[8];
+      double v_result[8];
+      double v_factor[1];
+      
+      static const double v_one[1] = 1.0;
+
+      current_channel = 0;
+
+      ret_v_buffer = (double *) {(double) buffer[0],
+				 (double) buffer[(current_channel = channels)],
+				 (double) buffer[(current_channel += channels)],
+				 (double) buffer[(current_channel += channels)],
+				 (double) buffer[(current_channel += channels)],
+				 (double) buffer[(current_channel += channels)],
+				 (double) buffer[(current_channel += channels)],
+				 (double) buffer[(current_channel += channels)]};
+
+      if(ret_v_buffer[0] == 0.0){
+	ret_v_buffer[0] = 1.0;
+
+	zero[0] = TRUE;
+      }
+
+      if(ret_v_buffer[1] == 0.0){
+	ret_v_buffer[1] = 1.0;
+	
+	zero[1] = TRUE;
+      }
+
+      if(ret_v_buffer[2] == 0.0){
+	ret_v_buffer[2] = 1.0;
+	
+	zero[2] = TRUE;
+      }
+
+      if(ret_v_buffer[3] == 0.0){
+	ret_v_buffer[3] = 1.0;
+	
+	zero[3] = TRUE;
+      }
+
+      if(ret_v_buffer[4] == 0.0){
+	ret_v_buffer[4] = 1.0;
+	
+	zero[4] = TRUE;
+      }
+
+      if(ret_v_buffer[5] == 0.0){
+	ret_v_buffer[5] = 1.0;
+	
+	zero[5] = TRUE;
+      }
+
+      if(ret_v_buffer[6] == 0.0){
+	ret_v_buffer[6] = 1.0;
+	
+	zero[6] = TRUE;
+      }
+
+      if(ret_v_buffer[7] == 0.0){
+	ret_v_buffer[7] = 1.0;
+	
+	zero[7] = TRUE;
+      }
+
+      vDSP_vdiv(v_one, 0, ret_v_buffer, 1, v_result, 1, 8);
+
+      if(v_zero[0]){
+	v_result[0] = 0.0;
+      }
+
+      if(v_zero[1]){
+	v_result[1] = 0.0;
+      }
+
+      if(v_zero[2]){
+	v_result[2] = 0.0;
+      }
+
+      if(v_zero[3]){
+	v_result[3] = 0.0;
+      }
+
+      if(v_zero[4]){
+	v_result[4] = 0.0;
+      }
+
+      if(v_zero[5]){
+	v_result[5] = 0.0;
+      }
+
+      if(v_zero[6]){
+	v_result[6] = 0.0;
+      }
+
+      if(v_zero[7]){
+	v_result[7] = 0.0;
+      }
+      
+      current_value += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
+
+      buffer += (current_channel + channels);
+    }
+  }
 #else
   /* unrolled function */
   if(buffer_length > 0){
@@ -4883,6 +6215,58 @@ ags_audio_buffer_util_pong_s8(gint8 *destination, guint dchannels,
       source += (current_schannel - schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      int v_destination[8];
+      int v_source[8];
+      int v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (int *) {(int) destination[0],
+			       (int) destination[(current_dchannel = dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (int *) {(int) source[0],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vaddi(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint8) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint8) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -4983,6 +6367,58 @@ ags_audio_buffer_util_pong_s16(gint16 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = v_destination[5];
       destination[(current_dchannel += dchannels)] = v_destination[6];
       destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      int v_destination[8];
+      int v_source[8];
+      int v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (int *) {(int) destination[0],
+			       (int) destination[(current_dchannel = dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (int *) {(int) source[0],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vaddi(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint16) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint16) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -5100,6 +6536,58 @@ ags_audio_buffer_util_pong_s24(gint32 *destination, guint dchannels,
       source += (current_schannel - schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      int v_destination[8];
+      int v_source[8];
+      int v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (int *) {(int) destination[0],
+			       (int) destination[(current_dchannel = dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (int *) {(int) source[0],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vaddi(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -5209,6 +6697,58 @@ ags_audio_buffer_util_pong_s32(gint32 *destination, guint dchannels,
       source += (current_schannel - schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      int v_destination[8];
+      int v_source[8];
+      int v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (int *) {(int) destination[0],
+			       (int) destination[(current_dchannel = dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (int *) {(int) source[0],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vaddi(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -5307,6 +6847,58 @@ ags_audio_buffer_util_pong_s64(gint64 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = v_destination[5];
       destination[(current_dchannel += dchannels)] = v_destination[6];
       destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      int v_destination[8];
+      int v_source[8];
+      int v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (int *) {(int) destination[0],
+			       (int) destination[(current_dchannel = dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (int *) {(int) source[0],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)],
+			  (int) source[(current_schannel -= schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vaddi(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint64) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint64) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -5424,6 +7016,58 @@ ags_audio_buffer_util_pong_float(gfloat *destination, guint dchannels,
       source += (current_schannel - schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel -= schannels)],
+			     (double) source[(current_schannel -= schannels)],
+			     (double) source[(current_schannel -= schannels)],
+			     (double) source[(current_schannel -= schannels)],
+			     (double) source[(current_schannel -= schannels)],
+			     (double) source[(current_schannel -= schannels)],
+			     (double) source[(current_schannel -= schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vaddD(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gfloat) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gfloat) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -5522,6 +7166,58 @@ ags_audio_buffer_util_pong_double(gdouble *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = v_destination[5];
       destination[(current_dchannel += dchannels)] = v_destination[6];
       destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel - schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel -= schannels)],
+			     (double) source[(current_schannel -= schannels)],
+			     (double) source[(current_schannel -= schannels)],
+			     (double) source[(current_schannel -= schannels)],
+			     (double) source[(current_schannel -= schannels)],
+			     (double) source[(current_schannel -= schannels)],
+			     (double) source[(current_schannel -= schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vaddD(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gdouble) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gdouble) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -5746,6 +7442,58 @@ ags_audio_buffer_util_copy_s8_to_s8(gint8 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = v_destination[5];
       destination[(current_dchannel += dchannels)] = v_destination[6];
       destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      int v_destination[8];
+      int v_source[8];
+      int v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (int *) {(int) destination[0],
+			       (int) destination[(current_dchannel = dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (int *) {(int) source[0],
+			  (int) source[(current_schannel = schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vaddi(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint8) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint8) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
