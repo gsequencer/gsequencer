@@ -42,15 +42,8 @@ void ags_ffplayer_input_line_disconnect(AgsConnectable *connectable);
  * packed by an #AgsFFPlayerInputLine.
  */
 
-enum{
-  RESIZE_LINES,
-  LAST_SIGNAL,
-};
-
 static gpointer ags_ffplayer_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_ffplayer_input_line_parent_connectable_interface;
-
-static guint ffplayer_input_line_signals[LAST_SIGNAL];
 
 GType
 ags_ffplayer_input_line_get_type(void)

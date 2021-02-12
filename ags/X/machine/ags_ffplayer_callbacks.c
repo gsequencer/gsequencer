@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -72,8 +72,6 @@ gboolean
 ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
 			   AgsFFPlayer *ffplayer)
 {
-  GtkWidget *widget;
-
   GtkStyleContext *ffplayer_style_context;
 
   GtkAllocation allocation;
@@ -87,10 +85,9 @@ ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
   guint i, i_stop, j, j0;
   
   GValue value = {0,};
-    
-  widget = (GtkWidget *) ffplayer->drawing_area;
-
-  gtk_widget_get_allocation(ffplayer->drawing_area, &allocation);
+  
+  gtk_widget_get_allocation((GtkWidget *) ffplayer->drawing_area,
+			    &allocation);
 
   /* style context */
   ffplayer_style_context = gtk_widget_get_style_context(GTK_WIDGET(ffplayer->drawing_area));
@@ -311,11 +308,6 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
 void
 ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *ffplayer)
 {
-  AgsWindow *window;
-
-  AgsAudio *audio;
-  AgsChannel *start_input;
-  
   AgsAudioContainer *audio_container;
   
   gint position;
@@ -325,10 +317,6 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
      ffplayer->audio_container->sound_container == NULL){
     return;
   }
-  
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ffplayer);
-
-  audio = AGS_MACHINE(ffplayer)->audio;
   
   /*  */
   audio_container = ffplayer->audio_container;
@@ -374,11 +362,11 @@ ags_ffplayer_drawing_area_button_press_callback(GtkWidget *widget, AgsFFPlayer *
 void
 ags_ffplayer_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsFFPlayer *ffplayer)
 {
-  gtk_widget_queue_draw(ffplayer);
+  gtk_widget_queue_draw((GtkWidget *) ffplayer);
 }
 
 void
 ags_ffplayer_update_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 {
-  ags_ffplayer_update(ffplayer);
+  ags_ffplayer_update((GtkWidget *) ffplayer);
 }

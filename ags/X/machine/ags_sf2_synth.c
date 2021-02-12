@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -128,8 +128,6 @@ ags_sf2_synth_class_init(AgsSF2SynthClass *sf2_synth)
 void
 ags_sf2_synth_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_sf2_synth_connectable_parent_interface;
-
   ags_sf2_synth_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_sf2_synth_connect;
@@ -139,10 +137,10 @@ ags_sf2_synth_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 {
-  GtkHBox *sf2_hbox;
-  GtkHBox *sf2_file_hbox;
-  GtkHBox *sf2_preset_hbox;
-  GtkHBox *hbox;
+  GtkBox *sf2_hbox;
+  GtkBox *sf2_file_hbox;
+  GtkBox *sf2_preset_hbox;
+  GtkBox *hbox;
   GtkTreeView *sf2_bank_tree_view;
   GtkTreeView *sf2_program_tree_view;
   GtkTreeViewColumn *sf2_bank_column;
@@ -231,31 +229,35 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   sf2_synth->audio_container = NULL;
 
   /* SF2 */
-  sf2_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-			 0);
+  sf2_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				    0);
   gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) sf2_synth)),
 		    (GtkWidget *) sf2_hbox);
 
   /* file */
-  sf2_file_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-			      0);  
-  gtk_box_pack_start(GTK_BOX(sf2_hbox),
-		     GTK_WIDGET(sf2_file_hbox),
+  sf2_file_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+					 0);  
+  gtk_box_pack_start(sf2_hbox,
+		     (GtkWidget *) sf2_file_hbox,
 		     FALSE, FALSE,
 		     0);
 
   sf2_synth->filename = (GtkEntry *) gtk_entry_new();
-  gtk_widget_set_valign(sf2_synth->filename,
+
+  gtk_widget_set_valign((GtkWidget *) sf2_synth->filename,
 			GTK_ALIGN_START);
-  gtk_box_pack_start((GtkBox *) sf2_file_hbox,
+  
+  gtk_box_pack_start(sf2_file_hbox,
 		     (GtkWidget *) sf2_synth->filename,
 		     FALSE, FALSE,
 		     0);
   
-  sf2_synth->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN);
-  gtk_widget_set_valign(sf2_synth->open,
+  sf2_synth->open = (GtkButton *) gtk_button_new_with_label(i18n("_Open"));
+
+  gtk_widget_set_valign((GtkWidget *) sf2_synth->open,
 			GTK_ALIGN_START);
-  gtk_box_pack_start((GtkBox *) sf2_file_hbox,
+
+  gtk_box_pack_start(sf2_file_hbox,
 		     (GtkWidget *) sf2_synth->open,
 		     FALSE, FALSE,
 		     0);
@@ -263,7 +265,7 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   sf2_synth->position = -1;
 
   sf2_synth->loading = (GtkLabel *) gtk_label_new(i18n("loading ...  "));
-  gtk_box_pack_start((GtkBox *) sf2_file_hbox,
+  gtk_box_pack_start(sf2_file_hbox,
 		     (GtkWidget *) sf2_synth->loading,
 		     FALSE, FALSE,
 		     0);
@@ -272,32 +274,32 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   gtk_widget_hide((GtkWidget *) sf2_synth->loading);
 
   /* preset - bank and program */
-  sf2_preset_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-  gtk_box_pack_start(GTK_BOX(sf2_hbox),
-		     GTK_WIDGET(sf2_preset_hbox),
+  sf2_preset_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+					   0);
+  gtk_box_pack_start(sf2_hbox,
+		     (GtkWidget *) sf2_preset_hbox,
 		     FALSE, FALSE,
 		     0);
 
-  scrolled_window = gtk_scrolled_window_new(NULL,
-					    NULL);
-  gtk_widget_set_size_request(scrolled_window,
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
+								  NULL);
+  gtk_widget_set_size_request((GtkWidget *) scrolled_window,
 			      AGS_SF2_SYNTH_BANK_WIDTH_REQUEST,
 			      AGS_SF2_SYNTH_BANK_HEIGHT_REQUEST);
   gtk_scrolled_window_set_policy(scrolled_window,
 				 GTK_POLICY_AUTOMATIC,
 				 GTK_POLICY_ALWAYS);
-  gtk_box_pack_start((GtkBox *) sf2_preset_hbox,
+  gtk_box_pack_start(sf2_preset_hbox,
 		     (GtkWidget *) scrolled_window,
 		     FALSE, FALSE,
 		     0);
   
   sf2_synth->bank_tree_view = 
     sf2_bank_tree_view = gtk_tree_view_new();
-  gtk_container_add(scrolled_window,
-		    sf2_bank_tree_view);
+  gtk_container_add((GtkContainer *) scrolled_window,
+		    (GtkWidget *) sf2_bank_tree_view);
     
-  gtk_widget_set_size_request(sf2_bank_tree_view,
+  gtk_widget_set_size_request((GtkWidget *) sf2_bank_tree_view,
 			      AGS_SF2_SYNTH_BANK_WIDTH_REQUEST,
 			      AGS_SF2_SYNTH_BANK_HEIGHT_REQUEST);
 
@@ -316,9 +318,9 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   gtk_tree_view_set_model(sf2_bank_tree_view,
 			  GTK_TREE_MODEL(sf2_bank));  
   
-  scrolled_window = gtk_scrolled_window_new(NULL,
-					    NULL);
-  gtk_widget_set_size_request(scrolled_window,
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
+								  NULL);
+  gtk_widget_set_size_request((GtkWidget *) scrolled_window,
 			      AGS_SF2_SYNTH_PROGRAM_WIDTH_REQUEST,
 			      AGS_SF2_SYNTH_PROGRAM_HEIGHT_REQUEST);
   gtk_scrolled_window_set_policy(scrolled_window,
@@ -331,10 +333,10 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 
   sf2_synth->program_tree_view = 
     sf2_program_tree_view = gtk_tree_view_new();
-  gtk_container_add(scrolled_window,
-		    sf2_program_tree_view);
+  gtk_container_add((GtkContainer *) scrolled_window,
+		    (GtkWidget *) sf2_program_tree_view);
 
-  gtk_widget_set_size_request(sf2_program_tree_view,
+  gtk_widget_set_size_request((GtkWidget *) sf2_program_tree_view,
 			      AGS_SF2_SYNTH_PROGRAM_WIDTH_REQUEST,
 			      AGS_SF2_SYNTH_PROGRAM_HEIGHT_REQUEST);
 
@@ -363,32 +365,36 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
 			  GTK_TREE_MODEL(sf2_program));
 
   /* lower */
-  hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-		     0);
-  gtk_box_pack_start(GTK_BOX(sf2_hbox),
-		     GTK_WIDGET(hbox),
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_pack_start(sf2_hbox,
+		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("lower"));
-  gtk_widget_set_valign(label,
+
+  gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(label),
+  
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
   
   sf2_synth->lower = gtk_spin_button_new_with_range(-72.0,
 						    72.0,
 						    1.0);
-  gtk_widget_set_valign(sf2_synth->lower,
-			GTK_ALIGN_START);
   gtk_spin_button_set_digits(sf2_synth->lower,
 			     2);
   gtk_spin_button_set_value(sf2_synth->lower,
 			    -48.0);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(sf2_synth->lower),
+
+  gtk_widget_set_valign((GtkWidget *) sf2_synth->lower,
+			GTK_ALIGN_START);
+
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) sf2_synth->lower,
 		     FALSE, FALSE,
 		     0);  
   
@@ -541,7 +547,7 @@ ags_sf2_synth_map_recall(AgsMachine *machine)
   
   AgsAudio *audio;
 
-  GList *start_recall, *recall;
+  GList *start_recall;
 
   gint position;
 
@@ -800,7 +806,7 @@ ags_sf2_synth_load_bank(AgsSF2Synth *sf2_synth,
 
   GError *error;
 
-  program_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_COMBO_BOX(sf2_synth->program_tree_view)));
+  program_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->program_tree_view)));
 
   gtk_list_store_clear(program_list_store);
 
@@ -835,7 +841,7 @@ ags_sf2_synth_load_bank(AgsSF2Synth *sf2_synth,
 	      
 	ipatch_item = ipatch_iter_get(&preset_iter);
 
-	ipatch_sf2_preset_get_midi_locale(ipatch_item,
+	ipatch_sf2_preset_get_midi_locale((IpatchSF2Preset *) ipatch_item,
 					  &bank,
 					  &program);
 
@@ -845,7 +851,7 @@ ags_sf2_synth_load_bank(AgsSF2Synth *sf2_synth,
 					    ags_sf2_synth_int_compare_func);
 
 	  start_name = g_list_insert(start_name,
-				     ipatch_sf2_preset_get_name(ipatch_item),
+				     ipatch_sf2_preset_get_name((IpatchSF2Preset *) ipatch_item),
 				     g_list_index(start_list,
 						  GINT_TO_POINTER(program)));
 	}
@@ -909,7 +915,7 @@ ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
 	       "audio-channels", &audio_channels,
 	       NULL);
   
-  ipatch = sf2_synth->audio_container->sound_container;
+  ipatch = (AgsIpatch *) sf2_synth->audio_container->sound_container;
 
   error = NULL;
   sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) ipatch->handle->file,
@@ -943,7 +949,7 @@ ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
 		     "note-range", &note_range,
 		     NULL);
 	
-	sf2_instrument = (IpatchItem *) ipatch_sf2_pzone_get_inst(ipatch_iter_get(&pzone_iter));
+	sf2_instrument = (IpatchItem *) ipatch_sf2_pzone_get_inst((IpatchSF2PZone *) ipatch_iter_get(&pzone_iter));
 	
 	izone_list = ipatch_sf2_inst_get_zones(sf2_instrument);
 
@@ -961,7 +967,7 @@ ags_sf2_synth_load_midi_locale(AgsSF2Synth *sf2_synth,
 	      
 	      izone = ipatch_iter_get(&izone_iter);
 
-	      sf2_sample = ipatch_sf2_izone_get_sample(izone);
+	      sf2_sample = ipatch_sf2_izone_get_sample((IpatchSF2IZone *) izone);
 
 	      g_object_get(sf2_sample,
 			   "sample-size", &frame_count,
@@ -1053,12 +1059,12 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 	sf2_synth->audio_container = sf2_synth->sf2_loader->audio_container;
 	sf2_synth->sf2_loader->audio_container = NULL;
 
-	bank_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_COMBO_BOX(sf2_synth->bank_tree_view)));
+	bank_list_store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->bank_tree_view)));
 
 	gtk_list_store_clear(bank_list_store);
-	gtk_list_store_clear(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_COMBO_BOX(sf2_synth->program_tree_view))));
+	gtk_list_store_clear(GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(sf2_synth->program_tree_view))));
 
-	ipatch = sf2_synth->audio_container->sound_container;
+	ipatch = (AgsIpatch *) sf2_synth->audio_container->sound_container;
 
 	error = NULL;
 	sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) ipatch->handle->file,
@@ -1087,7 +1093,7 @@ ags_sf2_synth_sf2_loader_completed_timeout(AgsSF2Synth *sf2_synth)
 	      
 	      ipatch_item = ipatch_iter_get(&preset_iter);
 
-	      ipatch_sf2_preset_get_midi_locale(ipatch_item,
+	      ipatch_sf2_preset_get_midi_locale((IpatchSF2Preset *) ipatch_item,
 						&bank,
 						&program);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -70,8 +70,6 @@ static AgsConnectableInterface *ags_ffplayer_parent_connectable_interface;
 
 GHashTable *ags_ffplayer_sf2_loader_completed = NULL;
 
-GtkStyle *ffplayer_style = NULL;
-
 GType
 ags_ffplayer_get_type(void)
 {
@@ -140,8 +138,6 @@ ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer)
 void
 ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_ffplayer_connectable_parent_interface;
-
   ags_ffplayer_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_ffplayer_connect;
@@ -151,21 +147,18 @@ ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_ffplayer_init(AgsFFPlayer *ffplayer)
 {
-  GtkVBox *vbox;
+  GtkBox *vbox;
   GtkAlignment *alignment;
-  GtkTable *table;
-  GtkHBox *hbox;
-  GtkHBox *filename_hbox;
-  GtkVBox *piano_vbox;
-  GtkVBox *synth_generator_vbox;
-  GtkHBox *base_note_hbox;
-  GtkHBox *key_count_hbox;
+  GtkGrid *grid;
+  GtkBox *hbox;
+  GtkBox *filename_hbox;
+  GtkBox *piano_vbox;
+  GtkBox *synth_generator_vbox;
+  GtkBox *base_note_hbox;
+  GtkBox *key_count_hbox;
   GtkFrame *frame;
   GtkLabel *label;
   
-  PangoAttrList *attr_list;
-  PangoAttribute *attr;
-
   GtkAllocation allocation;
   
   AgsAudio *audio;
@@ -276,43 +269,49 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->audio_container = NULL;
 
   /* create widgets */
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
   gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) ffplayer)),
 		    (GtkWidget *) vbox);
 
   alignment = (GtkAlignment *) g_object_new(GTK_TYPE_ALIGNMENT,
 					    "xalign", 0.0,
 					    NULL);
-  gtk_box_pack_start((GtkBox *) vbox,
+  gtk_box_pack_start(vbox,
 		     (GtkWidget *) alignment,
 		     FALSE, FALSE,
 		     0);
   
-  table = (GtkTable *) gtk_table_new(4, 2, FALSE);
+  grid = (GtkGrid *) gtk_grid_new();
   gtk_container_add((GtkContainer *) alignment,
-		    (GtkWidget *) table);
+		    (GtkWidget *) grid);
   
   /* preset and instrument */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(hbox),
-		   0, 1,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+
+  gtk_widget_set_valign((GtkWidget *) hbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) hbox,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) hbox,
+		  0, 1,
+		  1, 1);
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("preset"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
-  ffplayer->preset = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(ffplayer->preset),
+  ffplayer->preset = (GtkComboBox *) gtk_combo_box_text_new();
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) ffplayer->preset,
 		     TRUE, FALSE,
 		     0);
 
@@ -320,28 +319,28 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 				    "label", i18n("instrument"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
-  ffplayer->instrument = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(ffplayer->instrument),
+  ffplayer->instrument = (GtkComboBox *) gtk_combo_box_text_new();
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) ffplayer->instrument,
 		     TRUE, FALSE,
 		     0);
 
   /* filename */
-  filename_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-					   0);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(filename_hbox),
+  filename_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+					 0);
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) filename_hbox,
 		     FALSE, FALSE,
 		     0);
 
 #if 0
   ffplayer->filename = (GtkEntry *) gtk_entry_new();
-  gtk_box_pack_start((GtkBox *) filename_hbox,
+  gtk_box_pack_start(filename_hbox,
 		     (GtkWidget *) ffplayer->filename,
 		     FALSE, FALSE,
 		     0);
@@ -349,8 +348,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->filename = NULL;
 #endif
   
-  ffplayer->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN);
-  gtk_box_pack_start((GtkBox *) filename_hbox,
+  ffplayer->open = (GtkButton *) gtk_button_new_with_label(i18n("_Open"));
+  gtk_box_pack_start(filename_hbox,
 		     (GtkWidget *) ffplayer->open,
 		     FALSE, FALSE,
 		     0);
@@ -363,7 +362,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->position = -1;
 
   ffplayer->loading = (GtkLabel *) gtk_label_new(i18n("loading ...  "));
-  gtk_box_pack_start((GtkBox *) filename_hbox,
+  gtk_box_pack_start(filename_hbox,
 		     (GtkWidget *) ffplayer->loading,
 		     FALSE, FALSE,
 		     0);
@@ -372,13 +371,19 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   gtk_widget_hide((GtkWidget *) ffplayer->loading);
 
   /* piano */
-  piano_vbox = (GtkVBox *) gtk_vbox_new(FALSE, 2);
-  gtk_table_attach(table, (GtkWidget *) piano_vbox,
-		   1, 2,
-		   0, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  piano_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				      2);
 
+  gtk_widget_set_valign((GtkWidget *) piano_vbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) piano_vhbox,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) piano_vbox,
+		  1, 0,
+		  1, 3);
+  
   ffplayer->control_width = (guint) (gui_scale_factor * AGS_FFPLAYER_DEFAULT_CONTROL_WIDTH);
   ffplayer->control_height = (guint) (gui_scale_factor * AGS_FFPLAYER_DEFAULT_CONTROL_HEIGHT);
 
@@ -392,7 +397,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 			| GDK_BUTTON_PRESS_MASK
 			| GDK_POINTER_MOTION_MASK
 			| GDK_POINTER_MOTION_HINT_MASK);
-  gtk_box_pack_start((GtkBox *) piano_vbox,
+  gtk_box_pack_start(piano_vbox,
 		     (GtkWidget *) ffplayer->drawing_area,
 		     FALSE, FALSE,
 		     0);
@@ -405,41 +410,47 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 							       1.0,
 							       (double) ffplayer->control_width,
 							       (double) (16 * ffplayer->control_width));
-  ffplayer->hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(ffplayer->hadjustment);
-  gtk_box_pack_start((GtkBox *) piano_vbox,
+  ffplayer->hscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
+							    ffplayer->hadjustment);
+  gtk_box_pack_start(piano_vbox,
 		     (GtkWidget *) ffplayer->hscrollbar,
 		     FALSE, FALSE,
 		     0);
 
   /* synth generator */
   frame = (GtkFrame *) gtk_frame_new(i18n("synth generator"));
-  gtk_table_attach(table, (GtkWidget *) frame,
-		   2, 3,
-		   0, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
 
-  synth_generator_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-						  0);
+  gtk_widget_set_valign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) frame,
+		  2, 0,
+		  1, 3);
+
+  synth_generator_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+						0);
   gtk_container_add((GtkContainer *) frame,
 		    (GtkWidget *) synth_generator_vbox);
   
   ffplayer->enable_synth_generator = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
-  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+  gtk_box_pack_start(synth_generator_vbox,
 		     (GtkWidget *) ffplayer->enable_synth_generator,
 		     FALSE, FALSE,
 		     0);
 
   /* base note */
-  base_note_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-					    0);
-  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+  base_note_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+					  0);
+  gtk_box_pack_start(synth_generator_vbox,
 		     (GtkWidget *) base_note_hbox,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("lower"));
-  gtk_box_pack_start((GtkBox *) base_note_hbox,
+  gtk_box_pack_start(base_note_hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
@@ -451,21 +462,21 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 			     2);
   gtk_spin_button_set_value(ffplayer->lower,
 			    -48.0);
-  gtk_box_pack_start((GtkBox *) base_note_hbox,
+  gtk_box_pack_start(base_note_hbox,
 		     (GtkWidget *) ffplayer->lower,
 		     FALSE, FALSE,
 		     0);
 
   /* key count */
-  key_count_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-					    0);
-  gtk_box_pack_start((GtkBox *) synth_generator_vbox,
+  key_count_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+					  0);
+  gtk_box_pack_start(synth_generator_vbox,
 		     (GtkWidget *) key_count_hbox,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("key count"));
-  gtk_box_pack_start((GtkBox *) key_count_hbox,
+  gtk_box_pack_start(key_count_hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
@@ -475,23 +486,27 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 									 1.0);
   gtk_spin_button_set_value(ffplayer->key_count,
 			    78.0);
-  gtk_box_pack_start((GtkBox *) key_count_hbox,
+  gtk_box_pack_start(key_count_hbox,
 		     (GtkWidget *) ffplayer->key_count,
 		     FALSE, FALSE,
 		     0);
 
+  /* update */
   ffplayer->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
-  gtk_widget_set_valign(ffplayer->update,
-			GTK_ALIGN_END);
-  gtk_table_attach(table, (GtkWidget *) ffplayer->update,
-		   3, 4,
-		   0, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) ffplayer->update,
+			(GTK_ALIGN_FILL | GTK_ALIGN_END));
+  gtk_widget_set_halign((GtkWidget *) ffplayer->update,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) ffplayer->update,
+		  3, 0,
+		  1, 3);
   
   /* effect bridge */
   AGS_MACHINE(ffplayer)->bridge = (GtkContainer *) ags_ffplayer_bridge_new(audio);
-  gtk_box_pack_start((GtkBox *) vbox,
+  gtk_box_pack_start(vbox,
 		     (GtkWidget *) AGS_MACHINE(ffplayer)->bridge,
 		     FALSE, FALSE,
 		     0);
@@ -524,8 +539,6 @@ void
 ags_ffplayer_connect(AgsConnectable *connectable)
 {
   AgsFFPlayer *ffplayer;
-
-  GList *list;
 
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
     return;
@@ -566,8 +579,6 @@ void
 ags_ffplayer_disconnect(AgsConnectable *connectable)
 {
   AgsFFPlayer *ffplayer;
-
-  GList *list;
 
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
     return;
@@ -630,16 +641,6 @@ ags_ffplayer_realize(GtkWidget *widget)
   
   /* call parent */
   GTK_WIDGET_CLASS(ags_ffplayer_parent_class)->realize(widget);
-
-  if(ffplayer_style == NULL){
-    ffplayer_style = gtk_style_copy(gtk_widget_get_style((GtkWidget *) ffplayer));
-  }
-  
-  gtk_widget_set_style((GtkWidget *) ffplayer->drawing_area,
-		       NULL);
-
-  gtk_widget_set_style((GtkWidget *) ffplayer->hscrollbar,
-		       NULL);
 }
 
 void
@@ -732,7 +733,7 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 
   application_context = ags_application_context_get_instance();
 
-  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
+  navigation = (AgsNavigation *) ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
 
   ffplayer = AGS_FFPLAYER(machine);
 
@@ -1039,7 +1040,7 @@ ags_ffplayer_load_preset(AgsFFPlayer *ffplayer)
 
   /* fill ffplayer->preset */
   while(preset != NULL && preset[0] != NULL){
-    gtk_combo_box_text_append_text(ffplayer->preset,
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(ffplayer->preset),
 				   preset[0]);
     
     preset++;
@@ -1078,7 +1079,7 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
 
   /* fill ffplayer->instrument */
   while(instrument != NULL && instrument[0] != NULL){
-    gtk_combo_box_text_append_text(ffplayer->instrument,
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(ffplayer->instrument),
 				   instrument[0]);
 
     instrument++;
@@ -1113,7 +1114,7 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
   gdouble lower;
   gdouble key_count;
   guint audio_channels;
-  guint output_pads, input_pads;
+  guint output_pads;
 
   if(!AGS_IS_FFPLAYER(ffplayer)){
     return;
@@ -1137,9 +1138,9 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
 
   /*  */
   
-  preset_str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(ffplayer->preset));
+  preset_str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(ffplayer->preset));
   
-  instrument_str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(ffplayer->instrument));
+  instrument_str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(ffplayer->instrument));
 
   lower = gtk_spin_button_get_value(ffplayer->lower);
   key_count = gtk_spin_button_get_value(ffplayer->key_count);
@@ -1147,12 +1148,11 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
   audio_channels = AGS_MACHINE(ffplayer)->audio_channels;
   
   output_pads = AGS_MACHINE(ffplayer)->output_pads;
-  input_pads = AGS_MACHINE(ffplayer)->input_pads;
   
   /* open sf2 instrument */
-  if(gtk_toggle_button_get_active(ffplayer->enable_synth_generator)){
-    GList *start_sf2_synth_generator, *sf2_synth_generator;
-    GList *start_sound_resource, *sound_resource;
+  if(gtk_toggle_button_get_active((GtkToggleButton *) ffplayer->enable_synth_generator)){
+    GList *start_sf2_synth_generator;
+    GList *start_sound_resource;
 
     guint requested_frame_count;
     

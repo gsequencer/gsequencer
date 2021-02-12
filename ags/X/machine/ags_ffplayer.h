@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -92,11 +92,11 @@ struct _AgsFFPlayer
   guint control_height;
   
   GtkDrawingArea *drawing_area;
-  GtkHScrollbar *hscrollbar;
+  GtkScrollbar *hscrollbar;
   GtkAdjustment *hadjustment;
 
-  GtkComboBoxText *preset;
-  GtkComboBoxText *instrument;
+  GtkComboBox *preset;
+  GtkComboBox *instrument;
 
   GtkCheckButton *enable_synth_generator;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -209,7 +209,7 @@ ags_ffplayer_bulk_input_input_map_recall(AgsFFPlayerBulkInput *ffplayer_bulk_inp
 
     bulk_plugin = list->data;
     
-    ags_effect_bulk_add_plugin(ffplayer_bulk_input,
+    ags_effect_bulk_add_plugin((AgsEffectBulk *) ffplayer_bulk_input,
 			       NULL,
 			       bulk_plugin->play_container, bulk_plugin->recall_container,
 			       bulk_plugin->plugin_name,
