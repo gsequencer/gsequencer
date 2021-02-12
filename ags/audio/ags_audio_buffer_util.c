@@ -7614,6 +7614,61 @@ ags_audio_buffer_util_copy_s8_to_s16(gint16 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint16) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint16) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -7718,6 +7773,61 @@ ags_audio_buffer_util_copy_s8_to_s24(gint32 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = (gint32) v_destination[5];
       destination[(current_dchannel += dchannels)] = (gint32) v_destination[6];
       destination[(current_dchannel += dchannels)] = (gint32) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -7838,6 +7948,61 @@ ags_audio_buffer_util_copy_s8_to_s32(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -7942,6 +8107,61 @@ ags_audio_buffer_util_copy_s8_to_s64(gint64 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[5];
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[6];
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint64) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint64) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -8063,6 +8283,61 @@ ags_audio_buffer_util_copy_s8_to_float(gfloat *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_normalized[8];
+      double v_result[8];
+      static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vdivD(v_normalize_divisor, 0, v_source, 1, v_normalized, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gfloat) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gfloat) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -8168,6 +8443,61 @@ ags_audio_buffer_util_copy_s8_to_double(gdouble *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = v_destination[5];
       destination[(current_dchannel += dchannels)] = v_destination[6];
       destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_normalized[8];
+      double v_result[8];
+      static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vdivD(v_normalize_divisor, 0, v_source, 1, v_normalized, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gdouble) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gdouble) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -8288,6 +8618,61 @@ ags_audio_buffer_util_copy_s16_to_s8(gint8 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint8) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint8) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -8388,6 +8773,58 @@ ags_audio_buffer_util_copy_s16_to_s16(gint16 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = v_destination[5];
       destination[(current_dchannel += dchannels)] = v_destination[6];
       destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      int v_destination[8];
+      int v_source[8];
+      int v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (int *) {(int) destination[0],
+			       (int) destination[(current_dchannel = dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (int *) {(int) source[0],
+			  (int) source[(current_schannel = schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vaddi(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint16) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint16) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -8508,6 +8945,61 @@ ags_audio_buffer_util_copy_s16_to_s24(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -8620,6 +9112,61 @@ ags_audio_buffer_util_copy_s16_to_s32(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -8724,6 +9271,61 @@ ags_audio_buffer_util_copy_s16_to_s64(gint64 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[5];
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[6];
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint64) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint64) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -8845,6 +9447,61 @@ ags_audio_buffer_util_copy_s16_to_float(gfloat *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_normalized[8];
+      double v_result[8];
+      static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vdivD(v_normalize_divisor, 0, v_source, 1, v_normalized, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gfloat) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gfloat) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -8950,6 +9607,61 @@ ags_audio_buffer_util_copy_s16_to_double(gdouble *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = v_destination[5];
       destination[(current_dchannel += dchannels)] = v_destination[6];
       destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_normalized[8];
+      double v_result[8];
+      static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vdivD(v_normalize_divisor, 0, v_source, 1, v_normalized, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gdouble) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gdouble) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -9070,6 +9782,61 @@ ags_audio_buffer_util_copy_s24_to_s8(gint8 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint8) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint8) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -9182,6 +9949,61 @@ ags_audio_buffer_util_copy_s24_to_s16(gint16 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint16) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint16) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -9283,6 +10105,58 @@ ags_audio_buffer_util_copy_s24_to_s24(gint32 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = v_destination[5];
       destination[(current_dchannel += dchannels)] = v_destination[6];
       destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      int v_destination[8];
+      int v_source[8];
+      int v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (int *) {(int) destination[0],
+			       (int) destination[(current_dchannel = dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (int *) {(int) source[0],
+			  (int) source[(current_schannel = schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vaddi(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -9403,6 +10277,61 @@ ags_audio_buffer_util_copy_s24_to_s32(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -9507,6 +10436,60 @@ ags_audio_buffer_util_copy_s24_to_s64(gint64 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[5];
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[6];
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint64) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint64) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -9628,6 +10611,61 @@ ags_audio_buffer_util_copy_s24_to_float(gfloat *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_normalized[8];
+      double v_result[8];
+      static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vdivD(v_normalize_divisor, 0, v_source, 1, v_normalized, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gfloat) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gfloat) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -9733,6 +10771,61 @@ ags_audio_buffer_util_copy_s24_to_double(gdouble *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = v_destination[5];
       destination[(current_dchannel += dchannels)] = v_destination[6];
       destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_normalized[8];
+      double v_result[8];
+      static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vdivD(v_normalize_divisor, 0, v_source, 1, v_normalized, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gdouble) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gdouble) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -9853,6 +10946,61 @@ ags_audio_buffer_util_copy_s32_to_s8(gint8 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint8) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint8) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -9947,6 +11095,58 @@ ags_audio_buffer_util_copy_s32_to_s16(gint16 *destination, guint dchannels,
       v_source *= scale;
       v_destination += v_source;
       
+      current_dchannel = 0;
+      
+      destination[0] = (gint16) v_destination[0];
+      destination[(current_dchannel = dchannels)] = (gint16) v_destination[1];
+      destination[(current_dchannel += dchannels)] = (gint16) v_destination[2];
+      destination[(current_dchannel += dchannels)] = (gint16) v_destination[3];
+      destination[(current_dchannel += dchannels)] = (gint16) v_destination[4];
+      destination[(current_dchannel += dchannels)] = (gint16) v_destination[5];
+      destination[(current_dchannel += dchannels)] = (gint16) v_destination[6];
+      destination[(current_dchannel += dchannels)] = (gint16) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      ags_v8double v_destination;
+      ags_v8double v_source;
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      v_source *= scale;
+      v_destination += v_source;
+
       current_dchannel = 0;
       
       destination[0] = (gint16) v_destination[0];
@@ -10077,6 +11277,61 @@ ags_audio_buffer_util_copy_s32_to_s24(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -10186,6 +11441,58 @@ ags_audio_buffer_util_copy_s32_to_s32(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      int v_destination[8];
+      int v_source[8];
+      int v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (int *) {(int) destination[0],
+			       (int) destination[(current_dchannel = dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (int *) {(int) source[0],
+			  (int) source[(current_schannel = schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vaddi(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -10287,6 +11594,61 @@ ags_audio_buffer_util_copy_s32_to_s64(gint64 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[5];
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[6];
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint64) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint64) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -10408,6 +11770,61 @@ ags_audio_buffer_util_copy_s32_to_float(gfloat *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_normalized[8];
+      double v_result[8];
+      static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vdivD(v_normalize_divisor, 0, v_source, 1, v_normalized, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gfloat) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gfloat) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -10513,6 +11930,61 @@ ags_audio_buffer_util_copy_s32_to_double(gdouble *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = v_destination[5];
       destination[(current_dchannel += dchannels)] = v_destination[6];
       destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_normalized[8];
+      double v_result[8];
+      static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vdivD(v_normalize_divisor, 0, v_source, 1, v_normalized, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gdouble) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gdouble) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -10633,6 +12105,60 @@ ags_audio_buffer_util_copy_s64_to_s8(gint8 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint8) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint8) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -10737,6 +12263,61 @@ ags_audio_buffer_util_copy_s64_to_s16(gint16 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = (gint16) v_destination[5];
       destination[(current_dchannel += dchannels)] = (gint16) v_destination[6];
       destination[(current_dchannel += dchannels)] = (gint16) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint16) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint16) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -10857,6 +12438,61 @@ ags_audio_buffer_util_copy_s64_to_s24(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -10969,6 +12605,61 @@ ags_audio_buffer_util_copy_s64_to_s32(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -11070,6 +12761,58 @@ ags_audio_buffer_util_copy_s64_to_s64(gint64 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = v_destination[5];
       destination[(current_dchannel += dchannels)] = v_destination[6];
       destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      int v_destination[8];
+      int v_source[8];
+      int v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (int *) {(int) destination[0],
+			       (int) destination[(current_dchannel = dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)],
+			       (int) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (int *) {(int) source[0],
+			  (int) source[(current_schannel = schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)],
+			  (int) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vaddi(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint64) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint64) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -11191,6 +12934,61 @@ ags_audio_buffer_util_copy_s64_to_float(gfloat *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_normalized[8];
+      double v_result[8];
+      static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vdivD(v_normalize_divisor, 0, v_source, 1, v_normalized, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gfloat) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gfloat) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -11296,6 +13094,61 @@ ags_audio_buffer_util_copy_s64_to_double(gdouble *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = v_destination[5];
       destination[(current_dchannel += dchannels)] = v_destination[6];
       destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_normalized[8];
+      double v_result[8];
+      static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vdivD(v_normalize_divisor, 0, v_source, 1, v_normalized, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gdouble) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gdouble) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -11416,6 +13269,61 @@ ags_audio_buffer_util_copy_float_to_s8(gint8 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint8) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint8) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -11520,6 +13428,61 @@ ags_audio_buffer_util_copy_float_to_s16(gint16 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = (gint16) v_destination[5];
       destination[(current_dchannel += dchannels)] = (gint16) v_destination[6];
       destination[(current_dchannel += dchannels)] = (gint16) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint16) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint16) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -11640,6 +13603,61 @@ ags_audio_buffer_util_copy_float_to_s24(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -11744,6 +13762,61 @@ ags_audio_buffer_util_copy_float_to_s32(gint32 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = (gint32) v_destination[5];
       destination[(current_dchannel += dchannels)] = (gint32) v_destination[6];
       destination[(current_dchannel += dchannels)] = (gint32) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -11864,6 +13937,61 @@ ags_audio_buffer_util_copy_float_to_s64(gint64 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint64) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint64) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -11965,6 +14093,58 @@ ags_audio_buffer_util_copy_float_to_float(gfloat *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = v_destination[5];
       destination[(current_dchannel += dchannels)] = v_destination[6];
       destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* just copy */
+      vDSP_vaddD(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gfloat) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gfloat) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -12079,6 +14259,58 @@ ags_audio_buffer_util_copy_float_to_double(gdouble *destination, guint dchannels
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* just copy */
+      vDSP_vaddD(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gdouble) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gdouble) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -12180,6 +14412,61 @@ ags_audio_buffer_util_copy_double_to_s8(gint8 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = (gint8) v_destination[5];
       destination[(current_dchannel += dchannels)] = (gint8) v_destination[6];
       destination[(current_dchannel += dchannels)] = (gint8) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint8) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint8) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -12300,6 +14587,61 @@ ags_audio_buffer_util_copy_double_to_s16(gint16 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint16) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint16) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -12404,6 +14746,61 @@ ags_audio_buffer_util_copy_double_to_s24(gint32 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = (gint32) v_destination[5];
       destination[(current_dchannel += dchannels)] = (gint32) v_destination[6];
       destination[(current_dchannel += dchannels)] = (gint32) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -12524,6 +14921,61 @@ ags_audio_buffer_util_copy_double_to_s32(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -12628,6 +15080,61 @@ ags_audio_buffer_util_copy_double_to_s64(gint64 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[5];
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[6];
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint64) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint64) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -12745,6 +15252,58 @@ ags_audio_buffer_util_copy_double_to_float(gfloat *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* no scale, just copy */
+      vDSP_vaddD(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gfloat) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gfloat) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -12846,6 +15405,58 @@ ags_audio_buffer_util_copy_double_to_double(gdouble *destination, guint dchannel
       destination[(current_dchannel += dchannels)] = v_destination[5];
       destination[(current_dchannel += dchannels)] = v_destination[6];
       destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* just copy */
+      vDSP_vaddD(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gdouble) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gdouble) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -12968,6 +15579,61 @@ ags_audio_buffer_util_copy_s8_to_float32(Float32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_normalized[8];
+      double v_result[8];
+      static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vdivD(v_normalize_divisor, 0, v_source, 1, v_normalized, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (Float32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (Float32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -13073,6 +15739,61 @@ ags_audio_buffer_util_copy_s16_to_float32(Float32 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = (Float32) v_destination[5];
       destination[(current_dchannel += dchannels)] = (Float32) v_destination[6];
       destination[(current_dchannel += dchannels)] = (Float32) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_normalized[8];
+      double v_result[8];
+      static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vdivD(v_normalize_divisor, 0, v_source, 1, v_normalized, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (Float32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (Float32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -13194,6 +15915,61 @@ ags_audio_buffer_util_copy_s24_to_float32(Float32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_normalized[8];
+      double v_result[8];
+      static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vdivD(v_normalize_divisor, 0, v_source, 1, v_normalized, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (Float32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (Float32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -13299,6 +16075,61 @@ ags_audio_buffer_util_copy_s32_to_float32(Float32 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = (Float32) v_destination[5];
       destination[(current_dchannel += dchannels)] = (Float32) v_destination[6];
       destination[(current_dchannel += dchannels)] = (Float32) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_normalized[8];
+      double v_result[8];
+      static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vdivD(v_normalize_divisor, 0, v_source, 1, v_normalized, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (Float32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (Float32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -13420,6 +16251,61 @@ ags_audio_buffer_util_copy_s64_to_float32(Float32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_normalized[8];
+      double v_result[8];
+      static const double v_normalize_divisor[1] = { (double) normalize_divisor };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vdivD(v_normalize_divisor, 0, v_source, 1, v_normalized, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_normalized, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (Float32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (Float32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -13513,7 +16399,7 @@ ags_audio_buffer_util_copy_float_to_float32(Float32 *destination, guint dchannel
       
       current_dchannel = 0;
       
-      destination[0] = v_destination[0];
+      destination[0] = (Float32) v_destination[0];
       destination[(current_dchannel = dchannels)] = (Float32) v_destination[1];
       destination[(current_dchannel += dchannels)] = (Float32) v_destination[2];
       destination[(current_dchannel += dchannels)] = (Float32) v_destination[3];
@@ -13521,6 +16407,58 @@ ags_audio_buffer_util_copy_float_to_float32(Float32 *destination, guint dchannel
       destination[(current_dchannel += dchannels)] = (Float32) v_destination[5];
       destination[(current_dchannel += dchannels)] = (Float32) v_destination[6];
       destination[(current_dchannel += dchannels)] = (Float32) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* just copy */
+      vDSP_vaddD(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (Float32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (Float32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -13619,7 +16557,7 @@ ags_audio_buffer_util_copy_double_to_float32(Float32 *destination, guint dchanne
       
       current_dchannel = 0;
       
-      destination[0] = v_destination[0];
+      destination[0] = (Float32) v_destination[0];
       destination[(current_dchannel = dchannels)] = (Float32) v_destination[1];
       destination[(current_dchannel += dchannels)] = (Float32) v_destination[2];
       destination[(current_dchannel += dchannels)] = (Float32) v_destination[3];
@@ -13627,6 +16565,58 @@ ags_audio_buffer_util_copy_double_to_float32(Float32 *destination, guint dchanne
       destination[(current_dchannel += dchannels)] = (Float32) v_destination[5];
       destination[(current_dchannel += dchannels)] = (Float32) v_destination[6];
       destination[(current_dchannel += dchannels)] = (Float32) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* just copy */
+      vDSP_vaddD(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (Float32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (Float32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -13741,6 +16731,58 @@ ags_audio_buffer_util_copy_float32_to_float32(Float32 *destination, guint dchann
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* just copy */
+      vDSP_vaddD(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (Float32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (Float32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (Float32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -13842,6 +16884,61 @@ ags_audio_buffer_util_copy_float32_to_s8(gint8 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = (gint8) v_destination[5];
       destination[(current_dchannel += dchannels)] = (gint8) v_destination[6];
       destination[(current_dchannel += dchannels)] = (gint8) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint8) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint8) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint8) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -13962,6 +17059,61 @@ ags_audio_buffer_util_copy_float32_to_s16(gint16 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint16) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint16) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint16) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -14066,6 +17218,61 @@ ags_audio_buffer_util_copy_float32_to_s24(gint32 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = (gint32) v_destination[5];
       destination[(current_dchannel += dchannels)] = (gint32) v_destination[6];
       destination[(current_dchannel += dchannels)] = (gint32) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -14186,6 +17393,61 @@ ags_audio_buffer_util_copy_float32_to_s32(gint32 *destination, guint dchannels,
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint32) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint32) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint32) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -14290,6 +17552,61 @@ ags_audio_buffer_util_copy_float32_to_s64(gint64 *destination, guint dchannels,
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[5];
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[6];
       destination[(current_dchannel += dchannels)] = (gint64) v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_scaled[8];
+      double v_result[8];
+      static const double v_scale[1] = { (double) scale };
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* scale and copy */
+      vDSP_vmulD(v_source, 1, v_scale, 0, v_scaled, 1, 8);
+      vDSP_vaddD(v_destination, 1, v_scaled, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gint64) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gint64) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gint64) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
@@ -14407,6 +17724,58 @@ ags_audio_buffer_util_copy_float32_to_float(gfloat *destination, guint dchannels
       source += (current_schannel + schannels);
     }
   }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* just copy */
+      vDSP_vaddD(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gfloat) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gfloat) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gfloat) v_result[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
 #else  
   /* unrolled function */
   if(count > 8){
@@ -14505,6 +17874,58 @@ ags_audio_buffer_util_copy_float32_to_double(gdouble *destination, guint dchanne
       destination[(current_dchannel += dchannels)] = v_destination[5];
       destination[(current_dchannel += dchannels)] = v_destination[6];
       destination[(current_dchannel += dchannels)] = v_destination[7];
+
+      /* iterate destination */
+      destination += (current_dchannel + dchannels);
+
+      /* iterate source */
+      source += (current_schannel + schannels);
+    }
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      double v_destination[8];
+      double v_source[8];
+      double v_result[8];
+
+      current_dchannel = 0;
+      current_schannel = 0;
+
+      v_destination = (double *) {(double) destination[0],
+				  (double) destination[(current_dchannel = dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)],
+				  (double) destination[(current_dchannel += dchannels)]};
+      
+      v_source = (double *) {(double) source[0],
+			     (double) source[(current_schannel = schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)],
+			     (double) source[(current_schannel += schannels)]};
+
+      /* just copy */
+      vDSP_vaddD(v_destination, 1, v_source, 1, v_result, 1, 8);
+      
+      current_dchannel = 0;
+
+      destination[0] = (gdouble) v_result[0];
+      destination[(current_dchannel = dchannels)] = (gdouble) v_result[1];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[2];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[3];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[4];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[5];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[6];
+      destination[(current_dchannel += dchannels)] = (gdouble) v_result[7];
 
       /* iterate destination */
       destination += (current_dchannel + dchannels);
