@@ -216,6 +216,9 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   pitch_sampler->notation_play_container = ags_recall_container_new();
   pitch_sampler->notation_recall_container = ags_recall_container_new();
 
+  pitch_sampler->lfo_play_container = ags_recall_container_new();
+  pitch_sampler->lfo_recall_container = ags_recall_container_new();
+
   pitch_sampler->envelope_play_container = ags_recall_container_new();
   pitch_sampler->envelope_recall_container = ags_recall_container_new();
 
@@ -873,6 +876,21 @@ ags_pitch_sampler_map_recall(AgsMachine *machine)
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
+  /* ags-fx-lfo */
+  start_recall = ags_fx_factory_create(audio,
+				       pitch_sampler->lfo_play_container, pitch_sampler->lfo_recall_container,
+				       "ags-fx-lfo",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
   /* ags-fx-envelope */
   start_recall = ags_fx_factory_create(audio,
 				       pitch_sampler->envelope_play_container, pitch_sampler->envelope_recall_container,
@@ -965,6 +983,20 @@ ags_pitch_sampler_input_map_recall(AgsPitchSampler *pitch_sampler,
   start_recall = ags_fx_factory_create(audio,
 				       pitch_sampler->notation_play_container, pitch_sampler->notation_recall_container,
 				       "ags-fx-notation",
+				       NULL,
+				       NULL,
+				       audio_channel_start, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-lfo */
+  start_recall = ags_fx_factory_create(audio,
+				       pitch_sampler->lfo_play_container, pitch_sampler->lfo_recall_container,
+				       "ags-fx-lfo",
 				       NULL,
 				       NULL,
 				       audio_channel_start, audio_channels,

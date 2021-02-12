@@ -137,7 +137,7 @@ ags_pitch_sampler_enable_lfo_callback(GtkToggleButton *toggle, AgsPitchSampler *
 
     /* play */
     play = ags_recall_find_type(start_play,
-				AGS_TYPE_LFO_CHANNEL);
+				AGS_TYPE_FX_LFO_CHANNEL);
       
     if(play != NULL){
       GValue value = {0};
@@ -161,7 +161,7 @@ ags_pitch_sampler_enable_lfo_callback(GtkToggleButton *toggle, AgsPitchSampler *
 
     /* recall */
     recall = ags_recall_find_type(start_recall,
-				  AGS_TYPE_LFO_CHANNEL);
+				  AGS_TYPE_FX_LFO_CHANNEL);
       
     if(recall != NULL){
       GValue value = {0};
@@ -220,7 +220,7 @@ ags_pitch_sampler_lfo_freq_callback(GtkSpinButton *spin_button, AgsPitchSampler 
 
     /* play */
     play = ags_recall_find_type(start_play,
-				AGS_TYPE_LFO_CHANNEL);
+				AGS_TYPE_FX_LFO_CHANNEL);
       
     if(play != NULL){
       GValue value = {0};
@@ -244,7 +244,7 @@ ags_pitch_sampler_lfo_freq_callback(GtkSpinButton *spin_button, AgsPitchSampler 
 
     /* recall */
     recall = ags_recall_find_type(start_recall,
-				  AGS_TYPE_LFO_CHANNEL);
+				  AGS_TYPE_FX_LFO_CHANNEL);
       
     if(recall != NULL){
       GValue value = {0};
@@ -303,7 +303,7 @@ ags_pitch_sampler_lfo_phase_callback(GtkSpinButton *spin_button, AgsPitchSampler
 
     /* play */
     play = ags_recall_find_type(start_play,
-				AGS_TYPE_LFO_CHANNEL);
+				AGS_TYPE_FX_LFO_CHANNEL);
       
     if(play != NULL){
       GValue value = {0};
@@ -327,7 +327,7 @@ ags_pitch_sampler_lfo_phase_callback(GtkSpinButton *spin_button, AgsPitchSampler
 
     /* recall */
     recall = ags_recall_find_type(start_recall,
-				  AGS_TYPE_LFO_CHANNEL);
+				  AGS_TYPE_FX_LFO_CHANNEL);
       
     if(recall != NULL){
       GValue value = {0};
@@ -386,7 +386,7 @@ ags_pitch_sampler_lfo_depth_callback(GtkSpinButton *spin_button, AgsPitchSampler
 
     /* play */
     play = ags_recall_find_type(start_play,
-				AGS_TYPE_LFO_CHANNEL);
+				AGS_TYPE_FX_LFO_CHANNEL);
       
     if(play != NULL){
       GValue value = {0};
@@ -410,7 +410,7 @@ ags_pitch_sampler_lfo_depth_callback(GtkSpinButton *spin_button, AgsPitchSampler
 
     /* recall */
     recall = ags_recall_find_type(start_recall,
-				  AGS_TYPE_LFO_CHANNEL);
+				  AGS_TYPE_FX_LFO_CHANNEL);
       
     if(recall != NULL){
       GValue value = {0};
@@ -469,7 +469,7 @@ ags_pitch_sampler_lfo_tuning_callback(GtkSpinButton *spin_button, AgsPitchSample
 
     /* play */
     play = ags_recall_find_type(start_play,
-				AGS_TYPE_LFO_CHANNEL);
+				AGS_TYPE_FX_LFO_CHANNEL);
       
     if(play != NULL){
       GValue value = {0};
@@ -493,7 +493,7 @@ ags_pitch_sampler_lfo_tuning_callback(GtkSpinButton *spin_button, AgsPitchSample
 
     /* recall */
     recall = ags_recall_find_type(start_recall,
-				  AGS_TYPE_LFO_CHANNEL);
+				  AGS_TYPE_FX_LFO_CHANNEL);
       
     if(recall != NULL){
       GValue value = {0};

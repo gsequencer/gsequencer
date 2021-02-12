@@ -6,7 +6,7 @@ ags (3.8.0)
 	* TODO:JK: implemented AgsCompositeToolbar
 	* TODO:JK: fixed deprecated Gtk+-3.0 symbols
 	* FIXME:JK: make indicator orientable
-	* FIXME:JK: make pitch sampler use ags-fx-lfo
+	* improved pitch sampler to use ags-fx-lfo
 
 ags (3.7.35)
 

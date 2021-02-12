@@ -72,6 +72,9 @@ struct _AgsPitchSampler
   AgsRecallContainer *notation_play_container;
   AgsRecallContainer *notation_recall_container;
 
+  AgsRecallContainer *lfo_play_container;
+  AgsRecallContainer *lfo_recall_container;
+
   AgsRecallContainer *envelope_play_container;
   AgsRecallContainer *envelope_recall_container;
   

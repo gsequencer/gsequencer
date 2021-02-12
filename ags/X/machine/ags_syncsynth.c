@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -131,8 +131,6 @@ ags_syncsynth_class_init(AgsSyncsynthClass *syncsynth)
 void
 ags_syncsynth_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_syncsynth_connectable_parent_interface;
-
   ags_syncsynth_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_syncsynth_connect;
@@ -142,9 +140,9 @@ ags_syncsynth_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_syncsynth_init(AgsSyncsynth *syncsynth)
 {
-  GtkHBox *hbox;
-  GtkVBox *vbox;
-  GtkTable *table;
+  GtkBox *hbox;
+  GtkBox *vbox;
+  GtkGrid *grid;
   GtkLabel *label;
 
   AgsAudio *audio;
@@ -225,11 +223,13 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
   syncsynth->xml_type = "ags-syncsynth";
  
   /* create widgets */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) syncsynth)), (GtkWidget *) hbox);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) syncsynth)),
+		    (GtkWidget *) hbox);
 
   syncsynth->oscillator = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) hbox,
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) syncsynth->oscillator,
 		     FALSE,
 		     FALSE,
@@ -243,40 +243,69 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
 			       ags_oscillator_new());
   
   /* add and remove buttons */
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) vbox, FALSE, FALSE, 0);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) vbox,
+		     FALSE, FALSE,
+		     0);
 
-  syncsynth->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) syncsynth->add, FALSE, FALSE, 0);
+  syncsynth->add = (GtkButton *) gtk_button_new_from_icon_name("list-add",
+							       GTK_ICON_SIZE_BUTTON);
+  gtk_box_pack_start(vbox,
+		     (GtkWidget *) syncsynth->add,
+		     FALSE, FALSE,
+		     0);
 
-  syncsynth->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) syncsynth->remove, FALSE, FALSE, 0);
+  syncsynth->remove = (GtkButton *) gtk_button_new_icon_name("list-remove",
+							     GTK_ICON_SIZE_BUTTON);
+  gtk_box_pack_start(vbox,
+		     (GtkWidget *) syncsynth->remove,
+		     FALSE, FALSE,
+		     0);
   
   /* update */
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) vbox, FALSE, FALSE, 0);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) vbox,
+		     FALSE, FALSE,
+		     0);
 
   syncsynth->auto_update = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("auto update"));
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) syncsynth->auto_update, FALSE, FALSE, 0);
+  gtk_box_pack_start(vbox,
+		     (GtkWidget *) syncsynth->auto_update,
+		     FALSE, FALSE,
+		     0);
 
   syncsynth->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) syncsynth->update, FALSE, FALSE, 0);
+  gtk_box_pack_start(vbox,
+		     (GtkWidget *) syncsynth->update,
+		     FALSE, FALSE,
+		     0);
 
-  /* table */
-  table = (GtkTable *) gtk_table_new(3, 2, FALSE);
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) table, FALSE, FALSE, 0);
+  /* grid */
+  grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_pack_start(vbox,
+		     (GtkWidget *) grid,
+		     FALSE, FALSE,
+		     0);
 
   /* lower - frequency */  
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("lower"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+    
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
 
   syncsynth->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_SYNCSYNTH_BASE_NOTE_MIN,
 								      AGS_SYNCSYNTH_BASE_NOTE_MAX,
@@ -284,52 +313,72 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
   gtk_spin_button_set_value(syncsynth->lower, -48.0);
   gtk_spin_button_set_digits(syncsynth->lower,
 			     2);
-  gtk_table_attach(table,
-		   GTK_WIDGET(syncsynth->lower),
-		   1, 2,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) syncsynth->lower,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) syncsynth->lower,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) syncsynth->lower,
+		  1, 0,
+		  1, 1);
 
   /* loop start */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("loop start"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
+
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		   (GtkWidget *) label,
 		   0, 1,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+		   1, 1);
 
   syncsynth->loop_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_OSCILLATOR_DEFAULT_FRAME_COUNT, 1.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(syncsynth->loop_start),
-		   1, 2,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) syncsynth->loop_start,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) syncsynth->loop_start,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) syncsynth->loop_start,
+		  1, 1,
+		  1, 1);
 
   /* loop end */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("loop end"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
 
   syncsynth->loop_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_OSCILLATOR_DEFAULT_FRAME_COUNT, 1.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(syncsynth->loop_end),
-		   1, 2,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) syncsynth->loop_end,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) syncsynth->loop_end,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) syncsynth->loop_end,
+		  1, 2,
+		  1, 1);
 }
 
 void
@@ -800,30 +849,30 @@ ags_syncsynth_add_oscillator(AgsSyncsynth *syncsynth,
 {
   AgsAudio *audio;
   
-  GtkHBox *hbox;
+  GtkBox *hbox;
   GtkCheckButton *check_button;
 
   audio = AGS_MACHINE(syncsynth)->audio;
   ags_audio_add_synth_generator(audio,
 				(GObject *) ags_synth_generator_new());
   
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
 
   check_button = (GtkCheckButton *) gtk_check_button_new();
-  gtk_box_pack_start((GtkBox *) hbox,
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) check_button,
 		     FALSE,
 		     FALSE,
 		     0);
   
-  gtk_box_pack_start((GtkBox *) hbox,
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) oscillator,
 		     FALSE,
 		     FALSE,
 		     0);
 
-  gtk_box_pack_start((GtkBox *) syncsynth->oscillator,
+  gtk_box_pack_start(syncsynth->oscillator,
 		     (GtkWidget *) hbox,
 		     FALSE,
 		     FALSE,
@@ -929,7 +978,6 @@ ags_syncsynth_reset_loop(AgsSyncsynth *syncsynth)
 void
 ags_syncsynth_update(AgsSyncsynth *syncsynth)
 {
-  AgsWindow *window;
   AgsOscillator *oscillator;
   
   AgsAudio *audio;
@@ -955,10 +1003,7 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   gdouble frequency, phase, start_frequency;
   gdouble volume;
 
-  AgsComplex **sync_point;
   guint sync_point_count;
-
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) syncsynth);
 
   application_context = ags_application_context_get_instance();
 
