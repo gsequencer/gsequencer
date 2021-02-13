@@ -1,3 +1,8 @@
+ags (3.7.36)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented vector operations on Apple macOS with Accelerate Framework
+
 ags (3.7.35)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
