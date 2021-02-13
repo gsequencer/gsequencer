@@ -1,3 +1,8 @@
+ags (3.7.37)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsServer missing HTTP status code 403 Forbidden and response
+
 ags (3.7.36)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
