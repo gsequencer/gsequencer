@@ -1519,6 +1519,9 @@ ags_server_xmlrpc_callback(SoupServer *soup_server,
 				      login,
 				      security_token);
     }else{
+      soup_message_set_status(msg,
+			      403);
+      
       g_message("AgsServer - session not active");
     }
   
