@@ -1521,7 +1521,13 @@ ags_server_xmlrpc_callback(SoupServer *soup_server,
     }else{
       soup_message_set_status(msg,
 			      403);
-      
+
+      soup_message_set_response(msg,
+				"text/plain",
+				SOUP_MEMORY_STATIC,
+				"Forbidden",
+				9);
+    }      
       g_message("AgsServer - session not active");
     }
   
