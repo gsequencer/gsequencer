@@ -1527,7 +1527,7 @@ ags_server_xmlrpc_callback(SoupServer *soup_server,
 				SOUP_MEMORY_STATIC,
 				"Forbidden",
 				9);
-    }      
+
       g_message("AgsServer - session not active");
     }
   
