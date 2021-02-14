@@ -2863,6 +2863,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
   gchar *str;
   
   guint64 ags_offset;
+  guint first_x0;
   glong delta_time;
   guint division;
   guint beat, clicks;
@@ -2879,6 +2880,8 @@ ags_notation_to_raw_midi(AgsNotation *notation,
   
   ags_offset = ags_timestamp_get_ags_offset(timestamp);
 
+  first_x0 = 0;
+  
   note = 
     start_note = ags_notation_get_note(notation);
   
@@ -2900,7 +2903,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 						  division,
 						  tempo,
 						  bpm,
-						  ags_offset);
+						  first_x0);
 
   str = g_strdup_printf("%d", (gint) delta_time);
   
@@ -2949,7 +2952,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 						  division,
 						  tempo,
 						  bpm,
-						  ags_offset);
+						  first_x0);
 
   str = g_strdup_printf("%d", (gint) delta_time);
   
@@ -2970,6 +2973,10 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 
   pattern_node = ags_notation_test_flags(notation,
 					 AGS_NOTATION_PATTERN_MODE);
+
+  if(start_note != NULL){
+    first_x0 = ags_note_get_x0(start_note->data);
+  }
   
   while(note != NULL){
     xmlNode *midi_message_node;
@@ -2977,8 +2984,9 @@ ags_notation_to_raw_midi(AgsNotation *notation,
     guint x0;
     guint note_y;
     glong delta_time;
+    
+    note_x0 = ags_note_get_x0(note->data);
 
-    note_x0 = ags_note_get_x0(note->data);      
     note_y = ags_note_get_y(note->data);
       
     if(pattern_node){
@@ -3013,7 +3021,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 						      division,
 						      tempo,
 						      bpm,
-						      note_x0);
+						      note_x0 - first_x0);
       
       str = g_strdup_printf("%d", delta_time);
       
@@ -3029,7 +3037,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 	guint current_y;
 	
 	if(midi_note[i] != NULL &&
-	   (current_x1 = ags_note_get_x1(midi_note[i])) < note_x0){
+	   (current_x1 = ags_note_get_x1(midi_note[i])) <= note_x0){
 	  current_y = ags_note_get_y(midi_note[i]);
 	  
 	  midi_message_node = xmlNewNode(NULL,
@@ -3063,7 +3071,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 							  division,
 							  tempo,
 							  bpm,
-							  current_x1);
+							  current_x1 - first_x0);
       
 	  str = g_strdup_printf("%d", delta_time);
       
@@ -3077,7 +3085,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 	}
       }
       
-      /* check key on */
+      /* key on */
       midi_note[i] = note->data;
       
       midi_message_node = xmlNewNode(NULL,
@@ -3111,7 +3119,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 						      division,
 						      tempo,
 						      bpm,
-						      x0);
+						      x0 - first_x0);
       
       str = g_strdup_printf("%d", delta_time);
       
@@ -3193,7 +3201,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 						    division,
 						    tempo,
 						    bpm,
-						    current_x1);
+						    current_x1 - first_x0);
       
     str = g_strdup_printf("%d", delta_time);
       
