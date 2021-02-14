@@ -1,6 +1,8 @@
 ags (3.7.38)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_notation_to_raw_midi()
+	* implemented ags_notation_from_raw_midi()
 	* fixed typo in AgsRecall:automation-port property
 
 ags (3.7.37)
