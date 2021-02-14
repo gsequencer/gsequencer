@@ -1116,8 +1116,10 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
   /* create xmlDoc and set root node */
   midi_parser->doc = 
     doc = xmlNewDoc("1.0");
+  
   root_node = xmlNewNode(NULL, "midi");
-  xmlDocSetRootElement(doc, root_node);
+  xmlDocSetRootElement(doc,
+		       root_node);
 
   /* create tracks node */
   tracks_node = xmlNewNode(NULL, "midi-tracks");
