@@ -542,7 +542,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * 
    * Since: 3.0.0
    */
-  param_spec = g_param_spec_pointer("autamation-port",
+  param_spec = g_param_spec_pointer("automation-port",
 				    i18n_pspec("automation port"),
 				    i18n_pspec("The port doing automation"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);

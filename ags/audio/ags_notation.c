@@ -22,6 +22,9 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_port.h>
 
+#include <ags/audio/midi/ags_midi_parser.h>
+#include <ags/audio/midi/ags_midi_builder.h>
+
 #include <stdlib.h>
 
 #include <ags/i18n.h>
@@ -2844,9 +2847,439 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 			 glong tempo,
 			 guint *buffer_length)
 {
-  //TODO:JK: implement me
+  AgsNote* midi_note[128];
+  AgsMidiBuilder *midi_builder;
 
-  return(NULL);
+  AgsTimestamp *timestamp;
+  
+  xmlDoc *midi_doc;
+  xmlNode *root_node;
+  xmlNode *midi_header_node;
+  xmlNode *midi_tracks_node;
+  xmlNode *midi_track_node;
+  xmlNode *midi_time_signature_node;
+  xmlNode *midi_end_of_track_node;
+
+  GList *start_note, *note;
+  
+  guchar *buffer;
+
+  gchar *str;
+  
+  guint64 ags_offset;
+  guint first_x0;
+  glong delta_time;
+  guint division;
+  guint beat, clicks;
+  guint length;
+  int denom;
+  gboolean pattern_node;
+  gboolean success;
+  guint i;
+  
+  if(!AGS_IS_NOTATION(notation)){
+    return(NULL);    
+  }
+
+  timestamp = ags_notation_get_timestamp(notation);
+  
+  ags_offset = ags_timestamp_get_ags_offset(timestamp);
+
+  first_x0 = 0;
+  
+  note = 
+    start_note = ags_notation_get_note(notation);
+  
+  midi_doc = xmlNewDoc("1.0");
+
+  root_node = xmlNewNode(NULL, "midi");
+  xmlDocSetRootElement(midi_doc,
+		       root_node);
+
+  midi_header_node = xmlNewNode(NULL,
+				"midi-header");
+  
+  xmlAddChild(root_node,
+	      midi_header_node);
+
+  division = AGS_NOTATION_DEFAULT_DIVISION;
+  
+  delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+						  division,
+						  tempo,
+						  bpm,
+						  first_x0);
+
+  str = g_strdup_printf("%d", (gint) delta_time);
+  
+  xmlNewProp(midi_header_node,
+	     "offset",
+	     str);
+
+  g_free(str);
+  
+  xmlNewProp(midi_header_node,
+	     "format",
+	     "1");
+
+  str = g_strdup_printf("%d", division);
+  
+  xmlNewProp(midi_header_node,
+	     "division",
+	     str);
+
+  g_free(str);
+    
+  beat =
+    clicks = division;
+
+  denom = 1;
+
+  while(dd > 0){
+    denom *= 2;
+    dd--;
+  }
+  
+  str = g_strdup_printf("%d", beat);
+  
+  xmlNewProp(midi_header_node,
+	     "beat",
+	     str);
+
+  g_free(str);
+  
+  xmlNewProp(midi_header_node,
+	     "track-count",
+	     "1");
+
+  /* create tracks node */
+  midi_tracks_node = xmlNewNode(NULL, "midi-tracks");
+
+  xmlAddChild(root_node,
+	      midi_tracks_node);
+
+  midi_track_node = xmlNewNode(NULL, "midi-track");
+
+  delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+						  division,
+						  tempo,
+						  bpm,
+						  first_x0);
+
+  str = g_strdup_printf("%d", (gint) delta_time);
+  
+  xmlNewProp(midi_track_node,
+	     "offset",
+	     str);
+
+  g_free(str);
+
+  xmlAddChild(midi_tracks_node,
+	      midi_track_node);
+
+  midi_time_signature_node = xmlNewNode(NULL,
+					"midi-message");
+  
+  xmlNewProp(midi_time_signature_node,
+	     "event",
+	     "time-signature");
+
+  xmlNewProp(midi_time_signature_node,
+	     "timesig",
+	     g_strdup_printf("%d/%d %d %d", nn, denom, cc, bb));
+  
+  for(i = 0; i < 128; i++){
+    midi_note[i] = NULL;
+  }
+  
+  note = start_note;
+
+  pattern_node = ags_notation_test_flags(notation,
+					 AGS_NOTATION_PATTERN_MODE);
+
+  if(start_note != NULL){
+    first_x0 = ags_note_get_x0(start_note->data);
+  }
+  
+  while(note != NULL){
+    xmlNode *midi_message_node;
+    
+    guint note_x0;
+    guint note_y;
+    glong delta_time;
+    
+    note_x0 = ags_note_get_x0(note->data);
+
+    note_y = ags_note_get_y(note->data);
+      
+    if(pattern_node){
+      midi_message_node = xmlNewNode(NULL,
+				     "midi-message");
+
+      xmlAddChild(midi_track_node,
+		  midi_message_node);
+
+      xmlNewProp(midi_message_node,
+		 "event",
+		 "note-on");
+
+      xmlNewProp(midi_message_node,
+		 "key",
+		 "0");
+
+      str = g_strdup_printf("%d",
+			    note_y);
+      
+      xmlNewProp(midi_message_node,
+		 "note",
+		 str);
+
+      g_free(str);
+      
+      xmlNewProp(midi_message_node,
+		 "velocity",
+		 "127");
+
+      delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+						      division,
+						      tempo,
+						      bpm,
+						      note_x0 - first_x0);
+      
+      str = g_strdup_printf("%d", delta_time);
+      
+      xmlNewProp(midi_message_node,
+		 "delta-time",
+		 str);
+
+      g_free(str);
+    }else{
+      /* check key off */
+      for(i = 0; i < 128; i++){
+	guint current_x1;
+	guint current_y;
+	
+	if(midi_note[i] != NULL &&
+	   (current_x1 = ags_note_get_x1(midi_note[i])) <= note_x0){
+	  current_y = ags_note_get_y(midi_note[i]);
+	  
+	  midi_message_node = xmlNewNode(NULL,
+					 "midi-message");
+
+	  xmlAddChild(midi_track_node,
+		      midi_message_node);
+
+	  xmlNewProp(midi_message_node,
+		     "event",
+		     "note-off");
+
+	  xmlNewProp(midi_message_node,
+		     "key",
+		     "0");
+
+	  str = g_strdup_printf("%d",
+				note_y);
+      
+	  xmlNewProp(midi_message_node,
+		     "note",
+		     str);
+
+	  g_free(str);
+      
+	  xmlNewProp(midi_message_node,
+		     "velocity",
+		     "127");
+
+	  delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+							  division,
+							  tempo,
+							  bpm,
+							  current_x1 - first_x0);
+      
+	  str = g_strdup_printf("%d", delta_time);
+      
+	  xmlNewProp(midi_message_node,
+		     "delta-time",
+		     str);
+
+	  g_free(str);
+	  
+	  midi_note[i] = NULL;
+	}
+      }
+      
+      /* key on */
+      midi_note[i] = note->data;
+      
+      midi_message_node = xmlNewNode(NULL,
+				     "midi-message");
+
+      xmlAddChild(midi_track_node,
+		  midi_message_node);
+
+      xmlNewProp(midi_message_node,
+		 "event",
+		 "note-on");
+
+      xmlNewProp(midi_message_node,
+		 "key",
+		 "0");
+
+      str = g_strdup_printf("%d",
+			    note_y);
+      
+      xmlNewProp(midi_message_node,
+		 "note",
+		 str);
+
+      g_free(str);
+      
+      xmlNewProp(midi_message_node,
+		 "velocity",
+		 "127");
+
+      delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+						      division,
+						      tempo,
+						      bpm,
+						      note_x0 - first_x0);
+      
+      str = g_strdup_printf("%d", delta_time);
+      
+      xmlNewProp(midi_message_node,
+		 "delta-time",
+		 str);
+
+      g_free(str);
+    }    
+    
+    /* iterate */
+    note = note->next;
+  }
+
+  success = FALSE;
+  
+  while(!success){
+    xmlNode *midi_message_node;
+
+    gint current_index;
+    guint current_x1;
+    guint current_y;
+    
+    current_index = -1;
+    
+    for(i = 0; i < 128; i++){
+      if(midi_note[i] != NULL){
+	if(current_index == -1){
+	  current_index = i;
+	}else{
+	  guint current_x1, x1;
+
+	  x1 = ags_note_get_x1(midi_note[i]);
+	  current_x1 = ags_note_get_x1(midi_note[current_index]);
+
+	  if(x1 < current_x1){
+	    current_index = i;
+	  }
+	}
+      }
+    }
+
+    if(current_index == -1){
+      success = TRUE;
+      
+      break;
+    }
+    
+    current_x1 = ags_note_get_x1(midi_note[current_index]);
+    current_y = ags_note_get_y(midi_note[current_index]);
+	  
+    midi_message_node = xmlNewNode(NULL,
+				   "midi-message");
+
+    xmlAddChild(midi_track_node,
+		midi_message_node);
+
+    xmlNewProp(midi_message_node,
+	       "event",
+	       "note-off");
+
+    xmlNewProp(midi_message_node,
+	       "key",
+	       "0");
+
+    str = g_strdup_printf("%d",
+			  current_y);
+      
+    xmlNewProp(midi_message_node,
+	       "note",
+	       str);
+
+    g_free(str);
+      
+    xmlNewProp(midi_message_node,
+	       "velocity",
+	       "127");
+
+    delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+						    division,
+						    tempo,
+						    bpm,
+						    current_x1 - first_x0);
+      
+    str = g_strdup_printf("%d", delta_time);
+      
+    xmlNewProp(midi_message_node,
+	       "delta-time",
+	       str);
+
+    g_free(str);
+	  
+    midi_note[i] = NULL;
+  }
+  
+  midi_end_of_track_node = xmlNewNode(NULL,
+				      "midi-message");
+
+  //NOTE:JK: take care of delta time
+  str = g_strdup_printf("%d", delta_time);
+      
+  xmlNewProp(midi_end_of_track_node,
+	     "delta-time",
+	     str);
+
+  g_free(str);
+
+  xmlNewProp(midi_end_of_track_node,
+	     "event",
+	     "end-of-track");
+
+  xmlAddChild(midi_track_node,
+	      midi_end_of_track_node);
+
+  midi_builder = ags_midi_builder_new(NULL);
+
+  ags_midi_builder_from_xml_doc(midi_builder,
+				midi_doc);
+
+  ags_midi_builder_build(midi_builder);
+  
+  length = 0;
+  
+  buffer = ags_midi_builder_get_data_with_length(midi_builder,
+						 &length);
+
+  if(buffer_length != NULL){
+    buffer_length[0] = length;
+  }
+
+  g_list_free_full(start_note,
+		   (GDestroyNotify) g_object_unref);
+
+  g_object_run_dispose(midi_builder);
+  g_object_unref(midi_builder);
+  
+  return(buffer);
 }
 
 /**
@@ -2874,9 +3307,199 @@ ags_notation_from_raw_midi(guchar *raw_midi,
 			   gdouble bpm, gdouble delay_factor,
 			   guint buffer_length)
 {
-  //TODO:JK: implement me
+  AgsNotation *notation;
+  AgsNote* midi_note[128];
+  AgsMidiParser *midi_parser;
 
-  return(NULL);
+  xmlDoc *midi_doc;
+  xmlNode *root_node;
+  xmlNode *midi_header_node;
+  xmlNode *midi_tracks_node;
+  xmlNode *midi_track_node;
+  xmlNode *midi_end_of_track_node;
+  xmlNode *child;
+
+  guint division;
+  guint i;
+  
+  if(raw_midi == NULL){
+    return(NULL);    
+  }
+
+  notation = ags_notation_new(NULL,
+			      0);
+
+  for(i = 0; i < 128; i++){
+    midi_note[i] = NULL;
+  }
+  
+  division = AGS_NOTATION_DEFAULT_DIVISION;
+
+  midi_parser = ags_midi_parser_new(NULL);
+
+  ags_midi_parser_set_buffer(midi_parser,
+			     raw_midi);
+  midi_parser->file_length = buffer_length;
+  
+  midi_doc = ags_midi_parser_parse_full(midi_parser);
+  
+  root_node = xmlDocGetRootElement(midi_doc);
+
+  midi_header_node = NULL;
+  midi_tracks_node = NULL;
+  midi_track_node = NULL;
+  midi_end_of_track_node = NULL;
+  
+  child = root_node->children;
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "midi-header",
+		     12)){
+	midi_header_node = child;
+      }else if(!xmlStrncmp(child->name,
+			   (xmlChar *) "midi-tracks",
+			   12)){
+	midi_tracks_node = child;
+      }
+    }
+
+    child = child->next;
+  }
+
+  if(midi_tracks_node != NULL){
+    child = midi_tracks_node->children;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!xmlStrncmp(child->name,
+		       (xmlChar *) "midi-track",
+		       11)){
+	  midi_track_node = child;
+	}
+      }
+      
+      child = child->next;
+    }
+  }
+
+  /* child nodes */
+  if(midi_track_node != NULL){
+    child = midi_track_node->children;
+  
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!xmlStrncmp(child->name,
+		       (xmlChar *) "midi-message",
+		       13)){
+	  xmlChar *event;
+	  xmlChar *str;
+    
+	  guint delta_time;	  
+
+	  /* get event */
+	  delta_time = 0;
+	  str = xmlGetProp(child,
+			   "delta-time");
+
+	  if(str != NULL){
+	    delta_time = g_ascii_strtoull(str,
+					  NULL,
+					  10);
+	  }
+    
+	  /* get event */
+	  event = xmlGetProp(child,
+			     "event");
+	  
+	  /* compute event */
+	  if(!xmlStrncmp(event,
+			 "note-on",
+			 8)){	    
+	    guint note_x0, note_x1;
+	    guint note_y;
+	    
+	    /* note */
+	    note_y = 0;
+	    str = xmlGetProp(child,
+			     "note");
+      
+	    if(str != NULL){
+	      AgsNote *note;
+
+	      note = ags_note_new();
+	      
+	      note_x0 = ags_midi_util_delta_time_to_offset(delay_factor,
+							   division,
+							   tempo,
+							   bpm,
+							   delta_time);
+	      note_x1 = note_x0 + 1;
+	      
+	      note_y = g_ascii_strtoull(str,
+					NULL,
+					10);
+
+	      g_object_set(note,
+			   "x0", note_x0,
+			   "x1", note_x1,
+			   "y", note_y,
+			   NULL);
+
+	      midi_note[note_y] = note;
+	      
+	      ags_notation_add_note(notation,
+				    note,
+				    FALSE);
+	    }
+	  }else if(!xmlStrncmp(event,
+			       "note-off",
+			       9)){
+	    guint note_x1;
+	    guint note_y;
+	    
+	    /* note */
+	    note_y = 0;
+	    str = xmlGetProp(child,
+			     "note");
+      
+	    if(str != NULL){	      
+	      note_x1 = ags_midi_util_delta_time_to_offset(delay_factor,
+							   division,
+							   tempo,
+							   bpm,
+							   delta_time);
+	      
+	      note_y = g_ascii_strtoull(str,
+					NULL,
+					10);
+
+	      if(midi_note[note_y] != NULL){
+		g_object_set(midi_note[note_y],
+			     "x1", note_x1,
+			     NULL);
+
+		midi_note[note_y] = NULL;
+	      }
+	    }
+	  }
+	}else if(!xmlStrncmp(child->name,
+			     (xmlChar *) "midi-system-common",
+			     19)){
+	  //empty
+	}else if(!xmlStrncmp(child->name,
+			     (xmlChar *) "meta-event",
+			     11)){
+	  //empty
+	}
+      }
+      
+      child = child->next;
+    }
+  }
+
+  return(notation);
 }
 
 /**

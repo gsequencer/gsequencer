@@ -8,6 +8,26 @@ ags (3.8.0)
 	* FIXME:JK: make indicator orientable
 	* improved pitch sampler to use ags-fx-lfo
 
+ags (3.7.38)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_notation_to_raw_midi()
+	* implemented ags_notation_from_raw_midi()
+	* added ags/test/audio/midi/ags_midi_delta_time.c
+	* fixed typo in AgsRecall:automation-port property
+	* fixed libags.pc old include of ags/config.h
+	* fixed libags_audio.pc missing gstreamer dependencies
+
+ags (3.7.37)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsServer missing HTTP status code 403 Forbidden and response
+
+ags (3.7.36)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented vector operations on Apple macOS with Accelerate Framework
+
 ags (3.7.35)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
