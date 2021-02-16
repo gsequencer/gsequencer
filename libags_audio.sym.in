@@ -1894,6 +1894,7 @@ ags_midi_parser_meta_misc
 ags_midi_parser_text_event
 ags_midi_parser_open_filename
 ags_midi_parser_set_buffer
+ags_midi_parser_set_file_length
 ags_midi_parser_new
 ags_midi_parser_new_from_filename
 ags_midi_builder_get_type

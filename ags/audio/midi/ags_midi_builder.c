@@ -2411,7 +2411,6 @@ ags_midi_builder_append_xml_node_message(AgsMidiBuilder *midi_builder,
   xmlChar *str;
     
   guint delta_time;
-
     
   /* get event */
   event = xmlGetProp(node,
@@ -3088,12 +3087,12 @@ ags_midi_builder_from_xml_doc(AgsMidiBuilder *midi_builder,
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
 		     (xmlChar *) "midi-header",
-		     13)){
+		     12)){
 	ags_midi_builder_append_xml_node(midi_builder,
 					 child);
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "midi-tracks",
-			   13)){
+			   12)){
 	ags_midi_builder_append_xml_node(midi_builder,
 					 child);
       }

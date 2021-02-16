@@ -181,6 +181,9 @@ void ags_midi_parser_open_filename(AgsMidiParser *midi_parser,
 void ags_midi_parser_set_buffer(AgsMidiParser *midi_parser,
 				guchar *buffer);
 
+void ags_midi_parser_set_file_length(AgsMidiParser *midi_parser,
+				     size_t file_length);
+
 /* instantiate */
 AgsMidiParser* ags_midi_parser_new(FILE *file);
 AgsMidiParser* ags_midi_parser_new_from_filename(gchar *filename);

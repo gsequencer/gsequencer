@@ -767,22 +767,36 @@ ags_midi_parser_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILE:
     {
+      FILE *f;
+
       struct stat sb;
 
+      size_t file_length;
+
+      f = g_value_get_pointer(value);
+      
       g_rec_mutex_lock(midi_parser_mutex);
       
-      midi_parser->file = g_value_get_pointer(value);
+      midi_parser->file = f;
 
       g_rec_mutex_unlock(midi_parser_mutex);
 
       /* read file */
-      fstat(fileno(midi_parser->file), &sb);
+      if(f != NULL){
+	fstat(fileno(f), &sb);
       
-      midi_parser->file_length = sb.st_size;
+	file_length = sb.st_size;
 
-      midi_parser->buffer = (guchar *) malloc(midi_parser->file_length * sizeof(guchar));
+	midi_parser->buffer = (guchar *) malloc(file_length * sizeof(guchar));
 
-      fread(midi_parser->buffer, sizeof(guchar), midi_parser->file_length, midi_parser->file);
+	fread(midi_parser->buffer, sizeof(guchar), file_length, f);
+
+	g_rec_mutex_lock(midi_parser_mutex);
+      
+	midi_parser->file_length = file_length;
+
+	g_rec_mutex_unlock(midi_parser_mutex);
+      }
     }
     break;
   default:
@@ -1034,14 +1048,14 @@ ags_midi_parser_real_midi_getc(AgsMidiParser *midi_parser)
 {
   int c;
 
-  if(midi_parser->file == NULL){
-    return(-1);
+  if(midi_parser->buffer == NULL){
+    return(0);
   }
   
   if(midi_parser->offset >= midi_parser->file_length){
     midi_parser->flags |= AGS_MIDI_PARSER_EOF;
 
-    return(-1);
+    return(0);
   }
 
   c = (int) midi_parser->buffer[midi_parser->offset];
@@ -1113,42 +1127,52 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
   xmlNode *tracks_node;
   xmlNode *current;
 
+  size_t file_length;
+
+  file_length = midi_parser->file_length;
+  
   /* create xmlDoc and set root node */
   midi_parser->doc = 
     doc = xmlNewDoc("1.0");
+  
   root_node = xmlNewNode(NULL, "midi");
-  xmlDocSetRootElement(doc, root_node);
-
-  /* create tracks node */
-  tracks_node = xmlNewNode(NULL, "midi-tracks");
+  xmlDocSetRootElement(doc,
+		       root_node);
 
   /* parse header */
-  current = ags_midi_parser_parse_header(midi_parser);
-  xmlAddChild(root_node,
-	      current);
+  if(file_length >= 8){  
+    current = ags_midi_parser_parse_header(midi_parser);
+    xmlAddChild(root_node,
+		current);
 
 #ifdef AGS_DEBUG
-  g_message("parsed header");
+    g_message("parsed header");
 #endif
-
-  /* parse tracks */
-  xmlAddChild(root_node,
-	      tracks_node);
-  
-  while(((AGS_MIDI_PARSER_EOF & (midi_parser->flags))) == 0){
-    current = ags_midi_parser_parse_track(midi_parser);
-    
-    if(current != NULL){
-      xmlAddChild(tracks_node,
-		  current);
-#ifdef AGS_DEBUG
-      g_message("parsed track");
-#endif
-    }else{
-      g_warning("skipped input");
-    }
   }
 
+  /* create tracks node */
+  if(file_length > 8){  
+    tracks_node = xmlNewNode(NULL, "midi-tracks");
+
+    xmlAddChild(root_node,
+		tracks_node);
+    
+    /* parse tracks */
+    while(((AGS_MIDI_PARSER_EOF & (midi_parser->flags))) == 0){
+      current = ags_midi_parser_parse_track(midi_parser);
+    
+      if(current != NULL){
+	xmlAddChild(tracks_node,
+		    current);
+#ifdef AGS_DEBUG
+	g_message("parsed track");
+#endif
+      }else{
+	g_warning("skipped input");
+      }
+    }
+  }
+  
   return(doc);
 }
 
@@ -1197,7 +1221,7 @@ ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser)
 {
   xmlNode *node;
 
-  static gchar header[] = "MThd";
+  static guchar header[] = "MThd";
 
   guint offset;
   guint format;
@@ -1205,19 +1229,21 @@ ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser)
   guint division;
   guint beat, clicks;
   guint n;
-  gchar c;
+  guchar c;
 
   /* read header */
   n = 0;
   
   while(n < 4 &&
 	(AGS_MIDI_PARSER_EOF & (midi_parser->flags)) == 0){
-    c = ags_midi_parser_midi_getc(midi_parser);
+    c = (guchar) ags_midi_parser_midi_getc(midi_parser);
     
     if(c == header[n]){
       n++;
     }else{
       n = 0;
+
+      return(NULL);
     }
   }
   
@@ -1300,24 +1326,24 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
 {
   xmlNode *node, *current;
 
-  static gchar track[] = "MTrk";
+  static guchar track[] = "MTrk";
 
   gint offset;
   long delta_time;
   guint status;
   guint n;
-  gchar c;
+  guchar c;
 
   n = 0;
   
   while(n < 4 &&
 	(AGS_MIDI_PARSER_EOF & (midi_parser->flags)) == 0){
-    c = ags_midi_parser_midi_getc(midi_parser);
+    c = (guchar) ags_midi_parser_midi_getc(midi_parser);
     
     if(c == track[n]){
       n++;
     }else{
-      n = 0;
+      return(NULL);
     }
   }
 
@@ -2946,6 +2972,26 @@ ags_midi_parser_set_buffer(AgsMidiParser *midi_parser,
   }
 
   midi_parser->buffer = buffer;
+}
+
+/**
+ * ags_midi_parser_set_file_length:
+ * @midi_parser: the #AgsMidiParser
+ * @file_length: the file length
+ * 
+ * Set file length of @midi_parser
+ * 
+ * Since: 3.7.38
+ */
+void
+ags_midi_parser_set_file_length(AgsMidiParser *midi_parser,
+				size_t file_length)
+{
+  if(!AGS_IS_MIDI_PARSER(midi_parser)){
+    return;
+  }
+
+  midi_parser->file_length = file_length;
 }
 
 /**
