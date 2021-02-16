@@ -22,6 +22,9 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_port.h>
 
+#include <ags/audio/midi/ags_midi_parser.h>
+#include <ags/audio/midi/ags_midi_builder.h>
+
 #include <stdlib.h>
 
 #include <ags/i18n.h>
@@ -2930,7 +2933,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
   beat =
     clicks = division;
 
-  demon = 1;
+  denom = 1;
 
   while(dd > 0){
     denom *= 2;
@@ -3001,7 +3004,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
   while(note != NULL){
     xmlNode *midi_message_node;
     
-    guint x0;
+    guint note_x0;
     guint note_y;
     glong delta_time;
     
@@ -3045,7 +3048,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
       
       str = g_strdup_printf("%d", delta_time);
       
-      xmlNewProp(midi_message_mode,
+      xmlNewProp(midi_message_node,
 		 "delta-time",
 		 str);
 
@@ -3095,7 +3098,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
       
 	  str = g_strdup_printf("%d", delta_time);
       
-	  xmlNewProp(midi_message_mode,
+	  xmlNewProp(midi_message_node,
 		     "delta-time",
 		     str);
 
@@ -3139,11 +3142,11 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 						      division,
 						      tempo,
 						      bpm,
-						      x0 - first_x0);
+						      note_x0 - first_x0);
       
       str = g_strdup_printf("%d", delta_time);
       
-      xmlNewProp(midi_message_mode,
+      xmlNewProp(midi_message_node,
 		 "delta-time",
 		 str);
 
@@ -3157,16 +3160,13 @@ ags_notation_to_raw_midi(AgsNotation *notation,
   success = FALSE;
   
   while(!success){
+    xmlNode *midi_message_node;
+
     gint current_index;
     guint current_x1;
     guint current_y;
-    gboolean is_empty;
     
-    current_note = NULL;    
-
     current_index = -1;
-    
-    is_empty = TRUE;
     
     for(i = 0; i < 128; i++){
       if(midi_note[i] != NULL){
@@ -3182,12 +3182,16 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 	    current_index = i;
 	  }
 	}
-	
-	is_empty = FALSE;
       }
     }
+
+    if(current_index == -1){
+      success = TRUE;
+      
+      break;
+    }
     
-    current_x1 = ags_note_get_x1(midi_note[i]);
+    current_x1 = ags_note_get_x1(midi_note[current_index]);
     current_y = ags_note_get_y(midi_note[current_index]);
 	  
     midi_message_node = xmlNewNode(NULL,
@@ -3205,7 +3209,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 	       "0");
 
     str = g_strdup_printf("%d",
-			  note_y);
+			  current_y);
       
     xmlNewProp(midi_message_node,
 	       "note",
@@ -3225,15 +3229,13 @@ ags_notation_to_raw_midi(AgsNotation *notation,
       
     str = g_strdup_printf("%d", delta_time);
       
-    xmlNewProp(midi_message_mode,
+    xmlNewProp(midi_message_node,
 	       "delta-time",
 	       str);
 
     g_free(str);
 	  
     midi_note[i] = NULL;
-
-    success = is_empty;
   }
   
   midi_end_of_track_node = xmlNewNode(NULL,
@@ -3242,7 +3244,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
   //NOTE:JK: take care of delta time
   str = g_strdup_printf("%d", delta_time);
       
-  xmlNewProp(midi_end_of_track_mode,
+  xmlNewProp(midi_end_of_track_node,
 	     "delta-time",
 	     str);
 
@@ -3320,7 +3322,7 @@ ags_notation_from_raw_midi(guchar *raw_midi,
   guint division;
   guint i;
   
-  if(!AGS_IS_NOTATION(notation)){
+  if(raw_midi == NULL){
     return(NULL);    
   }
 
@@ -3337,6 +3339,7 @@ ags_notation_from_raw_midi(guchar *raw_midi,
 
   ags_midi_parser_set_buffer(midi_parser,
 			     raw_midi);
+  midi_parser->file_length = buffer_length;
   
   midi_doc = ags_midi_parser_parse_full(midi_parser);
   
@@ -3397,7 +3400,7 @@ ags_notation_from_raw_midi(guchar *raw_midi,
 
 	  /* get event */
 	  delta_time = 0;
-	  str = xmlGetProp(node,
+	  str = xmlGetProp(child,
 			   "delta-time");
 
 	  if(str != NULL){
@@ -3419,7 +3422,7 @@ ags_notation_from_raw_midi(guchar *raw_midi,
 	    
 	    /* note */
 	    note_y = 0;
-	    str = xmlGetProp(node,
+	    str = xmlGetProp(child,
 			     "note");
       
 	    if(str != NULL){
@@ -3427,7 +3430,7 @@ ags_notation_from_raw_midi(guchar *raw_midi,
 
 	      note = ags_note_new();
 	      
-	      mote_x0 = ags_midi_util_delta_time_to_offset(delay_factor,
+	      note_x0 = ags_midi_util_delta_time_to_offset(delay_factor,
 							   division,
 							   tempo,
 							   bpm,
@@ -3458,11 +3461,11 @@ ags_notation_from_raw_midi(guchar *raw_midi,
 	    
 	    /* note */
 	    note_y = 0;
-	    str = xmlGetProp(node,
+	    str = xmlGetProp(child,
 			     "note");
       
 	    if(str != NULL){	      
-	      mote_x1 = ags_midi_util_delta_time_to_offset(delay_factor,
+	      note_x1 = ags_midi_util_delta_time_to_offset(delay_factor,
 							   division,
 							   tempo,
 							   bpm,

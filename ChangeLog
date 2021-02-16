@@ -3,6 +3,7 @@ ags (3.7.38)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented ags_notation_to_raw_midi()
 	* implemented ags_notation_from_raw_midi()
+	* added ags/test/audio/midi/ags_midi_delta_time.c
 	* fixed typo in AgsRecall:automation-port property
 	* fixed libags.pc old include of ags/config.h
 	* fixed libags_audio.pc missing gstreamer dependencies
