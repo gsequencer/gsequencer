@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2016 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -48,6 +48,8 @@ void ags_notation_test_remove_region_from_selection();
 void ags_notation_test_copy_selection();
 void ags_notation_test_cut_selection();
 void ags_notation_test_insert_from_clipboard();
+void ags_notation_test_to_raw_midi();
+void ags_notation_test_from_raw_midi();
 
 #define AGS_NOTATION_TEST_FIND_NEAR_TIMESTAMP_N_NOTATION (8)
 
@@ -804,6 +806,87 @@ ags_notation_test_insert_from_clipboard()
   //TODO:JK: implement me
 }
 
+void
+ags_notation_test_to_raw_midi()
+{
+  AgsNotation *notation;
+  AgsNote *note;
+
+  guchar *buffer;
+
+  glong tempo;
+  glong nn, dd, cc, bb;
+  guint buffer_length;
+  guint i;
+  
+  notation = ags_notation_new(NULL,
+			      0);
+
+  for(i = 0; i < 4; i++){
+    note = ags_note_new();
+
+    g_object_set(note,
+		 "x0", i * 4,
+		 "x1", i * 4 + 1,
+		 "y", 62,
+		 NULL);
+
+    ags_notation_add_note(notation,
+			  note,
+			  FALSE);
+  }
+
+  buffer_length = 0;
+
+  tempo = 0x07A120;
+  
+  nn = 0x06;
+  dd = 0x03;
+  cc = 0x24;
+  bb = 0x08;
+  
+  buffer = ags_notation_to_raw_midi(notation,
+				    AGS_SOUNDCARD_DEFAULT_BPM, AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR,
+				    nn, dd, cc, bb,
+				    tempo,
+				    &buffer_length);
+
+  CU_ASSERT(buffer != NULL);
+  CU_ASSERT(buffer_length > 0);
+}
+
+void
+ags_notation_test_from_raw_midi()
+{
+  AgsNotation *notation;
+  
+  glong tempo;
+  glong nn, dd, cc, bb;
+  guint buffer_length;
+  
+  static const guchar buffer[] = "MThd\x00\x00\x00\x00\x00\x01\x00\x01\x00\x60MTrk\x00\x00\x00\x0\x00\xff\x58\x04\x06\x03\x24\x08\x00\x90\x36\x7f\x00\x90\x36\x7f\x60\x90\x36\x7f\x81\x40\x90\x36\x7f\x82\x20\x90\x36\x7f\x83\x00\xff\x2f\x00";
+
+  tempo = 0x07A120;
+
+  nn = 0x06;
+  dd = 0x03;
+  cc = 0x24;
+  bb = 0x08;
+
+  buffer_length = sizeof(buffer);
+
+  notation = ags_notation_from_raw_midi(buffer,
+					nn, dd, cc, bb,
+					tempo,
+					AGS_SOUNDCARD_DEFAULT_BPM, AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR,
+					buffer_length);
+
+  CU_ASSERT(notation != NULL);
+  CU_ASSERT(AGS_IS_NOTATION(notation));
+  CU_ASSERT(g_list_length(notation->note) == 4);
+
+}
+
 int
 main(int argc, char **argv)
 {
@@ -842,7 +925,9 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsNotation remove region from selection", ags_notation_test_remove_region_from_selection) == NULL) ||
      (CU_add_test(pSuite, "test of AgsNotation copy selection", ags_notation_test_copy_selection) == NULL) ||
      (CU_add_test(pSuite, "test of AgsNotation cut selection", ags_notation_test_cut_selection) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsNotation insert from clipboard", ags_notation_test_insert_from_clipboard) == NULL)){
+     (CU_add_test(pSuite, "test of AgsNotation insert from clipboard", ags_notation_test_insert_from_clipboard) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation to raw MIDI", ags_notation_test_to_raw_midi) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation from raw MIDI", ags_notation_test_from_raw_midi) == NULL)){
     CU_cleanup_registry();
       
       return CU_get_error();

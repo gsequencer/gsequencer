@@ -2854,6 +2854,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
   xmlNode *midi_header_node;
   xmlNode *midi_tracks_node;
   xmlNode *midi_track_node;
+  xmlNode *midi_time_signature_node;
   xmlNode *midi_end_of_track_node;
 
   GList *start_note, *note;
@@ -2868,6 +2869,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
   guint division;
   guint beat, clicks;
   guint length;
+  int denom;
   gboolean pattern_node;
   gboolean success;
   guint i;
@@ -2928,6 +2930,13 @@ ags_notation_to_raw_midi(AgsNotation *notation,
   beat =
     clicks = division;
 
+  demon = 1;
+
+  while(dd > 0){
+    denom *= 2;
+    dd--;
+  }
+  
   str = g_strdup_printf("%d", beat);
   
   xmlNewProp(midi_header_node,
@@ -2965,6 +2974,17 @@ ags_notation_to_raw_midi(AgsNotation *notation,
   xmlAddChild(midi_tracks_node,
 	      midi_track_node);
 
+  midi_time_signature_node = xmlNewNode(NULL,
+					"midi-message");
+  
+  xmlNewProp(midi_time_signature_node,
+	     "event",
+	     "time-signature");
+
+  xmlNewProp(midi_time_signature_node,
+	     "timesig",
+	     g_strdup_printf("%d/%d %d %d", nn, denom, cc, bb));
+  
   for(i = 0; i < 128; i++){
     midi_note[i] = NULL;
   }

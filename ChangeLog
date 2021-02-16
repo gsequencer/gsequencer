@@ -4,6 +4,8 @@ ags (3.7.38)
 	* implemented ags_notation_to_raw_midi()
 	* implemented ags_notation_from_raw_midi()
 	* fixed typo in AgsRecall:automation-port property
+	* fixed libags.pc old include of ags/config.h
+	* fixed libags_audio.pc missing gstreamer dependencies
 
 ags (3.7.37)
 
