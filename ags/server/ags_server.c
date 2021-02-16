@@ -1519,6 +1519,15 @@ ags_server_xmlrpc_callback(SoupServer *soup_server,
 				      login,
 				      security_token);
     }else{
+      soup_message_set_status(msg,
+			      403);
+
+      soup_message_set_response(msg,
+				"text/plain",
+				SOUP_MEMORY_STATIC,
+				"Forbidden",
+				9);
+
       g_message("AgsServer - session not active");
     }
   
@@ -1529,6 +1538,15 @@ ags_server_xmlrpc_callback(SoupServer *soup_server,
     ags_login_info_unref(login_info);
 
     g_free(user_uuid);
+  }else{
+    soup_message_set_status(msg,
+			    403);
+
+    soup_message_set_response(msg,
+			      "text/plain",
+			      SOUP_MEMORY_STATIC,
+			      "Forbidden",
+			      9);
   }
 }
 
