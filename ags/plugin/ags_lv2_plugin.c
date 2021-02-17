@@ -2026,14 +2026,22 @@ ags_lv2_plugin_atom_sequence_remove_midi(gpointer atom_sequence,
     current_aev->body.size = 0;  
     current_aev->body.type = 0;
 
-    memmove(current_aev,
-	    current_aev + ((current_size + 7) & (~7)),
-	    (atom_sequence + sequence_size) - (((void *) current_aev) + ((current_size + 7) & (~7))));
-    
-    memset(atom_sequence + sequence_size - ((current_size + 7) & (~7)),
-	   0,
-	   ((current_size + 7) & (~7)));
+    if(((void *) current_aev) + ((current_size + 7) & (~7)) < atom_sequence + sequence_size){
+      memmove(current_aev,
+	      current_aev + ((current_size + 7) & (~7)),
+	      (atom_sequence + sequence_size) - (((void *) current_aev) + ((current_size + 7) & (~7))));
+    }
 
+    if(atom_sequence + sequence_size - ((current_size + 7) & (~7)) >= 0){
+      memset(atom_sequence + sequence_size - ((current_size + 7) & (~7)),
+	     0,
+	     ((current_size + 7) & (~7)));
+    }else{
+      memset(atom_sequence,
+	     0,
+	     -1 * (atom_sequence + sequence_size - ((current_size + 7) & (~7))));
+    }
+    
     aseq->atom.size -= ((current_size + 7) & (~7));    
   }
   

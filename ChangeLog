@@ -1,3 +1,9 @@
+ags (3.7.39)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed use after free of GList of soundcards in ags_remove_soundcard.c task
+	* minor improvements
+
 ags (3.7.38)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

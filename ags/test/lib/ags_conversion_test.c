@@ -129,7 +129,6 @@ ags_conversion_test_finalize()
   gpointer orig_finalize;
   
   conversion = ags_conversion_new();
-  g_object_ref(conversion);
 
   CU_ASSERT(conversion != NULL);
 
