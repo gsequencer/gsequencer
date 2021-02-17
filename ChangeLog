@@ -2,6 +2,7 @@ ags (3.7.39)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed use after free of GList of soundcards in ags_remove_soundcard.c task
+	* fixed wrong reference counter in ags_recycling_position()
 	* minor improvements
 
 ags (3.7.38)

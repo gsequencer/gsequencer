@@ -1473,13 +1473,18 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
 					     length * sizeof(AgsNote *));
     }
 
+    channel = NULL;
+    pad = 0;
+    
     g_object_get(pattern,
 		 "channel", &channel,
 		 NULL);
 
-    g_object_get(channel,
-		 "pad", &pad,
-		 NULL);
+    if(channel != NULL){
+      g_object_get(channel,
+		   "pad", &pad,
+		   NULL);
+    }
     
     for(k = pattern->dim[2]; k < length; k++){
       pattern->note[k] = ags_note_new();

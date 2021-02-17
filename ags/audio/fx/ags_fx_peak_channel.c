@@ -285,6 +285,8 @@ void
 ags_fx_peak_channel_dispose(GObject *gobject)
 {
   AgsFxPeakChannel *fx_peak_channel;
+
+  AgsResetFxPeak *reset_fx_peak;
   
   fx_peak_channel = AGS_FX_PEAK_CHANNEL(gobject);
 
@@ -294,6 +296,12 @@ ags_fx_peak_channel_dispose(GObject *gobject)
 
     fx_peak_channel->peak = NULL;
   }  
+
+  /* reset ags-fx-peak task */
+  reset_fx_peak = ags_reset_fx_peak_get_instance();
+  
+  ags_reset_fx_peak_remove(reset_fx_peak,
+			   fx_peak_channel);
   
   /* call parent */
   G_OBJECT_CLASS(ags_fx_peak_channel_parent_class)->dispose(gobject);
