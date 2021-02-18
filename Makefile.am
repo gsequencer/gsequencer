@@ -114,7 +114,9 @@ EXTRA_DIST = config.rpath \
 	ags_example.xml \
 	midi2xml.1 \
 	ags_check_system_unit_programs \
+	ags_check_system_valgrind_unit_programs \
 	ags_check_system_functional_programs \
+	ags_check_system_valgrind_functional_programs \
 	ags_authentication_test.xml \
 	ags_business_group_test.xml \
 	ags_certificate_test.xml \

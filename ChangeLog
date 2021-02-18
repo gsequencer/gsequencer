@@ -8,6 +8,12 @@ ags (3.8.0)
 	* FIXME:JK: make indicator orientable
 	* improved pitch sampler to use ags-fx-lfo
 
+ags (3.7.40)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_audio_open_audio_file_as_channel()
+	* fixed missing files in tarball to run valgrind make targets
+
 ags (3.7.39)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
