@@ -332,12 +332,8 @@ ags_midi_buffer_util_put_header(guchar *buffer,
   memcpy(buffer, header, 4 * sizeof(guchar));
 
   /* chunk length */
-  if(offset != 6){
-    g_warning("invalid chunk length");
-  }
-  
   ags_midi_buffer_util_put_int32(buffer + 4,
-				 6);
+				 offset);
 
   /* format */
   ags_midi_buffer_util_put_int16(buffer + 8,

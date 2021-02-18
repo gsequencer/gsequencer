@@ -464,7 +464,7 @@ ags_channel_test_init_recall()
   ags_channel_init_recall(channel,
 			  recall_id, AGS_SOUND_STAGING_RUN_INIT_PRE);
 
-  CU_ASSERT(test_init_recall_callback_hits_count == 2);
+  CU_ASSERT(test_init_recall_callback_hits_count == 1);
 }
 
 void

@@ -2865,6 +2865,9 @@ ags-integration-valgrind-functional-test:
 ags-parallel-integration-functional-test: 
 	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-parallel-check-system-functional-test
 
+ags-integration-valgrind-functional-test: 
+	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-check-system-valgrind-functional-test
+
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool
 

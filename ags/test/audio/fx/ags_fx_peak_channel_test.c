@@ -54,7 +54,9 @@ ags_fx_peak_channel_stub_finalize(GObject *gobject)
  */
 int
 ags_fx_peak_channel_test_init_suite()
-{ 
+{
+  ags_audio_application_context_new();
+  
   return(0);
 }
 
@@ -148,6 +150,7 @@ ags_fx_peak_channel_test_finalize()
   stub = gobject_class->finalize;
   gobject_class->finalize = ags_fx_peak_channel_stub_finalize;
   
+  g_object_run_dispose(fx_peak_channel);
   g_object_unref(fx_peak_channel);
 
   CU_ASSERT(finalized == TRUE);
@@ -160,6 +163,7 @@ ags_fx_peak_channel_test_finalize()
   
   fx_peak_channel = ags_fx_peak_channel_new(channel);
 
+  g_object_run_dispose(fx_peak_channel);
   g_object_unref(fx_peak_channel);
 }
 
