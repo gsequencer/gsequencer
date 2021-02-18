@@ -14691,6 +14691,7 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 				     gboolean overwrite_channels,
 				     gboolean create_channels)
 {
+  AgsChannel *start_input;
   AgsChannel *channel;
   AgsAudioFile *audio_file;
 
@@ -14706,7 +14707,6 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
   GError *error;
 
   GRecMutex *audio_mutex;
-  GRecMutex *channel_mutex;
   GRecMutex *recycling_mutex;
 
   if(!AGS_IS_AUDIO(audio) ||
@@ -14720,10 +14720,15 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get audio fields */
-  g_rec_mutex_lock(audio_mutex);
+  soundcard = NULL;
+  start_input = NULL;
+  
+  g_object_get(audio,
+	       "output-soundcard", &soundcard,
+	       "input", &start_input,
+	       NULL);
 
-  channel = audio->input;
-  soundcard = audio->output_soundcard;
+  g_rec_mutex_lock(audio_mutex);
   
   input_pads = audio->input_pads;
   audio_channels = audio->audio_channels;
@@ -14732,6 +14737,10 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
   
   /* overwriting existing channels */
   if(overwrite_channels){
+    channel = start_input;
+
+    g_object_ref(channel);
+    
     if(channel != NULL){
       for(i = 0; i < input_pads && filename != NULL; i++){
 	audio_file = ags_audio_file_new((gchar *) filename->data,
@@ -14750,6 +14759,7 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	audio_signal = audio_file->audio_signal;
 	
 	for(j = 0; j < audio_channels && audio_signal != NULL; j++){
+	  AgsChannel *next;
 	  AgsRecycling *recycling;
 
 	  AgsFileLink *file_link;
@@ -14767,17 +14777,15 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	    g_error_free(error);
 	  }
 
-	  /* get channel mutex */
-	  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
-
 	  /* get recycling */
-	  g_rec_mutex_lock(channel_mutex);
+	  recycling = NULL;
 
-	  recycling = channel->first_recycling;
-
-	  file_link = AGS_INPUT(channel)->file_link;
-	  
-	  g_rec_mutex_unlock(channel_mutex);
+	  file_link = NULL;
+	
+	  g_object_get(channel,
+		       "first-recycling", &recycling,
+		       "file-link", &file_link,
+		       NULL);
 
 	  /* set filename and channel */
 	  if(file_link == NULL){
@@ -14787,14 +14795,14 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	    g_object_set(channel,
 			 "file-link", file_link,
 			 NULL);
-
-	    g_object_unref(file_link);
 	  }
 	  
 	  g_object_set(file_link,
 		       "filename", filename->data,
 		       "audio-channel", j,
 		       NULL);
+	  	
+	  g_object_unref(file_link);
 	  
 	  /* get recycling mutex */
 	  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
@@ -14811,17 +14819,26 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	  /* iterate */
 	  audio_signal = audio_signal->next;
 
-	  g_rec_mutex_lock(channel_mutex);
+	  next = ags_channel_next(channel);
+	
+	  if(channel != NULL){
+	    g_object_unref(channel);
+	  }
 
-	  channel = channel->next;
-
-	  g_rec_mutex_unlock(channel_mutex);
+	  channel = next;
 	}
 
 	if(audio_file->file_audio_channels < audio_channels){
-	  channel = ags_channel_nth(channel,
-				    audio_channels - audio_file->file_audio_channels);
-	  g_object_unref(channel);
+	  AgsChannel *nth_channel;
+	  
+	  nth_channel = ags_channel_nth(channel,
+					audio_channels - audio_file->file_audio_channels);
+
+	  if(channel != NULL){
+	    g_object_unref(channel);
+	  }
+	  
+	  channel = nth_channel;
 	}
 
 	g_object_run_dispose(audio_file);
@@ -14832,16 +14849,23 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
     }
   }
 
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+  
   /* appending to channels */
   if(create_channels && filename != NULL){
     list_length = g_slist_length(filename);
     
     ags_audio_set_pads((AgsAudio *) audio, AGS_TYPE_INPUT,
 		       list_length + AGS_AUDIO(audio)->input_pads, 0);
+
+    g_object_get(audio,
+		 "input", &start_input,
+		 NULL);
     
-    channel = ags_channel_nth(AGS_AUDIO(audio)->input,
-			      (AGS_AUDIO(audio)->input_pads - list_length) * AGS_AUDIO(audio)->audio_channels);
-    g_object_unref(channel);
+    channel = ags_channel_nth(start_input,
+			      (input_pads - list_length) * AGS_AUDIO(audio)->audio_channels);
     
     while(filename != NULL){
       audio_file = ags_audio_file_new((gchar *) filename->data,
@@ -14859,21 +14883,20 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
       audio_signal = audio_file->audio_signal;
       
       for(j = 0; j < audio_channels && audio_signal != NULL; j++){
+	AgsChannel *next;
 	AgsRecycling *recycling;
 	
 	AgsFileLink *file_link;
-	
-	/* get channel mutex */
-	channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
 
 	/* get recycling */
-	g_rec_mutex_lock(channel_mutex);
+	recycling = NULL;
 
-	recycling = channel->first_recycling;
-
-	file_link = AGS_INPUT(channel)->file_link;
+	file_link = NULL;
 	
-	g_rec_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "first-recycling", &recycling,
+		     "file-link", &file_link,
+		     NULL);
 
 	/* set filename and channel */
 	if(file_link == NULL){
@@ -14883,14 +14906,14 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	  g_object_set(channel,
 		       "file-link", file_link,
 		       NULL);
-
-	  g_object_unref(file_link);
 	}
 	
 	g_object_set(file_link,
 		     "filename", filename->data,
 		     "audio-channel", j,
 		     NULL);
+	
+	g_object_unref(file_link);
 
 	/* get recycling mutex */
 	recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
@@ -14909,11 +14932,13 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	/* iterate */
 	audio_signal = audio_signal->next;
 
-	g_rec_mutex_lock(channel_mutex);
+	next = ags_channel_next(channel);
+	
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
 
-	channel = channel->next;
-
-	g_rec_mutex_unlock(channel_mutex);
+	channel = next;
       }
       
       if(audio_channels > audio_file->file_audio_channels){
@@ -14926,6 +14951,10 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
       g_object_unref(audio_file);
       
       filename = filename->next;
+    }
+
+    if(start_input != NULL){
+      g_object_unref(start_input);
     }
   }
 }
