@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2699,7 +2699,7 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
     /* iterate */
     next = ags_recycling_next(current);
 
-    g_object_unref(next);
+    g_object_unref(current);
 
     current = next;
   }

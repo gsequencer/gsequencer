@@ -16,6 +16,32 @@
 AgsAudio* setup_master(AgsApplicationContext *application_context);
 AgsAudio* setup_slave(AgsApplicationContext *application_context);
 
+#define DEFAULT_CONFIG "[generic]\n"			\
+  "autosave-thread=false\n"				\
+  "simple-file=true\n"					\
+  "disable-feature=experimental\n"			\
+  "segmentation=4/4\n"					\
+  "\n"							\
+  "[thread]\n"						\
+  "model=super-threaded\n"				\
+  "super-threaded-scope=channel\n"			\
+  "lock-global=ags-thread\n"				\
+  "lock-parent=ags-recycling-thread\n"			\
+  "\n"							\
+  "[soundcard]\n"					\
+  "backend=alsa\n"					\
+  "device=default\n"					\
+  "samplerate=48000\n"					\
+  "buffer-size=1024\n"					\
+  "pcm-channels=2\n"					\
+  "dsp-channels=2\n"					\
+  "format=16\n"						\
+  "\n"							\
+  "[recall]\n"						\
+  "auto-sense=true\n"					\
+  "\n"
+
+
 AgsAudio*
 setup_master(AgsApplicationContext *application_context)
 {
@@ -379,27 +405,20 @@ main(int argc, char **argv)
 
   GError *error;
 
+  config = ags_config_get_instance();
+  ags_config_load_from_data(config,
+			    DEFAULT_CONFIG,
+			    strlen(DEFAULT_CONFIG));
+
   /* create application context */
   application_context = ags_audio_application_context_new();
   g_object_ref(audio_application_context);
-
+  
   ags_application_context_prepare(audio_application_context);
   ags_application_context_setup(audio_application_context);
 
   task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
   
-  /* set config */
-  config = application_context->config;
-
-  ags_config_set_value(config,
-                       AGS_CONFIG_THREAD,
-                       "model",
-                       "super-threaded");
-  ags_config_set_value(config,
-                       AGS_CONFIG_THREAD,
-                       "super-threaded-scope",
-                       "channel");
-
   /* main loop */
   main_loop = application_context->main_loop;
 

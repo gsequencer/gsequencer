@@ -528,9 +528,9 @@ ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel)
     fx_eq10_channel->input_data[i]->parent = fx_eq10_channel;
 
     fx_eq10_channel->input_data[i]->output = (gdouble *) ags_stream_alloc(buffer_size,
- AGS_SOUNDCARD_DOUBLE);
+									  AGS_SOUNDCARD_DOUBLE);
     fx_eq10_channel->input_data[i]->input = (gdouble *) ags_stream_alloc(buffer_size,
-AGS_SOUNDCARD_DOUBLE);
+									 AGS_SOUNDCARD_DOUBLE);
   }
 }
 

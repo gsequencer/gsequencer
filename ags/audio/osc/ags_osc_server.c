@@ -862,8 +862,6 @@ ags_osc_server_remove_connection(AgsOscServer *osc_server,
     
     osc_server->connection = g_list_remove(osc_server->connection,
 					   osc_connection);
-
-    g_object_unref(osc_connection);
   }
   
   g_rec_mutex_unlock(osc_server_mutex);
@@ -872,6 +870,8 @@ ags_osc_server_remove_connection(AgsOscServer *osc_server,
     g_object_set(osc_connection,
 		 "osc-server", NULL,
 		 NULL);
+
+    g_object_unref(osc_connection);
   }
 }
 

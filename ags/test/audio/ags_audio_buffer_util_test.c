@@ -2400,7 +2400,7 @@ ags_audio_buffer_util_test_copy_s24_to_s8()
 				    AGS_SOUNDCARD_SIGNED_8_BIT);
   
   for(i = 0; i < AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_S8_BUFFER_SIZE; i++){
-    s24_buffer[i] = G_MAXINT8 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
+    s24_buffer[i] = AGS_AUDIO_BUFFER_UTIL_TEST_MAX_S24 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
   }
 
   orig_xcross_count = ags_synth_util_get_xcross_count_s24(s24_buffer,
@@ -2432,7 +2432,7 @@ ags_audio_buffer_util_test_copy_s24_to_s16()
 				     AGS_SOUNDCARD_SIGNED_16_BIT);
   
   for(i = 0; i < AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_S16_BUFFER_SIZE; i++){
-    s24_buffer[i] = G_MAXINT16 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
+    s24_buffer[i] = AGS_AUDIO_BUFFER_UTIL_TEST_MAX_S24 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
   }
 
   orig_xcross_count = ags_synth_util_get_xcross_count_s24(s24_buffer,
@@ -2495,7 +2495,7 @@ ags_audio_buffer_util_test_copy_s24_to_s32()
 				     AGS_SOUNDCARD_SIGNED_32_BIT);
   
   for(i = 0; i < AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_S32_BUFFER_SIZE; i++){
-    s24_buffer[i] = G_MAXINT32 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
+    s24_buffer[i] = AGS_AUDIO_BUFFER_UTIL_TEST_MAX_S24 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
   }
 
   orig_xcross_count = ags_synth_util_get_xcross_count_s24(s24_buffer,
@@ -2527,7 +2527,7 @@ ags_audio_buffer_util_test_copy_s24_to_s64()
 				     AGS_SOUNDCARD_SIGNED_64_BIT);
   
   for(i = 0; i < AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_S64_BUFFER_SIZE; i++){
-    s24_buffer[i] = G_MAXINT64 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
+    s24_buffer[i] = AGS_AUDIO_BUFFER_UTIL_TEST_MAX_S24 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
   }
 
   orig_xcross_count = ags_synth_util_get_xcross_count_s24(s24_buffer,
@@ -2559,7 +2559,7 @@ ags_audio_buffer_util_test_copy_s24_to_float()
 				       AGS_SOUNDCARD_FLOAT);
   
   for(i = 0; i < AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_FLOAT_BUFFER_SIZE; i++){
-    s24_buffer[i] = G_MAXINT8 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
+    s24_buffer[i] = AGS_AUDIO_BUFFER_UTIL_TEST_MAX_S24 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
   }
 
   orig_xcross_count = ags_synth_util_get_xcross_count_s24(s24_buffer,
@@ -2591,7 +2591,7 @@ ags_audio_buffer_util_test_copy_s24_to_double()
 					AGS_SOUNDCARD_DOUBLE);
   
   for(i = 0; i < AGS_AUDIO_BUFFER_UTIL_TEST_COPY_S24_TO_DOUBLE_BUFFER_SIZE; i++){
-    s24_buffer[i] = G_MAXINT8 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
+    s24_buffer[i] = AGS_AUDIO_BUFFER_UTIL_TEST_MAX_S24 * sin(i * 2.0 * M_PI * AGS_AUDIO_BUFFER_UTIL_TEST_FREQUENCY / AGS_AUDIO_BUFFER_UTIL_TEST_SAMPLERATE);
   }
 
   orig_xcross_count = ags_synth_util_get_xcross_count_s24(s24_buffer,

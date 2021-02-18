@@ -229,6 +229,7 @@ ags_recall_container_test_find()
 			   NULL);
   g_object_set(recall_container,
 	       "recall-audio-run", recall[0],
+	       "recall-audio-run-type", AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 	       NULL);
 
   /* ags-play */
@@ -241,6 +242,7 @@ ags_recall_container_test_find()
 			   NULL);
   g_object_set(recall_container,
 	       "recall-channel-run", recall[1],
+	       "recall-channel-run-type", AGS_TYPE_PLAY_CHANNEL_RUN,
 	       NULL);
 
   /* ags-copy-pattern */
@@ -250,15 +252,17 @@ ags_recall_container_test_find()
 			recall_container);
   
   recall[2] = g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
-			NULL);
+			   NULL);
   g_object_set(recall_container,
 	       "recall-audio-run", recall[2],
+	       "recall-audio-run-type", AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
 	       NULL);
 
   recall[3] = g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,
-			NULL);
+			   NULL);
   g_object_set(recall_container,
 	       "recall-channel-run", recall[3],
+	       "recall-channel-run-type", AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,
 	       NULL);
 
   /* ags-buffer */
@@ -268,9 +272,10 @@ ags_recall_container_test_find()
 			recall_container);
 
   recall[4] = g_object_new(AGS_TYPE_BUFFER_CHANNEL,
-			NULL);
+			   NULL);
   g_object_set(recall_container,
 	       "recall-channel", recall[4],
+	       "recall-channel-type", AGS_TYPE_BUFFER_CHANNEL,
 	       NULL);
 
   /* ags-delay */
@@ -280,9 +285,10 @@ ags_recall_container_test_find()
 			recall_container);
 
   recall[5] = g_object_new(AGS_TYPE_DELAY_AUDIO,
-			NULL);
+			   NULL);
   g_object_set(recall_container,
 	       "recall-audio", recall[5],
+	       "recall-audio-type", AGS_TYPE_DELAY_AUDIO,
 	       NULL);
 
   /* find and assert ags-count-beats */

@@ -51,6 +51,7 @@ void ags_server_application_context_get_property(GObject *gobject,
 						 GParamSpec *param_spec);
 void ags_server_application_context_connect(AgsConnectable *connectable);
 void ags_server_application_context_disconnect(AgsConnectable *connectable);
+void ags_server_application_context_dispose(GObject *gobject);
 void ags_server_application_context_finalize(GObject *gobject);
 
 AgsThread* ags_server_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
@@ -163,6 +164,7 @@ ags_server_application_context_class_init(AgsServerApplicationContextClass *serv
   gobject->set_property = ags_server_application_context_set_property;
   gobject->get_property = ags_server_application_context_get_property;
 
+  gobject->dispose = ags_server_application_context_dispose;
   gobject->finalize = ags_server_application_context_finalize;
 
   /* AgsServerApplicationContextClass */
@@ -313,11 +315,74 @@ ags_server_application_context_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_server_application_context_dispose(GObject *gobject)
+{
+  AgsServerApplicationContext *server_application_context;
+
+  server_application_context = AGS_SERVER_APPLICATION_CONTEXT(gobject);
+    
+  /* thread pool */
+  if(server_application_context->thread_pool != NULL){
+    g_object_unref(server_application_context->thread_pool);
+    
+    server_application_context->thread_pool = NULL;
+  }
+
+  /* worker thread */
+  if(server_application_context->worker != NULL){    
+    g_list_free_full(server_application_context->worker,
+		     g_object_unref);
+
+    server_application_context->worker = NULL;
+  }
+
+  /* server status */
+  if(server_application_context->server_status != NULL){
+    g_object_unref(server_application_context->server_status);
+    
+    server_application_context->server_status = NULL;
+  }
+
+  /* server thread */
+  if(server_application_context->server != NULL){    
+    g_list_free_full(server_application_context->server,
+		     g_object_unref);
+
+    server_application_context->server = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_server_application_context_parent_class)->dispose(gobject);
+}
+
+void
 ags_server_application_context_finalize(GObject *gobject)
 {
   AgsServerApplicationContext *server_application_context;
 
   server_application_context = AGS_SERVER_APPLICATION_CONTEXT(gobject);
+
+  /* thread pool */
+  if(server_application_context->thread_pool != NULL){
+    g_object_unref(server_application_context->thread_pool);
+  }
+
+  /* worker thread */
+  if(server_application_context->worker != NULL){    
+    g_list_free_full(server_application_context->worker,
+		     g_object_unref);
+  }
+
+  /* server status */
+  if(server_application_context->server_status != NULL){
+    g_object_unref(server_application_context->server_status);
+  }
+
+  /* server thread */
+  if(server_application_context->server != NULL){    
+    g_list_free_full(server_application_context->server,
+		     g_object_unref);
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_server_application_context_parent_class)->finalize(gobject);

@@ -606,6 +606,10 @@ ags_recall_recycling_connect_connection(AgsConnectable *connectable,
 
   recall_recycling = AGS_RECALL_RECYCLING(connectable);
 
+  if(connection == NULL){
+    return;
+  }
+  
   if((GObject *) recall_recycling->destination == connection){
     //empty
   }else if((GObject *) recall_recycling->source == connection){
@@ -632,6 +636,10 @@ ags_recall_recycling_disconnect_connection(AgsConnectable *connectable,
   AgsRecallRecycling *recall_recycling;
 
   recall_recycling = AGS_RECALL_RECYCLING(connectable);
+
+  if(connection == NULL){
+    return;
+  }
 
   if((GObject *) recall_recycling->destination == connection){
     //empty

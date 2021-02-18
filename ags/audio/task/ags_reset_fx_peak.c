@@ -276,7 +276,9 @@ ags_reset_fx_peak_get_instance()
 				      (AgsTask *) ags_reset_fx_peak);
     
     /* unref */
-    g_object_unref(task_launcher);
+    if(task_launcher != NULL){
+      g_object_unref(task_launcher);
+    }
   }else{
     g_mutex_unlock(&mutex);
   }
