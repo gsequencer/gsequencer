@@ -1366,13 +1366,17 @@ ags_recall_container_find(GList *recall_container,
 	break;
       }
 
+      current_recall_id = NULL;
+      
       g_object_get(recall,
 		   "recall-id", &current_recall_id,
 		   NULL);
 
       match_recall_id = (current_recall_id != NULL && current_recall_id == recall_id) ? TRUE: FALSE;
 
-      g_object_unref(current_recall_id);
+      if(current_recall_id != NULL){
+	g_object_unref(current_recall_id);
+      }
       
       if((AGS_RECALL_CONTAINER_FIND_RECALL_ID & find_flags) != 0 && match_recall_id){
 	break;

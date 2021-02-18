@@ -222,7 +222,7 @@ ags_playback_test_find_channel()
 			    NULL);
   
   playback[0] = g_object_new(AGS_TYPE_PLAYBACK,
-			     "source", channel[0],
+			     "channel", channel[0],
 			     NULL);
   list = g_list_prepend(list,
 			playback[0]);
@@ -232,7 +232,7 @@ ags_playback_test_find_channel()
 			    NULL);
   
   playback[1] = g_object_new(AGS_TYPE_PLAYBACK,
-			     "source", channel[1],
+			     "channel", channel[1],
 			     NULL);
   list = g_list_prepend(list,
 			playback[1]);
@@ -242,7 +242,7 @@ ags_playback_test_find_channel()
 			    NULL);
   
   playback[2] = g_object_new(AGS_TYPE_PLAYBACK,
-			     "source", channel[2],
+			     "channel", channel[2],
 			     NULL);
   list = g_list_prepend(list,
 			playback[2]);

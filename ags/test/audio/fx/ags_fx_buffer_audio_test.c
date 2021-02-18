@@ -41,6 +41,8 @@ void ags_fx_buffer_audio_test_new();
 int
 ags_fx_buffer_audio_test_init_suite()
 { 
+  ags_audio_application_context_new();
+
   return(0);
 }
 

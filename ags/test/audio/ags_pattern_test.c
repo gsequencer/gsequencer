@@ -93,23 +93,26 @@ ags_pattern_test_find_near_timestamp()
     /* nth pattern */
     pattern[i] = ags_pattern_new();
     timestamp = ags_timestamp_new();
+    
     g_object_set(pattern[i],
-		 "timestamp\0", timestamp,
+		 "timestamp", timestamp,
 		 NULL);
 
-    timestamp->timer.unix_time.time_val = AGS_TIMESTAMP(pattern[0]->timestamp)->timer.unix_time.time_val + ((i + 1) * AGS_PATTERN_DEFAULT_DURATION);
+    timestamp->timer.unix_time.time_val = AGS_TIMESTAMP(pattern[0]->timestamp)->timer.unix_time.time_val + (i * AGS_PATTERN_DEFAULT_DURATION);
 
     list = g_list_prepend(list,
 			  pattern[i]);
   }
 
+  list = g_list_reverse(list);
+  
   /* instantiate timestamp to check against */
   timestamp = ags_timestamp_new();
   timestamp->timer.unix_time.time_val = AGS_TIMESTAMP(pattern[0]->timestamp)->timer.unix_time.time_val;
   
   /* assert find */
   for(i = 0; i + 1 < AGS_PATTERN_TEST_FIND_NEAR_TIMESTAMP_N_PATTERN; i++){
-    timestamp->timer.unix_time.time_val = AGS_TIMESTAMP(pattern[0]->timestamp)->timer.unix_time.time_val + ((i + 1) * AGS_PATTERN_DEFAULT_DURATION + 1);
+    timestamp->timer.unix_time.time_val = AGS_TIMESTAMP(pattern[0]->timestamp)->timer.unix_time.time_val + ((i + 1) * AGS_PATTERN_DEFAULT_DURATION);
     current = ags_pattern_find_near_timestamp(list,
 					      timestamp);
 

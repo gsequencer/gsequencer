@@ -374,6 +374,8 @@ ags_fx_analyse_channel_dispose(GObject *gobject)
 {
   AgsFxAnalyseChannel *fx_analyse_channel;
   
+  AgsResetFxAnalyse *reset_fx_analyse;
+
   fx_analyse_channel = AGS_FX_ANALYSE_CHANNEL(gobject);
 
   /* frequency */
@@ -390,6 +392,12 @@ ags_fx_analyse_channel_dispose(GObject *gobject)
 
     fx_analyse_channel->magnitude = NULL;
   }  
+
+  /* reset ags-fx-analyse task */
+  reset_fx_analyse = ags_reset_fx_analyse_get_instance();
+  
+  ags_reset_fx_analyse_remove(reset_fx_analyse,
+			      fx_analyse_channel);
   
   /* call parent */
   G_OBJECT_CLASS(ags_fx_analyse_channel_parent_class)->dispose(gobject);

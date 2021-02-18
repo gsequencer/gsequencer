@@ -57,6 +57,8 @@ ags_connectable_test_init_suite()
 {
   guint i;
 
+  ags_audio_application_context_new();
+  
   i = 0;
   
   connectable_test_types[i++] = AGS_TYPE_APPLICATION_CONTEXT;

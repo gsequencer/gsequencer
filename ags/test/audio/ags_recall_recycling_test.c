@@ -441,7 +441,7 @@ ags_recall_recycling_test_source_remove_audio_signal()
 			 recall_channel,
 			 FALSE);
   ags_connectable_connect(AGS_CONNECTABLE(recall_channel));
-    
+  
   recall_channel_run = ags_recall_channel_run_new();
   ags_recall_set_flags(recall_channel_run,
 		       AGS_RECALL_TEMPLATE);

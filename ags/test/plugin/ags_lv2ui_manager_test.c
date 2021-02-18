@@ -148,14 +148,14 @@ ags_lv2ui_manager_test_find_lv2ui_plugin()
 
   lv2ui_plugin = g_object_new(AGS_TYPE_LV2UI_PLUGIN,
 			      "ui-filename", AGS_LV2UI_MANAGER_TEST_FIND_LV2UI_PLUGIN_INVADA,
-			      "effect", AGS_LV2UI_MANAGER_TEST_FIND_LV2UI_PLUGIN_INVADA_EFFECT,
+			      "ui-effect", AGS_LV2UI_MANAGER_TEST_FIND_LV2UI_PLUGIN_INVADA_EFFECT,
 			      NULL);
   list = g_list_prepend(list,
 			lv2ui_plugin);
   
   lv2ui_plugin = g_object_new(AGS_TYPE_LV2UI_PLUGIN,
 			      "ui-filename", AGS_LV2UI_MANAGER_TEST_FIND_LV2UI_PLUGIN_X42,
-			      "effect", AGS_LV2UI_MANAGER_TEST_FIND_LV2UI_PLUGIN_X42_EFFECT,
+			      "ui-effect", AGS_LV2UI_MANAGER_TEST_FIND_LV2UI_PLUGIN_X42_EFFECT,
 			      NULL);
   list = g_list_prepend(list,
 			lv2ui_plugin);
@@ -169,7 +169,7 @@ ags_lv2ui_manager_test_find_lv2ui_plugin()
 								AGS_LV2UI_MANAGER_TEST_FIND_LV2UI_PLUGIN_INVADA_EFFECT)) != NULL &&
 	    !g_strcmp0(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename,
 		       AGS_LV2UI_MANAGER_TEST_FIND_LV2UI_PLUGIN_INVADA) &&
-	    !g_strcmp0(AGS_BASE_PLUGIN(lv2ui_plugin)->effect,
+	    !g_strcmp0(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_effect,
 		       AGS_LV2UI_MANAGER_TEST_FIND_LV2UI_PLUGIN_INVADA_EFFECT));
 
   CU_ASSERT((lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin(lv2ui_manager,
@@ -177,7 +177,7 @@ ags_lv2ui_manager_test_find_lv2ui_plugin()
 								AGS_LV2UI_MANAGER_TEST_FIND_LV2UI_PLUGIN_X42_EFFECT)) != NULL &&
 	    !g_strcmp0(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename,
 		       AGS_LV2UI_MANAGER_TEST_FIND_LV2UI_PLUGIN_X42) &&
-	    !g_strcmp0(AGS_BASE_PLUGIN(lv2ui_plugin)->effect,
+	    !g_strcmp0(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_effect,
 		       AGS_LV2UI_MANAGER_TEST_FIND_LV2UI_PLUGIN_X42_EFFECT));
 
   g_object_unref(lv2ui_manager);
