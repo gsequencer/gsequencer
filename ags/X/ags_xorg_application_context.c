@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1646,9 +1646,8 @@ ags_xorg_application_context_set_soundcard(AgsSoundProvider *sound_provider,
     return;
   }
   
-  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard != NULL){
-    g_list_free(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard);
-  }
+  g_list_free_full(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard,
+		   (GDestroyNotify) g_object_unref);
 
   AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard = soundcard;
 
@@ -1703,9 +1702,8 @@ ags_xorg_application_context_set_sequencer(AgsSoundProvider *sound_provider,
     return;
   }
 
-  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->sequencer != NULL){
-    g_list_free(AGS_XORG_APPLICATION_CONTEXT(application_context)->sequencer);
-  }
+  g_list_free_full(AGS_XORG_APPLICATION_CONTEXT(application_context)->sequencer,
+		   (GDestroyNotify) g_object_unref);
   
   AGS_XORG_APPLICATION_CONTEXT(application_context)->sequencer = sequencer;
 
@@ -1816,9 +1814,8 @@ ags_xorg_application_context_set_audio(AgsSoundProvider *sound_provider,
     return;
   }
 
-  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->audio != NULL){
-    g_list_free(AGS_XORG_APPLICATION_CONTEXT(application_context)->audio);
-  }
+  g_list_free_full(AGS_XORG_APPLICATION_CONTEXT(application_context)->audio,
+		   (GDestroyNotify) g_object_unref);
 
   AGS_XORG_APPLICATION_CONTEXT(application_context)->audio = audio;
 
@@ -1873,9 +1870,8 @@ ags_xorg_application_context_set_osc_server(AgsSoundProvider *sound_provider,
     return;
   }
 
-  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->osc_server != NULL){
-    g_list_free(AGS_XORG_APPLICATION_CONTEXT(application_context)->osc_server);
-  }
+  g_list_free_full(AGS_XORG_APPLICATION_CONTEXT(application_context)->osc_server,
+		   (GDestroyNotify) g_object_unref);
 
   AGS_XORG_APPLICATION_CONTEXT(application_context)->osc_server = osc_server;
 

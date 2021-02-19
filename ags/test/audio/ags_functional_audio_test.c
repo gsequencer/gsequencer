@@ -742,6 +742,8 @@ ags_functional_audio_test_playback()
 	}else{
 	  notation = ags_notation_new(audio[i],
 				      j);
+	  notation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+	  
 	  audio[i]->notation = ags_notation_add(audio[i]->notation,
 						notation);
 	}

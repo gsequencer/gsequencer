@@ -251,9 +251,6 @@ ags_add_soundcard_launch(AgsTask *task)
 				     g_list_append(list_start,
 						   add_soundcard->soundcard));
   }
-
-  g_list_free_full(list_start,
-		   g_object_unref);
 }
 
 /**

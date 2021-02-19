@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-02-18 16:28+0100\n"
+"POT-Creation-Date: 2021-02-19 17:33+0100\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -777,28 +777,28 @@ msgstr "DSSI"
 msgid "Lv2"
 msgstr "Lv2"
 
-#: ags/X/ags_xorg_application_context.c:3413
-#: ags/audio/ags_audio_application_context.c:2141
+#: ags/X/ags_xorg_application_context.c:3409
+#: ags/audio/ags_audio_application_context.c:2137
 #: ags/audio/task/ags_apply_sound_config.c:902
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "unbekannte Soundkarten Schnittstelle - %s"
 
-#: ags/X/ags_xorg_application_context.c:3423
-#: ags/audio/ags_audio_application_context.c:2151
+#: ags/X/ags_xorg_application_context.c:3419
+#: ags/audio/ags_audio_application_context.c:2147
 #: ags/audio/task/ags_apply_sound_config.c:912
 msgid "unknown soundcard backend - NULL"
 msgstr "unbekannte Soundkarten Schnittstelle - NULL"
 
-#: ags/X/ags_xorg_application_context.c:3665
-#: ags/audio/ags_audio_application_context.c:2393
+#: ags/X/ags_xorg_application_context.c:3661
+#: ags/audio/ags_audio_application_context.c:2389
 #: ags/audio/task/ags_apply_sound_config.c:1152
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "unbekannte Sequenzer Schnittstelle - %s"
 
-#: ags/X/ags_xorg_application_context.c:3675
-#: ags/audio/ags_audio_application_context.c:2403
+#: ags/X/ags_xorg_application_context.c:3671
+#: ags/audio/ags_audio_application_context.c:2399
 #: ags/audio/task/ags_apply_sound_config.c:1162
 msgid "unknown sequencer backend - NULL"
 msgstr "unbekannte Sequenzer Schnittstelle - NULL"

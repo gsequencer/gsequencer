@@ -568,41 +568,41 @@ monitor-timeout=0.033333
         <ags-sf-notation-list>
           <ags-sf-notation channel="1">
             <ags-sf-timestamp offset="0"/>
-            <ags-sf-note x0="0" x1="1" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="4" x1="5" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="8" x1="9" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="12" x1="13" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="16" x1="17" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="20" x1="21" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="24" x1="25" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="28" x1="29" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="32" x1="33" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="36" x1="37" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="40" x1="41" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="44" x1="45" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="48" x1="49" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="52" x1="53" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="56" x1="57" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="60" x1="61" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="0" x1="1" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="4" x1="5" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="8" x1="9" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="12" x1="13" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="16" x1="17" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="20" x1="21" y="5" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="24" x1="25" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="28" x1="29" y="5" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="32" x1="33" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="36" x1="37" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="40" x1="41" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="44" x1="45" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="48" x1="49" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="52" x1="53" y="5" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="56" x1="57" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="60" x1="61" y="5" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
           </ags-sf-notation>
           <ags-sf-notation channel="0">
             <ags-sf-timestamp offset="0"/>
-            <ags-sf-note x0="0" x1="1" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="4" x1="5" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="8" x1="9" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="12" x1="13" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="16" x1="17" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="20" x1="21" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="24" x1="25" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="28" x1="29" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="32" x1="33" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="36" x1="37" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="40" x1="41" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="44" x1="45" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="48" x1="49" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="52" x1="53" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="56" x1="57" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="60" x1="61" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="0" x1="1" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="4" x1="5" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="8" x1="9" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="12" x1="13" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="16" x1="17" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="20" x1="21" y="5" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="24" x1="25" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="28" x1="29" y="5" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="32" x1="33" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="36" x1="37" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="40" x1="41" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="44" x1="45" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="48" x1="49" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="52" x1="53" y="5" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="56" x1="57" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="60" x1="61" y="5" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
           </ags-sf-notation>
         </ags-sf-notation-list>
       </ags-sf-machine>
@@ -626,38 +626,38 @@ monitor-timeout=0.033333
         <ags-sf-notation-list>
           <ags-sf-notation channel="0">
             <ags-sf-timestamp offset="0"/>
-            <ags-sf-note x0="0" x1="1" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="2" x1="3" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="4" x1="5" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="6" x1="7" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="8" x1="9" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="10" x1="11" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="12" x1="13" y="13" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="14" x1="15" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="16" x1="17" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="18" x1="19" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="20" x1="21" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="22" x1="23" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="24" x1="25" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="26" x1="27" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="28" x1="29" y="13" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="30" x1="31" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="32" x1="33" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="34" x1="35" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="36" x1="37" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="38" x1="39" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="40" x1="41" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="42" x1="43" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="44" x1="45" y="13" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="46" x1="47" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="48" x1="49" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="50" x1="51" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="52" x1="53" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="54" x1="55" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="56" x1="57" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="58" x1="59" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="60" x1="61" y="13" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="62" x1="63" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="0" x1="1" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="2" x1="3" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="4" x1="5" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="6" x1="7" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="8" x1="9" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="10" x1="11" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="12" x1="13" y="13" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="14" x1="15" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="16" x1="17" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="18" x1="19" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="20" x1="21" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="22" x1="23" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="24" x1="25" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="26" x1="27" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="28" x1="29" y="13" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="30" x1="31" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="32" x1="33" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="34" x1="35" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="36" x1="37" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="38" x1="39" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="40" x1="41" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="42" x1="43" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="44" x1="45" y="13" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="46" x1="47" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="48" x1="49" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="50" x1="51" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="52" x1="53" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="54" x1="55" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="56" x1="57" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="58" x1="59" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="60" x1="61" y="13" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="62" x1="63" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
           </ags-sf-notation>
           <ags-sf-notation channel="0">
             <ags-sf-timestamp offset="1024"/>
@@ -685,38 +685,38 @@ monitor-timeout=0.033333
         <ags-sf-notation-list>
           <ags-sf-notation channel="0">
             <ags-sf-timestamp offset="0"/>
-            <ags-sf-note x0="0" x1="2" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="2" x1="4" y="6" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="4" x1="6" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="6" x1="8" y="7" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="8" x1="10" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="10" x1="12" y="6" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="12" x1="14" y="12" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="14" x1="16" y="9" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="16" x1="18" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="18" x1="20" y="12" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="20" x1="22" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="22" x1="24" y="10" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="24" x1="26" y="12" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="26" x1="28" y="10" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="28" x1="30" y="12" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="30" x1="32" y="8" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="32" x1="34" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="34" x1="36" y="6" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="36" x1="38" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="38" x1="40" y="6" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="40" x1="42" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="42" x1="44" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="44" x1="46" y="14" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="46" x1="48" y="8" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="48" x1="50" y="7" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="50" x1="52" y="8" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="52" x1="54" y="7" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="54" x1="56" y="8" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="56" x1="58" y="6" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="58" x1="60" y="8" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="60" x1="62" y="5" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
-            <ags-sf-note x0="62" x1="64" y="7" attack="0.000000 -nan" decay="0.000000 -nan" sustain="0.000000 -nan" release="0.000000 -nan" ratio="0.000000 -nan"/>
+            <ags-sf-note x0="0" x1="2" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="2" x1="4" y="6" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="4" x1="6" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="6" x1="8" y="7" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="8" x1="10" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="10" x1="12" y="6" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="12" x1="14" y="12" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="14" x1="16" y="9" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="16" x1="18" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="18" x1="20" y="12" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="20" x1="22" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="22" x1="24" y="10" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="24" x1="26" y="12" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="26" x1="28" y="10" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="28" x1="30" y="12" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="30" x1="32" y="8" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="32" x1="34" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="34" x1="36" y="6" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="36" x1="38" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="38" x1="40" y="6" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="40" x1="42" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="42" x1="44" y="5" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="44" x1="46" y="14" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="46" x1="48" y="8" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="48" x1="50" y="7" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="50" x1="52" y="8" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="52" x1="54" y="7" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="54" x1="56" y="8" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="56" x1="58" y="6" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="58" x1="60" y="8" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="60" x1="62" y="5" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="62" x1="64" y="7" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
           </ags-sf-notation>
         </ags-sf-notation-list>
       </ags-sf-machine>
@@ -736,22 +736,22 @@ monitor-timeout=0.033333
         <ags-sf-notation-list>
           <ags-sf-notation channel="0">
             <ags-sf-timestamp offset="0"/>
-            <ags-sf-note x0="0" x1="2" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="4" x1="6" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="8" x1="10" y="2" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="12" x1="14" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="16" x1="18" y="3" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="20" x1="22" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="24" x1="26" y="6" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="28" x1="30" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="32" x1="34" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="36" x1="38" y="6" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="40" x1="42" y="5" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="44" x1="46" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="48" x1="50" y="4" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="52" x1="54" y="2" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="56" x1="58" y="2" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
-            <ags-sf-note x0="60" x1="62" y="1" attack="0.000000 nan" decay="0.000000 nan" sustain="0.000000 nan" release="0.000000 nan" ratio="0.000000 nan"/>
+            <ags-sf-note x0="0" x1="2" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="4" x1="6" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="8" x1="10" y="2" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="12" x1="14" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="16" x1="18" y="3" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="20" x1="22" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="24" x1="26" y="6" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="28" x1="30" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="32" x1="34" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="36" x1="38" y="6" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="40" x1="42" y="5" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="44" x1="46" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="48" x1="50" y="4" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="52" x1="54" y="2" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="56" x1="58" y="2" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
+            <ags-sf-note x0="60" x1="62" y="1" attack="0.250000 1.000000" decay="0.250000 1.000000" sustain="0.250000 1.000000" release="0.250000 1.000000" ratio="0.250000 1.000000"/>
           </ags-sf-notation>
         </ags-sf-notation-list>
       </ags-sf-machine>
