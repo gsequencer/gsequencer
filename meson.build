@@ -8,7 +8,7 @@
 project('gsequencer', 'c',
         license: 'GPL3',
         default_options: [ 'buildtype=release', 'c_std=gnu99'],
-        version: '3.7.40')
+        version: '3.7.41')
 
 #note:jk: specify --buildtype=debug if needed
 gsequencer_debug = get_option('buildtype').contains('debug')

@@ -250,10 +250,6 @@ ags_remove_audio_launch(AgsTask *task)
 
   if(g_list_find(start_list,
 		 remove_audio->audio) != NULL){
-    g_list_foreach(start_list,
-		   (GFunc) g_object_unref,
-		   NULL);
-
     /* remove to sound provider */
     start_list = g_list_remove(start_list,
 			       remove_audio->audio);
