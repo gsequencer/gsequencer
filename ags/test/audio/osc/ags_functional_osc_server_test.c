@@ -301,10 +301,12 @@ ags_functional_osc_server_test_init_suite()
 	       "blocking", FALSE,
 	       NULL);
 
+#if 0
   g_object_set(osc_client->ip6_socket,
 	       "blocking", FALSE,
 	       NULL);
-
+#endif
+  
   sleep(5);
   
   return(0);

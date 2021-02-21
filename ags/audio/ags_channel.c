@@ -12929,7 +12929,7 @@ ags_channel_recursive_setup_run_stage_up(AgsChannel *channel,
 		 "audio", &current_audio,
 		 NULL);
       
-    goto ags_channel_recursive_prepare_run_stage_up_OUTPUT;
+    goto ags_channel_recursive_setup_run_stage_up_OUTPUT;
   }
 
   while(current_channel != NULL){      
@@ -13031,7 +13031,7 @@ ags_channel_recursive_setup_run_stage_up(AgsChannel *channel,
       current_channel = nth_channel;
     }
       
-  ags_channel_recursive_prepare_run_stage_up_OUTPUT:
+  ags_channel_recursive_setup_run_stage_up_OUTPUT:
 
     /* check scope - output */
     recall_id =

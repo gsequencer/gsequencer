@@ -1116,10 +1116,11 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 
     retval = 0;
 
+    error = NULL;
+
     g_rec_mutex_lock(osc_client_mutex);
     
     if(osc_client->cache_data_length < AGS_OSC_CLIENT_DEFAULT_CACHE_DATA_LENGTH){
-      error = NULL;
       retval = g_socket_receive(socket,
 				data + osc_client->cache_data_length,
 				AGS_OSC_CLIENT_DEFAULT_CACHE_DATA_LENGTH - osc_client->cache_data_length,
@@ -1140,19 +1141,21 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 	g_critical("AgsOscClient - %s", error->message);
       }
 
-      g_error_free(error);
-
       if(g_error_matches(error, G_IO_ERROR, G_IO_ERROR_WOULD_BLOCK)){
 	if(available_data_length == 0){
+	  g_error_free(error);
+	  
 	  continue;
 	}
       }else{
 	if(g_error_matches(error, G_IO_ERROR, G_IO_ERROR_CONNECTION_CLOSED)){
+	  GError *close_error;
+	  
 	  g_rec_mutex_lock(osc_client_mutex);
 
-	  error = NULL;
+	  close_error = NULL;
 	  g_socket_close(socket,
-			 &error);
+			 &close_error);
 	  g_object_unref(socket);
 
 	  if(ip4_fd == fd){
@@ -1166,10 +1169,18 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 	  }
 	
 	  g_rec_mutex_unlock(osc_client_mutex);
+
+	  if(close_error != NULL){
+	    g_error_free(close_error);
+	  }
+	  
+	  g_error_free(error);	  
       
 	  break;
 	}
       }
+
+      g_error_free(error);
     }
 
     if(available_data_length == 0){

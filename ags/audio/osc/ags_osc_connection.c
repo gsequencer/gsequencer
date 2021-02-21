@@ -731,11 +731,12 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
     }
 
     retval = 0;
+
+    error = NULL;
     
     g_rec_mutex_lock(osc_connection_mutex);
     
     if(osc_connection->cache_data_length < AGS_OSC_CONNECTION_DEFAULT_CACHE_DATA_LENGTH){
-      error = NULL;
       retval = g_socket_receive(osc_connection->socket,
 				data + osc_connection->cache_data_length,
 				AGS_OSC_CONNECTION_DEFAULT_CACHE_DATA_LENGTH - osc_connection->cache_data_length,
@@ -771,19 +772,25 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 	}
       }else{
 	if(g_error_matches(error, G_IO_ERROR, G_IO_ERROR_CONNECTION_CLOSED)){
-	  g_error_free(error);
-
+	  GError *close_error;
+	  
 	  g_rec_mutex_lock(osc_connection_mutex);
 
-	  error = NULL;
+	  close_error = NULL;
 	  g_socket_close(osc_connection->socket,
-			 &error);
+			 &close_error);
 	  g_object_unref(osc_connection->socket);
 
 	  osc_connection->socket = NULL;
 	  osc_connection->fd = -1;
 	
 	  g_rec_mutex_unlock(osc_connection_mutex);
+
+	  if(close_error != NULL){
+	    g_error_free(close_error);
+	  }
+
+	  g_error_free(error);
       
 	  break;
 	}

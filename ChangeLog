@@ -1,3 +1,20 @@
+ags (3.7.42)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed unitialized buffer of AgsFxPeakChannel recall
+
+ags (3.7.41)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* updated test artifacts
+	* fixed use after free of GList of soundcards in ags_add_soundcard.c task
+	* fixed ref-count in AgsAudioApplicationContext and AgsXorgApplicationContext of setters of GList
+	* fixed ref-count in AgsOscFrontController
+	* fixed ags_osc_connection_read_bytes() might be uninitialized error
+	* fixed ags_osc_connection_read_bytes() error might leak
+	* fixed ags_osc_client_read_bytes() might be uninitialized error
+	* fixed ags_osc_client_read_bytes() use after free
+
 ags (3.7.40)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

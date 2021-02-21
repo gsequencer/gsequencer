@@ -233,7 +233,7 @@ ags_remove_soundcard_launch(AgsTask *task)
 
   AgsApplicationContext *application_context;
   
-  GList *list_start;
+  GList *start_list;
   
   remove_soundcard = AGS_REMOVE_SOUNDCARD(task);
 
@@ -243,14 +243,17 @@ ags_remove_soundcard_launch(AgsTask *task)
   g_return_if_fail(AGS_IS_SOUNDCARD(remove_soundcard->soundcard));
   
   /* remove soundcard */
-  list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   
-  if(g_list_find(list_start, remove_soundcard->soundcard) != NULL){
+  if(g_list_find(start_list, remove_soundcard->soundcard) != NULL){
     ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
-				     g_list_remove(list_start,
+				     g_list_remove(start_list,
 						   remove_soundcard->soundcard));
 
     g_object_unref(remove_soundcard->soundcard);
+  }else{
+    g_list_free_full(start_list,
+		     (GDestroyNotify) g_object_unref);
   }
 }
 

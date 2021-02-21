@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -998,7 +998,7 @@ ags_audio_application_context_set_worker(AgsConcurrencyProvider *concurrency_pro
   }
 
   g_list_free_full(audio_application_context->worker,
-		   g_object_unref);
+		   (GDestroyNotify) g_object_unref);
   
   audio_application_context->worker = worker;
 
@@ -1169,7 +1169,7 @@ ags_audio_application_context_set_server(AgsServiceProvider *service_provider,
   }
 
   g_list_free_full(audio_application_context->server,
-		   g_object_unref);
+		   (GDestroyNotify) g_object_unref);
   
   audio_application_context->server = server;
 
@@ -1409,9 +1409,8 @@ ags_audio_application_context_set_soundcard(AgsSoundProvider *sound_provider,
     return;
   }
   
-  if(AGS_AUDIO_APPLICATION_CONTEXT(application_context)->soundcard != NULL){
-    g_list_free(AGS_AUDIO_APPLICATION_CONTEXT(application_context)->soundcard);
-  }
+  g_list_free_full(AGS_AUDIO_APPLICATION_CONTEXT(application_context)->soundcard,
+		   (GDestroyNotify) g_object_unref);
 
   AGS_AUDIO_APPLICATION_CONTEXT(application_context)->soundcard = soundcard;
 
@@ -1466,9 +1465,8 @@ ags_audio_application_context_set_sequencer(AgsSoundProvider *sound_provider,
     return;
   }
 
-  if(AGS_AUDIO_APPLICATION_CONTEXT(application_context)->sequencer != NULL){
-    g_list_free(AGS_AUDIO_APPLICATION_CONTEXT(application_context)->sequencer);
-  }
+  g_list_free_full(AGS_AUDIO_APPLICATION_CONTEXT(application_context)->sequencer,
+		   (GDestroyNotify) g_object_unref);
   
   AGS_AUDIO_APPLICATION_CONTEXT(application_context)->sequencer = sequencer;
 
@@ -1524,7 +1522,7 @@ ags_audio_application_context_set_sound_server(AgsSoundProvider *concurrency_pro
   }
 
   g_list_free_full(audio_application_context->sound_server,
-		   g_object_unref);
+		   (GDestroyNotify) g_object_unref);
   
   audio_application_context->sound_server = sound_server;
 
@@ -1579,9 +1577,8 @@ ags_audio_application_context_set_audio(AgsSoundProvider *sound_provider,
     return;
   }
 
-  if(AGS_AUDIO_APPLICATION_CONTEXT(application_context)->audio != NULL){
-    g_list_free(AGS_AUDIO_APPLICATION_CONTEXT(application_context)->audio);
-  }
+  g_list_free_full(AGS_AUDIO_APPLICATION_CONTEXT(application_context)->audio,
+		   (GDestroyNotify) g_object_unref);
 
   AGS_AUDIO_APPLICATION_CONTEXT(application_context)->audio = audio;
 
@@ -1636,9 +1633,8 @@ ags_audio_application_context_set_osc_server(AgsSoundProvider *sound_provider,
     return;
   }
 
-  if(AGS_AUDIO_APPLICATION_CONTEXT(application_context)->osc_server != NULL){
-    g_list_free(AGS_AUDIO_APPLICATION_CONTEXT(application_context)->osc_server);
-  }
+  g_list_free_full(AGS_AUDIO_APPLICATION_CONTEXT(application_context)->osc_server,
+		   (GDestroyNotify) g_object_unref);
 
   AGS_AUDIO_APPLICATION_CONTEXT(application_context)->osc_server = osc_server;
 
