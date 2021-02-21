@@ -387,6 +387,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
       if(AGS_OSC_MESSAGE(list->data)->immediately){
 	start_message = g_list_prepend(start_message,
 				       list->data);
+	g_object_ref(list->data);
 	
 	ags_osc_front_controller_remove_message(osc_front_controller,
 						list->data);
@@ -396,6 +397,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 	if(current_time < time_now){
 	  start_message = g_list_prepend(start_message,
 					 list->data);
+	  g_object_ref(list->data);
 	  
 	  ags_osc_front_controller_remove_message(osc_front_controller,
 						  list->data);

@@ -14858,9 +14858,10 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
     list_length = g_slist_length(filename);
     
     ags_audio_set_pads((AgsAudio *) audio, AGS_TYPE_INPUT,
-		       list_length + AGS_AUDIO(audio)->input_pads, 0);
+		       input_pads + list_length, 0);
 
     g_object_get(audio,
+		 "input-pads", &input_pads,
 		 "input", &start_input,
 		 NULL);
     
