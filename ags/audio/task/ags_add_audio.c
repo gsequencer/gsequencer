@@ -266,10 +266,6 @@ ags_add_audio_launch(AgsTask *task)
 
   if(g_list_find(start_list,
 		 add_audio->audio) == NULL){
-    g_list_foreach(start_list,
-		   (GFunc) g_object_unref,
-		   NULL);
-
     g_object_ref(add_audio->audio);
     start_list = g_list_append(start_list,
 			       add_audio->audio);

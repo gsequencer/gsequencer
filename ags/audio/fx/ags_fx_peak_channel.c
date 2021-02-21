@@ -21,6 +21,8 @@
 
 #include <ags/plugin/ags_plugin_port.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
+
 #include <ags/audio/task/ags_reset_fx_peak.h>
 
 #include <ags/i18n.h>
@@ -192,6 +194,8 @@ ags_fx_peak_channel_init(AgsFxPeakChannel *fx_peak_channel)
     fx_peak_channel->input_data[i]->parent = fx_peak_channel;
 
     fx_peak_channel->input_data[i]->buffer = (gdouble *) g_malloc(buffer_size * sizeof(gdouble));
+    ags_audio_buffer_util_clear_double(fx_peak_channel->input_data[i]->buffer, 1,
+				       buffer_size);
   }
 
   /* add to reset peak task */

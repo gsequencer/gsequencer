@@ -232,7 +232,7 @@ ags_add_soundcard_launch(AgsTask *task)
 
   AgsApplicationContext *application_context;
   
-  GList *list_start;
+  GList *start_list;
   
   add_soundcard = AGS_ADD_SOUNDCARD(task);
 
@@ -242,18 +242,18 @@ ags_add_soundcard_launch(AgsTask *task)
   g_return_if_fail(AGS_IS_SOUNDCARD(add_soundcard->soundcard));
 
   /* add soundcard */
-  list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   
-  if(g_list_find(list_start, add_soundcard->soundcard) == NULL){
+  if(g_list_find(start_list, add_soundcard->soundcard) == NULL){
     g_object_ref(add_soundcard->soundcard);
     
     ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
-				     g_list_append(list_start,
+				     g_list_append(start_list,
 						   add_soundcard->soundcard));
+  }else{
+    g_list_free_full(start_list,
+		     (GDestroyNotify) g_object_unref);
   }
-
-  g_list_free_full(list_start,
-		   g_object_unref);
 }
 
 /**
