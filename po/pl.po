@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-02-21 12:03+0100\n"
+"POT-Creation-Date: 2021-02-22 07:49+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -782,7 +782,7 @@ msgstr "Lv2"
 #: ags/audio/task/ags_apply_sound_config.c:902
 #, c-format
 msgid "unknown soundcard backend - %s"
-msgstr "nieznany backend karty dźwiękowej - %"
+msgstr "nieznany backend karty dźwiękowej - %s"
 
 #: ags/X/ags_xorg_application_context.c:3419
 #: ags/audio/ags_audio_application_context.c:2147
