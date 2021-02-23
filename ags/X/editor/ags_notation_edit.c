@@ -1889,16 +1889,16 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit, cairo_t *cr)
 	       "notation", &start_list_notation,
 	       NULL);
 
+  timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_NOTATION_DEFAULT_OFFSET);
+
   i = 0;
   
   while((i = ags_notebook_next_active_tab(notation_editor->notebook,
 					  i)) != -1){
-    list_notation = start_list_notation;
+    list_notation = ags_notation_find_near_timestamp(start_list_notation, i,
+						     timestamp);
     
-    timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_NOTATION_DEFAULT_OFFSET);
-    
-    while((list_notation = ags_notation_find_near_timestamp(list_notation, i,
-							    timestamp)) != NULL){
+    while(list_notation != NULL){
       AgsNotation *notation;
 
       GList *start_list_note, *list_note;
@@ -1945,11 +1945,8 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit, cairo_t *cr)
 
       g_list_free_full(start_list_note,
 		       g_object_unref);
-
-      /* iterate */
+      
       list_notation = list_notation->next;
-
-      timestamp->timer.ags_offset.offset += (guint64) AGS_NOTATION_DEFAULT_OFFSET;
     }
     
     i++;
