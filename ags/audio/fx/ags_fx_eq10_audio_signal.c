@@ -495,7 +495,7 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
     }
 
     /* equalizer */
-    for(i = 0; i + 8 < buffer_size; i += 8){
+    for(i = 0; i + AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE < buffer_size; i += AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE){
       gdouble resonator;
       gdouble frequency;
     
@@ -798,7 +798,7 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
     }
 
     if(buffer_size >= 4){
-      for(; i < buffer_size; i++){
+      for(; i + 1 < buffer_size; i++){
 	gdouble resonator;
 	gdouble frequency;
       

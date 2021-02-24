@@ -1,3 +1,10 @@
+ags (3.7.44)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_lv2_plugin_atom_sequence_remove_midi()
+	* fixed ags_fx_eq10_audio_signal_real_run_inter()
+	* fixed ags_eq10_audio_signal_real_run_inter()
+
 ags (3.7.43)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
