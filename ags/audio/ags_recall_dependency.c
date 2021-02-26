@@ -269,6 +269,8 @@ ags_recall_dependency_find_dependency(GList *recall_dependency, GObject *depende
     GObject *current_dependency;
 
     gboolean success;
+
+    current_dependency = NULL;
     
     g_object_get(recall_dependency->data,
 		 "dependency", &current_dependency,
@@ -276,7 +278,9 @@ ags_recall_dependency_find_dependency(GList *recall_dependency, GObject *depende
 
     success = (current_dependency == dependency) ? TRUE: FALSE;
 
-    g_object_unref(current_dependency);
+    if(current_dependency != NULL){
+      g_object_unref(current_dependency);
+    }
     
     if(success){
       return(recall_dependency);
@@ -316,13 +320,17 @@ ags_recall_dependency_find_dependency_by_provider(GList *recall_dependency,
        AGS_IS_RECALL_CHANNEL_RUN(current_dependency)){
       AgsChannel *channel;
 
+      channel = NULL;
+      
       g_object_get(current_dependency,
 		   "source", &channel,
 		   NULL);
 
       success = (channel == AGS_CHANNEL(provider)) ? TRUE: FALSE;
 
-      g_object_unref(channel);
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
       
       if(success){
 	g_object_unref(current_dependency);
@@ -335,13 +343,17 @@ ags_recall_dependency_find_dependency_by_provider(GList *recall_dependency,
        AGS_IS_RECALL_AUDIO_RUN(current_dependency)){
       AgsAudio *audio;
 
+      audio = NULL;
+      
       g_object_get(current_dependency,
 		   "audio", &audio,
 		   NULL);
 
       success = (audio == AGS_AUDIO(provider)) ? TRUE: FALSE;
 
-      g_object_unref(audio);
+      if(audio != NULL){
+	g_object_unref(audio);
+      }
       
       if(success){
 	g_object_unref(current_dependency);
@@ -376,6 +388,8 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
   AgsRecall *dependency;
 
   GObject *retval;
+
+  dependency = NULL;
   
   g_object_get(recall_dependency,
 	       "dependency", &dependency,
@@ -385,6 +399,8 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
     return(NULL);
   }
 
+  recall_container = NULL;
+  
   g_object_get(dependency,
 	       "recall-container", &recall_container,
 	       NULL);
@@ -400,13 +416,17 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
   if(AGS_IS_RECALL_AUDIO(dependency)){
     GObject *recall_audio;
 
+    recall_audio = NULL;
+    
     g_object_get(recall_container,
 		 "recall-audio", &recall_audio,
 		 NULL);
 
     retval = recall_audio;
-    
-    g_object_unref(recall_audio);    
+
+    if(recall_audio != NULL){
+      g_object_unref(recall_audio);
+    }
   }else if(AGS_IS_RECALL_AUDIO_RUN(dependency)){
     AgsRecyclingContext *recycling_context;
 
@@ -420,9 +440,13 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
       goto ags_recall_dependency_resolve_END;
     }
 
+    recycling_context = NULL;
+    
     g_object_get(recall_id,
 		 "recycling-context", &recycling_context,
 		 NULL);
+
+    list_start = NULL;
     
     g_object_get(recall_container,
 		 "recall-audio-run", &list_start,
@@ -436,7 +460,9 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
       retval = recall_audio_run;
     }
 
-    g_object_unref(recycling_context);
+    if(recycling_context != NULL){
+      g_object_unref(recycling_context);
+    }
     
     g_list_free_full(list_start,
 		     g_object_unref);
@@ -447,10 +473,14 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
     
     GList *list_start, *list;
 
+    list_start = NULL;
+
     g_object_get(recall_container,
 		 "recall-channel", &list_start,
 		 NULL);
 
+    source = NULL;
+    
     g_object_get(dependency,
 		 "source", &source,
 		 NULL);
@@ -464,7 +494,9 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
       retval = recall_channel;
     }
 
-    g_object_unref(source);
+    if(source != NULL){
+      g_object_unref(source);
+    }
     
     g_list_free_full(list_start,
 		     g_object_unref);
@@ -481,13 +513,18 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
       goto ags_recall_dependency_resolve_END;
     }
 
+    recycling_context = NULL;
+    
     g_object_get(recall_id,
 		 "recycling-context", &recycling_context,
 		 NULL);
     
+    list_start = NULL;
+
     g_object_get(recall_container,
 		 "recall-channel-run", &list_start,
 		 NULL);
+
     list = ags_recall_find_recycling_context(list_start,
 					     (GObject *) recycling_context);
 
@@ -497,8 +534,10 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
       retval = recall_channel_run;
     }
 
-    g_object_unref(recycling_context);
-
+    if(recycling_context != NULL){
+      g_object_unref(recycling_context);
+    }
+    
     g_list_free_full(list_start,
 		     g_object_unref);
   }

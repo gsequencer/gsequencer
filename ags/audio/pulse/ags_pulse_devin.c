@@ -1340,8 +1340,9 @@ ags_pulse_devin_set_device(AgsSoundcard *soundcard,
   g_rec_mutex_lock(pulse_devin_mutex);
 
   if(pulse_devin->card_uri == device ||
-     !g_ascii_strcasecmp(pulse_devin->card_uri,
-			 device)){
+     (pulse_devin->card_uri != NULL &&
+      !g_ascii_strcasecmp(pulse_devin->card_uri,
+			  device))){
     g_rec_mutex_unlock(pulse_devin_mutex);
   
     return;

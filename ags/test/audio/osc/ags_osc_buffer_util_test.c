@@ -1044,7 +1044,8 @@ ags_osc_buffer_util_test_put_message()
   static const unsigned char *message = "/meter\x00\x00,sT\x00";
 
   buffer = (unsigned char *) malloc(256 * sizeof(unsigned char));
-
+  memset(buffer, 0, 256 * sizeof(unsigned char));
+  
   success = TRUE;
 
   ags_osc_buffer_util_put_message(buffer,
