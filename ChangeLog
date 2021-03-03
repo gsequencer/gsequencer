@@ -1,3 +1,8 @@
+ags (3.7.45)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved safer ags_midi_buffer_util.c
+
 ags (3.7.44)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

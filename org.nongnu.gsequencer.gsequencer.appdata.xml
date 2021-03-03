@@ -40,6 +40,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.7.45" date="2021-03-03">
+      <description>
+	<p>minor improvements.</p>
+      </description>
+    </release>
+
     <release version="3.7.44" date="2021-02-27">
       <description>
 	<p>fixed potential SIGSEGV with AgsPluginBrowser no plugin selected.</p>
