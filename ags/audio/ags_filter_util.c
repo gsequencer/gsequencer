@@ -66,6 +66,10 @@ ags_filter_util_pitch_s8(gint8 *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -368,6 +372,10 @@ ags_filter_util_pitch_s16(gint16 *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -670,6 +678,10 @@ ags_filter_util_pitch_s24(gint32 *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -972,6 +984,10 @@ ags_filter_util_pitch_s32(gint32 *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -1274,6 +1290,10 @@ ags_filter_util_pitch_s64(gint64 *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -1576,6 +1596,10 @@ ags_filter_util_pitch_float(gfloat *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -1878,6 +1902,10 @@ ags_filter_util_pitch_double(gdouble *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -2180,6 +2208,10 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;

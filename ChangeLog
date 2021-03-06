@@ -1,3 +1,20 @@
+ags (3.7.46)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed unified floating point types
+	* improved safer ags_buffer_util.c
+	* improved safer ags_char_buffer_util.c
+	* improved safer ags_audio_buffer_util.c
+	* improved safer ags_fast_pitch_util.c
+	* improved safer ags_filter_util.c
+	* improved safer ags_fm_synth_util.c
+	* improved safer ags_lfo_synth_util.c
+	* improved safer ags_soundcard_util.c
+	* improved safer ags_sf2_synth_util.c
+	* improved safer ags_sfz_synth_util.c
+	* improved safer ags_synth_util.c
+	* improved safer ags_osc_buffer_util.c
+
 ags (3.7.45)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

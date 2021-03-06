@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,6 +53,10 @@ ags_synth_util_get_xcross_count_s8(gint8 *buffer,
   guint count;
   guint i;
   gboolean negative;
+
+  if(buffer == NULL){
+    return(0);
+  }
   
   count = 0;
 
@@ -97,6 +101,10 @@ ags_synth_util_get_xcross_count_s16(gint16 *buffer,
   guint count;
   guint i;
   gboolean negative;
+
+  if(buffer == NULL){
+    return(0);
+  }
   
   count = 0;
 
@@ -141,6 +149,10 @@ ags_synth_util_get_xcross_count_s24(gint32 *buffer,
   guint count;
   guint i;
   gboolean negative;
+
+  if(buffer == NULL){
+    return(0);
+  }
   
   count = 0;
 
@@ -185,6 +197,10 @@ ags_synth_util_get_xcross_count_s32(gint32 *buffer,
   guint count;
   guint i;
   gboolean negative;
+
+  if(buffer == NULL){
+    return(0);
+  }
   
   count = 0;
 
@@ -229,6 +245,10 @@ ags_synth_util_get_xcross_count_s64(gint64 *buffer,
   guint count;
   guint i;
   gboolean negative;
+
+  if(buffer == NULL){
+    return(0);
+  }
   
   count = 0;
 
@@ -267,12 +287,16 @@ ags_synth_util_get_xcross_count_s64(gint64 *buffer,
  * Since: 3.0.0
  */
 guint
-ags_synth_util_get_xcross_count_float(float *buffer,
+ags_synth_util_get_xcross_count_float(gfloat *buffer,
 				      guint buffer_size)
 {
   guint count;
   guint i;
   gboolean negative;
+
+  if(buffer == NULL){
+    return(0);
+  }
   
   count = 0;
 
@@ -311,13 +335,17 @@ ags_synth_util_get_xcross_count_float(float *buffer,
  * Since: 3.0.0
  */
 guint
-ags_synth_util_get_xcross_count_double(double *buffer,
+ags_synth_util_get_xcross_count_double(gdouble *buffer,
 				       guint buffer_size)
 {
   guint count;
 
   guint i;
   gboolean negative;
+
+  if(buffer == NULL){
+    return(0);
+  }
   
   count = 0;
 
@@ -368,6 +396,10 @@ ags_synth_util_get_xcross_count_complex(AgsComplex *buffer,
   
   guint i;
   gboolean negative;
+
+  if(buffer == NULL){
+    return(0);
+  }
   
   count = 0;
 
@@ -424,6 +456,10 @@ ags_synth_util_get_xcross_count(void *buffer,
 {
   guint count;
 
+  if(buffer == NULL){
+    return(0);
+  }
+
   count = 0;
 
   switch(audio_buffer_util_format){
@@ -459,13 +495,13 @@ ags_synth_util_get_xcross_count(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
   {
-    count = ags_synth_util_get_xcross_count_float((float *) buffer,
+    count = ags_synth_util_get_xcross_count_float((gfloat *) buffer,
 						  buffer_size);
   }
   break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
   {
-    count = ags_synth_util_get_xcross_count_double((double *) buffer,
+    count = ags_synth_util_get_xcross_count_double((gdouble *) buffer,
 						   buffer_size);
   }
   break;
@@ -507,6 +543,10 @@ ags_synth_util_sin_s8(gint8 *buffer,
   static const gdouble scale = 127.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (gint8) (0xff & ((gint16) buffer[i] + (gint16) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
   }
@@ -534,6 +574,10 @@ ags_synth_util_sin_s16(gint16 *buffer,
 {
   static const gdouble scale = 32767.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (gint16) (0xffff & ((gint32) buffer[i] + (gint32) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
@@ -563,6 +607,10 @@ ags_synth_util_sin_s24(gint32 *buffer,
   static const gdouble scale = 8388607.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (gint32) (0xffffffff & ((gint32) buffer[i] + (gint32) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
   }
@@ -590,6 +638,10 @@ ags_synth_util_sin_s32(gint32 *buffer,
 {
   static const gdouble scale = 214748363.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (gint32) (0xffffffff & ((gint64) buffer[i] + (gint64) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
@@ -619,6 +671,10 @@ ags_synth_util_sin_s64(gint64 *buffer,
   static const gdouble scale = 9223372036854775807.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (gint64) (0xffffffffffff & ((gint64) buffer[i] + (gint64) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
   }
@@ -639,12 +695,16 @@ ags_synth_util_sin_s64(gint64 *buffer,
  * Since: 3.0.0
  */
 void
-ags_synth_util_sin_float(float *buffer,
+ags_synth_util_sin_float(gfloat *buffer,
 			 gdouble freq, gdouble phase, gdouble volume,
 			 guint samplerate,
 			 guint offset, guint n_frames)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (float) ((gdouble) buffer[i] + (gdouble) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * volume));
@@ -666,12 +726,16 @@ ags_synth_util_sin_float(float *buffer,
  * Since: 3.0.0
  */
 void
-ags_synth_util_sin_double(double *buffer,
+ags_synth_util_sin_double(gdouble *buffer,
 			  gdouble freq, gdouble phase, gdouble volume,
 			  guint samplerate,
 			  guint offset, guint n_frames)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (double) ((gdouble) buffer[i] + (gdouble) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * volume));
@@ -705,6 +769,10 @@ ags_synth_util_sin_complex(AgsComplex *buffer,
 
   guint i_stop;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   c_ptr = buffer;
   c_ptr_ptr = &c_ptr;
@@ -741,6 +809,10 @@ ags_synth_util_sawtooth_s8(gint8 *buffer,
   static const gdouble scale = 127.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
@@ -771,6 +843,10 @@ ags_synth_util_sawtooth_s16(gint16 *buffer,
 {
   static const gdouble scale = 32767.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -803,6 +879,10 @@ ags_synth_util_sawtooth_s24(gint32 *buffer,
   static const gdouble scale = 8388607.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
@@ -833,6 +913,10 @@ ags_synth_util_sawtooth_s32(gint32 *buffer,
 {
   static const gdouble scale = 214748363.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -865,6 +949,10 @@ ags_synth_util_sawtooth_s64(gint64 *buffer,
   static const gdouble scale = 9223372036854775807.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
@@ -888,12 +976,16 @@ ags_synth_util_sawtooth_s64(gint64 *buffer,
  * Since: 3.0.0
  */
 void
-ags_synth_util_sawtooth_float(float *buffer,
+ags_synth_util_sawtooth_float(gfloat *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
 			      guint samplerate,
 			      guint offset, guint n_frames)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -918,12 +1010,16 @@ ags_synth_util_sawtooth_float(float *buffer,
  * Since: 3.0.0
  */
 void
-ags_synth_util_sawtooth_double(double *buffer,
+ags_synth_util_sawtooth_double(gdouble *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -960,6 +1056,10 @@ ags_synth_util_sawtooth_complex(AgsComplex *buffer,
 
   guint i_stop;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -999,6 +1099,10 @@ ags_synth_util_triangle_s8(gint8 *buffer,
   static const gdouble scale = 127.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
@@ -1029,6 +1133,10 @@ ags_synth_util_triangle_s16(gint16 *buffer,
 {
   static const gdouble scale = 32767.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -1061,6 +1169,10 @@ ags_synth_util_triangle_s24(gint32 *buffer,
   static const gdouble scale = 8388607.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
@@ -1091,6 +1203,10 @@ ags_synth_util_triangle_s32(gint32 *buffer,
 {
   static const gdouble scale = 214748363.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -1123,6 +1239,10 @@ ags_synth_util_triangle_s64(gint64 *buffer,
   static const gdouble scale = 9223372036854775807.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
@@ -1146,12 +1266,16 @@ ags_synth_util_triangle_s64(gint64 *buffer,
  * Since: 3.0.0
  */
 void
-ags_synth_util_triangle_float(float *buffer,
+ags_synth_util_triangle_float(gfloat *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
 			      guint samplerate,
 			      guint offset, guint n_frames)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -1176,12 +1300,16 @@ ags_synth_util_triangle_float(float *buffer,
  * Since: 3.0.0
  */
 void
-ags_synth_util_triangle_double(double *buffer,
+ags_synth_util_triangle_double(gdouble *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -1218,6 +1346,10 @@ ags_synth_util_triangle_complex(AgsComplex *buffer,
 
   guint i_stop;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -1257,6 +1389,10 @@ ags_synth_util_square_s8(gint8 *buffer,
   static const gdouble scale = 127.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= 0.0){
       buffer[i] = (gint8) (0xff & ((gint16) buffer[i] + (gint16) (1.0 * scale * volume)));
@@ -1288,6 +1424,10 @@ ags_synth_util_square_s16(gint16 *buffer,
 {
   static const gdouble scale = 32767.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= 0.0){
@@ -1321,6 +1461,10 @@ ags_synth_util_square_s24(gint32 *buffer,
   static const gdouble scale = 8388607.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= 0.0){
       buffer[i] = (gint32) (0xffffffff & ((gint32) buffer[i] + (gint32) (1.0 * scale * volume)));
@@ -1352,6 +1496,10 @@ ags_synth_util_square_s32(gint32 *buffer,
 {
   static const gdouble scale = 214748363.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= 0.0){
@@ -1385,6 +1533,10 @@ ags_synth_util_square_s64(gint64 *buffer,
   static const gdouble scale = 9223372036854775807.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= 0.0){
       buffer[i] = (gint64) (0xffffffffffffffff & ((gint64) buffer[i] + (gint64) (1.0 * scale * volume)));
@@ -1409,12 +1561,16 @@ ags_synth_util_square_s64(gint64 *buffer,
  * Since: 3.0.0
  */
 void
-ags_synth_util_square_float(float *buffer,
+ags_synth_util_square_float(gfloat *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= 0.0){
@@ -1440,12 +1596,16 @@ ags_synth_util_square_float(float *buffer,
  * Since: 3.0.0
  */
 void
-ags_synth_util_square_double(double *buffer,
+ags_synth_util_square_double(gdouble *buffer,
 			     gdouble freq, gdouble phase, gdouble volume,
 			     guint samplerate,
 			     guint offset, guint n_frames)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= 0.0){
@@ -1483,6 +1643,10 @@ ags_synth_util_square_complex(AgsComplex *buffer,
 
   guint i_stop;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   c_ptr = buffer;
   c_ptr_ptr = &c_ptr;
@@ -1523,6 +1687,10 @@ ags_synth_util_impulse_s8(gint8 *buffer,
   static const gdouble scale = 127.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
       buffer[i] = (gint8) (0xff & ((gint16) buffer[i] + (gint16) (1.0 * scale * volume)));
@@ -1554,6 +1722,10 @@ ags_synth_util_impulse_s16(gint16 *buffer,
 {
   static const gdouble scale = 32767.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
@@ -1587,6 +1759,10 @@ ags_synth_util_impulse_s24(gint32 *buffer,
   static const gdouble scale = 8388607.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
       buffer[i] = (gint32) (0xffffffff & ((gint32) buffer[i] + (gint32) (1.0 * scale * volume)));
@@ -1618,6 +1794,10 @@ ags_synth_util_impulse_s32(gint32 *buffer,
 {
   static const gdouble scale = 214748363.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
@@ -1651,6 +1831,10 @@ ags_synth_util_impulse_s64(gint64 *buffer,
   static const gdouble scale = 9223372036854775807.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
       buffer[i] = (gint64) (0xffffffffffffffff & ((gint64) buffer[i] + (gint64) (1.0 * scale * volume)));
@@ -1675,12 +1859,16 @@ ags_synth_util_impulse_s64(gint64 *buffer,
  * Since: 3.0.0
  */
 void
-ags_synth_util_impulse_float(float *buffer,
+ags_synth_util_impulse_float(gfloat *buffer,
 			     gdouble freq, gdouble phase, gdouble volume,
 			     guint samplerate,
 			     guint offset, guint n_frames)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
@@ -1706,12 +1894,16 @@ ags_synth_util_impulse_float(float *buffer,
  * Since: 3.0.0
  */
 void
-ags_synth_util_impulse_double(double *buffer,
+ags_synth_util_impulse_double(gdouble *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
 			      guint samplerate,
 			      guint offset, guint n_frames)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
@@ -1750,6 +1942,10 @@ ags_synth_util_impulse_complex(AgsComplex *buffer,
   guint i_stop;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   c_ptr = buffer;
   c_ptr_ptr = &c_ptr;
 
@@ -1787,6 +1983,10 @@ ags_synth_util_sin(void *buffer,
 		   guint samplerate, guint audio_buffer_util_format,
 		   guint offset, guint n_frames)
 {
+  if(buffer == NULL){
+    return;
+  }
+
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
   {
@@ -1830,7 +2030,7 @@ ags_synth_util_sin(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
   {
-    ags_synth_util_sin_float((float *) buffer,
+    ags_synth_util_sin_float((gfloat *) buffer,
 			     freq, phase, volume,
 			     samplerate,
 			     offset, n_frames);
@@ -1838,7 +2038,7 @@ ags_synth_util_sin(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
   {
-    ags_synth_util_sin_double((double *) buffer,
+    ags_synth_util_sin_double((gdouble *) buffer,
 			      freq, phase, volume,
 			      samplerate,
 			      offset, n_frames);
@@ -1880,6 +2080,10 @@ ags_synth_util_sawtooth(void *buffer,
 			guint samplerate, guint audio_buffer_util_format,
 			guint offset, guint n_frames)
 {
+  if(buffer == NULL){
+    return;
+  }
+
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
   {
@@ -1923,7 +2127,7 @@ ags_synth_util_sawtooth(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
   {
-    ags_synth_util_sawtooth_float((float *) buffer,
+    ags_synth_util_sawtooth_float((gfloat *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1931,7 +2135,7 @@ ags_synth_util_sawtooth(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
   {
-    ags_synth_util_sawtooth_double((double *) buffer,
+    ags_synth_util_sawtooth_double((gdouble *) buffer,
 				   freq, phase, volume,
 				   samplerate,
 				   offset, n_frames);
@@ -1973,6 +2177,10 @@ ags_synth_util_triangle(void *buffer,
 			guint samplerate, guint audio_buffer_util_format,
 			guint offset, guint n_frames)
 {
+  if(buffer == NULL){
+    return;
+  }
+
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
   {
@@ -2016,7 +2224,7 @@ ags_synth_util_triangle(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
   {
-    ags_synth_util_triangle_float((float *) buffer,
+    ags_synth_util_triangle_float((gfloat *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -2024,7 +2232,7 @@ ags_synth_util_triangle(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
   {
-    ags_synth_util_triangle_double((double *) buffer,
+    ags_synth_util_triangle_double((gdouble *) buffer,
 				   freq, phase, volume,
 				   samplerate,
 				   offset, n_frames);
@@ -2066,6 +2274,10 @@ ags_synth_util_square(void *buffer,
 		      guint samplerate, guint audio_buffer_util_format,
 		      guint offset, guint n_frames)
 {
+  if(buffer == NULL){
+    return;
+  }
+
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
   {
@@ -2109,7 +2321,7 @@ ags_synth_util_square(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
   {
-    ags_synth_util_square_float((float *) buffer,
+    ags_synth_util_square_float((gfloat *) buffer,
 				freq, phase, volume,
 				samplerate,
 				offset, n_frames);
@@ -2117,7 +2329,7 @@ ags_synth_util_square(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
   {
-    ags_synth_util_square_double((double *) buffer,
+    ags_synth_util_square_double((gdouble *) buffer,
 				 freq, phase, volume,
 				 samplerate,
 				 offset, n_frames);
@@ -2159,6 +2371,10 @@ ags_synth_util_impulse(void *buffer,
 		       guint samplerate, guint audio_buffer_util_format,
 		       guint offset, guint n_frames)
 {
+  if(buffer == NULL){
+    return;
+  }
+
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
   {
@@ -2202,7 +2418,7 @@ ags_synth_util_impulse(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
   {
-    ags_synth_util_impulse_float((float *) buffer,
+    ags_synth_util_impulse_float((gfloat *) buffer,
 				 freq, phase, volume,
 				 samplerate,
 				 offset, n_frames);
@@ -2210,7 +2426,7 @@ ags_synth_util_impulse(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
   {
-    ags_synth_util_impulse_double((double *) buffer,
+    ags_synth_util_impulse_double((gdouble *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);

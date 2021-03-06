@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -265,6 +265,12 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
   gboolean success;
   gboolean pong_copy;
 
+  if(buffer == NULL ||
+     ipatch_sample == NULL ||
+     !IPATCH_IS_SAMPLE(ipatch_sample)){
+    return;
+  }
+  
   source_frame_count = 0;
 
   source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
@@ -534,6 +540,12 @@ ags_sf2_synth_util_copy_s16(gint16 *buffer,
   gboolean success;
   gboolean pong_copy;
 
+  if(buffer == NULL ||
+     ipatch_sample == NULL ||
+     !IPATCH_IS_SAMPLE(ipatch_sample)){
+    return;
+  }
+
   source_frame_count = 0;
 
   source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
@@ -802,6 +814,12 @@ ags_sf2_synth_util_copy_s24(gint32 *buffer,
   guint i0, i1, i2;
   gboolean success;
   gboolean pong_copy;
+
+  if(buffer == NULL ||
+     ipatch_sample == NULL ||
+     !IPATCH_IS_SAMPLE(ipatch_sample)){
+    return;
+  }
   
   source_frame_count = 0;
 
@@ -1071,6 +1089,12 @@ ags_sf2_synth_util_copy_s32(gint32 *buffer,
   guint i0, i1, i2;
   gboolean success;
   gboolean pong_copy;
+
+  if(buffer == NULL ||
+     ipatch_sample == NULL ||
+     !IPATCH_IS_SAMPLE(ipatch_sample)){
+    return;
+  }
   
   source_frame_count = 0;
 
@@ -1340,6 +1364,12 @@ ags_sf2_synth_util_copy_s64(gint64 *buffer,
   guint i0, i1, i2;
   gboolean success;
   gboolean pong_copy;
+
+  if(buffer == NULL ||
+     ipatch_sample == NULL ||
+     !IPATCH_IS_SAMPLE(ipatch_sample)){
+    return;
+  }
   
   source_frame_count = 0;
 
@@ -1609,6 +1639,12 @@ ags_sf2_synth_util_copy_float(gfloat *buffer,
   guint i0, i1, i2;
   gboolean success;
   gboolean pong_copy;
+
+  if(buffer == NULL ||
+     ipatch_sample == NULL ||
+     !IPATCH_IS_SAMPLE(ipatch_sample)){
+    return;
+  }
   
   source_frame_count = 0;
 
@@ -1878,6 +1914,12 @@ ags_sf2_synth_util_copy_double(gdouble *buffer,
   guint i0, i1, i2;
   gboolean success;
   gboolean pong_copy;
+
+  if(buffer == NULL ||
+     ipatch_sample == NULL ||
+     !IPATCH_IS_SAMPLE(ipatch_sample)){
+    return;
+  }
   
   source_frame_count = 0;
 
@@ -2147,6 +2189,12 @@ ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
   guint i0, i1, i2;
   gboolean success;
   gboolean pong_copy;
+
+  if(buffer == NULL ||
+     ipatch_sample == NULL ||
+     !IPATCH_IS_SAMPLE(ipatch_sample)){
+    return;
+  }
   
   source_frame_count = 0;
 
@@ -2400,6 +2448,12 @@ ags_sf2_synth_util_copy(void *buffer,
 			guint loop_mode,
 			gint loop_start, gint loop_end)
 {
+  if(buffer == NULL ||
+     ipatch_sample == NULL ||
+     !IPATCH_IS_SAMPLE(ipatch_sample)){
+    return;
+  }
+
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
   {

@@ -54,6 +54,10 @@ ags_buffer_util_s8_to_char_buffer(gint8 *buffer,
 
   guint limit;
   guint i;
+
+  if(buffer == NULL){
+    return(NULL);
+  }
   
   start_cbuffer = 
     cbuffer = (guchar *) malloc(buffer_length * sizeof(guchar));
@@ -107,6 +111,10 @@ ags_buffer_util_s16_to_char_buffer(gint16 *buffer,
 
   guint limit;
   guint i;
+
+  if(buffer == NULL){
+    return(NULL);
+  }
   
   start_cbuffer = 
     cbuffer = (guchar *) malloc((2 * buffer_length) * sizeof(guchar));
@@ -176,6 +184,10 @@ ags_buffer_util_s24_to_char_buffer(gint32 *buffer,
 
   guint limit;
   guint i;
+
+  if(buffer == NULL){
+    return(NULL);
+  }
   
   start_cbuffer = 
     cbuffer = (guchar *) malloc((4 * buffer_length) * sizeof(guchar));
@@ -263,6 +275,10 @@ ags_buffer_util_s32_to_char_buffer(gint32 *buffer,
 
   guint limit;
   guint i;
+
+  if(buffer == NULL){
+    return(NULL);
+  }
   
   start_cbuffer = 
     cbuffer = (guchar *) malloc((4 * buffer_length) * sizeof(guchar));
@@ -350,6 +366,10 @@ ags_buffer_util_s64_to_char_buffer(gint64 *buffer,
 
   guint limit;
   guint i;
+
+  if(buffer == NULL){
+    return(NULL);
+  }
   
   start_cbuffer = 
     cbuffer = (guchar *) malloc((8 * buffer_length) * sizeof(guchar));
@@ -470,6 +490,10 @@ ags_buffer_util_float_to_char_buffer(gfloat *buffer,
 				     guint buffer_length)
 {
   guchar *cbuffer, *start_cbuffer;
+
+  if(buffer == NULL){
+    return(NULL);
+  }
   
   start_cbuffer = 
     cbuffer = (guchar *) malloc((buffer_length * sizeof(gfloat)) * sizeof(guchar));
@@ -496,6 +520,10 @@ ags_buffer_util_double_to_char_buffer(gdouble *buffer,
 {
   guchar *cbuffer, *start_cbuffer;
 
+  if(buffer == NULL){
+    return(NULL);
+  }
+
   start_cbuffer = 
     cbuffer = (guchar *) malloc((buffer_length * sizeof(gdouble)) * sizeof(guchar));
 
@@ -520,6 +548,10 @@ ags_buffer_util_complex_to_char_buffer(AgsComplex *buffer,
 				       guint buffer_length)
 {
   guchar *cbuffer, *start_cbuffer;
+
+  if(buffer == NULL){
+    return(NULL);
+  }
 
   start_cbuffer = 
     cbuffer = (guchar *) malloc((buffer_length * sizeof(AgsComplex)) * sizeof(guchar));
@@ -548,6 +580,10 @@ ags_buffer_util_char_buffer_to_s8(guchar *cbuffer,
 
   guint limit;
   guint i;
+
+  if(cbuffer == NULL){
+    return(NULL);
+  }
 
   start_buffer = 
     buffer = (gint8 *) malloc(buffer_size * sizeof(gint8));
@@ -602,6 +638,10 @@ ags_buffer_util_char_buffer_to_s16(guchar *cbuffer,
 
   guint limit;
   guint i;
+
+  if(cbuffer == NULL){
+    return(NULL);
+  }
 
   start_buffer = 
     buffer = (gint16 *) malloc((buffer_size / 2) * sizeof(gint16));
@@ -674,6 +714,10 @@ ags_buffer_util_char_buffer_to_s24(guchar *cbuffer,
 
   guint limit;
   guint i;
+
+  if(cbuffer == NULL){
+    return(NULL);
+  }
 
   start_buffer = 
     buffer = (gint32 *) malloc((buffer_size / 4) * sizeof(gint32));
@@ -765,6 +809,10 @@ ags_buffer_util_char_buffer_to_s32(guchar *cbuffer,
   guint limit;
   guint i;
   
+  if(cbuffer == NULL){
+    return(NULL);
+  }
+
   start_buffer = 
     buffer = (gint32 *) malloc((buffer_size / 4) * sizeof(gint32));
   memset(buffer, 0, (buffer_size / 4) * sizeof(gint32));
@@ -854,6 +902,10 @@ ags_buffer_util_char_buffer_to_s64(guchar *cbuffer,
 
   guint limit;
   guint i;
+
+  if(cbuffer == NULL){
+    return(NULL);
+  }
 
   start_buffer = 
     buffer = (gint64 *) malloc((buffer_size / 8) * sizeof(gint64));
@@ -978,6 +1030,10 @@ ags_buffer_util_char_buffer_to_float(guchar *cbuffer,
 {
   gfloat *buffer, *start_buffer;
   
+  if(cbuffer == NULL){
+    return(NULL);
+  }
+
   start_buffer = 
     buffer = (gfloat *) malloc((buffer_size / sizeof(gfloat)) * sizeof(gfloat));
 
@@ -1005,6 +1061,10 @@ ags_buffer_util_char_buffer_to_double(guchar *cbuffer,
 {
   gdouble *buffer, *start_buffer;
   
+  if(cbuffer == NULL){
+    return(NULL);
+  }
+
   start_buffer = 
     buffer = (gdouble *) malloc((buffer_size / sizeof(gdouble)) * sizeof(gdouble));
 
@@ -1032,6 +1092,10 @@ ags_buffer_util_char_buffer_to_complex(guchar *cbuffer,
 {
   AgsComplex *buffer, *start_buffer;
   
+  if(cbuffer == NULL){
+    return(NULL);
+  }
+
   start_buffer = 
     buffer = (AgsComplex *) malloc((buffer_size / sizeof(AgsComplex)) * sizeof(AgsComplex));
 
@@ -1059,6 +1123,10 @@ ags_buffer_util_char_buffer_read_s8(guchar *cbuffer,
 {
   gint8 val;
 
+  if(cbuffer == NULL){
+    return(0);
+  }
+
   val = 0;
   val |= cbuffer[0];
 
@@ -1081,6 +1149,10 @@ ags_buffer_util_char_buffer_read_s16(guchar *cbuffer,
 				     guint byte_order)
 {
   gint16 val;
+
+  if(cbuffer == NULL){
+    return(0);
+  }
 
   val = 0;
   
@@ -1111,6 +1183,10 @@ ags_buffer_util_char_buffer_read_s24(guchar *cbuffer,
 				     guint byte_order)
 {
   gint32 val;
+
+  if(cbuffer == NULL){
+    return(0);
+  }
 
   val = 0;
   
@@ -1143,6 +1219,10 @@ ags_buffer_util_char_buffer_read_s32(guchar *cbuffer,
 				     guint byte_order)
 {
   gint32 val;
+
+  if(cbuffer == NULL){
+    return(0);
+  }
 
   val = 0;
   
@@ -1177,6 +1257,10 @@ ags_buffer_util_char_buffer_read_s64(guchar *cbuffer,
 				     guint byte_order)
 {
   gint64 val;
+
+  if(cbuffer == NULL){
+    return(0);
+  }
 
   val = 0;
   
@@ -1222,6 +1306,10 @@ ags_buffer_util_char_buffer_read_float(guchar *cbuffer,
     guint32 val;
     GFloatIEEE754 ieee_float;
   }data;
+
+  if(cbuffer == NULL){
+    return(0.0);
+  }
   
   data.val = 0;
   
@@ -1259,6 +1347,10 @@ ags_buffer_util_char_buffer_read_double(guchar *cbuffer,
     guint64 val;
     GDoubleIEEE754 ieee_double;
   }data;
+
+  if(cbuffer == NULL){
+    return(0.0);
+  }
 
   data.val = 0;
   
@@ -1306,6 +1398,10 @@ ags_buffer_util_char_buffer_read_complex(guchar *cbuffer,
   }data;
 
   guint i;
+
+  if(cbuffer == NULL){
+    return(NULL);
+  }
   
   for(i = 0; i < sizeof(AgsComplex); i++){
     if(byte_order == AGS_BYTE_ORDER_BE){
@@ -1333,6 +1429,10 @@ ags_buffer_util_char_buffer_write_s8(guchar *cbuffer,
 				     gint8 value,
 				     guint byte_order)
 {
+  if(cbuffer == NULL){
+    return;
+  }
+  
   cbuffer[0] = value;
 }
 
@@ -1351,6 +1451,10 @@ ags_buffer_util_char_buffer_write_s16(guchar *cbuffer,
 				      gint16 value,
 				      guint byte_order)
 {
+  if(cbuffer == NULL){
+    return;
+  }
+
   if(byte_order == AGS_BYTE_ORDER_BE){
     cbuffer[0] = (0xff & value);
     cbuffer[1] = (0xff00 & value) >> 8;
@@ -1375,6 +1479,10 @@ ags_buffer_util_char_buffer_write_s24(guchar *cbuffer,
 				      gint32 value,
 				      guint byte_order)
 {
+  if(cbuffer == NULL){
+    return;
+  }
+
   if(byte_order == AGS_BYTE_ORDER_BE){
     cbuffer[0] = (0xff & value);
     cbuffer[1] = (0xff00 & value) >> 8;
@@ -1401,6 +1509,10 @@ ags_buffer_util_char_buffer_write_s32(guchar *cbuffer,
 				      gint32 value,
 				      guint byte_order)
 {
+  if(cbuffer == NULL){
+    return;
+  }
+
   if(byte_order == AGS_BYTE_ORDER_BE){
     cbuffer[0] = (0xff & value);
     cbuffer[1] = (0xff00 & value) >> 8;
@@ -1429,6 +1541,10 @@ ags_buffer_util_char_buffer_write_s64(guchar *cbuffer,
 				      gint64 value,
 				      guint byte_order)
 {
+  if(cbuffer == NULL){
+    return;
+  }
+
   if(byte_order == AGS_BYTE_ORDER_BE){
     cbuffer[0] = (0xff & value);
     cbuffer[1] = (0xff00 & value) >> 8;
@@ -1470,6 +1586,10 @@ ags_buffer_util_char_buffer_write_float(guchar *cbuffer,
     GFloatIEEE754 ieee_float;
   }data;
 
+  if(cbuffer == NULL){
+    return;
+  }
+
   data.ieee_float.v_float = value;
   
   if(byte_order == AGS_BYTE_ORDER_BE){
@@ -1504,6 +1624,10 @@ ags_buffer_util_char_buffer_write_double(guchar *cbuffer,
     guint64 val;
     GDoubleIEEE754 ieee_double;
   }data;
+
+  if(cbuffer == NULL){
+    return;
+  }
 
   data.ieee_double.v_double = value;
 
@@ -1550,6 +1674,10 @@ ags_buffer_util_char_buffer_write_complex(guchar *cbuffer,
 
   guint i;
 
+  if(cbuffer == NULL){
+    return;
+  }
+
   ags_complex_set(&(data.c_val),
 		  ags_complex_get(value));
 
@@ -1580,6 +1708,10 @@ ags_buffer_util_char_buffer_swap_bytes(guchar *cbuffer, guint word_size,
   guchar tmp_buffer[8];
     
   guint i, j;
+
+  if(cbuffer == NULL){
+    return;
+  }
 
   if(word_size <= 1){
     return;
