@@ -1,3 +1,8 @@
+ags (3.7.47)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed check object type in ags_sf2_synth_util.c
+
 ags (3.7.46)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

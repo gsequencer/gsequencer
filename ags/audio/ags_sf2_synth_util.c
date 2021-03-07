@@ -267,7 +267,7 @@ ags_sf2_synth_util_copy_s8(gint8 *buffer,
 
   if(buffer == NULL ||
      ipatch_sample == NULL ||
-     !IPATCH_IS_SAMPLE(ipatch_sample)){
+     !AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
     return;
   }
   
@@ -542,7 +542,7 @@ ags_sf2_synth_util_copy_s16(gint16 *buffer,
 
   if(buffer == NULL ||
      ipatch_sample == NULL ||
-     !IPATCH_IS_SAMPLE(ipatch_sample)){
+     !AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
     return;
   }
 
@@ -817,7 +817,7 @@ ags_sf2_synth_util_copy_s24(gint32 *buffer,
 
   if(buffer == NULL ||
      ipatch_sample == NULL ||
-     !IPATCH_IS_SAMPLE(ipatch_sample)){
+     !AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
     return;
   }
   
@@ -1092,7 +1092,7 @@ ags_sf2_synth_util_copy_s32(gint32 *buffer,
 
   if(buffer == NULL ||
      ipatch_sample == NULL ||
-     !IPATCH_IS_SAMPLE(ipatch_sample)){
+     !AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
     return;
   }
   
@@ -1367,7 +1367,7 @@ ags_sf2_synth_util_copy_s64(gint64 *buffer,
 
   if(buffer == NULL ||
      ipatch_sample == NULL ||
-     !IPATCH_IS_SAMPLE(ipatch_sample)){
+     !AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
     return;
   }
   
@@ -1642,7 +1642,7 @@ ags_sf2_synth_util_copy_float(gfloat *buffer,
 
   if(buffer == NULL ||
      ipatch_sample == NULL ||
-     !IPATCH_IS_SAMPLE(ipatch_sample)){
+     !AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
     return;
   }
   
@@ -1917,7 +1917,7 @@ ags_sf2_synth_util_copy_double(gdouble *buffer,
 
   if(buffer == NULL ||
      ipatch_sample == NULL ||
-     !IPATCH_IS_SAMPLE(ipatch_sample)){
+     !AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
     return;
   }
   
@@ -2192,7 +2192,7 @@ ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
 
   if(buffer == NULL ||
      ipatch_sample == NULL ||
-     !IPATCH_IS_SAMPLE(ipatch_sample)){
+     !AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
     return;
   }
   
@@ -2450,7 +2450,7 @@ ags_sf2_synth_util_copy(void *buffer,
 {
   if(buffer == NULL ||
      ipatch_sample == NULL ||
-     !IPATCH_IS_SAMPLE(ipatch_sample)){
+     !AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
     return;
   }
 
