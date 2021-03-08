@@ -989,6 +989,10 @@
       update button. Loop start and loop end allows you to specify what region of the audio data shall be looped
       in order to get the desired note length.
     </para>
+
+    <para>
+      The FM Syncsynth has the very same oscillators as FM Synth.
+    </para>
   </sect1>
 
   <sect1>
@@ -1008,6 +1012,11 @@
       controls, preset and instrument to navigate within container format and a open button to
       read Soundfont2 files and assign the selected instrument to the input.
     </para>
+
+    <para>
+      Synth generator can be enabled to pitch missing keys from lower upto specific key count.
+    </para>
+    
     <para>
       The ffplayer contains recently the bridge widget. You can add plugins in bulk mode by
       click Add or Remove within AgsFFPlayer&apos;s bridge, what you can collapse/expand. To add an effect
@@ -1031,6 +1040,11 @@
       Produce audio data by opening SFZ audio file container format. There is a open button to read SFZ
       files and assign it to the input.
     </para>
+
+    <para>
+      Synth generator can be enabled to pitch missing keys from lower upto specific key count.
+    </para>
+
     <para>
       There is a LFO enable control allowing you make adjustments to LFO amplification:
     </para>
