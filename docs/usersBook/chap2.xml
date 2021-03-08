@@ -869,9 +869,42 @@
     </mediaobject>
     <para>
       Produce audio data using its oscillators. The count of oscillators depends on number of
-      input lines. They are adjusted vertically. You have on the right the option to auto-update
-      changes you do with the controls or do it manually by the update button.
+      input lines. They are adjusted vertically.
     </para>
+
+    <para>
+      Wave is the actual oscillator either sine, sawtooth, square, triangle or impulse.
+    </para>
+
+    <para>
+     Attack is the first frame after key on to start output.
+    </para>
+
+    <para>
+      Length is the length of the output in frames.
+    </para>
+
+    <para>
+      Phase is the initial phase as x offset within oscillator's algorithm.
+    </para>
+
+    <para>
+      Frequency is the lower range key's frequency.
+    </para>
+
+    <para>
+      Volume is the output volume of the oscillator.
+    </para>
+
+    <para>
+      Sync allows you reset the phase with 3 times a tuple of x offset and new x offset of phase.
+    </para>
+    
+    <para>
+      You have on the right the option to auto-update changes you do with the controls or do it
+      manually by the update button. Lower is the very first y key.
+    </para>
+    
   </sect1>
 
   <sect1>
@@ -890,6 +923,27 @@
       Produce audio data using its oscillators. The count of oscillators depends on number of
       input lines. They are adjusted vertically. You have on the right the option to auto-update
       changes you do with the controls or do it manually by the update button.
+    </para>
+
+    <para>
+      FM Synth has additional controls than Synth for its oscillators to control. The controls
+      are related to the Low Frequency Oscillator that does the actual Frequency Modulation.
+    </para>
+
+    <para>
+      LFO wave use specific function to modulate frequency.
+    </para>
+
+    <para>
+      LFO frequency use specific frequency to modulate frequency.
+    </para>
+
+    <para>
+      LFO depth is the depth of the frequency modulation.
+    </para>
+
+    <para>
+      LFO tuning tunes by cents.
     </para>
   </sect1>
 
@@ -910,6 +964,10 @@
       You have on the right the option to auto-update changes you do with the controls or do it manually by the
       update button. Loop start and loop end allows you to specify what region of the audio data shall be looped
       in order to get the desired note length.
+    </para>
+
+    <para>
+      The Syncsynth has the very same oscillators as Synth.
     </para>
   </sect1>
 
