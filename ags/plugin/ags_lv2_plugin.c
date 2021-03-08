@@ -1900,7 +1900,7 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
   AgsLv2UriMapManager *uri_map_manager;
   
   LV2_Atom_Sequence *aseq;
-  LV2_Atom_Event *aev;
+  LV2_Atom_Event *start_aev, *aev;
   
   unsigned char midi_buffer[8];
 
@@ -1916,10 +1916,11 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
   aseq = (LV2_Atom_Sequence *) atom_sequence;
   
   /* find offset */
-  aev = (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+  aev =
+    start_aev = (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
   
-  while((void *) aev < atom_sequence + sequence_size){
-    if(aev->body.size == 0){
+  while((void *) aev < (void *) (aseq + sizeof(LV2_Atom_Sequence)) + sequence_size){
+    if(aev->body.size <= 0){
       break;
     }
     
@@ -1931,7 +1932,7 @@ ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
   success = TRUE;
 
   for(i = 0; i < event_count; i++){
-    if((void *) aev >= atom_sequence + sequence_size){
+    if((void *) aev >= (void *) (aseq + sizeof(LV2_Atom_Sequence)) + sequence_size){
       return(FALSE);
     }
   
@@ -1983,7 +1984,7 @@ ags_lv2_plugin_atom_sequence_remove_midi(gpointer atom_sequence,
   AgsLv2UriMapManager *uri_map_manager;
   
   LV2_Atom_Sequence *aseq;
-  LV2_Atom_Event *aev, *current_aev;
+  LV2_Atom_Event *start_aev, *end_aev, *aev, *current_aev;
   
   unsigned char midi_buffer[8];
 
@@ -1999,27 +2000,29 @@ ags_lv2_plugin_atom_sequence_remove_midi(gpointer atom_sequence,
   aseq = (LV2_Atom_Sequence *) atom_sequence;
   
   /* find offset */
-  aev = (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+  aev =
+    start_aev = (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
 
   success = FALSE;
   
-  while((void *) aev < atom_sequence + sequence_size){
-    if(aev->body.size == 0){
+  while((void *) aev < (void *) (aseq + sizeof(LV2_Atom_Sequence)) + sequence_size){
+    if(aev->body.size <= 0){
       break;
     }
 
-    if(((unsigned char *) LV2_ATOM_BODY(&(aev->body)))[1] == (0x7f & note)){
+    if(!success &&
+       (0x7f & ((unsigned char *) LV2_ATOM_BODY(&(aev->body)))[1]) == (0x7f & note)){
       current_aev = aev;
       current_size = aev->body.size;
       
       success = TRUE;
-
-      break;
     }
-    
+
     size = aev->body.size;
     aev += ((size + 7) & (~7));
   }
+
+  end_aev = aev;
   
   /* remove midi */
   if(success){
@@ -2027,23 +2030,27 @@ ags_lv2_plugin_atom_sequence_remove_midi(gpointer atom_sequence,
     current_aev->body.size = 0;  
     current_aev->body.type = 0;
 
-    if(sequence_size - ((current_size + 7) & (~7)) - ((void *) current_aev - atom_sequence) >= 0){
+    if(((void *) end_aev - (void *) current_aev) - ((current_size + 7) & (~7)) >= 0 &&
+       ((void *) end_aev - (void *) current_aev) - ((current_size + 7) & (~7)) < sequence_size){
 #if 0
       g_message("current size %d", ((current_size + 7) & (~7)));
-      g_message("current index %d", ((void *) current_aev - atom_sequence));
+      g_message("current index %d", (void *) current_aev - (void *) start_aev);
       g_message("sequence size %d", sequence_size);
-      g_message("count %d", sequence_size - ((current_size + 7) & (~7)) - ((void *) current_aev - atom_sequence));
+      g_message("count %d", ((void *) end_aev - (void *) current_aev) - ((current_size + 7) & (~7)));
 #endif
       
       memmove(current_aev,
 	      current_aev + ((current_size + 7) & (~7)),
-	      sequence_size - ((current_size + 7) & (~7)) - ((void *) current_aev - atom_sequence));
+	      ((void *) end_aev - (void *) current_aev) - ((current_size + 7) & (~7)));
+    }
+
+    if(end_aev - ((current_size + 7) & (~7)) >= start_aev &&
+       end_aev - ((current_size + 7) & (~7)) < (void *) (aseq + sizeof(LV2_Atom_Sequence)) + sequence_size){
+      memset(end_aev - ((current_size + 7) & (~7)),
+	     0,
+	     ((current_size + 7) & (~7)));
     }
     
-    memset(atom_sequence + sequence_size - ((current_size + 7) & (~7)),
-	   0,
-	   ((current_size + 7) & (~7)));
-
     aseq->atom.size -= ((current_size + 7) & (~7));    
   }
   

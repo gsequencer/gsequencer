@@ -1122,10 +1122,13 @@ ags_osc_connection_real_close(AgsOscConnection *osc_connection)
   g_rec_mutex_lock(osc_connection_mutex);
 
   error = NULL;
-  g_socket_close(osc_connection->socket,
-		 &error);
-  g_object_unref(osc_connection->socket);
 
+  if(osc_connection->socket != NULL){
+    g_socket_close(osc_connection->socket,
+		   &error);
+    g_object_unref(osc_connection->socket);
+  }
+  
   osc_connection->socket = NULL;
   osc_connection->fd = -1;
   

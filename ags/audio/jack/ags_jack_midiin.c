@@ -1018,8 +1018,9 @@ ags_jack_midiin_set_device(AgsSequencer *sequencer,
   g_rec_mutex_lock(jack_midiin_mutex);
 
   if(jack_midiin->card_uri == device ||
-     !g_ascii_strcasecmp(jack_midiin->card_uri,
-			 device)){
+     (jack_midiin->card_uri != NULL &&
+      !g_ascii_strcasecmp(jack_midiin->card_uri,
+			  device))){
     g_rec_mutex_unlock(jack_midiin_mutex);
     
     return;

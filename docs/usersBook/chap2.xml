@@ -38,14 +38,26 @@
     </listitem>
     <listitem>
       <para>
+	To remove an engine open context menu and activate &quot;destroy&quot; entry.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
 	To rename an engine open context menu and activate &quot;rename&quot; entry.
       </para>
     </listitem>
     <listitem>
       <para>
-	To remove an engine open context menu and activate &quot;destroy&quot; entry.
+	To remove an audio object open context menu and activate &quot;rename audio&quot; entry.
+	This name can be used by the OSC Server to address the audio object.
       </para>
     </listitem>
+    <listitem>
+      <para>
+	To reposition an audio object open context menu and activate &quot;reposition audio&quot; entry.
+	This position can be used by the OSC Server to address the audio object.
+      </para>
+    </listitem>    
     <listitem>
       <para>
 	To open properties dialog open context menu and activate &quot;properties&quot;
@@ -68,8 +80,48 @@
 	  Copy pattern does convert your pattern bitmap into a pattern based notation suitable
 	  to paste in notation editor.
 	</listitem>
+      </itemizedlist>	  
+      <itemizedlist>
+	<listitem>
+	  Envelope opens a dialog with envelope editor, info and pattern editor tab. Allowing you to edit
+	  envelope presets and apply to selected notes.
+	</listitem>
       </itemizedlist>
 	  
+    </listitem>
+    <listitem>
+      <para>
+	Connection gives you audio/MIDI options.
+      </para>
+      
+      <itemizedlist>
+	<listitem>
+	  Audio connection allows you assign output or input soundcards.
+	</listitem>
+      </itemizedlist>	  
+      <itemizedlist>
+	<listitem>
+	  Midi dialog allows you to assign MIDI sequencers to an instrument.
+	</listitem>
+      </itemizedlist>
+	  
+    </listitem>
+    <listitem>
+      <para>
+	Export gives you audio exporting options.
+      </para>
+      
+      <itemizedlist>
+	<listitem>
+	  Audio export does export your wave data into an audio file without any effect processing.
+	</listitem>
+      </itemizedlist>	  
+	  
+    </listitem>    
+    <listitem>
+      <para>
+	To adjust many input controls at once open context menu and activate &quot;sticky controls&quot; entry.
+      </para>
     </listitem>
   </itemizedlist>
 
@@ -265,9 +317,15 @@
     <title>Envelope dialog</title>
     <para>
       The envelope dialog allows you to edit envelope information as presets. These presets
-      can be assigned to a specific note.
+      can be assigned to a specific note. Selection is done with select tool of notation editor and
+      selecting notes of active audio channel.
     </para>
 
+    <para>
+      The enelope's width matches with x length 1.0 the audio signal's length. The magnitude has normal
+      volume with value 1.0.
+    </para>
+    
     <sect2>
       <title>Envelope editor</title>
       <mediaobject>
@@ -282,8 +340,34 @@
       </mediaobject>
       
       <para>
-	Modify or create presets and apply it to selected notes.
-      </para>    
+	Modify or create presets and apply it to selected notes. Selection is performed within notation
+	editor.
+      </para>
+
+      <para>
+	Add new or remove unwanted presets.
+      </para>
+
+      <para>
+	Attack is the initial x length and y magnitude.
+      </para>
+
+      <para>
+	Decay is the second x length and y magnitude.
+      </para>
+
+      <para>
+	Sustain is the third x length and y magnitude.
+      </para>
+
+      <para>
+	Release is the last x length and y magnitude.
+      </para>      
+
+      <para>
+	Ratio increase/decrease the entire envelope's magnitude.
+      </para>
+
     </sect2>
 
     <sect2>
@@ -300,8 +384,29 @@
       </mediaobject>
       
       <para>
-	Show envelope information of selected notes.
+	Show envelope information of selected notes. There are 5 columns with information of the
+	specific selection. The selection itself is presented by the list view.
       </para>    
+
+      <para>
+	Plot enables plotting of the matching note's envelope information.
+      </para>
+
+      <para>
+	Audio channel is the selected note's audio channel.
+      </para>
+
+      <para>
+	Note x0 is the selected note's x0 offset.
+      </para>
+
+      <para>
+	Note x1 is the selected note's x1 offset.
+      </para>
+
+      <para>
+	Note y is the selected note's y key.
+      </para>
     </sect2>
 
     <sect2>
@@ -318,8 +423,53 @@
       </mediaobject>
       
       <para>
-	Modify and create pattern related envelope presets.
+	Modify and create pattern related envelope presets. There are 9 columns with information of
+	the pattern's region to apply the envelope preset.
       </para>    
+
+      <para>
+	Edit means modify the matchin preset.
+      </para>      
+
+      <para>
+	Plot enables plotting of the matching envelope preset information.
+      </para>
+
+      <para>
+	Preset is the preset's name.
+      </para>
+
+      <para>
+	Audio channel start the preset's start audio channel.
+      </para>
+
+      <para>
+	Audio channel end the preset's end audio channel.	
+      </para>
+
+      <para>
+	Pad start the preset's start pad.
+      </para>
+
+      <para>
+	Pad end the preset's end pad.
+      </para>
+      
+      <para>
+	X start the preset's x start offset.
+      </para>
+
+      <para>
+	X end the preset's x end offset.
+      </para>
+
+      <para>
+	There are the usual envelope editor controls.
+      </para>
+
+      <para>
+	Organize your presets with move up and move down. Or add new or remove unwanted presets.
+      </para>
     </sect2>
 
   </sect1>
@@ -338,8 +488,10 @@
 	</caption>
       </mediaobject>
       <para>
-	The MIDI dialog allows you to select the MIDI sequencer to assign of the current machine.
-	You might want to perform start and end key. Further you can adjust the start and end channel.
+	The MIDI dialog allows you to select the MIDI sequencer to assign of the current machine. The MIDI
+	channel is the MIDI channel assigned to the MIDI device, useful with multiple devices. Upto 16
+	devices are allowed. You might want to perform start and end key. Further you can adjust the start
+	and end channel.
       </para>    
   </sect1>
   
@@ -717,9 +869,42 @@
     </mediaobject>
     <para>
       Produce audio data using its oscillators. The count of oscillators depends on number of
-      input lines. They are adjusted vertically. You have on the right the option to auto-update
-      changes you do with the controls or do it manually by the update button.
+      input lines. They are adjusted vertically.
     </para>
+
+    <para>
+      Wave is the actual oscillator either sine, sawtooth, square, triangle or impulse.
+    </para>
+
+    <para>
+     Attack is the first frame after key on to start output.
+    </para>
+
+    <para>
+      Length is the length of the output in frames.
+    </para>
+
+    <para>
+      Phase is the initial phase as x offset within oscillator's algorithm.
+    </para>
+
+    <para>
+      Frequency is the lower range key's frequency.
+    </para>
+
+    <para>
+      Volume is the output volume of the oscillator.
+    </para>
+
+    <para>
+      Sync allows you reset the phase with 3 times a tuple of x offset and new x offset of phase.
+    </para>
+    
+    <para>
+      You have on the right the option to auto-update changes you do with the controls or do it
+      manually by the update button. Lower is the very first y key.
+    </para>
+    
   </sect1>
 
   <sect1>
@@ -738,6 +923,27 @@
       Produce audio data using its oscillators. The count of oscillators depends on number of
       input lines. They are adjusted vertically. You have on the right the option to auto-update
       changes you do with the controls or do it manually by the update button.
+    </para>
+
+    <para>
+      FM Synth has additional controls than Synth for its oscillators to control. The controls
+      are related to the Low Frequency Oscillator that does the actual Frequency Modulation.
+    </para>
+
+    <para>
+      LFO wave use specific function to modulate frequency.
+    </para>
+
+    <para>
+      LFO frequency use specific frequency to modulate frequency.
+    </para>
+
+    <para>
+      LFO depth is the depth of the frequency modulation.
+    </para>
+
+    <para>
+      LFO tuning tunes by cents.
     </para>
   </sect1>
 
@@ -759,6 +965,10 @@
       update button. Loop start and loop end allows you to specify what region of the audio data shall be looped
       in order to get the desired note length.
     </para>
+
+    <para>
+      The Syncsynth has the very same oscillators as Synth.
+    </para>
   </sect1>
 
   <sect1>
@@ -779,6 +989,10 @@
       update button. Loop start and loop end allows you to specify what region of the audio data shall be looped
       in order to get the desired note length.
     </para>
+
+    <para>
+      The FM Syncsynth has the very same oscillators as FM Synth.
+    </para>
   </sect1>
 
   <sect1>
@@ -798,6 +1012,11 @@
       controls, preset and instrument to navigate within container format and a open button to
       read Soundfont2 files and assign the selected instrument to the input.
     </para>
+
+    <para>
+      Synth generator can be enabled to pitch missing keys from lower upto specific key count.
+    </para>
+    
     <para>
       The ffplayer contains recently the bridge widget. You can add plugins in bulk mode by
       click Add or Remove within AgsFFPlayer&apos;s bridge, what you can collapse/expand. To add an effect
@@ -821,8 +1040,13 @@
       Produce audio data by opening SFZ audio file container format. There is a open button to read SFZ
       files and assign it to the input.
     </para>
+
     <para>
-      There is a LFO enable control allowing you make adjustments to LFO amplification:
+      Synth generator can be enabled to pitch missing keys from lower upto specific key count.
+    </para>
+
+    <para>
+      There is a LFO enable control allowing you make adjustments to LFO amplification (currently defunctional):
     </para>
 
     <itemizedlist mark="bullet">
