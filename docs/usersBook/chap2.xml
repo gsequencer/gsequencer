@@ -38,14 +38,26 @@
     </listitem>
     <listitem>
       <para>
+	To remove an engine open context menu and activate &quot;destroy&quot; entry.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
 	To rename an engine open context menu and activate &quot;rename&quot; entry.
       </para>
     </listitem>
     <listitem>
       <para>
-	To remove an engine open context menu and activate &quot;destroy&quot; entry.
+	To remove an audio object open context menu and activate &quot;rename audio&quot; entry.
+	This name can be used by the OSC Server to address the audio object.
       </para>
     </listitem>
+    <listitem>
+      <para>
+	To reposition an audio object open context menu and activate &quot;reposition audio&quot; entry.
+	This position can be used by the OSC Server to address the audio object.
+      </para>
+    </listitem>    
     <listitem>
       <para>
 	To open properties dialog open context menu and activate &quot;properties&quot;
@@ -68,8 +80,48 @@
 	  Copy pattern does convert your pattern bitmap into a pattern based notation suitable
 	  to paste in notation editor.
 	</listitem>
+      </itemizedlist>	  
+      <itemizedlist>
+	<listitem>
+	  Envelope opens a dialog with envelope editor, info and pattern editor tab. Allowing you to edit
+	  envelope presets and apply to selected notes.
+	</listitem>
       </itemizedlist>
 	  
+    </listitem>
+    <listitem>
+      <para>
+	Connection gives you audio/MIDI options.
+      </para>
+      
+      <itemizedlist>
+	<listitem>
+	  Audio connection allows you assign output or input soundcards.
+	</listitem>
+      </itemizedlist>	  
+      <itemizedlist>
+	<listitem>
+	  Midi dialog allows you to assign MIDI sequencers to an instrument.
+	</listitem>
+      </itemizedlist>
+	  
+    </listitem>
+    <listitem>
+      <para>
+	Export gives you audio exporting options.
+      </para>
+      
+      <itemizedlist>
+	<listitem>
+	  Audio export does export your wave data into an audio file without any effect processing.
+	</listitem>
+      </itemizedlist>	  
+	  
+    </listitem>    
+    <listitem>
+      <para>
+	To adjust many input controls at once open context menu and activate &quot;sticky controls&quot; entry.
+      </para>
     </listitem>
   </itemizedlist>
 
