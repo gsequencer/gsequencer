@@ -317,9 +317,15 @@
     <title>Envelope dialog</title>
     <para>
       The envelope dialog allows you to edit envelope information as presets. These presets
-      can be assigned to a specific note.
+      can be assigned to a specific note. Selection is done with select tool of notation editor and
+      selecting notes of active audio channel.
     </para>
 
+    <para>
+      The enelope's width matches with x length 1.0 the audio signal's length. The magnitude has normal
+      volume with value 1.0.
+    </para>
+    
     <sect2>
       <title>Envelope editor</title>
       <mediaobject>
@@ -334,8 +340,34 @@
       </mediaobject>
       
       <para>
-	Modify or create presets and apply it to selected notes.
-      </para>    
+	Modify or create presets and apply it to selected notes. Selection is performed within notation
+	editor.
+      </para>
+
+      <para>
+	Add new or remove unwanted presets.
+      </para>
+
+      <para>
+	Attack is the initial x length and y magnitude.
+      </para>
+
+      <para>
+	Decay is the second x length and y magnitude.
+      </para>
+
+      <para>
+	Sustain is the third x length and y magnitude.
+      </para>
+
+      <para>
+	Release is the last x length and y magnitude.
+      </para>      
+
+      <para>
+	Ratio increase/decrease the entire envelope's magnitude.
+      </para>
+
     </sect2>
 
     <sect2>
@@ -352,8 +384,29 @@
       </mediaobject>
       
       <para>
-	Show envelope information of selected notes.
+	Show envelope information of selected notes. There are 5 columns with information of the
+	specific selection. The selection itself is presented by the list view.
       </para>    
+
+      <para>
+	Plot enables plotting of the matching note's envelope information.
+      </para>
+
+      <para>
+	Audio channel is the selected note's audio channel.
+      </para>
+
+      <para>
+	Note x0 is the selected note's x0 offset.
+      </para>
+
+      <para>
+	Note x1 is the selected note's x1 offset.
+      </para>
+
+      <para>
+	Note y is the selected note's y key.
+      </para>
     </sect2>
 
     <sect2>
@@ -370,8 +423,53 @@
       </mediaobject>
       
       <para>
-	Modify and create pattern related envelope presets.
+	Modify and create pattern related envelope presets. There are 9 columns with information of
+	the pattern's region to apply the envelope preset.
       </para>    
+
+      <para>
+	Edit means modify the matchin preset.
+      </para>      
+
+      <para>
+	Plot enables plotting of the matching envelope preset information.
+      </para>
+
+      <para>
+	Preset is the preset's name.
+      </para>
+
+      <para>
+	Audio channel start the preset's start audio channel.
+      </para>
+
+      <para>
+	Audio channel end the preset's end audio channel.	
+      </para>
+
+      <para>
+	Pad start the preset's start pad.
+      </para>
+
+      <para>
+	Pad end the preset's end pad.
+      </para>
+      
+      <para>
+	X start the preset's x start offset.
+      </para>
+
+      <para>
+	X end the preset's x end offset.
+      </para>
+
+      <para>
+	There are the usual envelope editor controls.
+      </para>
+
+      <para>
+	Organize your presets with move up and move down. Or add new or remove unwanted presets.
+      </para>
     </sect2>
 
   </sect1>
@@ -390,8 +488,10 @@
 	</caption>
       </mediaobject>
       <para>
-	The MIDI dialog allows you to select the MIDI sequencer to assign of the current machine.
-	You might want to perform start and end key. Further you can adjust the start and end channel.
+	The MIDI dialog allows you to select the MIDI sequencer to assign of the current machine. The MIDI
+	channel is the MIDI channel assigned to the MIDI device, useful with multiple devices. Upto 16
+	devices are allowed. You might want to perform start and end key. Further you can adjust the start
+	and end channel.
       </para>    
   </sect1>
   
