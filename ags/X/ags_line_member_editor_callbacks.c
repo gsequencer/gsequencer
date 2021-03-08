@@ -301,7 +301,9 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
 	g_list_free(pad_start);
 
-	if(line != NULL){
+	if(filename != NULL &&
+	   effect != NULL &&
+	   line != NULL){
 	  guint audio_channel;
 	  guint pad;
 
@@ -363,7 +365,9 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
 	g_list_free(pad_start);
 
-	if(effect_line != NULL){
+	if(filename != NULL &&
+	   effect != NULL &&
+	   effect_line != NULL){
 	  guint audio_channel;
 	  guint pad;
 

@@ -497,7 +497,9 @@ ags_ladspa_manager_find_ladspa_plugin_with_fallback(AgsLadspaManager *ladspa_man
   GRecMutex *ladspa_manager_mutex;
   GRecMutex *base_plugin_mutex;
 
-  if(!AGS_IS_LADSPA_MANAGER(ladspa_manager)){
+  if(!AGS_IS_LADSPA_MANAGER(ladspa_manager) ||
+     filename == NULL ||
+     effect == NULL){
     return(NULL);
   }
   

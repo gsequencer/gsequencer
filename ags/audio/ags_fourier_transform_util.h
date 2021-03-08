@@ -30,7 +30,7 @@
 
 G_BEGIN_DECLS
 
-#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S8_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S8_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { double _Complex l_z; \
     gdouble l_h;							\
     gdouble l_k;							\
     gdouble l_r;							\
@@ -46,7 +46,7 @@ G_BEGIN_DECLS
     									\
     ags_complex_set(x_retval[0], l_z); }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval)  { complex l_z; \
+#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval)  { double _Complex l_z; \
     gdouble l_h;							\
     gdouble l_k;							\
     gdouble l_r;							\
@@ -62,7 +62,7 @@ G_BEGIN_DECLS
     									\
     ags_complex_set(x_retval[0], l_z); }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S24_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S24_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { double _Complex l_z; \
     gdouble l_h;							\
     gdouble l_k;							\
     gdouble l_r;							\
@@ -78,7 +78,7 @@ G_BEGIN_DECLS
     									\
     ags_complex_set(x_retval[0], l_z); }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S32_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S32_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { double _Complex l_z; \
     gdouble l_h;							\
     gdouble l_k;							\
     gdouble l_r;							\
@@ -94,7 +94,7 @@ G_BEGIN_DECLS
     									\
     ags_complex_set(x_retval[0], l_z); }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S64_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S64_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { double _Complex l_z; \
     gdouble l_h;							\
     gdouble l_k;							\
     gdouble l_r;							\
@@ -110,7 +110,7 @@ G_BEGIN_DECLS
     									\
     ags_complex_set(x_retval[0], l_z); }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_FLOAT_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_FLOAT_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { double _Complex l_z; \
     gdouble l_h;							\
     gdouble l_k;							\
     gdouble l_r;							\
@@ -124,7 +124,7 @@ G_BEGIN_DECLS
     									\
     ags_complex_set(x_retval[0], l_z); }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { double _Complex l_z; \
     gdouble l_h;							\
     gdouble l_k;							\
     gdouble l_r;							\
@@ -138,7 +138,7 @@ G_BEGIN_DECLS
     									\
     ags_complex_set(x_retval[0], l_z); }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S8_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S8_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { double _Complex l_z; \
     gdouble l_k;							\
     gdouble l_y;							\
 									\
@@ -152,7 +152,7 @@ G_BEGIN_DECLS
 									\
     x_retval[0][0] = scale * l_y; }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { double _Complex l_z; \
     gdouble l_k;							\
     gdouble l_y;							\
 									\
@@ -166,7 +166,7 @@ G_BEGIN_DECLS
 									\
     x_retval[0][0] = scale * l_y; }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S24_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S24_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { double _Complex l_z; \
     gdouble l_k;							\
     gdouble l_y;							\
 									\
@@ -180,7 +180,7 @@ G_BEGIN_DECLS
 									\
     x_retval[0][0] = scale * l_y; }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S32_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S32_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { double _Complex l_z; \
     gdouble l_k;							\
     gdouble l_y;							\
 									\
@@ -194,7 +194,7 @@ G_BEGIN_DECLS
 									\
     x_retval[0][0] = scale * l_y; }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S64_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S64_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { double _Complex l_z; \
     gdouble l_k;							\
     gdouble l_y;							\
 									\
@@ -208,7 +208,7 @@ G_BEGIN_DECLS
 									\
     x_retval[0][0] = scale * l_y; }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_FLOAT_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_FLOAT_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { double _Complex l_z; \
     gdouble l_k;							\
     gdouble l_y;							\
 									\
@@ -220,7 +220,7 @@ G_BEGIN_DECLS
 									\
     x_retval[0][0] = l_y / M_PI; }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_DOUBLE_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_DOUBLE_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { double _Complex l_z; \
     gdouble l_k;							\
     gdouble l_y;							\
 									\

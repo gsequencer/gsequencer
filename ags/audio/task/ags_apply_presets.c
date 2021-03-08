@@ -435,10 +435,12 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
 			    apply_presets->format);
 
   /* reset audio loop frequency */
-  g_object_set(G_OBJECT(main_loop),
-	       "frequency", freq,
-	       NULL);
-    
+  if(main_loop != NULL){
+    g_object_set(G_OBJECT(main_loop),
+		 "frequency", freq,
+		 NULL);
+  }
+  
   /* reset export thread frequency */
   export_thread = ags_thread_find_type(main_loop,
 				       AGS_TYPE_EXPORT_THREAD);
@@ -495,7 +497,9 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
 		   g_object_unref);
 
   /* unref */
-  g_object_unref(main_loop);
+  if(main_loop != NULL){
+    g_object_unref(main_loop);
+  }
 }
 
 void

@@ -1161,8 +1161,9 @@ ags_core_audio_devin_set_device(AgsSoundcard *soundcard,
   g_rec_mutex_lock(core_audio_devin_mutex);
 
   if(core_audio_devin->card_uri == device ||
-     !g_ascii_strcasecmp(core_audio_devin->card_uri,
-			 device)){
+     (core_audio_devin->card_uri != NULL &&
+      !g_ascii_strcasecmp(core_audio_devin->card_uri,
+			  device))){
     g_rec_mutex_unlock(core_audio_devin_mutex);
   
     return;

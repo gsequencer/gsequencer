@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -58,13 +58,13 @@ void ags_lfo_synth_util_sin_s64(gint64 *buffer,
 				gdouble tuning,
 				guint samplerate,
 				guint offset, guint n_frames);
-void ags_lfo_synth_util_sin_float(float *buffer,
+void ags_lfo_synth_util_sin_float(gfloat *buffer,
 				  gdouble freq, gdouble phase,
 				  gdouble depth,
 				  gdouble tuning,
 				  guint samplerate,
 				  guint offset, guint n_frames);
-void ags_lfo_synth_util_sin_double(double *buffer,
+void ags_lfo_synth_util_sin_double(gdouble *buffer,
 				   gdouble freq, gdouble phase,
 				   gdouble depth,
 				   gdouble tuning,
@@ -108,13 +108,13 @@ void ags_lfo_synth_util_sawtooth_s64(gint64 *buffer,
 				     gdouble tuning,
 				     guint samplerate,
 				     guint offset, guint n_frames);
-void ags_lfo_synth_util_sawtooth_float(float *buffer,
+void ags_lfo_synth_util_sawtooth_float(gfloat *buffer,
 				       gdouble freq, gdouble phase,
 				       gdouble depth,
 				       gdouble tuning,
 				       guint samplerate,
 				       guint offset, guint n_frames);
-void ags_lfo_synth_util_sawtooth_double(double *buffer,
+void ags_lfo_synth_util_sawtooth_double(gdouble *buffer,
 					gdouble freq, gdouble phase,
 					gdouble depth,
 					gdouble tuning,
@@ -158,13 +158,13 @@ void ags_lfo_synth_util_triangle_s64(gint64 *buffer,
 				     gdouble tuning,
 				     guint samplerate,
 				     guint offset, guint n_frames);
-void ags_lfo_synth_util_triangle_float(float *buffer,
+void ags_lfo_synth_util_triangle_float(gfloat *buffer,
 				       gdouble freq, gdouble phase,
 				       gdouble depth,
 				       gdouble tuning,
 				       guint samplerate,
 				       guint offset, guint n_frames);
-void ags_lfo_synth_util_triangle_double(double *buffer,
+void ags_lfo_synth_util_triangle_double(gdouble *buffer,
 					gdouble freq, gdouble phase,
 					gdouble depth,
 					gdouble tuning,
@@ -208,13 +208,13 @@ void ags_lfo_synth_util_square_s64(gint64 *buffer,
 				   gdouble tuning,
 				   guint samplerate,
 				   guint offset, guint n_frames);
-void ags_lfo_synth_util_square_float(float *buffer,
+void ags_lfo_synth_util_square_float(gfloat *buffer,
 				     gdouble freq, gdouble phase,
 				     gdouble depth,
 				     gdouble tuning,
 				     guint samplerate,
 				     guint offset, guint n_frames);
-void ags_lfo_synth_util_square_double(double *buffer,
+void ags_lfo_synth_util_square_double(gdouble *buffer,
 				      gdouble freq, gdouble phase,
 				      gdouble depth,
 				      gdouble tuning,
@@ -258,13 +258,13 @@ void ags_lfo_synth_util_impulse_s64(gint64 *buffer,
 				    gdouble tuning,
 				    guint samplerate,
 				    guint offset, guint n_frames);
-void ags_lfo_synth_util_impulse_float(float *buffer,
+void ags_lfo_synth_util_impulse_float(gfloat *buffer,
 				      gdouble freq, gdouble phase,
 				      gdouble depth,
 				      gdouble tuning,
 				      guint samplerate,
 				      guint offset, guint n_frames);
-void ags_lfo_synth_util_impulse_double(double *buffer,
+void ags_lfo_synth_util_impulse_double(gdouble *buffer,
 				       gdouble freq, gdouble phase,
 				       gdouble depth,
 				       gdouble tuning,

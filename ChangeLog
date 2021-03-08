@@ -8,6 +8,46 @@ ags (3.8.0)
 	* FIXME:JK: make indicator orientable
 	* improved pitch sampler to use ags-fx-lfo
 
+ags (3.7.48)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* updated user's handbook chapter 2 Docbook XML file
+
+ags (3.7.47)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed check object type in ags_sf2_synth_util.c
+
+ags (3.7.46)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed unified floating point types
+	* improved safer ags_buffer_util.c
+	* improved safer ags_char_buffer_util.c
+	* improved safer ags_audio_buffer_util.c
+	* improved safer ags_fast_pitch_util.c
+	* improved safer ags_filter_util.c
+	* improved safer ags_fm_synth_util.c
+	* improved safer ags_lfo_synth_util.c
+	* improved safer ags_soundcard_util.c
+	* improved safer ags_sf2_synth_util.c
+	* improved safer ags_sfz_synth_util.c
+	* improved safer ags_synth_util.c
+	* improved safer ags_osc_buffer_util.c
+
+ags (3.7.45)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved safer ags_midi_buffer_util.c
+
+ags (3.7.44)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV with AgsPluginBrowser no plugin selected
+	* fixed ags_lv2_plugin_atom_sequence_remove_midi()
+	* fixed ags_fx_eq10_audio_signal_real_run_inter()
+	* fixed ags_eq10_audio_signal_real_run_inter()
+
 ags (3.7.43)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

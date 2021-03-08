@@ -662,7 +662,9 @@ ags_lv2_manager_find_lv2_plugin_with_fallback(AgsLv2Manager *lv2_manager,
   GRecMutex *lv2_manager_mutex;
   GRecMutex *base_plugin_mutex;
 
-  if(!AGS_IS_LV2_MANAGER(lv2_manager)){
+  if(!AGS_IS_LV2_MANAGER(lv2_manager) ||
+     filename == NULL ||
+     effect == NULL){
     return(NULL);
   }
   
