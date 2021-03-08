@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -125,6 +125,11 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
 
   GRecMutex *obj_mutex;
 
+  if(soundcard == NULL ||
+     !AGS_IS_SOUNDCARD(soundcard)){
+    return;
+  }
+  
   obj_mutex = ags_soundcard_util_get_obj_mutex(soundcard);
   
   /* get some initial values */

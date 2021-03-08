@@ -66,6 +66,10 @@ ags_fast_pitch_util_compute_s8(gint8 *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i, j;
+
+  if(buffer == NULL){
+    return;
+  }
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -379,6 +383,10 @@ ags_fast_pitch_util_compute_s16(gint16 *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i, j;
+
+  if(buffer == NULL){
+    return;
+  }
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -692,6 +700,10 @@ ags_fast_pitch_util_compute_s24(gint32 *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i, j;
+
+  if(buffer == NULL){
+    return;
+  }
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -1005,6 +1017,10 @@ ags_fast_pitch_util_compute_s32(gint32 *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i, j;
+
+  if(buffer == NULL){
+    return;
+  }
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -1318,6 +1334,10 @@ ags_fast_pitch_util_compute_s64(gint64 *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i, j;
+
+  if(buffer == NULL){
+    return;
+  }
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -1627,6 +1647,10 @@ ags_fast_pitch_util_compute_float(gfloat *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i, j;
+
+  if(buffer == NULL){
+    return;
+  }
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -1940,6 +1964,10 @@ ags_fast_pitch_util_compute_double(gdouble *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i, j;
+
+  if(buffer == NULL){
+    return;
+  }
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;
@@ -2253,6 +2281,10 @@ ags_fast_pitch_util_compute_complex(AgsComplex *buffer,
   gdouble freq_period, im_freq_period, low_freq_period, new_freq_period;
   gdouble t;
   guint i, j;
+
+  if(buffer == NULL){
+    return;
+  }
   
   /* frequency */
   base_freq = exp2((base_key) / 12.0) * 440.0;

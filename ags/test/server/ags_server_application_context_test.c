@@ -108,6 +108,8 @@ ags_server_application_context_test_finalize()
   ags_application_context_prepare(server_application_context);
   ags_application_context_setup(server_application_context);
 
+  g_usleep(G_USEC_PER_SEC);
+  
   /* run dispose */
   g_object_run_dispose(server_application_context);
 

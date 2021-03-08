@@ -92,7 +92,9 @@ void ags_soundcard_test_get_loop_offset();
 #define AGS_SOUNDCARD_TEST_SET_DO_LOOP (TRUE)
   
 GType soundcard_test_types[10];
- 
+
+extern AgsApplicationContext *ags_application_context;
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -102,6 +104,8 @@ ags_soundcard_test_init_suite()
 {
   guint i;
 
+  ags_audio_application_context_new();
+  
   i = 0;
   
   soundcard_test_types[i++] = AGS_TYPE_DEVOUT;
@@ -347,6 +351,8 @@ ags_soundcard_test_list_cards()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+  
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -383,6 +389,8 @@ ags_soundcard_test_is_available()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -408,6 +416,8 @@ ags_soundcard_test_is_starting()
   
   guint i;
   gboolean success;
+
+  ags_application_context = NULL;
 
   application_context = ags_audio_application_context_new();
 
@@ -474,6 +484,8 @@ ags_soundcard_test_is_recording()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -507,6 +519,8 @@ ags_soundcard_test_get_uptime()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -539,6 +553,8 @@ ags_soundcard_test_play_init()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -569,6 +585,8 @@ ags_soundcard_test_play()
   
   guint i;
   gboolean success;
+
+  ags_application_context = NULL;
 
   application_context = ags_audio_application_context_new();
 
@@ -601,6 +619,8 @@ ags_soundcard_test_record_init()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -631,6 +651,8 @@ ags_soundcard_test_record()
   
   guint i;
   gboolean success;
+
+  ags_application_context = NULL;
 
   application_context = ags_audio_application_context_new();
 
@@ -663,6 +685,8 @@ ags_soundcard_test_stop()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -692,6 +716,8 @@ ags_soundcard_test_tic()
   
   guint i;
   gboolean success;
+
+  ags_application_context = NULL;
 
   application_context = ags_audio_application_context_new();
 
@@ -725,6 +751,8 @@ ags_soundcard_test_offset_changed()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -756,6 +784,8 @@ ags_soundcard_test_get_buffer()
   
   guint i;
   gboolean success;
+
+  ags_application_context = NULL;
 
   application_context = ags_audio_application_context_new();
 
@@ -789,6 +819,8 @@ ags_soundcard_test_get_next_buffer()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -820,6 +852,8 @@ ags_soundcard_test_get_prev_buffer()
   
   guint i;
   gboolean success;
+
+  ags_application_context = NULL;
 
   application_context = ags_audio_application_context_new();
 
@@ -865,6 +899,8 @@ ags_soundcard_test_set_bpm()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -899,6 +935,8 @@ ags_soundcard_test_get_bpm()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -930,6 +968,8 @@ ags_soundcard_test_set_delay_factor()
   
   guint i;
   gboolean success;
+
+  ags_application_context = NULL;
 
   application_context = ags_audio_application_context_new();
 
@@ -965,6 +1005,8 @@ ags_soundcard_test_get_delay_factor()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -997,6 +1039,8 @@ ags_soundcard_test_get_absolute_delay()
   gdouble retval;
   guint i;
   gboolean success;
+
+  ags_application_context = NULL;
 
   application_context = ags_audio_application_context_new();
 
@@ -1031,6 +1075,8 @@ ags_soundcard_test_get_delay()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -1063,6 +1109,8 @@ ags_soundcard_test_get_attack()
   guint retval;
   guint i;
   gboolean success;
+
+  ags_application_context = NULL;
 
   application_context = ags_audio_application_context_new();
 
@@ -1097,6 +1145,8 @@ ags_soundcard_test_get_delay_counter()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -1128,6 +1178,8 @@ ags_soundcard_test_set_note_offset()
   
   guint i;
   gboolean success;
+
+  ags_application_context = NULL;
 
   application_context = ags_audio_application_context_new();
 
@@ -1163,6 +1215,8 @@ ags_soundcard_test_get_note_offset()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -1194,6 +1248,8 @@ ags_soundcard_test_set_note_offset_absolute()
   
   guint i;
   gboolean success;
+
+  ags_application_context = NULL;
 
   application_context = ags_audio_application_context_new();
 
@@ -1229,6 +1285,8 @@ ags_soundcard_test_get_note_offset_absolute()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -1262,6 +1320,8 @@ ags_soundcard_test_set_loop()
   gboolean do_loop;
   guint i;
   gboolean success;
+
+  ags_application_context = NULL;
 
   application_context = ags_audio_application_context_new();
 
@@ -1299,6 +1359,8 @@ ags_soundcard_test_get_loop()
   guint i;
   gboolean success;
 
+  ags_application_context = NULL;
+
   application_context = ags_audio_application_context_new();
 
   success = TRUE;
@@ -1333,6 +1395,8 @@ ags_soundcard_test_get_loop_offset()
   guint retval;
   guint i;
   gboolean success;
+
+  ags_application_context = NULL;
 
   application_context = ags_audio_application_context_new();
 

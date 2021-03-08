@@ -1349,8 +1349,9 @@ ags_jack_devin_set_device(AgsSoundcard *soundcard,
   g_rec_mutex_lock(jack_devin_mutex);
 
   if(jack_devin->card_uri == device ||
-     !g_ascii_strcasecmp(jack_devin->card_uri,
-			 device)){
+     (jack_devin->card_uri != NULL &&
+      !g_ascii_strcasecmp(jack_devin->card_uri,
+			  device))){
     g_rec_mutex_unlock(jack_devin_mutex);
   
     return;

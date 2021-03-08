@@ -132,6 +132,10 @@ ags_midi_buffer_util_get_varlength(guchar *buffer,
   char c;
 
   if(buffer == NULL){
+    if(varlength != NULL){
+      *varlength = 0;
+    }
+    
     return(0);
   }
 
@@ -192,6 +196,10 @@ ags_midi_buffer_util_get_int16(guchar *buffer,
   glong tmp;
 
   if(buffer == NULL){
+    if(val != NULL){
+      *val = 0;
+    }
+    
     return;
   }
 
@@ -241,6 +249,10 @@ ags_midi_buffer_util_get_int24(guchar *buffer,
   glong tmp;
 
   if(buffer == NULL){
+    if(val != NULL){
+      *val = 0;
+    }
+
     return;
   }
   
@@ -292,6 +304,10 @@ ags_midi_buffer_util_get_int32(guchar *buffer,
   glong tmp;
 
   if(buffer == NULL){
+    if(val != NULL){
+      *val = 0;
+    }
+
     return;
   }
   
@@ -369,9 +385,26 @@ ags_midi_buffer_util_get_header(guchar *buffer,
 {
   static gchar header[] = "MThd";
 
-  if(g_ascii_strncasecmp(buffer,
-			 header,
-			 4)){
+  if(buffer == NULL ||
+     (!g_ascii_strncasecmp(buffer,
+			   header,
+			   4)) == FALSE){
+    if(offset != NULL){
+      *offset = 0;
+    }
+    
+    if(format != NULL){
+      *format = 0;
+    }
+
+    if(track_count != NULL){
+      *track_count = 0;
+    }
+
+    if(division != NULL){
+      *division = 0;
+    }
+    
     return(0);
   }
   
@@ -438,13 +471,14 @@ ags_midi_buffer_util_get_track(guchar *buffer,
 {
   static gchar track[] = "MTrk";
 
-  if(buffer == NULL){
-    return(0);
-  }
-  
-  if(g_ascii_strncasecmp(buffer,
-			 track,
-			 4)){
+  if(buffer == NULL ||
+     (!g_ascii_strncasecmp(buffer,
+			   track,
+			   4)) == FALSE){
+    if(offset != NULL){
+      *offset = 0;
+    }
+
     return(0);
   }
 
@@ -520,6 +554,22 @@ ags_midi_buffer_util_get_key_on(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(channel != NULL){
+      *channel = 0;
+    }
+
+    if(key != NULL){
+      *key = 0;
+    }
+
+    if(velocity != NULL){
+      *velocity = 0;
+    }
+    
     return(0);
   }
 
@@ -615,6 +665,22 @@ ags_midi_buffer_util_get_key_off(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(channel != NULL){
+      *channel = 0;
+    }
+
+    if(key != NULL){
+      *key = 0;
+    }
+
+    if(velocity != NULL){
+      *velocity = 0;
+    }
+
     return(0);
   }
 
@@ -710,6 +776,22 @@ ags_midi_buffer_util_get_key_pressure(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(channel != NULL){
+      *channel = 0;
+    }
+
+    if(key != NULL){
+      *key = 0;
+    }
+
+    if(pressure != NULL){
+      *pressure = 0;
+    }
+
     return(0);
   }
 
@@ -805,6 +887,22 @@ ags_midi_buffer_util_get_change_parameter(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(channel != NULL){
+      *channel = 0;
+    }
+
+    if(control != NULL){
+      *control = 0;
+    }
+
+    if(value != NULL){
+      *value = 0;
+    }
+
     return(0);
   }
 
@@ -900,6 +998,22 @@ ags_midi_buffer_util_get_pitch_bend(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(channel != NULL){
+      *channel = 0;
+    }
+
+    if(pitch != NULL){
+      *pitch = 0;
+    }
+
+    if(transmitter != NULL){
+      *transmitter = 0;
+    }
+
     return(0);
   }
 
@@ -988,6 +1102,18 @@ ags_midi_buffer_util_get_change_program(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(channel != NULL){
+      *channel = 0;
+    }
+
+    if(program != NULL){
+      *program = 0;
+    }
+
     return(0);
   }
 
@@ -1071,6 +1197,18 @@ ags_midi_buffer_util_get_change_pressure(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(channel != NULL){
+      *channel = 0;
+    }
+
+    if(pressure != NULL){
+      *pressure = 0;
+    }
+
     return(0);
   }
 
@@ -1157,6 +1295,18 @@ ags_midi_buffer_util_get_sysex(guchar *buffer,
   guint i;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(data != NULL){
+      *data = NULL;
+    }
+
+    if(length != NULL){
+      *length = 0;
+    }
+
     return(0);
   }
   
@@ -1249,6 +1399,18 @@ ags_midi_buffer_util_get_quarter_frame(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(message_type != NULL){
+      *message_type = 0;
+    }
+
+    if(values != NULL){
+      *values = 0;
+    }
+
     return(0);
   }
   
@@ -1326,6 +1488,14 @@ ags_midi_buffer_util_get_song_position(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(song_position != NULL){
+      *song_position = 0;
+    }
+
     return(0);
   }
 
@@ -1400,6 +1570,14 @@ ags_midi_buffer_util_get_song_select(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(song_select != NULL){
+      *song_select = 0;
+    }
+
     return(0);
   }
   
@@ -1465,6 +1643,10 @@ ags_midi_buffer_util_get_tune_request(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
     return(0);
   }
   
@@ -1540,6 +1722,14 @@ ags_midi_buffer_util_get_sequence_number(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(sequence != NULL){
+      *sequence = 0;
+    }
+
     return(0);
   }
   
@@ -1640,6 +1830,30 @@ ags_midi_buffer_util_get_smtpe(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(rr != NULL){
+      *rr = 0;
+    }
+
+    if(hr != NULL){
+      *hr = 0;
+    }
+
+    if(mn != NULL){
+      *mn = 0;
+    }
+
+    if(se != NULL){
+      *se = 0;
+    }
+
+    if(fr != NULL){
+      *fr = 0;
+    }
+
     return(0);
   }
   
@@ -1740,6 +1954,14 @@ ags_midi_buffer_util_get_tempo(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(tempo != NULL){
+      *tempo = 0;
+    }
+
     return(0);
   }
   
@@ -1833,6 +2055,26 @@ ags_midi_buffer_util_get_time_signature(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(nn != NULL){
+      *nn = 0;
+    }
+
+    if(dd != NULL){
+      *dd = 0;
+    }
+
+    if(cc != NULL){
+      *cc = 0;
+    }
+
+    if(bb != NULL){
+      *bb = 0;
+    }
+
     return(0);
   }
   
@@ -1932,6 +2174,18 @@ ags_midi_buffer_util_get_key_signature(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(sf != NULL){
+      *sf = 0;
+    }
+
+    if(mi != NULL){
+      *mi = 0;
+    }
+
     return(0);
   }
   
@@ -2033,6 +2287,22 @@ ags_midi_buffer_util_get_sequencer_meta_event(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(len != NULL){
+      *len = 0;
+    }
+
+    if(id != NULL){
+      *id = 0;
+    }
+
+    if(data != NULL){
+      *data = 0;
+    }
+
     return(0);
   }
   
@@ -2134,6 +2404,18 @@ ags_midi_buffer_util_get_text_event(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(text != NULL){
+      *text = NULL;
+    }
+
+    if(length != NULL){
+      *length = 0;
+    }
+    
     return(0);
   }
   
@@ -2214,6 +2496,10 @@ ags_midi_buffer_util_get_end_of_track(guchar *buffer,
   guint delta_time_size;
   
   if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
     return(0);
   }
 
@@ -2250,7 +2536,7 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
 
   guchar *offset;
   
-  glong current_delta_time;
+  glong current_delta_time, tmp_delta_time;
   glong next_delta_time;
   guint delta_time_size;
   guchar status, prev_status;
@@ -2291,8 +2577,14 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
     }
 
     /* read delta time */
+    tmp_delta_time = 0;
+    
     delta_time_size = ags_midi_buffer_util_get_varlength(offset,
-							 &current_delta_time);
+							 &tmp_delta_time);
+
+    if(delta_time_size > 0){
+      current_delta_time = tmp_delta_time;
+    }
     
     /* read status byte */
     status = offset[delta_time_size];
@@ -2365,6 +2657,8 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
       offset += n;
 
       /* check if status is omitted */
+      next_delta_time = 0;
+      
       delta_time_size = ags_midi_buffer_util_get_varlength(offset,
 							   &next_delta_time);
       

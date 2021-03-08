@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -80,10 +80,10 @@ void ags_char_buffer_util_copy_s64_to_cbuffer(guchar *destination, guint word_si
 					      gint64 *source, guint schannels,
 					      guint frame_count, guint byte_order);
 void ags_char_buffer_util_copy_float_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
-						float *source, guint schannels,
+						gfloat *source, guint schannels,
 						guint frame_count, guint byte_order);
 void ags_char_buffer_util_copy_double_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
-						 double *source, guint schannels,
+						 gdouble *source, guint schannels,
 						 guint frame_count, guint byte_order);
 
 /* copy from cbuffer */
@@ -102,10 +102,10 @@ void ags_char_buffer_util_copy_cbuffer_to_s32(gint32 *destination, guint dchanne
 void ags_char_buffer_util_copy_cbuffer_to_s64(gint64 *destination, guint dchannels,
 					      guchar *source, guint word_size, guint schannels,
 					      guint frame_count, guint byte_order);
-void ags_char_buffer_util_copy_cbuffer_to_float(float *destination, guint dchannels,
+void ags_char_buffer_util_copy_cbuffer_to_float(gfloat *destination, guint dchannels,
 						gint8 *source, guint word_size, guint schannels,
 						guint frame_count, guint byte_order);
-void ags_char_buffer_util_copy_cbuffer_to_double(double *destination, guint dchannels,
+void ags_char_buffer_util_copy_cbuffer_to_double(gdouble *destination, guint dchannels,
 						 guchar *source, guint word_size, guint schannels,
 						 guint frame_count, guint byte_order);
 

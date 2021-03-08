@@ -475,6 +475,10 @@ ags_audio_buffer_util_clear_float(gfloat *buffer, guint channels,
   guint current_channel;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+  
   i = 0;
   
   /* unrolled function */
@@ -522,6 +526,10 @@ ags_audio_buffer_util_clear_float32(Float32 *buffer, guint channels,
   guint limit;
   guint current_channel;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -571,6 +579,10 @@ ags_audio_buffer_util_clear_double(gdouble *buffer, guint channels,
   guint current_channel;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   i = 0;
   
   /* unrolled function */
@@ -617,6 +629,10 @@ ags_audio_buffer_util_clear_complex(AgsComplex *buffer, guint channels,
   guint limit;
   guint current_channel;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -760,6 +776,10 @@ ags_audio_buffer_util_envelope_s8(gint8 *buffer, guint channels,
   guint current_channel;
   guint i;
 
+  if(buffer == NULL){
+    return(1.0);
+  }
+
   start_volume = current_volume;
   i = 0;
   
@@ -890,6 +910,10 @@ ags_audio_buffer_util_envelope_s16(gint16 *buffer, guint channels,
   guint limit;
   guint current_channel;
   guint i;
+
+  if(buffer == NULL){
+    return(1.0);
+  }
 
   start_volume = current_volume;
   i = 0;
@@ -1022,6 +1046,10 @@ ags_audio_buffer_util_envelope_s24(gint32 *buffer, guint channels,
   guint current_channel;
   guint i;
 
+  if(buffer == NULL){
+    return(1.0);
+  }
+
   start_volume = current_volume;
   i = 0;
   
@@ -1152,6 +1180,10 @@ ags_audio_buffer_util_envelope_s32(gint32 *buffer, guint channels,
   guint limit;
   guint current_channel;
   guint i;
+
+  if(buffer == NULL){
+    return(1.0);
+  }
 
   start_volume = current_volume;
   i = 0;
@@ -1284,6 +1316,10 @@ ags_audio_buffer_util_envelope_s64(gint64 *buffer, guint channels,
   guint current_channel;
   guint i;
 
+  if(buffer == NULL){
+    return(1.0);
+  }
+
   start_volume = current_volume;
   i = 0;
   
@@ -1414,6 +1450,10 @@ ags_audio_buffer_util_envelope_float(gfloat *buffer, guint channels,
   guint limit;
   guint current_channel;
   guint i;
+
+  if(buffer == NULL){
+    return(1.0);
+  }
 
   start_volume = current_volume;
   i = 0;
@@ -1550,6 +1590,10 @@ ags_audio_buffer_util_envelope_double(gdouble *buffer, guint channels,
   guint current_channel;
   guint i;
 
+  if(buffer == NULL){
+    return(1.0);
+  }
+
   start_volume = current_volume;
   i = 0;
   
@@ -1681,6 +1725,10 @@ ags_audio_buffer_util_envelope_complex(AgsComplex *buffer, guint channels,
   guint current_channel;
   guint i;
 
+  if(buffer == NULL){
+    return(1.0);
+  }
+
   start_volume = current_volume;
   i = 0;
 
@@ -1723,6 +1771,10 @@ ags_audio_buffer_util_envelope(void *buffer, guint channels,
 			       gdouble ratio)
 {
   gdouble retval;
+
+  if(buffer == NULL){
+    return(1.0);
+  }
 
   retval = 0.0;
   
@@ -1817,6 +1869,10 @@ ags_audio_buffer_util_volume_s8(gint8 *buffer, guint channels,
   guint limit;
   guint current_channel;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -1943,6 +1999,10 @@ ags_audio_buffer_util_volume_s16(gint16 *buffer, guint channels,
   guint current_channel;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -2067,6 +2127,10 @@ ags_audio_buffer_util_volume_s24(gint32 *buffer, guint channels,
   guint limit;
   guint current_channel;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -2193,6 +2257,10 @@ ags_audio_buffer_util_volume_s32(gint32 *buffer, guint channels,
   guint current_channel;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -2317,6 +2385,10 @@ ags_audio_buffer_util_volume_s64(gint64 *buffer, guint channels,
   guint limit;
   guint current_channel;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -2443,6 +2515,10 @@ ags_audio_buffer_util_volume_float(gfloat *buffer, guint channels,
   guint current_channel;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -2567,6 +2643,10 @@ ags_audio_buffer_util_volume_double(gdouble *buffer, guint channels,
   guint limit;
   guint current_channel;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -2693,6 +2773,10 @@ ags_audio_buffer_util_volume_complex(AgsComplex *buffer, guint channels,
   guint current_channel;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   i = 0;
 
   //TODO:JK: improve me
@@ -2726,6 +2810,10 @@ ags_audio_buffer_util_volume(void *buffer, guint channels,
 			     guint buffer_length,
 			     gdouble volume)
 {
+  if(buffer == NULL){
+    return;
+  }
+
   switch(format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
     {
@@ -2814,6 +2902,10 @@ ags_audio_buffer_util_peak_s8(gint8 *buffer, guint channels,
   guint limit;
   guint current_channel;
   guint i;
+
+  if(buffer == NULL){
+    return(0.0);
+  }
 
   /* calculate average value */
   current_value = 0.0;
@@ -3119,6 +3211,10 @@ ags_audio_buffer_util_peak_s16(gint16 *buffer, guint channels,
   guint current_channel;
   guint i;
 
+  if(buffer == NULL){
+    return(0.0);
+  }
+
   /* calculate average value */
   current_value = 0.0;
 
@@ -3422,6 +3518,10 @@ ags_audio_buffer_util_peak_s24(gint32 *buffer, guint channels,
   guint limit;
   guint current_channel;
   guint i;
+
+  if(buffer == NULL){
+    return(0.0);
+  }
 
   /* calculate average value */
   current_value = 0.0;
@@ -3727,6 +3827,10 @@ ags_audio_buffer_util_peak_s32(gint32 *buffer, guint channels,
   guint current_channel;
   guint i;
 
+  if(buffer == NULL){
+    return(0.0);
+  }
+
   /* calculate average value */
   current_value = 0.0;
 
@@ -4030,6 +4134,10 @@ ags_audio_buffer_util_peak_s64(gint64 *buffer, guint channels,
   guint limit;
   guint current_channel;
   guint i;
+
+  if(buffer == NULL){
+    return(0.0);
+  }
 
   /* calculate average value */
   current_value = 0.0;
@@ -4335,6 +4443,10 @@ ags_audio_buffer_util_peak_float(gfloat *buffer, guint channels,
   guint current_channel;
   guint i;
 
+  if(buffer == NULL){
+    return(0.0);
+  }
+
   /* calculate average value */
   current_value = 0.0;
 
@@ -4632,6 +4744,10 @@ ags_audio_buffer_util_peak_double(gdouble *buffer, guint channels,
   guint limit;
   guint current_channel;
   guint i;
+
+  if(buffer == NULL){
+    return(0.0);
+  }
 
   /* calculate average value */
   current_value = 0.0;
@@ -4932,6 +5048,10 @@ ags_audio_buffer_util_peak_complex(AgsComplex *buffer, guint channels,
   guint current_channel;
   guint i;
 
+  if(buffer == NULL){
+    return(0.0);
+  }
+
   i = 0;
   
   /* calculate average value */
@@ -4984,6 +5104,10 @@ ags_audio_buffer_util_peak(void *buffer, guint channels,
 			   gdouble pressure_factor)
 {
   gdouble current_value;
+
+  if(buffer == NULL){
+    return(0.0);
+  }
 
   current_value = 0.0;
   
@@ -5091,6 +5215,10 @@ ags_audio_buffer_util_resample_s8(gint8 *buffer, guint channels,
 
   gint8 *ret_buffer;
 
+  if(buffer == NULL){
+    return(NULL);
+  }
+
   secret_rabbit.src_ratio = target_samplerate / samplerate;
 
   secret_rabbit.input_frames = buffer_length;
@@ -5143,6 +5271,10 @@ ags_audio_buffer_util_resample_s16(gint16 *buffer, guint channels,
   SRC_DATA secret_rabbit;
 
   gint16 *ret_buffer;
+
+  if(buffer == NULL){
+    return(NULL);
+  }
 
   secret_rabbit.src_ratio = target_samplerate / samplerate;
 
@@ -5197,6 +5329,10 @@ ags_audio_buffer_util_resample_s24(gint32 *buffer, guint channels,
 
   gint32 *ret_buffer;
 
+  if(buffer == NULL){
+    return(NULL);
+  }
+
   secret_rabbit.src_ratio = target_samplerate / samplerate;
 
   secret_rabbit.input_frames = buffer_length;
@@ -5249,6 +5385,10 @@ ags_audio_buffer_util_resample_s32(gint32 *buffer, guint channels,
   SRC_DATA secret_rabbit;
 
   gint32 *ret_buffer;
+
+  if(buffer == NULL){
+    return(NULL);
+  }
 
   secret_rabbit.src_ratio = target_samplerate / samplerate;
 
@@ -5303,6 +5443,10 @@ ags_audio_buffer_util_resample_s64(gint64 *buffer, guint channels,
 
   gint64 *ret_buffer;
 
+  if(buffer == NULL){
+    return(NULL);
+  }
+
   secret_rabbit.src_ratio = target_samplerate / samplerate;
 
   secret_rabbit.input_frames = buffer_length;
@@ -5355,6 +5499,10 @@ ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
   SRC_DATA secret_rabbit;
 
   gfloat *ret_buffer;
+
+  if(buffer == NULL){
+    return(NULL);
+  }
 
   //FIXME:JK: lost precision
 
@@ -5411,6 +5559,10 @@ ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
   SRC_DATA secret_rabbit;
 
   gdouble *ret_buffer;
+
+  if(buffer == NULL){
+    return(NULL);
+  }
 
   //FIXME:JK: lost precision
 
@@ -5480,6 +5632,10 @@ ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
   guint output_frames;
   guint i, n;
 
+  if(buffer == NULL){
+    return(NULL);
+  }
+
   delay_factor = 1.0 / (gdouble) target_samplerate * (gdouble) samplerate;
   
   output_frames = ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate);
@@ -5543,6 +5699,10 @@ ags_audio_buffer_util_resample(void *buffer, guint channels,
 			       guint target_samplerate)
 {
   void *retval;
+
+  if(buffer == NULL){
+    return(NULL);
+  }
 
   retval = NULL;
   
@@ -5642,6 +5802,11 @@ ags_audio_buffer_util_resample_s8_with_buffer(gint8 *buffer, guint channels,
 {
   SRC_DATA secret_rabbit;
 
+  if(buffer == NULL ||
+     target_buffer == NULL){
+    return;
+  }
+
   secret_rabbit.src_ratio = target_samplerate / samplerate;
 
   secret_rabbit.input_frames = buffer_length;
@@ -5690,6 +5855,11 @@ ags_audio_buffer_util_resample_s16_with_buffer(gint16 *buffer, guint channels,
 					       gint16 *target_buffer)
 {
   SRC_DATA secret_rabbit;
+
+  if(buffer == NULL ||
+     target_buffer == NULL){
+    return;
+  }
 
   secret_rabbit.src_ratio = target_samplerate / samplerate;
 
@@ -5740,6 +5910,11 @@ ags_audio_buffer_util_resample_s24_with_buffer(gint32 *buffer, guint channels,
 {
   SRC_DATA secret_rabbit;
 
+  if(buffer == NULL ||
+     target_buffer == NULL){
+    return;
+  }
+
   secret_rabbit.src_ratio = target_samplerate / samplerate;
 
   secret_rabbit.input_frames = buffer_length;
@@ -5788,6 +5963,11 @@ ags_audio_buffer_util_resample_s32_with_buffer(gint32 *buffer, guint channels,
 					       gint32 *target_buffer)
 {
   SRC_DATA secret_rabbit;
+
+  if(buffer == NULL ||
+     target_buffer == NULL){
+    return;
+  }
 
   secret_rabbit.src_ratio = target_samplerate / samplerate;
 
@@ -5838,6 +6018,11 @@ ags_audio_buffer_util_resample_s64_with_buffer(gint64 *buffer, guint channels,
 {
   SRC_DATA secret_rabbit;
 
+  if(buffer == NULL ||
+     target_buffer == NULL){
+    return;
+  }
+
   secret_rabbit.src_ratio = target_samplerate / samplerate;
 
   secret_rabbit.input_frames = buffer_length;
@@ -5887,6 +6072,11 @@ ags_audio_buffer_util_resample_float_with_buffer(gfloat *buffer, guint channels,
 {
   SRC_DATA secret_rabbit;
 
+  if(buffer == NULL ||
+     target_buffer == NULL){
+    return;
+  }
+
   secret_rabbit.src_ratio = target_samplerate / samplerate;
 
   secret_rabbit.input_frames = buffer_length;
@@ -5930,6 +6120,11 @@ ags_audio_buffer_util_resample_double_with_buffer(gdouble *buffer, guint channel
 						  gdouble *target_buffer)
 {
   SRC_DATA secret_rabbit;
+
+  if(buffer == NULL ||
+     target_buffer == NULL){
+    return;
+  }
 
   secret_rabbit.src_ratio = target_samplerate / samplerate;
 
@@ -5993,6 +6188,11 @@ ags_audio_buffer_util_resample_complex_with_buffer(AgsComplex *buffer, guint cha
   guint output_frames;
   guint i, n;
 
+  if(buffer == NULL ||
+     target_buffer == NULL){
+    return;
+  }
+
   delay_factor = 1.0 / (gdouble) target_samplerate * (gdouble) samplerate;
   
   output_frames = ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate);
@@ -6053,6 +6253,11 @@ ags_audio_buffer_util_resample_with_buffer(void *buffer, guint channels,
 					   guint target_buffer_length,
 					   void *target_buffer)
 {
+  if(buffer == NULL ||
+     target_buffer == NULL){
+    return;
+  }
+
   switch(format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
     {
@@ -6159,6 +6364,11 @@ ags_audio_buffer_util_pong_s8(gint8 *destination, guint dchannels,
   guint limit;
   gint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
 
@@ -6319,6 +6529,11 @@ ags_audio_buffer_util_pong_s16(gint16 *destination, guint dchannels,
   gint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -6476,6 +6691,11 @@ ags_audio_buffer_util_pong_s24(gint32 *destination, guint dchannels,
   guint limit;
   gint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
 
@@ -6636,6 +6856,11 @@ ags_audio_buffer_util_pong_s32(gint32 *destination, guint dchannels,
   gint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -6791,6 +7016,11 @@ ags_audio_buffer_util_pong_s64(gint64 *destination, guint dchannels,
   guint limit;
   gint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;  
 
@@ -6951,6 +7181,11 @@ ags_audio_buffer_util_pong_float(gfloat *destination, guint dchannels,
   gint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -7106,6 +7341,11 @@ ags_audio_buffer_util_pong_double(gdouble *destination, guint dchannels,
   guint limit;
   gint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -7264,6 +7504,11 @@ ags_audio_buffer_util_pong_complex(AgsComplex *destination, guint dchannels,
 {
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
 
   for(; i < count; i++){
@@ -7298,6 +7543,11 @@ ags_audio_buffer_util_pong(void *destination, guint dchannels,
 			   void *source, guint schannels,
 			   guint count, guint format)
 {
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   switch(format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
     {
@@ -7380,6 +7630,11 @@ ags_audio_buffer_util_copy_s8_to_s8(gint8 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -7541,6 +7796,11 @@ ags_audio_buffer_util_copy_s8_to_s16(gint16 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -7707,6 +7967,11 @@ ags_audio_buffer_util_copy_s8_to_s24(gint32 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -7872,6 +8137,11 @@ ags_audio_buffer_util_copy_s8_to_s32(gint32 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -8036,6 +8306,11 @@ ags_audio_buffer_util_copy_s8_to_s64(gint64 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -8203,6 +8478,11 @@ ags_audio_buffer_util_copy_s8_to_float(gfloat *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -8369,6 +8649,11 @@ ags_audio_buffer_util_copy_s8_to_double(gdouble *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -8534,6 +8819,11 @@ ags_audio_buffer_util_copy_s16_to_s8(gint8 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -8697,6 +8987,11 @@ ags_audio_buffer_util_copy_s16_to_s16(gint16 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -8856,6 +9151,11 @@ ags_audio_buffer_util_copy_s16_to_s24(gint32 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -9022,6 +9322,11 @@ ags_audio_buffer_util_copy_s16_to_s32(gint32 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -9186,6 +9491,11 @@ ags_audio_buffer_util_copy_s16_to_s64(gint64 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -9353,6 +9663,11 @@ ags_audio_buffer_util_copy_s16_to_float(gfloat *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -9519,6 +9834,11 @@ ags_audio_buffer_util_copy_s16_to_double(gdouble *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -9683,6 +10003,11 @@ ags_audio_buffer_util_copy_s24_to_s8(gint8 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -9849,6 +10174,11 @@ ags_audio_buffer_util_copy_s24_to_s16(gint16 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -10012,6 +10342,11 @@ ags_audio_buffer_util_copy_s24_to_s24(gint32 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -10172,6 +10507,11 @@ ags_audio_buffer_util_copy_s24_to_s32(gint32 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -10337,6 +10677,11 @@ ags_audio_buffer_util_copy_s24_to_s64(gint64 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -10504,6 +10849,11 @@ ags_audio_buffer_util_copy_s24_to_float(gfloat *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -10670,6 +11020,11 @@ ags_audio_buffer_util_copy_s24_to_double(gdouble *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -10834,6 +11189,11 @@ ags_audio_buffer_util_copy_s32_to_s8(gint8 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -11000,6 +11360,11 @@ ags_audio_buffer_util_copy_s32_to_s16(gint16 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -11165,6 +11530,11 @@ ags_audio_buffer_util_copy_s32_to_s24(gint32 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -11328,6 +11698,11 @@ ags_audio_buffer_util_copy_s32_to_s32(gint32 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -11485,6 +11860,11 @@ ags_audio_buffer_util_copy_s32_to_s64(gint64 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -11652,6 +12032,11 @@ ags_audio_buffer_util_copy_s32_to_float(gfloat *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -11818,6 +12203,11 @@ ags_audio_buffer_util_copy_s32_to_double(gdouble *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -11982,6 +12372,11 @@ ags_audio_buffer_util_copy_s64_to_s8(gint8 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -12148,6 +12543,11 @@ ags_audio_buffer_util_copy_s64_to_s16(gint16 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -12312,6 +12712,11 @@ ags_audio_buffer_util_copy_s64_to_s24(gint32 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -12478,6 +12883,11 @@ ags_audio_buffer_util_copy_s64_to_s32(gint32 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -12641,6 +13051,11 @@ ags_audio_buffer_util_copy_s64_to_s64(gint64 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;  
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -12802,6 +13217,11 @@ ags_audio_buffer_util_copy_s64_to_float(gfloat *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -12969,6 +13389,11 @@ ags_audio_buffer_util_copy_s64_to_double(gdouble *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -13133,6 +13558,11 @@ ags_audio_buffer_util_copy_float_to_s8(gint8 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -13299,6 +13729,11 @@ ags_audio_buffer_util_copy_float_to_s16(gint16 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -13463,6 +13898,11 @@ ags_audio_buffer_util_copy_float_to_s24(gint32 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -13629,6 +14069,11 @@ ags_audio_buffer_util_copy_float_to_s32(gint32 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -13794,6 +14239,11 @@ ags_audio_buffer_util_copy_float_to_s64(gint64 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -13957,6 +14407,11 @@ ags_audio_buffer_util_copy_float_to_float(gfloat *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -14112,6 +14567,11 @@ ags_audio_buffer_util_copy_float_to_double(gdouble *destination, guint dchannels
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -14270,6 +14730,11 @@ ags_audio_buffer_util_copy_double_to_s8(gint8 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -14436,6 +14901,11 @@ ags_audio_buffer_util_copy_double_to_s16(gint16 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -14600,6 +15070,11 @@ ags_audio_buffer_util_copy_double_to_s24(gint32 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -14766,6 +15241,11 @@ ags_audio_buffer_util_copy_double_to_s32(gint32 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -14931,6 +15411,11 @@ ags_audio_buffer_util_copy_double_to_s64(gint64 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -15094,6 +15579,11 @@ ags_audio_buffer_util_copy_double_to_float(gfloat *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -15252,6 +15742,11 @@ ags_audio_buffer_util_copy_double_to_double(gdouble *destination, guint dchannel
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -15415,6 +15910,11 @@ ags_audio_buffer_util_copy_s8_to_float32(Float32 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -15582,6 +16082,11 @@ ags_audio_buffer_util_copy_s16_to_float32(Float32 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -15747,6 +16252,11 @@ ags_audio_buffer_util_copy_s24_to_float32(Float32 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -15914,6 +16424,11 @@ ags_audio_buffer_util_copy_s32_to_float32(Float32 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -16080,6 +16595,11 @@ ags_audio_buffer_util_copy_s64_to_float32(Float32 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -16243,6 +16763,11 @@ ags_audio_buffer_util_copy_float_to_float32(Float32 *destination, guint dchannel
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -16399,6 +16924,11 @@ ags_audio_buffer_util_copy_double_to_float32(Float32 *destination, guint dchanne
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -16554,6 +17084,11 @@ ags_audio_buffer_util_copy_float32_to_float32(Float32 *destination, guint dchann
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -16712,6 +17247,11 @@ ags_audio_buffer_util_copy_float32_to_s8(gint8 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -16878,6 +17418,11 @@ ags_audio_buffer_util_copy_float32_to_s16(gint16 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -17042,6 +17587,11 @@ ags_audio_buffer_util_copy_float32_to_s24(gint32 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -17208,6 +17758,11 @@ ags_audio_buffer_util_copy_float32_to_s32(gint32 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -17373,6 +17928,11 @@ ags_audio_buffer_util_copy_float32_to_s64(gint64 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -17536,6 +18096,11 @@ ags_audio_buffer_util_copy_float32_to_float(gfloat *destination, guint dchannels
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
@@ -17691,6 +18256,11 @@ ags_audio_buffer_util_copy_float32_to_double(gdouble *destination, guint dchanne
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
   
@@ -17853,6 +18423,11 @@ ags_audio_buffer_util_copy_s8_to_complex(AgsComplex *destination, guint dchannel
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   c_ptr = &c_value;
   c_ptr_ptr = &c_ptr;
   
@@ -17898,6 +18473,11 @@ ags_audio_buffer_util_copy_s16_to_complex(AgsComplex *destination, guint dchanne
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   c_ptr = &c_value;
   c_ptr_ptr = &c_ptr;
@@ -17945,6 +18525,11 @@ ags_audio_buffer_util_copy_s24_to_complex(AgsComplex *destination, guint dchanne
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   c_ptr = &c_value;
   c_ptr_ptr = &c_ptr;
   
@@ -17990,6 +18575,11 @@ ags_audio_buffer_util_copy_s32_to_complex(AgsComplex *destination, guint dchanne
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   c_ptr = &c_value;
   c_ptr_ptr = &c_ptr;
@@ -18037,6 +18627,11 @@ ags_audio_buffer_util_copy_s64_to_complex(AgsComplex *destination, guint dchanne
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   c_ptr = &c_value;
   c_ptr_ptr = &c_ptr;
   
@@ -18083,6 +18678,11 @@ ags_audio_buffer_util_copy_float_to_complex(AgsComplex *destination, guint dchan
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   c_ptr = &c_value;
   c_ptr_ptr = &c_ptr;
   
@@ -18128,6 +18728,11 @@ ags_audio_buffer_util_copy_double_to_complex(AgsComplex *destination, guint dcha
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   c_ptr = &c_value;
   c_ptr_ptr = &c_ptr;
@@ -18179,6 +18784,11 @@ ags_audio_buffer_util_copy_float32_to_complex(AgsComplex *destination, guint dch
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   c_ptr = &c_value;
   c_ptr_ptr = &c_ptr;
   
@@ -18226,6 +18836,11 @@ ags_audio_buffer_util_copy_complex_to_complex(AgsComplex *destination, guint dch
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
 
   for(; i < count; i++){
@@ -18266,6 +18881,11 @@ ags_audio_buffer_util_copy_complex_to_s8(gint8 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
   
   ptr = &value;
@@ -18303,6 +18923,11 @@ ags_audio_buffer_util_copy_complex_to_s16(gint16 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
 
@@ -18342,6 +18967,11 @@ ags_audio_buffer_util_copy_complex_to_s24(gint32 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
 
   ptr = &value;    
@@ -18379,6 +19009,11 @@ ags_audio_buffer_util_copy_complex_to_s32(gint32 *destination, guint dchannels,
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
 
@@ -18418,6 +19053,11 @@ ags_audio_buffer_util_copy_complex_to_s64(gint64 *destination, guint dchannels,
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
 
   ptr = &value;    
@@ -18456,6 +19096,11 @@ ags_audio_buffer_util_copy_complex_to_float(gfloat *destination, guint dchannels
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
 
   ptr = &value;    
@@ -18493,6 +19138,11 @@ ags_audio_buffer_util_copy_complex_to_double(gdouble *destination, guint dchanne
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
+
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
 
   i = 0;
 
@@ -18533,6 +19183,11 @@ ags_audio_buffer_util_copy_complex_to_float32(Float32 *destination, guint dchann
   guint current_dchannel, current_schannel;
   guint i;
 
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   i = 0;
 
   ptr = &value;    
@@ -18568,6 +19223,11 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
 					    void *source, guint schannels, guint soffset,
 					    guint count, guint mode)
 {
+  if(destination == NULL ||
+     source == NULL){
+    return;
+  }
+
   switch(mode){
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8:
     {

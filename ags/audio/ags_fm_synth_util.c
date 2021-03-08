@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,6 +64,10 @@ ags_fm_synth_util_sin_s8(gint8 *buffer,
 {
   static const gdouble scale = 127.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
@@ -133,6 +137,10 @@ ags_fm_synth_util_sin_s16(gint16 *buffer,
 {
   static const gdouble scale = 32767.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
     
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
@@ -203,6 +211,10 @@ ags_fm_synth_util_sin_s24(gint32 *buffer,
   static const gdouble scale = 8388607.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
   {
@@ -271,6 +283,10 @@ ags_fm_synth_util_sin_s32(gint32 *buffer,
 {
   static const gdouble scale = 214748363.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
@@ -341,6 +357,10 @@ ags_fm_synth_util_sin_s64(gint64 *buffer,
   static const gdouble scale = 9223372036854775807.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
   {
@@ -399,7 +419,7 @@ ags_fm_synth_util_sin_s64(gint64 *buffer,
  * Since: 3.0.0
  */
 void
-ags_fm_synth_util_sin_float(float *buffer,
+ags_fm_synth_util_sin_float(gfloat *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames,
@@ -408,6 +428,10 @@ ags_fm_synth_util_sin_float(float *buffer,
 			    gdouble tuning)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
@@ -467,7 +491,7 @@ ags_fm_synth_util_sin_float(float *buffer,
  * Since: 3.0.0
  */
 void
-ags_fm_synth_util_sin_double(double *buffer,
+ags_fm_synth_util_sin_double(gdouble *buffer,
 			     gdouble freq, gdouble phase, gdouble volume,
 			     guint samplerate,
 			     guint offset, guint n_frames,
@@ -476,6 +500,10 @@ ags_fm_synth_util_sin_double(double *buffer,
 			     gdouble tuning)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
@@ -550,6 +578,10 @@ ags_fm_synth_util_sin_complex(AgsComplex *buffer,
 
   guint i_stop;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   c_ptr = buffer;
   c_ptr_ptr = &c_ptr;
@@ -635,6 +667,10 @@ ags_fm_synth_util_sawtooth_s8(gint8 *buffer,
   static const gdouble scale = 127.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
@@ -706,6 +742,10 @@ ags_fm_synth_util_sawtooth_s16(gint16 *buffer,
 {
   static const gdouble scale = 32767.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -779,6 +819,10 @@ ags_fm_synth_util_sawtooth_s24(gint32 *buffer,
   static const gdouble scale = 8388607.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
@@ -850,6 +894,10 @@ ags_fm_synth_util_sawtooth_s32(gint32 *buffer,
 {
   static const gdouble scale = 214748363.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -923,6 +971,10 @@ ags_fm_synth_util_sawtooth_s64(gint64 *buffer,
   static const gdouble scale = 9223372036854775807.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
@@ -984,7 +1036,7 @@ ags_fm_synth_util_sawtooth_s64(gint64 *buffer,
  * Since: 3.0.0
  */
 void
-ags_fm_synth_util_sawtooth_float(float *buffer,
+ags_fm_synth_util_sawtooth_float(gfloat *buffer,
 				 gdouble freq, gdouble phase, gdouble volume,
 				 guint samplerate,
 				 guint offset, guint n_frames,
@@ -993,6 +1045,10 @@ ags_fm_synth_util_sawtooth_float(float *buffer,
 				 gdouble tuning)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -1055,7 +1111,7 @@ ags_fm_synth_util_sawtooth_float(float *buffer,
  * Since: 3.0.0
  */
 void
-ags_fm_synth_util_sawtooth_double(double *buffer,
+ags_fm_synth_util_sawtooth_double(gdouble *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
 				  guint offset, guint n_frames,
@@ -1064,6 +1120,10 @@ ags_fm_synth_util_sawtooth_double(double *buffer,
 				  gdouble tuning)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -1141,6 +1201,10 @@ ags_fm_synth_util_sawtooth_complex(AgsComplex *buffer,
 
   guint i_stop;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -1229,6 +1293,10 @@ ags_fm_synth_util_triangle_s8(gint8 *buffer,
   static const gdouble scale = 127.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
@@ -1300,6 +1368,10 @@ ags_fm_synth_util_triangle_s16(gint16 *buffer,
 {
   static const gdouble scale = 32767.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -1374,6 +1446,10 @@ ags_fm_synth_util_triangle_s24(gint32 *buffer,
   gdouble current_freq;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
@@ -1445,6 +1521,10 @@ ags_fm_synth_util_triangle_s32(gint32 *buffer,
 {
   static const gdouble scale = 214748363.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
   
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -1518,6 +1598,10 @@ ags_fm_synth_util_triangle_s64(gint64 *buffer,
   static const gdouble scale = 9223372036854775807.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
@@ -1579,7 +1663,7 @@ ags_fm_synth_util_triangle_s64(gint64 *buffer,
  * Since: 3.0.0
  */
 void
-ags_fm_synth_util_triangle_float(float *buffer,
+ags_fm_synth_util_triangle_float(gfloat *buffer,
 				 gdouble freq, gdouble phase, gdouble volume,
 				 guint samplerate,
 				 guint offset, guint n_frames,
@@ -1588,6 +1672,10 @@ ags_fm_synth_util_triangle_float(float *buffer,
 				 gdouble tuning)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -1650,7 +1738,7 @@ ags_fm_synth_util_triangle_float(float *buffer,
  * Since: 3.0.0
  */
 void
-ags_fm_synth_util_triangle_double(double *buffer,
+ags_fm_synth_util_triangle_double(gdouble *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
 				  guint offset, guint n_frames,
@@ -1659,6 +1747,10 @@ ags_fm_synth_util_triangle_double(double *buffer,
 				  gdouble tuning)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -1736,6 +1828,10 @@ ags_fm_synth_util_triangle_complex(AgsComplex *buffer,
 
   guint i_stop;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
@@ -1823,6 +1919,10 @@ ags_fm_synth_util_square_s8(gint8 *buffer,
 {
   static const gdouble scale = 127.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
@@ -1913,6 +2013,10 @@ ags_fm_synth_util_square_s16(gint16 *buffer,
   static const gdouble scale = 32767.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
   {
@@ -2001,6 +2105,10 @@ ags_fm_synth_util_square_s24(gint32 *buffer,
 {
   static const gdouble scale = 8388607.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
@@ -2091,6 +2199,10 @@ ags_fm_synth_util_square_s32(gint32 *buffer,
   static const gdouble scale = 214748363.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
   {
@@ -2180,6 +2292,10 @@ ags_fm_synth_util_square_s64(gint64 *buffer,
   static const gdouble scale = 9223372036854775807.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
   {
@@ -2258,7 +2374,7 @@ ags_fm_synth_util_square_s64(gint64 *buffer,
  * Since: 3.0.0
  */
 void
-ags_fm_synth_util_square_float(float *buffer,
+ags_fm_synth_util_square_float(gfloat *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames,
@@ -2267,6 +2383,10 @@ ags_fm_synth_util_square_float(float *buffer,
 			       gdouble tuning)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
@@ -2346,7 +2466,7 @@ ags_fm_synth_util_square_float(float *buffer,
  * Since: 3.0.0
  */
 void
-ags_fm_synth_util_square_double(double *buffer,
+ags_fm_synth_util_square_double(gdouble *buffer,
 				gdouble freq, gdouble phase, gdouble volume,
 				guint samplerate,
 				guint offset, guint n_frames,
@@ -2355,6 +2475,10 @@ ags_fm_synth_util_square_double(double *buffer,
 				gdouble tuning)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
@@ -2450,6 +2574,10 @@ ags_fm_synth_util_square_complex(AgsComplex *buffer,
 
   guint i_stop;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   c_ptr = buffer;
   c_ptr_ptr = &c_ptr;
@@ -2555,6 +2683,10 @@ ags_fm_synth_util_impulse_s8(gint8 *buffer,
   static const gdouble scale = 127.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
   {
@@ -2643,6 +2775,10 @@ ags_fm_synth_util_impulse_s16(gint16 *buffer,
 {
   static const gdouble scale = 32767.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
@@ -2733,6 +2869,10 @@ ags_fm_synth_util_impulse_s24(gint32 *buffer,
   static const gdouble scale = 8388607.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
   {
@@ -2821,6 +2961,10 @@ ags_fm_synth_util_impulse_s32(gint32 *buffer,
 {
   static const gdouble scale = 214748363.0;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
@@ -2911,6 +3055,10 @@ ags_fm_synth_util_impulse_s64(gint64 *buffer,
   static const gdouble scale = 9223372036854775807.0;
   guint i;
 
+  if(buffer == NULL){
+    return;
+  }
+
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
   {
@@ -2989,7 +3137,7 @@ ags_fm_synth_util_impulse_s64(gint64 *buffer,
  * Since: 3.0.0
  */
 void
-ags_fm_synth_util_impulse_float(float *buffer,
+ags_fm_synth_util_impulse_float(gfloat *buffer,
 				gdouble freq, gdouble phase, gdouble volume,
 				guint samplerate,
 				guint offset, guint n_frames,
@@ -2998,6 +3146,10 @@ ags_fm_synth_util_impulse_float(float *buffer,
 				gdouble tuning)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
@@ -3077,7 +3229,7 @@ ags_fm_synth_util_impulse_float(float *buffer,
  * Since: 3.0.0
  */
 void
-ags_fm_synth_util_impulse_double(double *buffer,
+ags_fm_synth_util_impulse_double(gdouble *buffer,
 				 gdouble freq, gdouble phase, gdouble volume,
 				 guint samplerate,
 				 guint offset, guint n_frames,
@@ -3086,6 +3238,10 @@ ags_fm_synth_util_impulse_double(double *buffer,
 				 gdouble tuning)
 {
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
@@ -3180,6 +3336,10 @@ ags_fm_synth_util_impulse_complex(AgsComplex *buffer,
 
   guint i_stop;
   guint i;
+
+  if(buffer == NULL){
+    return;
+  }
 
   c_ptr = buffer;
   c_ptr_ptr = &c_ptr;
@@ -3283,6 +3443,10 @@ ags_fm_synth_util_sin(void *buffer,
 		      gdouble lfo_freq, gdouble lfo_depth,
 		      gdouble tuning)
 {
+  if(buffer == NULL){
+    return;
+  }
+
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
   {
@@ -3341,7 +3505,7 @@ ags_fm_synth_util_sin(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
   {
-    ags_fm_synth_util_sin_float((float *) buffer,
+    ags_fm_synth_util_sin_float((gfloat *) buffer,
 				freq, phase, volume,
 				samplerate,
 				offset, n_frames,
@@ -3352,7 +3516,7 @@ ags_fm_synth_util_sin(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
   {
-    ags_fm_synth_util_sin_double((double *) buffer,
+    ags_fm_synth_util_sin_double((gdouble *) buffer,
 				 freq, phase, volume,
 				 samplerate,
 				 offset, n_frames,
@@ -3407,6 +3571,10 @@ ags_fm_synth_util_sawtooth(void *buffer,
 			   gdouble lfo_freq, gdouble lfo_depth,
 			   gdouble tuning)
 {
+  if(buffer == NULL){
+    return;
+  }
+
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
   {
@@ -3465,7 +3633,7 @@ ags_fm_synth_util_sawtooth(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
   {
-    ags_fm_synth_util_sawtooth_float((float *) buffer,
+    ags_fm_synth_util_sawtooth_float((gfloat *) buffer,
 				     freq, phase, volume,
 				     samplerate,
 				     offset, n_frames,
@@ -3476,7 +3644,7 @@ ags_fm_synth_util_sawtooth(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
   {
-    ags_fm_synth_util_sawtooth_double((double *) buffer,
+    ags_fm_synth_util_sawtooth_double((gdouble *) buffer,
 				      freq, phase, volume,
 				      samplerate,
 				      offset, n_frames,
@@ -3531,6 +3699,10 @@ ags_fm_synth_util_triangle(void *buffer,
 			   gdouble lfo_freq, gdouble lfo_depth,
 			   gdouble tuning)
 {
+  if(buffer == NULL){
+    return;
+  }
+
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
   {
@@ -3589,7 +3761,7 @@ ags_fm_synth_util_triangle(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
   {
-    ags_fm_synth_util_triangle_float((float *) buffer,
+    ags_fm_synth_util_triangle_float((gfloat *) buffer,
 				     freq, phase, volume,
 				     samplerate,
 				     offset, n_frames,
@@ -3600,7 +3772,7 @@ ags_fm_synth_util_triangle(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
   {
-    ags_fm_synth_util_triangle_double((double *) buffer,
+    ags_fm_synth_util_triangle_double((gdouble *) buffer,
 				      freq, phase, volume,
 				      samplerate,
 				      offset, n_frames,
@@ -3655,6 +3827,10 @@ ags_fm_synth_util_square(void *buffer,
 			 gdouble lfo_freq, gdouble lfo_depth,
 			 gdouble tuning)
 {
+  if(buffer == NULL){
+    return;
+  }
+
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
   {
@@ -3713,7 +3889,7 @@ ags_fm_synth_util_square(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
   {
-    ags_fm_synth_util_square_float((float *) buffer,
+    ags_fm_synth_util_square_float((gfloat *) buffer,
 				   freq, phase, volume,
 				   samplerate,
 				   offset, n_frames,
@@ -3724,7 +3900,7 @@ ags_fm_synth_util_square(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
   {
-    ags_fm_synth_util_square_double((double *) buffer,
+    ags_fm_synth_util_square_double((gdouble *) buffer,
 				    freq, phase, volume,
 				    samplerate,
 				    offset, n_frames,
@@ -3779,6 +3955,10 @@ ags_fm_synth_util_impulse(void *buffer,
 			  gdouble lfo_freq, gdouble lfo_depth,
 			  gdouble tuning)
 {
+  if(buffer == NULL){
+    return;
+  }
+
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
   {
@@ -3837,7 +4017,7 @@ ags_fm_synth_util_impulse(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
   {
-    ags_fm_synth_util_impulse_float((float *) buffer,
+    ags_fm_synth_util_impulse_float((gfloat *) buffer,
 				    freq, phase, volume,
 				    samplerate,
 				    offset, n_frames,
@@ -3848,7 +4028,7 @@ ags_fm_synth_util_impulse(void *buffer,
   break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
   {
-    ags_fm_synth_util_impulse_double((double *) buffer,
+    ags_fm_synth_util_impulse_double((gdouble *) buffer,
 				     freq, phase, volume,
 				     samplerate,
 				     offset, n_frames,

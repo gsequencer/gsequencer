@@ -79,6 +79,10 @@ ags_osc_buffer_util_get_int32(unsigned char *buffer,
   gint32 tmp;
   
   if(buffer == NULL){
+    if(val != NULL){
+      val[0] = 0;
+    }
+    
     return;
   }
 
@@ -144,6 +148,18 @@ ags_osc_buffer_util_get_timetag(unsigned char *buffer,
   gint32 tmp;
   
   if(buffer == NULL){
+    if(tv_secs != NULL){
+      tv_secs[0] = -1;
+    }
+
+    if(tv_fraction != NULL){
+      tv_fraction[0] = -1;
+    }
+
+    if(immediately != NULL){
+      immediately[0] = FALSE;
+    }
+    
     return;
   }
 
@@ -223,6 +239,10 @@ ags_osc_buffer_util_get_float(unsigned char *buffer,
   }data;
 
   if(buffer == NULL){
+    if(val != NULL){
+      val[0] = 0.0;
+    }
+    
     return;
   }
 
@@ -285,6 +305,14 @@ ags_osc_buffer_util_get_string(unsigned char *buffer,
   gsize count;
   
   if(buffer == NULL){
+    if(str != NULL){
+      str[0] = NULL;
+    }
+    
+    if(length != NULL){
+      length[0] = 0;
+    }
+    
     return;
   }
 
@@ -366,6 +394,14 @@ ags_osc_buffer_util_get_blob(unsigned char *buffer,
   gint32 tmp;
   
   if(buffer == NULL){
+    if(data_size != NULL){
+      data_size[0] = 0;
+    }
+    
+    if(data != NULL){
+      data[0] = NULL;
+    }
+    
     return;
   }
 
@@ -433,6 +469,10 @@ ags_osc_buffer_util_get_int64(unsigned char *buffer,
   gint64 tmp;
   
   if(buffer == NULL){
+    if(val != NULL){
+      val[0] = 0;
+    }
+    
     return;
   }
 
@@ -503,6 +543,10 @@ ags_osc_buffer_util_get_double(unsigned char *buffer,
   }data;
 
   if(buffer == NULL){
+    if(val != NULL){
+      val[0] = 0.0;
+    }
+
     return;
   }
 
@@ -559,6 +603,10 @@ ags_osc_buffer_util_get_char(unsigned char *buffer,
   gint32 tmp;
   
   if(buffer == NULL){
+    if(val != NULL){
+      val[0] = '\0';
+    }
+    
     return;
   }
 
@@ -612,6 +660,22 @@ ags_osc_buffer_util_get_rgba(unsigned char *buffer,
 			     guint8 *r, guint8 *g, guint8 *b, guint8 *a)
 {  
   if(buffer == NULL){
+    if(r != NULL){
+      r[0] = 0;
+    }
+    
+    if(g != NULL){
+      g[0] = 0;
+    }
+    
+    if(b != NULL){
+      b[0] = 0;
+    }
+
+    if(a != NULL){
+      a[0] = 0;
+    }
+
     return;
   }
  
@@ -675,6 +739,22 @@ ags_osc_buffer_util_get_midi(unsigned char *buffer,
 			     guint8 *port, guint8 *status_byte, guint8 *data0, guint8 *data1)
 {
   if(buffer == NULL){
+    if(port != NULL){
+      *port = 0x0;
+    }
+
+    if(status_byte != NULL){
+      *status_byte = 0x0;
+    }
+
+    if(data0 != NULL){
+      *data0 = 0x0;
+    }
+
+    if(data1 != NULL){
+      *data1 = 0x0;
+    }
+    
     return;
   }
  
@@ -754,6 +834,14 @@ ags_osc_buffer_util_get_packet(unsigned char *buffer,
   gint32 tmp;
 
   if(buffer == NULL){
+    if(packet_size != NULL){
+      packet_size[0] = 0;
+    }
+
+    if(packet != NULL){
+      packet[0] = NULL;
+    }
+    
     return;
   }
 
@@ -874,6 +962,14 @@ ags_osc_buffer_util_get_message(unsigned char *buffer,
   gsize length;
   
   if(buffer == NULL){
+    if(address_pattern != NULL){
+      address_pattern[0] = NULL;
+    }
+
+    if(type_tag != NULL){
+      type_tag[0] = NULL;
+    }
+
     return;
   }
 
@@ -961,6 +1057,18 @@ ags_osc_buffer_util_get_bundle(unsigned char *buffer,
   gboolean success;
   
   if(buffer == NULL){
+    if(tv_secs != NULL){
+      *tv_secs = -1;
+    }
+
+    if(tv_fraction != NULL){
+      *tv_fraction = -1;
+    }
+
+    if(immediately != NULL){
+      *immediately = FALSE;
+    }
+
     return;
   }
   

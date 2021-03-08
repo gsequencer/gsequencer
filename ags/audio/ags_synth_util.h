@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,9 +38,9 @@ guint ags_synth_util_get_xcross_count_s32(gint32 *buffer,
 					  guint buffer_size);
 guint ags_synth_util_get_xcross_count_s64(gint64 *buffer,
 					  guint buffer_size);
-guint ags_synth_util_get_xcross_count_float(float *buffer,
+guint ags_synth_util_get_xcross_count_float(gfloat *buffer,
 					    guint buffer_size);
-guint ags_synth_util_get_xcross_count_double(double *buffer,
+guint ags_synth_util_get_xcross_count_double(gdouble *buffer,
 					     guint buffer_size);
 guint ags_synth_util_get_xcross_count_complex(AgsComplex *buffer,
 					      guint buffer_size);
@@ -70,11 +70,11 @@ void ags_synth_util_sin_s64(gint64 *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames);
-void ags_synth_util_sin_float(float *buffer,
+void ags_synth_util_sin_float(gfloat *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
 			      guint samplerate,
 			      guint offset, guint n_frames);
-void ags_synth_util_sin_double(double *buffer,
+void ags_synth_util_sin_double(gdouble *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames);
@@ -104,11 +104,11 @@ void ags_synth_util_sawtooth_s64(gint64 *buffer,
 				 gdouble freq, gdouble phase, gdouble volume,
 				 guint samplerate,
 				 guint offset, guint n_frames);
-void ags_synth_util_sawtooth_float(float *buffer,
+void ags_synth_util_sawtooth_float(gfloat *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
 				   guint offset, guint n_frames);
-void ags_synth_util_sawtooth_double(double *buffer,
+void ags_synth_util_sawtooth_double(gdouble *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
 				    guint offset, guint n_frames);
@@ -138,11 +138,11 @@ void ags_synth_util_triangle_s64(gint64 *buffer,
 				 gdouble freq, gdouble phase, gdouble volume,
 				 guint samplerate,
 				 guint offset, guint n_frames);
-void ags_synth_util_triangle_float(float *buffer,
+void ags_synth_util_triangle_float(gfloat *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
 				   guint offset, guint n_frames);
-void ags_synth_util_triangle_double(double *buffer,
+void ags_synth_util_triangle_double(gdouble *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
 				    guint offset, guint n_frames);
@@ -172,11 +172,11 @@ void ags_synth_util_square_s64(gint64 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames);
-void ags_synth_util_square_float(float *buffer,
+void ags_synth_util_square_float(gfloat *buffer,
 				 gdouble freq, gdouble phase, gdouble volume,
 				 guint samplerate,
 				 guint offset, guint n_frames);
-void ags_synth_util_square_double(double *buffer,
+void ags_synth_util_square_double(gdouble *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
 				  guint offset, guint n_frames);
@@ -206,11 +206,11 @@ void ags_synth_util_impulse_s64(gint64 *buffer,
 				gdouble freq, gdouble phase, gdouble volume,
 				guint samplerate,
 				guint offset, guint n_frames);
-void ags_synth_util_impulse_float(float *buffer,
+void ags_synth_util_impulse_float(gfloat *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
 				  guint offset, guint n_frames);
-void ags_synth_util_impulse_double(double *buffer,
+void ags_synth_util_impulse_double(gdouble *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
 				   guint offset, guint n_frames);
