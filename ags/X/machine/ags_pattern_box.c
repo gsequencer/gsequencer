@@ -247,7 +247,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 			      (guint) (gui_scale_factor * pattern_box->n_controls * AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH), (guint) (gui_scale_factor * AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT));
 
   gtk_widget_set_valign((GtkWidget *) pattern_box->hled_array,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_CENTER);
   gtk_widget_set_vexpand((GtkWidget *) pattern_box->hled_array,
 			 TRUE);
   
@@ -270,6 +270,12 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   /* pattern */
   pattern_box->pattern = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						0);
+
+  gtk_widget_set_valign((GtkWidget *) pattern_box->pattern,
+			GTK_ALIGN_CENTER);
+  gtk_widget_set_vexpand((GtkWidget *) pattern_box->pattern,
+			 TRUE);
+
   gtk_grid_attach((GtkGrid *) pattern_box,
 		   (GtkWidget *) pattern_box->pattern,
 		   0, 1,

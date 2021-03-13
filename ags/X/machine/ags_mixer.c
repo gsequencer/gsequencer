@@ -121,8 +121,6 @@ ags_mixer_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_mixer_init(AgsMixer *mixer)
 {
-  GList *start_list;
-  
   g_signal_connect_after((GObject *) mixer, "parent_set",
 			 G_CALLBACK(ags_mixer_parent_set_callback), (gpointer) mixer);
 
@@ -150,15 +148,11 @@ ags_mixer_init(AgsMixer *mixer)
   mixer->peak_recall_container = ags_recall_container_new();
   
   /* input */
-  start_list = gtk_container_get_children((GtkContainer *) mixer);
-  
   mixer->input_pad = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					    0);
   AGS_MACHINE(mixer)->input = (GtkContainer *) mixer->input_pad;
-  gtk_container_add((GtkContainer*) start_list->data,
+  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) mixer),
 		    (GtkWidget *) mixer->input_pad);
-
-  g_list_free(start_list);
 }
 
 void

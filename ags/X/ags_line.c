@@ -522,7 +522,7 @@ ags_line_init(AgsLine *line)
   AgsConfig *config;
 
   gtk_orientable_set_orientation(GTK_ORIENTABLE(line),
-				 GTK_ORIENTATION_HORIZONTAL);  
+				 GTK_ORIENTATION_VERTICAL);  
 
   application_context = ags_application_context_get_instance();
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -457,6 +457,17 @@ ags_machine_init(AgsMachine *machine)
   machine->bank_0 = 0;
   machine->bank_1 = 0;
 
+  gtk_widget_set_vexpand((GtkWidget *) machine,
+			 FALSE);
+  gtk_widget_set_hexpand((GtkWidget *) machine,
+			 TRUE);
+
+  gtk_widget_set_valign((GtkWidget *) machine,
+			 GTK_ALIGN_START);
+  gtk_widget_set_halign((GtkWidget *) machine,
+			 GTK_ALIGN_START);
+
+  
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
   

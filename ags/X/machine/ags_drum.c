@@ -247,7 +247,7 @@ ags_drum_init(AgsDrum *drum)
   /* create widgets */
   drum->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				      0);
-  gtk_container_add((GtkContainer*) gtk_bin_get_child((GtkBin *) drum), (GtkWidget *) drum->vbox);
+  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) drum), (GtkWidget *) drum->vbox);
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
@@ -310,8 +310,16 @@ ags_drum_init(AgsDrum *drum)
   
   /* sequencer */
   frame = (GtkFrame *) gtk_frame_new(i18n("pattern"));
-  gtk_box_pack_start(hbox, (GtkWidget *) frame,
-		     FALSE, FALSE,
+
+  gtk_widget_set_hexpand((GtkWidget *) frame,
+			 TRUE);
+
+  gtk_widget_set_halign((GtkWidget *) frame,
+			 GTK_ALIGN_START);
+
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) frame,
+		     TRUE, TRUE,
 		     0);
 
   grid0 = (GtkGrid *) gtk_grid_new();
@@ -379,15 +387,15 @@ ags_drum_init(AgsDrum *drum)
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				0);
 
-  gtk_widget_set_vexpand(hbox,
-			 TRUE);
-  gtk_widget_set_hexpand(hbox,
+  gtk_widget_set_vexpand((GtkWidget *) hbox,
+			 FALSE);
+  gtk_widget_set_hexpand((GtkWidget *) hbox,
 			 TRUE);
   
   gtk_grid_attach(grid0,
-		   (GtkWidget *) hbox,
-		   6, 0,
-		   1, 1);
+		  (GtkWidget *) hbox,
+		  6, 0,
+		  1, 1);
   
   gtk_box_pack_start(hbox,
 		     gtk_label_new(i18n("length")),
@@ -396,6 +404,10 @@ ags_drum_init(AgsDrum *drum)
   
   drum->length_spin = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 64.0, 1.0);
   gtk_spin_button_set_value(drum->length_spin, 16.0);
+
+  gtk_widget_set_vexpand((GtkWidget *) drum->length_spin,
+			 FALSE);
+
   gtk_box_pack_start(hbox,
 		     (GtkWidget *) drum->length_spin,
 		     FALSE, FALSE,
@@ -404,9 +416,9 @@ ags_drum_init(AgsDrum *drum)
   /* pattern box */
   drum->pattern_box = ags_pattern_box_new();
 
-  gtk_widget_set_vexpand(drum->pattern_box,
+  gtk_widget_set_vexpand((GtkWidget *) drum->pattern_box,
 			 TRUE);
-  gtk_widget_set_hexpand(drum->pattern_box,
+  gtk_widget_set_hexpand((GtkWidget *) drum->pattern_box,
 			 TRUE);
 
   gtk_grid_attach(grid0,
