@@ -30,7 +30,7 @@
 
 #include <ags/libags-gui.h>
 
-#include <ags/X/ags_composite_edit.h>
+#include <ags/X/editor/ags_composite_edit.h>
 
 G_BEGIN_DECLS
 

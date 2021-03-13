@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/ags_composite_edit.h>
-#include <ags/X/ags_composite_edit_callbacks.h>
+#include <ags/X/editor/ags_composite_edit.h>
+#include <ags/X/editor/ags_composite_edit_callbacks.h>
 
 #include <ags/X/ags_ui_provider.h>
 

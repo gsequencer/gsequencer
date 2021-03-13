@@ -340,6 +340,12 @@
 #include <ags/audio/fx/ags_fx_ladspa_channel.h>
 #include <ags/audio/fx/ags_fx_ladspa_channel_processor.h>
 #include <ags/audio/fx/ags_fx_ladspa_recycling.h>
+#include <ags/audio/fx/ags_fx_lfo_audio.h>
+#include <ags/audio/fx/ags_fx_lfo_audio_processor.h>
+#include <ags/audio/fx/ags_fx_lfo_audio_signal.h>
+#include <ags/audio/fx/ags_fx_lfo_channel.h>
+#include <ags/audio/fx/ags_fx_lfo_channel_processor.h>
+#include <ags/audio/fx/ags_fx_lfo_recycling.h>
 #include <ags/audio/fx/ags_fx_lv2_audio.h>
 #include <ags/audio/fx/ags_fx_lv2_audio_processor.h>
 #include <ags/audio/fx/ags_fx_lv2_audio_signal.h>

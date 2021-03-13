@@ -2120,8 +2120,6 @@ libgsequencer_h_sources = \
 	ags/X/ags_bulk_member.h \
 	ags/X/ags_composite_editor.h \
 	ags/X/ags_composite_editor_callbacks.h \
-	ags/X/ags_composite_edit.h \
-	ags/X/ags_composite_edit_callbacks.h \
 	ags/X/ags_connection_editor_callbacks.h \
 	ags/X/ags_connection_editor.h \
 	ags/X/ags_context_menu.h \
@@ -2247,8 +2245,6 @@ libgsequencer_c_sources = \
 	ags/X/ags_bulk_member_callbacks.c \
 	ags/X/ags_composite_editor.c \
 	ags/X/ags_composite_editor_callbacks.c \
-	ags/X/ags_composite_edit.c \
-	ags/X/ags_composite_edit_callbacks.c \
 	ags/X/ags_connection_editor_callbacks.c \
 	ags/X/ags_connection_editor.c \
 	ags/X/ags_context_menu.c \
@@ -2653,6 +2649,8 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_automation_meta.h \
 	ags/X/editor/ags_automation_toolbar_callbacks.h \
 	ags/X/editor/ags_automation_toolbar.h \
+	ags/X/editor/ags_composite_edit.h \
+	ags/X/editor/ags_composite_edit_callbacks.h \
 	ags/X/editor/ags_composite_toolbar.h \
 	ags/X/editor/ags_composite_toolbar_callbacks.h \
 	ags/X/editor/ags_crop_note_dialog_callbacks.h \
@@ -2719,6 +2717,8 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_automation_meta_callbacks.c \
 	ags/X/editor/ags_automation_toolbar.c \
 	ags/X/editor/ags_automation_toolbar_callbacks.c \
+	ags/X/editor/ags_composite_edit.c \
+	ags/X/editor/ags_composite_edit_callbacks.c \
 	ags/X/editor/ags_composite_toolbar.c \
 	ags/X/editor/ags_composite_toolbar_callbacks.c \
 	ags/X/editor/ags_crop_note_dialog_callbacks.c \

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/ags_composite_edit_callbacks.h>
+#include <ags/X/editor/ags_composite_edit_callbacks.h>
 
 void
 ags_composite_edit_vscrollbar_callback(GtkRange *scrollbar,
