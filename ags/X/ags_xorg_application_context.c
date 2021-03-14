@@ -1068,7 +1068,7 @@ ags_xorg_application_context_get_task_launcher(AgsConcurrencyProvider *concurren
   /* get main loop */
   g_rec_mutex_lock(application_context_mutex);
 
-  task_launcher = (AgsThread *) application_context->task_launcher;
+  task_launcher = (AgsTaskLauncher *) application_context->task_launcher;
 
   if(task_launcher != NULL){
     g_object_ref(task_launcher);
