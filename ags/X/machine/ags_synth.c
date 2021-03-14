@@ -182,7 +182,7 @@ ags_synth_init(AgsSynth *synth)
 		     FALSE,
 		     0);
 
-  vbox = (GtkBox *) gtk_box_new(GTK_ORIENATION_VERTICAL,
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
   gtk_box_pack_start(hbox,
 		     (GtkWidget *) vbox,

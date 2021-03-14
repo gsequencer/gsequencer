@@ -376,7 +376,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   gtk_widget_set_valign((GtkWidget *) piano_vbox,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_halign((GtkWidget *) piano_vhbox,
+  gtk_widget_set_halign((GtkWidget *) piano_vbox,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,

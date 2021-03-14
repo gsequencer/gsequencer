@@ -257,8 +257,8 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
 		     FALSE, FALSE,
 		     0);
 
-  syncsynth->remove = (GtkButton *) gtk_button_new_icon_name("list-remove",
-							     GTK_ICON_SIZE_BUTTON);
+  syncsynth->remove = (GtkButton *) gtk_button_new_from_icon_name("list-remove",
+								  GTK_ICON_SIZE_BUTTON);
   gtk_box_pack_start(vbox,
 		     (GtkWidget *) syncsynth->remove,
 		     FALSE, FALSE,

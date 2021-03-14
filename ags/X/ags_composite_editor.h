@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,10 +31,10 @@
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
-#include <ags/X/ags_composite_edit.h>
 
 #include <ags/X/editor/ags_composite_toolbar.h>
 #include <ags/X/editor/ags_machine_selector.h>
+#include <ags/X/editor/ags_composite_edit.h>
 
 G_BEGIN_DECLS
 
