@@ -22,6 +22,7 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_port.h>
 
+#include <ags/audio/midi/ags_midi_util.h>
 #include <ags/audio/midi/ags_midi_parser.h>
 #include <ags/audio/midi/ags_midi_builder.h>
 
