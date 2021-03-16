@@ -1,3 +1,8 @@
+ags (3.7.49)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing loop information while machine added
+
 ags (3.7.48)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
