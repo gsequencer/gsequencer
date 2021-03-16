@@ -198,6 +198,16 @@ ags_machine_map_recall_callback(AgsMachine *machine,
     list = list->next;
   }
 
+  list = start_play;
+  
+  while((list = ags_recall_template_find_type(list, AGS_TYPE_FX_PLAYBACK_AUDIO)) != NULL){
+    ags_machine_recall_set_loop(machine,
+				list->data);
+
+    /* iterate */
+    list = list->next;
+  }
+
   list = start_recall;
   
   while((list = ags_recall_template_find_type(list, AGS_TYPE_FX_NOTATION_AUDIO)) != NULL){
@@ -208,6 +218,15 @@ ags_machine_map_recall_callback(AgsMachine *machine,
     list = list->next;
   }
   
+  list = start_recall;
+  
+  while((list = ags_recall_template_find_type(list, AGS_TYPE_FX_PLAYBACK_AUDIO)) != NULL){
+    ags_machine_recall_set_loop(machine,
+				list->data);
+
+    /* iterate */
+    list = list->next;
+  }
   
   g_list_free_full(start_play,
 		   (GDestroyNotify) g_object_unref);
