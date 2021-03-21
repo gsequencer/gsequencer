@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,6 +37,9 @@ G_BEGIN_DECLS
 void ags_machine_check_message_callback(GObject *application_context, AgsMachine *machine);
 
 void ags_machine_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMachine *machine);
+
+void ags_machine_map_recall_callback(AgsMachine *machine,
+				     gpointer user_data);
 
 /* controls */
 int ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine);

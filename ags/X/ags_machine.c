@@ -1220,6 +1220,9 @@ ags_machine_connect(AgsConnectable *connectable)
     ags_machine_find_port(machine);
   }
 
+  g_signal_connect_after(G_OBJECT(machine), "map-recall",
+			 G_CALLBACK(ags_machine_map_recall_callback), NULL);
+  
   if(machine->bridge != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(machine->bridge));
   }
@@ -1277,6 +1280,12 @@ ags_machine_disconnect(AgsConnectable *connectable)
   }
 
   machine->flags &= (~AGS_MACHINE_CONNECTED);
+
+  g_object_disconnect(G_OBJECT(machine),
+		      "any_signal::map-recall",
+		      G_CALLBACK(ags_machine_map_recall_callback),
+		      NULL,
+		      NULL);
 
   if(machine->bridge != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(machine->bridge));
