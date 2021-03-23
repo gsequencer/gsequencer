@@ -420,17 +420,17 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		  1, 1);
 
   /* GtkButton's in GtkDialog->action_area  */
-  midi_dialog->apply = (GtkButton *) gtk_button_new_with_label(i18n("_Apply"));
+  midi_dialog->apply = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Apply"));
   gtk_dialog_add_action_widget((GtkDialog *) midi_dialog,
 			       (GtkWidget *) midi_dialog->apply,
 			       GTK_RESPONSE_NONE);
   
-  midi_dialog->ok = (GtkButton *) gtk_button_new_with_label(i18n("_OK"));
+  midi_dialog->ok = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_OK"));
   gtk_dialog_add_action_widget((GtkDialog *) midi_dialog,
 			       (GtkWidget *) midi_dialog->ok,
 			       GTK_RESPONSE_NONE);
   
-  midi_dialog->cancel = (GtkButton *) gtk_button_new_with_label(i18n("_Cancel"));
+  midi_dialog->cancel = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Cancel"));
   gtk_dialog_add_action_widget((GtkDialog *) midi_dialog,
 			       (GtkWidget *) midi_dialog->cancel,
 			       GTK_RESPONSE_NONE);
