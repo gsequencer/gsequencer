@@ -462,7 +462,7 @@ ags_apply_sf2_synth_launch(AgsTask *task)
       }
 	
       /* compute audio signal */
-      note = base_note + (gdouble) i + 48.0;
+      note = base_note + (gdouble) i;
 	
       ags_sf2_synth_generator_compute(sf2_synth_generator,
 				      (GObject *) audio_signal,
