@@ -1893,7 +1893,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 
   midi_key = (gint) floor(note) + 69;
 
-  g_message("--> %d", midi_key);
+//  g_message("--> %d", midi_key);
 
   matching_midi_key = -1;
   

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -130,9 +130,6 @@ ags_listing_editor_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_listing_editor_init(AgsListingEditor *listing_editor)
 {
-  g_signal_connect_after(G_OBJECT(listing_editor), "parent_set",
-			 G_CALLBACK(ags_listing_editor_parent_set_callback), listing_editor);
-
   listing_editor->channel_type = G_TYPE_NONE;
 
   listing_editor->child = NULL;
@@ -322,6 +319,8 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
   if(nth == 0){
     listing_editor->child = (GtkBox *) gtk_vbox_new(GTK_ORIENTATION_VERTICAL,
 						    0);
+    gtk_box_set_homogeneous(listing_editor->child,
+			    FALSE);
     gtk_box_pack_start(GTK_BOX(listing_editor),
 		       GTK_WIDGET(listing_editor->child),
 		       FALSE, FALSE,

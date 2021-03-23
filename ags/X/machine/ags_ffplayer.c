@@ -348,7 +348,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->filename = NULL;
 #endif
   
-  ffplayer->open = (GtkButton *) gtk_button_new_with_label(i18n("_Open"));
+  ffplayer->open = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Open"));
   gtk_box_pack_start(filename_hbox,
 		     (GtkWidget *) ffplayer->open,
 		     FALSE, FALSE,

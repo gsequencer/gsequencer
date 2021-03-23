@@ -53,7 +53,7 @@ ags_property_collection_editor_add_collection_callback(GtkButton *button,
 		  2, 1);
 
 
-  remove_collection = (GtkButton *) gtk_button_new_with_label(i18n("_Remove"));
+  remove_collection = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
 
   gtk_widget_set_valign(GTK_WIDGET(remove_collection),
 			GTK_ALIGN_FILL);

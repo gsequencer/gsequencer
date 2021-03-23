@@ -464,14 +464,15 @@ ags_machine_init(AgsMachine *machine)
 
   gtk_widget_set_valign((GtkWidget *) machine,
 			 GTK_ALIGN_START);
-  gtk_widget_set_halign((GtkWidget *) machine,
-			 GTK_ALIGN_START);
-
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				0);
   
   frame = (GtkFrame *) gtk_frame_new(NULL);
+
+  gtk_widget_set_hexpand((GtkWidget *) frame,
+			 TRUE);
+
   gtk_container_add((GtkContainer *) machine,
 		    (GtkWidget *) frame);
 

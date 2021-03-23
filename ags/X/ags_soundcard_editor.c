@@ -266,13 +266,13 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 		  2, y0,
 		  1, 1);
 
-  soundcard_editor->add_port = (GtkButton *) gtk_button_new_with_label(i18n("_Add"));
+  soundcard_editor->add_port = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Add"));
   gtk_box_pack_start((GtkBox *) soundcard_editor->port_hbox,
 		     (GtkWidget *) soundcard_editor->add_port,
 		     FALSE, FALSE,
 		     0);
   
-  soundcard_editor->remove_port = (GtkButton *) gtk_button_new_with_label(i18n("_Remove"));
+  soundcard_editor->remove_port = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
   gtk_box_pack_start((GtkBox *) soundcard_editor->port_hbox,
 		     (GtkWidget *) soundcard_editor->remove_port,
 		     FALSE, FALSE,

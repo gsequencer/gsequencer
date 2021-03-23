@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,26 +20,6 @@
 #include <ags/X/ags_listing_editor_callbacks.h>
 
 #include <ags/X/ags_machine_editor.h>
-
-void
-ags_listing_editor_parent_set_callback(GtkWidget *widget,
-				       GtkWidget *old_parent,
-				       AgsListingEditor *listing_editor)
-{
-  AgsMachineEditor *machine_editor;
-
-  if(old_parent != NULL)
-    return;
-
-  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(widget,
-								AGS_TYPE_MACHINE_EDITOR);
-
-  if(machine_editor->machine != NULL){
-    ags_listing_editor_add_children(listing_editor,
-				    machine_editor->machine->audio, 0,
-				    FALSE);
-  }
-}
 
 void
 ags_listing_editor_resize_pads_callback(AgsMachine *machine, GType channel_type,

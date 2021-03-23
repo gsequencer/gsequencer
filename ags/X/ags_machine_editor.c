@@ -252,17 +252,17 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 			   (GtkWidget *) gtk_label_new(i18n("resize channels")));
 
   /* GtkButton's in GtkDialog->action_area  */
-  machine_editor->apply = (GtkButton *) gtk_button_new_with_label(i18n("_Apply"));
+  machine_editor->apply = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Apply"));
   gtk_dialog_add_action_widget((GtkDialog *) machine_editor,
 			       (GtkWidget *) machine_editor->apply,
 			       GTK_RESPONSE_NONE);
 
-  machine_editor->ok = (GtkButton *) gtk_button_new_with_label(i18n("_OK"));
+  machine_editor->ok = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_OK"));
   gtk_dialog_add_action_widget((GtkDialog *) machine_editor,
 			       (GtkWidget *) machine_editor->ok,
 			       GTK_RESPONSE_NONE);
 
-  machine_editor->cancel = (GtkButton *) gtk_button_new_with_label("_Cancel");
+  machine_editor->cancel = (GtkButton *) gtk_button_new_with_mnemonic("_Cancel");
   gtk_dialog_add_action_widget((GtkDialog *) machine_editor,
 			       (GtkWidget *) machine_editor->cancel,
 			       GTK_RESPONSE_NONE);
@@ -270,9 +270,9 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 
 void
 ags_machine_editor_set_property(GObject *gobject,
-			    guint prop_id,
-			    const GValue *value,
-			    GParamSpec *param_spec)
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec)
 {
   AgsMachineEditor *machine_editor;
 
@@ -280,14 +280,14 @@ ags_machine_editor_set_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_MACHINE:
-    {
-      AgsMachine *machine;
+  {
+    AgsMachine *machine;
 
-      machine = (AgsMachine *) g_value_get_object(value);
+    machine = (AgsMachine *) g_value_get_object(value);
 
-      ags_machine_editor_set_machine(machine_editor, machine);
-    }
-    break;
+    ags_machine_editor_set_machine(machine_editor, machine);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -466,10 +466,18 @@ ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
   gtk_container_add((GtkContainer *) machine_editor->output_scrolled_window,
 		    (GtkWidget *) machine_editor->output_editor);
 
+  ags_listing_editor_add_children(machine_editor->output_editor,
+				  machine_editor->machine->audio, 0,
+				  FALSE);
+
   /* AgsInput */
   machine_editor->input_editor = ags_listing_editor_new(AGS_TYPE_INPUT);
   gtk_container_add((GtkContainer *) machine_editor->input_scrolled_window,
 		    (GtkWidget *) machine_editor->input_editor);
+
+  ags_listing_editor_add_children(machine_editor->input_editor,
+				  machine_editor->machine->audio, 0,
+				  FALSE);
 
   /* AgsOutput link editor */
   machine_editor->output_link_editor = ags_property_collection_editor_new(AGS_TYPE_LINK_COLLECTION_EDITOR,

@@ -232,6 +232,9 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   gtk_orientable_set_orientation(GTK_ORIENTABLE(notation_editor),
 				 GTK_ORIENTATION_VERTICAL);
 
+  gtk_box_set_homogeneous((GtkBox *) notation_editor,
+			  FALSE);
+
   notation_editor->flags = (AGS_NOTATION_EDITOR_PASTE_MATCH_AUDIO_CHANNEL |
 			    AGS_NOTATION_EDITOR_PASTE_NO_DUPLICATES);
 
@@ -329,7 +332,7 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 			GTK_ALIGN_FILL);
 
   gtk_widget_set_vexpand((GtkWidget *) notation_editor->notebook,
-			 TRUE);
+			 FALSE);
   
   gtk_grid_attach(grid,
 		  (GtkWidget *) notation_editor->notebook,

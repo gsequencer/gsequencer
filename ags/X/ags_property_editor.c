@@ -97,6 +97,19 @@ ags_property_editor_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_property_editor_init(AgsPropertyEditor *property_editor)
 {
+  gtk_widget_set_vexpand((GtkWidget *) property_editor,
+			 FALSE);
+  gtk_widget_set_hexpand((GtkWidget *) property_editor,
+			 TRUE);
+
+  gtk_widget_set_valign((GtkWidget *) property_editor,
+			 GTK_ALIGN_START);
+  gtk_widget_set_halign((GtkWidget *) property_editor,
+			 GTK_ALIGN_START);
+
+  gtk_box_set_homogeneous(property_editor,
+			  FALSE);
+
   gtk_orientable_set_orientation(GTK_ORIENTABLE(property_editor),
 				 GTK_ORIENTATION_VERTICAL);  
     
