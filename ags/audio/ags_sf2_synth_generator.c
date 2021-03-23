@@ -1923,8 +1923,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
       continue;
     }
 
-    diff = midi_key - matching_midi_key;
-    current_diff = midi_key - current_midi_key;
+    diff = matching_midi_key - midi_key;
+    current_diff = current_midi_key - midi_key;
 
     if(diff < 0){
       diff *= -1;
