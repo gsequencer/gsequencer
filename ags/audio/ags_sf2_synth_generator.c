@@ -2019,6 +2019,7 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
   buffer = ags_stream_alloc(frame_count,
 			    format);
 
+#if 0
   {
     gint current_midi_key;
 
@@ -2028,7 +2029,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
     
     g_message("SF2, note %f, midi_key %d", note, current_midi_key);
   }
-
+#endif
+  
   ags_sf2_synth_util_copy(buffer,
 			  frame_count,
 			  ipatch_sample,

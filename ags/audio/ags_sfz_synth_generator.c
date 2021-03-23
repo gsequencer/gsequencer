@@ -1535,6 +1535,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 			    0, G_SEEK_SET);
   }
 
+#if 0
   {
     gint current_midi_key;
 
@@ -1542,6 +1543,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
     
     g_message("SFZ, note %f, midi_key %d", note, current_midi_key);
   }
+#endif
   
   ags_sfz_synth_util_copy(buffer,
 			  frame_count,
