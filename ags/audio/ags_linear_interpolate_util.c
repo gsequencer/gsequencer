@@ -76,7 +76,7 @@ ags_linear_interpolate_util_fill_s8(gint8 *buffer, guint channels,
     gint8 z, mix_z, im_z;
     gdouble t;
     
-    if((i * factor) + j > (i + 1) * factor){
+    if(((gdouble) i * factor) + (gdouble) j > ((gdouble) i + 1.0) * factor){
       j = 0;
     }
 
@@ -93,9 +93,9 @@ ags_linear_interpolate_util_fill_s8(gint8 *buffer, guint channels,
     }
 
     if(factor < 1.0){
-      t = i / (i / factor);
+      t = (gdouble) (i + 1) / ((gdouble) (i + 1) / factor);
     }else{
-      t = j * (1.0 / (i / factor));
+      t = (gdouble) (j + 1) / factor;
     }
     
     im_z = (1.0 - t) * z + (t * mix_z);
@@ -158,7 +158,7 @@ ags_linear_interpolate_util_fill_s16(gint16 *buffer, guint channels,
     gint16 z, mix_z, im_z;
     gdouble t;
     
-    if((i * factor) + j > (i + 1) * factor){
+    if(((gdouble) i * factor) + (gdouble) j > ((gdouble) i + 1.0) * factor){
       j = 0;
     }
 
@@ -175,9 +175,9 @@ ags_linear_interpolate_util_fill_s16(gint16 *buffer, guint channels,
     }
 
     if(factor < 1.0){
-      t = i / (i / factor);
+      t = (gdouble) (i + 1) / ((gdouble) (i + 1) / factor);
     }else{
-      t = j * (1.0 / (i / factor));
+      t = (gdouble) (j + 1) / factor;
     }
     
     im_z = (1.0 - t) * z + (t * mix_z);
@@ -240,7 +240,7 @@ ags_linear_interpolate_util_fill_s24(gint32 *buffer, guint channels,
     gint32 z, mix_z, im_z;
     gdouble t;
     
-    if((i * factor) + j > (i + 1) * factor){
+    if(((gdouble) i * factor) + (gdouble) j > ((gdouble) i + 1.0) * factor){
       j = 0;
     }
 
@@ -257,9 +257,9 @@ ags_linear_interpolate_util_fill_s24(gint32 *buffer, guint channels,
     }
 
     if(factor < 1.0){
-      t = i / (i / factor);
+      t = (gdouble) (i + 1) / ((gdouble) (i + 1) / factor);
     }else{
-      t = j * (1.0 / (i / factor));
+      t = (gdouble) (j + 1) / factor;
     }
     
     im_z = (1.0 - t) * z + (t * mix_z);
@@ -322,7 +322,7 @@ ags_linear_interpolate_util_fill_s32(gint32 *buffer, guint channels,
     gint32 z, mix_z, im_z;
     gdouble t;
     
-    if((i * factor) + j > (i + 1) * factor){
+    if(((gdouble) i * factor) + (gdouble) j > ((gdouble) i + 1.0) * factor){
       j = 0;
     }
 
@@ -339,9 +339,9 @@ ags_linear_interpolate_util_fill_s32(gint32 *buffer, guint channels,
     }
 
     if(factor < 1.0){
-      t = i / (i / factor);
+      t = (gdouble) (i + 1) / ((gdouble) (i + 1) / factor);
     }else{
-      t = j * (1.0 / (i / factor));
+      t = (gdouble) (j + 1) / factor;
     }
     
     im_z = (1.0 - t) * z + (t * mix_z);
@@ -404,7 +404,7 @@ ags_linear_interpolate_util_fill_s64(gint64 *buffer, guint channels,
     gint64 z, mix_z, im_z;
     gdouble t;
     
-    if((i * factor) + j > (i + 1) * factor){
+    if(((gdouble) i * factor) + (gdouble) j > ((gdouble) i + 1.0) * factor){
       j = 0;
     }
 
@@ -421,9 +421,9 @@ ags_linear_interpolate_util_fill_s64(gint64 *buffer, guint channels,
     }
 
     if(factor < 1.0){
-      t = i / (i / factor);
+      t = (gdouble) (i + 1) / ((gdouble) (i + 1) / factor);
     }else{
-      t = j * (1.0 / (i / factor));
+      t = (gdouble) (j + 1) / factor;
     }
     
     im_z = (1.0 - t) * z + (t * mix_z);
@@ -486,7 +486,7 @@ ags_linear_interpolate_util_fill_float(gfloat *buffer, guint channels,
     gfloat z, mix_z, im_z;
     gdouble t;
     
-    if((i * factor) + j > (i + 1) * factor){
+    if(((gdouble) i * factor) + (gdouble) j > ((gdouble) i + 1.0) * factor){
       j = 0;
     }
 
@@ -503,9 +503,9 @@ ags_linear_interpolate_util_fill_float(gfloat *buffer, guint channels,
     }
 
     if(factor < 1.0){
-      t = i / (i / factor);
+      t = (gdouble) (i + 1) / ((gdouble) (i + 1) / factor);
     }else{
-      t = j * (1.0 / (i / factor));
+      t = (gdouble) (j + 1) / factor;
     }
     
     im_z = (1.0 - t) * z + (t * mix_z);
@@ -568,7 +568,7 @@ ags_linear_interpolate_util_fill_double(gdouble *buffer, guint channels,
     gdouble z, mix_z, im_z;
     gdouble t;
     
-    if((i * factor) + j > (i + 1) * factor){
+    if(((gdouble) i * factor) + (gdouble) j > ((gdouble) i + 1.0) * factor){
       j = 0;
     }
 
@@ -585,9 +585,9 @@ ags_linear_interpolate_util_fill_double(gdouble *buffer, guint channels,
     }
 
     if(factor < 1.0){
-      t = i / (i / factor);
+      t = (gdouble) (i + 1) / ((gdouble) (i + 1) / factor);
     }else{
-      t = j * (1.0 / (i / factor));
+      t = (gdouble) (j + 1) / factor;
     }
     
     im_z = (1.0 - t) * z + (t * mix_z);
@@ -650,7 +650,7 @@ ags_linear_interpolate_util_fill_complex(AgsComplex *buffer, guint channels,
     double _Complex z, mix_z, im_z;
     gdouble t;
     
-    if((i * factor) + j > (i + 1) * factor){
+    if(((gdouble) i * factor) + (gdouble) j > ((gdouble) i + 1.0) * factor){
       j = 0;
     }
 
@@ -667,9 +667,9 @@ ags_linear_interpolate_util_fill_complex(AgsComplex *buffer, guint channels,
     }
 
     if(factor < 1.0){
-      t = i / (i / factor);
+      t = (gdouble) (i + 1) / ((gdouble) (i + 1) / factor);
     }else{
-      t = j * (1.0 / (i / factor));
+      t = (gdouble) (j + 1) / factor;
     }
     
     im_z = (1.0 - t) * z + (t * mix_z);
