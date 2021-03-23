@@ -1891,12 +1891,15 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
     ipatch_sample = list->data;
   }
 
-  midi_key = (gint) floor(note) + 60;
+  midi_key = (gint) floor(note) + 69;
+
+  g_message("--> %d", midi_key);
 
   matching_midi_key = -1;
   
   while(list != NULL){
     gint current_midi_key;
+    gint current_diff, diff;
     
     g_object_get(AGS_IPATCH_SAMPLE(list->data)->sample,
 		 "root-note", &current_midi_key,
@@ -1920,33 +1923,21 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
       continue;
     }
 
-    if(matching_midi_key < midi_key &&
-       current_midi_key < midi_key){
-      if(current_midi_key > matching_midi_key){
-	ipatch_sample = list->data;
+    diff = midi_key - matching_midi_key;
+    current_diff = midi_key - current_midi_key;
+
+    if(diff < 0){
+      diff *= -1;
+    }
+
+    if(current_diff < 0){
+      current_diff *= -1;
+    }
+
+    if(current_diff < diff){
+      ipatch_sample = list->data;
       
-	matching_midi_key = current_midi_key;	
-      }
-    }else if(matching_midi_key < midi_key &&
-	     current_midi_key > midi_key){
-      if(current_midi_key - midi_key < midi_key - matching_midi_key){
-	ipatch_sample = list->data;
-      
-	matching_midi_key = current_midi_key;
-      }
-    }else if(matching_midi_key > midi_key &&
-	     current_midi_key < midi_key){
-      if(midi_key - current_midi_key < matching_midi_key - midi_key){
-	ipatch_sample = list->data;
-      
-	matching_midi_key = current_midi_key;
-      }
-    }else{
-      if(current_midi_key < matching_midi_key){
-	ipatch_sample = list->data;
-      
-	matching_midi_key = current_midi_key;
-      }
+      matching_midi_key = current_midi_key;	
     }
     
     list = list->next;
@@ -2027,6 +2018,16 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 
   buffer = ags_stream_alloc(frame_count,
 			    format);
+
+  {
+    gint current_midi_key;
+
+    g_object_get(AGS_IPATCH_SAMPLE(ipatch_sample)->sample,
+		 "root-note", &current_midi_key,
+		 NULL);
+    
+    g_message("SF2, note %f, midi_key %d", note, current_midi_key);
+  }
 
   ags_sf2_synth_util_copy(buffer,
 			  frame_count,

@@ -1391,6 +1391,8 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   
   midi_key = (gint) floor(note) + 69;
 
+  g_message("--> %d", midi_key);
+  
   upper = -1;
   lower = -1;
   
@@ -1399,29 +1401,54 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 
     glong hikey, lokey;
     glong value;
+    glong current_diff, diff;
     int retval;
     
     hikey = ags_sfz_sample_get_hikey(list->data);
     lokey = ags_sfz_sample_get_lokey(list->data);
     
-    if(lokey >= midi_key &&
-       hikey <= midi_key){
+    if(lokey <= midi_key &&
+       hikey >= midi_key){
       sfz_sample = list->data;
 
       break;
     }
 
+    diff = lower - midi_key;
+    current_diff = lokey - midi_key;
+
+    if(diff < 0){
+      diff *= -1;
+    }
+
+    if(current_diff < 0){
+      current_diff *= -1;
+    }
+    
     if(lower == -1 ||
-       lower > lokey){
+       current_diff < diff){
       sfz_sample = list->data;
 
       lower = lokey;
+      upper = hikey;
+    }
+
+    diff = upper - midi_key;
+    current_diff = hikey - midi_key;
+
+    if(diff < 0){
+      diff *= -1;
+    }
+
+    if(current_diff < 0){
+      current_diff *= -1;
     }
 
     if(upper == -1 ||
-       upper < hikey){
+       current_diff < diff){
       sfz_sample = list->data;
 
+      lower = lokey;
       upper = hikey;
     }
     
@@ -1506,6 +1533,14 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   if(sfz_sample != NULL){
     ags_sound_resource_seek(AGS_SOUND_RESOURCE(sfz_sample),
 			    0, G_SEEK_SET);
+  }
+
+  {
+    gint current_midi_key;
+
+    current_midi_key = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
+    
+    g_message("SFZ, note %f, midi_key %d", note, current_midi_key);
   }
   
   ags_sfz_synth_util_copy(buffer,

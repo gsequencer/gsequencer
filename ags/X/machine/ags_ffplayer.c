@@ -1062,8 +1062,7 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
 	       "input", &start_input,
 	       NULL);
 
-  /*  */
-  
+  /*  */  
   preset_str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(ffplayer->preset));
   
   instrument_str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(ffplayer->instrument));

@@ -1414,7 +1414,7 @@ ags_sfz_file_get_range(AgsSFZFile *sfz_file,
     value = 0;
     
     if(str != NULL){
-      retval = sscanf(str, "%lu", &value);
+      retval = sscanf(str, "%3ld", &value);
 
       if(retval <= 0){
 	glong tmp;
@@ -1440,7 +1440,7 @@ ags_sfz_file_get_range(AgsSFZFile *sfz_file,
     value = AGS_SFZ_FILE_LOOP_MAX;
     
     if(str != NULL){
-      retval = sscanf(str, "%lu", &value);
+      retval = sscanf(str, "%3ld", &value);
 
       if(retval <= 0){
 	glong tmp;
@@ -1473,7 +1473,7 @@ ags_sfz_file_get_range(AgsSFZFile *sfz_file,
     value = 0;
     
     if(str != NULL){
-      retval = sscanf(str, "%lu", &value);
+      retval = sscanf(str, "%3ld", &value);
 
       if(retval <= 0){
 	glong tmp;
@@ -1499,7 +1499,7 @@ ags_sfz_file_get_range(AgsSFZFile *sfz_file,
     value = AGS_SFZ_FILE_LOOP_MAX;
     
     if(str != NULL){
-      retval = sscanf(str, "%lu", &value);
+      retval = sscanf(str, "%3ld", &value);
 
       if(retval <= 0){
 	glong tmp;
