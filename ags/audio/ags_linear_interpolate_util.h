@@ -40,10 +40,10 @@ void ags_linear_interpolate_util_fill_s16(gint16 *buffer, guint channels,
 					  gdouble factor,
 					  gint16 **output_buffer,
 					  guint *output_buffer_length);
-void ags_linear_interpolate_util_fill_s24(gint24 *buffer, guint channels,
+void ags_linear_interpolate_util_fill_s24(gint32 *buffer, guint channels,
 					  guint buffer_length,
 					  gdouble factor,
-					  gint24 **output_buffer,
+					  gint32 **output_buffer,
 					  guint *output_buffer_length);
 void ags_linear_interpolate_util_fill_s32(gint32 *buffer, guint channels,
 					  guint buffer_length,

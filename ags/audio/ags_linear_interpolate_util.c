@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_linear_interpolate_util.h>
 
-#include <math.h>
-
 /**
  * SECTION:ags_linear_interpolate_util
  * @short_description: util functions to linear interpolat
@@ -210,10 +208,10 @@ ags_linear_interpolate_util_fill_s16(gint16 *buffer, guint channels,
  * Since: 3.8.0
  */
 void
-ags_linear_interpolate_util_fill_s24(gint24 *buffer, guint channels,
+ags_linear_interpolate_util_fill_s24(gint32 *buffer, guint channels,
 				     guint buffer_length,
 				     gdouble factor,
-				     gint24 **output_buffer,
+				     gint32 **output_buffer,
 				     guint *output_buffer_length)
 {
   gint32 *out;

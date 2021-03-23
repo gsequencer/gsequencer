@@ -109,7 +109,10 @@
       <xi:include href="xml/ags_soundcard_util.xml"/>
       <xi:include href="xml/ags_sequencer_util.xml"/>
       <xi:include href="xml/ags_char_buffer_util.xml"/>
+      <xi:include href="xml/ags_linear_interpolate_util.xml"/>
       <xi:include href="xml/ags_fourier_transform_util.xml"/>
+      <xi:include href="xml/ags_fast_pitch_util.xml"/>
+      <xi:include href="xml/ags_hq_pitch_util.xml"/>
       <xi:include href="xml/ags_audio_buffer_util.xml"/>
       <xi:include href="xml/ags_filter_util.xml"/>
       <xi:include href="xml/ags_synth_util.xml"/>
