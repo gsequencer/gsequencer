@@ -65,8 +65,10 @@
 #include <ags/audio/ags_fourier_transform_util.h>
 #include <ags/audio/ags_frequency_map_manager.h>
 #include <ags/audio/ags_frequency_map.h>
+#include <ags/audio/ags_hq_pitch_util.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_lfo_synth_util.h>
+#include <ags/audio/ags_linear_interpolate_util.h>
 #include <ags/audio/ags_midi.h>
 #include <ags/audio/ags_midiin.h>
 #include <ags/audio/ags_notation.h>
