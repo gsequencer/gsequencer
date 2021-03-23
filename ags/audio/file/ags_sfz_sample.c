@@ -1868,7 +1868,7 @@ ags_sfz_sample_get_key(AgsSFZSample *sfz_sample)
     glong current_midi_key;
     int retval;
     
-    retval = sscanf(group_key, "%l", &current_midi_key);
+    retval = sscanf(group_key, "%3ld", &current_midi_key);
 
     if(retval > 0){
       midi_key = current_midi_key;
@@ -1891,7 +1891,7 @@ ags_sfz_sample_get_key(AgsSFZSample *sfz_sample)
     glong current_midi_key;
     int retval;
 
-    retval = sscanf(region_key, "%l", &current_midi_key);
+    retval = sscanf(region_key, "%3ld", &current_midi_key);
 
     if(retval <= 0){
       retval = ags_diatonic_scale_note_to_midi_key(region_key,
@@ -1938,7 +1938,7 @@ ags_sfz_sample_get_hikey(AgsSFZSample *sfz_sample)
     glong current_hikey;
     int retval;
     
-    retval = sscanf(group_key, "%l", &current_hikey);
+    retval = sscanf(group_key, "%3ld", &current_hikey);
 
     if(retval > 0){
       hikey = current_hikey;
@@ -1961,7 +1961,7 @@ ags_sfz_sample_get_hikey(AgsSFZSample *sfz_sample)
     glong current_hikey;
     int retval;
     
-    retval = sscanf(region_key, "%l", &current_hikey);
+    retval = sscanf(region_key, "%3ld", &current_hikey);
 
     if(retval > 0){
       hikey = current_hikey;
@@ -2010,7 +2010,7 @@ ags_sfz_sample_get_lokey(AgsSFZSample *sfz_sample)
     glong current_lokey;
     int retval;
     
-    retval = sscanf(group_key, "%l", &current_lokey);
+    retval = sscanf(group_key, "%3ld", &current_lokey);
 
     if(retval > 0){
       lokey = current_lokey;
@@ -2033,7 +2033,7 @@ ags_sfz_sample_get_lokey(AgsSFZSample *sfz_sample)
     glong current_lokey;
     int retval;
     
-    retval = sscanf(region_key, "%l", &current_lokey);
+    retval = sscanf(region_key, "%3ld", &current_lokey);
 
     if(retval > 0){
       lokey = current_lokey;
@@ -2082,7 +2082,7 @@ ags_sfz_sample_get_pitch_keycenter(AgsSFZSample *sfz_sample)
     glong current_pitch_keycenter;
     int retval;
     
-    retval = sscanf(group_key, "%l", &current_pitch_keycenter);
+    retval = sscanf(group_key, "%3ld", &current_pitch_keycenter);
 
     if(retval > 0){
       pitch_keycenter = current_pitch_keycenter;
@@ -2105,7 +2105,7 @@ ags_sfz_sample_get_pitch_keycenter(AgsSFZSample *sfz_sample)
     glong current_pitch_keycenter;
     int retval;
     
-    retval = sscanf(region_key, "%l", &current_pitch_keycenter);
+    retval = sscanf(region_key, "%3ld", &current_pitch_keycenter);
 
     if(retval > 0){
       pitch_keycenter = current_pitch_keycenter;
