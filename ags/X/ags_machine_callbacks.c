@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,9 @@
 #include <ags/i18n.h>
 
 #define AGS_RENAME_ENTRY "AgsRenameEntry"
+
+void ags_machine_recall_set_loop(AgsMachine *machine,
+				 AgsRecall *recall);
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_rename_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
@@ -89,6 +92,147 @@ void
 ags_machine_check_message_callback(GObject *application_context, AgsMachine *machine)
 {
   ags_machine_check_message(machine);
+}
+
+void
+ags_machine_recall_set_loop(AgsMachine *machine,
+			    AgsRecall *recall)
+{
+  AgsNavigation *navigation;
+  AgsPort *port;
+
+  AgsApplicationContext *application_context;
+
+  GValue value = G_VALUE_INIT;
+
+  application_context = ags_application_context_get_instance();
+
+  navigation = ags_ui_provider_get_navigation(AGS_UI_PROVIDER(application_context));
+
+  /* loop */
+  port = NULL;
+    
+  g_object_get(recall,
+	       "loop", &port,
+	       NULL);
+
+  g_value_init(&value,
+	       G_TYPE_BOOLEAN);
+
+  g_value_set_boolean(&value,
+		      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
+
+  ags_port_safe_write(port,
+		      &value);
+
+  if(port != NULL){
+    g_object_unref(port);
+  }
+    
+  /* loop start */
+  port = NULL;
+    
+  g_object_get(recall,
+	       "loop-start", &port,
+	       NULL);
+
+  g_value_unset(&value);
+  g_value_init(&value,
+	       G_TYPE_UINT64);
+
+  g_value_set_uint64(&value,
+		     16 * gtk_spin_button_get_value_as_int(navigation->loop_left_tact));
+
+  ags_port_safe_write(port,
+		      &value);
+
+  if(port != NULL){
+    g_object_unref(port);
+  }
+    
+  /* loop end */
+  port = NULL;
+    
+  g_object_get(recall,
+	       "loop-end", &port,
+	       NULL);
+
+  g_value_unset(&value);
+  g_value_init(&value,
+	       G_TYPE_UINT64);
+
+  g_value_set_uint64(&value,
+		     16 * gtk_spin_button_get_value_as_int(navigation->loop_right_tact));
+
+  ags_port_safe_write(port,
+		      &value);
+
+  if(port != NULL){
+    g_object_unref(port);
+  }
+}
+
+void
+ags_machine_map_recall_callback(AgsMachine *machine,
+				gpointer user_data)
+{
+  GList *start_play;
+  GList *start_recall;
+  GList *list;
+  
+  start_play = NULL;
+  start_recall = NULL;
+  
+  g_object_get(machine->audio,
+	       "play", &start_play,
+	       "recall", &start_recall,
+	       NULL);
+
+  list = start_play;
+  
+  while((list = ags_recall_template_find_type(list, AGS_TYPE_FX_NOTATION_AUDIO)) != NULL){
+    ags_machine_recall_set_loop(machine,
+				list->data);
+
+    /* iterate */
+    list = list->next;
+  }
+
+  list = start_play;
+  
+  while((list = ags_recall_template_find_type(list, AGS_TYPE_FX_PLAYBACK_AUDIO)) != NULL){
+    ags_machine_recall_set_loop(machine,
+				list->data);
+
+    /* iterate */
+    list = list->next;
+  }
+
+  list = start_recall;
+  
+  while((list = ags_recall_template_find_type(list, AGS_TYPE_FX_NOTATION_AUDIO)) != NULL){
+    ags_machine_recall_set_loop(machine,
+				list->data);
+
+    /* iterate */
+    list = list->next;
+  }
+  
+  list = start_recall;
+  
+  while((list = ags_recall_template_find_type(list, AGS_TYPE_FX_PLAYBACK_AUDIO)) != NULL){
+    ags_machine_recall_set_loop(machine,
+				list->data);
+
+    /* iterate */
+    list = list->next;
+  }
+  
+  g_list_free_full(start_play,
+		   (GDestroyNotify) g_object_unref);
+  
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 int

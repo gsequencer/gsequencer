@@ -40,6 +40,18 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.7.50" date="2021-03-16">
+      <description>
+	<p>fixed missing loop information after map recall.</p>
+      </description>
+    </release>
+
+    <release version="3.7.49" date="2021-03-16">
+      <description>
+	<p>fixed missing loop information after machine added.</p>
+      </description>
+    </release>
+
     <release version="3.7.48" date="2021-03-08">
       <description>
 	<p>updated user's handbook chapter 2.</p>
