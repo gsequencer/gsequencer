@@ -26,8 +26,8 @@
 
 #include <math.h>
 
-//#include <ags/libags.h>
-//#include <ags/libags-audio.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 void ags_visual_phase_shift_putpixel(unsigned char *data, int x, int y, unsigned long int pixel);
 
@@ -53,7 +53,7 @@ guint BLACK_PIXEL = 0x0;
 gint STRIDE;
 
 gdouble orig_buffer[1920];
-gdouble phase_shifted_buffer[1920];
+gdouble *phase_shifted_buffer;
 
 void
 ags_visual_phase_shift_putpixel(unsigned char *data, int x, int y, unsigned long int pixel)
@@ -62,6 +62,13 @@ ags_visual_phase_shift_putpixel(unsigned char *data, int x, int y, unsigned long
   /* Here p is the address to the pixel we want to set */
   unsigned char *p = data + y * STRIDE + x * bpp;
 
+  if(x < 0 ||
+     y < 0 ||
+     x >= 1920 ||
+     y >= 200){
+    return;
+  }
+  
   switch(bpp) {
   case 1:
     *p = pixel;
@@ -157,11 +164,23 @@ int
 main(int argc, char* argv[])
 {
   GtkBox *vbox;
+
+  guint i;
   
   gtk_init(&argc, &argv);
+  
+  for(i = 0; i < 1920; i++){
+    orig_buffer[i] = sin(((double) i / (1920.0 / 8.0)) * 2.0 * M_PI);
+  }
 
-  memset(orig_buffer, 0, sizeof(orig_buffer));
-  memset(phase_shifted_buffer, 0, sizeof(phase_shifted_buffer));
+  phase_shifted_buffer = NULL;
+  
+  ags_phase_shift_util_compute_double(orig_buffer,
+				      1920,
+				      1920,
+				      8.0,
+				      2 * M_PI,
+				      &phase_shifted_buffer);
   
   window = (GtkWindow *) gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
@@ -176,7 +195,6 @@ main(int argc, char* argv[])
 						     1920, 200);
 
   STRIDE = cairo_image_surface_get_stride(orig_surface);
-
   
   orig_wave = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_size_request((GtkWidget *) orig_wave,
