@@ -71,7 +71,6 @@ void ags_hq_pitch_util_compute_complex(AgsComplex *buffer,
 				       gdouble base_key,
 				       gdouble tuning);
 
-
 G_END_DECLS
 
 #endif /*__AGS_HQ_PITCH_UTIL_H__*/

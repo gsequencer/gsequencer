@@ -63,6 +63,7 @@
 #include <ags/audio/ags_filter_util.h>
 #include <ags/audio/ags_fm_synth_util.h>
 #include <ags/audio/ags_fourier_transform_util.h>
+#include <ags/audio/ags_frequency_aliase_util.h>
 #include <ags/audio/ags_frequency_map_manager.h>
 #include <ags/audio/ags_frequency_map.h>
 #include <ags/audio/ags_hq_pitch_util.h>
@@ -75,6 +76,7 @@
 #include <ags/audio/ags_note.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_pattern.h>
+#include <ags/audio/ags_phase_shift_util.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_port.h>

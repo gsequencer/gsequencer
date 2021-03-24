@@ -26,7 +26,7 @@
 /**
  * SECTION:ags_hq_pitch_util
  * @short_description: hq pitch util
- * @title: AgsHqPitchUtil
+ * @title: AgsHQPitchUtil
  * @section_id:
  * @include: ags/audio/ags_hq_pitch_util.h
  *

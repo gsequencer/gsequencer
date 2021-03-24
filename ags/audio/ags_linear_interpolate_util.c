@@ -21,7 +21,7 @@
 
 /**
  * SECTION:ags_linear_interpolate_util
- * @short_description: util functions to linear interpolat
+ * @short_description: util functions to linear interpolate
  * @title: AgsLinearInterpolateUtil
  * @section_id:
  * @include: ags/audio/ags_linear_interpolate_util.h
@@ -93,7 +93,7 @@ ags_linear_interpolate_util_fill_s8(gint8 *buffer, guint channels,
     }
 
     if(factor < 1.0){
-      t = (gdouble) (i + 1) / ((gdouble) (i + 1) / factor);
+      t = (gdouble) (i * factor) / ((gdouble) (i + 1) * factor);
     }else{
       t = (gdouble) (j + 1) / factor;
     }
@@ -175,7 +175,7 @@ ags_linear_interpolate_util_fill_s16(gint16 *buffer, guint channels,
     }
 
     if(factor < 1.0){
-      t = (gdouble) (i + 1) / ((gdouble) (i + 1) / factor);
+      t = (gdouble) (i * factor) / ((gdouble) (i + 1) * factor);
     }else{
       t = (gdouble) (j + 1) / factor;
     }
@@ -257,7 +257,7 @@ ags_linear_interpolate_util_fill_s24(gint32 *buffer, guint channels,
     }
 
     if(factor < 1.0){
-      t = (gdouble) (i + 1) / ((gdouble) (i + 1) / factor);
+      t = (gdouble) (i * factor) / ((gdouble) (i + 1) * factor);
     }else{
       t = (gdouble) (j + 1) / factor;
     }
@@ -339,7 +339,7 @@ ags_linear_interpolate_util_fill_s32(gint32 *buffer, guint channels,
     }
 
     if(factor < 1.0){
-      t = (gdouble) (i + 1) / ((gdouble) (i + 1) / factor);
+      t = (gdouble) (i * factor) / ((gdouble) (i + 1) * factor);
     }else{
       t = (gdouble) (j + 1) / factor;
     }
@@ -421,7 +421,7 @@ ags_linear_interpolate_util_fill_s64(gint64 *buffer, guint channels,
     }
 
     if(factor < 1.0){
-      t = (gdouble) (i + 1) / ((gdouble) (i + 1) / factor);
+      t = (gdouble) (i * factor) / ((gdouble) (i + 1) * factor);
     }else{
       t = (gdouble) (j + 1) / factor;
     }
@@ -503,7 +503,7 @@ ags_linear_interpolate_util_fill_float(gfloat *buffer, guint channels,
     }
 
     if(factor < 1.0){
-      t = (gdouble) (i + 1) / ((gdouble) (i + 1) / factor);
+      t = (gdouble) (i * factor) / ((gdouble) (i + 1) * factor);
     }else{
       t = (gdouble) (j + 1) / factor;
     }
@@ -585,7 +585,7 @@ ags_linear_interpolate_util_fill_double(gdouble *buffer, guint channels,
     }
 
     if(factor < 1.0){
-      t = (gdouble) (i + 1) / ((gdouble) (i + 1) / factor);
+      t = (gdouble) (i * factor) / ((gdouble) (i + 1) * factor);
     }else{
       t = (gdouble) (j + 1) / factor;
     }
@@ -667,7 +667,7 @@ ags_linear_interpolate_util_fill_complex(AgsComplex *buffer, guint channels,
     }
 
     if(factor < 1.0){
-      t = (gdouble) (i + 1) / ((gdouble) (i + 1) / factor);
+      t = (gdouble) (i * factor) / ((gdouble) (i + 1) * factor);
     }else{
       t = (gdouble) (j + 1) / factor;
     }

@@ -1038,6 +1038,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_fifoout.h \
 	ags/audio/ags_fm_synth_util.h \
 	ags/audio/ags_fourier_transform_util.h \
+	ags/audio/ags_frequency_aliase_util.h \
 	ags/audio/ags_frequency_map.h \
 	ags/audio/ags_frequency_map_manager.h \
 	ags/audio/ags_fx_factory.h \
@@ -1053,6 +1054,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_note.h \
 	ags/audio/ags_output.h \
 	ags/audio/ags_pattern.h \
+	ags/audio/ags_phase_shift_util.h \
 	ags/audio/ags_playback.h \
 	ags/audio/ags_playback_domain.h \
 	ags/audio/ags_port.h \
@@ -1118,6 +1120,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_fifoout.c \
 	ags/audio/ags_fm_synth_util.c \
 	ags/audio/ags_fourier_transform_util.c \
+	ags/audio/ags_frequency_aliase_util.c \
 	ags/audio/ags_frequency_map.c \
 	ags/audio/ags_frequency_map_manager.c \
 	ags/audio/ags_fx_factory.c \
@@ -1132,6 +1135,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_note.c \
 	ags/audio/ags_output.c \
 	ags/audio/ags_pattern.c \
+	ags/audio/ags_phase_shift_util.c \
 	ags/audio/ags_playback.c \
 	ags/audio/ags_playback_domain.c \
 	ags/audio/ags_port.c \
