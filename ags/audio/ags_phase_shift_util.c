@@ -41,7 +41,8 @@
  * @amount: the amount
  * @output_buffer: (out): output buffer
  * 
- * Apply pitch filter.
+ * Compute phase shift of audio buffer by @frequency with @amount with
+ * max radian 2 * M_PI.
  * 
  * Since: 3.8.0
  */
@@ -97,7 +98,8 @@ ags_phase_shift_util_compute_s8(gint8 *buffer,
  * @amount: the amount
  * @output_buffer: (out): output buffer
  * 
- * Apply pitch filter.
+ * Compute phase shift of audio buffer by @frequency with @amount with
+ * max radian 2 * M_PI.
  * 
  * Since: 3.8.0
  */
@@ -153,7 +155,8 @@ ags_phase_shift_util_compute_s16(gint16 *buffer,
  * @amount: the amount
  * @output_buffer: (out): output buffer
  * 
- * Apply pitch filter.
+ * Compute phase shift of audio buffer by @frequency with @amount with
+ * max radian 2 * M_PI.
  * 
  * Since: 3.8.0
  */
@@ -209,7 +212,8 @@ ags_phase_shift_util_compute_s24(gint32 *buffer,
  * @amount: the amount
  * @output_buffer: (out): output buffer
  * 
- * Apply pitch filter.
+ * Compute phase shift of audio buffer by @frequency with @amount with
+ * max radian 2 * M_PI.
  * 
  * Since: 3.8.0
  */
@@ -265,7 +269,8 @@ ags_phase_shift_util_compute_s32(gint32 *buffer,
  * @amount: the amount
  * @output_buffer: (out): output buffer
  * 
- * Apply pitch filter.
+ * Compute phase shift of audio buffer by @frequency with @amount with
+ * max radian 2 * M_PI.
  * 
  * Since: 3.8.0
  */
@@ -321,7 +326,8 @@ ags_phase_shift_util_compute_s64(gint64 *buffer,
  * @amount: the amount
  * @output_buffer: (out): output buffer
  * 
- * Apply pitch filter.
+ * Compute phase shift of audio buffer by @frequency with @amount with
+ * max radian 2 * M_PI.
  * 
  * Since: 3.8.0
  */
@@ -377,7 +383,8 @@ ags_phase_shift_util_compute_float(gfloat *buffer,
  * @amount: the amount
  * @output_buffer: (out): output buffer
  * 
- * Apply pitch filter.
+ * Compute phase shift of audio buffer by @frequency with @amount with
+ * max radian 2 * M_PI.
  * 
  * Since: 3.8.0
  */
@@ -433,7 +440,8 @@ ags_phase_shift_util_compute_double(gdouble *buffer,
  * @amount: the amount
  * @output_buffer: (out): output buffer
  * 
- * Apply pitch filter.
+ * Compute phase shift of audio buffer by @frequency with @amount with
+ * max radian 2 * M_PI.
  * 
  * Since: 3.8.0
  */
