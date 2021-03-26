@@ -21,6 +21,9 @@
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_phase_shift_util.h>
+
+#include <math.h>
 
 /**
  * SECTION:ags_frequency_aliase_util
@@ -41,7 +44,7 @@
  * @amount: the amount
  * @output_buffer: (out): output buffer
  * 
- * Compute aliased audio buffer by @frequency with @amount with max radian
+ * Compute aliased audio buffer at @frequency with @amount with max radian
  * 2 * M_PI.
  * 
  * Since: 3.8.0
@@ -99,7 +102,7 @@ ags_frequency_aliase_util_compute_s8(gint8 *buffer,
  * @amount: the amount
  * @output_buffer: (out): output buffer
  * 
- * Compute aliased audio buffer by @frequency with @amount with max radian
+ * Compute aliased audio buffer at @frequency with @amount with max radian
  * 2 * M_PI.
  * 
  * Since: 3.8.0
@@ -157,7 +160,7 @@ ags_frequency_aliase_util_compute_s16(gint16 *buffer,
  * @amount: the amount
  * @output_buffer: (out): output buffer
  * 
- * Compute aliased audio buffer by @frequency with @amount with max radian
+ * Compute aliased audio buffer at @frequency with @amount with max radian
  * 2 * M_PI.
  * 
  * Since: 3.8.0
@@ -215,7 +218,7 @@ ags_frequency_aliase_util_compute_s24(gint32 *buffer,
  * @amount: the amount
  * @output_buffer: (out): output buffer
  * 
- * Compute aliased audio buffer by @frequency with @amount with max radian
+ * Compute aliased audio buffer at @frequency with @amount with max radian
  * 2 * M_PI.
  * 
  * Since: 3.8.0
@@ -273,7 +276,7 @@ ags_frequency_aliase_util_compute_s32(gint32 *buffer,
  * @amount: the amount
  * @output_buffer: (out): output buffer
  * 
- * Compute aliased audio buffer by @frequency with @amount with max radian
+ * Compute aliased audio buffer at @frequency with @amount with max radian
  * 2 * M_PI.
  * 
  * Since: 3.8.0
@@ -331,7 +334,7 @@ ags_frequency_aliase_util_compute_s64(gint64 *buffer,
  * @amount: the amount
  * @output_buffer: (out): output buffer
  * 
- * Compute aliased audio buffer by @frequency with @amount with max radian
+ * Compute aliased audio buffer at @frequency with @amount with max radian
  * 2 * M_PI.
  * 
  * Since: 3.8.0
@@ -389,7 +392,7 @@ ags_frequency_aliase_util_compute_float(gfloat *buffer,
  * @amount: the amount
  * @output_buffer: (out): output buffer
  * 
- * Compute aliased audio buffer by @frequency with @amount with max radian
+ * Compute aliased audio buffer at @frequency with @amount with max radian
  * 2 * M_PI.
  * 
  * Since: 3.8.0
@@ -448,7 +451,7 @@ ags_frequency_aliase_util_compute_double(gdouble *buffer,
  * @amount: the amount
  * @output_buffer: (out): output buffer
  * 
- * Compute aliased audio buffer by @frequency with @amount with max radian
+ * Compute aliased audio buffer at @frequency with @amount with max radian
  * 2 * M_PI.
  * 
  * Since: 3.8.0
@@ -488,7 +491,7 @@ ags_frequency_aliase_util_compute_complex(AgsComplex *buffer,
 
   for(i = 0; i < buffer_length; i++){
     ags_complex_set(out + i,
-		    sqrt(pow((double) ags_complex_get(buffer + i), 2.0) + pow((double) ags_complex_get(phase_shifted_buffer + i), 2.0));
+		    sqrt(pow((double) ags_complex_get(buffer + i), 2.0) + pow((double) ags_complex_get(phase_shifted_buffer + i), 2.0)));
   }
 
   g_free(phase_shifted_buffer);
