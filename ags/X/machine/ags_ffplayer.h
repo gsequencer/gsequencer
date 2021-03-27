@@ -69,6 +69,9 @@ struct _AgsFFPlayer
   AgsRecallContainer *notation_play_container;
   AgsRecallContainer *notation_recall_container;
 
+  AgsRecallContainer *volume_play_container;
+  AgsRecallContainer *volume_recall_container;
+
   AgsRecallContainer *envelope_play_container;
   AgsRecallContainer *envelope_recall_container;
   
@@ -103,7 +106,12 @@ struct _AgsFFPlayer
   GtkSpinButton *lower;
   GtkSpinButton *key_count;
 
+  GtkCheckButton *enable_aliase;
+  GtkSpinButton *aliase_amount;
+  
   GtkButton *update;
+  
+  GtkScale *volume;
   
   GtkWidget *open_dialog;
 };

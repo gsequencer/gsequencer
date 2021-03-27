@@ -251,6 +251,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->notation_play_container = ags_recall_container_new();
   ffplayer->notation_recall_container = ags_recall_container_new();
 
+  ffplayer->volume_play_container = ags_recall_container_new();
+  ffplayer->volume_recall_container = ags_recall_container_new();
+
   ffplayer->envelope_play_container = ags_recall_container_new();
   ffplayer->envelope_recall_container = ags_recall_container_new();
 
@@ -760,6 +763,21 @@ ags_ffplayer_map_recall(AgsMachine *machine)
   start_recall = ags_fx_factory_create(audio,
 				       ffplayer->notation_play_container, ffplayer->notation_recall_container,
 				       "ags-fx-notation",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       ffplayer->volume_play_container, ffplayer->volume_recall_container,
+				       "ags-fx-volume",
 				       NULL,
 				       NULL,
 				       0, 0,

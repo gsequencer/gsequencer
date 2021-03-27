@@ -51,6 +51,8 @@ gboolean ags_visual_phase_shift_phase_shifted_wave_draw(GtkWidget *widget,
 #define AGS_VISUAL_PHASE_SHIFT_TEST_BASE_FREQ (220.0)
 #define AGS_VISUAL_PHASE_SHIFT_TEST_VOLUME (1.0)
 
+#define AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT (0.5 * M_PI)
+
 #define AGS_VISUAL_PHASE_SHIFT_TEST_CONFIG "[generic]\n"	\
   "autosave-thread=false\n"				\
   "simple-file=true\n"					\
@@ -292,8 +294,8 @@ ags_visual_phase_shift_test_create_sine_wave()
   guint i, j;
 
   ags_synth_util_sin_s16(s16_buffer,
-			 440.0, 0.0, 1.0,
-			 44100,
+			 AGS_VISUAL_PHASE_SHIFT_TEST_BASE_FREQ, 0.0, 1.0,
+			 AGS_VISUAL_PHASE_SHIFT_TEST_SAMPLERATE,
 			 0, (guint) AGS_VISUAL_PHASE_SHIFT_TEST_FRAME_COUNT);
   
   start_wave = NULL;
@@ -341,11 +343,11 @@ ags_visual_phase_shift_test_create_phase_shifted_sine_wave()
 
   guint i, j;
 
-  ags_frequency_aliase_util_compute_s16(s16_buffer,
+  ags_phase_shift_util_compute_s16(s16_buffer,
 				   (guint) AGS_VISUAL_PHASE_SHIFT_TEST_FRAME_COUNT,
 				   AGS_VISUAL_PHASE_SHIFT_TEST_SAMPLERATE,
 				   AGS_VISUAL_PHASE_SHIFT_TEST_BASE_FREQ,
-				   0.5 * M_PI,
+				   AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT,
 				   &s16_phase_shifted_buffer);
 
   start_wave = NULL;
@@ -534,7 +536,7 @@ main(int argc, char* argv[])
     frequency = 8.0;
     freq_period = samplerate / frequency;
 
-    amount = 0.5 * M_PI;
+    amount = AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT;
     amount_period = (amount / (2.0 * M_PI)) * freq_period;
     
     phase = freq_period - amount_period;
@@ -550,7 +552,7 @@ main(int argc, char* argv[])
 				      1920,
 				      1920,
 				      8.0,
-				      0.5 * M_PI,
+				      AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT,
 				      &phase_shifted_buffer);
   
   window = (GtkWindow *) gtk_window_new(GTK_WINDOW_TOPLEVEL);

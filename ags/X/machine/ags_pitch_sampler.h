@@ -75,6 +75,9 @@ struct _AgsPitchSampler
   AgsRecallContainer *lfo_play_container;
   AgsRecallContainer *lfo_recall_container;
 
+  AgsRecallContainer *volume_play_container;
+  AgsRecallContainer *volume_recall_container;
+
   AgsRecallContainer *envelope_play_container;
   AgsRecallContainer *envelope_recall_container;
   
@@ -98,6 +101,9 @@ struct _AgsPitchSampler
   GtkSpinButton *lower;
   GtkSpinButton *key_count;
 
+  GtkCheckButton *enable_aliase;
+  GtkSpinButton *aliase_amount;
+
   GtkButton *update;
 
   GtkCheckButton *enable_lfo;
@@ -107,6 +113,8 @@ struct _AgsPitchSampler
 
   GtkSpinButton *lfo_depth;
   GtkSpinButton *lfo_tuning;
+
+  GtkScale *volume;
 
   GtkFileChooserDialog *open_dialog;
 };

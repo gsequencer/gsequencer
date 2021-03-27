@@ -81,7 +81,7 @@ ags_phase_shift_util_compute_s8(gint8 *buffer,
   for(i = 0; i < buffer_length; i++){
     phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
-    out[i] = phase_shift * buffer[i];
+    out[i] = 0.5 * (phase_shift + buffer[i]);
   }
   
   if(output_buffer != NULL){
@@ -138,7 +138,7 @@ ags_phase_shift_util_compute_s16(gint16 *buffer,
   for(i = 0; i < buffer_length; i++){
     phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
-    out[i] = phase_shift * buffer[i];
+    out[i] = 0.5 * (phase_shift + buffer[i]);
   }
   
   if(output_buffer != NULL){
@@ -195,7 +195,7 @@ ags_phase_shift_util_compute_s24(gint32 *buffer,
   for(i = 0; i < buffer_length; i++){
     phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
-    out[i] = phase_shift * buffer[i];
+    out[i] = 0.5 * (phase_shift + buffer[i]);
   }
   
   if(output_buffer != NULL){
@@ -252,7 +252,7 @@ ags_phase_shift_util_compute_s32(gint32 *buffer,
   for(i = 0; i < buffer_length; i++){
     phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
-    out[i] = phase_shift * buffer[i];
+    out[i] = 0.5 * (phase_shift + buffer[i]);
   }
   
   if(output_buffer != NULL){
@@ -309,7 +309,7 @@ ags_phase_shift_util_compute_s64(gint64 *buffer,
   for(i = 0; i < buffer_length; i++){
     phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
-    out[i] = phase_shift * buffer[i];
+    out[i] = 0.5 * (phase_shift + buffer[i]);
   }
   
   if(output_buffer != NULL){
@@ -366,7 +366,7 @@ ags_phase_shift_util_compute_float(gfloat *buffer,
   for(i = 0; i < buffer_length; i++){
     phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
-    out[i] = phase_shift * buffer[i];
+    out[i] = 0.5 * (phase_shift + buffer[i]);
   }
   
   if(output_buffer != NULL){
@@ -423,7 +423,7 @@ ags_phase_shift_util_compute_double(gdouble *buffer,
   for(i = 0; i < buffer_length; i++){
     phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
-    out[i] = phase_shift * buffer[i];
+    out[i] = 0.5 * (phase_shift + buffer[i]);
   }
   
   if(output_buffer != NULL){
@@ -481,7 +481,7 @@ ags_phase_shift_util_compute_complex(AgsComplex *buffer,
     phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
     ags_complex_set(out + i,
-		    phase_shift * ags_complex_get(buffer + i));
+		    0.5 * (phase_shift + ags_complex_get(buffer + i)));
   }
   
   if(output_buffer != NULL){

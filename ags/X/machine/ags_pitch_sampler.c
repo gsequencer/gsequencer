@@ -219,6 +219,9 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   pitch_sampler->lfo_play_container = ags_recall_container_new();
   pitch_sampler->lfo_recall_container = ags_recall_container_new();
 
+  pitch_sampler->volume_play_container = ags_recall_container_new();
+  pitch_sampler->volume_recall_container = ags_recall_container_new();
+
   pitch_sampler->envelope_play_container = ags_recall_container_new();
   pitch_sampler->envelope_recall_container = ags_recall_container_new();
 
@@ -807,6 +810,21 @@ ags_pitch_sampler_map_recall(AgsMachine *machine)
   start_recall = ags_fx_factory_create(audio,
 				       pitch_sampler->lfo_play_container, pitch_sampler->lfo_recall_container,
 				       "ags-fx-lfo",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       pitch_sampler->volume_play_container, pitch_sampler->volume_recall_container,
+				       "ags-fx-volume",
 				       NULL,
 				       NULL,
 				       0, 0,
