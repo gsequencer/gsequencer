@@ -19,10 +19,6 @@
 
 #include <ags/audio/ags_frequency_aliase_util.h>
 
-#include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_audio_buffer_util.h>
-#include <ags/audio/ags_phase_shift_util.h>
-
 #include <math.h>
 
 /**
@@ -32,471 +28,254 @@
  * @section_id:
  * @include: ags/audio/ags_frequency_aliase_util.h
  *
- * Utility functions to frequency aliase.
+ * Utility functions to compute frequency aliase.
  */
 
 /**
  * ags_frequency_aliase_util_compute_s8:
- * @buffer: the audio buffer
+ * @destination: the destination audio buffer
+ * @source: the source audio buffer
+ * @phase_shifted_source: the phase shifted source audio buffer
  * @buffer_length: the audio buffer's length
- * @samplerate: the samplerate
- * @frequency: the frequency
- * @amount: the amount
- * @output_buffer: (out): output buffer
  * 
- * Compute aliased audio buffer at @frequency with @amount with max radian
- * 2 * M_PI.
+ * Compute aliased audio buffer.
  * 
  * Since: 3.8.0
  */
 void
-ags_frequency_aliase_util_compute_s8(gint8 *buffer,
-				     guint buffer_length,
-				     guint samplerate,
-				     gdouble frequency,
-				     gdouble amount,
-				     gint8 **output_buffer)
+ags_frequency_aliase_util_compute_s8(gint8 *destination,
+				     gint8 *source,
+				     gint8 *phase_shifted_source,
+				     guint buffer_length)
 {
-  gint8 *phase_shifted_buffer;
-  gint8 *out;
-
   guint i;
   
-  if(buffer == NULL ||
+  if(destination == NULL ||
+     source == NULL ||
+     phase_shifted_source == NULL ||
      buffer_length == 0){
-    if(output_buffer != NULL){
-      output_buffer[0] = NULL;
-    }
-    
     return;
   }
 
-  phase_shifted_buffer = NULL;
-
-  ags_phase_shift_util_compute_s8(buffer,
-				  buffer_length,
-				  samplerate,
-				  frequency,
-				  amount,
-				  &phase_shifted_buffer);
-
-  out = (gint8 *) g_malloc(buffer_length * sizeof(gint8));
-
   for(i = 0; i < buffer_length; i++){
-    out[i] = sqrt(pow((double) buffer[i], 2.0) + pow((double) phase_shifted_buffer[i], 2.0));
-  }
-
-  g_free(phase_shifted_buffer);
-  
-  if(output_buffer != NULL){
-    output_buffer[0] = out;
+    destination[i] = sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
   }
 }
 
 /**
  * ags_frequency_aliase_util_compute_s16:
- * @buffer: the audio buffer
+ * @destination: the destination audio buffer
+ * @source: the source audio buffer
+ * @phase_shifted_source: the phase shifted source audio buffer
  * @buffer_length: the audio buffer's length
- * @samplerate: the samplerate
- * @frequency: the frequency
- * @amount: the amount
- * @output_buffer: (out): output buffer
  * 
- * Compute aliased audio buffer at @frequency with @amount with max radian
- * 2 * M_PI.
+ * Compute aliased audio buffer.
  * 
  * Since: 3.8.0
  */
 void
-ags_frequency_aliase_util_compute_s16(gint16 *buffer,
-				      guint buffer_length,
-				      guint samplerate,
-				      gdouble frequency,
-				      gdouble amount,
-				      gint16 **output_buffer)
+ags_frequency_aliase_util_compute_s16(gint16 *destination,
+				      gint16 *source,
+				      gint16 *phase_shifted_source,
+				      guint buffer_length)
 {
-  gint16 *phase_shifted_buffer;
-  gint16 *out;
-
   guint i;
   
-  if(buffer == NULL ||
+  if(destination == NULL ||
+     source == NULL ||
+     phase_shifted_source == NULL ||
      buffer_length == 0){
-    if(output_buffer != NULL){
-      output_buffer[0] = NULL;
-    }
-    
     return;
   }
 
-  phase_shifted_buffer = NULL;
-
-  ags_phase_shift_util_compute_s16(buffer,
-				   buffer_length,
-				   samplerate,
-				   frequency,
-				   amount,
-				   &phase_shifted_buffer);
-
-  out = (gint16 *) g_malloc(buffer_length * sizeof(gint16));
-
   for(i = 0; i < buffer_length; i++){
-    out[i] = sqrt(pow((double) buffer[i], 2.0) + pow((double) phase_shifted_buffer[i], 2.0));
-  }
-
-  g_free(phase_shifted_buffer);
-  
-  if(output_buffer != NULL){
-    output_buffer[0] = out;
+    destination[i] = sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
   }
 }
 
 /**
  * ags_frequency_aliase_util_compute_s24:
- * @buffer: the audio buffer
+ * @destination: the destination audio buffer
+ * @source: the source audio buffer
+ * @phase_shifted_source: the phase shifted source audio buffer
  * @buffer_length: the audio buffer's length
- * @samplerate: the samplerate
- * @frequency: the frequency
- * @amount: the amount
- * @output_buffer: (out): output buffer
  * 
- * Compute aliased audio buffer at @frequency with @amount with max radian
- * 2 * M_PI.
+ * Compute aliased audio buffer.
  * 
  * Since: 3.8.0
  */
 void
-ags_frequency_aliase_util_compute_s24(gint32 *buffer,
-				      guint buffer_length,
-				      guint samplerate,
-				      gdouble frequency,
-				      gdouble amount,
-				      gint32 **output_buffer)
+ags_frequency_aliase_util_compute_s24(gint32 *destination,
+				      gint32 *source,
+				      gint32 *phase_shifted_source,
+				      guint buffer_length)
 {
-  gint32 *phase_shifted_buffer;
-  gint32 *out;
-
   guint i;
   
-  if(buffer == NULL ||
+  if(destination == NULL ||
+     source == NULL ||
+     phase_shifted_source == NULL ||
      buffer_length == 0){
-    if(output_buffer != NULL){
-      output_buffer[0] = NULL;
-    }
-    
     return;
   }
 
-  phase_shifted_buffer = NULL;
-
-  ags_phase_shift_util_compute_s24(buffer,
-				   buffer_length,
-				   samplerate,
-				   frequency,
-				   amount,
-				   &phase_shifted_buffer);
-
-  out = (gint32 *) g_malloc(buffer_length * sizeof(gint32));
-
   for(i = 0; i < buffer_length; i++){
-    out[i] = sqrt(pow((double) buffer[i], 2.0) + pow((double) phase_shifted_buffer[i], 2.0));
-  }
-
-  g_free(phase_shifted_buffer);
-  
-  if(output_buffer != NULL){
-    output_buffer[0] = out;
+    destination[i] = sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
   }
 }
 
 /**
  * ags_frequency_aliase_util_compute_s32:
- * @buffer: the audio buffer
+ * @destination: the destination audio buffer
+ * @source: the source audio buffer
+ * @phase_shifted_source: the phase shifted source audio buffer
  * @buffer_length: the audio buffer's length
- * @samplerate: the samplerate
- * @frequency: the frequency
- * @amount: the amount
- * @output_buffer: (out): output buffer
  * 
- * Compute aliased audio buffer at @frequency with @amount with max radian
- * 2 * M_PI.
+ * Compute aliased audio buffer.
  * 
  * Since: 3.8.0
  */
 void
-ags_frequency_aliase_util_compute_s32(gint32 *buffer,
-				      guint buffer_length,
-				      guint samplerate,
-				      gdouble frequency,
-				      gdouble amount,
-				      gint32 **output_buffer)
+ags_frequency_aliase_util_compute_s32(gint32 *destination,
+				      gint32 *source,
+				      gint32 *phase_shifted_source,
+				      guint buffer_length)
 {
-  gint32 *phase_shifted_buffer;
-  gint32 *out;
-
   guint i;
   
-  if(buffer == NULL ||
+  if(destination == NULL ||
+     source == NULL ||
+     phase_shifted_source == NULL ||
      buffer_length == 0){
-    if(output_buffer != NULL){
-      output_buffer[0] = NULL;
-    }
-    
     return;
   }
 
-  phase_shifted_buffer = NULL;
-
-  ags_phase_shift_util_compute_s32(buffer,
-				   buffer_length,
-				   samplerate,
-				   frequency,
-				   amount,
-				   &phase_shifted_buffer);
-
-  out = (gint32 *) g_malloc(buffer_length * sizeof(gint32));
-
   for(i = 0; i < buffer_length; i++){
-    out[i] = sqrt(pow((double) buffer[i], 2.0) + pow((double) phase_shifted_buffer[i], 2.0));
-  }
-
-  g_free(phase_shifted_buffer);
-  
-  if(output_buffer != NULL){
-    output_buffer[0] = out;
+    destination[i] = sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
   }
 }
 
 /**
  * ags_frequency_aliase_util_compute_s64:
- * @buffer: the audio buffer
+ * @destination: the destination audio buffer
+ * @source: the source audio buffer
+ * @phase_shifted_source: the phase shifted source audio buffer
  * @buffer_length: the audio buffer's length
- * @samplerate: the samplerate
- * @frequency: the frequency
- * @amount: the amount
- * @output_buffer: (out): output buffer
  * 
- * Compute aliased audio buffer at @frequency with @amount with max radian
- * 2 * M_PI.
+ * Compute aliased audio buffer.
  * 
  * Since: 3.8.0
  */
 void
-ags_frequency_aliase_util_compute_s64(gint64 *buffer,
-				      guint buffer_length,
-				      guint samplerate,
-				      gdouble frequency,
-				      gdouble amount,
-				      gint64 **output_buffer)
+ags_frequency_aliase_util_compute_s64(gint64 *destination,
+				      gint64 *source,
+				      gint64 *phase_shifted_source,
+				      guint buffer_length)
 {
-  gint64 *phase_shifted_buffer;
-  gint64 *out;
-
   guint i;
   
-  if(buffer == NULL ||
+  if(destination == NULL ||
+     source == NULL ||
+     phase_shifted_source == NULL ||
      buffer_length == 0){
-    if(output_buffer != NULL){
-      output_buffer[0] = NULL;
-    }
-    
     return;
   }
 
-  phase_shifted_buffer = NULL;
-
-  ags_phase_shift_util_compute_s64(buffer,
-				   buffer_length,
-				   samplerate,
-				   frequency,
-				   amount,
-				   &phase_shifted_buffer);
-
-  out = (gint64 *) g_malloc(buffer_length * sizeof(gint64));
-
   for(i = 0; i < buffer_length; i++){
-    out[i] = sqrt(pow((double) buffer[i], 2.0) + pow((double) phase_shifted_buffer[i], 2.0));
-  }
-
-  g_free(phase_shifted_buffer);
-  
-  if(output_buffer != NULL){
-    output_buffer[0] = out;
+    destination[i] = sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
   }
 }
 
 /**
  * ags_frequency_aliase_util_compute_float:
- * @buffer: the audio buffer
+ * @destination: the destination audio buffer
+ * @source: the source audio buffer
+ * @phase_shifted_source: the phase shifted source audio buffer
  * @buffer_length: the audio buffer's length
- * @samplerate: the samplerate
- * @frequency: the frequency
- * @amount: the amount
- * @output_buffer: (out): output buffer
  * 
- * Compute aliased audio buffer at @frequency with @amount with max radian
- * 2 * M_PI.
+ * Compute aliased audio buffer.
  * 
  * Since: 3.8.0
  */
 void
-ags_frequency_aliase_util_compute_float(gfloat *buffer,
-					guint buffer_length,
-					guint samplerate,
-					gdouble frequency,
-					gdouble amount,
-					gfloat **output_buffer)
+ags_frequency_aliase_util_compute_float(gfloat *destination,
+					gfloat *source,
+					gfloat *phase_shifted_source,
+					guint buffer_length)
 {
-  gfloat *phase_shifted_buffer;
-  gfloat *out;
-
   guint i;
   
-  if(buffer == NULL ||
+  if(destination == NULL ||
+     source == NULL ||
+     phase_shifted_source == NULL ||
      buffer_length == 0){
-    if(output_buffer != NULL){
-      output_buffer[0] = NULL;
-    }
-    
     return;
   }
 
-  phase_shifted_buffer = NULL;
-
-  ags_phase_shift_util_compute_float(buffer,
-				     buffer_length,
-				     samplerate,
-				     frequency,
-				     amount,
-				     &phase_shifted_buffer);
-
-  out = (gfloat *) g_malloc(buffer_length * sizeof(gfloat));
-
   for(i = 0; i < buffer_length; i++){
-    out[i] = sqrt(pow((double) buffer[i], 2.0) + pow((double) phase_shifted_buffer[i], 2.0));
-  }
-
-  g_free(phase_shifted_buffer);
-  
-  if(output_buffer != NULL){
-    output_buffer[0] = out;
+    destination[i] = sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
   }
 }
 
 /**
  * ags_frequency_aliase_util_compute_double:
- * @buffer: the audio buffer
+ * @destination: the destination audio buffer
+ * @source: the source audio buffer
+ * @phase_shifted_source: the phase shifted source audio buffer
  * @buffer_length: the audio buffer's length
- * @samplerate: the samplerate
- * @frequency: the frequency
- * @amount: the amount
- * @output_buffer: (out): output buffer
  * 
- * Compute aliased audio buffer at @frequency with @amount with max radian
- * 2 * M_PI.
+ * Compute aliased audio buffer.
  * 
  * Since: 3.8.0
  */
 void
-ags_frequency_aliase_util_compute_double(gdouble *buffer,
-					 guint buffer_length,
-					 guint samplerate,
-					 gdouble frequency,
-					 gdouble amount,
-					 gdouble **output_buffer)
+ags_frequency_aliase_util_compute_double(gdouble *destination,
+					 gdouble *source,
+					 gdouble *phase_shifted_source,
+					 guint buffer_length)
 {
-  gdouble *phase_shifted_buffer;
-  gdouble *out;
-
   guint i;
   
-  if(buffer == NULL ||
+  if(destination == NULL ||
+     source == NULL ||
+     phase_shifted_source == NULL ||
      buffer_length == 0){
-    if(output_buffer != NULL){
-      output_buffer[0] = NULL;
-    }
-    
     return;
   }
 
-  phase_shifted_buffer = NULL;
-
-  ags_phase_shift_util_compute_double(buffer,
-				      buffer_length,
-				      samplerate,
-				      frequency,
-				      amount,
-				      &phase_shifted_buffer);
-
-  out = (gdouble *) g_malloc(buffer_length * sizeof(gdouble));
-
   for(i = 0; i < buffer_length; i++){
-    out[i] = sqrt(pow((double) buffer[i], 2.0) + pow((double) phase_shifted_buffer[i], 2.0));
+    destination[i] = sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
   }
-
-  g_free(phase_shifted_buffer);
-  
-  if(output_buffer != NULL){
-    output_buffer[0] = out;
-  }
-  //TODO:JK: implement me
 }
 
 /**
  * ags_frequency_aliase_util_compute_complex:
- * @buffer: the audio buffer
+ * @destination: the destination audio buffer
+ * @source: the source audio buffer
+ * @phase_shifted_source: the phase shifted source audio buffer
  * @buffer_length: the audio buffer's length
- * @samplerate: the samplerate
- * @frequency: the frequency
- * @amount: the amount
- * @output_buffer: (out): output buffer
  * 
- * Compute aliased audio buffer at @frequency with @amount with max radian
- * 2 * M_PI.
+ * Compute aliased audio buffer.
  * 
  * Since: 3.8.0
  */
 void
-ags_frequency_aliase_util_compute_complex(AgsComplex *buffer,
-					  guint buffer_length,
-					  guint samplerate,
-					  gdouble frequency,
-					  gdouble amount,
-					  AgsComplex **output_buffer)
+ags_frequency_aliase_util_compute_complex(AgsComplex *destination,
+					  AgsComplex *source,
+					  AgsComplex *phase_shifted_source,
+					  guint buffer_length)
 {
-  AgsComplex *phase_shifted_buffer;
-  AgsComplex *out;
-
   guint i;
   
-  if(buffer == NULL ||
+  if(destination == NULL ||
+     source == NULL ||
+     phase_shifted_source == NULL ||
      buffer_length == 0){
-    if(output_buffer != NULL){
-      output_buffer[0] = NULL;
-    }
-    
     return;
   }
 
-  phase_shifted_buffer = NULL;
-
-  ags_phase_shift_util_compute_complex(buffer,
-				       buffer_length,
-				       samplerate,
-				       frequency,
-				       amount,
-				       &phase_shifted_buffer);
-
-  out = (AgsComplex *) g_malloc(buffer_length * sizeof(AgsComplex));
-
   for(i = 0; i < buffer_length; i++){
-    ags_complex_set(out + i,
-		    sqrt(pow((double) ags_complex_get(buffer + i), 2.0) + pow((double) ags_complex_get(phase_shifted_buffer + i), 2.0)));
-  }
-
-  g_free(phase_shifted_buffer);
-  
-  if(output_buffer != NULL){
-    output_buffer[0] = out;
+    ags_complex_set(destination + i,
+		    sqrt(pow((double) ags_complex_get(source + i), 2.0) + pow((double) ags_complex_get(phase_shifted_source + i), 2.0)));
   }
 }

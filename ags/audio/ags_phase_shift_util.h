@@ -30,54 +30,54 @@
 
 G_BEGIN_DECLS
 
-void ags_phase_shift_util_compute_s8(gint8 *buffer,
+void ags_phase_shift_util_compute_s8(gint8 *destination,
+				     gint8 *source,
 				     guint buffer_length,
 				     guint samplerate,
 				     gdouble frequency,
-				     gdouble amount,
-				     gint8 **output_buffer);
-void ags_phase_shift_util_compute_s16(gint16 *buffer,
+				     gdouble amount);
+void ags_phase_shift_util_compute_s16(gint16 *destination,
+				      gint16 *source,
 				      guint buffer_length,
 				      guint samplerate,
 				      gdouble frequency,
-				      gdouble amount,
-				      gint16 **output_buffer);
-void ags_phase_shift_util_compute_s24(gint32 *buffer,
+				      gdouble amount);
+void ags_phase_shift_util_compute_s24(gint32 *destination,
+				      gint32 *source,
 				      guint buffer_length,
 				      guint samplerate,
 				      gdouble frequency,
-				      gdouble amount,
-				      gint32 **output_buffer);
-void ags_phase_shift_util_compute_s32(gint32 *buffer,
+				      gdouble amount);
+void ags_phase_shift_util_compute_s32(gint32 *destination,
+				      gint32 *source,
 				      guint buffer_length,
 				      guint samplerate,
 				      gdouble frequency,
-				      gdouble amount,
-				      gint32 **output_buffer);
-void ags_phase_shift_util_compute_s64(gint64 *buffer,
+				      gdouble amount);
+void ags_phase_shift_util_compute_s64(gint64 *destination,
+				      gint64 *source,
 				      guint buffer_length,
 				      guint samplerate,
 				      gdouble frequency,
-				      gdouble amount,
-				      gint64 **output_buffer);
-void ags_phase_shift_util_compute_float(gfloat *buffer,
+				      gdouble amount);
+void ags_phase_shift_util_compute_float(gfloat *destination,
+					gfloat *source,
 					guint buffer_length,
 					guint samplerate,
 					gdouble frequency,
-					gdouble amount,
-					gfloat **output_buffer);
-void ags_phase_shift_util_compute_double(gdouble *buffer,
+					gdouble amount);
+void ags_phase_shift_util_compute_double(gdouble *destination,
+					 gdouble *source,
 					 guint buffer_length,
 					 guint samplerate,
 					 gdouble frequency,
-					 gdouble amount,
-					 gdouble **output_buffer);
-void ags_phase_shift_util_compute_complex(AgsComplex *buffer,
+					 gdouble amount);
+void ags_phase_shift_util_compute_complex(AgsComplex *destination,
+					  AgsComplex *source,
 					  guint buffer_length,
 					  guint samplerate,
 					  gdouble frequency,
-					  gdouble amount,
-					  AgsComplex **output_buffer);
+					  gdouble amount);
 
 G_END_DECLS
 

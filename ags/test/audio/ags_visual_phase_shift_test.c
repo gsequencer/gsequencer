@@ -51,7 +51,7 @@ gboolean ags_visual_phase_shift_phase_shifted_wave_draw(GtkWidget *widget,
 #define AGS_VISUAL_PHASE_SHIFT_TEST_BASE_FREQ (220.0)
 #define AGS_VISUAL_PHASE_SHIFT_TEST_VOLUME (1.0)
 
-#define AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT (0.5 * M_PI)
+#define AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT (1.75 * M_PI)
 
 #define AGS_VISUAL_PHASE_SHIFT_TEST_CONFIG "[generic]\n"	\
   "autosave-thread=false\n"				\
@@ -106,11 +106,11 @@ guint BLACK_PIXEL = 0x0;
 gint STRIDE;
 
 gint16 s16_buffer[(guint) AGS_VISUAL_PHASE_SHIFT_TEST_FRAME_COUNT];
-gint16 *s16_phase_shifted_buffer;
+gint16 s16_phase_shifted_buffer[(guint) AGS_VISUAL_PHASE_SHIFT_TEST_FRAME_COUNT];
 
 gdouble orig_buffer[1920];
 gdouble shift_buffer[1920];
-gdouble *phase_shifted_buffer;
+gdouble phase_shifted_buffer[1920];
 
 gint64 start_playback = -1;
 gboolean is_playing = FALSE;
@@ -343,12 +343,12 @@ ags_visual_phase_shift_test_create_phase_shifted_sine_wave()
 
   guint i, j;
 
-  ags_phase_shift_util_compute_s16(s16_buffer,
+  ags_phase_shift_util_compute_s16(s16_phase_shifted_buffer,
+				   s16_buffer,
 				   (guint) AGS_VISUAL_PHASE_SHIFT_TEST_FRAME_COUNT,
 				   AGS_VISUAL_PHASE_SHIFT_TEST_SAMPLERATE,
 				   AGS_VISUAL_PHASE_SHIFT_TEST_BASE_FREQ,
-				   AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT,
-				   &s16_phase_shifted_buffer);
+				   AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT);
 
   start_wave = NULL;
   
@@ -546,14 +546,12 @@ main(int argc, char* argv[])
     }
   }
   
-  phase_shifted_buffer = NULL;
-  
-  ags_phase_shift_util_compute_double(orig_buffer,
+  ags_phase_shift_util_compute_double(phase_shifted_buffer,
+				      orig_buffer,
 				      1920,
 				      1920,
 				      8.0,
-				      AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT,
-				      &phase_shifted_buffer);
+				      AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT);
   
   window = (GtkWindow *) gtk_window_new(GTK_WINDOW_TOPLEVEL);
 

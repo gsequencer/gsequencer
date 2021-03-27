@@ -29,17 +29,17 @@
  * @section_id:
  * @include: ags/audio/ags_phase_shift_util.h
  *
- * Utility functions to phase shift.
+ * Utility functions to compute phase shift.
  */
 
 /**
  * ags_phase_shift_util_compute_s8:
- * @buffer: the audio buffer
+ * @destination: the destination audio buffer
+ * @source: the source audio buffer
  * @buffer_length: the audio buffer's length
  * @samplerate: the samplerate
  * @frequency: the frequency
  * @amount: the amount
- * @output_buffer: (out): output buffer
  * 
  * Compute phase shift of audio buffer at @frequency with @amount with
  * max radian 2 * M_PI.
@@ -47,30 +47,23 @@
  * Since: 3.8.0
  */
 void
-ags_phase_shift_util_compute_s8(gint8 *buffer,
+ags_phase_shift_util_compute_s8(gint8 *destination,
+				gint8 *source,
 				guint buffer_length,
 				guint samplerate,
 				gdouble frequency,
-				gdouble amount,
-				gint8 **output_buffer)
+				gdouble amount)
 {
-  gint8 *out;
-
   gdouble freq_period, amount_period;
   gdouble phase_shift;
   gdouble phase;
   guint i;
   
-  if(buffer == NULL ||
+  if(destination == NULL ||
+     source == NULL ||
      buffer_length == 0){
-    if(output_buffer != NULL){
-      output_buffer[0] = NULL;
-    }
-    
     return;
   }
-
-  out = (gint8 *) g_malloc(buffer_length * sizeof(gint8));
 
   freq_period = samplerate / frequency;
 
@@ -81,22 +74,18 @@ ags_phase_shift_util_compute_s8(gint8 *buffer,
   for(i = 0; i < buffer_length; i++){
     phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
-    out[i] = 0.5 * (phase_shift + buffer[i]);
-  }
-  
-  if(output_buffer != NULL){
-    output_buffer[0] = out;
+    destination[i] = 0.5 * (phase_shift + source[i]);
   }
 }
 
 /**
  * ags_phase_shift_util_compute_s16:
- * @buffer: the audio buffer
+ * @destination: the destination audio buffer
+ * @source: the source audio buffer
  * @buffer_length: the audio buffer's length
  * @samplerate: the samplerate
  * @frequency: the frequency
  * @amount: the amount
- * @output_buffer: (out): output buffer
  * 
  * Compute phase shift of audio buffer at @frequency with @amount with
  * max radian 2 * M_PI.
@@ -104,30 +93,23 @@ ags_phase_shift_util_compute_s8(gint8 *buffer,
  * Since: 3.8.0
  */
 void
-ags_phase_shift_util_compute_s16(gint16 *buffer,
+ags_phase_shift_util_compute_s16(gint16 *destination,
+				 gint16 *source,
 				 guint buffer_length,
 				 guint samplerate,
 				 gdouble frequency,
-				 gdouble amount,
-				 gint16 **output_buffer)
+				 gdouble amount)
 {
-  gint16 *out;
-
   gdouble freq_period, amount_period;
   gdouble phase_shift;
   gdouble phase;
   guint i;
 
-  if(buffer == NULL ||
+  if(destination == NULL ||
+     source == NULL ||
      buffer_length == 0){
-    if(output_buffer != NULL){
-      output_buffer[0] = NULL;
-    }
-    
     return;
   }
-
-  out = (gint16 *) g_malloc(buffer_length * sizeof(gint16));
 
   freq_period = samplerate / frequency;
 
@@ -138,22 +120,18 @@ ags_phase_shift_util_compute_s16(gint16 *buffer,
   for(i = 0; i < buffer_length; i++){
     phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
-    out[i] = 0.5 * (phase_shift + buffer[i]);
-  }
-  
-  if(output_buffer != NULL){
-    output_buffer[0] = out;
+    destination[i] = 0.5 * (phase_shift + source[i]);
   }
 }
 
 /**
  * ags_phase_shift_util_compute_s24:
- * @buffer: the audio buffer
+ * @destination: the destination audio buffer
+ * @source: the source audio buffer
  * @buffer_length: the audio buffer's length
  * @samplerate: the samplerate
  * @frequency: the frequency
  * @amount: the amount
- * @output_buffer: (out): output buffer
  * 
  * Compute phase shift of audio buffer at @frequency with @amount with
  * max radian 2 * M_PI.
@@ -161,30 +139,23 @@ ags_phase_shift_util_compute_s16(gint16 *buffer,
  * Since: 3.8.0
  */
 void
-ags_phase_shift_util_compute_s24(gint32 *buffer,
+ags_phase_shift_util_compute_s24(gint32 *destination,
+				 gint32 *source,
 				 guint buffer_length,
 				 guint samplerate,
 				 gdouble frequency,
-				 gdouble amount,
-				 gint32 **output_buffer)
+				 gdouble amount)
 {
-  gint32 *out;
-
   gdouble freq_period, amount_period;
   gdouble phase_shift;
   gdouble phase;
   guint i;
 
-  if(buffer == NULL ||
+  if(destination == NULL ||
+     source == NULL ||
      buffer_length == 0){
-    if(output_buffer != NULL){
-      output_buffer[0] = NULL;
-    }
-    
     return;
   }
-
-  out = (gint32 *) g_malloc(buffer_length * sizeof(gint32));
 
   freq_period = samplerate / frequency;
 
@@ -195,22 +166,18 @@ ags_phase_shift_util_compute_s24(gint32 *buffer,
   for(i = 0; i < buffer_length; i++){
     phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
-    out[i] = 0.5 * (phase_shift + buffer[i]);
-  }
-  
-  if(output_buffer != NULL){
-    output_buffer[0] = out;
+    destination[i] = 0.5 * (phase_shift + source[i]);
   }
 }
 
 /**
  * ags_phase_shift_util_compute_s32:
- * @buffer: the audio buffer
+ * @destination: the destination audio buffer
+ * @source: the source audio buffer
  * @buffer_length: the audio buffer's length
  * @samplerate: the samplerate
  * @frequency: the frequency
  * @amount: the amount
- * @output_buffer: (out): output buffer
  * 
  * Compute phase shift of audio buffer at @frequency with @amount with
  * max radian 2 * M_PI.
@@ -218,30 +185,23 @@ ags_phase_shift_util_compute_s24(gint32 *buffer,
  * Since: 3.8.0
  */
 void
-ags_phase_shift_util_compute_s32(gint32 *buffer,
+ags_phase_shift_util_compute_s32(gint32 *destination,
+				 gint32 *source,
 				 guint buffer_length,
 				 guint samplerate,
 				 gdouble frequency,
-				 gdouble amount,
-				 gint32 **output_buffer)
+				 gdouble amount)
 {
-  gint32 *out;
-
   gdouble freq_period, amount_period;
   gdouble phase_shift;
   gdouble phase;
   guint i;
 
-  if(buffer == NULL ||
+  if(destination == NULL ||
+     source == NULL ||
      buffer_length == 0){
-    if(output_buffer != NULL){
-      output_buffer[0] = NULL;
-    }
-    
     return;
   }
-
-  out = (gint32 *) g_malloc(buffer_length * sizeof(gint32));
 
   freq_period = samplerate / frequency;
 
@@ -252,22 +212,18 @@ ags_phase_shift_util_compute_s32(gint32 *buffer,
   for(i = 0; i < buffer_length; i++){
     phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
-    out[i] = 0.5 * (phase_shift + buffer[i]);
-  }
-  
-  if(output_buffer != NULL){
-    output_buffer[0] = out;
+    destination[i] = 0.5 * (phase_shift + source[i]);
   }
 }
 
 /**
  * ags_phase_shift_util_compute_s64:
- * @buffer: the audio buffer
+ * @destination: the destination audio buffer
+ * @source: the source audio buffer
  * @buffer_length: the audio buffer's length
  * @samplerate: the samplerate
  * @frequency: the frequency
  * @amount: the amount
- * @output_buffer: (out): output buffer
  * 
  * Compute phase shift of audio buffer at @frequency with @amount with
  * max radian 2 * M_PI.
@@ -275,30 +231,23 @@ ags_phase_shift_util_compute_s32(gint32 *buffer,
  * Since: 3.8.0
  */
 void
-ags_phase_shift_util_compute_s64(gint64 *buffer,
+ags_phase_shift_util_compute_s64(gint64 *destination,
+				 gint64 *source,
 				 guint buffer_length,
 				 guint samplerate,
 				 gdouble frequency,
-				 gdouble amount,
-				 gint64 **output_buffer)
+				 gdouble amount)
 {
-  gint64 *out;
-
   gdouble freq_period, amount_period;
   gdouble phase_shift;
   gdouble phase;
   guint i;
 
-  if(buffer == NULL ||
+  if(destination == NULL ||
+     source == NULL ||
      buffer_length == 0){
-    if(output_buffer != NULL){
-      output_buffer[0] = NULL;
-    }
-    
     return;
   }
-
-  out = (gint64 *) g_malloc(buffer_length * sizeof(gint64));
 
   freq_period = samplerate / frequency;
 
@@ -309,22 +258,18 @@ ags_phase_shift_util_compute_s64(gint64 *buffer,
   for(i = 0; i < buffer_length; i++){
     phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
-    out[i] = 0.5 * (phase_shift + buffer[i]);
-  }
-  
-  if(output_buffer != NULL){
-    output_buffer[0] = out;
+    destination[i] = 0.5 * (phase_shift + source[i]);
   }
 }
 
 /**
  * ags_phase_shift_util_compute_float:
- * @buffer: the audio buffer
+ * @destination: the destination audio buffer
+ * @source: the source audio buffer
  * @buffer_length: the audio buffer's length
  * @samplerate: the samplerate
  * @frequency: the frequency
  * @amount: the amount
- * @output_buffer: (out): output buffer
  * 
  * Compute phase shift of audio buffer at @frequency with @amount with
  * max radian 2 * M_PI.
@@ -332,30 +277,23 @@ ags_phase_shift_util_compute_s64(gint64 *buffer,
  * Since: 3.8.0
  */
 void
-ags_phase_shift_util_compute_float(gfloat *buffer,
+ags_phase_shift_util_compute_float(gfloat *destination,
+				   gfloat *source,
 				   guint buffer_length,
 				   guint samplerate,
 				   gdouble frequency,
-				   gdouble amount,
-				   gfloat **output_buffer)
+				   gdouble amount)
 {
-  gfloat *out;
-
   gdouble freq_period, amount_period;
   gdouble phase_shift;
   gdouble phase;
   guint i;
 
-  if(buffer == NULL ||
+  if(destination == NULL ||
+     source == NULL ||
      buffer_length == 0){
-    if(output_buffer != NULL){
-      output_buffer[0] = NULL;
-    }
-    
     return;
   }
-
-  out = (gfloat *) g_malloc(buffer_length * sizeof(gfloat));
 
   freq_period = samplerate / frequency;
 
@@ -366,22 +304,18 @@ ags_phase_shift_util_compute_float(gfloat *buffer,
   for(i = 0; i < buffer_length; i++){
     phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
-    out[i] = 0.5 * (phase_shift + buffer[i]);
-  }
-  
-  if(output_buffer != NULL){
-    output_buffer[0] = out;
+    destination[i] = 0.5 * (phase_shift + source[i]);
   }
 }
 
 /**
  * ags_phase_shift_util_compute_double:
- * @buffer: the audio buffer
+ * @destination: the destination audio buffer
+ * @source: the source audio buffer
  * @buffer_length: the audio buffer's length
  * @samplerate: the samplerate
  * @frequency: the frequency
  * @amount: the amount
- * @output_buffer: (out): output buffer
  * 
  * Compute phase shift of audio buffer at @frequency with @amount with
  * max radian 2 * M_PI.
@@ -389,30 +323,23 @@ ags_phase_shift_util_compute_float(gfloat *buffer,
  * Since: 3.8.0
  */
 void
-ags_phase_shift_util_compute_double(gdouble *buffer,
+ags_phase_shift_util_compute_double(gdouble *destination,
+				    gdouble *source,
 				    guint buffer_length,
 				    guint samplerate,
 				    gdouble frequency,
-				    gdouble amount,
-				    gdouble **output_buffer)
+				    gdouble amount)
 {
-  gdouble *out;
-
   gdouble freq_period, amount_period;
   gdouble phase_shift;
   gdouble phase;
   guint i;
 
-  if(buffer == NULL ||
+  if(destination == NULL ||
+     source == NULL ||
      buffer_length == 0){
-    if(output_buffer != NULL){
-      output_buffer[0] = NULL;
-    }
-    
     return;
   }
-
-  out = (gdouble *) g_malloc(buffer_length * sizeof(gdouble));
 
   freq_period = samplerate / frequency;
 
@@ -423,22 +350,18 @@ ags_phase_shift_util_compute_double(gdouble *buffer,
   for(i = 0; i < buffer_length; i++){
     phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
-    out[i] = 0.5 * (phase_shift + buffer[i]);
-  }
-  
-  if(output_buffer != NULL){
-    output_buffer[0] = out;
+    destination[i] = 0.5 * (phase_shift + source[i]);
   }
 }
 
 /**
  * ags_phase_shift_util_compute_complex:
- * @buffer: the audio buffer
+ * @destination: the destination audio buffer
+ * @source: the source audio buffer
  * @buffer_length: the audio buffer's length
  * @samplerate: the samplerate
  * @frequency: the frequency
  * @amount: the amount
- * @output_buffer: (out): output buffer
  * 
  * Compute phase shift of audio buffer at @frequency with @amount with
  * max radian 2 * M_PI.
@@ -446,30 +369,23 @@ ags_phase_shift_util_compute_double(gdouble *buffer,
  * Since: 3.8.0
  */
 void
-ags_phase_shift_util_compute_complex(AgsComplex *buffer,
+ags_phase_shift_util_compute_complex(AgsComplex *destination,
+				     AgsComplex *source,
 				     guint buffer_length,
 				     guint samplerate,
 				     gdouble frequency,
-				     gdouble amount,
-				     AgsComplex **output_buffer)
+				     gdouble amount)
 {
-  AgsComplex *out;
-
   gdouble freq_period, amount_period;
   gdouble phase_shift;
   gdouble phase;
   guint i;
 
-  if(buffer == NULL ||
+  if(destination == NULL ||
+     source == NULL ||
      buffer_length == 0){
-    if(output_buffer != NULL){
-      output_buffer[0] = NULL;
-    }
-    
     return;
   }
-
-  out = (AgsComplex *) g_malloc(buffer_length * sizeof(AgsComplex));
 
   freq_period = samplerate / frequency;
 
@@ -480,11 +396,7 @@ ags_phase_shift_util_compute_complex(AgsComplex *buffer,
   for(i = 0; i < buffer_length; i++){
     phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
-    ags_complex_set(out + i,
-		    0.5 * (phase_shift + ags_complex_get(buffer + i)));
-  }
-  
-  if(output_buffer != NULL){
-    output_buffer[0] = out;
+    ags_complex_set(destination + i,
+		    0.5 * (phase_shift + ags_complex_get(source + i)));
   }
 }
