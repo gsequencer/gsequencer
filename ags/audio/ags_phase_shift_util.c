@@ -348,7 +348,7 @@ ags_phase_shift_util_compute_double(gdouble *destination,
   phase = freq_period - amount_period;
   
   for(i = 0; i < buffer_length; i++){
-    phase_shift = (amount_period / (freq_period * 4.0 * M_PI) + (1.0 / amount_period)) * ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
+    phase_shift = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     
     destination[i] = 0.5 * (phase_shift + source[i]);
   }
