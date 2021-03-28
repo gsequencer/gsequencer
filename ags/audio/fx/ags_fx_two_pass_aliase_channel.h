@@ -44,6 +44,8 @@ struct _AgsFxTwoPassAliaseChannel
 {
   AgsRecallChannel recall_channel;
 
+  AgsPort *enabled;
+
   AgsPort *a_amount;
   AgsPort *a_phase;
 
