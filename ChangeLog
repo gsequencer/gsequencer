@@ -4,9 +4,18 @@ ags (3.8.0)
 	* TODO:JK: implemented AgsCompositeEditor
 	* TODO:JK: implemented AgsCompositeEdit
 	* TODO:JK: implemented AgsCompositeToolbar
-	* TODO:JK: fixed deprecated Gtk+-3.0 symbols
 	* FIXME:JK: make indicator orientable
+	* TODO:JK: implemented volume control of AgsFFPlayer
+	* TODO:JK: implemented volume control of AgsPitchSampler
+	* TODO:JK: implemented volume control of AgsSyncSynth
+	* TODO:JK: implemented volume control of AgsSyncFMSynth
+	* TODO:JK: implemented ags-fx-two-pass-aliase
+	* implemented ags_linear_interpolate_util.c
+	* implemented ags_hq_pitch_util.c
+	* implemented ags_phase_shift_util.c
+	* implemented ags_frequency_aliase_util.c
 	* improved pitch sampler to use ags-fx-lfo
+	* fixed deprecated Gtk+-3.0 symbols
 
 ags (3.7.50)
 

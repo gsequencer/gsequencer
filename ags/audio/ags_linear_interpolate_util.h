@@ -30,46 +30,38 @@
 
 G_BEGIN_DECLS
 
-void ags_linear_interpolate_util_fill_s8(gint8 *buffer, guint channels,
+void ags_linear_interpolate_util_fill_s8(gint8 *destination,
+					 gint8 *source,
 					 guint buffer_length,
-					 gdouble factor,
-					 gint8 **output_buffer,
-					 guint *output_buffer_length);
-void ags_linear_interpolate_util_fill_s16(gint16 *buffer, guint channels,
+					 gdouble factor);
+void ags_linear_interpolate_util_fill_s16(gint16 *destination,
+					  gint16 *source,
 					  guint buffer_length,
-					  gdouble factor,
-					  gint16 **output_buffer,
-					  guint *output_buffer_length);
-void ags_linear_interpolate_util_fill_s24(gint32 *buffer, guint channels,
+					  gdouble factor);
+void ags_linear_interpolate_util_fill_s24(gint32 *destination,
+					  gint32 *source,
 					  guint buffer_length,
-					  gdouble factor,
-					  gint32 **output_buffer,
-					  guint *output_buffer_length);
-void ags_linear_interpolate_util_fill_s32(gint32 *buffer, guint channels,
+					  gdouble factor);
+void ags_linear_interpolate_util_fill_s32(gint32 *destination,
+					  gint32 *source,
 					  guint buffer_length,
-					  gdouble factor,
-					  gint32 **output_buffer,
-					  guint *output_buffer_length);
-void ags_linear_interpolate_util_fill_s64(gint64 *buffer, guint channels,
+					  gdouble factor);
+void ags_linear_interpolate_util_fill_s64(gint64 *destination,
+					  gint64 *source,
 					  guint buffer_length,
-					  gdouble factor,
-					  gint64 **output_buffer,
-					  guint *output_buffer_length);
-void ags_linear_interpolate_util_fill_float(gfloat *buffer, guint channels,
+					  gdouble factor);
+void ags_linear_interpolate_util_fill_float(gfloat *destination,
+					    gfloat *source,
 					    guint buffer_length,
-					    gdouble factor,
-					    gfloat **output_buffer,
-					    guint *output_buffer_length);
-void ags_linear_interpolate_util_fill_double(gdouble *buffer, guint channels,
+					    gdouble factor);
+void ags_linear_interpolate_util_fill_double(gdouble *destination,
+					     gdouble *source,
 					     guint buffer_length,
-					     gdouble factor,
-					     gdouble **output_buffer,
-					     guint *output_buffer_length);
-void ags_linear_interpolate_util_fill_complex(AgsComplex *buffer, guint channels,
+					     gdouble factor);
+void ags_linear_interpolate_util_fill_complex(AgsComplex *destination,
+					      AgsComplex *source,
 					      guint buffer_length,
-					      gdouble factor,
-					      AgsComplex **output_buffer,
-					      guint *output_buffer_length);
+					      gdouble factor);
 
 G_END_DECLS
 

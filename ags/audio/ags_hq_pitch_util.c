@@ -107,18 +107,19 @@ ags_hq_pitch_util_compute_s8(gint8 *buffer,
 
   /* allocate buffer */
   mix_buffer = buffer;
+
+  low_mix_buffer = (gint8 *) ags_stream_alloc(buffer_length,
+					      AGS_SOUNDCARD_SIGNED_8_BIT);
   
   new_mix_buffer = (gint8 *) ags_stream_alloc(buffer_length,
 					      AGS_SOUNDCARD_SIGNED_8_BIT);
 
-  low_mix_buffer = NULL;
-  low_mix_buffer_length = 0;
+  low_mix_buffer_length = buffer_length;
 
-  ags_linear_interpolate_util_fill_s8(buffer, 1,
+  ags_linear_interpolate_util_fill_s8(low_mix_buffer,
+				      buffer,
 				      buffer_length,
-				      2.0,
-				      &low_mix_buffer,
-				      &low_mix_buffer_length);
+				      2.0);
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
@@ -195,7 +196,7 @@ ags_hq_pitch_util_compute_s8(gint8 *buffer,
     buffer[i] = new_mix_buffer[i];
   }
 
-  g_free(low_mix_buffer);
+  ags_stream_free(low_mix_buffer);
 
   ags_stream_free(new_mix_buffer);
 }
@@ -276,17 +277,18 @@ ags_hq_pitch_util_compute_s16(gint16 *buffer,
   /* allocate buffer */
   mix_buffer = buffer;
   
+  low_mix_buffer = (gint16 *) ags_stream_alloc(buffer_length,
+					       AGS_SOUNDCARD_SIGNED_16_BIT);
+
   new_mix_buffer = (gint16 *) ags_stream_alloc(buffer_length,
-					      AGS_SOUNDCARD_SIGNED_16_BIT);
+					       AGS_SOUNDCARD_SIGNED_16_BIT);
 
-  low_mix_buffer = NULL;
-  low_mix_buffer_length = 0;
+  low_mix_buffer_length = buffer_length;
 
-  ags_linear_interpolate_util_fill_s16(buffer, 1,
-				      buffer_length,
-				      2.0,
-				      &low_mix_buffer,
-				      &low_mix_buffer_length);
+  ags_linear_interpolate_util_fill_s16(low_mix_buffer,
+				       buffer,
+				       buffer_length,
+				       2.0);
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
@@ -363,7 +365,7 @@ ags_hq_pitch_util_compute_s16(gint16 *buffer,
     buffer[i] = new_mix_buffer[i];
   }
 
-  g_free(low_mix_buffer);
+  ags_stream_free(low_mix_buffer);
 
   ags_stream_free(new_mix_buffer);
 }
@@ -443,17 +445,18 @@ ags_hq_pitch_util_compute_s24(gint32 *buffer,
   /* allocate buffer */
   mix_buffer = buffer;
   
+  low_mix_buffer = (gint32 *) ags_stream_alloc(buffer_length,
+					       AGS_SOUNDCARD_SIGNED_24_BIT);
+
   new_mix_buffer = (gint32 *) ags_stream_alloc(buffer_length,
-					      AGS_SOUNDCARD_SIGNED_24_BIT);
+					       AGS_SOUNDCARD_SIGNED_24_BIT);
 
-  low_mix_buffer = NULL;
-  low_mix_buffer_length = 0;
+  low_mix_buffer_length = buffer_length;
 
-  ags_linear_interpolate_util_fill_s24(buffer, 1,
-				      buffer_length,
-				      2.0,
-				      &low_mix_buffer,
-				      &low_mix_buffer_length);
+  ags_linear_interpolate_util_fill_s24(low_mix_buffer,
+				       buffer,
+				       buffer_length,
+				       2.0);
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
@@ -530,7 +533,7 @@ ags_hq_pitch_util_compute_s24(gint32 *buffer,
     buffer[i] = new_mix_buffer[i];
   }
 
-  g_free(low_mix_buffer);
+  ags_stream_free(low_mix_buffer);
 
   ags_stream_free(new_mix_buffer);
 }
@@ -610,17 +613,18 @@ ags_hq_pitch_util_compute_s32(gint32 *buffer,
   /* allocate buffer */
   mix_buffer = buffer;
   
+  low_mix_buffer = (gint32 *) ags_stream_alloc(buffer_length,
+					       AGS_SOUNDCARD_SIGNED_32_BIT);
+
   new_mix_buffer = (gint32 *) ags_stream_alloc(buffer_length,
-					      AGS_SOUNDCARD_SIGNED_32_BIT);
+					       AGS_SOUNDCARD_SIGNED_32_BIT);
+  
+  low_mix_buffer_length = buffer_length;
 
-  low_mix_buffer = NULL;
-  low_mix_buffer_length = 0;
-
-  ags_linear_interpolate_util_fill_s32(buffer, 1,
-				      buffer_length,
-				      2.0,
-				      &low_mix_buffer,
-				      &low_mix_buffer_length);
+  ags_linear_interpolate_util_fill_s32(low_mix_buffer,
+				       buffer,
+				       buffer_length,
+				       2.0);
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
@@ -697,7 +701,7 @@ ags_hq_pitch_util_compute_s32(gint32 *buffer,
     buffer[i] = new_mix_buffer[i];
   }
 
-  g_free(low_mix_buffer);
+  ags_stream_free(low_mix_buffer);
 
   ags_stream_free(new_mix_buffer);
 }
@@ -777,17 +781,18 @@ ags_hq_pitch_util_compute_s64(gint64 *buffer,
   /* allocate buffer */
   mix_buffer = buffer;
   
+  low_mix_buffer = (gint64 *) ags_stream_alloc(buffer_length,
+					       AGS_SOUNDCARD_SIGNED_64_BIT);
+
   new_mix_buffer = (gint64 *) ags_stream_alloc(buffer_length,
-					      AGS_SOUNDCARD_SIGNED_64_BIT);
+					       AGS_SOUNDCARD_SIGNED_64_BIT);
 
-  low_mix_buffer = NULL;
-  low_mix_buffer_length = 0;
+  low_mix_buffer_length = buffer_length;
 
-  ags_linear_interpolate_util_fill_s64(buffer, 1,
-				      buffer_length,
-				      2.0,
-				      &low_mix_buffer,
-				      &low_mix_buffer_length);
+  ags_linear_interpolate_util_fill_s64(low_mix_buffer,
+				       buffer,
+				       buffer_length,
+				       2.0);
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
@@ -864,7 +869,7 @@ ags_hq_pitch_util_compute_s64(gint64 *buffer,
     buffer[i] = new_mix_buffer[i];
   }
 
-  g_free(low_mix_buffer);
+  ags_stream_free(low_mix_buffer);
 
   ags_stream_free(new_mix_buffer);
 }
@@ -944,17 +949,18 @@ ags_hq_pitch_util_compute_float(gfloat *buffer,
   /* allocate buffer */
   mix_buffer = buffer;
   
+  low_mix_buffer = (gfloat *) ags_stream_alloc(buffer_length,
+					       AGS_SOUNDCARD_FLOAT);
+
   new_mix_buffer = (gfloat *) ags_stream_alloc(buffer_length,
-					      AGS_SOUNDCARD_FLOAT);
+					       AGS_SOUNDCARD_FLOAT);
 
-  low_mix_buffer = NULL;
-  low_mix_buffer_length = 0;
+  low_mix_buffer_length = buffer_length;
 
-  ags_linear_interpolate_util_fill_float(buffer, 1,
-				      buffer_length,
-				      2.0,
-				      &low_mix_buffer,
-				      &low_mix_buffer_length);
+  ags_linear_interpolate_util_fill_float(low_mix_buffer,
+					 buffer,
+					 buffer_length,
+					 2.0);
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
@@ -1031,7 +1037,7 @@ ags_hq_pitch_util_compute_float(gfloat *buffer,
     buffer[i] = new_mix_buffer[i];
   }
 
-  g_free(low_mix_buffer);
+  ags_stream_free(low_mix_buffer);
 
   ags_stream_free(new_mix_buffer);
 }
@@ -1111,17 +1117,18 @@ ags_hq_pitch_util_compute_double(gdouble *buffer,
   /* allocate buffer */
   mix_buffer = buffer;
   
+  low_mix_buffer = (gdouble *) ags_stream_alloc(buffer_length,
+						AGS_SOUNDCARD_DOUBLE);
+
   new_mix_buffer = (gdouble *) ags_stream_alloc(buffer_length,
-					      AGS_SOUNDCARD_DOUBLE);
+						AGS_SOUNDCARD_DOUBLE);
 
-  low_mix_buffer = NULL;
-  low_mix_buffer_length = 0;
+  low_mix_buffer_length = buffer_length;
 
-  ags_linear_interpolate_util_fill_double(buffer, 1,
-				      buffer_length,
-				      2.0,
-				      &low_mix_buffer,
-				      &low_mix_buffer_length);
+  ags_linear_interpolate_util_fill_double(low_mix_buffer,
+					  buffer,
+					  buffer_length,
+					  2.0);
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
@@ -1198,7 +1205,7 @@ ags_hq_pitch_util_compute_double(gdouble *buffer,
     buffer[i] = new_mix_buffer[i];
   }
 
-  g_free(low_mix_buffer);
+  ags_stream_free(low_mix_buffer);
 
   ags_stream_free(new_mix_buffer);
 }
@@ -1278,17 +1285,18 @@ ags_hq_pitch_util_compute_complex(AgsComplex *buffer,
   /* allocate buffer */
   mix_buffer = buffer;
   
+  low_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						   AGS_SOUNDCARD_COMPLEX);
+  
   new_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
 						   AGS_SOUNDCARD_COMPLEX);
 
-  low_mix_buffer = NULL;
-  low_mix_buffer_length = 0;
+  low_mix_buffer_length = buffer_length;
 
-  ags_linear_interpolate_util_fill_complex(buffer, 1,
-				      buffer_length,
-				      2.0,
-				      &low_mix_buffer,
-				      &low_mix_buffer_length);
+  ags_linear_interpolate_util_fill_complex(low_mix_buffer,
+					   buffer,
+					   buffer_length,
+					   2.0);
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
@@ -1368,7 +1376,7 @@ ags_hq_pitch_util_compute_complex(AgsComplex *buffer,
 		    ags_complex_get(new_mix_buffer + i));
   }
 
-  g_free(low_mix_buffer);
+  ags_stream_free(low_mix_buffer);
 
   ags_stream_free(new_mix_buffer);
 }
