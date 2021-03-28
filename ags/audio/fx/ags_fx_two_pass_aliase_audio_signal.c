@@ -20,6 +20,8 @@
 #include <ags/audio/fx/ags_fx_two_pass_aliase_audio_signal.h>
 
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_phase_shift_util.h>
+#include <ags/audio/ags_frequency_aliase_util.h>
 
 #include <ags/audio/fx/ags_fx_two_pass_aliase_channel.h>
 #include <ags/audio/fx/ags_fx_two_pass_aliase_channel_processor.h>
@@ -133,7 +135,246 @@ ags_fx_two_pass_aliase_audio_signal_finalize(GObject *gobject)
 void
 ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  AgsFxTwoPassAliaseChannel *fx_two_pass_aliase_channel;
+  AgsFxTwoPassAliaseChannelProcessor *fx_two_pass_aliase_channel_processor;
+  AgsFxTwoPassAliaseRecycling *fx_two_pass_aliase_recycling;
+  AgsAudioSignal *source;
+  AgsPort *port;
+
+  gint sound_scope;
+  guint buffer_size;
+  guint samplerate;
+  guint format;
+  guint copy_mode_out, copy_mode_in;
+  gboolean enabled;
+  gdouble frequency;
+  gdouble a_amount;
+  gdouble a_phase;
+  gdouble b_amount;
+  gdouble b_phase;
+
+  GRecMutex *fx_two_pass_aliase_channel_mutex;
+  GRecMutex *stream_mutex;
+
+  sound_scope = ags_recall_get_sound_scope(recall);
+
+  fx_two_pass_aliase_channel = NULL;
+  fx_two_pass_aliase_channel_mutex = NULL;
+
+  fx_two_pass_aliase_channel_processor = NULL;
+
+  fx_two_pass_aliase_recycling = NULL;
+
+  source = NULL;
+  
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  
+  g_object_get(recall,
+	       "parent", &fx_two_pass_aliase_recycling,
+	       "source", &source,
+	       NULL);
+
+  g_object_get(fx_two_pass_aliase_recycling,
+	       "parent", &fx_two_pass_aliase_channel_processor,
+	       NULL);
+
+  g_object_get(fx_two_pass_aliase_channel_processor,
+	       "recall-channel", &fx_two_pass_aliase_channel,
+	       NULL);
+
+  g_object_get(source,
+	       "buffer-size", &buffer_size,
+	       "samplerate", &samplerate,
+	       "format", &format,
+	       NULL);
+
+  copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+						      AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+						     ags_audio_buffer_util_format_from_soundcard(format));
+
+  enabled = FALSE;
+  
+  frequency = 440.0;
+  
+  a_amount = 0.0;
+  a_phase = 0.0;
+
+  b_amount = 0.0;
+  b_phase = 0.0;
+
+  port = NULL;
+  g_object_get(fx_two_pass_aliase_channel,
+	       "enabled", &port,
+	       NULL);
+
+  if(port != NULL){
+    GValue value = G_VALUE_INIT;
+
+    g_value_init(&value,
+		 G_TYPE_FLOAT);
+    
+    ags_port_safe_read(port,
+		       &value);
+
+    enabled = (g_value_get_float(&value) != 0.0) ? TRUE: FALSE;
+  }
+
+  port = NULL;
+  g_object_get(fx_two_pass_aliase_channel,
+	       "a-amount", &port,
+	       NULL);
+
+  if(port != NULL){
+    GValue value = G_VALUE_INIT;
+
+    g_value_init(&value,
+		 G_TYPE_FLOAT);
+    
+    ags_port_safe_read(port,
+		       &value);
+
+    a_amount = g_value_get_float(&value);
+  }
+
+  port = NULL;
+  g_object_get(fx_two_pass_aliase_channel,
+	       "a-phase", &port,
+	       NULL);
+
+  if(port != NULL){
+    GValue value = G_VALUE_INIT;
+
+    g_value_init(&value,
+		 G_TYPE_FLOAT);
+    
+    ags_port_safe_read(port,
+		       &value);
+
+    a_phase = g_value_get_float(&value);
+  }
+
+  port = NULL;
+  g_object_get(fx_two_pass_aliase_channel,
+	       "b-amount", &port,
+	       NULL);
+
+  if(port != NULL){
+    GValue value = G_VALUE_INIT;
+
+    g_value_init(&value,
+		 G_TYPE_FLOAT);
+    
+    ags_port_safe_read(port,
+		       &value);
+
+    b_amount = g_value_get_float(&value);
+  }
+
+  port = NULL;
+  g_object_get(fx_two_pass_aliase_channel,
+	       "b-phase", &port,
+	       NULL);
+
+  if(port != NULL){
+    GValue value = G_VALUE_INIT;
+
+    g_value_init(&value,
+		 G_TYPE_FLOAT);
+    
+    ags_port_safe_read(port,
+		       &value);
+
+    b_phase = g_value_get_float(&value);
+  }
+  
+  if(enabled &&
+     fx_two_pass_aliase_channel != NULL &&
+     source != NULL &&
+     source->stream_current != NULL &&
+     sound_scope >= 0 &&
+     sound_scope < AGS_SOUND_SCOPE_LAST){
+    fx_two_pass_aliase_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_two_pass_aliase_channel);
+    stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
+
+    g_rec_mutex_lock(fx_two_pass_aliase_channel_mutex);
+    g_rec_mutex_lock(stream_mutex);
+
+    ags_audio_buffer_util_copy_buffer_to_buffer(fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer, 1, 0,
+						source->stream_current->data, 1, 0,
+						buffer_size, copy_mode_in);
+    
+    g_rec_mutex_unlock(stream_mutex);
+
+    ags_phase_shift_util_compute_double(fx_two_pass_aliase_channel->input_data[sound_scope]->a_buffer,
+					fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer,
+					buffer_size,
+					samplerate,
+					frequency,
+					a_amount,
+					a_phase);
+
+    ags_phase_shift_util_compute_double(fx_two_pass_aliase_channel->input_data[sound_scope]->b_buffer,
+					fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer,
+					buffer_size,
+					samplerate,
+					frequency,
+					b_amount,
+					b_phase);
+    
+    ags_frequency_aliase_util_compute_double(fx_two_pass_aliase_channel->input_data[sound_scope]->a_mix,
+					     fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer,
+					     fx_two_pass_aliase_channel->input_data[sound_scope]->a_buffer,
+					     buffer_size);
+
+    ags_frequency_aliase_util_compute_double(fx_two_pass_aliase_channel->input_data[sound_scope]->b_mix,
+					     fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer,
+					     fx_two_pass_aliase_channel->input_data[sound_scope]->b_buffer,
+					     buffer_size);
+    
+    ags_frequency_aliase_util_compute_double(fx_two_pass_aliase_channel->input_data[sound_scope]->final_mix,
+					     fx_two_pass_aliase_channel->input_data[sound_scope]->a_mix,
+					     fx_two_pass_aliase_channel->input_data[sound_scope]->b_mix,
+					     buffer_size);
+    
+    g_rec_mutex_lock(stream_mutex);
+
+    ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
+				       buffer_size, format);
+
+    ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+						fx_two_pass_aliase_channel->input_data[sound_scope]->final_mix, 1, 0,
+						buffer_size, copy_mode_out);
+    
+    g_rec_mutex_unlock(stream_mutex);
+
+    g_rec_mutex_unlock(fx_two_pass_aliase_channel_mutex);
+  }
+  
+  /* done */
+  if(source == NULL ||
+     source->stream_current == NULL){
+    ags_recall_done(recall);
+  }
+
+  /* unref */
+  if(fx_two_pass_aliase_channel != NULL){
+    g_object_unref(fx_two_pass_aliase_channel);
+  }
+
+  if(fx_two_pass_aliase_channel_processor != NULL){
+    g_object_unref(fx_two_pass_aliase_channel_processor);
+  }
+
+  if(fx_two_pass_aliase_recycling != NULL){
+    g_object_unref(fx_two_pass_aliase_recycling);
+  }
+
+  if(source != NULL){
+    g_object_unref(source);
+  }
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_two_pass_aliase_audio_signal_parent_class)->run_inter(recall);
