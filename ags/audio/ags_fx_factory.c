@@ -593,7 +593,7 @@ ags_fx_factory_create_playback(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -783,7 +783,7 @@ ags_fx_factory_create_playback(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -1038,7 +1038,7 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -1231,7 +1231,7 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -1499,7 +1499,7 @@ ags_fx_factory_create_volume(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -1681,7 +1681,7 @@ ags_fx_factory_create_volume(AgsAudio *audio,
 
       /* iterate */
       next_channel = ags_channel_nth(channel,
-				     audio_channels - stop_audio_channel);
+				     audio_channels - stop_audio_channel + 1);
 
       if(channel != NULL){
 	g_object_unref(channel);
@@ -1946,7 +1946,7 @@ ags_fx_factory_create_peak(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -2126,7 +2126,7 @@ ags_fx_factory_create_peak(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -2394,7 +2394,7 @@ ags_fx_factory_create_eq10(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -2584,7 +2584,7 @@ ags_fx_factory_create_eq10(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -2852,7 +2852,7 @@ ags_fx_factory_create_analyse(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -3042,7 +3042,7 @@ ags_fx_factory_create_analyse(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -3310,7 +3310,7 @@ ags_fx_factory_create_two_pass_aliase(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -3492,7 +3492,7 @@ ags_fx_factory_create_two_pass_aliase(AgsAudio *audio,
 
       /* iterate */
       next_channel = ags_channel_nth(channel,
-				     audio_channels - stop_audio_channel);
+				     audio_channels - stop_audio_channel + 1);
 
       if(channel != NULL){
 	g_object_unref(channel);
@@ -3757,7 +3757,7 @@ ags_fx_factory_create_lfo(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -3939,7 +3939,7 @@ ags_fx_factory_create_lfo(AgsAudio *audio,
 
       /* iterate */
       next_channel = ags_channel_nth(channel,
-				     audio_channels - stop_audio_channel);
+				     audio_channels - stop_audio_channel + 1);
 
       if(channel != NULL){
 	g_object_unref(channel);
@@ -4204,7 +4204,7 @@ ags_fx_factory_create_envelope(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -4394,7 +4394,7 @@ ags_fx_factory_create_envelope(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -4648,7 +4648,7 @@ ags_fx_factory_create_pattern(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -4823,7 +4823,7 @@ ags_fx_factory_create_pattern(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -5085,7 +5085,7 @@ ags_fx_factory_create_notation(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -5270,7 +5270,7 @@ ags_fx_factory_create_notation(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -5564,7 +5564,7 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -5773,7 +5773,7 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -6079,7 +6079,7 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -6288,7 +6288,7 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -6653,7 +6653,7 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
@@ -6907,7 +6907,7 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
 
     /* iterate */
     next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel);
+				   audio_channels - stop_audio_channel + 1);
 
     if(channel != NULL){
       g_object_unref(channel);
