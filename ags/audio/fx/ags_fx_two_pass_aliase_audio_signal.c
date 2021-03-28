@@ -138,16 +138,21 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
   AgsFxTwoPassAliaseChannel *fx_two_pass_aliase_channel;
   AgsFxTwoPassAliaseChannelProcessor *fx_two_pass_aliase_channel_processor;
   AgsFxTwoPassAliaseRecycling *fx_two_pass_aliase_recycling;
+  AgsAudio *audio;
+  AgsChannel *channel;
   AgsAudioSignal *source;
   AgsPort *port;
 
   gint sound_scope;
+  guint pad;
+  guint midi_start_mapping;
+  gint midi_note;
   guint buffer_size;
   guint samplerate;
   guint format;
   guint copy_mode_out, copy_mode_in;
   gboolean enabled;
-  gdouble frequency;
+  gdouble base_freq;
   gdouble a_amount;
   gdouble a_phase;
   gdouble b_amount;
@@ -165,8 +170,15 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
 
   fx_two_pass_aliase_recycling = NULL;
 
+  audio = NULL;
+
+  channel = NULL;
+  
   source = NULL;
   
+  pad = 0;
+  midi_start_mapping = 0;
+
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
@@ -184,11 +196,30 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
 	       "recall-channel", &fx_two_pass_aliase_channel,
 	       NULL);
 
+  g_object_get(fx_two_pass_aliase_channel,
+	       "source", &channel,
+	       NULL);
+
+  g_object_get(channel,
+	       "audio", &audio,
+	       "pad", &pad,
+	       NULL);
+
   g_object_get(source,
 	       "buffer-size", &buffer_size,
 	       "samplerate", &samplerate,
 	       "format", &format,
 	       NULL);
+
+  g_object_get(audio,
+	       "midi-start-mapping", &midi_start_mapping,
+	       NULL);
+
+  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
+    midi_note = (128 - pad - 1 + midi_start_mapping);
+  }else{
+    midi_note = (pad + midi_start_mapping);
+  }
 
   copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 						      AGS_AUDIO_BUFFER_UTIL_DOUBLE);
@@ -197,7 +228,7 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
 
   enabled = FALSE;
   
-  frequency = 440.0;
+  base_freq = exp2((midi_note - 69) / 12.0) * 440.0;
   
   a_amount = 0.0;
   a_phase = 0.0;
@@ -220,6 +251,8 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
 		       &value);
 
     enabled = (g_value_get_float(&value) != 0.0) ? TRUE: FALSE;
+
+    g_object_unref(port);
   }
 
   port = NULL;
@@ -237,6 +270,8 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
 		       &value);
 
     a_amount = g_value_get_float(&value);
+
+    g_object_unref(port);
   }
 
   port = NULL;
@@ -254,6 +289,8 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
 		       &value);
 
     a_phase = g_value_get_float(&value);
+
+    g_object_unref(port);
   }
 
   port = NULL;
@@ -271,6 +308,8 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
 		       &value);
 
     b_amount = g_value_get_float(&value);
+
+    g_object_unref(port);
   }
 
   port = NULL;
@@ -288,6 +327,8 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
 		       &value);
 
     b_phase = g_value_get_float(&value);
+
+    g_object_unref(port);
   }
   
   if(enabled &&
@@ -312,7 +353,7 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
 					fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer,
 					buffer_size,
 					samplerate,
-					frequency,
+					base_freq,
 					a_amount,
 					a_phase);
 
@@ -320,7 +361,7 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
 					fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer,
 					buffer_size,
 					samplerate,
-					frequency,
+					base_freq,
 					b_amount,
 					b_phase);
     
@@ -370,6 +411,14 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
 
   if(fx_two_pass_aliase_recycling != NULL){
     g_object_unref(fx_two_pass_aliase_recycling);
+  }
+
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+
+  if(channel != NULL){
+    g_object_unref(channel);
   }
 
   if(source != NULL){

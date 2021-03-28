@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -50,6 +50,16 @@ gboolean ags_ffplayer_drawing_area_button_press_callback(GtkWidget *widget, AgsF
 void ags_ffplayer_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsFFPlayer *ffplayer);
 
 void ags_ffplayer_update_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
+
+void ags_ffplayer_enable_aliase_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
+
+void ags_ffplayer_aliase_a_amount_callback(AgsDial *dial, AgsFFPlayer *ffplayer);
+void ags_ffplayer_aliase_a_phase_callback(AgsDial *dial, AgsFFPlayer *ffplayer);
+
+void ags_ffplayer_aliase_b_amount_callback(AgsDial *dial, AgsFFPlayer *ffplayer);
+void ags_ffplayer_aliase_b_phase_callback(AgsDial *dial, AgsFFPlayer *ffplayer);
+
+void ags_ffplayer_volume_callback(GtkRange *range, AgsFFPlayer *ffplayer);
 
 G_END_DECLS
 

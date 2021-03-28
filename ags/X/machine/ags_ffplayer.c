@@ -154,10 +154,14 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   GtkBox *filename_hbox;
   GtkBox *piano_vbox;
   GtkBox *synth_generator_vbox;
+  GtkBox *aliase_hbox;
+  GtkBox *volume_hbox;
   GtkBox *base_note_hbox;
   GtkBox *key_count_hbox;
   GtkFrame *frame;
   GtkLabel *label;
+
+  GtkAdjustment *adjustment;
   
   GtkAllocation allocation;
   
@@ -169,6 +173,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   gchar *str;
   
   gdouble gui_scale_factor;
+  gdouble page, step;
 
   g_signal_connect_after((GObject *) ffplayer, "parent_set",
 			 G_CALLBACK(ags_ffplayer_parent_set_callback), (gpointer) ffplayer);
@@ -250,6 +255,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   ffplayer->notation_play_container = ags_recall_container_new();
   ffplayer->notation_recall_container = ags_recall_container_new();
+
+  ffplayer->two_pass_aliase_play_container = ags_recall_container_new();
+  ffplayer->two_pass_aliase_recall_container = ags_recall_container_new();
 
   ffplayer->volume_play_container = ags_recall_container_new();
   ffplayer->volume_recall_container = ags_recall_container_new();
@@ -507,6 +515,148 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		  3, 0,
 		  1, 3);
   
+  /* aliase */
+  frame = (GtkFrame *) gtk_frame_new(i18n("aliase"));
+
+  gtk_widget_set_valign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) frame,
+		  4, 0,
+		  1, 1);
+
+  aliase_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				       0);
+  gtk_container_add((GtkContainer *) frame,
+		    (GtkWidget *) aliase_hbox);
+  
+  ffplayer->enable_aliase = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
+  gtk_box_pack_start(aliase_hbox,
+		     (GtkWidget *) ffplayer->enable_aliase,
+		     FALSE, FALSE,
+		     0);
+
+  step = 2.0 * M_PI / 100.0;
+  page = 2.0 * M_PI / AGS_DIAL_DEFAULT_PRECISION;
+
+  /* aliase a */
+  ffplayer->aliase_a_amount = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(ffplayer->aliase_a_amount);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    step);
+  gtk_adjustment_set_page_increment(adjustment,
+				    page);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+  
+  gtk_box_pack_start(aliase_hbox,
+		     (GtkWidget *) ffplayer->aliase_a_amount,
+		     FALSE, FALSE,
+		     0);
+
+  ffplayer->aliase_a_phase = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(ffplayer->aliase_a_phase);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    step);
+  gtk_adjustment_set_page_increment(adjustment,
+				    page);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+  
+  gtk_box_pack_start(aliase_hbox,
+		     (GtkWidget *) ffplayer->aliase_a_phase,
+		     FALSE, FALSE,
+		     0);
+
+  /* aliase b */
+  ffplayer->aliase_b_amount = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(ffplayer->aliase_b_amount);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    step);
+  gtk_adjustment_set_page_increment(adjustment,
+				    page);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+  
+  gtk_box_pack_start(aliase_hbox,
+		     (GtkWidget *) ffplayer->aliase_b_amount,
+		     FALSE, FALSE,
+		     0);
+
+  ffplayer->aliase_b_phase = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(ffplayer->aliase_b_phase);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    step);
+  gtk_adjustment_set_page_increment(adjustment,
+				    page);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+  
+  gtk_box_pack_start(aliase_hbox,
+		     (GtkWidget *) ffplayer->aliase_b_phase,
+		     FALSE, FALSE,
+		     0);
+
+  /* volume */
+  frame = (GtkFrame *) gtk_frame_new(i18n("volume"));
+
+  gtk_widget_set_valign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) frame,
+		  5, 0,
+		  1, 3);
+
+  volume_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				       0);
+  gtk_container_add((GtkContainer *) frame,
+		    (GtkWidget *) volume_hbox);
+  
+  ffplayer->volume = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+							   0.0,
+							   2.0,
+							   0.025);
+  gtk_box_pack_start(volume_hbox,
+		     (GtkWidget *) ffplayer->volume,
+		     FALSE, FALSE,
+		     0);
+
+  gtk_scale_set_digits(ffplayer->volume,
+		       3);
+
+  gtk_range_set_increments(GTK_RANGE(ffplayer->volume),
+			   0.025, 0.1);
+  gtk_range_set_value(GTK_RANGE(ffplayer->volume),
+		      1.0);
+  gtk_range_set_inverted(GTK_RANGE(ffplayer->volume),
+			 TRUE);  
+
   /* effect bridge */
   AGS_MACHINE(ffplayer)->bridge = (GtkContainer *) ags_ffplayer_bridge_new(audio);
   gtk_box_pack_start(vbox,
@@ -576,6 +726,24 @@ ags_ffplayer_connect(AgsConnectable *connectable)
 
   g_signal_connect((GObject *) ffplayer->update, "clicked",
 		   G_CALLBACK(ags_ffplayer_update_callback), (gpointer) ffplayer);
+
+  g_signal_connect((GObject *) ffplayer->enable_aliase, "clicked",
+		   G_CALLBACK(ags_ffplayer_enable_aliase_callback), (gpointer) ffplayer);
+
+  g_signal_connect((GObject *) ffplayer->aliase_a_amount, "value-changed",
+		   G_CALLBACK(ags_ffplayer_aliase_a_amount_callback), (gpointer) ffplayer);
+
+  g_signal_connect((GObject *) ffplayer->aliase_a_phase, "value-changed",
+		   G_CALLBACK(ags_ffplayer_aliase_a_phase_callback), (gpointer) ffplayer);
+
+  g_signal_connect((GObject *) ffplayer->aliase_b_amount, "value-changed",
+		   G_CALLBACK(ags_ffplayer_aliase_b_amount_callback), (gpointer) ffplayer);
+
+  g_signal_connect((GObject *) ffplayer->aliase_b_phase, "value-changed",
+		   G_CALLBACK(ags_ffplayer_aliase_b_phase_callback), (gpointer) ffplayer);
+
+  g_signal_connect((GObject *) ffplayer->volume, "value-changed",
+		   G_CALLBACK(ags_ffplayer_volume_callback), (gpointer) ffplayer);
 }
 
 void
@@ -631,6 +799,42 @@ ags_ffplayer_disconnect(AgsConnectable *connectable)
   g_object_disconnect((GObject *) ffplayer->update,
 		      "any_signal::clicked",
 		      G_CALLBACK(ags_ffplayer_update_callback),
+		      (gpointer) ffplayer,
+		      NULL);
+
+  g_object_disconnect((GObject *) ffplayer->enable_aliase,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_ffplayer_enable_aliase_callback),
+		      (gpointer) ffplayer,
+		      NULL);
+
+  g_object_disconnect((GObject *) ffplayer->aliase_a_amount,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_ffplayer_aliase_a_amount_callback),
+		      (gpointer) ffplayer,
+		      NULL);
+
+  g_object_disconnect((GObject *) ffplayer->aliase_a_phase,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_ffplayer_aliase_a_phase_callback),
+		      (gpointer) ffplayer,
+		      NULL);
+
+  g_object_disconnect((GObject *) ffplayer->aliase_b_amount,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_ffplayer_aliase_b_amount_callback),
+		      (gpointer) ffplayer,
+		      NULL);
+
+  g_object_disconnect((GObject *) ffplayer->aliase_b_phase,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_ffplayer_aliase_b_phase_callback),
+		      (gpointer) ffplayer,
+		      NULL);
+
+  g_object_disconnect((GObject *) ffplayer->volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_ffplayer_volume_callback),
 		      (gpointer) ffplayer,
 		      NULL);
 }
@@ -774,6 +978,21 @@ ags_ffplayer_map_recall(AgsMachine *machine)
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
+  /* ags-fx-two-pass-aliase */
+  start_recall = ags_fx_factory_create(audio,
+				       ffplayer->two_pass_aliase_play_container, ffplayer->two_pass_aliase_recall_container,
+				       "ags-fx-two-pass-aliase",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
   /* ags-fx-volume */
   start_recall = ags_fx_factory_create(audio,
 				       ffplayer->volume_play_container, ffplayer->volume_recall_container,
@@ -788,7 +1007,7 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
-
+  
   /* ags-fx-envelope */
   start_recall = ags_fx_factory_create(audio,
 				       ffplayer->envelope_play_container, ffplayer->envelope_recall_container,

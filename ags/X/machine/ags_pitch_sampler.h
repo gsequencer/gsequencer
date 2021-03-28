@@ -75,6 +75,9 @@ struct _AgsPitchSampler
   AgsRecallContainer *lfo_play_container;
   AgsRecallContainer *lfo_recall_container;
 
+  AgsRecallContainer *two_pass_aliase_play_container;
+  AgsRecallContainer *two_pass_aliase_recall_container;
+
   AgsRecallContainer *volume_play_container;
   AgsRecallContainer *volume_recall_container;
 
@@ -101,10 +104,15 @@ struct _AgsPitchSampler
   GtkSpinButton *lower;
   GtkSpinButton *key_count;
 
-  GtkCheckButton *enable_aliase;
-  GtkSpinButton *aliase_amount;
-
   GtkButton *update;
+
+  GtkCheckButton *enable_aliase;
+
+  AgsDial *aliase_a_amount;
+  AgsDial *aliase_a_phase;
+
+  AgsDial *aliase_b_amount;
+  AgsDial *aliase_b_phase;
 
   GtkCheckButton *enable_lfo;
     
