@@ -23,11 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <fftw3.h>
-
 #include <ags/libags.h>
 
-#include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel.h>
 
@@ -46,6 +43,12 @@ typedef struct _AgsFxTwoPassAliaseChannelClass AgsFxTwoPassAliaseChannelClass;
 struct _AgsFxTwoPassAliaseChannel
 {
   AgsRecallChannel recall_channel;
+
+  AgsPort *a_amount;
+  AgsPort *a_phase;
+
+  AgsPort *b_amount;
+  AgsPort *b_phase;
 };
 
 struct _AgsFxTwoPassAliaseChannelClass

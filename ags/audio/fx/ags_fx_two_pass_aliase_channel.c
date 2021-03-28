@@ -36,6 +36,11 @@ void ags_fx_two_pass_aliase_channel_get_property(GObject *gobject,
 void ags_fx_two_pass_aliase_channel_dispose(GObject *gobject);
 void ags_fx_two_pass_aliase_channel_finalize(GObject *gobject);
 
+static AgsPluginPort* ags_fx_volume_channel_get_a_amount_plugin_port();
+static AgsPluginPort* ags_fx_volume_channel_get_a_phase_plugin_port();
+static AgsPluginPort* ags_fx_volume_channel_get_b_amount_plugin_port();
+static AgsPluginPort* ags_fx_volume_channel_get_b_phase_plugin_port();
+
 /**
  * SECTION:ags_fx_two_pass_aliase_channel
  * @short_description: fx two pass aliase channel
@@ -51,15 +56,27 @@ static gpointer ags_fx_two_pass_aliase_channel_parent_class = NULL;
 const gchar *ags_fx_two_pass_aliase_channel_plugin_name = "ags-fx-two-pass-aliase";
 
 const gchar* ags_fx_two_pass_aliase_channel_specifier[] = {
+  "./a-amount[0]",
+  "./a-phase[0]",
+  "./b-amount[0]",
+  "./b-phase[0]",
   NULL,
 };
 
 const gchar* ags_fx_two_pass_aliase_channel_control_port[] = {
+  "1/4",
+  "2/4",
+  "3/4",
+  "4/4",
   NULL,
 };
 
 enum{
   PROP_0,
+  PROP_A_AMOUNT,
+  PROP_A_PHASE,
+  PROP_B_AMOUNT,
+  PROP_B_PHASE,
 };
 
 GType
@@ -112,6 +129,69 @@ ags_fx_two_pass_aliase_channel_class_init(AgsFxTwoPassAliaseChannelClass *fx_two
   gobject->finalize = ags_fx_two_pass_aliase_channel_finalize;
 
   /* properties */
+  /**
+   * AgsFxTwoPassAliaseChannel:a-amount:
+   *
+   * The first pass amount.
+   * 
+   * Since: 3.8.0
+   */
+  param_spec = g_param_spec_object("a-amount",
+				   i18n_pspec("a's amount"),
+				   i18n_pspec("The amount of a"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_A_AMOUNT,
+				  param_spec);
+
+  /**
+   * AgsFxTwoPassAliaseChannel:a-phase:
+   *
+   * The first pass phase.
+   * 
+   * Since: 3.8.0
+   */
+  param_spec = g_param_spec_object("a-phase",
+				   i18n_pspec("a's phase"),
+				   i18n_pspec("The phase of a"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_A_PHASE,
+				  param_spec);
+
+  /**
+   * AgsFxTwoPassAliaseChannel:b-amount:
+   *
+   * The second pass amount.
+   * 
+   * Since: 3.8.0
+   */
+  param_spec = g_param_spec_object("b-amount",
+				   i18n_pspec("b's amount"),
+				   i18n_pspec("The amount of b"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_B_AMOUNT,
+				  param_spec);
+
+  /**
+   * AgsFxTwoPassAliaseChannel:b-phase:
+   *
+   * The second pass phase.
+   * 
+   * Since: 3.8.0
+   */
+  param_spec = g_param_spec_object("b-phase",
+				   i18n_pspec("b's phase"),
+				   i18n_pspec("The phase of b"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_B_PHASE,
+				  param_spec);
 }
 
 void
@@ -121,6 +201,88 @@ ags_fx_two_pass_aliase_channel_init(AgsFxTwoPassAliaseChannel *fx_two_pass_alias
   AGS_RECALL(fx_two_pass_aliase_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_two_pass_aliase_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_two_pass_aliase_channel)->xml_type = "ags-fx-two-pass-aliase-channel";
+
+  /* a amount */
+  fx_two_pass_aliase_channel->a_amount = g_object_new(AGS_TYPE_PORT,
+						      "plugin-name", ags_fx_two_pass_aliase_channel_plugin_name,
+						      "specifier", ags_fx_two_pass_aliase_channel_specifier[0],
+						      "control-port", ags_fx_two_pass_aliase_channel_control_port[0],
+						      "port-value-is-pointer", FALSE,
+						      "port-value-type", G_TYPE_FLOAT,
+						      "port-value-size", sizeof(gfloat),
+						      "port-value-length", 1,
+						      NULL);
+  
+  fx_two_pass_aliase_channel->a_amount->port_value.ags_port_float = (gfloat) FALSE;
+
+  g_object_set(fx_two_pass_aliase_channel->a_amount,
+	       "plugin-port", ags_fx_two_pass_aliase_channel_get_a_amount_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_two_pass_aliase_channel,
+		      fx_two_pass_aliase_channel->a_amount);
+
+
+  /* a phase */
+  fx_two_pass_aliase_channel->a_phase = g_object_new(AGS_TYPE_PORT,
+						     "plugin-name", ags_fx_two_pass_aliase_channel_plugin_name,
+						     "specifier", ags_fx_two_pass_aliase_channel_specifier[0],
+						     "control-port", ags_fx_two_pass_aliase_channel_control_port[0],
+						     "port-value-is-pointer", FALSE,
+						     "port-value-type", G_TYPE_FLOAT,
+						     "port-value-size", sizeof(gfloat),
+						     "port-value-length", 1,
+						     NULL);
+  
+  fx_two_pass_aliase_channel->a_phase->port_value.ags_port_float = (gfloat) FALSE;
+
+  g_object_set(fx_two_pass_aliase_channel->a_phase,
+	       "plugin-port", ags_fx_two_pass_aliase_channel_get_a_phase_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_two_pass_aliase_channel,
+		      fx_two_pass_aliase_channel->a_phase);
+
+
+  /* b amount */
+  fx_two_pass_aliase_channel->b_amount = g_object_new(AGS_TYPE_PORT,
+						      "plugin-name", ags_fx_two_pass_aliase_channel_plugin_name,
+						      "specifier", ags_fx_two_pass_aliase_channel_specifier[0],
+						      "control-port", ags_fx_two_pass_aliase_channel_control_port[0],
+						      "port-value-is-pointer", FALSE,
+						      "port-value-type", G_TYPE_FLOAT,
+						      "port-value-size", sizeof(gfloat),
+						      "port-value-length", 1,
+						      NULL);
+  
+  fx_two_pass_aliase_channel->b_amount->port_value.ags_port_float = (gfloat) FALSE;
+
+  g_object_set(fx_two_pass_aliase_channel->b_amount,
+	       "plugin-port", ags_fx_two_pass_aliase_channel_get_b_amount_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_two_pass_aliase_channel,
+		      fx_two_pass_aliase_channel->b_amount);
+
+  /* b phase */
+  fx_two_pass_aliase_channel->b_phase = g_object_new(AGS_TYPE_PORT,
+						     "plugin-name", ags_fx_two_pass_aliase_channel_plugin_name,
+						     "specifier", ags_fx_two_pass_aliase_channel_specifier[0],
+						     "control-port", ags_fx_two_pass_aliase_channel_control_port[0],
+						     "port-value-is-pointer", FALSE,
+						     "port-value-type", G_TYPE_FLOAT,
+						     "port-value-size", sizeof(gfloat),
+						     "port-value-length", 1,
+						     NULL);
+  
+  fx_two_pass_aliase_channel->b_phase->port_value.ags_port_float = (gfloat) FALSE;
+
+  g_object_set(fx_two_pass_aliase_channel->b_phase,
+	       "plugin-port", ags_fx_two_pass_aliase_channel_get_b_phase_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_two_pass_aliase_channel,
+		      fx_two_pass_aliase_channel->b_phase);
 }
 
 void
@@ -139,6 +301,114 @@ ags_fx_two_pass_aliase_channel_set_property(GObject *gobject,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_two_pass_aliase_channel);
 
   switch(prop_id){
+  case PROP_A_AMOUNT:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_two_pass_aliase_channel->a_amount){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_two_pass_aliase_channel->a_amount != NULL){
+      g_object_unref(G_OBJECT(fx_two_pass_aliase_channel->a_amount));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_two_pass_aliase_channel->a_amount = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_A_PHASE:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_two_pass_aliase_channel->a_phase){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_two_pass_aliase_channel->a_phase != NULL){
+      g_object_unref(G_OBJECT(fx_two_pass_aliase_channel->a_phase));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_two_pass_aliase_channel->a_phase = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_B_AMOUNT:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_two_pass_aliase_channel->b_amount){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_two_pass_aliase_channel->b_amount != NULL){
+      g_object_unref(G_OBJECT(fx_two_pass_aliase_channel->b_amount));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_two_pass_aliase_channel->b_amount = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_B_PHASE:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(recall_mutex);
+
+    if(port == fx_two_pass_aliase_channel->b_phase){
+      g_rec_mutex_unlock(recall_mutex);	
+
+      return;
+    }
+
+    if(fx_two_pass_aliase_channel->b_phase != NULL){
+      g_object_unref(G_OBJECT(fx_two_pass_aliase_channel->b_phase));
+    }
+      
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    fx_two_pass_aliase_channel->b_phase = port;
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -161,6 +431,42 @@ ags_fx_two_pass_aliase_channel_get_property(GObject *gobject,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_two_pass_aliase_channel);
 
   switch(prop_id){
+  case PROP_A_AMOUNT:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_two_pass_aliase_channel->a_amount);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_A_PHASE:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_two_pass_aliase_channel->a_phase);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_B_AMOUNT:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_two_pass_aliase_channel->b_amount);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
+  case PROP_B_PHASE:
+  {
+    g_rec_mutex_lock(recall_mutex);
+
+    g_value_set_object(value, fx_two_pass_aliase_channel->b_phase);
+      
+    g_rec_mutex_unlock(recall_mutex);	
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -187,6 +493,162 @@ ags_fx_two_pass_aliase_channel_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_fx_two_pass_aliase_channel_parent_class)->finalize(gobject);
+}
+
+static AgsPluginPort*
+ags_fx_two_pass_aliase_channel_get_a_amount_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      2.0 * M_PI);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_two_pass_aliase_channel_get_a_phase_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      2.0 * M_PI);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_two_pass_aliase_channel_get_b_amount_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      2.0 * M_PI);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_two_pass_aliase_channel_get_b_phase_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      2.0 * M_PI);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
 }
 
 /**
