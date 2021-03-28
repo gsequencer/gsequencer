@@ -19,6 +19,8 @@
 
 #include <ags/audio/fx/ags_fx_eq10_channel.h>
 
+#include <ags/audio/ags_audio_signal.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_eq10_channel_class_init(AgsFxEq10ChannelClass *fx_eq10_channel);

@@ -21,6 +21,8 @@
 
 #include <ags/plugin/ags_plugin_port.h>
 
+#include <ags/audio/ags_audio_signal.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_two_pass_aliase_channel_class_init(AgsFxTwoPassAliaseChannelClass *fx_two_pass_aliase_channel);
@@ -35,6 +37,10 @@ void ags_fx_two_pass_aliase_channel_get_property(GObject *gobject,
 						 GParamSpec *param_spec);
 void ags_fx_two_pass_aliase_channel_dispose(GObject *gobject);
 void ags_fx_two_pass_aliase_channel_finalize(GObject *gobject);
+
+void ags_fx_two_pass_aliase_channel_notify_buffer_size_callback(GObject *gobject,
+								GParamSpec *pspec,
+								gpointer user_data);
 
 static AgsPluginPort* ags_fx_two_pass_aliase_channel_get_enabled_plugin_port();
 static AgsPluginPort* ags_fx_two_pass_aliase_channel_get_a_amount_plugin_port();
@@ -217,21 +223,33 @@ ags_fx_two_pass_aliase_channel_class_init(AgsFxTwoPassAliaseChannelClass *fx_two
 void
 ags_fx_two_pass_aliase_channel_init(AgsFxTwoPassAliaseChannel *fx_two_pass_aliase_channel)
 {
+  guint buffer_size;
+  guint i;
+
+  g_signal_connect(fx_two_pass_aliase_channel, "notify::buffer-size",
+		   G_CALLBACK(ags_fx_two_pass_aliase_channel_notify_buffer_size_callback), NULL);
+  
   AGS_RECALL(fx_two_pass_aliase_channel)->name = "ags-fx-two-pass-aliase";
   AGS_RECALL(fx_two_pass_aliase_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_two_pass_aliase_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_two_pass_aliase_channel)->xml_type = "ags-fx-two-pass-aliase-channel";
 
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  
+  g_object_get(fx_two_pass_aliase_channel,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
   /* enabled */
   fx_two_pass_aliase_channel->enabled = g_object_new(AGS_TYPE_PORT,
-						      "plugin-name", ags_fx_two_pass_aliase_channel_plugin_name,
-						      "specifier", ags_fx_two_pass_aliase_channel_specifier[0],
-						      "control-port", ags_fx_two_pass_aliase_channel_control_port[0],
-						      "port-value-is-pointer", FALSE,
-						      "port-value-type", G_TYPE_FLOAT,
-						      "port-value-size", sizeof(gfloat),
-						      "port-value-length", 1,
-						      NULL);
+						     "plugin-name", ags_fx_two_pass_aliase_channel_plugin_name,
+						     "specifier", ags_fx_two_pass_aliase_channel_specifier[0],
+						     "control-port", ags_fx_two_pass_aliase_channel_control_port[0],
+						     "port-value-is-pointer", FALSE,
+						     "port-value-type", G_TYPE_FLOAT,
+						     "port-value-size", sizeof(gfloat),
+						     "port-value-length", 1,
+						     NULL);
   
   fx_two_pass_aliase_channel->enabled->port_value.ags_port_float = (gfloat) FALSE;
 
@@ -322,6 +340,30 @@ ags_fx_two_pass_aliase_channel_init(AgsFxTwoPassAliaseChannel *fx_two_pass_alias
 
   ags_recall_add_port((AgsRecall *) fx_two_pass_aliase_channel,
 		      fx_two_pass_aliase_channel->b_phase);
+
+
+  /* input data */
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    fx_two_pass_aliase_channel->input_data[i] = ags_fx_two_pass_aliase_channel_input_data_alloc();
+      
+    fx_two_pass_aliase_channel->input_data[i]->parent = fx_two_pass_aliase_channel;
+
+    fx_two_pass_aliase_channel->input_data[i]->orig_buffer = (gdouble *) ags_stream_alloc(buffer_size,
+											  AGS_SOUNDCARD_DOUBLE);
+
+    fx_two_pass_aliase_channel->input_data[i]->a_buffer = (gdouble *) ags_stream_alloc(buffer_size,
+										       AGS_SOUNDCARD_DOUBLE);
+    fx_two_pass_aliase_channel->input_data[i]->b_buffer = (gdouble *) ags_stream_alloc(buffer_size,
+										       AGS_SOUNDCARD_DOUBLE);
+
+    fx_two_pass_aliase_channel->input_data[i]->a_mix = (gdouble *) ags_stream_alloc(buffer_size,
+										    AGS_SOUNDCARD_DOUBLE);
+    fx_two_pass_aliase_channel->input_data[i]->b_mix = (gdouble *) ags_stream_alloc(buffer_size,
+										    AGS_SOUNDCARD_DOUBLE);
+
+    fx_two_pass_aliase_channel->input_data[i]->final_mix = (gdouble *) ags_stream_alloc(buffer_size,
+											AGS_SOUNDCARD_DOUBLE);
+  }
 }
 
 void
@@ -764,6 +806,378 @@ ags_fx_two_pass_aliase_channel_get_b_phase_plugin_port()
   g_mutex_unlock(&mutex);
     
   return(plugin_port);
+}
+
+void
+ags_fx_two_pass_aliase_channel_notify_buffer_size_callback(GObject *gobject,
+							   GParamSpec *pspec,
+							   gpointer user_data)
+{
+  AgsFxTwoPassAliaseChannel *fx_two_pass_aliase_channel;
+
+  guint buffer_size;
+  guint i;
+  
+  GRecMutex *recall_mutex;
+  
+  fx_two_pass_aliase_channel = AGS_FX_TWO_PASS_ALIASE_CHANNEL(gobject);
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_two_pass_aliase_channel);
+
+  /* get buffer size */
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  
+  g_object_get(fx_two_pass_aliase_channel,
+	       "buffer-size", &buffer_size,
+	       NULL);
+  
+  /* reallocate buffer - apply buffer size */
+  g_rec_mutex_lock(recall_mutex);
+
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    AgsFxTwoPassAliaseChannelInputData *input_data;
+
+    input_data = fx_two_pass_aliase_channel->input_data[i];
+
+    /* buffer */
+    ags_stream_free(input_data->orig_buffer);
+    
+    ags_stream_free(input_data->a_buffer);
+    ags_stream_free(input_data->b_buffer);
+
+    if(buffer_size > 0){
+      input_data->orig_buffer = (gdouble *) ags_stream_alloc(buffer_size,
+							     AGS_SOUNDCARD_DOUBLE);
+      
+      input_data->a_buffer = (gdouble *) ags_stream_alloc(buffer_size,
+							  AGS_SOUNDCARD_DOUBLE);
+      input_data->b_buffer = (gdouble *) ags_stream_alloc(buffer_size,
+							  AGS_SOUNDCARD_DOUBLE);
+
+      input_data->a_mix = (gdouble *) ags_stream_alloc(buffer_size,
+						       AGS_SOUNDCARD_DOUBLE);
+      input_data->b_mix = (gdouble *) ags_stream_alloc(buffer_size,
+						       AGS_SOUNDCARD_DOUBLE);
+
+      input_data->final_mix = (gdouble *) ags_stream_alloc(buffer_size,
+							   AGS_SOUNDCARD_DOUBLE);
+    }else{
+      input_data->orig_buffer = NULL;
+      
+      input_data->a_buffer = NULL;
+      input_data->b_buffer = NULL;
+
+      input_data->a_mix = NULL;
+      input_data->b_mix = NULL;
+
+      input_data->final_mix = NULL;
+    }
+  }
+  
+  g_rec_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_fx_two_pass_aliase_channel_input_data_alloc:
+ * 
+ * Allocate #AgsFxTwoPassAliaseChannelInputData-struct
+ * 
+ * Returns: (type gpointer) (transfer full): the new #AgsFxTwoPassAliaseChannelInputData-struct
+ * 
+ * Since: 3.8.0
+ */
+AgsFxTwoPassAliaseChannelInputData*
+ags_fx_two_pass_aliase_channel_input_data_alloc()
+{
+  AgsFxTwoPassAliaseChannelInputData *input_data;
+
+  input_data = (AgsFxTwoPassAliaseChannelInputData *) g_malloc(sizeof(AgsFxTwoPassAliaseChannelInputData));
+
+  g_rec_mutex_init(&(input_data->strct_mutex));
+  
+  input_data->parent = NULL;
+
+  input_data->orig_buffer = NULL;
+
+  input_data->a_buffer = NULL;
+  input_data->b_buffer = NULL;
+
+  return(input_data);
+}
+
+/**
+ * ags_fx_two_pass_aliase_channel_input_data_free:
+ * @input_data: (type gpointer) (transfer full): the #AgsFxTwoPassAliaseChannelInputData-struct
+ * 
+ * Free @input_data.
+ * 
+ * Since: 3.8.0
+ */
+void
+ags_fx_two_pass_aliase_channel_input_data_free(AgsFxTwoPassAliaseChannelInputData *input_data)
+{
+  if(input_data == NULL){
+    return;
+  }
+
+  ags_stream_free(input_data->orig_buffer);
+
+  ags_stream_free(input_data->a_buffer);
+  ags_stream_free(input_data->b_buffer);
+  
+  g_free(input_data);
+}
+
+/**
+ * ags_fx_two_pass_aliase_channel_input_data_get_strct_mutex:
+ * @input_data: (type gpointer) (transfer none): the #AgsFxTwoPassAliaseChannelInputData
+ * 
+ * Get structure mutex.
+ * 
+ * Returns: (type gpointer) (transfer none): the #GRecMutex to lock @input_data
+ * 
+ * Since: 3.8.0
+ */
+GRecMutex*
+ags_fx_two_pass_aliase_channel_input_data_get_strct_mutex(AgsFxTwoPassAliaseChannelInputData *input_data)
+{
+  if(input_data == NULL){
+    return(NULL);
+  }
+
+  return(AGS_FX_TWO_PASS_ALIASE_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data));
+}
+
+/**
+ * ags_fx_two_pass_aliase_channel_input_get_parent:
+ * @input_data: (type gpointer) (transfer none): the #AgsFxTwoPassAliaseChannelInputData-struct
+ * 
+ * Get parent of @input_data.
+ * 
+ * Returns: (type gpointer) (transfer none): the parent
+ * 
+ * Since: 3.8.0
+ */
+gpointer
+ags_fx_two_pass_aliase_channel_input_get_parent(AgsFxTwoPassAliaseChannelInputData *input_data)
+{
+  gpointer parent;
+  
+  GRecMutex *input_data_mutex;
+  
+  if(input_data == NULL){
+    return(NULL);
+  }
+
+  input_data_mutex = AGS_FX_TWO_PASS_ALIASE_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data);
+
+  /* parent */
+  g_rec_mutex_lock(input_data_mutex);
+
+  parent = input_data->parent;
+  
+  g_rec_mutex_unlock(input_data_mutex);
+
+  return(parent);
+}
+
+/**
+ * ags_fx_two_pass_aliase_channel_input_get_orig_buffer:
+ * @input_data: (type gpointer) (transfer none): the #AgsFxTwoPassAliaseChannelInputData-struct
+ * 
+ * Get orig buffer of @input_data.
+ * 
+ * Returns: (type gpointer) (transfer none): the orig buffer
+ * 
+ * Since: 3.8.0
+ */
+gpointer
+ags_fx_two_pass_aliase_channel_input_get_orig_buffer(AgsFxTwoPassAliaseChannelInputData *input_data)
+{
+  gpointer orig_buffer;
+  
+  GRecMutex *input_data_mutex;
+  
+  if(input_data == NULL){
+    return(NULL);
+  }
+
+  input_data_mutex = AGS_FX_TWO_PASS_ALIASE_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data);
+
+  /* orig buffer */
+  g_rec_mutex_lock(input_data_mutex);
+
+  orig_buffer = input_data->orig_buffer;
+  
+  g_rec_mutex_unlock(input_data_mutex);
+
+  return(orig_buffer);
+}
+
+/**
+ * ags_fx_two_pass_aliase_channel_input_get_a_buffer:
+ * @input_data: (type gpointer) (transfer none): the #AgsFxTwoPassAliaseChannelInputData-struct
+ * 
+ * Get a buffer of @input_data.
+ * 
+ * Returns: (type gpointer) (transfer none): the a buffer
+ * 
+ * Since: 3.8.0
+ */
+gpointer
+ags_fx_two_pass_aliase_channel_input_get_a_buffer(AgsFxTwoPassAliaseChannelInputData *input_data)
+{
+  gpointer a_buffer;
+  
+  GRecMutex *input_data_mutex;
+  
+  if(input_data == NULL){
+    return(NULL);
+  }
+
+  input_data_mutex = AGS_FX_TWO_PASS_ALIASE_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data);
+
+  /* a buffer */
+  g_rec_mutex_lock(input_data_mutex);
+
+  a_buffer = input_data->a_buffer;
+  
+  g_rec_mutex_unlock(input_data_mutex);
+
+  return(a_buffer);
+}
+
+/**
+ * ags_fx_two_pass_aliase_channel_input_get_b_buffer:
+ * @input_data: (type gpointer) (transfer none): the #AgsFxTwoPassAliaseChannelInputData-struct
+ * 
+ * Get b buffer of @input_data.
+ * 
+ * Returns: (type gpointer) (transfer none): the b buffer
+ * 
+ * Since: 3.8.0
+ */
+gpointer
+ags_fx_two_pass_aliase_channel_input_get_b_buffer(AgsFxTwoPassAliaseChannelInputData *input_data)
+{
+  gpointer b_buffer;
+  
+  GRecMutex *input_data_mutex;
+  
+  if(input_data == NULL){
+    return(NULL);
+  }
+
+  input_data_mutex = AGS_FX_TWO_PASS_ALIASE_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data);
+
+  /* b buffer */
+  g_rec_mutex_lock(input_data_mutex);
+
+  b_buffer = input_data->b_buffer;
+  
+  g_rec_mutex_unlock(input_data_mutex);
+
+  return(b_buffer);
+}
+
+/**
+ * ags_fx_two_pass_aliase_channel_input_get_a_mix:
+ * @input_data: (type gpointer) (transfer none): the #AgsFxTwoPassAliaseChannelInputData-struct
+ * 
+ * Get a mix of @input_data.
+ * 
+ * Returns: (type gpointer) (transfer none): the a mix
+ * 
+ * Since: 3.8.0
+ */
+gpointer
+ags_fx_two_pass_aliase_channel_input_get_a_mix(AgsFxTwoPassAliaseChannelInputData *input_data)
+{
+  gpointer a_mix;
+  
+  GRecMutex *input_data_mutex;
+  
+  if(input_data == NULL){
+    return(NULL);
+  }
+
+  input_data_mutex = AGS_FX_TWO_PASS_ALIASE_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data);
+
+  /* a mix */
+  g_rec_mutex_lock(input_data_mutex);
+
+  a_mix = input_data->a_mix;
+  
+  g_rec_mutex_unlock(input_data_mutex);
+
+  return(a_mix);
+}
+
+/**
+ * ags_fx_two_pass_aliase_channel_input_get_b_mix:
+ * @input_data: (type gpointer) (transfer none): the #AgsFxTwoPassAliaseChannelInputData-struct
+ * 
+ * Get b mix of @input_data.
+ * 
+ * Returns: (type gpointer) (transfer none): the b mix
+ * 
+ * Since: 3.8.0
+ */
+gpointer
+ags_fx_two_pass_aliase_channel_input_get_b_mix(AgsFxTwoPassAliaseChannelInputData *input_data)
+{
+  gpointer b_mix;
+  
+  GRecMutex *input_data_mutex;
+  
+  if(input_data == NULL){
+    return(NULL);
+  }
+
+  input_data_mutex = AGS_FX_TWO_PASS_ALIASE_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data);
+
+  /* b mix */
+  g_rec_mutex_lock(input_data_mutex);
+
+  b_mix = input_data->b_mix;
+  
+  g_rec_mutex_unlock(input_data_mutex);
+
+  return(b_mix);
+}
+
+/**
+ * ags_fx_two_pass_aliase_channel_input_get_final_mix:
+ * @input_data: (type gpointer) (transfer none): the #AgsFxTwoPassAliaseChannelInputData-struct
+ * 
+ * Get final mix of @input_data.
+ * 
+ * Returns: (type gpointer) (transfer none): the final mix
+ * 
+ * Since: 3.8.0
+ */
+gpointer
+ags_fx_two_pass_aliase_channel_input_get_final_mix(AgsFxTwoPassAliaseChannelInputData *input_data)
+{
+  gpointer final_mix;
+  
+  GRecMutex *input_data_mutex;
+  
+  if(input_data == NULL){
+    return(NULL);
+  }
+
+  input_data_mutex = AGS_FX_TWO_PASS_ALIASE_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data);
+
+  /* final mix */
+  g_rec_mutex_lock(input_data_mutex);
+
+  final_mix = input_data->final_mix;
+  
+  g_rec_mutex_unlock(input_data_mutex);
+
+  return(final_mix);
 }
 
 /**

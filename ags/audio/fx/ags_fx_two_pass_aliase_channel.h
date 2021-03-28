@@ -25,6 +25,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel.h>
 
@@ -37,12 +38,18 @@ G_BEGIN_DECLS
 #define AGS_IS_FX_TWO_PASS_ALIASE_CHANNEL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FX_TWO_PASS_ALIASE_CHANNEL))
 #define AGS_FX_TWO_PASS_ALIASE_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_TWO_PASS_ALIASE_CHANNEL, AgsFxTwoPassAliaseChannelClass))
 
+#define AGS_FX_TWO_PASS_ALIASE_CHANNEL_INPUT_DATA(ptr) ((AgsFxTwoPassAliaseChannelInputData *)(ptr))
+#define AGS_FX_TWO_PASS_ALIASE_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxTwoPassAliaseChannelInputData *)(ptr))->strct_mutex))
+
 typedef struct _AgsFxTwoPassAliaseChannel AgsFxTwoPassAliaseChannel;
+typedef struct _AgsFxTwoPassAliaseChannelInputData AgsFxTwoPassAliaseChannelInputData;
 typedef struct _AgsFxTwoPassAliaseChannelClass AgsFxTwoPassAliaseChannelClass;
 
 struct _AgsFxTwoPassAliaseChannel
 {
   AgsRecallChannel recall_channel;
+
+  AgsFxTwoPassAliaseChannelInputData* input_data[AGS_SOUND_SCOPE_LAST];
 
   AgsPort *enabled;
 
@@ -58,7 +65,44 @@ struct _AgsFxTwoPassAliaseChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
+
+struct _AgsFxTwoPassAliaseChannelInputData
+{
+  GRecMutex strct_mutex;
+
+  gpointer parent;
+
+  gdouble *orig_buffer;
+
+  gdouble *a_buffer;
+  gdouble *b_buffer;
+
+  gdouble *a_mix;
+  gdouble *b_mix;
+
+  gdouble *final_mix;
+};
+
 GType ags_fx_two_pass_aliase_channel_get_type();
+
+/* runtime */
+AgsFxTwoPassAliaseChannelInputData* ags_fx_two_pass_aliase_channel_input_data_alloc();
+void ags_fx_two_pass_aliase_channel_input_data_free(AgsFxTwoPassAliaseChannelInputData *input_data);
+
+/* get/set AgsFxTwoPassAliaseChannelInputData */
+GRecMutex* ags_fx_two_pass_aliase_channel_input_data_get_strct_mutex(AgsFxTwoPassAliaseChannelInputData *input_data);
+
+gpointer ags_fx_two_pass_aliase_channel_input_get_parent(AgsFxTwoPassAliaseChannelInputData *input_data);
+
+gpointer ags_fx_two_pass_aliase_channel_input_get_orig_buffer(AgsFxTwoPassAliaseChannelInputData *input_data);
+
+gpointer ags_fx_two_pass_aliase_channel_input_get_a_buffer(AgsFxTwoPassAliaseChannelInputData *input_data);
+gpointer ags_fx_two_pass_aliase_channel_input_get_b_buffer(AgsFxTwoPassAliaseChannelInputData *input_data);
+
+gpointer ags_fx_two_pass_aliase_channel_input_get_a_mix(AgsFxTwoPassAliaseChannelInputData *input_data);
+gpointer ags_fx_two_pass_aliase_channel_input_get_b_mix(AgsFxTwoPassAliaseChannelInputData *input_data);
+
+gpointer ags_fx_two_pass_aliase_channel_input_get_final_mix(AgsFxTwoPassAliaseChannelInputData *input_data);
 
 /* instantiate */
 AgsFxTwoPassAliaseChannel* ags_fx_two_pass_aliase_channel_new(AgsChannel *channel);
