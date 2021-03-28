@@ -377,7 +377,7 @@ ags_ffplayer_enable_aliase_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   AgsChannel *start_input;
   AgsChannel *channel;
   
-  GList *start_recall, *recall;
+  GList *start_play, *start_recall, *recall;
 
   gfloat enabled;
 
@@ -385,7 +385,7 @@ ags_ffplayer_enable_aliase_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   
   start_input = NULL;
   
-  g_object_get(AGS_MACHINE(ffplayer),
+  g_object_get(AGS_MACHINE(ffplayer)->audio,
 	       "input", &start_input,
 	       NULL);
 
@@ -397,9 +397,12 @@ ags_ffplayer_enable_aliase_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 
   while(channel != NULL){
     AgsChannel *next;
+
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
     
     recall =
-      start_recall = ags_channel_collect_all_channel_ports(channel);
+      start_recall = g_list_concat(start_play, start_recall);
 
     while((recall = ags_recall_template_find_type(recall, AGS_TYPE_FX_TWO_PASS_ALIASE_CHANNEL) ) != NULL){
       AgsPort *port;
@@ -451,7 +454,7 @@ ags_ffplayer_aliase_a_amount_callback(AgsDial *dial, AgsFFPlayer *ffplayer)
   AgsChannel *start_input;
   AgsChannel *channel;
   
-  GList *start_recall, *recall;
+  GList *start_play, *start_recall, *recall;
 
   gfloat amount;
 
@@ -459,7 +462,7 @@ ags_ffplayer_aliase_a_amount_callback(AgsDial *dial, AgsFFPlayer *ffplayer)
   
   start_input = NULL;
   
-  g_object_get(AGS_MACHINE(ffplayer),
+  g_object_get(AGS_MACHINE(ffplayer)->audio,
 	       "input", &start_input,
 	       NULL);
 
@@ -472,8 +475,11 @@ ags_ffplayer_aliase_a_amount_callback(AgsDial *dial, AgsFFPlayer *ffplayer)
   while(channel != NULL){
     AgsChannel *next;
     
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
+    
     recall =
-      start_recall = ags_channel_collect_all_channel_ports(channel);
+      start_recall = g_list_concat(start_play, start_recall);
 
     while((recall = ags_recall_template_find_type(recall, AGS_TYPE_FX_TWO_PASS_ALIASE_CHANNEL) ) != NULL){
       AgsPort *port;
@@ -525,7 +531,7 @@ ags_ffplayer_aliase_a_phase_callback(AgsDial *dial, AgsFFPlayer *ffplayer)
   AgsChannel *start_input;
   AgsChannel *channel;
   
-  GList *start_recall, *recall;
+  GList *start_play, *start_recall, *recall;
 
   gfloat phase;
 
@@ -533,7 +539,7 @@ ags_ffplayer_aliase_a_phase_callback(AgsDial *dial, AgsFFPlayer *ffplayer)
   
   start_input = NULL;
   
-  g_object_get(AGS_MACHINE(ffplayer),
+  g_object_get(AGS_MACHINE(ffplayer)->audio,
 	       "input", &start_input,
 	       NULL);
 
@@ -546,8 +552,11 @@ ags_ffplayer_aliase_a_phase_callback(AgsDial *dial, AgsFFPlayer *ffplayer)
   while(channel != NULL){
     AgsChannel *next;
     
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
+    
     recall =
-      start_recall = ags_channel_collect_all_channel_ports(channel);
+      start_recall = g_list_concat(start_play, start_recall);
 
     while((recall = ags_recall_template_find_type(recall, AGS_TYPE_FX_TWO_PASS_ALIASE_CHANNEL) ) != NULL){
       AgsPort *port;
@@ -599,7 +608,7 @@ ags_ffplayer_aliase_b_amount_callback(AgsDial *dial, AgsFFPlayer *ffplayer)
   AgsChannel *start_input;
   AgsChannel *channel;
   
-  GList *start_recall, *recall;
+  GList *start_play, *start_recall, *recall;
 
   gfloat amount;
 
@@ -607,7 +616,7 @@ ags_ffplayer_aliase_b_amount_callback(AgsDial *dial, AgsFFPlayer *ffplayer)
   
   start_input = NULL;
   
-  g_object_get(AGS_MACHINE(ffplayer),
+  g_object_get(AGS_MACHINE(ffplayer)->audio,
 	       "input", &start_input,
 	       NULL);
 
@@ -620,8 +629,11 @@ ags_ffplayer_aliase_b_amount_callback(AgsDial *dial, AgsFFPlayer *ffplayer)
   while(channel != NULL){
     AgsChannel *next;
     
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
+    
     recall =
-      start_recall = ags_channel_collect_all_channel_ports(channel);
+      start_recall = g_list_concat(start_play, start_recall);
 
     while((recall = ags_recall_template_find_type(recall, AGS_TYPE_FX_TWO_PASS_ALIASE_CHANNEL) ) != NULL){
       AgsPort *port;
@@ -673,7 +685,7 @@ ags_ffplayer_aliase_b_phase_callback(AgsDial *dial, AgsFFPlayer *ffplayer)
   AgsChannel *start_input;
   AgsChannel *channel;
   
-  GList *start_recall, *recall;
+  GList *start_play, *start_recall, *recall;
 
   gfloat phase;
 
@@ -681,7 +693,7 @@ ags_ffplayer_aliase_b_phase_callback(AgsDial *dial, AgsFFPlayer *ffplayer)
   
   start_input = NULL;
   
-  g_object_get(AGS_MACHINE(ffplayer),
+  g_object_get(AGS_MACHINE(ffplayer)->audio,
 	       "input", &start_input,
 	       NULL);
 
@@ -694,8 +706,11 @@ ags_ffplayer_aliase_b_phase_callback(AgsDial *dial, AgsFFPlayer *ffplayer)
   while(channel != NULL){
     AgsChannel *next;
     
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
+    
     recall =
-      start_recall = ags_channel_collect_all_channel_ports(channel);
+      start_recall = g_list_concat(start_play, start_recall);
 
     while((recall = ags_recall_template_find_type(recall, AGS_TYPE_FX_TWO_PASS_ALIASE_CHANNEL) ) != NULL){
       AgsPort *port;
@@ -739,7 +754,6 @@ ags_ffplayer_aliase_b_phase_callback(AgsDial *dial, AgsFFPlayer *ffplayer)
   if(start_input != NULL){
     g_object_unref(start_input);
   }
-  //TODO:JK: implemement me
 }
 
 void
@@ -748,7 +762,7 @@ ags_ffplayer_volume_callback(GtkRange *range, AgsFFPlayer *ffplayer)
   AgsChannel *start_input;
   AgsChannel *channel;
   
-  GList *start_recall, *recall;
+  GList *start_play, *start_recall, *recall;
 
   gfloat volume;
 
@@ -756,7 +770,7 @@ ags_ffplayer_volume_callback(GtkRange *range, AgsFFPlayer *ffplayer)
   
   start_input = NULL;
   
-  g_object_get(AGS_MACHINE(ffplayer),
+  g_object_get(AGS_MACHINE(ffplayer)->audio,
 	       "input", &start_input,
 	       NULL);
 
@@ -769,8 +783,11 @@ ags_ffplayer_volume_callback(GtkRange *range, AgsFFPlayer *ffplayer)
   while(channel != NULL){
     AgsChannel *next;
     
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
+    
     recall =
-      start_recall = ags_channel_collect_all_channel_ports(channel);
+      start_recall = g_list_concat(start_play, start_recall);
 
     while((recall = ags_recall_template_find_type(recall, AGS_TYPE_FX_VOLUME_CHANNEL) ) != NULL){
       AgsPort *port;

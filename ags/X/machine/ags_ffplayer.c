@@ -1110,6 +1110,34 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer,
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
+  /* ags-fx-two-pass-aliase */
+  start_recall = ags_fx_factory_create(audio,
+				       ffplayer->two_pass_aliase_play_container, ffplayer->two_pass_aliase_recall_container,
+				       "ags-fx-two-pass-aliase",
+				       NULL,
+				       NULL,
+				       audio_channel_start, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       ffplayer->volume_play_container, ffplayer->volume_recall_container,
+				       "ags-fx-volume",
+				       NULL,
+				       NULL,
+				       audio_channel_start, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
   /* ags-fx-envelope */
   start_recall = ags_fx_factory_create(audio,
 				       ffplayer->envelope_play_container, ffplayer->envelope_recall_container,
@@ -1123,7 +1151,7 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer,
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
-
+  
   /* ags-fx-buffer */
   start_recall = ags_fx_factory_create(audio,
 				       ffplayer->buffer_play_container, ffplayer->buffer_recall_container,

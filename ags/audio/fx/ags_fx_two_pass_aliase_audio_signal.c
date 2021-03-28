@@ -383,7 +383,7 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
     g_rec_mutex_lock(stream_mutex);
 
     ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
-				       buffer_size, format);
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
 
     ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
 						fx_two_pass_aliase_channel->input_data[sound_scope]->final_mix, 1, 0,
