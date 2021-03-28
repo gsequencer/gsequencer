@@ -1081,8 +1081,6 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer,
 	       "input-pads", &input_pads,
 	       "audio-channels", &audio_channels,
 	       NULL);
-
-  g_message("map %d - %d", input_pad_start, input_pads);
   
   /* ags-fx-playback */
   start_recall = ags_fx_factory_create(audio,
