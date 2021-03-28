@@ -48,10 +48,11 @@ gboolean ags_visual_phase_shift_phase_shifted_wave_draw(GtkWidget *widget,
 #define AGS_VISUAL_PHASE_SHIFT_TEST_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
 
 #define AGS_VISUAL_PHASE_SHIFT_TEST_FRAME_COUNT (22050.0)
-#define AGS_VISUAL_PHASE_SHIFT_TEST_BASE_FREQ (220.0)
+#define AGS_VISUAL_PHASE_SHIFT_TEST_BASE_FREQ (440.0)
 #define AGS_VISUAL_PHASE_SHIFT_TEST_VOLUME (1.0)
 
-#define AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT (1.75 * M_PI)
+#define AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT (0.5 * M_PI)
+#define AGS_VISUAL_PHASE_SHIFT_TEST_PHASE (0.0)
 
 #define AGS_VISUAL_PHASE_SHIFT_TEST_CONFIG "[generic]\n"	\
   "autosave-thread=false\n"				\
@@ -348,7 +349,8 @@ ags_visual_phase_shift_test_create_phase_shifted_sine_wave()
 				   (guint) AGS_VISUAL_PHASE_SHIFT_TEST_FRAME_COUNT,
 				   AGS_VISUAL_PHASE_SHIFT_TEST_SAMPLERATE,
 				   AGS_VISUAL_PHASE_SHIFT_TEST_BASE_FREQ,
-				   AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT);
+				   AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT,
+				   AGS_VISUAL_PHASE_SHIFT_TEST_PHASE);
 
   start_wave = NULL;
   
@@ -525,9 +527,9 @@ main(int argc, char* argv[])
 
   {
     gdouble samplerate;
-    gdouble phase;
     gdouble frequency;
     gdouble freq_period;
+    gdouble phase_period;
     gdouble amount;
     gdouble amount_period;
 
@@ -539,10 +541,12 @@ main(int argc, char* argv[])
     amount = AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT;
     amount_period = (amount / (2.0 * M_PI)) * freq_period;
     
-    phase = freq_period - amount_period;
+    phase_period = (AGS_VISUAL_PHASE_SHIFT_TEST_PHASE / (2.0 * M_PI)) * freq_period;
     
     for(i = 0; i < 1920; i++){
-      shift_buffer[i] = ((((int) ceil(i + phase) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
+      gdouble phase_shift;
+
+      shift_buffer[i] = 0.5 * (amount / (2.0 * M_PI)) * ((((int) ceil(i + phase_period) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
     }
   }
   
@@ -551,7 +555,8 @@ main(int argc, char* argv[])
 				      1920,
 				      1920,
 				      8.0,
-				      AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT);
+				      AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT,
+				      AGS_VISUAL_PHASE_SHIFT_TEST_PHASE);
   
   window = (GtkWindow *) gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
