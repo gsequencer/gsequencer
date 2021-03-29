@@ -189,7 +189,7 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
   
   gtk_grid_attach(grid,
 		   (GtkWidget *) export_soundcard->backend,
-		   0, 2,
+		   1, 0,
 		   1, 1);
   
 #ifdef AGS_WITH_WASAPI

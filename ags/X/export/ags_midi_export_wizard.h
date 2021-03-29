@@ -85,7 +85,7 @@ void ags_midi_export_wizard_set_flags(AgsMidiExportWizard *midi_export_wizard,
 void ags_midi_export_wizard_unset_flags(AgsMidiExportWizard *midi_export_wizard,
 					guint flags);
 
-AgsMidiExportWizard* ags_midi_export_wizard_new(GtkWidget *main_window);
+AgsMidiExportWizard* ags_midi_export_wizard_new();
 
 G_END_DECLS
 

@@ -979,9 +979,6 @@ ags_menu_action_midi_import_callback(GtkWidget *menu_item, gpointer data)
   }
 
   window->midi_import_wizard = (GtkWidget *) ags_midi_import_wizard_new();
-  g_object_set(window->midi_import_wizard,
-	       "main-window", window,
-	       NULL);
 
   ags_connectable_connect(AGS_CONNECTABLE(window->midi_import_wizard));
   ags_applicable_reset(AGS_APPLICABLE(window->midi_import_wizard));

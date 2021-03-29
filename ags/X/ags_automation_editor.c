@@ -361,11 +361,12 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   gtk_widget_set_valign((GtkWidget *) automation_editor->audio_scrolled_scale_box,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) automation_editor->audio_scrolled_scale_box,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
+  
   gtk_widget_set_vexpand((GtkWidget *) automation_editor->audio_scrolled_scale_box,
 			 TRUE);
   gtk_widget_set_hexpand((GtkWidget *) automation_editor->audio_scrolled_scale_box,
-			 TRUE);
+			 FALSE);
   
   gtk_grid_attach(grid,
 		   (GtkWidget *) automation_editor->audio_scrolled_scale_box,
@@ -501,11 +502,12 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   gtk_widget_set_valign((GtkWidget *) automation_editor->output_scrolled_scale_box,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) automation_editor->output_scrolled_scale_box,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
+  
   gtk_widget_set_vexpand((GtkWidget *) automation_editor->output_scrolled_scale_box,
 			 TRUE);
   gtk_widget_set_hexpand((GtkWidget *) automation_editor->output_scrolled_scale_box,
-			 TRUE);
+			 FALSE);
 
   gtk_grid_attach(grid,
 		  (GtkWidget *) automation_editor->output_scrolled_scale_box,
@@ -641,11 +643,12 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   gtk_widget_set_valign((GtkWidget *) automation_editor->input_scrolled_scale_box,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) automation_editor->input_scrolled_scale_box,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
+  
   gtk_widget_set_vexpand((GtkWidget *) automation_editor->input_scrolled_scale_box,
 			 TRUE);
   gtk_widget_set_hexpand((GtkWidget *) automation_editor->input_scrolled_scale_box,
-			 TRUE);
+			 FALSE);
 
   gtk_grid_attach(grid,
 		   (GtkWidget *) automation_editor->input_scrolled_scale_box,

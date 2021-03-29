@@ -49,6 +49,7 @@ void ags_midi_import_wizard_reset(AgsApplicable *applicable);
 
 gboolean ags_midi_import_wizard_delete_event(GtkWidget *widget, GdkEventAny *event);
 void ags_midi_import_wizard_show(GtkWidget *widget);
+void ags_midi_import_wizard_show_all(GtkWidget *widget);
 
 /**
  * SECTION:ags_midi_import_wizard
@@ -139,6 +140,7 @@ ags_midi_import_wizard_class_init(AgsMidiImportWizardClass *midi_import_wizard)
   /* GtkWidget */
   widget->delete_event = ags_midi_import_wizard_delete_event;
   widget->show = ags_midi_import_wizard_show;
+  widget->show_all = ags_midi_import_wizard_show_all;
 }
 
 void
@@ -163,12 +165,11 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 {
   midi_import_wizard->flags = AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER;
 
-  /* file chooser */
-  
+  /* file chooser */  
   midi_import_wizard->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
 
-  gtk_widget_set_no_show_all((GtkWidget *) midi_import_wizard->file_chooser,
-			     TRUE);
+//  gtk_widget_set_no_show_all((GtkWidget *) midi_import_wizard->file_chooser,
+//			     TRUE);
   
   gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) midi_import_wizard),
 		     (GtkWidget *) midi_import_wizard->file_chooser,
@@ -181,8 +182,8 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 										NULL,
 										NULL);
 
-  gtk_widget_set_no_show_all((GtkWidget *) midi_import_wizard->track_collection,
-			     TRUE);
+//  gtk_widget_set_no_show_all((GtkWidget *) midi_import_wizard->track_collection,
+//			     TRUE);
   
   gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) midi_import_wizard),
 		     (GtkWidget*) midi_import_wizard->track_collection,
@@ -313,14 +314,30 @@ ags_midi_import_wizard_show(GtkWidget *widget)
 
   GTK_WIDGET_CLASS(ags_midi_import_wizard_parent_class)->show(widget);
   
-  if((AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER & (midi_import_wizard->flags)) != 0){
-    gtk_widget_show(gtk_widget_get_parent(midi_import_wizard->file_chooser));
-    gtk_widget_show_all(midi_import_wizard->file_chooser);
+  if((AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER & (midi_import_wizard->flags)) == 0){
+    gtk_widget_hide(midi_import_wizard->file_chooser);
   }
 
-  if((AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION & (midi_import_wizard->flags)) != 0){
-    gtk_widget_show(gtk_widget_get_parent(midi_import_wizard->track_collection));
-    gtk_widget_show_all(midi_import_wizard->track_collection);
+  if((AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION & (midi_import_wizard->flags)) == 0){
+    gtk_widget_hide(midi_import_wizard->track_collection);
+  }
+}
+
+void
+ags_midi_import_wizard_show_all(GtkWidget *widget)
+{
+  AgsMidiImportWizard *midi_import_wizard;
+
+  midi_import_wizard = AGS_MIDI_IMPORT_WIZARD(widget);
+
+  GTK_WIDGET_CLASS(ags_midi_import_wizard_parent_class)->show_all(widget);
+  
+  if((AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER & (midi_import_wizard->flags)) == 0){
+    gtk_widget_hide(midi_import_wizard->file_chooser);
+  }
+
+  if((AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION & (midi_import_wizard->flags)) == 0){
+    gtk_widget_hide(midi_import_wizard->track_collection);
   }
 }
 

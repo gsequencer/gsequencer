@@ -412,7 +412,30 @@ ags_fx_lfo_audio_signal_real_run_inter(AgsRecall *recall)
       }
     }
   }
+
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+
+  if(source != NULL){
+    g_object_unref(source);
+  }
   
+  if(fx_lfo_channel != NULL){
+    g_object_unref(fx_lfo_channel);
+  }
+  
+  if(fx_lfo_channel_processor != NULL){
+    g_object_unref(fx_lfo_channel_processor);
+  }
+
+  if(fx_lfo_recycling != NULL){
+    g_object_unref(fx_lfo_recycling);
+  }
+  
+  g_list_free_full(start_note,
+		   (GDestroyNotify) g_object_unref);
+
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_lfo_audio_signal_parent_class)->run_inter(recall);
 }
