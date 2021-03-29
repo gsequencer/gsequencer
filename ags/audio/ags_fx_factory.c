@@ -822,10 +822,6 @@ ags_fx_factory_create_playback(AgsAudio *audio,
     g_object_unref(input);
   }
 
-  if(channel != NULL){
-    g_object_unref(channel);
-  }
-
   return(start_recall);
 }
 
@@ -1268,10 +1264,6 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
 
   if(input != NULL){
     g_object_unref(input);
-  }
-
-  if(channel != NULL){
-    g_object_unref(channel);
   }
 
   return(start_recall);
@@ -2165,10 +2157,6 @@ ags_fx_factory_create_peak(AgsAudio *audio,
     g_object_unref(input);
   }
 
-  if(channel != NULL){
-    g_object_unref(channel);
-  }
-
   return(start_recall);
 }
 
@@ -2623,10 +2611,6 @@ ags_fx_factory_create_eq10(AgsAudio *audio,
     g_object_unref(input);
   }
 
-  if(channel != NULL){
-    g_object_unref(channel);
-  }
-
   return(start_recall);
 }
 
@@ -3079,10 +3063,6 @@ ags_fx_factory_create_analyse(AgsAudio *audio,
 
   if(input != NULL){
     g_object_unref(input);
-  }
-
-  if(channel != NULL){
-    g_object_unref(channel);
   }
 
   return(start_recall);
@@ -4433,10 +4413,6 @@ ags_fx_factory_create_envelope(AgsAudio *audio,
     g_object_unref(input);
   }
 
-  if(channel != NULL){
-    g_object_unref(channel);
-  }
-
   return(start_recall);
 }
 
@@ -4860,10 +4836,6 @@ ags_fx_factory_create_pattern(AgsAudio *audio,
 
   if(input != NULL){
     g_object_unref(input);
-  }
-
-  if(channel != NULL){
-    g_object_unref(channel);
   }
 
   return(start_recall);
@@ -5307,10 +5279,6 @@ ags_fx_factory_create_notation(AgsAudio *audio,
 
   if(input != NULL){
     g_object_unref(input);
-  }
-
-  if(channel != NULL){
-    g_object_unref(channel);
   }
 
   return(start_recall);
@@ -5818,10 +5786,6 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
 
   if(input != NULL){
     g_object_unref(input);
-  }
-
-  if(channel != NULL){
-    g_object_unref(channel);
   }
 
   return(start_recall);
@@ -6333,10 +6297,6 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
 
   if(input != NULL){
     g_object_unref(input);
-  }
-
-  if(channel != NULL){
-    g_object_unref(channel);
   }
 
   return(start_recall);
@@ -6952,10 +6912,6 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
 
   if(input != NULL){
     g_object_unref(input);
-  }
-
-  if(channel != NULL){
-    g_object_unref(channel);
   }
   
   return(start_recall);
