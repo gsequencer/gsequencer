@@ -146,12 +146,18 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   GtkBox *synth_generator_vbox;
   GtkBox *base_note_hbox;
   GtkBox *key_count_hbox;
+  GtkBox *aliase_hbox;
   GtkGrid *lfo_grid;
+  GtkBox *volume_hbox;
   GtkFrame *frame;
   GtkLabel *label;
+
+  GtkAdjustment *adjustment;
   
   AgsAudio *audio;
   AgsSFZSynthGenerator *sfz_synth_generator;
+
+  gdouble page, step;
 
   g_signal_connect_after((GObject *) pitch_sampler, "parent_set",
 			 G_CALLBACK(ags_pitch_sampler_parent_set_callback), (gpointer) pitch_sampler);
@@ -393,6 +399,147 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		     0);
   
   /* other controls */
+  /* aliase */
+  frame = (GtkFrame *) gtk_frame_new(i18n("aliase"));
+
+  gtk_widget_set_valign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+  
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) frame,
+		     FALSE, FALSE,
+		     0);
+
+  aliase_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				       0);
+  gtk_container_add((GtkContainer *) frame,
+		    (GtkWidget *) aliase_hbox);
+  
+  pitch_sampler->enable_aliase = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
+  gtk_box_pack_start(aliase_hbox,
+		     (GtkWidget *) pitch_sampler->enable_aliase,
+		     FALSE, FALSE,
+		     0);
+
+  step = 2.0 * M_PI / 100.0;
+  page = 2.0 * M_PI / AGS_DIAL_DEFAULT_PRECISION;
+
+  /* aliase a */
+  pitch_sampler->aliase_a_amount = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(pitch_sampler->aliase_a_amount);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    step);
+  gtk_adjustment_set_page_increment(adjustment,
+				    page);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+  
+  gtk_box_pack_start(aliase_hbox,
+		     (GtkWidget *) pitch_sampler->aliase_a_amount,
+		     FALSE, FALSE,
+		     0);
+
+  pitch_sampler->aliase_a_phase = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(pitch_sampler->aliase_a_phase);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    step);
+  gtk_adjustment_set_page_increment(adjustment,
+				    page);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+  
+  gtk_box_pack_start(aliase_hbox,
+		     (GtkWidget *) pitch_sampler->aliase_a_phase,
+		     FALSE, FALSE,
+		     0);
+
+  /* aliase b */
+  pitch_sampler->aliase_b_amount = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(pitch_sampler->aliase_b_amount);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    step);
+  gtk_adjustment_set_page_increment(adjustment,
+				    page);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+  
+  gtk_box_pack_start(aliase_hbox,
+		     (GtkWidget *) pitch_sampler->aliase_b_amount,
+		     FALSE, FALSE,
+		     0);
+
+  pitch_sampler->aliase_b_phase = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(pitch_sampler->aliase_b_phase);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    step);
+  gtk_adjustment_set_page_increment(adjustment,
+				    page);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+  
+  gtk_box_pack_start(aliase_hbox,
+		     (GtkWidget *) pitch_sampler->aliase_b_phase,
+		     FALSE, FALSE,
+		     0);
+
+  /* volume */
+  frame = (GtkFrame *) gtk_frame_new(i18n("volume"));
+
+  gtk_widget_set_valign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+  
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) frame,
+		     FALSE, FALSE,
+		     0);
+
+  volume_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				       0);
+  gtk_container_add((GtkContainer *) frame,
+		    (GtkWidget *) volume_hbox);
+  
+  pitch_sampler->volume = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+							   0.0,
+							   2.0,
+							   0.025);
+  gtk_box_pack_start(volume_hbox,
+		     (GtkWidget *) pitch_sampler->volume,
+		     FALSE, FALSE,
+		     0);
+
+  gtk_scale_set_digits(pitch_sampler->volume,
+		       3);
+
+  gtk_range_set_increments(GTK_RANGE(pitch_sampler->volume),
+			   0.025, 0.1);
+  gtk_range_set_value(GTK_RANGE(pitch_sampler->volume),
+		      1.0);
+  gtk_range_set_inverted(GTK_RANGE(pitch_sampler->volume),
+			 TRUE);  
   
   /* LFO grid */
   lfo_grid = (GtkGrid *) gtk_grid_new();
@@ -605,6 +752,24 @@ ags_pitch_sampler_connect(AgsConnectable *connectable)
 
   g_signal_connect_after((GObject *) pitch_sampler->lfo_tuning, "value-changed",
 			 G_CALLBACK(ags_pitch_sampler_lfo_tuning_callback), (gpointer) pitch_sampler);
+
+  g_signal_connect((GObject *) pitch_sampler->enable_aliase, "clicked",
+		   G_CALLBACK(ags_pitch_sampler_enable_aliase_callback), (gpointer) pitch_sampler);
+
+  g_signal_connect((GObject *) pitch_sampler->aliase_a_amount, "value-changed",
+		   G_CALLBACK(ags_pitch_sampler_aliase_a_amount_callback), (gpointer) pitch_sampler);
+
+  g_signal_connect((GObject *) pitch_sampler->aliase_a_phase, "value-changed",
+		   G_CALLBACK(ags_pitch_sampler_aliase_a_phase_callback), (gpointer) pitch_sampler);
+
+  g_signal_connect((GObject *) pitch_sampler->aliase_b_amount, "value-changed",
+		   G_CALLBACK(ags_pitch_sampler_aliase_b_amount_callback), (gpointer) pitch_sampler);
+
+  g_signal_connect((GObject *) pitch_sampler->aliase_b_phase, "value-changed",
+		   G_CALLBACK(ags_pitch_sampler_aliase_b_phase_callback), (gpointer) pitch_sampler);
+
+  g_signal_connect((GObject *) pitch_sampler->volume, "value-changed",
+		   G_CALLBACK(ags_pitch_sampler_volume_callback), (gpointer) pitch_sampler);
 }
 
 void
@@ -681,6 +846,44 @@ ags_pitch_sampler_disconnect(AgsConnectable *connectable)
   g_object_disconnect((GObject *) pitch_sampler->lfo_tuning,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_pitch_sampler_lfo_tuning_callback),
+		      (gpointer) pitch_sampler,
+		      NULL);
+
+  /* aliase */
+  g_object_disconnect((GObject *) pitch_sampler->enable_aliase,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_pitch_sampler_enable_aliase_callback),
+		      (gpointer) pitch_sampler,
+		      NULL);
+
+  g_object_disconnect((GObject *) pitch_sampler->aliase_a_amount,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_pitch_sampler_aliase_a_amount_callback),
+		      (gpointer) pitch_sampler,
+		      NULL);
+
+  g_object_disconnect((GObject *) pitch_sampler->aliase_a_phase,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_pitch_sampler_aliase_a_phase_callback),
+		      (gpointer) pitch_sampler,
+		      NULL);
+
+  g_object_disconnect((GObject *) pitch_sampler->aliase_b_amount,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_pitch_sampler_aliase_b_amount_callback),
+		      (gpointer) pitch_sampler,
+		      NULL);
+
+  g_object_disconnect((GObject *) pitch_sampler->aliase_b_phase,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_pitch_sampler_aliase_b_phase_callback),
+		      (gpointer) pitch_sampler,
+		      NULL);
+
+  /* volume */
+  g_object_disconnect((GObject *) pitch_sampler->volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_pitch_sampler_volume_callback),
 		      (gpointer) pitch_sampler,
 		      NULL);
 }
@@ -960,6 +1163,34 @@ ags_pitch_sampler_input_map_recall(AgsPitchSampler *pitch_sampler,
   start_recall = ags_fx_factory_create(audio,
 				       pitch_sampler->lfo_play_container, pitch_sampler->lfo_recall_container,
 				       "ags-fx-lfo",
+				       NULL,
+				       NULL,
+				       audio_channel_start, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-two-pass-aliase */
+  start_recall = ags_fx_factory_create(audio,
+				       pitch_sampler->two_pass_aliase_play_container, pitch_sampler->two_pass_aliase_recall_container,
+				       "ags-fx-two-pass-aliase",
+				       NULL,
+				       NULL,
+				       audio_channel_start, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       pitch_sampler->volume_play_container, pitch_sampler->volume_recall_container,
+				       "ags-fx-volume",
 				       NULL,
 				       NULL,
 				       audio_channel_start, audio_channels,

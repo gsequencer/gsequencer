@@ -223,15 +223,15 @@ ags_preferences_init(AgsPreferences *preferences)
   }
   
   gtk_dialog_add_action_widget(GTK_DIALOG(preferences),
-			       gtk_button_new_with_label(i18n("_Apply")),
+			       gtk_button_new_with_mnemonic(i18n("_Apply")),
 			       GTK_RESPONSE_APPLY);
 
   gtk_dialog_add_action_widget(GTK_DIALOG(preferences),
-			       gtk_button_new_with_label(i18n("_Cancel")),
+			       gtk_button_new_with_mnemonic(i18n("_Cancel")),
 			       GTK_RESPONSE_CANCEL);
 
   gtk_dialog_add_action_widget(GTK_DIALOG(preferences),
-			       gtk_button_new_with_label(i18n("_OK")),
+			       gtk_button_new_with_mnemonic(i18n("_OK")),
 			       GTK_RESPONSE_OK);
 }
 

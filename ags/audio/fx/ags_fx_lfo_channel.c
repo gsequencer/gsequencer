@@ -29,13 +29,13 @@ void ags_fx_lfo_channel_class_init(AgsFxLfoChannelClass *fx_lfo_channel);
 void ags_fx_lfo_channel_mutable_interface_init(AgsMutableInterface *mutable);
 void ags_fx_lfo_channel_init(AgsFxLfoChannel *fx_lfo_channel);
 void ags_fx_lfo_channel_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec);
 void ags_fx_lfo_channel_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec);
 void ags_fx_lfo_channel_dispose(GObject *gobject);
 void ags_fx_lfo_channel_finalize(GObject *gobject);
 
@@ -111,9 +111,9 @@ ags_fx_lfo_channel_get_type()
     };
 
     ags_type_fx_lfo_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-							"AgsFxLfoChannel",
-							&ags_fx_lfo_channel_info,
-							0);
+						     "AgsFxLfoChannel",
+						     &ags_fx_lfo_channel_info,
+						     0);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_fx_lfo_channel);
   }
@@ -140,6 +140,101 @@ ags_fx_lfo_channel_class_init(AgsFxLfoChannelClass *fx_lfo_channel)
   gobject->finalize = ags_fx_lfo_channel_finalize;
 
   /* properties */
+  /**
+   * AgsFxLfoChannel:enabled:
+   *
+   * The enable control of LFO.
+   * 
+   * Since: 3.8.0
+   */
+  param_spec = g_param_spec_object("enabled",
+				   i18n_pspec("LFO enabled"),
+				   i18n_pspec("The enabled port to control LFO"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ENABLED,
+				  param_spec);
+
+  /**
+   * AgsFxLfoChannel:lfo-wave:
+   *
+   * The wave of LFO.
+   * 
+   * Since: 3.8.0
+   */
+  param_spec = g_param_spec_object("lfo-wave",
+				   i18n_pspec("LFO wave"),
+				   i18n_pspec("The wave of the LFO"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LFO_WAVE,
+				  param_spec);
+
+  /**
+   * AgsFxLfoChannel:lfo-freq:
+   *
+   * The freq of LFO.
+   * 
+   * Since: 3.8.0
+   */
+  param_spec = g_param_spec_object("lfo-freq",
+				   i18n_pspec("LFO freq"),
+				   i18n_pspec("The freq of the LFO"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LFO_FREQ,
+				  param_spec);
+
+  /**
+   * AgsFxLfoChannel:lfo-phase:
+   *
+   * The phase of LFO.
+   * 
+   * Since: 3.8.0
+   */
+  param_spec = g_param_spec_object("lfo-phase",
+				   i18n_pspec("LFO phase"),
+				   i18n_pspec("The phase of the LFO"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LFO_PHASE,
+				  param_spec);
+
+  /**
+   * AgsFxLfoChannel:lfo-depth:
+   *
+   * The depth of LFO.
+   * 
+   * Since: 3.8.0
+   */
+  param_spec = g_param_spec_object("lfo-depth",
+				   i18n_pspec("LFO depth"),
+				   i18n_pspec("The depth of the LFO"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LFO_DEPTH,
+				  param_spec);
+
+  /**
+   * AgsFxLfoChannel:lfo-tuning:
+   *
+   * The tuning of LFO.
+   * 
+   * Since: 3.8.0
+   */
+  param_spec = g_param_spec_object("lfo-tuning",
+				   i18n_pspec("LFO tuning"),
+				   i18n_pspec("The tuning of the LFO"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LFO_TUNING,
+				  param_spec);
 }
 
 void
@@ -152,14 +247,14 @@ ags_fx_lfo_channel_init(AgsFxLfoChannel *fx_lfo_channel)
 
   /* enabled */
   fx_lfo_channel->enabled = g_object_new(AGS_TYPE_PORT,
-				      "plugin-name", "ags-lfo",
-				      "specifier", "./enabled[0]",
-				      "control-port", "1/5",
-				      "port-value-is-pointer", FALSE,
-				      "port-value-type", G_TYPE_FLOAT,
-				      "port-value-size", sizeof(gfloat),
-				      "port-value-length", 1,
-				      NULL);
+					 "plugin-name", "ags-lfo",
+					 "specifier", "./enabled[0]",
+					 "control-port", "1/6",
+					 "port-value-is-pointer", FALSE,
+					 "port-value-type", G_TYPE_FLOAT,
+					 "port-value-size", sizeof(gfloat),
+					 "port-value-length", 1,
+					 NULL);
   
   fx_lfo_channel->enabled->port_value.ags_port_float = 0.0;
 
@@ -172,14 +267,14 @@ ags_fx_lfo_channel_init(AgsFxLfoChannel *fx_lfo_channel)
 
   /* lfo wave */
   fx_lfo_channel->lfo_wave = g_object_new(AGS_TYPE_PORT,
-				       "plugin-name", "ags-lfo",
-				       "specifier", "./lfo-wave[0]",
-				       "control-port", "4/5",
-				       "port-value-is-pointer", FALSE,
-				       "port-value-type", G_TYPE_FLOAT,
-				       "port-value-size", sizeof(gfloat),
-				       "port-value-length", 1,
-				       NULL);
+					  "plugin-name", "ags-lfo",
+					  "specifier", "./lfo-wave[0]",
+					  "control-port", "2/6",
+					  "port-value-is-pointer", FALSE,
+					  "port-value-type", G_TYPE_FLOAT,
+					  "port-value-size", sizeof(gfloat),
+					  "port-value-length", 1,
+					  NULL);
   
   fx_lfo_channel->lfo_wave->port_value.ags_port_float = 0.0;
 
@@ -192,14 +287,14 @@ ags_fx_lfo_channel_init(AgsFxLfoChannel *fx_lfo_channel)
 
   /* lfo-freq */
   fx_lfo_channel->lfo_freq = g_object_new(AGS_TYPE_PORT,
-				       "plugin-name", "ags-lfo",
-				       "specifier", "./lfo-freq[0]",
-				       "control-port", "2/5",
-				       "port-value-is-pointer", FALSE,
-				       "port-value-type", G_TYPE_FLOAT,
-				       "port-value-size", sizeof(gfloat),
-				       "port-value-length", 1,
-				       NULL);
+					  "plugin-name", "ags-lfo",
+					  "specifier", "./lfo-freq[0]",
+					  "control-port", "3/6",
+					  "port-value-is-pointer", FALSE,
+					  "port-value-type", G_TYPE_FLOAT,
+					  "port-value-size", sizeof(gfloat),
+					  "port-value-length", 1,
+					  NULL);
   
   fx_lfo_channel->lfo_freq->port_value.ags_port_float = 0.0;
 
@@ -212,14 +307,14 @@ ags_fx_lfo_channel_init(AgsFxLfoChannel *fx_lfo_channel)
 
   /* lfo phase */
   fx_lfo_channel->lfo_phase = g_object_new(AGS_TYPE_PORT,
-					"plugin-name", "ags-lfo",
-					"specifier", "./lfo-phase[0]",
-					"control-port", "3/5",
-					"port-value-is-pointer", FALSE,
-					"port-value-type", G_TYPE_FLOAT,
-					"port-value-size", sizeof(gfloat),
-					"port-value-length", 1,
-					NULL);
+					   "plugin-name", "ags-lfo",
+					   "specifier", "./lfo-phase[0]",
+					   "control-port", "4/6",
+					   "port-value-is-pointer", FALSE,
+					   "port-value-type", G_TYPE_FLOAT,
+					   "port-value-size", sizeof(gfloat),
+					   "port-value-length", 1,
+					   NULL);
 
   fx_lfo_channel->lfo_phase->port_value.ags_port_float = 0.0;
 
@@ -232,14 +327,14 @@ ags_fx_lfo_channel_init(AgsFxLfoChannel *fx_lfo_channel)
 
   /* lfo depth */
   fx_lfo_channel->lfo_depth = g_object_new(AGS_TYPE_PORT,
-					"plugin-name", "ags-lfo",
-					"specifier", "./lfo-depth[0]",
-					"control-port", "4/5",
-					"port-value-is-pointer", FALSE,
-					"port-value-type", G_TYPE_FLOAT,
-					"port-value-size", sizeof(gfloat),
-					"port-value-length", 1,
-					NULL);
+					   "plugin-name", "ags-lfo",
+					   "specifier", "./lfo-depth[0]",
+					   "control-port", "5/6",
+					   "port-value-is-pointer", FALSE,
+					   "port-value-type", G_TYPE_FLOAT,
+					   "port-value-size", sizeof(gfloat),
+					   "port-value-length", 1,
+					   NULL);
   
   fx_lfo_channel->lfo_depth->port_value.ags_port_float = 0.0;
 
@@ -252,14 +347,14 @@ ags_fx_lfo_channel_init(AgsFxLfoChannel *fx_lfo_channel)
 
   /* lfo tuning */
   fx_lfo_channel->lfo_tuning = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name", "ags-lfo",
-					 "specifier", "./lfo-tuning[0]",
-					 "control-port", "5/5",
-					 "port-value-is-pointer", FALSE,
-					 "port-value-type", G_TYPE_FLOAT,
-					 "port-value-size", sizeof(gfloat),
-					 "port-value-length", 1,
-					 NULL);
+					    "plugin-name", "ags-lfo",
+					    "specifier", "./lfo-tuning[0]",
+					    "control-port", "6/6",
+					    "port-value-is-pointer", FALSE,
+					    "port-value-type", G_TYPE_FLOAT,
+					    "port-value-size", sizeof(gfloat),
+					    "port-value-length", 1,
+					    NULL);
 
   fx_lfo_channel->lfo_tuning->port_value.ags_port_float = 0.0;
 
@@ -273,9 +368,9 @@ ags_fx_lfo_channel_init(AgsFxLfoChannel *fx_lfo_channel)
 
 void
 ags_fx_lfo_channel_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec)
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec)
 {
   AgsFxLfoChannel *fx_lfo_channel;
 
@@ -457,9 +552,9 @@ ags_fx_lfo_channel_set_property(GObject *gobject,
 
 void
 ags_fx_lfo_channel_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec)
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec)
 {
   AgsFxLfoChannel *fx_lfo_channel;
 
@@ -866,8 +961,8 @@ ags_fx_lfo_channel_new(AgsChannel *channel)
   AgsFxLfoChannel *fx_lfo_channel;
 
   fx_lfo_channel = (AgsFxLfoChannel *) g_object_new(AGS_TYPE_FX_LFO_CHANNEL,
-							  "source", channel,
-							  NULL);
+						    "source", channel,
+						    NULL);
 
   return(fx_lfo_channel);
 }
