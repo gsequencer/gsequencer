@@ -65,7 +65,6 @@ struct _AgsFxTwoPassAliaseChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
-
 struct _AgsFxTwoPassAliaseChannelInputData
 {
   GRecMutex strct_mutex;

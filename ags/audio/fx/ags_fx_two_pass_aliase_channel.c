@@ -597,6 +597,41 @@ ags_fx_two_pass_aliase_channel_dispose(GObject *gobject)
   
   fx_two_pass_aliase_channel = AGS_FX_TWO_PASS_ALIASE_CHANNEL(gobject);
 
+  /* enabled */
+  if(fx_two_pass_aliase_channel->enabled != NULL){
+    g_object_unref(G_OBJECT(fx_two_pass_aliase_channel->enabled));
+
+    fx_two_pass_aliase_channel->enabled = NULL;
+  }
+
+  /* a amount */
+  if(fx_two_pass_aliase_channel->a_amount != NULL){
+    g_object_unref(G_OBJECT(fx_two_pass_aliase_channel->a_amount));
+
+    fx_two_pass_aliase_channel->a_amount = NULL;
+  }
+
+  /* a phase */
+  if(fx_two_pass_aliase_channel->a_phase != NULL){
+    g_object_unref(G_OBJECT(fx_two_pass_aliase_channel->a_phase));
+
+    fx_two_pass_aliase_channel->a_phase = NULL;
+  }
+
+  /* b amount */
+  if(fx_two_pass_aliase_channel->b_amount != NULL){
+    g_object_unref(G_OBJECT(fx_two_pass_aliase_channel->b_amount));
+
+    fx_two_pass_aliase_channel->b_amount = NULL;
+  }
+
+  /* b phase */
+  if(fx_two_pass_aliase_channel->b_phase != NULL){
+    g_object_unref(G_OBJECT(fx_two_pass_aliase_channel->b_phase));
+
+    fx_two_pass_aliase_channel->b_phase = NULL;
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_fx_two_pass_aliase_channel_parent_class)->dispose(gobject);
 }
@@ -606,7 +641,39 @@ ags_fx_two_pass_aliase_channel_finalize(GObject *gobject)
 {
   AgsFxTwoPassAliaseChannel *fx_two_pass_aliase_channel;
 
+  guint i;
+
   fx_two_pass_aliase_channel = AGS_FX_TWO_PASS_ALIASE_CHANNEL(gobject);
+
+  /* enabled */
+  if(fx_two_pass_aliase_channel->enabled != NULL){
+    g_object_unref(G_OBJECT(fx_two_pass_aliase_channel->enabled));
+  }
+
+  /* a amount */
+  if(fx_two_pass_aliase_channel->a_amount != NULL){
+    g_object_unref(G_OBJECT(fx_two_pass_aliase_channel->a_amount));
+  }
+
+  /* a phase */
+  if(fx_two_pass_aliase_channel->a_phase != NULL){
+    g_object_unref(G_OBJECT(fx_two_pass_aliase_channel->a_phase));
+  }
+
+  /* b amount */
+  if(fx_two_pass_aliase_channel->b_amount != NULL){
+    g_object_unref(G_OBJECT(fx_two_pass_aliase_channel->b_amount));
+  }
+
+  /* b phase */
+  if(fx_two_pass_aliase_channel->b_phase != NULL){
+    g_object_unref(G_OBJECT(fx_two_pass_aliase_channel->b_phase));
+  }
+  
+  /* input data */
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    ags_fx_two_pass_aliase_channel_input_data_free(fx_two_pass_aliase_channel->input_data[i]);
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_fx_two_pass_aliase_channel_parent_class)->finalize(gobject);
@@ -903,6 +970,11 @@ ags_fx_two_pass_aliase_channel_input_data_alloc()
   input_data->a_buffer = NULL;
   input_data->b_buffer = NULL;
 
+  input_data->a_mix = NULL;
+  input_data->b_mix = NULL;
+
+  input_data->final_mix = NULL;
+
   return(input_data);
 }
 
@@ -925,6 +997,11 @@ ags_fx_two_pass_aliase_channel_input_data_free(AgsFxTwoPassAliaseChannelInputDat
 
   ags_stream_free(input_data->a_buffer);
   ags_stream_free(input_data->b_buffer);
+
+  ags_stream_free(input_data->a_mix);
+  ags_stream_free(input_data->b_mix);
+
+  ags_stream_free(input_data->final_mix);
   
   g_free(input_data);
 }

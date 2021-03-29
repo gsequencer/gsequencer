@@ -636,31 +636,43 @@ ags_fx_lfo_channel_dispose(GObject *gobject)
   /* enabled */
   if(fx_lfo_channel->enabled != NULL){
     g_object_unref(G_OBJECT(fx_lfo_channel->enabled));
+
+    fx_lfo_channel->enabled = NULL;
   }
 
   /* lfo wave */
   if(fx_lfo_channel->lfo_wave != NULL){
     g_object_unref(G_OBJECT(fx_lfo_channel->lfo_wave));
+
+    fx_lfo_channel->lfo_wave = NULL;
   }
 
   /* lfo freq */
   if(fx_lfo_channel->lfo_freq != NULL){
     g_object_unref(G_OBJECT(fx_lfo_channel->lfo_freq));
+
+    fx_lfo_channel->lfo_freq = NULL;
   }
 
   /* lfo phase */
   if(fx_lfo_channel->lfo_phase != NULL){
     g_object_unref(G_OBJECT(fx_lfo_channel->lfo_phase));
+
+    fx_lfo_channel->lfo_phase = NULL;
   }
 
   /* lfo depth */
   if(fx_lfo_channel->lfo_depth != NULL){
     g_object_unref(G_OBJECT(fx_lfo_channel->lfo_depth));
+
+    fx_lfo_channel->lfo_depth = NULL;
   }
 
   /* lfo tuning */
   if(fx_lfo_channel->lfo_tuning != NULL){
     g_object_unref(G_OBJECT(fx_lfo_channel->lfo_tuning));
+
+    fx_lfo_channel->lfo_tuning = NULL;
   }
   
   /* call parent */
@@ -737,7 +749,7 @@ ags_fx_lfo_channel_get_enabled_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -781,7 +793,7 @@ ags_fx_lfo_channel_get_lfo_wave_plugin_port()
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      (gdouble) AGS_SYNTH_OSCILLATOR_LAST - 1.0);
+		      (gfloat) AGS_SYNTH_OSCILLATOR_LAST - 1.0);
   }
   
   g_mutex_unlock(&mutex);
@@ -894,11 +906,11 @@ ags_fx_lfo_channel_get_lfo_depth_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      1.0);
     g_value_set_float(plugin_port->lower_value,
-		      -1200.0);
+		      0.0);
     g_value_set_float(plugin_port->upper_value,
-		      1200.0);
+		      1.0);
   }
   
   g_mutex_unlock(&mutex);

@@ -21,6 +21,7 @@
 
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_synth_enums.h>
 
 #include <ags/audio/fx/ags_fx_lfo_audio.h>
 #include <ags/audio/fx/ags_fx_lfo_channel.h>
@@ -125,7 +126,7 @@ void
 ags_fx_lfo_audio_signal_finalize(GObject *gobject)
 {
   AgsFxLfoAudioSignal *fx_lfo_audio_signal;
-  
+
   fx_lfo_audio_signal = AGS_FX_LFO_AUDIO_SIGNAL(gobject);
 
   /* call parent */
@@ -135,7 +136,282 @@ ags_fx_lfo_audio_signal_finalize(GObject *gobject)
 void
 ags_fx_lfo_audio_signal_real_run_inter(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  AgsFxLfoChannel *fx_lfo_channel;
+  AgsFxLfoChannelProcessor *fx_lfo_channel_processor;
+  AgsFxLfoRecycling *fx_lfo_recycling;
+  AgsAudioSignal *source;
+  AgsPort *port;
+  
+  GObject *output_soundcard;
+
+  GList *start_note, *note;
+
+  guint buffer_size;
+  guint samplerate;
+  guint format;
+  gboolean enabled;
+  guint lfo_wave;
+  gdouble lfo_freq;
+  gdouble lfo_phase;
+  gdouble lfo_depth;
+  gdouble lfo_tuning;
+  gdouble delay;
+  guint note_offset, delay_counter;
+  guint current_frame;
+  
+  GRecMutex *stream_mutex;
+
+  output_soundcard = NULL;
+
+  fx_lfo_channel = NULL;
+
+  fx_lfo_channel_processor = NULL;
+
+  fx_lfo_recycling = NULL;
+
+  start_note = NULL;
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+
+  stream_mutex = NULL;
+
+  g_object_get(recall,
+	       "parent", &fx_lfo_recycling,
+	       "source", &source,
+	       NULL);
+
+  g_object_get(fx_lfo_recycling,
+	       "parent", &fx_lfo_channel_processor,
+	       NULL);
+
+  g_object_get(fx_lfo_channel_processor,
+	       "recall-channel", &fx_lfo_channel,
+	       NULL);
+
+  g_object_get(source,
+	       "output-soundcard", &output_soundcard,
+	       "note", &start_note,
+	       "buffer-size", &buffer_size,
+	       "samplerate", &samplerate,
+	       "format", &format,
+	       NULL);
+
+  enabled = FALSE;
+
+  lfo_wave = 0;
+  lfo_freq = 6.0;
+  lfo_phase = 0.0;
+  lfo_depth = 1.0;
+  lfo_tuning = 0.0;
+  
+  current_frame = 0;
+  
+  port = NULL;
+  g_object_get(fx_lfo_channel,
+	       "enabled", &port,
+	       NULL);
+
+  if(port != NULL){
+    GValue value = G_VALUE_INIT;
+
+    g_value_init(&value,
+		 G_TYPE_FLOAT);
+    
+    ags_port_safe_read(port,
+		       &value);
+
+    enabled = (g_value_get_float(&value) != 0.0) ? TRUE: FALSE;
+
+    g_object_unref(port);
+  }
+
+  port = NULL;
+  g_object_get(fx_lfo_channel,
+	       "lfo-wave", &port,
+	       NULL);
+
+  if(port != NULL){
+    GValue value = G_VALUE_INIT;
+
+    g_value_init(&value,
+		 G_TYPE_FLOAT);
+    
+    ags_port_safe_read(port,
+		       &value);
+
+    lfo_wave = (guint) g_value_get_float(&value);
+
+    g_object_unref(port);
+  }
+
+  port = NULL;
+  g_object_get(fx_lfo_channel,
+	       "lfo-freq", &port,
+	       NULL);
+
+  if(port != NULL){
+    GValue value = G_VALUE_INIT;
+
+    g_value_init(&value,
+		 G_TYPE_FLOAT);
+    
+    ags_port_safe_read(port,
+		       &value);
+
+    lfo_freq = g_value_get_float(&value);
+
+    g_object_unref(port);
+  }
+
+  port = NULL;
+  g_object_get(fx_lfo_channel,
+	       "lfo-phase", &port,
+	       NULL);
+
+  if(port != NULL){
+    GValue value = G_VALUE_INIT;
+
+    g_value_init(&value,
+		 G_TYPE_FLOAT);
+    
+    ags_port_safe_read(port,
+		       &value);
+
+    lfo_phase = g_value_get_float(&value);
+
+    g_object_unref(port);
+  }
+
+  port = NULL;
+  g_object_get(fx_lfo_channel,
+	       "lfo-depth", &port,
+	       NULL);
+
+  if(port != NULL){
+    GValue value = G_VALUE_INIT;
+
+    g_value_init(&value,
+		 G_TYPE_FLOAT);
+    
+    ags_port_safe_read(port,
+		       &value);
+
+    lfo_depth = g_value_get_float(&value);
+
+    g_object_unref(port);
+  }
+
+  port = NULL;
+  g_object_get(fx_lfo_channel,
+	       "lfo-tuning", &port,
+	       NULL);
+
+  if(port != NULL){
+    GValue value = G_VALUE_INIT;
+
+    g_value_init(&value,
+		 G_TYPE_FLOAT);
+    
+    ags_port_safe_read(port,
+		       &value);
+
+    lfo_tuning = g_value_get_float(&value);
+
+    g_object_unref(port);
+  }
+
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+  
+  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+  
+  if(enabled &&
+     source != NULL &&
+     source->stream_current != NULL){
+    stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
+
+    if(start_note != NULL){
+      note = start_note;
+    
+      while(note != NULL){
+	guint x0, x1;
+
+	g_object_get(note->data,
+		     "x0", &x0,
+		     "x1", &x1,
+		     NULL);
+
+	if(note_offset >= x0){
+	  current_frame = (guint) floor(((gdouble) (note_offset - x0) * delay + delay_counter) * buffer_size);
+	}else{
+	  current_frame = 0;
+	}
+	
+	g_rec_mutex_lock(stream_mutex);
+
+	switch(lfo_wave){
+	case AGS_SYNTH_OSCILLATOR_SIN:
+	{
+	  ags_lfo_synth_util_sin(source->stream_current->data,
+				 lfo_freq, lfo_phase,
+				 lfo_depth,
+				 lfo_tuning,
+				 samplerate, ags_audio_buffer_util_format_from_soundcard(format),
+				 current_frame, buffer_size);
+	}
+	break;
+	case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+	{
+	  ags_lfo_synth_util_sawtooth(source->stream_current->data,
+				      lfo_freq, lfo_phase,
+				      lfo_depth,
+				      lfo_tuning,
+				      samplerate, ags_audio_buffer_util_format_from_soundcard(format),
+				      current_frame, buffer_size);
+	}
+	break;
+	case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+	{
+	  ags_lfo_synth_util_triangle(source->stream_current->data,
+				      lfo_freq, lfo_phase,
+				      lfo_depth,
+				      lfo_tuning,
+				      samplerate, ags_audio_buffer_util_format_from_soundcard(format),
+				      current_frame, buffer_size);
+	}
+	break;
+	case AGS_SYNTH_OSCILLATOR_SQUARE:
+	{
+	  ags_lfo_synth_util_square(source->stream_current->data,
+				    lfo_freq, lfo_phase,
+				    lfo_depth,
+				    lfo_tuning,
+				    samplerate, ags_audio_buffer_util_format_from_soundcard(format),
+				    current_frame, buffer_size);
+	}
+	break;
+	case AGS_SYNTH_OSCILLATOR_IMPULSE:
+	{
+	  ags_lfo_synth_util_impulse(source->stream_current->data,
+				     lfo_freq, lfo_phase,
+				     lfo_depth,
+				     lfo_tuning,
+				     samplerate, ags_audio_buffer_util_format_from_soundcard(format),
+				     current_frame, buffer_size);
+	}
+	break;    
+	default:
+	  g_warning("invalid LFO wave");
+	}
+    
+	g_rec_mutex_unlock(stream_mutex);
+	
+	note = note->next;
+      }
+    }
+  }
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_lfo_audio_signal_parent_class)->run_inter(recall);
@@ -151,10 +427,10 @@ ags_fx_lfo_audio_signal_real_run_inter(AgsRecall *recall)
  *
  * Since: 3.8.0
  */
-AgsFxLfoAudioSignal*
-ags_fx_lfo_audio_signal_new(AgsAudioSignal *audio_signal)
-{
-  AgsFxLfoAudioSignal *fx_lfo_audio_signal;
+    AgsFxLfoAudioSignal*
+      ags_fx_lfo_audio_signal_new(AgsAudioSignal *audio_signal)
+    {
+      AgsFxLfoAudioSignal *fx_lfo_audio_signal;
 
   fx_lfo_audio_signal = (AgsFxLfoAudioSignal *) g_object_new(AGS_TYPE_FX_LFO_AUDIO_SIGNAL,
 							     "source", audio_signal,
