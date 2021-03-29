@@ -228,7 +228,7 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
 
   enabled = FALSE;
   
-  base_freq = exp2((midi_note - 69) / 12.0) * 440.0;
+  base_freq = exp2(((double) midi_note - 69.0) / 12.0) * 440.0;
   
   a_amount = 0.0;
   a_phase = 0.0;
@@ -341,6 +341,10 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
     stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
 
     g_rec_mutex_lock(fx_two_pass_aliase_channel_mutex);
+
+    ags_audio_buffer_util_clear_buffer(fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer, 1,
+				       buffer_size, AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
     g_rec_mutex_lock(stream_mutex);
 
     ags_audio_buffer_util_copy_buffer_to_buffer(fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer, 1, 0,
@@ -364,7 +368,7 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
 					base_freq,
 					b_amount,
 					b_phase);
-    
+
     ags_frequency_aliase_util_compute_double(fx_two_pass_aliase_channel->input_data[sound_scope]->a_mix,
 					     fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer,
 					     fx_two_pass_aliase_channel->input_data[sound_scope]->a_buffer,

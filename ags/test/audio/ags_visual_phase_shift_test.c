@@ -51,7 +51,7 @@ gboolean ags_visual_phase_shift_phase_shifted_wave_draw(GtkWidget *widget,
 #define AGS_VISUAL_PHASE_SHIFT_TEST_BASE_FREQ (440.0)
 #define AGS_VISUAL_PHASE_SHIFT_TEST_VOLUME (1.0)
 
-#define AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT (0.5 * M_PI)
+#define AGS_VISUAL_PHASE_SHIFT_TEST_AMOUNT (M_PI)
 #define AGS_VISUAL_PHASE_SHIFT_TEST_PHASE (0.0)
 
 #define AGS_VISUAL_PHASE_SHIFT_TEST_CONFIG "[generic]\n"	\

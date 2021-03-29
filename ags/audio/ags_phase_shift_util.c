@@ -122,7 +122,7 @@ ags_phase_shift_util_compute_s16(gint16 *destination,
 
   for(i = 0; i < buffer_length; i++){
     phase_shift = ((amount / (2.0 * M_PI)) * (G_MAXINT16 / 2.0)) * ((((int) ceil(i + phase_period) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
-        
+      
     destination[i] = 0.5 * (phase_shift + source[i]);
   }
 }
@@ -343,6 +343,7 @@ ags_phase_shift_util_compute_double(gdouble *destination,
 				    gdouble amount,
 				    gdouble phase)
 {
+  gdouble y_translate;
   gdouble freq_period, amount_period;
   gdouble phase_period;
   gdouble phase_shift;
@@ -354,15 +355,17 @@ ags_phase_shift_util_compute_double(gdouble *destination,
     return;
   }
 
+  y_translate = -0.75;
+  
   freq_period = samplerate / frequency;
 
   amount_period = (amount / (2.0 * M_PI)) * freq_period;
 
   phase_period = (phase / (2.0 * M_PI)) * freq_period;
   
-  for(i = 0; i < buffer_length; i++){
+  for(i = 0; i < buffer_length - (guint) floor(amount_period); i++){
     phase_shift = (amount / (2.0 * M_PI)) * ((((int) ceil(i + phase_period) % (int) ceil(freq_period)) * 2.0 * frequency / samplerate) - 1.0);
-      
+    
     destination[i] = 0.5 * (phase_shift + source[i]);
   }
 }
