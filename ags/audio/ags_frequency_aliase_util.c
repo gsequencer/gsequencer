@@ -49,6 +49,7 @@ ags_frequency_aliase_util_compute_s8(gint8 *destination,
 				     guint buffer_length)
 {
   guint i;
+  gboolean is_signed;
   
   if(destination == NULL ||
      source == NULL ||
@@ -58,7 +59,18 @@ ags_frequency_aliase_util_compute_s8(gint8 *destination,
   }
 
   for(i = 0; i < buffer_length; i++){
-    destination[i] = sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
+    is_signed = FALSE;
+
+    if((source[i] < 0 &&
+	phase_shifted_source[i] < 0) ||
+       (source[i] < 0 &&
+	-1 * source[i] > phase_shifted_source[i]) ||
+       (phase_shifted_source[i] < 0 &&
+	-1 * phase_shifted_source[i] > source[i])){
+      is_signed = TRUE;
+    }
+    
+    destination[i] = (is_signed ? -1: 1) * (gint8) sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
   }
 }
 
@@ -80,6 +92,7 @@ ags_frequency_aliase_util_compute_s16(gint16 *destination,
 				      guint buffer_length)
 {
   guint i;
+  gboolean is_signed;
   
   if(destination == NULL ||
      source == NULL ||
@@ -89,7 +102,18 @@ ags_frequency_aliase_util_compute_s16(gint16 *destination,
   }
 
   for(i = 0; i < buffer_length; i++){
-    destination[i] = sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
+    is_signed = FALSE;
+
+    if((source[i] < 0 &&
+	phase_shifted_source[i] < 0) ||
+       (source[i] < 0 &&
+	-1 * source[i] > phase_shifted_source[i]) ||
+       (phase_shifted_source[i] < 0 &&
+	-1 * phase_shifted_source[i] > source[i])){
+      is_signed = TRUE;
+    }
+    
+    destination[i] = (is_signed ? -1: 1) * (gint16) sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
   }
 }
 
@@ -111,6 +135,7 @@ ags_frequency_aliase_util_compute_s24(gint32 *destination,
 				      guint buffer_length)
 {
   guint i;
+  gboolean is_signed;
   
   if(destination == NULL ||
      source == NULL ||
@@ -120,7 +145,18 @@ ags_frequency_aliase_util_compute_s24(gint32 *destination,
   }
 
   for(i = 0; i < buffer_length; i++){
-    destination[i] = sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
+    is_signed = FALSE;
+
+    if((source[i] < 0 &&
+	phase_shifted_source[i] < 0) ||
+       (source[i] < 0 &&
+	-1 * source[i] > phase_shifted_source[i]) ||
+       (phase_shifted_source[i] < 0 &&
+	-1 * phase_shifted_source[i] > source[i])){
+      is_signed = TRUE;
+    }
+    
+    destination[i] = (is_signed ? -1: 1) * (gint32) sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
   }
 }
 
@@ -142,6 +178,7 @@ ags_frequency_aliase_util_compute_s32(gint32 *destination,
 				      guint buffer_length)
 {
   guint i;
+  gboolean is_signed;
   
   if(destination == NULL ||
      source == NULL ||
@@ -151,7 +188,18 @@ ags_frequency_aliase_util_compute_s32(gint32 *destination,
   }
 
   for(i = 0; i < buffer_length; i++){
-    destination[i] = sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
+    is_signed = FALSE;
+
+    if((source[i] < 0 &&
+	phase_shifted_source[i] < 0) ||
+       (source[i] < 0 &&
+	-1 * source[i] > phase_shifted_source[i]) ||
+       (phase_shifted_source[i] < 0 &&
+	-1 * phase_shifted_source[i] > source[i])){
+      is_signed = TRUE;
+    }
+    
+    destination[i] = (is_signed ? -1: 1) * (gint32) sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
   }
 }
 
@@ -173,6 +221,7 @@ ags_frequency_aliase_util_compute_s64(gint64 *destination,
 				      guint buffer_length)
 {
   guint i;
+  gboolean is_signed;
   
   if(destination == NULL ||
      source == NULL ||
@@ -182,7 +231,18 @@ ags_frequency_aliase_util_compute_s64(gint64 *destination,
   }
 
   for(i = 0; i < buffer_length; i++){
-    destination[i] = sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
+    is_signed = FALSE;
+
+    if((source[i] < 0 &&
+	phase_shifted_source[i] < 0) ||
+       (source[i] < 0 &&
+	-1 * source[i] > phase_shifted_source[i]) ||
+       (phase_shifted_source[i] < 0 &&
+	-1 * phase_shifted_source[i] > source[i])){
+      is_signed = TRUE;
+    }
+    
+    destination[i] = (is_signed ? -1: 1) * (gint64) sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
   }
 }
 
@@ -204,6 +264,7 @@ ags_frequency_aliase_util_compute_float(gfloat *destination,
 					guint buffer_length)
 {
   guint i;
+  gboolean is_signed;
   
   if(destination == NULL ||
      source == NULL ||
@@ -213,7 +274,18 @@ ags_frequency_aliase_util_compute_float(gfloat *destination,
   }
 
   for(i = 0; i < buffer_length; i++){
-    destination[i] = sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
+    is_signed = FALSE;
+
+    if((source[i] < 0.0 &&
+	phase_shifted_source[i] < 0.0) ||
+       (source[i] < 0.0 &&
+	-1.0 * source[i] > phase_shifted_source[i]) ||
+       (phase_shifted_source[i] < 0.0 &&
+	-1.0 * phase_shifted_source[i] > source[i])){
+      is_signed = TRUE;
+    }
+    
+    destination[i] = (is_signed ? -1.0: 1.0) * (gfloat) sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
   }
 }
 
@@ -235,6 +307,7 @@ ags_frequency_aliase_util_compute_double(gdouble *destination,
 					 guint buffer_length)
 {
   guint i;
+  gboolean is_signed;
   
   if(destination == NULL ||
      source == NULL ||
@@ -244,7 +317,18 @@ ags_frequency_aliase_util_compute_double(gdouble *destination,
   }
 
   for(i = 0; i < buffer_length; i++){
-    destination[i] = sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
+    is_signed = FALSE;
+
+    if((source[i] < 0.0 &&
+	phase_shifted_source[i] < 0.0) ||
+       (source[i] < 0.0 &&
+	-1.0 * source[i] > phase_shifted_source[i]) ||
+       (phase_shifted_source[i] < 0.0 &&
+	-1.0 * phase_shifted_source[i] > source[i])){
+      is_signed = TRUE;
+    }
+    
+    destination[i] = (is_signed ? -1.0: 1.0) * (gdouble) sqrt(pow((double) source[i], 2.0) + pow((double) phase_shifted_source[i], 2.0));
   }
 }
 
@@ -266,6 +350,7 @@ ags_frequency_aliase_util_compute_complex(AgsComplex *destination,
 					  guint buffer_length)
 {
   guint i;
+  gboolean is_signed;
   
   if(destination == NULL ||
      source == NULL ||
@@ -275,7 +360,19 @@ ags_frequency_aliase_util_compute_complex(AgsComplex *destination,
   }
 
   for(i = 0; i < buffer_length; i++){
+    is_signed = FALSE;
+
+    //FIXME:JK: improve me
+    if(((gdouble) ags_complex_get(source + i) < 0.0 &&
+	(gdouble) ags_complex_get(phase_shifted_source + i) < 0.0) ||
+       ((gdouble) ags_complex_get(source + i) < 0.0 &&
+	-1.0 * (gdouble) ags_complex_get(source + i) > (gdouble) ags_complex_get(phase_shifted_source + i)) ||
+       ((gdouble) ags_complex_get(phase_shifted_source + i) < 0.0 &&
+	-1.0 * (gdouble) ags_complex_get(phase_shifted_source + i) > (gdouble) ags_complex_get(source + i))){
+      is_signed = TRUE;
+    }
+    
     ags_complex_set(destination + i,
-		    sqrt(pow((double) ags_complex_get(source + i), 2.0) + pow((double) ags_complex_get(phase_shifted_source + i), 2.0)));
+		    (is_signed ? -1.0: 1.0) * (double _Complex) sqrt(pow((double) ags_complex_get(source + i), 2.0) + pow((double) ags_complex_get(phase_shifted_source + i), 2.0)));
   }
 }

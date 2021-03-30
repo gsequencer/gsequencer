@@ -30,6 +30,8 @@ void ags_plugin_browser_class_init(AgsPluginBrowserClass *plugin_browser);
 void ags_plugin_browser_init(AgsPluginBrowser *plugin_browser);
 void ags_plugin_browser_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_plugin_browser_applicable_interface_init(AgsApplicableInterface *applicable);
+
+gboolean ags_plugin_browser_delete_event(GtkWidget *widget, GdkEventAny *event);
 void ags_plugin_browser_show(GtkWidget *widget);
 
 void ags_plugin_browser_connect(AgsConnectable *connectable);
@@ -112,6 +114,7 @@ ags_plugin_browser_class_init(AgsPluginBrowserClass *plugin_browser)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) plugin_browser;
   
+  widget->delete_event = ags_plugin_browser_delete_event;
   widget->show = ags_plugin_browser_show;
 }
 
@@ -171,9 +174,9 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 		     0);
   
   gtk_combo_box_text_append_text(plugin_browser->plugin_type,
-				 "Lv2");
+				 "lv2");
   gtk_combo_box_text_append_text(plugin_browser->plugin_type,
-				 "LADSPA");
+				 "ladspa");
 
   plugin_browser->active_browser = NULL;
   
@@ -198,6 +201,14 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 			 i18n("_OK"), GTK_RESPONSE_ACCEPT,
 			 i18n("_Cancel"), GTK_RESPONSE_REJECT,
 			 NULL);
+}
+
+gboolean
+ags_plugin_browser_delete_event(GtkWidget *widget, GdkEventAny *event)
+{
+  gtk_widget_hide(widget);
+
+  return(TRUE);
 }
 
 void

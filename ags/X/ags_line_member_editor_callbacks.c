@@ -112,10 +112,10 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
   GList *list, *list_start;
   GList *control_type_name;
 
-  gchar *plugin_type;
   gchar *plugin_name;
   gchar *filename, *effect;
 
+  gint active_plugin_type;
   gint position;
   gboolean has_bridge;
   gboolean is_output;  
@@ -153,16 +153,12 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
       plugin_browser = AGS_PLUGIN_BROWSER(line_member_editor->plugin_browser);
 
-      plugin_type = gtk_combo_box_text_get_active_text(plugin_browser->plugin_type);
+      active_plugin_type = gtk_combo_box_get_active(plugin_browser->plugin_type);
       plugin_name = NULL;
 
-      if(!g_ascii_strncasecmp(plugin_type,
-			      "ladspa",
-			      7)){
+      if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
 	plugin_name = "ags-fx-ladspa";
-      }else if(!g_ascii_strncasecmp(plugin_type,
-				    "lv2",
-				    4)){
+      }else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
 	plugin_name = "ags-fx-lv2";
       }
 

@@ -12,8 +12,12 @@ Free Documentation License".
 * TODO:JK: implemented AgsConnectableFlags
 * TODO:JK: implemented AgsSF2Synth
 * TODO:JK: implemented AgsSFZSynth
-* TODO:JK: implemented AgsFxLfoAudio, AgsFxLfoAudioProcessor, AgsFxLfoChannel,
-  AgsFxLfoChannelProcessor, AgsFxLfoRecycling and AgsFxLfoAudioSignal
+* TODO:JK: implemented AgsCompositeEditor
+* TODO:JK: implemented AgsCompositeEdit
+* TODO:JK: implemented AgsCompositeToolbar
+* TODO:JK: implemented volume control of AgsSyncSynth
+* TODO:JK: implemented volume control of AgsSyncFMSynth
+* FIXME:JK: make indicator orientable
 * TODO:JK: implemented Fx mutex per scope
 * TODO:JK: extended user's handbook to cover OSC server preferences
 * TODO:JK: implemented AgsFunction and related

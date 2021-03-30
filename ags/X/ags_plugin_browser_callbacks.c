@@ -40,9 +40,6 @@ void
 ags_plugin_browser_response_callback(GtkDialog *plugin_browser,
 				     gint response,
 				     gpointer user_data)
-{
-  gtk_combo_box_set_active((GtkComboBox *) AGS_PLUGIN_BROWSER(plugin_browser)->plugin_type,
-			   -1);
-  
+{  
   gtk_widget_hide((GtkWidget *) plugin_browser);
 }

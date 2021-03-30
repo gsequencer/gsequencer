@@ -1168,7 +1168,7 @@ ags_functional_test_util_dialog_ok(GtkDialog *dialog)
     list = gtk_container_get_children(gtk_dialog_get_action_area(dialog));
 
   while(list != NULL){
-    if(!g_strcmp0(GTK_STOCK_OK, gtk_button_get_label(list->data))){
+    if(!g_ascii_strncasecmp("_ok", gtk_button_get_label(list->data), 4)){
       ok_button = list->data;
       
       break;
@@ -1213,7 +1213,7 @@ ags_functional_test_util_dialog_cancel(GtkDialog *dialog)
     list = gtk_container_get_children(gtk_dialog_get_action_area(dialog));
 
   while(list != NULL){
-    if(!g_strcmp0(GTK_STOCK_CANCEL, gtk_button_get_label(list->data))){
+    if(!g_ascii_strncasecmp("_cancel", gtk_button_get_label(list->data), 8)){
       cancel_button = list->data;
       
       break;
@@ -4231,26 +4231,17 @@ ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine
   plugin_browser = member_editor->plugin_browser;
   
   /* set plugin type */
-  model = gtk_combo_box_get_model(GTK_COMBO_BOX(plugin_browser->plugin_type));
-  success = FALSE;
-
-  if(gtk_tree_model_get_iter_first(model, &iter)){
-    do{
-      gtk_tree_model_get(model, &iter,
-			 0, &value,
-			 -1);
-      
-      if(!g_strcmp0(plugin_type,
-		    value)){
-	gtk_combo_box_set_active_iter((GtkComboBox *) plugin_browser->plugin_type,
-				      &iter);
-	success = TRUE;
-	
-	break;
-      }
-    }while(gtk_tree_model_iter_next(model,
-				    &iter));
-  }      
+  if(!g_ascii_strncasecmp(plugin_type,
+			  "ladspa",
+			  7)){
+    gtk_combo_box_set_active((GtkComboBox *) plugin_browser->plugin_type,
+			     0);
+  }else if(!g_ascii_strncasecmp(plugin_type,
+				"lv2",
+				4)){
+    gtk_combo_box_set_active((GtkComboBox *) plugin_browser->plugin_type,
+			     1);
+  }
   
   ags_test_leave();
 
