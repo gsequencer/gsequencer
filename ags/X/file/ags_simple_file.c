@@ -3102,6 +3102,22 @@ ags_simple_file_read_matrix_launch(AgsSimpleFile *simple_file, xmlNode *node, Ag
       
     xmlFree(str);
   }
+
+  /* volume */
+  str = xmlGetProp(node,
+		   "volume");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = g_ascii_strtod(str,
+			    NULL);
+      
+    gtk_range_set_value((GtkRange *) matrix->volume,
+			volume);
+      
+    xmlFree(str);
+  }
 }
 
 void
@@ -3192,6 +3208,22 @@ ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node,
       
     gtk_spin_button_set_value(syncsynth->loop_end,
 			      (gdouble) audio_loop_end);
+      
+    xmlFree(str);
+  }
+
+  /* volume */
+  str = xmlGetProp(node,
+		   "volume");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = g_ascii_strtod(str,
+			    NULL);
+      
+    gtk_range_set_value((GtkRange *) syncsynth->volume,
+			volume);
       
     xmlFree(str);
   }
@@ -3288,6 +3320,22 @@ ags_simple_file_read_fm_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *no
       
     xmlFree(str);
   }
+
+  /* volume */
+  str = xmlGetProp(node,
+		   "volume");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = g_ascii_strtod(str,
+			    NULL);
+      
+    gtk_range_set_value((GtkRange *) fm_syncsynth->volume,
+			volume);
+      
+    xmlFree(str);
+  }
 }
 
 void
@@ -3373,6 +3421,109 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
   ags_pitch_sampler_open_filename(pitch_sampler,
 				  filename);
 
+  /* aliase */
+  str = xmlGetProp(node,
+		   "enable-aliase");
+
+  if(str != NULL){
+    gtk_toggle_button_set_active(pitch_sampler->enable_aliase,
+				 ((!g_ascii_strncasecmp(str, "true", 5)) ? TRUE: FALSE));
+    
+    xmlFree(str);
+  }
+  
+  /* aliase a amount */
+  str = xmlGetProp(node,
+		   "aliase-a-amount");
+
+  if(str != NULL){
+    gdouble a_amount;
+
+    a_amount = g_ascii_strtod(str,
+			    NULL);
+      
+    gtk_adjustment_set_value(pitch_sampler->aliase_a_amount->adjustment,
+			     a_amount);
+      
+    xmlFree(str);
+  }
+
+  /* aliase a phase */
+  str = xmlGetProp(node,
+		   "aliase-a-phase");
+
+  if(str != NULL){
+    gdouble a_phase;
+
+    a_phase = g_ascii_strtod(str,
+			    NULL);
+      
+    gtk_adjustment_set_value(pitch_sampler->aliase_a_phase->adjustment,
+			     a_phase);
+      
+    xmlFree(str);
+  }
+  
+  /* aliase b amount */
+  str = xmlGetProp(node,
+		   "aliase-b-amount");
+
+  if(str != NULL){
+    gdouble b_amount;
+
+    b_amount = g_ascii_strtod(str,
+			    NULL);
+      
+    gtk_adjustment_set_value(pitch_sampler->aliase_b_amount->adjustment,
+			     b_amount);
+      
+    xmlFree(str);
+  }
+
+  /* aliase b phase */
+  str = xmlGetProp(node,
+		   "aliase-b-phase");
+
+  if(str != NULL){
+    gdouble b_phase;
+
+    b_phase = g_ascii_strtod(str,
+			    NULL);
+      
+    gtk_adjustment_set_value(pitch_sampler->aliase_b_phase->adjustment,
+			     b_phase);
+      
+    xmlFree(str);
+  }
+  
+  /* volume */
+  str = xmlGetProp(node,
+		   "volume");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = g_ascii_strtod(str,
+			    NULL);
+      
+    gtk_range_set_value((GtkRange *) pitch_sampler->volume,
+			volume);
+      
+    xmlFree(str);
+  }
+
+  /* lfo */
+  str = xmlGetProp(node,
+		   "enable-lfo");
+
+  if(str != NULL){
+    gtk_toggle_button_set_active(pitch_sampler->enable_lfo,
+				 ((!g_ascii_strncasecmp(str, "true", 5)) ? TRUE: FALSE));
+    
+    xmlFree(str);
+  }
+
+  /* lfo freq */
   str = xmlGetProp(node,
 		   "lfo-freq");
     
@@ -3383,6 +3534,7 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
     xmlFree(str);
   }
 
+  /* lfo phase */
   str = xmlGetProp(node,
 		   "lfo-phase");
     
@@ -3393,6 +3545,7 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
     xmlFree(str);
   }
 
+  /* lfo depth */
   str = xmlGetProp(node,
 		   "lfo-depth");
     
@@ -3402,7 +3555,8 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
 					     NULL));
     xmlFree(str);
   }
-    
+
+  /* tuning */
   str = xmlGetProp(node,
 		   "lfo-tuning");
     
@@ -3439,7 +3593,8 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   xmlChar *key_count;
   xmlChar *base_note;
   xmlChar *version;
-
+  xmlChar *str;
+  
   guint major, minor, micro;
       
   /* fixup 3.7.3 */
@@ -3513,6 +3668,97 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
     
   ags_ffplayer_open_filename(ffplayer,
 			     filename);
+
+  /* aliase */
+  str = xmlGetProp(node,
+		   "enable-aliase");
+
+  if(str != NULL){
+    gtk_toggle_button_set_active(ffplayer->enable_aliase,
+				 ((!g_ascii_strncasecmp(str, "true", 5)) ? TRUE: FALSE));
+    
+    xmlFree(str);
+  }
+  
+  /* aliase a amount */
+  str = xmlGetProp(node,
+		   "aliase-a-amount");
+
+  if(str != NULL){
+    gdouble a_amount;
+
+    a_amount = g_ascii_strtod(str,
+			    NULL);
+      
+    gtk_adjustment_set_value(ffplayer->aliase_a_amount->adjustment,
+			     a_amount);
+      
+    xmlFree(str);
+  }
+
+  /* aliase a phase */
+  str = xmlGetProp(node,
+		   "aliase-a-phase");
+
+  if(str != NULL){
+    gdouble a_phase;
+
+    a_phase = g_ascii_strtod(str,
+			    NULL);
+      
+    gtk_adjustment_set_value(ffplayer->aliase_a_phase->adjustment,
+			     a_phase);
+      
+    xmlFree(str);
+  }
+  
+  /* aliase b amount */
+  str = xmlGetProp(node,
+		   "aliase-b-amount");
+
+  if(str != NULL){
+    gdouble b_amount;
+
+    b_amount = g_ascii_strtod(str,
+			    NULL);
+      
+    gtk_adjustment_set_value(ffplayer->aliase_b_amount->adjustment,
+			     b_amount);
+      
+    xmlFree(str);
+  }
+
+  /* aliase b phase */
+  str = xmlGetProp(node,
+		   "aliase-b-phase");
+
+  if(str != NULL){
+    gdouble b_phase;
+
+    b_phase = g_ascii_strtod(str,
+			    NULL);
+      
+    gtk_adjustment_set_value(ffplayer->aliase_b_phase->adjustment,
+			     b_phase);
+    
+    xmlFree(str);
+  }
+  
+  /* volume */
+  str = xmlGetProp(node,
+		   "volume");
+
+  if(str != NULL){
+    gdouble volume;
+
+    volume = g_ascii_strtod(str,
+			    NULL);
+      
+    gtk_range_set_value((GtkRange *) ffplayer->volume,
+			volume);
+      
+    xmlFree(str);
+  }
   
   if(filename != NULL){
     xmlFree(filename);
@@ -9254,6 +9500,15 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       str);
 
     g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_range_get_value((GtkRange *) matrix->volume));
+    
+    xmlNewProp(node,
+	       "volume",
+	       str);
+
+    g_free(str);
   }else if(AGS_IS_SYNTH(machine)){
     AgsSynth *synth;
 
@@ -9306,6 +9561,15 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       str);
 
     g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_range_get_value((GtkRange *) syncsynth->volume));
+    
+    xmlNewProp(node,
+	       "volume",
+	       str);
+
+    g_free(str);
   }else if(AGS_IS_FM_SYNCSYNTH(machine)){
     AgsFMSyncsynth *fm_syncsynth;
 
@@ -9334,6 +9598,15 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       "audio-loop-end",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_range_get_value((GtkRange *) fm_syncsynth->volume));
+    
+    xmlNewProp(node,
+	       "volume",
 	       str);
 
     g_free(str);
@@ -9371,8 +9644,65 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       "key-count",
 	       str);
 
-    g_free(str);
+    g_free(str);    
+
+    if(gtk_toggle_button_get_active(pitch_sampler->enable_aliase)){
+      xmlNewProp(node,
+		 "enable-aliase",
+		 "true");
+    }
+
+    str = g_strdup_printf("%lf",
+			  gtk_adjustment_get_value(pitch_sampler->aliase_a_amount->adjustment));
     
+    xmlNewProp(node,
+	       "aliase-a-amount",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_adjustment_get_value(pitch_sampler->aliase_a_phase->adjustment));
+    
+    xmlNewProp(node,
+	       "aliase-a-phase",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_adjustment_get_value(pitch_sampler->aliase_b_amount->adjustment));
+    
+    xmlNewProp(node,
+	       "aliase-b-amount",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_adjustment_get_value(pitch_sampler->aliase_b_phase->adjustment));
+    
+    xmlNewProp(node,
+	       "aliase-b-phase",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_range_get_value((GtkRange *) pitch_sampler->volume));
+    
+    xmlNewProp(node,
+	       "volume",
+	       str);
+
+    g_free(str);
+
+    if(gtk_toggle_button_get_active(pitch_sampler->enable_lfo)){
+      xmlNewProp(node,
+		 "enable-lfo",
+		 "true");
+    }
+
     str = g_strdup_printf("%lf",
 			  gtk_spin_button_get_value(pitch_sampler->lfo_freq));
     
@@ -9457,6 +9787,57 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       "key-count",
+	       str);
+
+    g_free(str);
+
+    if(gtk_toggle_button_get_active(ffplayer->enable_aliase)){
+      xmlNewProp(node,
+		 "enable-aliase",
+		 "true");
+    }
+
+    str = g_strdup_printf("%lf",
+			  gtk_adjustment_get_value(ffplayer->aliase_a_amount->adjustment));
+    
+    xmlNewProp(node,
+	       "aliase-a-amount",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_adjustment_get_value(ffplayer->aliase_a_phase->adjustment));
+    
+    xmlNewProp(node,
+	       "aliase-a-phase",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_adjustment_get_value(ffplayer->aliase_b_amount->adjustment));
+    
+    xmlNewProp(node,
+	       "aliase-b-amount",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_adjustment_get_value(ffplayer->aliase_b_phase->adjustment));
+    
+    xmlNewProp(node,
+	       "aliase-b-phase",
+	       str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%lf",
+			  gtk_range_get_value((GtkRange *) ffplayer->volume));
+    
+    xmlNewProp(node,
+	       "volume",
 	       str);
 
     g_free(str);

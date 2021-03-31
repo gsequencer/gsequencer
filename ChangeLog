@@ -1,3 +1,9 @@
+ags (3.8.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing store of aliase and volume
+	* edited NEWS
+
 ags (3.8.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
