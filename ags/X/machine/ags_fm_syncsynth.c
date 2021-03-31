@@ -143,6 +143,8 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
   GtkBox *hbox;
   GtkBox *vbox;
   GtkGrid *grid;
+  GtkFrame *frame;
+  GtkBox *volume_hbox;
   GtkLabel *label;
 
   AgsAudio *audio;
@@ -207,6 +209,9 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 
   fm_syncsynth->notation_play_container = ags_recall_container_new();
   fm_syncsynth->notation_recall_container = ags_recall_container_new();
+
+  fm_syncsynth->volume_play_container = ags_recall_container_new();
+  fm_syncsynth->volume_recall_container = ags_recall_container_new();
 
   fm_syncsynth->envelope_play_container = ags_recall_container_new();
   fm_syncsynth->envelope_recall_container = ags_recall_container_new();
@@ -374,6 +379,43 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 		  (GtkWidget *) fm_syncsynth->loop_end,
 		  1, 2,
 		  1, 1);
+
+  /* volume */
+  frame = (GtkFrame *) gtk_frame_new(i18n("volume"));
+
+  gtk_widget_set_valign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+    
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) frame,
+		     FALSE, FALSE,
+		     0);
+
+  volume_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				       0);
+  gtk_container_add((GtkContainer *) frame,
+		    (GtkWidget *) volume_hbox);
+  
+  fm_syncsynth->volume = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+							       0.0,
+							       2.0,
+							       0.025);
+  gtk_box_pack_start(volume_hbox,
+		     (GtkWidget *) fm_syncsynth->volume,
+		     FALSE, FALSE,
+		     0);
+
+  gtk_scale_set_digits(fm_syncsynth->volume,
+		       3);
+
+  gtk_range_set_increments(GTK_RANGE(fm_syncsynth->volume),
+			   0.025, 0.1);
+  gtk_range_set_value(GTK_RANGE(fm_syncsynth->volume),
+		      1.0);
+  gtk_range_set_inverted(GTK_RANGE(fm_syncsynth->volume),
+			 TRUE);  
 }
 
 void
@@ -429,6 +471,9 @@ ags_fm_syncsynth_connect(AgsConnectable *connectable)
 
   g_signal_connect((GObject *) fm_syncsynth->update, "clicked",
 		   G_CALLBACK(ags_fm_syncsynth_update_callback), (gpointer) fm_syncsynth);
+
+  g_signal_connect((GObject *) fm_syncsynth->volume, "value-changed",
+		   G_CALLBACK(ags_fm_syncsynth_volume_callback), (gpointer) fm_syncsynth);
 }
 
 void
@@ -490,6 +535,12 @@ ags_fm_syncsynth_disconnect(AgsConnectable *connectable)
   g_object_disconnect((GObject *) fm_syncsynth->update,
 		      "any_signal::clicked",
 		      G_CALLBACK(ags_fm_syncsynth_update_callback),
+		      (gpointer) fm_syncsynth,
+		      NULL);
+
+  g_object_disconnect((GObject *) fm_syncsynth->volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_fm_syncsynth_volume_callback),
 		      (gpointer) fm_syncsynth,
 		      NULL);
 }
@@ -614,6 +665,21 @@ ags_fm_syncsynth_map_recall(AgsMachine *machine)
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       fm_syncsynth->volume_play_container, fm_syncsynth->volume_recall_container,
+				       "ags-fx-volume",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
   /* ags-fx-envelope */
   start_recall = ags_fx_factory_create(audio,
 				       fm_syncsynth->envelope_play_container, fm_syncsynth->envelope_recall_container,
@@ -706,6 +772,20 @@ ags_fm_syncsynth_input_map_recall(AgsFMSyncsynth *fm_syncsynth,
   start_recall = ags_fx_factory_create(audio,
 				       fm_syncsynth->notation_play_container, fm_syncsynth->notation_recall_container,
 				       "ags-fx-notation",
+				       NULL,
+				       NULL,
+				       audio_channel_start, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       fm_syncsynth->volume_play_container, fm_syncsynth->volume_recall_container,
+				       "ags-fx-volume",
 				       NULL,
 				       NULL,
 				       audio_channel_start, audio_channels,

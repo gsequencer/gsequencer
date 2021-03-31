@@ -71,6 +71,9 @@ struct _AgsSyncsynth
   AgsRecallContainer *notation_play_container;
   AgsRecallContainer *notation_recall_container;
 
+  AgsRecallContainer *volume_play_container;
+  AgsRecallContainer *volume_recall_container;
+
   AgsRecallContainer *envelope_play_container;
   AgsRecallContainer *envelope_recall_container;
   
@@ -87,6 +90,8 @@ struct _AgsSyncsynth
   GtkSpinButton *lower; // how many channels until to lowest freq
   GtkSpinButton *loop_start;
   GtkSpinButton *loop_end;
+
+  GtkScale *volume;
 };
 
 struct _AgsSyncsynthClass

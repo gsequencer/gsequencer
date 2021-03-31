@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,6 +51,8 @@ void ags_syncsynth_update_callback(GtkButton *button, AgsSyncsynth *syncsynth);
 void ags_syncsynth_lower_callback(GtkSpinButton *spin_button, AgsSyncsynth *syncsynth);
 void ags_syncsynth_loop_start_callback(GtkSpinButton *spin_button, AgsSyncsynth *syncsynth);
 void ags_syncsynth_loop_end_callback(GtkSpinButton *spin_button, AgsSyncsynth *syncsynth);
+
+void ags_syncsynth_volume_callback(GtkRange *range, AgsSyncsynth *syncsynth);
 
 G_END_DECLS
 

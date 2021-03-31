@@ -27,6 +27,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_matrix_class_init(AgsMatrixClass *matrix);
 void ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_matrix_init(AgsMatrix *matrix);
@@ -140,6 +142,7 @@ ags_matrix_init(AgsMatrix *matrix)
   GtkToggleButton *button;
   GtkBox *vbox;
   GtkBox *hbox;
+  GtkBox *volume_hbox;
 
   AgsAudio *audio;
 
@@ -212,6 +215,9 @@ ags_matrix_init(AgsMatrix *matrix)
 
   matrix->notation_play_container = ags_recall_container_new();
   matrix->notation_recall_container = ags_recall_container_new();
+
+  matrix->volume_play_container = ags_recall_container_new();
+  matrix->volume_recall_container = ags_recall_container_new();
 
   matrix->envelope_play_container = ags_recall_container_new();
   matrix->envelope_recall_container = ags_recall_container_new();
@@ -329,6 +335,43 @@ ags_matrix_init(AgsMatrix *matrix)
 		     (GtkWidget *) matrix->loop_button,
 		     FALSE, FALSE,
 		     0);
+
+  /* volume */
+  frame = (GtkFrame *) gtk_frame_new(i18n("volume"));
+
+  gtk_widget_set_valign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(matrix->grid,
+		  (GtkWidget *) frame,
+		  4, 0,
+		  1, 3);
+
+  volume_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				       0);
+  gtk_container_add((GtkContainer *) frame,
+		    (GtkWidget *) volume_hbox);
+  
+  matrix->volume = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+							 0.0,
+							 2.0,
+							 0.025);
+  gtk_box_pack_start(volume_hbox,
+		     (GtkWidget *) matrix->volume,
+		     FALSE, FALSE,
+		     0);
+
+  gtk_scale_set_digits(matrix->volume,
+		       3);
+
+  gtk_range_set_increments(GTK_RANGE(matrix->volume),
+			   0.025, 0.1);
+  gtk_range_set_value(GTK_RANGE(matrix->volume),
+		      1.0);
+  gtk_range_set_inverted(GTK_RANGE(matrix->volume),
+			 TRUE);  
 }
 
 void
@@ -370,6 +413,9 @@ ags_matrix_connect(AgsConnectable *connectable)
 
   g_signal_connect_after(G_OBJECT(matrix), "stop",
 			 G_CALLBACK(ags_matrix_stop_callback), NULL);
+
+  g_signal_connect((GObject *) matrix->volume, "value-changed",
+		   G_CALLBACK(ags_matrix_volume_callback), (gpointer) matrix);
 }
 
 void
@@ -412,6 +458,12 @@ ags_matrix_disconnect(AgsConnectable *connectable)
 		      "any_signal::stop",
 		      G_CALLBACK(ags_matrix_stop_callback),
 		      NULL,
+		      NULL);
+
+  g_object_disconnect((GObject *) matrix->volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_matrix_volume_callback),
+		      (gpointer) matrix,
 		      NULL);
 
   /* call parent */
@@ -565,6 +617,21 @@ ags_matrix_map_recall(AgsMachine *machine)
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       matrix->volume_play_container, matrix->volume_recall_container,
+				       "ags-fx-volume",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
   /* ags-fx-envelope */
   start_recall = ags_fx_factory_create(audio,
 				       matrix->envelope_play_container, matrix->envelope_recall_container,
@@ -684,6 +751,20 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
 				       0);
 
   /* unref */
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       matrix->volume_play_container, matrix->volume_recall_container,
+				       "ags-fx-volume",
+				       NULL,
+				       NULL,
+				       0, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 

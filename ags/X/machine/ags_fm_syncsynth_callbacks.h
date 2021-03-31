@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -58,6 +58,8 @@ void ags_fm_syncsynth_lfo_freq_callback(GtkSpinButton *spin_button, AgsFMSyncsyn
 void ags_fm_syncsynth_lfo_phase_callback(GtkSpinButton *spin_button, AgsFMSyncsynth *fm_syncsynth);
 void ags_fm_syncsynth_lfo_depth_callback(GtkSpinButton *spin_button, AgsFMSyncsynth *fm_syncsynth);
 void ags_fm_syncsynth_lfo_tunint_callback(GtkSpinButton *spin_button, AgsFMSyncsynth *fm_syncsynth);
+
+void ags_fm_syncsynth_volume_callback(GtkRange *range, AgsFMSyncsynth *fm_syncsynth);
 
 G_END_DECLS
 

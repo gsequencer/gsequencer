@@ -1,3 +1,11 @@
+ags (3.8.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented volume control of AgsSyncsynth
+	* implemented volume control of AgsFMSyncsynth
+	* implemented volume control of AgsMatrix
+	* fixed AgsFMOscillator layout
+
 ags (3.8.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

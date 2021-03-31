@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,6 +51,8 @@ void ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix);
 void ags_matrix_stop_callback(AgsMatrix *matrix,
 			      GList *recall_id, gint sound_scope,
 			      gpointer data);
+
+void ags_matrix_volume_callback(GtkRange *range, AgsMatrix *matrix);
 
 G_END_DECLS
 

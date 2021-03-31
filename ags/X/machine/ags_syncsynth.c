@@ -144,6 +144,8 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
   GtkBox *vbox;
   GtkGrid *grid;
   GtkLabel *label;
+  GtkFrame *frame;
+  GtkBox *volume_hbox;
 
   AgsAudio *audio;
 
@@ -207,6 +209,9 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
 
   syncsynth->notation_play_container = ags_recall_container_new();
   syncsynth->notation_recall_container = ags_recall_container_new();
+
+  syncsynth->volume_play_container = ags_recall_container_new();
+  syncsynth->volume_recall_container = ags_recall_container_new();
 
   syncsynth->envelope_play_container = ags_recall_container_new();
   syncsynth->envelope_recall_container = ags_recall_container_new();
@@ -379,6 +384,43 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
 		  (GtkWidget *) syncsynth->loop_end,
 		  1, 2,
 		  1, 1);
+
+  /* volume */
+  frame = (GtkFrame *) gtk_frame_new(i18n("volume"));
+
+  gtk_widget_set_valign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+  
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) frame,
+		     FALSE, FALSE,
+		     0);
+
+  volume_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				       0);
+  gtk_container_add((GtkContainer *) frame,
+		    (GtkWidget *) volume_hbox);
+  
+  syncsynth->volume = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+							    0.0,
+							    2.0,
+							    0.025);
+  gtk_box_pack_start(volume_hbox,
+		     (GtkWidget *) syncsynth->volume,
+		     FALSE, FALSE,
+		     0);
+
+  gtk_scale_set_digits(syncsynth->volume,
+		       3);
+
+  gtk_range_set_increments(GTK_RANGE(syncsynth->volume),
+			   0.025, 0.1);
+  gtk_range_set_value(GTK_RANGE(syncsynth->volume),
+		      1.0);
+  gtk_range_set_inverted(GTK_RANGE(syncsynth->volume),
+			 TRUE);  
 }
 
 void
@@ -434,6 +476,9 @@ ags_syncsynth_connect(AgsConnectable *connectable)
 
   g_signal_connect((GObject *) syncsynth->update, "clicked",
 		   G_CALLBACK(ags_syncsynth_update_callback), (gpointer) syncsynth);
+
+  g_signal_connect((GObject *) syncsynth->volume, "value-changed",
+		   G_CALLBACK(ags_syncsynth_volume_callback), (gpointer) syncsynth);
 }
 
 void
@@ -495,6 +540,12 @@ ags_syncsynth_disconnect(AgsConnectable *connectable)
   g_object_disconnect((GObject *) syncsynth->update,
 		      "any_signal::clicked",
 		      G_CALLBACK(ags_syncsynth_update_callback),
+		      (gpointer) syncsynth,
+		      NULL);
+
+  g_object_disconnect((GObject *) syncsynth->volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_syncsynth_volume_callback),
 		      (gpointer) syncsynth,
 		      NULL);
 }
@@ -615,6 +666,22 @@ ags_syncsynth_map_recall(AgsMachine *machine)
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       syncsynth->volume_play_container, syncsynth->volume_recall_container,
+				       "ags-fx-volume",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+  
+
   /* ags-fx-envelope */
   start_recall = ags_fx_factory_create(audio,
 				       syncsynth->envelope_play_container, syncsynth->envelope_recall_container,
@@ -707,6 +774,20 @@ ags_syncsynth_input_map_recall(AgsSyncsynth *syncsynth,
   start_recall = ags_fx_factory_create(audio,
 				       syncsynth->notation_play_container, syncsynth->notation_recall_container,
 				       "ags-fx-notation",
+				       NULL,
+				       NULL,
+				       audio_channel_start, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       syncsynth->volume_play_container, syncsynth->volume_recall_container,
+				       "ags-fx-volume",
 				       NULL,
 				       NULL,
 				       audio_channel_start, audio_channels,

@@ -67,6 +67,9 @@ struct _AgsMatrix
   AgsRecallContainer *notation_play_container;
   AgsRecallContainer *notation_recall_container;
 
+  AgsRecallContainer *volume_play_container;
+  AgsRecallContainer *volume_recall_container;
+
   AgsRecallContainer *envelope_play_container;
   AgsRecallContainer *envelope_recall_container;
 
@@ -83,6 +86,8 @@ struct _AgsMatrix
 
   GtkSpinButton *length_spin;
   GtkCheckButton *loop_button;
+
+  GtkScale *volume;
 };
 
 struct _AgsMatrixClass

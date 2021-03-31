@@ -225,7 +225,9 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		  1, 1);
   fm_oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   gtk_spin_button_set_value(fm_oscillator->frame_count, AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT);
-  gtk_grid_attach(grid, (GtkWidget *) fm_oscillator->frame_count, 5, 6, 0, 1);
+  gtk_grid_attach(grid, (GtkWidget *) fm_oscillator->frame_count,
+		  5, 0,
+		  1, 1);
 
   gtk_grid_attach(grid,
 		  (GtkWidget *) gtk_label_new(i18n("phase")),
@@ -233,7 +235,10 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		  1, 1);
   fm_oscillator->phase = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   gtk_spin_button_set_value(fm_oscillator->phase, 0.0);
-  gtk_grid_attach(grid, (GtkWidget *) fm_oscillator->phase, 1, 2, 1, 2);
+  gtk_grid_attach(grid,
+		  (GtkWidget *) fm_oscillator->phase,
+		  1, 1,
+		  1, 1);
 
   gtk_grid_attach(grid,
 		  (GtkWidget *) gtk_label_new(i18n("frequency")),
@@ -256,7 +261,10 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   gtk_spin_button_set_digits(fm_oscillator->volume,
 			     3);
   gtk_spin_button_set_value(fm_oscillator->volume, 0.2);
-  gtk_grid_attach(grid, (GtkWidget *) fm_oscillator->volume, 5, 6, 1, 2);
+  gtk_grid_attach(grid,
+		  (GtkWidget *) fm_oscillator->volume,
+		  5, 1,
+		  1, 1);
 
   /* do sync */
   fm_oscillator->do_sync = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("sync"));
