@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -96,7 +96,7 @@ ags_machine_collection_entry_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_machine_collection_entry = g_type_register_static(GTK_TYPE_TABLE,
+    ags_type_machine_collection_entry = g_type_register_static(GTK_TYPE_GRID,
 							       "AgsMachineCollectionEntry", &ags_machine_collection_entry_info,
 							       0);
 
@@ -168,51 +168,36 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
 
   machine_collection_entry->flags = 0;
   
-  gtk_table_resize((GtkTable *) machine_collection_entry,
-		   4, 4);
-
   machine_collection_entry->machine = NULL;
 
   /* enabled */
   machine_collection_entry->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
-  gtk_table_attach((GtkTable *) machine_collection_entry,
-		   (GtkWidget *) machine_collection_entry->enabled,
-		   0, 4,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  
+  gtk_widget_set_valign((GtkWidget *) machine_collection_entry->enabled,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) machine_collection_entry->enabled,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach((GtkGrid *) machine_collection_entry,
+		  (GtkWidget *) machine_collection_entry->enabled,
+		  0, 0,
+		  4, 1);
 
   /* machine label */
   machine_collection_entry->label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 							      "xalign", 0.0,
 							      NULL);
-  gtk_table_attach((GtkTable *) machine_collection_entry,
-		   (GtkWidget *) machine_collection_entry->label,
-		   0, 4,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
 
-  /* instrument * /
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "instrument: ",
-				    "xalign", 0.0,
-				    NULL);
-  gtk_table_attach((GtkTable *) machine_collection_entry,
-		   (GtkWidget *) label,
-		   0, 2,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_widget_set_valign((GtkWidget *) machine_collection_entry->label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) machine_collection_entry->label,
+			GTK_ALIGN_FILL);
 
-  machine_collection_entry->instrument = (GtkEntry *) gtk_entry_new();
-  gtk_table_attach((GtkTable *) machine_collection_entry,
-		   (GtkWidget *) machine_collection_entry->instrument,
-		   2, 4,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-  */
+  gtk_grid_attach((GtkGrid *) machine_collection_entry,
+		  (GtkWidget *) machine_collection_entry->label,
+		  0, 1,
+		  4, 1);
+
   machine_collection_entry->instrument = NULL;
   
   /* sequence */
@@ -220,20 +205,28 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
 				    "label", i18n("sequence: "),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach((GtkTable *) machine_collection_entry,
-		   (GtkWidget *) label,
-		   0, 2,
-		   3, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach((GtkGrid *) machine_collection_entry,
+		  (GtkWidget *) label,
+		  0, 3,
+		  2, 1);
 
   machine_collection_entry->sequence = (GtkEntry *) gtk_entry_new();
-  gtk_table_attach((GtkTable *) machine_collection_entry,
-		   (GtkWidget *) machine_collection_entry->sequence,
-		   2, 4,
-		   3, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) machine_collection_entry->sequence,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) machine_collection_entry->sequence,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach((GtkGrid *) machine_collection_entry,
+		  (GtkWidget *) machine_collection_entry->sequence,
+		  2, 3,
+		  2, 1);
 }
 
 void

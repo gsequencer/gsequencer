@@ -1038,8 +1038,8 @@ ags_machine_util_new_lv2_bridge(gchar *filename, gchar *effect)
 					G_DIR_SEPARATOR,
 					"manifest.ttl");
 
-    manifest = ags_turtle_manager_find(turtle_manager,
-				       manifest_filename);
+    manifest = (AgsTurtle *) ags_turtle_manager_find(turtle_manager,
+						     manifest_filename);
 
     if(manifest == NULL){
       AgsLv2TurtleParser *lv2_turtle_parser;
@@ -1072,7 +1072,7 @@ ags_machine_util_new_lv2_bridge(gchar *filename, gchar *effect)
       ags_lv2_turtle_parser_parse(lv2_turtle_parser,
 				  turtle, n_turtle);
     
-      g_object_run_dispose(lv2_turtle_parser);
+      g_object_run_dispose((GObject *) lv2_turtle_parser);
       g_object_unref(lv2_turtle_parser);
 	
       g_object_unref(manifest);
@@ -1237,8 +1237,6 @@ ags_machine_util_new_live_lv2_bridge(gchar *filename, gchar *effect)
   AgsWindow *window;
   AgsLiveLv2Bridge *live_lv2_bridge;
 
-  AgsAddAudio *add_audio;
-
   AgsApplicationContext *application_context;
 
   AgsLv2Plugin *lv2_plugin;
@@ -1269,8 +1267,8 @@ ags_machine_util_new_live_lv2_bridge(gchar *filename, gchar *effect)
 					G_DIR_SEPARATOR,
 					"manifest.ttl");
 
-    manifest = ags_turtle_manager_find(turtle_manager,
-				       manifest_filename);
+    manifest = (AgsTurtle *) ags_turtle_manager_find(turtle_manager,
+						     manifest_filename);
 
     if(manifest == NULL){
       AgsLv2TurtleParser *lv2_turtle_parser;
@@ -1303,7 +1301,7 @@ ags_machine_util_new_live_lv2_bridge(gchar *filename, gchar *effect)
       ags_lv2_turtle_parser_parse(lv2_turtle_parser,
 				  turtle, n_turtle);
     
-      g_object_run_dispose(lv2_turtle_parser);
+      g_object_run_dispose((GObject *) lv2_turtle_parser);
       g_object_unref(lv2_turtle_parser);
 	
       g_object_unref(manifest);
@@ -1378,7 +1376,7 @@ GtkWidget*
 ags_machine_util_new_by_type_name(gchar *machine_type_name,
 				  gchar *filename, gchar *effect)
 {
-  AgsMachine *machine;
+  GtkWidget *machine;
 
   machine = NULL;
 
@@ -1473,5 +1471,5 @@ ags_machine_util_new_by_type_name(gchar *machine_type_name,
 						   effect);
   }
 
-  return((GtkWidget *) machine);
+  return(machine);
 }

@@ -249,6 +249,9 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 
   notation_edit->current_note = NULL;
 
+  gtk_table_set_homogeneous(notation_edit,
+			    FALSE);
+  
   notation_edit->ruler = ags_ruler_new();
   g_object_set(notation_edit->ruler,
 	       "height-request", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),

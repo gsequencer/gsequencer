@@ -71,8 +71,8 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 					G_DIR_SEPARATOR,
 					"manifest.ttl");
 
-    manifest = ags_turtle_manager_find(turtle_manager,
-				       manifest_filename);
+    manifest = (AgsTurtle *) ags_turtle_manager_find(turtle_manager,
+						     manifest_filename);
 
     if(manifest == NULL){
       AgsLv2TurtleParser *lv2_turtle_parser;
@@ -105,7 +105,7 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
       ags_lv2_turtle_parser_parse(lv2_turtle_parser,
 				  turtle, n_turtle);
     
-      g_object_run_dispose(lv2_turtle_parser);
+      g_object_run_dispose((GObject *) lv2_turtle_parser);
       g_object_unref(lv2_turtle_parser);
 	
       g_object_unref(manifest);
@@ -161,14 +161,14 @@ void
 ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 				    AgsLv2Browser *lv2_browser)
 {
-  GtkTable *table;
+  GtkGrid *grid;
   GtkComboBoxText *filename_combo, *effect_combo;
   GtkLabel *label;
 
   AgsLv2Plugin *lv2_plugin;
 
-  GList *list, *list_start;
-  GList *child, *child_start;
+  GList *start_list, *list;
+  GList *start_child, *child;
 
   gchar *filename, *effect;
   gchar *str;
@@ -178,17 +178,17 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
   GRecMutex *plugin_port_mutex;
 
   /* retrieve filename and uri */
-  list_start = 
-    list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
+  list =
+    start_list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
 
   filename_combo = GTK_COMBO_BOX_TEXT(list->next->data);
   effect_combo = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 
   /* update description */
-  list_start = 
-    list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->description));
+  list =
+    start_list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->description));
 
   filename = gtk_combo_box_text_get_active_text(filename_combo);
   effect = gtk_combo_box_text_get_active_text(effect_combo);
@@ -210,8 +210,8 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 					G_DIR_SEPARATOR,
 					"manifest.ttl");
 
-    manifest = ags_turtle_manager_find(turtle_manager,
-				       manifest_filename);
+    manifest = (AgsTurtle *) ags_turtle_manager_find(turtle_manager,
+						     manifest_filename);
 
     if(manifest == NULL){
       AgsLv2TurtleParser *lv2_turtle_parser;
@@ -244,7 +244,7 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
       ags_lv2_turtle_parser_parse(lv2_turtle_parser,
 				  turtle, n_turtle);
     
-      g_object_run_dispose(lv2_turtle_parser);
+      g_object_run_dispose((GObject *) lv2_turtle_parser);
       g_object_unref(lv2_turtle_parser);
 	
       g_object_unref(manifest);
@@ -307,12 +307,11 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 
     g_free(str);
     
-    list = list->next;
-    table = GTK_TABLE(list->data);
+    grid = lv2_browser->port_grid;
 
     /* update ui - port information */
-    child_start = 
-      child = gtk_container_get_children(GTK_CONTAINER(table));
+    child =
+      start_child = gtk_container_get_children(GTK_CONTAINER(grid));
     
     while(child != NULL){
       gtk_widget_destroy(GTK_WIDGET(child->data));
@@ -320,7 +319,7 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
       child = child->next;
     }
     
-    g_list_free(child_start);
+    g_list_free(start_child);
 
     start_plugin_port = g_list_copy(AGS_BASE_PLUGIN(lv2_plugin)->plugin_port);
 
@@ -350,34 +349,34 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 					"xalign", 0.0,
 					"label", str,
 					NULL);
-      gtk_table_attach_defaults(table,
-				GTK_WIDGET(label),
-				0, 1,
-				y, y + 1);
+      gtk_grid_attach(grid,
+		      (GtkWidget *) label,
+		      0, y,
+		      1, 1);
       
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
 	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
-	  gtk_table_attach_defaults(table,
-				    GTK_WIDGET(ags_lv2_browser_combo_box_output_boolean_controls_new()),
-				    1, 2,
-				    y, y + 1);
+	  gtk_grid_attach(grid,
+			  GTK_WIDGET(ags_lv2_browser_combo_box_output_boolean_controls_new()),
+			  1, y,
+			  1, 1);
 	}else{
-	  gtk_table_attach_defaults(table,
-				    GTK_WIDGET(ags_lv2_browser_combo_box_boolean_controls_new()),
-				    1, 2,
-				    y, y + 1);
+	  gtk_grid_attach(grid,
+			  GTK_WIDGET(ags_lv2_browser_combo_box_boolean_controls_new()),
+			  1, y,
+			  1, 1);
 	}
       }else{
 	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
-	  gtk_table_attach_defaults(table,
-				    GTK_WIDGET(ags_lv2_browser_combo_box_output_controls_new()),
-				    1, 2,
-				    y, y + 1);
+	  gtk_grid_attach(grid,
+			  GTK_WIDGET(ags_lv2_browser_combo_box_output_controls_new()),
+			  1, y,
+			  1, 1);
 	}else{
-	  gtk_table_attach_defaults(table,
-				    GTK_WIDGET(ags_lv2_browser_combo_box_controls_new()),
-				    1, 2,
-				    y, y + 1);
+	  gtk_grid_attach(grid,
+			  GTK_WIDGET(ags_lv2_browser_combo_box_controls_new()),
+			  1, y,
+			  1, 1);
 	}
       }
       
@@ -388,7 +387,7 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 
     g_list_free(start_plugin_port);
     
-    gtk_widget_show_all((GtkWidget *) table);
+    gtk_widget_show_all((GtkWidget *) grid);
   }else{
     /* update ui - empty */
     label = GTK_LABEL(list->data);
@@ -426,12 +425,11 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 
     g_free(str);
 
-    list = list->next;
-    table = GTK_TABLE(list->data);
+    grid = lv2_browser->port_grid;
     
     /* update ui - no ports */
-    child_start = 
-      child = gtk_container_get_children(GTK_CONTAINER(table));
+    child =
+      start_child = gtk_container_get_children(GTK_CONTAINER(grid));
     
     while(child != NULL){
       gtk_widget_destroy(GTK_WIDGET(child->data));
@@ -439,8 +437,8 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
       child = child->next;
     }
 
-    g_list_free(child_start);
+    g_list_free(start_child);
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }

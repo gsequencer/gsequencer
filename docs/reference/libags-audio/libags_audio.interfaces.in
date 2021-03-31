@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2020 Joël Krähemann
+# Copyright (C) 2005-2021 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -34,9 +34,11 @@ AgsFxLv2AudioSignal AgsConnectable
 AgsFxEnvelopeAudioSignal AgsConnectable
 AgsFxEq10AudioSignal AgsConnectable
 AgsFxLadspaAudioSignal AgsConnectable
+AgsFxLfoAudioSignal AgsConnectable
 AgsFxPatternAudioSignal AgsConnectable
 AgsFxPeakAudioSignal AgsConnectable
 AgsFxPlaybackAudioSignal AgsConnectable
+AgsFxTwoPassAliaseAudioSignal AgsConnectable
 AgsFxVolumeAudioSignal AgsConnectable
 AgsLfoAudioSignal AgsConnectable
 AgsMuteAudioSignal AgsConnectable
@@ -66,9 +68,11 @@ AgsFxLv2Channel AgsConnectable
 AgsFxEnvelopeChannel AgsConnectable
 AgsFxEq10Channel AgsConnectable
 AgsFxLadspaChannel AgsConnectable
+AgsFxLfoChannel AgsConnectable
 AgsFxPatternChannel AgsConnectable
 AgsFxPeakChannel AgsConnectable
 AgsFxPlaybackChannel AgsConnectable
+AgsFxTwoPassAliaseChannel AgsConnectable
 AgsFxVolumeChannel AgsConnectable AgsMutable
 AgsLfoChannel AgsConnectable
 AgsLoopChannel AgsConnectable
@@ -100,9 +104,11 @@ AgsFxLv2ChannelProcessor AgsConnectable
 AgsFxEnvelopeChannelProcessor AgsConnectable
 AgsFxEq10ChannelProcessor AgsConnectable
 AgsFxLadspaChannelProcessor AgsConnectable
+AgsFxLfoChannelProcessor AgsConnectable
 AgsFxPatternChannelProcessor AgsConnectable
 AgsFxPeakChannelProcessor AgsConnectable
 AgsFxPlaybackChannelProcessor AgsConnectable
+AgsFxTwoPassAliaseChannelProcessor AgsConnectable
 AgsFxVolumeChannelProcessor AgsConnectable
 AgsGenericRecallChannelRun AgsConnectable
 AgsLfoChannelRun AgsConnectable
@@ -131,9 +137,11 @@ AgsFxLv2Recycling AgsConnectable
 AgsFxEnvelopeRecycling AgsConnectable
 AgsFxEq10Recycling AgsConnectable
 AgsFxLadspaRecycling AgsConnectable
+AgsFxLfoRecycling AgsConnectable
 AgsFxPatternRecycling AgsConnectable
 AgsFxPeakRecycling AgsConnectable
 AgsFxPlaybackRecycling AgsConnectable
+AgsFxTwoPassAliaseRecycling AgsConnectable
 AgsFxVolumeRecycling AgsConnectable
 AgsGenericRecallRecycling AgsConnectable
 AgsLfoRecycling AgsConnectable
@@ -157,9 +165,11 @@ AgsFxLv2Audio AgsConnectable
 AgsFxEnvelopeAudio AgsConnectable
 AgsFxEq10Audio AgsConnectable
 AgsFxLadspaAudio AgsConnectable
+AgsFxLfoAudio AgsConnectable
 AgsFxPatternAudio AgsConnectable
 AgsFxPeakAudio AgsConnectable
 AgsFxPlaybackAudio AgsConnectable
+AgsFxTwoPassAliaseAudio AgsConnectable
 AgsFxVolumeAudio AgsConnectable AgsMutable
 AgsMuteAudio AgsConnectable AgsMutable
 AgsPlayAudio AgsConnectable AgsMutable
@@ -183,9 +193,11 @@ AgsFxLv2AudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxEnvelopeAudioProcessor AgsConnectable
 AgsFxEq10AudioProcessor AgsConnectable
 AgsFxLadspaAudioProcessor AgsConnectable
+AgsFxLfoAudioProcessor AgsConnectable
 AgsFxPatternAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxPeakAudioProcessor AgsConnectable
 AgsFxPlaybackAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
+AgsFxTwoPassAliaseAudioProcessor AgsConnectable
 AgsFxVolumeAudioProcessor AgsConnectable
 AgsMuteAudioRun AgsConnectable
 AgsPlayDssiAudioRun AgsConnectable

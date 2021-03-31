@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2020 Joël Krähemann
+# Copyright (C) 2005-2021 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -27,6 +27,9 @@ ags_automation_toolbar_get_type
 ags_automation_window_get_type
 ags_bulk_member_get_type
 ags_cell_pattern_get_type
+ags_composite_edit_get_type
+ags_composite_editor_get_type
+ags_composite_toolbar_get_type
 ags_connection_editor_get_type
 ags_context_menu_get_type
 ags_crop_note_dialog_get_type

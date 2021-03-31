@@ -158,20 +158,19 @@ ags_audiorec_class_init(AgsAudiorecClass *audiorec)
 void
 ags_audiorec_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_audiorec_connectable_parent_interface;
-
   ags_audiorec_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_audiorec_connect;
+  connectable->disconnect = ags_audiorec_disconnect;
 }
 
 void
 ags_audiorec_init(AgsAudiorec *audiorec)
 {
-  GtkHBox *hbox;
-  GtkHBox *vbox;
-  GtkHBox *filename_hbox;
-  GtkHBox *radio_hbox;
+  GtkBox *hbox;
+  GtkBox *vbox;
+  GtkBox *filename_hbox;
+  GtkBox *radio_hbox;
   GtkFrame *frame;
   GtkLabel *label;
 
@@ -208,8 +207,8 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 							  i);
       
       if(audio_thread != NULL){
-	ags_audio_thread_set_do_fx_staging(audio_thread, TRUE);
-	ags_audio_thread_set_staging_program(audio_thread,
+	ags_audio_thread_set_do_fx_staging((AgsAudioThread *) audio_thread, TRUE);
+	ags_audio_thread_set_staging_program((AgsAudioThread *) audio_thread,
 					     staging_program,
 					     1);
 
@@ -256,45 +255,45 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 				       (AGS_MACHINE_POPUP_WAVE_EXPORT));
 
   /* hbox */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
   gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) audiorec)),
 		    (GtkWidget *) hbox);
 
   /* frame - filename and open */
   frame = (GtkFrame *) gtk_frame_new(i18n("file"));
-  gtk_box_pack_start((GtkBox *) hbox,
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) frame,
 		     FALSE, FALSE,
 		     0);
 
-  vbox = (GtkHBox *) gtk_vbox_new(FALSE,
-				  0);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
   gtk_container_add((GtkContainer *) frame,
 		    (GtkWidget *) vbox);
 
   /* filename */
-  filename_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-					   0);
-  gtk_box_pack_start((GtkBox *) vbox,
+  filename_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+					 0);
+  gtk_box_pack_start(vbox,
 		     (GtkWidget *) filename_hbox,
 		     FALSE, FALSE,
 		     0);
   
   label = (GtkLabel *) gtk_label_new(i18n("filename: "));
-  gtk_box_pack_start((GtkBox *) filename_hbox,
+  gtk_box_pack_start(filename_hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   audiorec->filename = (GtkEntry *) gtk_entry_new();
-  gtk_box_pack_start((GtkBox *) filename_hbox,
+  gtk_box_pack_start(filename_hbox,
 		     (GtkWidget *) audiorec->filename,
 		     FALSE, FALSE,
 		     0);
 
-  audiorec->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN);
-  gtk_box_pack_start((GtkBox *) filename_hbox,
+  audiorec->open = (GtkButton *) gtk_button_new_with_label(i18n("_Open"));
+  gtk_box_pack_start(filename_hbox,
 		     (GtkWidget *) audiorec->open,
 		     FALSE, FALSE,
 		     0);
@@ -304,7 +303,7 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   audiorec->position = -1;
 
   audiorec->loading = (GtkLabel *) gtk_label_new(i18n("loading ...  "));
-  gtk_box_pack_start((GtkBox *) filename_hbox,
+  gtk_box_pack_start(filename_hbox,
 		     (GtkWidget *) audiorec->loading,
 		     FALSE, FALSE,
 		     0);
@@ -313,43 +312,43 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   gtk_widget_hide((GtkWidget *) audiorec->loading);
   
   /* radio */
-  radio_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-					0);
-  gtk_box_pack_start((GtkBox *) vbox,
+  radio_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				      0);
+  gtk_box_pack_start(vbox,
 		     (GtkWidget *) radio_hbox,
 		     FALSE, FALSE,
 		     0);
 
   audiorec->keep_data = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(NULL,
 										       "keep");
-  gtk_box_pack_start((GtkBox *) radio_hbox,
+  gtk_box_pack_start(radio_hbox,
 		     (GtkWidget *) audiorec->keep_data,
 		     FALSE, FALSE,
 		     0);
 
   audiorec->replace_data = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(audiorec->keep_data,
 											  "replace");
-  gtk_box_pack_start((GtkBox *) radio_hbox,
+  gtk_box_pack_start(radio_hbox,
 		     (GtkWidget *) audiorec->replace_data,
 		     FALSE, FALSE,
 		     0);
   
   audiorec->mix_data = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(audiorec->keep_data,
 										      "mix");
-  gtk_box_pack_start((GtkBox *) radio_hbox,
+  gtk_box_pack_start(radio_hbox,
 		     (GtkWidget *) audiorec->mix_data,
 		     FALSE, FALSE,
 		     0);
   
   /* frame - hindicator */
   frame = (GtkFrame *) gtk_frame_new(i18n("input"));
-  gtk_box_pack_start((GtkBox *) hbox,
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) frame,
 		     FALSE, FALSE,
 		     0);
 
-  audiorec->hindicator_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-						       0);
+  audiorec->hindicator_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+						     0);
   gtk_container_add((GtkContainer *) frame,
 		    (GtkWidget *) audiorec->hindicator_vbox);
 
@@ -399,10 +398,7 @@ ags_audiorec_finalize(GObject *gobject)
 void
 ags_audiorec_connect(AgsConnectable *connectable)
 {
-  AgsWindow *window;
   AgsAudiorec *audiorec;
-
-  GList *list;
 
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
     return;
@@ -431,8 +427,6 @@ void
 ags_audiorec_disconnect(AgsConnectable *connectable)
 {
   AgsAudiorec *audiorec;
-
-  GList *list;
 
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
     return;
@@ -495,11 +489,7 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 
   gdouble gui_scale_factor;  
   guint i;
-  
-  static const guint staging_program[] = {
-    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
-  };
-  
+    
   application_context = ags_application_context_get_instance();
 
   audiorec = AGS_AUDIOREC(machine);
@@ -529,7 +519,7 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 		   "segment-height", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_HEIGHT),
 		   "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
 		   NULL);
-      gtk_box_pack_start((GtkBox *) audiorec->hindicator_vbox,
+      gtk_box_pack_start(audiorec->hindicator_vbox,
 			 (GtkWidget *) hindicator,
 			 FALSE, FALSE,
 			 8);
@@ -567,10 +557,6 @@ ags_audiorec_resize_pads(AgsMachine *machine,
 
   gdouble gui_scale_factor;  
   
-  static const guint staging_program[] = {
-    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
-  };
-
   application_context = ags_application_context_get_instance();
 
   audiorec = AGS_AUDIOREC(machine);
@@ -687,12 +673,12 @@ ags_audiorec_map_recall(AgsMachine *machine)
 		   (GDestroyNotify) g_object_unref);
   
   /* depending on destination */
-  ags_audiorec_input_map_recall(machine,
+  ags_audiorec_input_map_recall((AgsAudiorec *) machine,
 				0,
 				0);
 
   /* depending on destination */
-  ags_audiorec_output_map_recall(machine,
+  ags_audiorec_output_map_recall((AgsAudiorec *) machine,
 				 0,
 				 0);
 

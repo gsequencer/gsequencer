@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -62,7 +62,7 @@ struct _AgsSynth
   guint mapped_input_pad;
   guint mapped_output_pad;
 
-  GtkVBox *input_pad;
+  GtkBox *input_pad;
 
   GtkSpinButton *lower; // how many channels until to lowest freq
   GtkSpinButton *loop_start;

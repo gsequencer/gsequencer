@@ -63,7 +63,7 @@ typedef enum{
 
 struct _AgsNotationEditor
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
 
@@ -80,7 +80,7 @@ struct _AgsNotationEditor
 
   GObject *soundcard;
   
-  GtkHPaned *paned;
+  GtkPaned *paned;
 
   AgsNotationToolbar *notation_toolbar;
   
@@ -98,7 +98,7 @@ struct _AgsNotationEditor
 
 struct _AgsNotationEditorClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 
   void (*machine_changed)(AgsNotationEditor *notation_editor, AgsMachine *machine);
 };

@@ -107,7 +107,7 @@ ags_effect_bridge_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_effect_bridge = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_effect_bridge = g_type_register_static(GTK_TYPE_BOX,
 						    "AgsEffectBridge", &ags_effect_bridge_info,
 						    0);
 
@@ -377,6 +377,9 @@ ags_effect_bridge_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_effect_bridge_init(AgsEffectBridge *effect_bridge)
 {
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(effect_bridge),
+				 GTK_ORIENTATION_VERTICAL);
+
   effect_bridge->flags = 0;
 
   effect_bridge->name = NULL;
@@ -662,7 +665,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 
 	  while(effect_pad != NULL && output != NULL){
 	    effect_line =
-	      start_effect_line = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(effect_pad->data)->table);
+	      start_effect_line = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(effect_pad->data)->grid);
 
 	    g_object_set(G_OBJECT(effect_pad->data),
 			 "channel", output,
@@ -738,7 +741,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 
 	  while(effect_pad != NULL && input != NULL){
 	    effect_line =
-	      start_effect_line = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(effect_pad->data)->table);
+	      start_effect_line = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(effect_pad->data)->grid);
 
 	    g_object_set(G_OBJECT(effect_pad->data),
 			 "channel", input,
@@ -1074,10 +1077,7 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
 					     guint new_size,
 					     guint old_size)
 {
-  GtkTable *table;
-
   AgsAudio *audio;
-  AgsChannel *start, *current;
 
   GList *start_list, *list;
   
@@ -1153,7 +1153,6 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 				   guint old_size)
 {
   AgsEffectPad *effect_pad;
-  GtkTable *table;
 
   AgsAudio *audio;
   AgsChannel *start_output, *start_input;
@@ -1366,7 +1365,6 @@ ags_effect_bridge_map_recall(AgsEffectBridge *effect_bridge)
 GList*
 ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge)
 {
-  GList *bulk;
   GList *effect_pad, *effect_pad_start;
   
   GList *port, *tmp_port;

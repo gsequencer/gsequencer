@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -67,13 +67,16 @@ struct _AgsMatrix
   AgsRecallContainer *notation_play_container;
   AgsRecallContainer *notation_recall_container;
 
+  AgsRecallContainer *volume_play_container;
+  AgsRecallContainer *volume_recall_container;
+
   AgsRecallContainer *envelope_play_container;
   AgsRecallContainer *envelope_recall_container;
 
   AgsRecallContainer *buffer_play_container;
   AgsRecallContainer *buffer_recall_container;
 
-  GtkTable *table;
+  GtkGrid *grid;
 
   GtkToggleButton *run;
   GtkToggleButton *selected;
@@ -83,6 +86,8 @@ struct _AgsMatrix
 
   GtkSpinButton *length_spin;
   GtkCheckButton *loop_button;
+
+  GtkScale *volume;
 };
 
 struct _AgsMatrixClass

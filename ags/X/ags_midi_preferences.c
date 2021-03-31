@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -84,7 +84,7 @@ ags_midi_preferences_get_type(void)
       NULL, /* interface_data */
     };
     
-    ags_type_midi_preferences = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_midi_preferences = g_type_register_static(GTK_TYPE_BOX,
 						       "AgsMidiPreferences", &ags_midi_preferences_info,
 						       0);
     
@@ -106,7 +106,6 @@ void
 ags_midi_preferences_class_init(AgsMidiPreferencesClass *midi_preferences)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
 
   ags_midi_preferences_parent_class = g_type_class_peek_parent(midi_preferences);
 
@@ -137,8 +136,9 @@ void
 ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
 {
   GtkScrolledWindow *scrolled_window;
-  GtkTable *table;
-  GtkHBox *hbox;
+  
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(midi_preferences),
+				 GTK_ORIENTATION_VERTICAL);
   
   g_signal_connect_after((GObject *) midi_preferences, "parent-set",
 			 G_CALLBACK(ags_midi_preferences_parent_set_callback), (gpointer) midi_preferences);
@@ -153,10 +153,10 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
 		     TRUE, TRUE,
 		     0);
   
-  midi_preferences->sequencer_editor = (GtkVBox *) gtk_vbox_new(FALSE,
-								0);
-  gtk_scrolled_window_add_with_viewport(scrolled_window,
-					(GtkWidget *) midi_preferences->sequencer_editor);
+  midi_preferences->sequencer_editor = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+							      0);
+  gtk_container_add((GtkContainer *) scrolled_window,
+		    (GtkWidget *) midi_preferences->sequencer_editor);
 
   /*  */
   midi_preferences->add = NULL;  
@@ -240,7 +240,6 @@ ags_midi_preferences_apply(AgsApplicable *applicable)
 void
 ags_midi_preferences_reset(AgsApplicable *applicable)
 {
-  AgsPreferences *preferences;
   AgsMidiPreferences *midi_preferences;
   AgsSequencerEditor *sequencer_editor;
 
@@ -249,14 +248,9 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
   
   AgsApplicationContext *application_context;
 
-  GObject *sequencer;
-  
   GList *list_start, *list;
 
   midi_preferences = AGS_MIDI_PREFERENCES(applicable);
-
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(midi_preferences),
-							   AGS_TYPE_PREFERENCES);
   
   application_context = ags_application_context_get_instance();
 

@@ -38,14 +38,6 @@
 void ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor);
 void ags_automation_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_automation_editor_init(AgsAutomationEditor *automation_editor);
-void ags_automation_editor_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
-void ags_automation_editor_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
 void ags_automation_editor_connect(AgsConnectable *connectable);
 void ags_automation_editor_disconnect(AgsConnectable *connectable);
 void ags_automation_editor_finalize(GObject *gobject);
@@ -121,7 +113,7 @@ ags_automation_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_automation_editor = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_automation_editor = g_type_register_static(GTK_TYPE_BOX,
 							"AgsAutomationEditor", &ags_automation_editor_info,
 							0);
     
@@ -150,15 +142,10 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
   GObjectClass *gobject;
   GtkWidgetClass *widget;
 
-  GParamSpec *param_spec;
-
   ags_automation_editor_parent_class = g_type_class_peek_parent(automation_editor);
 
   /* GObjectClass */
   gobject = (GObjectClass *) automation_editor;
-
-  gobject->set_property = ags_automation_editor_set_property;
-  gobject->get_property = ags_automation_editor_get_property;
 
   gobject->finalize = ags_automation_editor_finalize;
   
@@ -198,9 +185,9 @@ void
 ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 {
   GtkViewport *viewport;
-  GtkHBox *hbox;
+  GtkBox *hbox;
   GtkScrolledWindow *scrolled_window;
-  GtkTable *table;
+  GtkGrid *grid;
 
   GtkStyleContext *style_context;  
 
@@ -209,6 +196,9 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   AgsApplicationContext *application_context;
   
   gdouble gui_scale_factor;
+
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(automation_editor),
+				 GTK_ORIENTATION_VERTICAL);
   
   automation_editor->flags = (AGS_AUTOMATION_EDITOR_PASTE_MATCH_LINE |
 			      AGS_AUTOMATION_EDITOR_PASTE_NO_DUPLICATES);
@@ -233,7 +223,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		     0);
 
   /* paned */
-  automation_editor->paned = (GtkHPaned *) gtk_hpaned_new();
+  automation_editor->paned = (GtkPaned *) gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
   gtk_box_pack_start((GtkBox *) automation_editor,
 		     (GtkWidget *) automation_editor->paned,
 		     TRUE, TRUE,
@@ -265,15 +255,15 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 	       "menu", automation_editor->machine_selector->popup,
 	       NULL);
   
-  gtk_scrolled_window_add_with_viewport(scrolled_window,
-					(GtkWidget *) automation_editor->machine_selector);
+  gtk_container_add((GtkContainer *) scrolled_window,
+		    (GtkWidget *) automation_editor->machine_selector);
 
   /* selected machine */
   automation_editor->selected_machine = NULL;
 
   /* notebook audio, output, input */
-  hbox = gtk_hbox_new(FALSE,
-		      0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
   gtk_paned_pack2((GtkPaned *) automation_editor->paned,
 		  (GtkWidget *) hbox,
 		  TRUE,
@@ -294,30 +284,39 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		    GTK_WIDGET(automation_editor->notebook));
   
   /* audio */
-  table = (GtkTable *) gtk_table_new(4, 3,
-				     FALSE);
+  grid = (GtkGrid *) gtk_grid_new();
   gtk_notebook_append_page(automation_editor->notebook,
-			   (GtkWidget *) table,
+			   (GtkWidget *) grid,
 			   gtk_label_new(i18n("audio")));
 
   /* audio - scrollbars */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT), 1.0);
-  automation_editor->audio_vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
-  gtk_table_attach(table,
-		   (GtkWidget *) automation_editor->audio_vscrollbar,
-		   2, 3,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  automation_editor->audio_vscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
+									   adjustment);
 
+  gtk_widget_set_valign((GtkWidget *) automation_editor->audio_vscrollbar,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->audio_vscrollbar,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) automation_editor->audio_vscrollbar,
+		  2, 2,
+		  1, 1);
+		    
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH), 1.0);
-  automation_editor->audio_hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
-  gtk_table_attach(table,
-		   (GtkWidget *) automation_editor->audio_hscrollbar,
-		   1, 2,
-		   3, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  automation_editor->audio_hscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
+									   adjustment);
+
+  gtk_widget_set_valign((GtkWidget *) automation_editor->audio_hscrollbar,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->audio_hscrollbar,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) automation_editor->audio_hscrollbar,
+		  1, 3,
+		  1, 1);
   
   /* audio - ruler */
   automation_editor->audio_ruler = ags_ruler_new();
@@ -328,16 +327,21 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
 	       NULL);
-  gtk_table_attach(table,
+
+  gtk_widget_set_valign((GtkWidget *) automation_editor->audio_ruler,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->audio_ruler,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand((GtkWidget *) automation_editor->audio_ruler,
+			 TRUE);
+
+  gtk_grid_attach(grid,
 		   (GtkWidget *) automation_editor->audio_ruler,
-		   1, 2,
-		   1, 2,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL,
-		   0, 0);
+		   1, 1,
+		   1, 1);
 
   /* audio - scale */
   automation_editor->audio_scrolled_scale_box = ags_scrolled_scale_box_new();
-  gtk_widget_set_vexpand(automation_editor->audio_scrolled_scale_box, TRUE);
   g_object_set(automation_editor->audio_scrolled_scale_box,
 	       "margin-top", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
 	       NULL);
@@ -353,13 +357,21 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   gtk_widget_set_size_request((GtkWidget *) automation_editor->audio_scrolled_scale_box,
 			      (gint) (gui_scale_factor * AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH),
 			      -1);
+
+  gtk_widget_set_valign((GtkWidget *) automation_editor->audio_scrolled_scale_box,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->audio_scrolled_scale_box,
+			GTK_ALIGN_START);
   
-  gtk_table_attach(table,
+  gtk_widget_set_vexpand((GtkWidget *) automation_editor->audio_scrolled_scale_box,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) automation_editor->audio_scrolled_scale_box,
+			 FALSE);
+  
+  gtk_grid_attach(grid,
 		   (GtkWidget *) automation_editor->audio_scrolled_scale_box,
-		   0, 1,
-		   2, 3,
-		   GTK_FILL, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+		   0, 2,
+		   1, 1);
 
   /* audio - automation edit */
   automation_editor->audio_scrolled_automation_edit_box = ags_scrolled_automation_edit_box_new();
@@ -371,12 +383,19 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   gtk_container_add(GTK_CONTAINER(automation_editor->audio_scrolled_automation_edit_box->viewport),
 		    GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box));
 
-  gtk_table_attach(table,
-		   (GtkWidget *) automation_editor->audio_scrolled_automation_edit_box,
-		   1, 2,
-		   2, 3,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+  gtk_widget_set_valign((GtkWidget *) automation_editor->audio_scrolled_automation_edit_box,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->audio_scrolled_automation_edit_box,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_vexpand((GtkWidget *) automation_editor->audio_scrolled_automation_edit_box,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) automation_editor->audio_scrolled_automation_edit_box,
+			 TRUE);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) automation_editor->audio_scrolled_automation_edit_box,
+		  1, 2,
+		  1, 1);
 
   gtk_widget_set_events(GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->viewport), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
@@ -387,30 +406,39 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 			| GDK_CONTROL_MASK);
   
   /* output */
-  table = (GtkTable *) gtk_table_new(4, 3,
-				     FALSE);
+  grid = (GtkGrid *) gtk_grid_new();
   gtk_notebook_append_page(automation_editor->notebook,
-			   (GtkWidget *) table,
+			   (GtkWidget *) grid,
 			   gtk_label_new(i18n("output")));
 
   /* output - scrollbars */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT), 1.0);
-  automation_editor->output_vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
-  gtk_table_attach(table,
-		   (GtkWidget *) automation_editor->output_vscrollbar,
-		   2, 3,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  automation_editor->output_vscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
+									    adjustment);
+
+  gtk_widget_set_valign((GtkWidget *) automation_editor->output_vscrollbar,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->output_vscrollbar,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) automation_editor->output_vscrollbar,
+		  2, 2,
+		  1, 1);
 
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH), 1.0);
-  automation_editor->output_hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
-  gtk_table_attach(table,
-		   (GtkWidget *) automation_editor->output_hscrollbar,
-		   1, 2,
-		   3, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  automation_editor->output_hscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
+									    adjustment);
+
+  gtk_widget_set_valign((GtkWidget *) automation_editor->output_hscrollbar,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->output_hscrollbar,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) automation_editor->output_hscrollbar,
+		  1, 3,
+		  1, 1);
   
   /* output - notebook */
   automation_editor->output_notebook = g_object_new(AGS_TYPE_NOTEBOOK,
@@ -418,12 +446,18 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 						    "spacing", 0,
 						    "prefix", i18n("line"),
 						    NULL);
-  gtk_table_attach(table,
-		   (GtkWidget *) automation_editor->output_notebook,
-		   0, 3,
-		   0, 1,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) automation_editor->output_notebook,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->output_notebook,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand((GtkWidget *) automation_editor->output_notebook,
+			 TRUE);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) automation_editor->output_notebook,
+		  0, 0,
+		  3, 1);
 
   /* output - ruler */
   automation_editor->output_ruler = ags_ruler_new();
@@ -434,16 +468,21 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
 	       NULL);
-  gtk_table_attach(table,
-		   (GtkWidget *) automation_editor->output_ruler,
-		   1, 2,
-		   1, 2,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL,
-		   0, 0);
 
+  gtk_widget_set_valign((GtkWidget *) automation_editor->output_ruler,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->output_ruler,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand((GtkWidget *) automation_editor->output_ruler,
+			 TRUE);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) automation_editor->output_ruler,
+		  1, 1,
+		  1, 1);
+  
   /* output - scale */
   automation_editor->output_scrolled_scale_box = ags_scrolled_scale_box_new();
-  gtk_widget_set_vexpand(automation_editor->output_scrolled_scale_box, TRUE);
   g_object_set(automation_editor->output_scrolled_scale_box,
 	       "margin-top", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
 	       NULL);
@@ -460,12 +499,20 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 			      (gint) (gui_scale_factor * AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH),
 			      -1);
 
-  gtk_table_attach(table,
-		   (GtkWidget *) automation_editor->output_scrolled_scale_box,
-		   0, 1,
-		   2, 3,
-		   GTK_FILL, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+  gtk_widget_set_valign((GtkWidget *) automation_editor->output_scrolled_scale_box,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->output_scrolled_scale_box,
+			GTK_ALIGN_START);
+  
+  gtk_widget_set_vexpand((GtkWidget *) automation_editor->output_scrolled_scale_box,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) automation_editor->output_scrolled_scale_box,
+			 FALSE);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) automation_editor->output_scrolled_scale_box,
+		  0, 2,
+		  1, 1);
 
   /* output - automation edit */
   automation_editor->output_scrolled_automation_edit_box = ags_scrolled_automation_edit_box_new();
@@ -477,12 +524,19 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   gtk_container_add(GTK_CONTAINER(automation_editor->output_scrolled_automation_edit_box->viewport),
 		    GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->automation_edit_box));
 
-  gtk_table_attach(table,
-		   (GtkWidget *) automation_editor->output_scrolled_automation_edit_box,
-		   1, 2,
-		   2, 3,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+  gtk_widget_set_valign((GtkWidget *) automation_editor->output_scrolled_automation_edit_box,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->output_scrolled_automation_edit_box,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_vexpand((GtkWidget *) automation_editor->output_scrolled_automation_edit_box,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) automation_editor->output_scrolled_automation_edit_box,
+			 TRUE);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) automation_editor->output_scrolled_automation_edit_box,
+		  1, 2,
+		  1, 1);
 
   gtk_widget_set_events(GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->viewport), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
@@ -493,30 +547,39 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 			| GDK_CONTROL_MASK);
   
   /* input */
-  table = (GtkTable *) gtk_table_new(4, 3,
-				     FALSE);
+  grid = (GtkGrid *) gtk_grid_new();
   gtk_notebook_append_page(automation_editor->notebook,
-			   (GtkWidget *) table,
+			   (GtkWidget *) grid,
 			   gtk_label_new(i18n("input")));
 
   /* input - scrollbars */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT), 1.0);
-  automation_editor->input_vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
-  gtk_table_attach(table,
-		   (GtkWidget *) automation_editor->input_vscrollbar,
-		   2, 3,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  automation_editor->input_vscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
+									   adjustment);
+
+  gtk_widget_set_valign((GtkWidget *) automation_editor->input_vscrollbar,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->input_vscrollbar,
+			GTK_ALIGN_FILL);  
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) automation_editor->input_vscrollbar,
+		  2, 2,
+		  1, 1);
 
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH), 1.0);
-  automation_editor->input_hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
-  gtk_table_attach(table,
-		   (GtkWidget *) automation_editor->input_hscrollbar,
-		   1, 2,
-		   3, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  automation_editor->input_hscrollbar = (GtkScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL,
+									   adjustment);
+
+  gtk_widget_set_valign((GtkWidget *) automation_editor->input_hscrollbar,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->input_hscrollbar,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) automation_editor->input_hscrollbar,
+		  1, 3,
+		  1, 1);
   
   /* input - notebook */
   automation_editor->input_notebook = g_object_new(AGS_TYPE_NOTEBOOK,
@@ -524,13 +587,19 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 						   "spacing", 0,
 						   "prefix", i18n("line"),
 						   NULL);
-  gtk_table_attach(table,
-		   (GtkWidget *) automation_editor->input_notebook,
-		   0, 3,
-		   0, 1,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL,
-		   0, 0);
 
+  gtk_widget_set_valign((GtkWidget *) automation_editor->input_notebook,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->input_notebook,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand((GtkWidget *) automation_editor->input_notebook,
+			 TRUE);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) automation_editor->input_notebook,
+		  0, 0,
+		  3, 1);
+  
   /* input - ruler */
   automation_editor->input_ruler = ags_ruler_new();
   g_object_set(automation_editor->input_ruler,
@@ -540,16 +609,21 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
 	       NULL);
-  gtk_table_attach(table,
-		   (GtkWidget *) automation_editor->input_ruler,
-		   1, 2,
-		   1, 2,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) automation_editor->input_ruler,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->input_ruler,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand((GtkWidget *) automation_editor->input_ruler,
+			 TRUE);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) automation_editor->input_ruler,
+		  1, 1,
+		  1, 1);
 
   /* input - scale */
   automation_editor->input_scrolled_scale_box = ags_scrolled_scale_box_new();
-  gtk_widget_set_vexpand(automation_editor->input_scrolled_scale_box, TRUE);
   g_object_set(automation_editor->input_scrolled_scale_box,
 	       "margin-top", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
 	       NULL);
@@ -566,14 +640,24 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 			      (gint) (gui_scale_factor * AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH),
 			      -1);
 
-  gtk_table_attach(table,
+  gtk_widget_set_valign((GtkWidget *) automation_editor->input_scrolled_scale_box,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->input_scrolled_scale_box,
+			GTK_ALIGN_START);
+  
+  gtk_widget_set_vexpand((GtkWidget *) automation_editor->input_scrolled_scale_box,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) automation_editor->input_scrolled_scale_box,
+			 FALSE);
+
+  gtk_grid_attach(grid,
 		   (GtkWidget *) automation_editor->input_scrolled_scale_box,
-		   0, 1,
-		   2, 3,
-		   GTK_FILL, GTK_FILL | GTK_EXPAND,
-		   0, 0);
-  gtk_widget_show_all(GTK_WIDGET(automation_editor->input_scrolled_scale_box));
-  gtk_widget_show_all(GTK_WIDGET(automation_editor->input_scrolled_scale_box->viewport));
+		   0, 2,
+		   1, 1);
+
+  //TODO:JK: check remove
+//  gtk_widget_show_all(GTK_WIDGET(automation_editor->input_scrolled_scale_box));
+//  gtk_widget_show_all(GTK_WIDGET(automation_editor->input_scrolled_scale_box->viewport));
   
   /* input automation edit */
   automation_editor->input_scrolled_automation_edit_box = ags_scrolled_automation_edit_box_new();
@@ -585,12 +669,19 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   gtk_container_add(GTK_CONTAINER(automation_editor->input_scrolled_automation_edit_box->viewport),
 		    GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->automation_edit_box));
 
-  gtk_table_attach(table,
-		   (GtkWidget *) automation_editor->input_scrolled_automation_edit_box,
-		   1, 2,
-		   2, 3,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
-		   0, 0);
+  gtk_widget_set_valign((GtkWidget *) automation_editor->input_scrolled_automation_edit_box,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) automation_editor->input_scrolled_automation_edit_box,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_vexpand((GtkWidget *) automation_editor->input_scrolled_automation_edit_box,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) automation_editor->input_scrolled_automation_edit_box,
+			 TRUE);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) automation_editor->input_scrolled_automation_edit_box,
+		  1, 2,
+		  1, 1);
 
   gtk_widget_set_events(GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->viewport), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
@@ -614,43 +705,9 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		     0);
   
   /* style context */
-  style_context = gtk_widget_get_style_context(automation_editor);
+  style_context = gtk_widget_get_style_context((GtkWidget *) automation_editor);
   gtk_style_context_add_class(style_context,
 			      "editor");
-}
-
-void
-ags_automation_editor_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec)
-{
-  AgsAutomationEditor *automation_editor;
-
-  automation_editor = AGS_AUTOMATION_EDITOR(gobject);
-
-  switch(prop_id){
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_automation_editor_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec)
-{
-  AgsAutomationEditor *automation_editor;
-
-  automation_editor = AGS_AUTOMATION_EDITOR(gobject);
-
-  switch(prop_id){
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
 }
 
 void
@@ -751,10 +808,6 @@ ags_automation_editor_disconnect(AgsConnectable *connectable)
 void
 ags_automation_editor_finalize(GObject *gobject)
 {
-  AgsAutomationEditor *automation_editor;
-
-  automation_editor = AGS_AUTOMATION_EDITOR(gobject);
-
   /* call parent */
   G_OBJECT_CLASS(ags_automation_editor_parent_class)->finalize(gobject);
 }
@@ -764,8 +817,6 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
 {
   AgsAutomationToolbar *automation_toolbar;
 
-  AgsApplicationContext *application_context;
-
   GtkAdjustment *audio_vscrollbar_adjustment;
   GtkAdjustment *audio_hscrollbar_adjustment;
 
@@ -774,19 +825,13 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
   
   GList *list_start, *list;
   
-  gdouble gui_scale_factor;
   gdouble old_h_upper;
   gdouble v_upper, h_upper;
-  double zoom_factor, zoom;
+  double zoom;
   double zoom_correction;
   guint map_width;
 
   automation_toolbar = automation_editor->automation_toolbar;
-
-  application_context = ags_application_context_get_instance();
-
-  /* scale factor */
-  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   /* audio */
   gtk_widget_get_allocation(GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box),
@@ -802,14 +847,14 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
     v_upper = 0.0;
   }
 
-  audio_vscrollbar_adjustment = gtk_range_get_adjustment(automation_editor->audio_vscrollbar);
+  audio_vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_editor->audio_vscrollbar));
   
   gtk_adjustment_set_upper(audio_vscrollbar_adjustment,
 			   v_upper);
 
-  gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->audio_scrolled_automation_edit_box->viewport),
+  gtk_adjustment_set_upper(gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(automation_editor->audio_scrolled_automation_edit_box->viewport)),
 			   v_upper);
-  gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->audio_scrolled_scale_box->viewport),
+  gtk_adjustment_set_upper(gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(automation_editor->audio_scrolled_scale_box->viewport)),
 			   v_upper);
   
   /* reset horizontal scrollbar */
@@ -870,26 +915,18 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
   GtkAdjustment *output_vscrollbar_adjustment;
   GtkAdjustment *output_hscrollbar_adjustment;
   
-  AgsApplicationContext *application_context;
-  
   GtkAllocation automation_edit_box_allocation;
   GtkAllocation viewport_allocation;
   
   GList *list_start, *list;
   
-  gdouble gui_scale_factor;
   gdouble old_h_upper;
   gdouble v_upper, h_upper;
-  double zoom_factor, zoom;
+  double zoom;
   double zoom_correction;
   guint map_width;
 
   automation_toolbar = automation_editor->automation_toolbar;
-
-  application_context = ags_application_context_get_instance();
-
-  /* scale factor */
-  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   /* output */
   gtk_widget_get_allocation(GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->automation_edit_box),
@@ -910,9 +947,9 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
   gtk_adjustment_set_upper(output_vscrollbar_adjustment,
 			   v_upper);
 
-  gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->output_scrolled_automation_edit_box->viewport),
+  gtk_adjustment_set_upper(gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(automation_editor->output_scrolled_automation_edit_box->viewport)),
 			   v_upper);
-  gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->output_scrolled_scale_box->viewport),
+  gtk_adjustment_set_upper(gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(automation_editor->output_scrolled_scale_box->viewport)),
 			   v_upper);
 
   /* reset horizontal scrollbar */
@@ -974,26 +1011,18 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
   GtkAdjustment *input_vscrollbar_adjustment;
   GtkAdjustment *input_hscrollbar_adjustment;
   
-  AgsApplicationContext *application_context;
-  
   GtkAllocation automation_edit_box_allocation;
   GtkAllocation viewport_allocation;
 
   GList *list_start, *list;
   
-  gdouble gui_scale_factor;
   gdouble old_h_upper;
   gdouble v_upper, h_upper;
-  double zoom_factor, zoom;
+  double zoom;
   double zoom_correction;
   guint map_width;
   
   automation_toolbar = automation_editor->automation_toolbar;
-
-  application_context = ags_application_context_get_instance();
-
-  /* scale factor */
-  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   /* input */
   gtk_widget_get_allocation(GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->automation_edit_box),
@@ -1014,9 +1043,9 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
   gtk_adjustment_set_upper(input_vscrollbar_adjustment,
 			   v_upper);
 
-  gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->input_scrolled_automation_edit_box->viewport),
+  gtk_adjustment_set_upper(gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(automation_editor->input_scrolled_automation_edit_box->viewport)),
 			   v_upper);
-  gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->input_scrolled_scale_box->viewport),
+  gtk_adjustment_set_upper(gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(automation_editor->input_scrolled_scale_box->viewport)),
 			   v_upper);
 
   /* reset horizontal scrollbar */
@@ -1075,7 +1104,7 @@ ags_automation_editor_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_automation_editor_parent_class)->show(widget);
 
-  gtk_widget_hide(AGS_AUTOMATION_EDITOR(widget)->automation_meta);
+  gtk_widget_hide((GtkWidget *) AGS_AUTOMATION_EDITOR(widget)->automation_meta);
 }
 
 void
@@ -1083,7 +1112,7 @@ ags_automation_editor_show_all(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_automation_editor_parent_class)->show_all(widget);
 
-  gtk_widget_hide(AGS_AUTOMATION_EDITOR(widget)->automation_meta);
+  gtk_widget_hide((GtkWidget *) AGS_AUTOMATION_EDITOR(widget)->automation_meta);
 }
 
 void
@@ -1096,16 +1125,11 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
   GList *list_start, *list;
   GList *tab;
   
-  gchar *str;
-  
   gdouble gui_scale_factor;
   guint length;
   guint output_pads, input_pads;
   guint audio_channels;
   guint i;
-
-  GRecMutex *audio_mutex;
-  GRecMutex *automation_mutex;
 
   /* disconnect set pads - old */
   old_machine = automation_editor->selected_machine;
@@ -1125,13 +1149,6 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
-
-  /* get audio mutex */
-  audio_mutex = NULL;
-  
-  if(machine != NULL){
-    audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(machine->audio);
-  }
   
   /* notebook - remove tabs */
   length = g_list_length(automation_editor->output_notebook->tab);
@@ -1150,14 +1167,16 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 
   /* notebook - add tabs */
   if(machine != NULL){
-    g_rec_mutex_lock(audio_mutex);
+    audio_channels = 0;
 
-    output_pads = machine->audio->output_pads;
-    input_pads = machine->audio->input_pads;
-    
-    audio_channels = machine->audio->audio_channels;
-    
-    g_rec_mutex_unlock(audio_mutex);
+    output_pads = 0;
+    input_pads = 0;
+
+    g_object_get(machine->audio,
+		 "audio-channels", &audio_channels,
+		 "output-pads", &output_pads,
+		 "input-pads", &input_pads,
+		 NULL);
 
     for(i = 0; i < output_pads * audio_channels; i++){
       ags_notebook_insert_tab(automation_editor->output_notebook,
@@ -1348,8 +1367,6 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     while(automation_port != NULL){
       AgsAutomationEdit *automation_edit;
       AgsScale *scale;
-
-      AgsPluginPort *plugin_port;
       
       gchar *control_name;
 
@@ -1391,6 +1408,9 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 
 	gboolean success;
 
+	specifier = NULL;
+	plugin_port = NULL;
+	
 	g_object_get(port->data,
 		     "specifier", &specifier,
 		     "plugin-port", &plugin_port,
@@ -1403,6 +1423,10 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 	  GValue *upper_value;
 	  GValue *lower_value;
 	  GValue *value;
+
+	  upper_value = NULL;
+	  lower_value = NULL;
+	  value = NULL;
 	  
 	  g_object_get(plugin_port,
 		       "upper-value", &upper_value,
@@ -1465,7 +1489,8 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
       {
 	GtkAllocation allocation;
 	  
-	gtk_widget_get_allocation(scale, &allocation);
+	gtk_widget_get_allocation((GtkWidget *) scale,
+				  &allocation);
 
 	g_message("%d|%d %d,%d", allocation.x, allocation.y, allocation.width, allocation.height);
       }
@@ -1576,8 +1601,6 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 
   AgsTimestamp *timestamp;
 
-  GList *list_automation;
-
   gint i;
   
   if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
@@ -1588,9 +1611,7 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 
   if(automation_editor->selected_machine != NULL){
     AgsChannel *start_output, *start_input;
-    AgsChannel *channel, *nth_channel;
-
-    GRecMutex *audio_mutex;
+    AgsChannel *nth_channel;
 
     machine = automation_editor->selected_machine;
 
@@ -1602,25 +1623,14 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
       notebook = automation_editor->input_notebook;
     }
 
-    /* get audio mutex */
-    audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(machine->audio);
-
     /* get some fields */
-    g_rec_mutex_lock(audio_mutex);
+    start_output = NULL;
+    start_input = NULL;
 
-    start_output = machine->audio->output;
-
-    if(start_output != NULL){
-      g_object_ref(start_output);
-    }
-    
-    start_input = machine->audio->input;
-
-    if(start_input != NULL){
-      g_object_ref(start_input);
-    }
-    
-    g_rec_mutex_unlock(audio_mutex);
+    g_object_get(machine->audio,
+		 "output", &start_output,
+		 "input", &start_input,
+		 NULL);
     
     /* check all active tabs */
     timestamp = ags_timestamp_new();
@@ -1879,8 +1889,6 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
     while(notebook == NULL ||
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){
-      AgsAcceleration *new_acceleration;
-      
       list_automation = start_list_automation;
       
       while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
@@ -1955,8 +1963,6 @@ ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
   AgsMachine *machine;
   AgsNotebook *notebook;
   
-  AgsAutomation *automation;
-
   AgsTimestamp *timestamp;
 
   GList *start_list_automation, *list_automation;
@@ -2100,8 +2106,8 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
 
 	if(i != line ||
 	   channel_type != automation_editor->focused_automation_edit->channel_type ||
-	   !g_strcmp0(control_name,
-		      automation_editor->focused_automation_edit->control_name) != TRUE){
+	   (!g_strcmp0(control_name,
+		       automation_editor->focused_automation_edit->control_name)) != TRUE){
 	  list_automation = list_automation->next;
 
 	  continue;
@@ -2139,7 +2145,7 @@ ags_automation_editor_paste_automation_all(AgsAutomationEditor *automation_edito
 					   gint *last_x)
 {    
   AgsChannel *start_output, *start_input;
-  AgsChannel *channel, *nth_channel;
+  AgsChannel *nth_channel;
   AgsAutomation *automation;
   
   GList *start_list_automation, *list_automation;
@@ -2148,29 +2154,16 @@ ags_automation_editor_paste_automation_all(AgsAutomationEditor *automation_edito
   guint current_x;
   gint i;
 
-  GRecMutex *audio_mutex;
-    
   first_x = -1;
 
-  /* get audio mutex */
-  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(machine->audio);
-
   /* get some fields */
-  g_rec_mutex_lock(audio_mutex);
+  start_output = NULL;
+  start_input = NULL;
 
-  start_output = machine->audio->output;
-
-  if(start_output != NULL){
-    g_object_ref(start_output);
-  }
-    
-  start_input = machine->audio->input;
-
-  if(start_input != NULL){
-    g_object_ref(start_input);
-  }
-    
-  g_rec_mutex_unlock(audio_mutex);
+  g_object_get(machine->audio,
+	       "output", &start_output,
+	       "input", &start_input,
+	       NULL);
     
   /*  */
   i = 0;
@@ -2190,8 +2183,6 @@ ags_automation_editor_paste_automation_all(AgsAutomationEditor *automation_edito
       GList *start_play_port, *play_port;
       GList *start_recall_port, *recall_port;
 	
-      AgsPort *current_port;
-
       play_port = NULL;
       recall_port = NULL;
 
@@ -2338,12 +2329,12 @@ ags_automation_editor_paste_automation_all(AgsAutomationEditor *automation_edito
 	while(child != NULL){
 	  if(child->type == XML_ELEMENT_NODE){
 	    if(!xmlStrncmp(child->name,
-			   "note",
+			   BAD_CAST "note",
 			   5)){
 	      guint tmp;
 
-	      tmp = g_ascii_strtoull(xmlGetProp(child,
-						"x"),
+	      tmp = g_ascii_strtoull((gchar *) xmlGetProp(child,
+							  BAD_CAST "x"),
 				     NULL,
 				     10);
 
@@ -2356,8 +2347,8 @@ ags_automation_editor_paste_automation_all(AgsAutomationEditor *automation_edito
 	  child = child->next;
 	}
 
-	x_boundary = g_ascii_strtoull(xmlGetProp(automation_node,
-						 "x_boundary"),
+	x_boundary = g_ascii_strtoull((gchar *) xmlGetProp(automation_node,
+							   BAD_CAST "x_boundary"),
 				      NULL,
 				      10);
 
@@ -2390,12 +2381,12 @@ ags_automation_editor_paste_automation_all(AgsAutomationEditor *automation_edito
 	while(child != NULL){
 	  if(child->type == XML_ELEMENT_NODE){
 	    if(!xmlStrncmp(child->name,
-			   "note",
+			   BAD_CAST "note",
 			   5)){
 	      guint tmp;
 
-	      tmp = g_ascii_strtoull(xmlGetProp(child,
-						"x"),
+	      tmp = g_ascii_strtoull((gchar *) xmlGetProp(child,
+							  BAD_CAST "x"),
 				     NULL,
 				     10);
 
@@ -2473,14 +2464,14 @@ ags_automation_editor_paste_automation(AgsAutomationEditor *automation_editor,
   while(automation_list_node != NULL){
     if(automation_list_node->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(automation_list_node->name,
-		     "automation-list",
+		     BAD_CAST "automation-list",
 		     14)){
 	automation_node = automation_list_node->children;
 	  
 	while(automation_node != NULL){
 	  if(automation_node->type == XML_ELEMENT_NODE){
 	    if(!xmlStrncmp(automation_node->name,
-			   "automation",
+			   BAD_CAST "automation",
 			   9)){
 	      guint64 offset;
 		
@@ -2490,10 +2481,10 @@ ags_automation_editor_paste_automation(AgsAutomationEditor *automation_editor,
 	      while(timestamp_node != NULL){
 		if(timestamp_node->type == XML_ELEMENT_NODE){
 		  if(!xmlStrncmp(timestamp_node->name,
-				 "timestamp",
+				 BAD_CAST "timestamp",
 				 10)){
-		    offset = g_ascii_strtoull(xmlGetProp(timestamp_node,
-							 "offset"),
+		    offset = g_ascii_strtoull((gchar *) xmlGetProp(timestamp_node,
+								   BAD_CAST "offset"),
 					      NULL,
 					      10);
 		      
@@ -2552,13 +2543,9 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
   AgsMachine *machine;
   AgsAutomationEdit *automation_edit;
   AgsNotebook *notebook;
-  
-  AgsAutomation *automation;
 
   xmlDoc *clipboard;
   xmlNode *audio_node;
-  xmlNode *automation_list_node, *automation_node;
-  xmlNode *timestamp_node;
   
   gchar *buffer;
 
@@ -2673,9 +2660,9 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
     /* iterate xml tree */
     while(audio_node != NULL){
       if(audio_node->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp("audio", audio_node->name, 6)){
-	  automation_node = audio_node->children;
-	
+	if(!xmlStrncmp(BAD_CAST "audio",
+		       audio_node->name,
+		       6)){
 	  first_x = ags_automation_editor_paste_automation(automation_editor,
 							   notebook,
 							   machine,
@@ -2721,8 +2708,6 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
   AgsMachine *machine;
   AgsNotebook *notebook;
   
-  AgsAutomation *automation;
-
   xmlDoc *clipboard;
   xmlNode *audio_node, *automation_list_node, *automation_node;
 
@@ -2798,7 +2783,7 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
-			   buffer, size);
+			   (gchar *) buffer, size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
 
     xmlFreeDoc(clipboard);
@@ -2811,8 +2796,6 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
   AgsMachine *machine;
   AgsNotebook *notebook;
   
-  AgsAutomation *automation;
-
   xmlDoc *clipboard;
   xmlNode *audio_node;
   xmlNode *automation_list_node, *automation_node;
@@ -2890,7 +2873,7 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
-			   buffer, size);
+			   (gchar *) buffer, size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
 
     xmlFreeDoc(clipboard);

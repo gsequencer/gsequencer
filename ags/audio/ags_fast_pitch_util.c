@@ -23,9 +23,6 @@
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_fourier_transform_util.h>
 
-#include <math.h>
-#include <complex.h>
-
 /**
  * SECTION:ags_fast_pitch_util
  * @short_description: fast pitch util

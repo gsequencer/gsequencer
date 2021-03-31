@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/editor/ags_toolbar_callbacks.h>
+#include <ags/X/editor/ags_composite_toolbar_callbacks.h>
 
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
@@ -31,67 +31,67 @@
 #include <ags/X/ags_wave_editor.h>
 
 void
-ags_toolbar_position_callback(GtkToolButton *button, AgsToolbar *toolbar)
+ags_composite_toolbar_position_callback(GtkToolButton *button, AgsCompositeToolbar *composite_toolbar)
 {
-  if(toolbar->block_selected_tool){
+  if(composite_toolbar->block_selected_tool){
     return;
   }
 
-  toolbar->block_selected_tool = TRUE;
+  composite_toolbar->block_selected_tool = TRUE;
 
-  ags_toolbar_set_selected_tool(toolbar,
-				(GtkToggleToolButton *) button);
+  ags_composite_toolbar_set_selected_tool(composite_toolbar,
+					  (GtkToggleToolButton *) button);
   
-  toolbar->block_selected_tool = FALSE;
+  composite_toolbar->block_selected_tool = FALSE;
 }
 
 void
-ags_toolbar_edit_callback(GtkToolButton *button, AgsToolbar *toolbar)
+ags_composite_toolbar_edit_callback(GtkToolButton *button, AgsCompositeToolbar *composite_toolbar)
 {
-  if(toolbar->block_selected_tool){
+  if(composite_toolbar->block_selected_tool){
     return;
   }
 
-  toolbar->block_selected_tool = TRUE;
+  composite_toolbar->block_selected_tool = TRUE;
 
-  ags_toolbar_set_selected_tool(toolbar,
-				(GtkToggleToolButton *) button);
+  ags_composite_toolbar_set_selected_tool(composite_toolbar,
+					  (GtkToggleToolButton *) button);
   
-  toolbar->block_selected_tool = FALSE;
+  composite_toolbar->block_selected_tool = FALSE;
 }
 
 void
-ags_toolbar_clear_callback(GtkToolButton *button, AgsToolbar *toolbar)
+ags_composite_toolbar_clear_callback(GtkToolButton *button, AgsCompositeToolbar *composite_toolbar)
 {
-  if(toolbar->block_selected_tool){
+  if(composite_toolbar->block_selected_tool){
     return;
   }
 
-  toolbar->block_selected_tool = TRUE;
+  composite_toolbar->block_selected_tool = TRUE;
 
-  ags_toolbar_set_selected_tool(toolbar,
-				(GtkToggleToolButton *) button);
+  ags_composite_toolbar_set_selected_tool(composite_toolbar,
+					  (GtkToggleToolButton *) button);
   
-  toolbar->block_selected_tool = FALSE;
+  composite_toolbar->block_selected_tool = FALSE;
 }
 
 void
-ags_toolbar_select_callback(GtkToolButton *button, AgsToolbar *toolbar)
+ags_composite_toolbar_select_callback(GtkToolButton *button, AgsCompositeToolbar *composite_toolbar)
 {
-  if(toolbar->block_selected_tool){
+  if(composite_toolbar->block_selected_tool){
     return;
   }
 
-  toolbar->block_selected_tool = TRUE;
+  composite_toolbar->block_selected_tool = TRUE;
 
-  ags_toolbar_set_selected_tool(toolbar,
-				(GtkToggleToolButton *) button);
+  ags_composite_toolbar_set_selected_tool(composite_toolbar,
+					  (GtkToggleToolButton *) button);
   
-  toolbar->block_selected_tool = FALSE;
+  composite_toolbar->block_selected_tool = FALSE;
 }
 
 void
-ags_toolbar_invert_callback(GtkToolButton *button, AgsToolbar *toolbar)
+ags_composite_toolbar_invert_callback(GtkToolButton *button, AgsCompositeToolbar *composite_toolbar)
 {
   AgsCompositeEditor *composite_editor;
   AgsNotationEditor *notation_editor;
@@ -119,7 +119,7 @@ ags_toolbar_invert_callback(GtkToolButton *button, AgsToolbar *toolbar)
     
     success = TRUE;
   }else{
-    notation_editor = gtk_widget_get_ancestor(toolbar,
+    notation_editor = gtk_widget_get_ancestor(composite_toolbar,
 					      AGS_TYPE_NOTATION_EDITOR);
 
     if(notation_editor != NULL){
@@ -127,7 +127,7 @@ ags_toolbar_invert_callback(GtkToolButton *button, AgsToolbar *toolbar)
       
       success = TRUE;
     }else{
-      sheet_editor = gtk_widget_get_ancestor(toolbar,
+      sheet_editor = gtk_widget_get_ancestor(composite_toolbar,
 					     AGS_TYPE_SHEET_EDITOR);
     }
 
@@ -137,7 +137,7 @@ ags_toolbar_invert_callback(GtkToolButton *button, AgsToolbar *toolbar)
       success = TRUE;
     }else{
       if(notation_editor == NULL){
-	automation_editor = gtk_widget_get_ancestor(toolbar,
+	automation_editor = gtk_widget_get_ancestor(composite_toolbar,
 						    AGS_TYPE_AUTOMATION_EDITOR);
       }
     }
@@ -149,7 +149,7 @@ ags_toolbar_invert_callback(GtkToolButton *button, AgsToolbar *toolbar)
     }else{
       if(notation_editor == NULL &&
 	 sheet_editor == NULL){
-	wave_editor = gtk_widget_get_ancestor(toolbar,
+	wave_editor = gtk_widget_get_ancestor(composite_toolbar,
 					      AGS_TYPE_WAVE_EDITOR);
       }
     }
@@ -163,7 +163,7 @@ ags_toolbar_invert_callback(GtkToolButton *button, AgsToolbar *toolbar)
 }
 
 void
-ags_toolbar_copy_callback(GtkToolButton *button, AgsToolbar *toolbar)
+ags_composite_toolbar_copy_callback(GtkToolButton *button, AgsCompositeToolbar *composite_toolbar)
 {
   AgsCompositeEditor *composite_editor;
   AgsNotationEditor *notation_editor;
@@ -191,7 +191,7 @@ ags_toolbar_copy_callback(GtkToolButton *button, AgsToolbar *toolbar)
     
     success = TRUE;
   }else{
-    notation_editor = gtk_widget_get_ancestor(toolbar,
+    notation_editor = gtk_widget_get_ancestor(composite_toolbar,
 					      AGS_TYPE_NOTATION_EDITOR);
 
     if(notation_editor != NULL){
@@ -199,7 +199,7 @@ ags_toolbar_copy_callback(GtkToolButton *button, AgsToolbar *toolbar)
       
       success = TRUE;
     }else{
-      sheet_editor = gtk_widget_get_ancestor(toolbar,
+      sheet_editor = gtk_widget_get_ancestor(composite_toolbar,
 					     AGS_TYPE_SHEET_EDITOR);
     }
 
@@ -209,7 +209,7 @@ ags_toolbar_copy_callback(GtkToolButton *button, AgsToolbar *toolbar)
       success = TRUE;
     }else{
       if(notation_editor == NULL){
-	automation_editor = gtk_widget_get_ancestor(toolbar,
+	automation_editor = gtk_widget_get_ancestor(composite_toolbar,
 						    AGS_TYPE_AUTOMATION_EDITOR);
       }
     }
@@ -221,7 +221,7 @@ ags_toolbar_copy_callback(GtkToolButton *button, AgsToolbar *toolbar)
     }else{
       if(notation_editor == NULL &&
 	 sheet_editor == NULL){
-	wave_editor = gtk_widget_get_ancestor(toolbar,
+	wave_editor = gtk_widget_get_ancestor(composite_toolbar,
 					      AGS_TYPE_WAVE_EDITOR);
       }
     }
@@ -235,7 +235,7 @@ ags_toolbar_copy_callback(GtkToolButton *button, AgsToolbar *toolbar)
 }
 
 void
-ags_toolbar_cut_callback(GtkToolButton *button, AgsToolbar *toolbar)
+ags_composite_toolbar_cut_callback(GtkToolButton *button, AgsCompositeToolbar *composite_toolbar)
 {
   AgsCompositeEditor *composite_editor;
   AgsNotationEditor *notation_editor;
@@ -263,7 +263,7 @@ ags_toolbar_cut_callback(GtkToolButton *button, AgsToolbar *toolbar)
     
     success = TRUE;
   }else{
-    notation_editor = gtk_widget_get_ancestor(toolbar,
+    notation_editor = gtk_widget_get_ancestor(composite_toolbar,
 					      AGS_TYPE_NOTATION_EDITOR);
 
     if(notation_editor != NULL){
@@ -271,7 +271,7 @@ ags_toolbar_cut_callback(GtkToolButton *button, AgsToolbar *toolbar)
       
       success = TRUE;
     }else{
-      sheet_editor = gtk_widget_get_ancestor(toolbar,
+      sheet_editor = gtk_widget_get_ancestor(composite_toolbar,
 					     AGS_TYPE_SHEET_EDITOR);
     }
 
@@ -281,7 +281,7 @@ ags_toolbar_cut_callback(GtkToolButton *button, AgsToolbar *toolbar)
       success = TRUE;
     }else{
       if(notation_editor == NULL){
-	automation_editor = gtk_widget_get_ancestor(toolbar,
+	automation_editor = gtk_widget_get_ancestor(composite_toolbar,
 						    AGS_TYPE_AUTOMATION_EDITOR);
       }
     }
@@ -293,7 +293,7 @@ ags_toolbar_cut_callback(GtkToolButton *button, AgsToolbar *toolbar)
     }else{
       if(notation_editor == NULL &&
 	 sheet_editor == NULL){
-	wave_editor = gtk_widget_get_ancestor(toolbar,
+	wave_editor = gtk_widget_get_ancestor(composite_toolbar,
 					      AGS_TYPE_WAVE_EDITOR);
       }
     }
@@ -307,7 +307,7 @@ ags_toolbar_cut_callback(GtkToolButton *button, AgsToolbar *toolbar)
 }
 
 void
-ags_toolbar_paste_callback(GtkToolButton *button, AgsToolbar *toolbar)
+ags_composite_toolbar_paste_callback(GtkToolButton *button, AgsCompositeToolbar *composite_toolbar)
 {
   AgsCompositeEditor *composite_editor;
   AgsNotationEditor *notation_editor;
@@ -335,7 +335,7 @@ ags_toolbar_paste_callback(GtkToolButton *button, AgsToolbar *toolbar)
     
     success = TRUE;
   }else{
-    notation_editor = gtk_widget_get_ancestor(toolbar,
+    notation_editor = gtk_widget_get_ancestor(composite_toolbar,
 					      AGS_TYPE_NOTATION_EDITOR);
 
     if(notation_editor != NULL){
@@ -343,7 +343,7 @@ ags_toolbar_paste_callback(GtkToolButton *button, AgsToolbar *toolbar)
       
       success = TRUE;
     }else{
-      sheet_editor = gtk_widget_get_ancestor(toolbar,
+      sheet_editor = gtk_widget_get_ancestor(composite_toolbar,
 					     AGS_TYPE_SHEET_EDITOR);
     }
 
@@ -353,7 +353,7 @@ ags_toolbar_paste_callback(GtkToolButton *button, AgsToolbar *toolbar)
       success = TRUE;
     }else{
       if(notation_editor == NULL){
-	automation_editor = gtk_widget_get_ancestor(toolbar,
+	automation_editor = gtk_widget_get_ancestor(composite_toolbar,
 						    AGS_TYPE_AUTOMATION_EDITOR);
       }
     }
@@ -365,7 +365,7 @@ ags_toolbar_paste_callback(GtkToolButton *button, AgsToolbar *toolbar)
     }else{
       if(notation_editor == NULL &&
 	 sheet_editor == NULL){
-	wave_editor = gtk_widget_get_ancestor(toolbar,
+	wave_editor = gtk_widget_get_ancestor(composite_toolbar,
 					      AGS_TYPE_WAVE_EDITOR);
       }
     }
@@ -379,115 +379,115 @@ ags_toolbar_paste_callback(GtkToolButton *button, AgsToolbar *toolbar)
 }
 
 void
-ags_toolbar_paste_match_audio_channel_callback(GtkMenuItem *button, AgsToolbar *toolbar)
+ags_composite_toolbar_paste_match_audio_channel_callback(GtkMenuItem *button, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_paste_match_line_callback(GtkMenuItem *button, AgsToolbar *toolbar)
+ags_composite_toolbar_paste_match_line_callback(GtkMenuItem *button, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_paste_no_duplicates_callback(GtkMenuItem *button, AgsToolbar *toolbar)
+ags_composite_toolbar_paste_no_duplicates_callback(GtkMenuItem *button, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_menu_tool_popup_notation_move_note_callback(GtkMenuItem *item, AgsToolbar *toolbar)
+ags_composite_toolbar_menu_tool_popup_notation_move_note_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_menu_tool_popup_notation_crop_note_callback(GtkMenuItem *item, AgsToolbar *toolbar)
+ags_composite_toolbar_menu_tool_popup_notation_crop_note_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_menu_tool_popup_notation_select_note_callback(GtkMenuItem *item, AgsToolbar *toolbar)
+ags_composite_toolbar_menu_tool_popup_notation_select_note_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_menu_tool_popup_notation_position_cursor_callback(GtkMenuItem *item, AgsToolbar *toolbar)
+ags_composite_toolbar_menu_tool_popup_notation_position_cursor_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_menu_tool_popup_sheet_position_cursor_callback(GtkMenuItem *item, AgsToolbar *toolbar)
+ags_composite_toolbar_menu_tool_popup_sheet_position_cursor_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_menu_tool_popup_automation_select_acceleration_callback(GtkMenuItem *item, AgsToolbar *toolbar)
+ags_composite_toolbar_menu_tool_popup_automation_select_acceleration_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_menu_tool_popup_automation_ramp_acceleration_callback(GtkMenuItem *item, AgsToolbar *toolbar)
+ags_composite_toolbar_menu_tool_popup_automation_ramp_acceleration_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_menu_tool_popup_automation_position_cursor_callback(GtkMenuItem *item, AgsToolbar *toolbar)
+ags_composite_toolbar_menu_tool_popup_automation_position_cursor_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_menu_tool_popup_wave_select_buffer_callback(GtkMenuItem *item, AgsToolbar *toolbar)
+ags_composite_toolbar_menu_tool_popup_wave_select_buffer_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_menu_tool_popup_wave_position_cursor_callback(GtkMenuItem *item, AgsToolbar *toolbar)
+ags_composite_toolbar_menu_tool_popup_wave_position_cursor_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_menu_tool_popup_enable_all_audio_channels_callback(GtkMenuItem *item, AgsToolbar *toolbar)
+ags_composite_toolbar_menu_tool_popup_enable_all_audio_channels_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_menu_tool_popup_disable_all_audio_channels_callback(GtkMenuItem *item, AgsToolbar *toolbar)
+ags_composite_toolbar_menu_tool_popup_disable_all_audio_channels_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_menu_tool_popup_enable_all_lines_callback(GtkMenuItem *item, AgsToolbar *toolbar)
+ags_composite_toolbar_menu_tool_popup_enable_all_lines_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_menu_tool_popup_disable_all_lines_callback(GtkMenuItem *item, AgsToolbar *toolbar)
+ags_composite_toolbar_menu_tool_popup_disable_all_lines_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
+ags_composite_toolbar_zoom_callback(GtkComboBox *combo_box, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsToolbar *toolbar)
+ags_composite_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsCompositeToolbar *composite_toolbar)
 {
   //TODO:JK: implement me
 }

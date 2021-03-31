@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -129,96 +129,89 @@ ags_resize_editor_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_resize_editor_init(AgsResizeEditor *resize_editor)
 {
-  GtkTable *table;
-  GtkAlignment *alignment;
+  GtkGrid *grid;
   GtkLabel *label;
 
-  table = (GtkTable *) gtk_table_new(3, 2, FALSE);
+  grid = (GtkGrid *) gtk_grid_new();
   gtk_box_pack_start(GTK_BOX(resize_editor),
-		     GTK_WIDGET(table),
+		     GTK_WIDGET(grid),
 		     FALSE, FALSE,
 		     0);
 
   /* audio channels */
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(alignment),
-		   0, 1,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  label = (GtkLabel *) gtk_label_new(i18n("audio channels count"));
 
-  label = (GtkLabel *) gtk_label_new(i18n("audio channels"));
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(label));
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
 
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(alignment),
-		   1, 2,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 0,
+		  1, 1);
 
   resize_editor->audio_channels = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1024.0, 1.0);
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(resize_editor->audio_channels));
+
+  gtk_widget_set_valign((GtkWidget *) resize_editor->audio_channels,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) resize_editor->audio_channels,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(resize_editor->audio_channels),
+		  1, 0,
+		  1, 1);
 
   /* output pads */
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(alignment),
+  label = (GtkLabel *) gtk_label_new(i18n("output pads count"));
+
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		   GTK_WIDGET(label),
 		   0, 1,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  label = (GtkLabel *) gtk_label_new(i18n("outputs"));
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(label));
-
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(alignment),
-		   1, 2,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+		   1, 1);
 
   resize_editor->output_pads = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1024.0, 1.0);
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(resize_editor->output_pads));
+
+  gtk_widget_set_valign((GtkWidget *) resize_editor->output_pads,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) resize_editor->output_pads,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		   GTK_WIDGET(resize_editor->output_pads),
+		   1, 1,
+		   1, 1);
 
   /* input pads */
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(alignment),
-		   0, 1,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  label = (GtkLabel *) gtk_label_new(i18n("input pads count"));
 
-  label = (GtkLabel *) gtk_label_new(i18n("inputs"));
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(label));
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
 
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(alignment),
-		   1, 2,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  gtk_grid_attach(grid,
+		   GTK_WIDGET(label),
+		   0, 2,
+		   1, 1);
 
   resize_editor->input_pads = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1024.0, 1.0);
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(resize_editor->input_pads));
+
+  gtk_widget_set_valign((GtkWidget *) resize_editor->input_pads,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) resize_editor->input_pads,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(resize_editor->input_pads),
+		  1, 2,
+		  1, 1);
 }
 
 void

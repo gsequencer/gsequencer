@@ -294,10 +294,10 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   
   /* File */
   list0 =
-    list0_start = gtk_container_get_children(GTK_MENU_SHELL(menu_bar));
+    list0_start = gtk_container_get_children(GTK_CONTAINER(menu_bar));
 
   list1_start = 
-    list1 = gtk_container_get_children ((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
+    list1 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
   g_signal_connect(G_OBJECT (list1->data), "activate",
 		   G_CALLBACK (ags_menu_action_open_callback), (gpointer) menu_bar);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -58,7 +58,7 @@ ags_fm_syncsynth_samplerate_changed_callback(AgsMachine *machine,
   GList *start_list, *list;
 
   list = 
-    start_list = gtk_container_get_children(AGS_FM_SYNCSYNTH(machine)->fm_oscillator);
+    start_list = gtk_container_get_children((GtkContainer *) AGS_FM_SYNCSYNTH(machine)->fm_oscillator);
 
   while(list != NULL){
     AgsFMOscillator *fm_oscillator;
@@ -67,7 +67,7 @@ ags_fm_syncsynth_samplerate_changed_callback(AgsMachine *machine,
     
     guint i;
 
-    start_child = gtk_container_get_children(list->data);
+    start_child = gtk_container_get_children((GtkContainer *) list->data);
 
     child = ags_list_util_find_type(start_child,
 				    AGS_TYPE_FM_OSCILLATOR);
@@ -200,4 +200,81 @@ void
 ags_fm_syncsynth_loop_end_callback(GtkSpinButton *spin_button, AgsFMSyncsynth *fm_syncsynth)
 {
   //TODO:JK: implement me
+}
+
+void
+ags_fm_syncsynth_volume_callback(GtkRange *range, AgsFMSyncsynth *fm_syncsynth)
+{
+  AgsChannel *start_input;
+  AgsChannel *channel;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gfloat volume;
+
+  volume = (gfloat) gtk_range_get_value(range);
+  
+  start_input = NULL;
+  
+  g_object_get(AGS_MACHINE(fm_syncsynth)->audio,
+	       "input", &start_input,
+	       NULL);
+
+  channel = start_input;
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+
+  while(channel != NULL){
+    AgsChannel *next;
+    
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
+    
+    recall =
+      start_recall = g_list_concat(start_play, start_recall);
+
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_VOLUME_CHANNEL)) != NULL){
+      AgsPort *port;
+
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "volume", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	g_value_set_float(&value,
+			  volume);
+
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+      }
+      
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+    
+    /* iterate */
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
 }

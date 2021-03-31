@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -61,11 +61,11 @@ struct _AgsDesk
   AgsRecallContainer *buffer_play_container;
   AgsRecallContainer *buffer_recall_container;
 
-  GtkVBox *vbox;
+  GtkBox *vbox;
   
   AgsDeskPad *left_pad;
 
-  GtkVBox *console;
+  GtkBox *console;
   
   GtkButton *move_left;
   GtkScale *balance;

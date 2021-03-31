@@ -48,7 +48,7 @@ typedef enum{
 
 struct _AgsGenericPreferences
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
   
@@ -56,9 +56,9 @@ struct _AgsGenericPreferences
 
   GtkComboBox *audio_output_module;
 
-  GtkComboBoxText *segmentation;
+  GtkComboBox *segmentation;
 
-  GtkComboBoxText *engine_mode;
+  GtkComboBox *engine_mode;
   GtkCheckButton *rt_safe;
 
   GtkComboBoxText *gui_scale;
@@ -66,7 +66,7 @@ struct _AgsGenericPreferences
 
 struct _AgsGenericPreferencesClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_generic_preferences_get_type(void);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,9 +76,9 @@ struct _AgsWindow
   AgsMenuBar *menu_bar;
   AgsContextMenu *context_menu;
   
-  GtkVPaned *paned;
+  GtkPaned *paned;
 
-  GtkVBox *machines;
+  GtkBox *machines;
   GList *machine_counter;
   AgsMachine *selected;
 

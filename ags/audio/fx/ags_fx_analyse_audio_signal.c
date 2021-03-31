@@ -157,6 +157,7 @@ ags_fx_analyse_audio_signal_real_run_inter(AgsRecall *recall)
 
   source = NULL;
 
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   
   g_object_get(recall,
@@ -204,7 +205,24 @@ ags_fx_analyse_audio_signal_real_run_inter(AgsRecall *recall)
      source->stream_current == NULL){
     ags_recall_done(recall);
   }
-  
+
+  /* unref */
+  if(fx_analyse_channel != NULL){
+    g_object_unref(fx_analyse_channel);
+  }
+
+  if(fx_analyse_channel_processor != NULL){
+    g_object_unref(fx_analyse_channel_processor);
+  }
+
+  if(fx_analyse_recycling != NULL){
+    g_object_unref(fx_analyse_recycling);
+  }  
+
+  if(source != NULL){
+    g_object_unref(source);
+  }
+
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_analyse_audio_signal_parent_class)->run_inter(recall);
 }

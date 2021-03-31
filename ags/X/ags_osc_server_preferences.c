@@ -82,7 +82,7 @@ ags_osc_server_preferences_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_osc_server_preferences = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_osc_server_preferences = g_type_register_static(GTK_TYPE_BOX,
 							     "AgsOscServerPreferences", &ags_osc_server_preferences_info,
 							     0);
     
@@ -133,11 +133,14 @@ ags_osc_server_preferences_applicable_interface_init(AgsApplicableInterface *app
 void
 ags_osc_server_preferences_init(AgsOscServerPreferences *osc_server_preferences)
 {
-  GtkTable *table;
-  GtkHBox *hbox;
+  GtkGrid *grid;
+  GtkBox *hbox;
   GtkLabel *label;
 
   gchar *str;
+
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(osc_server_preferences),
+				 GTK_ORIENTATION_VERTICAL);
   
   osc_server_preferences->flags = 0;
 
@@ -145,144 +148,187 @@ ags_osc_server_preferences_init(AgsOscServerPreferences *osc_server_preferences)
 				    "label", i18n("Note: the fields below are applied immediately"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_box_pack_start(GTK_BOX(osc_server_preferences),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start((GtkBox *) osc_server_preferences,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     2);
 
-  /* table */
-  table = (GtkTable *) gtk_table_new(2, 9,
-				     FALSE);
-  gtk_box_pack_start(GTK_BOX(osc_server_preferences),
-		     GTK_WIDGET(table),
+  /* grid */
+  grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_pack_start((GtkBox *) osc_server_preferences,
+		     (GtkWidget *) grid,
 		     FALSE, FALSE,
 		     2);
 
   /* auto-start */
   osc_server_preferences->auto_start = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("auto-start OSC server"));
-  gtk_table_attach(table,
-		   GTK_WIDGET(osc_server_preferences->auto_start),
-		   0, 2,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) osc_server_preferences->auto_start,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) osc_server_preferences->auto_start,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) osc_server_preferences->auto_start,
+		  0, 0,
+		  2, 1);
 
   /* start/stop */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-		      0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(hbox),
-		   0, 2,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+
+  gtk_widget_set_valign((GtkWidget *) hbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) hbox,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) hbox,
+		  0, 1,
+		  2, 1);
   
   osc_server_preferences->start = (GtkButton *) gtk_button_new_with_label(i18n("start OSC server"));
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(osc_server_preferences->start),
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) osc_server_preferences->start,
 		     FALSE, FALSE,
 		     0);
 
   osc_server_preferences->stop = (GtkButton *) gtk_button_new_with_label(i18n("stop OSC server"));
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(osc_server_preferences->stop),
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) osc_server_preferences->stop,
 		     FALSE, FALSE,
 		     0);
   
   /* listen any address */
   osc_server_preferences->any_address = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("listen on any address"));
-  gtk_table_attach(table,
-		   GTK_WIDGET(osc_server_preferences->any_address),
-		   0, 2,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) osc_server_preferences->any_address,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) osc_server_preferences->any_address,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) osc_server_preferences->any_address,
+		  0, 2,
+		  2, 1);
 
   /* enable IP4 address */
   osc_server_preferences->enable_ip4 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enable IPv4"));
-  gtk_table_attach(table,
-		   GTK_WIDGET(osc_server_preferences->enable_ip4),
-		   0, 2,
-		   3, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) osc_server_preferences->enable_ip4,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) osc_server_preferences->enable_ip4,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) osc_server_preferences->enable_ip4,
+		  0, 3,
+		  2, 1);
 
   /* IP4 address */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("IPv4 address"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   4, 5,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 4,
+		  1, 1);
 
   osc_server_preferences->ip4_address = (GtkEntry *) gtk_entry_new();
   gtk_entry_set_text(osc_server_preferences->ip4_address,
 		     AGS_OSC_SERVER_DEFAULT_INET4_ADDRESS);
-  gtk_table_attach(table,
-		   GTK_WIDGET(osc_server_preferences->ip4_address),
-		   1, 2,
-		   4, 5,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) osc_server_preferences->ip4_address,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) osc_server_preferences->ip4_address,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) osc_server_preferences->ip4_address,
+		  1, 4,
+		  1, 1);
 
   /* enable IP6 address */
   osc_server_preferences->enable_ip6 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enable IPv6"));
-  gtk_table_attach(table,
-		   GTK_WIDGET(osc_server_preferences->enable_ip6),
-		   0, 2,
-		   5, 6,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) osc_server_preferences->enable_ip6,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) osc_server_preferences->enable_ip6,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(osc_server_preferences->enable_ip6),
+		  0, 5,
+		  2, 1);
 
   /* IP6 address */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("IPv6 address"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   6, 7,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 6,
+		  1, 1);
 
   osc_server_preferences->ip6_address = (GtkEntry *) gtk_entry_new();
   gtk_entry_set_text(osc_server_preferences->ip6_address,
 		     AGS_OSC_SERVER_DEFAULT_INET6_ADDRESS);
-  gtk_table_attach(table,
-		   GTK_WIDGET(osc_server_preferences->ip6_address),
-		   1, 2,
-		   6, 7,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) osc_server_preferences->ip6_address,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) osc_server_preferences->ip6_address,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) osc_server_preferences->ip6_address,
+		  1, 6,
+		  1, 1);
   
   /* port */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("port"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   7, 8,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 7,
+		  1, 1);
 
   str = g_strdup_printf("%d",
 			AGS_OSC_SERVER_DEFAULT_SERVER_PORT);
   osc_server_preferences->port = (GtkEntry *) gtk_entry_new();
   gtk_entry_set_text(osc_server_preferences->port,
 		     str);
-  gtk_table_attach(table,
-		   GTK_WIDGET(osc_server_preferences->port),
-		   1, 2,
-		   7, 8,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) osc_server_preferences->port,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) osc_server_preferences->port,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) osc_server_preferences->port,
+		  1, 7,
+		  1, 1);
 
   g_free(str);
 
@@ -291,24 +337,33 @@ ags_osc_server_preferences_init(AgsOscServerPreferences *osc_server_preferences)
 				    "label", i18n("monitor timeout"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   8, 9,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 8,
+		  1, 1);
 
   osc_server_preferences->monitor_timeout = (GtkSpinButton *) gtk_spin_button_new_with_range(0.000001, 10.0, 0.0001);
   gtk_spin_button_set_digits(osc_server_preferences->monitor_timeout,
 			     9);
   gtk_spin_button_set_value(osc_server_preferences->monitor_timeout,
 			    AGS_OSC_METER_CONTROLLER_DEFAULT_MONITOR_TIMEOUT);
-  gtk_table_attach(table,
-		   GTK_WIDGET(osc_server_preferences->monitor_timeout),
-		   1, 2,
-		   8, 9,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+
+  gtk_widget_set_valign((GtkWidget *) osc_server_preferences->monitor_timeout,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) osc_server_preferences->monitor_timeout,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) osc_server_preferences->monitor_timeout,
+		  1, 8,
+		  1, 1);
 }
 
 void

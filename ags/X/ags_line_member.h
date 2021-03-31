@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -71,6 +71,7 @@ struct _AgsLineMember
   guint port_flags;
   
   GType widget_type;
+  guint widget_orientation;
   gchar *widget_label;
 
   AgsRecallContainer *play_container;

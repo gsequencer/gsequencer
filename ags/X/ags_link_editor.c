@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -83,7 +83,7 @@ ags_link_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_link_editor = g_type_register_static(GTK_TYPE_HBOX,
+    ags_type_link_editor = g_type_register_static(GTK_TYPE_BOX,
 						  "AgsLinkEditor", &ags_link_editor_info,
 						  0);
 
@@ -128,6 +128,9 @@ void
 ags_link_editor_init(AgsLinkEditor *link_editor)
 {
   GtkCellRenderer *cell_renderer;
+
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(link_editor),
+				 GTK_ORIENTATION_HORIZONTAL);
 
   g_signal_connect_after((GObject *) link_editor, "parent_set",
 			 G_CALLBACK(ags_link_editor_parent_set_callback), (gpointer) link_editor);
@@ -218,7 +221,6 @@ ags_link_editor_apply(AgsApplicable *applicable)
   /* reset */
   if(gtk_combo_box_get_active_iter(link_editor->combo,
 				   &iter)){
-    AgsWindow *window;
     AgsMachine *link_machine, *machine;
     AgsMachineEditor *machine_editor;
     AgsLineEditor *line_editor;
@@ -241,9 +243,6 @@ ags_link_editor_apply(AgsApplicable *applicable)
 								AGS_TYPE_MACHINE_EDITOR));
 
     machine = machine_editor->machine;
-
-    window = AGS_WINDOW(gtk_widget_get_ancestor(GTK_WIDGET(machine),
-						AGS_TYPE_WINDOW));
     
     /* get channel */
     channel = line_editor->channel;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,7 +51,7 @@ typedef enum{
 
 struct _AgsLinkEditor
 {
-  GtkHBox hbox;
+  GtkBox box;
 
   guint flags;
 
@@ -65,7 +65,7 @@ struct _AgsLinkEditor
 
 struct _AgsLinkEditorClass
 {
-  GtkHBoxClass hbox;
+  GtkBoxClass box;
 };
 
 GType ags_link_editor_get_type(void);

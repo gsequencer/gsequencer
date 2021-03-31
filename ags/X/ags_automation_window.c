@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,14 +33,6 @@
 void ags_automation_window_class_init(AgsAutomationWindowClass *automation_window);
 void ags_automation_window_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_automation_window_init(AgsAutomationWindow *automation_window);
-void ags_automation_window_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
-void ags_automation_window_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
 void ags_automation_window_finalize(GObject *gobject);
 
 void ags_automation_window_connect(AgsConnectable *connectable);
@@ -110,15 +102,11 @@ ags_automation_window_class_init(AgsAutomationWindowClass *automation_window)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
-  GParamSpec *param_spec;
 
   ags_automation_window_parent_class = g_type_class_peek_parent(automation_window);
 
   /* GObjectClass */
   gobject = (GObjectClass *) automation_window;
-
-  gobject->set_property = ags_automation_window_set_property;
-  gobject->get_property = ags_automation_window_get_property;
 
   gobject->finalize = ags_automation_window_finalize;
 
@@ -141,7 +129,7 @@ void
 ags_automation_window_init(AgsAutomationWindow *automation_window)
 {
   g_object_set(G_OBJECT(automation_window),
-	       "title", "edit automation",
+	       "title", i18n("edit automation"),
 	       NULL);
 
   automation_window->flags = 0;
@@ -152,46 +140,8 @@ ags_automation_window_init(AgsAutomationWindow *automation_window)
 }
 
 void
-ags_automation_window_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec)
-{
-  AgsAutomationWindow *automation_window;
-
-  automation_window = AGS_AUTOMATION_WINDOW(gobject);
-
-  switch(prop_id){
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_automation_window_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec)
-{
-  AgsAutomationWindow *automation_window;
-
-  automation_window = AGS_AUTOMATION_WINDOW(gobject);
-
-  switch(prop_id){
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
 ags_automation_window_finalize(GObject *gobject)
 {
-  AgsAutomationWindow *automation_window;
-
-  automation_window = (AgsAutomationWindow *) gobject;
-  
   /* call parent */
   G_OBJECT_CLASS(ags_automation_window_parent_class)->finalize(gobject);
 }

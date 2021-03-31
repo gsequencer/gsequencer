@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -71,13 +71,16 @@ struct _AgsSyncsynth
   AgsRecallContainer *notation_play_container;
   AgsRecallContainer *notation_recall_container;
 
+  AgsRecallContainer *volume_play_container;
+  AgsRecallContainer *volume_recall_container;
+
   AgsRecallContainer *envelope_play_container;
   AgsRecallContainer *envelope_recall_container;
   
   AgsRecallContainer *buffer_play_container;
   AgsRecallContainer *buffer_recall_container;
   
-  GtkVBox *oscillator;
+  GtkBox *oscillator;
   GtkButton *add;
   GtkButton *remove;
   
@@ -87,6 +90,8 @@ struct _AgsSyncsynth
   GtkSpinButton *lower; // how many channels until to lowest freq
   GtkSpinButton *loop_start;
   GtkSpinButton *loop_end;
+
+  GtkScale *volume;
 };
 
 struct _AgsSyncsynthClass

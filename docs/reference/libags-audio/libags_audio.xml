@@ -109,7 +109,12 @@
       <xi:include href="xml/ags_soundcard_util.xml"/>
       <xi:include href="xml/ags_sequencer_util.xml"/>
       <xi:include href="xml/ags_char_buffer_util.xml"/>
+      <xi:include href="xml/ags_linear_interpolate_util.xml"/>
       <xi:include href="xml/ags_fourier_transform_util.xml"/>
+      <xi:include href="xml/ags_fast_pitch_util.xml"/>
+      <xi:include href="xml/ags_hq_pitch_util.xml"/>
+      <xi:include href="xml/ags_phase_shift_util.xml"/>
+      <xi:include href="xml/ags_frequency_aliase_util.xml"/>
       <xi:include href="xml/ags_audio_buffer_util.xml"/>
       <xi:include href="xml/ags_filter_util.xml"/>
       <xi:include href="xml/ags_synth_util.xml"/>
@@ -485,6 +490,20 @@
       <xi:include href="xml/ags_fx_ladspa_channel_processor.xml"/>
       <xi:include href="xml/ags_fx_ladspa_recycling.xml"/>      
 
+      <xi:include href="xml/ags_fx_lfo_audio.xml"/>
+      <xi:include href="xml/ags_fx_lfo_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_lfo_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_lfo_channel.xml"/>
+      <xi:include href="xml/ags_fx_lfo_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_lfo_recycling.xml"/>      
+
+      <xi:include href="xml/ags_fx_two_pass_aliase_audio.xml"/>
+      <xi:include href="xml/ags_fx_two_pass_aliase_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_two_pass_aliase_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_two_pass_aliase_channel.xml"/>
+      <xi:include href="xml/ags_fx_two_pass_aliase_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_two_pass_aliase_recycling.xml"/>      
+      
     </chapter>
     
     <chapter id="audio-task">

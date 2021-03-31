@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,34 +46,18 @@ ags_line_member_dial_changed_callback(GtkWidget *dial, AgsLineMember *line_membe
 }
 
 void
-ags_line_member_vscale_changed_callback(GtkWidget *vscale, AgsLineMember *line_member)
+ags_line_member_scale_changed_callback(GtkWidget *scale, AgsLineMember *line_member)
 {
   GtkAdjustment *adjustment;
 
   gdouble value;
   
-  adjustment = gtk_range_get_adjustment(GTK_RANGE(vscale));
+  adjustment = gtk_range_get_adjustment(GTK_RANGE(scale));
 
   value = gtk_adjustment_get_value(adjustment);
 
   ags_line_member_change_port(line_member,
 			      (gpointer) &value);
-  ags_line_member_chained_event(line_member);
-}
-
-void
-ags_line_member_hscale_changed_callback(GtkWidget *hscale, AgsLineMember *line_member)
-{
-  GtkAdjustment *adjustment;
-
-  gdouble value;
-  
-  adjustment = gtk_range_get_adjustment(GTK_RANGE(hscale));
-
-  value = gtk_adjustment_get_value(adjustment);
-
-  ags_line_member_change_port(line_member,
-			      &value);
   ags_line_member_chained_event(line_member);
 }
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -211,7 +211,7 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 
   machine_editor->notebook =
     notebook = (GtkNotebook *) gtk_notebook_new();
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(machine_editor),
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area((GtkDialog *) machine_editor),
 		     (GtkWidget *) notebook,
 		     TRUE, TRUE,
 		     0);
@@ -252,30 +252,27 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 			   (GtkWidget *) gtk_label_new(i18n("resize channels")));
 
   /* GtkButton's in GtkDialog->action_area  */
-  machine_editor->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(machine_editor),
-		     (GtkWidget *) machine_editor->apply,
-		     FALSE, FALSE,
-		     0);
+  machine_editor->apply = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Apply"));
+  gtk_dialog_add_action_widget((GtkDialog *) machine_editor,
+			       (GtkWidget *) machine_editor->apply,
+			       GTK_RESPONSE_NONE);
 
-  machine_editor->ok = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OK);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(machine_editor),
-		     (GtkWidget *) machine_editor->ok,
-		     FALSE, FALSE,
-		     0);
+  machine_editor->ok = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_OK"));
+  gtk_dialog_add_action_widget((GtkDialog *) machine_editor,
+			       (GtkWidget *) machine_editor->ok,
+			       GTK_RESPONSE_NONE);
 
-  machine_editor->cancel = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(machine_editor),
-		     (GtkWidget *) machine_editor->cancel,
-		     FALSE, FALSE,
-		     0);
+  machine_editor->cancel = (GtkButton *) gtk_button_new_with_mnemonic("_Cancel");
+  gtk_dialog_add_action_widget((GtkDialog *) machine_editor,
+			       (GtkWidget *) machine_editor->cancel,
+			       GTK_RESPONSE_NONE);
 }
 
 void
 ags_machine_editor_set_property(GObject *gobject,
-			    guint prop_id,
-			    const GValue *value,
-			    GParamSpec *param_spec)
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec)
 {
   AgsMachineEditor *machine_editor;
 
@@ -283,14 +280,14 @@ ags_machine_editor_set_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_MACHINE:
-    {
-      AgsMachine *machine;
+  {
+    AgsMachine *machine;
 
-      machine = (AgsMachine *) g_value_get_object(value);
+    machine = (AgsMachine *) g_value_get_object(value);
 
-      ags_machine_editor_set_machine(machine_editor, machine);
-    }
-    break;
+    ags_machine_editor_set_machine(machine_editor, machine);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -432,54 +429,74 @@ ags_machine_editor_reset(AgsApplicable *applicable)
 void
 ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
 {
-  GParameter *output_link_editor_child_parameter;
-  GParameter *input_link_editor_child_parameter;
+  gchar **output_link_editor_child_strv;
+  gchar **input_link_editor_child_strv;
+
+  GValue *output_link_editor_child_value;
+  GValue *input_link_editor_child_value;
 
   /* output */
-  output_link_editor_child_parameter = g_new0(GParameter, 1);
+  output_link_editor_child_strv = (gchar **) g_malloc(2 * sizeof(gchar *));
 
-  output_link_editor_child_parameter[0].name = "channel-type";
+  output_link_editor_child_strv[0] = g_strdup("channel-type");
+  output_link_editor_child_strv[1] = NULL;
 
-  g_value_init(&(output_link_editor_child_parameter[0].value), G_TYPE_GTYPE);
-  g_value_set_gtype(&(output_link_editor_child_parameter[0].value), AGS_TYPE_OUTPUT);
+  output_link_editor_child_value = g_new0(GValue,
+					  1);
+
+  g_value_init(output_link_editor_child_value, G_TYPE_GTYPE);
+  g_value_set_gtype(output_link_editor_child_value,
+		    AGS_TYPE_OUTPUT);
 
   /* input */
-  input_link_editor_child_parameter = g_new0(GParameter, 1);
+  input_link_editor_child_strv = (gchar **) g_malloc(2 * sizeof(gchar *));
 
-  input_link_editor_child_parameter[0].name = "channel-type";
+  input_link_editor_child_strv[0] = g_strdup("channel-type");
+  input_link_editor_child_strv[1] = NULL;
+  
+  input_link_editor_child_value = g_new0(GValue,
+					 1);
 
-  g_value_init(&(input_link_editor_child_parameter[0].value), G_TYPE_GTYPE);
-  g_value_set_gtype(&(input_link_editor_child_parameter[0].value), AGS_TYPE_INPUT);
-
+  g_value_init(input_link_editor_child_value, G_TYPE_GTYPE);
+  g_value_set_gtype(input_link_editor_child_value,
+		    AGS_TYPE_INPUT);
 
   /* AgsOutput */
   machine_editor->output_editor = ags_listing_editor_new(AGS_TYPE_OUTPUT);
-  gtk_scrolled_window_add_with_viewport(machine_editor->output_scrolled_window,
-					(GtkWidget *) machine_editor->output_editor);
+  gtk_container_add((GtkContainer *) machine_editor->output_scrolled_window,
+		    (GtkWidget *) machine_editor->output_editor);
+
+  ags_listing_editor_add_children(machine_editor->output_editor,
+				  machine_editor->machine->audio, 0,
+				  FALSE);
 
   /* AgsInput */
   machine_editor->input_editor = ags_listing_editor_new(AGS_TYPE_INPUT);
-  gtk_scrolled_window_add_with_viewport(machine_editor->input_scrolled_window,
-					(GtkWidget *) machine_editor->input_editor);
+  gtk_container_add((GtkContainer *) machine_editor->input_scrolled_window,
+		    (GtkWidget *) machine_editor->input_editor);
+
+  ags_listing_editor_add_children(machine_editor->input_editor,
+				  machine_editor->machine->audio, 0,
+				  FALSE);
 
   /* AgsOutput link editor */
   machine_editor->output_link_editor = ags_property_collection_editor_new(AGS_TYPE_LINK_COLLECTION_EDITOR,
-									  1,
-									  output_link_editor_child_parameter);
-  gtk_scrolled_window_add_with_viewport(machine_editor->output_link_editor_scrolled_window,
-					(GtkWidget *) machine_editor->output_link_editor);
+									  output_link_editor_child_strv,
+									  output_link_editor_child_value);
+  gtk_container_add((GtkContainer *) machine_editor->output_link_editor_scrolled_window,
+		    (GtkWidget *) machine_editor->output_link_editor);
 
   /* AgsInput link editor */
   machine_editor->input_link_editor = ags_property_collection_editor_new(AGS_TYPE_LINK_COLLECTION_EDITOR,
-									 1,
-									 input_link_editor_child_parameter);
-  gtk_scrolled_window_add_with_viewport(machine_editor->input_link_editor_scrolled_window,
-					(GtkWidget *) machine_editor->input_link_editor);
+									 input_link_editor_child_strv,
+									 input_link_editor_child_value);
+  gtk_container_add((GtkContainer *) machine_editor->input_link_editor_scrolled_window,
+		    (GtkWidget *) machine_editor->input_link_editor);
 
   /* resize editor */
   machine_editor->resize_editor = ags_resize_editor_new();
-  gtk_scrolled_window_add_with_viewport(machine_editor->resize_editor_scrolled_window,
-					(GtkWidget *) machine_editor->resize_editor);
+  gtk_container_add((GtkContainer *) machine_editor->resize_editor_scrolled_window,
+		    (GtkWidget *) machine_editor->resize_editor);
 }
 
 void

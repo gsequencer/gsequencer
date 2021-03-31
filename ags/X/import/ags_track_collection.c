@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -98,7 +98,7 @@ ags_track_collection_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_track_collection = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_track_collection = g_type_register_static(GTK_TYPE_BOX,
 						       "AgsTrackCollection", &ags_track_collection_info,
 						       0);
     
@@ -169,6 +169,9 @@ ags_track_collection_init(AgsTrackCollection *track_collection)
 {
   GtkScrolledWindow *scrolled_window;
 
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(track_collection),
+				 GTK_ORIENTATION_VERTICAL);
+  
   track_collection->midi_doc = NULL;
 
   track_collection->first_offset = 0;
@@ -178,18 +181,25 @@ ags_track_collection_init(AgsTrackCollection *track_collection)
   track_collection->tempo = 500000;
   
   track_collection->default_length = 4;
+
+  track_collection->child_type = G_TYPE_NONE;
+
+  track_collection->child_n_properties = 0;
+
+  track_collection->child_strv = NULL;
+  track_collection->child_value = NULL;
   
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
 								  NULL);
-  gtk_box_pack_start(GTK_BOX(track_collection),
+  gtk_box_pack_start((GtkBox *) track_collection,
 		     (GtkWidget *) scrolled_window,
 		     TRUE, TRUE,
 		     0);
   
-  track_collection->child = (GtkVBox *) gtk_vbox_new(FALSE,
-						     0);
-  gtk_scrolled_window_add_with_viewport(scrolled_window,
-					(GtkWidget *) track_collection->child);
+  track_collection->child = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+						    0);
+  gtk_container_add((GtkContainer *) scrolled_window,
+		    (GtkWidget *) track_collection->child);
 }
 
 void
@@ -213,9 +223,7 @@ ags_track_collection_set_property(GObject *gobject,
 	return;
       }
 
-      track_collection->midi_doc = midi_document;
-
-      
+      track_collection->midi_doc = midi_document;      
     }
     break;
   default:
@@ -404,7 +412,7 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
   }
 
   str = xmlGetProp(header_node,
-		   "division");
+		   BAD_CAST "division");
   track_collection->division = g_ascii_strtoull(str,
 						NULL,
 						10);
@@ -415,7 +423,7 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
     track_collection->first_offset = 0;
     
     str = xmlGetProp(tempo_node,
-		     "tempo");
+		     BAD_CAST "tempo");
     track_collection->tempo = g_ascii_strtoull(str,
 					       NULL,
 					       10);
@@ -453,7 +461,7 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
       xmlChar *str;
 
       str = xmlGetProp(time_signature_node,
-		       "timesig");
+		       BAD_CAST "timesig");
 
       if(str != NULL){
 	sscanf(str, "%d/%d", &numerator, &denominator);
@@ -494,7 +502,7 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 	  for(j = 0; j < xpath_object->nodesetval->nodeNr; j++){
 	    if(instrument_node[j]->type == XML_ELEMENT_NODE){
 	      instrument = xmlGetProp(instrument_node[j],
-				      "instrument-name");
+				      BAD_CAST "instrument-name");
 	      break;
 	    }
 	  }
@@ -514,7 +522,7 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 	  for(j = 0; j < xpath_object->nodesetval->nodeNr; j++){
 	    if(sequence_node[j]->type == XML_ELEMENT_NODE){
 	      sequence = xmlGetProp(sequence_node[j],
-				    "sequence-name");
+				    BAD_CAST "sequence-name");
 	      break;
 	    }
 	  }
@@ -578,10 +586,10 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
   g_message("%s", instrument);
   g_message("%s", sequence);
 
-  //FIXME:JK: deprecated
-  track_collection_mapper = (AgsTrackCollectionMapper *) g_object_newv(track_collection->child_type,
-								       track_collection->child_parameter_count,
-								       track_collection->child_parameter);
+  track_collection_mapper = (AgsTrackCollectionMapper *) g_object_new_with_properties(track_collection->child_type,
+										      track_collection->child_n_properties,
+										      track_collection->child_strv,
+										      track_collection->child_value);
   g_object_set(track_collection_mapper,
 	       "track", track,
 	       "instrument", instrument,
@@ -596,8 +604,9 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
 /**
  * ags_track_collection_new:
  * @child_type: the child type
- * @child_parameter_count: the child parameter count
- * @child_parameter: the child parameters
+ * @child_n_properties: the child properties count
+ * @child_strv: the child string vector
+ * @child_value: the child value array
  *
  * Creates an #AgsTrackCollection
  *
@@ -607,8 +616,9 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
  */
 AgsTrackCollection*
 ags_track_collection_new(GType child_type,
-			 guint child_parameter_count,
-			 GParameter *child_parameter)
+			 guint child_n_properties,
+			 gchar **child_strv,
+			 GValue *child_value)
 {
   AgsTrackCollection *track_collection;
 
@@ -616,8 +626,9 @@ ags_track_collection_new(GType child_type,
 							 NULL);
 
   track_collection->child_type = child_type;
-  track_collection->child_parameter_count = child_parameter_count;
-  track_collection->child_parameter = child_parameter;
+  track_collection->child_n_properties = child_n_properties;
+  track_collection->child_strv = child_strv;
+  track_collection->child_value = child_value;
   
   return(track_collection);
 }

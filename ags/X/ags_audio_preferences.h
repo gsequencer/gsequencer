@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,11 +47,11 @@ typedef enum{
 
 struct _AgsAudioPreferences
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
   
-  GtkVBox *soundcard_editor;
+  GtkBox *soundcard_editor;
   GtkButton *add;
   
   GtkComboBoxText *jack_driver;
@@ -61,7 +61,7 @@ struct _AgsAudioPreferences
 
 struct _AgsAudioPreferencesClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_audio_preferences_get_type(void);

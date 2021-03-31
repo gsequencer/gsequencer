@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -204,7 +204,7 @@ ags_ladspa_bridge_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 {
-  GtkTable *table;
+  GtkGrid *grid;
 
   AgsAudio *audio;
 
@@ -248,9 +248,9 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
   gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) ladspa_bridge),
 		    (GtkWidget *) AGS_MACHINE(ladspa_bridge)->bridge);
 
-  table = (GtkTable *) gtk_table_new(1, 2, FALSE);
+  grid = (GtkGrid *) gtk_grid_new();
   gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge),
-		     (GtkWidget *) table,
+		     (GtkWidget *) grid,
 		     FALSE, FALSE,
 		     0);
 
@@ -259,12 +259,16 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
   AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input)->flags |= (AGS_EFFECT_BULK_HIDE_BUTTONS |
 												AGS_EFFECT_BULK_HIDE_ENTRIES |
 												AGS_EFFECT_BULK_SHOW_LABELS);
-  gtk_table_attach(table,
-		   (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
-		   0, 1,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
+		  0, 0,
+		  1, 1);
 }
 
 void
@@ -523,10 +527,6 @@ ags_ladspa_bridge_map_recall(AgsMachine *machine)
 {  
   AgsLadspaBridge *ladspa_bridge;
   
-  AgsAudio *audio;
-
-  GList *start_recall;
-
   gint position;
   
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
@@ -535,8 +535,6 @@ ags_ladspa_bridge_map_recall(AgsMachine *machine)
   }
 
   ladspa_bridge = (AgsLadspaBridge *) machine;
-
-  audio = machine->audio;
 
   position = 0;
   
@@ -572,8 +570,6 @@ ags_ladspa_bridge_input_map_recall(AgsLadspaBridge *ladspa_bridge,
 				   guint input_pad_start)
 {
   AgsAudio *audio;
-
-  GList *start_recall;
 
   gint position;
   guint input_pads;

@@ -48,31 +48,31 @@ typedef enum{
 
 struct _AgsLadspaBrowser
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
   
   gchar *path;
 
-  GtkHBox *plugin;
+  GtkBox *plugin;
   
   GtkComboBox *filename;
   GtkComboBox *effect;
   
-  GtkVBox *description;
+  GtkBox *description;
 
   GtkLabel *label;
   GtkLabel *maker;
   GtkLabel *copyright;
 
-  GtkTable *port_table;
+  GtkGrid *port_grid;
 
   GtkWidget *preview;
 };
 
 struct _AgsLadspaBrowserClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_ladspa_browser_get_type(void);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -97,7 +97,7 @@ ags_cell_pattern_get_type(void)
       NULL, /* interface_data */
     };
     
-    ags_type_cell_pattern = g_type_register_static(GTK_TYPE_TABLE,
+    ags_type_cell_pattern = g_type_register_static(GTK_TYPE_GRID,
 						   "AgsCellPattern", &ags_cell_pattern_info,
 						   0);
     
@@ -191,8 +191,6 @@ ags_accessible_cell_pattern_action_interface_init(AtkActionIface *action)
 void
 ags_cell_pattern_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_cell_pattern_connectable_parent_interface;
-
   connectable->connect = ags_cell_pattern_connect;
   connectable->disconnect = ags_cell_pattern_disconnect;
 }
@@ -201,20 +199,15 @@ void
 ags_cell_pattern_init(AgsCellPattern *cell_pattern)
 {
   GtkAdjustment *adjustment;
-  AgsLed *led;
 
   AgsApplicationContext *application_context;
 
   gdouble gui_scale_factor;
-  guint i;
 
   application_context = ags_application_context_get_instance();
 
   g_object_set(cell_pattern,
 	       "can-focus", TRUE,
-	       "n-columns", 2,
-	       "n-rows", 2,
-	       "homogeneous", FALSE,
 	       NULL);
 
   cell_pattern->flags = 0;
@@ -237,12 +230,17 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
 
   gtk_widget_set_size_request((GtkWidget *) cell_pattern->drawing_area,
 			      AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY * cell_pattern->cell_width + 1, AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY * cell_pattern->cell_height + 1);
-  gtk_table_attach((GtkTable *) cell_pattern,
+
+  gtk_widget_set_valign((GtkWidget *) cell_pattern->drawing_area,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) cell_pattern->drawing_area,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach((GtkGrid *) cell_pattern,
 		   (GtkWidget *) cell_pattern->drawing_area,
-		   0, 1,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+		   0, 0,
+		   1, 1);
+  
   gtk_widget_set_events((GtkWidget *) cell_pattern->drawing_area,
 			GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
@@ -255,13 +253,18 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
   
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, (double) AGS_CELL_PATTERN_DEFAULT_CONTROLS_VERTICALLY - 1.0, 1.0, 1.0, (gdouble) AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY);
 
-  cell_pattern->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
-  gtk_table_attach((GtkTable *) cell_pattern,
+  cell_pattern->vscrollbar = (GtkVScrollbar *) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
+								 adjustment);
+
+  gtk_widget_set_valign((GtkWidget *) cell_pattern->vscrollbar,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) cell_pattern->vscrollbar,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach((GtkGrid *) cell_pattern,
 		   (GtkWidget *) cell_pattern->vscrollbar,
-		   1, 2,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+		   1, 0,
+		   1, 1);
 
   cell_pattern->hscrollbar = NULL;
   
@@ -274,12 +277,16 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
 	       "led-height", (guint) (gui_scale_factor * AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT),
 	       "led-count", cell_pattern->n_cols,
 	       NULL);
-  gtk_table_attach((GtkTable *) cell_pattern,
+
+  gtk_widget_set_valign((GtkWidget *) cell_pattern->hled_array,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) cell_pattern->hled_array,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach((GtkGrid *) cell_pattern,
 		   (GtkWidget *) cell_pattern->hled_array,
-		   0, 1,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+		   0, 2,
+		   1, 1);
   gtk_widget_show_all((GtkWidget *) cell_pattern->hled_array);
 
   if(ags_cell_pattern_led_queue_draw == NULL){
@@ -999,7 +1006,6 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     GList *start_list, *list;
     GList *start_recall, *recall;
     
-    guint offset;
     guint64 active_led_new;
 
     GRecMutex *play_fx_pattern_audio_processor_mutex;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,22 +37,9 @@ ags_plugin_browser_plugin_type_changed_callback(GtkWidget *combo_box,
 }
 
 void
-ags_plugin_browser_ok_callback(GtkWidget *button,
-			       AgsPluginBrowser *plugin_browser)
-{
-  gtk_combo_box_set_active((GtkComboBox *) plugin_browser->plugin_type,
-			   -1);
-  
+ags_plugin_browser_response_callback(GtkDialog *plugin_browser,
+				     gint response,
+				     gpointer user_data)
+{  
   gtk_widget_hide((GtkWidget *) plugin_browser);
 }
-
-void
-ags_plugin_browser_cancel_callback(GtkWidget *button,
-				   AgsPluginBrowser *plugin_browser)
-{
-  gtk_combo_box_set_active((GtkComboBox *) plugin_browser->plugin_type,
-			   -1);
-
-  gtk_widget_hide((GtkWidget *) plugin_browser);
-}
-

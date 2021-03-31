@@ -64,22 +64,23 @@ void
 ags_line_member_editor_plugin_browser_response_create_entry(AgsLineMemberEditor *line_member_editor,
 							    gchar *filename, gchar *effect)
 {
-  GtkHBox *hbox;
+  GtkBox *hbox;
   GtkCheckButton *check_button;
   GtkLabel *label;
 
   gchar *str;
   
   /* create entry */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
-		     GTK_WIDGET(hbox),
+  hbox = (GtkBox *) gtk_hbox_new(GTK_ORIENTATION_HORIZONTAL,
+				 0);
+  gtk_box_pack_start(line_member_editor->line_member,
+		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
       
   check_button = (GtkCheckButton *) gtk_check_button_new();
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(check_button),
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) check_button,
 		     FALSE, FALSE,
 		     0);
 
@@ -88,8 +89,8 @@ ags_line_member_editor_plugin_browser_response_create_entry(AgsLineMemberEditor 
 			effect);
     
   label = (GtkLabel *) gtk_label_new(str);
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
   gtk_widget_show_all((GtkWidget *) hbox);
@@ -111,10 +112,10 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
   GList *list, *list_start;
   GList *control_type_name;
 
-  gchar *plugin_type;
   gchar *plugin_name;
   gchar *filename, *effect;
 
+  gint active_plugin_type;
   gint position;
   gboolean has_bridge;
   gboolean is_output;  
@@ -152,16 +153,12 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
       plugin_browser = AGS_PLUGIN_BROWSER(line_member_editor->plugin_browser);
 
-      plugin_type = gtk_combo_box_text_get_active_text(plugin_browser->plugin_type);
+      active_plugin_type = gtk_combo_box_get_active(plugin_browser->plugin_type);
       plugin_name = NULL;
 
-      if(!g_ascii_strncasecmp(plugin_type,
-			      "ladspa",
-			      7)){
+      if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
 	plugin_name = "ags-fx-ladspa";
-      }else if(!g_ascii_strncasecmp(plugin_type,
-				    "lv2",
-				    4)){
+      }else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
 	plugin_name = "ags-fx-lv2";
       }
 
@@ -346,7 +343,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
 	if(pad != NULL){
 	  list_start =
-	    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(pad->data)->table);
+	    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(pad->data)->grid);
 
 	  while(list != NULL){
 	    if(AGS_EFFECT_LINE(list->data)->channel == line_editor->channel){
@@ -517,7 +514,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
     if(pad != NULL){
       list_start =
-	list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(pad->data)->table);
+	list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(pad->data)->grid);
 
       while(list != NULL){
 	if(AGS_EFFECT_LINE(list->data)->channel == line_editor->channel){

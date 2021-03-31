@@ -119,7 +119,7 @@ ags_composite_editor_class_init(AgsCompositeEditorClass *composite_editor)
    *
    * The ::machine-changed signal notifies about changed machine.
    * 
-   * Since: 3.7.9
+   * Since: 3.8.0
    */
   composite_editor_signals[MACHINE_CHANGED] =
     g_signal_new("machine-changed",
@@ -157,10 +157,14 @@ ags_composite_editor_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_composite_editor_init(AgsCompositeEditor *composite_editor)
 {
+  GtkViewport *viewport;
+  GtkScrolledWindow *scrolled_window;
+
   gtk_orientable_set_orientation(GTK_ORIENTABLE(composite_editor),
 				 GTK_ORIENTATION_VERTICAL);
 
   composite_editor->flags = 0;
+  composite_editor->edit = 0;
 
   composite_editor->version = g_strdup(AGS_COMPOSITE_EDITOR_DEFAULT_VERSION);
   composite_editor->build_id = g_strdup(AGS_COMPOSITE_EDITOR_DEFAULT_BUILD_ID);
@@ -168,6 +172,49 @@ ags_composite_editor_init(AgsCompositeEditor *composite_editor)
   /* uuid */
   composite_editor->uuid = ags_uuid_alloc();
   ags_uuid_generate(composite_editor->uuid);
+
+  /* widgets */
+  composite_editor->toolbar = ags_composite_toolbar_new();
+  gtk_box_pack_start((GtkBox *) composite_editor,
+		     (GtkWidget *) composite_editor->toolbar,
+		     FALSE, FALSE,
+		     0);
+
+  /* paned */
+  composite_editor->paned = (GtkPaned *) gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
+  gtk_box_pack_start((GtkBox *) composite_editor,
+		     (GtkWidget *) composite_editor->paned,
+		     FALSE, FALSE,
+		     0);
+
+  /* machine selector */
+  viewport = (GtkViewport *) gtk_viewport_new(NULL,
+					      NULL);
+  g_object_set(viewport,
+	       "shadow-type", GTK_SHADOW_NONE,
+	       NULL);
+  gtk_paned_pack1((GtkPaned *) composite_editor->paned,
+		  (GtkWidget *) viewport,
+		  FALSE, TRUE);
+
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  gtk_container_add(GTK_CONTAINER(viewport),
+		    GTK_WIDGET(scrolled_window));
+
+  composite_editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
+						    "homogeneous", FALSE,
+						    "spacing", 0,
+						    NULL);
+  gtk_label_set_label(composite_editor->machine_selector->label,
+		      i18n("composite selector"));
+  
+  composite_editor->machine_selector->popup = ags_machine_selector_popup_new(composite_editor->machine_selector);
+  g_object_set(composite_editor->machine_selector->menu_button,
+	       "menu", composite_editor->machine_selector->popup,
+	       NULL);
+  
+  gtk_container_add((GtkContainer *) scrolled_window,
+		    (GtkWidget *) composite_editor->machine_selector);
 }
 
 AgsUUID*
@@ -327,6 +374,72 @@ ags_composite_editor_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
+/**
+ * ags_composite_editor_test_flags:
+ * @composite_editor: the #AgsCompositeEditor
+ * @flags: the flags
+ *
+ * Test @flags to be set on @composite_editor.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 3.8.0
+ */
+gboolean
+ags_composite_editor_test_flags(AgsCompositeEditor *composite_editor, guint flags)
+{
+  gboolean retval;  
+  
+  if(!AGS_IS_COMPOSITE_EDITOR(composite_editor)){
+    return(FALSE);
+  }
+    
+  /* test */
+  retval = (flags & (composite_editor->flags)) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_composite_editor_set_flags:
+ * @composite_editor: the #AgsCompositeEditor
+ * @flags: see enum AgsCompositeEditorFlags
+ *
+ * Enable a feature of #AgsCompositeEditor.
+ *
+ * Since: 3.8.0
+ */
+void
+ags_composite_editor_set_flags(AgsCompositeEditor *composite_editor, guint flags)
+{
+  if(!AGS_IS_COMPOSITE_EDITOR(composite_editor)){
+    return;
+  }
+
+  /* set flags */
+  composite_editor->flags |= flags;
+}
+    
+/**
+ * ags_composite_editor_unset_flags:
+ * @composite_editor: the #AgsCompositeEditor
+ * @flags: see enum AgsCompositeEditorFlags
+ *
+ * Disable a feature of AgsCompositeEditor.
+ *
+ * Since: 3.8.0
+ */
+void
+ags_composite_editor_unset_flags(AgsCompositeEditor *composite_editor, guint flags)
+{  
+  if(!AGS_IS_COMPOSITE_EDITOR(composite_editor)){
+    return;
+  }
+
+  /* unset flags */
+  composite_editor->flags &= (~flags);
+}
+
 void
 ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 					  AgsMachine *machine)
@@ -341,7 +454,7 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
  *
  * Is emitted as machine changed of composite_editor.
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 void
 ags_composite_editor_machine_changed(AgsCompositeEditor *composite_editor,
@@ -357,13 +470,69 @@ ags_composite_editor_machine_changed(AgsCompositeEditor *composite_editor,
 }
 
 /**
+ * ags_composite_editor_paste:
+ * @composite_editor: the #AgsCompositeEditor
+ *
+ * Paste to @composite_editor from clipboard.
+ * 
+ * Since: 3.8.0
+ */
+void
+ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_composite_editor_copy:
+ * @composite_editor: the #AgsCompositeEditor
+ * 
+ * Copy to clipboard from @composite_editor.
+ * 
+ * Since: 3.8.0
+ */
+void
+ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_composite_editor_cut:
+ * @composite_editor: the #AgsCompositeEditor
+ * 
+ * Copy to clipboard from @composite_editor.
+ * 
+ * Since: 3.8.0
+ */
+void
+ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_composite_editor_invert:
+ * @composite_editor: the #AgsCompositeEditor
+ * 
+ * Invert selected region of @composite_editor.
+ * 
+ * Since: 3.8.0
+ */
+void
+ags_composite_editor_invert(AgsCompositeEditor *composite_editor)
+{
+  //TODO:JK: implement me
+}
+
+/**
  * ags_composite_editor_new:
  *
  * Create a new #AgsCompositeEditor.
  *
  * Returns: a new #AgsCompositeEditor
  *
- * Since: 3.7.9
+ * Since: 3.8.0
  */
 AgsCompositeEditor*
 ags_composite_editor_new()

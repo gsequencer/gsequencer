@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -49,7 +49,7 @@ typedef enum{
 
 struct _AgsPitchSamplerFile
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
   
@@ -64,7 +64,7 @@ struct _AgsPitchSamplerFile
 
 struct _AgsPitchSamplerFileClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 
   void (*control_changed)(AgsPitchSamplerFile *pitch_sampler_file);
 };

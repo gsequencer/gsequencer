@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,7 +52,7 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   /* open */
   accel_group = gtk_accel_group_new();
 
-  closure = g_cclosure_new(ags_menu_action_open_callback,
+  closure = g_cclosure_new((GCallback) ags_menu_action_open_callback,
 			   NULL,
 			   NULL);
   gtk_accel_group_connect(accel_group,
@@ -65,7 +65,7 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   /* save */
   accel_group = gtk_accel_group_new();
 
-  closure = g_cclosure_new(ags_menu_action_save_callback,
+  closure = g_cclosure_new((GCallback) ags_menu_action_save_callback,
 			   NULL,
 			   NULL);
   gtk_accel_group_connect(accel_group,
@@ -78,7 +78,7 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   /* save as */
   accel_group = gtk_accel_group_new();
 
-  closure = g_cclosure_new(ags_menu_action_save_as_callback,
+  closure = g_cclosure_new((GCallback) ags_menu_action_save_as_callback,
 			   NULL,
 			   NULL);
   gtk_accel_group_connect(accel_group,
@@ -91,7 +91,7 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   /* quit */
   accel_group = gtk_accel_group_new();
 
-  closure = g_cclosure_new(ags_menu_action_quit_callback,
+  closure = g_cclosure_new((GCallback) ags_menu_action_quit_callback,
 			   NULL,
 			   NULL);
   gtk_accel_group_connect(accel_group,
@@ -104,7 +104,7 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   /* online help */
   accel_group = gtk_accel_group_new();
 
-  closure = g_cclosure_new(ags_menu_action_online_help_callback,
+  closure = g_cclosure_new((GCallback) ags_menu_action_online_help_callback,
 			   NULL,
 			   NULL);
   gtk_accel_group_connect(accel_group,
@@ -186,7 +186,7 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
 
   /* connect and show window */
   ags_connectable_connect(AGS_CONNECTABLE(window));
-  gtk_widget_show_all(window);
+  gtk_widget_show_all((GtkWidget *) window);
 }
 
 gboolean
@@ -195,13 +195,13 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   AgsQuitDialog *quit_dialog;
 
   quit_dialog = ags_quit_dialog_new();
-  gtk_widget_show_all(quit_dialog);
+  gtk_widget_show_all((GtkWidget *) quit_dialog);
   
-  gtk_widget_grab_focus(quit_dialog->cancel);
+  gtk_widget_grab_focus((GtkWidget *) quit_dialog->cancel);
   
   ags_connectable_connect(AGS_CONNECTABLE(quit_dialog));
 
-  gtk_dialog_run(quit_dialog);
+  gtk_dialog_run((GtkDialog *) quit_dialog);
 
   return(TRUE);
 }
@@ -216,9 +216,8 @@ ags_window_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsWindo
   if(event->type == GDK_BUTTON_PRESS && event->button == 3){
     success = TRUE;
     
-    gtk_menu_popup(GTK_MENU(window->context_menu), NULL, NULL, NULL, NULL,
-                   (event != NULL) ? event->button : 0,
-                   gdk_event_get_time((GdkEvent*)event));
+    gtk_menu_popup_at_pointer(GTK_MENU(window->context_menu),
+			      event);
   }
 
   return(success);

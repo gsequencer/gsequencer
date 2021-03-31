@@ -25,9 +25,10 @@
 
 #include <ags/libags.h>
 
-G_BEGIN_DECLS
+#include <math.h>
+#include <complex.h>
 
-#define AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE (8192)
+G_BEGIN_DECLS
 
 void ags_fast_pitch_util_compute_s8(gint8 *buffer,
 				    guint buffer_length,

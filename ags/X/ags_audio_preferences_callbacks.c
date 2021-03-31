@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,29 +29,28 @@
 void
 ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsAudioPreferences *audio_preferences)
 {  
-  AgsPreferences *preferences;
-
   if(old_parent != NULL){
     return;
   }
 
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-							   AGS_TYPE_PREFERENCES);
+  if(audio_preferences->add == NULL) {
+    AgsPreferences *preferences;
 
-  audio_preferences->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_end(gtk_dialog_get_action_area(GTK_DIALOG(preferences)),
-		   (GtkWidget *) audio_preferences->add,
-		   TRUE, FALSE,
-		   0);  
+    preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
+							     AGS_TYPE_PREFERENCES);
+    
+    audio_preferences->add = (GtkButton *) gtk_button_new_from_icon_name("list-add",
+									 GTK_ICON_SIZE_BUTTON);
+    gtk_dialog_add_action_widget((GtkDialog *) preferences,
+				 (GtkWidget *) audio_preferences->add,
+				 GTK_RESPONSE_NONE);
+  }
 }
 
 void
 ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio_preferences)
 {
-  AgsPreferences *preferences;
   AgsSoundcardEditor *soundcard_editor;
-
-  AgsSoundcardThread *soundcard_thread;
 
   AgsThread *main_loop;
   
@@ -60,9 +59,6 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
   GObject *soundcard;
 
   GList *start_list, *list;
-
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-							   AGS_TYPE_PREFERENCES);
 
   application_context = ags_application_context_get_instance();
 
@@ -119,15 +115,9 @@ void
 ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
 						       AgsAudioPreferences *audio_preferences)
 {
-  AgsPreferences *preferences;
   AgsSoundcardEditor *soundcard_editor;
 
-  GObject *soundcard;
-
   GList *start_list, *list;
-  
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-							   AGS_TYPE_PREFERENCES);
 
   soundcard_editor = (AgsSoundcardEditor *) gtk_widget_get_ancestor(button,
 								    AGS_TYPE_SOUNDCARD_EDITOR);

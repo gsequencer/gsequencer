@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -104,7 +104,7 @@ ags_pattern_box_get_type(void)
       NULL, /* interface_data */
     };
     
-    ags_type_pattern_box = g_type_register_static(GTK_TYPE_TABLE,
+    ags_type_pattern_box = g_type_register_static(GTK_TYPE_GRID,
 						  "AgsPatternBox", &ags_pattern_box_info,
 						  0);
     
@@ -198,8 +198,6 @@ ags_accessible_pattern_box_action_interface_init(AtkActionIface *action)
 void
 ags_pattern_box_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_pattern_box_connectable_parent_interface;
-
   connectable->connect = ags_pattern_box_connect;
   connectable->disconnect = ags_pattern_box_disconnect;
 }
@@ -207,7 +205,6 @@ ags_pattern_box_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_pattern_box_init(AgsPatternBox *pattern_box)
 {
-  AgsLed *led;
   GtkToggleButton *toggle_button;
   GtkRadioButton *radio_button;
 
@@ -222,16 +219,13 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   
   g_object_set(pattern_box,
 	       "can-focus", TRUE,
-	       "n-columns", 2,
-	       "n-rows", 2,
-	       "homogeneous", FALSE,
 	       NULL);
 
   gtk_widget_set_events((GtkWidget *) pattern_box,
-			GDK_CONTROL_MASK
-			| GDK_KEY_PRESS_MASK
-			| GDK_KEY_RELEASE_MASK);
-
+			(GDK_CONTROL_MASK
+			 | GDK_KEY_PRESS_MASK
+			 | GDK_KEY_RELEASE_MASK));
+			
   pattern_box->flags = 0;
 
   pattern_box->key_mask = 0;
@@ -251,12 +245,16 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 	       NULL);
   gtk_widget_set_size_request((GtkWidget *) pattern_box->hled_array,
 			      (guint) (gui_scale_factor * pattern_box->n_controls * AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH), (guint) (gui_scale_factor * AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT));
-  gtk_table_attach((GtkTable *) pattern_box,
-		   (GtkWidget *) pattern_box->hled_array,
-		   0, 1,
-		   0, 1,
-		   GTK_FILL|GTK_EXPAND, 0,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) pattern_box->hled_array,
+			GTK_ALIGN_CENTER);
+  gtk_widget_set_vexpand((GtkWidget *) pattern_box->hled_array,
+			 TRUE);
+  
+  gtk_grid_attach((GtkGrid *) pattern_box,
+		  (GtkWidget *) pattern_box->hled_array,
+		  0, 0,
+		  1, 1);
   gtk_widget_show_all((GtkWidget *) pattern_box->hled_array);
   
   if(ags_pattern_box_led_queue_draw == NULL){
@@ -270,30 +268,36 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   g_timeout_add((guint) floor(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0), (GSourceFunc) ags_pattern_box_led_queue_draw_timeout, (gpointer) pattern_box);
   
   /* pattern */
-  pattern_box->pattern = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_table_attach((GtkTable *) pattern_box,
+  pattern_box->pattern = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						0);
+
+  gtk_widget_set_valign((GtkWidget *) pattern_box->pattern,
+			GTK_ALIGN_CENTER);
+  gtk_widget_set_vexpand((GtkWidget *) pattern_box->pattern,
+			 TRUE);
+
+  gtk_grid_attach((GtkGrid *) pattern_box,
 		   (GtkWidget *) pattern_box->pattern,
 		   0, 1,
-		   1, 2,
-		   0, 0,
-		   0, 0);
+		   1, 1);
 
   for(i = 0; i < pattern_box->n_controls; i++){
     toggle_button = (GtkToggleButton *) gtk_toggle_button_new();
     gtk_widget_set_size_request((GtkWidget *) toggle_button,
 				gui_scale_factor * AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH, gui_scale_factor * AGS_PATTERN_BOX_DEFAULT_PAD_HEIGHT);
-    gtk_box_pack_start((GtkBox *) pattern_box->pattern,
+    gtk_box_pack_start(pattern_box->pattern,
 		       (GtkWidget *) toggle_button,
 		       FALSE, FALSE,
 		       0);
   }
 
   /* page / offset */
-  pattern_box->offset = (GtkVBox*) gtk_vbox_new(FALSE, 0);
-  gtk_table_attach_defaults((GtkTable *) pattern_box,
-			    (GtkWidget *) pattern_box->offset,
-			    1, 2,
-			    0, 2);
+  pattern_box->offset = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+					       0);
+  gtk_grid_attach((GtkGrid *) pattern_box,
+		  (GtkWidget *) pattern_box->offset,
+		  1, 0,
+		  1, 2);
   radio_button = NULL;
 
   for(i = 0; i < pattern_box->n_indices; i++){
@@ -302,7 +306,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 			    i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls);
       radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL,
 									str);
-      gtk_box_pack_start((GtkBox*) pattern_box->offset,
+      gtk_box_pack_start(pattern_box->offset,
 			 (GtkWidget *) radio_button,
 			 FALSE, FALSE,
 			 0);
@@ -311,7 +315,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
     }else{
       str = g_strdup_printf("%d-%d",
 			    i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls);
-      gtk_box_pack_start((GtkBox*) pattern_box->offset,
+      gtk_box_pack_start(pattern_box->offset,
 			 (GtkWidget *) gtk_radio_button_new_with_label(gtk_radio_button_get_group(radio_button),
 								       str),
 			 FALSE, FALSE,
@@ -474,20 +478,9 @@ ags_pattern_box_get_accessible(GtkWidget *widget)
 
 void
 ags_pattern_box_realize(GtkWidget *widget)
-{
-  AgsPatternBox *pattern_box;
-
-  pattern_box = (AgsPatternBox *) widget;
-  
+{  
   /* call parent */
   GTK_WIDGET_CLASS(ags_pattern_box_parent_class)->realize(widget);
-
-  if(pattern_box_style == NULL){
-    pattern_box_style = gtk_style_copy(gtk_widget_get_style((GtkWidget *) pattern_box));
-  }
-  
-  gtk_widget_set_style((GtkWidget *) pattern_box,
-		       pattern_box_style);
 }
 
 void
@@ -809,7 +802,6 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 
     AgsAudio *audio;
     AgsRecallID *recall_id;
-    AgsRecyclingContext *recycling_context;
     
     AgsFxPatternAudio *play_fx_pattern_audio;
     AgsFxPatternAudioProcessor *play_fx_pattern_audio_processor;
@@ -818,7 +810,8 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     GList *start_recall, *recall;
     
     guint64 active_led_new;
-
+    gboolean success;
+    
     GRecMutex *play_fx_pattern_audio_processor_mutex;
     
     machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
@@ -837,26 +830,26 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 		 NULL);
 
     list = start_list;
+
+    success = FALSE;
     
-    while(list != NULL){
-      AgsRecyclingContext *current;
+    while(list != NULL && !success){
+      AgsRecyclingContext *parent_recycling_context;
+      AgsRecyclingContext *current_recycling_context;
 
+      parent_recycling_context = NULL;
+      current_recycling_context = NULL;
+      
       g_object_get(list->data,
-		   "recycling-context", &current,
+		   "recycling-context", &current_recycling_context,
 		   NULL);
-
-      g_object_unref(current);
-
-      if(current != NULL){
-	g_object_get(current,
-		     "parent", &current,
+      
+      if(current_recycling_context != NULL){
+	g_object_get(current_recycling_context,
+		     "parent", &parent_recycling_context,
 		     NULL);
 
-	if(current != NULL){
-	  g_object_unref(current);
-	}
-	
-	if(current == NULL &&
+	if(parent_recycling_context == NULL &&
 	   ags_recall_id_check_sound_scope(list->data, AGS_SOUND_SCOPE_SEQUENCER)){
 	  recall_id = list->data;
 
@@ -876,11 +869,12 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     
 	  recall = ags_recall_find_type_with_recycling_context(start_recall,
 							       AGS_TYPE_FX_PATTERN_AUDIO_PROCESSOR,
-							       (GObject *) recall_id->recycling_context);
+							       (GObject *) current_recycling_context);
     
 	  if(recall != NULL){
 	    play_fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(recall->data);
 	  }
+
 
 	  g_list_free_full(start_recall,
 			   g_object_unref);
@@ -889,9 +883,17 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 	     play_fx_pattern_audio_processor == NULL){
 	    recall_id = NULL;
 	  }else{
-	    break;
+	    success = TRUE;
 	  }
 	}
+      }
+
+      if(parent_recycling_context != NULL){
+	g_object_unref(parent_recycling_context);
+      }
+
+      if(current_recycling_context != NULL){
+	g_object_unref(current_recycling_context);
       }
 
       list = list->next;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -163,9 +163,9 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
   
   gchar *card;
 
-  guint channels, channels_min, channels_max;
-  guint rate, rate_min, rate_max;
-  guint buffer_size, buffer_size_min, buffer_size_max;
+  guint channels_min, channels_max;
+  guint rate_min, rate_max;
+  guint buffer_size_min, buffer_size_max;
 
   GError *error;
 
@@ -358,5 +358,5 @@ ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
 
   /* append AgsSetBufferSize */
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-				(GObject *) set_format);
+				(AgsTask *) set_format);
 }

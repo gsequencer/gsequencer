@@ -1391,7 +1391,7 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
   
   midi_key = (gint) floor(note) + 69;
 
-  g_message("--> %d", midi_key);
+//  g_message("--> %d", midi_key);
   
   upper = -1;
   lower = -1;

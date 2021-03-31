@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -131,8 +131,6 @@ ags_fm_syncsynth_class_init(AgsFMSyncsynthClass *fm_syncsynth)
 void
 ags_fm_syncsynth_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_fm_syncsynth_connectable_parent_interface;
-
   ags_fm_syncsynth_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_fm_syncsynth_connect;
@@ -142,9 +140,11 @@ ags_fm_syncsynth_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 {
-  GtkHBox *hbox;
-  GtkVBox *vbox;
-  GtkTable *table;
+  GtkBox *hbox;
+  GtkBox *vbox;
+  GtkGrid *grid;
+  GtkFrame *frame;
+  GtkBox *volume_hbox;
   GtkLabel *label;
 
   AgsAudio *audio;
@@ -210,6 +210,9 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
   fm_syncsynth->notation_play_container = ags_recall_container_new();
   fm_syncsynth->notation_recall_container = ags_recall_container_new();
 
+  fm_syncsynth->volume_play_container = ags_recall_container_new();
+  fm_syncsynth->volume_recall_container = ags_recall_container_new();
+
   fm_syncsynth->envelope_play_container = ags_recall_container_new();
   fm_syncsynth->envelope_recall_container = ags_recall_container_new();
 
@@ -225,11 +228,12 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
   fm_syncsynth->xml_type = "ags-fm_syncsynth";
  
   /* create widgets */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
   gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) fm_syncsynth)), (GtkWidget *) hbox);
 
   fm_syncsynth->fm_oscillator = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) hbox,
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) fm_syncsynth->fm_oscillator,
 		     FALSE,
 		     FALSE,
@@ -240,40 +244,68 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 				     ags_fm_oscillator_new());
   
   /* add and remove buttons */
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) vbox, FALSE, FALSE, 0);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) vbox,
+		     FALSE, FALSE,
+		     0);
 
-  fm_syncsynth->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) fm_syncsynth->add, FALSE, FALSE, 0);
+  fm_syncsynth->add = (GtkButton *) gtk_button_new_from_icon_name("list-add",
+								  GTK_ICON_SIZE_BUTTON);
+  gtk_box_pack_start(vbox,
+		     (GtkWidget *) fm_syncsynth->add,
+		     FALSE, FALSE,
+		     0);
 
   fm_syncsynth->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) fm_syncsynth->remove, FALSE, FALSE, 0);
+  gtk_box_pack_start(vbox,
+		     (GtkWidget *) fm_syncsynth->remove,
+		     FALSE, FALSE,
+		     0);
   
   /* update */
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) vbox, FALSE, FALSE, 0);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) vbox,
+		     FALSE, FALSE,
+		     0);
 
   fm_syncsynth->auto_update = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("auto update"));
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) fm_syncsynth->auto_update, FALSE, FALSE, 0);
+  gtk_box_pack_start(vbox,
+		     (GtkWidget *) fm_syncsynth->auto_update,
+		     FALSE, FALSE,
+		     0);
 
   fm_syncsynth->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) fm_syncsynth->update, FALSE, FALSE, 0);
+  gtk_box_pack_start(vbox,
+		     (GtkWidget *) fm_syncsynth->update,
+		     FALSE, FALSE,
+		     0);
 
-  /* table */
-  table = (GtkTable *) gtk_table_new(3, 2, FALSE);
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) table, FALSE, FALSE, 0);
+  /* grid */
+  grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_pack_start(vbox,
+		     (GtkWidget *) grid,
+		     FALSE, FALSE,
+		     0);
 
   /* lower - frequency */  
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("lower"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 0,
+		  1, 1);
 
   fm_syncsynth->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_FM_SYNCSYNTH_BASE_NOTE_MIN,
 									 AGS_FM_SYNCSYNTH_BASE_NOTE_MAX,
@@ -281,52 +313,109 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
   gtk_spin_button_set_digits(fm_syncsynth->lower,
 			     2);
   gtk_spin_button_set_value(fm_syncsynth->lower, -48.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(fm_syncsynth->lower),
-		   1, 2,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) fm_syncsynth->lower,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) fm_syncsynth->lower,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) fm_syncsynth->lower,
+		  1, 0,
+		  1, 1);
 
   /* loop start */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("loop start"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
 
   fm_syncsynth->loop_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT, 1.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(fm_syncsynth->loop_start),
-		   1, 2,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) fm_syncsynth->loop_start,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) fm_syncsynth->loop_start,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(fm_syncsynth->loop_start),
+		  1, 1,
+		  1, 1);
 
   /* loop end */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("loop end"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		   0, 2,
+		   1, 1);
 
   fm_syncsynth->loop_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT, 1.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(fm_syncsynth->loop_end),
-		   1, 2,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) fm_syncsynth->loop_end,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) fm_syncsynth->loop_end,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) fm_syncsynth->loop_end,
+		  1, 2,
+		  1, 1);
+
+  /* volume */
+  frame = (GtkFrame *) gtk_frame_new(i18n("volume"));
+
+  gtk_widget_set_valign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) frame,
+			GTK_ALIGN_FILL);
+    
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) frame,
+		     FALSE, FALSE,
+		     0);
+
+  volume_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				       0);
+  gtk_container_add((GtkContainer *) frame,
+		    (GtkWidget *) volume_hbox);
+  
+  fm_syncsynth->volume = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+							       0.0,
+							       2.0,
+							       0.025);
+  gtk_box_pack_start(volume_hbox,
+		     (GtkWidget *) fm_syncsynth->volume,
+		     FALSE, FALSE,
+		     0);
+
+  gtk_scale_set_digits(fm_syncsynth->volume,
+		       3);
+
+  gtk_range_set_increments(GTK_RANGE(fm_syncsynth->volume),
+			   0.025, 0.1);
+  gtk_range_set_value(GTK_RANGE(fm_syncsynth->volume),
+		      1.0);
+  gtk_range_set_inverted(GTK_RANGE(fm_syncsynth->volume),
+			 TRUE);  
 }
 
 void
@@ -382,6 +471,9 @@ ags_fm_syncsynth_connect(AgsConnectable *connectable)
 
   g_signal_connect((GObject *) fm_syncsynth->update, "clicked",
 		   G_CALLBACK(ags_fm_syncsynth_update_callback), (gpointer) fm_syncsynth);
+
+  g_signal_connect((GObject *) fm_syncsynth->volume, "value-changed",
+		   G_CALLBACK(ags_fm_syncsynth_volume_callback), (gpointer) fm_syncsynth);
 }
 
 void
@@ -443,6 +535,12 @@ ags_fm_syncsynth_disconnect(AgsConnectable *connectable)
   g_object_disconnect((GObject *) fm_syncsynth->update,
 		      "any_signal::clicked",
 		      G_CALLBACK(ags_fm_syncsynth_update_callback),
+		      (gpointer) fm_syncsynth,
+		      NULL);
+
+  g_object_disconnect((GObject *) fm_syncsynth->volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_fm_syncsynth_volume_callback),
 		      (gpointer) fm_syncsynth,
 		      NULL);
 }
@@ -567,6 +665,21 @@ ags_fm_syncsynth_map_recall(AgsMachine *machine)
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       fm_syncsynth->volume_play_container, fm_syncsynth->volume_recall_container,
+				       "ags-fx-volume",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
+				       0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
   /* ags-fx-envelope */
   start_recall = ags_fx_factory_create(audio,
 				       fm_syncsynth->envelope_play_container, fm_syncsynth->envelope_recall_container,
@@ -659,6 +772,20 @@ ags_fm_syncsynth_input_map_recall(AgsFMSyncsynth *fm_syncsynth,
   start_recall = ags_fx_factory_create(audio,
 				       fm_syncsynth->notation_play_container, fm_syncsynth->notation_recall_container,
 				       "ags-fx-notation",
+				       NULL,
+				       NULL,
+				       audio_channel_start, audio_channels,
+				       input_pad_start, input_pads,
+				       position,
+				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* ags-fx-volume */
+  start_recall = ags_fx_factory_create(audio,
+				       fm_syncsynth->volume_play_container, fm_syncsynth->volume_recall_container,
+				       "ags-fx-volume",
 				       NULL,
 				       NULL,
 				       audio_channel_start, audio_channels,
@@ -801,30 +928,30 @@ ags_fm_syncsynth_add_fm_oscillator(AgsFMSyncsynth *fm_syncsynth,
 {
   AgsAudio *audio;
   
-  GtkHBox *hbox;
+  GtkBox *hbox;
   GtkCheckButton *check_button;
 
   audio = AGS_MACHINE(fm_syncsynth)->audio;
   ags_audio_add_synth_generator(audio,
 				(GObject *) ags_synth_generator_new());
   
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
 
   check_button = (GtkCheckButton *) gtk_check_button_new();
-  gtk_box_pack_start((GtkBox *) hbox,
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) check_button,
 		     FALSE,
 		     FALSE,
 		     0);
   
-  gtk_box_pack_start((GtkBox *) hbox,
+  gtk_box_pack_start(hbox,
 		     (GtkWidget *) fm_oscillator,
 		     FALSE,
 		     FALSE,
 		     0);
 
-  gtk_box_pack_start((GtkBox *) fm_syncsynth->fm_oscillator,
+  gtk_box_pack_start(fm_syncsynth->fm_oscillator,
 		     (GtkWidget *) hbox,
 		     FALSE,
 		     FALSE,
@@ -930,7 +1057,6 @@ ags_fm_syncsynth_reset_loop(AgsFMSyncsynth *fm_syncsynth)
 void
 ags_fm_syncsynth_update(AgsFMSyncsynth *fm_syncsynth)
 {
-  AgsWindow *window;
   AgsFMOscillator *fm_oscillator;
   
   AgsAudio *audio;
@@ -958,12 +1084,9 @@ ags_fm_syncsynth_update(AgsFMSyncsynth *fm_syncsynth)
   gdouble fm_lfo_frequency, fm_lfo_depth;
   gdouble fm_tuning;
 
-  AgsComplex **sync_point;
   guint sync_point_count;
 
   application_context = ags_application_context_get_instance();
-
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) fm_syncsynth);
 
   audio = AGS_MACHINE(fm_syncsynth)->audio;
 

@@ -23,7 +23,7 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_diatonic_scale.h>
-#include <ags/audio/ags_fast_pitch_util.h>
+#include <ags/audio/ags_hq_pitch_util.h>
 
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
@@ -190,11 +190,11 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
   
   tuning = 100.0 * (note - base_key);
   
-  ags_fast_pitch_util_compute_s8(im_buffer,
-				 frame_count,
-				 samplerate,
-				 base_key,
-				 tuning);
+  ags_hq_pitch_util_compute_s8(im_buffer,
+			       frame_count,
+			       samplerate,
+			       base_key,
+			       tuning);
 
   success = FALSE;
   pong_copy = FALSE;
@@ -462,11 +462,11 @@ ags_sfz_synth_util_copy_s16(gint16 *buffer,
 
   tuning = 100.0 * (note - base_key);
   
-  ags_fast_pitch_util_compute_s16(im_buffer,
-				  frame_count,
-				  samplerate,
-				  base_key,
-				  tuning);
+  ags_hq_pitch_util_compute_s16(im_buffer,
+				frame_count,
+				samplerate,
+				base_key,
+				tuning);
 
   success = FALSE;
   pong_copy = FALSE;
@@ -734,11 +734,11 @@ ags_sfz_synth_util_copy_s24(gint32 *buffer,
 
   tuning = 100.0 * (note - base_key);
   
-  ags_fast_pitch_util_compute_s24(im_buffer,
-				  frame_count,
-				  samplerate,
-				  base_key,
-				  tuning);
+  ags_hq_pitch_util_compute_s24(im_buffer,
+				frame_count,
+				samplerate,
+				base_key,
+				tuning);
 
   success = FALSE;
   pong_copy = FALSE;
@@ -1006,11 +1006,11 @@ ags_sfz_synth_util_copy_s32(gint32 *buffer,
 
   tuning = 100.0 * (note - base_key);
   
-  ags_fast_pitch_util_compute_s32(im_buffer,
-				  frame_count,
-				  samplerate,
-				  base_key,
-				  tuning);
+  ags_hq_pitch_util_compute_s32(im_buffer,
+				frame_count,
+				samplerate,
+				base_key,
+				tuning);
 
   success = FALSE;
   pong_copy = FALSE;
@@ -1278,11 +1278,11 @@ ags_sfz_synth_util_copy_s64(gint64 *buffer,
 
   tuning = 100.0 * (note - base_key);
   
-  ags_fast_pitch_util_compute_s64(im_buffer,
-				  frame_count,
-				  samplerate,
-				  base_key,
-				  tuning);
+  ags_hq_pitch_util_compute_s64(im_buffer,
+				frame_count,
+				samplerate,
+				base_key,
+				tuning);
 
   success = FALSE;
   pong_copy = FALSE;
@@ -1550,11 +1550,11 @@ ags_sfz_synth_util_copy_float(gfloat *buffer,
 
   tuning = 100.0 * (note - base_key);
   
-  ags_fast_pitch_util_compute_float(im_buffer,
-				    frame_count,
-				    samplerate,
-				    base_key,
-				    tuning);
+  ags_hq_pitch_util_compute_float(im_buffer,
+				  frame_count,
+				  samplerate,
+				  base_key,
+				  tuning);
 
   success = FALSE;
   pong_copy = FALSE;
@@ -1822,11 +1822,11 @@ ags_sfz_synth_util_copy_double(gdouble *buffer,
 
   tuning = 100.0 * (note - base_key);
   
-  ags_fast_pitch_util_compute_double(im_buffer,
-				     frame_count,
-				     samplerate,
-				     base_key,
-				     tuning);
+  ags_hq_pitch_util_compute_double(im_buffer,
+				   frame_count,
+				   samplerate,
+				   base_key,
+				   tuning);
 
   success = FALSE;
   pong_copy = FALSE;
@@ -2094,11 +2094,11 @@ ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
 
   tuning = 100.0 * (note - base_key);
   
-  ags_fast_pitch_util_compute_complex(im_buffer,
-				      frame_count,
-				      samplerate,
-				      base_key,
-				      tuning);
+  ags_hq_pitch_util_compute_complex(im_buffer,
+				    frame_count,
+				    samplerate,
+				    base_key,
+				    tuning);
 
   success = FALSE;
   pong_copy = FALSE;

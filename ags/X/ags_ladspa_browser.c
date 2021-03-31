@@ -85,7 +85,7 @@ ags_ladspa_browser_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_ladspa_browser = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_ladspa_browser = g_type_register_static(GTK_TYPE_BOX,
 						     "AgsLadspaBrowser", &ags_ladspa_browser_info,
 						     0);
 
@@ -129,28 +129,31 @@ ags_ladspa_browser_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 {
-  GtkTable *table;
   GtkLabel *label;
 
   GList *start_list, *list;
   gchar **filenames, **filenames_start;
+
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(ladspa_browser),
+				 GTK_ORIENTATION_VERTICAL);
   
   /* plugin */
-  ladspa_browser->plugin = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(ladspa_browser),
-		     GTK_WIDGET(ladspa_browser->plugin),
+  ladspa_browser->plugin = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						  0);
+  gtk_box_pack_start((GtkBox *) ladspa_browser,
+		     (GtkWidget *) ladspa_browser->plugin,
 		     FALSE, FALSE,
 		     0);
 
   label = (GtkLabel *) gtk_label_new(i18n("filename: "));
-  gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start(ladspa_browser->plugin,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   ladspa_browser->filename = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
-		     GTK_WIDGET(ladspa_browser->filename),
+  gtk_box_pack_start(ladspa_browser->plugin,
+		     (GtkWidget *) ladspa_browser->filename,
 		     FALSE, FALSE,
 		     0);
 
@@ -186,21 +189,22 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   }
     
   label = (GtkLabel *) gtk_label_new(i18n("effect: "));
-  gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start(ladspa_browser->plugin,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   ladspa_browser->effect = (GtkComboBox *) gtk_combo_box_text_new();
-  gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
-		     GTK_WIDGET(ladspa_browser->effect),
+  gtk_box_pack_start(ladspa_browser->plugin,
+		     (GtkWidget *) ladspa_browser->effect,
 		     FALSE, FALSE,
 		     0);
 
   /* description */
-  ladspa_browser->description = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(ladspa_browser),
-		     GTK_WIDGET(ladspa_browser->description),
+  ladspa_browser->description = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+						       0);
+  gtk_box_pack_start((GtkBox *) ladspa_browser,
+		     (GtkWidget *) ladspa_browser->description,
 		     FALSE, FALSE,
 		     0);
 
@@ -209,8 +213,8 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 				      "xalign", 0.0,
 				      "label", i18n("Label: "),
 				      NULL);
-  gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start((GtkBox *) ladspa_browser->description,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
@@ -219,8 +223,8 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 				      "xalign", 0.0,
 				      "label", i18n("Maker: "),
 				      NULL);
-  gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start((GtkBox *) ladspa_browser->description,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
@@ -229,8 +233,8 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 				      "xalign", 0.0,
 				      "label", i18n("Copyright: "),
 				      NULL);
-  gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start((GtkBox *) ladspa_browser->description,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
@@ -238,16 +242,14 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 				    "xalign", 0.0,
 				    "label", i18n("Ports: "),
 				    NULL);
-  gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
-		     GTK_WIDGET(label),
+  gtk_box_pack_start((GtkBox *) ladspa_browser->description,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
-  ladspa_browser->port_table = 
-    table = (GtkTable *) gtk_table_new(256, 2,
-				       FALSE);
-  gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
-		     GTK_WIDGET(table),
+  ladspa_browser->port_grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_pack_start((GtkBox *) ladspa_browser->description,
+		     (GtkWidget *) ladspa_browser->port_grid,
 		     FALSE, FALSE,
 		     0);
 

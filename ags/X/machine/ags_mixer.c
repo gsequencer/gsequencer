@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -112,8 +112,6 @@ ags_mixer_class_init(AgsMixerClass *mixer)
 void
 ags_mixer_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_mixer_connectable_parent_interface;
-
   ags_mixer_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_mixer_connect;
@@ -150,9 +148,11 @@ ags_mixer_init(AgsMixer *mixer)
   mixer->peak_recall_container = ags_recall_container_new();
   
   /* input */
-  mixer->input_pad = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  mixer->input_pad = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+					    0);
   AGS_MACHINE(mixer)->input = (GtkContainer *) mixer->input_pad;
-  gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) mixer))->data, (GtkWidget *) mixer->input_pad);
+  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) mixer),
+		    (GtkWidget *) mixer->input_pad);
 }
 
 void
@@ -187,7 +187,7 @@ ags_mixer_map_recall(AgsMachine *machine)
 {
   AgsAudio *audio;
 
-  GList *start_recall, *recall;
+  GList *start_recall;
 
   gint position;
 

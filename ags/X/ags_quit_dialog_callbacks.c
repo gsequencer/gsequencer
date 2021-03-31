@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -130,7 +130,7 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
 #endif
 
       list = 
-	start_list = gtk_container_get_children(window->machines);
+	start_list = gtk_container_get_children((GtkContainer *) window->machines);
       
       while(list != NULL){
 	if(AGS_IS_AUDIOREC(list->data)){
@@ -151,10 +151,6 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
       AgsMachine *machine;
 
       GList *wave_export_machine;
-
-      gchar *str;
-      gchar *filename;
-      gchar *machine_name;
 	
       wave_export_machine = g_list_nth(quit_dialog->wave_export_machine,
 				       quit_dialog->nth_wave_export_machine);
@@ -265,7 +261,7 @@ ags_quit_dialog_response_callback(GtkDialog *dialog,
       GList *start_list, *list;
 
       list = 
-	start_list = gtk_container_get_children(window->machines);
+	start_list = gtk_container_get_children((GtkContainer *) window->machines);
 
       while(list != NULL){
 	if(AGS_IS_AUDIOREC(list->data)){

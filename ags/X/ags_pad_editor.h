@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,7 +51,7 @@ typedef enum{
 
 struct _AgsPadEditor
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
   
@@ -64,12 +64,12 @@ struct _AgsPadEditor
   GType *editor_type;
   
   GtkExpander *line_editor_expander;
-  GtkVBox *line_editor;
+  GtkBox *line_editor;
 };
 
 struct _AgsPadEditorClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_pad_editor_get_type(void);

@@ -1038,19 +1038,23 @@ libags_audio_h_sources = \
 	ags/audio/ags_fifoout.h \
 	ags/audio/ags_fm_synth_util.h \
 	ags/audio/ags_fourier_transform_util.h \
+	ags/audio/ags_frequency_aliase_util.h \
 	ags/audio/ags_frequency_map.h \
 	ags/audio/ags_frequency_map_manager.h \
 	ags/audio/ags_fx_factory.h \
 	ags/audio/ags_generic_recall_channel_run.h \
 	ags/audio/ags_generic_recall_recycling.h \
+	ags/audio/ags_hq_pitch_util.h \
 	ags/audio/ags_input.h \
 	ags/audio/ags_lfo_synth_util.h \
+	ags/audio/ags_linear_interpolate_util.h \
 	ags/audio/ags_midi.h \
 	ags/audio/ags_midiin.h \
 	ags/audio/ags_notation.h \
 	ags/audio/ags_note.h \
 	ags/audio/ags_output.h \
 	ags/audio/ags_pattern.h \
+	ags/audio/ags_phase_shift_util.h \
 	ags/audio/ags_playback.h \
 	ags/audio/ags_playback_domain.h \
 	ags/audio/ags_port.h \
@@ -1116,18 +1120,22 @@ libags_audio_c_sources = \
 	ags/audio/ags_fifoout.c \
 	ags/audio/ags_fm_synth_util.c \
 	ags/audio/ags_fourier_transform_util.c \
+	ags/audio/ags_frequency_aliase_util.c \
 	ags/audio/ags_frequency_map.c \
 	ags/audio/ags_frequency_map_manager.c \
 	ags/audio/ags_fx_factory.c \
 	ags/audio/ags_generic_recall_channel_run.c \
 	ags/audio/ags_generic_recall_recycling.c \
+	ags/audio/ags_hq_pitch_util.c \
 	ags/audio/ags_lfo_synth_util.c \
+	ags/audio/ags_linear_interpolate_util.c \
 	ags/audio/ags_midi.c \
 	ags/audio/ags_midiin.c \
 	ags/audio/ags_notation.c \
 	ags/audio/ags_note.c \
 	ags/audio/ags_output.c \
 	ags/audio/ags_pattern.c \
+	ags/audio/ags_phase_shift_util.c \
 	ags/audio/ags_playback.c \
 	ags/audio/ags_playback_domain.c \
 	ags/audio/ags_port.c \
@@ -1767,6 +1775,12 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_volume_channel_processor.h \
 	ags/audio/fx/ags_fx_volume_recycling.h \
 	ags/audio/fx/ags_fx_volume_audio_signal.h \
+	ags/audio/fx/ags_fx_lfo_audio.h \
+	ags/audio/fx/ags_fx_lfo_audio_processor.h \
+	ags/audio/fx/ags_fx_lfo_channel.h \
+	ags/audio/fx/ags_fx_lfo_channel_processor.h \
+	ags/audio/fx/ags_fx_lfo_recycling.h \
+	ags/audio/fx/ags_fx_lfo_audio_signal.h \
 	ags/audio/fx/ags_fx_eq10_audio.h \
 	ags/audio/fx/ags_fx_eq10_audio_processor.h \
 	ags/audio/fx/ags_fx_eq10_channel.h \
@@ -1791,6 +1805,12 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_analyse_channel_processor.h \
 	ags/audio/fx/ags_fx_analyse_recycling.h \
 	ags/audio/fx/ags_fx_analyse_audio_signal.h \
+	ags/audio/fx/ags_fx_two_pass_aliase_audio.h \
+	ags/audio/fx/ags_fx_two_pass_aliase_audio_processor.h \
+	ags/audio/fx/ags_fx_two_pass_aliase_channel.h \
+	ags/audio/fx/ags_fx_two_pass_aliase_channel_processor.h \
+	ags/audio/fx/ags_fx_two_pass_aliase_recycling.h \
+	ags/audio/fx/ags_fx_two_pass_aliase_audio_signal.h \
 	ags/audio/fx/ags_fx_pattern_audio.h \
 	ags/audio/fx/ags_fx_pattern_audio_processor.h \
 	ags/audio/fx/ags_fx_pattern_channel.h \
@@ -1844,6 +1864,12 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_volume_channel_processor.c \
 	ags/audio/fx/ags_fx_volume_recycling.c \
 	ags/audio/fx/ags_fx_volume_audio_signal.c \
+	ags/audio/fx/ags_fx_lfo_audio.c \
+	ags/audio/fx/ags_fx_lfo_audio_processor.c \
+	ags/audio/fx/ags_fx_lfo_channel.c \
+	ags/audio/fx/ags_fx_lfo_channel_processor.c \
+	ags/audio/fx/ags_fx_lfo_recycling.c \
+	ags/audio/fx/ags_fx_lfo_audio_signal.c \
 	ags/audio/fx/ags_fx_eq10_audio.c \
 	ags/audio/fx/ags_fx_eq10_audio_processor.c \
 	ags/audio/fx/ags_fx_eq10_channel.c \
@@ -1868,6 +1894,12 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_analyse_channel_processor.c \
 	ags/audio/fx/ags_fx_analyse_recycling.c \
 	ags/audio/fx/ags_fx_analyse_audio_signal.c \
+	ags/audio/fx/ags_fx_two_pass_aliase_audio.c \
+	ags/audio/fx/ags_fx_two_pass_aliase_audio_processor.c \
+	ags/audio/fx/ags_fx_two_pass_aliase_channel.c \
+	ags/audio/fx/ags_fx_two_pass_aliase_channel_processor.c \
+	ags/audio/fx/ags_fx_two_pass_aliase_recycling.c \
+	ags/audio/fx/ags_fx_two_pass_aliase_audio_signal.c \
 	ags/audio/fx/ags_fx_pattern_audio.c \
 	ags/audio/fx/ags_fx_pattern_audio_processor.c \
 	ags/audio/fx/ags_fx_pattern_channel.c \
@@ -2106,6 +2138,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_audio_preferences.h \
 	ags/X/ags_bulk_member_callbacks.h \
 	ags/X/ags_bulk_member.h \
+	ags/X/ags_composite_editor.h \
+	ags/X/ags_composite_editor_callbacks.h \
 	ags/X/ags_connection_editor_callbacks.h \
 	ags/X/ags_connection_editor.h \
 	ags/X/ags_context_menu.h \
@@ -2229,6 +2263,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_audio_preferences_callbacks.c \
 	ags/X/ags_bulk_member.c \
 	ags/X/ags_bulk_member_callbacks.c \
+	ags/X/ags_composite_editor.c \
+	ags/X/ags_composite_editor_callbacks.c \
 	ags/X/ags_connection_editor_callbacks.c \
 	ags/X/ags_connection_editor.c \
 	ags/X/ags_context_menu.c \
@@ -2633,6 +2669,10 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_automation_meta.h \
 	ags/X/editor/ags_automation_toolbar_callbacks.h \
 	ags/X/editor/ags_automation_toolbar.h \
+	ags/X/editor/ags_composite_edit.h \
+	ags/X/editor/ags_composite_edit_callbacks.h \
+	ags/X/editor/ags_composite_toolbar.h \
+	ags/X/editor/ags_composite_toolbar_callbacks.h \
 	ags/X/editor/ags_crop_note_dialog_callbacks.h \
 	ags/X/editor/ags_crop_note_dialog.h \
 	ags/X/editor/ags_envelope_dialog_callbacks.h \
@@ -2697,6 +2737,10 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_automation_meta_callbacks.c \
 	ags/X/editor/ags_automation_toolbar.c \
 	ags/X/editor/ags_automation_toolbar_callbacks.c \
+	ags/X/editor/ags_composite_edit.c \
+	ags/X/editor/ags_composite_edit_callbacks.c \
+	ags/X/editor/ags_composite_toolbar.c \
+	ags/X/editor/ags_composite_toolbar_callbacks.c \
 	ags/X/editor/ags_crop_note_dialog_callbacks.c \
 	ags/X/editor/ags_crop_note_dialog.c \
 	ags/X/editor/ags_envelope_dialog_callbacks.c \
@@ -2836,6 +2880,9 @@ ags-parallel-integration-valgrind-unit-test:
 
 ags-integration-functional-test: 
 	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-check-system-functional-test
+
+ags-integration-valgrind-functional-test: 
+	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-check-system-valgrind-functional-test
 
 ags-parallel-integration-functional-test: 
 	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-parallel-check-system-functional-test

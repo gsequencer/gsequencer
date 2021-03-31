@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -59,7 +59,7 @@ typedef enum{
 
 struct _AgsExportSoundcard
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
 
@@ -76,7 +76,7 @@ struct _AgsExportSoundcard
 
 struct _AgsExportSoundcardClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_export_soundcard_get_type(void);

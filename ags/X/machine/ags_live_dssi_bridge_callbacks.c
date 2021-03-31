@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -62,13 +62,10 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
    
     GList *bulk_member, *bulk_member_start;
     GList *start_recall, *recall;
-    GList *port;
   
     gchar *name;
     gchar *specifier;
     
-    LADSPA_PortDescriptor *port_descriptor;
-
     guint bank, program;
     unsigned long i;
 
@@ -95,8 +92,6 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
     recall = start_recall;
     
     while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_DSSI_AUDIO)) != NULL){
-      GList *start_port, *port;
-      
       ags_fx_dssi_audio_change_program(recall->data,
 				       bank,
 				       program);
@@ -116,8 +111,6 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
     recall = start_recall;
     
     while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_DSSI_AUDIO)) != NULL){
-      GList *start_port, *port;
-      
       ags_fx_dssi_audio_change_program(recall->data,
 				       bank,
 				       program);
@@ -130,7 +123,7 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
 		     g_object_unref);
 
     /* update UI */
-    bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input)->table);
+    bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input)->grid);
   
     for(i = 0; i < live_dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortCount; i++){
       /* find bulk member */
@@ -174,7 +167,7 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
 	    }
 	    
 	    gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment, val);
-	    gtk_widget_queue_draw((AgsDial *) child_widget);
+	    gtk_widget_queue_draw(child_widget);
 
 #ifdef AGS_DEBUG
 	    g_message(" --- %f", live_dssi_bridge->port_values[i]);

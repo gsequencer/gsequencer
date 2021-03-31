@@ -65,14 +65,14 @@ struct _AgsMidiDialog
   
   AgsMachine *machine;
 
-  GtkVBox *io_options;
+  GtkBox *io_options;
   
   GtkSpinButton *midi_channel;
   
   GtkCheckButton *playback;
   GtkCheckButton *record;
 
-  GtkVBox *mapping;
+  GtkBox *mapping;
   
   GtkSpinButton *audio_start;
   GtkSpinButton *audio_end;
@@ -80,9 +80,9 @@ struct _AgsMidiDialog
   GtkSpinButton *midi_start;
   GtkSpinButton *midi_end;
 
-  GtkVBox *device;
+  GtkBox *device;
   
-  GtkComboBoxText *midi_device;
+  GtkComboBox *midi_device;
   
   GtkButton *apply;
   GtkButton *ok;

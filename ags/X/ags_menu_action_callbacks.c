@@ -93,7 +93,6 @@ ags_menu_action_open_callback(GtkWidget *menu_item, gpointer data)
   AgsApplicationContext *application_context;
   AgsWindow *window;
   GtkFileChooserDialog *file_chooser;
-  gint response;
 
   application_context = ags_application_context_get_instance();
   window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
@@ -101,8 +100,8 @@ ags_menu_action_open_callback(GtkWidget *menu_item, gpointer data)
   file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("open file",
 								      (GtkWindow *) window,
 								      GTK_FILE_CHOOSER_ACTION_OPEN,
-								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+								      "_Cancel", GTK_RESPONSE_CANCEL,
+								      "_OK", GTK_RESPONSE_ACCEPT,
 								      NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), FALSE);
   gtk_widget_show_all((GtkWidget *) file_chooser);
@@ -338,11 +337,13 @@ ags_menu_action_save_as_callback(GtkWidget *menu_item, gpointer data)
   file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("save file as",
 								      (GtkWindow *) window,
 								      GTK_FILE_CHOOSER_ACTION_SAVE,
-								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+								      "_Cancel", GTK_RESPONSE_CANCEL,
+								      "_OK", GTK_RESPONSE_ACCEPT,
 								      NULL);
+  
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), FALSE);
   gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(file_chooser), TRUE);
+  
   gtk_widget_show_all((GtkWidget *) file_chooser);
 
   response = gtk_dialog_run(GTK_DIALOG(file_chooser));
@@ -467,13 +468,14 @@ ags_menu_action_quit_callback(GtkWidget *menu_item, gpointer data)
   AgsQuitDialog *quit_dialog;
 
   quit_dialog = ags_quit_dialog_new();
-  gtk_widget_show_all(quit_dialog);
+
+  gtk_widget_show_all((GtkWidget *) quit_dialog);
   
-  gtk_widget_grab_focus(quit_dialog->cancel);
+  gtk_widget_grab_focus((GtkWidget *) quit_dialog->cancel);
   
   ags_connectable_connect(AGS_CONNECTABLE(quit_dialog));
 
-  gtk_dialog_run(quit_dialog);
+  gtk_dialog_run((GtkDialog *) quit_dialog);
 }
 
 void
@@ -493,7 +495,7 @@ ags_menu_action_add_panel_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
 
   /* create panel */
-  panel = ags_machine_util_new_panel();
+  panel = (AgsPanel *) ags_machine_util_new_panel();
   
   add_audio = ags_add_audio_new(AGS_MACHINE(panel)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -512,7 +514,7 @@ ags_menu_action_add_mixer_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
   
   /* create mixer */
-  mixer = ags_machine_util_new_mixer();
+  mixer = (AgsMixer *) ags_machine_util_new_mixer();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(mixer)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -531,7 +533,7 @@ ags_menu_action_add_spectrometer_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
 
   /* create spectrometer */
-  spectrometer = ags_machine_util_new_spectrometer();
+  spectrometer = (AgsSpectrometer *) ags_machine_util_new_spectrometer();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(spectrometer)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -550,7 +552,7 @@ ags_menu_action_add_equalizer_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
 
   /* create equalizer10 */
-  equalizer10 = ags_machine_util_new_equalizer();
+  equalizer10 = (AgsEqualizer10 *) ags_machine_util_new_equalizer();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(equalizer10)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -569,7 +571,7 @@ ags_menu_action_add_drum_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
 
   /* create drum */
-  drum = ags_machine_util_new_drum();
+  drum = (AgsDrum *) ags_machine_util_new_drum();
   
   add_audio = ags_add_audio_new(AGS_MACHINE(drum)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -588,7 +590,7 @@ ags_menu_action_add_matrix_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
 
   /* create matrix */
-  matrix = ags_machine_util_new_matrix();
+  matrix = (AgsMatrix *) ags_machine_util_new_matrix();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(matrix)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -607,7 +609,7 @@ ags_menu_action_add_synth_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
 
   /* create synth */
-  synth = ags_machine_util_new_synth();
+  synth = (AgsSynth *) ags_machine_util_new_synth();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(synth)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -626,7 +628,7 @@ ags_menu_action_add_fm_synth_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
 
   /* create fm synth */
-  fm_synth = ags_machine_util_new_fm_synth();
+  fm_synth = (AgsFMSynth *) ags_machine_util_new_fm_synth();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(fm_synth)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -645,7 +647,7 @@ ags_menu_action_add_syncsynth_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
 
   /* create syncsynth */
-  syncsynth = ags_machine_util_new_syncsynth();
+  syncsynth = (AgsSyncsynth *) ags_machine_util_new_syncsynth();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(syncsynth)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -664,7 +666,7 @@ ags_menu_action_add_fm_syncsynth_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
 
   /* create fm syncsynth */
-  fm_syncsynth = ags_machine_util_new_fm_syncsynth();
+  fm_syncsynth = (AgsFMSyncsynth *) ags_machine_util_new_fm_syncsynth();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(fm_syncsynth)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -684,7 +686,7 @@ ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
   
   /* create ffplayer */
-  ffplayer = ags_machine_util_new_ffplayer();
+  ffplayer = (AgsFFPlayer *) ags_machine_util_new_ffplayer();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(ffplayer)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -703,7 +705,7 @@ ags_menu_action_add_sf2_synth_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
   
   /* create SF2 synth */
-  sf2_synth = ags_machine_util_new_sf2_synth();
+  sf2_synth = (AgsSF2Synth *) ags_machine_util_new_sf2_synth();
   
   add_audio = ags_add_audio_new(AGS_MACHINE(sf2_synth)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -723,7 +725,7 @@ ags_menu_action_add_pitch_sampler_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
   
   /* create pitch sampler */
-  pitch_sampler = ags_machine_util_new_pitch_sampler();
+  pitch_sampler = (AgsPitchSampler *) ags_machine_util_new_pitch_sampler();
   
   add_audio = ags_add_audio_new(AGS_MACHINE(pitch_sampler)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -742,7 +744,7 @@ ags_menu_action_add_sfz_synth_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
   
   /* create SFZ synth */
-  sfz_synth = ags_machine_util_new_sfz_synth();
+  sfz_synth = (AgsSFZSynth *) ags_machine_util_new_sfz_synth();
   
   add_audio = ags_add_audio_new(AGS_MACHINE(sfz_synth)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -761,7 +763,7 @@ ags_menu_action_add_audiorec_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
   
   /* create audiorec */
-  audiorec = ags_machine_util_new_audiorec();
+  audiorec = (AgsAudiorec *) ags_machine_util_new_audiorec();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(audiorec)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -780,7 +782,7 @@ ags_menu_action_add_desk_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
   
   /* create desk */
-  desk = ags_machine_util_new_desk();
+  desk = (AgsDesk *) ags_machine_util_new_desk();
 
   add_audio = ags_add_audio_new(AGS_MACHINE(desk)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -806,7 +808,7 @@ ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
   
   /* create ladspa bridge */
-  ladspa_bridge = ags_machine_util_new_ladspa_bridge(filename, effect);
+  ladspa_bridge = (AgsLadspaBridge *) ags_machine_util_new_ladspa_bridge(filename, effect);
   
   add_audio = ags_add_audio_new(AGS_MACHINE(ladspa_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -832,7 +834,7 @@ ags_menu_action_add_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
   
   /* create dssi bridge */
-  dssi_bridge = ags_machine_util_new_dssi_bridge(filename, effect);
+  dssi_bridge = (AgsDssiBridge *) ags_machine_util_new_dssi_bridge(filename, effect);
   
   add_audio = ags_add_audio_new(AGS_MACHINE(dssi_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -858,7 +860,7 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
   application_context = ags_application_context_get_instance();
 
   /* create lv2 bridge */
-  lv2_bridge = ags_machine_util_new_lv2_bridge(filename, effect);
+  lv2_bridge = (AgsLv2Bridge *) ags_machine_util_new_lv2_bridge(filename, effect);
   
   add_audio = ags_add_audio_new(AGS_MACHINE(lv2_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -884,7 +886,7 @@ ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer dat
   application_context = ags_application_context_get_instance();
   
   /* create live dssi bridge */
-  live_dssi_bridge = ags_machine_util_new_live_dssi_bridge(filename, effect);
+  live_dssi_bridge = (AgsLiveDssiBridge *) ags_machine_util_new_live_dssi_bridge(filename, effect);
   
   add_audio = ags_add_audio_new(AGS_MACHINE(live_dssi_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -894,17 +896,12 @@ ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer dat
 void
 ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsWindow *window;
   AgsLiveLv2Bridge *live_lv2_bridge;
 
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
 
-  AgsLv2Plugin *lv2_plugin;
-
-  GObject *default_soundcard;
-  
   gchar *filename, *effect;
     
   filename = g_object_get_data((GObject *) menu_item,
@@ -915,7 +912,7 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
   application_context = ags_application_context_get_instance();
   
   /* create live lv2 bridge */
-  live_lv2_bridge = ags_machine_util_new_live_lv2_bridge(filename, effect);
+  live_lv2_bridge = (AgsLiveLv2Bridge *) ags_machine_util_new_live_lv2_bridge(filename, effect);
     
   add_audio = ags_add_audio_new(AGS_MACHINE(live_lv2_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
@@ -982,9 +979,6 @@ ags_menu_action_midi_import_callback(GtkWidget *menu_item, gpointer data)
   }
 
   window->midi_import_wizard = (GtkWidget *) ags_midi_import_wizard_new();
-  g_object_set(window->midi_import_wizard,
-	       "main-window", window,
-	       NULL);
 
   ags_connectable_connect(AGS_CONNECTABLE(window->midi_import_wizard));
   ags_applicable_reset(AGS_APPLICABLE(window->midi_import_wizard));
@@ -1007,8 +1001,6 @@ ags_menu_action_midi_export_track_callback(GtkWidget *menu_item, gpointer data)
   }
 
   window->midi_export_wizard = (GtkWidget *) ags_midi_export_wizard_new((GtkWidget *) window);
-  g_object_set(window->midi_export_wizard,
-	       NULL);
 
   ags_connectable_connect(AGS_CONNECTABLE(window->midi_export_wizard));
   ags_applicable_reset(AGS_APPLICABLE(window->midi_export_wizard));
@@ -1025,7 +1017,7 @@ ags_menu_action_midi_playback_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data)
 {
-  GtkWidget *online_help_window;
+  AgsOnlineHelpWindow *online_help_window;
   
   AgsApplicationContext *application_context;
 
@@ -1039,10 +1031,10 @@ ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data)
     ags_connectable_connect(AGS_CONNECTABLE(online_help_window));
     
     ags_ui_provider_set_online_help_window(AGS_UI_PROVIDER(application_context),
-					   online_help_window);
+					   (GtkWidget *) online_help_window);
   }
   
-  gtk_widget_show_all(online_help_window);
+  gtk_widget_show_all((GtkWidget *) online_help_window);
 }
 
 void
@@ -1058,7 +1050,6 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 
   gchar *license_filename;
   gchar *logo_filename;
-  gchar *str;
 #if defined(AGS_W32API)
   gchar *app_dir;
 #endif

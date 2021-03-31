@@ -137,7 +137,7 @@ ags_fx_volume_channel_class_init(AgsFxVolumeChannelClass *fx_volume_channel)
   /**
    * AgsFxVolumeChannel:muted:
    *
-   * The beats per minute.
+   * The muted port.
    * 
    * Since: 3.3.0
    */
@@ -153,7 +153,7 @@ ags_fx_volume_channel_class_init(AgsFxVolumeChannelClass *fx_volume_channel)
   /**
    * AgsFxVolumeChannel:volume:
    *
-   * The beats per minute.
+   * The volume port.
    * 
    * Since: 3.3.0
    */

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -81,7 +81,7 @@ ags_server_preferences_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_server_preferences = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_server_preferences = g_type_register_static(GTK_TYPE_BOX,
 							 "AgsServerPreferences", &ags_server_preferences_info,
 							 0);
     
@@ -125,22 +125,30 @@ ags_server_preferences_applicable_interface_init(AgsApplicableInterface *applica
 void
 ags_server_preferences_init(AgsServerPreferences *server_preferences)
 {
-  GtkTable *table;
+  GtkGrid *grid;
   GtkLabel *label;
 
-  table = (GtkTable *) gtk_table_new(2, 5, FALSE);
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(server_preferences),
+				 GTK_ORIENTATION_VERTICAL);  
+
+  grid = (GtkGrid *) gtk_grid_new();
   gtk_box_pack_start(GTK_BOX(server_preferences),
-		     GTK_WIDGET(table),
+		     GTK_WIDGET(grid),
 		     FALSE, FALSE,
 		     2);
 
   server_preferences->start = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("start server"));
-  gtk_table_attach(table,
+
+  gtk_widget_set_valign(server_preferences->start,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(server_preferences->start,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
 		   GTK_WIDGET(server_preferences->start),
-		   0, 2,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+		   0, 0,
+		   2, 1);
+  
   gtk_widget_set_sensitive((GtkWidget *) server_preferences->start,
 			   FALSE);
 
@@ -149,20 +157,22 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 				    "label", i18n("address"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign(label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 1,
+		  1, 1);
 
   server_preferences->address = (GtkEntry *) gtk_entry_new();
-  gtk_table_attach(table,
+  gtk_grid_attach(grid,
 		   GTK_WIDGET(server_preferences->address),
-		   1, 2,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+		   1, 1,
+		   1, 1);
   gtk_widget_set_sensitive((GtkWidget *) server_preferences->address,
 			   FALSE);
 
@@ -171,20 +181,29 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 				    "label", i18n("port"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign(label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 2,
+		  1, 1);
 
   server_preferences->port = (GtkEntry *) gtk_entry_new();
-  gtk_table_attach(table,
+
+  gtk_widget_set_valign(server_preferences->port,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(server_preferences->port,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
 		   GTK_WIDGET(server_preferences->port),
 		   1, 2,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+		   1, 1);
+
   gtk_widget_set_sensitive((GtkWidget *) server_preferences->port,
 			   FALSE);
 
@@ -193,20 +212,29 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 				    "label", i18n("username"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   3, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign(label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 3,
+		  1, 1);
 
   server_preferences->username = (GtkEntry *) gtk_entry_new();
-  gtk_table_attach(table,
+
+  gtk_widget_set_valign(server_preferences->username,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(server_preferences->username,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
 		   GTK_WIDGET(server_preferences->username),
-		   1, 2,
-		   3, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+		   1, 3,
+		   1, 1);
+
   gtk_widget_set_sensitive((GtkWidget *) server_preferences->username,
 			   FALSE);
 
@@ -215,21 +243,32 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 				    "label", i18n("password"),
 				    "xalign", 0.0,
 				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   4, 5,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign(label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(label,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 4,
+		  1, 1);
 
   server_preferences->password = (GtkEntry *) gtk_entry_new();
-  gtk_entry_set_visibility(server_preferences->password, FALSE);
-  gtk_table_attach(table,
-		   GTK_WIDGET(server_preferences->password),
-		   1, 2,
-		   4, 5,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign(server_preferences->password,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(server_preferences->password,
+			GTK_ALIGN_FILL);
+
+  gtk_entry_set_visibility(server_preferences->password,
+			   FALSE);
+  
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(server_preferences->password),
+		  1, 4,
+		  1, 1);
+  
   gtk_widget_set_sensitive((GtkWidget *) server_preferences->password,
 			   FALSE);
 }

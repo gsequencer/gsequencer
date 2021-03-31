@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -68,7 +68,7 @@ typedef enum{
 
 struct _AgsAutomationEditor
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
   
@@ -80,7 +80,7 @@ struct _AgsAutomationEditor
 
   guint chunk_duration;
 
-  GtkHPaned *paned;
+  GtkPaned *paned;
   
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;
@@ -88,26 +88,26 @@ struct _AgsAutomationEditor
   AgsAutomationToolbar *automation_toolbar;
 
   GtkNotebook *notebook;
-
+  
   AgsRuler *audio_ruler;
   AgsScrolledScaleBox *audio_scrolled_scale_box;
   AgsScrolledAutomationEditBox *audio_scrolled_automation_edit_box;
-  GtkVScrollbar *audio_vscrollbar;
-  GtkHScrollbar *audio_hscrollbar;
+  GtkScrollbar *audio_vscrollbar;
+  GtkScrollbar *audio_hscrollbar;
   
   AgsNotebook *output_notebook;
   AgsRuler *output_ruler;
   AgsScrolledScaleBox *output_scrolled_scale_box;
   AgsScrolledAutomationEditBox *output_scrolled_automation_edit_box;
-  GtkVScrollbar *output_vscrollbar;
-  GtkHScrollbar *output_hscrollbar;
+  GtkScrollbar *output_vscrollbar;
+  GtkScrollbar *output_hscrollbar;
 
   AgsNotebook *input_notebook;
   AgsRuler *input_ruler;
   AgsScrolledScaleBox *input_scrolled_scale_box;
   AgsScrolledAutomationEditBox *input_scrolled_automation_edit_box;
-  GtkVScrollbar *input_vscrollbar;
-  GtkHScrollbar *input_hscrollbar;
+  GtkScrollbar *input_vscrollbar;
+  GtkScrollbar *input_hscrollbar;
 
   AgsAutomationEdit *focused_automation_edit;
 
@@ -116,7 +116,7 @@ struct _AgsAutomationEditor
 
 struct _AgsAutomationEditorClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 
   void (*machine_changed)(AgsAutomationEditor *automation_editor,
 			  AgsMachine *machine);

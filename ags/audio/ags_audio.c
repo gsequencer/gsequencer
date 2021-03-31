@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -5981,7 +5981,6 @@ ags_audio_set_audio_channel_shrink_zero0:
     channel_next = channel->next;
 
     g_object_run_dispose((GObject *) channel);
-    g_object_unref((GObject *) channel);
 
     channel = channel_next;
   }
@@ -6077,7 +6076,6 @@ ags_audio_set_audio_channel_shrink0:
       channel1 = channel0->next;
       
       g_object_run_dispose((GObject *) channel0);
-      g_object_unref((GObject *) channel0);
 
       channel0 = channel1;
     }
@@ -7062,7 +7060,6 @@ ags_audio_set_pads_shrink_zero(AgsAudio *audio,
 #endif
       
     g_object_run_dispose((GObject *) channel);
-    g_object_unref((GObject *) channel);
 
     channel = channel_next;
   }

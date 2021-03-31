@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -107,7 +107,7 @@ ags_pad_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_pad = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_pad = g_type_register_static(GTK_TYPE_BOX,
 					  "AgsPad", &ags_pad_info,
 					  0);
 
@@ -374,11 +374,13 @@ ags_pad_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_pad_init(AgsPad *pad)
 {
-  GtkMenu *menu;
-  GtkHBox *hbox;
+  GtkBox *hbox;
 
   AgsConfig *config;
 
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(pad),
+				 GTK_ORIENTATION_VERTICAL);  
+  
   pad->flags = 0;
 
   pad->name = NULL;
@@ -399,7 +401,8 @@ ags_pad_init(AgsPad *pad)
   pad->expander_set = ags_expander_set_new(1, 1);
   gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) pad->expander_set, TRUE, TRUE, 0);
 
-  hbox = (GtkHBox *) gtk_hbox_new(TRUE, 0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
   gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) hbox, FALSE, FALSE, 0);
 
   pad->group = (GtkToggleButton *) gtk_toggle_button_new_with_label("G");
@@ -445,7 +448,7 @@ ags_pad_set_property(GObject *gobject,
 				 samplerate, old_samplerate);
 
       list =
-	start_list = gtk_container_get_children(pad->expander_set);
+	start_list = gtk_container_get_children((GtkContainer *) pad->expander_set);
 
       while(list != NULL){
 	if(AGS_LINE(list->data)){
@@ -479,7 +482,7 @@ ags_pad_set_property(GObject *gobject,
 				  buffer_size, old_buffer_size);
 
       list =
-	start_list = gtk_container_get_children(pad->expander_set);
+	start_list = gtk_container_get_children((GtkContainer *) pad->expander_set);
 
       while(list != NULL){
 	if(AGS_LINE(list->data)){
@@ -513,7 +516,7 @@ ags_pad_set_property(GObject *gobject,
 			     format, old_format);
 
       list =
-	start_list = gtk_container_get_children(pad->expander_set);
+	start_list = gtk_container_get_children((GtkContainer *) pad->expander_set);
 
       while(list != NULL){
 	if(AGS_LINE(list->data)){
@@ -829,7 +832,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
   AgsChannel *channel;
 
   guint audio_audio_channels;
-  guint i, j;
+  guint i;
 
 #ifdef AGS_DEBUG
   g_message("ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n", audio_channels, audio_channels_old);

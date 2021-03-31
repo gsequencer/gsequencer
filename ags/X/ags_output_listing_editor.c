@@ -309,7 +309,7 @@ ags_output_listing_editor_add_children(AgsOutputListingEditor *output_listing_ed
 				       gboolean connect)
 {
   AgsPadEditor *pad_editor;
-  GtkVBox *vbox;
+  GtkBox *vbox;
 
   AgsChannel *start_channel;
   AgsChannel *channel, *next_pad, *nth_channel;
@@ -327,9 +327,10 @@ ags_output_listing_editor_add_children(AgsOutputListingEditor *output_listing_ed
 
   /* instantiate pad editor vbox */
   if(nth == 0){
-    output_listing_editor->child = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(output_listing_editor),
-		       GTK_WIDGET(output_listing_editor->child),
+    output_listing_editor->child = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+							  0);
+    gtk_box_pack_start((GtkBox *) output_listing_editor,
+		       (GtkWidget *) output_listing_editor->child,
 		       FALSE, FALSE,
 		       0);
   }
@@ -366,8 +367,8 @@ ags_output_listing_editor_add_children(AgsOutputListingEditor *output_listing_ed
 		 "channel", channel,
 		 NULL);
     
-    gtk_box_pack_start(GTK_BOX(output_listing_editor->child),
-		       GTK_WIDGET(pad_editor),
+    gtk_box_pack_start(output_listing_editor->child,
+		       (GtkWidget *) pad_editor,
 		       FALSE, FALSE,
 		       0);
 

@@ -130,7 +130,7 @@ ags_notation_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_notation_editor = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_notation_editor = g_type_register_static(GTK_TYPE_BOX,
 						      "AgsNotationEditor", &ags_notation_editor_info,
 						      0);
     
@@ -223,11 +223,17 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 {
   GtkViewport *viewport;
   GtkScrolledWindow *scrolled_window;
-  GtkTable *table;
+  GtkGrid *grid;
 
   AgsApplicationContext *application_context;
   
   gdouble gui_scale_factor;
+
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(notation_editor),
+				 GTK_ORIENTATION_VERTICAL);
+
+  gtk_box_set_homogeneous((GtkBox *) notation_editor,
+			  FALSE);
 
   notation_editor->flags = (AGS_NOTATION_EDITOR_PASTE_MATCH_AUDIO_CHANNEL |
 			    AGS_NOTATION_EDITOR_PASTE_NO_DUPLICATES);
@@ -259,7 +265,7 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 		     0);
 
   /* paned */
-  notation_editor->paned = (GtkHPaned *) gtk_hpaned_new();
+  notation_editor->paned = (GtkPaned *) gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
   gtk_box_pack_start((GtkBox *) notation_editor,
 		     (GtkWidget *) notation_editor->paned,
 		     TRUE, TRUE, 0);
@@ -293,13 +299,13 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 	       "menu", notation_editor->machine_selector->popup,
 	       NULL);
   
-  gtk_scrolled_window_add_with_viewport(scrolled_window,
-					(GtkWidget *) notation_editor->machine_selector);
+  gtk_container_add((GtkContainer *) scrolled_window,
+		    (GtkWidget *) notation_editor->machine_selector);
 
   /* selected machine */
   notation_editor->selected_machine = NULL;
 
-  /* table */
+  /* grid */
   viewport = (GtkViewport *) gtk_viewport_new(NULL,
 					      NULL);
   g_object_set(viewport,
@@ -309,10 +315,9 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 		  (GtkWidget *) viewport,
 		  TRUE, TRUE);
 
-  table = (GtkTable *) gtk_table_new(3, 2,
-				     FALSE);
+  grid = (GtkGrid *) gtk_grid_new();
   gtk_container_add(GTK_CONTAINER(viewport),
-		    GTK_WIDGET(table));
+		    GTK_WIDGET(grid));
   
   /* notebook */
   notation_editor->notebook = g_object_new(AGS_TYPE_NOTEBOOK,
@@ -320,12 +325,19 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 					   "spacing", 0,
 					   "prefix", i18n("channel"),
 					   NULL);
-  gtk_table_attach(table,
-		   (GtkWidget *) notation_editor->notebook,
-		   0, 3,
-		   0, 1,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) notation_editor->notebook,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) notation_editor->notebook,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) notation_editor->notebook,
+			 FALSE);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) notation_editor->notebook,
+		  0, 0,
+		  3, 1);
 
   /* scrolled piano */
   notation_editor->scrolled_piano = ags_scrolled_piano_new();
@@ -336,33 +348,50 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 	       "key-width", (guint) (gui_scale_factor * AGS_PIANO_DEFAULT_KEY_WIDTH),
 	       "key-height", (guint) (gui_scale_factor * AGS_PIANO_DEFAULT_KEY_HEIGHT),
 	       NULL);
-  gtk_table_attach(table,
-		   (GtkWidget *) notation_editor->scrolled_piano,
-		   0, 1,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) notation_editor->scrolled_piano,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) notation_editor->scrolled_piano,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) notation_editor->scrolled_piano,
+		  0, 1,
+		  1, 1);
   
   /* notation edit */
   notation_editor->notation_edit = ags_notation_edit_new();
-  gtk_table_attach(table,
-		   (GtkWidget *) notation_editor->notation_edit,
-		   1, 2,
-		   1, 2,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) notation_editor->notation_edit,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) notation_editor->notation_edit,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) notation_editor->notation_edit,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) notation_editor->notation_edit,
+			 TRUE);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) notation_editor->notation_edit,
+		  1, 1,
+		  1, 1);
 
   /* notation meta */
   notation_editor->notation_meta = ags_notation_meta_new();
   g_object_set(notation_editor->notation_meta,
 	       "valign", GTK_ALIGN_START,
 	       NULL);  
-  gtk_table_attach(table,
-		   (GtkWidget *) notation_editor->notation_meta,
-		   2, 3,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) notation_editor->notation_meta,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) notation_editor->notation_meta,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) notation_editor->notation_meta,
+		  2, 1,
+		  1, 1);
 }
 
 void
@@ -522,7 +551,7 @@ ags_notation_editor_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_notation_editor_parent_class)->show(widget);
 
-  gtk_widget_hide(AGS_NOTATION_EDITOR(widget)->notation_meta);
+  gtk_widget_hide((GtkWidget *) AGS_NOTATION_EDITOR(widget)->notation_meta);
 }
 
 void
@@ -530,7 +559,7 @@ ags_notation_editor_show_all(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_notation_editor_parent_class)->show_all(widget);
 
-  gtk_widget_hide(AGS_NOTATION_EDITOR(widget)->notation_meta);
+  gtk_widget_hide((GtkWidget *) AGS_NOTATION_EDITOR(widget)->notation_meta);
 }
 
 void
@@ -617,8 +646,8 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 		 NULL);
   }
   
-  gtk_widget_queue_resize(notation_editor->scrolled_piano->piano);
-  gtk_widget_queue_resize(notation_editor->scrolled_piano);
+  gtk_widget_queue_resize((GtkWidget *) notation_editor->scrolled_piano->piano);
+  gtk_widget_queue_resize((GtkWidget *) notation_editor->scrolled_piano);
 
   gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano->piano);
   gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano);
@@ -794,8 +823,6 @@ ags_notation_editor_delete_note(AgsNotationEditor *notation_editor,
 
     while((i = ags_notebook_next_active_tab(notation_editor->notebook,
 					    i)) != -1){
-      AgsNote *new_note;
-
       g_object_get(machine->audio,
 		   "notation", &start_list_notation,
 		   NULL);
@@ -841,8 +868,6 @@ ags_notation_editor_select_region(AgsNotationEditor *notation_editor,
 {
   AgsMachine *machine;
   
-  AgsNotation *notation;
-
   AgsTimestamp *timestamp;
 
   GList *start_list_notation, *list_notation;
@@ -938,9 +963,8 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
     AgsMachine *machine;
   
     AgsChannel *start_output, *start_input;
-    AgsChannel *channel, *nth_channel, *nth_pad;
+    AgsChannel *nth_channel, *nth_pad;
     AgsPlayback *playback;
-    AgsNotation *notation;
     
     AgsTimestamp *timestamp;
     
@@ -979,9 +1003,7 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
       list_notation = ags_notation_find_near_timestamp(list_notation, i,
 						       timestamp);
 
-      if(list_notation != NULL){
-	notation = list_notation->data;
-      }else{
+      if(list_notation == NULL){
 	i++;
 	
 	continue;
@@ -1087,7 +1109,7 @@ ags_notation_editor_start_play_key(AgsNotationEditor *notation_editor,
     AgsMachine *machine;
 
     AgsChannel *start_output, *start_input;
-    AgsChannel *channel, *nth_channel, *nth_pad;
+    AgsChannel *nth_channel, *nth_pad;
     AgsPlayback *playback;
 
     GObject *output_soundcard;
@@ -1214,7 +1236,7 @@ ags_notation_editor_stop_play_key(AgsNotationEditor *notation_editor,
     AgsMachine *machine;
 
     AgsChannel *start_output, *start_input;
-    AgsChannel *channel, *nth_channel, *nth_pad;
+    AgsChannel *nth_channel, *nth_pad;
     AgsPlayback *playback;
     
     guint output_pads, input_pads;
@@ -1437,12 +1459,12 @@ ags_notation_editor_paste_notation_all(AgsNotationEditor *notation_editor,
       while(child != NULL){
 	if(child->type == XML_ELEMENT_NODE){
 	  if(!xmlStrncmp(child->name,
-			 "note",
+			 BAD_CAST "note",
 			 5)){
 	    guint tmp;
 
 	    tmp = g_ascii_strtoull(xmlGetProp(child,
-					      "x1"),
+					      BAD_CAST "x1"),
 				   NULL,
 				   10);
 
@@ -1456,7 +1478,7 @@ ags_notation_editor_paste_notation_all(AgsNotationEditor *notation_editor,
       }
 
       x_boundary = g_ascii_strtoull(xmlGetProp(notation_node,
-					       "x_boundary"),
+					       BAD_CAST "x_boundary"),
 				    NULL,
 				    10);
 
@@ -1489,12 +1511,12 @@ ags_notation_editor_paste_notation_all(AgsNotationEditor *notation_editor,
       while(child != NULL){
 	if(child->type == XML_ELEMENT_NODE){
 	  if(!xmlStrncmp(child->name,
-			 "note",
+			 BAD_CAST "note",
 			 5)){
 	    guint tmp;
 
 	    tmp = g_ascii_strtoull(xmlGetProp(child,
-					      "x1"),
+					      BAD_CAST "x1"),
 				   NULL,
 				   10);
 
@@ -1554,14 +1576,14 @@ ags_notation_editor_paste_notation(AgsNotationEditor *notation_editor,
   while(notation_list_node != NULL){
     if(notation_list_node->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(notation_list_node->name,
-		     "notation-list",
+		     BAD_CAST "notation-list",
 		     14)){
 	notation_node = notation_list_node->children;
 	  
 	while(notation_node != NULL){
 	  if(notation_node->type == XML_ELEMENT_NODE){
 	    if(!xmlStrncmp(notation_node->name,
-			   "notation",
+			   BAD_CAST "notation",
 			   9)){
 	      guint64 offset;
 		
@@ -1571,10 +1593,10 @@ ags_notation_editor_paste_notation(AgsNotationEditor *notation_editor,
 	      while(timestamp_node != NULL){
 		if(timestamp_node->type == XML_ELEMENT_NODE){
 		  if(!xmlStrncmp(timestamp_node->name,
-				 "timestamp",
+				 BAD_CAST "timestamp",
 				 10)){
-		    offset = g_ascii_strtoull(xmlGetProp(timestamp_node,
-							 "offset"),
+		    offset = g_ascii_strtoull((gchar *) xmlGetProp(timestamp_node,
+								   BAD_CAST "offset"),
 					      NULL,
 					      10);
 		      
@@ -1637,12 +1659,9 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 {
   AgsMachine *machine;
   AgsNotationEdit *notation_edit;
-  
-  AgsNotation *notation;
 
   xmlDoc *clipboard;
   xmlNode *audio_node;
-  xmlNode *notation_node;
   
   gchar *buffer;
 
@@ -1693,9 +1712,9 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
     /* iterate xml tree */
     while(audio_node != NULL){
       if(audio_node->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp("audio", audio_node->name, 6)){
-	  notation_node = audio_node->children;
-	  
+	if(!xmlStrncmp(audio_node->name,
+		       BAD_CAST "audio",
+		       6)){
 	  first_x = ags_notation_editor_paste_notation(notation_editor,
 						       machine,
 						       audio_node,
@@ -1747,8 +1766,6 @@ ags_notation_editor_copy(AgsNotationEditor *notation_editor)
 {
   AgsMachine *machine;
   
-  AgsNotation *notation;
-
   xmlDoc *clipboard;
   xmlNode *audio_node, *notation_list_node, *notation_node;
 
@@ -1756,7 +1773,7 @@ ags_notation_editor_copy(AgsNotationEditor *notation_editor)
 
   xmlChar *buffer;
 
-  int size;
+  int buffer_size;
   guint audio_channel;
   gint i;
 
@@ -1818,9 +1835,9 @@ ags_notation_editor_copy(AgsNotationEditor *notation_editor)
 		     g_object_unref);
     
     /* write to clipboard */
-    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
+    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &buffer_size, "UTF-8", TRUE);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
-			   buffer, size);
+			   (gchar *) buffer, buffer_size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
 
     xmlFreeDoc(clipboard);
@@ -1839,8 +1856,6 @@ void
 ags_notation_editor_cut(AgsNotationEditor *notation_editor)
 {
   AgsMachine *machine;
-  
-  AgsNotation *notation;
 
   xmlDoc *clipboard;
   xmlNode *audio_node;
@@ -1850,7 +1865,7 @@ ags_notation_editor_cut(AgsNotationEditor *notation_editor)
 
   xmlChar *buffer;
 
-  int size;
+  int buffer_size;
   guint audio_channel;
   gint i;
 
@@ -1914,9 +1929,9 @@ ags_notation_editor_cut(AgsNotationEditor *notation_editor)
     gtk_widget_queue_draw((GtkWidget *) notation_editor->notation_edit);
 
     /* write to clipboard */
-    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
+    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &buffer_size, "UTF-8", TRUE);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
-			   buffer, size);
+			   (gchar *) buffer, buffer_size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
 
     xmlFreeDoc(clipboard);
@@ -2013,11 +2028,8 @@ ags_notation_editor_invert(AgsNotationEditor *notation_editor)
 {
   AgsMachine *machine;
   
-  AgsNotation *notation;
-
   GList *start_list_notation, *list_notation;
 
-  int size;
   guint audio_channel;
   gint i;
   

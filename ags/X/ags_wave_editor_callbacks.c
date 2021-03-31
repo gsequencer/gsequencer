@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,11 +34,11 @@ ags_wave_editor_vscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_ed
 {
   GtkAdjustment *vadjustment;
 
-  vadjustment = gtk_viewport_get_vadjustment(wave_editor->scrolled_wave_edit_box->viewport);
+  vadjustment = gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(wave_editor->scrolled_wave_edit_box->viewport));
   gtk_adjustment_set_value(vadjustment,
 			   gtk_range_get_value(range));
 
-  vadjustment = gtk_viewport_get_vadjustment(wave_editor->scrolled_level_box->viewport);
+  vadjustment = gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(wave_editor->scrolled_level_box->viewport));
   gtk_adjustment_set_value(vadjustment,
 			   gtk_range_get_value(range));
 }

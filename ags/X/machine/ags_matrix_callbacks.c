@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -72,10 +72,10 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 
       matrix->selected = (GtkToggleButton*) widget;
 
-      gtk_widget_queue_draw(matrix->cell_pattern->drawing_area);
+      gtk_widget_queue_draw((GtkWidget *) matrix->cell_pattern->drawing_area);
 
       /* calculate index 1 */
-      str = gtk_button_get_label(matrix->selected);
+      str = gtk_button_get_label((GtkButton *) matrix->selected);
       bank_index_1 =
 	AGS_MACHINE(matrix)->bank_1 = ((guint) g_ascii_strtoull(str, NULL, 10)) - 1;
 
@@ -183,8 +183,6 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 void
 ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 {
-  AgsWindow *window;
-
   AgsApplySequencerLength *apply_sequencer_length;
   
   AgsApplicationContext *application_context;
@@ -193,9 +191,6 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 
   application_context = ags_application_context_get_instance();
 
-  /* get window and application_context  */
-  window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(matrix));
-
   /* task - apply length */
   length = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button));
 
@@ -203,7 +198,7 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 							  length);
 
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-				(GObject *) apply_sequencer_length);
+				(AgsTask *) apply_sequencer_length);
 }
 
 void
@@ -316,3 +311,79 @@ ags_matrix_stop_callback(AgsMatrix *matrix,
   ags_led_array_unset_all((AgsLedArray *) matrix->cell_pattern->hled_array);
 }
 
+void
+ags_matrix_volume_callback(GtkRange *range, AgsMatrix *matrix)
+{
+  AgsChannel *start_input;
+  AgsChannel *channel;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gfloat volume;
+
+  volume = (gfloat) gtk_range_get_value(range);
+  
+  start_input = NULL;
+  
+  g_object_get(AGS_MACHINE(matrix)->audio,
+	       "input", &start_input,
+	       NULL);
+
+  channel = start_input;
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+
+  while(channel != NULL){
+    AgsChannel *next;
+    
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
+    
+    recall =
+      start_recall = g_list_concat(start_play, start_recall);
+
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_VOLUME_CHANNEL)) != NULL){
+      AgsPort *port;
+
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "volume", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	g_value_set_float(&value,
+			  volume);
+
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+      }
+      
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+    
+    /* iterate */
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+}

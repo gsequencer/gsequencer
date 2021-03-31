@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -131,14 +131,14 @@ ags_quit_dialog_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
 {
-  GtkVBox *vbox;
+  GtkBox *vbox;
   
   quit_dialog->flags = 0;
 
-  vbox = gtk_dialog_get_content_area(quit_dialog);
+  vbox = gtk_dialog_get_content_area((GtkDialog *) quit_dialog);
   
   quit_dialog->accept_all = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("accept all"));
-  gtk_box_pack_start((GtkBox *) vbox,
+  gtk_box_pack_start(vbox,
 		     (GtkWidget *) quit_dialog->accept_all,
 		     FALSE, FALSE,
 		     0);
@@ -146,7 +146,7 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
   quit_dialog->current_question = AGS_QUIT_DIALOG_QUESTION_SAVE_FILE;
   
   quit_dialog->question = (GtkLabel *) gtk_label_new(i18n("Do you want to save before quit?"));
-  gtk_box_pack_start((GtkBox *) vbox,
+  gtk_box_pack_start(vbox,
 		     (GtkWidget *) quit_dialog->question,
 		     FALSE, FALSE,
 		     0);
@@ -155,17 +155,17 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
 
   quit_dialog->wave_export_machine = NULL;
   
-  quit_dialog->yes = gtk_dialog_add_button(quit_dialog,
-					   i18n("Yes"),
-					   GTK_RESPONSE_YES);
+  quit_dialog->yes = (GtkButton *) gtk_dialog_add_button((GtkDialog *) quit_dialog,
+							 i18n("Yes"),
+							 GTK_RESPONSE_YES);
 
-  quit_dialog->no = gtk_dialog_add_button(quit_dialog,
-					  i18n("No"),
-					  GTK_RESPONSE_NO);
+  quit_dialog->no = (GtkButton *) gtk_dialog_add_button((GtkDialog *) quit_dialog,
+							i18n("No"),
+							GTK_RESPONSE_NO);
 
-  quit_dialog->cancel = gtk_dialog_add_button(quit_dialog,
-					      i18n("Cancel"),
-					      GTK_RESPONSE_CANCEL);
+  quit_dialog->cancel = (GtkButton *) gtk_dialog_add_button((GtkDialog *) quit_dialog,
+							    i18n("Cancel"),
+							    GTK_RESPONSE_CANCEL);
   
   quit_dialog->confirm = NULL;
 }
@@ -232,9 +232,7 @@ ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
 {
   AgsApplicationContext *application_context;
 
-  GObject *soundcard;
-
-  GList *start_wave, *end_wave, *wave;
+  GList *start_wave, *end_wave;
     
   guint64 start_frame, end_frame;
   guint buffer_size;
@@ -245,8 +243,6 @@ ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
   }
 
   application_context = ags_application_context_get_instance();
-
-  soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   /* get some fields */
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
@@ -290,7 +286,7 @@ ags_quit_dialog_fast_export(AgsQuitDialog *quit_dialog,
     
     filename = gtk_entry_get_text(AGS_AUDIOREC(machine)->filename);
   
-    ags_audiorec_fast_export(machine,
+    ags_audiorec_fast_export((AgsAudiorec *) machine,
 			     filename,
 			     start_frame, end_frame);
   }

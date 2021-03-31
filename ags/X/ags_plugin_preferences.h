@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,14 +45,14 @@ typedef struct _AgsLadspaPluginPreferences AgsLadspaPluginPreferences;
 
 struct _AgsPluginPreferences
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   AgsLadspaPluginPreferences *ladspa_plugin_preferencens;
 };
 
 struct _AgsPluginPreferencesClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 struct _AgsLadspaPluginPreferences

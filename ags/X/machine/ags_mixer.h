@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -56,7 +56,7 @@ struct _AgsMixer
   AgsRecallContainer *peak_play_container;
   AgsRecallContainer *peak_recall_container;
 
-  GtkHBox *input_pad;
+  GtkBox *input_pad;
 };
 
 struct _AgsMixerClass

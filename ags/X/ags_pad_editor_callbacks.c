@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,8 +27,6 @@ ags_pad_editor_resize_audio_channels_callback(AgsMachine *machine,
 					      guint audio_channels, guint audio_channels_old,
 					      AgsPadEditor *pad_editor)
 {
-  AgsAudio *audio;
-  
   if(audio_channels > audio_channels_old){
     AgsLineEditor *line_editor;
 

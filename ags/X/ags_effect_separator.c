@@ -78,7 +78,7 @@ ags_effect_separator_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_effect_separator = g_type_register_static(GTK_TYPE_HBOX,
+    ags_type_effect_separator = g_type_register_static(GTK_TYPE_BOX,
 						       "AgsEffectSeparator", &ags_effect_separator_info,
 						       0);
 
@@ -169,6 +169,9 @@ ags_effect_separator_init(AgsEffectSeparator *effect_separator)
 {
   GtkSeparator *separator;
 
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(effect_separator),
+				 GTK_ORIENTATION_HORIZONTAL);
+
   effect_separator->play_container = NULL;
   effect_separator->recall_container = NULL;
 
@@ -178,23 +181,23 @@ ags_effect_separator_init(AgsEffectSeparator *effect_separator)
   effect_separator->effect = NULL;
 
   /* heading separator */
-  separator = (GtkSeparator *) gtk_hseparator_new();
-  gtk_box_pack_start(GTK_BOX(effect_separator),
-		     GTK_WIDGET(separator),
+  separator = (GtkSeparator *) gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+  gtk_box_pack_start((GtkBox *) effect_separator,
+		     (GtkWidget *) separator,
 		     TRUE, TRUE,
 		     0);
 
   /* label */
   effect_separator->label = (GtkLabel *) gtk_label_new(NULL);
-  gtk_box_pack_start(GTK_BOX(effect_separator),
-		     GTK_WIDGET(effect_separator->label),
+  gtk_box_pack_start((GtkBox *) effect_separator,
+		     (GtkWidget *) effect_separator->label,
 		     FALSE, FALSE,
 		     0);
 
   /* trailing separator */
-  separator = (GtkSeparator *) gtk_hseparator_new();
-  gtk_box_pack_start(GTK_BOX(effect_separator),
-		     GTK_WIDGET(separator),
+  separator = (GtkSeparator *) gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+  gtk_box_pack_start((GtkBox *) effect_separator,
+		     (GtkWidget *) separator,
 		     TRUE, TRUE,
 		     0);
 }

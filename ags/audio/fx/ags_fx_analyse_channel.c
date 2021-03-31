@@ -19,6 +19,8 @@
 
 #include <ags/audio/fx/ags_fx_analyse_channel.h>
 
+#include <ags/audio/ags_audio_signal.h>
+
 #include <ags/audio/task/ags_reset_fx_analyse.h>
 
 #include <ags/i18n.h>

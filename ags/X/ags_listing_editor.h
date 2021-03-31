@@ -50,7 +50,7 @@ struct _AgsListingEditor
 
   GType channel_type;
 
-  GtkVBox *child;
+  GtkBox *child;
 };
 
 struct _AgsListingEditorClass

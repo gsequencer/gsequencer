@@ -50,11 +50,11 @@ ags_automation_editor_audio_vscrollbar_value_changed(GtkRange *range, AgsAutomat
 {
   GtkAdjustment *vadjustment;
 
-  vadjustment = gtk_viewport_get_vadjustment(automation_editor->audio_scrolled_automation_edit_box->viewport);
+  vadjustment = gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(automation_editor->audio_scrolled_automation_edit_box->viewport));
   gtk_adjustment_set_value(vadjustment,
 			   gtk_range_get_value(range));
 
-  vadjustment = gtk_viewport_get_vadjustment(automation_editor->audio_scrolled_scale_box->viewport);
+  vadjustment = gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(automation_editor->audio_scrolled_scale_box->viewport));
   gtk_adjustment_set_value(vadjustment,
 			   gtk_range_get_value(range));
 }
@@ -98,11 +98,11 @@ ags_automation_editor_output_vscrollbar_value_changed(GtkRange *range, AgsAutoma
 {
   GtkAdjustment *vadjustment;
 
-  vadjustment = gtk_viewport_get_vadjustment(automation_editor->output_scrolled_automation_edit_box->viewport);
+  vadjustment = gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(automation_editor->output_scrolled_automation_edit_box->viewport));
   gtk_adjustment_set_value(vadjustment,
 			   gtk_range_get_value(range));
 
-  vadjustment = gtk_viewport_get_vadjustment(automation_editor->output_scrolled_scale_box->viewport);
+  vadjustment = gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(automation_editor->output_scrolled_scale_box->viewport));
   gtk_adjustment_set_value(vadjustment,
 			   gtk_range_get_value(range));
 }
@@ -147,11 +147,11 @@ ags_automation_editor_input_vscrollbar_value_changed(GtkRange *range, AgsAutomat
 {
   GtkAdjustment *vadjustment;
 
-  vadjustment = gtk_viewport_get_vadjustment(automation_editor->input_scrolled_automation_edit_box->viewport);
+  vadjustment = gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(automation_editor->input_scrolled_automation_edit_box->viewport));
   gtk_adjustment_set_value(vadjustment,
 			   gtk_range_get_value(range));
 
-  vadjustment = gtk_viewport_get_vadjustment(automation_editor->input_scrolled_scale_box->viewport);
+  vadjustment = gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(automation_editor->input_scrolled_scale_box->viewport));
   gtk_adjustment_set_value(vadjustment,
 			   gtk_range_get_value(range));
 }

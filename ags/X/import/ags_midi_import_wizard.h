@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,8 +53,6 @@ struct _AgsMidiImportWizard
   GtkDialog dialog;
 
   guint flags;
-
-  GtkWidget *main_window;
   
   GtkWidget *file_chooser;
   GtkWidget *track_collection;
@@ -66,6 +64,13 @@ struct _AgsMidiImportWizardClass
 };
 
 GType ags_midi_import_wizard_get_type(void);
+
+gboolean ags_midi_import_wizard_test_flags(AgsMidiImportWizard *midi_import_wizard,
+					   guint flags);
+void ags_midi_import_wizard_set_flags(AgsMidiImportWizard *midi_import_wizard,
+				      guint flags);
+void ags_midi_import_wizard_unset_flags(AgsMidiImportWizard *midi_import_wizard,
+					guint flags);
 
 AgsMidiImportWizard* ags_midi_import_wizard_new();
 

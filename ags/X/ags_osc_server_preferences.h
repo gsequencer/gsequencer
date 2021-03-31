@@ -49,7 +49,7 @@ typedef enum{
 
 struct _AgsOscServerPreferences
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
   
@@ -72,7 +72,7 @@ struct _AgsOscServerPreferences
 
 struct _AgsOscServerPreferencesClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_osc_server_preferences_get_type(void);

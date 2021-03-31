@@ -96,7 +96,7 @@ ags_output_collection_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_output_collection_editor = g_type_register_static(GTK_TYPE_TABLE,
+    ags_type_output_collection_editor = g_type_register_static(GTK_TYPE_GRID,
 							       "AgsOutputCollectionEditor",
 							       &ags_output_collection_editor_info,
 							       0);
@@ -165,7 +165,6 @@ ags_output_collection_editor_applicable_interface_init(AgsApplicableInterface *a
 void
 ags_output_collection_editor_init(AgsOutputCollectionEditor *output_collection_editor)
 {
-  GtkAlignment *alignment;
   GtkLabel *label;
 
   output_collection_editor->flags = 0;
@@ -174,107 +173,168 @@ ags_output_collection_editor_init(AgsOutputCollectionEditor *output_collection_e
 			 G_CALLBACK(ags_output_collection_editor_parent_set_callback), output_collection_editor);
 
   output_collection_editor->channel_type = G_TYPE_NONE;
-  
-  gtk_table_resize(GTK_TABLE(output_collection_editor),
-		   4, 2);
-  gtk_table_set_row_spacings(GTK_TABLE(output_collection_editor),
-			     4);
-  gtk_table_set_col_spacings(GTK_TABLE(output_collection_editor),
-			     2);
 
   /* first line */
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(GTK_TABLE(output_collection_editor),
-		   GTK_WIDGET(alignment),
-		   0, 1,
-		   0, 1,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
-
   label = (GtkLabel *) gtk_label_new(i18n("first line"));
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(label));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_label_set_yalign(label,
+		       0.5);
+  
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) label,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) label,
+			 TRUE);
+  
+  gtk_grid_attach((GtkGrid *) output_collection_editor,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
 
   output_collection_editor->first_line = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0,
 											  -1.0,
 											  1.0);
-  gtk_table_attach(GTK_TABLE(output_collection_editor),
-		   GTK_WIDGET(output_collection_editor->first_line),
-		   1, 2,
-		   0, 1,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
+  
+  gtk_widget_set_valign((GtkWidget *) output_collection_editor->first_line,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) output_collection_editor->first_line,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) output_collection_editor->first_line,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) output_collection_editor->first_line,
+			 TRUE);
+
+  gtk_grid_attach((GtkGrid *) output_collection_editor,
+		  (GtkWidget *) output_collection_editor->first_line,
+		  1, 0,
+		  1, 1);
 
   /* count */
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(GTK_TABLE(output_collection_editor),
-		   GTK_WIDGET(alignment),
-		   0, 1,
-		   1, 2,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
-
   label = (GtkLabel *) gtk_label_new(i18n("count"));
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(label));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_label_set_yalign(label,
+		       0.5);
+  
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) label,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) label,
+			 TRUE);
+
+  gtk_grid_attach((GtkGrid *) output_collection_editor,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
 
   output_collection_editor->count = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0,
 										     -1.0,
 										     1.0);
-  gtk_table_attach(GTK_TABLE(output_collection_editor),
-		   GTK_WIDGET(output_collection_editor->count),
-		   1, 2,
-		   1, 2,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
+  
+  gtk_widget_set_valign((GtkWidget *) output_collection_editor->count,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) output_collection_editor->count,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) output_collection_editor->count,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) output_collection_editor->count,
+			 TRUE);
+
+  gtk_grid_attach((GtkGrid *) output_collection_editor,
+		  (GtkWidget *) output_collection_editor->count,
+		  1, 1,
+		  1, 1);
 
   /* soundcard */
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(GTK_TABLE(output_collection_editor),
-		   GTK_WIDGET(alignment),
-		   0, 1,
-		   2, 3,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
-
   label = (GtkLabel *) gtk_label_new(i18n("soundcard"));
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(label));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_label_set_yalign(label,
+		       0.5);
+  
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) label,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) label,
+			 TRUE);
+
+  gtk_grid_attach((GtkGrid *) output_collection_editor,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
 
   output_collection_editor->soundcard = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_table_attach(GTK_TABLE(output_collection_editor),
-		   GTK_WIDGET(output_collection_editor->soundcard),
-		   1, 2,
-		   2, 3,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) output_collection_editor->soundcard,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) output_collection_editor->soundcard,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) output_collection_editor->soundcard,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) output_collection_editor->soundcard,
+			 TRUE);
+
+  gtk_grid_attach((GtkGrid *) output_collection_editor,
+		  (GtkWidget *) output_collection_editor->soundcard,
+		  1, 2,
+		  1, 1);
 
   /* audio channel */
-  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
-						 0.0, 0.0);
-  gtk_table_attach(GTK_TABLE(output_collection_editor),
-		   GTK_WIDGET(alignment),
-		   0, 1,
-		   3, 4,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
-
   label = (GtkLabel *) gtk_label_new(i18n("audio channel"));
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(label));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_label_set_yalign(label,
+		       0.5);
+  
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) label,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) label,
+			 TRUE);
+
+  gtk_grid_attach((GtkGrid *) output_collection_editor,
+		  (GtkWidget *) label,
+		   0, 3,
+		   1, 1);
 
   output_collection_editor->audio_channel = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0,
 											     -1.0,
 											     1.0);
-  gtk_table_attach(GTK_TABLE(output_collection_editor),
-		   GTK_WIDGET(output_collection_editor->audio_channel),
-		   1, 2,
-		   3, 4,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) output_collection_editor->audio_channel,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) output_collection_editor->audio_channel,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) output_collection_editor->audio_channel,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) output_collection_editor->audio_channel,
+			 TRUE);
+  
+  gtk_grid_attach((GtkGrid *) output_collection_editor,
+		  (GtkWidget *) output_collection_editor->audio_channel,
+		  1, 3,
+		  1, 1);
 }
 
 
@@ -388,9 +448,6 @@ ags_output_collection_editor_apply(AgsApplicable *applicable)
 
     GtkTreeModel *model;
 
-    GList *task;
-    
-    guint audio_channels;
     guint first_line, count;
     guint audio_channel;
     guint i;

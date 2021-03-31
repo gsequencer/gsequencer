@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,6 +19,8 @@
 
 #include <ags/X/export/ags_wave_export_dialog_callbacks.h>
 
+#include <ags/i18n.h>
+
 void
 ags_wave_export_dialog_file_chooser_button_callback(GtkWidget *file_chooser_button,
 						    AgsWaveExportDialog *wave_export_dialog)
@@ -28,8 +30,8 @@ ags_wave_export_dialog_file_chooser_button_callback(GtkWidget *file_chooser_butt
   file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("Export to file ...",
 								      GTK_WINDOW(wave_export_dialog),
 								      GTK_FILE_CHOOSER_ACTION_SAVE,
-								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-								      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+								      i18n("_Cancel"), GTK_RESPONSE_CANCEL,
+								      i18n("_OK"), GTK_RESPONSE_ACCEPT,
 								      NULL);
   if(gtk_dialog_run(GTK_DIALOG(file_chooser)) == GTK_RESPONSE_ACCEPT){
     char *filename;

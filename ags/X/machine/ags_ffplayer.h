@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -69,6 +69,12 @@ struct _AgsFFPlayer
   AgsRecallContainer *notation_play_container;
   AgsRecallContainer *notation_recall_container;
 
+  AgsRecallContainer *two_pass_aliase_play_container;
+  AgsRecallContainer *two_pass_aliase_recall_container;
+
+  AgsRecallContainer *volume_play_container;
+  AgsRecallContainer *volume_recall_container;
+
   AgsRecallContainer *envelope_play_container;
   AgsRecallContainer *envelope_recall_container;
   
@@ -92,18 +98,28 @@ struct _AgsFFPlayer
   guint control_height;
   
   GtkDrawingArea *drawing_area;
-  GtkHScrollbar *hscrollbar;
+  GtkScrollbar *hscrollbar;
   GtkAdjustment *hadjustment;
 
-  GtkComboBoxText *preset;
-  GtkComboBoxText *instrument;
+  GtkComboBox *preset;
+  GtkComboBox *instrument;
 
   GtkCheckButton *enable_synth_generator;
 
   GtkSpinButton *lower;
   GtkSpinButton *key_count;
-
+  
   GtkButton *update;
+
+  GtkCheckButton *enable_aliase;
+
+  AgsDial *aliase_a_amount;
+  AgsDial *aliase_a_phase;
+
+  AgsDial *aliase_b_amount;
+  AgsDial *aliase_b_phase;
+
+  GtkScale *volume;
   
   GtkWidget *open_dialog;
 };

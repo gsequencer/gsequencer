@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -188,7 +188,7 @@ ags_window_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_window_init(AgsWindow *window)
 {
-  GtkVBox *vbox;
+  GtkBox *vbox;
   GtkViewport *viewport;
   GtkWidget *scrolled_window;
 
@@ -248,10 +248,10 @@ ags_window_init(AgsWindow *window)
   gtk_box_pack_start((GtkBox *) vbox,
   		     (GtkWidget *) window->menu_bar,
   		     FALSE, FALSE, 0);
-  gtk_widget_show_all(window->menu_bar);
+  gtk_widget_show_all((GtkWidget *) window->menu_bar);
 
   /* vpaned and scrolled window */
-  window->paned = (GtkVPaned *) gtk_vpaned_new();
+  window->paned = (GtkPaned *) gtk_paned_new(GTK_ORIENTATION_VERTICAL);
   gtk_box_pack_start((GtkBox*) vbox,
 		     (GtkWidget*) window->paned,
 		     TRUE, TRUE,
@@ -271,9 +271,10 @@ ags_window_init(AgsWindow *window)
 		    (GtkWidget *) scrolled_window);
 
   /* machines rack */
-  window->machines = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_scrolled_window_add_with_viewport((GtkScrolledWindow *) scrolled_window,
-					(GtkWidget *) window->machines);
+  window->machines = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+					    0);
+  gtk_container_add((GtkContainer *) scrolled_window,
+		    (GtkWidget *) window->machines);
 
   window->machine_counter = ags_window_standard_machine_counter_alloc();
   window->selected = NULL;

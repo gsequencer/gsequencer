@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -81,7 +81,7 @@ ags_performance_preferences_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_performance_preferences = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_performance_preferences = g_type_register_static(GTK_TYPE_BOX,
 							      "AgsPerformancePreferences", &ags_performance_preferences_info,
 							      0);
     
@@ -125,8 +125,11 @@ ags_performance_preferences_applicable_interface_init(AgsApplicableInterface *ap
 void
 ags_performance_preferences_init(AgsPerformancePreferences *performance_preferences)
 {
-  GtkHBox *hbox;
+  GtkBox *hbox;
   GtkLabel *label;
+
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(performance_preferences),
+				 GTK_ORIENTATION_VERTICAL);  
 
   performance_preferences->flags = 0;
   
@@ -152,8 +155,8 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
 		     0);
 
   /* thread-pool - max unused threads */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
   gtk_box_pack_start(GTK_BOX(performance_preferences),
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -174,8 +177,8 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
 		     0);
   
   /* max precision */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
   gtk_box_pack_start(GTK_BOX(performance_preferences),
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -313,7 +316,7 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
   g_free(str);
   
   /* max-precision */
-  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(performance_preferences->max_precision));
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(performance_preferences->max_precision));
   max_precision = 0;
   
   if(str != NULL){

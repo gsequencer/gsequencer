@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -125,8 +125,6 @@ ags_sfz_synth_class_init(AgsSFZSynthClass *sfz_synth)
 void
 ags_sfz_synth_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_sfz_synth_connectable_parent_interface;
-
   ags_sfz_synth_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_sfz_synth_connect;
@@ -334,7 +332,7 @@ ags_sfz_synth_map_recall(AgsMachine *machine)
   
   AgsAudio *audio;
 
-  GList *start_recall, *recall;
+  GList *start_recall;
 
   gint position;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -48,7 +48,7 @@ typedef enum{
 
 struct _AgsPerformancePreferences
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
   
@@ -64,7 +64,7 @@ struct _AgsPerformancePreferences
 
 struct _AgsPerformancePreferencesClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 };
 
 GType ags_performance_preferences_get_type(void);

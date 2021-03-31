@@ -58,7 +58,7 @@ typedef enum{
 
 struct _AgsEffectPad
 {
-  GtkVBox vbox;
+  GtkBox box;
 
   guint flags;
 
@@ -74,12 +74,12 @@ struct _AgsEffectPad
   AgsChannel *channel;
   
   guint cols;
-  GtkTable *table;
+  GtkGrid *grid;
 };
 
 struct _AgsEffectPadClass
 {
-  GtkVBoxClass vbox;
+  GtkBoxClass box;
 
   void (*samplerate_changed)(AgsEffectPad *effect_pad,
 			     guint samplerate, guint old_samplerate);

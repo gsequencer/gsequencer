@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,10 +31,10 @@
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
-#include <ags/X/ags_composite_view.h>
 
-#include <ags/X/editor/ags_toolbar.h>
+#include <ags/X/editor/ags_composite_toolbar.h>
 #include <ags/X/editor/ags_machine_selector.h>
+#include <ags/X/editor/ags_composite_edit.h>
 
 G_BEGIN_DECLS
 
@@ -45,7 +45,7 @@ G_BEGIN_DECLS
 #define AGS_IS_COMPOSITE_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_COMPOSITE_EDITOR))
 #define AGS_COMPOSITE_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_COMPOSITE_EDITOR, AgsCompositeEditorClass))
   
-#define AGS_COMPOSITE_EDITOR_DEFAULT_VERSION "3.7.9"
+#define AGS_COMPOSITE_EDITOR_DEFAULT_VERSION "3.8.0"
 #define AGS_COMPOSITE_EDITOR_DEFAULT_BUILD_ID "Mon Dec 14 15:29:38 UTC 2020"
 
 typedef struct _AgsCompositeEditor AgsCompositeEditor;
@@ -57,37 +57,37 @@ typedef enum{
 }AgsCompositeEditorFlags;
 
 typedef enum{
-  AGS_COMPOSITE_EDITOR_VIEW_NOTATION    = 1,
-  AGS_COMPOSITE_EDITOR_VIEW_SHEET       = 1 <<  1,
-  AGS_COMPOSITE_EDITOR_VIEW_AUTOMATION  = 1 <<  2,
-  AGS_COMPOSITE_EDITOR_VIEW_WAVE        = 1 <<  3,
-}AgsCompositeEditorView;
+  AGS_COMPOSITE_EDITOR_EDIT_NOTATION    = 1,
+  AGS_COMPOSITE_EDITOR_EDIT_SHEET       = 1 <<  1,
+  AGS_COMPOSITE_EDITOR_EDIT_AUTOMATION  = 1 <<  2,
+  AGS_COMPOSITE_EDITOR_EDIT_WAVE        = 1 <<  3,
+}AgsCompositeEditorEdit;
 
 struct _AgsCompositeEditor
 {
   GtkBox box;
 
   guint flags;
-  guint view;
+  guint edit;
   
   gchar *version;
   gchar *build_id;
 
   AgsUUID *uuid;
 
-  AgsToolbar *toolbar;
+  AgsCompositeToolbar *toolbar;
   
-  GtkHPaned *paned;
+  GtkPaned *paned;
   
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;
 
-  AgsCompositeView *selected_view;
+  AgsCompositeEdit *selected_edit;
 
-  AgsCompositeView *notation_view;
-  AgsCompositeView *sheet_view;
-  AgsCompositeView *automation_view;
-  AgsCompositeView *wave_view;
+  AgsCompositeEdit *notation_edit;
+  AgsCompositeEdit *sheet_edit;
+  AgsCompositeEdit *automation_edit;
+  AgsCompositeEdit *wave_edit;
 };
 
 struct _AgsCompositeEditorClass
@@ -99,6 +99,10 @@ struct _AgsCompositeEditorClass
 };
 
 GType ags_composite_editor_get_type(void);
+
+gboolean ags_composite_editor_test_flags(AgsCompositeEditor *composite_editor, guint flags);
+void ags_composite_editor_set_flags(AgsCompositeEditor *composite_editor, guint flags);
+void ags_composite_editor_unset_flags(AgsCompositeEditor *composite_editor, guint flags);
 
 void ags_composite_editor_machine_changed(AgsCompositeEditor *composite_editor,
 					  AgsMachine *machine);

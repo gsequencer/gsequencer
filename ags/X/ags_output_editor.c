@@ -203,8 +203,6 @@ ags_output_editor_apply(AgsApplicable *applicable)
 
   if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(output_editor->soundcard),
 				   &iter)){
-    AgsWindow *window;
-
     AgsChannel *channel;
 
     GObject *output_soundcard;
@@ -264,8 +262,6 @@ ags_output_editor_reset(AgsApplicable *applicable)
     
     GObject *output_soundcard, *current;
 
-    GList *list;
-    
     gint i;
     gboolean found;
 

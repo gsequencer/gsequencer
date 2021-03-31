@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -65,8 +65,8 @@ ags_pitch_sampler_open_callback(GtkButton *button, AgsPitchSampler *pitch_sample
     dialog = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open audio files"),
 								  (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) pitch_sampler),
 								  GTK_FILE_CHOOSER_ACTION_OPEN,
-								  GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-								  GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+								  i18n("_OK"), GTK_RESPONSE_ACCEPT,
+								  i18n("_Cancel"), GTK_RESPONSE_CANCEL,
 								  NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog),
 				       FALSE);
@@ -137,7 +137,7 @@ ags_pitch_sampler_enable_lfo_callback(GtkToggleButton *toggle, AgsPitchSampler *
 
     /* play */
     play = ags_recall_find_type(start_play,
-				AGS_TYPE_LFO_CHANNEL);
+				AGS_TYPE_FX_LFO_CHANNEL);
       
     if(play != NULL){
       GValue value = {0};
@@ -161,7 +161,7 @@ ags_pitch_sampler_enable_lfo_callback(GtkToggleButton *toggle, AgsPitchSampler *
 
     /* recall */
     recall = ags_recall_find_type(start_recall,
-				  AGS_TYPE_LFO_CHANNEL);
+				  AGS_TYPE_FX_LFO_CHANNEL);
       
     if(recall != NULL){
       GValue value = {0};
@@ -220,7 +220,7 @@ ags_pitch_sampler_lfo_freq_callback(GtkSpinButton *spin_button, AgsPitchSampler 
 
     /* play */
     play = ags_recall_find_type(start_play,
-				AGS_TYPE_LFO_CHANNEL);
+				AGS_TYPE_FX_LFO_CHANNEL);
       
     if(play != NULL){
       GValue value = {0};
@@ -244,7 +244,7 @@ ags_pitch_sampler_lfo_freq_callback(GtkSpinButton *spin_button, AgsPitchSampler 
 
     /* recall */
     recall = ags_recall_find_type(start_recall,
-				  AGS_TYPE_LFO_CHANNEL);
+				  AGS_TYPE_FX_LFO_CHANNEL);
       
     if(recall != NULL){
       GValue value = {0};
@@ -303,7 +303,7 @@ ags_pitch_sampler_lfo_phase_callback(GtkSpinButton *spin_button, AgsPitchSampler
 
     /* play */
     play = ags_recall_find_type(start_play,
-				AGS_TYPE_LFO_CHANNEL);
+				AGS_TYPE_FX_LFO_CHANNEL);
       
     if(play != NULL){
       GValue value = {0};
@@ -327,7 +327,7 @@ ags_pitch_sampler_lfo_phase_callback(GtkSpinButton *spin_button, AgsPitchSampler
 
     /* recall */
     recall = ags_recall_find_type(start_recall,
-				  AGS_TYPE_LFO_CHANNEL);
+				  AGS_TYPE_FX_LFO_CHANNEL);
       
     if(recall != NULL){
       GValue value = {0};
@@ -386,7 +386,7 @@ ags_pitch_sampler_lfo_depth_callback(GtkSpinButton *spin_button, AgsPitchSampler
 
     /* play */
     play = ags_recall_find_type(start_play,
-				AGS_TYPE_LFO_CHANNEL);
+				AGS_TYPE_FX_LFO_CHANNEL);
       
     if(play != NULL){
       GValue value = {0};
@@ -410,7 +410,7 @@ ags_pitch_sampler_lfo_depth_callback(GtkSpinButton *spin_button, AgsPitchSampler
 
     /* recall */
     recall = ags_recall_find_type(start_recall,
-				  AGS_TYPE_LFO_CHANNEL);
+				  AGS_TYPE_FX_LFO_CHANNEL);
       
     if(recall != NULL){
       GValue value = {0};
@@ -469,7 +469,7 @@ ags_pitch_sampler_lfo_tuning_callback(GtkSpinButton *spin_button, AgsPitchSample
 
     /* play */
     play = ags_recall_find_type(start_play,
-				AGS_TYPE_LFO_CHANNEL);
+				AGS_TYPE_FX_LFO_CHANNEL);
       
     if(play != NULL){
       GValue value = {0};
@@ -493,7 +493,7 @@ ags_pitch_sampler_lfo_tuning_callback(GtkSpinButton *spin_button, AgsPitchSample
 
     /* recall */
     recall = ags_recall_find_type(start_recall,
-				  AGS_TYPE_LFO_CHANNEL);
+				  AGS_TYPE_FX_LFO_CHANNEL);
       
     if(recall != NULL){
       GValue value = {0};
@@ -521,5 +521,467 @@ ags_pitch_sampler_lfo_tuning_callback(GtkSpinButton *spin_button, AgsPitchSample
     g_object_unref(channel);
 
     channel = next_channel;
+  }
+}
+
+void
+ags_pitch_sampler_enable_aliase_callback(GtkWidget *widget, AgsPitchSampler *pitch_sampler)
+{
+  AgsChannel *start_input;
+  AgsChannel *channel;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gfloat enabled;
+
+  enabled = gtk_toggle_button_get_active(widget) ? 1.0: 0.0;
+  
+  start_input = NULL;
+  
+  g_object_get(AGS_MACHINE(pitch_sampler)->audio,
+	       "input", &start_input,
+	       NULL);
+
+  channel = start_input;
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+
+  while(channel != NULL){
+    AgsChannel *next;
+
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
+    
+    recall =
+      start_recall = g_list_concat(start_play, start_recall);
+
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_TWO_PASS_ALIASE_CHANNEL) ) != NULL){
+      AgsPort *port;
+
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "enabled", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	g_value_set_float(&value,
+			  enabled);
+
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+      }
+      
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+    
+    /* iterate */
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+}
+
+void
+ags_pitch_sampler_aliase_a_amount_callback(AgsDial *dial, AgsPitchSampler *pitch_sampler)
+{
+  AgsChannel *start_input;
+  AgsChannel *channel;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gfloat amount;
+
+  amount = gtk_adjustment_get_value(ags_dial_get_adjustment(dial));
+  
+  start_input = NULL;
+  
+  g_object_get(AGS_MACHINE(pitch_sampler)->audio,
+	       "input", &start_input,
+	       NULL);
+
+  channel = start_input;
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+
+  while(channel != NULL){
+    AgsChannel *next;
+    
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
+    
+    recall =
+      start_recall = g_list_concat(start_play, start_recall);
+
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_TWO_PASS_ALIASE_CHANNEL) ) != NULL){
+      AgsPort *port;
+
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "a-amount", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	g_value_set_float(&value,
+			  amount);
+
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+      }
+      
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+    
+    /* iterate */
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+}
+
+void
+ags_pitch_sampler_aliase_a_phase_callback(AgsDial *dial, AgsPitchSampler *pitch_sampler)
+{
+  AgsChannel *start_input;
+  AgsChannel *channel;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gfloat phase;
+
+  phase = gtk_adjustment_get_value(ags_dial_get_adjustment(dial));
+  
+  start_input = NULL;
+  
+  g_object_get(AGS_MACHINE(pitch_sampler)->audio,
+	       "input", &start_input,
+	       NULL);
+
+  channel = start_input;
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+
+  while(channel != NULL){
+    AgsChannel *next;
+    
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
+    
+    recall =
+      start_recall = g_list_concat(start_play, start_recall);
+
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_TWO_PASS_ALIASE_CHANNEL) ) != NULL){
+      AgsPort *port;
+
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "a-phase", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	g_value_set_float(&value,
+			  phase);
+
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+      }
+      
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+    
+    /* iterate */
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+}
+
+void
+ags_pitch_sampler_aliase_b_amount_callback(AgsDial *dial, AgsPitchSampler *pitch_sampler)
+{
+  AgsChannel *start_input;
+  AgsChannel *channel;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gfloat amount;
+
+  amount = gtk_adjustment_get_value(ags_dial_get_adjustment(dial));
+  
+  start_input = NULL;
+  
+  g_object_get(AGS_MACHINE(pitch_sampler)->audio,
+	       "input", &start_input,
+	       NULL);
+
+  channel = start_input;
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+
+  while(channel != NULL){
+    AgsChannel *next;
+    
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
+    
+    recall =
+      start_recall = g_list_concat(start_play, start_recall);
+
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_TWO_PASS_ALIASE_CHANNEL) ) != NULL){
+      AgsPort *port;
+
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "b-amount", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	g_value_set_float(&value,
+			  amount);
+
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+      }
+      
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+    
+    /* iterate */
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+}
+
+void
+ags_pitch_sampler_aliase_b_phase_callback(AgsDial *dial, AgsPitchSampler *pitch_sampler)
+{
+  AgsChannel *start_input;
+  AgsChannel *channel;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gfloat phase;
+
+  phase = gtk_adjustment_get_value(ags_dial_get_adjustment(dial));
+  
+  start_input = NULL;
+  
+  g_object_get(AGS_MACHINE(pitch_sampler)->audio,
+	       "input", &start_input,
+	       NULL);
+
+  channel = start_input;
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+
+  while(channel != NULL){
+    AgsChannel *next;
+    
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
+    
+    recall =
+      start_recall = g_list_concat(start_play, start_recall);
+
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_TWO_PASS_ALIASE_CHANNEL) ) != NULL){
+      AgsPort *port;
+
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "b-phase", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	g_value_set_float(&value,
+			  phase);
+
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+      }
+      
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+    
+    /* iterate */
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+}
+
+void
+ags_pitch_sampler_volume_callback(GtkRange *range, AgsPitchSampler *pitch_sampler)
+{
+  AgsChannel *start_input;
+  AgsChannel *channel;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gfloat volume;
+
+  volume = (gfloat) gtk_range_get_value(range);
+  
+  start_input = NULL;
+  
+  g_object_get(AGS_MACHINE(pitch_sampler)->audio,
+	       "input", &start_input,
+	       NULL);
+
+  channel = start_input;
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+
+  while(channel != NULL){
+    AgsChannel *next;
+    
+    start_play = ags_channel_get_play(channel);
+    start_recall = ags_channel_get_recall(channel);
+    
+    recall =
+      start_recall = g_list_concat(start_play, start_recall);
+
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_VOLUME_CHANNEL)) != NULL){
+      AgsPort *port;
+
+      port = NULL;
+      
+      g_object_get(recall->data,
+		   "volume", &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	g_value_set_float(&value,
+			  volume);
+
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+      }
+      
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+    
+    /* iterate */
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
   }
 }

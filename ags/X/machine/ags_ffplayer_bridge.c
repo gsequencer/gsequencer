@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -109,7 +109,7 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
 {
   GtkFrame *frame;
   GtkExpander *expander;
-  GtkTable *table;
+  GtkGrid *grid;
 
   AGS_EFFECT_BRIDGE(ffplayer_bridge)->input_pad_type = AGS_TYPE_FFPLAYER_INPUT_PAD;
   AGS_EFFECT_BRIDGE(ffplayer_bridge)->input_line_type = AGS_TYPE_FFPLAYER_INPUT_LINE;
@@ -124,26 +124,40 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
   gtk_container_add((GtkContainer *) frame,
 		    (GtkWidget *) expander);
 
-  table = (GtkTable *) gtk_table_new(1, 2, FALSE);
+  grid = (GtkGrid *) gtk_grid_new();
   gtk_container_add((GtkContainer *) expander,
-		    (GtkWidget *) table);
+		    (GtkWidget *) grid);
 
   AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input = (GtkWidget *) g_object_new(AGS_TYPE_FFPLAYER_BULK_INPUT,
 									      NULL);
-  gtk_table_attach(table,
-		   (GtkWidget *) AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,
-		   0, 1,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign(AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,
+			GTK_ALIGN_FILL);
   
-  AGS_EFFECT_BRIDGE(ffplayer_bridge)->input = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_table_attach(table,
-		   (GtkWidget *) AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
-		   1, 2,
-		   0, 1,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
+  gtk_grid_attach(grid,
+		  (GtkWidget *) AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,
+		  0, 0,
+		  1, 1);
+  
+  AGS_EFFECT_BRIDGE(ffplayer_bridge)->input = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+								     0);
+
+  gtk_widget_set_valign(AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand(AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
+			 TRUE);
+  gtk_widget_set_hexpand(AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
+			 TRUE);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
+		  1, 0,
+		  1, 1);
 }
 
 void

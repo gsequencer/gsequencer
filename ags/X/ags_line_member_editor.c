@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -82,7 +82,7 @@ ags_line_member_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_line_member_editor = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_line_member_editor = g_type_register_static(GTK_TYPE_BOX,
 							 "AgsLineMemberEditor", &ags_line_member_editor_info,
 							 0);
 
@@ -124,29 +124,36 @@ ags_line_member_editor_applicable_interface_init(AgsApplicableInterface *applica
 void
 ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
 {
-  GtkHBox *hbox;
+  GtkBox *hbox;
+
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(line_member_editor),
+				 GTK_ORIENTATION_VERTICAL);  
 
   line_member_editor->flags = 0;
   
-  line_member_editor->line_member = (GtkVBox *) gtk_vbox_new(FALSE, 2);
+  line_member_editor->line_member = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+							   0);
   gtk_box_pack_start((GtkBox *) line_member_editor,
 		     (GtkWidget *) line_member_editor->line_member,
 		     FALSE, FALSE,
 		     0);
 
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 2);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
   gtk_box_pack_start((GtkBox *) line_member_editor,
 		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
 
-  line_member_editor->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  line_member_editor->add = (GtkButton *) gtk_button_new_from_icon_name("list-add",
+									GTK_ICON_SIZE_BUTTON);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) line_member_editor->add,
 		     FALSE, FALSE,
 		     0);
 
-  line_member_editor->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  line_member_editor->remove = (GtkButton *) gtk_button_new_from_icon_name("list-remove",
+									   GTK_ICON_SIZE_BUTTON);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) line_member_editor->remove,
 		     FALSE, FALSE,
@@ -228,10 +235,11 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 {
   AgsLineEditor *line_editor;
   AgsLineMemberEditor *line_member_editor;
-  GtkHBox *hbox;
+  GtkBox *hbox;
   GtkCheckButton *check_button;
   GtkLabel *label;
 
+  GList *start_list, *list;
   GList *start_recall, *recall;
 
   gchar *str;
@@ -239,9 +247,16 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 
   line_member_editor = AGS_LINE_MEMBER_EDITOR(applicable);
 
-  gtk_container_foreach(line_member_editor->line_member,
-			(GtkCallback) gtk_widget_destroy,
-			NULL);
+  list = 
+    start_list = gtk_container_get_children((GtkContainer *) line_member_editor->line_member);
+
+  while(list != NULL){
+    gtk_widget_destroy(list->data);
+    
+    list = list->next;
+  }
+
+  g_list_free((GDestroyNotify) start_list);
   
   line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 							  AGS_TYPE_LINE_EDITOR);
@@ -271,15 +286,16 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 		 "effect", &effect,
 		 NULL);
     
-    hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
-		       GTK_WIDGET(hbox),
+    hbox = (GtkBox *) gtk_hbox_new(GTK_ORIENTATION_HORIZONTAL,
+				   0);
+    gtk_box_pack_start(line_member_editor->line_member,
+		       (GtkWidget *) hbox,
 		       FALSE, FALSE,
 		       0);
       
     check_button = (GtkCheckButton *) gtk_check_button_new();
-    gtk_box_pack_start(GTK_BOX(hbox),
-		       GTK_WIDGET(check_button),
+    gtk_box_pack_start(hbox,
+		       (GtkWidget *) check_button,
 		       FALSE, FALSE,
 		       0);
     
@@ -287,8 +303,8 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 			  filename,
 			  effect);
     label = (GtkLabel *) gtk_label_new(str);
-    gtk_box_pack_start(GTK_BOX(hbox),
-		       GTK_WIDGET(label),
+    gtk_box_pack_start(hbox,
+		       (GtkWidget *) label,
 		       FALSE, FALSE,
 		       0);
     gtk_widget_show_all((GtkWidget *) hbox);

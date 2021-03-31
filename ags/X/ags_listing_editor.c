@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -105,6 +105,7 @@ ags_listing_editor_get_type(void)
 void
 ags_listing_editor_class_init(AgsListingEditorClass *listing_editor)
 {
+  ags_listing_editor_parent_class = g_type_class_peek_parent(listing_editor);
 }
 
 void
@@ -129,9 +130,6 @@ ags_listing_editor_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_listing_editor_init(AgsListingEditor *listing_editor)
 {
-  g_signal_connect_after(G_OBJECT(listing_editor), "parent_set",
-			 G_CALLBACK(ags_listing_editor_parent_set_callback), listing_editor);
-
   listing_editor->channel_type = G_TYPE_NONE;
 
   listing_editor->child = NULL;
@@ -301,7 +299,7 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
 				gboolean connect)
 {
   AgsPadEditor *pad_editor;
-  GtkVBox *vbox;
+  GtkBox *vbox;
 
   AgsChannel *start_channel;
   AgsChannel *channel, *next_pad, *nth_channel;
@@ -319,7 +317,10 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
   
   /* instantiate pad editor vbox */
   if(nth == 0){
-    listing_editor->child = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+    listing_editor->child = (GtkBox *) gtk_vbox_new(GTK_ORIENTATION_VERTICAL,
+						    0);
+    gtk_box_set_homogeneous(listing_editor->child,
+			    FALSE);
     gtk_box_pack_start(GTK_BOX(listing_editor),
 		       GTK_WIDGET(listing_editor->child),
 		       FALSE, FALSE,

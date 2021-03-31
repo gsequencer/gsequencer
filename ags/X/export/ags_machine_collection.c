@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/X/export/ags_machine_collection.h>
 #include <ags/X/export/ags_machine_collection_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
 #include <ags/X/export/ags_midi_export_wizard.h>
@@ -92,7 +93,7 @@ ags_machine_collection_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_machine_collection = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_machine_collection = g_type_register_static(GTK_TYPE_BOX,
 							 "AgsMachineCollection", &ags_machine_collection_info,
 							 0);
     
@@ -140,7 +141,17 @@ ags_machine_collection_init(AgsMachineCollection *machine_collection)
 {
   GtkScrolledWindow *scrolled_window;
 
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(machine_collection),
+				 GTK_ORIENTATION_VERTICAL);
+
   machine_collection->flags = 0;
+
+  machine_collection->child_type = G_TYPE_NONE;
+
+  machine_collection->child_n_properties = 0;
+
+  machine_collection->child_strv = NULL;
+  machine_collection->child_value = NULL;
   
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
 								  NULL);
@@ -149,10 +160,10 @@ ags_machine_collection_init(AgsMachineCollection *machine_collection)
 		     TRUE, TRUE,
 		     0);
   
-  machine_collection->child = (GtkVBox *) gtk_vbox_new(FALSE,
-						       0);
-  gtk_scrolled_window_add_with_viewport(scrolled_window,
-					(GtkWidget *) machine_collection->child);
+  machine_collection->child = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+						     0);
+  gtk_container_add((GtkContainer *) scrolled_window,
+		    (GtkWidget *) machine_collection->child);
 }
 
 void
@@ -277,12 +288,18 @@ ags_machine_collection_reload(AgsMachineCollection *machine_collection)
   AgsWindow *window;
   AgsMidiExportWizard *midi_export_wizard;
   GtkWidget *parent;
+
+  AgsApplicationContext *application_context;
   
   GList *machine, *machine_start;
 
+  application_context = ags_application_context_get_instance();
+  
   midi_export_wizard = (AgsMidiExportWizard *) gtk_widget_get_ancestor((GtkWidget *) machine_collection,
 								       AGS_TYPE_MIDI_EXPORT_WIZARD);
-  window = (AgsWindow *) midi_export_wizard->main_window;
+
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   /* destroy old */
   parent = gtk_widget_get_parent(GTK_WIDGET(machine_collection->child));
@@ -320,10 +337,10 @@ ags_machine_collection_add_entry(AgsMachineCollection *machine_collection,
     return;
   }
 
-  //FIXME:JK: deprecated
-  machine_collection_entry = (AgsMachineCollectionEntry *) g_object_newv(machine_collection->child_type,
-									 machine_collection->child_parameter_count,
-									 machine_collection->child_parameter);
+  machine_collection_entry = (AgsMachineCollectionEntry *) g_object_new_with_properties(machine_collection->child_type,
+											machine_collection->child_n_properties,
+											machine_collection->child_strv,
+											machine_collection->child_value);
   g_object_set(machine_collection_entry,
 	       "machine", machine,
 	       NULL);
@@ -336,8 +353,9 @@ ags_machine_collection_add_entry(AgsMachineCollection *machine_collection,
 /**
  * ags_machine_collection_new:
  * @child_type: the child type
- * @child_parameter_count: the child parameter count
- * @child_parameter: the child parameters
+ * @child_n_properties: the child properties count
+ * @child_strv: the child string vector
+ * @child_value: the child value array
  *
  * Creates an #AgsMachineCollection
  *
@@ -347,8 +365,9 @@ ags_machine_collection_add_entry(AgsMachineCollection *machine_collection,
  */
 AgsMachineCollection*
 ags_machine_collection_new(GType child_type,
-			   guint child_parameter_count,
-			   GParameter *child_parameter)
+			   guint child_n_properties,
+			   gchar **child_strv,
+			   GValue *child_value)
 {
   AgsMachineCollection *machine_collection;
 
@@ -356,8 +375,9 @@ ags_machine_collection_new(GType child_type,
 							     NULL);
 
   machine_collection->child_type = child_type;
-  machine_collection->child_parameter_count = child_parameter_count;
-  machine_collection->child_parameter = child_parameter;
+  machine_collection->child_n_properties = child_n_properties;
+  machine_collection->child_strv = child_strv;
+  machine_collection->child_value = child_value;
   
   return(machine_collection);
 }

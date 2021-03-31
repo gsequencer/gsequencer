@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -109,7 +109,7 @@ ags_track_collection_mapper_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_track_collection_mapper = g_type_register_static(GTK_TYPE_TABLE,
+    ags_type_track_collection_mapper = g_type_register_static(GTK_TYPE_GRID,
 							      "AgsTrackCollectionMapper", &ags_track_collection_mapper_info,
 							      0);
 
@@ -210,9 +210,6 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 {
   GtkLabel *label;
   
-  gtk_table_resize((GtkTable *) track_collection_mapper,
-		   3, 4);
-
   track_collection_mapper->instrument = NULL;
   track_collection_mapper->sequence = NULL;
 
@@ -222,21 +219,30 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 
   /* enabled */
   track_collection_mapper->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
-  gtk_table_attach((GtkTable *) track_collection_mapper,
-		   (GtkWidget *) track_collection_mapper->enabled,
-		   0, 4,
-		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) track_collection_mapper->enabled,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) track_collection_mapper->enabled,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach((GtkGrid *) track_collection_mapper,
+		  (GtkWidget *) track_collection_mapper->enabled,
+		  0, 0,
+		  4, 1);
 
   /* info box */
-  track_collection_mapper->info = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_table_attach((GtkTable *) track_collection_mapper,
-		   (GtkWidget *) track_collection_mapper->info,
-		   0, 4,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  track_collection_mapper->info = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+							 0);
+
+  gtk_widget_set_valign((GtkWidget *) track_collection_mapper->info,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) track_collection_mapper->info,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach((GtkGrid *) track_collection_mapper,
+		  (GtkWidget *) track_collection_mapper->info,
+		  0, 1,
+		  4, 1);
 
   /* instrument */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -260,32 +266,47 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 
   /* machine type */
   track_collection_mapper->machine_type = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_table_attach((GtkTable *) track_collection_mapper,
-		   (GtkWidget *) track_collection_mapper->machine_type,
-		   1, 2,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) track_collection_mapper->machine_type,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) track_collection_mapper->machine_type,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach((GtkGrid *) track_collection_mapper,
+		  (GtkWidget *) track_collection_mapper->machine_type,
+		  1, 2,
+		  1, 1);
 
   /* audio channels */
+  //NOTE:JK: midi only knows 16 channels
   track_collection_mapper->audio_channels = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 16.0, 1.0);
   gtk_spin_button_set_value(track_collection_mapper->audio_channels,
 			    2.0);
-  gtk_table_attach((GtkTable *) track_collection_mapper,
-		   (GtkWidget *) track_collection_mapper->audio_channels,
-		   2, 3,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign((GtkWidget *) track_collection_mapper->audio_channels,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) track_collection_mapper->audio_channels,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach((GtkGrid *) track_collection_mapper,
+		  (GtkWidget *) track_collection_mapper->audio_channels,
+		  2, 2,
+		  1, 1);
 
   /* offset */
-  track_collection_mapper->offset = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, (gdouble) AGS_NOTATION_EDITOR_MAX_CONTROLS, 1.0);
-  gtk_table_attach((GtkTable *) track_collection_mapper,
-		   (GtkWidget *) track_collection_mapper->offset,
-		   3, 4,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  track_collection_mapper->offset = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+										     (gdouble) AGS_NOTATION_EDITOR_MAX_CONTROLS,
+										     1.0);
+
+  gtk_widget_set_valign((GtkWidget *) track_collection_mapper->offset,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) track_collection_mapper->offset,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach((GtkGrid *) track_collection_mapper,
+		  (GtkWidget *) track_collection_mapper->offset,
+		  3, 2,
+		  1, 1);
 }
 
 void
@@ -458,12 +479,13 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   if(!gtk_toggle_button_get_active((GtkToggleButton *) track_collection_mapper->enabled)){
     return;
   }  
+
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   
   midi_import_wizard = (AgsMidiImportWizard *) gtk_widget_get_ancestor((GtkWidget *) track_collection_mapper,
 								       AGS_TYPE_MIDI_IMPORT_WIZARD);
-  window = (AgsWindow *) midi_import_wizard->main_window;
-
-  application_context = ags_application_context_get_instance();
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
@@ -678,11 +700,11 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 	glong delta_time;
 
 	if(!xmlStrncmp(xmlGetProp(child,
-				  "event"),
+				  BAD_CAST "event"),
 		       "note-on",
 		       8)){
 	  str = xmlGetProp(child,
-			   "delta-time");
+			   BAD_CAST "delta-time");
 	  delta_time = g_ascii_strtod(str,
 				      NULL);
 
@@ -696,14 +718,14 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 	  x -= track_collection->first_offset;
 
 	  str = xmlGetProp(child,
-			   "note");
+			   BAD_CAST "note");
 	  y = (guint) g_ascii_strtoull(str,
 				       NULL,
 				       10);
 	  xmlFree(str);
 
 	  str = xmlGetProp(child,
-			   "velocity");
+			   BAD_CAST "velocity");
 	  velocity = (guint) g_ascii_strtoull(str,
 					      NULL,
 					      10);
@@ -750,11 +772,11 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 	  //	  g_object_unref(note);
 	  n_key_on++;
 	}else if(!xmlStrncmp(xmlGetProp(child,
-					"event"),
+					BAD_CAST "event"),
 			     "note-off",
 			     9)){	  
 	  str = xmlGetProp(child,
-			   "delta-time");
+			   BAD_CAST "delta-time");
 	  delta_time = g_ascii_strtod(str,
 				      NULL);
 
@@ -768,14 +790,14 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 	  x -= track_collection->first_offset;
 
 	  str = xmlGetProp(child,
-			   "note");
+			   BAD_CAST "note");
 	  y = (guint) g_ascii_strtoull(str,
 				       NULL,
 				       10);
 	  xmlFree(str);
 
 	  str = xmlGetProp(child,
-			   "velocity");
+			   BAD_CAST "velocity");
 	  velocity = (guint) g_ascii_strtoull(str,
 					      NULL,
 					      10);

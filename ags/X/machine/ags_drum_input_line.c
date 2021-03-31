@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -154,7 +154,8 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 
   /* volume control */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-					       "widget-type", GTK_TYPE_VSCALE,
+					       "widget-type", GTK_TYPE_SCALE,
+					       "widget-orientation", GTK_ORIENTATION_VERTICAL,
 					       "plugin-name", "ags-fx-volume",
 					       "specifier", "./volume[0]",
 					       "control-port", "2/2",
@@ -283,7 +284,6 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
     if(old_channel == NULL &&
        nth_line == 0){
       AgsDrum *drum;
-      GtkToggleButton *selected_edit_button;
 
       GList *list;
 
@@ -338,7 +338,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
     return;
   }
 
-  drum = (AgsDrum *) gtk_widget_get_ancestor(line,
+  drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line),
 					     AGS_TYPE_DRUM);
   
   audio = AGS_MACHINE(drum)->audio;

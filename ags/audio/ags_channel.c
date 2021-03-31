@@ -2016,6 +2016,7 @@ ags_channel_dispose(GObject *gobject)
   AgsRecycling *recycling, *recycling_next;
   AgsRecycling *end_region;
 
+  GList *start_list;
   GList *list, *list_next;
   
   gboolean dispose_recycling;
@@ -2150,7 +2151,8 @@ ags_channel_dispose(GObject *gobject)
   if(channel->recall != NULL){
     g_rec_mutex_lock(AGS_CHANNEL_GET_RECALL_MUTEX(channel));
 
-    list = channel->recall;
+    list =
+      start_list = g_list_copy(channel->recall);
 
     while(list != NULL){
       list_next = list->next;
@@ -2160,6 +2162,7 @@ ags_channel_dispose(GObject *gobject)
       list = list_next;
     }
 
+    g_list_free(start_list);
     g_list_free_full(channel->recall,
 		     g_object_unref);
   
@@ -2172,7 +2175,8 @@ ags_channel_dispose(GObject *gobject)
   if(channel->play != NULL){
     g_rec_mutex_lock(AGS_CHANNEL_GET_PLAY_MUTEX(channel));
 
-    list = channel->play;
+    list =
+      start_list = g_list_copy(channel->play);
 
     while(list != NULL){
       list_next = list->next;
@@ -2182,6 +2186,7 @@ ags_channel_dispose(GObject *gobject)
       list = list_next;
     }
 
+    g_list_free(start_list);
     g_list_free_full(channel->play,
 		     g_object_unref);
 
@@ -2192,7 +2197,8 @@ ags_channel_dispose(GObject *gobject)
   
   /* pattern */
   if(channel->pattern != NULL){
-    list = channel->pattern;
+    start_list =
+      list = g_list_copy(channel->pattern);
 
     while(list != NULL){
       list_next = list->next;
@@ -2202,6 +2208,7 @@ ags_channel_dispose(GObject *gobject)
       list = list_next;
     }
     
+    g_list_free(start_list);
     g_list_free_full(channel->pattern,
 		     g_object_unref);
 

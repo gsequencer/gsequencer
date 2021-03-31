@@ -128,8 +128,8 @@ ags_functional_pitch_test_add_thread(gpointer data)
   }
   
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of ags_filter_util.h doing pitch up", ags_functional_pitch_test_pitch_up) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_filter_util.h doing pitch down", ags_functional_pitch_test_pitch_down) == NULL)){
+  if((CU_add_test(pSuite, "test of ags_hq_pitch_util.h doing pitch up", ags_functional_pitch_test_pitch_up) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_hq_pitch_util.h doing pitch down", ags_functional_pitch_test_pitch_down) == NULL)){
       CU_cleanup_registry();
       
       exit(CU_get_error());
@@ -431,11 +431,11 @@ ags_functional_pitch_test_pitch_up()
 	switch(AGS_FUNCTIONAL_PITCH_TEST_FORMAT){
 	case AGS_SOUNDCARD_SIGNED_16_BIT:
 	{
-	  ags_filter_util_pitch_s16(AGS_BUFFER(pitch_buffer->data)->data,
-				    AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
-				    AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE,
-				    AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY,
-				    (gdouble) i * AGS_FUNCTIONAL_PITCH_TEST_TUNE);
+	  ags_hq_pitch_util_compute_s16(AGS_BUFFER(pitch_buffer->data)->data,
+					AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
+					AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE,
+					AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY,
+					(gdouble) i * AGS_FUNCTIONAL_PITCH_TEST_TUNE);
 	}
 	break;
 	}
@@ -577,11 +577,11 @@ ags_functional_pitch_test_pitch_down()
 	switch(AGS_FUNCTIONAL_PITCH_TEST_FORMAT){
 	case AGS_SOUNDCARD_SIGNED_16_BIT:
 	{
-	  ags_filter_util_pitch_s16(AGS_BUFFER(pitch_buffer->data)->data,
-				    AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
-				    AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE,
-				    AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY,
-				    (gdouble) i * AGS_FUNCTIONAL_PITCH_TEST_TUNE);
+	  ags_hq_pitch_util_compute_s16(AGS_BUFFER(pitch_buffer->data)->data,
+					AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
+					AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE,
+					AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY,
+					(gdouble) i * AGS_FUNCTIONAL_PITCH_TEST_TUNE);
 	}
 	break;
 	}

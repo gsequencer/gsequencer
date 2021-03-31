@@ -731,7 +731,6 @@ ags_simple_file_finalize(GObject *gobject)
 gchar*
 ags_simple_file_str2md5(gchar *content, guint content_length)
 {
-  GChecksum *checksum;
   gchar *str;
 
   str = g_compute_checksum_for_string(G_CHECKSUM_MD5,
@@ -783,8 +782,6 @@ ags_simple_file_find_id_ref_by_node(AgsSimpleFile *simple_file, xmlNode *node)
 GList*
 ags_simple_file_find_id_ref_by_xpath(AgsSimpleFile *simple_file, gchar *xpath)
 {
-  AgsFileIdRef *file_id_ref;
-
   xmlXPathContext *xpath_context; 
   xmlXPathObject *xpath_object;
   xmlNode **node;
@@ -814,7 +811,7 @@ ags_simple_file_find_id_ref_by_xpath(AgsSimpleFile *simple_file, gchar *xpath)
   xpath_context->node = simple_file->root_node;
 
   /* Evaluate xpath expression */
-  xpath_object = xmlXPathEval(xpath, xpath_context);
+  xpath_object = xmlXPathEval(BAD_CAST xpath, xpath_context);
 
   if(xpath_object == NULL) {
     g_warning("Error: unable to evaluate xpath expression \"%s\"", xpath);
@@ -995,11 +992,12 @@ ags_simple_file_real_rw_open(AgsSimpleFile *simple_file,
 
   simple_file->out = fopen(simple_file->filename, "w+");
 
-  simple_file->doc = xmlNewDoc("1.0");
-  simple_file->root_node = xmlNewNode(NULL, "ags-simple-file");
+  simple_file->doc = xmlNewDoc(BAD_CAST "1.0");
+  simple_file->root_node = xmlNewNode(NULL,
+				      BAD_CAST "ags-simple-file");
   xmlNewProp(simple_file->root_node,
-	     "xmlns:agssf",
-	     "http://nongnu.org/gsequencer/ns/ags-simple-file");
+	     BAD_CAST "xmlns:agssf",
+	     BAD_CAST "http://nongnu.org/gsequencer/ns/ags-simple-file");
   
   xmlDocSetRootElement(simple_file->doc, simple_file->root_node);
 }
@@ -1081,11 +1079,11 @@ ags_simple_file_real_write(AgsSimpleFile *simple_file)
   AgsApplicationContext *application_context;
   AgsConfig *config;
   
-  xmlNode *node, *child;
+  xmlNode *node;
   
   gchar *id;
 
-  guint size;
+  int size;
   
   if(simple_file == NULL ||
      simple_file->root_node == NULL){
@@ -1099,16 +1097,16 @@ ags_simple_file_real_write(AgsSimpleFile *simple_file)
 
   node = simple_file->root_node;
   xmlNewProp(node,
-	     AGS_SIMPLE_FILE_ID_PROP,
-	     id);
+	     BAD_CAST AGS_SIMPLE_FILE_ID_PROP,
+	     BAD_CAST id);
 
   xmlNewProp(node,
-	     AGS_SIMPLE_FILE_VERSION_PROP,
-	     AGS_APPLICATION_CONTEXT(application_context)->version);
+	     BAD_CAST AGS_SIMPLE_FILE_VERSION_PROP,
+	     BAD_CAST AGS_APPLICATION_CONTEXT(application_context)->version);
 
   xmlNewProp(node,
-	     AGS_SIMPLE_FILE_BUILD_ID_PROP,
-	     AGS_APPLICATION_CONTEXT(application_context)->build_id);
+	     BAD_CAST AGS_SIMPLE_FILE_BUILD_ID_PROP,
+	     BAD_CAST AGS_APPLICATION_CONTEXT(application_context)->build_id);
 
   /* add to parent */
   ags_simple_file_write_config(simple_file,
@@ -1117,7 +1115,7 @@ ags_simple_file_real_write(AgsSimpleFile *simple_file)
   
   ags_simple_file_write_window(simple_file,
 			       node,
-			       ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+			       (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
   /* resolve */
   ags_simple_file_write_resolve(simple_file);
@@ -1195,7 +1193,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 #if 0
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp("ags-sf-config",
+      if(!xmlStrncmp(BAD_CAST "ags-sf-config",
 		     child->name,
 		     13)){
 	//NOTE:JK: no redundant code here
@@ -1208,7 +1206,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
   
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp("ags-sf-window",
+      if(!xmlStrncmp(BAD_CAST "ags-sf-window",
 		     child->name,
 		     14)){
 	AgsWindow *orig_window, *window;
@@ -1221,7 +1219,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 
 	if(orig_window != window){
 	  ags_ui_provider_set_window(AGS_UI_PROVIDER(application_context),
-				     window);
+				     (GtkWidget *) window);
 	}
       }
     }
@@ -1355,10 +1353,10 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
   
   config = *ags_config;
   config->version = xmlGetProp(node,
-				AGS_SIMPLE_FILE_VERSION_PROP);
+			       BAD_CAST AGS_SIMPLE_FILE_VERSION_PROP);
 
   config->build_id = xmlGetProp(node,
-				 AGS_SIMPLE_FILE_BUILD_ID_PROP);
+				BAD_CAST AGS_SIMPLE_FILE_BUILD_ID_PROP);
 
   application_context = ags_application_context_get_instance();
   
@@ -1481,25 +1479,25 @@ ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParame
   }
 
   str = xmlGetProp(node,
-		   "name");
+		   BAD_CAST "name");
 
   if(str != NULL){
     pointer->name = str;
   }
   
   str = xmlGetProp(node,
-		   "value");
+		   BAD_CAST "value");
 
   type = xmlGetProp(node,
-		    "type");
+		    BAD_CAST "type");
 
   if(str != NULL){
-    if(!g_strcmp0(type,
+    if(!g_strcmp0((gchar *) type,
 		  "gboolean")){
       g_value_init(&(pointer->value),
 		   G_TYPE_BOOLEAN);
       
-      if(!g_ascii_strcasecmp(str,
+      if(!g_ascii_strcasecmp((gchar *) str,
 			     "false")){
 	g_value_set_boolean(&(pointer->value),
 			    FALSE);
@@ -1507,45 +1505,45 @@ ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParame
 	g_value_set_boolean(&(pointer->value),
 			    TRUE);
       }
-    }else if(!g_strcmp0(type,
+    }else if(!g_strcmp0((gchar *) type,
 			"guint")){
       guint val;
 
       g_value_init(&(pointer->value),
 		   G_TYPE_UINT);
       
-      val = g_ascii_strtoull(str,
+      val = g_ascii_strtoull((gchar *) str,
 			     NULL,
 			     10);
 
       g_value_set_uint(&(pointer->value),
 		       val);
-    }else if(!g_strcmp0(type,
+    }else if(!g_strcmp0((gchar *) type,
 			"gint")){
       gint val;
 
       g_value_init(&(pointer->value),
 		   G_TYPE_UINT);
       
-      val = g_ascii_strtoll(str,
+      val = g_ascii_strtoll((gchar *) str,
 			    NULL,
 			    10);
 
       g_value_set_int(&(pointer->value),
 		      val);
-    }else if(!g_strcmp0(type,
+    }else if(!g_strcmp0((gchar *) type,
 			"gdouble")){
       gdouble val;
       
       g_value_init(&(pointer->value),
 		   G_TYPE_DOUBLE);
 
-      val = g_ascii_strtod(str,
+      val = g_ascii_strtod((gchar *) str,
 			   NULL);
 
       g_value_set_double(&(pointer->value),
 			 val);
-    }else if(!g_strcmp0(type,
+    }else if(!g_strcmp0((gchar *) type,
 			"AgsComplex")){
       AgsComplex z;
 
@@ -1555,7 +1553,8 @@ ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParame
       g_value_init(&(pointer->value),
 		   AGS_TYPE_COMPLEX);
 
-      sscanf(str, "%lf %lf", &(z.real), &(z.imag));
+      sscanf((char *) str, "%lf %lf", &(z.real), &(z.imag));
+
       g_value_set_boxed(&(pointer->value),
 			&z);
     }else{
@@ -1563,7 +1562,7 @@ ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParame
 		   G_TYPE_STRING);
 
       g_value_set_string(&(pointer->value),
-			 g_strdup(str));
+			 g_strdup((gchar *) str));
     }
   }
 
@@ -1594,7 +1593,7 @@ ags_simple_file_read_strv(AgsSimpleFile *simple_file, xmlNode *node, gchar ***st
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
-		     (xmlChar *) "ags-sf-str",
+		     BAD_CAST "ags-sf-str",
 		     11)){
 	if(current == NULL){
 	  current = malloc(2 * sizeof(gchar *));
@@ -1625,11 +1624,11 @@ ags_simple_file_read_value(AgsSimpleFile *simple_file, xmlNode *node, GValue **v
   
   current = value[0];
   
-  str = xmlGetProp(node,
-		   "value");
+  str = (gchar *) xmlGetProp(node,
+			     BAD_CAST "value");
 
-  type = xmlGetProp(node,
-		    "type");
+  type = (gchar *) xmlGetProp(node,
+			      BAD_CAST "type");
 
   if(str != NULL){
     if(!g_strcmp0(type,
@@ -1742,16 +1741,16 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
   }else{
     gobject = ags_window_new();
     ags_ui_provider_set_window(AGS_UI_PROVIDER(application_context),
-			       gobject);
+			       (GtkWidget *) gobject);
     
     *window = gobject;
   }
 
   str = xmlGetProp(node,
-		   "filename");
+		   BAD_CAST "filename");
 
   if(str != NULL){
-    gobject->name = str;
+    gobject->name = (gchar *) str;
 
     gtk_window_set_title((GtkWindow *) gobject, g_strconcat("GSequencer - ", gobject->name, NULL));
   }
@@ -1873,7 +1872,7 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 
   /* bpm */
   str = xmlGetProp(file_launch->node,
-		   "bpm");
+		   BAD_CAST "bpm");
 
   if(str != NULL){
     bpm = g_ascii_strtod(str,
@@ -2166,7 +2165,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     /* AgsAudio */
     ags_connectable_connect(AGS_CONNECTABLE(gobject->audio));
 
-    ags_xorg_application_context_task_timeout(application_context);
+    ags_xorg_application_context_task_timeout((AgsXorgApplicationContext *) application_context);
 
     ags_ui_provider_check_message(AGS_UI_PROVIDER(application_context));
     ags_ui_provider_clean_message(AGS_UI_PROVIDER(application_context));
@@ -3344,7 +3343,7 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
      !g_ascii_strncasecmp(enable_synth_generator,
 			  "true",
 			  5)){
-    gtk_toggle_button_set_active(pitch_sampler->enable_synth_generator,
+    gtk_toggle_button_set_active((GtkToggleButton *) pitch_sampler->enable_synth_generator,
 				 TRUE);
   }
 
@@ -3482,7 +3481,7 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
      !g_ascii_strncasecmp(enable_synth_generator,
 			  "true",
 			  5)){
-    gtk_toggle_button_set_active(ffplayer->enable_synth_generator,
+    gtk_toggle_button_set_active((GtkToggleButton *) ffplayer->enable_synth_generator,
 				 TRUE);
   }
 
@@ -4021,7 +4020,7 @@ ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *nod
 	  }
 	}
 	
-	list_start = gtk_container_get_children(GTK_CONTAINER(effect_bulk->table));
+	list_start = gtk_container_get_children(GTK_CONTAINER(effect_bulk->grid));
 	list = list_start;
 
 	while(list != NULL){
@@ -5001,8 +5000,8 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 						      G_DIR_SEPARATOR,
 						      "manifest.ttl");
 
-		  manifest = ags_turtle_manager_find(turtle_manager,
-						     manifest_filename);
+		  manifest = (AgsTurtle *) ags_turtle_manager_find(turtle_manager,
+								   manifest_filename);
 
 		  if(manifest == NULL){
 		    AgsLv2TurtleParser *lv2_turtle_parser;
@@ -5035,7 +5034,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 		    ags_lv2_turtle_parser_parse(lv2_turtle_parser,
 						turtle, n_turtle);
     
-		    g_object_run_dispose(lv2_turtle_parser);
+		    g_object_run_dispose((GObject *) lv2_turtle_parser);
 		    g_object_unref(lv2_turtle_parser);
 	
 		    g_object_unref(manifest);
@@ -6099,7 +6098,7 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 		    }
 
 		    list =
-		      list_start = gtk_container_get_children((GtkContainer *) gobject->table);
+		      list_start = gtk_container_get_children((GtkContainer *) gobject->grid);
 
 		    while(list != NULL){
 		      if(AGS_IS_LINE_MEMBER(list->data)){
@@ -8674,7 +8673,7 @@ ags_simple_file_write_effect_list(AgsSimpleFile *simple_file, xmlNode *parent, A
   effect = NULL;
     
   list =
-    list_start = gtk_container_get_children((GtkContainer *) effect_bulk->table);
+    list_start = gtk_container_get_children((GtkContainer *) effect_bulk->grid);
     
   while(list != NULL){
     if(AGS_IS_BULK_MEMBER(list->data)){
@@ -10451,8 +10450,8 @@ ags_simple_file_write_effect_pad(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 
 
   /* children */
-  if(effect_pad->table != NULL){
-    list = gtk_container_get_children((GtkContainer *) effect_pad->table);
+  if(effect_pad->grid != NULL){
+    list = gtk_container_get_children((GtkContainer *) effect_pad->grid);
 
     if(ags_simple_file_write_effect_line_list(simple_file,
 					      node,
@@ -10614,7 +10613,7 @@ ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, A
   effect = NULL;
 
   list_start = 
-    list = gtk_container_get_children((GtkContainer *) effect_line->table);
+    list = gtk_container_get_children((GtkContainer *) effect_line->grid);
 
   while(list != NULL){
     if(AGS_IS_LINE_MEMBER(list->data)){

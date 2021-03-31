@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -135,7 +135,7 @@ void
 ags_wave_window_init(AgsWaveWindow *wave_window)
 {
   g_object_set(G_OBJECT(wave_window),
-	       "title", "edit wave",
+	       "title", i18n("edit wave"),
 	       NULL);
 
   wave_window->flags = 0;

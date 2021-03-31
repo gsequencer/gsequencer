@@ -581,9 +581,9 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   AGS_APPLICATION_CONTEXT(xorg_application_context)->config = config;
   g_object_ref(config);
 
-  log = (GObject *) ags_log_get_instance();
+  log = ags_log_get_instance();
 
-  AGS_APPLICATION_CONTEXT(xorg_application_context)->log = log;
+  AGS_APPLICATION_CONTEXT(xorg_application_context)->log = (GObject *) log;
   g_object_ref(log);
   
   /* Xorg application context */  
@@ -664,7 +664,7 @@ ags_xorg_application_context_set_property(GObject *gobject,
       
     window = (AgsWindow *) g_value_get_object(value);
 
-    if(window == xorg_application_context->window){
+    if(window == (AgsWindow *) xorg_application_context->window){
       return;
     }
 
@@ -907,8 +907,6 @@ ags_xorg_application_context_connect(AgsConnectable *connectable)
   GList *start_soundcard, *soundcard;
   GList *start_sequencer, *sequencer;
 
-  GRecMutex *application_context_mutex;
-  
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(connectable);
 
   if(ags_application_context_test_flags(AGS_APPLICATION_CONTEXT(xorg_application_context), AGS_APPLICATION_CONTEXT_CONNECTED)){
@@ -916,9 +914,6 @@ ags_xorg_application_context_connect(AgsConnectable *connectable)
   }
 
   ags_xorg_application_context_parent_connectable_interface->connect(connectable);
-
-  /* get application context mutex */
-  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
     
   /* soundcard */
   soundcard = 
@@ -955,8 +950,6 @@ ags_xorg_application_context_disconnect(AgsConnectable *connectable)
   GList *start_soundcard, *soundcard;
   GList *start_sequencer, *sequencer;
 
-  GRecMutex *application_context_mutex;
-
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(connectable);
 
   if(!ags_application_context_test_flags(AGS_APPLICATION_CONTEXT(xorg_application_context), AGS_APPLICATION_CONTEXT_CONNECTED)){
@@ -964,9 +957,6 @@ ags_xorg_application_context_disconnect(AgsConnectable *connectable)
   }
 
   ags_xorg_application_context_parent_connectable_interface->disconnect(connectable);
-
-  /* get application context mutex */
-  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
   
   /* soundcard */
   soundcard = 
@@ -1042,7 +1032,7 @@ ags_xorg_application_context_set_main_loop(AgsConcurrencyProvider *concurrency_p
   /* get main loop */
   g_rec_mutex_lock(application_context_mutex);
 
-  if(application_context->main_loop == main_loop){
+  if((AgsThread *) application_context->main_loop == main_loop){
     g_rec_mutex_unlock(application_context_mutex);
     
     return;
@@ -1078,7 +1068,7 @@ ags_xorg_application_context_get_task_launcher(AgsConcurrencyProvider *concurren
   /* get main loop */
   g_rec_mutex_lock(application_context_mutex);
 
-  task_launcher = (AgsThread *) application_context->task_launcher;
+  task_launcher = (AgsTaskLauncher *) application_context->task_launcher;
 
   if(task_launcher != NULL){
     g_object_ref(task_launcher);
@@ -1105,7 +1095,7 @@ ags_xorg_application_context_set_task_launcher(AgsConcurrencyProvider *concurren
   /* get main loop */
   g_rec_mutex_lock(application_context_mutex);
 
-  if(application_context->task_launcher == task_launcher){
+  if((AgsTaskLauncher *) application_context->task_launcher == task_launcher){
     g_rec_mutex_unlock(application_context_mutex);
     
     return;
@@ -1182,7 +1172,7 @@ ags_xorg_application_context_set_thread_pool(AgsConcurrencyProvider *concurrency
     g_object_ref(thread_pool);
   }
   
-  xorg_application_context->thread_pool = (GObject *) thread_pool;
+  xorg_application_context->thread_pool = thread_pool;
   
   g_rec_mutex_unlock(application_context_mutex);
 }
@@ -1353,7 +1343,7 @@ ags_xorg_application_context_set_registry(AgsServiceProvider *service_provider,
     g_object_ref(registry);
   }
   
-  xorg_application_context->registry = (GObject *) registry;
+  xorg_application_context->registry = registry;
   
   g_rec_mutex_unlock(application_context_mutex);
 }
@@ -1492,15 +1482,15 @@ ags_xorg_application_context_set_default_soundcard(AgsSoundProvider *sound_provi
     xmlNode *root_node;
 
     /* specify message body */
-    doc = xmlNewDoc("1.0");
+    doc = xmlNewDoc(BAD_CAST "1.0");
 
     root_node = xmlNewNode(NULL,
-			   "ags-command");
+			   BAD_CAST "ags-command");
     xmlDocSetRootElement(doc, root_node);    
 
     xmlNewProp(root_node,
-	       "method",
-	       "AgsSoundProvider::set-default-soundcard");
+	       BAD_CAST "method",
+	       BAD_CAST "AgsSoundProvider::set-default-soundcard");
 
     /* add message */
     message = ags_message_envelope_new(G_OBJECT(sound_provider),
@@ -1528,7 +1518,7 @@ ags_xorg_application_context_set_default_soundcard(AgsSoundProvider *sound_provi
     /* add message */
     ags_message_delivery_add_message_envelope(message_delivery,
 					      "libags-audio",
-					      message);
+					      (GObject *) message);
 
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
@@ -2034,103 +2024,11 @@ ags_xorg_application_context_set_gui_scale_factor(AgsUiProvider *ui_provider,
 {
   AgsXorgApplicationContext *xorg_application_context;
   
-  GParamSpec *param_spec;
-
-  gchar *str;
-  
-  gint default_slider_width;
-  gint default_stepper_size;
-  guint i;
-  
-  GValue *value;
-
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
 
   xorg_application_context->gui_scale_factor = gui_scale_factor;
-  
-  /* horizontal scrollbar */
-  default_slider_width = 14;
-  default_stepper_size = 14;
 
-  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_VSCROLLBAR),
-						    "slider-width");
-  value = g_param_spec_get_default_value(param_spec);
-
-  if(value != NULL){
-    default_slider_width = g_value_get_int(value);
-  }
-
-  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_VSCROLLBAR),
-						    "stepper-size");
-  value = g_param_spec_get_default_value(param_spec);
-
-  if(value != NULL){
-    default_stepper_size = g_value_get_int(value);
-  }
-    
-  str = g_strdup_printf("style \"ags-default-vscrollbar-style\"\n{\n\tGtkVScrollbar::slider-width = %d\nGtkVScrollbar::stepper-size = %d\n}\n\nwidget_class \"*GtkVScrollbar*\" style \"ags-default-vscrollbar-style\"\n",
-			(gint) (gui_scale_factor * default_slider_width),
-			(gint) (gui_scale_factor * default_stepper_size));
-  gtk_rc_parse_string(str);
-  g_free(str);
-
-  /* vertical scrollbar */
-  default_slider_width = 14;
-  default_stepper_size = 14;
-
-  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_HSCROLLBAR),
-						    "slider-width");
-  value = g_param_spec_get_default_value(param_spec);
-
-  if(value != NULL){
-    default_slider_width = g_value_get_int(value);
-  }
-
-  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_HSCROLLBAR),
-						    "stepper-size");
-  value = g_param_spec_get_default_value(param_spec);
-
-  if(value != NULL){
-    default_stepper_size = g_value_get_int(value);
-  }
-
-  str = g_strdup_printf("style \"ags-default-hscrollbar-style\"\n{\n\tGtkHScrollbar::slider-width = %d\nGtkHScrollbar::stepper-size = %d\n}\n\nwidget_class \"*GtkHScrollbar*\" style \"ags-default-hscrollbar-style\"\n",
-			(gint) (gui_scale_factor * default_slider_width),
-			(gint) (gui_scale_factor * default_stepper_size));
-  gtk_rc_parse_string(str);
-  g_free(str);
-
-  /* horizontal scale */
-  default_slider_width = 14;
-
-  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_HSCALE),
-						    "slider-width");
-  value = g_param_spec_get_default_value(param_spec);
-
-  if(value != NULL){
-    default_slider_width = g_value_get_int(value);
-  }
-
-  str = g_strdup_printf("style \"ags-default-vscale-style\"\n{\n\tGtkVScale::slider-width = %d\n}\n\nwidget_class \"*<GtkVScale>*\" style \"ags-default-vscale-style\"\n",
-			(gint) (gui_scale_factor * default_slider_width));
-  gtk_rc_parse_string(str);
-  g_free(str);
-
-  /* vertical scale */
-  default_slider_width = 14;
-
-  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_VSCALE),
-						    "slider-width");
-  value = g_param_spec_get_default_value(param_spec);
-
-  if(value != NULL){
-    default_slider_width = g_value_get_int(value);
-  }
-
-  str = g_strdup_printf("style \"ags-default-hscale-style\"\n{\n\tGtkHScale::slider-width = %d\n}\n\nwidget_class \"*<GtkHScale>*\" style \"ags-default-hscale-style\"\n",
-			(gint) (gui_scale_factor * default_slider_width));
-  gtk_rc_parse_string(str);
-  g_free(str);
+  //TODO:JK: implement me
 }
 
 void
@@ -2188,16 +2086,12 @@ ags_xorg_application_context_schedule_task_all(AgsUiProvider *ui_provider,
 void
 ags_xorg_application_context_clean_message(AgsUiProvider *ui_provider)
 {
-  AgsXorgApplicationContext *xorg_application_context;
-
   AgsMessageDelivery *message_delivery;
   
   GList *start_message_queue, *message_queue;
   GList *start_message_envelope, *message_envelope;
 
   GRecMutex *message_queue_mutex;
-  
-  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
 
   message_delivery = ags_message_delivery_get_instance();
 
@@ -2287,7 +2181,7 @@ ags_xorg_application_context_set_window(AgsUiProvider *ui_provider,
   xorg_application_context = AGS_APPLICATION_CONTEXT(ui_provider);
 
   /* set window */
-  xorg_application_context->window = (AgsWindow *) widget;
+  xorg_application_context->window = widget;
 }
   
 GtkWidget*
@@ -2693,9 +2587,6 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   GMainContext *audio_main_context;
   GMainContext *osc_server_main_context;
   GMainLoop *main_loop;
-  GThread *main_loop_thread;
-  
-  GList *start_queue;
   
   gchar *filename;
   gchar *str;
@@ -2760,7 +2651,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 			      TRUE);
 
   g_thread_new("Advanced Gtk+ Sequencer - server main loop",
-	       ags_xorg_application_context_server_main_loop_thread,
+	       (GThreadFunc) ags_xorg_application_context_server_main_loop_thread,
 	       main_loop);
 
   /* audio main context and main loop */
@@ -2774,7 +2665,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 			      TRUE);
 
   g_thread_new("Advanced Gtk+ Sequencer - audio main loop",
-	       ags_xorg_application_context_audio_main_loop_thread,
+	       (GThreadFunc) ags_xorg_application_context_audio_main_loop_thread,
 	       main_loop);
 #else
   xorg_application_context->audio_main_context = NULL;  
@@ -2808,8 +2699,9 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 
   /* AgsAudioLoop */
   audio_loop = (AgsThread *) ags_audio_loop_new();
-  ags_audio_loop_set_do_fx_staging(audio_loop, TRUE);
-  ags_audio_loop_set_staging_program(audio_loop,
+  ags_audio_loop_set_do_fx_staging((AgsAudioLoop *) audio_loop,
+				   TRUE);
+  ags_audio_loop_set_staging_program((AgsAudioLoop *) audio_loop,
 				     staging_program,
 				     1);
   
@@ -2861,18 +2753,19 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   ags_ui_provider_set_gui_ready(AGS_UI_PROVIDER(application_context),
 				TRUE);
   
-  widget = ags_animation_window_new();
+  widget = (GtkWidget *) ags_animation_window_new();
   ags_ui_provider_set_animation_window(AGS_UI_PROVIDER(application_context),
 				       widget);
   
   gtk_widget_show(widget);
 
   /* AgsWindow */
-  window =
-    xorg_application_context->window = g_object_new(AGS_TYPE_WINDOW,
-						    NULL);
+  window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW,
+				      NULL);
+  
+  xorg_application_context->window = (GtkWidget *) window;
 
-  xorg_application_context->navigation = window->navigation;
+  xorg_application_context->navigation = (GtkWidget *) window->navigation;
   
 #ifdef AGS_WITH_QUARTZ  
   app = gtkosx_application_get();
@@ -3007,9 +2900,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
       xmlChar *xpath;
 
-      gchar *buffer;
-      guint buffer_length;
-      
 #if defined(AGS_OSXAPI) || defined(AGS_W32API)
 #else
       locale_t current;
@@ -3057,7 +2947,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       ags_log_add_message(log,
 			  str);
 
-      xpath = "/ags-simple-file/ags-sf-config";
+      xpath = BAD_CAST "/ags-simple-file/ags-sf-config";
 
       /* Create xpath evaluation context */
       xpath_context = xmlXPathNewContext(simple_file->doc);
@@ -3080,7 +2970,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       }
 
       node = xpath_object->nodesetval->nodeTab;
-      buffer = NULL;
       
       for(j = 0; j < xpath_object->nodesetval->nodeNr; j++){
 	if(node[j]->type == XML_ELEMENT_NODE){
@@ -3503,9 +3392,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 			       "use-cache");
 
     if(str != NULL &&
-       !g_strncasecmp(str,
-		      "false",
-		      5)){
+       !g_ascii_strncasecmp(str,
+			    "false",
+			    5)){
       use_cache = FALSE;
     }
 
@@ -3596,8 +3485,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   sequencer_group = g_strdup("sequencer");
   
   for(i = 0; ; i++){
-    guint pcm_channels, buffer_size, samplerate, format;
-
     if(!g_key_file_has_group(config->key_file,
 			     sequencer_group)){
       if(i == 0){
@@ -3804,28 +3691,28 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     }
 
     /* ip4 and ip6 address */
-    str = ags_config_get_value(config,
+    ip4 = ags_config_get_value(config,
 			       server_group,
 			       "ip4-address");
 
-    if(str != NULL){
+    if(ip4 != NULL){
       g_object_set(server,
-		   "ip4", str,
+		   "ip4", ip4,
 		   NULL);
       
-      g_free(str);
+      g_free(ip4);
     }
 
-    str = ags_config_get_value(config,
+    ip6 = ags_config_get_value(config,
 			       server_group,
 			       "ip6-address");
 
-    if(str != NULL){
+    if(ip6 != NULL){
       g_object_set(server,
-		   "ip6", str,
+		   "ip6", ip6,
 		   NULL);
       
-      g_free(str);
+      g_free(ip6);
     }
 
     /* server port */
@@ -4301,17 +4188,10 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 
   AgsJackServer *jack_server;
 
-  AgsConfig *config;
-
   GList *core_audio_client;
   GList *jack_client;
   GList *start_list, *list;
 
-  gchar *filename;
-  gchar *str;
-
-  config = application_context->config;
-  
   /* free managers */
   ladspa_manager = ags_ladspa_manager_get_instance();
   g_object_unref(ladspa_manager);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -126,7 +126,7 @@ void
 ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
 {
   AgsPad *pad;
-  GtkHBox *hbox;
+  GtkBox *hbox;
 
   drum_input_pad->flags = 0;
 
@@ -136,24 +136,36 @@ ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
   pad = (AgsPad *) drum_input_pad;
 
   /* toplevel functions */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) hbox, FALSE, TRUE, 0);
-  gtk_box_reorder_child((GtkBox *) pad, (GtkWidget *) hbox, 0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_pack_start((GtkBox *) pad,
+		     (GtkWidget *) hbox,
+		     FALSE, TRUE,
+		     0);
+  gtk_box_reorder_child((GtkBox *) pad,
+			(GtkWidget *) hbox,
+			0);
 
   /* open */
   drum_input_pad->open = (GtkButton *) gtk_button_new();
   gtk_container_add((GtkContainer *) drum_input_pad->open,
-		    (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_OPEN,
-							   GTK_ICON_SIZE_BUTTON));
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) drum_input_pad->open, TRUE, TRUE, 0);
+		    (GtkWidget *) gtk_image_new_from_icon_name("document-open",
+							       GTK_ICON_SIZE_BUTTON));
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) drum_input_pad->open,
+		     TRUE, TRUE,
+		     0);
 
   /* play */
   AGS_PAD(drum_input_pad)->play = 
     drum_input_pad->play = (GtkToggleButton *) gtk_toggle_button_new();
   gtk_container_add((GtkContainer *) drum_input_pad->play,
-		    (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_MEDIA_PLAY,
-							   GTK_ICON_SIZE_BUTTON));
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) drum_input_pad->play, TRUE, TRUE, 0);
+		    (GtkWidget *) gtk_image_new_from_icon_name("media-playback-start",
+							       GTK_ICON_SIZE_BUTTON));
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) drum_input_pad->play,
+		     TRUE, TRUE,
+		     0);
 
   /* bottom functions - edit */
   drum_input_pad->edit = (GtkToggleButton *) gtk_toggle_button_new_with_label(i18n("edit"));

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,7 +37,7 @@ void ags_property_collection_editor_add_collection_callback(GtkButton *button,
 							    AgsPropertyCollectionEditor *property_collection_editor);
 
 void ags_property_collection_editor_remove_collection_callback(GtkButton *button,
-							       GtkTable *table);
+							       GtkGrid *grid);
 
 G_END_DECLS
 

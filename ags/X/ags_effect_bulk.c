@@ -166,7 +166,7 @@ ags_effect_bulk_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_effect_bulk = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_effect_bulk = g_type_register_static(GTK_TYPE_BOX,
 						  "AgsEffectBulk", &ags_effect_bulk_info,
 						  0);
 
@@ -388,8 +388,10 @@ ags_effect_bulk_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 {
-  GtkAlignment *alignment;
-  GtkHBox *hbox;
+  GtkBox *hbox;
+
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(effect_bulk),
+				 GTK_ORIENTATION_VERTICAL);
 
   if(ags_effect_bulk_indicator_queue_draw == NULL){
     ags_effect_bulk_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -409,43 +411,42 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 
   effect_bulk->plugin = NULL;
 
-  alignment = (GtkAlignment *) g_object_new(GTK_TYPE_ALIGNMENT,
-					    "xalign", 1.0,
-					    NULL);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_widget_set_halign(hbox,
+			GTK_ALIGN_END);
+  gtk_widget_set_no_show_all((GtkWidget *) hbox,
+			     TRUE);
   gtk_box_pack_start((GtkBox *) effect_bulk,
-		     (GtkWidget *) alignment,
+		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
 
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_widget_set_no_show_all((GtkWidget *) hbox,
-			     TRUE);
-  gtk_container_add((GtkContainer *) alignment,
-		    (GtkWidget *) hbox);
-
-  effect_bulk->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  effect_bulk->add = (GtkButton *) gtk_button_new_from_icon_name("list-add",
+								 GTK_ICON_SIZE_BUTTON);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) effect_bulk->add,
 		     FALSE, FALSE,
 		     0);
   gtk_widget_show((GtkWidget *) effect_bulk->add);
   
-  effect_bulk->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  effect_bulk->remove = (GtkButton *) gtk_button_new_from_icon_name("list-remove",
+								    GTK_ICON_SIZE_BUTTON);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) effect_bulk->remove,
 		     FALSE, FALSE,
 		     0);
   gtk_widget_show((GtkWidget *) effect_bulk->remove);
   
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
   gtk_box_pack_start((GtkBox *) effect_bulk,
 		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
 
-  effect_bulk->bulk_member = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  effect_bulk->bulk_member = (GtkVBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+						     0);
   gtk_widget_set_no_show_all((GtkWidget *) effect_bulk->bulk_member,
 			     TRUE);
   gtk_box_pack_start((GtkBox *) hbox,
@@ -453,10 +454,9 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 		     FALSE, FALSE,
 		     0);
 
-  effect_bulk->table = (GtkTable *) gtk_table_new(1, AGS_EFFECT_BULK_COLUMNS_COUNT,
-						  FALSE);
+  effect_bulk->grid = (GtkGrid *) gtk_grid_new();
   gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) effect_bulk->table,
+		     (GtkWidget *) effect_bulk->grid,
 		     FALSE, FALSE,
 		     0);
 
@@ -591,8 +591,6 @@ void
 ags_effect_bulk_dispose(GObject *gobject)
 {
   AgsEffectBulk *effect_bulk;
-
-  GList *list;
   
   effect_bulk = (AgsEffectBulk *) gobject;
 
@@ -680,7 +678,7 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_effect_bulk_plugin_browser_response_callback), effect_bulk);
 
   list =
-    list_start = gtk_container_get_children((GtkContainer *) effect_bulk->table);
+    list_start = gtk_container_get_children((GtkContainer *) effect_bulk->grid);
 
   while(list != NULL){
     if(AGS_IS_CONNECTABLE(list->data)){
@@ -742,7 +740,7 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   list =
-    list_start = gtk_container_get_children((GtkContainer *) effect_bulk->table);
+    list_start = gtk_container_get_children((GtkContainer *) effect_bulk->grid);
 
   while(list != NULL){
     if(AGS_IS_CONNECTABLE(list->data)){
@@ -873,7 +871,6 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
 {
   AgsBulkMember *bulk_member;
 
-  GtkAdjustment *adjustment;
   AgsEffectBulkPlugin *effect_bulk_plugin;
 
   AgsLadspaPlugin *ladspa_plugin;
@@ -888,7 +885,6 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
   guint control_count;
   
   guint x, y;
-  guint i, j;
   guint k;
 
   pads = 0;
@@ -950,12 +946,12 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
   y = 0;
   
   list =
-    start_list = gtk_container_get_children(GTK_CONTAINER(effect_bulk->table));
+    start_list = gtk_container_get_children(GTK_CONTAINER(effect_bulk->grid));
 
   while(list != NULL){
     guint top_attach;
 
-    gtk_container_child_get(GTK_CONTAINER(effect_bulk->table),
+    gtk_container_child_get(GTK_CONTAINER(effect_bulk->grid),
 			    list->data,
 			    "top-attach", &top_attach,
 			    NULL);
@@ -1013,8 +1009,6 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
 	y++;
-	gtk_table_resize(effect_bulk->table,
-			 y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
       }
       
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
@@ -1230,7 +1224,7 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
 	control_value = default_value;
 	
 	if(ladspa_conversion != NULL){
-	  control_value = ags_conversion_convert(ladspa_conversion,
+	  control_value = ags_conversion_convert((AgsConversion *) ladspa_conversion,
 						 default_value,
 						 TRUE);
 	}
@@ -1254,14 +1248,17 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
       g_message("ladspa bounds: %f %f", lower, upper);
 #endif
 
-      gtk_table_attach(effect_bulk->table,
-		       (GtkWidget *) bulk_member,
-		       x, x + 1,
-		       y, y + 1,
-		       GTK_FILL, GTK_FILL,
-		       0, 0);
+      gtk_widget_set_halign((GtkWidget *) bulk_member,
+			    GTK_ALIGN_FILL);
+      gtk_widget_set_valign((GtkWidget *) bulk_member,
+			    GTK_ALIGN_FILL);
+      
+      gtk_grid_attach(effect_bulk->grid,
+		      (GtkWidget *) bulk_member,
+		      x, y,
+		      1, 1);
       ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
-      gtk_widget_show_all((GtkWidget *) effect_bulk->table);
+      gtk_widget_show_all((GtkWidget *) effect_bulk->grid);
 
       /* iterate */
       x++;
@@ -1292,7 +1289,6 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
 {
   AgsBulkMember *bulk_member;
    
-  GtkAdjustment *adjustment;
   AgsEffectBulkPlugin *effect_bulk_plugin;
 
   AgsDssiPlugin *dssi_plugin;
@@ -1308,7 +1304,6 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
   guint control_count;
   
   guint x, y;
-  guint i, j;
   guint k;
   
   pads = 0;
@@ -1374,12 +1369,12 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
   y = 0;
   
   list =
-    start_list = gtk_container_get_children(GTK_CONTAINER(effect_bulk->table));
+    start_list = gtk_container_get_children(GTK_CONTAINER(effect_bulk->grid));
 
   while(list != NULL){
     guint top_attach;
 
-    gtk_container_child_get(GTK_CONTAINER(effect_bulk->table),
+    gtk_container_child_get(GTK_CONTAINER(effect_bulk->grid),
 			    list->data,
 			    "top-attach", &top_attach,
 			    NULL);
@@ -1434,8 +1429,6 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
 	y++;
-	gtk_table_resize(effect_bulk->table,
-			 y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
       }
 
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
@@ -1647,7 +1640,7 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
 	control_value = default_value;
 	
 	if(ladspa_conversion != NULL){
-	  control_value = ags_conversion_convert(ladspa_conversion,
+	  control_value = ags_conversion_convert((AgsConversion *) ladspa_conversion,
 						 default_value,
 						 TRUE);
 	}
@@ -1667,14 +1660,17 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
 	g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
 
-      gtk_table_attach(effect_bulk->table,
-		       (GtkWidget *) bulk_member,
-		       x, x + 1,
-		       y, y + 1,
-		       GTK_FILL, GTK_FILL,
-		       0, 0);
+      gtk_widget_set_halign(bulk_member,
+			    GTK_ALIGN_FILL);
+      gtk_widget_set_valign(bulk_member,
+			    GTK_ALIGN_FILL);
+
+      gtk_grid_attach(effect_bulk->grid,
+		      (GtkWidget *) bulk_member,
+		      x, y,
+		      1, 1);
       ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
-      gtk_widget_show_all((GtkWidget *) effect_bulk->table);
+      gtk_widget_show_all((GtkWidget *) effect_bulk->grid);
 
       /* iterate */
       x++;
@@ -1705,7 +1701,6 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
 {
   AgsBulkMember *bulk_member;
   
-  GtkAdjustment *adjustment;
   AgsEffectBulkPlugin *effect_bulk_plugin;
 
   AgsLv2Manager *lv2_manager;
@@ -1717,7 +1712,6 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
 
   gchar *uri;
   gchar *port_name;
-  gchar *str;
 
   gboolean is_lv2_plugin;
   
@@ -1727,11 +1721,8 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
   guint control_count;
   
   guint x, y;
-  guint i, j;
   guint k;
   
-  float lower_bound, upper_bound, default_bound;
-
   GRecMutex *lv2_manager_mutex;
   GRecMutex *base_plugin_mutex;
 
@@ -1772,8 +1763,8 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
 					G_DIR_SEPARATOR,
 					"manifest.ttl");
 
-    manifest = ags_turtle_manager_find(turtle_manager,
-				       manifest_filename);
+    manifest = (AgsTurtle *) ags_turtle_manager_find(turtle_manager,
+						     manifest_filename);
 
     if(manifest == NULL){
       AgsLv2TurtleParser *lv2_turtle_parser;
@@ -1801,7 +1792,7 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
       ags_lv2_turtle_parser_parse(lv2_turtle_parser,
 				  turtle, n_turtle);
     
-      g_object_run_dispose(lv2_turtle_parser);
+      g_object_run_dispose((GObject *) lv2_turtle_parser);
       g_object_unref(lv2_turtle_parser);
 	
       g_object_unref(manifest);
@@ -1878,12 +1869,12 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
   y = 0;
   
   list =
-    start_list = gtk_container_get_children(GTK_CONTAINER(effect_bulk->table));
+    start_list = gtk_container_get_children(GTK_CONTAINER(effect_bulk->grid));
 
   while(list != NULL){
     guint top_attach;
 
-    gtk_container_child_get(GTK_CONTAINER(effect_bulk->table),
+    gtk_container_child_get(GTK_CONTAINER(effect_bulk->grid),
 			    list->data,
 			    "top-attach", &top_attach,
 			    NULL);
@@ -1937,8 +1928,6 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
 	y++;
-	gtk_table_resize(effect_bulk->table,
-			 y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
       }
 
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
@@ -2127,7 +2116,7 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
 	control_value = default_value;
 	
 	if(lv2_conversion != NULL){
-	  control_value = ags_conversion_convert(lv2_conversion,
+	  control_value = ags_conversion_convert((AgsConversion *) lv2_conversion,
 						 default_value,
 						 TRUE);
 	}
@@ -2150,15 +2139,18 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
 #ifdef AGS_DEBUG
       g_message("lv2 bounds: %f %f", lower, upper);
 #endif
+
+      gtk_widget_set_halign(bulk_member,
+			    GTK_ALIGN_FILL);
+      gtk_widget_set_valign(bulk_member,
+			    GTK_ALIGN_FILL);
       
-      gtk_table_attach(effect_bulk->table,
-		       (GtkWidget *) bulk_member,
-		       x, x + 1,
-		       y, y + 1,
-		       GTK_FILL, GTK_FILL,
-		       0, 0);
+      gtk_grid_attach(effect_bulk->grid,
+		      (GtkWidget *) bulk_member,
+		      x, y,
+		      1, 1);
       ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
-      gtk_widget_show_all((GtkWidget *) effect_bulk->table);
+      gtk_widget_show_all((GtkWidget *) effect_bulk->grid);
 
       /* iterate */
       x++;
@@ -2200,18 +2192,18 @@ ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
   if(!g_ascii_strncasecmp(plugin_name,
 			  "ags-fx-ladspa",
 			  14)){   
-    base_plugin = ags_ladspa_manager_find_ladspa_plugin_with_fallback(ags_ladspa_manager_get_instance(),
-								      filename, effect);
+    base_plugin = (AgsBasePlugin *) ags_ladspa_manager_find_ladspa_plugin_with_fallback(ags_ladspa_manager_get_instance(),
+											filename, effect);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-dssi",
 				12)){
-    base_plugin = ags_dssi_manager_find_dssi_plugin_with_fallback(ags_dssi_manager_get_instance(),
-								  filename, effect);
+    base_plugin = (AgsBasePlugin *) ags_dssi_manager_find_dssi_plugin_with_fallback(ags_dssi_manager_get_instance(),
+										    filename, effect);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-lv2",
 				11)){
-    base_plugin = ags_lv2_manager_find_lv2_plugin_with_fallback(ags_lv2_manager_get_instance(),
-								filename, effect);
+    base_plugin = (AgsBasePlugin *) ags_lv2_manager_find_lv2_plugin_with_fallback(ags_lv2_manager_get_instance(),
+										  filename, effect);
   }
 
   if(base_plugin != NULL){
@@ -2264,8 +2256,6 @@ ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
 				     create_flags, recall_flags);
     }
   }else if((AGS_FX_FACTORY_REMAP & (create_flags)) != 0){
-    AgsEffectBulkPlugin *effect_bulk_plugin;
-
     GList *start_list, *list;
     GList *start_recall, *recall;
 
@@ -2294,7 +2284,7 @@ ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
 
     /*  */
     list = 
-      start_list = gtk_container_get_children(effect_bulk->table);
+      start_list = gtk_container_get_children((GtkContainer *) effect_bulk->grid);
 
     while(list != NULL){
       if(AGS_IS_BULK_MEMBER(list->data) &&
@@ -2393,10 +2383,10 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
 				      effect_bulk_plugin);
 
   /* AgsRecallAudio */
-  ags_audio_remove_recall(effect_bulk->audio, ags_recall_container_get_recall_audio(effect_bulk_plugin->play_container),
+  ags_audio_remove_recall(effect_bulk->audio, (GObject *) ags_recall_container_get_recall_audio(effect_bulk_plugin->play_container),
 			  TRUE);
 
-  ags_audio_remove_recall(effect_bulk->audio, ags_recall_container_get_recall_audio(effect_bulk_plugin->recall_container),
+  ags_audio_remove_recall(effect_bulk->audio, (GObject *) ags_recall_container_get_recall_audio(effect_bulk_plugin->recall_container),
 			  FALSE);
 
   /* AgsRecallAudioRun - play context */
@@ -2407,7 +2397,7 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
   recall = start_recall;
 
   while(recall != NULL){
-    ags_audio_remove_recall(effect_bulk->audio, recall->data,
+    ags_audio_remove_recall(effect_bulk->audio, (GObject *) recall->data,
 			    TRUE);
 
     recall = recall->next;
@@ -2424,7 +2414,7 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
   recall = start_recall;
 
   while(recall != NULL){
-    ags_audio_remove_recall(effect_bulk->audio, recall->data,
+    ags_audio_remove_recall(effect_bulk->audio, (GObject *) recall->data,
 			    FALSE);
 
     recall = recall->next;    
@@ -2447,7 +2437,7 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
 		 "source", &channel,
 		 NULL);
     
-    ags_channel_remove_recall(channel, recall->data,
+    ags_channel_remove_recall(channel, (GObject *) recall->data,
 			      TRUE);
 
     if(channel != NULL){
@@ -2474,7 +2464,7 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
 		 "source", &channel,
 		 NULL);
     
-    ags_channel_remove_recall(channel, recall->data,
+    ags_channel_remove_recall(channel, (GObject *) recall->data,
 			      FALSE);
     
 
@@ -2502,7 +2492,7 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
 		 "source", &channel,
 		 NULL);
     
-    ags_channel_remove_recall(channel, recall->data,
+    ags_channel_remove_recall(channel, (GObject *) recall->data,
 			      TRUE);    
 
     if(channel != NULL){
@@ -2529,7 +2519,7 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
 		 "source", &channel,
 		 NULL);
     
-    ags_channel_remove_recall(channel, recall->data,
+    ags_channel_remove_recall(channel, (GObject *) recall->data,
 			      FALSE);    
 
     if(channel != NULL){
@@ -2543,8 +2533,8 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
 		   (GDestroyNotify) g_object_unref);
 
   /* recall container */
-  ags_audio_remove_recall_container(effect_bulk->audio, effect_bulk_plugin->play_container);
-  ags_audio_remove_recall_container(effect_bulk->audio, effect_bulk_plugin->recall_container);
+  ags_audio_remove_recall_container(effect_bulk->audio, (GObject *) effect_bulk_plugin->play_container);
+  ags_audio_remove_recall_container(effect_bulk->audio, (GObject *) effect_bulk_plugin->recall_container);
 
   g_object_get(effect_bulk->audio,
 	       "input", &start_channel,
@@ -2573,7 +2563,7 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
   }
 
   /* destroy controls - bulk member */
-  start_list = gtk_container_get_children(effect_bulk->bulk_member);
+  start_list = gtk_container_get_children((GtkContainer *) effect_bulk->bulk_member);
 
   list = g_list_nth(start_list,
 		    nth);
@@ -2585,7 +2575,7 @@ ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
   g_list_free(start_list);
 
   /* destroy controls - table */
-  start_list = gtk_container_get_children(effect_bulk->table);
+  start_list = gtk_container_get_children((GtkContainer *) effect_bulk->grid);
 
   list = start_list;
 
@@ -2725,7 +2715,7 @@ ags_effect_bulk_real_find_port(AgsEffectBulk *effect_bulk)
 
   /* find output ports */
   bulk_member_start = 
-    bulk_member = gtk_container_get_children((GtkContainer *) effect_bulk->table);
+    bulk_member = gtk_container_get_children((GtkContainer *) effect_bulk->grid);
 
   if(bulk_member != NULL){
     while(bulk_member != NULL){
@@ -2795,8 +2785,8 @@ ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget)
 
     gdouble val;
     
-    bulk_member = gtk_widget_get_ancestor(widget,
-					  AGS_TYPE_BULK_MEMBER);
+    bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(widget,
+							    AGS_TYPE_BULK_MEMBER);
 
     list = bulk_member->bulk_port;
 
@@ -2818,9 +2808,9 @@ ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget)
 
     if(AGS_IS_LED(widget)){
       if(val != 0.0){
-	ags_led_set_active(widget);
+	ags_led_set_active((AgsLed *) widget);
       }else{
-	ags_led_unset_active(widget);
+	ags_led_unset_active((AgsLed *) widget);
       }
     }else if(AGS_IS_INDICATOR(widget)){
       gtk_adjustment_set_value(AGS_INDICATOR(widget)->adjustment,

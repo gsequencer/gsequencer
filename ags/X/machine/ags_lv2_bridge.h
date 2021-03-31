@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -106,10 +106,10 @@ struct _AgsLv2Bridge
   LV2_Feature **ui_feature;
   LV2UI_Handle *ui_handle;
 
-  GtkVBox *vbox;
+  GtkBox *vbox;
   
-  GtkComboBoxText *program;
-  GtkComboBoxText *preset;
+  GtkComboBox *program;
+  GtkComboBox *preset;
   
   GtkMenu *lv2_menu;
 

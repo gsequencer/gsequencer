@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,6 +76,7 @@ enum{
 enum{
   PROP_0,
   PROP_WIDGET_TYPE,
+  PROP_WIDGET_ORIENTATION,
   PROP_WIDGET_LABEL,
   PROP_PLAY_CONTAINER,
   PROP_RECALL_CONTAINER,
@@ -171,6 +172,23 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  PROP_WIDGET_TYPE,
 				  param_spec);
 
+  /**
+   * AgsLineMember:widget-orientation:
+   *
+   * The widget orientation.
+   * 
+   * Since: 3.8.0
+   */
+  param_spec = g_param_spec_uint("widget-orientation",
+				 i18n_pspec("widget orientation"),
+				 i18n_pspec("widget orientation"),
+				 0, G_MAXUINT,
+				 GTK_ORIENTATION_VERTICAL,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WIDGET_ORIENTATION,
+				  param_spec);
+  
   /**
    * AgsLineMember:widget-label:
    *
@@ -500,6 +518,7 @@ ags_line_member_init(AgsLineMember *line_member)
   line_member->port_flags = 0;
   
   line_member->widget_type = AGS_TYPE_DIAL;
+  line_member->widget_orientation = GTK_ORIENTATION_VERTICAL;
   dial = (AgsDial *) g_object_new(AGS_TYPE_DIAL,
 				  "adjustment", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
 				  NULL);
@@ -568,7 +587,9 @@ ags_line_member_set_property(GObject *gobject,
    
       GType widget_type;
 
-      gdouble gui_scale_factor;      
+      gdouble gui_scale_factor;
+      gdouble lower_value, upper_value;
+      gdouble current_value;
       gboolean active;
       
       //TODO:JK: verify me
@@ -595,9 +616,17 @@ ags_line_member_set_property(GObject *gobject,
       }else if(GTK_IS_TOGGLE_BUTTON(child)){
 	active = gtk_toggle_button_get_active((GtkToggleButton *) child);
       }
-      
+
+      lower_value = 0.0;
+      upper_value = 0.0;
+
+      current_value = 0.0;
+
       if(adjustment != NULL){
-	g_object_ref(adjustment);
+	lower_value = gtk_adjustment_get_lower(adjustment);
+	upper_value = gtk_adjustment_get_upper(adjustment);
+	
+	current_value = gtk_adjustment_get_value(adjustment);
       }
       
       /* destroy old */
@@ -619,24 +648,41 @@ ags_line_member_set_property(GObject *gobject,
 		     "button-width", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_WIDTH),
 		     "button-height", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_HEIGHT),
 		     NULL);
-      }else if(GTK_IS_VSCALE(new_child)){
-	gtk_widget_set_size_request(new_child,
-				    gui_scale_factor * 16, gui_scale_factor * 100);
-      }else if(GTK_IS_HSCALE(new_child)){
-	gtk_widget_set_size_request(new_child,
-				    gui_scale_factor * 100, gui_scale_factor * 16);
+      }else if(GTK_IS_SCALE(new_child)){
+	guint widget_orientation;
+
+	widget_orientation = GTK_ORIENTATION_VERTICAL;
+	
+	g_object_get(line_member,
+		     "widget-orientation", &widget_orientation,
+		     NULL);
+	
+	gtk_orientable_set_orientation(GTK_ORIENTABLE(new_child),
+				       widget_orientation);
+	
+	if(widget_orientation == GTK_ORIENTATION_VERTICAL){
+	  gtk_widget_set_size_request(new_child,
+				      gui_scale_factor * 16, gui_scale_factor * 100);
+	}else{
+	  gtk_widget_set_size_request(new_child,
+				      gui_scale_factor * 100, gui_scale_factor * 16);
+	}
       }else if(AGS_IS_VINDICATOR(new_child)){
 	g_object_set(new_child,
 		     "segment-width", (guint) (gui_scale_factor * AGS_VINDICATOR_DEFAULT_SEGMENT_WIDTH),
 		     "segment-height", (guint) (gui_scale_factor * AGS_VINDICATOR_DEFAULT_SEGMENT_HEIGHT),
 		     "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
 		     NULL);
+
+	//FIXME:JK: make indicator orientable
       }else if(AGS_IS_HINDICATOR(new_child)){
 	g_object_set(new_child,
 		     "segment-width", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_WIDTH),
 		     "segment-height", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_HEIGHT),
 		     "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
 		     NULL);
+
+	//FIXME:JK: make indicator orientable
       }
 
       gtk_widget_queue_resize_no_redraw(new_child);
@@ -649,38 +695,38 @@ ags_line_member_set_property(GObject *gobject,
 	new_adjustment = gtk_range_get_adjustment(GTK_RANGE(new_child));
 	
 	gtk_adjustment_set_lower(new_adjustment,
-				 gtk_adjustment_get_lower(adjustment));
+				 lower_value);
 	gtk_adjustment_set_upper(new_adjustment,
-				 gtk_adjustment_get_upper(adjustment));
+				 upper_value);
 
 	gtk_adjustment_set_value(new_adjustment,
-				 gtk_adjustment_get_value(adjustment));
+				 current_value);
       }else if(GTK_IS_SPIN_BUTTON(new_child)){
 	GtkAdjustment *new_adjustment;
 
-	new_adjustment = gtk_spin_button_get_adjustment(GTK_RANGE(new_child));
+	new_adjustment = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(new_child));
 
 	gtk_adjustment_set_lower(new_adjustment,
-				 gtk_adjustment_get_lower(adjustment));
+				 lower_value);
 	gtk_adjustment_set_upper(new_adjustment,
-				 gtk_adjustment_get_upper(adjustment));
+				 upper_value);
 
 	gtk_adjustment_set_value(new_adjustment,
-				 gtk_adjustment_get_value(adjustment));
+				 current_value);
       }else if(AGS_IS_DIAL(new_child)){
 	GtkAdjustment *new_adjustment;
 
 	new_adjustment = AGS_DIAL(new_child)->adjustment;
 
 	gtk_adjustment_set_lower(new_adjustment,
-				 gtk_adjustment_get_lower(adjustment));
+				 lower_value);
 	gtk_adjustment_set_upper(new_adjustment,
-				 gtk_adjustment_get_upper(adjustment));
+				 upper_value);
 
 	gtk_adjustment_set_value(new_adjustment,
-				 gtk_adjustment_get_value(adjustment));
+				 current_value);
 
-	gtk_widget_queue_draw((AgsDial *) new_child);
+	gtk_widget_queue_draw((GtkWidget *) new_child);
       }else if(GTK_IS_TOGGLE_BUTTON(new_child)){
 	gtk_toggle_button_set_active((GtkToggleButton *) new_child,
 				     active);
@@ -694,6 +740,45 @@ ags_line_member_set_property(GObject *gobject,
       /* add */
       gtk_container_add(GTK_CONTAINER(line_member),
 			new_child);
+    }
+    break;
+  case PROP_WIDGET_ORIENTATION:
+    {
+      GtkWidget *child;
+
+      AgsApplicationContext *application_context;
+
+      gdouble gui_scale_factor;
+      guint widget_orientation;
+
+      widget_orientation = g_value_get_uint(value);
+      
+      line_member->widget_orientation = widget_orientation;
+
+      application_context = ags_application_context_get_instance();
+
+      /* scale factor */
+      gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+
+      child = gtk_bin_get_child(GTK_BIN(line_member));
+
+      if(GTK_IS_SCALE(child)){
+	gtk_orientable_set_orientation(GTK_ORIENTABLE(child),
+				       widget_orientation);
+	
+	if(widget_orientation == GTK_ORIENTATION_VERTICAL){
+	  gtk_widget_set_size_request(child,
+				      gui_scale_factor * 16, gui_scale_factor * 100);
+	}else{
+	  gtk_widget_set_size_request(child,
+				      gui_scale_factor * 100, gui_scale_factor * 16);
+	}
+      }else if(AGS_IS_INDICATOR(child)){
+	gtk_orientable_set_orientation(GTK_ORIENTABLE(child),
+				       widget_orientation);
+
+	//FIXME:JK: make indicator orientable
+      }
     }
     break;
   case PROP_WIDGET_LABEL:
@@ -858,8 +943,6 @@ ags_line_member_set_property(GObject *gobject,
     break;
   case PROP_STEP_COUNT:
     {
-      GtkWidget *child;
-      
       gdouble step_count;
 
       step_count = g_value_get_double(value);
@@ -910,7 +993,7 @@ ags_line_member_set_property(GObject *gobject,
 
 	  child = gtk_bin_get_child(GTK_BIN(line_member));
 
-	  //TODO:JK: add more types
+	  //TODO:JK: add more orientations
 
 	  if(AGS_IS_DIAL(child)){
 	    AGS_DIAL(child)->flags |= AGS_DIAL_SEEMLESS_MODE;
@@ -1001,6 +1084,11 @@ ags_line_member_get_property(GObject *gobject,
   case PROP_WIDGET_TYPE:
     {
       g_value_set_ulong(value, line_member->widget_type);
+    }
+    break;
+  case PROP_WIDGET_ORIENTATION:
+    {
+      g_value_set_uint(value, line_member->widget_orientation);
     }
     break;
   case PROP_WIDGET_LABEL:
@@ -1188,12 +1276,9 @@ ags_line_member_connect(AgsConnectable *connectable)
   if(line_member->widget_type == AGS_TYPE_DIAL){
     g_signal_connect_after(GTK_WIDGET(control), "value-changed",
 			   G_CALLBACK(ags_line_member_dial_changed_callback), line_member);
-  }else if(line_member->widget_type == GTK_TYPE_VSCALE){
+  }else if(g_type_is_a(line_member->widget_type, GTK_TYPE_SCALE)){
     g_signal_connect_after(GTK_WIDGET(control), "value-changed",
-			   G_CALLBACK(ags_line_member_vscale_changed_callback), line_member);
-  }else if(line_member->widget_type == GTK_TYPE_HSCALE){
-    g_signal_connect_after(GTK_WIDGET(control), "value-changed",
-			   G_CALLBACK(ags_line_member_hscale_changed_callback), line_member);
+			   G_CALLBACK(ags_line_member_scale_changed_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_SPIN_BUTTON){
     g_signal_connect_after(GTK_WIDGET(control), "value-changed",
 			   G_CALLBACK(ags_line_member_spin_button_changed_callback), line_member);
@@ -1232,16 +1317,10 @@ ags_line_member_disconnect(AgsConnectable *connectable)
 			G_CALLBACK(ags_line_member_dial_changed_callback),
 			line_member,
 			NULL);
-  }else if(line_member->widget_type == GTK_TYPE_VSCALE){
+  }else if(g_type_is_a(line_member->widget_type, GTK_TYPE_SCALE)){
     g_object_disconnect(GTK_WIDGET(control),
 			"any_signal::value-changed",
-			G_CALLBACK(ags_line_member_vscale_changed_callback),
-			line_member,
-			NULL);
-  }else if(line_member->widget_type == GTK_TYPE_HSCALE){
-    g_object_disconnect(GTK_WIDGET(control),
-			"any_signal::value-changed",
-			G_CALLBACK(ags_line_member_hscale_changed_callback),
+			G_CALLBACK(ags_line_member_scale_changed_callback),
 			line_member,
 			NULL);
   }else if(line_member->widget_type == GTK_TYPE_SPIN_BUTTON){
@@ -1412,9 +1491,6 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 	port_val = val;
 	
 	if(line_member->conversion != NULL){
-	  gdouble upper, lower, range, step;
-	  gdouble c_upper, c_lower, c_range;
-
 	  gboolean success;
 
 	  success = FALSE;
@@ -1477,14 +1553,9 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
   }
 
   if((AGS_LINE_MEMBER_RESET_BY_TASK & (line_member->flags)) != 0){
-    AgsWindow *window;
-
     AgsTask *task;
 
     AgsApplicationContext *application_context;
-
-    window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) line_member,
-						   AGS_TYPE_WINDOW);
   
     application_context = ags_application_context_get_instance();
 
@@ -1576,9 +1647,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
   AgsPort *audio_port, *channel_port;
   AgsPort *recall_audio_port, *recall_channel_port;
 
-  GList *recall;
   GList *port;
-  GList *list_start;
+  GList *start_list;
   
   gchar *specifier;
 
@@ -1622,24 +1692,24 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
     
   /* play context */
   g_object_get(channel,
-	       "play", &list_start,
+	       "play", &start_list,
 	       NULL);
 
-  channel_port = ags_line_member_find_specifier(list_start,
+  channel_port = ags_line_member_find_specifier(start_list,
 						specifier);
 
-  g_list_free_full(list_start,
+  g_list_free_full(start_list,
 		   g_object_unref);  
 
   /* recall context */
   g_object_get(channel,
-	       "recall", &list_start,
+	       "recall", &start_list,
 	       NULL);
     
-  recall_channel_port = ags_line_member_find_specifier(list_start,
+  recall_channel_port = ags_line_member_find_specifier(start_list,
 						       specifier);
 
-  g_list_free_full(list_start,
+  g_list_free_full(start_list,
 		   g_object_unref);
 
   if(channel_port != NULL){
@@ -1655,28 +1725,28 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
   /* search audio */
   if(channel_port == NULL &&
      recall_channel_port == NULL){
-    GList *list_start;
+    GList *start_list;
 
     /* play context */
     g_object_get(audio,
-		 "play", &list_start,
+		 "play", &start_list,
 		 NULL);
 
-    audio_port = ags_line_member_find_specifier(list_start,
+    audio_port = ags_line_member_find_specifier(start_list,
 						specifier);
 
-    g_list_free_full(list_start,
+    g_list_free_full(start_list,
 		     g_object_unref);
 
     /* recall context */
     g_object_get(audio,
-		 "recall", &list_start,
+		 "recall", &start_list,
 		 NULL);
 
-    recall_audio_port = ags_line_member_find_specifier(list_start,
+    recall_audio_port = ags_line_member_find_specifier(start_list,
 						       specifier);
 
-    g_list_free_full(list_start,
+    g_list_free_full(start_list,
 		     g_object_unref);
 
     if(audio_port != NULL){
@@ -1856,12 +1926,12 @@ ags_line_member_chained_event(AgsLineMember *line_member)
 							      AGS_TYPE_EFFECT_LINE);
       
       list_effect_line =
-	list_effect_line_start = gtk_container_get_children(GTK_CONTAINER(effect_pad->table));
+	list_effect_line_start = gtk_container_get_children(GTK_CONTAINER(effect_pad->grid));
 
       while((list_effect_line = ags_effect_line_find_next_grouped(list_effect_line)) != NULL){
 	if(list_effect_line->data != effect_line){
 	  list_line_member =
-	    list_line_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_LINE(list_effect_line->data)->table);
+	    list_line_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_LINE(list_effect_line->data)->grid);
 
 	  while(list_line_member != NULL){
 	    if(!g_strcmp0(line_member->specifier,

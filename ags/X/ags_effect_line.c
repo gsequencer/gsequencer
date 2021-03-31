@@ -174,7 +174,7 @@ ags_effect_line_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_effect_line = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_effect_line = g_type_register_static(GTK_TYPE_BOX,
 						  "AgsEffectLine", &ags_effect_line_info,
 						  0);
 
@@ -498,6 +498,9 @@ ags_effect_line_init(AgsEffectLine *effect_line)
   AgsApplicationContext *application_context;
   AgsConfig *config;
 
+  gtk_orientable_set_orientation(GTK_ORIENTABLE(effect_line),
+				 GTK_ORIENTATION_VERTICAL);
+
   application_context = ags_application_context_get_instance();
 
   g_signal_connect(application_context, "check-message",
@@ -532,15 +535,14 @@ ags_effect_line_init(AgsEffectLine *effect_line)
 		     0);
 
   effect_line->group = (GtkToggleButton *) gtk_toggle_button_new_with_label(i18n("group"));
-  gtk_box_pack_start(GTK_BOX(effect_line),
-		     GTK_WIDGET(effect_line->group),
+  gtk_box_pack_start((GtkBox *) effect_line,
+		     (GtkWidget *) effect_line->group,
 		     FALSE, FALSE,
 		     0);
 
-  effect_line->table = (GtkTable *) gtk_table_new(1, AGS_EFFECT_LINE_COLUMNS_COUNT,
-						  TRUE);
-  gtk_box_pack_start(GTK_BOX(effect_line),
-		     GTK_WIDGET(effect_line->table),
+  effect_line->grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_pack_start((GtkBox *) effect_line,
+		     (GtkWidget *) effect_line->grid,
 		     FALSE, FALSE,
 		     0);
 
@@ -671,7 +673,6 @@ void
 ags_effect_line_dispose(GObject *gobject)
 {
   AgsEffectLine *effect_line;
-  GList *list;
 
   effect_line = AGS_EFFECT_LINE(gobject);
 
@@ -728,7 +729,7 @@ ags_effect_line_connect(AgsConnectable *connectable)
 {
   AgsEffectLine *effect_line;
 
-  GList *list, *list_start;
+  GList *list, *start_list;
 
   effect_line = AGS_EFFECT_LINE(connectable);
 
@@ -748,8 +749,8 @@ ags_effect_line_connect(AgsConnectable *connectable)
   }
 
   /* connect line members */
-  list_start = 
-    list = gtk_container_get_children(GTK_CONTAINER(effect_line->table));
+  list =
+    start_list = gtk_container_get_children(GTK_CONTAINER(effect_line->grid));
   
   while(list != NULL){
     if(AGS_IS_CONNECTABLE(list->data)){
@@ -759,7 +760,7 @@ ags_effect_line_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 void
@@ -767,7 +768,7 @@ ags_effect_line_disconnect(AgsConnectable *connectable)
 {
   AgsEffectLine *effect_line;
 
-  GList *list, *list_start;
+  GList *start_list, *list;
 
   effect_line = AGS_EFFECT_LINE(connectable);
 
@@ -779,8 +780,8 @@ ags_effect_line_disconnect(AgsConnectable *connectable)
   effect_line->flags &= (~AGS_EFFECT_LINE_CONNECTED);
 
   /* disconnect line members */
-  list_start = 
-    list = gtk_container_get_children(GTK_CONTAINER(effect_line->table));
+  list =
+    start_list = gtk_container_get_children(GTK_CONTAINER(effect_line->grid));
   
   while(list != NULL){
     if(AGS_IS_CONNECTABLE(list->data)){
@@ -790,7 +791,7 @@ ags_effect_line_disconnect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
 }
 
 /**
@@ -1039,7 +1040,6 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
   AgsLineMember *line_member;
   AgsEffectSeparator *separator;
 
-  GtkAdjustment *adjustment;
   AgsEffectLinePlugin *effect_line_plugin;
   
   AgsAudio *audio;
@@ -1047,8 +1047,6 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
   
   AgsLadspaPlugin *ladspa_plugin;
 
-  AgsRecallHandler *recall_handler;
-  
   GList *start_recall;
   GList *start_list, *list;
   GList *start_plugin_port, *plugin_port;
@@ -1112,12 +1110,12 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
   y = 0;
   
   list =
-    start_list = gtk_container_get_children(effect_line->table);
+    start_list = gtk_container_get_children(effect_line->grid);
 
   while(list != NULL){
     guint top_attach;
 
-    gtk_container_child_get(GTK_CONTAINER(effect_line->table),
+    gtk_container_child_get(GTK_CONTAINER(effect_line->grid),
 			    list->data,
 			    "top-attach", &top_attach,
 			    NULL);
@@ -1142,13 +1140,16 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
 	       "filename", filename,
 	       "effect", effect,
 	       NULL);
-  
-  gtk_table_attach(effect_line->table,
-		   (GtkWidget *) separator,
-		   0, AGS_EFFECT_LINE_COLUMNS_COUNT,
-		   y, y + 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign(separator,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(separator,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(effect_line->grid,
+		  (GtkWidget *) separator,
+		  0, y,
+		  AGS_EFFECT_LINE_COLUMNS_COUNT, 1);
   gtk_widget_show_all(GTK_WIDGET(separator));
 
   y++;
@@ -1194,8 +1195,6 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
       if(x == AGS_EFFECT_LINE_COLUMNS_COUNT){
 	x = 0;
 	y++;
-	gtk_table_resize(effect_line->table,
-			 y + 1, AGS_EFFECT_LINE_COLUMNS_COUNT);
       }
       
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
@@ -1418,7 +1417,7 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
 	control_value = default_value;
 
 	if(ladspa_conversion != NULL){
-	  control_value = ags_conversion_convert(ladspa_conversion,
+	  control_value = ags_conversion_convert((AgsConversion *) ladspa_conversion,
 						 default_value,
 						 TRUE);
 	}
@@ -1508,7 +1507,7 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
 	control_value = default_value;
 
 	if(ladspa_conversion != NULL){
-	  control_value = ags_conversion_convert(ladspa_conversion,
+	  control_value = ags_conversion_convert((AgsConversion *) ladspa_conversion,
 						 default_value,
 						 TRUE);
 	}
@@ -1598,7 +1597,7 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
 	control_value = default_value;
 
 	if(ladspa_conversion != NULL){
-	  control_value = ags_conversion_convert(ladspa_conversion,
+	  control_value = ags_conversion_convert((AgsConversion *) ladspa_conversion,
 						 default_value,
 						 TRUE);
 	}
@@ -1621,13 +1620,16 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
 #ifdef AGS_DEBUG
       g_message("ladspa bounds: %f %f", lower, upper);
 #endif
+      
+      gtk_widget_set_valign(line_member,
+			    GTK_ALIGN_FILL);
+      gtk_widget_set_halign(line_member,
+			    GTK_ALIGN_FILL);
 	  
-      gtk_table_attach(effect_line->table,
-		       (GtkWidget *) line_member,
-		       (x % AGS_EFFECT_LINE_COLUMNS_COUNT), (x % AGS_EFFECT_LINE_COLUMNS_COUNT) + 1,
-		       y, y + 1,
-		       GTK_FILL, GTK_FILL,
-		       0, 0);
+      gtk_grid_attach(effect_line->grid,
+		      (GtkWidget *) line_member,
+		      (x % AGS_EFFECT_LINE_COLUMNS_COUNT), y,
+		      1, 1);
 
       ags_connectable_connect(AGS_CONNECTABLE(line_member));
       gtk_widget_show_all((GtkWidget *) line_member);
@@ -1674,7 +1676,6 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
   AgsLineMember *line_member;
   AgsEffectSeparator *separator;
 
-  GtkAdjustment *adjustment;
   AgsEffectLinePlugin *effect_line_plugin;
 
   AgsAudio *audio;
@@ -1747,8 +1748,8 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
 					G_DIR_SEPARATOR,
 					"manifest.ttl");
 
-    manifest = ags_turtle_manager_find(turtle_manager,
-				       manifest_filename);
+    manifest = (AgsTurtle *) ags_turtle_manager_find(turtle_manager,
+						     manifest_filename);
 
     if(manifest == NULL){
       AgsLv2TurtleParser *lv2_turtle_parser;
@@ -1776,7 +1777,7 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
       ags_lv2_turtle_parser_parse(lv2_turtle_parser,
 				  turtle, n_turtle);
     
-      g_object_run_dispose(lv2_turtle_parser);
+      g_object_run_dispose((GObject *) lv2_turtle_parser);
       g_object_unref(lv2_turtle_parser);
 	
       g_object_unref(manifest);
@@ -1836,12 +1837,12 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
   y = 0;
 
   list =
-    start_list = gtk_container_get_children(effect_line->table);
+    start_list = gtk_container_get_children(effect_line->grid);
 
   while(list != NULL){
     guint top_attach;
 
-    gtk_container_child_get(GTK_CONTAINER(effect_line->table),
+    gtk_container_child_get(GTK_CONTAINER(effect_line->grid),
 			    list->data,
 			    "top-attach", &top_attach,
 			    NULL);
@@ -1866,12 +1867,16 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
 	       "filename", filename,
 	       "effect", effect,
 	       NULL);
-  gtk_table_attach(effect_line->table,
-		   (GtkWidget *) separator,
-		   0, AGS_EFFECT_LINE_COLUMNS_COUNT,
-		   y, y + 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_valign(separator,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign(separator,
+			GTK_ALIGN_FILL);
+  
+  gtk_grid_attach(effect_line->grid,
+		  (GtkWidget *) separator,
+		  0, y,
+		  AGS_EFFECT_LINE_COLUMNS_COUNT, 1);
   gtk_widget_show_all(GTK_WIDGET(separator));
   
   y++;
@@ -1916,8 +1921,6 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
       if(x == AGS_EFFECT_LINE_COLUMNS_COUNT){
 	x = 0;
 	y++;
-	gtk_table_resize(effect_line->table,
-			 y + 1, AGS_EFFECT_LINE_COLUMNS_COUNT);
       }
 
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
@@ -2108,7 +2111,7 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
 	control_value = default_value;
 
 	if(lv2_conversion != NULL){
-	  control_value = ags_conversion_convert(lv2_conversion,
+	  control_value = ags_conversion_convert((AgsConversion *) lv2_conversion,
 						 default_value,
 						 TRUE);
 	}
@@ -2198,7 +2201,7 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
 	control_value = default_value;
 
 	if(lv2_conversion != NULL){
-	  control_value = ags_conversion_convert(lv2_conversion,
+	  control_value = ags_conversion_convert((AgsConversion *) lv2_conversion,
 						 default_value,
 						 TRUE);
 	}
@@ -2288,7 +2291,7 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
 	control_value = default_value;
 
 	if(lv2_conversion != NULL){
-	  control_value = ags_conversion_convert(lv2_conversion,
+	  control_value = ags_conversion_convert((AgsConversion *) lv2_conversion,
 						 default_value,
 						 TRUE);
 	}
@@ -2313,12 +2316,15 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
       g_message("lv2 bounds: %f %f", lower, upper);
 #endif
 	  
-      gtk_table_attach(effect_line->table,
-		       (GtkWidget *) line_member,
-		       (x % AGS_EFFECT_LINE_COLUMNS_COUNT), (x % AGS_EFFECT_LINE_COLUMNS_COUNT) + 1,
-		       y, y + 1,
-		       GTK_FILL, GTK_FILL,
-		       0, 0);
+      gtk_widget_set_valign(line_member,
+			    GTK_ALIGN_FILL);
+      gtk_widget_set_halign(line_member,
+			    GTK_ALIGN_FILL);
+
+      gtk_grid_attach(effect_line->grid,
+		      (GtkWidget *) line_member,
+		      (x % AGS_EFFECT_LINE_COLUMNS_COUNT), y,
+		      1, 1);
       
       ags_connectable_connect(AGS_CONNECTABLE(line_member));
       gtk_widget_show_all((GtkWidget *) line_member);
@@ -2375,13 +2381,13 @@ ags_effect_line_real_add_plugin(AgsEffectLine *effect_line,
   if(!g_ascii_strncasecmp(plugin_name,
 			  "ags-fx-ladspa",
 			  14)){   
-    base_plugin = ags_ladspa_manager_find_ladspa_plugin_with_fallback(ags_ladspa_manager_get_instance(),
-								      filename, effect);
+    base_plugin = (AgsBasePlugin *) ags_ladspa_manager_find_ladspa_plugin_with_fallback(ags_ladspa_manager_get_instance(),
+											filename, effect);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-lv2",
 				11)){
-    base_plugin = ags_lv2_manager_find_lv2_plugin_with_fallback(ags_lv2_manager_get_instance(),
-								filename, effect);
+    base_plugin = (AgsBasePlugin *) ags_lv2_manager_find_lv2_plugin_with_fallback(ags_lv2_manager_get_instance(),
+										  filename, effect);
   }
 
   if(base_plugin != NULL){
@@ -2510,10 +2516,10 @@ ags_effect_line_real_remove_plugin(AgsEffectLine *effect_line,
 				      effect_line_plugin);
 
   /* AgsRecallAudio */
-  ags_audio_remove_recall(audio, ags_recall_container_get_recall_audio(effect_line_plugin->play_container),
+  ags_audio_remove_recall(audio, (GObject *) ags_recall_container_get_recall_audio(effect_line_plugin->play_container),
 			  TRUE);
 
-  ags_audio_remove_recall(audio, ags_recall_container_get_recall_audio(effect_line_plugin->recall_container),
+  ags_audio_remove_recall(audio, (GObject *) ags_recall_container_get_recall_audio(effect_line_plugin->recall_container),
 			  FALSE);
 
   /* AgsRecallAudioRun - play context */
@@ -2541,7 +2547,7 @@ ags_effect_line_real_remove_plugin(AgsEffectLine *effect_line,
   recall = start_recall;
 
   while(recall != NULL){
-    ags_audio_remove_recall(audio, recall->data,
+    ags_audio_remove_recall(audio, (GObject *) recall->data,
 			    FALSE);
 
     recall = recall->next;    
@@ -2564,7 +2570,7 @@ ags_effect_line_real_remove_plugin(AgsEffectLine *effect_line,
 		 "source", &channel,
 		 NULL);
     
-    ags_channel_remove_recall(channel, recall->data,
+    ags_channel_remove_recall(channel, (GObject *) recall->data,
 			      TRUE);
 
     if(channel != NULL){
@@ -2591,7 +2597,7 @@ ags_effect_line_real_remove_plugin(AgsEffectLine *effect_line,
 		 "source", &channel,
 		 NULL);
     
-    ags_channel_remove_recall(channel, recall->data,
+    ags_channel_remove_recall(channel, (GObject *) recall->data,
 			      FALSE);
     
 
@@ -2619,7 +2625,7 @@ ags_effect_line_real_remove_plugin(AgsEffectLine *effect_line,
 		 "source", &channel,
 		 NULL);
     
-    ags_channel_remove_recall(channel, recall->data,
+    ags_channel_remove_recall(channel, (GObject *) recall->data,
 			      TRUE);    
 
     if(channel != NULL){
@@ -2646,7 +2652,7 @@ ags_effect_line_real_remove_plugin(AgsEffectLine *effect_line,
 		 "source", &channel,
 		 NULL);
     
-    ags_channel_remove_recall(channel, recall->data,
+    ags_channel_remove_recall(channel, (GObject *) recall->data,
 			      FALSE);    
 
     if(channel != NULL){
@@ -2660,14 +2666,14 @@ ags_effect_line_real_remove_plugin(AgsEffectLine *effect_line,
 		   (GDestroyNotify) g_object_unref);
 
   /* recall container */
-  ags_audio_remove_recall_container(audio, effect_line_plugin->play_container);
-  ags_audio_remove_recall_container(audio, effect_line_plugin->recall_container);
+  ags_audio_remove_recall_container(audio, (GObject *) effect_line_plugin->play_container);
+  ags_audio_remove_recall_container(audio, (GObject *) effect_line_plugin->recall_container);
 
-  ags_channel_remove_recall_container(effect_line->channel, effect_line_plugin->play_container);
-  ags_channel_remove_recall_container(effect_line->channel, effect_line_plugin->recall_container);
+  ags_channel_remove_recall_container(effect_line->channel, (GObject *) effect_line_plugin->play_container);
+  ags_channel_remove_recall_container(effect_line->channel, (GObject *) effect_line_plugin->recall_container);
 
   /* destroy controls - expander table */
-  start_list = gtk_container_get_children(effect_line->table);
+  start_list = gtk_container_get_children((GtkContainer *) effect_line->grid);
 
   list = start_list;
   
@@ -2764,12 +2770,13 @@ ags_effect_line_real_find_port(AgsEffectLine *effect_line)
   GList *port, *tmp_port;
   GList *line_member, *line_member_start;
 
-  if(effect_line == NULL || effect_line->table == NULL){
+  if(effect_line == NULL ||
+     effect_line->grid == NULL){
     return(NULL);
   }
 
   line_member_start = 
-    line_member = gtk_container_get_children(GTK_CONTAINER(effect_line->table));
+    line_member = gtk_container_get_children(GTK_CONTAINER(effect_line->grid));
   
   port = NULL;
 
@@ -2905,7 +2912,7 @@ ags_effect_line_check_message(AgsEffectLine *effect_line)
 		   12)){
       if(!xmlStrncmp(xmlGetProp(root_node,
 				"method"),
-		     "AgsChannel::set-samplerate",
+		     BAD_CAST "AgsChannel::set-samplerate",
 		     27)){
 	guint samplerate;
 	gint position;
@@ -2920,7 +2927,7 @@ ags_effect_line_check_message(AgsEffectLine *effect_line)
 		     NULL);
       }else if(!xmlStrncmp(xmlGetProp(root_node,
 				      "method"),
-			   "AgsChannel::set-buffer-size",
+			   BAD_CAST "AgsChannel::set-buffer-size",
 			   28)){
 	guint buffer_size;
 	gint position;
@@ -2935,7 +2942,7 @@ ags_effect_line_check_message(AgsEffectLine *effect_line)
 		     NULL);
       }else if(!xmlStrncmp(xmlGetProp(root_node,
 				      "method"),
-			   "AgsChannel::set-format",
+			   BAD_CAST "AgsChannel::set-format",
 			   23)){
 	guint format;
 	gint position;
@@ -2950,7 +2957,7 @@ ags_effect_line_check_message(AgsEffectLine *effect_line)
 		     NULL);
       }else if(!xmlStrncmp(xmlGetProp(root_node,
 				      "method"),
-			   "AgsChannel::done",
+			   BAD_CAST "AgsChannel::done",
 			   16)){
 	AgsRecallID *recall_id;
 
@@ -2997,7 +3004,7 @@ ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget)
 							    AGS_TYPE_EFFECT_LINE);
 
     list_start = 
-      list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_LINE(effect_line)->table);
+      list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_LINE(effect_line)->grid);
 
     /* check members */
     while(list != NULL){

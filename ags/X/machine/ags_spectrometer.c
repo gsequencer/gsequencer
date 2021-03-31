@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -141,21 +141,14 @@ ags_spectrometer_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_spectrometer_init(AgsSpectrometer *spectrometer)
 {
-  GtkVBox *vbox;
+  GtkBox *vbox;
   AgsCartesian *cartesian;
 
   AgsPlot *fg_plot;
 
-  AgsConfig *config;
-
-  gchar *str;
-
   guint buffer_size;
   gdouble width, height;
   gdouble default_width, default_height;
-  gdouble offset;
-  
-  config = ags_config_get_instance();
   
   g_signal_connect_after((GObject *) spectrometer, "parent_set",
 			 G_CALLBACK(ags_spectrometer_parent_set_callback), (gpointer) spectrometer);
@@ -191,8 +184,10 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
   spectrometer->analyse_play_container = ags_recall_container_new();
   spectrometer->analyse_recall_container = ags_recall_container_new();
 
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_container_add((GtkContainer*) gtk_bin_get_child((GtkBin *) spectrometer), (GtkWidget *) vbox);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
+  gtk_container_add((GtkContainer*) gtk_bin_get_child((GtkBin *) spectrometer),
+		    (GtkWidget *) vbox);
 
   /* cartesian */
   cartesian = 
@@ -243,8 +238,8 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
   /* cartesian - size, pack and redraw */
   gtk_widget_set_size_request((GtkWidget *) cartesian,
 			      (gint) (width + 2.0 * cartesian->x_margin), (gint) (height + 2.0 * cartesian->y_margin));
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(cartesian),
+  gtk_box_pack_start(vbox,
+		     (GtkWidget *) cartesian,
 		     FALSE, FALSE,
 		     0);
 
@@ -319,15 +314,8 @@ ags_spectrometer_resize_audio_channels_callback(AgsMachine *machine,
 						gpointer data)
 {
   AgsSpectrometer *spectrometer;
-  AgsCartesian *cartesian;
-
-  AgsAudio *audio;
   
   spectrometer = (AgsSpectrometer *) machine;  
-
-  cartesian = spectrometer->cartesian;
-
-  audio = machine->audio;
   
   if(audio_channels > audio_channels_old){
     /* recall */
@@ -351,18 +339,10 @@ ags_spectrometer_resize_pads_callback(AgsMachine *machine,
 {
   AgsSpectrometer *spectrometer;
 
-  AgsCartesian *cartesian;
-    
-  AgsAudio *audio;
-  
   guint audio_channels;
   gboolean grow;
 
   spectrometer = (AgsSpectrometer *) machine;
-
-  cartesian = spectrometer->cartesian;
-  
-  audio = machine->audio;
 
   /* get some fields */
   audio_channels = machine->audio_channels;
@@ -469,15 +449,18 @@ ags_spectrometer_map_recall(AgsMachine *machine)
   position = 0;
   
   /* add new controls */
-  ags_fx_factory_create(machine->audio,
-			spectrometer->analyse_play_container, spectrometer->analyse_recall_container,
-			"ags-fx-analyse",
-			NULL,
-			NULL,
-			0, 0,
-			0, 0,
-			position,
-			(AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT), 0);
+  start_recall = ags_fx_factory_create(audio,
+				       spectrometer->analyse_play_container, spectrometer->analyse_recall_container,
+				       "ags-fx-analyse",
+				       NULL,
+				       NULL,
+				       0, 0,
+				       0, 0,
+				       position,
+				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT), 0);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 
   /* depending on destination */
   ags_spectrometer_input_map_recall(spectrometer,
@@ -690,7 +673,6 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
   if(g_hash_table_lookup(ags_spectrometer_cartesian_queue_draw,
 			 widget) != NULL){    
     AgsSpectrometer *spectrometer;
-    AgsCartesian *cartesian;
 
     AgsPort *port;
     
@@ -700,25 +682,19 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
     guint samplerate;
     guint buffer_size;
     guint audio_buffer_size;
-    gdouble nyquist;
     gdouble correction;
     gdouble frequency;
-    gdouble gfrequency, gfrequency_next;
+    gdouble gfrequency;
     double magnitude;
     guint copy_mode;
     guint i;
-    guint j, j_stop;
-    guint k, k_stop;
-    guint nth;
-
-    gboolean completed;
+    guint j;
+    guint k;
     
     GValue value = {0,};
 
     spectrometer = (AgsSpectrometer *) gtk_widget_get_ancestor(widget,
 							       AGS_TYPE_SPECTROMETER);
-
-    cartesian = spectrometer->cartesian;
 
     samplerate = AGS_MACHINE(spectrometer)->samplerate;
     buffer_size = AGS_MACHINE(spectrometer)->buffer_size;
@@ -809,12 +785,9 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
     /* plot */
     fg_plot = spectrometer->fg_plot;
     
-    nyquist = ((gdouble) samplerate / 2.0);
     correction = (44100.0 - AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE) / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
     while(fg_plot != NULL){
-      completed = FALSE;
-
       magnitude = 0.0;
 
       frequency = 0.0;

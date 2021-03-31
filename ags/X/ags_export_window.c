@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -172,11 +172,10 @@ ags_export_window_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_export_window_init(AgsExportWindow *export_window)
 {
-  GtkVBox *vbox;
-  GtkHBox *hbox;
-  GtkTable *table;
+  GtkBox *vbox;
+  GtkBox *hbox;
+  GtkGrid *grid;
   GtkLabel *label;
-  GtkAlignment *alignment;
   
   gchar *str;
   
@@ -189,8 +188,8 @@ ags_export_window_init(AgsExportWindow *export_window)
   export_window->main_window = NULL;
 
   /* pack */
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE,
-				  0);
+  vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				0);
   gtk_container_add(GTK_CONTAINER(export_window),
 		    GTK_WIDGET(vbox));
 
@@ -225,10 +224,9 @@ ags_export_window_init(AgsExportWindow *export_window)
 		     FALSE, FALSE,
 		     0);
 
-  table = (GtkTable *) gtk_table_new(5, 2,
-				     FALSE);
-  gtk_box_pack_start(GTK_BOX(vbox),
-		     GTK_WIDGET(table),
+  grid = (GtkGrid *) gtk_grid_new();
+  gtk_box_pack_start(vbox,
+		     (GtkWidget *) grid,
 		     FALSE, FALSE,
 		     0);
 
@@ -237,12 +235,20 @@ ags_export_window_init(AgsExportWindow *export_window)
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   1, 2,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
+
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand((GtkWidget *) label,
+			 TRUE);
+  gtk_widget_set_vexpand((GtkWidget *) label,
+			 TRUE);
+  
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
 
   export_window->mode = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_combo_box_text_append_text(export_window->mode,
@@ -252,96 +258,124 @@ ags_export_window_init(AgsExportWindow *export_window)
   //				 "time");
   gtk_combo_box_set_active((GtkComboBox *) export_window->mode,
 			   0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(export_window->mode),
-		   1, 2,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_halign((GtkWidget *) export_window->mode,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) export_window->mode,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) export_window->mode,
+		  1, 1,
+		  1, 1);
 
   /* tact */
   label = (GtkLabel *) gtk_label_new(i18n("tact"));
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   2, 3,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
+
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand((GtkWidget *) label,
+			 TRUE);
+  gtk_widget_set_vexpand((GtkWidget *) label,
+			 TRUE);
+
+  gtk_grid_attach(grid,
+		  GTK_WIDGET(label),
+		  0, 2,
+		  1, 1);
 
   export_window->tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTATION_DEFAULT_LENGTH, 0.25);
   gtk_spin_button_set_digits(export_window->tact,
 			     2);
-  gtk_table_attach(table,
-		   GTK_WIDGET(export_window->tact),
-		   1, 2,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+
+  gtk_widget_set_halign((GtkWidget *) export_window->tact,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) export_window->tact,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) export_window->tact,
+		  1, 2,
+		  1, 1);
 
   /* time */
   label = (GtkLabel *) gtk_label_new(i18n("time"));
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   3, 4,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
+
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) label,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand((GtkWidget *) label,
+			 TRUE);
+  gtk_widget_set_vexpand((GtkWidget *) label,
+			 TRUE);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, 3,
+		  1, 1);
 
   /* duration */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(hbox),
-		   1, 2,
-		   3, 4,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  
+  gtk_widget_set_halign((GtkWidget *) hbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) hbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand((GtkWidget *) hbox,
+			 TRUE);
+  gtk_widget_set_vexpand((GtkWidget *) hbox,
+			 TRUE);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) hbox,
+		  1, 3,
+		  1, 1);
 
   export_window->duration = (GtkLabel *) gtk_label_new(ags_navigation_tact_to_time_string(0.0,
 											  AGS_SOUNDCARD_DEFAULT_BPM,
 											  1.0));
-  gtk_box_pack_start(GTK_BOX(hbox),
+  gtk_box_pack_start(hbox,
 		     GTK_WIDGET(export_window->duration),
 		     FALSE, FALSE,
 		     0);
 
   /* export soundcard */
-  export_window->export_soundcard = (GtkVBox *) gtk_vbox_new(FALSE,
-							     0);
-  gtk_box_pack_start(GTK_BOX(vbox),
-		     GTK_WIDGET(export_window->export_soundcard),
+  export_window->export_soundcard = (GtkBox *) gtk_vbox_new(GTK_ORIENTATION_VERTICAL,
+							    0);
+  gtk_box_pack_start(vbox,
+		     (GtkWidget *) export_window->export_soundcard,
 		     FALSE, FALSE,
 		     0);
 
   /* add */
-  alignment = (GtkAlignment *) gtk_alignment_new(1.0, 0.5,
-						 0.0, 0.0);
-  gtk_box_pack_start(GTK_BOX(vbox),
-		     GTK_WIDGET(alignment),
+  export_window->add = (GtkButton *) gtk_button_new_from_icon_name("list-add",
+								   GTK_ICON_SIZE_BUTTON);
+  gtk_box_pack_start(vbox,
+		     (GtkWidget *) export_window->add,
 		     FALSE, FALSE,
 		     0);
   
-  export_window->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_container_add(GTK_CONTAINER(alignment),
-		    GTK_WIDGET(export_window->add));
-  
   /* export */
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_box_pack_start(GTK_BOX(vbox),
-		     GTK_WIDGET(hbox),
+  hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				0);
+  gtk_box_pack_start(vbox,
+		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
 
   export_window->export = (GtkToggleButton *) gtk_toggle_button_new_with_label(i18n("export"));
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(export_window->export),
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) export_window->export,
 		     FALSE, FALSE,
 		     0);
 }
@@ -534,8 +568,7 @@ void
 ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
 {
   AgsExportSoundcard *export_soundcard;
-  GtkHBox *hbox;
-  GtkAlignment *alignment;
+  GtkBox *hbox;
   GtkButton *remove_button;
   
   AgsApplicationContext *application_context;
@@ -561,9 +594,9 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
     
     if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_PLAYBACK){
       /* create GtkHBox */
-      hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				      0);
-      gtk_box_pack_start((GtkBox *) export_window->export_soundcard,
+      hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				    0);
+      gtk_box_pack_start(export_window->export_soundcard,
 			 (GtkWidget *) hbox,
 			 FALSE, FALSE,
 			 0);
@@ -572,23 +605,20 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
       export_soundcard = (AgsExportSoundcard *) g_object_new(AGS_TYPE_EXPORT_SOUNDCARD,
 							     "soundcard", list->data,
 							     NULL);
-      gtk_box_pack_start((GtkBox *) hbox,
+      gtk_box_pack_start(hbox,
 			 (GtkWidget *) export_soundcard,
 			 FALSE, FALSE,
 			 0);
       ags_connectable_connect(AGS_CONNECTABLE(export_soundcard));
     
       /* remove button */
-      alignment = (GtkAlignment *) gtk_alignment_new(0.5, 1.0,
-						     0.0, 0.0);
+    
+      remove_button = (GtkButton *) gtk_button_new_from_icon_name("list-remove",
+								  GTK_ICON_SIZE_BUTTON);
       gtk_box_pack_start((GtkBox *) hbox,
-			 (GtkWidget *) alignment,
+			 (GtkWidget *) remove_button,
 			 FALSE, FALSE,
 			 0);
-    
-      remove_button = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-      gtk_container_add((GtkContainer *) alignment,
-			(GtkWidget *) remove_button);
     
       g_signal_connect(G_OBJECT(remove_button), "clicked",
 		       G_CALLBACK(ags_export_window_remove_export_soundcard_callback), export_window);
