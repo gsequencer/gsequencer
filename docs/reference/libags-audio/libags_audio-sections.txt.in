@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2020 Joël Krähemann
+# Copyright (C) 2005-2021 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -2346,7 +2346,6 @@ ags_export_thread_get_type
 
 <SECTION>
 <FILE>ags_fast_pitch_util</FILE>
-AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE
 ags_fast_pitch_util_compute_s8
 ags_fast_pitch_util_compute_s16
 ags_fast_pitch_util_compute_s24
@@ -2562,6 +2561,18 @@ AGS_TYPE_FREE_SELECTION
 AgsFreeSelection
 AgsFreeSelectionClass
 ags_free_selection_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_frequency_aliase_util</FILE>
+ags_frequency_aliase_util_compute_s8
+ags_frequency_aliase_util_compute_s16
+ags_frequency_aliase_util_compute_s24
+ags_frequency_aliase_util_compute_s32
+ags_frequency_aliase_util_compute_s64
+ags_frequency_aliase_util_compute_float
+ags_frequency_aliase_util_compute_double
+ags_frequency_aliase_util_compute_complex
 </SECTION>
 
 <SECTION>
@@ -3151,6 +3162,9 @@ ags_fx_eq10_recycling_get_type
 <FILE>ags_fx_factory</FILE>
 AgsFxFactoryCreateFlags
 ags_fx_factory_create
+<SUBSECTION Public>
+AGS_TYPE_FX_FACTORY_CREATE_FLAGS
+ags_fx_factory_create_flags_get_type
 </SECTION>
 
 <SECTION>
@@ -3254,6 +3268,102 @@ AGS_TYPE_FX_LADSPA_RECYCLING
 AgsFxLadspaRecycling
 AgsFxLadspaRecyclingClass
 ags_fx_ladspa_recycling_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_lfo_audio</FILE>
+<TITLE>AgsFxLfoAudio</TITLE>
+ags_fx_lfo_audio_new
+<SUBSECTION Public>
+AGS_FX_LFO_AUDIO
+AGS_FX_LFO_AUDIO_CLASS
+AGS_FX_LFO_AUDIO_GET_CLASS
+AGS_IS_FX_LFO_AUDIO
+AGS_IS_FX_LFO_AUDIO_CLASS
+AGS_TYPE_FX_LFO_AUDIO
+AgsFxLfoAudio
+AgsFxLfoAudioClass
+ags_fx_lfo_audio_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_lfo_audio_processor</FILE>
+<TITLE>AgsFxLfoAudioProcessor</TITLE>
+ags_fx_lfo_audio_processor_new
+<SUBSECTION Public>
+AGS_FX_LFO_AUDIO_PROCESSOR
+AGS_FX_LFO_AUDIO_PROCESSOR_CLASS
+AGS_FX_LFO_AUDIO_PROCESSOR_GET_CLASS
+AGS_IS_FX_LFO_AUDIO_PROCESSOR
+AGS_IS_FX_LFO_AUDIO_PROCESSOR_CLASS
+AGS_TYPE_FX_LFO_AUDIO_PROCESSOR
+AgsFxLfoAudioProcessor
+AgsFxLfoAudioProcessorClass
+ags_fx_lfo_audio_processor_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_lfo_audio_signal</FILE>
+<TITLE>AgsFxLfoAudioSignal</TITLE>
+ags_fx_lfo_audio_signal_new
+<SUBSECTION Public>
+AGS_FX_LFO_AUDIO_SIGNAL
+AGS_FX_LFO_AUDIO_SIGNAL_CLASS
+AGS_FX_LFO_AUDIO_SIGNAL_GET_CLASS
+AGS_IS_FX_LFO_AUDIO_SIGNAL
+AGS_IS_FX_LFO_AUDIO_SIGNAL_CLASS
+AGS_TYPE_FX_LFO_AUDIO_SIGNAL
+AgsFxLfoAudioSignal
+AgsFxLfoAudioSignalClass
+ags_fx_lfo_audio_signal_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_lfo_channel</FILE>
+<TITLE>AgsFxLfoChannel</TITLE>
+ags_fx_lfo_channel_new
+<SUBSECTION Public>
+AGS_FX_LFO_CHANNEL
+AGS_FX_LFO_CHANNEL_CLASS
+AGS_FX_LFO_CHANNEL_GET_CLASS
+AGS_IS_FX_LFO_CHANNEL
+AGS_IS_FX_LFO_CHANNEL_CLASS
+AGS_TYPE_FX_LFO_CHANNEL
+AgsFxLfoChannel
+AgsFxLfoChannelClass
+ags_fx_lfo_channel_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_lfo_channel_processor</FILE>
+<TITLE>AgsFxLfoChannelProcessor</TITLE>
+ags_fx_lfo_channel_processor_new
+<SUBSECTION Public>
+AGS_FX_LFO_CHANNEL_PROCESSOR
+AGS_FX_LFO_CHANNEL_PROCESSOR_CLASS
+AGS_FX_LFO_CHANNEL_PROCESSOR_GET_CLASS
+AGS_IS_FX_LFO_CHANNEL_PROCESSOR
+AGS_IS_FX_LFO_CHANNEL_PROCESSOR_CLASS
+AGS_TYPE_FX_LFO_CHANNEL_PROCESSOR
+AgsFxLfoChannelProcessor
+AgsFxLfoChannelProcessorClass
+ags_fx_lfo_channel_processor_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_lfo_recycling</FILE>
+<TITLE>AgsFxLfoRecycling</TITLE>
+ags_fx_lfo_recycling_new
+<SUBSECTION Public>
+AGS_FX_LFO_RECYCLING
+AGS_FX_LFO_RECYCLING_CLASS
+AGS_FX_LFO_RECYCLING_GET_CLASS
+AGS_IS_FX_LFO_RECYCLING
+AGS_IS_FX_LFO_RECYCLING_CLASS
+AGS_TYPE_FX_LFO_RECYCLING
+AgsFxLfoRecycling
+AgsFxLfoRecyclingClass
+ags_fx_lfo_recycling_get_type
 </SECTION>
 
 <SECTION>
@@ -3824,6 +3934,115 @@ ags_fx_playback_recycling_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_fx_two_pass_aliase_audio</FILE>
+<TITLE>AgsFxTwoPassAliaseAudio</TITLE>
+ags_fx_two_pass_aliase_audio_new
+<SUBSECTION Public>
+AGS_FX_TWO_PASS_ALIASE_AUDIO
+AGS_FX_TWO_PASS_ALIASE_AUDIO_CLASS
+AGS_FX_TWO_PASS_ALIASE_AUDIO_GET_CLASS
+AGS_IS_FX_TWO_PASS_ALIASE_AUDIO
+AGS_IS_FX_TWO_PASS_ALIASE_AUDIO_CLASS
+AGS_TYPE_FX_TWO_PASS_ALIASE_AUDIO
+AgsFxTwoPassAliaseAudio
+AgsFxTwoPassAliaseAudioClass
+ags_fx_two_pass_aliase_audio_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_two_pass_aliase_audio_processor</FILE>
+<TITLE>AgsFxTwoPassAliaseAudioProcessor</TITLE>
+ags_fx_two_pass_aliase_audio_processor_new
+<SUBSECTION Public>
+AGS_FX_TWO_PASS_ALIASE_AUDIO_PROCESSOR
+AGS_FX_TWO_PASS_ALIASE_AUDIO_PROCESSOR_CLASS
+AGS_FX_TWO_PASS_ALIASE_AUDIO_PROCESSOR_GET_CLASS
+AGS_IS_FX_TWO_PASS_ALIASE_AUDIO_PROCESSOR
+AGS_IS_FX_TWO_PASS_ALIASE_AUDIO_PROCESSOR_CLASS
+AGS_TYPE_FX_TWO_PASS_ALIASE_AUDIO_PROCESSOR
+AgsFxTwoPassAliaseAudioProcessor
+AgsFxTwoPassAliaseAudioProcessorClass
+ags_fx_two_pass_aliase_audio_processor_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_two_pass_aliase_audio_signal</FILE>
+<TITLE>AgsFxTwoPassAliaseAudioSignal</TITLE>
+ags_fx_two_pass_aliase_audio_signal_new
+<SUBSECTION Public>
+AGS_FX_TWO_PASS_ALIASE_AUDIO_SIGNAL
+AGS_FX_TWO_PASS_ALIASE_AUDIO_SIGNAL_CLASS
+AGS_FX_TWO_PASS_ALIASE_AUDIO_SIGNAL_GET_CLASS
+AGS_IS_FX_TWO_PASS_ALIASE_AUDIO_SIGNAL
+AGS_IS_FX_TWO_PASS_ALIASE_AUDIO_SIGNAL_CLASS
+AGS_TYPE_FX_TWO_PASS_ALIASE_AUDIO_SIGNAL
+AgsFxTwoPassAliaseAudioSignal
+AgsFxTwoPassAliaseAudioSignalClass
+ags_fx_two_pass_aliase_audio_signal_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_two_pass_aliase_channel</FILE>
+<TITLE>AgsFxTwoPassAliaseChannel</TITLE>
+AGS_FX_TWO_PASS_ALIASE_CHANNEL_INPUT_DATA
+AGS_FX_TWO_PASS_ALIASE_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX
+AgsFxTwoPassAliaseChannelInputData
+ags_fx_two_pass_aliase_channel_input_data_alloc
+ags_fx_two_pass_aliase_channel_input_data_free
+ags_fx_two_pass_aliase_channel_input_data_get_strct_mutex
+ags_fx_two_pass_aliase_channel_input_get_parent
+ags_fx_two_pass_aliase_channel_input_get_orig_buffer
+ags_fx_two_pass_aliase_channel_input_get_a_buffer
+ags_fx_two_pass_aliase_channel_input_get_b_buffer
+ags_fx_two_pass_aliase_channel_input_get_a_mix
+ags_fx_two_pass_aliase_channel_input_get_b_mix
+ags_fx_two_pass_aliase_channel_input_get_final_mix
+ags_fx_two_pass_aliase_channel_new
+<SUBSECTION Public>
+AGS_FX_TWO_PASS_ALIASE_CHANNEL
+AGS_FX_TWO_PASS_ALIASE_CHANNEL_CLASS
+AGS_FX_TWO_PASS_ALIASE_CHANNEL_GET_CLASS
+AGS_IS_FX_TWO_PASS_ALIASE_CHANNEL
+AGS_IS_FX_TWO_PASS_ALIASE_CHANNEL_CLASS
+AGS_TYPE_FX_TWO_PASS_ALIASE_CHANNEL
+AgsFxTwoPassAliaseChannel
+AgsFxTwoPassAliaseChannelClass
+ags_fx_two_pass_aliase_channel_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_two_pass_aliase_channel_processor</FILE>
+<TITLE>AgsFxTwoPassAliaseChannelProcessor</TITLE>
+ags_fx_two_pass_aliase_channel_processor_new
+<SUBSECTION Public>
+AGS_FX_TWO_PASS_ALIASE_CHANNEL_PROCESSOR
+AGS_FX_TWO_PASS_ALIASE_CHANNEL_PROCESSOR_CLASS
+AGS_FX_TWO_PASS_ALIASE_CHANNEL_PROCESSOR_GET_CLASS
+AGS_IS_FX_TWO_PASS_ALIASE_CHANNEL_PROCESSOR
+AGS_IS_FX_TWO_PASS_ALIASE_CHANNEL_PROCESSOR_CLASS
+AGS_TYPE_FX_TWO_PASS_ALIASE_CHANNEL_PROCESSOR
+AgsFxTwoPassAliaseChannelProcessor
+AgsFxTwoPassAliaseChannelProcessorClass
+ags_fx_two_pass_aliase_channel_processor_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_fx_two_pass_aliase_recycling</FILE>
+<TITLE>AgsFxTwoPassAliaseRecycling</TITLE>
+ags_fx_two_pass_aliase_recycling_new
+<SUBSECTION Public>
+AGS_FX_TWO_PASS_ALIASE_RECYCLING
+AGS_FX_TWO_PASS_ALIASE_RECYCLING_CLASS
+AGS_FX_TWO_PASS_ALIASE_RECYCLING_GET_CLASS
+AGS_IS_FX_TWO_PASS_ALIASE_RECYCLING
+AGS_IS_FX_TWO_PASS_ALIASE_RECYCLING_CLASS
+AGS_TYPE_FX_TWO_PASS_ALIASE_RECYCLING
+AgsFxTwoPassAliaseRecycling
+AgsFxTwoPassAliaseRecyclingClass
+ags_fx_two_pass_aliase_recycling_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_fx_volume_audio</FILE>
 <TITLE>AgsFxVolumeAudio</TITLE>
 ags_fx_volume_audio_new
@@ -4132,6 +4351,18 @@ AGS_TYPE_GSTREAMER_SERVER
 AgsGstreamerServer
 AgsGstreamerServerClass
 ags_gstreamer_server_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_hq_pitch_util</FILE>
+ags_hq_pitch_util_compute_s8
+ags_hq_pitch_util_compute_s16
+ags_hq_pitch_util_compute_s24
+ags_hq_pitch_util_compute_s32
+ags_hq_pitch_util_compute_s64
+ags_hq_pitch_util_compute_float
+ags_hq_pitch_util_compute_double
+ags_hq_pitch_util_compute_complex
 </SECTION>
 
 <SECTION>
@@ -4638,6 +4869,18 @@ ags_lfo_synth_util_sawtooth
 ags_lfo_synth_util_triangle
 ags_lfo_synth_util_square
 ags_lfo_synth_util_impulse
+</SECTION>
+
+<SECTION>
+<FILE>ags_linear_interpolate_util</FILE>
+ags_linear_interpolate_util_fill_s8
+ags_linear_interpolate_util_fill_s16
+ags_linear_interpolate_util_fill_s24
+ags_linear_interpolate_util_fill_s32
+ags_linear_interpolate_util_fill_s64
+ags_linear_interpolate_util_fill_float
+ags_linear_interpolate_util_fill_double
+ags_linear_interpolate_util_fill_complex
 </SECTION>
 
 <SECTION>
@@ -5237,6 +5480,7 @@ ags_midi_builder_from_xml_doc
 ags_midi_builder_build
 ags_midi_builder_open_filename
 ags_midi_builder_get_data
+ags_midi_builder_get_data_with_length
 ags_midi_builder_write
 ags_midi_builder_new
 ags_midi_builder_new_from_filename
@@ -5355,6 +5599,7 @@ ags_midi_parser_meta_misc
 ags_midi_parser_text_event
 ags_midi_parser_open_filename
 ags_midi_parser_set_buffer
+ags_midi_parser_set_file_length
 ags_midi_parser_new
 ags_midi_parser_new_from_filename
 <SUBSECTION Public>
@@ -5546,6 +5791,7 @@ AGS_NOTATION_DEFAULT_JIFFIE
 AGS_NOTATION_DEFAULT_DURATION
 AGS_NOTATION_DEFAULT_OFFSET
 AGS_NOTATION_DEFAULT_END
+AGS_NOTATION_DEFAULT_DIVISION
 AGS_NOTATION_CLIPBOARD_VERSION
 AGS_NOTATION_CLIPBOARD_TYPE
 AGS_NOTATION_CLIPBOARD_FORMAT
@@ -5833,6 +6079,8 @@ ags_osc_builder_append_bundle
 ags_osc_builder_append_message
 ags_osc_builder_append_value
 ags_osc_builder_build
+ags_osc_builder_get_data
+ags_osc_builder_get_data_with_length
 ags_osc_builder_new
 <SUBSECTION Public>
 AGS_IS_OSC_BUILDER
@@ -6459,6 +6707,18 @@ ags_peak_recycling_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_phase_shift_util</FILE>
+ags_phase_shift_util_compute_s8
+ags_phase_shift_util_compute_s16
+ags_phase_shift_util_compute_s24
+ags_phase_shift_util_compute_s32
+ags_phase_shift_util_compute_s64
+ags_phase_shift_util_compute_float
+ags_phase_shift_util_compute_double
+ags_phase_shift_util_compute_complex
+</SECTION>
+
+<SECTION>
 <FILE>ags_play_audio</FILE>
 <TITLE>AgsPlayAudio</TITLE>
 ags_play_audio_new
@@ -6777,6 +7037,7 @@ ags_playback_domain_unset_flags
 ags_playback_domain_set_audio_thread
 ags_playback_domain_get_audio_thread
 ags_playback_domain_add_playback
+ags_playback_domain_insert_playback
 ags_playback_domain_remove_playback
 ags_playback_domain_new
 <SUBSECTION Public>
@@ -7078,6 +7339,7 @@ ags_pulse_devout_get_type
 <FILE>ags_pulse_port</FILE>
 <TITLE>AgsPulsePort</TITLE>
 AGS_PULSE_PORT_GET_OBJ_MUTEX
+AGS_PULSE_PORT_DEFAULT_CACHE_COUNT
 AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE
 AgsPulsePortFlags
 ags_pulse_port_test_flags
@@ -7188,6 +7450,8 @@ ags_recall_get_recall_dependency
 ags_recall_set_recall_dependency
 ags_recall_add_recall_dependency
 ags_recall_remove_recall_dependency
+ags_recall_get_port
+ags_recall_set_port
 ags_recall_add_port
 ags_recall_remove_port
 ags_recall_get_children
@@ -7248,9 +7512,13 @@ AGS_RECALL
 AGS_RECALL_CLASS
 AGS_RECALL_GET_CLASS
 AGS_TYPE_RECALL
+AGS_TYPE_RECALL_FLAGS
+AGS_TYPE_RECALL_NOTIFY_DEPENDENCY_MODE
 AgsRecall
 AgsRecallClass
+ags_recall_flags_get_type
 ags_recall_get_type
+ags_recall_notify_dependency_mode_get_type
 </SECTION>
 
 <SECTION>
@@ -8349,9 +8617,17 @@ ags_sfz_region_get_type
 <TITLE>AgsSFZSample</TITLE>
 AGS_SFZ_SAMPLE_GET_OBJ_MUTEX
 AgsSFZSampleFlags
+AgsSFZSampleLoopMode
 ags_sfz_sample_test_flags
 ags_sfz_sample_set_flags
 ags_sfz_sample_unset_flags
+ags_sfz_sample_get_key
+ags_sfz_sample_get_hikey
+ags_sfz_sample_get_lokey
+ags_sfz_sample_get_pitch_keycenter
+ags_sfz_sample_get_loop_mode
+ags_sfz_sample_get_loop_start
+ags_sfz_sample_get_loop_end
 ags_sfz_sample_new
 <SUBSECTION Public>
 AGS_IS_SFZ_SAMPLE

@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2020 Joël Krähemann
+# Copyright (C) 2005-2021 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -274,6 +274,8 @@ ags_complex_alloc
 ags_complex_copy
 ags_complex_free
 ags_complex_set
+ags_complex_get_term
+ags_complex_set_term
 <SUBSECTION Public>
 AGS_TYPE_COMPLEX
 AgsComplex
