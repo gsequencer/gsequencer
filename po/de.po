@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-03-30 19:08+0200\n"
+"POT-Creation-Date: 2021-03-31 03:36+0200\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -1447,9 +1447,9 @@ msgstr "Druck"
 msgid "synth generator"
 msgstr "Synth Generator"
 
-#: ags/X/machine/ags_ffplayer.c:463 ags/X/machine/ags_fm_syncsynth.c:291
+#: ags/X/machine/ags_ffplayer.c:463 ags/X/machine/ags_fm_syncsynth.c:296
 #: ags/X/machine/ags_fm_synth.c:210 ags/X/machine/ags_pitch_sampler.c:351
-#: ags/X/machine/ags_sf2_synth.c:375 ags/X/machine/ags_syncsynth.c:296
+#: ags/X/machine/ags_sf2_synth.c:375 ags/X/machine/ags_syncsynth.c:301
 #: ags/X/machine/ags_synth.c:213
 msgid "lower"
 msgstr "nieder Grenze"
@@ -1458,9 +1458,9 @@ msgstr "nieder Grenze"
 msgid "key count"
 msgstr "Ton Anzahl"
 
-#: ags/X/machine/ags_ffplayer.c:506 ags/X/machine/ags_fm_syncsynth.c:276
+#: ags/X/machine/ags_ffplayer.c:506 ags/X/machine/ags_fm_syncsynth.c:281
 #: ags/X/machine/ags_fm_synth.c:198 ags/X/machine/ags_pitch_sampler.c:393
-#: ags/X/machine/ags_syncsynth.c:281 ags/X/machine/ags_synth.c:198
+#: ags/X/machine/ags_syncsynth.c:286 ags/X/machine/ags_synth.c:198
 msgid "update"
 msgstr "aktualisieren"
 
@@ -1468,72 +1468,74 @@ msgstr "aktualisieren"
 msgid "aliase"
 msgstr ""
 
-#: ags/X/machine/ags_ffplayer.c:624 ags/X/machine/ags_fm_oscillator.c:252
+#: ags/X/machine/ags_ffplayer.c:624 ags/X/machine/ags_fm_oscillator.c:257
+#: ags/X/machine/ags_fm_syncsynth.c:384 ags/X/machine/ags_matrix.c:340
 #: ags/X/machine/ags_oscillator.c:261 ags/X/machine/ags_pitch_sampler.c:508
+#: ags/X/machine/ags_syncsynth.c:389
 msgid "volume"
 msgstr "Lautstärke"
 
-#: ags/X/machine/ags_fm_oscillator.c:189 ags/X/machine/ags_fm_oscillator.c:334
+#: ags/X/machine/ags_fm_oscillator.c:189 ags/X/machine/ags_fm_oscillator.c:342
 #: ags/X/machine/ags_oscillator.c:185
 msgid "sawtooth"
 msgstr "sawtooth"
 
-#: ags/X/machine/ags_fm_oscillator.c:194 ags/X/machine/ags_fm_oscillator.c:339
+#: ags/X/machine/ags_fm_oscillator.c:194 ags/X/machine/ags_fm_oscillator.c:347
 #: ags/X/machine/ags_oscillator.c:190
 msgid "square"
 msgstr "square"
 
-#: ags/X/machine/ags_fm_oscillator.c:199 ags/X/machine/ags_fm_oscillator.c:344
+#: ags/X/machine/ags_fm_oscillator.c:199 ags/X/machine/ags_fm_oscillator.c:352
 #: ags/X/machine/ags_oscillator.c:195
 msgid "triangle"
 msgstr "triangle"
 
-#: ags/X/machine/ags_fm_oscillator.c:204 ags/X/machine/ags_fm_oscillator.c:349
+#: ags/X/machine/ags_fm_oscillator.c:204 ags/X/machine/ags_fm_oscillator.c:357
 #: ags/X/machine/ags_oscillator.c:200
 msgid "impulse"
 msgstr "impulse"
 
-#: ags/X/machine/ags_fm_oscillator.c:231 ags/X/machine/ags_oscillator.c:233
+#: ags/X/machine/ags_fm_oscillator.c:233 ags/X/machine/ags_oscillator.c:233
 msgid "phase"
 msgstr "phase"
 
-#: ags/X/machine/ags_fm_oscillator.c:239 ags/X/machine/ags_oscillator.c:246
+#: ags/X/machine/ags_fm_oscillator.c:244 ags/X/machine/ags_oscillator.c:246
 #: ags/X/machine/ags_pitch_sampler_file.c:171
 msgid "frequency"
 msgstr "Frequenz"
 
-#: ags/X/machine/ags_fm_oscillator.c:262 ags/X/machine/ags_oscillator.c:275
+#: ags/X/machine/ags_fm_oscillator.c:270 ags/X/machine/ags_oscillator.c:275
 msgid "sync"
 msgstr "synchronisieren"
 
-#: ags/X/machine/ags_fm_oscillator.c:301
+#: ags/X/machine/ags_fm_oscillator.c:309
 msgid "LFO wave"
 msgstr "LFO Welle"
 
-#: ags/X/machine/ags_fm_oscillator.c:357
+#: ags/X/machine/ags_fm_oscillator.c:365
 msgid "LFO frequency"
 msgstr "LFO Frequenz"
 
-#: ags/X/machine/ags_fm_oscillator.c:370 ags/X/machine/ags_pitch_sampler.c:619
+#: ags/X/machine/ags_fm_oscillator.c:378 ags/X/machine/ags_pitch_sampler.c:619
 msgid "LFO depth"
 msgstr "LFO Tiefe"
 
-#: ags/X/machine/ags_fm_oscillator.c:383 ags/X/machine/ags_pitch_sampler.c:648
+#: ags/X/machine/ags_fm_oscillator.c:391 ags/X/machine/ags_pitch_sampler.c:648
 msgid "LFO tuning"
 msgstr "LFO Tuning"
 
-#: ags/X/machine/ags_fm_syncsynth.c:270 ags/X/machine/ags_fm_synth.c:192
-#: ags/X/machine/ags_syncsynth.c:275 ags/X/machine/ags_synth.c:192
+#: ags/X/machine/ags_fm_syncsynth.c:275 ags/X/machine/ags_fm_synth.c:192
+#: ags/X/machine/ags_syncsynth.c:280 ags/X/machine/ags_synth.c:192
 msgid "auto update"
 msgstr "automatische Aktualisierung"
 
-#: ags/X/machine/ags_fm_syncsynth.c:324
-#: ags/X/machine/ags_pitch_sampler_file.c:233 ags/X/machine/ags_syncsynth.c:329
+#: ags/X/machine/ags_fm_syncsynth.c:329
+#: ags/X/machine/ags_pitch_sampler_file.c:233 ags/X/machine/ags_syncsynth.c:334
 msgid "loop start"
 msgstr "schleifen Anfang"
 
-#: ags/X/machine/ags_fm_syncsynth.c:352
-#: ags/X/machine/ags_pitch_sampler_file.c:264 ags/X/machine/ags_syncsynth.c:357
+#: ags/X/machine/ags_fm_syncsynth.c:357
+#: ags/X/machine/ags_pitch_sampler_file.c:264 ags/X/machine/ags_syncsynth.c:362
 msgid "loop end"
 msgstr "schleifen Ende"
 
