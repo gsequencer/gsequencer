@@ -960,11 +960,16 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
   }
   
   for(i = 0; i < stop_pad - start_pad && channel != NULL; i++){
+    channel = ags_channel_pad_nth(start_input,
+				  start_pad + i);
+
     next_channel = ags_channel_nth(channel,
 				   start_audio_channel);
 
-    g_object_unref(channel);
-
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+    
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel && channel != NULL; j++){
@@ -1032,19 +1037,9 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
       channel = next_channel;
     }
 
-    /* iterate */
-    next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel + 1);
-
     if(channel != NULL){
       g_object_unref(channel);
     }
-      
-    channel = next_channel;
-  }
-
-  if(channel != NULL){
-    g_object_unref(channel);
   }
   
   if((AGS_FX_FACTORY_REMAP & (create_flags)) != 0){
@@ -1145,11 +1140,16 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
   }
   
   for(i = 0; i < stop_pad - start_pad && channel != NULL; i++){
+    channel = ags_channel_pad_nth(start_input,
+				  start_pad + i);
+
     next_channel = ags_channel_nth(channel,
 				   start_audio_channel);
 
-    g_object_unref(channel);
-
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+    
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel && channel != NULL; j++){
@@ -1225,19 +1225,9 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
       channel = next_channel;
     }
 
-    /* iterate */
-    next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel + 1);
-
     if(channel != NULL){
       g_object_unref(channel);
     }
-      
-    channel = next_channel;
-  }
-
-  if(channel != NULL){
-    g_object_unref(channel);
   }
 
   if((AGS_FX_FACTORY_REMAP & (create_flags)) != 0){
@@ -4979,11 +4969,16 @@ ags_fx_factory_create_notation(AgsAudio *audio,
   }
   
   for(i = 0; i < stop_pad - start_pad && channel != NULL; i++){
+    channel = ags_channel_pad_nth(start_input,
+				  start_pad + i);
+
     next_channel = ags_channel_nth(channel,
 				   start_audio_channel);
 
-    g_object_unref(channel);
-
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+    
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel && channel != NULL; j++){      
@@ -5055,19 +5050,9 @@ ags_fx_factory_create_notation(AgsAudio *audio,
       channel = next_channel;
     }
 
-    /* iterate */
-    next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel + 1);
-
     if(channel != NULL){
       g_object_unref(channel);
     }
-      
-    channel = next_channel;
-  }
-
-  if(channel != NULL){
-    g_object_unref(channel);
   }
 
   if((AGS_FX_FACTORY_REMAP & (create_flags)) != 0){
@@ -5164,11 +5149,16 @@ ags_fx_factory_create_notation(AgsAudio *audio,
   }
   
   for(i = 0; i < stop_pad - start_pad && channel != NULL; i++){
+    channel = ags_channel_pad_nth(start_input,
+				  start_pad + i);
+
     next_channel = ags_channel_nth(channel,
 				   start_audio_channel);
 
-    g_object_unref(channel);
-
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+    
     channel = next_channel;
       
     for(j = 0; j < stop_audio_channel - start_audio_channel && channel != NULL; j++){      
@@ -5240,19 +5230,9 @@ ags_fx_factory_create_notation(AgsAudio *audio,
       channel = next_channel;
     }
 
-    /* iterate */
-    next_channel = ags_channel_nth(channel,
-				   audio_channels - stop_audio_channel + 1);
-
     if(channel != NULL){
       g_object_unref(channel);
     }
-      
-    channel = next_channel;
-  }
-
-  if(channel != NULL){
-    g_object_unref(channel);
   }
 
   if((AGS_FX_FACTORY_REMAP & (create_flags)) != 0){
