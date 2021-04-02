@@ -803,7 +803,7 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->input_soundcard = NULL;
   audio_signal->input_soundcard_channel = 0;
 
-#if 0
+#if 1
   /* config */
   config = ags_config_get_instance();
 
@@ -3550,7 +3550,7 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 	       "buffer-size", buffer_size,
 	       NULL);
   ags_audio_signal_stream_resize(audio_signal,
-				 length);
+				 g_list_length(template->stream));
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 						  ags_audio_buffer_util_format_from_soundcard(template_format));
