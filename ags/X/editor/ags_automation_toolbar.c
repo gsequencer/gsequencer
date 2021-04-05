@@ -125,8 +125,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 
   automation_toolbar->position = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
 								      "label", i18n("Position"),
-								      "image", gtk_image_new_from_icon_name("go-jump",
-													    GTK_ICON_SIZE_LARGE_TOOLBAR),
+								      "icon-name", "go-jump",
 								      NULL);
   gtk_container_add((GtkContainer *) tool_item,
 		    (GtkWidget *) automation_toolbar->position);
@@ -138,8 +137,8 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 		     -1);
 
   automation_toolbar->edit = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
-								  "image", gtk_image_new_from_icon_name("format-text-direction-ltr",
-													GTK_ICON_SIZE_LARGE_TOOLBAR),
+								  "label", i18n("Edit"),
+								  "icon-name", "format-text-direction-ltr",
 								  "active", TRUE,
 								  NULL);
   automation_toolbar->selected_edit_mode = automation_toolbar->edit;
@@ -153,8 +152,8 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 		     -1);
 
   automation_toolbar->clear = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
-								   "image", gtk_image_new_from_icon_name("edit-clear",
-													 GTK_ICON_SIZE_LARGE_TOOLBAR),
+								   "label", i18n("Clear"),
+								   "icon-name", "edit-clear",
 								   NULL);
   gtk_container_add((GtkContainer *) tool_item,
 		    (GtkWidget *) automation_toolbar->clear);
@@ -167,8 +166,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 
   automation_toolbar->select = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
 								    "label", i18n("Select"),
-								    "image", gtk_image_new_from_icon_name("edit-select-all",
-													  GTK_ICON_SIZE_LARGE_TOOLBAR),
+								    "icon-name", "edit-select-all",
 								    NULL);
   gtk_container_add((GtkContainer *) tool_item,
 		    (GtkWidget *) automation_toolbar->select);
@@ -180,8 +178,8 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 		     -1);
 
   automation_toolbar->copy = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
-							    "image", gtk_image_new_from_icon_name("edit-copy",
-												  GTK_ICON_SIZE_LARGE_TOOLBAR),
+							    "label", i18n("Copy"),
+							    "icon-name", "edit-copy",
 							    NULL);
   gtk_container_add((GtkContainer *) tool_item,
 		    (GtkWidget *) automation_toolbar->copy);
@@ -193,8 +191,8 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 		     -1);
 
   automation_toolbar->cut = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
-							   "image", gtk_image_new_from_icon_name("edit-cut",
-												 GTK_ICON_SIZE_LARGE_TOOLBAR),
+							   "label", i18n("Cut"),
+							   "icon-name", "edit-cut",
 							   NULL);
   gtk_container_add((GtkContainer *) tool_item,
 		    (GtkWidget *) automation_toolbar->cut);
@@ -206,8 +204,8 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 		     -1);
 
   automation_toolbar->paste_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-								      "image", gtk_image_new_from_icon_name("edit-paste",
-													    GTK_ICON_SIZE_LARGE_TOOLBAR),
+								      "label", i18n("Paste"),
+								      "icon-name", "edit-paste",
 								      NULL);
 
   menu = (GtkMenu *) gtk_menu_new();
@@ -241,8 +239,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 
   automation_toolbar->menu_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
 								     "label", i18n("Tool"),
-								     "image", gtk_image_new_from_icon_name("system-run",
-													   GTK_ICON_SIZE_LARGE_TOOLBAR),
+								     "icon-name", "system-run",
 								     NULL);
   gtk_container_add((GtkContainer *) tool_item,
 		    (GtkWidget *) automation_toolbar->menu_tool);
@@ -371,7 +368,7 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
   GList *list;
   
   automation_toolbar = AGS_AUTOMATION_TOOLBAR(connectable);
-
+  
   if((AGS_AUTOMATION_TOOLBAR_CONNECTED & (automation_toolbar->flags)) != 0){
     return;
   }
