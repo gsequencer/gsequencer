@@ -44,12 +44,19 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   
   GRecMutex *lv2_manager_mutex;
 
-  list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
+  list =
+    start_list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
 
   filename_combo = GTK_COMBO_BOX_TEXT(list->next->data);
   effect_combo = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
 
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model((GtkComboBox *) effect_combo)));
+
+  g_list_free(start_list);
+
+  if(gtk_combo_box_get_active(filename_combo) == -1){
+    return;
+  }
 
   lv2_manager = ags_lv2_manager_get_instance();
 
@@ -151,7 +158,7 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   }
   
   gtk_combo_box_set_active((GtkComboBox *) effect_combo,
-  			   0);
+  			   -1);
 
   g_list_free_full(start_list,
 		   g_object_unref);
@@ -185,6 +192,66 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
   effect_combo = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
 
   g_list_free(start_list);
+
+  if(gtk_combo_box_get_active(effect_combo) == -1){
+    list =
+      start_list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->description));
+    
+    /* update ui - empty */
+    label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s:",
+			  i18n("Name"));
+    gtk_label_set_text(label,
+		       str);
+
+    g_free(str);
+    
+    list = list->next;
+    label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s:",
+			  i18n("Homepage"));
+    gtk_label_set_text(label,
+		       str);
+
+    g_free(str);
+
+    list = list->next;
+    label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s:",
+			  i18n("M-Box"));
+    gtk_label_set_text(label,
+		       str);
+
+    g_free(str);
+
+    list = list->next;
+    label = GTK_LABEL(list->data);
+
+    str = g_strdup_printf("%s: ",
+			  i18n("Ports"));
+    gtk_label_set_text(label,
+		       str);
+
+    g_free(str);
+    
+    grid = lv2_browser->port_grid;
+
+    /* update ui - port information */
+    child =
+      start_child = gtk_container_get_children(GTK_CONTAINER(grid));
+    
+    while(child != NULL){
+      gtk_widget_destroy(GTK_WIDGET(child->data));
+      
+      child = child->next;
+    }
+    
+    g_list_free(start_child);
+
+    g_list_free(start_list);
+    
+    return;
+  }
 
   /* update description */
   list =

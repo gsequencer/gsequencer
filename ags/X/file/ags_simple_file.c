@@ -4812,12 +4812,28 @@ ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsL
     
   str = xmlGetProp(node,
 		   "control-type");
-
+  
   if(str != NULL){
-    g_object_set(line_member,
-		 "widget-type", g_type_from_name(str),
-		 NULL);
-
+    if(!g_ascii_strncasecmp(str,
+			    "GtkVScale",
+			    11)){
+      g_object_set(line_member,
+		   "widget-type", GTK_TYPE_SCALE,
+		   "widget-orientation", GTK_ORIENTATION_VERTICAL,
+		   NULL);
+    }else if(!g_ascii_strncasecmp(str,
+				  "GtkHScale",
+				  11)){
+      g_object_set(line_member,
+		   "widget-type", GTK_TYPE_SCALE,
+		   "widget-orientation", GTK_ORIENTATION_HORIZONTAL,
+		   NULL);
+    }else{
+      g_object_set(line_member,
+		   "widget-type", g_type_from_name(str),
+		   NULL);
+    }
+    
     xmlFree(str);
   }
 
@@ -5036,11 +5052,13 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	list = list->next;
       }
 
-      is_output = AGS_IS_OUTPUT(AGS_LINE(gobject)->channel) ? TRUE: FALSE;
+      g_list_free(list_start);
 
-      if(list_start != NULL){
-	g_list_free(list_start);
+      if(gobject == NULL){
+	return;
       }
+      
+      is_output = AGS_IS_OUTPUT(AGS_LINE(gobject)->channel) ? TRUE: FALSE;
     }else{
       //      "./ancestor::*[self::ags-sf-machine][1]"
       

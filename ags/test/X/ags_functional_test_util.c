@@ -4235,12 +4235,16 @@ ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine
 			  "ladspa",
 			  7)){
     gtk_combo_box_set_active((GtkComboBox *) plugin_browser->plugin_type,
-			     0);
+			     1);
+
+    success = TRUE;
   }else if(!g_ascii_strncasecmp(plugin_type,
 				"lv2",
 				4)){
     gtk_combo_box_set_active((GtkComboBox *) plugin_browser->plugin_type,
-			     1);
+			     0);
+
+    success = TRUE;
   }
   
   ags_test_leave();
@@ -4364,9 +4368,15 @@ ags_functional_test_util_machine_properties_ladspa_filename(guint nth_machine,
   success = FALSE;
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
+    gint entry_text_column;
+    
+    entry_text_column = gtk_combo_box_get_entry_text_column(ladspa_browser->filename);
+    
     do{
+      value = NULL;
+      
       gtk_tree_model_get(model, &iter,
-			 0, &value,
+			 entry_text_column, &value,
 			 -1);
       
       if(!g_strcmp0(filename,
@@ -4502,9 +4512,13 @@ ags_functional_test_util_machine_properties_ladspa_effect(guint nth_machine,
   success = FALSE;
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
+    gint entry_text_column;
+
+    entry_text_column = gtk_combo_box_get_entry_text_column(ladspa_browser->effect);
+    
     do{
       gtk_tree_model_get(model, &iter,
-			 0, &value,
+			 entry_text_column, &value,
 			 -1);
       
       if(!g_strcmp0(effect,
@@ -4640,9 +4654,13 @@ ags_functional_test_util_machine_properties_lv2_filename(guint nth_machine,
   success = FALSE;
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
+    gint entry_text_column;
+
+    entry_text_column = gtk_combo_box_get_entry_text_column(lv2_browser->filename);
+
     do{
       gtk_tree_model_get(model, &iter,
-			 0, &value,
+			 entry_text_column, &value,
 			 -1);
       
       if(!g_strcmp0(filename,
@@ -4778,9 +4796,13 @@ ags_functional_test_util_machine_properties_lv2_effect(guint nth_machine,
   success = FALSE;
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
+    gint entry_text_column;
+
+    entry_text_column = gtk_combo_box_get_entry_text_column(lv2_browser->effect);
+
     do{
       gtk_tree_model_get(model, &iter,
-			 0, &value,
+			 entry_text_column, &value,
 			 -1);
       
       if(!g_strcmp0(effect,
