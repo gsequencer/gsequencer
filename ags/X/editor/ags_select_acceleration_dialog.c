@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -213,7 +213,7 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 		     0);  
   
   /* add */
-  select_acceleration_dialog->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  select_acceleration_dialog->add = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Add"));
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(select_acceleration_dialog->add),
 		     FALSE, FALSE,
@@ -275,9 +275,9 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) select_acceleration_dialog,
-			 GTK_STOCK_APPLY, GTK_RESPONSE_APPLY,
-			 GTK_STOCK_OK, GTK_RESPONSE_OK,
-			 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+			 i18n("_Apply"), GTK_RESPONSE_APPLY,
+			 i18n("_OK"), GTK_RESPONSE_OK,
+			 i18n("_Cancel"), GTK_RESPONSE_CANCEL,
 			 NULL);
 }
 

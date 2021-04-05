@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -332,9 +332,9 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) ramp_acceleration_dialog,
-			 GTK_STOCK_APPLY, GTK_RESPONSE_APPLY,
-			 GTK_STOCK_OK, GTK_RESPONSE_OK,
-			 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+			 i18n("_Apply"), GTK_RESPONSE_APPLY,
+			 i18n("_OK"), GTK_RESPONSE_OK,
+			 i18n("_Cancel"), GTK_RESPONSE_CANCEL,
 			 NULL);
 }
 

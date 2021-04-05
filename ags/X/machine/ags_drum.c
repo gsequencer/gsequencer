@@ -303,7 +303,7 @@ ags_drum_init(AgsDrum *drum)
 		     0);
  
   gtk_box_pack_start(vbox,
-		     (GtkWidget *) (drum->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN)),
+		     (GtkWidget *) (drum->open = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Open"))),
 		     FALSE, FALSE,
 		     0);
   drum->open_dialog = NULL;

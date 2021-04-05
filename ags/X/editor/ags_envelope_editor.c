@@ -181,13 +181,13 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		     FALSE, FALSE,
 		     0);
 
-  envelope_editor->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  envelope_editor->add = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Add"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) envelope_editor->add,
 		     FALSE, FALSE,
 		     0);
 
-  envelope_editor->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  envelope_editor->remove = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) envelope_editor->remove,
 		     FALSE, FALSE,

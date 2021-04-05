@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -107,14 +107,17 @@ ags_sheet_toolbar_init(AgsSheetToolbar *sheet_toolbar)
   /* position */
   sheet_toolbar->position = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
 								 "label", i18n("Position"),
-								 "stock-id", GTK_STOCK_JUMP_TO,
+								 "image", gtk_image_new_from_icon_name("go-jump",
+												       GTK_ICON_SIZE_LARGE_TOOLBAR),
 								 NULL);
   gtk_container_add((GtkToolbar *) sheet_toolbar,
 		    (GtkWidget *) sheet_toolbar->position);
 
   /* edit */
   sheet_toolbar->edit_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-								"stock-id", GTK_STOCK_EDIT,
+								"image", gtk_image_new_from_icon_name("format-text-direction-ltr",
+												      GTK_ICON_SIZE_LARGE_TOOLBAR),
+								"active", TRUE,
 								NULL);
   
   menu = (GtkMenu *) gtk_menu_new();
@@ -170,7 +173,8 @@ ags_sheet_toolbar_init(AgsSheetToolbar *sheet_toolbar)
   
   /* clear */
   sheet_toolbar->clear = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
-							      "stock-id", GTK_STOCK_CLEAR,
+							      "image", gtk_image_new_from_icon_name("edit-clear",
+												    GTK_ICON_SIZE_LARGE_TOOLBAR),
 							      NULL);
   gtk_container_add((GtkToolbar *) sheet_toolbar,
 		    (GtkWidget *) sheet_toolbar->clear);
@@ -178,28 +182,32 @@ ags_sheet_toolbar_init(AgsSheetToolbar *sheet_toolbar)
   /* select */
   sheet_toolbar->select = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
 							       "label", i18n("Select"),
-							       "stock-id", GTK_STOCK_SELECT_ALL,
+							       "image", gtk_image_new_from_icon_name("edit-select-all",
+												     GTK_ICON_SIZE_LARGE_TOOLBAR),
 							       NULL);
   gtk_container_add((GtkToolbar *) sheet_toolbar,
 		    (GtkWidget *) sheet_toolbar->select);
 
   /* copy */
   sheet_toolbar->copy = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
-						       "stock-id", GTK_STOCK_COPY,
+						       "image", gtk_image_new_from_icon_name("edit-copy",
+											     GTK_ICON_SIZE_LARGE_TOOLBAR),
 						       NULL);
   gtk_container_add((GtkToolbar *) sheet_toolbar,
 		    (GtkWidget *) sheet_toolbar->copy);
 
   /* cut */
   sheet_toolbar->cut = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
-						      "stock-id", GTK_STOCK_CUT,
+						      "image", gtk_image_new_from_icon_name("edit-cut",
+											    GTK_ICON_SIZE_LARGE_TOOLBAR),
 						      NULL);
   gtk_container_add((GtkToolbar *) sheet_toolbar,
 		    (GtkWidget *) sheet_toolbar->cut);
 
   /* paste */
   sheet_toolbar->paste_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-								 "stock-id", GTK_STOCK_PASTE,
+								 "image", gtk_image_new_from_icon_name("edit-paste",
+												       GTK_ICON_SIZE_LARGE_TOOLBAR),
 								 NULL);
   
   menu = (GtkMenu *) gtk_menu_new();

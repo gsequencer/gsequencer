@@ -3,6 +3,7 @@ ags (3.8.6)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved AgsPluginBrowser proper reset
 	* fixed functional integration tests
+	* fixed deprecated Gtk+-3.0 symbols all GTK_STOCK_*
 
 ags (3.8.5)
 

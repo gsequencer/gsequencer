@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -157,7 +157,8 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
   machine_selector->popup = NULL;
 
   machine_selector->menu_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-					       "stock-id", GTK_STOCK_EXECUTE,
+					       "image", gtk_image_new_from_icon_name("system-run",
+										     GTK_ICON_SIZE_LARGE_TOOLBAR),
 					       NULL);
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(machine_selector->menu_button),

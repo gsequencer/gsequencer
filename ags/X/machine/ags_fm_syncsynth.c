@@ -258,7 +258,8 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 		     FALSE, FALSE,
 		     0);
 
-  fm_syncsynth->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  fm_syncsynth->remove = (GtkButton *) gtk_button_new_from_icon_name("list-remove",
+								     GTK_ICON_SIZE_BUTTON);
   gtk_box_pack_start(vbox,
 		     (GtkWidget *) fm_syncsynth->remove,
 		     FALSE, FALSE,

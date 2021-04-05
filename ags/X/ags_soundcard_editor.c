@@ -611,7 +611,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 /*  */
   //  soundcard_editor->remove = NULL;
 
-  soundcard_editor->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  soundcard_editor->remove = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
 
   gtk_widget_set_valign((GtkWidget *) soundcard_editor->remove,
 			GTK_ALIGN_FILL);
