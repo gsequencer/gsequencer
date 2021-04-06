@@ -2,6 +2,7 @@ ags (3.8.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved AgsPluginBrowser proper reset
+	* improved breaking circular dependencies of libags_audio.so
 	* fixed functional integration tests
 	* fixed deprecated Gtk+-3.0 symbols all GTK_STOCK_*
 
