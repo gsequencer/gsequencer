@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -366,16 +366,24 @@ ags_recall_channel_dispose(GObject *gobject)
   
   /* source */
   if(recall_channel->source != NULL){
-    g_object_unref(recall_channel->source);
+    gpointer tmp;
 
+    tmp = recall_channel->source;
+    
     recall_channel->source = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* destination */
   if(recall_channel->destination != NULL){
-    g_object_unref(G_OBJECT(recall_channel->destination));
+    gpointer tmp;
+
+    tmp = recall_channel->destination;
 
     recall_channel->destination = NULL;
+
+    g_object_unref(G_OBJECT(recall_channel->destination));
   }
 
   /* call parent */
@@ -391,11 +399,23 @@ ags_recall_channel_finalize(GObject *gobject)
 
   /* source */
   if(recall_channel->source != NULL){
-    g_object_unref(recall_channel->source);
+    gpointer tmp;
+
+    tmp = recall_channel->source;
+    
+    recall_channel->source = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* destination */
   if(recall_channel->destination != NULL){
+    gpointer tmp;
+
+    tmp = recall_channel->destination;
+
+    recall_channel->destination = NULL;
+
     g_object_unref(G_OBJECT(recall_channel->destination));
   }
 

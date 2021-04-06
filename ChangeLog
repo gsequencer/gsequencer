@@ -1,3 +1,28 @@
+ags (3.8.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsPluginBrowser proper reset
+	* improved breaking circular dependencies of libags_audio.so
+	* fixed functional integration tests
+	* fixed deprecated Gtk+-3.0 symbols all GTK_STOCK_*
+
+ags (3.8.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_lfo_synth_util.c offset of iteration
+
+ags (3.8.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed dead keys recently introduced by ags_hq_pitch_util.c
+	* improved iteration over AgsChannel in ags_fx_factory.c
+
+ags (3.8.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing store of aliase and volume
+	* edited NEWS
+
 ags (3.8.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

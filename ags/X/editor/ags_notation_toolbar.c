@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -121,7 +121,7 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
   
   notation_toolbar->position = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
 								    "label", i18n("Position"),
-								    "stock-id", GTK_STOCK_JUMP_TO,
+								    "icon-name", "go-jump",
 								    NULL);
   gtk_container_add((GtkContainer *) tool_item,
 		    (GtkWidget *) notation_toolbar->position);
@@ -133,7 +133,8 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
 		     -1);
 
   notation_toolbar->edit = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
-								"stock-id", GTK_STOCK_EDIT,
+								"label", i18n("Edit"),
+								"icon-name", "format-text-direction-ltr",
 								"active", TRUE,
 								NULL);
   notation_toolbar->selected_edit_mode = notation_toolbar->edit;
@@ -147,7 +148,8 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
 		     -1);
 
   notation_toolbar->clear = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
-								 "stock-id", GTK_STOCK_CLEAR,
+								 "label", i18n("Clear"),
+								 "icon-name", "edit-clear",
 								 NULL);
   gtk_container_add((GtkContainer *) tool_item,
 		    (GtkWidget *) notation_toolbar->clear);
@@ -160,7 +162,7 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
 
   notation_toolbar->select = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
 								  "label", i18n("Select"),
-								  "stock-id", GTK_STOCK_SELECT_ALL,
+								  "icon-name", "edit-select-all",
 								  NULL);
   gtk_container_add((GtkContainer *) tool_item,
 		    (GtkWidget *) notation_toolbar->select);
@@ -172,7 +174,8 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
 		     -1);
 
   notation_toolbar->copy = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
-							  "stock-id", GTK_STOCK_COPY,
+							  "label", i18n("Copy"),							  
+							  "icon-name", "edit-copy",
 							  NULL);
   gtk_container_add((GtkContainer *) tool_item,
 		    (GtkWidget *) notation_toolbar->copy);
@@ -184,7 +187,8 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
 		     -1);
 
   notation_toolbar->cut = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
-							 "stock-id", GTK_STOCK_CUT,
+							 "label", i18n("Cut"),
+							 "icon-name", "edit-cut",
 							 NULL);
   gtk_container_add((GtkContainer *) tool_item,
 		    (GtkWidget *) notation_toolbar->cut);
@@ -196,7 +200,8 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
 		     -1);
 
   notation_toolbar->paste_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-								    "stock-id", GTK_STOCK_PASTE,
+								    "label", i18n("Paste"),
+								    "icon-name", "edit-paste",
 								    NULL);
   
   menu = (GtkMenu *) gtk_menu_new();
@@ -229,8 +234,8 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
 		     -1);
 
   notation_toolbar->invert = (GtkButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
-							"icon-widget", (GtkWidget *) gtk_image_new_from_icon_name("object-flip-vertical",
-														  GTK_ICON_SIZE_LARGE_TOOLBAR),
+							"label", i18n("Invert"),
+							"icon-name", "object-flip-vertical",
 							"label", i18n("Invert"),
 							NULL);
   gtk_container_add((GtkContainer *) tool_item,
@@ -244,7 +249,7 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
 
   notation_toolbar->menu_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
 								   "label", i18n("Tool"),
-								   "stock-id", GTK_STOCK_EXECUTE,
+								   "icon-name", "system-run",
 								   NULL);
   gtk_container_add((GtkContainer *) tool_item,
 		    (GtkWidget *) notation_toolbar->menu_tool);

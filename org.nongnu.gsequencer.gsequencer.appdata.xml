@@ -40,6 +40,25 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.8.6" date="2021-04-05">
+      <description>
+	<p>improved AgsPluginBrowser proper reset.</p>
+      </description>
+    </release>
+
+    <release version="3.8.5" date="2021-04-02">
+      <description>
+	<p>fixed ags_lfo_synth_util.c offset and iteration.</p>
+      </description>
+    </release>
+
+    <release version="3.8.3" date="2021-03-31">
+      <description>
+	<p>fixed missing store of AgsFFPlayer and AgsPitchSampler aliase.</p>
+	<p>fixed missing store of AgsSyncsynth, AgsFMSyncsynth, AgsMatrix, AgsFFPlayer and AgsPitchSampler volume.</p>
+      </description>
+    </release>
+
     <release version="3.7.50" date="2021-03-16">
       <description>
 	<p>fixed missing loop information after map recall.</p>

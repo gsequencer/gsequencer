@@ -48,9 +48,9 @@ ags_envelope_editor_preset_add_callback(GtkWidget *button,
     dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("preset name"),
 						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(envelope_editor)),
 						       GTK_DIALOG_DESTROY_WITH_PARENT,
-						       GTK_STOCK_OK,
+						       i18n("_OK"),
 						       GTK_RESPONSE_ACCEPT,
-						       GTK_STOCK_CANCEL,
+						       i18n("_Cancel"),
 						       GTK_RESPONSE_REJECT,
 						       NULL);
 

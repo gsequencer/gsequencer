@@ -1354,7 +1354,9 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
 
   next_recycling = NULL;
   
-  while(recycling != end_recycling){    
+  while(recycling != end_recycling){
+    output_soundcard = NULL;
+    
     g_object_get(recycling,
 		 "output-soundcard", &output_soundcard,
 		 NULL);

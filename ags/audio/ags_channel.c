@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2013,6 +2013,7 @@ void
 ags_channel_dispose(GObject *gobject)
 {
   AgsChannel *channel;
+  AgsRecycling *first_recycling, *last_recycling;
   AgsRecycling *recycling, *recycling_next;
   AgsRecycling *end_region;
 
@@ -2020,6 +2021,9 @@ ags_channel_dispose(GObject *gobject)
   GList *list, *list_next;
   
   gboolean dispose_recycling;
+
+  GRecMutex *play_mutex;
+  GRecMutex *recall_mutex;
   
   channel = AGS_CHANNEL(gobject);
 
@@ -2035,10 +2039,10 @@ ags_channel_dispose(GObject *gobject)
 
     channel->audio = NULL;
     
-    if(((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0 &&
+    if((ags_audio_test_flags(audio, AGS_AUDIO_INPUT_HAS_RECYCLING) &&
 	AGS_IS_INPUT(channel) &&
 	channel->link == NULL) ||
-       ((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0 &&
+       (ags_audio_test_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING) &&
 	AGS_IS_OUTPUT(channel))){
       dispose_recycling = TRUE;
     }
@@ -2047,23 +2051,37 @@ ags_channel_dispose(GObject *gobject)
   }
 
   /* soundcard */
-  if(channel->output_soundcard != NULL){
-    g_object_unref(channel->output_soundcard);
+  if(channel->output_soundcard != NULL){    
+    gpointer tmp;
+
+    tmp = channel->output_soundcard;
 
     channel->output_soundcard = NULL;
+
+    g_object_unref(tmp);
   }
 
-  if(channel->input_soundcard != NULL){
-    g_object_unref(channel->input_soundcard);
+  if(channel->input_soundcard != NULL){    
+    gpointer tmp;
+
+    tmp = channel->input_soundcard;
 
     channel->input_soundcard = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* recycling */
-  recycling = channel->first_recycling;
+  recycling =
+    first_recycling = channel->first_recycling;
 
+  last_recycling = channel->last_recycling;
+
+  channel->first_recycling = NULL;
+  channel->last_recycling = NULL;
+  
   if(recycling != NULL){
-    end_region = channel->last_recycling->next;
+    end_region = last_recycling->next;
     
     while(recycling != end_region){
       recycling_next = recycling->next;
@@ -2075,9 +2093,6 @@ ags_channel_dispose(GObject *gobject)
       
       recycling = recycling_next;
     }
-
-    channel->first_recycling = NULL;
-    channel->last_recycling = NULL;
   }
   
   /* playback */
@@ -2094,25 +2109,29 @@ ags_channel_dispose(GObject *gobject)
 
   /* recall id */
   if(channel->recall_id != NULL){
-    list = channel->recall_id;
+    list =
+      start_list = channel->recall_id;
 
+    channel->recall_id = NULL;
+    
     while(list != NULL){
       list_next = list->next;
-
+      
       g_object_run_dispose(list->data);
-
+      
       list = list_next;
     }
 
-    g_list_free_full(channel->recall_id,
+    g_list_free_full(start_list,
 		     g_object_unref);
-  
-    channel->recall_id = NULL;
   }
   
   /* recall container */
   if(channel->recall_container != NULL){
-    list = channel->recall_container;
+    list =
+      start_list = channel->recall_container;
+
+    channel->recall_container = NULL;
 
     while(list != NULL){
       AgsRecall *recall_audio;
@@ -2141,64 +2160,68 @@ ags_channel_dispose(GObject *gobject)
       list = list_next;
     }
 
-    g_list_free_full(channel->recall_container,
+    g_list_free_full(start_list,
 		     g_object_unref);
-
-    channel->recall_container = NULL;
-  }
-  
-  /* recall */
-  if(channel->recall != NULL){
-    g_rec_mutex_lock(AGS_CHANNEL_GET_RECALL_MUTEX(channel));
-
-    list =
-      start_list = g_list_copy(channel->recall);
-
-    while(list != NULL){
-      list_next = list->next;
-
-      g_object_run_dispose((GObject *) list->data);
-
-      list = list_next;
-    }
-
-    g_list_free(start_list);
-    g_list_free_full(channel->recall,
-		     g_object_unref);
-  
-    channel->recall = NULL;
-
-    g_rec_mutex_unlock(AGS_CHANNEL_GET_RECALL_MUTEX(channel));
   }
   
   /* play */
   if(channel->play != NULL){
-    g_rec_mutex_lock(AGS_CHANNEL_GET_PLAY_MUTEX(channel));
+    play_mutex = AGS_CHANNEL_GET_PLAY_MUTEX(channel);
+
+    /* run dispose and unref */
+    g_rec_mutex_lock(play_mutex);
 
     list =
-      start_list = g_list_copy(channel->play);
-
-    while(list != NULL){
-      list_next = list->next;
-
-      g_object_run_dispose((GObject *) list->data);
-
-      list = list_next;
-    }
-
-    g_list_free(start_list);
-    g_list_free_full(channel->play,
-		     g_object_unref);
+      start_list = channel->play;
 
     channel->play = NULL;
 
-    g_rec_mutex_unlock(AGS_CHANNEL_GET_PLAY_MUTEX(channel));
+    g_rec_mutex_unlock(play_mutex);
+
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
+    
+      list = list_next;
+    }
+
+    g_list_free_full(start_list,
+		     g_object_unref);
+  }
+
+  /* recall */
+  if(channel->recall != NULL){
+    recall_mutex = AGS_CHANNEL_GET_RECALL_MUTEX(channel);
+
+    /* run dispose and unref */
+    g_rec_mutex_lock(recall_mutex);
+    
+    list =
+      start_list = channel->recall;
+
+    channel->recall = NULL;
+  
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
+    
+      list = list_next;
+    }
+
+    g_list_free_full(start_list,
+		     g_object_unref);
+
+    g_rec_mutex_unlock(recall_mutex);
   }
   
   /* pattern */
   if(channel->pattern != NULL){
-    start_list =
-      list = g_list_copy(channel->pattern);
+    list =
+      start_list = channel->pattern;
+
+    channel->pattern = NULL;
 
     while(list != NULL){
       list_next = list->next;
@@ -2208,11 +2231,8 @@ ags_channel_dispose(GObject *gobject)
       list = list_next;
     }
     
-    g_list_free(start_list);
-    g_list_free_full(channel->pattern,
+    g_list_free_full(start_list,
 		     g_object_unref);
-
-    channel->pattern = NULL;
   }
   
   /* call parent */
@@ -2223,33 +2243,82 @@ void
 ags_channel_finalize(GObject *gobject)
 {
   AgsChannel *channel;
+  AgsRecycling *first_recycling, *last_recycling;
   AgsRecycling *recycling, *recycling_next;
+  AgsRecycling *end_region;
+
+  GList *start_list;
+  GList *list, *list_next;
+
+  gboolean dispose_recycling;
+
+  GRecMutex *play_mutex;
+  GRecMutex *recall_mutex;
 
   channel = AGS_CHANNEL(gobject);
 
   /* audio */
+  dispose_recycling = FALSE;
+
   if(channel->audio != NULL){
-    g_object_unref(channel->audio);
+    AgsAudio *audio;
+
+    audio = channel->audio;
+    
+    channel->audio = NULL;
+
+    if((ags_audio_test_flags(audio, AGS_AUDIO_INPUT_HAS_RECYCLING) &&
+	AGS_IS_INPUT(channel) &&
+	channel->link == NULL) ||
+       (ags_audio_test_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING) &&
+	AGS_IS_OUTPUT(channel))){
+      dispose_recycling = TRUE;
+    }
+
+    g_object_unref(audio);
   }
 
   /* soundcard */
-  if(channel->output_soundcard != NULL){
-    g_object_unref(channel->output_soundcard);
+  if(channel->output_soundcard != NULL){    
+    gpointer tmp;
+
+    tmp = channel->output_soundcard;
+
+    channel->output_soundcard = NULL;
+
+    g_object_unref(tmp);
   }
 
-  if(channel->input_soundcard != NULL){
-    g_object_unref(channel->input_soundcard);
+  if(channel->input_soundcard != NULL){    
+    gpointer tmp;
+
+    tmp = channel->input_soundcard;
+
+    channel->input_soundcard = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* recycling */
-  recycling = channel->first_recycling;
+  recycling =
+    first_recycling = channel->first_recycling;
 
+  last_recycling = channel->last_recycling;
+
+  channel->first_recycling = NULL;
+  channel->last_recycling = NULL;
+  
   if(recycling != NULL){
-    while(recycling != channel->last_recycling->next){
+    end_region = last_recycling->next;
+    
+    while(recycling != end_region){
       recycling_next = recycling->next;
 
-      g_object_unref((GObject *) recycling);
-
+      if(dispose_recycling){
+	g_object_run_dispose((GObject *) recycling);
+	g_object_unref((GObject *) recycling);
+      }
+      
       recycling = recycling_next;
     }
   }
@@ -2265,21 +2334,144 @@ ags_channel_finalize(GObject *gobject)
   }
 
   /* recall id */
-  g_list_free_full(channel->recall_id,
-		   g_object_unref);
+  if(channel->playback != NULL){
+    AgsPlayback *playback;
+
+    playback = (AgsPlayback *) channel->playback;
+  
+    channel->playback = NULL;
+
+    //TODO:JK: stop threads
+    g_object_run_dispose(playback);
+  }
+
+  /* recall id */
+  if(channel->recall_id != NULL){
+    list =
+      start_list = channel->recall_id;
+
+    channel->recall_id = NULL;
+    
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
+      
+      list = list_next;
+    }
+
+    g_list_free_full(start_list,
+		     g_object_unref);
+  }
+  
+  /* recall container */
+  if(channel->recall_container != NULL){
+    list =
+      start_list = channel->recall_container;
+
+    channel->recall_container = NULL;
+
+    while(list != NULL){
+      AgsRecall *recall_audio;
+      
+      GList *recall_audio_run;
+      
+      list_next = list->next;
+
+      g_object_get(list->data,
+		   "recall-audio", &recall_audio,
+		   "recall-audio-run", &recall_audio_run,
+		   NULL);
+      
+      if(recall_audio == NULL &&
+	 recall_audio_run == NULL){
+	g_object_run_dispose((GObject *) list->data);
+      }
+
+      if(recall_audio != NULL){
+	g_object_unref(recall_audio);
+      }
+      
+      g_list_free_full(recall_audio_run,
+		       g_object_unref);
+      
+      list = list_next;
+    }
+
+    g_list_free_full(start_list,
+		     g_object_unref);
+  }
+  
+  /* play */
+  if(channel->play != NULL){
+    play_mutex = AGS_CHANNEL_GET_PLAY_MUTEX(channel);
+
+    /* run dispose and unref */
+    g_rec_mutex_lock(play_mutex);
+
+    list =
+      start_list = channel->play;
+
+    channel->play = NULL;
+
+    g_rec_mutex_unlock(play_mutex);
+
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
+    
+      list = list_next;
+    }
+
+    g_list_free_full(start_list,
+		     g_object_unref);
+  }
 
   /* recall */
-  g_list_free_full(channel->recall_container,
-		   g_object_unref);
+  if(channel->recall != NULL){
+    recall_mutex = AGS_CHANNEL_GET_RECALL_MUTEX(channel);
+
+    /* run dispose and unref */
+    g_rec_mutex_lock(recall_mutex);
+    
+    list =
+      start_list = channel->recall;
+
+    channel->recall = NULL;
   
-  g_list_free_full(channel->recall,
-		   g_object_unref);
-  g_list_free_full(channel->play,
-		   g_object_unref);
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
+    
+      list = list_next;
+    }
+
+    g_list_free_full(start_list,
+		     g_object_unref);
+
+    g_rec_mutex_unlock(recall_mutex);
+  }
   
   /* pattern */
-  g_list_free_full(channel->pattern,
-		   g_object_unref);
+  if(channel->pattern != NULL){
+    list =
+      start_list = channel->pattern;
+
+    channel->pattern = NULL;
+
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose((GObject *) list->data);
+
+      list = list_next;
+    }
+    
+    g_list_free_full(start_list,
+		     g_object_unref);
+  }
   
   /* call parent class */
   G_OBJECT_CLASS(ags_channel_parent_class)->finalize(gobject);

@@ -119,6 +119,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
   gint position;
   gboolean has_bridge;
   gboolean is_output;  
+
+  plugin_browser = AGS_PLUGIN_BROWSER(line_member_editor->plugin_browser);
   
   switch(response){
   case GTK_RESPONSE_ACCEPT:
@@ -150,8 +152,6 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
       }else{
 	has_bridge = FALSE;
       }
-
-      plugin_browser = AGS_PLUGIN_BROWSER(line_member_editor->plugin_browser);
 
       active_plugin_type = gtk_combo_box_get_active(plugin_browser->plugin_type);
       plugin_name = NULL;
@@ -392,6 +392,17 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
     }
     break;      
   }
+		
+  if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
+    gtk_combo_box_set_active(AGS_LADSPA_BROWSER(plugin_browser->active_browser)->filename,
+			     -1);
+  }else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
+    gtk_combo_box_set_active(AGS_LV2_BROWSER(plugin_browser->active_browser)->filename,
+			     -1);
+  }
+
+  gtk_combo_box_set_active(plugin_browser->plugin_type,
+			   -1);
 }
 
 void

@@ -288,10 +288,10 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		     FALSE, FALSE,
 		     0);
 
-  g_signal_connect(G_OBJECT(edit_renderer), "toggled\0",
+  g_signal_connect(G_OBJECT(edit_renderer), "toggled",
 		   G_CALLBACK(ags_pattern_envelope_edit_callback), pattern_envelope);
 
-  g_signal_connect(G_OBJECT(plot_renderer), "toggled\0",
+  g_signal_connect(G_OBJECT(plot_renderer), "toggled",
 		   G_CALLBACK(ags_pattern_envelope_plot_callback), pattern_envelope);
 
   /* table */
@@ -667,14 +667,14 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		     0);
 
   /* add */
-  pattern_envelope->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  pattern_envelope->add = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Add"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     GTK_WIDGET(pattern_envelope->add),
 		     FALSE, FALSE,
 		     0);
 
   /* remove */
-  pattern_envelope->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  pattern_envelope->remove = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     GTK_WIDGET(pattern_envelope->remove),
 		     FALSE, FALSE,
@@ -750,12 +750,14 @@ ags_pattern_envelope_connect(AgsConnectable *connectable)
   /* move up/down preset */
   g_signal_connect((GObject *) pattern_envelope->move_up, "clicked",
 		   G_CALLBACK(ags_pattern_envelope_preset_move_up_callback), (gpointer) pattern_envelope);
+
   g_signal_connect((GObject *) pattern_envelope->move_down, "clicked",
 		   G_CALLBACK(ags_pattern_envelope_preset_move_down_callback), (gpointer) pattern_envelope);
 
   /* add/remove preset */
   g_signal_connect((GObject *) pattern_envelope->add, "clicked",
 		   G_CALLBACK(ags_pattern_envelope_preset_add_callback), (gpointer) pattern_envelope);
+
   g_signal_connect((GObject *) pattern_envelope->remove, "clicked",
 		   G_CALLBACK(ags_pattern_envelope_preset_remove_callback), (gpointer) pattern_envelope);
 

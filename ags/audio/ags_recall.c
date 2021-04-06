@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1670,7 +1670,7 @@ ags_recall_dispose(GObject *gobject)
 {
   AgsRecall *recall;
 
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   recall = AGS_RECALL(gobject);
 
@@ -1678,38 +1678,49 @@ ags_recall_dispose(GObject *gobject)
   
   /* recall container */
   if(recall->recall_container != NULL){
-    g_object_set(recall,
-		 "recall-container", NULL,
-		 NULL);
+    ags_recall_container_remove(recall->recall_container,
+				recall);
   }
 
-  /* output/input soundcard */
-  if(recall->output_soundcard != NULL){
-    g_object_unref(recall->output_soundcard);
+  /* soundcard */
+  if(recall->output_soundcard != NULL){    
+    gpointer tmp;
+
+    tmp = recall->output_soundcard;
 
     recall->output_soundcard = NULL;
+
+    g_object_unref(tmp);
   }
 
-  if(recall->input_soundcard != NULL){
-    g_object_unref(recall->input_soundcard);
+  if(recall->input_soundcard != NULL){    
+    gpointer tmp;
+
+    tmp = recall->input_soundcard;
 
     recall->input_soundcard = NULL;
+
+    g_object_unref(tmp);
   }
   
   /* port */
   if(recall->port != NULL){
-    g_list_free_full(recall->port,
-		     (GDestroyNotify) g_object_unref);
+    start_list = recall->port;
 
     recall->port = NULL;
+
+    g_list_free_full(start_list,
+		     (GDestroyNotify) g_object_unref);
   }
   
   /* automation port */
   if(recall->automation_port != NULL){
-    g_list_free_full(recall->automation_port,
-		     g_object_unref);
+    start_list = recall->automation_port;
 
     recall->automation_port = NULL;
+
+    g_list_free_full(start_list,
+		     g_object_unref);
   }
 
   /* recall id */
@@ -1738,7 +1749,9 @@ ags_recall_dispose(GObject *gobject)
   /* children */
   if(recall->children != NULL){
     list =
-      list_start = g_list_copy(recall->children);
+      start_list = recall->children;
+
+    recall->children = NULL;
 
     while(list != NULL){      
       g_object_run_dispose(G_OBJECT(list->data));
@@ -1746,11 +1759,8 @@ ags_recall_dispose(GObject *gobject)
       list = list->next;
     }
 
-    g_list_free(list_start);
-    g_list_free_full(recall->children,
+    g_list_free_full(start_list,
 		     g_object_unref);
-
-    recall->children = NULL;
   }
 
   /* call parent */
@@ -1761,6 +1771,8 @@ void
 ags_recall_finalize(GObject *gobject)
 {
   AgsRecall *recall;
+
+  GList *start_list, *list;
   
   guint i;
   
@@ -1798,49 +1810,83 @@ ags_recall_finalize(GObject *gobject)
   
   /* recall container */
   if(recall->recall_container != NULL){
-    g_object_set(recall,
-		 "recall-container", NULL,
-		 NULL);
+    ags_recall_container_remove(recall->recall_container,
+				recall);
   }
 
-  /* output/input soundcard */
-  if(recall->output_soundcard != NULL){
-    g_object_unref(recall->output_soundcard);
+  /* soundcard */
+  if(recall->output_soundcard != NULL){    
+    gpointer tmp;
+
+    tmp = recall->output_soundcard;
+
+    recall->output_soundcard = NULL;
+
+    g_object_unref(tmp);
   }
 
-  if(recall->input_soundcard != NULL){
-    g_object_unref(recall->input_soundcard);
-  }
+  if(recall->input_soundcard != NULL){    
+    gpointer tmp;
 
+    tmp = recall->input_soundcard;
+
+    recall->input_soundcard = NULL;
+
+    g_object_unref(tmp);
+  }
+  
   /* port */
-  g_list_free_full(recall->port,
-		   g_object_unref);
+  if(recall->port != NULL){
+    start_list = recall->port;
 
+    recall->port = NULL;
+
+    g_list_free_full(start_list,
+		     (GDestroyNotify) g_object_unref);
+  }
+  
   /* automation port */
-  g_list_free_full(recall->automation_port,
-		   g_object_unref);
+  if(recall->automation_port != NULL){
+    start_list = recall->automation_port;
+
+    recall->automation_port = NULL;
+
+    g_list_free_full(start_list,
+		     g_object_unref);
+  }
 
   /* recall id */
   if(recall->recall_id != NULL){
     g_object_unref(recall->recall_id);
+
+    recall->recall_id = NULL;
   }
 
   /* recall dependency */
-  g_list_free_full(recall->recall_dependency,
-		   g_object_unref);
+  if(recall->recall_dependency != NULL){
+    g_list_free_full(recall->recall_dependency,
+		     g_object_unref);
+
+    recall->recall_dependency = NULL;
+  }
+  
+  /* parent */
+  if(recall->parent != NULL){
+    ags_recall_remove_child(recall->parent,
+			    recall);
+
+    recall->parent = NULL;
+  }
 
   /* recall handler */
   g_list_free_full(recall->recall_handler,
 		   (GDestroyNotify) ags_recall_handler_free);
-
-  /* parent */
-  if(recall->parent != NULL){
-    g_object_unref(recall->parent);
-  }
-
+    
   /* children */
   if(recall->child_parameter_name != NULL){
     g_strfreev(recall->child_parameter_name);
+
+    recall->child_parameter_name = NULL;
   }
 
   if(recall->child_value != NULL){
@@ -1849,10 +1895,25 @@ ags_recall_finalize(GObject *gobject)
     }
     
     g_free(recall->child_value);
+
+    recall->child_value = NULL;
   }
 
-  g_list_free_full(recall->children,
-		   g_object_unref);
+  if(recall->children != NULL){
+    list =
+      start_list = recall->children;
+
+    recall->children = NULL;
+
+    while(list != NULL){      
+      g_object_run_dispose(G_OBJECT(list->data));
+
+      list = list->next;
+    }
+
+    g_list_free_full(start_list,
+		     g_object_unref);
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_recall_parent_class)->finalize(gobject);

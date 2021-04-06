@@ -24,6 +24,8 @@
 #include <ags/X/ags_automation_editor.h>
 #include <ags/X/ags_machine.h>
 
+#include <ags/i18n.h>
+
 void
 ags_select_acceleration_dialog_response_callback(GtkWidget *dialog, gint response,
 						 AgsSelectAccelerationDialog *select_acceleration_dialog)
@@ -297,7 +299,7 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
   g_strfreev(collected_specifier);
   
   /* remove button */
-  remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  remove = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) remove,
 		     FALSE, FALSE,

@@ -218,19 +218,19 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   envelope_dialog->pattern_envelope = NULL;
   
   /* GtkButton's in GtkDialog->action_area  */
-  envelope_dialog->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
+  envelope_dialog->apply = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Apply"));
   gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(envelope_dialog)),
 		     (GtkWidget *) envelope_dialog->apply,
 		     FALSE, FALSE,
 		     0);
   
-  envelope_dialog->ok = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OK);
+  envelope_dialog->ok = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_OK"));
   gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(envelope_dialog)),
 		     (GtkWidget *) envelope_dialog->ok,
 		     FALSE, FALSE,
 		     0);
   
-  envelope_dialog->cancel = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+  envelope_dialog->cancel = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Cancel"));
   gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(envelope_dialog)),
 		     (GtkWidget *) envelope_dialog->cancel,
 		     FALSE, FALSE,

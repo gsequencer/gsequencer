@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ags-simple-file xmlns:agssf="http://nongnu.org/gsequencer/ns/ags-simple-file" id="e4865fc4-cb77-11ea-a68c-0b982de30397" version="3.5.6" build-id="Wed Nov  6 18:28:15 UTC 2019">
-  <ags-sf-config id="e4865fc5-cb77-11ea-a68c-0b982de30397" version="0.7.0" build-id="CEST 13-10-2015 01:19"><![CDATA[[generic]
+<ags-simple-file xmlns:agssf="http://nongnu.org/gsequencer/ns/ags-simple-file" id="df22642a-9623-11eb-bf13-a3677f1c9b23" version="3.8.5" build-id="Wed Nov  6 18:28:15 UTC 2019">
+  <ags-sf-config id="df22642b-9623-11eb-bf13-a3677f1c9b23" version="0.7.0" build-id="CEST 13-10-2015 01:19"><![CDATA[[generic]
 disable-feature=experimental
 autosave-thread=false
 segmentation=4/4
@@ -38,20 +38,20 @@ ip6-address=::1
 server-port=9000
 monitor-timeout=0.033333
 ]]></ags-sf-config>
-  <ags-sf-window filename="/home/joelkraehemann/ags-loop-010.xml" bpm="145.000000" loop="true" loop-start="0.000000" loop-end="4.000000">
+  <ags-sf-window filename="ags/test/X/examples/ags-loop-010.xml" bpm="145.000000" loop="true" loop-start="0.000000" loop-end="4.000000">
     <ags-sf-machine-list>
-      <ags-sf-machine id="e4865fc6-cb77-11ea-a68c-0b982de30397" type="AgsPanel" name="Default 0" soundcard-device="default" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="1">
+      <ags-sf-machine id="df22642c-9623-11eb-bf13-a3677f1c9b23" type="AgsPanel" name="Default 0" soundcard-device="default" bank-0="0" bank-1="0" channels="2" output-pads="1" input-pads="1">
         <ags-sf-pad-list is-output="false">
-          <ags-sf-pad id="e4865fc7-cb77-11ea-a68c-0b982de30397" nth-pad="0" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df22642d-9623-11eb-bf13-a3677f1c9b23" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865fc8-cb77-11ea-a68c-0b982de30397" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='e4865fe5-cb77-11ea-a68c-0b982de30397']">
+              <ags-sf-line id="df22642e-9623-11eb-bf13-a3677f1c9b23" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='df22644b-9623-11eb-bf13-a3677f1c9b23']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkCheckButton" value="false" specifier="./muted[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="e4865fc9-cb77-11ea-a68c-0b982de30397" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='e4865fe6-cb77-11ea-a68c-0b982de30397']">
+              <ags-sf-line id="df22642f-9623-11eb-bf13-a3677f1c9b23" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='df22644c-9623-11eb-bf13-a3677f1c9b23']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
                     <ags-sf-control control-type="GtkCheckButton" value="false" specifier="./muted[0]"/>
@@ -62,147 +62,147 @@ monitor-timeout=0.033333
           </ags-sf-pad>
         </ags-sf-pad-list>
       </ags-sf-machine>
-      <ags-sf-machine id="e4865fcc-cb77-11ea-a68c-0b982de30397" type="AgsMixer" name="Default 0" soundcard-device="default" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="8">
+      <ags-sf-machine id="df226432-9623-11eb-bf13-a3677f1c9b23" type="AgsMixer" name="Default 0" soundcard-device="default" bank-0="0" bank-1="0" channels="2" output-pads="1" input-pads="8">
         <ags-sf-pad-list is-output="false">
-          <ags-sf-pad id="e4865fcd-cb77-11ea-a68c-0b982de30397" nth-pad="0" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226433-9623-11eb-bf13-a3677f1c9b23" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865fce-cb77-11ea-a68c-0b982de30397" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='e4866009-cb77-11ea-a68c-0b982de30397']">
+              <ags-sf-line id="df226434-9623-11eb-bf13-a3677f1c9b23" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='df22646f-9623-11eb-bf13-a3677f1c9b23']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.700000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.700000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="e4865fcf-cb77-11ea-a68c-0b982de30397" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='e486600b-cb77-11ea-a68c-0b982de30397']">
+              <ags-sf-line id="df226435-9623-11eb-bf13-a3677f1c9b23" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='df226471-9623-11eb-bf13-a3677f1c9b23']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.700000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.700000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865fd0-cb77-11ea-a68c-0b982de30397" nth-pad="1" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226436-9623-11eb-bf13-a3677f1c9b23" nth-pad="1" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865fd1-cb77-11ea-a68c-0b982de30397" nth-line="2" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='e486601d-cb77-11ea-a68c-0b982de30397']">
+              <ags-sf-line id="df226437-9623-11eb-bf13-a3677f1c9b23" nth-line="2" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='df226483-9623-11eb-bf13-a3677f1c9b23']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.450000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.450000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="e4865fd2-cb77-11ea-a68c-0b982de30397" nth-line="3" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='e486601e-cb77-11ea-a68c-0b982de30397']">
+              <ags-sf-line id="df226438-9623-11eb-bf13-a3677f1c9b23" nth-line="3" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='df226484-9623-11eb-bf13-a3677f1c9b23']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.450000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.450000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865fd3-cb77-11ea-a68c-0b982de30397" nth-pad="2" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226439-9623-11eb-bf13-a3677f1c9b23" nth-pad="2" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865fd4-cb77-11ea-a68c-0b982de30397" nth-line="4" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='e486603f-cb77-11ea-a68c-0b982de30397']">
+              <ags-sf-line id="df22643a-9623-11eb-bf13-a3677f1c9b23" nth-line="4" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='df226496-9623-11eb-bf13-a3677f1c9b23']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.450000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.450000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="e4865fd5-cb77-11ea-a68c-0b982de30397" nth-line="5" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='e4866040-cb77-11ea-a68c-0b982de30397']">
+              <ags-sf-line id="df22643b-9623-11eb-bf13-a3677f1c9b23" nth-line="5" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='df226497-9623-11eb-bf13-a3677f1c9b23']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.450000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.450000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865fd6-cb77-11ea-a68c-0b982de30397" nth-pad="3" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df22643c-9623-11eb-bf13-a3677f1c9b23" nth-pad="3" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865fd7-cb77-11ea-a68c-0b982de30397" nth-line="6" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='e4866061-cb77-11ea-a68c-0b982de30397']">
+              <ags-sf-line id="df22643d-9623-11eb-bf13-a3677f1c9b23" nth-line="6" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='df2264a9-9623-11eb-bf13-a3677f1c9b23']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.625000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.625000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="e4865fd8-cb77-11ea-a68c-0b982de30397" nth-line="7" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='e4866062-cb77-11ea-a68c-0b982de30397']">
+              <ags-sf-line id="df22643e-9623-11eb-bf13-a3677f1c9b23" nth-line="7" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='df2264aa-9623-11eb-bf13-a3677f1c9b23']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.625000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.625000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865fd9-cb77-11ea-a68c-0b982de30397" nth-pad="4" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df22643f-9623-11eb-bf13-a3677f1c9b23" nth-pad="4" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865fda-cb77-11ea-a68c-0b982de30397" nth-line="8" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='e48660a3-cb77-11ea-a68c-0b982de30397']">
+              <ags-sf-line id="df226440-9623-11eb-bf13-a3677f1c9b23" nth-line="8" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='df2264dc-9623-11eb-bf13-a3677f1c9b23']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.775000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.775000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="e4865fdb-cb77-11ea-a68c-0b982de30397" nth-line="9" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='e48660a4-cb77-11ea-a68c-0b982de30397']">
+              <ags-sf-line id="df226441-9623-11eb-bf13-a3677f1c9b23" nth-line="9" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='df2264dd-9623-11eb-bf13-a3677f1c9b23']">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.775000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.775000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865fdc-cb77-11ea-a68c-0b982de30397" nth-pad="5" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226442-9623-11eb-bf13-a3677f1c9b23" nth-pad="5" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865fdd-cb77-11ea-a68c-0b982de30397" nth-line="10" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="df226443-9623-11eb-bf13-a3677f1c9b23" nth-line="10" soundcard-device="default" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="e4865fde-cb77-11ea-a68c-0b982de30397" nth-line="11" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="df226444-9623-11eb-bf13-a3677f1c9b23" nth-line="11" soundcard-device="default" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865fdf-cb77-11ea-a68c-0b982de30397" nth-pad="6" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226445-9623-11eb-bf13-a3677f1c9b23" nth-pad="6" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865fe0-cb77-11ea-a68c-0b982de30397" nth-line="12" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="df226446-9623-11eb-bf13-a3677f1c9b23" nth-line="12" soundcard-device="default" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="e4865fe1-cb77-11ea-a68c-0b982de30397" nth-line="13" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="df226447-9623-11eb-bf13-a3677f1c9b23" nth-line="13" soundcard-device="default" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865fe2-cb77-11ea-a68c-0b982de30397" nth-pad="7" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226448-9623-11eb-bf13-a3677f1c9b23" nth-pad="7" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865fe3-cb77-11ea-a68c-0b982de30397" nth-line="14" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="df226449-9623-11eb-bf13-a3677f1c9b23" nth-line="14" soundcard-device="default" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
-              <ags-sf-line id="e4865fe4-cb77-11ea-a68c-0b982de30397" nth-line="15" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="df22644a-9623-11eb-bf13-a3677f1c9b23" nth-line="15" soundcard-device="default" is-grouped="true">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
@@ -212,185 +212,185 @@ monitor-timeout=0.033333
         <ags-sf-pad-list is-output="true">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865fe5-cb77-11ea-a68c-0b982de30397" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='e4865fc8-cb77-11ea-a68c-0b982de30397']"/>
-              <ags-sf-line id="e4865fe6-cb77-11ea-a68c-0b982de30397" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='e4865fc9-cb77-11ea-a68c-0b982de30397']"/>
+              <ags-sf-line id="df22644b-9623-11eb-bf13-a3677f1c9b23" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='df22642e-9623-11eb-bf13-a3677f1c9b23']"/>
+              <ags-sf-line id="df22644c-9623-11eb-bf13-a3677f1c9b23" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='df22642f-9623-11eb-bf13-a3677f1c9b23']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
       </ags-sf-machine>
-      <ags-sf-machine id="e4865fe7-cb77-11ea-a68c-0b982de30397" type="AgsDrum" name="Kit909" soundcard-device="default" bank_0="0" bank_1="0" channels="1" output-pads="2" input-pads="16" length="16">
+      <ags-sf-machine id="df22644d-9623-11eb-bf13-a3677f1c9b23" type="AgsDrum" name="Kit909" soundcard-device="default" bank-0="0" bank-1="0" channels="1" output-pads="2" input-pads="16" loop="true" length="16">
         <ags-sf-pad-list is-output="false">
-          <ags-sf-pad id="e4865fe8-cb77-11ea-a68c-0b982de30397" nth-pad="0" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df22644e-9623-11eb-bf13-a3677f1c9b23" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865fe9-cb77-11ea-a68c-0b982de30397" nth-line="0" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/BD 909 Clean Long A 01.wav" file-channel="0">
+              <ags-sf-line id="df22644f-9623-11eb-bf13-a3677f1c9b23" nth-line="0" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/BD 909 Clean Long A 01.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.800000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="0.800000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865fea-cb77-11ea-a68c-0b982de30397" nth-pad="1" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226450-9623-11eb-bf13-a3677f1c9b23" nth-pad="1" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865feb-cb77-11ea-a68c-0b982de30397" nth-line="2" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/BD 909 Tape Medium F 04.wav" file-channel="0">
+              <ags-sf-line id="df226451-9623-11eb-bf13-a3677f1c9b23" nth-line="1" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/BD 909 Tape Medium F 04.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.750000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865fec-cb77-11ea-a68c-0b982de30397" nth-pad="2" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226452-9623-11eb-bf13-a3677f1c9b23" nth-pad="2" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865fed-cb77-11ea-a68c-0b982de30397" nth-line="4" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/BD 909 Tube Long F 06.wav" file-channel="0">
+              <ags-sf-line id="df226453-9623-11eb-bf13-a3677f1c9b23" nth-line="2" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/BD 909 Tube Long F 06.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865fee-cb77-11ea-a68c-0b982de30397" nth-pad="3" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226454-9623-11eb-bf13-a3677f1c9b23" nth-pad="3" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865fef-cb77-11ea-a68c-0b982de30397" nth-line="6" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/CH 909 Clean 01.wav" file-channel="0">
+              <ags-sf-line id="df226455-9623-11eb-bf13-a3677f1c9b23" nth-line="3" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/CH 909 Clean 01.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="0.350000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865ff0-cb77-11ea-a68c-0b982de30397" nth-pad="4" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226456-9623-11eb-bf13-a3677f1c9b23" nth-pad="4" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865ff1-cb77-11ea-a68c-0b982de30397" nth-line="8" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="df226457-9623-11eb-bf13-a3677f1c9b23" nth-line="4" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/CH 909 Clean 04.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865ff2-cb77-11ea-a68c-0b982de30397" nth-pad="5" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226458-9623-11eb-bf13-a3677f1c9b23" nth-pad="5" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865ff3-cb77-11ea-a68c-0b982de30397" nth-line="10" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="df226459-9623-11eb-bf13-a3677f1c9b23" nth-line="5" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/Clap 909 Clean.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865ff4-cb77-11ea-a68c-0b982de30397" nth-pad="6" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df22645a-9623-11eb-bf13-a3677f1c9b23" nth-pad="6" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865ff5-cb77-11ea-a68c-0b982de30397" nth-line="12" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="df22645b-9623-11eb-bf13-a3677f1c9b23" nth-line="6" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/Crash 909 Clean 06.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865ff6-cb77-11ea-a68c-0b982de30397" nth-pad="7" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df22645c-9623-11eb-bf13-a3677f1c9b23" nth-pad="7" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865ff7-cb77-11ea-a68c-0b982de30397" nth-line="14" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="df22645d-9623-11eb-bf13-a3677f1c9b23" nth-line="7" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/OH 909 Clean 01.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865ff8-cb77-11ea-a68c-0b982de30397" nth-pad="8" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df22645e-9623-11eb-bf13-a3677f1c9b23" nth-pad="8" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865ff9-cb77-11ea-a68c-0b982de30397" nth-line="8" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/CH 909 Clean 04.wav" file-channel="0">
+              <ags-sf-line id="df22645f-9623-11eb-bf13-a3677f1c9b23" nth-line="8" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/Ride 909 Clean A 05.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865ffa-cb77-11ea-a68c-0b982de30397" nth-pad="9" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226460-9623-11eb-bf13-a3677f1c9b23" nth-pad="9" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865ffb-cb77-11ea-a68c-0b982de30397" nth-line="9" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="df226461-9623-11eb-bf13-a3677f1c9b23" nth-line="9" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/Rim 909 Clean.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865ffc-cb77-11ea-a68c-0b982de30397" nth-pad="10" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226462-9623-11eb-bf13-a3677f1c9b23" nth-pad="10" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865ffd-cb77-11ea-a68c-0b982de30397" nth-line="10" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/Clap 909 Clean.wav" file-channel="0">
+              <ags-sf-line id="df226463-9623-11eb-bf13-a3677f1c9b23" nth-line="10" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/SD 909 Clean E 01.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4865ffe-cb77-11ea-a68c-0b982de30397" nth-pad="11" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226464-9623-11eb-bf13-a3677f1c9b23" nth-pad="11" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4865fff-cb77-11ea-a68c-0b982de30397" nth-line="11" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="df226465-9623-11eb-bf13-a3677f1c9b23" nth-line="11" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/SD 909 Clean E 03.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4866000-cb77-11ea-a68c-0b982de30397" nth-pad="12" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226466-9623-11eb-bf13-a3677f1c9b23" nth-pad="12" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4866001-cb77-11ea-a68c-0b982de30397" nth-line="12" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/Crash 909 Clean 06.wav" file-channel="0">
+              <ags-sf-line id="df226467-9623-11eb-bf13-a3677f1c9b23" nth-line="12" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/SD 909 Clean E 10.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4866002-cb77-11ea-a68c-0b982de30397" nth-pad="13" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226468-9623-11eb-bf13-a3677f1c9b23" nth-pad="13" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4866003-cb77-11ea-a68c-0b982de30397" nth-line="13" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="df226469-9623-11eb-bf13-a3677f1c9b23" nth-line="13" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/Tom Hi 909 Clean 04.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4866004-cb77-11ea-a68c-0b982de30397" nth-pad="14" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df22646a-9623-11eb-bf13-a3677f1c9b23" nth-pad="14" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4866005-cb77-11ea-a68c-0b982de30397" nth-line="14" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/OH 909 Clean 01.wav" file-channel="0">
+              <ags-sf-line id="df22646b-9623-11eb-bf13-a3677f1c9b23" nth-line="14" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/Tom Lo 909 Clean 01.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e4866006-cb77-11ea-a68c-0b982de30397" nth-pad="15" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df22646c-9623-11eb-bf13-a3677f1c9b23" nth-pad="15" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4866007-cb77-11ea-a68c-0b982de30397" nth-line="15" soundcard-device="default" is-grouped="true">
+              <ags-sf-line id="df22646d-9623-11eb-bf13-a3677f1c9b23" nth-line="15" soundcard-device="default" is-grouped="true" filename="file:///home/joelkraehemann/sounds/909 From Mars/WAV/Kits/01. Clean Kit/Tom Mid 909 Clean 03.wav" file-channel="0">
                 <ags-sf-effect-list>
                   <ags-sf-effect filename="" effect="">
-                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                    <ags-sf-control control-type="GtkScale" value="1.000000" specifier="./volume[0]"/>
                   </ags-sf-effect>
                 </ags-sf-effect-list>
               </ags-sf-line>
@@ -398,14 +398,14 @@ monitor-timeout=0.033333
           </ags-sf-pad>
         </ags-sf-pad-list>
         <ags-sf-pad-list is-output="true">
-          <ags-sf-pad id="e4866008-cb77-11ea-a68c-0b982de30397" nth-pad="0" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df22646e-9623-11eb-bf13-a3677f1c9b23" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e4866009-cb77-11ea-a68c-0b982de30397" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='e4865fce-cb77-11ea-a68c-0b982de30397']"/>
+              <ags-sf-line id="df22646f-9623-11eb-bf13-a3677f1c9b23" nth-line="0" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='df226434-9623-11eb-bf13-a3677f1c9b23']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
-          <ags-sf-pad id="e486600a-cb77-11ea-a68c-0b982de30397" nth-pad="1" group="true" mute="false" solo="false">
+          <ags-sf-pad id="df226470-9623-11eb-bf13-a3677f1c9b23" nth-pad="1" group="true" mute="false" solo="false">
             <ags-sf-line-list>
-              <ags-sf-line id="e486600b-cb77-11ea-a68c-0b982de30397" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='e4865fcf-cb77-11ea-a68c-0b982de30397']"/>
+              <ags-sf-line id="df226471-9623-11eb-bf13-a3677f1c9b23" nth-line="1" soundcard-device="default" is-grouped="true" link="xpath=//ags-sf-line[@id='df226435-9623-11eb-bf13-a3677f1c9b23']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
@@ -1001,16 +1001,16 @@ monitor-timeout=0.033333
           </ags-sf-notation>
         </ags-sf-notation-list>
       </ags-sf-machine>
-      <ags-sf-machine id="e486600c-cb77-11ea-a68c-0b982de30397" type="AgsFMSyncsynth" name="Default 0" soundcard-device="default" bank_0="0" bank_1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="16" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="128" base-note="-48.000000" audio-loop-start="800" audio-loop-end="1604">
+      <ags-sf-machine id="df226472-9623-11eb-bf13-a3677f1c9b23" type="AgsFMSyncsynth" name="Default 0" soundcard-device="default" bank-0="0" bank-1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="16" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="128" base-note="-48.000000" audio-loop-start="800" audio-loop-end="1604" volume="1.000000">
         <ags-sf-pad-list is-output="true">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>
-              <ags-sf-line id="e486601d-cb77-11ea-a68c-0b982de30397" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='e4865fd1-cb77-11ea-a68c-0b982de30397']"/>
+              <ags-sf-line id="df226483-9623-11eb-bf13-a3677f1c9b23" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='df226437-9623-11eb-bf13-a3677f1c9b23']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="1">
             <ags-sf-line-list>
-              <ags-sf-line id="e486601e-cb77-11ea-a68c-0b982de30397" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='e4865fd2-cb77-11ea-a68c-0b982de30397']"/>
+              <ags-sf-line id="df226484-9623-11eb-bf13-a3677f1c9b23" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='df226438-9623-11eb-bf13-a3677f1c9b23']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
@@ -1410,16 +1410,16 @@ monitor-timeout=0.033333
           </ags-sf-notation>
         </ags-sf-notation-list>
       </ags-sf-machine>
-      <ags-sf-machine id="e486601f-cb77-11ea-a68c-0b982de30397" type="AgsPitchSampler" name="lead" soundcard-device="default" bank_0="0" bank_1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="16" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="128" filename="/home/joelkraehemann/sounds/PSYTRANCE_NATION/PSN_SAMPLER_PATCHES/SFZ/PSN_SYNTHS/PSN_Synth_Multi_01.sfz" enable-synth-generator="true" base-note="52.000000" key-count="16.000000" lfo-freq="6.000000" lfo-phase="0.000000" lfo-depth="0.000000" lfo-tuning="0.000000">
+      <ags-sf-machine id="df226485-9623-11eb-bf13-a3677f1c9b23" type="AgsPitchSampler" name="lead" soundcard-device="default" bank-0="0" bank-1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="16" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="128" filename="/home/joelkraehemann/sounds/PSYTRANCE_NATION/PSN_SAMPLER_PATCHES/SFZ/PSN_SYNTHS/PSN_Synth_Multi_01.sfz" enable-synth-generator="true" base-note="4.000000" key-count="16.000000" aliase-a-amount="0.000000" aliase-a-phase="0.000000" aliase-b-amount="0.000000" aliase-b-phase="0.000000" volume="1.000000" lfo-freq="6.000000" lfo-phase="0.000000" lfo-depth="0.000000" lfo-tuning="0.000000">
         <ags-sf-pad-list is-output="true">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>
-              <ags-sf-line id="e486603f-cb77-11ea-a68c-0b982de30397" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='e4865fd4-cb77-11ea-a68c-0b982de30397']"/>
+              <ags-sf-line id="df226496-9623-11eb-bf13-a3677f1c9b23" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='df22643a-9623-11eb-bf13-a3677f1c9b23']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="1">
             <ags-sf-line-list>
-              <ags-sf-line id="e4866040-cb77-11ea-a68c-0b982de30397" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='e4865fd5-cb77-11ea-a68c-0b982de30397']"/>
+              <ags-sf-line id="df226497-9623-11eb-bf13-a3677f1c9b23" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='df22643b-9623-11eb-bf13-a3677f1c9b23']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
@@ -1696,16 +1696,16 @@ monitor-timeout=0.033333
           </ags-sf-notation>
         </ags-sf-notation-list>
       </ags-sf-machine>
-      <ags-sf-machine id="e4866041-cb77-11ea-a68c-0b982de30397" type="AgsFFPlayer" name="piccolo" soundcard-device="default" bank_0="0" bank_1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="16" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="128" filename="/usr/share/sounds/sf2/FluidR3_GM.sf2" preset="Piccolo" instrument="Piccolo" enable-synth-generator="true" base-note="52.000000" key-count="16.000000">
+      <ags-sf-machine id="df226498-9623-11eb-bf13-a3677f1c9b23" type="AgsFFPlayer" name="piccolo" soundcard-device="default" bank-0="0" bank-1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="16" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="128" filename="/usr/share/sounds/sf2/FluidR3_GM.sf2" preset="Piccolo" instrument="Piccolo" enable-synth-generator="true" base-note="4.000000" key-count="16.000000" aliase-a-amount="0.000000" aliase-a-phase="0.000000" aliase-b-amount="0.000000" aliase-b-phase="0.000000" volume="1.000000">
         <ags-sf-pad-list is-output="true">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>
-              <ags-sf-line id="e4866061-cb77-11ea-a68c-0b982de30397" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='e4865fd7-cb77-11ea-a68c-0b982de30397']"/>
+              <ags-sf-line id="df2264a9-9623-11eb-bf13-a3677f1c9b23" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='df22643d-9623-11eb-bf13-a3677f1c9b23']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="1">
             <ags-sf-line-list>
-              <ags-sf-line id="e4866062-cb77-11ea-a68c-0b982de30397" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='e4865fd8-cb77-11ea-a68c-0b982de30397']"/>
+              <ags-sf-line id="df2264aa-9623-11eb-bf13-a3677f1c9b23" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='df22643e-9623-11eb-bf13-a3677f1c9b23']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
@@ -2006,16 +2006,16 @@ monitor-timeout=0.033333
           </ags-sf-notation>
         </ags-sf-notation-list>
       </ags-sf-machine>
-      <ags-sf-machine id="e4866083-cb77-11ea-a68c-0b982de30397" type="AgsPitchSampler" name="bass" soundcard-device="default" bank_0="0" bank_1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="16" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="128" filename="/home/joelkraehemann/sounds/PSYTRANCE_NATION/PSN_SAMPLER_PATCHES/SFZ/PSN_BASS/PSN_Syn_Bass_Multi_01.sfz" enable-synth-generator="true" base-note="52.000000" key-count="16.000000" lfo-freq="6.000000" lfo-phase="0.000000" lfo-depth="0.000000" lfo-tuning="0.000000">
+      <ags-sf-machine id="df2264cb-9623-11eb-bf13-a3677f1c9b23" type="AgsPitchSampler" name="bass" soundcard-device="default" bank-0="0" bank-1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="16" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="128" filename="/home/joelkraehemann/sounds/PSYTRANCE_NATION/PSN_SAMPLER_PATCHES/SFZ/PSN_BASS/PSN_Syn_Bass_Multi_01.sfz" enable-synth-generator="true" base-note="4.000000" key-count="16.000000" aliase-a-amount="0.000000" aliase-a-phase="0.000000" aliase-b-amount="0.000000" aliase-b-phase="0.000000" volume="1.000000" lfo-freq="6.000000" lfo-phase="0.000000" lfo-depth="0.000000" lfo-tuning="0.000000">
         <ags-sf-pad-list is-output="true">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>
-              <ags-sf-line id="e48660a3-cb77-11ea-a68c-0b982de30397" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='e4865fda-cb77-11ea-a68c-0b982de30397']"/>
+              <ags-sf-line id="df2264dc-9623-11eb-bf13-a3677f1c9b23" nth-line="0" soundcard-device="default" link="xpath=//ags-sf-line[@id='df226440-9623-11eb-bf13-a3677f1c9b23']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
           <ags-sf-pad nth-pad="1">
             <ags-sf-line-list>
-              <ags-sf-line id="e48660a4-cb77-11ea-a68c-0b982de30397" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='e4865fdb-cb77-11ea-a68c-0b982de30397']"/>
+              <ags-sf-line id="df2264dd-9623-11eb-bf13-a3677f1c9b23" nth-line="1" soundcard-device="default" link="xpath=//ags-sf-line[@id='df226441-9623-11eb-bf13-a3677f1c9b23']"/>
             </ags-sf-line-list>
           </ags-sf-pad>
         </ags-sf-pad-list>
@@ -2223,11 +2223,11 @@ monitor-timeout=0.033333
     </ags-sf-machine-list>
     <ags-sf-notation-editor zoom="1:1">
       <ags-sf-property-list>
-        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='e4865fe7-cb77-11ea-a68c-0b982de30397']"/>
-        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='e486600c-cb77-11ea-a68c-0b982de30397']"/>
-        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='e486601f-cb77-11ea-a68c-0b982de30397']"/>
-        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='e4866041-cb77-11ea-a68c-0b982de30397']"/>
-        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='e4866083-cb77-11ea-a68c-0b982de30397']"/>
+        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='df22644d-9623-11eb-bf13-a3677f1c9b23']"/>
+        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='df226472-9623-11eb-bf13-a3677f1c9b23']"/>
+        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='df226485-9623-11eb-bf13-a3677f1c9b23']"/>
+        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='df226498-9623-11eb-bf13-a3677f1c9b23']"/>
+        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='df2264cb-9623-11eb-bf13-a3677f1c9b23']"/>
       </ags-sf-property-list>
     </ags-sf-notation-editor>
     <ags-sf-automation-editor zoom="1:1"/>

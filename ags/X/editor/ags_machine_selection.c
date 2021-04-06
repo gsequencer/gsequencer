@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -137,8 +137,8 @@ ags_machine_selection_init(AgsMachineSelection *machine_selection)
 	       NULL);
 
   gtk_dialog_add_buttons(GTK_DIALOG(machine_selection),
-			 GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-			 GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+			 i18n("_OK"), GTK_RESPONSE_ACCEPT,
+			 i18n("_Cancel"), GTK_RESPONSE_REJECT,
 			 NULL);
 }
 

@@ -91,6 +91,10 @@ ags_hq_pitch_util_compute_s8(gint8 *buffer,
     return;
   }
 
+  if(tuning == 0.0){
+    return;
+  }
+  
   volume = 1.0 / base_freq * new_freq;
   
   /* get frequency period */
@@ -256,6 +260,10 @@ ags_hq_pitch_util_compute_s16(gint16 *buffer,
   if(new_freq <= 0.0){
     g_warning("rejecting pitch new freq %f <= 0.0", new_freq);
     
+    return;
+  }
+
+  if(tuning == 0.0){
     return;
   }
 
@@ -428,6 +436,10 @@ ags_hq_pitch_util_compute_s24(gint32 *buffer,
     return;
   }
 
+  if(tuning == 0.0){
+    return;
+  }
+
   volume = 1.0 / base_freq * new_freq;
   
   /* get frequency period */
@@ -593,6 +605,10 @@ ags_hq_pitch_util_compute_s32(gint32 *buffer,
   if(new_freq <= 0.0){
     g_warning("rejecting pitch new freq %f <= 0.0", new_freq);
     
+    return;
+  }
+
+  if(tuning == 0.0){
     return;
   }
 
@@ -764,6 +780,10 @@ ags_hq_pitch_util_compute_s64(gint64 *buffer,
     return;
   }
 
+  if(tuning == 0.0){
+    return;
+  }
+
   volume = 1.0 / base_freq * new_freq;
   
   /* get frequency period */
@@ -929,6 +949,10 @@ ags_hq_pitch_util_compute_float(gfloat *buffer,
   if(new_freq <= 0.0){
     g_warning("rejecting pitch new freq %f <= 0.0", new_freq);
     
+    return;
+  }
+
+  if(tuning == 0.0){
     return;
   }
 
@@ -1100,6 +1124,10 @@ ags_hq_pitch_util_compute_double(gdouble *buffer,
     return;
   }
 
+  if(tuning == 0.0){
+    return;
+  }
+
   volume = 1.0 / base_freq * new_freq;
   
   /* get frequency period */
@@ -1265,6 +1293,10 @@ ags_hq_pitch_util_compute_complex(AgsComplex *buffer,
   if(new_freq <= 0.0){
     g_warning("rejecting pitch new freq %f <= 0.0", new_freq);
     
+    return;
+  }
+
+  if(tuning == 0.0){
     return;
   }
 

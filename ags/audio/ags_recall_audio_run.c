@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -305,32 +305,26 @@ ags_recall_audio_run_dispose(GObject *gobject)
 
   recall_audio_run = AGS_RECALL_AUDIO_RUN(gobject);
 
-  /* unpack */
-  if(AGS_RECALL(gobject)->recall_container != NULL){
-    AgsRecallContainer *recall_container;
-
-    recall_container = (AgsRecallContainer *) AGS_RECALL(gobject)->recall_container;
-
-    recall_container->recall_audio_run = g_list_remove(recall_container->recall_audio_run,
-						       gobject);
-    g_object_unref(gobject);
-    g_object_unref(AGS_RECALL(gobject)->recall_container);
-
-    AGS_RECALL(gobject)->recall_container = NULL;
-  }
-
   /* audio */
   if(recall_audio_run->audio != NULL){
-    g_object_unref(G_OBJECT(recall_audio_run->audio));
+    gpointer tmp;
+
+    tmp = recall_audio_run->audio;
 
     recall_audio_run->audio = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* recall audio */
   if(recall_audio_run->recall_audio != NULL){
-    g_object_unref(G_OBJECT(recall_audio_run->recall_audio));
+    gpointer tmp;
+
+    tmp = recall_audio_run->recall_audio;
 
     recall_audio_run->recall_audio = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* call parent */
@@ -344,26 +338,28 @@ ags_recall_audio_run_finalize(GObject *gobject)
 
   recall_audio_run = AGS_RECALL_AUDIO_RUN(gobject);
   
-  if(AGS_RECALL(gobject)->recall_container != NULL){
-    AgsRecallContainer *recall_container;
-
-    recall_container = (AgsRecallContainer *) AGS_RECALL(gobject)->recall_container;
-
-    recall_container->recall_audio_run = g_list_remove(recall_container->recall_audio_run,
-						       gobject);
-    g_object_unref(AGS_RECALL(gobject)->recall_container);
-  }
-  
   /* audio */
   if(recall_audio_run->audio != NULL){
-    g_object_unref(G_OBJECT(recall_audio_run->audio));
+    gpointer tmp;
+
+    tmp = recall_audio_run->audio;
+
+    recall_audio_run->audio = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* recall audio */
   if(recall_audio_run->recall_audio != NULL){
-    g_object_unref(G_OBJECT(recall_audio_run->recall_audio));
+    gpointer tmp;
+
+    tmp = recall_audio_run->recall_audio;
+
+    recall_audio_run->recall_audio = NULL;
+
+    g_object_unref(tmp);
   }
-  
+
   /* call parent */
   G_OBJECT_CLASS(ags_recall_audio_run_parent_class)->finalize(gobject);
 }

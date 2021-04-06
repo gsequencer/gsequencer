@@ -3166,9 +3166,10 @@ ags_audio_dispose(GObject *gobject)
 {
   AgsAudio *audio;
 
-  GList *list, *list_next;
+  GList *start_list, *list, *list_next;
 
-  GRecMutex *play_mutex, *recall_mutex;
+  GRecMutex *play_mutex;
+  GRecMutex *recall_mutex;
 
   audio = AGS_AUDIO(gobject);
 
@@ -3176,28 +3177,44 @@ ags_audio_dispose(GObject *gobject)
 
   /* soundcard */
   if(audio->output_soundcard != NULL){    
-    g_object_unref(audio->output_soundcard);
+    gpointer tmp;
+
+    tmp = audio->output_soundcard;
 
     audio->output_soundcard = NULL;
+
+    g_object_unref(tmp);
   }
 
   if(audio->input_soundcard != NULL){    
-    g_object_unref(audio->input_soundcard);
+    gpointer tmp;
+
+    tmp = audio->input_soundcard;
 
     audio->input_soundcard = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* sequencer */
   if(audio->output_sequencer != NULL){
-    g_object_unref(audio->output_sequencer);
+    gpointer tmp;
 
+    tmp = audio->output_sequencer;
+    
     audio->output_sequencer = NULL;
+
+    g_object_unref(tmp);
   }
 
   if(audio->input_sequencer != NULL){
-    g_object_unref(audio->input_sequencer);
+    gpointer tmp;
+
+    tmp = audio->input_sequencer;
 
     audio->input_sequencer = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* channels */
@@ -3213,7 +3230,10 @@ ags_audio_dispose(GObject *gobject)
   
   /* preset */
   if(audio->preset != NULL){
-    list = audio->preset;
+    list =
+      start_list = audio->preset;
+
+    audio->preset = NULL;
 
     while(list != NULL){
       list_next = list->next;
@@ -3223,15 +3243,16 @@ ags_audio_dispose(GObject *gobject)
       list = list_next;
     }
   
-    g_list_free_full(audio->preset,
+    g_list_free_full(start_list,
 		     g_object_unref);
-
-    audio->preset = NULL;
   }
 
   /* synth generator */
   if(audio->synth_generator != NULL){
-    list = audio->synth_generator;
+    list =
+      start_list = audio->synth_generator;
+
+    audio->synth_generator = NULL;
 
     while(list != NULL){
       list_next = list->next;
@@ -3241,15 +3262,16 @@ ags_audio_dispose(GObject *gobject)
       list = list_next;
     }
   
-    g_list_free_full(audio->synth_generator,
+    g_list_free_full(start_list,
 		     g_object_unref);
-
-    audio->synth_generator = NULL;
   }
 
   /* sf2 synth generator */
   if(audio->sf2_synth_generator != NULL){
-    list = audio->sf2_synth_generator;
+    list =
+      start_list = audio->sf2_synth_generator;
+
+    audio->sf2_synth_generator = NULL;
 
     while(list != NULL){
       list_next = list->next;
@@ -3259,15 +3281,16 @@ ags_audio_dispose(GObject *gobject)
       list = list_next;
     }
   
-    g_list_free_full(audio->sf2_synth_generator,
+    g_list_free_full(start_list,
 		     g_object_unref);
-
-    audio->sf2_synth_generator = NULL;
   }
 
   /* sfz synth generator */
   if(audio->sfz_synth_generator != NULL){
-    list = audio->sfz_synth_generator;
+    list =
+      start_list = audio->sfz_synth_generator;
+
+    audio->sfz_synth_generator = NULL;
 
     while(list != NULL){
       list_next = list->next;
@@ -3277,10 +3300,8 @@ ags_audio_dispose(GObject *gobject)
       list = list_next;
     }
   
-    g_list_free_full(audio->sfz_synth_generator,
+    g_list_free_full(start_list,
 		     g_object_unref);
-
-    audio->sfz_synth_generator = NULL;
   }
   
   /* playback domain */
@@ -3296,7 +3317,10 @@ ags_audio_dispose(GObject *gobject)
   
   /* notation */
   if(audio->notation != NULL){
-    list = audio->notation;
+    list =
+      start_list = audio->notation;
+
+    audio->notation = NULL;
 
     while(list != NULL){
       list_next = list->next;
@@ -3306,15 +3330,16 @@ ags_audio_dispose(GObject *gobject)
       list = list_next;
     }
   
-    g_list_free_full(audio->notation,
+    g_list_free_full(start_list,
 		     g_object_unref);
-
-    audio->notation = NULL;
   }
   
   /* automation */
   if(audio->automation != NULL){
-    list = audio->automation;
+    list =
+      start_list = audio->automation;
+
+    audio->automation = NULL;
 
     while(list != NULL){
       list_next = list->next;
@@ -3324,15 +3349,16 @@ ags_audio_dispose(GObject *gobject)
       list = list_next;
     }
   
-    g_list_free_full(audio->automation,
+    g_list_free_full(start_list,
 		     g_object_unref);
-
-    audio->automation = NULL;
   }
 
   /* wave */
   if(audio->wave != NULL){
-    list = audio->wave;
+    list =
+      start_list = audio->wave;
+
+    audio->wave = NULL;
 
     while(list != NULL){
       list_next = list->next;
@@ -3342,29 +3368,38 @@ ags_audio_dispose(GObject *gobject)
       list = list_next;
     }
   
-    g_list_free_full(audio->wave,
+    g_list_free_full(start_list,
 		     g_object_unref);
-
-    audio->wave = NULL;
   }
 
   /* output audio file */
   if(audio->output_audio_file != NULL){
-    g_object_unref(audio->output_audio_file);
+    gpointer tmp;
+
+    tmp = audio->output_audio_file;
 
     audio->output_audio_file = NULL;
+    
+    g_object_unref(tmp);
   }
   
   /* input audio file */
   if(audio->input_audio_file != NULL){
-    g_object_unref(audio->input_audio_file);
+    gpointer tmp;
+
+    tmp = audio->input_audio_file;
 
     audio->input_audio_file = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* midi */
   if(audio->midi != NULL){
-    list = audio->midi;
+    list =
+      start_list = audio->midi;
+
+    audio->midi = NULL;
 
     while(list != NULL){
       list_next = list->next;
@@ -3374,29 +3409,38 @@ ags_audio_dispose(GObject *gobject)
       list = list_next;
     }
   
-    g_list_free_full(audio->midi,
+    g_list_free_full(start_list,
 		     g_object_unref);
-
-    audio->midi = NULL;
   }
 
   /* output midi file */
   if(audio->output_midi_file != NULL){
-    g_object_unref(audio->output_midi_file);
+    gpointer tmp;
+
+    tmp = audio->output_midi_file;
 
     audio->output_midi_file = NULL;
+    
+    g_object_unref(tmp);
   }
   
   /* input midi file */
   if(audio->input_midi_file != NULL){
-    g_object_unref(audio->input_midi_file);
+    gpointer tmp;
+
+    tmp = audio->input_midi_file;
 
     audio->input_midi_file = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* recall id */
   if(audio->recall_id != NULL){
-    list = audio->recall_id;
+    list =
+      start_list = audio->recall_id;
+
+    audio->recall_id = NULL;
     
     while(list != NULL){
       list_next = list->next;
@@ -3406,16 +3450,16 @@ ags_audio_dispose(GObject *gobject)
       list = list_next;
     }
 
-    
-    g_list_free_full(audio->recall_id,
+    g_list_free_full(start_list,
 		     g_object_unref);
-
-    audio->recall_id = NULL;
   }
   
   /* recycling context */
   if(audio->recycling_context != NULL){
-    list = audio->recycling_context;
+    list =
+      start_list = audio->recycling_context;
+
+    audio->recycling_context = NULL;
 
     while(list != NULL){
       list_next = list->next;
@@ -3425,15 +3469,16 @@ ags_audio_dispose(GObject *gobject)
       list = list_next;
     }
   
-    g_list_free_full(audio->recycling_context,
+    g_list_free_full(start_list,
 		     g_object_unref);
-
-    audio->recycling_context = NULL;
   }
   
   /* recall container */
   if(audio->recall_container != NULL){
-    list = audio->recall_container;
+    list =
+      start_list = audio->recall_container;
+
+    audio->recall_container = NULL;
 
     while(list != NULL){
       list_next = list->next;
@@ -3443,10 +3488,8 @@ ags_audio_dispose(GObject *gobject)
       list = list_next;
     }
 
-    g_list_free_full(audio->recall_container,
+    g_list_free_full(start_list,
 		     g_object_unref);
-
-    audio->recall_container = NULL;
   }
 
   /* play */
@@ -3456,7 +3499,12 @@ ags_audio_dispose(GObject *gobject)
     /* run dispose and unref */
     g_rec_mutex_lock(play_mutex);
 
-    list = audio->play;
+    list =
+      start_list = audio->play;
+
+    audio->play = NULL;
+
+    g_rec_mutex_unlock(play_mutex);
 
     while(list != NULL){
       list_next = list->next;
@@ -3466,12 +3514,8 @@ ags_audio_dispose(GObject *gobject)
       list = list_next;
     }
 
-    g_list_free_full(audio->play,
+    g_list_free_full(start_list,
 		     g_object_unref);
-
-    audio->play = NULL;
-
-    g_rec_mutex_unlock(play_mutex);
   }
 
   /* recall */
@@ -3481,7 +3525,10 @@ ags_audio_dispose(GObject *gobject)
     /* run dispose and unref */
     g_rec_mutex_lock(recall_mutex);
     
-    list = audio->recall;
+    list =
+      start_list = audio->recall;
+
+    audio->recall = NULL;
   
     while(list != NULL){
       list_next = list->next;
@@ -3491,10 +3538,8 @@ ags_audio_dispose(GObject *gobject)
       list = list_next;
     }
 
-    g_list_free_full(audio->recall,
+    g_list_free_full(start_list,
 		     g_object_unref);
-
-    audio->recall = NULL;
 
     g_rec_mutex_unlock(recall_mutex);
   }
@@ -3509,30 +3554,57 @@ ags_audio_finalize(GObject *gobject)
   AgsAudio *audio;
   AgsChannel *channel;
 
-  GList *list;
+  GList *start_list, *list, *list_next;
+
+  GRecMutex *play_mutex;
+  GRecMutex *recall_mutex;
 
   audio = AGS_AUDIO(gobject);
 
   ags_uuid_free(audio->uuid);
   
-  g_free(audio->audio_name);
-  
+  g_free(audio->audio_name);  
+
   /* soundcard */
-  if(audio->output_soundcard != NULL){
-    g_object_unref(audio->output_soundcard);
+  if(audio->output_soundcard != NULL){    
+    gpointer tmp;
+
+    tmp = audio->output_soundcard;
+
+    audio->output_soundcard = NULL;
+
+    g_object_unref(tmp);
   }
 
-  if(audio->input_soundcard != NULL){
-    g_object_unref(audio->input_soundcard);
+  if(audio->input_soundcard != NULL){    
+    gpointer tmp;
+
+    tmp = audio->input_soundcard;
+
+    audio->input_soundcard = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* sequencer */
   if(audio->output_sequencer != NULL){
-    g_object_unref(audio->output_sequencer);
+    gpointer tmp;
+
+    tmp = audio->output_sequencer;
+    
+    audio->output_sequencer = NULL;
+
+    g_object_unref(tmp);
   }
 
   if(audio->input_sequencer != NULL){
-    g_object_unref(audio->input_sequencer);
+    gpointer tmp;
+
+    tmp = audio->input_sequencer;
+
+    audio->input_sequencer = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* channels */
@@ -3548,211 +3620,318 @@ ags_audio_finalize(GObject *gobject)
   
   /* preset */
   if(audio->preset != NULL){
-    list = audio->preset;
+    list =
+      start_list = audio->preset;
+
+    audio->preset = NULL;
 
     while(list != NULL){
-      g_object_set(list->data,
-		   "audio", NULL,
-		   NULL);
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
 
-      list = list->next;
+      list = list_next;
     }
-
-    g_list_free_full(audio->preset,
+  
+    g_list_free_full(start_list,
 		     g_object_unref);
   }
 
   /* synth generator */
   if(audio->synth_generator != NULL){
-    list = audio->synth_generator;
+    list =
+      start_list = audio->synth_generator;
+
+    audio->synth_generator = NULL;
 
     while(list != NULL){
-      g_object_set(list->data,
-		   "audio", NULL,
-		   NULL);
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
 
-      list = list->next;
+      list = list_next;
     }
-
-    g_list_free_full(audio->synth_generator,
+  
+    g_list_free_full(start_list,
 		     g_object_unref);
   }
 
   /* sf2 synth generator */
   if(audio->sf2_synth_generator != NULL){
-    list = audio->sf2_synth_generator;
+    list =
+      start_list = audio->sf2_synth_generator;
+
+    audio->sf2_synth_generator = NULL;
 
     while(list != NULL){
-      g_object_set(list->data,
-		   "audio", NULL,
-		   NULL);
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
 
-      list = list->next;
+      list = list_next;
     }
-
-    g_list_free_full(audio->sf2_synth_generator,
+  
+    g_list_free_full(start_list,
 		     g_object_unref);
   }
 
   /* sfz synth generator */
   if(audio->sfz_synth_generator != NULL){
-    list = audio->sfz_synth_generator;
+    list =
+      start_list = audio->sfz_synth_generator;
+
+    audio->sfz_synth_generator = NULL;
 
     while(list != NULL){
-      g_object_set(list->data,
-		   "audio", NULL,
-		   NULL);
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
 
-      list = list->next;
+      list = list_next;
     }
-
-    g_list_free_full(audio->sfz_synth_generator,
+  
+    g_list_free_full(start_list,
 		     g_object_unref);
   }
   
   /* playback domain */
   if(audio->playback_domain != NULL){
-    g_object_unref(audio->playback_domain);
+    AgsPlaybackDomain *playback_domain;
+
+    playback_domain = audio->playback_domain;
+
+    audio->playback_domain = NULL;
+    
+    g_object_run_dispose(playback_domain);
   }
   
   /* notation */
   if(audio->notation != NULL){
-    list = audio->notation;
+    list =
+      start_list = audio->notation;
+
+    audio->notation = NULL;
 
     while(list != NULL){
-      g_object_set(list->data,
-		   "audio", NULL,
-		   NULL);
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
 
-      list = list->next;
+      list = list_next;
     }
-
-    g_list_free_full(audio->notation,
+  
+    g_list_free_full(start_list,
 		     g_object_unref);
   }
   
   /* automation */
   if(audio->automation != NULL){
-    list = audio->automation;
+    list =
+      start_list = audio->automation;
+
+    audio->automation = NULL;
 
     while(list != NULL){
-      g_object_set(list->data,
-		   "audio", NULL,
-		   NULL);
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
 
-      list = list->next;
+      list = list_next;
     }
-
-    g_list_free_full(audio->automation,
+  
+    g_list_free_full(start_list,
 		     g_object_unref);
   }
 
   /* wave */
   if(audio->wave != NULL){
-    list = audio->wave;
+    list =
+      start_list = audio->wave;
+
+    audio->wave = NULL;
 
     while(list != NULL){
-      g_object_set(list->data,
-		   "audio", NULL,
-		   NULL);
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
 
-      list = list->next;
+      list = list_next;
     }
-
-    g_list_free_full(audio->wave,
+  
+    g_list_free_full(start_list,
 		     g_object_unref);
   }
 
   /* output audio file */
   if(audio->output_audio_file != NULL){
-    g_object_unref(audio->output_audio_file);
-  }
+    gpointer tmp;
 
-  /* input audio file */
-  if(audio->input_audio_file != NULL){
-    g_object_unref(audio->input_audio_file);
+    tmp = audio->output_audio_file;
+
+    audio->output_audio_file = NULL;
+    
+    g_object_unref(tmp);
   }
   
+  /* input audio file */
+  if(audio->input_audio_file != NULL){
+    gpointer tmp;
+
+    tmp = audio->input_audio_file;
+
+    audio->input_audio_file = NULL;
+
+    g_object_unref(tmp);
+  }
+
   /* midi */
   if(audio->midi != NULL){
-    list = audio->midi;
+    list =
+      start_list = audio->midi;
+
+    audio->midi = NULL;
 
     while(list != NULL){
-      g_object_set(list->data,
-		   "audio", NULL,
-		   NULL);
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
 
-      list = list->next;
+      list = list_next;
     }
-
-    g_list_free_full(audio->midi,
+  
+    g_list_free_full(start_list,
 		     g_object_unref);
   }
 
   /* output midi file */
   if(audio->output_midi_file != NULL){
-    g_object_unref(audio->output_midi_file);
-  }
+    gpointer tmp;
 
+    tmp = audio->output_midi_file;
+
+    audio->output_midi_file = NULL;
+    
+    g_object_unref(tmp);
+  }
+  
   /* input midi file */
   if(audio->input_midi_file != NULL){
-    g_object_unref(audio->input_midi_file);
+    gpointer tmp;
+
+    tmp = audio->input_midi_file;
+
+    audio->input_midi_file = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* recall id */
   if(audio->recall_id != NULL){
-    g_list_free_full(audio->recall_id,
+    list =
+      start_list = audio->recall_id;
+
+    audio->recall_id = NULL;
+    
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
+      
+      list = list_next;
+    }
+
+    g_list_free_full(start_list,
 		     g_object_unref);
   }
   
   /* recycling context */
   if(audio->recycling_context != NULL){
-    g_list_free_full(audio->recycling_context,
+    list =
+      start_list = audio->recycling_context;
+
+    audio->recycling_context = NULL;
+
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
+
+      list = list_next;
+    }
+  
+    g_list_free_full(start_list,
 		     g_object_unref);
   }
   
   /* recall container */
   if(audio->recall_container != NULL){
-    g_list_free_full(audio->recall_container,
+    list =
+      start_list = audio->recall_container;
+
+    audio->recall_container = NULL;
+
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
+
+      list = list_next;
+    }
+
+    g_list_free_full(start_list,
 		     g_object_unref);
   }
 
-  /* play context */
+  /* play */
   if(audio->play != NULL){
-    list = audio->play;
+    play_mutex = AGS_AUDIO_GET_PLAY_MUTEX(audio);
+
+    /* run dispose and unref */
+    g_rec_mutex_lock(play_mutex);
+
+    list =
+      start_list = audio->play;
+
+    audio->play = NULL;
+
+    g_rec_mutex_unlock(play_mutex);
 
     while(list != NULL){
-      if(AGS_IS_RECALL_AUDIO(list->data) ||
-	 AGS_IS_RECALL_AUDIO_RUN(list->data)){
-	g_object_set(list->data,
-		     "audio", NULL,
-		     NULL);
-      }
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
     
-      list = list->next;
+      list = list_next;
     }
 
-    g_list_free_full(audio->play,
+    g_list_free_full(start_list,
 		     g_object_unref);
   }
 
-  /* recall context */
+  /* recall */
   if(audio->recall != NULL){
-    list = audio->recall;
+    recall_mutex = AGS_AUDIO_GET_RECALL_MUTEX(audio);
 
-    while(list != NULL){
-      if(AGS_IS_RECALL_AUDIO(list->data) ||
-	 AGS_IS_RECALL_AUDIO_RUN(list->data)){
-	g_object_set(list->data,
-		     "audio", NULL,
-		     NULL);
-      }
+    /* run dispose and unref */
+    g_rec_mutex_lock(recall_mutex);
     
-      list = list->next;
+    list =
+      start_list = audio->recall;
+
+    audio->recall = NULL;
+  
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
+    
+      list = list_next;
     }
 
-    g_list_free_full(audio->recall,
+    g_list_free_full(start_list,
 		     g_object_unref);
+
+    g_rec_mutex_unlock(recall_mutex);
   }
   
   /* call parent */

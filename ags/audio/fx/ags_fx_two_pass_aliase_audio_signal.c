@@ -352,7 +352,7 @@ ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall)
 						buffer_size, copy_mode_in);
     
     g_rec_mutex_unlock(stream_mutex);
-
+    
     ags_phase_shift_util_compute_double(fx_two_pass_aliase_channel->input_data[sound_scope]->a_buffer,
 					fx_two_pass_aliase_channel->input_data[sound_scope]->orig_buffer,
 					buffer_size,

@@ -1,4 +1,4 @@
-<!-- Copyright (C) 2005-2020 Jo\u00EBl Kr\u00E4hemann -->
+<!-- Copyright (C) 2005-2021 Jo\u00EBl Kr\u00E4hemann -->
 <!-- Copying and distribution of this file, with or without modification, -->
 <!-- are permitted in any medium without royalty provided the copyright -->
 <!-- notice and this notice are preserved.  This file is offered as-is, -->
@@ -82,6 +82,13 @@
 	  base-note               NMTOKEN   #IMPLIED
 	  audio-loop-start        NMTOKEN   #IMPLIED
 	  audio-loop-end          NMTOKEN   #IMPLIED
+	  volume                  NMTOKEN   #IMPLIED
+	  enable-aliase           CDATA     "false"
+	  aliase-a-amount         NMTOKEN   #IMPLIED
+	  aliase-a-phase          NMTOKEN   #IMPLIED
+	  aliase-b-amount         NMTOKEN   #IMPLIED
+	  aliase-b-phase          NMTOKEN   #IMPLIED
+	  enable-lfo              CDATA     "false"
 	  lfo-freq                NMTOKEN   #IMPLIED
 	  lfo-phase               NMTOKEN   #IMPLIED
 	  lfo-depth               NMTOKEN   #IMPLIED
