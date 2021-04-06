@@ -523,37 +523,57 @@ ags_recall_channel_run_dispose(GObject *gobject)
   
   /* recall audio */
   if(recall_channel_run->recall_audio != NULL){
-    g_object_unref(G_OBJECT(recall_channel_run->recall_audio));
+    gpointer tmp;
+
+    tmp = recall_channel_run->recall_audio;
 
     recall_channel_run->recall_audio = NULL;
+
+    g_object_unref(G_OBJECT(recall_channel_run->recall_audio));
   }
 
   /* recall audio run */
   if(recall_channel_run->recall_audio_run != NULL){
-    g_object_unref(G_OBJECT(recall_channel_run->recall_audio_run));
+    gpointer tmp;
+
+    tmp = recall_channel_run->recall_audio_run;
 
     recall_channel_run->recall_audio_run = NULL;
+
+    g_object_unref(G_OBJECT(recall_channel_run->recall_audio_run));
   }
   
   /* recall channel */
   if(recall_channel_run->recall_channel != NULL){
-    g_object_unref(G_OBJECT(recall_channel_run->recall_channel));
+    gpointer tmp;
+
+    tmp = recall_channel_run->recall_channel;
 
     recall_channel_run->recall_channel = NULL;
+
+    g_object_unref(G_OBJECT(recall_channel_run->recall_channel));
   }
 
   /* destination */
   if(recall_channel_run->destination != NULL){
-    g_object_unref(recall_channel_run->destination);
+    gpointer tmp;
+
+    tmp = recall_channel_run->destination;
 
     recall_channel_run->destination = NULL;
+
+    g_object_unref(recall_channel_run->destination);
   }
 
   /* source */
   if(recall_channel_run->source != NULL){
-    g_object_unref(recall_channel_run->source);
+    gpointer tmp;
+
+    tmp = recall_channel_run->source;
 
     recall_channel_run->source = NULL;
+
+    g_object_unref(recall_channel_run->source);
   }
 
   /* call parent */
@@ -569,26 +589,56 @@ ags_recall_channel_run_finalize(GObject *gobject)
 
   /* recall audio */
   if(recall_channel_run->recall_audio != NULL){
+    gpointer tmp;
+
+    tmp = recall_channel_run->recall_audio;
+
+    recall_channel_run->recall_audio = NULL;
+
     g_object_unref(G_OBJECT(recall_channel_run->recall_audio));
   }
 
   /* recall audio run */
   if(recall_channel_run->recall_audio_run != NULL){
+    gpointer tmp;
+
+    tmp = recall_channel_run->recall_audio_run;
+
+    recall_channel_run->recall_audio_run = NULL;
+
     g_object_unref(G_OBJECT(recall_channel_run->recall_audio_run));
   }
   
   /* recall channel */
   if(recall_channel_run->recall_channel != NULL){
+    gpointer tmp;
+
+    tmp = recall_channel_run->recall_channel;
+
+    recall_channel_run->recall_channel = NULL;
+
     g_object_unref(G_OBJECT(recall_channel_run->recall_channel));
   }
 
   /* destination */
   if(recall_channel_run->destination != NULL){
+    gpointer tmp;
+
+    tmp = recall_channel_run->destination;
+
+    recall_channel_run->destination = NULL;
+
     g_object_unref(recall_channel_run->destination);
   }
 
   /* source */
   if(recall_channel_run->source != NULL){
+    gpointer tmp;
+
+    tmp = recall_channel_run->source;
+
+    recall_channel_run->source = NULL;
+
     g_object_unref(recall_channel_run->source);
   }
 

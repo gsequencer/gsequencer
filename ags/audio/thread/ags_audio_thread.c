@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -370,16 +370,24 @@ ags_audio_thread_dispose(GObject *gobject)
 
   /* soundcard */
   if(audio_thread->default_output_soundcard != NULL){
-    g_object_unref(audio_thread->default_output_soundcard);
+    gpointer tmp;
+
+    tmp = audio_thread->default_output_soundcard;
 
     audio_thread->default_output_soundcard = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* audio */
   if(audio_thread->audio != NULL){
-    g_object_unref(audio_thread->audio);
+    gpointer tmp;
+
+    tmp = audio_thread->audio;
 
     audio_thread->audio = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* call parent */
@@ -397,16 +405,30 @@ ags_audio_thread_finalize(GObject *gobject)
 
   /* soundcard */
   if(audio_thread->default_output_soundcard != NULL){
-    g_object_unref(audio_thread->default_output_soundcard);
+    gpointer tmp;
+
+    tmp = audio_thread->default_output_soundcard;
+
+    audio_thread->default_output_soundcard = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* audio */
   if(audio_thread->audio != NULL){
-    g_object_unref(audio_thread->audio);
-  }  
+    gpointer tmp;
+
+    tmp = audio_thread->audio;
+
+    audio_thread->audio = NULL;
+
+    g_object_unref(tmp);
+  }
 
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
     ags_audio_thread_scope_data_free(audio_thread->scope_data[i]);
+
+    audio_thread->scope_data[i] = NULL;
   }
   
   /* call parent */

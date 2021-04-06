@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -250,9 +250,13 @@ ags_recall_audio_dispose(GObject *gobject)
   
   /* audio */
   if(recall_audio->audio != NULL){
-    g_object_unref(G_OBJECT(recall_audio->audio));
+    gpointer tmp;
+
+    tmp = recall_audio->audio;
 
     recall_audio->audio = NULL;
+    
+    g_object_unref(tmp);
   }
 
   /* call parent */
@@ -268,7 +272,13 @@ ags_recall_audio_finalize(GObject *gobject)
 
   /* audio */
   if(recall_audio->audio != NULL){
-    g_object_unref(G_OBJECT(recall_audio->audio));
+    gpointer tmp;
+
+    tmp = recall_audio->audio;
+
+    recall_audio->audio = NULL;
+    
+    g_object_unref(tmp);
   }
   
   /* call parent */

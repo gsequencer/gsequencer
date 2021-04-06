@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -358,16 +358,24 @@ ags_channel_thread_dispose(GObject *gobject)
 
   /* soundcard */
   if(channel_thread->default_output_soundcard != NULL){
-    g_object_unref(channel_thread->default_output_soundcard);
+    gpointer tmp;
+
+    tmp = channel_thread->default_output_soundcard;
 
     channel_thread->default_output_soundcard = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* channel */
   if(channel_thread->channel != NULL){
-    g_object_unref(channel_thread->channel);
+    gpointer tmp;
+
+    tmp = channel_thread->channel;
 
     channel_thread->channel = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* call parent */
@@ -383,12 +391,24 @@ ags_channel_thread_finalize(GObject *gobject)
 
   /* soundcard */
   if(channel_thread->default_output_soundcard != NULL){
-    g_object_unref(channel_thread->default_output_soundcard);
+    gpointer tmp;
+
+    tmp = channel_thread->default_output_soundcard;
+
+    channel_thread->default_output_soundcard = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* channel */
   if(channel_thread->channel != NULL){
-    g_object_unref(channel_thread->channel);
+    gpointer tmp;
+
+    tmp = channel_thread->channel;
+
+    channel_thread->channel = NULL;
+
+    g_object_unref(tmp);
   }
 
   /* call parent */

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -494,12 +494,29 @@ ags_playback_finalize(GObject *gobject)
 
   /* playback domain */
   if(playback->playback_domain != NULL){
-    g_object_unref(playback->playback_domain);
+    if(playback->channel != NULL){
+      ags_playback_domain_remove_playback(playback->playback_domain,
+					  playback, ((AGS_IS_OUTPUT(playback->channel)) ? AGS_TYPE_OUTPUT: AGS_TYPE_INPUT));
+    }else{
+      gpointer tmp;
+
+      tmp = playback->playback_domain;
+
+      playback->playback_domain = NULL;
+
+      g_object_unref(tmp);
+    }
   }
 
   /* channel */
   if(playback->channel != NULL){
-    g_object_unref(playback->channel);
+    AgsChannel *channel;
+
+    channel = playback->channel;
+    
+    playback->channel = NULL;
+    
+    g_object_unref(channel);
   }
   
   /* channel thread */
@@ -512,6 +529,8 @@ ags_playback_finalize(GObject *gobject)
     }
     
     free(playback->channel_thread);
+
+    playback->channel_thread = NULL;
   }
   
   /* recall id */
@@ -523,6 +542,8 @@ ags_playback_finalize(GObject *gobject)
     }
     
     free(playback->recall_id);
+
+    playback->recall_id = NULL;
   }
 
   /* call parent */

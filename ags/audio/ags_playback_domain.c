@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -358,6 +358,8 @@ ags_playback_domain_dispose(GObject *gobject)
 {
   AgsPlaybackDomain *playback_domain;
 
+  GList *start_list;
+  
   guint i;
   
   playback_domain = AGS_PLAYBACK_DOMAIN(gobject);
@@ -386,18 +388,22 @@ ags_playback_domain_dispose(GObject *gobject)
 
   /* output playback */
   if(playback_domain->output_playback != NULL){
-    g_list_free_full(playback_domain->output_playback,
-		     g_object_unref);
-    
+    start_list = playback_domain->output_playback;
+
     playback_domain->output_playback = NULL;
+
+    g_list_free_full(start_list,
+		     g_object_unref);    
   }
 
   /* input playback */
   if(playback_domain->input_playback != NULL){
-    g_list_free_full(playback_domain->input_playback,
-		     g_object_unref);
+    start_list = playback_domain->input_playback;
     
     playback_domain->input_playback = NULL;
+
+    g_list_free_full(start_list,
+		     g_object_unref);
   }
   
   /* call parent */
@@ -408,6 +414,8 @@ void
 ags_playback_domain_finalize(GObject *gobject)
 {
   AgsPlaybackDomain *playback_domain;
+
+  GList *start_list;
 
   guint i;
   
@@ -423,6 +431,8 @@ ags_playback_domain_finalize(GObject *gobject)
     }
     
     free(playback_domain->audio_thread);
+
+    playback_domain->audio_thread = NULL;
   }
 
   /* domain */
@@ -431,12 +441,24 @@ ags_playback_domain_finalize(GObject *gobject)
   }
   
   /* output playback */
-  g_list_free_full(playback_domain->output_playback,
-		   g_object_unref);
+  if(playback_domain->output_playback != NULL){
+    start_list = playback_domain->output_playback;
+
+    playback_domain->output_playback = NULL;
+
+    g_list_free_full(start_list,
+		     g_object_unref);    
+  }
 
   /* input playback */
-  g_list_free_full(playback_domain->input_playback,
-		   g_object_unref);
+  if(playback_domain->input_playback != NULL){
+    start_list = playback_domain->input_playback;
+    
+    playback_domain->input_playback = NULL;
+
+    g_list_free_full(start_list,
+		     g_object_unref);
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_playback_domain_parent_class)->finalize(gobject);
