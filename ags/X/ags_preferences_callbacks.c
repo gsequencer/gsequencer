@@ -50,7 +50,7 @@ ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer 
     {
       apply = TRUE;
     }
-  case GTK_RESPONSE_OK:
+  case GTK_RESPONSE_ACCEPT:
     {
       ags_applicable_apply(AGS_APPLICABLE(dialog));
 
@@ -62,7 +62,7 @@ ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer 
 	break;
       }
     }
-  case GTK_RESPONSE_CANCEL:
+  case GTK_RESPONSE_REJECT:
     {
       AgsWindow *window;
 
@@ -87,26 +87,17 @@ ags_preferences_notebook_switch_page_callback(GtkNotebook *notebook,
 					      guint page_n,
 					      AgsPreferences *preferences)
 {
-#if 0  
-  GList *list, *list_start;
-
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_action_area(GTK_DIALOG(preferences)));
-  list = g_list_nth(list,
-		    3);
-  
-  while(list != NULL){
-    gtk_widget_hide(list->data);
-
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-  
   if(page_n == 1){
+    gtk_widget_hide((GtkWidget *) preferences->midi_preferences->add);
+
     gtk_widget_show((GtkWidget *) preferences->audio_preferences->add);
   }else if(page_n == 2){
+    gtk_widget_hide((GtkWidget *) preferences->audio_preferences->add);
+
     gtk_widget_show((GtkWidget *) preferences->midi_preferences->add);
+  }else{
+    gtk_widget_hide((GtkWidget *) preferences->audio_preferences->add);
+
+    gtk_widget_hide((GtkWidget *) preferences->midi_preferences->add);
   }
-#endif
 }

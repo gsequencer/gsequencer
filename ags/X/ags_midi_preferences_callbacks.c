@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,19 +30,22 @@
 void
 ags_midi_preferences_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMidiPreferences *midi_preferences)
 {  
-  AgsPreferences *preferences;
-
   if(old_parent != NULL){
     return;
   }
 
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(midi_preferences),
-							   AGS_TYPE_PREFERENCES);
-
-  midi_preferences->add = (GtkButton *) gtk_button_new_with_label("_Add");
-  gtk_dialog_add_action_widget((GtkDialog *) preferences,
-			       (GtkWidget *) midi_preferences->add,
-			       GTK_RESPONSE_NONE);
+  if(midi_preferences->add == NULL) {
+    AgsPreferences *preferences;
+    
+    preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(midi_preferences),
+							     AGS_TYPE_PREFERENCES);
+    
+    midi_preferences->add = (GtkButton *) gtk_button_new_from_icon_name("list-add",
+									GTK_ICON_SIZE_BUTTON);
+    gtk_dialog_add_action_widget((GtkDialog *) preferences,
+				 (GtkWidget *) midi_preferences->add,
+				 GTK_RESPONSE_NONE);
+  }
 }
 
 void

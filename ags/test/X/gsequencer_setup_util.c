@@ -51,6 +51,8 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
+#include <X11/Xlib.h>
+
 #include <string.h>
 
 #include <unistd.h>

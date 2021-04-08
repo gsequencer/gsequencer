@@ -222,17 +222,11 @@ ags_preferences_init(AgsPreferences *preferences)
 			     gtk_label_new(i18n("server")));
   }
   
-  gtk_dialog_add_action_widget(GTK_DIALOG(preferences),
-			       gtk_button_new_with_mnemonic(i18n("_Apply")),
-			       GTK_RESPONSE_APPLY);
-
-  gtk_dialog_add_action_widget(GTK_DIALOG(preferences),
-			       gtk_button_new_with_mnemonic(i18n("_Cancel")),
-			       GTK_RESPONSE_CANCEL);
-
-  gtk_dialog_add_action_widget(GTK_DIALOG(preferences),
-			       gtk_button_new_with_mnemonic(i18n("_OK")),
-			       GTK_RESPONSE_OK);
+  gtk_dialog_add_buttons((GtkDialog *) preferences,
+			 i18n("_Apply"), GTK_RESPONSE_APPLY,
+			 i18n("_OK"), GTK_RESPONSE_ACCEPT,
+			 i18n("_Cancel"), GTK_RESPONSE_REJECT,
+			 NULL);
 }
 
 void
@@ -242,6 +236,12 @@ ags_preferences_connect(AgsConnectable *connectable)
 
   preferences = AGS_PREFERENCES(connectable);
 
+  if((AGS_PREFERENCES_CONNECTED & (preferences->flags)) != 0){
+    return;
+  }
+
+  preferences->flags |= AGS_PREFERENCES_CONNECTED;
+  
   ags_connectable_connect(AGS_CONNECTABLE(preferences->generic_preferences));
   ags_connectable_connect(AGS_CONNECTABLE(preferences->audio_preferences));
   ags_connectable_connect(AGS_CONNECTABLE(preferences->midi_preferences));
@@ -265,7 +265,40 @@ ags_preferences_connect(AgsConnectable *connectable)
 void
 ags_preferences_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsPreferences *preferences;
+
+  preferences = AGS_PREFERENCES(connectable);
+
+  if((AGS_PREFERENCES_CONNECTED & (preferences->flags)) == 0){
+    return;
+  }
+
+  preferences->flags &= (~AGS_PREFERENCES_CONNECTED);
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(preferences->generic_preferences));
+  ags_connectable_disconnect(AGS_CONNECTABLE(preferences->audio_preferences));
+  ags_connectable_disconnect(AGS_CONNECTABLE(preferences->midi_preferences));
+  ags_connectable_disconnect(AGS_CONNECTABLE(preferences->performance_preferences));
+  ags_connectable_disconnect(AGS_CONNECTABLE(preferences->osc_server_preferences));
+
+  if(preferences->server_preferences != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(preferences->server_preferences));
+  }
+
+  g_object_disconnect(G_OBJECT(preferences),
+		      "any_signal::delete-event",
+		      G_CALLBACK(ags_preferences_delete_event_callback),
+		      NULL,
+		      "any_signal::response",
+		      G_CALLBACK(ags_preferences_response_callback),
+		      NULL,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(preferences->notebook),
+		      "any_signal::switch-page",
+		      G_CALLBACK(ags_preferences_notebook_switch_page_callback),
+		      preferences,
+		      NULL);
 }
 
 void
@@ -356,47 +389,29 @@ ags_preferences_reset(AgsApplicable *applicable)
 void
 ags_preferences_show(GtkWidget *widget)
 {
-  GList *list, *list_start;
+  AgsPreferences *preferences;
 
+  preferences = (AgsPreferences *) widget;
+  
   GTK_WIDGET_CLASS(ags_preferences_parent_class)->show(widget);
 
-#if 0  
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_action_area(GTK_DIALOG(widget)));
-  list = g_list_nth(list,
-		    3);
-  
-  while(list != NULL){
-    gtk_widget_hide((GtkWidget *) list->data);
+  gtk_widget_hide((GtkWidget *) preferences->audio_preferences->add);
 
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-#endif
+  gtk_widget_hide((GtkWidget *) preferences->midi_preferences->add);
 }
 
 void
 ags_preferences_show_all(GtkWidget *widget)
 {
-  GList *list, *list_start;
+  AgsPreferences *preferences;
 
+  preferences = (AgsPreferences *) widget;
+  
   GTK_WIDGET_CLASS(ags_preferences_parent_class)->show_all(widget);
 
-#if 0  
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_action_area(GTK_DIALOG(widget)));
-  list = g_list_nth(list,
-		    3);
-  
-  while(list != NULL){
-    gtk_widget_hide(list->data);
+  gtk_widget_hide((GtkWidget *) preferences->audio_preferences->add);
 
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-#endif
+  gtk_widget_hide((GtkWidget *) preferences->midi_preferences->add);
 }
 
 /**

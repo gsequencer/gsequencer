@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1645,12 +1645,25 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
       if(hints != NULL){
 	for(iter = hints; iter[0] != NULL; iter++){
 	  if(card_id != NULL){
-	    *card_id = g_list_prepend(*card_id, g_strdup(snd_device_name_get_hint(iter[0],
-										  "NAME")));
+	    char *hint;
+
+	    hint = snd_device_name_get_hint(iter[0],
+					    "NAME");
+	    
+	    *card_id = g_list_prepend(*card_id,
+				      g_strdup(hint));
+
+	    if(hint != NULL){
+	      free(hint);
+	    }
 	  }
 
 	  if(card_name != NULL){
-	    *card_name = g_list_prepend(*card_name, g_strdup(snd_ctl_card_info_get_name(card_info)));
+	    char *name;
+
+	    name = snd_ctl_card_info_get_name(card_info);
+	    
+	    *card_name = g_list_prepend(*card_name, g_strdup(name));
 	  }
 	}
 

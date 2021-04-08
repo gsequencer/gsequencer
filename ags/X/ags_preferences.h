@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,7 +52,8 @@ typedef struct _AgsPreferences AgsPreferences;
 typedef struct _AgsPreferencesClass AgsPreferencesClass;
 
 typedef enum{
-  AGS_PREFERENCES_SHUTDOWN               = 1,
+  AGS_PREFERENCES_CONNECTED              = 1,
+  AGS_PREFERENCES_SHUTDOWN               = 1 << 1,
 }AgsPreferencesFlags;
 
 struct _AgsPreferences
