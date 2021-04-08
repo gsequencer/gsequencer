@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1092,8 +1092,17 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
       if(hints != NULL){
 	for(iter = hints; iter[0] != NULL; iter++){
 	  if(card_id != NULL){
-	    *card_id = g_list_prepend(*card_id, g_strdup(snd_device_name_get_hint(iter[0],
-										  "NAME")));
+	    char *hint;
+
+	    hint = snd_device_name_get_hint(iter[0],
+					    "NAME");
+	    
+	    *card_id = g_list_prepend(*card_id,
+				      g_strdup(hint));
+
+	    if(hint != NULL){
+	      free(hint);
+	    }
 	  }
 
 	  if(card_name != NULL){

@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-04-06 01:54+0200\n"
+"POT-Creation-Date: 2021-04-08 16:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -99,7 +99,7 @@ msgstr ""
 
 #: ags/X/ags_connection_editor.c:249 ags/X/ags_machine_editor.c:260
 #: ags/X/ags_midi_dialog.c:428 ags/X/ags_plugin_browser.c:201
-#: ags/X/ags_preferences.c:234 ags/X/editor/ags_crop_note_dialog.c:270
+#: ags/X/ags_preferences.c:227 ags/X/editor/ags_crop_note_dialog.c:270
 #: ags/X/editor/ags_envelope_dialog.c:227
 #: ags/X/editor/ags_envelope_editor_callbacks.c:51
 #: ags/X/editor/ags_machine_selection.c:140
@@ -124,7 +124,7 @@ msgstr ""
 
 #: ags/X/ags_connection_editor.c:254 ags/X/ags_export_soundcard_callbacks.c:320
 #: ags/X/ags_midi_dialog.c:433 ags/X/ags_plugin_browser.c:202
-#: ags/X/ags_preferences.c:230 ags/X/editor/ags_crop_note_dialog.c:271
+#: ags/X/ags_preferences.c:228 ags/X/editor/ags_crop_note_dialog.c:271
 #: ags/X/editor/ags_envelope_dialog.c:233
 #: ags/X/editor/ags_envelope_editor_callbacks.c:53
 #: ags/X/editor/ags_machine_selection.c:141
