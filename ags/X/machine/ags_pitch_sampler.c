@@ -662,7 +662,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 									       1.0);
   gtk_spin_button_set_digits(pitch_sampler->lfo_tuning,
 			     2);
-  gtk_spin_button_set_value(pitch_sampler->lfo_tuning, 0.0);
+  gtk_spin_button_set_value(pitch_sampler->lfo_tuning, 1.0);
 
   gtk_widget_set_valign((GtkWidget *) pitch_sampler->lfo_tuning,
 			GTK_ALIGN_FILL);

@@ -40,6 +40,13 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.8.8" date="2021-04-09">
+      <description>
+	<p>fixed ags-fx-lfo default values.</p>
+	<p>fixed wrong tuning AgsSF2SynthGenerator and AgsSFZSynthGenerator.</p>
+      </description>
+    </release>
+
     <release version="3.8.6" date="2021-04-05">
       <description>
 	<p>improved AgsPluginBrowser proper reset.</p>
