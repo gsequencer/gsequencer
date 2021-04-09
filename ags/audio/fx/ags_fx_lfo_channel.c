@@ -296,7 +296,7 @@ ags_fx_lfo_channel_init(AgsFxLfoChannel *fx_lfo_channel)
 					  "port-value-length", 1,
 					  NULL);
   
-  fx_lfo_channel->lfo_freq->port_value.ags_port_float = 0.0;
+  fx_lfo_channel->lfo_freq->port_value.ags_port_float = 6.0;
 
   g_object_set(fx_lfo_channel->lfo_freq,
 	       "plugin-port", ags_fx_lfo_channel_get_lfo_freq_plugin_port(),
@@ -336,7 +336,7 @@ ags_fx_lfo_channel_init(AgsFxLfoChannel *fx_lfo_channel)
 					   "port-value-length", 1,
 					   NULL);
   
-  fx_lfo_channel->lfo_depth->port_value.ags_port_float = 0.0;
+  fx_lfo_channel->lfo_depth->port_value.ags_port_float = 1.0;
 
   g_object_set(fx_lfo_channel->lfo_depth,
 	       "plugin-port", ags_fx_lfo_channel_get_lfo_depth_plugin_port(),

@@ -1,3 +1,9 @@
+ags (3.8.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed tuning of AgsSF2SynthGenerator and AgsSFZSynthGenerator
+	* fixed ags-fx-lfo default values of ports
+
 ags (3.8.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
