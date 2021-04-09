@@ -529,7 +529,7 @@ ags_recall_channel_run_dispose(GObject *gobject)
 
     recall_channel_run->recall_audio = NULL;
 
-    g_object_unref(G_OBJECT(recall_channel_run->recall_audio));
+    g_object_unref(tmp);
   }
 
   /* recall audio run */
@@ -540,7 +540,7 @@ ags_recall_channel_run_dispose(GObject *gobject)
 
     recall_channel_run->recall_audio_run = NULL;
 
-    g_object_unref(G_OBJECT(recall_channel_run->recall_audio_run));
+    g_object_unref(tmp);
   }
   
   /* recall channel */
@@ -551,7 +551,7 @@ ags_recall_channel_run_dispose(GObject *gobject)
 
     recall_channel_run->recall_channel = NULL;
 
-    g_object_unref(G_OBJECT(recall_channel_run->recall_channel));
+    g_object_unref(tmp);
   }
 
   /* destination */
@@ -562,7 +562,7 @@ ags_recall_channel_run_dispose(GObject *gobject)
 
     recall_channel_run->destination = NULL;
 
-    g_object_unref(recall_channel_run->destination);
+    g_object_unref(tmp);
   }
 
   /* source */
@@ -573,7 +573,7 @@ ags_recall_channel_run_dispose(GObject *gobject)
 
     recall_channel_run->source = NULL;
 
-    g_object_unref(recall_channel_run->source);
+    g_object_unref(tmp);
   }
 
   /* call parent */

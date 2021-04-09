@@ -234,20 +234,20 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 		  2, 1,
 		  1, 1);
 
-  sequencer_editor->add_jack = (GtkButton *) gtk_button_new_with_label(i18n("_Add"));
+  sequencer_editor->add_jack = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Add"));
   gtk_box_pack_start((GtkBox *) sequencer_editor->jack_hbox,
 		     (GtkWidget *) sequencer_editor->add_jack,
 		     FALSE, FALSE,
 		     0);
   
-  sequencer_editor->remove_jack = (GtkButton *) gtk_button_new_with_label(i18n("_Remove"));
+  sequencer_editor->remove_jack = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
   gtk_box_pack_start((GtkBox *) sequencer_editor->jack_hbox,
 		     (GtkWidget *) sequencer_editor->remove_jack,
 		     FALSE, FALSE,
 		     0);
   
   /*  */
-  sequencer_editor->remove = (GtkButton *) gtk_button_new_with_label(i18n("_Remove"));
+  sequencer_editor->remove = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
 
   gtk_widget_set_valign(sequencer_editor->remove,
 			GTK_ALIGN_FILL);

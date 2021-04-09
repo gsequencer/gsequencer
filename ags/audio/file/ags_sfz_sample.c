@@ -1859,7 +1859,7 @@ ags_sfz_sample_get_key(AgsSFZSample *sfz_sample)
     return(-1);
   }
 
-  midi_key = 60;
+  midi_key = -1;
 
   group_key = ags_sfz_group_lookup_control(sfz_sample->group,
 					   "key");
@@ -1929,7 +1929,7 @@ ags_sfz_sample_get_hikey(AgsSFZSample *sfz_sample)
     return(-1);
   }
 
-  hikey = 60;
+  hikey = -1;
   
   group_key = ags_sfz_group_lookup_control(sfz_sample->group,
 					   "hikey");
@@ -2001,7 +2001,7 @@ ags_sfz_sample_get_lokey(AgsSFZSample *sfz_sample)
     return(-1);
   }
 
-  lokey = 60;
+  lokey = -1;
   
   group_key = ags_sfz_group_lookup_control(sfz_sample->group,
 					   "lokey");
@@ -2073,7 +2073,7 @@ ags_sfz_sample_get_pitch_keycenter(AgsSFZSample *sfz_sample)
     return(-1);
   }
 
-  pitch_keycenter = 60;
+  pitch_keycenter = -1;
   
   group_key = ags_sfz_group_lookup_control(sfz_sample->group,
 					   "pitch_keycenter");

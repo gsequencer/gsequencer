@@ -79,9 +79,6 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
 			   guint loop_mode,
 			   gint loop_start, gint loop_end)
 {
-  gchar *group_key;
-  gchar *region_key;
-
   void *sample_buffer;
 
   gint8 *im_buffer;
@@ -181,14 +178,14 @@ ags_sfz_synth_util_copy_s8(gint8 *buffer,
   pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
 
   if(key >= 0){
-    base_key = (gdouble) key - 22.0;
+    base_key = (gdouble) key - 21.0;
   }else if(pitch_keycenter >= 0){
-    base_key = (gdouble) pitch_keycenter - 22.0;
+    base_key = (gdouble) pitch_keycenter - 21.0;
   }else{
     base_key = 48.0;
   }
   
-  tuning = 100.0 * (note - base_key);
+  tuning = 100.0 * ((note + 48.0) - base_key);
   
   ags_hq_pitch_util_compute_s8(im_buffer,
 			       frame_count,
@@ -352,8 +349,6 @@ ags_sfz_synth_util_copy_s16(gint16 *buffer,
 			    guint loop_mode,
 			    gint loop_start, gint loop_end)
 {
-  gchar *group_key, *region_key;
-
   void *sample_buffer;
 
   gint16 *im_buffer;
@@ -453,14 +448,16 @@ ags_sfz_synth_util_copy_s16(gint16 *buffer,
   pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
 
   if(key >= 0){
-    base_key = (gdouble) key - 22.0;
+    base_key = (gdouble) key - 21.0;
   }else if(pitch_keycenter >= 0){
-    base_key = (gdouble) pitch_keycenter - 22.0;
+    base_key = (gdouble) pitch_keycenter - 21.0;
   }else{
     base_key = 48.0;
   }
 
-  tuning = 100.0 * (note - base_key);
+  tuning = 100.0 * ((note + 48.0) - base_key);
+
+  g_message("tuning %f", tuning);
   
   ags_hq_pitch_util_compute_s16(im_buffer,
 				frame_count,
@@ -624,8 +621,6 @@ ags_sfz_synth_util_copy_s24(gint32 *buffer,
 			    guint loop_mode,
 			    gint loop_start, gint loop_end)
 {
-  gchar *group_key, *region_key;
-
   void *sample_buffer;
 
   gint32 *im_buffer;
@@ -725,14 +720,14 @@ ags_sfz_synth_util_copy_s24(gint32 *buffer,
   pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
 
   if(key >= 0){
-    base_key = (gdouble) key - 22.0;
+    base_key = (gdouble) key - 21.0;
   }else if(pitch_keycenter >= 0){
-    base_key = (gdouble) pitch_keycenter - 22.0;
+    base_key = (gdouble) pitch_keycenter - 21.0;
   }else{
     base_key = 48.0;
   }
 
-  tuning = 100.0 * (note - base_key);
+  tuning = 100.0 * ((note + 48.0) - base_key);
   
   ags_hq_pitch_util_compute_s24(im_buffer,
 				frame_count,
@@ -896,8 +891,6 @@ ags_sfz_synth_util_copy_s32(gint32 *buffer,
 			    guint loop_mode,
 			    gint loop_start, gint loop_end)
 {
-  gchar *group_key, *region_key;
-
   void *sample_buffer;
 
   gint32 *im_buffer;
@@ -997,14 +990,14 @@ ags_sfz_synth_util_copy_s32(gint32 *buffer,
   pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
 
   if(key >= 0){
-    base_key = (gdouble) key - 22.0;
+    base_key = (gdouble) key - 21.0;
   }else if(pitch_keycenter >= 0){
-    base_key = (gdouble) pitch_keycenter - 22.0;
+    base_key = (gdouble) pitch_keycenter - 21.0;
   }else{
     base_key = 48.0;
   }
 
-  tuning = 100.0 * (note - base_key);
+  tuning = 100.0 * ((note + 48.0) - base_key);
   
   ags_hq_pitch_util_compute_s32(im_buffer,
 				frame_count,
@@ -1168,8 +1161,6 @@ ags_sfz_synth_util_copy_s64(gint64 *buffer,
 			    guint loop_mode,
 			    gint loop_start, gint loop_end)
 {
-  gchar *group_key, *region_key;
-
   void *sample_buffer;
 
   gint64 *im_buffer;
@@ -1269,14 +1260,14 @@ ags_sfz_synth_util_copy_s64(gint64 *buffer,
   pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
 
   if(key >= 0){
-    base_key = (gdouble) key - 22.0;
+    base_key = (gdouble) key - 21.0;
   }else if(pitch_keycenter >= 0){
-    base_key = (gdouble) pitch_keycenter - 22.0;
+    base_key = (gdouble) pitch_keycenter - 21.0;
   }else{
     base_key = 48.0;
   }
 
-  tuning = 100.0 * (note - base_key);
+  tuning = 100.0 * ((note + 48.0) - base_key);
   
   ags_hq_pitch_util_compute_s64(im_buffer,
 				frame_count,
@@ -1440,8 +1431,6 @@ ags_sfz_synth_util_copy_float(gfloat *buffer,
 			      guint loop_mode,
 			      gint loop_start, gint loop_end)
 {
-  gchar *group_key, *region_key;
-
   void *sample_buffer;
 
   gfloat *im_buffer;
@@ -1541,14 +1530,14 @@ ags_sfz_synth_util_copy_float(gfloat *buffer,
   pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
 
   if(key >= 0){
-    base_key = (gdouble) key - 22.0;
+    base_key = (gdouble) key - 21.0;
   }else if(pitch_keycenter >= 0){
-    base_key = (gdouble) pitch_keycenter - 22.0;
+    base_key = (gdouble) pitch_keycenter - 21.0;
   }else{
     base_key = 48.0;
   }
 
-  tuning = 100.0 * (note - base_key);
+  tuning = 100.0 * ((note + 48.0) - base_key);
   
   ags_hq_pitch_util_compute_float(im_buffer,
 				  frame_count,
@@ -1712,8 +1701,6 @@ ags_sfz_synth_util_copy_double(gdouble *buffer,
 			       guint loop_mode,
 			       gint loop_start, gint loop_end)
 {
-  gchar *group_key, *region_key;
-
   void *sample_buffer;
 
   gdouble *im_buffer;
@@ -1813,14 +1800,14 @@ ags_sfz_synth_util_copy_double(gdouble *buffer,
   pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
 
   if(key >= 0){
-    base_key = (gdouble) key - 22.0;
+    base_key = (gdouble) key - 21.0;
   }else if(pitch_keycenter >= 0){
-    base_key = (gdouble) pitch_keycenter - 22.0;
+    base_key = (gdouble) pitch_keycenter - 21.0;
   }else{
     base_key = 48.0;
   }
 
-  tuning = 100.0 * (note - base_key);
+  tuning = 100.0 * ((note + 48.0) - base_key);
   
   ags_hq_pitch_util_compute_double(im_buffer,
 				   frame_count,
@@ -1984,8 +1971,6 @@ ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
 				guint loop_mode,
 				gint loop_start, gint loop_end)
 {
-  gchar *group_key, *region_key;
-
   void *sample_buffer;
 
   AgsComplex *im_buffer;
@@ -2085,14 +2070,14 @@ ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
   pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_sample);
 
   if(key >= 0){
-    base_key = (gdouble) key - 22.0;
+    base_key = (gdouble) key - 21.0;
   }else if(pitch_keycenter >= 0){
-    base_key = (gdouble) pitch_keycenter - 22.0;
+    base_key = (gdouble) pitch_keycenter - 21.0;
   }else{
     base_key = 48.0;
   }
 
-  tuning = 100.0 * (note - base_key);
+  tuning = 100.0 * ((note + 48.0) - base_key);
   
   ags_hq_pitch_util_compute_complex(im_buffer,
 				    frame_count,
