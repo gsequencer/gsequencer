@@ -71,7 +71,7 @@ ags_hq_pitch_util_compute_s8(gint8 *buffer,
   base_freq = exp2((base_key) / 12.0) * 440.0;
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = base_freq / 2.0;
+  low_freq = exp2((base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -243,7 +243,7 @@ ags_hq_pitch_util_compute_s16(gint16 *buffer,
   base_freq = exp2((base_key) / 12.0) * 440.0;
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = base_freq / 2.0;
+  low_freq = exp2((base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -416,7 +416,7 @@ ags_hq_pitch_util_compute_s24(gint32 *buffer,
   base_freq = exp2((base_key) / 12.0) * 440.0;
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = base_freq / 2.0;
+  low_freq = exp2((base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -588,7 +588,7 @@ ags_hq_pitch_util_compute_s32(gint32 *buffer,
   base_freq = exp2((base_key) / 12.0) * 440.0;
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = base_freq / 2.0;
+  low_freq = exp2((base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -760,7 +760,7 @@ ags_hq_pitch_util_compute_s64(gint64 *buffer,
   base_freq = exp2((base_key) / 12.0) * 440.0;
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = base_freq / 2.0;
+  low_freq = exp2((base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -932,7 +932,7 @@ ags_hq_pitch_util_compute_float(gfloat *buffer,
   base_freq = exp2((base_key) / 12.0) * 440.0;
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = base_freq / 2.0;
+  low_freq = exp2((base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1104,7 +1104,7 @@ ags_hq_pitch_util_compute_double(gdouble *buffer,
   base_freq = exp2((base_key) / 12.0) * 440.0;
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = base_freq / 2.0;
+  low_freq = exp2((base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1276,7 +1276,7 @@ ags_hq_pitch_util_compute_complex(AgsComplex *buffer,
   base_freq = exp2((base_key) / 12.0) * 440.0;
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = base_freq / 2.0;
+  low_freq = exp2((base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
