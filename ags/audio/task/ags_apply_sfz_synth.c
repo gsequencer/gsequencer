@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -215,6 +215,8 @@ ags_apply_sfz_synth_init(AgsApplySFZSynth *apply_sfz_synth)
   apply_sfz_synth->sfz_synth_generator = NULL;
 
   apply_sfz_synth->start_channel = NULL;
+
+  apply_sfz_synth->base_note = 0.0;
   apply_sfz_synth->count = 0;
 
   apply_sfz_synth->requested_frame_count = 0;
