@@ -576,11 +576,11 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
 
   GRecMutex *solver_polynomial_mutex;
 
-  static const GRegex *sign_regex = NULL;
-  static const GRegex *coefficient_regex = NULL;
-  static const GRegex *symbol_regex = NULL;
-  static const GRegex *function_regex = NULL;
-  static const GRegex *exponent_regex = NULL;
+  static GRegex *sign_regex = NULL;
+  static GRegex *coefficient_regex = NULL;
+  static GRegex *symbol_regex = NULL;
+  static GRegex *function_regex = NULL;
+  static GRegex *exponent_regex = NULL;
 
   /* groups: #1 sign */
   static const gchar *sign_pattern = "^([\\+\\-])";
