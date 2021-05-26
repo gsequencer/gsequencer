@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -55,7 +55,57 @@ ags_solver_polynomial_test_clean_suite()
 void
 ags_solver_polynomial_test_set_property()
 {
-  //TODO:JK: implement me
+  AgsSolverPolynomial *solver_polynomial;
+
+  AgsComplex *coefficient_value;
+  
+  gchar *polynomial;
+  gchar *coefficient;
+
+  double _Complex z;
+  
+  solver_polynomial = ags_solver_polynomial_new();
+  
+  polynomial = g_strdup_printf("-2%sa^(%s)",
+			       AGS_SYMBOLIC_PI,
+			       AGS_SYMBOLIC_EULER);
+
+  g_object_set(solver_polynomial,
+	       "polynomial", polynomial,
+	       NULL);
+
+  CU_ASSERT(!g_ascii_strcasecmp(solver_polynomial->polynomial,
+				polynomial));
+
+  coefficient = g_strdup_printf("-2%s",
+				AGS_SYMBOLIC_PI);
+  
+  g_object_set(solver_polynomial,
+	       "coefficient", coefficient,
+	       NULL);
+
+  CU_ASSERT(!g_ascii_strcasecmp(solver_polynomial->coefficient,
+				coefficient));
+
+  g_object_set(solver_polynomial,
+	       "symbol", "a",
+	       NULL);
+  
+  CU_ASSERT(g_strv_contains(solver_polynomial->symbol, "a"));
+
+  coefficient_value = g_new(AgsComplex,
+			    1);
+
+  z = 1.0 + I * 0.25;
+  
+  ags_complex_set(coefficient_value,
+		  z);
+
+  g_object_set(solver_polynomial,
+	       "coefficient-value", coefficient_value,
+	       NULL);
+
+  CU_ASSERT(ags_complex_get(solver_polynomial->coefficient_value) == z);
 }
 
 void

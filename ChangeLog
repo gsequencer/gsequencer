@@ -1,3 +1,9 @@
+ags (3.8.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_solver_polynomial_parse()
+	* extended ags_solver_polynomial_test.c
+
 ags (3.8.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

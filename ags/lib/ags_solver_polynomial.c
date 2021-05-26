@@ -228,8 +228,11 @@ ags_solver_polynomial_init(AgsSolverPolynomial *solver_polynomial)
   solver_polynomial->symbol = NULL;
   solver_polynomial->exponent = NULL;
 
+  solver_polynomial->coefficient_value = g_new(AgsComplex,
+					       1);
+  
   z = 1.0 + I * 0.0;
-  ags_complex_set(&(solver_polynomial->coefficient_value),
+  ags_complex_set(solver_polynomial->coefficient_value,
 		  z);
 
   solver_polynomial->exponent_value = NULL;
@@ -309,7 +312,8 @@ ags_solver_polynomial_set_property(GObject *gobject,
 
     g_rec_mutex_lock(solver_polynomial_mutex);
 
-    if(g_strv_contains(solver_polynomial->symbol, symbol)){
+    if(solver_polynomial->symbol != NULL &&
+       g_strv_contains(solver_polynomial->symbol, symbol)){
       g_rec_mutex_unlock(solver_polynomial_mutex);
 
       return;
@@ -357,7 +361,7 @@ ags_solver_polynomial_set_property(GObject *gobject,
 
     g_rec_mutex_lock(solver_polynomial_mutex);
 
-    ags_complex_set(&(solver_polynomial->coefficient_value),
+    ags_complex_set(solver_polynomial->coefficient_value,
 		    ags_complex_get(coefficient_value));
 
     g_rec_mutex_unlock(solver_polynomial_mutex);
