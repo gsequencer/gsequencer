@@ -2,6 +2,10 @@ ags (3.8.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented ags_solver_polynomial_parse()
+	* implemented ags_audio_signal_stream_lock()
+	* implemented ags_audio_signal_stream_unlock()
+	* implemented ags_audio_signal_get_stream()
+	* implemented ags_audio_signal_set_stream()
 	* extended ags_solver_polynomial_test.c
 
 ags (3.8.10)
