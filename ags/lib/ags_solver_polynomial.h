@@ -62,7 +62,7 @@ struct _AgsSolverPolynomial
   gchar **symbol;
   gchar **exponent;
 
-  AgsComplex coefficient_value;
+  AgsComplex *coefficient_value;
   AgsComplex *exponent_value;
 };
 

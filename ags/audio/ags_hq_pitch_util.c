@@ -71,7 +71,7 @@ ags_hq_pitch_util_compute_s8(gint8 *buffer,
   base_freq = exp2((base_key) / 12.0) * 440.0;
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = base_freq / 2.0;
+  low_freq = exp2((base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -112,18 +112,18 @@ ags_hq_pitch_util_compute_s8(gint8 *buffer,
   /* allocate buffer */
   mix_buffer = buffer;
 
-  low_mix_buffer = (gint8 *) ags_stream_alloc(buffer_length,
+  low_mix_buffer_length = (freq_period / low_freq_period) * buffer_length;
+
+  low_mix_buffer = (gint8 *) ags_stream_alloc(low_mix_buffer_length,
 					      AGS_SOUNDCARD_SIGNED_8_BIT);
   
   new_mix_buffer = (gint8 *) ags_stream_alloc(buffer_length,
 					      AGS_SOUNDCARD_SIGNED_8_BIT);
 
-  low_mix_buffer_length = buffer_length;
-
   ags_linear_interpolate_util_fill_s8(low_mix_buffer,
 				      buffer,
-				      buffer_length,
-				      2.0);
+				      low_mix_buffer_length,
+				      freq_period / low_freq_period);
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
@@ -243,7 +243,7 @@ ags_hq_pitch_util_compute_s16(gint16 *buffer,
   base_freq = exp2((base_key) / 12.0) * 440.0;
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = base_freq / 2.0;
+  low_freq = exp2((base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -284,19 +284,19 @@ ags_hq_pitch_util_compute_s16(gint16 *buffer,
 
   /* allocate buffer */
   mix_buffer = buffer;
+
+  low_mix_buffer_length = (freq_period / low_freq_period) * buffer_length;
   
-  low_mix_buffer = (gint16 *) ags_stream_alloc(buffer_length,
+  low_mix_buffer = (gint16 *) ags_stream_alloc(low_mix_buffer_length,
 					       AGS_SOUNDCARD_SIGNED_16_BIT);
 
   new_mix_buffer = (gint16 *) ags_stream_alloc(buffer_length,
 					       AGS_SOUNDCARD_SIGNED_16_BIT);
 
-  low_mix_buffer_length = buffer_length;
-
   ags_linear_interpolate_util_fill_s16(low_mix_buffer,
 				       buffer,
-				       buffer_length,
-				       2.0);
+				       low_mix_buffer_length,
+				       freq_period / low_freq_period);
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
@@ -416,7 +416,7 @@ ags_hq_pitch_util_compute_s24(gint32 *buffer,
   base_freq = exp2((base_key) / 12.0) * 440.0;
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = base_freq / 2.0;
+  low_freq = exp2((base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -456,19 +456,19 @@ ags_hq_pitch_util_compute_s24(gint32 *buffer,
 
   /* allocate buffer */
   mix_buffer = buffer;
+
+  low_mix_buffer_length = (freq_period / low_freq_period) * buffer_length;
   
-  low_mix_buffer = (gint32 *) ags_stream_alloc(buffer_length,
+  low_mix_buffer = (gint32 *) ags_stream_alloc(low_mix_buffer_length,
 					       AGS_SOUNDCARD_SIGNED_24_BIT);
 
   new_mix_buffer = (gint32 *) ags_stream_alloc(buffer_length,
 					       AGS_SOUNDCARD_SIGNED_24_BIT);
 
-  low_mix_buffer_length = buffer_length;
-
   ags_linear_interpolate_util_fill_s24(low_mix_buffer,
 				       buffer,
-				       buffer_length,
-				       2.0);
+				       low_mix_buffer_length,
+				       freq_period / low_freq_period);
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
@@ -588,7 +588,7 @@ ags_hq_pitch_util_compute_s32(gint32 *buffer,
   base_freq = exp2((base_key) / 12.0) * 440.0;
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = base_freq / 2.0;
+  low_freq = exp2((base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -628,19 +628,19 @@ ags_hq_pitch_util_compute_s32(gint32 *buffer,
 
   /* allocate buffer */
   mix_buffer = buffer;
+
+  low_mix_buffer_length = (freq_period / low_freq_period) * buffer_length;
   
-  low_mix_buffer = (gint32 *) ags_stream_alloc(buffer_length,
+  low_mix_buffer = (gint32 *) ags_stream_alloc(low_mix_buffer_length,
 					       AGS_SOUNDCARD_SIGNED_32_BIT);
 
   new_mix_buffer = (gint32 *) ags_stream_alloc(buffer_length,
 					       AGS_SOUNDCARD_SIGNED_32_BIT);
   
-  low_mix_buffer_length = buffer_length;
-
   ags_linear_interpolate_util_fill_s32(low_mix_buffer,
 				       buffer,
-				       buffer_length,
-				       2.0);
+				       low_mix_buffer_length,
+				       freq_period / low_freq_period);
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
@@ -760,7 +760,7 @@ ags_hq_pitch_util_compute_s64(gint64 *buffer,
   base_freq = exp2((base_key) / 12.0) * 440.0;
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = base_freq / 2.0;
+  low_freq = exp2((base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -800,19 +800,19 @@ ags_hq_pitch_util_compute_s64(gint64 *buffer,
 
   /* allocate buffer */
   mix_buffer = buffer;
+
+  low_mix_buffer_length = (freq_period / low_freq_period) * buffer_length;
   
-  low_mix_buffer = (gint64 *) ags_stream_alloc(buffer_length,
+  low_mix_buffer = (gint64 *) ags_stream_alloc(low_mix_buffer_length,
 					       AGS_SOUNDCARD_SIGNED_64_BIT);
 
   new_mix_buffer = (gint64 *) ags_stream_alloc(buffer_length,
 					       AGS_SOUNDCARD_SIGNED_64_BIT);
 
-  low_mix_buffer_length = buffer_length;
-
   ags_linear_interpolate_util_fill_s64(low_mix_buffer,
 				       buffer,
-				       buffer_length,
-				       2.0);
+				       low_mix_buffer_length,
+				       freq_period / low_freq_period);
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
@@ -932,7 +932,7 @@ ags_hq_pitch_util_compute_float(gfloat *buffer,
   base_freq = exp2((base_key) / 12.0) * 440.0;
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = base_freq / 2.0;
+  low_freq = exp2((base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -972,19 +972,19 @@ ags_hq_pitch_util_compute_float(gfloat *buffer,
 
   /* allocate buffer */
   mix_buffer = buffer;
+
+  low_mix_buffer_length = (freq_period / low_freq_period) * buffer_length;
   
-  low_mix_buffer = (gfloat *) ags_stream_alloc(buffer_length,
+  low_mix_buffer = (gfloat *) ags_stream_alloc(low_mix_buffer_length,
 					       AGS_SOUNDCARD_FLOAT);
 
   new_mix_buffer = (gfloat *) ags_stream_alloc(buffer_length,
 					       AGS_SOUNDCARD_FLOAT);
 
-  low_mix_buffer_length = buffer_length;
-
   ags_linear_interpolate_util_fill_float(low_mix_buffer,
 					 buffer,
-					 buffer_length,
-					 2.0);
+					 low_mix_buffer_length,
+					 freq_period / low_freq_period);
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
@@ -1104,7 +1104,7 @@ ags_hq_pitch_util_compute_double(gdouble *buffer,
   base_freq = exp2((base_key) / 12.0) * 440.0;
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = base_freq / 2.0;
+  low_freq = exp2((base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1144,19 +1144,19 @@ ags_hq_pitch_util_compute_double(gdouble *buffer,
 
   /* allocate buffer */
   mix_buffer = buffer;
+
+  low_mix_buffer_length = (freq_period / low_freq_period) * buffer_length;
   
-  low_mix_buffer = (gdouble *) ags_stream_alloc(buffer_length,
+  low_mix_buffer = (gdouble *) ags_stream_alloc(low_mix_buffer_length,
 						AGS_SOUNDCARD_DOUBLE);
 
   new_mix_buffer = (gdouble *) ags_stream_alloc(buffer_length,
 						AGS_SOUNDCARD_DOUBLE);
 
-  low_mix_buffer_length = buffer_length;
-
   ags_linear_interpolate_util_fill_double(low_mix_buffer,
 					  buffer,
-					  buffer_length,
-					  2.0);
+					  low_mix_buffer_length,
+					  freq_period / low_freq_period);
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){
@@ -1276,7 +1276,7 @@ ags_hq_pitch_util_compute_complex(AgsComplex *buffer,
   base_freq = exp2((base_key) / 12.0) * 440.0;
   new_freq = exp2((base_key + (tuning / 100.0))  / 12.0) * 440.0;
 
-  low_freq = base_freq / 2.0;
+  low_freq = exp2((base_key - 0.25) / 12.0) * 440.0;
 
   if(base_freq <= 0.0){
     g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
@@ -1316,19 +1316,19 @@ ags_hq_pitch_util_compute_complex(AgsComplex *buffer,
 
   /* allocate buffer */
   mix_buffer = buffer;
+
+  low_mix_buffer_length = (freq_period / low_freq_period) * buffer_length;
   
-  low_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+  low_mix_buffer = (AgsComplex *) ags_stream_alloc(low_mix_buffer_length,
 						   AGS_SOUNDCARD_COMPLEX);
   
   new_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
 						   AGS_SOUNDCARD_COMPLEX);
 
-  low_mix_buffer_length = buffer_length;
-
   ags_linear_interpolate_util_fill_complex(low_mix_buffer,
 					   buffer,
-					   buffer_length,
-					   2.0);
+					   low_mix_buffer_length,
+					   freq_period / low_freq_period);
   
   /* new mix buffer */
   for(i = 0, j = 0; i < buffer_length; i++, j++){

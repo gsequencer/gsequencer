@@ -1717,6 +1717,8 @@ ags_audio_signal_get_note
 ags_audio_signal_set_note
 ags_audio_signal_add_note
 ags_audio_signal_remove_note
+ags_audio_signal_get_stream
+ags_audio_signal_set_stream
 ags_audio_signal_refresh_data
 ags_audio_signal_add_stream
 ags_audio_signal_stream_resize

@@ -3927,7 +3927,7 @@ ags_audio_signal_set_note(AgsAudioSignal *audio_signal, GList *note)
     return;
   }
 
-  /* get audio_signal mutex */
+  /* get audio signal mutex */
   audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
     
   g_rec_mutex_lock(audio_signal_mutex);
@@ -4003,6 +4003,87 @@ ags_audio_signal_remove_note(AgsAudioSignal *audio_signal,
 		audio_signal_signals[REMOVE_NOTE], 0,
 		note);
   g_object_unref(G_OBJECT(audio_signal));
+}
+
+/**
+ * ags_audio_signal_get_stream:
+ * @audio_signal: the #AgsAudioSignal
+ * 
+ * Get stream.
+ * 
+ * Returns: (element-type guint8) (transfer none): the #GList-struct containig audio data
+ * 
+ * Since: 3.8.11
+ */
+GList*
+ags_audio_signal_get_stream(AgsAudioSignal *audio_signal)
+{
+  GList *start_stream;
+  
+  GRecMutex *stream_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return(NULL);
+  }
+
+  /* get stream mutex */
+  stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal);
+    
+  g_rec_mutex_lock(stream_mutex);
+
+  start_stream = audio_signal->stream;
+  
+  g_rec_mutex_unlock(stream_mutex);
+
+  return(start_stream);
+}
+
+/**
+ * ags_audio_signal_set_stream:
+ * @audio_signal: the #AgsAudioSignal
+ * @stream: (element-type guint8) (transfer full): the #GList-struct containing audio data
+ * 
+ * Set stream by replacing existing.
+ * 
+ * Since: 3.8.11
+ */
+void
+ags_audio_signal_set_stream(AgsAudioSignal *audio_signal, GList *stream)
+{
+  GList *start_stream;
+  
+  GRecMutex *stream_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  /* get stream mutex */
+  stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal);
+    
+  g_rec_mutex_lock(stream_mutex);
+
+  start_stream = audio_signal->stream;
+  audio_signal->stream = stream;
+  
+  g_rec_mutex_unlock(stream_mutex);
+
+  if(!ags_audio_signal_test_flags(audio_signal,
+				  AGS_AUDIO_SIGNAL_SLICE_ALLOC)){
+    g_list_free_full(start_stream,
+		     (GDestroyNotify) ags_stream_free);
+  }else{
+    guint buffer_size;
+
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+    
+    g_object_get(audio_signal,
+		 "buffer-size", &buffer_size,
+		 NULL);
+    
+    g_list_free_full(start_stream,
+		     (GDestroyNotify) ags_stream_slice_free);
+  }
 }
 
 /**

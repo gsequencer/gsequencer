@@ -19,6 +19,7 @@
 
 #include <ags/lib/ags_solver_polynomial.h>
 
+#include <ags/lib/ags_math_util.h>
 #include <ags/lib/ags_string_util.h>
 
 #include <stdlib.h>
@@ -227,8 +228,11 @@ ags_solver_polynomial_init(AgsSolverPolynomial *solver_polynomial)
   solver_polynomial->symbol = NULL;
   solver_polynomial->exponent = NULL;
 
+  solver_polynomial->coefficient_value = g_new(AgsComplex,
+					       1);
+  
   z = 1.0 + I * 0.0;
-  ags_complex_set(&(solver_polynomial->coefficient_value),
+  ags_complex_set(solver_polynomial->coefficient_value,
 		  z);
 
   solver_polynomial->exponent_value = NULL;
@@ -308,7 +312,8 @@ ags_solver_polynomial_set_property(GObject *gobject,
 
     g_rec_mutex_lock(solver_polynomial_mutex);
 
-    if(g_strv_contains(solver_polynomial->symbol, symbol)){
+    if(solver_polynomial->symbol != NULL &&
+       g_strv_contains(solver_polynomial->symbol, symbol)){
       g_rec_mutex_unlock(solver_polynomial_mutex);
 
       return;
@@ -356,7 +361,7 @@ ags_solver_polynomial_set_property(GObject *gobject,
 
     g_rec_mutex_lock(solver_polynomial_mutex);
 
-    ags_complex_set(&(solver_polynomial->coefficient_value),
+    ags_complex_set(solver_polynomial->coefficient_value,
 		    ags_complex_get(coefficient_value));
 
     g_rec_mutex_unlock(solver_polynomial_mutex);
@@ -563,24 +568,28 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
   
   gchar *coefficient;
   
-  AgsComplex coefficient_value;
+  AgsComplex *coefficient_value;
   AgsComplex *exponent_value;
   
   double _Complex z;
 
   guint offset, current_offset;
   guint symbol_count;
+  guint exponent_count;
   guint i;
-
+  gunichar c, match_c;
+  gboolean success;
+  gboolean is_signed;
+  
   GError *error;
 
   GRecMutex *solver_polynomial_mutex;
 
-  static const GRegex *sign_regex = NULL;
-  static const GRegex *coefficient_regex = NULL;
-  static const GRegex *symbol_regex = NULL;
-  static const GRegex *function_regex = NULL;
-  static const GRegex *exponent_regex = NULL;
+  static GRegex *sign_regex = NULL;
+  static GRegex *coefficient_regex = NULL;
+  static GRegex *symbol_regex = NULL;
+  static GRegex *function_regex = NULL;
+  static GRegex *exponent_regex = NULL;
 
   /* groups: #1 sign */
   static const gchar *sign_pattern = "^([\\+\\-])";
@@ -705,7 +714,9 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
   g_match_info_free(sign_match_info);
 
   /* parse coefficient */
-  g_regex_match(coefficient_regex, polynomial, 0, &coefficient_match_info);
+  is_signed = FALSE;
+  
+  g_regex_match(coefficient_regex, polynomial + offset, 0, &coefficient_match_info);
 
   while(g_match_info_matches(coefficient_match_info)){
     gint start_pos, end_pos;
@@ -732,11 +743,18 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
       coefficient = g_strdup_printf("%c%c",
 				    polynomial[0],
 				    '1');
+      
+      is_signed = TRUE;
     }else{
       coefficient = g_strndup(polynomial,
 			      1); 
     }
   }else{
+    if(polynomial[0] == '+' ||
+       polynomial[0] == '-'){      
+      is_signed = TRUE;
+    }
+    
     coefficient = g_strndup(polynomial,
 			    offset); 
   }
@@ -747,7 +765,7 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
 
   current_offset = offset;
   
-  g_regex_match(symbol_regex, polynomial, 0, &symbol_match_info);
+  g_regex_match(symbol_regex, polynomial + current_offset, 0, &symbol_match_info);
 
   while(g_match_info_matches(symbol_match_info)){
     gint start_pos, end_pos;
@@ -770,7 +788,7 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
     
     symbol_count++;
     
-    offset += end_pos;
+    current_offset += end_pos;
     
     g_match_info_next(symbol_match_info,
 		      NULL);
@@ -778,15 +796,70 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
 
   g_match_info_free(symbol_match_info);
 
+  /* coefficient */
+  coefficient_value = (AgsComplex *) g_new(AgsComplex,
+					   1);
+
+  z = 1.0 + I * 0.0;
+
+  current_offset = 0;
+
+  if(is_signed){
+    current_offset++;
+  }
+
+  /* match pi */
+  c = g_utf8_get_char(coefficient + current_offset);
+
+  match_c = g_utf8_get_char(AGS_SYMBOLIC_PI);
+
+  if(c == match_c){
+    z *= M_PI;
+    
+    offset += strlen(AGS_SYMBOLIC_PI);
+  }
+
+  /* match euler */
+  if(offset < strlen(coefficient)){
+    match_c = g_utf8_get_char(AGS_SYMBOLIC_EULER);
+
+    if(c == match_c){
+      z *= M_E;
+
+      offset += strlen(AGS_SYMBOLIC_EULER);
+    }
+  }
+
+  //TODO:JK: huh
+  /* match more? */
+
+  if(offset < strlen(coefficient)){
+    gchar *endptr;
+
+    gdouble val;
+    
+    endptr = NULL;
+
+    val = g_ascii_strtod(coefficient + offset,
+			 &endptr);
+
+    if(endptr != NULL){
+      z *= val;
+    }
+  }  
+
+  if(coefficient[0] == '-'){
+    z *= -1.0;
+  }
+  
+  ags_complex_set(coefficient_value,
+		  z);
+
   /* get base */
   exponent = NULL;
+  exponent_count = 0;
 
   exponent_value = NULL;
-
-  /* coefficient */
-  z = 1.0 + I * 0.0;
-  ags_complex_set(&(coefficient_value),
-		  z);
   
   /* exponent */
   if(symbol_count > 0){
@@ -800,9 +873,127 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
 		      z);
     }
   }
+  
+  /* parse */
+  current_offset = offset;
 
-  /* parse */  
-  //TODO:JK: implement me
+  success = TRUE;
+  
+  while(success){
+    /* parse symbol */
+    g_regex_match(symbol_regex, polynomial + current_offset, 0, &symbol_match_info);
+    
+    if(g_match_info_matches(symbol_match_info)){
+      gint start_pos, end_pos;
+      
+      g_match_info_fetch_pos(symbol_match_info,
+			     0,
+			     &start_pos, &end_pos);
+      
+      current_offset += end_pos;
+    }else{
+      success = FALSE;
+    }
+    
+    g_match_info_free(symbol_match_info);
+
+    if(!success){
+      break;
+    }
+    
+    /* parse exponent */
+    if(exponent == NULL){
+      exponent = (gchar *) g_malloc(2 * sizeof(gchar *));
+    }else{
+      exponent = (gchar *) g_realloc(exponent,
+				     (exponent_count + 2) * sizeof(gchar *));
+    }
+
+    g_regex_match(exponent_regex, polynomial + current_offset, 0, &exponent_match_info);
+    
+    if(g_match_info_matches(exponent_match_info)){
+      guint tmp_offset;
+      gint start_pos, end_pos;
+      gboolean tmp_is_signed;
+      
+      g_match_info_fetch_pos(exponent_match_info,
+			     0,
+			     &start_pos, &end_pos);
+    
+      exponent[exponent_count] = g_strdup_printf("%*.s",
+						 end_pos - start_pos, polynomial + current_offset + start_pos);
+
+      tmp_offset = current_offset;
+      
+      z = 1.0 + I * 0.0;
+
+      tmp_is_signed = FALSE;
+      
+      if(polynomial[current_offset] == '+' ||
+	 polynomial[current_offset] == '-'){
+	tmp_offset++;
+
+	tmp_is_signed = TRUE;
+      }
+
+      /* match pi */
+      c = g_utf8_get_char(polynomial + tmp_offset);
+
+      match_c = g_utf8_get_char(AGS_SYMBOLIC_PI);
+
+      if(c == match_c){
+	z *= M_PI;
+    
+	tmp_offset += strlen(AGS_SYMBOLIC_PI);
+      }
+
+      /* match euler */
+      if(tmp_offset < end_pos){
+	match_c = g_utf8_get_char(AGS_SYMBOLIC_EULER);
+
+	if(c == match_c){
+	  z *= M_E;
+
+	  tmp_offset += strlen(AGS_SYMBOLIC_EULER);
+	}
+      }
+
+      //TODO:JK: huh
+      /* match more? */
+
+      if(tmp_offset < end_pos){
+	gchar *endptr;
+
+	gdouble val;
+    
+	endptr = NULL;
+
+	val = g_ascii_strtod(polynomial + tmp_offset,
+			     &endptr);
+
+	if(endptr != NULL){
+	  z *= val;
+	}
+      }  
+
+      if(polynomial[0] == '-'){
+	z *= -1.0;
+      }
+      
+      ags_complex_set(&(exponent_value[exponent_count]),
+		      z);
+      
+      current_offset += end_pos;
+    }else{
+      exponent[exponent_count] = g_strdup("1");  
+    }
+	
+    g_match_info_free(exponent_match_info);
+
+    exponent[exponent_count + 1] = NULL;
+        
+    exponent_count++;
+  }
   
   /* apply */
   g_rec_mutex_lock(solver_polynomial_mutex);
@@ -814,9 +1005,7 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
   solver_polynomial->symbol = symbol;
   solver_polynomial->exponent = exponent;
   
-  ags_complex_set(&(solver_polynomial->coefficient_value),
-		  ags_complex_get(&coefficient_value));
-
+  solver_polynomial->coefficient_value = coefficient_value;
   solver_polynomial->exponent_value = exponent_value;
 
   g_rec_mutex_unlock(solver_polynomial_mutex);

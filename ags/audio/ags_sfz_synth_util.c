@@ -457,7 +457,7 @@ ags_sfz_synth_util_copy_s16(gint16 *buffer,
 
   tuning = 100.0 * ((note + 48.0) - base_key);
 
-  g_message("tuning %f", tuning);
+//  g_message("tuning %f", tuning);
   
   ags_hq_pitch_util_compute_s16(im_buffer,
 				frame_count,

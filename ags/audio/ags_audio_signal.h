@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -185,6 +185,9 @@ void ags_audio_signal_add_note(AgsAudioSignal *audio_signal,
 			       GObject *note);
 void ags_audio_signal_remove_note(AgsAudioSignal *audio_signal,
 				  GObject *note);
+
+GList* ags_audio_signal_get_stream(AgsAudioSignal *audio_signal);
+void ags_audio_signal_set_stream(AgsAudioSignal *audio_signal, GList *stream);
 
 /* presets related */
 void ags_audio_signal_refresh_data(AgsAudioSignal *audio_signal);
