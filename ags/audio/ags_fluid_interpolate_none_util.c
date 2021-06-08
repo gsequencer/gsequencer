@@ -90,7 +90,7 @@ ags_fluid_interpolate_none_util_fill_s8(gint8 *destination,
   dsp_i = 0;
 
   /* round to nearest point */
-  dsp_phase_index = fluid_phase_index_round(dsp_phase);
+  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
 
   /* interpolate sequence of sample points */
   for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++){
@@ -144,7 +144,7 @@ ags_fluid_interpolate_none_util_fill_s16(gint16 *destination,
   dsp_i = 0;
 
   /* round to nearest point */
-  dsp_phase_index = fluid_phase_index_round(dsp_phase);
+  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
 
   /* interpolate sequence of sample points */
   for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++){
@@ -198,7 +198,7 @@ ags_fluid_interpolate_none_util_fill_s24(gint32 *destination,
   dsp_i = 0;
 
   /* round to nearest point */
-  dsp_phase_index = fluid_phase_index_round(dsp_phase);
+  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
 
   /* interpolate sequence of sample points */
   for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++){
@@ -252,7 +252,7 @@ ags_fluid_interpolate_none_util_fill_s32(gint32 *destination,
   dsp_i = 0;
 
   /* round to nearest point */
-  dsp_phase_index = fluid_phase_index_round(dsp_phase);
+  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
 
   /* interpolate sequence of sample points */
   for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++){
@@ -306,7 +306,7 @@ ags_fluid_interpolate_none_util_fill_s64(gint64 *destination,
   dsp_i = 0;
 
   /* round to nearest point */
-  dsp_phase_index = fluid_phase_index_round(dsp_phase);
+  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
 
   /* interpolate sequence of sample points */
   for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++){
@@ -360,7 +360,7 @@ ags_fluid_interpolate_none_util_fill_float(gfloat *destination,
   dsp_i = 0;
 
   /* round to nearest point */
-  dsp_phase_index = fluid_phase_index_round(dsp_phase);
+  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
 
   /* interpolate sequence of sample points */
   for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++){
@@ -414,7 +414,7 @@ ags_fluid_interpolate_none_util_fill_double(gdouble *destination,
   dsp_i = 0;
 
   /* round to nearest point */
-  dsp_phase_index = fluid_phase_index_round(dsp_phase);
+  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
 
   /* interpolate sequence of sample points */
   for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++){
@@ -468,7 +468,7 @@ ags_fluid_interpolate_none_util_fill_complex(AgsComplex *destination,
   dsp_i = 0;
 
   /* round to nearest point */
-  dsp_phase_index = fluid_phase_index_round(dsp_phase);
+  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
 
   /* interpolate sequence of sample points */
   for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++){

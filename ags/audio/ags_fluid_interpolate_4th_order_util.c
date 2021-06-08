@@ -38,6 +38,8 @@
 
 #include <ags/audio/ags_fluid_interpolate_4th_order_util.h>
 
+#include <ags/audio/ags_fluid_util.h>
+
 /* 4th Order interpolation table (2 coefficients centered on 1st) */
 gboolean interp_coeff_4th_order_initialized = FALSE;
 
@@ -71,8 +73,8 @@ ags_fluid_interpolate_4th_order_util_config()
     return;
   }
 
-  for(i = 0; i < FLUID_INTERP_MAX; i++){
-    x = (double) i / (double) FLUID_INTERP_MAX;
+  for(i = 0; i < AGS_FLUID_INTERP_MAX; i++){
+    x = (double) i / (double) AGS_FLUID_INTERP_MAX;
 
     interp_coeff_4th_order[i][0] = (x * (-0.5 + x * (1 - 0.5 * x)));
     interp_coeff_4th_order[i][1] = (1.0 + x * x * (1.5 * x - 2.5));
@@ -106,7 +108,6 @@ ags_fluid_interpolate_4th_order_util_fill_s8(gint8 *destination,
   guint64 dsp_phase_incr;
   guint dsp_i;
   guint dsp_phase_index;
-  guint end_index;
   guint start_index, end_index;
   gdouble start_point, end_point1, end_point2;
   gdouble coeffs_0, coeffs_1, coeffs_2, coeffs_3;
@@ -149,18 +150,18 @@ ags_fluid_interpolate_4th_order_util_fill_s8(gint8 *destination,
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
     
-    dsp_buf[dsp_i] = (coeffs_0 * start_point
-		      + coeffs_1 * source[dsp_phase_index]
-		      + coeffs_2 * source[dsp_phase_index + 1]
-		      + coeffs_3 * source[dsp_phase_index + 2]);
+    destination[dsp_i] = (coeffs_0 * start_point
+			  + coeffs_1 * source[dsp_phase_index]
+			  + coeffs_2 * source[dsp_phase_index + 1]
+			  + coeffs_3 * source[dsp_phase_index + 2]);
     
     /* increment phase */
-    fluid_phase_incr(dsp_phase, dsp_phase_incr);
-    dsp_phase_index = fluid_phase_index(dsp_phase);
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
   }
   
   /* interpolate the sequence of sample points */
-  for(; dsp_i < FLUID_BUFSIZE && dsp_phase_index <= end_index; dsp_i++)
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
   {
     gint row;
     
@@ -175,14 +176,14 @@ ags_fluid_interpolate_4th_order_util_fill_s8(gint8 *destination,
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
 
-    dsp_buf[dsp_i] = (coeffs_0 * source[dsp_phase_index - 1]
-		      + coeffs_1 * source[dsp_phase_index]
-		      + coeffs_2 * source[dsp_phase_index + 1]
-		      + coeffs_3 * source[dsp_phase_index + 2]);
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index - 1]
+			  + coeffs_1 * source[dsp_phase_index]
+			  + coeffs_2 * source[dsp_phase_index + 1]
+			  + coeffs_3 * source[dsp_phase_index + 2]);
 
     /* increment phase */
-    fluid_phase_incr(dsp_phase, dsp_phase_incr);
-    dsp_phase_index = fluid_phase_index(dsp_phase);
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
   }
 }
 
@@ -207,7 +208,6 @@ ags_fluid_interpolate_4th_order_util_fill_s16(gint16 *destination,
   guint64 dsp_phase_incr;
   guint dsp_i;
   guint dsp_phase_index;
-  guint end_index;
   guint start_index, end_index;
   gdouble start_point, end_point1, end_point2;
   gdouble coeffs_0, coeffs_1, coeffs_2, coeffs_3;
@@ -250,18 +250,18 @@ ags_fluid_interpolate_4th_order_util_fill_s16(gint16 *destination,
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
     
-    dsp_buf[dsp_i] = (coeffs_0 * start_point
-		      + coeffs_1 * source[dsp_phase_index]
-		      + coeffs_2 * source[dsp_phase_index + 1]
-		      + coeffs_3 * source[dsp_phase_index + 2]);
+    destination[dsp_i] = (coeffs_0 * start_point
+			  + coeffs_1 * source[dsp_phase_index]
+			  + coeffs_2 * source[dsp_phase_index + 1]
+			  + coeffs_3 * source[dsp_phase_index + 2]);
     
     /* increment phase */
-    fluid_phase_incr(dsp_phase, dsp_phase_incr);
-    dsp_phase_index = fluid_phase_index(dsp_phase);
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
   }
   
   /* interpolate the sequence of sample points */
-  for(; dsp_i < FLUID_BUFSIZE && dsp_phase_index <= end_index; dsp_i++)
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
   {
     gint row;
     
@@ -276,14 +276,14 @@ ags_fluid_interpolate_4th_order_util_fill_s16(gint16 *destination,
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
 
-    dsp_buf[dsp_i] = (coeffs_0 * source[dsp_phase_index - 1]
-		      + coeffs_1 * source[dsp_phase_index]
-		      + coeffs_2 * source[dsp_phase_index + 1]
-		      + coeffs_3 * source[dsp_phase_index + 2]);
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index - 1]
+			  + coeffs_1 * source[dsp_phase_index]
+			  + coeffs_2 * source[dsp_phase_index + 1]
+			  + coeffs_3 * source[dsp_phase_index + 2]);
 
     /* increment phase */
-    fluid_phase_incr(dsp_phase, dsp_phase_incr);
-    dsp_phase_index = fluid_phase_index(dsp_phase);
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
   }
 }
 
@@ -308,7 +308,6 @@ ags_fluid_interpolate_4th_order_util_fill_s24(gint32 *destination,
   guint64 dsp_phase_incr;
   guint dsp_i;
   guint dsp_phase_index;
-  guint end_index;
   guint start_index, end_index;
   gdouble start_point, end_point1, end_point2;
   gdouble coeffs_0, coeffs_1, coeffs_2, coeffs_3;
@@ -351,18 +350,18 @@ ags_fluid_interpolate_4th_order_util_fill_s24(gint32 *destination,
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
     
-    dsp_buf[dsp_i] = (coeffs_0 * start_point
-		      + coeffs_1 * source[dsp_phase_index]
-		      + coeffs_2 * source[dsp_phase_index + 1]
-		      + coeffs_3 * source[dsp_phase_index + 2]);
+    destination[dsp_i] = (coeffs_0 * start_point
+			  + coeffs_1 * source[dsp_phase_index]
+			  + coeffs_2 * source[dsp_phase_index + 1]
+			  + coeffs_3 * source[dsp_phase_index + 2]);
     
     /* increment phase */
-    fluid_phase_incr(dsp_phase, dsp_phase_incr);
-    dsp_phase_index = fluid_phase_index(dsp_phase);
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
   }
   
   /* interpolate the sequence of sample points */
-  for(; dsp_i < FLUID_BUFSIZE && dsp_phase_index <= end_index; dsp_i++)
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
   {
     gint row;
     
@@ -377,14 +376,14 @@ ags_fluid_interpolate_4th_order_util_fill_s24(gint32 *destination,
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
 
-    dsp_buf[dsp_i] = (coeffs_0 * source[dsp_phase_index - 1]
-		      + coeffs_1 * source[dsp_phase_index]
-		      + coeffs_2 * source[dsp_phase_index + 1]
-		      + coeffs_3 * source[dsp_phase_index + 2]);
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index - 1]
+			  + coeffs_1 * source[dsp_phase_index]
+			  + coeffs_2 * source[dsp_phase_index + 1]
+			  + coeffs_3 * source[dsp_phase_index + 2]);
 
     /* increment phase */
-    fluid_phase_incr(dsp_phase, dsp_phase_incr);
-    dsp_phase_index = fluid_phase_index(dsp_phase);
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
   }
 }
 
@@ -409,7 +408,6 @@ ags_fluid_interpolate_4th_order_util_fill_s32(gint32 *destination,
   guint64 dsp_phase_incr;
   guint dsp_i;
   guint dsp_phase_index;
-  guint end_index;
   guint start_index, end_index;
   gdouble start_point, end_point1, end_point2;
   gdouble coeffs_0, coeffs_1, coeffs_2, coeffs_3;
@@ -452,18 +450,18 @@ ags_fluid_interpolate_4th_order_util_fill_s32(gint32 *destination,
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
     
-    dsp_buf[dsp_i] = (coeffs_0 * start_point
-		      + coeffs_1 * source[dsp_phase_index]
-		      + coeffs_2 * source[dsp_phase_index + 1]
-		      + coeffs_3 * source[dsp_phase_index + 2]);
+    destination[dsp_i] = (coeffs_0 * start_point
+			  + coeffs_1 * source[dsp_phase_index]
+			  + coeffs_2 * source[dsp_phase_index + 1]
+			  + coeffs_3 * source[dsp_phase_index + 2]);
     
     /* increment phase */
-    fluid_phase_incr(dsp_phase, dsp_phase_incr);
-    dsp_phase_index = fluid_phase_index(dsp_phase);
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
   }
   
   /* interpolate the sequence of sample points */
-  for(; dsp_i < FLUID_BUFSIZE && dsp_phase_index <= end_index; dsp_i++)
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
   {
     gint row;
     
@@ -478,14 +476,14 @@ ags_fluid_interpolate_4th_order_util_fill_s32(gint32 *destination,
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
 
-    dsp_buf[dsp_i] = (coeffs_0 * source[dsp_phase_index - 1]
-		      + coeffs_1 * source[dsp_phase_index]
-		      + coeffs_2 * source[dsp_phase_index + 1]
-		      + coeffs_3 * source[dsp_phase_index + 2]);
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index - 1]
+			  + coeffs_1 * source[dsp_phase_index]
+			  + coeffs_2 * source[dsp_phase_index + 1]
+			  + coeffs_3 * source[dsp_phase_index + 2]);
 
     /* increment phase */
-    fluid_phase_incr(dsp_phase, dsp_phase_incr);
-    dsp_phase_index = fluid_phase_index(dsp_phase);
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
   }
 }
 
@@ -510,7 +508,6 @@ ags_fluid_interpolate_4th_order_util_fill_s64(gint64 *destination,
   guint64 dsp_phase_incr;
   guint dsp_i;
   guint dsp_phase_index;
-  guint end_index;
   guint start_index, end_index;
   gdouble start_point, end_point1, end_point2;
   gdouble coeffs_0, coeffs_1, coeffs_2, coeffs_3;
@@ -553,18 +550,18 @@ ags_fluid_interpolate_4th_order_util_fill_s64(gint64 *destination,
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
     
-    dsp_buf[dsp_i] = (coeffs_0 * start_point
-		      + coeffs_1 * source[dsp_phase_index]
-		      + coeffs_2 * source[dsp_phase_index + 1]
-		      + coeffs_3 * source[dsp_phase_index + 2]);
+    destination[dsp_i] = (coeffs_0 * start_point
+			  + coeffs_1 * source[dsp_phase_index]
+			  + coeffs_2 * source[dsp_phase_index + 1]
+			  + coeffs_3 * source[dsp_phase_index + 2]);
     
     /* increment phase */
-    fluid_phase_incr(dsp_phase, dsp_phase_incr);
-    dsp_phase_index = fluid_phase_index(dsp_phase);
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
   }
   
   /* interpolate the sequence of sample points */
-  for(; dsp_i < FLUID_BUFSIZE && dsp_phase_index <= end_index; dsp_i++)
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
   {
     gint row;
     
@@ -579,14 +576,14 @@ ags_fluid_interpolate_4th_order_util_fill_s64(gint64 *destination,
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
 
-    dsp_buf[dsp_i] = (coeffs_0 * source[dsp_phase_index - 1]
-		      + coeffs_1 * source[dsp_phase_index]
-		      + coeffs_2 * source[dsp_phase_index + 1]
-		      + coeffs_3 * source[dsp_phase_index + 2]);
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index - 1]
+			  + coeffs_1 * source[dsp_phase_index]
+			  + coeffs_2 * source[dsp_phase_index + 1]
+			  + coeffs_3 * source[dsp_phase_index + 2]);
 
     /* increment phase */
-    fluid_phase_incr(dsp_phase, dsp_phase_incr);
-    dsp_phase_index = fluid_phase_index(dsp_phase);
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
   }
 }
 
@@ -611,7 +608,6 @@ ags_fluid_interpolate_4th_order_util_fill_float(gfloat *destination,
   guint64 dsp_phase_incr;
   guint dsp_i;
   guint dsp_phase_index;
-  guint end_index;
   guint start_index, end_index;
   gdouble start_point, end_point1, end_point2;
   gdouble coeffs_0, coeffs_1, coeffs_2, coeffs_3;
@@ -654,18 +650,18 @@ ags_fluid_interpolate_4th_order_util_fill_float(gfloat *destination,
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
     
-    dsp_buf[dsp_i] = (coeffs_0 * start_point
-		      + coeffs_1 * source[dsp_phase_index]
-		      + coeffs_2 * source[dsp_phase_index + 1]
-		      + coeffs_3 * source[dsp_phase_index + 2]);
+    destination[dsp_i] = (coeffs_0 * start_point
+			  + coeffs_1 * source[dsp_phase_index]
+			  + coeffs_2 * source[dsp_phase_index + 1]
+			  + coeffs_3 * source[dsp_phase_index + 2]);
     
     /* increment phase */
-    fluid_phase_incr(dsp_phase, dsp_phase_incr);
-    dsp_phase_index = fluid_phase_index(dsp_phase);
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
   }
   
   /* interpolate the sequence of sample points */
-  for(; dsp_i < FLUID_BUFSIZE && dsp_phase_index <= end_index; dsp_i++)
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
   {
     gint row;
     
@@ -680,14 +676,14 @@ ags_fluid_interpolate_4th_order_util_fill_float(gfloat *destination,
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
 
-    dsp_buf[dsp_i] = (coeffs_0 * source[dsp_phase_index - 1]
-		      + coeffs_1 * source[dsp_phase_index]
-		      + coeffs_2 * source[dsp_phase_index + 1]
-		      + coeffs_3 * source[dsp_phase_index + 2]);
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index - 1]
+			  + coeffs_1 * source[dsp_phase_index]
+			  + coeffs_2 * source[dsp_phase_index + 1]
+			  + coeffs_3 * source[dsp_phase_index + 2]);
 
     /* increment phase */
-    fluid_phase_incr(dsp_phase, dsp_phase_incr);
-    dsp_phase_index = fluid_phase_index(dsp_phase);
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
   }
 }
 
@@ -712,7 +708,6 @@ ags_fluid_interpolate_4th_order_util_fill_double(gdouble *destination,
   guint64 dsp_phase_incr;
   guint dsp_i;
   guint dsp_phase_index;
-  guint end_index;
   guint start_index, end_index;
   gdouble start_point, end_point1, end_point2;
   gdouble coeffs_0, coeffs_1, coeffs_2, coeffs_3;
@@ -755,18 +750,18 @@ ags_fluid_interpolate_4th_order_util_fill_double(gdouble *destination,
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
     
-    dsp_buf[dsp_i] = (coeffs_0 * start_point
-		      + coeffs_1 * source[dsp_phase_index]
-		      + coeffs_2 * source[dsp_phase_index + 1]
-		      + coeffs_3 * source[dsp_phase_index + 2]);
+    destination[dsp_i] = (coeffs_0 * start_point
+			  + coeffs_1 * source[dsp_phase_index]
+			  + coeffs_2 * source[dsp_phase_index + 1]
+			  + coeffs_3 * source[dsp_phase_index + 2]);
     
     /* increment phase */
-    fluid_phase_incr(dsp_phase, dsp_phase_incr);
-    dsp_phase_index = fluid_phase_index(dsp_phase);
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
   }
   
   /* interpolate the sequence of sample points */
-  for(; dsp_i < FLUID_BUFSIZE && dsp_phase_index <= end_index; dsp_i++)
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
   {
     gint row;
     
@@ -781,14 +776,14 @@ ags_fluid_interpolate_4th_order_util_fill_double(gdouble *destination,
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
 
-    dsp_buf[dsp_i] = (coeffs_0 * source[dsp_phase_index - 1]
-		      + coeffs_1 * source[dsp_phase_index]
-		      + coeffs_2 * source[dsp_phase_index + 1]
-		      + coeffs_3 * source[dsp_phase_index + 2]);
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index - 1]
+			  + coeffs_1 * source[dsp_phase_index]
+			  + coeffs_2 * source[dsp_phase_index + 1]
+			  + coeffs_3 * source[dsp_phase_index + 2]);
 
     /* increment phase */
-    fluid_phase_incr(dsp_phase, dsp_phase_incr);
-    dsp_phase_index = fluid_phase_index(dsp_phase);
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
   }
 }
 
@@ -813,7 +808,6 @@ ags_fluid_interpolate_4th_order_util_fill_complex(AgsComplex *destination,
   guint64 dsp_phase_incr;
   guint dsp_i;
   guint dsp_phase_index;
-  guint end_index;
   guint start_index, end_index;
   double _Complex start_point, end_point1, end_point2;
   gdouble coeffs_0, coeffs_1, coeffs_2, coeffs_3;
@@ -856,18 +850,18 @@ ags_fluid_interpolate_4th_order_util_fill_complex(AgsComplex *destination,
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
     
-    dsp_buf[dsp_i] = (coeffs_0 * start_point
-		      + coeffs_1 * ags_complex_get(source + dsp_phase_index)
-		      + coeffs_2 * ags_complex_get(source + dsp_phase_index + 1),
-		      + coeffs_3 * ags_complex_get(source + dsp_phase_index + 2));
+    ags_complex_set(destination + dsp_i, (coeffs_0 * start_point
+					  + coeffs_1 * ags_complex_get(source + dsp_phase_index)
+					  + coeffs_2 * ags_complex_get(source + dsp_phase_index + 1),
+					  + coeffs_3 * ags_complex_get(source + dsp_phase_index + 2)));
     
     /* increment phase */
-    fluid_phase_incr(dsp_phase, dsp_phase_incr);
-    dsp_phase_index = fluid_phase_index(dsp_phase);
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
   }
   
   /* interpolate the sequence of sample points */
-  for(; dsp_i < FLUID_BUFSIZE && dsp_phase_index <= end_index; dsp_i++)
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
   {
     gint row;
     
@@ -882,13 +876,13 @@ ags_fluid_interpolate_4th_order_util_fill_complex(AgsComplex *destination,
     
     g_mutex_unlock(&interp_coeff_4th_order_mutex);
 
-    dsp_buf[dsp_i] = (coeffs_0 * ags_complex_get(source + dsp_phase_index - 1)
-		      + coeffs_1 * ags_complex_get(source + dsp_phase_index)
-		      + coeffs_2 * ags_complex_get(source + dsp_phase_index + 1)
-		      + coeffs_3 * ags_complex_get(source + dsp_phase_index + 2));
+    ags_complex_set(destination + dsp_i, (coeffs_0 * ags_complex_get(source + dsp_phase_index - 1)
+					  + coeffs_1 * ags_complex_get(source + dsp_phase_index)
+					  + coeffs_2 * ags_complex_get(source + dsp_phase_index + 1)
+					  + coeffs_3 * ags_complex_get(source + dsp_phase_index + 2)));
     
     /* increment phase */
-    fluid_phase_incr(dsp_phase, dsp_phase_incr);
-    dsp_phase_index = fluid_phase_index(dsp_phase);
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
   }
 }

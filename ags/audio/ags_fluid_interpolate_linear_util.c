@@ -144,7 +144,7 @@ ags_fluid_interpolate_linear_util_fill_s8(gint8 *destination,
     
     g_mutex_unlock(&interp_coeff_linear_mutex);
 
-    destination[dsp_i] = (coeffs_0_ * source[dsp_phase_index]
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
 			  + coeffs_1 * source[dsp_phase_index + 1]);
     
     /* increment phase */
@@ -214,7 +214,7 @@ ags_fluid_interpolate_linear_util_fill_s16(gint16 *destination,
     
     g_mutex_unlock(&interp_coeff_linear_mutex);
 
-    destination[dsp_i] = (coeffs_0_ * source[dsp_phase_index]
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
 			  + coeffs_1 * source[dsp_phase_index + 1]);
     
     /* increment phase */
@@ -284,7 +284,7 @@ ags_fluid_interpolate_linear_util_fill_s24(gint32 *destination,
     
     g_mutex_unlock(&interp_coeff_linear_mutex);
 
-    destination[dsp_i] = (coeffs_0_ * source[dsp_phase_index]
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
 			  + coeffs_1 * source[dsp_phase_index + 1]);
     
     /* increment phase */
@@ -354,7 +354,7 @@ ags_fluid_interpolate_linear_util_fill_s32(gint32 *destination,
     
     g_mutex_unlock(&interp_coeff_linear_mutex);
 
-    destination[dsp_i] = (coeffs_0_ * source[dsp_phase_index]
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
 			  + coeffs_1 * source[dsp_phase_index + 1]);
     
     /* increment phase */
@@ -424,7 +424,7 @@ ags_fluid_interpolate_linear_util_fill_s64(gint64 *destination,
     
     g_mutex_unlock(&interp_coeff_linear_mutex);
 
-    destination[dsp_i] = (coeffs_0_ * source[dsp_phase_index]
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
 			  + coeffs_1 * source[dsp_phase_index + 1]);
     
     /* increment phase */
@@ -494,7 +494,7 @@ ags_fluid_interpolate_linear_util_fill_float(gfloat *destination,
     
     g_mutex_unlock(&interp_coeff_linear_mutex);
 
-    destination[dsp_i] = (coeffs_0_ * source[dsp_phase_index]
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
 			  + coeffs_1 * source[dsp_phase_index + 1]);
     
     /* increment phase */
@@ -564,7 +564,7 @@ ags_fluid_interpolate_linear_util_fill_double(gdouble *destination,
     
     g_mutex_unlock(&interp_coeff_linear_mutex);
 
-    destination[dsp_i] = (coeffs_0_ * source[dsp_phase_index]
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
 			  + coeffs_1 * source[dsp_phase_index + 1]);
     
     /* increment phase */
@@ -635,8 +635,8 @@ ags_fluid_interpolate_linear_util_fill_complex(AgsComplex *destination,
     g_mutex_unlock(&interp_coeff_linear_mutex);
 
     ags_complex_set(destination + dsp_i,
-		    (coeffs_0_ * ags_complex_get(source + dsp_phase_index)
-		     + coeffs_1 * ags_complex_get(source 1 dsp_phase_index + 1)));
+		    (coeffs_0 * ags_complex_get(source + dsp_phase_index)
+		     + coeffs_1 * ags_complex_get(source + dsp_phase_index + 1)));
     
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
