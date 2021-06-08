@@ -55,6 +55,9 @@ G_BEGIN_DECLS
 
 #define AGS_FLUID_FRACT_MAX ((gdouble) 4294967296.0)
 
+#define AGS_FLUID_INTERP_MAX         256
+#define AGS_SINC_INTERP_ORDER 7     /* 7th order constant */
+
 #define ags_fluid_phase_set(a,b) a=b;
 #define ags_fluid_phase_set_int(a, b)    ((a) = ((guint64)(b)) << 32)
 

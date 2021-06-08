@@ -85,7 +85,7 @@ ags_fluid_interpolate_none_util_fill_s8(gint8 *destination,
   /* Convert playback "speed" floating point value to phase index/fract */
   ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
-  end_index = buffer_length;
+  end_index = buffer_length - 1;
 
   dsp_i = 0;
 
@@ -97,7 +97,7 @@ ags_fluid_interpolate_none_util_fill_s8(gint8 *destination,
     /* write destination */
     destination[dsp_i] = source[dsp_phase_index];
 
-    /* increment phase and amplitude */
+    /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
 
     /* round to nearest point */
@@ -139,7 +139,7 @@ ags_fluid_interpolate_none_util_fill_s16(gint16 *destination,
   /* Convert playback "speed" floating point value to phase index/fract */
   ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
-  end_index = buffer_length;
+  end_index = buffer_length - 1;
 
   dsp_i = 0;
 
@@ -151,7 +151,7 @@ ags_fluid_interpolate_none_util_fill_s16(gint16 *destination,
     /* write destination */
     destination[dsp_i] = source[dsp_phase_index];
 
-    /* increment phase and amplitude */
+    /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
 
     /* round to nearest point */
@@ -193,7 +193,7 @@ ags_fluid_interpolate_none_util_fill_s24(gint32 *destination,
   /* Convert playback "speed" floating point value to phase index/fract */
   ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
-  end_index = buffer_length;
+  end_index = buffer_length - 1;
 
   dsp_i = 0;
 
@@ -205,7 +205,7 @@ ags_fluid_interpolate_none_util_fill_s24(gint32 *destination,
     /* write destination */
     destination[dsp_i] = source[dsp_phase_index];
 
-    /* increment phase and amplitude */
+    /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
 
     /* round to nearest point */
@@ -247,7 +247,7 @@ ags_fluid_interpolate_none_util_fill_s32(gint32 *destination,
   /* Convert playback "speed" floating point value to phase index/fract */
   ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
-  end_index = buffer_length;
+  end_index = buffer_length - 1;
 
   dsp_i = 0;
 
@@ -259,7 +259,7 @@ ags_fluid_interpolate_none_util_fill_s32(gint32 *destination,
     /* write destination */
     destination[dsp_i] = source[dsp_phase_index];
 
-    /* increment phase and amplitude */
+    /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
 
     /* round to nearest point */
@@ -301,7 +301,7 @@ ags_fluid_interpolate_none_util_fill_s64(gint64 *destination,
   /* Convert playback "speed" floating point value to phase index/fract */
   ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
-  end_index = buffer_length;
+  end_index = buffer_length - 1;
 
   dsp_i = 0;
 
@@ -313,7 +313,7 @@ ags_fluid_interpolate_none_util_fill_s64(gint64 *destination,
     /* write destination */
     destination[dsp_i] = source[dsp_phase_index];
 
-    /* increment phase and amplitude */
+    /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
 
     /* round to nearest point */
@@ -355,7 +355,7 @@ ags_fluid_interpolate_none_util_fill_float(gfloat *destination,
   /* Convert playback "speed" floating point value to phase index/fract */
   ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
-  end_index = buffer_length;
+  end_index = buffer_length - 1;
 
   dsp_i = 0;
 
@@ -367,7 +367,7 @@ ags_fluid_interpolate_none_util_fill_float(gfloat *destination,
     /* write destination */
     destination[dsp_i] = source[dsp_phase_index];
 
-    /* increment phase and amplitude */
+    /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
 
     /* round to nearest point */
@@ -409,7 +409,7 @@ ags_fluid_interpolate_none_util_fill_double(gdouble *destination,
   /* Convert playback "speed" floating point value to phase index/fract */
   ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
-  end_index = buffer_length;
+  end_index = buffer_length - 1;
 
   dsp_i = 0;
 
@@ -421,7 +421,7 @@ ags_fluid_interpolate_none_util_fill_double(gdouble *destination,
     /* write destination */
     destination[dsp_i] = source[dsp_phase_index];
 
-    /* increment phase and amplitude */
+    /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
 
     /* round to nearest point */
@@ -463,7 +463,7 @@ ags_fluid_interpolate_none_util_fill_complex(AgsComplex *destination,
   /* Convert playback "speed" floating point value to phase index/fract */
   ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
-  end_index = buffer_length;
+  end_index = buffer_length - 1;
 
   dsp_i = 0;
 
@@ -476,7 +476,7 @@ ags_fluid_interpolate_none_util_fill_complex(AgsComplex *destination,
     ags_complex_set(destination + dsp_i,
 		    ags_complex_get(source + dsp_phase_index));
 
-    /* increment phase and amplitude */
+    /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
 
     /* round to nearest point */
