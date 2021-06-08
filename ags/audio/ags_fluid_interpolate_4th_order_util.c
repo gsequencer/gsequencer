@@ -90,7 +90,7 @@ ags_fluid_interpolate_4th_order_util_config()
  * @destination: the destination audio buffer
  * @source: the source audio buffer
  * @buffer_length: the buffer length
- * @factor: the factor to interpolate
+ * @phase_incr: the phase increment
  * 
  * Perform fluid interpolate 4th order on @buffer and return the result in @output_buffer.
  * 
@@ -100,7 +100,7 @@ void
 ags_fluid_interpolate_4th_order_util_fill_s8(gint8 *destination,
 					     gint8 *source,
 					     guint buffer_length,
-					     gdouble factor)
+					     gdouble phase_incr)
 {
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
@@ -191,7 +191,7 @@ ags_fluid_interpolate_4th_order_util_fill_s8(gint8 *destination,
  * @destination: the destination audio buffer
  * @source: the source audio buffer
  * @buffer_length: the buffer length
- * @factor: the factor to interpolate
+ * @phase_incr: the phase increment
  * 
  * Perform fluid interpolate 4th order on @buffer and return the result in @output_buffer.
  * 
@@ -201,7 +201,7 @@ void
 ags_fluid_interpolate_4th_order_util_fill_s16(gint16 *destination,
 					      gint16 *source,
 					      guint buffer_length,
-					      gdouble factor)
+					      gdouble phase_incr)
 {
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
@@ -292,7 +292,7 @@ ags_fluid_interpolate_4th_order_util_fill_s16(gint16 *destination,
  * @destination: the destination audio buffer
  * @source: the source audio buffer
  * @buffer_length: the buffer length
- * @factor: the factor to interpolate
+ * @phase_incr: the phase increment
  * 
  * Perform fluid interpolate 4th order on @buffer and return the result in @output_buffer.
  * 
@@ -302,7 +302,7 @@ void
 ags_fluid_interpolate_4th_order_util_fill_s24(gint32 *destination,
 					      gint32 *source,
 					      guint buffer_length,
-					      gdouble factor)
+					      gdouble phase_incr)
 {
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
@@ -393,7 +393,7 @@ ags_fluid_interpolate_4th_order_util_fill_s24(gint32 *destination,
  * @destination: the destination audio buffer
  * @source: the source audio buffer
  * @buffer_length: the buffer length
- * @factor: the factor to interpolate
+ * @phase_incr: the phase increment
  * 
  * Perform fluid interpolate 4th order on @buffer and return the result in @output_buffer.
  * 
@@ -403,7 +403,7 @@ void
 ags_fluid_interpolate_4th_order_util_fill_s32(gint32 *destination,
 					      gint32 *source,
 					      guint buffer_length,
-					      gdouble factor)
+					      gdouble phase_incr)
 {
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
@@ -494,7 +494,7 @@ ags_fluid_interpolate_4th_order_util_fill_s32(gint32 *destination,
  * @destination: the destination audio buffer
  * @source: the source audio buffer
  * @buffer_length: the buffer length
- * @factor: the factor to interpolate
+ * @phase_incr: the phase increment
  * 
  * Perform fluid interpolate 4th order on @buffer and return the result in @output_buffer.
  * 
@@ -504,7 +504,7 @@ void
 ags_fluid_interpolate_4th_order_util_fill_s64(gint64 *destination,
 					      gint64 *source,
 					      guint buffer_length,
-					      gdouble factor)
+					      gdouble phase_incr)
 {
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
@@ -595,7 +595,7 @@ ags_fluid_interpolate_4th_order_util_fill_s64(gint64 *destination,
  * @destination: the destination audio buffer
  * @source: the source audio buffer
  * @buffer_length: the buffer length
- * @factor: the factor to interpolate
+ * @phase_incr: the phase increment
  * 
  * Perform fluid interpolate 4th order on @buffer and return the result in @output_buffer.
  * 
@@ -605,7 +605,7 @@ void
 ags_fluid_interpolate_4th_order_util_fill_float(gfloat *destination,
 						gfloat *source,
 						guint buffer_length,
-						gdouble factor)
+						gdouble phase_incr)
 {
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
@@ -696,7 +696,7 @@ ags_fluid_interpolate_4th_order_util_fill_float(gfloat *destination,
  * @destination: the destination audio buffer
  * @source: the source audio buffer
  * @buffer_length: the buffer length
- * @factor: the factor to interpolate
+ * @phase_incr: the phase increment
  * 
  * Perform fluid interpolate 4th order on @buffer and return the result in @output_buffer.
  * 
@@ -706,7 +706,7 @@ void
 ags_fluid_interpolate_4th_order_util_fill_double(gdouble *destination,
 						 gdouble *source,
 						 guint buffer_length,
-						 gdouble factor)
+						 gdouble phase_incr)
 {
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
@@ -797,7 +797,7 @@ ags_fluid_interpolate_4th_order_util_fill_double(gdouble *destination,
  * @destination: the destination audio buffer
  * @source: the source audio buffer
  * @buffer_length: the buffer length
- * @factor: the factor to interpolate
+ * @phase_incr: the phase increment
  * 
  * Perform fluid interpolate 4th order on @buffer and return the result in @output_buffer.
  * 
@@ -807,7 +807,7 @@ void
 ags_fluid_interpolate_4th_order_util_fill_complex(AgsComplex *destination,
 						  AgsComplex *source,
 						  guint buffer_length,
-						  gdouble factor)
+						  gdouble phase_incr)
 {
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
@@ -815,7 +815,7 @@ ags_fluid_interpolate_4th_order_util_fill_complex(AgsComplex *destination,
   guint dsp_phase_index;
   guint end_index;
   guint start_index, end_index;
-  gdouble start_point, end_point1, end_point2;
+  double _Complex start_point, end_point1, end_point2;
   gdouble coeffs_0, coeffs_1, coeffs_2, coeffs_3;
 
   if(destination == NULL ||
@@ -832,9 +832,9 @@ ags_fluid_interpolate_4th_order_util_fill_complex(AgsComplex *destination,
   end_index = buffer_length - 1;
 
   start_index = 0;
-  start_point = source[0];
+  start_point = ags_complex_get(source);
 
-  end_point1 = source[end_index];
+  end_point1 = ags_complex_get(source + end_index);
   end_point2 = end_point1;
 
   dsp_i = 0;

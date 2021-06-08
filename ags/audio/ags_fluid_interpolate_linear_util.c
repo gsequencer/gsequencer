@@ -597,7 +597,7 @@ ags_fluid_interpolate_linear_util_fill_complex(AgsComplex *destination,
   guint dsp_i;
   guint dsp_phase_index;
   guint end_index;
-  gdouble point;
+  double _Complex point;
   gdouble coeffs_0, coeffs_1;
 
   if(destination == NULL ||
@@ -613,7 +613,7 @@ ags_fluid_interpolate_linear_util_fill_complex(AgsComplex *destination,
 
   end_index = buffer_length - 1;
 
-  point = source[end_index];
+  point = ags_complex_get(source + end_index);
 
   dsp_i = 0;
 
