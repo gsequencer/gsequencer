@@ -40,6 +40,13 @@
 
 #include <ags/audio/ags_fluid_util.h>
 
+/* Linear interpolation table (2 coefficients centered on 1st) */
+gboolean interp_coeff_linear_initialized = FALSE;
+
+gdouble interp_coeff_linear[AGS_FLUID_INTERP_MAX][2];
+
+GMutex interp_coeff_linear_mutex;
+
 /**
  * SECTION:ags_fluid_interpolate_linear_util
  * @short_description: util functions to fluid interpolate linear
@@ -50,13 +57,6 @@
  * These utility functions allow you to fill fluid interpolated
  * linear data.
  */
-
-/* Linear interpolation table (2 coefficients centered on 1st) */
-gboolean interp_coeff_linear_initialized = FALSE;
-
-gdouble interp_coeff_linear[AGS_FLUID_INTERP_MAX][2];
-
-GMutex interp_coeff_linear_mutex;
 
 /* Initializes interpolation tables */
 void
@@ -72,7 +72,7 @@ ags_fluid_interpolate_linear_util_config()
 
     return;
   }
-
+  
   for(i = 0; i < AGS_FLUID_INTERP_MAX; i++){
     x = (double) i / (double) AGS_FLUID_INTERP_MAX;
 
@@ -119,7 +119,7 @@ ags_fluid_interpolate_linear_util_fill_s8(gint8 *destination,
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
-  ags_fluid_phase_set_float(dsp_phase_incr, voice->phase_incr);
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
   end_index = buffer_length - 1;
 
@@ -189,7 +189,7 @@ ags_fluid_interpolate_linear_util_fill_s16(gint16 *destination,
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
-  ags_fluid_phase_set_float(dsp_phase_incr, voice->phase_incr);
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
   end_index = buffer_length - 1;
 
@@ -259,7 +259,7 @@ ags_fluid_interpolate_linear_util_fill_s24(gint32 *destination,
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
-  ags_fluid_phase_set_float(dsp_phase_incr, voice->phase_incr);
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
   end_index = buffer_length - 1;
 
@@ -329,7 +329,7 @@ ags_fluid_interpolate_linear_util_fill_s32(gint32 *destination,
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
-  ags_fluid_phase_set_float(dsp_phase_incr, voice->phase_incr);
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
   end_index = buffer_length - 1;
 
@@ -399,7 +399,7 @@ ags_fluid_interpolate_linear_util_fill_s64(gint64 *destination,
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
-  ags_fluid_phase_set_float(dsp_phase_incr, voice->phase_incr);
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
   end_index = buffer_length - 1;
 
@@ -469,7 +469,7 @@ ags_fluid_interpolate_linear_util_fill_float(gfloat *destination,
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
-  ags_fluid_phase_set_float(dsp_phase_incr, voice->phase_incr);
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
   end_index = buffer_length - 1;
 
@@ -539,7 +539,7 @@ ags_fluid_interpolate_linear_util_fill_double(gdouble *destination,
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
-  ags_fluid_phase_set_float(dsp_phase_incr, voice->phase_incr);
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
   end_index = buffer_length - 1;
 
@@ -609,7 +609,7 @@ ags_fluid_interpolate_linear_util_fill_complex(AgsComplex *destination,
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
-  ags_fluid_phase_set_float(dsp_phase_incr, voice->phase_incr);
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
 
   end_index = buffer_length - 1;
 
