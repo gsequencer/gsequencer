@@ -30,8 +30,8 @@ GMutex interp_coeff_7th_order_mutex;
 
 /**
  * SECTION:ags_fluid_interpolate_7th_order_util
- * @short_description: util functions to fluid interpolate 7th_order
- * @title: AgsFluidInterpolate7th_OrderUtil
+ * @short_description: util functions to fluid interpolate 7th order
+ * @title: AgsFluidInterpolate7thOrderUtil
  * @section_id:
  * @include: ags/audio/ags_fluid_interpolate_7th_order_util.h
  *

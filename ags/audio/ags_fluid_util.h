@@ -49,14 +49,16 @@
 
 G_BEGIN_DECLS
 
-#define AGS_FLUID_INTERP_BITS        8
-#define AGS_FLUID_INTERP_BITS_MASK   0xff000000
-#define AGS_FLUID_INTERP_BITS_SHIFT  24
+#define AGS_FLUID_INTERP_BITS        (8)
+#define AGS_FLUID_INTERP_BITS_MASK   (0xff000000)
+#define AGS_FLUID_INTERP_BITS_SHIFT  (24)
 
 #define AGS_FLUID_FRACT_MAX ((gdouble) 4294967296.0)
 
-#define AGS_FLUID_INTERP_MAX         256
+#define AGS_FLUID_INTERP_MAX         (256)
 #define AGS_FLUID_SINC_INTERP_ORDER 7     /* 7th order constant */
+
+#define AGS_FLUID_CENTS_HZ_SIZE     (1200)
 
 #define ags_fluid_phase_set(a,b) a=b;
 #define ags_fluid_phase_set_int(a, b)    ((a) = ((guint64)(b)) << 32)
@@ -89,6 +91,9 @@ G_BEGIN_DECLS
 #define ags_fluid_phase_sub_int(a, b)  ((a) -= (guint64)(b) << 32)
 
 #define ags_fluid_phase_index_plusplus(a)  (((a) += 0x100000000LL)
+
+gdouble ags_fluid_ct2hz_real(gdouble cents);
+gdouble ags_fluid_ct2hz(gdouble cents);
 
 G_END_DECLS
 

@@ -1129,6 +1129,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_fluid_iir_filter_util.c \
 	ags/audio/ags_fluid_interpolate_linear_util.c \
 	ags/audio/ags_fluid_interpolate_none_util.c \
+	ags/audio/ags_fluid_util.c \
 	ags/audio/ags_fm_synth_util.c \
 	ags/audio/ags_fourier_transform_util.c \
 	ags/audio/ags_frequency_aliase_util.c \

@@ -49,8 +49,8 @@ GMutex interp_coeff_4th_order_mutex;
 
 /**
  * SECTION:ags_fluid_interpolate_4th_order_util
- * @short_description: util functions to fluid interpolate 4th_order
- * @title: AgsFluidInterpolate4th_OrderUtil
+ * @short_description: util functions to fluid interpolate 4th order
+ * @title: AgsFluidInterpolate4thOrderUtil
  * @section_id:
  * @include: ags/audio/ags_fluid_interpolate_4th_order_util.h
  *
