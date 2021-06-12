@@ -40,12 +40,18 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.8.12" date="2021-06-12">
+      <description>
+	<p>New functions added with Fluidsynth power.</p>
+      </description>
+    </release>
+
     <release version="3.8.11" date="2021-06-02">
       <description>
 	<p>fixed ags_hq_pitch_util.c wrong interpolate factor, affecting AgsFFPlayer and AgsPitchSampler.</p>
       </description>
     </release>
-
+    
     <release version="3.8.10" date="2021-04-09">
       <description>
 	<p>improved hq pitch util.</p>

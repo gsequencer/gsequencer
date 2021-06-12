@@ -88,7 +88,7 @@ void ags_fluid_iir_filter_util_apply_s32(AgsFluidIIRFilter *iir_filter,
 void ags_fluid_iir_filter_util_apply_s64(AgsFluidIIRFilter *iir_filter,
 					 gint64 *destination,
 					 gint64 *source,
-					 guint buffer_lengt);
+					 guint buffer_length);
 void ags_fluid_iir_filter_util_apply_float(AgsFluidIIRFilter *iir_filter,
 					   gfloat *destination,
 					   gfloat *source,

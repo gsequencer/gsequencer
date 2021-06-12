@@ -21,6 +21,7 @@
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_fluid_util.h>
 #include <ags/audio/ags_fluid_interpolate_none_util.h>
 #include <ags/audio/ags_fluid_interpolate_linear_util.h>
 #include <ags/audio/ags_fluid_interpolate_4th_order_util.h>
@@ -69,9 +70,9 @@ ags_fluid_pitch_util_compute_s8(gint8 *buffer,
 					   AGS_SOUNDCARD_SIGNED_8_BIT);
 
   /* pitch */
-  root_pitch_hz = ags_fluid_ct2hz_real(100.0 * base_key);
+  root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
   
-  phase_incr = ags_fluid_ct2hz_real(tuning) / root_pitch_hz;
+  phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
 
   if(phase_incr == 0.0){
     phase_incr = 1.0;
@@ -116,7 +117,7 @@ ags_fluid_pitch_util_compute_s8(gint8 *buffer,
     g_warning("invalid interpolation method");
   }
 
-  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint16));
+  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint8));
 
   ags_stream_free(mix_buffer);
 }
@@ -151,9 +152,9 @@ ags_fluid_pitch_util_compute_s16(gint16 *buffer,
 					   AGS_SOUNDCARD_SIGNED_16_BIT);
 
   /* pitch */
-  root_pitch_hz = ags_fluid_ct2hz_real(100.0 * base_key);
+  root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
   
-  phase_incr = ags_fluid_ct2hz_real(tuning) / root_pitch_hz;
+  phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
 
   if(phase_incr == 0.0){
     phase_incr = 1.0;
@@ -233,9 +234,9 @@ ags_fluid_pitch_util_compute_s24(gint32 *buffer,
 					   AGS_SOUNDCARD_SIGNED_24_BIT);
 
   /* pitch */
-  root_pitch_hz = ags_fluid_ct2hz_real(100.0 * base_key);
+  root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
   
-  phase_incr = ags_fluid_ct2hz_real(tuning) / root_pitch_hz;
+  phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
 
   if(phase_incr == 0.0){
     phase_incr = 1.0;
@@ -280,7 +281,7 @@ ags_fluid_pitch_util_compute_s24(gint32 *buffer,
     g_warning("invalid interpolation method");
   }
 
-  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint16));
+  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint32));
 
   ags_stream_free(mix_buffer);
 }
@@ -315,9 +316,9 @@ ags_fluid_pitch_util_compute_s32(gint32 *buffer,
 					   AGS_SOUNDCARD_SIGNED_32_BIT);
 
   /* pitch */
-  root_pitch_hz = ags_fluid_ct2hz_real(100.0 * base_key);
+  root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
   
-  phase_incr = ags_fluid_ct2hz_real(tuning) / root_pitch_hz;
+  phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
 
   if(phase_incr == 0.0){
     phase_incr = 1.0;
@@ -362,7 +363,7 @@ ags_fluid_pitch_util_compute_s32(gint32 *buffer,
     g_warning("invalid interpolation method");
   }
 
-  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint16));
+  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint32));
 
   ags_stream_free(mix_buffer);
 }
@@ -397,9 +398,9 @@ ags_fluid_pitch_util_compute_s64(gint64 *buffer,
 					   AGS_SOUNDCARD_SIGNED_64_BIT);
 
   /* pitch */
-  root_pitch_hz = ags_fluid_ct2hz_real(100.0 * base_key);
+  root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
   
-  phase_incr = ags_fluid_ct2hz_real(tuning) / root_pitch_hz;
+  phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
 
   if(phase_incr == 0.0){
     phase_incr = 1.0;
@@ -444,7 +445,7 @@ ags_fluid_pitch_util_compute_s64(gint64 *buffer,
     g_warning("invalid interpolation method");
   }
 
-  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint16));
+  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint64));
 
   ags_stream_free(mix_buffer);
 }
@@ -479,9 +480,9 @@ ags_fluid_pitch_util_compute_float(gfloat *buffer,
 					   AGS_SOUNDCARD_FLOAT);
 
   /* pitch */
-  root_pitch_hz = ags_fluid_ct2hz_real(100.0 * base_key);
+  root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
   
-  phase_incr = ags_fluid_ct2hz_real(tuning) / root_pitch_hz;
+  phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
 
   if(phase_incr == 0.0){
     phase_incr = 1.0;
@@ -526,7 +527,7 @@ ags_fluid_pitch_util_compute_float(gfloat *buffer,
     g_warning("invalid interpolation method");
   }
 
-  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint16));
+  memcpy(buffer, mix_buffer, buffer_length * sizeof(gfloat));
 
   ags_stream_free(mix_buffer);
 }
@@ -561,9 +562,9 @@ ags_fluid_pitch_util_compute_double(gdouble *buffer,
 					    AGS_SOUNDCARD_DOUBLE);
 
   /* pitch */
-  root_pitch_hz = ags_fluid_ct2hz_real(100.0 * base_key);
+  root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
   
-  phase_incr = ags_fluid_ct2hz_real(tuning) / root_pitch_hz;
+  phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
 
   if(phase_incr == 0.0){
     phase_incr = 1.0;
@@ -608,7 +609,7 @@ ags_fluid_pitch_util_compute_double(gdouble *buffer,
     g_warning("invalid interpolation method");
   }
 
-  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint16));
+  memcpy(buffer, mix_buffer, buffer_length * sizeof(gdouble));
 
   ags_stream_free(mix_buffer);
 }
@@ -643,9 +644,9 @@ ags_fluid_pitch_util_compute_complex(AgsComplex *buffer,
 					       AGS_SOUNDCARD_COMPLEX);
 
   /* pitch */
-  root_pitch_hz = ags_fluid_ct2hz_real(100.0 * base_key);
+  root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
   
-  phase_incr = ags_fluid_ct2hz_real(tuning) / root_pitch_hz;
+  phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
 
   if(phase_incr == 0.0){
     phase_incr = 1.0;
@@ -690,7 +691,7 @@ ags_fluid_pitch_util_compute_complex(AgsComplex *buffer,
     g_warning("invalid interpolation method");
   }
 
-  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint16));
+  memcpy(buffer, mix_buffer, buffer_length * sizeof(AgsComplex));
 
   ags_stream_free(mix_buffer);
 }

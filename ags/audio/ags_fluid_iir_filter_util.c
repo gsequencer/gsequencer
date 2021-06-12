@@ -170,8 +170,10 @@ ags_fluid_iir_filter_util_calculate_coefficients(AgsFluidIIRFilter *iir_filter,
 
 /**
  * ags_fluid_iir_filter_util_calc:
+ * @iir_filter: the #AgsFluidIIRFilter-struct containing filter parameters
  * @output_rate: the output rate
  * @fres_mod: the fres mod
+ * @transition_samples: the transition samples
  * 
  * Calc fluid IIR filter.
  * 
