@@ -1,3 +1,8 @@
+ags (3.8.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed gtk-doc missing sections
+
 ags (3.8.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
