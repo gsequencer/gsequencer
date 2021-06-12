@@ -7,6 +7,7 @@ ags (3.8.12)
 	* implemented ags_fluid_interpolate_4th_order_util.[ch]
 	* implemented ags_fluid_interpolate_7th_order_util.[ch]
 	* implemented ags_fluid_iir_filter_util.[ch]
+	* TODO:JK: implemented ags_fluid_pitch_util.[ch]
 	* updated user's handbook chapter 3, added missing key modifier description shift and left or right
 
 ags (3.8.11)
