@@ -118,6 +118,8 @@ ags_fluid_interpolate_4th_order_util_fill_s8(gint8 *destination,
     return;
   }
   
+  ags_fluid_interpolate_4th_order_util_config();
+  
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -138,7 +140,7 @@ ags_fluid_interpolate_4th_order_util_fill_s8(gint8 *destination,
   /* interpolate first sample point (start or loop start) if needed */
   for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
     gint row;
-    
+        
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
     g_mutex_lock(&interp_coeff_4th_order_mutex);
@@ -154,7 +156,7 @@ ags_fluid_interpolate_4th_order_util_fill_s8(gint8 *destination,
 			  + coeffs_1 * source[dsp_phase_index]
 			  + coeffs_2 * source[dsp_phase_index + 1]
 			  + coeffs_3 * source[dsp_phase_index + 2]);
-    
+
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
     dsp_phase_index = ags_fluid_phase_index(dsp_phase);
@@ -218,6 +220,8 @@ ags_fluid_interpolate_4th_order_util_fill_s16(gint16 *destination,
     return;
   }
   
+  ags_fluid_interpolate_4th_order_util_config();
+
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -238,7 +242,7 @@ ags_fluid_interpolate_4th_order_util_fill_s16(gint16 *destination,
   /* interpolate first sample point (start or loop start) if needed */
   for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
     gint row;
-    
+
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
     g_mutex_lock(&interp_coeff_4th_order_mutex);
@@ -317,6 +321,8 @@ ags_fluid_interpolate_4th_order_util_fill_s24(gint32 *destination,
      buffer_length == 0){
     return;
   }
+  
+  ags_fluid_interpolate_4th_order_util_config();
   
   dsp_phase = 0;
 
@@ -418,6 +424,8 @@ ags_fluid_interpolate_4th_order_util_fill_s32(gint32 *destination,
     return;
   }
   
+  ags_fluid_interpolate_4th_order_util_config();
+  
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -517,6 +525,8 @@ ags_fluid_interpolate_4th_order_util_fill_s64(gint64 *destination,
      buffer_length == 0){
     return;
   }
+  
+  ags_fluid_interpolate_4th_order_util_config();
   
   dsp_phase = 0;
 
@@ -618,6 +628,8 @@ ags_fluid_interpolate_4th_order_util_fill_float(gfloat *destination,
     return;
   }
   
+  ags_fluid_interpolate_4th_order_util_config();
+  
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -718,6 +730,8 @@ ags_fluid_interpolate_4th_order_util_fill_double(gdouble *destination,
     return;
   }
   
+  ags_fluid_interpolate_4th_order_util_config();
+  
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -817,6 +831,8 @@ ags_fluid_interpolate_4th_order_util_fill_complex(AgsComplex *destination,
      buffer_length == 0){
     return;
   }
+  
+  ags_fluid_interpolate_4th_order_util_config();
   
   dsp_phase = 0;
 

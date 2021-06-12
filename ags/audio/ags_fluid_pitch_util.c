@@ -21,7 +21,13 @@
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
-#include <ags/audio/ags_linear_interpolate_util.h>
+#include <ags/audio/ags_fluid_interpolate_none_util.h>
+#include <ags/audio/ags_fluid_interpolate_linear_util.h>
+#include <ags/audio/ags_fluid_interpolate_4th_order_util.h>
+#include <ags/audio/ags_fluid_interpolate_7th_order_util.h>
+
+#include <math.h>
+#include <string.h>
 
 /**
  * SECTION:ags_fluid_pitch_util
@@ -51,8 +57,68 @@ ags_fluid_pitch_util_compute_s8(gint8 *buffer,
 				guint samplerate,
 				gdouble base_key,
 				gdouble tuning)
-{
-  //TODO:JK: implement me
+{  
+  gint8 *mix_buffer;
+  
+  gdouble root_pitch_hz;
+  gdouble phase_incr;
+
+  guint interp_method;
+  
+  mix_buffer = (gint16 *) ags_stream_alloc(buffer_length,
+					   AGS_SOUNDCARD_SIGNED_8_BIT);
+
+  /* pitch */
+  root_pitch_hz = ags_fluid_ct2hz_real(100.0 * base_key);
+  
+  phase_incr = ags_fluid_ct2hz_real(tuning) / root_pitch_hz;
+
+  if(phase_incr == 0.0){
+    phase_incr = 1.0;
+  }
+
+  interp_method = 4;
+
+  switch(interp_method){
+  case 0:
+  {
+    ags_fluid_interpolate_none_util_fill_s8(mix_buffer,
+					    buffer,
+					    buffer_length,
+					    phase_incr);
+  }
+  break;
+  case 1:
+  {
+    ags_fluid_interpolate_linear_util_fill_s8(mix_buffer,
+					      buffer,
+					      buffer_length,
+					      phase_incr);
+  }
+  break;
+  case 4:
+  {
+    ags_fluid_interpolate_4th_order_util_fill_s8(mix_buffer,
+						 buffer,
+						 buffer_length,
+						 phase_incr);
+  }
+  break;
+  case 7:
+  {
+    ags_fluid_interpolate_7th_order_util_fill_s8(mix_buffer,
+						 buffer,
+						 buffer_length,
+						 phase_incr);
+  }
+  break;
+  default:
+    g_warning("invalid interpolation method");
+  }
+
+  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint16));
+
+  ags_stream_free(mix_buffer);
 }
 
 /**
@@ -74,7 +140,67 @@ ags_fluid_pitch_util_compute_s16(gint16 *buffer,
 				 gdouble base_key,
 				 gdouble tuning)
 {
-  //TODO:JK: implement me
+  gint16 *mix_buffer;
+  
+  gdouble root_pitch_hz;
+  gdouble phase_incr;
+
+  guint interp_method;
+  
+  mix_buffer = (gint16 *) ags_stream_alloc(buffer_length,
+					   AGS_SOUNDCARD_SIGNED_16_BIT);
+
+  /* pitch */
+  root_pitch_hz = ags_fluid_ct2hz_real(100.0 * base_key);
+  
+  phase_incr = ags_fluid_ct2hz_real(tuning) / root_pitch_hz;
+
+  if(phase_incr == 0.0){
+    phase_incr = 1.0;
+  }
+
+  interp_method = 4;
+
+  switch(interp_method){
+  case 0:
+  {
+    ags_fluid_interpolate_none_util_fill_s16(mix_buffer,
+					     buffer,
+					     buffer_length,
+					     phase_incr);
+  }
+  break;
+  case 1:
+  {
+    ags_fluid_interpolate_linear_util_fill_s16(mix_buffer,
+					       buffer,
+					       buffer_length,
+					       phase_incr);
+  }
+  break;
+  case 4:
+  {
+    ags_fluid_interpolate_4th_order_util_fill_s16(mix_buffer,
+						  buffer,
+						  buffer_length,
+						  phase_incr);
+  }
+  break;
+  case 7:
+  {
+    ags_fluid_interpolate_7th_order_util_fill_s16(mix_buffer,
+						  buffer,
+						  buffer_length,
+						  phase_incr);
+  }
+  break;
+  default:
+    g_warning("invalid interpolation method");
+  }
+
+  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint16));
+
+  ags_stream_free(mix_buffer);
 }
 
 /**
@@ -96,6 +222,67 @@ ags_fluid_pitch_util_compute_s24(gint32 *buffer,
 				 gdouble base_key,
 				 gdouble tuning)
 {
+  gint32 *mix_buffer;
+  
+  gdouble root_pitch_hz;
+  gdouble phase_incr;
+
+  guint interp_method;
+
+  mix_buffer = (gint32 *) ags_stream_alloc(buffer_length,
+					   AGS_SOUNDCARD_SIGNED_24_BIT);
+
+  /* pitch */
+  root_pitch_hz = ags_fluid_ct2hz_real(100.0 * base_key);
+  
+  phase_incr = ags_fluid_ct2hz_real(tuning) / root_pitch_hz;
+
+  if(phase_incr == 0.0){
+    phase_incr = 1.0;
+  }
+
+  interp_method = 4;
+
+  switch(interp_method){
+  case 0:
+  {
+    ags_fluid_interpolate_none_util_fill_s24(mix_buffer,
+					     buffer,
+					     buffer_length,
+					     phase_incr);
+  }
+  break;
+  case 1:
+  {
+    ags_fluid_interpolate_linear_util_fill_s24(mix_buffer,
+					       buffer,
+					       buffer_length,
+					       phase_incr);
+  }
+  break;
+  case 4:
+  {
+    ags_fluid_interpolate_4th_order_util_fill_s24(mix_buffer,
+						  buffer,
+						  buffer_length,
+						  phase_incr);
+  }
+  break;
+  case 7:
+  {
+    ags_fluid_interpolate_7th_order_util_fill_s24(mix_buffer,
+						  buffer,
+						  buffer_length,
+						  phase_incr);
+  }
+  break;
+  default:
+    g_warning("invalid interpolation method");
+  }
+
+  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint16));
+
+  ags_stream_free(mix_buffer);
 }
 
 /**
@@ -117,7 +304,67 @@ ags_fluid_pitch_util_compute_s32(gint32 *buffer,
 				 gdouble base_key,
 				 gdouble tuning)
 {
-  //TODO:JK: implement me
+  gint32 *mix_buffer;
+  
+  gdouble root_pitch_hz;
+  gdouble phase_incr;
+
+  guint interp_method;
+  
+  mix_buffer = (gint32 *) ags_stream_alloc(buffer_length,
+					   AGS_SOUNDCARD_SIGNED_32_BIT);
+
+  /* pitch */
+  root_pitch_hz = ags_fluid_ct2hz_real(100.0 * base_key);
+  
+  phase_incr = ags_fluid_ct2hz_real(tuning) / root_pitch_hz;
+
+  if(phase_incr == 0.0){
+    phase_incr = 1.0;
+  }
+
+  interp_method = 4;
+
+  switch(interp_method){
+  case 0:
+  {
+    ags_fluid_interpolate_none_util_fill_s32(mix_buffer,
+					     buffer,
+					     buffer_length,
+					     phase_incr);
+  }
+  break;
+  case 1:
+  {
+    ags_fluid_interpolate_linear_util_fill_s32(mix_buffer,
+					       buffer,
+					       buffer_length,
+					       phase_incr);
+  }
+  break;
+  case 4:
+  {
+    ags_fluid_interpolate_4th_order_util_fill_s32(mix_buffer,
+						  buffer,
+						  buffer_length,
+						  phase_incr);
+  }
+  break;
+  case 7:
+  {
+    ags_fluid_interpolate_7th_order_util_fill_s32(mix_buffer,
+						  buffer,
+						  buffer_length,
+						  phase_incr);
+  }
+  break;
+  default:
+    g_warning("invalid interpolation method");
+  }
+
+  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint16));
+
+  ags_stream_free(mix_buffer);
 }
 
 /**
@@ -139,7 +386,67 @@ ags_fluid_pitch_util_compute_s64(gint64 *buffer,
 				 gdouble base_key,
 				 gdouble tuning)
 {
-  //TODO:JK: implement me
+  gint64 *mix_buffer;
+  
+  gdouble root_pitch_hz;
+  gdouble phase_incr;
+
+  guint interp_method;
+
+  mix_buffer = (gint64 *) ags_stream_alloc(buffer_length,
+					   AGS_SOUNDCARD_SIGNED_64_BIT);
+
+  /* pitch */
+  root_pitch_hz = ags_fluid_ct2hz_real(100.0 * base_key);
+  
+  phase_incr = ags_fluid_ct2hz_real(tuning) / root_pitch_hz;
+
+  if(phase_incr == 0.0){
+    phase_incr = 1.0;
+  }
+
+  interp_method = 4;
+
+  switch(interp_method){
+  case 0:
+  {
+    ags_fluid_interpolate_none_util_fill_s64(mix_buffer,
+					     buffer,
+					     buffer_length,
+					     phase_incr);
+  }
+  break;
+  case 1:
+  {
+    ags_fluid_interpolate_linear_util_fill_s64(mix_buffer,
+					       buffer,
+					       buffer_length,
+					       phase_incr);
+  }
+  break;
+  case 4:
+  {
+    ags_fluid_interpolate_4th_order_util_fill_s64(mix_buffer,
+						  buffer,
+						  buffer_length,
+						  phase_incr);
+  }
+  break;
+  case 7:
+  {
+    ags_fluid_interpolate_7th_order_util_fill_s64(mix_buffer,
+						  buffer,
+						  buffer_length,
+						  phase_incr);
+  }
+  break;
+  default:
+    g_warning("invalid interpolation method");
+  }
+
+  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint16));
+
+  ags_stream_free(mix_buffer);
 }
 
 /**
@@ -161,7 +468,67 @@ ags_fluid_pitch_util_compute_float(gfloat *buffer,
 				   gdouble base_key,
 				   gdouble tuning)
 {
-  //TODO:JK: implement me
+  gfloat *mix_buffer;
+  
+  gdouble root_pitch_hz;
+  gdouble phase_incr;
+
+  guint interp_method;
+
+  mix_buffer = (gfloat *) ags_stream_alloc(buffer_length,
+					   AGS_SOUNDCARD_FLOAT);
+
+  /* pitch */
+  root_pitch_hz = ags_fluid_ct2hz_real(100.0 * base_key);
+  
+  phase_incr = ags_fluid_ct2hz_real(tuning) / root_pitch_hz;
+
+  if(phase_incr == 0.0){
+    phase_incr = 1.0;
+  }
+
+  interp_method = 4;
+
+  switch(interp_method){
+  case 0:
+  {
+    ags_fluid_interpolate_none_util_fill_float(mix_buffer,
+					       buffer,
+					       buffer_length,
+					       phase_incr);
+  }
+  break;
+  case 1:
+  {
+    ags_fluid_interpolate_linear_util_fill_float(mix_buffer,
+						 buffer,
+						 buffer_length,
+						 phase_incr);
+  }
+  break;
+  case 4:
+  {
+    ags_fluid_interpolate_4th_order_util_fill_float(mix_buffer,
+						    buffer,
+						    buffer_length,
+						    phase_incr);
+  }
+  break;
+  case 7:
+  {
+    ags_fluid_interpolate_7th_order_util_fill_float(mix_buffer,
+						    buffer,
+						    buffer_length,
+						    phase_incr);
+  }
+  break;
+  default:
+    g_warning("invalid interpolation method");
+  }
+
+  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint16));
+
+  ags_stream_free(mix_buffer);
 }
 
 /**
@@ -183,7 +550,67 @@ ags_fluid_pitch_util_compute_double(gdouble *buffer,
 				    gdouble base_key,
 				    gdouble tuning)
 {
-  //TODO:JK: implement me
+  gdouble *mix_buffer;
+  
+  gdouble root_pitch_hz;
+  gdouble phase_incr;
+
+  guint interp_method;
+
+  mix_buffer = (gdouble *) ags_stream_alloc(buffer_length,
+					    AGS_SOUNDCARD_DOUBLE);
+
+  /* pitch */
+  root_pitch_hz = ags_fluid_ct2hz_real(100.0 * base_key);
+  
+  phase_incr = ags_fluid_ct2hz_real(tuning) / root_pitch_hz;
+
+  if(phase_incr == 0.0){
+    phase_incr = 1.0;
+  }
+
+  interp_method = 4;
+
+  switch(interp_method){
+  case 0:
+  {
+    ags_fluid_interpolate_none_util_fill_double(mix_buffer,
+						buffer,
+						buffer_length,
+						phase_incr);
+  }
+  break;
+  case 1:
+  {
+    ags_fluid_interpolate_linear_util_fill_double(mix_buffer,
+						  buffer,
+						  buffer_length,
+						  phase_incr);
+  }
+  break;
+  case 4:
+  {
+    ags_fluid_interpolate_4th_order_util_fill_double(mix_buffer,
+						     buffer,
+						     buffer_length,
+						     phase_incr);
+  }
+  break;
+  case 7:
+  {
+    ags_fluid_interpolate_7th_order_util_fill_double(mix_buffer,
+						     buffer,
+						     buffer_length,
+						     phase_incr);
+  }
+  break;
+  default:
+    g_warning("invalid interpolation method");
+  }
+
+  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint16));
+
+  ags_stream_free(mix_buffer);
 }
 
 /**
@@ -205,5 +632,65 @@ ags_fluid_pitch_util_compute_complex(AgsComplex *buffer,
 				     gdouble base_key,
 				     gdouble tuning)
 {
-  //TODO:JK: implement me
+  AgsComplex *mix_buffer;
+  
+  gdouble root_pitch_hz;
+  gdouble phase_incr;
+
+  guint interp_method;
+
+  mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+					       AGS_SOUNDCARD_COMPLEX);
+
+  /* pitch */
+  root_pitch_hz = ags_fluid_ct2hz_real(100.0 * base_key);
+  
+  phase_incr = ags_fluid_ct2hz_real(tuning) / root_pitch_hz;
+
+  if(phase_incr == 0.0){
+    phase_incr = 1.0;
+  }
+
+  interp_method = 4;
+
+  switch(interp_method){
+  case 0:
+  {
+    ags_fluid_interpolate_none_util_fill_complex(mix_buffer,
+						 buffer,
+						 buffer_length,
+						 phase_incr);
+  }
+  break;
+  case 1:
+  {
+    ags_fluid_interpolate_linear_util_fill_complex(mix_buffer,
+						   buffer,
+						   buffer_length,
+						   phase_incr);
+  }
+  break;
+  case 4:
+  {
+    ags_fluid_interpolate_4th_order_util_fill_complex(mix_buffer,
+						      buffer,
+						      buffer_length,
+						      phase_incr);
+  }
+  break;
+  case 7:
+  {
+    ags_fluid_interpolate_7th_order_util_fill_complex(mix_buffer,
+						      buffer,
+						      buffer_length,
+						      phase_incr);
+  }
+  break;
+  default:
+    g_warning("invalid interpolation method");
+  }
+
+  memcpy(buffer, mix_buffer, buffer_length * sizeof(gint16));
+
+  ags_stream_free(mix_buffer);
 }
