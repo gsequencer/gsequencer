@@ -1036,6 +1036,13 @@ libags_audio_h_sources = \
 	ags/audio/ags_fast_pitch_util.h \
 	ags/audio/ags_filter_util.h \
 	ags/audio/ags_fifoout.h \
+	ags/audio/ags_fluid_interpolate_4th_order_util.h \
+	ags/audio/ags_fluid_interpolate_7th_order_util.h \
+	ags/audio/ags_fluid_iir_filter_util.h \
+	ags/audio/ags_fluid_interpolate_linear_util.h \
+	ags/audio/ags_fluid_interpolate_none_util.h \
+	ags/audio/ags_fluid_pitch_util.h \
+	ags/audio/ags_fluid_util.h \
 	ags/audio/ags_fm_synth_util.h \
 	ags/audio/ags_fourier_transform_util.h \
 	ags/audio/ags_frequency_aliase_util.h \
@@ -1118,6 +1125,13 @@ libags_audio_c_sources = \
 	ags/audio/ags_fast_pitch_util.c \
 	ags/audio/ags_filter_util.c \
 	ags/audio/ags_fifoout.c \
+	ags/audio/ags_fluid_interpolate_4th_order_util.c \
+	ags/audio/ags_fluid_interpolate_7th_order_util.c \
+	ags/audio/ags_fluid_iir_filter_util.c \
+	ags/audio/ags_fluid_interpolate_linear_util.c \
+	ags/audio/ags_fluid_interpolate_none_util.c \
+	ags/audio/ags_fluid_pitch_util.c \
+	ags/audio/ags_fluid_util.c \
 	ags/audio/ags_fm_synth_util.c \
 	ags/audio/ags_fourier_transform_util.c \
 	ags/audio/ags_frequency_aliase_util.c \

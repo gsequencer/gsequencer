@@ -584,6 +584,20 @@
       </listitem>
       <listitem>
 	<para>
+	  Shift and Left, Left-Arrow
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Shrink note by zoom factor.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
 	  Right, Right-Arrow 
 	</para>
 	
@@ -591,6 +605,20 @@
 	  <listitem>
 	    <para>
 	      Move within notation right, audible feedback as above.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Shift and Right, Right-Arrow 
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Grow note by zoom factor.
 	    </para>
 	  </listitem>
 	</itemizedlist>

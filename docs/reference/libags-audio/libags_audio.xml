@@ -127,6 +127,21 @@
       <xi:include href="xml/ags_sfz_synth_generator.xml"/>
     </chapter>
 
+    <chapter id="audio-fluid">
+      <title>Utility functions from Fluidsynth</title>
+      <para>
+	The utility functions from Fluidsynth.
+      </para>
+
+      <xi:include href="xml/ags_fluid_util.xml"/>
+      <xi:include href="xml/ags_fluid_interpolate_none_util.xml"/>
+      <xi:include href="xml/ags_fluid_interpolate_linear_util.xml"/>
+      <xi:include href="xml/ags_fluid_interpolate_4th_order_util.xml"/>
+      <xi:include href="xml/ags_fluid_interpolate_7th_order_util.xml"/>
+      <xi:include href="xml/ags_fluid_iir_filter_util.xml"/>
+      <xi:include href="xml/ags_fluid_pitch_util.xml"/>
+    </chapter>
+
     <chapter id="audio-freq">
       <title>Frequency utils</title>
       <para>
