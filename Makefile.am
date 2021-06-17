@@ -1049,6 +1049,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_frequency_map.h \
 	ags/audio/ags_frequency_map_manager.h \
 	ags/audio/ags_fx_factory.h \
+	ags/audio/ags_generic_pitch_util.h \
 	ags/audio/ags_generic_recall_channel_run.h \
 	ags/audio/ags_generic_recall_recycling.h \
 	ags/audio/ags_hq_pitch_util.h \
@@ -1138,6 +1139,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_frequency_map.c \
 	ags/audio/ags_frequency_map_manager.c \
 	ags/audio/ags_fx_factory.c \
+	ags/audio/ags_generic_pitch_util.c \
 	ags/audio/ags_generic_recall_channel_run.c \
 	ags/audio/ags_generic_recall_recycling.c \
 	ags/audio/ags_hq_pitch_util.c \

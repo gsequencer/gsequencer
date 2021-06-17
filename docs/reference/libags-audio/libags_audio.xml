@@ -112,6 +112,7 @@
       <xi:include href="xml/ags_linear_interpolate_util.xml"/>
       <xi:include href="xml/ags_fourier_transform_util.xml"/>
       <xi:include href="xml/ags_fast_pitch_util.xml"/>
+      <xi:include href="xml/ags_generic_pitch_util.xml"/>
       <xi:include href="xml/ags_hq_pitch_util.xml"/>
       <xi:include href="xml/ags_phase_shift_util.xml"/>
       <xi:include href="xml/ags_frequency_aliase_util.xml"/>
