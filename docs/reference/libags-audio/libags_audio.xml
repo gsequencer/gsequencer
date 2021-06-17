@@ -120,7 +120,9 @@
       <xi:include href="xml/ags_filter_util.xml"/>
       <xi:include href="xml/ags_synth_util.xml"/>
       <xi:include href="xml/ags_fm_synth_util.xml"/>
+      <xi:include href="xml/ags_sf2_util.xml"/>
       <xi:include href="xml/ags_sf2_synth_util.xml"/>
+      <xi:include href="xml/ags_sfz_util.xml"/>
       <xi:include href="xml/ags_sfz_synth_util.xml"/>
       <xi:include href="xml/ags_lfo_synth_util.xml"/>
       <xi:include href="xml/ags_synth_generator.xml"/>

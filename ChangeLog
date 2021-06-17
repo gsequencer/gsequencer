@@ -1,6 +1,9 @@
 ags (3.9.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_generic_pitch_util.c with delegation
+	* implemented ags_sf2_util.c using AgsGenericPitch
+	* implemented ags_sfz_util.c using AgsGenericPitch
 	* TODO:JK: implemented pitch function selection within UI
 	* TODO:JK: refactored AgsOscServer and related controllers
 
