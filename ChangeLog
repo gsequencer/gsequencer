@@ -1,3 +1,9 @@
+ags (3.9.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented pitch function selection within UI
+	* TODO:JK: refactored AgsOscServer and related controllers
+
 ags (3.8.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
