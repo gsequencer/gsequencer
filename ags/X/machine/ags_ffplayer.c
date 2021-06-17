@@ -156,6 +156,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   GtkBox *synth_generator_vbox;
   GtkBox *aliase_hbox;
   GtkBox *volume_hbox;
+  GtkBox *pitch_hbox;
   GtkBox *base_note_hbox;
   GtkBox *key_count_hbox;
   GtkFrame *frame;
@@ -452,6 +453,45 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     FALSE, FALSE,
 		     0);
 
+  /* pitch function */
+  pitch_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				      0);
+  gtk_box_pack_start(synth_generator_vbox,
+		     (GtkWidget *) pitch_hbox,
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new(i18n("pitch"));
+  gtk_box_pack_start(pitch_hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
+  
+  ffplayer->pitch_function = (GtkComboBox *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) ffplayer->pitch_function,
+				 "ags-fast-pitch");
+  
+  gtk_combo_box_text_append_text((GtkComboBoxText *) ffplayer->pitch_function,
+				 "ags-hq-pitch");
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) ffplayer->pitch_function,
+				 "fluid-no-interpolate");
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) ffplayer->pitch_function,
+				 "fluid-linear-interpolate");
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) ffplayer->pitch_function,
+				 "fluid-4th-order-interpolate");
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) ffplayer->pitch_function,
+				 "fluid-7th-order-interpolate");
+  
+  gtk_box_pack_start(pitch_hbox,
+		     (GtkWidget *) ffplayer->pitch_function,
+		     FALSE, FALSE,
+		     0);
+  
   /* base note */
   base_note_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					  0);

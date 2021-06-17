@@ -106,6 +106,8 @@ struct _AgsFFPlayer
 
   GtkCheckButton *enable_synth_generator;
 
+  GtkComboBox *pitch_function;
+  
   GtkSpinButton *lower;
   GtkSpinButton *key_count;
   
