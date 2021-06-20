@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sf2_util.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SF2_SYNTH_GENERATOR                (ags_sf2_synth_generator_get_type())
@@ -89,6 +91,8 @@ struct _AgsSF2SynthGenerator
   
   gdouble base_key;
   gdouble tuning;
+
+  AgsSF2 *sf2;
   
   GObject *timestamp;
 };

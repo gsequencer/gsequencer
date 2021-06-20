@@ -34,6 +34,17 @@ G_BEGIN_DECLS
 
 typedef struct _AgsGenericPitch AgsGenericPitch;
 
+/**
+ * AgsPitchType:
+ * @AGS_FAST_PITCH: the AGS fast pitch
+ * @AGS_HQ_PITCH: the AGS HQ pitch
+ * @AGS_FLUID_NO_INTERPOLATE: the Fluidsynth no interpolate
+ * @AGS_FLUID_LINEAR_INTERPOLATE: the Fluidsynth linear interpolate
+ * @AGS_FLUID_4TH_ORDER_INTERPOLATE: the Fluidsynth qubic interpolate
+ * @AGS_FLUID_7TH_ORDER_INTERPOLATE: the Fluidsynth 7th order interpolate
+ *
+ * Enum values to select the desired pitch strategy.
+ */
 typedef enum{
   AGS_FAST_PITCH,
   AGS_HQ_PITCH,

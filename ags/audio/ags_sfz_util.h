@@ -88,6 +88,12 @@ void ags_sfz_util_copy_complex(AgsSFZ *sfz,
 			       guint buffer_size,
 			       AgsSFZSample *sfz_sample);
 
+void ags_sfz_util_copy(AgsSFZ *sfz,
+		       void *buffer,
+		       guint buffer_size,
+		       AgsSFZSample *sfz_sample,
+		       guint audio_buffer_util_format);
+
 G_END_DECLS
 
 #endif /*__AGS_SFZ_UTIL_H__*/

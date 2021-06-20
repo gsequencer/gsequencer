@@ -88,6 +88,12 @@ void ags_sf2_util_copy_complex(AgsSF2 *sf2,
 			       guint buffer_size,
 			       AgsIpatchSample *ipatch_sample);
 
+void ags_sf2_util_copy(AgsSF2 *sf2,
+		       void *buffer,
+		       guint buffer_size,
+		       AgsIpatchSample *ipatch_sample,
+		       guint audio_buffer_util_format);
+
 G_END_DECLS
 
 #endif /*__AGS_SF2_UTIL_H__*/

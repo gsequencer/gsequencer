@@ -472,6 +472,12 @@ ags_sf2_synth_generator_init(AgsSF2SynthGenerator *sf2_synth_generator)
   sf2_synth_generator->base_key = AGS_SF2_SYNTH_GENERATOR_DEFAULT_BASE_KEY;
   sf2_synth_generator->tuning = AGS_SF2_SYNTH_GENERATOR_DEFAULT_TUNING;
 
+  sf2_synth_generator->sf2 = (AgsSF2 *) g_new0(AgsSF2,
+					       1);
+
+  sf2_synth_generator->sf2->generic_pitch = g_new0(AgsGenericPitch,
+						   1);
+  
   /* timestamp */
   sf2_synth_generator->timestamp = NULL;
 }
@@ -2125,7 +2131,8 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
     g_message("SF2, note %f, midi_key %d", note, current_midi_key);
   }
 #endif
-  
+
+#if 0
   ags_sf2_synth_util_copy(buffer,
 			  frame_count,
 			  ipatch_sample,
@@ -2135,7 +2142,34 @@ ags_sf2_synth_generator_compute_instrument(AgsSF2SynthGenerator *sf2_synth_gener
 			  0, frame_count,
 			  AGS_SF2_SYNTH_UTIL_LOOP_NONE,
 			  0, 0);
+#else
+  g_rec_mutex_lock(sf2_synth_generator_mutex);
+  
+  sf2_synth_generator->sf2->note = note;
+  
+  sf2_synth_generator->sf2->volume = volume;
 
+  sf2_synth_generator->sf2->samplerate = samplerate;
+
+  sf2_synth_generator->sf2->offset = 0;
+  sf2_synth_generator->sf2->n_frames = frame_count;
+
+  sf2_synth_generator->sf2->loop_mode = AGS_SF2_SYNTH_UTIL_LOOP_NONE;
+  
+  sf2_synth_generator->sf2->loop_start = 0;
+  sf2_synth_generator->sf2->loop_end = 0;
+
+  AGS_GENERIC_PITCH(sf2_synth_generator->sf2->generic_pitch)->pitch_type = sf2_synth_generator->pitch_type;
+  
+  ags_sf2_util_copy(sf2_synth_generator->sf2,
+		    buffer,
+		    frame_count,
+		    ipatch_sample,
+		    audio_buffer_util_format);
+  
+  g_rec_mutex_unlock(sf2_synth_generator_mutex);    
+#endif
+  
   copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
 						  audio_buffer_util_format);
   
@@ -2351,6 +2385,7 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   buffer = ags_stream_alloc(frame_count,
 			    format);
 
+#if 0
   ags_sf2_synth_util_copy(buffer,
 			  frame_count,
 			  ipatch_sample,
@@ -2360,6 +2395,33 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
 			  0, frame_count,
 			  AGS_SF2_SYNTH_UTIL_LOOP_NONE,
 			  0, 0);
+#else
+  g_rec_mutex_lock(sf2_synth_generator_mutex);
+  
+  sf2_synth_generator->sf2->note = note;
+  
+  sf2_synth_generator->sf2->volume = volume;
+
+  sf2_synth_generator->sf2->samplerate = samplerate;
+
+  sf2_synth_generator->sf2->offset = 0;
+  sf2_synth_generator->sf2->n_frames = frame_count;
+
+  sf2_synth_generator->sf2->loop_mode = AGS_SF2_SYNTH_UTIL_LOOP_NONE;
+  
+  sf2_synth_generator->sf2->loop_start = 0;
+  sf2_synth_generator->sf2->loop_end = 0;
+
+  AGS_GENERIC_PITCH(sf2_synth_generator->sf2->generic_pitch)->pitch_type = sf2_synth_generator->pitch_type;
+  
+  ags_sf2_util_copy(sf2_synth_generator->sf2,
+		    buffer,
+		    frame_count,
+		    ipatch_sample,
+		    audio_buffer_util_format);
+  
+  g_rec_mutex_unlock(sf2_synth_generator_mutex);    
+#endif
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
 						  audio_buffer_util_format);

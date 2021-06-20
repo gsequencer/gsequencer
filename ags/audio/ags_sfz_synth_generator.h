@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sfz_util.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SFZ_SYNTH_GENERATOR                (ags_sfz_synth_generator_get_type())
@@ -75,6 +77,8 @@ struct _AgsSFZSynthGenerator
 
   gdouble base_key;
   gdouble tuning;
+
+  AgsSFZ *sfz;
   
   GObject *timestamp;
 };

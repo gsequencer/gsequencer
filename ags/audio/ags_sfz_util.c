@@ -2152,3 +2152,101 @@ ags_sfz_util_copy_complex(AgsSFZ *sfz,
   ags_stream_free(sample_buffer);
   ags_stream_free(im_buffer);
 }
+
+/**
+ * ags_sfz_util_copy:
+ * @sfz: the #AgsSFZ-struct
+ * @buffer: the audio buffer
+ * @buffer_size: the audio buffer length
+ * @sfz_sample: the #AgsSFZSample
+ * @audio_buffer_util_format: the audio data format
+ * 
+ * Generate Soundfont2 wave.
+ * 
+ * Since: 3.9.0
+ */
+void
+ags_sfz_util_copy(AgsSFZ *sfz,
+		  void *buffer,
+		  guint buffer_size,
+		  AgsSFZSample *sfz_sample,
+		  guint audio_buffer_util_format)
+{
+  if(sfz == NULL ||
+     buffer == NULL ||
+     sfz_sample == NULL ||
+     !AGS_IS_SFZ_SAMPLE(sfz_sample)){
+    return;
+  }
+
+  switch(audio_buffer_util_format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+  {
+    ags_sfz_util_copy_s8(sfz,
+			 (gint8 *) buffer,
+			 buffer_size,
+			 sfz_sample);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+  {
+    ags_sfz_util_copy_s16(sfz,
+			  (gint16 *) buffer,
+			  buffer_size,
+			  sfz_sample);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+  {
+    ags_sfz_util_copy_s24(sfz,
+			  (gint32 *) buffer,
+			  buffer_size,
+			  sfz_sample);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+  {
+    ags_sfz_util_copy_s32(sfz,
+			  (gint32 *) buffer,
+			  buffer_size,
+			  sfz_sample);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+  {
+    ags_sfz_util_copy_s64(sfz,
+			  (gint64 *) buffer,
+			  buffer_size,
+			  sfz_sample);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_sfz_util_copy_float(sfz,
+			    (float *) buffer,
+			    buffer_size,
+			    sfz_sample);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_sfz_util_copy_double(sfz,
+			     (double *) buffer,
+			     buffer_size,
+			     sfz_sample);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_sfz_util_copy_complex(sfz,
+			      (AgsComplex *) buffer,
+			      buffer_size,
+			      sfz_sample);
+  }
+  break;
+  default:
+  {
+    g_warning("ags_sfz_util_copy() - unsupported format");
+  }
+  }
+}

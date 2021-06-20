@@ -2194,3 +2194,101 @@ ags_sf2_util_copy_complex(AgsSF2 *sf2,
   ags_stream_free(sample_buffer);
   ags_stream_free(im_buffer);
 }
+
+/**
+ * ags_sf2_util_copy:
+ * @sf2: the #AgsSF2-struct
+ * @buffer: the audio buffer
+ * @buffer_size: the audio buffer length
+ * @ipatch_sample: the #AgsIpatchSample
+ * @audio_buffer_util_format: the audio data format
+ * 
+ * Generate Soundfont2 wave.
+ * 
+ * Since: 3.9.0
+ */
+void
+ags_sf2_util_copy(AgsSF2 *sf2,
+		  void *buffer,
+		  guint buffer_size,
+		  AgsIpatchSample *ipatch_sample,
+		  guint audio_buffer_util_format)
+{
+  if(sf2 == NULL ||
+     buffer == NULL ||
+     ipatch_sample == NULL ||
+     !AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
+    return;
+  }
+
+  switch(audio_buffer_util_format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+  {
+    ags_sf2_util_copy_s8(sf2,
+			 (gint8 *) buffer,
+			 buffer_size,
+			 ipatch_sample);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+  {
+    ags_sf2_util_copy_s16(sf2,
+			  (gint16 *) buffer,
+			  buffer_size,
+			  ipatch_sample);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+  {
+    ags_sf2_util_copy_s24(sf2,
+			  (gint32 *) buffer,
+			  buffer_size,
+			  ipatch_sample);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+  {
+    ags_sf2_util_copy_s32(sf2,
+			  (gint32 *) buffer,
+			  buffer_size,
+			  ipatch_sample);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+  {
+    ags_sf2_util_copy_s64(sf2,
+			  (gint64 *) buffer,
+			  buffer_size,
+			  ipatch_sample);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_sf2_util_copy_float(sf2,
+			    (float *) buffer,
+			    buffer_size,
+			    ipatch_sample);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_sf2_util_copy_double(sf2,
+			     (double *) buffer,
+			     buffer_size,
+			     ipatch_sample);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_sf2_util_copy_complex(sf2,
+			      (AgsComplex *) buffer,
+			      buffer_size,
+			      ipatch_sample);
+  }
+  break;
+  default:
+  {
+    g_warning("ags_sf2_util_copy() - unsupported format");
+  }
+  }
+}
