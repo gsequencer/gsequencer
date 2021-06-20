@@ -1192,7 +1192,8 @@ if WITH_LIBINSTPATCH
 libags_audio_c_sources += \
 	$(deprecated_libags_audio_c_sources) \
 	ags/audio/ags_sf2_synth_generator.c \
-	ags/audio/ags_sf2_synth_util.c
+	ags/audio/ags_sf2_synth_util.c \
+	ags/audio/ags_sf2_util.c
 endif
 
 # libags-audio - thread

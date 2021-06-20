@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,6 +76,8 @@ struct _AgsSF2SynthGenerator
   guint buffer_size;
   guint format;
 
+  guint pitch_type;
+  
   guint frame_count;
   guint loop_start;
   guint loop_end;
@@ -127,6 +129,9 @@ void ags_sf2_synth_generator_set_buffer_size(AgsSF2SynthGenerator *sf2_synth_gen
 
 guint ags_sf2_synth_generator_get_format(AgsSF2SynthGenerator *sf2_synth_generator);
 void ags_sf2_synth_generator_set_format(AgsSF2SynthGenerator *sf2_synth_generator, guint format);
+
+guint ags_sf2_synth_generator_get_pitch_type(AgsSF2SynthGenerator *sf2_synth_generator);
+void ags_sf2_synth_generator_set_pitch_type(AgsSF2SynthGenerator *sf2_synth_generator, guint pitch_type);
 
 gdouble ags_sf2_synth_generator_get_delay(AgsSF2SynthGenerator *sf2_synth_generator);
 void ags_sf2_synth_generator_set_delay(AgsSF2SynthGenerator *sf2_synth_generator, gdouble delay);

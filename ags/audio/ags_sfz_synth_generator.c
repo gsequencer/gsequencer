@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 #include <ags/audio/ags_diatonic_scale.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_generic_pitch_util.h>
 #include <ags/audio/ags_sfz_synth_util.h>
 
 #include <ags/audio/file/ags_audio_container.h>
@@ -60,6 +61,7 @@ enum{
   PROP_SAMPLERATE,
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
+  PROP_PITCH_TYPE,
   PROP_DELAY,
   PROP_ATTACK,
   PROP_FRAME_COUNT,
@@ -190,6 +192,24 @@ ags_sfz_synth_generator_class_init(AgsSFZSynthGeneratorClass *sfz_synth_generato
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FORMAT,
+				  param_spec);
+
+  /**
+   * AgsSFZSynthGenerator:pitch-type:
+   *
+   * The pitch type to be used.
+   * 
+   * Since: 3.9.0
+   */
+  param_spec = g_param_spec_uint("pitch-type",
+				 i18n_pspec("using pitch type"),
+				 i18n_pspec("The pitch type to be used"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_FLUID_4TH_ORDER_INTERPOLATE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PITCH_TYPE,
 				  param_spec);
 
   /**
@@ -358,6 +378,8 @@ ags_sfz_synth_generator_init(AgsSFZSynthGenerator *sfz_synth_generator)
   sfz_synth_generator->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   sfz_synth_generator->format = ags_soundcard_helper_config_get_format(config);
 
+  sfz_synth_generator->format = AGS_FLUID_4TH_ORDER_INTERPOLATE;
+
   /* more base init */
   sfz_synth_generator->frame_count = 0;
   sfz_synth_generator->loop_start = 0;
@@ -443,6 +465,16 @@ ags_sfz_synth_generator_set_property(GObject *gobject,
 
     ags_sfz_synth_generator_set_format(sfz_synth_generator,
 				       format);
+  }
+  break;
+  case PROP_PITCH_TYPE:
+  {
+    guint pitch_type;
+      
+    pitch_type = g_value_get_uint(value);
+
+    ags_sfz_synth_generator_set_pitch_type(sfz_synth_generator,
+					   pitch_type);
   }
   break;
   case PROP_DELAY:
@@ -598,6 +630,15 @@ ags_sfz_synth_generator_get_property(GObject *gobject,
     g_rec_mutex_lock(sfz_synth_generator_mutex);    
 
     g_value_set_uint(value, sfz_synth_generator->format);
+
+    g_rec_mutex_unlock(sfz_synth_generator_mutex);
+  }
+  break;
+  case PROP_PITCH_TYPE:
+  {
+    g_rec_mutex_lock(sfz_synth_generator_mutex);    
+
+    g_value_set_uint(value, sfz_synth_generator->pitch_type);
 
     g_rec_mutex_unlock(sfz_synth_generator_mutex);
   }
@@ -945,6 +986,60 @@ ags_sfz_synth_generator_set_format(AgsSFZSynthGenerator *sfz_synth_generator, gu
   g_rec_mutex_lock(sfz_synth_generator_mutex);
 
   sfz_synth_generator->format = format;
+
+  g_rec_mutex_unlock(sfz_synth_generator_mutex);
+}
+
+/**
+ * ags_sfz_synth_generator_get_pitch_type:
+ * @sfz_synth_generator: the #AgsSFZSynthGenerator
+ *
+ * Gets pitch type.
+ * 
+ * Returns: the pitch type
+ * 
+ * Since: 3.9.0
+ */
+guint
+ags_sfz_synth_generator_get_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator)
+{
+  guint pitch_type;
+  
+  if(!AGS_IS_SFZ_SYNTH_GENERATOR(sfz_synth_generator)){
+    return(0);
+  }
+
+  g_object_get(sfz_synth_generator,
+	       "pitch-type", &pitch_type,
+	       NULL);
+
+  return(pitch_type);
+}
+
+/**
+ * ags_sfz_synth_generator_set_pitch_type:
+ * @sfz_synth_generator: the #AgsSFZSynthGenerator
+ * @pitch_type: the pitch type
+ * 
+ * Set pitch type.
+ * 
+ * Since: 3.9.0
+ */
+void
+ags_sfz_synth_generator_set_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator, guint pitch_type)
+{
+  GRecMutex *sfz_synth_generator_mutex;
+
+  if(!AGS_IS_SFZ_SYNTH_GENERATOR(sfz_synth_generator)){
+    return;
+  }
+
+  /* get sfz synth generator mutex */
+  sfz_synth_generator_mutex = AGS_SFZ_SYNTH_GENERATOR_GET_OBJ_MUTEX(sfz_synth_generator);
+
+  g_rec_mutex_lock(sfz_synth_generator_mutex);
+
+  sfz_synth_generator->pitch_type = pitch_type;
 
   g_rec_mutex_unlock(sfz_synth_generator_mutex);
 }

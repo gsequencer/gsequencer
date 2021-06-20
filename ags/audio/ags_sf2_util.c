@@ -176,7 +176,7 @@ ags_sf2_util_copy_s8(AgsSF2 *sf2,
   
   base_key = (gdouble) midi_key - 21.0;
 
-  tuning = 100.0 * ((note + 48.0) - base_key);
+  tuning = 100.0 * ((sf2->note + 48.0) - base_key);
   
   ags_generic_pitch_util_compute_s8(generic_pitch,
 				    im_buffer,
@@ -445,7 +445,7 @@ ags_sf2_util_copy_s16(AgsSF2 *sf2,
   
   base_key = (gdouble) midi_key - 21.0;
 
-  tuning = 100.0 * ((note + 48.0) - base_key);
+  tuning = 100.0 * ((sf2->note + 48.0) - base_key);
   
   ags_generic_pitch_util_compute_s16(generic_pitch,
 				     im_buffer,
@@ -714,7 +714,7 @@ ags_sf2_util_copy_s24(AgsSF2 *sf2,
   
   base_key = (gdouble) midi_key - 21.0;
 
-  tuning = 100.0 * ((note + 48.0) - base_key);
+  tuning = 100.0 * ((sf2->note + 48.0) - base_key);
   
   ags_generic_pitch_util_compute_s24(generic_pitch,
 				     im_buffer,
@@ -983,7 +983,7 @@ ags_sf2_util_copy_s32(AgsSF2 *sf2,
   
   base_key = (gdouble) midi_key - 21.0;
 
-  tuning = 100.0 * ((note + 48.0) - base_key);
+  tuning = 100.0 * ((sf2->note + 48.0) - base_key);
   
   ags_generic_pitch_util_compute_s32(generic_pitch,
 				     im_buffer,
@@ -1252,7 +1252,7 @@ ags_sf2_util_copy_s64(AgsSF2 *sf2,
   
   base_key = (gdouble) midi_key - 21.0;
 
-  tuning = 100.0 * ((note + 48.0) - base_key);
+  tuning = 100.0 * ((sf2->note + 48.0) - base_key);
   
   ags_generic_pitch_util_compute_s64(generic_pitch,
 				     im_buffer,
@@ -1521,7 +1521,7 @@ ags_sf2_util_copy_float(AgsSF2 *sf2,
   
   base_key = (gdouble) midi_key - 21.0;
 
-  tuning = 100.0 * ((note + 48.0) - base_key);
+  tuning = 100.0 * ((sf2->note + 48.0) - base_key);
   
   ags_generic_pitch_util_compute_float(generic_pitch,
 				       im_buffer,
@@ -1790,7 +1790,7 @@ ags_sf2_util_copy_double(AgsSF2 *sf2,
   
   base_key = (gdouble) midi_key - 21.0;
 
-  tuning = 100.0 * ((note + 48.0) - base_key);
+  tuning = 100.0 * ((sf2->note + 48.0) - base_key);
   
   ags_generic_pitch_util_compute_double(generic_pitch,
 					im_buffer,
@@ -2059,7 +2059,7 @@ ags_sf2_util_copy_complex(AgsSF2 *sf2,
   
   base_key = (gdouble) midi_key - 21.0;
 
-  tuning = 100.0 * ((note + 48.0) - base_key);
+  tuning = 100.0 * ((sf2->note + 48.0) - base_key);
   
   ags_generic_pitch_util_compute_complex(generic_pitch,
 					 im_buffer,
