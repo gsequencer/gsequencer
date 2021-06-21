@@ -52,8 +52,48 @@ struct _AgsSFZ
   
   gpointer generic_pitch;
 
-  gpointer data;
+  gpointer user_data;
 };
+
+gdouble ags_sfz_get_note(AgsSFZ *sfz);
+void ags_sfz_set_note(AgsSFZ *sfz,
+		      gdouble note);
+
+gdouble ags_sfz_get_volume(AgsSFZ *sfz);
+void ags_sfz_set_volume(AgsSFZ *sfz,
+			gdouble volume);
+
+guint ags_sfz_get_samplerate(AgsSFZ *sfz);
+void ags_sfz_set_samplerate(AgsSFZ *sfz,
+			    guint samplerate);
+
+guint ags_sfz_get_offset(AgsSFZ *sfz);
+void ags_sfz_set_offset(AgsSFZ *sfz,
+			guint offset);
+
+guint ags_sfz_get_n_frames(AgsSFZ *sfz);
+void ags_sfz_set_n_frames(AgsSFZ *sfz,
+			    guint n_frames);
+
+guint ags_sfz_get_loop_mode(AgsSFZ *sfz);
+void ags_sfz_set_loop_mode(AgsSFZ *sfz,
+			    guint loop_mode);
+
+guint ags_sfz_get_loop_start(AgsSFZ *sfz);
+void ags_sfz_set_loop_start(AgsSFZ *sfz,
+			    guint loop_start);
+
+guint ags_sfz_get_loop_end(AgsSFZ *sfz);
+void ags_sfz_set_loop_end(AgsSFZ *sfz,
+			    guint loop_end);
+
+gpointer ags_sfz_get_generic_pitch(AgsSFZ *sfz);
+void ags_sfz_set_generic_pitch(AgsSFZ *sfz,
+			       gpointer generic_pitch);
+
+gpointer ags_sfz_get_user_data(AgsSFZ *sfz);
+void ags_sfz_set_user_data(AgsSFZ *sfz,
+			   gpointer user_data);
 
 void ags_sfz_util_copy_s8(AgsSFZ *sfz,
 			  gint8 *buffer,
