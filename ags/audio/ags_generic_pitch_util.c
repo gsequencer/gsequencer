@@ -61,12 +61,16 @@ ags_generic_pitch_util_compute_s8(AgsGenericPitch *generic_pitch,
 				  gdouble tuning)
 {
   guint fluid_interp_method;
+  gboolean fluid_success;
   
   if(generic_pitch == NULL ||
      buffer == NULL){
     return;
   }
 
+  fluid_interp_method = 4;
+  fluid_success = FALSE;
+  
   switch(generic_pitch->pitch_type){
   case AGS_FAST_PITCH:
   {
@@ -89,23 +93,40 @@ ags_generic_pitch_util_compute_s8(AgsGenericPitch *generic_pitch,
   case AGS_FLUID_NO_INTERPOLATE:
   {
     fluid_interp_method = 0;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_LINEAR_INTERPOLATE:
   {
     fluid_interp_method = 1;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_4TH_ORDER_INTERPOLATE:
   {
     fluid_interp_method = 4;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_7TH_ORDER_INTERPOLATE:
   {
+    fluid_interp_method = 7;
+
+    fluid_success = TRUE;
+  }
+  break;
+  default:
+    g_warning("unknown pitch type");
+  }
+
+  if(fluid_success){
     gint8 *mix_buffer;
   
     gdouble root_pitch_hz;
     gdouble phase_incr;
-
-    fluid_interp_method = 7;
 
     mix_buffer = (gint8 *) ags_stream_alloc(buffer_length,
 					    AGS_SOUNDCARD_SIGNED_8_BIT);
@@ -160,10 +181,7 @@ ags_generic_pitch_util_compute_s8(AgsGenericPitch *generic_pitch,
 
     ags_stream_free(mix_buffer);
   }
-  break;
-  default:
-    g_warning("invalid interpolation method");
-  }
+  
 }
 
 /**
@@ -188,11 +206,15 @@ ags_generic_pitch_util_compute_s16(AgsGenericPitch *generic_pitch,
 				   gdouble tuning)
 {
   guint fluid_interp_method;
+  gboolean fluid_success;
   
   if(generic_pitch == NULL ||
      buffer == NULL){
     return;
   }
+
+  fluid_interp_method = 4;
+  fluid_success = FALSE;
 
   switch(generic_pitch->pitch_type){
   case AGS_FAST_PITCH:
@@ -216,23 +238,40 @@ ags_generic_pitch_util_compute_s16(AgsGenericPitch *generic_pitch,
   case AGS_FLUID_NO_INTERPOLATE:
   {
     fluid_interp_method = 0;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_LINEAR_INTERPOLATE:
   {
     fluid_interp_method = 1;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_4TH_ORDER_INTERPOLATE:
   {
     fluid_interp_method = 4;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_7TH_ORDER_INTERPOLATE:
   {
+    fluid_interp_method = 7;
+
+    fluid_success = TRUE;
+  }
+  break;
+  default:
+    g_warning("unknown pitch type");
+  }
+  
+  if(fluid_success){
     gint16 *mix_buffer;
   
     gdouble root_pitch_hz;
     gdouble phase_incr;
-
-    fluid_interp_method = 7;
 
     mix_buffer = (gint16 *) ags_stream_alloc(buffer_length,
 					     AGS_SOUNDCARD_SIGNED_16_BIT);
@@ -282,14 +321,10 @@ ags_generic_pitch_util_compute_s16(AgsGenericPitch *generic_pitch,
     default:
       g_warning("invalid fluid interpolation method");
     }
-
+    
     memcpy(buffer, mix_buffer, buffer_length * sizeof(gint16));
 
     ags_stream_free(mix_buffer);
-  }
-  break;
-  default:
-    g_warning("invalid interpolation method");
   }
 }
 
@@ -315,11 +350,15 @@ ags_generic_pitch_util_compute_s24(AgsGenericPitch *generic_pitch,
 				   gdouble tuning)
 {
   guint fluid_interp_method;
+  gboolean fluid_success;
   
   if(generic_pitch == NULL ||
      buffer == NULL){
     return;
   }
+
+  fluid_interp_method = 4;
+  fluid_success = FALSE;
 
   switch(generic_pitch->pitch_type){
   case AGS_FAST_PITCH:
@@ -343,23 +382,40 @@ ags_generic_pitch_util_compute_s24(AgsGenericPitch *generic_pitch,
   case AGS_FLUID_NO_INTERPOLATE:
   {
     fluid_interp_method = 0;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_LINEAR_INTERPOLATE:
   {
     fluid_interp_method = 1;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_4TH_ORDER_INTERPOLATE:
   {
     fluid_interp_method = 4;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_7TH_ORDER_INTERPOLATE:
   {
+    fluid_interp_method = 7;
+
+    fluid_success = TRUE;
+  }
+  break;
+  default:
+    g_warning("unknown pitch type");
+  }
+  
+  if(fluid_success){
     gint32 *mix_buffer;
   
     gdouble root_pitch_hz;
     gdouble phase_incr;
-
-    fluid_interp_method = 7;
 
     mix_buffer = (gint32 *) ags_stream_alloc(buffer_length,
 					     AGS_SOUNDCARD_SIGNED_24_BIT);
@@ -414,10 +470,6 @@ ags_generic_pitch_util_compute_s24(AgsGenericPitch *generic_pitch,
 
     ags_stream_free(mix_buffer);
   }
-  break;
-  default:
-    g_warning("invalid interpolation method");
-  }
 }
 
 /**
@@ -442,11 +494,15 @@ ags_generic_pitch_util_compute_s32(AgsGenericPitch *generic_pitch,
 				   gdouble tuning)
 {
   guint fluid_interp_method;
+  gboolean fluid_success;
   
   if(generic_pitch == NULL ||
      buffer == NULL){
     return;
   }
+
+  fluid_interp_method = 4;
+  fluid_success = FALSE;
 
   switch(generic_pitch->pitch_type){
   case AGS_FAST_PITCH:
@@ -470,23 +526,40 @@ ags_generic_pitch_util_compute_s32(AgsGenericPitch *generic_pitch,
   case AGS_FLUID_NO_INTERPOLATE:
   {
     fluid_interp_method = 0;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_LINEAR_INTERPOLATE:
   {
     fluid_interp_method = 1;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_4TH_ORDER_INTERPOLATE:
   {
     fluid_interp_method = 4;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_7TH_ORDER_INTERPOLATE:
   {
+    fluid_interp_method = 7;
+
+    fluid_success = TRUE;
+  }
+  break;
+  default:
+    g_warning("unknown pitch type");
+  }
+
+  if(fluid_success){
     gint32 *mix_buffer;
   
     gdouble root_pitch_hz;
     gdouble phase_incr;
-
-    fluid_interp_method = 7;
 
     mix_buffer = (gint32 *) ags_stream_alloc(buffer_length,
 					     AGS_SOUNDCARD_SIGNED_32_BIT);
@@ -541,10 +614,6 @@ ags_generic_pitch_util_compute_s32(AgsGenericPitch *generic_pitch,
 
     ags_stream_free(mix_buffer);
   }
-  break;
-  default:
-    g_warning("invalid interpolation method");
-  }
 }
 
 /**
@@ -569,11 +638,15 @@ ags_generic_pitch_util_compute_s64(AgsGenericPitch *generic_pitch,
 				   gdouble tuning)
 {
   guint fluid_interp_method;
+  gboolean fluid_success;
   
   if(generic_pitch == NULL ||
      buffer == NULL){
     return;
   }
+
+  fluid_interp_method = 4;
+  fluid_success = FALSE;
 
   switch(generic_pitch->pitch_type){
   case AGS_FAST_PITCH:
@@ -597,23 +670,40 @@ ags_generic_pitch_util_compute_s64(AgsGenericPitch *generic_pitch,
   case AGS_FLUID_NO_INTERPOLATE:
   {
     fluid_interp_method = 0;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_LINEAR_INTERPOLATE:
   {
     fluid_interp_method = 1;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_4TH_ORDER_INTERPOLATE:
   {
     fluid_interp_method = 4;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_7TH_ORDER_INTERPOLATE:
   {
+    fluid_interp_method = 7;
+
+    fluid_success = TRUE;
+  }
+  break;
+  default:
+    g_warning("unknown pitch type");
+  }
+
+  if(fluid_success){
     gint64 *mix_buffer;
   
     gdouble root_pitch_hz;
     gdouble phase_incr;
-
-    fluid_interp_method = 7;
 
     mix_buffer = (gint64 *) ags_stream_alloc(buffer_length,
 					     AGS_SOUNDCARD_SIGNED_64_BIT);
@@ -668,10 +758,6 @@ ags_generic_pitch_util_compute_s64(AgsGenericPitch *generic_pitch,
 
     ags_stream_free(mix_buffer);
   }
-  break;
-  default:
-    g_warning("invalid interpolation method");
-  }
 }
 
 /**
@@ -696,11 +782,15 @@ ags_generic_pitch_util_compute_float(AgsGenericPitch *generic_pitch,
 				     gdouble tuning)
 {
   guint fluid_interp_method;
+  gboolean fluid_success;
   
   if(generic_pitch == NULL ||
      buffer == NULL){
     return;
   }
+
+  fluid_interp_method = 4;
+  fluid_success = FALSE;
 
   switch(generic_pitch->pitch_type){
   case AGS_FAST_PITCH:
@@ -724,23 +814,40 @@ ags_generic_pitch_util_compute_float(AgsGenericPitch *generic_pitch,
   case AGS_FLUID_NO_INTERPOLATE:
   {
     fluid_interp_method = 0;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_LINEAR_INTERPOLATE:
   {
     fluid_interp_method = 1;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_4TH_ORDER_INTERPOLATE:
   {
     fluid_interp_method = 4;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_7TH_ORDER_INTERPOLATE:
   {
+    fluid_interp_method = 7;
+
+    fluid_success = TRUE;
+  }
+  break;
+  default:
+    g_warning("unknown pitch type");
+  }
+
+  if(fluid_success){
     gfloat *mix_buffer;
   
     gdouble root_pitch_hz;
     gdouble phase_incr;
-
-    fluid_interp_method = 7;
 
     mix_buffer = (gfloat *) ags_stream_alloc(buffer_length,
 					     AGS_SOUNDCARD_FLOAT);
@@ -795,10 +902,6 @@ ags_generic_pitch_util_compute_float(AgsGenericPitch *generic_pitch,
 
     ags_stream_free(mix_buffer);
   }
-  break;
-  default:
-    g_warning("invalid interpolation method");
-  }
 }
 
 /**
@@ -823,11 +926,15 @@ ags_generic_pitch_util_compute_double(AgsGenericPitch *generic_pitch,
 				      gdouble tuning)
 {
   guint fluid_interp_method;
+  gboolean fluid_success;
   
   if(generic_pitch == NULL ||
      buffer == NULL){
     return;
   }
+
+  fluid_interp_method = 4;
+  fluid_success = FALSE;
 
   switch(generic_pitch->pitch_type){
   case AGS_FAST_PITCH:
@@ -851,23 +958,40 @@ ags_generic_pitch_util_compute_double(AgsGenericPitch *generic_pitch,
   case AGS_FLUID_NO_INTERPOLATE:
   {
     fluid_interp_method = 0;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_LINEAR_INTERPOLATE:
   {
     fluid_interp_method = 1;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_4TH_ORDER_INTERPOLATE:
   {
     fluid_interp_method = 4;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_7TH_ORDER_INTERPOLATE:
   {
+    fluid_interp_method = 7;
+
+    fluid_success = TRUE;
+  }
+  break;
+  default:
+    g_warning("unknown pitch type");
+  }
+
+  if(fluid_success){
     gdouble *mix_buffer;
   
     gdouble root_pitch_hz;
     gdouble phase_incr;
-
-    fluid_interp_method = 7;
 
     mix_buffer = (gdouble *) ags_stream_alloc(buffer_length,
 					     AGS_SOUNDCARD_DOUBLE);
@@ -922,10 +1046,6 @@ ags_generic_pitch_util_compute_double(AgsGenericPitch *generic_pitch,
 
     ags_stream_free(mix_buffer);
   }
-  break;
-  default:
-    g_warning("invalid interpolation method");
-  }
 }
 
 /**
@@ -950,11 +1070,15 @@ ags_generic_pitch_util_compute_complex(AgsGenericPitch *generic_pitch,
 				       gdouble tuning)
 {
   guint fluid_interp_method;
+  gboolean fluid_success;
   
   if(generic_pitch == NULL ||
      buffer == NULL){
     return;
   }
+
+  fluid_interp_method = 4;
+  fluid_success = FALSE;
 
   switch(generic_pitch->pitch_type){
   case AGS_FAST_PITCH:
@@ -978,23 +1102,40 @@ ags_generic_pitch_util_compute_complex(AgsGenericPitch *generic_pitch,
   case AGS_FLUID_NO_INTERPOLATE:
   {
     fluid_interp_method = 0;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_LINEAR_INTERPOLATE:
   {
     fluid_interp_method = 1;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_4TH_ORDER_INTERPOLATE:
   {
     fluid_interp_method = 4;
+
+    fluid_success = TRUE;
   }
+  break;
   case AGS_FLUID_7TH_ORDER_INTERPOLATE:
   {
+    fluid_interp_method = 7;
+
+    fluid_success = TRUE;
+  }
+  break;
+  default:
+    g_warning("unknown pitch type");
+  }
+
+  if(fluid_success){
     AgsComplex *mix_buffer;
   
     gdouble root_pitch_hz;
     gdouble phase_incr;
-
-    fluid_interp_method = 7;
 
     mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
 						 AGS_SOUNDCARD_COMPLEX);
@@ -1048,9 +1189,5 @@ ags_generic_pitch_util_compute_complex(AgsGenericPitch *generic_pitch,
     memcpy(buffer, mix_buffer, buffer_length * sizeof(AgsComplex));
 
     ags_stream_free(mix_buffer);
-  }
-  break;
-  default:
-    g_warning("invalid interpolation method");
   }
 }

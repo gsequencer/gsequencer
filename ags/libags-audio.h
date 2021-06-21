@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -61,6 +61,12 @@
 #include <ags/audio/ags_fast_pitch_util.h>
 #include <ags/audio/ags_fifoout.h>
 #include <ags/audio/ags_filter_util.h>
+#include <ags/audio/ags_fluid_iir_filter_util.h>
+#include <ags/audio/ags_fluid_interpolate_linear_util.h>
+#include <ags/audio/ags_fluid_interpolate_none_util.h>
+#include <ags/audio/ags_fluid_interpolate_4th_order_util.h>
+#include <ags/audio/ags_fluid_interpolate_7th_order_util.h>
+#include <ags/audio/ags_fluid_pitch_util.h>
 #include <ags/audio/ags_fm_synth_util.h>
 #include <ags/audio/ags_fourier_transform_util.h>
 #include <ags/audio/ags_frequency_aliase_util.h>
@@ -100,6 +106,7 @@
 #include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_recall_lv2_run.h>
 #include <ags/audio/ags_generic_recall_recycling.h>
+#include <ags/audio/ags_generic_pitch_util.h>
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recycling_context.h>
 #include <ags/audio/ags_recycling.h>
@@ -111,8 +118,10 @@
 #include <ags/audio/ags_synth_util.h>
 #include <ags/audio/ags_sf2_synth_generator.h>
 #include <ags/audio/ags_sf2_synth_util.h>
+#include <ags/audio/ags_sf2_util.h>
 #include <ags/audio/ags_sfz_synth_generator.h>
 #include <ags/audio/ags_sfz_synth_util.h>
+#include <ags/audio/ags_sfz_util.h>
 #include <ags/audio/ags_track.h>
 #include <ags/audio/ags_wave.h>
 

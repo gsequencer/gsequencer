@@ -378,8 +378,8 @@ ags_sfz_synth_generator_init(AgsSFZSynthGenerator *sfz_synth_generator)
   sfz_synth_generator->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   sfz_synth_generator->format = ags_soundcard_helper_config_get_format(config);
 
-  sfz_synth_generator->format = AGS_FLUID_4TH_ORDER_INTERPOLATE;
-
+  sfz_synth_generator->pitch_type = AGS_FLUID_4TH_ORDER_INTERPOLATE;
+  
   /* more base init */
   sfz_synth_generator->frame_count = 0;
   sfz_synth_generator->loop_start = 0;
@@ -392,6 +392,12 @@ ags_sfz_synth_generator_init(AgsSFZSynthGenerator *sfz_synth_generator)
   
   sfz_synth_generator->base_key = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_BASE_KEY;
   sfz_synth_generator->tuning = AGS_SFZ_SYNTH_GENERATOR_DEFAULT_TUNING;
+
+  sfz_synth_generator->sfz = (AgsSFZ *) g_new0(AgsSFZ,
+					       1);
+
+  sfz_synth_generator->sfz->generic_pitch = (gpointer) g_new0(AgsGenericPitch,
+							      1);
 
   /* timestamp */
   sfz_synth_generator->timestamp = NULL;
@@ -1639,7 +1645,8 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
     g_message("SFZ, note %f, midi_key %d", note, current_midi_key);
   }
 #endif
-  
+
+#if 0
   ags_sfz_synth_util_copy(buffer,
 			  frame_count,
 			  sfz_sample,
@@ -1649,6 +1656,33 @@ ags_sfz_synth_generator_compute(AgsSFZSynthGenerator *sfz_synth_generator,
 			  0, frame_count,
 			  AGS_SFZ_SYNTH_UTIL_LOOP_NONE,
 			  0, 0);
+#else
+  g_rec_mutex_lock(sfz_synth_generator_mutex);
+  
+  sfz_synth_generator->sfz->note = note;
+  
+  sfz_synth_generator->sfz->volume = volume;
+
+  sfz_synth_generator->sfz->samplerate = samplerate;
+
+  sfz_synth_generator->sfz->offset = 0;
+  sfz_synth_generator->sfz->n_frames = frame_count;
+
+  sfz_synth_generator->sfz->loop_mode = AGS_SFZ_SYNTH_UTIL_LOOP_NONE;
+  
+  sfz_synth_generator->sfz->loop_start = 0;
+  sfz_synth_generator->sfz->loop_end = 0;
+
+  AGS_GENERIC_PITCH(sfz_synth_generator->sfz->generic_pitch)->pitch_type = sfz_synth_generator->pitch_type;
+  
+  ags_sfz_util_copy(sfz_synth_generator->sfz,
+		    buffer,
+		    frame_count,
+		    sfz_sample,
+		    audio_buffer_util_format);
+  
+  g_rec_mutex_unlock(sfz_synth_generator_mutex);    
+#endif
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(audio_buffer_util_format,
 						  audio_buffer_util_format);

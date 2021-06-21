@@ -15,6 +15,25 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * FluidSynth - A Software Synthesizer
+ *
+ * Copyright (C) 2003  Peter Hanappe and others.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA
  */
 
 #include <ags/audio/ags_fluid_interpolate_7th_order_util.h>
@@ -107,6 +126,8 @@ ags_fluid_interpolate_7th_order_util_fill_s8(gint8 *destination,
   guint start_index, end_index;
   gdouble start_points[3], end_points[3];
   gdouble *coeffs;
+
+  ags_fluid_interpolate_7th_order_util_config();
 
   dsp_phase = 0;
 
@@ -264,6 +285,8 @@ ags_fluid_interpolate_7th_order_util_fill_s16(gint16 *destination,
   gdouble start_points[3], end_points[3];
   gdouble *coeffs;
 
+  ags_fluid_interpolate_7th_order_util_config();
+
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -419,6 +442,8 @@ ags_fluid_interpolate_7th_order_util_fill_s24(gint32 *destination,
   guint start_index, end_index;
   gdouble start_points[3], end_points[3];
   gdouble *coeffs;
+
+  ags_fluid_interpolate_7th_order_util_config();
 
   dsp_phase = 0;
 
@@ -576,6 +601,8 @@ ags_fluid_interpolate_7th_order_util_fill_s32(gint32 *destination,
   gdouble start_points[3], end_points[3];
   gdouble *coeffs;
 
+  ags_fluid_interpolate_7th_order_util_config();
+
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -731,6 +758,8 @@ ags_fluid_interpolate_7th_order_util_fill_s64(gint64 *destination,
   guint start_index, end_index;
   gdouble start_points[3], end_points[3];
   gdouble *coeffs;
+
+  ags_fluid_interpolate_7th_order_util_config();
 
   dsp_phase = 0;
 
@@ -888,6 +917,8 @@ ags_fluid_interpolate_7th_order_util_fill_float(gfloat *destination,
   gdouble start_points[3], end_points[3];
   gdouble *coeffs;
 
+  ags_fluid_interpolate_7th_order_util_config();
+
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -1044,6 +1075,8 @@ ags_fluid_interpolate_7th_order_util_fill_double(gdouble *destination,
   gdouble start_points[3], end_points[3];
   gdouble *coeffs;
 
+  ags_fluid_interpolate_7th_order_util_config();
+
   dsp_phase = 0;
 
   /* Convert playback "speed" floating point value to phase index/fract */
@@ -1199,6 +1232,8 @@ ags_fluid_interpolate_7th_order_util_fill_complex(AgsComplex *destination,
   guint start_index, end_index;
   double _Complex start_points[3], end_points[3];
   gdouble *coeffs;
+
+  ags_fluid_interpolate_7th_order_util_config();
 
   dsp_phase = 0;
 

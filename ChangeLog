@@ -4,7 +4,7 @@ ags (3.9.0)
 	* implemented ags_generic_pitch_util.c with delegation
 	* implemented ags_sf2_util.c using AgsGenericPitch
 	* implemented ags_sfz_util.c using AgsGenericPitch
-	* TODO:JK: implemented pitch function selection within UI
+	* implemented pitch function selection within UI
 	* TODO:JK: refactored AgsOscServer and related controllers
 
 ags (3.8.13)

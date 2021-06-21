@@ -475,8 +475,8 @@ ags_sf2_synth_generator_init(AgsSF2SynthGenerator *sf2_synth_generator)
   sf2_synth_generator->sf2 = (AgsSF2 *) g_new0(AgsSF2,
 					       1);
 
-  sf2_synth_generator->sf2->generic_pitch = g_new0(AgsGenericPitch,
-						   1);
+  sf2_synth_generator->sf2->generic_pitch = (gpointer) g_new0(AgsGenericPitch,
+							      1);
   
   /* timestamp */
   sf2_synth_generator->timestamp = NULL;
