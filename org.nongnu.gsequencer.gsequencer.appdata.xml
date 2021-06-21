@@ -40,6 +40,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.9.0" date="2021-06-21">
+      <description>
+	<p>Implemented pitch function to select within UI.</p>
+      </description>
+    </release>
+
     <release version="3.8.12" date="2021-06-12">
       <description>
 	<p>New functions added with Fluidsynth power.</p>

@@ -40,6 +40,7 @@
  * @samplerate: the samplerate
  * @frequency: the frequency
  * @amount: the amount
+ * @phase: the phase
  * 
  * Compute phase shift of audio buffer at @frequency with @amount with
  * max radian 2 * M_PI.

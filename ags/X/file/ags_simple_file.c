@@ -3342,10 +3342,12 @@ void
 ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsPitchSampler *pitch_sampler)
 {
   GtkTreeModel *model;
+
   GtkTreeIter iter;
 
   xmlChar *filename;
   xmlChar *enable_synth_generator;
+  xmlChar *pitch_type;
   xmlChar *key_count;
   xmlChar *base_note;
   xmlChar *str;
@@ -3384,6 +3386,9 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
   key_count = xmlGetProp(node,
 			 "key-count");
 
+  pitch_type = xmlGetProp(node,
+			  "pitch-type");
+  
   base_note = xmlGetProp(node,
 			 "base-note");
 
@@ -3395,6 +3400,26 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
 				 TRUE);
   }
 
+  model = gtk_combo_box_get_model(pitch_sampler->pitch_function);
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gchar *value;
+      
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+
+      if(!g_strcmp0(pitch_type,
+		    value)){
+	gtk_combo_box_set_active_iter(pitch_sampler->pitch_function,
+				      &iter);
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }
+  
   if(base_note != NULL){
     if(major < 3 ||
        (major == 3 &&
@@ -3575,6 +3600,10 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
     xmlFree(enable_synth_generator);
   }
 
+  if(pitch_type != NULL){
+    xmlFree(pitch_type);
+  }
+
   if(key_count != NULL){
     xmlFree(key_count);
   }
@@ -3588,8 +3617,13 @@ ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *n
 void
 ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFFPlayer *ffplayer)
 {
+  GtkTreeModel *model;
+
+  GtkTreeIter iter;
+
   xmlChar *filename, *preset, *instrument;
   xmlChar *enable_synth_generator;
+  xmlChar *pitch_type;
   xmlChar *key_count;
   xmlChar *base_note;
   xmlChar *version;
@@ -3626,6 +3660,9 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
   enable_synth_generator = xmlGetProp(node,
 				      "enable-synth-generator");
 
+  pitch_type = xmlGetProp(node,
+			  "pitch-type");
+
   key_count = xmlGetProp(node,
 			 "key-count");
 
@@ -3638,6 +3675,26 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
 			  5)){
     gtk_toggle_button_set_active((GtkToggleButton *) ffplayer->enable_synth_generator,
 				 TRUE);
+  }
+
+  model = gtk_combo_box_get_model(ffplayer->pitch_function);
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gchar *value;
+      
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+
+      if(!g_strcmp0(pitch_type,
+		    value)){
+	gtk_combo_box_set_active_iter(ffplayer->pitch_function,
+				      &iter);
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
   }
 
   if(base_note != NULL){
@@ -3774,6 +3831,10 @@ ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, 
 
   if(enable_synth_generator != NULL){
     xmlFree(enable_synth_generator);
+  }
+
+  if(pitch_type != NULL){
+    xmlFree(pitch_type);
   }
 
   if(key_count != NULL){
@@ -9646,6 +9707,14 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		 "true");
     }
 
+    str = gtk_combo_box_text_get_active_text(pitch_sampler->pitch_function);
+      
+    xmlNewProp(node,
+	       "pitch-type",
+	       str);
+
+    g_free(str);
+
     str = g_strdup_printf("%lf",
 			  gtk_spin_button_get_value(pitch_sampler->lower));
     
@@ -9791,6 +9860,14 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		 "true");
     }
 
+    str = gtk_combo_box_text_get_active_text(ffplayer->pitch_function);
+      
+    xmlNewProp(node,
+	       "pitch-type",
+	       str);
+
+    g_free(str);
+    
     str = g_strdup_printf("%lf",
 			  gtk_spin_button_get_value(ffplayer->lower));
     
