@@ -144,6 +144,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   GtkBox *control_vbox;
   GtkBox *filename_hbox;
   GtkBox *synth_generator_vbox;
+  GtkBox *pitch_hbox;
   GtkBox *base_note_hbox;
   GtkBox *key_count_hbox;
   GtkBox *aliase_hbox;
@@ -337,6 +338,48 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   pitch_sampler->enable_synth_generator = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
   gtk_box_pack_start(synth_generator_vbox,
 		     (GtkWidget *) pitch_sampler->enable_synth_generator,
+		     FALSE, FALSE,
+		     0);
+
+  /* pitch function */
+  pitch_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				      0);
+  gtk_box_pack_start(synth_generator_vbox,
+		     (GtkWidget *) pitch_hbox,
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new(i18n("pitch"));
+  gtk_box_pack_start(pitch_hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
+  
+  pitch_sampler->pitch_function = (GtkComboBox *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) pitch_sampler->pitch_function,
+				 "ags-fast-pitch");
+  
+  gtk_combo_box_text_append_text((GtkComboBoxText *) pitch_sampler->pitch_function,
+				 "ags-hq-pitch");
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) pitch_sampler->pitch_function,
+				 "fluid-no-interpolate");
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) pitch_sampler->pitch_function,
+				 "fluid-linear-interpolate");
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) pitch_sampler->pitch_function,
+				 "fluid-4th-order-interpolate");
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) pitch_sampler->pitch_function,
+				 "fluid-7th-order-interpolate");
+  
+  gtk_combo_box_set_active(pitch_sampler->pitch_function,
+			   4);
+
+  gtk_box_pack_start(pitch_hbox,
+		     (GtkWidget *) pitch_sampler->pitch_function,
 		     FALSE, FALSE,
 		     0);
 
@@ -1371,11 +1414,14 @@ ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
   AgsOpenSFZFile *open_sfz_file;
 
   AgsApplicationContext *application_context;
+
+  gchar *str;
   
   gdouble lower;
   gdouble key_count;
   guint audio_channels;
   guint output_pads;
+  guint pitch_type;
 
   if(!AGS_IS_PITCH_SAMPLER(pitch_sampler)){
     return;
@@ -1404,6 +1450,37 @@ ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
   audio_channels = AGS_MACHINE(pitch_sampler)->audio_channels;
   
   output_pads = AGS_MACHINE(pitch_sampler)->output_pads;
+
+  /* pitch type */
+  pitch_type = AGS_FLUID_4TH_ORDER_INTERPOLATE;
+
+  str = gtk_combo_box_text_get_active_text(pitch_sampler->pitch_function);
+
+  if(!g_ascii_strncasecmp(str,
+			  "ags-fast-pitch",
+			  16)){
+    pitch_type = AGS_FAST_PITCH;
+  }else if(!g_ascii_strncasecmp(str,
+				"ags-hq-pitch",
+				14)){
+    pitch_type = AGS_HQ_PITCH;
+  }else if(!g_ascii_strncasecmp(str,
+				"fluid-no-interpolate",
+				21)){
+    pitch_type = AGS_FLUID_NO_INTERPOLATE;
+  }else if(!g_ascii_strncasecmp(str,
+				"fluid-linear-interpolate",
+				26)){
+    pitch_type = AGS_FLUID_LINEAR_INTERPOLATE;
+  }else if(!g_ascii_strncasecmp(str,
+				"fluid-4th-order-interpolate",
+				29)){
+    pitch_type = AGS_FLUID_4TH_ORDER_INTERPOLATE;
+  }else if(!g_ascii_strncasecmp(str,
+				"fluid-7th-order-interpolate",
+				29)){
+    pitch_type = AGS_FLUID_7TH_ORDER_INTERPOLATE;
+  }
   
   /* open sfz file */
   if(gtk_toggle_button_get_active((GtkToggleButton *) pitch_sampler->enable_synth_generator)){
@@ -1444,6 +1521,7 @@ ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
       g_object_set(start_sfz_synth_generator->data,
 		   "filename", audio_container->filename,
 		   "frame-count", requested_frame_count,
+		   "pitch-type", pitch_type,
 		   NULL);
       
       apply_sfz_synth = ags_apply_sfz_synth_new(start_sfz_synth_generator->data,

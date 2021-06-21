@@ -1049,6 +1049,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_frequency_map.h \
 	ags/audio/ags_frequency_map_manager.h \
 	ags/audio/ags_fx_factory.h \
+	ags/audio/ags_generic_pitch_util.h \
 	ags/audio/ags_generic_recall_channel_run.h \
 	ags/audio/ags_generic_recall_recycling.h \
 	ags/audio/ags_hq_pitch_util.h \
@@ -1091,6 +1092,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_soundcard_util.h \
 	ags/audio/ags_sfz_synth_generator.h \
 	ags/audio/ags_sfz_synth_util.h \
+	ags/audio/ags_sfz_util.h \
 	ags/audio/ags_synth_generator.h \
 	ags/audio/ags_synth_util.h \
 	ags/audio/ags_track.h \
@@ -1100,7 +1102,8 @@ if WITH_LIBINSTPATCH
 libags_audio_h_sources += \
 	$(deprecated_libags_audio_h_sources) \
 	ags/audio/ags_sf2_synth_generator.h \
-	ags/audio/ags_sf2_synth_util.h
+	ags/audio/ags_sf2_synth_util.h \
+	ags/audio/ags_sf2_util.h
 endif
 
 deprecated_libags_audio_c_sources =
@@ -1138,6 +1141,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_frequency_map.c \
 	ags/audio/ags_frequency_map_manager.c \
 	ags/audio/ags_fx_factory.c \
+	ags/audio/ags_generic_pitch_util.c \
 	ags/audio/ags_generic_recall_channel_run.c \
 	ags/audio/ags_generic_recall_recycling.c \
 	ags/audio/ags_hq_pitch_util.c \
@@ -1179,6 +1183,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_soundcard_util.c \
 	ags/audio/ags_sfz_synth_generator.c \
 	ags/audio/ags_sfz_synth_util.c \
+	ags/audio/ags_sfz_util.c \
 	ags/audio/ags_synth_generator.c \
 	ags/audio/ags_synth_util.c \
 	ags/audio/ags_track.c \
@@ -1188,7 +1193,8 @@ if WITH_LIBINSTPATCH
 libags_audio_c_sources += \
 	$(deprecated_libags_audio_c_sources) \
 	ags/audio/ags_sf2_synth_generator.c \
-	ags/audio/ags_sf2_synth_util.c
+	ags/audio/ags_sf2_synth_util.c \
+	ags/audio/ags_sf2_util.c
 endif
 
 # libags-audio - thread

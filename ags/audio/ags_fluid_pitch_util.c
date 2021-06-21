@@ -66,7 +66,7 @@ ags_fluid_pitch_util_compute_s8(gint8 *buffer,
 
   guint interp_method;
   
-  mix_buffer = (gint16 *) ags_stream_alloc(buffer_length,
+  mix_buffer = (gint8 *) ags_stream_alloc(buffer_length,
 					   AGS_SOUNDCARD_SIGNED_8_BIT);
 
   /* pitch */

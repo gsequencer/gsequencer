@@ -156,6 +156,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   GtkBox *synth_generator_vbox;
   GtkBox *aliase_hbox;
   GtkBox *volume_hbox;
+  GtkBox *pitch_hbox;
   GtkBox *base_note_hbox;
   GtkBox *key_count_hbox;
   GtkFrame *frame;
@@ -452,6 +453,48 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     FALSE, FALSE,
 		     0);
 
+  /* pitch function */
+  pitch_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				      0);
+  gtk_box_pack_start(synth_generator_vbox,
+		     (GtkWidget *) pitch_hbox,
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new(i18n("pitch"));
+  gtk_box_pack_start(pitch_hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
+  
+  ffplayer->pitch_function = (GtkComboBox *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) ffplayer->pitch_function,
+				 "ags-fast-pitch");
+  
+  gtk_combo_box_text_append_text((GtkComboBoxText *) ffplayer->pitch_function,
+				 "ags-hq-pitch");
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) ffplayer->pitch_function,
+				 "fluid-no-interpolate");
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) ffplayer->pitch_function,
+				 "fluid-linear-interpolate");
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) ffplayer->pitch_function,
+				 "fluid-4th-order-interpolate");
+
+  gtk_combo_box_text_append_text((GtkComboBoxText *) ffplayer->pitch_function,
+				 "fluid-7th-order-interpolate");
+
+  gtk_combo_box_set_active(ffplayer->pitch_function,
+			   4);
+  
+  gtk_box_pack_start(pitch_hbox,
+		     (GtkWidget *) ffplayer->pitch_function,
+		     FALSE, FALSE,
+		     0);
+  
   /* base note */
   base_note_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 					  0);
@@ -1302,11 +1345,13 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
 
   gchar *preset_str;
   gchar *instrument_str;
+  gchar *str;
   
   gdouble lower;
   gdouble key_count;
   guint audio_channels;
   guint output_pads;
+  guint pitch_type;
 
   if(!AGS_IS_FFPLAYER(ffplayer)){
     return;
@@ -1339,6 +1384,37 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
   audio_channels = AGS_MACHINE(ffplayer)->audio_channels;
   
   output_pads = AGS_MACHINE(ffplayer)->output_pads;
+
+  /* pitch type */
+  pitch_type = AGS_FLUID_4TH_ORDER_INTERPOLATE;
+
+  str = gtk_combo_box_text_get_active_text(ffplayer->pitch_function);
+
+  if(!g_ascii_strncasecmp(str,
+			  "ags-fast-pitch",
+			  16)){
+    pitch_type = AGS_FAST_PITCH;
+  }else if(!g_ascii_strncasecmp(str,
+				"ags-hq-pitch",
+				14)){
+    pitch_type = AGS_HQ_PITCH;
+  }else if(!g_ascii_strncasecmp(str,
+				"fluid-no-interpolate",
+				21)){
+    pitch_type = AGS_FLUID_NO_INTERPOLATE;
+  }else if(!g_ascii_strncasecmp(str,
+				"fluid-linear-interpolate",
+				26)){
+    pitch_type = AGS_FLUID_LINEAR_INTERPOLATE;
+  }else if(!g_ascii_strncasecmp(str,
+				"fluid-4th-order-interpolate",
+				29)){
+    pitch_type = AGS_FLUID_4TH_ORDER_INTERPOLATE;
+  }else if(!g_ascii_strncasecmp(str,
+				"fluid-7th-order-interpolate",
+				29)){
+    pitch_type = AGS_FLUID_7TH_ORDER_INTERPOLATE;
+  }
   
   /* open sf2 instrument */
   if(gtk_toggle_button_get_active((GtkToggleButton *) ffplayer->enable_synth_generator)){
@@ -1381,6 +1457,7 @@ ags_ffplayer_update(AgsFFPlayer *ffplayer)
 		   "preset", audio_container->preset,
 		   "instrument", audio_container->instrument,
 		   "frame-count", requested_frame_count,
+		   "pitch-type", pitch_type,
 		   NULL);
       
       apply_sf2_synth = ags_apply_sf2_synth_new(start_sf2_synth_generator->data,

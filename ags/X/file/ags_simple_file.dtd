@@ -78,6 +78,7 @@
 	  output-pads             NMTOKEN   #IMPLIED
 	  input-pads              NMTOKEN   #IMPLIED
 	  enable-synth-generator  CDATA     "false"
+	  pitch-type              CDATA     "fluid-4th-order-interpolate"
 	  key-count               NMTOKEN   #IMPLIED
 	  base-note               NMTOKEN   #IMPLIED
 	  audio-loop-start        NMTOKEN   #IMPLIED

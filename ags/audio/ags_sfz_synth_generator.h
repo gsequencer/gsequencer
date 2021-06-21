@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+#include <ags/audio/ags_sfz_util.h>
 
 G_BEGIN_DECLS
 
@@ -62,6 +64,8 @@ struct _AgsSFZSynthGenerator
   guint buffer_size;
   guint format;
 
+  guint pitch_type;
+  
   guint frame_count;
   guint loop_start;
   guint loop_end;
@@ -73,6 +77,8 @@ struct _AgsSFZSynthGenerator
 
   gdouble base_key;
   gdouble tuning;
+
+  AgsSFZ *sfz;
   
   GObject *timestamp;
 };
@@ -97,6 +103,9 @@ void ags_sfz_synth_generator_set_buffer_size(AgsSFZSynthGenerator *sfz_synth_gen
 
 guint ags_sfz_synth_generator_get_format(AgsSFZSynthGenerator *sfz_synth_generator);
 void ags_sfz_synth_generator_set_format(AgsSFZSynthGenerator *sfz_synth_generator, guint format);
+
+guint ags_sfz_synth_generator_get_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator);
+void ags_sfz_synth_generator_set_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator, guint pitch_type);
 
 gdouble ags_sfz_synth_generator_get_delay(AgsSFZSynthGenerator *sfz_synth_generator);
 void ags_sfz_synth_generator_set_delay(AgsSFZSynthGenerator *sfz_synth_generator, gdouble delay);
