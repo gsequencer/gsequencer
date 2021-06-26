@@ -22,6 +22,7 @@
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_synth_enums.h>
+#include <ags/audio/ags_lfo_synth_util.h>
 
 #include <ags/audio/fx/ags_fx_lfo_audio.h>
 #include <ags/audio/fx/ags_fx_lfo_channel.h>

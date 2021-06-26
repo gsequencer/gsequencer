@@ -31,6 +31,10 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_AUDIO_BUFFER_UTIL         (ags_buffer_util_get_type())
+
+GType ags_audio_buffer_util_get_type(void);
+
 #define AGS_AUDIO_BUFFER_S8(ptr) ((gint8 *)(ptr))
 #define AGS_AUDIO_BUFFER_S16(ptr) ((gint16 *)(ptr))
 #define AGS_AUDIO_BUFFER_S24(ptr) ((gint32 *)(ptr))

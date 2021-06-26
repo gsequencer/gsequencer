@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,10 @@
 #include <ags/lib/ags_complex.h>
 
 G_BEGIN_DECLS
+
+#define AGS_TYPE_BUFFER_UTIL         (ags_buffer_util_get_type())
+
+GType ags_buffer_util_get_type(void);
 
 /* signed integers to char buffer */
 guchar* ags_buffer_util_s8_to_char_buffer(gint8 *buffer,
