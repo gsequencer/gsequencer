@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,8 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_MATH_UTIL         (ags_math_util_get_type())
+
 #define AGS_SYMBOLIC_EULER "ℯ"
 #define AGS_SYMBOLIC_PI "𝜋"
 #define AGS_SYMBOLIC_INFINIT "∞"
@@ -42,6 +44,15 @@ G_BEGIN_DECLS
 #define AGS_SUBSCRIPT_7 "₇"
 #define AGS_SUBSCRIPT_8 "₈"
 #define AGS_SUBSCRIPT_9 "₉"
+
+typedef struct _AgsMathUtil AgsMathUtil;
+
+struct _AgsMathUtil
+{
+  //empty
+};
+
+GType ags_math_util_get_type(void);
 
 void ags_math_util_find_parenthesis_all(gchar *str,
 					gint **open_position, gint **close_position,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,12 +29,23 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_SFZ_SYNTH_UTIL         (ags_sfz_synth_util_get_type())
+
 typedef enum{
   AGS_SFZ_SYNTH_UTIL_LOOP_NONE,
   AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD,
   AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE,
   AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG,
 }AgsSFZSynthUtilLoopMode;
+
+typedef struct _AgsSFZSynthUtil AgsSFZSynthUtil;
+
+struct _AgsSFZSynthUtil
+{
+  //empty
+};
+
+GType ags_sfz_synth_util_get_type(void);
 
 void ags_sfz_synth_util_copy_s8(gint8 *buffer,
 				guint buffer_size,

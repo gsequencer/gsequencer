@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,17 @@
 #include <glib-object.h>
 
 G_BEGIN_DECLS
+
+#define AGS_TYPE_LIST_UTIL         (ags_list_util_get_type())
+
+typedef struct _AgsListUtil AgsListUtil;
+
+struct _AgsListUtil
+{
+  //empty
+};
+
+GType ags_list_util_get_type(void);
 
 GList* ags_list_util_find_type(GList *list,
 			       GType gtype);

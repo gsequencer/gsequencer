@@ -31,7 +31,14 @@
 
 G_BEGIN_DECLS
 
-#define AGS_TYPE_AUDIO_BUFFER_UTIL         (ags_buffer_util_get_type())
+#define AGS_TYPE_AUDIO_BUFFER_UTIL         (ags_audio_buffer_util_get_type())
+
+typedef struct _AgsAudioBufferUtil AgsAudioBufferUtil;
+
+struct _AgsAudioBufferUtil
+{
+  //empty
+};
 
 GType ags_audio_buffer_util_get_type(void);
 

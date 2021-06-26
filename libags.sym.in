@@ -17,12 +17,14 @@
 # along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
 
 ags_id_generator_create_uuid
+ags_destroy_util_get_type
 ags_destroy_util_dispose_and_unref
 ags_soundcard_helper_config_get_dsp_channels
 ags_soundcard_helper_config_get_pcm_channels
 ags_soundcard_helper_config_get_samplerate
 ags_soundcard_helper_config_get_buffer_size
 ags_soundcard_helper_config_get_format
+ags_list_util_get_type
 ags_list_util_find_type
 ags_function_get_type
 ags_function_collapse_parantheses
@@ -51,6 +53,7 @@ ags_solver_vector_get_type
 ags_solver_vector_insert_polynomial
 ags_solver_vector_remove_polynomial
 ags_solver_vector_new
+ags_math_util_get_type
 ags_math_util_find_parenthesis_all
 ags_math_util_find_exponent_parenthesis
 ags_math_util_find_function_parenthesis
@@ -69,6 +72,7 @@ ags_math_util_find_symbol_all
 ags_math_util_is_term
 ags_math_util_split_polynomial
 ags_math_util_split_sum
+ags_string_util_get_type
 ags_string_util_escape_single_quote
 ags_strv_length
 ags_strv_contains
@@ -88,6 +92,7 @@ ags_turtle_manager_find
 ags_turtle_manager_add
 ags_turtle_manager_get_instance
 ags_turtle_manager_new
+ags_buffer_util_get_type
 ags_buffer_util_s8_to_char_buffer
 ags_buffer_util_s16_to_char_buffer
 ags_buffer_util_s24_to_char_buffer

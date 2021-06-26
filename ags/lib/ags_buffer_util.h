@@ -30,6 +30,13 @@ G_BEGIN_DECLS
 
 #define AGS_TYPE_BUFFER_UTIL         (ags_buffer_util_get_type())
 
+typedef struct _AgsBufferUtil AgsBufferUtil;
+
+struct _AgsBufferUtil
+{
+  //empty
+};
+
 GType ags_buffer_util_get_type(void);
 
 /* signed integers to char buffer */

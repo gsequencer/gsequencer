@@ -299,6 +299,7 @@ ags_fifoout_switch_buffer_flag
 ags_fifoout_adjust_delay_and_attack
 ags_fifoout_realloc_buffer
 ags_fifoout_new
+ags_sfz_synth_util_get_type
 ags_sfz_synth_util_copy_s8
 ags_sfz_synth_util_copy_s16
 ags_sfz_synth_util_copy_s24
@@ -1121,6 +1122,7 @@ ags_audio_recursive_run_stage
 ags_audio_new
 ags_recall_dssi_run_get_type
 ags_recall_dssi_run_new
+ags_audio_buffer_util_get_type
 ags_complex_set
 ags_complex_set
 ags_complex_set

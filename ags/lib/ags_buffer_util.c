@@ -60,15 +60,17 @@ ags_buffer_util_get_type(void)
 gpointer
 ags_buffer_util_copy(gpointer ptr)
 {
-  //empty
+  gpointer retval;
 
-  return(NULL);
+  retval = g_memdup(ptr, sizeof(AgsBufferUtil));
+ 
+  return(retval);
 }
 
 void
 ags_buffer_util_free(gpointer ptr)
 {
-  //empty
+  g_free(ptr);
 }
 
 /**
