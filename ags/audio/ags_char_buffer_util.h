@@ -27,6 +27,17 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_CHAR_BUFFER_UTIL         (ags_char_buffer_util_get_type())
+
+typedef struct _AgsCharBufferUtil AgsCharBufferUtil;
+
+struct _AgsCharBufferUtil
+{
+  //empty
+};
+
+GType ags_char_buffer_util_get_type(void);
+
 /**
  * AgsCharBufferUtilCopyMode:
  * @AGS_CHAR_BUFFER_UTIL_COPY_S8_TO_CBUFFER: copy signed 8 bit to char buffer

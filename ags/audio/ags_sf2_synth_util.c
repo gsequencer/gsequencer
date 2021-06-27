@@ -45,7 +45,6 @@ void ags_sf2_synth_util_strct_free(gpointer ptr);
  * Utility functions to compute SF2 synths.
  */
 
-
 GType
 ags_sf2_synth_util_get_type(void)
 {

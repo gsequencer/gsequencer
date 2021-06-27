@@ -30,9 +30,17 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_SFZ_UTIL         (ags_sfz_util_get_type())
+
 #define AGS_SFZ(ptr)                ((AgsSFZ *)(ptr))
 
+typedef struct _AgsSFZUtil AgsSFZUtil;
 typedef struct _AgsSFZ AgsSFZ;
+
+struct _AgsSFZUtil
+{
+  //empty
+};
 
 struct _AgsSFZ
 {
@@ -54,6 +62,8 @@ struct _AgsSFZ
 
   gpointer user_data;
 };
+
+GType ags_sfz_util_get_type(void);
 
 gdouble ags_sfz_get_note(AgsSFZ *sfz);
 void ags_sfz_set_note(AgsSFZ *sfz,

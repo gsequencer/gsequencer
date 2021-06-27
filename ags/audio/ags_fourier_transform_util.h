@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,17 @@
 #include <complex.h>
 
 G_BEGIN_DECLS
+
+#define AGS_TYPE_FOURIER_TRANSFORM_UTIL         (ags_fourier_transform_util_get_type())
+
+typedef struct _AgsFourierTransformUtil AgsFourierTransformUtil;
+
+struct _AgsFourierTransformUtil
+{
+  //empty
+};
+
+GType ags_fourier_transform_util_get_type(void);
 
 #define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S8_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { double _Complex l_z; \
     gdouble l_h;							\

@@ -22,6 +22,9 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
+gpointer ags_phase_shift_util_strct_copy(gpointer ptr);
+void ags_phase_shift_util_strct_free(gpointer ptr);
+
 /**
  * SECTION:ags_phase_shift_util
  * @short_description: phase shift util
@@ -31,6 +34,42 @@
  *
  * Utility functions to compute phase shift.
  */
+
+
+GType
+ags_phase_shift_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_phase_shift_util = 0;
+
+    ags_type_phase_shift_util =
+      g_boxed_type_register_static("AgsPhaseShiftUtil",
+				   (GBoxedCopyFunc) ags_phase_shift_util_strct_copy,
+				   (GBoxedFreeFunc) ags_phase_shift_util_strct_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_phase_shift_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+gpointer
+ags_phase_shift_util_strct_copy(gpointer ptr)
+{
+  gpointer retval;
+
+  retval = g_memdup(ptr, sizeof(AgsPhaseShiftUtil));
+ 
+  return(retval);
+}
+
+void
+ags_phase_shift_util_strct_free(gpointer ptr)
+{
+  g_free(ptr);
+}
 
 /**
  * ags_phase_shift_util_compute_s8:

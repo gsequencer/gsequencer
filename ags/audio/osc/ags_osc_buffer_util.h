@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,17 @@
 #include <ags/libags.h>
 
 G_BEGIN_DECLS
+
+#define AGS_TYPE_OSC_BUFFER_UTIL         (ags_osc_buffer_util_get_type())
+
+typedef struct _AgsOscBufferUtil AgsOscBufferUtil;
+
+struct _AgsOscBufferUtil
+{
+  //empty
+};
+
+GType ags_osc_buffer_util_get_type(void);
 
 void ags_osc_buffer_util_put_int32(unsigned char *buffer,
 				   gint32 val);

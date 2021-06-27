@@ -30,6 +30,17 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_FLUID_PITCH_UTIL         (ags_fluid_pitch_util_get_type())
+
+typedef struct _AgsFluidPitchUtil AgsFluidPitchUtil;
+
+struct _AgsFluidPitchUtil
+{
+  //empty
+};
+
+GType ags_fluid_pitch_util_get_type(void);
+
 void ags_fluid_pitch_util_compute_s8(gint8 *buffer,
 				     guint buffer_length,
 				     guint samplerate,

@@ -46,6 +46,8 @@ struct _AgsSF2SynthUtil
   //empty
 };
 
+GType ags_sf2_synth_util_get_type(void);
+
 AgsIpatchSample* ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 									  gint bank,
 									  gint program,

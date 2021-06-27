@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,9 @@
 #include <mach/mach.h>
 #endif
 
+gpointer ags_osc_util_copy(gpointer ptr);
+void ags_osc_util_free(gpointer ptr);
+
 /**
  * SECTION:ags_osc_util
  * @short_description: OSC util
@@ -38,6 +41,41 @@
  *
  * Utility functions for OSC.
  */
+
+GType
+ags_osc_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_osc_util = 0;
+
+    ags_type_osc_util =
+      g_boxed_type_register_static("AgsOscUtil",
+				   (GBoxedCopyFunc) ags_osc_util_copy,
+				   (GBoxedFreeFunc) ags_osc_util_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_osc_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+gpointer
+ags_osc_util_copy(gpointer ptr)
+{
+  gpointer retval;
+
+  retval = g_memdup(ptr, sizeof(AgsOscUtil));
+ 
+  return(retval);
+}
+
+void
+ags_osc_util_free(gpointer ptr)
+{
+  g_free(ptr);
+}
 
 /**
  * ags_osc_util_type_tag_string_count_type:

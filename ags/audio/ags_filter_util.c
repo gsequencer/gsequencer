@@ -26,6 +26,9 @@
 #include <math.h>
 #include <complex.h>
 
+gpointer ags_filter_util_copy(gpointer ptr);
+void ags_filter_util_free(gpointer ptr);
+
 /**
  * SECTION:ags_filter_util
  * @short_description: filter util
@@ -35,6 +38,41 @@
  *
  * Utility functions to compute filters.
  */
+
+GType
+ags_filter_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_filter_util = 0;
+
+    ags_type_filter_util =
+      g_boxed_type_register_static("AgsFilterUtil",
+				   (GBoxedCopyFunc) ags_filter_util_copy,
+				   (GBoxedFreeFunc) ags_filter_util_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_filter_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+gpointer
+ags_filter_util_copy(gpointer ptr)
+{
+  gpointer retval;
+
+  retval = g_memdup(ptr, sizeof(AgsFilterUtil));
+ 
+  return(retval);
+}
+
+void
+ags_filter_util_free(gpointer ptr)
+{
+  g_free(ptr);
+}
 
 /**
  * ags_filter_util_pitch_s8:

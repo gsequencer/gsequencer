@@ -30,6 +30,17 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_PHASE_SHIFT_UTIL         (ags_phase_shift_util_get_type())
+
+typedef struct _AgsPhaseShiftUtil AgsPhaseShiftUtil;
+
+struct _AgsPhaseShiftUtil
+{
+  //empty
+};
+
+GType ags_phase_shift_util_get_type(void);
+
 void ags_phase_shift_util_compute_s8(gint8 *destination,
 				     gint8 *source,
 				     guint buffer_length,

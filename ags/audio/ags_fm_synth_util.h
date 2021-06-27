@@ -27,6 +27,17 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_FM_SYNTH_UTIL         (ags_fm_synth_util_get_type())
+
+typedef struct _AgsFMSynthUtil AgsFMSynthUtil;
+
+struct _AgsFMSynthUtil
+{
+  //empty
+};
+
+GType ags_fm_synth_util_get_type(void);
+
 /* fm sin oscillator */
 void ags_fm_synth_util_sin_s8(gint8 *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,

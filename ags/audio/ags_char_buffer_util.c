@@ -19,6 +19,9 @@
 
 #include <ags/audio/ags_char_buffer_util.h>
 
+gpointer ags_char_buffer_util_copy(gpointer ptr);
+void ags_char_buffer_util_free(gpointer ptr);
+
 /**
  * SECTION:ags_char_buffer_util
  * @short_description: util functions to handle char buffer
@@ -29,6 +32,41 @@
  * These utility functions allow you to store/restore PCM data from 
  * char buffer.
  */
+
+GType
+ags_char_buffer_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_char_buffer_util = 0;
+
+    ags_type_char_buffer_util =
+      g_boxed_type_register_static("AgsCharBufferUtil",
+				   (GBoxedCopyFunc) ags_char_buffer_util_copy,
+				   (GBoxedFreeFunc) ags_char_buffer_util_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_char_buffer_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+gpointer
+ags_char_buffer_util_copy(gpointer ptr)
+{
+  gpointer retval;
+
+  retval = g_memdup(ptr, sizeof(AgsCharBufferUtil));
+ 
+  return(retval);
+}
+
+void
+ags_char_buffer_util_free(gpointer ptr)
+{
+  g_free(ptr);
+}
 
 /**
  * ags_char_buffer_util_copy_s8_to_cbuffer:

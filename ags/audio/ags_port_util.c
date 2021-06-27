@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,9 @@
 #include <ags/plugin/ags_ladspa_conversion.h>
 #include <ags/plugin/ags_lv2_conversion.h>
 
+gpointer ags_port_util_copy(gpointer ptr);
+void ags_port_util_free(gpointer ptr);
+
 /**
  * SECTION:ags_port_util
  * @short_description: port util
@@ -31,6 +34,41 @@
  *
  * Utility functions to deal with #AgsPort.
  */
+
+GType
+ags_port_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_port_util = 0;
+
+    ags_type_port_util =
+      g_boxed_type_register_static("AgsPortUtil",
+				   (GBoxedCopyFunc) ags_port_util_copy,
+				   (GBoxedFreeFunc) ags_port_util_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_port_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+gpointer
+ags_port_util_copy(gpointer ptr)
+{
+  gpointer retval;
+
+  retval = g_memdup(ptr, sizeof(AgsPortUtil));
+ 
+  return(retval);
+}
+
+void
+ags_port_util_free(gpointer ptr)
+{
+  g_free(ptr);
+}
 
 /**
  * ags_port_util_load_ladspa_conversion:

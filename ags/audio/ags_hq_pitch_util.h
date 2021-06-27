@@ -30,6 +30,17 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_HQ_PITCH_UTIL         (ags_hq_pitch_util_get_type())
+
+typedef struct _AgsHQPitchUtil AgsHQPitchUtil;
+
+struct _AgsHQPitchUtil
+{
+  //empty
+};
+
+GType ags_hq_pitch_util_get_type(void);
+
 void ags_hq_pitch_util_compute_s8(gint8 *buffer,
 				  guint buffer_length,
 				  guint samplerate,

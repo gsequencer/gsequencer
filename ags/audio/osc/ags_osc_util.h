@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 #include <ags/libags.h>
 
 G_BEGIN_DECLS
+
+#define AGS_TYPE_OSC_UTIL         (ags_osc_util_get_type())
 
 #define AGS_OSC_UTIL_TYPE_TAG_STRING_INT32 'i'
 #define AGS_OSC_UTIL_TYPE_TAG_STRING_FLOAT 'f'
@@ -56,6 +58,15 @@ G_BEGIN_DECLS
 #define AGS_OSC_UTIL_SLIP_ESC (219)
 #define AGS_OSC_UTIL_SLIP_ESC_END (220)
 #define AGS_OSC_UTIL_SLIP_ESC_ESC (221)
+
+typedef struct _AgsOscUtil AgsOscUtil;
+
+struct _AgsOscUtil
+{
+  //empty
+};
+
+GType ags_osc_util_get_type(void);
 
 guint ags_osc_util_type_tag_string_count_type(gchar *type_tag);
 

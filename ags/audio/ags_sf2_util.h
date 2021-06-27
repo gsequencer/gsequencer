@@ -30,9 +30,17 @@
 
 G_BEGIN_DECLS
 
-#define AGS_SF2(ptr)                ((AgsSF2 *)(ptr))
+#define AGS_TYPE_SF2_UTIL         (ags_sf2_util_get_type())
 
+#define AGS_SF2(ptr)              ((AgsSF2 *)(ptr))
+
+typedef struct _AgsSF2Util AgsSF2Util;
 typedef struct _AgsSF2 AgsSF2;
+
+struct _AgsSF2Util
+{
+  //empty
+};
 
 struct _AgsSF2
 {
@@ -54,6 +62,8 @@ struct _AgsSF2
 
   gpointer user_data;
 };
+
+GType ags_sf2_util_get_type(void);
 
 gdouble ags_sf2_get_note(AgsSF2 *sf2);
 void ags_sf2_set_note(AgsSF2 *sf2,

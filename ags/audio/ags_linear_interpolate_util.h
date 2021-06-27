@@ -30,6 +30,17 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_LINEAR_INTERPOLATE_UTIL         (ags_linear_interpolate_util_get_type())
+
+typedef struct _AgsLinearInterpolateUtil AgsLinearInterpolateUtil;
+
+struct _AgsLinearInterpolateUtil
+{
+  //empty
+};
+
+GType ags_linear_interpolate_util_get_type(void);
+
 void ags_linear_interpolate_util_fill_s8(gint8 *destination,
 					 gint8 *source,
 					 guint buffer_length,

@@ -27,6 +27,17 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_LFO_SYNTH_UTIL         (ags_lfo_synth_util_get_type())
+
+typedef struct _AgsLFOSynthUtil AgsLFOSynthUtil;
+
+struct _AgsLFOSynthUtil
+{
+  //empty
+};
+
+GType ags_lfo_synth_util_get_type(void);
+
 /* sin LFO */
 void ags_lfo_synth_util_sin_s8(gint8 *buffer,
 			       gdouble freq, gdouble phase,

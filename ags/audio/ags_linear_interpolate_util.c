@@ -19,6 +19,9 @@
 
 #include <ags/audio/ags_linear_interpolate_util.h>
 
+gpointer ags_linear_interpolate_util_strct_copy(gpointer ptr);
+void ags_linear_interpolate_util_strct_free(gpointer ptr);
+
 /**
  * SECTION:ags_linear_interpolate_util
  * @short_description: util functions to linear interpolate
@@ -29,6 +32,41 @@
  * These utility functions allow you to fill linear interpolated
  * data.
  */
+
+GType
+ags_linear_interpolate_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_linear_interpolate_util = 0;
+
+    ags_type_linear_interpolate_util =
+      g_boxed_type_register_static("AgsLinearInterpolateUtil",
+				   (GBoxedCopyFunc) ags_linear_interpolate_util_strct_copy,
+				   (GBoxedFreeFunc) ags_linear_interpolate_util_strct_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_linear_interpolate_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+gpointer
+ags_linear_interpolate_util_strct_copy(gpointer ptr)
+{
+  gpointer retval;
+
+  retval = g_memdup(ptr, sizeof(AgsLinearInterpolateUtil));
+ 
+  return(retval);
+}
+
+void
+ags_linear_interpolate_util_strct_free(gpointer ptr)
+{
+  g_free(ptr);
+}
 
 /**
  * ags_linear_interpolate_util_fill_s8:

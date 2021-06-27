@@ -27,6 +27,17 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_SYNTH_UTIL         (ags_synth_util_get_type())
+
+typedef struct _AgsSynthUtil AgsSynthUtil;
+
+struct _AgsSynthUtil
+{
+  //empty
+};
+
+GType ags_synth_util_get_type(void);
+
 /* zero-crossing */
 guint ags_synth_util_get_xcross_count_s8(gint8 *buffer,
 					 guint buffer_size);

@@ -30,6 +30,15 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL         (ags_fluid_interpolate_linear_util_get_type())
+
+struct _AgsFluidInterpolateLinearUtil
+{
+  //empty
+};
+
+typedef struct _AgsFluidInterpolateLinearUtil AgsFluidInterpolateLinearUtil;
+
 void ags_fluid_interpolate_linear_util_fill_s8(gint8 *destination,
 					       gint8 *source,
 					       guint buffer_length,

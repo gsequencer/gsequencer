@@ -1,3 +1,9 @@
+ags (3.9.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented getter/setter of AgsGenericPitch
+	* implemented get type functions of utility files
+
 ags (3.9.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

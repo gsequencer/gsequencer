@@ -25,6 +25,9 @@
 #include <math.h>
 #include <complex.h>
 
+gpointer ags_synth_util_copy(gpointer ptr);
+void ags_synth_util_free(gpointer ptr);
+
 /**
  * SECTION:ags_synth_util
  * @short_description: synth util
@@ -34,6 +37,41 @@
  *
  * Utility functions to compute synths.
  */
+
+GType
+ags_synth_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_synth_util = 0;
+
+    ags_type_synth_util =
+      g_boxed_type_register_static("AgsSynthUtil",
+				   (GBoxedCopyFunc) ags_synth_util_copy,
+				   (GBoxedFreeFunc) ags_synth_util_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_synth_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+gpointer
+ags_synth_util_copy(gpointer ptr)
+{
+  gpointer retval;
+
+  retval = g_memdup(ptr, sizeof(AgsSynthUtil));
+ 
+  return(retval);
+}
+
+void
+ags_synth_util_free(gpointer ptr)
+{
+  g_free(ptr);
+}
 
 /**
  * ags_synth_util_get_xcross_count_s8:
