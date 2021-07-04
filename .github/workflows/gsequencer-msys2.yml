@@ -14,7 +14,7 @@ env:
 
 jobs:
   push:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     permissions:
       packages: write
       contents: read
