@@ -1,4 +1,4 @@
-FROM ghcr.io/joelkraehemann/msys2
+FROM ghcr.io/gsequencer/msys2
 RUN bash -c "git clone https://github.com/gsequencer/gsequencer.git"
 RUN bash -c "git clone git://git.sv.gnu.org/gnulib.git"
 RUN bash -c "wget -c http://xn--krhemann-1za.com/download/ags-user-manual.pdf"
