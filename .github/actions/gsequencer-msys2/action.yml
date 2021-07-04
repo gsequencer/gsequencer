@@ -1,0 +1,7 @@
+name: "GSequencer MSys2 build"
+
+description: "build GSequencer on Microsoft Windows using MSys2"
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
