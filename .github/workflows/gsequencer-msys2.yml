@@ -11,7 +11,7 @@ env:
   
 jobs:
   push:
-    runs-on: msys2
+    runs-on: windows-latest
     permissions:
       packages: write
       contents: read
