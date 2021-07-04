@@ -33,7 +33,7 @@
       <listitem>
 	<para>
 	  Buffer audio data, produces new destination as on source occurs
-	  AgsAudioSignal::add_audio_signal().	  
+	  AgsRecycling::add_audio_signal().	  
 	</para>
       </listitem>
     </varlistentry>
