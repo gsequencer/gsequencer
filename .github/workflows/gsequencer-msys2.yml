@@ -2,9 +2,6 @@ name: GSequencer MSys2
 
 on:
   push:
-    branches:
-      - master
-
     # Publish `v3.x.x` tags as releases.
     tags:
       - 3.*
@@ -24,7 +21,7 @@ jobs:
 
       - name: get version
         run: |
-          VERSION="${{ github.ref }}"
+          set VERSION="${{ github.ref }}"
 
       - name: gsequencer-msys2
         uses: ./.github/actions/gsequencer-msys2
