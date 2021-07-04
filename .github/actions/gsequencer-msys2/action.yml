@@ -7,8 +7,13 @@ inputs:
     description: 'The GSequencer version'
     required: true
 
+  gh_token:  # id of input
+    description: 'The Github token'
+    required: true
+
 runs:
   using: "docker"
   image: "Dockerfile"
   args:
     - GSEQUENCER_VERSION=${{ inputs.version }}
+    - GH_TOKEN=${{ inputs.gh_token }}

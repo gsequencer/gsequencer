@@ -22,10 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Log in to registry
-        # This is where you will update the PAT to GITHUB_TOKEN
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password--stdin
-
       - name: get version
         run: |
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
@@ -34,3 +30,4 @@ jobs:
         uses: ./.github/actions/gsequencer-msys2
         with:
           version: "$VERSION"
+          gh_token: "${{ secrets.GITHUB_TOKEN }}"
