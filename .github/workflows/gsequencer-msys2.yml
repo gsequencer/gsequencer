@@ -8,7 +8,7 @@ on:
 
 env:
   IMAGE_NAME: gsequencer-msys2
-
+  
 jobs:
   push:
     runs-on: msys2
