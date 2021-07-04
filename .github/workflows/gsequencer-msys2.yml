@@ -2,7 +2,7 @@ name: GSequencer MSys2
 
 on:
   push:
-    # Publish `v3.x.x` tags as releases.
+    # Publish `3.x.x` tags as releases.
     tags:
       - 3.*
 
