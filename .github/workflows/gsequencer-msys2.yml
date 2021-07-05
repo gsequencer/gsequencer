@@ -12,9 +12,7 @@ env:
 jobs:
   push:
     runs-on: windows-latest
-    permissions:
-      packages: read
-      contents: read
+    permissions: read-all
 
     steps:
       - uses: actions/checkout@v2
@@ -27,8 +25,7 @@ jobs:
           set GHCR_IMAGE "msys2:latest"
           set GHCR_CONTAINER "ags-ms-build-container"
           echo $CR_TOKEN | docker login ghcr.io -u $GHCR_USERNAME --password-stdin
-          sleep 30
-          docker pull ghcr.io/gsequencer/$GHCR_IMAGE
+          docker pull ghcr.io/$GHCR_USERNAME/$GHCR_IMAGE
           docker container create $GHCR_IMAGE --name $GHCR_CONTAINER
           docker container start $GHCR_CONTAINER
           docker exec $GHCR_CONTAINER git clone https://github.com/gsequencer/gsequencer.git
