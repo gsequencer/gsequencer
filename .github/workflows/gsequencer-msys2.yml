@@ -22,7 +22,7 @@ jobs:
           set CR_TOKEN "${{ secrets.GITHUB_TOKEN }}"
           set GSEQUENCER_VERSION "${{ github.ref }}"
           set GHCR_USERNAME "joelkraehemann"
-          set GHCR_PROJECT "joelkraehemann"
+          set GHCR_PROJECT "gsequencer"
           set GHCR_IMAGE "msys2:latest"
           set GHCR_CONTAINER "ags-ms-build-container"
           echo $CR_TOKEN | docker login ghcr.io -u $GHCR_USERNAME --password-stdin
