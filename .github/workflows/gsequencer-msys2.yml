@@ -19,17 +19,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: login to ghcr.io
-        run: |
-          set CR_TOKEN "${{ secrets.GITHUB_TOKEN }}"
-          set GHCR_USERNAME "joelkraehemann"
-          echo $CR_TOKEN | docker login ghcr.io -u $GHCR_USERNAME --password-stdin
-
       - name: build gsequencer.exe
         run: |
+          set CR_TOKEN "${{ secrets.GITHUB_TOKEN }}"
           set GSEQUENCER_VERSION "${{ github.ref }}"
+          set GHCR_USERNAME "joelkraehemann"
           set GHCR_IMAGE "msys2:latest"
           set GHCR_CONTAINER "ags-ms-build-container"
+          echo $CR_TOKEN | docker login ghcr.io -u $GHCR_USERNAME --password-stdin
           docker pull ghcr.io/gsequencer/$GHCR_IMAGE
           docker container create $GHCR_IMAGE --name $GHCR_CONTAINER
           docker container start $GHCR_CONTAINER
