@@ -13,7 +13,7 @@ jobs:
   push:
     runs-on: windows-latest
     permissions:
-      packages: write
+      packages: read
       contents: read
 
     steps:
