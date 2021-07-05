@@ -12,7 +12,8 @@ env:
 jobs:
   push:
     runs-on: windows-latest
-    permissions: read-all
+    permissions:
+      packages: read
 
     steps:
       - uses: actions/checkout@v2
