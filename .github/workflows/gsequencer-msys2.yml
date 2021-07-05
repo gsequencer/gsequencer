@@ -21,11 +21,12 @@ jobs:
         run: |
           set CR_TOKEN "${{ secrets.GITHUB_TOKEN }}"
           set GSEQUENCER_VERSION "${{ github.ref }}"
-          set GHCR_USERNAME "gsequencer"
+          set GHCR_USERNAME "joelkraehemann"
+          set GHCR_PROJECT "joelkraehemann"
           set GHCR_IMAGE "msys2:latest"
           set GHCR_CONTAINER "ags-ms-build-container"
           echo $CR_TOKEN | docker login ghcr.io -u $GHCR_USERNAME --password-stdin
-          docker pull ghcr.io/$GHCR_USERNAME/$GHCR_IMAGE
+          docker pull ghcr.io/$GHCR_PROJECT/$GHCR_IMAGE
           docker container create $GHCR_IMAGE --name $GHCR_CONTAINER
           docker container start $GHCR_CONTAINER
           docker exec $GHCR_CONTAINER git clone https://github.com/gsequencer/gsequencer.git
