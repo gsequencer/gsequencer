@@ -15378,7 +15378,7 @@ ags_audio_recursive_run_stage(AgsAudio *audio,
  * ags_audio_new:
  * @output_soundcard: the #AgsSoundcard to use for output
  *
- * Creates an #AgsAudio, with defaults of @soundcard.
+ * Creates an #AgsAudio, with defaults of @output_soundcard.
  *
  * Returns: a new #AgsAudio
  *

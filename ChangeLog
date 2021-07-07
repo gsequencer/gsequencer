@@ -1,3 +1,8 @@
+ags (3.9.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed Makefile.am missing introspection sources
+
 ags (3.9.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
