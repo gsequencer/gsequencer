@@ -363,39 +363,48 @@ void ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
 					guint count, guint format);
 
 /* envelope */
+G_DEPRECATED_FOR(ags_envelope_util_compute_s8)
 gdouble ags_audio_buffer_util_envelope_s8(gint8 *buffer, guint channels,
 					  guint buffer_length,
 					  gdouble current_volume,
 					  gdouble ratio);
+G_DEPRECATED_FOR(ags_envelope_util_compute_s16)
 gdouble ags_audio_buffer_util_envelope_s16(gint16 *buffer, guint channels,
 					   guint buffer_length,
 					   gdouble current_volume,
 					   gdouble ratio);
+G_DEPRECATED_FOR(ags_envelope_util_compute_s24)
 gdouble ags_audio_buffer_util_envelope_s24(gint32 *buffer, guint channels,
 					   guint buffer_length,
 					   gdouble current_volume,
 					   gdouble ratio);
+G_DEPRECATED_FOR(ags_envelope_util_compute_s32)
 gdouble ags_audio_buffer_util_envelope_s32(gint32 *buffer, guint channels,
 					   guint buffer_length,
 					   gdouble current_volume,
 					   gdouble ratio);
+G_DEPRECATED_FOR(ags_envelope_util_compute_s64)
 gdouble ags_audio_buffer_util_envelope_s64(gint64 *buffer, guint channels,
 					   guint buffer_length,
 					   gdouble current_volume,
 					   gdouble ratio);
+G_DEPRECATED_FOR(ags_envelope_util_compute_float)
 gdouble ags_audio_buffer_util_envelope_float(gfloat *buffer, guint channels,
 					     guint buffer_length,
 					     gdouble current_volume,
 					     gdouble ratio);
+G_DEPRECATED_FOR(ags_envelope_util_compute_double)
 gdouble ags_audio_buffer_util_envelope_double(gdouble *buffer, guint channels,
 					      guint buffer_length,
 					      gdouble current_volume,
 					      gdouble ratio);
+G_DEPRECATED_FOR(ags_envelope_util_compute_complex)
 gdouble ags_audio_buffer_util_envelope_complex(AgsComplex *buffer, guint channels,
 					       guint buffer_length,
 					       gdouble current_volume,
 					       gdouble ratio);
 
+G_DEPRECATED_FOR(ags_envelope_util_compute)
 gdouble ags_audio_buffer_util_envelope(void *buffer, guint channels,
 				       guint format,
 				       guint buffer_length,
