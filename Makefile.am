@@ -1033,6 +1033,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_devout.h \
 	ags/audio/ags_devin.h \
 	ags/audio/ags_diatonic_scale.h \
+	ags/audio/ags_envelope_util.h \
 	ags/audio/ags_fast_pitch_util.h \
 	ags/audio/ags_filter_util.h \
 	ags/audio/ags_fifoout.h \
@@ -1124,7 +1125,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_devout.c \
 	ags/audio/ags_devin.c \
 	ags/audio/ags_diatonic_scale.c \
-	ags/audio/ags_input.c \
+	ags/audio/ags_envelope_util.c \
 	ags/audio/ags_fast_pitch_util.c \
 	ags/audio/ags_filter_util.c \
 	ags/audio/ags_fifoout.c \
@@ -1145,6 +1146,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_generic_recall_channel_run.c \
 	ags/audio/ags_generic_recall_recycling.c \
 	ags/audio/ags_hq_pitch_util.c \
+	ags/audio/ags_input.c \
 	ags/audio/ags_lfo_synth_util.c \
 	ags/audio/ags_linear_interpolate_util.c \
 	ags/audio/ags_midi.c \

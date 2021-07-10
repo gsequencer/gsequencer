@@ -19,6 +19,8 @@
 
 #include <ags/audio/ags_envelope_util.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
+
 /**
  * SECTION:ags_envelope_util
  * @short_description: Boxed type of envelope util
@@ -136,8 +138,9 @@ ags_envelope_util_free(AgsEnvelopeUtil *ptr)
 void
 ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
 {
-  gint8 *destination, *source;
-  gdouble start_volume, current_volume;
+  gint8 *destination;
+  gint8 *source;
+  gdouble start_volume;
   guint i, i_stop;
 
   if(envelope_util == NULL ||
@@ -159,64 +162,115 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
   for(; i < i_stop;){
     ags_v8double v_buffer;
     ags_v8double v_volume;
-    guint j;
 
-    j = 0;
-    
     v_buffer = (ags_v8double) {
-      (gdouble) source[0],
-      (gdouble) source[j++],
-      (gdouble) source[j++],
-      (gdouble) source[j++],
-      (gdouble) source[j++],
-      (gdouble) source[j++],
-      (gdouble) source[j++],
-      (gdouble) source[j++]
+      (gdouble) *(source),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++)
     };
-    
-    j = 0;
+
+    source++;
 
     v_volume = (ags_v8double) {
       (gdouble) start_volume + i * envelope_util->amount,
-      (gdouble) start_volume + (i + (j++)) * envelope_util->amount,
-      (gdouble) start_volume + (i + (j++)) * envelope_util->amount,
-      (gdouble) start_volume + (i + (j++)) * envelope_util->amount,
-      (gdouble) start_volume + (i + (j++)) * envelope_util->amount,
-      (gdouble) start_volume + (i + (j++)) * envelope_util->amount,
-      (gdouble) start_volume + (i + (j++)) * envelope_util->amount,
-      (gdouble) start_volume + (i + (j++)) * envelope_util->amount
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount
     };
 
+    i++;
+    
     v_buffer *= v_volume;
 
-    j = 0;
-    
-    destination[0] = (gint8) v_buffer[0];
-    destination[j++] = (gint8) v_buffer[1];
-    destination[j++] = (gint8) v_buffer[2];
-    destination[j++] = (gint8) v_buffer[3];
-    destination[j++] = (gint8) v_buffer[4];
-    destination[j++] = (gint8) v_buffer[5];
-    destination[j++] = (gint8) v_buffer[6];
-    destination[j++] = (gint8) v_buffer[7];
-    
-    i += 8;
+    *(destination) = (gint8) v_buffer[0];
+    *(destination++) = (gint8) v_buffer[1];
+    *(destination++) = (gint8) v_buffer[2];
+    *(destination++) = (gint8) v_buffer[3];
+    *(destination++) = (gint8) v_buffer[4];
+    *(destination++) = (gint8) v_buffer[5];
+    *(destination++) = (gint8) v_buffer[6];
+    *(destination++) = (gint8) v_buffer[7];
+
+    destination++;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
-  //TODO:JK: implement me
-#else
-  //TODO:JK: implement me
-#endif
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+  
+  for(; i < i_stop;){
+    double ret_v_buffer[8];
 
-  /* loop tail */
-  for(; i < envelope_util->buffer_length; i++){
-    current_volume = start_volume + i * envelope_util->amount;
-    
-    destination[0] = (gint8) ((gint16) (source[0] * current_volume));
+    double v_buffer[] = {(double) buffer[0],
+      (double) *(source),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++)};
+
+    double v_volume[] = {(double) ,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount};
+
+    source++;
+    i++;
+
+    vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+
+    *(destination) = (gint8) ret_v_buffer[0];
+    *(destination++) = (gint8) ret_v_buffer[1];
+    *(destination++) = (gint8) ret_v_buffer[2];
+    *(destination++) = (gint8) ret_v_buffer[3];
+    *(destination++) = (gint8) ret_v_buffer[4];
+    *(destination++) = (gint8) ret_v_buffer[5];
+    *(destination++) = (gint8) ret_v_buffer[6];
+    *(destination++) = (gint8) ret_v_buffer[7];
+
+    destination++;
+  }
+#else
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+
+  for(; i < i_stop;){
+    *(destination) = (gint8) ((gint16) ((source)[0] * (start_volume + i * envelope_util->amount)));
+    *(destination++) = (gint8) ((gint16) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint8) ((gint16) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint8) ((gint16) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint8) ((gint16) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint8) ((gint16) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint8) ((gint16) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint8) ((gint16) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
 
     destination++;
     source++;
+    i++;
   }
+#endif
+
+  /* loop tail */
+  for(; i < envelope_util->buffer_length;){
+    destination[0] = (gint8) ((gint16) (source[0] * (start_volume + (i++) * envelope_util->amount)));
+
+    destination++;
+    source++;
+    i++;
+  }
+
+  envelope_util->volume = start_volume + i * envelope_util->amount;
 }
 
 /**
@@ -230,13 +284,139 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
 void
 ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
 {
+  gint16 *destination;
+  gint16 *source;
+  gdouble start_volume;
+  guint i, i_stop;
+
   if(envelope_util == NULL ||
      envelope_util->destination == NULL ||
      envelope_util->source == NULL){
     return;
   }
+
+  destination = (gint16 *) envelope_util->destination;
+  source = (gint16 *) envelope_util->source;
   
-  //TODO:JK: implement me
+  start_volume = envelope_util->volume;
+
+  i = 0;
+  
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+
+  for(; i < i_stop;){
+    ags_v8double v_buffer;
+    ags_v8double v_volume;
+
+    v_buffer = (ags_v8double) {
+      (gdouble) *(source),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++)
+    };
+
+    source++;
+
+    v_volume = (ags_v8double) {
+      (gdouble) start_volume + i * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount
+    };
+
+    i++;
+    
+    v_buffer *= v_volume;
+
+    *(destination) = (gint16) v_buffer[0];
+    *(destination++) = (gint16) v_buffer[1];
+    *(destination++) = (gint16) v_buffer[2];
+    *(destination++) = (gint16) v_buffer[3];
+    *(destination++) = (gint16) v_buffer[4];
+    *(destination++) = (gint16) v_buffer[5];
+    *(destination++) = (gint16) v_buffer[6];
+    *(destination++) = (gint16) v_buffer[7];
+
+    destination++;
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+  
+  for(; i < i_stop;){
+    double ret_v_buffer[8];
+
+    double v_buffer[] = {(double) buffer[0],
+      (double) *(source),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++)};
+
+    double v_volume[] = {(double) ,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount};
+
+    source++;
+    i++;
+
+    vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+
+    *(destination) = (gint16) ret_v_buffer[0];
+    *(destination++) = (gint16) ret_v_buffer[1];
+    *(destination++) = (gint16) ret_v_buffer[2];
+    *(destination++) = (gint16) ret_v_buffer[3];
+    *(destination++) = (gint16) ret_v_buffer[4];
+    *(destination++) = (gint16) ret_v_buffer[5];
+    *(destination++) = (gint16) ret_v_buffer[6];
+    *(destination++) = (gint16) ret_v_buffer[7];
+
+    destination++;
+  }
+#else
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+
+  for(; i < i_stop;){
+    *(destination) = (gint16) ((gint32) ((source)[0] * (start_volume + i * envelope_util->amount)));
+    *(destination++) = (gint16) ((gint32) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint16) ((gint32) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint16) ((gint32) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint16) ((gint32) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint16) ((gint32) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint16) ((gint32) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint16) ((gint32) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+
+    destination++;
+    source++;
+    i++;
+  }
+#endif
+
+  /* loop tail */
+  for(; i < envelope_util->buffer_length;){
+    destination[0] = (gint16) ((gint32) (source[0] * (start_volume + (i++) * envelope_util->amount)));
+
+    destination++;
+    source++;
+    i++;
+  }
+
+  envelope_util->volume = start_volume + i * envelope_util->amount;
 }
 
 /**
@@ -250,13 +430,139 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
 void
 ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
 {
+  gint32 *destination;
+  gint32 *source;
+  gdouble start_volume;
+  guint i, i_stop;
+
   if(envelope_util == NULL ||
      envelope_util->destination == NULL ||
      envelope_util->source == NULL){
     return;
   }
+
+  destination = (gint32 *) envelope_util->destination;
+  source = (gint32 *) envelope_util->source;
   
-  //TODO:JK: implement me
+  start_volume = envelope_util->volume;
+
+  i = 0;
+  
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+
+  for(; i < i_stop;){
+    ags_v8double v_buffer;
+    ags_v8double v_volume;
+
+    v_buffer = (ags_v8double) {
+      (gdouble) *(source),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++)
+    };
+
+    source++;
+
+    v_volume = (ags_v8double) {
+      (gdouble) start_volume + i * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount
+    };
+
+    i++;
+    
+    v_buffer *= v_volume;
+
+    *(destination) = (gint32) v_buffer[0];
+    *(destination++) = (gint32) v_buffer[1];
+    *(destination++) = (gint32) v_buffer[2];
+    *(destination++) = (gint32) v_buffer[3];
+    *(destination++) = (gint32) v_buffer[4];
+    *(destination++) = (gint32) v_buffer[5];
+    *(destination++) = (gint32) v_buffer[6];
+    *(destination++) = (gint32) v_buffer[7];
+
+    destination++;
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+  
+  for(; i < i_stop;){
+    double ret_v_buffer[8];
+
+    double v_buffer[] = {(double) buffer[0],
+      (double) *(source),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++)};
+
+    double v_volume[] = {(double) ,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount};
+
+    source++;
+    i++;
+
+    vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+
+    *(destination) = (gint32) ret_v_buffer[0];
+    *(destination++) = (gint32) ret_v_buffer[1];
+    *(destination++) = (gint32) ret_v_buffer[2];
+    *(destination++) = (gint32) ret_v_buffer[3];
+    *(destination++) = (gint32) ret_v_buffer[4];
+    *(destination++) = (gint32) ret_v_buffer[5];
+    *(destination++) = (gint32) ret_v_buffer[6];
+    *(destination++) = (gint32) ret_v_buffer[7];
+
+    destination++;
+  }
+#else
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+
+  for(; i < i_stop;){
+    *(destination) = (gint32) ((gint32) ((source)[0] * (start_volume + i * envelope_util->amount)));
+    *(destination++) = (gint32) ((gint32) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint32) ((gint32) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint32) ((gint32) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint32) ((gint32) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint32) ((gint32) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint32) ((gint32) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint32) ((gint32) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+
+    destination++;
+    source++;
+    i++;
+  }
+#endif
+
+  /* loop tail */
+  for(; i < envelope_util->buffer_length;){
+    destination[0] = (gint32) ((gint32) (source[0] * (start_volume + (i++) * envelope_util->amount)));
+
+    destination++;
+    source++;
+    i++;
+  }
+
+  envelope_util->volume = start_volume + i * envelope_util->amount;
 }
 
 /**
@@ -270,13 +576,139 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
 void
 ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
 {
+  gint32 *destination;
+  gint32 *source;
+  gdouble start_volume;
+  guint i, i_stop;
+
   if(envelope_util == NULL ||
      envelope_util->destination == NULL ||
      envelope_util->source == NULL){
     return;
   }
+
+  destination = (gint32 *) envelope_util->destination;
+  source = (gint32 *) envelope_util->source;
   
-  //TODO:JK: implement me
+  start_volume = envelope_util->volume;
+
+  i = 0;
+  
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+
+  for(; i < i_stop;){
+    ags_v8double v_buffer;
+    ags_v8double v_volume;
+
+    v_buffer = (ags_v8double) {
+      (gdouble) *(source),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++)
+    };
+
+    source++;
+
+    v_volume = (ags_v8double) {
+      (gdouble) start_volume + i * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount
+    };
+
+    i++;
+    
+    v_buffer *= v_volume;
+
+    *(destination) = (gint32) v_buffer[0];
+    *(destination++) = (gint32) v_buffer[1];
+    *(destination++) = (gint32) v_buffer[2];
+    *(destination++) = (gint32) v_buffer[3];
+    *(destination++) = (gint32) v_buffer[4];
+    *(destination++) = (gint32) v_buffer[5];
+    *(destination++) = (gint32) v_buffer[6];
+    *(destination++) = (gint32) v_buffer[7];
+
+    destination++;
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+  
+  for(; i < i_stop;){
+    double ret_v_buffer[8];
+
+    double v_buffer[] = {(double) buffer[0],
+      (double) *(source),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++)};
+
+    double v_volume[] = {(double) ,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount};
+
+    source++;
+    i++;
+
+    vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+
+    *(destination) = (gint32) ret_v_buffer[0];
+    *(destination++) = (gint32) ret_v_buffer[1];
+    *(destination++) = (gint32) ret_v_buffer[2];
+    *(destination++) = (gint32) ret_v_buffer[3];
+    *(destination++) = (gint32) ret_v_buffer[4];
+    *(destination++) = (gint32) ret_v_buffer[5];
+    *(destination++) = (gint32) ret_v_buffer[6];
+    *(destination++) = (gint32) ret_v_buffer[7];
+
+    destination++;
+  }
+#else
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+
+  for(; i < i_stop;){
+    *(destination) = (gint32) ((gint64) ((source)[0] * (start_volume + i * envelope_util->amount)));
+    *(destination++) = (gint32) ((gint64) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint32) ((gint64) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint32) ((gint64) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint32) ((gint64) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint32) ((gint64) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint32) ((gint64) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint32) ((gint64) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+
+    destination++;
+    source++;
+    i++;
+  }
+#endif
+
+  /* loop tail */
+  for(; i < envelope_util->buffer_length;){
+    destination[0] = (gint32) ((gint64) (source[0] * (start_volume + (i++) * envelope_util->amount)));
+
+    destination++;
+    source++;
+    i++;
+  }
+
+  envelope_util->volume = start_volume + i * envelope_util->amount;
 }
 
 /**
@@ -290,13 +722,139 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
 void
 ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
 {
+  gint64 *destination;
+  gint64 *source;
+  gdouble start_volume;
+  guint i, i_stop;
+
   if(envelope_util == NULL ||
      envelope_util->destination == NULL ||
      envelope_util->source == NULL){
     return;
   }
+
+  destination = (gint64 *) envelope_util->destination;
+  source = (gint64 *) envelope_util->source;
   
-  //TODO:JK: implement me
+  start_volume = envelope_util->volume;
+
+  i = 0;
+  
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+
+  for(; i < i_stop;){
+    ags_v8double v_buffer;
+    ags_v8double v_volume;
+
+    v_buffer = (ags_v8double) {
+      (gdouble) *(source),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++)
+    };
+
+    source++;
+
+    v_volume = (ags_v8double) {
+      (gdouble) start_volume + i * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount
+    };
+
+    i++;
+    
+    v_buffer *= v_volume;
+
+    *(destination) = (gint64) v_buffer[0];
+    *(destination++) = (gint64) v_buffer[1];
+    *(destination++) = (gint64) v_buffer[2];
+    *(destination++) = (gint64) v_buffer[3];
+    *(destination++) = (gint64) v_buffer[4];
+    *(destination++) = (gint64) v_buffer[5];
+    *(destination++) = (gint64) v_buffer[6];
+    *(destination++) = (gint64) v_buffer[7];
+
+    destination++;
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+  
+  for(; i < i_stop;){
+    double ret_v_buffer[8];
+
+    double v_buffer[] = {(double) buffer[0],
+      (double) *(source),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++)};
+
+    double v_volume[] = {(double) ,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount};
+
+    source++;
+    i++;
+
+    vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+
+    *(destination) = (gint64) ret_v_buffer[0];
+    *(destination++) = (gint64) ret_v_buffer[1];
+    *(destination++) = (gint64) ret_v_buffer[2];
+    *(destination++) = (gint64) ret_v_buffer[3];
+    *(destination++) = (gint64) ret_v_buffer[4];
+    *(destination++) = (gint64) ret_v_buffer[5];
+    *(destination++) = (gint64) ret_v_buffer[6];
+    *(destination++) = (gint64) ret_v_buffer[7];
+
+    destination++;
+  }
+#else
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+
+  for(; i < i_stop;){
+    *(destination) = (gint64) ((gint64) ((source)[0] * (start_volume + i * envelope_util->amount)));
+    *(destination++) = (gint64) ((gint64) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint64) ((gint64) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint64) ((gint64) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint64) ((gint64) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint64) ((gint64) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint64) ((gint64) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gint64) ((gint64) ((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+
+    destination++;
+    source++;
+    i++;
+  }
+#endif
+
+  /* loop tail */
+  for(; i < envelope_util->buffer_length;){
+    destination[0] = (gint64) ((gint64) (source[0] * (start_volume + (i++) * envelope_util->amount)));
+
+    destination++;
+    source++;
+    i++;
+  }
+
+  envelope_util->volume = start_volume + i * envelope_util->amount;
 }
 
 /**
@@ -310,13 +868,139 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
 void
 ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
 {
+  gfloat *destination;
+  gfloat *source;
+  gdouble start_volume;
+  guint i, i_stop;
+
   if(envelope_util == NULL ||
      envelope_util->destination == NULL ||
      envelope_util->source == NULL){
     return;
   }
+
+  destination = (gfloat *) envelope_util->destination;
+  source = (gfloat *) envelope_util->source;
   
-  //TODO:JK: implement me
+  start_volume = envelope_util->volume;
+
+  i = 0;
+  
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+
+  for(; i < i_stop;){
+    ags_v8double v_buffer;
+    ags_v8double v_volume;
+
+    v_buffer = (ags_v8double) {
+      (gdouble) *(source),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++)
+    };
+
+    source++;
+
+    v_volume = (ags_v8double) {
+      (gdouble) start_volume + i * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount
+    };
+
+    i++;
+    
+    v_buffer *= v_volume;
+
+    *(destination) = (gfloat) v_buffer[0];
+    *(destination++) = (gfloat) v_buffer[1];
+    *(destination++) = (gfloat) v_buffer[2];
+    *(destination++) = (gfloat) v_buffer[3];
+    *(destination++) = (gfloat) v_buffer[4];
+    *(destination++) = (gfloat) v_buffer[5];
+    *(destination++) = (gfloat) v_buffer[6];
+    *(destination++) = (gfloat) v_buffer[7];
+
+    destination++;
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+  
+  for(; i < i_stop;){
+    double ret_v_buffer[8];
+
+    double v_buffer[] = {(double) buffer[0],
+      (double) *(source),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++)};
+
+    double v_volume[] = {(double) ,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount};
+
+    source++;
+    i++;
+
+    vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+
+    *(destination) = (gfloat) ret_v_buffer[0];
+    *(destination++) = (gfloat) ret_v_buffer[1];
+    *(destination++) = (gfloat) ret_v_buffer[2];
+    *(destination++) = (gfloat) ret_v_buffer[3];
+    *(destination++) = (gfloat) ret_v_buffer[4];
+    *(destination++) = (gfloat) ret_v_buffer[5];
+    *(destination++) = (gfloat) ret_v_buffer[6];
+    *(destination++) = (gfloat) ret_v_buffer[7];
+
+    destination++;
+  }
+#else
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+
+  for(; i < i_stop;){
+    *(destination) = (gfloat) (((source)[0] * (start_volume + i * envelope_util->amount)));
+    *(destination++) = (gfloat) (((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gfloat) (((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gfloat) (((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gfloat) (((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gfloat) (((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gfloat) (((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gfloat) (((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+
+    destination++;
+    source++;
+    i++;
+  }
+#endif
+
+  /* loop tail */
+  for(; i < envelope_util->buffer_length;){
+    destination[0] = (gfloat) ((source[0] * (start_volume + (i++) * envelope_util->amount)));
+
+    destination++;
+    source++;
+    i++;
+  }
+
+  envelope_util->volume = start_volume + i * envelope_util->amount;
 }
 
 /**
@@ -330,13 +1014,139 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
 void
 ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
 {
+  gdouble *destination;
+  gdouble *source;
+  gdouble start_volume;
+  guint i, i_stop;
+
   if(envelope_util == NULL ||
      envelope_util->destination == NULL ||
      envelope_util->source == NULL){
     return;
   }
+
+  destination = (gdouble *) envelope_util->destination;
+  source = (gdouble *) envelope_util->source;
   
-  //TODO:JK: implement me
+  start_volume = envelope_util->volume;
+
+  i = 0;
+  
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+
+  for(; i < i_stop;){
+    ags_v8double v_buffer;
+    ags_v8double v_volume;
+
+    v_buffer = (ags_v8double) {
+      (gdouble) *(source),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++),
+      (gdouble) *(source++)
+    };
+
+    source++;
+
+    v_volume = (ags_v8double) {
+      (gdouble) start_volume + i * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount,
+      (gdouble) start_volume + (i++) * envelope_util->amount
+    };
+
+    i++;
+    
+    v_buffer *= v_volume;
+
+    *(destination) = (gdouble) v_buffer[0];
+    *(destination++) = (gdouble) v_buffer[1];
+    *(destination++) = (gdouble) v_buffer[2];
+    *(destination++) = (gdouble) v_buffer[3];
+    *(destination++) = (gdouble) v_buffer[4];
+    *(destination++) = (gdouble) v_buffer[5];
+    *(destination++) = (gdouble) v_buffer[6];
+    *(destination++) = (gdouble) v_buffer[7];
+
+    destination++;
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+  
+  for(; i < i_stop;){
+    double ret_v_buffer[8];
+
+    double v_buffer[] = {(double) buffer[0],
+      (double) *(source),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++),
+      (double) *(source++)};
+
+    double v_volume[] = {(double) ,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount,
+      (double) start_volume + (i++) * envelope_util->amount};
+
+    source++;
+    i++;
+
+    vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
+
+    *(destination) = (gdouble) ret_v_buffer[0];
+    *(destination++) = (gdouble) ret_v_buffer[1];
+    *(destination++) = (gdouble) ret_v_buffer[2];
+    *(destination++) = (gdouble) ret_v_buffer[3];
+    *(destination++) = (gdouble) ret_v_buffer[4];
+    *(destination++) = (gdouble) ret_v_buffer[5];
+    *(destination++) = (gdouble) ret_v_buffer[6];
+    *(destination++) = (gdouble) ret_v_buffer[7];
+
+    destination++;
+  }
+#else
+  i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
+
+  for(; i < i_stop;){
+    *(destination) = (gdouble) (((source)[0] * (start_volume + i * envelope_util->amount)));
+    *(destination++) = (gdouble) (((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gdouble) (((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gdouble) (((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gdouble) (((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gdouble) (((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gdouble) (((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+    *(destination++) = (gdouble) (((source++)[0] * (start_volume + (i++) * envelope_util->amount)));
+
+    destination++;
+    source++;
+    i++;
+  }
+#endif
+
+  /* loop tail */
+  for(; i < envelope_util->buffer_length;){
+    destination[0] = (gdouble) ((source[0] * (start_volume + (i++) * envelope_util->amount)));
+
+    destination++;
+    source++;
+    i++;
+  }
+
+  envelope_util->volume = start_volume + i * envelope_util->amount;
 }
 
 /**
@@ -350,13 +1160,38 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
 void
 ags_envelope_util_compute_complex(AgsEnvelopeUtil *envelope_util)
 {
+  AgsComplex *destination;
+  AgsComplex *source;
+  gdouble start_volume;
+  guint i;
+
   if(envelope_util == NULL ||
      envelope_util->destination == NULL ||
      envelope_util->source == NULL){
     return;
   }
   
-  //TODO:JK: implement me
+  destination = (AgsComplex *) envelope_util->destination;
+  source = (AgsComplex *) envelope_util->source;
+  
+  start_volume = envelope_util->volume;
+
+  i = 0;
+  
+  for(; i < envelope_util->buffer_length;){
+    double _Complex z;
+
+    z = ags_complex_get(source);
+
+    ags_complex_set(destination,
+		    z * (start_volume + (i++) * envelope_util->amount));
+
+    destination++;
+    source++;
+    i++;
+  }
+
+  envelope_util->volume = start_volume + i * envelope_util->amount;
 }
 
 /**
