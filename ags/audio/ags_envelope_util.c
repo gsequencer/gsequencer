@@ -53,9 +53,9 @@ ags_envelope_util_get_type(void)
 /**
  * ags_envelope_util_alloc:
  *
- * Allocate #AgsEnvelopeUtil
+ * Allocate #AgsEnvelopeUtil-struct
  *
- * Returns: a new #AgsEnvelopeUtil
+ * Returns: a new #AgsEnvelopeUtil-struct
  *
  * Since: 3.9.2
  */
@@ -83,11 +83,11 @@ ags_envelope_util_alloc()
 
 /**
  * ags_envelope_util_copy:
- * @ptr: the original #AgsEnvelopeUtil
+ * @ptr: the original #AgsEnvelopeUtil-struct
  *
  * Create a copy of @ptr.
  *
- * Returns: a pointer of the new #AgsEnvelopeUtil
+ * Returns: a pointer of the new #AgsEnvelopeUtil-struct
  *
  * Since: 3.9.2
  */
@@ -217,7 +217,7 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
       (double) *(source++),
       (double) *(source++)};
 
-    double v_volume[] = {(double) ,
+    double v_volume[] = {(double) start_volume + i * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
@@ -263,7 +263,7 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
 
   /* loop tail */
   for(; i < envelope_util->buffer_length;){
-    destination[0] = (gint8) ((gint16) (source[0] * (start_volume + (i++) * envelope_util->amount)));
+    destination[0] = (gint8) ((gint16) (source[0] * (start_volume + i * envelope_util->amount)));
 
     destination++;
     source++;
@@ -363,7 +363,7 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
       (double) *(source++),
       (double) *(source++)};
 
-    double v_volume[] = {(double) ,
+    double v_volume[] = {(double) start_volume + i * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
@@ -409,7 +409,7 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
 
   /* loop tail */
   for(; i < envelope_util->buffer_length;){
-    destination[0] = (gint16) ((gint32) (source[0] * (start_volume + (i++) * envelope_util->amount)));
+    destination[0] = (gint16) ((gint32) (source[0] * (start_volume + i * envelope_util->amount)));
 
     destination++;
     source++;
@@ -509,7 +509,7 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
       (double) *(source++),
       (double) *(source++)};
 
-    double v_volume[] = {(double) ,
+    double v_volume[] = {(double) start_volume + i * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
@@ -555,7 +555,7 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
 
   /* loop tail */
   for(; i < envelope_util->buffer_length;){
-    destination[0] = (gint32) ((gint32) (source[0] * (start_volume + (i++) * envelope_util->amount)));
+    destination[0] = (gint32) ((gint32) (source[0] * (start_volume + i * envelope_util->amount)));
 
     destination++;
     source++;
@@ -655,7 +655,7 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
       (double) *(source++),
       (double) *(source++)};
 
-    double v_volume[] = {(double) ,
+    double v_volume[] = {(double) start_volume + i * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
@@ -701,7 +701,7 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
 
   /* loop tail */
   for(; i < envelope_util->buffer_length;){
-    destination[0] = (gint32) ((gint64) (source[0] * (start_volume + (i++) * envelope_util->amount)));
+    destination[0] = (gint32) ((gint64) (source[0] * (start_volume + i * envelope_util->amount)));
 
     destination++;
     source++;
@@ -801,7 +801,7 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
       (double) *(source++),
       (double) *(source++)};
 
-    double v_volume[] = {(double) ,
+    double v_volume[] = {(double) start_volume + i * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
@@ -847,7 +847,7 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
 
   /* loop tail */
   for(; i < envelope_util->buffer_length;){
-    destination[0] = (gint64) ((gint64) (source[0] * (start_volume + (i++) * envelope_util->amount)));
+    destination[0] = (gint64) ((gint64) (source[0] * (start_volume + i * envelope_util->amount)));
 
     destination++;
     source++;
@@ -947,7 +947,7 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
       (double) *(source++),
       (double) *(source++)};
 
-    double v_volume[] = {(double) ,
+    double v_volume[] = {(double) start_volume + i * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
@@ -993,7 +993,7 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
 
   /* loop tail */
   for(; i < envelope_util->buffer_length;){
-    destination[0] = (gfloat) ((source[0] * (start_volume + (i++) * envelope_util->amount)));
+    destination[0] = (gfloat) ((source[0] * (start_volume + i * envelope_util->amount)));
 
     destination++;
     source++;
@@ -1093,7 +1093,7 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
       (double) *(source++),
       (double) *(source++)};
 
-    double v_volume[] = {(double) ,
+    double v_volume[] = {(double) start_volume + i * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
       (double) start_volume + (i++) * envelope_util->amount,
@@ -1139,7 +1139,7 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
 
   /* loop tail */
   for(; i < envelope_util->buffer_length;){
-    destination[0] = (gdouble) ((source[0] * (start_volume + (i++) * envelope_util->amount)));
+    destination[0] = (gdouble) ((source[0] * (start_volume + i * envelope_util->amount)));
 
     destination++;
     source++;
@@ -1184,7 +1184,7 @@ ags_envelope_util_compute_complex(AgsEnvelopeUtil *envelope_util)
     z = ags_complex_get(source);
 
     ags_complex_set(destination,
-		    z * (start_volume + (i++) * envelope_util->amount));
+		    z * (start_volume + i * envelope_util->amount));
 
     destination++;
     source++;

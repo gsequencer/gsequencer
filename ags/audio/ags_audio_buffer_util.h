@@ -412,31 +412,40 @@ gdouble ags_audio_buffer_util_envelope(void *buffer, guint channels,
 				       gdouble ratio);
 
 /* volume */
+G_DEPRECATED_FOR(ags_volume_util_compute_s8)
 void ags_audio_buffer_util_volume_s8(gint8 *buffer, guint channels,
 				     guint buffer_length,
 				     gdouble volume);
+G_DEPRECATED_FOR(ags_volume_util_compute_s16)
 void ags_audio_buffer_util_volume_s16(gint16 *buffer, guint channels,
 				      guint buffer_length,
 				      gdouble volume);
+G_DEPRECATED_FOR(ags_volume_util_compute_s24)
 void ags_audio_buffer_util_volume_s24(gint32 *buffer, guint channels,
 				      guint buffer_length,
 				      gdouble volume);
+G_DEPRECATED_FOR(ags_volume_util_compute_s32)
 void ags_audio_buffer_util_volume_s32(gint32 *buffer, guint channels,
 				      guint buffer_length,
 				      gdouble volume);
+G_DEPRECATED_FOR(ags_volume_util_compute_s64)
 void ags_audio_buffer_util_volume_s64(gint64 *buffer, guint channels,
 				      guint buffer_length,
 				      gdouble volume);
+G_DEPRECATED_FOR(ags_volume_util_compute_float)
 void ags_audio_buffer_util_volume_float(gfloat *buffer, guint channels,
 					guint buffer_length,
 					gdouble volume);
+G_DEPRECATED_FOR(ags_volume_util_compute_double)
 void ags_audio_buffer_util_volume_double(gdouble *buffer, guint channels,
 					 guint buffer_length,
 					 gdouble volume);
+G_DEPRECATED_FOR(ags_volume_util_compute_complex)
 void ags_audio_buffer_util_volume_complex(AgsComplex *buffer, guint channels,
 					  guint buffer_length,
 					  gdouble volume);
 
+G_DEPRECATED_FOR(ags_volume_util_compute)
 void ags_audio_buffer_util_volume(void *buffer, guint channels,
 				  guint format,
 				  guint buffer_length,

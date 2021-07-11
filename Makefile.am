@@ -1097,6 +1097,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_synth_generator.h \
 	ags/audio/ags_synth_util.h \
 	ags/audio/ags_track.h \
+	ags/audio/ags_volume_util.h \
 	ags/audio/ags_wave.h
 
 if WITH_LIBINSTPATCH
@@ -1189,6 +1190,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_synth_generator.c \
 	ags/audio/ags_synth_util.c \
 	ags/audio/ags_track.c \
+	ags/audio/ags_volume_util.c \
 	ags/audio/ags_wave.c
 
 if WITH_LIBINSTPATCH
