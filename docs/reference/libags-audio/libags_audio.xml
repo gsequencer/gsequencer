@@ -117,6 +117,10 @@
       <xi:include href="xml/ags_phase_shift_util.xml"/>
       <xi:include href="xml/ags_frequency_aliase_util.xml"/>
       <xi:include href="xml/ags_audio_buffer_util.xml"/>
+      <xi:include href="xml/ags_volume_util.xml"/>
+      <xi:include href="xml/ags_envelope_util.xml"/>
+      <xi:include href="xml/ags_peak_util.xml"/>
+      <xi:include href="xml/ags_resample_util.xml"/>
       <xi:include href="xml/ags_filter_util.xml"/>
       <xi:include href="xml/ags_synth_util.xml"/>
       <xi:include href="xml/ags_fm_synth_util.xml"/>
