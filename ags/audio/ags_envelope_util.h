@@ -35,9 +35,10 @@ typedef struct _AgsEnvelopeUtil AgsEnvelopeUtil;
 struct _AgsEnvelopeUtil
 {
   gpointer destination;
+  guint destination_stride;
+
   gpointer source;
-  
-  guint audio_channels;
+  guint source_stride;
   
   guint buffer_length;
   guint audio_buffer_util_format;
@@ -52,6 +53,38 @@ AgsEnvelopeUtil* ags_envelope_util_alloc();
 
 gpointer ags_envelope_util_copy(AgsEnvelopeUtil *ptr);
 void ags_envelope_util_free(AgsEnvelopeUtil *ptr);
+
+gpointer ags_envelope_util_get_destination(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_destination(AgsEnvelopeUtil *envelope_util,
+				       gpointer destination);
+
+guint ags_envelope_util_get_destination_stride(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_destination_stride(AgsEnvelopeUtil *envelope_util,
+					      guint destination_stride);
+
+gpointer ags_envelope_util_get_source(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_source(AgsEnvelopeUtil *envelope_util,
+				  gpointer source);
+
+guint ags_envelope_util_get_source_stride(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_source_stride(AgsEnvelopeUtil *envelope_util,
+					 guint source_stride);
+
+guint ags_envelope_util_get_buffer_length(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_buffer_length(AgsEnvelopeUtil *envelope_util,
+					 guint buffer_length);
+
+guint ags_envelope_util_get_audio_buffer_util_format(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_audio_buffer_util_format(AgsEnvelopeUtil *envelope_util,
+						    guint audio_buffer_util_format);
+
+gdouble ags_envelope_util_get_volume(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_volume(AgsEnvelopeUtil *envelope_util,
+				  gdouble volume);
+
+gdouble ags_envelope_util_get_amount(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_amount(AgsEnvelopeUtil *envelope_util,
+				  gdouble amount);
 
 void ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util);
 void ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util);

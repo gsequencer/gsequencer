@@ -35,9 +35,10 @@ typedef struct _AgsVolumeUtil AgsVolumeUtil;
 struct _AgsVolumeUtil
 {
   gpointer destination;
+  guint destination_stride;
+
   gpointer source;
-  
-  guint audio_channels;
+  guint source_stride;
   
   guint buffer_length;
   guint audio_buffer_util_format;
@@ -51,6 +52,35 @@ AgsVolumeUtil* ags_volume_util_alloc();
 
 gpointer ags_volume_util_copy(AgsVolumeUtil *ptr);
 void ags_volume_util_free(AgsVolumeUtil *ptr);
+
+
+gpointer ags_volume_util_get_destination(AgsVolumeUtil *volume_util);
+void ags_volume_util_set_destination(AgsVolumeUtil *volume_util,
+				     gpointer destination);
+
+guint ags_volume_util_get_destination_stride(AgsVolumeUtil *volume_util);
+void ags_volume_util_set_destination_stride(AgsVolumeUtil *volume_util,
+					    guint destination_stride);
+
+gpointer ags_volume_util_get_source(AgsVolumeUtil *volume_util);
+void ags_volume_util_set_source(AgsVolumeUtil *volume_util,
+				gpointer source);
+
+guint ags_volume_util_get_source_stride(AgsVolumeUtil *volume_util);
+void ags_volume_util_set_source_stride(AgsVolumeUtil *volume_util,
+				       guint source_stride);
+
+guint ags_volume_util_get_buffer_length(AgsVolumeUtil *volume_util);
+void ags_volume_util_set_buffer_length(AgsVolumeUtil *volume_util,
+				       guint buffer_length);
+
+guint ags_volume_util_get_audio_buffer_util_format(AgsVolumeUtil *volume_util);
+void ags_volume_util_set_audio_buffer_util_format(AgsVolumeUtil *volume_util,
+						  guint audio_buffer_util_format);
+
+gdouble ags_volume_util_get_volume(AgsVolumeUtil *volume_util);
+void ags_volume_util_set_volume(AgsVolumeUtil *volume_util,
+				gdouble volume);
 
 void ags_volume_util_compute_s8(AgsVolumeUtil *volume_util);
 void ags_volume_util_compute_s16(AgsVolumeUtil *volume_util);
