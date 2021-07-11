@@ -452,47 +452,56 @@ void ags_audio_buffer_util_volume(void *buffer, guint channels,
 				  gdouble volume);
 
 /* peak */
+G_DEPRECATED_FOR(ags_peak_util_compute_s8)
 gdouble ags_audio_buffer_util_peak_s8(gint8 *buffer, guint channels,
 				      guint buffer_length,
 				      gdouble harmonic_rate,
 				      gdouble max_rate,
 				      gdouble pressure_factor);
+G_DEPRECATED_FOR(ags_peak_util_compute_s16)
 gdouble ags_audio_buffer_util_peak_s16(gint16 *buffer, guint channels,
 				       guint buffer_length,
 				       gdouble harmonic_rate,
 				       gdouble max_rate,
 				       gdouble pressure_factor);
+G_DEPRECATED_FOR(ags_peak_util_compute_s24)
 gdouble ags_audio_buffer_util_peak_s24(gint32 *buffer, guint channels,
 				       guint buffer_length,
 				       gdouble harmonic_rate,
 				       gdouble max_rate,
 				       gdouble pressure_factor);
+G_DEPRECATED_FOR(ags_peak_util_compute_s32)
 gdouble ags_audio_buffer_util_peak_s32(gint32 *buffer, guint channels,
 				       guint buffer_length,
 				       gdouble harmonic_rate,
 				       gdouble max_rate,
 				       gdouble pressure_factor);
+G_DEPRECATED_FOR(ags_peak_util_compute_s64)
 gdouble ags_audio_buffer_util_peak_s64(gint64 *buffer, guint channels,
 				       guint buffer_length,
 				       gdouble harmonic_rate,
 				       gdouble max_rate,
 				       gdouble pressure_factor);
+G_DEPRECATED_FOR(ags_peak_util_compute_float)
 gdouble ags_audio_buffer_util_peak_float(gfloat *buffer, guint channels,
 					 guint buffer_length,
 					 gdouble harmonic_rate,
 					 gdouble max_rate,
 					 gdouble pressure_factor);
+G_DEPRECATED_FOR(ags_peak_util_compute_double)
 gdouble ags_audio_buffer_util_peak_double(gdouble *buffer, guint channels,
 					  guint buffer_length,
 					  gdouble harmonic_rate,
 					  gdouble max_rate,
 					  gdouble pressure_factor);
+G_DEPRECATED_FOR(ags_peak_util_compute_complex)
 gdouble ags_audio_buffer_util_peak_complex(AgsComplex *buffer, guint channels,
 					   guint buffer_length,
 					   gdouble harmonic_rate,
 					   gdouble max_rate,
 					   gdouble pressure_factor);
 
+G_DEPRECATED_FOR(ags_peak_util_compute)
 gdouble ags_audio_buffer_util_peak(void *buffer, guint channels,
 				   guint format,
 				   guint buffer_length,
@@ -501,87 +510,104 @@ gdouble ags_audio_buffer_util_peak(void *buffer, guint channels,
 				   gdouble pressure_factor);
 
 /* resample */
+G_DEPRECATED_FOR(ags_resample_util_compute_s8)
 gint8* ags_audio_buffer_util_resample_s8(gint8 *buffer, guint channels,
 					 guint samplerate,
 					 guint buffer_length,
 					 guint target_samplerate);
+G_DEPRECATED_FOR(ags_resample_util_compute_s16)
 gint16* ags_audio_buffer_util_resample_s16(gint16 *buffer, guint channels,
 					   guint samplerate,
 					   guint buffer_length,
 					   guint target_samplerate);
+G_DEPRECATED_FOR(ags_resample_util_compute_s24)
 gint32* ags_audio_buffer_util_resample_s24(gint32 *buffer, guint channels,
 					   guint samplerate,
 					   guint buffer_length,
 					   guint target_samplerate);
+G_DEPRECATED_FOR(ags_resample_util_compute_s32)
 gint32* ags_audio_buffer_util_resample_s32(gint32 *buffer, guint channels,
 					   guint samplerate,
 					   guint buffer_length,
 					   guint target_samplerate);
+G_DEPRECATED_FOR(ags_resample_util_compute_s64)
 gint64* ags_audio_buffer_util_resample_s64(gint64 *buffer, guint channels,
 					   guint samplerate,
 					   guint buffer_length,
 					   guint target_samplerate);
+G_DEPRECATED_FOR(ags_resample_util_compute_float)
 gfloat* ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
 					     guint samplerate,
 					     guint buffer_length,
 					     guint target_samplerate);
+G_DEPRECATED_FOR(ags_resample_util_compute_double)
 gdouble* ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
 					       guint samplerate,
 					       guint buffer_length,
 					       guint target_samplerate);
+G_DEPRECATED_FOR(ags_resample_util_compute_complex)
 AgsComplex* ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
 						   guint samplerate,
 						   guint buffer_length,
 						   guint target_samplerate);
 
+G_DEPRECATED_FOR(ags_resample_util_compute)
 void* ags_audio_buffer_util_resample(void *buffer, guint channels,
 				     guint format,  guint samplerate,
 				     guint buffer_length,
 				     guint target_samplerate);
 
 /* resample with buffer */
+G_DEPRECATED
 void ags_audio_buffer_util_resample_s8_with_buffer(gint8 *buffer, guint channels,
 						   guint samplerate,
 						   guint buffer_length,
 						   guint target_samplerate,
 						   guint target_buffer_length,
 						   gint8 *target_buffer);
+G_DEPRECATED
 void ags_audio_buffer_util_resample_s16_with_buffer(gint16 *buffer, guint channels,
 						    guint samplerate,
 						    guint buffer_length,
 						    guint target_samplerate,
 						    guint target_buffer_length,
 						    gint16 *target_buffer);
+G_DEPRECATED
 void ags_audio_buffer_util_resample_s24_with_buffer(gint32 *buffer, guint channels,
 						    guint samplerate,
 						    guint buffer_length,
 						    guint target_samplerate,
 						    guint target_buffer_length,
 						    gint32 *target_buffer);
+G_DEPRECATED
 void ags_audio_buffer_util_resample_s32_with_buffer(gint32 *buffer, guint channels,
 						    guint samplerate,
 						    guint buffer_length,
 						    guint target_samplerate,
 						    guint target_buffer_length,
 						    gint32 *target_buffer);
+G_DEPRECATED
 void ags_audio_buffer_util_resample_s64_with_buffer(gint64 *buffer, guint channels,
 						    guint samplerate,
 						    guint buffer_length,
 						    guint target_samplerate,
 						    guint target_buffer_length,
 						    gint64 *target_buffer);
+G_DEPRECATED
 void ags_audio_buffer_util_resample_float_with_buffer(gfloat *buffer, guint channels,
 						      guint samplerate,
 						      guint buffer_length,
 						      guint target_samplerate,
 						      guint target_buffer_length,
 						      gfloat *target_buffer);
+G_DEPRECATED
 void ags_audio_buffer_util_resample_double_with_buffer(gdouble *buffer, guint channels,
 						       guint samplerate,
 						       guint buffer_length,
 						       guint target_samplerate,
 						       guint target_buffer_length,
 						       gdouble *target_buffer);
+G_DEPRECATED
 void ags_audio_buffer_util_resample_complex_with_buffer(AgsComplex *buffer, guint channels,
 							guint samplerate,
 							guint buffer_length,
@@ -589,6 +615,7 @@ void ags_audio_buffer_util_resample_complex_with_buffer(AgsComplex *buffer, guin
 							guint target_buffer_length,
 							AgsComplex *target_buffer);
 
+G_DEPRECATED
 void ags_audio_buffer_util_resample_with_buffer(void *buffer, guint channels,
 						guint format,  guint samplerate,
 						guint buffer_length,

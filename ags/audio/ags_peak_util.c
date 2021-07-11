@@ -128,6 +128,8 @@ ags_peak_util_copy(AgsPeakUtil *ptr)
 void
 ags_peak_util_free(AgsPeakUtil *ptr)
 {
+  g_free(ptr->source);
+
   g_free(ptr);
 }
 

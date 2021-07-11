@@ -126,6 +126,12 @@ ags_envelope_util_copy(AgsEnvelopeUtil *ptr)
 void
 ags_envelope_util_free(AgsEnvelopeUtil *ptr)
 {
+  g_free(ptr->destination);
+
+  if(ptr->destination != ptr->source){
+    g_free(ptr->source);
+  }
+
   g_free(ptr);
 }
 

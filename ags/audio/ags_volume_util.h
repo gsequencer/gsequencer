@@ -53,7 +53,7 @@ AgsVolumeUtil* ags_volume_util_alloc();
 gpointer ags_volume_util_copy(AgsVolumeUtil *ptr);
 void ags_volume_util_free(AgsVolumeUtil *ptr);
 
-
+/* getter/setter */
 gpointer ags_volume_util_get_destination(AgsVolumeUtil *volume_util);
 void ags_volume_util_set_destination(AgsVolumeUtil *volume_util,
 				     gpointer destination);
@@ -82,6 +82,7 @@ gdouble ags_volume_util_get_volume(AgsVolumeUtil *volume_util);
 void ags_volume_util_set_volume(AgsVolumeUtil *volume_util,
 				gdouble volume);
 
+/* compute */
 void ags_volume_util_compute_s8(AgsVolumeUtil *volume_util);
 void ags_volume_util_compute_s16(AgsVolumeUtil *volume_util);
 void ags_volume_util_compute_s24(AgsVolumeUtil *volume_util);

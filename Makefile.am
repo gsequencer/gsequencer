@@ -1089,6 +1089,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_recall_recycling.h \
 	ags/audio/ags_recycling_context.h \
 	ags/audio/ags_recycling.h \
+	ags/audio/ags_resample_util.h \
 	ags/audio/ags_sound_provider.h \
 	ags/audio/ags_sequencer_util.h \
 	ags/audio/ags_soundcard_util.h \
@@ -1183,6 +1184,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_recall_recycling.c \
 	ags/audio/ags_recycling.c \
 	ags/audio/ags_recycling_context.c \
+	ags/audio/ags_resample_util.c \
 	ags/audio/ags_sound_provider.c \
 	ags/audio/ags_sequencer_util.c \
 	ags/audio/ags_soundcard_util.c \

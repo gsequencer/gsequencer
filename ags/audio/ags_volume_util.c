@@ -124,6 +124,12 @@ ags_volume_util_copy(AgsVolumeUtil *ptr)
 void
 ags_volume_util_free(AgsVolumeUtil *ptr)
 {
+  g_free(ptr->destination);
+
+  if(ptr->destination != ptr->source){
+    g_free(ptr->source);
+  }
+  
   g_free(ptr);
 }
 
