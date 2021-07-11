@@ -3,6 +3,7 @@ ags (3.9.2)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented ags_volume_util.[ch]
 	* implemented ags_envelope_util.[ch]
+	* implemented ags_peak_util.[ch]
 	* fixed Makefile.am missing introspection sources
 	* fixed developer's book chapter 5 find_port.c listing duplicated function call ags_application_context_get_instance()
 
