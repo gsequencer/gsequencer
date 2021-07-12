@@ -355,7 +355,8 @@ void
 ags_resample_util_set_buffer_length(AgsResampleUtil *resample_util,
 				    guint buffer_length)
 {
-  if(resample_util == NULL){
+  if(resample_util == NULL ||
+     resample_util->buffer_length == buffer_length){
     return;
   }
 
@@ -455,7 +456,8 @@ void
 ags_resample_util_set_samplerate(AgsResampleUtil *resample_util,
 				 guint samplerate)
 {
-  if(resample_util == NULL){
+  if(resample_util == NULL ||
+     resample_util->samplerate == samplerate){
     return;
   }
 
@@ -505,7 +507,8 @@ void
 ags_resample_util_set_target_samplerate(AgsResampleUtil *resample_util,
 					guint target_samplerate)
 {
-  if(resample_util == NULL){
+  if(resample_util == NULL ||
+     resample_util->target_samplerate == target_samplerate){
     return;
   }
 
