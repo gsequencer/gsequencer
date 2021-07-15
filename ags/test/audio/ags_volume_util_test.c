@@ -57,6 +57,22 @@ void ags_volume_util_test_compute_double();
 void ags_volume_util_test_compute_complex();
 void ags_volume_util_test_compute();
 
+#define AGS_VOLUME_UTIL_TEST_COPY_BUFFER_SIZE (1024)
+#define AGS_VOLUME_UTIL_TEST_COPY_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+#define AGS_VOLUME_UTIL_TEST_COPY_SOURCE_AUDIO_CHANNELS (2)
+
+#define AGS_VOLUME_UTIL_TEST_GET_DESTINATION_BUFFER_SIZE (1024)
+#define AGS_VOLUME_UTIL_TEST_GET_DESTINATION_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+
+#define AGS_VOLUME_UTIL_TEST_SET_DESTINATION_BUFFER_SIZE (1024)
+#define AGS_VOLUME_UTIL_TEST_SET_DESTINATION_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+
+#define AGS_VOLUME_UTIL_TEST_GET_SOURCE_BUFFER_SIZE (1024)
+#define AGS_VOLUME_UTIL_TEST_GET_SOURCE_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+
+#define AGS_VOLUME_UTIL_TEST_SET_SOURCE_BUFFER_SIZE (1024)
+#define AGS_VOLUME_UTIL_TEST_SET_SOURCE_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -80,157 +96,475 @@ ags_volume_util_test_clean_suite()
 void
 ags_volume_util_test_alloc()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil *volume_util;
+
+  volume_util = ags_volume_util_alloc();
+
+  CU_ASSERT(volume_util != NULL);
+
+  CU_ASSERT(volume_util->destination == NULL);
+  CU_ASSERT(volume_util->destination_stride == 1);
+
+  CU_ASSERT(volume_util->source == NULL);
+  CU_ASSERT(volume_util->source_stride == 1);
+  
+  CU_ASSERT(volume_util->buffer_length == 0);
+  CU_ASSERT(volume_util->audio_buffer_util_format == AGS_VOLUME_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT);
+
+  CU_ASSERT(volume_util->volume == 1.0);
 }
 
 void
 ags_volume_util_test_copy()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+  AgsVolumeUtil *copy_volume_util;
+
+  volume_util = (AgsVolumeUtil) {
+    .destination = ags_stream_alloc(AGS_VOLUME_UTIL_TEST_COPY_BUFFER_SIZE,
+				    AGS_VOLUME_UTIL_TEST_COPY_FORMAT),
+    .source = ags_stream_alloc(AGS_VOLUME_UTIL_TEST_COPY_SOURCE_AUDIO_CHANNELS * AGS_VOLUME_UTIL_TEST_COPY_BUFFER_SIZE,
+			       AGS_VOLUME_UTIL_TEST_COPY_FORMAT),
+    .source_stride = AGS_VOLUME_UTIL_TEST_COPY_SOURCE_AUDIO_CHANNELS,
+    .buffer_length = AGS_VOLUME_UTIL_TEST_COPY_BUFFER_SIZE,
+    .volume = 0.5
+  };
+
+  copy_volume_util = ags_volume_util_copy(&volume_util);
+  
+  CU_ASSERT(copy_volume_util != NULL);
+  
+  CU_ASSERT(copy_volume_util->destination == volume_util.destination);
+  CU_ASSERT(copy_volume_util->destination_stride == volume_util.destination_stride);
+  
+  CU_ASSERT(copy_volume_util->source == volume_util.source);
+  CU_ASSERT(copy_volume_util->source_stride == volume_util.source_stride);
+  
+  CU_ASSERT(copy_volume_util->buffer_length == volume_util.buffer_length);
+  CU_ASSERT(copy_volume_util->audio_buffer_util_format == volume_util.audio_buffer_util_format);
+
+  CU_ASSERT(copy_volume_util->volume == volume_util.volume);
 }
 
 void
 ags_volume_util_test_free()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil *volume_util;
+  
+  volume_util = (AgsVolumeUtil *) g_new(AgsVolumeUtil,
+					1);
+
+  CU_ASSERT(volume_util != NULL);
+
+  volume_util->source = NULL;
+  volume_util->destination = NULL;
+  
+  ags_volume_util_free(volume_util);
+  
+  volume_util = ags_volume_util_alloc();
+
+  CU_ASSERT(volume_util != NULL);
+
+  ags_volume_util_free(volume_util);
 }
 
 void
 ags_volume_util_test_get_destination()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  volume_util.destination = NULL;
+
+  CU_ASSERT(ags_volume_util_get_destination(&volume_util) == NULL);
+  
+  volume_util.destination = ags_stream_alloc(AGS_VOLUME_UTIL_TEST_GET_DESTINATION_BUFFER_SIZE,
+					     AGS_VOLUME_UTIL_TEST_GET_DESTINATION_FORMAT);
+
+  CU_ASSERT(ags_volume_util_get_destination(&volume_util) == volume_util.destination);
 }
 
 void
 ags_volume_util_test_set_destination()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  gpointer destination;
+  
+  volume_util.destination = NULL;
+
+  destination = ags_stream_alloc(AGS_VOLUME_UTIL_TEST_SET_DESTINATION_BUFFER_SIZE,
+				 AGS_VOLUME_UTIL_TEST_SET_DESTINATION_FORMAT);
+
+  ags_volume_util_set_destination(&volume_util,
+				  destination);
+  
+  CU_ASSERT(volume_util.destination == destination);
 }
 
 void
 ags_volume_util_test_get_destination_stride()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  volume_util.destination_stride = 0;
+
+  CU_ASSERT(ags_volume_util_get_destination_stride(&volume_util) == 0);
+  
+  volume_util.destination_stride = 1;
+
+  CU_ASSERT(ags_volume_util_get_destination_stride(&volume_util) == volume_util.destination_stride);
 }
 
 void
 ags_volume_util_test_set_destination_stride()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+  
+  volume_util.destination_stride = 0;
+
+  ags_volume_util_set_destination_stride(&volume_util,
+					 1);
+  
+  CU_ASSERT(volume_util.destination_stride == 1);
 }
 
 void
 ags_volume_util_test_get_source()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  volume_util.source = NULL;
+
+  CU_ASSERT(ags_volume_util_get_source(&volume_util) == NULL);
+  
+  volume_util.source = ags_stream_alloc(AGS_VOLUME_UTIL_TEST_GET_SOURCE_BUFFER_SIZE,
+					AGS_VOLUME_UTIL_TEST_GET_SOURCE_FORMAT);
+
+  CU_ASSERT(ags_volume_util_get_source(&volume_util) == volume_util.source);
 }
 
 void
 ags_volume_util_test_set_source()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  gpointer source;
+  
+  volume_util.source = NULL;
+
+  source = ags_stream_alloc(AGS_VOLUME_UTIL_TEST_SET_SOURCE_BUFFER_SIZE,
+			    AGS_VOLUME_UTIL_TEST_SET_SOURCE_FORMAT);
+  
+  ags_volume_util_set_source(&volume_util,
+			     source);
+  
+  CU_ASSERT(volume_util.source == source);
 }
 
 void
 ags_volume_util_test_get_source_stride()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  volume_util.source_stride = 0;
+
+  CU_ASSERT(ags_volume_util_get_source_stride(&volume_util) == 0);
+  
+  volume_util.source_stride = 1;
+
+  CU_ASSERT(ags_volume_util_get_source_stride(&volume_util) == volume_util.source_stride);
 }
 
 void
 ags_volume_util_test_set_source_stride()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+  
+  volume_util.source_stride = 0;
+
+  ags_volume_util_set_source_stride(&volume_util,
+				    1);
+  
+  CU_ASSERT(volume_util.source_stride == 1);
 }
 
 void
 ags_volume_util_test_get_buffer_length()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  volume_util.buffer_length = 0;
+
+  CU_ASSERT(ags_volume_util_get_buffer_length(&volume_util) == 0);
+  
+  volume_util.buffer_length = 512;
+
+  CU_ASSERT(ags_volume_util_get_buffer_length(&volume_util) == volume_util.buffer_length);
 }
 
 void
 ags_volume_util_test_set_buffer_length()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+  
+  volume_util.buffer_length = 0;
+
+  ags_volume_util_set_buffer_length(&volume_util,
+				    512);
+  
+  CU_ASSERT(volume_util.buffer_length == 512);
 }
 
 void
 ags_volume_util_test_get_audio_buffer_util_format()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  volume_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+
+  CU_ASSERT(ags_volume_util_get_audio_buffer_util_format(&volume_util) == AGS_AUDIO_BUFFER_UTIL_S16);
+  
+  volume_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT;
+
+  CU_ASSERT(ags_volume_util_get_audio_buffer_util_format(&volume_util) == volume_util.audio_buffer_util_format);
 }
 
 void
 ags_volume_util_test_set_audio_buffer_util_format()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+  
+  volume_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+
+  ags_volume_util_set_audio_buffer_util_format(&volume_util,
+					       AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  
+  CU_ASSERT(volume_util.audio_buffer_util_format == AGS_AUDIO_BUFFER_UTIL_FLOAT);
 }
 
 void
 ags_volume_util_test_get_volume()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  volume_util.volume = 1.0;
+
+  CU_ASSERT(ags_volume_util_get_volume(&volume_util) == 1.0);
+  
+  volume_util.volume = 0.25;
+
+  CU_ASSERT(ags_volume_util_get_volume(&volume_util) == 0.25);
 }
 
 void
 ags_volume_util_test_set_volume()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+  
+  volume_util.volume = 1.0;
+
+  ags_volume_util_set_volume(&volume_util,
+			     0.35);
+  
+  CU_ASSERT(volume_util.volume == 0.35);
 }
 
 void
 ags_volume_util_test_compute_s8()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_8_BIT);
+
+  volume_util = (AgsVolumeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S8,
+    .volume = 0.5
+  };
+  
+  ags_volume_util_compute_s8(&volume_util);
 }
 
 void
 ags_volume_util_test_compute_s16()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_16_BIT);
+
+  volume_util = (AgsVolumeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16,
+    .volume = 0.5
+  };
+  
+  ags_volume_util_compute_s16(&volume_util);
 }
 
 void
 ags_volume_util_test_compute_s24()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_24_BIT);
+
+  volume_util = (AgsVolumeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S24,
+    .volume = 0.5
+  };
+  
+  ags_volume_util_compute_s24(&volume_util);
 }
 
 void
 ags_volume_util_test_compute_s32()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_32_BIT);
+
+  volume_util = (AgsVolumeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S32,
+    .volume = 0.5
+  };
+  
+  ags_volume_util_compute_s32(&volume_util);
 }
 
 void
 ags_volume_util_test_compute_s64()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_64_BIT);
+
+  volume_util = (AgsVolumeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S64,
+    .volume = 0.5
+  };
+  
+  ags_volume_util_compute_s64(&volume_util);
 }
 
 void
 ags_volume_util_test_compute_float()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_FLOAT);
+
+  volume_util = (AgsVolumeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT,
+    .volume = 0.5
+  };
+  
+  ags_volume_util_compute_float(&volume_util);
 }
 
 void
 ags_volume_util_test_compute_double()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_DOUBLE);
+
+  volume_util = (AgsVolumeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+    .volume = 0.5
+  };
+  
+  ags_volume_util_compute_double(&volume_util);
 }
 
 void
 ags_volume_util_test_compute_complex()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_COMPLEX);
+
+  volume_util = (AgsVolumeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_COMPLEX,
+    .volume = 0.5
+  };
+  
+  ags_volume_util_compute_complex(&volume_util);
 }
 
 void
 ags_volume_util_test_compute()
 {
-  //TODO:JK: implement me
+  AgsVolumeUtil volume_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_16_BIT);
+
+  volume_util = (AgsVolumeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16,
+    .volume = 0.5
+  };
+  
+  ags_volume_util_compute(&volume_util);
 }
 
 int

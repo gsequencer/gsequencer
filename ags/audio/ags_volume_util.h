@@ -30,6 +30,8 @@ G_BEGIN_DECLS
 #define AGS_TYPE_VOLUME_UTIL         (ags_volume_util_get_type())
 #define AGS_VOLUME_UTIL(ptr) ((AgsVolumeUtil *)(ptr))
 
+#define AGS_VOLUME_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT (AGS_AUDIO_BUFFER_UTIL_S16)
+
 typedef struct _AgsVolumeUtil AgsVolumeUtil;
 
 struct _AgsVolumeUtil
