@@ -71,7 +71,7 @@ ags_peak_util_alloc()
   ptr->source_stride = 1;
 
   ptr->buffer_length = 0;
-  ptr->audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+  ptr->audio_buffer_util_format = AGS_PEAK_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT;
 
   ptr->samplerate = AGS_PEAK_UTIL_DEFAULT_SAMPLERATE;
 
