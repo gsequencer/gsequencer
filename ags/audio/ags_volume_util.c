@@ -478,8 +478,9 @@ ags_volume_util_compute_s8(AgsVolumeUtil *volume_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
@@ -599,8 +600,9 @@ ags_volume_util_compute_s16(AgsVolumeUtil *volume_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
@@ -720,8 +722,9 @@ ags_volume_util_compute_s24(AgsVolumeUtil *volume_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
@@ -841,8 +844,9 @@ ags_volume_util_compute_s32(AgsVolumeUtil *volume_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
@@ -962,8 +966,9 @@ ags_volume_util_compute_s64(AgsVolumeUtil *volume_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
@@ -1083,8 +1088,9 @@ ags_volume_util_compute_float(AgsVolumeUtil *volume_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
@@ -1204,8 +1210,9 @@ ags_volume_util_compute_double(AgsVolumeUtil *volume_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
       (double) *(source += volume_util->source_stride),
