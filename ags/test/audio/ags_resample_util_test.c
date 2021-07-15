@@ -59,6 +59,24 @@ void ags_resample_util_test_compute_double();
 void ags_resample_util_test_compute_complex();
 void ags_resample_util_test_compute();
 
+#define AGS_RESAMPLE_UTIL_TEST_COPY_SOURCE_AUDIO_CHANNELS (2)
+#define AGS_RESAMPLE_UTIL_TEST_COPY_BUFFER_SIZE (1024)
+#define AGS_RESAMPLE_UTIL_TEST_COPY_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+#define AGS_RESAMPLE_UTIL_TEST_COPY_SAMPLERATE (48000)
+#define AGS_RESAMPLE_UTIL_TEST_COPY_TARGET_SAMPLERATE (44100)
+
+#define AGS_RESAMPLE_UTIL_TEST_GET_DESTINATION_BUFFER_SIZE (1024)
+#define AGS_RESAMPLE_UTIL_TEST_GET_DESTINATION_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+
+#define AGS_RESAMPLE_UTIL_TEST_SET_DESTINATION_BUFFER_SIZE (1024)
+#define AGS_RESAMPLE_UTIL_TEST_SET_DESTINATION_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+
+#define AGS_RESAMPLE_UTIL_TEST_GET_SOURCE_BUFFER_SIZE (1024)
+#define AGS_RESAMPLE_UTIL_TEST_GET_SOURCE_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+
+#define AGS_RESAMPLE_UTIL_TEST_SET_SOURCE_BUFFER_SIZE (1024)
+#define AGS_RESAMPLE_UTIL_TEST_SET_SOURCE_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -82,169 +100,514 @@ ags_resample_util_test_clean_suite()
 void
 ags_resample_util_test_alloc()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil *resample_util;
+
+  resample_util = ags_resample_util_alloc();
+
+  CU_ASSERT(resample_util != NULL);
+
+  CU_ASSERT(resample_util->destination == NULL);
+  CU_ASSERT(resample_util->destination_stride == 1);
+
+  CU_ASSERT(resample_util->source == NULL);
+  CU_ASSERT(resample_util->source_stride == 1);
+  
+  CU_ASSERT(resample_util->buffer_length == 0);
+  CU_ASSERT(resample_util->audio_buffer_util_format == AGS_RESAMPLE_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT);
+  CU_ASSERT(resample_util->samplerate == AGS_RESAMPLE_UTIL_DEFAULT_SAMPLERATE);
+  
+  CU_ASSERT(resample_util->target_samplerate == AGS_RESAMPLE_UTIL_DEFAULT_TARGET_SAMPLERATE);
 }
 
 void
 ags_resample_util_test_copy()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+  AgsResampleUtil *copy_resample_util;
+
+  resample_util = (AgsResampleUtil) {
+    .destination = ags_stream_alloc(AGS_RESAMPLE_UTIL_TEST_COPY_BUFFER_SIZE,
+				    AGS_RESAMPLE_UTIL_TEST_COPY_FORMAT),
+    .source = ags_stream_alloc(AGS_RESAMPLE_UTIL_TEST_COPY_SOURCE_AUDIO_CHANNELS * AGS_RESAMPLE_UTIL_TEST_COPY_BUFFER_SIZE,
+			       AGS_RESAMPLE_UTIL_TEST_COPY_FORMAT),
+    .source_stride = AGS_RESAMPLE_UTIL_TEST_COPY_SOURCE_AUDIO_CHANNELS,
+    .buffer_length = AGS_RESAMPLE_UTIL_TEST_COPY_BUFFER_SIZE,
+    .samplerate = AGS_RESAMPLE_UTIL_TEST_COPY_SAMPLERATE,
+    .target_samplerate = AGS_RESAMPLE_UTIL_TEST_COPY_TARGET_SAMPLERATE
+  };
+
+  copy_resample_util = ags_resample_util_copy(&resample_util);
+  
+  CU_ASSERT(copy_resample_util != NULL);
+  
+  CU_ASSERT(copy_resample_util->destination == resample_util.destination);
+  CU_ASSERT(copy_resample_util->destination_stride == resample_util.destination_stride);
+  
+  CU_ASSERT(copy_resample_util->source == resample_util.source);
+  CU_ASSERT(copy_resample_util->source_stride == resample_util.source_stride);
+  
+  CU_ASSERT(copy_resample_util->buffer_length == resample_util.buffer_length);
+  CU_ASSERT(copy_resample_util->audio_buffer_util_format == resample_util.audio_buffer_util_format);
+  CU_ASSERT(copy_resample_util->samplerate == resample_util.samplerate);
+
+  CU_ASSERT(copy_resample_util->target_samplerate == resample_util.target_samplerate);
 }
 
 void
 ags_resample_util_test_free()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil *resample_util;
+  
+  resample_util = (AgsResampleUtil *) g_new(AgsResampleUtil,
+					    1);
+
+  CU_ASSERT(resample_util != NULL);
+
+  resample_util->source = NULL;
+  resample_util->destination = NULL;
+  
+  ags_resample_util_free(resample_util);
+  
+  resample_util = ags_resample_util_alloc();
+
+  CU_ASSERT(resample_util != NULL);
+
+  ags_resample_util_free(resample_util);
 }
 
 void
 ags_resample_util_test_get_destination()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  resample_util.destination = NULL;
+
+  CU_ASSERT(ags_resample_util_get_destination(&resample_util) == NULL);
+  
+  resample_util.destination = ags_stream_alloc(AGS_RESAMPLE_UTIL_TEST_GET_DESTINATION_BUFFER_SIZE,
+					       AGS_RESAMPLE_UTIL_TEST_GET_DESTINATION_FORMAT);
+
+  CU_ASSERT(ags_resample_util_get_destination(&resample_util) == resample_util.destination);
 }
 
 void
 ags_resample_util_test_set_destination()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  gpointer destination;
+  
+  resample_util.destination = NULL;
+
+  destination = ags_stream_alloc(AGS_RESAMPLE_UTIL_TEST_SET_DESTINATION_BUFFER_SIZE,
+				 AGS_RESAMPLE_UTIL_TEST_SET_DESTINATION_FORMAT);
+
+  ags_resample_util_set_destination(&resample_util,
+				    destination);
+  
+  CU_ASSERT(resample_util.destination == destination);
 }
 
 void
 ags_resample_util_test_get_destination_stride()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  resample_util.destination_stride = 0;
+
+  CU_ASSERT(ags_resample_util_get_destination_stride(&resample_util) == 0);
+  
+  resample_util.destination_stride = 1;
+
+  CU_ASSERT(ags_resample_util_get_destination_stride(&resample_util) == resample_util.destination_stride);
 }
 
 void
 ags_resample_util_test_set_destination_stride()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+  
+  resample_util.destination_stride = 0;
+
+  ags_resample_util_set_destination_stride(&resample_util,
+					   1);
+  
+  CU_ASSERT(resample_util.destination_stride == 1);
 }
 
 void
 ags_resample_util_test_get_source()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  resample_util.source = NULL;
+
+  CU_ASSERT(ags_resample_util_get_source(&resample_util) == NULL);
+  
+  resample_util.source = ags_stream_alloc(AGS_RESAMPLE_UTIL_TEST_GET_SOURCE_BUFFER_SIZE,
+					  AGS_RESAMPLE_UTIL_TEST_GET_SOURCE_FORMAT);
+
+  CU_ASSERT(ags_resample_util_get_source(&resample_util) == resample_util.source);
 }
 
 void
 ags_resample_util_test_set_source()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  gpointer source;
+  
+  resample_util.source = NULL;
+
+  source = ags_stream_alloc(AGS_RESAMPLE_UTIL_TEST_SET_SOURCE_BUFFER_SIZE,
+			    AGS_RESAMPLE_UTIL_TEST_SET_SOURCE_FORMAT);
+  
+  ags_resample_util_set_source(&resample_util,
+			       source);
+  
+  CU_ASSERT(resample_util.source == source);
 }
 
 void
 ags_resample_util_test_get_source_stride()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  resample_util.source_stride = 0;
+
+  CU_ASSERT(ags_resample_util_get_source_stride(&resample_util) == 0);
+  
+  resample_util.source_stride = 1;
+
+  CU_ASSERT(ags_resample_util_get_source_stride(&resample_util) == resample_util.source_stride);
 }
 
 void
 ags_resample_util_test_set_source_stride()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+  
+  resample_util.source_stride = 0;
+
+  ags_resample_util_set_source_stride(&resample_util,
+				      1);
+  
+  CU_ASSERT(resample_util.source_stride == 1);
 }
 
 void
 ags_resample_util_test_get_buffer_length()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  resample_util.buffer_length = 0;
+
+  CU_ASSERT(ags_resample_util_get_buffer_length(&resample_util) == 0);
+  
+  resample_util.buffer_length = 512;
+
+  CU_ASSERT(ags_resample_util_get_buffer_length(&resample_util) == resample_util.buffer_length);
 }
 
 void
 ags_resample_util_test_set_buffer_length()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+  
+  resample_util.buffer_length = 0;
+
+  ags_resample_util_set_buffer_length(&resample_util,
+				      512);
+  
+  CU_ASSERT(resample_util.buffer_length == 512);
 }
 
 void
 ags_resample_util_test_get_audio_buffer_util_format()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  resample_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+
+  CU_ASSERT(ags_resample_util_get_audio_buffer_util_format(&resample_util) == AGS_AUDIO_BUFFER_UTIL_S16);
+  
+  resample_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT;
+
+  CU_ASSERT(ags_resample_util_get_audio_buffer_util_format(&resample_util) == resample_util.audio_buffer_util_format);
 }
 
 void
 ags_resample_util_test_set_audio_buffer_util_format()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+  
+  resample_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+
+  ags_resample_util_set_audio_buffer_util_format(&resample_util,
+						 AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  
+  CU_ASSERT(resample_util.audio_buffer_util_format == AGS_AUDIO_BUFFER_UTIL_FLOAT);
 }
 
 void
 ags_resample_util_test_get_samplerate()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  resample_util.samplerate = 0;
+
+  CU_ASSERT(ags_resample_util_get_samplerate(&resample_util) == 0);
+  
+  resample_util.samplerate = 44100;
+
+  CU_ASSERT(ags_resample_util_get_samplerate(&resample_util) == resample_util.samplerate);
 }
 
 void
 ags_resample_util_test_set_samplerate()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+  
+  resample_util.samplerate = 0;
+
+  ags_resample_util_set_samplerate(&resample_util,
+				   44100);
+  
+  CU_ASSERT(resample_util.samplerate == 44100);
 }
 
 void
 ags_resample_util_test_get_target_samplerate()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  resample_util.target_samplerate = 0;
+
+  CU_ASSERT(ags_resample_util_get_target_samplerate(&resample_util) == 0);
+  
+  resample_util.target_samplerate = 44100;
+
+  CU_ASSERT(ags_resample_util_get_target_samplerate(&resample_util) == resample_util.target_samplerate);
 }
 
 void
 ags_resample_util_test_set_target_samplerate()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+  
+  resample_util.target_samplerate = 0;
+
+  ags_resample_util_set_target_samplerate(&resample_util,
+					  44100);
+  
+  CU_ASSERT(resample_util.target_samplerate == 44100);
 }
 
 void
 ags_resample_util_test_compute_s8()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_8_BIT);
+
+  resample_util = (AgsResampleUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S8,
+    .samplerate = 48000,
+    .target_samplerate = 44100
+  };
+  
+  ags_resample_util_compute_s8(&resample_util);
 }
 
 void
 ags_resample_util_test_compute_s16()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_16_BIT);
+
+  resample_util = (AgsResampleUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16,
+    .samplerate = 48000,
+    .target_samplerate = 44100
+  };
+  
+  ags_resample_util_compute_s16(&resample_util);
 }
 
 void
 ags_resample_util_test_compute_s24()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_24_BIT);
+
+  resample_util = (AgsResampleUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S24,
+    .samplerate = 48000,
+    .target_samplerate = 44100
+  };
+  
+  ags_resample_util_compute_s24(&resample_util);
 }
 
 void
 ags_resample_util_test_compute_s32()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_32_BIT);
+
+  resample_util = (AgsResampleUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S32,
+    .samplerate = 48000,
+    .target_samplerate = 44100
+  };
+  
+  ags_resample_util_compute_s32(&resample_util);
 }
 
 void
 ags_resample_util_test_compute_s64()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_64_BIT);
+
+  resample_util = (AgsResampleUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S64,
+    .samplerate = 48000,
+    .target_samplerate = 44100
+  };
+  
+  ags_resample_util_compute_s64(&resample_util);
 }
 
 void
 ags_resample_util_test_compute_float()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_FLOAT);
+
+  resample_util = (AgsResampleUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT,
+    .samplerate = 48000,
+    .target_samplerate = 44100
+  };
+  
+  ags_resample_util_compute_float(&resample_util);
 }
 
 void
 ags_resample_util_test_compute_double()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_DOUBLE);
+
+  resample_util = (AgsResampleUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+    .samplerate = 48000,
+    .target_samplerate = 44100
+  };
+  
+  ags_resample_util_compute_double(&resample_util);
 }
 
 void
 ags_resample_util_test_compute_complex()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_COMPLEX);
+
+  resample_util = (AgsResampleUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_COMPLEX,
+    .samplerate = 48000,
+    .target_samplerate = 44100
+  };
+  
+  ags_resample_util_compute_complex(&resample_util);
 }
 
 void
 ags_resample_util_test_compute()
 {
-  //TODO:JK: implement me
+  AgsResampleUtil resample_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_16_BIT);
+
+  resample_util = (AgsResampleUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16,
+    .samplerate = 48000,
+    .target_samplerate = 44100
+  };
+  
+  ags_resample_util_compute(&resample_util);
 }
 
 int
