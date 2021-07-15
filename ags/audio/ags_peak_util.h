@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_PEAK_UTIL         (ags_peak_util_get_type())

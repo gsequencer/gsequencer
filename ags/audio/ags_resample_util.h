@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
+
 #include <samplerate.h>
 
 G_BEGIN_DECLS

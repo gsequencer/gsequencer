@@ -25,6 +25,9 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_synth_enums.h>
+#include <ags/audio/ags_audio_buffer_util.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SYNTH_UTIL         (ags_synth_util_get_type())
