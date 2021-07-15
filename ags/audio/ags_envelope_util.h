@@ -30,6 +30,8 @@ G_BEGIN_DECLS
 #define AGS_TYPE_ENVELOPE_UTIL         (ags_envelope_util_get_type())
 #define AGS_ENVELOPE_UTIL(ptr) ((AgsEnvelopeUtil *)(ptr))
 
+#define AGS_ENVELOPE_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT (AGS_AUDIO_BUFFER_UTIL_S16)
+
 typedef struct _AgsEnvelopeUtil AgsEnvelopeUtil;
 
 struct _AgsEnvelopeUtil

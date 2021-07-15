@@ -59,6 +59,22 @@ void ags_envelope_util_test_compute_double();
 void ags_envelope_util_test_compute_complex();
 void ags_envelope_util_test_compute();
 
+#define AGS_ENVELOPE_UTIL_TEST_COPY_BUFFER_SIZE (1024)
+#define AGS_ENVELOPE_UTIL_TEST_COPY_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+#define AGS_ENVELOPE_UTIL_TEST_COPY_SOURCE_AUDIO_CHANNELS (2)
+
+#define AGS_ENVELOPE_UTIL_TEST_GET_DESTINATION_BUFFER_SIZE (1024)
+#define AGS_ENVELOPE_UTIL_TEST_GET_DESTINATION_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+
+#define AGS_ENVELOPE_UTIL_TEST_SET_DESTINATION_BUFFER_SIZE (1024)
+#define AGS_ENVELOPE_UTIL_TEST_SET_DESTINATION_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+
+#define AGS_ENVELOPE_UTIL_TEST_GET_SOURCE_BUFFER_SIZE (1024)
+#define AGS_ENVELOPE_UTIL_TEST_GET_SOURCE_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+
+#define AGS_ENVELOPE_UTIL_TEST_SET_SOURCE_BUFFER_SIZE (1024)
+#define AGS_ENVELOPE_UTIL_TEST_SET_SOURCE_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -82,169 +98,530 @@ ags_envelope_util_test_clean_suite()
 void
 ags_envelope_util_test_alloc()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil *envelope_util;
+
+  envelope_util = ags_envelope_util_alloc();
+
+  CU_ASSERT(envelope_util != NULL);
+
+  CU_ASSERT(envelope_util->destination == NULL);
+  CU_ASSERT(envelope_util->destination_stride == 1);
+
+  CU_ASSERT(envelope_util->source == NULL);
+  CU_ASSERT(envelope_util->source_stride == 1);
+  
+  CU_ASSERT(envelope_util->buffer_length == 0);
+  CU_ASSERT(envelope_util->audio_buffer_util_format == AGS_ENVELOPE_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT);
+
+  CU_ASSERT(envelope_util->volume == 1.0);
+  CU_ASSERT(envelope_util->amount == 0.0);
 }
 
 void
 ags_envelope_util_test_copy()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+  AgsEnvelopeUtil *copy_envelope_util;
+
+  envelope_util = (AgsEnvelopeUtil) {
+    .destination = ags_stream_alloc(AGS_ENVELOPE_UTIL_TEST_COPY_BUFFER_SIZE,
+				    AGS_ENVELOPE_UTIL_TEST_COPY_FORMAT),
+    .source = ags_stream_alloc(AGS_ENVELOPE_UTIL_TEST_COPY_SOURCE_AUDIO_CHANNELS * AGS_ENVELOPE_UTIL_TEST_COPY_BUFFER_SIZE,
+			       AGS_ENVELOPE_UTIL_TEST_COPY_FORMAT),
+    .source_stride = AGS_ENVELOPE_UTIL_TEST_COPY_SOURCE_AUDIO_CHANNELS,
+    .buffer_length = AGS_ENVELOPE_UTIL_TEST_COPY_BUFFER_SIZE,
+    .volume = 0.5,
+    .amount = 0.25
+  };
+
+  copy_envelope_util = ags_envelope_util_copy(&envelope_util);
+  
+  CU_ASSERT(copy_envelope_util != NULL);
+  
+  CU_ASSERT(copy_envelope_util->destination == envelope_util.destination);
+  CU_ASSERT(copy_envelope_util->destination_stride == envelope_util.destination_stride);
+  
+  CU_ASSERT(copy_envelope_util->source == envelope_util.source);
+  CU_ASSERT(copy_envelope_util->source_stride == envelope_util.source_stride);
+  
+  CU_ASSERT(copy_envelope_util->buffer_length == envelope_util.buffer_length);
+  CU_ASSERT(copy_envelope_util->audio_buffer_util_format == envelope_util.audio_buffer_util_format);
+
+  CU_ASSERT(copy_envelope_util->volume == envelope_util.volume);
+  CU_ASSERT(copy_envelope_util->amount == envelope_util.amount);
 }
 
 void
 ags_envelope_util_test_free()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil *envelope_util;
+  
+  envelope_util = (AgsEnvelopeUtil *) g_new(AgsEnvelopeUtil,
+					1);
+
+  CU_ASSERT(envelope_util != NULL);
+
+  envelope_util->source = NULL;
+  envelope_util->destination = NULL;
+  
+  ags_envelope_util_free(envelope_util);
+  
+  envelope_util = ags_envelope_util_alloc();
+
+  CU_ASSERT(envelope_util != NULL);
+
+  ags_envelope_util_free(envelope_util);
 }
 
 void
 ags_envelope_util_test_get_destination()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  envelope_util.destination = NULL;
+
+  CU_ASSERT(ags_envelope_util_get_destination(&envelope_util) == NULL);
+  
+  envelope_util.destination = ags_stream_alloc(AGS_ENVELOPE_UTIL_TEST_GET_DESTINATION_BUFFER_SIZE,
+					     AGS_ENVELOPE_UTIL_TEST_GET_DESTINATION_FORMAT);
+
+  CU_ASSERT(ags_envelope_util_get_destination(&envelope_util) == envelope_util.destination);
 }
 
 void
 ags_envelope_util_test_set_destination()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  gpointer destination;
+  
+  envelope_util.destination = NULL;
+
+  destination = ags_stream_alloc(AGS_ENVELOPE_UTIL_TEST_SET_DESTINATION_BUFFER_SIZE,
+				 AGS_ENVELOPE_UTIL_TEST_SET_DESTINATION_FORMAT);
+
+  ags_envelope_util_set_destination(&envelope_util,
+				  destination);
+  
+  CU_ASSERT(envelope_util.destination == destination);
 }
 
 void
 ags_envelope_util_test_get_destination_stride()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  envelope_util.destination_stride = 0;
+
+  CU_ASSERT(ags_envelope_util_get_destination_stride(&envelope_util) == 0);
+  
+  envelope_util.destination_stride = 1;
+
+  CU_ASSERT(ags_envelope_util_get_destination_stride(&envelope_util) == envelope_util.destination_stride);
 }
 
 void
 ags_envelope_util_test_set_destination_stride()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+  
+  envelope_util.destination_stride = 0;
+
+  ags_envelope_util_set_destination_stride(&envelope_util,
+					 1);
+  
+  CU_ASSERT(envelope_util.destination_stride == 1);
 }
 
 void
 ags_envelope_util_test_get_source()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  envelope_util.source = NULL;
+
+  CU_ASSERT(ags_envelope_util_get_source(&envelope_util) == NULL);
+  
+  envelope_util.source = ags_stream_alloc(AGS_ENVELOPE_UTIL_TEST_GET_SOURCE_BUFFER_SIZE,
+					AGS_ENVELOPE_UTIL_TEST_GET_SOURCE_FORMAT);
+
+  CU_ASSERT(ags_envelope_util_get_source(&envelope_util) == envelope_util.source);
 }
 
 void
 ags_envelope_util_test_set_source()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  gpointer source;
+  
+  envelope_util.source = NULL;
+
+  source = ags_stream_alloc(AGS_ENVELOPE_UTIL_TEST_SET_SOURCE_BUFFER_SIZE,
+			    AGS_ENVELOPE_UTIL_TEST_SET_SOURCE_FORMAT);
+  
+  ags_envelope_util_set_source(&envelope_util,
+			     source);
+  
+  CU_ASSERT(envelope_util.source == source);
 }
 
 void
 ags_envelope_util_test_get_source_stride()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  envelope_util.source_stride = 0;
+
+  CU_ASSERT(ags_envelope_util_get_source_stride(&envelope_util) == 0);
+  
+  envelope_util.source_stride = 1;
+
+  CU_ASSERT(ags_envelope_util_get_source_stride(&envelope_util) == envelope_util.source_stride);
 }
 
 void
 ags_envelope_util_test_set_source_stride()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+  
+  envelope_util.source_stride = 0;
+
+  ags_envelope_util_set_source_stride(&envelope_util,
+				    1);
+  
+  CU_ASSERT(envelope_util.source_stride == 1);
 }
 
 void
 ags_envelope_util_test_get_buffer_length()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  envelope_util.buffer_length = 0;
+
+  CU_ASSERT(ags_envelope_util_get_buffer_length(&envelope_util) == 0);
+  
+  envelope_util.buffer_length = 512;
+
+  CU_ASSERT(ags_envelope_util_get_buffer_length(&envelope_util) == envelope_util.buffer_length);
 }
 
 void
 ags_envelope_util_test_set_buffer_length()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+  
+  envelope_util.buffer_length = 0;
+
+  ags_envelope_util_set_buffer_length(&envelope_util,
+				    512);
+  
+  CU_ASSERT(envelope_util.buffer_length == 512);
 }
 
 void
 ags_envelope_util_test_get_audio_buffer_util_format()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  envelope_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+
+  CU_ASSERT(ags_envelope_util_get_audio_buffer_util_format(&envelope_util) == AGS_AUDIO_BUFFER_UTIL_S16);
+  
+  envelope_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT;
+
+  CU_ASSERT(ags_envelope_util_get_audio_buffer_util_format(&envelope_util) == envelope_util.audio_buffer_util_format);
 }
 
 void
 ags_envelope_util_test_set_audio_buffer_util_format()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+  
+  envelope_util.audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16;
+
+  ags_envelope_util_set_audio_buffer_util_format(&envelope_util,
+					       AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  
+  CU_ASSERT(envelope_util.audio_buffer_util_format == AGS_AUDIO_BUFFER_UTIL_FLOAT);
 }
 
 void
 ags_envelope_util_test_get_volume()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  envelope_util.volume = 1.0;
+
+  CU_ASSERT(ags_envelope_util_get_volume(&envelope_util) == 1.0);
+  
+  envelope_util.volume = 0.25;
+
+  CU_ASSERT(ags_envelope_util_get_volume(&envelope_util) == 0.25);
 }
 
 void
 ags_envelope_util_test_set_volume()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+  
+  envelope_util.volume = 1.0;
+
+  ags_envelope_util_set_volume(&envelope_util,
+			       0.35);
+  
+  CU_ASSERT(envelope_util.volume == 0.35);
 }
 
 void
 ags_envelope_util_test_get_amount()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  envelope_util.amount = 0.0;
+
+  CU_ASSERT(ags_envelope_util_get_amount(&envelope_util) == 0.0);
+  
+  envelope_util.amount = 0.25;
+
+  CU_ASSERT(ags_envelope_util_get_amount(&envelope_util) == 0.25);
 }
 
 void
 ags_envelope_util_test_set_amount()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+  
+  envelope_util.amount = 0.0;
+
+  ags_envelope_util_set_amount(&envelope_util,
+			       0.25);
+  
+  CU_ASSERT(envelope_util.amount == 0.25);
 }
 
 void
 ags_envelope_util_test_compute_s8()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_8_BIT);
+
+  envelope_util = (AgsEnvelopeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S8,
+    .volume = 0.5,
+    .amount = 0.25
+  };
+  
+  ags_envelope_util_compute_s8(&envelope_util);
+
+  CU_ASSERT(envelope_util.volume > 0.5);
 }
 
 void
 ags_envelope_util_test_compute_s16()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_16_BIT);
+
+  envelope_util = (AgsEnvelopeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16,
+    .volume = 0.5,
+    .amount = 0.25
+  };
+  
+  ags_envelope_util_compute_s16(&envelope_util);
+
+  CU_ASSERT(envelope_util.volume > 0.5);
 }
 
 void
 ags_envelope_util_test_compute_s24()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_24_BIT);
+
+  envelope_util = (AgsEnvelopeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S24,
+    .volume = 0.5,
+    .amount = 0.25
+  };
+  
+  ags_envelope_util_compute_s24(&envelope_util);
+
+  CU_ASSERT(envelope_util.volume > 0.5);
 }
 
 void
 ags_envelope_util_test_compute_s32()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_32_BIT);
+
+  envelope_util = (AgsEnvelopeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S32,
+    .volume = 0.5,
+    .amount = 0.25
+  };
+  
+  ags_envelope_util_compute_s32(&envelope_util);
+
+  CU_ASSERT(envelope_util.volume > 0.5);
 }
 
 void
 ags_envelope_util_test_compute_s64()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_64_BIT);
+
+  envelope_util = (AgsEnvelopeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S64,
+    .volume = 0.5,
+    .amount = 0.25
+  };
+  
+  ags_envelope_util_compute_s64(&envelope_util);
+
+  CU_ASSERT(envelope_util.volume > 0.5);
 }
 
 void
 ags_envelope_util_test_compute_float()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_FLOAT);
+
+  envelope_util = (AgsEnvelopeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_FLOAT,
+    .volume = 0.5,
+    .amount = 0.25
+  };
+  
+  ags_envelope_util_compute_float(&envelope_util);
+
+  CU_ASSERT(envelope_util.volume > 0.5);
 }
 
 void
 ags_envelope_util_test_compute_double()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_DOUBLE);
+
+  envelope_util = (AgsEnvelopeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+    .volume = 0.5,
+    .amount = 0.25
+  };
+  
+  ags_envelope_util_compute_double(&envelope_util);
 }
 
 void
 ags_envelope_util_test_compute_complex()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_COMPLEX);
+
+  envelope_util = (AgsEnvelopeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_COMPLEX,
+    .volume = 0.5,
+    .amount = 0.25
+  };
+  
+  ags_envelope_util_compute_complex(&envelope_util);
+
+  CU_ASSERT(envelope_util.volume > 0.5);
 }
 
 void
 ags_envelope_util_test_compute()
 {
-  //TODO:JK: implement me
+  AgsEnvelopeUtil envelope_util;
+
+  gpointer source;
+
+  source = ags_stream_alloc(1024,
+			    AGS_SOUNDCARD_SIGNED_16_BIT);
+
+  envelope_util = (AgsEnvelopeUtil) {
+    .destination = source,
+    .source = source,
+    .source_stride = 1,
+    .buffer_length = 1024,
+    .audio_buffer_util_format = AGS_AUDIO_BUFFER_UTIL_S16,
+    .volume = 0.5,
+    .amount = 0.25
+  };
+  
+  ags_envelope_util_compute(&envelope_util);
+
+  CU_ASSERT(envelope_util.volume > 0.5);
 }
 
 int
