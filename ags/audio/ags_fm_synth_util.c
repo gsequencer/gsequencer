@@ -83,6 +83,12 @@ ags_fm_synth_util_alloc()
   ptr->frequency = AGS_FM_SYNTH_UTIL_DEFAULT_FREQUENCY;
   ptr->phase = 0.0;
   ptr->volume = 1.0;
+  
+  ptr->lfo_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
+
+  ptr->lfo_frequency = AGS_FM_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY;
+  ptr->lfo_depth = AGS_FM_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
+  ptr->tuning = AGS_FM_SYNTH_UTIL_DEFAULT_TUNING;
 
   ptr->frame_count = 0;
   ptr->offset = 0;
@@ -120,6 +126,12 @@ ags_fm_synth_util_copy(AgsFMSynthUtil *ptr)
   new_ptr->frequency = ptr->frequency;
   new_ptr->phase = ptr->phase;
   new_ptr->volume = ptr->volume;
+
+  new_ptr->lfo_oscillator_mode = ptr->lfo_oscillator_mode;
+
+  new_ptr->lfo_frequency = ptr->lfo_frequency;
+  new_ptr->lfo_depth = ptr->lfo_depth;
+  new_ptr->tuning = ptr->tuning;
 
   new_ptr->frame_count = ptr->frame_count;
   new_ptr->offset = ptr->offset;
