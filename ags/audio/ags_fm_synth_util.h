@@ -29,6 +29,9 @@ G_BEGIN_DECLS
 
 #define AGS_TYPE_FM_SYNTH_UTIL         (ags_fm_synth_util_get_type())
 
+#define AGS_FM_SYNTH_UTIL_DEFAULT_FREQUENCY (440.0)
+#define AGS_FM_SYNTH_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT (AGS_AUDIO_BUFFER_UTIL_S16)
+
 typedef struct _AgsFMSynthUtil AgsFMSynthUtil;
 
 struct _AgsFMSynthUtil
