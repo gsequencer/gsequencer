@@ -25,9 +25,6 @@
 #include <math.h>
 #include <complex.h>
 
-gpointer ags_fm_synth_util_strct_copy(gpointer ptr);
-void ags_fm_synth_util_strct_free(gpointer ptr);
-
 /**
  * SECTION:ags_fm_synth_util
  * @short_description: frequency modulation synth util
@@ -48,8 +45,8 @@ ags_fm_synth_util_get_type(void)
 
     ags_type_fm_synth_util =
       g_boxed_type_register_static("AgsFMSynthUtil",
-				   (GBoxedCopyFunc) ags_fm_synth_util_strct_copy,
-				   (GBoxedFreeFunc) ags_fm_synth_util_strct_free);
+				   (GBoxedCopyFunc) ags_fm_synth_util_copy,
+				   (GBoxedFreeFunc) ags_fm_synth_util_free);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_fm_synth_util);
   }
@@ -57,20 +54,693 @@ ags_fm_synth_util_get_type(void)
   return g_define_type_id__volatile;
 }
 
-gpointer
-ags_fm_synth_util_strct_copy(gpointer ptr)
+/**
+ * ags_fm_synth_util_alloc:
+ *
+ * Allocate #AgsFMSynthUtil-struct
+ *
+ * Returns: a new #AgsFMSynthUtil-struct
+ *
+ * Since: 3.9.3
+ */
+AgsFMSynthUtil*
+ags_fm_synth_util_alloc()
 {
-  gpointer retval;
+  AgsFMSynthUtil *ptr;
 
-  retval = g_memdup(ptr, sizeof(AgsFMSynthUtil));
- 
-  return(retval);
+  ptr = (AgsFMSynthUtil *) g_new(AgsFMSynthUtil,
+				 1);
+
+  ptr->source = NULL;
+  ptr->source_stride = 1;
+
+  ptr->buffer_length = 0;
+  ptr->audio_buffer_util_format = AGS_FM_SYNTH_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT;
+  ptr->samplerate = 0;
+  
+  ptr->synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
+
+  ptr->frequency = AGS_FM_SYNTH_UTIL_DEFAULT_FREQUENCY;
+  ptr->phase = 0.0;
+  ptr->volume = 1.0;
+
+  ptr->frame_count = 0;
+  ptr->offset = 0;
+
+  return(ptr);
 }
 
-void
-ags_fm_synth_util_strct_free(gpointer ptr)
+/**
+ * ags_fm_synth_util_copy:
+ * @ptr: the original #AgsFMSynthUtil-struct
+ *
+ * Create a copy of @ptr.
+ *
+ * Returns: a pointer of the new #AgsFMSynthUtil-struct
+ *
+ * Since: 3.9.3
+ */
+gpointer
+ags_fm_synth_util_copy(AgsFMSynthUtil *ptr)
 {
+  AgsFMSynthUtil *new_ptr;
+  
+  new_ptr = (AgsFMSynthUtil *) g_new(AgsFMSynthUtil,
+				     1);
+  
+  new_ptr->source = ptr->source;
+  new_ptr->source_stride = ptr->source_stride;
+
+  new_ptr->buffer_length = ptr->buffer_length;
+  new_ptr->audio_buffer_util_format = ptr->audio_buffer_util_format;
+  new_ptr->samplerate = ptr->samplerate;
+
+  new_ptr->synth_oscillator_mode = ptr->synth_oscillator_mode;
+
+  new_ptr->frequency = ptr->frequency;
+  new_ptr->phase = ptr->phase;
+  new_ptr->volume = ptr->volume;
+
+  new_ptr->frame_count = ptr->frame_count;
+  new_ptr->offset = ptr->offset;
+  
+  return(new_ptr);
+}
+
+/**
+ * ags_fm_synth_util_free:
+ * @ptr: the #AgsFMSynthUtil-struct
+ *
+ * Free the memory of @ptr.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_free(AgsFMSynthUtil *ptr)
+{
+  g_free(ptr->source);
+  
   g_free(ptr);
+}
+
+/**
+ * ags_fm_synth_util_get_source:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Get source buffer of @fm_synth_util.
+ * 
+ * Returns: the source buffer
+ * 
+ * Since: 3.9.3
+ */
+gpointer
+ags_fm_synth_util_get_source(AgsFMSynthUtil *fm_synth_util)
+{
+  if(fm_synth_util == NULL){
+    return(NULL);
+  }
+
+  return(fm_synth_util->source);
+}
+
+/**
+ * ags_fm_synth_util_set_source:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * @source: the source buffer
+ *
+ * Set @source buffer of @fm_synth_util.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_set_source(AgsFMSynthUtil *fm_synth_util,
+			     gpointer source)
+{
+  if(fm_synth_util == NULL){
+    return;
+  }
+
+  fm_synth_util->source = source;
+}
+
+/**
+ * ags_fm_synth_util_get_source_stride:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Get source stride of @fm_synth_util.
+ * 
+ * Returns: the source buffer stride
+ * 
+ * Since: 3.9.3
+ */
+guint
+ags_fm_synth_util_get_source_stride(AgsFMSynthUtil *fm_synth_util)
+{
+  if(fm_synth_util == NULL){
+    return(0);
+  }
+
+  return(fm_synth_util->source_stride);
+}
+
+/**
+ * ags_fm_synth_util_set_source_stride:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * @source_stride: the source buffer stride
+ *
+ * Set @source stride of @fm_synth_util.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_set_source_stride(AgsFMSynthUtil *fm_synth_util,
+				    guint source_stride)
+{
+  if(fm_synth_util == NULL){
+    return;
+  }
+
+  fm_synth_util->source_stride = source_stride;
+}
+
+/**
+ * ags_fm_synth_util_get_buffer_length:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Get buffer length of @fm_synth_util.
+ * 
+ * Returns: the buffer length
+ * 
+ * Since: 3.9.3
+ */
+guint
+ags_fm_synth_util_get_buffer_length(AgsFMSynthUtil *fm_synth_util)
+{
+  if(fm_synth_util == NULL){
+    return(0);
+  }
+
+  return(fm_synth_util->buffer_length);
+}
+
+/**
+ * ags_fm_synth_util_set_buffer_length:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * @buffer_length: the buffer length
+ *
+ * Set @buffer_length of @fm_synth_util.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_set_buffer_length(AgsFMSynthUtil *fm_synth_util,
+				    guint buffer_length)
+{
+  if(fm_synth_util == NULL){
+    return;
+  }
+
+  fm_synth_util->buffer_length = buffer_length;
+}
+
+/**
+ * ags_fm_synth_util_get_audio_buffer_util_format:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Get audio buffer util format of @fm_synth_util.
+ * 
+ * Returns: the audio buffer util format
+ * 
+ * Since: 3.9.3
+ */
+guint
+ags_fm_synth_util_get_audio_buffer_util_format(AgsFMSynthUtil *fm_synth_util)
+{
+  if(fm_synth_util == NULL){
+    return(0);
+  }
+
+  return(fm_synth_util->audio_buffer_util_format);
+}
+
+/**
+ * ags_fm_synth_util_set_audio_buffer_util_format:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * @audio_buffer_util_format: the audio buffer util format
+ *
+ * Set @audio_buffer_util_format of @fm_synth_util.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_set_audio_buffer_util_format(AgsFMSynthUtil *fm_synth_util,
+					       guint audio_buffer_util_format)
+{
+  if(fm_synth_util == NULL){
+    return;
+  }
+
+  fm_synth_util->audio_buffer_util_format = audio_buffer_util_format;
+}
+
+/**
+ * ags_fm_synth_util_get_samplerate:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Get samplerate of @fm_synth_util.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 3.9.3
+ */
+guint
+ags_fm_synth_util_get_samplerate(AgsFMSynthUtil *fm_synth_util)
+{
+  if(fm_synth_util == NULL){
+    return(0);
+  }
+
+  return(fm_synth_util->samplerate);
+}
+
+/**
+ * ags_fm_synth_util_set_samplerate:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * @samplerate: the samplerate
+ *
+ * Set @samplerate of @fm_synth_util.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_set_samplerate(AgsFMSynthUtil *fm_synth_util,
+				 guint samplerate)
+{
+  if(fm_synth_util == NULL){
+    return;
+  }
+
+  fm_synth_util->samplerate = samplerate;
+}
+
+/**
+ * ags_fm_synth_util_get_synth_oscillator_mode:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Get synth oscillator mode of @fm_synth_util.
+ * 
+ * Returns: the synth oscillator mode
+ * 
+ * Since: 3.9.3
+ */
+guint
+ags_fm_synth_util_get_synth_oscillator_mode(AgsFMSynthUtil *fm_synth_util)
+{
+  if(fm_synth_util == NULL){
+    return(0);
+  }
+
+  return(fm_synth_util->synth_oscillator_mode);
+}
+
+/**
+ * ags_fm_synth_util_set_synth_oscillator_mode:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * @synth_oscillator_mode: the synth oscillator mode
+ *
+ * Set @synth_oscillator_mode of @fm_synth_util.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_set_synth_oscillator_mode(AgsFMSynthUtil *fm_synth_util,
+					    guint synth_oscillator_mode)
+{
+  if(fm_synth_util == NULL){
+    return;
+  }
+
+  fm_synth_util->synth_oscillator_mode = synth_oscillator_mode;
+}
+
+/**
+ * ags_fm_synth_util_get_frequency:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Get frequency of @fm_synth_util.
+ * 
+ * Returns: the frequency
+ * 
+ * Since: 3.9.3
+ */
+gdouble
+ags_fm_synth_util_get_frequency(AgsFMSynthUtil *fm_synth_util)
+{
+  if(fm_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(fm_synth_util->frequency);
+}
+
+/**
+ * ags_fm_synth_util_set_frequency:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * @frequency: the frequency
+ *
+ * Set @frequency of @fm_synth_util.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_set_frequency(AgsFMSynthUtil *fm_synth_util,
+				gdouble frequency)
+{
+  if(fm_synth_util == NULL){
+    return;
+  }
+
+  fm_synth_util->frequency = frequency;
+}
+
+/**
+ * ags_fm_synth_util_get_phase:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Get phase of @fm_synth_util.
+ * 
+ * Returns: the phase
+ * 
+ * Since: 3.9.3
+ */
+gdouble
+ags_fm_synth_util_get_phase(AgsFMSynthUtil *fm_synth_util)
+{
+  if(fm_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(fm_synth_util->phase);
+}
+
+/**
+ * ags_fm_synth_util_set_phase:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * @phase: the phase
+ *
+ * Set @phase of @fm_synth_util.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_set_phase(AgsFMSynthUtil *fm_synth_util,
+			    gdouble phase)
+{
+  if(fm_synth_util == NULL){
+    return;
+  }
+
+  fm_synth_util->phase = phase;
+}
+
+/**
+ * ags_fm_synth_util_get_volume:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Get volume of @fm_synth_util.
+ * 
+ * Returns: the volume
+ * 
+ * Since: 3.9.3
+ */
+gdouble
+ags_fm_synth_util_get_volume(AgsFMSynthUtil *fm_synth_util)
+{
+  if(fm_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(fm_synth_util->volume);
+}
+
+/**
+ * ags_fm_synth_util_set_volume:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * @volume: the volume
+ *
+ * Set @volume of @fm_synth_util.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_set_volume(AgsFMSynthUtil *fm_synth_util,
+			     gdouble volume)
+{
+  if(fm_synth_util == NULL){
+    return;
+  }
+
+  fm_synth_util->volume = volume;
+}
+
+/**
+ * ags_fm_synth_util_get_frame_count:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Get frame count of @fm_synth_util.
+ * 
+ * Returns: the frame count
+ * 
+ * Since: 3.9.3
+ */
+guint
+ags_fm_synth_util_get_frame_count(AgsFMSynthUtil *fm_synth_util)
+{
+  if(fm_synth_util == NULL){
+    return(0);
+  }
+
+  return(fm_synth_util->frame_count);
+}
+
+/**
+ * ags_fm_synth_util_get_lfo_oscillator_mode:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Get LFO oscillator mode of @fm_synth_util.
+ * 
+ * Returns: the LFO oscillator mode
+ * 
+ * Since: 3.9.3
+ */
+guint
+ags_fm_synth_util_get_lfo_oscillator_mode(AgsFMSynthUtil *fm_synth_util)
+{
+  if(fm_synth_util == NULL){
+    return(0);
+  }
+
+  return(fm_synth_util->lfo_oscillator_mode);
+}
+
+/**
+ * ags_fm_synth_util_set_lfo_oscillator_mode:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * @lfo_oscillator_mode: the LFO oscillator mode
+ *
+ * Set @lfo_oscillator_mode of @fm_synth_util.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_set_lfo_oscillator_mode(AgsFMSynthUtil *fm_synth_util,
+					  guint lfo_oscillator_mode)
+{
+  if(fm_synth_util == NULL){
+    return;
+  }
+
+  fm_synth_util->lfo_oscillator_mode = lfo_oscillator_mode;
+}
+
+/**
+ * ags_fm_synth_util_get_lfo_frequency:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Get LFO frequency of @fm_synth_util.
+ * 
+ * Returns: the LFO frequency
+ * 
+ * Since: 3.9.3
+ */
+gdouble
+ags_fm_synth_util_get_lfo_frequency(AgsFMSynthUtil *fm_synth_util)
+{
+  if(fm_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(fm_synth_util->lfo_frequency);
+}
+
+/**
+ * ags_fm_synth_util_set_lfo_frequency:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * @lfo_frequency: the LFO frequency
+ *
+ * Set @lfo_frequency of @fm_synth_util.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_set_lfo_frequency(AgsFMSynthUtil *fm_synth_util,
+				    gdouble lfo_frequency)
+{
+  if(fm_synth_util == NULL){
+    return;
+  }
+
+  fm_synth_util->lfo_frequency = lfo_frequency;
+}
+
+/**
+ * ags_fm_synth_util_get_lfo_depth:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Get LFO depth of @fm_synth_util.
+ * 
+ * Returns: the LFO depth
+ * 
+ * Since: 3.9.3
+ */
+gdouble
+ags_fm_synth_util_get_lfo_depth(AgsFMSynthUtil *fm_synth_util)
+{
+  if(fm_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(fm_synth_util->lfo_depth);
+}
+
+/**
+ * ags_fm_synth_util_set_lfo_depth:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * @lfo_depth: the LFO depth
+ *
+ * Set @lfo_depth of @fm_synth_util.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_set_lfo_depth(AgsFMSynthUtil *fm_synth_util,
+				gdouble lfo_depth)
+{
+  if(fm_synth_util == NULL){
+    return;
+  }
+
+  fm_synth_util->lfo_depth = lfo_depth;
+}
+
+/**
+ * ags_fm_synth_util_get_tuning:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Get tuning of @fm_synth_util.
+ * 
+ * Returns: the tuning
+ * 
+ * Since: 3.9.3
+ */
+gdouble
+ags_fm_synth_util_get_tuning(AgsFMSynthUtil *fm_synth_util)
+{
+  if(fm_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(fm_synth_util->tuning);
+}
+
+/**
+ * ags_fm_synth_util_set_tuning:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * @tuning: the tuning
+ *
+ * Set @tuning of @fm_synth_util.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_set_tuning(AgsFMSynthUtil *fm_synth_util,
+			     gdouble tuning)
+{
+  if(fm_synth_util == NULL){
+    return;
+  }
+
+  fm_synth_util->tuning = tuning;
+}
+
+/**
+ * ags_fm_synth_util_set_frame_count:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * @frame_count: the frame count
+ *
+ * Set @frame_count of @fm_synth_util.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_set_frame_count(AgsFMSynthUtil *fm_synth_util,
+				  guint frame_count)
+{
+  if(fm_synth_util == NULL){
+    return;
+  }
+
+  fm_synth_util->frame_count = frame_count;
+}
+
+/**
+ * ags_fm_synth_util_get_offset:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Get offset of @fm_synth_util.
+ * 
+ * Returns: the offset
+ * 
+ * Since: 3.9.3
+ */
+guint
+ags_fm_synth_util_get_offset(AgsFMSynthUtil *fm_synth_util)
+{
+  if(fm_synth_util == NULL){
+    return(0);
+  }
+
+  return(fm_synth_util->offset);
+}
+
+/**
+ * ags_fm_synth_util_set_offset:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * @offset: the offset
+ *
+ * Set @offset of @fm_synth_util.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_set_offset(AgsFMSynthUtil *fm_synth_util,
+			     guint offset)
+{
+  if(fm_synth_util == NULL){
+    return;
+  }
+
+  fm_synth_util->offset = offset;
 }
 
 /**
