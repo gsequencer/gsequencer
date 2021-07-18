@@ -5,6 +5,8 @@ ags (3.9.3)
 	* added ags_envelope_util_test.c
 	* added ags_peak_util_test.c
 	* added ags_resample_util_test.c
+	* deprecated functions in ags_synth_util.h
+	* refactored ags_synth_util.c
 
 ags (3.9.2)
 
