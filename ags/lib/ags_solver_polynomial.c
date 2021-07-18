@@ -1706,23 +1706,335 @@ ags_solver_polynomial_divide(AgsSolverPolynomial *polynomial_a,
 			     GError **error)
 {
   AgsSolverPolynomial *solver_polynomial;
-  
-  gchar **symbol_a, **symbol_b;
-  gchar **exponent_a, **exponent_b;
 
-  double _Complex coefficient_a, coefficient_b;
+  GMatchInfo *constant_exponent_match_info;
+
+  gchar **symbol_a, **symbol_b;
+  gchar **symbol;
+  gchar **exponent_a, **exponent_b;
+  gchar **exponent;
+  
+  double _Complex coefficient_value_a, coefficient_value_b;
+  double _Complex exponent_value_a, exponent_value_b;
+  guint a_length, b_length;
+  guint i0, i1;
+  gboolean is_exponent_constant;
+
+  GError *error;
 
   GRecMutex *polynomial_a_mutex;
   GRecMutex *polynomial_b_mutex;
 
+  static GRegex *constant_exponent_regex = NULL;
+
+  /* groups: #1 constants, #2 numeric with optional fraction */
+  static const gchar *constant_exponent_pattern = "^([ℯ𝜋𝑖∞])|([0-9]+(\\.[0-9]+)?)(\\+([ℯ𝜋𝑖∞])|([0-9]+(\\.[0-9]+)?))?";
+  
   if(!AGS_IS_SOLVER_POLYNOMIAL(polynomial_a) ||
      !AGS_IS_SOLVER_POLYNOMIAL(polynomial_b)){
     return(NULL);
   }
 
-  //TODO:JK: implement me
+  /* compile regex */
+  g_mutex_lock(&regex_mutex);
 
-  return(NULL);
+  if(constant_exponent_regex == NULL){
+    error = NULL;
+    constant_exponent_regex = g_regex_new(constant_exponent_pattern,
+					  (G_REGEX_EXTENDED),
+					  0,
+					  &error);
+    
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  g_mutex_unlock(&regex_mutex);
+
+  symbol_a = NULL;
+  symbol_b = NULL;
+
+  exponent_a = NULL;
+  exponent_b = NULL;
+    
+  solver_polynomial = ags_solver_polynomial_new();
+
+  polynomial_a_mutex = AGS_SOLVER_POLYNOMIAL_GET_OBJ_MUTEX(polynomial_a);
+  polynomial_b_mutex = AGS_SOLVER_POLYNOMIAL_GET_OBJ_MUTEX(polynomial_b);
+
+  /* polynomial a */
+  g_object_get(polynomial_a,
+	       "symbol", &symbol_a,
+	       "exponent", &exponent_a,
+	       NULL);
+
+  g_rec_mutex_lock(polynomial_a_mutex);
+    
+  coefficient_value_a = ags_complex_get(polynomial_a->coefficient_value);
+
+  g_rec_mutex_unlock(polynomial_a_mutex);
+
+  /* polynomial b */
+  g_object_get(polynomial_b,
+	       "symbol", &symbol_b,
+	       "exponent", &exponent_b,
+	       NULL);
+
+  g_rec_mutex_lock(polynomial_b_mutex);
+    
+  coefficient_value_b = ags_complex_get(polynomial_b->coefficient_value);
+
+  g_rec_mutex_unlock(polynomial_b_mutex);
+
+  /* check exponent */
+  a_length = g_strv_length(symbol_a);
+  b_length = g_strv_length(symbol_b);
+
+  is_exponent_constant = TRUE;
+
+  for(i0 = 0; is_exponent_constant && i0 < a_length; i0++){
+    if(exponent_a[i0] != NULL){
+      g_regex_match(constant_exponent_regex, exponent_a[i0], 0, &constant_exponent_match_info);
+
+      if(g_match_info_matches(constant_exponent_match_info)){
+	gint start_pos, end_pos;
+
+	g_match_info_fetch_pos(constant_exponent_match_info,
+			       0,
+			       &start_pos, &end_pos);
+
+	if(end_pos < strlen(exponent_a[i0])){
+	  is_exponent_constant = FALSE;
+	}
+      }else{
+	is_exponent_constant = FALSE;
+      }
+      
+      g_match_info_free(constant_exponent_match_info);
+    }    
+  }
+
+  for(i0 = 0; is_exponent_constant && i0 < b_length; i0++){
+    if(exponent_b[i0] != NULL){
+      g_regex_match(constant_exponent_regex, exponent_b[i0], 0, &constant_exponent_match_info);
+
+      if(g_match_info_matches(constant_exponent_match_info)){
+	gint start_pos, end_pos;
+
+	g_match_info_fetch_pos(constant_exponent_match_info,
+			       0,
+			       &start_pos, &end_pos);
+
+	if(end_pos < strlen(exponent_b[i0])){
+	  is_exponent_constant = FALSE;
+	}
+      }else{
+	is_exponent_constant = FALSE;
+      }
+      
+      g_match_info_free(constant_exponent_match_info);
+    }    
+  }
+  
+  if(!is_exponent_constant){
+    g_strfreev(symbol_a);
+    g_strfreev(exponent_a);
+
+    g_strfreev(symbol_b);
+    g_strfreev(exponent_b);
+    
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_SOLVER_POLYNOMIAL_ERROR,
+		  AGS_SOLVER_POLYNOMIAL_ERROR_EXPONENT_NOT_CONSTANT,
+		  "exponent isn't constant");
+    }
+    
+    return(NULL);
+  }
+  
+  /* multiply */
+  ags_complex_set(polynomial->coefficient_value,
+		  coefficient_value_a * coefficient_value_b);
+
+  symbol = NULL;
+  exponent = NULL;
+  
+  for(i0 = 0; i0 < a_length || i0 < b_length; i0++){
+    gboolean symbol_matched;
+
+    symbol_matched = FALSE;
+
+    if(i0 < a_length){
+      for(i1 = 0; i1 < b_length; i1++){
+	if(!g_strcmp0(symbol_a[i0], symbol_b[i1])){
+	  double _Complex z;
+	  
+	  /* exponent value a */
+	  g_rec_mutex_lock(polynomial_a_mutex);
+    
+	  exponent_value_a = ags_complex_get(&(polynomial_a->exponent_value[i0]));
+
+	  g_rec_mutex_unlock(polynomial_a_mutex);
+
+	  /* exponent value b */
+	  g_rec_mutex_lock(polynomial_b_mutex);
+    
+	  exponent_value_b = ags_complex_get(&(polynomial_b->exponent_value[i1]));
+
+	  g_rec_mutex_unlock(polynomial_b_mutex);
+
+	  /* multiply */
+	  if(solver_polynomial->symbol == NULL){
+	    solver_polynomial->symbol = (gchar **) g_malloc(2 * sizeof(gchar *));
+	  }else{
+	    solver_polynomial->symbol = (gchar **) g_realloc(solver_polynomial->symbol,
+							     (i0 + 2) * sizeof(gchar *));
+	  }
+
+	  solver_polynomial->symbol[i0] = g_strdup(symbol_a[i0]);
+	  solver_polynomial->symbol[i0 + 1] = NULL;
+	  
+	  if(solver_polynomial->exponent_value == NULL){
+	    solver_polynomial->exponent_value = (AgsComplex *) g_new(AgsComplex,
+								     1);
+	  }else{
+	    solver_polynomial->exponent_value = (AgsComplex *) g_renew(AgsComplex,
+								       solver_polynomial->exponent_value,
+								       i0 + 1);
+	  }
+
+	  z = exponent_value_a - exponent_value_b;
+	  ags_complex_set(&(solver_polynomial->exponent_value[i0]),
+			  z);
+	  
+	  if(solver_polynomial->exponent == NULL){
+	    solver_polynomial->exponent = (gchar **) g_malloc(2 * sizeof(gchar *));
+	  }else{
+	    solver_polynomial->exponent = (gchar **) g_realloc(solver_polynomial->exponent,
+							     (i0 + 2) * sizeof(gchar *));
+	  }
+
+	  if(cimag(z) != 0.0){
+	    solver_polynomial->exponent[i0] = g_strdup_printf("%f+𝑖%f", creal(z), cimag(z));
+	  }else{
+	    solver_polynomial->exponent[i0] = g_strdup_printf("%f", creal(z));
+	  }
+	  
+	  solver_polynomial->exponent[i0 + 1] = NULL;
+
+	  symbol_matched = TRUE;
+
+	  break;
+	}
+      }
+    }
+    
+    if(!symbol_matched){
+      if(i0 < a_length){
+	if(solver_polynomial->exponent_value == NULL){
+	  solver_polynomial->exponent_value = (AgsComplex *) g_new(AgsComplex,
+								   1);
+	}else{
+	  solver_polynomial->exponent_value = (AgsComplex *) g_renew(AgsComplex,
+								     solver_polynomial->exponent_value,
+								     i0 + 1);
+	}
+
+	/* exponent value a */
+	g_rec_mutex_lock(polynomial_a_mutex);
+    
+	exponent_value_a = ags_complex_get(&(polynomial_a->exponent_value[i0]));
+
+	g_rec_mutex_unlock(polynomial_a_mutex);
+
+	/* multiply */
+	if(solver_polynomial->symbol == NULL){
+	  solver_polynomial->symbol = (gchar **) g_malloc(2 * sizeof(gchar *));
+	}else{
+	  solver_polynomial->symbol = (gchar **) g_realloc(solver_polynomial->symbol,
+							   (i0 + 2) * sizeof(gchar *));
+	}
+
+	solver_polynomial->symbol[i0] = g_strdup(symbol_a[i0]);
+	solver_polynomial->symbol[i0 + 1] = NULL;
+	
+	ags_complex_set(&(solver_polynomial->exponent_value[i0]),
+			exponent_value_a);
+
+	if(solver_polynomial->exponent == NULL){
+	  solver_polynomial->exponent = (gchar **) g_malloc(2 * sizeof(gchar *));
+	}else{
+	  solver_polynomial->exponent = (gchar **) g_realloc(solver_polynomial->exponent,
+							     (i0 + 2) * sizeof(gchar *));
+	}
+
+	if(cimag(exponent_value_a) != 0.0){
+	  solver_polynomial->exponent[i0] = g_strdup_printf("%f+𝑖%f", creal(exponent_value_a), cimag(exponent_value_a));
+	}else{
+	  solver_polynomial->exponent[i0] = g_strdup_printf("%f", creal(exponent_value_a));
+	}
+	
+	solver_polynomial->exponent[i0 + 1] = NULL;
+      }else{
+	if(solver_polynomial->exponent_value == NULL){
+	  solver_polynomial->exponent_value = (AgsComplex *) g_new(AgsComplex,
+								   1);
+	}else{
+	  solver_polynomial->exponent_value = (AgsComplex *) g_renew(AgsComplex,
+								     solver_polynomial->exponent_value,
+								     i0 + 1);
+	}
+
+	/* exponent value b */
+	g_rec_mutex_lock(polynomial_b_mutex);
+    
+	exponent_value_b = ags_complex_get(&(polynomial_b->exponent_value[i0]));
+
+	g_rec_mutex_unlock(polynomial_b_mutex);
+
+	/* multiply */
+	if(solver_polynomial->symbol == NULL){
+	  solver_polynomial->symbol = (gchar **) g_malloc(2 * sizeof(gchar *));
+	}else{
+	  solver_polynomial->symbol = (gchar **) g_realloc(solver_polynomial->symbol,
+							   (i0 + 2) * sizeof(gchar *));
+	}
+
+	solver_polynomial->symbol[i0] = g_strdup(symbol_b[i0]);
+	solver_polynomial->symbol[i0 + 1] = NULL;
+
+	ags_complex_set(&(solver_polynomial->exponent_value[i0]),
+			-1.0 * exponent_value_b);
+
+	if(solver_polynomial->exponent == NULL){
+	  solver_polynomial->exponent = (gchar **) g_malloc(2 * sizeof(gchar *));
+	}else{
+	  solver_polynomial->exponent = (gchar **) g_realloc(solver_polynomial->exponent,
+							     (i0 + 2) * sizeof(gchar *));
+	}
+
+	if(cimag(exponent_value_b) != 0.0){
+	  solver_polynomial->exponent[i0] = g_strdup_printf("%f+𝑖%f", creal(exponent_value_b), cimag(exponent_value_b));
+	}else{
+	  solver_polynomial->exponent[i0] = g_strdup_printf("%f", creal(exponent_value_b));
+	}
+	
+	solver_polynomial->exponent[i0 + 1] = NULL;
+      }
+    }
+  }
+
+  g_strfreev(symbol_a);
+  g_strfreev(exponent_a);
+
+  g_strfreev(symbol_b);
+  g_strfreev(exponent_b);
+  
+  return(solver_polynomial);
 }
 
 /**
