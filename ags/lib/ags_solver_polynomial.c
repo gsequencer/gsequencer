@@ -197,11 +197,10 @@ ags_solver_polynomial_class_init(AgsSolverPolynomialClass *solver_polynomial)
    * 
    * Since: 3.2.0
    */
-  param_spec = g_param_spec_boxed("exponent-value",
-				  i18n_pspec("exponent value"),
-				  i18n_pspec("The exponent value"),
-				  AGS_TYPE_COMPLEX,
-				  G_PARAM_READABLE);
+  param_spec = g_param_spec_pointer("exponent-value",
+				    i18n_pspec("exponent value"),
+				    i18n_pspec("The exponent value"),
+				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_EXPONENT_VALUE,
 				  param_spec);
@@ -429,7 +428,7 @@ ags_solver_polynomial_get_property(GObject *gobject,
   {
     g_rec_mutex_lock(solver_polynomial_mutex);
 
-    g_value_set_boxed(value, &(solver_polynomial->coefficient_value));
+    g_value_set_boxed(value, solver_polynomial->coefficient_value);
 
     g_rec_mutex_unlock(solver_polynomial_mutex);
   }
@@ -438,7 +437,7 @@ ags_solver_polynomial_get_property(GObject *gobject,
   {
     g_rec_mutex_lock(solver_polynomial_mutex);
 
-    g_value_set_boxed(value, &(solver_polynomial->exponent_value));
+    g_value_set_pointer(value, solver_polynomial->exponent_value);
 
     g_rec_mutex_unlock(solver_polynomial_mutex);
   }
@@ -464,6 +463,240 @@ ags_solver_polynomial_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_solver_polynomial_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_solver_polynomial_set_polynomial:
+ * @solver_polynomial: the #AgsSolverPolynomial
+ * @polynomial: the polynomial
+ * 
+ * Set @polynomial of @solver_polynomial.
+ * 
+ * Since: 3.9.3
+ */
+void
+ags_solver_polynomial_set_polynomial(AgsSolverPolynomial *solver_polynomial,
+				     gchar *polynomial)
+{
+  if(!AGS_IS_SOLVER_POLYNOMIAL(solver_polynomial)){
+    return;
+  }
+
+  g_object_set(solver_polynomial,
+	       "polynomial", polynomial,
+	       NULL);
+}
+
+/**
+ * ags_solver_polynomial_get_polynomial:
+ * @solver_polynomial: the #AgsSolverPolynomial
+ * 
+ * Get polynomial of @solver_polynomial.
+ * 
+ * Returns: the polynomial
+ * 
+ * Since: 3.9.3
+ */
+gchar*
+ags_solver_polynomial_get_polynomial(AgsSolverPolynomial *solver_polynomial)
+{
+  gchar *polynomial;
+  
+  if(!AGS_IS_SOLVER_POLYNOMIAL(solver_polynomial)){
+    return(NULL);
+  }
+
+  polynomial = NULL;
+  
+  g_object_get(solver_polynomial,
+	       "polynomial", &polynomial,
+	       NULL);
+
+  return(polynomial);
+}
+
+/**
+ * ags_solver_polynomial_set_coefficient:
+ * @solver_polynomial: the #AgsSolverPolynomial
+ * @coefficient: the coefficient
+ * 
+ * Set @coefficient of @solver_polynomial.
+ * 
+ * Since: 3.9.3
+ */
+void
+ags_solver_polynomial_set_coefficient(AgsSolverPolynomial *solver_polynomial,
+				      gchar *coefficient)
+{
+  if(!AGS_IS_SOLVER_POLYNOMIAL(solver_polynomial)){
+    return;
+  }
+
+  g_object_set(solver_polynomial,
+	       "coefficient", coefficient,
+	       NULL);
+}
+
+/**
+ * ags_solver_polynomial_get_coefficient:
+ * @solver_polynomial: the #AgsSolverPolynomial
+ * 
+ * Get coefficient of @solver_polynomial.
+ * 
+ * Returns: the coefficient
+ * 
+ * Since: 3.9.3
+ */
+gchar*
+ags_solver_polynomial_get_coefficient(AgsSolverPolynomial *solver_polynomial)
+{
+  gchar *coefficient;
+  
+  if(!AGS_IS_SOLVER_POLYNOMIAL(solver_polynomial)){
+    return(NULL);
+  }
+
+  coefficient = NULL;
+  
+  g_object_get(solver_polynomial,
+	       "coefficient", &coefficient,
+	       NULL);
+
+  return(coefficient);
+}
+
+/**
+ * ags_solver_polynomial_get_symbol:
+ * @solver_polynomial: the #AgsSolverPolynomial
+ * 
+ * Get symbol of @solver_polynomial.
+ * 
+ * Returns: the symbol
+ * 
+ * Since: 3.9.3
+ */
+gchar**
+ags_solver_polynomial_get_symbol(AgsSolverPolynomial *solver_polynomial)
+{
+  gchar **symbol;
+  
+  if(!AGS_IS_SOLVER_POLYNOMIAL(solver_polynomial)){
+    return(NULL);
+  }
+
+  symbol = NULL;
+  
+  g_object_get(solver_polynomial,
+	       "symbol", &symbol,
+	       NULL);
+
+  return(symbol);
+}
+
+/**
+ * ags_solver_polynomial_get_exponent:
+ * @solver_polynomial: the #AgsSolverPolynomial
+ * 
+ * Get exponent of @solver_polynomial.
+ * 
+ * Returns: the exponent
+ * 
+ * Since: 3.9.3
+ */
+gchar**
+ags_solver_polynomial_get_exponent(AgsSolverPolynomial *solver_polynomial)
+{
+  gchar **exponent;
+  
+  if(!AGS_IS_SOLVER_POLYNOMIAL(solver_polynomial)){
+    return(NULL);
+  }
+
+  exponent = NULL;
+  
+  g_object_get(solver_polynomial,
+	       "exponent", &exponent,
+	       NULL);
+
+  return(exponent);
+}
+
+/**
+ * ags_solver_polynomial_set_coefficient_value:
+ * @solver_polynomial: the #AgsSolverPolynomial
+ * @coefficient_value: the coefficient value
+ * 
+ * Set @coefficient_value of @solver_polynomial.
+ * 
+ * Since: 3.9.3
+ */
+void
+ags_solver_polynomial_set_coefficient_value(AgsSolverPolynomial *solver_polynomial,
+					    AgsComplex *coefficient_value)
+{
+  if(!AGS_IS_SOLVER_POLYNOMIAL(solver_polynomial)){
+    return;
+  }
+
+  g_object_set(solver_polynomial,
+	       "coefficient-value", coefficient_value,
+	       NULL);
+}
+
+/**
+ * ags_solver_polynomial_get_coefficient_value:
+ * @solver_polynomial: the #AgsSolverPolynomial
+ * 
+ * Get coefficient value of @solver_polynomial.
+ * 
+ * Returns: the coefficient value
+ * 
+ * Since: 3.9.3
+ */
+AgsComplex*
+ags_solver_polynomial_get_coefficient_value(AgsSolverPolynomial *solver_polynomial)
+{
+  AgsComplex *coefficient_value;
+  
+  if(!AGS_IS_SOLVER_POLYNOMIAL(solver_polynomial)){
+    return(NULL);
+  }
+
+  coefficient_value = NULL;
+  
+  g_object_get(solver_polynomial,
+	       "coefficient-value", &coefficient_value,
+	       NULL);
+
+  return(coefficient_value);
+}
+
+/**
+ * ags_solver_polynomial_get_exponent_value:
+ * @solver_polynomial: the #AgsSolverPolynomial
+ * 
+ * Get exponent value of @solver_polynomial.
+ * 
+ * Returns: the exponent value
+ * 
+ * Since: 3.9.3
+ */
+AgsComplex*
+ags_solver_polynomial_get_exponent_value(AgsSolverPolynomial *solver_polynomial)
+{
+  AgsComplex *exponent_value;
+  
+  if(!AGS_IS_SOLVER_POLYNOMIAL(solver_polynomial)){
+    return(NULL);
+  }
+
+  exponent_value = NULL;
+  
+  g_object_get(solver_polynomial,
+	       "exponent-value", &exponent_value,
+	       NULL);
+
+  return(exponent_value);
 }
 
 /**

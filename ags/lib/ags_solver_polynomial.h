@@ -75,6 +75,23 @@ GType ags_solver_polynomial_get_type(void);
 
 GQuark ags_solver_polynomial_error_quark();
 
+void ags_solver_polynomial_set_polynomial(AgsSolverPolynomial *solver_polynomial,
+					  gchar *polynomial);
+gchar* ags_solver_polynomial_get_polynomial(AgsSolverPolynomial *solver_polynomial);
+
+void ags_solver_polynomial_set_coefficient(AgsSolverPolynomial *solver_polynomial,
+					   gchar *coefficient);
+gchar* ags_solver_polynomial_get_coefficient(AgsSolverPolynomial *solver_polynomial);
+
+gchar** ags_solver_polynomial_get_symbol(AgsSolverPolynomial *solver_polynomial);
+gchar** ags_solver_polynomial_get_exponent(AgsSolverPolynomial *solver_polynomial);
+
+void ags_solver_polynomial_set_coefficient_value(AgsSolverPolynomial *solver_polynomial,
+						 AgsComplex *coefficient_value);
+AgsComplex* ags_solver_polynomial_get_coefficient_value(AgsSolverPolynomial *solver_polynomial);
+
+AgsComplex* ags_solver_polynomial_get_exponent_value(AgsSolverPolynomial *solver_polynomial);
+
 void ags_solver_polynomial_update(AgsSolverPolynomial *solver_polynomial);
 void ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
 				 gchar *polynomial);

@@ -782,7 +782,7 @@ ags_function_push_equation(AgsFunction *function,
       num_bytes = strlen(equation);
     num_bytes += 5;
     
-    function->equation[i] = (gchar *) malloc(sizeof(gchar));
+    function->equation[i] = (gchar *) g_malloc(num_bytes * sizeof(gchar));
     function->equation[i][num_bytes - 1] = '\0';
 
     offset = function->equation[i];

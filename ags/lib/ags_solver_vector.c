@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,6 +47,8 @@ void ags_solver_vector_finalize(GObject *gobject);
 
 enum{
   PROP_0,
+  PROP_SOURCE_POLYNOMIAL,
+  PROP_POLYNOMIAL_COUNT,
 };
 
 static gpointer ags_solver_vector_parent_class = NULL;
@@ -99,6 +101,39 @@ ags_solver_vector_class_init(AgsSolverVectorClass *solver_vector)
   gobject->finalize = ags_solver_vector_finalize;
 
   /* properties */
+  /**
+   * AgsSolverVector:source-polynomial:
+   *
+   * The assigned source-polynomial.
+   * 
+   * Since: 3.9.3
+   */
+  param_spec = g_param_spec_string("source-polynomial",
+				   i18n_pspec("source polynomial of solver vector"),
+				   i18n_pspec("The source polynomial this solver vector is derived from"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOURCE_POLYNOMIAL,
+				  param_spec);
+
+  /**
+   * AgsSolverVector:polynomial-count:
+   *
+   * The polynomial count of the term table.
+   * 
+   * Since: 3.9.3
+   */
+  param_spec = g_param_spec_uint("polynomial-count",
+				 i18n_pspec("polynomial count of solver vector"),
+				 i18n_pspec("The polynomial count this solver vector has in polynomial column"),
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_POLYNOMIAL_COUNT,
+				  param_spec);
 }
 
 void
@@ -124,9 +159,37 @@ ags_solver_vector_set_property(GObject *gobject,
 {
   AgsSolverVector *solver_vector;
 
+  GRecMutex *solver_vector_mutex;
+
   solver_vector = AGS_SOLVER_VECTOR(gobject);
 
+  /* solver vector mutex */
+  solver_vector_mutex = AGS_SOLVER_VECTOR_GET_OBJ_MUTEX(solver_vector);
+
   switch(prop_id){
+  case PROP_SOURCE_POLYNOMIAL:
+  {
+    gchar *source_polynomial;
+
+    source_polynomial = (gchar *) g_value_get_string(value);
+
+    g_rec_mutex_lock(solver_vector_mutex);
+
+    if(solver_vector->source_polynomial == source_polynomial){
+      g_rec_mutex_unlock(solver_vector_mutex);
+
+      return;
+    }
+      
+    if(solver_vector->source_polynomial != NULL){
+      g_free(solver_vector->source_polynomial);
+    }
+
+    solver_vector->source_polynomial = g_strdup(source_polynomial);
+
+    g_rec_mutex_unlock(solver_vector_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -141,9 +204,32 @@ ags_solver_vector_get_property(GObject *gobject,
 {
   AgsSolverVector *solver_vector;
 
+  GRecMutex *solver_vector_mutex;
+
   solver_vector = AGS_SOLVER_VECTOR(gobject);
 
+  /* solver vector mutex */
+  solver_vector_mutex = AGS_SOLVER_VECTOR_GET_OBJ_MUTEX(solver_vector);
+
   switch(prop_id){
+  case PROP_SOURCE_POLYNOMIAL:
+  {
+    g_rec_mutex_lock(solver_vector_mutex);
+
+    g_value_set_string(value, solver_vector->source_polynomial);
+
+    g_rec_mutex_unlock(solver_vector_mutex);
+  }
+  break;
+  case PROP_POLYNOMIAL_COUNT:
+  {
+    g_rec_mutex_lock(solver_vector_mutex);
+
+    g_value_set_uint(value, solver_vector->polynomial_count);
+
+    g_rec_mutex_unlock(solver_vector_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -159,6 +245,84 @@ ags_solver_vector_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_solver_vector_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_solver_vector_get_source_polynomial:
+ * @solver_vector: the #AgsSolverVector
+ * 
+ * Get source polynomial of @solver_vector.
+ * 
+ * Returns: the source polynomial
+ * 
+ * Since: 3.9.3
+ */
+gchar*
+ags_solver_vector_get_source_polynomial(AgsSolverVector *solver_vector)
+{
+  gchar *source_polynomial;
+  
+  if(!AGS_IS_SOLVER_VECTOR(solver_vector)){
+    return(NULL);
+  }
+
+  source_polynomial = NULL;
+  
+  g_object_get(solver_vector,
+	       "source-polynomial", &source_polynomial,
+	       NULL);
+
+  return(source_polynomial);
+}
+
+/**
+ * ags_solver_vector_set_source_polynomial:
+ * @solver_vector: the #AgsSolverVector
+ * @source_polynomial: the source polynomial
+ * 
+ * Set @source_polynomial of @solver_vector.
+ * 
+ * Since: 3.9.3
+ */
+void
+ags_solver_vector_set_source_polynomial(AgsSolverVector *solver_vector,
+				      gchar *source_polynomial)
+{
+  if(!AGS_IS_SOLVER_VECTOR(solver_vector)){
+    return;
+  }
+
+  g_object_set(solver_vector,
+	       "source-polynomial", source_polynomial,
+	       NULL);
+}
+
+/**
+ * ags_solver_vector_get_polynomial_count:
+ * @solver_vector: the #AgsSolverVector
+ * 
+ * Get polynomial count of @solver_vector.
+ * 
+ * Returns: the polynomial count
+ * 
+ * Since: 3.9.3
+ */
+guint
+ags_solver_vector_get_polynomial_count(AgsSolverVector *solver_vector)
+{
+  guint polynomial_count;
+  
+  if(!AGS_IS_SOLVER_VECTOR(solver_vector)){
+    return(0);
+  }
+
+  polynomial_count = 0;
+
+  g_object_get(solver_vector,
+	       "polynomial-count", &polynomial_count,
+	       NULL);
+
+  return(polynomial_count);
 }
 
 /**

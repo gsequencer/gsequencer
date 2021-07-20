@@ -1,7 +1,10 @@
 ags (3.9.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented AgsSolverPolynomial
+	* implemented AgsSolverMatrix missing getter/setter and parse
+	* implemented AgsSolverVector missing getter/setter
+	* implemented AgsSolverPolynomial missing getter/setter
+	* implemented AgsSolverPolynomial missing multiply, divide, raise power and extract root
 	* added ags_volume_util_test.c
 	* added ags_envelope_util_test.c
 	* added ags_peak_util_test.c
