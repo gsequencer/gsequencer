@@ -756,6 +756,452 @@ ags_fm_synth_util_set_offset(AgsFMSynthUtil *fm_synth_util,
 }
 
 /**
+ * ags_fm_synth_util_compute_sin_s8:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sine synth of signed 8 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sin_s8(AgsFMSynthUtil *fm_synth_util)
+{
+  gint8 *source, *tmp_source;
+
+  guint samplerate;
+  gdouble frequency;
+  gdouble phase;
+  gdouble lfo_frequency;
+  gdouble lfo_depth;
+  gdouble tuning;
+  guint offset;
+  gdouble volume;
+  guint i, i_stop;
+
+  static const gdouble scale = 127.0;
+  
+  if(fm_synth_util == NULL ||
+     fm_synth_util->source == NULL){
+    return;
+  }
+
+  source = fm_synth_util->source;
+
+  samplerate = fm_synth_util->samplerate;
+
+  frequency = fm_synth_util->frequency;
+  phase = fm_synth_util->phase;
+  volume = scale * fm_synth_util->volume;
+
+  lfo_frequency = fm_synth_util->lfo_frequency;
+  lfo_depth = fm_synth_util->lfo_depth;
+  tuning = fm_synth_util->tuning;
+  
+  offset = fm_synth_util->offset;
+  
+  i = 0;
+  
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  i_stop = fm_synth_util->buffer_length - (fm_synth_util->buffer_length % 8);
+
+  if(fm_synth_util->offset + i_stop > fm_synth_util->frame_count){
+    i_stop = (fm_synth_util->frame_count - fm_synth_util->offset) - ((fm_synth_util->frame_count - fm_synth_util->offset) % 8);
+  }
+  
+  for(; i < i_stop;){
+    ags_v8double v_buffer, v_sine;
+
+    tmp_source = source;
+    
+    v_buffer = (ags_v8double) {
+      (gdouble) *(tmp_source),
+      (gdouble) *(tmp_source += fm_synth_util->source_stride),
+      (gdouble) *(tmp_source += fm_synth_util->source_stride),
+      (gdouble) *(tmp_source += fm_synth_util->source_stride),
+      (gdouble) *(tmp_source += fm_synth_util->source_stride),
+      (gdouble) *(tmp_source += fm_synth_util->source_stride),
+      (gdouble) *(tmp_source += fm_synth_util->source_stride),
+      (gdouble) *(tmp_source += fm_synth_util->source_stride)
+    };
+    
+    switch(fm_synth_util->lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+    {
+      v_sine = (ags_v8double) {
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate)
+      };
+      
+      i++;
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+    {
+      v_sine = (ags_v8double) {
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate,
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate
+      };
+    
+      i++;
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+    { 
+      v_sine = (ags_v8double) {
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)
+      };
+    
+      i++;
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+    {   
+      v_sine = (ags_v8double) {
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)
+      };
+    
+      i++;
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+    {
+      v_sine = (ags_v8double) {
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)
+      };
+    
+      i++;
+    }
+    break;
+    default:
+      v_sine = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    }
+
+    v_sine *= volume;
+
+    v_buffer += v_sine;
+
+    *(source) = (gint8) v_buffer[0];
+    *(source += fm_synth_util->source_stride) = (gint8) v_buffer[1];
+    *(source += fm_synth_util->source_stride) = (gint8) v_buffer[2];
+    *(source += fm_synth_util->source_stride) = (gint8) v_buffer[3];
+    *(source += fm_synth_util->source_stride) = (gint8) v_buffer[4];
+    *(source += fm_synth_util->source_stride) = (gint8) v_buffer[5];
+    *(source += fm_synth_util->source_stride) = (gint8) v_buffer[6];
+    *(source += fm_synth_util->source_stride) = (gint8) v_buffer[7];
+
+    source += fm_synth_util->source_stride;    
+  }
+#elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+  i_stop = fm_synth_util->buffer_length - (fm_synth_util->buffer_length % 8);
+
+  if(fm_synth_util->offset + i_stop > fm_synth_util->frame_count){
+    i_stop = (fm_synth_util->frame_count - fm_synth_util->offset) - ((fm_synth_util->frame_count - fm_synth_util->offset) % 8);
+  }
+  
+  for(; i < i_stop;){
+    double ret_v_buffer[8], tmp_ret_v_buffer[8];
+
+    tmp_source = source;
+
+    double v_buffer[] = {
+      (double) *(tmp_source),
+      (double) *(tmp_source += fm_synth_util->source_stride),
+      (double) *(tmp_source += fm_synth_util->source_stride),
+      (double) *(tmp_source += fm_synth_util->source_stride),
+      (double) *(tmp_source += fm_synth_util->source_stride),
+      (double) *(tmp_source += fm_synth_util->source_stride),
+      (double) *(tmp_source += fm_synth_util->source_stride),
+      (double) *(tmp_source += fm_synth_util->source_stride)};
+
+    double v_sine[8];
+
+    switch(fm_synth_util->lfo_oscillator_mode){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+    {
+      v_sine = (double *) {
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_frequency / samplerate) * lfo_depth)) / (gdouble) samplerate)
+      };
+    
+      i++;
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+    {
+      v_sine = (double *) {
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((int) ceil(i) % (int) ceil(samplerate / lfo_frequency)) * 2.0 * lfo_frequency / samplerate) - 1.0) * lfo_depth)) / (gdouble) samplerate)
+      };
+    
+      i++;
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+    { 
+      v_sine = (double *) {
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + (((i) * lfo_frequency / samplerate * 2.0) - ((int) ((double) ((int) ((i) * lfo_frequency / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth)) / (gdouble) samplerate)
+      };
+    
+      i++;
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+    {   
+      v_sine = (double *) {
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)
+      };
+    
+      i++;
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+    {
+      v_sine = (double *) {
+	sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate),
+	sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate)
+      };
+    
+      i++;
+    }
+    break;
+    default:
+      v_sine = (double *) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    };
+
+    double v_volume[] = {(double) volume};
+
+    i++;
+    
+    vDSP_vmulD(v_sine, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
+    vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
+    
+    *(source) = (gint8) ret_v_buffer[0];
+    *(source += fm_synth_util->source_stride) = (gint8) ret_v_buffer[1];
+    *(source += fm_synth_util->source_stride) = (gint8) ret_v_buffer[2];
+    *(source += fm_synth_util->source_stride) = (gint8) ret_v_buffer[3];
+    *(source += fm_synth_util->source_stride) = (gint8) ret_v_buffer[4];
+    *(source += fm_synth_util->source_stride) = (gint8) ret_v_buffer[5];
+    *(source += fm_synth_util->source_stride) = (gint8) ret_v_buffer[6];
+    *(source += fm_synth_util->source_stride) = (gint8) ret_v_buffer[7];
+
+    source += fm_synth_util->source_stride;
+  }
+#else
+  i_stop = fm_synth_util->buffer_length - (fm_synth_util->buffer_length % 8);
+
+  if(fm_synth_util->offset + i_stop > fm_synth_util->frame_count){
+    i_stop = (fm_synth_util->frame_count - fm_synth_util->offset) - ((fm_synth_util->frame_count - fm_synth_util->offset) % 8);
+  }
+  
+  for(; i < i_stop;){
+    tmp_source = source;
+
+    (*source) = (gint8) ((gint16) (tmp_source)[0] + (gint16) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) * volume));
+    *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) * volume));
+    *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) * volume));
+    *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) * volume));
+    *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) * volume));
+    *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) * volume));
+    *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) * volume));
+    *(source += fm_synth_util->source_stride) = (gint8) ((gint16) (tmp_source += fm_synth_util->source_stride)[0] + (gint16) (sin((gdouble) ((offset + (i++)) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) * volume));
+
+    source += fm_synth_util->source_stride;
+    i++;
+  }
+#endif
+
+  for(; i < fm_synth_util->buffer_length && fm_synth_util->offset + i < fm_synth_util->frame_count;){
+    source[0] = (gint8) ((gint16) source[0] + (gint16) (sin((gdouble) ((offset + i) + phase) * 2.0 * M_PI * (frequency * exp2(tuning / 1200.0 + ((sin((gdouble) (i) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)) ? 1.0: -1.0) * lfo_depth)) / (gdouble) samplerate) * volume));
+
+    source += fm_synth_util->source_stride;
+    i++;
+  }
+}
+
+/**
+ * ags_fm_synth_util_compute_sin_s16:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sine synth of signed 16 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sin_s16(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_sin_s24:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sine synth of signed 24 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sin_s24(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_sin_s32:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sine synth of signed 32 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sin_s32(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_sin_s64:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sine synth of signed 64 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sin_s64(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_sin_float:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sine synth of float data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sin_float(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_sin_double:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sine synth of double data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sin_double(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_sin_complex:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sine synth of complex data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sin_complex(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_sin:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sine synth.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sin(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
  * ags_fm_synth_util_sin_s8:
  * @buffer: the audio buffer
  * @freq: the frequency of the sin wave
@@ -1355,6 +1801,260 @@ ags_fm_synth_util_sin_complex(AgsComplex *buffer,
   }
   break;
   }
+}
+
+/**
+ * ags_fm_synth_util_sin:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sin wave
+ * @phase: the phase of the sin wave
+ * @volume: the volume of the sin wave
+ * @samplerate: the samplerate
+ * @audio_buffer_util_format: the audio data format
+ * @offset: start frame
+ * @n_frames: generate n frames
+ * @lfo_osc_mode: the LFO's oscillator mode
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
+ *
+ * Generate frequency modulate sin wave.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_fm_synth_util_sin(void *buffer,
+		      gdouble freq, gdouble phase, gdouble volume,
+		      guint samplerate, guint audio_buffer_util_format,
+		      guint offset, guint n_frames,
+		      guint lfo_osc_mode,
+		      gdouble lfo_freq, gdouble lfo_depth,
+		      gdouble tuning)
+{
+  if(buffer == NULL){
+    return;
+  }
+
+  switch(audio_buffer_util_format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+  {
+    ags_fm_synth_util_sin_s8((gint8 *) buffer,
+			     freq, phase, volume,
+			     samplerate,
+			     offset, n_frames,
+			     lfo_osc_mode,
+			     lfo_freq, lfo_depth,
+			     tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+  {
+    ags_fm_synth_util_sin_s16((gint16 *) buffer,
+			      freq, phase, volume,
+			      samplerate,
+			      offset, n_frames,
+			      lfo_osc_mode,
+			      lfo_freq, lfo_depth,
+			      tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+  {
+    ags_fm_synth_util_sin_s24((gint32 *) buffer,
+			      freq, phase, volume,
+			      samplerate,
+			      offset, n_frames,
+			      lfo_osc_mode,
+			      lfo_freq, lfo_depth,
+			      tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+  {
+    ags_fm_synth_util_sin_s32((gint32 *) buffer,
+			      freq, phase, volume,
+			      samplerate,
+			      offset, n_frames,
+			      lfo_osc_mode,
+			      lfo_freq, lfo_depth,
+			      tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+  {
+    ags_fm_synth_util_sin_s64((gint64 *) buffer,
+			      freq, phase, volume,
+			      samplerate,
+			      offset, n_frames,
+			      lfo_osc_mode,
+			      lfo_freq, lfo_depth,
+			      tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_fm_synth_util_sin_float((gfloat *) buffer,
+				freq, phase, volume,
+				samplerate,
+				offset, n_frames,
+				lfo_osc_mode,
+				lfo_freq, lfo_depth,
+				tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_fm_synth_util_sin_double((gdouble *) buffer,
+				 freq, phase, volume,
+				 samplerate,
+				 offset, n_frames,
+				 lfo_osc_mode,
+				 lfo_freq, lfo_depth,
+				 tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_fm_synth_util_sin_complex((AgsComplex *) buffer,
+				  freq, phase, volume,
+				  samplerate,
+				  offset, n_frames,
+				  lfo_osc_mode,
+				  lfo_freq, lfo_depth,
+				  tuning);
+  }
+  break;
+  default:
+  {
+    g_warning("ags_fm_synth_util_sin() - unsupported format");
+  }
+  }
+}
+
+/**
+ * ags_fm_synth_util_compute_sawtooth_s8:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sawtooth synth of signed 8 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sawtooth_s8(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_sawtooth_s16:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sawtooth synth of signed 16 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sawtooth_s16(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_sawtooth_s24:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sawtooth synth of signed 24 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sawtooth_s24(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_sawtooth_s32:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sawtooth synth of signed 32 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sawtooth_s32(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_sawtooth_s64:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sawtooth synth of signed 64 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sawtooth_s64(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_sawtooth_float:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sawtooth synth of float data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sawtooth_float(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_sawtooth_double:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sawtooth synth of double data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sawtooth_double(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_sawtooth_complex:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sawtooth synth of complex data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sawtooth_complex(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_sawtooth:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM sawtooth synth.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_sawtooth(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
 }
 
 /**
@@ -1984,6 +2684,260 @@ ags_fm_synth_util_sawtooth_complex(AgsComplex *buffer,
 }
 
 /**
+ * ags_fm_synth_util_sawtooth:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sin wave
+ * @phase: the phase of the sin wave
+ * @volume: the volume of the sin wave
+ * @samplerate: the samplerate
+ * @audio_buffer_util_format: the audio data format
+ * @offset: start frame
+ * @n_frames: generate n frames
+ * @lfo_osc_mode: the LFO's oscillator mode
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
+ *
+ * Generate frequency modulate sawtooth wave.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_fm_synth_util_sawtooth(void *buffer,
+			   gdouble freq, gdouble phase, gdouble volume,
+			   guint samplerate, guint audio_buffer_util_format,
+			   guint offset, guint n_frames,
+			   guint lfo_osc_mode,
+			   gdouble lfo_freq, gdouble lfo_depth,
+			   gdouble tuning)
+{
+  if(buffer == NULL){
+    return;
+  }
+
+  switch(audio_buffer_util_format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+  {
+    ags_fm_synth_util_sawtooth_s8((gint8 *) buffer,
+				  freq, phase, volume,
+				  samplerate,
+				  offset, n_frames,
+				  lfo_osc_mode,
+				  lfo_freq, lfo_depth,
+				  tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+  {
+    ags_fm_synth_util_sawtooth_s16((gint16 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_osc_mode,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+  {
+    ags_fm_synth_util_sawtooth_s24((gint32 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_osc_mode,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+  {
+    ags_fm_synth_util_sawtooth_s32((gint32 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_osc_mode,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+  {
+    ags_fm_synth_util_sawtooth_s64((gint64 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_osc_mode,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_fm_synth_util_sawtooth_float((gfloat *) buffer,
+				     freq, phase, volume,
+				     samplerate,
+				     offset, n_frames,
+				     lfo_osc_mode,
+				     lfo_freq, lfo_depth,
+				     tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_fm_synth_util_sawtooth_double((gdouble *) buffer,
+				      freq, phase, volume,
+				      samplerate,
+				      offset, n_frames,
+				      lfo_osc_mode,
+				      lfo_freq, lfo_depth,
+				      tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_fm_synth_util_sawtooth_complex((AgsComplex *) buffer,
+				       freq, phase, volume,
+				       samplerate,
+				       offset, n_frames,
+				       lfo_osc_mode,
+				       lfo_freq, lfo_depth,
+				       tuning);
+  }
+  break;
+  default:
+  {
+    g_warning("ags_fm_synth_util_sawtooth() - unsupported format");
+  }
+  }
+}
+
+/**
+ * ags_fm_synth_util_compute_triangle_s8:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM triangle synth of signed 8 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_triangle_s8(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_triangle_s16:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM triangle synth of signed 16 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_triangle_s16(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_triangle_s24:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM triangle synth of signed 24 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_triangle_s24(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_triangle_s32:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM triangle synth of signed 32 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_triangle_s32(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_triangle_s64:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM triangle synth of signed 64 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_triangle_s64(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_triangle_float:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM triangle synth of float data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_triangle_float(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_triangle_double:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM triangle synth of double data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_triangle_double(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_triangle_complex:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM triangle synth of complex data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_triangle_complex(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_triangle:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM triangle synth.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_triangle(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
  * ags_fm_synth_util_triangle_s8:
  * @buffer: the audio buffer
  * @freq: the frequency of the sin wave
@@ -2608,6 +3562,260 @@ ags_fm_synth_util_triangle_complex(AgsComplex *buffer,
   }
   break;
   }
+}
+
+/**
+ * ags_fm_synth_util_triangle:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sin wave
+ * @phase: the phase of the sin wave
+ * @volume: the volume of the sin wave
+ * @samplerate: the samplerate
+ * @audio_buffer_util_format: the audio data format
+ * @offset: start frame
+ * @n_frames: generate n frames
+ * @lfo_osc_mode: the LFO's oscillator mode
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
+ *
+ * Generate frequency modulate triangle wave.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_fm_synth_util_triangle(void *buffer,
+			   gdouble freq, gdouble phase, gdouble volume,
+			   guint samplerate, guint audio_buffer_util_format,
+			   guint offset, guint n_frames,
+			   guint lfo_osc_mode,
+			   gdouble lfo_freq, gdouble lfo_depth,
+			   gdouble tuning)
+{
+  if(buffer == NULL){
+    return;
+  }
+
+  switch(audio_buffer_util_format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+  {
+    ags_fm_synth_util_triangle_s8((gint8 *) buffer,
+				  freq, phase, volume,
+				  samplerate,
+				  offset, n_frames,
+				  lfo_osc_mode,
+				  lfo_freq, lfo_depth,
+				  tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+  {
+    ags_fm_synth_util_triangle_s16((gint16 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_osc_mode,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+  {
+    ags_fm_synth_util_triangle_s24((gint32 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_osc_mode,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+  {
+    ags_fm_synth_util_triangle_s32((gint32 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_osc_mode,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+  {
+    ags_fm_synth_util_triangle_s64((gint64 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_osc_mode,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_fm_synth_util_triangle_float((gfloat *) buffer,
+				     freq, phase, volume,
+				     samplerate,
+				     offset, n_frames,
+				     lfo_osc_mode,
+				     lfo_freq, lfo_depth,
+				     tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_fm_synth_util_triangle_double((gdouble *) buffer,
+				      freq, phase, volume,
+				      samplerate,
+				      offset, n_frames,
+				      lfo_osc_mode,
+				      lfo_freq, lfo_depth,
+				      tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_fm_synth_util_triangle_complex((AgsComplex *) buffer,
+				       freq, phase, volume,
+				       samplerate,
+				       offset, n_frames,
+				       lfo_osc_mode,
+				       lfo_freq, lfo_depth,
+				       tuning);
+  }
+  break;
+  default:
+  {
+    g_warning("ags_fm_synth_util_triangle() - unsupported format");
+  }
+  }
+}
+
+/**
+ * ags_fm_synth_util_compute_square_s8:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM square synth of signed 8 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_square_s8(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_square_s16:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM square synth of signed 16 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_square_s16(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_square_s24:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM square synth of signed 24 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_square_s24(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_square_s32:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM square synth of signed 32 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_square_s32(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_square_s64:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM square synth of signed 64 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_square_s64(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_square_float:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM square synth of float data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_square_float(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_square_double:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM square synth of double data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_square_double(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_square_complex:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM square synth of complex data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_square_complex(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_square:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM square synth.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_square(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
 }
 
 /**
@@ -3374,6 +4582,260 @@ ags_fm_synth_util_square_complex(AgsComplex *buffer,
 }
 
 /**
+ * ags_fm_synth_util_square:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sin wave
+ * @phase: the phase of the sin wave
+ * @volume: the volume of the sin wave
+ * @samplerate: the samplerate
+ * @audio_buffer_util_format: the audio data format
+ * @offset: start frame
+ * @n_frames: generate n frames
+ * @lfo_osc_mode: the LFO's oscillator mode
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
+ *
+ * Generate frequency modulate square wave.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_fm_synth_util_square(void *buffer,
+			 gdouble freq, gdouble phase, gdouble volume,
+			 guint samplerate, guint audio_buffer_util_format,
+			 guint offset, guint n_frames,
+			 guint lfo_osc_mode,
+			 gdouble lfo_freq, gdouble lfo_depth,
+			 gdouble tuning)
+{
+  if(buffer == NULL){
+    return;
+  }
+
+  switch(audio_buffer_util_format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+  {
+    ags_fm_synth_util_square_s8((gint8 *) buffer,
+				freq, phase, volume,
+				samplerate,
+				offset, n_frames,
+				lfo_osc_mode,
+				lfo_freq, lfo_depth,
+				tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+  {
+    ags_fm_synth_util_square_s16((gint16 *) buffer,
+				 freq, phase, volume,
+				 samplerate,
+				 offset, n_frames,
+				 lfo_osc_mode,
+				 lfo_freq, lfo_depth,
+				 tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+  {
+    ags_fm_synth_util_square_s24((gint32 *) buffer,
+				 freq, phase, volume,
+				 samplerate,
+				 offset, n_frames,
+				 lfo_osc_mode,
+				 lfo_freq, lfo_depth,
+				 tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+  {
+    ags_fm_synth_util_square_s32((gint32 *) buffer,
+				 freq, phase, volume,
+				 samplerate,
+				 offset, n_frames,
+				 lfo_osc_mode,
+				 lfo_freq, lfo_depth,
+				 tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+  {
+    ags_fm_synth_util_square_s64((gint64 *) buffer,
+				 freq, phase, volume,
+				 samplerate,
+				 offset, n_frames,
+				 lfo_osc_mode,
+				 lfo_freq, lfo_depth,
+				 tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_fm_synth_util_square_float((gfloat *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_osc_mode,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_fm_synth_util_square_double((gdouble *) buffer,
+				    freq, phase, volume,
+				    samplerate,
+				    offset, n_frames,
+				    lfo_osc_mode,
+				    lfo_freq, lfo_depth,
+				    tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_fm_synth_util_square_complex((AgsComplex *) buffer,
+				     freq, phase, volume,
+				     samplerate,
+				     offset, n_frames,
+				     lfo_osc_mode,
+				     lfo_freq, lfo_depth,
+				     tuning);
+  }
+  break;
+  default:
+  {
+    g_warning("ags_fm_synth_util_square() - unsupported format");
+  }
+  }
+}
+
+/**
+ * ags_fm_synth_util_compute_impulse_s8:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM impulse synth of signed 8 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_impulse_s8(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_impulse_s16:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM impulse synth of signed 16 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_impulse_s16(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_impulse_s24:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM impulse synth of signed 24 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_impulse_s24(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_impulse_s32:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM impulse synth of signed 32 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_impulse_s32(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_impulse_s64:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM impulse synth of signed 64 bit data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_impulse_s64(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_impulse_float:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM impulse synth of float data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_impulse_float(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_impulse_double:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM impulse synth of double data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_impulse_double(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_impulse_complex:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM impulse synth of complex data.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_impulse_complex(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fm_synth_util_compute_impulse:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Compute FM impulse synth.
+ *
+ * Since: 3.9.3
+ */
+void
+ags_fm_synth_util_compute_impulse(AgsFMSynthUtil *fm_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
  * ags_fm_synth_util_impulse_s8:
  * @buffer: the audio buffer
  * @freq: the frequency of the sin wave
@@ -4132,518 +5594,6 @@ ags_fm_synth_util_impulse_complex(AgsComplex *buffer,
     }
   }
   break;
-  }
-}
-
-/**
- * ags_fm_synth_util_sin:
- * @buffer: the audio buffer
- * @freq: the frequency of the sin wave
- * @phase: the phase of the sin wave
- * @volume: the volume of the sin wave
- * @samplerate: the samplerate
- * @audio_buffer_util_format: the audio data format
- * @offset: start frame
- * @n_frames: generate n frames
- * @lfo_osc_mode: the LFO's oscillator mode
- * @lfo_freq: the LFO's frequency
- * @lfo_depth: the LFO's depth
- * @tuning: the tuninig
- *
- * Generate frequency modulate sin wave.
- *
- * Since: 3.0.0
- */
-void
-ags_fm_synth_util_sin(void *buffer,
-		      gdouble freq, gdouble phase, gdouble volume,
-		      guint samplerate, guint audio_buffer_util_format,
-		      guint offset, guint n_frames,
-		      guint lfo_osc_mode,
-		      gdouble lfo_freq, gdouble lfo_depth,
-		      gdouble tuning)
-{
-  if(buffer == NULL){
-    return;
-  }
-
-  switch(audio_buffer_util_format){
-  case AGS_AUDIO_BUFFER_UTIL_S8:
-  {
-    ags_fm_synth_util_sin_s8((gint8 *) buffer,
-			     freq, phase, volume,
-			     samplerate,
-			     offset, n_frames,
-			     lfo_osc_mode,
-			     lfo_freq, lfo_depth,
-			     tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_S16:
-  {
-    ags_fm_synth_util_sin_s16((gint16 *) buffer,
-			      freq, phase, volume,
-			      samplerate,
-			      offset, n_frames,
-			      lfo_osc_mode,
-			      lfo_freq, lfo_depth,
-			      tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_S24:
-  {
-    ags_fm_synth_util_sin_s24((gint32 *) buffer,
-			      freq, phase, volume,
-			      samplerate,
-			      offset, n_frames,
-			      lfo_osc_mode,
-			      lfo_freq, lfo_depth,
-			      tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_S32:
-  {
-    ags_fm_synth_util_sin_s32((gint32 *) buffer,
-			      freq, phase, volume,
-			      samplerate,
-			      offset, n_frames,
-			      lfo_osc_mode,
-			      lfo_freq, lfo_depth,
-			      tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_S64:
-  {
-    ags_fm_synth_util_sin_s64((gint64 *) buffer,
-			      freq, phase, volume,
-			      samplerate,
-			      offset, n_frames,
-			      lfo_osc_mode,
-			      lfo_freq, lfo_depth,
-			      tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-  {
-    ags_fm_synth_util_sin_float((gfloat *) buffer,
-				freq, phase, volume,
-				samplerate,
-				offset, n_frames,
-				lfo_osc_mode,
-				lfo_freq, lfo_depth,
-				tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-  {
-    ags_fm_synth_util_sin_double((gdouble *) buffer,
-				 freq, phase, volume,
-				 samplerate,
-				 offset, n_frames,
-				 lfo_osc_mode,
-				 lfo_freq, lfo_depth,
-				 tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
-  {
-    ags_fm_synth_util_sin_complex((AgsComplex *) buffer,
-				  freq, phase, volume,
-				  samplerate,
-				  offset, n_frames,
-				  lfo_osc_mode,
-				  lfo_freq, lfo_depth,
-				  tuning);
-  }
-  break;
-  default:
-  {
-    g_warning("ags_fm_synth_util_sin() - unsupported format");
-  }
-  }
-}
-
-/**
- * ags_fm_synth_util_sawtooth:
- * @buffer: the audio buffer
- * @freq: the frequency of the sin wave
- * @phase: the phase of the sin wave
- * @volume: the volume of the sin wave
- * @samplerate: the samplerate
- * @audio_buffer_util_format: the audio data format
- * @offset: start frame
- * @n_frames: generate n frames
- * @lfo_osc_mode: the LFO's oscillator mode
- * @lfo_freq: the LFO's frequency
- * @lfo_depth: the LFO's depth
- * @tuning: the tuninig
- *
- * Generate frequency modulate sawtooth wave.
- *
- * Since: 3.0.0
- */
-void
-ags_fm_synth_util_sawtooth(void *buffer,
-			   gdouble freq, gdouble phase, gdouble volume,
-			   guint samplerate, guint audio_buffer_util_format,
-			   guint offset, guint n_frames,
-			   guint lfo_osc_mode,
-			   gdouble lfo_freq, gdouble lfo_depth,
-			   gdouble tuning)
-{
-  if(buffer == NULL){
-    return;
-  }
-
-  switch(audio_buffer_util_format){
-  case AGS_AUDIO_BUFFER_UTIL_S8:
-  {
-    ags_fm_synth_util_sawtooth_s8((gint8 *) buffer,
-				  freq, phase, volume,
-				  samplerate,
-				  offset, n_frames,
-				  lfo_osc_mode,
-				  lfo_freq, lfo_depth,
-				  tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_S16:
-  {
-    ags_fm_synth_util_sawtooth_s16((gint16 *) buffer,
-				   freq, phase, volume,
-				   samplerate,
-				   offset, n_frames,
-				   lfo_osc_mode,
-				   lfo_freq, lfo_depth,
-				   tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_S24:
-  {
-    ags_fm_synth_util_sawtooth_s24((gint32 *) buffer,
-				   freq, phase, volume,
-				   samplerate,
-				   offset, n_frames,
-				   lfo_osc_mode,
-				   lfo_freq, lfo_depth,
-				   tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_S32:
-  {
-    ags_fm_synth_util_sawtooth_s32((gint32 *) buffer,
-				   freq, phase, volume,
-				   samplerate,
-				   offset, n_frames,
-				   lfo_osc_mode,
-				   lfo_freq, lfo_depth,
-				   tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_S64:
-  {
-    ags_fm_synth_util_sawtooth_s64((gint64 *) buffer,
-				   freq, phase, volume,
-				   samplerate,
-				   offset, n_frames,
-				   lfo_osc_mode,
-				   lfo_freq, lfo_depth,
-				   tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-  {
-    ags_fm_synth_util_sawtooth_float((gfloat *) buffer,
-				     freq, phase, volume,
-				     samplerate,
-				     offset, n_frames,
-				     lfo_osc_mode,
-				     lfo_freq, lfo_depth,
-				     tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-  {
-    ags_fm_synth_util_sawtooth_double((gdouble *) buffer,
-				      freq, phase, volume,
-				      samplerate,
-				      offset, n_frames,
-				      lfo_osc_mode,
-				      lfo_freq, lfo_depth,
-				      tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
-  {
-    ags_fm_synth_util_sawtooth_complex((AgsComplex *) buffer,
-				       freq, phase, volume,
-				       samplerate,
-				       offset, n_frames,
-				       lfo_osc_mode,
-				       lfo_freq, lfo_depth,
-				       tuning);
-  }
-  break;
-  default:
-  {
-    g_warning("ags_fm_synth_util_sawtooth() - unsupported format");
-  }
-  }
-}
-
-/**
- * ags_fm_synth_util_triangle:
- * @buffer: the audio buffer
- * @freq: the frequency of the sin wave
- * @phase: the phase of the sin wave
- * @volume: the volume of the sin wave
- * @samplerate: the samplerate
- * @audio_buffer_util_format: the audio data format
- * @offset: start frame
- * @n_frames: generate n frames
- * @lfo_osc_mode: the LFO's oscillator mode
- * @lfo_freq: the LFO's frequency
- * @lfo_depth: the LFO's depth
- * @tuning: the tuninig
- *
- * Generate frequency modulate triangle wave.
- *
- * Since: 3.0.0
- */
-void
-ags_fm_synth_util_triangle(void *buffer,
-			   gdouble freq, gdouble phase, gdouble volume,
-			   guint samplerate, guint audio_buffer_util_format,
-			   guint offset, guint n_frames,
-			   guint lfo_osc_mode,
-			   gdouble lfo_freq, gdouble lfo_depth,
-			   gdouble tuning)
-{
-  if(buffer == NULL){
-    return;
-  }
-
-  switch(audio_buffer_util_format){
-  case AGS_AUDIO_BUFFER_UTIL_S8:
-  {
-    ags_fm_synth_util_triangle_s8((gint8 *) buffer,
-				  freq, phase, volume,
-				  samplerate,
-				  offset, n_frames,
-				  lfo_osc_mode,
-				  lfo_freq, lfo_depth,
-				  tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_S16:
-  {
-    ags_fm_synth_util_triangle_s16((gint16 *) buffer,
-				   freq, phase, volume,
-				   samplerate,
-				   offset, n_frames,
-				   lfo_osc_mode,
-				   lfo_freq, lfo_depth,
-				   tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_S24:
-  {
-    ags_fm_synth_util_triangle_s24((gint32 *) buffer,
-				   freq, phase, volume,
-				   samplerate,
-				   offset, n_frames,
-				   lfo_osc_mode,
-				   lfo_freq, lfo_depth,
-				   tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_S32:
-  {
-    ags_fm_synth_util_triangle_s32((gint32 *) buffer,
-				   freq, phase, volume,
-				   samplerate,
-				   offset, n_frames,
-				   lfo_osc_mode,
-				   lfo_freq, lfo_depth,
-				   tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_S64:
-  {
-    ags_fm_synth_util_triangle_s64((gint64 *) buffer,
-				   freq, phase, volume,
-				   samplerate,
-				   offset, n_frames,
-				   lfo_osc_mode,
-				   lfo_freq, lfo_depth,
-				   tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-  {
-    ags_fm_synth_util_triangle_float((gfloat *) buffer,
-				     freq, phase, volume,
-				     samplerate,
-				     offset, n_frames,
-				     lfo_osc_mode,
-				     lfo_freq, lfo_depth,
-				     tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-  {
-    ags_fm_synth_util_triangle_double((gdouble *) buffer,
-				      freq, phase, volume,
-				      samplerate,
-				      offset, n_frames,
-				      lfo_osc_mode,
-				      lfo_freq, lfo_depth,
-				      tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
-  {
-    ags_fm_synth_util_triangle_complex((AgsComplex *) buffer,
-				       freq, phase, volume,
-				       samplerate,
-				       offset, n_frames,
-				       lfo_osc_mode,
-				       lfo_freq, lfo_depth,
-				       tuning);
-  }
-  break;
-  default:
-  {
-    g_warning("ags_fm_synth_util_triangle() - unsupported format");
-  }
-  }
-}
-
-/**
- * ags_fm_synth_util_square:
- * @buffer: the audio buffer
- * @freq: the frequency of the sin wave
- * @phase: the phase of the sin wave
- * @volume: the volume of the sin wave
- * @samplerate: the samplerate
- * @audio_buffer_util_format: the audio data format
- * @offset: start frame
- * @n_frames: generate n frames
- * @lfo_osc_mode: the LFO's oscillator mode
- * @lfo_freq: the LFO's frequency
- * @lfo_depth: the LFO's depth
- * @tuning: the tuninig
- *
- * Generate frequency modulate square wave.
- *
- * Since: 3.0.0
- */
-void
-ags_fm_synth_util_square(void *buffer,
-			 gdouble freq, gdouble phase, gdouble volume,
-			 guint samplerate, guint audio_buffer_util_format,
-			 guint offset, guint n_frames,
-			 guint lfo_osc_mode,
-			 gdouble lfo_freq, gdouble lfo_depth,
-			 gdouble tuning)
-{
-  if(buffer == NULL){
-    return;
-  }
-
-  switch(audio_buffer_util_format){
-  case AGS_AUDIO_BUFFER_UTIL_S8:
-  {
-    ags_fm_synth_util_square_s8((gint8 *) buffer,
-				freq, phase, volume,
-				samplerate,
-				offset, n_frames,
-				lfo_osc_mode,
-				lfo_freq, lfo_depth,
-				tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_S16:
-  {
-    ags_fm_synth_util_square_s16((gint16 *) buffer,
-				 freq, phase, volume,
-				 samplerate,
-				 offset, n_frames,
-				 lfo_osc_mode,
-				 lfo_freq, lfo_depth,
-				 tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_S24:
-  {
-    ags_fm_synth_util_square_s24((gint32 *) buffer,
-				 freq, phase, volume,
-				 samplerate,
-				 offset, n_frames,
-				 lfo_osc_mode,
-				 lfo_freq, lfo_depth,
-				 tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_S32:
-  {
-    ags_fm_synth_util_square_s32((gint32 *) buffer,
-				 freq, phase, volume,
-				 samplerate,
-				 offset, n_frames,
-				 lfo_osc_mode,
-				 lfo_freq, lfo_depth,
-				 tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_S64:
-  {
-    ags_fm_synth_util_square_s64((gint64 *) buffer,
-				 freq, phase, volume,
-				 samplerate,
-				 offset, n_frames,
-				 lfo_osc_mode,
-				 lfo_freq, lfo_depth,
-				 tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-  {
-    ags_fm_synth_util_square_float((gfloat *) buffer,
-				   freq, phase, volume,
-				   samplerate,
-				   offset, n_frames,
-				   lfo_osc_mode,
-				   lfo_freq, lfo_depth,
-				   tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-  {
-    ags_fm_synth_util_square_double((gdouble *) buffer,
-				    freq, phase, volume,
-				    samplerate,
-				    offset, n_frames,
-				    lfo_osc_mode,
-				    lfo_freq, lfo_depth,
-				    tuning);
-  }
-  break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
-  {
-    ags_fm_synth_util_square_complex((AgsComplex *) buffer,
-				     freq, phase, volume,
-				     samplerate,
-				     offset, n_frames,
-				     lfo_osc_mode,
-				     lfo_freq, lfo_depth,
-				     tuning);
-  }
-  break;
-  default:
-  {
-    g_warning("ags_fm_synth_util_square() - unsupported format");
-  }
   }
 }
 

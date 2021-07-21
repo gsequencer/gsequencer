@@ -130,6 +130,18 @@ void ags_fm_synth_util_set_offset(AgsFMSynthUtil *fm_synth_util,
 				  guint offset);
 
 /* fm sin oscillator */
+void ags_fm_synth_util_compute_sin_s8(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sin_s16(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sin_s24(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sin_s32(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sin_s64(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sin_float(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sin_double(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sin_complex(AgsFMSynthUtil *fm_synth_util);
+
+void ags_fm_synth_util_compute_sin(AgsFMSynthUtil *fm_synth_util);
+
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sin_s8)
 void ags_fm_synth_util_sin_s8(gint8 *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
 			      guint samplerate,
@@ -137,6 +149,7 @@ void ags_fm_synth_util_sin_s8(gint8 *buffer,
 			      guint lfo_osc_mode,
 			      gdouble lfo_freq, gdouble lfo_depth,
 			      gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sin_s16)
 void ags_fm_synth_util_sin_s16(gint16 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
@@ -144,6 +157,7 @@ void ags_fm_synth_util_sin_s16(gint16 *buffer,
 			       guint lfo_osc_mode,
 			       gdouble lfo_freq, gdouble lfo_depth,
 			       gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sin_s24)
 void ags_fm_synth_util_sin_s24(gint32 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
@@ -151,6 +165,7 @@ void ags_fm_synth_util_sin_s24(gint32 *buffer,
 			       guint lfo_osc_mode,
 			       gdouble lfo_freq, gdouble lfo_depth,
 			       gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sin_s32)
 void ags_fm_synth_util_sin_s32(gint32 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
@@ -158,6 +173,7 @@ void ags_fm_synth_util_sin_s32(gint32 *buffer,
 			       guint lfo_osc_mode,
 			       gdouble lfo_freq, gdouble lfo_depth,
 			       gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sin_s64)
 void ags_fm_synth_util_sin_s64(gint64 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
@@ -165,6 +181,7 @@ void ags_fm_synth_util_sin_s64(gint64 *buffer,
 			       guint lfo_osc_mode,
 			       gdouble lfo_freq, gdouble lfo_depth,
 			       gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sin_float)
 void ags_fm_synth_util_sin_float(gfloat *buffer,
 				 gdouble freq, gdouble phase, gdouble volume,
 				 guint samplerate,
@@ -172,6 +189,7 @@ void ags_fm_synth_util_sin_float(gfloat *buffer,
 				 guint lfo_osc_mode,
 				 gdouble lfo_freq, gdouble lfo_depth,
 				 gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sin_double)
 void ags_fm_synth_util_sin_double(gdouble *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
@@ -179,6 +197,7 @@ void ags_fm_synth_util_sin_double(gdouble *buffer,
 				  guint lfo_osc_mode,
 				  gdouble lfo_freq, gdouble lfo_depth,
 				  gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sin_complex)
 void ags_fm_synth_util_sin_complex(AgsComplex *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
@@ -187,6 +206,7 @@ void ags_fm_synth_util_sin_complex(AgsComplex *buffer,
 				   gdouble lfo_freq, gdouble lfo_depth,
 				   gdouble tuning);
 
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sin)
 void ags_fm_synth_util_sin(void *buffer,
 			   gdouble freq, gdouble phase, gdouble volume,
 			   guint samplerate, guint audio_buffer_util_format,
@@ -196,6 +216,18 @@ void ags_fm_synth_util_sin(void *buffer,
 			   gdouble tuning);
 
 /* fm sawtooth oscillator */
+void ags_fm_synth_util_compute_sawtooth_s8(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sawtooth_s16(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sawtooth_s24(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sawtooth_s32(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sawtooth_s64(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sawtooth_float(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sawtooth_double(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_sawtooth_complex(AgsFMSynthUtil *fm_synth_util);
+
+void ags_fm_synth_util_compute_sawtooth(AgsFMSynthUtil *fm_synth_util);
+
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sawtooth_s8)
 void ags_fm_synth_util_sawtooth_s8(gint8 *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
@@ -203,6 +235,7 @@ void ags_fm_synth_util_sawtooth_s8(gint8 *buffer,
 				   guint lfo_osc_mode,
 				   gdouble lfo_freq, gdouble lfo_depth,
 				   gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sawtooth_s16)
 void ags_fm_synth_util_sawtooth_s16(gint16 *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
@@ -210,6 +243,7 @@ void ags_fm_synth_util_sawtooth_s16(gint16 *buffer,
 				    guint lfo_osc_mode,
 				    gdouble lfo_freq, gdouble lfo_depth,
 				    gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sawtooth_s24)
 void ags_fm_synth_util_sawtooth_s24(gint32 *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
@@ -217,6 +251,7 @@ void ags_fm_synth_util_sawtooth_s24(gint32 *buffer,
 				    guint lfo_osc_mode,
 				    gdouble lfo_freq, gdouble lfo_depth,
 				    gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sawtooth_s32)
 void ags_fm_synth_util_sawtooth_s32(gint32 *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
@@ -224,6 +259,7 @@ void ags_fm_synth_util_sawtooth_s32(gint32 *buffer,
 				    guint lfo_osc_mode,
 				    gdouble lfo_freq, gdouble lfo_depth,
 				    gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sawtooth_s64)
 void ags_fm_synth_util_sawtooth_s64(gint64 *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
@@ -231,6 +267,7 @@ void ags_fm_synth_util_sawtooth_s64(gint64 *buffer,
 				    guint lfo_osc_mode,
 				    gdouble lfo_freq, gdouble lfo_depth,
 				    gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sawtooth_float)
 void ags_fm_synth_util_sawtooth_float(gfloat *buffer,
 				      gdouble freq, gdouble phase, gdouble volume,
 				      guint samplerate,
@@ -238,6 +275,7 @@ void ags_fm_synth_util_sawtooth_float(gfloat *buffer,
 				      guint lfo_osc_mode,
 				      gdouble lfo_freq, gdouble lfo_depth,
 				      gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sawtooth_double)
 void ags_fm_synth_util_sawtooth_double(gdouble *buffer,
 				       gdouble freq, gdouble phase, gdouble volume,
 				       guint samplerate,
@@ -245,6 +283,7 @@ void ags_fm_synth_util_sawtooth_double(gdouble *buffer,
 				       guint lfo_osc_mode,
 				       gdouble lfo_freq, gdouble lfo_depth,
 				       gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sawtooth_complex)
 void ags_fm_synth_util_sawtooth_complex(AgsComplex *buffer,
 					gdouble freq, gdouble phase, gdouble volume,
 					guint samplerate,
@@ -253,6 +292,7 @@ void ags_fm_synth_util_sawtooth_complex(AgsComplex *buffer,
 					gdouble lfo_freq, gdouble lfo_depth,
 					gdouble tuning);
 
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_sawtooth)
 void ags_fm_synth_util_sawtooth(void *buffer,
 				gdouble freq, gdouble phase, gdouble volume,
 				guint samplerate, guint audio_buffer_util_format,
@@ -262,6 +302,18 @@ void ags_fm_synth_util_sawtooth(void *buffer,
 				gdouble tuning);
 
 /* fm triangle oscillator */
+void ags_fm_synth_util_compute_triangle_s8(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_triangle_s16(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_triangle_s24(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_triangle_s32(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_triangle_s64(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_triangle_float(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_triangle_double(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_triangle_complex(AgsFMSynthUtil *fm_synth_util);
+
+void ags_fm_synth_util_compute_triangle(AgsFMSynthUtil *fm_synth_util);
+
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_triangle_s8)
 void ags_fm_synth_util_triangle_s8(gint8 *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
@@ -269,6 +321,7 @@ void ags_fm_synth_util_triangle_s8(gint8 *buffer,
 				   guint lfo_osc_mode,
 				   gdouble lfo_freq, gdouble lfo_depth,
 				   gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_triangle_16)
 void ags_fm_synth_util_triangle_s16(gint16 *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
@@ -276,6 +329,7 @@ void ags_fm_synth_util_triangle_s16(gint16 *buffer,
 				    guint lfo_osc_mode,
 				    gdouble lfo_freq, gdouble lfo_depth,
 				    gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_triangle_s24)
 void ags_fm_synth_util_triangle_s24(gint32 *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
@@ -283,6 +337,7 @@ void ags_fm_synth_util_triangle_s24(gint32 *buffer,
 				    guint lfo_osc_mode,
 				    gdouble lfo_freq, gdouble lfo_depth,
 				    gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_triangle_s32)
 void ags_fm_synth_util_triangle_s32(gint32 *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
@@ -290,6 +345,7 @@ void ags_fm_synth_util_triangle_s32(gint32 *buffer,
 				    guint lfo_osc_mode,
 				    gdouble lfo_freq, gdouble lfo_depth,
 				    gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_triangle_s64)
 void ags_fm_synth_util_triangle_s64(gint64 *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
@@ -297,6 +353,7 @@ void ags_fm_synth_util_triangle_s64(gint64 *buffer,
 				    guint lfo_osc_mode,
 				    gdouble lfo_freq, gdouble lfo_depth,
 				    gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_triangle_float)
 void ags_fm_synth_util_triangle_float(gfloat *buffer,
 				      gdouble freq, gdouble phase, gdouble volume,
 				      guint samplerate,
@@ -304,6 +361,7 @@ void ags_fm_synth_util_triangle_float(gfloat *buffer,
 				      guint lfo_osc_mode,
 				      gdouble lfo_freq, gdouble lfo_depth,
 				      gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_triangle_double)
 void ags_fm_synth_util_triangle_double(gdouble *buffer,
 				       gdouble freq, gdouble phase, gdouble volume,
 				       guint samplerate,
@@ -311,6 +369,7 @@ void ags_fm_synth_util_triangle_double(gdouble *buffer,
 				       guint lfo_osc_mode,
 				       gdouble lfo_freq, gdouble lfo_depth,
 				       gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_triangle_complex)
 void ags_fm_synth_util_triangle_complex(AgsComplex *buffer,
 					gdouble freq, gdouble phase, gdouble volume,
 					guint samplerate,
@@ -319,6 +378,7 @@ void ags_fm_synth_util_triangle_complex(AgsComplex *buffer,
 					gdouble lfo_freq, gdouble lfo_depth,
 					gdouble tuning);
 
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_triangle)
 void ags_fm_synth_util_triangle(void *buffer,
 				gdouble freq, gdouble phase, gdouble volume,
 				guint samplerate, guint audio_buffer_util_format,
@@ -328,6 +388,18 @@ void ags_fm_synth_util_triangle(void *buffer,
 				gdouble tuning);
 
 /* fm square oscillator */
+void ags_fm_synth_util_compute_square_s8(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_square_s16(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_square_s24(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_square_s32(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_square_s64(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_square_float(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_square_double(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_square_complex(AgsFMSynthUtil *fm_synth_util);
+
+void ags_fm_synth_util_compute_square(AgsFMSynthUtil *fm_synth_util);
+
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_square_s8)
 void ags_fm_synth_util_square_s8(gint8 *buffer,
 				 gdouble freq, gdouble phase, gdouble volume,
 				 guint samplerate,
@@ -335,6 +407,7 @@ void ags_fm_synth_util_square_s8(gint8 *buffer,
 				 guint lfo_osc_mode,
 				 gdouble lfo_freq, gdouble lfo_depth,
 				 gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_square_s16)
 void ags_fm_synth_util_square_s16(gint16 *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
@@ -342,6 +415,7 @@ void ags_fm_synth_util_square_s16(gint16 *buffer,
 				  guint lfo_osc_mode,
 				  gdouble lfo_freq, gdouble lfo_depth,
 				  gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_square_s24)
 void ags_fm_synth_util_square_s24(gint32 *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
@@ -349,6 +423,7 @@ void ags_fm_synth_util_square_s24(gint32 *buffer,
 				  guint lfo_osc_mode,
 				  gdouble lfo_freq, gdouble lfo_depth,
 				  gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_square_s32)
 void ags_fm_synth_util_square_s32(gint32 *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
@@ -356,6 +431,7 @@ void ags_fm_synth_util_square_s32(gint32 *buffer,
 				  guint lfo_osc_mode,
 				  gdouble lfo_freq, gdouble lfo_depth,
 				  gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_square_s64)
 void ags_fm_synth_util_square_s64(gint64 *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
@@ -363,6 +439,7 @@ void ags_fm_synth_util_square_s64(gint64 *buffer,
 				  guint lfo_osc_mode,
 				  gdouble lfo_freq, gdouble lfo_depth,
 				  gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_square_float)
 void ags_fm_synth_util_square_float(gfloat *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
@@ -370,6 +447,7 @@ void ags_fm_synth_util_square_float(gfloat *buffer,
 				    guint lfo_osc_mode,
 				    gdouble lfo_freq, gdouble lfo_depth,
 				    gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_square_double)
 void ags_fm_synth_util_square_double(gdouble *buffer,
 				     gdouble freq, gdouble phase, gdouble volume,
 				     guint samplerate,
@@ -377,6 +455,7 @@ void ags_fm_synth_util_square_double(gdouble *buffer,
 				     guint lfo_osc_mode,
 				     gdouble lfo_freq, gdouble lfo_depth,
 				     gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_square_complex)
 void ags_fm_synth_util_square_complex(AgsComplex *buffer,
 				      gdouble freq, gdouble phase, gdouble volume,
 				      guint samplerate,
@@ -385,6 +464,7 @@ void ags_fm_synth_util_square_complex(AgsComplex *buffer,
 				      gdouble lfo_freq, gdouble lfo_depth,
 				      gdouble tuning);
 
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_square)
 void ags_fm_synth_util_square(void *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
 			      guint samplerate, guint audio_buffer_util_format,
@@ -394,6 +474,18 @@ void ags_fm_synth_util_square(void *buffer,
 			      gdouble tuning);
 
 /* fm impulse oscillator */
+void ags_fm_synth_util_compute_impulse_s8(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_impulse_s16(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_impulse_s24(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_impulse_s32(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_impulse_s64(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_impulse_float(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_impulse_double(AgsFMSynthUtil *fm_synth_util);
+void ags_fm_synth_util_compute_impulse_complex(AgsFMSynthUtil *fm_synth_util);
+
+void ags_fm_synth_util_compute_impulse(AgsFMSynthUtil *fm_synth_util);
+
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_impulse_s8)
 void ags_fm_synth_util_impulse_s8(gint8 *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
@@ -401,6 +493,7 @@ void ags_fm_synth_util_impulse_s8(gint8 *buffer,
 				  guint lfo_osc_mode,
 				  gdouble lfo_freq, gdouble lfo_depth,
 				  gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_impulse_s16)
 void ags_fm_synth_util_impulse_s16(gint16 *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
@@ -408,6 +501,7 @@ void ags_fm_synth_util_impulse_s16(gint16 *buffer,
 				   guint lfo_osc_mode,
 				   gdouble lfo_freq, gdouble lfo_depth,
 				   gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_impulse_s24)
 void ags_fm_synth_util_impulse_s24(gint32 *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
@@ -415,6 +509,7 @@ void ags_fm_synth_util_impulse_s24(gint32 *buffer,
 				   guint lfo_osc_mode,
 				   gdouble lfo_freq, gdouble lfo_depth,
 				   gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_impulse_s32)
 void ags_fm_synth_util_impulse_s32(gint32 *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
@@ -422,6 +517,7 @@ void ags_fm_synth_util_impulse_s32(gint32 *buffer,
 				   guint lfo_osc_mode,
 				   gdouble lfo_freq, gdouble lfo_depth,
 				   gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_impulse_s64)
 void ags_fm_synth_util_impulse_s64(gint64 *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
@@ -429,6 +525,7 @@ void ags_fm_synth_util_impulse_s64(gint64 *buffer,
 				   guint lfo_osc_mode,
 				   gdouble lfo_freq, gdouble lfo_depth,
 				   gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_impulse_float)
 void ags_fm_synth_util_impulse_float(gfloat *buffer,
 				     gdouble freq, gdouble phase, gdouble volume,
 				     guint samplerate,
@@ -436,6 +533,7 @@ void ags_fm_synth_util_impulse_float(gfloat *buffer,
 				     guint lfo_osc_mode,
 				     gdouble lfo_freq, gdouble lfo_depth,
 				     gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_impulse_double)
 void ags_fm_synth_util_impulse_double(gdouble *buffer,
 				      gdouble freq, gdouble phase, gdouble volume,
 				      guint samplerate,
@@ -443,6 +541,7 @@ void ags_fm_synth_util_impulse_double(gdouble *buffer,
 				      guint lfo_osc_mode,
 				      gdouble lfo_freq, gdouble lfo_depth,
 				      gdouble tuning);
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_impulse_complex)
 void ags_fm_synth_util_impulse_complex(AgsComplex *buffer,
 				       gdouble freq, gdouble phase, gdouble volume,
 				       guint samplerate,
@@ -451,6 +550,7 @@ void ags_fm_synth_util_impulse_complex(AgsComplex *buffer,
 				       gdouble lfo_freq, gdouble lfo_depth,
 				       gdouble tuning);
 
+G_DEPRECATED_FOR(ags_fm_synth_util_compute_impulse)
 void ags_fm_synth_util_impulse(void *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate, guint audio_buffer_util_format,
