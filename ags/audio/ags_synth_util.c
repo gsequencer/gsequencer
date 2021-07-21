@@ -1566,7 +1566,7 @@ ags_synth_util_compute_sin_s32(AgsSynthUtil *synth_util)
   gdouble volume;
   guint i, i_stop;
 
-  static const gdouble scale = 32767.0;
+  static const gdouble scale = 214748363.0;
 
   if(synth_util == NULL ||
      synth_util->source == NULL){
@@ -1727,7 +1727,7 @@ ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util)
   gdouble volume;
   guint i, i_stop;
 
-  static const gdouble scale = 32767.0;
+  static const gdouble scale = 9223372036854775807.0;
 
   if(synth_util == NULL ||
      synth_util->source == NULL){
