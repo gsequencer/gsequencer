@@ -446,6 +446,8 @@ ags_solver_matrix_parse(AgsSolverMatrix *solver_matrix,
 	}else if(tmp_iter[0] == ')'){
 	  paranthesis_balance--;
 	}
+
+	tmp_iter++;
       }
 
       if(paranthesis_balance == 0){
@@ -664,6 +666,10 @@ ags_solver_matrix_parse(AgsSolverMatrix *solver_matrix,
     
     iter++;
   }
+
+  g_object_set(solver_matrix,
+	       "source-function", source_function,
+	       NULL);
 }
 
 /**
@@ -791,6 +797,183 @@ ags_solver_matrix_remove_vector(AgsSolverMatrix *solver_matrix,
   solver_matrix->column_count -= 1;
   
   g_rec_mutex_unlock(solver_matrix_mutex);  
+}
+
+/**
+ * ags_solver_matrix_eliminate:
+ * @solver_matrix: the #AgsSolverMatrix
+ * @nth_column: the nth column
+ * @nth_row_a: the nth row as a
+ * @nth_row_b: the nth row as b
+ * 
+ * Eliminate one column of @solver_matrix.
+ * 
+ * Since: 3.9.3
+ */
+void
+ags_solver_matrix_eliminate(AgsSolverMatrix *solver_matrix,
+			    guint nth_column,
+			    guint nth_row_a, guint nth_row_b)
+{
+  AgsSolverVector *solver_vector;
+  AgsSolverVector *current_vector;
+  AgsSolverPolynomial *solver_polynomial_a, *solver_polynomial_b;
+  AgsSolverPolynomial *solver_polynomial_factor;
+  AgsSolverPolynomial *current_a, *current_b;
+  AgsSolverPolynomial *current_b_factored;
+  AgsSolverPolynomial *current_c;
+
+  AgsComplex *a, *b;
+
+  gchar *polynomial_factor;
+  
+  guint row_count, column_count;
+  guint polynomial_count;
+  double _Complex factor;
+  guint i;
+  
+  GError *error;
+  
+  GRecMutex *solver_matrix_mutex;
+  GRecMutex *solver_vector_mutex;
+  GRecMutex *current_vector_mutex;
+
+  if(!AGS_IS_SOLVER_MATRIX(solver_matrix)){
+    return;
+  }
+
+  solver_matrix_mutex = AGS_SOLVER_MATRIX_GET_OBJ_MUTEX(solver_matrix);
+
+  g_object_get(solver_matrix,
+	       "row-count", &row_count,
+	       "column-count", &column_count,
+	       NULL);
+
+  if(nth_column >= column_count){
+    return;
+  }
+  
+  g_rec_mutex_lock(solver_matrix_mutex);
+
+  solver_vector = solver_matrix->term_table[nth_column];
+  g_object_ref(solver_vector);
+    
+  g_rec_mutex_unlock(solver_matrix_mutex);
+
+  solver_vector_mutex = AGS_SOLVER_VECTOR_GET_OBJ_MUTEX(solver_vector);
+
+  g_object_get(solver_vector,
+	       "polynomial-count", &polynomial_count,
+	       NULL);
+
+  if(nth_row_a >= polynomial_count ||
+     nth_row_b >= polynomial_count){  
+    if(solver_vector != NULL){
+      g_object_unref(solver_vector);
+    }
+
+    return;
+  }
+  
+  g_rec_mutex_lock(solver_vector_mutex);
+  
+  solver_polynomial_a = solver_vector->polynomial_column[nth_row_a];
+  g_object_ref(solver_polynomial_a);
+  
+  solver_polynomial_b = solver_vector->polynomial_column[nth_row_b];
+  g_object_ref(solver_polynomial_b);
+
+  g_rec_mutex_unlock(solver_vector_mutex);
+
+  a = ags_solver_polynomial_get_coefficient_value(solver_polynomial_a);
+  b = ags_solver_polynomial_get_coefficient_value(solver_polynomial_b);
+  
+  factor = 1.0 / ags_complex_get(b) * ags_complex_get(a);
+  
+  if(cimag(factor) != 0.0){
+    if(cimag(factor) >= 0.0){
+      polynomial_factor = g_strdup_printf("%f+𝑖%f",
+					  creal(factor), cimag(factor));
+    }else{
+      polynomial_factor = g_strdup_printf("%f-𝑖%f",
+					  creal(factor), -1.0 * cimag(factor));
+    }
+  }else{
+    polynomial_factor = g_strdup_printf("%f",
+					creal(factor));
+  }
+
+  solver_polynomial_factor = ags_solver_polynomial_new();
+  
+  ags_solver_polynomial_parse(solver_polynomial_factor,
+			      polynomial_factor);
+
+  for(i = 0; i < column_count; i++){
+    g_rec_mutex_lock(solver_matrix_mutex);
+    
+    current_vector = solver_matrix->term_table[i];
+    g_object_ref(current_vector);
+    
+    g_rec_mutex_unlock(solver_matrix_mutex);
+
+    current_vector_mutex = AGS_SOLVER_VECTOR_GET_OBJ_MUTEX(current_vector);
+
+    g_rec_mutex_lock(current_vector_mutex);
+  
+    current_a = current_vector->polynomial_column[nth_row_a];
+    g_object_ref(current_a);
+  
+    current_b = current_vector->polynomial_column[nth_row_b];
+    g_object_ref(current_b);
+
+    g_rec_mutex_unlock(current_vector_mutex);
+    
+    error = NULL;
+    current_b_factored = ags_solver_polynomial_multiply(current_b,
+							solver_polynomial_factor,
+							&error);
+  
+    error = NULL;
+    current_c = ags_solver_polynomial_subtract(current_a,
+					       current_b_factored,
+					       &error);
+
+    ags_solver_vector_insert_polynomial(current_vector,
+					current_c,
+					-1);
+
+    if(current_vector != NULL){
+      g_object_unref(current_vector);
+    }
+    
+    if(current_a != NULL){
+      g_object_unref(current_a);
+    }
+  
+    if(current_b != NULL){
+      g_object_unref(current_b);
+    }
+
+    if(current_b_factored != NULL){
+      g_object_unref(current_b_factored);
+    }
+  }
+  
+  if(solver_vector != NULL){
+    g_object_unref(solver_vector);
+  }
+  
+  if(solver_polynomial_a != NULL){
+    g_object_unref(solver_polynomial_a);
+  }
+  
+  if(solver_polynomial_b != NULL){
+    g_object_unref(solver_polynomial_b);
+  }
+
+  if(solver_polynomial_factor != NULL){
+    g_object_unref(solver_polynomial_factor);
+  }
 }
 
 /**

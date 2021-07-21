@@ -81,6 +81,10 @@ void ags_solver_matrix_insert_vector(AgsSolverMatrix *solver_matrix,
 void ags_solver_matrix_remove_vector(AgsSolverMatrix *solver_matrix,
 				     AgsSolverVector *solver_vector);
 
+void ags_solver_matrix_eliminate(AgsSolverMatrix *solver_matrix,
+				 guint nth_column,
+				 guint nth_row_a, guint nth_row_b);
+
 AgsSolverMatrix* ags_solver_matrix_new();
 
 G_END_DECLS

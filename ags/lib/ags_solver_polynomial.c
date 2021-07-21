@@ -1401,7 +1401,11 @@ ags_solver_polynomial_add(AgsSolverPolynomial *polynomial_a,
 		  coefficient_a + coefficient_b);
 
   if(solver_polynomial->coefficient_value->imag != 0.0){
-    solver_polynomial->coefficient = g_strdup_printf("%f+𝑖%f", solver_polynomial->coefficient_value->real, solver_polynomial->coefficient_value->imag);
+    if(solver_polynomial->coefficient_value->imag >= 0.0){
+      solver_polynomial->coefficient = g_strdup_printf("%f+𝑖%f", solver_polynomial->coefficient_value->real, solver_polynomial->coefficient_value->imag);
+    }else{
+      solver_polynomial->coefficient = g_strdup_printf("%f-𝑖%f", solver_polynomial->coefficient_value->real, -1.0 * solver_polynomial->coefficient_value->imag);
+    }
   }else{
     solver_polynomial->coefficient = g_strdup_printf("%f", solver_polynomial->coefficient_value->real);
   }
