@@ -1075,10 +1075,11 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
       gint paranthesis_balance;
       gboolean has_digits;
       gboolean is_float;
+      gboolean is_signed;
       
       if(symbol_count <= exponent_count ||
 	 polynomial[offset + 1] != '('){
-	g_warning("exponent malforemd");
+	g_warning("exponent malformed");
 	
 	break;
       }
@@ -1089,6 +1090,7 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
 
       has_digits = FALSE;
       is_float = FALSE;
+      is_signed = FALSE;
       
       while(polynomial[current_offset] != '\0' &&
 	    paranthesis_balance != 0){
@@ -1101,8 +1103,12 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
 	  has_digits = TRUE;
 	}else if(has_digits &&
 		 !is_float &&
-		 polynomial[current_offset] == '.' ){
+		 polynomial[current_offset] == '.'){
 	  is_float = TRUE;
+	}else if(!is_signed &&
+		 (polynomial[current_offset] == '-' ||
+		  polynomial[current_offset] == '+')){
+	  is_signed = TRUE;
 	}else{
 	  g_warning("exponent malformed");
 	
@@ -2339,7 +2345,7 @@ ags_solver_polynomial_raise_power(AgsSolverPolynomial *polynomial_a,
 	       "symbol", &symbol_b,
 	       "exponent", &exponent_b,
 	       NULL);
-
+  
   g_rec_mutex_lock(polynomial_b_mutex);
     
   coefficient_value_b = ags_complex_get(polynomial_b->coefficient_value);
@@ -2373,30 +2379,9 @@ ags_solver_polynomial_raise_power(AgsSolverPolynomial *polynomial_a,
       g_match_info_free(constant_exponent_match_info);
     }    
   }
-
-  for(i0 = 0; is_exponent_constant && i0 < b_length; i0++){
-    if(exponent_b[i0] != NULL){
-      g_regex_match(constant_exponent_regex, exponent_b[i0], 0, &constant_exponent_match_info);
-
-      if(g_match_info_matches(constant_exponent_match_info)){
-	gint start_pos, end_pos;
-
-	start_pos = 0;
-	end_pos = 0;
-
-	g_match_info_fetch_pos(constant_exponent_match_info,
-			       0,
-			       &start_pos, &end_pos);
-
-	if(end_pos < strlen(exponent_b[i0])){
-	  is_exponent_constant = FALSE;
-	}
-      }else{
-	is_exponent_constant = FALSE;
-      }
-      
-      g_match_info_free(constant_exponent_match_info);
-    }    
+  
+  if(symbol_b != NULL){
+    is_exponent_constant = FALSE;
   }
   
   if(!is_exponent_constant){
@@ -2637,30 +2622,9 @@ ags_solver_polynomial_extract_root(AgsSolverPolynomial *polynomial_a,
       g_match_info_free(constant_exponent_match_info);
     }    
   }
-
-  for(i0 = 0; is_exponent_constant && i0 < b_length; i0++){
-    if(exponent_b[i0] != NULL){
-      g_regex_match(constant_exponent_regex, exponent_b[i0], 0, &constant_exponent_match_info);
-
-      if(g_match_info_matches(constant_exponent_match_info)){
-	gint start_pos, end_pos;
-
-	start_pos = 0;
-	end_pos = 0;
-
-	g_match_info_fetch_pos(constant_exponent_match_info,
-			       0,
-			       &start_pos, &end_pos);
-
-	if(end_pos < strlen(exponent_b[i0])){
-	  is_exponent_constant = FALSE;
-	}
-      }else{
-	is_exponent_constant = FALSE;
-      }
-      
-      g_match_info_free(constant_exponent_match_info);
-    }    
+  
+  if(symbol_b != NULL){
+    is_exponent_constant = FALSE;
   }
   
   if(!is_exponent_constant){
