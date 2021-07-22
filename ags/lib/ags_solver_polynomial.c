@@ -1486,7 +1486,11 @@ ags_solver_polynomial_subtract(AgsSolverPolynomial *polynomial_a,
 		  coefficient_a - coefficient_b);
 
   if(solver_polynomial->coefficient_value->imag != 0.0){
-    solver_polynomial->coefficient = g_strdup_printf("%f+𝑖%f", solver_polynomial->coefficient_value->real, solver_polynomial->coefficient_value->imag);
+    if(solver_polynomial->coefficient_value->imag >= 0.0){
+      solver_polynomial->coefficient = g_strdup_printf("%f+𝑖%f", solver_polynomial->coefficient_value->real, solver_polynomial->coefficient_value->imag);
+    }else{
+      solver_polynomial->coefficient = g_strdup_printf("%f-𝑖%f", solver_polynomial->coefficient_value->real, -1.0 * solver_polynomial->coefficient_value->imag);
+    }
   }else{
     solver_polynomial->coefficient = g_strdup_printf("%f", solver_polynomial->coefficient_value->real);
   }
@@ -1678,7 +1682,11 @@ ags_solver_polynomial_multiply(AgsSolverPolynomial *polynomial_a,
 		  coefficient_value_a * coefficient_value_b);
 
   if(solver_polynomial->coefficient_value->imag != 0.0){
-    solver_polynomial->coefficient = g_strdup_printf("%f+𝑖%f", solver_polynomial->coefficient_value->real, solver_polynomial->coefficient_value->imag);
+    if(solver_polynomial->coefficient_value->imag >= 0.0){
+      solver_polynomial->coefficient = g_strdup_printf("%f+𝑖%f", solver_polynomial->coefficient_value->real, solver_polynomial->coefficient_value->imag);
+    }else{
+      solver_polynomial->coefficient = g_strdup_printf("%f-𝑖%f", solver_polynomial->coefficient_value->real, -1.0 * solver_polynomial->coefficient_value->imag);
+    }
   }else{
     solver_polynomial->coefficient = g_strdup_printf("%f", solver_polynomial->coefficient_value->real);
   }
@@ -1742,7 +1750,11 @@ ags_solver_polynomial_multiply(AgsSolverPolynomial *polynomial_a,
 	  }
 
 	  if(cimag(z) != 0.0){
-	    solver_polynomial->exponent[i0] = g_strdup_printf("%f+𝑖%f", creal(z), cimag(z));
+	    if(cimag(z) >= 0.0){
+	      solver_polynomial->exponent[i0] = g_strdup_printf("%f+𝑖%f", creal(z), cimag(z));
+	    }else{
+	      solver_polynomial->exponent[i0] = g_strdup_printf("%f-𝑖%f", creal(z), cimag(z));
+	    }
 	  }else{
 	    solver_polynomial->exponent[i0] = g_strdup_printf("%f", creal(z));
 	  }
@@ -2041,7 +2053,11 @@ ags_solver_polynomial_divide(AgsSolverPolynomial *polynomial_a,
 		  coefficient_value_a / coefficient_value_b);
 
   if(solver_polynomial->coefficient_value->imag != 0.0){
-    solver_polynomial->coefficient = g_strdup_printf("%f+𝑖%f", solver_polynomial->coefficient_value->real, solver_polynomial->coefficient_value->imag);
+    if(solver_polynomial->coefficient_value->imag >= 0.0){
+      solver_polynomial->coefficient = g_strdup_printf("%f+𝑖%f", solver_polynomial->coefficient_value->real, solver_polynomial->coefficient_value->imag);
+    }else{
+      solver_polynomial->coefficient = g_strdup_printf("%f-𝑖%f", solver_polynomial->coefficient_value->real, -1.0 * solver_polynomial->coefficient_value->imag);
+    }
   }else{
     solver_polynomial->coefficient = g_strdup_printf("%f", solver_polynomial->coefficient_value->real);
   }
@@ -2105,7 +2121,11 @@ ags_solver_polynomial_divide(AgsSolverPolynomial *polynomial_a,
 	  }
 
 	  if(cimag(z) != 0.0){
-	    solver_polynomial->exponent[i0] = g_strdup_printf("%f+𝑖%f", creal(z), cimag(z));
+	    if(cimag(z) >= 0.0){
+	      solver_polynomial->exponent[i0] = g_strdup_printf("%f+𝑖%f", creal(z), cimag(z));
+	    }else{
+	      solver_polynomial->exponent[i0] = g_strdup_printf("%f-𝑖%f", creal(z), cimag(z));
+	    }
 	  }else{
 	    solver_polynomial->exponent[i0] = g_strdup_printf("%f", creal(z));
 	  }
@@ -2254,7 +2274,7 @@ ags_solver_polynomial_raise_power(AgsSolverPolynomial *polynomial_a,
   double _Complex coefficient_value_a, coefficient_value_b;
   double _Complex exponent_value_a, exponent_value_b;
   guint a_length, b_length;
-  guint i0, i1;
+  guint i0;
   gboolean is_exponent_constant;
 
   GRecMutex *polynomial_a_mutex;
@@ -2401,7 +2421,11 @@ ags_solver_polynomial_raise_power(AgsSolverPolynomial *polynomial_a,
 		  cpow(coefficient_value_a, coefficient_value_b));
 
   if(solver_polynomial->coefficient_value->imag != 0.0){
-    solver_polynomial->coefficient = g_strdup_printf("%f+𝑖%f", solver_polynomial->coefficient_value->real, solver_polynomial->coefficient_value->imag);
+    if(solver_polynomial->coefficient_value->imag >= 0.0){
+      solver_polynomial->coefficient = g_strdup_printf("%f+𝑖%f", solver_polynomial->coefficient_value->real, solver_polynomial->coefficient_value->imag);
+    }else{
+      solver_polynomial->coefficient = g_strdup_printf("%f-𝑖%f", solver_polynomial->coefficient_value->real, -1.0 * solver_polynomial->coefficient_value->imag);
+    }
   }else{
     solver_polynomial->coefficient = g_strdup_printf("%f", solver_polynomial->coefficient_value->real);
   }
@@ -2409,169 +2433,66 @@ ags_solver_polynomial_raise_power(AgsSolverPolynomial *polynomial_a,
   symbol = NULL;
   exponent = NULL;
   
-  for(i0 = 0; i0 < a_length || i0 < b_length; i0++){
-    gboolean symbol_matched;
-
-    symbol_matched = FALSE;
-
-    if(i0 < a_length){
-      for(i1 = 0; i1 < b_length; i1++){
-	if(!g_strcmp0(symbol_a[i0], symbol_b[i1])){
-	  double _Complex z;
+  for(i0 = 0; i0 < a_length; i0++){
+    double _Complex z;
 	  
-	  /* exponent value a */
-	  g_rec_mutex_lock(polynomial_a_mutex);
+    /* exponent value a */
+    g_rec_mutex_lock(polynomial_a_mutex);
     
-	  exponent_value_a = ags_complex_get(&(polynomial_a->exponent_value[i0]));
+    exponent_value_a = ags_complex_get(&(polynomial_a->exponent_value[i0]));
 
-	  g_rec_mutex_unlock(polynomial_a_mutex);
+    g_rec_mutex_unlock(polynomial_a_mutex);
 
-	  /* exponent value b */
-	  g_rec_mutex_lock(polynomial_b_mutex);
-    
-	  exponent_value_b = ags_complex_get(&(polynomial_b->exponent_value[i1]));
+    /* exponent value b */
+    g_rec_mutex_lock(polynomial_b_mutex);
 
-	  g_rec_mutex_unlock(polynomial_b_mutex);
+    //FIXME:JK: needs proper implementation
+//    exponent_value_b = ags_complex_get(&(polynomial_b->exponent_value[i1]));
 
-	  /* raise power */
-	  if(solver_polynomial->symbol == NULL){
-	    solver_polynomial->symbol = (gchar **) g_malloc(2 * sizeof(gchar *));
-	  }else{
-	    solver_polynomial->symbol = (gchar **) g_realloc(solver_polynomial->symbol,
-							     (i0 + 2) * sizeof(gchar *));
-	  }
+    g_rec_mutex_unlock(polynomial_b_mutex);
 
-	  solver_polynomial->symbol[i0] = g_strdup(symbol_a[i0]);
-	  solver_polynomial->symbol[i0 + 1] = NULL;
-	  
-	  if(solver_polynomial->exponent_value == NULL){
-	    solver_polynomial->exponent_value = (AgsComplex *) g_new(AgsComplex,
-								     1);
-	  }else{
-	    solver_polynomial->exponent_value = (AgsComplex *) g_renew(AgsComplex,
-								       solver_polynomial->exponent_value,
-								       i0 + 1);
-	  }
-
-	  z = exponent_value_a * exponent_value_b;
-	  ags_complex_set(&(solver_polynomial->exponent_value[i0]),
-			  z);
-	  
-	  if(solver_polynomial->exponent == NULL){
-	    solver_polynomial->exponent = (gchar **) g_malloc(2 * sizeof(gchar *));
-	  }else{
-	    solver_polynomial->exponent = (gchar **) g_realloc(solver_polynomial->exponent,
-							     (i0 + 2) * sizeof(gchar *));
-	  }
-
-	  if(cimag(z) != 0.0){
-	    solver_polynomial->exponent[i0] = g_strdup_printf("%f+𝑖%f", creal(z), cimag(z));
-	  }else{
-	    solver_polynomial->exponent[i0] = g_strdup_printf("%f", creal(z));
-	  }
-	  
-	  solver_polynomial->exponent[i0 + 1] = NULL;
-
-	  symbol_matched = TRUE;
-
-	  break;
-	}
-      }
+    /* raise power */
+    if(solver_polynomial->symbol == NULL){
+      solver_polynomial->symbol = (gchar **) g_malloc(2 * sizeof(gchar *));
+    }else{
+      solver_polynomial->symbol = (gchar **) g_realloc(solver_polynomial->symbol,
+						       (i0 + 2) * sizeof(gchar *));
     }
-    
-    if(!symbol_matched){
-      if(i0 < a_length){
-	if(solver_polynomial->exponent_value == NULL){
-	  solver_polynomial->exponent_value = (AgsComplex *) g_new(AgsComplex,
-								   1);
-	}else{
-	  solver_polynomial->exponent_value = (AgsComplex *) g_renew(AgsComplex,
-								     solver_polynomial->exponent_value,
-								     i0 + 1);
-	}
 
-	/* exponent value a */
-	g_rec_mutex_lock(polynomial_a_mutex);
-    
-	exponent_value_a = ags_complex_get(&(polynomial_a->exponent_value[i0]));
+    solver_polynomial->symbol[i0] = g_strdup(symbol_a[i0]);
+    solver_polynomial->symbol[i0 + 1] = NULL;
+	  
+    if(solver_polynomial->exponent_value == NULL){
+      solver_polynomial->exponent_value = (AgsComplex *) g_new(AgsComplex,
+							       1);
+    }else{
+      solver_polynomial->exponent_value = (AgsComplex *) g_renew(AgsComplex,
+								 solver_polynomial->exponent_value,
+								 i0 + 1);
+    }
 
-	g_rec_mutex_unlock(polynomial_a_mutex);
+    z = exponent_value_a * coefficient_value_b;
+    ags_complex_set(&(solver_polynomial->exponent_value[i0]),
+		    z);
+	  
+    if(solver_polynomial->exponent == NULL){
+      solver_polynomial->exponent = (gchar **) g_malloc(2 * sizeof(gchar *));
+    }else{
+      solver_polynomial->exponent = (gchar **) g_realloc(solver_polynomial->exponent,
+							 (i0 + 2) * sizeof(gchar *));
+    }
 
-	/* raise power */
-	if(solver_polynomial->symbol == NULL){
-	  solver_polynomial->symbol = (gchar **) g_malloc(2 * sizeof(gchar *));
-	}else{
-	  solver_polynomial->symbol = (gchar **) g_realloc(solver_polynomial->symbol,
-							   (i0 + 2) * sizeof(gchar *));
-	}
-
-	solver_polynomial->symbol[i0] = g_strdup(symbol_a[i0]);
-	solver_polynomial->symbol[i0 + 1] = NULL;
-	
-	ags_complex_set(&(solver_polynomial->exponent_value[i0]),
-			exponent_value_a);
-
-	if(solver_polynomial->exponent == NULL){
-	  solver_polynomial->exponent = (gchar **) g_malloc(2 * sizeof(gchar *));
-	}else{
-	  solver_polynomial->exponent = (gchar **) g_realloc(solver_polynomial->exponent,
-							     (i0 + 2) * sizeof(gchar *));
-	}
-
-	if(cimag(exponent_value_a) != 0.0){
-	  solver_polynomial->exponent[i0] = g_strdup_printf("%f+𝑖%f", creal(exponent_value_a), cimag(exponent_value_a));
-	}else{
-	  solver_polynomial->exponent[i0] = g_strdup_printf("%f", creal(exponent_value_a));
-	}
-	
-	solver_polynomial->exponent[i0 + 1] = NULL;
+    if(cimag(z) != 0.0){
+      if(cimag(z) >= 0.0){
+	solver_polynomial->exponent[i0] = g_strdup_printf("%f+𝑖%f", creal(z), cimag(z));
       }else{
-	if(solver_polynomial->exponent_value == NULL){
-	  solver_polynomial->exponent_value = (AgsComplex *) g_new(AgsComplex,
-								   1);
-	}else{
-	  solver_polynomial->exponent_value = (AgsComplex *) g_renew(AgsComplex,
-								     solver_polynomial->exponent_value,
-								     i0 + 1);
-	}
-
-	/* exponent value b */
-	g_rec_mutex_lock(polynomial_b_mutex);
-    
-	exponent_value_b = ags_complex_get(&(polynomial_b->exponent_value[i0]));
-
-	g_rec_mutex_unlock(polynomial_b_mutex);
-
-	/* raise power */
-	if(solver_polynomial->symbol == NULL){
-	  solver_polynomial->symbol = (gchar **) g_malloc(2 * sizeof(gchar *));
-	}else{
-	  solver_polynomial->symbol = (gchar **) g_realloc(solver_polynomial->symbol,
-							   (i0 + 2) * sizeof(gchar *));
-	}
-
-	solver_polynomial->symbol[i0] = g_strdup(symbol_b[i0]);
-	solver_polynomial->symbol[i0 + 1] = NULL;
-
-	ags_complex_set(&(solver_polynomial->exponent_value[i0]),
-			exponent_value_b);
-
-	if(solver_polynomial->exponent == NULL){
-	  solver_polynomial->exponent = (gchar **) g_malloc(2 * sizeof(gchar *));
-	}else{
-	  solver_polynomial->exponent = (gchar **) g_realloc(solver_polynomial->exponent,
-							     (i0 + 2) * sizeof(gchar *));
-	}
-
-	if(cimag(exponent_value_b) != 0.0){
-	  solver_polynomial->exponent[i0] = g_strdup_printf("%f+𝑖%f", creal(exponent_value_b), cimag(exponent_value_b));
-	}else{
-	  solver_polynomial->exponent[i0] = g_strdup_printf("%f", creal(exponent_value_b));
-	}
-	
-	solver_polynomial->exponent[i0 + 1] = NULL;
+	solver_polynomial->exponent[i0] = g_strdup_printf("%f-𝑖%f", creal(z), cimag(z));
       }
+    }else{
+      solver_polynomial->exponent[i0] = g_strdup_printf("%f", creal(z));
     }
+	  
+    solver_polynomial->exponent[i0 + 1] = NULL;
   }
 
   ags_solver_polynomial_update(solver_polynomial);
@@ -2614,7 +2535,7 @@ ags_solver_polynomial_extract_root(AgsSolverPolynomial *polynomial_a,
   double _Complex coefficient_value_a, coefficient_value_b;
   double _Complex exponent_value_a, exponent_value_b;
   guint a_length, b_length;
-  guint i0, i1;
+  guint i0;
   gboolean is_exponent_constant;
 
   GRecMutex *polynomial_a_mutex;
@@ -2764,7 +2685,11 @@ ags_solver_polynomial_extract_root(AgsSolverPolynomial *polynomial_a,
 		  cpow(coefficient_value_a, 1.0 / coefficient_value_b));
 
   if(solver_polynomial->coefficient_value->imag != 0.0){
-    solver_polynomial->coefficient = g_strdup_printf("%f+𝑖%f", solver_polynomial->coefficient_value->real, solver_polynomial->coefficient_value->imag);
+    if(solver_polynomial->coefficient_value->imag >= 0.0){
+      solver_polynomial->coefficient = g_strdup_printf("%f+𝑖%f", solver_polynomial->coefficient_value->real, solver_polynomial->coefficient_value->imag);
+    }else{
+      solver_polynomial->coefficient = g_strdup_printf("%f-𝑖%f", solver_polynomial->coefficient_value->real, -1.0 * solver_polynomial->coefficient_value->imag);
+    }
   }else{
     solver_polynomial->coefficient = g_strdup_printf("%f", solver_polynomial->coefficient_value->real);
   }
@@ -2772,169 +2697,66 @@ ags_solver_polynomial_extract_root(AgsSolverPolynomial *polynomial_a,
   symbol = NULL;
   exponent = NULL;
   
-  for(i0 = 0; i0 < a_length || i0 < b_length; i0++){
-    gboolean symbol_matched;
-
-    symbol_matched = FALSE;
-
-    if(i0 < a_length){
-      for(i1 = 0; i1 < b_length; i1++){
-	if(!g_strcmp0(symbol_a[i0], symbol_b[i1])){
-	  double _Complex z;
+  for(i0 = 0; i0 < a_length; i0++){
+    double _Complex z;
 	  
-	  /* exponent value a */
-	  g_rec_mutex_lock(polynomial_a_mutex);
+    /* exponent value a */
+    g_rec_mutex_lock(polynomial_a_mutex);
     
-	  exponent_value_a = ags_complex_get(&(polynomial_a->exponent_value[i0]));
+    exponent_value_a = ags_complex_get(&(polynomial_a->exponent_value[i0]));
 
-	  g_rec_mutex_unlock(polynomial_a_mutex);
+    g_rec_mutex_unlock(polynomial_a_mutex);
 
-	  /* exponent value b */
-	  g_rec_mutex_lock(polynomial_b_mutex);
-    
-	  exponent_value_b = ags_complex_get(&(polynomial_b->exponent_value[i1]));
+    /* exponent value b */
+    g_rec_mutex_lock(polynomial_b_mutex);
 
-	  g_rec_mutex_unlock(polynomial_b_mutex);
+    //FIXME:JK: needs proper implementation    
+//    exponent_value_b = ags_complex_get(&(polynomial_b->exponent_value[i1]));
 
-	  /* extract root */
-	  if(solver_polynomial->symbol == NULL){
-	    solver_polynomial->symbol = (gchar **) g_malloc(2 * sizeof(gchar *));
-	  }else{
-	    solver_polynomial->symbol = (gchar **) g_realloc(solver_polynomial->symbol,
-							     (i0 + 2) * sizeof(gchar *));
-	  }
+    g_rec_mutex_unlock(polynomial_b_mutex);
 
-	  solver_polynomial->symbol[i0] = g_strdup(symbol_a[i0]);
-	  solver_polynomial->symbol[i0 + 1] = NULL;
-	  
-	  if(solver_polynomial->exponent_value == NULL){
-	    solver_polynomial->exponent_value = (AgsComplex *) g_new(AgsComplex,
-								     1);
-	  }else{
-	    solver_polynomial->exponent_value = (AgsComplex *) g_renew(AgsComplex,
-								       solver_polynomial->exponent_value,
-								       i0 + 1);
-	  }
-
-	  z = exponent_value_a / exponent_value_b;
-	  ags_complex_set(&(solver_polynomial->exponent_value[i0]),
-			  z);
-	  
-	  if(solver_polynomial->exponent == NULL){
-	    solver_polynomial->exponent = (gchar **) g_malloc(2 * sizeof(gchar *));
-	  }else{
-	    solver_polynomial->exponent = (gchar **) g_realloc(solver_polynomial->exponent,
-							     (i0 + 2) * sizeof(gchar *));
-	  }
-
-	  if(cimag(z) != 0.0){
-	    solver_polynomial->exponent[i0] = g_strdup_printf("%f+𝑖%f", creal(z), cimag(z));
-	  }else{
-	    solver_polynomial->exponent[i0] = g_strdup_printf("%f", creal(z));
-	  }
-	  
-	  solver_polynomial->exponent[i0 + 1] = NULL;
-
-	  symbol_matched = TRUE;
-
-	  break;
-	}
-      }
+    /* extract root */
+    if(solver_polynomial->symbol == NULL){
+      solver_polynomial->symbol = (gchar **) g_malloc(2 * sizeof(gchar *));
+    }else{
+      solver_polynomial->symbol = (gchar **) g_realloc(solver_polynomial->symbol,
+						       (i0 + 2) * sizeof(gchar *));
     }
-    
-    if(!symbol_matched){
-      if(i0 < a_length){
-	if(solver_polynomial->exponent_value == NULL){
-	  solver_polynomial->exponent_value = (AgsComplex *) g_new(AgsComplex,
-								   1);
-	}else{
-	  solver_polynomial->exponent_value = (AgsComplex *) g_renew(AgsComplex,
-								     solver_polynomial->exponent_value,
-								     i0 + 1);
-	}
 
-	/* exponent value a */
-	g_rec_mutex_lock(polynomial_a_mutex);
-    
-	exponent_value_a = ags_complex_get(&(polynomial_a->exponent_value[i0]));
+    solver_polynomial->symbol[i0] = g_strdup(symbol_a[i0]);
+    solver_polynomial->symbol[i0 + 1] = NULL;
+	  
+    if(solver_polynomial->exponent_value == NULL){
+      solver_polynomial->exponent_value = (AgsComplex *) g_new(AgsComplex,
+							       1);
+    }else{
+      solver_polynomial->exponent_value = (AgsComplex *) g_renew(AgsComplex,
+								 solver_polynomial->exponent_value,
+								 i0 + 1);
+    }
 
-	g_rec_mutex_unlock(polynomial_a_mutex);
+    z = exponent_value_a / coefficient_value_b;
+    ags_complex_set(&(solver_polynomial->exponent_value[i0]),
+		    z);
+	  
+    if(solver_polynomial->exponent == NULL){
+      solver_polynomial->exponent = (gchar **) g_malloc(2 * sizeof(gchar *));
+    }else{
+      solver_polynomial->exponent = (gchar **) g_realloc(solver_polynomial->exponent,
+							 (i0 + 2) * sizeof(gchar *));
+    }
 
-	/* extract root */
-	if(solver_polynomial->symbol == NULL){
-	  solver_polynomial->symbol = (gchar **) g_malloc(2 * sizeof(gchar *));
-	}else{
-	  solver_polynomial->symbol = (gchar **) g_realloc(solver_polynomial->symbol,
-							   (i0 + 2) * sizeof(gchar *));
-	}
-
-	solver_polynomial->symbol[i0] = g_strdup(symbol_a[i0]);
-	solver_polynomial->symbol[i0 + 1] = NULL;
-	
-	ags_complex_set(&(solver_polynomial->exponent_value[i0]),
-			exponent_value_a);
-
-	if(solver_polynomial->exponent == NULL){
-	  solver_polynomial->exponent = (gchar **) g_malloc(2 * sizeof(gchar *));
-	}else{
-	  solver_polynomial->exponent = (gchar **) g_realloc(solver_polynomial->exponent,
-							     (i0 + 2) * sizeof(gchar *));
-	}
-
-	if(cimag(exponent_value_a) != 0.0){
-	  solver_polynomial->exponent[i0] = g_strdup_printf("%f+𝑖%f", creal(exponent_value_a), cimag(exponent_value_a));
-	}else{
-	  solver_polynomial->exponent[i0] = g_strdup_printf("%f", creal(exponent_value_a));
-	}
-	
-	solver_polynomial->exponent[i0 + 1] = NULL;
+    if(cimag(z) != 0.0){
+      if(cimag(z) >= 0.0){
+	solver_polynomial->exponent[i0] = g_strdup_printf("%f+𝑖%f", creal(z), cimag(z));
       }else{
-	if(solver_polynomial->exponent_value == NULL){
-	  solver_polynomial->exponent_value = (AgsComplex *) g_new(AgsComplex,
-								   1);
-	}else{
-	  solver_polynomial->exponent_value = (AgsComplex *) g_renew(AgsComplex,
-								     solver_polynomial->exponent_value,
-								     i0 + 1);
-	}
-
-	/* exponent value b */
-	g_rec_mutex_lock(polynomial_b_mutex);
-    
-	exponent_value_b = ags_complex_get(&(polynomial_b->exponent_value[i0]));
-
-	g_rec_mutex_unlock(polynomial_b_mutex);
-
-	/* extract root */
-	if(solver_polynomial->symbol == NULL){
-	  solver_polynomial->symbol = (gchar **) g_malloc(2 * sizeof(gchar *));
-	}else{
-	  solver_polynomial->symbol = (gchar **) g_realloc(solver_polynomial->symbol,
-							   (i0 + 2) * sizeof(gchar *));
-	}
-
-	solver_polynomial->symbol[i0] = g_strdup(symbol_b[i0]);
-	solver_polynomial->symbol[i0 + 1] = NULL;
-
-	ags_complex_set(&(solver_polynomial->exponent_value[i0]),
-			1.0 / exponent_value_b);
-
-	if(solver_polynomial->exponent == NULL){
-	  solver_polynomial->exponent = (gchar **) g_malloc(2 * sizeof(gchar *));
-	}else{
-	  solver_polynomial->exponent = (gchar **) g_realloc(solver_polynomial->exponent,
-							     (i0 + 2) * sizeof(gchar *));
-	}
-
-	if(cimag(exponent_value_b) != 0.0){
-	  solver_polynomial->exponent[i0] = g_strdup_printf("%f+𝑖%f", creal(exponent_value_b), cimag(exponent_value_b));
-	}else{
-	  solver_polynomial->exponent[i0] = g_strdup_printf("%f", creal(exponent_value_b));
-	}
-	
-	solver_polynomial->exponent[i0 + 1] = NULL;
+	solver_polynomial->exponent[i0] = g_strdup_printf("%f-𝑖%f", creal(z), cimag(z));
       }
+    }else{
+      solver_polynomial->exponent[i0] = g_strdup_printf("%f", creal(z));
     }
+	  
+    solver_polynomial->exponent[i0 + 1] = NULL;
   }
 
   ags_solver_polynomial_update(solver_polynomial);

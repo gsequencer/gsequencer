@@ -740,8 +740,8 @@ ags_solver_polynomial_test_divide()
 
   error = NULL;
   c = ags_solver_polynomial_divide(a,
-				     b,
-				     &error);
+				   b,
+				   &error);
 
   CU_ASSERT(error == NULL);
   
@@ -761,8 +761,8 @@ ags_solver_polynomial_test_divide()
 
   error = NULL;
   c = ags_solver_polynomial_divide(a,
-				     b,
-				     &error);
+				   b,
+				   &error);
 
   CU_ASSERT(error == NULL);
   
@@ -782,8 +782,8 @@ ags_solver_polynomial_test_divide()
 
   error = NULL;
   c = ags_solver_polynomial_divide(a,
-				     b,
-				     &error);
+				   b,
+				   &error);
 
   CU_ASSERT(error == NULL);
   
@@ -796,13 +796,187 @@ ags_solver_polynomial_test_divide()
 void
 ags_solver_polynomial_test_raise_power()
 {
-  //TODO:JK: implement me
+  AgsSolverPolynomial *a, *b;
+  AgsSolverPolynomial *c;
+
+  GError *error;
+
+  /* numeric only */
+  a = ags_solver_polynomial_new();
+  ags_solver_polynomial_parse(a,
+			      "2.0");
+
+  b = ags_solver_polynomial_new();
+  ags_solver_polynomial_parse(b,
+			      "5.0");
+
+  error = NULL;
+  c = ags_solver_polynomial_raise_power(a,
+					b,
+					&error);
+
+  CU_ASSERT(error == NULL);
+  
+  CU_ASSERT(ags_complex_get(c->coefficient_value) == 32.0);
+
+  CU_ASSERT(c->symbol == NULL);
+  CU_ASSERT(c->exponent == NULL);
+  
+  /* with symbol */
+  a = ags_solver_polynomial_new();
+  ags_solver_polynomial_parse(a,
+			      "4.0ab");
+
+  b = ags_solver_polynomial_new();
+  ags_solver_polynomial_parse(b,
+			      "0.5");
+
+  error = NULL;
+  c = ags_solver_polynomial_raise_power(a,
+					b,
+					&error);
+
+  CU_ASSERT(error == NULL);
+  
+  CU_ASSERT(ags_complex_get(c->coefficient_value) == 2.0);
+
+  CU_ASSERT(c->symbol != NULL && !g_strcmp0(c->symbol[0], "a") && !g_strcmp0(c->symbol[1], "b") && c->symbol[2] == NULL);
+  CU_ASSERT(c->exponent_value != NULL && ags_complex_get(c->exponent_value) == 0.5 && ags_complex_get(c->exponent_value + 1) == 0.5);
+
+  /* with symbol */
+  a = ags_solver_polynomial_new();
+  ags_solver_polynomial_parse(a,
+			      "3.0abc");
+
+  b = ags_solver_polynomial_new();
+  ags_solver_polynomial_parse(b,
+			      "2.0");
+
+  error = NULL;
+  c = ags_solver_polynomial_raise_power(a,
+					b,
+					&error);
+  
+  CU_ASSERT(error == NULL);
+  
+  CU_ASSERT(round(ags_complex_get(c->coefficient_value)) == 9.0);
+
+  CU_ASSERT(c->symbol != NULL && !g_strcmp0(c->symbol[0], "a") && !g_strcmp0(c->symbol[1], "b") && !g_strcmp0(c->symbol[2], "c") && c->symbol[3] == NULL);
+  CU_ASSERT(c->exponent_value != NULL && round(ags_complex_get(c->exponent_value)) == 2.0 && round(ags_complex_get(c->exponent_value + 1)) == 2.0 && round(ags_complex_get(c->exponent_value + 2)) == 2.0);
+  
+  /* with symbol and exponent */
+  a = ags_solver_polynomial_new();
+  ags_solver_polynomial_parse(a,
+			      "32.0a^(12.0)b");
+
+  b = ags_solver_polynomial_new();
+  ags_solver_polynomial_parse(b,
+			      "0.25");
+
+  error = NULL;
+  c = ags_solver_polynomial_raise_power(a,
+					b,
+					&error);
+
+  CU_ASSERT(error == NULL);
+  
+  CU_ASSERT(round(ags_complex_get(c->coefficient_value)) == 2.0);
+
+  CU_ASSERT(c->symbol != NULL && !g_strcmp0(c->symbol[0], "a") && !g_strcmp0(c->symbol[1], "b") && c->symbol[2] == NULL);
+  CU_ASSERT(c->exponent_value != NULL && round(ags_complex_get(c->exponent_value)) == 3.0 && round(4.0 * ags_complex_get(c->exponent_value + 1)) == 1.0);
 }
 
 void
 ags_solver_polynomial_test_extract_root()
 {
-  //TODO:JK: implement me
+  AgsSolverPolynomial *a, *b;
+  AgsSolverPolynomial *c;
+
+  GError *error;
+
+  /* numeric only */
+  a = ags_solver_polynomial_new();
+  ags_solver_polynomial_parse(a,
+			      "27.0");
+
+  b = ags_solver_polynomial_new();
+  ags_solver_polynomial_parse(b,
+			      "3.0");
+
+  error = NULL;
+  c = ags_solver_polynomial_extract_root(a,
+					 b,
+					 &error);
+
+  CU_ASSERT(error == NULL);
+  
+  CU_ASSERT(round(ags_complex_get(c->coefficient_value)) == 3.0);
+
+  CU_ASSERT(c->symbol == NULL);
+  CU_ASSERT(c->exponent == NULL);
+  
+  /* with symbol */
+  a = ags_solver_polynomial_new();
+  ags_solver_polynomial_parse(a,
+			      "4.0ab");
+
+  b = ags_solver_polynomial_new();
+  ags_solver_polynomial_parse(b,
+			      "0.5");
+
+  error = NULL;
+  c = ags_solver_polynomial_extract_root(a,
+					 b,
+					 &error);
+
+  CU_ASSERT(error == NULL);
+  
+  CU_ASSERT(round(ags_complex_get(c->coefficient_value)) == 16.0);
+
+  CU_ASSERT(c->symbol != NULL && !g_strcmp0(c->symbol[0], "a") && !g_strcmp0(c->symbol[1], "b") && c->symbol[2] == NULL);
+  CU_ASSERT(c->exponent_value != NULL && round(ags_complex_get(c->exponent_value)) == 2.0 && round(ags_complex_get(c->exponent_value + 1)) == 2.0);
+
+  /* with symbol */
+  a = ags_solver_polynomial_new();
+  ags_solver_polynomial_parse(a,
+			      "4.0abc");
+
+  b = ags_solver_polynomial_new();
+  ags_solver_polynomial_parse(b,
+			      "2.0");
+
+  error = NULL;
+  c = ags_solver_polynomial_extract_root(a,
+					 b,
+					 &error);
+
+  CU_ASSERT(error == NULL);
+  
+  CU_ASSERT(round(ags_complex_get(c->coefficient_value)) == 2.0);
+
+  CU_ASSERT(c->symbol != NULL && !g_strcmp0(c->symbol[0], "a") && !g_strcmp0(c->symbol[1], "b") && !g_strcmp0(c->symbol[2], "c") && c->symbol[3] == NULL);
+  CU_ASSERT(c->exponent_value != NULL && ags_complex_get(c->exponent_value) == 0.5 && ags_complex_get(c->exponent_value + 1) == 0.5 && ags_complex_get(c->exponent_value + 2) == 0.5);
+  
+  /* with symbol and exponent */
+  a = ags_solver_polynomial_new();
+  ags_solver_polynomial_parse(a,
+			      "32.0a^(12.0)b");
+
+  b = ags_solver_polynomial_new();
+  ags_solver_polynomial_parse(b,
+			      "4.0");
+
+  error = NULL;
+  c = ags_solver_polynomial_extract_root(a,
+					 b,
+					 &error);
+
+  CU_ASSERT(error == NULL);
+  
+  CU_ASSERT(round(ags_complex_get(c->coefficient_value)) == 2.0);
+
+  CU_ASSERT(c->symbol != NULL && !g_strcmp0(c->symbol[0], "a") && !g_strcmp0(c->symbol[1], "b") && c->symbol[2] == NULL);
+  CU_ASSERT(c->exponent_value != NULL && round(ags_complex_get(c->exponent_value)) == 3.0 && round(4.0 * ags_complex_get(c->exponent_value + 1)) == 1.0);
 }
 
 int
