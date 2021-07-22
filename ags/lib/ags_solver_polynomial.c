@@ -345,7 +345,7 @@ ags_solver_polynomial_set_property(GObject *gobject,
     solver_polynomial->exponent[length] = g_strdup("1");
     solver_polynomial->exponent[length + 1] = NULL;
 
-    z = 1.0 + I * 0.0;
+    z = 1.0;
     ags_complex_set(&(solver_polynomial->exponent_value[length]),
 		    z);
     
@@ -1064,6 +1064,9 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
       exponent[symbol_count] = g_strdup("1");
       exponent[symbol_count + 1] = NULL;
 
+      ags_complex_set(exponent_value + symbol_count,
+		      1.0);
+
       symbol_count++;
 
       offset = current_offset;
@@ -1101,7 +1104,7 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
 		 polynomial[current_offset] == '.' ){
 	  is_float = TRUE;
 	}else{
-	  g_warning("exponent malforemd");
+	  g_warning("exponent malformed");
 	
 	  break;
 	}
@@ -1201,10 +1204,12 @@ ags_solver_polynomial_add(AgsSolverPolynomial *polynomial_a,
 	       "symbol", &symbol_b,
 	       NULL);
 
-  is_symbol_matching = (symbol_a != NULL &&
-			symbol_b != NULL &&
-			ags_strv_equal(symbol_a,
-				       symbol_b)) ? TRUE: FALSE;
+  is_symbol_matching = ((symbol_a == NULL &&
+			 symbol_b == NULL) ||
+			(symbol_a != NULL &&
+			 symbol_b != NULL &&
+			 ags_strv_equal(symbol_a,
+					symbol_b))) ? TRUE: FALSE;
 
   g_strfreev(symbol_a);
   g_strfreev(symbol_b);
@@ -1228,7 +1233,9 @@ ags_solver_polynomial_add(AgsSolverPolynomial *polynomial_a,
 	       "exponent", &exponent_b,
 	       NULL);
 
-  is_exponent_matching = (exponent_a != NULL &&
+  is_exponent_matching = ((exponent_a == NULL &&
+			   exponent_b == NULL) ||
+			  exponent_a != NULL &&
 			  exponent_b != NULL &&
 			  ags_strv_equal(exponent_a,
 					 exponent_b)) ? TRUE: FALSE;
@@ -1263,7 +1270,7 @@ ags_solver_polynomial_add(AgsSolverPolynomial *polynomial_a,
 	       "exponent", &exponent_a,
 	       NULL);
 
-  length = g_strv_length(symbol_a);
+  length = (symbol_a != NULL) ? g_strv_length(symbol_a): 0;
 
   if(length > 0){
     solver_polynomial->symbol = g_strdupv(symbol_a);
@@ -1275,8 +1282,8 @@ ags_solver_polynomial_add(AgsSolverPolynomial *polynomial_a,
     g_rec_mutex_lock(polynomial_a_mutex);
     
     for(i = 0; i < length; i++){
-      ags_complex_set(&(solver_polynomial->exponent_value[i]),
-		      ags_complex_get(&(polynomial_a->exponent_value[i])));
+      ags_complex_set(solver_polynomial->exponent_value + i,
+		      ags_complex_get(polynomial_a->exponent_value + i));
     }
 
     g_rec_mutex_unlock(polynomial_a_mutex);
@@ -1285,14 +1292,14 @@ ags_solver_polynomial_add(AgsSolverPolynomial *polynomial_a,
   /* get coeffiecient and summand of polynomial a */
   g_rec_mutex_lock(polynomial_a_mutex);
 
-  coefficient_a = ags_complex_get(&(polynomial_a->coefficient_value));
+  coefficient_a = ags_complex_get(polynomial_a->coefficient_value);
   
   g_rec_mutex_unlock(polynomial_a_mutex);
 
   /* get coeffiecient and summand of polynomial b */
   g_rec_mutex_lock(polynomial_b_mutex);
 
-  coefficient_b = ags_complex_get(&(polynomial_b->coefficient_value));
+  coefficient_b = ags_complex_get(polynomial_b->coefficient_value);
 
   g_rec_mutex_unlock(polynomial_b_mutex);
 
@@ -1375,10 +1382,12 @@ ags_solver_polynomial_subtract(AgsSolverPolynomial *polynomial_a,
 	       "symbol", &symbol_b,
 	       NULL);
 
-  is_symbol_matching = (symbol_a != NULL &&
-			symbol_b != NULL &&
-			ags_strv_equal(symbol_a,
-				       symbol_b)) ? TRUE: FALSE;
+  is_symbol_matching = ((symbol_a == NULL &&
+			 symbol_b == NULL) ||
+			(symbol_a != NULL &&
+			 symbol_b != NULL &&
+			 ags_strv_equal(symbol_a,
+					symbol_b))) ? TRUE: FALSE;
 
   g_strfreev(symbol_a);
   g_strfreev(symbol_b);
@@ -1402,7 +1411,9 @@ ags_solver_polynomial_subtract(AgsSolverPolynomial *polynomial_a,
 	       "exponent", &exponent_b,
 	       NULL);
 
-  is_exponent_matching = (exponent_a != NULL &&
+  is_exponent_matching = ((exponent_a == NULL &&
+			   exponent_b == NULL) ||
+			  exponent_a != NULL &&
 			  exponent_b != NULL &&
 			  ags_strv_equal(exponent_a,
 					 exponent_b)) ? TRUE: FALSE;
@@ -1437,7 +1448,7 @@ ags_solver_polynomial_subtract(AgsSolverPolynomial *polynomial_a,
 	       "exponent", &exponent_a,
 	       NULL);
 
-  length = g_strv_length(symbol_a);
+  length = (symbol_a != NULL) ? g_strv_length(symbol_a): 0;
 
   if(length > 0){
     solver_polynomial->symbol = g_strdupv(symbol_a);
@@ -1449,8 +1460,8 @@ ags_solver_polynomial_subtract(AgsSolverPolynomial *polynomial_a,
     g_rec_mutex_lock(polynomial_a_mutex);
     
     for(i = 0; i < length; i++){
-      ags_complex_set(&(solver_polynomial->exponent_value[i]),
-		      ags_complex_get(&(polynomial_a->exponent_value[i])));
+      ags_complex_set(solver_polynomial->exponent_value + i,
+		      ags_complex_get(polynomial_a->exponent_value + i));
     }
 
     g_rec_mutex_unlock(polynomial_a_mutex);
@@ -1459,19 +1470,19 @@ ags_solver_polynomial_subtract(AgsSolverPolynomial *polynomial_a,
   /* get coeffiecient and summand of polynomial a */
   g_rec_mutex_lock(polynomial_a_mutex);
 
-  coefficient_a = ags_complex_get(&(polynomial_a->coefficient_value));
+  coefficient_a = ags_complex_get(polynomial_a->coefficient_value);
   
   g_rec_mutex_unlock(polynomial_a_mutex);
 
   /* get coeffiecient and summand of polynomial b */
   g_rec_mutex_lock(polynomial_b_mutex);
 
-  coefficient_b = ags_complex_get(&(polynomial_b->coefficient_value));
+  coefficient_b = ags_complex_get(polynomial_b->coefficient_value);
 
   g_rec_mutex_unlock(polynomial_b_mutex);
 
   /* subtract */
-  ags_complex_set(&(solver_polynomial->coefficient_value),
+  ags_complex_set(solver_polynomial->coefficient_value,
 		  coefficient_a - coefficient_b);
 
   if(solver_polynomial->coefficient_value->imag != 0.0){
@@ -1590,8 +1601,8 @@ ags_solver_polynomial_multiply(AgsSolverPolynomial *polynomial_a,
   g_rec_mutex_unlock(polynomial_b_mutex);
 
   /* check exponent */
-  a_length = g_strv_length(symbol_a);
-  b_length = g_strv_length(symbol_b);
+  a_length = (symbol_a != NULL) ? g_strv_length(symbol_a): 0;
+  b_length = (symbol_b != NULL) ? g_strv_length(symbol_b): 0;
 
   is_exponent_constant = TRUE;
 
@@ -1953,8 +1964,8 @@ ags_solver_polynomial_divide(AgsSolverPolynomial *polynomial_a,
   g_rec_mutex_unlock(polynomial_b_mutex);
 
   /* check exponent */
-  a_length = g_strv_length(symbol_a);
-  b_length = g_strv_length(symbol_b);
+  a_length = (symbol_a != NULL) ? g_strv_length(symbol_a): 0;
+  b_length = (symbol_b != NULL) ? g_strv_length(symbol_b): 0;
 
   is_exponent_constant = TRUE;
 
@@ -2316,8 +2327,8 @@ ags_solver_polynomial_raise_power(AgsSolverPolynomial *polynomial_a,
   g_rec_mutex_unlock(polynomial_b_mutex);
 
   /* check */
-  a_length = g_strv_length(symbol_a);
-  b_length = g_strv_length(symbol_b);
+  a_length = (symbol_a != NULL) ? g_strv_length(symbol_a): 0;
+  b_length = (symbol_b != NULL) ? g_strv_length(symbol_b): 0;
 
   is_exponent_constant = TRUE;
 
@@ -2676,8 +2687,8 @@ ags_solver_polynomial_extract_root(AgsSolverPolynomial *polynomial_a,
   g_rec_mutex_unlock(polynomial_b_mutex);
 
   /* check */
-  a_length = g_strv_length(symbol_a);
-  b_length = g_strv_length(symbol_b);
+  a_length = (symbol_a != NULL) ? g_strv_length(symbol_a): 0;
+  b_length = (symbol_b != NULL) ? g_strv_length(symbol_b): 0;
 
   is_exponent_constant = TRUE;
 
