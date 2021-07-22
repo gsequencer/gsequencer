@@ -850,6 +850,8 @@ ags_solver_matrix_eliminate(AgsSolverMatrix *solver_matrix,
 	       NULL);
 
   if(nth_column >= column_count){
+    g_warning("solver matrix column index excess");
+    
     return;
   }
   
@@ -868,6 +870,8 @@ ags_solver_matrix_eliminate(AgsSolverMatrix *solver_matrix,
 
   if(nth_row_a >= polynomial_count ||
      nth_row_b >= polynomial_count){  
+    g_warning("solver matrix row index excess");
+    
     if(solver_vector != NULL){
       g_object_unref(solver_vector);
     }
@@ -887,6 +891,25 @@ ags_solver_matrix_eliminate(AgsSolverMatrix *solver_matrix,
 
   a = ags_solver_polynomial_get_coefficient_value(solver_polynomial_a);
   b = ags_solver_polynomial_get_coefficient_value(solver_polynomial_b);
+
+  if(a->real == 0.0 ||
+     b->real == 0.0){
+    g_warning("solver polynomial coefficient is 0.0");
+
+    if(solver_vector != NULL){
+      g_object_unref(solver_vector);
+    }
+
+    if(solver_polynomial_a != NULL){
+      g_object_unref(solver_polynomial_a);
+    }
+
+    if(solver_polynomial_b != NULL){
+      g_object_unref(solver_polynomial_b);
+    }
+
+    return;
+  }
   
   factor = 1.0 / ags_complex_get(b) * ags_complex_get(a);
   

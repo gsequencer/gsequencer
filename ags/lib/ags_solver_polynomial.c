@@ -571,7 +571,7 @@ ags_solver_polynomial_get_coefficient(AgsSolverPolynomial *solver_polynomial)
  * 
  * Get symbol of @solver_polynomial.
  * 
- * Returns: the symbol
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the symbol
  * 
  * Since: 3.9.3
  */
@@ -599,7 +599,7 @@ ags_solver_polynomial_get_symbol(AgsSolverPolynomial *solver_polynomial)
  * 
  * Get exponent of @solver_polynomial.
  * 
- * Returns: the exponent
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the exponent
  * 
  * Since: 3.9.3
  */
@@ -677,7 +677,7 @@ ags_solver_polynomial_get_coefficient_value(AgsSolverPolynomial *solver_polynomi
  * 
  * Get exponent value of @solver_polynomial.
  * 
- * Returns: the exponent value
+ * Returns: (element-type gpointer) (array zero-terminated=0) (transfer none): the exponent value
  * 
  * Since: 3.9.3
  */
@@ -790,12 +790,8 @@ void
 ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
 			    gchar *polynomial)
 {
-  GMatchInfo *sign_match_info;
-  GMatchInfo *coefficient_match_info;
-  GMatchInfo *symbol_match_info;
   GMatchInfo *function_match_info;
-  GMatchInfo *exponent_match_info;
-
+  
   gchar **symbol;
   gchar **exponent;
   
@@ -807,31 +803,31 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
   double _Complex z;
 
   guint offset, current_offset;
+  gint coefficient_start_pos, coefficient_end_pos;
+  gint symbol_start_pos, symbol_end_pos;
+  gint current_start_pos, current_end_pos;
   guint symbol_count;
   guint exponent_count;
-  guint i;
-  gunichar c, match_c;
-  gboolean success;
   gboolean is_signed;
+  gboolean is_float;
+  gboolean has_complex_unit;
+  gboolean has_coefficient;
+  gboolean has_symbol;
   
   GError *error;
-
+  
   GRecMutex *solver_polynomial_mutex;
 
-  static GRegex *sign_regex = NULL;
-  static GRegex *coefficient_regex = NULL;
-  static GRegex *symbol_regex = NULL;
   static GRegex *function_regex = NULL;
-  static GRegex *exponent_regex = NULL;
 
   /* groups: #1 sign */
   static const gchar *sign_pattern = "^([\\+\\-])";
 
   /* groups: #1 constants, #2 numeric with optional fraction */
-  static const gchar *coefficient_pattern = "^([ℯ𝜋𝑖∞])|([0-9]+(\\.[0-9]+)?)";
+  static const gchar *coefficient_pattern = "(([ℯ𝜋𝑖∞])|([0-9]+(\\.[0-9]+)?))";
 
   /* groups: #1 symbol */
-  static const gchar *symbol_pattern = "^([a-zA-Z][0-9]*)";
+  static const gchar *symbol_pattern = "([a-zA-Z][0-9]*)";
 
   /* groups: #1 function */
   static const gchar *function_pattern = "(log|exp|sin|cos|tan|asin|acos|atan|floor|ceil|round)";
@@ -849,48 +845,6 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
   /* compile regex */
   g_mutex_lock(&regex_mutex);
   
-  if(sign_regex == NULL){
-    error = NULL;
-    sign_regex = g_regex_new(sign_pattern,
-			     (G_REGEX_EXTENDED),
-			     0,
-			     &error);
-    
-    if(error != NULL){
-      g_message("%s", error->message);
-
-      g_error_free(error);
-    }
-  }
-
-  if(coefficient_regex == NULL){
-    error = NULL;
-    coefficient_regex = g_regex_new(coefficient_pattern,
-				    (G_REGEX_EXTENDED),
-				    0,
-				    &error);
-    
-    if(error != NULL){
-      g_message("%s", error->message);
-
-      g_error_free(error);
-    }
-  }
-  
-  if(symbol_regex == NULL){
-    error = NULL;
-    symbol_regex = g_regex_new(symbol_pattern,
-			       (G_REGEX_EXTENDED),
-			       0,
-			       &error);
-    
-    if(error != NULL){
-      g_message("%s", error->message);
-
-      g_error_free(error);
-    }
-  }
-  
   if(function_regex == NULL){
     error = NULL;
     function_regex = g_regex_new(function_pattern,
@@ -904,24 +858,8 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
       g_error_free(error);
     }
   }
-  
-  if(exponent_regex == NULL){
-    error = NULL;
-    exponent_regex = g_regex_new(exponent_pattern,
-				 (G_REGEX_EXTENDED),
-				 0,
-				 &error);
-    
-    if(error != NULL){
-      g_message("%s", error->message);
-
-      g_error_free(error);
-    }
-  }
 
   g_mutex_unlock(&regex_mutex);
-
-  offset = 0;
   
   g_regex_match(function_regex, polynomial, 0, &function_match_info);
 
@@ -931,301 +869,263 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
     return;
   }
 
-  /* parse sign */
-  g_regex_match(sign_regex, polynomial, 0, &sign_match_info);
-
-  if(g_match_info_matches(sign_match_info)){
-    gint start_pos, end_pos;
-
-    g_match_info_fetch_pos(sign_match_info,
-			   0,
-			   &start_pos, &end_pos);
-
-    offset += end_pos;
-  }
-
-  g_match_info_free(sign_match_info);
-
-  /* parse coefficient */
-  is_signed = FALSE;
-  
-  g_regex_match(coefficient_regex, polynomial + offset, 0, &coefficient_match_info);
-
-  while(g_match_info_matches(coefficient_match_info)){
-    gint start_pos, end_pos;
-
-    g_match_info_fetch_pos(coefficient_match_info,
-			   0,
-			   &start_pos, &end_pos);
-
-    offset += end_pos;
-
-    g_match_info_next(coefficient_match_info,
-		      NULL);
-  }
-
-  g_match_info_free(coefficient_match_info);
-
-  coefficient = NULL;
-
-  if(offset == 0){
-    coefficient = g_strdup("1"); 
-  }else if(offset == 1){
-    if(polynomial[0] == '+' ||
-       polynomial[0] == '-'){
-      coefficient = g_strdup_printf("%c%c",
-				    polynomial[0],
-				    '1');
-      
-      is_signed = TRUE;
-    }else{
-      coefficient = g_strndup(polynomial,
-			      1); 
-    }
-  }else{
-    if(polynomial[0] == '+' ||
-       polynomial[0] == '-'){      
-      is_signed = TRUE;
-    }
-    
-    coefficient = g_strndup(polynomial,
-			    offset); 
-  }
-
-  /* parse symbol */
-  symbol = NULL;
-  symbol_count = 0;
-
-  current_offset = offset;
-  
-  g_regex_match(symbol_regex, polynomial + current_offset, 0, &symbol_match_info);
-
-  while(g_match_info_matches(symbol_match_info)){
-    gint start_pos, end_pos;
-
-    g_match_info_fetch_pos(symbol_match_info,
-			   0,
-			   &start_pos, &end_pos);
-
-    if(symbol == NULL){
-      symbol = (gchar *) g_malloc(2 * sizeof(gchar *));
-    }else{
-      symbol = (gchar *) g_realloc(symbol,
-				   (symbol_count + 2) * sizeof(gchar *));
-    }
-
-    symbol[symbol_count] = g_strdup_printf("%*.s",
-					   end_pos - start_pos, polynomial + current_offset + start_pos);
-
-    symbol[symbol_count + 1] = NULL;
-    
-    symbol_count++;
-    
-    current_offset += end_pos;
-    
-    g_match_info_next(symbol_match_info,
-		      NULL);
-  }
-
-  g_match_info_free(symbol_match_info);
-
-  /* coefficient */
+  /* parse */
   coefficient_value = (AgsComplex *) g_new(AgsComplex,
 					   1);
 
-  z = 1.0 + I * 0.0;
-
-  current_offset = 0;
-
-  if(is_signed){
-    current_offset++;
-  }
-
-  /* match pi */
-  c = g_utf8_get_char(coefficient + current_offset);
-
-  match_c = g_utf8_get_char(AGS_SYMBOLIC_PI);
-
-  if(c == match_c){
-    z *= M_PI;
-    
-    offset += strlen(AGS_SYMBOLIC_PI);
-  }
-
-  /* match euler */
-  if(offset < strlen(coefficient)){
-    match_c = g_utf8_get_char(AGS_SYMBOLIC_EULER);
-
-    if(c == match_c){
-      z *= M_E;
-
-      offset += strlen(AGS_SYMBOLIC_EULER);
-    }
-  }
-
-  //TODO:JK: huh
-  /* match more? */
-
-  if(offset < strlen(coefficient)){
-    gchar *endptr;
-
-    gdouble val;
-    
-    endptr = NULL;
-
-    val = g_ascii_strtod(coefficient + offset,
-			 &endptr);
-
-    if(endptr != NULL){
-      z *= val;
-    }
-  }  
-
-  if(coefficient[0] == '-'){
-    z *= -1.0;
-  }
-  
   ags_complex_set(coefficient_value,
-		  z);
+		  1.0);
 
-  /* get base */
+  z = 1.0;
+  
+  coefficient = NULL;
+
+  symbol = NULL;
+  symbol_count = 0;
+
   exponent = NULL;
   exponent_count = 0;
 
   exponent_value = NULL;
-  
-  /* exponent */
-  if(symbol_count > 0){
-    exponent_value = g_new(AgsComplex,
-			   symbol_count);    
 
-    for(i = 0; i < symbol_count; i++){
-      z = 1.0 + I * 0.0;
-      
-      ags_complex_set(&(exponent_value[i]),
-		      z);
-    }
+  coefficient_start_pos = -1;
+  coefficient_end_pos = -1;
+
+  symbol_start_pos = -1;
+  symbol_end_pos = -1;
+
+  current_start_pos = -1;
+  current_end_pos = -1;
+
+  is_signed = FALSE;
+  is_float = FALSE;
+  has_coefficient = FALSE;
+  has_complex_unit = FALSE;
+  has_symbol = FALSE;
+
+  offset = 0;
+  current_offset = 0;
+  
+  if(polynomial[0] == '+' ||
+     polynomial[0] == '-'){
+    is_signed = TRUE;
+
+    current_offset = offset++;
   }
   
-  /* parse */
-  current_offset = offset;
+  while(polynomial[offset] != '\0'){
+    gunichar match_c;
 
-  success = TRUE;
-  
-  while(success){
-    /* parse symbol */
-    g_regex_match(symbol_regex, polynomial + current_offset, 0, &symbol_match_info);
+    gunichar pi = g_utf8_get_char(AGS_SYMBOLIC_PI);
+    gunichar euler = g_utf8_get_char(AGS_SYMBOLIC_EULER);
+    gunichar complex_unit = g_utf8_get_char(AGS_SYMBOLIC_COMPLEX_UNIT);
     
-    if(g_match_info_matches(symbol_match_info)){
-      gint start_pos, end_pos;
+    match_c = g_utf8_get_char(polynomial + offset);
+    
+    if(!has_symbol &&
+       match_c == pi){
+      /* check coefficient */
+      if(coefficient_start_pos == -1){
+	has_coefficient = TRUE;
+
+	coefficient_start_pos = offset;
+      }
+
+      z *= M_PI;
       
-      g_match_info_fetch_pos(symbol_match_info,
-			     0,
-			     &start_pos, &end_pos);
+      current_offset += strlen(AGS_SYMBOLIC_PI);
+          
+      offset = current_offset;
+    }else if(!has_symbol &&
+	     match_c == euler){
+      /* check coefficient */
+      if(coefficient_start_pos == -1){
+	has_coefficient = TRUE;
+
+	coefficient_start_pos = offset;
+      }
+
+      z *= M_E;
+
+      current_offset += strlen(AGS_SYMBOLIC_EULER);
+
+      offset = current_offset;
+    }else if(!has_symbol &&
+	     match_c == complex_unit){
+      /* check coefficient */
+      if(coefficient_start_pos == -1){
+	has_coefficient = TRUE;
+
+	coefficient_start_pos = offset;
+      }
+
+      has_complex_unit = TRUE;
+
+      z *= I;
       
-      current_offset += end_pos;
+      current_offset += strlen(AGS_SYMBOLIC_COMPLEX_UNIT);
+
+      offset = current_offset;
+    }else if(!has_symbol &&
+	     polynomial[offset] >= '0' &&
+	     polynomial[offset] <= '9'){
+      /* check coefficient */
+      if(coefficient_start_pos == -1){
+	has_coefficient = TRUE;
+
+	current_offset = 
+	  coefficient_start_pos =offset;
+      }
+
+      while(polynomial[current_offset] != '\0'){
+	if(polynomial[current_offset] >= '0' &&
+	   polynomial[current_offset] <= '9'){
+	}else if(!is_float &&
+		 polynomial[current_offset] == '.'){
+	}else{
+	  break;
+	}
+	
+	if(polynomial[current_offset] == '.'){
+	  is_float = TRUE;
+	}
+	
+	current_offset++;
+      }
+      
+      coefficient_end_pos = current_offset;
+
+      coefficient = g_strndup(polynomial + coefficient_start_pos,
+			      coefficient_end_pos - coefficient_start_pos);
+
+      ags_complex_set(coefficient_value,
+		      (polynomial[0] == '-' ? -1.0: 1.0) * z * g_ascii_strtod(polynomial + offset,
+									      NULL));
+      
+      offset = current_offset;
+      
+      z = 1.0;
+    }else if((polynomial[offset] >= 'a' &&
+	      polynomial[offset] <= 'z') ||
+	     (polynomial[offset] >= 'A' &&
+	      polynomial[offset] <= 'Z')){
+      /* check coefficient occured */
+      if(coefficient == NULL &&
+	 polynomial[0] == '-'){
+	ags_complex_set(coefficient_value,
+			-1.0);
+      }
+	
+      /* check symbol and exponent */
+      if(symbol_start_pos == -1){
+	has_symbol = TRUE;
+
+	symbol_start_pos = offset;
+      }
+
+      current_start_pos = offset;
+
+      current_offset = offset + 1;
+      
+      while(polynomial[current_offset] != '\0'){
+	if(!(polynomial[current_offset] >= '0' &&
+	     polynomial[current_offset] <= '9')){
+	  break;
+	}
+	
+	current_offset++;
+      }
+
+      if(symbol == NULL){
+	symbol = (gchar **) g_malloc(2 * sizeof(gchar *));
+	  
+	exponent = (gchar **) g_malloc(2 * sizeof(gchar *));
+
+	exponent_value = (AgsComplex *) g_new(AgsComplex,
+					      1);
+      }else{
+	symbol = (gchar **) g_realloc(symbol,
+				      (symbol_count + 2) * sizeof(gchar *));
+	  
+	exponent = (gchar **) g_realloc(exponent,
+					(symbol_count + 2) * sizeof(gchar *));
+
+
+	exponent_value = (AgsComplex *) g_renew(AgsComplex,
+						exponent_value,
+						symbol_count + 1);
+      }
+
+      symbol[symbol_count] = g_strndup(polynomial + offset,
+				       current_offset - offset);
+
+      symbol[symbol_count + 1] = NULL;
+      
+      exponent[symbol_count] = g_strdup("1");
+      exponent[symbol_count + 1] = NULL;
+
+      symbol_count++;
+
+      offset = current_offset;
+    }else if(has_symbol &&
+	     polynomial[offset] == '^'){
+      gint paranthesis_balance;
+      gboolean has_digits;
+      gboolean is_float;
+      
+      if(symbol_count <= exponent_count ||
+	 polynomial[offset + 1] != '('){
+	g_warning("exponent malforemd");
+	
+	break;
+      }
+
+      current_offset = offset + 2;
+
+      paranthesis_balance = 1;
+
+      has_digits = FALSE;
+      is_float = FALSE;
+      
+      while(polynomial[current_offset] != '\0' &&
+	    paranthesis_balance != 0){
+	if(polynomial[current_offset] == '('){
+	  paranthesis_balance++;
+	}else if(polynomial[current_offset] == ')'){
+	  paranthesis_balance--;
+	}else if(polynomial[current_offset] >= '0' &&
+		 polynomial[current_offset] <= '9'){
+	  has_digits = TRUE;
+	}else if(has_digits &&
+		 !is_float &&
+		 polynomial[current_offset] == '.' ){
+	  is_float = TRUE;
+	}else{
+	  g_warning("exponent malforemd");
+	
+	  break;
+	}
+	
+	current_offset++;
+      }
+
+      g_free(exponent[exponent_count]);
+      
+      exponent[exponent_count] = g_strndup(polynomial + offset + 2,
+					   current_offset - offset - 3);
+
+      ags_complex_set(exponent_value + exponent_count,
+		      g_ascii_strtod(exponent[exponent_count],
+				     NULL));
+
+      exponent_count++;
+
+      offset = current_offset;
     }else{
-      success = FALSE;
-    }
-    
-    g_match_info_free(symbol_match_info);
-
-    if(!success){
+      g_warning("malformed polynomial");
+      
       break;
     }
-    
-    /* parse exponent */
-    if(exponent == NULL){
-      exponent = (gchar *) g_malloc(2 * sizeof(gchar *));
-    }else{
-      exponent = (gchar *) g_realloc(exponent,
-				     (exponent_count + 2) * sizeof(gchar *));
-    }
-
-    g_regex_match(exponent_regex, polynomial + current_offset, 0, &exponent_match_info);
-    
-    if(g_match_info_matches(exponent_match_info)){
-      guint tmp_offset;
-      gint start_pos, end_pos;
-      gboolean tmp_is_signed;
-      
-      g_match_info_fetch_pos(exponent_match_info,
-			     0,
-			     &start_pos, &end_pos);
-    
-      exponent[exponent_count] = g_strdup_printf("%*.s",
-						 end_pos - start_pos, polynomial + current_offset + start_pos);
-
-      tmp_offset = current_offset;
-      
-      z = 1.0 + I * 0.0;
-
-      tmp_is_signed = FALSE;
-      
-      if(polynomial[current_offset] == '+' ||
-	 polynomial[current_offset] == '-'){
-	tmp_offset++;
-
-	tmp_is_signed = TRUE;
-      }
-
-      /* match pi */
-      c = g_utf8_get_char(polynomial + tmp_offset);
-
-      match_c = g_utf8_get_char(AGS_SYMBOLIC_PI);
-
-      if(c == match_c){
-	z *= M_PI;
-    
-	tmp_offset += strlen(AGS_SYMBOLIC_PI);
-      }
-
-      /* match euler */
-      if(tmp_offset < end_pos){
-	match_c = g_utf8_get_char(AGS_SYMBOLIC_EULER);
-
-	if(c == match_c){
-	  z *= M_E;
-
-	  tmp_offset += strlen(AGS_SYMBOLIC_EULER);
-	}
-      }
-
-      //TODO:JK: huh
-      /* match more? */
-
-      if(tmp_offset < end_pos){
-	gchar *endptr;
-
-	gdouble val;
-    
-	endptr = NULL;
-
-	val = g_ascii_strtod(polynomial + tmp_offset,
-			     &endptr);
-
-	if(endptr != NULL){
-	  z *= val;
-	}
-      }  
-
-      if(polynomial[0] == '-'){
-	z *= -1.0;
-      }
-      
-      ags_complex_set(&(exponent_value[exponent_count]),
-		      z);
-      
-      current_offset += end_pos;
-    }else{
-      exponent[exponent_count] = g_strdup("1");  
-    }
-	
-    g_match_info_free(exponent_match_info);
-
-    exponent[exponent_count + 1] = NULL;
-        
-    exponent_count++;
   }
   
   /* apply */
@@ -1253,7 +1153,7 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
  * Perform addition of @polynomial_a and @polynomial_b. Both summands need to have the very same
  * symbol and exponent, otherwise %NULL returned and error is appropriately set.
  * 
- * Returns: the newly instantiated #AgsSolverPolynomial or %NULL
+ * Returns: (transfer full): the newly instantiated #AgsSolverPolynomial or %NULL
  * 
  * Since: 3.2.0
  */
@@ -1427,7 +1327,7 @@ ags_solver_polynomial_add(AgsSolverPolynomial *polynomial_a,
  * Perform subtraction of @polynomial_a and @polynomial_b. Both minuend and subtrahend need to have the very same
  * symbol and exponent, otherwise %NULL returned and error is appropriately set.
  * 
- * Returns: the newly instantiated #AgsSolverPolynomial or %NULL
+ * Returns: (transfer full): the newly instantiated #AgsSolverPolynomial or %NULL
  * 
  * Since: 3.2.0
  */
@@ -1596,7 +1496,7 @@ ags_solver_polynomial_subtract(AgsSolverPolynomial *polynomial_a,
  * 
  * Perform multiplication of @polynomial_a and @polynomial_b.
  * 
- * Returns: the newly instantiated #AgsSolverPolynomial or %NULL
+ * Returns: (transfer full): the newly instantiated #AgsSolverPolynomial or %NULL
  * 
  * Since: 3.2.0
  */
@@ -1702,6 +1602,9 @@ ags_solver_polynomial_multiply(AgsSolverPolynomial *polynomial_a,
       if(g_match_info_matches(constant_exponent_match_info)){
 	gint start_pos, end_pos;
 
+	start_pos = 0;
+	end_pos = 0;
+
 	g_match_info_fetch_pos(constant_exponent_match_info,
 			       0,
 			       &start_pos, &end_pos);
@@ -1723,6 +1626,9 @@ ags_solver_polynomial_multiply(AgsSolverPolynomial *polynomial_a,
 
       if(g_match_info_matches(constant_exponent_match_info)){
 	gint start_pos, end_pos;
+
+	start_pos = 0;
+	end_pos = 0;
 
 	g_match_info_fetch_pos(constant_exponent_match_info,
 			       0,
@@ -1953,7 +1859,7 @@ ags_solver_polynomial_multiply(AgsSolverPolynomial *polynomial_a,
  * 
  * Perform division of @polynomial_a and @polynomial_b.
  * 
- * Returns: the newly instantiated #AgsSolverPolynomial or %NULL
+ * Returns: (transfer full): the newly instantiated #AgsSolverPolynomial or %NULL
  * 
  * Since: 3.2.0
  */
@@ -2059,6 +1965,9 @@ ags_solver_polynomial_divide(AgsSolverPolynomial *polynomial_a,
       if(g_match_info_matches(constant_exponent_match_info)){
 	gint start_pos, end_pos;
 
+	start_pos = 0;
+	end_pos = 0;
+
 	g_match_info_fetch_pos(constant_exponent_match_info,
 			       0,
 			       &start_pos, &end_pos);
@@ -2080,6 +1989,9 @@ ags_solver_polynomial_divide(AgsSolverPolynomial *polynomial_a,
 
       if(g_match_info_matches(constant_exponent_match_info)){
 	gint start_pos, end_pos;
+
+	start_pos = 0;
+	end_pos = 0;
 
 	g_match_info_fetch_pos(constant_exponent_match_info,
 			       0,
@@ -2310,7 +2222,7 @@ ags_solver_polynomial_divide(AgsSolverPolynomial *polynomial_a,
  * 
  * Perform raising power of @polynomial_a and @polynomial_b.
  * 
- * Returns: the newly instantiated #AgsSolverPolynomial or %NULL
+ * Returns: (transfer full): the newly instantiated #AgsSolverPolynomial or %NULL
  * 
  * Since: 3.2.0
  */
@@ -2437,6 +2349,9 @@ ags_solver_polynomial_raise_power(AgsSolverPolynomial *polynomial_a,
 
       if(g_match_info_matches(constant_exponent_match_info)){
 	gint start_pos, end_pos;
+
+	start_pos = 0;
+	end_pos = 0;
 
 	g_match_info_fetch_pos(constant_exponent_match_info,
 			       0,
@@ -2667,7 +2582,7 @@ ags_solver_polynomial_raise_power(AgsSolverPolynomial *polynomial_a,
  * 
  * Perform raising power of @polynomial_a and @polynomial_b.
  * 
- * Returns: the newly instantiated #AgsSolverPolynomial or %NULL
+ * Returns: (transfer full): the newly instantiated #AgsSolverPolynomial or %NULL
  * 
  * Since: 3.2.0
  */
@@ -2773,6 +2688,9 @@ ags_solver_polynomial_extract_root(AgsSolverPolynomial *polynomial_a,
       if(g_match_info_matches(constant_exponent_match_info)){
 	gint start_pos, end_pos;
 
+	start_pos = 0;
+	end_pos = 0;
+
 	g_match_info_fetch_pos(constant_exponent_match_info,
 			       0,
 			       &start_pos, &end_pos);
@@ -2794,6 +2712,9 @@ ags_solver_polynomial_extract_root(AgsSolverPolynomial *polynomial_a,
 
       if(g_match_info_matches(constant_exponent_match_info)){
 	gint start_pos, end_pos;
+
+	start_pos = 0;
+	end_pos = 0;
 
 	g_match_info_fetch_pos(constant_exponent_match_info,
 			       0,
