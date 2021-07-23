@@ -235,6 +235,7 @@ ags_solver_matrix_get_column_count
 ags_solver_matrix_parse
 ags_solver_matrix_insert_vector
 ags_solver_matrix_remove_vector
+ags_solver_matrix_eliminate
 ags_solver_matrix_new
 ags_application_context
 ags_connectable_get_type

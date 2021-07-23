@@ -264,6 +264,22 @@ ags_solver_matrix_test_eliminate()
   for(i = 0; i < 4; i++){
     CU_ASSERT(solver_matrix->term_table[i]->polynomial_count == 2);
   }
+
+  ags_solver_matrix_eliminate(solver_matrix,
+			      0,
+			      0, 1);
+			      
+  ags_solver_matrix_eliminate(solver_matrix,
+			      1,
+			      0, 1);
+
+  ags_solver_matrix_eliminate(solver_matrix,
+			      2,
+			      0, 1);
+
+  ags_solver_matrix_eliminate(solver_matrix,
+			      3,
+			      0, 1);
 }
 
 int
