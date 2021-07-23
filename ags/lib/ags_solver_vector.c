@@ -369,14 +369,8 @@ ags_solver_vector_insert_polynomial(AgsSolverVector *solver_vector,
   if(position < 0){
     solver_vector->polynomial_column[solver_vector->polynomial_count] = solver_polynomial;
   }else{
-    for(i = 0, j = 0; i < solver_vector->polynomial_count + 1; i++){
-      if(i > position){
-	solver_vector->polynomial_column[i] = solver_vector->polynomial_column[j];
-      }
-
-      if(i != position){
-	j++;
-      }
+    for(i = solver_vector->polynomial_count, j = solver_vector->polynomial_count - 1; i >= 0 && i > position; i--, j--){
+      solver_vector->polynomial_column[i] = solver_vector->polynomial_column[j];
     }
 
     solver_vector->polynomial_column[position] = solver_polynomial;

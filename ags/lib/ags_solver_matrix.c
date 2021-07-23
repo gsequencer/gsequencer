@@ -588,8 +588,103 @@ ags_solver_matrix_parse(AgsSolverMatrix *solver_matrix,
 	
 	if(solver_vector == NULL){
 	  gint position;
-
+	  guint i, j;
+	  gboolean success;	  
+	  
+	  GRecMutex *solver_polynomial_mutex;
+	  GRecMutex *current_solver_polynomial_mutex;
+	  
 	  position = -1;
+
+	  success = FALSE;
+
+	  solver_polynomial_mutex = AGS_SOLVER_POLYNOMIAL_GET_OBJ_MUTEX(solver_polynomial);
+
+	  if(symbol != NULL){
+	    for(i = 0; i < column_count && !success; i++){
+	      gchar **current_symbol;
+
+	      double _Complex exp_val, current_exp_val;
+	    
+	      /*  get current solver vector */
+	      g_rec_mutex_lock(solver_matrix_mutex);
+	  
+	      current_solver_vector = solver_matrix->term_table[i];
+
+	      g_object_ref(current_solver_vector);
+	  
+	      g_rec_mutex_unlock(solver_matrix_mutex);
+
+	      /*  get current solver vector mutex */
+	      current_solver_vector_mutex = AGS_SOLVER_VECTOR_GET_OBJ_MUTEX(current_solver_vector);
+
+	      /*  get current solver polynomial */
+	      g_rec_mutex_lock(current_solver_vector_mutex);
+	  
+	      current_solver_polynomial = (current_solver_vector->polynomial_column != NULL) ? current_solver_vector->polynomial_column[0]: NULL;
+
+	      g_object_ref(current_solver_polynomial);
+
+	      g_rec_mutex_unlock(current_solver_vector_mutex);
+
+	      current_solver_polynomial_mutex = AGS_SOLVER_POLYNOMIAL_GET_OBJ_MUTEX(current_solver_polynomial);
+	    
+	      /* compare polynomial */
+	      current_symbol = NULL;
+	  
+	      g_object_get(current_solver_polynomial,
+			   "symbol", &current_symbol,
+			   NULL);
+
+	      /* insert sorted */
+	      j = 0;
+	    
+	      if(current_symbol != NULL){
+		for(; symbol[j] != NULL && current_symbol[j] != NULL; j++){
+		  if(g_strcmp0(symbol[j], current_symbol[j]) < 0.0){
+		    position = i;
+		
+		    success = TRUE;
+
+		    break;
+		  }
+
+		  g_rec_mutex_lock(solver_polynomial_mutex);
+
+		  exp_val = ags_complex_get(solver_polynomial->exponent_value + j);
+
+		  g_rec_mutex_unlock(solver_polynomial_mutex);
+
+		  g_rec_mutex_lock(current_solver_polynomial_mutex);
+
+		  current_exp_val = ags_complex_get(current_solver_polynomial->exponent_value + j);
+	      
+		  g_rec_mutex_unlock(current_solver_polynomial_mutex);
+	      
+		  if(!g_strcmp0(symbol[j], current_symbol[j]) &&
+		     cabs(exp_val) > cabs(current_exp_val)){
+		    position = i;
+		
+		    success = TRUE;
+
+		    break;
+		  }	      
+		}
+
+		if(!success &&
+		   (current_symbol == NULL || (symbol[j] != NULL && current_symbol[j] == NULL))){
+		  position = i;
+		
+		  success = TRUE;
+		}
+
+		g_object_unref(current_solver_vector);
+		g_object_unref(current_solver_polynomial);
+
+		g_strfreev(current_symbol);
+	      }
+	    }
+	  }
 	  
 	  solver_vector = ags_solver_vector_new();
 	  g_object_set(solver_vector,
@@ -770,13 +865,104 @@ ags_solver_matrix_parse(AgsSolverMatrix *solver_matrix,
 	
     if(solver_vector == NULL){
       gint position;
-
-      if(numeric_column >= 0){
-	position = column_count - 2;
-      }else{
-	position = -1;
-      }
+      guint i, j;
+      gboolean success;	  
 	  
+      GRecMutex *solver_polynomial_mutex;
+      GRecMutex *current_solver_polynomial_mutex;
+	  
+      position = -1;
+
+      success = FALSE;
+
+      solver_polynomial_mutex = AGS_SOLVER_POLYNOMIAL_GET_OBJ_MUTEX(solver_polynomial);
+
+      if(symbol != NULL){
+	for(i = 0; i < column_count && !success; i++){
+	  gchar **current_symbol;
+
+	  double _Complex exp_val, current_exp_val;
+	    
+	  /*  get current solver vector */
+	  g_rec_mutex_lock(solver_matrix_mutex);
+	  
+	  current_solver_vector = solver_matrix->term_table[i];
+
+	  g_object_ref(current_solver_vector);
+	  
+	  g_rec_mutex_unlock(solver_matrix_mutex);
+
+	  /*  get current solver vector mutex */
+	  current_solver_vector_mutex = AGS_SOLVER_VECTOR_GET_OBJ_MUTEX(current_solver_vector);
+
+	  /*  get current solver polynomial */
+	  g_rec_mutex_lock(current_solver_vector_mutex);
+	  
+	  current_solver_polynomial = (current_solver_vector->polynomial_column != NULL) ? current_solver_vector->polynomial_column[0]: NULL;
+
+	  g_object_ref(current_solver_polynomial);
+
+	  g_rec_mutex_unlock(current_solver_vector_mutex);
+
+	  current_solver_polynomial_mutex = AGS_SOLVER_POLYNOMIAL_GET_OBJ_MUTEX(current_solver_polynomial);
+	    
+	  /* compare polynomial */
+	  current_symbol = NULL;
+	  
+	  g_object_get(current_solver_polynomial,
+		       "symbol", &current_symbol,
+		       NULL);
+
+	  /* insert sorted */
+	  j = 0;
+	    
+	  if(current_symbol != NULL){
+	    for(; symbol[j] != NULL && current_symbol[j] != NULL; j++){
+	      if(g_strcmp0(symbol[j], current_symbol[j]) < 0.0){
+		position = i;
+		
+		success = TRUE;
+
+		break;
+	      }
+
+	      g_rec_mutex_lock(solver_polynomial_mutex);
+
+	      exp_val = ags_complex_get(solver_polynomial->exponent_value + j);
+
+	      g_rec_mutex_unlock(solver_polynomial_mutex);
+
+	      g_rec_mutex_lock(current_solver_polynomial_mutex);
+
+	      current_exp_val = ags_complex_get(current_solver_polynomial->exponent_value + j);
+	      
+	      g_rec_mutex_unlock(current_solver_polynomial_mutex);
+	      
+	      if(!g_strcmp0(symbol[j], current_symbol[j]) &&
+		 cabs(exp_val) > cabs(current_exp_val)){
+		position = i;
+		
+		success = TRUE;
+
+		break;
+	      }	      
+	    }
+
+	    if(!success &&
+	       (current_symbol == NULL || (symbol[j] != NULL && current_symbol[j] == NULL))){
+	      position = i;
+		
+	      success = TRUE;
+	    }
+
+	    g_object_unref(current_solver_vector);
+	    g_object_unref(current_solver_polynomial);
+
+	    g_strfreev(current_symbol);
+	  }
+	}
+      }
+
       solver_vector = ags_solver_vector_new();
       g_object_set(solver_vector,
 		   "source-polynomial", polynomial,
@@ -890,14 +1076,8 @@ ags_solver_matrix_insert_vector(AgsSolverMatrix *solver_matrix,
   if(position < 0){
     solver_matrix->term_table[solver_matrix->column_count] = solver_vector;
   }else{
-    for(i = 0, j = 0; i < solver_matrix->column_count + 1; i++){
-      if(i > position){
-	solver_matrix->term_table[i] = solver_matrix->term_table[j];
-      }
-
-      if(i != position){
-	j++;
-      }
+    for(i = solver_matrix->column_count, j = solver_matrix->column_count - 1; i >= 0 && i > position; i--, j--){
+      solver_matrix->term_table[i] = solver_matrix->term_table[j];
     }
 
     solver_matrix->term_table[position] = solver_vector;

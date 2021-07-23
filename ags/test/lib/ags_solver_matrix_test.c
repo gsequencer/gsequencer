@@ -151,12 +151,16 @@ ags_solver_matrix_test_insert_vector()
 {
   AgsSolverMatrix *solver_matrix;
   AgsSolverVector *solver_vector;
-  
+  AgsSolverVector* solver_vector_arr_orig[3];
+  AgsSolverVector* solver_vector_arr_new[3];
+
   solver_matrix = ags_solver_matrix_new();
 
   CU_ASSERT(solver_matrix->term_table == NULL);
-  
-  solver_vector = ags_solver_vector_new();
+
+  /* append */
+  solver_vector =
+    solver_vector_arr_orig[0] = ags_solver_vector_new();
   ags_solver_matrix_insert_vector(solver_matrix,
 				  solver_vector,
 				  -1);
@@ -164,13 +168,51 @@ ags_solver_matrix_test_insert_vector()
   CU_ASSERT(solver_matrix->term_table != NULL);
   CU_ASSERT(solver_matrix->term_table[0] == solver_vector);
   
-  solver_vector = ags_solver_vector_new();
+  solver_vector =
+    solver_vector_arr_orig[1] =  ags_solver_vector_new();
   ags_solver_matrix_insert_vector(solver_matrix,
 				  solver_vector,
 				  -1);
 
   CU_ASSERT(solver_matrix->term_table != NULL);
   CU_ASSERT(solver_matrix->term_table[1] == solver_vector);
+
+  solver_vector = 
+    solver_vector_arr_orig[2] = ags_solver_vector_new();
+  ags_solver_matrix_insert_vector(solver_matrix,
+				  solver_vector,
+				  -1);
+
+  CU_ASSERT(solver_matrix->term_table != NULL);
+  CU_ASSERT(solver_matrix->term_table[2] == solver_vector);
+
+  /* insert */
+  solver_vector = 
+    solver_vector_arr_new[0] = ags_solver_vector_new();
+  ags_solver_matrix_insert_vector(solver_matrix,
+				  solver_vector,
+				  0);
+
+  CU_ASSERT(solver_matrix->term_table != NULL);
+  CU_ASSERT(solver_matrix->term_table[0] == solver_vector);
+
+  solver_vector = 
+    solver_vector_arr_new[1] = ags_solver_vector_new();
+  ags_solver_matrix_insert_vector(solver_matrix,
+				  solver_vector,
+				  2);
+
+  CU_ASSERT(solver_matrix->term_table != NULL);
+  CU_ASSERT(solver_matrix->term_table[2] == solver_vector);
+
+  solver_vector = 
+    solver_vector_arr_new[2] = ags_solver_vector_new();
+  ags_solver_matrix_insert_vector(solver_matrix,
+				  solver_vector,
+				  4);
+
+  CU_ASSERT(solver_matrix->term_table != NULL);
+  CU_ASSERT(solver_matrix->term_table[4] == solver_vector);
 }
 
 void
