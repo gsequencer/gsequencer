@@ -15,8 +15,6 @@ Free Documentation License".
 * TODO:JK: implemented AgsCompositeEditor
 * TODO:JK: implemented AgsCompositeEdit
 * TODO:JK: implemented AgsCompositeToolbar
-* TODO:JK: implemented volume control of AgsSyncSynth
-* TODO:JK: implemented volume control of AgsSyncFMSynth
 * FIXME:JK: make indicator orientable
 * TODO:JK: implemented Fx mutex per scope
 * TODO:JK: extended user's handbook to cover OSC server preferences
@@ -29,7 +27,6 @@ Free Documentation License".
 * TODO:JK: migrated unit-tests to GTest?
 * TODO:JK: move ags/X to ags/ui
 * TODO:JK: implemented ags-modify-synth-generator recall
-* TODO:JK: updated developer's handbook
 * TODO:JK: check recall id cleanup
 * TODO:JK: added unit-tests
 * TODO:JK: implement ::seek() of AgsMidiParser and AgsOscParser
