@@ -2035,72 +2035,67 @@ ags_stream_alloc(guint buffer_size,
 		 guint format)
 {
   void *buffer;
-  guint word_size;
   
   switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
-      buffer = (gint8 *) malloc(buffer_size * sizeof(gint8));
-      word_size = sizeof(gint8);
+      buffer = (gint8 *) g_malloc(buffer_size * sizeof(gint8));
+      memset(buffer, 0, buffer_size * sizeof(gint8));
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      buffer = (gint16 *) malloc(buffer_size * sizeof(gint16));
-      word_size = sizeof(gint16);
+      buffer = (gint16 *) g_malloc(buffer_size * sizeof(gint16));
+      memset(buffer, 0, buffer_size * sizeof(gint16));
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
-      buffer = (gint32 *) malloc(buffer_size * sizeof(gint32));
+      buffer = (gint32 *) g_malloc(buffer_size * sizeof(gint32));
+      memset(buffer, 0, buffer_size * sizeof(gint32));
       //NOTE:JK: The 24-bit linear samples use 32-bit physical space
-      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      buffer = (gint32 *) malloc(buffer_size * sizeof(gint32));
-      word_size = sizeof(gint32);
+      buffer = (gint32 *) g_malloc(buffer_size * sizeof(gint32));
+      memset(buffer, 0, buffer_size * sizeof(gint32));
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      buffer = (gint64 *) malloc(buffer_size * sizeof(gint64));
-      word_size = sizeof(gint64);
+      buffer = (gint64 *) g_malloc(buffer_size * sizeof(gint64));
+      memset(buffer, 0, buffer_size * sizeof(gint64));
     }
     break;
   case AGS_SOUNDCARD_FLOAT:
     {
-      buffer = (gfloat *) malloc(buffer_size * sizeof(gfloat));
-      word_size = sizeof(gfloat);
+      buffer = (gfloat *) g_malloc(buffer_size * sizeof(gfloat));
+      memset(buffer, 0, buffer_size * sizeof(gfloat));
     }
     break;
   case AGS_SOUNDCARD_DOUBLE:
     {
-      buffer = (gdouble *) malloc(buffer_size * sizeof(gdouble));
-      word_size = sizeof(gdouble);
+      buffer = (gdouble *) g_malloc(buffer_size * sizeof(gdouble));
+      memset(buffer, 0, buffer_size * sizeof(gdouble));
     }
     break;
   case AGS_SOUNDCARD_COMPLEX:
     {
       guint i;
       
-      buffer = (AgsComplex *) malloc(buffer_size * sizeof(AgsComplex));
+      buffer = (AgsComplex *) g_malloc(buffer_size * sizeof(AgsComplex));
 
       for(i = 0; i < buffer_size; i++){
 	((AgsComplex *) buffer)[i].real = 0.0;
 	((AgsComplex *) buffer)[i].imag = 0.0;
       }
-      
-      return(buffer);
     }
     break;
   default:
     g_warning("ags_stream_alloc(): unsupported word size");
     return(NULL);
   }
-
-  memset(buffer, 0, buffer_size * word_size);
 
   return(buffer);
 }
@@ -2120,7 +2115,7 @@ ags_stream_free(void *buffer)
     return;
   }
   
-  free(buffer);
+  g_free(buffer);
 }
 
 /**

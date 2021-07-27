@@ -852,7 +852,7 @@ ags_sfz_util_copy_s16(AgsSFZ *sfz,
 
   /* format */
   im_buffer = ags_stream_alloc(frame_count,
-			       AGS_SOUNDCARD_SIGNED_8_BIT);
+			       AGS_SOUNDCARD_SIGNED_16_BIT);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S16,
 						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
@@ -1116,7 +1116,7 @@ ags_sfz_util_copy_s24(AgsSFZ *sfz,
 
   /* format */
   im_buffer = ags_stream_alloc(frame_count,
-			       AGS_SOUNDCARD_SIGNED_8_BIT);
+			       AGS_SOUNDCARD_SIGNED_24_BIT);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S24,
 						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
@@ -1380,7 +1380,7 @@ ags_sfz_util_copy_s32(AgsSFZ *sfz,
 
   /* format */
   im_buffer = ags_stream_alloc(frame_count,
-			       AGS_SOUNDCARD_SIGNED_8_BIT);
+			       AGS_SOUNDCARD_SIGNED_32_BIT);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S32,
 						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
@@ -1908,7 +1908,7 @@ ags_sfz_util_copy_float(AgsSFZ *sfz,
 
   /* format */
   im_buffer = ags_stream_alloc(frame_count,
-			       AGS_SOUNDCARD_SIGNED_8_BIT);
+			       AGS_SOUNDCARD_FLOAT);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
 						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
@@ -2172,7 +2172,7 @@ ags_sfz_util_copy_double(AgsSFZ *sfz,
 
   /* format */
   im_buffer = ags_stream_alloc(frame_count,
-			       AGS_SOUNDCARD_SIGNED_8_BIT);
+			       AGS_SOUNDCARD_DOUBLE);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
@@ -2436,7 +2436,7 @@ ags_sfz_util_copy_complex(AgsSFZ *sfz,
 
   /* format */
   im_buffer = ags_stream_alloc(frame_count,
-			       AGS_SOUNDCARD_SIGNED_8_BIT);
+			       AGS_SOUNDCARD_COMPLEX);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_COMPLEX,
 						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);

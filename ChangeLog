@@ -5,6 +5,7 @@ ags (3.9.3)
 	* implemented AgsSolverVector missing getter/setter
 	* implemented AgsSolverPolynomial missing getter/setter
 	* implemented AgsSolverPolynomial missing multiply, divide, raise power and extract root
+	* fixed ags_sfz_util.c allocating not enough memory
 	* added unit-tests
 	* added ags_volume_util_test.c
 	* added ags_envelope_util_test.c
