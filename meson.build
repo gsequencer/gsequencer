@@ -8,6 +8,7 @@
 project('gsequencer', 'c',
         license: 'GPL3',
         default_options: [ 'buildtype=release', 'c_std=gnu99'],
+        meson_version: '>=0.53.0',
         version: '3.9.3')
 
 #note:jk: specify --buildtype=debug if needed
