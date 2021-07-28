@@ -2,6 +2,7 @@ ags (3.9.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: refactored ags_fm_synth_util.c
+	* fixed ags_resample_util_test.c some uninitialized values
 
 ags (3.9.3)
 

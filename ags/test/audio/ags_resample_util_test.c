@@ -166,6 +166,9 @@ ags_resample_util_test_free()
   resample_util->source = NULL;
   resample_util->destination = NULL;
   
+  resample_util->secret_rabbit.data_out = NULL;
+  resample_util->secret_rabbit.data_in = NULL;
+
   ags_resample_util_free(resample_util);
   
   resample_util = ags_resample_util_alloc();
@@ -313,9 +316,14 @@ void
 ags_resample_util_test_set_buffer_length()
 {
   AgsResampleUtil resample_util;
-  
-  resample_util.buffer_length = 0;
 
+  resample_util.secret_rabbit.data_in = NULL;
+  resample_util.secret_rabbit.data_out = NULL;
+  
+  resample_util.secret_rabbit.src_ratio = 1.0;
+
+  resample_util.buffer_length = 0;
+  
   ags_resample_util_set_buffer_length(&resample_util,
 				      512);
   
@@ -368,7 +376,13 @@ ags_resample_util_test_set_samplerate()
 {
   AgsResampleUtil resample_util;
   
+  resample_util.secret_rabbit.data_out = NULL;
+
+  resample_util.secret_rabbit.src_ratio = 1.0;
+
+  resample_util.buffer_length = 0;
   resample_util.samplerate = 0;
+  resample_util.target_samplerate = 44100;
 
   ags_resample_util_set_samplerate(&resample_util,
 				   44100);
@@ -395,6 +409,12 @@ ags_resample_util_test_set_target_samplerate()
 {
   AgsResampleUtil resample_util;
   
+  resample_util.secret_rabbit.data_out = NULL;
+
+  resample_util.secret_rabbit.src_ratio = 1.0;
+
+  resample_util.buffer_length = 0;
+  resample_util.samplerate = 44100;
   resample_util.target_samplerate = 0;
 
   ags_resample_util_set_target_samplerate(&resample_util,
