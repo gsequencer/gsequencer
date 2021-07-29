@@ -4335,16 +4335,14 @@ ags_synth_util_compute_triangle_s8(AgsSynthUtil *synth_util)
     
     v_triangle = (ags_v8double) {
       (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 1) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 1) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 2) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 2) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 3) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 3) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 4) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 4) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 5) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 5) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 6) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 7) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
     };
-
-    i++;
 
     v_triangle *= volume;
 
@@ -4359,7 +4357,9 @@ ags_synth_util_compute_triangle_s8(AgsSynthUtil *synth_util)
     *(source += synth_util->source_stride) = (gint8) v_buffer[6];
     *(source += synth_util->source_stride) = (gint8) v_buffer[7];
 
-    source += synth_util->source_stride;    
+    source += synth_util->source_stride;
+    
+    i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
@@ -4384,17 +4384,15 @@ ags_synth_util_compute_triangle_s8(AgsSynthUtil *synth_util)
       (double) *(tmp_source += synth_util->source_stride)};
     double v_triangle[] = {
       (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume)};
+      (((((synth_util->offset + i + 1) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 1) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 2) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 2) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 3) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 3) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 4) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 4) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 5) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 5) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 6) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 7) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume)};
     double v_volume[] = {(double) volume};
 
-    i++;
-    
     vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
     
@@ -4408,6 +4406,8 @@ ags_synth_util_compute_triangle_s8(AgsSynthUtil *synth_util)
     *(source += synth_util->source_stride) = (gint8) ret_v_buffer[7];
 
     source += synth_util->source_stride;
+
+    i += 8;    
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
@@ -4508,13 +4508,13 @@ ags_synth_util_compute_triangle_s16(AgsSynthUtil *synth_util)
     
     v_triangle = (ags_v8double) {
       (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 1) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 1) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 2) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 2) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 3) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 3) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 4) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 4) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 5) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 5) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 6) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 7) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
     };
 
     i++;
@@ -4557,16 +4557,14 @@ ags_synth_util_compute_triangle_s16(AgsSynthUtil *synth_util)
       (double) *(tmp_source += synth_util->source_stride)};
     double v_triangle[] = {
       (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume)};
+      (((((synth_util->offset + i + 1) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 1) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 2) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 2) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 3) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 3) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 4) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 4) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 5) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 5) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 6) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 7) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume)};
     double v_volume[] = {(double) volume};
-
-    i++;
     
     vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
@@ -4581,6 +4579,8 @@ ags_synth_util_compute_triangle_s16(AgsSynthUtil *synth_util)
     *(source += synth_util->source_stride) = (gint16) ret_v_buffer[7];
 
     source += synth_util->source_stride;
+
+    i += 8;
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
@@ -4681,16 +4681,14 @@ ags_synth_util_compute_triangle_s24(AgsSynthUtil *synth_util)
     
     v_triangle = (ags_v8double) {
       (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 1) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 1) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 2) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 2) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 3) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 3) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 4) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 4) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 5) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 5) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 6) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 7) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
     };
-
-    i++;
 
     v_triangle *= volume;
 
@@ -4706,6 +4704,8 @@ ags_synth_util_compute_triangle_s24(AgsSynthUtil *synth_util)
     *(source += synth_util->source_stride) = (gint32) v_buffer[7];
 
     source += synth_util->source_stride;    
+
+    i += 8;
   }
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
@@ -4730,16 +4730,14 @@ ags_synth_util_compute_triangle_s24(AgsSynthUtil *synth_util)
       (double) *(tmp_source += synth_util->source_stride)};
     double v_triangle[] = {
       (((((synth_util->offset + i) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
-      (((((synth_util->offset + (i++)) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume)};
+      (((((synth_util->offset + i + 1) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 1) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 2) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 2) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 3) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 3) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 4) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 4) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 5) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 5) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 6) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 6) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume),
+      (((((synth_util->offset + i + 7) + synth_util->phase) * ratio * 2.0) - (((double) ((((synth_util->offset + i + 7) + synth_util->phase) * ratio)) / 2.0) * 2.0) - 1.0) * volume)};
     double v_volume[] = {(double) volume};
-
-    i++;
     
     vDSP_vmulD(v_triangle, 1, v_volume, 0, tmp_ret_v_buffer, 1, 8);
     vDSP_vaddD(v_buffer, 1, tmp_ret_v_buffer, 1, ret_v_buffer, 1, 8);
@@ -4754,6 +4752,8 @@ ags_synth_util_compute_triangle_s24(AgsSynthUtil *synth_util)
     *(source += synth_util->source_stride) = (gint32) ret_v_buffer[7];
 
     source += synth_util->source_stride;
+
+    i += 8;
   }
 #else
   i_stop = synth_util->buffer_length - (synth_util->buffer_length % 8);
