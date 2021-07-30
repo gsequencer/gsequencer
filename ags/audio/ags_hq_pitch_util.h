@@ -28,6 +28,8 @@
 #include <math.h>
 #include <complex.h>
 
+#include <ags/audio/ags_linear_interpolate_util.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_HQ_PITCH_UTIL         (ags_hq_pitch_util_get_type())
@@ -43,8 +45,6 @@ struct _AgsHQPitchUtil
   gpointer destination;
   guint destination_stride;
 
-  gpointer mix_buffer;
-  gpointer im_mix_buffer;
   gpointer low_mix_buffer;
   gpointer new_mix_buffer;
 
@@ -54,6 +54,8 @@ struct _AgsHQPitchUtil
 
   gdouble base_key;
   gdouble tuning;
+
+  AgsLinearInterpolateUtil *linear_interpolate_util;
 };
 
 GType ags_hq_pitch_util_get_type(void);
@@ -78,14 +80,6 @@ void ags_hq_pitch_util_set_destination(AgsHQPitchUtil *hq_pitch_util,
 guint ags_hq_pitch_util_get_destination_stride(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_set_destination_stride(AgsHQPitchUtil *hq_pitch_util,
 					      guint destination_stride);
-
-gpointer ags_hq_pitch_util_get_mix_buffer(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_set_mix_buffer(AgsHQPitchUtil *hq_pitch_util,
-				      gpointer mix_buffer);
-
-gpointer ags_hq_pitch_util_get_im_mix_buffer(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_set_im_mix_buffer(AgsHQPitchUtil *hq_pitch_util,
-					 gpointer im_mix_buffer);
 
 gpointer ags_hq_pitch_util_get_low_mix_buffer(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_set_low_mix_buffer(AgsHQPitchUtil *hq_pitch_util,

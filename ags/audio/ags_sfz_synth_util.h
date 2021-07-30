@@ -30,7 +30,7 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SFZ_SYNTH_UTIL         (ags_sfz_synth_util_get_type())
-#define AGS_SF2_SYNTH_UTIL(ptr) ((AgsSF2SynthUtil *)(ptr))
+#define AGS_SFZ_SYNTH_UTIL(ptr) ((AgsSFZSynthUtil *)(ptr))
 
 typedef enum{
   AGS_SFZ_SYNTH_UTIL_LOOP_NONE,
@@ -68,6 +68,73 @@ struct _AgsSFZSynthUtil
 };
 
 GType ags_sfz_synth_util_get_type(void);
+
+AgsSFZSynthUtil* ags_sfz_synth_util_alloc();
+
+gpointer ags_sfz_synth_util_copy(AgsSFZSynthUtil *ptr);
+void ags_sfz_synth_util_free(AgsSFZSynthUtil *ptr);
+
+gpointer ags_sfz_synth_util_get_source(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_source(AgsSFZSynthUtil *sfz_synth_util,
+				   gpointer source);
+
+guint ags_sfz_synth_util_get_source_stride(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_source_stride(AgsSFZSynthUtil *sfz_synth_util,
+					  guint source_stride);
+
+guint ags_sfz_synth_util_get_buffer_length(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_buffer_length(AgsSFZSynthUtil *sfz_synth_util,
+					  guint buffer_length);
+
+guint ags_sfz_synth_util_get_audio_buffer_util_format(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_audio_buffer_util_format(AgsSFZSynthUtil *sfz_synth_util,
+						     guint audio_buffer_util_format);
+
+guint ags_sfz_synth_util_get_samplerate(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_samplerate(AgsSFZSynthUtil *sfz_synth_util,
+				       guint samplerate);
+
+gdouble ags_sfz_synth_util_get_note(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_note(AgsSFZSynthUtil *sfz_synth_util,
+				    gdouble note);
+
+gdouble ags_sfz_synth_util_get_volume(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_volume(AgsSFZSynthUtil *sfz_synth_util,
+				   gdouble volume);
+
+guint ags_sfz_synth_util_get_frame_count(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_frame_count(AgsSFZSynthUtil *sfz_synth_util,
+				       guint frame_count);
+
+guint ags_sfz_synth_util_get_offset(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_offset(AgsSFZSynthUtil *sfz_synth_util,
+				       guint offset);
+
+guint ags_sfz_synth_util_get_loop_mode(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_loop_mode(AgsSFZSynthUtil *sfz_synth_util,
+				       guint loop_mode);
+
+gint ags_sfz_synth_util_get_loop_start(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_loop_start(AgsSFZSynthUtil *sfz_synth_util,
+				       gint loop_start);
+
+gint ags_sfz_synth_util_get_loop_end(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_loop_end(AgsSFZSynthUtil *sfz_synth_util,
+				     gint loop_end);
+
+gpointer ags_sfz_synth_util_get_generic_pitch(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_generic_pitch(AgsSFZSynthUtil *sfz_synth_util,
+					  gpointer generic_pitch);
+
+void ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_compute(AgsSFZSynthUtil *sfz_synth_util);
 
 void ags_sfz_synth_util_copy_s8(gint8 *buffer,
 				guint buffer_size,
