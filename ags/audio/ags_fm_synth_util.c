@@ -516,26 +516,6 @@ ags_fm_synth_util_set_volume(AgsFMSynthUtil *fm_synth_util,
 }
 
 /**
- * ags_fm_synth_util_get_frame_count:
- * @fm_synth_util: the #AgsFMSynthUtil-struct
- * 
- * Get frame count of @fm_synth_util.
- * 
- * Returns: the frame count
- * 
- * Since: 3.9.3
- */
-guint
-ags_fm_synth_util_get_frame_count(AgsFMSynthUtil *fm_synth_util)
-{
-  if(fm_synth_util == NULL){
-    return(0);
-  }
-
-  return(fm_synth_util->frame_count);
-}
-
-/**
  * ags_fm_synth_util_get_lfo_oscillator_mode:
  * @fm_synth_util: the #AgsFMSynthUtil-struct
  * 
@@ -693,6 +673,26 @@ ags_fm_synth_util_set_tuning(AgsFMSynthUtil *fm_synth_util,
   }
 
   fm_synth_util->tuning = tuning;
+}
+
+/**
+ * ags_fm_synth_util_get_frame_count:
+ * @fm_synth_util: the #AgsFMSynthUtil-struct
+ * 
+ * Get frame count of @fm_synth_util.
+ * 
+ * Returns: the frame count
+ * 
+ * Since: 3.9.3
+ */
+guint
+ags_fm_synth_util_get_frame_count(AgsFMSynthUtil *fm_synth_util)
+{
+  if(fm_synth_util == NULL){
+    return(0);
+  }
+
+  return(fm_synth_util->frame_count);
 }
 
 /**
@@ -2695,7 +2695,7 @@ ags_fm_synth_util_compute_sin_s64(AgsFMSynthUtil *fm_synth_util)
  * ags_fm_synth_util_compute_sin_float:
  * @fm_synth_util: the #AgsFMSynthUtil-struct
  * 
- * Compute FM sine synth of float data.
+ * Compute FM sine synth of floating point data.
  *
  * Since: 3.9.3
  */
@@ -3081,7 +3081,7 @@ ags_fm_synth_util_compute_sin_float(AgsFMSynthUtil *fm_synth_util)
  * ags_fm_synth_util_compute_sin_double:
  * @fm_synth_util: the #AgsFMSynthUtil-struct
  * 
- * Compute FM sine synth of double data.
+ * Compute FM sine synth of double precision floating point data.
  *
  * Since: 3.9.3
  */
@@ -6279,7 +6279,7 @@ ags_fm_synth_util_compute_sawtooth_s64(AgsFMSynthUtil *fm_synth_util)
  * ags_fm_synth_util_compute_sawtooth_float:
  * @fm_synth_util: the #AgsFMSynthUtil-struct
  * 
- * Compute FM sawtooth synth of float data.
+ * Compute FM sawtooth synth of floating point data.
  *
  * Since: 3.9.3
  */
@@ -6665,7 +6665,7 @@ ags_fm_synth_util_compute_sawtooth_float(AgsFMSynthUtil *fm_synth_util)
  * ags_fm_synth_util_compute_sawtooth_double:
  * @fm_synth_util: the #AgsFMSynthUtil-struct
  * 
- * Compute FM sawtooth synth of double data.
+ * Compute FM sawtooth synth of double precision floating point data.
  *
  * Since: 3.9.3
  */
@@ -9886,7 +9886,7 @@ ags_fm_synth_util_compute_triangle_s64(AgsFMSynthUtil *fm_synth_util)
  * ags_fm_synth_util_compute_triangle_float:
  * @fm_synth_util: the #AgsFMSynthUtil-struct
  * 
- * Compute FM triangle synth of float data.
+ * Compute FM triangle synth of floating point data.
  *
  * Since: 3.9.3
  */
@@ -10272,7 +10272,7 @@ ags_fm_synth_util_compute_triangle_float(AgsFMSynthUtil *fm_synth_util)
  * ags_fm_synth_util_compute_triangle_double:
  * @fm_synth_util: the #AgsFMSynthUtil-struct
  * 
- * Compute FM triangle synth of double data.
+ * Compute FM triangle synth of double precision floating point data.
  *
  * Since: 3.9.3
  */
@@ -13496,7 +13496,7 @@ ags_fm_synth_util_compute_square_s64(AgsFMSynthUtil *fm_synth_util)
  * ags_fm_synth_util_compute_square_float:
  * @fm_synth_util: the #AgsFMSynthUtil-struct
  * 
- * Compute FM square synth of float data.
+ * Compute FM square synth of floating point data.
  *
  * Since: 3.9.3
  */
@@ -13882,7 +13882,7 @@ ags_fm_synth_util_compute_square_float(AgsFMSynthUtil *fm_synth_util)
  * ags_fm_synth_util_compute_square_double:
  * @fm_synth_util: the #AgsFMSynthUtil-struct
  * 
- * Compute FM square synth of double data.
+ * Compute FM square synth of double precision floating point data.
  *
  * Since: 3.9.3
  */
@@ -17242,7 +17242,7 @@ ags_fm_synth_util_compute_impulse_s64(AgsFMSynthUtil *fm_synth_util)
  * ags_fm_synth_util_compute_impulse_float:
  * @fm_synth_util: the #AgsFMSynthUtil-struct
  * 
- * Compute FM impulse synth of float data.
+ * Compute FM impulse synth of floating point data.
  *
  * Since: 3.9.3
  */
@@ -17628,7 +17628,7 @@ ags_fm_synth_util_compute_impulse_float(AgsFMSynthUtil *fm_synth_util)
  * ags_fm_synth_util_compute_impulse_double:
  * @fm_synth_util: the #AgsFMSynthUtil-struct
  * 
- * Compute FM impulse synth of double data.
+ * Compute FM impulse synth of double precision floating point data.
  *
  * Since: 3.9.3
  */

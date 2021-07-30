@@ -74,7 +74,7 @@ struct _AgsSF2SynthUtil
   gint loop_start;
   gint loop_end;
   
-  gpointer generic_pitch;
+  gpointer generic_pitch_util;
 };
 
 GType ags_sf2_synth_util_get_type(void);
@@ -126,7 +126,7 @@ void ags_sf2_synth_util_set_program(AgsSF2SynthUtil *sf2_synth_util,
 
 gint ags_sf2_synth_util_get_midi_key(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_midi_key(AgsSF2SynthUtil *sf2_synth_util,
-				     gint samplerate);
+				     gint midi_key);
 
 gdouble ags_sf2_synth_util_get_note(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_note(AgsSF2SynthUtil *sf2_synth_util,
@@ -156,9 +156,9 @@ gint ags_sf2_synth_util_get_loop_end(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_set_loop_end(AgsSF2SynthUtil *sf2_synth_util,
 				     gint loop_end);
 
-gpointer ags_sf2_synth_util_get_generic_pitch(AgsSF2SynthUtil *sf2_synth_util);
-void ags_sf2_synth_util_set_generic_pitch(AgsSF2SynthUtil *sf2_synth_util,
-					  gpointer generic_pitch);
+gpointer ags_sf2_synth_util_get_generic_pitch_util(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_generic_pitch_util(AgsSF2SynthUtil *sf2_synth_util,
+					       gpointer generic_pitch_util);
 
 void ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util);
 void ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util);

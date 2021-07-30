@@ -32,9 +32,6 @@
 #include <math.h>
 #include <complex.h>
 
-gpointer ags_sf2_synth_util_strct_copy(gpointer ptr);
-void ags_sf2_synth_util_strct_free(gpointer ptr);
-
 /**
  * SECTION:ags_sf2_synth_util
  * @short_description: SF2 synth util
@@ -55,8 +52,8 @@ ags_sf2_synth_util_get_type(void)
 
     ags_type_sf2_synth_util =
       g_boxed_type_register_static("AgsSF2SynthUtil",
-				   (GBoxedCopyFunc) ags_sf2_synth_util_strct_copy,
-				   (GBoxedFreeFunc) ags_sf2_synth_util_strct_free);
+				   (GBoxedCopyFunc) ags_sf2_synth_util_copy,
+				   (GBoxedFreeFunc) ags_sf2_synth_util_free);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_sf2_synth_util);
   }
@@ -64,20 +61,1031 @@ ags_sf2_synth_util_get_type(void)
   return g_define_type_id__volatile;
 }
 
-gpointer
-ags_sf2_synth_util_strct_copy(gpointer ptr)
+/**
+ * ags_sf2_synth_util_alloc:
+ * 
+ * Allocate #AgsSF2SynthUtil-struct.
+ * 
+ * Returns: the newly allocated #AgsSF2SynthUtil-struct
+ * 
+ * Since: 3.9.6
+ */
+AgsSF2SynthUtil*
+ags_sf2_synth_util_alloc()
 {
-  gpointer retval;
+  AgsSF2SynthUtil *ptr;
+  
+  ptr = (AgsSF2SynthUtil *) g_new(AgsSF2SynthUtil,
+				  1);
 
-  retval = g_memdup(ptr, sizeof(AgsSF2SynthUtil));
- 
-  return(retval);
+  ptr->ipatch_sample = NULL;
+
+  ptr->source = NULL;
+  ptr->source_stride = 1;
+
+  ptr->buffer_length = 0;
+  ptr->audio_buffer_util_format = AGS_SF2_SYNTH_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT;
+  ptr->samplerate = 0;
+
+  ptr->preset = NULL;
+  ptr->instrument = NULL;
+  ptr->sample = NULL;
+
+  ptr->bank = -1;
+  ptr->program = -1;
+
+  ptr->midi_key = -1;
+  
+  ptr->note = 0.0;
+
+  ptr->volume = 1.0;
+
+  ptr->frame_count = 0;
+  ptr->offset = 0;
+
+  ptr->loop_mode = AGS_SF2_SYNTH_UTIL_LOOP_NONE;
+
+  ptr->loop_start = 0;
+  ptr->loop_end = 0;
+
+  ptr->generic_pitch_util = ags_generic_pitch_util_alloc();
+
+  return(ptr);
 }
 
-void
-ags_sf2_synth_util_strct_free(gpointer ptr)
+/**
+ * ags_sf2_synth_util_copy:
+ * @ptr: the #AgsSF2SynthUtil-struct
+ * 
+ * Copy #AgsSF2SynthUtil-struct.
+ * 
+ * Returns: the newly allocated #AgsSF2SynthUtil-struct
+ * 
+ * Since: 3.9.6
+ */
+gpointer
+ags_sf2_synth_util_copy(AgsSF2SynthUtil *ptr)
 {
+  AgsSynthUtil *new_ptr;
+  
+  new_ptr = (AgsSynthUtil *) g_new(AgsSynthUtil,
+				   1);
+  
+  new_ptr->ipatch_sample = ptr->ipatch_sample;
+
+  if(new_ptr->ipatch_sample != NULL){
+    g_object_ref(new_ptr->ipatch_sample);
+  }
+
+  new_ptr->source = ptr->source;
+  new_ptr->source_stride = ptr->source_stride;
+
+  new_ptr->buffer_length = ptr->buffer_length;
+  new_ptr->audio_buffer_util_format = ptr->audio_buffer_util_format;
+  new_ptr->samplerate = ptr->samplerate;
+
+  new_ptr->preset = g_strdup(ptr->preset);
+  new_ptr->instrument = g_strdup(ptr->instrument);
+  new_ptr->sample = g_strdup(ptr->sample);
+
+  new_ptr->bank = ptr->bank;
+  new_ptr->program = ptr->program;
+
+  new_ptr->midi_key = ptr->midi_key;
+
+  new_ptr->note = ptr->note;
+
+  new_ptr->volume = ptr->volume;
+
+  new_ptr->frame_count = ptr->frame_count;
+  new_ptr->offset = ptr->offset;
+
+  new_ptr->loop_mode = ptr->loop_mode;
+
+  new_ptr->loop_start = ptr->loop_start;
+  new_ptr->loop_end = ptr->loop_end;
+
+  new_ptr->generic_pitch_util = ags_generic_pitch_util_copy(ptr->generic_pitch_util);
+  
+  return(new_ptr);
+}
+
+/**
+ * ags_sf2_synth_util_free:
+ * @ptr: the #AgsSF2SynthUtil-struct
+ * 
+ * Free #AgsSF2SynthUtil-struct.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_free(AgsSF2SynthUtil *ptr)
+{
+  if(ptr->ipatch_sample != NULL){
+    g_object_unref(ptr->ipatch_sample);
+  }
+
+  g_free(ptr->source);
+
+  g_free(ptr->preset);
+  g_free(ptr->instrument);
+  g_free(ptr->sample);
+
+  ags_generic_pitch_util_free(ptr->generic_pitch_util);
+  
   g_free(ptr);
+}
+
+/**
+ * ags_sf2_synth_util_get_source:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get source buffer of @sf2_synth_util.
+ * 
+ * Returns: the source buffer
+ * 
+ * Since: 3.9.6
+ */
+gpointer
+ags_sf2_synth_util_get_source(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(NULL);
+  }
+
+  return(sf2_synth_util->source);
+}
+
+/**
+ * ags_sf2_synth_util_set_source:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @source: the source buffer
+ *
+ * Set @source buffer of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_source(AgsSF2SynthUtil *sf2_synth_util,
+			      gpointer source)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->source = source;
+}
+
+/**
+ * ags_sf2_synth_util_get_source_stride:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get source stride of @sf2_synth_util.
+ * 
+ * Returns: the source buffer stride
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_sf2_synth_util_get_source_stride(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(0);
+  }
+
+  return(sf2_synth_util->source_stride);
+}
+
+/**
+ * ags_sf2_synth_util_set_source_stride:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @source_stride: the source buffer stride
+ *
+ * Set @source stride of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_source_stride(AgsSF2SynthUtil *sf2_synth_util,
+				     guint source_stride)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->source_stride = source_stride;
+}
+
+/**
+ * ags_sf2_synth_util_get_buffer_length:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get buffer length of @sf2_synth_util.
+ * 
+ * Returns: the buffer length
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_sf2_synth_util_get_buffer_length(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(0);
+  }
+
+  return(sf2_synth_util->buffer_length);
+}
+
+/**
+ * ags_sf2_synth_util_set_buffer_length:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @buffer_length: the buffer length
+ *
+ * Set @buffer_length of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_buffer_length(AgsSF2SynthUtil *sf2_synth_util,
+					  guint buffer_length)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->buffer_length = buffer_length;
+}
+
+/**
+ * ags_sf2_synth_util_get_audio_buffer_util_format:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get audio buffer util format of @sf2_synth_util.
+ * 
+ * Returns: the audio buffer util format
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_sf2_synth_util_get_audio_buffer_util_format(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(0);
+  }
+
+  return(sf2_synth_util->audio_buffer_util_format);
+}
+
+/**
+ * ags_sf2_synth_util_set_audio_buffer_util_format:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @audio_buffer_util_format: the audio buffer util format
+ *
+ * Set @audio_buffer_util_format of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_audio_buffer_util_format(AgsSF2SynthUtil *sf2_synth_util,
+						guint audio_buffer_util_format)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->audio_buffer_util_format = audio_buffer_util_format;
+}
+
+/**
+ * ags_sf2_synth_util_get_samplerate:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get samplerate of @sf2_synth_util.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_sf2_synth_util_get_samplerate(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(0);
+  }
+
+  return(sf2_synth_util->samplerate);
+}
+
+/**
+ * ags_sf2_synth_util_set_samplerate:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @samplerate: the samplerate
+ *
+ * Set @samplerate of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_samplerate(AgsSF2SynthUtil *sf2_synth_util,
+				  guint samplerate)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->samplerate = samplerate;
+}
+
+/**
+ * ags_sf2_synth_util_get_preset:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get preset of @sf2_synth_util.
+ * 
+ * Returns: the preset
+ * 
+ * Since: 3.9.6
+ */
+gchar*
+ags_sf2_synth_util_get_preset(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(NULL);
+  }
+
+  return(g_strdup(sf2_synth_util->samplerate));
+}
+
+/**
+ * ags_sf2_synth_util_set_preset:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @preset: the preset
+ *
+ * Set @preset of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_preset(AgsSF2SynthUtil *sf2_synth_util,
+			      gchar *preset)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  g_free(sf2_synth_util->preset);
+  
+  sf2_synth_util->preset = g_strdup(preset);
+}
+
+/**
+ * ags_sf2_synth_util_get_instrument:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get instrument of @sf2_synth_util.
+ * 
+ * Returns: the instrument
+ * 
+ * Since: 3.9.6
+ */
+gchar*
+ags_sf2_synth_util_get_instrument(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(NULL);
+  }
+
+  return(g_strdup(sf2_synth_util->samplerate));
+}
+
+/**
+ * ags_sf2_synth_util_set_instrument:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @instrument: the instrument
+ *
+ * Set @instrument of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_instrument(AgsSF2SynthUtil *sf2_synth_util,
+				  gchar *instrument)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  g_free(sf2_synth_util->instrument);
+  
+  sf2_synth_util->instrument = g_strdup(instrument);
+}
+
+/**
+ * ags_sf2_synth_util_get_sample:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get sample of @sf2_synth_util.
+ * 
+ * Returns: the sample
+ * 
+ * Since: 3.9.6
+ */
+gchar*
+ags_sf2_synth_util_get_sample(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(NULL);
+  }
+
+  return(g_strdup(sf2_synth_util->samplerate));
+}
+
+/**
+ * ags_sf2_synth_util_set_sample:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @sample: the sample
+ *
+ * Set @sample of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_sample(AgsSF2SynthUtil *sf2_synth_util,
+			      gchar *sample)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  g_free(sf2_synth_util->sample);
+  
+  sf2_synth_util->sample = g_strdup(sample);
+}
+
+/**
+ * ags_sf2_synth_util_get_bank:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get bank of @sf2_synth_util.
+ * 
+ * Returns: the bank
+ * 
+ * Since: 3.9.6
+ */
+gint
+ags_sf2_synth_util_get_bank(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(-1);
+  }
+
+  return(sf2_synth_util->bank);
+}
+
+/**
+ * ags_sf2_synth_util_set_bank:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @bank: the bank
+ *
+ * Set @bank of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_bank(AgsSF2SynthUtil *sf2_synth_util,
+			    gint bank)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->bank = bank;
+}
+
+/**
+ * ags_sf2_synth_util_get_program:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get program of @sf2_synth_util.
+ * 
+ * Returns: the program
+ * 
+ * Since: 3.9.6
+ */
+gint
+ags_sf2_synth_util_get_program(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(-1);
+  }
+
+  return(sf2_synth_util->program);
+}
+
+/**
+ * ags_sf2_synth_util_set_program:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @program: the program
+ *
+ * Set @program of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_program(AgsSF2SynthUtil *sf2_synth_util,
+			       gint program)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->program = program;
+}
+
+/**
+ * ags_sf2_synth_util_get_midi_key:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get midi_key of @sf2_synth_util.
+ * 
+ * Returns: the midi key
+ * 
+ * Since: 3.9.6
+ */
+gint
+ags_sf2_synth_util_get_midi_key(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(-1);
+  }
+
+  return(sf2_synth_util->midi_key);
+}
+
+/**
+ * ags_sf2_synth_util_set_midi_key:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @midi_key: the midi key
+ *
+ * Set @midi_key of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_midi_key(AgsSF2SynthUtil *sf2_synth_util,
+				gint midi_key)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->midi_key = midi_key;
+}
+
+/**
+ * ags_sf2_synth_util_get_note:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get note of @sf2_synth_util.
+ * 
+ * Returns: the note
+ * 
+ * Since: 3.9.6
+ */
+gdouble
+ags_sf2_synth_util_get_note(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(sf2_synth_util->note);
+}
+
+/**
+ * ags_sf2_synth_util_set_note:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @note: the note
+ *
+ * Set @note of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_note(AgsSF2SynthUtil *sf2_synth_util,
+			    gdouble note)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->note = note;
+}
+
+/**
+ * ags_sf2_synth_util_get_volume:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get volume of @sf2_synth_util.
+ * 
+ * Returns: the volume
+ * 
+ * Since: 3.9.6
+ */
+gdouble
+ags_sf2_synth_util_get_volume(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(sf2_synth_util->volume);
+}
+
+/**
+ * ags_sf2_synth_util_set_volume:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @volume: the volume
+ *
+ * Set @volume of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_volume(AgsSF2SynthUtil *sf2_synth_util,
+			      gdouble volume)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->volume = volume;
+}
+
+/**
+ * ags_sf2_synth_util_get_frame_count:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get frame count of @sf2_synth_util.
+ * 
+ * Returns: the frame count
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_sf2_synth_util_get_frame_count(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(0);
+  }
+
+  return(sf2_synth_util->frame_count);
+}
+
+/**
+ * ags_sf2_synth_util_set_frame_count:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @frame_count: the frame count
+ *
+ * Set @frame_count of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_frame_count(AgsSF2SynthUtil *sf2_synth_util,
+				   guint frame_count)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->frame_count = frame_count;
+}
+
+/**
+ * ags_sf2_synth_util_get_offset:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get offset of @sf2_synth_util.
+ * 
+ * Returns: the offset
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_sf2_synth_util_get_offset(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(0);
+  }
+
+  return(sf2_synth_util->offset);
+}
+
+/**
+ * ags_sf2_synth_util_set_offset:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @offset: the offset
+ *
+ * Set @offset of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_offset(AgsSF2SynthUtil *sf2_synth_util,
+			      guint offset)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->offset = offset;
+}
+
+/**
+ * ags_sf2_synth_util_get_loop_mode:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get loop mode of @sf2_synth_util.
+ * 
+ * Returns: the loop mode
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_sf2_synth_util_get_loop_mode(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(AGS_SF2_SYNTH_UTIL_LOOP_NONE);
+  }
+
+  return(sf2_synth_util->loop_mode);
+}
+
+/**
+ * ags_sf2_synth_util_set_loop_mode:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @loop_mode: the loop mode
+ *
+ * Set @loop_mode of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_loop_mode(AgsSF2SynthUtil *sf2_synth_util,
+				 guint loop_mode)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->loop_mode = loop_mode;
+}
+
+/**
+ * ags_sf2_synth_util_get_loop_start:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get loop start of @sf2_synth_util.
+ * 
+ * Returns: the loop start
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_sf2_synth_util_get_loop_start(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(0);
+  }
+
+  return(sf2_synth_util->loop_start);
+}
+
+/**
+ * ags_sf2_synth_util_set_loop_start:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @loop_start: the loop start
+ *
+ * Set @loop_start of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_loop_start(AgsSF2SynthUtil *sf2_synth_util,
+				  guint loop_start)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->loop_start = loop_start;
+}
+
+/**
+ * ags_sf2_synth_util_get_loop_end:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get loop end of @sf2_synth_util.
+ * 
+ * Returns: the loop end
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_sf2_synth_util_get_loop_end(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(0);
+  }
+
+  return(sf2_synth_util->loop_end);
+}
+
+/**
+ * ags_sf2_synth_util_set_loop_end:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @loop_end: the loop end
+ *
+ * Set @loop_end of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_loop_end(AgsSF2SynthUtil *sf2_synth_util,
+				guint loop_end)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->loop_end = loop_end;
+}
+
+/**
+ * ags_sf2_synth_util_get_generic_pitch_util:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get generic pitch util of @sf2_synth_util.
+ * 
+ * Returns: (transfer none): the generic pitch util
+ * 
+ * Since: 3.9.6
+ */
+gpointer
+ags_sf2_synth_util_get_generic_pitch_util(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(NULL);
+  }
+
+  return(sf2_synth_util->generic_pitch_util);
+}
+
+/**
+ * ags_sf2_synth_util_set_generic_pitch_util:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @generic_pitch_util: (transfer full): the generic pitch util
+ *
+ * Set @generic_pitch_util of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_generic_pitch_util(AgsSF2SynthUtil *sf2_synth_util,
+					  gpointer generic_pitch_util)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->generic_pitch_util = generic_pitch_util;
+}
+
+/**
+ * ags_sf2_synth_util_compute_s8:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Compute Soundfont2 synth of signed 8 bit data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_sf2_synth_util_compute_s16:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Compute Soundfont2 synth of signed 16 bit data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_sf2_synth_util_compute_s24:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Compute Soundfont2 synth of signed 24 bit data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_sf2_synth_util_compute_s32:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Compute Soundfont2 synth of signed 32 bit data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_sf2_synth_util_compute_s64:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Compute Soundfont2 synth of signed 64 bit data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_sf2_synth_util_compute_float:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Compute Soundfont2 synth of floating point data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_sf2_synth_util_compute_double:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Compute Soundfont2 synth of double precision floating point data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_sf2_synth_util_compute_s8:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Compute Soundfont2 synth of complex data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_sf2_synth_util_compute:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Compute Soundfont2 synth.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_compute(AgsSF2SynthUtil *sf2_synth_util)
+{
+  //TODO:JK: implement me
 }
 
 /**

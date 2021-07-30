@@ -1876,7 +1876,7 @@ ags_synth_util_compute_sin_s64(AgsSynthUtil *synth_util)
  * ags_synth_util_compute_sin_float:
  * @synth_util: the #AgsSynthUtil-struct
  * 
- * Compute sine synth of float data.
+ * Compute sine synth of floating point data.
  *
  * Since: 3.9.3
  */
@@ -2035,7 +2035,7 @@ ags_synth_util_compute_sin_float(AgsSynthUtil *synth_util)
  * ags_synth_util_compute_sin_double:
  * @synth_util: the #AgsSynthUtil-struct
  * 
- * Compute sine synth of double data.
+ * Compute sine synth of double precision floating point data.
  *
  * Since: 3.9.3
  */
@@ -3473,7 +3473,7 @@ ags_synth_util_compute_sawtooth_s64(AgsSynthUtil *synth_util)
  * ags_synth_util_compute_sawtooth_float:
  * @synth_util: the #AgsSynthUtil-struct
  * 
- * Compute sawtooth synth of float data.
+ * Compute sawtooth synth of floating point data.
  *
  * Since: 3.9.3
  */
@@ -3635,7 +3635,7 @@ ags_synth_util_compute_sawtooth_float(AgsSynthUtil *synth_util)
  * ags_synth_util_compute_sawtooth_double:
  * @synth_util: the #AgsSynthUtil-struct
  * 
- * Compute sawtooth synth of double data.
+ * Compute sawtooth synth of double precision floating point data.
  *
  * Since: 3.9.3
  */
@@ -5148,7 +5148,7 @@ ags_synth_util_compute_triangle_s64(AgsSynthUtil *synth_util)
  * ags_synth_util_compute_triangle_float:
  * @synth_util: the #AgsSynthUtil-struct
  * 
- * Compute triangle synth of float data.
+ * Compute triangle synth of floating point data.
  *
  * Since: 3.9.3
  */
@@ -5321,7 +5321,7 @@ ags_synth_util_compute_triangle_float(AgsSynthUtil *synth_util)
  * ags_synth_util_compute_triangle_double:
  * @synth_util: the #AgsSynthUtil-struct
  * 
- * Compute triangle synth of double data.
+ * Compute triangle synth of double precision floating point data.
  *
  * Since: 3.9.3
  */
@@ -6785,7 +6785,7 @@ ags_synth_util_compute_square_s64(AgsSynthUtil *synth_util)
  * ags_synth_util_compute_square_float:
  * @synth_util: the #AgsSynthUtil-struct
  * 
- * Compute square synth of float data.
+ * Compute square synth of floating point data.
  *
  * Since: 3.9.3
  */
@@ -6946,7 +6946,7 @@ ags_synth_util_compute_square_float(AgsSynthUtil *synth_util)
  * ags_synth_util_compute_square_double:
  * @synth_util: the #AgsSynthUtil-struct
  * 
- * Compute square synth of double data.
+ * Compute square synth of double precision floating point data.
  *
  * Since: 3.9.3
  */
@@ -8401,7 +8401,7 @@ ags_synth_util_compute_impulse_s64(AgsSynthUtil *synth_util)
  * ags_synth_util_compute_impulse_float:
  * @synth_util: the #AgsSynthUtil-struct
  * 
- * Compute impulse synth of float data.
+ * Compute impulse synth of floating point data.
  *
  * Since: 3.9.3
  */
@@ -8560,7 +8560,7 @@ ags_synth_util_compute_impulse_float(AgsSynthUtil *synth_util)
  * ags_synth_util_compute_impulse_double:
  * @synth_util: the #AgsSynthUtil-struct
  * 
- * Compute impulse synth of double data.
+ * Compute impulse synth of double precision floating point data.
  *
  * Since: 3.9.3
  */
