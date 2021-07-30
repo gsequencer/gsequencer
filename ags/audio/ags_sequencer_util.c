@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,9 @@
 
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
 
+gpointer ags_sequencer_util_copy(gpointer ptr);
+void ags_sequencer_util_free(gpointer ptr);
+
 /**
  * SECTION:ags_sequencer_util
  * @short_description: sequencer util
@@ -34,6 +37,41 @@
  *
  * Sequencer utility functions.
  */
+
+GType
+ags_sequencer_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_sequencer_util = 0;
+
+    ags_type_sequencer_util =
+      g_boxed_type_register_static("AgsSequencerUtil",
+				   (GBoxedCopyFunc) ags_sequencer_util_copy,
+				   (GBoxedFreeFunc) ags_sequencer_util_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_sequencer_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+gpointer
+ags_sequencer_util_copy(gpointer ptr)
+{
+  gpointer retval;
+
+  retval = g_memdup(ptr, sizeof(AgsSequencerUtil));
+ 
+  return(retval);
+}
+
+void
+ags_sequencer_util_free(gpointer ptr)
+{
+  g_free(ptr);
+}
 
 /**
  * ags_sequencer_util_get_obj_mutex:

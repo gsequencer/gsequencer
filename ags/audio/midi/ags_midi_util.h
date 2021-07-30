@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,17 @@
 #include <ags/libags.h>
 
 G_BEGIN_DECLS
+
+#define AGS_TYPE_MIDI_UTIL         (ags_midi_util_get_type())
+
+typedef struct _AgsMidiUtil AgsMidiUtil;
+
+struct _AgsMidiUtil
+{
+  //empty
+};
+
+GType ags_midi_util_get_type(void);
 
 /* real-time channel message utility */
 gboolean ags_midi_util_is_key_on(unsigned char *buffer);

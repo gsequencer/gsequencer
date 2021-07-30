@@ -57,7 +57,7 @@ typedef enum{
 /**
  * AgsSFZSampleLoopMode:
  * @AGS_SFZ_SAMPLE_LOOP_ONE_SHOT: one shot
- * @AGS_SFZ_SAMPLE_LOOP_CONINUOUS: loop continuous
+ * @AGS_SFZ_SAMPLE_LOOP_CONTINUOUS: loop continuous
  * @AGS_SFZ_SAMPLE_LOOP_SUSTAIN: loop sustain
  * 
  * Enum values to control the behavior or indicate internal state of #AgsSFZSample by

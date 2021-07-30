@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -62,6 +62,12 @@ struct _AgsSolverVectorClass
 };
 
 GType ags_solver_vector_get_type(void);
+
+gchar* ags_solver_vector_get_source_polynomial(AgsSolverVector *solver_vector);
+void ags_solver_vector_set_source_polynomial(AgsSolverVector *solver_vector,
+					     gchar *source_polynomial);
+
+guint ags_solver_vector_get_polynomial_count(AgsSolverVector *solver_vector);
 
 void ags_solver_vector_insert_polynomial(AgsSolverVector *solver_vector,
 					 AgsSolverPolynomial *solver_polynomial,

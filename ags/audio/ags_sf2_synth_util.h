@@ -30,12 +30,23 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_SF2_SYNTH_UTIL         (ags_sf2_synth_util_get_type())
+
 typedef enum{
   AGS_SF2_SYNTH_UTIL_LOOP_NONE,
   AGS_SF2_SYNTH_UTIL_LOOP_STANDARD,
   AGS_SF2_SYNTH_UTIL_LOOP_RELEASE,
   AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG,
 }AgsSF2SynthUtilLoopMode;
+
+typedef struct _AgsSF2SynthUtil AgsSF2SynthUtil;
+
+struct _AgsSF2SynthUtil
+{
+  //empty
+};
+
+GType ags_sf2_synth_util_get_type(void);
 
 AgsIpatchSample* ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 									  gint bank,

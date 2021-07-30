@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,17 @@
 #include <ags/libags.h>
 
 G_BEGIN_DECLS
+
+#define AGS_TYPE_SEQUENCER_UTIL         (ags_sequencer_util_get_type())
+
+typedef struct _AgsSequencerUtil AgsSequencerUtil;
+
+struct _AgsSequencerUtil
+{
+  //empty
+};
+
+GType ags_sequencer_util_get_type(void);
 
 GRecMutex* ags_sequencer_util_get_obj_mutex(GObject *sequencer);
 

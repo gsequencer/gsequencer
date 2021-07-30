@@ -40,6 +40,9 @@
 
 #include <ags/audio/ags_fluid_util.h>
 
+gpointer ags_fluid_interpolate_7th_order_util_strct_copy(gpointer ptr);
+void ags_fluid_interpolate_7th_order_util_strct_free(gpointer ptr);
+
 /* 7th order interpolation (7 coefficients centered on 3rd) */
 gboolean interp_coeff_7th_order_initialized = FALSE;
 
@@ -57,6 +60,41 @@ GMutex interp_coeff_7th_order_mutex;
  * These utility functions allow you to fill fluid interpolated
  * 7th order data.
  */
+
+GType
+ags_fluid_interpolate_7th_order_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_fluid_interpolate_7th_order_util = 0;
+
+    ags_type_fluid_interpolate_7th_order_util =
+      g_boxed_type_register_static("AgsFluidInterpolate7thOrderUtil",
+				   (GBoxedCopyFunc) ags_fluid_interpolate_7th_order_util_strct_copy,
+				   (GBoxedFreeFunc) ags_fluid_interpolate_7th_order_util_strct_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_fluid_interpolate_7th_order_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+gpointer
+ags_fluid_interpolate_7th_order_util_strct_copy(gpointer ptr)
+{
+  gpointer retval;
+
+  retval = g_memdup(ptr, sizeof(AgsFluidInterpolate7thOrderUtil));
+ 
+  return(retval);
+}
+
+void
+ags_fluid_interpolate_7th_order_util_strct_free(gpointer ptr)
+{
+  g_free(ptr);
+}
 
 /* Initializes interpolation tables */
 void

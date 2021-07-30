@@ -31,6 +31,9 @@
 #include <math.h>
 #include <complex.h>
 
+gpointer ags_sfz_util_strct_copy(gpointer ptr);
+void ags_sfz_util_strct_free(gpointer ptr);
+
 /**
  * SECTION:ags_sfz_util
  * @short_description: SFZ synth util
@@ -40,6 +43,443 @@
  *
  * Utility functions to compute SFZ synths.
  */
+
+GType
+ags_sfz_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_sfz_util = 0;
+
+    ags_type_sfz_util =
+      g_boxed_type_register_static("AgsSFZUtil",
+				   (GBoxedCopyFunc) ags_sfz_util_strct_copy,
+				   (GBoxedFreeFunc) ags_sfz_util_strct_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_sfz_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+gpointer
+ags_sfz_util_strct_copy(gpointer ptr)
+{
+  gpointer retval;
+
+  retval = g_memdup(ptr, sizeof(AgsSFZUtil));
+ 
+  return(retval);
+}
+
+void
+ags_sfz_util_strct_free(gpointer ptr)
+{
+  g_free(ptr);
+}
+
+/**
+ * ags_sfz_get_note:
+ * @sfz: the #AgsSFZ-struct
+ * 
+ * Get note.
+ * 
+ * Returns: the note
+ * 
+ * Since: 3.9.1
+ */
+gdouble
+ags_sfz_get_note(AgsSFZ *sfz)
+{
+  if(sfz == NULL){
+    return(0.0);
+  }
+  
+  return(sfz->note);
+}
+
+/**
+ * ags_sfz_set_note:
+ * @sfz: the #AgsSFZ-struct
+ * @note: the note
+ * 
+ * Set note.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sfz_set_note(AgsSFZ *sfz,
+		 gdouble note)
+{
+  if(sfz == NULL){
+    return;
+  }
+
+  sfz->note = note;
+}
+
+/**
+ * ags_sfz_get_volume:
+ * @sfz: the #AgsSFZ-struct
+ * 
+ * Get volume.
+ * 
+ * Returns: the volume
+ * 
+ * Since: 3.9.1
+ */
+gdouble
+ags_sfz_get_volume(AgsSFZ *sfz)
+{
+  if(sfz == NULL){
+    return(0.0);
+  }
+
+  return(sfz->volume);
+}
+
+/**
+ * ags_sfz_set_volume:
+ * @sfz: the #AgsSFZ-struct
+ * @volume: the volume
+ * 
+ * Set volume.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sfz_set_volume(AgsSFZ *sfz,
+		   gdouble volume)
+{
+  if(sfz == NULL){
+    return;
+  }
+
+  sfz->volume = volume;
+}
+
+/**
+ * ags_sfz_get_samplerate:
+ * @sfz: the #AgsSFZ-struct
+ * 
+ * Get samplerate.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 3.9.1
+ */
+guint
+ags_sfz_get_samplerate(AgsSFZ *sfz)
+{
+  if(sfz == NULL){
+    return(0);
+  }
+
+  return(sfz->samplerate);
+}
+
+/**
+ * ags_sfz_set_samplerate:
+ * @sfz: the #AgsSFZ-struct
+ * @samplerate: the samplerate
+ * 
+ * Set samplerate.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sfz_set_samplerate(AgsSFZ *sfz,
+		       guint samplerate)
+{
+  if(sfz == NULL){
+    return;
+  }
+
+  sfz->samplerate = samplerate;
+}
+
+/**
+ * ags_sfz_get_offset:
+ * @sfz: the #AgsSFZ-struct
+ * 
+ * Get offset.
+ * 
+ * Returns: the offset
+ * 
+ * Since: 3.9.1
+ */
+guint
+ags_sfz_get_offset(AgsSFZ *sfz)
+{
+  if(sfz == NULL){
+    return(0);
+  }
+
+  return(sfz->offset);
+}
+
+/**
+ * ags_sfz_set_offset:
+ * @sfz: the #AgsSFZ-struct
+ * @offset: the offset
+ * 
+ * Set offset.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sfz_set_offset(AgsSFZ *sfz,
+		   guint offset)
+{
+  if(sfz == NULL){
+    return;
+  }
+
+  sfz->offset = 0;
+}
+
+/**
+ * ags_sfz_get_n_frames:
+ * @sfz: the #AgsSFZ-struct
+ * 
+ * Get n-frames.
+ * 
+ * Returns: the n-frames
+ * 
+ * Since: 3.9.1
+ */
+guint
+ags_sfz_get_n_frames(AgsSFZ *sfz)
+{
+  if(sfz == NULL){
+    return(0);
+  }
+
+  return(sfz->n_frames);
+}
+
+/**
+ * ags_sfz_set_n_frames:
+ * @sfz: the #AgsSFZ-struct
+ * @n_frames: the n-frames
+ * 
+ * Set n-frames.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sfz_set_n_frames(AgsSFZ *sfz,
+		     guint n_frames)
+{
+  if(sfz == NULL){
+    return;
+  }
+
+  sfz->n_frames = n_frames;
+}
+
+/**
+ * ags_sfz_get_loop_mode:
+ * @sfz: the #AgsSFZ-struct
+ * 
+ * Get loop mode.
+ * 
+ * Returns: the loop mode
+ * 
+ * Since: 3.9.1
+ */
+guint
+ags_sfz_get_loop_mode(AgsSFZ *sfz)
+{
+  if(sfz == NULL){
+    return(0);
+  }
+
+  return(sfz->loop_mode);
+}
+
+/**
+ * ags_sfz_set_loop_mode:
+ * @sfz: the #AgsSFZ-struct
+ * @loop_mode: the loop mode
+ * 
+ * Set loop mode.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sfz_set_loop_mode(AgsSFZ *sfz,
+		      guint loop_mode)
+{
+  if(sfz == NULL){
+    return;
+  }
+
+  sfz->loop_mode = loop_mode;
+}
+
+/**
+ * ags_sfz_get_loop_start:
+ * @sfz: the #AgsSFZ-struct
+ * 
+ * Get loop start.
+ * 
+ * Returns: the loop start
+ * 
+ * Since: 3.9.1
+ */
+guint
+ags_sfz_get_loop_start(AgsSFZ *sfz)
+{
+  if(sfz == NULL){
+    return(0);
+  }
+
+  return(sfz->loop_start);
+}
+
+/**
+ * ags_sfz_set_loop_start:
+ * @sfz: the #AgsSFZ-struct
+ * @loop_start: the loop start
+ * 
+ * Set loop start.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sfz_set_loop_start(AgsSFZ *sfz,
+		       guint loop_start)
+{
+  if(sfz == NULL){
+    return;
+  }
+
+  sfz->loop_start = loop_start;
+}
+
+/**
+ * ags_sfz_get_loop_end:
+ * @sfz: the #AgsSFZ-struct
+ * 
+ * Get loop end.
+ * 
+ * Returns: the loop end
+ * 
+ * Since: 3.9.1
+ */
+guint
+ags_sfz_get_loop_end(AgsSFZ *sfz)
+{
+  if(sfz == NULL){
+    return(0);
+  }
+
+  return(sfz->loop_end);
+}
+
+/**
+ * ags_sfz_set_loop_end:
+ * @sfz: the #AgsSFZ-struct
+ * @loop_end: the loop end
+ * 
+ * Set loop end.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sfz_set_loop_end(AgsSFZ *sfz,
+		     guint loop_end)
+{
+  if(sfz == NULL){
+    return;
+  }
+
+  sfz->loop_end = loop_end;
+}
+
+/**
+ * ags_sfz_get_generic_pitch:
+ * @sfz: the #AgsSFZ-struct
+ * 
+ * Get generic pitch.
+ * 
+ * Returns: the generic pitch
+ * 
+ * Since: 3.9.1
+ */
+gpointer
+ags_sfz_get_generic_pitch(AgsSFZ *sfz)
+{
+  if(sfz == NULL){
+    return(NULL);
+  }
+
+  return(sfz->generic_pitch);
+}
+
+/**
+ * ags_sfz_set_generic_pitch:
+ * @sfz: the #AgsSFZ-struct
+ * @generic_pitch: the generic pitch
+ * 
+ * Set generic pitch.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sfz_set_generic_pitch(AgsSFZ *sfz,
+			  gpointer generic_pitch)
+{
+  if(sfz == NULL){
+    return;
+  }
+
+  g_free(sfz->generic_pitch);
+  
+  sfz->generic_pitch = generic_pitch;
+}
+
+/**
+ * ags_sfz_get_user_data:
+ * @sfz: the #AgsSFZ-struct
+ * 
+ * Get user data.
+ * 
+ * Returns: the user data
+ * 
+ * Since: 3.9.1
+ */
+gpointer
+ags_sfz_get_user_data(AgsSFZ *sfz)
+{
+  if(sfz == NULL){
+    return(NULL);
+  }
+
+  return(sfz->user_data);
+}
+
+/**
+ * ags_sfz_set_user_data:
+ * @sfz: the #AgsSFZ-struct
+ * @user_data: the user data
+ * 
+ * Set user data.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sfz_set_user_data(AgsSFZ *sfz,
+		      gpointer user_data)
+{
+  if(sfz == NULL){
+    return;
+  }
+
+  sfz->user_data = user_data;
+}
 
 /**
  * ags_sfz_util_copy_s8:
@@ -412,7 +852,7 @@ ags_sfz_util_copy_s16(AgsSFZ *sfz,
 
   /* format */
   im_buffer = ags_stream_alloc(frame_count,
-			       AGS_SOUNDCARD_SIGNED_8_BIT);
+			       AGS_SOUNDCARD_SIGNED_16_BIT);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S16,
 						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
@@ -676,7 +1116,7 @@ ags_sfz_util_copy_s24(AgsSFZ *sfz,
 
   /* format */
   im_buffer = ags_stream_alloc(frame_count,
-			       AGS_SOUNDCARD_SIGNED_8_BIT);
+			       AGS_SOUNDCARD_SIGNED_24_BIT);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S24,
 						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
@@ -940,7 +1380,7 @@ ags_sfz_util_copy_s32(AgsSFZ *sfz,
 
   /* format */
   im_buffer = ags_stream_alloc(frame_count,
-			       AGS_SOUNDCARD_SIGNED_8_BIT);
+			       AGS_SOUNDCARD_SIGNED_32_BIT);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S32,
 						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
@@ -1468,7 +1908,7 @@ ags_sfz_util_copy_float(AgsSFZ *sfz,
 
   /* format */
   im_buffer = ags_stream_alloc(frame_count,
-			       AGS_SOUNDCARD_SIGNED_8_BIT);
+			       AGS_SOUNDCARD_FLOAT);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
 						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
@@ -1732,7 +2172,7 @@ ags_sfz_util_copy_double(AgsSFZ *sfz,
 
   /* format */
   im_buffer = ags_stream_alloc(frame_count,
-			       AGS_SOUNDCARD_SIGNED_8_BIT);
+			       AGS_SOUNDCARD_DOUBLE);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
 						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
@@ -1996,7 +2436,7 @@ ags_sfz_util_copy_complex(AgsSFZ *sfz,
 
   /* format */
   im_buffer = ags_stream_alloc(frame_count,
-			       AGS_SOUNDCARD_SIGNED_8_BIT);
+			       AGS_SOUNDCARD_COMPLEX);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_COMPLEX,
 						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);

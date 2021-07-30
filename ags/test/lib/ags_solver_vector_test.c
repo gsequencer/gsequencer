@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,8 +29,11 @@
 int ags_solver_vector_test_init_suite();
 int ags_solver_vector_test_clean_suite();
 
-void ags_solver_vector_test_insert_term();
-void ags_solver_vector_test_remove_term();
+void ags_solver_vector_test_get_source_polynomial();
+void ags_solver_vector_test_set_source_polynomial();
+void ags_solver_vector_test_get_polynomial_count();
+void ags_solver_vector_test_insert_polynomial();
+void ags_solver_vector_test_remove_polynomial();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -53,24 +56,157 @@ ags_solver_vector_test_clean_suite()
 }
 
 void
-ags_solver_vector_test_insert_term()
+ags_solver_vector_test_get_source_polynomial()
 {
-  //TODO:JK: implement me
+  AgsSolverVector *solver_vector;
+  
+  solver_vector = ags_solver_vector_new();
+
+  ags_solver_vector_set_source_polynomial(solver_vector,
+					  "-3.14a^(2)b");
+
+  CU_ASSERT(solver_vector->source_polynomial != NULL &&
+	    !g_strcmp0(solver_vector->source_polynomial, "-3.14a^(2)b"));
 }
 
 void
-ags_solver_vector_test_remove_term()
+ags_solver_vector_test_set_source_polynomial()
 {
-  //TODO:JK: implement me
+  AgsSolverVector *solver_vector;
+
+  gchar *source_polynomial;
+  
+  solver_vector = ags_solver_vector_new();
+
+  solver_vector->source_polynomial = g_strdup("-3.14a^(2)b");
+
+  source_polynomial = ags_solver_vector_get_source_polynomial(solver_vector);
+
+  CU_ASSERT(source_polynomial != NULL &&
+	    !g_strcmp0(source_polynomial, "-3.14a^(2)b"));
+}
+
+void
+ags_solver_vector_test_get_polynomial_count()
+{
+  AgsSolverVector *solver_vector;
+
+  guint polynomial_count;
+  
+  solver_vector = ags_solver_vector_new();
+
+  solver_vector->polynomial_count = 2;
+  
+  polynomial_count = ags_solver_vector_get_polynomial_count(solver_vector);
+
+  CU_ASSERT(polynomial_count == 2);
+}
+
+void
+ags_solver_vector_test_insert_polynomial()
+{
+  AgsSolverVector *solver_vector;
+  AgsSolverPolynomial *solver_polynomial;
+  AgsSolverPolynomial* solver_polynomial_arr_orig[3];
+  AgsSolverPolynomial* solver_polynomial_arr_new[3];
+
+  solver_vector = ags_solver_vector_new();
+
+  CU_ASSERT(solver_vector->polynomial_column == NULL);
+
+  /* append */
+  solver_polynomial =
+    solver_polynomial_arr_orig[0] = ags_solver_polynomial_new();
+  ags_solver_vector_insert_polynomial(solver_vector,
+				      solver_polynomial,
+				      -1);
+
+  CU_ASSERT(solver_vector->polynomial_column != NULL);
+  CU_ASSERT(solver_vector->polynomial_column[0] == solver_polynomial);
+
+  solver_polynomial =
+    solver_polynomial_arr_orig[1] =  ags_solver_polynomial_new();
+  ags_solver_vector_insert_polynomial(solver_vector,
+				      solver_polynomial,
+				      -1);
+
+  CU_ASSERT(solver_vector->polynomial_column != NULL);
+  CU_ASSERT(solver_vector->polynomial_column[1] == solver_polynomial);
+
+  solver_polynomial = 
+    solver_polynomial_arr_orig[2] = ags_solver_polynomial_new();
+  ags_solver_vector_insert_polynomial(solver_vector,
+				      solver_polynomial,
+				      -1);
+
+  CU_ASSERT(solver_vector->polynomial_column != NULL);
+  CU_ASSERT(solver_vector->polynomial_column[2] == solver_polynomial);
+
+  /* insert */
+  solver_polynomial = 
+    solver_polynomial_arr_new[0] = ags_solver_polynomial_new();
+  ags_solver_vector_insert_polynomial(solver_vector,
+				      solver_polynomial,
+				      0);
+
+  CU_ASSERT(solver_vector->polynomial_column != NULL);
+  CU_ASSERT(solver_vector->polynomial_column[0] == solver_polynomial);
+
+  solver_polynomial = 
+    solver_polynomial_arr_new[1] = ags_solver_polynomial_new();
+  ags_solver_vector_insert_polynomial(solver_vector,
+				      solver_polynomial,
+				      2);
+
+  CU_ASSERT(solver_vector->polynomial_column != NULL);
+  CU_ASSERT(solver_vector->polynomial_column[2] == solver_polynomial);
+
+  solver_polynomial = 
+    solver_polynomial_arr_new[2] = ags_solver_polynomial_new();
+  ags_solver_vector_insert_polynomial(solver_vector,
+				      solver_polynomial,
+				      4);
+
+  CU_ASSERT(solver_vector->polynomial_column != NULL);
+  CU_ASSERT(solver_vector->polynomial_column[4] == solver_polynomial);
+}
+
+void
+ags_solver_vector_test_remove_polynomial()
+{
+  AgsSolverVector *solver_vector;
+  AgsSolverPolynomial *item_0, *item_1;
+  
+  solver_vector = ags_solver_vector_new();
+  
+  item_0 = ags_solver_polynomial_new();
+  ags_solver_vector_insert_polynomial(solver_vector,
+				      item_0,
+				      -1);
+  
+  item_1 = ags_solver_polynomial_new();
+  ags_solver_vector_insert_polynomial(solver_vector,
+				      item_1,
+				      -1);
+
+  CU_ASSERT(solver_vector->polynomial_column[0] == item_0);
+  CU_ASSERT(solver_vector->polynomial_column[1] == item_1);
+
+  ags_solver_vector_remove_polynomial(solver_vector,
+				      item_0);
+
+  CU_ASSERT(solver_vector->polynomial_column[0] == item_1);
+
+  ags_solver_vector_remove_polynomial(solver_vector,
+				      item_1);
+
+  CU_ASSERT(solver_vector->polynomial_column == NULL);
 }
 
 int
 main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
-
-  putenv("LC_ALL=C");
-  putenv("LANG=C");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -87,8 +223,11 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsSolverVector insert term", ags_solver_vector_test_insert_term) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsSolverVector remove term", ags_solver_vector_test_remove_term) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsSolverVector get source polynomial", ags_solver_vector_test_get_source_polynomial) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSolverVector set source polynomial", ags_solver_vector_test_set_source_polynomial) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSolverVector get polynomial count", ags_solver_vector_test_get_polynomial_count) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSolverVector insert polynomial", ags_solver_vector_test_insert_polynomial) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSolverVector remove polynomial", ags_solver_vector_test_remove_polynomial) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

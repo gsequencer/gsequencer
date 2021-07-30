@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,17 @@
 #include <ags/libags.h>
 
 G_BEGIN_DECLS
+
+#define AGS_TYPE_SOUNDCARD_UTIL         (ags_soundcard_util_get_type())
+
+typedef struct _AgsSoundcardUtil AgsSoundcardUtil;
+
+struct _AgsSoundcardUtil
+{
+  //empty
+};
+
+GType ags_soundcard_util_get_type(void);
 
 GRecMutex* ags_soundcard_util_get_obj_mutex(GObject *soundcard);
 

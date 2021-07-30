@@ -33,6 +33,9 @@
 #include <math.h>
 #include <complex.h>
 
+gpointer ags_sf2_util_strct_copy(gpointer ptr);
+void ags_sf2_util_strct_free(gpointer ptr);
+
 /**
  * SECTION:ags_sf2_util
  * @short_description: SF2 synth util
@@ -42,6 +45,443 @@
  *
  * Utility functions to compute SF2 synths.
  */
+
+GType
+ags_sf2_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_sf2_util = 0;
+
+    ags_type_sf2_util =
+      g_boxed_type_register_static("AgsSF2Util",
+				   (GBoxedCopyFunc) ags_sf2_util_strct_copy,
+				   (GBoxedFreeFunc) ags_sf2_util_strct_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_sf2_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+gpointer
+ags_sf2_util_strct_copy(gpointer ptr)
+{
+  gpointer retval;
+
+  retval = g_memdup(ptr, sizeof(AgsSF2Util));
+ 
+  return(retval);
+}
+
+void
+ags_sf2_util_strct_free(gpointer ptr)
+{
+  g_free(ptr);
+}
+
+/**
+ * ags_sf2_get_note:
+ * @sf2: the #AgsSF2-struct
+ * 
+ * Get note.
+ * 
+ * Returns: the note
+ * 
+ * Since: 3.9.1
+ */
+gdouble
+ags_sf2_get_note(AgsSF2 *sf2)
+{
+  if(sf2 == NULL){
+    return(0.0);
+  }
+  
+  return(sf2->note);
+}
+
+/**
+ * ags_sf2_set_note:
+ * @sf2: the #AgsSF2-struct
+ * @note: the note
+ * 
+ * Set note.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sf2_set_note(AgsSF2 *sf2,
+		 gdouble note)
+{
+  if(sf2 == NULL){
+    return;
+  }
+
+  sf2->note = note;
+}
+
+/**
+ * ags_sf2_get_volume:
+ * @sf2: the #AgsSF2-struct
+ * 
+ * Get volume.
+ * 
+ * Returns: the volume
+ * 
+ * Since: 3.9.1
+ */
+gdouble
+ags_sf2_get_volume(AgsSF2 *sf2)
+{
+  if(sf2 == NULL){
+    return(0.0);
+  }
+
+  return(sf2->volume);
+}
+
+/**
+ * ags_sf2_set_volume:
+ * @sf2: the #AgsSF2-struct
+ * @volume: the volume
+ * 
+ * Set volume.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sf2_set_volume(AgsSF2 *sf2,
+		   gdouble volume)
+{
+  if(sf2 == NULL){
+    return;
+  }
+
+  sf2->volume = volume;
+}
+
+/**
+ * ags_sf2_get_samplerate:
+ * @sf2: the #AgsSF2-struct
+ * 
+ * Get samplerate.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 3.9.1
+ */
+guint
+ags_sf2_get_samplerate(AgsSF2 *sf2)
+{
+  if(sf2 == NULL){
+    return(0);
+  }
+
+  return(sf2->samplerate);
+}
+
+/**
+ * ags_sf2_set_samplerate:
+ * @sf2: the #AgsSF2-struct
+ * @samplerate: the samplerate
+ * 
+ * Set samplerate.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sf2_set_samplerate(AgsSF2 *sf2,
+		       guint samplerate)
+{
+  if(sf2 == NULL){
+    return;
+  }
+
+  sf2->samplerate = samplerate;
+}
+
+/**
+ * ags_sf2_get_offset:
+ * @sf2: the #AgsSF2-struct
+ * 
+ * Get offset.
+ * 
+ * Returns: the offset
+ * 
+ * Since: 3.9.1
+ */
+guint
+ags_sf2_get_offset(AgsSF2 *sf2)
+{
+  if(sf2 == NULL){
+    return(0);
+  }
+
+  return(sf2->offset);
+}
+
+/**
+ * ags_sf2_set_offset:
+ * @sf2: the #AgsSF2-struct
+ * @offset: the offset
+ * 
+ * Set offset.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sf2_set_offset(AgsSF2 *sf2,
+		   guint offset)
+{
+  if(sf2 == NULL){
+    return;
+  }
+
+  sf2->offset = 0;
+}
+
+/**
+ * ags_sf2_get_n_frames:
+ * @sf2: the #AgsSF2-struct
+ * 
+ * Get n-frames.
+ * 
+ * Returns: the n-frames
+ * 
+ * Since: 3.9.1
+ */
+guint
+ags_sf2_get_n_frames(AgsSF2 *sf2)
+{
+  if(sf2 == NULL){
+    return(0);
+  }
+
+  return(sf2->n_frames);
+}
+
+/**
+ * ags_sf2_set_n_frames:
+ * @sf2: the #AgsSF2-struct
+ * @n_frames: the n-frames
+ * 
+ * Set n-frames.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sf2_set_n_frames(AgsSF2 *sf2,
+		     guint n_frames)
+{
+  if(sf2 == NULL){
+    return;
+  }
+
+  sf2->n_frames = n_frames;
+}
+
+/**
+ * ags_sf2_get_loop_mode:
+ * @sf2: the #AgsSF2-struct
+ * 
+ * Get loop mode.
+ * 
+ * Returns: the loop mode
+ * 
+ * Since: 3.9.1
+ */
+guint
+ags_sf2_get_loop_mode(AgsSF2 *sf2)
+{
+  if(sf2 == NULL){
+    return(0);
+  }
+
+  return(sf2->loop_mode);
+}
+
+/**
+ * ags_sf2_set_loop_mode:
+ * @sf2: the #AgsSF2-struct
+ * @loop_mode: the loop mode
+ * 
+ * Set loop mode.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sf2_set_loop_mode(AgsSF2 *sf2,
+		      guint loop_mode)
+{
+  if(sf2 == NULL){
+    return;
+  }
+
+  sf2->loop_mode = loop_mode;
+}
+
+/**
+ * ags_sf2_get_loop_start:
+ * @sf2: the #AgsSF2-struct
+ * 
+ * Get loop start.
+ * 
+ * Returns: the loop start
+ * 
+ * Since: 3.9.1
+ */
+guint
+ags_sf2_get_loop_start(AgsSF2 *sf2)
+{
+  if(sf2 == NULL){
+    return(0);
+  }
+
+  return(sf2->loop_start);
+}
+
+/**
+ * ags_sf2_set_loop_start:
+ * @sf2: the #AgsSF2-struct
+ * @loop_start: the loop start
+ * 
+ * Set loop start.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sf2_set_loop_start(AgsSF2 *sf2,
+		       guint loop_start)
+{
+  if(sf2 == NULL){
+    return;
+  }
+
+  sf2->loop_start = loop_start;
+}
+
+/**
+ * ags_sf2_get_loop_end:
+ * @sf2: the #AgsSF2-struct
+ * 
+ * Get loop end.
+ * 
+ * Returns: the loop end
+ * 
+ * Since: 3.9.1
+ */
+guint
+ags_sf2_get_loop_end(AgsSF2 *sf2)
+{
+  if(sf2 == NULL){
+    return(0);
+  }
+
+  return(sf2->loop_end);
+}
+
+/**
+ * ags_sf2_set_loop_end:
+ * @sf2: the #AgsSF2-struct
+ * @loop_end: the loop end
+ * 
+ * Set loop end.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sf2_set_loop_end(AgsSF2 *sf2,
+		     guint loop_end)
+{
+  if(sf2 == NULL){
+    return;
+  }
+
+  sf2->loop_end = loop_end;
+}
+
+/**
+ * ags_sf2_get_generic_pitch:
+ * @sf2: the #AgsSF2-struct
+ * 
+ * Get generic pitch.
+ * 
+ * Returns: the generic pitch
+ * 
+ * Since: 3.9.1
+ */
+gpointer
+ags_sf2_get_generic_pitch(AgsSF2 *sf2)
+{
+  if(sf2 == NULL){
+    return(NULL);
+  }
+
+  return(sf2->generic_pitch);
+}
+
+/**
+ * ags_sf2_set_generic_pitch:
+ * @sf2: the #AgsSF2-struct
+ * @generic_pitch: the generic pitch
+ * 
+ * Set generic pitch.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sf2_set_generic_pitch(AgsSF2 *sf2,
+			  gpointer generic_pitch)
+{
+  if(sf2 == NULL){
+    return;
+  }
+
+  g_free(sf2->generic_pitch);
+  
+  sf2->generic_pitch = generic_pitch;
+}
+
+/**
+ * ags_sf2_get_user_data:
+ * @sf2: the #AgsSF2-struct
+ * 
+ * Get user data.
+ * 
+ * Returns: the user data
+ * 
+ * Since: 3.9.1
+ */
+gpointer
+ags_sf2_get_user_data(AgsSF2 *sf2)
+{
+  if(sf2 == NULL){
+    return(NULL);
+  }
+
+  return(sf2->user_data);
+}
+
+/**
+ * ags_sf2_set_user_data:
+ * @sf2: the #AgsSF2-struct
+ * @user_data: the user data
+ * 
+ * Set user data.
+ * 
+ * Since: 3.9.1
+ */
+void
+ags_sf2_set_user_data(AgsSF2 *sf2,
+		      gpointer user_data)
+{
+  if(sf2 == NULL){
+    return;
+  }
+
+  sf2->user_data = user_data;
+}
 
 /**
  * ags_sf2_util_copy_s8:

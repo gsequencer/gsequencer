@@ -30,8 +30,6 @@ gfloat volume;
 
 ags_audio_application_context_new();
 
-application_context = ags_application_context_get_instance();
-
 /* get application context and soundcard */
 application_context = ags_application_context_get_instance();
 

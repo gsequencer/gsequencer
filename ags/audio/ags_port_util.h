@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,6 +30,17 @@
 #include <ags/audio/ags_port.h>
 
 G_BEGIN_DECLS
+
+#define AGS_TYPE_PORT_UTIL         (ags_port_util_get_type())
+
+typedef struct _AgsPortUtil AgsPortUtil;
+
+struct _AgsPortUtil
+{
+  //empty
+};
+
+GType ags_port_util_get_type(void);
 
 void ags_port_util_load_ladspa_conversion(AgsPort *port,
 					  AgsPluginPort *plugin_port);

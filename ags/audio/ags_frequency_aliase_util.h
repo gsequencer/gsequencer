@@ -30,6 +30,17 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_FREQUENCY_ALIASE_UTIL         (ags_frequency_aliase_util_get_type())
+
+typedef struct _AgsFrequencyAliaseUtil AgsFrequencyAliaseUtil;
+
+struct _AgsFrequencyAliaseUtil
+{
+  //empty
+};
+
+GType ags_frequency_aliase_util_get_type(void);
+
 void ags_frequency_aliase_util_compute_s8(gint8 *destination,
 					  gint8 *source,
 					  gint8 *phase_shifted_source,

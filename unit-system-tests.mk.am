@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2020 Joel Kraehemann
+# Copyright (C) 2005-2021 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -110,6 +110,7 @@ libags_audio_installcheck_programs += \
 	ags_check_system_audio_signal_test \
 	ags_check_system_audio_buffer_util_test \
 	ags_check_system_char_buffer_util_test \
+	ags_check_system_envelope_util_test \
 	ags_check_system_filter_util_test \
 	ags_check_system_synth_util_test \
 	ags_check_system_fm_synth_util_test \
@@ -125,8 +126,11 @@ libags_audio_installcheck_programs += \
 	ags_check_system_recall_recycling_test \
 	ags_check_system_recycling_context_test \
 	ags_check_system_synth_generator_test \
+	ags_check_system_volume_util_test \
+	ags_check_system_peak_util_test \
 	ags_check_system_port_test \
 	ags_check_system_pattern_test \
+	ags_check_system_resample_util_test \
 	ags_check_system_notation_test \
 	ags_check_system_note_test \
 	ags_check_system_automation_test \
@@ -891,6 +895,13 @@ ags_check_system_char_buffer_util_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_char_buffer_util_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_char_buffer_util_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
+# envelope util unit test
+ags_check_system_envelope_util_test_SOURCES = ags/test/audio/ags_envelope_util_test.c
+ags_check_system_envelope_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_check_system_envelope_util_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_envelope_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_envelope_util_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
 # filter util unit test
 ags_check_system_filter_util_test_SOURCES = ags/test/audio/ags_filter_util_test.c
 ags_check_system_filter_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
@@ -996,6 +1007,20 @@ ags_check_system_synth_generator_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_synth_generator_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_synth_generator_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
+# volume util unit test
+ags_check_system_volume_util_test_SOURCES = ags/test/audio/ags_volume_util_test.c
+ags_check_system_volume_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_check_system_volume_util_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_volume_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_volume_util_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# peak util unit test
+ags_check_system_peak_util_test_SOURCES = ags/test/audio/ags_peak_util_test.c
+ags_check_system_peak_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_check_system_peak_util_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_peak_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_peak_util_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
 # port unit test
 ags_check_system_port_test_SOURCES = ags/test/audio/ags_port_test.c
 ags_check_system_port_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
@@ -1009,6 +1034,13 @@ ags_check_system_pattern_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CF
 ags_check_system_pattern_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_pattern_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_pattern_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# resample util unit test
+ags_check_system_resample_util_test_SOURCES = ags/test/audio/ags_resample_util_test.c
+ags_check_system_resample_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_check_system_resample_util_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_resample_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_resample_util_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
 # notation unit test
 ags_check_system_notation_test_SOURCES = ags/test/audio/ags_notation_test.c
@@ -2211,6 +2243,7 @@ ags-check-system-unit-test: $(libags_installcheck_programs) $(libags_audio_insta
 	./ags_check_system_audio_signal_test
 	./ags_check_system_audio_buffer_util_test
 	./ags_check_system_char_buffer_util_test
+	./ags_check_system_envelope_util_test
 	./ags_check_system_filter_util_test
 	./ags_check_system_synth_util_test
 	./ags_check_system_fm_synth_util_test
@@ -2226,8 +2259,11 @@ ags-check-system-unit-test: $(libags_installcheck_programs) $(libags_audio_insta
 	./ags_check_system_recall_recycling_test
 	./ags_check_system_recycling_context_test
 	./ags_check_system_synth_generator_test
+	./ags_check_system_volume_util_test
+	./ags_check_system_peak_util_test
 	./ags_check_system_port_test
 	./ags_check_system_pattern_test
+	./ags_check_system_resample_util_test
 	./ags_check_system_notation_test
 	./ags_check_system_note_test
 	./ags_check_system_automation_test

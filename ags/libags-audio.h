@@ -58,6 +58,7 @@
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_devin.h>
 #include <ags/audio/ags_diatonic_scale.h>
+#include <ags/audio/ags_envelope_util.h>
 #include <ags/audio/ags_fast_pitch_util.h>
 #include <ags/audio/ags_fifoout.h>
 #include <ags/audio/ags_filter_util.h>
@@ -82,6 +83,7 @@
 #include <ags/audio/ags_note.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_pattern.h>
+#include <ags/audio/ags_peak_util.h>
 #include <ags/audio/ags_phase_shift_util.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_playback_domain.h>
@@ -110,6 +112,7 @@
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recycling_context.h>
 #include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_resample_util.h>
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_sequencer_util.h>
 #include <ags/audio/ags_soundcard_util.h>
@@ -123,6 +126,7 @@
 #include <ags/audio/ags_sfz_synth_util.h>
 #include <ags/audio/ags_sfz_util.h>
 #include <ags/audio/ags_track.h>
+#include <ags/audio/ags_volume_util.h>
 #include <ags/audio/ags_wave.h>
 
 /* audio thread */

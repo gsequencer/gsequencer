@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,17 @@
 #include <glib-object.h>
 
 G_BEGIN_DECLS
+
+#define AGS_TYPE_DESTROY_UTIL         (ags_destroy_util_get_type())
+
+typedef struct _AgsDestroyUtil AgsDestroyUtil;
+
+struct _AgsDestroyUtil
+{
+  //empty
+};
+
+GType ags_destroy_util_get_type(void);
 
 void ags_destroy_util_dispose_and_unref(GObject *gobject);
 

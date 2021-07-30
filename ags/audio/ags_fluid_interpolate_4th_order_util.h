@@ -30,6 +30,17 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL         (ags_fluid_interpolate_4th_order_util_get_type())
+
+typedef struct _AgsFluidInterpolate4thOrderUtil AgsFluidInterpolate4thOrderUtil;
+
+struct _AgsFluidInterpolate4thOrderUtil
+{
+  //empty
+};
+
+GType ags_fluid_interpolate_4th_order_util_get_type(void);
+
 void ags_fluid_interpolate_4th_order_util_fill_s8(gint8 *destination,
 						  gint8 *source,
 						  guint buffer_length,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,7 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_COMPLEX                (ags_complex_get_type())
+#define AGS_COMPLEX(ptr) ((AgsComplex *)(ptr))
 
 #define AGS_COMPLEX_M_E (M_E + I * 0.0)
 #define AGS_COMPLEX_M_PI (M_PI + I * 0.0)

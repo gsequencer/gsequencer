@@ -48,6 +48,7 @@
 #include <complex.h>
 
 G_BEGIN_DECLS
+#define AGS_TYPE_FLUID_UTIL         (ags_fluid_util_get_type())
 
 #define AGS_FLUID_INTERP_BITS        (8)
 #define AGS_FLUID_INTERP_BITS_MASK   (0xff000000)
@@ -59,6 +60,15 @@ G_BEGIN_DECLS
 #define AGS_FLUID_SINC_INTERP_ORDER 7     /* 7th order constant */
 
 #define AGS_FLUID_CENTS_HZ_SIZE     (1200)
+
+typedef struct _AgsFluidUtil AgsFluidUtil;
+
+struct _AgsFluidUtil
+{
+  //empty
+};
+
+GType ags_fluid_util_get_type(void);
 
 #define ags_fluid_phase_set(a,b) a=b;
 #define ags_fluid_phase_set_int(a, b)    ((a) = ((guint64)(b)) << 32)

@@ -25,6 +25,9 @@
 #include <string.h>
 #include <math.h>
 
+gpointer ags_buffer_util_copy(gpointer ptr);
+void ags_buffer_util_free(gpointer ptr);
+
 /**
  * SECTION:ags_buffer_util
  * @short_description: buffer util
@@ -34,6 +37,41 @@
  *
  * Common utility functions related to char buffers.
  */
+
+GType
+ags_buffer_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_buffer_util = 0;
+
+    ags_type_buffer_util =
+      g_boxed_type_register_static("AgsBufferUtil",
+				   (GBoxedCopyFunc) ags_buffer_util_copy,
+				   (GBoxedFreeFunc) ags_buffer_util_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_buffer_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+gpointer
+ags_buffer_util_copy(gpointer ptr)
+{
+  gpointer retval;
+
+  retval = g_memdup(ptr, sizeof(AgsBufferUtil));
+ 
+  return(retval);
+}
+
+void
+ags_buffer_util_free(gpointer ptr)
+{
+  g_free(ptr);
+}
 
 /**
  * ags_buffer_util_s8_to_char_buffer:

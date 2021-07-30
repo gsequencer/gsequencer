@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,17 @@
 #include <complex.h>
 
 G_BEGIN_DECLS
+
+#define AGS_TYPE_FAST_PITCH_UTIL         (ags_fast_pitch_util_get_type())
+
+typedef struct _AgsFastPitchUtil AgsFastPitchUtil;
+
+struct _AgsFastPitchUtil
+{
+  //empty
+};
+
+GType ags_fast_pitch_util_get_type(void);
 
 void ags_fast_pitch_util_compute_s8(gint8 *buffer,
 				    guint buffer_length,

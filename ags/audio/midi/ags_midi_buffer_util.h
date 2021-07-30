@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,10 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_MIDI_BUFFER_UTIL         (ags_midi_buffer_util_get_type())
+
+typedef struct _AgsMidiBufferUtil AgsMidiBufferUtil;
+
 typedef enum{
   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_FRAME_NUMBER_LSB   = 0x0,
   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_FRAME_NUMBER_MSB   = 0x10,
@@ -46,6 +50,13 @@ typedef enum{
   AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS             = 0x80,
   AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS_DROP_FRAME  = 0xc0,
 }AgsMidiBufferUtilSmtpeFrameRate;
+
+struct _AgsMidiBufferUtil
+{
+  //empty
+};
+
+GType ags_midi_buffer_util_get_type(void);
 
 /* varlength */
 guint ags_midi_buffer_util_get_varlength_size(glong varlength);

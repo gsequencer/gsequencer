@@ -30,6 +30,17 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL         (ags_fluid_interpolate_none_util_get_type())
+
+struct _AgsFluidInterpolateNoneUtil
+{
+  //empty
+};
+
+typedef struct _AgsFluidInterpolateNoneUtil AgsFluidInterpolateNoneUtil;
+
+GType ags_fluid_interpolate_none_util_get_type(void);
+
 void ags_fluid_interpolate_none_util_fill_s8(gint8 *destination,
 					     gint8 *source,
 					     guint buffer_length,

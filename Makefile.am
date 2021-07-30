@@ -283,7 +283,7 @@ INTROSPECTION_SCANNER_ARGS = --add-include-path=$(top_srcdir) --add-include-path
 INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir) --includedir=$(top_builddir)
 
 if HAVE_INTROSPECTION
-introspection_sources = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) $(libags_gui_la_SOURCES)
+introspection_sources = $(libags_la_SOURCES) $(libags_thread_la_SOURCES) $(libags_server_la_SOURCES) $(libags_audio_la_SOURCES) $(libags_gui_la_SOURCES)
 
 Ags-3.0.gir: libags.la libags_thread.la libags_server.la
 Ags_3_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-2.4
@@ -1033,6 +1033,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_devout.h \
 	ags/audio/ags_devin.h \
 	ags/audio/ags_diatonic_scale.h \
+	ags/audio/ags_envelope_util.h \
 	ags/audio/ags_fast_pitch_util.h \
 	ags/audio/ags_filter_util.h \
 	ags/audio/ags_fifoout.h \
@@ -1062,6 +1063,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_note.h \
 	ags/audio/ags_output.h \
 	ags/audio/ags_pattern.h \
+	ags/audio/ags_peak_util.h \
 	ags/audio/ags_phase_shift_util.h \
 	ags/audio/ags_playback.h \
 	ags/audio/ags_playback_domain.h \
@@ -1087,6 +1089,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_recall_recycling.h \
 	ags/audio/ags_recycling_context.h \
 	ags/audio/ags_recycling.h \
+	ags/audio/ags_resample_util.h \
 	ags/audio/ags_sound_provider.h \
 	ags/audio/ags_sequencer_util.h \
 	ags/audio/ags_soundcard_util.h \
@@ -1096,6 +1099,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_synth_generator.h \
 	ags/audio/ags_synth_util.h \
 	ags/audio/ags_track.h \
+	ags/audio/ags_volume_util.h \
 	ags/audio/ags_wave.h
 
 if WITH_LIBINSTPATCH
@@ -1124,7 +1128,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_devout.c \
 	ags/audio/ags_devin.c \
 	ags/audio/ags_diatonic_scale.c \
-	ags/audio/ags_input.c \
+	ags/audio/ags_envelope_util.c \
 	ags/audio/ags_fast_pitch_util.c \
 	ags/audio/ags_filter_util.c \
 	ags/audio/ags_fifoout.c \
@@ -1145,6 +1149,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_generic_recall_channel_run.c \
 	ags/audio/ags_generic_recall_recycling.c \
 	ags/audio/ags_hq_pitch_util.c \
+	ags/audio/ags_input.c \
 	ags/audio/ags_lfo_synth_util.c \
 	ags/audio/ags_linear_interpolate_util.c \
 	ags/audio/ags_midi.c \
@@ -1153,6 +1158,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_note.c \
 	ags/audio/ags_output.c \
 	ags/audio/ags_pattern.c \
+	ags/audio/ags_peak_util.c \
 	ags/audio/ags_phase_shift_util.c \
 	ags/audio/ags_playback.c \
 	ags/audio/ags_playback_domain.c \
@@ -1178,6 +1184,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_recall_recycling.c \
 	ags/audio/ags_recycling.c \
 	ags/audio/ags_recycling_context.c \
+	ags/audio/ags_resample_util.c \
 	ags/audio/ags_sound_provider.c \
 	ags/audio/ags_sequencer_util.c \
 	ags/audio/ags_soundcard_util.c \
@@ -1187,6 +1194,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_synth_generator.c \
 	ags/audio/ags_synth_util.c \
 	ags/audio/ags_track.c \
+	ags/audio/ags_volume_util.c \
 	ags/audio/ags_wave.c
 
 if WITH_LIBINSTPATCH

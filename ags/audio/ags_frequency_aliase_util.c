@@ -21,6 +21,9 @@
 
 #include <math.h>
 
+gpointer ags_frequency_aliase_util_strct_copy(gpointer ptr);
+void ags_frequency_aliase_util_strct_free(gpointer ptr);
+
 /**
  * SECTION:ags_frequency_aliase_util
  * @short_description: frequency aliase util
@@ -30,6 +33,41 @@
  *
  * Utility functions to compute frequency aliase.
  */
+
+GType
+ags_frequency_aliase_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_frequency_aliase_util = 0;
+
+    ags_type_frequency_aliase_util =
+      g_boxed_type_register_static("AgsFrequencyAliaseUtil",
+				   (GBoxedCopyFunc) ags_frequency_aliase_util_strct_copy,
+				   (GBoxedFreeFunc) ags_frequency_aliase_util_strct_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_frequency_aliase_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+gpointer
+ags_frequency_aliase_util_strct_copy(gpointer ptr)
+{
+  gpointer retval;
+
+  retval = g_memdup(ptr, sizeof(AgsFrequencyAliaseUtil));
+ 
+  return(retval);
+}
+
+void
+ags_frequency_aliase_util_strct_free(gpointer ptr)
+{
+  g_free(ptr);
+}
 
 /**
  * ags_frequency_aliase_util_compute_s8:

@@ -1,3 +1,51 @@
+ags (3.9.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* refactored ags_fm_synth_util.c
+	* fixed ags_synth_util.c
+	* added unit-tests
+
+ags (3.9.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: refactored ags_fm_synth_util.c
+	* fixed ags_resample_util_test.c some uninitialized values
+
+ags (3.9.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsSolverMatrix missing getter/setter and parse
+	* implemented AgsSolverVector missing getter/setter
+	* implemented AgsSolverPolynomial missing getter/setter
+	* implemented AgsSolverPolynomial missing multiply, divide, raise power and extract root
+	* fixed ags_sfz_util.c allocating not enough memory
+	* added unit-tests
+	* added ags_volume_util_test.c
+	* added ags_envelope_util_test.c
+	* added ags_peak_util_test.c
+	* added ags_resample_util_test.c
+	* deprecated functions in ags_synth_util.h
+	* deprecated functions in ags_fm_synth_util.h
+	* refactored ags_synth_util.c
+	* TODO:JK: refactored ags_fm_synth_util.c
+
+ags (3.9.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_volume_util.[ch]
+	* implemented ags_envelope_util.[ch]
+	* implemented ags_peak_util.[ch]
+	* implemented ags_resample_util.[ch]
+	* deprecated functions in ags_audio_buffer_util.h
+	* fixed Makefile.am missing introspection sources
+	* fixed developer's book chapter 5 find_port.c listing duplicated function call ags_application_context_get_instance()
+
+ags (3.9.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented getter/setter of AgsGenericPitch
+	* implemented get type functions of utility files
+
 ags (3.9.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

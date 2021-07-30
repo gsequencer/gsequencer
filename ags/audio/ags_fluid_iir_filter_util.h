@@ -30,8 +30,11 @@
 
 G_BEGIN_DECLS
 
-#define AGS_FLUID_IIR_FILTER(ptr)                ((AgsFluidIIRFilter *)(ptr))
+#define AGS_TYPE_FLUID_IIR_FILTER_UTIL         (ags_fluid_iir_filter_util_get_type())
 
+#define AGS_FLUID_IIR_FILTER(ptr)              ((AgsFluidIIRFilter *)(ptr))
+
+typedef struct _AgsFluidIIRFilterUtil AgsFluidIIRFilterUtil;
 typedef struct _AgsFluidIIRFilter AgsFluidIIRFilter;
 
 typedef enum{
@@ -40,6 +43,11 @@ typedef enum{
   AGS_FLUID_IIR_HIGHPASS,
   AGS_FLUID_IIR_LAST,
 }AgsFluidIIRFilterType;
+
+struct _AgsFluidIIRFilterUtil
+{
+  //empty
+};
 
 struct _AgsFluidIIRFilter
 {
@@ -63,6 +71,8 @@ struct _AgsFluidIIRFilter
   gdouble q_lin;
   gdouble filter_gain;
 };
+
+GType ags_fluid_iir_filter_util_get_type(void);
 
 void ags_fluid_iir_filter_util_calc(AgsFluidIIRFilter *iir_filter,
 				    gdouble output_rate,

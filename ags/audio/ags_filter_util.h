@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,7 +27,18 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_FILTER_UTIL         (ags_filter_util_get_type())
+
 #define AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE (8192)
+
+struct _AgsFilterUtil
+{
+  //empty
+};
+
+GType ags_filter_util_get_type(void);
+
+typedef struct _AgsFilterUtil AgsFilterUtil;
 
 void ags_filter_util_pitch_s8(gint8 *buffer,
 			      guint buffer_length,

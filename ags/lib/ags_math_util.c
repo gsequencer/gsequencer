@@ -22,6 +22,12 @@
 #include <stdio.h>
 #include <string.h>
 
+
+static GMutex regex_mutex;
+
+gpointer ags_math_util_copy(gpointer ptr);
+void ags_math_util_free(gpointer ptr);
+
 /**
  * SECTION:ags_math_util
  * @short_description: math util
@@ -32,7 +38,40 @@
  * Common math utility functions.
  */
 
-static GMutex regex_mutex;
+GType
+ags_math_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_math_util = 0;
+
+    ags_type_math_util =
+      g_boxed_type_register_static("AgsMathUtil",
+				   (GBoxedCopyFunc) ags_math_util_copy,
+				   (GBoxedFreeFunc) ags_math_util_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_math_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+gpointer
+ags_math_util_copy(gpointer ptr)
+{
+  gpointer retval;
+
+  retval = g_memdup(ptr, sizeof(AgsMathUtil));
+
+  return(retval);
+}
+
+void
+ags_math_util_free(gpointer ptr)
+{
+  g_free(ptr);
+}
 
 /**
  * ags_math_util_find_parenthesis_all:

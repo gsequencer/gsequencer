@@ -53,9 +53,9 @@ ags_complex_get_type(void)
 /**
  * ags_complex_alloc:
  *
- * Allocate #AgsComplex
+ * Allocate #AgsComplex-struct
  *
- * Returns: a new #AgsComplex
+ * Returns: a new #AgsComplex-struct
  *
  * Since: 3.0.0
  */
@@ -74,11 +74,11 @@ ags_complex_alloc()
 
 /**
  * ags_complex_copy:
- * @ptr: the original #AgsComplex
+ * @ptr: the original #AgsComplex-struct
  *
  * Create a copy of @ptr.
  *
- * Returns: a pointer of the new #AgsComplex
+ * Returns: a pointer of the new #AgsComplex-struct
  *
  * Since: 3.0.0
  */
@@ -97,7 +97,7 @@ ags_complex_copy(AgsComplex *ptr)
 
 /**
  * ags_complex_free:
- * @ptr: the #AgsComplex
+ * @ptr: the #AgsComplex-struct
  *
  * Free the memory of @ptr.
  *
@@ -131,7 +131,7 @@ ags_complex_get(AgsComplex *ptr)
 
 /**
  * ags_complex_set:
- * @ptr: the #AgsComplex
+ * @ptr: the #AgsComplex-struct
  * @z: the complex data to set
  * 
  * Set complex number.
@@ -147,7 +147,7 @@ ags_complex_set(AgsComplex *ptr, double _Complex z)
 
 /**
  * ags_complex_get:
- * @ptr: the #AgsComplex
+ * @ptr: the #AgsComplex-struct
  * @real: (out): the real part
  * @imag: (out): the imaginary part
  * 
@@ -173,7 +173,7 @@ ags_complex_get_term(AgsComplex *ptr,
 
 /**
  * ags_complex_set:
- * @ptr: the #AgsComplex
+ * @ptr: the #AgsComplex-struct
  * @real: the real part
  * @imag: the imaginary part
  * 

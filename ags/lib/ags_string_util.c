@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,9 @@
 #include <string.h>
 #include <strings.h>
 
+gpointer ags_string_util_copy(gpointer ptr);
+void ags_string_util_free(gpointer ptr);
+
 /**
  * SECTION:ags_string_util
  * @short_description: string util
@@ -32,6 +35,41 @@
  *
  * Common string utility functions.
  */
+
+GType
+ags_string_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_string_util = 0;
+
+    ags_type_string_util =
+      g_boxed_type_register_static("AgsStringUtil",
+				   (GBoxedCopyFunc) ags_string_util_copy,
+				   (GBoxedFreeFunc) ags_string_util_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_string_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+gpointer
+ags_string_util_copy(gpointer ptr)
+{
+  gpointer retval;
+
+  retval = g_memdup(ptr, sizeof(AgsStringUtil));
+ 
+  return(retval);
+}
+
+void
+ags_string_util_free(gpointer ptr)
+{
+  g_free(ptr);
+}
 
 /**
  * ags_string_util_escape_single_quote:

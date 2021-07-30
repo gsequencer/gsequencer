@@ -30,8 +30,11 @@
 
 G_BEGIN_DECLS
 
+#define AGS_TYPE_GENERIC_PITCH_UTIL         (ags_generic_pitch_util_get_type())
+
 #define AGS_GENERIC_PITCH(ptr)                ((AgsGenericPitch *)(ptr))
 
+typedef struct _AgsGenericPitchUtil AgsGenericPitchUtil;
 typedef struct _AgsGenericPitch AgsGenericPitch;
 
 /**
@@ -55,12 +58,19 @@ typedef enum{
   AGS_GENERIC_PITCH_LAST,
 }AgsPitchType;
 
+struct _AgsGenericPitchUtil
+{
+  //empty
+};
+
 struct _AgsGenericPitch
 {
   guint pitch_type;
 
   gpointer data;
 };
+
+GType ags_generic_pitch_util_get_type(void);
 
 void ags_generic_pitch_util_compute_s8(AgsGenericPitch *generic_pitch,
 				       gint8 *buffer,

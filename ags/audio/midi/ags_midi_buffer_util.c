@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+gpointer ags_midi_buffer_util_copy(gpointer ptr);
+void ags_midi_buffer_util_free(gpointer ptr);
+
 /**
  * SECTION:ags_midi_buffer_util
  * @short_description: MIDI buffer util
@@ -35,6 +38,41 @@
  *
  * Utility functions for MIDI buffers.
  */
+
+GType
+ags_midi_buffer_util_get_type(void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_midi_buffer_util = 0;
+
+    ags_type_midi_buffer_util =
+      g_boxed_type_register_static("AgsMidiBufferUtil",
+				   (GBoxedCopyFunc) ags_midi_buffer_util_copy,
+				   (GBoxedFreeFunc) ags_midi_buffer_util_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_midi_buffer_util);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+gpointer
+ags_midi_buffer_util_copy(gpointer ptr)
+{
+  gpointer retval;
+
+  retval = g_memdup(ptr, sizeof(AgsMidiBufferUtil));
+ 
+  return(retval);
+}
+
+void
+ags_midi_buffer_util_free(gpointer ptr)
+{
+  g_free(ptr);
+}
 
 /**
  * ags_midi_buffer_util_get_varlength_size:
