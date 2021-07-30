@@ -3,6 +3,7 @@ ags (3.9.5)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* refactored ags_fm_synth_util.c
 	* fixed ags_synth_util.c
+	* added unit-tests
 
 ags (3.9.4)
 
