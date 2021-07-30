@@ -31,15 +31,99 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_FAST_PITCH_UTIL         (ags_fast_pitch_util_get_type())
+#define AGS_FAST_PITCH_UTIL(ptr) ((AgsFastPitchUtil *)(ptr))
 
 typedef struct _AgsFastPitchUtil AgsFastPitchUtil;
 
 struct _AgsFastPitchUtil
 {
-  //empty
+  gpointer source;
+  guint source_stride;
+
+  gpointer destination;
+  guint destination_stride;
+
+  gpointer mix_buffer;
+  gpointer im_mix_buffer;
+  gpointer low_mix_buffer;
+  gpointer new_mix_buffer;
+
+  guint buffer_length;
+  guint audio_buffer_util_format;
+  guint samplerate;
+
+  gdouble base_key;
+  gdouble tuning;
 };
 
 GType ags_fast_pitch_util_get_type(void);
+
+AgsFastPitchUtil* ags_fast_pitch_util_alloc();
+
+gpointer ags_fast_pitch_util_copy(AgsFastPitchUtil *ptr);
+void ags_fast_pitch_util_free(AgsFastPitchUtil *ptr);
+
+gpointer ags_fast_pitch_util_get_source(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_source(AgsFastPitchUtil *fast_pitch_util,
+				    gpointer source);
+
+guint ags_fast_pitch_util_get_source_stride(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_source_stride(AgsFastPitchUtil *fast_pitch_util,
+					   guint source_stride);
+
+gpointer ags_fast_pitch_util_get_destination(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_destination(AgsFastPitchUtil *fast_pitch_util,
+					 gpointer destination);
+
+guint ags_fast_pitch_util_get_destination_stride(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_destination_stride(AgsFastPitchUtil *fast_pitch_util,
+						guint destination_stride);
+
+gpointer ags_fast_pitch_util_get_mix_buffer(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_mix_buffer(AgsFastPitchUtil *fast_pitch_util,
+					gpointer mix_buffer);
+
+gpointer ags_fast_pitch_util_get_im_mix_buffer(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_im_mix_buffer(AgsFastPitchUtil *fast_pitch_util,
+					   gpointer im_mix_buffer);
+
+gpointer ags_fast_pitch_util_get_low_mix_buffer(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_low_mix_buffer(AgsFastPitchUtil *fast_pitch_util,
+					    gpointer low_mix_buffer);
+
+gpointer ags_fast_pitch_util_get_new_mix_buffer(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_new_mix_buffer(AgsFastPitchUtil *fast_pitch_util,
+					    gpointer new_mix_buffer);
+
+guint ags_fast_pitch_util_get_buffer_length(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_buffer_length(AgsFastPitchUtil *fast_pitch_util,
+					   guint buffer_length);
+
+guint ags_fast_pitch_util_get_audio_buffer_util_format(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_audio_buffer_util_format(AgsFastPitchUtil *fast_pitch_util,
+						      guint audio_buffer_util_format);
+
+guint ags_fast_pitch_util_get_samplerate(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_samplerate(AgsFastPitchUtil *fast_pitch_util,
+					guint samplerate);
+
+gdouble ags_fast_pitch_util_get_base_key(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_base_key(AgsFastPitchUtil *fast_pitch_util,
+				      gdouble base_key);
+
+gdouble ags_fast_pitch_util_get_tuning(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_tuning(AgsFastPitchUtil *fast_pitch_util,
+				    gdouble tuning);
+
+void ags_fast_pitch_util_pitch_s8(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_pitch_s16(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_pitch_s24(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_pitch_s32(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_pitch_s64(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_pitch_float(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_pitch_double(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_pitch_complex(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_pitch(AgsFastPitchUtil *fast_pitch_util);
 
 void ags_fast_pitch_util_compute_s8(gint8 *buffer,
 				    guint buffer_length,

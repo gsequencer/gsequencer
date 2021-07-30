@@ -31,6 +31,7 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_FLUID_IIR_FILTER_UTIL         (ags_fluid_iir_filter_util_get_type())
+#define AGS_FLUID_IIR_FILTER_UTIL(ptr)         ((AgsFluidIIRFilterUtil *)(ptr))
 
 #define AGS_FLUID_IIR_FILTER(ptr)              ((AgsFluidIIRFilter *)(ptr))
 
@@ -46,7 +47,42 @@ typedef enum{
 
 struct _AgsFluidIIRFilterUtil
 {
-  //empty
+  gpointer source;
+  guint source_stride;
+
+  gpointer destination;
+  guint destination_stride;
+
+  guint buffer_length;
+  guint audio_buffer_util_format;
+  guint samplerate;
+  
+  guint filter_type;
+
+  guint flags;
+
+  gdouble b02;
+  gdouble b1;
+  gdouble a1;
+  gdouble a2;
+  gdouble b02_incr;
+  gdouble b1_incr;
+  gdouble a1_incr;
+  gdouble a2_incr;
+
+  gint filter_coeff_incr_count;
+  gint compensate_incr;
+
+  gdouble hist1;
+  gdouble hist2;
+
+  gboolean filter_startup;
+
+  gdouble fres;
+  gdouble last_fres;
+
+  gdouble q_lin;
+  gdouble filter_gain;
 };
 
 struct _AgsFluidIIRFilter
@@ -74,10 +110,73 @@ struct _AgsFluidIIRFilter
 
 GType ags_fluid_iir_filter_util_get_type(void);
 
+AgsFluidIIRFilterUtil* ags_fluid_iir_filter_util_alloc();
+
+gpointer ags_fluid_iir_filter_util_copy(AgsFluidIIRFilterUtil *ptr);
+void ags_fluid_iir_filter_util_free(AgsFluidIIRFilterUtil *ptr);
+
+gpointer ags_fluid_iir_filter_util_get_source(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_set_source(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+					  gpointer source);
+
+guint ags_fluid_iir_filter_util_get_source_stride(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_set_source_stride(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+						 guint source_stride);
+
+gpointer ags_fluid_iir_filter_util_get_destination(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_set_destination(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+					       gpointer destination);
+
+guint ags_fluid_iir_filter_util_get_destination_stride(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_set_destination_stride(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+						      guint destination_stride);
+
+guint ags_fluid_iir_filter_util_get_buffer_length(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_set_buffer_length(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+						 guint buffer_length);
+
+guint ags_fluid_iir_filter_util_get_audio_buffer_util_format(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_set_audio_buffer_util_format(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+							    guint audio_buffer_util_format);
+
+guint ags_fluid_iir_filter_util_get_samplerate(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_set_samplerate(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+					      guint samplerate);
+
+guint ags_fluid_iir_filter_util_get_filter_type(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_set_filter_type(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+					       guint filter_type);
+
+guint ags_fluid_iir_filter_util_get_flags(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_set_flags(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+					 guint flags);
+
+gboolean ags_fluid_iir_filter_util_get_filter_startup(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_set_filter_startup(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+						  gboolean filter_startup);
+
+gdouble ags_fluid_iir_filter_util_get_q_lin(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_set_q_lin(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+					 gdouble q_lin);
+
+gdouble ags_fluid_iir_filter_util_get_filter_gain(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_set_filter_gain(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+					       gdouble filter_gain);
+
 void ags_fluid_iir_filter_util_calc(AgsFluidIIRFilter *iir_filter,
 				    gdouble output_rate,
 				    gdouble fres_mod,
 				    gint transition_samples);
+
+void ags_fluid_iir_filter_util_process_s8(AgsFluidIIRFilterUtil *iir_filter_util);
+void ags_fluid_iir_filter_util_process_s16(AgsFluidIIRFilterUtil *iir_filter_util);
+void ags_fluid_iir_filter_util_process_s24(AgsFluidIIRFilterUtil *iir_filter_util);
+void ags_fluid_iir_filter_util_process_s32(AgsFluidIIRFilterUtil *iir_filter_util);
+void ags_fluid_iir_filter_util_process_s64(AgsFluidIIRFilterUtil *iir_filter_util);
+void ags_fluid_iir_filter_util_process_float(AgsFluidIIRFilterUtil *iir_filter_util);
+void ags_fluid_iir_filter_util_process_double(AgsFluidIIRFilterUtil *iir_filter_util);
+void ags_fluid_iir_filter_util_process_complex(AgsFluidIIRFilterUtil *iir_filter_util);
+void ags_fluid_iir_filter_util_process(AgsFluidIIRFilterUtil *iir_filter_util);
 
 void ags_fluid_iir_filter_util_apply_s8(AgsFluidIIRFilter *iir_filter,
 					gint8 *destination,

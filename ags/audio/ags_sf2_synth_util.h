@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,6 +31,7 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SF2_SYNTH_UTIL         (ags_sf2_synth_util_get_type())
+#define AGS_SF2_SYNTH_UTIL(ptr) ((AgsSF2SynthUtil *)(ptr))
 
 typedef enum{
   AGS_SF2_SYNTH_UTIL_LOOP_NONE,
@@ -43,10 +44,131 @@ typedef struct _AgsSF2SynthUtil AgsSF2SynthUtil;
 
 struct _AgsSF2SynthUtil
 {
-  //empty
+  AgsIpatchSample *ipatch_sample;
+  
+  gpointer source;
+  guint source_stride;
+
+  guint buffer_length;
+  guint audio_buffer_util_format;
+  guint samplerate;
+  
+  gchar *preset;
+  gchar *instrument;
+  gchar *sample;
+  
+  gint bank;
+  gint program;
+  
+  gint midi_key;
+  
+  gdouble note;
+
+  gdouble volume;
+
+  guint frame_count;
+  guint offset;
+
+  guint loop_mode;
+
+  gint loop_start;
+  gint loop_end;
+  
+  gpointer generic_pitch;
 };
 
 GType ags_sf2_synth_util_get_type(void);
+
+AgsSF2SynthUtil* ags_sf2_synth_util_alloc();
+
+gpointer ags_sf2_synth_util_copy(AgsSF2SynthUtil *ptr);
+void ags_sf2_synth_util_free(AgsSF2SynthUtil *ptr);
+
+gpointer ags_sf2_synth_util_get_source(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_source(AgsSF2SynthUtil *sf2_synth_util,
+				   gpointer source);
+
+guint ags_sf2_synth_util_get_source_stride(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_source_stride(AgsSF2SynthUtil *sf2_synth_util,
+					  guint source_stride);
+
+guint ags_sf2_synth_util_get_buffer_length(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_buffer_length(AgsSF2SynthUtil *sf2_synth_util,
+					  guint buffer_length);
+
+guint ags_sf2_synth_util_get_audio_buffer_util_format(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_audio_buffer_util_format(AgsSF2SynthUtil *sf2_synth_util,
+						     guint audio_buffer_util_format);
+
+guint ags_sf2_synth_util_get_samplerate(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_samplerate(AgsSF2SynthUtil *sf2_synth_util,
+				       guint samplerate);
+
+gchar* ags_sf2_synth_util_get_preset(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_preset(AgsSF2SynthUtil *sf2_synth_util,
+				   gchar *preset);
+
+gchar* ags_sf2_synth_util_get_instrument(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_instrument(AgsSF2SynthUtil *sf2_synth_util,
+				       gchar *instrument);
+
+gchar* ags_sf2_synth_util_get_sample(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_sample(AgsSF2SynthUtil *sf2_synth_util,
+				   gchar *sample);
+
+gint ags_sf2_synth_util_get_bank(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_bank(AgsSF2SynthUtil *sf2_synth_util,
+				 gint bank);
+
+gint ags_sf2_synth_util_get_program(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_program(AgsSF2SynthUtil *sf2_synth_util,
+				    gint program);
+
+gint ags_sf2_synth_util_get_midi_key(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_midi_key(AgsSF2SynthUtil *sf2_synth_util,
+				     gint samplerate);
+
+gdouble ags_sf2_synth_util_get_note(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_note(AgsSF2SynthUtil *sf2_synth_util,
+				    gdouble note);
+
+gdouble ags_sf2_synth_util_get_volume(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_volume(AgsSF2SynthUtil *sf2_synth_util,
+				   gdouble volume);
+
+guint ags_sf2_synth_util_get_frame_count(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_frame_count(AgsSF2SynthUtil *sf2_synth_util,
+				       guint frame_count);
+
+guint ags_sf2_synth_util_get_offset(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_offset(AgsSF2SynthUtil *sf2_synth_util,
+				       guint offset);
+
+guint ags_sf2_synth_util_get_loop_mode(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_loop_mode(AgsSF2SynthUtil *sf2_synth_util,
+				       guint loop_mode);
+
+gint ags_sf2_synth_util_get_loop_start(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_loop_start(AgsSF2SynthUtil *sf2_synth_util,
+				       gint loop_start);
+
+gint ags_sf2_synth_util_get_loop_end(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_loop_end(AgsSF2SynthUtil *sf2_synth_util,
+				     gint loop_end);
+
+gpointer ags_sf2_synth_util_get_generic_pitch(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_generic_pitch(AgsSF2SynthUtil *sf2_synth_util,
+					  gpointer generic_pitch);
+
+void ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_compute(AgsSF2SynthUtil *sf2_synth_util);
 
 AgsIpatchSample* ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpatch *ipatch,
 									  gint bank,

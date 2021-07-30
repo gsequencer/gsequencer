@@ -31,15 +31,73 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_FLUID_INTERPOLATE_NONE_UTIL         (ags_fluid_interpolate_none_util_get_type())
-
-struct _AgsFluidInterpolateNoneUtil
-{
-  //empty
-};
+#define AGS_FLUID_INTERPOLATE_NONE_UTIL(ptr) ((AgsFluidInterpolateNoneUtil *)(ptr))
 
 typedef struct _AgsFluidInterpolateNoneUtil AgsFluidInterpolateNoneUtil;
 
+struct _AgsFluidInterpolateNoneUtil
+{
+  gpointer source;
+  guint source_stride;
+
+  gpointer destination;
+  guint destination_stride;
+
+  guint buffer_length;
+  guint audio_buffer_util_format;
+  guint samplerate;
+
+  gdouble phase_increment;
+};
+
 GType ags_fluid_interpolate_none_util_get_type(void);
+
+AgsFluidInterpolateNoneUtil* ags_fluid_interpolate_none_util_alloc();
+
+gpointer ags_fluid_interpolate_none_util_copy(AgsFluidInterpolateNoneUtil *ptr);
+void ags_fluid_interpolate_none_util_free(AgsFluidInterpolateNoneUtil *ptr);
+
+gpointer ags_fluid_interpolate_none_util_get_source(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_source(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+						gpointer source);
+
+guint ags_fluid_interpolate_none_util_get_source_stride(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_source_stride(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+						       guint source_stride);
+
+gpointer ags_fluid_interpolate_none_util_get_destination(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_destination(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+						     gpointer destination);
+
+guint ags_fluid_interpolate_none_util_get_destination_stride(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_destination_stride(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+							    guint destination_stride);
+
+guint ags_fluid_interpolate_none_util_get_buffer_length(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_buffer_length(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+						       guint buffer_length);
+
+guint ags_fluid_interpolate_none_util_get_audio_buffer_util_format(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_audio_buffer_util_format(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+								  guint audio_buffer_util_format);
+
+guint ags_fluid_interpolate_none_util_get_samplerate(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_samplerate(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+						    guint samplerate);
+
+gdouble ags_fluid_interpolate_none_util_get_phase_increment(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_set_phase_increment(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util,
+							 gdouble phase_increment);
+
+void ags_fluid_interpolate_none_util_pitch_s8(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_pitch_s16(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_pitch_s24(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_pitch_s32(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_pitch_s64(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_pitch_float(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_pitch_double(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_pitch_complex(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
+void ags_fluid_interpolate_none_util_pitch(AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util);
 
 void ags_fluid_interpolate_none_util_fill_s8(gint8 *destination,
 					     gint8 *source,

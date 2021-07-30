@@ -30,6 +30,7 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SFZ_SYNTH_UTIL         (ags_sfz_synth_util_get_type())
+#define AGS_SF2_SYNTH_UTIL(ptr) ((AgsSF2SynthUtil *)(ptr))
 
 typedef enum{
   AGS_SFZ_SYNTH_UTIL_LOOP_NONE,
@@ -42,7 +43,28 @@ typedef struct _AgsSFZSynthUtil AgsSFZSynthUtil;
 
 struct _AgsSFZSynthUtil
 {
-  //empty
+  AgsSFZSample *sfz_sample;
+  
+  gpointer source;
+  guint source_stride;
+
+  guint buffer_length;
+  guint audio_buffer_util_format;
+  guint samplerate;
+
+  gdouble note;
+
+  gdouble volume;
+
+  guint frame_count;
+  guint offset;
+
+  guint loop_mode;
+
+  gint loop_start;
+  gint loop_end;
+  
+  gpointer generic_pitch;
 };
 
 GType ags_sfz_synth_util_get_type(void);

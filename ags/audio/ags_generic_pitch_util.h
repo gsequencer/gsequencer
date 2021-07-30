@@ -25,6 +25,13 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_fast_pitch_util.h>
+#include <ags/audio/ags_hq_pitch_util.h>
+#include <ags/audio/ags_fluid_interpolate_none_util.h>
+#include <ags/audio/ags_fluid_interpolate_linear_util.h>
+#include <ags/audio/ags_fluid_interpolate_4th_order_util.h>
+#include <ags/audio/ags_fluid_interpolate_7th_order_util.h>
+
 #include <math.h>
 #include <complex.h>
 
@@ -60,7 +67,14 @@ typedef enum{
 
 struct _AgsGenericPitchUtil
 {
-  //empty
+  guint pitch_type;
+  
+  AgsFastPitchUtil *fast_pitch_util;
+  AgsHQPitchUtil *hq_pitch_util;
+  AgsFluidInterpolateNoneUtil *fluid_interpolate_none_util;
+  AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util;
+  AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util;
+  AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util;
 };
 
 struct _AgsGenericPitch
@@ -71,6 +85,25 @@ struct _AgsGenericPitch
 };
 
 GType ags_generic_pitch_util_get_type(void);
+
+AgsGenericPitchUtil* ags_generic_pitch_util_alloc();
+
+gpointer ags_generic_pitch_util_copy(AgsGenericPitchUtil *ptr);
+void ags_generic_pitch_util_free(AgsGenericPitchUtil *ptr);
+
+guint ags_sf2_synth_util_get_pitch_type(AgsSF2SynthUtil *sf2_synth_util);
+void ags_sf2_synth_util_set_pitch_type(AgsSF2SynthUtil *sf2_synth_util,
+				       guint pitch_type);
+
+void ags_generic_pitch_util_pitch_s8(AgsGenericPitchUtil *generic_pitch_util);
+void ags_generic_pitch_util_pitch_s16(AgsGenericPitchUtil *generic_pitch_util);
+void ags_generic_pitch_util_pitch_s24(AgsGenericPitchUtil *generic_pitch_util);
+void ags_generic_pitch_util_pitch_s32(AgsGenericPitchUtil *generic_pitch_util);
+void ags_generic_pitch_util_pitch_s64(AgsGenericPitchUtil *generic_pitch_util);
+void ags_generic_pitch_util_pitch_float(AgsGenericPitchUtil *generic_pitch_util);
+void ags_generic_pitch_util_pitch_double(AgsGenericPitchUtil *generic_pitch_util);
+void ags_generic_pitch_util_pitch_complex(AgsGenericPitchUtil *generic_pitch_util);
+void ags_generic_pitch_util_pitch(AgsGenericPitchUtil *generic_pitch_util);
 
 void ags_generic_pitch_util_compute_s8(AgsGenericPitch *generic_pitch,
 				       gint8 *buffer,
