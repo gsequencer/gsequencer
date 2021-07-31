@@ -79,22 +79,6 @@ guint ags_fast_pitch_util_get_destination_stride(AgsFastPitchUtil *fast_pitch_ut
 void ags_fast_pitch_util_set_destination_stride(AgsFastPitchUtil *fast_pitch_util,
 						guint destination_stride);
 
-gpointer ags_fast_pitch_util_get_mix_buffer(AgsFastPitchUtil *fast_pitch_util);
-void ags_fast_pitch_util_set_mix_buffer(AgsFastPitchUtil *fast_pitch_util,
-					gpointer mix_buffer);
-
-gpointer ags_fast_pitch_util_get_im_mix_buffer(AgsFastPitchUtil *fast_pitch_util);
-void ags_fast_pitch_util_set_im_mix_buffer(AgsFastPitchUtil *fast_pitch_util,
-					   gpointer im_mix_buffer);
-
-gpointer ags_fast_pitch_util_get_low_mix_buffer(AgsFastPitchUtil *fast_pitch_util);
-void ags_fast_pitch_util_set_low_mix_buffer(AgsFastPitchUtil *fast_pitch_util,
-					    gpointer low_mix_buffer);
-
-gpointer ags_fast_pitch_util_get_new_mix_buffer(AgsFastPitchUtil *fast_pitch_util);
-void ags_fast_pitch_util_set_new_mix_buffer(AgsFastPitchUtil *fast_pitch_util,
-					    gpointer new_mix_buffer);
-
 guint ags_fast_pitch_util_get_buffer_length(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_set_buffer_length(AgsFastPitchUtil *fast_pitch_util,
 					   guint buffer_length);

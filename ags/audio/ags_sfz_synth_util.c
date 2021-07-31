@@ -59,7 +59,7 @@ ags_sfz_synth_util_get_type(void)
 
     ags_type_sfz_synth_util =
       g_boxed_type_register_static("AgsSFZSynthUtil",
-				   (GBoxedCopyFunc) ags_sfz_synth_util_copy,
+				   (GBoxedCopyFunc) ags_sfz_synth_util_boxed_copy,
 				   (GBoxedFreeFunc) ags_sfz_synth_util_free);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_sfz_synth_util);
@@ -85,13 +85,13 @@ ags_sfz_synth_util_alloc()
   ptr = (AgsSFZSynthUtil *) g_new(AgsSFZSynthUtil,
 				  1);
 
-  ptr->ipatch_sample = NULL;
+  ptr->sfz_sample = NULL;
 
   ptr->source = NULL;
   ptr->source_stride = 1;
 
   ptr->buffer_length = 0;
-  ptr->audio_buffer_util_format = AGS_SFZ_SYNTH_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT;
+  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   ptr->samplerate = 0;
   
   ptr->note = 0.0;
@@ -122,12 +122,12 @@ ags_sfz_synth_util_alloc()
  * Since: 3.9.6
  */
 gpointer
-ags_sfz_synth_util_copy(AgsSFZSynthUtil *ptr)
+ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr)
 {
-  AgsSynthUtil *new_ptr;
+  AgsSFZSynthUtil *new_ptr;
   
-  new_ptr = (AgsSynthUtil *) g_new(AgsSynthUtil,
-				   1);
+  new_ptr = (AgsSFZSynthUtil *) g_new(AgsSFZSynthUtil,
+				      1);
   
   new_ptr->sfz_sample = ptr->sfz_sample;
 
@@ -139,7 +139,7 @@ ags_sfz_synth_util_copy(AgsSFZSynthUtil *ptr)
   new_ptr->source_stride = ptr->source_stride;
 
   new_ptr->buffer_length = ptr->buffer_length;
-  new_ptr->audio_buffer_util_format = ptr->audio_buffer_util_format;
+  new_ptr->format = ptr->format;
   new_ptr->samplerate = ptr->samplerate;
 
   new_ptr->note = ptr->note;
@@ -302,43 +302,43 @@ ags_sfz_synth_util_set_buffer_length(AgsSFZSynthUtil *sfz_synth_util,
 }
 
 /**
- * ags_sfz_synth_util_get_audio_buffer_util_format:
+ * ags_sfz_synth_util_get_format:
  * @sfz_synth_util: the #AgsSFZSynthUtil-struct
  * 
- * Get audio buffer util format of @sfz_synth_util.
+ * Get format of @sfz_synth_util.
  * 
- * Returns: the audio buffer util format
+ * Returns: the format
  * 
  * Since: 3.9.6
  */
 guint
-ags_sfz_synth_util_get_audio_buffer_util_format(AgsSFZSynthUtil *sfz_synth_util)
+ags_sfz_synth_util_get_format(AgsSFZSynthUtil *sfz_synth_util)
 {
   if(sfz_synth_util == NULL){
     return(0);
   }
 
-  return(sfz_synth_util->audio_buffer_util_format);
+  return(sfz_synth_util->format);
 }
 
 /**
- * ags_sfz_synth_util_set_audio_buffer_util_format:
+ * ags_sfz_synth_util_set_format:
  * @sfz_synth_util: the #AgsSFZSynthUtil-struct
- * @audio_buffer_util_format: the audio buffer util format
+ * @format: the format
  *
- * Set @audio_buffer_util_format of @sfz_synth_util.
+ * Set @format of @sfz_synth_util.
  *
  * Since: 3.9.6
  */
 void
-ags_sfz_synth_util_set_audio_buffer_util_format(AgsSFZSynthUtil *sfz_synth_util,
-						guint audio_buffer_util_format)
+ags_sfz_synth_util_set_format(AgsSFZSynthUtil *sfz_synth_util,
+			      guint format)
 {
   if(sfz_synth_util == NULL){
     return;
   }
 
-  sfz_synth_util->audio_buffer_util_format = audio_buffer_util_format;
+  sfz_synth_util->format = format;
 }
 
 /**
@@ -671,7 +671,7 @@ ags_sfz_synth_util_set_loop_end(AgsSFZSynthUtil *sfz_synth_util,
  * 
  * Since: 3.9.6
  */
-gpointer
+AgsGenericPitchUtil*
 ags_sfz_synth_util_get_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util)
 {
   if(sfz_synth_util == NULL){
@@ -692,7 +692,7 @@ ags_sfz_synth_util_get_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util)
  */
 void
 ags_sfz_synth_util_set_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util,
-					  gpointer generic_pitch_util)
+					  AgsGenericPitchUtil *generic_pitch_util)
 {
   if(sfz_synth_util == NULL){
     return;

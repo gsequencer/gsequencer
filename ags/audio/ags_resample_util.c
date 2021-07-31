@@ -82,8 +82,10 @@ ags_resample_util_alloc()
   ptr->source_stride = 1;
 
   ptr->buffer_length = 0;
-  ptr->audio_buffer_util_format = AGS_RESAMPLE_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT;
+  ptr->format = AGS_RESAMPLE_UTIL_DEFAULT_FORMAT;
   ptr->samplerate = AGS_RESAMPLE_UTIL_DEFAULT_SAMPLERATE;
+
+  ptr->audio_buffer_util_format = AGS_RESAMPLE_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT;
 
   ptr->target_samplerate = AGS_RESAMPLE_UTIL_DEFAULT_TARGET_SAMPLERATE;
 
@@ -131,8 +133,10 @@ ags_resample_util_copy(AgsResampleUtil *ptr)
   new_ptr->source_stride = ptr->source_stride;
 
   new_ptr->buffer_length = ptr->buffer_length;
-  new_ptr->audio_buffer_util_format = ptr->audio_buffer_util_format;
+  new_ptr->format = ptr->format;
   new_ptr->samplerate = ptr->samplerate;
+
+  new_ptr->audio_buffer_util_format = ptr->audio_buffer_util_format;
 
   new_ptr->target_samplerate = ptr->target_samplerate;
 
@@ -384,43 +388,45 @@ ags_resample_util_set_buffer_length(AgsResampleUtil *resample_util,
 }
 
 /**
- * ags_resample_util_get_audio_buffer_util_format:
+ * ags_resample_util_get_format:
  * @resample_util: the #AgsResampleUtil-struct
  * 
- * Get audio buffer util format of @resample_util.
+ * Get format of @resample_util.
  * 
- * Returns: the audio buffer util format
+ * Returns: the format
  * 
- * Since: 3.9.2
+ * Since: 3.9.6
  */
 guint
-ags_resample_util_get_audio_buffer_util_format(AgsResampleUtil *resample_util)
+ags_resample_util_get_format(AgsResampleUtil *resample_util)
 {
   if(resample_util == NULL){
     return(0);
   }
 
-  return(resample_util->audio_buffer_util_format);
+  return(resample_util->format);
 }
 
 /**
- * ags_resample_util_set_audio_buffer_util_format:
+ * ags_resample_util_set_format:
  * @resample_util: the #AgsResampleUtil-struct
- * @audio_buffer_util_format: the audio buffer util format
+ * @format: the format
  *
- * Set @audio_buffer_util_format of @resample_util.
+ * Set @format of @resample_util.
  *
- * Since: 3.9.2
+ * Since: 3.9.6
  */
 void
-ags_resample_util_set_audio_buffer_util_format(AgsResampleUtil *resample_util,
-					       guint audio_buffer_util_format)
+ags_resample_util_set_format(AgsResampleUtil *resample_util,
+			     guint format)
 {
   if(resample_util == NULL){
     return;
   }
 
-  resample_util->audio_buffer_util_format = audio_buffer_util_format;
+  resample_util->format = format;
+
+  resample_util->audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
 }
 
 /**
@@ -472,6 +478,46 @@ ags_resample_util_set_samplerate(AgsResampleUtil *resample_util,
     
     resample_util->secret_rabbit.data_out = (gfloat *) g_malloc(resample_util->secret_rabbit.output_frames * sizeof(gfloat));
   }
+}
+
+/**
+ * ags_resample_util_get_audio_buffer_util_format:
+ * @resample_util: the #AgsResampleUtil-struct
+ * 
+ * Get audio buffer util format of @resample_util.
+ * 
+ * Returns: the audio buffer util format
+ * 
+ * Since: 3.9.2
+ */
+guint
+ags_resample_util_get_audio_buffer_util_format(AgsResampleUtil *resample_util)
+{
+  if(resample_util == NULL){
+    return(0);
+  }
+
+  return(resample_util->audio_buffer_util_format);
+}
+
+/**
+ * ags_resample_util_set_audio_buffer_util_format:
+ * @resample_util: the #AgsResampleUtil-struct
+ * @audio_buffer_util_format: the audio buffer util format
+ *
+ * Set @audio_buffer_util_format of @resample_util.
+ *
+ * Since: 3.9.2
+ */
+void
+ags_resample_util_set_audio_buffer_util_format(AgsResampleUtil *resample_util,
+					       guint audio_buffer_util_format)
+{
+  if(resample_util == NULL){
+    return;
+  }
+
+  resample_util->audio_buffer_util_format = audio_buffer_util_format;
 }
 
 /**

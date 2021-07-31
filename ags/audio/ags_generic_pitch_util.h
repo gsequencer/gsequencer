@@ -91,9 +91,9 @@ AgsGenericPitchUtil* ags_generic_pitch_util_alloc();
 gpointer ags_generic_pitch_util_copy(AgsGenericPitchUtil *ptr);
 void ags_generic_pitch_util_free(AgsGenericPitchUtil *ptr);
 
-guint ags_sf2_synth_util_get_pitch_type(AgsSF2SynthUtil *sf2_synth_util);
-void ags_sf2_synth_util_set_pitch_type(AgsSF2SynthUtil *sf2_synth_util,
-				       guint pitch_type);
+guint ags_generic_pitch_util_get_pitch_type(AgsGenericPitchUtil *generic_pitch_util);
+void ags_generic_pitch_util_set_pitch_type(AgsGenericPitchUtil *generic_pitch_util,
+					   guint pitch_type);
 
 void ags_generic_pitch_util_pitch_s8(AgsGenericPitchUtil *generic_pitch_util);
 void ags_generic_pitch_util_pitch_s16(AgsGenericPitchUtil *generic_pitch_util);

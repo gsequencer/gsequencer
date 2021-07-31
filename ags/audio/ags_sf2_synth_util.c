@@ -52,7 +52,7 @@ ags_sf2_synth_util_get_type(void)
 
     ags_type_sf2_synth_util =
       g_boxed_type_register_static("AgsSF2SynthUtil",
-				   (GBoxedCopyFunc) ags_sf2_synth_util_copy,
+				   (GBoxedCopyFunc) ags_sf2_synth_util_boxed_copy,
 				   (GBoxedFreeFunc) ags_sf2_synth_util_free);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_sf2_synth_util);
@@ -83,8 +83,11 @@ ags_sf2_synth_util_alloc()
   ptr->source = NULL;
   ptr->source_stride = 1;
 
+  ptr->sample_buffer = NULL;
+  ptr->im_buffer = NULL;
+
   ptr->buffer_length = 0;
-  ptr->audio_buffer_util_format = AGS_SF2_SYNTH_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT;
+  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   ptr->samplerate = 0;
 
   ptr->preset = NULL;
@@ -108,13 +111,18 @@ ags_sf2_synth_util_alloc()
   ptr->loop_start = 0;
   ptr->loop_end = 0;
 
+  ptr->resample_util = ags_resample_util_alloc();
+
+  ags_resample_util_set_format(ptr->resample_util,
+			       AGS_SOUNDCARD_DOUBLE);  
+
   ptr->generic_pitch_util = ags_generic_pitch_util_alloc();
 
   return(ptr);
 }
 
 /**
- * ags_sf2_synth_util_copy:
+ * ags_sf2_synth_util_boxed_copy:
  * @ptr: the #AgsSF2SynthUtil-struct
  * 
  * Copy #AgsSF2SynthUtil-struct.
@@ -124,12 +132,12 @@ ags_sf2_synth_util_alloc()
  * Since: 3.9.6
  */
 gpointer
-ags_sf2_synth_util_copy(AgsSF2SynthUtil *ptr)
+ags_sf2_synth_util_boxed_copy(AgsSF2SynthUtil *ptr)
 {
-  AgsSynthUtil *new_ptr;
+  AgsSF2SynthUtil *new_ptr;
   
-  new_ptr = (AgsSynthUtil *) g_new(AgsSynthUtil,
-				   1);
+  new_ptr = (AgsSF2SynthUtil *) g_new(AgsSF2SynthUtil,
+				      1);
   
   new_ptr->ipatch_sample = ptr->ipatch_sample;
 
@@ -140,8 +148,11 @@ ags_sf2_synth_util_copy(AgsSF2SynthUtil *ptr)
   new_ptr->source = ptr->source;
   new_ptr->source_stride = ptr->source_stride;
 
+  new_ptr->sample_buffer = ptr->sample_buffer;
+  new_ptr->im_buffer = ptr->im_buffer;
+
   new_ptr->buffer_length = ptr->buffer_length;
-  new_ptr->audio_buffer_util_format = ptr->audio_buffer_util_format;
+  new_ptr->format = ptr->format;
   new_ptr->samplerate = ptr->samplerate;
 
   new_ptr->preset = g_strdup(ptr->preset);
@@ -165,6 +176,7 @@ ags_sf2_synth_util_copy(AgsSF2SynthUtil *ptr)
   new_ptr->loop_start = ptr->loop_start;
   new_ptr->loop_end = ptr->loop_end;
 
+  new_ptr->resample_util = ags_resample_util_copy(ptr->resample_util);
   new_ptr->generic_pitch_util = ags_generic_pitch_util_copy(ptr->generic_pitch_util);
   
   return(new_ptr);
@@ -185,15 +197,57 @@ ags_sf2_synth_util_free(AgsSF2SynthUtil *ptr)
     g_object_unref(ptr->ipatch_sample);
   }
 
-  g_free(ptr->source);
+  ags_stream_free(ptr->source);
 
+  ags_stream_free(ptr->sample_buffer);
+  ags_stream_free(ptr->im_buffer);
+  
   g_free(ptr->preset);
   g_free(ptr->instrument);
   g_free(ptr->sample);
 
+  ags_resample_util_free(ptr->resample_util);
   ags_generic_pitch_util_free(ptr->generic_pitch_util);
   
   g_free(ptr);
+}
+
+AgsIpatchSample*
+ags_sf2_synth_util_get_ipatch_sample(AgsSF2SynthUtil *sf2_synth_util)
+{
+  AgsIpatchSample *ipatch_sample;
+  
+  if(sf2_synth_util == NULL){
+    return(NULL);
+  }
+
+  ipatch_sample = sf2_synth_util->ipatch_sample;
+
+  if(ipatch_sample != NULL){
+    g_object_ref(ipatch_sample);
+  }
+  
+  return(ipatch_sample);
+}
+
+void
+ags_sf2_synth_util_set_ipatch_sample(AgsSF2SynthUtil *sf2_synth_util,
+				     AgsIpatchSample *ipatch_sample)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+  
+  if(ipatch_sample != NULL){
+    g_object_ref(ipatch_sample);
+  }
+
+  if(sf2_synth_util->ipatch_sample != NULL){
+    g_object_unref(sf2_synth_util->ipatch_sample);
+  }
+
+  sf2_synth_util->ipatch_sample = ipatch_sample;
+  
 }
 
 /**
@@ -307,53 +361,69 @@ ags_sf2_synth_util_get_buffer_length(AgsSF2SynthUtil *sf2_synth_util)
  */
 void
 ags_sf2_synth_util_set_buffer_length(AgsSF2SynthUtil *sf2_synth_util,
-					  guint buffer_length)
+				     guint buffer_length)
 {
   if(sf2_synth_util == NULL){
     return;
   }
 
   sf2_synth_util->buffer_length = buffer_length;
+
+  ags_stream_free(sf2_synth_util->im_buffer);
+
+  if(buffer_length > 0){
+    sf2_synth_util->im_buffer = ags_stream_alloc(buffer_length,
+						 sf2_synth_util->format);
+  }else{
+    sf2_synth_util->im_buffer = NULL;
+  }
 }
 
 /**
- * ags_sf2_synth_util_get_audio_buffer_util_format:
+ * ags_sf2_synth_util_get_format:
  * @sf2_synth_util: the #AgsSF2SynthUtil-struct
  * 
- * Get audio buffer util format of @sf2_synth_util.
+ * Get format of @sf2_synth_util.
  * 
- * Returns: the audio buffer util format
+ * Returns: the format
  * 
  * Since: 3.9.6
  */
 guint
-ags_sf2_synth_util_get_audio_buffer_util_format(AgsSF2SynthUtil *sf2_synth_util)
+ags_sf2_synth_util_get_format(AgsSF2SynthUtil *sf2_synth_util)
 {
   if(sf2_synth_util == NULL){
     return(0);
   }
 
-  return(sf2_synth_util->audio_buffer_util_format);
+  return(sf2_synth_util->format);
 }
 
 /**
- * ags_sf2_synth_util_set_audio_buffer_util_format:
+ * ags_sf2_synth_util_set_format:
  * @sf2_synth_util: the #AgsSF2SynthUtil-struct
- * @audio_buffer_util_format: the audio buffer util format
+ * @format: the format
  *
- * Set @audio_buffer_util_format of @sf2_synth_util.
+ * Set @format of @sf2_synth_util.
  *
  * Since: 3.9.6
  */
 void
-ags_sf2_synth_util_set_audio_buffer_util_format(AgsSF2SynthUtil *sf2_synth_util,
-						guint audio_buffer_util_format)
+ags_sf2_synth_util_set_format(AgsSF2SynthUtil *sf2_synth_util,
+			      guint format)
 {
   if(sf2_synth_util == NULL){
     return;
   }
 
-  sf2_synth_util->audio_buffer_util_format = audio_buffer_util_format;
+  sf2_synth_util->format = format;
+
+  ags_stream_free(sf2_synth_util->im_buffer);
+
+  if(sf2_synth_util->buffer_length > 0){
+    sf2_synth_util->im_buffer = ags_stream_alloc(sf2_synth_util->buffer_length,
+						 format);
+  }
 }
 
 /**
@@ -497,7 +567,7 @@ ags_sf2_synth_util_get_sample(AgsSF2SynthUtil *sf2_synth_util)
     return(NULL);
   }
 
-  return(g_strdup(sf2_synth_util->samplerate));
+  return(g_strdup(sf2_synth_util->sample));
 }
 
 /**
@@ -923,6 +993,46 @@ ags_sf2_synth_util_set_loop_end(AgsSF2SynthUtil *sf2_synth_util,
 }
 
 /**
+ * ags_sf2_synth_util_get_resample_util:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * 
+ * Get resample util of @sf2_synth_util.
+ * 
+ * Returns: (transfer none): the resample util
+ * 
+ * Since: 3.9.6
+ */
+AgsResampleUtil*
+ags_sf2_synth_util_get_resample_util(AgsSF2SynthUtil *sf2_synth_util)
+{
+  if(sf2_synth_util == NULL){
+    return(NULL);
+  }
+
+  return(sf2_synth_util->resample_util);
+}
+
+/**
+ * ags_sf2_synth_util_set_resample_util:
+ * @sf2_synth_util: the #AgsSF2SynthUtil-struct
+ * @resample_util: (transfer full): the resample util
+ *
+ * Set @resample_util of @sf2_synth_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_sf2_synth_util_set_resample_util(AgsSF2SynthUtil *sf2_synth_util,
+				     AgsResampleUtil *resample_util)
+{
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  sf2_synth_util->resample_util = resample_util;
+}
+
+/**
  * ags_sf2_synth_util_get_generic_pitch_util:
  * @sf2_synth_util: the #AgsSF2SynthUtil-struct
  * 
@@ -932,7 +1042,7 @@ ags_sf2_synth_util_set_loop_end(AgsSF2SynthUtil *sf2_synth_util,
  * 
  * Since: 3.9.6
  */
-gpointer
+AgsGenericPitchUtil*
 ags_sf2_synth_util_get_generic_pitch_util(AgsSF2SynthUtil *sf2_synth_util)
 {
   if(sf2_synth_util == NULL){
@@ -953,13 +1063,108 @@ ags_sf2_synth_util_get_generic_pitch_util(AgsSF2SynthUtil *sf2_synth_util)
  */
 void
 ags_sf2_synth_util_set_generic_pitch_util(AgsSF2SynthUtil *sf2_synth_util,
-					  gpointer generic_pitch_util)
+					  AgsGenericPitchUtil *generic_pitch_util)
 {
   if(sf2_synth_util == NULL){
     return;
   }
 
   sf2_synth_util->generic_pitch_util = generic_pitch_util;
+}
+
+void
+ags_sf2_synth_util_read_ipatch_sample(AgsSF2SynthUtil *sf2_synth_util)
+{
+  guint ipatch_sample_frame_count;
+  guint resampled_ipatch_sample_frame_count;
+  guint audio_channels;
+  guint ipatch_sample_samplerate;
+  
+  if(sf2_synth_util == NULL){
+    return;
+  }
+
+  if(sf2_synth_util->ipatch_sample == NULL){
+    ags_stream_free(sf2_synth_util->sample_buffer);
+    sf2_synth_util->sample_buffer = NULL;
+    
+    ags_stream_free(sf2_synth_util->im_buffer);
+    sf2_synth_util->im_buffer = NULL;
+    
+    return;
+  }
+  
+  audio_channels = 1;
+
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(sf2_synth_util->ipatch_sample),
+			  &ipatch_sample_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sf2_synth_util->ipatch_sample),
+				 &audio_channels,
+				 &ipatch_sample_samplerate,
+				 NULL,
+				 NULL);
+
+  resampled_ipatch_sample_frame_count = ipatch_sample_frame_count;
+  
+  if(sf2_synth_util->samplerate != ipatch_sample_samplerate){
+    resampled_ipatch_sample_frame_count = (guint) ceil(ipatch_sample_frame_count / ipatch_sample_samplerate * sf2_synth_util->samplerate);
+  }
+  
+  ags_stream_free(sf2_synth_util->sample_buffer);
+
+  ags_stream_free(sf2_synth_util->im_buffer);
+
+  if(audio_channels > 0 &&
+     resampled_ipatch_sample_frame_count > 0){
+    sf2_synth_util->sample_buffer = ags_stream_alloc(audio_channels * resampled_ipatch_sample_frame_count,
+						     AGS_SOUNDCARD_DOUBLE);
+
+    sf2_synth_util->im_buffer = ags_stream_alloc(resampled_ipatch_sample_frame_count,
+						 sf2_synth_util->format);
+  }else{
+    sf2_synth_util->sample_buffer = NULL;
+    sf2_synth_util->im_buffer = NULL;
+  }
+
+  if(sf2_synth_util->samplerate == ipatch_sample_samplerate){
+    ags_sound_resource_read(AGS_SOUND_RESOURCE(sf2_synth_util->ipatch_sample),
+			    sf2_synth_util->sample_buffer, 1,
+			    0,
+			    ipatch_sample_frame_count, AGS_SOUNDCARD_DOUBLE);
+  }else{
+    AgsResampleUtil *resample_util;
+
+    gpointer buffer;
+    
+    resample_util = sf2_synth_util->resample_util;
+
+    ags_resample_util_set_destination(resample_util,
+				      sf2_synth_util->sample_buffer);    
+
+    buffer = ags_stream_alloc(ipatch_sample_frame_count,
+			      AGS_SOUNDCARD_DOUBLE);
+    
+    ags_sound_resource_read(AGS_SOUND_RESOURCE(sf2_synth_util->ipatch_sample),
+			    buffer, 1,
+			    0,
+			    ipatch_sample_frame_count, AGS_SOUNDCARD_DOUBLE);
+
+    ags_resample_util_set_source(resample_util,
+				 buffer);    
+
+    ags_resample_util_set_samplerate(resample_util,
+				     ipatch_sample_samplerate);
+
+    ags_resample_util_set_target_samplerate(resample_util,
+					    sf2_synth_util->samplerate);
+
+    ags_resample_util_set_buffer_length(resample_util,
+					ipatch_sample_frame_count);
+
+    ags_resample_util_compute(resample_util);
+  }
 }
 
 /**
@@ -973,6 +1178,49 @@ ags_sf2_synth_util_set_generic_pitch_util(AgsSF2SynthUtil *sf2_synth_util,
 void
 ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
 {
+  guint resampled_source_frame_count;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint copy_mode;
+
+  if(sf2_synth_util == NULL ||
+     sf2_synth_util->source == NULL ||
+     !AGS_IS_IPATCH_SAMPLE(sf2_synth_util->ipatch_sample)){
+    return;
+  }
+
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(sf2_synth_util->ipatch_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sf2_synth_util->ipatch_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  resampled_source_frame_count = source_frame_count;
+
+  if(source_samplerate != sf2_synth_util->samplerate){
+    resampled_source_frame_count = (sf2_synth_util->samplerate / source_samplerate) * source_frame_count;
+  }
+  
+  /*  */
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S8,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(sf2_synth_util->im_buffer, 1, 0,
+					      sf2_synth_util->sample_buffer, 1, 0,
+					      resampled_source_frame_count, copy_mode);
+
   //TODO:JK: implement me
 }
 

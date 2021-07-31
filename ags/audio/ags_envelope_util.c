@@ -74,6 +74,8 @@ ags_envelope_util_alloc()
   ptr->source_stride = 1;
 
   ptr->buffer_length = 0;
+  ptr->format = AGS_ENVELOPE_UTIL_DEFAULT_FORMAT;
+
   ptr->audio_buffer_util_format = AGS_ENVELOPE_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT;
   
   ptr->volume = 1.0;
@@ -107,6 +109,8 @@ ags_envelope_util_copy(AgsEnvelopeUtil *ptr)
   new_ptr->source_stride = ptr->source_stride;
 
   new_ptr->buffer_length = ptr->buffer_length;
+  new_ptr->format = ptr->format;
+
   new_ptr->audio_buffer_util_format = ptr->audio_buffer_util_format;
 
   new_ptr->volume = ptr->volume;
@@ -333,6 +337,48 @@ ags_envelope_util_set_buffer_length(AgsEnvelopeUtil *envelope_util,
   }
 
   envelope_util->buffer_length = buffer_length;
+}
+
+/**
+ * ags_envelope_util_get_format:
+ * @envelope_util: the #AgsEnvelopeUtil-struct
+ * 
+ * Get format of @envelope_util.
+ * 
+ * Returns: the format
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_envelope_util_get_format(AgsEnvelopeUtil *envelope_util)
+{
+  if(envelope_util == NULL){
+    return(0);
+  }
+
+  return(envelope_util->format);
+}
+
+/**
+ * ags_envelope_util_set_format:
+ * @envelope_util: the #AgsEnvelopeUtil-struct
+ * @format: the format
+ *
+ * Set @format of @envelope_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_envelope_util_set_format(AgsEnvelopeUtil *envelope_util,
+			     guint format)
+{
+  if(envelope_util == NULL){
+    return;
+  }
+
+  envelope_util->format = format;
+
+  envelope_util->audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
 }
 
 /**

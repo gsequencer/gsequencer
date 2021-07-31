@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_generic_pitch_util.h>
+
 #include <ags/audio/file/ags_sfz_sample.h>
 
 G_BEGIN_DECLS
@@ -49,7 +51,7 @@ struct _AgsSFZSynthUtil
   guint source_stride;
 
   guint buffer_length;
-  guint audio_buffer_util_format;
+  guint format;
   guint samplerate;
 
   gdouble note;
@@ -61,17 +63,17 @@ struct _AgsSFZSynthUtil
 
   guint loop_mode;
 
-  gint loop_start;
-  gint loop_end;
+  guint loop_start;
+  guint loop_end;
   
-  gpointer generic_pitch;
+  AgsGenericPitchUtil *generic_pitch_util;
 };
 
 GType ags_sfz_synth_util_get_type(void);
 
 AgsSFZSynthUtil* ags_sfz_synth_util_alloc();
 
-gpointer ags_sfz_synth_util_copy(AgsSFZSynthUtil *ptr);
+gpointer ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr);
 void ags_sfz_synth_util_free(AgsSFZSynthUtil *ptr);
 
 gpointer ags_sfz_synth_util_get_source(AgsSFZSynthUtil *sfz_synth_util);
@@ -86,9 +88,9 @@ guint ags_sfz_synth_util_get_buffer_length(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_buffer_length(AgsSFZSynthUtil *sfz_synth_util,
 					  guint buffer_length);
 
-guint ags_sfz_synth_util_get_audio_buffer_util_format(AgsSFZSynthUtil *sfz_synth_util);
-void ags_sfz_synth_util_set_audio_buffer_util_format(AgsSFZSynthUtil *sfz_synth_util,
-						     guint audio_buffer_util_format);
+guint ags_sfz_synth_util_get_format(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_format(AgsSFZSynthUtil *sfz_synth_util,
+				   guint format);
 
 guint ags_sfz_synth_util_get_samplerate(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_samplerate(AgsSFZSynthUtil *sfz_synth_util,
@@ -114,17 +116,17 @@ guint ags_sfz_synth_util_get_loop_mode(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_loop_mode(AgsSFZSynthUtil *sfz_synth_util,
 				       guint loop_mode);
 
-gint ags_sfz_synth_util_get_loop_start(AgsSFZSynthUtil *sfz_synth_util);
+guint ags_sfz_synth_util_get_loop_start(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_loop_start(AgsSFZSynthUtil *sfz_synth_util,
-				       gint loop_start);
+				       guint loop_start);
 
-gint ags_sfz_synth_util_get_loop_end(AgsSFZSynthUtil *sfz_synth_util);
+guint ags_sfz_synth_util_get_loop_end(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_set_loop_end(AgsSFZSynthUtil *sfz_synth_util,
-				     gint loop_end);
+				     guint loop_end);
 
-gpointer ags_sfz_synth_util_get_generic_pitch(AgsSFZSynthUtil *sfz_synth_util);
-void ags_sfz_synth_util_set_generic_pitch(AgsSFZSynthUtil *sfz_synth_util,
-					  gpointer generic_pitch);
+AgsGenericPitchUtil* ags_sfz_synth_util_get_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util,
+					       AgsGenericPitchUtil *generic_pitch_util);
 
 void ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util);
 void ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util);

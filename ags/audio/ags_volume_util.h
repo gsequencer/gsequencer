@@ -32,6 +32,7 @@ G_BEGIN_DECLS
 #define AGS_TYPE_VOLUME_UTIL         (ags_volume_util_get_type())
 #define AGS_VOLUME_UTIL(ptr) ((AgsVolumeUtil *)(ptr))
 
+#define AGS_VOLUME_UTIL_DEFAULT_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
 #define AGS_VOLUME_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT (AGS_AUDIO_BUFFER_UTIL_S16)
 
 typedef struct _AgsVolumeUtil AgsVolumeUtil;
@@ -45,6 +46,8 @@ struct _AgsVolumeUtil
   guint source_stride;
   
   guint buffer_length;
+  guint format;
+
   guint audio_buffer_util_format;
   
   gdouble volume;
@@ -77,6 +80,10 @@ void ags_volume_util_set_source_stride(AgsVolumeUtil *volume_util,
 guint ags_volume_util_get_buffer_length(AgsVolumeUtil *volume_util);
 void ags_volume_util_set_buffer_length(AgsVolumeUtil *volume_util,
 				       guint buffer_length);
+
+guint ags_volume_util_get_format(AgsVolumeUtil *volume_util);
+void ags_volume_util_set_format(AgsVolumeUtil *volume_util,
+				guint format);
 
 guint ags_volume_util_get_audio_buffer_util_format(AgsVolumeUtil *volume_util);
 void ags_volume_util_set_audio_buffer_util_format(AgsVolumeUtil *volume_util,

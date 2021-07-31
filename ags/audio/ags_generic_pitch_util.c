@@ -52,8 +52,8 @@ ags_generic_pitch_util_get_type(void)
 
     ags_type_generic_pitch_util =
       g_boxed_type_register_static("AgsGenericPitchUtil",
-				   (GBoxedCopyFunc) ags_generic_pitch_util_strct_copy,
-				   (GBoxedFreeFunc) ags_generic_pitch_util_strct_free);
+				   (GBoxedCopyFunc) ags_generic_pitch_util_copy,
+				   (GBoxedFreeFunc) ags_generic_pitch_util_free);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_generic_pitch_util);
   }
@@ -61,19 +61,66 @@ ags_generic_pitch_util_get_type(void)
   return g_define_type_id__volatile;
 }
 
-gpointer
-ags_generic_pitch_util_strct_copy(gpointer ptr)
+/**
+ * ags_generic_pitch_util_alloc:
+ * 
+ * Allocate #AgsGenericPitchUtil-struct.
+ * 
+ * Returns: the newly allocated #AgsGenericPitchUtil-struct
+ * 
+ * Since: 3.9.6
+ */
+AgsGenericPitchUtil*
+ags_generic_pitch_util_alloc()
 {
-  gpointer retval;
+  AgsGenericPitchUtil *ptr;
+  
+  ptr = (AgsGenericPitchUtil *) g_new(AgsGenericPitchUtil,
+				      1);
 
-  retval = g_memdup(ptr, sizeof(AgsGenericPitchUtil));
- 
-  return(retval);
+  ptr->pitch_type = AGS_FLUID_4TH_ORDER_INTERPOLATE;
+
+  //TODO:JK: implement me
+  
+  return(ptr);
 }
 
-void
-ags_generic_pitch_util_strct_free(gpointer ptr)
+/**
+ * ags_generic_pitch_util_boxed_copy:
+ * @ptr: the #AgsGenericPitchUtil-struct
+ * 
+ * Copy #AgsGenericPitchUtil-struct.
+ * 
+ * Returns: the newly allocated #AgsGenericPitchUtil-struct
+ * 
+ * Since: 3.9.6
+ */
+gpointer
+ags_generic_pitch_util_copy(AgsGenericPitchUtil *ptr)
 {
+  AgsGenericPitchUtil *new_ptr;
+  
+  new_ptr = (AgsGenericPitchUtil *) g_new(AgsGenericPitchUtil,
+					  1);
+
+  //TODO:JK: implement me
+      
+  return(new_ptr);
+}
+
+/**
+ * ags_generic_pitch_util_free:
+ * @ptr: the #AgsGenericPitchUtil-struct
+ * 
+ * Free #AgsGenericPitchUtil-struct.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_generic_pitch_util_free(AgsGenericPitchUtil *ptr)
+{  
+  //TODO:JK: implement me
+  
   g_free(ptr);
 }
 
