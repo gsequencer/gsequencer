@@ -29,9 +29,6 @@
 #include <ags/audio/ags_fluid_interpolate_4th_order_util.h>
 #include <ags/audio/ags_fluid_interpolate_7th_order_util.h>
 
-gpointer ags_generic_pitch_util_strct_copy(gpointer ptr);
-void ags_generic_pitch_util_strct_free(gpointer ptr);
-
 /**
  * SECTION:ags_generic_pitch_util
  * @short_description: generic pitch util
@@ -122,6 +119,81 @@ ags_generic_pitch_util_free(AgsGenericPitchUtil *ptr)
   //TODO:JK: implement me
   
   g_free(ptr);
+}
+
+guint
+ags_generic_pitch_util_get_pitch_type(AgsGenericPitchUtil *generic_pitch_util)
+{
+  if(generic_pitch_util == NULL){
+    return(AGS_FLUID_4TH_ORDER_INTERPOLATE);
+  }
+
+  return(generic_pitch_util->pitch_type);
+}
+
+void
+ags_generic_pitch_util_set_pitch_type(AgsGenericPitchUtil *generic_pitch_util,
+				      guint pitch_type)
+{
+  if(generic_pitch_util == NULL){
+    return;
+  }
+
+  generic_pitch_util->pitch_type = pitch_type;
+}
+
+void
+ags_generic_pitch_util_pitch_s8(AgsGenericPitchUtil *generic_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_generic_pitch_util_pitch_s16(AgsGenericPitchUtil *generic_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_generic_pitch_util_pitch_s24(AgsGenericPitchUtil *generic_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_generic_pitch_util_pitch_s32(AgsGenericPitchUtil *generic_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_generic_pitch_util_pitch_s64(AgsGenericPitchUtil *generic_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_generic_pitch_util_pitch_float(AgsGenericPitchUtil *generic_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_generic_pitch_util_pitch_double(AgsGenericPitchUtil *generic_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_generic_pitch_util_pitch_complex(AgsGenericPitchUtil *generic_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_generic_pitch_util_pitch(AgsGenericPitchUtil *generic_pitch_util)
+{
+  //TODO:JK: implement me
 }
 
 /**

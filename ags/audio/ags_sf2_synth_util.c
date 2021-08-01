@@ -1178,12 +1178,18 @@ ags_sf2_synth_util_read_ipatch_sample(AgsSF2SynthUtil *sf2_synth_util)
 void
 ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
 {
-  guint resampled_source_frame_count;
+  gint midi_key;
+  gdouble base_key;
+  gdouble tuning;
   guint source_frame_count;
+  guint resampled_source_frame_count;
   guint source_samplerate;
   guint source_buffer_size;
   guint source_format;
   guint copy_mode;
+  guint i0, i1, i2;
+  gboolean success;
+  gboolean pong_copy;
 
   if(sf2_synth_util == NULL ||
      sf2_synth_util->source == NULL ||
@@ -1221,7 +1227,151 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
 					      sf2_synth_util->sample_buffer, 1, 0,
 					      resampled_source_frame_count, copy_mode);
 
-  //TODO:JK: implement me
+  /* pitch */
+  midi_key = 60;
+
+  //FIXME:JK: thread-safety
+  if(sf2_synth_util->ipatch_sample->sample != NULL){
+    gint tmp_midi_key;
+    
+    g_object_get(sf2_synth_util->ipatch_sample->sample,
+		 "root-note", &tmp_midi_key,
+		 NULL);
+
+    if(tmp_midi_key >= 0 &&
+       tmp_midi_key < 128){
+      midi_key = tmp_midi_key;
+    }
+  }
+  
+  base_key = (gdouble) midi_key - 21.0;
+
+  tuning = 100.0 * ((sf2_synth_util->note + 48.0) - base_key);
+
+  ags_generic_pitch_util_pitch_s8(sf2_synth_util->generic_pitch_util);
+
+  success = FALSE;
+  pong_copy = FALSE;
+  
+  for(i0 = 0, i1 = 0, i2 = 0; i0 < sf2_synth_util->frame_count && !success && i2 < sf2_synth_util->buffer_length; ){
+    guint copy_n_frames;
+    guint start_frame;
+
+    gboolean set_loop_start;
+    gboolean set_loop_end;
+    gboolean do_copy;
+    
+    copy_n_frames = sf2_synth_util->buffer_length;
+
+    set_loop_start = FALSE;
+    set_loop_end = FALSE;
+
+    do_copy = FALSE;
+    
+    if(i0 + copy_n_frames > sf2_synth_util->frame_count){
+      copy_n_frames = sf2_synth_util->frame_count - i0;
+    }
+    
+    if((sf2_synth_util->loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+	sf2_synth_util->loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+	sf2_synth_util->loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sf2_synth_util->loop_start >= 0 &&
+       sf2_synth_util->loop_end >= 0 &&
+       sf2_synth_util->loop_start < sf2_synth_util->loop_end){
+      /* can loop */
+      if(sf2_synth_util->loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+	if(i1 + copy_n_frames >= sf2_synth_util->loop_end){
+	  copy_n_frames = sf2_synth_util->loop_end - i1;
+	  
+	  set_loop_start = TRUE;
+	}
+      }else{
+	if(!pong_copy){
+	  if(i1 + copy_n_frames >= sf2_synth_util->loop_end){
+	    copy_n_frames = sf2_synth_util->loop_end - i1;
+
+	    set_loop_end = TRUE;
+	  }
+	}else{
+	  if(i1 - copy_n_frames <= sf2_synth_util->loop_start){
+	    copy_n_frames = i1 - sf2_synth_util->loop_start;
+	    
+	    set_loop_start = TRUE;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      if(i1 + copy_n_frames > sf2_synth_util->frame_count){
+	copy_n_frames = sf2_synth_util->frame_count - i1;
+
+	success = TRUE;
+      }
+    }
+
+    start_frame = 0;
+      
+    if(i0 + copy_n_frames > sf2_synth_util->offset){
+      do_copy = TRUE;
+      
+      if(i0 < sf2_synth_util->offset){
+	start_frame = (i0 + copy_n_frames) - sf2_synth_util->offset;
+      }
+      
+      if(!pong_copy){	
+	ags_audio_buffer_util_copy_s8_to_s8(((gint8 *) sf2_synth_util->source) + i2, 1,
+					    ((gint8 *) sf2_synth_util->im_buffer) + i1, 1,
+					    copy_n_frames - start_frame);
+      }else{
+	ags_audio_buffer_util_pong_s8(((gint8 *) sf2_synth_util->source) + i2, 1,
+				      ((gint8 *) sf2_synth_util->im_buffer) + i1, 1,
+				      copy_n_frames - start_frame);
+      }
+    }
+
+    i0 += copy_n_frames;
+    
+    if((sf2_synth_util->loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_STANDARD ||
+	sf2_synth_util->loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_RELEASE ||
+	sf2_synth_util->loop_mode == AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sf2_synth_util->loop_start >= 0 &&
+       sf2_synth_util->loop_end >= 0 &&
+       sf2_synth_util->loop_start < sf2_synth_util->loop_end){
+      /* can loop */
+      if(sf2_synth_util->loop_mode != AGS_SF2_SYNTH_UTIL_LOOP_PINGPONG){
+	if(set_loop_start){
+	  i1 = sf2_synth_util->loop_start;
+	}else{
+	  i1 += copy_n_frames;
+	}
+      }else{
+	if(!pong_copy){
+	  if(set_loop_end){
+	    i1 = sf2_synth_util->loop_end; 
+	    
+	    pong_copy = TRUE;
+	  }else{
+	    i1 += copy_n_frames;
+	  }
+	}else{
+	  if(set_loop_start){
+	    i1 = sf2_synth_util->loop_start;
+	    
+	    pong_copy = FALSE;
+	  }else{
+	    i1 -= copy_n_frames;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      i1 += copy_n_frames;
+    }    
+
+    if(do_copy){
+      i2 += (copy_n_frames - start_frame);
+    }
+  }
 }
 
 /**

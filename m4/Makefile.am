@@ -12,6 +12,7 @@ EXTRA_DIST = host-cpu-c-abi.m4 \
 	ags-marshallers.m4 \
 	ags-potfiles.m4 \
 	ags-symbols.m4 \
+        gnulib-comp.m4 \ 
 	codeset.m4 \
 	extern-inline.m4 \
 	fcntl-o.m4 \

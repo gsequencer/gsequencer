@@ -71,6 +71,8 @@ ags_peak_util_alloc()
   ptr->source_stride = 1;
 
   ptr->buffer_length = 0;
+  ptr->format = AGS_PEAK_UTIL_DEFAULT_FORMAT;
+  
   ptr->audio_buffer_util_format = AGS_PEAK_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT;
 
   ptr->samplerate = AGS_PEAK_UTIL_DEFAULT_SAMPLERATE;
@@ -105,6 +107,8 @@ ags_peak_util_copy(AgsPeakUtil *ptr)
   new_ptr->source_stride = ptr->source_stride;
 
   new_ptr->buffer_length = ptr->buffer_length;
+  new_ptr->format = ptr->format;
+
   new_ptr->audio_buffer_util_format = ptr->audio_buffer_util_format;
 
   new_ptr->samplerate = ptr->samplerate;
@@ -251,6 +255,48 @@ ags_peak_util_set_buffer_length(AgsPeakUtil *peak_util,
   }
 
   peak_util->buffer_length = buffer_length;
+}
+
+/**
+ * ags_peak_util_get_format:
+ * @peak_util: the #AgsPeakUtil-struct
+ * 
+ * Get format of @peak_util.
+ * 
+ * Returns: the format
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_peak_util_get_format(AgsPeakUtil *peak_util)
+{
+  if(peak_util == NULL){
+    return(0);
+  }
+
+  return(peak_util->format);
+}
+
+/**
+ * ags_peak_util_set_format:
+ * @peak_util: the #AgsPeakUtil-struct
+ * @format: the format
+ *
+ * Set @format of @peak_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_peak_util_set_format(AgsPeakUtil *peak_util,
+			 guint format)
+{
+  if(peak_util == NULL){
+    return;
+  }
+
+  peak_util->format = format;
+
+  peak_util->audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
 }
 
 /**

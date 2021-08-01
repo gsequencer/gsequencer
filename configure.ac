@@ -73,6 +73,11 @@ AC_ARG_ENABLE(alsa, [AS_HELP_STRING([--enable-alsa],
 	      [],
 	      [enable_alsa=yes])
 
+AC_ARG_ENABLE(alsa-compat, [AS_HELP_STRING([--enable-alsa-compat],
+				    [enable alsa compatibility library (default is no)])],
+	      [],
+	      [enable_alsa_compat=no])
+
 AC_ARG_ENABLE(oss, [AS_HELP_STRING([--enable-oss],
 				   [enable oss (default is no)])],
 	      [],
@@ -172,8 +177,7 @@ AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_INSTALL
 
-#AS_IF([test "x$enable_w32api" != xno],
-#      [gl_EARLY])
+gl_EARLY
 
 # libtool
 LT_PREREQ([2.4.2])
@@ -270,18 +274,14 @@ AS_IF([test "x$enable_alsa" != xno],
        AC_SUBST(LIBASOUND2_LIBS)
        AC_DEFINE([AGS_WITH_ALSA], [1], [ALSA enabled])
        AC_MSG_NOTICE([ALSA enabled])],
-      [AC_MSG_NOTICE([ALSA disabled])
-       AC_CHECK_HEADERS([alsa/seq_event.h],
-			[AC_DEFINE([HAVE_ALSA_SEQ_EVENT_H], [1], [ALSA sequencer event available])]
-			[PKG_CHECK_MODULES([LIBASOUND2], [alsa >= 1.0.5])
-			AC_SUBST(LIBASOUND2_CFLAGS)
-			AC_SUBST(LIBASOUND2_LIBS)],
-		  	[AC_MSG_NOTICE([ALSA sequencer event not available])],[
-#if HAVE_ALSA_SEQ_EVENT_H
-#  include <alsa/seq_event.h>
-#  include <alsa/seq_midi_event.h>
-#endif
-			])])
+      [AC_MSG_NOTICE([ALSA disabled])])
+
+AS_IF([test "x$enable_alsa_compat" != xno],
+      [PKG_CHECK_MODULES([LIBDSSIALSACOMPAT], [libdssialsacompat >= 1.0.0])
+       AC_SUBST(LIBDSSIALSACOMPAT_CFLAGS)
+       AC_SUBST(LIBDSSIALSACOMPAT_LIBS)
+       AC_MSG_NOTICE([ALSA compatibility library enabled])],
+      [AC_MSG_NOTICE([ALSA compatibility library disabled])])
 
 AS_IF([test "x$enable_oss" != xno],
       [AC_DEFINE([AGS_WITH_OSS], [1], [OSS enabled])
@@ -666,11 +666,11 @@ AS_IF([test "x$LIBGSEQUENCER_API_DIR" != x],
        AC_MSG_NOTICE([LIBGSEQUENCER_API_DIR = $LIBGSEQUENCER_API_DIR])])
 ])
 
-#AS_IF([test "x$enable_w32api" != xno],
-#       [gl_INIT])
+gl_INIT
 
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
+lib/Makefile
 Makefile
 unit-system-tests.mk
 functional-system-tests.mk
@@ -685,8 +685,5 @@ libags.pc
 libags_audio.pc
 libags_gui.pc
 libgsequencer.pc])
-
-#AM_COND_IF([WITH_W32API],
-#           [AC_CONFIG_FILES([lib/Makefile])])
 
 AC_OUTPUT

@@ -49,27 +49,7 @@ typedef enum{
   AGS_SYNTH_OSCILLATOR_LAST,
 }AgsSynthOscillatorMode;
 
-/**
- * AgsSynthMixMode:
- * @AGS_SYNTH_MIX_ADDITION: mix using addition
- * @AGS_SYNTH_MIX_SUBTRACTION: mix using subtraction
- * @AGS_SYNTH_MIX_MULTIPLICATION: mix using multiplication
- * @AGS_SYNTH_MIX_DIVISION: mix using division
- * @AGS_SYNTH_MIX_LAST: last mode
- * 
- * Enum values to specify mix mode.
- */
-typedef enum{
-  AGS_SYNTH_MIX_ADDITION,
-  AGS_SYNTH_MIX_SUBTRACTION,
-  AGS_SYNTH_MIX_MULTIPLICATION,
-  AGS_SYNTH_MIX_DIVISION,
-  AGS_SYNTH_MIX_LAST,
-}AgsSynthMixMode;
-
 GType ags_synth_oscillator_mode_get_type();
-
-GType ags_synth_mix_mode_get_type();
 
 G_END_DECLS
 
