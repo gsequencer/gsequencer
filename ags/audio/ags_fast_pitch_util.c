@@ -23,9 +23,6 @@
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_fourier_transform_util.h>
 
-gpointer ags_fast_pitch_util_strct_copy(gpointer ptr);
-void ags_fast_pitch_util_strct_free(gpointer ptr);
-
 /**
  * SECTION:ags_fast_pitch_util
  * @short_description: fast pitch util
@@ -46,8 +43,8 @@ ags_fast_pitch_util_get_type(void)
 
     ags_type_fast_pitch_util =
       g_boxed_type_register_static("AgsFastPitchUtil",
-				   (GBoxedCopyFunc) ags_fast_pitch_util_strct_copy,
-				   (GBoxedFreeFunc) ags_fast_pitch_util_strct_free);
+				   (GBoxedCopyFunc) ags_fast_pitch_util_copy,
+				   (GBoxedFreeFunc) ags_fast_pitch_util_free);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_fast_pitch_util);
   }
@@ -55,20 +52,578 @@ ags_fast_pitch_util_get_type(void)
   return g_define_type_id__volatile;
 }
 
-gpointer
-ags_fast_pitch_util_strct_copy(gpointer ptr)
-{
-  gpointer retval;
 
-  retval = g_memdup(ptr, sizeof(AgsFastPitchUtil));
- 
-  return(retval);
+/**
+ * ags_fast_pitch_util_alloc:
+ * 
+ * Allocate #AgsFastPitchUtil-struct.
+ * 
+ * Returns: the newly allocated #AgsFastPitchUtil-struct
+ * 
+ * Since: 3.9.6
+ */
+AgsFastPitchUtil*
+ags_fast_pitch_util_alloc()
+{
+  AgsFastPitchUtil *ptr;
+  
+  ptr = (AgsFastPitchUtil *) g_new(AgsFastPitchUtil,
+				   1);
+
+  ptr->source = NULL;
+  ptr->source_stride = 1;
+
+  ptr->destination = NULL;
+  ptr->destination_stride = 1;
+
+  ptr->buffer_length = 0;
+  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  ptr->base_key = 0.0;
+  ptr->tuning = 0.0;
+
+  return(ptr);
 }
 
-void
-ags_fast_pitch_util_strct_free(gpointer ptr)
+/**
+ * ags_fast_pitch_util_copy:
+ * @ptr: the original #AgsFastPitchUtil-struct
+ *
+ * Create a copy of @ptr.
+ *
+ * Returns: a pointer of the new #AgsFastPitchUtil-struct
+ *
+ * Since: 3.9.6
+ */
+gpointer
+ags_fast_pitch_util_copy(AgsFastPitchUtil *ptr)
 {
+  AgsFastPitchUtil *new_ptr;
+  
+  new_ptr = (AgsFastPitchUtil *) g_new(AgsFastPitchUtil,
+				       1);
+  
+  new_ptr->destination = ptr->destination;
+  new_ptr->destination_stride = ptr->destination_stride;
+
+  new_ptr->source = ptr->source;
+  new_ptr->source_stride = ptr->source_stride;
+
+  new_ptr->buffer_length = ptr->buffer_length;
+  new_ptr->format = ptr->format;
+  new_ptr->samplerate = ptr->samplerate;
+
+  new_ptr->base_key = ptr->base_key;
+  new_ptr->tuning = ptr->tuning;
+
+  return(new_ptr);
+}
+
+/**
+ * ags_fast_pitch_util_free:
+ * @ptr: the #AgsFastPitchUtil-struct
+ *
+ * Free the memory of @ptr.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_free(AgsFastPitchUtil *ptr)
+{
+  g_free(ptr->destination);
+
+  if(ptr->destination != ptr->source){
+    g_free(ptr->source);
+  }
+  
   g_free(ptr);
+}
+
+/**
+ * ags_fast_pitch_util_get_destination:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Get destination buffer of @fast_pitch_util.
+ * 
+ * Returns: the destination buffer
+ * 
+ * Since: 3.9.6
+ */
+gpointer
+ags_fast_pitch_util_get_destination(AgsFastPitchUtil *fast_pitch_util)
+{
+  if(fast_pitch_util == NULL){
+    return(NULL);
+  }
+
+  return(fast_pitch_util->destination);
+}
+
+/**
+ * ags_fast_pitch_util_set_destination:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * @destination: the destination buffer
+ *
+ * Set @destination buffer of @fast_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_set_destination(AgsFastPitchUtil *fast_pitch_util,
+				    gpointer destination)
+{
+  if(fast_pitch_util == NULL){
+    return;
+  }
+
+  fast_pitch_util->destination = destination;
+}
+
+/**
+ * ags_fast_pitch_util_get_destination_stride:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Get destination stride of @fast_pitch_util.
+ * 
+ * Returns: the destination buffer stride
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_fast_pitch_util_get_destination_stride(AgsFastPitchUtil *fast_pitch_util)
+{
+  if(fast_pitch_util == NULL){
+    return(0);
+  }
+
+  return(fast_pitch_util->destination_stride);
+}
+
+/**
+ * ags_fast_pitch_util_set_destination_stride:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * @destination_stride: the destination buffer stride
+ *
+ * Set @destination stride of @fast_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_set_destination_stride(AgsFastPitchUtil *fast_pitch_util,
+					   guint destination_stride)
+{
+  if(fast_pitch_util == NULL){
+    return;
+  }
+
+  fast_pitch_util->destination_stride = destination_stride;
+}
+
+/**
+ * ags_fast_pitch_util_get_source:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Get source buffer of @fast_pitch_util.
+ * 
+ * Returns: the source buffer
+ * 
+ * Since: 3.9.6
+ */
+gpointer
+ags_fast_pitch_util_get_source(AgsFastPitchUtil *fast_pitch_util)
+{
+  if(fast_pitch_util == NULL){
+    return(NULL);
+  }
+
+  return(fast_pitch_util->source);
+}
+
+/**
+ * ags_fast_pitch_util_set_source:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * @source: the source buffer
+ *
+ * Set @source buffer of @fast_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_set_source(AgsFastPitchUtil *fast_pitch_util,
+			       gpointer source)
+{
+  if(fast_pitch_util == NULL){
+    return;
+  }
+
+  fast_pitch_util->source = source;
+}
+
+/**
+ * ags_fast_pitch_util_get_source_stride:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Get source stride of @fast_pitch_util.
+ * 
+ * Returns: the source buffer stride
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_fast_pitch_util_get_source_stride(AgsFastPitchUtil *fast_pitch_util)
+{
+  if(fast_pitch_util == NULL){
+    return(0);
+  }
+
+  return(fast_pitch_util->source_stride);
+}
+
+/**
+ * ags_fast_pitch_util_set_source_stride:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * @source_stride: the source buffer stride
+ *
+ * Set @source stride of @fast_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_set_source_stride(AgsFastPitchUtil *fast_pitch_util,
+				      guint source_stride)
+{
+  if(fast_pitch_util == NULL){
+    return;
+  }
+
+  fast_pitch_util->source_stride = source_stride;
+}
+
+/**
+ * ags_fast_pitch_util_get_buffer_length:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Get buffer length of @fast_pitch_util.
+ * 
+ * Returns: the buffer length
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_fast_pitch_util_get_buffer_length(AgsFastPitchUtil *fast_pitch_util)
+{
+  if(fast_pitch_util == NULL){
+    return(0);
+  }
+
+  return(fast_pitch_util->buffer_length);
+}
+
+/**
+ * ags_fast_pitch_util_set_buffer_length:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * @buffer_length: the buffer length
+ *
+ * Set @buffer_length of @fast_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_set_buffer_length(AgsFastPitchUtil *fast_pitch_util,
+				      guint buffer_length)
+{
+  if(fast_pitch_util == NULL){
+    return;
+  }
+
+  fast_pitch_util->buffer_length = buffer_length;
+}
+
+/**
+ * ags_fast_pitch_util_get_format:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Get format of @fast_pitch_util.
+ * 
+ * Returns: the format
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_fast_pitch_util_get_format(AgsFastPitchUtil *fast_pitch_util)
+{
+  if(fast_pitch_util == NULL){
+    return(0);
+  }
+
+  return(fast_pitch_util->format);
+}
+
+/**
+ * ags_fast_pitch_util_set_format:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * @format: the format
+ *
+ * Set @format of @fast_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_set_format(AgsFastPitchUtil *fast_pitch_util,
+			       guint format)
+{
+  if(fast_pitch_util == NULL){
+    return;
+  }
+
+  fast_pitch_util->format = format;
+}
+
+/**
+ * ags_fast_pitch_util_get_samplerate:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Get samplerate of @fast_pitch_util.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_fast_pitch_util_get_samplerate(AgsFastPitchUtil *fast_pitch_util)
+{
+  if(fast_pitch_util == NULL){
+    return(0);
+  }
+
+  return(fast_pitch_util->samplerate);
+}
+
+/**
+ * ags_fast_pitch_util_set_samplerate:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * @samplerate: the samplerate
+ *
+ * Set @samplerate of @fast_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_set_samplerate(AgsFastPitchUtil *fast_pitch_util,
+				   guint samplerate)
+{
+  if(fast_pitch_util == NULL){
+    return;
+  }
+
+  fast_pitch_util->samplerate = samplerate;
+}
+
+/**
+ * ags_fast_pitch_util_get_fast_pitch:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Get base key of @fast_pitch_util.
+ * 
+ * Returns: the base key
+ * 
+ * Since: 3.9.6
+ */
+gdouble
+ags_fast_pitch_util_get_base_key(AgsFastPitchUtil *fast_pitch_util)
+{
+  if(fast_pitch_util == NULL){
+    return(0.0);
+  }
+
+  return(fast_pitch_util->base_key);
+}
+
+/**
+ * ags_fast_pitch_util_set_base_key:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * @base_key: the base key
+ *
+ * Set @base_key of @fast_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_set_base_key(AgsFastPitchUtil *fast_pitch_util,
+				 gdouble base_key)
+{
+  if(fast_pitch_util == NULL){
+    return;
+  }
+
+  fast_pitch_util->base_key = base_key;
+}
+
+/**
+ * ags_fast_pitch_util_get_fast_pitch:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Get tuning of @fast_pitch_util.
+ * 
+ * Returns: the tuning
+ * 
+ * Since: 3.9.6
+ */
+gdouble
+ags_fast_pitch_util_get_tuning(AgsFastPitchUtil *fast_pitch_util)
+{
+  if(fast_pitch_util == NULL){
+    return(0.0);
+  }
+
+  return(fast_pitch_util->tuning);
+}
+
+/**
+ * ags_fast_pitch_util_set_tuning:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * @tuning: the tuning
+ *
+ * Set @tuning of @fast_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_set_tuning(AgsFastPitchUtil *fast_pitch_util,
+			       gdouble tuning)
+{
+  if(fast_pitch_util == NULL){
+    return;
+  }
+
+  fast_pitch_util->tuning = tuning;
+}
+
+/**
+ * ags_fast_pitch_util_pitch_s8:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Pitch @fast_pitch_util of signed 8 bit data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_pitch_s8(AgsFastPitchUtil *fast_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fast_pitch_util_pitch_s16:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Pitch @fast_pitch_util of signed 16 bit data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_pitch_s16(AgsFastPitchUtil *fast_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fast_pitch_util_pitch_s24:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Pitch @fast_pitch_util of signed 24 bit data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_pitch_s24(AgsFastPitchUtil *fast_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fast_pitch_util_pitch_s32:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Pitch @fast_pitch_util of signed 32 bit data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_pitch_s32(AgsFastPitchUtil *fast_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fast_pitch_util_pitch_s64:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Pitch @fast_pitch_util of signed 64 bit data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_pitch_s64(AgsFastPitchUtil *fast_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fast_pitch_util_pitch_float:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Pitch @fast_pitch_util of floating point data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_pitch_float(AgsFastPitchUtil *fast_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fast_pitch_util_pitch_double:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Pitch @fast_pitch_util of double precision floating point data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_pitch_double(AgsFastPitchUtil *fast_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fast_pitch_util_pitch_complex:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Pitch @fast_pitch_util of complex data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_pitch_complex(AgsFastPitchUtil *fast_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_fast_pitch_util_pitch:
+ * @fast_pitch_util: the #AgsFastPitchUtil-struct
+ * 
+ * Pitch @fast_pitch_util.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_fast_pitch_util_pitch(AgsFastPitchUtil *fast_pitch_util)
+{
+  //TODO:JK: implement me
 }
 
 /**

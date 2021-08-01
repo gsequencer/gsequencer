@@ -49,7 +49,7 @@ struct _AgsHQPitchUtil
   gpointer new_mix_buffer;
 
   guint buffer_length;
-  guint audio_buffer_util_format;
+  guint format;
   guint samplerate;
 
   gdouble base_key;
@@ -93,9 +93,9 @@ guint ags_hq_pitch_util_get_buffer_length(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_set_buffer_length(AgsHQPitchUtil *hq_pitch_util,
 					 guint buffer_length);
 
-guint ags_hq_pitch_util_get_audio_buffer_util_format(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_set_audio_buffer_util_format(AgsHQPitchUtil *hq_pitch_util,
-						    guint audio_buffer_util_format);
+guint ags_hq_pitch_util_get_format(AgsHQPitchUtil *hq_pitch_util);
+void ags_hq_pitch_util_set_format(AgsHQPitchUtil *hq_pitch_util,
+				  guint format);
 
 guint ags_hq_pitch_util_get_samplerate(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_set_samplerate(AgsHQPitchUtil *hq_pitch_util,

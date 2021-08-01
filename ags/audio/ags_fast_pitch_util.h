@@ -49,7 +49,7 @@ struct _AgsFastPitchUtil
   gpointer new_mix_buffer;
 
   guint buffer_length;
-  guint audio_buffer_util_format;
+  guint format;
   guint samplerate;
 
   gdouble base_key;
@@ -83,9 +83,9 @@ guint ags_fast_pitch_util_get_buffer_length(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_set_buffer_length(AgsFastPitchUtil *fast_pitch_util,
 					   guint buffer_length);
 
-guint ags_fast_pitch_util_get_audio_buffer_util_format(AgsFastPitchUtil *fast_pitch_util);
-void ags_fast_pitch_util_set_audio_buffer_util_format(AgsFastPitchUtil *fast_pitch_util,
-						      guint audio_buffer_util_format);
+guint ags_fast_pitch_util_get_format(AgsFastPitchUtil *fast_pitch_util);
+void ags_fast_pitch_util_set_format(AgsFastPitchUtil *fast_pitch_util,
+				    guint format);
 
 guint ags_fast_pitch_util_get_samplerate(AgsFastPitchUtil *fast_pitch_util);
 void ags_fast_pitch_util_set_samplerate(AgsFastPitchUtil *fast_pitch_util,

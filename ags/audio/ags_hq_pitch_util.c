@@ -23,9 +23,6 @@
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_linear_interpolate_util.h>
 
-gpointer ags_hq_pitch_util_strct_copy(gpointer ptr);
-void ags_hq_pitch_util_strct_free(gpointer ptr);
-
 /**
  * SECTION:ags_hq_pitch_util
  * @short_description: hq pitch util
@@ -46,8 +43,8 @@ ags_hq_pitch_util_get_type(void)
 
     ags_type_hq_pitch_util =
       g_boxed_type_register_static("AgsHQPitchUtil",
-				   (GBoxedCopyFunc) ags_hq_pitch_util_strct_copy,
-				   (GBoxedFreeFunc) ags_hq_pitch_util_strct_free);
+				   (GBoxedCopyFunc) ags_hq_pitch_util_copy,
+				   (GBoxedFreeFunc) ags_hq_pitch_util_free);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_hq_pitch_util);
   }
@@ -55,20 +52,577 @@ ags_hq_pitch_util_get_type(void)
   return g_define_type_id__volatile;
 }
 
-gpointer
-ags_hq_pitch_util_strct_copy(gpointer ptr)
+/**
+ * ags_hq_pitch_util_alloc:
+ * 
+ * Allocate #AgsHQPitchUtil-struct.
+ * 
+ * Returns: the newly allocated #AgsHQPitchUtil-struct
+ * 
+ * Since: 3.9.6
+ */
+AgsHQPitchUtil*
+ags_hq_pitch_util_alloc()
 {
-  gpointer retval;
+  AgsHQPitchUtil *ptr;
+  
+  ptr = (AgsHQPitchUtil *) g_new(AgsHQPitchUtil,
+				 1);
 
-  retval = g_memdup(ptr, sizeof(AgsHQPitchUtil));
- 
-  return(retval);
+  ptr->source = NULL;
+  ptr->source_stride = 1;
+
+  ptr->destination = NULL;
+  ptr->destination_stride = 1;
+
+  ptr->buffer_length = 0;
+  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  ptr->base_key = 0.0;
+  ptr->tuning = 0.0;
+
+  return(ptr);
 }
 
-void
-ags_hq_pitch_util_strct_free(gpointer ptr)
+/**
+ * ags_hq_pitch_util_copy:
+ * @ptr: the original #AgsHQPitchUtil-struct
+ *
+ * Create a copy of @ptr.
+ *
+ * Returns: a pointer of the new #AgsHQPitchUtil-struct
+ *
+ * Since: 3.9.6
+ */
+gpointer
+ags_hq_pitch_util_copy(AgsHQPitchUtil *ptr)
 {
+  AgsHQPitchUtil *new_ptr;
+  
+  new_ptr = (AgsHQPitchUtil *) g_new(AgsHQPitchUtil,
+				     1);
+  
+  new_ptr->destination = ptr->destination;
+  new_ptr->destination_stride = ptr->destination_stride;
+
+  new_ptr->source = ptr->source;
+  new_ptr->source_stride = ptr->source_stride;
+
+  new_ptr->buffer_length = ptr->buffer_length;
+  new_ptr->format = ptr->format;
+  new_ptr->samplerate = ptr->samplerate;
+
+  new_ptr->base_key = ptr->base_key;
+  new_ptr->tuning = ptr->tuning;
+
+  return(new_ptr);
+}
+
+/**
+ * ags_hq_pitch_util_free:
+ * @ptr: the #AgsHQPitchUtil-struct
+ *
+ * Free the memory of @ptr.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_free(AgsHQPitchUtil *ptr)
+{
+  g_free(ptr->destination);
+
+  if(ptr->destination != ptr->source){
+    g_free(ptr->source);
+  }
+  
   g_free(ptr);
+}
+
+/**
+ * ags_hq_pitch_util_get_destination:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get destination buffer of @hq_pitch_util.
+ * 
+ * Returns: the destination buffer
+ * 
+ * Since: 3.9.6
+ */
+gpointer
+ags_hq_pitch_util_get_destination(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(NULL);
+  }
+
+  return(hq_pitch_util->destination);
+}
+
+/**
+ * ags_hq_pitch_util_set_destination:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @destination: the destination buffer
+ *
+ * Set @destination buffer of @hq_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_set_destination(AgsHQPitchUtil *hq_pitch_util,
+				  gpointer destination)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->destination = destination;
+}
+
+/**
+ * ags_hq_pitch_util_get_destination_stride:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get destination stride of @hq_pitch_util.
+ * 
+ * Returns: the destination buffer stride
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_hq_pitch_util_get_destination_stride(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(0);
+  }
+
+  return(hq_pitch_util->destination_stride);
+}
+
+/**
+ * ags_hq_pitch_util_set_destination_stride:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @destination_stride: the destination buffer stride
+ *
+ * Set @destination stride of @hq_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_set_destination_stride(AgsHQPitchUtil *hq_pitch_util,
+					 guint destination_stride)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->destination_stride = destination_stride;
+}
+
+/**
+ * ags_hq_pitch_util_get_source:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get source buffer of @hq_pitch_util.
+ * 
+ * Returns: the source buffer
+ * 
+ * Since: 3.9.6
+ */
+gpointer
+ags_hq_pitch_util_get_source(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(NULL);
+  }
+
+  return(hq_pitch_util->source);
+}
+
+/**
+ * ags_hq_pitch_util_set_source:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @source: the source buffer
+ *
+ * Set @source buffer of @hq_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_set_source(AgsHQPitchUtil *hq_pitch_util,
+			     gpointer source)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->source = source;
+}
+
+/**
+ * ags_hq_pitch_util_get_source_stride:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get source stride of @hq_pitch_util.
+ * 
+ * Returns: the source buffer stride
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_hq_pitch_util_get_source_stride(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(0);
+  }
+
+  return(hq_pitch_util->source_stride);
+}
+
+/**
+ * ags_hq_pitch_util_set_source_stride:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @source_stride: the source buffer stride
+ *
+ * Set @source stride of @hq_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_set_source_stride(AgsHQPitchUtil *hq_pitch_util,
+				    guint source_stride)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->source_stride = source_stride;
+}
+
+/**
+ * ags_hq_pitch_util_get_buffer_length:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get buffer length of @hq_pitch_util.
+ * 
+ * Returns: the buffer length
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_hq_pitch_util_get_buffer_length(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(0);
+  }
+
+  return(hq_pitch_util->buffer_length);
+}
+
+/**
+ * ags_hq_pitch_util_set_buffer_length:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @buffer_length: the buffer length
+ *
+ * Set @buffer_length of @hq_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_set_buffer_length(AgsHQPitchUtil *hq_pitch_util,
+				    guint buffer_length)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->buffer_length = buffer_length;
+}
+
+/**
+ * ags_hq_pitch_util_get_format:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get format of @hq_pitch_util.
+ * 
+ * Returns: the format
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_hq_pitch_util_get_format(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(0);
+  }
+
+  return(hq_pitch_util->format);
+}
+
+/**
+ * ags_hq_pitch_util_set_format:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @format: the format
+ *
+ * Set @format of @hq_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_set_format(AgsHQPitchUtil *hq_pitch_util,
+			     guint format)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->format = format;
+}
+
+/**
+ * ags_hq_pitch_util_get_samplerate:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get samplerate of @hq_pitch_util.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_hq_pitch_util_get_samplerate(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(0);
+  }
+
+  return(hq_pitch_util->samplerate);
+}
+
+/**
+ * ags_hq_pitch_util_set_samplerate:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @samplerate: the samplerate
+ *
+ * Set @samplerate of @hq_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_set_samplerate(AgsHQPitchUtil *hq_pitch_util,
+				 guint samplerate)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->samplerate = samplerate;
+}
+
+/**
+ * ags_hq_pitch_util_get_hq_pitch:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get base key of @hq_pitch_util.
+ * 
+ * Returns: the base key
+ * 
+ * Since: 3.9.6
+ */
+gdouble
+ags_hq_pitch_util_get_base_key(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(0.0);
+  }
+
+  return(hq_pitch_util->base_key);
+}
+
+/**
+ * ags_hq_pitch_util_set_base_key:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @base_key: the base key
+ *
+ * Set @base_key of @hq_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_set_base_key(AgsHQPitchUtil *hq_pitch_util,
+			       gdouble base_key)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->base_key = base_key;
+}
+
+/**
+ * ags_hq_pitch_util_get_hq_pitch:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Get tuning of @hq_pitch_util.
+ * 
+ * Returns: the tuning
+ * 
+ * Since: 3.9.6
+ */
+gdouble
+ags_hq_pitch_util_get_tuning(AgsHQPitchUtil *hq_pitch_util)
+{
+  if(hq_pitch_util == NULL){
+    return(0.0);
+  }
+
+  return(hq_pitch_util->tuning);
+}
+
+/**
+ * ags_hq_pitch_util_set_tuning:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * @tuning: the tuning
+ *
+ * Set @tuning of @hq_pitch_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_set_tuning(AgsHQPitchUtil *hq_pitch_util,
+			     gdouble tuning)
+{
+  if(hq_pitch_util == NULL){
+    return;
+  }
+
+  hq_pitch_util->tuning = tuning;
+}
+
+/**
+ * ags_hq_pitch_util_pitch_s8:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Pitch @hq_pitch_util of signed 8 bit data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_hq_pitch_util_pitch_s16:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Pitch @hq_pitch_util of signed 16 bit data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_hq_pitch_util_pitch_s24:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Pitch @hq_pitch_util of signed 24 bit data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_pitch_s24(AgsHQPitchUtil *hq_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_hq_pitch_util_pitch_s32:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Pitch @hq_pitch_util of signed 32 bit data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_pitch_s32(AgsHQPitchUtil *hq_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_hq_pitch_util_pitch_s64:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Pitch @hq_pitch_util of signed 64 bit data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_pitch_s64(AgsHQPitchUtil *hq_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_hq_pitch_util_pitch_float:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Pitch @hq_pitch_util of floating point data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_pitch_float(AgsHQPitchUtil *hq_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_hq_pitch_util_pitch_double:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Pitch @hq_pitch_util of double precision floating point data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_pitch_double(AgsHQPitchUtil *hq_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_hq_pitch_util_pitch_complex:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Pitch @hq_pitch_util of complex data.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_pitch_complex(AgsHQPitchUtil *hq_pitch_util)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_hq_pitch_util_pitch:
+ * @hq_pitch_util: the #AgsHQPitchUtil-struct
+ * 
+ * Pitch @hq_pitch_util.
+ * 
+ * Since: 3.9.6
+ */
+void
+ags_hq_pitch_util_pitch(AgsHQPitchUtil *hq_pitch_util)
+{
+  //TODO:JK: implement me
 }
 
 /**
