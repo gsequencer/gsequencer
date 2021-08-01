@@ -2,6 +2,7 @@ ags (3.9.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved configure.ac and Makefile.am to handle absent gnulib
+	* fixed missing files in meson.build
 
 ags (3.9.5)
 
