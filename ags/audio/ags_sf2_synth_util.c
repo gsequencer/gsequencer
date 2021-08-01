@@ -88,7 +88,7 @@ ags_sf2_synth_util_alloc()
 
   ptr->buffer_length = 0;
   ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  ptr->samplerate = 0;
+  ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
   ptr->preset = NULL;
   ptr->instrument = NULL;

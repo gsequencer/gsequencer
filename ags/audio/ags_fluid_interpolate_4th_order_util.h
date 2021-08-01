@@ -44,7 +44,7 @@ struct _AgsFluidInterpolate4thOrderUtil
   guint destination_stride;
 
   guint buffer_length;
-  guint audio_buffer_util_format;
+  guint format;
   guint samplerate;
 
   gdouble phase_increment;
@@ -77,9 +77,9 @@ guint ags_fluid_interpolate_4th_order_util_get_buffer_length(AgsFluidInterpolate
 void ags_fluid_interpolate_4th_order_util_set_buffer_length(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util,
 							    guint buffer_length);
 
-guint ags_fluid_interpolate_4th_order_util_get_audio_buffer_util_format(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
-void ags_fluid_interpolate_4th_order_util_set_audio_buffer_util_format(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util,
-								       guint audio_buffer_util_format);
+guint ags_fluid_interpolate_4th_order_util_get_format(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
+void ags_fluid_interpolate_4th_order_util_set_format(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util,
+						     guint format);
 
 guint ags_fluid_interpolate_4th_order_util_get_samplerate(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util);
 void ags_fluid_interpolate_4th_order_util_set_samplerate(AgsFluidInterpolate4thOrderUtil *fluid_interpolate_4th_order_util,

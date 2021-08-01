@@ -54,7 +54,7 @@ struct _AgsFluidIIRFilterUtil
   guint destination_stride;
 
   guint buffer_length;
-  guint audio_buffer_util_format;
+  guint format;
   guint samplerate;
   
   guint filter_type;
@@ -135,9 +135,9 @@ guint ags_fluid_iir_filter_util_get_buffer_length(AgsFluidIIRFilterUtil *fluid_i
 void ags_fluid_iir_filter_util_set_buffer_length(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
 						 guint buffer_length);
 
-guint ags_fluid_iir_filter_util_get_audio_buffer_util_format(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
-void ags_fluid_iir_filter_util_set_audio_buffer_util_format(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
-							    guint audio_buffer_util_format);
+guint ags_fluid_iir_filter_util_get_format(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_set_format(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+					  guint format);
 
 guint ags_fluid_iir_filter_util_get_samplerate(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
 void ags_fluid_iir_filter_util_set_samplerate(AgsFluidIIRFilterUtil *fluid_iir_filter_util,

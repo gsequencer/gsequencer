@@ -44,7 +44,7 @@ struct _AgsFluidInterpolateLinearUtil
   guint destination_stride;
 
   guint buffer_length;
-  guint audio_buffer_util_format;
+  guint format;
   guint samplerate;
 
   gdouble phase_increment;
@@ -77,9 +77,9 @@ guint ags_fluid_interpolate_linear_util_get_buffer_length(AgsFluidInterpolateLin
 void ags_fluid_interpolate_linear_util_set_buffer_length(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
 							 guint buffer_length);
 
-guint ags_fluid_interpolate_linear_util_get_audio_buffer_util_format(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
-void ags_fluid_interpolate_linear_util_set_audio_buffer_util_format(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
-								    guint audio_buffer_util_format);
+guint ags_fluid_interpolate_linear_util_get_format(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_format(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+						  guint format);
 
 guint ags_fluid_interpolate_linear_util_get_samplerate(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
 void ags_fluid_interpolate_linear_util_set_samplerate(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
