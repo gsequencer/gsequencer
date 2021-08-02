@@ -743,7 +743,181 @@ ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util)
 void
 ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util)
 {
-  //TODO:JK: implement me
+  AgsLinearInterpolateUtil *linear_interpolate_util;
+  
+  gint16 *destination, *source;
+  gint16 *ptr_mix_buffer, *ptr_low_mix_buffer, *ptr_new_mix_buffer;
+  gint16 *mix_buffer, *new_mix_buffer, *low_mix_buffer;
+
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble volume;
+  gdouble base_freq, low_freq, new_freq;
+  gdouble offset_factor, low_offset_factor, new_offset_factor;
+  gdouble freq_period, low_freq_period, new_freq_period;
+  guint low_mix_buffer_length;  
+  guint i, j;
+
+  if(hq_pitch_util == NULL ||
+     hq_pitch_util->destination == NULL ||
+     hq_pitch_util->source == NULL){
+    return;
+  }
+
+  linear_interpolate_util = hq_pitch_util->linear_interpolate_util;
+  
+  destination = hq_pitch_util->destination;
+  destination_stride = hq_pitch_util->destination_stride;
+
+  source = hq_pitch_util->source;
+  source_stride = hq_pitch_util->source_stride;
+
+  buffer_length = hq_pitch_util->buffer_length;
+  samplerate = hq_pitch_util->samplerate;
+
+  /* frequency */
+  base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
+  new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
+
+  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
+
+  if(base_freq <= 0.0){
+    g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
+    
+    return;
+  }
+
+  if(low_freq <= 0.0){
+    g_warning("rejecting pitch low freq %f <= 0.0", low_freq);
+    
+    return;
+  }
+
+  if(new_freq <= 0.0){
+    g_warning("rejecting pitch new freq %f <= 0.0", new_freq);
+    
+    return;
+  }
+
+  if(hq_pitch_util->tuning == 0.0){
+    return;
+  }
+  
+  volume = 1.0 / base_freq * new_freq;
+  
+  /* get frequency period */
+  freq_period = 2.0 * M_PI * samplerate / base_freq;
+  
+  low_freq_period = samplerate / low_freq;
+  new_freq_period = samplerate / new_freq;
+
+  /* get offset factor */
+  offset_factor = 1.0;
+  
+  low_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / low_freq);
+  new_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+
+  /* get buffer */
+  low_mix_buffer_length = (freq_period / low_freq_period) * buffer_length;
+
+  mix_buffer = source;
+
+  low_mix_buffer = (gint16 *) hq_pitch_util->low_mix_buffer;
+
+  new_mix_buffer = (gint16 *) hq_pitch_util->new_mix_buffer;
+
+  ags_linear_interpolate_util_set_destination(linear_interpolate_util,
+					      low_mix_buffer);
+  
+  ags_linear_interpolate_util_set_source(linear_interpolate_util,
+					 source);
+
+  ags_linear_interpolate_util_set_buffer_length(linear_interpolate_util,
+						low_mix_buffer_length);
+
+  ags_linear_interpolate_util_set_format(linear_interpolate_util,
+					 AGS_SOUNDCARD_SIGNED_16_BIT);
+  
+  ags_linear_interpolate_util_set_factor(linear_interpolate_util,
+					 freq_period / low_freq_period);
+  
+  ags_linear_interpolate_util_pitch(linear_interpolate_util);
+
+  /* new mix buffer */
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
+    gint16 new_z;
+    gdouble phase, low_phase, new_phase;    
+    guint start_x, low_start_x;
+
+    if(j >= new_freq_period){
+      j = 0;
+    }
+
+    if(floor(freq_period) != 0.0){
+      start_x = freq_period * floor((double) i / freq_period);
+    }else{
+      start_x = 0;
+    }
+
+    if(floor(low_freq_period) != 0.0){
+      low_start_x = low_freq_period * floor((double) i / low_freq_period);
+    }else{
+      low_start_x = 0;
+    }
+
+    phase = fmod(i, freq_period);
+
+    low_phase = fmod(i, low_freq_period);
+
+    new_phase = fmod(i, new_freq_period);
+
+    if(start_x + (guint) floor(new_phase) < buffer_length){
+      ptr_mix_buffer = mix_buffer + ((start_x + (guint) floor(new_phase)) * source_stride);
+    }else{
+      if((start_x + (guint) floor(new_phase)) - (guint) floor(freq_period) < buffer_length &&
+	 (start_x + (guint) floor(new_phase)) - (guint) floor(freq_period) > 0){
+	ptr_mix_buffer = mix_buffer + (((start_x + (guint) floor(new_phase)) - (guint) floor(freq_period)) * source_stride);
+      }else{
+	if(floor(new_phase) < buffer_length){
+	  ptr_mix_buffer = mix_buffer + ((guint) floor(new_phase) * source_stride);
+	}else{
+	  ptr_mix_buffer = mix_buffer + ((buffer_length - 1) * source_stride);
+	}
+      }
+    }
+
+    if(low_start_x + (guint) floor(new_phase) < low_mix_buffer_length){
+      ptr_low_mix_buffer = low_mix_buffer + (low_start_x + (guint) floor(new_phase));
+    }else{
+      if((low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period) < low_mix_buffer_length &&
+	 (low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period) > 0){
+	ptr_low_mix_buffer = low_mix_buffer + (low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period);
+      }else{
+	if(floor(new_phase) < low_mix_buffer_length){
+	  ptr_low_mix_buffer = low_mix_buffer + (guint) floor(new_phase);
+	}else{
+	  ptr_low_mix_buffer = low_mix_buffer + low_mix_buffer_length - 1;
+	}
+      }
+    }
+    
+    ptr_new_mix_buffer = new_mix_buffer + i;
+
+    /* write new mix buffer */
+    if(ptr_mix_buffer[0] != 0){
+      new_z = volume * ((new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_low_mix_buffer[0] / low_freq_period) / (ptr_mix_buffer[0] / freq_period)));
+    }else{
+      new_z = 0;
+    }
+    
+    ptr_new_mix_buffer[0] = new_z;
+  }
+  
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    destination[i * destination_stride] = new_mix_buffer[i];
+  }
 }
 
 /**
@@ -757,7 +931,181 @@ ags_hq_pitch_util_pitch_s16(AgsHQPitchUtil *hq_pitch_util)
 void
 ags_hq_pitch_util_pitch_s24(AgsHQPitchUtil *hq_pitch_util)
 {
-  //TODO:JK: implement me
+  AgsLinearInterpolateUtil *linear_interpolate_util;
+  
+  gint32 *destination, *source;
+  gint32 *ptr_mix_buffer, *ptr_low_mix_buffer, *ptr_new_mix_buffer;
+  gint32 *mix_buffer, *new_mix_buffer, *low_mix_buffer;
+
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble volume;
+  gdouble base_freq, low_freq, new_freq;
+  gdouble offset_factor, low_offset_factor, new_offset_factor;
+  gdouble freq_period, low_freq_period, new_freq_period;
+  guint low_mix_buffer_length;  
+  guint i, j;
+
+  if(hq_pitch_util == NULL ||
+     hq_pitch_util->destination == NULL ||
+     hq_pitch_util->source == NULL){
+    return;
+  }
+
+  linear_interpolate_util = hq_pitch_util->linear_interpolate_util;
+  
+  destination = hq_pitch_util->destination;
+  destination_stride = hq_pitch_util->destination_stride;
+
+  source = hq_pitch_util->source;
+  source_stride = hq_pitch_util->source_stride;
+
+  buffer_length = hq_pitch_util->buffer_length;
+  samplerate = hq_pitch_util->samplerate;
+
+  /* frequency */
+  base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
+  new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
+
+  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
+
+  if(base_freq <= 0.0){
+    g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
+    
+    return;
+  }
+
+  if(low_freq <= 0.0){
+    g_warning("rejecting pitch low freq %f <= 0.0", low_freq);
+    
+    return;
+  }
+
+  if(new_freq <= 0.0){
+    g_warning("rejecting pitch new freq %f <= 0.0", new_freq);
+    
+    return;
+  }
+
+  if(hq_pitch_util->tuning == 0.0){
+    return;
+  }
+  
+  volume = 1.0 / base_freq * new_freq;
+  
+  /* get frequency period */
+  freq_period = 2.0 * M_PI * samplerate / base_freq;
+  
+  low_freq_period = samplerate / low_freq;
+  new_freq_period = samplerate / new_freq;
+
+  /* get offset factor */
+  offset_factor = 1.0;
+  
+  low_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / low_freq);
+  new_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+
+  /* get buffer */
+  low_mix_buffer_length = (freq_period / low_freq_period) * buffer_length;
+
+  mix_buffer = source;
+
+  low_mix_buffer = (gint32 *) hq_pitch_util->low_mix_buffer;
+
+  new_mix_buffer = (gint32 *) hq_pitch_util->new_mix_buffer;
+
+  ags_linear_interpolate_util_set_destination(linear_interpolate_util,
+					      low_mix_buffer);
+  
+  ags_linear_interpolate_util_set_source(linear_interpolate_util,
+					 source);
+
+  ags_linear_interpolate_util_set_buffer_length(linear_interpolate_util,
+						low_mix_buffer_length);
+
+  ags_linear_interpolate_util_set_format(linear_interpolate_util,
+					 AGS_SOUNDCARD_SIGNED_24_BIT);
+  
+  ags_linear_interpolate_util_set_factor(linear_interpolate_util,
+					 freq_period / low_freq_period);
+  
+  ags_linear_interpolate_util_pitch(linear_interpolate_util);
+
+  /* new mix buffer */
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
+    gint32 new_z;
+    gdouble phase, low_phase, new_phase;    
+    guint start_x, low_start_x;
+
+    if(j >= new_freq_period){
+      j = 0;
+    }
+
+    if(floor(freq_period) != 0.0){
+      start_x = freq_period * floor((double) i / freq_period);
+    }else{
+      start_x = 0;
+    }
+
+    if(floor(low_freq_period) != 0.0){
+      low_start_x = low_freq_period * floor((double) i / low_freq_period);
+    }else{
+      low_start_x = 0;
+    }
+
+    phase = fmod(i, freq_period);
+
+    low_phase = fmod(i, low_freq_period);
+
+    new_phase = fmod(i, new_freq_period);
+
+    if(start_x + (guint) floor(new_phase) < buffer_length){
+      ptr_mix_buffer = mix_buffer + ((start_x + (guint) floor(new_phase)) * source_stride);
+    }else{
+      if((start_x + (guint) floor(new_phase)) - (guint) floor(freq_period) < buffer_length &&
+	 (start_x + (guint) floor(new_phase)) - (guint) floor(freq_period) > 0){
+	ptr_mix_buffer = mix_buffer + (((start_x + (guint) floor(new_phase)) - (guint) floor(freq_period)) * source_stride);
+      }else{
+	if(floor(new_phase) < buffer_length){
+	  ptr_mix_buffer = mix_buffer + ((guint) floor(new_phase) * source_stride);
+	}else{
+	  ptr_mix_buffer = mix_buffer + ((buffer_length - 1) * source_stride);
+	}
+      }
+    }
+
+    if(low_start_x + (guint) floor(new_phase) < low_mix_buffer_length){
+      ptr_low_mix_buffer = low_mix_buffer + (low_start_x + (guint) floor(new_phase));
+    }else{
+      if((low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period) < low_mix_buffer_length &&
+	 (low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period) > 0){
+	ptr_low_mix_buffer = low_mix_buffer + (low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period);
+      }else{
+	if(floor(new_phase) < low_mix_buffer_length){
+	  ptr_low_mix_buffer = low_mix_buffer + (guint) floor(new_phase);
+	}else{
+	  ptr_low_mix_buffer = low_mix_buffer + low_mix_buffer_length - 1;
+	}
+      }
+    }
+    
+    ptr_new_mix_buffer = new_mix_buffer + i;
+
+    /* write new mix buffer */
+    if(ptr_mix_buffer[0] != 0){
+      new_z = volume * ((new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_low_mix_buffer[0] / low_freq_period) / (ptr_mix_buffer[0] / freq_period)));
+    }else{
+      new_z = 0;
+    }
+    
+    ptr_new_mix_buffer[0] = new_z;
+  }
+  
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    destination[i * destination_stride] = new_mix_buffer[i];
+  }
 }
 
 /**
@@ -771,7 +1119,181 @@ ags_hq_pitch_util_pitch_s24(AgsHQPitchUtil *hq_pitch_util)
 void
 ags_hq_pitch_util_pitch_s32(AgsHQPitchUtil *hq_pitch_util)
 {
-  //TODO:JK: implement me
+  AgsLinearInterpolateUtil *linear_interpolate_util;
+  
+  gint32 *destination, *source;
+  gint32 *ptr_mix_buffer, *ptr_low_mix_buffer, *ptr_new_mix_buffer;
+  gint32 *mix_buffer, *new_mix_buffer, *low_mix_buffer;
+
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble volume;
+  gdouble base_freq, low_freq, new_freq;
+  gdouble offset_factor, low_offset_factor, new_offset_factor;
+  gdouble freq_period, low_freq_period, new_freq_period;
+  guint low_mix_buffer_length;  
+  guint i, j;
+
+  if(hq_pitch_util == NULL ||
+     hq_pitch_util->destination == NULL ||
+     hq_pitch_util->source == NULL){
+    return;
+  }
+
+  linear_interpolate_util = hq_pitch_util->linear_interpolate_util;
+  
+  destination = hq_pitch_util->destination;
+  destination_stride = hq_pitch_util->destination_stride;
+
+  source = hq_pitch_util->source;
+  source_stride = hq_pitch_util->source_stride;
+
+  buffer_length = hq_pitch_util->buffer_length;
+  samplerate = hq_pitch_util->samplerate;
+
+  /* frequency */
+  base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
+  new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
+
+  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
+
+  if(base_freq <= 0.0){
+    g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
+    
+    return;
+  }
+
+  if(low_freq <= 0.0){
+    g_warning("rejecting pitch low freq %f <= 0.0", low_freq);
+    
+    return;
+  }
+
+  if(new_freq <= 0.0){
+    g_warning("rejecting pitch new freq %f <= 0.0", new_freq);
+    
+    return;
+  }
+
+  if(hq_pitch_util->tuning == 0.0){
+    return;
+  }
+  
+  volume = 1.0 / base_freq * new_freq;
+  
+  /* get frequency period */
+  freq_period = 2.0 * M_PI * samplerate / base_freq;
+  
+  low_freq_period = samplerate / low_freq;
+  new_freq_period = samplerate / new_freq;
+
+  /* get offset factor */
+  offset_factor = 1.0;
+  
+  low_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / low_freq);
+  new_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+
+  /* get buffer */
+  low_mix_buffer_length = (freq_period / low_freq_period) * buffer_length;
+
+  mix_buffer = source;
+
+  low_mix_buffer = (gint32 *) hq_pitch_util->low_mix_buffer;
+
+  new_mix_buffer = (gint32 *) hq_pitch_util->new_mix_buffer;
+
+  ags_linear_interpolate_util_set_destination(linear_interpolate_util,
+					      low_mix_buffer);
+  
+  ags_linear_interpolate_util_set_source(linear_interpolate_util,
+					 source);
+
+  ags_linear_interpolate_util_set_buffer_length(linear_interpolate_util,
+						low_mix_buffer_length);
+
+  ags_linear_interpolate_util_set_format(linear_interpolate_util,
+					 AGS_SOUNDCARD_SIGNED_32_BIT);
+  
+  ags_linear_interpolate_util_set_factor(linear_interpolate_util,
+					 freq_period / low_freq_period);
+  
+  ags_linear_interpolate_util_pitch(linear_interpolate_util);
+
+  /* new mix buffer */
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
+    gint32 new_z;
+    gdouble phase, low_phase, new_phase;    
+    guint start_x, low_start_x;
+
+    if(j >= new_freq_period){
+      j = 0;
+    }
+
+    if(floor(freq_period) != 0.0){
+      start_x = freq_period * floor((double) i / freq_period);
+    }else{
+      start_x = 0;
+    }
+
+    if(floor(low_freq_period) != 0.0){
+      low_start_x = low_freq_period * floor((double) i / low_freq_period);
+    }else{
+      low_start_x = 0;
+    }
+
+    phase = fmod(i, freq_period);
+
+    low_phase = fmod(i, low_freq_period);
+
+    new_phase = fmod(i, new_freq_period);
+
+    if(start_x + (guint) floor(new_phase) < buffer_length){
+      ptr_mix_buffer = mix_buffer + ((start_x + (guint) floor(new_phase)) * source_stride);
+    }else{
+      if((start_x + (guint) floor(new_phase)) - (guint) floor(freq_period) < buffer_length &&
+	 (start_x + (guint) floor(new_phase)) - (guint) floor(freq_period) > 0){
+	ptr_mix_buffer = mix_buffer + (((start_x + (guint) floor(new_phase)) - (guint) floor(freq_period)) * source_stride);
+      }else{
+	if(floor(new_phase) < buffer_length){
+	  ptr_mix_buffer = mix_buffer + ((guint) floor(new_phase) * source_stride);
+	}else{
+	  ptr_mix_buffer = mix_buffer + ((buffer_length - 1) * source_stride);
+	}
+      }
+    }
+
+    if(low_start_x + (guint) floor(new_phase) < low_mix_buffer_length){
+      ptr_low_mix_buffer = low_mix_buffer + (low_start_x + (guint) floor(new_phase));
+    }else{
+      if((low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period) < low_mix_buffer_length &&
+	 (low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period) > 0){
+	ptr_low_mix_buffer = low_mix_buffer + (low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period);
+      }else{
+	if(floor(new_phase) < low_mix_buffer_length){
+	  ptr_low_mix_buffer = low_mix_buffer + (guint) floor(new_phase);
+	}else{
+	  ptr_low_mix_buffer = low_mix_buffer + low_mix_buffer_length - 1;
+	}
+      }
+    }
+    
+    ptr_new_mix_buffer = new_mix_buffer + i;
+
+    /* write new mix buffer */
+    if(ptr_mix_buffer[0] != 0){
+      new_z = volume * ((new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_low_mix_buffer[0] / low_freq_period) / (ptr_mix_buffer[0] / freq_period)));
+    }else{
+      new_z = 0;
+    }
+    
+    ptr_new_mix_buffer[0] = new_z;
+  }
+  
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    destination[i * destination_stride] = new_mix_buffer[i];
+  }
 }
 
 /**
@@ -785,7 +1307,181 @@ ags_hq_pitch_util_pitch_s32(AgsHQPitchUtil *hq_pitch_util)
 void
 ags_hq_pitch_util_pitch_s64(AgsHQPitchUtil *hq_pitch_util)
 {
-  //TODO:JK: implement me
+  AgsLinearInterpolateUtil *linear_interpolate_util;
+  
+  gint64 *destination, *source;
+  gint64 *ptr_mix_buffer, *ptr_low_mix_buffer, *ptr_new_mix_buffer;
+  gint64 *mix_buffer, *new_mix_buffer, *low_mix_buffer;
+
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble volume;
+  gdouble base_freq, low_freq, new_freq;
+  gdouble offset_factor, low_offset_factor, new_offset_factor;
+  gdouble freq_period, low_freq_period, new_freq_period;
+  guint low_mix_buffer_length;  
+  guint i, j;
+
+  if(hq_pitch_util == NULL ||
+     hq_pitch_util->destination == NULL ||
+     hq_pitch_util->source == NULL){
+    return;
+  }
+
+  linear_interpolate_util = hq_pitch_util->linear_interpolate_util;
+  
+  destination = hq_pitch_util->destination;
+  destination_stride = hq_pitch_util->destination_stride;
+
+  source = hq_pitch_util->source;
+  source_stride = hq_pitch_util->source_stride;
+
+  buffer_length = hq_pitch_util->buffer_length;
+  samplerate = hq_pitch_util->samplerate;
+
+  /* frequency */
+  base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
+  new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
+
+  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
+
+  if(base_freq <= 0.0){
+    g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
+    
+    return;
+  }
+
+  if(low_freq <= 0.0){
+    g_warning("rejecting pitch low freq %f <= 0.0", low_freq);
+    
+    return;
+  }
+
+  if(new_freq <= 0.0){
+    g_warning("rejecting pitch new freq %f <= 0.0", new_freq);
+    
+    return;
+  }
+
+  if(hq_pitch_util->tuning == 0.0){
+    return;
+  }
+  
+  volume = 1.0 / base_freq * new_freq;
+  
+  /* get frequency period */
+  freq_period = 2.0 * M_PI * samplerate / base_freq;
+  
+  low_freq_period = samplerate / low_freq;
+  new_freq_period = samplerate / new_freq;
+
+  /* get offset factor */
+  offset_factor = 1.0;
+  
+  low_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / low_freq);
+  new_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+
+  /* get buffer */
+  low_mix_buffer_length = (freq_period / low_freq_period) * buffer_length;
+
+  mix_buffer = source;
+
+  low_mix_buffer = (gint64 *) hq_pitch_util->low_mix_buffer;
+
+  new_mix_buffer = (gint64 *) hq_pitch_util->new_mix_buffer;
+
+  ags_linear_interpolate_util_set_destination(linear_interpolate_util,
+					      low_mix_buffer);
+  
+  ags_linear_interpolate_util_set_source(linear_interpolate_util,
+					 source);
+
+  ags_linear_interpolate_util_set_buffer_length(linear_interpolate_util,
+						low_mix_buffer_length);
+
+  ags_linear_interpolate_util_set_format(linear_interpolate_util,
+					 AGS_SOUNDCARD_SIGNED_64_BIT);
+  
+  ags_linear_interpolate_util_set_factor(linear_interpolate_util,
+					 freq_period / low_freq_period);
+  
+  ags_linear_interpolate_util_pitch(linear_interpolate_util);
+
+  /* new mix buffer */
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
+    gint64 new_z;
+    gdouble phase, low_phase, new_phase;    
+    guint start_x, low_start_x;
+
+    if(j >= new_freq_period){
+      j = 0;
+    }
+
+    if(floor(freq_period) != 0.0){
+      start_x = freq_period * floor((double) i / freq_period);
+    }else{
+      start_x = 0;
+    }
+
+    if(floor(low_freq_period) != 0.0){
+      low_start_x = low_freq_period * floor((double) i / low_freq_period);
+    }else{
+      low_start_x = 0;
+    }
+
+    phase = fmod(i, freq_period);
+
+    low_phase = fmod(i, low_freq_period);
+
+    new_phase = fmod(i, new_freq_period);
+
+    if(start_x + (guint) floor(new_phase) < buffer_length){
+      ptr_mix_buffer = mix_buffer + ((start_x + (guint) floor(new_phase)) * source_stride);
+    }else{
+      if((start_x + (guint) floor(new_phase)) - (guint) floor(freq_period) < buffer_length &&
+	 (start_x + (guint) floor(new_phase)) - (guint) floor(freq_period) > 0){
+	ptr_mix_buffer = mix_buffer + (((start_x + (guint) floor(new_phase)) - (guint) floor(freq_period)) * source_stride);
+      }else{
+	if(floor(new_phase) < buffer_length){
+	  ptr_mix_buffer = mix_buffer + ((guint) floor(new_phase) * source_stride);
+	}else{
+	  ptr_mix_buffer = mix_buffer + ((buffer_length - 1) * source_stride);
+	}
+      }
+    }
+
+    if(low_start_x + (guint) floor(new_phase) < low_mix_buffer_length){
+      ptr_low_mix_buffer = low_mix_buffer + (low_start_x + (guint) floor(new_phase));
+    }else{
+      if((low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period) < low_mix_buffer_length &&
+	 (low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period) > 0){
+	ptr_low_mix_buffer = low_mix_buffer + (low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period);
+      }else{
+	if(floor(new_phase) < low_mix_buffer_length){
+	  ptr_low_mix_buffer = low_mix_buffer + (guint) floor(new_phase);
+	}else{
+	  ptr_low_mix_buffer = low_mix_buffer + low_mix_buffer_length - 1;
+	}
+      }
+    }
+    
+    ptr_new_mix_buffer = new_mix_buffer + i;
+
+    /* write new mix buffer */
+    if(ptr_mix_buffer[0] != 0){
+      new_z = volume * ((new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_low_mix_buffer[0] / low_freq_period) / (ptr_mix_buffer[0] / freq_period)));
+    }else{
+      new_z = 0;
+    }
+    
+    ptr_new_mix_buffer[0] = new_z;
+  }
+  
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    destination[i * destination_stride] = new_mix_buffer[i];
+  }
 }
 
 /**
@@ -799,7 +1495,181 @@ ags_hq_pitch_util_pitch_s64(AgsHQPitchUtil *hq_pitch_util)
 void
 ags_hq_pitch_util_pitch_float(AgsHQPitchUtil *hq_pitch_util)
 {
-  //TODO:JK: implement me
+  AgsLinearInterpolateUtil *linear_interpolate_util;
+  
+  gfloat *destination, *source;
+  gfloat *ptr_mix_buffer, *ptr_low_mix_buffer, *ptr_new_mix_buffer;
+  gfloat *mix_buffer, *new_mix_buffer, *low_mix_buffer;
+
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble volume;
+  gdouble base_freq, low_freq, new_freq;
+  gdouble offset_factor, low_offset_factor, new_offset_factor;
+  gdouble freq_period, low_freq_period, new_freq_period;
+  guint low_mix_buffer_length;  
+  guint i, j;
+
+  if(hq_pitch_util == NULL ||
+     hq_pitch_util->destination == NULL ||
+     hq_pitch_util->source == NULL){
+    return;
+  }
+
+  linear_interpolate_util = hq_pitch_util->linear_interpolate_util;
+  
+  destination = hq_pitch_util->destination;
+  destination_stride = hq_pitch_util->destination_stride;
+
+  source = hq_pitch_util->source;
+  source_stride = hq_pitch_util->source_stride;
+
+  buffer_length = hq_pitch_util->buffer_length;
+  samplerate = hq_pitch_util->samplerate;
+
+  /* frequency */
+  base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
+  new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
+
+  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
+
+  if(base_freq <= 0.0){
+    g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
+    
+    return;
+  }
+
+  if(low_freq <= 0.0){
+    g_warning("rejecting pitch low freq %f <= 0.0", low_freq);
+    
+    return;
+  }
+
+  if(new_freq <= 0.0){
+    g_warning("rejecting pitch new freq %f <= 0.0", new_freq);
+    
+    return;
+  }
+
+  if(hq_pitch_util->tuning == 0.0){
+    return;
+  }
+  
+  volume = 1.0 / base_freq * new_freq;
+  
+  /* get frequency period */
+  freq_period = 2.0 * M_PI * samplerate / base_freq;
+  
+  low_freq_period = samplerate / low_freq;
+  new_freq_period = samplerate / new_freq;
+
+  /* get offset factor */
+  offset_factor = 1.0;
+  
+  low_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / low_freq);
+  new_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+
+  /* get buffer */
+  low_mix_buffer_length = (freq_period / low_freq_period) * buffer_length;
+
+  mix_buffer = source;
+
+  low_mix_buffer = (gfloat *) hq_pitch_util->low_mix_buffer;
+
+  new_mix_buffer = (gfloat *) hq_pitch_util->new_mix_buffer;
+
+  ags_linear_interpolate_util_set_destination(linear_interpolate_util,
+					      low_mix_buffer);
+  
+  ags_linear_interpolate_util_set_source(linear_interpolate_util,
+					 source);
+
+  ags_linear_interpolate_util_set_buffer_length(linear_interpolate_util,
+						low_mix_buffer_length);
+
+  ags_linear_interpolate_util_set_format(linear_interpolate_util,
+					 AGS_SOUNDCARD_FLOAT);
+  
+  ags_linear_interpolate_util_set_factor(linear_interpolate_util,
+					 freq_period / low_freq_period);
+  
+  ags_linear_interpolate_util_pitch(linear_interpolate_util);
+
+  /* new mix buffer */
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
+    gfloat new_z;
+    gdouble phase, low_phase, new_phase;    
+    guint start_x, low_start_x;
+
+    if(j >= new_freq_period){
+      j = 0;
+    }
+
+    if(floor(freq_period) != 0.0){
+      start_x = freq_period * floor((double) i / freq_period);
+    }else{
+      start_x = 0;
+    }
+
+    if(floor(low_freq_period) != 0.0){
+      low_start_x = low_freq_period * floor((double) i / low_freq_period);
+    }else{
+      low_start_x = 0;
+    }
+
+    phase = fmod(i, freq_period);
+
+    low_phase = fmod(i, low_freq_period);
+
+    new_phase = fmod(i, new_freq_period);
+
+    if(start_x + (guint) floor(new_phase) < buffer_length){
+      ptr_mix_buffer = mix_buffer + ((start_x + (guint) floor(new_phase)) * source_stride);
+    }else{
+      if((start_x + (guint) floor(new_phase)) - (guint) floor(freq_period) < buffer_length &&
+	 (start_x + (guint) floor(new_phase)) - (guint) floor(freq_period) > 0){
+	ptr_mix_buffer = mix_buffer + (((start_x + (guint) floor(new_phase)) - (guint) floor(freq_period)) * source_stride);
+      }else{
+	if(floor(new_phase) < buffer_length){
+	  ptr_mix_buffer = mix_buffer + ((guint) floor(new_phase) * source_stride);
+	}else{
+	  ptr_mix_buffer = mix_buffer + ((buffer_length - 1) * source_stride);
+	}
+      }
+    }
+
+    if(low_start_x + (guint) floor(new_phase) < low_mix_buffer_length){
+      ptr_low_mix_buffer = low_mix_buffer + (low_start_x + (guint) floor(new_phase));
+    }else{
+      if((low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period) < low_mix_buffer_length &&
+	 (low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period) > 0){
+	ptr_low_mix_buffer = low_mix_buffer + (low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period);
+      }else{
+	if(floor(new_phase) < low_mix_buffer_length){
+	  ptr_low_mix_buffer = low_mix_buffer + (guint) floor(new_phase);
+	}else{
+	  ptr_low_mix_buffer = low_mix_buffer + low_mix_buffer_length - 1;
+	}
+      }
+    }
+    
+    ptr_new_mix_buffer = new_mix_buffer + i;
+
+    /* write new mix buffer */
+    if(ptr_mix_buffer[0] != 0){
+      new_z = volume * ((new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_low_mix_buffer[0] / low_freq_period) / (ptr_mix_buffer[0] / freq_period)));
+    }else{
+      new_z = 0;
+    }
+    
+    ptr_new_mix_buffer[0] = new_z;
+  }
+  
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    destination[i * destination_stride] = new_mix_buffer[i];
+  }
 }
 
 /**
@@ -813,7 +1683,181 @@ ags_hq_pitch_util_pitch_float(AgsHQPitchUtil *hq_pitch_util)
 void
 ags_hq_pitch_util_pitch_double(AgsHQPitchUtil *hq_pitch_util)
 {
-  //TODO:JK: implement me
+  AgsLinearInterpolateUtil *linear_interpolate_util;
+  
+  gdouble *destination, *source;
+  gdouble *ptr_mix_buffer, *ptr_low_mix_buffer, *ptr_new_mix_buffer;
+  gdouble *mix_buffer, *new_mix_buffer, *low_mix_buffer;
+
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble volume;
+  gdouble base_freq, low_freq, new_freq;
+  gdouble offset_factor, low_offset_factor, new_offset_factor;
+  gdouble freq_period, low_freq_period, new_freq_period;
+  guint low_mix_buffer_length;  
+  guint i, j;
+
+  if(hq_pitch_util == NULL ||
+     hq_pitch_util->destination == NULL ||
+     hq_pitch_util->source == NULL){
+    return;
+  }
+
+  linear_interpolate_util = hq_pitch_util->linear_interpolate_util;
+  
+  destination = hq_pitch_util->destination;
+  destination_stride = hq_pitch_util->destination_stride;
+
+  source = hq_pitch_util->source;
+  source_stride = hq_pitch_util->source_stride;
+
+  buffer_length = hq_pitch_util->buffer_length;
+  samplerate = hq_pitch_util->samplerate;
+
+  /* frequency */
+  base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
+  new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
+
+  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
+
+  if(base_freq <= 0.0){
+    g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
+    
+    return;
+  }
+
+  if(low_freq <= 0.0){
+    g_warning("rejecting pitch low freq %f <= 0.0", low_freq);
+    
+    return;
+  }
+
+  if(new_freq <= 0.0){
+    g_warning("rejecting pitch new freq %f <= 0.0", new_freq);
+    
+    return;
+  }
+
+  if(hq_pitch_util->tuning == 0.0){
+    return;
+  }
+  
+  volume = 1.0 / base_freq * new_freq;
+  
+  /* get frequency period */
+  freq_period = 2.0 * M_PI * samplerate / base_freq;
+  
+  low_freq_period = samplerate / low_freq;
+  new_freq_period = samplerate / new_freq;
+
+  /* get offset factor */
+  offset_factor = 1.0;
+  
+  low_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / low_freq);
+  new_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+
+  /* get buffer */
+  low_mix_buffer_length = (freq_period / low_freq_period) * buffer_length;
+
+  mix_buffer = source;
+
+  low_mix_buffer = (gdouble *) hq_pitch_util->low_mix_buffer;
+
+  new_mix_buffer = (gdouble *) hq_pitch_util->new_mix_buffer;
+
+  ags_linear_interpolate_util_set_destination(linear_interpolate_util,
+					      low_mix_buffer);
+  
+  ags_linear_interpolate_util_set_source(linear_interpolate_util,
+					 source);
+
+  ags_linear_interpolate_util_set_buffer_length(linear_interpolate_util,
+						low_mix_buffer_length);
+
+  ags_linear_interpolate_util_set_format(linear_interpolate_util,
+					 AGS_SOUNDCARD_DOUBLE);
+  
+  ags_linear_interpolate_util_set_factor(linear_interpolate_util,
+					 freq_period / low_freq_period);
+  
+  ags_linear_interpolate_util_pitch(linear_interpolate_util);
+
+  /* new mix buffer */
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
+    gdouble new_z;
+    gdouble phase, low_phase, new_phase;    
+    guint start_x, low_start_x;
+
+    if(j >= new_freq_period){
+      j = 0;
+    }
+
+    if(floor(freq_period) != 0.0){
+      start_x = freq_period * floor((double) i / freq_period);
+    }else{
+      start_x = 0;
+    }
+
+    if(floor(low_freq_period) != 0.0){
+      low_start_x = low_freq_period * floor((double) i / low_freq_period);
+    }else{
+      low_start_x = 0;
+    }
+
+    phase = fmod(i, freq_period);
+
+    low_phase = fmod(i, low_freq_period);
+
+    new_phase = fmod(i, new_freq_period);
+
+    if(start_x + (guint) floor(new_phase) < buffer_length){
+      ptr_mix_buffer = mix_buffer + ((start_x + (guint) floor(new_phase)) * source_stride);
+    }else{
+      if((start_x + (guint) floor(new_phase)) - (guint) floor(freq_period) < buffer_length &&
+	 (start_x + (guint) floor(new_phase)) - (guint) floor(freq_period) > 0){
+	ptr_mix_buffer = mix_buffer + (((start_x + (guint) floor(new_phase)) - (guint) floor(freq_period)) * source_stride);
+      }else{
+	if(floor(new_phase) < buffer_length){
+	  ptr_mix_buffer = mix_buffer + ((guint) floor(new_phase) * source_stride);
+	}else{
+	  ptr_mix_buffer = mix_buffer + ((buffer_length - 1) * source_stride);
+	}
+      }
+    }
+
+    if(low_start_x + (guint) floor(new_phase) < low_mix_buffer_length){
+      ptr_low_mix_buffer = low_mix_buffer + (low_start_x + (guint) floor(new_phase));
+    }else{
+      if((low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period) < low_mix_buffer_length &&
+	 (low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period) > 0){
+	ptr_low_mix_buffer = low_mix_buffer + (low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period);
+      }else{
+	if(floor(new_phase) < low_mix_buffer_length){
+	  ptr_low_mix_buffer = low_mix_buffer + (guint) floor(new_phase);
+	}else{
+	  ptr_low_mix_buffer = low_mix_buffer + low_mix_buffer_length - 1;
+	}
+      }
+    }
+    
+    ptr_new_mix_buffer = new_mix_buffer + i;
+
+    /* write new mix buffer */
+    if(ptr_mix_buffer[0] != 0){
+      new_z = volume * ((new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_low_mix_buffer[0] / low_freq_period) / (ptr_mix_buffer[0] / freq_period)));
+    }else{
+      new_z = 0;
+    }
+    
+    ptr_new_mix_buffer[0] = new_z;
+  }
+  
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    destination[i * destination_stride] = new_mix_buffer[i];
+  }
 }
 
 /**
@@ -827,7 +1871,183 @@ ags_hq_pitch_util_pitch_double(AgsHQPitchUtil *hq_pitch_util)
 void
 ags_hq_pitch_util_pitch_complex(AgsHQPitchUtil *hq_pitch_util)
 {
-  //TODO:JK: implement me
+  AgsLinearInterpolateUtil *linear_interpolate_util;
+  
+  AgsComplex *destination, *source;
+  AgsComplex *ptr_mix_buffer, *ptr_low_mix_buffer, *ptr_new_mix_buffer;
+  AgsComplex *mix_buffer, *new_mix_buffer, *low_mix_buffer;
+
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  guint samplerate;
+  gdouble volume;
+  gdouble base_freq, low_freq, new_freq;
+  gdouble offset_factor, low_offset_factor, new_offset_factor;
+  gdouble freq_period, low_freq_period, new_freq_period;
+  guint low_mix_buffer_length;  
+  guint i, j;
+
+  if(hq_pitch_util == NULL ||
+     hq_pitch_util->destination == NULL ||
+     hq_pitch_util->source == NULL){
+    return;
+  }
+
+  linear_interpolate_util = hq_pitch_util->linear_interpolate_util;
+  
+  destination = hq_pitch_util->destination;
+  destination_stride = hq_pitch_util->destination_stride;
+
+  source = hq_pitch_util->source;
+  source_stride = hq_pitch_util->source_stride;
+
+  buffer_length = hq_pitch_util->buffer_length;
+  samplerate = hq_pitch_util->samplerate;
+
+  /* frequency */
+  base_freq = exp2((hq_pitch_util->base_key) / 12.0) * 440.0;
+  new_freq = exp2((hq_pitch_util->base_key + (hq_pitch_util->tuning / 100.0))  / 12.0) * 440.0;
+
+  low_freq = exp2((hq_pitch_util->base_key - 0.25) / 12.0) * 440.0;
+
+  if(base_freq <= 0.0){
+    g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
+    
+    return;
+  }
+
+  if(low_freq <= 0.0){
+    g_warning("rejecting pitch low freq %f <= 0.0", low_freq);
+    
+    return;
+  }
+
+  if(new_freq <= 0.0){
+    g_warning("rejecting pitch new freq %f <= 0.0", new_freq);
+    
+    return;
+  }
+
+  if(hq_pitch_util->tuning == 0.0){
+    return;
+  }
+  
+  volume = 1.0 / base_freq * new_freq;
+  
+  /* get frequency period */
+  freq_period = 2.0 * M_PI * samplerate / base_freq;
+  
+  low_freq_period = samplerate / low_freq;
+  new_freq_period = samplerate / new_freq;
+
+  /* get offset factor */
+  offset_factor = 1.0;
+  
+  low_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / low_freq);
+  new_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+
+  /* get buffer */
+  low_mix_buffer_length = (freq_period / low_freq_period) * buffer_length;
+
+  mix_buffer = source;
+
+  low_mix_buffer = (AgsComplex *) hq_pitch_util->low_mix_buffer;
+
+  new_mix_buffer = (AgsComplex *) hq_pitch_util->new_mix_buffer;
+
+  ags_linear_interpolate_util_set_destination(linear_interpolate_util,
+					      low_mix_buffer);
+  
+  ags_linear_interpolate_util_set_source(linear_interpolate_util,
+					 source);
+
+  ags_linear_interpolate_util_set_buffer_length(linear_interpolate_util,
+						low_mix_buffer_length);
+
+  ags_linear_interpolate_util_set_format(linear_interpolate_util,
+					 AGS_SOUNDCARD_COMPLEX);
+  
+  ags_linear_interpolate_util_set_factor(linear_interpolate_util,
+					 freq_period / low_freq_period);
+  
+  ags_linear_interpolate_util_pitch(linear_interpolate_util);
+
+  /* new mix buffer */
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
+    double _Complex new_z;
+    gdouble phase, low_phase, new_phase;    
+    guint start_x, low_start_x;
+
+    if(j >= new_freq_period){
+      j = 0;
+    }
+
+    if(floor(freq_period) != 0.0){
+      start_x = freq_period * floor((double) i / freq_period);
+    }else{
+      start_x = 0;
+    }
+
+    if(floor(low_freq_period) != 0.0){
+      low_start_x = low_freq_period * floor((double) i / low_freq_period);
+    }else{
+      low_start_x = 0;
+    }
+
+    phase = fmod(i, freq_period);
+
+    low_phase = fmod(i, low_freq_period);
+
+    new_phase = fmod(i, new_freq_period);
+
+    if(start_x + (guint) floor(new_phase) < buffer_length){
+      ptr_mix_buffer = mix_buffer + ((start_x + (guint) floor(new_phase)) * source_stride);
+    }else{
+      if((start_x + (guint) floor(new_phase)) - (guint) floor(freq_period) < buffer_length &&
+	 (start_x + (guint) floor(new_phase)) - (guint) floor(freq_period) > 0){
+	ptr_mix_buffer = mix_buffer + (((start_x + (guint) floor(new_phase)) - (guint) floor(freq_period)) * source_stride);
+      }else{
+	if(floor(new_phase) < buffer_length){
+	  ptr_mix_buffer = mix_buffer + ((guint) floor(new_phase) * source_stride);
+	}else{
+	  ptr_mix_buffer = mix_buffer + ((buffer_length - 1) * source_stride);
+	}
+      }
+    }
+
+    if(low_start_x + (guint) floor(new_phase) < low_mix_buffer_length){
+      ptr_low_mix_buffer = low_mix_buffer + (low_start_x + (guint) floor(new_phase));
+    }else{
+      if((low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period) < low_mix_buffer_length &&
+	 (low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period) > 0){
+	ptr_low_mix_buffer = low_mix_buffer + (low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period);
+      }else{
+	if(floor(new_phase) < low_mix_buffer_length){
+	  ptr_low_mix_buffer = low_mix_buffer + (guint) floor(new_phase);
+	}else{
+	  ptr_low_mix_buffer = low_mix_buffer + low_mix_buffer_length - 1;
+	}
+      }
+    }
+    
+    ptr_new_mix_buffer = new_mix_buffer + i;
+
+    /* write new mix buffer */
+    if(ptr_mix_buffer[0].real != 0.0){
+      new_z = volume * ((new_freq_period * (ags_complex_get(ptr_mix_buffer) / freq_period) * (ags_complex_get(ptr_low_mix_buffer) / low_freq_period) / (ags_complex_get(ptr_mix_buffer) / freq_period)));
+    }else{
+      new_z = 0;
+    }
+    
+    ags_complex_set(ptr_new_mix_buffer,
+		    new_z);
+  }
+  
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    ags_complex_set(destination + (i * destination_stride),
+		    ags_complex_get(new_mix_buffer + i));
+  }
 }
 
 /**
@@ -841,7 +2061,56 @@ ags_hq_pitch_util_pitch_complex(AgsHQPitchUtil *hq_pitch_util)
 void
 ags_hq_pitch_util_pitch(AgsHQPitchUtil *hq_pitch_util)
 {
-  //TODO:JK: implement me
+  if(hq_pitch_util == NULL ||
+     hq_pitch_util->destination == NULL ||
+     hq_pitch_util->source == NULL){
+    return;
+  }
+
+  switch(hq_pitch_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+  {
+    ags_hq_pitch_util_pitch_s8(hq_pitch_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+  {
+    ags_hq_pitch_util_pitch_s16(hq_pitch_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+  {
+    ags_hq_pitch_util_pitch_s24(hq_pitch_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+  {
+    ags_hq_pitch_util_pitch_s32(hq_pitch_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+  {
+    ags_hq_pitch_util_pitch_s64(hq_pitch_util);
+  }
+  break;
+  case AGS_SOUNDCARD_FLOAT:
+  {
+    ags_hq_pitch_util_pitch_float(hq_pitch_util);
+  }
+  break;
+  case AGS_SOUNDCARD_DOUBLE:
+  {
+    ags_hq_pitch_util_pitch_double(hq_pitch_util);
+  }
+  break;
+  case AGS_SOUNDCARD_COMPLEX:
+  {
+    ags_hq_pitch_util_pitch_complex(hq_pitch_util);
+  }
+  break;
+  default:
+    g_warning("unknown format");
+  }
 }
 
 /**
