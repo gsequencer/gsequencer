@@ -195,6 +195,7 @@ AgsIpatchSample* ags_sf2_synth_util_midi_locale_find_sample_near_midi_key(AgsIpa
 									  gchar **instrument,
 									  gchar **sample);
 
+G_DEPRECATED_FOR(ags_sf2_synth_util_compute_s8)
 void ags_sf2_synth_util_copy_s8(gint8 *buffer,
 				guint buffer_size,
 				AgsIpatchSample *ipatch_sample,
@@ -204,6 +205,7 @@ void ags_sf2_synth_util_copy_s8(gint8 *buffer,
 				guint offset, guint n_frames,
 				guint loop_mode,
 				gint loop_start, gint loop_end);
+G_DEPRECATED_FOR(ags_sf2_synth_util_compute_s16)
 void ags_sf2_synth_util_copy_s16(gint16 *buffer,
 				 guint buffer_size,
 				 AgsIpatchSample *ipatch_sample,
@@ -213,6 +215,7 @@ void ags_sf2_synth_util_copy_s16(gint16 *buffer,
 				 guint offset, guint n_frames,
 				 guint loop_mode,
 				 gint loop_start, gint loop_end);
+G_DEPRECATED_FOR(ags_sf2_synth_util_compute_s24)
 void ags_sf2_synth_util_copy_s24(gint32 *buffer,
 				 guint buffer_size,
 				 AgsIpatchSample *ipatch_sample,
@@ -222,6 +225,7 @@ void ags_sf2_synth_util_copy_s24(gint32 *buffer,
 				 guint offset, guint n_frames,
 				 guint loop_mode,
 				 gint loop_start, gint loop_end);
+G_DEPRECATED_FOR(ags_sf2_synth_util_compute_s32)
 void ags_sf2_synth_util_copy_s32(gint32 *buffer,
 				 guint buffer_size,
 				 AgsIpatchSample *ipatch_sample,
@@ -231,6 +235,7 @@ void ags_sf2_synth_util_copy_s32(gint32 *buffer,
 				 guint offset, guint n_frames,
 				 guint loop_mode,
 				 gint loop_start, gint loop_end);
+G_DEPRECATED_FOR(ags_sf2_synth_util_compute_s64)
 void ags_sf2_synth_util_copy_s64(gint64 *buffer,
 				 guint buffer_size,
 				 AgsIpatchSample *ipatch_sample,
@@ -240,6 +245,7 @@ void ags_sf2_synth_util_copy_s64(gint64 *buffer,
 				 guint offset, guint n_frames,
 				 guint loop_mode,
 				 gint loop_start, gint loop_end);
+G_DEPRECATED_FOR(ags_sf2_synth_util_compute_float)
 void ags_sf2_synth_util_copy_float(gfloat *buffer,
 				   guint buffer_size,
 				   AgsIpatchSample *ipatch_sample,
@@ -249,6 +255,7 @@ void ags_sf2_synth_util_copy_float(gfloat *buffer,
 				   guint offset, guint n_frames,
 				   guint loop_mode,
 				   gint loop_start, gint loop_end);
+G_DEPRECATED_FOR(ags_sf2_synth_util_compute_double)
 void ags_sf2_synth_util_copy_double(gdouble *buffer,
 				    guint buffer_size,
 				    AgsIpatchSample *ipatch_sample,
@@ -258,6 +265,7 @@ void ags_sf2_synth_util_copy_double(gdouble *buffer,
 				    guint offset, guint n_frames,
 				    guint loop_mode,
 				    gint loop_start, gint loop_end);
+G_DEPRECATED_FOR(ags_sf2_synth_util_compute_complex)
 void ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
 				     guint buffer_size,
 				     AgsIpatchSample *ipatch_sample,
@@ -268,6 +276,7 @@ void ags_sf2_synth_util_copy_complex(AgsComplex *buffer,
 				     guint loop_mode,
 				     gint loop_start, gint loop_end);
 
+G_DEPRECATED_FOR(ags_sf2_synth_util_compute)
 void ags_sf2_synth_util_copy(void *buffer,
 			     guint buffer_size,
 			     AgsIpatchSample *ipatch_sample,

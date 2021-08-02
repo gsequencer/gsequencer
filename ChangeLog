@@ -6,6 +6,7 @@ ags (3.9.6)
 	* refactored ags_generic_pitch_util.h
 	* refactored ags_fluid_interpolate_none_util.h
 	* refactored ags_sf2_synth_util.h
+	* refactored ags_sfz_synth_util.h
 
 ags (3.9.5)
 

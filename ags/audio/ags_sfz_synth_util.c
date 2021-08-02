@@ -712,7 +712,305 @@ ags_sfz_synth_util_set_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util,
 void
 ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
 {
-  //TODO:JK: implement me
+  AgsGenericPitchUtil *generic_pitch_util;
+
+  gint key;
+  gint pitch_keycenter;
+  gdouble base_key;
+  gdouble tuning;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint resampled_source_frame_count;
+  guint copy_mode;
+  guint i0, i1, i2;
+  gboolean success;
+  gboolean pong_copy;
+
+  if(sfz_synth_util == NULL ||
+     sfz_synth_util->source == NULL ||
+     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_sample)){
+    return;
+  }
+
+  generic_pitch_util = sfz_synth_util->generic_pitch_util;
+  
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  resampled_source_frame_count = source_frame_count;
+
+  if(source_samplerate != sfz_synth_util->samplerate){
+    resampled_source_frame_count = (sfz_synth_util->samplerate / source_samplerate) * source_frame_count;
+  }
+  
+  /*  */
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S8,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(sfz_synth_util->im_buffer, 1, 0,
+					      sfz_synth_util->sample_buffer, 1, 0,
+					      resampled_source_frame_count, copy_mode);
+
+  /* pitch */
+  key = ags_sfz_sample_get_key(sfz_synth_util->sfz_sample);
+  pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_synth_util->sfz_sample);
+
+  if(key >= 0){
+    base_key = (gdouble) key - 21.0;
+  }else if(pitch_keycenter >= 0){
+    base_key = (gdouble) pitch_keycenter - 21.0;
+  }else{
+    base_key = 48.0;
+  }
+  
+  tuning = 100.0 * ((sfz_synth_util->note + 48.0) - base_key);
+  
+  switch(generic_pitch_util->pitch_type){
+  case AGS_FAST_PITCH:
+  {
+    ags_fast_pitch_util_set_format(generic_pitch_util->fast_pitch_util,
+				   AGS_SOUNDCARD_SIGNED_8_BIT);
+
+    ags_fast_pitch_util_set_base_key(generic_pitch_util->fast_pitch_util,
+				     base_key);
+    
+    ags_fast_pitch_util_set_tuning(generic_pitch_util->fast_pitch_util,
+				   tuning);
+  }
+  break;
+  case AGS_HQ_PITCH:
+  {
+    ags_hq_pitch_util_set_format(generic_pitch_util->hq_pitch_util,
+				 AGS_SOUNDCARD_SIGNED_8_BIT);
+
+    ags_hq_pitch_util_set_base_key(generic_pitch_util->hq_pitch_util,
+				   base_key);
+    
+    ags_hq_pitch_util_set_tuning(generic_pitch_util->hq_pitch_util,
+				 tuning);
+  }
+  break;
+  case AGS_FLUID_NO_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_none_util_set_format(generic_pitch_util->fluid_interpolate_none_util,
+					       AGS_SOUNDCARD_SIGNED_8_BIT);
+
+    ags_fluid_interpolate_none_util_set_phase_increment(generic_pitch_util->fluid_interpolate_none_util,
+							phase_incr);
+  }
+  break;
+  case AGS_FLUID_LINEAR_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_linear_util_set_format(generic_pitch_util->fluid_interpolate_linear_util,
+						 AGS_SOUNDCARD_SIGNED_8_BIT);
+
+    ags_fluid_interpolate_linear_util_set_phase_increment(generic_pitch_util->fluid_interpolate_linear_util,
+							  phase_incr);
+  }
+  break;
+  case AGS_FLUID_4TH_ORDER_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_4th_order_util_set_format(generic_pitch_util->fluid_interpolate_4th_order_util,
+						    AGS_SOUNDCARD_SIGNED_8_BIT);
+
+    ags_fluid_interpolate_4th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_4th_order_util,
+							     phase_incr);
+  }
+  break;
+  case AGS_FLUID_7TH_ORDER_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_7th_order_util_set_format(generic_pitch_util->fluid_interpolate_7th_order_util,
+						    AGS_SOUNDCARD_SIGNED_8_BIT);
+
+    ags_fluid_interpolate_7th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_7th_order_util,
+							     phase_incr);
+  }
+  break;
+  }
+  
+  ags_generic_pitch_util_pitch(generic_pitch_util);
+
+  success = FALSE;
+  pong_copy = FALSE;
+
+  for(i0 = 0, i1 = 0, i2 = 0; i0 < sfz_synth_util->frame_count && !success && i2 < sfz_synth_util->buffer_length; ){
+    guint copy_n_frames;
+    guint start_frame;
+
+    gboolean set_loop_start;
+    gboolean set_loop_end;
+    gboolean do_copy;
+    
+    copy_n_frames = sfz_synth_util->buffer_length;
+
+    set_loop_start = FALSE;
+    set_loop_end = FALSE;
+
+    do_copy = FALSE;
+    
+    if(i0 + copy_n_frames > sfz_synth_util->frame_count){
+      copy_n_frames = sfz_synth_util->frame_count - i0;
+    }
+    
+    if((sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sfz_synth_util->loop_start >= 0 &&
+       sfz_synth_util->loop_end >= 0 &&
+       sfz_synth_util->loop_start < sfz_synth_util->loop_end){
+      /* can loop */
+      if(sfz_synth_util->loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
+	if(i1 + copy_n_frames >= sfz_synth_util->loop_end){
+	  copy_n_frames = sfz_synth_util->loop_end - i1;
+	  
+	  set_loop_start = TRUE;
+	}
+      }else{
+	if(!pong_copy){
+	  if(i1 + copy_n_frames >= sfz_synth_util->loop_end){
+	    copy_n_frames = sfz_synth_util->loop_end - i1;
+
+	    set_loop_end = TRUE;
+	  }
+	}else{
+	  if(i1 - copy_n_frames <= sfz_synth_util->loop_start){
+	    copy_n_frames = i1 - sfz_synth_util->loop_start;
+	    
+	    set_loop_start = TRUE;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      if(i1 + copy_n_frames > sfz_synth_util->frame_count){
+	copy_n_frames = sfz_synth_util->frame_count - i1;
+
+	success = TRUE;
+      }
+    }
+
+    start_frame = 0;
+      
+    if(i0 + copy_n_frames > sfz_synth_util->offset){
+      do_copy = TRUE;
+      
+      if(i0 < sfz_synth_util->offset){
+	start_frame = (i0 + copy_n_frames) - sfz_synth_util->offset;
+      }
+      
+      if(!pong_copy){	
+	ags_audio_buffer_util_copy_s8_to_s8(((gint8 *) sfz_synth_util->source) + i2, 1,
+					    ((gint8 *) sfz_synth_util->im_buffer) + i1, 1,
+					    copy_n_frames - start_frame);
+      }else{
+	ags_audio_buffer_util_pong_s8(sfz_synth_util->source + i2, 1,
+				      sfz_synth_util->im_buffer + i1, 1,
+				      copy_n_frames - start_frame);
+      }
+    }
+
+    i0 += copy_n_frames;
+    
+    if((sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sfz_synth_util->loop_start >= 0 &&
+       sfz_synth_util->loop_end >= 0 &&
+       sfz_synth_util->loop_start < sfz_synth_util->loop_end){
+      /* can loop */
+      if(sfz_synth_util->loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
+	if(set_loop_start){
+	  i1 = sfz_synth_util->loop_start;
+	}else{
+	  i1 += copy_n_frames;
+	}
+      }else{
+	if(!pong_copy){
+	  if(set_loop_end){
+	    i1 = sfz_synth_util->loop_end; 
+	    
+	    pong_copy = TRUE;
+	  }else{
+	    i1 += copy_n_frames;
+	  }
+	}else{
+	  if(set_loop_start){
+	    i1 = sfz_synth_util->loop_start;
+	    
+	    pong_copy = FALSE;
+	  }else{
+	    i1 -= copy_n_frames;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      i1 += copy_n_frames;
+    }    
+
+    if(do_copy){
+      i2 += (copy_n_frames - start_frame);
+    }
+  }
 }
 
 /**
@@ -726,7 +1024,305 @@ ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util)
 void
 ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
 {
-  //TODO:JK: implement me
+  AgsGenericPitchUtil *generic_pitch_util;
+
+  gint key;
+  gint pitch_keycenter;
+  gdouble base_key;
+  gdouble tuning;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint resampled_source_frame_count;
+  guint copy_mode;
+  guint i0, i1, i2;
+  gboolean success;
+  gboolean pong_copy;
+
+  if(sfz_synth_util == NULL ||
+     sfz_synth_util->source == NULL ||
+     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_sample)){
+    return;
+  }
+
+  generic_pitch_util = sfz_synth_util->generic_pitch_util;
+  
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  resampled_source_frame_count = source_frame_count;
+
+  if(source_samplerate != sfz_synth_util->samplerate){
+    resampled_source_frame_count = (sfz_synth_util->samplerate / source_samplerate) * source_frame_count;
+  }
+  
+  /*  */
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S16,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(sfz_synth_util->im_buffer, 1, 0,
+					      sfz_synth_util->sample_buffer, 1, 0,
+					      resampled_source_frame_count, copy_mode);
+
+  /* pitch */
+  key = ags_sfz_sample_get_key(sfz_synth_util->sfz_sample);
+  pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_synth_util->sfz_sample);
+
+  if(key >= 0){
+    base_key = (gdouble) key - 21.0;
+  }else if(pitch_keycenter >= 0){
+    base_key = (gdouble) pitch_keycenter - 21.0;
+  }else{
+    base_key = 48.0;
+  }
+  
+  tuning = 100.0 * ((sfz_synth_util->note + 48.0) - base_key);
+  
+  switch(generic_pitch_util->pitch_type){
+  case AGS_FAST_PITCH:
+  {
+    ags_fast_pitch_util_set_format(generic_pitch_util->fast_pitch_util,
+				   AGS_SOUNDCARD_SIGNED_16_BIT);
+
+    ags_fast_pitch_util_set_base_key(generic_pitch_util->fast_pitch_util,
+				     base_key);
+    
+    ags_fast_pitch_util_set_tuning(generic_pitch_util->fast_pitch_util,
+				   tuning);
+  }
+  break;
+  case AGS_HQ_PITCH:
+  {
+    ags_hq_pitch_util_set_format(generic_pitch_util->hq_pitch_util,
+				 AGS_SOUNDCARD_SIGNED_16_BIT);
+
+    ags_hq_pitch_util_set_base_key(generic_pitch_util->hq_pitch_util,
+				   base_key);
+    
+    ags_hq_pitch_util_set_tuning(generic_pitch_util->hq_pitch_util,
+				 tuning);
+  }
+  break;
+  case AGS_FLUID_NO_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_none_util_set_format(generic_pitch_util->fluid_interpolate_none_util,
+					       AGS_SOUNDCARD_SIGNED_16_BIT);
+
+    ags_fluid_interpolate_none_util_set_phase_increment(generic_pitch_util->fluid_interpolate_none_util,
+							phase_incr);
+  }
+  break;
+  case AGS_FLUID_LINEAR_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_linear_util_set_format(generic_pitch_util->fluid_interpolate_linear_util,
+						 AGS_SOUNDCARD_SIGNED_16_BIT);
+
+    ags_fluid_interpolate_linear_util_set_phase_increment(generic_pitch_util->fluid_interpolate_linear_util,
+							  phase_incr);
+  }
+  break;
+  case AGS_FLUID_4TH_ORDER_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_4th_order_util_set_format(generic_pitch_util->fluid_interpolate_4th_order_util,
+						    AGS_SOUNDCARD_SIGNED_16_BIT);
+
+    ags_fluid_interpolate_4th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_4th_order_util,
+							     phase_incr);
+  }
+  break;
+  case AGS_FLUID_7TH_ORDER_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_7th_order_util_set_format(generic_pitch_util->fluid_interpolate_7th_order_util,
+						    AGS_SOUNDCARD_SIGNED_16_BIT);
+
+    ags_fluid_interpolate_7th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_7th_order_util,
+							     phase_incr);
+  }
+  break;
+  }
+  
+  ags_generic_pitch_util_pitch(generic_pitch_util);
+
+  success = FALSE;
+  pong_copy = FALSE;
+
+  for(i0 = 0, i1 = 0, i2 = 0; i0 < sfz_synth_util->frame_count && !success && i2 < sfz_synth_util->buffer_length; ){
+    guint copy_n_frames;
+    guint start_frame;
+
+    gboolean set_loop_start;
+    gboolean set_loop_end;
+    gboolean do_copy;
+    
+    copy_n_frames = sfz_synth_util->buffer_length;
+
+    set_loop_start = FALSE;
+    set_loop_end = FALSE;
+
+    do_copy = FALSE;
+    
+    if(i0 + copy_n_frames > sfz_synth_util->frame_count){
+      copy_n_frames = sfz_synth_util->frame_count - i0;
+    }
+    
+    if((sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sfz_synth_util->loop_start >= 0 &&
+       sfz_synth_util->loop_end >= 0 &&
+       sfz_synth_util->loop_start < sfz_synth_util->loop_end){
+      /* can loop */
+      if(sfz_synth_util->loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
+	if(i1 + copy_n_frames >= sfz_synth_util->loop_end){
+	  copy_n_frames = sfz_synth_util->loop_end - i1;
+	  
+	  set_loop_start = TRUE;
+	}
+      }else{
+	if(!pong_copy){
+	  if(i1 + copy_n_frames >= sfz_synth_util->loop_end){
+	    copy_n_frames = sfz_synth_util->loop_end - i1;
+
+	    set_loop_end = TRUE;
+	  }
+	}else{
+	  if(i1 - copy_n_frames <= sfz_synth_util->loop_start){
+	    copy_n_frames = i1 - sfz_synth_util->loop_start;
+	    
+	    set_loop_start = TRUE;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      if(i1 + copy_n_frames > sfz_synth_util->frame_count){
+	copy_n_frames = sfz_synth_util->frame_count - i1;
+
+	success = TRUE;
+      }
+    }
+
+    start_frame = 0;
+      
+    if(i0 + copy_n_frames > sfz_synth_util->offset){
+      do_copy = TRUE;
+      
+      if(i0 < sfz_synth_util->offset){
+	start_frame = (i0 + copy_n_frames) - sfz_synth_util->offset;
+      }
+      
+      if(!pong_copy){	
+	ags_audio_buffer_util_copy_s16_to_s16(((gint16 *) sfz_synth_util->source) + i2, 1,
+					      ((gint16 *) sfz_synth_util->im_buffer) + i1, 1,
+					      copy_n_frames - start_frame);
+      }else{
+	ags_audio_buffer_util_pong_s16(((gint16 *) sfz_synth_util->source) + i2, 1,
+				       ((gint16 *) sfz_synth_util->im_buffer) + i1, 1,
+				       copy_n_frames - start_frame);
+      }
+    }
+
+    i0 += copy_n_frames;
+    
+    if((sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sfz_synth_util->loop_start >= 0 &&
+       sfz_synth_util->loop_end >= 0 &&
+       sfz_synth_util->loop_start < sfz_synth_util->loop_end){
+      /* can loop */
+      if(sfz_synth_util->loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
+	if(set_loop_start){
+	  i1 = sfz_synth_util->loop_start;
+	}else{
+	  i1 += copy_n_frames;
+	}
+      }else{
+	if(!pong_copy){
+	  if(set_loop_end){
+	    i1 = sfz_synth_util->loop_end; 
+	    
+	    pong_copy = TRUE;
+	  }else{
+	    i1 += copy_n_frames;
+	  }
+	}else{
+	  if(set_loop_start){
+	    i1 = sfz_synth_util->loop_start;
+	    
+	    pong_copy = FALSE;
+	  }else{
+	    i1 -= copy_n_frames;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      i1 += copy_n_frames;
+    }    
+
+    if(do_copy){
+      i2 += (copy_n_frames - start_frame);
+    }
+  }
 }
 
 /**
@@ -740,7 +1336,305 @@ ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util)
 void
 ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util)
 {
-  //TODO:JK: implement me
+  AgsGenericPitchUtil *generic_pitch_util;
+
+  gint key;
+  gint pitch_keycenter;
+  gdouble base_key;
+  gdouble tuning;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint resampled_source_frame_count;
+  guint copy_mode;
+  guint i0, i1, i2;
+  gboolean success;
+  gboolean pong_copy;
+
+  if(sfz_synth_util == NULL ||
+     sfz_synth_util->source == NULL ||
+     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_sample)){
+    return;
+  }
+
+  generic_pitch_util = sfz_synth_util->generic_pitch_util;
+  
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  resampled_source_frame_count = source_frame_count;
+
+  if(source_samplerate != sfz_synth_util->samplerate){
+    resampled_source_frame_count = (sfz_synth_util->samplerate / source_samplerate) * source_frame_count;
+  }
+  
+  /*  */
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S24,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(sfz_synth_util->im_buffer, 1, 0,
+					      sfz_synth_util->sample_buffer, 1, 0,
+					      resampled_source_frame_count, copy_mode);
+
+  /* pitch */
+  key = ags_sfz_sample_get_key(sfz_synth_util->sfz_sample);
+  pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_synth_util->sfz_sample);
+
+  if(key >= 0){
+    base_key = (gdouble) key - 21.0;
+  }else if(pitch_keycenter >= 0){
+    base_key = (gdouble) pitch_keycenter - 21.0;
+  }else{
+    base_key = 48.0;
+  }
+  
+  tuning = 100.0 * ((sfz_synth_util->note + 48.0) - base_key);
+  
+  switch(generic_pitch_util->pitch_type){
+  case AGS_FAST_PITCH:
+  {
+    ags_fast_pitch_util_set_format(generic_pitch_util->fast_pitch_util,
+				   AGS_SOUNDCARD_SIGNED_24_BIT);
+
+    ags_fast_pitch_util_set_base_key(generic_pitch_util->fast_pitch_util,
+				     base_key);
+    
+    ags_fast_pitch_util_set_tuning(generic_pitch_util->fast_pitch_util,
+				   tuning);
+  }
+  break;
+  case AGS_HQ_PITCH:
+  {
+    ags_hq_pitch_util_set_format(generic_pitch_util->hq_pitch_util,
+				 AGS_SOUNDCARD_SIGNED_24_BIT);
+
+    ags_hq_pitch_util_set_base_key(generic_pitch_util->hq_pitch_util,
+				   base_key);
+    
+    ags_hq_pitch_util_set_tuning(generic_pitch_util->hq_pitch_util,
+				 tuning);
+  }
+  break;
+  case AGS_FLUID_NO_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_none_util_set_format(generic_pitch_util->fluid_interpolate_none_util,
+					       AGS_SOUNDCARD_SIGNED_24_BIT);
+
+    ags_fluid_interpolate_none_util_set_phase_increment(generic_pitch_util->fluid_interpolate_none_util,
+							phase_incr);
+  }
+  break;
+  case AGS_FLUID_LINEAR_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_linear_util_set_format(generic_pitch_util->fluid_interpolate_linear_util,
+						 AGS_SOUNDCARD_SIGNED_24_BIT);
+
+    ags_fluid_interpolate_linear_util_set_phase_increment(generic_pitch_util->fluid_interpolate_linear_util,
+							  phase_incr);
+  }
+  break;
+  case AGS_FLUID_4TH_ORDER_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_4th_order_util_set_format(generic_pitch_util->fluid_interpolate_4th_order_util,
+						    AGS_SOUNDCARD_SIGNED_24_BIT);
+
+    ags_fluid_interpolate_4th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_4th_order_util,
+							     phase_incr);
+  }
+  break;
+  case AGS_FLUID_7TH_ORDER_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_7th_order_util_set_format(generic_pitch_util->fluid_interpolate_7th_order_util,
+						    AGS_SOUNDCARD_SIGNED_24_BIT);
+
+    ags_fluid_interpolate_7th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_7th_order_util,
+							     phase_incr);
+  }
+  break;
+  }
+  
+  ags_generic_pitch_util_pitch(generic_pitch_util);
+
+  success = FALSE;
+  pong_copy = FALSE;
+
+  for(i0 = 0, i1 = 0, i2 = 0; i0 < sfz_synth_util->frame_count && !success && i2 < sfz_synth_util->buffer_length; ){
+    guint copy_n_frames;
+    guint start_frame;
+
+    gboolean set_loop_start;
+    gboolean set_loop_end;
+    gboolean do_copy;
+    
+    copy_n_frames = sfz_synth_util->buffer_length;
+
+    set_loop_start = FALSE;
+    set_loop_end = FALSE;
+
+    do_copy = FALSE;
+    
+    if(i0 + copy_n_frames > sfz_synth_util->frame_count){
+      copy_n_frames = sfz_synth_util->frame_count - i0;
+    }
+    
+    if((sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sfz_synth_util->loop_start >= 0 &&
+       sfz_synth_util->loop_end >= 0 &&
+       sfz_synth_util->loop_start < sfz_synth_util->loop_end){
+      /* can loop */
+      if(sfz_synth_util->loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
+	if(i1 + copy_n_frames >= sfz_synth_util->loop_end){
+	  copy_n_frames = sfz_synth_util->loop_end - i1;
+	  
+	  set_loop_start = TRUE;
+	}
+      }else{
+	if(!pong_copy){
+	  if(i1 + copy_n_frames >= sfz_synth_util->loop_end){
+	    copy_n_frames = sfz_synth_util->loop_end - i1;
+
+	    set_loop_end = TRUE;
+	  }
+	}else{
+	  if(i1 - copy_n_frames <= sfz_synth_util->loop_start){
+	    copy_n_frames = i1 - sfz_synth_util->loop_start;
+	    
+	    set_loop_start = TRUE;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      if(i1 + copy_n_frames > sfz_synth_util->frame_count){
+	copy_n_frames = sfz_synth_util->frame_count - i1;
+
+	success = TRUE;
+      }
+    }
+
+    start_frame = 0;
+      
+    if(i0 + copy_n_frames > sfz_synth_util->offset){
+      do_copy = TRUE;
+      
+      if(i0 < sfz_synth_util->offset){
+	start_frame = (i0 + copy_n_frames) - sfz_synth_util->offset;
+      }
+      
+      if(!pong_copy){	
+	ags_audio_buffer_util_copy_s24_to_s24(((gint32 *) sfz_synth_util->source) + i2, 1,
+					    ((gint32 *) sfz_synth_util->im_buffer) + i1, 1,
+					    copy_n_frames - start_frame);
+      }else{
+	ags_audio_buffer_util_pong_s24(((gint32 *) sfz_synth_util->source) + i2, 1,
+				       ((gint32 *) sfz_synth_util->im_buffer) + i1, 1,
+				       copy_n_frames - start_frame);
+      }
+    }
+
+    i0 += copy_n_frames;
+    
+    if((sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sfz_synth_util->loop_start >= 0 &&
+       sfz_synth_util->loop_end >= 0 &&
+       sfz_synth_util->loop_start < sfz_synth_util->loop_end){
+      /* can loop */
+      if(sfz_synth_util->loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
+	if(set_loop_start){
+	  i1 = sfz_synth_util->loop_start;
+	}else{
+	  i1 += copy_n_frames;
+	}
+      }else{
+	if(!pong_copy){
+	  if(set_loop_end){
+	    i1 = sfz_synth_util->loop_end; 
+	    
+	    pong_copy = TRUE;
+	  }else{
+	    i1 += copy_n_frames;
+	  }
+	}else{
+	  if(set_loop_start){
+	    i1 = sfz_synth_util->loop_start;
+	    
+	    pong_copy = FALSE;
+	  }else{
+	    i1 -= copy_n_frames;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      i1 += copy_n_frames;
+    }    
+
+    if(do_copy){
+      i2 += (copy_n_frames - start_frame);
+    }
+  }
 }
 
 /**
@@ -754,7 +1648,305 @@ ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util)
 void
 ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util)
 {
-  //TODO:JK: implement me
+  AgsGenericPitchUtil *generic_pitch_util;
+
+  gint key;
+  gint pitch_keycenter;
+  gdouble base_key;
+  gdouble tuning;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint resampled_source_frame_count;
+  guint copy_mode;
+  guint i0, i1, i2;
+  gboolean success;
+  gboolean pong_copy;
+
+  if(sfz_synth_util == NULL ||
+     sfz_synth_util->source == NULL ||
+     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_sample)){
+    return;
+  }
+
+  generic_pitch_util = sfz_synth_util->generic_pitch_util;
+  
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  resampled_source_frame_count = source_frame_count;
+
+  if(source_samplerate != sfz_synth_util->samplerate){
+    resampled_source_frame_count = (sfz_synth_util->samplerate / source_samplerate) * source_frame_count;
+  }
+  
+  /*  */
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S32,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(sfz_synth_util->im_buffer, 1, 0,
+					      sfz_synth_util->sample_buffer, 1, 0,
+					      resampled_source_frame_count, copy_mode);
+
+  /* pitch */
+  key = ags_sfz_sample_get_key(sfz_synth_util->sfz_sample);
+  pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_synth_util->sfz_sample);
+
+  if(key >= 0){
+    base_key = (gdouble) key - 21.0;
+  }else if(pitch_keycenter >= 0){
+    base_key = (gdouble) pitch_keycenter - 21.0;
+  }else{
+    base_key = 48.0;
+  }
+  
+  tuning = 100.0 * ((sfz_synth_util->note + 48.0) - base_key);
+  
+  switch(generic_pitch_util->pitch_type){
+  case AGS_FAST_PITCH:
+  {
+    ags_fast_pitch_util_set_format(generic_pitch_util->fast_pitch_util,
+				   AGS_SOUNDCARD_SIGNED_32_BIT);
+
+    ags_fast_pitch_util_set_base_key(generic_pitch_util->fast_pitch_util,
+				     base_key);
+    
+    ags_fast_pitch_util_set_tuning(generic_pitch_util->fast_pitch_util,
+				   tuning);
+  }
+  break;
+  case AGS_HQ_PITCH:
+  {
+    ags_hq_pitch_util_set_format(generic_pitch_util->hq_pitch_util,
+				 AGS_SOUNDCARD_SIGNED_32_BIT);
+
+    ags_hq_pitch_util_set_base_key(generic_pitch_util->hq_pitch_util,
+				   base_key);
+    
+    ags_hq_pitch_util_set_tuning(generic_pitch_util->hq_pitch_util,
+				 tuning);
+  }
+  break;
+  case AGS_FLUID_NO_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_none_util_set_format(generic_pitch_util->fluid_interpolate_none_util,
+					       AGS_SOUNDCARD_SIGNED_32_BIT);
+
+    ags_fluid_interpolate_none_util_set_phase_increment(generic_pitch_util->fluid_interpolate_none_util,
+							phase_incr);
+  }
+  break;
+  case AGS_FLUID_LINEAR_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_linear_util_set_format(generic_pitch_util->fluid_interpolate_linear_util,
+						 AGS_SOUNDCARD_SIGNED_32_BIT);
+
+    ags_fluid_interpolate_linear_util_set_phase_increment(generic_pitch_util->fluid_interpolate_linear_util,
+							  phase_incr);
+  }
+  break;
+  case AGS_FLUID_4TH_ORDER_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_4th_order_util_set_format(generic_pitch_util->fluid_interpolate_4th_order_util,
+						    AGS_SOUNDCARD_SIGNED_32_BIT);
+
+    ags_fluid_interpolate_4th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_4th_order_util,
+							     phase_incr);
+  }
+  break;
+  case AGS_FLUID_7TH_ORDER_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_7th_order_util_set_format(generic_pitch_util->fluid_interpolate_7th_order_util,
+						    AGS_SOUNDCARD_SIGNED_32_BIT);
+
+    ags_fluid_interpolate_7th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_7th_order_util,
+							     phase_incr);
+  }
+  break;
+  }
+  
+  ags_generic_pitch_util_pitch(generic_pitch_util);
+
+  success = FALSE;
+  pong_copy = FALSE;
+
+  for(i0 = 0, i1 = 0, i2 = 0; i0 < sfz_synth_util->frame_count && !success && i2 < sfz_synth_util->buffer_length; ){
+    guint copy_n_frames;
+    guint start_frame;
+
+    gboolean set_loop_start;
+    gboolean set_loop_end;
+    gboolean do_copy;
+    
+    copy_n_frames = sfz_synth_util->buffer_length;
+
+    set_loop_start = FALSE;
+    set_loop_end = FALSE;
+
+    do_copy = FALSE;
+    
+    if(i0 + copy_n_frames > sfz_synth_util->frame_count){
+      copy_n_frames = sfz_synth_util->frame_count - i0;
+    }
+    
+    if((sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sfz_synth_util->loop_start >= 0 &&
+       sfz_synth_util->loop_end >= 0 &&
+       sfz_synth_util->loop_start < sfz_synth_util->loop_end){
+      /* can loop */
+      if(sfz_synth_util->loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
+	if(i1 + copy_n_frames >= sfz_synth_util->loop_end){
+	  copy_n_frames = sfz_synth_util->loop_end - i1;
+	  
+	  set_loop_start = TRUE;
+	}
+      }else{
+	if(!pong_copy){
+	  if(i1 + copy_n_frames >= sfz_synth_util->loop_end){
+	    copy_n_frames = sfz_synth_util->loop_end - i1;
+
+	    set_loop_end = TRUE;
+	  }
+	}else{
+	  if(i1 - copy_n_frames <= sfz_synth_util->loop_start){
+	    copy_n_frames = i1 - sfz_synth_util->loop_start;
+	    
+	    set_loop_start = TRUE;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      if(i1 + copy_n_frames > sfz_synth_util->frame_count){
+	copy_n_frames = sfz_synth_util->frame_count - i1;
+
+	success = TRUE;
+      }
+    }
+
+    start_frame = 0;
+      
+    if(i0 + copy_n_frames > sfz_synth_util->offset){
+      do_copy = TRUE;
+      
+      if(i0 < sfz_synth_util->offset){
+	start_frame = (i0 + copy_n_frames) - sfz_synth_util->offset;
+      }
+      
+      if(!pong_copy){	
+	ags_audio_buffer_util_copy_s32_to_s32(((gint32 *) sfz_synth_util->source) + i2, 1,
+					    ((gint32 *) sfz_synth_util->im_buffer) + i1, 1,
+					    copy_n_frames - start_frame);
+      }else{
+	ags_audio_buffer_util_pong_s32(((gint32 *) sfz_synth_util->source) + i2, 1,
+					((gint32 *) sfz_synth_util->im_buffer) + i1, 1,
+				       copy_n_frames - start_frame);
+      }
+    }
+
+    i0 += copy_n_frames;
+    
+    if((sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sfz_synth_util->loop_start >= 0 &&
+       sfz_synth_util->loop_end >= 0 &&
+       sfz_synth_util->loop_start < sfz_synth_util->loop_end){
+      /* can loop */
+      if(sfz_synth_util->loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
+	if(set_loop_start){
+	  i1 = sfz_synth_util->loop_start;
+	}else{
+	  i1 += copy_n_frames;
+	}
+      }else{
+	if(!pong_copy){
+	  if(set_loop_end){
+	    i1 = sfz_synth_util->loop_end; 
+	    
+	    pong_copy = TRUE;
+	  }else{
+	    i1 += copy_n_frames;
+	  }
+	}else{
+	  if(set_loop_start){
+	    i1 = sfz_synth_util->loop_start;
+	    
+	    pong_copy = FALSE;
+	  }else{
+	    i1 -= copy_n_frames;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      i1 += copy_n_frames;
+    }    
+
+    if(do_copy){
+      i2 += (copy_n_frames - start_frame);
+    }
+  }
 }
 
 /**
@@ -768,7 +1960,305 @@ ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util)
 void
 ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util)
 {
-  //TODO:JK: implement me
+  AgsGenericPitchUtil *generic_pitch_util;
+
+  gint key;
+  gint pitch_keycenter;
+  gdouble base_key;
+  gdouble tuning;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint resampled_source_frame_count;
+  guint copy_mode;
+  guint i0, i1, i2;
+  gboolean success;
+  gboolean pong_copy;
+
+  if(sfz_synth_util == NULL ||
+     sfz_synth_util->source == NULL ||
+     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_sample)){
+    return;
+  }
+
+  generic_pitch_util = sfz_synth_util->generic_pitch_util;
+  
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  resampled_source_frame_count = source_frame_count;
+
+  if(source_samplerate != sfz_synth_util->samplerate){
+    resampled_source_frame_count = (sfz_synth_util->samplerate / source_samplerate) * source_frame_count;
+  }
+  
+  /*  */
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S64,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(sfz_synth_util->im_buffer, 1, 0,
+					      sfz_synth_util->sample_buffer, 1, 0,
+					      resampled_source_frame_count, copy_mode);
+
+  /* pitch */
+  key = ags_sfz_sample_get_key(sfz_synth_util->sfz_sample);
+  pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_synth_util->sfz_sample);
+
+  if(key >= 0){
+    base_key = (gdouble) key - 21.0;
+  }else if(pitch_keycenter >= 0){
+    base_key = (gdouble) pitch_keycenter - 21.0;
+  }else{
+    base_key = 48.0;
+  }
+  
+  tuning = 100.0 * ((sfz_synth_util->note + 48.0) - base_key);
+  
+  switch(generic_pitch_util->pitch_type){
+  case AGS_FAST_PITCH:
+  {
+    ags_fast_pitch_util_set_format(generic_pitch_util->fast_pitch_util,
+				   AGS_SOUNDCARD_SIGNED_64_BIT);
+
+    ags_fast_pitch_util_set_base_key(generic_pitch_util->fast_pitch_util,
+				     base_key);
+    
+    ags_fast_pitch_util_set_tuning(generic_pitch_util->fast_pitch_util,
+				   tuning);
+  }
+  break;
+  case AGS_HQ_PITCH:
+  {
+    ags_hq_pitch_util_set_format(generic_pitch_util->hq_pitch_util,
+				 AGS_SOUNDCARD_SIGNED_64_BIT);
+
+    ags_hq_pitch_util_set_base_key(generic_pitch_util->hq_pitch_util,
+				   base_key);
+    
+    ags_hq_pitch_util_set_tuning(generic_pitch_util->hq_pitch_util,
+				 tuning);
+  }
+  break;
+  case AGS_FLUID_NO_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_none_util_set_format(generic_pitch_util->fluid_interpolate_none_util,
+					       AGS_SOUNDCARD_SIGNED_64_BIT);
+
+    ags_fluid_interpolate_none_util_set_phase_increment(generic_pitch_util->fluid_interpolate_none_util,
+							phase_incr);
+  }
+  break;
+  case AGS_FLUID_LINEAR_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_linear_util_set_format(generic_pitch_util->fluid_interpolate_linear_util,
+						 AGS_SOUNDCARD_SIGNED_64_BIT);
+
+    ags_fluid_interpolate_linear_util_set_phase_increment(generic_pitch_util->fluid_interpolate_linear_util,
+							  phase_incr);
+  }
+  break;
+  case AGS_FLUID_4TH_ORDER_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_4th_order_util_set_format(generic_pitch_util->fluid_interpolate_4th_order_util,
+						    AGS_SOUNDCARD_SIGNED_64_BIT);
+
+    ags_fluid_interpolate_4th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_4th_order_util,
+							     phase_incr);
+  }
+  break;
+  case AGS_FLUID_7TH_ORDER_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_7th_order_util_set_format(generic_pitch_util->fluid_interpolate_7th_order_util,
+						    AGS_SOUNDCARD_SIGNED_64_BIT);
+
+    ags_fluid_interpolate_7th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_7th_order_util,
+							     phase_incr);
+  }
+  break;
+  }
+  
+  ags_generic_pitch_util_pitch(generic_pitch_util);
+
+  success = FALSE;
+  pong_copy = FALSE;
+
+  for(i0 = 0, i1 = 0, i2 = 0; i0 < sfz_synth_util->frame_count && !success && i2 < sfz_synth_util->buffer_length; ){
+    guint copy_n_frames;
+    guint start_frame;
+
+    gboolean set_loop_start;
+    gboolean set_loop_end;
+    gboolean do_copy;
+    
+    copy_n_frames = sfz_synth_util->buffer_length;
+
+    set_loop_start = FALSE;
+    set_loop_end = FALSE;
+
+    do_copy = FALSE;
+    
+    if(i0 + copy_n_frames > sfz_synth_util->frame_count){
+      copy_n_frames = sfz_synth_util->frame_count - i0;
+    }
+    
+    if((sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sfz_synth_util->loop_start >= 0 &&
+       sfz_synth_util->loop_end >= 0 &&
+       sfz_synth_util->loop_start < sfz_synth_util->loop_end){
+      /* can loop */
+      if(sfz_synth_util->loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
+	if(i1 + copy_n_frames >= sfz_synth_util->loop_end){
+	  copy_n_frames = sfz_synth_util->loop_end - i1;
+	  
+	  set_loop_start = TRUE;
+	}
+      }else{
+	if(!pong_copy){
+	  if(i1 + copy_n_frames >= sfz_synth_util->loop_end){
+	    copy_n_frames = sfz_synth_util->loop_end - i1;
+
+	    set_loop_end = TRUE;
+	  }
+	}else{
+	  if(i1 - copy_n_frames <= sfz_synth_util->loop_start){
+	    copy_n_frames = i1 - sfz_synth_util->loop_start;
+	    
+	    set_loop_start = TRUE;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      if(i1 + copy_n_frames > sfz_synth_util->frame_count){
+	copy_n_frames = sfz_synth_util->frame_count - i1;
+
+	success = TRUE;
+      }
+    }
+
+    start_frame = 0;
+      
+    if(i0 + copy_n_frames > sfz_synth_util->offset){
+      do_copy = TRUE;
+      
+      if(i0 < sfz_synth_util->offset){
+	start_frame = (i0 + copy_n_frames) - sfz_synth_util->offset;
+      }
+      
+      if(!pong_copy){	
+	ags_audio_buffer_util_copy_s64_to_s64(((gint64 *) sfz_synth_util->source) + i2, 1,
+					      ((gint64 *) sfz_synth_util->im_buffer) + i1, 1,
+					      copy_n_frames - start_frame);
+      }else{
+	ags_audio_buffer_util_pong_s64(((gint64 *) sfz_synth_util->source) + i2, 1,
+				       ((gint64 *) sfz_synth_util->im_buffer) + i1, 1,
+				       copy_n_frames - start_frame);
+      }
+    }
+
+    i0 += copy_n_frames;
+    
+    if((sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sfz_synth_util->loop_start >= 0 &&
+       sfz_synth_util->loop_end >= 0 &&
+       sfz_synth_util->loop_start < sfz_synth_util->loop_end){
+      /* can loop */
+      if(sfz_synth_util->loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
+	if(set_loop_start){
+	  i1 = sfz_synth_util->loop_start;
+	}else{
+	  i1 += copy_n_frames;
+	}
+      }else{
+	if(!pong_copy){
+	  if(set_loop_end){
+	    i1 = sfz_synth_util->loop_end; 
+	    
+	    pong_copy = TRUE;
+	  }else{
+	    i1 += copy_n_frames;
+	  }
+	}else{
+	  if(set_loop_start){
+	    i1 = sfz_synth_util->loop_start;
+	    
+	    pong_copy = FALSE;
+	  }else{
+	    i1 -= copy_n_frames;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      i1 += copy_n_frames;
+    }    
+
+    if(do_copy){
+      i2 += (copy_n_frames - start_frame);
+    }
+  }
 }
 
 /**
@@ -782,7 +2272,305 @@ ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util)
 void
 ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util)
 {
-  //TODO:JK: implement me
+  AgsGenericPitchUtil *generic_pitch_util;
+
+  gint key;
+  gint pitch_keycenter;
+  gdouble base_key;
+  gdouble tuning;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint resampled_source_frame_count;
+  guint copy_mode;
+  guint i0, i1, i2;
+  gboolean success;
+  gboolean pong_copy;
+
+  if(sfz_synth_util == NULL ||
+     sfz_synth_util->source == NULL ||
+     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_sample)){
+    return;
+  }
+
+  generic_pitch_util = sfz_synth_util->generic_pitch_util;
+  
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  resampled_source_frame_count = source_frame_count;
+
+  if(source_samplerate != sfz_synth_util->samplerate){
+    resampled_source_frame_count = (sfz_synth_util->samplerate / source_samplerate) * source_frame_count;
+  }
+  
+  /*  */
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(sfz_synth_util->im_buffer, 1, 0,
+					      sfz_synth_util->sample_buffer, 1, 0,
+					      resampled_source_frame_count, copy_mode);
+
+  /* pitch */
+  key = ags_sfz_sample_get_key(sfz_synth_util->sfz_sample);
+  pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_synth_util->sfz_sample);
+
+  if(key >= 0){
+    base_key = (gdouble) key - 21.0;
+  }else if(pitch_keycenter >= 0){
+    base_key = (gdouble) pitch_keycenter - 21.0;
+  }else{
+    base_key = 48.0;
+  }
+  
+  tuning = 100.0 * ((sfz_synth_util->note + 48.0) - base_key);
+  
+  switch(generic_pitch_util->pitch_type){
+  case AGS_FAST_PITCH:
+  {
+    ags_fast_pitch_util_set_format(generic_pitch_util->fast_pitch_util,
+				   AGS_SOUNDCARD_FLOAT);
+
+    ags_fast_pitch_util_set_base_key(generic_pitch_util->fast_pitch_util,
+				     base_key);
+    
+    ags_fast_pitch_util_set_tuning(generic_pitch_util->fast_pitch_util,
+				   tuning);
+  }
+  break;
+  case AGS_HQ_PITCH:
+  {
+    ags_hq_pitch_util_set_format(generic_pitch_util->hq_pitch_util,
+				 AGS_SOUNDCARD_FLOAT);
+
+    ags_hq_pitch_util_set_base_key(generic_pitch_util->hq_pitch_util,
+				   base_key);
+    
+    ags_hq_pitch_util_set_tuning(generic_pitch_util->hq_pitch_util,
+				 tuning);
+  }
+  break;
+  case AGS_FLUID_NO_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_none_util_set_format(generic_pitch_util->fluid_interpolate_none_util,
+					       AGS_SOUNDCARD_FLOAT);
+
+    ags_fluid_interpolate_none_util_set_phase_increment(generic_pitch_util->fluid_interpolate_none_util,
+							phase_incr);
+  }
+  break;
+  case AGS_FLUID_LINEAR_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_linear_util_set_format(generic_pitch_util->fluid_interpolate_linear_util,
+						 AGS_SOUNDCARD_FLOAT);
+
+    ags_fluid_interpolate_linear_util_set_phase_increment(generic_pitch_util->fluid_interpolate_linear_util,
+							  phase_incr);
+  }
+  break;
+  case AGS_FLUID_4TH_ORDER_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_4th_order_util_set_format(generic_pitch_util->fluid_interpolate_4th_order_util,
+						    AGS_SOUNDCARD_FLOAT);
+
+    ags_fluid_interpolate_4th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_4th_order_util,
+							     phase_incr);
+  }
+  break;
+  case AGS_FLUID_7TH_ORDER_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_7th_order_util_set_format(generic_pitch_util->fluid_interpolate_7th_order_util,
+						    AGS_SOUNDCARD_FLOAT);
+
+    ags_fluid_interpolate_7th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_7th_order_util,
+							     phase_incr);
+  }
+  break;
+  }
+  
+  ags_generic_pitch_util_pitch(generic_pitch_util);
+
+  success = FALSE;
+  pong_copy = FALSE;
+
+  for(i0 = 0, i1 = 0, i2 = 0; i0 < sfz_synth_util->frame_count && !success && i2 < sfz_synth_util->buffer_length; ){
+    guint copy_n_frames;
+    guint start_frame;
+
+    gboolean set_loop_start;
+    gboolean set_loop_end;
+    gboolean do_copy;
+    
+    copy_n_frames = sfz_synth_util->buffer_length;
+
+    set_loop_start = FALSE;
+    set_loop_end = FALSE;
+
+    do_copy = FALSE;
+    
+    if(i0 + copy_n_frames > sfz_synth_util->frame_count){
+      copy_n_frames = sfz_synth_util->frame_count - i0;
+    }
+    
+    if((sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sfz_synth_util->loop_start >= 0 &&
+       sfz_synth_util->loop_end >= 0 &&
+       sfz_synth_util->loop_start < sfz_synth_util->loop_end){
+      /* can loop */
+      if(sfz_synth_util->loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
+	if(i1 + copy_n_frames >= sfz_synth_util->loop_end){
+	  copy_n_frames = sfz_synth_util->loop_end - i1;
+	  
+	  set_loop_start = TRUE;
+	}
+      }else{
+	if(!pong_copy){
+	  if(i1 + copy_n_frames >= sfz_synth_util->loop_end){
+	    copy_n_frames = sfz_synth_util->loop_end - i1;
+
+	    set_loop_end = TRUE;
+	  }
+	}else{
+	  if(i1 - copy_n_frames <= sfz_synth_util->loop_start){
+	    copy_n_frames = i1 - sfz_synth_util->loop_start;
+	    
+	    set_loop_start = TRUE;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      if(i1 + copy_n_frames > sfz_synth_util->frame_count){
+	copy_n_frames = sfz_synth_util->frame_count - i1;
+
+	success = TRUE;
+      }
+    }
+
+    start_frame = 0;
+      
+    if(i0 + copy_n_frames > sfz_synth_util->offset){
+      do_copy = TRUE;
+      
+      if(i0 < sfz_synth_util->offset){
+	start_frame = (i0 + copy_n_frames) - sfz_synth_util->offset;
+      }
+      
+      if(!pong_copy){	
+	ags_audio_buffer_util_copy_float_to_float(((gfloat *) sfz_synth_util->source) + i2, 1,
+						  ((gfloat *) sfz_synth_util->im_buffer) + i1, 1,
+						  copy_n_frames - start_frame);
+      }else{
+	ags_audio_buffer_util_pong_float(((gfloat *) sfz_synth_util->source) + i2, 1,
+					 ((gfloat *) sfz_synth_util->im_buffer) + i1, 1,
+					 copy_n_frames - start_frame);
+      }
+    }
+
+    i0 += copy_n_frames;
+    
+    if((sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sfz_synth_util->loop_start >= 0 &&
+       sfz_synth_util->loop_end >= 0 &&
+       sfz_synth_util->loop_start < sfz_synth_util->loop_end){
+      /* can loop */
+      if(sfz_synth_util->loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
+	if(set_loop_start){
+	  i1 = sfz_synth_util->loop_start;
+	}else{
+	  i1 += copy_n_frames;
+	}
+      }else{
+	if(!pong_copy){
+	  if(set_loop_end){
+	    i1 = sfz_synth_util->loop_end; 
+	    
+	    pong_copy = TRUE;
+	  }else{
+	    i1 += copy_n_frames;
+	  }
+	}else{
+	  if(set_loop_start){
+	    i1 = sfz_synth_util->loop_start;
+	    
+	    pong_copy = FALSE;
+	  }else{
+	    i1 -= copy_n_frames;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      i1 += copy_n_frames;
+    }    
+
+    if(do_copy){
+      i2 += (copy_n_frames - start_frame);
+    }
+  }
 }
 
 /**
@@ -796,7 +2584,305 @@ ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util)
 void
 ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util)
 {
-  //TODO:JK: implement me
+  AgsGenericPitchUtil *generic_pitch_util;
+
+  gint key;
+  gint pitch_keycenter;
+  gdouble base_key;
+  gdouble tuning;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint resampled_source_frame_count;
+  guint copy_mode;
+  guint i0, i1, i2;
+  gboolean success;
+  gboolean pong_copy;
+
+  if(sfz_synth_util == NULL ||
+     sfz_synth_util->source == NULL ||
+     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_sample)){
+    return;
+  }
+
+  generic_pitch_util = sfz_synth_util->generic_pitch_util;
+  
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  resampled_source_frame_count = source_frame_count;
+
+  if(source_samplerate != sfz_synth_util->samplerate){
+    resampled_source_frame_count = (sfz_synth_util->samplerate / source_samplerate) * source_frame_count;
+  }
+  
+  /*  */
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(sfz_synth_util->im_buffer, 1, 0,
+					      sfz_synth_util->sample_buffer, 1, 0,
+					      resampled_source_frame_count, copy_mode);
+
+  /* pitch */
+  key = ags_sfz_sample_get_key(sfz_synth_util->sfz_sample);
+  pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_synth_util->sfz_sample);
+
+  if(key >= 0){
+    base_key = (gdouble) key - 21.0;
+  }else if(pitch_keycenter >= 0){
+    base_key = (gdouble) pitch_keycenter - 21.0;
+  }else{
+    base_key = 48.0;
+  }
+  
+  tuning = 100.0 * ((sfz_synth_util->note + 48.0) - base_key);
+  
+  switch(generic_pitch_util->pitch_type){
+  case AGS_FAST_PITCH:
+  {
+    ags_fast_pitch_util_set_format(generic_pitch_util->fast_pitch_util,
+				   AGS_SOUNDCARD_DOUBLE);
+
+    ags_fast_pitch_util_set_base_key(generic_pitch_util->fast_pitch_util,
+				     base_key);
+    
+    ags_fast_pitch_util_set_tuning(generic_pitch_util->fast_pitch_util,
+				   tuning);
+  }
+  break;
+  case AGS_HQ_PITCH:
+  {
+    ags_hq_pitch_util_set_format(generic_pitch_util->hq_pitch_util,
+				 AGS_SOUNDCARD_DOUBLE);
+
+    ags_hq_pitch_util_set_base_key(generic_pitch_util->hq_pitch_util,
+				   base_key);
+    
+    ags_hq_pitch_util_set_tuning(generic_pitch_util->hq_pitch_util,
+				 tuning);
+  }
+  break;
+  case AGS_FLUID_NO_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_none_util_set_format(generic_pitch_util->fluid_interpolate_none_util,
+					       AGS_SOUNDCARD_DOUBLE);
+
+    ags_fluid_interpolate_none_util_set_phase_increment(generic_pitch_util->fluid_interpolate_none_util,
+							phase_incr);
+  }
+  break;
+  case AGS_FLUID_LINEAR_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_linear_util_set_format(generic_pitch_util->fluid_interpolate_linear_util,
+						 AGS_SOUNDCARD_DOUBLE);
+
+    ags_fluid_interpolate_linear_util_set_phase_increment(generic_pitch_util->fluid_interpolate_linear_util,
+							  phase_incr);
+  }
+  break;
+  case AGS_FLUID_4TH_ORDER_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_4th_order_util_set_format(generic_pitch_util->fluid_interpolate_4th_order_util,
+						    AGS_SOUNDCARD_DOUBLE);
+
+    ags_fluid_interpolate_4th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_4th_order_util,
+							     phase_incr);
+  }
+  break;
+  case AGS_FLUID_7TH_ORDER_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_7th_order_util_set_format(generic_pitch_util->fluid_interpolate_7th_order_util,
+						    AGS_SOUNDCARD_DOUBLE);
+
+    ags_fluid_interpolate_7th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_7th_order_util,
+							     phase_incr);
+  }
+  break;
+  }
+  
+  ags_generic_pitch_util_pitch(generic_pitch_util);
+
+  success = FALSE;
+  pong_copy = FALSE;
+
+  for(i0 = 0, i1 = 0, i2 = 0; i0 < sfz_synth_util->frame_count && !success && i2 < sfz_synth_util->buffer_length; ){
+    guint copy_n_frames;
+    guint start_frame;
+
+    gboolean set_loop_start;
+    gboolean set_loop_end;
+    gboolean do_copy;
+    
+    copy_n_frames = sfz_synth_util->buffer_length;
+
+    set_loop_start = FALSE;
+    set_loop_end = FALSE;
+
+    do_copy = FALSE;
+    
+    if(i0 + copy_n_frames > sfz_synth_util->frame_count){
+      copy_n_frames = sfz_synth_util->frame_count - i0;
+    }
+    
+    if((sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sfz_synth_util->loop_start >= 0 &&
+       sfz_synth_util->loop_end >= 0 &&
+       sfz_synth_util->loop_start < sfz_synth_util->loop_end){
+      /* can loop */
+      if(sfz_synth_util->loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
+	if(i1 + copy_n_frames >= sfz_synth_util->loop_end){
+	  copy_n_frames = sfz_synth_util->loop_end - i1;
+	  
+	  set_loop_start = TRUE;
+	}
+      }else{
+	if(!pong_copy){
+	  if(i1 + copy_n_frames >= sfz_synth_util->loop_end){
+	    copy_n_frames = sfz_synth_util->loop_end - i1;
+
+	    set_loop_end = TRUE;
+	  }
+	}else{
+	  if(i1 - copy_n_frames <= sfz_synth_util->loop_start){
+	    copy_n_frames = i1 - sfz_synth_util->loop_start;
+	    
+	    set_loop_start = TRUE;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      if(i1 + copy_n_frames > sfz_synth_util->frame_count){
+	copy_n_frames = sfz_synth_util->frame_count - i1;
+
+	success = TRUE;
+      }
+    }
+
+    start_frame = 0;
+      
+    if(i0 + copy_n_frames > sfz_synth_util->offset){
+      do_copy = TRUE;
+      
+      if(i0 < sfz_synth_util->offset){
+	start_frame = (i0 + copy_n_frames) - sfz_synth_util->offset;
+      }
+      
+      if(!pong_copy){	
+	ags_audio_buffer_util_copy_double_to_double(((gdouble *) sfz_synth_util->source) + i2, 1,
+						    ((gdouble *) sfz_synth_util->im_buffer) + i1, 1,
+						    copy_n_frames - start_frame);
+      }else{
+	ags_audio_buffer_util_pong_double(((gdouble *) sfz_synth_util->source) + i2, 1,
+					  ((gdouble *) sfz_synth_util->im_buffer) + i1, 1,
+					  copy_n_frames - start_frame);
+      }
+    }
+
+    i0 += copy_n_frames;
+    
+    if((sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sfz_synth_util->loop_start >= 0 &&
+       sfz_synth_util->loop_end >= 0 &&
+       sfz_synth_util->loop_start < sfz_synth_util->loop_end){
+      /* can loop */
+      if(sfz_synth_util->loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
+	if(set_loop_start){
+	  i1 = sfz_synth_util->loop_start;
+	}else{
+	  i1 += copy_n_frames;
+	}
+      }else{
+	if(!pong_copy){
+	  if(set_loop_end){
+	    i1 = sfz_synth_util->loop_end; 
+	    
+	    pong_copy = TRUE;
+	  }else{
+	    i1 += copy_n_frames;
+	  }
+	}else{
+	  if(set_loop_start){
+	    i1 = sfz_synth_util->loop_start;
+	    
+	    pong_copy = FALSE;
+	  }else{
+	    i1 -= copy_n_frames;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      i1 += copy_n_frames;
+    }    
+
+    if(do_copy){
+      i2 += (copy_n_frames - start_frame);
+    }
+  }
 }
 
 /**
@@ -810,7 +2896,305 @@ ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util)
 void
 ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util)
 {
-  //TODO:JK: implement me
+  AgsGenericPitchUtil *generic_pitch_util;
+
+  gint key;
+  gint pitch_keycenter;
+  gdouble base_key;
+  gdouble tuning;
+  guint source_frame_count;
+  guint source_samplerate;
+  guint source_buffer_size;
+  guint source_format;
+  guint resampled_source_frame_count;
+  guint copy_mode;
+  guint i0, i1, i2;
+  gboolean success;
+  gboolean pong_copy;
+
+  if(sfz_synth_util == NULL ||
+     sfz_synth_util->source == NULL ||
+     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_sample)){
+    return;
+  }
+
+  generic_pitch_util = sfz_synth_util->generic_pitch_util;
+  
+  source_frame_count = 0;
+
+  source_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  source_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  source_format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
+  
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_sample),
+			  &source_frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sfz_synth_util->sfz_sample),
+				 NULL,
+				 &source_samplerate,
+				 &source_buffer_size,
+				 &source_format);
+
+  resampled_source_frame_count = source_frame_count;
+
+  if(source_samplerate != sfz_synth_util->samplerate){
+    resampled_source_frame_count = (sfz_synth_util->samplerate / source_samplerate) * source_frame_count;
+  }
+  
+  /*  */
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_COMPLEX,
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(sfz_synth_util->im_buffer, 1, 0,
+					      sfz_synth_util->sample_buffer, 1, 0,
+					      resampled_source_frame_count, copy_mode);
+
+  /* pitch */
+  key = ags_sfz_sample_get_key(sfz_synth_util->sfz_sample);
+  pitch_keycenter = ags_sfz_sample_get_pitch_keycenter(sfz_synth_util->sfz_sample);
+
+  if(key >= 0){
+    base_key = (gdouble) key - 21.0;
+  }else if(pitch_keycenter >= 0){
+    base_key = (gdouble) pitch_keycenter - 21.0;
+  }else{
+    base_key = 48.0;
+  }
+  
+  tuning = 100.0 * ((sfz_synth_util->note + 48.0) - base_key);
+  
+  switch(generic_pitch_util->pitch_type){
+  case AGS_FAST_PITCH:
+  {
+    ags_fast_pitch_util_set_format(generic_pitch_util->fast_pitch_util,
+				   AGS_SOUNDCARD_COMPLEX);
+
+    ags_fast_pitch_util_set_base_key(generic_pitch_util->fast_pitch_util,
+				     base_key);
+    
+    ags_fast_pitch_util_set_tuning(generic_pitch_util->fast_pitch_util,
+				   tuning);
+  }
+  break;
+  case AGS_HQ_PITCH:
+  {
+    ags_hq_pitch_util_set_format(generic_pitch_util->hq_pitch_util,
+				 AGS_SOUNDCARD_COMPLEX);
+
+    ags_hq_pitch_util_set_base_key(generic_pitch_util->hq_pitch_util,
+				   base_key);
+    
+    ags_hq_pitch_util_set_tuning(generic_pitch_util->hq_pitch_util,
+				 tuning);
+  }
+  break;
+  case AGS_FLUID_NO_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_none_util_set_format(generic_pitch_util->fluid_interpolate_none_util,
+					       AGS_SOUNDCARD_COMPLEX);
+
+    ags_fluid_interpolate_none_util_set_phase_increment(generic_pitch_util->fluid_interpolate_none_util,
+							phase_incr);
+  }
+  break;
+  case AGS_FLUID_LINEAR_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_linear_util_set_format(generic_pitch_util->fluid_interpolate_linear_util,
+						 AGS_SOUNDCARD_COMPLEX);
+
+    ags_fluid_interpolate_linear_util_set_phase_increment(generic_pitch_util->fluid_interpolate_linear_util,
+							  phase_incr);
+  }
+  break;
+  case AGS_FLUID_4TH_ORDER_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_4th_order_util_set_format(generic_pitch_util->fluid_interpolate_4th_order_util,
+						    AGS_SOUNDCARD_COMPLEX);
+
+    ags_fluid_interpolate_4th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_4th_order_util,
+							     phase_incr);
+  }
+  break;
+  case AGS_FLUID_7TH_ORDER_INTERPOLATE:
+  {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_interpolate_7th_order_util_set_format(generic_pitch_util->fluid_interpolate_7th_order_util,
+						    AGS_SOUNDCARD_COMPLEX);
+
+    ags_fluid_interpolate_7th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_7th_order_util,
+							     phase_incr);
+  }
+  break;
+  }
+  
+  ags_generic_pitch_util_pitch(generic_pitch_util);
+
+  success = FALSE;
+  pong_copy = FALSE;
+
+  for(i0 = 0, i1 = 0, i2 = 0; i0 < sfz_synth_util->frame_count && !success && i2 < sfz_synth_util->buffer_length; ){
+    guint copy_n_frames;
+    guint start_frame;
+
+    gboolean set_loop_start;
+    gboolean set_loop_end;
+    gboolean do_copy;
+    
+    copy_n_frames = sfz_synth_util->buffer_length;
+
+    set_loop_start = FALSE;
+    set_loop_end = FALSE;
+
+    do_copy = FALSE;
+    
+    if(i0 + copy_n_frames > sfz_synth_util->frame_count){
+      copy_n_frames = sfz_synth_util->frame_count - i0;
+    }
+    
+    if((sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sfz_synth_util->loop_start >= 0 &&
+       sfz_synth_util->loop_end >= 0 &&
+       sfz_synth_util->loop_start < sfz_synth_util->loop_end){
+      /* can loop */
+      if(sfz_synth_util->loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
+	if(i1 + copy_n_frames >= sfz_synth_util->loop_end){
+	  copy_n_frames = sfz_synth_util->loop_end - i1;
+	  
+	  set_loop_start = TRUE;
+	}
+      }else{
+	if(!pong_copy){
+	  if(i1 + copy_n_frames >= sfz_synth_util->loop_end){
+	    copy_n_frames = sfz_synth_util->loop_end - i1;
+
+	    set_loop_end = TRUE;
+	  }
+	}else{
+	  if(i1 - copy_n_frames <= sfz_synth_util->loop_start){
+	    copy_n_frames = i1 - sfz_synth_util->loop_start;
+	    
+	    set_loop_start = TRUE;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      if(i1 + copy_n_frames > sfz_synth_util->frame_count){
+	copy_n_frames = sfz_synth_util->frame_count - i1;
+
+	success = TRUE;
+      }
+    }
+
+    start_frame = 0;
+      
+    if(i0 + copy_n_frames > sfz_synth_util->offset){
+      do_copy = TRUE;
+      
+      if(i0 < sfz_synth_util->offset){
+	start_frame = (i0 + copy_n_frames) - sfz_synth_util->offset;
+      }
+      
+      if(!pong_copy){	
+	ags_audio_buffer_util_copy_complex_to_complex(((AgsComplex *) sfz_synth_util->source) + i2, 1,
+						      ((AgsComplex *) sfz_synth_util->im_buffer) + i1, 1,
+						      copy_n_frames - start_frame);
+      }else{
+	ags_audio_buffer_util_pong_complex(((AgsComplex *) sfz_synth_util->source) + i2, 1,
+					   ((AgsComplex *) sfz_synth_util->im_buffer) + i1, 1,
+					   copy_n_frames - start_frame);
+      }
+    }
+
+    i0 += copy_n_frames;
+    
+    if((sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE ||
+	sfz_synth_util->loop_mode == AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG) &&
+       sfz_synth_util->loop_start >= 0 &&
+       sfz_synth_util->loop_end >= 0 &&
+       sfz_synth_util->loop_start < sfz_synth_util->loop_end){
+      /* can loop */
+      if(sfz_synth_util->loop_mode != AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG){
+	if(set_loop_start){
+	  i1 = sfz_synth_util->loop_start;
+	}else{
+	  i1 += copy_n_frames;
+	}
+      }else{
+	if(!pong_copy){
+	  if(set_loop_end){
+	    i1 = sfz_synth_util->loop_end; 
+	    
+	    pong_copy = TRUE;
+	  }else{
+	    i1 += copy_n_frames;
+	  }
+	}else{
+	  if(set_loop_start){
+	    i1 = sfz_synth_util->loop_start;
+	    
+	    pong_copy = FALSE;
+	  }else{
+	    i1 -= copy_n_frames;
+	  }
+	}
+      }
+    }else{
+      /* can't loop */
+      i1 += copy_n_frames;
+    }    
+
+    if(do_copy){
+      i2 += (copy_n_frames - start_frame);
+    }
+  }
 }
 
 /**
@@ -824,7 +3208,56 @@ ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util)
 void
 ags_sfz_synth_util_compute(AgsSFZSynthUtil *sfz_synth_util)
 {
-  //TODO:JK: implement me
+  if(sfz_synth_util == NULL ||
+     sfz_synth_util->source == NULL ||
+     !AGS_IS_SFZ_SAMPLE(sfz_synth_util->sfz_sample)){
+    return;
+  }
+
+  switch(sfz_synth_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+  {
+    ags_sfz_synth_util_compute_s8(sfz_synth_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+  {
+    ags_sfz_synth_util_compute_s16(sfz_synth_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+  {
+    ags_sfz_synth_util_compute_s24(sfz_synth_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+  {
+    ags_sfz_synth_util_compute_s32(sfz_synth_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+  {
+    ags_sfz_synth_util_compute_s64(sfz_synth_util);
+  }
+  break;
+  case AGS_SOUNDCARD_FLOAT:
+  {
+    ags_sfz_synth_util_compute_float(sfz_synth_util);
+  }
+  break;
+  case AGS_SOUNDCARD_DOUBLE:
+  {
+    ags_sfz_synth_util_compute_double(sfz_synth_util);
+  }
+  break;
+  case AGS_SOUNDCARD_COMPLEX:
+  {
+    ags_sfz_synth_util_compute_complex(sfz_synth_util);
+  }
+  break;
+  default:
+    g_warning("unknown format");
+  }
 }
 
 /**

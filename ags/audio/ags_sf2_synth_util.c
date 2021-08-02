@@ -1255,38 +1255,106 @@ ags_sf2_synth_util_compute_s8(AgsSF2SynthUtil *sf2_synth_util)
   switch(generic_pitch_util->pitch_type){
   case AGS_FAST_PITCH:
   {
-    ags_fast_pitch_util_set_format(sf2_synth_util->generic_pitch_util->fast_pitch_util,
+    ags_fast_pitch_util_set_format(generic_pitch_util->fast_pitch_util,
 				   AGS_SOUNDCARD_SIGNED_8_BIT);
+
+    ags_fast_pitch_util_set_base_key(generic_pitch_util->fast_pitch_util,
+				     base_key);
+    
+    ags_fast_pitch_util_set_tuning(generic_pitch_util->fast_pitch_util,
+				   tuning);
   }
   break;
   case AGS_HQ_PITCH:
   {
     ags_hq_pitch_util_set_format(generic_pitch_util->hq_pitch_util,
 				 AGS_SOUNDCARD_SIGNED_8_BIT);
+
+    ags_hq_pitch_util_set_base_key(generic_pitch_util->hq_pitch_util,
+				   base_key);
+    
+    ags_hq_pitch_util_set_tuning(generic_pitch_util->hq_pitch_util,
+				 tuning);
   }
   break;
   case AGS_FLUID_NO_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_none_util_set_format(generic_pitch_util->fluid_interpolate_none_util,
 					       AGS_SOUNDCARD_SIGNED_8_BIT);
+
+    ags_fluid_interpolate_none_util_set_phase_increment(generic_pitch_util->fluid_interpolate_none_util,
+							phase_incr);
   }
   break;
   case AGS_FLUID_LINEAR_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_linear_util_set_format(generic_pitch_util->fluid_interpolate_linear_util,
 						 AGS_SOUNDCARD_SIGNED_8_BIT);
+
+    ags_fluid_interpolate_linear_util_set_phase_increment(generic_pitch_util->fluid_interpolate_linear_util,
+							  phase_incr);
   }
   break;
   case AGS_FLUID_4TH_ORDER_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_4th_order_util_set_format(generic_pitch_util->fluid_interpolate_4th_order_util,
 						    AGS_SOUNDCARD_SIGNED_8_BIT);
+
+    ags_fluid_interpolate_4th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_4th_order_util,
+							     phase_incr);
   }
   break;
   case AGS_FLUID_7TH_ORDER_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_7th_order_util_set_format(generic_pitch_util->fluid_interpolate_7th_order_util,
 						    AGS_SOUNDCARD_SIGNED_8_BIT);
+
+    ags_fluid_interpolate_7th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_7th_order_util,
+							     phase_incr);
   }
   break;
   }
@@ -1507,36 +1575,104 @@ ags_sf2_synth_util_compute_s16(AgsSF2SynthUtil *sf2_synth_util)
   {
     ags_fast_pitch_util_set_format(sf2_synth_util->generic_pitch_util->fast_pitch_util,
 				   AGS_SOUNDCARD_SIGNED_16_BIT);
+
+    ags_fast_pitch_util_set_base_key(generic_pitch_util->fast_pitch_util,
+				     base_key);
+    
+    ags_fast_pitch_util_set_tuning(generic_pitch_util->fast_pitch_util,
+				   tuning);
   }
   break;
   case AGS_HQ_PITCH:
   {
     ags_hq_pitch_util_set_format(generic_pitch_util->hq_pitch_util,
 				 AGS_SOUNDCARD_SIGNED_16_BIT);
+
+    ags_hq_pitch_util_set_base_key(generic_pitch_util->hq_pitch_util,
+				   base_key);
+    
+    ags_hq_pitch_util_set_tuning(generic_pitch_util->hq_pitch_util,
+				 tuning);
   }
   break;
   case AGS_FLUID_NO_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_none_util_set_format(generic_pitch_util->fluid_interpolate_none_util,
 					       AGS_SOUNDCARD_SIGNED_16_BIT);
+
+    ags_fluid_interpolate_none_util_set_phase_increment(generic_pitch_util->fluid_interpolate_none_util,
+							phase_incr);
   }
   break;
   case AGS_FLUID_LINEAR_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_linear_util_set_format(generic_pitch_util->fluid_interpolate_linear_util,
 						 AGS_SOUNDCARD_SIGNED_16_BIT);
+
+    ags_fluid_interpolate_linear_util_set_phase_increment(generic_pitch_util->fluid_interpolate_linear_util,
+							  phase_incr);
   }
   break;
   case AGS_FLUID_4TH_ORDER_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_4th_order_util_set_format(generic_pitch_util->fluid_interpolate_4th_order_util,
 						    AGS_SOUNDCARD_SIGNED_16_BIT);
+
+    ags_fluid_interpolate_4th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_4th_order_util,
+							     phase_incr);
   }
   break;
   case AGS_FLUID_7TH_ORDER_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_7th_order_util_set_format(generic_pitch_util->fluid_interpolate_7th_order_util,
 						    AGS_SOUNDCARD_SIGNED_16_BIT);
+
+    ags_fluid_interpolate_7th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_7th_order_util,
+							     phase_incr);
   }
   break;
   }
@@ -1757,36 +1893,104 @@ ags_sf2_synth_util_compute_s24(AgsSF2SynthUtil *sf2_synth_util)
   {
     ags_fast_pitch_util_set_format(sf2_synth_util->generic_pitch_util->fast_pitch_util,
 				   AGS_SOUNDCARD_SIGNED_24_BIT);
+
+    ags_fast_pitch_util_set_base_key(generic_pitch_util->fast_pitch_util,
+				     base_key);
+    
+    ags_fast_pitch_util_set_tuning(generic_pitch_util->fast_pitch_util,
+				   tuning);
   }
   break;
   case AGS_HQ_PITCH:
   {
     ags_hq_pitch_util_set_format(generic_pitch_util->hq_pitch_util,
 				 AGS_SOUNDCARD_SIGNED_24_BIT);
+
+    ags_hq_pitch_util_set_base_key(generic_pitch_util->hq_pitch_util,
+				   base_key);
+    
+    ags_hq_pitch_util_set_tuning(generic_pitch_util->hq_pitch_util,
+				 tuning);
   }
   break;
   case AGS_FLUID_NO_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_none_util_set_format(generic_pitch_util->fluid_interpolate_none_util,
 					       AGS_SOUNDCARD_SIGNED_24_BIT);
+
+    ags_fluid_interpolate_none_util_set_phase_increment(generic_pitch_util->fluid_interpolate_none_util,
+							phase_incr);
   }
   break;
   case AGS_FLUID_LINEAR_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_linear_util_set_format(generic_pitch_util->fluid_interpolate_linear_util,
 						 AGS_SOUNDCARD_SIGNED_24_BIT);
+
+    ags_fluid_interpolate_linear_util_set_phase_increment(generic_pitch_util->fluid_interpolate_linear_util,
+							  phase_incr);
   }
   break;
   case AGS_FLUID_4TH_ORDER_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_4th_order_util_set_format(generic_pitch_util->fluid_interpolate_4th_order_util,
 						    AGS_SOUNDCARD_SIGNED_24_BIT);
+
+    ags_fluid_interpolate_4th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_4th_order_util,
+							     phase_incr);
   }
   break;
   case AGS_FLUID_7TH_ORDER_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_7th_order_util_set_format(generic_pitch_util->fluid_interpolate_7th_order_util,
 						    AGS_SOUNDCARD_SIGNED_24_BIT);
+
+    ags_fluid_interpolate_7th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_7th_order_util,
+							     phase_incr);
   }
   break;
   }
@@ -2007,36 +2211,104 @@ ags_sf2_synth_util_compute_s32(AgsSF2SynthUtil *sf2_synth_util)
   {
     ags_fast_pitch_util_set_format(sf2_synth_util->generic_pitch_util->fast_pitch_util,
 				   AGS_SOUNDCARD_SIGNED_32_BIT);
+
+    ags_fast_pitch_util_set_base_key(generic_pitch_util->fast_pitch_util,
+				     base_key);
+    
+    ags_fast_pitch_util_set_tuning(generic_pitch_util->fast_pitch_util,
+				   tuning);
   }
   break;
   case AGS_HQ_PITCH:
   {
     ags_hq_pitch_util_set_format(generic_pitch_util->hq_pitch_util,
 				 AGS_SOUNDCARD_SIGNED_32_BIT);
+
+    ags_hq_pitch_util_set_base_key(generic_pitch_util->hq_pitch_util,
+				   base_key);
+    
+    ags_hq_pitch_util_set_tuning(generic_pitch_util->hq_pitch_util,
+				 tuning);
   }
   break;
   case AGS_FLUID_NO_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_none_util_set_format(generic_pitch_util->fluid_interpolate_none_util,
 					       AGS_SOUNDCARD_SIGNED_32_BIT);
+
+    ags_fluid_interpolate_none_util_set_phase_increment(generic_pitch_util->fluid_interpolate_none_util,
+							phase_incr);
   }
   break;
   case AGS_FLUID_LINEAR_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_linear_util_set_format(generic_pitch_util->fluid_interpolate_linear_util,
 						 AGS_SOUNDCARD_SIGNED_32_BIT);
+
+    ags_fluid_interpolate_linear_util_set_phase_increment(generic_pitch_util->fluid_interpolate_linear_util,
+							  phase_incr);
   }
   break;
   case AGS_FLUID_4TH_ORDER_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_4th_order_util_set_format(generic_pitch_util->fluid_interpolate_4th_order_util,
 						    AGS_SOUNDCARD_SIGNED_32_BIT);
+
+    ags_fluid_interpolate_4th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_4th_order_util,
+							     phase_incr);
   }
   break;
   case AGS_FLUID_7TH_ORDER_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_7th_order_util_set_format(generic_pitch_util->fluid_interpolate_7th_order_util,
 						    AGS_SOUNDCARD_SIGNED_32_BIT);
+
+    ags_fluid_interpolate_7th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_7th_order_util,
+							     phase_incr);
   }
   break;
   }
@@ -2257,36 +2529,104 @@ ags_sf2_synth_util_compute_s64(AgsSF2SynthUtil *sf2_synth_util)
   {
     ags_fast_pitch_util_set_format(sf2_synth_util->generic_pitch_util->fast_pitch_util,
 				   AGS_SOUNDCARD_SIGNED_64_BIT);
+
+    ags_fast_pitch_util_set_base_key(generic_pitch_util->fast_pitch_util,
+				     base_key);
+    
+    ags_fast_pitch_util_set_tuning(generic_pitch_util->fast_pitch_util,
+				   tuning);
   }
   break;
   case AGS_HQ_PITCH:
   {
     ags_hq_pitch_util_set_format(generic_pitch_util->hq_pitch_util,
 				 AGS_SOUNDCARD_SIGNED_64_BIT);
+
+    ags_hq_pitch_util_set_base_key(generic_pitch_util->hq_pitch_util,
+				   base_key);
+    
+    ags_hq_pitch_util_set_tuning(generic_pitch_util->hq_pitch_util,
+				 tuning);
   }
   break;
   case AGS_FLUID_NO_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_none_util_set_format(generic_pitch_util->fluid_interpolate_none_util,
 					       AGS_SOUNDCARD_SIGNED_64_BIT);
+
+    ags_fluid_interpolate_none_util_set_phase_increment(generic_pitch_util->fluid_interpolate_none_util,
+							phase_incr);
   }
   break;
   case AGS_FLUID_LINEAR_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_linear_util_set_format(generic_pitch_util->fluid_interpolate_linear_util,
 						 AGS_SOUNDCARD_SIGNED_64_BIT);
+
+    ags_fluid_interpolate_linear_util_set_phase_increment(generic_pitch_util->fluid_interpolate_linear_util,
+							  phase_incr);
   }
   break;
   case AGS_FLUID_4TH_ORDER_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_4th_order_util_set_format(generic_pitch_util->fluid_interpolate_4th_order_util,
 						    AGS_SOUNDCARD_SIGNED_64_BIT);
+
+    ags_fluid_interpolate_4th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_4th_order_util,
+							     phase_incr);
   }
   break;
   case AGS_FLUID_7TH_ORDER_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_7th_order_util_set_format(generic_pitch_util->fluid_interpolate_7th_order_util,
 						    AGS_SOUNDCARD_SIGNED_64_BIT);
+
+    ags_fluid_interpolate_7th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_7th_order_util,
+							     phase_incr);
   }
   break;
   }
@@ -2507,36 +2847,104 @@ ags_sf2_synth_util_compute_float(AgsSF2SynthUtil *sf2_synth_util)
   {
     ags_fast_pitch_util_set_format(sf2_synth_util->generic_pitch_util->fast_pitch_util,
 				   AGS_SOUNDCARD_FLOAT);
+
+    ags_fast_pitch_util_set_base_key(generic_pitch_util->fast_pitch_util,
+				     base_key);
+    
+    ags_fast_pitch_util_set_tuning(generic_pitch_util->fast_pitch_util,
+				   tuning);
   }
   break;
   case AGS_HQ_PITCH:
   {
     ags_hq_pitch_util_set_format(generic_pitch_util->hq_pitch_util,
 				 AGS_SOUNDCARD_FLOAT);
+
+    ags_hq_pitch_util_set_base_key(generic_pitch_util->hq_pitch_util,
+				   base_key);
+    
+    ags_hq_pitch_util_set_tuning(generic_pitch_util->hq_pitch_util,
+				 tuning);
   }
   break;
   case AGS_FLUID_NO_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_none_util_set_format(generic_pitch_util->fluid_interpolate_none_util,
 					       AGS_SOUNDCARD_FLOAT);
+
+    ags_fluid_interpolate_none_util_set_phase_increment(generic_pitch_util->fluid_interpolate_none_util,
+							phase_incr);
   }
   break;
   case AGS_FLUID_LINEAR_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_linear_util_set_format(generic_pitch_util->fluid_interpolate_linear_util,
 						 AGS_SOUNDCARD_FLOAT);
+
+    ags_fluid_interpolate_linear_util_set_phase_increment(generic_pitch_util->fluid_interpolate_linear_util,
+							  phase_incr);
   }
   break;
   case AGS_FLUID_4TH_ORDER_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_4th_order_util_set_format(generic_pitch_util->fluid_interpolate_4th_order_util,
 						    AGS_SOUNDCARD_FLOAT);
+
+    ags_fluid_interpolate_4th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_4th_order_util,
+							     phase_incr);
   }
   break;
   case AGS_FLUID_7TH_ORDER_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_7th_order_util_set_format(generic_pitch_util->fluid_interpolate_7th_order_util,
 						    AGS_SOUNDCARD_FLOAT);
+
+    ags_fluid_interpolate_7th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_7th_order_util,
+							     phase_incr);
   }
   break;
   }
@@ -2757,36 +3165,104 @@ ags_sf2_synth_util_compute_double(AgsSF2SynthUtil *sf2_synth_util)
   {
     ags_fast_pitch_util_set_format(sf2_synth_util->generic_pitch_util->fast_pitch_util,
 				   AGS_SOUNDCARD_DOUBLE);
+
+    ags_fast_pitch_util_set_base_key(generic_pitch_util->fast_pitch_util,
+				     base_key);
+    
+    ags_fast_pitch_util_set_tuning(generic_pitch_util->fast_pitch_util,
+				   tuning);
   }
   break;
   case AGS_HQ_PITCH:
   {
     ags_hq_pitch_util_set_format(generic_pitch_util->hq_pitch_util,
 				 AGS_SOUNDCARD_DOUBLE);
+
+    ags_hq_pitch_util_set_base_key(generic_pitch_util->hq_pitch_util,
+				   base_key);
+    
+    ags_hq_pitch_util_set_tuning(generic_pitch_util->hq_pitch_util,
+				 tuning);
   }
   break;
   case AGS_FLUID_NO_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_none_util_set_format(generic_pitch_util->fluid_interpolate_none_util,
 					       AGS_SOUNDCARD_DOUBLE);
+
+    ags_fluid_interpolate_none_util_set_phase_increment(generic_pitch_util->fluid_interpolate_none_util,
+							phase_incr);
   }
   break;
   case AGS_FLUID_LINEAR_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_linear_util_set_format(generic_pitch_util->fluid_interpolate_linear_util,
 						 AGS_SOUNDCARD_DOUBLE);
+
+    ags_fluid_interpolate_linear_util_set_phase_increment(generic_pitch_util->fluid_interpolate_linear_util,
+							  phase_incr);
   }
   break;
   case AGS_FLUID_4TH_ORDER_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_4th_order_util_set_format(generic_pitch_util->fluid_interpolate_4th_order_util,
 						    AGS_SOUNDCARD_DOUBLE);
+
+    ags_fluid_interpolate_4th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_4th_order_util,
+							     phase_incr);
   }
   break;
   case AGS_FLUID_7TH_ORDER_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_7th_order_util_set_format(generic_pitch_util->fluid_interpolate_7th_order_util,
 						    AGS_SOUNDCARD_DOUBLE);
+
+    ags_fluid_interpolate_7th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_7th_order_util,
+							     phase_incr);
   }
   break;
   }
@@ -3007,36 +3483,104 @@ ags_sf2_synth_util_compute_complex(AgsSF2SynthUtil *sf2_synth_util)
   {
     ags_fast_pitch_util_set_format(sf2_synth_util->generic_pitch_util->fast_pitch_util,
 				   AGS_SOUNDCARD_COMPLEX);
+
+    ags_fast_pitch_util_set_base_key(generic_pitch_util->fast_pitch_util,
+				     base_key);
+    
+    ags_fast_pitch_util_set_tuning(generic_pitch_util->fast_pitch_util,
+				   tuning);
   }
   break;
   case AGS_HQ_PITCH:
   {
     ags_hq_pitch_util_set_format(generic_pitch_util->hq_pitch_util,
 				 AGS_SOUNDCARD_COMPLEX);
+
+    ags_hq_pitch_util_set_base_key(generic_pitch_util->hq_pitch_util,
+				   base_key);
+    
+    ags_hq_pitch_util_set_tuning(generic_pitch_util->hq_pitch_util,
+				 tuning);
   }
   break;
   case AGS_FLUID_NO_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_none_util_set_format(generic_pitch_util->fluid_interpolate_none_util,
 					       AGS_SOUNDCARD_COMPLEX);
+
+    ags_fluid_interpolate_none_util_set_phase_increment(generic_pitch_util->fluid_interpolate_none_util,
+							phase_incr);
   }
   break;
   case AGS_FLUID_LINEAR_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_linear_util_set_format(generic_pitch_util->fluid_interpolate_linear_util,
 						 AGS_SOUNDCARD_COMPLEX);
+
+    ags_fluid_interpolate_linear_util_set_phase_increment(generic_pitch_util->fluid_interpolate_linear_util,
+							  phase_incr);
   }
   break;
   case AGS_FLUID_4TH_ORDER_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_4th_order_util_set_format(generic_pitch_util->fluid_interpolate_4th_order_util,
 						    AGS_SOUNDCARD_COMPLEX);
+
+    ags_fluid_interpolate_4th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_4th_order_util,
+							     phase_incr);
   }
   break;
   case AGS_FLUID_7TH_ORDER_INTERPOLATE:
   {
+    gdouble root_pitch_hz;
+    gdouble phase_incr;
+
+    root_pitch_hz = ags_fluid_ct2hz(100.0 * base_key);
+  
+    phase_incr = ags_fluid_ct2hz(tuning) / root_pitch_hz;
+
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
     ags_fluid_interpolate_7th_order_util_set_format(generic_pitch_util->fluid_interpolate_7th_order_util,
 						    AGS_SOUNDCARD_COMPLEX);
+
+    ags_fluid_interpolate_7th_order_util_set_phase_increment(generic_pitch_util->fluid_interpolate_7th_order_util,
+							     phase_incr);
   }
   break;
   }
