@@ -77,7 +77,12 @@ ags_generic_pitch_util_alloc()
 
   ptr->pitch_type = AGS_FLUID_4TH_ORDER_INTERPOLATE;
 
-  //TODO:JK: implement me
+  ptr->fast_pitch_util = ags_fast_pitch_util_alloc();
+  ptr->hq_pitch_util = ags_hq_pitch_util_alloc();
+  ptr->fluid_interpolate_none_util = ags_fluid_interpolate_none_util_alloc();
+  ptr->fluid_interpolate_linear_util = ags_fluid_interpolate_linear_util_alloc();
+  ptr->fluid_interpolate_4th_order_util = ags_fluid_interpolate_4th_order_util_alloc();
+  ptr->fluid_interpolate_7th_order_util = ags_fluid_interpolate_7th_order_util_alloc();
   
   return(ptr);
 }
@@ -100,7 +105,14 @@ ags_generic_pitch_util_copy(AgsGenericPitchUtil *ptr)
   new_ptr = (AgsGenericPitchUtil *) g_new(AgsGenericPitchUtil,
 					  1);
 
-  //TODO:JK: implement me
+  new_ptr->pitch_type = ptr->pitch_type;
+
+  new_ptr->fast_pitch_util = ags_fast_pitch_util_copy(ptr->fast_pitch_util);
+  new_ptr->hq_pitch_util = ags_hq_pitch_util_copy(ptr->hq_pitch_util);
+  new_ptr->fluid_interpolate_none_util = ags_fluid_interpolate_none_util_copy(ptr->fluid_interpolate_none_util);
+  new_ptr->fluid_interpolate_linear_util = ags_fluid_interpolate_linear_util_copy(ptr->fluid_interpolate_linear_util);
+  new_ptr->fluid_interpolate_4th_order_util = ags_fluid_interpolate_4th_order_util_copy(ptr->fluid_interpolate_4th_order_util);
+  new_ptr->fluid_interpolate_7th_order_util = ags_fluid_interpolate_7th_order_util_copy(ptr->fluid_interpolate_7th_order_util);
       
   return(new_ptr);
 }
@@ -116,11 +128,26 @@ ags_generic_pitch_util_copy(AgsGenericPitchUtil *ptr)
 void
 ags_generic_pitch_util_free(AgsGenericPitchUtil *ptr)
 {  
-  //TODO:JK: implement me
+  ags_fast_pitch_util_free(ptr->fast_pitch_util);
+  ags_hq_pitch_util_free(ptr->hq_pitch_util);
+  ags_fluid_interpolate_none_util_free(ptr->fluid_interpolate_none_util);
+  ags_fluid_interpolate_linear_util_free(ptr->fluid_interpolate_linear_util);
+  ags_fluid_interpolate_4th_order_util_free(ptr->fluid_interpolate_4th_order_util);
+  ags_fluid_interpolate_7th_order_util_free(ptr->fluid_interpolate_7th_order_util);
   
   g_free(ptr);
 }
 
+/**
+ * ags_generic_pitch_util_get_pitch_type:
+ * @generic_pitch_util: the #AgsGenericPitchUtil-struct
+ * 
+ * Get pitch type of @generic_pitch_util.
+ * 
+ * Returns: the pitch type
+ * 
+ * Since: 3.9.6
+ */
 guint
 ags_generic_pitch_util_get_pitch_type(AgsGenericPitchUtil *generic_pitch_util)
 {
@@ -131,6 +158,15 @@ ags_generic_pitch_util_get_pitch_type(AgsGenericPitchUtil *generic_pitch_util)
   return(generic_pitch_util->pitch_type);
 }
 
+/**
+ * ags_generic_pitch_util_set_pitch_type:
+ * @generic_pitch_util: the #AgsGenericPitchUtil-struct
+ * @pitch_type: the pitch type
+ * 
+ * Set @pitch_type of @generic_pitch_util.
+ * 
+ * Since: 3.9.6
+ */
 void
 ags_generic_pitch_util_set_pitch_type(AgsGenericPitchUtil *generic_pitch_util,
 				      guint pitch_type)
@@ -142,58 +178,55 @@ ags_generic_pitch_util_set_pitch_type(AgsGenericPitchUtil *generic_pitch_util,
   generic_pitch_util->pitch_type = pitch_type;
 }
 
-void
-ags_generic_pitch_util_pitch_s8(AgsGenericPitchUtil *generic_pitch_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_generic_pitch_util_pitch_s16(AgsGenericPitchUtil *generic_pitch_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_generic_pitch_util_pitch_s24(AgsGenericPitchUtil *generic_pitch_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_generic_pitch_util_pitch_s32(AgsGenericPitchUtil *generic_pitch_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_generic_pitch_util_pitch_s64(AgsGenericPitchUtil *generic_pitch_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_generic_pitch_util_pitch_float(AgsGenericPitchUtil *generic_pitch_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_generic_pitch_util_pitch_double(AgsGenericPitchUtil *generic_pitch_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_generic_pitch_util_pitch_complex(AgsGenericPitchUtil *generic_pitch_util)
-{
-  //TODO:JK: implement me
-}
-
+/**
+ * ags_generic_pitch_util_pitch:
+ * @generic_pitch_util: the #AgsGenericPitchUtil-struct
+ * 
+ * Pitch @generic_pitch_util.
+ * 
+ * Since: 3.9.6
+ */
 void
 ags_generic_pitch_util_pitch(AgsGenericPitchUtil *generic_pitch_util)
 {
-  //TODO:JK: implement me
+  if(generic_pitch_util == NULL){
+    return;
+  }
+  
+  switch(generic_pitch_util->pitch_type){
+  case AGS_FAST_PITCH:
+  {
+    ags_fast_pitch_util_pitch(generic_pitch_util->fast_pitch_util);
+  }
+  break;
+  case AGS_HQ_PITCH:
+  {
+    ags_hq_pitch_util_pitch(generic_pitch_util->hq_pitch_util);
+  }
+  break;
+  case AGS_FLUID_NO_INTERPOLATE:
+  {
+    ags_fluid_interpolate_none_util_pitch(generic_pitch_util->fluid_interpolate_none_util);
+  }
+  break;
+  case AGS_FLUID_LINEAR_INTERPOLATE:
+  {
+    ags_fluid_interpolate_linear_util_pitch(generic_pitch_util->fluid_interpolate_linear_util);
+  }
+  break;
+  case AGS_FLUID_4TH_ORDER_INTERPOLATE:
+  {
+    ags_fluid_interpolate_4th_order_util_pitch(generic_pitch_util->fluid_interpolate_4th_order_util);
+  }
+  break;
+  case AGS_FLUID_7TH_ORDER_INTERPOLATE:
+  {
+    ags_fluid_interpolate_7th_order_util_pitch(generic_pitch_util->fluid_interpolate_7th_order_util);
+  }
+  break;
+  default:
+    g_warning("unknown pitch type");
+  }
 }
 
 /**

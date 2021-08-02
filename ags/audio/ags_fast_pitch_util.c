@@ -421,7 +421,7 @@ ags_fast_pitch_util_set_samplerate(AgsFastPitchUtil *fast_pitch_util,
 }
 
 /**
- * ags_fast_pitch_util_get_fast_pitch:
+ * ags_fast_pitch_util_get_base_key:
  * @fast_pitch_util: the #AgsFastPitchUtil-struct
  * 
  * Get base key of @fast_pitch_util.
@@ -461,7 +461,7 @@ ags_fast_pitch_util_set_base_key(AgsFastPitchUtil *fast_pitch_util,
 }
 
 /**
- * ags_fast_pitch_util_get_fast_pitch:
+ * ags_fast_pitch_util_get_tuning:
  * @fast_pitch_util: the #AgsFastPitchUtil-struct
  * 
  * Get tuning of @fast_pitch_util.

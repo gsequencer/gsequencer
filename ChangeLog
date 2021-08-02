@@ -3,6 +3,9 @@ ags (3.9.6)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved configure.ac and Makefile.am to handle absent gnulib
 	* fixed missing files in meson.build
+	* refactored ags_generic_pitch_util.h
+	* refactored ags_fluid_interpolate_none_util.h
+	* refactored ags_sf2_synth_util.h
 
 ags (3.9.5)
 

@@ -800,7 +800,7 @@ ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util)
 }
 
 /**
- * ags_sfz_synth_util_compute_s8:
+ * ags_sfz_synth_util_compute_complex:
  * @sfz_synth_util: the #AgsSFZSynthUtil-struct
  * 
  * Compute Soundfont2 synth of complex data.

@@ -420,7 +420,7 @@ ags_hq_pitch_util_set_samplerate(AgsHQPitchUtil *hq_pitch_util,
 }
 
 /**
- * ags_hq_pitch_util_get_hq_pitch:
+ * ags_hq_pitch_util_get_base_key:
  * @hq_pitch_util: the #AgsHQPitchUtil-struct
  * 
  * Get base key of @hq_pitch_util.
@@ -460,7 +460,7 @@ ags_hq_pitch_util_set_base_key(AgsHQPitchUtil *hq_pitch_util,
 }
 
 /**
- * ags_hq_pitch_util_get_hq_pitch:
+ * ags_hq_pitch_util_get_tuning:
  * @hq_pitch_util: the #AgsHQPitchUtil-struct
  * 
  * Get tuning of @hq_pitch_util.

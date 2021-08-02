@@ -95,14 +95,6 @@ guint ags_generic_pitch_util_get_pitch_type(AgsGenericPitchUtil *generic_pitch_u
 void ags_generic_pitch_util_set_pitch_type(AgsGenericPitchUtil *generic_pitch_util,
 					   guint pitch_type);
 
-void ags_generic_pitch_util_pitch_s8(AgsGenericPitchUtil *generic_pitch_util);
-void ags_generic_pitch_util_pitch_s16(AgsGenericPitchUtil *generic_pitch_util);
-void ags_generic_pitch_util_pitch_s24(AgsGenericPitchUtil *generic_pitch_util);
-void ags_generic_pitch_util_pitch_s32(AgsGenericPitchUtil *generic_pitch_util);
-void ags_generic_pitch_util_pitch_s64(AgsGenericPitchUtil *generic_pitch_util);
-void ags_generic_pitch_util_pitch_float(AgsGenericPitchUtil *generic_pitch_util);
-void ags_generic_pitch_util_pitch_double(AgsGenericPitchUtil *generic_pitch_util);
-void ags_generic_pitch_util_pitch_complex(AgsGenericPitchUtil *generic_pitch_util);
 void ags_generic_pitch_util_pitch(AgsGenericPitchUtil *generic_pitch_util);
 
 void ags_generic_pitch_util_compute_s8(AgsGenericPitch *generic_pitch,
