@@ -75,6 +75,9 @@ ags_hq_pitch_util_alloc()
   ptr->destination = NULL;
   ptr->destination_stride = 1;
 
+  ptr->low_mix_buffer = NULL;
+  ptr->new_mix_buffer = NULL;
+  
   ptr->buffer_length = 0;
   ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
@@ -109,6 +112,17 @@ ags_hq_pitch_util_copy(AgsHQPitchUtil *ptr)
   new_ptr->source = ptr->source;
   new_ptr->source_stride = ptr->source_stride;
 
+  new_ptr->low_mix_buffer = NULL;
+  new_ptr->new_mix_buffer = NULL;
+
+  if(ptr->buffer_length > 0){
+    new_ptr->low_mix_buffer = ags_stream_alloc(ptr->buffer_length,
+					       ptr->format);
+    
+    new_ptr->new_mix_buffer = ags_stream_alloc(ptr->buffer_length,
+					       ptr->format);
+  }
+  
   new_ptr->buffer_length = ptr->buffer_length;
   new_ptr->format = ptr->format;
   new_ptr->samplerate = ptr->samplerate;
