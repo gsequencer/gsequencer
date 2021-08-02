@@ -5,8 +5,13 @@ ags (3.9.6)
 	* fixed missing files in meson.build
 	* refactored ags_generic_pitch_util.h
 	* refactored ags_fluid_interpolate_none_util.h
+	* refactored ags_fluid_interpolate_linear_util.h
 	* refactored ags_sf2_synth_util.h
 	* refactored ags_sfz_synth_util.h
+	* deprecated functions in ags_fluid_interpolate_none_util.h
+	* deprecated functions in ags_fluid_interpolate_linear_util.h
+	* deprecated functions in ags_sf2_synth_util.h
+	* deprecated functions in ags_sfz_synth_util.h
 
 ags (3.9.5)
 

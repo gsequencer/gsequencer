@@ -520,7 +520,60 @@ ags_fluid_interpolate_linear_util_set_phase_increment(AgsFluidInterpolateLinearU
 void
 ags_fluid_interpolate_linear_util_pitch_s8(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
 {
-  //TODO:JK: implement me
+  gint8 *destination, *source;
+  
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint end_index;
+  gdouble coeffs_0, coeffs_1;
+
+  if(fluid_interpolate_linear_util == NULL ||
+     fluid_interpolate_linear_util->destination == NULL ||
+     fluid_interpolate_linear_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_interpolate_linear_util->destination;
+  source = fluid_interpolate_linear_util->source;
+  
+  dsp_phase = 0;
+  
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, fluid_interpolate_linear_util->phase_increment);
+
+  end_index = fluid_interpolate_linear_util->buffer_length - 1;
+
+  dsp_i = 0;
+
+  /* round to nearest point */
+  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+  /* interpolate the sequence of sample points */
+  ags_fluid_interpolate_linear_util_config();
+  
+  for(; dsp_i < fluid_interpolate_linear_util->buffer_length && dsp_phase_index <= end_index; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_linear_mutex);
+    
+    coeffs_0 = interp_coeff_linear[row][0];
+    coeffs_1 = interp_coeff_linear[row][1];
+    
+    g_mutex_unlock(&interp_coeff_linear_mutex);
+
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
+			  + coeffs_1 * source[dsp_phase_index + 1]);
+    
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    
+    /* nearest point */
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
 }
 
 /**
@@ -534,7 +587,60 @@ ags_fluid_interpolate_linear_util_pitch_s8(AgsFluidInterpolateLinearUtil *fluid_
 void
 ags_fluid_interpolate_linear_util_pitch_s16(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
 {
-  //TODO:JK: implement me
+  gint8 *destination, *source;
+  
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint end_index;
+  gdouble coeffs_0, coeffs_1;
+
+  if(fluid_interpolate_linear_util == NULL ||
+     fluid_interpolate_linear_util->destination == NULL ||
+     fluid_interpolate_linear_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_interpolate_linear_util->destination;
+  source = fluid_interpolate_linear_util->source;
+  
+  dsp_phase = 0;
+  
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, fluid_interpolate_linear_util->phase_increment);
+
+  end_index = fluid_interpolate_linear_util->buffer_length - 1;
+
+  dsp_i = 0;
+
+  /* round to nearest point */
+  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+  /* interpolate the sequence of sample points */
+  ags_fluid_interpolate_linear_util_config();
+  
+  for(; dsp_i < fluid_interpolate_linear_util->buffer_length && dsp_phase_index <= end_index; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_linear_mutex);
+    
+    coeffs_0 = interp_coeff_linear[row][0];
+    coeffs_1 = interp_coeff_linear[row][1];
+    
+    g_mutex_unlock(&interp_coeff_linear_mutex);
+
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
+			  + coeffs_1 * source[dsp_phase_index + 1]);
+    
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    
+    /* nearest point */
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
 }
 
 /**
@@ -548,7 +654,60 @@ ags_fluid_interpolate_linear_util_pitch_s16(AgsFluidInterpolateLinearUtil *fluid
 void
 ags_fluid_interpolate_linear_util_pitch_s24(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
 {
-  //TODO:JK: implement me
+  gint8 *destination, *source;
+  
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint end_index;
+  gdouble coeffs_0, coeffs_1;
+
+  if(fluid_interpolate_linear_util == NULL ||
+     fluid_interpolate_linear_util->destination == NULL ||
+     fluid_interpolate_linear_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_interpolate_linear_util->destination;
+  source = fluid_interpolate_linear_util->source;
+  
+  dsp_phase = 0;
+  
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, fluid_interpolate_linear_util->phase_increment);
+
+  end_index = fluid_interpolate_linear_util->buffer_length - 1;
+
+  dsp_i = 0;
+
+  /* round to nearest point */
+  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+  /* interpolate the sequence of sample points */
+  ags_fluid_interpolate_linear_util_config();
+  
+  for(; dsp_i < fluid_interpolate_linear_util->buffer_length && dsp_phase_index <= end_index; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_linear_mutex);
+    
+    coeffs_0 = interp_coeff_linear[row][0];
+    coeffs_1 = interp_coeff_linear[row][1];
+    
+    g_mutex_unlock(&interp_coeff_linear_mutex);
+
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
+			  + coeffs_1 * source[dsp_phase_index + 1]);
+    
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    
+    /* nearest point */
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
 }
 
 /**
@@ -562,7 +721,60 @@ ags_fluid_interpolate_linear_util_pitch_s24(AgsFluidInterpolateLinearUtil *fluid
 void
 ags_fluid_interpolate_linear_util_pitch_s32(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
 {
-  //TODO:JK: implement me
+  gint8 *destination, *source;
+  
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint end_index;
+  gdouble coeffs_0, coeffs_1;
+
+  if(fluid_interpolate_linear_util == NULL ||
+     fluid_interpolate_linear_util->destination == NULL ||
+     fluid_interpolate_linear_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_interpolate_linear_util->destination;
+  source = fluid_interpolate_linear_util->source;
+  
+  dsp_phase = 0;
+  
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, fluid_interpolate_linear_util->phase_increment);
+
+  end_index = fluid_interpolate_linear_util->buffer_length - 1;
+
+  dsp_i = 0;
+
+  /* round to nearest point */
+  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+  /* interpolate the sequence of sample points */
+  ags_fluid_interpolate_linear_util_config();
+  
+  for(; dsp_i < fluid_interpolate_linear_util->buffer_length && dsp_phase_index <= end_index; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_linear_mutex);
+    
+    coeffs_0 = interp_coeff_linear[row][0];
+    coeffs_1 = interp_coeff_linear[row][1];
+    
+    g_mutex_unlock(&interp_coeff_linear_mutex);
+
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
+			  + coeffs_1 * source[dsp_phase_index + 1]);
+    
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    
+    /* nearest point */
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
 }
 
 /**
@@ -576,7 +788,60 @@ ags_fluid_interpolate_linear_util_pitch_s32(AgsFluidInterpolateLinearUtil *fluid
 void
 ags_fluid_interpolate_linear_util_pitch_s64(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
 {
-  //TODO:JK: implement me
+  gint8 *destination, *source;
+  
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint end_index;
+  gdouble coeffs_0, coeffs_1;
+
+  if(fluid_interpolate_linear_util == NULL ||
+     fluid_interpolate_linear_util->destination == NULL ||
+     fluid_interpolate_linear_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_interpolate_linear_util->destination;
+  source = fluid_interpolate_linear_util->source;
+  
+  dsp_phase = 0;
+  
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, fluid_interpolate_linear_util->phase_increment);
+
+  end_index = fluid_interpolate_linear_util->buffer_length - 1;
+
+  dsp_i = 0;
+
+  /* round to nearest point */
+  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+  /* interpolate the sequence of sample points */
+  ags_fluid_interpolate_linear_util_config();
+  
+  for(; dsp_i < fluid_interpolate_linear_util->buffer_length && dsp_phase_index <= end_index; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_linear_mutex);
+    
+    coeffs_0 = interp_coeff_linear[row][0];
+    coeffs_1 = interp_coeff_linear[row][1];
+    
+    g_mutex_unlock(&interp_coeff_linear_mutex);
+
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
+			  + coeffs_1 * source[dsp_phase_index + 1]);
+    
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    
+    /* nearest point */
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
 }
 
 /**
@@ -590,7 +855,60 @@ ags_fluid_interpolate_linear_util_pitch_s64(AgsFluidInterpolateLinearUtil *fluid
 void
 ags_fluid_interpolate_linear_util_pitch_float(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
 {
-  //TODO:JK: implement me
+  gint8 *destination, *source;
+  
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint end_index;
+  gdouble coeffs_0, coeffs_1;
+
+  if(fluid_interpolate_linear_util == NULL ||
+     fluid_interpolate_linear_util->destination == NULL ||
+     fluid_interpolate_linear_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_interpolate_linear_util->destination;
+  source = fluid_interpolate_linear_util->source;
+  
+  dsp_phase = 0;
+  
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, fluid_interpolate_linear_util->phase_increment);
+
+  end_index = fluid_interpolate_linear_util->buffer_length - 1;
+
+  dsp_i = 0;
+
+  /* round to nearest point */
+  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+  /* interpolate the sequence of sample points */
+  ags_fluid_interpolate_linear_util_config();
+  
+  for(; dsp_i < fluid_interpolate_linear_util->buffer_length && dsp_phase_index <= end_index; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_linear_mutex);
+    
+    coeffs_0 = interp_coeff_linear[row][0];
+    coeffs_1 = interp_coeff_linear[row][1];
+    
+    g_mutex_unlock(&interp_coeff_linear_mutex);
+
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
+			  + coeffs_1 * source[dsp_phase_index + 1]);
+    
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    
+    /* nearest point */
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
 }
 
 /**
@@ -604,7 +922,60 @@ ags_fluid_interpolate_linear_util_pitch_float(AgsFluidInterpolateLinearUtil *flu
 void
 ags_fluid_interpolate_linear_util_pitch_double(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
 {
-  //TODO:JK: implement me
+  gint8 *destination, *source;
+  
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint end_index;
+  gdouble coeffs_0, coeffs_1;
+
+  if(fluid_interpolate_linear_util == NULL ||
+     fluid_interpolate_linear_util->destination == NULL ||
+     fluid_interpolate_linear_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_interpolate_linear_util->destination;
+  source = fluid_interpolate_linear_util->source;
+  
+  dsp_phase = 0;
+  
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, fluid_interpolate_linear_util->phase_increment);
+
+  end_index = fluid_interpolate_linear_util->buffer_length - 1;
+
+  dsp_i = 0;
+
+  /* round to nearest point */
+  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+  /* interpolate the sequence of sample points */
+  ags_fluid_interpolate_linear_util_config();
+  
+  for(; dsp_i < fluid_interpolate_linear_util->buffer_length && dsp_phase_index <= end_index; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_linear_mutex);
+    
+    coeffs_0 = interp_coeff_linear[row][0];
+    coeffs_1 = interp_coeff_linear[row][1];
+    
+    g_mutex_unlock(&interp_coeff_linear_mutex);
+
+    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
+			  + coeffs_1 * source[dsp_phase_index + 1]);
+    
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    
+    /* nearest point */
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
 }
 
 /**
@@ -618,7 +989,60 @@ ags_fluid_interpolate_linear_util_pitch_double(AgsFluidInterpolateLinearUtil *fl
 void
 ags_fluid_interpolate_linear_util_pitch_complex(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
 {
-  //TODO:JK: implement me
+  gint8 *destination, *source;
+  
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint end_index;
+  gdouble coeffs_0, coeffs_1;
+
+  if(fluid_interpolate_linear_util == NULL ||
+     fluid_interpolate_linear_util->destination == NULL ||
+     fluid_interpolate_linear_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_interpolate_linear_util->destination;
+  source = fluid_interpolate_linear_util->source;
+  
+  dsp_phase = 0;
+  
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, fluid_interpolate_linear_util->phase_increment);
+
+  end_index = fluid_interpolate_linear_util->buffer_length - 1;
+
+  dsp_i = 0;
+
+  /* round to nearest point */
+  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+  /* interpolate the sequence of sample points */
+  ags_fluid_interpolate_linear_util_config();
+  
+  for(; dsp_i < fluid_interpolate_linear_util->buffer_length && dsp_phase_index <= end_index; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_linear_mutex);
+    
+    coeffs_0 = interp_coeff_linear[row][0];
+    coeffs_1 = interp_coeff_linear[row][1];
+    
+    g_mutex_unlock(&interp_coeff_linear_mutex);
+
+    ags_complex_set(destination + dsp_i,
+		    (coeffs_0 * ags_complex_get(source + dsp_phase_index) + coeffs_1 * ags_complex_get(source + dsp_phase_index + 1)));
+    
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    
+    /* nearest point */
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
 }
 
 /**
@@ -632,7 +1056,56 @@ ags_fluid_interpolate_linear_util_pitch_complex(AgsFluidInterpolateLinearUtil *f
 void
 ags_fluid_interpolate_linear_util_pitch(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util)
 {
-  //TODO:JK: implement me
+  if(fluid_interpolate_linear_util == NULL ||
+     fluid_interpolate_linear_util->destination == NULL ||
+     fluid_interpolate_linear_util->source == NULL){
+    return;
+  }
+
+  switch(fluid_interpolate_linear_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+  {
+    ags_fluid_interpolate_linear_util_pitch_s8(fluid_interpolate_linear_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+  {
+    ags_fluid_interpolate_linear_util_pitch_s16(fluid_interpolate_linear_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+  {
+    ags_fluid_interpolate_linear_util_pitch_s24(fluid_interpolate_linear_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+  {
+    ags_fluid_interpolate_linear_util_pitch_s32(fluid_interpolate_linear_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+  {
+    ags_fluid_interpolate_linear_util_pitch_s64(fluid_interpolate_linear_util);
+  }
+  break;
+  case AGS_SOUNDCARD_FLOAT:
+  {
+    ags_fluid_interpolate_linear_util_pitch_float(fluid_interpolate_linear_util);
+  }
+  break;
+  case AGS_SOUNDCARD_DOUBLE:
+  {
+    ags_fluid_interpolate_linear_util_pitch_double(fluid_interpolate_linear_util);
+  }
+  break;
+  case AGS_SOUNDCARD_COMPLEX:
+  {
+    ags_fluid_interpolate_linear_util_pitch_complex(fluid_interpolate_linear_util);
+  }
+  break;
+  default:
+    g_warning("unknown format");
+  }
 }
 
 /**
