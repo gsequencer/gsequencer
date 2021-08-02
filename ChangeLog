@@ -1,3 +1,12 @@
+ags (3.9.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: refactored ags_linear_interpolate_util.c
+	* TODO:JK: refactored ags_hq_pitch_util.c
+	* TODO:JK: refactored ags_fluid_interpolate_4th_order_util.c
+	* TODO:JK: refactored ags_fluid_interpolate_7th_order_util.c
+	* TODO:JK: refactored ags_fluid_iir_filter_util.c
+
 ags (3.9.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

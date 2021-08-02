@@ -44,8 +44,10 @@ struct _AgsLinearInterpolateUtil
   guint destination_stride;
 
   guint buffer_length;
-  guint audio_buffer_util_format;
+  guint format;
   guint samplerate;
+
+  guint audio_buffer_util_format;
 
   gdouble factor;
 };
@@ -77,13 +79,17 @@ guint ags_linear_interpolate_util_get_buffer_length(AgsLinearInterpolateUtil *li
 void ags_linear_interpolate_util_set_buffer_length(AgsLinearInterpolateUtil *linear_interpolate_util,
 						   guint buffer_length);
 
-guint ags_linear_interpolate_util_get_audio_buffer_util_format(AgsLinearInterpolateUtil *linear_interpolate_util);
-void ags_linear_interpolate_util_set_audio_buffer_util_format(AgsLinearInterpolateUtil *linear_interpolate_util,
-							      guint audio_buffer_util_format);
+guint ags_linear_interpolate_util_get_format(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_set_format(AgsLinearInterpolateUtil *linear_interpolate_util,
+					    guint format);
 
 guint ags_linear_interpolate_util_get_samplerate(AgsLinearInterpolateUtil *linear_interpolate_util);
 void ags_linear_interpolate_util_set_samplerate(AgsLinearInterpolateUtil *linear_interpolate_util,
 						guint samplerate);
+
+guint ags_linear_interpolate_util_get_audio_buffer_util_format(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_set_audio_buffer_util_format(AgsLinearInterpolateUtil *linear_interpolate_util,
+							      guint audio_buffer_util_format);
 
 gdouble ags_linear_interpolate_util_get_factor(AgsLinearInterpolateUtil *linear_interpolate_util);
 void ags_linear_interpolate_util_set_factor(AgsLinearInterpolateUtil *linear_interpolate_util,

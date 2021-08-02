@@ -160,6 +160,11 @@ ags_fast_pitch_util_free(AgsFastPitchUtil *ptr)
   if(ptr->destination != ptr->source){
     g_free(ptr->source);
   }
+
+  g_free(ptr->mix_buffer);
+  g_free(ptr->im_mix_buffer);
+  g_free(ptr->low_mix_buffer);
+  g_free(ptr->new_mix_buffer);
   
   g_free(ptr);
 }

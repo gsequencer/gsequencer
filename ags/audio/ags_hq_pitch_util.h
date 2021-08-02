@@ -81,14 +81,6 @@ guint ags_hq_pitch_util_get_destination_stride(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_set_destination_stride(AgsHQPitchUtil *hq_pitch_util,
 					      guint destination_stride);
 
-gpointer ags_hq_pitch_util_get_low_mix_buffer(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_set_low_mix_buffer(AgsHQPitchUtil *hq_pitch_util,
-					  gpointer low_mix_buffer);
-
-gpointer ags_hq_pitch_util_get_new_mix_buffer(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_set_new_mix_buffer(AgsHQPitchUtil *hq_pitch_util,
-					  gpointer new_mix_buffer);
-
 guint ags_hq_pitch_util_get_buffer_length(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_set_buffer_length(AgsHQPitchUtil *hq_pitch_util,
 					 guint buffer_length);
