@@ -561,6 +561,7 @@ ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util)
   gint8 *ptr_mix_buffer, *ptr_low_mix_buffer, *ptr_new_mix_buffer;
   gint8 *mix_buffer, *new_mix_buffer, *low_mix_buffer;
 
+  guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
   gdouble volume;
@@ -579,7 +580,10 @@ ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util)
   linear_interpolate_util = hq_pitch_util->linear_interpolate_util;
   
   destination = hq_pitch_util->destination;
+  destination_stride = hq_pitch_util->destination_stride;
+
   source = hq_pitch_util->source;
+  source_stride = hq_pitch_util->source_stride;
 
   buffer_length = hq_pitch_util->buffer_length;
   samplerate = hq_pitch_util->samplerate;
@@ -652,7 +656,80 @@ ags_hq_pitch_util_pitch_s8(AgsHQPitchUtil *hq_pitch_util)
   
   ags_linear_interpolate_util_pitch(linear_interpolate_util);
 
-  //TODO:JK: implement me
+  /* new mix buffer */
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
+    gint8 new_z;
+    gdouble phase, low_phase, new_phase;    
+    guint start_x, low_start_x;
+
+    if(j >= new_freq_period){
+      j = 0;
+    }
+
+    if(floor(freq_period) != 0.0){
+      start_x = freq_period * floor((double) i / freq_period);
+    }else{
+      start_x = 0;
+    }
+
+    if(floor(low_freq_period) != 0.0){
+      low_start_x = low_freq_period * floor((double) i / low_freq_period);
+    }else{
+      low_start_x = 0;
+    }
+
+    phase = fmod(i, freq_period);
+
+    low_phase = fmod(i, low_freq_period);
+
+    new_phase = fmod(i, new_freq_period);
+
+    if(start_x + (guint) floor(new_phase) < buffer_length){
+      ptr_mix_buffer = mix_buffer + ((start_x + (guint) floor(new_phase)) * source_stride);
+    }else{
+      if((start_x + (guint) floor(new_phase)) - (guint) floor(freq_period) < buffer_length &&
+	 (start_x + (guint) floor(new_phase)) - (guint) floor(freq_period) > 0){
+	ptr_mix_buffer = mix_buffer + (((start_x + (guint) floor(new_phase)) - (guint) floor(freq_period)) * source_stride);
+      }else{
+	if(floor(new_phase) < buffer_length){
+	  ptr_mix_buffer = mix_buffer + ((guint) floor(new_phase) * source_stride);
+	}else{
+	  ptr_mix_buffer = mix_buffer + ((buffer_length - 1) * source_stride);
+	}
+      }
+    }
+
+    if(low_start_x + (guint) floor(new_phase) < low_mix_buffer_length){
+      ptr_low_mix_buffer = low_mix_buffer + (low_start_x + (guint) floor(new_phase));
+    }else{
+      if((low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period) < low_mix_buffer_length &&
+	 (low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period) > 0){
+	ptr_low_mix_buffer = low_mix_buffer + (low_start_x + (guint) floor(new_phase)) - (guint) floor(low_freq_period);
+      }else{
+	if(floor(new_phase) < low_mix_buffer_length){
+	  ptr_low_mix_buffer = low_mix_buffer + (guint) floor(new_phase);
+	}else{
+	  ptr_low_mix_buffer = low_mix_buffer + low_mix_buffer_length - 1;
+	}
+      }
+    }
+    
+    ptr_new_mix_buffer = new_mix_buffer + i;
+
+    /* write new mix buffer */
+    if(ptr_mix_buffer[0] != 0){
+      new_z = volume * ((new_freq_period * (ptr_mix_buffer[0] / freq_period) * (ptr_low_mix_buffer[0] / low_freq_period) / (ptr_mix_buffer[0] / freq_period)));
+    }else{
+      new_z = 0;
+    }
+    
+    ptr_new_mix_buffer[0] = new_z;
+  }
+  
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    destination[i * destination_stride] = new_mix_buffer[i];
+  }
 }
 
 /**
