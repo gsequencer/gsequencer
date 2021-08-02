@@ -31,42 +31,110 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_FLUID_INTERPOLATE_LINEAR_UTIL         (ags_fluid_interpolate_linear_util_get_type())
-
-struct _AgsFluidInterpolateLinearUtil
-{
-  //empty
-};
+#define AGS_FLUID_INTERPOLATE_LINEAR_UTIL(ptr) ((AgsFluidInterpolateLinearUtil *)(ptr))
 
 typedef struct _AgsFluidInterpolateLinearUtil AgsFluidInterpolateLinearUtil;
 
+struct _AgsFluidInterpolateLinearUtil
+{
+  gpointer source;
+  guint source_stride;
+
+  gpointer destination;
+  guint destination_stride;
+
+  guint buffer_length;
+  guint format;
+  guint samplerate;
+
+  gdouble phase_increment;
+};
+
+GType ags_fluid_interpolate_linear_util_get_type(void);
+
+AgsFluidInterpolateLinearUtil* ags_fluid_interpolate_linear_util_alloc();
+
+gpointer ags_fluid_interpolate_linear_util_copy(AgsFluidInterpolateLinearUtil *ptr);
+void ags_fluid_interpolate_linear_util_free(AgsFluidInterpolateLinearUtil *ptr);
+
+gpointer ags_fluid_interpolate_linear_util_get_source(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_source(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+						  gpointer source);
+
+guint ags_fluid_interpolate_linear_util_get_source_stride(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_source_stride(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+							 guint source_stride);
+
+gpointer ags_fluid_interpolate_linear_util_get_destination(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_destination(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+						       gpointer destination);
+
+guint ags_fluid_interpolate_linear_util_get_destination_stride(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_destination_stride(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+							      guint destination_stride);
+
+guint ags_fluid_interpolate_linear_util_get_buffer_length(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_buffer_length(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+							 guint buffer_length);
+
+guint ags_fluid_interpolate_linear_util_get_format(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_format(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+						  guint format);
+
+guint ags_fluid_interpolate_linear_util_get_samplerate(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_samplerate(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+						      guint samplerate);
+
+gdouble ags_fluid_interpolate_linear_util_get_phase_increment(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_set_phase_increment(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util,
+							   gdouble phase_increment);
+
+void ags_fluid_interpolate_linear_util_pitch_s8(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_pitch_s16(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_pitch_s24(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_pitch_s32(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_pitch_s64(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_pitch_float(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_pitch_double(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_pitch_complex(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+void ags_fluid_interpolate_linear_util_pitch(AgsFluidInterpolateLinearUtil *fluid_interpolate_linear_util);
+
+G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_pitch_s8)
 void ags_fluid_interpolate_linear_util_fill_s8(gint8 *destination,
 					       gint8 *source,
 					       guint buffer_length,
 					       gdouble phase_incr);
+G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_pitch_s16)
 void ags_fluid_interpolate_linear_util_fill_s16(gint16 *destination,
 						gint16 *source,
 						guint buffer_length,
 						gdouble phase_incr);
+G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_pitch_s24)
 void ags_fluid_interpolate_linear_util_fill_s24(gint32 *destination,
 						gint32 *source,
 						guint buffer_length,
 						gdouble phase_incr);
+G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_pitch_s32)
 void ags_fluid_interpolate_linear_util_fill_s32(gint32 *destination,
 						gint32 *source,
 						guint buffer_length,
 						gdouble phase_incr);
+G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_pitch_s64)
 void ags_fluid_interpolate_linear_util_fill_s64(gint64 *destination,
 						gint64 *source,
 						guint buffer_length,
 						gdouble phase_incr);
+G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_pitch_float)
 void ags_fluid_interpolate_linear_util_fill_float(gfloat *destination,
 						  gfloat *source,
 						  guint buffer_length,
 						  gdouble phase_incr);
+G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_pitch_double)
 void ags_fluid_interpolate_linear_util_fill_double(gdouble *destination,
 						   gdouble *source,
 						   guint buffer_length,
 						   gdouble phase_incr);
+G_DEPRECATED_FOR(ags_fluid_interpolate_linear_util_pitch_complex)
 void ags_fluid_interpolate_linear_util_fill_complex(AgsComplex *destination,
 						    AgsComplex *source,
 						    guint buffer_length,

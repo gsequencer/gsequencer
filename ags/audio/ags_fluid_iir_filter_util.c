@@ -42,9 +42,6 @@
 
 #include <math.h>
 
-gpointer ags_fluid_iir_filter_util_strct_copy(gpointer ptr);
-void ags_fluid_iir_filter_util_strct_free(gpointer ptr);
-
 void ags_fluid_iir_filter_util_calculate_coefficients(AgsFluidIIRFilter *iir_filter,
 						      gdouble output_rate,
 						      gint transition_samples);
@@ -70,29 +67,13 @@ ags_fluid_iir_filter_util_get_type(void)
 
     ags_type_fluid_iir_filter_util =
       g_boxed_type_register_static("AgsFluidIIRFilterUtil",
-				   (GBoxedCopyFunc) ags_fluid_iir_filter_util_strct_copy,
-				   (GBoxedFreeFunc) ags_fluid_iir_filter_util_strct_free);
+				   (GBoxedCopyFunc) ags_fluid_iir_filter_util_copy,
+				   (GBoxedFreeFunc) ags_fluid_iir_filter_util_free);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_fluid_iir_filter_util);
   }
 
   return g_define_type_id__volatile;
-}
-
-gpointer
-ags_fluid_iir_filter_util_strct_copy(gpointer ptr)
-{
-  gpointer retval;
-
-  retval = g_memdup(ptr, sizeof(AgsFluidIIRFilterUtil));
- 
-  return(retval);
-}
-
-void
-ags_fluid_iir_filter_util_strct_free(gpointer ptr)
-{
-  g_free(ptr);
 }
 
 void
@@ -253,6 +234,371 @@ ags_fluid_iir_filter_util_calc(AgsFluidIIRFilter *iir_filter,
 						     output_rate,
 						     transition_samples);
   }
+}
+
+/**
+ * ags_fluid_iir_filter_util_alloc:
+ * 
+ * Allocate #AgsFluidIIRFilterUtil-struct.
+ * 
+ * Returns: the newly allocated #AgsFluidIIRFilterUtil-struct
+ * 
+ * Since: 3.9.6
+ */
+AgsFluidIIRFilterUtil*
+ags_fluid_iir_filter_util_alloc()
+{
+  AgsFluidIIRFilterUtil *ptr;
+  
+  ptr = (AgsFluidIIRFilterUtil *) g_new(AgsFluidIIRFilterUtil,
+					1);
+
+  ptr->source = NULL;
+  ptr->source_stride = 1;
+
+  ptr->destination = NULL;
+  ptr->destination_stride = 1;
+
+  ptr->buffer_length = 0;
+  ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  //TODO:JK: implement me
+  
+  return(ptr);
+}
+
+/**
+ * ags_fluid_iir_filter_util_copy:
+ * @ptr: the original #AgsFluidIIRFilterUtil-struct
+ *
+ * Create a copy of @ptr.
+ *
+ * Returns: a pointer of the new #AgsFluidIIRFilterUtil-struct
+ *
+ * Since: 3.9.6
+ */
+gpointer
+ags_fluid_iir_filter_util_copy(AgsFluidIIRFilterUtil *ptr)
+{
+  AgsFluidIIRFilterUtil *new_ptr;
+  
+  new_ptr = (AgsFluidIIRFilterUtil *) g_new(AgsFluidIIRFilterUtil,
+					    1);
+  
+  new_ptr->destination = ptr->destination;
+  new_ptr->destination_stride = ptr->destination_stride;
+
+  new_ptr->source = ptr->source;
+  new_ptr->source_stride = ptr->source_stride;
+
+  new_ptr->buffer_length = ptr->buffer_length;
+  new_ptr->format = ptr->format;
+  new_ptr->samplerate = ptr->samplerate;
+
+  //TODO:JK: implement me
+  
+  return(new_ptr);
+}
+
+/**
+ * ags_fluid_iir_filter_util_free:
+ * @ptr: the #AgsFluidIIRFilterUtil-struct
+ *
+ * Free the memory of @ptr.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fluid_iir_filter_util_free(AgsFluidIIRFilterUtil *ptr)
+{
+  g_free(ptr->destination);
+
+  if(ptr->destination != ptr->source){
+    g_free(ptr->source);
+  }
+  
+  g_free(ptr);
+}
+
+/**
+ * ags_fluid_iir_filter_util_get_destination:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Get destination buffer of @fluid_iir_filter_util.
+ * 
+ * Returns: the destination buffer
+ * 
+ * Since: 3.9.6
+ */
+gpointer
+ags_fluid_iir_filter_util_get_destination(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  if(fluid_iir_filter_util == NULL){
+    return(NULL);
+  }
+
+  return(fluid_iir_filter_util->destination);
+}
+
+/**
+ * ags_fluid_iir_filter_util_set_destination:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * @destination: the destination buffer
+ *
+ * Set @destination buffer of @fluid_iir_filter_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fluid_iir_filter_util_set_destination(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+					  gpointer destination)
+{
+  if(fluid_iir_filter_util == NULL){
+    return;
+  }
+
+  fluid_iir_filter_util->destination = destination;
+}
+
+/**
+ * ags_fluid_iir_filter_util_get_destination_stride:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Get destination stride of @fluid_iir_filter_util.
+ * 
+ * Returns: the destination buffer stride
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_fluid_iir_filter_util_get_destination_stride(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  if(fluid_iir_filter_util == NULL){
+    return(0);
+  }
+
+  return(fluid_iir_filter_util->destination_stride);
+}
+
+/**
+ * ags_fluid_iir_filter_util_set_destination_stride:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * @destination_stride: the destination buffer stride
+ *
+ * Set @destination stride of @fluid_iir_filter_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fluid_iir_filter_util_set_destination_stride(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+						 guint destination_stride)
+{
+  if(fluid_iir_filter_util == NULL){
+    return;
+  }
+
+  fluid_iir_filter_util->destination_stride = destination_stride;
+}
+
+/**
+ * ags_fluid_iir_filter_util_get_source:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Get source buffer of @fluid_iir_filter_util.
+ * 
+ * Returns: the source buffer
+ * 
+ * Since: 3.9.6
+ */
+gpointer
+ags_fluid_iir_filter_util_get_source(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  if(fluid_iir_filter_util == NULL){
+    return(NULL);
+  }
+
+  return(fluid_iir_filter_util->source);
+}
+
+/**
+ * ags_fluid_iir_filter_util_set_source:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * @source: the source buffer
+ *
+ * Set @source buffer of @fluid_iir_filter_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fluid_iir_filter_util_set_source(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+				     gpointer source)
+{
+  if(fluid_iir_filter_util == NULL){
+    return;
+  }
+
+  fluid_iir_filter_util->source = source;
+}
+
+/**
+ * ags_fluid_iir_filter_util_get_source_stride:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Get source stride of @fluid_iir_filter_util.
+ * 
+ * Returns: the source buffer stride
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_fluid_iir_filter_util_get_source_stride(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  if(fluid_iir_filter_util == NULL){
+    return(0);
+  }
+
+  return(fluid_iir_filter_util->source_stride);
+}
+
+/**
+ * ags_fluid_iir_filter_util_set_source_stride:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * @source_stride: the source buffer stride
+ *
+ * Set @source stride of @fluid_iir_filter_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fluid_iir_filter_util_set_source_stride(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+					    guint source_stride)
+{
+  if(fluid_iir_filter_util == NULL){
+    return;
+  }
+
+  fluid_iir_filter_util->source_stride = source_stride;
+}
+
+/**
+ * ags_fluid_iir_filter_util_get_buffer_length:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Get buffer length of @fluid_iir_filter_util.
+ * 
+ * Returns: the buffer length
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_fluid_iir_filter_util_get_buffer_length(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  if(fluid_iir_filter_util == NULL){
+    return(0);
+  }
+
+  return(fluid_iir_filter_util->buffer_length);
+}
+
+/**
+ * ags_fluid_iir_filter_util_set_buffer_length:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * @buffer_length: the buffer length
+ *
+ * Set @buffer_length of @fluid_iir_filter_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fluid_iir_filter_util_set_buffer_length(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+					    guint buffer_length)
+{
+  if(fluid_iir_filter_util == NULL){
+    return;
+  }
+
+  fluid_iir_filter_util->buffer_length = buffer_length;
+}
+
+/**
+ * ags_fluid_iir_filter_util_get_format:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Get format of @fluid_iir_filter_util.
+ * 
+ * Returns: the format
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_fluid_iir_filter_util_get_format(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  if(fluid_iir_filter_util == NULL){
+    return(0);
+  }
+
+  return(fluid_iir_filter_util->format);
+}
+
+/**
+ * ags_fluid_iir_filter_util_set_format:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * @format: the format
+ *
+ * Set @format of @fluid_iir_filter_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fluid_iir_filter_util_set_format(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+				     guint format)
+{
+  if(fluid_iir_filter_util == NULL){
+    return;
+  }
+
+  fluid_iir_filter_util->format = format;
+}
+
+/**
+ * ags_fluid_iir_filter_util_get_samplerate:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Get samplerate of @fluid_iir_filter_util.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_fluid_iir_filter_util_get_samplerate(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  if(fluid_iir_filter_util == NULL){
+    return(0);
+  }
+
+  return(fluid_iir_filter_util->samplerate);
+}
+
+/**
+ * ags_fluid_iir_filter_util_set_samplerate:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * @samplerate: the samplerate
+ *
+ * Set @samplerate of @fluid_iir_filter_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_fluid_iir_filter_util_set_samplerate(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+					 guint samplerate)
+{
+  if(fluid_iir_filter_util == NULL){
+    return;
+  }
+
+  fluid_iir_filter_util->samplerate = samplerate;
 }
 
 /**

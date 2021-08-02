@@ -74,6 +74,8 @@ ags_volume_util_alloc()
   ptr->source_stride = 1;
 
   ptr->buffer_length = 0;
+  ptr->format = AGS_VOLUME_UTIL_DEFAULT_FORMAT;
+
   ptr->audio_buffer_util_format = AGS_VOLUME_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT;
   
   ptr->volume = 1.0;
@@ -106,6 +108,8 @@ ags_volume_util_copy(AgsVolumeUtil *ptr)
   new_ptr->source_stride = ptr->source_stride;
 
   new_ptr->buffer_length = ptr->buffer_length;
+  new_ptr->format = ptr->format;
+
   new_ptr->audio_buffer_util_format = ptr->audio_buffer_util_format;
 
   new_ptr->volume = ptr->volume;
@@ -331,6 +335,48 @@ ags_volume_util_set_buffer_length(AgsVolumeUtil *volume_util,
   }
 
   volume_util->buffer_length = buffer_length;
+}
+
+/**
+ * ags_volume_util_get_format:
+ * @volume_util: the #AgsVolumeUtil-struct
+ * 
+ * Get format of @volume_util.
+ * 
+ * Returns: the format
+ * 
+ * Since: 3.9.6
+ */
+guint
+ags_volume_util_get_format(AgsVolumeUtil *volume_util)
+{
+  if(volume_util == NULL){
+    return(0);
+  }
+
+  return(volume_util->format);
+}
+
+/**
+ * ags_volume_util_set_format:
+ * @volume_util: the #AgsVolumeUtil-struct
+ * @format: the format
+ *
+ * Set @format of @volume_util.
+ *
+ * Since: 3.9.6
+ */
+void
+ags_volume_util_set_format(AgsVolumeUtil *volume_util,
+			   guint format)
+{
+  if(volume_util == NULL){
+    return;
+  }
+
+  volume_util->format = format;
+
+  volume_util->audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
 }
 
 /**

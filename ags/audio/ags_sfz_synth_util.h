@@ -25,11 +25,14 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_generic_pitch_util.h>
+
 #include <ags/audio/file/ags_sfz_sample.h>
 
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SFZ_SYNTH_UTIL         (ags_sfz_synth_util_get_type())
+#define AGS_SFZ_SYNTH_UTIL(ptr) ((AgsSFZSynthUtil *)(ptr))
 
 typedef enum{
   AGS_SFZ_SYNTH_UTIL_LOOP_NONE,
@@ -42,11 +45,103 @@ typedef struct _AgsSFZSynthUtil AgsSFZSynthUtil;
 
 struct _AgsSFZSynthUtil
 {
-  //empty
+  AgsSFZSample *sfz_sample;
+  
+  gpointer source;
+  guint source_stride;
+
+  gpointer sample_buffer;
+  gpointer im_buffer;
+
+  guint buffer_length;
+  guint format;
+  guint samplerate;
+
+  gdouble note;
+
+  gdouble volume;
+
+  guint frame_count;
+  guint offset;
+
+  guint loop_mode;
+
+  guint loop_start;
+  guint loop_end;
+  
+  AgsGenericPitchUtil *generic_pitch_util;
 };
 
 GType ags_sfz_synth_util_get_type(void);
 
+AgsSFZSynthUtil* ags_sfz_synth_util_alloc();
+
+gpointer ags_sfz_synth_util_boxed_copy(AgsSFZSynthUtil *ptr);
+void ags_sfz_synth_util_free(AgsSFZSynthUtil *ptr);
+
+gpointer ags_sfz_synth_util_get_source(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_source(AgsSFZSynthUtil *sfz_synth_util,
+				   gpointer source);
+
+guint ags_sfz_synth_util_get_source_stride(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_source_stride(AgsSFZSynthUtil *sfz_synth_util,
+					  guint source_stride);
+
+guint ags_sfz_synth_util_get_buffer_length(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_buffer_length(AgsSFZSynthUtil *sfz_synth_util,
+					  guint buffer_length);
+
+guint ags_sfz_synth_util_get_format(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_format(AgsSFZSynthUtil *sfz_synth_util,
+				   guint format);
+
+guint ags_sfz_synth_util_get_samplerate(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_samplerate(AgsSFZSynthUtil *sfz_synth_util,
+				       guint samplerate);
+
+gdouble ags_sfz_synth_util_get_note(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_note(AgsSFZSynthUtil *sfz_synth_util,
+				    gdouble note);
+
+gdouble ags_sfz_synth_util_get_volume(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_volume(AgsSFZSynthUtil *sfz_synth_util,
+				   gdouble volume);
+
+guint ags_sfz_synth_util_get_frame_count(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_frame_count(AgsSFZSynthUtil *sfz_synth_util,
+				       guint frame_count);
+
+guint ags_sfz_synth_util_get_offset(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_offset(AgsSFZSynthUtil *sfz_synth_util,
+				       guint offset);
+
+guint ags_sfz_synth_util_get_loop_mode(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_loop_mode(AgsSFZSynthUtil *sfz_synth_util,
+				       guint loop_mode);
+
+guint ags_sfz_synth_util_get_loop_start(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_loop_start(AgsSFZSynthUtil *sfz_synth_util,
+				       guint loop_start);
+
+guint ags_sfz_synth_util_get_loop_end(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_loop_end(AgsSFZSynthUtil *sfz_synth_util,
+				     guint loop_end);
+
+AgsGenericPitchUtil* ags_sfz_synth_util_get_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_set_generic_pitch_util(AgsSFZSynthUtil *sfz_synth_util,
+					       AgsGenericPitchUtil *generic_pitch_util);
+
+void ags_sfz_synth_util_compute_s8(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_compute_s16(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_compute_s24(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_compute_s32(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_compute_s64(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_compute_float(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_compute_double(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_compute_complex(AgsSFZSynthUtil *sfz_synth_util);
+void ags_sfz_synth_util_compute(AgsSFZSynthUtil *sfz_synth_util);
+
+G_DEPRECATED_FOR(ags_sfz_synth_util_compute_s8)
 void ags_sfz_synth_util_copy_s8(gint8 *buffer,
 				guint buffer_size,
 				AgsSFZSample *sfz_sample,
@@ -56,6 +151,7 @@ void ags_sfz_synth_util_copy_s8(gint8 *buffer,
 				guint offset, guint n_frames,
 				guint loop_mode,
 				gint loop_start, gint loop_end);
+G_DEPRECATED_FOR(ags_sfz_synth_util_compute_s16)
 void ags_sfz_synth_util_copy_s16(gint16 *buffer,
 				 guint buffer_size,
 				 AgsSFZSample *sfz_sample,
@@ -65,6 +161,7 @@ void ags_sfz_synth_util_copy_s16(gint16 *buffer,
 				 guint offset, guint n_frames,
 				 guint loop_mode,
 				 gint loop_start, gint loop_end);
+G_DEPRECATED_FOR(ags_sfz_synth_util_compute_s24)
 void ags_sfz_synth_util_copy_s24(gint32 *buffer,
 				 guint buffer_size,
 				 AgsSFZSample *sfz_sample,
@@ -74,6 +171,7 @@ void ags_sfz_synth_util_copy_s24(gint32 *buffer,
 				 guint offset, guint n_frames,
 				 guint loop_mode,
 				 gint loop_start, gint loop_end);
+G_DEPRECATED_FOR(ags_sfz_synth_util_compute_s32)
 void ags_sfz_synth_util_copy_s32(gint32 *buffer,
 				 guint buffer_size,
 				 AgsSFZSample *sfz_sample,
@@ -83,6 +181,7 @@ void ags_sfz_synth_util_copy_s32(gint32 *buffer,
 				 guint offset, guint n_frames,
 				 guint loop_mode,
 				 gint loop_start, gint loop_end);
+G_DEPRECATED_FOR(ags_sfz_synth_util_compute_s64)
 void ags_sfz_synth_util_copy_s64(gint64 *buffer,
 				 guint buffer_size,
 				 AgsSFZSample *sfz_sample,
@@ -92,6 +191,7 @@ void ags_sfz_synth_util_copy_s64(gint64 *buffer,
 				 guint offset, guint n_frames,
 				 guint loop_mode,
 				 gint loop_start, gint loop_end);
+G_DEPRECATED_FOR(ags_sfz_synth_util_compute_float)
 void ags_sfz_synth_util_copy_float(gfloat *buffer,
 				   guint buffer_size,
 				   AgsSFZSample *sfz_sample,
@@ -101,6 +201,7 @@ void ags_sfz_synth_util_copy_float(gfloat *buffer,
 				   guint offset, guint n_frames,
 				   guint loop_mode,
 				   gint loop_start, gint loop_end);
+G_DEPRECATED_FOR(ags_sfz_synth_util_compute_double)
 void ags_sfz_synth_util_copy_double(gdouble *buffer,
 				    guint buffer_size,
 				    AgsSFZSample *sfz_sample,
@@ -110,6 +211,7 @@ void ags_sfz_synth_util_copy_double(gdouble *buffer,
 				    guint offset, guint n_frames,
 				    guint loop_mode,
 				    gint loop_start, gint loop_end);
+G_DEPRECATED_FOR(ags_sfz_synth_util_compute_complex)
 void ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
 				     guint buffer_size,
 				     AgsSFZSample *sfz_sample,
@@ -120,6 +222,7 @@ void ags_sfz_synth_util_copy_complex(AgsComplex *buffer,
 				     guint loop_mode,
 				     gint loop_start, gint loop_end);
 
+G_DEPRECATED_FOR(ags_sfz_synth_util_compute)
 void ags_sfz_synth_util_copy(void *buffer,
 			     guint buffer_size,
 			     AgsSFZSample *sfz_sample,

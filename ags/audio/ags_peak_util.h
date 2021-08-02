@@ -32,6 +32,7 @@ G_BEGIN_DECLS
 #define AGS_TYPE_PEAK_UTIL         (ags_peak_util_get_type())
 #define AGS_PEAK_UTIL(ptr) ((AgsPeakUtil *)(ptr))
 
+#define AGS_PEAK_UTIL_DEFAULT_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
 #define AGS_PEAK_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT (AGS_AUDIO_BUFFER_UTIL_S16)
 #define AGS_PEAK_UTIL_DEFAULT_SAMPLERATE (AGS_SOUNDCARD_DEFAULT_SAMPLERATE)
 #define AGS_PEAK_UTIL_DEFAULT_HARMONIC_RATE (440.0)
@@ -45,9 +46,10 @@ struct _AgsPeakUtil
   guint source_stride;
   
   guint buffer_length;
-  guint audio_buffer_util_format;
-
+  guint format;
   guint samplerate;
+
+  guint audio_buffer_util_format;
   
   gdouble harmonic_rate;
   gdouble pressure_factor;
@@ -74,13 +76,17 @@ guint ags_peak_util_get_buffer_length(AgsPeakUtil *peak_util);
 void ags_peak_util_set_buffer_length(AgsPeakUtil *peak_util,
 				     guint buffer_length);
 
-guint ags_peak_util_get_audio_buffer_util_format(AgsPeakUtil *peak_util);
-void ags_peak_util_set_audio_buffer_util_format(AgsPeakUtil *peak_util,
-						guint audio_buffer_util_format);
+guint ags_peak_util_get_format(AgsPeakUtil *peak_util);
+void ags_peak_util_set_format(AgsPeakUtil *peak_util,
+			      guint format);
 
 guint ags_peak_util_get_samplerate(AgsPeakUtil *peak_util);
 void ags_peak_util_set_samplerate(AgsPeakUtil *peak_util,
 				  guint samplerate);
+
+guint ags_peak_util_get_audio_buffer_util_format(AgsPeakUtil *peak_util);
+void ags_peak_util_set_audio_buffer_util_format(AgsPeakUtil *peak_util,
+						guint audio_buffer_util_format);
 
 gdouble ags_peak_util_get_harmonic_rate(AgsPeakUtil *peak_util);
 void ags_peak_util_set_harmonic_rate(AgsPeakUtil *peak_util,

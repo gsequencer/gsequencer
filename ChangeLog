@@ -1,3 +1,24 @@
+ags (3.9.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved configure.ac and Makefile.am to handle absent gnulib
+	* fixed missing files in meson.build
+	* refactored ags_generic_pitch_util.c
+	* refactored ags_fluid_interpolate_none_util.c
+	* refactored ags_fluid_interpolate_linear_util.c
+	* refactored ags_fast_pitch_util.c
+	* TODO:JK: refactored ags_hq_pitch_util.c
+	* TODO:JK: refactored ags_fluid_interpolate_4th_order_util.c
+	* TODO:JK: refactored ags_fluid_interpolate_7th_order_util.c
+	* TODO:JK: refactored ags_fluid_iir_filter_util.c
+	* refactored ags_sf2_synth_util.c
+	* refactored ags_sfz_synth_util.c
+	* deprecated functions in ags_fast_pitch_util.h
+	* deprecated functions in ags_fluid_interpolate_none_util.h
+	* deprecated functions in ags_fluid_interpolate_linear_util.h
+	* deprecated functions in ags_sf2_synth_util.h
+	* deprecated functions in ags_sfz_synth_util.h
+
 ags (3.9.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

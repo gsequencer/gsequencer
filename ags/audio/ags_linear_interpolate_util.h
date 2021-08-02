@@ -31,15 +31,73 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_LINEAR_INTERPOLATE_UTIL         (ags_linear_interpolate_util_get_type())
+#define AGS_LINEAR_INTERPOLATE_UTIL(ptr) ((AgsLinearInterpolateUtil *)(ptr))
 
 typedef struct _AgsLinearInterpolateUtil AgsLinearInterpolateUtil;
 
 struct _AgsLinearInterpolateUtil
 {
-  //empty
+  gpointer source;
+  guint source_stride;
+
+  gpointer destination;
+  guint destination_stride;
+
+  guint buffer_length;
+  guint audio_buffer_util_format;
+  guint samplerate;
+
+  gdouble factor;
 };
 
 GType ags_linear_interpolate_util_get_type(void);
+
+AgsLinearInterpolateUtil* ags_linear_interpolate_util_alloc();
+
+gpointer ags_linear_interpolate_util_copy(AgsLinearInterpolateUtil *ptr);
+void ags_linear_interpolate_util_free(AgsLinearInterpolateUtil *ptr);
+
+gpointer ags_linear_interpolate_util_get_source(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_set_source(AgsLinearInterpolateUtil *linear_interpolate_util,
+					    gpointer source);
+
+guint ags_linear_interpolate_util_get_source_stride(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_set_source_stride(AgsLinearInterpolateUtil *linear_interpolate_util,
+						   guint source_stride);
+
+gpointer ags_linear_interpolate_util_get_destination(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_set_destination(AgsLinearInterpolateUtil *linear_interpolate_util,
+						 gpointer destination);
+
+guint ags_linear_interpolate_util_get_destination_stride(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_set_destination_stride(AgsLinearInterpolateUtil *linear_interpolate_util,
+							guint destination_stride);
+
+guint ags_linear_interpolate_util_get_buffer_length(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_set_buffer_length(AgsLinearInterpolateUtil *linear_interpolate_util,
+						   guint buffer_length);
+
+guint ags_linear_interpolate_util_get_audio_buffer_util_format(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_set_audio_buffer_util_format(AgsLinearInterpolateUtil *linear_interpolate_util,
+							      guint audio_buffer_util_format);
+
+guint ags_linear_interpolate_util_get_samplerate(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_set_samplerate(AgsLinearInterpolateUtil *linear_interpolate_util,
+						guint samplerate);
+
+gdouble ags_linear_interpolate_util_get_factor(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_set_factor(AgsLinearInterpolateUtil *linear_interpolate_util,
+					    gdouble factor);
+
+void ags_linear_interpolate_util_pitch_s8(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_pitch_s16(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_pitch_s24(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_pitch_s32(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_pitch_s64(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_pitch_float(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_pitch_double(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_pitch_complex(AgsLinearInterpolateUtil *linear_interpolate_util);
+void ags_linear_interpolate_util_pitch(AgsLinearInterpolateUtil *linear_interpolate_util);
 
 void ags_linear_interpolate_util_fill_s8(gint8 *destination,
 					 gint8 *source,

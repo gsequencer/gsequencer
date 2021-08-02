@@ -32,6 +32,7 @@ G_BEGIN_DECLS
 #define AGS_TYPE_ENVELOPE_UTIL         (ags_envelope_util_get_type())
 #define AGS_ENVELOPE_UTIL(ptr) ((AgsEnvelopeUtil *)(ptr))
 
+#define AGS_ENVELOPE_UTIL_DEFAULT_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
 #define AGS_ENVELOPE_UTIL_DEFAULT_AUDIO_BUFFER_UTIL_FORMAT (AGS_AUDIO_BUFFER_UTIL_S16)
 
 typedef struct _AgsEnvelopeUtil AgsEnvelopeUtil;
@@ -45,6 +46,8 @@ struct _AgsEnvelopeUtil
   guint source_stride;
   
   guint buffer_length;
+  guint format;
+
   guint audio_buffer_util_format;
   
   gdouble volume;
@@ -77,6 +80,10 @@ void ags_envelope_util_set_source_stride(AgsEnvelopeUtil *envelope_util,
 guint ags_envelope_util_get_buffer_length(AgsEnvelopeUtil *envelope_util);
 void ags_envelope_util_set_buffer_length(AgsEnvelopeUtil *envelope_util,
 					 guint buffer_length);
+
+guint ags_envelope_util_get_format(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_format(AgsEnvelopeUtil *envelope_util,
+				  guint format);
 
 guint ags_envelope_util_get_audio_buffer_util_format(AgsEnvelopeUtil *envelope_util);
 void ags_envelope_util_set_audio_buffer_util_format(AgsEnvelopeUtil *envelope_util,
