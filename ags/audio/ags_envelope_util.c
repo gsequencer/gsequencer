@@ -582,8 +582,9 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
@@ -592,16 +593,15 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
       (double) *(source += envelope_util->source_stride)};
 
     double v_volume[] = {(double) start_volume + i * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount};
+      (double) start_volume + (i + 1) * envelope_util->amount,
+      (double) start_volume + (i + 2) * envelope_util->amount,
+      (double) start_volume + (i + 3) * envelope_util->amount,
+      (double) start_volume + (i + 4) * envelope_util->amount,
+      (double) start_volume + (i + 5) * envelope_util->amount,
+      (double) start_volume + (i + 6) * envelope_util->amount,
+      (double) start_volume + (i + 7) * envelope_util->amount};
 
     source += envelope_util->source_stride;
-    i++;
 
     vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
 
@@ -615,6 +615,8 @@ ags_envelope_util_compute_s8(AgsEnvelopeUtil *envelope_util)
     *(destination += envelope_util->destination_stride) = (gint8) ret_v_buffer[7];
 
     destination += envelope_util->destination_stride;
+    
+    i += 8;
   }
 #else
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
@@ -728,8 +730,9 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
@@ -738,16 +741,15 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
       (double) *(source += envelope_util->source_stride)};
 
     double v_volume[] = {(double) start_volume + i * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount};
+      (double) start_volume + (i + 1) * envelope_util->amount,
+      (double) start_volume + (i + 2) * envelope_util->amount,
+      (double) start_volume + (i + 3) * envelope_util->amount,
+      (double) start_volume + (i + 4) * envelope_util->amount,
+      (double) start_volume + (i + 5) * envelope_util->amount,
+      (double) start_volume + (i + 6) * envelope_util->amount,
+      (double) start_volume + (i + 7) * envelope_util->amount};
 
     source += envelope_util->source_stride;
-    i++;
 
     vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
 
@@ -761,6 +763,8 @@ ags_envelope_util_compute_s16(AgsEnvelopeUtil *envelope_util)
     *(destination += envelope_util->destination_stride) = (gint16) ret_v_buffer[7];
 
     destination += envelope_util->destination_stride;
+    
+    i += 8;
   }
 #else
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
@@ -874,8 +878,9 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
@@ -884,16 +889,15 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
       (double) *(source += envelope_util->source_stride)};
 
     double v_volume[] = {(double) start_volume + i * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount};
+      (double) start_volume + (i + 1) * envelope_util->amount,
+      (double) start_volume + (i + 2) * envelope_util->amount,
+      (double) start_volume + (i + 3) * envelope_util->amount,
+      (double) start_volume + (i + 4) * envelope_util->amount,
+      (double) start_volume + (i + 5) * envelope_util->amount,
+      (double) start_volume + (i + 6) * envelope_util->amount,
+      (double) start_volume + (i + 7) * envelope_util->amount};
 
     source += envelope_util->source_stride;
-    i++;
 
     vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
 
@@ -907,6 +911,8 @@ ags_envelope_util_compute_s24(AgsEnvelopeUtil *envelope_util)
     *(destination += envelope_util->destination_stride) = (gint32) ret_v_buffer[7];
 
     destination += envelope_util->destination_stride;
+
+    i += 8;
   }
 #else
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
@@ -1020,8 +1026,9 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
@@ -1030,16 +1037,15 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
       (double) *(source += envelope_util->source_stride)};
 
     double v_volume[] = {(double) start_volume + i * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount};
+      (double) start_volume + (i + 1) * envelope_util->amount,
+      (double) start_volume + (i + 2) * envelope_util->amount,
+      (double) start_volume + (i + 3) * envelope_util->amount,
+      (double) start_volume + (i + 4) * envelope_util->amount,
+      (double) start_volume + (i + 5) * envelope_util->amount,
+      (double) start_volume + (i + 6) * envelope_util->amount,
+      (double) start_volume + (i + 7) * envelope_util->amount};
 
     source += envelope_util->source_stride;
-    i++;
 
     vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
 
@@ -1053,6 +1059,8 @@ ags_envelope_util_compute_s32(AgsEnvelopeUtil *envelope_util)
     *(destination += envelope_util->destination_stride) = (gint32) ret_v_buffer[7];
 
     destination += envelope_util->destination_stride;
+    
+    i += 8;
   }
 #else
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
@@ -1166,8 +1174,9 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
@@ -1176,16 +1185,15 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
       (double) *(source += envelope_util->source_stride)};
 
     double v_volume[] = {(double) start_volume + i * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount};
+      (double) start_volume + (i + 1) * envelope_util->amount,
+      (double) start_volume + (i + 2) * envelope_util->amount,
+      (double) start_volume + (i + 3) * envelope_util->amount,
+      (double) start_volume + (i + 4) * envelope_util->amount,
+      (double) start_volume + (i + 5) * envelope_util->amount,
+      (double) start_volume + (i + 6) * envelope_util->amount,
+      (double) start_volume + (i + 7) * envelope_util->amount};
 
     source += envelope_util->source_stride;
-    i++;
 
     vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
 
@@ -1199,6 +1207,8 @@ ags_envelope_util_compute_s64(AgsEnvelopeUtil *envelope_util)
     *(destination += envelope_util->destination_stride) = (gint64) ret_v_buffer[7];
 
     destination += envelope_util->destination_stride;
+    
+    i += 8;
   }
 #else
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
@@ -1312,8 +1322,9 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
@@ -1322,16 +1333,15 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
       (double) *(source += envelope_util->source_stride)};
 
     double v_volume[] = {(double) start_volume + i * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount};
+      (double) start_volume + (i + 1) * envelope_util->amount,
+      (double) start_volume + (i + 2) * envelope_util->amount,
+      (double) start_volume + (i + 3) * envelope_util->amount,
+      (double) start_volume + (i + 4) * envelope_util->amount,
+      (double) start_volume + (i + 5) * envelope_util->amount,
+      (double) start_volume + (i + 6) * envelope_util->amount,
+      (double) start_volume + (i + 7) * envelope_util->amount};
 
     source += envelope_util->source_stride;
-    i++;
 
     vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
 
@@ -1345,6 +1355,8 @@ ags_envelope_util_compute_float(AgsEnvelopeUtil *envelope_util)
     *(destination += envelope_util->destination_stride) = (gfloat) ret_v_buffer[7];
 
     destination += envelope_util->destination_stride;
+    
+    i += 8;
   }
 #else
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
@@ -1458,8 +1470,9 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
       (double) *(source += envelope_util->source_stride),
@@ -1468,16 +1481,15 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
       (double) *(source += envelope_util->source_stride)};
 
     double v_volume[] = {(double) start_volume + i * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount,
-      (double) start_volume + (i++) * envelope_util->amount};
+      (double) start_volume + (i + 1) * envelope_util->amount,
+      (double) start_volume + (i + 2) * envelope_util->amount,
+      (double) start_volume + (i + 3) * envelope_util->amount,
+      (double) start_volume + (i + 4) * envelope_util->amount,
+      (double) start_volume + (i + 5) * envelope_util->amount,
+      (double) start_volume + (i + 6) * envelope_util->amount,
+      (double) start_volume + (i + 7) * envelope_util->amount};
 
     source += envelope_util->source_stride;
-    i++;
 
     vDSP_vmulD(v_buffer, 1, v_volume, 1, ret_v_buffer, 1, 8);
 
@@ -1491,6 +1503,8 @@ ags_envelope_util_compute_double(AgsEnvelopeUtil *envelope_util)
     *(destination += envelope_util->destination_stride) = (gdouble) ret_v_buffer[7];
 
     destination += envelope_util->destination_stride;
+    
+    i += 8;
   }
 #else
   i_stop = envelope_util->buffer_length - (envelope_util->buffer_length % 8);
