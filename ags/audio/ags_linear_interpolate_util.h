@@ -105,34 +105,42 @@ void ags_linear_interpolate_util_pitch_double(AgsLinearInterpolateUtil *linear_i
 void ags_linear_interpolate_util_pitch_complex(AgsLinearInterpolateUtil *linear_interpolate_util);
 void ags_linear_interpolate_util_pitch(AgsLinearInterpolateUtil *linear_interpolate_util);
 
+G_DEPRECATED_FOR(ags_linear_interpolate_util_pitch_s8)
 void ags_linear_interpolate_util_fill_s8(gint8 *destination,
 					 gint8 *source,
 					 guint buffer_length,
 					 gdouble factor);
+G_DEPRECATED_FOR(ags_linear_interpolate_util_pitch_s16)
 void ags_linear_interpolate_util_fill_s16(gint16 *destination,
 					  gint16 *source,
 					  guint buffer_length,
 					  gdouble factor);
+G_DEPRECATED_FOR(ags_linear_interpolate_util_pitch_s24)
 void ags_linear_interpolate_util_fill_s24(gint32 *destination,
 					  gint32 *source,
 					  guint buffer_length,
 					  gdouble factor);
+G_DEPRECATED_FOR(ags_linear_interpolate_util_pitch_s32)
 void ags_linear_interpolate_util_fill_s32(gint32 *destination,
 					  gint32 *source,
 					  guint buffer_length,
 					  gdouble factor);
+G_DEPRECATED_FOR(ags_linear_interpolate_util_pitch_s64)
 void ags_linear_interpolate_util_fill_s64(gint64 *destination,
 					  gint64 *source,
 					  guint buffer_length,
 					  gdouble factor);
+G_DEPRECATED_FOR(ags_linear_interpolate_util_pitch_float)
 void ags_linear_interpolate_util_fill_float(gfloat *destination,
 					    gfloat *source,
 					    guint buffer_length,
 					    gdouble factor);
+G_DEPRECATED_FOR(ags_linear_interpolate_util_pitch_double)
 void ags_linear_interpolate_util_fill_double(gdouble *destination,
 					     gdouble *source,
 					     guint buffer_length,
 					     gdouble factor);
+G_DEPRECATED_FOR(ags_linear_interpolate_util_pitch_complex)
 void ags_linear_interpolate_util_fill_complex(AgsComplex *destination,
 					      AgsComplex *source,
 					      guint buffer_length,

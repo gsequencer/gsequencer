@@ -168,44 +168,52 @@ void ags_fluid_iir_filter_util_calc(AgsFluidIIRFilter *iir_filter,
 				    gdouble fres_mod,
 				    gint transition_samples);
 
-void ags_fluid_iir_filter_util_process_s8(AgsFluidIIRFilterUtil *iir_filter_util);
-void ags_fluid_iir_filter_util_process_s16(AgsFluidIIRFilterUtil *iir_filter_util);
-void ags_fluid_iir_filter_util_process_s24(AgsFluidIIRFilterUtil *iir_filter_util);
-void ags_fluid_iir_filter_util_process_s32(AgsFluidIIRFilterUtil *iir_filter_util);
-void ags_fluid_iir_filter_util_process_s64(AgsFluidIIRFilterUtil *iir_filter_util);
-void ags_fluid_iir_filter_util_process_float(AgsFluidIIRFilterUtil *iir_filter_util);
-void ags_fluid_iir_filter_util_process_double(AgsFluidIIRFilterUtil *iir_filter_util);
-void ags_fluid_iir_filter_util_process_complex(AgsFluidIIRFilterUtil *iir_filter_util);
-void ags_fluid_iir_filter_util_process(AgsFluidIIRFilterUtil *iir_filter_util);
+void ags_fluid_iir_filter_util_process_s8(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_process_s16(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_process_s24(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_process_s32(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_process_s64(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_process_float(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_process_double(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_process_complex(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
+void ags_fluid_iir_filter_util_process(AgsFluidIIRFilterUtil *fluid_iir_filter_util);
 
+G_DEPRECATED_FOR(ags_fluid_iir_filter_util_process_s8)
 void ags_fluid_iir_filter_util_apply_s8(AgsFluidIIRFilter *iir_filter,
 					gint8 *destination,
 					gint8 *source,
 					guint buffer_length);
+G_DEPRECATED_FOR(ags_fluid_iir_filter_util_process_s16)
 void ags_fluid_iir_filter_util_apply_s16(AgsFluidIIRFilter *iir_filter,
 					 gint16 *destination,
 					 gint16 *source,
 					 guint buffer_length);
+G_DEPRECATED_FOR(ags_fluid_iir_filter_util_process_s24)
 void ags_fluid_iir_filter_util_apply_s24(AgsFluidIIRFilter *iir_filter,
 					 gint32 *destination,
 					 gint32 *source,
 					 guint buffer_length);
+G_DEPRECATED_FOR(ags_fluid_iir_filter_util_process_s32)
 void ags_fluid_iir_filter_util_apply_s32(AgsFluidIIRFilter *iir_filter,
 					 gint32 *destination,
 					 gint32 *source,
 					 guint buffer_length);
+G_DEPRECATED_FOR(ags_fluid_iir_filter_util_process_s64)
 void ags_fluid_iir_filter_util_apply_s64(AgsFluidIIRFilter *iir_filter,
 					 gint64 *destination,
 					 gint64 *source,
 					 guint buffer_length);
+G_DEPRECATED_FOR(ags_fluid_iir_filter_util_process_float)
 void ags_fluid_iir_filter_util_apply_float(AgsFluidIIRFilter *iir_filter,
 					   gfloat *destination,
 					   gfloat *source,
 					   guint buffer_length);
+G_DEPRECATED_FOR(ags_fluid_iir_filter_util_process_double)
 void ags_fluid_iir_filter_util_apply_double(AgsFluidIIRFilter *iir_filter,
 					    gdouble *destination,
 					    gdouble *source,
 					    guint buffer_length);
+G_DEPRECATED_FOR(ags_fluid_iir_filter_util_process_complex)
 void ags_fluid_iir_filter_util_apply_complex(AgsFluidIIRFilter *iir_filter,
 					     AgsComplex *destination,
 					     AgsComplex *source,
