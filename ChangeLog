@@ -1,3 +1,8 @@
+ags (3.10.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* stripped unneeded code from utility functions
+
 ags (3.9.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
