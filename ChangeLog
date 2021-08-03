@@ -2,9 +2,9 @@ ags (3.9.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed missing use of destination_stride and source_stride fields
-	* TODO:JK: refactored ags_linear_interpolate_util.c
+	* refactored ags_linear_interpolate_util.c
 	* refactored ags_hq_pitch_util.c
-	* TODO:JK: refactored ags_fluid_interpolate_4th_order_util.c
+	* refactored ags_fluid_interpolate_4th_order_util.c
 	* TODO:JK: refactored ags_fluid_interpolate_7th_order_util.c
 	* TODO:JK: refactored ags_fluid_iir_filter_util.c
 
