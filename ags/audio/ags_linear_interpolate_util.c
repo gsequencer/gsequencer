@@ -505,7 +505,63 @@ ags_linear_interpolate_util_set_factor(AgsLinearInterpolateUtil *linear_interpol
 void
 ags_linear_interpolate_util_pitch_s8(AgsLinearInterpolateUtil *linear_interpolate_util)
 {
-  //TODO:JK: implement me
+  gint8 *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble factor;
+  guint i, j;
+  
+  if(linear_interpolate_util == NULL ||
+     linear_interpolate_util->destination == NULL ||
+     linear_interpolate_util->source == NULL){
+    return;
+  }
+
+  destination = linear_interpolate_util->destination;
+  destination_stride = linear_interpolate_util->destination_stride;
+
+  source = linear_interpolate_util->source;
+  source_stride = linear_interpolate_util->source_stride;
+
+  buffer_length = linear_interpolate_util->buffer_length;
+
+  factor = linear_interpolate_util->factor;
+
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
+    gint8 z, mix_z, im_z;
+    gdouble t;
+
+    if(factor != 0.0){
+      if(((gdouble) i * factor) + (gdouble) j > ((gdouble) i + 1.0) * factor){
+	j = 0;
+      }
+
+      if((guint) floor(i / factor) < buffer_length){
+	z = source[(guint) floor(i / factor) * source_stride];
+      }else{
+	z = source[(buffer_length - 1) * source_stride];
+      }
+    
+      if((guint) floor(i / factor) + 1 < buffer_length){
+	mix_z = source[((guint) floor(i / factor) + 1) * source_stride];
+      }else{
+	mix_z = source[(buffer_length - 1) * source_stride];
+      }
+
+      if(factor < 1.0){
+	t = (gdouble) (i * factor) / ((gdouble) (i + 1) * factor);
+      }else{
+	t = (gdouble) (j + 1) / factor;
+      }
+    
+      im_z = (1.0 - t) * z + (t * mix_z);
+    }else{
+      im_z = source[i * source_stride];
+    }
+    
+    destination[i * destination_stride] = im_z;
+  }
 }
 
 /**
@@ -519,7 +575,63 @@ ags_linear_interpolate_util_pitch_s8(AgsLinearInterpolateUtil *linear_interpolat
 void
 ags_linear_interpolate_util_pitch_s16(AgsLinearInterpolateUtil *linear_interpolate_util)
 {
-  //TODO:JK: implement me
+  gint16 *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble factor;
+  guint i, j;
+  
+  if(linear_interpolate_util == NULL ||
+     linear_interpolate_util->destination == NULL ||
+     linear_interpolate_util->source == NULL){
+    return;
+  }
+
+  destination = linear_interpolate_util->destination;
+  destination_stride = linear_interpolate_util->destination_stride;
+
+  source = linear_interpolate_util->source;
+  source_stride = linear_interpolate_util->source_stride;
+
+  buffer_length = linear_interpolate_util->buffer_length;
+
+  factor = linear_interpolate_util->factor;
+
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
+    gint16 z, mix_z, im_z;
+    gdouble t;
+
+    if(factor != 0.0){
+      if(((gdouble) i * factor) + (gdouble) j > ((gdouble) i + 1.0) * factor){
+	j = 0;
+      }
+
+      if((guint) floor(i / factor) < buffer_length){
+	z = source[(guint) floor(i / factor) * source_stride];
+      }else{
+	z = source[(buffer_length - 1) * source_stride];
+      }
+    
+      if((guint) floor(i / factor) + 1 < buffer_length){
+	mix_z = source[((guint) floor(i / factor) + 1) * source_stride];
+      }else{
+	mix_z = source[(buffer_length - 1) * source_stride];
+      }
+
+      if(factor < 1.0){
+	t = (gdouble) (i * factor) / ((gdouble) (i + 1) * factor);
+      }else{
+	t = (gdouble) (j + 1) / factor;
+      }
+    
+      im_z = (1.0 - t) * z + (t * mix_z);
+    }else{
+      im_z = source[i * source_stride];
+    }
+    
+    destination[i * destination_stride] = im_z;
+  }
 }
 
 /**
@@ -533,7 +645,63 @@ ags_linear_interpolate_util_pitch_s16(AgsLinearInterpolateUtil *linear_interpola
 void
 ags_linear_interpolate_util_pitch_s24(AgsLinearInterpolateUtil *linear_interpolate_util)
 {
-  //TODO:JK: implement me
+  gint32 *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble factor;
+  guint i, j;
+  
+  if(linear_interpolate_util == NULL ||
+     linear_interpolate_util->destination == NULL ||
+     linear_interpolate_util->source == NULL){
+    return;
+  }
+
+  destination = linear_interpolate_util->destination;
+  destination_stride = linear_interpolate_util->destination_stride;
+
+  source = linear_interpolate_util->source;
+  source_stride = linear_interpolate_util->source_stride;
+
+  buffer_length = linear_interpolate_util->buffer_length;
+
+  factor = linear_interpolate_util->factor;
+
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
+    gint32 z, mix_z, im_z;
+    gdouble t;
+
+    if(factor != 0.0){
+      if(((gdouble) i * factor) + (gdouble) j > ((gdouble) i + 1.0) * factor){
+	j = 0;
+      }
+
+      if((guint) floor(i / factor) < buffer_length){
+	z = source[(guint) floor(i / factor) * source_stride];
+      }else{
+	z = source[(buffer_length - 1) * source_stride];
+      }
+    
+      if((guint) floor(i / factor) + 1 < buffer_length){
+	mix_z = source[((guint) floor(i / factor) + 1) * source_stride];
+      }else{
+	mix_z = source[(buffer_length - 1) * source_stride];
+      }
+
+      if(factor < 1.0){
+	t = (gdouble) (i * factor) / ((gdouble) (i + 1) * factor);
+      }else{
+	t = (gdouble) (j + 1) / factor;
+      }
+    
+      im_z = (1.0 - t) * z + (t * mix_z);
+    }else{
+      im_z = source[i * source_stride];
+    }
+    
+    destination[i * destination_stride] = im_z;
+  }
 }
 
 /**
@@ -547,7 +715,63 @@ ags_linear_interpolate_util_pitch_s24(AgsLinearInterpolateUtil *linear_interpola
 void
 ags_linear_interpolate_util_pitch_s32(AgsLinearInterpolateUtil *linear_interpolate_util)
 {
-  //TODO:JK: implement me
+  gint32 *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble factor;
+  guint i, j;
+  
+  if(linear_interpolate_util == NULL ||
+     linear_interpolate_util->destination == NULL ||
+     linear_interpolate_util->source == NULL){
+    return;
+  }
+
+  destination = linear_interpolate_util->destination;
+  destination_stride = linear_interpolate_util->destination_stride;
+
+  source = linear_interpolate_util->source;
+  source_stride = linear_interpolate_util->source_stride;
+
+  buffer_length = linear_interpolate_util->buffer_length;
+
+  factor = linear_interpolate_util->factor;
+
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
+    gint32 z, mix_z, im_z;
+    gdouble t;
+
+    if(factor != 0.0){
+      if(((gdouble) i * factor) + (gdouble) j > ((gdouble) i + 1.0) * factor){
+	j = 0;
+      }
+
+      if((guint) floor(i / factor) < buffer_length){
+	z = source[(guint) floor(i / factor) * source_stride];
+      }else{
+	z = source[(buffer_length - 1) * source_stride];
+      }
+    
+      if((guint) floor(i / factor) + 1 < buffer_length){
+	mix_z = source[((guint) floor(i / factor) + 1) * source_stride];
+      }else{
+	mix_z = source[(buffer_length - 1) * source_stride];
+      }
+
+      if(factor < 1.0){
+	t = (gdouble) (i * factor) / ((gdouble) (i + 1) * factor);
+      }else{
+	t = (gdouble) (j + 1) / factor;
+      }
+    
+      im_z = (1.0 - t) * z + (t * mix_z);
+    }else{
+      im_z = source[i * source_stride];
+    }
+    
+    destination[i * destination_stride] = im_z;
+  }
 }
 
 /**
@@ -561,7 +785,63 @@ ags_linear_interpolate_util_pitch_s32(AgsLinearInterpolateUtil *linear_interpola
 void
 ags_linear_interpolate_util_pitch_s64(AgsLinearInterpolateUtil *linear_interpolate_util)
 {
-  //TODO:JK: implement me
+  gint64 *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble factor;
+  guint i, j;
+  
+  if(linear_interpolate_util == NULL ||
+     linear_interpolate_util->destination == NULL ||
+     linear_interpolate_util->source == NULL){
+    return;
+  }
+
+  destination = linear_interpolate_util->destination;
+  destination_stride = linear_interpolate_util->destination_stride;
+
+  source = linear_interpolate_util->source;
+  source_stride = linear_interpolate_util->source_stride;
+
+  buffer_length = linear_interpolate_util->buffer_length;
+
+  factor = linear_interpolate_util->factor;
+
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
+    gint64 z, mix_z, im_z;
+    gdouble t;
+
+    if(factor != 0.0){
+      if(((gdouble) i * factor) + (gdouble) j > ((gdouble) i + 1.0) * factor){
+	j = 0;
+      }
+
+      if((guint) floor(i / factor) < buffer_length){
+	z = source[(guint) floor(i / factor) * source_stride];
+      }else{
+	z = source[(buffer_length - 1) * source_stride];
+      }
+    
+      if((guint) floor(i / factor) + 1 < buffer_length){
+	mix_z = source[((guint) floor(i / factor) + 1) * source_stride];
+      }else{
+	mix_z = source[(buffer_length - 1) * source_stride];
+      }
+
+      if(factor < 1.0){
+	t = (gdouble) (i * factor) / ((gdouble) (i + 1) * factor);
+      }else{
+	t = (gdouble) (j + 1) / factor;
+      }
+    
+      im_z = (1.0 - t) * z + (t * mix_z);
+    }else{
+      im_z = source[i * source_stride];
+    }
+    
+    destination[i * destination_stride] = im_z;
+  }
 }
 
 /**
@@ -575,7 +855,63 @@ ags_linear_interpolate_util_pitch_s64(AgsLinearInterpolateUtil *linear_interpola
 void
 ags_linear_interpolate_util_pitch_float(AgsLinearInterpolateUtil *linear_interpolate_util)
 {
-  //TODO:JK: implement me
+  gfloat *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble factor;
+  guint i, j;
+  
+  if(linear_interpolate_util == NULL ||
+     linear_interpolate_util->destination == NULL ||
+     linear_interpolate_util->source == NULL){
+    return;
+  }
+
+  destination = linear_interpolate_util->destination;
+  destination_stride = linear_interpolate_util->destination_stride;
+
+  source = linear_interpolate_util->source;
+  source_stride = linear_interpolate_util->source_stride;
+
+  buffer_length = linear_interpolate_util->buffer_length;
+
+  factor = linear_interpolate_util->factor;
+
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
+    gfloat z, mix_z, im_z;
+    gdouble t;
+
+    if(factor != 0.0){
+      if(((gdouble) i * factor) + (gdouble) j > ((gdouble) i + 1.0) * factor){
+	j = 0;
+      }
+
+      if((guint) floor(i / factor) < buffer_length){
+	z = source[(guint) floor(i / factor) * source_stride];
+      }else{
+	z = source[(buffer_length - 1) * source_stride];
+      }
+    
+      if((guint) floor(i / factor) + 1 < buffer_length){
+	mix_z = source[((guint) floor(i / factor) + 1) * source_stride];
+      }else{
+	mix_z = source[(buffer_length - 1) * source_stride];
+      }
+
+      if(factor < 1.0){
+	t = (gdouble) (i * factor) / ((gdouble) (i + 1) * factor);
+      }else{
+	t = (gdouble) (j + 1) / factor;
+      }
+    
+      im_z = (1.0 - t) * z + (t * mix_z);
+    }else{
+      im_z = source[i * source_stride];
+    }
+    
+    destination[i * destination_stride] = im_z;
+  }
 }
 
 /**
@@ -589,7 +925,63 @@ ags_linear_interpolate_util_pitch_float(AgsLinearInterpolateUtil *linear_interpo
 void
 ags_linear_interpolate_util_pitch_double(AgsLinearInterpolateUtil *linear_interpolate_util)
 {
-  //TODO:JK: implement me
+  gdouble *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble factor;
+  guint i, j;
+  
+  if(linear_interpolate_util == NULL ||
+     linear_interpolate_util->destination == NULL ||
+     linear_interpolate_util->source == NULL){
+    return;
+  }
+
+  destination = linear_interpolate_util->destination;
+  destination_stride = linear_interpolate_util->destination_stride;
+
+  source = linear_interpolate_util->source;
+  source_stride = linear_interpolate_util->source_stride;
+
+  buffer_length = linear_interpolate_util->buffer_length;
+
+  factor = linear_interpolate_util->factor;
+
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
+    gdouble z, mix_z, im_z;
+    gdouble t;
+
+    if(factor != 0.0){
+      if(((gdouble) i * factor) + (gdouble) j > ((gdouble) i + 1.0) * factor){
+	j = 0;
+      }
+
+      if((guint) floor(i / factor) < buffer_length){
+	z = source[(guint) floor(i / factor) * source_stride];
+      }else{
+	z = source[(buffer_length - 1) * source_stride];
+      }
+    
+      if((guint) floor(i / factor) + 1 < buffer_length){
+	mix_z = source[((guint) floor(i / factor) + 1) * source_stride];
+      }else{
+	mix_z = source[(buffer_length - 1) * source_stride];
+      }
+
+      if(factor < 1.0){
+	t = (gdouble) (i * factor) / ((gdouble) (i + 1) * factor);
+      }else{
+	t = (gdouble) (j + 1) / factor;
+      }
+    
+      im_z = (1.0 - t) * z + (t * mix_z);
+    }else{
+      im_z = source[i * source_stride];
+    }
+    
+    destination[i * destination_stride] = im_z;
+  }
 }
 
 /**
@@ -603,7 +995,64 @@ ags_linear_interpolate_util_pitch_double(AgsLinearInterpolateUtil *linear_interp
 void
 ags_linear_interpolate_util_pitch_complex(AgsLinearInterpolateUtil *linear_interpolate_util)
 {
-  //TODO:JK: implement me
+  AgsComplex *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble factor;
+  guint i, j;
+  
+  if(linear_interpolate_util == NULL ||
+     linear_interpolate_util->destination == NULL ||
+     linear_interpolate_util->source == NULL){
+    return;
+  }
+
+  destination = linear_interpolate_util->destination;
+  destination_stride = linear_interpolate_util->destination_stride;
+
+  source = linear_interpolate_util->source;
+  source_stride = linear_interpolate_util->source_stride;
+
+  buffer_length = linear_interpolate_util->buffer_length;
+
+  factor = linear_interpolate_util->factor;
+
+  for(i = 0, j = 0; i < buffer_length; i++, j++){
+    double _Complex z, mix_z, im_z;
+    gdouble t;
+
+    if(factor != 0.0){
+      if(((gdouble) i * factor) + (gdouble) j > ((gdouble) i + 1.0) * factor){
+	j = 0;
+      }
+
+      if((guint) floor(i / factor) < buffer_length){
+	z = ags_complex_get(source + ((guint) floor(i / factor) * source_stride));
+      }else{
+	z = ags_complex_get(source + ((buffer_length - 1) * source_stride));
+      }
+    
+      if((guint) floor(i / factor) + 1 < buffer_length){
+	mix_z = ags_complex_get(source + (((guint) floor(i / factor) + 1) * source_stride));
+      }else{
+	mix_z = ags_complex_get(source + ((buffer_length - 1) * source_stride));
+      }
+
+      if(factor < 1.0){
+	t = (gdouble) (i * factor) / ((gdouble) (i + 1) * factor);
+      }else{
+	t = (gdouble) (j + 1) / factor;
+      }
+    
+      im_z = (1.0 - t) * z + (t * mix_z);
+    }else{
+      im_z = ags_complex_get(source + (i * source_stride));
+    }
+    
+    ags_complex_set(destination + ( i * destination_stride),
+		    im_z);
+  }
 }
 
 /**
@@ -617,7 +1066,56 @@ ags_linear_interpolate_util_pitch_complex(AgsLinearInterpolateUtil *linear_inter
 void
 ags_linear_interpolate_util_pitch(AgsLinearInterpolateUtil *linear_interpolate_util)
 {
-  //TODO:JK: implement me
+  if(linear_interpolate_util == NULL ||
+     linear_interpolate_util->destination == NULL ||
+     linear_interpolate_util->source == NULL){
+    return;
+  }
+
+  switch(linear_interpolate_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+  {
+    ags_linear_interpolate_util_pitch_s8(linear_interpolate_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+  {
+    ags_linear_interpolate_util_pitch_s16(linear_interpolate_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+  {
+    ags_linear_interpolate_util_pitch_s24(linear_interpolate_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+  {
+    ags_linear_interpolate_util_pitch_s32(linear_interpolate_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+  {
+    ags_linear_interpolate_util_pitch_s64(linear_interpolate_util);
+  }
+  break;
+  case AGS_SOUNDCARD_FLOAT:
+  {
+    ags_linear_interpolate_util_pitch_float(linear_interpolate_util);
+  }
+  break;
+  case AGS_SOUNDCARD_DOUBLE:
+  {
+    ags_linear_interpolate_util_pitch_double(linear_interpolate_util);
+  }
+  break;
+  case AGS_SOUNDCARD_COMPLEX:
+  {
+    ags_linear_interpolate_util_pitch_complex(linear_interpolate_util);
+  }
+  break;
+  default:
+    g_warning("unknown format");
+  }
 }
 
 /**
