@@ -263,7 +263,32 @@ ags_fluid_iir_filter_util_alloc()
   ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
-  //TODO:JK: implement me
+  ptr->filter_type = 0;
+
+  ptr->flags = 0;
+  
+  ptr->b02 = 0.0;
+  ptr->b1 = 0.0;
+  ptr->a1 = 0.0;
+  ptr->a2 = 0.0;
+  ptr->b02_incr = 0.0;
+  ptr->b1_incr = 0.0;
+  ptr->a1_incr = 0.0;
+  ptr->a2_incr = 0.0;
+
+  ptr->filter_coeff_incr_count = 0;
+  ptr->compensate_incr = 0;
+
+  ptr->hist1 = 0.0;
+  ptr->hist2 = 0.0;
+
+  ptr->filter_startup = TRUE;
+
+  ptr->fres = 0.0;
+  ptr->last_fres = 0.0;
+  
+  ptr->q_lin = 0.0;
+  ptr->filter_gain = 1.0;
   
   return(ptr);
 }
@@ -296,7 +321,32 @@ ags_fluid_iir_filter_util_copy(AgsFluidIIRFilterUtil *ptr)
   new_ptr->format = ptr->format;
   new_ptr->samplerate = ptr->samplerate;
 
-  //TODO:JK: implement me
+  new_ptr->filter_type = ptr->filter_type;
+
+  new_ptr->flags = ptr->flags;
+  
+  new_ptr->b02 = ptr->b02;
+  new_ptr->b1 = ptr->b1;
+  new_ptr->a1 = ptr->a1;
+  new_ptr->a2 = ptr->a2;
+  new_ptr->b02_incr = ptr->b02_incr;
+  new_ptr->b1_incr = ptr->b1_incr;
+  new_ptr->a1_incr = ptr->a1_incr;
+  new_ptr->a2_incr = ptr->a2_incr;
+
+  new_ptr->filter_coeff_incr_count = ptr->filter_coeff_incr_count;
+  new_ptr->compensate_incr = ptr->compensate_incr;
+
+  new_ptr->hist1 = ptr->hist1;
+  new_ptr->hist2 = ptr->hist2;
+
+  new_ptr->filter_startup = ptr->filter_startup;
+
+  new_ptr->fres = ptr->fres;
+  new_ptr->last_fres = ptr->last_fres;
+  
+  new_ptr->q_lin = ptr->q_lin;
+  new_ptr->filter_gain = ptr->filter_gain;
   
   return(new_ptr);
 }
@@ -599,6 +649,1303 @@ ags_fluid_iir_filter_util_set_samplerate(AgsFluidIIRFilterUtil *fluid_iir_filter
   }
 
   fluid_iir_filter_util->samplerate = samplerate;
+}
+
+/**
+ * ags_fluid_iir_filter_util_get_filter_type:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Get filter type of @fluid_iir_filter_util.
+ * 
+ * Returns: the filter type
+ * 
+ * Since: 3.9.7
+ */
+guint
+ags_fluid_iir_filter_util_get_filter_type(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  if(fluid_iir_filter_util == NULL){
+    return(0);
+  }
+
+  return(fluid_iir_filter_util->filter_type);
+}
+
+/**
+ * ags_fluid_iir_filter_util_set_filter_type:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * @filter_type: the filter type
+ *
+ * Set @filter_type of @fluid_iir_filter_util.
+ *
+ * Since: 3.9.7
+ */
+void
+ags_fluid_iir_filter_util_set_filter_type(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+					  guint filter_type)
+{
+  if(fluid_iir_filter_util == NULL){
+    return;
+  }
+
+  fluid_iir_filter_util->filter_type = filter_type;
+}
+
+/**
+ * ags_fluid_iir_filter_util_get_flags:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Get flags of @fluid_iir_filter_util.
+ * 
+ * Returns: the flags
+ * 
+ * Since: 3.9.7
+ */
+guint
+ags_fluid_iir_filter_util_get_flags(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  if(fluid_iir_filter_util == NULL){
+    return(0);
+  }
+
+  return(fluid_iir_filter_util->flags);
+}
+
+/**
+ * ags_fluid_iir_filter_util_set_flags:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * @flags: the flags
+ *
+ * Set @flags of @fluid_iir_filter_util.
+ *
+ * Since: 3.9.7
+ */
+void
+ags_fluid_iir_filter_util_set_flags(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+				    guint flags)
+{
+  if(fluid_iir_filter_util == NULL){
+    return;
+  }
+
+  fluid_iir_filter_util->flags = flags;
+}
+
+/**
+ * ags_fluid_iir_filter_util_get_filter_startup:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Get filter startup of @fluid_iir_filter_util.
+ * 
+ * Returns: %TRUE if the filter does startup, otherwise %FALSE
+ * 
+ * Since: 3.9.7
+ */
+gboolean
+ags_fluid_iir_filter_util_get_filter_startup(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  if(fluid_iir_filter_util == NULL){
+    return(FALSE);
+  }
+
+  return(fluid_iir_filter_util->filter_startup);
+}
+
+/**
+ * ags_fluid_iir_filter_util_set_filter_startup:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * @filter_startup: the filter startup
+ *
+ * Set @filter_startup of @fluid_iir_filter_util.
+ *
+ * Since: 3.9.7
+ */
+void
+ags_fluid_iir_filter_util_set_filter_startup(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+					     gboolean filter_startup)
+{
+  if(fluid_iir_filter_util == NULL){
+    return;
+  }
+
+  fluid_iir_filter_util->filter_startup = filter_startup;
+}
+
+/**
+ * ags_fluid_iir_filter_util_get_q_lin:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Get q-lin of @fluid_iir_filter_util.
+ * 
+ * Returns: the q-lin
+ * 
+ * Since: 3.9.7
+ */
+gdouble
+ags_fluid_iir_filter_util_get_q_lin(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  if(fluid_iir_filter_util == NULL){
+    return(0.0);
+  }
+
+  return(fluid_iir_filter_util->q_lin);
+}
+
+/**
+ * ags_fluid_iir_filter_util_set_q_lin:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * @q_lin: the q-lin
+ *
+ * Set @q_lin of @fluid_iir_filter_util.
+ *
+ * Since: 3.9.7
+ */
+void
+ags_fluid_iir_filter_util_set_q_lin(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+				    gdouble q_lin)
+{
+  if(fluid_iir_filter_util == NULL){
+    return;
+  }
+
+  fluid_iir_filter_util->q_lin = q_lin;
+}
+
+/**
+ * ags_fluid_iir_filter_util_get_filter_gain:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Get filter gain of @fluid_iir_filter_util.
+ * 
+ * Returns: the filter gain
+ * 
+ * Since: 3.9.7
+ */
+gdouble
+ags_fluid_iir_filter_util_get_filter_gain(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  if(fluid_iir_filter_util == NULL){
+    return(1.0);
+  }
+
+  return(fluid_iir_filter_util->filter_gain);
+}
+
+/**
+ * ags_fluid_iir_filter_util_set_filter_gain:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * @filter_gain: the filter gain
+ *
+ * Set @filter_gain of @fluid_iir_filter_util.
+ *
+ * Since: 3.9.7
+ */
+void
+ags_fluid_iir_filter_util_set_filter_gain(AgsFluidIIRFilterUtil *fluid_iir_filter_util,
+					  gdouble filter_gain)
+{
+  if(fluid_iir_filter_util == NULL){
+    return;
+  }
+
+  fluid_iir_filter_util->filter_gain = filter_gain;
+}
+
+/**
+ * ags_fluid_iir_filter_util_process_s8:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Process @fluid_iir_filter_util of signed 8 bit data.
+ * 
+ * Since: 3.9.7
+ */
+void
+ags_fluid_iir_filter_util_process_s8(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  gint8 *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  
+  if(fluid_iir_filter_util == NULL ||
+     fluid_iir_filter_util->destination == NULL ||
+     fluid_iir_filter_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_iir_filter_util->destination;
+  destination_stride = fluid_iir_filter_util->destination_stride;
+
+  source = fluid_iir_filter_util->source;
+  source_stride = fluid_iir_filter_util->source_stride;
+
+  buffer_length = fluid_iir_filter_util->buffer_length;
+
+  if(fluid_iir_filter_util->filter_type == AGS_FLUID_IIR_DISABLED || fluid_iir_filter_util->q_lin == 0.0){
+    return;
+  }else{
+    /* IIR filter sample history */
+    gdouble dsp_hist1;
+    gdouble dsp_hist2;
+    
+    /* IIR filter coefficients */
+    gdouble dsp_a1;
+    gdouble dsp_a2;
+    gdouble dsp_b02;
+    gdouble dsp_b1;
+    gint dsp_filter_coeff_incr_count;
+      
+    gdouble dsp_centernode;
+    gint dsp_i;
+      
+    /* filter (implement the voice filter according to SoundFont standard) */
+    dsp_hist1 = fluid_iir_filter_util->hist1;
+    dsp_hist2 = fluid_iir_filter_util->hist2;
+    
+    dsp_a1 = fluid_iir_filter_util->a1;
+    dsp_a2 = fluid_iir_filter_util->a2;
+    dsp_b02 = fluid_iir_filter_util->b02;
+    dsp_b1 = fluid_iir_filter_util->b1;
+
+    dsp_filter_coeff_incr_count = fluid_iir_filter_util->filter_coeff_incr_count;
+    
+    /* Two versions of the filter loop. One, while the filter is
+     * changing towards its new setting. The other, if the filter
+     * doesn't change.
+     */
+
+    if(dsp_filter_coeff_incr_count > 0){
+      gdouble dsp_a1_incr;
+      gdouble dsp_a2_incr;
+      gdouble dsp_b02_incr;
+      gdouble dsp_b1_incr;
+      
+      dsp_a1_incr = fluid_iir_filter_util->a1_incr;
+      dsp_a2_incr = fluid_iir_filter_util->a2_incr;
+      dsp_b02_incr = fluid_iir_filter_util->b02_incr;
+      dsp_b1_incr = fluid_iir_filter_util->b1_incr;
+
+      /* Increment is added to each filter coefficient filter_coeff_incr_count times. */
+      for(dsp_i = 0; dsp_i < buffer_length; dsp_i++){
+	/* The filter is implemented in Direct-II form. */
+	dsp_centernode = source[dsp_i * source_stride] - dsp_a1 * dsp_hist1 - dsp_a2 * dsp_hist2;
+
+	destination[dsp_i * destination_stride] = dsp_b02 * (dsp_centernode + dsp_hist2) + dsp_b1 * dsp_hist1;
+
+	dsp_hist2 = dsp_hist1;
+	dsp_hist1 = dsp_centernode;
+
+	if(dsp_filter_coeff_incr_count-- > 0){
+	  gdouble old_b02;
+
+	  old_b02 = dsp_b02;
+
+	  dsp_a1 += dsp_a1_incr;
+	  dsp_a2 += dsp_a2_incr;
+	  dsp_b02 += dsp_b02_incr;
+	  dsp_b1 += dsp_b1_incr;
+
+	  /* Compensate history to avoid the filter going havoc with large frequency changes */
+	  if(fluid_iir_filter_util->compensate_incr && fabs(dsp_b02) > 0.001f){
+	    gdouble compensate;
+
+	    compensate = old_b02 / dsp_b02;
+
+	    dsp_hist1 *= compensate;
+	    dsp_hist2 *= compensate;
+	  }
+	}
+      } /* for dsp_i */
+    }else{ /* The filter parameters are constant.  This is duplicated to save time. */
+      for(dsp_i = 0; dsp_i < buffer_length; dsp_i++){
+	/* The filter is implemented in Direct-II form. */
+	dsp_centernode = source[dsp_i * source_stride] - dsp_a1 * dsp_hist1 - dsp_a2 * dsp_hist2;
+	
+	destination[dsp_i * destination_stride] = dsp_b02 * (dsp_centernode + dsp_hist2) + dsp_b1 * dsp_hist1;
+
+	dsp_hist2 = dsp_hist1;
+	dsp_hist1 = dsp_centernode;
+      }
+    }
+    
+    fluid_iir_filter_util->hist1 = dsp_hist1;
+    fluid_iir_filter_util->hist2 = dsp_hist2;
+    
+    fluid_iir_filter_util->a1 = dsp_a1;
+    fluid_iir_filter_util->a2 = dsp_a2;
+    fluid_iir_filter_util->b02 = dsp_b02;
+    fluid_iir_filter_util->b1 = dsp_b1;
+    
+    fluid_iir_filter_util->filter_coeff_incr_count = dsp_filter_coeff_incr_count;
+  }
+}
+
+/**
+ * ags_fluid_iir_filter_util_process_s16:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Process @fluid_iir_filter_util of signed 16 bit data.
+ * 
+ * Since: 3.9.7
+ */
+void
+ags_fluid_iir_filter_util_process_s16(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  gint16 *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  
+  if(fluid_iir_filter_util == NULL ||
+     fluid_iir_filter_util->destination == NULL ||
+     fluid_iir_filter_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_iir_filter_util->destination;
+  destination_stride = fluid_iir_filter_util->destination_stride;
+
+  source = fluid_iir_filter_util->source;
+  source_stride = fluid_iir_filter_util->source_stride;
+
+  buffer_length = fluid_iir_filter_util->buffer_length;
+
+  if(fluid_iir_filter_util->filter_type == AGS_FLUID_IIR_DISABLED || fluid_iir_filter_util->q_lin == 0.0){
+    return;
+  }else{
+    /* IIR filter sample history */
+    gdouble dsp_hist1;
+    gdouble dsp_hist2;
+    
+    /* IIR filter coefficients */
+    gdouble dsp_a1;
+    gdouble dsp_a2;
+    gdouble dsp_b02;
+    gdouble dsp_b1;
+    gint dsp_filter_coeff_incr_count;
+      
+    gdouble dsp_centernode;
+    gint dsp_i;
+      
+    /* filter (implement the voice filter according to SoundFont standard) */
+    dsp_hist1 = fluid_iir_filter_util->hist1;
+    dsp_hist2 = fluid_iir_filter_util->hist2;
+    
+    dsp_a1 = fluid_iir_filter_util->a1;
+    dsp_a2 = fluid_iir_filter_util->a2;
+    dsp_b02 = fluid_iir_filter_util->b02;
+    dsp_b1 = fluid_iir_filter_util->b1;
+
+    dsp_filter_coeff_incr_count = fluid_iir_filter_util->filter_coeff_incr_count;
+    
+    /* Two versions of the filter loop. One, while the filter is
+     * changing towards its new setting. The other, if the filter
+     * doesn't change.
+     */
+
+    if(dsp_filter_coeff_incr_count > 0){
+      gdouble dsp_a1_incr;
+      gdouble dsp_a2_incr;
+      gdouble dsp_b02_incr;
+      gdouble dsp_b1_incr;
+      
+      dsp_a1_incr = fluid_iir_filter_util->a1_incr;
+      dsp_a2_incr = fluid_iir_filter_util->a2_incr;
+      dsp_b02_incr = fluid_iir_filter_util->b02_incr;
+      dsp_b1_incr = fluid_iir_filter_util->b1_incr;
+
+      /* Increment is added to each filter coefficient filter_coeff_incr_count times. */
+      for(dsp_i = 0; dsp_i < buffer_length; dsp_i++){
+	/* The filter is implemented in Direct-II form. */
+	dsp_centernode = source[dsp_i * source_stride] - dsp_a1 * dsp_hist1 - dsp_a2 * dsp_hist2;
+
+	destination[dsp_i * destination_stride] = dsp_b02 * (dsp_centernode + dsp_hist2) + dsp_b1 * dsp_hist1;
+
+	dsp_hist2 = dsp_hist1;
+	dsp_hist1 = dsp_centernode;
+
+	if(dsp_filter_coeff_incr_count-- > 0){
+	  gdouble old_b02;
+
+	  old_b02 = dsp_b02;
+
+	  dsp_a1 += dsp_a1_incr;
+	  dsp_a2 += dsp_a2_incr;
+	  dsp_b02 += dsp_b02_incr;
+	  dsp_b1 += dsp_b1_incr;
+
+	  /* Compensate history to avoid the filter going havoc with large frequency changes */
+	  if(fluid_iir_filter_util->compensate_incr && fabs(dsp_b02) > 0.001f){
+	    gdouble compensate;
+
+	    compensate = old_b02 / dsp_b02;
+
+	    dsp_hist1 *= compensate;
+	    dsp_hist2 *= compensate;
+	  }
+	}
+      } /* for dsp_i */
+    }else{ /* The filter parameters are constant.  This is duplicated to save time. */
+      for(dsp_i = 0; dsp_i < buffer_length; dsp_i++){
+	/* The filter is implemented in Direct-II form. */
+	dsp_centernode = source[dsp_i * source_stride] - dsp_a1 * dsp_hist1 - dsp_a2 * dsp_hist2;
+	
+	destination[dsp_i * destination_stride] = dsp_b02 * (dsp_centernode + dsp_hist2) + dsp_b1 * dsp_hist1;
+
+	dsp_hist2 = dsp_hist1;
+	dsp_hist1 = dsp_centernode;
+      }
+    }
+    
+    fluid_iir_filter_util->hist1 = dsp_hist1;
+    fluid_iir_filter_util->hist2 = dsp_hist2;
+    
+    fluid_iir_filter_util->a1 = dsp_a1;
+    fluid_iir_filter_util->a2 = dsp_a2;
+    fluid_iir_filter_util->b02 = dsp_b02;
+    fluid_iir_filter_util->b1 = dsp_b1;
+    
+    fluid_iir_filter_util->filter_coeff_incr_count = dsp_filter_coeff_incr_count;
+  }
+}
+
+/**
+ * ags_fluid_iir_filter_util_process_s24:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Process @fluid_iir_filter_util of signed 24 bit data.
+ * 
+ * Since: 3.9.7
+ */
+void
+ags_fluid_iir_filter_util_process_s24(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  gint32 *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  
+  if(fluid_iir_filter_util == NULL ||
+     fluid_iir_filter_util->destination == NULL ||
+     fluid_iir_filter_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_iir_filter_util->destination;
+  destination_stride = fluid_iir_filter_util->destination_stride;
+
+  source = fluid_iir_filter_util->source;
+  source_stride = fluid_iir_filter_util->source_stride;
+
+  buffer_length = fluid_iir_filter_util->buffer_length;
+
+  if(fluid_iir_filter_util->filter_type == AGS_FLUID_IIR_DISABLED || fluid_iir_filter_util->q_lin == 0.0){
+    return;
+  }else{
+    /* IIR filter sample history */
+    gdouble dsp_hist1;
+    gdouble dsp_hist2;
+    
+    /* IIR filter coefficients */
+    gdouble dsp_a1;
+    gdouble dsp_a2;
+    gdouble dsp_b02;
+    gdouble dsp_b1;
+    gint dsp_filter_coeff_incr_count;
+      
+    gdouble dsp_centernode;
+    gint dsp_i;
+      
+    /* filter (implement the voice filter according to SoundFont standard) */
+    dsp_hist1 = fluid_iir_filter_util->hist1;
+    dsp_hist2 = fluid_iir_filter_util->hist2;
+    
+    dsp_a1 = fluid_iir_filter_util->a1;
+    dsp_a2 = fluid_iir_filter_util->a2;
+    dsp_b02 = fluid_iir_filter_util->b02;
+    dsp_b1 = fluid_iir_filter_util->b1;
+
+    dsp_filter_coeff_incr_count = fluid_iir_filter_util->filter_coeff_incr_count;
+    
+    /* Two versions of the filter loop. One, while the filter is
+     * changing towards its new setting. The other, if the filter
+     * doesn't change.
+     */
+
+    if(dsp_filter_coeff_incr_count > 0){
+      gdouble dsp_a1_incr;
+      gdouble dsp_a2_incr;
+      gdouble dsp_b02_incr;
+      gdouble dsp_b1_incr;
+      
+      dsp_a1_incr = fluid_iir_filter_util->a1_incr;
+      dsp_a2_incr = fluid_iir_filter_util->a2_incr;
+      dsp_b02_incr = fluid_iir_filter_util->b02_incr;
+      dsp_b1_incr = fluid_iir_filter_util->b1_incr;
+
+      /* Increment is added to each filter coefficient filter_coeff_incr_count times. */
+      for(dsp_i = 0; dsp_i < buffer_length; dsp_i++){
+	/* The filter is implemented in Direct-II form. */
+	dsp_centernode = source[dsp_i * source_stride] - dsp_a1 * dsp_hist1 - dsp_a2 * dsp_hist2;
+
+	destination[dsp_i * destination_stride] = dsp_b02 * (dsp_centernode + dsp_hist2) + dsp_b1 * dsp_hist1;
+
+	dsp_hist2 = dsp_hist1;
+	dsp_hist1 = dsp_centernode;
+
+	if(dsp_filter_coeff_incr_count-- > 0){
+	  gdouble old_b02;
+
+	  old_b02 = dsp_b02;
+
+	  dsp_a1 += dsp_a1_incr;
+	  dsp_a2 += dsp_a2_incr;
+	  dsp_b02 += dsp_b02_incr;
+	  dsp_b1 += dsp_b1_incr;
+
+	  /* Compensate history to avoid the filter going havoc with large frequency changes */
+	  if(fluid_iir_filter_util->compensate_incr && fabs(dsp_b02) > 0.001f){
+	    gdouble compensate;
+
+	    compensate = old_b02 / dsp_b02;
+
+	    dsp_hist1 *= compensate;
+	    dsp_hist2 *= compensate;
+	  }
+	}
+      } /* for dsp_i */
+    }else{ /* The filter parameters are constant.  This is duplicated to save time. */
+      for(dsp_i = 0; dsp_i < buffer_length; dsp_i++){
+	/* The filter is implemented in Direct-II form. */
+	dsp_centernode = source[dsp_i * source_stride] - dsp_a1 * dsp_hist1 - dsp_a2 * dsp_hist2;
+	
+	destination[dsp_i * destination_stride] = dsp_b02 * (dsp_centernode + dsp_hist2) + dsp_b1 * dsp_hist1;
+
+	dsp_hist2 = dsp_hist1;
+	dsp_hist1 = dsp_centernode;
+      }
+    }
+    
+    fluid_iir_filter_util->hist1 = dsp_hist1;
+    fluid_iir_filter_util->hist2 = dsp_hist2;
+    
+    fluid_iir_filter_util->a1 = dsp_a1;
+    fluid_iir_filter_util->a2 = dsp_a2;
+    fluid_iir_filter_util->b02 = dsp_b02;
+    fluid_iir_filter_util->b1 = dsp_b1;
+    
+    fluid_iir_filter_util->filter_coeff_incr_count = dsp_filter_coeff_incr_count;
+  }
+}
+
+/**
+ * ags_fluid_iir_filter_util_process_s32:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Process @fluid_iir_filter_util of signed 32 bit data.
+ * 
+ * Since: 3.9.7
+ */
+void
+ags_fluid_iir_filter_util_process_s32(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  gint32 *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  
+  if(fluid_iir_filter_util == NULL ||
+     fluid_iir_filter_util->destination == NULL ||
+     fluid_iir_filter_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_iir_filter_util->destination;
+  destination_stride = fluid_iir_filter_util->destination_stride;
+
+  source = fluid_iir_filter_util->source;
+  source_stride = fluid_iir_filter_util->source_stride;
+
+  buffer_length = fluid_iir_filter_util->buffer_length;
+
+  if(fluid_iir_filter_util->filter_type == AGS_FLUID_IIR_DISABLED || fluid_iir_filter_util->q_lin == 0.0){
+    return;
+  }else{
+    /* IIR filter sample history */
+    gdouble dsp_hist1;
+    gdouble dsp_hist2;
+    
+    /* IIR filter coefficients */
+    gdouble dsp_a1;
+    gdouble dsp_a2;
+    gdouble dsp_b02;
+    gdouble dsp_b1;
+    gint dsp_filter_coeff_incr_count;
+      
+    gdouble dsp_centernode;
+    gint dsp_i;
+      
+    /* filter (implement the voice filter according to SoundFont standard) */
+    dsp_hist1 = fluid_iir_filter_util->hist1;
+    dsp_hist2 = fluid_iir_filter_util->hist2;
+    
+    dsp_a1 = fluid_iir_filter_util->a1;
+    dsp_a2 = fluid_iir_filter_util->a2;
+    dsp_b02 = fluid_iir_filter_util->b02;
+    dsp_b1 = fluid_iir_filter_util->b1;
+
+    dsp_filter_coeff_incr_count = fluid_iir_filter_util->filter_coeff_incr_count;
+    
+    /* Two versions of the filter loop. One, while the filter is
+     * changing towards its new setting. The other, if the filter
+     * doesn't change.
+     */
+
+    if(dsp_filter_coeff_incr_count > 0){
+      gdouble dsp_a1_incr;
+      gdouble dsp_a2_incr;
+      gdouble dsp_b02_incr;
+      gdouble dsp_b1_incr;
+      
+      dsp_a1_incr = fluid_iir_filter_util->a1_incr;
+      dsp_a2_incr = fluid_iir_filter_util->a2_incr;
+      dsp_b02_incr = fluid_iir_filter_util->b02_incr;
+      dsp_b1_incr = fluid_iir_filter_util->b1_incr;
+
+      /* Increment is added to each filter coefficient filter_coeff_incr_count times. */
+      for(dsp_i = 0; dsp_i < buffer_length; dsp_i++){
+	/* The filter is implemented in Direct-II form. */
+	dsp_centernode = source[dsp_i * source_stride] - dsp_a1 * dsp_hist1 - dsp_a2 * dsp_hist2;
+
+	destination[dsp_i * destination_stride] = dsp_b02 * (dsp_centernode + dsp_hist2) + dsp_b1 * dsp_hist1;
+
+	dsp_hist2 = dsp_hist1;
+	dsp_hist1 = dsp_centernode;
+
+	if(dsp_filter_coeff_incr_count-- > 0){
+	  gdouble old_b02;
+
+	  old_b02 = dsp_b02;
+
+	  dsp_a1 += dsp_a1_incr;
+	  dsp_a2 += dsp_a2_incr;
+	  dsp_b02 += dsp_b02_incr;
+	  dsp_b1 += dsp_b1_incr;
+
+	  /* Compensate history to avoid the filter going havoc with large frequency changes */
+	  if(fluid_iir_filter_util->compensate_incr && fabs(dsp_b02) > 0.001f){
+	    gdouble compensate;
+
+	    compensate = old_b02 / dsp_b02;
+
+	    dsp_hist1 *= compensate;
+	    dsp_hist2 *= compensate;
+	  }
+	}
+      } /* for dsp_i */
+    }else{ /* The filter parameters are constant.  This is duplicated to save time. */
+      for(dsp_i = 0; dsp_i < buffer_length; dsp_i++){
+	/* The filter is implemented in Direct-II form. */
+	dsp_centernode = source[dsp_i * source_stride] - dsp_a1 * dsp_hist1 - dsp_a2 * dsp_hist2;
+	
+	destination[dsp_i * destination_stride] = dsp_b02 * (dsp_centernode + dsp_hist2) + dsp_b1 * dsp_hist1;
+
+	dsp_hist2 = dsp_hist1;
+	dsp_hist1 = dsp_centernode;
+      }
+    }
+    
+    fluid_iir_filter_util->hist1 = dsp_hist1;
+    fluid_iir_filter_util->hist2 = dsp_hist2;
+    
+    fluid_iir_filter_util->a1 = dsp_a1;
+    fluid_iir_filter_util->a2 = dsp_a2;
+    fluid_iir_filter_util->b02 = dsp_b02;
+    fluid_iir_filter_util->b1 = dsp_b1;
+    
+    fluid_iir_filter_util->filter_coeff_incr_count = dsp_filter_coeff_incr_count;
+  }
+}
+
+/**
+ * ags_fluid_iir_filter_util_process_s64:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Process @fluid_iir_filter_util of signed 64 bit data.
+ * 
+ * Since: 3.9.7
+ */
+void
+ags_fluid_iir_filter_util_process_s64(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  gint64 *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  
+  if(fluid_iir_filter_util == NULL ||
+     fluid_iir_filter_util->destination == NULL ||
+     fluid_iir_filter_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_iir_filter_util->destination;
+  destination_stride = fluid_iir_filter_util->destination_stride;
+
+  source = fluid_iir_filter_util->source;
+  source_stride = fluid_iir_filter_util->source_stride;
+
+  buffer_length = fluid_iir_filter_util->buffer_length;
+
+  if(fluid_iir_filter_util->filter_type == AGS_FLUID_IIR_DISABLED || fluid_iir_filter_util->q_lin == 0.0){
+    return;
+  }else{
+    /* IIR filter sample history */
+    gdouble dsp_hist1;
+    gdouble dsp_hist2;
+    
+    /* IIR filter coefficients */
+    gdouble dsp_a1;
+    gdouble dsp_a2;
+    gdouble dsp_b02;
+    gdouble dsp_b1;
+    gint dsp_filter_coeff_incr_count;
+      
+    gdouble dsp_centernode;
+    gint dsp_i;
+      
+    /* filter (implement the voice filter according to SoundFont standard) */
+    dsp_hist1 = fluid_iir_filter_util->hist1;
+    dsp_hist2 = fluid_iir_filter_util->hist2;
+    
+    dsp_a1 = fluid_iir_filter_util->a1;
+    dsp_a2 = fluid_iir_filter_util->a2;
+    dsp_b02 = fluid_iir_filter_util->b02;
+    dsp_b1 = fluid_iir_filter_util->b1;
+
+    dsp_filter_coeff_incr_count = fluid_iir_filter_util->filter_coeff_incr_count;
+    
+    /* Two versions of the filter loop. One, while the filter is
+     * changing towards its new setting. The other, if the filter
+     * doesn't change.
+     */
+
+    if(dsp_filter_coeff_incr_count > 0){
+      gdouble dsp_a1_incr;
+      gdouble dsp_a2_incr;
+      gdouble dsp_b02_incr;
+      gdouble dsp_b1_incr;
+      
+      dsp_a1_incr = fluid_iir_filter_util->a1_incr;
+      dsp_a2_incr = fluid_iir_filter_util->a2_incr;
+      dsp_b02_incr = fluid_iir_filter_util->b02_incr;
+      dsp_b1_incr = fluid_iir_filter_util->b1_incr;
+
+      /* Increment is added to each filter coefficient filter_coeff_incr_count times. */
+      for(dsp_i = 0; dsp_i < buffer_length; dsp_i++){
+	/* The filter is implemented in Direct-II form. */
+	dsp_centernode = source[dsp_i * source_stride] - dsp_a1 * dsp_hist1 - dsp_a2 * dsp_hist2;
+
+	destination[dsp_i * destination_stride] = dsp_b02 * (dsp_centernode + dsp_hist2) + dsp_b1 * dsp_hist1;
+
+	dsp_hist2 = dsp_hist1;
+	dsp_hist1 = dsp_centernode;
+
+	if(dsp_filter_coeff_incr_count-- > 0){
+	  gdouble old_b02;
+
+	  old_b02 = dsp_b02;
+
+	  dsp_a1 += dsp_a1_incr;
+	  dsp_a2 += dsp_a2_incr;
+	  dsp_b02 += dsp_b02_incr;
+	  dsp_b1 += dsp_b1_incr;
+
+	  /* Compensate history to avoid the filter going havoc with large frequency changes */
+	  if(fluid_iir_filter_util->compensate_incr && fabs(dsp_b02) > 0.001f){
+	    gdouble compensate;
+
+	    compensate = old_b02 / dsp_b02;
+
+	    dsp_hist1 *= compensate;
+	    dsp_hist2 *= compensate;
+	  }
+	}
+      } /* for dsp_i */
+    }else{ /* The filter parameters are constant.  This is duplicated to save time. */
+      for(dsp_i = 0; dsp_i < buffer_length; dsp_i++){
+	/* The filter is implemented in Direct-II form. */
+	dsp_centernode = source[dsp_i * source_stride] - dsp_a1 * dsp_hist1 - dsp_a2 * dsp_hist2;
+	
+	destination[dsp_i * destination_stride] = dsp_b02 * (dsp_centernode + dsp_hist2) + dsp_b1 * dsp_hist1;
+
+	dsp_hist2 = dsp_hist1;
+	dsp_hist1 = dsp_centernode;
+      }
+    }
+    
+    fluid_iir_filter_util->hist1 = dsp_hist1;
+    fluid_iir_filter_util->hist2 = dsp_hist2;
+    
+    fluid_iir_filter_util->a1 = dsp_a1;
+    fluid_iir_filter_util->a2 = dsp_a2;
+    fluid_iir_filter_util->b02 = dsp_b02;
+    fluid_iir_filter_util->b1 = dsp_b1;
+    
+    fluid_iir_filter_util->filter_coeff_incr_count = dsp_filter_coeff_incr_count;
+  }
+}
+
+/**
+ * ags_fluid_iir_filter_util_process_float:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Process @fluid_iir_filter_util of floating point data.
+ * 
+ * Since: 3.9.7
+ */
+void
+ags_fluid_iir_filter_util_process_float(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  gfloat *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  
+  if(fluid_iir_filter_util == NULL ||
+     fluid_iir_filter_util->destination == NULL ||
+     fluid_iir_filter_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_iir_filter_util->destination;
+  destination_stride = fluid_iir_filter_util->destination_stride;
+
+  source = fluid_iir_filter_util->source;
+  source_stride = fluid_iir_filter_util->source_stride;
+
+  buffer_length = fluid_iir_filter_util->buffer_length;
+
+  if(fluid_iir_filter_util->filter_type == AGS_FLUID_IIR_DISABLED || fluid_iir_filter_util->q_lin == 0.0){
+    return;
+  }else{
+    /* IIR filter sample history */
+    gdouble dsp_hist1;
+    gdouble dsp_hist2;
+    
+    /* IIR filter coefficients */
+    gdouble dsp_a1;
+    gdouble dsp_a2;
+    gdouble dsp_b02;
+    gdouble dsp_b1;
+    gint dsp_filter_coeff_incr_count;
+      
+    gdouble dsp_centernode;
+    gint dsp_i;
+      
+    /* filter (implement the voice filter according to SoundFont standard) */
+    dsp_hist1 = fluid_iir_filter_util->hist1;
+    dsp_hist2 = fluid_iir_filter_util->hist2;
+    
+    dsp_a1 = fluid_iir_filter_util->a1;
+    dsp_a2 = fluid_iir_filter_util->a2;
+    dsp_b02 = fluid_iir_filter_util->b02;
+    dsp_b1 = fluid_iir_filter_util->b1;
+
+    dsp_filter_coeff_incr_count = fluid_iir_filter_util->filter_coeff_incr_count;
+    
+    /* Two versions of the filter loop. One, while the filter is
+     * changing towards its new setting. The other, if the filter
+     * doesn't change.
+     */
+
+    if(dsp_filter_coeff_incr_count > 0){
+      gdouble dsp_a1_incr;
+      gdouble dsp_a2_incr;
+      gdouble dsp_b02_incr;
+      gdouble dsp_b1_incr;
+      
+      dsp_a1_incr = fluid_iir_filter_util->a1_incr;
+      dsp_a2_incr = fluid_iir_filter_util->a2_incr;
+      dsp_b02_incr = fluid_iir_filter_util->b02_incr;
+      dsp_b1_incr = fluid_iir_filter_util->b1_incr;
+
+      /* Increment is added to each filter coefficient filter_coeff_incr_count times. */
+      for(dsp_i = 0; dsp_i < buffer_length; dsp_i++){
+	/* The filter is implemented in Direct-II form. */
+	dsp_centernode = source[dsp_i * source_stride] - dsp_a1 * dsp_hist1 - dsp_a2 * dsp_hist2;
+
+	destination[dsp_i * destination_stride] = dsp_b02 * (dsp_centernode + dsp_hist2) + dsp_b1 * dsp_hist1;
+
+	dsp_hist2 = dsp_hist1;
+	dsp_hist1 = dsp_centernode;
+
+	if(dsp_filter_coeff_incr_count-- > 0){
+	  gdouble old_b02;
+
+	  old_b02 = dsp_b02;
+
+	  dsp_a1 += dsp_a1_incr;
+	  dsp_a2 += dsp_a2_incr;
+	  dsp_b02 += dsp_b02_incr;
+	  dsp_b1 += dsp_b1_incr;
+
+	  /* Compensate history to avoid the filter going havoc with large frequency changes */
+	  if(fluid_iir_filter_util->compensate_incr && fabs(dsp_b02) > 0.001f){
+	    gdouble compensate;
+
+	    compensate = old_b02 / dsp_b02;
+
+	    dsp_hist1 *= compensate;
+	    dsp_hist2 *= compensate;
+	  }
+	}
+      } /* for dsp_i */
+    }else{ /* The filter parameters are constant.  This is duplicated to save time. */
+      for(dsp_i = 0; dsp_i < buffer_length; dsp_i++){
+	/* The filter is implemented in Direct-II form. */
+	dsp_centernode = source[dsp_i * source_stride] - dsp_a1 * dsp_hist1 - dsp_a2 * dsp_hist2;
+	
+	destination[dsp_i * destination_stride] = dsp_b02 * (dsp_centernode + dsp_hist2) + dsp_b1 * dsp_hist1;
+
+	dsp_hist2 = dsp_hist1;
+	dsp_hist1 = dsp_centernode;
+      }
+    }
+    
+    fluid_iir_filter_util->hist1 = dsp_hist1;
+    fluid_iir_filter_util->hist2 = dsp_hist2;
+    
+    fluid_iir_filter_util->a1 = dsp_a1;
+    fluid_iir_filter_util->a2 = dsp_a2;
+    fluid_iir_filter_util->b02 = dsp_b02;
+    fluid_iir_filter_util->b1 = dsp_b1;
+    
+    fluid_iir_filter_util->filter_coeff_incr_count = dsp_filter_coeff_incr_count;
+  }
+}
+
+/**
+ * ags_fluid_iir_filter_util_process_double:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Process @fluid_iir_filter_util of double precision floating point data.
+ * 
+ * Since: 3.9.7
+ */
+void
+ags_fluid_iir_filter_util_process_double(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  gdouble *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  
+  if(fluid_iir_filter_util == NULL ||
+     fluid_iir_filter_util->destination == NULL ||
+     fluid_iir_filter_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_iir_filter_util->destination;
+  destination_stride = fluid_iir_filter_util->destination_stride;
+
+  source = fluid_iir_filter_util->source;
+  source_stride = fluid_iir_filter_util->source_stride;
+
+  buffer_length = fluid_iir_filter_util->buffer_length;
+
+  if(fluid_iir_filter_util->filter_type == AGS_FLUID_IIR_DISABLED || fluid_iir_filter_util->q_lin == 0.0){
+    return;
+  }else{
+    /* IIR filter sample history */
+    gdouble dsp_hist1;
+    gdouble dsp_hist2;
+    
+    /* IIR filter coefficients */
+    gdouble dsp_a1;
+    gdouble dsp_a2;
+    gdouble dsp_b02;
+    gdouble dsp_b1;
+    gint dsp_filter_coeff_incr_count;
+      
+    gdouble dsp_centernode;
+    gint dsp_i;
+      
+    /* filter (implement the voice filter according to SoundFont standard) */
+    dsp_hist1 = fluid_iir_filter_util->hist1;
+    dsp_hist2 = fluid_iir_filter_util->hist2;
+    
+    dsp_a1 = fluid_iir_filter_util->a1;
+    dsp_a2 = fluid_iir_filter_util->a2;
+    dsp_b02 = fluid_iir_filter_util->b02;
+    dsp_b1 = fluid_iir_filter_util->b1;
+
+    dsp_filter_coeff_incr_count = fluid_iir_filter_util->filter_coeff_incr_count;
+    
+    /* Two versions of the filter loop. One, while the filter is
+     * changing towards its new setting. The other, if the filter
+     * doesn't change.
+     */
+
+    if(dsp_filter_coeff_incr_count > 0){
+      gdouble dsp_a1_incr;
+      gdouble dsp_a2_incr;
+      gdouble dsp_b02_incr;
+      gdouble dsp_b1_incr;
+      
+      dsp_a1_incr = fluid_iir_filter_util->a1_incr;
+      dsp_a2_incr = fluid_iir_filter_util->a2_incr;
+      dsp_b02_incr = fluid_iir_filter_util->b02_incr;
+      dsp_b1_incr = fluid_iir_filter_util->b1_incr;
+
+      /* Increment is added to each filter coefficient filter_coeff_incr_count times. */
+      for(dsp_i = 0; dsp_i < buffer_length; dsp_i++){
+	/* The filter is implemented in Direct-II form. */
+	dsp_centernode = source[dsp_i * source_stride] - dsp_a1 * dsp_hist1 - dsp_a2 * dsp_hist2;
+
+	destination[dsp_i * destination_stride] = dsp_b02 * (dsp_centernode + dsp_hist2) + dsp_b1 * dsp_hist1;
+
+	dsp_hist2 = dsp_hist1;
+	dsp_hist1 = dsp_centernode;
+
+	if(dsp_filter_coeff_incr_count-- > 0){
+	  gdouble old_b02;
+
+	  old_b02 = dsp_b02;
+
+	  dsp_a1 += dsp_a1_incr;
+	  dsp_a2 += dsp_a2_incr;
+	  dsp_b02 += dsp_b02_incr;
+	  dsp_b1 += dsp_b1_incr;
+
+	  /* Compensate history to avoid the filter going havoc with large frequency changes */
+	  if(fluid_iir_filter_util->compensate_incr && fabs(dsp_b02) > 0.001f){
+	    gdouble compensate;
+
+	    compensate = old_b02 / dsp_b02;
+
+	    dsp_hist1 *= compensate;
+	    dsp_hist2 *= compensate;
+	  }
+	}
+      } /* for dsp_i */
+    }else{ /* The filter parameters are constant.  This is duplicated to save time. */
+      for(dsp_i = 0; dsp_i < buffer_length; dsp_i++){
+	/* The filter is implemented in Direct-II form. */
+	dsp_centernode = source[dsp_i * source_stride] - dsp_a1 * dsp_hist1 - dsp_a2 * dsp_hist2;
+	
+	destination[dsp_i * destination_stride] = dsp_b02 * (dsp_centernode + dsp_hist2) + dsp_b1 * dsp_hist1;
+
+	dsp_hist2 = dsp_hist1;
+	dsp_hist1 = dsp_centernode;
+      }
+    }
+    
+    fluid_iir_filter_util->hist1 = dsp_hist1;
+    fluid_iir_filter_util->hist2 = dsp_hist2;
+    
+    fluid_iir_filter_util->a1 = dsp_a1;
+    fluid_iir_filter_util->a2 = dsp_a2;
+    fluid_iir_filter_util->b02 = dsp_b02;
+    fluid_iir_filter_util->b1 = dsp_b1;
+    
+    fluid_iir_filter_util->filter_coeff_incr_count = dsp_filter_coeff_incr_count;
+  }
+}
+
+/**
+ * ags_fluid_iir_filter_util_process_complex:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Process @fluid_iir_filter_util of complex data.
+ * 
+ * Since: 3.9.7
+ */
+void
+ags_fluid_iir_filter_util_process_complex(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  AgsComplex *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  
+  if(fluid_iir_filter_util == NULL ||
+     fluid_iir_filter_util->destination == NULL ||
+     fluid_iir_filter_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_iir_filter_util->destination;
+  destination_stride = fluid_iir_filter_util->destination_stride;
+
+  source = fluid_iir_filter_util->source;
+  source_stride = fluid_iir_filter_util->source_stride;
+
+  buffer_length = fluid_iir_filter_util->buffer_length;
+
+  if(fluid_iir_filter_util->filter_type == AGS_FLUID_IIR_DISABLED || fluid_iir_filter_util->q_lin == 0.0){
+    return;
+  }else{
+    /* IIR filter sample history */
+    gdouble dsp_hist1;
+    gdouble dsp_hist2;
+    
+    /* IIR filter coefficients */
+    gdouble dsp_a1;
+    gdouble dsp_a2;
+    gdouble dsp_b02;
+    gdouble dsp_b1;
+    gint dsp_filter_coeff_incr_count;
+      
+    gdouble dsp_centernode;
+    gint dsp_i;
+      
+    /* filter (implement the voice filter according to SoundFont standard) */
+    dsp_hist1 = fluid_iir_filter_util->hist1;
+    dsp_hist2 = fluid_iir_filter_util->hist2;
+    
+    dsp_a1 = fluid_iir_filter_util->a1;
+    dsp_a2 = fluid_iir_filter_util->a2;
+    dsp_b02 = fluid_iir_filter_util->b02;
+    dsp_b1 = fluid_iir_filter_util->b1;
+
+    dsp_filter_coeff_incr_count = fluid_iir_filter_util->filter_coeff_incr_count;
+    
+    /* Two versions of the filter loop. One, while the filter is
+     * changing towards its new setting. The other, if the filter
+     * doesn't change.
+     */
+
+    if(dsp_filter_coeff_incr_count > 0){
+      gdouble dsp_a1_incr;
+      gdouble dsp_a2_incr;
+      gdouble dsp_b02_incr;
+      gdouble dsp_b1_incr;
+      
+      dsp_a1_incr = fluid_iir_filter_util->a1_incr;
+      dsp_a2_incr = fluid_iir_filter_util->a2_incr;
+      dsp_b02_incr = fluid_iir_filter_util->b02_incr;
+      dsp_b1_incr = fluid_iir_filter_util->b1_incr;
+
+      /* Increment is added to each filter coefficient filter_coeff_incr_count times. */
+      for(dsp_i = 0; dsp_i < buffer_length; dsp_i++){
+	/* The filter is implemented in Direct-II form. */
+	dsp_centernode = ags_complex_get(source + (dsp_i * source_stride)) - dsp_a1 * dsp_hist1 - dsp_a2 * dsp_hist2;
+
+	ags_complex_set(destination + (dsp_i * destination_stride),
+			(dsp_b02 * (dsp_centernode + dsp_hist2) + dsp_b1 * dsp_hist1));
+
+	dsp_hist2 = dsp_hist1;
+	dsp_hist1 = dsp_centernode;
+
+	if(dsp_filter_coeff_incr_count-- > 0){
+	  gdouble old_b02;
+
+	  old_b02 = dsp_b02;
+
+	  dsp_a1 += dsp_a1_incr;
+	  dsp_a2 += dsp_a2_incr;
+	  dsp_b02 += dsp_b02_incr;
+	  dsp_b1 += dsp_b1_incr;
+
+	  /* Compensate history to avoid the filter going havoc with large frequency changes */
+	  if(fluid_iir_filter_util->compensate_incr && fabs(dsp_b02) > 0.001f){
+	    gdouble compensate;
+
+	    compensate = old_b02 / dsp_b02;
+
+	    dsp_hist1 *= compensate;
+	    dsp_hist2 *= compensate;
+	  }
+	}
+      } /* for dsp_i */
+    }else{ /* The filter parameters are constant.  This is duplicated to save time. */
+      for(dsp_i = 0; dsp_i < buffer_length; dsp_i++){
+	/* The filter is implemented in Direct-II form. */
+	dsp_centernode = ags_complex_get(source + (dsp_i * source_stride)) - dsp_a1 * dsp_hist1 - dsp_a2 * dsp_hist2;
+	
+	ags_complex_set(destination + (dsp_i * destination_stride),
+			dsp_b02 * (dsp_centernode + dsp_hist2) + dsp_b1 * dsp_hist1);
+
+	dsp_hist2 = dsp_hist1;
+	dsp_hist1 = dsp_centernode;
+      }
+    }
+    
+    fluid_iir_filter_util->hist1 = dsp_hist1;
+    fluid_iir_filter_util->hist2 = dsp_hist2;
+    
+    fluid_iir_filter_util->a1 = dsp_a1;
+    fluid_iir_filter_util->a2 = dsp_a2;
+    fluid_iir_filter_util->b02 = dsp_b02;
+    fluid_iir_filter_util->b1 = dsp_b1;
+    
+    fluid_iir_filter_util->filter_coeff_incr_count = dsp_filter_coeff_incr_count;
+  }
+}
+
+/**
+ * ags_fluid_iir_filter_util_process:
+ * @fluid_iir_filter_util: the #AgsFluidIIRFilterUtil-struct
+ * 
+ * Process @fluid_iir_filter_util.
+ * 
+ * Since: 3.9.7
+ */
+void
+ags_fluid_iir_filter_util_process(AgsFluidIIRFilterUtil *fluid_iir_filter_util)
+{
+  if(fluid_iir_filter_util == NULL ||
+     fluid_iir_filter_util->destination == NULL ||
+     fluid_iir_filter_util->source == NULL){
+    return;
+  }
+
+  switch(fluid_iir_filter_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+  {
+    ags_fluid_iir_filter_util_process_s8(fluid_iir_filter_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+  {
+    ags_fluid_iir_filter_util_process_s16(fluid_iir_filter_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+  {
+    ags_fluid_iir_filter_util_process_s24(fluid_iir_filter_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+  {
+    ags_fluid_iir_filter_util_process_s32(fluid_iir_filter_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+  {
+    ags_fluid_iir_filter_util_process_s64(fluid_iir_filter_util);
+  }
+  break;
+  case AGS_SOUNDCARD_FLOAT:
+  {
+    ags_fluid_iir_filter_util_process_float(fluid_iir_filter_util);
+  }
+  break;
+  case AGS_SOUNDCARD_DOUBLE:
+  {
+    ags_fluid_iir_filter_util_process_double(fluid_iir_filter_util);
+  }
+  break;
+  case AGS_SOUNDCARD_COMPLEX:
+  {
+    ags_fluid_iir_filter_util_process_complex(fluid_iir_filter_util);
+  }
+  break;
+  default:
+    g_warning("unknown format");
+  }
 }
 
 /**

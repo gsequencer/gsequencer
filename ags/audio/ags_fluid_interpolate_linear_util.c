@@ -522,6 +522,7 @@ ags_fluid_interpolate_linear_util_pitch_s8(AgsFluidInterpolateLinearUtil *fluid_
 {
   gint8 *destination, *source;
   
+  guint destination_stride, source_stride;
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
   guint dsp_i;
@@ -536,7 +537,10 @@ ags_fluid_interpolate_linear_util_pitch_s8(AgsFluidInterpolateLinearUtil *fluid_
   }
 
   destination = fluid_interpolate_linear_util->destination;
+  destination_stride = fluid_interpolate_linear_util->destination_stride;
+
   source = fluid_interpolate_linear_util->source;
+  source_stride = fluid_interpolate_linear_util->source_stride;
   
   dsp_phase = 0;
   
@@ -565,8 +569,8 @@ ags_fluid_interpolate_linear_util_pitch_s8(AgsFluidInterpolateLinearUtil *fluid_
     
     g_mutex_unlock(&interp_coeff_linear_mutex);
 
-    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
-			  + coeffs_1 * source[dsp_phase_index + 1]);
+    destination[dsp_i * destination_stride] = (coeffs_0 * source[dsp_phase_index * source_stride]
+					       + coeffs_1 * source[(dsp_phase_index + 1) * source_stride]);
     
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -589,6 +593,7 @@ ags_fluid_interpolate_linear_util_pitch_s16(AgsFluidInterpolateLinearUtil *fluid
 {
   gint8 *destination, *source;
   
+  guint destination_stride, source_stride;
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
   guint dsp_i;
@@ -603,7 +608,10 @@ ags_fluid_interpolate_linear_util_pitch_s16(AgsFluidInterpolateLinearUtil *fluid
   }
 
   destination = fluid_interpolate_linear_util->destination;
+  destination_stride = fluid_interpolate_linear_util->destination_stride;
+
   source = fluid_interpolate_linear_util->source;
+  source_stride = fluid_interpolate_linear_util->source_stride;
   
   dsp_phase = 0;
   
@@ -632,8 +640,8 @@ ags_fluid_interpolate_linear_util_pitch_s16(AgsFluidInterpolateLinearUtil *fluid
     
     g_mutex_unlock(&interp_coeff_linear_mutex);
 
-    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
-			  + coeffs_1 * source[dsp_phase_index + 1]);
+    destination[dsp_i * destination_stride] = (coeffs_0 * source[dsp_phase_index * source_stride]
+					       + coeffs_1 * source[(dsp_phase_index + 1) * source_stride]);
     
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -656,6 +664,7 @@ ags_fluid_interpolate_linear_util_pitch_s24(AgsFluidInterpolateLinearUtil *fluid
 {
   gint8 *destination, *source;
   
+  guint destination_stride, source_stride;
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
   guint dsp_i;
@@ -670,7 +679,10 @@ ags_fluid_interpolate_linear_util_pitch_s24(AgsFluidInterpolateLinearUtil *fluid
   }
 
   destination = fluid_interpolate_linear_util->destination;
+  destination_stride = fluid_interpolate_linear_util->destination_stride;
+
   source = fluid_interpolate_linear_util->source;
+  source_stride = fluid_interpolate_linear_util->source_stride;
   
   dsp_phase = 0;
   
@@ -699,8 +711,8 @@ ags_fluid_interpolate_linear_util_pitch_s24(AgsFluidInterpolateLinearUtil *fluid
     
     g_mutex_unlock(&interp_coeff_linear_mutex);
 
-    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
-			  + coeffs_1 * source[dsp_phase_index + 1]);
+    destination[dsp_i * destination_stride] = (coeffs_0 * source[dsp_phase_index * source_stride]
+					       + coeffs_1 * source[(dsp_phase_index + 1) * source_stride]);
     
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -723,6 +735,7 @@ ags_fluid_interpolate_linear_util_pitch_s32(AgsFluidInterpolateLinearUtil *fluid
 {
   gint8 *destination, *source;
   
+  guint destination_stride, source_stride;
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
   guint dsp_i;
@@ -737,7 +750,10 @@ ags_fluid_interpolate_linear_util_pitch_s32(AgsFluidInterpolateLinearUtil *fluid
   }
 
   destination = fluid_interpolate_linear_util->destination;
+  destination_stride = fluid_interpolate_linear_util->destination_stride;
+
   source = fluid_interpolate_linear_util->source;
+  source_stride = fluid_interpolate_linear_util->source_stride;
   
   dsp_phase = 0;
   
@@ -766,8 +782,8 @@ ags_fluid_interpolate_linear_util_pitch_s32(AgsFluidInterpolateLinearUtil *fluid
     
     g_mutex_unlock(&interp_coeff_linear_mutex);
 
-    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
-			  + coeffs_1 * source[dsp_phase_index + 1]);
+    destination[dsp_i * destination_stride] = (coeffs_0 * source[dsp_phase_index * source_stride]
+					       + coeffs_1 * source[(dsp_phase_index + 1) * source_stride]);
     
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -790,6 +806,7 @@ ags_fluid_interpolate_linear_util_pitch_s64(AgsFluidInterpolateLinearUtil *fluid
 {
   gint8 *destination, *source;
   
+  guint destination_stride, source_stride;
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
   guint dsp_i;
@@ -804,7 +821,10 @@ ags_fluid_interpolate_linear_util_pitch_s64(AgsFluidInterpolateLinearUtil *fluid
   }
 
   destination = fluid_interpolate_linear_util->destination;
+  destination_stride = fluid_interpolate_linear_util->destination_stride;
+
   source = fluid_interpolate_linear_util->source;
+  source_stride = fluid_interpolate_linear_util->source_stride;
   
   dsp_phase = 0;
   
@@ -833,8 +853,8 @@ ags_fluid_interpolate_linear_util_pitch_s64(AgsFluidInterpolateLinearUtil *fluid
     
     g_mutex_unlock(&interp_coeff_linear_mutex);
 
-    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
-			  + coeffs_1 * source[dsp_phase_index + 1]);
+    destination[dsp_i * destination_stride] = (coeffs_0 * source[dsp_phase_index * source_stride]
+					       + coeffs_1 * source[(dsp_phase_index + 1) * source_stride]);
     
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -857,6 +877,7 @@ ags_fluid_interpolate_linear_util_pitch_float(AgsFluidInterpolateLinearUtil *flu
 {
   gint8 *destination, *source;
   
+  guint destination_stride, source_stride;
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
   guint dsp_i;
@@ -871,7 +892,10 @@ ags_fluid_interpolate_linear_util_pitch_float(AgsFluidInterpolateLinearUtil *flu
   }
 
   destination = fluid_interpolate_linear_util->destination;
+  destination_stride = fluid_interpolate_linear_util->destination_stride;
+
   source = fluid_interpolate_linear_util->source;
+  source_stride = fluid_interpolate_linear_util->source_stride;
   
   dsp_phase = 0;
   
@@ -900,8 +924,8 @@ ags_fluid_interpolate_linear_util_pitch_float(AgsFluidInterpolateLinearUtil *flu
     
     g_mutex_unlock(&interp_coeff_linear_mutex);
 
-    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
-			  + coeffs_1 * source[dsp_phase_index + 1]);
+    destination[dsp_i * destination_stride] = (coeffs_0 * source[dsp_phase_index * source_stride]
+					       + coeffs_1 * source[(dsp_phase_index + 1) * source_stride]);
     
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -924,6 +948,7 @@ ags_fluid_interpolate_linear_util_pitch_double(AgsFluidInterpolateLinearUtil *fl
 {
   gint8 *destination, *source;
   
+  guint destination_stride, source_stride;
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
   guint dsp_i;
@@ -938,7 +963,10 @@ ags_fluid_interpolate_linear_util_pitch_double(AgsFluidInterpolateLinearUtil *fl
   }
 
   destination = fluid_interpolate_linear_util->destination;
+  destination_stride = fluid_interpolate_linear_util->destination_stride;
+
   source = fluid_interpolate_linear_util->source;
+  source_stride = fluid_interpolate_linear_util->source_stride;
   
   dsp_phase = 0;
   
@@ -967,8 +995,8 @@ ags_fluid_interpolate_linear_util_pitch_double(AgsFluidInterpolateLinearUtil *fl
     
     g_mutex_unlock(&interp_coeff_linear_mutex);
 
-    destination[dsp_i] = (coeffs_0 * source[dsp_phase_index]
-			  + coeffs_1 * source[dsp_phase_index + 1]);
+    destination[dsp_i * destination_stride] = (coeffs_0 * source[dsp_phase_index * source_stride]
+			  + coeffs_1 * source[(dsp_phase_index + 1) * source_stride]);
     
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -991,6 +1019,7 @@ ags_fluid_interpolate_linear_util_pitch_complex(AgsFluidInterpolateLinearUtil *f
 {
   gint8 *destination, *source;
   
+  guint destination_stride, source_stride;
   guint64 dsp_phase;
   guint64 dsp_phase_incr;
   guint dsp_i;
@@ -1005,7 +1034,10 @@ ags_fluid_interpolate_linear_util_pitch_complex(AgsFluidInterpolateLinearUtil *f
   }
 
   destination = fluid_interpolate_linear_util->destination;
+  destination_stride = fluid_interpolate_linear_util->destination_stride;
+
   source = fluid_interpolate_linear_util->source;
+  source_stride = fluid_interpolate_linear_util->source_stride;
   
   dsp_phase = 0;
   
@@ -1034,8 +1066,8 @@ ags_fluid_interpolate_linear_util_pitch_complex(AgsFluidInterpolateLinearUtil *f
     
     g_mutex_unlock(&interp_coeff_linear_mutex);
 
-    ags_complex_set(destination + dsp_i,
-		    (coeffs_0 * ags_complex_get(source + dsp_phase_index) + coeffs_1 * ags_complex_get(source + dsp_phase_index + 1)));
+    ags_complex_set(destination + (dsp_i * destination_stride),
+		    (coeffs_0 * ags_complex_get(source + (dsp_phase_index * source_stride)) + coeffs_1 * ags_complex_get(source + ((dsp_phase_index + 1) * source_stride))));
     
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);

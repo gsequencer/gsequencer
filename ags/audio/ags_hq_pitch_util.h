@@ -81,14 +81,6 @@ guint ags_hq_pitch_util_get_destination_stride(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_set_destination_stride(AgsHQPitchUtil *hq_pitch_util,
 					      guint destination_stride);
 
-gpointer ags_hq_pitch_util_get_low_mix_buffer(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_set_low_mix_buffer(AgsHQPitchUtil *hq_pitch_util,
-					  gpointer low_mix_buffer);
-
-gpointer ags_hq_pitch_util_get_new_mix_buffer(AgsHQPitchUtil *hq_pitch_util);
-void ags_hq_pitch_util_set_new_mix_buffer(AgsHQPitchUtil *hq_pitch_util,
-					  gpointer new_mix_buffer);
-
 guint ags_hq_pitch_util_get_buffer_length(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_set_buffer_length(AgsHQPitchUtil *hq_pitch_util,
 					 guint buffer_length);
@@ -119,41 +111,49 @@ void ags_hq_pitch_util_pitch_double(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_pitch_complex(AgsHQPitchUtil *hq_pitch_util);
 void ags_hq_pitch_util_pitch(AgsHQPitchUtil *hq_pitch_util);
 
+G_DEPRECATED_FOR(ags_hq_pitch_util_pitch_s8)
 void ags_hq_pitch_util_compute_s8(gint8 *buffer,
 				  guint buffer_length,
 				  guint samplerate,
 				  gdouble base_key,
 				  gdouble tuning);
+G_DEPRECATED_FOR(ags_hq_pitch_util_pitch_s16)
 void ags_hq_pitch_util_compute_s16(gint16 *buffer,
 				   guint buffer_length,
 				   guint samplerate,
 				   gdouble base_key,
 				   gdouble tuning);
+G_DEPRECATED_FOR(ags_hq_pitch_util_pitch_s24)
 void ags_hq_pitch_util_compute_s24(gint32 *buffer,
 				   guint buffer_length,
 				   guint samplerate,
 				   gdouble base_key,
 				   gdouble tuning);
+G_DEPRECATED_FOR(ags_hq_pitch_util_pitch_s32)
 void ags_hq_pitch_util_compute_s32(gint32 *buffer,
 				   guint buffer_length,
 				   guint samplerate,
 				   gdouble base_key,
 				   gdouble tuning);
+G_DEPRECATED_FOR(ags_hq_pitch_util_pitch_s64)
 void ags_hq_pitch_util_compute_s64(gint64 *buffer,
 				   guint buffer_length,
 				   guint samplerate,
 				   gdouble base_key,
 				   gdouble tuning);
+G_DEPRECATED_FOR(ags_hq_pitch_util_pitch_float)
 void ags_hq_pitch_util_compute_float(gfloat *buffer,
 				     guint buffer_length,
 				     guint samplerate,
 				     gdouble base_key,
 				     gdouble tuning);
+G_DEPRECATED_FOR(ags_hq_pitch_util_pitch_double)
 void ags_hq_pitch_util_compute_double(gdouble *buffer,
 				      guint buffer_length,
 				      guint samplerate,
 				      gdouble base_key,
 				      gdouble tuning);
+G_DEPRECATED_FOR(ags_hq_pitch_util_pitch_complex)
 void ags_hq_pitch_util_compute_complex(AgsComplex *buffer,
 				       guint buffer_length,
 				       guint samplerate,

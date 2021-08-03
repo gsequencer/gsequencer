@@ -160,6 +160,11 @@ ags_fast_pitch_util_free(AgsFastPitchUtil *ptr)
   if(ptr->destination != ptr->source){
     g_free(ptr->source);
   }
+
+  g_free(ptr->mix_buffer);
+  g_free(ptr->im_mix_buffer);
+  g_free(ptr->low_mix_buffer);
+  g_free(ptr->new_mix_buffer);
   
   g_free(ptr);
 }
@@ -588,6 +593,7 @@ ags_fast_pitch_util_pitch_s8(AgsFastPitchUtil *fast_pitch_util)
   gint8 *mix_buffer, *im_mix_buffer, *low_mix_buffer, *new_mix_buffer;
   gint8 *ptr_buffer;
 
+  guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
   gdouble volume;
@@ -605,7 +611,10 @@ ags_fast_pitch_util_pitch_s8(AgsFastPitchUtil *fast_pitch_util)
   }
 
   destination = fast_pitch_util->destination;
+  destination_stride = fast_pitch_util->destination_stride;
+
   source = fast_pitch_util->source;
+  source_stride = fast_pitch_util->source_stride;
 
   buffer_length = fast_pitch_util->buffer_length;
   samplerate = fast_pitch_util->samplerate;
@@ -679,7 +688,7 @@ ags_fast_pitch_util_pitch_s8(AgsFastPitchUtil *fast_pitch_util)
     ptr_mix_buffer = mix_buffer + i;
 
     /* write mix buffer */
-    ptr_mix_buffer[0] = source[i];
+    ptr_mix_buffer[0] = source[i * source_stride];
   }
 
   /* im mix buffer */
@@ -874,7 +883,7 @@ ags_fast_pitch_util_pitch_s8(AgsFastPitchUtil *fast_pitch_util)
   /* rewrite buffer */
   for(i = 0; i < buffer_length; i++){
     ptr_new_mix_buffer = new_mix_buffer + i;
-    ptr_buffer = destination + i;
+    ptr_buffer = destination + (i * destination_stride);
 
     ptr_buffer[0] = ptr_new_mix_buffer[0];
   }
@@ -896,6 +905,7 @@ ags_fast_pitch_util_pitch_s16(AgsFastPitchUtil *fast_pitch_util)
   gint16 *mix_buffer, *im_mix_buffer, *low_mix_buffer, *new_mix_buffer;
   gint16 *ptr_buffer;
 
+  guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
   gdouble volume;
@@ -913,7 +923,10 @@ ags_fast_pitch_util_pitch_s16(AgsFastPitchUtil *fast_pitch_util)
   }
 
   destination = fast_pitch_util->destination;
+  destination_stride = fast_pitch_util->destination_stride;
+
   source = fast_pitch_util->source;
+  source_stride = fast_pitch_util->source_stride;
 
   buffer_length = fast_pitch_util->buffer_length;
   samplerate = fast_pitch_util->samplerate;
@@ -987,7 +1000,7 @@ ags_fast_pitch_util_pitch_s16(AgsFastPitchUtil *fast_pitch_util)
     ptr_mix_buffer = mix_buffer + i;
 
     /* write mix buffer */
-    ptr_mix_buffer[0] = source[i];
+    ptr_mix_buffer[0] = source[i * source_stride];
   }
 
   /* im mix buffer */
@@ -1182,7 +1195,7 @@ ags_fast_pitch_util_pitch_s16(AgsFastPitchUtil *fast_pitch_util)
   /* rewrite buffer */
   for(i = 0; i < buffer_length; i++){
     ptr_new_mix_buffer = new_mix_buffer + i;
-    ptr_buffer = destination + i;
+    ptr_buffer = destination + (i * destination_stride);
 
     ptr_buffer[0] = ptr_new_mix_buffer[0];
   }
@@ -1204,6 +1217,7 @@ ags_fast_pitch_util_pitch_s24(AgsFastPitchUtil *fast_pitch_util)
   gint32 *mix_buffer, *im_mix_buffer, *low_mix_buffer, *new_mix_buffer;
   gint32 *ptr_buffer;
 
+  guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
   gdouble volume;
@@ -1221,7 +1235,10 @@ ags_fast_pitch_util_pitch_s24(AgsFastPitchUtil *fast_pitch_util)
   }
 
   destination = fast_pitch_util->destination;
+  destination_stride = fast_pitch_util->destination_stride;
+
   source = fast_pitch_util->source;
+  source_stride = fast_pitch_util->source_stride;
 
   buffer_length = fast_pitch_util->buffer_length;
   samplerate = fast_pitch_util->samplerate;
@@ -1295,7 +1312,7 @@ ags_fast_pitch_util_pitch_s24(AgsFastPitchUtil *fast_pitch_util)
     ptr_mix_buffer = mix_buffer + i;
 
     /* write mix buffer */
-    ptr_mix_buffer[0] = source[i];
+    ptr_mix_buffer[0] = source[i * source_stride];
   }
 
   /* im mix buffer */
@@ -1490,7 +1507,7 @@ ags_fast_pitch_util_pitch_s24(AgsFastPitchUtil *fast_pitch_util)
   /* rewrite buffer */
   for(i = 0; i < buffer_length; i++){
     ptr_new_mix_buffer = new_mix_buffer + i;
-    ptr_buffer = destination + i;
+    ptr_buffer = destination + (i * destination_stride);
 
     ptr_buffer[0] = ptr_new_mix_buffer[0];
   }
@@ -1512,6 +1529,7 @@ ags_fast_pitch_util_pitch_s32(AgsFastPitchUtil *fast_pitch_util)
   gint32 *mix_buffer, *im_mix_buffer, *low_mix_buffer, *new_mix_buffer;
   gint32 *ptr_buffer;
 
+  guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
   gdouble volume;
@@ -1529,7 +1547,10 @@ ags_fast_pitch_util_pitch_s32(AgsFastPitchUtil *fast_pitch_util)
   }
 
   destination = fast_pitch_util->destination;
+  destination_stride = fast_pitch_util->destination_stride;
+
   source = fast_pitch_util->source;
+  source_stride = fast_pitch_util->source_stride;
 
   buffer_length = fast_pitch_util->buffer_length;
   samplerate = fast_pitch_util->samplerate;
@@ -1603,7 +1624,7 @@ ags_fast_pitch_util_pitch_s32(AgsFastPitchUtil *fast_pitch_util)
     ptr_mix_buffer = mix_buffer + i;
 
     /* write mix buffer */
-    ptr_mix_buffer[0] = source[i];
+    ptr_mix_buffer[0] = source[i * source_stride];
   }
 
   /* im mix buffer */
@@ -1798,7 +1819,7 @@ ags_fast_pitch_util_pitch_s32(AgsFastPitchUtil *fast_pitch_util)
   /* rewrite buffer */
   for(i = 0; i < buffer_length; i++){
     ptr_new_mix_buffer = new_mix_buffer + i;
-    ptr_buffer = destination + i;
+    ptr_buffer = destination + (i * destination_stride);
 
     ptr_buffer[0] = ptr_new_mix_buffer[0];
   }
@@ -1820,6 +1841,7 @@ ags_fast_pitch_util_pitch_s64(AgsFastPitchUtil *fast_pitch_util)
   gint64 *mix_buffer, *im_mix_buffer, *low_mix_buffer, *new_mix_buffer;
   gint64 *ptr_buffer;
 
+  guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
   gdouble volume;
@@ -1837,7 +1859,10 @@ ags_fast_pitch_util_pitch_s64(AgsFastPitchUtil *fast_pitch_util)
   }
 
   destination = fast_pitch_util->destination;
+  destination_stride = fast_pitch_util->destination_stride;
+
   source = fast_pitch_util->source;
+  source_stride = fast_pitch_util->source_stride;
 
   buffer_length = fast_pitch_util->buffer_length;
   samplerate = fast_pitch_util->samplerate;
@@ -1911,7 +1936,7 @@ ags_fast_pitch_util_pitch_s64(AgsFastPitchUtil *fast_pitch_util)
     ptr_mix_buffer = mix_buffer + i;
 
     /* write mix buffer */
-    ptr_mix_buffer[0] = source[i];
+    ptr_mix_buffer[0] = source[i * source_stride];
   }
 
   /* im mix buffer */
@@ -2106,7 +2131,7 @@ ags_fast_pitch_util_pitch_s64(AgsFastPitchUtil *fast_pitch_util)
   /* rewrite buffer */
   for(i = 0; i < buffer_length; i++){
     ptr_new_mix_buffer = new_mix_buffer + i;
-    ptr_buffer = destination + i;
+    ptr_buffer = destination + (i * destination_stride);
 
     ptr_buffer[0] = ptr_new_mix_buffer[0];
   }
@@ -2128,6 +2153,7 @@ ags_fast_pitch_util_pitch_float(AgsFastPitchUtil *fast_pitch_util)
   gfloat *mix_buffer, *im_mix_buffer, *low_mix_buffer, *new_mix_buffer;
   gfloat *ptr_buffer;
 
+  guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
   gdouble volume;
@@ -2145,7 +2171,10 @@ ags_fast_pitch_util_pitch_float(AgsFastPitchUtil *fast_pitch_util)
   }
 
   destination = fast_pitch_util->destination;
+  destination_stride = fast_pitch_util->destination_stride;
+
   source = fast_pitch_util->source;
+  source_stride = fast_pitch_util->source_stride;
 
   buffer_length = fast_pitch_util->buffer_length;
   samplerate = fast_pitch_util->samplerate;
@@ -2219,7 +2248,7 @@ ags_fast_pitch_util_pitch_float(AgsFastPitchUtil *fast_pitch_util)
     ptr_mix_buffer = mix_buffer + i;
 
     /* write mix buffer */
-    ptr_mix_buffer[0] = source[i];
+    ptr_mix_buffer[0] = source[i * source_stride];
   }
 
   /* im mix buffer */
@@ -2414,7 +2443,7 @@ ags_fast_pitch_util_pitch_float(AgsFastPitchUtil *fast_pitch_util)
   /* rewrite buffer */
   for(i = 0; i < buffer_length; i++){
     ptr_new_mix_buffer = new_mix_buffer + i;
-    ptr_buffer = destination + i;
+    ptr_buffer = destination + (i * destination_stride);
 
     ptr_buffer[0] = ptr_new_mix_buffer[0];
   }
@@ -2436,6 +2465,7 @@ ags_fast_pitch_util_pitch_double(AgsFastPitchUtil *fast_pitch_util)
   gdouble *mix_buffer, *im_mix_buffer, *low_mix_buffer, *new_mix_buffer;
   gdouble *ptr_buffer;
 
+  guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
   gdouble volume;
@@ -2453,7 +2483,10 @@ ags_fast_pitch_util_pitch_double(AgsFastPitchUtil *fast_pitch_util)
   }
 
   destination = fast_pitch_util->destination;
+  destination_stride = fast_pitch_util->destination_stride;
+
   source = fast_pitch_util->source;
+  source_stride = fast_pitch_util->source_stride;
 
   buffer_length = fast_pitch_util->buffer_length;
   samplerate = fast_pitch_util->samplerate;
@@ -2527,7 +2560,7 @@ ags_fast_pitch_util_pitch_double(AgsFastPitchUtil *fast_pitch_util)
     ptr_mix_buffer = mix_buffer + i;
 
     /* write mix buffer */
-    ptr_mix_buffer[0] = source[i];
+    ptr_mix_buffer[0] = source[i * source_stride];
   }
 
   /* im mix buffer */
@@ -2722,7 +2755,7 @@ ags_fast_pitch_util_pitch_double(AgsFastPitchUtil *fast_pitch_util)
   /* rewrite buffer */
   for(i = 0; i < buffer_length; i++){
     ptr_new_mix_buffer = new_mix_buffer + i;
-    ptr_buffer = destination + i;
+    ptr_buffer = destination + (i * destination_stride);
 
     ptr_buffer[0] = ptr_new_mix_buffer[0];
   }
@@ -2744,6 +2777,7 @@ ags_fast_pitch_util_pitch_complex(AgsFastPitchUtil *fast_pitch_util)
   AgsComplex *mix_buffer, *im_mix_buffer, *low_mix_buffer, *new_mix_buffer;
   AgsComplex *ptr_buffer;
 
+  guint destination_stride, source_stride;
   guint buffer_length;
   guint samplerate;
   gdouble volume;
@@ -2761,7 +2795,10 @@ ags_fast_pitch_util_pitch_complex(AgsFastPitchUtil *fast_pitch_util)
   }
 
   destination = fast_pitch_util->destination;
+  destination_stride = fast_pitch_util->destination_stride;
+
   source = fast_pitch_util->source;
+  source_stride = fast_pitch_util->source_stride;
 
   buffer_length = fast_pitch_util->buffer_length;
   samplerate = fast_pitch_util->samplerate;
@@ -2836,7 +2873,7 @@ ags_fast_pitch_util_pitch_complex(AgsFastPitchUtil *fast_pitch_util)
 
     /* write mix buffer */
     ags_complex_set(ptr_mix_buffer,
-		    ags_complex_get(source + i));
+		    ags_complex_get(source + (i * source_stride)));
   }
 
   /* im mix buffer */
@@ -3034,7 +3071,7 @@ ags_fast_pitch_util_pitch_complex(AgsFastPitchUtil *fast_pitch_util)
   /* rewrite buffer */
   for(i = 0; i < buffer_length; i++){
     ptr_new_mix_buffer = new_mix_buffer + i;
-    ptr_buffer = destination + i;
+    ptr_buffer = destination + (i * destination_stride);
 
     ags_complex_set(ptr_buffer,
 		    ags_complex_get(ptr_new_mix_buffer));

@@ -537,7 +537,166 @@ ags_fluid_interpolate_7th_order_util_set_phase_increment(AgsFluidInterpolate7thO
 void
 ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util)
 {
-  //TODO:JK: implement me
+  gint8 *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble phase_incr;
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint start_index, end_index;
+  gdouble start_points[3], end_points[3];
+  gdouble *coeffs;
+
+  if(fluid_interpolate_7th_order_util == NULL ||
+     fluid_interpolate_7th_order_util->destination == NULL ||
+     fluid_interpolate_7th_order_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_interpolate_7th_order_util->destination;
+  destination_stride = fluid_interpolate_7th_order_util->destination_stride;
+
+  source = fluid_interpolate_7th_order_util->source;
+  source_stride = fluid_interpolate_7th_order_util->source_stride;
+
+  buffer_length = fluid_interpolate_7th_order_util->buffer_length;
+
+  phase_incr = fluid_interpolate_7th_order_util->phase_increment;
+
+  ags_fluid_interpolate_7th_order_util_config();
+
+  dsp_phase = 0;
+
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+
+  end_index = buffer_length - 1;
+
+  start_index = 0;
+
+  start_points[0] = source[0];
+  start_points[1] = start_points[0];
+  start_points[2] = start_points[0];
+  
+  end_points[0] = source[end_index * source_stride];
+  end_points[1] = end_points[0];
+  end_points[2] = end_points[0];
+
+  dsp_i = 0;
+
+  dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+  /* interpolate first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[2]
+					       + coeffs[1] * start_points[1]
+					       + coeffs[2] * start_points[0]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  start_index++;
+
+  /* interpolate 2nd to first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[1]
+					       + coeffs[1] * start_points[0]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  start_index++;
+
+  /* interpolate 3rd to first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++)
+  {
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[0]
+					       + coeffs[1] * source[(dsp_phase_index - 2) * source_stride]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  /* set back to original start index */
+  start_index -= 2;
+
+  /* interpolate the sequence of sample points */
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
+  {
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * source[(dsp_phase_index - 3) * source_stride]
+					       + coeffs[1] * source[(dsp_phase_index - 2) * source_stride]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
 }
 
 /**
@@ -551,7 +710,166 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
 void
 ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util)
 {
-  //TODO:JK: implement me
+  gint16 *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble phase_incr;
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint start_index, end_index;
+  gdouble start_points[3], end_points[3];
+  gdouble *coeffs;
+
+  if(fluid_interpolate_7th_order_util == NULL ||
+     fluid_interpolate_7th_order_util->destination == NULL ||
+     fluid_interpolate_7th_order_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_interpolate_7th_order_util->destination;
+  destination_stride = fluid_interpolate_7th_order_util->destination_stride;
+
+  source = fluid_interpolate_7th_order_util->source;
+  source_stride = fluid_interpolate_7th_order_util->source_stride;
+
+  buffer_length = fluid_interpolate_7th_order_util->buffer_length;
+
+  phase_incr = fluid_interpolate_7th_order_util->phase_increment;
+
+  ags_fluid_interpolate_7th_order_util_config();
+
+  dsp_phase = 0;
+
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+
+  end_index = buffer_length - 1;
+
+  start_index = 0;
+
+  start_points[0] = source[0];
+  start_points[1] = start_points[0];
+  start_points[2] = start_points[0];
+  
+  end_points[0] = source[end_index * source_stride];
+  end_points[1] = end_points[0];
+  end_points[2] = end_points[0];
+
+  dsp_i = 0;
+
+  dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+  /* interpolate first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[2]
+					       + coeffs[1] * start_points[1]
+					       + coeffs[2] * start_points[0]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  start_index++;
+
+  /* interpolate 2nd to first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[1]
+					       + coeffs[1] * start_points[0]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  start_index++;
+
+  /* interpolate 3rd to first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++)
+  {
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[0]
+					       + coeffs[1] * source[(dsp_phase_index - 2) * source_stride]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  /* set back to original start index */
+  start_index -= 2;
+
+  /* interpolate the sequence of sample points */
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
+  {
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * source[(dsp_phase_index - 3) * source_stride]
+					       + coeffs[1] * source[(dsp_phase_index - 2) * source_stride]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
 }
 
 /**
@@ -565,7 +883,166 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
 void
 ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util)
 {
-  //TODO:JK: implement me
+  gint32 *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble phase_incr;
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint start_index, end_index;
+  gdouble start_points[3], end_points[3];
+  gdouble *coeffs;
+
+  if(fluid_interpolate_7th_order_util == NULL ||
+     fluid_interpolate_7th_order_util->destination == NULL ||
+     fluid_interpolate_7th_order_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_interpolate_7th_order_util->destination;
+  destination_stride = fluid_interpolate_7th_order_util->destination_stride;
+
+  source = fluid_interpolate_7th_order_util->source;
+  source_stride = fluid_interpolate_7th_order_util->source_stride;
+
+  buffer_length = fluid_interpolate_7th_order_util->buffer_length;
+
+  phase_incr = fluid_interpolate_7th_order_util->phase_increment;
+
+  ags_fluid_interpolate_7th_order_util_config();
+
+  dsp_phase = 0;
+
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+
+  end_index = buffer_length - 1;
+
+  start_index = 0;
+
+  start_points[0] = source[0];
+  start_points[1] = start_points[0];
+  start_points[2] = start_points[0];
+  
+  end_points[0] = source[end_index * source_stride];
+  end_points[1] = end_points[0];
+  end_points[2] = end_points[0];
+
+  dsp_i = 0;
+
+  dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+  /* interpolate first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[2]
+					       + coeffs[1] * start_points[1]
+					       + coeffs[2] * start_points[0]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  start_index++;
+
+  /* interpolate 2nd to first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[1]
+					       + coeffs[1] * start_points[0]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  start_index++;
+
+  /* interpolate 3rd to first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++)
+  {
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[0]
+					       + coeffs[1] * source[(dsp_phase_index - 2) * source_stride]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  /* set back to original start index */
+  start_index -= 2;
+
+  /* interpolate the sequence of sample points */
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
+  {
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * source[(dsp_phase_index - 3) * source_stride]
+					       + coeffs[1] * source[(dsp_phase_index - 2) * source_stride]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
 }
 
 /**
@@ -579,7 +1056,166 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
 void
 ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util)
 {
-  //TODO:JK: implement me
+  gint32 *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble phase_incr;
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint start_index, end_index;
+  gdouble start_points[3], end_points[3];
+  gdouble *coeffs;
+
+  if(fluid_interpolate_7th_order_util == NULL ||
+     fluid_interpolate_7th_order_util->destination == NULL ||
+     fluid_interpolate_7th_order_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_interpolate_7th_order_util->destination;
+  destination_stride = fluid_interpolate_7th_order_util->destination_stride;
+
+  source = fluid_interpolate_7th_order_util->source;
+  source_stride = fluid_interpolate_7th_order_util->source_stride;
+
+  buffer_length = fluid_interpolate_7th_order_util->buffer_length;
+
+  phase_incr = fluid_interpolate_7th_order_util->phase_increment;
+
+  ags_fluid_interpolate_7th_order_util_config();
+
+  dsp_phase = 0;
+
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+
+  end_index = buffer_length - 1;
+
+  start_index = 0;
+
+  start_points[0] = source[0];
+  start_points[1] = start_points[0];
+  start_points[2] = start_points[0];
+  
+  end_points[0] = source[end_index * source_stride];
+  end_points[1] = end_points[0];
+  end_points[2] = end_points[0];
+
+  dsp_i = 0;
+
+  dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+  /* interpolate first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[2]
+					       + coeffs[1] * start_points[1]
+					       + coeffs[2] * start_points[0]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  start_index++;
+
+  /* interpolate 2nd to first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[1]
+					       + coeffs[1] * start_points[0]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  start_index++;
+
+  /* interpolate 3rd to first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++)
+  {
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[0]
+					       + coeffs[1] * source[(dsp_phase_index - 2) * source_stride]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  /* set back to original start index */
+  start_index -= 2;
+
+  /* interpolate the sequence of sample points */
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
+  {
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * source[(dsp_phase_index - 3) * source_stride]
+					       + coeffs[1] * source[(dsp_phase_index - 2) * source_stride]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
 }
 
 /**
@@ -593,7 +1229,166 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
 void
 ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util)
 {
-  //TODO:JK: implement me
+  gint64 *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble phase_incr;
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint start_index, end_index;
+  gdouble start_points[3], end_points[3];
+  gdouble *coeffs;
+
+  if(fluid_interpolate_7th_order_util == NULL ||
+     fluid_interpolate_7th_order_util->destination == NULL ||
+     fluid_interpolate_7th_order_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_interpolate_7th_order_util->destination;
+  destination_stride = fluid_interpolate_7th_order_util->destination_stride;
+
+  source = fluid_interpolate_7th_order_util->source;
+  source_stride = fluid_interpolate_7th_order_util->source_stride;
+
+  buffer_length = fluid_interpolate_7th_order_util->buffer_length;
+
+  phase_incr = fluid_interpolate_7th_order_util->phase_increment;
+
+  ags_fluid_interpolate_7th_order_util_config();
+
+  dsp_phase = 0;
+
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+
+  end_index = buffer_length - 1;
+
+  start_index = 0;
+
+  start_points[0] = source[0];
+  start_points[1] = start_points[0];
+  start_points[2] = start_points[0];
+  
+  end_points[0] = source[end_index * source_stride];
+  end_points[1] = end_points[0];
+  end_points[2] = end_points[0];
+
+  dsp_i = 0;
+
+  dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+  /* interpolate first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[2]
+					       + coeffs[1] * start_points[1]
+					       + coeffs[2] * start_points[0]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  start_index++;
+
+  /* interpolate 2nd to first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[1]
+					       + coeffs[1] * start_points[0]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  start_index++;
+
+  /* interpolate 3rd to first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++)
+  {
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[0]
+					       + coeffs[1] * source[(dsp_phase_index - 2) * source_stride]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  /* set back to original start index */
+  start_index -= 2;
+
+  /* interpolate the sequence of sample points */
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
+  {
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * source[(dsp_phase_index - 3) * source_stride]
+					       + coeffs[1] * source[(dsp_phase_index - 2) * source_stride]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
 }
 
 /**
@@ -607,7 +1402,166 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
 void
 ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util)
 {
-  //TODO:JK: implement me
+  gfloat *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble phase_incr;
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint start_index, end_index;
+  gdouble start_points[3], end_points[3];
+  gdouble *coeffs;
+
+  if(fluid_interpolate_7th_order_util == NULL ||
+     fluid_interpolate_7th_order_util->destination == NULL ||
+     fluid_interpolate_7th_order_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_interpolate_7th_order_util->destination;
+  destination_stride = fluid_interpolate_7th_order_util->destination_stride;
+
+  source = fluid_interpolate_7th_order_util->source;
+  source_stride = fluid_interpolate_7th_order_util->source_stride;
+
+  buffer_length = fluid_interpolate_7th_order_util->buffer_length;
+
+  phase_incr = fluid_interpolate_7th_order_util->phase_increment;
+
+  ags_fluid_interpolate_7th_order_util_config();
+
+  dsp_phase = 0;
+
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+
+  end_index = buffer_length - 1;
+
+  start_index = 0;
+
+  start_points[0] = source[0];
+  start_points[1] = start_points[0];
+  start_points[2] = start_points[0];
+  
+  end_points[0] = source[end_index * source_stride];
+  end_points[1] = end_points[0];
+  end_points[2] = end_points[0];
+
+  dsp_i = 0;
+
+  dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+  /* interpolate first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[2]
+					       + coeffs[1] * start_points[1]
+					       + coeffs[2] * start_points[0]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  start_index++;
+
+  /* interpolate 2nd to first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[1]
+					       + coeffs[1] * start_points[0]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  start_index++;
+
+  /* interpolate 3rd to first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++)
+  {
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[0]
+					       + coeffs[1] * source[(dsp_phase_index - 2) * source_stride]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  /* set back to original start index */
+  start_index -= 2;
+
+  /* interpolate the sequence of sample points */
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
+  {
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * source[(dsp_phase_index - 3) * source_stride]
+					       + coeffs[1] * source[(dsp_phase_index - 2) * source_stride]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
 }
 
 /**
@@ -621,7 +1575,166 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
 void
 ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util)
 {
-  //TODO:JK: implement me
+  gdouble *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble phase_incr;
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint start_index, end_index;
+  gdouble start_points[3], end_points[3];
+  gdouble *coeffs;
+
+  if(fluid_interpolate_7th_order_util == NULL ||
+     fluid_interpolate_7th_order_util->destination == NULL ||
+     fluid_interpolate_7th_order_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_interpolate_7th_order_util->destination;
+  destination_stride = fluid_interpolate_7th_order_util->destination_stride;
+
+  source = fluid_interpolate_7th_order_util->source;
+  source_stride = fluid_interpolate_7th_order_util->source_stride;
+
+  buffer_length = fluid_interpolate_7th_order_util->buffer_length;
+
+  phase_incr = fluid_interpolate_7th_order_util->phase_increment;
+
+  ags_fluid_interpolate_7th_order_util_config();
+
+  dsp_phase = 0;
+
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+
+  end_index = buffer_length - 1;
+
+  start_index = 0;
+
+  start_points[0] = source[0];
+  start_points[1] = start_points[0];
+  start_points[2] = start_points[0];
+  
+  end_points[0] = source[end_index * source_stride];
+  end_points[1] = end_points[0];
+  end_points[2] = end_points[0];
+
+  dsp_i = 0;
+
+  dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+  /* interpolate first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[2]
+					       + coeffs[1] * start_points[1]
+					       + coeffs[2] * start_points[0]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  start_index++;
+
+  /* interpolate 2nd to first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[1]
+					       + coeffs[1] * start_points[0]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  start_index++;
+
+  /* interpolate 3rd to first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++)
+  {
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * start_points[0]
+					       + coeffs[1] * source[(dsp_phase_index - 2) * source_stride]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  /* set back to original start index */
+  start_index -= 2;
+
+  /* interpolate the sequence of sample points */
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
+  {
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    destination[dsp_i * destination_stride] = (coeffs[0] * source[(dsp_phase_index - 3) * source_stride]
+					       + coeffs[1] * source[(dsp_phase_index - 2) * source_stride]
+					       + coeffs[2] * source[(dsp_phase_index - 1) * source_stride]
+					       + coeffs[3] * source[dsp_phase_index * source_stride]
+					       + coeffs[4] * source[(dsp_phase_index + 1) * source_stride]
+					       + coeffs[5] * source[(dsp_phase_index + 2) * source_stride]
+					       + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
 }
 
 /**
@@ -635,7 +1748,170 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
 void
 ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util)
 {
-  //TODO:JK: implement me
+  AgsComplex *destination, *source;
+  
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble phase_incr;
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint start_index, end_index;
+  double _Complex start_points[3], end_points[3];
+  gdouble *coeffs;
+
+  if(fluid_interpolate_7th_order_util == NULL ||
+     fluid_interpolate_7th_order_util->destination == NULL ||
+     fluid_interpolate_7th_order_util->source == NULL){
+    return;
+  }
+
+  destination = fluid_interpolate_7th_order_util->destination;
+  destination_stride = fluid_interpolate_7th_order_util->destination_stride;
+
+  source = fluid_interpolate_7th_order_util->source;
+  source_stride = fluid_interpolate_7th_order_util->source_stride;
+
+  buffer_length = fluid_interpolate_7th_order_util->buffer_length;
+
+  phase_incr = fluid_interpolate_7th_order_util->phase_increment;
+
+  ags_fluid_interpolate_7th_order_util_config();
+
+  dsp_phase = 0;
+
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+
+  end_index = buffer_length - 1;
+
+  start_index = 0;
+
+  start_points[0] = ags_complex_get(source);
+  start_points[1] = start_points[0];
+  start_points[2] = start_points[0];
+  
+  end_points[0] = ags_complex_get(source + (end_index * source_stride));
+  end_points[1] = end_points[0];
+  end_points[2] = end_points[0];
+
+  dsp_i = 0;
+
+  dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+  /* interpolate first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    ags_complex_set(destination + (dsp_i * destination_stride),
+		    (coeffs[0] * start_points[2]
+		     + coeffs[1] * start_points[1]
+		     + coeffs[2] * start_points[0]
+		     + coeffs[3] * ags_complex_get(source + (dsp_phase_index * source_stride))
+		     + coeffs[4] * ags_complex_get(source + ((dsp_phase_index + 1) * source_stride))
+		     + coeffs[5] * ags_complex_get(source + ((dsp_phase_index + 2) * source_stride))
+		     + coeffs[6] * ags_complex_get(source + ((dsp_phase_index + 3) * source_stride))));
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  start_index++;
+
+  /* interpolate 2nd to first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    ags_complex_set(destination + (dsp_i * destination_stride),
+		    (coeffs[0] * start_points[1]
+		     + coeffs[1] * start_points[0]
+		     + coeffs[2] * ags_complex_get(source + ((dsp_phase_index - 1) * source_stride))
+		     + coeffs[3] * ags_complex_get(source + (dsp_phase_index * source_stride))
+		     + coeffs[4] * ags_complex_get(source + ((dsp_phase_index + 1) * source_stride))
+		     + coeffs[5] * ags_complex_get(source + ((dsp_phase_index + 2) * source_stride))
+		     + coeffs[6] * ags_complex_get(source + ((dsp_phase_index + 3) * source_stride))));
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  start_index++;
+
+  /* interpolate 3rd to first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++)
+  {
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    ags_complex_set(destination + (dsp_i * destination_stride),
+		    (coeffs[0] * start_points[0]
+		     + coeffs[1] * ags_complex_get(source + ((dsp_phase_index - 2) * source_stride))
+		     + coeffs[2] * ags_complex_get(source + ((dsp_phase_index - 1) * source_stride))
+		     + coeffs[3] * ags_complex_get(source + (dsp_phase_index * source_stride))
+		     + coeffs[4] * ags_complex_get(source + ((dsp_phase_index + 1) * source_stride))
+		     + coeffs[5] * ags_complex_get(source + ((dsp_phase_index + 2) * source_stride))
+		     + coeffs[6] * ags_complex_get(source + ((dsp_phase_index + 3) * source_stride))));
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
+
+  /* set back to original start index */
+  start_index -= 2;
+
+  /* interpolate the sequence of sample points */
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
+  {
+    gint row;
+    
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&interp_coeff_7th_order_mutex);
+
+    coeffs = interp_coeff_7th_order[row];
+
+    ags_complex_set(destination + (dsp_i * destination_stride),
+		    (coeffs[0] * ags_complex_get(source + ((dsp_phase_index - 3) * source_stride))
+		     + coeffs[1] * ags_complex_get(source + ((dsp_phase_index - 2) * source_stride))
+		     + coeffs[2] * ags_complex_get(source + ((dsp_phase_index - 1) * source_stride))
+		     + coeffs[3] * ags_complex_get(source + (dsp_phase_index * source_stride))
+		     + coeffs[4] * ags_complex_get(source + ((dsp_phase_index + 1) * source_stride))
+		     + coeffs[5] * ags_complex_get(source + ((dsp_phase_index + 2) * source_stride))
+		     + coeffs[6] * ags_complex_get(source + ((dsp_phase_index + 3) * source_stride))));
+
+    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+  }
 }
 
 /**
@@ -649,7 +1925,56 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
 void
 ags_fluid_interpolate_7th_order_util_pitch(AgsFluidInterpolate7thOrderUtil *fluid_interpolate_7th_order_util)
 {
-  //TODO:JK: implement me
+  if(fluid_interpolate_7th_order_util == NULL ||
+     fluid_interpolate_7th_order_util->destination == NULL ||
+     fluid_interpolate_7th_order_util->source == NULL){
+    return;
+  }
+
+  switch(fluid_interpolate_7th_order_util->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+  {
+    ags_fluid_interpolate_7th_order_util_pitch_s8(fluid_interpolate_7th_order_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+  {
+    ags_fluid_interpolate_7th_order_util_pitch_s16(fluid_interpolate_7th_order_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+  {
+    ags_fluid_interpolate_7th_order_util_pitch_s24(fluid_interpolate_7th_order_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+  {
+    ags_fluid_interpolate_7th_order_util_pitch_s32(fluid_interpolate_7th_order_util);
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+  {
+    ags_fluid_interpolate_7th_order_util_pitch_s64(fluid_interpolate_7th_order_util);
+  }
+  break;
+  case AGS_SOUNDCARD_FLOAT:
+  {
+    ags_fluid_interpolate_7th_order_util_pitch_float(fluid_interpolate_7th_order_util);
+  }
+  break;
+  case AGS_SOUNDCARD_DOUBLE:
+  {
+    ags_fluid_interpolate_7th_order_util_pitch_double(fluid_interpolate_7th_order_util);
+  }
+  break;
+  case AGS_SOUNDCARD_COMPLEX:
+  {
+    ags_fluid_interpolate_7th_order_util_pitch_complex(fluid_interpolate_7th_order_util);
+  }
+  break;
+  default:
+    g_warning("unknown format");
+  }
 }
 
 /**
