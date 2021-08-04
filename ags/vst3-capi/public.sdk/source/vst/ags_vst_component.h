@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_AUDIO_EFFECT_H__
-#define __AGS_VST_AUDIO_EFFECT_H__
+#ifndef __AGS_VST_COMPONENT_H__
+#define __AGS_VST_COMPONENT_H__
 
 #include <glib.h>
 
@@ -271,4 +271,4 @@ extern "C" {
 }
 #endif
 
-#endif /*__AGS_VST_AUDIO_EFFECT_H__*/
+#endif /*__AGS_VST_COMPONENT_H__*/

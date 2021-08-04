@@ -26,7 +26,7 @@
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.h>
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_smart_pointer.h>
 
-#define AGS_VST_FUNKNOWN_IID (ags_vst_funknown_get_iid());
+#define AGS_VST_FUNKNOWN_IID (ags_vst_funknown_get_iid())
 
 #ifdef __cplusplus
 extern "C" {
