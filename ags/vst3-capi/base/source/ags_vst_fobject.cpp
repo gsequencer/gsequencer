@@ -17,23 +17,12 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_ICOMPONENT_H__
-#define __AGS_VST_ICOMPONENT_H__
+#include <ags/vst3-capi/base/source/ags_vst_fobject.h>
 
-#include <glib.h>
+#include <base/source/fobject.h>
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
-  typedef struct AgsVstIComponent IComponent;
-
-  typedef struct AgsVstBusInfo BusInfo;
-
-  typedef struct AgsVstRoutingInfo RoutingInfo;
+  //TODO:JK: implement me
   
-#ifdef __cplusplus
 }
-#endif
-
-#endif /*__AGS_VST_ICOMPONENT_H__*/

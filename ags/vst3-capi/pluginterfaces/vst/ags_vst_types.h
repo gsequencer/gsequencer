@@ -22,7 +22,7 @@
 
 #include <glib.h>
 
-#include <ags/vst3-capi/pluginterfaces/base/fstrdefs.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.h>
 
 #ifndef AGS_VST_VERSION_STRING
 #define AGS_VST_VERSION_STRING "VST 3.6.13"
@@ -62,7 +62,7 @@ extern "C" {
   typedef gdouble AgsVstSample64;
   typedef gdouble AgsVstSampleRate;
 
-  typedef guint64 AgsVstSpeakerArrangement;
+  typedef long long unsigned int AgsVstSpeakerArrangement;
   typedef guint64 AgsVstSpeaker;
   
 #ifdef __cplusplus

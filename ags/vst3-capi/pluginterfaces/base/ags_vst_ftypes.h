@@ -55,13 +55,14 @@ extern "C" {
   static const guint64 ags_vst_kmax_int64u = (guint64) (0xffffffff) | ((guint64) (0xffffffff) << 32);
   
   typedef gint64 AgsVstTSize;
-
+  typedef gint32 AgsVstTResult;
+  
 #if SMTG_PLATFORM_64
   typedef guint64 AgsVstTPtrInt;
 #else
   typedef guint32 AgsVstTPtrInt;
 #endif  
-
+  
   static const float ags_vst_kmax_float = 3.40282346638528860E38;
   static const double ags_vst_kmax_double = 1.7976931348623158E308;
 

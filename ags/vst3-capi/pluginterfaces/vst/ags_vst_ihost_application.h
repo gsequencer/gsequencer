@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_ICOMPONENT_H__
-#define __AGS_VST_ICOMPONENT_H__
+#ifndef __AGS_VST_IHOST_APPLICATION_H__
+#define __AGS_VST_IHOST_APPLICATION_H__
 
 #include <glib.h>
 
@@ -26,14 +26,10 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIComponent IComponent;
-
-  typedef struct AgsVstBusInfo BusInfo;
-
-  typedef struct AgsVstRoutingInfo RoutingInfo;
+  typedef struct AgsVstIHostApplication IHostApplication;
   
 #ifdef __cplusplus
 }
 #endif
 
-#endif /*__AGS_VST_ICOMPONENT_H__*/
+#endif /*__AGS_VST_IHOST_APPLICATION_H__*/

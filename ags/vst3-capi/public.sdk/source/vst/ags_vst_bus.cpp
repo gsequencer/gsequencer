@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,7 @@ extern "C" {
   
   AgsVstBus* ags_vst_bus_new(AgsVstTChar *name, AgsVstBusType bus_type, gint32 flags)
   {
-    return(new Bus());
+    return(new Steinberg::Bus());
   }
   
   void ags_vst_bus_delete(AgsVstBus *bus)

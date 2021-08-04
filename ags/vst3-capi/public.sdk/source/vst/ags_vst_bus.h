@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,10 +22,12 @@
 
 #include <glib.h>
 
-#include <ags/vst3-capi/base/source/ags_fobject.h>
-#include <ags/vst3-capi/base/source/ags_fstring.h>
-#include <ags/vst3-capi/pluginterfaces/vst/ags_ivst_component.h>
-#include <ags/vst3-capi/pluginterfaces/vst/ags_ivst_audio_processor.h>
+#include <ags/vst3-capi/base/source/ags_vst_fobject.h>
+#include <ags/vst3-capi/base/source/ags_vst_fstring.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iaudio_processor.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h>
 
 #ifdef __cplusplus
 extern "C" {

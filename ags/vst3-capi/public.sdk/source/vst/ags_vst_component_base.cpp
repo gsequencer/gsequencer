@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,7 +27,7 @@ extern "C" {
 
   AgsVstComponentBase* ags_vst_component_base_new()
   {
-    return(new ComponentBase());
+    return((AgsVstComponentBase*) new Steinberg::Vst::ComponentBase());
   }
   
   void ags_vst_component_base_delete(AgsVstComponentBase *component_base)
@@ -37,64 +37,64 @@ extern "C" {
 
   AgsVstFUnknown* ags_vst_component_base_get_host_context(AgsVstComponentBase *component_base)
   {
-    return(component_base->getHostContext());
+    return((AgsVstFUnknown*) static_cast<Steinberg::Vst::ComponentBase*>((void*) component_base)->getHostContext());
   }
 
   AgsVstIConnectionPoint* ags_vst_component_base_get_peer(AgsVstComponentBase *component_base)
   {
-    return(component_base->getPeer());
+    return((AgsVstIConnectionPoint*) static_cast<Steinberg::Vst::ComponentBase*>((void*) component_base)->getPeer());
   }
 
   AgsVstIMessage* ags_vst_component_base_allocate_message(AgsVstComponentBase *component_base)
   {
-    return(component_base->allocateMessage());
+    return((AgsVstIMessage*) static_cast<Steinberg::Vst::ComponentBase*>((void*) component_base)->allocateMessage());
   }
 
-  tresult ags_vst_component_base_send_message(AgsVstComponentBase *component_base,
+  AgsVstTResult ags_vst_component_base_send_message(AgsVstComponentBase *component_base,
+						    AgsVstIMessage* message)
+  {
+    return(static_cast<Steinberg::Vst::ComponentBase*>((void*) component_base)->sendMessage(static_cast<Steinberg::Vst::IMessage*>((void*) message)));
+  }
+
+  AgsVstTResult ags_vst_component_base_send_text_message(AgsVstComponentBase *component_base,
+							 gchar *text)
+  {
+    return(static_cast<Steinberg::Vst::ComponentBase*>((void*) component_base)->sendTextMessage(static_cast<Steinberg::char8*>(text)));
+  }
+
+  AgsVstTResult ags_vst_component_base_receive_text(AgsVstComponentBase *component_base,
+						    gchar *text)
+  {
+    return(static_cast<Steinberg::Vst::ComponentBase*>((void*) component_base)->receiveText(static_cast<Steinberg::char8*>(text)));
+  }
+
+  AgsVstTResult ags_vst_component_base_initialize(AgsVstComponentBase *component_base,
+						  AgsVstFUnknown* context)
+  {
+    return(static_cast<Steinberg::Vst::ComponentBase*>((void*) component_base)->initialize(static_cast<Steinberg::FUnknown*>((void*) context)));
+  }
+
+  AgsVstTResult ags_vst_component_base_terminate(AgsVstComponentBase *component_base)
+  {
+    return(static_cast<Steinberg::Vst::ComponentBase*>((void*) component_base)->terminate());
+  }
+
+  AgsVstTResult ags_vst_component_base_connect(AgsVstComponentBase *component_base,
+					       AgsVstIConnectionPoint* other)
+  {
+    return(static_cast<Steinberg::Vst::ComponentBase*>((void*) component_base)->connect(static_cast<Steinberg::Vst::IConnectionPoint*>((void*) other)));
+  }
+
+  AgsVstTResult ags_vst_component_base_disconnect(AgsVstComponentBase *component_base,
+						  AgsVstIConnectionPoint* other)
+  {
+    return(static_cast<Steinberg::Vst::ComponentBase*>((void*) component_base)->disconnect(static_cast<Steinberg::Vst::IConnectionPoint*>((void*) other)));
+  }
+
+  AgsVstTResult ags_vst_component_base_notify(AgsVstComponentBase *component_base,
 					      AgsVstIMessage* message)
   {
-    return(component_base->sendMessage(message));
-  }
-
-  tresult ags_vst_component_base_send_text_message(AgsVstComponentBase *component_base,
-						   gchar *text)
-  {
-    return(component_base->sendTextMessage(static_cast<char8*>(text)));
-  }
-
-  tresult ags_vst_component_base_receive_text(AgsVstComponentBase *component_base,
-					      gchar *text)
-  {
-    return(component_base->receiveText(static_cast<char8*>(text)));
-  }
-
-  tresult PLUGIN_API ags_vst_component_base_initialize(AgsVstComponentBase *component_base,
-						       AgsVstFUnknown* context)
-  {
-    return(component_base->initialize(context));
-  }
-
-  tresult PLUGIN_API ags_vst_component_base_terminate(AgsVstComponentBase *component_base)
-  {
-    return(component_base->terminate());
-  }
-
-  tresult PLUGIN_API ags_vst_component_base_connect(AgsVstComponentBase *component_base,
-						    AgsVstIConnectionPoint* other)
-  {
-    return(component_base->connect(other));
-  }
-
-  tresult PLUGIN_API ags_vst_component_base_disconnect(AgsVstComponentBase *component_base,
-						       AgsVstIConnectionPoint* other)
-  {
-    return(component_base->disconnect(other));
-  }
-
-  tresult PLUGIN_API ags_vst_component_base_notify(AgsVstComponentBase *component_base,
-						   AgsVstIMessage* message)
-  {
-    return(component_base->notify(message));
+    return(static_cast<Steinberg::Vst::ComponentBase*>((void*) component_base)->notify(static_cast<Steinberg::Vst::IMessage*>((void*) message)));
   }
 
 }
