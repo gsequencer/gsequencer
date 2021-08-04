@@ -25,34 +25,26 @@ using namespace Steinberg;
 
 extern "C" {
 
-  AgsVstTUID*
+  const AgsVstTUID*
   ags_vst_iplugin_base_get_iid()
   {
-    extern const Steinberg::TUID IPluginBase__iid;
-    
-    return((AgsVstTUID *) (&IPluginBase__iid));
+    return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IPluginBase)));
   }
 
-  AgsVstTUID*
+  const AgsVstTUID*
   ags_vst_iplugin_factory_get_iid()
   {
-    extern const Steinberg::TUID IPluginFactory__iid;
-    
-    return((AgsVstTUID *) (&IPluginFactory__iid));
+    return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IPluginFactory)));
   }
 
-  AgsVstTUID* ags_vst_iplugin_factory2_get_iid()
+  const AgsVstTUID* ags_vst_iplugin_factory2_get_iid()
   {
-    extern const Steinberg::TUID IPluginFactory2__iid;
-    
-    return((AgsVstTUID *) (&IPluginFactory2__iid));
+    return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IPluginFactory2)));
   }
 
-  AgsVstTUID* ags_vst_iplugin_factory3_get_iid()
+  const AgsVstTUID* ags_vst_iplugin_factory3_get_iid()
   {
-    extern const Steinberg::TUID IPluginFactory3__iid;
-    
-    return((AgsVstTUID *) (&IPluginFactory3__iid));
+    return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IPluginFactory3)));
   }
 
   AgsVstIPluginFactory*  ags_vst_get_plugin_factory()

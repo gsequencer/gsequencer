@@ -25,10 +25,10 @@
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.h>
 
-#define AGS_VST_IPLUGIN_BASE_IID (ags_vst_iplugin_base_get_iid());
-#define AGS_VST_IPLUGIN_FACTORY_IID (ags_vst_iplugin_factory_get_iid());
-#define AGS_VST_IPLUGIN_FACTORY2_IID (ags_vst_iplugin_factory2_get_iid());
-#define AGS_VST_IPLUGIN_FACTORY3_IID (ags_vst_iplugin_factory3_get_iid());
+#define AGS_VST_IPLUGIN_BASE_IID (ags_vst_iplugin_base_get_iid())
+#define AGS_VST_IPLUGIN_FACTORY_IID (ags_vst_iplugin_factory_get_iid())
+#define AGS_VST_IPLUGIN_FACTORY2_IID (ags_vst_iplugin_factory2_get_iid())
+#define AGS_VST_IPLUGIN_FACTORY3_IID (ags_vst_iplugin_factory3_get_iid())
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,25 +36,25 @@ extern "C" {
 
   typedef struct AgsVstIPluginBase IPluginBase;
 
-  AgsVstTUID* ags_vst_iplugin_base_get_iid();
+  const AgsVstTUID* ags_vst_iplugin_base_get_iid();
 
   typedef struct AgsVstPFactoryInfo PFactoryInfo;
   typedef struct AgsVstPClassInfo PClassInfo;
 
   typedef struct AgsVstIPluginFactory IPluginFactory;
 
-  AgsVstTUID* ags_vst_iplugin_factory_get_iid();
+  const AgsVstTUID* ags_vst_iplugin_factory_get_iid();
 
   typedef struct AgsVstPClassInfo2 PClassInfo2;
   typedef struct AgsVstIPluginFactory2 IPluginFactory2;
 
-  AgsVstTUID* ags_vst_iplugin_factory2_get_iid();
+  const AgsVstTUID* ags_vst_iplugin_factory2_get_iid();
 
   typedef struct AgsVstPClassInfoW PClassInfoW;
 
   typedef struct AgsVstIPluginFactory3 IPluginFactory3;
 
-  AgsVstTUID* ags_vst_iplugin_factory3_get_iid();
+  const AgsVstTUID* ags_vst_iplugin_factory3_get_iid();
 
   AgsVstIPluginFactory*  ags_vst_get_plugin_factory();
 

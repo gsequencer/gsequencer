@@ -22,7 +22,6 @@
 
 #include <glib.h>
 
-#include <ags/vst3-capi/pluginterfaces/base/ags_vst_fplatform.h>
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.h>
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_smart_pointer.h>
 

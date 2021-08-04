@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,104 +17,115 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/vst3-capi/plugininterfaces/base/ags_vst_ipersistent.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ipersistent.h>
 
-#include <plugininterfaces/base/ipersistent.h>
+#include <pluginterfaces/base/ipersistent.h>
+#include <pluginterfaces/base/fvariant.h>
 
 extern "C" {
 
-  AgsVstTUID
+  const AgsVstTUID*
   ags_vst_ipersistent_get_iid()
   {
-    return(IPersistent__iid);
+    return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IPersistent)));
   }
 
   gint32 ags_vst_ipersistent_load_attributes(AgsVstIPersistent *persistent,
 					     AgsVstIAttributes *attributes)
   {
-    return(persistent->loadAttributes(attributes));
+    return(static_cast<Steinberg::IPersistent*>((void *) persistent)->loadAttributes(static_cast<Steinberg::IAttributes*>((void *) attributes)));
   }
 
-  AgsVstTUID
+  const AgsVstTUID*
   ags_vst_iattributes_get_iid()
   {
-    return(IAttributes__iid);
+    return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IAttributes)));
   }
 
   gint32 ags_vst_iattributes_set(AgsVstIAttributes *attr,
-				 AgsVstIAttrID attr_id, const AgsVstFVariant **data)
+				 AgsVstIAttrID attr_id, AgsVstFVariant *data)
   {
-    return(attr->set(attr_id, static_cast<FVariant&>(data[0])));
+    const Steinberg::FVariant& tmp_data = static_cast<Steinberg::FVariant>((void *) data);
+    
+    return(static_cast<Steinberg::IAttributes*>((void *) attr)->set(attr_id, tmp_data));
   }
 
   gint32 ags_vst_iattributes_queue(AgsVstIAttributes *attr,
-				   AgsVstIAttrID list_id, const AgsVstFVariant **data)
+				   AgsVstIAttrID list_id, AgsVstFVariant *data)
   {
-    return(attr->queue(list_id, static_cast<FVariant&>(data[0])));
+    const Steinberg::FVariant& tmp_data = static_cast<Steinberg::FVariant>((void *) data);
+    
+    return(static_cast<Steinberg::IAttributes*>((void *) attr)->queue(list_id, tmp_data));
   }
 
   gint32 ags_vst_iattributes_set_binary_data(AgsVstIAttributes *attr,
 					     AgsVstIAttrID attr_id, void *data, guint32 bytes, gboolean copy_bytes)
   {
-    return(attr->setBinaryData(attr_id, data, bytes, copy_bytes));
+    return(static_cast<Steinberg::IAttributes*>((void *) attr)->setBinaryData(attr_id, data, bytes, copy_bytes));
   }
 
   gint32 ags_vst_iattributes_get(AgsVstIAttributes *attr,
-				 AgsVstIAttrID attr_id, AgsVstFVariant **data)
+				 AgsVstIAttrID attr_id, AgsVstFVariant *data)
   {
-    return(attr->get(attr_id, static_cast<FVariant&>(data[0])));
+    Steinberg::FVariant *tmp_data_0 = static_cast<Steinberg::FVariant*>((void *) data);
+    const Steinberg::FVariant& tmp_data_1 = tmp_data_0;
+
+    return(static_cast<Steinberg::IAttributes*>((void *) attr)->get(attr_id, const_cast<Steinberg::FVariant&>(tmp_data_1)));
   }
 
   gint32 ags_vst_iattributes_unqueue(AgsVstIAttributes *attr,
-				     AgsVstIAttrID list_id, AgsVstFVariant **data)
+				     AgsVstIAttrID list_id, AgsVstFVariant *data)
   {
-    return(attr->unqueue(list_id, static_cast<FVariant&>(data[0])));
+    Steinberg::FVariant *tmp_data_0 = static_cast<Steinberg::FVariant*>((void *) data);
+    const Steinberg::FVariant& tmp_data_1 = tmp_data_0;
+
+    return(static_cast<Steinberg::IAttributes*>((void *) attr)->unqueue(list_id, const_cast<Steinberg::FVariant&>(tmp_data_1)));
   }
 
   gint32 ags_vst_iattributes_get_queue_item_count(AgsVstIAttributes *attr,
 						  AgsVstIAttrID attr_id)
   {
-    return(attr->getQueueItemCount(attr_id));
+    return(static_cast<Steinberg::IAttributes*>((void *) attr)->getQueueItemCount(attr_id));
   }
         
   gint32 ags_vst_iattributes_reset_queue(AgsVstIAttributes *attr,
 					 AgsVstIAttrID attr_id)
   {
-    return(attr->resetQueue(attr_id));
+    return(static_cast<Steinberg::IAttributes*>((void *) attr)->resetQueue(attr_id));
   }
 
   gint32 ags_vst_iattributes_reset_all_queues(AgsVstIAttributes *attr)
   {
-    return(attr->resetAllQueues());
+    return(static_cast<Steinberg::IAttributes*>((void *) attr)->resetAllQueues());
   }
 
   gint32 ags_vst_iattributes_get_binary_data(AgsVstIAttributes *attr,
 					     AgsVstIAttrID attr_id, void *data, guint32 bytes)
   {
-    return(attr->getBinaryData(attr_id, data, bytes));
+    return(static_cast<Steinberg::IAttributes*>((void *) attr)->getBinaryData(attr_id, data, bytes));
   }
 
   guint32 ags_vst_iattributes_get_binary_data_size(AgsVstIAttributes *attr,
 						   AgsVstIAttrID attr_id)
   {
-    return(attr->getBinaryDataSize(attr_id));
+    return(static_cast<Steinberg::IAttributes*>((void *) attr)->getBinaryDataSize(attr_id));
   }
 
-  AgsVstTUID
+  const AgsVstTUID*
   ags_vst_iattributes2_get_iid()
   {
-    return(IAttributes2__iid);
+    return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IAttributes2)));
   }
 
   gint32 ags_vst_iattributes2_count_attributes(AgsVstIAttributes2 *attr)
   {
-    return(attr->countAttributes());
+    return(static_cast<Steinberg::IAttributes2*>((void *) attr)->countAttributes());
   }
 
   AgsVstIAttrID ags_vst_iattributes2_get_attribute_id(AgsVstIAttributes2 *attr,
 						      gint32 index)
   {
-    return(attr->getAttributeID(index));
+    return(static_cast<Steinberg::IAttributes2*>((void *) attr)->getAttributeID(index));
   }
 
 }

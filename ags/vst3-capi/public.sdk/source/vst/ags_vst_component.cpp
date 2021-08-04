@@ -27,7 +27,7 @@ extern "C" {
   
   AgsVstComponent* ags_vst_component_new()
   {
-    return(new Component());
+    return((AgsVstComponent *) new Steinberg::Component());
   }
   
   void ags_vst_component_delete(AgsVstComponent *component)
