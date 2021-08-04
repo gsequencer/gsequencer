@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,8 +21,8 @@
 #define __AGS_VST_PARAMETERS_H__
 
 #include <ags/vst3-capi/base/source/ags_vst_fobject.h>
-#include <ags/vst3-capi/pluginterfaces/vst/ags_ivst_edit_controller.h>
-#include <ags/vst3-capi/pluginterfaces/vst/ags_ivst_units.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iunits.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -99,7 +99,7 @@ extern "C" {
   void ags_vst_string_list_parameter_append_string(AgsVstStringListParameter *string_list_parameter,
 						   AgsVstString128 string);
   gboolean ags_vst_string_list_parameter_replace_string(AgsVstStringListParameter *string_list_parameter,
-							gint32 index, AgsVstrString128 string);
+							gint32 index, AgsVstString128 string);
 
   void ags_vst_string_list_parameter_to_string(AgsVstStringListParameter *string_list_parameter,
 					       gdouble _value_normalized, AgsVstString128 string);

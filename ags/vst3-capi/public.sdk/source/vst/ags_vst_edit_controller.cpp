@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,133 +35,133 @@ extern "C" {
     delete edit_controller;
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_set_component_state(AgsVstEditController *edit_controller, AgsVstIBStream *state)
+  AgsVstTResult ags_vst_edit_controller_set_component_state(AgsVstEditController *edit_controller, AgsVstIBStream *state)
   {
     return(edit_controller->setComponentState(state));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_set_state(AgsVstEditController *edit_controller, AgsVstIBStream *state)
+  AgsVstTResult ags_vst_edit_controller_set_state(AgsVstEditController *edit_controller, AgsVstIBStream *state)
   {
     return(edit_controller->setState(state));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_get_state(AgsVstEditController *edit_controller, AgsVstIBStream *state)
+  AgsVstTResult ags_vst_edit_controller_get_state(AgsVstEditController *edit_controller, AgsVstIBStream *state)
   {
     return(edit_controller->getState(state));
   }
 
-  gint32 PLUGIN_API ags_vst_edit_controller_get_parameter_count(AgsVstEditController *edit_controller)
+  gint32 ags_vst_edit_controller_get_parameter_count(AgsVstEditController *edit_controller)
   {
     return(edit_controller->getParameterCount());
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_get_parameter_info(AgsVstEditController *edit_controller,
-								gint32 param_index, AgsVstParameterInfo **info)
+  AgsVstTResult ags_vst_edit_controller_get_parameter_info(AgsVstEditController *edit_controller,
+							   gint32 param_index, AgsVstParameterInfo **info)
   {
     return(edit_controller->getParameterInfo(param_index, static_cast<ParameterInfo&>(info[0])));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_get_param_string_by_value(AgsVstEditController *edit_controller,
-								       guint32 tag, gdouble value_normalized, gchar *str)
+  AgsVstTResult ags_vst_edit_controller_get_param_string_by_value(AgsVstEditController *edit_controller,
+								  guint32 tag, gdouble value_normalized, gchar *str)
   {
     return(edit_controller->getParamStringByValue(tag, value_normalized, str));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_get_param_value_by_string(AgsVstEditController *edit_controller,
-								       guint32 tag, gchar *string, gdouble *value_normalized)
+  AgsVstTResult ags_vst_edit_controller_get_param_value_by_string(AgsVstEditController *edit_controller,
+								  guint32 tag, gchar *string, gdouble *value_normalized)
   {
     return(edit_controller->getParamValueByString(tag, string, static_cast<ParamValue&>(value_normalized[0])));
   }
 
-  gdouble PLUGIN_API ags_vst_edit_controller_normalized_param_to_plain(AgsVstEditController *edit_controller,
-								       guint32 tag, gdouble value_normalized)
+  gdouble ags_vst_edit_controller_normalized_param_to_plain(AgsVstEditController *edit_controller,
+							    guint32 tag, gdouble value_normalized)
   {
     return(edit_controller->normalizedParamToPlain(tag, value_normalized));
   }
 
-  gdouble PLUGIN_API ags_vst_edit_controller_plain_param_to_normalized(AgsVstEditController *edit_controller,
-								       guint32 tag, gdouble plain_value)
+  gdouble ags_vst_edit_controller_plain_param_to_normalized(AgsVstEditController *edit_controller,
+							    guint32 tag, gdouble plain_value)
   {
     return(edit_controller->plainParamToNormalized(tag, plain_value));
   }
 
-  gdouble PLUGIN_API ags_vst_edit_controller_get_param_normalized(AgsVstEditController *edit_controller,
-								  guint32 tag)
+  gdouble ags_vst_edit_controller_get_param_normalized(AgsVstEditController *edit_controller,
+						       guint32 tag)
   {
     return(edit_controller->getParamNormalized(tag));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_set_param_normalized(AgsVstEditController *edit_controller,
-								  guint32 tag, gdouble value)
+  AgsVstTResult ags_vst_edit_controller_set_param_normalized(AgsVstEditController *edit_controller,
+							     guint32 tag, gdouble value)
   {
     return(edit_controller->setParamNormalized(tag, value));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_set_component_handler(AgsVstEditController *edit_controller,
-								   AgsVstIComponentHandler *handler)
+  AgsVstTResult ags_vst_edit_controller_set_component_handler(AgsVstEditController *edit_controller,
+							      AgsVstIComponentHandler *handler)
   {
     return(edit_controller->setComponentHandler(handler));
   }
 
-  AgsVstIPlugView* PLUGIN_API ags_vst_edit_controller_create_view(AgsVstEditController *edit_controller,
-								  gchar *view_name)
+  AgsVstIPlugView* ags_vst_edit_controller_create_view(AgsVstEditController *edit_controller,
+						       gchar *view_name)
   {
     return(edit_controller->createView(view_name));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_set_knob_mode(AgsVstEditController *edit_controller,
-							   guint mode)
+  AgsVstTResult ags_vst_edit_controller_set_knob_mode(AgsVstEditController *edit_controller,
+						      guint mode)
   {
     return(edit_controller->setKnowMode(mode));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_open_help(AgsVstEditController *edit_controller,
-						       gboolean only_check)
+  AgsVstTResult ags_vst_edit_controller_open_help(AgsVstEditController *edit_controller,
+						  gboolean only_check)
   {
     return(edit_controller->openHelp(only_check));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_open_about_box(AgsVstEditController *edit_controller,
-							    gboolean only_check)
+  AgsVstTResult ags_vst_edit_controller_open_about_box(AgsVstEditController *edit_controller,
+						       gboolean only_check)
   {
     return(edit_controller->openAboutBox(only_check));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_initialize(AgsVstEditController *edit_controller,
-							AgsVstFUnknown *context)
+  AgsVstTResult ags_vst_edit_controller_initialize(AgsVstEditController *edit_controller,
+						   AgsVstFUnknown *context)
   {
     return(edit_controller->initialize(context));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_terminate(AgsVstEditController *edit_controller)
+  AgsVstTResult ags_vst_edit_controller_terminate(AgsVstEditController *edit_controller)
   {
     return(edit_controller->terminate());
   }
 
-  tresult ags_vst_edit_controller_begin_edit(AgsVstEditController *edit_controller,
-					     guint32 tag)
+  AgsVstTResult ags_vst_edit_controller_begin_edit(AgsVstEditController *edit_controller,
+						   guint32 tag)
   {
     return(edit_controller->beginEdit(tag));
   }
 
-  tresult ags_vst_edit_controller_perform_edit(AgsVstEditController *edit_controller,
-					       guint32 tag, gdouble value_normalized)
+  AgsVstTResult ags_vst_edit_controller_perform_edit(AgsVstEditController *edit_controller,
+						     guint32 tag, gdouble value_normalized)
   {
     return(edit_controller->performEdit(tag, value_normalized));
   }
 
-  tresult ags_vst_edit_controller_end_edit(AgsVstEditController *edit_controller,
-					   guint32 tag)
+  AgsVstTResult ags_vst_edit_controller_end_edit(AgsVstEditController *edit_controller,
+						 guint32 tag)
   {
     return(edit_controller->endEdit(tag));
   }
 
-  tresult ags_vst_edit_controller_start_group_edit(AgsVstEditController *edit_controller)
+  AgsVstTResult ags_vst_edit_controller_start_group_edit(AgsVstEditController *edit_controller)
   {
     return(edit_controller->startGroupEdit());
   }
 
-  tresult ags_vst_edit_controller_finish_group_edit(AgsVstEditController *edit_controller)
+  AgsVstTResult ags_vst_edit_controller_finish_group_edit(AgsVstEditController *edit_controller)
   {
     return(edit_controller->finishGroupEdit());
   }
@@ -195,20 +195,20 @@ extern "C" {
     return(edit_controller->getParameterObject(tag));
   }
 
-  tresult ags_vst_edit_controller_get_parameter_info_by_tag(AgsVstEditController *edit_controller,
-							    guint32 tag, AgsVstParameterInfo **info)
+  AgsVstTResult ags_vst_edit_controller_get_parameter_info_by_tag(AgsVstEditController *edit_controller,
+								  guint32 tag, AgsVstParameterInfo **info)
   {
     return(edit_controller->getParameterInfoByTag(tag, static_cast<ParameterInfo&>(info[0])));
   }
 
-  tresult ags_vst_edit_controller_set_dirty(AgsVstEditController *edit_controller,
-					    gboolean state)
+  AgsVstTResult ags_vst_edit_controller_set_dirty(AgsVstEditController *edit_controller,
+						  gboolean state)
   {
     return(edit_controller->setDirty(state));
   }
 
-  tresult ags_vst_edit_controller_request_open_editor(AgsVstEditController *edit_controller,
-						      gchar *editor_name)
+  AgsVstTResult ags_vst_edit_controller_request_open_editor(AgsVstEditController *edit_controller,
+							    gchar *editor_name)
   {
     return(edit_controller->openEditor(editor_name));
   }
@@ -328,34 +328,34 @@ extern "C" {
     return(program_list->getCount());
   }
 
-  tresult ags_vst_program_list_get_program_name(AgsVstProgramList *program_list,
-						gint32 program_index, gchar *out_name)
+  AgsVstTResult ags_vst_program_list_get_program_name(AgsVstProgramList *program_list,
+						      gint32 program_index, gchar *out_name)
   {
     return(program_list->getProgramName(program_index, out_name));
   }
 
-  tresult ags_vst_program_list_set_program_name(AgsVstProgramList *program_list,
-						gint32 program_index, gchar *in_name)
+  AgsVstTResult ags_vst_program_list_set_program_name(AgsVstProgramList *program_list,
+						      gint32 program_index, gchar *in_name)
   {
     return(program_list->setProgramName(program_index, in_name));
   }
 
-  tresult ags_vst_program_list_get_program_info(AgsVstProgramList *program_list,
-						gint32 program_index, gchar *attribute_id,
-						gchar *out_value)
+  AgsVstTResult ags_vst_program_list_get_program_info(AgsVstProgramList *program_list,
+						      gint32 program_index, gchar *attribute_id,
+						      gchar *out_value)
   {
     return(program_list->getProgramInfo(program_index, attribute_id,
 					out_value));
   }
 
-  tresult ags_vst_program_list_has_pitch_names(AgsVstProgramList *program_list,
-					       gint32 program_index)
+  AgsVstTResult ags_vst_program_list_has_pitch_names(AgsVstProgramList *program_list,
+						     gint32 program_index)
   {
     return(program_list->hasPitchNames(program_index));
   }
 
-  tresult ags_vst_program_list_get_pitch_name(AgsVstProgramList *program_list,
-					      gint32 program_index, gint16 midi_pitch, gchar *out_name)
+  AgsVstTResult ags_vst_program_list_get_pitch_name(AgsVstProgramList *program_list,
+						    gint32 program_index, gint16 midi_pitch, gchar *out_name)
   {
     return(program_list->getPitchName(program_index, midi_pitch, out_name));
   }
@@ -405,15 +405,15 @@ extern "C" {
     return(program_list_with_pitch_names->addProgram(name));
   }
 
-  tresult ags_vst_program_list_with_pitch_names_has_pitch_names(AgsVstProgramListWithPitchNames *program_list_with_pitch_names,
-								gint32 program_index)
+  AgsVstTResult ags_vst_program_list_with_pitch_names_has_pitch_names(AgsVstProgramListWithPitchNames *program_list_with_pitch_names,
+								      gint32 program_index)
   {
     return(program_list_with_pitch_names->hasPitchNames(program_index));
   }
 
-  tresult ags_vst_program_list_with_pitch_names_get_pitch_name(AgsVstProgramListWithPitchNames *program_list_with_pitch_names,
-							       gint32 program_index, gint16 midi_pitch,
-							       gchar *name)
+  AgsVstTResult ags_vst_program_list_with_pitch_names_get_pitch_name(AgsVstProgramListWithPitchNames *program_list_with_pitch_names,
+								     gint32 program_index, gint16 midi_pitch,
+								     gchar *name)
   {
     return(program_list_with_pitch_names->getPitchName(program_index, midi_pitch,
 						       name));
@@ -447,111 +447,111 @@ extern "C" {
     return(edit_controller_ex1->getProgramList(list_id));
   }
 
-  tresult ags_vst_edit_controller_ex1_notify_program_list_change(AgsVstEditControllerEx1 *edit_controller_ex1,
-								 gint32 list_id, gint32 program_index)
+  AgsVstTResult ags_vst_edit_controller_ex1_notify_program_list_change(AgsVstEditControllerEx1 *edit_controller_ex1,
+								       gint32 list_id, gint32 program_index)
   {
     return(edit_controller_ex1->notify_program_list_change(list_id, program_index));
   }
 
-  gint32 PLUGIN_API ags_vst_edit_controller_ex1_get_unit_count(AgsVstEditControllerEx1 *edit_controller_ex1)
+  gint32 ags_vst_edit_controller_ex1_get_unit_count(AgsVstEditControllerEx1 *edit_controller_ex1)
   {
     return(edit_controller_ex1->getUnitCount());
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_ex1_get_unit_info(AgsVstEditControllerEx1 *edit_controller_ex1,
-							       gint32 unit_index, AgsVstUnitInfo **info)
+  AgsVstTResult ags_vst_edit_controller_ex1_get_unit_info(AgsVstEditControllerEx1 *edit_controller_ex1,
+							  gint32 unit_index, AgsVstUnitInfo **info)
   {
     return(edit_controller_ex1->getUnitInfo(unit_index, static_cast<UnitInfo&>(info[0])));
   }
 
-  gint32 PLUGIN_API ags_vst_edit_controller_ex1_get_program_list_count(AgsVstEditControllerEx1 *edit_controller_ex1)
+  gint32 ags_vst_edit_controller_ex1_get_program_list_count(AgsVstEditControllerEx1 *edit_controller_ex1)
   {
     return(edit_controller_ex1->getProgramListCount());
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_ex1_get_program_list_info(AgsVstEditControllerEx1 *edit_controller_ex1,
-								       gint32 list_index,
-								       AgsVstProgramListInfo **info)
+  AgsVstTResult ags_vst_edit_controller_ex1_get_program_list_info(AgsVstEditControllerEx1 *edit_controller_ex1,
+								  gint32 list_index,
+								  AgsVstProgramListInfo **info)
   {
     return(edit_controller_ex1->getProgramListInfo(list_index,
 						   static_cast<ProgramListInfo&>(info[0])));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_ex1_get_program_name(AgsVstEditControllerEx1 *edit_controller_ex1,
-								  gint32 list_id, gint32 program_index,
-								  gchar *name)
+  AgsVstTResult ags_vst_edit_controller_ex1_get_program_name(AgsVstEditControllerEx1 *edit_controller_ex1,
+							     gint32 list_id, gint32 program_index,
+							     gchar *name)
   {
     return(edit_controller_ex1->getProgramName(list_id, program_index,
 					       name));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_ex1_get_program_info(AgsVstEditControllerEx1 *edit_controller_ex1,
-								  gint32 list_id, gint32 program_index,
-								  gchar *attribute_id,
-								  gchar *attribute_value)
+  AgsVstTResult ags_vst_edit_controller_ex1_get_program_info(AgsVstEditControllerEx1 *edit_controller_ex1,
+							     gint32 list_id, gint32 program_index,
+							     gchar *attribute_id,
+							     gchar *attribute_value)
   {
     return(edit_controller_ex1->getProgramInfo(list_id, program_index,
 					       attribtue_id,
 					       attribute_value));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_ex1_has_program_pitch_names(AgsVstEditControllerEx1 *edit_controller_ex1,
-									 gint32 list_id,
-									 gint32 program_index)
+  AgsVstTResult ags_vst_edit_controller_ex1_has_program_pitch_names(AgsVstEditControllerEx1 *edit_controller_ex1,
+								    gint32 list_id,
+								    gint32 program_index)
   {
     return(edit_controller_ex1->hasProgramPitchNames(list_id,
 						     program_index));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_ex1_get_program_pitch_name(AgsVstEditControllerEx1 *edit_controller_ex1,
-									gint32 list_id, gint32 program_index,
-									gint16 midi_pitch, gchar *name)
+  AgsVstTResult ags_vst_edit_controller_ex1_get_program_pitch_name(AgsVstEditControllerEx1 *edit_controller_ex1,
+								   gint32 list_id, gint32 program_index,
+								   gint16 midi_pitch, gchar *name)
   {
     return(edit_controller_ex1->getProgramPitchName(list_id, program_index,
 						    midi_pitch, name));
   }
 
-  tresult ags_vst_edit_controller_ex1_set_program_name(AgsVstEditControllerEx1 *edit_controller_ex1,
-						       gint32 list_id, gint32 program_index,
-						       gchar *name)
+  AgsVstTResult ags_vst_edit_controller_ex1_set_program_name(AgsVstEditControllerEx1 *edit_controller_ex1,
+							     gint32 list_id, gint32 program_index,
+							     gchar *name)
   {
     return(edit_controller_ex1->setProgramName(list_id, program_index,
 					       name));
   }
 
-  gint32 PLUGIN_API ags_vst_edit_controller_ex1_get_selected_unit(AgsVstEditControllerEx1 *edit_controller_ex1)
+  gint32 ags_vst_edit_controller_ex1_get_selected_unit(AgsVstEditControllerEx1 *edit_controller_ex1)
   {
     return(edit_controller_ex1->getSelectedUnit());
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_ex1_select_unit(AgsVstEditControllerEx1 *edit_controller_ex1,
-							     AgsVstUnitID unit_id)
+  AgsVstTResult ags_vst_edit_controller_ex1_select_unit(AgsVstEditControllerEx1 *edit_controller_ex1,
+							AgsVstUnitID unit_id)
   {
     return(edit_controller_ex1->selectUnit(unit_id));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_ex1_get_unit_by_bus(AgsVstEditControllerEx1 *edit_controller_ex1,
-								 guint type, guint dir, gint32 bus_index,
-								 gint32 channel, gint32 *unit_id)
+  AgsVstTResult ags_vst_edit_controller_ex1_get_unit_by_bus(AgsVstEditControllerEx1 *edit_controller_ex1,
+							    guint type, guint dir, gint32 bus_index,
+							    gint32 channel, gint32 *unit_id)
   {
     return(edit_controller_ex1->getUnitByBus(type, dir, bus_index,
 					     channel, unit_id));
   }
 
-  tresult PLUGIN_API ags_vst_edit_controller_ex1_set_unit_program_data(AgsVstEditControllerEx1 *edit_controller_ex1,
-								       gint32 list_or_unit_id, gint32 program_index,
-								       AgsVstIBStream *data)
+  AgsVstTResult ags_vst_edit_controller_ex1_set_unit_program_data(AgsVstEditControllerEx1 *edit_controller_ex1,
+								  gint32 list_or_unit_id, gint32 program_index,
+								  AgsVstIBStream *data)
   {
     return(edit_controller_ex1->setUnitProgramData(list_or_unit_id, program_index,
 						   data));
   }
   
-  tresult ags_vst_edit_controller_ex1_notify_unit_selection(AgsVstEditControllerEx1 *edit_controller_ex1)
+  AgsVstTResult ags_vst_edit_controller_ex1_notify_unit_selection(AgsVstEditControllerEx1 *edit_controller_ex1)
   {
     return(edit_controller_ex1->notifyUnitSelection());
   }
 
-  void PLUGIN_API ags_vst_edit_controller_ex1_update(AgsVstFUnknown *changedUnknown, gint32 message)
+  void ags_vst_edit_controller_ex1_update(AgsVstFUnknown *changedUnknown, gint32 message)
   {
     return(edit_controller_ex1->update(message));
   }
