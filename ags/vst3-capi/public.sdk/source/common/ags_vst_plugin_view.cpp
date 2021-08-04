@@ -17,9 +17,9 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/vst3-capi/puglic.sdk/source/common/ags_vst_plugin_view.h>
+#include <ags/vst3-capi/public.sdk/source/common/ags_vst_plugin_view.h>
 
-#include <puglic.sdk/source/common/pluginview.h>
+#include <public.sdk/source/common/pluginview.h>
 
 extern "C" {
   

@@ -35,7 +35,12 @@ extern "C" {
 #endif
 
   typedef struct AgsVstEditController EditController;
-  
+  typedef struct AgsVstEditorView EditorView;
+  typedef struct AgsVstUnit Unit;
+  typedef struct AgsVstProgramList ProgramList;
+  typedef struct AgsVstProgramListWithPitchNames ProgramListWithPitchNames;
+  typedef struct AgsVstEditControllerEx1 EditControllerEx1;
+    
   AgsVstEditController* ags_vst_edit_controller_new();
   void ags_vst_edit_controller_delete(AgsVstEditController *edit_controller);
 
@@ -44,7 +49,7 @@ extern "C" {
   AgsVstTResult ags_vst_edit_controller_get_state(AgsVstEditController *edit_controller, AgsVstIBStream *state);
   gint32 ags_vst_edit_controller_get_parameter_count(AgsVstEditController *edit_controller);
   AgsVstTResult ags_vst_edit_controller_get_parameter_info(AgsVstEditController *edit_controller,
-							   gint32 param_index, AgsVstParameterInfo **info);
+							   gint32 param_index, AgsVstParameterInfo *info);
   AgsVstTResult ags_vst_edit_controller_get_param_string_by_value(AgsVstEditController *edit_controller,
 								  guint32 tag, gdouble value_normalized, AgsVstString128 string);
   AgsVstTResult ags_vst_edit_controller_get_param_value_by_string(AgsVstEditController *edit_controller,
@@ -95,7 +100,7 @@ extern "C" {
 								guint32 tag);
 
   AgsVstTResult ags_vst_edit_controller_get_parameter_info_by_tag(AgsVstEditController *edit_controller,
-								  guint32 tag, AgsParameterInfo *info);
+								  guint32 tag, AgsVstParameterInfo *info);
 
   AgsVstTResult ags_vst_edit_controller_set_dirty(AgsVstEditController *edit_controller,
 						  gboolean state);
@@ -104,9 +109,7 @@ extern "C" {
 							    AgsVstFIDString editor_name);
 
   AgsVstIComponentHandler* ags_vst_edit_controller_get_component_handler(AgsVstEditController *edit_controller);
-  
-  typedef struct AgsVstEditorView EditorView;
-  
+    
   AgsVstEditorView* ags_vst_editor_view_new(AgsVstEditController *controller, AgsVstViewRect *size);
   void ags_vst_editor_view_delete(AgsVstEditorView *editor_view);
 
@@ -115,8 +118,6 @@ extern "C" {
   void ags_vst_editor_view_attached_to_parent(AgsVstEditorView *editor_view);
   void ags_vst_editor_view_removed_from_parent(AgsVstEditorView *editor_view);
 
-  typedef struct AgsVstUnit Unit;
-  
   AgsVstUnit* ags_vst_unit_new(AgsVstString128 unit_name, AgsVstUnitID unit_id, gint32 parent_unit_id,
 			       gint32 program_list_id);
   void ags_vst_unit_delete(AgsVstUnit *unit);
@@ -138,10 +139,8 @@ extern "C" {
   void ags_vst_unit_set_program_list_id(AgsVstUnit *unit,
 					gint32 new_id);
 
-  typedef struct AgsVstProgramList ProgramList;
-
   AgsVstProgramList* ags_vst_program_list_new(AgsVstString128 name, gint32 list_id, AgsVstUnitID unit_id);
-  AgsVstProgramList* ags_vst_program_list_new_from_program_list(AgsVstProgramList **program_list);
+  AgsVstProgramList* ags_vst_program_list_new_from_program_list(AgsVstProgramList *program_list);
   void ags_vst_program_list_delete(AgsVstProgramList *program_list);
   
   AgsVstProgramListInfo* ags_vst_program_list_get_info(AgsVstProgramList *program_list);
@@ -169,8 +168,6 @@ extern "C" {
 
   AgsVstParameter* ags_vst_program_list_get_parameter(AgsVstProgramList *program_list);
 
-  typedef struct AgsVstProgramListWithPitchNames ProgramListWithPitchNames;
-  
   AgsVstProgramListWithPitchNames* ags_vst_program_list_with_pitch_names_new(AgsVstString128 name, AgsVstProgramListID list_id, AgsVstUnitID unit_id);
   void ags_vst_program_list_with_pitch_names_delete(AgsVstProgramListWithPitchNames *program_list_with_pitch_names);
   
@@ -187,8 +184,6 @@ extern "C" {
   AgsVstTResult ags_vst_program_list_with_pitch_names_get_pitch_name(AgsVstProgramListWithPitchNames *program_list_with_pitch_names,
 								     gint32 program_index, gint16 midi_pitch,
 								     AgsVstString128 name);
-
-  typedef struct AgsVstEditControllerEx1 EditControllerEx1;
 
   AgsVstEditControllerEx1* ags_vst_edit_controller_ex1_new();
   void ags_vst_edit_controller_ex1_delete(AgsVstEditControllerEx1 *edit_controller_ex1);
@@ -207,12 +202,12 @@ extern "C" {
 
   gint32 ags_vst_edit_controller_ex1_get_unit_count(AgsVstEditControllerEx1 *edit_controller_ex1);
   AgsVstTResult ags_vst_edit_controller_ex1_get_unit_info(AgsVstEditControllerEx1 *edit_controller_ex1,
-							  gint32 unit_index, AgsVstUnitInfo **info);
+							  gint32 unit_index, AgsVstUnitInfo *info);
 
   gint32 ags_vst_edit_controller_ex1_get_program_list_count(AgsVstEditControllerEx1 *edit_controller_ex1);
   AgsVstTResult ags_vst_edit_controller_ex1_get_program_list_info(AgsVstEditControllerEx1 *edit_controller_ex1,
 								  gint32 list_index,
-								  AgsVstProgramListInfo **info);
+								  AgsVstProgramListInfo *info);
   AgsVstTResult ags_vst_edit_controller_ex1_get_program_name(AgsVstEditControllerEx1 *edit_controller_ex1,
 							     gint32 list_id, gint32 program_index,
 							     AgsVstString128 name);
@@ -238,14 +233,14 @@ extern "C" {
 
   AgsVstTResult ags_vst_edit_controller_ex1_get_unit_by_bus(AgsVstEditControllerEx1 *edit_controller_ex1,
 							    guint type, guint dir, gint32 bus_index,
-							    gint32 channel, gint32 *unit_id);
+							    gint32 channel, AgsVstUnitID unit_id);
   AgsVstTResult ags_vst_edit_controller_ex1_set_unit_program_data(AgsVstEditControllerEx1 *edit_controller_ex1,
 								  gint32 list_or_unit_id, gint32 program_index,
 								  AgsVstIBStream *data);
   
   AgsVstTResult ags_vst_edit_controller_ex1_notify_unit_selection(AgsVstEditControllerEx1 *edit_controller_ex1);
 
-  void ags_vst_edit_controller_ex1_update(AgsVstFUnknown *changedUnknown, gint32 message);
+  void ags_vst_edit_controller_ex1_update(AgsVstEditControllerEx1 *edit_controller_ex1, AgsVstFUnknown *changed_unknown, gint32 message);
   
 #ifdef __cplusplus
 }

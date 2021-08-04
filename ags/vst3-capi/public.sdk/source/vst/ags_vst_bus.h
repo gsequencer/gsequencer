@@ -126,7 +126,7 @@ extern "C" {
    * 
    * Since: 2.2.0
    */
-  gboolean ags_vst_bus_get_info(AgsVstBus *bus, AgsVstBusInfo **info);
+  gboolean ags_vst_bus_get_info(AgsVstBus *bus, AgsVstBusInfo *info);
 
   typedef struct AgsVstEventBus EventBus;
 
@@ -166,7 +166,7 @@ extern "C" {
    * 
    * Since: 2.2.0
    */
-  gboolean ags_vst_event_bus_get_info(AgsVstEventBus *event_bus, AgsVstBusInfo **info);
+  gboolean ags_vst_event_bus_get_info(AgsVstEventBus *event_bus, AgsVstBusInfo *info);
 
   typedef struct AgsVstAudioBus AudioBus;
 
@@ -216,7 +216,7 @@ extern "C" {
    * 
    * Since: 2.2.0
    */
-  void ags_vst_audio_bus_set_arrangement(AgsVstAudioBus *audio_bus, AgsVstSpeakerArrangement *arr);
+  void ags_vst_audio_bus_set_arrangement(AgsVstAudioBus *audio_bus, AgsVstSpeakerArrangement arr);
 
   /**
    * ags_vst_audio_bus_get_info:
@@ -229,7 +229,7 @@ extern "C" {
    * 
    * Since: 2.2.0
    */
-  gboolean ags_vst_audio_bus_get_info(AgsVstAudioBus *audio_bus, AgsVstBusInfo **info);
+  gboolean ags_vst_audio_bus_get_info(AgsVstAudioBus *audio_bus, AgsVstBusInfo *info);
   
   typedef struct AgsVstBusList BusList;
 
