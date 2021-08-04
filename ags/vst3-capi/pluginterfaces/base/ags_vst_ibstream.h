@@ -22,8 +22,8 @@
 
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
 
-#define AGS_VST_IBSTREAM_IID (ags_vst_ibstream_get_iid);
-#define AGS_VST_ISIZEABLE_STREAM_IID (ags_vst_isizeable_stream_get_iid());
+#define AGS_VST_IBSTREAM_IID (ags_vst_ibstream_get_iid())
+#define AGS_VST_ISIZEABLE_STREAM_IID (ags_vst_isizeable_stream_get_iid())
 
 #ifdef __cplusplus
 extern "C" {

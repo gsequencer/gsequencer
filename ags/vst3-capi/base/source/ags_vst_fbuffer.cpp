@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,31 +21,36 @@
 
 #include <base/source/fbuffer.h>
 
+#include <cstring>
+
 extern "C" {
 
   AgsVstBuffer* ags_vst_buffer_new()
   {
-    return(new Buffer());
+    return((AgsVstBuffer *) new Steinberg::Buffer());
   }
   
   AgsVstBuffer* ags_vst_buffer_new_from_string(void *b, guint32 size)
   {
-    return(new Buffer(b, size));
+    return((AgsVstBuffer *) new Steinberg::Buffer(b, size));
   }
   
   AgsVstBuffer* ags_vst_buffer_new_and_fill_up(guint32 size, guint8 init_val)
   {
-    return(new Buffer(size, init_val));
+    return((AgsVstBuffer *) new Steinberg::Buffer(size, init_val));
   }
   
   AgsVstBuffer* ags_vst_buffer_new_with_size(guint32 size)
   {
-    return(new Buffer(size));
+    return((AgsVstBuffer *) new Steinberg::Buffer(size));
   }
   
-  AgsVstBuffer* ags_vst_buffer_new_from_buffer(AgsVstBuffer **buffer)
+  AgsVstBuffer* ags_vst_buffer_new_from_buffer(AgsVstBuffer *buffer)
   {
-    return(new Buffer(static_cast<Buffer&>(buffer)));
+    Steinberg::Buffer *tmp_buffer_0 = static_cast<Steinberg::Buffer*>((void *) buffer);
+    const Steinberg::Buffer& tmp_buffer_1 = (const Steinberg::Buffer&) tmp_buffer_0;
+    
+    return((AgsVstBuffer *) new Steinberg::Buffer(tmp_buffer_1));
   }
   
   void ags_vst_buffer_delete(AgsVstBuffer *buffer)
@@ -67,272 +72,285 @@ extern "C" {
 
   guint32 ags_vst_buffer_get_size(AgsVstBuffer *buffer)
   {
-    return(buffer->getSize());
+    return(static_cast<Steinberg::Buffer*>((void *) buffer)->getSize());
   }
 
   gboolean ags_vst_buffer_set_size(AgsVstBuffer *buffer,
 				   guint32 new_size)
   {
-    return(static_cast<gboolean>(buffer->setSize(new_size)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->setSize(new_size)));
   }
 
   gboolean ags_vst_buffer_grow(AgsVstBuffer *buffer,
 			       guint32 mem_size)
   {
-    return(static_cast<gboolean>(buffer->grow(mem_size)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->grow(mem_size)));
   }
 
   gboolean ags_vst_buffer_set_max_size(AgsVstBuffer *buffer,
 				       guint32 size)
   {
-    return(static_cast<gboolean>(buffer->setMaxSize(size)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->setMaxSize(size)));
   }
 
   void ags_vst_buffer_fillup(AgsVstBuffer *buffer,
 			     guint8 init_val)
   {
-    buffer->fillup(init_value);
+    static_cast<Steinberg::Buffer*>((void *) buffer)->fillup(init_val);
   }
   
   guint32 ags_vst_buffer_get_fill_size(AgsVstBuffer *buffer)
   {
-    return(buffer->getFillSize());
+    return(static_cast<Steinberg::Buffer*>((void *) buffer)->getFillSize());
   }
   
   gboolean ags_vst_buffer_set_fill_size(AgsVstBuffer *buffer,
 					guint32 c)
   {
-    return(static_cast<gboolean>(buffer->setFillSize(c)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->setFillSize(c)));
   }
 
   void ags_vst_buffer_flush(AgsVstBuffer *buffer)
   {
-    buffer->flush()
+    static_cast<Steinberg::Buffer*>((void *) buffer)->flush();
   }
   
   gboolean ags_vst_buffer_truncate_to_fill_size(AgsVstBuffer *buffer)
   {
-    return(static_cast<gboolean>(buffer->truncateToFillSize()));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->truncateToFillSize()));
   }
 
   gboolean ags_vst_buffer_is_full(AgsVstBuffer *buffer)
   {
-    return(static_cast<gboolean>(buffer->isFull()));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->isFull()));
   }
 
   guint32 ags_vst_buffer_get_free(AgsVstBuffer *buffer)
   {
-    return(buffer->getFree());
+    return(static_cast<Steinberg::Buffer*>((void *) buffer)->getFree());
   }
 
   void ags_vst_buffer_shift_start(AgsVstBuffer *buffer,
 				  gint32 amount)
   {
-    buffer->shiftStart(amount);
+    static_cast<Steinberg::Buffer*>((void *) buffer)->shiftStart(amount);
   }
   
   void ags_vst_buffer_shift_at(AgsVstBuffer *buffer,
 			       guint32 position, gint32 amount)
   {
-    buffer->shiftAt(position, amount);
+    static_cast<Steinberg::Buffer*>((void *) buffer)->shiftAt(position, amount);
   }
   
   void ags_vst_buffer_move(AgsVstBuffer *buffer,
 			   gint32 amount, guint8 init_val)
   {
-    buffer->move(amount, init_val);
+    static_cast<Steinberg::Buffer*>((void *) buffer)->move(amount, init_val);
   }
 
   gboolean ags_vst_buffer_copy(AgsVstBuffer *buffer,
 			       guint32 from, guint32 to, guint32 bytes)
   {
-    return(static_cast<gboolean>(buffer->copy(from, to, bytes)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->copy(from, to, bytes)));
   }
 
   guint32 ags_vst_buffer_get(AgsVstBuffer *buffer,
 			     void *b, guint32 size)
   {
-    return(buffer->get(b, size));
+    return(static_cast<Steinberg::Buffer*>((void *) buffer)->get(b, size));
   }
 
   void ags_vst_buffer_set_delta(AgsVstBuffer *buffer,
 				guint32 d)
   {
-    buffer->setDelta(d);
+    static_cast<Steinberg::Buffer*>((void *) buffer)->setDelta(d);
   }
 
   gboolean ags_vst_buffer_put_from_uint8(AgsVstBuffer *buffer,
 					 guint8 val)
   {
-    return(static_cast<gboolean>(buffer->put(val)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->put((Steinberg::uint8) val)));
   }
 
   gboolean ags_vst_buffer_put_from_unichar2(AgsVstBuffer *buffer,
 					    gunichar2 c)
   {
-    return(static_cast<gboolean>(buffer->put(c)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->put((Steinberg::char16) c)));
   }
 
   gboolean ags_vst_buffer_put_from_char(AgsVstBuffer *buffer,
 					gchar c)
   {
-    return(static_cast<gboolean>(buffer->put(c)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->put((char) c)));
   }
 
   gboolean ags_vst_buffer_put_from_buffer(AgsVstBuffer *buffer,
-					  void *buffer, guint32 size)
+					  void *ptr_buffer, guint32 size)
   {
-    return(static_cast<gboolean>(buffer->put(buffer, size)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->put(ptr_buffer, size)));
   }
 
   gboolean ags_vst_buffer_put_from_uint8_buffer(AgsVstBuffer *buffer,
-						guint8 *buffer, guint32 size)
+						guint8 *ptr_buffer, guint32 size)
   {
-    return(static_cast<gboolean>(buffer->put(buffer, size)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->put(ptr_buffer, size)));
   }
 
   gboolean ags_vst_buffer_put_from_char_buffer(AgsVstBuffer *buffer,
-					       gchar *buffer, guint32 size)
+					       gchar *ptr_buffer, guint32 size)
   {
-    return(static_cast<gboolean>(buffer->put(buffer, size)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->put(ptr_buffer, size)));
   }
 
   gboolean ags_vst_buffer_put_from_string(AgsVstBuffer *buffer,
-					  gchar **string)
+					  gchar *string)
   {
-    return(static_cast<gboolean>(buffer->put(static_cast<String&>(string[0]))));
+    Steinberg::String *tmp_string_0 = static_cast<Steinberg::String*>((void *) string);
+    const Steinberg::String& tmp_string_1 = (const Steinberg::String&) tmp_string_0;
+    
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->put(tmp_string_1)));
   }
-
 
   void ags_vst_buffer_set(AgsVstBuffer *buffer,
 			  guint8 value)
   {
-    buffer->set(value);
+    static_cast<Steinberg::Buffer*>((void *) buffer)->set(value);
   }
         
   gboolean ags_vst_buffer_append_string(AgsVstBuffer *buffer,
 					ags_vst_tchar *s)
   {
-    return(static_cast<gboolean>(buffer->append(s)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->appendString((Steinberg::tchar*) s)));
   }
 
   gboolean ags_vst_buffer_append_char(AgsVstBuffer *buffer,
 				      ags_vst_tchar c)
   {
-    return(static_cast<gboolean>(buffer->append(c)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->appendString(c)));
   }
   
   gboolean ags_vst_buffer_append_string_from_char_buffer(AgsVstBuffer *buffer,
 							 gchar *s)
   {
-    return(static_cast<gboolean>(buffer->appendString8(s)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->appendString8(s)));
   }
 
   gboolean ags_vst_buffer_append_string_from_uchar_buffer(AgsVstBuffer *buffer,
 							  guchar *s)
   {
-    return(static_cast<gboolean>(buffer->appendString8(s)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->appendString8(s)));
   }
 
   gboolean ags_vst_buffer_append_string_from_unichar2_buffer(AgsVstBuffer *buffer,
 							     gunichar2 *s)
   {
-    return(static_cast<gboolean>(buffer->appendString16(s)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->appendString16((Steinberg::char16*) s)));
   }
 
   gboolean ags_vst_buffer_append_string_from_char_byte(AgsVstBuffer *buffer,
 						       gchar c)
   {
-    return(static_cast<gboolean>(buffer->appendString8(c)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->appendString8(c)));
   }
 
   gboolean ags_vst_buffer_append_string_from_uchar_byte(AgsVstBuffer *buffer,
 							guchar c)
   {
-    return(static_cast<gboolean>(buffer->appendString8(c)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->appendString8(c)));
   }
 
   gboolean ags_vst_buffer_append_string_from_unichar2_byte(AgsVstBuffer *buffer,
 							   gunichar2 c)
   {
-    return(static_cast<gboolean>(buffer->appendString16()));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->appendString16((Steinberg::char16) c)));
   }
 
   gboolean ags_vst_buffer_prepend_string(AgsVstBuffer *buffer,
 					 ags_vst_tchar *s)
   {
-    return(static_cast<gboolean>(buffer->prependString(s)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->prependString(s)));
   }
 
   gboolean ags_vst_buffer_prepend_char(AgsVstBuffer *buffer,
 				       ags_vst_tchar c)
   {
-    return(static_cast<gboolean>(buffer->prependString8()));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->prependString((Steinberg::tchar) c)));
   }
 
   
   gboolean ags_vst_buffer_prepend_string_from_char_buffer(AgsVstBuffer *buffer,
 							  gchar *s)
   {
-    return(static_cast<gboolean>(buffer->prependString8(s)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->prependString8(s)));
   }
 
   gboolean ags_vst_buffer_prepend_string_from_uchar_buffer(AgsVstBuffer *buffer,
 							   guchar *s)
   {
-    return(static_cast<gboolean>(buffer->prependString8(s)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->prependString8(s)));
   }
 
   gboolean ags_vst_buffer_prepend_string_from_unichar2_buffer(AgsVstBuffer *buffer,
 							      gunichar2 *s)
   {
-    return(static_cast<gboolean>(buffer->prependString16(s)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->prependString16((Steinberg::char16 *) s)));
   }
 
 
   gboolean ags_vst_buffer_prepend_string_from_char_byte(AgsVstBuffer *buffer,
 							gchar c)
   {
-    return(static_cast<gboolean>(buffer->prependString8(c)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->prependString8(c)));
   }
 
   gboolean ags_vst_buffer_prepend_string_from_uchar_byte(AgsVstBuffer *buffer,
 							 guchar c)
   {
-    return(static_cast<gboolean>(buffer->prependString8(c)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->prependString8(c)));
   }
 
   gboolean ags_vst_buffer_prepend_string_from_unichar2_byte(AgsVstBuffer *buffer,
 							    gunichar2 c)
   {
-    return(static_cast<gboolean>(buffer->prependString16(c)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->prependString16(c)));
   }
 
   void ags_vst_buffer_end_string(AgsVstBuffer *buffer)
   {
-    buffer->endString();
+    static_cast<Steinberg::Buffer*>((void *) buffer)->endString();
   }
   
   void ags_vst_buffer_end_string_char(AgsVstBuffer *buffer)
   {
-    buffer->endString8();
+    static_cast<Steinberg::Buffer*>((void *) buffer)->endString8();
   }
   
   void ags_vst_buffer_end_string_unichar2(AgsVstBuffer *buffer)
   {
-    buffer->endString16();
+    static_cast<Steinberg::Buffer*>((void *) buffer)->endString16();
   }
 
   gboolean ags_vst_buffer_make_hex_string(AgsVstBuffer *buffer,
 					  gchar **result)
   {
-    return(static_cast<gboolean>(buffer->makeHexString(static_cast<String&>(result[0]))));
+    Steinberg::String *tmp_result_0;
+    const Steinberg::String& tmp_result_1 = (const Steinberg::String&) tmp_result_0;
+
+    gboolean retval;
+    
+    retval = static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->makeHexString(const_cast<Steinberg::String&>(tmp_result_1)));
+
+    if(result != NULL){
+      result[0] = (gchar *) tmp_result_0;
+    }
+    
+    return(retval);
   }
 
   gboolean ags_vst_buffer_from_hex_string(AgsVstBuffer *buffer,
 					  gchar *string)
   {
-    return(static_cast<gboolean>(buffer->fromHexString(string)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->fromHexString(string)));
   }
 
   void* ags_vst_buffer_to_buffer(AgsVstBuffer *buffer)
@@ -342,108 +360,100 @@ extern "C" {
   
   ags_vst_tchar* ags_vst_buffer_to_str(AgsVstBuffer *buffer)
   {
-    return(buffer->str());
+    return(static_cast<Steinberg::Buffer*>((void *) buffer)->str());
   }
   
   gchar* ags_vst_buffer_to_str8(AgsVstBuffer *buffer)
   {
-    return(buffer->str8());
+    return(static_cast<Steinberg::Buffer*>((void *) buffer)->str8());
   }
   
   gunichar2* ags_vst_buffer_to_str16(AgsVstBuffer *buffer)
   {
-    return(buffer->str16());
+    return((gunichar2 *) static_cast<Steinberg::Buffer*>((void *) buffer)->str16());
   }
   
   gint8* ags_vst_buffer_to_int8_ptr(AgsVstBuffer *buffer)
   {
-    return(buffer->int8Ptr());
+    return((gint8 *) static_cast<Steinberg::Buffer*>((void *) buffer)->int8Ptr());
   }
   
   guint8* ags_vst_buffer_to_uint8_ptr(AgsVstBuffer *buffer)
   {
-    return(buffer->uint8Ptr());
+    return((guint8 *) static_cast<Steinberg::Buffer*>((void *) buffer)->uint8Ptr());
   }
   
   gint16* ags_vst_buffer_to_int16_ptr(AgsVstBuffer *buffer)
   {
-    return(buffer->int16Ptr());
+    return((gint16 *) static_cast<Steinberg::Buffer*>((void *) buffer)->int16Ptr());
   }
   
   guint16* ags_vst_buffer_to_uint16_ptr(AgsVstBuffer *buffer)
   {
-    return(buffer->uint16Ptr());
+    return((guint16 *) static_cast<Steinberg::Buffer*>((void *) buffer)->uint16Ptr());
   }
   
   gint32* ags_vst_buffer_to_int32_ptr(AgsVstBuffer *buffer)
   {
-    return(buffer->int32Ptr());
+    return((gint32 *) static_cast<Steinberg::Buffer*>((void *) buffer)->int32Ptr());
   }
   
   guint32* ags_vst_buffer_to_uint32_ptr(AgsVstBuffer *buffer)
   {
-    return(buffer->uint32Ptr());
+    return((guint32 *) static_cast<Steinberg::Buffer*>((void *) buffer)->uint32Ptr());
   }
   
   gfloat* ags_vst_buffer_to_float_ptr(AgsVstBuffer *buffer)
   {
-    return(buffer->floatPtr());
+    return(static_cast<Steinberg::Buffer*>((void *) buffer)->floatPtr());
   }
   
   gdouble* ags_vst_buffer_to_double_ptr(AgsVstBuffer *buffer)
   {
-    return(buffer->doublePtr());
+    return(static_cast<Steinberg::Buffer*>((void *) buffer)->doublePtr());
   }
   
   gunichar2* ags_vst_buffer_to_wchar_ptr(AgsVstBuffer *buffer)
   {
-    return(buffer->wcharPtr());
+    return((gunichar2 *) static_cast<Steinberg::Buffer*>((void *) buffer)->wcharPtr());
   }
-  
-  gint8 ags_vst_buffer_offset(AgsVstBuffer *buffer,
-			      guint32 i)
-  {
-    return(buffer->offset(i));
-  }
-  
-  gint8 ags_vst_buffer_is_empty(AgsVstBuffer *buffer,
-				guint32 i)
-  {
-    return(buffer->isEmpty(i));
-  }
-  
+    
   gboolean ags_vst_buffer_swap(AgsVstBuffer *buffer,
 			       gint16 swap_size)
   {
-    return(static_cast<gboolean>(buffer->swap(swap_size)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->swap(swap_size)));
   }
 
   gboolean ags_vst_buffer_swap_buffer(AgsVstBuffer *buffer,
-				      void* buffer, guint32 buffer_size, gint16 swap_size)
+				      void *ptr_buffer, guint32 buffer_size, gint16 swap_size)
   {
-    return(static_cast<gboolean>(buffer->swapBuffer(buffer, buffer_size, swap_size)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->swap(ptr_buffer, buffer_size, swap_size)));
   }
   
-  void ags_vst_buffer_take(AgsVstBuffer **bufferBuffer)
+  void ags_vst_buffer_take(AgsVstBuffer *buffer,
+			   AgsVstBuffer *from)
   {
-    buffer->take();
+    Steinberg::Buffer *tmp_buffer_0 = static_cast<Steinberg::Buffer*>((void *) from);
+    const Steinberg::Buffer& tmp_buffer_1 = (const Steinberg::Buffer&) tmp_buffer_0;
+
+    static_cast<Steinberg::Buffer*>((void *) buffer)->take(const_cast<Steinberg::Buffer&>(tmp_buffer_1));
   }
   
   gint8* ags_vst_buffer_pass(AgsVstBuffer *buffer)
   {
-    return(buffer->pass());
+    return((gint8 *) static_cast<Steinberg::Buffer*>((void *) buffer)->pass());
   }
 
   gboolean ags_vst_buffer_to_wide_string(AgsVstBuffer *buffer,
 					 gint32 source_code_page)
   {
-    return(static_cast<gboolean>(buffer->toWideString(source_code_page)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->toWideString(source_code_page)));
   }
 
   gboolean ags_vst_buffer_to_multibyte_string(AgsVstBuffer *buffer,
 					      gint32 dest_code_page)
   {
-    return(static_cast<gboolean>(buffer->toMultibyteString(dest_code_page)));
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->toMultibyteString(dest_code_page)));
   }
   
 }

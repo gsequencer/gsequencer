@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,41 +20,43 @@
 #ifndef __AGS_VST_IPERSISTENT_H__
 #define __AGS_VST_IPERSISTENT_H__
 
-#include <ags/vst3-capi/pluginterfaces/base/funknown.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_fvariant.h>
 
-#define AGS_VST_IPERSISTENT_IID (ags_vst_ipersistent_get_iid());
-#define AGS_VST_IATTRIBUTES_IID (ags_vst_iattributes_get_iid());
-#define AGS_VST_IATTRIBUTES2_IID (ags_vst_iattributes2_get_iid());
+#define AGS_VST_IPERSISTENT_IID (ags_vst_ipersistent_get_iid())
+#define AGS_VST_IATTRIBUTES_IID (ags_vst_iattributes_get_iid())
+#define AGS_VST_IATTRIBUTES2_IID (ags_vst_iattributes2_get_iid())
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-  typedef struct AgsVstIPersistent IPersistent;
+  typedef const gchar* AgsVstIAttrID;
+  typedef struct AgsVstIPersistent IPersistent;  
+  typedef struct AgsVstIAttributes IAttributes;
+  typedef struct AgsVstIAttributes2 IAttributes2;
 
-  AgsVstTUID ags_vst_ipersistent_get_iid();
+  const AgsVstTUID* ags_vst_ipersistent_get_iid();
   
   gint32 ags_vst_ipersistent_load_attributes(AgsVstIPersistent *persistent,
 					     AgsVstIAttributes *attributes);
-  
-  typedef struct AgsVstIAttributes IAttributes;
 
-  AgsVstTUID ags_vst_iattributes_get_iid();
+  const AgsVstTUID* ags_vst_iattributes_get_iid();
 
   gint32 ags_vst_iattributes_set(AgsVstIAttributes *attr,
-				 AgsVstIAttrID attr_id, const AgsVstFVariant **data);
+				 AgsVstIAttrID attr_id, AgsVstFVariant *data);
 
   gint32 ags_vst_iattributes_queue(AgsVstIAttributes *attr,
-				   AgsVstIAttrID list_id, const AgsVstFVariant **data);
+				   AgsVstIAttrID list_id, AgsVstFVariant *data);
 
   gint32 ags_vst_iattributes_set_binary_data(AgsVstIAttributes *attr,
 					     AgsVstIAttrID attr_id, void *data, guint32 bytes, gboolean copy_bytes);
 
   gint32 ags_vst_iattributes_get(AgsVstIAttributes *attr,
-				 AgsVstIAttrID attr_id, AgsVstFVariant **data);
+				 AgsVstIAttrID attr_id, AgsVstFVariant *data);
 
   gint32 ags_vst_iattributes_unqueue(AgsVstIAttributes *attr,
-				     AgsVstIAttrID list_id, AgsVstFVariant **data);
+				     AgsVstIAttrID list_id, AgsVstFVariant *data);
 
   gint32 ags_vst_iattributes_get_queue_item_count(AgsVstIAttributes *attr,
 						  AgsVstIAttrID attr_id);
@@ -68,9 +70,7 @@ extern "C" {
   guint32 ags_vst_iattributes_get_binary_data_size(AgsVstIAttributes *attr,
 						   AgsVstIAttrID attr_id);
 
-  typedef struct AgsVstIAttributes2 IAttributes2;
-
-  AgsVstTUID ags_vst_iattributes2_get_iid();
+  const AgsVstTUID* ags_vst_iattributes2_get_iid();
 
   gint32 ags_vst_iattributes2_count_attributes(AgsVstIAttributes2 *attr);
   AgsVstIAttrID ags_vst_iattributes2_get_attribute_id(AgsVstIAttributes2 *attr,

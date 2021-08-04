@@ -22,7 +22,7 @@
 
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
 
-#define AGS_VST_ICLONEABLE_IID (ags_vst_icloneable_get_iid());
+#define AGS_VST_ICLONEABLE_IID (ags_vst_icloneable_get_iid())
 
 #ifdef __cplusplus
 extern "C" {

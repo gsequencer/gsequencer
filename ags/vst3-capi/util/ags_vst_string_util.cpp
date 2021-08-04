@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,7 +31,7 @@ extern "C" {
     destination_str = NULL;
     destination_length = -1;
 
-    ags_vst_string_util_to_unicode16_extended(str,
+    ags_vst_string_util_to_unicode16_extended(source_str,
 					      &destination_str, &destination_length);
 
     return(destination_str);

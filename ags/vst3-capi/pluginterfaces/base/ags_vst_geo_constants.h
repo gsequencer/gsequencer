@@ -19,7 +19,7 @@
 
 #ifndef __AGS_VST_GEO_CONSTANTS_H__
 #define __AGS_VST_GEO_CONSTANTS_H__
-
+  
 enum AgsVstDirection 
 {
   AGS_VST_KNORTH,
