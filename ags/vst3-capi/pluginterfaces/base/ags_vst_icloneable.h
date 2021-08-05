@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,8 +32,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_icloneable_get_iid();
   
-  AgsVstFUnknown* ags_vst_icloneable_clone(AgsVstICloneable *cloneable);
-  
+  AgsVstFUnknown* ags_vst_icloneable_clone(AgsVstICloneable *cloneable);  
 
 #ifdef __cplusplus
 }

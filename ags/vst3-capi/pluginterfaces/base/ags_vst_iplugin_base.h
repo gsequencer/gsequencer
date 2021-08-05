@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,29 +36,49 @@ extern "C" {
 
   typedef struct AgsVstIPluginBase IPluginBase;
 
-  const AgsVstTUID* ags_vst_iplugin_base_get_iid();
-
   typedef struct AgsVstPFactoryInfo PFactoryInfo;
   typedef struct AgsVstPClassInfo PClassInfo;
 
   typedef struct AgsVstIPluginFactory IPluginFactory;
 
-  const AgsVstTUID* ags_vst_iplugin_factory_get_iid();
-
   typedef struct AgsVstPClassInfo2 PClassInfo2;
   typedef struct AgsVstIPluginFactory2 IPluginFactory2;
-
-  const AgsVstTUID* ags_vst_iplugin_factory2_get_iid();
 
   typedef struct AgsVstPClassInfoW PClassInfoW;
 
   typedef struct AgsVstIPluginFactory3 IPluginFactory3;
 
+  typedef AgsVstIPluginFactory* (*AgsVstGetFactoryProc)();
+
+  const AgsVstTUID* ags_vst_iplugin_base_get_iid();
+
+  AgsVstTResult ags_vst_iplugin_base_initialize(AgsVstIPluginBase *iplugin_base, AgsVstFUnknown *funknown);
+
+  AgsVstTResult ags_vst_iplugin_base_terminate(AgsVstIPluginBase *iplugin_base);
+
+  const AgsVstTUID* ags_vst_iplugin_factory_get_iid();
+
+  AgsVstTResult ags_vst_iplugin_factory_get_factory_info(AgsVstIPluginFactory *iplugin_factory,
+							 AgsVstPFactoryInfo *pfactory_info);
+
+  gint32 ags_vst_iplugin_factory_count_classes(AgsVstIPluginFactory *iplugin_factory);
+
+  AgsVstTResult ags_vst_iplugin_factory_get_class_info(AgsVstIPluginFactory *iplugin_factory,
+						       gint32 index, AgsVstPClassInfo *info);
+
+  AgsVstTResult ags_vst_iplugin_factory_create_instance(AgsVstIPluginFactory *iplugin_factory,
+							AgsVstFIDString *cid, AgsVstFIDString *_iid, void **obj);
+  const AgsVstTUID* ags_vst_iplugin_factory2_get_iid();
+
+  AgsVstTResult ags_vst_iplugin_factory2_get_class_info2(AgsVstIPluginFactory2 *iplugin_factory2,
+							 gint32 index, AgsVstPClassInfo *info);
+
   const AgsVstTUID* ags_vst_iplugin_factory3_get_iid();
 
-  AgsVstIPluginFactory*  ags_vst_get_plugin_factory();
-
-  typedef AgsVstIPluginFactory* (*AgsVstGetFactoryProc)();
+  AgsVstTResult ags_vst_iplugin_factory3_get_class_info_unicode(AgsVstIPluginFactory3 *iplugin_factory3,
+								gint32 index, AgsVstPClassInfoW *info);
+  
+  AgsVstIPluginFactory* ags_vst_get_plugin_factory();
 
 #ifdef __cplusplus
 }

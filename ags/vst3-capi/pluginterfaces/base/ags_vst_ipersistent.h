@@ -38,35 +38,35 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_ipersistent_get_iid();
   
-  gint32 ags_vst_ipersistent_load_attributes(AgsVstIPersistent *persistent,
-					     AgsVstIAttributes *attributes);
+  AgsVstTResult ags_vst_ipersistent_load_attributes(AgsVstIPersistent *persistent,
+						    AgsVstIAttributes *attributes);
 
   const AgsVstTUID* ags_vst_iattributes_get_iid();
 
-  gint32 ags_vst_iattributes_set(AgsVstIAttributes *attr,
-				 AgsVstIAttrID attr_id, AgsVstFVariant *data);
+  AgsVstTResult ags_vst_iattributes_set(AgsVstIAttributes *attr,
+					AgsVstIAttrID attr_id, AgsVstFVariant *data);
 
-  gint32 ags_vst_iattributes_queue(AgsVstIAttributes *attr,
-				   AgsVstIAttrID list_id, AgsVstFVariant *data);
+  AgsVstTResult ags_vst_iattributes_queue(AgsVstIAttributes *attr,
+					  AgsVstIAttrID list_id, AgsVstFVariant *data);
 
-  gint32 ags_vst_iattributes_set_binary_data(AgsVstIAttributes *attr,
-					     AgsVstIAttrID attr_id, void *data, guint32 bytes, gboolean copy_bytes);
+  AgsVstTResult ags_vst_iattributes_set_binary_data(AgsVstIAttributes *attr,
+						    AgsVstIAttrID attr_id, void *data, guint32 bytes, gboolean copy_bytes);
 
-  gint32 ags_vst_iattributes_get(AgsVstIAttributes *attr,
-				 AgsVstIAttrID attr_id, AgsVstFVariant *data);
+  AgsVstTResult ags_vst_iattributes_get(AgsVstIAttributes *attr,
+					AgsVstIAttrID attr_id, AgsVstFVariant *data);
 
-  gint32 ags_vst_iattributes_unqueue(AgsVstIAttributes *attr,
-				     AgsVstIAttrID list_id, AgsVstFVariant *data);
+  AgsVstTResult ags_vst_iattributes_unqueue(AgsVstIAttributes *attr,
+					    AgsVstIAttrID list_id, AgsVstFVariant *data);
 
   gint32 ags_vst_iattributes_get_queue_item_count(AgsVstIAttributes *attr,
 						  AgsVstIAttrID attr_id);
         
-  gint32 ags_vst_iattributes_reset_queue(AgsVstIAttributes *attr,
-					 AgsVstIAttrID attr_id);
-  gint32 ags_vst_iattributes_reset_all_queues(AgsVstIAttributes *attr);
+  AgsVstTResult ags_vst_iattributes_reset_queue(AgsVstIAttributes *attr,
+						AgsVstIAttrID attr_id);
+  AgsVstTResult ags_vst_iattributes_reset_all_queues(AgsVstIAttributes *attr);
 
-  gint32 ags_vst_iattributes_get_binary_data(AgsVstIAttributes *attr,
-					     AgsVstIAttrID attr_id, void *data, guint32 bytes);
+  AgsVstTResult ags_vst_iattributes_get_binary_data(AgsVstIAttributes *attr,
+						    AgsVstIAttrID attr_id, void *data, guint32 bytes);
   guint32 ags_vst_iattributes_get_binary_data_size(AgsVstIAttributes *attr,
 						   AgsVstIAttrID attr_id);
 

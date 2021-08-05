@@ -30,8 +30,8 @@ extern "C" {
     return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IPersistent)));
   }
 
-  gint32 ags_vst_ipersistent_load_attributes(AgsVstIPersistent *persistent,
-					     AgsVstIAttributes *attributes)
+  AgsVstTResult ags_vst_ipersistent_load_attributes(AgsVstIPersistent *persistent,
+						    AgsVstIAttributes *attributes)
   {
     return(static_cast<Steinberg::IPersistent*>((void *) persistent)->loadAttributes(static_cast<Steinberg::IAttributes*>((void *) attributes)));
   }
@@ -42,30 +42,30 @@ extern "C" {
     return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IAttributes)));
   }
 
-  gint32 ags_vst_iattributes_set(AgsVstIAttributes *attr,
-				 AgsVstIAttrID attr_id, AgsVstFVariant *data)
+  AgsVstTResult ags_vst_iattributes_set(AgsVstIAttributes *attr,
+					AgsVstIAttrID attr_id, AgsVstFVariant *data)
   {
     const Steinberg::FVariant& tmp_data = static_cast<Steinberg::FVariant>((void *) data);
     
     return(static_cast<Steinberg::IAttributes*>((void *) attr)->set(attr_id, tmp_data));
   }
 
-  gint32 ags_vst_iattributes_queue(AgsVstIAttributes *attr,
-				   AgsVstIAttrID list_id, AgsVstFVariant *data)
+  AgsVstTResult ags_vst_iattributes_queue(AgsVstIAttributes *attr,
+					  AgsVstIAttrID list_id, AgsVstFVariant *data)
   {
     const Steinberg::FVariant& tmp_data = static_cast<Steinberg::FVariant>((void *) data);
     
     return(static_cast<Steinberg::IAttributes*>((void *) attr)->queue(list_id, tmp_data));
   }
 
-  gint32 ags_vst_iattributes_set_binary_data(AgsVstIAttributes *attr,
-					     AgsVstIAttrID attr_id, void *data, guint32 bytes, gboolean copy_bytes)
+  AgsVstTResult ags_vst_iattributes_set_binary_data(AgsVstIAttributes *attr,
+						    AgsVstIAttrID attr_id, void *data, guint32 bytes, gboolean copy_bytes)
   {
     return(static_cast<Steinberg::IAttributes*>((void *) attr)->setBinaryData(attr_id, data, bytes, copy_bytes));
   }
 
-  gint32 ags_vst_iattributes_get(AgsVstIAttributes *attr,
-				 AgsVstIAttrID attr_id, AgsVstFVariant *data)
+  AgsVstTResult ags_vst_iattributes_get(AgsVstIAttributes *attr,
+					AgsVstIAttrID attr_id, AgsVstFVariant *data)
   {
     Steinberg::FVariant *tmp_data_0 = static_cast<Steinberg::FVariant*>((void *) data);
     const Steinberg::FVariant& tmp_data_1 = tmp_data_0;
@@ -73,8 +73,8 @@ extern "C" {
     return(static_cast<Steinberg::IAttributes*>((void *) attr)->get(attr_id, const_cast<Steinberg::FVariant&>(tmp_data_1)));
   }
 
-  gint32 ags_vst_iattributes_unqueue(AgsVstIAttributes *attr,
-				     AgsVstIAttrID list_id, AgsVstFVariant *data)
+  AgsVstTResult ags_vst_iattributes_unqueue(AgsVstIAttributes *attr,
+					    AgsVstIAttrID list_id, AgsVstFVariant *data)
   {
     Steinberg::FVariant *tmp_data_0 = static_cast<Steinberg::FVariant*>((void *) data);
     const Steinberg::FVariant& tmp_data_1 = tmp_data_0;
@@ -88,19 +88,19 @@ extern "C" {
     return(static_cast<Steinberg::IAttributes*>((void *) attr)->getQueueItemCount(attr_id));
   }
         
-  gint32 ags_vst_iattributes_reset_queue(AgsVstIAttributes *attr,
-					 AgsVstIAttrID attr_id)
+  AgsVstTResult ags_vst_iattributes_reset_queue(AgsVstIAttributes *attr,
+						AgsVstIAttrID attr_id)
   {
     return(static_cast<Steinberg::IAttributes*>((void *) attr)->resetQueue(attr_id));
   }
 
-  gint32 ags_vst_iattributes_reset_all_queues(AgsVstIAttributes *attr)
+  AgsVstTResult ags_vst_iattributes_reset_all_queues(AgsVstIAttributes *attr)
   {
     return(static_cast<Steinberg::IAttributes*>((void *) attr)->resetAllQueues());
   }
 
-  gint32 ags_vst_iattributes_get_binary_data(AgsVstIAttributes *attr,
-					     AgsVstIAttrID attr_id, void *data, guint32 bytes)
+  AgsVstTResult ags_vst_iattributes_get_binary_data(AgsVstIAttributes *attr,
+						    AgsVstIAttrID attr_id, void *data, guint32 bytes)
   {
     return(static_cast<Steinberg::IAttributes*>((void *) attr)->getBinaryData(attr_id, data, bytes));
   }
