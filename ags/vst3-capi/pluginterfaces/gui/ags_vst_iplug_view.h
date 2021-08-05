@@ -33,6 +33,37 @@ extern "C" {
   typedef struct AgsVstITimerHandler ITimerHandler;
   typedef struct AgsVstIRunLoop IRunLoop;
 
+  const AgsVstFIDString ags_vst_kplatform_type_hwnd = "HWND";
+  const AgsVstFIDString ags_vst_kplatform_type_hi_view = "HIView";
+  const AgsVstFIDString ags_vst_kplatform_type_ns_view = "NSView";
+  const AgsVstFIDString ags_vst_kplatform_type_ui_view = "UIView";
+  const AgsVstFIDString ags_vst_kplatform_type_x11_embed_window_id = "X11EmbedWindowID";
+  
+  gint32 ags_vst_view_rect_get_width(AgsVstViewRect *view_rect);
+  gint32 ags_vst_view_rect_get_height(AgsVstViewRect *view_rect);
+
+  AgsVstTUID* ags_vst_iplug_view_get_iid();
+  
+  AgsVstTResult ags_vst_iplug_view_attached(AgsVstIPlugView *iplug_view, void *parent, AgsVstFIDString type);
+  AgsVstTResult ags_vst_iplug_view_removed(AgsVstIPlugView *iplug_view);
+
+  AgsVstTResult ags_vst_iplug_view_on_wheel(AgsVstIPlugView *iplug_view, gfloat distance);
+
+  AgsVstTResult ags_vst_iplug_view_on_key_down(AgsVstIPlugView *iplug_view, gunichar2 key, gint16 key_code, gint16 modifiers);
+  AgsVstTResult ags_vst_iplug_view_on_key_up(AgsVstIPlugView *iplug_view, gunichar2 key, gint16 key_code, gint16 modifiers);
+  
+  AgsVstTResult ags_vst_iplug_view_get_size(AgsVstIPlugView *iplug_view, AgsVstViewRect *current_size);
+
+  AgsVstTResult ags_vst_iplug_view_on_size(AgsVstIPlugView *iplug_view, AgsVstViewRect *new_size);
+
+  AgsVstTResult ags_vst_iplug_view_on_focus(AgsVstIPlugView *iplug_view, gboolean state);
+
+  AgsVstTResult ags_vst_iplug_view_set_frame(AgsVstIPlugView *iplug_view, AgsVstIPlugFrame *frame);
+
+  AgsVstTResult ags_vst_iplug_view_can_resize(AgsVstIPlugView *iplug_view);
+
+  AgsVstTResult ags_vst_iplug_view_check_size_constraint(AgsVstIPlugView *iplug_view, AgsVstViewRect *rect);
+
 #ifdef __cplusplus
 }
 #endif
