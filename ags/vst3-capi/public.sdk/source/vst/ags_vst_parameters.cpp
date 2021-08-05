@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,23 +27,26 @@ extern "C" {
 
   AgsVstParameter* ags_vst_parameter_new()
   {
-    return(new Parameter());
+    return((AgsVstParameter *) new Steinberg::Vst::Parameter());
   }
   
-  AgsVstParameter* ags_vst_parameter_new_with_info(AgsVstParameterInfo **info)
+  AgsVstParameter* ags_vst_parameter_new_with_info(AgsVstParameterInfo *info)
   {
-    return(new Parameter(static_cast<ParameterInfo&>(info[0])));
+    Steinberg::Vst::Parameter *tmp_info_0 = static_cast<Steinberg::Vst::Parameter*>((void *) info);
+    const Steinberg::Vst::Parameter& tmp_info_1 = const_cast<Steinberg::Vst::Parameter&>(tmp_info_0[0]);
+    
+    return((AgsVstParameter *) new Steinberg::Vst::Parameter(const_cast<Steinberg::Vst::Parameter&>(tmp_info_1)));
   }
   
-  AgsVstParameter* ags_vst_parameter_new_full(gchar *title, guint32 tag, gchar *units,
+  AgsVstParameter* ags_vst_parameter_new_full(gunichar2 *title, guint32 tag, gunichar2 *units,
 					      gdouble default_value_normalized, gint32 step_count,
 					      gint32 flags, gint32 unit_id,
-					      gchar *short_title)
+					      gunichar2 *short_title)
   {
-    return(new Parameter(title, tag, units,
-			 default_value_normalized, step_count,
-			 flags, unit_id,
-			 short_title));
+    return((AgsVstParameter *) new Steinberg::Vst::Parameter((char16_t *) title, tag, (char16_t *) units,
+							     default_value_normalized, step_count,
+							     flags, unit_id,
+							     (char16_t *) short_title));
   }
   
   void ags_vst_parameters_delete(AgsVstParameter *parameter)
@@ -53,245 +56,268 @@ extern "C" {
 
   AgsVstParameterInfo* ags_vst_parameter_get_info(AgsVstParameter *parameter)
   {
-    return(static_cast<AgsVstParameterInfo*>(parameter->getInfo()));
+    const Steinberg::Vst::ParameterInfo& info = static_cast<Steinberg::Vst::Parameter*>((void *) parameter)->getInfo();
+    Steinberg::Vst::ParameterInfo *tmp_info_0 = const_cast<Steinberg::Vst::ParameterInfo*>(&info);
+
+    
+    return((AgsVstParameterInfo *) tmp_info_0);
   }
   
   void ags_vst_parameter_set_unit_id(AgsVstParameter *parameter,
 				     gint32 id)
   {
-    parameter->setUnitID(id);
+    static_cast<Steinberg::Vst::Parameter*>((void *) parameter)->setUnitID(id);
   }
   
   gint32 ags_vst_parameter_get_unit_id(AgsVstParameter *parameter)
   {
-    return(parameter->getUnitID());
+    return(static_cast<Steinberg::Vst::Parameter*>((void *) parameter)->getUnitID());
   }  
 
   gdouble ags_vst_parameter_get_normalized(AgsVstParameter *parameter)
   {
-    return(parameter->getNormalized());
+    return(static_cast<Steinberg::Vst::Parameter*>((void *) parameter)->getNormalized());
   }
   
   gboolean ags_vst_parameter_set_normalized(AgsVstParameter *parameter,
 					    gdouble v)
   {
-    return(parameter->setNormalized(v));
+    return(static_cast<Steinberg::Vst::Parameter*>((void *) parameter)->setNormalized(v));
   }  
 
   void ags_vst_parameter_to_string(AgsVstParameter *parameter,
-				   gdouble value_normalized, gchar *string)
+				   gdouble value_normalized, AgsVstString128 string)
   {
-    parameter->toString(value_normalized, string);
+    static_cast<Steinberg::Vst::Parameter*>((void *) parameter)->toString(value_normalized, (char16_t *) string);
   }
 
   gboolean ags_vst_parameter_from_string(AgsVstParameter *parameter,
-					 gchar *string, gdouble *value_normalized)
+					 gunichar2 *string, gdouble *value_normalized)
   {
-    return(parameter->fromString(string, static_cast<ParamValue&>(value_normalized[0])));
+    Steinberg::Vst::ParamValue *tmp_value_normalized_0 = static_cast<Steinberg::Vst::ParamValue*>(value_normalized);
+    const Steinberg::Vst::ParamValue& tmp_value_normalized_1 = const_cast<Steinberg::Vst::ParamValue&>(tmp_value_normalized_0[0]);
+    
+    return(static_cast<Steinberg::Vst::Parameter*>((void *) parameter)->fromString((char16_t *) string, const_cast<Steinberg::Vst::ParamValue&>(tmp_value_normalized_1)));
   }
   
   gdouble ags_vst_parameter_to_plain(AgsVstParameter *parameter,
 				     gdouble value_normalized)
   {
-    return(parameter->toPlain(value_normalized));
+    return(static_cast<Steinberg::Vst::Parameter*>((void *) parameter)->toPlain(value_normalized));
   }
   
   gdouble ags_vst_parameter_to_normalized(AgsVstParameter *parameter,
 					  gdouble plain_value)
   {
-    return(parameter->toNormalized(plain_value));
+    return(static_cast<Steinberg::Vst::Parameter*>((void *) parameter)->toNormalized(plain_value));
   }
   
   gint32 ags_vst_parameter_get_precision(AgsVstParameter *parameter)
   {
-    return(parameter->getPrecision());
+    return(static_cast<Steinberg::Vst::Parameter*>((void *) parameter)->getPrecision());
   }
   
   void ags_vst_parameter_set_precision(AgsVstParameter *parameter,
 				       gint32 val)
   {
-    parameter->setPrecision(val);
+    static_cast<Steinberg::Vst::Parameter*>((void *) parameter)->setPrecision(val);
   }
-    
+
+#if 0  
   AgsVstRangeParameter* ags_vst_range_parameter_new()
   {
-    return(new RangeParameter());
+    return((AgsVstRangeParameter *) new Steinberg::Vst::RangeParameter());
   }
+#endif
   
-  AgsVstRangeParameter* ags_vst_range_parameter_new_with_info(AgsVstParameterInfo **param_info, gdouble min, gdouble max)
+  AgsVstRangeParameter* ags_vst_range_parameter_new_with_info(AgsVstParameterInfo *param_info, gdouble min, gdouble max)
   {
-    return(new RangeParameter(static_cast<ParameterInfo&>(param_info[0]), min, max));
+    Steinberg::Vst::ParameterInfo *tmp_param_info_0 = static_cast<Steinberg::Vst::ParameterInfo*>((void *) param_info);
+    const Steinberg::Vst::ParameterInfo& tmp_param_info_1 = const_cast<Steinberg::Vst::ParameterInfo&>(tmp_param_info_0[0]);
+    
+    return((AgsVstRangeParameter *) new Steinberg::Vst::RangeParameter(tmp_param_info_1, static_cast<Steinberg::Vst::ParamValue>(min), static_cast<Steinberg::Vst::ParamValue>(max)));
   }
   
-  AgsVstRangeParameter* ags_vst_range_parameter_new_full(gchar *title, guint32 tag, gchar *units,
+  AgsVstRangeParameter* ags_vst_range_parameter_new_full(gunichar2 *title, guint32 tag, gunichar2 *units,
 							 gdouble min_plain, gdouble max_plain,
 							 gdouble default_value_plain, gint32 step_count,
 							 gint32 flags, gint32 unit_id,
-							 gchar *short_title)
+							 gunichar2 *short_title)
   {
-    return(new RangeParameter(title, tag, units,
-			      min_plain, max_plain,
-			      default_value_plain, step_count,
-			      flags, unit_id,
-			      short_title));
+    return((AgsVstRangeParameter *) new Steinberg::Vst::RangeParameter((char16_t *) title, tag, (char16_t *) units,
+								       min_plain, max_plain,
+								       default_value_plain, step_count,
+								       flags, unit_id,
+								       (char16_t *) short_title));
   }
     
   gdouble ags_vst_range_parameter_get_min(AgsVstRangeParameter *range_parameter)
   {
-    return(range_parameter->getMin());
+    return(static_cast<Steinberg::Vst::RangeParameter*>((void *) range_parameter)->getMin());
   }
   
   void ags_vst_range_parameter_set_min(AgsVstRangeParameter *range_parameter,
 				       gdouble value)
   {
-    range_parameter->setMin(value);
+    static_cast<Steinberg::Vst::RangeParameter*>((void *) range_parameter)->setMin(value);
   }
   
   gdouble ags_vst_range_parameter_get_max(AgsVstRangeParameter *range_parameter)
   {
-    return(range_parameter->getMax());
+    return(static_cast<Steinberg::Vst::RangeParameter*>((void *) range_parameter)->getMax());
   }
   
   void ags_vst_range_parameter_set_max(AgsVstRangeParameter *range_parameter,
 				       gdouble value)
   {
-    range_parameter->setMax(value);
+    static_cast<Steinberg::Vst::RangeParameter*>((void *) range_parameter)->setMax(value);
   }
   
   void ags_vst_range_parameter_to_string(AgsVstRangeParameter *range_parameter,
-					 gdouble _value_normalized, gchar *string)
+					 gdouble value_normalized, AgsVstString128 string)
   {
-    range_parameter->toString(_value_normalized, string);
+    static_cast<Steinberg::Vst::RangeParameter*>((void *) range_parameter)->toString(value_normalized, (char16_t *) string);
   }
   
   gboolean ags_vst_range_parameter_from_string(AgsVstRangeParameter *range_parameter,
-					       gchar *string, gdouble *_value_normalized)
+					       gunichar2 *string, gdouble *value_normalized)
   {
-    return(range_parameter->fromString(string, static_cast<ParamValue&>(_value_normalized[0])));
+    return(static_cast<Steinberg::Vst::RangeParameter*>((void *) range_parameter)->fromString((char16_t *) string, static_cast<Steinberg::Vst::ParamValue&>(value_normalized[0])));
   }
 
   gdouble ags_vst_range_parameter_to_plain(AgsVstRangeParameter *range_parameter,
-					   gdouble _value_normalized)
+					   gdouble value_normalized)
   {
-    return(range_parameter->toPlain(_value_normalized));
+    return(static_cast<Steinberg::Vst::RangeParameter*>((void *) range_parameter)->toPlain(value_normalized));
   }
   
   gdouble ags_vst_range_parameter_to_normalized(AgsVstRangeParameter *range_parameter,
 						gdouble plain_value)
   {
-    return(range_parameter->toNormalized(plain_value));
-  }
-  
-  AgsVstStringListParameter* ags_vst_string_list_parameter_new()
-  {
-    return(new StringListParameter());
-  }
-  
-  AgsVstStringListParameter* ags_vst_string_list_parameter_new_with_info(AgsVstParameterInfo **param_info)
-  {
-    return(new StringListParameter(static_cast<ParameterInfo&>(param_info[0])));
+    return(static_cast<Steinberg::Vst::RangeParameter*>((void *) range_parameter)->toNormalized(plain_value));
   }
 
-  AgsVstStringListParameter* ags_vst_string_list_parameter_new_full(gchar *title, guint32 tag, gchar *units,
-								    gint32 flags,
-								    gint32 unit_id, gchar *short_title)
+#if 0
+  AgsVstStringListParameter* ags_vst_string_list_parameter_new()
   {
-    return(new StringListParameter(title, tag, units,
-				   flags,
-				   unit_id, short_title));
+    return((AgsVstStringListParameter *) new Steinberg::Vst::StringListParameter());
+  }
+#endif
+  
+  AgsVstStringListParameter* ags_vst_string_list_parameter_new_with_info(AgsVstParameterInfo *param_info)
+  {
+    Steinberg::Vst::ParameterInfo *tmp_param_info_0 = static_cast<Steinberg::Vst::ParameterInfo*>((void *) param_info);
+    const Steinberg::Vst::ParameterInfo& tmp_param_info_1 = const_cast<Steinberg::Vst::ParameterInfo&>(tmp_param_info_0[0]);
+
+    return((AgsVstStringListParameter *) new Steinberg::Vst::StringListParameter(tmp_param_info_1));
+  }
+
+  AgsVstStringListParameter* ags_vst_string_list_parameter_new_full(gunichar2 *title, guint32 tag, gunichar2 *units,
+								    gint32 flags,
+								    gint32 unit_id, gunichar2 *short_title)
+  {
+    return((AgsVstStringListParameter *) new Steinberg::Vst::StringListParameter((char16_t *) title, tag, (char16_t *) units,
+										 flags,
+										 unit_id, (char16_t *) short_title));
   }
 
   void ags_vst_string_list_parameter_append_string(AgsVstStringListParameter *string_list_parameter,
-						   gchar *string)
+						   AgsVstString128 string)
   {
-    string_list_parameter->appendString(string);
+    static_cast<Steinberg::Vst::StringListParameter*>((void *) string_list_parameter)->appendString((char16_t *) string);
   }
   
   gboolean ags_vst_string_list_parameter_replace_string(AgsVstStringListParameter *string_list_parameter,
-							gint32 index, gchar *string)
+							gint32 index, AgsVstString128 string)
   {
-    return(string_list_parameter->replaceString(index, string);
+    return(static_cast<Steinberg::Vst::StringListParameter*>((void *) string_list_parameter)->replaceString(index, (char16_t *) string));
   }
   
   void ags_vst_string_list_parameter_to_string(AgsVstStringListParameter *string_list_parameter,
-					       gdouble _value_normalized, gchar *string)
+					       gdouble _value_normalized, AgsVstString128 string)
   {
-    string_list_parameter->toString(_value_normalized, string);
+    static_cast<Steinberg::Vst::StringListParameter*>((void *) string_list_parameter)->toString(_value_normalized, (char16_t *) string);
   }
   
   gboolean ags_vst_string_list_parameter_from_string(AgsVstStringListParameter *string_list_parameter,
-						     gchar *string, gdouble *_value_normalized)
+						     gunichar2 *string, gdouble *value_normalized)
   {
-    return(string_list_parameter->fromString(string, static_cast<ParamValue&>(_value_normalized[0])));
+    Steinberg::Vst::ParamValue *tmp_value_normalized_0 = static_cast<Steinberg::Vst::ParamValue*>(value_normalized);
+    const Steinberg::Vst::ParamValue& tmp_value_normalized_1 = const_cast<Steinberg::Vst::ParamValue&>(tmp_value_normalized_0[0]);    
+    
+    return(static_cast<Steinberg::Vst::StringListParameter*>((void *) string_list_parameter)->fromString((char16_t *) string, const_cast<Steinberg::Vst::ParamValue&>(tmp_value_normalized_1)));
   }
   
   gdouble ags_vst_string_list_parameter_to_plain(AgsVstStringListParameter *string_list_parameter,
-						 gdouble _value_normalized)
+						 gdouble value_normalized)
   {
-    return(string_list_parameter->toPlain(_value_normalized));
+    return(static_cast<Steinberg::Vst::StringListParameter*>((void *) string_list_parameter)->toPlain(value_normalized));
   }
   
   gdouble ags_vst_string_list_parameter_to_normalized(AgsVstStringListParameter *string_list_parameter,
 						      gdouble plain_value)
   {
-    return(string_list_parameter->toNormalized(plain_value));
+    return(static_cast<Steinberg::Vst::StringListParameter*>((void *) string_list_parameter)->toNormalized(plain_value));
   }
   
   AgsVstParameterContainer* ags_vst_parameter_container_new()
   {
-    return(new ParameterContainer());
+    return((AgsVstParameterContainer *) new Steinberg::Vst::ParameterContainer());
   }
   
   void ags_vst_parameter_container_init(AgsVstParameterContainer *parameter_container,
 					gint32 initial_size, gint32 resize_delta)
   {
-    parameter_container->init(initial_size, resize_delta);
+    static_cast<Steinberg::Vst::ParameterContainer*>((void *) parameter_container)->init(initial_size, resize_delta);
   }
   
   AgsVstParameter* ags_vst_parameter_container_add_parameter_with_info(AgsVstParameterContainer *parameter_container,
-								       AgsVstParameterInfo **info)
+								       AgsVstParameterInfo *info)
   {
-    return(parameter_container->addParameterWithInfo(static_cast<ParameterInfo&>(info[0])));
+    Steinberg::Vst::ParameterInfo *tmp_info_0 = static_cast<Steinberg::Vst::ParameterInfo*>((void *) info);
+    const Steinberg::Vst::ParameterInfo& tmp_info_1 = const_cast<Steinberg::Vst::ParameterInfo&>(tmp_info_0[0]);
+    
+    return((AgsVstParameter *) static_cast<Steinberg::Vst::ParameterContainer*>((void *) parameter_container)->addParameter(tmp_info_1));
   }  
 
   AgsVstParameter* ags_vst_parameter_container_add_parameter_extended(AgsVstParameterContainer *parameter_container,
-								      gchar *title, gchar *units, gint32 step_count,
+								      gunichar2 *title, gunichar2 *units, gint32 step_count,
 								      gdouble default_value_normalized,
 								      gint32 flags, gint32 tag,
-								      gint32 unit_id, gchar *short_title)
+								      gint32 unit_id, gunichar2 *short_title)
   {
-    return(parameter_container->addParameterExtended(title, units, step_count,
-						     default_value_normalized,
-						     flags, tag,
-						     unit_id, short_title));
+    return((AgsVstParameter *) static_cast<Steinberg::Vst::ParameterContainer*>((void *) parameter_container)->addParameter((char16_t *) title, (char16_t *) units, step_count,
+															    default_value_normalized,
+															    flags, tag,
+															    unit_id, (char16_t *) short_title));
   }
   
   AgsVstParameter* ags_vst_parameter_container_add_parameter(AgsVstParameterContainer *parameter_container,
 							     AgsVstParameter *p)
   {
-    return(parameter_container->addParameter(p));
+    return((AgsVstParameter *) static_cast<Steinberg::Vst::ParameterContainer*>((void *) parameter_container)->addParameter(static_cast<Steinberg::Vst::Parameter*>((void *) p)));
   }
   
   gint32 ags_vst_parameter_container_get_parameter_count(AgsVstParameterContainer *parameter_container)
   {
-    return(parameter_container->getParameterCount());
+    return(static_cast<Steinberg::Vst::ParameterContainer*>((void *) parameter_container)->getParameterCount());
   }  
 
   AgsVstParameter* ags_vst_parameter_container_get_parameter_by_index(AgsVstParameterContainer *parameter_container,
 								      gint32 index)
   {
-    return(parameter_container->getParameterByIndex(index));
+    return((AgsVstParameter *) static_cast<Steinberg::Vst::ParameterContainer*>((void *) parameter_container)->getParameterByIndex(index));
   }
   
   void ags_vst_parameter_container_remove_all(AgsVstParameterContainer *parameter_container)
   {
-    return(parameter_container->removeAll());
+    return(static_cast<Steinberg::Vst::ParameterContainer*>((void *) parameter_container)->removeAll());
   }
   
   AgsVstParameter* ags_vst_parameter_container_get_parameter(AgsVstParameterContainer *parameter_container,
 							     guint32 tag)
   {
-    return(parameter_container->getParameter(tag));
+    return((AgsVstParameter *) static_cast<Steinberg::Vst::ParameterContainer*>((void *) parameter_container)->getParameter(tag));
   }
 
 }

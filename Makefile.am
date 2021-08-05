@@ -167,6 +167,7 @@ EXTRA_DIST += \
 	libags_thread.sym.in \
 	libags_server.sym.in \
 	libags_audio.sym.in \
+	libags_vst.sym.in \
 	libags_gui.sym.in
 
 EXTRA_DIST += \
@@ -235,6 +236,7 @@ CLEANFILES = \
 	libags_thread.sym \
 	libags_server.sym \
 	libags_audio.sym \
+	libags_vst.sym \
 	libags_gui.sym \
 	ags/object/ags_marshallers.list \
 	ags/widget/ags_widget_marshallers.list \
@@ -359,6 +361,7 @@ EXTRA_DIST += \
 	libags_thread.sym \
 	libags_server.sym \
 	libags_audio.sym \
+	libags_vst.sym \
 	libags_gui.sym
 
 EXTRA_DIST += \
@@ -3298,6 +3301,13 @@ gen-symbols-ags-audio:
 	find ags/plugin -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
 	find ags/audio -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
 
+gen-symbols-ags-vst:
+	rm -f libags_vst.sym.in
+	touch libags_vst.sym.in
+	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_vst.sym.in
+	echo -e -n "\n" >> libags_vst.sym.in
+	find ags/vst3-capi -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_vst.sym.in
+
 gen-symbols-ags-gui:
 	rm -f libags_gui.sym.in
 	touch libags_gui.sym.in
@@ -3306,7 +3316,7 @@ gen-symbols-ags-gui:
 	find ags/widget -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_gui.sym.in
 	find ags/widget -name "ags_widget_marshal.h" | xargs grep --no-filename -o -P "(ags_widget_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags_gui.sym.in
 
-gen-symbols-all: gen-symbols-ags gen-symbols-ags-thread gen-symbols-ags-server gen-symbols-ags-audio gen-symbols-ags-gui
+gen-symbols-all: gen-symbols-ags gen-symbols-ags-thread gen-symbols-ags-server gen-symbols-ags-audio gen-symbols-ags-vst gen-symbols-ags-gui
 	echo "Generated all symbols"
 
 gen-marshallers:

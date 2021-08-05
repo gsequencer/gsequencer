@@ -29,9 +29,15 @@ extern "C" {
 #endif
 
   typedef struct AgsVstParameter Parameter;
+
+  typedef struct AgsVstRangeParameter RangeParameter;
+
+  typedef struct AgsVstStringListParameter StringListParameter;
+
+  typedef struct AgsVstParameterContainer ParameterContainer;
   
   AgsVstParameter* ags_vst_parameter_new();
-  AgsVstParameter* ags_vst_parameter_new_with_info(AgsVstParameterInfo **info);
+  AgsVstParameter* ags_vst_parameter_new_with_info(AgsVstParameterInfo *info);
   AgsVstParameter* ags_vst_parameter_new_full(gunichar2 *title, guint32 tag, gunichar2 *units,
 					      gdouble default_value_normalized, gint32 step_count,
 					      gint32 flags, gint32 unit_id,
@@ -60,11 +66,8 @@ extern "C" {
   gint32 ags_vst_parameter_get_precision(AgsVstParameter *parameter);
   void ags_vst_parameter_set_precision(AgsVstParameter *parameter,
 				       gint32 val);
-
-  typedef struct AgsVstRangeParameter RangeParameter;
   
-  AgsVstRangeParameter* ags_vst_range_parameter_new();
-  AgsVstRangeParameter* ags_vst_range_parameter_new_with_info(AgsVstParameterInfo **param_info, gdouble min, gdouble max);
+  AgsVstRangeParameter* ags_vst_range_parameter_new_with_info(AgsVstParameterInfo *param_info, gdouble min, gdouble max);
   AgsVstRangeParameter* ags_vst_range_parameter_new_full(gunichar2 *title, guint32 tag, gunichar2 *units,
 							 gdouble min_plain, gdouble max_plain,
 							 gdouble default_value_plain, gint32 step_count,
@@ -79,19 +82,16 @@ extern "C" {
 				       gdouble value);
 
   void ags_vst_range_parameter_to_string(AgsVstRangeParameter *range_parameter,
-					 gdouble _value_normalized, AgsVstString128 string);
+					 gdouble value_normalized, AgsVstString128 string);
   gboolean ags_vst_range_parameter_from_string(AgsVstRangeParameter *range_parameter,
-					       gunichar2 *string, gdouble *_value_normalized);
+					       gunichar2 *string, gdouble *value_normalized);
 
   gdouble ags_vst_range_parameter_to_plain(AgsVstRangeParameter *range_parameter,
-					   gdouble _value_normalized);
+					   gdouble value_normalized);
   gdouble ags_vst_range_parameter_to_normalized(AgsVstRangeParameter *range_parameter,
 						gdouble plain_value);
 
-  typedef struct AgsVstStringListParameter StringListParameter;
-
-  AgsVstStringListParameter* ags_vst_string_list_parameter_new();
-  AgsVstStringListParameter* ags_vst_string_list_parameter_new_with_info(AgsVstParameterInfo **param_info);
+  AgsVstStringListParameter* ags_vst_string_list_parameter_new_with_info(AgsVstParameterInfo *param_info);
   AgsVstStringListParameter* ags_vst_string_list_parameter_new_full(gunichar2 *title, guint32 tag, gunichar2 *units,
 								    gint32 flags,
 								    gint32 unit_id, gunichar2 *short_title);
@@ -111,16 +111,13 @@ extern "C" {
   gdouble ags_vst_string_list_parameter_to_normalized(AgsVstStringListParameter *string_list_parameter,
 						      gdouble plain_value);
 
-
-  typedef struct AgsVstParameterContainer ParameterContainer;
-
   AgsVstParameterContainer* ags_vst_parameter_container_new();
 
   void ags_vst_parameter_container_init(AgsVstParameterContainer *parameter_container,
 					gint32 initial_size, gint32 resize_delta);
 
   AgsVstParameter* ags_vst_parameter_container_add_parameter_with_info(AgsVstParameterContainer *parameter_container,
-								       AgsVstParameterInfo **info);
+								       AgsVstParameterInfo *info);
 
   AgsVstParameter* ags_vst_parameter_container_add_parameter_extended(AgsVstParameterContainer *parameter_container,
 								      gunichar2 *title, gunichar2 *units, gint32 step_count,
