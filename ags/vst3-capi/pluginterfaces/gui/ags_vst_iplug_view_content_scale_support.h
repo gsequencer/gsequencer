@@ -17,41 +17,26 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_GEO_CONSTANTS_H__
-#define __AGS_VST_GEO_CONSTANTS_H__
-  
-enum AgsVstDirection 
-{
-  AGS_VST_KNORTH,
-  AGS_VST_KNORTH_EAST,
-  AGS_VST_KEAST,
-  AGS_VST_KSOUTH_EAST,
-  AGS_VST_KSOUTH,
-  AGS_VST_KSOUTH_WEST,
-  AGS_VST_KWEST,
-  AGS_VST_KNORTH_WEST,
-  AGS_VST_KNO_DIRECTION,
-  AGS_VST_KNUMBER_OF_DIRECTIONS,
-};
+#ifndef __AGS_VST_IPLUG_VIEW_CONTENT_SCALE_SUPPORT_H__
+#define __AGS_VST_IPLUG_VIEW_CONTENT_SCALE_SUPPORT_H__
 
-enum AgsVstOrientation 
-{
-  AGS_VST_KHORIZONTAL,
-  AGS_VST_KVERTICAL,
-  AGS_VST_KNUMBER_OF_ORIENTATIONS,
-};
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-  AgsVstDirection ags_vst_geo_constants_to_oposite(AgsVstDirection dir);
-  AgsVstOrientation ags_vst_geo_constants_to_orientation(AgsVstDirection dir);
-  AgsVstOrientation ags_vst_geo_constants_to_orthogonal_orientation(AgsVstOrientation dir);
+  typedef struct AgsVstIPlugViewContentScaleSupport IPlugViewContentScaleSupport;  
+
+  typedef gfloat AgsVstScaleFactor;
+  
+  AgsVstTUID* ags_vst_iplug_view_content_scale_support_get_iid();
+
+  AgsVstTResult ags_vst_iplug_view_content_scale_support_set_content_scale_factor(AgsVstIPlugViewContentScaleSupport *iplug_view_content_scale_support,
+										  AgsVstScaleFactor factor);
   
 #ifdef __cplusplus
 }
 #endif
 
-#endif /*__AGS_VST_GEO_CONSTANTS_H__*/
-  
+#endif /*__AGS_VST_IPLUG_VIEW_CONTENT_SCALE_SUPPORT_H__*/

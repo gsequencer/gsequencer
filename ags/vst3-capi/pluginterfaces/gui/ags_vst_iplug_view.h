@@ -22,6 +22,8 @@
 
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
 
+#define AGS_VST_IPLUG_VIEW_IID (ags_vst_iplug_view_get_iid())
+
 #ifdef __cplusplus
 extern "C" {
 #endif

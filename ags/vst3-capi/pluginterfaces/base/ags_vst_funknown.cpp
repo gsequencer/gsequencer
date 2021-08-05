@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -196,32 +196,6 @@ extern "C" {
   {
     return(((Steinberg::FUnknown *) funknown)->release());
   }
-
-#if 0
-  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new_from_funknown(AgsVstFUnknown *funknown,
-							    AgsVstTUID *tuid)
-  {
-    //TODO:JK: implement me
-  }
-    
-  AgsVstI* ags_funknown_ptr_get_interface(AgsVstFUnknownPtr *funknown_ptr,
-					  AgsVstTUID *tuid)
-  {    
-    //TODO:JK: implement me
-  }
-  
-  void ags_vst_funknown_ptr_set_funknown(AgsVstFUnknownPtr *funknown_ptr,
-					 AgsVstFUnknown *funknown)
-  {
-    //TODO:JK: implement me
-  }
-  
-  void ags_vst_funknown_ptr_set_funknown_interface(AgsVstFUnknownPtr *funknown_ptr,
-						   AgsVstFUnknown *funknown, AgsVstI *vst_interface)
-  {
-    //TODO:JK: implement me
-  }
-#endif
   
   AgsVstFReleaser* ags_freleaser_alloc(AgsVstFUnknown *funknown)
   {
