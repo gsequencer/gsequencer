@@ -17,22 +17,27 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_CONST_STRING_TABLE_H__
-#define __AGS_VST_CONST_STRING_TABLE_H__
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_keycodes.h>
 
-#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.h>
+#include <pluginterfaces/base/keycodes.h>
 
-#ifdef __cplusplus
 extern "C" {
+
+  gunichar2 ags_vst_keycodes_virtual_key_code_to_char(guint8 vkey)
+  {
+    return(Steinberg::VirtualKeyCodeToChar(vkey));
+  }
+
+  guint8 ags_vst_keycodes_char_to_virtual_key_code(gunichar2 character)
+  {
+    return(Steinberg::CharToVirtualKeyCode(character));
+  }
+
+#if 0
+  gboolean ags_vst_keycodes_is_modifier_only_key(const AgsVstKey *key)
+  {
+    //TODO:JK: implement me
+  }
 #endif
-
-  typedef struct AgsVstConstStringTable ConstStringTable;
-
-  gunichar2* ags_vst_const_string_table_get_string_literal(AgsVstConstStringTable *const_string_table, gchar *str);
-  gunichar2 ags_vst_const_string_table_get_string_character(AgsVstConstStringTable *const_string_table, gchar str);
   
-#ifdef __cplusplus
 }
-#endif
-
-#endif /*__AGS_VST_CONST_STRING_TABLE_H__*/
