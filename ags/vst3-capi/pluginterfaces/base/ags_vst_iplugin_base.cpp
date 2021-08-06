@@ -92,9 +92,4 @@ extern "C" {
     return(((Steinberg::IPluginFactory3 *) iplugin_factory3)->getClassInfoUnicode(index, (Steinberg::PClassInfoW *) info));
   }
 
-  AgsVstIPluginFactory*  ags_vst_get_plugin_factory()
-  {
-    return((AgsVstIPluginFactory *) GetPluginFactory());
-  }
-
 }

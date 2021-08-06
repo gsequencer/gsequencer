@@ -50,6 +50,20 @@ extern "C" {
 
   typedef AgsVstIPluginFactory* (*AgsVstGetFactoryProc)();
 
+  typedef enum {
+    AGS_VST_KNOFLAGS                        = 0,
+    AGS_VST_KCLASSES_DISCARDABLE            = 1 << 0,
+    AGS_VST_KLICENSE_CHECK                  = 1 << 1,
+    AGS_VST_KCOMPONENT_NON_DISCARDABLE      = 1 << 3,
+    AGS_VST_KUNICODE                        = 1 << 4
+  }AgsVstFactoryFlags;
+  
+  enum {
+    AGS_VST_KURL_SIZE   = 256,
+    AGS_VST_KEMAIL_SIZE = 128,
+    AGS_VST_KNAME_SIZE  = 64
+  };
+  
   const AgsVstTUID* ags_vst_iplugin_base_get_iid();
 
   AgsVstTResult ags_vst_iplugin_base_initialize(AgsVstIPluginBase *iplugin_base, AgsVstFUnknown *funknown);
@@ -78,8 +92,6 @@ extern "C" {
   AgsVstTResult ags_vst_iplugin_factory3_get_class_info_unicode(AgsVstIPluginFactory3 *iplugin_factory3,
 								gint32 index, AgsVstPClassInfoW *info);
   
-  AgsVstIPluginFactory* ags_vst_get_plugin_factory();
-
 #ifdef __cplusplus
 }
 #endif
