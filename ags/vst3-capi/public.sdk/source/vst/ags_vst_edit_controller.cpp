@@ -219,16 +219,12 @@ extern "C" {
   AgsVstTResult ags_vst_edit_controller_get_parameter_info_by_tag(AgsVstEditController *edit_controller,
 								  guint32 tag, AgsVstParameterInfo *info)
   {
-    Steinberg::Vst::ParameterInfo tmp_info_0;
-    const Steinberg::Vst::ParameterInfo& tmp_info_1 = const_cast<Steinberg::Vst::ParameterInfo&>(tmp_info_0);
+    Steinberg::Vst::ParameterInfo *tmp_info_0 = (Steinberg::Vst::ParameterInfo *) info;
+    const Steinberg::Vst::ParameterInfo& tmp_info_1 = const_cast<Steinberg::Vst::ParameterInfo&>(tmp_info_0[0]);
 
     Steinberg::tresult retval;
 
     retval = static_cast<Steinberg::Vst::EditController*>((void *) edit_controller)->getParameterInfoByTag(tag, const_cast<Steinberg::Vst::ParameterInfo&>(tmp_info_1));
-
-    if(info != NULL){
-      memcpy(info, &tmp_info_0, sizeof(struct Steinberg::Vst::ParameterInfo));
-    }
     
     return(retval);
   }

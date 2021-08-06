@@ -51,22 +51,14 @@ extern "C" {
 						gint32 index,
 						AgsVstBusInfo *bus)
   {
-    Steinberg::Vst::BusInfo tmp_bus_info_0;
-    const Steinberg::Vst::BusInfo& tmp_bus_info_1 = const_cast<Steinberg::Vst::BusInfo&>(tmp_bus_info_0);
+    Steinberg::Vst::BusInfo *tmp_bus_info_0 = (Steinberg::Vst::BusInfo *) bus;
+    const Steinberg::Vst::BusInfo& tmp_bus_info_1 = const_cast<Steinberg::Vst::BusInfo&>(tmp_bus_info_0[0]);
 
     Steinberg::tresult retval;
-
-    if(bus != NULL){
-      memcpy(&tmp_bus_info_0, bus, sizeof(Steinberg::Vst::BusInfo));
-    }
     
     retval = ((Steinberg::Vst::IComponent *) icomponent)->getBusInfo(type, dir,
 								     index,
 								     const_cast<Steinberg::Vst::BusInfo&>(tmp_bus_info_1));
-
-    if(bus != NULL){
-      memcpy(bus, &tmp_bus_info_0, sizeof(Steinberg::Vst::BusInfo));
-    }
     
     return(retval);
   }
@@ -74,30 +66,14 @@ extern "C" {
   AgsVstTResult ags_vst_icomponent_get_routing_info(AgsVstIComponent *icomponent,
 						    AgsVstRoutingInfo *in_info, AgsVstRoutingInfo *out_info)
   {
-    Steinberg::Vst::RoutingInfo tmp_in_info_0;
-    Steinberg::Vst::RoutingInfo tmp_out_info_0;
-    const Steinberg::Vst::RoutingInfo& tmp_in_info_1 = const_cast<Steinberg::Vst::RoutingInfo&>(tmp_in_info_0);
-    const Steinberg::Vst::RoutingInfo& tmp_out_info_1 = const_cast<Steinberg::Vst::RoutingInfo&>(tmp_out_info_0);
+    Steinberg::Vst::RoutingInfo *tmp_in_info_0 = (Steinberg::Vst::RoutingInfo *) in_info;
+    Steinberg::Vst::RoutingInfo *tmp_out_info_0 = (Steinberg::Vst::RoutingInfo *) out_info;
+    const Steinberg::Vst::RoutingInfo& tmp_in_info_1 = const_cast<Steinberg::Vst::RoutingInfo&>(tmp_in_info_0[0]);
+    const Steinberg::Vst::RoutingInfo& tmp_out_info_1 = const_cast<Steinberg::Vst::RoutingInfo&>(tmp_out_info_0[0]);
 
     Steinberg::tresult retval;
-
-    if(in_info != NULL){
-      memcpy(&tmp_in_info_0, in_info, sizeof(Steinberg::Vst::RoutingInfo));
-    }
-
-    if(out_info != NULL){
-      memcpy(&tmp_out_info_0, out_info, sizeof(Steinberg::Vst::RoutingInfo));
-    }
     
     retval = ((Steinberg::Vst::IComponent *) icomponent)->getRoutingInfo(const_cast<Steinberg::Vst::RoutingInfo&>(tmp_in_info_1), const_cast<Steinberg::Vst::RoutingInfo&>(tmp_out_info_1));
-    
-    if(in_info != NULL){
-      memcpy(in_info, &tmp_in_info_0, sizeof(Steinberg::Vst::RoutingInfo));
-    }
-
-    if(out_info != NULL){
-      memcpy(out_info, &tmp_out_info_0, sizeof(Steinberg::Vst::RoutingInfo));
-    }
 
     return(retval);
   }

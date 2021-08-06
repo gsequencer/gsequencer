@@ -2837,6 +2837,7 @@ libags_vst_h_sources = \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_ievents.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_imessage.h \
@@ -2882,6 +2883,7 @@ libags_vst_c_sources = \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.cpp \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_ievents.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_imessage.cpp \
