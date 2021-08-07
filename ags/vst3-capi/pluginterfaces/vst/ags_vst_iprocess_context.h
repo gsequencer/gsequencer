@@ -34,7 +34,7 @@ extern "C" {
   typedef enum{
     AGS_VST_KPULL_DOWN_RATE = 1,
     AGS_VST_KDROP_RATE      = 1 << 1,
-  }AgsVstFrameRate;
+  }AgsVstFrameRateFlags;
 
   typedef struct AgsVstChord Chord;
   typedef struct AgsVstProcessContext ProcessContext;

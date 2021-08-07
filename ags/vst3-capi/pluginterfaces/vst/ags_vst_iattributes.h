@@ -28,21 +28,26 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-  
+
+  typedef const gchar* AgsVstAttrID;
   typedef struct AgsVstIAttributeList IAttributeList;
   typedef struct AgsVstIStreamAttributes IStreamAttributes;
   
+  const AgsVstTUID* ags_vst_iattribute_list_get_iid();
+
   AgsVstTResult ags_vst_iattribute_list_set_int(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, gint64 value);
   AgsVstTResult ags_vst_iattribute_list_get_int(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, gint64 *value);
 
   AgsVstTResult ags_vst_iattribute_list_set_float(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, gdouble value);
   AgsVstTResult ags_vst_iattribute_list_get_float(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, gdouble *value);
 
-  AgsVstTResult ags_vst_iattribute_list_set_string(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, ags_vst_tchar *value);
-  AgsVstTResult ags_vst_iattribute_list_get_string(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, ags_vst_tchar *value, guint size_in_bytes);
+  AgsVstTResult ags_vst_iattribute_list_set_string(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, AgsVstTChar *value);
+  AgsVstTResult ags_vst_iattribute_list_get_string(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, AgsVstTChar *value, guint32 size_in_bytes);
 
-  AgsVstTResult ags_vst_iattribute_list_set_binary(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, void *data, guint size_in_bytes);
-  AgsVstTResult ags_vst_iattribute_list_get_binary(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, void *data, guint size_in_bytes);
+  AgsVstTResult ags_vst_iattribute_list_set_binary(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, const void *data, guint32 size_in_bytes);
+  AgsVstTResult ags_vst_iattribute_list_get_binary(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, const void *data, guint32 size_in_bytes);
+
+  const AgsVstTUID* ags_vst_istream_attributes_get_iid();
 
   AgsVstIAttributeList* ags_vst_istream_attributes_get_attributes(AgsVstIStreamAttributes *istream_attributes);
   

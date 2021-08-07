@@ -31,7 +31,7 @@
 extern "C" {
 #endif
 
-  typedef const gchar* AgsVstIAttrID;
+  typedef const AgsVstFIDString AgsVstIAttrID;
   typedef struct AgsVstIPersistent IPersistent;  
   typedef struct AgsVstIAttributes IAttributes;
   typedef struct AgsVstIAttributes2 IAttributes2;

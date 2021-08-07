@@ -22,45 +22,72 @@
 #include <pluginterfaces/vst/ivstattributes.h>
 
 extern "C" {
+
+  const AgsVstTUID* ags_vst_attribute_list_get_iid()
+  {
+    extern const Steinberg::TUID IAttributeList__iid;
+
+    return((AgsVstTUID *) (&IAttributeList__iid));
+  }
   
   AgsVstTResult ags_vst_iattribute_list_set_int(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, gint64 value)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IAttributeList *) iattribute_list)->setInt(id, value));
   }
   
   AgsVstTResult ags_vst_iattribute_list_get_int(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, gint64 *value)
   {
-    //TODO:JK: implement me
+    Steinberg::int64 *tmp_value_0 = (Steinberg::int64 *) value; 
+    const Steinberg::int64& tmp_value_1 = const_cast<Steinberg::int64&>(tmp_value_0[0]);
+    
+    return(((Steinberg::Vst::IAttributeList *) iattribute_list)->getInt(id, const_cast<Steinberg::int64&>(tmp_value_1)));
   }
   
   AgsVstTResult ags_vst_iattribute_list_set_float(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, gdouble value)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IAttributeList *) iattribute_list)->setFloat(id, value));
   }
   
   AgsVstTResult ags_vst_iattribute_list_get_float(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, gdouble *value)
   {
-    //TODO:JK: implement me
+    double *tmp_value_0 = (double *) value; 
+    const double& tmp_value_1 = const_cast<double&>(tmp_value_0[0]);
+    
+    return(((Steinberg::Vst::IAttributeList *) iattribute_list)->getFloat(id, const_cast<double&>(tmp_value_1)));
   }
   
-  AgsVstTResult ags_vst_iattribute_list_set_string(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, ags_vst_tchar *value)
+  AgsVstTResult ags_vst_iattribute_list_set_string(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, AgsVstTChar *value)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IAttributeList *) iattribute_list)->setString(id, (Steinberg::Vst::TChar *) value));
   }
   
-  AgsVstTResult ags_vst_iattribute_list_get_string(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, ags_vst_tchar *value, guint size_in_bytes)
+  AgsVstTResult ags_vst_iattribute_list_get_string(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, AgsVstTChar *value, guint32 size_in_bytes)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IAttributeList *) iattribute_list)->getString(id, (Steinberg::Vst::TChar *) value, size_in_bytes));
   }
   
-  AgsVstTResult ags_vst_iattribute_list_set_binary(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, void *data, guint size_in_bytes)
+  AgsVstTResult ags_vst_iattribute_list_set_binary(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, const void *data, guint32 size_in_bytes)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IAttributeList *) iattribute_list)->setBinary(id, data, size_in_bytes));
   }
   
-  AgsVstTResult ags_vst_iattribute_list_get_binary(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, void *data, guint size_in_bytes)
+  AgsVstTResult ags_vst_iattribute_list_get_binary(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, const void *data, guint32 size_in_bytes)
   {
-    //TODO:JK: implement me
+    const void*& tmp_value_0 = const_cast<const void*&>(data);
+    
+    return(((Steinberg::Vst::IAttributeList *) iattribute_list)->getBinary(id, tmp_value_0, size_in_bytes));
+  }
+
+  const AgsVstTUID* ags_vst_istream_attributes_get_iid()
+  {
+    extern const Steinberg::TUID IStreamAttributes__iid;
+
+    return((AgsVstTUID *) (&IStreamAttributes__iid));
+  }
+
+  AgsVstIAttributeList* ags_vst_istream_attributes_get_attributes(AgsVstIStreamAttributes *istream_attributes)
+  {
+    return((AgsVstIAttributeList *) ((Steinberg::Vst::IStreamAttributes *) istream_attributes)->getAttributes());
   }
 
 }
