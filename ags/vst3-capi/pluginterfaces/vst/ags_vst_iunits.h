@@ -52,7 +52,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iunit_handler2_get_iid();
 
-  AgsVstTResult ags_vst_iunit_handler2_notify_unit_bus_change(AgsVstIUnitHandler2 *iunit_handler2);
+  AgsVstTResult ags_vst_iunit_handler2_notify_unit_by_bus_change(AgsVstIUnitHandler2 *iunit_handler2);
 
   const AgsVstTUID* ags_vst_iunit_info_get_iid();
 
@@ -81,6 +81,7 @@ extern "C" {
 
   AgsVstTResult ags_vst_iunit_info_get_program_pitch_name(AgsVstIUnitInfo *iunit_info,
 							  AgsVstProgramListID list_id, gint32 program_index,
+							  gint16 midi_pitch,
 							  AgsVstString128 name);
   
   AgsVstUnitID ags_vst_iunit_info_get_selected_unit(AgsVstIUnitInfo *iunit_info);
@@ -89,7 +90,7 @@ extern "C" {
 					       AgsVstUnitID unit_id);
 
   AgsVstTResult ags_vst_iunit_info_get_unit_by_bus(AgsVstIUnitInfo *iunit_info,
-						   AgsVstMediaType type, AgsVstBusDirection dir, gint32 busIndex,
+						   AgsVstMediaType type, AgsVstBusDirection dir, gint32 bus_index,
 						   gint32 channel, AgsVstUnitID *unit_id);
 
   const AgsVstTUID* ags_vst_iprogram_list_data_get_iid();
