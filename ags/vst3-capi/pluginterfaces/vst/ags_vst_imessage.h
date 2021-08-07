@@ -22,6 +22,8 @@
 
 #include <glib.h>
 
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iattributes.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

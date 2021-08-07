@@ -28,8 +28,16 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-  
 
+  typedef struct AgsVstFrameRate FrameRate;
+  
+  typedef enum{
+    AGS_VST_KPULL_DOWN_RATE = 1,
+    AGS_VST_KDROP_RATE      = 1 << 1,
+  }AgsVstFrameRate;
+
+  typedef struct AgsVstChord Chord;
+  typedef struct AgsVstProcessContext ProcessContext;
   
 #ifdef __cplusplus
 }

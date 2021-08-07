@@ -714,7 +714,7 @@ endif
 
 # library libags-vst
 if WITH_VST3
-libags_vst_la_CPPFLAGS = -std=gnu++20 -DDEVELOPMENT
+libags_vst_la_CPPFLAGS = -std=gnu++2a -DDEVELOPMENT
 libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/home/joelkraehemann/sounds/vst3/VST_SDK/VST3_SDK $(GLIB_CFLAGS) $(VST3_CXXFLAGS) $(W32API_CFLAGS)
 libags_vst_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 $(PIC_FLAGS) -pthread 
 libags_vst_la_LIBADD = -lm $(GLIB_LIBS) $(VST3_LIBS) $(W32API_LIBS)
@@ -2836,6 +2836,7 @@ libags_vst_h_sources = \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.h \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iattributes.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_ievents.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.h \
@@ -2882,6 +2883,7 @@ libags_vst_c_sources = \
 	$(deprecated_libags_vst_c_sources) \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.cpp \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iattributes.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_ievents.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.cpp \
