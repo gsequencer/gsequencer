@@ -88,7 +88,7 @@ extern "C" {
     const Steinberg::int32& tmp_index_0 = const_cast<Steinberg::int32&>(index[0]);
 
     return((AgsVstIParamValueQueue *) ((Steinberg::Vst::IParameterChanges *) iparameter_changes)->addParameterData(const_cast<Steinberg::Vst::ParamID&>(tmp_param_id_0),
-											const_cast<Steinberg::int32&>(tmp_index_0)));
+														   const_cast<Steinberg::int32&>(tmp_index_0)));
   }
 
 }
