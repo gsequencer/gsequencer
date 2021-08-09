@@ -25,77 +25,92 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iaudio_processor_get_iid()
   {
-    //TODO:JK: implement me
+    extern const Steinberg::TUID IAudioProcessor__iid;
+
+    return((AgsVstTUID *) (&IAudioProcessor__iid));
   }
 
-  AgsVStTResult ags_vst_iaudio_processor_set_bus_arrangements(AgsVstIAudioProcessor *iaudio_processor,
-							      AgsVstSpeakerArrangements *inputs, gint32 num_ins,
-							      AgsVstSpeakerArrangements *outputs, gint32 num_outs)
+  AgsVstTResult ags_vst_iaudio_processor_set_bus_arrangements(AgsVstIAudioProcessor *iaudio_processor,
+							      AgsVstSpeakerArrangement *inputs, gint32 num_ins,
+							      AgsVstSpeakerArrangement *outputs, gint32 num_outs)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IAudioProcessor *) iaudio_processor)->setBusArrangements(inputs, num_ins,
+										      outputs, num_outs));
   }
 
-  AgsVStTResult ags_vst_iaudio_processor_get_bus_arrangements(AgsVstIAudioProcessor *iaudio_processor,
-							      AgsVstBusDirection dir, gint32 index,
-							      AgsVstSpeakerArrangments *arr)
+  AgsVstTResult ags_vst_iaudio_processor_get_bus_arrangement(AgsVstIAudioProcessor *iaudio_processor,
+							     AgsVstBusDirection dir, gint32 index,
+							     AgsVstSpeakerArrangement *arr)
   {
-    //TODO:JK: implement me
+    const Steinberg::Vst::SpeakerArrangement& tmp_arr_0 = const_cast<Steinberg::Vst::SpeakerArrangement&>(arr[0]);
+    
+    return(((Steinberg::Vst::IAudioProcessor *) iaudio_processor)->getBusArrangement(dir, index,
+										     const_cast<Steinberg::Vst::SpeakerArrangement&>(tmp_arr_0)));
   }
 
-  AgsVStTResult ags_vst_iaudio_processor_can_process_sample_size(AgsVstIAudioProcessor *iaudio_processor,
+  AgsVstTResult ags_vst_iaudio_processor_can_process_sample_size(AgsVstIAudioProcessor *iaudio_processor,
 								 gint32 symbolic_sample_size)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IAudioProcessor *) iaudio_processor)->canProcessSampleSize(symbolic_sample_size));
   }
 
-  guint32 ags_vst_iaudio_processor_get_latency_sample(AgsVstIAudioProcessor *iaudio_processor)
+  guint32 ags_vst_iaudio_processor_get_latency_samples(AgsVstIAudioProcessor *iaudio_processor)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IAudioProcessor *) iaudio_processor)->getLatencySamples());
   }
 
-  AgsVStTResult ags_vst_iaudio_processor_setup_processing(AgsVstIAudioProcessor *iaudio_processor,
+  AgsVstTResult ags_vst_iaudio_processor_setup_processing(AgsVstIAudioProcessor *iaudio_processor,
 							  AgsVstProcessSetup *setup)
   {
-    //TODO:JK: implement me
+    const Steinberg::Vst::ProcessSetup& tmp_setup_0 = const_cast<Steinberg::Vst::ProcessSetup&>(((Steinberg::Vst::ProcessSetup *) setup)[0]);
+  
+    return(((Steinberg::Vst::IAudioProcessor *) iaudio_processor)->setupProcessing(const_cast<Steinberg::Vst::ProcessSetup&>(tmp_setup_0)));
   }
 
-  AgsVStTResult ags_vst_iaudio_processor_set_processing(AgsVstIAudioProcessor *iaudio_processor,
+  AgsVstTResult ags_vst_iaudio_processor_set_processing(AgsVstIAudioProcessor *iaudio_processor,
 							gboolean state)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IAudioProcessor *) iaudio_processor)->setProcessing(state));
   }
 
-  AgsVStTResult ags_vst_iaudio_processor_process(AgsVstIAudioProcessor *iaudio_processor,
+  AgsVstTResult ags_vst_iaudio_processor_process(AgsVstIAudioProcessor *iaudio_processor,
 						 AgsVstProcessData *data)
   {
-    //TODO:JK: implement me
+    const Steinberg::Vst::ProcessData& tmp_data_0 = const_cast<Steinberg::Vst::ProcessData&>(((Steinberg::Vst::ProcessData *) data)[0]);
+
+    return(((Steinberg::Vst::IAudioProcessor *) iaudio_processor)->process(const_cast<Steinberg::Vst::ProcessData&>(tmp_data_0)));
   }
   
   guint32 ags_vst_iaudio_processor_get_tail_samples(AgsVstIAudioProcessor *iaudio_processor)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IAudioProcessor *) iaudio_processor)->getTailSamples());
   }
 
   const AgsVstTUID* ags_vst_iaudio_presentation_latency_get_iid()
   {
-    //TODO:JK: implement me
+    extern const Steinberg::TUID IAudioPresentationLatency__iid;
+
+    return((AgsVstTUID *) (&IAudioPresentationLatency__iid));
   }
 
   AgsVstTResult ags_vst_iaudio_presentation_latency_set_audio_presentation_latency_samples(AgsVstIAudioPresentationLatency *iaudio_presentation_latency,
 											   AgsVstBusDirection dir, gint32 bus_index,
 											   guint32 latency_in_samples)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IAudioPresentationLatency *) iaudio_presentation_latency)->setAudioPresentationLatencySamples(dir, bus_index,
+															   latency_in_samples));
   }
 
   const AgsVstTUID* ags_vst_iprocess_context_requirements_get_iid()
   {
-    //TODO:JK: implement me
+    extern const Steinberg::TUID IProcessContextRequirements__iid;
+
+    return((AgsVstTUID *) (&IProcessContextRequirements__iid));
   }
   
-  AgsVstTResult ags_vst_iprocess_context_get_process_context_requirements(AgsVstIProcessContextRequirements *iprocess_context_requirements)
+  guint32 ags_vst_iprocess_context_requirements_get_process_context_requirements(AgsVstIProcessContextRequirements *iprocess_context_requirements)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IProcessContextRequirements *) iprocess_context_requirements)->getProcessContextRequirements());
   }  
 
 }

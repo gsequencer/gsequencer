@@ -109,30 +109,30 @@ extern "C" {
     AGS_VST_KNEED_CHORD                        = 1 <<  8,
     AGS_VST_KNEED_FRAME_RATE                   = 1 <<  9,
     AGS_VST_KNEED_TRANSPORT_STATE              = 1 << 10,
-  }AgsVstIProcessContextRequirements;
+  }AgsVstIProcessContextRequirementsFlags;
   
   const AgsVstTUID* ags_vst_iaudio_processor_get_iid();
 
-  AgsVStTResult ags_vst_iaudio_processor_set_bus_arrangements(AgsVstIAudioProcessor *iaudio_processor,
-							      AgsVstSpeakerArrangements *inputs, gint32 num_ins,
-							      AgsVstSpeakerArrangements *outputs, gint32 num_outs);
+  AgsVstTResult ags_vst_iaudio_processor_set_bus_arrangements(AgsVstIAudioProcessor *iaudio_processor,
+							      AgsVstSpeakerArrangement *inputs, gint32 num_ins,
+							      AgsVstSpeakerArrangement *outputs, gint32 num_outs);
 
-  AgsVStTResult ags_vst_iaudio_processor_get_bus_arrangements(AgsVstIAudioProcessor *iaudio_processor,
-							      AgsVstBusDirection dir, gint32 index,
-							      AgsVstSpeakerArrangments *arr);
-
-  AgsVStTResult ags_vst_iaudio_processor_can_process_sample_size(AgsVstIAudioProcessor *iaudio_processor,
+  AgsVstTResult ags_vst_iaudio_processor_get_bus_arrangement(AgsVstIAudioProcessor *iaudio_processor,
+							     AgsVstBusDirection dir, gint32 index,
+							     AgsVstSpeakerArrangement *arr);
+  
+  AgsVstTResult ags_vst_iaudio_processor_can_process_sample_size(AgsVstIAudioProcessor *iaudio_processor,
 								 gint32 symbolic_sample_size);
 
-  guint32 ags_vst_iaudio_processor_get_latency_sample(AgsVstIAudioProcessor *iaudio_processor);
+  guint32 ags_vst_iaudio_processor_get_latency_samples(AgsVstIAudioProcessor *iaudio_processor);
 
-  AgsVStTResult ags_vst_iaudio_processor_setup_processing(AgsVstIAudioProcessor *iaudio_processor,
+  AgsVstTResult ags_vst_iaudio_processor_setup_processing(AgsVstIAudioProcessor *iaudio_processor,
 							  AgsVstProcessSetup *setup);
 
-  AgsVStTResult ags_vst_iaudio_processor_set_processing(AgsVstIAudioProcessor *iaudio_processor,
+  AgsVstTResult ags_vst_iaudio_processor_set_processing(AgsVstIAudioProcessor *iaudio_processor,
 							gboolean state);
 
-  AgsVStTResult ags_vst_iaudio_processor_process(AgsVstIAudioProcessor *iaudio_processor,
+  AgsVstTResult ags_vst_iaudio_processor_process(AgsVstIAudioProcessor *iaudio_processor,
 						 AgsVstProcessData *data);
   
   guint32 ags_vst_iaudio_processor_get_tail_samples(AgsVstIAudioProcessor *iaudio_processor);
@@ -145,7 +145,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iprocess_context_requirements_get_iid();
   
-  AgsVstTResult ags_vst_iprocess_context_get_process_context_requirements(AgsVstIProcessContextRequirements *iprocess_context_requirements);  
+  guint32 ags_vst_iprocess_context_requirements_get_process_context_requirements(AgsVstIProcessContextRequirements *iprocess_context_requirements);  
   
 #ifdef __cplusplus
 }

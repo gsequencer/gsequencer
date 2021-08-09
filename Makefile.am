@@ -2837,18 +2837,19 @@ libags_vst_h_sources = \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iattributes.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iaudio_processor.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_ievents.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iinter_app_audio.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_imessage.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_imidi_controllers.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_changes.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_function_name.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_interface_support.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iunits.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.h \
-	ags/vst3-capi/pluginterfaces/vst/ags_vst_iaudio_processor.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_icloneable.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_geo_constants.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ierror_context.h \
@@ -2887,6 +2888,7 @@ libags_vst_c_sources = \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.cpp \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iattributes.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iaudio_processor.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_ievents.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.cpp \
