@@ -31,6 +31,26 @@ extern "C" {
   typedef struct AgsVstIMessage IMessage;
 
   typedef struct AgsVstIConnectionPoint IConnectionPoint;
+
+  const AgsVstTUID* ags_vst_imessage_get_iid();
+
+  AgsVstFIDString ags_vst_imessage_get_message_id(AgsVstIMessage *imessage);
+
+  void ags_vst_imessage_set_message_id(AgsVstIMessage *imessage,
+				       AgsVstFIDString id);
+  
+  AgsVstIAttributeList* ags_vst_imessage_get_attributes(AgsVstIMessage *imessage);
+
+  const AgsVstTUID* ags_vst_iconnection_point_get_iid();
+
+  AgsVstTResult ags_vst_iconnection_point_connect(AgsVstIConnectionPoint *iconnection_point,
+						  AgsVstIConnectionPoint *other);
+
+  AgsVstTResult ags_vst_iconnection_point_disconnect(AgsVstIConnectionPoint *iconnection_point,
+						     AgsVstIConnectionPoint *other);
+
+  AgsVstTResult ags_vst_iconnection_point_notify(AgsVstIConnectionPoint *iconnection_point,
+						 AgsVstIMessage *imessage);
   
 #ifdef __cplusplus
 }

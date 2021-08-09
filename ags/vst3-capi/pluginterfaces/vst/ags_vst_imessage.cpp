@@ -23,6 +23,52 @@
 
 extern "C" {
   
-  //TODO:JK: implement me
+  const AgsVstTUID* ags_vst_imessage_get_iid()
+  {
+    extern const Steinberg::TUID IMessage__iid;
+
+    return((AgsVstTUID *) (&IMessage__iid));
+  }
+
+  AgsVstFIDString ags_vst_imessage_get_message_id(AgsVstIMessage *imessage)
+  {
+    return(((Steinberg::Vst::IMessage *) imessage)->getMessageID());
+  }
+
+  void ags_vst_imessage_set_message_id(AgsVstIMessage *imessage,
+				       AgsVstFIDString id)
+  {
+    return(((Steinberg::Vst::IMessage *) imessage)->setMessageID(id));
+  }
+  
+  AgsVstIAttributeList* ags_vst_imessage_get_attributes(AgsVstIMessage *imessage)
+  {
+    return((AgsVstIAttributeList *) ((Steinberg::Vst::IMessage *) imessage)->getAttributes());
+  }
+
+  const AgsVstTUID* ags_vst_iconnection_point_get_iid()
+  {
+    extern const Steinberg::TUID IConnectionPoint__iid;
+
+    return((AgsVstTUID *) (&IConnectionPoint__iid));
+  }
+
+  AgsVstTResult ags_vst_iconnection_point_connect(AgsVstIConnectionPoint *iconnection_point,
+						  AgsVstIConnectionPoint *other)
+  {
+    return(((Steinberg::Vst::IConnectionPoint *) iconnection_point)->connect((Steinberg::Vst::IConnectionPoint *) other));
+  }
+
+  AgsVstTResult ags_vst_iconnection_point_disconnect(AgsVstIConnectionPoint *iconnection_point,
+						     AgsVstIConnectionPoint *other)
+  {
+    return(((Steinberg::Vst::IConnectionPoint *) iconnection_point)->disconnect((Steinberg::Vst::IConnectionPoint *) other));
+  }
+
+  AgsVstTResult ags_vst_iconnection_point_notify(AgsVstIConnectionPoint *iconnection_point,
+						 AgsVstIMessage *imessage)
+  {
+    return(((Steinberg::Vst::IConnectionPoint *) iconnection_point)->notify((Steinberg::Vst::IMessage *) imessage));
+  }
 
 }
