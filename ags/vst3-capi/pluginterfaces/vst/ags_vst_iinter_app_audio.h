@@ -28,6 +28,7 @@
 extern "C" {
 #endif
 
+  //FIXME:JK: add missing include
   struct AgsVstViewRect;
   struct AgsVstEvent;
   
