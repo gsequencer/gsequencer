@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,17 +25,17 @@ extern "C" {
 
   AgsVstDirection ags_vst_geo_constants_to_oposite(AgsVstDirection dir)
   {
-    //TODO:JK: implement me
+    return((AgsVstDirection) Steinberg::GeoConstants::toOpposite((Steinberg::Direction) dir));
   }
   
   AgsVstOrientation ags_vst_geo_constants_to_orientation(AgsVstDirection dir)
   {
-    //TODO:JK: implement me
+    return((AgsVstOrientation) Steinberg::GeoConstants::toOrientation((Steinberg::Direction) dir));
   }
   
   AgsVstOrientation ags_vst_geo_constants_to_orthogonal_orientation(AgsVstOrientation dir)
   {
-    //TODO:JK: implement me
+    return((AgsVstOrientation) Steinberg::GeoConstants::toOrthogonalOrientation((Steinberg::Orientation) dir));
   }
   
 }

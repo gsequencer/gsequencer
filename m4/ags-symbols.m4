@@ -42,6 +42,12 @@ AC_DEFUN([LIBAGS_AUDIO_SYMBOLS],
   `tail -n +19 $srcdir/libags_audio.sym.in > $PWD/libags_audio.sym`
 ])
 
+AC_DEFUN([LIBAGS_VST_SYMBOLS],
+[
+  AC_MSG_NOTICE([generating libags_vst.sym])
+  `tail -n +19 $srcdir/libags_vst.sym.in > $PWD/libags_vst.sym`
+])
+
 AC_DEFUN([LIBAGS_GUI_SYMBOLS],
 [
   AC_MSG_NOTICE([generating libags_gui.sym])

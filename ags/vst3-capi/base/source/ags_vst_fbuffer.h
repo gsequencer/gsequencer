@@ -34,7 +34,7 @@ extern "C" {
   AgsVstBuffer* ags_vst_buffer_new_from_string(void *b, guint32 size);
   AgsVstBuffer* ags_vst_buffer_new_and_fill_up(guint32 size, guint8 init_val);
   AgsVstBuffer* ags_vst_buffer_new_with_size(guint32 size);
-  AgsVstBuffer* ags_vst_buffer_new_from_buffer(AgsVstBuffer **buffer);
+  AgsVstBuffer* ags_vst_buffer_new_from_buffer(AgsVstBuffer *buffer);
 
   void ags_vst_buffer_delete(AgsVstBuffer *buffer);
         
@@ -87,13 +87,13 @@ extern "C" {
   gboolean ags_vst_buffer_put_from_char(AgsVstBuffer *buffer,
 					gchar c);
   gboolean ags_vst_buffer_put_from_buffer(AgsVstBuffer *buffer,
-					  void *buffer, guint32 size);
+					  void *ptr_buffer, guint32 size);
   gboolean ags_vst_buffer_put_from_uint8_buffer(AgsVstBuffer *buffer,
-						guint8 *buffer, guint32 size);
+						guint8 *ptr_buffer, guint32 size);
   gboolean ags_vst_buffer_put_from_char_buffer(AgsVstBuffer *buffer,
-					       gchar *buffer, guint32 size);
+					       gchar *ptr_buffer, guint32 size);
   gboolean ags_vst_buffer_put_from_string(AgsVstBuffer *buffer,
-					  gchar **string);
+					  gchar *string);
 
   void ags_vst_buffer_set(AgsVstBuffer *buffer,
 			  guint8 value);
@@ -158,11 +158,6 @@ extern "C" {
   gfloat* ags_vst_buffer_to_float_ptr(AgsVstBuffer *buffer);
   gdouble* ags_vst_buffer_to_double_ptr(AgsVstBuffer *buffer);
   gunichar2* ags_vst_buffer_to_wchar_ptr(AgsVstBuffer *buffer);
-
-  gint8 ags_vst_buffer_offset(AgsVstBuffer *buffer,
-			      guint32 i);
-  gint8 ags_vst_buffer_is_empty(AgsVstBuffer *buffer,
-				guint32 i);
         
   enum AgsVstSwapSize 
   {
@@ -174,9 +169,10 @@ extern "C" {
   gboolean ags_vst_buffer_swap(AgsVstBuffer *buffer,
 			       gint16 swap_size);
   gboolean ags_vst_buffer_swap_buffer(AgsVstBuffer *buffer,
-				      void* buffer, guint32 buffer_size, gint16 swap_size);
+				      void *ptr_buffer, guint32 buffer_size, gint16 swap_size);
   
-  void ags_vst_buffer_take(AgsVstBuffer **bufferBuffer);
+  void ags_vst_buffer_take(AgsVstBuffer *buffer,
+			   AgsVstBuffer *from);
   gint8* ags_vst_buffer_pass(AgsVstBuffer *buffer);
 
   gboolean ags_vst_buffer_to_wide_string(AgsVstBuffer *buffer,

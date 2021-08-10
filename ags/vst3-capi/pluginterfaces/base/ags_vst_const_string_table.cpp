@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,19 +25,22 @@ using namespace Steinberg;
 
 extern "C" {
 
-  AgsVstConstStringTable* ags_vst_const_string_table_new()
+  gunichar2* ags_vst_const_string_table_get_string_literal(AgsVstConstStringTable *const_string_table, gchar *str)
   {
-    //TODO:JK: implement me
-  }
+    const Steinberg::char16 *tmp_str;
 
-  gunichar2* get_string_from_char_buffer(gchar *str)
-  {
-    //TODO:JK: implement me
+    tmp_str = ((Steinberg::ConstStringTable *) const_string_table)->getString(str);
+
+    return((gunichar2 *) tmp_str);
   }
   
-  gunichar2 get_string_from_char_byte(gchar str)
+  gunichar2 ags_vst_const_string_table_get_string_character(AgsVstConstStringTable *const_string_table, gchar str)
   {
-    //TODO:JK: implement me
-  }
+    Steinberg::char16 tmp_str;
 
+    tmp_str = ((Steinberg::ConstStringTable *) const_string_table)->getString(str);
+
+    return((gunichar2) tmp_str);
+  }
+  
 }

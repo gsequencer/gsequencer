@@ -1,3 +1,9 @@
+ags (3.10.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: stripped unneeded code from utility functions
+	* TODO:JK: implemented ags/vst3-capi/pluginterfaces
+
 ags (3.9.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,14 +17,15 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_AUDIO_EFFECT_H__
-#define __AGS_VST_AUDIO_EFFECT_H__
+#ifndef __AGS_VST_COMPONENT_H__
+#define __AGS_VST_COMPONENT_H__
 
 #include <glib.h>
 
 #include <ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.h>
 #include <ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.h>
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ibstream.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,7 +64,7 @@ extern "C" {
    * Since: 2.2.0
    */
   void ags_vst_component_set_controller_class(AgsVstComponent *component,
-					      AgsVstFUID **cid);
+					      AgsVstFUID *cid);
 
   /**
    * ags_vst_component_remove_audio_buses:
@@ -119,7 +120,7 @@ extern "C" {
    * Since: 2.2.0
    */
   gint32 ags_vst_component_get_controller_class_id(AgsVstComponent *component,
-						   AgsVstTUID class_id);
+						   AgsVstTUID *class_id);
 
   /**
    * ags_vst_component_set_io_mode:
@@ -165,13 +166,13 @@ extern "C" {
    * Since: 2.2.0
    */
   gint32 ags_vst_component_get_bus_info(AgsVstComponent *component,
-					AgsVstMediaType type, AgsVstBusDirection dir, gint32 index, AgsVstBusInfo **info);
+					AgsVstMediaType type, AgsVstBusDirection dir, gint32 index, AgsVstBusInfo *info);
 
   /**
    * ags_vst_component_get_routing_info:
    * @component: the #AgsVstComponent-struct pointer
-   * @in_info: the #AgsVstRoutingInfo-struct pointer to a pointer
-   * @out_info: the #AgsVstRoutingInfo-struct pointer to a pointer 
+   * @in_info: the #AgsVstRoutingInfo-struct pointer
+   * @out_info: the #AgsVstRoutingInfo-struct pointer
    * 
    * Get routing info of @component.
    * 
@@ -180,7 +181,7 @@ extern "C" {
    * Since: 2.2.0
    */
   gint32 ags_vst_component_get_routing_info(AgsVstComponent *component,
-					    AgsVstRoutingInfo **in_info, AgsVstRoutingInfo **out_info);
+					    AgsVstRoutingInfo *in_info, AgsVstRoutingInfo *out_info);
 
   /**
    * ags_vst_component_activate_bus:
@@ -271,4 +272,4 @@ extern "C" {
 }
 #endif
 
-#endif /*__AGS_VST_AUDIO_EFFECT_H__*/
+#endif /*__AGS_VST_COMPONENT_H__*/

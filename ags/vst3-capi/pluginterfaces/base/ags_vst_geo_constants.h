@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,7 +19,7 @@
 
 #ifndef __AGS_VST_GEO_CONSTANTS_H__
 #define __AGS_VST_GEO_CONSTANTS_H__
-
+  
 enum AgsVstDirection 
 {
   AGS_VST_KNORTH,

@@ -9,7 +9,7 @@ AUTOMAKE_OPTIONS = foreign
 
 SUBDIRS = m4 po lib
 
-AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection
+AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection --enable-vst3
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 AM_CPPFLAGS = -std=gnu99
@@ -167,6 +167,7 @@ EXTRA_DIST += \
 	libags_thread.sym.in \
 	libags_server.sym.in \
 	libags_audio.sym.in \
+	libags_vst.sym.in \
 	libags_gui.sym.in
 
 EXTRA_DIST += \
@@ -235,6 +236,7 @@ CLEANFILES = \
 	libags_thread.sym \
 	libags_server.sym \
 	libags_audio.sym \
+	libags_vst.sym \
 	libags_gui.sym \
 	ags/object/ags_marshallers.list \
 	ags/widget/ags_widget_marshallers.list \
@@ -359,6 +361,7 @@ EXTRA_DIST += \
 	libags_thread.sym \
 	libags_server.sym \
 	libags_audio.sym \
+	libags_vst.sym \
 	libags_gui.sym
 
 EXTRA_DIST += \
@@ -410,7 +413,7 @@ EXTRA_DIST += \
 
 # include
 otherincludedir = $(includedir)/ags
-nobase_include_HEADERS = $(libags_la_HEADERS_0) $(libags_thread_la_HEADERS_0) $(libags_server_la_HEADERS_0) $(libags_audio_la_HEADERS_0) $(libags_gui_la_HEADERS_0)
+nobase_include_HEADERS = $(libags_la_HEADERS_0) $(libags_thread_la_HEADERS_0) $(libags_server_la_HEADERS_0) $(libags_audio_la_HEADERS_0) $(libags_vst_la_HEADERS_0) $(libags_gui_la_HEADERS_0)
 # nobase_include_HEADERS += $(libgsequencer_la_HEADERS_0)
 
 # doc
@@ -609,9 +612,12 @@ libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
 libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_osc_controller_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_export_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
 libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_osc_controller_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_export_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
 
+libags_vst_la_SOURCES = 
+libags_vst_la_HEADERS_0 =
+
 if WITH_VST3
-libags_vst_la_SOURCES = $(libags_vst_c_sources)
-libags_vst_la_HEADERS_0 = ags/libags-vst.h $(libags_vst_h_sources)
+libags_vst_la_SOURCES += $(libags_vst_c_sources)
+libags_vst_la_HEADERS_0 += ags/libags-vst.h $(libags_vst_h_sources)
 endif
 
 # library libags
@@ -711,7 +717,8 @@ endif
 
 # library libags-vst
 if WITH_VST3
-libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GLIB_CFLAGS) $(VST3_CXXFLAGS) $(W32API_CFLAGS)
+libags_vst_la_CPPFLAGS = -std=gnu++2a -DDEVELOPMENT
+libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include/vst3 $(GLIB_CFLAGS) $(VST3_CXXFLAGS) $(W32API_CFLAGS)
 libags_vst_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 $(PIC_FLAGS) -pthread 
 libags_vst_la_LIBADD = -lm $(GLIB_LIBS) $(VST3_LIBS) $(W32API_LIBS)
 
@@ -2829,7 +2836,26 @@ deprecated_libags_vst_h_sources =
 
 libags_vst_h_sources = \
 	$(deprecated_libags_vst_h_sources) \
+	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.h \
+	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iattributes.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iaudio_processor.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_ievents.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iprocess_context.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iinter_app_audio.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_imessage.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_imidi_controllers.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_inote_expression.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_changes.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_function_name.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_interface_support.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iunits.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_speaker.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_icloneable.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_geo_constants.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ierror_context.h \
@@ -2842,10 +2868,18 @@ libags_vst_h_sources = \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_const_string_table.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ipersistent.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_istring_result.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_iupdate_handler.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_fplatform.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_smart_pointer.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_ustring.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_ucolor_spec.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_keycodes.h \
 	ags/vst3-capi/util/ags_vst_string_util.h \
 	ags/vst3-capi/base/source/ags_vst_fbuffer.h \
+	ags/vst3-capi/base/source/ags_vst_fobject.h \
+	ags/vst3-capi/base/source/ags_vst_fstring.h \
+	ags/vst3-capi/public.sdk/source/common/ags_vst_plugin_view.h \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.h \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_component.h \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.h \
@@ -2857,6 +2891,23 @@ deprecated_libags_vst_c_sources =
 
 libags_vst_c_sources = \
 	$(deprecated_libags_vst_c_sources) \
+	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.cpp \
+	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iattributes.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iaudio_processor.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_ievents.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iinter_app_audio.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_imessage.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_inote_expression.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_changes.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_function_name.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_interface_support.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iunits.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_speaker.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_icloneable.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_geo_constants.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ierror_context.cpp \
@@ -2869,8 +2920,16 @@ libags_vst_c_sources = \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_const_string_table.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ipersistent.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_istring_result.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_iupdate_handler.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_ustring.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_ucolor_spec.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_keycodes.cpp \
 	ags/vst3-capi/util/ags_vst_string_util.cpp \
 	ags/vst3-capi/base/source/ags_vst_fbuffer.cpp \
+	ags/vst3-capi/base/source/ags_vst_fobject.cpp \
+	ags/vst3-capi/base/source/ags_vst_fstring.cpp \
+	ags/vst3-capi/public.sdk/source/common/ags_vst_plugin_view.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_component.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp \
@@ -3281,6 +3340,13 @@ gen-symbols-ags-audio:
 	find ags/plugin -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
 	find ags/audio -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
 
+gen-symbols-ags-vst:
+	rm -f libags_vst.sym.in
+	touch libags_vst.sym.in
+	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_vst.sym.in
+	echo -e -n "\n" >> libags_vst.sym.in
+	find ags/vst3-capi -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_vst.sym.in
+
 gen-symbols-ags-gui:
 	rm -f libags_gui.sym.in
 	touch libags_gui.sym.in
@@ -3289,7 +3355,7 @@ gen-symbols-ags-gui:
 	find ags/widget -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_gui.sym.in
 	find ags/widget -name "ags_widget_marshal.h" | xargs grep --no-filename -o -P "(ags_widget_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags_gui.sym.in
 
-gen-symbols-all: gen-symbols-ags gen-symbols-ags-thread gen-symbols-ags-server gen-symbols-ags-audio gen-symbols-ags-gui
+gen-symbols-all: gen-symbols-ags gen-symbols-ags-thread gen-symbols-ags-server gen-symbols-ags-audio gen-symbols-ags-vst gen-symbols-ags-gui
 	echo "Generated all symbols"
 
 gen-marshallers:

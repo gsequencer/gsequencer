@@ -24,7 +24,7 @@
 
 #include <ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.h>
 #include <ags/vst3-capi/public.sdk/source/vst/ags_vst_component.h>
-#include <ags/vst3-capi/plugininterfaces/base/ags_ivst_audio_processor.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iaudio_processor.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -200,7 +200,7 @@ extern "C" {
 						   AgsVstSpeakerArrangement *outputs, gint32 num_outs);
 
   /**
-   * ags_vst_audio_effect_get_bus_arrangements:
+   * ags_vst_audio_effect_get_bus_arrangement:
    * @audio_effect: the #AgsVstAudioEffect-struct pointer
    * @bus_direction: the #AgsVstBusDirections-enum
    * @bus_index: the bus index
@@ -212,10 +212,10 @@ extern "C" {
    * 
    * Since: 2.2.0
    */
-  gint32 ags_vst_audio_effect_get_bus_arrangements(AgsVstAudioEffect *audio_effect,
-						   AgsVstBusDirection bus_direction, gint32 bus_index,
-						   AgsVstSpeakerArrangement *arr);
-
+  gint32 ags_vst_audio_effect_get_bus_arrangement(AgsVstAudioEffect *audio_effect,
+						  AgsVstBusDirection bus_direction, gint32 bus_index,
+						  AgsVstSpeakerArrangement *arr);
+  
   /**
    * ags_vst_audio_effect_can_process_sample_size:
    * @audio_effect: the #AgsVstAudioEffect-struct pointer
@@ -245,7 +245,7 @@ extern "C" {
   /**
    * ags_vst_audio_effect_setup_processing:
    * @audio_effect: the #AgsVstAudioEffect-struct pointer
-   * @setup: the #AgsVstProcessSetup-struct pointer to a pointer
+   * @setup: the #AgsVstProcessSetup-struct pointer
    * 
    * Setup processing of @audio_effect.
    * 
@@ -254,7 +254,7 @@ extern "C" {
    * Since: 2.2.0
    */
   gint32 ags_vst_audio_effect_setup_processing(AgsVstAudioEffect *audio_effect,
-					       AgsVstProcessSetup **setup);
+					       AgsVstProcessSetup *setup);
 
   /**
    * ags_vst_audio_effect_set_processing:
@@ -273,7 +273,7 @@ extern "C" {
   /**
    * ags_vst_audio_effect_process:
    * @audio_effect: the #AgsVstAudioEffect-struct pointer
-   * @data: the #AgsVstProcessData-struct pointer to a pointer
+   * @data: the #AgsVstProcessData-struct pointer
    * 
    * Process @audio_effect using @data.
    * 
@@ -282,7 +282,7 @@ extern "C" {
    * Since: 2.2.0
    */
   gint32 ags_vst_audio_effect_process(AgsVstAudioEffect *audio_effect,
-				      AgsVstProcessData **data);
+				      AgsVstProcessData *data);
 
   /**
    * ags_vst_audio_effect_get_tail_samples:

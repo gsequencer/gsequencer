@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,14 +22,16 @@
 
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
 
-#define AGS_VST_IBSTREAM_IID (ags_vst_ibstream_get_iid);
-#define AGS_VST_ISIZEABLE_STREAM_IID (ags_vst_isizeable_stream_get_iid());
+#define AGS_VST_IBSTREAM_IID (ags_vst_ibstream_get_iid())
+#define AGS_VST_ISIZEABLE_STREAM_IID (ags_vst_isizeable_stream_get_iid())
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
   typedef struct AgsVstIBStream IBStream;
+
+  typedef struct AgsVstISizeableStream ISizeableStream;  
 
   enum AgsVstIStreamSeekMode
   {
@@ -40,8 +42,17 @@ extern "C" {
 
   AgsVstTUID* ags_vst_ibstream_get_iid();
 
-  typedef struct AgsVstISizeableStream ISizeableStream;  
+  AgsVstTResult ags_vst_ibstream_read(AgsVstIBStream *ib_stream, gpointer buffer, gint32 num_bytes, gint32 *num_bytes_read);
+  AgsVstTResult ags_vst_ibstream_write(AgsVstIBStream *ib_stream, gpointer buffer, gint32 num_bytes, gint32 *num_bytes_written);
 
+  AgsVstTResult ags_vst_ibstream_seek(AgsVstIBStream *ib_stream, gint64 pos, gint32 mode, gint64 *result);
+
+  AgsVstTResult ags_vst_ibstream_tell(AgsVstIBStream *ib_stream, gint64 *pos);
+
+  AgsVstTUID* ags_vst_isizeable_stream_get_iid();
+
+  AgsVstTResult ags_vst_isizeable_stream_set_stream_size(AgsVstISizeableStream *isizeable_stream, gint64 stream_size);
+  
 #ifdef __cplusplus
 }
 #endif

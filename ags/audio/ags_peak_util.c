@@ -637,8 +637,9 @@ ags_peak_util_compute_s8(AgsPeakUtil *peak_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
@@ -750,7 +751,7 @@ ags_peak_util_compute_s8(AgsPeakUtil *peak_util)
       v_result[7] = 0.0;
     }
       
-    current_value += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
+    current_peak += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
     
     i += 8;
   }
@@ -759,35 +760,35 @@ ags_peak_util_compute_s8(AgsPeakUtil *peak_util)
 
   for(; i < i_stop;){      
     if(buffer[0] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * buffer[0]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * buffer[0]));
     }
 
     if(buffer[(current_channel = channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * buffer[current_channel]));
     }
     
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * buffer[current_channel]));
     }
     
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     i += 8;
@@ -949,8 +950,9 @@ ags_peak_util_compute_s16(AgsPeakUtil *peak_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
@@ -1062,7 +1064,7 @@ ags_peak_util_compute_s16(AgsPeakUtil *peak_util)
       v_result[7] = 0.0;
     }
       
-    current_value += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
+    current_peak += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
     
     i += 8;
   }
@@ -1071,35 +1073,35 @@ ags_peak_util_compute_s16(AgsPeakUtil *peak_util)
 
   for(; i < i_stop;){      
     if(buffer[0] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * buffer[0]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * buffer[0]));
     }
 
     if(buffer[(current_channel = channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * buffer[current_channel]));
     }
     
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * buffer[current_channel]));
     }
     
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     i += 8;
@@ -1261,8 +1263,9 @@ ags_peak_util_compute_s24(AgsPeakUtil *peak_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
@@ -1374,7 +1377,7 @@ ags_peak_util_compute_s24(AgsPeakUtil *peak_util)
       v_result[7] = 0.0;
     }
       
-    current_value += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
+    current_peak += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
     
     i += 8;
   }
@@ -1383,35 +1386,35 @@ ags_peak_util_compute_s24(AgsPeakUtil *peak_util)
 
   for(; i < i_stop;){      
     if(buffer[0] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * buffer[0]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * buffer[0]));
     }
 
     if(buffer[(current_channel = channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * buffer[current_channel]));
     }
     
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * buffer[current_channel]));
     }
     
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     i += 8;
@@ -1573,8 +1576,9 @@ ags_peak_util_compute_s32(AgsPeakUtil *peak_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
@@ -1686,7 +1690,7 @@ ags_peak_util_compute_s32(AgsPeakUtil *peak_util)
       v_result[7] = 0.0;
     }
       
-    current_value += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
+    current_peak += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
     
     i += 8;
   }
@@ -1695,35 +1699,35 @@ ags_peak_util_compute_s32(AgsPeakUtil *peak_util)
 
   for(; i < i_stop;){      
     if(buffer[0] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * buffer[0]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * buffer[0]));
     }
 
     if(buffer[(current_channel = channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * buffer[current_channel]));
     }
     
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * buffer[current_channel]));
     }
     
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     i += 8;
@@ -1885,8 +1889,9 @@ ags_peak_util_compute_s64(AgsPeakUtil *peak_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
@@ -1998,7 +2003,7 @@ ags_peak_util_compute_s64(AgsPeakUtil *peak_util)
       v_result[7] = 0.0;
     }
       
-    current_value += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
+    current_peak += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
     
     i += 8;
   }
@@ -2007,35 +2012,35 @@ ags_peak_util_compute_s64(AgsPeakUtil *peak_util)
 
   for(; i < i_stop;){      
     if(buffer[0] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * buffer[0]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * buffer[0]));
     }
 
     if(buffer[(current_channel = channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * buffer[current_channel]));
     }
     
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * buffer[current_channel]));
     }
     
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     i += 8;
@@ -2197,8 +2202,9 @@ ags_peak_util_compute_float(AgsPeakUtil *peak_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
@@ -2310,7 +2316,7 @@ ags_peak_util_compute_float(AgsPeakUtil *peak_util)
       v_result[7] = 0.0;
     }
       
-    current_value += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
+    current_peak += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
     
     i += 8;
   }
@@ -2319,35 +2325,35 @@ ags_peak_util_compute_float(AgsPeakUtil *peak_util)
 
   for(; i < i_stop;){      
     if(buffer[0] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[0]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[0]));
     }
 
     if(buffer[(current_channel = channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
     }
     
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
     }
     
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     i += 8;
@@ -2509,8 +2515,9 @@ ags_peak_util_compute_double(AgsPeakUtil *peak_util)
   for(; i < i_stop;){
     double ret_v_buffer[8];
 
-    double v_buffer[] = {(double) buffer[0],
+    double v_buffer[] = {
       (double) *(source),
+      (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
       (double) *(source += peak_util->source_stride),
@@ -2622,7 +2629,7 @@ ags_peak_util_compute_double(AgsPeakUtil *peak_util)
       v_result[7] = 0.0;
     }
       
-    current_value += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
+    current_peak += v_result[0] + v_result[1] + v_result[2] + v_result[3] + v_result[4] + v_result[5] + v_result[6] + v_result[7];
     
     i += 8;
   }
@@ -2631,35 +2638,35 @@ ags_peak_util_compute_double(AgsPeakUtil *peak_util)
 
   for(; i < i_stop;){      
     if(buffer[0] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[0]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[0]));
     }
 
     if(buffer[(current_channel = channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
     }
     
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
     }
     
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     if(buffer[(current_channel += channels)] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
+      current_peak += (1.0 / ((1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * buffer[current_channel]));
     }
 
     i += 8;

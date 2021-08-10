@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,8 +31,19 @@ extern "C" {
     return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IErrorContext)));
   }
 
-  gint32 ags_vst_ierror_context_get_error_message(AgsVstIErrorContext *error_context,
-						  AgsVstIString *message)
+  void ags_vst_ierror_context_disable_error_ui(AgsVstIErrorContext *error_context,
+					       gboolean state)
+  {
+    ((Steinberg::IErrorContext *) error_context)->disableErrorUI(state);
+  }
+
+  AgsVstTResult ags_vst_ierror_context_error_message_shown(AgsVstIErrorContext *error_context)
+  {
+    return(((Steinberg::IErrorContext *) error_context)->errorMessageShown());
+  }
+  
+  AgsVstTResult ags_vst_ierror_context_get_error_message(AgsVstIErrorContext *error_context,
+							 AgsVstIString *message)
   {
     return(((Steinberg::IErrorContext *) error_context)->getErrorMessage((Steinberg::IString *) message));
   }

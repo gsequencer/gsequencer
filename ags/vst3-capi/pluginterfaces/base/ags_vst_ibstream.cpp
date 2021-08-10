@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,12 +31,60 @@ extern "C" {
     return((AgsVstTUID *) (&IBStream__iid));
   }
 
+  AgsVstTResult
+  ags_vst_ibstream_read(AgsVstIBStream *ib_stream, gpointer buffer, gint32 num_bytes, gint32 *num_bytes_read)
+  {
+    return((AgsVstTResult) static_cast<Steinberg::IBStream*>((void *) ib_stream)->read(buffer, num_bytes, num_bytes_read));
+  }
+
+  AgsVstTResult
+  ags_vst_ibstream_write(AgsVstIBStream *ib_stream, gpointer buffer, gint32 num_bytes, gint32 *num_bytes_written)
+  {
+    return((AgsVstTResult) static_cast<Steinberg::IBStream*>((void *) ib_stream)->write(buffer, num_bytes, num_bytes_written));
+  }
+
+  AgsVstTResult
+  ags_vst_ibstream_seek(AgsVstIBStream *ib_stream, gint64 pos, gint32 mode, gint64 *result)
+  {
+    Steinberg::int64 tmp_result;
+    Steinberg::tresult retval;
+
+    retval = static_cast<Steinberg::IBStream*>((void *) ib_stream)->seek(pos, mode, &tmp_result);
+
+    if(result != NULL){
+      result[0] = (gint64) tmp_result;
+    }
+    
+    return((AgsVstTResult) retval);
+  }
+
+  AgsVstTResult
+  ags_vst_ibstream_tell(AgsVstIBStream *ib_stream, gint64 *pos)
+  {
+    Steinberg::int64 tmp_pos;
+    Steinberg::tresult retval;
+
+    retval = static_cast<Steinberg::IBStream*>((void *) ib_stream)->tell(&tmp_pos);
+
+    if(pos != NULL){
+      pos[0] = (gint64) tmp_pos;
+    }
+    
+    return((AgsVstTResult) retval);
+  }
+
   AgsVstTUID*
   ags_vst_isizeable_stream_get_iid()
   {
     extern const Steinberg::TUID ISizeableStream__iid;
 
     return((AgsVstTUID *) (&ISizeableStream__iid));
+  }
+
+  AgsVstTResult
+  ags_vst_isizeable_stream_set_stream_size(AgsVstISizeableStream *isizeable_stream, gint64 stream_size)
+  {
+    return((AgsVstTResult) static_cast<Steinberg::ISizeableStream*>((void *) isizeable_stream)->setStreamSize(stream_size));
   }
 
 }

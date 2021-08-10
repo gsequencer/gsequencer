@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.9.7],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.10.0],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -527,6 +527,7 @@ LIBAGS_SYMBOLS([])
 LIBAGS_THREAD_SYMBOLS([])
 LIBAGS_SERVER_SYMBOLS([])
 LIBAGS_AUDIO_SYMBOLS([])
+LIBAGS_VST_SYMBOLS([])
 LIBAGS_GUI_SYMBOLS([])
 
 LIBAGS_MARSHALLERS([])

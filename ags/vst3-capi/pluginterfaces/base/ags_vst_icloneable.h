@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,7 +22,7 @@
 
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
 
-#define AGS_VST_ICLONEABLE_IID (ags_vst_icloneable_get_iid());
+#define AGS_VST_ICLONEABLE_IID (ags_vst_icloneable_get_iid())
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,8 +32,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_icloneable_get_iid();
   
-  AgsVstFUnknown* ags_vst_icloneable_clone(AgsVstICloneable *cloneable);
-  
+  AgsVstFUnknown* ags_vst_icloneable_clone(AgsVstICloneable *cloneable);  
 
 #ifdef __cplusplus
 }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,10 +22,12 @@
 
 #include <glib.h>
 
-#include <ags/vst3-capi/base/source/ags_fobject.h>
-#include <ags/vst3-capi/base/source/ags_fstring.h>
-#include <ags/vst3-capi/pluginterfaces/vst/ags_ivst_component.h>
-#include <ags/vst3-capi/pluginterfaces/vst/ags_ivst_audio_processor.h>
+#include <ags/vst3-capi/base/source/ags_vst_fobject.h>
+#include <ags/vst3-capi/base/source/ags_vst_fstring.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iaudio_processor.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -124,7 +126,7 @@ extern "C" {
    * 
    * Since: 2.2.0
    */
-  gboolean ags_vst_bus_get_info(AgsVstBus *bus, AgsVstBusInfo **info);
+  gboolean ags_vst_bus_get_info(AgsVstBus *bus, AgsVstBusInfo *info);
 
   typedef struct AgsVstEventBus EventBus;
 
@@ -164,7 +166,7 @@ extern "C" {
    * 
    * Since: 2.2.0
    */
-  gboolean ags_vst_event_bus_get_info(AgsVstEventBus *event_bus, AgsVstBusInfo **info);
+  gboolean ags_vst_event_bus_get_info(AgsVstEventBus *event_bus, AgsVstBusInfo *info);
 
   typedef struct AgsVstAudioBus AudioBus;
 
@@ -214,7 +216,7 @@ extern "C" {
    * 
    * Since: 2.2.0
    */
-  void ags_vst_audio_bus_set_arrangement(AgsVstAudioBus *audio_bus, AgsVstSpeakerArrangement *arr);
+  void ags_vst_audio_bus_set_arrangement(AgsVstAudioBus *audio_bus, AgsVstSpeakerArrangement arr);
 
   /**
    * ags_vst_audio_bus_get_info:
@@ -227,7 +229,7 @@ extern "C" {
    * 
    * Since: 2.2.0
    */
-  gboolean ags_vst_audio_bus_get_info(AgsVstAudioBus *audio_bus, AgsVstBusInfo **info);
+  gboolean ags_vst_audio_bus_get_info(AgsVstAudioBus *audio_bus, AgsVstBusInfo *info);
   
   typedef struct AgsVstBusList BusList;
 

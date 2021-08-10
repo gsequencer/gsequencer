@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,10 +28,8 @@ extern "C" {
 
   typedef struct AgsVstConstStringTable ConstStringTable;
 
-  AgsVstConstStringTable* ags_vst_const_string_table_new();
-
-  gunichar2* get_string_from_char_buffer(gchar *str);
-  gunichar2 get_string_from_char_byte(gchar str);
+  gunichar2* ags_vst_const_string_table_get_string_literal(AgsVstConstStringTable *const_string_table, gchar *str);
+  gunichar2 ags_vst_const_string_table_get_string_character(AgsVstConstStringTable *const_string_table, gchar str);
   
 #ifdef __cplusplus
 }

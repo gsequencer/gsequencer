@@ -27,6 +27,9 @@ option('webkit', type: 'boolean', value: false,
 option('poppler', type: 'boolean', value: false,
        description: 'Enable poppler')
 
+option('vst3', type: 'boolean', value: false,
+       description: 'Enable VST3')
+
 option('gtk_doc', type: 'boolean', value: 'false',
        description : 'Build API reference and tools documentation')
 
