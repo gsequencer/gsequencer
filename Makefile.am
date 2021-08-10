@@ -9,7 +9,7 @@ AUTOMAKE_OPTIONS = foreign
 
 SUBDIRS = m4 po lib
 
-AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection
+AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection --enable-vst3
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 AM_CPPFLAGS = -std=gnu99
@@ -413,7 +413,7 @@ EXTRA_DIST += \
 
 # include
 otherincludedir = $(includedir)/ags
-nobase_include_HEADERS = $(libags_la_HEADERS_0) $(libags_thread_la_HEADERS_0) $(libags_server_la_HEADERS_0) $(libags_audio_la_HEADERS_0) $(libags_gui_la_HEADERS_0)
+nobase_include_HEADERS = $(libags_la_HEADERS_0) $(libags_thread_la_HEADERS_0) $(libags_server_la_HEADERS_0) $(libags_audio_la_HEADERS_0) $(libags_vst_la_HEADERS_0) $(libags_gui_la_HEADERS_0)
 # nobase_include_HEADERS += $(libgsequencer_la_HEADERS_0)
 
 # doc
@@ -612,9 +612,12 @@ libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
 libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_osc_controller_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_export_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
 libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_osc_controller_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_export_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
 
+libags_vst_la_SOURCES = 
+libags_vst_la_HEADERS_0 =
+
 if WITH_VST3
-libags_vst_la_SOURCES = $(libags_vst_c_sources)
-libags_vst_la_HEADERS_0 = ags/libags-vst.h $(libags_vst_h_sources)
+libags_vst_la_SOURCES += $(libags_vst_c_sources)
+libags_vst_la_HEADERS_0 += ags/libags-vst.h $(libags_vst_h_sources)
 endif
 
 # library libags
@@ -715,7 +718,7 @@ endif
 # library libags-vst
 if WITH_VST3
 libags_vst_la_CPPFLAGS = -std=gnu++2a -DDEVELOPMENT
-libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/home/joelkraehemann/sounds/vst3/VST_SDK/VST3_SDK $(GLIB_CFLAGS) $(VST3_CXXFLAGS) $(W32API_CFLAGS)
+libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include/vst3 $(GLIB_CFLAGS) $(VST3_CXXFLAGS) $(W32API_CFLAGS)
 libags_vst_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 $(PIC_FLAGS) -pthread 
 libags_vst_la_LIBADD = -lm $(GLIB_LIBS) $(VST3_LIBS) $(W32API_LIBS)
 
@@ -2841,6 +2844,7 @@ libags_vst_h_sources = \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_ievents.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iprocess_context.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iinter_app_audio.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_imessage.h \

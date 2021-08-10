@@ -57,7 +57,7 @@ struct _AgsConfig
 
   guint flags;
 
-  GRecMutex *obj_mutex;
+  GRecMutex obj_mutex;
   
   gchar *version;
   gchar *build_id;
