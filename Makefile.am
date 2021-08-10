@@ -2851,6 +2851,7 @@ libags_vst_h_sources = \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_interface_support.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iunits.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_speaker.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_icloneable.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_geo_constants.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ierror_context.h \
@@ -2902,6 +2903,7 @@ libags_vst_c_sources = \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_interface_support.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iunits.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_speaker.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_icloneable.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_geo_constants.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ierror_context.cpp \
