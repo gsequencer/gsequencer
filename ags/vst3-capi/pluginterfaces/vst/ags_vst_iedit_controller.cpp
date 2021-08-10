@@ -25,58 +25,64 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_icomponent_handler_get_iid()
   {
-    //TODO:JK: implement me
+    extern const Steinberg::TUID IComponentHandler__iid;
+
+    return((AgsVstTUID *) (&IComponentHandler__iid));
   }
 
   AgsVstTResult ags_vst_icomponent_handler_begin_edit(AgsVstIComponentHandler *icomponent_handler,
 						      AgsVstParamID id)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IComponentHandler *) icomponent_handler)->beginEdit(id));
   }
 
   AgsVstTResult ags_vst_icomponent_handler_perform_edit(AgsVstIComponentHandler *icomponent_handler,
 							AgsVstParamID id, AgsVstParamValue value_normalized)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IComponentHandler *) icomponent_handler)->performEdit(id, value_normalized));
   }
 
   AgsVstTResult ags_vst_icomponent_handler_end_edit(AgsVstIComponentHandler *icomponent_handler,
 						    AgsVstParamID id)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IComponentHandler *) icomponent_handler)->endEdit(id));
   }
 
   AgsVstTResult ags_vst_icomponent_handler_restart_component(AgsVstIComponentHandler *icomponent_handler,
 							     gint32 flags)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IComponentHandler *) icomponent_handler)->restartComponent(flags));
   }
   
   const AgsVstTUID* ags_vst_icomponent_handler2_get_iid()
   {
-    //TODO:JK: implement me
+    extern const Steinberg::TUID IComponentHandler2__iid;
+
+    return((AgsVstTUID *) (&IComponentHandler2__iid));
   }
 
   AgsVstTResult ags_vst_icomponent_handler2_set_dirty(AgsVstIComponentHandler2 *icomponent_handler2,
 						      gboolean state)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IComponentHandler2 *) icomponent_handler2)->setDirty(state));
   }
 
   AgsVstTResult ags_vst_icomponent_handler2_request_open_editor(AgsVstIComponentHandler2 *icomponent_handler2,
 								AgsVstFIDString name)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IComponentHandler2 *) icomponent_handler2)->requestOpenEditor((Steinberg::FIDString) name));
   }
   
   AgsVstTResult ags_vst_icomponent_handler2_finish_group_edit(AgsVstIComponentHandler2 *icomponent_handler2)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IComponentHandler2 *) icomponent_handler2)->finishGroupEdit());
   }
   
   const AgsVstTUID* ags_vst_icomponent_handler_bus_activation_get_iid()
   {
-    //TODO:JK: implement me
+    extern const Steinberg::TUID IComponentHandlerBusActivation__iid;
+
+    return((AgsVstTUID *) (&IComponentHandlerBusActivation__iid));
   }
 
   AgsVstTResult ags_vst_icomponent_handler_bus_activation_request_bus_activation(AgsVstIComponentHandlerBusActivation *icomponent_handler_bus_activation,
@@ -84,12 +90,16 @@ extern "C" {
 										 gint32 index,
 										 gboolean state)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IComponentHandlerBusActivation *) icomponent_handler_bus_activation)->requestBusActivation(media_type, dir,
+															index,
+															state));
   }
   
   const AgsVstTUID* ags_vst_iprogress_get_iid()
   {
-    //TODO:JK: implement me
+    extern const Steinberg::TUID IProgress__iid;
+
+    return((AgsVstTUID *) (&IProgress__iid));
   }
 
   AgsVstTResult ags_vst_iprogress_start(AgsVstIProgress *iprogress,
@@ -97,60 +107,74 @@ extern "C" {
 					ags_vst_tchar *optional_description,
 					AgsVstID *out_id)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IProgress *) iprogress)->start((Steinberg::Vst::IProgress::ProgressType) progress_type,
+							    optional_description,
+							    const_cast<Steinberg::Vst::IProgress::ID&>(((Steinberg::Vst::IProgress::ID *) out_id)[0])));
   }
 
   AgsVstTResult ags_vst_iprogress_update(AgsVstIProgress *iprogress,
 					 AgsVstID id, AgsVstParamValue norm_value)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IProgress *) iprogress)->update((Steinberg::Vst::IProgress::ID) id,
+							     norm_value));
   }
 
   AgsVstTResult ags_vst_iprogress_finish(AgsVstIProgress *iprogress,
 					 AgsVstID id)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IProgress *) iprogress)->finish((Steinberg::Vst::IProgress::ID) id));
   }
   
   const AgsVstTUID* ags_vst_iedit_controller_get_iid()
   {
-    //TODO:JK: implement me
+    extern const Steinberg::TUID IEditController__iid;
+
+    return((AgsVstTUID *) (&IEditController__iid));
   }
 
   AgsVstTResult ags_vst_iedit_controller_set_component_state(AgsVstIEditController *iedit_controller,
 							     AgsVstIBStream *state)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IEditController *) iedit_controller)->setComponentState((Steinberg::IBStream *) state));
   }
   
   AgsVstTResult ags_vst_iedit_controller_set_state(AgsVstIEditController *iedit_controller,
 						   AgsVstIBStream *state)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IEditController *) iedit_controller)->setState((Steinberg::IBStream *) state));
   }
   
   AgsVstTResult ags_vst_iedit_controller_get_state(AgsVstIEditController *iedit_controller,
 						   AgsVstIBStream *state)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IEditController *) iedit_controller)->getState((Steinberg::IBStream *) state));
   }
   
   gint32 ags_vst_iedit_controller_get_parameter_count(AgsVstIEditController *iedit_controller)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IEditController *) iedit_controller)->getParameterCount());
   }
 
   AgsVstTResult ags_vst_iedit_controller_get_parameter_info(AgsVstIEditController *iedit_controller,
-							    gint32 paramIndex, AgsVstParameterInfo *info)
+							    gint32 param_index, AgsVstParameterInfo *info)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IEditController *) iedit_controller)->getParameterInfo(param_index,
+										    const_cast<Steinberg::Vst::ParameterInfo&>(((Steinberg::Vst::ParameterInfo *) info)[0])));
   }
 
   AgsVstTResult ags_vst_iedit_controller_get_param_string_by_value(AgsVstIEditController *iedit_controller,
 								   AgsVstParamID id, AgsVstParamValue value_normalized,
 								   AgsVstString128 *string)
   {
-    //TODO:JK: implement me
+    Steinberg::Vst::String128 tmp_string;
+    Steinberg::tresult retval;
+    
+    retval = ((Steinberg::Vst::IEditController *) iedit_controller)->getParamStringByValue(id, value_normalized,
+											   tmp_string);
+
+    memcpy(string, &tmp_string, sizeof(Steinberg::Vst::String128));
+      
+    return(retval);
   }
 
   AgsVstTResult ags_vst_iedit_controller_get_param_value_by_string(AgsVstIEditController *iedit_controller,
@@ -158,98 +182,109 @@ extern "C" {
 								   AgsVstTChar *string,
 								   AgsVstParamValue *value_normalized)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IEditController *) iedit_controller)->getParamValueByString(id,
+											 (Steinberg::Vst::TChar *) string,
+											 const_cast<Steinberg::Vst::ParamValue&>(((Steinberg::Vst::ParamValue *) value_normalized)[0])));
   }
   
   AgsVstParamValue ags_vst_iedit_controller_normalized_param_to_plain(AgsVstIEditController *iedit_controller,
 								      AgsVstParamID id,
 								      AgsVstParamValue value_normalized)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IEditController *) iedit_controller)->normalizedParamToPlain(id,
+											  value_normalized));
   }
 
   AgsVstParamValue ags_vst_iedit_controller_plain_param_to_normalized(AgsVstIEditController *iedit_controller,
 								      AgsVstParamID id,
 								      AgsVstParamValue plain_value)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IEditController *) iedit_controller)->plainParamToNormalized(id,
+											  plain_value));
   }
   
   AgsVstParamValue ags_vst_iedit_controller_get_param_normalized(AgsVstIEditController *iedit_controller,
 								 AgsVstParamID id)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IEditController *) iedit_controller)->getParamNormalized(id));
   }
   
   AgsVstParamValue ags_vst_iedit_controller_set_param_normalized(AgsVstIEditController *iedit_controller,
 								 AgsVstParamID id,
 								 AgsVstParamValue value)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IEditController *) iedit_controller)->setParamNormalized(id, value));
   }
 
   AgsVstTResult ags_vst_iedit_controller_set_component_handler(AgsVstIEditController *iedit_controller,
-							       AgsVstIComponent *handler)
+							       AgsVstIComponentHandler *handler)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IEditController *) iedit_controller)->setComponentHandler((Steinberg::Vst::IComponentHandler *) handler));
   }
 
   AgsVstIPlugView* ags_vst_iedit_controller_create_view(AgsVstIEditController *iedit_controller,
 							AgsVstFIDString name)
   {
-    //TODO:JK: implement me
+    return((AgsVstIPlugView *) ((Steinberg::Vst::IEditController *) iedit_controller)->createView(name));
   }
   
   const AgsVstTUID* ags_vst_iedit_controller2_get_iid()
   {
-    //TODO:JK: implement me
+    extern const Steinberg::TUID IEditController2__iid;
+
+    return((AgsVstTUID *) (&IEditController2__iid));
   }
 
-  AgsVstTResult ags_vst_iedit_controller_set_knob_mode(AgsVstIEditController2 *iedit_controller2,
+  AgsVstTResult ags_vst_iedit_controller2_set_knob_mode(AgsVstIEditController2 *iedit_controller2,
 						       guint mode)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IEditController2 *) iedit_controller2)->setKnobMode(mode));
   }
   
-  AgsVstTResult ags_vst_iedit_controller_open_help(AgsVstIEditController2 *iedit_controller2,
-						   gboolean only_check)
+  AgsVstTResult ags_vst_iedit_controller2_open_help(AgsVstIEditController2 *iedit_controller2,
+						    gboolean only_check)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IEditController2 *) iedit_controller2)->openHelp(only_check));
   }
   
-  AgsVstTResult ags_vst_iedit_controller_open_about_box(AgsVstIEditController2 *iedit_controller2,
-							gboolean only_check)
+  AgsVstTResult ags_vst_iedit_controller2_open_about_box(AgsVstIEditController2 *iedit_controller2,
+							 gboolean only_check)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IEditController2 *) iedit_controller2)->openAboutBox(only_check));
   }
 
   const AgsVstTUID* ags_vst_imidi_mapping_get_iid()
   {
-    //TODO:JK: implement me
+    extern const Steinberg::TUID IMidiMapping__iid;
+
+    return((AgsVstTUID *) (&IMidiMapping__iid));
   }
 
   AgsVstTResult ags_vst_imidi_mapping_get_midi_controller_assignment(AgsVstIMidiMapping *imidi_mapping,
 								     gint32 bus_index, gint16 channel,
-								     AgsVstCtrlNumber midiControllerNumber, AgsVstParamID *id)
+								     AgsVstCtrlNumber midi_controller_number, AgsVstParamID *id)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IMidiMapping *) imidi_mapping)->getMidiControllerAssignment(bus_index, channel,
+											 midi_controller_number, const_cast<Steinberg::Vst::ParamID&>(((Steinberg::Vst::ParamID *) id)[0])));
   }
 
   const AgsVstTUID* ags_vst_iedit_controller_host_editing_get_iid()
   {
-    //TODO:JK: implement me
+    extern const Steinberg::TUID IEditControllerHostEditing__iid;
+
+    return((AgsVstTUID *) (&IEditControllerHostEditing__iid));
   }
 
   AgsVstTResult ags_vst_iedit_controller_host_editing_begin_edit_from_host(AgsVstIEditControllerHostEditing *iedit_controller_host_editing,
-								      AgsVstParamID param_id)
+									   AgsVstParamID param_id)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IEditControllerHostEditing *) iedit_controller_host_editing)->beginEditFromHost(param_id));
   }
   
   AgsVstTResult ags_vst_iedit_controller_host_editing_end_edit_from_host(AgsVstIEditControllerHostEditing *iedit_controller_host_editing,
 									 AgsVstParamID param_id)
   {
-    //TODO:JK: implement me
+    return(((Steinberg::Vst::IEditControllerHostEditing *) iedit_controller_host_editing)->endEditFromHost(param_id));
   }
 
 }

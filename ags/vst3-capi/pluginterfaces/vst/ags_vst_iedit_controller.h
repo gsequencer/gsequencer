@@ -142,7 +142,7 @@ extern "C" {
   gint32 ags_vst_iedit_controller_get_parameter_count(AgsVstIEditController *iedit_controller);
 
   AgsVstTResult ags_vst_iedit_controller_get_parameter_info(AgsVstIEditController *iedit_controller,
-							    gint32 paramIndex, AgsVstParameterInfo *info);
+							    gint32 param_index, AgsVstParameterInfo *info);
 
   AgsVstTResult ags_vst_iedit_controller_get_param_string_by_value(AgsVstIEditController *iedit_controller,
 								   AgsVstParamID id, AgsVstParamValue value_normalized,
@@ -169,27 +169,27 @@ extern "C" {
 								 AgsVstParamValue value);
 
   AgsVstTResult ags_vst_iedit_controller_set_component_handler(AgsVstIEditController *iedit_controller,
-							       AgsVstIComponent *handler);
+							       AgsVstIComponentHandler *handler);
 
   AgsVstIPlugView* ags_vst_iedit_controller_create_view(AgsVstIEditController *iedit_controller,
 							AgsVstFIDString name);
   
   const AgsVstTUID* ags_vst_iedit_controller2_get_iid();
 
-  AgsVstTResult ags_vst_iedit_controller_set_knob_mode(AgsVstIEditController2 *iedit_controller2,
-						       guint mode);
+  AgsVstTResult ags_vst_iedit_controller2_set_knob_mode(AgsVstIEditController2 *iedit_controller2,
+							guint mode);
   
-  AgsVstTResult ags_vst_iedit_controller_open_help(AgsVstIEditController2 *iedit_controller2,
-						   gboolean only_check);
+  AgsVstTResult ags_vst_iedit_controller2_open_help(AgsVstIEditController2 *iedit_controller2,
+						    gboolean only_check);
   
-  AgsVstTResult ags_vst_iedit_controller_open_about_box(AgsVstIEditController2 *iedit_controller2,
-							gboolean only_check);
+  AgsVstTResult ags_vst_iedit_controller2_open_about_box(AgsVstIEditController2 *iedit_controller2,
+							 gboolean only_check);
 
   const AgsVstTUID* ags_vst_imidi_mapping_get_iid();
 
   AgsVstTResult ags_vst_imidi_mapping_get_midi_controller_assignment(AgsVstIMidiMapping *imidi_mapping,
 								     gint32 bus_index, gint16 channel,
-								     AgsVstCtrlNumber midiControllerNumber, AgsVstParamID *id);
+								     AgsVstCtrlNumber midi_controller_number, AgsVstParamID *id);
 
   const AgsVstTUID* ags_vst_iedit_controller_host_editing_get_iid();
 
