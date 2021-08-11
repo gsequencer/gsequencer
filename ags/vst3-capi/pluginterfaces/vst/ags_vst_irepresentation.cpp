@@ -17,45 +17,25 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_IREPRESENTATION_H__
-#define __AGS_VST_IREPRESENTATION_H__
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_irepresentation.h>
 
-#include <glib.h>
+#include <pluginterfaces/vst/ivstrepresentation.h>
 
-#include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
-#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ibstream.h>
-
-#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h>
-
-#ifdef __cplusplus
 extern "C" {
-#endif
-  
-  typedef struct AgsVstRepresentationInfo RepresentationInfo;
 
-  typedef struct AgsVstIXmlRepresentationController IXmlRepresentationController;
-
-  typedef enum
+  const AgsVstTUID* ags_vst_ixml_representation_controller()
   {
-    AGS_VST_KKNOB = 0,
-    AGS_VST_KPRESSET_KNOB,
-    AGS_VST_KSWITCH_KNOB,
-    AGS_VST_KSWITCH,
-    AGS_VST_KLED,
-    AGS_VST_KLINK,
-    AGS_VST_KDISPLAY,
-    AGS_VST_KFADER,
-    AGS_VST_KEEND_OF_LAYER_TYPE
-  }AgsVstLayerType;
-  
-  const AgsVstTUID* ags_vst_ixml_representation_controller();
+    extern const Steinberg::TUID IXmlRepresentationController__iid;
+
+    return((AgsVstTUID *) (&IXmlRepresentationController__iid));
+  }
 
   AgsVstTResult ags_vst_ixml_representation_controller_get_xml_representation_stream(AgsVstIXmlRepresentationController *ixml_representation_controller,
 										     AgsVstRepresentationInfo *info,
-										     AgsVstIBStream *stream);  
-  
-#ifdef __cplusplus
-}
-#endif
+										     AgsVstIBStream *stream)
+  {
+    return(((Steinberg::Vst::IXmlRepresentationController *) ixml_representation_controller)->getXmlRepresentationStream(const_cast<Steinberg::Vst::RepresentationInfo&>(((Steinberg::Vst::RepresentationInfo *) info)[0]),
+															 (Steinberg::IBStream *) stream));
+  }
 
-#endif /*__AGS_VST_IREPRESENTATION_H__*/
+}
