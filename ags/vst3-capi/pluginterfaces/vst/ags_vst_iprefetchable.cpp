@@ -23,19 +23,17 @@
 
 extern "C" {
 
-  const AgsVstTUID* ags_vst_ixml_representation_controller_get_iid()
+  const AgsVstTUID* ags_vst_iprefetchable_support_get_iid()
   {
-    extern const Steinberg::TUID IXmlRepresentationController__iid;
+    extern const Steinberg::TUID IPrefetchable__iid;
 
-    return((AgsVstTUID *) (&IXmlRepresentationController__iid));
+    return((AgsVstTUID *) (&IPrefetchable__iid));
   }
 
-  AgsVstTResult ags_vst_ixml_representation_controller_get_xml_representation_stream(AgsVstIXmlRepresentationController *ixml_representation_controller,
-										     AgsVstRepresentationInfo *info,
-										     AgsVstIBStream *stream)
+  AgsVstTResult ags_vst_iprefetchable_support_get_prefetchable_support(AgsVstPrefetchableSupport *iprefetchable,
+								       AgsVstPrefetchableSupport *out)
   {
-    return(((Steinberg::Vst::IXmlRepresentationController *) ixml_representation_controller)->getXmlRepresentationStream(const_cast<Steinberg::Vst::RepresentationInfo&>(((Steinberg::Vst::RepresentationInfo *) info)[0]),
-															 (Steinberg::IBStream *) stream));
+    return(((Steinberg::Vst::IPrefetchableSupport *) iprefetchable)->getPrefetchableSupport(const_cast<Steinberg::Vst::IPrefetchableSupport&>(((Steinberg::Vst::IPrefetchableSupport *) out)[0])));
   }
 
 }

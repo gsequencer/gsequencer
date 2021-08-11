@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_IREPRESENTATION_H__
-#define __AGS_VST_IREPRESENTATION_H__
+#ifndef __AGS_VST_IPREFETCHABLE_H__
+#define __AGS_VST_IPREFETCHABLE_H__
 
 #include <glib.h>
 
@@ -30,32 +30,18 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+  typedef guint32 AgsVstPrefetchableSupport;
   
-  typedef struct AgsVstRepresentationInfo RepresentationInfo;
+  typedef struct AgsVstIPrefetchableSupport IPrefetchableSupport;
 
-  typedef struct AgsVstIXmlRepresentationController IXmlRepresentationController;
+  const AgsVstTUID* ags_vst_iprefetchable_support_get_iid();
 
-  typedef enum
-  {
-    AGS_VST_KKNOB = 0,
-    AGS_VST_KPRESSET_KNOB,
-    AGS_VST_KSWITCH_KNOB,
-    AGS_VST_KSWITCH,
-    AGS_VST_KLED,
-    AGS_VST_KLINK,
-    AGS_VST_KDISPLAY,
-    AGS_VST_KFADER,
-    AGS_VST_KEEND_OF_LAYER_TYPE
-  }AgsVstLayerType;
-  
-  const AgsVstTUID* ags_vst_ixml_representation_controller_get_iid();
-
-  AgsVstTResult ags_vst_ixml_representation_controller_get_xml_representation_stream(AgsVstIXmlRepresentationController *ixml_representation_controller,
-										     AgsVstRepresentationInfo *info,
-										     AgsVstIBStream *stream);  
+  AgsVstTResult ags_vst_iprefetchable_support_get_prefetchable_support(AgsVstPrefetchableSupport *iprefetchable,
+								       AgsVstPrefetchableSupport *out);
   
 #ifdef __cplusplus
 }
 #endif
 
-#endif /*__AGS_VST_IREPRESENTATION_H__*/
+#endif /*__AGS_VST_IPREFETCHABLE_H__*/
