@@ -156,7 +156,8 @@ endif
 
 cxx_compiler_flags = [
   '-std=gnu++2a',
-  '-DRELEASE'
+  '-DRELEASE',
+  '-I/usr/include/vst3'
 ]
 
 libags_sources = files(
@@ -794,21 +795,22 @@ if get_option('vst3')
     'vst3-capi/pluginterfaces/base/ags_vst_ipersistent.cpp',
     'vst3-capi/pluginterfaces/base/ags_vst_ierror_context.cpp',
     'vst3-capi/pluginterfaces/base/ags_vst_fvariant.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iparameter_changes.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_inote_expression.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iaudio_processor.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iattributes.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_ichannel_context_info.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_icomponent.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_ievents.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iinter_app_audio.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iinter_app_audio.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_inote_expression.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_imessage.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_iunits.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iaudio_processor.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_icomponent.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iparameter_changes.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_iparameter_function_name.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_iplug_interface_support.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_speaker.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iattributes.cpp',
     'vst3-capi/public.sdk/source/common/ags_vst_plugin_view.cpp',
     'vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp',
     'vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp',
@@ -1935,25 +1937,26 @@ if get_option('vst3')
   ]
 
   libags_vst_pluginterfaces_vst_headers = [
-    'vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iattributes.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_iaudio_processor.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_speaker.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iprocess_context.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_ichannel_cotext_info.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_ievents.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iinter_app_audio.h'
+    'vst3-capi/pluginterfaces/vst/ags_vst_imessage.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_imidi_controllers.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_inote_expression.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_iparameter_function_name.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_iparameter_changes.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_ichannel_cotext_info.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iunits.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_ievents.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_imessage.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_types.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_imidi_controllers.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_inote_expression.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iprocess_context.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_iplug_interface_support.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iattributes.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iinter_app_audio.h'
+    'vst3-capi/pluginterfaces/vst/ags_vst_irepresentation.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iunits.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_speaker.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_types.h',
   ]
 
   libags_vst_public_sdk_source_common_headers = [
