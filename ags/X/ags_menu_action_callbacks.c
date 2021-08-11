@@ -27,6 +27,7 @@
 #include <ags/X/ags_export_window.h>
 #include <ags/X/ags_machine_util.h>
 #include <ags/X/ags_online_help_window.h>
+#include <ags/X/ags_meta_data_window.h>
 
 #include <ags/X/import/ags_midi_import_wizard.h>
 
@@ -1191,4 +1192,10 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 #if defined AGS_W32API
   g_free(app_dir);
 #endif
+}
+
+void ags_menu_action_meta_data(GtkWidget *menu_item, gpointer data)
+{
+  AgsMetaDataWindow *window = ags_meta_data_window_new();
+  gtk_widget_show_all(window);
 }

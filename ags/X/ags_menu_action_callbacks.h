@@ -71,6 +71,7 @@ void ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer
 void ags_menu_action_automation_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_wave_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_preferences_callback(GtkWidget *menu_item, gpointer data);
+void ags_menu_action_meta_data(GtkWidget *menu_item, gpointer data);
 
 void ags_menu_action_midi_import_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_midi_export_track_callback(GtkWidget *menu_item, gpointer data);

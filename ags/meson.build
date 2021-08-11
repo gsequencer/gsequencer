@@ -872,6 +872,7 @@ libgsequencer_sources = files(
   'X/ags_machine_util.c',
   'X/ags_menu_action_callbacks.c',
   'X/ags_menu_bar.c',
+  'X/ags_meta_data_window.c',
   'X/ags_midi_dialog.c',
   'X/ags_midi_dialog_callbacks.c',
   'X/ags_midi_preferences.c',
@@ -1097,6 +1098,14 @@ libgsequencer_sources = files(
   'X/osc/controller/ags_ui_osc_renew_controller.c',
   'X/task/ags_simple_file_read.c',
   'X/task/ags_simple_file_write.c',
+)
+
+libgsequencer_sources += gnome.compile_resources(
+  'ags-gui-resources',
+  'X/gui.gresource.xml',
+  source_dir: 'X',
+  c_name: 'ags_gui',
+  export: true,
 )
 
 libgsequencer_dependencies = [
