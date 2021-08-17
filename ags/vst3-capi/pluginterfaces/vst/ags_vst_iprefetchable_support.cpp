@@ -17,31 +17,23 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_IPREFETCHABLE_H__
-#define __AGS_VST_IPREFETCHABLE_H__
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iprefetchable_support.h>
 
-#include <glib.h>
+#include <pluginterfaces/vst/ivstprefetchablesupport.h>
 
-#include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
-#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ibstream.h>
-
-#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h>
-
-#ifdef __cplusplus
 extern "C" {
-#endif
 
-  typedef guint32 AgsVstPrefetchableSupport;
-  
-  typedef struct AgsVstIPrefetchableSupport IPrefetchableSupport;
+  const AgsVstTUID* ags_vst_iprefetchable_support_get_iid()
+  {
+    extern const Steinberg::TUID IPrefetchable__iid;
 
-  const AgsVstTUID* ags_vst_iprefetchable_support_get_iid();
+    return((AgsVstTUID *) (&IPrefetchable__iid));
+  }
 
-  AgsVstTResult ags_vst_iprefetchable_support_get_prefetchable_support(AgsVstPrefetchableSupport *iprefetchable,
-								       AgsVstPrefetchableSupport *out);
-  
-#ifdef __cplusplus
+  AgsVstTResult ags_vst_iprefetchable_support_get_prefetchable_support(AgsVstIPrefetchableSupport *iprefetchable,
+								       AgsVstPrefetchableSupport *out)
+  {
+    return(((Steinberg::Vst::IPrefetchableSupport *) iprefetchable)->getPrefetchableSupport(const_cast<Steinberg::Vst::PrefetchableSupport&>(((Steinberg::Vst::PrefetchableSupport *) out)[0])));
+  }
+
 }
-#endif
-
-#endif /*__AGS_VST_IPREFETCHABLE_H__*/
