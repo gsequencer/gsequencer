@@ -25,3 +25,5 @@ jobs:
       run: xvfb-run --server-args="-screen 0 1920x1080x24" -a make check
     - name: make distcheck
       run: xvfb-run --server-args="-screen 0 1920x1080x24" -a make distcheck
+      env:
+        DISTCHECK_CONFIGURE_FLAGS: --enable-introspection --disable-vst3
