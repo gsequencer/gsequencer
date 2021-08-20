@@ -1962,6 +1962,7 @@ if get_option('vst3')
     'vst3-capi/pluginterfaces/vst/ags_vst_iunits.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_speaker.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_types.h',
+    'ags/vst3-capi/pluginterfaces/vst/ags_vst_preset_keys.h'
   ]
 
   libags_vst_public_sdk_source_common_headers = [

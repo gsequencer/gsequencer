@@ -2879,6 +2879,7 @@ libags_vst_h_sources = \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ustring.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ucolor_spec.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_keycodes.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_preset_keys.h \
 	ags/vst3-capi/util/ags_vst_string_util.h \
 	ags/vst3-capi/base/source/ags_vst_fbuffer.h \
 	ags/vst3-capi/base/source/ags_vst_fobject.h \
