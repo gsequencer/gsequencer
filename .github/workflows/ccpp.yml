@@ -17,8 +17,6 @@ jobs:
       run: autoreconf -fi
     - name: configure
       run: ./configure
-      env:
-        DISTCHECK_CONFIGURE_FLAGS: --enable-introspection --disable-vst3
     - name: make
       run: make
     - name: make check
