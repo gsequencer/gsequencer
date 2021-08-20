@@ -22,8 +22,6 @@
 
 #include <glib.h>
 
-#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_imessage.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -383,5 +381,5 @@ extern "C" {
 }
 #endif
 
-#endif /*__AGS_VST_IHOST_APPLICATION_H__*/
+#endif /*__AGS_VST_PRESET_KEYS_H__*/
 

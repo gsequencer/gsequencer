@@ -2853,6 +2853,7 @@ libags_vst_h_sources = \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_imidi_controllers.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_inote_expression.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_changes.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iphysical_ui.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_function_name.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_interface_support.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iprefetchable_support.h \
@@ -2910,6 +2911,7 @@ libags_vst_c_sources = \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_imessage.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_inote_expression.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_changes.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iphysical_ui.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_function_name.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_interface_support.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iprefetchable_support.cpp \
