@@ -30,7 +30,7 @@
 extern "C" {
 #endif
   
-  enum ControllerNumbers
+  typedef enum
   {
     AGS_VST_KCTRL_BANK_SELECT_MSB       =   0,
     AGS_VST_KCTRL_MOD_WHEEL             =   1,
@@ -96,7 +96,7 @@ extern "C" {
     AGS_VST_KCTRL_PROGRAM_CHANGE        = 130,
     AGS_VST_KCTRL_POLY_PRESSURE         = 131,
     AGS_VST_KCTRL_QUARTER_FRAME         = 132,
-  };
+  }AgsVstControllerNumbers;
   
 #ifdef __cplusplus
 }

@@ -2845,17 +2845,18 @@ libags_vst_h_sources = \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_ichannel_context_info.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_icontext_menu.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_ievents.h \
-	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.h \
-	ags/vst3-capi/pluginterfaces/vst/ags_vst_iprocess_context.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iinter_app_audio.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_imessage.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_imidi_controllers.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_imidi_learn.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_inote_expression.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_changes.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iphysical_ui.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_function_name.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_interface_support.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iprocess_context.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iprefetchable_support.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_irepresentation.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iunits.h \
@@ -2909,6 +2910,7 @@ libags_vst_c_sources = \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iinter_app_audio.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_imessage.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_imidi_learn.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_inote_expression.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_changes.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iphysical_ui.cpp \
