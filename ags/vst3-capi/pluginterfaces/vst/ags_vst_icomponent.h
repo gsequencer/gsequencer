@@ -30,11 +30,11 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIComponent IComponent;
+  typedef struct IComponent AgsVstIComponent;
 
-  typedef struct AgsVstBusInfo BusInfo;
+  typedef struct BusInfo AgsVstBusInfo;
 
-  typedef struct AgsVstRoutingInfo RoutingInfo;
+  typedef struct RoutingInfo AgsVstRoutingInfo;
 
   typedef enum{
     AGS_VST_KAUDIO = 0,

@@ -21,26 +21,26 @@
 #define __AGS_VST_IEDIT_CONTROLLER_H__
 
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.h>
+
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h>
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h>
+
+#include <ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-  struct AgsVstIPlugView;
-  struct AgsVstIBStream;  
   
-  typedef struct AgsVstParameterInfo ParameterInfo;
-  typedef struct AgsVstIComponentHandler IComponentHandler;
-  typedef struct AgsVstIComponentHandler2 IComponentHandler2;
-  typedef struct AgsVstIComponentHandlerBusActivation IComponentHandlerBusActivation;
-  typedef struct AgsVstIProgress IProgress;
-  typedef struct AgsVstIEditController IEditController;
-  typedef struct AgsVstIEditController2 IEditController2;
-  typedef struct AgsVstMyEditorController MyEditorController;
-  typedef struct AgsVstIMidiMapping IMidiMapping;
-  typedef struct AgsVstIEditControllerHostEditing IEditControllerHostEditing;
+  typedef struct ParameterInfo AgsVstParameterInfo;
+  typedef struct IComponentHandler AgsVstIComponentHandler;
+  typedef struct IComponentHandler2 AgsVstIComponentHandler2;
+  typedef struct IComponentHandlerBusActivation AgsVstIComponentHandlerBusActivation;
+  typedef struct IProgress AgsVstIProgress;
+  typedef struct IEditController AgsVstIEditController;
+  typedef struct IEditController2 AgsVstIEditController2;
+  typedef struct MyEditorController AgsVstMyEditorController;
+  typedef struct IMidiMapping AgsVstIMidiMapping;
+  typedef struct IEditControllerHostEditing AgsVstIEditControllerHostEditing;
   typedef guint64 AgsVstID;
 
   typedef enum

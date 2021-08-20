@@ -30,7 +30,7 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIAutomationState IAutomationState;
+  typedef struct IAutomationState AgsVstIAutomationState;
 
   typedef enum
   {

@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIMidiLearn IMidiLearn;
+  typedef struct IMidiLearn AgsVstIMidiLearn;
   
   const AgsVstTUID* ags_vst_imidi_learn_get_iid();
 

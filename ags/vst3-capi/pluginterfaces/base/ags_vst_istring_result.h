@@ -29,8 +29,8 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIStringResult IStringResult;
-  typedef struct AgsVstIString IString;
+  typedef struct IStringResult AgsVstIStringResult;
+  typedef struct IString AgsVstIString;
 
   AgsVstTUID* ags_vst_istring_result_get_iid();
 

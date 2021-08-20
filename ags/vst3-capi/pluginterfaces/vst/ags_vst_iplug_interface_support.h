@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIPlugInterfaceSupport IPlugInterfaceSupport;
+  typedef struct IPlugInterfaceSupport AgsVstIPlugInterfaceSupport;
   
   const AgsVstTUID* ags_vst_iplug_interface_support_get_iid();
 

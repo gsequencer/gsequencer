@@ -29,15 +29,15 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstProcessSetup ProcessSetup;
-  typedef struct AgsVstAudioBusBuffers AudioBusBuffers;
-  typedef struct AgsVstProcessData ProcessData;
+  typedef struct ProcessSetup AgsVstProcessSetup;
+  typedef struct AudioBusBuffers AgsVstAudioBusBuffers;
+  typedef struct ProcessData AgsVstProcessData;
   
-  typedef struct AgsVstIAudioProcessor IAudioProcessor;
+  typedef struct IAudioProcessor AgsVstIAudioProcessor;
 
-  typedef struct AgsVstIAudioPresentationLatency IAudioPresentationLatency;
+  typedef struct IAudioPresentationLatency AgsVstIAudioPresentationLatency;
 
-  typedef struct AgsVstIProcessContextRequirements IProcessContextRequirements;
+  typedef struct IProcessContextRequirements AgsVstIProcessContextRequirements;
       
   const AgsVstCString ags_vst_kfx_analyzer               = "Fx|Analyzer";
   const AgsVstCString ags_vst_kfx_delay                  = "Fx|Delay";

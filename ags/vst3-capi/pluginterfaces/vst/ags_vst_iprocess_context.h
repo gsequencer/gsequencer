@@ -29,15 +29,15 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstFrameRate FrameRate;
+  typedef struct FrameRate AgsVstFrameRate;
   
   typedef enum{
     AGS_VST_KPULL_DOWN_RATE = 1,
     AGS_VST_KDROP_RATE      = 1 << 1,
   }AgsVstFrameRateFlags;
 
-  typedef struct AgsVstChord Chord;
-  typedef struct AgsVstProcessContext ProcessContext;
+  typedef struct Chord AgsVstChord;
+  typedef struct ProcessContext AgsVstProcessContext;
   
 #ifdef __cplusplus
 }

@@ -20,6 +20,56 @@
 #ifndef __LIBAGS_VST_H__
 #define __LIBAGS_VST_H__
 
+#include <glib.h>
 
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_const_string_table.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_fplatform.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_futils.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_fvariant.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_geo_constants.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ibstream.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_icloneable.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ierror_context.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ipersistent.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_istring_result.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_iupdate_handler.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_keycodes.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_smart_pointer.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ucolor_spec.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ustring.h>
+
+#include <ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.h>
+#include <ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.h>
+
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iattributes.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iaudio_processor.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iautomation_state.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_ichannel_context_info.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_icontext_menu.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_ievents.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iinter_app_audio.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_imessage.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_imidi_controllers.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_imidi_learn.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_inote_expression.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_changes.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_function_name.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iphysical_ui.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_interface_support.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iprefetchable_support.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iprocess_context.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_irepresentation.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iunits.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_preset_keys.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_speaker.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h>
 
 #endif /*__LIBAGS_VST_H__*/

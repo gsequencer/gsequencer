@@ -23,17 +23,17 @@
 
 extern "C" {
 
-  AgsVstDirection ags_vst_geo_constants_to_oposite(AgsVstDirection dir)
+  guint ags_vst_geo_constants_to_oposite(guint dir)
   {
     return((AgsVstDirection) Steinberg::GeoConstants::toOpposite((Steinberg::Direction) dir));
   }
   
-  AgsVstOrientation ags_vst_geo_constants_to_orientation(AgsVstDirection dir)
+  guint ags_vst_geo_constants_to_orientation(guint dir)
   {
     return((AgsVstOrientation) Steinberg::GeoConstants::toOrientation((Steinberg::Direction) dir));
   }
   
-  AgsVstOrientation ags_vst_geo_constants_to_orthogonal_orientation(AgsVstOrientation dir)
+  guint ags_vst_geo_constants_to_orthogonal_orientation(guint dir)
   {
     return((AgsVstOrientation) Steinberg::GeoConstants::toOrthogonalOrientation((Steinberg::Orientation) dir));
   }

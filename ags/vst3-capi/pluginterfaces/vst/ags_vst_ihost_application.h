@@ -28,15 +28,15 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIHostApplication IHostApplication;
+  typedef struct IHostApplication AgsVstIHostApplication;
 
-  typedef struct AgsVstIVst3ToVst2Wrapper IVst3ToVst2Wrapper;
+  typedef struct IVst3ToVst2Wrapper AgsVstIVst3ToVst2Wrapper;
 
-  typedef struct AgsVstIVst3ToAUWrapper IVst3ToAUWrapper;
+  typedef struct IVst3ToAUWrapper AgsVstIVst3ToAUWrapper;
 
-  typedef struct AgsVstIVst3ToAAXWrapper IVst3ToAAXWrapper;
+  typedef struct IVst3ToAAXWrapper AgsVstIVst3ToAAXWrapper;
   
-  typedef struct AgsVstIVst3WrapperMPESupport IVst3WrapperMPESupport;
+  typedef struct IVst3WrapperMPESupport AgsVstIVst3WrapperMPESupport;
 
   const AgsVstTUID* ags_vst_ihost_application_get_iid();
 

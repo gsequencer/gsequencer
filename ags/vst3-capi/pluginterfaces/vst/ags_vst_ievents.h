@@ -29,15 +29,15 @@
 extern "C" {
 #endif
   
-  typedef struct AgsVstIEventList IEventList;
-  typedef struct AgsVstNoteOnEvent NoteOnEvent;
-  typedef struct AgsVstNoteOffEvent NoteOffEvent;
-  typedef struct AgsVstDataEvent DataEvent;
-  typedef struct AgsVstPolyPressureEvent PolyPressureEvent;
-  typedef struct AgsVstChordEvent ChordEvent;
-  typedef struct AgsVstScaleEvent ScaleEvent;
-  typedef struct AgsVstLegacyMIDICCOutEventEvent LegacyMIDICCOutEventEvent;
-  typedef struct AgsVstEvent Event;  
+  typedef struct IEventList AgsVstIEventList;
+  typedef struct NoteOnEvent AgsVstNoteOnEvent;
+  typedef struct NoteOffEvent AgsVstNoteOffEvent;
+  typedef struct DataEvent AgsVstDataEvent;
+  typedef struct PolyPressureEvent AgsVstPolyPressureEvent;
+  typedef struct ChordEvent AgsVstChordEvent;
+  typedef struct ScaleEvent AgsVstScaleEvent;
+  typedef struct LegacyMIDICCOutEventEvent AgsVstLegacyMIDICCOutEventEvent;
+  typedef struct Event AgsVstEvent;  
   
   typedef enum{
     AGS_VST_KNOTE_ID_USER_RANGE_LOWER_BOUND = -10000, 

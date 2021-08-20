@@ -82,7 +82,7 @@ ags_sfz_synth_util_loop_mode_get_type()
       { 0, NULL, NULL }
     };
 
-    GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsSynthOscillatorMode"), values);
+    GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsSFZSynthUtilLoopMode"), values);
 
     g_once_init_leave (&g_enum_type_id__volatile, g_enum_type_id);
   }

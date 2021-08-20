@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIInfoListener IInfoListener;
+  typedef struct IInfoListener AgsVstIInfoListener;
   
   typedef enum
   {

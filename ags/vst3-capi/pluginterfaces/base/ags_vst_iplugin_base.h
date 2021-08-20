@@ -34,19 +34,19 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIPluginBase IPluginBase;
+  typedef struct IPluginBase AgsVstIPluginBase;
 
-  typedef struct AgsVstPFactoryInfo PFactoryInfo;
-  typedef struct AgsVstPClassInfo PClassInfo;
+  typedef struct PFactoryInfo AgsVstPFactoryInfo;
+  typedef struct PClassInfo AgsVstPClassInfo;
 
-  typedef struct AgsVstIPluginFactory IPluginFactory;
+  typedef struct IPluginFactory AgsVstIPluginFactory;
 
-  typedef struct AgsVstPClassInfo2 PClassInfo2;
-  typedef struct AgsVstIPluginFactory2 IPluginFactory2;
+  typedef struct PClassInfo2 AgsVstPClassInfo2;
+  typedef struct IPluginFactory2 AgsVstIPluginFactory2;
 
-  typedef struct AgsVstPClassInfoW PClassInfoW;
+  typedef struct PClassInfoW AgsVstPClassInfoW;
 
-  typedef struct AgsVstIPluginFactory3 IPluginFactory3;
+  typedef struct IPluginFactory3 AgsVstIPluginFactory3;
 
   typedef AgsVstIPluginFactory* (*AgsVstGetFactoryProc)();
 

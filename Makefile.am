@@ -671,7 +671,13 @@ endif
 # library libags-audio
 libags_audio_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(W32API_CFLAGS)
 libags_audio_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 $(PIC_FLAGS) -pthread 
-libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la -lm $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBXML2_LIBS) $(SAMPLERATE_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(FFTW_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(W32API_LIBS)
+libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la
+
+if WITH_VST3
+libags_audio_la_LIBADD += libags_vst.la
+endif
+
+libags_audio_la_LIBADD += -lm $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBXML2_LIBS) $(SAMPLERATE_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(FFTW_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(W32API_LIBS)
 
 if WITH_W32API
 libags_audio_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_audio.dll.a
@@ -1283,6 +1289,12 @@ libags_plugin_h_sources = \
 	ags/plugin/ags_plugin_stock.h \
 	ags/plugin/ags_plugin_port.h
 
+if WITH_VST3
+libags_plugin_h_sources += \
+	ags/plugin/ags_vst3_manager.h \
+	ags/plugin/ags_vst3_plugin.h
+endif
+
 deprecated_libags_plugin_c_sources =
 
 libags_plugin_c_sources = \
@@ -1310,6 +1322,12 @@ libags_plugin_c_sources = \
 	ags/plugin/ags_lv2ui_manager.c \
 	ags/plugin/ags_lv2ui_plugin.c \
 	ags/plugin/ags_plugin_port.c
+
+if WITH_VST3
+libags_plugin_c_sources += \
+	ags/plugin/ags_vst3_manager.c \
+	ags/plugin/ags_vst3_plugin.c
+endif
 
 # libags-audio - file
 deprecated_libags_audio_file_h_sources =

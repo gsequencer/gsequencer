@@ -28,13 +28,13 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstUnitInfo UnitInfo;
-  typedef struct AgsVstProgramListInfo ProgramListInfo;
-  typedef struct AgsVstIUnitHandler IUnitHandler;
-  typedef struct AgsVstIUnitHandler2 IUnitHandler2;
-  typedef struct AgsVstIUnitInfo IUnitInfo;
-  typedef struct AgsVstIProgramListData IProgramListData;
-  typedef struct AgsVstIUnitData IUnitData;
+  typedef struct UnitInfo AgsVstUnitInfo;
+  typedef struct ProgramListInfo AgsVstProgramListInfo;
+  typedef struct IUnitHandler AgsVstIUnitHandler;
+  typedef struct IUnitHandler2 AgsVstIUnitHandler2;
+  typedef struct IUnitInfo AgsVstIUnitInfo;
+  typedef struct IProgramListData AgsVstIProgramListData;
+  typedef struct IUnitData AgsVstIUnitData;
 
   static const AgsVstUnitID ags_vst_kroot_unit_id = 0;
   static const AgsVstUnitID ags_vst_kno_parent_unit_id = -1;

@@ -30,11 +30,11 @@ extern "C" {
   
   typedef guint32 AgsVstPhysicalUITypeID;
 
-  typedef struct AgsVstPhysicalUIMap PhysicalUIMap;
+  typedef struct PhysicalUIMap AgsVstPhysicalUIMap;
 
-  typedef struct AgsVstPhysicalUIMapList PhysicalUIMapList;
+  typedef struct PhysicalUIMapList AgsVstPhysicalUIMapList;
 
-  typedef struct AgsVstINoteExpressionPhysicalUIMapping INoteExpressionPhysicalUIMapping;
+  typedef struct INoteExpressionPhysicalUIMapping AgsVstINoteExpressionPhysicalUIMapping;
   
   typedef enum
   {

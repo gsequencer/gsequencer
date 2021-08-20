@@ -28,12 +28,12 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstViewRect ViewRect;
-  typedef struct AgsVstIPlugView IPlugView;
-  typedef struct AgsVstIPlugFrame IPlugFrame;
-  typedef struct AgsVstIEventHandler IEventHandler;
-  typedef struct AgsVstITimerHandler ITimerHandler;
-  typedef struct AgsVstIRunLoop IRunLoop;
+  typedef struct ViewRect AgsVstViewRect;
+  typedef struct IPlugView AgsVstIPlugView;
+  typedef struct IPlugFrame AgsVstIPlugFrame;
+  typedef struct IEventHandler AgsVstIEventHandler;
+  typedef struct ITimerHandler AgsVstITimerHandler;
+  typedef struct IRunLoop AgsVstIRunLoop;
 
   const AgsVstFIDString ags_vst_kplatform_type_hwnd = "HWND";
   const AgsVstFIDString ags_vst_kplatform_type_hi_view = "HIView";

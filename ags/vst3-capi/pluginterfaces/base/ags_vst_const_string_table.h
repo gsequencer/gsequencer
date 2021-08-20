@@ -26,7 +26,7 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstConstStringTable ConstStringTable;
+  typedef struct ConstStringTable AgsVstConstStringTable;
 
   gunichar2* ags_vst_const_string_table_get_string_literal(AgsVstConstStringTable *const_string_table, gchar *str);
   gunichar2 ags_vst_const_string_table_get_string_character(AgsVstConstStringTable *const_string_table, gchar str);

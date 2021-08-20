@@ -38,7 +38,7 @@ extern "C" {
 
   const gchar *ags_vst_krandomize = "Randomize";
 
-  typedef struct AgsVstIParameterFunctionName IParameterFunctionName;
+  typedef struct IParameterFunctionName AgsVstIParameterFunctionName;
   
   const AgsVstTUID* ags_vst_iparameter_function_name_get_iid();
 

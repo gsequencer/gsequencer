@@ -31,9 +31,9 @@
 extern "C" {
 #endif
   
-  typedef struct AgsVstRepresentationInfo RepresentationInfo;
+  typedef struct RepresentationInfo AgsVstRepresentationInfo;
 
-  typedef struct AgsVstIXmlRepresentationController IXmlRepresentationController;
+  typedef struct IXmlRepresentationController AgsVstIXmlRepresentationController;
 
   typedef enum
   {

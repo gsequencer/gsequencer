@@ -29,9 +29,9 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIBStream IBStream;
+  typedef struct IBStream AgsVstIBStream;
 
-  typedef struct AgsVstISizeableStream ISizeableStream;  
+  typedef struct ISizeableStream AgsVstISizeableStream;  
 
   enum AgsVstIStreamSeekMode
   {

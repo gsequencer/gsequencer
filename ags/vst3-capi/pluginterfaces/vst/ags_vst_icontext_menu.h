@@ -31,15 +31,15 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIComponentHandler3 IComponentHandler3;
+  typedef struct IComponentHandler3 AgsVstIComponentHandler3;
 
-  typedef struct AgsVstIContextMenuTarget IContextMenuTarget;
+  typedef struct IContextMenuTarget AgsVstIContextMenuTarget;
 
-  typedef struct AgsVstIContextMenuItem IContextMenuItem;
+  typedef struct IContextMenuItem AgsVstIContextMenuItem;
 
-  typedef struct AgsVstIContextMenu IContextMenu;
+  typedef struct IContextMenu AgsVstIContextMenu;
   
-  typedef struct AgsVstItem Item;
+  typedef struct Item AgsVstItem;
   
   const AgsVstTUID* ags_vst_icomponent_handler3_get_iid();
 

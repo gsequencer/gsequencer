@@ -26,13 +26,13 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIPtr IPtr;
+  typedef struct IPtr AgsVstIPtr;
 
-  typedef struct AgsVstOPtr OPtr;
+  typedef struct OPtr AgsVstOPtr;
 
-  typedef struct AgsVstUsed Used;
+  typedef struct Used AgsVstUsed;
 
-  typedef struct AgsVstAdopt Adopt;
+  typedef struct Adopt AgsVstAdopt;
 
 #ifdef __cplusplus
 }

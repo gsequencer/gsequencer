@@ -67,17 +67,17 @@ extern "C" {
   static const double ags_vst_kmax_double = 1.7976931348623158E308;
 
 #ifdef AGS_VST_UNICODE
-  typedef char16_t ags_vst_tchar;
+  typedef gunichar2 ags_vst_tchar;
 #else
   typedef gchar ags_vst_tchar;
 #endif
 
   typedef const gchar* AgsVstCStringA;
-  typedef const char16_t* AgsVstCStringW;
+  typedef const gunichar2* AgsVstCStringW;
   typedef const ags_vst_tchar* AgsVstCString;
   gboolean ags_vst_str_empty(ags_vst_tchar *str);
   gboolean ags_vst_str8_empty(gchar *str);
-  gboolean ags_vst_str16_empty(char16_t *str);
+  gboolean ags_vst_str16_empty(gunichar2 *str);
 
   typedef const gchar* AgsVstFIDString;
 

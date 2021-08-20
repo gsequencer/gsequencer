@@ -28,9 +28,9 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIMessage IMessage;
+  typedef struct IMessage AgsVstIMessage;
 
-  typedef struct AgsVstIConnectionPoint IConnectionPoint;
+  typedef struct IConnectionPoint AgsVstIConnectionPoint;
 
   const AgsVstTUID* ags_vst_imessage_get_iid();
 

@@ -19,7 +19,9 @@
 
 #ifndef __AGS_VST_GEO_CONSTANTS_H__
 #define __AGS_VST_GEO_CONSTANTS_H__
-  
+
+#include <glib.h>
+
 enum AgsVstDirection 
 {
   AGS_VST_KNORTH,
@@ -45,9 +47,9 @@ enum AgsVstOrientation
 extern "C" {
 #endif
 
-  AgsVstDirection ags_vst_geo_constants_to_oposite(AgsVstDirection dir);
-  AgsVstOrientation ags_vst_geo_constants_to_orientation(AgsVstDirection dir);
-  AgsVstOrientation ags_vst_geo_constants_to_orthogonal_orientation(AgsVstOrientation dir);
+  guint ags_vst_geo_constants_to_oposite(guint dir);
+  guint ags_vst_geo_constants_to_orientation(guint dir);
+  guint ags_vst_geo_constants_to_orthogonal_orientation(guint dir);
   
 #ifdef __cplusplus
 }

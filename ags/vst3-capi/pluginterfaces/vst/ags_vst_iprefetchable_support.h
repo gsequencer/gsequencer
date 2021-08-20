@@ -33,7 +33,7 @@ extern "C" {
 
   typedef guint32 AgsVstPrefetchableSupport;
   
-  typedef struct AgsVstIPrefetchableSupport IPrefetchableSupport;
+  typedef struct IPrefetchableSupport AgsVstIPrefetchableSupport;
 
   const AgsVstTUID* ags_vst_iprefetchable_support_get_iid();
 
