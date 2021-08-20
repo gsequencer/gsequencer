@@ -22,12 +22,46 @@
 
 #include <glib.h>
 
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_imessage.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
   typedef struct AgsVstIHostApplication IHostApplication;
+
+  typedef struct AgsVstIVst3ToVst2Wrapper IVst3ToVst2Wrapper;
+
+  typedef struct AgsVstIVst3ToAUWrapper IVst3ToAUWrapper;
+
+  typedef struct AgsVstIVst3ToAAXWrapper IVst3ToAAXWrapper;
   
+  typedef struct AgsVstIVst3WrapperMPESupport IVst3WrapperMPESupport;
+
+  const AgsVstTUID* ags_vst_ihost_application_get_iid();
+
+  AgsVstTResult ags_vst_ihost_application_get_name(AgsVstIHostApplication *ihost_application,
+						   AgsVstString128 name);
+
+  AgsVstTResult ags_vst_ihost_application_create_instance(AgsVstIHostApplication *ihost_application,
+							  AgsVstTUID *cid, AgsVstTUID *iid, void **obj);
+  
+  const AgsVstTUID* ags_vst_ivst3_to_vst2_wrapper_get_iid();
+  
+  const AgsVstTUID* ags_vst_ivst3_to_au_wrapper_get_iid();
+
+  const AgsVstTUID* ags_vst_ivst3_to_aax_wrapper_get_iid();
+
+  const AgsVstTUID* ags_vst_ivst3_wrapper_mpe_support_get_iid();
+
+  AgsVstTResult ags_vst_ivst3_wrapper_mpe_support_enable_mpe_input_processing(AgsVstIVst3WrapperMPESupport *ivst3_wrapper_mpe_support,
+									     gboolean state);
+								       
+  AgsVstTResult ags_vst_ivst3_wrapper_mpe_suppor_set_mpe_input_device_settings(AgsVstIVst3WrapperMPESupport *ivst3_wrapper_mpe_support,
+									       gint32 master_channel,
+									       gint32 member_begin_channel,
+									       gint32 member_end_channel);
+
 #ifdef __cplusplus
 }
 #endif
