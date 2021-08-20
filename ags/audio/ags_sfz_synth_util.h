@@ -34,6 +34,15 @@ G_BEGIN_DECLS
 #define AGS_TYPE_SFZ_SYNTH_UTIL         (ags_sfz_synth_util_get_type())
 #define AGS_SFZ_SYNTH_UTIL(ptr) ((AgsSFZSynthUtil *)(ptr))
 
+/**
+ * AgsSFZSynthUtilLoopMode:
+ * @AGS_SFZ_SYNTH_UTIL_LOOP_NONE: loop none
+ * @AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD: loop standard
+ * @AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE: loop release
+ * @AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG: loop pingpong
+ * 
+ * Enum values to specify loop mode.
+ */
 typedef enum{
   AGS_SFZ_SYNTH_UTIL_LOOP_NONE,
   AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD,
@@ -73,6 +82,8 @@ struct _AgsSFZSynthUtil
 };
 
 GType ags_sfz_synth_util_get_type(void);
+
+GType ags_sfz_synth_util_loop_mode_get_type();
 
 AgsSFZSynthUtil* ags_sfz_synth_util_alloc();
 
