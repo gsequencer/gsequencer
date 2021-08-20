@@ -16,7 +16,7 @@ jobs:
     - name: autoreconf
       run: autoreconf -fi
     - name: configure
-      run: ./configure 
+      run: ./configure --disable-vst3
     - name: make
       run: make
     - name: make check
