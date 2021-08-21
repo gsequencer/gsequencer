@@ -27,9 +27,7 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_icomponent_handler_get_iid()
   {
-    extern const Steinberg::TUID IComponentHandler__iid;
-
-    return((AgsVstTUID *) (&IComponentHandler__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IComponentHandler::iid));
   }
 
   AgsVstTResult ags_vst_icomponent_handler_begin_edit(AgsVstIComponentHandler *icomponent_handler,
@@ -58,9 +56,7 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_icomponent_handler2_get_iid()
   {
-    extern const Steinberg::TUID IComponentHandler2__iid;
-
-    return((AgsVstTUID *) (&IComponentHandler2__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IComponentHandler2::iid));
   }
 
   AgsVstTResult ags_vst_icomponent_handler2_set_dirty(AgsVstIComponentHandler2 *icomponent_handler2,
@@ -99,9 +95,7 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_iprogress_get_iid()
   {
-    extern const Steinberg::TUID IProgress__iid;
-
-    return((AgsVstTUID *) (&IProgress__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IProgress::iid));
   }
 
   AgsVstTResult ags_vst_iprogress_start(AgsVstIProgress *iprogress,
@@ -129,9 +123,7 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_iedit_controller_get_iid()
   {
-    extern const Steinberg::TUID IEditController__iid;
-
-    return((AgsVstTUID *) (&IEditController__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IEditController::iid));
   }
 
   AgsVstTResult ags_vst_iedit_controller_set_component_state(AgsVstIEditController *iedit_controller,
@@ -232,9 +224,7 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_iedit_controller2_get_iid()
   {
-    extern const Steinberg::TUID IEditController2__iid;
-
-    return((AgsVstTUID *) (&IEditController2__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IEditController2::iid));
   }
 
   AgsVstTResult ags_vst_iedit_controller2_set_knob_mode(AgsVstIEditController2 *iedit_controller2,
@@ -257,9 +247,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_imidi_mapping_get_iid()
   {
-    extern const Steinberg::TUID IMidiMapping__iid;
-
-    return((AgsVstTUID *) (&IMidiMapping__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IMidiMapping::iid));
   }
 
   AgsVstTResult ags_vst_imidi_mapping_get_midi_controller_assignment(AgsVstIMidiMapping *imidi_mapping,
@@ -272,9 +260,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iedit_controller_host_editing_get_iid()
   {
-    extern const Steinberg::TUID IEditControllerHostEditing__iid;
-
-    return((AgsVstTUID *) (&IEditControllerHostEditing__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IEditControllerHostEditing::iid));
   }
 
   AgsVstTResult ags_vst_iedit_controller_host_editing_begin_edit_from_host(AgsVstIEditControllerHostEditing *iedit_controller_host_editing,

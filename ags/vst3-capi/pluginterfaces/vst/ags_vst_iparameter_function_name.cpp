@@ -36,9 +36,7 @@ extern "C" {
       
   const AgsVstTUID* ags_vst_iparameter_function_name_get_iid()
   {
-    extern const Steinberg::TUID IParameterFunctionName__iid;
-
-    return((AgsVstTUID *) (&IParameterFunctionName__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IParameterFunctionName::iid));
   }
   
   AgsVstTResult ags_vst_iparameter_function_name_get_parameter_id_from_function_name(AgsVstIParameterFunctionName *iparameter_function_name,

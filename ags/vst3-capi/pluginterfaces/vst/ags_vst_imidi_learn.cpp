@@ -25,9 +25,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_imidi_learn_get_iid()
   {
-    extern const Steinberg::TUID IMidiLearn__iid;
-
-    return((AgsVstTUID *) (&IMidiLearn__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IMidiLearn::iid));
   }
 
   AgsVstTResult ags_vst_midi_learn_on_live_midi_controller_input(AgsVstIMidiLearn *imidi_learn,

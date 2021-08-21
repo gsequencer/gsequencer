@@ -28,7 +28,7 @@ extern "C" {
   const AgsVstTUID*
   ags_vst_ierror_context_get_iid()
   {
-    return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IErrorContext)));
+    return((AgsVstTUID *) &(Steinberg::IErrorContext::iid));
   }
 
   void ags_vst_ierror_context_disable_error_ui(AgsVstIErrorContext *error_context,

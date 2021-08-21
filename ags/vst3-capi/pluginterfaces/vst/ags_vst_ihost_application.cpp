@@ -25,9 +25,7 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_ihost_application_get_iid()
   {
-    extern const Steinberg::TUID IHostApplication__iid;
-
-    return((AgsVstTUID *) (&IHostApplication__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IHostApplication::iid));
   }
 
   AgsVstTResult ags_vst_ihost_application_get_name(AgsVstIHostApplication *ihost_application,
@@ -44,30 +42,22 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_ivst3_to_vst2_wrapper_get_iid()
   {
-    extern const Steinberg::TUID IVst3ToVst2Wrapper__iid;
-
-    return((AgsVstTUID *) (&IVst3ToVst2Wrapper__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IVst3ToVst2Wrapper::iid));
   }
   
   const AgsVstTUID* ags_vst_ivst3_to_au_wrapper_get_iid()
   {
-    extern const Steinberg::TUID IVst3ToAUWrapper__iid;
-
-    return((AgsVstTUID *) (&IVst3ToAUWrapper__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IVst3ToAUWrapper::iid));
   }
 
   const AgsVstTUID* ags_vst_ivst3_to_aax_wrapper_get_iid()
   {
-    extern const Steinberg::TUID IVst3ToAAXWrapper__iid;
-
-    return((AgsVstTUID *) (&IVst3ToAAXWrapper__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IVst3ToAAXWrapper::iid));
   }
 
   const AgsVstTUID* ags_vst_ivst3_wrapper_mpe_support_get_iid()
   {
-    extern const Steinberg::TUID IVst3WrapperMPESupport__iid;
-
-    return((AgsVstTUID *) (&IVst3WrapperMPESupport__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IVst3WrapperMPESupport::iid));
   }
 
   AgsVstTResult ags_vst_ivst3_wrapper_mpe_support_enable_mpe_input_processing(AgsVstIVst3WrapperMPESupport *ivst3_wrapper_mpe_support,

@@ -26,9 +26,7 @@ extern "C" {
   AgsVstTUID*
   ags_vst_iplug_view_content_scale_support_get_iid()
   {
-    extern const Steinberg::TUID IPlugViewContentScaleSupport__iid;
-
-    return((AgsVstTUID *) (&IPlugViewContentScaleSupport__iid));
+    return((AgsVstTUID *) &(Steinberg::IPlugViewContentScaleSupport::iid));
   }
 
   AgsVstTResult ags_vst_iplug_view_content_scale_support_set_content_scale_factor(AgsVstIPlugViewContentScaleSupport *iplug_view_content_scale_support,

@@ -25,9 +25,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_ixml_representation_controller_get_iid()
   {
-    extern const Steinberg::TUID IXmlRepresentationController__iid;
-
-    return((AgsVstTUID *) (&IXmlRepresentationController__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IXmlRepresentationController::iid));
   }
 
   AgsVstTResult ags_vst_ixml_representation_controller_get_xml_representation_stream(AgsVstIXmlRepresentationController *ixml_representation_controller,

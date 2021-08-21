@@ -25,9 +25,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iparam_value_queue_get_iid()
   {
-    extern const Steinberg::TUID IParamValueQueue__iid;
-
-    return((AgsVstTUID *) (&IParamValueQueue__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IParamValueQueue::iid));
   }
 
   AgsVstParamID ags_vst_iparam_value_queue_get_parameter_id(AgsVstIParamValueQueue *iparam_value_queue)
@@ -64,9 +62,7 @@ extern "C" {
    
   const AgsVstTUID* ags_vst_iparameter_changes_get_iid()
   {
-    extern const Steinberg::TUID IParameterChanges__iid;
-
-    return((AgsVstTUID *) (&IParameterChanges__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IParameterChanges::iid));
   }
 
   gint32 ags_vst_iparameter_changes_get_parameter_count(AgsVstIParameterChanges *iparameter_changes)

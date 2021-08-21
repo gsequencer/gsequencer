@@ -37,9 +37,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iinfo_listener_get_iid()
   {
-    extern const Steinberg::TUID IInfoListener__iid;
-
-    return((AgsVstTUID *) (&IInfoListener__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::ChannelContext::IInfoListener::iid));
   }
 
   AgsVstTResult ags_vst_iinfo_listener_set_channel_context_info(AgsVstIInfoListener *iinfo_listener,

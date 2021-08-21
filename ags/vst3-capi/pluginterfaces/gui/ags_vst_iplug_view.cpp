@@ -42,9 +42,7 @@ extern "C" {
   AgsVstTUID*
   ags_vst_iplug_view_get_iid()
   {
-    extern const Steinberg::TUID IPlugView__iid;
-
-    return((AgsVstTUID *) (&IPlugView__iid));
+    return((AgsVstTUID *) &(Steinberg::IPlugView::iid));
   }
     
   AgsVstTResult ags_vst_iplug_view_attached(AgsVstIPlugView *iplug_view, void *parent, AgsVstFIDString type)

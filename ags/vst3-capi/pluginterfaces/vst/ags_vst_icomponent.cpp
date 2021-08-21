@@ -27,9 +27,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_icomponent_get_iid()
   {
-    extern const Steinberg::TUID IComponent__iid;
-
-    return((AgsVstTUID *) (&IComponent__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IComponent::iid));
   }
 
   AgsVstTResult ags_vst_icomponent_get_controller_class_id(AgsVstIComponent *icomponent, AgsVstTUID *class_id)

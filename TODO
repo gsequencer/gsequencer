@@ -18,7 +18,7 @@ Free Documentation License".
 * FIXME:JK: make indicator orientable
 * TODO:JK: implemented Fx mutex per scope
 * TODO:JK: extended user's handbook to cover OSC server preferences
-* TODO:JK: implemented AgsFunction and related
+* TODO:JK: implemented AgsFunction and fix typo in header
 * TODO:JK: implemented support for GtkApplication
 * TODO:JK: refactored AgsNotationToolbar, AgsAutomationToolbar and AgsWaveToolbar
 * TODO:JK: migrated AgsBasePlugin to GModule
@@ -34,7 +34,6 @@ Free Documentation License".
 * TODO:JK: implemented resample AgsAudioSignal on presets modified
 * TODO:JK: improve thread-safety to LADSPA and DSSI
 * TODO:JK: removed ags_id_generator.[ch]
-* TODO:JK: improved ags-feed recall thread-safety
 * TODO:JK: improved ags_audio_signal_feed() reduce over-head
 * TODO:JK: refactored AgsAutomationEditor to be more light-weight
 * TODO:JK: implemented AgsConnectable:disconnect() to all implementing objects
