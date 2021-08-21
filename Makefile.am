@@ -725,7 +725,7 @@ endif
 if WITH_VST3
 libags_vst_la_CPPFLAGS = -std=gnu++2a -DDEVELOPMENT
 libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include/vst3 $(GLIB_CFLAGS) $(VST3_CXXFLAGS) $(W32API_CFLAGS)
-libags_vst_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 $(PIC_FLAGS) -pthread 
+libags_vst_la_LDFLAGS = $(LDFLAGS) $(VST3_LDFLAGS) -version-info 3:0:0 $(PIC_FLAGS) -pthread 
 libags_vst_la_LIBADD = -lm $(GLIB_LIBS) $(VST3_LIBS) $(W32API_LIBS)
 
 if WITH_W32API

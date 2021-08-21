@@ -21,6 +21,8 @@
 
 #include <ags/plugin/ags_plugin_port.h>
 
+#include <math.h>
+
 #if defined(AGS_W32API)
 #include <windows.h>
 #else
@@ -147,6 +149,8 @@ ags_vst3_plugin_class_init(AgsVst3PluginClass *vst3_plugin)
 void
 ags_vst3_plugin_init(AgsVst3Plugin *vst3_plugin)
 {
+  vst3_plugin->get_plugin_factory = NULL;
+
   vst3_plugin->host_context = NULL;
 
   vst3_plugin->icomponent = NULL;
@@ -228,7 +232,7 @@ ags_vst3_plugin_instantiate(AgsBasePlugin *base_plugin,
   /* get instantiate */
   g_rec_mutex_lock(base_plugin_mutex);
 
-  GetPluginFactory = base_plugin->plugin_descriptor;
+  GetPluginFactory = AGS_VST3_PLUGIN(base_plugin)->get_plugin_factory;
     
   g_rec_mutex_unlock(base_plugin_mutex);
 
@@ -334,7 +338,239 @@ ags_vst3_plugin_run(AgsBasePlugin *base_plugin,
 void
 ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 {
-  //TODO:JK: implement me
+  AgsVstIPluginFactory *iplugin_factory;
+
+  GList *plugin_port;
+
+  gpointer retval;
+
+  guint i, i_stop;
+  gboolean success;
+  
+  AgsVstIPluginFactory* (*GetPluginFactory)();
+  
+  GRecMutex *base_plugin_mutex;
+
+  /* get base plugin mutex */
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
+
+  /* dlopen */
+  g_rec_mutex_lock(base_plugin_mutex);
+
+#ifdef AGS_W32API
+  base_plugin->plugin_so = LoadLibrary(base_plugin->filename);
+#else
+  base_plugin->plugin_so = dlopen(base_plugin->filename,
+				  RTLD_NOW);
+#endif
+  
+  if(base_plugin->plugin_so == NULL){
+    g_warning("ags_vst3_plugin.c - failed to load static object file");
+    
+#ifndef AGS_W32API    
+    dlerror();
+#endif
+    
+    g_rec_mutex_unlock(base_plugin_mutex);
+
+    return;
+  }
+
+  plugin_port = NULL;
+
+  success = FALSE;
+
+#ifdef AGS_W32API
+  GetPluginFactory =
+    AGS_VST3_PLUGIN(base_plugin)->get_plugin_factory = GetProcAddress(base_plugin->plugin_so,
+								      "GetPluginFactory");
+    
+  success = (AGS_VST3_PLUGIN(base_plugin)->get_plugin_factory != NULL) ? TRUE: FALSE;
+#else
+  GetPluginFactory =
+    AGS_VST3_PLUGIN(base_plugin)->get_plugin_factory = dlsym(base_plugin->plugin_so,
+							     "GetPluginFactory");
+  
+  success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
+
+  g_rec_mutex_unlock(base_plugin_mutex);
+
+  if(success){
+    AgsVstPClassInfo *info;
+
+    AgsVstTResult val;
+    
+    iplugin_factory = GetPluginFactory();
+
+    info = ags_vst_pclass_info_alloc();
+    
+    i_stop = ags_vst_iplugin_factory_count_classes(iplugin_factory);
+    
+    for(i = 0; i < i_stop; i++){
+      ags_vst_iplugin_factory_get_class_info(iplugin_factory,
+					     i, info);
+
+      if(!g_strcmp0(ags_vst_pclass_info_get_category(&info), AGS_VST_KAUDIO_EFFECT_CLASS) == FALSE){
+	continue;
+      }
+
+      AGS_VST3_PLUGIN(base_plugin)->icomponent = NULL;
+
+      val = ags_vst_iplugin_factory_create_instance(iplugin_factory,
+						    ags_vst_pclass_info_get_cid(&info),
+						    ags_vst_icomponent_get_iid(),
+						    (void **) &(AGS_VST3_PLUGIN(base_plugin)->icomponent));
+
+      if(val != AGS_VST_KRESULT_TRUE){
+	g_warning("failed to create VST3 instance with plugin factory");
+	
+	break;
+      }
+
+      ags_vst_icomponent_set_io_mode(AGS_VST3_PLUGIN(base_plugin)->icomponent,
+				     AGS_VST_KADVANCED);
+
+      AGS_VST3_PLUGIN(base_plugin)->host_context = ags_vst_host_context_get_instance();
+      
+      ags_vst_iplugin_base_initialize((AgsVstIPluginBase *) AGS_VST3_PLUGIN(base_plugin)->icomponent,
+				      AGS_VST3_PLUGIN(base_plugin)->host_context);
+
+
+      AGS_VST3_PLUGIN(base_plugin)->iedit_controller = NULL;
+      
+      val = ags_vst_iplugin_factory_create_instance(iplugin_factory,
+						    ags_vst_pclass_info_get_cid(&info),
+						    ags_vst_iedit_controller_get_iid(),
+						    (void **) &(AGS_VST3_PLUGIN(base_plugin)->iedit_controller));
+
+      if(val != AGS_VST_KRESULT_TRUE){
+	g_warning("failed to create VST3 instance with plugin factory");
+	
+	break;
+      }
+
+      ags_vst_iplugin_base_initialize((AgsVstIPluginBase *) AGS_VST3_PLUGIN(base_plugin)->iedit_controller,
+				      AGS_VST3_PLUGIN(base_plugin)->host_context);
+
+      break;
+    }
+
+    i_stop = ags_vst_iedit_controller_get_parameter_count(AGS_VST3_PLUGIN(base_plugin)->iedit_controller);
+
+    for(i = 0; i < i_stop; i++){
+      AgsPluginPort *current_plugin_port;
+      
+      AgsVstParameterInfo *info;
+      AgsVstParamID *id;
+      
+      guint flags;
+      gint32 step_count;
+      AgsVstParamValue default_normalized_value;
+      
+      current_plugin_port = ags_plugin_port_new();
+      g_object_ref(current_plugin_port);
+
+      g_value_init(current_plugin_port->default_value,
+		   G_TYPE_FLOAT);
+      g_value_init(current_plugin_port->lower_value,
+		   G_TYPE_FLOAT);
+      g_value_init(current_plugin_port->upper_value,
+		   G_TYPE_FLOAT);
+      
+      info = ags_vst_parameter_info_alloc();
+      
+      ags_vst_iedit_controller_get_parameter_info(AGS_VST3_PLUGIN(base_plugin)->iedit_controller,
+						  i, info);
+
+      flags = ags_vst_parameter_info_get_flags(info);
+
+      step_count = ags_vst_paramter_info_get_step_count(info);
+
+      id = ags_vst_paramter_info_get_param_id(info);
+      
+      default_normalized_value = ags_vst_paramter_info_get_default_normalized_value(info);
+
+
+      
+      if(step_count == 0){
+	/* set lower */
+	g_value_set_float(current_plugin_port->lower_value,
+			  0.0);
+	    
+	/* set upper */
+	g_value_set_float(current_plugin_port->upper_value,
+			  1.0);
+
+	/* set default */
+	g_value_set_float(current_plugin_port->default_value,
+			  ags_vst_iedit_controller_normalized_param_to_plain(AGS_VST3_PLUGIN(base_plugin)->iedit_controller,
+									     id,
+									     default_normalized_value));
+      }else if(step_count == 1){
+	/* set lower */
+	g_value_set_float(current_plugin_port->lower_value,
+			  0.0);
+	    
+	/* set upper */
+	g_value_set_float(current_plugin_port->upper_value,
+			  1.0);
+
+	/* set default */
+	current_plugin_port->flags |= AGS_PLUGIN_PORT_TOGGLED;
+
+	g_value_set_float(current_plugin_port->default_value,
+			  default_normalized_value);
+      }else{
+	/* set lower */
+	g_value_set_float(current_plugin_port->lower_value,
+			  0.0);
+	    
+	/* set upper */
+	g_value_set_float(current_plugin_port->upper_value,
+			  (gfloat) step_count);
+
+	/* set default */
+	g_value_set_float(current_plugin_port->default_value,
+			  fmin(step_count, default_normalized_value * (step_count + 1)));
+      }
+
+      
+      if((AGS_VST_KCAN_AUTOMATE & (flags)) != 0){
+	//TODO:JK: implement me
+      }
+      
+      if((AGS_VST_KIS_READ_ONLY & (flags)) != 0){
+	current_plugin_port->flags |= AGS_PLUGIN_PORT_OUTPUT;
+      }else{
+	current_plugin_port->flags |= AGS_PLUGIN_PORT_INPUT;
+      }
+      
+      if((AGS_VST_KIS_WRAP_AROUND & (flags)) != 0){	
+	//TODO:JK: implement me
+      }
+      
+      if((AGS_VST_KIS_LIST & (flags)) != 0){
+	//TODO:JK: implement me
+      }
+      
+      if((AGS_VST_KIS_HIDDEN & (flags)) != 0){
+	//TODO:JK: implement me
+      }
+      
+      if((AGS_VST_KIS_PROGRAM_CHANGE & (flags)) != 0){
+	//TODO:JK: implement me
+      }
+      
+      if((AGS_VST_KIS_BYPASS & (flags)) != 0){
+	current_plugin_port->flags |= AGS_PLUGIN_PORT_TOGGLED;
+      }      
+      
+      ags_vst_parameter_info_free(info);
+    }
+
+    ags_vst_pclass_info_free(info);
+  }
 }
 
 /**

@@ -44,6 +44,8 @@ struct _AgsVst3Plugin
 {
   AgsBasePlugin base_plugin;
 
+  gpointer get_plugin_factory;
+  
   AgsVstHostContext *host_context;
 
   AgsVstIComponent *icomponent;

@@ -24,6 +24,56 @@
 extern "C" {
 
   const AgsVstCString ags_vst_editor = "editor";
+
+  AgsVstParameterInfo* ags_vst_paramter_info_alloc()
+  {
+    return((AgsVstParameterInfo *) new Steinberg::Vst::ParameterInfo);
+  }
+
+  void ags_vst_paramter_info_free(AgsVstParameterInfo *info)
+  {
+    delete ((Steinberg::Vst::ParameterInfo *) info);
+  }
+
+  AgsVstParamID* ags_vst_paramter_info_get_param_id(AgsVstParameterInfo *info)
+  {
+    return((AgsVstParamID *) ((Steinberg::Vst::ParameterInfo *) info)->id);
+  }
+  
+  AgsVstString128* ags_vst_paramter_info_get_title(AgsVstParameterInfo *info)
+  {
+    return((AgsVstString128 *) &(((Steinberg::Vst::ParameterInfo *) info)->title));
+  }
+  
+  AgsVstString128* ags_vst_paramter_info_get_short_title(AgsVstParameterInfo *info)
+  {
+    return((AgsVstString128 *) &(((Steinberg::Vst::ParameterInfo *) info)->shortTitle));
+  }
+  
+  AgsVstString128* ags_vst_paramter_info_get_units(AgsVstParameterInfo *info)
+  {
+    return((AgsVstString128 *) &(((Steinberg::Vst::ParameterInfo *) info)->units));
+  }
+  
+  gint32 ags_vst_paramter_info_get_step_count(AgsVstParameterInfo *info)
+  {
+    return((gint32) (((Steinberg::Vst::ParameterInfo *) info)->stepCount));
+  }
+
+  AgsVstParamValue ags_vst_paramter_info_get_default_normalized_value(AgsVstParameterInfo *info)
+  {
+    return((AgsVstParamValue) (((Steinberg::Vst::ParameterInfo *) info)->defaultNormalizedValue));
+  }
+  
+  AgsVstUnitID ags_vst_paramter_info_get_unit_id(AgsVstParameterInfo *info)
+  {
+    return((AgsVstUnitID) (((Steinberg::Vst::ParameterInfo *) info)->unitId));
+  }
+  
+  guint ags_vst_paramter_info_get_flags(AgsVstParameterInfo *info)
+  {
+    return((guint) (((Steinberg::Vst::ParameterInfo *) info)->flags));
+  }
   
   const AgsVstTUID* ags_vst_icomponent_handler_get_iid()
   {
@@ -75,12 +125,10 @@ extern "C" {
   {
     return(((Steinberg::Vst::IComponentHandler2 *) icomponent_handler2)->finishGroupEdit());
   }
-  
+
   const AgsVstTUID* ags_vst_icomponent_handler_bus_activation_get_iid()
   {
-    extern const Steinberg::TUID IComponentHandlerBusActivation__iid;
-
-    return((AgsVstTUID *) (&IComponentHandlerBusActivation__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IComponentHandlerBusActivation::iid));
   }
 
   AgsVstTResult ags_vst_icomponent_handler_bus_activation_request_bus_activation(AgsVstIComponentHandlerBusActivation *icomponent_handler_bus_activation,
