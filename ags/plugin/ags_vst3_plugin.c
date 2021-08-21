@@ -21,8 +21,6 @@
 
 #include <ags/plugin/ags_plugin_port.h>
 
-#include <ags/libags-vst.h>
-
 #if defined(AGS_W32API)
 #include <windows.h>
 #else
@@ -149,7 +147,10 @@ ags_vst3_plugin_class_init(AgsVst3PluginClass *vst3_plugin)
 void
 ags_vst3_plugin_init(AgsVst3Plugin *vst3_plugin)
 {
-  //TODO:JK: implement me
+  vst3_plugin->host_context = NULL;
+
+  vst3_plugin->icomponent = NULL;
+  vst3_plugin->iedit_controller = NULL;
 }
 
 void
@@ -211,9 +212,91 @@ gpointer
 ags_vst3_plugin_instantiate(AgsBasePlugin *base_plugin,
 			    guint samplerate, guint buffer_size)
 {
-  //TODO:JK: implement me
+  AgsVstIPluginFactory *iplugin_factory;
+
+  gpointer retval;
+
+  guint i, i_stop;
   
-  return(NULL);
+  AgsVstIPluginFactory* (*GetPluginFactory)();
+  
+  GRecMutex *base_plugin_mutex;
+
+  /* get base plugin mutex */
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
+  
+  /* get instantiate */
+  g_rec_mutex_lock(base_plugin_mutex);
+
+  GetPluginFactory = base_plugin->plugin_descriptor;
+    
+  g_rec_mutex_unlock(base_plugin_mutex);
+
+  retval = NULL;
+
+  if(GetPluginFactory != NULL){    
+    AgsVstPClassInfo *info;
+
+    AgsVstTResult val;
+    
+    iplugin_factory = GetPluginFactory();
+
+    info = ags_vst_pclass_info_alloc();
+    
+    i_stop = ags_vst_iplugin_factory_count_classes(iplugin_factory);
+    
+    for(i = 0; i < i_stop; i++){
+      ags_vst_iplugin_factory_get_class_info(iplugin_factory,
+					     i, info);
+
+      if(!g_strcmp0(ags_vst_pclass_info_get_category(&info), AGS_VST_KAUDIO_EFFECT_CLASS) == FALSE){
+	continue;
+      }
+
+      AGS_VST3_PLUGIN(base_plugin)->icomponent = NULL;
+
+      val = ags_vst_iplugin_factory_create_instance(iplugin_factory,
+						    ags_vst_pclass_info_get_cid(&info),
+						    ags_vst_icomponent_get_iid(),
+						    (void **) &(AGS_VST3_PLUGIN(base_plugin)->icomponent));
+
+      if(val != AGS_VST_KRESULT_TRUE){
+	g_warning("failed to create VST3 instance with plugin factory");
+	
+	break;
+      }
+
+      ags_vst_icomponent_set_io_mode(AGS_VST3_PLUGIN(base_plugin)->icomponent,
+				     AGS_VST_KADVANCED);
+
+      AGS_VST3_PLUGIN(base_plugin)->host_context = ags_vst_host_context_get_instance();
+      
+      ags_vst_iplugin_base_initialize((AgsVstIPluginBase *) AGS_VST3_PLUGIN(base_plugin)->icomponent,
+				      AGS_VST3_PLUGIN(base_plugin)->host_context);
+
+
+      AGS_VST3_PLUGIN(base_plugin)->iedit_controller = NULL;
+      
+      val = ags_vst_iplugin_factory_create_instance(iplugin_factory,
+						    ags_vst_pclass_info_get_cid(&info),
+						    ags_vst_iedit_controller_get_iid(),
+						    (void **) &(AGS_VST3_PLUGIN(base_plugin)->iedit_controller));
+
+      if(val != AGS_VST_KRESULT_TRUE){
+	g_warning("failed to create VST3 instance with plugin factory");
+	
+	break;
+      }
+
+      ags_vst_iplugin_base_initialize((AgsVstIPluginBase *) AGS_VST3_PLUGIN(base_plugin)->iedit_controller,
+				      AGS_VST3_PLUGIN(base_plugin)->host_context);
+
+      break;
+    }    
+  }
+  
+  
+  return(retval);
 }
 
 void

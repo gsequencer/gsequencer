@@ -22,6 +22,8 @@
 #include <pluginterfaces/vst/ivsteditcontroller.h>
 
 extern "C" {
+
+  const AgsVstCString ags_vst_editor = "editor";
   
   const AgsVstTUID* ags_vst_icomponent_handler_get_iid()
   {

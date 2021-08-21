@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+#include <ags/libags-vst.h>
 
 #include <ags/plugin/ags_base_plugin.h>
 
@@ -42,6 +43,11 @@ typedef struct _AgsVst3PluginClass AgsVst3PluginClass;
 struct _AgsVst3Plugin
 {
   AgsBasePlugin base_plugin;
+
+  AgsVstHostContext *host_context;
+
+  AgsVstIComponent *icomponent;
+  AgsVstIEditController *iedit_controller;
 };
 
 struct _AgsVst3PluginClass

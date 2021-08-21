@@ -22,6 +22,12 @@
 #include <pluginterfaces/gui/iplugview.h>
 
 extern "C" {
+
+  const AgsVstFIDString ags_vst_kplatform_type_hwnd = "HWND";
+  const AgsVstFIDString ags_vst_kplatform_type_hi_view = "HIView";
+  const AgsVstFIDString ags_vst_kplatform_type_ns_view = "NSView";
+  const AgsVstFIDString ags_vst_kplatform_type_ui_view = "UIView";
+  const AgsVstFIDString ags_vst_kplatform_type_x11_embed_window_id = "X11EmbedWindowID";
   
   gint32 ags_vst_view_rect_get_width(AgsVstViewRect *view_rect)
   {

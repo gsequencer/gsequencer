@@ -44,15 +44,15 @@
 extern "C" {
 #endif
 
-  static const gint32 ags_vst_kmax_long = 0x7fffffff;
-  static const gint32 ags_vst_kmin_long = (-0x7fffffff - 1);
-  static const gint32 ags_vst_kmax_int32 = ags_vst_kmax_long;
-  static const gint32 ags_vst_kmin_int32 = ags_vst_kmin_long;
-  static const guint32 ags_vst_kmax_int32u = 0xffffffff;
+  extern const gint32 ags_vst_kmax_long;
+  extern const gint32 ags_vst_kmin_long;
+  extern const gint32 ags_vst_kmax_int32;
+  extern const gint32 ags_vst_kmin_int32;
+  extern const guint32 ags_vst_kmax_int32u;
 
-  static const gint64 ags_vst_kmax_int64 = 0x7fffffffffffffffLL;
-  static const gint64 ags_vst_kmin_int64 = (-0x7fffffffffffffffLL-1);
-  static const guint64 ags_vst_kmax_int64u = (guint64) (0xffffffff) | ((guint64) (0xffffffff) << 32);
+  extern const gint64 ags_vst_kmax_int64;
+  extern const gint64 ags_vst_kmin_int64;
+  extern const guint64 ags_vst_kmax_int64u;
   
   typedef gint64 AgsVstTSize;
   typedef gint32 AgsVstTResult;
@@ -63,8 +63,8 @@ extern "C" {
   typedef guint32 AgsVstTPtrInt;
 #endif  
   
-  static const float ags_vst_kmax_float = 3.40282346638528860E38;
-  static const double ags_vst_kmax_double = 1.7976931348623158E308;
+  extern const float ags_vst_kmax_float;
+  extern const double ags_vst_kmax_double;
 
 #ifdef AGS_VST_UNICODE
   typedef gunichar2 ags_vst_tchar;
@@ -81,23 +81,23 @@ extern "C" {
 
   typedef const gchar* AgsVstFIDString;
 
-  const AgsVstFIDString ags_vst_kplatform_string_win = "WIN";
-  const AgsVstFIDString ags_vst_kplatform_string_mac = "MAC";
-  const AgsVstFIDString ags_vst_kplatform_string_ios = "IOS";
-  const AgsVstFIDString ags_vst_kplatform_string_linux = "Linux";
+  extern const AgsVstFIDString ags_vst_kplatform_string_win;
+  extern const AgsVstFIDString ags_vst_kplatform_string_mac;
+  extern const AgsVstFIDString ags_vst_kplatform_string_ios;
+  extern const AgsVstFIDString ags_vst_kplatform_string_linux;
 #if SMTG_OS_WINDOWS
-  const AgsVstFIDString ags_vst_kplatform_string = ags_vst_kplatform_string_win;
+  extern const AgsVstFIDString ags_vst_kplatform_string;
 #elif SMTG_OS_IOS
-  const AgsVstFIDString ags_vst_kplatform_string = ags_vst_kplatform_string_ios;
+  extern const AgsVstFIDString ags_vst_kplatform_string;
 #elif SMTG_OS_MACOS
-  const AgsVstFIDString ags_vst_kplatform_string = ags_vst_kplatform_string_mac;
+  extern const AgsVstFIDString ags_vst_kplatform_string;
 #elif SMTG_OS_LINUX
-  const AgsVstFIDString ags_vst_kplatform_string = ags_vst_kplatform_string_linux;
+  extern const AgsVstFIDString ags_vst_kplatform_string;
 #endif
 
   typedef gint32 AgsVstUCoord;
-  static const AgsVstUCoord ags_vst_kmax_coord = ((AgsVstUCoord) 0x7FFFFFFF);
-  static const AgsVstUCoord ags_vst_kmin_coord = ((AgsVstUCoord) -0x7FFFFFFF);
+  extern const AgsVstUCoord ags_vst_kmax_coord;
+  extern const AgsVstUCoord ags_vst_kmin_coord;
   
 #ifdef __cplusplus
 }

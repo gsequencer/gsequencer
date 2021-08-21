@@ -27,16 +27,16 @@
 extern "C" {
 #endif
   
-  const gchar *ags_vst_kcomp_gain_reduction = "Comp:GainReduction";
-  const gchar *ags_vst_kcomp_gain_reduction_max = "Comp:GainReductionMax";
-  const gchar *ags_vst_kcomp_gain_reduction_peak_hold = "Comp:GainReductionPeakHold";
-  const gchar *ags_vst_kcomp_reset_gain_reduction_max = "Comp:ResetGainReductionMax";
+  extern const gchar *ags_vst_kcomp_gain_reduction;
+  extern const gchar *ags_vst_kcomp_gain_reduction_max;
+  extern const gchar *ags_vst_kcomp_gain_reduction_peak_hold;
+  extern const gchar *ags_vst_kcomp_reset_gain_reduction_max;
 
-  const gchar *ags_vst_klow_latency_mode = "LowLatencyMode";
+  extern const gchar *ags_vst_klow_latency_mode;
 
-  const gchar *ags_vst_kdry_wet_mix = "DryWetMix";
+  extern const gchar *ags_vst_kdry_wet_mix;
 
-  const gchar *ags_vst_krandomize = "Randomize";
+  extern const gchar *ags_vst_krandomize;
 
   typedef struct IParameterFunctionName AgsVstIParameterFunctionName;
   

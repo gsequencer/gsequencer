@@ -2854,6 +2854,7 @@ deprecated_libags_vst_h_sources =
 
 libags_vst_h_sources = \
 	$(deprecated_libags_vst_h_sources) \
+	ags/vst3-capi/host/ags_vst_host_context.h \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.h \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h \
@@ -2879,6 +2880,7 @@ libags_vst_h_sources = \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_irepresentation.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iunits.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.h \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_preset_keys.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_speaker.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_icloneable.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_geo_constants.h \
@@ -2899,7 +2901,6 @@ libags_vst_h_sources = \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ustring.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ucolor_spec.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_keycodes.h \
-	ags/vst3-capi/pluginterfaces/vst/ags_vst_preset_keys.h \
 	ags/vst3-capi/util/ags_vst_string_util.h \
 	ags/vst3-capi/base/source/ags_vst_fbuffer.h \
 	ags/vst3-capi/base/source/ags_vst_fobject.h \
@@ -2916,6 +2917,7 @@ deprecated_libags_vst_c_sources =
 
 libags_vst_c_sources = \
 	$(deprecated_libags_vst_c_sources) \
+	ags/vst3-capi/host/ags_vst_host_context.cpp \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.cpp \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iattributes.cpp \
@@ -2939,6 +2941,7 @@ libags_vst_c_sources = \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iunits.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_speaker.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_preset_keys.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_icloneable.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_geo_constants.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ierror_context.cpp \

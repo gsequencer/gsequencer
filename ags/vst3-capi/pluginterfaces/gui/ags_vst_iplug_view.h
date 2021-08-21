@@ -35,11 +35,11 @@ extern "C" {
   typedef struct ITimerHandler AgsVstITimerHandler;
   typedef struct IRunLoop AgsVstIRunLoop;
 
-  const AgsVstFIDString ags_vst_kplatform_type_hwnd = "HWND";
-  const AgsVstFIDString ags_vst_kplatform_type_hi_view = "HIView";
-  const AgsVstFIDString ags_vst_kplatform_type_ns_view = "NSView";
-  const AgsVstFIDString ags_vst_kplatform_type_ui_view = "UIView";
-  const AgsVstFIDString ags_vst_kplatform_type_x11_embed_window_id = "X11EmbedWindowID";
+  extern const AgsVstFIDString ags_vst_kplatform_type_hwnd;
+  extern const AgsVstFIDString ags_vst_kplatform_type_hi_view;
+  extern const AgsVstFIDString ags_vst_kplatform_type_ns_view;
+  extern const AgsVstFIDString ags_vst_kplatform_type_ui_view;
+  extern const AgsVstFIDString ags_vst_kplatform_type_x11_embed_window_id;
   
   gint32 ags_vst_view_rect_get_width(AgsVstViewRect *view_rect);
   gint32 ags_vst_view_rect_get_height(AgsVstViewRect *view_rect);

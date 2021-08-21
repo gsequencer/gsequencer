@@ -22,6 +22,17 @@
 #include <pluginterfaces/vst/ivstparameterfunctionname.h>
 
 extern "C" {
+
+  const gchar *ags_vst_kcomp_gain_reduction = "Comp:GainReduction";
+  const gchar *ags_vst_kcomp_gain_reduction_max = "Comp:GainReductionMax";
+  const gchar *ags_vst_kcomp_gain_reduction_peak_hold = "Comp:GainReductionPeakHold";
+  const gchar *ags_vst_kcomp_reset_gain_reduction_max = "Comp:ResetGainReductionMax";
+
+  const gchar *ags_vst_klow_latency_mode = "LowLatencyMode";
+
+  const gchar *ags_vst_kdry_wet_mix = "DryWetMix";
+
+  const gchar *ags_vst_krandomize = "Randomize";
       
   const AgsVstTUID* ags_vst_iparameter_function_name_get_iid()
   {

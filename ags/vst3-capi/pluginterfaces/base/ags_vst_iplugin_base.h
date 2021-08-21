@@ -58,7 +58,7 @@ extern "C" {
     AGS_VST_KUNICODE                        = 1 << 4
   }AgsVstFactoryFlags;
   
-  enum {
+  enum{
     AGS_VST_KURL_SIZE   = 256,
     AGS_VST_KEMAIL_SIZE = 128,
     AGS_VST_KNAME_SIZE  = 64
@@ -70,6 +70,14 @@ extern "C" {
 
   AgsVstTResult ags_vst_iplugin_base_terminate(AgsVstIPluginBase *iplugin_base);
 
+  AgsVstPClassInfo* ags_vst_pclass_info_alloc();
+  void ags_vst_pclass_info_free(AgsVstPClassInfo *info);
+
+  AgsVstTUID* ags_vst_pclass_info_get_cid(AgsVstPClassInfo *info);
+  gint32 ags_vst_pclass_info_get_cardinality(AgsVstPClassInfo *info);
+  gchar* ags_vst_pclass_info_get_category(AgsVstPClassInfo *info);
+  gchar* ags_vst_pclass_info_get_name(AgsVstPClassInfo *info);
+  
   const AgsVstTUID* ags_vst_iplugin_factory_get_iid();
 
   AgsVstTResult ags_vst_iplugin_factory_get_factory_info(AgsVstIPluginFactory *iplugin_factory,

@@ -23,6 +23,47 @@
 
 extern "C" {
 
+  const AgsVstCString ags_vst_kfx_analyzer               = "Fx|Analyzer";
+  const AgsVstCString ags_vst_kfx_delay                  = "Fx|Delay";
+  const AgsVstCString ags_vst_kfx_distortion             = "Fx|Distortion";
+  const AgsVstCString ags_vst_kfx_dynamics               = "Fx|Dynamics";
+  const AgsVstCString ags_vst_kfx_eq                     = "Fx|EQ";
+  const AgsVstCString ags_vst_kfx_filter                 = "Fx|Filter";
+  const AgsVstCString ags_vst_kfx                        = "Fx";
+  const AgsVstCString ags_vst_kfx_instrument             = "Fx|Instrument";
+  const AgsVstCString ags_vst_kfx_instrument_external    = "Fx|Instrument|External";
+  const AgsVstCString ags_vst_kfx_spatial                = "Fx|Spatial";
+  const AgsVstCString ags_vst_kfx_generator              = "Fx|Generator";
+  const AgsVstCString ags_vst_kfx_mastering              = "Fx|Mastering";
+  const AgsVstCString ags_vst_kfx_modulation             = "Fx|Modulation";
+  const AgsVstCString ags_vst_kfx_pitch_shift            = "Fx|Pitch Shift";
+  const AgsVstCString ags_vst_kfx_restoration            = "Fx|Restoration";
+  const AgsVstCString ags_vst_kfx_reverb                 = "Fx|Reverb";
+  const AgsVstCString ags_vst_kfx_surround               = "Fx|Surround";
+  const AgsVstCString ags_vst_kfx_tools                  = "Fx|Tools";
+  const AgsVstCString ags_vst_kfx_network                = "Fx|Network";
+  const AgsVstCString ags_vst_kinstrument                = "Instrument";
+  const AgsVstCString ags_vst_kinstrument_drum           = "Instrument|Drum";
+  const AgsVstCString ags_vst_kinstrument_external       = "Instrument|External";
+  const AgsVstCString ags_vst_kinstrument_piano          = "Instrument|Piano";
+  const AgsVstCString ags_vst_kinstrument_sampler        = "Instrument|Sampler";
+  const AgsVstCString ags_vst_kinstrument_synth          = "Instrument|Synth";
+  const AgsVstCString ags_vst_kinstrument_synth_sampler  = "Instrument|Synth|Sampler";
+  const AgsVstCString ags_vst_kspatial                   = "Spatial";
+  const AgsVstCString ags_vst_kspatial_fx                = "Spatial|Fx";
+  const AgsVstCString ags_vst_konly_real_time            = "OnlyRT";
+  const AgsVstCString ags_vst_konly_offline_process      = "OnlyOfflineProcess";
+  const AgsVstCString ags_vst_konly_ara                  = "OnlyARA";
+  
+  const AgsVstCString ags_vst_kno_offline_process        = "NoOfflineProcess";
+  const AgsVstCString ags_vst_kup_down_mix               = "Up-Downmix";
+  const AgsVstCString ags_vst_kanalyzer                  = "Analyzer";
+  const AgsVstCString ags_vst_kambisonics                = "Ambisonics";
+
+  const AgsVstCString ags_vst_kmono                      = "Mono";
+  const AgsVstCString ags_vst_kstereo                    = "Stereo";
+  const AgsVstCString ags_vst_ksurround                  = "Surround";
+
   const AgsVstTUID* ags_vst_iaudio_processor_get_iid()
   {
     extern const Steinberg::TUID IAudioProcessor__iid;

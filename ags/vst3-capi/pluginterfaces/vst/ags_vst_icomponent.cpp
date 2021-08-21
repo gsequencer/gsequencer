@@ -23,6 +23,8 @@
 
 extern "C" {
 
+  const gint32 ags_vst_kdefault_factory_flags = AGS_VST_KUNICODE;
+
   const AgsVstTUID* ags_vst_icomponent_get_iid()
   {
     extern const Steinberg::TUID IComponent__iid;

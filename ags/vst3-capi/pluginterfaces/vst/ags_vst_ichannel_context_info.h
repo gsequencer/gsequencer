@@ -41,17 +41,17 @@ extern "C" {
   typedef guint32 AgsVstColorSpec;
   typedef guint8 AgsVstColorComponent;
 
-  const AgsVstCString AGS_VST_KCHANNEL_UID_KEY = "channel uid";
-  const AgsVstCString AGS_VST_KCHANNEL_UID_LENGTH_KEY = "channel uid length";
-  const AgsVstCString AGS_VST_KCHANNEL_NAME_KEY = "channel name";
-  const AgsVstCString AGS_VST_KCHANNEL_NAME_LENGTH_KEY = "channel name length";
-  const AgsVstCString AGS_VST_KCHANNEL_COLOR_KEY = "channel color";
-  const AgsVstCString AGS_VST_KCHANNEL_INDEX_KEY = "channel index";
-  const AgsVstCString AGS_VST_KCHANNEL_INDEX_NAMESPACE_ORDER_KEY = "channel index namespace order";
-  const AgsVstCString AGS_VST_KCHANNEL_INDEX_NAMESPACE_KEY = "channel index namespace";
-  const AgsVstCString AGS_VST_KCHANNEL_INDEX_NAMESPACE_LENGTH_KEY = "channel index namespace length";
-  const AgsVstCString AGS_VST_KCHANNEL_IMAGE_KEY = "channel image";
-  const AgsVstCString AGS_VST_KCHANNEL_PLUGIN_LOCATION_KEY = "channel plugin location";
+  extern const AgsVstCString AGS_VST_KCHANNEL_UID_KEY;
+  extern const AgsVstCString AGS_VST_KCHANNEL_UID_LENGTH_KEY;
+  extern const AgsVstCString AGS_VST_KCHANNEL_NAME_KEY;
+  extern const AgsVstCString AGS_VST_KCHANNEL_NAME_LENGTH_KEY;
+  extern const AgsVstCString AGS_VST_KCHANNEL_COLOR_KEY;
+  extern const AgsVstCString AGS_VST_KCHANNEL_INDEX_KEY;
+  extern const AgsVstCString AGS_VST_KCHANNEL_INDEX_NAMESPACE_ORDER_KEY;
+  extern const AgsVstCString AGS_VST_KCHANNEL_INDEX_NAMESPACE_KEY;
+  extern const AgsVstCString AGS_VST_KCHANNEL_INDEX_NAMESPACE_LENGTH_KEY;
+  extern const AgsVstCString AGS_VST_KCHANNEL_IMAGE_KEY;
+  extern const AgsVstCString AGS_VST_KCHANNEL_PLUGIN_LOCATION_KEY;
   
   const AgsVstTUID* ags_vst_iinfo_listener_get_iid();
 

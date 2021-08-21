@@ -61,7 +61,7 @@ extern "C" {
     AGS_VST_KIS_BYPASS                = 1 << 16
   }AgsVstParameterFlags;
 
-  const AgsVstCString ags_vst_editor = "editor";
+  extern const AgsVstCString ags_vst_editor;
 
   typedef enum
   {
