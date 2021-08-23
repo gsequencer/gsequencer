@@ -592,6 +592,8 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
     }
 
     ags_vst_pclass_info_free(info);
+
+    base_plugin->plugin_port = g_list_reverse(plugin_port);
   }
 }
 

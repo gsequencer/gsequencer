@@ -25,6 +25,8 @@
 
 #include <pluginterfaces/vst/ivsthostapplication.h>
 
+#include <base/source/updatehandler.cpp>
+
 using namespace Steinberg;
 
 extern "C" {
@@ -36,18 +38,49 @@ extern "C" {
       class HostContext : public Steinberg::Vst::IHostApplication
       {
       public:
-	HostContext();
-	virtual ~HostContext() { FUNKNOWN_DTOR }
-      
-	tresult PLUGIN_API getName(Steinberg::Vst::String128 name) SMTG_OVERRIDE;
-	tresult PLUGIN_API createInstance(TUID cid, TUID _iid, void** obj) SMTG_OVERRIDE;
+	Steinberg::Vst::String128 name;
+	
+	HostContext(){
+	  //TODO:JK: implement me
+	}
 
-	DECLARE_FUNKNOWN_METHODS
+	~HostContext(){
+	  //TODO:JK: implement me
+	}
+	
+	Steinberg::tresult getName(Steinberg::Vst::String128){
+	  //TODO:JK: implement me	  
+	  
+	  return(0);
+	}
 
-	Steinberg::Vst::PlugInterfaceSupport* getPlugInterfaceSupport() const { return mPlugInterfaceSupport; }
+	Steinberg::tresult createInstance(TUID cid,
+					  TUID iid,
+					  void **obj){
+	  //TODO:JK: implement me
+	}
 
-      protected:
-	IPtr<Steinberg::Vst::PlugInterfaceSupport> mPlugInterfaceSupport;
+	Steinberg::Vst::PlugInterfaceSupport* getPlugInterfaceSupport(){
+	  //TODO:JK: implement me
+	}
+
+	tresult queryInterface(const TUID _iid, void **obj){
+	  //TODO:JK: implement me
+
+	  return(0);
+	}
+ 
+	uint32 addRef(){
+	  //TODO:JK: implement me
+
+	  return(0);
+	}
+	
+	uint32 release(){
+	  //TODO:JK: implement me
+
+	  return(0);
+	}
       };
     }
   }
@@ -57,7 +90,7 @@ extern "C" {
   AgsVstHostContext* ags_vst_host_context_get_instance()
   {
     if(host_context == NULL){
-//      host_context = new Ags::Vst::HostContext();
+      host_context = new Ags::Vst::HostContext();
     }
     
     return((AgsVstHostContext *) host_context);
@@ -65,7 +98,7 @@ extern "C" {
 
   AgsVstHostContext* ags_vst_host_context_new()
   {
-//    return((AgsVstHostContext *) new Ags::Vst::HostContext());
+    return((AgsVstHostContext *) new Ags::Vst::HostContext());
   }
 
 }
