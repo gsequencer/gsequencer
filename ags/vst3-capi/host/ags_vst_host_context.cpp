@@ -27,37 +27,37 @@
 
 using namespace Steinberg;
 
-namespace Ags
-{
-  namespace Vst
-  {
-    class HostContext : public Steinberg::Vst::IHostApplication
-    {
-    public:
-      HostContext();
-      virtual ~HostContext() { FUNKNOWN_DTOR }
-      
-      tresult PLUGIN_API getName(Steinberg::Vst::String128 name) SMTG_OVERRIDE;
-      tresult PLUGIN_API createInstance(TUID cid, TUID _iid, void** obj) SMTG_OVERRIDE;
-
-      DECLARE_FUNKNOWN_METHODS
-
-      Steinberg::Vst::PlugInterfaceSupport* getPlugInterfaceSupport() const { return mPlugInterfaceSupport; }
-
-    protected:
-      IPtr<Steinberg::Vst::PlugInterfaceSupport> mPlugInterfaceSupport;
-    };
-  }
-}
-
-Ags::Vst::HostContext *host_context = NULL;
-
 extern "C" {
+
+  namespace Ags
+  {
+    namespace Vst
+    {
+      class HostContext : public Steinberg::Vst::IHostApplication
+      {
+      public:
+	HostContext();
+	virtual ~HostContext() { FUNKNOWN_DTOR }
+      
+	tresult PLUGIN_API getName(Steinberg::Vst::String128 name) SMTG_OVERRIDE;
+	tresult PLUGIN_API createInstance(TUID cid, TUID _iid, void** obj) SMTG_OVERRIDE;
+
+	DECLARE_FUNKNOWN_METHODS
+
+	Steinberg::Vst::PlugInterfaceSupport* getPlugInterfaceSupport() const { return mPlugInterfaceSupport; }
+
+      protected:
+	IPtr<Steinberg::Vst::PlugInterfaceSupport> mPlugInterfaceSupport;
+      };
+    }
+  }
+
+  Ags::Vst::HostContext *host_context = NULL;
 
   AgsVstHostContext* ags_vst_host_context_get_instance()
   {
     if(host_context == NULL){
-      host_context = new Ags::Vst::HostContext();
+//      host_context = new Ags::Vst::HostContext();
     }
     
     return((AgsVstHostContext *) host_context);
@@ -65,7 +65,7 @@ extern "C" {
 
   AgsVstHostContext* ags_vst_host_context_new()
   {
-    return((AgsVstHostContext *) new Ags::Vst::HostContext());
+//    return((AgsVstHostContext *) new Ags::Vst::HostContext());
   }
 
 }

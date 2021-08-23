@@ -84,25 +84,25 @@ extern "C" {
     AGS_VST_KLINEAR_MODE
   }AgsVstKnobModes;
 
-  AgsVstParameterInfo* ags_vst_paramter_info_alloc();
+  AgsVstParameterInfo* ags_vst_parameter_info_alloc();
 
-  void ags_vst_paramter_info_free(AgsVstParameterInfo *info);
+  void ags_vst_parameter_info_free(AgsVstParameterInfo *info);
 
-  AgsVstParamID* ags_vst_paramter_info_get_param_id(AgsVstParameterInfo *info);
+  AgsVstParamID* ags_vst_parameter_info_get_param_id(AgsVstParameterInfo *info);
   
-  AgsVstString128* ags_vst_paramter_info_get_title(AgsVstParameterInfo *info);
+  AgsVstString128* ags_vst_parameter_info_get_title(AgsVstParameterInfo *info);
   
-  AgsVstString128* ags_vst_paramter_info_get_short_title(AgsVstParameterInfo *info);
+  AgsVstString128* ags_vst_parameter_info_get_short_title(AgsVstParameterInfo *info);
   
-  AgsVstString128* ags_vst_paramter_info_get_units(AgsVstParameterInfo *info);
+  AgsVstString128* ags_vst_parameter_info_get_units(AgsVstParameterInfo *info);
   
-  gint32 ags_vst_paramter_info_get_step_count(AgsVstParameterInfo *info);
+  gint32 ags_vst_parameter_info_get_step_count(AgsVstParameterInfo *info);
 
-  AgsVstParamValue ags_vst_paramter_info_get_default_normalized_value(AgsVstParameterInfo *info);
+  AgsVstParamValue ags_vst_parameter_info_get_default_normalized_value(AgsVstParameterInfo *info);
   
-  AgsVstUnitID ags_vst_paramter_info_get_unit_id(AgsVstParameterInfo *info);
+  AgsVstUnitID ags_vst_parameter_info_get_unit_id(AgsVstParameterInfo *info);
   
-  guint ags_vst_paramter_info_get_flags(AgsVstParameterInfo *info);
+  guint ags_vst_parameter_info_get_flags(AgsVstParameterInfo *info);
   
   const AgsVstTUID* ags_vst_icomponent_handler_get_iid();
 

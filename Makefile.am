@@ -2900,18 +2900,19 @@ libags_vst_h_sources = \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_smart_pointer.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ustring.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ucolor_spec.h \
-	ags/vst3-capi/pluginterfaces/base/ags_vst_keycodes.h \
-	ags/vst3-capi/util/ags_vst_string_util.h \
-	ags/vst3-capi/base/source/ags_vst_fbuffer.h \
-	ags/vst3-capi/base/source/ags_vst_fobject.h \
-	ags/vst3-capi/base/source/ags_vst_fstring.h \
-	ags/vst3-capi/public.sdk/source/common/ags_vst_plugin_view.h \
-	ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.h \
-	ags/vst3-capi/public.sdk/source/vst/ags_vst_component.h \
-	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.h \
-	ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.h \
-	ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.h \
-	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.h
+	ags/vst3-capi/pluginterfaces/base/ags_vst_keycodes.h
+
+#	ags/vst3-capi/util/ags_vst_string_util.h
+#	ags/vst3-capi/base/source/ags_vst_fbuffer.h \
+#	ags/vst3-capi/base/source/ags_vst_fobject.h \
+#	ags/vst3-capi/base/source/ags_vst_fstring.h
+#	ags/vst3-capi/public.sdk/source/common/ags_vst_plugin_view.h
+#	ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.h
+#	ags/vst3-capi/public.sdk/source/vst/ags_vst_component.h
+#	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.h
+#	ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.h
+#	ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.h
+#	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.h
 
 deprecated_libags_vst_c_sources =
 
@@ -2958,18 +2959,19 @@ libags_vst_c_sources = \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_iupdate_handler.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ustring.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ucolor_spec.cpp \
-	ags/vst3-capi/pluginterfaces/base/ags_vst_keycodes.cpp \
-	ags/vst3-capi/util/ags_vst_string_util.cpp \
-	ags/vst3-capi/base/source/ags_vst_fbuffer.cpp \
-	ags/vst3-capi/base/source/ags_vst_fobject.cpp \
-	ags/vst3-capi/base/source/ags_vst_fstring.cpp \
-	ags/vst3-capi/public.sdk/source/common/ags_vst_plugin_view.cpp \
-	ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.cpp \
-	ags/vst3-capi/public.sdk/source/vst/ags_vst_component.cpp \
-	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp \
-	ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp \
-	ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.cpp \
-	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp
+	ags/vst3-capi/pluginterfaces/base/ags_vst_keycodes.cpp
+
+#	ags/vst3-capi/util/ags_vst_string_util.cpp 
+#	ags/vst3-capi/base/source/ags_vst_fbuffer.cpp
+#	ags/vst3-capi/base/source/ags_vst_fobject.cpp
+#	ags/vst3-capi/base/source/ags_vst_fstring.cpp
+#	ags/vst3-capi/public.sdk/source/common/ags_vst_plugin_view.cpp
+#	ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.cpp
+#	ags/vst3-capi/public.sdk/source/vst/ags_vst_component.cpp
+#	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp
+#	ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp
+#	ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.cpp
+#	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp
 
 # gsequencer all files
 gsequencerheaders = \

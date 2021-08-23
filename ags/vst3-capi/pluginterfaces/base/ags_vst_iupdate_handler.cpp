@@ -57,5 +57,4 @@ extern "C" {
   {
     ((Steinberg::IDependent *) idependent)->update((Steinberg::FUnknown*) changed_funknown, message);
   }
-  
 }

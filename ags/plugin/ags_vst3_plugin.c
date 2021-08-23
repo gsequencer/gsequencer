@@ -345,8 +345,10 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
   gpointer retval;
 
   guint i, i_stop;
-  gboolean success;
-  
+  gboolean success;  
+
+  GError *error;
+
   AgsVstIPluginFactory* (*GetPluginFactory)();
   
   GRecMutex *base_plugin_mutex;
@@ -471,6 +473,9 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
       current_plugin_port = ags_plugin_port_new();
       g_object_ref(current_plugin_port);
 
+      plugin_port = g_list_prepend(plugin_port,
+				   current_plugin_port);
+
       g_value_init(current_plugin_port->default_value,
 		   G_TYPE_FLOAT);
       g_value_init(current_plugin_port->lower_value,
@@ -485,14 +490,25 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
       flags = ags_vst_parameter_info_get_flags(info);
 
-      step_count = ags_vst_paramter_info_get_step_count(info);
+      step_count = ags_vst_parameter_info_get_step_count(info);
 
-      id = ags_vst_paramter_info_get_param_id(info);
+      id = ags_vst_parameter_info_get_param_id(info);
       
-      default_normalized_value = ags_vst_paramter_info_get_default_normalized_value(info);
+      current_plugin_port->port_index = i;
 
+      error = NULL;
+      current_plugin_port->port_name = g_utf16_to_utf8(ags_vst_parameter_info_get_title(info),
+						       128,
+						       NULL,
+						       NULL,
+						       &error);
 
+      if(error != NULL){
+	g_warning("%s", error->message);
+      }
       
+      default_normalized_value = ags_vst_parameter_info_get_default_normalized_value(info);
+
       if(step_count == 0){
 	/* set lower */
 	g_value_set_float(current_plugin_port->lower_value,
@@ -507,6 +523,8 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 			  ags_vst_iedit_controller_normalized_param_to_plain(AGS_VST3_PLUGIN(base_plugin)->iedit_controller,
 									     id,
 									     default_normalized_value));
+	
+	current_plugin_port->scale_steps = -1;
       }else if(step_count == 1){
 	/* set lower */
 	g_value_set_float(current_plugin_port->lower_value,
@@ -521,6 +539,8 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
 	g_value_set_float(current_plugin_port->default_value,
 			  default_normalized_value);
+	
+	current_plugin_port->scale_steps = step_count;
       }else{
 	/* set lower */
 	g_value_set_float(current_plugin_port->lower_value,
@@ -533,6 +553,8 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	/* set default */
 	g_value_set_float(current_plugin_port->default_value,
 			  fmin(step_count, default_normalized_value * (step_count + 1)));
+	
+	current_plugin_port->scale_steps = step_count;
       }
 
       
