@@ -2,7 +2,7 @@ ags (3.10.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: stripped unneeded code from utility functions
-	* fixed libags-vst3 compiler errors
+	* fixed libags-vst3 compiler and linker errors
 
 ags (3.10.1)
 

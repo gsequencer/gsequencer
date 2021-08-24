@@ -19,7 +19,7 @@
 
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iautomation_state.h>
 
-#include <pluginterfaces/vst/ivstautomationstate.h>
+#include <ags/vst3-capi/ags_vst_headers.h>
 
 extern "C" {
   

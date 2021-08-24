@@ -22,8 +22,7 @@
 
 #include <glib.h>
 
-#include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
-
+#include <ags/libags-vst.h>
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h>
 
 #ifdef __cplusplus

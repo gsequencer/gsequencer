@@ -776,6 +776,7 @@ libags_vst_sources = files()
 if get_option('vst3')
 
   libags_vst_sources += files(
+    'vst3-capi/host/ags_vst_host_context.cpp',
     'vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.cpp',
     'vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.cpp',
     'vst3-capi/pluginterfaces/base/ags_vst_geo_constants.cpp',
@@ -796,6 +797,7 @@ if get_option('vst3')
     'vst3-capi/pluginterfaces/base/ags_vst_ierror_context.cpp',
     'vst3-capi/pluginterfaces/base/ags_vst_fvariant.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_iaudio_processor.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iautomation_state.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_iattributes.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_ichannel_context_info.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_icomponent.cpp',
@@ -1914,6 +1916,10 @@ libags_audio_audio_wasapi_headers = [
 libags_audio_headers = libags_audio_plugin_headers + libags_audio_audio_headers + libags_audio_audio_audio_unit_headers + libags_audio_audio_core_audio_headers + libags_audio_audio_file_headers + libags_audio_audio_fx_headers + libags_audio_audio_gstreamer_headers + libags_audio_audio_jack_headers + libags_audio_audio_midi_headers + libags_audio_audio_osc_headers + libags_audio_audio_pulse_headers + libags_audio_audio_recall_headers + libags_audio_audio_task_headers
 
 if get_option('vst3')
+  libags_vst_host_headers = [
+    'vst3-capi/host/ags_vst_host_context.h'
+  ]
+
   libags_vst_pluginterfaces_gui_headers = [
     'vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.h',
     'vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.h'
@@ -1944,7 +1950,8 @@ if get_option('vst3')
   libags_vst_pluginterfaces_vst_headers = [
     'vst3-capi/pluginterfaces/vst/ags_vst_iattributes.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_iaudio_processor.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_ichannel_cotext_info.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iautomation_state.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_ichannel_context_info.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_icontext_menu.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_ievents.h',
@@ -1966,7 +1973,7 @@ if get_option('vst3')
     'vst3-capi/pluginterfaces/vst/ags_vst_iunits.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_speaker.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_types.h',
-    'ags/vst3-capi/pluginterfaces/vst/ags_vst_preset_keys.h'
+    'vst3-capi/pluginterfaces/vst/ags_vst_preset_keys.h'
   ]
 
   libags_vst_public_sdk_source_common_headers = [
@@ -1992,7 +1999,7 @@ if get_option('vst3')
     'vst3-capi/util/ags_vst_string_util.h'
   ]
 
-  libags_vst_headers = libags_vst_pluginterfaces_gui_headers + libags_vst_pluginterfaces_base_headers + libags_vst_pluginterfaces_vst_headers + libags_vst_public_sdk_source_common_headers + libags_vst_public_sdk_source_vst_headers + libags_vst_base_source_headers + libags_vst_util_headers
+  libags_vst_headers = libags_vst_host_headers + libags_vst_pluginterfaces_gui_headers + libags_vst_pluginterfaces_base_headers + libags_vst_pluginterfaces_vst_headers + libags_vst_public_sdk_source_common_headers + libags_vst_public_sdk_source_vst_headers + libags_vst_base_source_headers + libags_vst_util_headers
 
   install_headers(libags_vst_pluginterfaces_gui_headers, install_dir: gsequencer_includedir / 'ags/vst3-capi/pluginterfaces/gui/')
   install_headers(libags_vst_pluginterfaces_base_headers, install_dir: gsequencer_includedir / 'ags/vst3-capi/pluginterfaces/base/')

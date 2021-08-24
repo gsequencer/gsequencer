@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.10.1],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.10.2],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -34,142 +34,142 @@ AC_ARG_VAR(LIBAGS_GUI_API_DIR, install path of Libags-gui API Reference Manual)
 AC_ARG_VAR(LIBGSEQUENCER_API_DIR, install path of Libgsequencer API Reference Manual)
 
 AC_ARG_ENABLE(public-libgsequencer, [AS_HELP_STRING([--enable-public-libgsequencer],
-					            [provide public libgsequencer (default is yes)])],
-	      [],
-	      [enable_public_libgsequencer=yes])
+                                                    [provide public libgsequencer (default is yes)])],
+              [],
+              [enable_public_libgsequencer=yes])
 
 AC_ARG_ENABLE(upstream-gtk-doc, [AS_HELP_STRING([--enable-upstream-gtk-doc],
-					        [put API reference manual in upstream dedicated directory (default is yes)])],
-	      [],
-	      [enable_upstream_gtk_doc=yes])
+                                                [put API reference manual in upstream dedicated directory (default is yes)])],
+              [],
+              [enable_upstream_gtk_doc=yes])
 
 AC_ARG_ENABLE(single-docdir, [AS_HELP_STRING([--enable-single-docdir],
-			     	             [put API reference manual in upstream dedicated directory (default is no)])],
-	      [],
-	      [enable_single_docdir=no])
+                                             [put API reference manual in upstream dedicated directory (default is no)])],
+              [],
+              [enable_single_docdir=no])
 
 AC_ARG_ENABLE(strip-rt-events, [AS_HELP_STRING([--enable-strip-rt-events],
-					       [strip rt events (default is yes)])],
-	      [],
-	      [enable_strip_rt_events=yes])
+                                               [strip rt events (default is yes)])],
+              [],
+              [enable_strip_rt_events=yes])
 
 AC_ARG_ENABLE(rt, [AS_HELP_STRING([--enable-rt],
-			          [enable rt (default is yes)])],
-	      [],
-	      [enable_rt=yes])
+                                  [enable rt (default is yes)])],
+              [],
+              [enable_rt=yes])
 
 AC_ARG_ENABLE(w32api, [AS_HELP_STRING([--enable-w32api],
-		      		      [enable w32 API (default is no)])],
-	      [],
-	      [enable_w32api=no])
+                                      [enable w32 API (default is no)])],
+              [],
+              [enable_w32api=no])
 
 AC_ARG_ENABLE(osxapi, [AS_HELP_STRING([--enable-osxapi],
-		      		      [enable OS X API (default is no)])],
-	      [],
-	      [enable_osxapi=no])
+                                      [enable OS X API (default is no)])],
+              [],
+              [enable_osxapi=no])
 
 AC_ARG_ENABLE(alsa, [AS_HELP_STRING([--enable-alsa],
-				    [enable alsa (default is yes)])],
-	      [],
-	      [enable_alsa=yes])
+                                    [enable alsa (default is yes)])],
+              [],
+              [enable_alsa=yes])
 
 AC_ARG_ENABLE(alsa-compat, [AS_HELP_STRING([--enable-alsa-compat],
-				    [enable alsa compatibility library (default is no)])],
-	      [],
-	      [enable_alsa_compat=no])
+                                    [enable alsa compatibility library (default is no)])],
+              [],
+              [enable_alsa_compat=no])
 
 AC_ARG_ENABLE(oss, [AS_HELP_STRING([--enable-oss],
-				   [enable oss (default is no)])],
-	      [],
-	      [enable_oss=no])
+                                   [enable oss (default is no)])],
+              [],
+              [enable_oss=no])
 
 AC_ARG_ENABLE(jack, [AS_HELP_STRING([--enable-jack],
-				    [enable jack (default is yes)])],
-	      [],
-	      [enable_jack=yes])
+                                    [enable jack (default is yes)])],
+              [],
+              [enable_jack=yes])
 
 AC_ARG_ENABLE(pulse, [AS_HELP_STRING([--enable-pulse],
-				     [enable pulse (default is yes)])],
-	      [],
-	      [enable_pulse=yes])
+                                     [enable pulse (default is yes)])],
+              [],
+              [enable_pulse=yes])
 
 AC_ARG_ENABLE(core-audio, [AS_HELP_STRING([--enable-core-audio],
-					  [enable core audio (default is no)])],
-	      [],
-	      [enable_core_audio=no])
+                                          [enable core audio (default is no)])],
+              [],
+              [enable_core_audio=no])
 
 AC_ARG_ENABLE(audio-unit, [AS_HELP_STRING([--enable-audio-unit],
-					  [enable audio unit (default is no)])],
-	      [],
-	      [enable_audio_unit=no])
+                                          [enable audio unit (default is no)])],
+              [],
+              [enable_audio_unit=no])
 
 AC_ARG_ENABLE(wasapi, [AS_HELP_STRING([--enable-wasapi],
-				      [enable WASAPI (default is no)])],
-	      [],
-	      [enable_wasapi=no])
+                                      [enable WASAPI (default is no)])],
+              [],
+              [enable_wasapi=no])
 
 AC_ARG_ENABLE(libinstpatch, [AS_HELP_STRING([--enable-libinstpatch],
-					    [enable libinstpatch (default is yes)])],
-	      [],
-	      [enable_libinstpatch=yes])
+                                            [enable libinstpatch (default is yes)])],
+              [],
+              [enable_libinstpatch=yes])
 
 AC_ARG_ENABLE(vst3, [AS_HELP_STRING([--enable-vst3],
-				    [enable vst3 (default is no)])],
-	      [],
-	      [enable_vst3=no])
+                                    [enable vst3 (default is no)])],
+              [],
+              [enable_vst3=no])
 
 AC_ARG_ENABLE(pulse, [AS_HELP_STRING([--enable-pulse],
-				     [enable pulse (default is yes)])],
-	      [],
-	      [enable_pulse=yes])
+                                     [enable pulse (default is yes)])],
+              [],
+              [enable_pulse=yes])
 
 AC_ARG_ENABLE(x11, [AS_HELP_STRING([--enable-x11],
-				   [enable X11 (default is yes)])],
-	      [],
-	      [enable_x11=yes])
+                                   [enable X11 (default is yes)])],
+              [],
+              [enable_x11=yes])
 
 AC_ARG_ENABLE(quartz, [AS_HELP_STRING([--enable-quartz],
-				      [enable quartz (default is no)])],
-	      [],
-	      [enable_quartz=no])
+                                      [enable quartz (default is no)])],
+              [],
+              [enable_quartz=no])
 
 AC_ARG_ENABLE(run-functional-tests, [AS_HELP_STRING([--enable-run-functional-tests],
-			            [run functional tests (default is no)])],
-	      [],
-	      [enable_run_functional_tests=no])
+                                    [run functional tests (default is no)])],
+              [],
+              [enable_run_functional_tests=no])
 
 AC_ARG_ENABLE(fast-test-mode, [AS_HELP_STRING([--enable-fast-test-mode],
-			      [fast test mode (default is no)])],
-	      [],
-	      [enable_fast_test_mode=no])
+                              [fast test mode (default is no)])],
+              [],
+              [enable_fast_test_mode=no])
 
 AC_ARG_ENABLE(run-system-tests, [AS_HELP_STRING([--enable-run-system-tests],
-		       	    	[run system tests (default is no)])],
-	      [],
-	      [enable_run_system_tests=no])
+                                [run system tests (default is no)])],
+              [],
+              [enable_run_system_tests=no])
 
 AC_ARG_ENABLE(experimental, [AS_HELP_STRING([--enable-experimental],
-		       	    	[experimental (default is no)])],
-	      [],
-	      [enable_experimental=no])
+                                [experimental (default is no)])],
+              [],
+              [enable_experimental=no])
 
 AC_ARG_WITH([webkit],
-	    [AS_HELP_STRING([--without-webkit],
-			    [disable support for webkit])],
-	    [],
-	    [with_webkit=yes])
+            [AS_HELP_STRING([--without-webkit],
+                            [disable support for webkit])],
+            [],
+            [with_webkit=yes])
 
 AC_ARG_WITH([poppler],
-	    [AS_HELP_STRING([--with-poppler],
-			    [enable support for poppler])],
-	    [],
-	    [with_poppler=no])
+            [AS_HELP_STRING([--with-poppler],
+                            [enable support for poppler])],
+            [],
+            [with_poppler=no])
 
 AC_ARG_WITH([gstreamer],
-	    [AS_HELP_STRING([--without-gstreamer],
-			    [disable support for gstreamer])],
-	    [],
-	    [with_gstreamer=yes])
+            [AS_HELP_STRING([--without-gstreamer],
+                            [disable support for gstreamer])],
+            [],
+            [with_gstreamer=yes])
 
 # Checks for programs.
 AC_PROG_CC
@@ -328,7 +328,7 @@ AS_IF([test "x$enable_jack" != xno],
       AC_SUBST(JACK_LIBS)
 
       AC_CHECK_FUNC([jack_port_uuid],
-		    [AC_DEFINE([HAVE_JACK_PORT_UUID], [1], [Jack port uuid available])])
+                    [AC_DEFINE([HAVE_JACK_PORT_UUID], [1], [Jack port uuid available])])
       AC_MSG_NOTICE([JACK enabled])],
       [AC_MSG_NOTICE([JACK disabled])])
 
@@ -414,14 +414,15 @@ AS_IF([test "x$enable_libinstpatch" != xno],
       [AC_MSG_NOTICE([libinstpatch disabled])])
 AM_CONDITIONAL([WITH_LIBINSTPATCH], [test "x$enable_libinstpatch" == xyes])
 
+WITH_VST3=0
+
 AS_IF([test "x$enable_vst3" != xno],
       [AC_DEFINE([AGS_WITH_VST3], [1], [VST3 enabled])
-
-      AC_SUBST(VST3_CXXFLAGS)
-      AC_SUBST(VST3_LIBS)
-      
+      VST3_CXXFLAGS="-I/usr/include/vst3"
+      VST3_LIBS="-L/usr/lib/vst3 -lbase -lpluginterfaces -lsdk -lsdk_common -lsdk_hosting -lvstgui -lvstgui_standalone -lvstgui_support -lvstgui_uidescription"      
       AC_MSG_NOTICE([VST3 enabled])],
       [AC_MSG_NOTICE([VST3 disabled])])
+AM_CONDITIONAL([WITH_VST3], [test "x$enable_vst3" == xyes])
 
 PKG_CHECK_MODULES([CAIRO], [cairo >= 1.12.0])
 AC_SUBST(CAIRO_CFLAGS)
@@ -436,7 +437,7 @@ AS_IF([test "x$with_webkit" != xno],
        AC_SUBST(WEBKITGTK_CFLAGS)
        AC_SUBST(WEBKITGTK_LIBS)
        AC_DEFINE([AGS_WITH_WEBKIT], [1],
-       		 [Define if you have webkit])
+                 [Define if you have webkit])
       ])
       
 AS_IF([test "x$with_poppler" != xno],
@@ -444,7 +445,7 @@ AS_IF([test "x$with_poppler" != xno],
        AC_SUBST(POPPLER_CFLAGS)
        AC_SUBST(POPPLER_LIBS)
        AC_DEFINE([AGS_WITH_POPPLER], [1],
-       		 [Define if you have poppler])
+                 [Define if you have poppler])
       ])
 
 AS_IF([test "x$with_gstreamer" != xno],
@@ -452,7 +453,7 @@ AS_IF([test "x$with_gstreamer" != xno],
        AC_SUBST(GSTREAMER_CFLAGS)
        AC_SUBST(GSTREAMER_LIBS)
        AC_DEFINE([AGS_WITH_GSTREAMER], [1],
-       		 [Define if you have gstreamer])
+                 [Define if you have gstreamer])
       ])
 AM_CONDITIONAL([WITH_GSTREAMER], [test "x$with_gstreamer" == xyes])
 
