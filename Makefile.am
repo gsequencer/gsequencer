@@ -67,11 +67,13 @@ DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
-lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la libags_audio.la libags_gui.la
+lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la
 
 if WITH_VST3
 lib_LTLIBRARIES += libags_vst.la 
 endif
+
+lib_LTLIBRARIES += libags_audio.la libags_gui.la
 
 # lib_LTLIBRARIES += libgsequencer.la
 
@@ -726,7 +728,7 @@ if WITH_VST3
 libags_vst_la_CPPFLAGS = -std=gnu++2a -DDEVELOPMENT
 libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include/vst3 $(GLIB_CFLAGS) $(VST3_CXXFLAGS) $(W32API_CFLAGS)
 libags_vst_la_LDFLAGS = $(LDFLAGS) $(VST3_LDFLAGS) -version-info 3:0:0 $(PIC_FLAGS) -pthread 
-libags_vst_la_LIBADD = -lm $(GLIB_LIBS) $(VST3_LIBS) $(W32API_LIBS)
+libags_vst_la_LIBADD = -lm -L/usr/lib/vst3 -lbase -lpluginterfaces -lsdk -lsdk_common -lsdk_hosting -lvstgui -lvstgui_standalone -lvstgui_support -lvstgui_uidescription $(GLIB_LIBS) $(VST3_LIBS) $(W32API_LIBS)
 
 if WITH_W32API
 libags_vst_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_vst.dll.a
