@@ -945,6 +945,10 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 			     0,
 			     &value);
     device = g_value_get_string(&value);
+
+    if(!g_ascii_strcasecmp(device, "(null)")){
+      device = NULL;
+    }
   }else{
     device = NULL;
   }
@@ -1289,10 +1293,16 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     tmp = card_id->data;
         
     if(tmp != NULL &&
-       device != NULL &&
-       !g_ascii_strcasecmp(tmp,
-			   device)){
-      found_card = TRUE;
+       device != NULL){
+      if(!g_ascii_strcasecmp(tmp,
+			     device)){
+	found_card = TRUE;
+      }
+    }else{
+      if(tmp == NULL &&
+	 device == NULL){
+	found_card = TRUE;
+      }
     }
 
     if(tmp != NULL){
@@ -2410,8 +2420,13 @@ ags_soundcard_editor_load_wasapi_card(AgsSoundcardEditor *soundcard_editor)
 
   while(card_id != NULL){
     if(card_id != NULL){
-      gtk_combo_box_text_append_text(soundcard_editor->card,
-				     card_id->data);
+      if(card_id->data != NULL){
+	gtk_combo_box_text_append_text(soundcard_editor->card,
+				       card_id->data);
+      }else{
+	gtk_combo_box_text_append_text(soundcard_editor->card,
+				       "(null)");
+      }
     }
     
     card_id = card_id->next;

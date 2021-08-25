@@ -158,7 +158,15 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   AgsAudio *audio;
   AgsSFZSynthGenerator *sfz_synth_generator;
 
+  AgsApplicationContext *application_context;   
+
+  gdouble gui_scale_factor;
   gdouble page, step;
+
+  application_context = ags_application_context_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   g_signal_connect_after((GObject *) pitch_sampler, "parent_set",
 			 G_CALLBACK(ags_pitch_sampler_parent_set_callback), (gpointer) pitch_sampler);
@@ -569,6 +577,10 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 							   0.0,
 							   2.0,
 							   0.025);
+  
+  gtk_widget_set_size_request(pitch_sampler->volume,
+			      gui_scale_factor * 16, gui_scale_factor * 100);
+  
   gtk_box_pack_start(volume_hbox,
 		     (GtkWidget *) pitch_sampler->volume,
 		     FALSE, FALSE,

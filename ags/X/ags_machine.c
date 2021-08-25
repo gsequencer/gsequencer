@@ -2795,13 +2795,19 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
       
       if((AGS_SOUNDCARD_CAPABILITY_PLAYBACK & (soundcard_capability)) != 0 ||
 	 (AGS_SOUNDCARD_CAPABILITY_DUPLEX & (soundcard_capability)) != 0){
+	gchar *tmp_device;
+
+	tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(list->data));
+	
 	gtk_list_store_append(model, &iter);
 	gtk_list_store_set(model, &iter,
 			   0, g_strdup_printf("%s: %s", 
 					      G_OBJECT_TYPE_NAME(G_OBJECT(list->data)),
-					      ags_soundcard_get_device(AGS_SOUNDCARD(list->data))),
+					      (tmp_device != NULL ? tmp_device: "(null)")),
 			   1, list->data,
 			   -1);
+
+	g_free(tmp_device);
       }
 
       list = list->next;
@@ -2856,13 +2862,19 @@ ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
 
       if((AGS_SOUNDCARD_CAPABILITY_CAPTURE & (soundcard_capability)) != 0 ||
 	 (AGS_SOUNDCARD_CAPABILITY_DUPLEX & (soundcard_capability)) != 0){
+	gchar *tmp_device;
+
+	tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(list->data));
+	
 	gtk_list_store_append(model, &iter);
 	gtk_list_store_set(model, &iter,
 			   0, g_strdup_printf("%s: %s", 
 					      G_OBJECT_TYPE_NAME(G_OBJECT(list->data)),
-					      ags_soundcard_get_device(AGS_SOUNDCARD(list->data))),
+					      (tmp_device != NULL ? tmp_device: "(null)")),
 			   1, list->data,
 			   -1);
+
+	g_free(tmp_device);
       }
 
       list = list->next;

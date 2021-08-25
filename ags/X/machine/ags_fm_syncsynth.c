@@ -149,6 +149,15 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 
   AgsAudio *audio;
 
+  AgsApplicationContext *application_context;   
+
+  gdouble gui_scale_factor;
+
+  application_context = ags_application_context_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+
   g_signal_connect_after((GObject *) fm_syncsynth, "parent_set",
 			 G_CALLBACK(ags_fm_syncsynth_parent_set_callback), (gpointer) fm_syncsynth);
   
@@ -403,6 +412,10 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 							       0.0,
 							       2.0,
 							       0.025);
+
+  gtk_widget_set_size_request(fm_syncsynth->volume,
+			      gui_scale_factor * 16, gui_scale_factor * 100);
+  
   gtk_box_pack_start(volume_hbox,
 		     (GtkWidget *) fm_syncsynth->volume,
 		     FALSE, FALSE,

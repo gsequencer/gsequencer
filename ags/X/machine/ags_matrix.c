@@ -146,7 +146,15 @@ ags_matrix_init(AgsMatrix *matrix)
 
   AgsAudio *audio;
 
+  AgsApplicationContext *application_context;   
+
+  gdouble gui_scale_factor;
   int i, j;
+
+  application_context = ags_application_context_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   g_signal_connect_after((GObject *) matrix, "parent_set",
 			 G_CALLBACK(ags_matrix_parent_set_callback), (gpointer) matrix);
@@ -358,6 +366,10 @@ ags_matrix_init(AgsMatrix *matrix)
 							 0.0,
 							 2.0,
 							 0.025);
+
+  gtk_widget_set_size_request(matrix->volume,
+			      gui_scale_factor * 16, gui_scale_factor * 100);
+  
   gtk_box_pack_start(volume_hbox,
 		     (GtkWidget *) matrix->volume,
 		     FALSE, FALSE,
