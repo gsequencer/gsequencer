@@ -23,6 +23,7 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_diatonic_scale.h>
+#include <ags/audio/ags_fluid_util.h>
 #include <ags/audio/ags_fluid_pitch_util.h>
 
 #include <ags/audio/file/ags_sound_container.h>

@@ -1,3 +1,9 @@
+ags (3.10.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved build
+	* fixed compiler warnings in ags_sf2_synth_util.c, ags_sfz_synth_util.c and ags_solver_matrix.c
+
 ags (3.10.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

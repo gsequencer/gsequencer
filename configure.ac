@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.10.2],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.10.3],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -252,6 +252,8 @@ AS_IF([test "x$enable_w32api" != xno],
       [AC_DEFINE([AGS_W32API], [1], [w32api enabled])
       W32API_CFLAGS="-nostdinc -I./lib -I/usr/lib/gcc/x86_64-w64-mingw32/7.4.0/include -I/usr/x86_64-w64-mingw32/sys-root/mingw/include -I/usr/x86_64-w64-mingw32/sys-root/mingw/include/dssi -include ags/config.h "
       W32API_LIBS="-L./lib -lgnu"
+      AC_SUBST(W32API_CFLAGS)
+      AC_SUBST(W32API_LIBS)
       AC_MSG_NOTICE([w32api enabled])],
       [AC_MSG_NOTICE([w32api disabled])])
 AM_CONDITIONAL([WITH_W32API], [test "x$enable_w32api" == xyes])
@@ -260,6 +262,8 @@ AS_IF([test "x$enable_osxapi" != xno],
       [AC_DEFINE([AGS_OSXAPI], [1], [OS X api enabled])
       OSXAPI_CFLAGS=""
       OSXAPI_LIBS=""
+      AC_SUBST(OSXAPI_CFLAGS)
+      AC_SUBST(OSXAPI_LIBS)
       AC_MSG_NOTICE([OS X api enabled])],
       [AC_MSG_NOTICE([OS X api disabled])])
 AM_CONDITIONAL([WITH_OSXAPI], [test "x$enable_osxapi" == xyes])
@@ -420,6 +424,8 @@ AS_IF([test "x$enable_vst3" != xno],
       [AC_DEFINE([AGS_WITH_VST3], [1], [VST3 enabled])
       VST3_CXXFLAGS="-I/usr/include/vst3"
       VST3_LIBS="-L/usr/lib/vst3 -lbase -lpluginterfaces -lsdk -lsdk_common -lsdk_hosting -lvstgui -lvstgui_standalone -lvstgui_support -lvstgui_uidescription"      
+      AC_SUBST(VST3_CXXFLAGS)
+      AC_SUBST(VST3_LIBS)
       AC_MSG_NOTICE([VST3 enabled])],
       [AC_MSG_NOTICE([VST3 disabled])])
 AM_CONDITIONAL([WITH_VST3], [test "x$enable_vst3" == xyes])

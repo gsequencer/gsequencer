@@ -22,6 +22,7 @@
 #include <ags/audio/ags_synth_enums.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_fluid_util.h>
 #include <ags/audio/ags_fluid_pitch_util.h>
 
 #include <ags/audio/file/ags_sound_container.h>
@@ -505,7 +506,7 @@ ags_sf2_synth_util_get_preset(AgsSF2SynthUtil *sf2_synth_util)
     return(NULL);
   }
 
-  return(g_strdup(sf2_synth_util->samplerate));
+  return(g_strdup(sf2_synth_util->preset));
 }
 
 /**
@@ -547,7 +548,7 @@ ags_sf2_synth_util_get_instrument(AgsSF2SynthUtil *sf2_synth_util)
     return(NULL);
   }
 
-  return(g_strdup(sf2_synth_util->samplerate));
+  return(g_strdup(sf2_synth_util->instrument));
 }
 
 /**

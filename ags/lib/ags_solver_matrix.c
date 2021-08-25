@@ -19,6 +19,8 @@
 
 #include <ags/lib/ags_solver_matrix.h>
 
+#include <ags/lib/ags_string_util.h>
+
 #include <stdlib.h>
 
 #include <ags/i18n.h>
