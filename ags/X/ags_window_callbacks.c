@@ -131,6 +131,10 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("VST3"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_vst3_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
   /* menu - live */
   menu_bar->live = (GtkMenu *) gtk_menu_new();
   
@@ -146,6 +150,10 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_lv2_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);  
 
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("VST3"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_vst3_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);
+
   /* context menu - bridge */
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("LADSPA"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
@@ -157,6 +165,10 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
 
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Lv2"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("VST3"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_vst3_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
 
   /* context menu - live */
@@ -173,6 +185,10 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Lv2"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_lv2_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) context_menu->live, (GtkWidget*) item);      
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("VST3"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_vst3_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->live, (GtkWidget *) item);
 
 #ifdef AGS_WITH_QUARTZ
   app = gtkosx_application_get();

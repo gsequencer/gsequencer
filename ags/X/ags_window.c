@@ -52,8 +52,10 @@
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
+#include <ags/X/machine/ags_vst3_bridge.h>
 #include <ags/X/machine/ags_live_dssi_bridge.h>
 #include <ags/X/machine/ags_live_lv2_bridge.h>
+#include <ags/X/machine/ags_live_vst3_bridge.h>
 
 #include <ags/X/file/ags_simple_file.h>
 
@@ -580,10 +582,16 @@ ags_window_standard_machine_counter_alloc()
 							     AGS_TYPE_LV2_BRIDGE, 0));
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_VST3_BRIDGE, 0));
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
 							     AGS_TYPE_LIVE_DSSI_BRIDGE, 0));
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
 							     AGS_TYPE_LIVE_LV2_BRIDGE, 0));
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_LIVE_VST3_BRIDGE, 0));
   
   return(machine_counter);
 }

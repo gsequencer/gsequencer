@@ -1137,6 +1137,8 @@ libgsequencer_sources = files(
   'X/machine/ags_live_dssi_bridge_callbacks.c',
   'X/machine/ags_live_lv2_bridge.c',
   'X/machine/ags_live_lv2_bridge_callbacks.c',
+  'X/machine/ags_live_vst3_bridge.c',
+  'X/machine/ags_live_vst3_bridge_callbacks.c',
   'X/machine/ags_lv2_bridge.c',
   'X/machine/ags_lv2_bridge_callbacks.c',
   'X/machine/ags_matrix_bridge.c',
@@ -1178,6 +1180,8 @@ libgsequencer_sources = files(
   'X/osc/controller/ags_ui_osc_renew_controller.c',
   'X/task/ags_simple_file_read.c',
   'X/task/ags_simple_file_write.c',
+  'X/machine/ags_vst3_bridge.c',
+  'X/machine/ags_vst3_bridge_callbacks.c',
 )
 
 libgsequencer_dependencies = [

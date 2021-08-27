@@ -46,9 +46,11 @@
 
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
+#include <ags/X/machine/ags_vst3_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
 #include <ags/X/machine/ags_live_dssi_bridge.h>
 #include <ags/X/machine/ags_live_lv2_bridge.h>
+#include <ags/X/machine/ags_live_vst3_bridge.h>
 
 /**
  * SECTION:ags_machine_util
@@ -993,6 +995,65 @@ ags_machine_util_new_dssi_bridge(gchar *filename, gchar *effect)
 }
 
 /**
+ * ags_machine_util_new_vst3_bridge:
+ * @filename: the filename
+ * @effect: the effect
+ * 
+ * Create #AgsVst3Bridge.
+ * 
+ * returns: the newly instantiated #AgsVst3Bridge
+ * 
+ * Since: 3.10.5
+ */
+GtkWidget*
+ags_machine_util_new_vst3_bridge(gchar *filename, gchar *effect)
+{
+  AgsWindow *window;
+  AgsVst3Bridge *vst3_bridge;
+
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+  
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
+  /* create vst3 bridge */
+  vst3_bridge = ags_vst3_bridge_new(G_OBJECT(default_soundcard),
+				    filename,
+				    effect);
+  
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     GTK_WIDGET(vst3_bridge),
+		     FALSE, FALSE, 0);
+
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(vst3_bridge));
+  
+  /*  */
+  ags_audio_set_audio_channels(AGS_MACHINE(vst3_bridge)->audio,
+			       2, 0);
+
+  ags_audio_set_pads(AGS_MACHINE(vst3_bridge)->audio,
+		     AGS_TYPE_INPUT,
+		     128, 0);
+  ags_audio_set_pads(AGS_MACHINE(vst3_bridge)->audio,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);
+
+  /*  */
+  ags_vst3_bridge_load(vst3_bridge);
+
+  /* */
+  gtk_widget_show_all(GTK_WIDGET(vst3_bridge));
+
+  return((GtkWidget *) vst3_bridge);
+}
+
+/**
  * ags_machine_util_new_lv2_bridge:
  * @filename: the filename
  * @effect: the effect
@@ -1361,6 +1422,66 @@ ags_machine_util_new_live_lv2_bridge(gchar *filename, gchar *effect)
 }
 
 /**
+ * ags_machine_util_new_live_vst3_bridge:
+ * @filename: the filename
+ * @effect: the effect
+ * 
+ * Create #AgsLiveVst3Bridge.
+ * 
+ * returns: the newly instantiated #AgsLiveVst3Bridge
+ * 
+ * Since: 3.10.5
+ */
+GtkWidget*
+ags_machine_util_new_live_vst3_bridge(gchar *filename, gchar *effect)
+{
+  AgsWindow *window;
+  AgsLiveVst3Bridge *live_vst3_bridge;
+
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
+  /* create live vst3 bridge */
+  live_vst3_bridge = ags_live_vst3_bridge_new(G_OBJECT(default_soundcard),
+					      filename,
+					      effect);
+  
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     GTK_WIDGET(live_vst3_bridge),
+		     FALSE, FALSE, 0);
+  
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(live_vst3_bridge));
+
+  /* */
+  ags_audio_set_audio_channels(AGS_MACHINE(live_vst3_bridge)->audio,
+			       2, 0);
+
+  /*  */
+  ags_audio_set_pads(AGS_MACHINE(live_vst3_bridge)->audio,
+		     AGS_TYPE_INPUT,
+		     128, 0);
+  ags_audio_set_pads(AGS_MACHINE(live_vst3_bridge)->audio,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);
+
+  /*  */
+  ags_live_vst3_bridge_load(live_vst3_bridge);
+
+  /* */
+  gtk_widget_show_all(GTK_WIDGET(live_vst3_bridge));
+
+  return((GtkWidget *) live_vst3_bridge);
+}
+
+/**
  * ags_machine_util_new_by_type_name:
  * @machine_type_name: the machine type name
  * @filename: the filename
@@ -1460,6 +1581,11 @@ ags_machine_util_new_by_type_name(gchar *machine_type_name,
     machine = ags_machine_util_new_lv2_bridge(filename,
 					      effect);
   }else if(!g_ascii_strncasecmp(machine_type_name,
+				"AgsVst3Bridge",
+				14)){
+    machine = ags_machine_util_new_vst3_bridge(filename,
+					       effect);
+  }else if(!g_ascii_strncasecmp(machine_type_name,
 				"AgsLiveDssiBridge",
 				18)){
     machine = ags_machine_util_new_live_dssi_bridge(filename,
@@ -1469,6 +1595,11 @@ ags_machine_util_new_by_type_name(gchar *machine_type_name,
 				17)){
     machine = ags_machine_util_new_live_lv2_bridge(filename,
 						   effect);
+  }else if(!g_ascii_strncasecmp(machine_type_name,
+				"AgsLiveVst3Bridge",
+				18)){
+    machine = ags_machine_util_new_live_vst3_bridge(filename,
+						    effect);
   }
 
   return(machine);

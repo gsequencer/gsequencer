@@ -2566,6 +2566,8 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_live_dssi_bridge.h \
 	ags/X/machine/ags_live_lv2_bridge_callbacks.h \
 	ags/X/machine/ags_live_lv2_bridge.h \
+	ags/X/machine/ags_live_vst3_bridge_callbacks.h \
+	ags/X/machine/ags_live_vst3_bridge.h \
 	ags/X/machine/ags_lv2_bridge_callbacks.h \
 	ags/X/machine/ags_lv2_bridge.h \
 	ags/X/machine/ags_matrix_callbacks.h \
@@ -2601,7 +2603,9 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_synth_input_line_callbacks.h \
 	ags/X/machine/ags_synth_input_pad.h \
 	ags/X/machine/ags_spectrometer.h \
-	ags/X/machine/ags_spectrometer_callbacks.h
+	ags/X/machine/ags_spectrometer_callbacks.h \
+	ags/X/machine/ags_vst3_bridge_callbacks.h \
+	ags/X/machine/ags_vst3_bridge.h
 
 if WITH_LIBINSTPATCH
 libgsequencer_machine_h_sources += \
@@ -2661,6 +2665,8 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_live_dssi_bridge_callbacks.c \
 	ags/X/machine/ags_live_lv2_bridge.c \
 	ags/X/machine/ags_live_lv2_bridge_callbacks.c \
+	ags/X/machine/ags_live_vst3_bridge.c \
+	ags/X/machine/ags_live_vst3_bridge_callbacks.c \
 	ags/X/machine/ags_lv2_bridge.c \
 	ags/X/machine/ags_lv2_bridge_callbacks.c \
 	ags/X/machine/ags_matrix.c \
@@ -2696,7 +2702,9 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_synth_input_line_callbacks.c \
 	ags/X/machine/ags_synth_input_pad.c \
 	ags/X/machine/ags_spectrometer.c \
-	ags/X/machine/ags_spectrometer_callbacks.c
+	ags/X/machine/ags_spectrometer_callbacks.c \
+	ags/X/machine/ags_vst3_bridge.c \
+	ags/X/machine/ags_vst3_bridge_callbacks.c
 
 if WITH_LIBINSTPATCH
 libgsequencer_machine_c_sources += \

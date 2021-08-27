@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,6 +35,8 @@
 
 #include <string.h>
 #include <strings.h>
+
+#include <sys/utsname.h>
 
 #include <ags/config.h>
 
@@ -614,6 +616,12 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
   AgsVst3Plugin *vst3_plugin;
 
   gchar *path;
+
+  void *plugin_so;
+
+  gboolean success;
+
+  AgsVstIPluginFactory* (*GetPluginFactory)();
   
   GRecMutex *vst3_manager_mutex;
 
@@ -636,7 +644,79 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
   
   g_message("ags_vst3_manager.c loading - %s", path);
 
-  //TODO:JK: implement me
+#ifdef AGS_W32API
+  plugin_so = LoadLibrary(path);
+#else
+  plugin_so = dlopen(path,
+		     RTLD_NOW);
+#endif
+	
+  if(plugin_so == NULL){
+    g_warning("ags_vst3_manager.c - failed to load static object file");
+      
+#ifndef AGS_W32API
+    dlerror();
+#endif
+    
+    g_rec_mutex_unlock(vst3_manager_mutex);
+    
+    return;
+  }
+
+  success = FALSE;
+
+#ifdef AGS_W32API
+  GetPluginFactory = GetProcAddress(plugin_so,
+				    "GetPluginFactory");
+  
+  success = (GetPluginFactory != NULL) ? TRUE: FALSE;
+#else
+  GetPluginFactory = dlsym(plugin_so,
+			   "GetPluginFactory");
+  
+  success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
+
+  if(success && GetPluginFactory){
+    AgsVstIPluginFactory *iplugin_factory;
+    AgsVstPClassInfo *info;
+
+    gchar *plugin_name;
+
+    gint32 i, i_stop;
+    
+    iplugin_factory = GetPluginFactory();
+
+    info = ags_vst_pclass_info_alloc();
+
+    i_stop = ags_vst_iplugin_factory_count_classes(iplugin_factory);
+    
+    for(i = 0; i < i_stop; i++){
+      ags_vst_iplugin_factory_get_class_info(iplugin_factory,
+					     i, info);
+      
+      if(!g_strcmp0(ags_vst_pclass_info_get_category(info), AGS_VST_KAUDIO_EFFECT_CLASS) == FALSE){
+	continue;
+      }
+
+      plugin_name = ags_vst_pclass_info_get_name(info);
+
+      if(ags_base_plugin_find_effect(vst3_manager->vst3_plugin,
+				     path,
+				     plugin_name) == NULL){	
+	vst3_plugin = ags_vst3_plugin_new(path,
+					  plugin_name,
+					  i);
+	ags_base_plugin_load_plugin((AgsBasePlugin *) vst3_plugin);
+	vst3_manager->vst3_plugin = g_list_prepend(vst3_manager->vst3_plugin,
+						   vst3_plugin);
+      }
+    }
+  }
+
+  g_rec_mutex_unlock(vst3_manager_mutex);
+
+  g_free(path);
 }
 
 /**
@@ -654,8 +734,12 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
 
   GDir *dir;
 
+  struct utsname buf;
+
   gchar **vst3_path;
   gchar *filename;
+  gchar *machine;
+  gchar *sysname;
 
   GError *error;
 
@@ -663,10 +747,16 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
     return;
   }
 
+  uname(&buf);
+
+  machine = g_strdup(buf.machine);
+  sysname = g_ascii_strdown(buf.sysname,
+			    -1);
+
   vst3_path = ags_vst3_default_path;
   
-  while(*vst3_path != NULL){
-    if(!g_file_test(*vst3_path,
+  while(vst3_path[0] != NULL){    
+    if(!g_file_test(vst3_path[0],
 		    G_FILE_TEST_EXISTS)){
       vst3_path++;
       
@@ -674,7 +764,7 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
     }
 
     error = NULL;
-    dir = g_dir_open(*vst3_path,
+    dir = g_dir_open(vst3_path[0],
 		     0,
 		     &error);
 
@@ -689,19 +779,58 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
     }
 
     while((filename = g_dir_read_name(dir)) != NULL){
-      if(g_str_has_suffix(filename,
-			  AGS_LIBRARY_SUFFIX) &&
-	 !g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
-			     filename,
-			     strcmp)){
-	ags_vst3_manager_load_file(vst3_manager,
-				   *vst3_path,
-				   filename);
-      }
+      GDir *arch_dir;
+
+      gchar *arch_path;
+      gchar *arch_filename;
+	
+      arch_path = g_strdup_printf("%s%c%s%cContents%c%s-%s",
+				  vst3_path[0],
+				  G_DIR_SEPARATOR,
+				  filename,
+				  G_DIR_SEPARATOR,
+				  G_DIR_SEPARATOR,
+				  machine,
+				  sysname);	
+	
+      if(g_file_test(arch_path,
+		     G_FILE_TEST_IS_DIR)){
+	error = NULL;
+	arch_dir = g_dir_open(arch_path,
+			      0,
+			      &error);
+
+	if(error != NULL){
+	  g_warning("%s", error->message);
+
+	  g_error_free(error);
+      
+	  goto ags_vst3_manager_load_default_directory_ARCH_PATH;
+	}
+
+	while((arch_filename = g_dir_read_name(arch_dir)) != NULL){
+	  if(g_str_has_suffix(arch_filename,
+			      AGS_LIBRARY_SUFFIX) &&
+	     !g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
+				 arch_filename,
+				 strcmp)){
+	    ags_vst3_manager_load_file(vst3_manager,
+				       arch_path,
+				       arch_filename);
+	  }
+	}
+
+      ags_vst3_manager_load_default_directory_ARCH_PATH:
+	
+	g_free(arch_path);
+      }      
     }
     
     vst3_path++;
   }
+
+  g_free(sysname);
+  g_free(machine);
 }
 
 /**

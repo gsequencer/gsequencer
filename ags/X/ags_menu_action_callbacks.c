@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -58,9 +58,11 @@
 
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
+#include <ags/X/machine/ags_vst3_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
 #include <ags/X/machine/ags_live_dssi_bridge.h>
 #include <ags/X/machine/ags_live_lv2_bridge.h>
+#include <ags/X/machine/ags_live_vst3_bridge.h>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -69,11 +71,6 @@
 
 #define _GNU_SOURCE
 #include <locale.h>
-
-#if defined __APPLE__ || AGS_W32API
-#else
-#include <X11/Xlib.h>
-#endif
 
 static GMutex locale_mutex;
 
@@ -868,6 +865,32 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
 }
 
 void
+ags_menu_action_add_vst3_bridge_callback(GtkWidget *menu_item, gpointer data)
+{
+  AgsVst3Bridge *vst3_bridge;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+
+  gchar *filename, *effect;
+
+  filename = g_object_get_data((GObject *) menu_item,
+			       AGS_MENU_ITEM_FILENAME_KEY);
+  effect = g_object_get_data((GObject *) menu_item,
+			     AGS_MENU_ITEM_EFFECT_KEY);
+  
+  application_context = ags_application_context_get_instance();
+  
+  /* create vst3 bridge */
+  vst3_bridge = (AgsVst3Bridge *) ags_machine_util_new_vst3_bridge(filename, effect);
+  
+  add_audio = ags_add_audio_new(AGS_MACHINE(vst3_bridge)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
 ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
 {
   AgsLiveDssiBridge *live_dssi_bridge;
@@ -915,6 +938,32 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
   live_lv2_bridge = (AgsLiveLv2Bridge *) ags_machine_util_new_live_lv2_bridge(filename, effect);
     
   add_audio = ags_add_audio_new(AGS_MACHINE(live_lv2_bridge)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_menu_action_add_live_vst3_bridge_callback(GtkWidget *menu_item, gpointer data)
+{
+  AgsLiveVst3Bridge *live_vst3_bridge;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  gchar *filename, *effect;
+
+  filename = g_object_get_data((GObject *) menu_item,
+			       AGS_MENU_ITEM_FILENAME_KEY);
+  effect = g_object_get_data((GObject *) menu_item,
+			     AGS_MENU_ITEM_EFFECT_KEY);
+  
+  application_context = ags_application_context_get_instance();
+  
+  /* create live vst3 bridge */
+  live_vst3_bridge = (AgsLiveVst3Bridge *) ags_machine_util_new_live_vst3_bridge(filename, effect);
+  
+  add_audio = ags_add_audio_new(AGS_MACHINE(live_vst3_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 }

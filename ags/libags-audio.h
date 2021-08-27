@@ -45,6 +45,8 @@
 #include <ags/plugin/ags_lv2ui_plugin.h>
 #include <ags/plugin/ags_plugin_stock.h>
 #include <ags/plugin/ags_plugin_port.h>
+#include <ags/plugin/ags_vst3_manager.h>
+#include <ags/plugin/ags_vst3_plugin.h>
 
 /* audio */
 #include <ags/audio/ags_acceleration.h>

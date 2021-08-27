@@ -250,8 +250,8 @@ WITH_W32API=0
 
 AS_IF([test "x$enable_w32api" != xno],
       [AC_DEFINE([AGS_W32API], [1], [w32api enabled])
-      W32API_CFLAGS="-nostdinc -I./lib -I/usr/lib/gcc/x86_64-w64-mingw32/7.4.0/include -I/usr/x86_64-w64-mingw32/sys-root/mingw/include -I/usr/x86_64-w64-mingw32/sys-root/mingw/include/dssi -include ags/config.h "
-      W32API_LIBS="-L./lib -lgnu"
+#      W32API_CFLAGS="-nostdinc -I./lib -I/usr/lib/gcc/x86_64-w64-mingw32/7.4.0/include -I/usr/x86_64-w64-mingw32/sys-root/mingw/include -I/usr/x86_64-w64-mingw32/sys-root/mingw/include/dssi -include ags/config.h "
+#      W32API_LIBS="-L./lib -lgnu"
       AC_SUBST(W32API_CFLAGS)
       AC_SUBST(W32API_LIBS)
       AC_MSG_NOTICE([w32api enabled])],
@@ -260,8 +260,6 @@ AM_CONDITIONAL([WITH_W32API], [test "x$enable_w32api" == xyes])
 
 AS_IF([test "x$enable_osxapi" != xno],
       [AC_DEFINE([AGS_OSXAPI], [1], [OS X api enabled])
-      OSXAPI_CFLAGS=""
-      OSXAPI_LIBS=""
       AC_SUBST(OSXAPI_CFLAGS)
       AC_SUBST(OSXAPI_LIBS)
       AC_MSG_NOTICE([OS X api enabled])],

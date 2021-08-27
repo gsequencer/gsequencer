@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -78,9 +78,11 @@ GtkComboBox* ags_tact_combo_box_new();
 GtkMenu* ags_ladspa_bridge_menu_new();
 GtkMenu* ags_dssi_bridge_menu_new();
 GtkMenu* ags_lv2_bridge_menu_new();
+GtkMenu* ags_vst3_bridge_menu_new();
 
 GtkMenu* ags_live_dssi_bridge_menu_new();
 GtkMenu* ags_live_lv2_bridge_menu_new();
+GtkMenu* ags_live_vst3_bridge_menu_new();
 
 AgsMenuBar* ags_menu_bar_new();
 

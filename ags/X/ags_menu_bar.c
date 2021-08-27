@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -447,6 +447,20 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 
   g_list_free(list3_start);
 
+  /* vst3 */
+  list3_start = 
+    list3 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list2->data));
+  list2 = list2->next;
+
+  while(list3 != NULL){
+    g_signal_connect(G_OBJECT(list3->data), "activate",
+		     G_CALLBACK(ags_menu_action_add_vst3_bridge_callback), (gpointer) menu_bar);
+
+    list3 = list3->next;
+  }
+  
+  g_list_free(list3_start);
+
   /* live! */
   list3 =
     list3_start = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list2->data));
@@ -477,6 +491,20 @@ ags_menu_bar_connect(AgsConnectable *connectable)
     list4 = list4->next;
   }
 
+  g_list_free(list4_start);
+
+  /* vst3 */
+  list4_start = 
+    list4 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list3->data));
+  list3 = list3->next;
+
+  while(list4 != NULL){
+    g_signal_connect(G_OBJECT(list4->data), "activate",
+		     G_CALLBACK(ags_menu_action_add_live_vst3_bridge_callback), (gpointer) menu_bar);
+
+    list4 = list4->next;
+  }
+  
   g_list_free(list4_start);
   g_list_free(list3_start);
   g_list_free(list2_start);
@@ -952,6 +980,69 @@ ags_lv2_bridge_menu_new()
 }
 
 GtkMenu*
+ags_vst3_bridge_menu_new()
+{
+  GtkMenu *menu;
+  GtkMenuItem *item;
+
+  AgsVst3Manager *vst3_manager;
+
+  GList *list, *start_list;
+
+  GRecMutex *vst3_manager_mutex;
+
+  menu = (GtkMenu *) gtk_menu_new();
+
+  vst3_manager = ags_vst3_manager_get_instance();
+
+  /* get vst3 manager mutex */
+  vst3_manager_mutex = AGS_VST3_MANAGER_GET_OBJ_MUTEX(vst3_manager);
+
+  /* get plugin */
+  g_rec_mutex_lock(vst3_manager_mutex);
+  
+  list =
+    start_list = g_list_copy_deep(vst3_manager->vst3_plugin,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
+
+  g_rec_mutex_unlock(vst3_manager_mutex);
+  
+  start_list = ags_base_plugin_sort(start_list);
+  g_list_free(list);
+ 
+  list = start_list;
+
+  while(list != NULL){
+    gchar *filename, *effect;
+    
+    /* get filename and effect */
+    g_object_get(list->data,
+		 "filename", &filename,
+		 "effect", &effect,
+		 NULL);
+      
+    /* create item */
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(effect);
+
+    g_object_set_data((GObject *) item,
+		      AGS_MENU_ITEM_FILENAME_KEY, filename);
+    g_object_set_data((GObject *) item,
+		      AGS_MENU_ITEM_EFFECT_KEY, effect);
+
+    gtk_menu_shell_append((GtkMenuShell *) menu,
+			  (GtkWidget *) item);
+
+    list = list->next;
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
+  
+  return(menu);
+}
+
+GtkMenu*
 ags_live_dssi_bridge_menu_new()
 {
   GtkMenu *menu;
@@ -1065,6 +1156,69 @@ ags_live_lv2_bridge_menu_new()
   
   g_rec_mutex_unlock(lv2_manager_mutex);
     
+  return(menu);
+}
+
+GtkMenu*
+ags_live_vst3_bridge_menu_new()
+{
+  GtkMenu *menu;
+  GtkMenuItem *item;
+
+  AgsVst3Manager *vst3_manager;
+
+  GList *list, *start_list;
+
+  GRecMutex *vst3_manager_mutex;
+  
+  menu = (GtkMenu *) gtk_menu_new();
+
+  vst3_manager = ags_vst3_manager_get_instance();
+
+  /* get vst3 manager mutex */
+  vst3_manager_mutex = AGS_VST3_MANAGER_GET_OBJ_MUTEX(vst3_manager);
+
+  /* get plugin */
+  g_rec_mutex_lock(vst3_manager_mutex);
+  
+  list =
+    start_list = g_list_copy_deep(vst3_manager->vst3_plugin,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
+  
+  g_rec_mutex_unlock(vst3_manager_mutex);
+  
+  start_list = ags_base_plugin_sort(start_list);
+  g_list_free(list);
+ 
+  list = start_list;
+
+  while(list != NULL){
+    gchar *filename, *effect;
+
+    /* get filename and effect */
+    g_object_get(list->data,
+		 "filename", &filename,
+		 "effect", &effect,
+		 NULL);
+      
+    /* create item */
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(effect);
+    
+    g_object_set_data((GObject *) item,
+		      AGS_MENU_ITEM_FILENAME_KEY, filename);
+    g_object_set_data((GObject *) item,
+		      AGS_MENU_ITEM_EFFECT_KEY, effect);
+    
+    gtk_menu_shell_append((GtkMenuShell *) menu,
+			  (GtkWidget *) item);
+
+    list = list->next;
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
+  
   return(menu);
 }
 

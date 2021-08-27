@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -450,6 +450,20 @@ ags_context_menu_connect(AgsConnectable *connectable)
   }
 
   g_list_free(list3_start);
+  
+  /* vst3 */
+  list3_start = 
+    list3 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list2->data));
+  list2 = list2->next;
+
+  while(list3 != NULL){
+    g_signal_connect(G_OBJECT(list3->data), "activate",
+		     G_CALLBACK(ags_menu_action_add_vst3_bridge_callback), (gpointer) context_menu);
+
+    list3 = list3->next;
+  }
+  
+  g_list_free(list3_start);
 
   /* live! */
   list3 =
@@ -481,6 +495,20 @@ ags_context_menu_connect(AgsConnectable *connectable)
     list4 = list4->next;
   }
 
+  g_list_free(list4_start);
+
+  /* vst3 */
+  list4_start = 
+    list4 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list3->data));
+  list3 = list3->next;
+
+  while(list4 != NULL){
+    g_signal_connect(G_OBJECT(list4->data), "activate",
+		     G_CALLBACK(ags_menu_action_add_live_vst3_bridge_callback), (gpointer) context_menu);
+
+    list4 = list4->next;
+  }
+  
   g_list_free(list4_start);
   g_list_free(list3_start);
   g_list_free(list2_start);
