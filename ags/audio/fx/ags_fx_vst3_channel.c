@@ -42,6 +42,9 @@ void ags_fx_vst3_channel_notify_samplerate_callback(GObject *gobject,
 						    GParamSpec *pspec,
 						    gpointer user_data);
 
+void ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
+					     AgsFxVst3Audio *fx_vst3_audio);
+
 /**
  * SECTION:ags_fx_vst3_channel
  * @short_description: fx vst3 channel
@@ -787,30 +790,8 @@ ags_fx_vst3_channel_load_port(AgsFxVst3Channel *fx_vst3_channel)
 	  ags_recall_add_port((AgsRecall *) fx_vst3_channel,
 			      vst3_port[nth]);
 	
-	  /* connect port */
-	  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-	    AgsFxVst3AudioScopeData *scope_data;
-
-	    scope_data = fx_vst3_audio->scope_data[i];
-
-	    if(i == AGS_SOUND_SCOPE_PLAYBACK ||
-	       i == AGS_SOUND_SCOPE_NOTATION ||
-	       i == AGS_SOUND_SCOPE_MIDI){
-	      for(j = 0; j < scope_data->audio_channels; j++){
-		AgsFxVst3AudioChannelData *channel_data;
-
-		channel_data = scope_data->channel_data[j];
-
-		if(pad < 128){
-		  AgsFxVst3AudioInputData *input_data;
-	  
-		  input_data = channel_data->input_data[pad];
-
-		  //TODO:JK: implement me
-		}
-	      }
-	    }
-	  }
+	  g_signal_connect_after(vst3_port[nth], "safe-write",
+				 ags_fx_vst3_channel_safe_write_callback, fx_vst3_audio);
 
 	  g_free(plugin_name);
 	  g_free(specifier);
@@ -860,8 +841,6 @@ ags_fx_vst3_channel_load_port(AgsFxVst3Channel *fx_vst3_channel)
 	     buffer_size > 0){
 	    input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
 	  }
-
-	  //TODO:JK: implement me
 	}
       }
     }
@@ -994,8 +973,9 @@ ags_fx_vst3_channel_load_port(AgsFxVst3Channel *fx_vst3_channel)
 
 	  ags_recall_add_port((AgsRecall *) fx_vst3_channel,
 			      vst3_port[nth]);
-
-	  //TODO:JK: implement me
+	
+	  g_signal_connect_after(vst3_port[nth], "safe-write",
+				 ags_fx_vst3_channel_safe_write_callback, fx_vst3_audio);
       
 	  g_free(plugin_name);
 	  g_free(specifier);
@@ -1031,8 +1011,6 @@ ags_fx_vst3_channel_load_port(AgsFxVst3Channel *fx_vst3_channel)
 	 buffer_size > 0){
 	input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
       }
-	  
-      //TODO:JK: implement me
     }
   
     fx_vst3_channel->output_port_count = output_port_count;
@@ -1058,6 +1036,13 @@ ags_fx_vst3_channel_load_port(AgsFxVst3Channel *fx_vst3_channel)
 
   g_list_free_full(start_plugin_port,
 		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
+					AgsFxVst3Audio *fx_vst3_audio)
+{
+  g_message("write");
 }
 
 /**

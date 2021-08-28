@@ -581,8 +581,6 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
       if(sub_categories != NULL &&
 	 strstr(sub_categories, "Instrument") != NULL){
 	ags_base_plugin_set_flags(base_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT);
-      }else{
-	ags_base_plugin_unset_flags(base_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT);
       }
       
       ags_vst_icomponent_set_io_mode(AGS_VST3_PLUGIN(base_plugin)->icomponent,

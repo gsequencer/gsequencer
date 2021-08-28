@@ -900,6 +900,12 @@ ags_fx_vst3_audio_channel_data_alloc()
   ags_vst_process_data_set_num_outputs(channel_data->process_data,
 				       1);
 
+  /* event list */
+  channel_data->input_event = ags_vst_event_list_new();
+
+  ags_vst_process_data_set_input_events(channel_data->process_data,
+					channel_data->input_event);
+
   /* input */
   input = ags_vst_audio_bus_buffers_alloc();
 
@@ -1015,6 +1021,12 @@ ags_fx_vst3_audio_input_data_alloc()
 
   ags_vst_process_data_set_num_outputs(input_data->process_data,
 				       1);
+
+  /* event list */
+  input_data->input_event = ags_vst_event_list_new();
+
+  ags_vst_process_data_set_input_events(input_data->process_data,
+					input_data->input_event);
 
   /* input */
   input = ags_vst_audio_bus_buffers_alloc();
@@ -1679,7 +1691,19 @@ void
 ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
 				      AgsFxVst3Audio *fx_vst3_audio)
 {
-  g_message("write");
+  AgsPluginPort *plugin_port;
+
+  plugin_port = NULL;
+  
+  g_object_get(port,
+	       "plugin-port", &plugin_port,
+	       NULL);
+
+  g_message("write %s", port->specifier);
+
+  if(plugin_port != NULL){
+    g_object_unref(plugin_port);
+  }
 }
 
 /**

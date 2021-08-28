@@ -20,14 +20,49 @@
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_ievents.h>
 
 #include <pluginterfaces/vst/ivstevents.h>
+#include <public.sdk/source/vst/hosting/eventlist.h>
 
 extern "C" {
+
+  AgsVstNoteOnEvent* ags_vst_note_on_event_alloc(gint channel, gint pitch, gfloat tuning, gfloat velocity, gint32 length, gint32 note_id)
+  {
+    Steinberg::Vst::NoteOnEvent *event = new Steinberg::Vst::NoteOnEvent();
+
+    event->channel = channel;
+    event->pitch = pitch;
+    event->tuning = tuning;
+    event->velocity = velocity;
+    event->length = length;
+    event->noteId = note_id;
+
+    return((AgsVstNoteOnEvent *) event);
+  }
+  
+  AgsVstNoteOffEvent* ags_vst_note_off_event_alloc(gint channel, gint pitch, gfloat tuning, gfloat velocity, gint32 length, gint32 note_id)
+  {
+    Steinberg::Vst::NoteOffEvent *event = new Steinberg::Vst::NoteOffEvent();
+
+    event->channel = channel;
+    event->pitch = pitch;
+    event->velocity = velocity;
+    event->noteId = note_id;
+    event->tuning = tuning;
+
+    return((AgsVstNoteOffEvent *) event);
+  }
 
   const AgsVstTUID* ags_vst_ievent_list_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IEventList::iid.toTUID()));
   }
 
+  AgsVstIEventList* ags_vst_event_list_new()
+  {
+    Steinberg::Vst::EventList *event_list = new Steinberg::Vst::EventList();
+    
+    return((AgsVstIEventList *) ((Steinberg::Vst::IEventList *) event_list));
+  }
+  
   gint32 ags_vst_ievent_list_get_event_count(AgsVstIEventList *ievent_list)
   {
     return(((Steinberg::Vst::IEventList *) ievent_list)->getEventCount());

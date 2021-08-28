@@ -263,8 +263,50 @@ ags_fx_vst3_audio_signal_real_run_inter(AgsRecall *recall)
   
   copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
 						     ags_audio_buffer_util_format_from_soundcard(format));
-  
-  //TODO:JK: implement me
+
+  if(fx_vst3_channel->input_data[sound_scope]->iaudio_processor != NULL){
+    AgsFxVst3ChannelInputData *input_data;
+
+    g_rec_mutex_lock(fx_vst3_channel_mutex);
+
+    input_data = fx_vst3_channel->input_data[sound_scope];
+
+    if(input_data->output != NULL){
+      ags_audio_buffer_util_clear_float(input_data->output, 1,
+					fx_vst3_channel->output_port_count * buffer_size);
+    }
+
+    if(input_data->input != NULL){
+      ags_audio_buffer_util_clear_float(input_data->input, 1,
+					fx_vst3_channel->input_port_count * buffer_size);
+    }
+
+    g_rec_mutex_lock(source_stream_mutex);
+    
+    if(input_data->input != NULL &&
+       fx_vst3_channel->input_port_count >= 1 &&
+       source->stream_current != NULL){
+      ags_audio_buffer_util_copy_buffer_to_buffer(input_data->input, fx_vst3_channel->input_port_count, 0,
+						  source->stream_current->data, 1, 0,
+						  buffer_size, copy_mode_in);
+    }
+
+    ags_vst_iaudio_processor_process(input_data->iaudio_processor,
+				     input_data->process_data);  
+    
+    if(input_data->output != NULL &&
+       fx_vst3_channel->output_port_count >= 1 &&
+       source->stream_current != NULL){
+      //NOTE:JK: only mono input, additional channels discarded
+      ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+						  input_data->output, fx_vst3_channel->output_port_count, 0,
+						  buffer_size, copy_mode_out);
+    }
+    
+    g_rec_mutex_unlock(source_stream_mutex);
+    
+    g_rec_mutex_unlock(fx_vst3_channel_mutex);
+  }
   
   if(source == NULL ||
      source->stream_current == NULL){
@@ -424,8 +466,84 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       input_data->key_on += 1;
 
       g_rec_mutex_unlock(fx_vst3_audio_mutex);
+    }
 
-      //TODO:JK: implement me
+    g_rec_mutex_lock(fx_vst3_audio_mutex);
+    
+    if(is_live_instrument){
+      ags_vst_ievent_list_add_event(channel_data->input_event,
+				    ags_vst_note_on_event_alloc(0,
+								midi_note,
+								0.0,
+								1.0,
+								-1,
+								-1));
+    }else{
+      ags_vst_ievent_list_add_event(input_data->input_event,
+				    ags_vst_note_on_event_alloc(0,
+								midi_note,
+								0.0,
+								1.0,
+								-1,
+								-1));
+    }      
+
+    g_rec_mutex_unlock(fx_vst3_audio_mutex);
+    
+    if(is_live_instrument){
+      g_rec_mutex_lock(fx_vst3_audio_mutex);
+      
+      if(channel_data->output != NULL){
+	ags_audio_buffer_util_clear_float(channel_data->output, fx_vst3_audio->output_port_count,
+					  buffer_size);
+      }
+
+      if(input_data->iaudio_processor != NULL){
+	ags_vst_iaudio_processor_process(input_data->iaudio_processor,
+					 input_data->process_data);  
+      }
+
+      g_rec_mutex_lock(source_stream_mutex);
+
+      if(channel_data->output != NULL &&
+	 fx_vst3_audio->output_port_count >= 1 &&
+	 source->stream_current != NULL){
+	//NOTE:JK: only mono input, additional channels discarded
+	ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+						    channel_data->output, fx_vst3_audio->output_port_count, 0,
+						    buffer_size, copy_mode_out);
+      }
+	  
+      g_rec_mutex_unlock(source_stream_mutex);
+
+      g_rec_mutex_unlock(fx_vst3_audio_mutex);
+    }else{
+      g_rec_mutex_lock(fx_vst3_audio_mutex);
+      
+      if(input_data->output != NULL){
+	ags_audio_buffer_util_clear_float(input_data->output, fx_vst3_audio->output_port_count,
+					  buffer_size);
+      }
+
+      if(input_data->iaudio_processor != NULL){
+	ags_vst_iaudio_processor_process(input_data->iaudio_processor,
+					 input_data->process_data);  
+      }
+      
+      g_rec_mutex_lock(source_stream_mutex);
+
+      if(input_data->output != NULL &&
+	 fx_vst3_audio->output_port_count >= 1 &&
+	 source->stream_current != NULL){
+	//NOTE:JK: only mono input, additional channels discarded
+	ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
+						    input_data->output, fx_vst3_audio->output_port_count, 0,
+						    buffer_size, copy_mode_out);
+      }
+	  
+      g_rec_mutex_unlock(source_stream_mutex);
+
+      g_rec_mutex_unlock(fx_vst3_audio_mutex);
     }
   }
   
@@ -534,7 +652,23 @@ ags_fx_vst3_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_aud
 
     input_data->key_on -= 1;
     
-    //TODO:JK: implement me
+    if(ags_fx_vst3_audio_test_flags(fx_vst3_audio, AGS_FX_VST3_AUDIO_LIVE_INSTRUMENT)){
+      ags_vst_ievent_list_add_event(channel_data->input_event,
+				    ags_vst_note_off_event_alloc(0,
+								 midi_note,
+								 0.0,
+								 1.0,
+								 -1,
+								 -1));
+    }else{
+      ags_vst_ievent_list_add_event(input_data->input_event,
+				    ags_vst_note_off_event_alloc(0,
+								 midi_note,
+								 0.0,
+								 1.0,
+								 -1,
+								 -1));
+    }
 
     g_rec_mutex_unlock(fx_vst3_audio_mutex);
   }
