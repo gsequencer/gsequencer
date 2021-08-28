@@ -1,3 +1,12 @@
+ags (3.10.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsVst3Manager and AgsVst3Plugin
+	* implemented VST3 C API additional allocation functions of structs and theirs setters
+	* implemented ags-fx-vst3 recall
+	* implemented AgsVst3Bridge and related
+	* fixed VST3 C API *_get_iid() by calling _iid.toTUID() before return
+
 ags (3.10.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

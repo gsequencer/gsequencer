@@ -112,7 +112,10 @@ struct _AgsFxVst3AudioChannelData
   
   AgsVstIComponent *icomponent;
   AgsVstIEditController *iedit_controller;
+  AgsVstIAudioProcessor *iaudio_processor;
 
+  AgsVstProcessData *process_data;
+  
   AgsFxVst3AudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
 };
 
@@ -127,7 +130,10 @@ struct _AgsFxVst3AudioInputData
 
   AgsVstIComponent *icomponent;
   AgsVstIEditController *iedit_controller;
+  AgsVstIAudioProcessor *iaudio_processor;
 
+  AgsVstProcessData *process_data;
+  
   snd_seq_event_t *event_buffer;
   guint key_on;
 };

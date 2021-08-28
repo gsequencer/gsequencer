@@ -64,6 +64,14 @@ GType ags_vst3_plugin_get_type(void);
 guint ags_vst3_plugin_get_audio_output_bus_count(AgsVst3Plugin *vst3_plugin);
 guint ags_vst3_plugin_get_audio_input_bus_count(AgsVst3Plugin *vst3_plugin);
 
+guint ags_vst3_plugin_get_event_output_bus_count(AgsVst3Plugin *vst3_plugin);
+guint ags_vst3_plugin_get_event_input_bus_count(AgsVst3Plugin *vst3_plugin);
+
+AgsVstProcessData* ags_vst3_plugin_process_data_lookup(AgsVstIComponent *icomponent);
+void ags_vst3_plugin_process_data_insert(AgsVstIComponent *icomponent,
+					 AgsVstProcessData *data);
+void ags_vst3_plugin_process_data_remove(AgsVstIComponent *icomponent);
+
 AgsVst3Plugin* ags_vst3_plugin_new(gchar *filename, gchar *effect, guint effect_index);
 
 G_END_DECLS

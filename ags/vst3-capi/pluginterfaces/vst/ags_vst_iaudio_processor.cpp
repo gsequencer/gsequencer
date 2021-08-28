@@ -157,6 +157,18 @@ extern "C" {
     ((Steinberg::Vst::ProcessData *) data)->numOutputs = num_outputs;
   }
 
+  void ags_vst_process_data_set_inputs(AgsVstProcessData *data,
+				       AgsVstAudioBusBuffers *buffers)
+  {
+    ((Steinberg::Vst::ProcessData *) data)->inputs = (Steinberg::Vst::AudioBusBuffers *) buffers;
+  }
+  
+  void ags_vst_process_data_set_outputs(AgsVstProcessData *data,
+					AgsVstAudioBusBuffers *buffers)
+  {
+    ((Steinberg::Vst::ProcessData *) data)->outputs = (Steinberg::Vst::AudioBusBuffers *) buffers;
+  }
+
   void ags_vst_process_data_set_input_iparameter_changes(AgsVstProcessData *data,
 							 AgsVstIParameterChanges *iparameter_changes)
   {

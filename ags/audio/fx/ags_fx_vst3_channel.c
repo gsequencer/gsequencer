@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -213,6 +213,9 @@ ags_fx_vst3_channel_notify_buffer_size_callback(GObject *gobject,
 
     input_data = fx_vst3_channel->input_data[i];
 
+    ags_vst_process_data_set_num_samples(input_data->process_data,
+					 buffer_size);
+    
     if(output_port_count > 0 &&
        buffer_size > 0){
       if(input_data->output == NULL){
@@ -305,6 +308,8 @@ ags_fx_vst3_channel_input_data_alloc()
 {
   AgsFxVst3ChannelInputData *input_data;
 
+  AgsVstAudioBusBuffers *output, *input;
+
   input_data = (AgsFxVst3ChannelInputData *) g_malloc(sizeof(AgsFxVst3ChannelInputData));
 
   g_rec_mutex_init(&(input_data->strct_mutex));
@@ -316,6 +321,55 @@ ags_fx_vst3_channel_input_data_alloc()
 
   input_data->icomponent = NULL;
   input_data->iedit_controller = NULL;
+  input_data->iaudio_processor = NULL;
+
+  /* process data */
+  input_data->process_data = ags_vst_process_data_alloc();
+
+  ags_vst_process_data_set_process_mode(input_data->process_data,
+					AGS_VST_KREALTIME);
+    
+  ags_vst_process_data_set_symbolic_sample_size(input_data->process_data,
+						AGS_VST_KSAMPLE32);  
+
+  ags_vst_process_data_set_num_samples(input_data->process_data,
+				       0);
+
+  ags_vst_process_data_set_num_inputs(input_data->process_data,
+				      1);
+
+  ags_vst_process_data_set_num_outputs(input_data->process_data,
+				       1);
+
+  /* input */
+  input = ags_vst_audio_bus_buffers_alloc();
+
+  ags_vst_audio_bus_buffers_set_num_channels(input,
+					     1);
+
+  ags_vst_audio_bus_buffers_set_silence_flags(input,
+					      0);
+
+  ags_vst_audio_bus_buffers_set_samples32(input,
+					  &(input_data->input));
+
+  ags_vst_process_data_set_inputs(input_data->process_data,
+				  input);
+
+  /* output */
+  output = ags_vst_audio_bus_buffers_alloc();
+
+  ags_vst_audio_bus_buffers_set_num_channels(output,
+					     1);
+
+  ags_vst_audio_bus_buffers_set_silence_flags(output,
+					      0);
+
+  ags_vst_audio_bus_buffers_set_samples32(output,
+					  &(input_data->output));
+
+  ags_vst_process_data_set_outputs(input_data->process_data,
+				   output);    
 
   return(input_data);
 }
@@ -375,6 +429,10 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
   AgsVst3Manager *vst3_manager;
   AgsVst3Plugin *vst3_plugin;
 
+  GStrvBuilder *strv_builder;
+
+  gchar **parameter_name;
+
   gchar *filename, *effect;
 
   guint buffer_size;
@@ -387,6 +445,19 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
   }
 
   vst3_manager = ags_vst3_manager_get_instance();
+
+  strv_builder = g_strv_builder_new();
+
+  g_strv_builder_add(strv_builder,
+		     "buffer-size");
+  g_strv_builder_add(strv_builder,
+		     "samplerate");
+  g_strv_builder_add(strv_builder,
+		     "iedit-controller");
+  g_strv_builder_add(strv_builder,
+		     "iaudio-processor");
+
+  parameter_name = g_strv_builder_end(strv_builder);
   
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_channel);
@@ -420,8 +491,34 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
     
   if(vst3_plugin != NULL &&
      !ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    GValue *value;
+
     guint i;
+    guint n_params;
     
+    n_params = 4;
+
+    value = g_new0(GValue,
+		   4);
+
+    g_value_init(value,
+		 G_TYPE_UINT);
+    
+    g_value_set_uint(value,
+		     buffer_size);
+    
+    g_value_init(value + 1,
+		 G_TYPE_UINT);
+
+    g_value_set_uint(value + 1,
+		     samplerate);
+    
+    g_value_init(value + 2,
+		 G_TYPE_POINTER);
+
+    g_value_init(value + 3,
+		 G_TYPE_POINTER);
+
     /* set vst3 plugin */    
     g_rec_mutex_lock(recall_mutex);
 
@@ -430,11 +527,20 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
 
       input_data = fx_vst3_channel->input_data[i];
 
-      //TODO:JK: implement me
+      if(input_data->icomponent == NULL){
+	input_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
+									 &n_params,
+									 &parameter_name, &value);
+	      
+	input_data->iedit_controller = g_value_get_pointer(value + 2);
+	input_data->iaudio_processor = g_value_get_pointer(value + 3);
+      }
     }
     
     g_rec_mutex_unlock(recall_mutex);
   }  
+
+  g_strfreev(parameter_name);
   
   g_free(filename);
   g_free(effect);

@@ -86,6 +86,9 @@ struct _AgsFxVst3ChannelInputData
   
   AgsVstIComponent *icomponent;
   AgsVstIEditController *iedit_controller;
+  AgsVstIAudioProcessor *iaudio_processor;
+
+  AgsVstProcessData *process_data;
 };
 
 GType ags_fx_vst3_channel_get_type();

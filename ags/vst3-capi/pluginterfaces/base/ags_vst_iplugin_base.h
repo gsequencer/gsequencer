@@ -71,11 +71,15 @@ extern "C" {
   AgsVstTResult ags_vst_iplugin_base_terminate(AgsVstIPluginBase *iplugin_base);
 
   AgsVstPClassInfo* ags_vst_pclass_info_alloc();
+
   void ags_vst_pclass_info_free(AgsVstPClassInfo *info);
 
   AgsVstTUID* ags_vst_pclass_info_get_cid(AgsVstPClassInfo *info);
+
   gint32 ags_vst_pclass_info_get_cardinality(AgsVstPClassInfo *info);
+
   gchar* ags_vst_pclass_info_get_category(AgsVstPClassInfo *info);
+
   gchar* ags_vst_pclass_info_get_name(AgsVstPClassInfo *info);
   
   const AgsVstTUID* ags_vst_iplugin_factory_get_iid();
@@ -90,8 +94,15 @@ extern "C" {
 
   AgsVstTResult ags_vst_iplugin_factory_create_instance(AgsVstIPluginFactory *iplugin_factory,
 							AgsVstFIDString *cid, AgsVstFIDString *_iid, void **obj);
+  
   const AgsVstTUID* ags_vst_iplugin_factory2_get_iid();
 
+  AgsVstPClassInfo2* ags_vst_pclass_info2_alloc();
+
+  void ags_vst_pclass_info2_free(AgsVstPClassInfo2 *info2);
+
+  gchar* ags_vst_pclass_info2_get_sub_categories(AgsVstPClassInfo2 *info2);
+  
   AgsVstTResult ags_vst_iplugin_factory2_get_class_info2(AgsVstIPluginFactory2 *iplugin_factory2,
 							 gint32 index, AgsVstPClassInfo *info);
 

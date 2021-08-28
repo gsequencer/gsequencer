@@ -81,6 +81,8 @@ enum{
 static gpointer ags_vst3_plugin_parent_class = NULL;
 static guint vst3_plugin_signals[LAST_SIGNAL];
 
+GHashTable *ags_vst3_plugin_process_data = NULL;
+
 GType
 ags_vst3_plugin_get_type (void)
 {
@@ -152,6 +154,12 @@ ags_vst3_plugin_class_init(AgsVst3PluginClass *vst3_plugin)
 void
 ags_vst3_plugin_init(AgsVst3Plugin *vst3_plugin)
 {
+  if(ags_vst3_plugin_process_data == NULL){
+    ags_vst3_plugin_process_data = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+							 NULL,
+							 NULL);
+  }
+
   vst3_plugin->get_plugin_factory = NULL;
 
   vst3_plugin->host_context = NULL;
@@ -224,6 +232,8 @@ ags_vst3_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 					GValue **value)
 {
   AgsVstIPluginFactory *iplugin_factory;
+  AgsVstIComponent *icomponent;
+  AgsVstIEditController *iedit_controller;
 
   gpointer retval;
 
@@ -285,12 +295,12 @@ ags_vst3_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
       }
 
       /* icomponent */
-      AGS_VST3_PLUGIN(base_plugin)->icomponent = NULL;
+      icomponent = NULL;
 
       val = ags_vst_iplugin_factory_create_instance(iplugin_factory,
 						    ags_vst_pclass_info_get_cid(info),
 						    ags_vst_icomponent_get_iid(),
-						    (void **) &(AGS_VST3_PLUGIN(base_plugin)->icomponent));
+						    (void **) &icomponent);
 
       if(val != AGS_VST_KRESULT_TRUE){
 	g_warning("failed to create VST3 instance with plugin factory - IComponent");
@@ -298,31 +308,31 @@ ags_vst3_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 	break;
       }
 
-      retval = AGS_VST3_PLUGIN(base_plugin)->icomponent;
-
+      retval = icomponent;
+      
       if((position = ags_strv_index(parameter_name[0], "icomponent")) >= 0){
 	g_value_set_pointer(&(value[0][position]),
-			    AGS_VST3_PLUGIN(base_plugin)->icomponent);
+			    icomponent);
       }
       
-      ags_vst_icomponent_set_io_mode(AGS_VST3_PLUGIN(base_plugin)->icomponent,
+      ags_vst_icomponent_set_io_mode(icomponent,
 				     AGS_VST_KADVANCED);
 
       AGS_VST3_PLUGIN(base_plugin)->host_context = ags_vst_host_context_get_instance();
       
-      ags_vst_iplugin_base_initialize((AgsVstIPluginBase *) AGS_VST3_PLUGIN(base_plugin)->icomponent,
+      ags_vst_iplugin_base_initialize((AgsVstIPluginBase *) icomponent,
 				      AGS_VST3_PLUGIN(base_plugin)->host_context);
 
       /* edit controller */
-      AGS_VST3_PLUGIN(base_plugin)->iedit_controller = NULL;
+      iedit_controller = NULL;
 
-      ags_vst_icomponent_get_controller_class_id(AGS_VST3_PLUGIN(base_plugin)->icomponent,
+      ags_vst_icomponent_get_controller_class_id(icomponent,
 						 &iedit_controller_id);
       
       val = ags_vst_iplugin_factory_create_instance(iplugin_factory,
 						    &iedit_controller_id,
 						    ags_vst_iedit_controller_get_iid(),
-						    (void **) &(AGS_VST3_PLUGIN(base_plugin)->iedit_controller));
+						    (void **) &iedit_controller);
 
       if(val != AGS_VST_KRESULT_TRUE){
 	g_warning("failed to create VST3 instance with plugin factory - IEditController");
@@ -332,29 +342,30 @@ ags_vst3_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 
       if((position = ags_strv_index(parameter_name[0], "iedit-controller")) >= 0){
 	g_value_set_pointer(&(value[0][position]),
-			    AGS_VST3_PLUGIN(base_plugin)->iedit_controller);
+			    iedit_controller);
       }
 
-      ags_vst_iplugin_base_initialize((AgsVstIPluginBase *) AGS_VST3_PLUGIN(base_plugin)->iedit_controller,
+      ags_vst_iplugin_base_initialize((AgsVstIPluginBase *) iedit_controller,
 				      AGS_VST3_PLUGIN(base_plugin)->host_context);
 
       break;
     }    
   }
   
-  if(AGS_VST3_PLUGIN(base_plugin)->icomponent != NULL){
+  if(icomponent != NULL){
     AgsVstIAudioProcessor *iaudio_processor;
     AgsVstProcessSetup *setup;
 
     iaudio_processor = NULL;
       
-    val = ags_vst_funknown_query_interface(AGS_VST3_PLUGIN(base_plugin)->icomponent,
+    val = ags_vst_funknown_query_interface(icomponent,
 					   ags_vst_iaudio_processor_get_iid(), &iaudio_processor);
 
     if(val != AGS_VST_KRESULT_TRUE){
       g_warning("failed to query interface of VST3 plugin - IAudioProcessor");
     }
 
+    /* process setup */
     setup = ags_vst_process_setup_alloc();
 
     ags_vst_process_setup_set_process_mode(setup,
@@ -376,6 +387,7 @@ ags_vst3_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
       g_warning("failed to setup VST3 processing - ProcessSetup");
     }  
     
+    /* return value */
     if((position = ags_strv_index(parameter_name[0], "iaudio-processor")) >= 0){
       g_value_set_pointer(&(value[0][position]),
 			  iaudio_processor);
@@ -418,6 +430,7 @@ ags_vst3_plugin_run(AgsBasePlugin *base_plugin,
 {
   AgsVstIComponent *icomponent;
   AgsVstIAudioProcessor *iaudio_processor;
+  AgsVstProcessData *data;
   
   AgsVstTResult val;
 
@@ -434,8 +447,11 @@ ags_vst3_plugin_run(AgsBasePlugin *base_plugin,
     return;
   }
 
+  data = g_hash_table_lookup(ags_vst3_plugin_process_data,
+			     icomponent);
   
-  //TODO:JK: implement me
+  ags_vst_iaudio_processor_process(iaudio_processor,
+				   data);  
 }
 
 void
@@ -503,6 +519,7 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
   if(success){
     AgsVstPClassInfo *info;
+    AgsVstPClassInfo2 *info2;
 
     AgsVstTUID iedit_controller_id;
     
@@ -511,6 +528,7 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
     AgsVstTResult val;
     
     info = ags_vst_pclass_info_alloc();
+    info2 = ags_vst_pclass_info2_alloc();    
     
     iplugin_factory = GetPluginFactory();
 
@@ -520,7 +538,7 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
       ags_vst_iplugin_factory_get_class_info(iplugin_factory,
 					     i, info);
 
-      if((!g_strcmp0(ags_vst_pclass_info_get_category(info), AGS_VST_KAUDIO_EFFECT_CLASS)) == FALSE){	
+      if((!g_strcmp0(ags_vst_pclass_info_get_category(info), AGS_VST_KAUDIO_EFFECT_CLASS)) == FALSE){
 	continue;
       }
 
@@ -544,6 +562,13 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	break;
       }
 
+      ags_vst_iplugin_factory2_get_class_info2(iplugin_factory,
+					       i, info2);
+      
+      if(strstr(ags_vst_pclass_info2_get_sub_categories(info2), "Instrument") != NULL){
+	ags_base_plugin_set_flags(base_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT);
+      }
+      
       ags_vst_icomponent_set_io_mode(AGS_VST3_PLUGIN(base_plugin)->icomponent,
 				     AGS_VST_KADVANCED);
 
@@ -571,11 +596,13 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
       ags_vst_iplugin_base_initialize((AgsVstIPluginBase *) AGS_VST3_PLUGIN(base_plugin)->iedit_controller,
 				      AGS_VST3_PLUGIN(base_plugin)->host_context);
-      
+
       break;
     }
 
     ags_vst_pclass_info_free(info);
+
+    ags_vst_pclass_info2_free(info2);
     
     if(AGS_VST3_PLUGIN(base_plugin)->iedit_controller != NULL){
       i_stop = ags_vst_iedit_controller_get_parameter_count(AGS_VST3_PLUGIN(base_plugin)->iedit_controller);
@@ -766,6 +793,103 @@ ags_vst3_plugin_get_audio_input_bus_count(AgsVst3Plugin *vst3_plugin)
   }
 
   return(audio_input_bus_count);
+}
+
+/**
+ * ags_vst3_plugin_get_event_output_bus_count:
+ * @vst3_plugin: the #AgsVst3Plugin
+ * 
+ * Get event output bus count.
+ * 
+ * Returns: the event output bus count
+ * 
+ * Since: 3.10.5
+ */
+guint
+ags_vst3_plugin_get_event_output_bus_count(AgsVst3Plugin *vst3_plugin)
+{
+  guint event_output_bus_count;
+
+  event_output_bus_count = 0;
+  
+  if(vst3_plugin->icomponent != NULL){
+    event_output_bus_count = ags_vst_icomponent_get_bus_count(vst3_plugin->icomponent,
+							      AGS_VST_KEVENT, AGS_VST_KOUTPUT);
+  }
+
+  return(event_output_bus_count);
+}
+
+/**
+ * ags_vst3_plugin_get_event_input_bus_count:
+ * @vst3_plugin: the #AgsVst3Plugin
+ * 
+ * Get event input bus count.
+ * 
+ * Returns: the event input bus count
+ * 
+ * Since: 3.10.5
+ */
+guint
+ags_vst3_plugin_get_event_input_bus_count(AgsVst3Plugin *vst3_plugin)
+{
+  guint event_input_bus_count;
+
+  event_input_bus_count = 0;
+  
+  if(vst3_plugin->icomponent != NULL){
+    event_input_bus_count = ags_vst_icomponent_get_bus_count(vst3_plugin->icomponent,
+							     AGS_VST_KEVENT, AGS_VST_KINPUT);
+  }
+
+  return(event_input_bus_count);
+}
+
+/**
+ * ags_vst3_plugin_process_data_lookup:
+ * @icomponent: the icomponent as key
+ * 
+ * Lookup process data.
+ *
+ * Since: 3.10.5
+ */
+AgsVstProcessData*
+ags_vst3_plugin_process_data_lookup(AgsVstIComponent *icomponent)
+{
+  return(g_hash_table_lookup(ags_vst3_plugin_process_data,
+			     icomponent));
+}
+
+/**
+ * ags_vst3_plugin_process_data_insert:
+ * @icomponent: the icomponent as key
+ * @data: the data as value
+ *
+ * Insert process data
+ * 
+ * Since: 3.10.5
+ */
+void
+ags_vst3_plugin_process_data_insert(AgsVstIComponent *icomponent,
+				    AgsVstProcessData *data)
+{
+  g_hash_table_insert(ags_vst3_plugin_process_data,
+		      icomponent, data);
+}
+
+/**
+ * ags_vst3_plugin_process_data_remove:
+ * @icomponent: the icomponent as key
+ * 
+ * Remove process data.
+ *
+ * Since: 3.10.5
+ */
+void
+ags_vst3_plugin_process_data_remove(AgsVstIComponent *icomponent)
+{
+  g_hash_table_remove(ags_vst3_plugin_process_data,
+		      icomponent);
 }
 
 /**

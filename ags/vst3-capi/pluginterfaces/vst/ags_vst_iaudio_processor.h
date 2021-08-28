@@ -160,6 +160,12 @@ extern "C" {
   void ags_vst_process_data_set_num_outputs(AgsVstProcessData *data,
 					    gint32 num_outputs);
 
+  void ags_vst_process_data_set_inputs(AgsVstProcessData *data,
+				       AgsVstAudioBusBuffers *buffers);
+  
+  void ags_vst_process_data_set_outputs(AgsVstProcessData *data,
+					AgsVstAudioBusBuffers *buffers);
+  
   void ags_vst_process_data_set_input_iparameter_changes(AgsVstProcessData *data,
 							 AgsVstIParameterChanges *iparameter_changes);
 

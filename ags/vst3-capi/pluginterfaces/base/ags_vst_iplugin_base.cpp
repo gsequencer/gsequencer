@@ -109,6 +109,25 @@ extern "C" {
     return((AgsVstTUID *) &(Steinberg::IPluginFactory2::iid.toTUID()));
   }
 
+  AgsVstPClassInfo2* ags_vst_pclass_info2_alloc()
+  {
+    Steinberg::PClassInfo2 *info2;
+
+    info2 = new Steinberg::PClassInfo2();
+
+    return((AgsVstPClassInfo2 *) info2);
+  }
+
+  void ags_vst_pclass_info2_free(AgsVstPClassInfo2 *info2)
+  {
+    delete info2;
+  }
+
+  gchar* ags_vst_pclass_info2_get_sub_categories(AgsVstPClassInfo2 *info2)
+  {
+    return(((Steinberg::PClassInfo2 *) info2)->subCategories);
+  }
+
   AgsVstTResult ags_vst_iplugin_factory2_get_class_info2(AgsVstIPluginFactory2 *iplugin_factory2,
 							 gint32 index, AgsVstPClassInfo *info)
   {
