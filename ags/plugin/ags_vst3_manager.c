@@ -707,7 +707,10 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
 	vst3_plugin = ags_vst3_plugin_new(path,
 					  plugin_name,
 					  i);
+	vst3_plugin->cid = (gchar *) ags_vst_pclass_info_get_cid(info);
+	
 	ags_base_plugin_load_plugin((AgsBasePlugin *) vst3_plugin);
+
 	vst3_manager->vst3_plugin = g_list_prepend(vst3_manager->vst3_plugin,
 						   vst3_plugin);
       }

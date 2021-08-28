@@ -1293,6 +1293,7 @@ libags_plugin_h_sources = \
 
 if WITH_VST3
 libags_plugin_h_sources += \
+	ags/plugin/ags_vst3_conversion.h \
 	ags/plugin/ags_vst3_manager.h \
 	ags/plugin/ags_vst3_plugin.h
 endif
@@ -1327,6 +1328,7 @@ libags_plugin_c_sources = \
 
 if WITH_VST3
 libags_plugin_c_sources += \
+	ags/plugin/ags_vst3_conversion.c \
 	ags/plugin/ags_vst3_manager.c \
 	ags/plugin/ags_vst3_plugin.c
 endif
@@ -1899,6 +1901,16 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_lv2_recycling.h \
 	ags/audio/fx/ags_fx_lv2_audio_signal.h
 
+if WITH_VST3
+libags_audio_fx_h_sources += \
+	ags/audio/fx/ags_fx_vst3_audio.h \
+	ags/audio/fx/ags_fx_vst3_audio_processor.h \
+	ags/audio/fx/ags_fx_vst3_channel.h \
+	ags/audio/fx/ags_fx_vst3_channel_processor.h \
+	ags/audio/fx/ags_fx_vst3_recycling.h \
+	ags/audio/fx/ags_fx_vst3_audio_signal.h
+endif
+
 deprecated_libags_audio_fx_c_sources =
 
 libags_audio_fx_c_sources = \
@@ -1987,6 +1999,16 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_lv2_channel_processor.c \
 	ags/audio/fx/ags_fx_lv2_recycling.c \
 	ags/audio/fx/ags_fx_lv2_audio_signal.c
+
+if WITH_VST3
+libags_audio_fx_c_sources += \
+	ags/audio/fx/ags_fx_vst3_audio.c \
+	ags/audio/fx/ags_fx_vst3_audio_processor.c \
+	ags/audio/fx/ags_fx_vst3_channel.c \
+	ags/audio/fx/ags_fx_vst3_channel_processor.c \
+	ags/audio/fx/ags_fx_vst3_recycling.c \
+	ags/audio/fx/ags_fx_vst3_audio_signal.c
+endif
 
 # libags-audio - task
 deprecated_libags_audio_task_h_sources =
