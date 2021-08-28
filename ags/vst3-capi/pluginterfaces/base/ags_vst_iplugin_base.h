@@ -104,7 +104,7 @@ extern "C" {
   gchar* ags_vst_pclass_info2_get_sub_categories(AgsVstPClassInfo2 *info2);
   
   AgsVstTResult ags_vst_iplugin_factory2_get_class_info2(AgsVstIPluginFactory2 *iplugin_factory2,
-							 gint32 index, AgsVstPClassInfo *info);
+							 gint32 index, AgsVstPClassInfo2 *info2);
 
   const AgsVstTUID* ags_vst_iplugin_factory3_get_iid();
 

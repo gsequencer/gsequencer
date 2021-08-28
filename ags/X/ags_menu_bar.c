@@ -1196,23 +1196,25 @@ ags_live_vst3_bridge_menu_new()
   while(list != NULL){
     gchar *filename, *effect;
 
-    /* get filename and effect */
-    g_object_get(list->data,
-		 "filename", &filename,
-		 "effect", &effect,
-		 NULL);
+    if(ags_base_plugin_test_flags(list->data, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+      /* get filename and effect */
+      g_object_get(list->data,
+		   "filename", &filename,
+		   "effect", &effect,
+		   NULL);
       
-    /* create item */
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(effect);
+      /* create item */
+      item = (GtkMenuItem *) gtk_menu_item_new_with_label(effect);
     
-    g_object_set_data((GObject *) item,
-		      AGS_MENU_ITEM_FILENAME_KEY, filename);
-    g_object_set_data((GObject *) item,
-		      AGS_MENU_ITEM_EFFECT_KEY, effect);
+      g_object_set_data((GObject *) item,
+			AGS_MENU_ITEM_FILENAME_KEY, filename);
+      g_object_set_data((GObject *) item,
+			AGS_MENU_ITEM_EFFECT_KEY, effect);
     
-    gtk_menu_shell_append((GtkMenuShell *) menu,
-			  (GtkWidget *) item);
-
+      gtk_menu_shell_append((GtkMenuShell *) menu,
+			    (GtkWidget *) item);
+    }
+    
     list = list->next;
   }
 

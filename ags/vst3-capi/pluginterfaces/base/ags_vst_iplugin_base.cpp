@@ -123,15 +123,20 @@ extern "C" {
     delete info2;
   }
 
-  gchar* ags_vst_pclass_info2_get_sub_categories(AgsVstPClassInfo2 *info2)
+  gchar* ags_vst_pclass_info2_get_category(AgsVstPClassInfo2 *info2)
   {
-    return(((Steinberg::PClassInfo2 *) info2)->subCategories);
+    return((gchar *) ((Steinberg::PClassInfo2 *) info2)->category);
   }
 
-  AgsVstTResult ags_vst_iplugin_factory2_get_class_info2(AgsVstIPluginFactory2 *iplugin_factory2,
-							 gint32 index, AgsVstPClassInfo *info)
+  gchar* ags_vst_pclass_info2_get_sub_categories(AgsVstPClassInfo2 *info2)
   {
-    return(((Steinberg::IPluginFactory2 *) iplugin_factory2)->getClassInfo(index, (Steinberg::PClassInfo *) info));
+    return((gchar *) ((Steinberg::PClassInfo2 *) info2)->subCategories);
+  }
+  
+  AgsVstTResult ags_vst_iplugin_factory2_get_class_info2(AgsVstIPluginFactory2 *iplugin_factory2,
+							 gint32 index, AgsVstPClassInfo2 *info)
+  {
+    return(((Steinberg::IPluginFactory2 *) iplugin_factory2)->getClassInfo2(index, (Steinberg::PClassInfo2 *) info));
   }
 
   const AgsVstTUID* ags_vst_iplugin_factory3_get_iid()

@@ -21,6 +21,7 @@
 
 #include <ags/plugin/ags_plugin_port.h>
 
+#include <string.h>
 #include <math.h>
 
 #if defined(AGS_W32API)
@@ -458,11 +459,14 @@ void
 ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 {
   AgsVstIPluginFactory *iplugin_factory;
+  AgsVstIPluginFactory2 *iplugin_factory2;
 
   GList *plugin_port;
 
   gpointer retval;
 
+  gchar *sub_categories;
+  
   guint i, i_stop;
   gboolean success;  
 
@@ -562,11 +566,23 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	break;
       }
 
-      ags_vst_iplugin_factory2_get_class_info2(iplugin_factory,
-					       i, info2);
+      ags_vst_funknown_query_interface(iplugin_factory,
+				       ags_vst_iplugin_factory2_get_iid(), &iplugin_factory2);
+
+      sub_categories = NULL;
+
+      if(iplugin_factory2 != NULL){
+	ags_vst_iplugin_factory2_get_class_info2(iplugin_factory2,
+						 i, info2);
+
+	sub_categories = ags_vst_pclass_info2_get_sub_categories(info2);
+      }
       
-      if(strstr(ags_vst_pclass_info2_get_sub_categories(info2), "Instrument") != NULL){
+      if(sub_categories != NULL &&
+	 strstr(sub_categories, "Instrument") != NULL){
 	ags_base_plugin_set_flags(base_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT);
+      }else{
+	ags_base_plugin_unset_flags(base_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT);
       }
       
       ags_vst_icomponent_set_io_mode(AGS_VST3_PLUGIN(base_plugin)->icomponent,
