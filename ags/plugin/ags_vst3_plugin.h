@@ -61,6 +61,9 @@ struct _AgsVst3PluginClass
 
 GType ags_vst3_plugin_get_type(void);
 
+guint ags_vst3_plugin_get_audio_output_bus_count(AgsVst3Plugin *vst3_plugin);
+guint ags_vst3_plugin_get_audio_input_bus_count(AgsVst3Plugin *vst3_plugin);
+
 AgsVst3Plugin* ags_vst3_plugin_new(gchar *filename, gchar *effect, guint effect_index);
 
 G_END_DECLS

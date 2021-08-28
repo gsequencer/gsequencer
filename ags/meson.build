@@ -322,6 +322,9 @@ libags_audio_sources = files(
   'plugin/ags_lv2_worker.c',
   'plugin/ags_lv2_worker_manager.c',
   'plugin/ags_plugin_port.c',
+  'plugin/ags_vst3_conversion.c',
+  'plugin/ags_vst3_manager.c',
+  'plugin/ags_vst3_plugin.c',
   'audio/ags_acceleration.c',
   'audio/ags_audio_application_context.c',
   'audio/ags_audio_buffer_util.c',
@@ -519,6 +522,12 @@ libags_audio_sources = files(
   'audio/fx/ags_fx_volume_channel.c',
   'audio/fx/ags_fx_volume_channel_processor.c',
   'audio/fx/ags_fx_volume_recycling.c',
+  'audio/fx/ags_fx_vst3_audio.c',
+  'audio/fx/ags_fx_vst3_audio_processor.c',
+  'audio/fx/ags_fx_vst3_audio_signal.c',
+  'audio/fx/ags_fx_vst3_channel.c',
+  'audio/fx/ags_fx_vst3_channel_processor.c',
+  'audio/fx/ags_fx_vst3_recycling.c',
   'audio/jack/ags_jack_client.c',
   'audio/jack/ags_jack_devin.c',
   'audio/jack/ags_jack_devout.c',
@@ -1460,6 +1469,9 @@ libags_audio_plugin_headers = [
   'plugin/ags_lv2ui_plugin.h',
   'plugin/ags_plugin_port.h',
   'plugin/ags_plugin_stock.h',
+  'plugin/ags_vst3_conversion.h',
+  'plugin/ags_vst3_manager.h',
+  'plugin/ags_vst3_plugin.h',
 ]
 
 libags_audio_audio_headers = [
@@ -1678,6 +1690,12 @@ libags_audio_audio_fx_headers = [
   'audio/fx/ags_fx_volume_channel.h',
   'audio/fx/ags_fx_volume_channel_processor.h',
   'audio/fx/ags_fx_volume_recycling.h',
+  'audio/fx/ags_fx_vst3_audio.h',
+  'audio/fx/ags_fx_vst3_audio_processor.h',
+  'audio/fx/ags_fx_vst3_audio_signal.h',
+  'audio/fx/ags_fx_vst3_channel.h',
+  'audio/fx/ags_fx_vst3_channel_processor.h',
+  'audio/fx/ags_fx_vst3_recycling.h',
 ]
 
 libags_audio_audio_gstreamer_headers = [ ]

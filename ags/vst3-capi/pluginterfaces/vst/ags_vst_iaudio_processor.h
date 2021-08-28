@@ -24,6 +24,8 @@
 
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h>
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_speaker.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_ievents.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_changes.h>
 
 #define AGS_VST_KAUDIO_EFFECT_CLASS "Audio Module Class"
 
@@ -112,6 +114,66 @@ extern "C" {
     AGS_VST_KNEED_FRAME_RATE                   = 1 <<  9,
     AGS_VST_KNEED_TRANSPORT_STATE              = 1 << 10,
   }AgsVstIProcessContextRequirementsFlags;
+
+  AgsVstProcessSetup* ags_vst_process_setup_alloc();
+
+  void ags_vst_process_setup_set_process_mode(AgsVstProcessSetup *setup,
+					      gint32 process_mode);
+
+  void ags_vst_process_setup_set_symbolic_sample_size(AgsVstProcessSetup *setup,
+						      gint32 symbolic_sample_size);
+  
+  void ags_vst_process_setup_set_max_samples_per_block(AgsVstProcessSetup *setup,
+						       gint32 max_samples_per_block);
+
+  void ags_vst_process_setup_set_samplerate(AgsVstProcessSetup *setup,
+					    gdouble samplerate);
+
+  AgsVstAudioBusBuffers* ags_vst_audio_bus_buffers_alloc();
+
+  void ags_vst_audio_bus_buffers_set_num_channels(AgsVstAudioBusBuffers *buffers,
+						  gint32 num_channels);
+  
+  void ags_vst_audio_bus_buffers_set_silence_flags(AgsVstAudioBusBuffers *buffers,
+						   guint64 silence_flags);
+  
+  void ags_vst_audio_bus_buffers_set_samples32(AgsVstAudioBusBuffers *buffers,
+					       gfloat **channel_buffers);
+  
+  void ags_vst_audio_bus_buffers_set_samples64(AgsVstAudioBusBuffers *buffers,
+					       gdouble **channel_buffers);
+
+  AgsVstProcessData* ags_vst_process_data_alloc();
+
+  void ags_vst_process_data_set_process_mode(AgsVstProcessData *data,
+					     gint32 process_mode);
+
+  void ags_vst_process_data_set_symbolic_sample_size(AgsVstProcessData *data,
+						     gint32 symbolic_sample_size);
+  
+  void ags_vst_process_data_set_num_samples(AgsVstProcessData *data,
+					    gint32 num_samples);
+  
+  void ags_vst_process_data_set_num_inputs(AgsVstProcessData *data,
+					   gint32 num_inputs);
+  
+  void ags_vst_process_data_set_num_outputs(AgsVstProcessData *data,
+					    gint32 num_outputs);
+
+  void ags_vst_process_data_set_input_iparameter_changes(AgsVstProcessData *data,
+							 AgsVstIParameterChanges *iparameter_changes);
+
+  void ags_vst_process_data_set_ouput_iparameter_changes(AgsVstProcessData *data,
+							 AgsVstIParameterChanges *iparameter_changes);
+
+  void ags_vst_process_data_set_input_events(AgsVstProcessData *data,
+					     AgsVstIEventList *events);
+
+  void ags_vst_process_data_set_output_events(AgsVstProcessData *data,
+					      AgsVstIEventList *events);
+
+  void ags_vst_process_data_set_process_context(AgsVstProcessData *data,
+						AgsVstProcessContext *context);
   
   const AgsVstTUID* ags_vst_iaudio_processor_get_iid();
 
