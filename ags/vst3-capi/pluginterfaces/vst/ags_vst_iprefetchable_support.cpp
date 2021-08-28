@@ -25,7 +25,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iprefetchable_support_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IPrefetchableSupport::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IPrefetchableSupport::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iprefetchable_support_get_prefetchable_support(AgsVstIPrefetchableSupport *iprefetchable,

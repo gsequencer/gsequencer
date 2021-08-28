@@ -25,7 +25,7 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_iautomation_state_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IAutomationState::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IAutomationState::iid.toTUID()));
   }
   
   AgsVstTResult ags_vst_iautomation_state_set_automation_state(AgsVstIAutomationState *iautomation_state,

@@ -48,7 +48,7 @@ struct _AgsVst3Plugin
   
   AgsVstHostContext *host_context;
 
-  gchar *cid;
+  char *cid;
   
   AgsVstIComponent *icomponent;
   AgsVstIEditController *iedit_controller;

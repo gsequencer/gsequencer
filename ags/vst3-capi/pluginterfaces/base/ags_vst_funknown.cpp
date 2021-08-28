@@ -178,7 +178,7 @@ extern "C" {
   const AgsVstTUID*
   ags_vst_funknown_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::FUnknown::iid));
+    return((AgsVstTUID *) &(Steinberg::FUnknown::iid.toTUID()));
   }
 
   gint32 ags_vst_funknown_query_interface(AgsVstFUnknown *funknown,

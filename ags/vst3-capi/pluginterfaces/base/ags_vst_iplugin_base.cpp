@@ -28,7 +28,7 @@ extern "C" {
   const AgsVstTUID*
   ags_vst_iplugin_base_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::IPluginBase::iid));
+    return((AgsVstTUID *) &(Steinberg::IPluginBase::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iplugin_base_initialize(AgsVstIPluginBase *iplugin_base, AgsVstFUnknown *funknown)
@@ -78,7 +78,7 @@ extern "C" {
   const AgsVstTUID*
   ags_vst_iplugin_factory_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::IPluginFactory::iid));
+    return((AgsVstTUID *) &(Steinberg::IPluginFactory::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iplugin_factory_get_factory_info(AgsVstIPluginFactory *iplugin_factory,
@@ -106,7 +106,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iplugin_factory2_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::IPluginFactory2::iid));
+    return((AgsVstTUID *) &(Steinberg::IPluginFactory2::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iplugin_factory2_get_class_info2(AgsVstIPluginFactory2 *iplugin_factory2,
@@ -117,7 +117,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iplugin_factory3_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::IPluginFactory3::iid));
+    return((AgsVstTUID *) &(Steinberg::IPluginFactory3::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iplugin_factory3_get_class_info_unicode(AgsVstIPluginFactory3 *iplugin_factory3,

@@ -25,7 +25,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_attribute_list_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IAttributeList::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IAttributeList::iid.toTUID()));
   }
   
   AgsVstTResult ags_vst_iattribute_list_set_int(AgsVstIAttributeList *iattribute_list, AgsVstAttrID id, gint64 value)
@@ -78,7 +78,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_istream_attributes_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IStreamAttributes::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IStreamAttributes::iid.toTUID()));
   }
 
   AgsVstIAttributeList* ags_vst_istream_attributes_get_attributes(AgsVstIStreamAttributes *istream_attributes)

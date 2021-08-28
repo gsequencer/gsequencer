@@ -25,7 +25,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_inote_expression_controller_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::INoteExpressionController::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::INoteExpressionController::iid.toTUID()));
   }
 
   gint32 ags_vst_inote_expression_controller_get_note_expression_count(AgsVstINoteExpressionController *inote_expression_controller,
@@ -66,7 +66,7 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_ikeyswitch_controller_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IKeyswitchController::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IKeyswitchController::iid.toTUID()));
   }
 
   gint32 ags_vst_ikeyswitch_controller_get_keyswitch_count(AgsVstIKeyswitchController *ikeyswitch_controller,

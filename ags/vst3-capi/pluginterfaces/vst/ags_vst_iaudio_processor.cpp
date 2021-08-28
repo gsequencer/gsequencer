@@ -66,7 +66,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iaudio_processor_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IAudioProcessor::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IAudioProcessor::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iaudio_processor_set_bus_arrangements(AgsVstIAudioProcessor *iaudio_processor,
@@ -127,7 +127,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iaudio_presentation_latency_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IAudioPresentationLatency::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IAudioPresentationLatency::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iaudio_presentation_latency_set_audio_presentation_latency_samples(AgsVstIAudioPresentationLatency *iaudio_presentation_latency,
@@ -140,7 +140,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iprocess_context_requirements_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IProcessContextRequirements::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IProcessContextRequirements::iid.toTUID()));
   }
   
   guint32 ags_vst_iprocess_context_requirements_get_process_context_requirements(AgsVstIProcessContextRequirements *iprocess_context_requirements)

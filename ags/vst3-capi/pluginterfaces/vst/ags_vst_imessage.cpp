@@ -25,7 +25,7 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_imessage_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IMessage::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IMessage::iid.toTUID()));
   }
 
   AgsVstFIDString ags_vst_imessage_get_message_id(AgsVstIMessage *imessage)
@@ -46,7 +46,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iconnection_point_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IConnectionPoint::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IConnectionPoint::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iconnection_point_connect(AgsVstIConnectionPoint *iconnection_point,

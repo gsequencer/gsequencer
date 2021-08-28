@@ -26,7 +26,7 @@ extern "C" {
   AgsVstTUID*
   ags_vst_ibstream_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::IBStream::iid));
+    return((AgsVstTUID *) &(Steinberg::IBStream::iid.toTUID()));
   }
 
   AgsVstTResult
@@ -76,7 +76,7 @@ extern "C" {
   {
     extern const Steinberg::TUID ISizeableStream__iid;
 
-    return((AgsVstTUID *) &(Steinberg::ISizeableStream::iid));
+    return((AgsVstTUID *) &(Steinberg::ISizeableStream::iid.toTUID()));
   }
 
   AgsVstTResult

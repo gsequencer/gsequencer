@@ -25,7 +25,7 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_ihost_application_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IHostApplication::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IHostApplication::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_ihost_application_get_name(AgsVstIHostApplication *ihost_application,
@@ -42,22 +42,22 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_ivst3_to_vst2_wrapper_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IVst3ToVst2Wrapper::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IVst3ToVst2Wrapper::iid.toTUID()));
   }
   
   const AgsVstTUID* ags_vst_ivst3_to_au_wrapper_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IVst3ToAUWrapper::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IVst3ToAUWrapper::iid.toTUID()));
   }
 
   const AgsVstTUID* ags_vst_ivst3_to_aax_wrapper_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IVst3ToAAXWrapper::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IVst3ToAAXWrapper::iid.toTUID()));
   }
 
   const AgsVstTUID* ags_vst_ivst3_wrapper_mpe_support_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IVst3WrapperMPESupport::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IVst3WrapperMPESupport::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_ivst3_wrapper_mpe_support_enable_mpe_input_processing(AgsVstIVst3WrapperMPESupport *ivst3_wrapper_mpe_support,

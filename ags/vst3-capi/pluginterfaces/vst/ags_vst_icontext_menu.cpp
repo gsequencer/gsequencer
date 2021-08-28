@@ -25,7 +25,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_icomponent_handler3_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IComponentHandler3::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IComponentHandler3::iid.toTUID()));
   }
 
   AgsVstIContextMenu* ags_vst_icomponent_handler3_create_context_menu(AgsVstIComponentHandler3 *icomponent_handler3,
@@ -36,7 +36,7 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_icontext_menu_target_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IContextMenuTarget::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IContextMenuTarget::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_icontext_menu_target_execute_menu_item(AgsVstIContextMenuTarget *icontext_menu_target,
@@ -47,7 +47,7 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_icontext_menu_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IContextMenu::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IContextMenu::iid.toTUID()));
   }
 
   gint32 ags_vst_icontext_menu_get_item_count(AgsVstIContextMenu *icontext_menu)

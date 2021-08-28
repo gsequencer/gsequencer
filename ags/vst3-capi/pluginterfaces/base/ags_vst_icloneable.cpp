@@ -26,7 +26,7 @@ extern "C" {
   const AgsVstTUID*
   ags_vst_icloneable_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::ICloneable::iid));
+    return((AgsVstTUID *) &(Steinberg::ICloneable::iid.toTUID()));
   }
 
   AgsVstFUnknown* ags_vst_icloneable_clone(AgsVstICloneable *cloneable)

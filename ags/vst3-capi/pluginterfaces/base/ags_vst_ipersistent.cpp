@@ -27,7 +27,7 @@ extern "C" {
   const AgsVstTUID*
   ags_vst_ipersistent_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::IPersistent::iid));
+    return((AgsVstTUID *) &(Steinberg::IPersistent::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_ipersistent_load_attributes(AgsVstIPersistent *persistent,
@@ -39,7 +39,7 @@ extern "C" {
   const AgsVstTUID*
   ags_vst_iattributes_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::IAttributes::iid));
+    return((AgsVstTUID *) &(Steinberg::IAttributes::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iattributes_set(AgsVstIAttributes *attr,
@@ -114,7 +114,7 @@ extern "C" {
   const AgsVstTUID*
   ags_vst_iattributes2_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::IAttributes2::iid));
+    return((AgsVstTUID *) &(Steinberg::IAttributes2::iid.toTUID()));
   }
 
   gint32 ags_vst_iattributes2_count_attributes(AgsVstIAttributes2 *attr)

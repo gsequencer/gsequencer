@@ -26,7 +26,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iinter_app_audio_host_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IInterAppAudioHost::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IInterAppAudioHost::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iinter_app_audio_host_get_screen_size(AgsVstIInterAppAudioHost *iinter_app_audio_host,
@@ -81,7 +81,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iinter_app_audio_connection_notification_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IInterAppAudioConnectionNotification::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IInterAppAudioConnectionNotification::iid.toTUID()));
   }
 
   void ags_vst_iinter_app_audio_connection_notification_on_inter_app_audio_connection_notification_state_change(AgsVstIInterAppAudioConnectionNotification *iinter_app_audio_connection_notification,
@@ -92,7 +92,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iinter_app_audio_preset_manager_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IInterAppAudioPresetManager::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IInterAppAudioPresetManager::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iinter_app_audio_preset_manager_run_load_preset_browser(AgsVstIInterAppAudioPresetManager *iinter_app_audio_manager)

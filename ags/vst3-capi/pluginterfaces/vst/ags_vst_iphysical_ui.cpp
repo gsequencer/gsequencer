@@ -25,7 +25,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_inote_expression_physical_ui_mapping_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::INoteExpressionPhysicalUIMapping::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::INoteExpressionPhysicalUIMapping::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_inote_expression_physical_ui_mapping_get_physical_ui_mapping(AgsVstINoteExpressionPhysicalUIMapping *inote_expression_physical_ui_mapping,

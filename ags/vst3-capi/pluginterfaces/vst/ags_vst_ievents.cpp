@@ -25,7 +25,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_ievent_list_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IEventList::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IEventList::iid.toTUID()));
   }
 
   gint32 ags_vst_ievent_list_get_event_count(AgsVstIEventList *ievent_list)

@@ -29,7 +29,7 @@ extern "C" {
   ags_vst_ierror_context_get_iid()
   {
     //FIXME:JK: check uncomment
-//    return((AgsVstTUID *) &(Steinberg::IErrorContext::iid));
+//    return((AgsVstTUID *) &(Steinberg::IErrorContext::iid.toTUID()));
     
     return(NULL);
   }

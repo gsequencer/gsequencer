@@ -26,7 +26,7 @@ extern "C" {
   AgsVstTUID*
   ags_vst_istring_result_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::IStringResult::iid));
+    return((AgsVstTUID *) &(Steinberg::IStringResult::iid.toTUID()));
   }
 
   void ags_vst_istring_result_set_text(AgsVstIStringResult *istring_result, gchar *text)
@@ -37,7 +37,7 @@ extern "C" {
   AgsVstTUID*
   ags_vst_istring_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::IString::iid));
+    return((AgsVstTUID *) &(Steinberg::IString::iid.toTUID()));
   }
 
   void ags_vst_istring_set_text8(AgsVstIString *istring, gchar *text)

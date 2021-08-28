@@ -25,7 +25,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iunit_handler_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IUnitHandler::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IUnitHandler::iid.toTUID()));
   }
   
   AgsVstTResult ags_vst_iunit_handler_notify_unit_selection(AgsVstIUnitHandler *iunit_handler,
@@ -42,7 +42,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iunit_handler2_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IUnitHandler2::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IUnitHandler2::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iunit_handler2_notify_unit_by_bus_change(AgsVstIUnitHandler2 *iunit_handler2)
@@ -52,7 +52,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iunit_info_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IUnitInfo::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IUnitInfo::iid.toTUID()));
   }
 
   gint32 ags_vst_iunit_info_get_unit_count(AgsVstIUnitInfo *iunit_info)
@@ -146,7 +146,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iprogram_list_data_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IProgramListData::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IProgramListData::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iprogram_list_data_program_data_supported(AgsVstIProgramListData *iprogram_list_data,
@@ -171,7 +171,7 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_iunit_data_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::Vst::IUnitData::iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IUnitData::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iunit_data_unit_data_supported(AgsVstIUnitData *iunit_data,

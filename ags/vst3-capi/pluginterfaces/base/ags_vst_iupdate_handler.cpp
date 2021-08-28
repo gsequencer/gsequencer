@@ -25,7 +25,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iupdate_handler_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::IUpdateHandler::iid));
+    return((AgsVstTUID *) &(Steinberg::IUpdateHandler::iid.toTUID()));
   }
   
   AgsVstTResult ags_vst_iupdate_handler_add_dependent(AgsVstIUpdateHandler *iupdate_handler, AgsVstFUnknown *funknown, AgsVstIDependent *idependent)
@@ -50,7 +50,7 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_idependent_get_iid()
   {
-    return((AgsVstTUID *) &(Steinberg::IDependent::iid));
+    return((AgsVstTUID *) &(Steinberg::IDependent::iid.toTUID()));
   }
   
   void ags_vst_idependent_update(AgsVstIDependent *idependent, AgsVstFUnknown *changed_funknown, gint32 message)
