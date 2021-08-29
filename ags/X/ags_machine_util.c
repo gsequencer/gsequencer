@@ -46,11 +46,14 @@
 
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
-#include <ags/X/machine/ags_vst3_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
 #include <ags/X/machine/ags_live_dssi_bridge.h>
 #include <ags/X/machine/ags_live_lv2_bridge.h>
+
+#if defined(AGS_WITH_VST3)
+#include <ags/X/machine/ags_vst3_bridge.h>
 #include <ags/X/machine/ags_live_vst3_bridge.h>
+#endif
 
 /**
  * SECTION:ags_machine_util
@@ -1008,10 +1011,13 @@ ags_machine_util_new_dssi_bridge(gchar *filename, gchar *effect)
 GtkWidget*
 ags_machine_util_new_vst3_bridge(gchar *filename, gchar *effect)
 {
+#if defined(AGS_WITH_VST3)
   AgsWindow *window;
   AgsVst3Bridge *vst3_bridge;
 
   AgsApplicationContext *application_context;
+
+  AgsVst3Plugin *vst3_plugin;
 
   GObject *default_soundcard;
   
@@ -1022,10 +1028,45 @@ ags_machine_util_new_vst3_bridge(gchar *filename, gchar *effect)
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   /* create vst3 bridge */
+  vst3_plugin = ags_vst3_manager_find_vst3_plugin(ags_vst3_manager_get_instance(),
+						  filename, effect);
+
+  if(vst3_plugin == NULL){
+    return(NULL);
+  }
+
   vst3_bridge = ags_vst3_bridge_new(G_OBJECT(default_soundcard),
 				    filename,
 				    effect);
   
+  if(vst3_plugin != NULL &&
+     ags_base_plugin_test_flags(vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    ags_audio_set_flags(AGS_MACHINE(vst3_bridge)->audio, (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+							  AGS_AUDIO_INPUT_HAS_RECYCLING |
+							  AGS_AUDIO_SYNC |
+							  AGS_AUDIO_ASYNC));
+    ags_audio_set_ability_flags(AGS_MACHINE(vst3_bridge)->audio, (AGS_SOUND_ABILITY_NOTATION));
+    ags_audio_set_behaviour_flags(AGS_MACHINE(vst3_bridge)->audio, (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT |
+								    AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING));
+    
+    g_object_set(AGS_MACHINE(vst3_bridge)->audio,
+		 "max-input-pads", 128,
+		 "audio-start-mapping", 0,
+		 "audio-end-mapping", 128,
+		 "midi-start-mapping", 0,
+		 "midi-end-mapping", 128,
+		 NULL);
+    
+    AGS_MACHINE(vst3_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
+					AGS_MACHINE_REVERSE_NOTATION);
+
+    ags_machine_popup_add_connection_options((AgsMachine *) vst3_bridge,
+					     (AGS_MACHINE_POPUP_MIDI_DIALOG));
+
+    ags_machine_popup_add_edit_options((AgsMachine *) vst3_bridge,
+				       (AGS_MACHINE_POPUP_ENVELOPE));
+  }
+
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(vst3_bridge),
 		     FALSE, FALSE, 0);
@@ -1037,9 +1078,18 @@ ags_machine_util_new_vst3_bridge(gchar *filename, gchar *effect)
   ags_audio_set_audio_channels(AGS_MACHINE(vst3_bridge)->audio,
 			       2, 0);
 
-  ags_audio_set_pads(AGS_MACHINE(vst3_bridge)->audio,
-		     AGS_TYPE_INPUT,
-		     128, 0);
+  if(vst3_plugin != NULL){
+    if(!ags_base_plugin_test_flags(vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+      ags_audio_set_pads(AGS_MACHINE(vst3_bridge)->audio,
+			 AGS_TYPE_INPUT,
+			 1, 0);
+    }else{
+      ags_audio_set_pads(AGS_MACHINE(vst3_bridge)->audio,
+			 AGS_TYPE_INPUT,
+			 128, 0);
+    }
+  }
+
   ags_audio_set_pads(AGS_MACHINE(vst3_bridge)->audio,
 		     AGS_TYPE_OUTPUT,
 		     1, 0);
@@ -1051,6 +1101,9 @@ ags_machine_util_new_vst3_bridge(gchar *filename, gchar *effect)
   gtk_widget_show_all(GTK_WIDGET(vst3_bridge));
 
   return((GtkWidget *) vst3_bridge);
+#else
+  return(NULL);
+#endif
 }
 
 /**
@@ -1435,10 +1488,13 @@ ags_machine_util_new_live_lv2_bridge(gchar *filename, gchar *effect)
 GtkWidget*
 ags_machine_util_new_live_vst3_bridge(gchar *filename, gchar *effect)
 {
+#if defined(AGS_WITH_VST3)
   AgsWindow *window;
   AgsLiveVst3Bridge *live_vst3_bridge;
 
   AgsApplicationContext *application_context;
+
+  AgsVst3Plugin *vst3_plugin;
 
   GObject *default_soundcard;
 
@@ -1448,7 +1504,14 @@ ags_machine_util_new_live_vst3_bridge(gchar *filename, gchar *effect)
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
-  /* create live vst3 bridge */
+  /* create live vst3 bridge */  
+  vst3_plugin = ags_vst3_manager_find_vst3_plugin(ags_vst3_manager_get_instance(),
+						  filename, effect);
+
+  if(vst3_plugin == NULL){
+    return(NULL);
+  }
+
   live_vst3_bridge = ags_live_vst3_bridge_new(G_OBJECT(default_soundcard),
 					      filename,
 					      effect);
@@ -1465,9 +1528,18 @@ ags_machine_util_new_live_vst3_bridge(gchar *filename, gchar *effect)
 			       2, 0);
 
   /*  */
-  ags_audio_set_pads(AGS_MACHINE(live_vst3_bridge)->audio,
-		     AGS_TYPE_INPUT,
-		     128, 0);
+  if(vst3_plugin != NULL){
+    if(!ags_base_plugin_test_flags(vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+      ags_audio_set_pads(AGS_MACHINE(live_vst3_bridge)->audio,
+			 AGS_TYPE_INPUT,
+			 1, 0);
+    }else{
+      ags_audio_set_pads(AGS_MACHINE(live_vst3_bridge)->audio,
+			 AGS_TYPE_INPUT,
+			 128, 0);
+    }
+  }
+
   ags_audio_set_pads(AGS_MACHINE(live_vst3_bridge)->audio,
 		     AGS_TYPE_OUTPUT,
 		     1, 0);
@@ -1479,6 +1551,9 @@ ags_machine_util_new_live_vst3_bridge(gchar *filename, gchar *effect)
   gtk_widget_show_all(GTK_WIDGET(live_vst3_bridge));
 
   return((GtkWidget *) live_vst3_bridge);
+#else
+  return(NULL);
+#endif
 }
 
 /**

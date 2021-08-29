@@ -20,6 +20,8 @@
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_menu_action_callbacks.h>
 
+#include <ags/config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -448,6 +450,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   g_list_free(list3_start);
 
   /* vst3 */
+#if defined(AGS_WITH_VST3)
   list3_start = 
     list3 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list2->data));
   list2 = list2->next;
@@ -460,7 +463,8 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   }
   
   g_list_free(list3_start);
-
+#endif
+  
   /* live! */
   list3 =
     list3_start = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list2->data));
@@ -494,6 +498,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   g_list_free(list4_start);
 
   /* vst3 */
+#if defined(AGS_WITH_VST3)
   list4_start = 
     list4 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list3->data));
   list3 = list3->next;
@@ -506,6 +511,8 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   }
   
   g_list_free(list4_start);
+#endif
+  
   g_list_free(list3_start);
   g_list_free(list2_start);
 
@@ -982,6 +989,7 @@ ags_lv2_bridge_menu_new()
 GtkMenu*
 ags_vst3_bridge_menu_new()
 {
+#if defined(AGS_WITH_VST3)
   GtkMenu *menu;
   GtkMenuItem *item;
 
@@ -1035,11 +1043,14 @@ ags_vst3_bridge_menu_new()
 
     list = list->next;
   }
-
+  
   g_list_free_full(start_list,
 		   g_object_unref);
   
   return(menu);
+#else
+  return(NULL);
+#endif
 }
 
 GtkMenu*
@@ -1162,6 +1173,7 @@ ags_live_lv2_bridge_menu_new()
 GtkMenu*
 ags_live_vst3_bridge_menu_new()
 {
+#if defined(AGS_WITH_VST3)
   GtkMenu *menu;
   GtkMenuItem *item;
 
@@ -1222,6 +1234,9 @@ ags_live_vst3_bridge_menu_new()
 		   g_object_unref);
   
   return(menu);
+#else
+  return(NULL);
+#endif
 }
 
 /**

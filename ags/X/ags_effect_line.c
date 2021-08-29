@@ -35,6 +35,8 @@
 #include <ags/X/ags_dssi_browser.h>
 #include <ags/X/ags_lv2_browser.h>
 
+#include <ags/config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -94,6 +96,8 @@ void ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
 				    guint start_pad, guint stop_pad,
 				    gint position,
 				    guint create_flags, guint recall_flags);
+
+#if defined(AGS_WITH_VST3)
 void ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
 				     GList *control_type_name,
 				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -104,6 +108,8 @@ void ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
 				     guint start_pad, guint stop_pad,
 				     gint position,
 				     guint create_flags, guint recall_flags);
+#endif
+
 void ags_effect_line_real_add_plugin(AgsEffectLine *effect_line,
 				     GList *control_type_name,
 				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -2368,6 +2374,7 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
   g_free(uri);
 }
 
+#if defined(AGS_WITH_VST3)
 void
 ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
 			       GList *control_type_name,
@@ -2985,6 +2992,7 @@ ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
   g_list_free_full(start_plugin_port,
 		   g_object_unref);  
 }
+#endif
 
 void
 ags_effect_line_real_add_plugin(AgsEffectLine *effect_line,
@@ -3019,8 +3027,10 @@ ags_effect_line_real_add_plugin(AgsEffectLine *effect_line,
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-vst3",
 				12)){
+#if defined(AGS_WITH_VST3)
     base_plugin = (AgsBasePlugin *) ags_vst3_manager_find_vst3_plugin_with_fallback(ags_vst3_manager_get_instance(),
 										    filename, effect);
+#endif
   }
 
   if(base_plugin != NULL){
@@ -3061,6 +3071,7 @@ ags_effect_line_real_add_plugin(AgsEffectLine *effect_line,
     }else if(!g_ascii_strncasecmp(plugin_name,
 				  "ags-fx-vst3",
 				  12)){
+#if defined(AGS_WITH_VST3)
       ags_effect_line_add_vst3_plugin(effect_line,
 				      control_type_name,
 				      play_container, recall_container,
@@ -3071,6 +3082,7 @@ ags_effect_line_real_add_plugin(AgsEffectLine *effect_line,
 				      start_pad, stop_pad,
 				      position,
 				      create_flags, recall_flags);
+#endif
     }
   }
 

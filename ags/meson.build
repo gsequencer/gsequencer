@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Daniel Maksymow, Joël Krähemann
+# Copyright (C) 2020-2021 Daniel Maksymow, Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -322,9 +322,6 @@ libags_audio_sources = files(
   'plugin/ags_lv2_worker.c',
   'plugin/ags_lv2_worker_manager.c',
   'plugin/ags_plugin_port.c',
-  'plugin/ags_vst3_conversion.c',
-  'plugin/ags_vst3_manager.c',
-  'plugin/ags_vst3_plugin.c',
   'audio/ags_acceleration.c',
   'audio/ags_audio_application_context.c',
   'audio/ags_audio_buffer_util.c',
@@ -522,12 +519,6 @@ libags_audio_sources = files(
   'audio/fx/ags_fx_volume_channel.c',
   'audio/fx/ags_fx_volume_channel_processor.c',
   'audio/fx/ags_fx_volume_recycling.c',
-  'audio/fx/ags_fx_vst3_audio.c',
-  'audio/fx/ags_fx_vst3_audio_processor.c',
-  'audio/fx/ags_fx_vst3_audio_signal.c',
-  'audio/fx/ags_fx_vst3_channel.c',
-  'audio/fx/ags_fx_vst3_channel_processor.c',
-  'audio/fx/ags_fx_vst3_recycling.c',
   'audio/jack/ags_jack_client.c',
   'audio/jack/ags_jack_devin.c',
   'audio/jack/ags_jack_devout.c',
@@ -724,6 +715,20 @@ libags_audio_sources = files(
   'audio/wasapi/ags_wasapi_devin.c',
   'audio/wasapi/ags_wasapi_devout.c',
 )
+
+if get_option('vst3')
+libags_audio_sources += files(
+    'plugin/ags_vst3_conversion.c',
+    'plugin/ags_vst3_manager.c',
+    'plugin/ags_vst3_plugin.c',
+    'audio/fx/ags_fx_vst3_audio.c',
+    'audio/fx/ags_fx_vst3_audio_processor.c',
+    'audio/fx/ags_fx_vst3_audio_signal.c',
+    'audio/fx/ags_fx_vst3_channel.c',
+    'audio/fx/ags_fx_vst3_channel_processor.c',
+    'audio/fx/ags_fx_vst3_recycling.c',
+  )
+endif
 
 if get_option('gstreamer')
 libags_audio_sources += files(
@@ -1147,8 +1152,6 @@ libgsequencer_sources = files(
   'X/machine/ags_live_dssi_bridge_callbacks.c',
   'X/machine/ags_live_lv2_bridge.c',
   'X/machine/ags_live_lv2_bridge_callbacks.c',
-  'X/machine/ags_live_vst3_bridge.c',
-  'X/machine/ags_live_vst3_bridge_callbacks.c',
   'X/machine/ags_lv2_bridge.c',
   'X/machine/ags_lv2_bridge_callbacks.c',
   'X/machine/ags_matrix_bridge.c',
@@ -1190,9 +1193,16 @@ libgsequencer_sources = files(
   'X/osc/controller/ags_ui_osc_renew_controller.c',
   'X/task/ags_simple_file_read.c',
   'X/task/ags_simple_file_write.c',
-  'X/machine/ags_vst3_bridge.c',
-  'X/machine/ags_vst3_bridge_callbacks.c',
 )
+
+if get_option('vst3')
+  libgsequencer_sources += files(
+    'X/machine/ags_live_vst3_bridge.c',
+    'X/machine/ags_live_vst3_bridge_callbacks.c',
+    'X/machine/ags_vst3_bridge.c',
+    'X/machine/ags_vst3_bridge_callbacks.c',
+  )
+endif
 
 libgsequencer_dependencies = [
   common_dependencies,
@@ -1470,10 +1480,15 @@ libags_audio_plugin_headers = [
   'plugin/ags_lv2ui_plugin.h',
   'plugin/ags_plugin_port.h',
   'plugin/ags_plugin_stock.h',
-  'plugin/ags_vst3_conversion.h',
-  'plugin/ags_vst3_manager.h',
-  'plugin/ags_vst3_plugin.h',
 ]
+
+if get_option('vst3')
+libags_audio_plugin_headers += [
+    'plugin/ags_vst3_conversion.h',
+    'plugin/ags_vst3_manager.h',
+    'plugin/ags_vst3_plugin.h',
+  ]
+endif
 
 libags_audio_audio_headers = [
   'audio/ags_acceleration.h',
@@ -1691,13 +1706,18 @@ libags_audio_audio_fx_headers = [
   'audio/fx/ags_fx_volume_channel.h',
   'audio/fx/ags_fx_volume_channel_processor.h',
   'audio/fx/ags_fx_volume_recycling.h',
-  'audio/fx/ags_fx_vst3_audio.h',
-  'audio/fx/ags_fx_vst3_audio_processor.h',
-  'audio/fx/ags_fx_vst3_audio_signal.h',
-  'audio/fx/ags_fx_vst3_channel.h',
-  'audio/fx/ags_fx_vst3_channel_processor.h',
-  'audio/fx/ags_fx_vst3_recycling.h',
 ]
+
+if get_option('vst3')
+libags_audio_audio_fx_headers += [
+    'audio/fx/ags_fx_vst3_audio.h',
+    'audio/fx/ags_fx_vst3_audio_processor.h',
+    'audio/fx/ags_fx_vst3_audio_signal.h',
+    'audio/fx/ags_fx_vst3_channel.h',
+    'audio/fx/ags_fx_vst3_channel_processor.h',
+    'audio/fx/ags_fx_vst3_recycling.h',
+  ]
+endif
 
 libags_audio_audio_gstreamer_headers = [ ]
 

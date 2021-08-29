@@ -25,6 +25,8 @@
 #include <ags/X/ags_plugin_browser.h>
 #include <ags/X/ags_bulk_member.h>
 
+#include <ags/config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -86,6 +88,8 @@ void ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
 				    guint start_pad, guint stop_pad,
 				    gint position,
 				    guint create_flags, guint recall_flags);
+
+#if defined(AGS_WITH_VST3)
 void ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
 				     GList *control_type_name,
 				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -96,6 +100,8 @@ void ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
 				     guint start_pad, guint stop_pad,
 				     gint position,
 				     guint create_flags, guint recall_flags);
+#endif
+
 void ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
 				     GList *control_type_name,
 				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -2179,6 +2185,7 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
   g_free(uri);
 }
 
+#if defined(AGS_WITH_VST3)
 void
 ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
 				GList *control_type_name,
@@ -2582,6 +2589,7 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
   g_list_free_full(start_plugin_port,
 		   g_object_unref);
 }
+#endif
 
 void
 ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
@@ -2621,8 +2629,10 @@ ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-vst3",
 				11)){
+#if defined(AGS_WITH_VST3)
     base_plugin = (AgsBasePlugin *) ags_vst3_manager_find_vst3_plugin_with_fallback(ags_vst3_manager_get_instance(),
 										    filename, effect);
+#endif
   }
 
   if(base_plugin != NULL){
@@ -2676,6 +2686,7 @@ ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
     }else if(!g_ascii_strncasecmp(plugin_name,
 				  "ags-fx-vst3",
 				  12)){
+#if defined(AGS_WITH_VST3)
       ags_effect_bulk_add_vst3_plugin(effect_bulk,
 				      control_type_name,
 				      play_container, recall_container,
@@ -2686,6 +2697,7 @@ ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
 				      start_pad, stop_pad,
 				      position,
 				      create_flags, recall_flags);
+#endif
     }
   }else if((AGS_FX_FACTORY_REMAP & (create_flags)) != 0){
     GList *start_list, *list;

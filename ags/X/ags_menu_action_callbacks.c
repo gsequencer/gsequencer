@@ -58,11 +58,14 @@
 
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
-#include <ags/X/machine/ags_vst3_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
 #include <ags/X/machine/ags_live_dssi_bridge.h>
 #include <ags/X/machine/ags_live_lv2_bridge.h>
+
+#if defined(AGS_WITH_VST3)
+#include <ags/X/machine/ags_vst3_bridge.h>
 #include <ags/X/machine/ags_live_vst3_bridge.h>
+#endif
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -867,6 +870,7 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_add_vst3_bridge_callback(GtkWidget *menu_item, gpointer data)
 {
+#if defined(AGS_WITH_VST3)
   AgsVst3Bridge *vst3_bridge;
 
   AgsAddAudio *add_audio;
@@ -888,6 +892,7 @@ ags_menu_action_add_vst3_bridge_callback(GtkWidget *menu_item, gpointer data)
   add_audio = ags_add_audio_new(AGS_MACHINE(vst3_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
+#endif
 }
 
 void
@@ -945,6 +950,7 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
 void
 ags_menu_action_add_live_vst3_bridge_callback(GtkWidget *menu_item, gpointer data)
 {
+#if defined(AGS_WITH_VST3)
   AgsLiveVst3Bridge *live_vst3_bridge;
 
   AgsAddAudio *add_audio;
@@ -966,6 +972,7 @@ ags_menu_action_add_live_vst3_bridge_callback(GtkWidget *menu_item, gpointer dat
   add_audio = ags_add_audio_new(AGS_MACHINE(live_vst3_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
+#endif
 }
 
 void

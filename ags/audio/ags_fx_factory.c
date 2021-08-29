@@ -20,10 +20,9 @@
 #include <ags/audio/ags_fx_factory.h>
 
 #include <ags/plugin/ags_base_plugin.h>
+
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_plugin.h>
-#include <ags/plugin/ags_vst3_manager.h>
-#include <ags/plugin/ags_vst3_plugin.h>
 
 #include <ags/audio/fx/ags_fx_playback_audio.h>
 #include <ags/audio/fx/ags_fx_playback_audio_processor.h>
@@ -129,6 +128,13 @@
 #include <ags/audio/fx/ags_fx_vst3_channel_processor.h>
 #include <ags/audio/fx/ags_fx_vst3_recycling.h>
 #include <ags/audio/fx/ags_fx_vst3_audio_signal.h>
+
+#include <ags/config.h>
+
+#if defined(AGS_WITH_VST3)
+#include <ags/plugin/ags_vst3_manager.h>
+#include <ags/plugin/ags_vst3_plugin.h>
+#endif
 
 /**
  * SECTION:ags_fx_factory
@@ -286,6 +292,7 @@ GList* ags_fx_factory_create_lv2(AgsAudio *audio,
 				 gint position,
 				 guint create_flags, guint recall_flags);
 
+#if defined(AGS_WITH_VST3)
 GList* ags_fx_factory_create_vst3(AgsAudio *audio,
 				  AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 				  gchar *plugin_name,
@@ -295,6 +302,7 @@ GList* ags_fx_factory_create_vst3(AgsAudio *audio,
 				  guint start_pad, guint stop_pad,
 				  gint position,
 				  guint create_flags, guint recall_flags);
+#endif
 
 GType
 ags_fx_factory_create_flags_get_type()
@@ -6467,6 +6475,7 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
   return(start_recall);
 }
 
+#if defined(AGS_WITH_VST3)
 GList*
 ags_fx_factory_create_vst3(AgsAudio *audio,
 			   AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -7038,6 +7047,7 @@ ags_fx_factory_create_vst3(AgsAudio *audio,
   
   return(start_recall);
 }
+#endif
 
 /**
  * ags_fx_factory_create:
@@ -7252,6 +7262,7 @@ ags_fx_factory_create(AgsAudio *audio,
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-vst3",
 				12)){
+#if defined(AGS_WITH_VST3)
     start_recall = ags_fx_factory_create_vst3(audio,
 					      play_container, recall_container,
 					      plugin_name,
@@ -7261,6 +7272,7 @@ ags_fx_factory_create(AgsAudio *audio,
 					      start_pad, stop_pad,
 					      position,
 					      create_flags, recall_flags);
+#endif
   }else{
     g_warning("no such plugin - %s", plugin_name);
   }
