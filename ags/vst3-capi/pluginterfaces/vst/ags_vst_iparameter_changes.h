@@ -30,8 +30,8 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIParamValueQueue IParamValueQueue;
-  typedef struct AgsVstIParameterChanges IParameterChanges;
+  typedef struct IParamValueQueue AgsVstIParamValueQueue;
+  typedef struct IParameterChanges AgsVstIParameterChanges;
 
   const AgsVstTUID* ags_vst_iparam_value_queue_get_iid();
 

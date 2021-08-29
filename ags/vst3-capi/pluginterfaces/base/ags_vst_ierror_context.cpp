@@ -28,7 +28,10 @@ extern "C" {
   const AgsVstTUID*
   ags_vst_ierror_context_get_iid()
   {
-    return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IErrorContext)));
+    //FIXME:JK: check uncomment
+//    return((AgsVstTUID *) &(Steinberg::IErrorContext::iid.toTUID()));
+    
+    return(NULL);
   }
 
   void ags_vst_ierror_context_disable_error_ui(AgsVstIErrorContext *error_context,

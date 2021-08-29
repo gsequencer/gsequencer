@@ -32,9 +32,9 @@ extern "C" {
 #endif
 
   typedef const AgsVstFIDString AgsVstIAttrID;
-  typedef struct AgsVstIPersistent IPersistent;  
-  typedef struct AgsVstIAttributes IAttributes;
-  typedef struct AgsVstIAttributes2 IAttributes2;
+  typedef struct IPersistent AgsVstIPersistent;  
+  typedef struct IAttributes AgsVstIAttributes;
+  typedef struct IAttributes2 AgsVstIAttributes2;
 
   const AgsVstTUID* ags_vst_ipersistent_get_iid();
   

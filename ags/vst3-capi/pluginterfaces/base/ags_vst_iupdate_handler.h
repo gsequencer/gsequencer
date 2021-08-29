@@ -29,8 +29,8 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIUpdateHandler IUpdateHandler;
-  typedef struct AgsVstIDependent IDependent;
+  typedef struct IUpdateHandler AgsVstIUpdateHandler;
+  typedef struct IDependent AgsVstIDependent;
 
   typedef enum{
     AGS_VST_KWILL_CHANGE,

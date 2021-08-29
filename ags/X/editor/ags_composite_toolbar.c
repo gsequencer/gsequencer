@@ -169,7 +169,7 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   composite_toolbar->menu_tool = NULL;
   composite_toolbar->menu_tool_popup = NULL;
 
-  composite_toolbar->selected_zoom = NULL;
+  composite_toolbar->selected_zoom = 2;
   
   composite_toolbar->port = NULL;
 

@@ -21,26 +21,26 @@
 #define __AGS_VST_IEDIT_CONTROLLER_H__
 
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.h>
+
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h>
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h>
+
+#include <ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-  struct AgsVstIPlugView;
-  struct AgsVstIBStream;  
   
-  typedef struct AgsVstParameterInfo ParameterInfo;
-  typedef struct AgsVstIComponentHandler IComponentHandler;
-  typedef struct AgsVstIComponentHandler2 IComponentHandler2;
-  typedef struct AgsVstIComponentHandlerBusActivation IComponentHandlerBusActivation;
-  typedef struct AgsVstIProgress IProgress;
-  typedef struct AgsVstIEditController IEditController;
-  typedef struct AgsVstIEditController2 IEditController2;
-  typedef struct AgsVstMyEditorController MyEditorController;
-  typedef struct AgsVstIMidiMapping IMidiMapping;
-  typedef struct AgsVstIEditControllerHostEditing IEditControllerHostEditing;
+  typedef struct ParameterInfo AgsVstParameterInfo;
+  typedef struct IComponentHandler AgsVstIComponentHandler;
+  typedef struct IComponentHandler2 AgsVstIComponentHandler2;
+  typedef struct IComponentHandlerBusActivation AgsVstIComponentHandlerBusActivation;
+  typedef struct IProgress AgsVstIProgress;
+  typedef struct IEditController AgsVstIEditController;
+  typedef struct IEditController2 AgsVstIEditController2;
+  typedef struct MyEditorController AgsVstMyEditorController;
+  typedef struct IMidiMapping AgsVstIMidiMapping;
+  typedef struct IEditControllerHostEditing AgsVstIEditControllerHostEditing;
   typedef guint64 AgsVstID;
 
   typedef enum
@@ -61,7 +61,7 @@ extern "C" {
     AGS_VST_KIS_BYPASS                = 1 << 16
   }AgsVstParameterFlags;
 
-  const AgsVstCString ags_vst_editor = "editor";
+  extern const AgsVstCString ags_vst_editor;
 
   typedef enum
   {
@@ -83,6 +83,26 @@ extern "C" {
     AGS_VST_KRELATIVE_CIRCULAR_MODE,
     AGS_VST_KLINEAR_MODE
   }AgsVstKnobModes;
+
+  AgsVstParameterInfo* ags_vst_parameter_info_alloc();
+
+  void ags_vst_parameter_info_free(AgsVstParameterInfo *info);
+
+  AgsVstParamID ags_vst_parameter_info_get_param_id(AgsVstParameterInfo *info);
+  
+  AgsVstString128* ags_vst_parameter_info_get_title(AgsVstParameterInfo *info);
+  
+  AgsVstString128* ags_vst_parameter_info_get_short_title(AgsVstParameterInfo *info);
+  
+  AgsVstString128* ags_vst_parameter_info_get_units(AgsVstParameterInfo *info);
+  
+  gint32 ags_vst_parameter_info_get_step_count(AgsVstParameterInfo *info);
+
+  AgsVstParamValue ags_vst_parameter_info_get_default_normalized_value(AgsVstParameterInfo *info);
+  
+  AgsVstUnitID ags_vst_parameter_info_get_unit_id(AgsVstParameterInfo *info);
+  
+  guint ags_vst_parameter_info_get_flags(AgsVstParameterInfo *info);
   
   const AgsVstTUID* ags_vst_icomponent_handler_get_iid();
 

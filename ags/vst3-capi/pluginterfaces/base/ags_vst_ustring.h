@@ -26,10 +26,10 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstUstring UString;
+  typedef struct UString AgsVstUstring;
 
-  typedef struct AgsVstUstring128 UString128;
-  typedef struct AgsVstUstring256 UString256;
+  typedef struct UString128 AgsVstUstring128;
+  typedef struct UString256 AgsVstUstring256;
   
   AgsVstUstring* ags_vst_ustring_new_from_buffer(gunichar2 *buffer, gint32 size);
 

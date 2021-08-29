@@ -28,8 +28,8 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIString IString;
-  typedef struct AgsVstIErrorContext IErrorContext;
+  typedef struct IString AgsVstIString;
+  typedef struct IErrorContext AgsVstIErrorContext;
 
   const AgsVstTUID* ags_vst_ierror_context_get_iid();
 

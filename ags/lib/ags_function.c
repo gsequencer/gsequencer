@@ -564,7 +564,7 @@ ags_function_literal_solve_expand_functions(gchar *transformed_function)
   gchar *expanded_functions;
   gchar *offset, *close_offset;
   gchar *str;
-  gchar *open_paranthesis, *close_paranthesis, *tmp_paranthesis;
+  gchar *open_parenthesis, *close_parenthesis, *tmp_parenthesis;
 
   int regexec_result;
     
@@ -594,7 +594,7 @@ ags_function_literal_solve_expand_functions(gchar *transformed_function)
     offset = g_strdup(transformed_function);
   close_offset = NULL;
 
-  close_paranthesis = NULL;
+  close_parenthesis = NULL;
   regexec_result = 0;
     
   while(regexec_result != REG_NOMATCH){
@@ -603,20 +603,20 @@ ags_function_literal_solve_expand_functions(gchar *transformed_function)
 	 close_offset > match_arr[0].rm_so){
 	offset = (gchar *) match_arr[0].rm_so;
 
-	/* find close paranthesis */
-	open_paranthesis = offset;
+	/* find close parenthesis */
+	open_parenthesis = offset;
 	  
-	while((open_paranthesis = strchr(open_paranthesis, '(')) != NULL &&
-	      close_paranthesis == NULL){
-	  close_paranthesis = strchr(open_paranthesis, ')');
-	  tmp_paranthesis = strchr(open_paranthesis, '(');
+	while((open_parenthesis = strchr(open_parenthesis, '(')) != NULL &&
+	      close_parenthesis == NULL){
+	  close_parenthesis = strchr(open_parenthesis, ')');
+	  tmp_parenthesis = strchr(open_parenthesis, '(');
 
-	  if(tmp_paranthesis < close_paranthesis){
-	    close_paranthesis = NULL;
+	  if(tmp_parenthesis < close_parenthesis){
+	    close_parenthesis = NULL;
 	  }
 	}
 
-	close_offset = close_paranthesis;
+	close_offset = close_parenthesis;
       }else{
 	if(close_offset != NULL){
 	  if(!g_strcmp0(offset,
@@ -635,7 +635,7 @@ ags_function_literal_solve_expand_functions(gchar *transformed_function)
 
 	    
 	}else{
-	  //NOTE:JK: you should report paranthesis mismatch
+	  //NOTE:JK: you should report parenthesis mismatch
 	    
 	  break;
 	}

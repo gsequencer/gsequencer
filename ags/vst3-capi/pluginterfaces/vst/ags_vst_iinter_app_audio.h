@@ -29,12 +29,12 @@ extern "C" {
 #endif
 
   //FIXME:JK: add missing include
-  struct AgsVstViewRect;
-  struct AgsVstEvent;
+  typedef struct ViewRect AgsVstViewRect;
+  typedef struct Event AgsVstEvent;
   
-  typedef struct AgsVstIInterAppAudioHost IInterAppAudioHost;
-  typedef struct AgsVstIInterAppAudioConnectionNotification IInterAppAudioConnectionNotification;
-  typedef struct AgsVstIInterAppAudioPresetManager IInterAppAudioPresetManager;
+  typedef struct IInterAppAudioHost AgsVstIInterAppAudioHost;
+  typedef struct IInterAppAudioConnectionNotification AgsVstIInterAppAudioConnectionNotification;
+  typedef struct IInterAppAudioPresetManager AgsVstIInterAppAudioPresetManager;
 
   const AgsVstTUID* ags_vst_iinter_app_audio_host_get_iid();
 

@@ -30,8 +30,8 @@ extern "C" {
 #endif
 
   typedef const gchar* AgsVstAttrID;
-  typedef struct AgsVstIAttributeList IAttributeList;
-  typedef struct AgsVstIStreamAttributes IStreamAttributes;
+  typedef struct IAttributeList AgsVstIAttributeList;
+  typedef struct IStreamAttributes AgsVstIStreamAttributes;
   
   const AgsVstTUID* ags_vst_iattribute_list_get_iid();
 

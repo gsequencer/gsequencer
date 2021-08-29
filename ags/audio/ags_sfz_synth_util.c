@@ -23,6 +23,7 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_diatonic_scale.h>
+#include <ags/audio/ags_fluid_util.h>
 #include <ags/audio/ags_fluid_pitch_util.h>
 
 #include <ags/audio/file/ags_sound_container.h>
@@ -66,6 +67,28 @@ ags_sfz_synth_util_get_type(void)
   }
 
   return g_define_type_id__volatile;
+}
+
+GType
+ags_sfz_synth_util_loop_mode_get_type()
+{
+  static volatile gsize g_enum_type_id__volatile;
+
+  if(g_once_init_enter (&g_enum_type_id__volatile)){
+    static const GEnumValue values[] = {
+      { AGS_SFZ_SYNTH_UTIL_LOOP_NONE, "AGS_SFZ_SYNTH_UTIL_LOOP_NONE", "loop-none" },
+      { AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD, "AGS_SFZ_SYNTH_UTIL_LOOP_STANDARD", "loop-standard" },
+      { AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE, "AGS_SFZ_SYNTH_UTIL_LOOP_RELEASE", "loop-release" },
+      { AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG, "AGS_SFZ_SYNTH_UTIL_LOOP_PINGPONG", "loop-pingpong" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_enum_type_id = g_enum_register_static(g_intern_static_string("AgsSFZSynthUtilLoopMode"), values);
+
+    g_once_init_leave (&g_enum_type_id__volatile, g_enum_type_id);
+  }
+  
+  return g_enum_type_id__volatile;
 }
 
 /**

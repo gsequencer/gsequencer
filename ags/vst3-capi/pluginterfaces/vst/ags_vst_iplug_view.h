@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIParameterFinder IParameterFinder;
+  typedef struct IParameterFinder AgsVstIParameterFinder;
 
   const AgsVstTUID* ags_vst_iparameter_finder_get_iid();
   

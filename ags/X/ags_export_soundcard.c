@@ -587,6 +587,9 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
 	  if(device != NULL){
 	    card_start = g_list_prepend(card_start,
 					device);
+	  }else{
+	    card_start = g_list_prepend(card_start,
+					g_strdup("(null)"));
 	  }
 	}
       

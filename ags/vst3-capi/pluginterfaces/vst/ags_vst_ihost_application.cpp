@@ -23,6 +23,57 @@
 
 extern "C" {
   
-  //TODO:JK: implement me
+  const AgsVstTUID* ags_vst_ihost_application_get_iid()
+  {
+    return((AgsVstTUID *) &(Steinberg::Vst::IHostApplication::iid.toTUID()));
+  }
+
+  AgsVstTResult ags_vst_ihost_application_get_name(AgsVstIHostApplication *ihost_application,
+						   AgsVstString128 name)
+  {
+    return(((Steinberg::Vst::IHostApplication *) ihost_application)->getName((Steinberg::Vst::TChar *) name));
+  }
+
+  AgsVstTResult ags_vst_ihost_application_create_instance(AgsVstIHostApplication *ihost_application,
+							  AgsVstTUID *cid, AgsVstTUID *iid, void **obj)
+  {
+    return(((Steinberg::Vst::IHostApplication *) ihost_application)->createInstance(((Steinberg::TUID *) cid)[0], ((Steinberg::TUID *) iid)[0], obj));
+  }
+  
+  const AgsVstTUID* ags_vst_ivst3_to_vst2_wrapper_get_iid()
+  {
+    return((AgsVstTUID *) &(Steinberg::Vst::IVst3ToVst2Wrapper::iid.toTUID()));
+  }
+  
+  const AgsVstTUID* ags_vst_ivst3_to_au_wrapper_get_iid()
+  {
+    return((AgsVstTUID *) &(Steinberg::Vst::IVst3ToAUWrapper::iid.toTUID()));
+  }
+
+  const AgsVstTUID* ags_vst_ivst3_to_aax_wrapper_get_iid()
+  {
+    return((AgsVstTUID *) &(Steinberg::Vst::IVst3ToAAXWrapper::iid.toTUID()));
+  }
+
+  const AgsVstTUID* ags_vst_ivst3_wrapper_mpe_support_get_iid()
+  {
+    return((AgsVstTUID *) &(Steinberg::Vst::IVst3WrapperMPESupport::iid.toTUID()));
+  }
+
+  AgsVstTResult ags_vst_ivst3_wrapper_mpe_support_enable_mpe_input_processing(AgsVstIVst3WrapperMPESupport *ivst3_wrapper_mpe_support,
+									     gboolean state)
+  {
+    return(((Steinberg::Vst::IVst3WrapperMPESupport *) ivst3_wrapper_mpe_support)->enableMPEInputProcessing(state));
+  }
+								       
+  AgsVstTResult ags_vst_ivst3_wrapper_mpe_suppor_set_mpe_input_device_settings(AgsVstIVst3WrapperMPESupport *ivst3_wrapper_mpe_support,
+									       gint32 master_channel,
+									       gint32 member_begin_channel,
+									       gint32 member_end_channel)
+  {
+    return(((Steinberg::Vst::IVst3WrapperMPESupport *) ivst3_wrapper_mpe_support)->setMPEInputDeviceSettings(master_channel,
+													     member_begin_channel,
+													     member_end_channel));
+  }
 
 }

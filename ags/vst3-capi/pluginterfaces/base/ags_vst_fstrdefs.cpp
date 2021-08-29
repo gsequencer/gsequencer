@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,7 +35,7 @@ extern "C" {
     return(strlen8((char8 *) str));
   }
   
-  gint32 ags_vst_strlen16(char16_t *str)
+  gint32 ags_vst_strlen16(gunichar2 *str)
   {
     return(strlen16((char16 *) str));
   }
@@ -50,7 +50,7 @@ extern "C" {
     return(strcmp8((char8 *) src, (char8 *) dst));
   }
   
-  gint32 ags_vst_strcmp16(char16_t *src, char16_t *dst)
+  gint32 ags_vst_strcmp16(gunichar2 *src, gunichar2 *dst)
   {
     return(strcmp16((char16 *) src, (char16 *) dst));
   }
@@ -65,7 +65,7 @@ extern "C" {
     return(strncmp8((char8 *) first, (char8 *) last, count));
   }
   
-  gint32 ags_vst_strncmp16(char16_t *first, char16_t *last, guint32 count)
+  gint32 ags_vst_strncmp16(gunichar2 *first, gunichar2 *last, guint32 count)
   {
     return(strncmp16((char16 *) first, (char16 *) last, count));
   }
@@ -80,9 +80,9 @@ extern "C" {
     return(strcpy8((char8 *) dst, (char8 *) src));
   }
   
-  char16_t* ags_vst_strcpy16(char16_t *dst, char16_t *src)
+  gunichar2* ags_vst_strcpy16(gunichar2 *dst, gunichar2 *src)
   {
-    return(strcpy16((char16 *) dst, (char16 *) src));
+    return((gunichar2 *) strcpy16((char16 *) dst, (char16 *) src));
   }
   
   ags_vst_tchar* ags_vst_tstrncpy(ags_vst_tchar* dest, ags_vst_tchar* source, guint32 count)
@@ -95,9 +95,9 @@ extern "C" {
     return(strncpy8((char8 *) dest, (char8 *) source, count));
   }
   
-  char16_t* ags_vst_strncpy16(char16_t* dest, char16_t* source, guint32 count)
+  gunichar2* ags_vst_strncpy16(gunichar2* dest, gunichar2* source, guint32 count)
   {
-    return(strncpy16((char16 *) dest, (char16 *) source, count));
+    return((gunichar2 *) strncpy16((char16 *) dest, (char16 *) source, count));
   }
   
   ags_vst_tchar* ags_vst_tstrcat(ags_vst_tchar *dst, ags_vst_tchar *src)
@@ -110,12 +110,12 @@ extern "C" {
     return(strcat8((char8 *) dst, (char8 *) src));
   }
   
-  char16_t* ags_vst_strcat16(char16_t *dst, char16_t *src)
+  gunichar2* ags_vst_strcat16(gunichar2 *dst, gunichar2 *src)
   {
-    return(strcat16((char16 *) dst, (char16 *) src));
+    return((gunichar2 *) strcat16((char16 *) dst, (char16 *) src));
   }
   
-  void ags_vst_str8_to_str16(char16_t *dst, gchar *src, gint32 n)
+  void ags_vst_str8_to_str16(gunichar2 *dst, gchar *src, gint32 n)
   {
     return(str8ToStr16((char16 *) dst, (char8 *) src, (int32) n));
   }

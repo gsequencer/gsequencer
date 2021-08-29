@@ -2803,6 +2803,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   AgsLadspaManager *ladspa_manager;
   AgsDssiManager *dssi_manager;
   AgsLv2Manager *lv2_manager;
+  AgsVst3Manager *vst3_manager;
   AgsLv2uiManager *lv2ui_manager;
   AgsLv2WorkerManager *lv2_worker_manager;
 
@@ -3079,6 +3080,21 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   ags_lv2ui_manager_load_default_directory(lv2ui_manager);
 #endif
+
+  /* load vst3 manager */
+  vst3_manager = ags_vst3_manager_get_instance();
+
+  blacklist_filename = g_strdup_printf("%s%c%s",
+				       blacklist_path,
+				       G_DIR_SEPARATOR,
+				       "vst3_plugin.blacklist");
+  ags_vst3_manager_load_blacklist(vst3_manager,
+				  blacklist_filename);
+
+  ags_log_add_message(log,
+		      "* Loading VST3 plugins");
+
+  ags_vst3_manager_load_default_directory(vst3_manager);
   
   /* launch GUI */
   ags_log_add_message(log,

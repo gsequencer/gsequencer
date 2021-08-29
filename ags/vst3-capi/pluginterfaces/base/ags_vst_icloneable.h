@@ -28,7 +28,7 @@
 extern "C" {
 #endif
   
-  typedef struct AgsVstICloneable ICloneable;
+  typedef struct ICloneable AgsVstICloneable;
 
   const AgsVstTUID* ags_vst_icloneable_get_iid();
   

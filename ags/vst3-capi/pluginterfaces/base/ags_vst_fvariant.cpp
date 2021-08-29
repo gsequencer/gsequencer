@@ -134,12 +134,18 @@ extern "C" {
   
   gchar* ags_vst_fvariant_get_string(AgsVstFVariant *fvariant)
   {
-    return(((Steinberg::FVariant *) fvariant)->get<char8*>());
+    //FIXME:JK: check string
+//    return(((Steinberg::FVariant *) fvariant)->get<char8*>());
+
+    return(NULL);
   }
   
   gunichar2* ags_vst_fvariant_get_wstring(AgsVstFVariant *fvariant)
   {
-    return(reinterpret_cast<gunichar2 *>(((Steinberg::FVariant *) fvariant)->get<char16*>()));
+    //FIXME:JK: check string
+//    return(reinterpret_cast<gunichar2 *>(((Steinberg::FVariant *) fvariant)->get<char16*>()));
+
+    return(NULL);
   }
   
   AgsVstFUnknown* ags_vst_fvariant_get_object(AgsVstFVariant *fvariant)

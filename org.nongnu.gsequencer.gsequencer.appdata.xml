@@ -40,6 +40,22 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.10.5" date="2021-08-29">
+      <description>
+	<p>First VST3 plugin support.</p>
+      </description>
+    </release>
+
+    <release version="3.10.4" date="2021-08-25">
+      <description>
+	<p>
+	  Improved default scale size of AgsMatrix, AgsSyncsynth, AgsFMSyncsynth, AgsFFPlayer
+	  and AgsPitchSampler.
+	</p>
+	<p>Improved allow (null) as WASAPI device</p>
+      </description>
+    </release>
+
     <release version="3.9.0" date="2021-06-21">
       <description>
 	<p>Implemented pitch function to select within UI.</p>

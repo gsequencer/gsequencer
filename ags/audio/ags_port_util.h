@@ -48,6 +48,9 @@ void ags_port_util_load_ladspa_conversion(AgsPort *port,
 void ags_port_util_load_lv2_conversion(AgsPort *port,
 				       AgsPluginPort *plugin_port);
 
+void ags_port_util_load_vst3_conversion(AgsPort *port,
+					AgsPluginPort *plugin_port);
+
 G_END_DECLS
 
 #endif /*__AGS_PORT_UTIL_H__*/

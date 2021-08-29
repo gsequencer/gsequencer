@@ -25,9 +25,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iplug_interface_support_get_iid()
   {
-    extern const Steinberg::TUID IPlugInterfaceSupport__iid;
-
-    return((AgsVstTUID *) (&IPlugInterfaceSupport__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IPlugInterfaceSupport::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iplug_interface_support_is_plug_interface_supported(AgsVstIPlugInterfaceSupport *iplug_interface_support,

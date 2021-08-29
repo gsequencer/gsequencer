@@ -1072,7 +1072,7 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
       offset = current_offset;
     }else if(has_symbol &&
 	     polynomial[offset] == '^'){
-      gint paranthesis_balance;
+      gint parenthesis_balance;
       gboolean has_digits;
       gboolean is_float;
       gboolean is_signed;
@@ -1086,18 +1086,18 @@ ags_solver_polynomial_parse(AgsSolverPolynomial *solver_polynomial,
 
       current_offset = offset + 2;
 
-      paranthesis_balance = 1;
+      parenthesis_balance = 1;
 
       has_digits = FALSE;
       is_float = FALSE;
       is_signed = FALSE;
       
       while(polynomial[current_offset] != '\0' &&
-	    paranthesis_balance != 0){
+	    parenthesis_balance != 0){
 	if(polynomial[current_offset] == '('){
-	  paranthesis_balance++;
+	  parenthesis_balance++;
 	}else if(polynomial[current_offset] == ')'){
-	  paranthesis_balance--;
+	  parenthesis_balance--;
 	}else if(polynomial[current_offset] >= '0' &&
 		 polynomial[current_offset] <= '9'){
 	  has_digits = TRUE;

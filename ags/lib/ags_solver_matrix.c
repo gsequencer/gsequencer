@@ -19,6 +19,8 @@
 
 #include <ags/lib/ags_solver_matrix.h>
 
+#include <ags/lib/ags_string_util.h>
+
 #include <stdlib.h>
 
 #include <ags/i18n.h>
@@ -434,33 +436,33 @@ ags_solver_matrix_parse(AgsSolverMatrix *solver_matrix,
     if(iter[0] == '('){
       gchar *tmp_iter;
       
-      gint paranthesis_balance;
+      gint parenthesis_balance;
 
       tmp_iter = iter + 1;
-      paranthesis_balance = 1;
+      parenthesis_balance = 1;
 
       while(tmp_iter[0] != '\0' &&
-	    paranthesis_balance > 0){
+	    parenthesis_balance > 0){
 	if(tmp_iter[0] == '('){
-	  paranthesis_balance++;
+	  parenthesis_balance++;
 	}else if(tmp_iter[0] == ')'){
-	  paranthesis_balance--;
+	  parenthesis_balance--;
 	}
 
 	tmp_iter++;
       }
 
-      if(paranthesis_balance == 0){
+      if(parenthesis_balance == 0){
 	iter = tmp_iter;
       }else{
-	g_warning("can't parse because malformed paranthesis");
+	g_warning("can't parse because malformed parenthesis");
 
 	break;
       }
     }
 
     if(iter[0] == ')'){
-      g_warning("can't parse because malformed paranthesis");
+      g_warning("can't parse because malformed parenthesis");
 
       break;
     }

@@ -1,3 +1,35 @@
+ags (3.10.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsVst3Manager and AgsVst3Plugin
+	* implemented VST3 C API additional allocation functions of structs and theirs setters
+	* implemented ags-fx-vst3 recall
+	* implemented AgsVst3Bridge and related
+	* fixed VST3 C API *_get_iid() by calling _iid.toTUID() before return
+
+ags (3.10.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved allow (null) as WASAPI device
+
+ags (3.10.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved build
+	* fixed compiler warnings in ags_sf2_synth_util.c, ags_sfz_synth_util.c and ags_solver_matrix.c
+
+ags (3.10.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: stripped unneeded code from utility functions
+	* fixed libags-vst3 compiler and linker errors
+
+ags (3.10.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: stripped unneeded code from utility functions
+	* implemented ags/vst3-capi/pluginterfaces
+
 ags (3.10.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

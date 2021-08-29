@@ -60,15 +60,11 @@ create any loops within the tree.
 Build using mingw
 ====
 
-The commands below might compile a native build of gsequencer on x86_64-mingw32 architecture using MinGW compiler assuming installing to
-home directory. To perform a parallel build using 8 threads, invoke following commands in shell:
-
-Follow the instructions on screen, edit configure.ac and Makefile.am or apply win32.patch.
+To build on windows you need gnulib. First import some functions using gnulib then compile with msys2.
 
 $ git clone git://git.sv.gnu.org/gnulib.git
 $ ./gnulib/gnulib-tool --import langinfo regex signal-h sigaction strings sys_types memcpy
-$ autoreconf -fi
-$ ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes ./configure --host=x86_64-w64-mingw32 --prefix=${HOME}/mingw64/target --disable-rt --enable-w32api --disable-alsa --disable-pulse --disable-jack --enable-wasapi --disable-x11
+$ CPATH=/mingw64/include PKG_CONFIG_PATH=/mingw64/lib/pkgconfig:/mingw64/lib64/pkgconfig CC=x86_64-w64-mingw32-gcc.exe ./configure --host=x86_64-w64-mingw32 --prefix=/mingw64 --disable-rt --enable-w32api --disable-alsa --disable-pulse --disable-jack --enable-wasapi --disable-x11 --without-webkit --with-poppler
 $ make -j8
 $ make install
 

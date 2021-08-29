@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -78,6 +78,16 @@ void ags_line_add_lv2_plugin(AgsLine *line,
 			     guint start_pad, guint stop_pad,
 			     gint position,
 			     guint create_flags, guint recall_flags);
+void ags_line_add_vst3_plugin(AgsLine *line,
+			      GList *control_type_name,
+			      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			      gchar *plugin_name,
+			      gchar *filename,
+			      gchar *effect,
+			      guint start_audio_channel, guint stop_audio_channel,
+			      guint start_pad, guint stop_pad,
+			      gint position,
+			      guint create_flags, guint recall_flags);
 void ags_line_real_add_plugin(AgsLine *line,
 			      GList *control_type_name,
 			      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -2414,6 +2424,597 @@ ags_line_add_lv2_plugin(AgsLine *line,
 }
 
 void
+ags_line_add_vst3_plugin(AgsLine *line,
+			GList *control_type_name,
+			AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			gchar *plugin_name,
+			gchar *filename,
+			gchar *effect,
+			guint start_audio_channel, guint stop_audio_channel,
+			guint start_pad, guint stop_pad,
+			gint position,
+			guint create_flags, guint recall_flags)
+{
+  AgsLineMember *line_member;
+  AgsEffectSeparator *separator;
+
+  AgsLinePlugin *line_plugin;
+
+  AgsAudio *audio;
+  AgsChannel *channel;
+  
+  AgsVst3Manager *vst3_manager;
+  AgsVst3Plugin *vst3_plugin;
+
+  GList *start_recall;
+  GList *list;
+  GList *start_plugin_port, *plugin_port;
+
+  guint audio_channel;
+  guint pad;
+  gdouble page, step;
+  guint port_count;
+  guint control_count;
+
+  guint x, y;
+  guint k;
+  
+  GRecMutex *vst3_manager_mutex;
+  GRecMutex *base_plugin_mutex;
+
+  vst3_manager = ags_vst3_manager_get_instance();
+    
+  vst3_manager_mutex = AGS_VST3_MANAGER_GET_OBJ_MUTEX(vst3_manager);
+
+  audio = NULL;
+  channel = NULL;
+  
+  pad = 0;
+  audio_channel = 0;
+
+  g_object_get(line,
+	       "channel", &channel,
+	       NULL);
+  
+  /* alloc line plugin */
+  line_plugin = ags_line_plugin_alloc(play_container, recall_container,
+				      plugin_name,
+				      filename,
+				      effect);
+  line_plugin->control_type_name = control_type_name;
+  
+  line->plugin = g_list_append(line->plugin,
+			       line_plugin);  
+
+  g_object_get(channel,
+	       "audio", &audio,
+	       "audio-channel", &audio_channel,
+	       "pad", &pad,
+	       NULL);
+  
+  /* load plugin */
+  vst3_plugin = ags_vst3_manager_find_vst3_plugin(ags_vst3_manager_get_instance(),
+						  filename, effect);
+
+  /* get base plugin mutex */
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(vst3_plugin);
+
+  /* ags-fx-vst3 */
+  start_recall = ags_fx_factory_create(audio,
+				       line_plugin->play_container, line_plugin->recall_container,
+				       plugin_name,
+				       filename,
+				       effect,
+				       audio_channel, audio_channel + 1,
+				       pad, pad + 1,
+				       position,
+				       create_flags | (AGS_IS_OUTPUT(channel) ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT), recall_flags);
+  
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+    
+  /* retrieve position within table  */
+  x = 0;
+  y = 0;
+
+  list = line->expander->children;
+
+  while(list != NULL){
+    if(y <= AGS_EXPANDER_CHILD(list->data)->y){
+      y = AGS_EXPANDER_CHILD(list->data)->y + 1;
+    }
+
+    list = list->next;
+  }
+  
+  /* add separator */
+  separator = ags_effect_separator_new();
+
+  separator->play_container = play_container;
+  separator->recall_container = recall_container;
+
+  g_object_set(separator,
+	       "text", effect,
+	       "filename", filename,
+	       "effect", effect,
+	       NULL);
+  ags_expander_add(line->expander,
+  		   (GtkWidget *) separator,
+  		   0, y,
+  		   AGS_LINE_COLUMNS_COUNT, 1);
+  gtk_widget_show_all(GTK_WIDGET(separator));
+  
+  y++;
+  
+  /* load ports */
+  g_object_get(vst3_plugin,
+	       "plugin-port", &start_plugin_port,
+	       NULL);
+
+  plugin_port = start_plugin_port;
+  
+  port_count = g_list_length(start_plugin_port);
+
+  control_count = 0;
+  
+  k = 0;
+  
+  while(plugin_port != NULL){
+    if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
+      GtkWidget *child_widget;
+
+      AgsVst3Conversion *vst3_conversion;
+      
+      GType widget_type;
+
+      gchar *plugin_name;
+      gchar *control_port;
+      gchar *port_name;
+
+      guint scale_precision;
+      gdouble step_count;
+      gboolean disable_seemless;
+      gboolean do_step_conversion;
+
+      GRecMutex *plugin_port_mutex;
+
+      control_count++;
+
+      disable_seemless = FALSE;
+      do_step_conversion = FALSE;
+       
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
+	disable_seemless = TRUE;
+
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
+	  widget_type = AGS_TYPE_LED;
+	}else{
+	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	}
+      }else{
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
+	  widget_type = AGS_TYPE_HINDICATOR;
+	}else{
+	  widget_type = AGS_TYPE_DIAL;
+	}
+      }
+
+      if(control_type_name != NULL){
+	widget_type = g_type_from_name(control_type_name->data);
+
+	control_type_name = control_type_name->next;
+      }
+      
+      scale_precision = AGS_DIAL_DEFAULT_PRECISION;
+      step_count = AGS_VST3_CONVERSION_DEFAULT_STEP_COUNT;
+
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INTEGER)){
+	guint scale_steps;
+	
+	g_object_get(plugin_port->data,
+		     "scale-steps", &scale_steps,
+		     NULL);
+
+	step_count =
+	  scale_precision = (gdouble) scale_steps;
+
+	disable_seemless = TRUE;
+      }
+
+      /* get plugin port mutex */
+      plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port->data);
+      
+      /* get port name */
+      g_rec_mutex_lock(plugin_port_mutex);
+
+      port_name = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
+	
+      g_rec_mutex_unlock(plugin_port_mutex);
+
+      /* add line member */
+      plugin_name = g_strdup_printf("vst3-<%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x%.2x>",
+				    vst3_plugin->cid[0],
+				    vst3_plugin->cid[1],
+				    vst3_plugin->cid[2],
+				    vst3_plugin->cid[3],
+				    vst3_plugin->cid[4],
+				    vst3_plugin->cid[5],
+				    vst3_plugin->cid[6],
+				    vst3_plugin->cid[7],
+				    vst3_plugin->cid[8],
+				    vst3_plugin->cid[9],
+				    vst3_plugin->cid[10],
+				    vst3_plugin->cid[11],
+				    vst3_plugin->cid[12],
+				    vst3_plugin->cid[13],
+				    vst3_plugin->cid[14],
+				    vst3_plugin->cid[15]);
+
+      control_port = g_strdup_printf("%d/%d",
+				     k + 1,
+				     port_count);
+
+      line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+						   "widget-type", widget_type,
+						   "widget-label", port_name,
+						   "play-container", play_container,
+						   "recall-container", recall_container,
+						   "plugin-name", plugin_name,
+						   "filename", filename,
+						   "effect", effect,
+						   "specifier", port_name,
+						   "control-port", control_port,
+						   "scale-precision", scale_precision,
+						   "step-count", step_count,
+						   NULL);
+      child_widget = ags_line_member_get_widget(line_member);
+
+      g_free(plugin_name);
+      g_free(control_port);
+      g_free(port_name);
+
+      /* vst3 conversion */
+      vst3_conversion = NULL;
+
+      g_object_set(line_member,
+		   "conversion", vst3_conversion,
+		   NULL);
+
+      /* child widget */
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
+	line_member->port_flags = AGS_LINE_MEMBER_PORT_BOOLEAN;
+      }
+      
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INTEGER)){
+	line_member->port_flags = AGS_LINE_MEMBER_PORT_INTEGER;
+      }
+
+      if(AGS_IS_DIAL(child_widget)){
+	AgsDial *dial;
+	GtkAdjustment *adjustment;
+
+	float lower_bound, upper_bound;
+	gdouble lower, upper;
+	float default_value;
+	gdouble control_value;
+	
+	dial = (AgsDial *) child_widget;
+
+	if(disable_seemless){
+	  dial->flags &= (~AGS_DIAL_SEEMLESS_MODE);
+	}
+	
+	/* add controls of ports and apply range  */
+	g_rec_mutex_lock(plugin_port_mutex);
+	
+	lower_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->lower_value);
+	upper_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
+
+	g_rec_mutex_unlock(plugin_port_mutex);
+
+	if(do_step_conversion){
+	  g_object_set(vst3_conversion,
+		       "lower", lower_bound,
+		       "upper", upper_bound,
+		       NULL);
+
+	  lower = 0.0;
+	  upper = AGS_VST3_CONVERSION_DEFAULT_STEP_COUNT - 1.0;
+	  
+#if 0
+	  if(!disable_seemless){
+	    g_object_get(vst3_conversion,
+			 "step-count", &step_count,
+			 NULL);
+	  }
+#endif
+	}else{
+	  lower = lower_bound;
+	  upper = upper_bound;
+	}
+
+	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+	g_object_set(dial,
+		     "adjustment", adjustment,
+		     NULL);
+
+	if(upper >= 0.0 && lower >= 0.0){
+	  step = (upper - lower) / step_count;
+	}else if(upper < 0.0 && lower < 0.0){
+	  step = -1.0 * (lower - upper) / step_count;
+	}else{
+	  step = (upper - lower) / step_count;
+	}
+
+	if(step_count > 8){
+	  if(upper >= 0.0 && lower >= 0.0){
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else if(upper < 0.0 && lower < 0.0){
+	    page = -1.0 * (lower - upper) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else{
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }
+	}else{
+	  page = step;
+	}
+	
+	gtk_adjustment_set_step_increment(adjustment,
+					  step);
+	gtk_adjustment_set_page_increment(adjustment,
+					  page);
+	gtk_adjustment_set_lower(adjustment,
+				 lower);
+	gtk_adjustment_set_upper(adjustment,
+				 upper);
+
+	/* get/set default value */
+	g_rec_mutex_lock(plugin_port_mutex);
+	
+	default_value = (float) g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
+
+	g_rec_mutex_unlock(plugin_port_mutex);
+
+	control_value = default_value;
+
+	if(vst3_conversion != NULL){
+	  control_value = ags_conversion_convert((AgsConversion *) vst3_conversion,
+						 default_value,
+						 TRUE);
+	}
+
+	gtk_adjustment_set_value(adjustment,
+				 control_value);
+      }else if(GTK_IS_RANGE(child_widget)){
+	GtkRange *range;
+	GtkAdjustment *adjustment;
+
+	float lower_bound, upper_bound;
+	gdouble lower, upper;
+	float default_value;
+	gdouble control_value;
+	
+	range = (GtkRange *) child_widget;
+	
+	/* add controls of ports and apply range  */
+	g_rec_mutex_lock(plugin_port_mutex);
+	
+	lower_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->lower_value);
+	upper_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
+
+	g_rec_mutex_unlock(plugin_port_mutex);
+
+	if(do_step_conversion){
+	  g_object_set(vst3_conversion,
+		       "lower", lower_bound,
+		       "upper", upper_bound,
+		       NULL);
+
+	  lower = 0.0;
+	  upper = AGS_VST3_CONVERSION_DEFAULT_STEP_COUNT - 1.0;
+	  
+#if 0
+	  if(!disable_seemless){
+	    g_object_get(vst3_conversion,
+			 "step-count", &step_count,
+			 NULL);
+	  }
+#endif
+	}else{
+	  lower = lower_bound;
+	  upper = upper_bound;
+	}
+
+	g_object_get(range,
+		     "adjustment", &adjustment,
+		     NULL);
+
+	if(upper >= 0.0 && lower >= 0.0){
+	  step = (upper - lower) / step_count;
+	}else if(upper < 0.0 && lower < 0.0){
+	  step = -1.0 * (lower - upper) / step_count;
+	}else{
+	  step = (upper - lower) / step_count;
+	}
+
+	if(step_count > 8){
+	  if(upper >= 0.0 && lower >= 0.0){
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else if(upper < 0.0 && lower < 0.0){
+	    page = -1.0 * (lower - upper) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else{
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }
+	}else{
+	  page = step;
+	}
+	
+	gtk_adjustment_set_step_increment(adjustment,
+					  step);
+	gtk_adjustment_set_page_increment(adjustment,
+					  page);
+	gtk_adjustment_set_lower(adjustment,
+				 lower);
+	gtk_adjustment_set_upper(adjustment,
+				 upper);
+
+	/* get/set default value */
+	g_rec_mutex_lock(plugin_port_mutex);
+	
+	default_value = (float) g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
+
+	g_rec_mutex_unlock(plugin_port_mutex);
+
+	control_value = default_value;
+
+	if(vst3_conversion != NULL){
+	  control_value = ags_conversion_convert((AgsConversion *) vst3_conversion,
+						 default_value,
+						 TRUE);
+	}
+
+	gtk_adjustment_set_value(adjustment,
+				 control_value);
+      }else if(GTK_IS_SPIN_BUTTON(child_widget)){
+	GtkSpinButton *spin_button;
+	GtkAdjustment *adjustment;
+
+	float lower_bound, upper_bound;
+	gdouble lower, upper;
+	float default_value;
+	gdouble control_value;
+	
+	spin_button = (GtkSpinButton *) child_widget;
+	
+	/* add controls of ports and apply range  */
+	g_rec_mutex_lock(plugin_port_mutex);
+	
+	lower_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->lower_value);
+	upper_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
+
+	g_rec_mutex_unlock(plugin_port_mutex);
+
+	if(do_step_conversion){
+	  g_object_set(vst3_conversion,
+		       "lower", lower_bound,
+		       "upper", upper_bound,
+		       NULL);
+
+	  lower = 0.0;
+	  upper = AGS_VST3_CONVERSION_DEFAULT_STEP_COUNT - 1.0;
+	  
+#if 0
+	  if(!disable_seemless){
+	    g_object_get(vst3_conversion,
+			 "step-count", &step_count,
+			 NULL);
+	  }
+#endif
+	}else{
+	  lower = lower_bound;
+	  upper = upper_bound;
+	}
+
+	g_object_get(spin_button,
+		     "adjustment", &adjustment,
+		     NULL);
+
+	if(upper >= 0.0 && lower >= 0.0){
+	  step = (upper - lower) / step_count;
+	}else if(upper < 0.0 && lower < 0.0){
+	  step = -1.0 * (lower - upper) / step_count;
+	}else{
+	  step = (upper - lower) / step_count;
+	}
+
+	if(step_count > 8){
+	  if(upper >= 0.0 && lower >= 0.0){
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else if(upper < 0.0 && lower < 0.0){
+	    page = -1.0 * (lower - upper) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else{
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }
+	}else{
+	  page = step;
+	}
+	
+	gtk_adjustment_set_step_increment(adjustment,
+					  step);
+	gtk_adjustment_set_page_increment(adjustment,
+					  page);
+	gtk_adjustment_set_lower(adjustment,
+				 lower);
+	gtk_adjustment_set_upper(adjustment,
+				 upper);
+
+	/* get/set default value */
+	g_rec_mutex_lock(plugin_port_mutex);
+	
+	default_value = (float) g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
+
+	g_rec_mutex_unlock(plugin_port_mutex);
+
+	control_value = default_value;
+
+	if(vst3_conversion != NULL){
+	  control_value = ags_conversion_convert((AgsConversion *) vst3_conversion,
+						 default_value,
+						 TRUE);
+	}
+
+	gtk_adjustment_set_value(adjustment,
+				 control_value);
+      }else if(AGS_IS_INDICATOR(child_widget)){
+	g_hash_table_insert(ags_line_indicator_queue_draw,
+			    child_widget,
+			    ags_line_indicator_queue_draw_timeout);
+
+	line->queued_drawing = g_list_prepend(line->queued_drawing,
+					      child_widget);
+	g_timeout_add(1000 / 30,
+		      (GSourceFunc) ags_line_indicator_queue_draw_timeout,
+		      (gpointer) child_widget);
+      }
+
+#ifdef AGS_DEBUG
+      g_message("vst3 bounds: %f %f", lower, upper);
+#endif
+
+      ags_expander_add(line->expander,
+		       (GtkWidget *) line_member,
+		       x % AGS_LINE_COLUMNS_COUNT, y,
+		       1, 1);      
+      ags_connectable_connect(AGS_CONNECTABLE(line_member));
+      gtk_widget_show_all((GtkWidget *) line_member);
+
+      /* iterate */
+      x++;
+
+      if(x % AGS_LINE_COLUMNS_COUNT == 0){
+	y++;
+      }
+    }
+
+    /* iterate */
+    plugin_port = plugin_port->next;
+    k++;
+  }
+
+  line_plugin->control_count = control_count;
+
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
+
+  g_list_free_full(start_plugin_port,
+		   g_object_unref);
+}
+
+void
 ags_line_real_add_plugin(AgsLine *line,
 			 GList *control_type_name,
 			 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -2480,6 +3081,19 @@ ags_line_real_add_plugin(AgsLine *line,
 			      start_pad, stop_pad,
 			      position,
 			      create_flags, recall_flags);
+    }else if(!g_ascii_strncasecmp(plugin_name,
+				  "ags-fx-vst3",
+				  12)){
+      ags_line_add_vst3_plugin(line,
+			       control_type_name,
+			       play_container, recall_container,
+			       plugin_name,
+			       fallback_filename,
+			       effect,
+			       start_audio_channel, stop_audio_channel,
+			       start_pad, stop_pad,
+			       position,
+			       create_flags, recall_flags);
     }
   }
 

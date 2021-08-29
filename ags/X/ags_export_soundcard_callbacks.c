@@ -33,7 +33,8 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
 
   gchar *backend;
   gchar *device;
-
+  gchar *tmp_device;
+  
   gboolean found_card;
 
   application_context = ags_application_context_get_instance();
@@ -67,91 +68,135 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
     if(!g_ascii_strncasecmp(backend,
 			    "wasapi",
 			    7)){
-      if(AGS_IS_WASAPI_DEVOUT(soundcard->data) &&
-	 !g_ascii_strcasecmp(device,
-			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
-	g_object_set(export_soundcard,
-		     "soundcard", soundcard->data,
-		     NULL);
-
-	found_card = TRUE;
+      if(AGS_IS_WASAPI_DEVOUT(soundcard->data)){
+	tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
 	
-	break;
+	if((tmp_device == NULL && !g_ascii_strcasecmp(device,
+						      "(null)")) ||
+	   (tmp_device != NULL && !g_ascii_strcasecmp(device,
+						      tmp_device))){
+	  g_object_set(export_soundcard,
+		       "soundcard", soundcard->data,
+		       NULL);
+	  
+	  found_card = TRUE;
+	}
+
+	g_free(tmp_device);
+	
+	if(found_card){
+	  break;
+	}
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "alsa",
 				  5)){
       if(AGS_IS_DEVOUT(soundcard->data) &&
-	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_ALSA) &&
-	 !g_ascii_strcasecmp(device,
-			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
-	g_object_set(export_soundcard,
-		     "soundcard", soundcard->data,
-		     NULL);
-
-	found_card = TRUE;
-	
-	break;
+	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_ALSA)){
+	 tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+	 	 
+	 if(!g_ascii_strcasecmp(device,
+				tmp_device)){
+	   g_object_set(export_soundcard,
+			"soundcard", soundcard->data,
+			NULL);
+	   
+	   found_card = TRUE;
+	 }
+	 
+	 g_free(tmp_device);
+	 
+	 if(found_card){
+	   break;
+	}
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "oss",
 				  4)){    
       if(AGS_IS_DEVOUT(soundcard->data) &&
-	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_OSS) &&
-	 !g_ascii_strcasecmp(device,
-			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
-	g_object_set(export_soundcard,
-		     "soundcard", soundcard->data,
-		     NULL);
-
-	found_card = TRUE;	
-
-	break;
+	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_OSS)){
+	tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+	
+	if(!g_ascii_strcasecmp(device,
+			       tmp_device)){
+	  g_object_set(export_soundcard,
+		       "soundcard", soundcard->data,
+		       NULL);
+	  
+	  found_card = TRUE;	
+	}
+	
+	g_free(tmp_device);
+	
+	if(found_card){
+	  break;
+	}
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "jack",
 				  5)){
-      if(AGS_IS_JACK_DEVOUT(soundcard->data) &&
-	 !g_ascii_strcasecmp(device,
-			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
-	g_object_set(export_soundcard,
-		     "soundcard", soundcard->data,
-		     NULL);
+      if(AGS_IS_JACK_DEVOUT(soundcard->data)){
+	tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+	
+	if(!g_ascii_strcasecmp(device,
+			       tmp_device)){	
+	  g_object_set(export_soundcard,
+		       "soundcard", soundcard->data,
+		       NULL);
 
-	found_card = TRUE;	
-
-	break;
+	  found_card = TRUE;	
+	}
+	
+	g_free(tmp_device);
+	
+	if(found_card){
+	  break;
+	}
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "pulse",
 				  6)){
-      if(AGS_IS_PULSE_DEVOUT(soundcard->data) &&
-	 !g_ascii_strcasecmp(device,
-			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
-	g_object_set(export_soundcard,
-		     "soundcard", soundcard->data,
-		     NULL);
+      if(AGS_IS_PULSE_DEVOUT(soundcard->data)){
+	tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+	
+	if(!g_ascii_strcasecmp(device,
+			       tmp_device)){
+	  g_object_set(export_soundcard,
+		       "soundcard", soundcard->data,
+		       NULL);
 
-	found_card = TRUE;	
-
-	break;
+	  found_card = TRUE;	
+	}
+	
+	g_free(tmp_device);
+	
+	if(found_card){
+	  break;
+	}
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "core-audio",
 				  11)){
-      if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data) &&
-	 !g_ascii_strcasecmp(device,
-			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
-	g_object_set(export_soundcard,
-		     "soundcard", soundcard->data,
-		     NULL);
-
-	found_card = TRUE;	
-
-	break;
+      if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data)){
+	tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+	
+	if(!g_ascii_strcasecmp(device,
+			       tmp_device)){
+	  g_object_set(export_soundcard,
+		       "soundcard", soundcard->data,
+		       NULL);
+	  
+	  found_card = TRUE;	
+	}
+	
+	g_free(tmp_device);
+	
+	if(found_card){
+	  break;
+	}
       }
     }
-
+  
     soundcard = soundcard->next;
   }
 
@@ -175,6 +220,7 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
 
   gchar *backend;
   gchar *device;
+  gchar *tmp_device;
 
   gboolean found_card;
 
@@ -201,93 +247,137 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
   }
   
   found_card = FALSE;
-
+  
   while(soundcard != NULL){
     if(!g_ascii_strncasecmp(backend,
 			    "wasapi",
 			    7)){
-      if(AGS_IS_WASAPI_DEVOUT(soundcard->data) &&
-	 !g_ascii_strcasecmp(device,
-			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
-	g_object_set(export_soundcard,
-		     "soundcard", soundcard->data,
-		     NULL);
-
-	found_card = TRUE;
+      if(AGS_IS_WASAPI_DEVOUT(soundcard->data)){
+	tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
 	
-	break;
+	if((tmp_device == NULL && !g_ascii_strcasecmp(device,
+						      "(null)")) ||
+	   (tmp_device != NULL && !g_ascii_strcasecmp(device,
+						      tmp_device))){
+	  g_object_set(export_soundcard,
+		       "soundcard", soundcard->data,
+		       NULL);
+	  
+	  found_card = TRUE;
+	}
+
+	g_free(tmp_device);
+	
+	if(found_card){
+	  break;
+	}
       }
     }else if(!g_ascii_strncasecmp(backend,
-			    "alsa",
-			    5)){
+				  "alsa",
+				  5)){
       if(AGS_IS_DEVOUT(soundcard->data) &&
-	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_ALSA) &&
-	 !g_ascii_strcasecmp(device,
-			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
-	g_object_set(export_soundcard,
-		     "soundcard", soundcard->data,
-		     NULL);
-
-	found_card = TRUE;
-	
-	break;
+	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_ALSA)){
+	 tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+	 	 
+	 if(!g_ascii_strcasecmp(device,
+				tmp_device)){
+	   g_object_set(export_soundcard,
+			"soundcard", soundcard->data,
+			NULL);
+	   
+	   found_card = TRUE;
+	 }
+	 
+	 g_free(tmp_device);
+	 
+	 if(found_card){
+	   break;
+	}
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "oss",
 				  4)){    
       if(AGS_IS_DEVOUT(soundcard->data) &&
-	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_OSS) &&
-	 !g_ascii_strcasecmp(device,
-			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
-	g_object_set(export_soundcard,
-		     "soundcard", soundcard->data,
-		     NULL);
-
-	found_card = TRUE;
-
-	break;
+	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_OSS)){
+	tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+	
+	if(!g_ascii_strcasecmp(device,
+			       tmp_device)){
+	  g_object_set(export_soundcard,
+		       "soundcard", soundcard->data,
+		       NULL);
+	  
+	  found_card = TRUE;	
+	}
+	
+	g_free(tmp_device);
+	
+	if(found_card){
+	  break;
+	}
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "jack",
 				  5)){
-      if(AGS_IS_JACK_DEVOUT(soundcard->data) &&
-	 !g_ascii_strcasecmp(device,
-			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
-	g_object_set(export_soundcard,
-		     "soundcard", soundcard->data,
-		     NULL);
+      if(AGS_IS_JACK_DEVOUT(soundcard->data)){
+	tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+	
+	if(!g_ascii_strcasecmp(device,
+			       tmp_device)){	
+	  g_object_set(export_soundcard,
+		       "soundcard", soundcard->data,
+		       NULL);
 
-	found_card = TRUE;
-
-	break;
+	  found_card = TRUE;	
+	}
+	
+	g_free(tmp_device);
+	
+	if(found_card){
+	  break;
+	}
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "pulse",
 				  6)){
-      if(AGS_IS_PULSE_DEVOUT(soundcard->data) &&
-	 !g_ascii_strcasecmp(device,
-			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
-	g_object_set(export_soundcard,
-		     "soundcard", soundcard->data,
-		     NULL);
+      if(AGS_IS_PULSE_DEVOUT(soundcard->data)){
+	tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+	
+	if(!g_ascii_strcasecmp(device,
+			       tmp_device)){
+	  g_object_set(export_soundcard,
+		       "soundcard", soundcard->data,
+		       NULL);
 
-	found_card = TRUE;
-
-	break;
+	  found_card = TRUE;	
+	}
+	
+	g_free(tmp_device);
+	
+	if(found_card){
+	  break;
+	}
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "core-audio",
 				  11)){
-      if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data) &&
-	 !g_ascii_strcasecmp(device,
-			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
-	g_object_set(export_soundcard,
-		     "soundcard", soundcard->data,
-		     NULL);
-
-	found_card = TRUE;
-
-	break;
+      if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data)){
+	tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+	
+	if(!g_ascii_strcasecmp(device,
+			       tmp_device)){
+	  g_object_set(export_soundcard,
+		       "soundcard", soundcard->data,
+		       NULL);
+	  
+	  found_card = TRUE;	
+	}
+	
+	g_free(tmp_device);
+	
+	if(found_card){
+	  break;
+	}
       }
     }
 

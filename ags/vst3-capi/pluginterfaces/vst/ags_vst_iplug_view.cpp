@@ -25,9 +25,7 @@ extern "C" {
     
   const AgsVstTUID* ags_vst_iparameter_finder_get_iid()
   {
-    extern const Steinberg::TUID IParameterFinder__iid;
-
-    return((AgsVstTUID *) (&IParameterFinder__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IParameterFinder::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iparameter_finder_find_parameter(AgsVstIParameterFinder *iparameter_finder,

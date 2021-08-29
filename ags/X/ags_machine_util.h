@@ -48,9 +48,11 @@ GtkWidget* ags_machine_util_new_audiorec();
 GtkWidget* ags_machine_util_new_desk();
 GtkWidget* ags_machine_util_new_ladspa_bridge(gchar *filename, gchar *effect);
 GtkWidget* ags_machine_util_new_dssi_bridge(gchar *filename, gchar *effect);
+GtkWidget* ags_machine_util_new_vst3_bridge(gchar *filename, gchar *effect);
 GtkWidget* ags_machine_util_new_lv2_bridge(gchar *filename, gchar *effect);
 GtkWidget* ags_machine_util_new_live_dssi_bridge(gchar *filename, gchar *effect);
 GtkWidget* ags_machine_util_new_live_lv2_bridge(gchar *filename, gchar *effect);
+GtkWidget* ags_machine_util_new_live_vst3_bridge(gchar *filename, gchar *effect);
 
 GtkWidget* ags_machine_util_new_by_type_name(gchar *machine_type_name,
 					     gchar *filename, gchar *effect);

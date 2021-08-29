@@ -23,11 +23,11 @@
 
 extern "C" {
 
+  const gint32 ags_vst_kdefault_factory_flags = AGS_VST_KUNICODE;
+
   const AgsVstTUID* ags_vst_icomponent_get_iid()
   {
-    extern const Steinberg::TUID IComponent__iid;
-
-    return((AgsVstTUID *) (&IComponent__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IComponent::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_icomponent_get_controller_class_id(AgsVstIComponent *icomponent, AgsVstTUID *class_id)

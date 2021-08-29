@@ -29,23 +29,27 @@
 extern "C" {
 #endif
   
-  typedef struct AgsVstIEventList IEventList;
-  typedef struct AgsVstNoteOnEvent NoteOnEvent;
-  typedef struct AgsVstNoteOffEvent NoteOffEvent;
-  typedef struct AgsVstDataEvent DataEvent;
-  typedef struct AgsVstPolyPressureEvent PolyPressureEvent;
-  typedef struct AgsVstChordEvent ChordEvent;
-  typedef struct AgsVstScaleEvent ScaleEvent;
-  typedef struct AgsVstLegacyMIDICCOutEventEvent LegacyMIDICCOutEventEvent;
-  typedef struct AgsVstEvent Event;  
+  typedef struct IEventList AgsVstIEventList;
+  typedef struct NoteOnEvent AgsVstNoteOnEvent;
+  typedef struct NoteOffEvent AgsVstNoteOffEvent;
+  typedef struct DataEvent AgsVstDataEvent;
+  typedef struct PolyPressureEvent AgsVstPolyPressureEvent;
+  typedef struct ChordEvent AgsVstChordEvent;
+  typedef struct ScaleEvent AgsVstScaleEvent;
+  typedef struct LegacyMIDICCOutEventEvent AgsVstLegacyMIDICCOutEventEvent;
+  typedef struct Event AgsVstEvent;  
   
   typedef enum{
     AGS_VST_KNOTE_ID_USER_RANGE_LOWER_BOUND = -10000, 
     AGS_VST_KNOTE_ID_USER_RANGE_UPPER_BOUND = -1000,
   }AgsVstNoteMidiUserRange;
+
+  AgsVstNoteOnEvent* ags_vst_note_on_event_alloc(gint channel, gint pitch, gfloat tuning, gfloat velocity, gint32 length, gint32 note_id);
+  
+  AgsVstNoteOffEvent* ags_vst_note_off_event_alloc(gint channel, gint pitch, gfloat tuning, gfloat velocity, gint32 length, gint32 note_id);
   
   const AgsVstTUID* ags_vst_ievent_list_get_iid();
-
+  
   gint32 ags_vst_ievent_list_get_event_count(AgsVstIEventList *ievent_list);
 
   AgsVstTResult ags_vst_ievent_list_get_event(AgsVstIEventList *ievent_list,

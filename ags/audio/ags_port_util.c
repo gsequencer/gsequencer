@@ -21,6 +21,7 @@
 
 #include <ags/plugin/ags_ladspa_conversion.h>
 #include <ags/plugin/ags_lv2_conversion.h>
+#include <ags/plugin/ags_vst3_conversion.h>
 
 gpointer ags_port_util_copy(gpointer ptr);
 void ags_port_util_free(gpointer ptr);
@@ -169,6 +170,35 @@ ags_port_util_load_lv2_conversion(AgsPort *port,
   if(lv2_conversion != NULL){
     g_object_set(port,
 		 "conversion", lv2_conversion,
+		 NULL);
+  }
+}
+
+/**
+ * ags_port_util_load_vst3_conversion:
+ * @port: the #AgsPort
+ * @plugin_port: the #AgsPluginPort
+ * 
+ * Loads conversion object by using @plugin_port and sets in on @port.
+ * 
+ * Since: 3.10.5
+ */
+void
+ags_port_util_load_vst3_conversion(AgsPort *port,
+				  AgsPluginPort *plugin_port)
+{
+  AgsVst3Conversion *vst3_conversion;
+
+  if(!AGS_IS_PORT(port) ||
+     !AGS_IS_PLUGIN_PORT(plugin_port)){
+    return;
+  }
+
+  vst3_conversion = NULL;
+
+  if(vst3_conversion != NULL){
+    g_object_set(port,
+		 "conversion", vst3_conversion,
 		 NULL);
   }
 }

@@ -49,14 +49,14 @@ extern "C" {
     AGS_VST_KINVALID_TYPE_ID = 0xFFFFFFFF
   }AgsVstNoteExpressionTypeIDs;
 
-  typedef struct AgsVstNoteExpressionValueDescription NoteExpressionValueDescription;
-  typedef struct AgsVstNoteExpressionValueEvent NoteExpressionValueEvent;
-  typedef struct AgsVstNoteExpressionTextEvent NoteExpressionTextEvent;
-  typedef struct AgsVstNoteExpressionTypeInfo NoteExpressionTypeInfo;
-  typedef struct AgsVstINoteExpressionController INoteExpressionController;
-  typedef struct AgsVstKeyswitchInfo KeyswitchInfo;
+  typedef struct NoteExpressionValueDescription AgsVstNoteExpressionValueDescription;
+  typedef struct NoteExpressionValueEvent AgsVstNoteExpressionValueEvent;
+  typedef struct NoteExpressionTextEvent AgsVstNoteExpressionTextEvent;
+  typedef struct NoteExpressionTypeInfo AgsVstNoteExpressionTypeInfo;
+  typedef struct INoteExpressionController AgsVstINoteExpressionController;
+  typedef struct KeyswitchInfo AgsVstKeyswitchInfo;
   typedef guint32 AgsVstKeyswitchTypeID;
-  typedef struct AgsVstIKeyswitchController IKeyswitchController;
+  typedef struct IKeyswitchController AgsVstIKeyswitchController;
   
   const AgsVstTUID* ags_vst_inote_expression_controller_get_iid();
 

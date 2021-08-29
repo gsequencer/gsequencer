@@ -685,6 +685,10 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 							   0.0,
 							   2.0,
 							   0.025);
+  
+  gtk_widget_set_size_request(ffplayer->volume,
+			      gui_scale_factor * 16, gui_scale_factor * 100);
+  
   gtk_box_pack_start(volume_hbox,
 		     (GtkWidget *) ffplayer->volume,
 		     FALSE, FALSE,

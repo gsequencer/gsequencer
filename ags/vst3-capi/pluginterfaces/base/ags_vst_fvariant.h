@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstFVariant FVariant;
+  typedef struct FVariant AgsVstFVariant;
 
   enum
   {

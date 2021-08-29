@@ -24,61 +24,65 @@
 
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h>
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_speaker.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_ievents.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_changes.h>
+
+#define AGS_VST_KAUDIO_EFFECT_CLASS "Audio Module Class"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-  typedef struct AgsVstProcessSetup ProcessSetup;
-  typedef struct AgsVstAudioBusBuffers AudioBusBuffers;
-  typedef struct AgsVstProcessData ProcessData;
+  typedef struct ProcessSetup AgsVstProcessSetup;
+  typedef struct AudioBusBuffers AgsVstAudioBusBuffers;
+  typedef struct ProcessData AgsVstProcessData;
   
-  typedef struct AgsVstIAudioProcessor IAudioProcessor;
+  typedef struct IAudioProcessor AgsVstIAudioProcessor;
 
-  typedef struct AgsVstIAudioPresentationLatency IAudioPresentationLatency;
+  typedef struct IAudioPresentationLatency AgsVstIAudioPresentationLatency;
 
-  typedef struct AgsVstIProcessContextRequirements IProcessContextRequirements;
+  typedef struct IProcessContextRequirements AgsVstIProcessContextRequirements;
       
-  const AgsVstCString ags_vst_kfx_analyzer               = "Fx|Analyzer";
-  const AgsVstCString ags_vst_kfx_delay                  = "Fx|Delay";
-  const AgsVstCString ags_vst_kfx_distortion             = "Fx|Distortion";
-  const AgsVstCString ags_vst_kfx_dynamics               = "Fx|Dynamics";
-  const AgsVstCString ags_vst_kfx_eq                     = "Fx|EQ";
-  const AgsVstCString ags_vst_kfx_filter                 = "Fx|Filter";
-  const AgsVstCString ags_vst_kfx                        = "Fx";
-  const AgsVstCString ags_vst_kfx_instrument             = "Fx|Instrument";
-  const AgsVstCString ags_vst_kfx_instrument_external    = "Fx|Instrument|External";
-  const AgsVstCString ags_vst_kfx_spatial                = "Fx|Spatial";
-  const AgsVstCString ags_vst_kfx_generator              = "Fx|Generator";
-  const AgsVstCString ags_vst_kfx_mastering              = "Fx|Mastering";
-  const AgsVstCString ags_vst_kfx_modulation             = "Fx|Modulation";
-  const AgsVstCString ags_vst_kfx_pitch_shift            = "Fx|Pitch Shift";
-  const AgsVstCString ags_vst_kfx_restoration            = "Fx|Restoration";
-  const AgsVstCString ags_vst_kfx_reverb                 = "Fx|Reverb";
-  const AgsVstCString ags_vst_kfx_surround               = "Fx|Surround";
-  const AgsVstCString ags_vst_kfx_tools                  = "Fx|Tools";
-  const AgsVstCString ags_vst_kfx_network                = "Fx|Network";
-  const AgsVstCString ags_vst_kinstrument                = "Instrument";
-  const AgsVstCString ags_vst_kinstrument_drum           = "Instrument|Drum";
-  const AgsVstCString ags_vst_kinstrument_external       = "Instrument|External";
-  const AgsVstCString ags_vst_kinstrument_piano          = "Instrument|Piano";
-  const AgsVstCString ags_vst_kinstrument_sampler        = "Instrument|Sampler";
-  const AgsVstCString ags_vst_kinstrument_synth          = "Instrument|Synth";
-  const AgsVstCString ags_vst_kinstrument_synth_sampler  = "Instrument|Synth|Sampler";
-  const AgsVstCString ags_vst_kspatial                   = "Spatial";
-  const AgsVstCString ags_vst_kspatial_fx                = "Spatial|Fx";
-  const AgsVstCString ags_vst_konly_real_time            = "OnlyRT";
-  const AgsVstCString ags_vst_konly_offline_process      = "OnlyOfflineProcess";
-  const AgsVstCString ags_vst_konly_ara                  = "OnlyARA";
+  extern const AgsVstCString ags_vst_kfx_analyzer;
+  extern const AgsVstCString ags_vst_kfx_delay;
+  extern const AgsVstCString ags_vst_kfx_distortion;
+  extern const AgsVstCString ags_vst_kfx_dynamics;
+  extern const AgsVstCString ags_vst_kfx_eq;
+  extern const AgsVstCString ags_vst_kfx_filter;
+  extern const AgsVstCString ags_vst_kfx;
+  extern const AgsVstCString ags_vst_kfx_instrument;
+  extern const AgsVstCString ags_vst_kfx_instrument_external;
+  extern const AgsVstCString ags_vst_kfx_spatial;
+  extern const AgsVstCString ags_vst_kfx_generator;
+  extern const AgsVstCString ags_vst_kfx_mastering;
+  extern const AgsVstCString ags_vst_kfx_modulation;
+  extern const AgsVstCString ags_vst_kfx_pitch_shift;
+  extern const AgsVstCString ags_vst_kfx_restoration;
+  extern const AgsVstCString ags_vst_kfx_reverb;
+  extern const AgsVstCString ags_vst_kfx_surround;
+  extern const AgsVstCString ags_vst_kfx_tools;
+  extern const AgsVstCString ags_vst_kfx_network;
+  extern const AgsVstCString ags_vst_kinstrument;
+  extern const AgsVstCString ags_vst_kinstrument_drum;
+  extern const AgsVstCString ags_vst_kinstrument_external;
+  extern const AgsVstCString ags_vst_kinstrument_piano;
+  extern const AgsVstCString ags_vst_kinstrument_sampler;
+  extern const AgsVstCString ags_vst_kinstrument_synth;
+  extern const AgsVstCString ags_vst_kinstrument_synth_sampler;
+  extern const AgsVstCString ags_vst_kspatial;
+  extern const AgsVstCString ags_vst_kspatial_fx;
+  extern const AgsVstCString ags_vst_konly_real_time;
+  extern const AgsVstCString ags_vst_konly_offline_process;
+  extern const AgsVstCString ags_vst_konly_ara;
   
-  const AgsVstCString ags_vst_kno_offline_process        = "NoOfflineProcess";
-  const AgsVstCString ags_vst_kup_down_mix               = "Up-Downmix";
-  const AgsVstCString ags_vst_kanalyzer                  = "Analyzer";
-  const AgsVstCString ags_vst_kambisonics                = "Ambisonics";
+  extern const AgsVstCString ags_vst_kno_offline_process;
+  extern const AgsVstCString ags_vst_kup_down_mix;
+  extern const AgsVstCString ags_vst_kanalyzer;
+  extern const AgsVstCString ags_vst_kambisonics;
 
-  const AgsVstCString ags_vst_kmono                      = "Mono";
-  const AgsVstCString ags_vst_kstereo                    = "Stereo";
-  const AgsVstCString ags_vst_ksurround                  = "Surround";
+  extern const AgsVstCString ags_vst_kmono;
+  extern const AgsVstCString ags_vst_kstereo;
+  extern const AgsVstCString ags_vst_ksurround;
 
   typedef enum{
     AGS_VST_KDISTRIBUTABLE           = 1,
@@ -110,6 +114,72 @@ extern "C" {
     AGS_VST_KNEED_FRAME_RATE                   = 1 <<  9,
     AGS_VST_KNEED_TRANSPORT_STATE              = 1 << 10,
   }AgsVstIProcessContextRequirementsFlags;
+
+  AgsVstProcessSetup* ags_vst_process_setup_alloc();
+
+  void ags_vst_process_setup_set_process_mode(AgsVstProcessSetup *setup,
+					      gint32 process_mode);
+
+  void ags_vst_process_setup_set_symbolic_sample_size(AgsVstProcessSetup *setup,
+						      gint32 symbolic_sample_size);
+  
+  void ags_vst_process_setup_set_max_samples_per_block(AgsVstProcessSetup *setup,
+						       gint32 max_samples_per_block);
+
+  void ags_vst_process_setup_set_samplerate(AgsVstProcessSetup *setup,
+					    gdouble samplerate);
+
+  AgsVstAudioBusBuffers* ags_vst_audio_bus_buffers_alloc();
+
+  void ags_vst_audio_bus_buffers_set_num_channels(AgsVstAudioBusBuffers *buffers,
+						  gint32 num_channels);
+  
+  void ags_vst_audio_bus_buffers_set_silence_flags(AgsVstAudioBusBuffers *buffers,
+						   guint64 silence_flags);
+  
+  void ags_vst_audio_bus_buffers_set_samples32(AgsVstAudioBusBuffers *buffers,
+					       gfloat **channel_buffers);
+  
+  void ags_vst_audio_bus_buffers_set_samples64(AgsVstAudioBusBuffers *buffers,
+					       gdouble **channel_buffers);
+
+  AgsVstProcessData* ags_vst_process_data_alloc();
+
+  void ags_vst_process_data_set_process_mode(AgsVstProcessData *data,
+					     gint32 process_mode);
+
+  void ags_vst_process_data_set_symbolic_sample_size(AgsVstProcessData *data,
+						     gint32 symbolic_sample_size);
+  
+  void ags_vst_process_data_set_num_samples(AgsVstProcessData *data,
+					    gint32 num_samples);
+  
+  void ags_vst_process_data_set_num_inputs(AgsVstProcessData *data,
+					   gint32 num_inputs);
+  
+  void ags_vst_process_data_set_num_outputs(AgsVstProcessData *data,
+					    gint32 num_outputs);
+
+  void ags_vst_process_data_set_inputs(AgsVstProcessData *data,
+				       AgsVstAudioBusBuffers *buffers);
+  
+  void ags_vst_process_data_set_outputs(AgsVstProcessData *data,
+					AgsVstAudioBusBuffers *buffers);
+  
+  void ags_vst_process_data_set_input_iparameter_changes(AgsVstProcessData *data,
+							 AgsVstIParameterChanges *iparameter_changes);
+
+  void ags_vst_process_data_set_ouput_iparameter_changes(AgsVstProcessData *data,
+							 AgsVstIParameterChanges *iparameter_changes);
+
+  void ags_vst_process_data_set_input_events(AgsVstProcessData *data,
+					     AgsVstIEventList *events);
+
+  void ags_vst_process_data_set_output_events(AgsVstProcessData *data,
+					      AgsVstIEventList *events);
+
+  void ags_vst_process_data_set_process_context(AgsVstProcessData *data,
+						AgsVstProcessContext *context);
   
   const AgsVstTUID* ags_vst_iaudio_processor_get_iid();
 

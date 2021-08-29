@@ -28,7 +28,7 @@ extern "C" {
   const AgsVstTUID*
   ags_vst_iplugin_base_get_iid()
   {
-    return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IPluginBase)));
+    return((AgsVstTUID *) &(Steinberg::IPluginBase::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iplugin_base_initialize(AgsVstIPluginBase *iplugin_base, AgsVstFUnknown *funknown)
@@ -41,10 +41,44 @@ extern "C" {
     return(((Steinberg::IPluginBase *) iplugin_base)->terminate());
   }
 
+  AgsVstPClassInfo* ags_vst_pclass_info_alloc()
+  {
+    Steinberg::PClassInfo *info;
+
+    info = new Steinberg::PClassInfo();
+
+    return((AgsVstPClassInfo *) info);
+  }
+
+  void ags_vst_pclass_info_free(AgsVstPClassInfo *info)
+  {
+    delete info;
+  }
+
+  AgsVstTUID* ags_vst_pclass_info_get_cid(AgsVstPClassInfo *info)
+  {
+    return((AgsVstTUID *) &(((Steinberg::PClassInfo *) info)->cid));
+  }
+  
+  gint32 ags_vst_pclass_info_get_cardinality(AgsVstPClassInfo *info)
+  {
+    return(((Steinberg::PClassInfo *) info)->cardinality);
+  }
+  
+  gchar* ags_vst_pclass_info_get_category(AgsVstPClassInfo *info)
+  {
+    return(((Steinberg::PClassInfo *) info)->category);
+  }
+  
+  gchar* ags_vst_pclass_info_get_name(AgsVstPClassInfo *info)
+  {
+    return(((Steinberg::PClassInfo *) info)->name);
+  }
+
   const AgsVstTUID*
   ags_vst_iplugin_factory_get_iid()
   {
-    return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IPluginFactory)));
+    return((AgsVstTUID *) &(Steinberg::IPluginFactory::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iplugin_factory_get_factory_info(AgsVstIPluginFactory *iplugin_factory,
@@ -72,18 +106,42 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iplugin_factory2_get_iid()
   {
-    return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IPluginFactory2)));
+    return((AgsVstTUID *) &(Steinberg::IPluginFactory2::iid.toTUID()));
   }
 
-  AgsVstTResult ags_vst_iplugin_factory2_get_class_info2(AgsVstIPluginFactory2 *iplugin_factory2,
-							 gint32 index, AgsVstPClassInfo *info)
+  AgsVstPClassInfo2* ags_vst_pclass_info2_alloc()
   {
-    return(((Steinberg::IPluginFactory2 *) iplugin_factory2)->getClassInfo(index, (Steinberg::PClassInfo *) info));
+    Steinberg::PClassInfo2 *info2;
+
+    info2 = new Steinberg::PClassInfo2();
+
+    return((AgsVstPClassInfo2 *) info2);
+  }
+
+  void ags_vst_pclass_info2_free(AgsVstPClassInfo2 *info2)
+  {
+    delete info2;
+  }
+
+  gchar* ags_vst_pclass_info2_get_category(AgsVstPClassInfo2 *info2)
+  {
+    return((gchar *) ((Steinberg::PClassInfo2 *) info2)->category);
+  }
+
+  gchar* ags_vst_pclass_info2_get_sub_categories(AgsVstPClassInfo2 *info2)
+  {
+    return((gchar *) ((Steinberg::PClassInfo2 *) info2)->subCategories);
+  }
+  
+  AgsVstTResult ags_vst_iplugin_factory2_get_class_info2(AgsVstIPluginFactory2 *iplugin_factory2,
+							 gint32 index, AgsVstPClassInfo2 *info)
+  {
+    return(((Steinberg::IPluginFactory2 *) iplugin_factory2)->getClassInfo2(index, (Steinberg::PClassInfo2 *) info));
   }
 
   const AgsVstTUID* ags_vst_iplugin_factory3_get_iid()
   {
-    return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IPluginFactory3)));
+    return((AgsVstTUID *) &(Steinberg::IPluginFactory3::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iplugin_factory3_get_class_info_unicode(AgsVstIPluginFactory3 *iplugin_factory3,

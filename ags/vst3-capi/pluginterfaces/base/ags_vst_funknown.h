@@ -78,16 +78,17 @@ extern "C" {
 
   typedef gint8 AgsVstTUID[16];
   
-  typedef struct AgsVstFUID FUID;
+  typedef struct FUID AgsVstFUID;
 
   typedef gchar AgsVstString[64];
   
-  typedef struct AgsVstFUnknown FUnknown;
+  typedef struct FUnknown AgsVstFUnknown;
   
-  typedef struct AgsVstI I;
-  typedef struct AgsVstFUnknownPtr FUnknownPtr;
+  typedef gpointer AgsVstI;
   
-  typedef struct AgsVstFReleaser FReleaser;
+  typedef struct FUnknownPtr AgsVstFUnknownPtr;
+  
+  typedef struct FReleaser AgsVstFReleaser;
 
   AgsVstFUID* ags_vst_fuid_new();
   AgsVstFUID* ags_vst_fuid_new_with_iid(guint32 l1, guint32 l2, guint32 l3, guint32 l4);

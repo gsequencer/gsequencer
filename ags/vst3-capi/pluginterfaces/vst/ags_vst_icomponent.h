@@ -30,11 +30,11 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIComponent IComponent;
+  typedef struct IComponent AgsVstIComponent;
 
-  typedef struct AgsVstBusInfo BusInfo;
+  typedef struct BusInfo AgsVstBusInfo;
 
-  typedef struct AgsVstRoutingInfo RoutingInfo;
+  typedef struct RoutingInfo AgsVstRoutingInfo;
 
   typedef enum{
     AGS_VST_KAUDIO = 0,
@@ -67,7 +67,7 @@ extern "C" {
     AGS_vST_KOFFLINE_PROCESSING
   }AgsVstIoModes;
   
-  const gint32 ags_vst_kdefault_factory_flags = AGS_VST_KUNICODE;
+  extern const gint32 ags_vst_kdefault_factory_flags;
 
   const AgsVstTUID* ags_vst_icomponent_get_iid();
 

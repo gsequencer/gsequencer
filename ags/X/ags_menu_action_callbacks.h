@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,9 +64,11 @@ void ags_menu_action_add_desk_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_add_dssi_bridge_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data);
+void ags_menu_action_add_vst3_bridge_callback(GtkWidget *menu_item, gpointer data);
 
 void ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data);
+void ags_menu_action_add_live_vst3_bridge_callback(GtkWidget *menu_item, gpointer data);
 
 void ags_menu_action_automation_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_wave_callback(GtkWidget *menu_item, gpointer data);

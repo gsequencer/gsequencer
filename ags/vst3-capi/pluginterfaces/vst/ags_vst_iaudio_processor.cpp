@@ -23,11 +23,185 @@
 
 extern "C" {
 
+  const AgsVstCString ags_vst_kfx_analyzer               = "Fx|Analyzer";
+  const AgsVstCString ags_vst_kfx_delay                  = "Fx|Delay";
+  const AgsVstCString ags_vst_kfx_distortion             = "Fx|Distortion";
+  const AgsVstCString ags_vst_kfx_dynamics               = "Fx|Dynamics";
+  const AgsVstCString ags_vst_kfx_eq                     = "Fx|EQ";
+  const AgsVstCString ags_vst_kfx_filter                 = "Fx|Filter";
+  const AgsVstCString ags_vst_kfx                        = "Fx";
+  const AgsVstCString ags_vst_kfx_instrument             = "Fx|Instrument";
+  const AgsVstCString ags_vst_kfx_instrument_external    = "Fx|Instrument|External";
+  const AgsVstCString ags_vst_kfx_spatial                = "Fx|Spatial";
+  const AgsVstCString ags_vst_kfx_generator              = "Fx|Generator";
+  const AgsVstCString ags_vst_kfx_mastering              = "Fx|Mastering";
+  const AgsVstCString ags_vst_kfx_modulation             = "Fx|Modulation";
+  const AgsVstCString ags_vst_kfx_pitch_shift            = "Fx|Pitch Shift";
+  const AgsVstCString ags_vst_kfx_restoration            = "Fx|Restoration";
+  const AgsVstCString ags_vst_kfx_reverb                 = "Fx|Reverb";
+  const AgsVstCString ags_vst_kfx_surround               = "Fx|Surround";
+  const AgsVstCString ags_vst_kfx_tools                  = "Fx|Tools";
+  const AgsVstCString ags_vst_kfx_network                = "Fx|Network";
+  const AgsVstCString ags_vst_kinstrument                = "Instrument";
+  const AgsVstCString ags_vst_kinstrument_drum           = "Instrument|Drum";
+  const AgsVstCString ags_vst_kinstrument_external       = "Instrument|External";
+  const AgsVstCString ags_vst_kinstrument_piano          = "Instrument|Piano";
+  const AgsVstCString ags_vst_kinstrument_sampler        = "Instrument|Sampler";
+  const AgsVstCString ags_vst_kinstrument_synth          = "Instrument|Synth";
+  const AgsVstCString ags_vst_kinstrument_synth_sampler  = "Instrument|Synth|Sampler";
+  const AgsVstCString ags_vst_kspatial                   = "Spatial";
+  const AgsVstCString ags_vst_kspatial_fx                = "Spatial|Fx";
+  const AgsVstCString ags_vst_konly_real_time            = "OnlyRT";
+  const AgsVstCString ags_vst_konly_offline_process      = "OnlyOfflineProcess";
+  const AgsVstCString ags_vst_konly_ara                  = "OnlyARA";
+  
+  const AgsVstCString ags_vst_kno_offline_process        = "NoOfflineProcess";
+  const AgsVstCString ags_vst_kup_down_mix               = "Up-Downmix";
+  const AgsVstCString ags_vst_kanalyzer                  = "Analyzer";
+  const AgsVstCString ags_vst_kambisonics                = "Ambisonics";
+
+  const AgsVstCString ags_vst_kmono                      = "Mono";
+  const AgsVstCString ags_vst_kstereo                    = "Stereo";
+  const AgsVstCString ags_vst_ksurround                  = "Surround";
+
+  AgsVstProcessSetup* ags_vst_process_setup_alloc()
+  {
+    return((AgsVstProcessSetup *) new Steinberg::Vst::ProcessSetup());
+  }
+
+  void ags_vst_process_setup_set_process_mode(AgsVstProcessSetup *setup,
+					      gint32 process_mode)
+  {
+    ((Steinberg::Vst::ProcessSetup *) setup)->processMode = process_mode;
+  }
+
+  void ags_vst_process_setup_set_symbolic_sample_size(AgsVstProcessSetup *setup,
+						      gint32 symbolic_sample_size)
+  {
+    ((Steinberg::Vst::ProcessSetup *) setup)->symbolicSampleSize = symbolic_sample_size;
+  }
+  
+  void ags_vst_process_setup_set_max_samples_per_block(AgsVstProcessSetup *setup,
+						       gint32 max_samples_per_block)
+  {
+    ((Steinberg::Vst::ProcessSetup *) setup)->maxSamplesPerBlock = max_samples_per_block;
+  }
+
+  void ags_vst_process_setup_set_samplerate(AgsVstProcessSetup *setup,
+					    gdouble samplerate)
+  {
+    ((Steinberg::Vst::ProcessSetup *) setup)->sampleRate = samplerate;
+  }
+
+  AgsVstAudioBusBuffers* ags_vst_audio_bus_buffers_alloc()
+  {
+    return((AgsVstAudioBusBuffers *) new Steinberg::Vst::AudioBusBuffers());
+  }
+
+  void ags_vst_audio_bus_buffers_set_num_channels(AgsVstAudioBusBuffers *buffers,
+						  gint32 num_channels)
+  {
+    ((Steinberg::Vst::AudioBusBuffers *) buffers)->numChannels = num_channels;
+  }
+  
+  void ags_vst_audio_bus_buffers_set_silence_flags(AgsVstAudioBusBuffers *buffers,
+						   guint64 silence_flags)
+  {
+    ((Steinberg::Vst::AudioBusBuffers *) buffers)->silenceFlags = silence_flags;
+  }
+  
+  void ags_vst_audio_bus_buffers_set_samples32(AgsVstAudioBusBuffers *buffers,
+					       gfloat **channel_buffers)
+  {
+    ((Steinberg::Vst::AudioBusBuffers *) buffers)->channelBuffers32 = channel_buffers;
+  }
+  
+  void ags_vst_audio_bus_buffers_set_samples64(AgsVstAudioBusBuffers *buffers,
+					       gdouble **channel_buffers)
+  {
+    ((Steinberg::Vst::AudioBusBuffers *) buffers)->channelBuffers64 = channel_buffers;
+  }
+
+  AgsVstProcessData* ags_vst_process_data_alloc()
+  {
+    return((AgsVstProcessData *) new Steinberg::Vst::ProcessData());
+  }
+
+  void ags_vst_process_data_set_process_mode(AgsVstProcessData *data,
+					     gint32 process_mode)
+  {
+    ((Steinberg::Vst::ProcessData *) data)->processMode = process_mode;
+  }
+
+  void ags_vst_process_data_set_symbolic_sample_size(AgsVstProcessData *data,
+						     gint32 symbolic_sample_size)
+  {
+    ((Steinberg::Vst::ProcessData *) data)->symbolicSampleSize = symbolic_sample_size;
+  }
+  
+  void ags_vst_process_data_set_num_samples(AgsVstProcessData *data,
+					    gint32 num_samples)
+  {
+    ((Steinberg::Vst::ProcessData *) data)->numSamples = num_samples;
+  }
+  
+  void ags_vst_process_data_set_num_inputs(AgsVstProcessData *data,
+					   gint32 num_inputs)
+  {
+    ((Steinberg::Vst::ProcessData *) data)->numInputs = num_inputs;
+  }
+  
+  void ags_vst_process_data_set_num_outputs(AgsVstProcessData *data,
+					    gint32 num_outputs)
+  {
+    ((Steinberg::Vst::ProcessData *) data)->numOutputs = num_outputs;
+  }
+
+  void ags_vst_process_data_set_inputs(AgsVstProcessData *data,
+				       AgsVstAudioBusBuffers *buffers)
+  {
+    ((Steinberg::Vst::ProcessData *) data)->inputs = (Steinberg::Vst::AudioBusBuffers *) buffers;
+  }
+  
+  void ags_vst_process_data_set_outputs(AgsVstProcessData *data,
+					AgsVstAudioBusBuffers *buffers)
+  {
+    ((Steinberg::Vst::ProcessData *) data)->outputs = (Steinberg::Vst::AudioBusBuffers *) buffers;
+  }
+
+  void ags_vst_process_data_set_input_iparameter_changes(AgsVstProcessData *data,
+							 AgsVstIParameterChanges *iparameter_changes)
+  {
+    ((Steinberg::Vst::ProcessData *) data)->inputParameterChanges = (Steinberg::Vst::IParameterChanges *) iparameter_changes;
+  }
+
+  void ags_vst_process_data_set_ouput_iparameter_changes(AgsVstProcessData *data,
+							 AgsVstIParameterChanges *iparameter_changes)
+  {
+    ((Steinberg::Vst::ProcessData *) data)->outputParameterChanges = (Steinberg::Vst::IParameterChanges *) iparameter_changes;
+  }
+
+  void ags_vst_process_data_set_input_events(AgsVstProcessData *data,
+					     AgsVstIEventList *events)
+  {
+    ((Steinberg::Vst::ProcessData *) data)->inputEvents = (Steinberg::Vst::IEventList *) events;
+  }
+
+  void ags_vst_process_data_set_output_events(AgsVstProcessData *data,
+					      AgsVstIEventList *events)
+  {
+    ((Steinberg::Vst::ProcessData *) data)->outputEvents = (Steinberg::Vst::IEventList *) events;
+  }
+
+  void ags_vst_process_data_set_process_context(AgsVstProcessData *data,
+						AgsVstProcessContext *context)
+  {
+    ((Steinberg::Vst::ProcessData *) data)->processContext = (Steinberg::Vst::ProcessContext *) context;
+  }
+
   const AgsVstTUID* ags_vst_iaudio_processor_get_iid()
   {
-    extern const Steinberg::TUID IAudioProcessor__iid;
-
-    return((AgsVstTUID *) (&IAudioProcessor__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IAudioProcessor::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iaudio_processor_set_bus_arrangements(AgsVstIAudioProcessor *iaudio_processor,
@@ -88,9 +262,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iaudio_presentation_latency_get_iid()
   {
-    extern const Steinberg::TUID IAudioPresentationLatency__iid;
-
-    return((AgsVstTUID *) (&IAudioPresentationLatency__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IAudioPresentationLatency::iid.toTUID()));
   }
 
   AgsVstTResult ags_vst_iaudio_presentation_latency_set_audio_presentation_latency_samples(AgsVstIAudioPresentationLatency *iaudio_presentation_latency,
@@ -103,9 +275,7 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_iprocess_context_requirements_get_iid()
   {
-    extern const Steinberg::TUID IProcessContextRequirements__iid;
-
-    return((AgsVstTUID *) (&IProcessContextRequirements__iid));
+    return((AgsVstTUID *) &(Steinberg::Vst::IProcessContextRequirements::iid.toTUID()));
   }
   
   guint32 ags_vst_iprocess_context_requirements_get_process_context_requirements(AgsVstIProcessContextRequirements *iprocess_context_requirements)

@@ -26,7 +26,7 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIPlugViewContentScaleSupport IPlugViewContentScaleSupport;  
+  typedef struct IPlugViewContentScaleSupport AgsVstIPlugViewContentScaleSupport;  
 
   typedef gfloat AgsVstScaleFactor;
   

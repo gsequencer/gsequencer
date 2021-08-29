@@ -156,7 +156,8 @@ endif
 
 cxx_compiler_flags = [
   '-std=gnu++2a',
-  '-DRELEASE'
+  '-DRELEASE',
+  '-I/usr/include/vst3'
 ]
 
 libags_sources = files(
@@ -321,6 +322,9 @@ libags_audio_sources = files(
   'plugin/ags_lv2_worker.c',
   'plugin/ags_lv2_worker_manager.c',
   'plugin/ags_plugin_port.c',
+  'plugin/ags_vst3_conversion.c',
+  'plugin/ags_vst3_manager.c',
+  'plugin/ags_vst3_plugin.c',
   'audio/ags_acceleration.c',
   'audio/ags_audio_application_context.c',
   'audio/ags_audio_buffer_util.c',
@@ -518,6 +522,12 @@ libags_audio_sources = files(
   'audio/fx/ags_fx_volume_channel.c',
   'audio/fx/ags_fx_volume_channel_processor.c',
   'audio/fx/ags_fx_volume_recycling.c',
+  'audio/fx/ags_fx_vst3_audio.c',
+  'audio/fx/ags_fx_vst3_audio_processor.c',
+  'audio/fx/ags_fx_vst3_audio_signal.c',
+  'audio/fx/ags_fx_vst3_channel.c',
+  'audio/fx/ags_fx_vst3_channel_processor.c',
+  'audio/fx/ags_fx_vst3_recycling.c',
   'audio/jack/ags_jack_client.c',
   'audio/jack/ags_jack_devin.c',
   'audio/jack/ags_jack_devout.c',
@@ -775,6 +785,7 @@ libags_vst_sources = files()
 if get_option('vst3')
 
   libags_vst_sources += files(
+    'vst3-capi/host/ags_vst_host_context.cpp',
     'vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.cpp',
     'vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.cpp',
     'vst3-capi/pluginterfaces/base/ags_vst_geo_constants.cpp',
@@ -794,21 +805,28 @@ if get_option('vst3')
     'vst3-capi/pluginterfaces/base/ags_vst_ipersistent.cpp',
     'vst3-capi/pluginterfaces/base/ags_vst_ierror_context.cpp',
     'vst3-capi/pluginterfaces/base/ags_vst_fvariant.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iparameter_changes.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_inote_expression.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_ievents.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iinter_app_audio.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_imessage.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iunits.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_iaudio_processor.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iautomation_state.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iattributes.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_ichannel_context_info.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_icomponent.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_icontext_menu.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_ievents.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iinter_app_audio.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_inote_expression.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_imessage.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_imidi_learn.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iparameter_changes.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iphysical_ui.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_iparameter_function_name.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_iplug_interface_support.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iprefetchable_support.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_irepresentation.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iunits.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_speaker.cpp',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iattributes.cpp',
     'vst3-capi/public.sdk/source/common/ags_vst_plugin_view.cpp',
     'vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp',
     'vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp',
@@ -816,6 +834,7 @@ if get_option('vst3')
     'vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp',
     'vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.cpp',
     'vst3-capi/public.sdk/source/vst/ags_vst_bus.cpp',
+    'vst3-capi/public.sdk/source/vst/hosting/ags_vst_event_list.cpp',
     'vst3-capi/base/source/ags_vst_fbuffer.cpp',
     'vst3-capi/base/source/ags_vst_fobject.cpp',
     'vst3-capi/base/source/ags_vst_fstring.cpp',
@@ -1128,6 +1147,8 @@ libgsequencer_sources = files(
   'X/machine/ags_live_dssi_bridge_callbacks.c',
   'X/machine/ags_live_lv2_bridge.c',
   'X/machine/ags_live_lv2_bridge_callbacks.c',
+  'X/machine/ags_live_vst3_bridge.c',
+  'X/machine/ags_live_vst3_bridge_callbacks.c',
   'X/machine/ags_lv2_bridge.c',
   'X/machine/ags_lv2_bridge_callbacks.c',
   'X/machine/ags_matrix_bridge.c',
@@ -1169,6 +1190,8 @@ libgsequencer_sources = files(
   'X/osc/controller/ags_ui_osc_renew_controller.c',
   'X/task/ags_simple_file_read.c',
   'X/task/ags_simple_file_write.c',
+  'X/machine/ags_vst3_bridge.c',
+  'X/machine/ags_vst3_bridge_callbacks.c',
 )
 
 libgsequencer_dependencies = [
@@ -1447,6 +1470,9 @@ libags_audio_plugin_headers = [
   'plugin/ags_lv2ui_plugin.h',
   'plugin/ags_plugin_port.h',
   'plugin/ags_plugin_stock.h',
+  'plugin/ags_vst3_conversion.h',
+  'plugin/ags_vst3_manager.h',
+  'plugin/ags_vst3_plugin.h',
 ]
 
 libags_audio_audio_headers = [
@@ -1665,6 +1691,12 @@ libags_audio_audio_fx_headers = [
   'audio/fx/ags_fx_volume_channel.h',
   'audio/fx/ags_fx_volume_channel_processor.h',
   'audio/fx/ags_fx_volume_recycling.h',
+  'audio/fx/ags_fx_vst3_audio.h',
+  'audio/fx/ags_fx_vst3_audio_processor.h',
+  'audio/fx/ags_fx_vst3_audio_signal.h',
+  'audio/fx/ags_fx_vst3_channel.h',
+  'audio/fx/ags_fx_vst3_channel_processor.h',
+  'audio/fx/ags_fx_vst3_recycling.h',
 ]
 
 libags_audio_audio_gstreamer_headers = [ ]
@@ -1907,6 +1939,10 @@ libags_audio_audio_wasapi_headers = [
 libags_audio_headers = libags_audio_plugin_headers + libags_audio_audio_headers + libags_audio_audio_audio_unit_headers + libags_audio_audio_core_audio_headers + libags_audio_audio_file_headers + libags_audio_audio_fx_headers + libags_audio_audio_gstreamer_headers + libags_audio_audio_jack_headers + libags_audio_audio_midi_headers + libags_audio_audio_osc_headers + libags_audio_audio_pulse_headers + libags_audio_audio_recall_headers + libags_audio_audio_task_headers
 
 if get_option('vst3')
+  libags_vst_host_headers = [
+    'vst3-capi/host/ags_vst_host_context.h'
+  ]
+
   libags_vst_pluginterfaces_gui_headers = [
     'vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.h',
     'vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.h'
@@ -1935,25 +1971,32 @@ if get_option('vst3')
   ]
 
   libags_vst_pluginterfaces_vst_headers = [
-    'vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iattributes.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_iaudio_processor.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_speaker.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iprocess_context.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iautomation_state.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_ichannel_context_info.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_icontext_menu.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_ievents.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iinter_app_audio.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_imessage.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_imidi_controllers.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_imidi_learn.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_inote_expression.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_iparameter_function_name.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_iparameter_changes.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_ichannel_cotext_info.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iunits.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_ievents.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_imessage.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_types.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_imidi_controllers.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iphysical_ui.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_iplug_view.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_inote_expression.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iprocess_context.h',
     'vst3-capi/pluginterfaces/vst/ags_vst_iplug_interface_support.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iattributes.h',
-    'vst3-capi/pluginterfaces/vst/ags_vst_iinter_app_audio.h'
+    'vst3-capi/pluginterfaces/vst/ags_vst_iprefetchable_support.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_irepresentation.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iunits.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_speaker.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_types.h',
+    'vst3-capi/pluginterfaces/vst/ags_vst_preset_keys.h'
   ]
 
   libags_vst_public_sdk_source_common_headers = [
@@ -1969,6 +2012,10 @@ if get_option('vst3')
     'vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.h',
   ]
 
+  libags_vst_public_sdk_source_vst_hosting_headers = [
+    'vst3-capi/public.sdk/source/vst/hosting/ags_vst_event_list.h',
+  ]
+  
   libags_vst_base_source_headers = [
     'vst3-capi/base/source/ags_vst_fobject.h',
     'vst3-capi/base/source/ags_vst_fbuffer.h',
@@ -1979,7 +2026,7 @@ if get_option('vst3')
     'vst3-capi/util/ags_vst_string_util.h'
   ]
 
-  libags_vst_headers = libags_vst_pluginterfaces_gui_headers + libags_vst_pluginterfaces_base_headers + libags_vst_pluginterfaces_vst_headers + libags_vst_public_sdk_source_common_headers + libags_vst_public_sdk_source_vst_headers + libags_vst_base_source_headers + libags_vst_util_headers
+  libags_vst_headers = libags_vst_host_headers + libags_vst_pluginterfaces_gui_headers + libags_vst_pluginterfaces_base_headers + libags_vst_pluginterfaces_vst_headers + libags_vst_public_sdk_source_common_headers + libags_vst_public_sdk_source_vst_headers + libags_vst_public_sdk_source_vst_hosting_headers + libags_vst_base_source_headers + libags_vst_util_headers
 
   install_headers(libags_vst_pluginterfaces_gui_headers, install_dir: gsequencer_includedir / 'ags/vst3-capi/pluginterfaces/gui/')
   install_headers(libags_vst_pluginterfaces_base_headers, install_dir: gsequencer_includedir / 'ags/vst3-capi/pluginterfaces/base/')

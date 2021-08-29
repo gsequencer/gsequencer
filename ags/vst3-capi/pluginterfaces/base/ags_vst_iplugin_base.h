@@ -34,19 +34,19 @@
 extern "C" {
 #endif
 
-  typedef struct AgsVstIPluginBase IPluginBase;
+  typedef struct IPluginBase AgsVstIPluginBase;
 
-  typedef struct AgsVstPFactoryInfo PFactoryInfo;
-  typedef struct AgsVstPClassInfo PClassInfo;
+  typedef struct PFactoryInfo AgsVstPFactoryInfo;
+  typedef struct PClassInfo AgsVstPClassInfo;
 
-  typedef struct AgsVstIPluginFactory IPluginFactory;
+  typedef struct IPluginFactory AgsVstIPluginFactory;
 
-  typedef struct AgsVstPClassInfo2 PClassInfo2;
-  typedef struct AgsVstIPluginFactory2 IPluginFactory2;
+  typedef struct PClassInfo2 AgsVstPClassInfo2;
+  typedef struct IPluginFactory2 AgsVstIPluginFactory2;
 
-  typedef struct AgsVstPClassInfoW PClassInfoW;
+  typedef struct PClassInfoW AgsVstPClassInfoW;
 
-  typedef struct AgsVstIPluginFactory3 IPluginFactory3;
+  typedef struct IPluginFactory3 AgsVstIPluginFactory3;
 
   typedef AgsVstIPluginFactory* (*AgsVstGetFactoryProc)();
 
@@ -58,7 +58,7 @@ extern "C" {
     AGS_VST_KUNICODE                        = 1 << 4
   }AgsVstFactoryFlags;
   
-  enum {
+  enum{
     AGS_VST_KURL_SIZE   = 256,
     AGS_VST_KEMAIL_SIZE = 128,
     AGS_VST_KNAME_SIZE  = 64
@@ -70,6 +70,18 @@ extern "C" {
 
   AgsVstTResult ags_vst_iplugin_base_terminate(AgsVstIPluginBase *iplugin_base);
 
+  AgsVstPClassInfo* ags_vst_pclass_info_alloc();
+
+  void ags_vst_pclass_info_free(AgsVstPClassInfo *info);
+
+  AgsVstTUID* ags_vst_pclass_info_get_cid(AgsVstPClassInfo *info);
+
+  gint32 ags_vst_pclass_info_get_cardinality(AgsVstPClassInfo *info);
+
+  gchar* ags_vst_pclass_info_get_category(AgsVstPClassInfo *info);
+
+  gchar* ags_vst_pclass_info_get_name(AgsVstPClassInfo *info);
+  
   const AgsVstTUID* ags_vst_iplugin_factory_get_iid();
 
   AgsVstTResult ags_vst_iplugin_factory_get_factory_info(AgsVstIPluginFactory *iplugin_factory,
@@ -82,10 +94,17 @@ extern "C" {
 
   AgsVstTResult ags_vst_iplugin_factory_create_instance(AgsVstIPluginFactory *iplugin_factory,
 							AgsVstFIDString *cid, AgsVstFIDString *_iid, void **obj);
+  
   const AgsVstTUID* ags_vst_iplugin_factory2_get_iid();
 
+  AgsVstPClassInfo2* ags_vst_pclass_info2_alloc();
+
+  void ags_vst_pclass_info2_free(AgsVstPClassInfo2 *info2);
+
+  gchar* ags_vst_pclass_info2_get_sub_categories(AgsVstPClassInfo2 *info2);
+  
   AgsVstTResult ags_vst_iplugin_factory2_get_class_info2(AgsVstIPluginFactory2 *iplugin_factory2,
-							 gint32 index, AgsVstPClassInfo *info);
+							 gint32 index, AgsVstPClassInfo2 *info2);
 
   const AgsVstTUID* ags_vst_iplugin_factory3_get_iid();
 
