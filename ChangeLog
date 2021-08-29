@@ -1,3 +1,10 @@
+ags (3.10.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing call to activate
+	* added ags-fx-vst3 effect processor to developer's book
+	* improved build
+
 ags (3.10.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

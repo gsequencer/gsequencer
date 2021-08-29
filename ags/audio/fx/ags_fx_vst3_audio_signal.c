@@ -291,8 +291,14 @@ ags_fx_vst3_audio_signal_real_run_inter(AgsRecall *recall)
 						  buffer_size, copy_mode_in);
     }
 
+    ags_base_plugin_activate(vst3_plugin,
+			     input_data->icomponent);
+    
     ags_vst_iaudio_processor_process(input_data->iaudio_processor,
 				     input_data->process_data);  
+
+    ags_base_plugin_deactivate(vst3_plugin,
+			       input_data->icomponent);
     
     if(input_data->output != NULL &&
        fx_vst3_channel->output_port_count >= 1 &&
@@ -499,8 +505,15 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       }
 
       if(input_data->iaudio_processor != NULL){
+	ags_base_plugin_activate(vst3_plugin,
+				 input_data->icomponent);
+	
 	ags_vst_iaudio_processor_process(input_data->iaudio_processor,
 					 input_data->process_data);  
+
+
+	ags_base_plugin_deactivate(vst3_plugin,
+				   input_data->icomponent);
       }
 
       g_rec_mutex_lock(source_stream_mutex);
@@ -526,8 +539,14 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       }
 
       if(input_data->iaudio_processor != NULL){
+	ags_base_plugin_activate(vst3_plugin,
+				 input_data->icomponent);
+	
 	ags_vst_iaudio_processor_process(input_data->iaudio_processor,
 					 input_data->process_data);  
+
+	ags_base_plugin_deactivate(vst3_plugin,
+				   input_data->icomponent);
       }
       
       g_rec_mutex_lock(source_stream_mutex);

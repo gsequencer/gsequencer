@@ -132,6 +132,7 @@ EXTRA_DIST = config.rpath \
 	pot_exclude.txt \
 	m4/Makefile.am \
 	m4/Makefile.in \
+	patches/libags_audio_xml-with-vst.patch \
 	po/POTFILES.in \
 	po/POTFILES.in.in \
 	po/gsequencer.pot-header \
@@ -3264,10 +3265,10 @@ else
 	install -c -p -m 644 $(top_builddir)/docs/custom.css $(DESTDIR)$(datadir)/doc/libags-audio-doc/osc-server/
 endif
 if ENABLE_GTK_DOC
-	install -c -p -m 644 $(top_builddir)/docs/reference/libags/libags-html/* $(DESTDIR)$(LIBAGS_API_DIR)
-	install -c -p -m 644 $(top_builddir)/docs/reference/libags-audio/libags-audio-html/* $(DESTDIR)$(LIBAGS_AUDIO_API_DIR)
-	install -c -p -m 644 $(top_builddir)/docs/reference/libags-gui/libags-gui-html/* $(DESTDIR)$(LIBAGS_GUI_API_DIR)
-	install -c -p -m 644 $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html/* $(DESTDIR)$(LIBGSEQUENCER_API_DIR)
+	install -c -p -m 644 $(top_builddir)/docs/reference/libags/html/* $(DESTDIR)$(LIBAGS_API_DIR)
+	install -c -p -m 644 $(top_builddir)/docs/reference/libags-audio/html/* $(DESTDIR)$(LIBAGS_AUDIO_API_DIR)
+	install -c -p -m 644 $(top_builddir)/docs/reference/libags-gui/html/* $(DESTDIR)$(LIBAGS_GUI_API_DIR)
+	install -c -p -m 644 $(top_builddir)/docs/reference/libgsequencer/html/* $(DESTDIR)$(LIBGSEQUENCER_API_DIR)
 endif
 
 install-pdf-mkdir:
@@ -3349,7 +3350,6 @@ clean-local:
 	rm -f unit-system-tests.mk
 	rm -f functional-system-tests.mk
 	rm -f docs/reference/libags-audio/libags_audio-decl-list.txt
-	rm -f docs/reference/libags-audio/libags_audio-decl.txt
 	rm -f docs/reference/libags-audio/libags_audio-undeclared.txt
 	rm -f docs/reference/libags-audio/libags_audio-undocumented.txt
 	rm -f docs/reference/libags-audio/libags_audio-unused.txt
@@ -3358,7 +3358,6 @@ clean-local:
 	rm -f docs/reference/libags-audio/libags_audio.prerequisites
 	rm -f docs/reference/libags-audio/libags_audio.signals
 	rm -f docs/reference/libags-gui/libags_gui-decl-list.txt
-	rm -f docs/reference/libags-gui/libags_gui-decl.txt
 	rm -f docs/reference/libags-gui/libags_gui-undeclared.txt
 	rm -f docs/reference/libags-gui/libags_gui-undocumented.txt
 	rm -f docs/reference/libags-gui/libags_gui-unused.txt
@@ -3367,7 +3366,6 @@ clean-local:
 	rm -f docs/reference/libags-gui/libags_gui.prerequisites
 	rm -f docs/reference/libags-gui/libags_gui.signals
 	rm -f docs/reference/libags/libags-decl-list.txt
-	rm -f docs/reference/libags/libags-decl.txt
 	rm -f docs/reference/libags/libags-undeclared.txt
 	rm -f docs/reference/libags/libags-undocumented.txt
 	rm -f docs/reference/libags/libags-unused.txt
@@ -3376,7 +3374,6 @@ clean-local:
 	rm -f docs/reference/libags/libags.prerequisites
 	rm -f docs/reference/libags/libags.signals
 	rm -f docs/reference/libgsequencer/libgsequencer-decl-list.txt
-	rm -f docs/reference/libgsequencer/libgsequencer-decl.txt
 	rm -f docs/reference/libgsequencer/libgsequencer-undeclared.txt
 	rm -f docs/reference/libgsequencer/libgsequencer-undocumented.txt
 	rm -f docs/reference/libgsequencer/libgsequencer-unused.txt

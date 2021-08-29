@@ -36,6 +36,8 @@ DOC_MODULE=libgsequencer
 # The top-level XML file.
 DOC_MAIN_SGML_FILE=$(DOC_MODULE).xml
 
+HTML_DIR=libgsequencer
+
 # Directories containing the source code.
 # gtk-doc will search all .c and .h files beneath these paths
 # for inline comments documenting functions and macros.
@@ -48,18 +50,18 @@ SCANGOBJ_OPTIONS=--cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
 # SCAN_OPTIONS=--rebuild-types --rebuild-sections
-SCAN_OPTIONS=--deprecated-guards="G_DISABLE_DEPRECATED"
+SCAN_OPTIONS=--module=libgsequencer --deprecated-guards="G_DISABLE_DEPRECATED"
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
-MKDB_OPTIONS=--xml-mode --output-format=xml --name-space=ags --module=libgsequencer
+MKDB_OPTIONS=--xml-mode --output-format=xml --name-space=ags --module=libgsequencer --default-stability=Stable
 
 # Extra options to supply to gtkdoc-mkhtml
 MKHTML_OPTIONS=
 
 # Extra options to supply to gtkdoc-fixref. Normally not needed.
 # e.g. FIXXREF_OPTIONS=--extra-dir=../gdk-pixbuf/html --extra-dir=../gdk/html
-FIXXREF_OPTIONS=--module=libgsequencer --module-dir=./libgsequencer-html/ --html-dir=$(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api --extra-dir=$(top_srcdir)/docs/reference/libags/libags-html --extra-dir=$(top_srcdir)/docs/reference/libags-audio/libags-audio-html --extra-dir=$(top_srcdir)/docs/reference/libags-gui/libags-gui-html
+FIXXREF_OPTIONS=--module=libgsequencer --module-dir=./html/ --html-dir=$(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api --extra-dir=$(top_srcdir)/docs/reference/libags/libags-html --extra-dir=$(top_srcdir)/docs/reference/libags-audio/libags-audio-html --extra-dir=$(top_srcdir)/docs/reference/libags-gui/libags-gui-html
 
 # Used for dependencies. The docs will be rebuilt if any of these change.
 # e.g. HFILE_GLOB=$(top_srcdir)/gtk/*.h

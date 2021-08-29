@@ -57,6 +57,7 @@ DOC_STAMPS=setup-build.stamp scan-build.stamp sgml-build.stamp \
 	sgml.stamp html.stamp pdf.stamp
 
 SCANOBJ_FILES = 		 \
+	$(DOC_MODULE).actions	 \
 	$(DOC_MODULE).args 	 \
 	$(DOC_MODULE).hierarchy  \
 	$(DOC_MODULE).interfaces \
@@ -99,55 +100,54 @@ $(REPORT_FILES): sgml-build.stamp
 
 #### setup ####
 
-GTK_DOC_V_SETUP=$(GTK_DOC_V_SETUP_$(V))
-GTK_DOC_V_SETUP_=$(GTK_DOC_V_SETUP_$(AM_DEFAULT_VERBOSITY))
+GTK_DOC_V_SETUP=$(GTK_DOC_V_SETUP_@AM_V@)
+GTK_DOC_V_SETUP_=$(GTK_DOC_V_SETUP_@AM_DEFAULT_V@)
 GTK_DOC_V_SETUP_0=@echo "  DOC   Preparing build";
 
 setup-build.stamp:
 	-$(GTK_DOC_V_SETUP)if test "$(abs_srcdir)" != "$(abs_builddir)" ; then \
-	    files=`echo $(SETUP_FILES) $(DOC_MODULE).types`; \
-	    if test "x$$files" != "x" ; then \
-	        for file in $$files ; do \
-	            destdir=`dirname $(abs_builddir)/$$file`; \
-	            test -d "$$destdir" || mkdir -p "$$destdir"; \
-	            test -f $(abs_srcdir)/$$file && \
-	                cp -pf $(abs_srcdir)/$$file $(abs_builddir)/$$file || true; \
-	        done; \
-	    fi; \
+	  files=`echo $(SETUP_FILES) $(DOC_MODULE).types`; \
+	  if test "x$$files" != "x" ; then \
+	    for file in $$files ; do \
+	      destdir=`dirname $(abs_builddir)/$$file`; \
+	      test -d "$$destdir" || mkdir -p "$$destdir"; \
+	      test -f $(abs_srcdir)/$$file && \
+	        cp -pf $(abs_srcdir)/$$file $(abs_builddir)/$$file || true; \
+	    done; \
+	  fi; \
 	fi
 	$(AM_V_at)touch setup-build.stamp
 
-
 #### scan ####
 
-GTK_DOC_V_SCAN=$(GTK_DOC_V_SCAN_$(V))
-GTK_DOC_V_SCAN_=$(GTK_DOC_V_SCAN_$(AM_DEFAULT_VERBOSITY))
+GTK_DOC_V_SCAN=$(GTK_DOC_V_SCAN_@AM_V@)
+GTK_DOC_V_SCAN_=$(GTK_DOC_V_SCAN_@AM_DEFAULT_V@)
 GTK_DOC_V_SCAN_0=@echo "  DOC   Scanning header files";
 
-GTK_DOC_V_INTROSPECT=$(GTK_DOC_V_INTROSPECT_$(V))
-GTK_DOC_V_INTROSPECT_=$(GTK_DOC_V_INTROSPECT_$(AM_DEFAULT_VERBOSITY))
+GTK_DOC_V_INTROSPECT=$(GTK_DOC_V_INTROSPECT_@AM_V@)
+GTK_DOC_V_INTROSPECT_=$(GTK_DOC_V_INTROSPECT_@AM_DEFAULT_V@)
 GTK_DOC_V_INTROSPECT_0=@echo "  DOC   Introspecting gobjects";
 
 scan-build.stamp: setup-build.stamp $(HFILE_GLOB) $(CFILE_GLOB)
 	$(GTK_DOC_V_SCAN)_source_dir='' ; \
 	for i in $(DOC_SOURCE_DIR) ; do \
-	    _source_dir="$${_source_dir} --source-dir=$$i" ; \
+	  _source_dir="$${_source_dir} --source-dir=$$i" ; \
 	done ; \
 	gtkdoc-scan --module=$(DOC_MODULE) --ignore-headers="$(IGNORE_HFILES)" $${_source_dir} $(SCAN_OPTIONS) $(EXTRA_HFILES)
 	$(GTK_DOC_V_INTROSPECT)if grep -l '^..*$$' $(DOC_MODULE).types > /dev/null 2>&1 ; then \
-	    scanobj_options=""; \
-	    gtkdoc-scangobj 2>&1 --help | grep  >/dev/null "\-\-verbose"; \
-	    if test "$$?" = "0"; then \
-	        if test "x$(V)" = "x1"; then \
-	            scanobj_options="--verbose"; \
-	        fi; \
+	  scanobj_options=""; \
+	  gtkdoc-scangobj 2>&1 --help | grep  >/dev/null "\-\-verbose"; \
+	  if test "$$?" = "0"; then \
+	    if test "x$(V)" = "x1"; then \
+	      scanobj_options="--verbose"; \
 	    fi; \
-	    CC="$(GTKDOC_CC)" LD="$(GTKDOC_LD)" RUN="$(GTKDOC_RUN)" CFLAGS="$(GTKDOC_CFLAGS) $(CFLAGS)" LDFLAGS="$(GTKDOC_LIBS) $(LDFLAGS)" \
-	    gtkdoc-scangobj $(SCANGOBJ_OPTIONS) $$scanobj_options --module=$(DOC_MODULE); \
+	  fi; \
+	  CC="$(GTKDOC_CC)" LD="$(GTKDOC_LD)" RUN="$(GTKDOC_RUN)" CFLAGS="$(GTKDOC_CFLAGS) $(CFLAGS)" LDFLAGS="$(GTKDOC_LIBS) $(LDFLAGS)" \
+	  gtkdoc-scangobj $(SCANGOBJ_OPTIONS) $$scanobj_options --module=$(DOC_MODULE); \
 	else \
-	    for i in $(SCANOBJ_FILES) ; do \
-	        test -f $$i || touch $$i ; \
-	    done \
+	  for i in $(SCANOBJ_FILES) ; do \
+	    test -f $$i || touch $$i ; \
+	  done \
 	fi
 	$(AM_V_at)touch scan-build.stamp
 
@@ -156,19 +156,22 @@ $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(DOC_MODULE)-sections.txt $(DOC_MODULE)
 
 #### xml ####
 
-GTK_DOC_V_XML=$(GTK_DOC_V_XML_$(V))
-GTK_DOC_V_XML_=$(GTK_DOC_V_XML_$(AM_DEFAULT_VERBOSITY))
+GTK_DOC_V_XML=$(GTK_DOC_V_XML_@AM_V@)
+GTK_DOC_V_XML_=$(GTK_DOC_V_XML_@AM_DEFAULT_V@)
 GTK_DOC_V_XML_0=@echo "  DOC   Building XML";
 
 sgml-build.stamp: setup-build.stamp $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(HFILE_GLOB) $(CFILE_GLOB) $(DOC_MODULE)-sections.txt $(DOC_MODULE)-overrides.txt $(expand_content_files) xml/gtkdocentities.ent
 	$(GTK_DOC_V_XML)_source_dir='' ; \
 	for i in $(DOC_SOURCE_DIR) ; do \
-	    _source_dir="$${_source_dir} --source-dir=$$i" ; \
+	  _source_dir="$${_source_dir} --source-dir=$$i" ; \
 	done ; \
 	gtkdoc-mkdb --module=$(DOC_MODULE) --output-format=xml --expand-content-files="$(expand_content_files)" --main-sgml-file=$(DOC_MAIN_SGML_FILE) $${_source_dir} $(MKDB_OPTIONS)
 	$(AM_V_at)touch sgml-build.stamp
 
 sgml.stamp: sgml-build.stamp
+	@true
+
+$(DOC_MAIN_SGML_FILE): sgml-build.stamp
 	@true
 
 xml/gtkdocentities.ent: Makefile
@@ -184,16 +187,16 @@ xml/gtkdocentities.ent: Makefile
 
 #### html ####
 
-GTK_DOC_V_HTML=$(GTK_DOC_V_HTML_$(V))
-GTK_DOC_V_HTML_=$(GTK_DOC_V_HTML_$(AM_DEFAULT_VERBOSITY))
+GTK_DOC_V_HTML=$(GTK_DOC_V_HTML_@AM_V@)
+GTK_DOC_V_HTML_=$(GTK_DOC_V_HTML_@AM_DEFAULT_V@)
 GTK_DOC_V_HTML_0=@echo "  DOC   Building HTML";
 
-GTK_DOC_V_XREF=$(GTK_DOC_V_XREF_$(V))
-GTK_DOC_V_XREF_=$(GTK_DOC_V_XREF_$(AM_DEFAULT_VERBOSITY))
+GTK_DOC_V_XREF=$(GTK_DOC_V_XREF_@AM_V@)
+GTK_DOC_V_XREF_=$(GTK_DOC_V_XREF_@AM_DEFAULT_V@)
 GTK_DOC_V_XREF_0=@echo "  DOC   Fixing cross-references";
 
 html-build.stamp: sgml.stamp $(DOC_MAIN_SGML_FILE) $(content_files) $(expand_content_files)
-	$(GTK_DOC_V_HTML)rm -rf libags-gui-html && mkdir libags-gui-html && \
+	$(GTK_DOC_V_HTML)rm -rf html && mkdir html && \
 	mkhtml_options=""; \
 	gtkdoc-mkhtml 2>&1 --help | grep  >/dev/null "\-\-verbose"; \
 	if test "$$?" = "0"; then \
@@ -205,24 +208,20 @@ html-build.stamp: sgml.stamp $(DOC_MAIN_SGML_FILE) $(content_files) $(expand_con
 	if test "$$?" = "0"; then \
 	  mkhtml_options="$$mkhtml_options --path=\"$(abs_srcdir)\""; \
 	fi; \
-	cd libags-gui-html && gtkdoc-mkhtml $$mkhtml_options $(MKHTML_OPTIONS) $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE)
+	cd html && gtkdoc-mkhtml $$mkhtml_options $(MKHTML_OPTIONS) $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE)
 	-@test "x$(HTML_IMAGES)" = "x" || \
 	for file in $(HTML_IMAGES) ; do \
-	  if test -f $(abs_srcdir)/$$file ; then \
-	    cp $(abs_srcdir)/$$file $(abs_builddir)/libags-gui-html; \
-	  fi; \
-	  if test -f $(abs_builddir)/$$file ; then \
-	    cp $(abs_builddir)/$$file $(abs_builddir)/libags-gui-html; \
-	  fi; \
-	  test -f $$file && cp $$file $(abs_builddir)/libags-gui-html; \
+	  test -f $(abs_srcdir)/$$file && cp $(abs_srcdir)/$$file $(abs_builddir)/html; \
+	  test -f $(abs_builddir)/$$file && cp $(abs_builddir)/$$file $(abs_builddir)/html; \
+	  test -f $$file && cp $$file $(abs_builddir)/html; \
 	done;
-	$(GTK_DOC_V_XREF)gtkdoc-fixxref --module=$(DOC_MODULE) --module-dir=libags-gui-html --html-dir=$(HTML_DIR) $(FIXXREF_OPTIONS)
+	$(GTK_DOC_V_XREF)gtkdoc-fixxref --module=$(DOC_MODULE) --module-dir=html --html-dir=$(HTML_DIR) $(FIXXREF_OPTIONS)
 	$(AM_V_at)touch html-build.stamp
 
 #### pdf ####
 
-GTK_DOC_V_PDF=$(GTK_DOC_V_PDF_$(V))
-GTK_DOC_V_PDF_=$(GTK_DOC_V_PDF_$(AM_DEFAULT_VERBOSITY))
+GTK_DOC_V_PDF=$(GTK_DOC_V_PDF_@AM_V@)
+GTK_DOC_V_PDF_=$(GTK_DOC_V_PDF_@AM_DEFAULT_V@)
 GTK_DOC_V_PDF_0=@echo "  DOC   Building PDF";
 
 pdf-build.stamp: sgml.stamp $(DOC_MAIN_SGML_FILE) $(content_files) $(expand_content_files)
@@ -259,18 +258,18 @@ clean-local:
 	fi
 
 distclean-local:
-	@rm -rf xml libags-gui-html $(REPORT_FILES) $(DOC_MODULE).pdf \
+	@rm -rf xml html $(REPORT_FILES) $(DOC_MODULE).pdf \
 	    $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt
 	@if test "$(abs_srcdir)" != "$(abs_builddir)" ; then \
 	    rm -f $(SETUP_FILES) $(DOC_MODULE).types; \
 	fi
 
 maintainer-clean-local:
-	@rm -rf xml libags-gui-html
+	@rm -rf xml html
 
 install-data-local:
-	@installfiles=`echo $(builddir)/libags-gui-html/*`; \
-	if test "$$installfiles" = '$(builddir)/libags-gui-html/*'; \
+	@installfiles=`echo $(builddir)/html/*`; \
+	if test "$$installfiles" = '$(builddir)/html/*'; \
 	then echo 1>&2 'Nothing to install' ; \
 	else \
 	  if test -n "$(DOC_MODULE_VERSION)"; then \
@@ -312,12 +311,12 @@ dist-check-gtkdoc:
 endif
 
 dist-hook: dist-check-gtkdoc all-gtk-doc dist-hook-local
-	@mkdir $(distdir)/libags-gui-html
-	@cp ./libags-gui-html/* $(distdir)/libags-gui-html
+	@mkdir $(distdir)/html
+	@cp ./html/* $(distdir)/html
 	@-cp ./$(DOC_MODULE).pdf $(distdir)/
 	@-cp ./$(DOC_MODULE).types $(distdir)/
 	@-cp ./$(DOC_MODULE)-sections.txt $(distdir)/
 	@cd $(distdir) && rm -f $(DISTCLEANFILES)
-	@$(GTKDOC_REBASE) --online --relative --html-dir=$(distdir)/libags-gui-html
+	@$(GTKDOC_REBASE) --online --relative --html-dir=$(distdir)/html
 
 .PHONY : dist-hook-local docs

@@ -36,6 +36,8 @@ DOC_MODULE=libags_audio
 # The top-level XML file.
 DOC_MAIN_SGML_FILE=$(DOC_MODULE).xml
 
+HTML_DIR=libags_audio
+
 # Directories containing the source code.
 # gtk-doc will search all .c and .h files beneath these paths
 # for inline comments documenting functions and macros.
@@ -43,23 +45,23 @@ DOC_MAIN_SGML_FILE=$(DOC_MODULE).xml
 DOC_SOURCE_DIR=$(top_srcdir)/ags/plugin $(top_srcdir)/ags/audio
 
 # Extra options to pass to gtkdoc-scangobj. Normally not needed.
-SCANGOBJ_OPTIONS=--cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(OPENSSL_CFLAGS) $(GOBJECT_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JACK_CFLAGS)" --ldflags="-static -ldl -lm -lrt -pthread $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(GOBJECT_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JACK_LIBS) -L$(top_builddir) $(top_builddir)/libags.la $(top_builddir)/libags_thread.la $(top_builddir)/libags_server.la $(top_builddir)/libags_audio.la"
+SCANGOBJ_OPTIONS=--cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(OPENSSL_CFLAGS) $(GOBJECT_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JACK_CFLAGS)" --ldflags="-static -ldl -lm -lrt -pthread $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(GOBJECT_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JACK_LIBS) -L$(top_builddir) $(top_builddir)/libags.la $(top_builddir)/libags_thread.la $(top_builddir)/libags_server.la $(top_builddir)/libags_vst.la $(top_builddir)/libags_audio.la"
 
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
 # SCAN_OPTIONS=--rebuild-types --rebuild-sections
-SCAN_OPTIONS=--deprecated-guards="G_DISABLE_DEPRECATED"
+SCAN_OPTIONS=--module=libags_audio --deprecated-guards="G_DISABLE_DEPRECATED"
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
-MKDB_OPTIONS=--xml-mode --output-format=xml --name-space=ags --module=libags_audio
+MKDB_OPTIONS=--xml-mode --output-format=xml --name-space=ags --module=libags_audio --default-stability=Stable
 
 # Extra options to supply to gtkdoc-mkhtml
 MKHTML_OPTIONS=
 
 # Extra options to supply to gtkdoc-fixref. Normally not needed.
 # e.g. FIXXREF_OPTIONS=--extra-dir=../gdk-pixbuf/html --extra-dir=../gdk/html
-FIXXREF_OPTIONS=--module=libags_audio --module-dir=./libags-audio-html/ --html-dir=$(DESTDIR)/$(datadir)/doc/libags-audio-doc/api --extra-dir=$(top_srcdir)/docs/reference/libags/libags-html
+FIXXREF_OPTIONS=--module=libags_audio --module-dir=./html/ --html-dir=$(DESTDIR)/$(datadir)/doc/libags-audio-doc/api --extra-dir=$(top_srcdir)/docs/reference/libags/libags-html
 
 # Used for dependencies. The docs will be rebuilt if any of these change.
 # e.g. HFILE_GLOB=$(top_srcdir)/gtk/*.h

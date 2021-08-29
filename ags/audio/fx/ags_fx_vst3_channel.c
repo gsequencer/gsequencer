@@ -432,8 +432,10 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
   AgsVst3Manager *vst3_manager;
   AgsVst3Plugin *vst3_plugin;
 
+#if defined(HAVE_GLIB_2_68)
   GStrvBuilder *strv_builder;
-
+#endif
+  
   gchar **parameter_name;
 
   gchar *filename, *effect;
@@ -449,6 +451,7 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
 
   vst3_manager = ags_vst3_manager_get_instance();
 
+#if defined(HAVE_GLIB_2_68)
   strv_builder = g_strv_builder_new();
 
   g_strv_builder_add(strv_builder,
@@ -461,6 +464,15 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
 		     "iaudio-processor");
 
   parameter_name = g_strv_builder_end(strv_builder);
+#else
+  parameter_name = (gchar **) g_malloc(5 * sizeof(gchar *));
+
+  parameter_name[0] = g_strdup("buffer-size");
+  parameter_name[1] = g_strdup("samplerate");
+  parameter_name[2] = g_strdup("iedit-controller");
+  parameter_name[3] = g_strdup("iaudio-processor");
+  parameter_name[4] = NULL;
+#endif
   
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_channel);
