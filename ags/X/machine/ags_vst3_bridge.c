@@ -215,30 +215,12 @@ ags_vst3_bridge_init(AgsVst3Bridge *vst3_bridge)
 			 G_CALLBACK(ags_vst3_bridge_parent_set_callback), (gpointer) vst3_bridge);
 
   audio = AGS_MACHINE(vst3_bridge)->audio;
-  ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
-			      AGS_AUDIO_ASYNC |
-			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-			      AGS_AUDIO_INPUT_HAS_RECYCLING));
-  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_PLAYBACK |
-				      AGS_SOUND_ABILITY_NOTATION));
-  ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
-					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
+  ags_audio_set_flags(audio, (AGS_AUDIO_SYNC));
   g_object_set(audio,
 	       "min-audio-channels", 1,
 	       "min-output-pads", 1,
 	       "min-input-pads", 1,
-	       "max-input-pads", 128,
-	       "audio-start-mapping", 0,
-	       "audio-end-mapping", 128,
-	       "midi-start-mapping", 0,
-	       "midi-end-mapping", 128,
 	       NULL);
-  
-  AGS_MACHINE(vst3_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
-				      AGS_MACHINE_REVERSE_NOTATION);
-
-  ags_machine_popup_add_connection_options((AgsMachine *) vst3_bridge,
-					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
   g_signal_connect_after(G_OBJECT(vst3_bridge), "resize-audio-channels",
 			 G_CALLBACK(ags_vst3_bridge_resize_audio_channels), NULL);

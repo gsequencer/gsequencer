@@ -1,3 +1,9 @@
+ags (3.10.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed compiler error if VST3 not available
+	* fixed AgsVst3Bridge and AgsLiveVst3Bridge input pad count and flags
+
 ags (3.10.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

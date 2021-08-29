@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-08-28 15:10+0200\n"
+"POT-Creation-Date: 2021-08-29 10:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -158,140 +158,140 @@ msgstr "podłącz wyjście"
 msgid "connect input"
 msgstr "podłącz wejście"
 
-#: ags/X/ags_context_menu.c:126 ags/X/ags_menu_bar.c:123
+#: ags/X/ags_context_menu.c:128 ags/X/ags_menu_bar.c:125
 msgid "_File"
 msgstr "Plik"
 
-#: ags/X/ags_context_menu.c:132 ags/X/ags_export_soundcard_callbacks.c:411
-#: ags/X/ags_menu_bar.c:129 ags/X/machine/ags_audiorec.c:295
+#: ags/X/ags_context_menu.c:134 ags/X/ags_export_soundcard_callbacks.c:411
+#: ags/X/ags_menu_bar.c:131 ags/X/machine/ags_audiorec.c:295
 #: ags/X/machine/ags_drum.c:306 ags/X/machine/ags_drum_input_pad_callbacks.c:54
 #: ags/X/machine/ags_ffplayer.c:363 ags/X/machine/ags_sf2_synth.c:255
 msgid "_Open"
 msgstr "Otwórz"
 
-#: ags/X/ags_context_menu.c:135 ags/X/ags_menu_bar.c:132
+#: ags/X/ags_context_menu.c:137 ags/X/ags_menu_bar.c:134
 msgid "_Save"
 msgstr "Zapisz"
 
-#: ags/X/ags_context_menu.c:138 ags/X/ags_menu_bar.c:135
+#: ags/X/ags_context_menu.c:140 ags/X/ags_menu_bar.c:137
 msgid "Save as"
 msgstr "Zapisz jako"
 
-#: ags/X/ags_context_menu.c:144 ags/X/ags_export_window.c:376
-#: ags/X/ags_machine.c:3672 ags/X/ags_menu_bar.c:141
+#: ags/X/ags_context_menu.c:146 ags/X/ags_export_window.c:376
+#: ags/X/ags_machine.c:3672 ags/X/ags_menu_bar.c:143
 msgid "export"
 msgstr "eksportuj"
 
-#: ags/X/ags_context_menu.c:150 ags/X/ags_menu_bar.c:147
+#: ags/X/ags_context_menu.c:152 ags/X/ags_menu_bar.c:149
 msgid "_Quit"
 msgstr "Wyjdź"
 
-#: ags/X/ags_context_menu.c:154 ags/X/ags_menu_bar.c:151
+#: ags/X/ags_context_menu.c:156 ags/X/ags_menu_bar.c:153
 msgid "_Edit"
 msgstr "Edytuj"
 
-#: ags/X/ags_context_menu.c:166 ags/X/ags_menu_bar.c:163
+#: ags/X/ags_context_menu.c:168 ags/X/ags_menu_bar.c:165
 msgid "Add"
 msgstr "Dodaj"
 
-#: ags/X/ags_context_menu.c:172 ags/X/ags_menu_bar.c:169
+#: ags/X/ags_context_menu.c:174 ags/X/ags_menu_bar.c:171
 msgid "Panel"
 msgstr "Panel"
 
-#: ags/X/ags_context_menu.c:175 ags/X/ags_menu_bar.c:172
+#: ags/X/ags_context_menu.c:177 ags/X/ags_menu_bar.c:174
 msgid "Mixer"
 msgstr "Mixer"
 
-#: ags/X/ags_context_menu.c:178 ags/X/ags_menu_bar.c:175
+#: ags/X/ags_context_menu.c:180 ags/X/ags_menu_bar.c:177
 msgid "Spectrometer"
 msgstr "Spektrometr"
 
-#: ags/X/ags_context_menu.c:181 ags/X/ags_menu_bar.c:178
+#: ags/X/ags_context_menu.c:183 ags/X/ags_menu_bar.c:180
 msgid "Equalizer"
 msgstr "Ekwalizer"
 
-#: ags/X/ags_context_menu.c:184 ags/X/ags_menu_bar.c:181
+#: ags/X/ags_context_menu.c:186 ags/X/ags_menu_bar.c:183
 msgid "Drum"
 msgstr "Bęben"
 
-#: ags/X/ags_context_menu.c:187 ags/X/ags_menu_bar.c:184
+#: ags/X/ags_context_menu.c:189 ags/X/ags_menu_bar.c:186
 msgid "Matrix"
 msgstr "Macierz"
 
-#: ags/X/ags_context_menu.c:190 ags/X/ags_menu_bar.c:187
+#: ags/X/ags_context_menu.c:192 ags/X/ags_menu_bar.c:189
 msgid "Synth"
 msgstr "Synteza"
 
-#: ags/X/ags_context_menu.c:193 ags/X/ags_menu_bar.c:190
+#: ags/X/ags_context_menu.c:195 ags/X/ags_menu_bar.c:192
 msgid "FM Synth"
 msgstr "Synteza FM"
 
-#: ags/X/ags_context_menu.c:196 ags/X/ags_menu_bar.c:193
+#: ags/X/ags_context_menu.c:198 ags/X/ags_menu_bar.c:195
 msgid "Syncsynth"
 msgstr "Synteza synchroniczna"
 
-#: ags/X/ags_context_menu.c:199 ags/X/ags_menu_bar.c:196
+#: ags/X/ags_context_menu.c:201 ags/X/ags_menu_bar.c:198
 msgid "FM Syncsynth"
 msgstr "Synteza synchroniczna FM"
 
-#: ags/X/ags_context_menu.c:203 ags/X/ags_menu_bar.c:200
+#: ags/X/ags_context_menu.c:205 ags/X/ags_menu_bar.c:202
 msgid "FPlayer"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:207 ags/X/ags_menu_bar.c:204
+#: ags/X/ags_context_menu.c:209 ags/X/ags_menu_bar.c:206
 msgid "SF2 Synth"
 msgstr "Synteza SF2"
 
-#: ags/X/ags_context_menu.c:212 ags/X/ags_menu_bar.c:209
+#: ags/X/ags_context_menu.c:214 ags/X/ags_menu_bar.c:211
 msgid "Sampler"
 msgstr "Próbkowanie"
 
-#: ags/X/ags_context_menu.c:216 ags/X/ags_menu_bar.c:213
+#: ags/X/ags_context_menu.c:218 ags/X/ags_menu_bar.c:215
 msgid "SFZ Synth"
 msgstr "Synteza SFZ"
 
-#: ags/X/ags_context_menu.c:220 ags/X/ags_menu_bar.c:217
+#: ags/X/ags_context_menu.c:222 ags/X/ags_menu_bar.c:219
 msgid "Audiorec"
 msgstr "Audio nagrywanie"
 
-#: ags/X/ags_context_menu.c:224 ags/X/ags_menu_bar.c:221
+#: ags/X/ags_context_menu.c:226 ags/X/ags_menu_bar.c:223
 msgid "Desk"
 msgstr "Warsztat"
 
-#: ags/X/ags_context_menu.c:229 ags/X/ags_menu_bar.c:226
+#: ags/X/ags_context_menu.c:231 ags/X/ags_menu_bar.c:228
 msgid "Automation"
 msgstr "Automatyzacja"
 
-#: ags/X/ags_context_menu.c:235 ags/X/ags_menu_bar.c:232
+#: ags/X/ags_context_menu.c:237 ags/X/ags_menu_bar.c:234
 msgid "Wave"
 msgstr "Fala"
 
-#: ags/X/ags_context_menu.c:244 ags/X/ags_menu_bar.c:241
+#: ags/X/ags_context_menu.c:246 ags/X/ags_menu_bar.c:243
 msgid "Preferences"
 msgstr "Narzędzia"
 
-#: ags/X/ags_context_menu.c:254 ags/X/ags_machine.c:3711
-#: ags/X/ags_menu_bar.c:251
+#: ags/X/ags_context_menu.c:256 ags/X/ags_machine.c:3711
+#: ags/X/ags_menu_bar.c:253
 msgid "import"
 msgstr "importuj"
 
-#: ags/X/ags_context_menu.c:257 ags/X/ags_menu_bar.c:254
+#: ags/X/ags_context_menu.c:259 ags/X/ags_menu_bar.c:256
 msgid "export track"
 msgstr "exportuj ścieżkę"
 
-#: ags/X/ags_context_menu.c:263 ags/X/ags_menu_bar.c:260
+#: ags/X/ags_context_menu.c:265 ags/X/ags_menu_bar.c:262
 msgid "playback"
 msgstr "nagranie"
 
-#: ags/X/ags_context_menu.c:269 ags/X/ags_menu_bar.c:266
+#: ags/X/ags_context_menu.c:271 ags/X/ags_menu_bar.c:268
 msgid "_Help"
 msgstr "Pomoc"
 
-#: ags/X/ags_context_menu.c:275 ags/X/ags_menu_bar.c:272
+#: ags/X/ags_context_menu.c:277 ags/X/ags_menu_bar.c:274
 msgid "Online help"
 msgstr "Pomoc Online"
 
-#: ags/X/ags_context_menu.c:278 ags/X/ags_menu_bar.c:275
+#: ags/X/ags_context_menu.c:280 ags/X/ags_menu_bar.c:277
 msgid "About"
 msgstr "O Programie"
 
@@ -345,12 +345,12 @@ msgstr ""
 msgid "Copyright"
 msgstr ""
 
-#: ags/X/ags_effect_line.c:547 ags/X/ags_line.c:572
+#: ags/X/ags_effect_line.c:553 ags/X/ags_line.c:578
 msgid "group"
 msgstr "grupa"
 
-#: ags/X/ags_effect_line.c:1003 ags/X/ags_effect_line.c:1009
-#: ags/X/ags_line.c:1093 ags/X/ags_line.c:1099 ags/X/ags_notation_editor.c:326
+#: ags/X/ags_effect_line.c:1009 ags/X/ags_effect_line.c:1015
+#: ags/X/ags_line.c:1099 ags/X/ags_line.c:1105 ags/X/ags_notation_editor.c:326
 msgid "channel"
 msgstr "kanał"
 
@@ -891,27 +891,27 @@ msgstr "Lv2"
 msgid "VST3"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3314
+#: ags/X/ags_xorg_application_context.c:3320
 #: ags/audio/ags_audio_application_context.c:2137
 #: ags/audio/task/ags_apply_sound_config.c:902
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "nieznany backend karty dźwiękowej - %s"
 
-#: ags/X/ags_xorg_application_context.c:3324
+#: ags/X/ags_xorg_application_context.c:3330
 #: ags/audio/ags_audio_application_context.c:2147
 #: ags/audio/task/ags_apply_sound_config.c:912
 msgid "unknown soundcard backend - NULL"
 msgstr "nieznany backend karty dźwiękowej - NULL"
 
-#: ags/X/ags_xorg_application_context.c:3564
+#: ags/X/ags_xorg_application_context.c:3570
 #: ags/audio/ags_audio_application_context.c:2389
 #: ags/audio/task/ags_apply_sound_config.c:1152
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "nieznany backend sekwencera - %s"
 
-#: ags/X/ags_xorg_application_context.c:3574
+#: ags/X/ags_xorg_application_context.c:3580
 #: ags/audio/ags_audio_application_context.c:2399
 #: ags/audio/task/ags_apply_sound_config.c:1162
 msgid "unknown sequencer backend - NULL"

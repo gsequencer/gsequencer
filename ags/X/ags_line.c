@@ -35,6 +35,8 @@
 #include <ags/X/ags_dssi_browser.h>
 #include <ags/X/ags_lv2_browser.h>
 
+#include <ags/config.h>
+
 #include <ladspa.h>
 
 #include <ags/i18n.h>
@@ -78,6 +80,8 @@ void ags_line_add_lv2_plugin(AgsLine *line,
 			     guint start_pad, guint stop_pad,
 			     gint position,
 			     guint create_flags, guint recall_flags);
+
+#if defined(AGS_WITH_VST3)
 void ags_line_add_vst3_plugin(AgsLine *line,
 			      GList *control_type_name,
 			      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -88,6 +92,8 @@ void ags_line_add_vst3_plugin(AgsLine *line,
 			      guint start_pad, guint stop_pad,
 			      gint position,
 			      guint create_flags, guint recall_flags);
+#endif
+
 void ags_line_real_add_plugin(AgsLine *line,
 			      GList *control_type_name,
 			      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -2423,6 +2429,7 @@ ags_line_add_lv2_plugin(AgsLine *line,
   g_free(uri);
 }
 
+#if defined(AGS_WITH_VST3)
 void
 ags_line_add_vst3_plugin(AgsLine *line,
 			GList *control_type_name,
@@ -3013,6 +3020,7 @@ ags_line_add_vst3_plugin(AgsLine *line,
   g_list_free_full(start_plugin_port,
 		   g_object_unref);
 }
+#endif
 
 void
 ags_line_real_add_plugin(AgsLine *line,
@@ -3084,6 +3092,7 @@ ags_line_real_add_plugin(AgsLine *line,
     }else if(!g_ascii_strncasecmp(plugin_name,
 				  "ags-fx-vst3",
 				  12)){
+#if defined(AGS_WITH_VST3)
       ags_line_add_vst3_plugin(line,
 			       control_type_name,
 			       play_container, recall_container,
@@ -3094,6 +3103,7 @@ ags_line_real_add_plugin(AgsLine *line,
 			       start_pad, stop_pad,
 			       position,
 			       create_flags, recall_flags);
+#endif
     }
   }
 
