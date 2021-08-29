@@ -625,7 +625,8 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	AgsPluginPort *current_plugin_port;
       
 	AgsVstParameterInfo *info;
-	AgsVstParamID *id;
+
+	AgsVstParamID id;
       
 	guint flags;
 	gint32 step_count;

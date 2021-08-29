@@ -43,7 +43,7 @@ void ags_fx_vst3_channel_notify_samplerate_callback(GObject *gobject,
 						    gpointer user_data);
 
 void ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
-					     AgsFxVst3Audio *fx_vst3_audio);
+					     AgsFxVst3Channel *fx_vst3_channel);
 
 /**
  * SECTION:ags_fx_vst3_channel
@@ -1040,9 +1040,56 @@ ags_fx_vst3_channel_load_port(AgsFxVst3Channel *fx_vst3_channel)
 
 void
 ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
-					AgsFxVst3Audio *fx_vst3_audio)
+					AgsFxVst3Channel *fx_vst3_channel)
 {
-  g_message("write");
+  AgsPluginPort *plugin_port;
+  
+  AgsVstParameterInfo *info;
+
+  gint sound_scope;
+  guint port_index;
+  gfloat param_value;
+
+//  g_message("write %s", port->specifier);
+  
+  plugin_port = NULL;
+
+  port_index = 0;
+
+  g_object_get(port,
+	       "plugin-port", &plugin_port,
+	       NULL);
+
+  if(plugin_port != NULL){
+    g_object_get(plugin_port,
+		 "port-index", &port_index,
+		 NULL);
+  }
+  
+  param_value = g_value_get_float(value);
+
+  info = ags_vst_parameter_info_alloc();      
+
+  for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
+    AgsFxVst3ChannelInputData *input_data;
+
+    AgsVstParamID param_id;
+
+    input_data = fx_vst3_channel->input_data[sound_scope];
+
+    if(input_data != NULL &&
+       input_data->iedit_controller != NULL){
+      ags_vst_iedit_controller_get_parameter_info(input_data->iedit_controller,
+						  port_index, info);
+
+      param_id = ags_vst_parameter_info_get_param_id(info);
+	  
+      ags_vst_iedit_controller_set_param_normalized(input_data->iedit_controller,
+						    param_id, param_value);
+    }
+  }
+
+  ags_vst_parameter_info_free(info);
 }
 
 /**

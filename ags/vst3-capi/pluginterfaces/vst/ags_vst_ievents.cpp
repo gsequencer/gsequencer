@@ -20,7 +20,6 @@
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_ievents.h>
 
 #include <pluginterfaces/vst/ivstevents.h>
-#include <public.sdk/source/vst/hosting/eventlist.h>
 
 extern "C" {
 
@@ -54,13 +53,6 @@ extern "C" {
   const AgsVstTUID* ags_vst_ievent_list_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IEventList::iid.toTUID()));
-  }
-
-  AgsVstIEventList* ags_vst_event_list_new()
-  {
-    Steinberg::Vst::EventList *event_list = new Steinberg::Vst::EventList();
-    
-    return((AgsVstIEventList *) ((Steinberg::Vst::IEventList *) event_list));
   }
   
   gint32 ags_vst_ievent_list_get_event_count(AgsVstIEventList *ievent_list)

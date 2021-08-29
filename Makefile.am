@@ -2945,7 +2945,8 @@ libags_vst_h_sources = \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.h \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.h \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.h \
-	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.h
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.h \
+	ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_event_list.h
 
 deprecated_libags_vst_c_sources =
 
@@ -3004,7 +3005,8 @@ libags_vst_c_sources = \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.cpp \
-	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp \
+	ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_event_list.cpp
 
 # gsequencer all files
 gsequencerheaders = \

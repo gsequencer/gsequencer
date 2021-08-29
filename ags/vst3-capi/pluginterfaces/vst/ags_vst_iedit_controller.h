@@ -88,7 +88,7 @@ extern "C" {
 
   void ags_vst_parameter_info_free(AgsVstParameterInfo *info);
 
-  AgsVstParamID* ags_vst_parameter_info_get_param_id(AgsVstParameterInfo *info);
+  AgsVstParamID ags_vst_parameter_info_get_param_id(AgsVstParameterInfo *info);
   
   AgsVstString128* ags_vst_parameter_info_get_title(AgsVstParameterInfo *info);
   

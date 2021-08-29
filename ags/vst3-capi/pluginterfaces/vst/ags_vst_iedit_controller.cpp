@@ -35,9 +35,9 @@ extern "C" {
     delete ((Steinberg::Vst::ParameterInfo *) info);
   }
 
-  AgsVstParamID* ags_vst_parameter_info_get_param_id(AgsVstParameterInfo *info)
+  AgsVstParamID ags_vst_parameter_info_get_param_id(AgsVstParameterInfo *info)
   {
-    return((AgsVstParamID *) ((Steinberg::Vst::ParameterInfo *) info)->id);
+    return((AgsVstParamID) ((Steinberg::Vst::ParameterInfo *) info)->id);
   }
   
   AgsVstString128* ags_vst_parameter_info_get_title(AgsVstParameterInfo *info)
