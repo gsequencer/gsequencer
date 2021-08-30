@@ -43,6 +43,11 @@
 #include <ags/X/machine/ags_live_dssi_bridge.h>
 #include <ags/X/machine/ags_live_lv2_bridge.h>
 
+#if defined(AGS_WITH_VST3)
+#include <ags/X/machine/ags_vst3_bridge.h>
+#include <ags/X/machine/ags_live_vst3_bridge.h>
+#endif
+
 #include <ags/i18n.h>
 
 void ags_machine_selection_class_init(AgsMachineSelectionClass *machine_selection);
@@ -192,6 +197,10 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 #ifdef AGS_WITH_LIBINSTPATCH
 	 AGS_IS_FFPLAYER(list->data) ||
 	 AGS_IS_SF2_SYNTH(list->data) ||
+#endif
+#if defined(AGS_WITH_VST3)
+	 AGS_IS_VST3_BRIDGE(list->data) ||
+	 AGS_IS_LIVE_VST3_BRIDGE(list->data) ||	 
 #endif
 	 AGS_IS_PITCH_SAMPLER(list->data) ||
 	 AGS_IS_SFZ_SYNTH(list->data) ||

@@ -507,7 +507,7 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       if(input_data->iaudio_processor != NULL){
 	ags_base_plugin_activate(vst3_plugin,
 				 input_data->icomponent);
-	
+
 	ags_vst_iaudio_processor_process(input_data->iaudio_processor,
 					 input_data->process_data);  
 

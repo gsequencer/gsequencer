@@ -528,12 +528,21 @@ ags_fx_vst3_audio_set_audio_channels_callback(AgsAudio *audio,
 
   GList *start_recall_channel, *recall_channel;
 
+#if defined(HAVE_GLIB_2_68)
+  GStrvBuilder *strv_builder;
+#endif
+  
+  gchar **parameter_name;
+    
+  guint n_params;
   guint input_pads;
   guint output_port_count, input_port_count;
   guint buffer_size;
   guint samplerate;
   guint i, j, k;
   gboolean is_live_instrument;
+
+  GValue *value;
 
   GRecMutex *recall_mutex;
 
@@ -551,6 +560,29 @@ ags_fx_vst3_audio_set_audio_channels_callback(AgsAudio *audio,
      !ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
     return;
   }
+
+#if defined(HAVE_GLIB_2_68)
+  strv_builder = g_strv_builder_new();
+
+  g_strv_builder_add(strv_builder,
+		     "buffer-size");
+  g_strv_builder_add(strv_builder,
+		     "samplerate");
+  g_strv_builder_add(strv_builder,
+		     "iedit-controller");
+  g_strv_builder_add(strv_builder,
+		     "iaudio-processor");
+  
+  parameter_name = g_strv_builder_end(strv_builder);
+#else
+  parameter_name = (gchar **) g_malloc(5 * sizeof(gchar *));
+
+  parameter_name[0] = g_strdup("buffer-size");
+  parameter_name[1] = g_strdup("samplerate");
+  parameter_name[2] = g_strdup("iedit-controller");
+  parameter_name[3] = g_strdup("iaudio-processor");
+  parameter_name[4] = NULL;
+#endif
 
   start_input = NULL;
 
@@ -582,6 +614,29 @@ ags_fx_vst3_audio_set_audio_channels_callback(AgsAudio *audio,
   input_port_count = fx_vst3_audio->input_port_count;
 
   g_rec_mutex_unlock(recall_mutex);
+
+  n_params = 4;
+
+  value = g_new0(GValue,
+		 4);
+
+  g_value_init(value,
+	       G_TYPE_UINT);
+    
+  g_value_set_uint(value,
+		   buffer_size);
+    
+  g_value_init(value + 1,
+	       G_TYPE_UINT);
+
+  g_value_set_uint(value + 1,
+		   samplerate);
+    
+  g_value_init(value + 2,
+	       G_TYPE_POINTER);
+
+  g_value_init(value + 3,
+	       G_TYPE_POINTER);
 
   /* allocate channel data */
   is_live_instrument = ags_fx_vst3_audio_test_flags(fx_vst3_audio, AGS_FX_VST3_AUDIO_LIVE_INSTRUMENT);
@@ -625,6 +680,13 @@ ags_fx_vst3_audio_set_audio_channels_callback(AgsAudio *audio,
 	  
 	    guint nth;
 
+	    channel_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
+									       &n_params,
+									       &parameter_name, &value);
+	      
+	    channel_data->iedit_controller = g_value_get_pointer(value + 2);
+	    channel_data->iaudio_processor = g_value_get_pointer(value + 3);
+
 	    ags_vst_process_data_set_num_samples(channel_data->process_data,
 						 buffer_size);
 	  
@@ -655,6 +717,13 @@ ags_fx_vst3_audio_set_audio_channels_callback(AgsAudio *audio,
 
 	      input_data = channel_data->input_data[k];
 	    
+	      input_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
+									       &n_params,
+									       &parameter_name, &value);
+
+	      input_data->iedit_controller = g_value_get_pointer(value + 2);
+	      input_data->iaudio_processor = g_value_get_pointer(value + 3);
+
 	      ags_vst_process_data_set_num_samples(input_data->process_data,
 						   buffer_size);
 	      
@@ -1358,7 +1427,7 @@ ags_fx_vst3_audio_load_plugin(AgsFxVst3Audio *fx_vst3_audio)
 		input_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
 										 &n_params,
 										 &parameter_name, &value);
-	      
+
 		input_data->iedit_controller = g_value_get_pointer(value + 2);
 		input_data->iaudio_processor = g_value_get_pointer(value + 3);
 	      }
@@ -1931,8 +2000,10 @@ ags_fx_vst3_audio_change_program(AgsFxVst3Audio *fx_vst3_audio,
 
 	    input_data = channel_data->input_data[key];
 
-	    if(input_data->iedit_controller != NULL && iprogram_list_data != NULL){
-	      val = ags_vst_funknown_query_interface(channel_data->iedit_controller,
+	    if(input_data->iedit_controller != NULL){
+	      iprogram_list_data = NULL;
+	    
+	      val = ags_vst_funknown_query_interface(input_data->iedit_controller,
 						     ags_vst_iprogram_list_data_get_iid(), &iprogram_list_data);
 
 
@@ -1945,7 +2016,7 @@ ags_fx_vst3_audio_change_program(AgsFxVst3Audio *fx_vst3_audio,
 							    program_list_id, program_index,
 							    data);
 	    
-		ags_vst_iedit_controller_set_state(channel_data->iedit_controller,
+		ags_vst_iedit_controller_set_state(input_data->iedit_controller,
 						   data);
 	      }
 	    }

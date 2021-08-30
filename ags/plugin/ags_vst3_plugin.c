@@ -279,6 +279,7 @@ ags_vst3_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   g_rec_mutex_unlock(base_plugin_mutex);
 
   retval = NULL;
+  icomponent = NULL;
 
   if(GetPluginFactory != NULL){    
     AgsVstPClassInfo *info;
@@ -300,8 +301,6 @@ ags_vst3_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
       }
 
       /* icomponent */
-      icomponent = NULL;
-
       val = ags_vst_iplugin_factory_create_instance(iplugin_factory,
 						    ags_vst_pclass_info_get_cid(info),
 						    ags_vst_icomponent_get_iid(),
@@ -393,7 +392,7 @@ ags_vst3_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
     }  
     
     /* return value */
-    if((position = ags_strv_index(parameter_name[0], "iaudio-processor")) >= 0){
+    if((position = ags_strv_index(parameter_name[0], "iaudio-processor")) >= 0){      
       g_value_set_pointer(&(value[0][position]),
 			  iaudio_processor);
     }    
@@ -655,8 +654,6 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	  g_hash_table_insert(AGS_VST3_PLUGIN(base_plugin)->program,
 			      program, GUINT_TO_POINTER(i));
 
-	  g_message("%s program - %s", base_plugin->effect, program);
-	  
 	  continue;
 	}
 	
