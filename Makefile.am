@@ -726,7 +726,7 @@ endif
 
 # library libags-vst
 if WITH_VST3
-libags_vst_la_CPPFLAGS = -std=gnu++2a -DDEVELOPMENT
+libags_vst_la_CPPFLAGS = -std=gnu++2a $(VST3_RELEASE_TYPE)
 libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GLIB_CFLAGS) $(VST3_CXXFLAGS) $(W32API_CFLAGS)
 libags_vst_la_LDFLAGS = $(LDFLAGS) $(VST3_LDFLAGS) -version-info 3:0:0 $(PIC_FLAGS) -pthread 
 libags_vst_la_LIBADD = -lm $(VST3_LIBS) -lbase -lpluginterfaces -lsdk -lsdk_common -lsdk_hosting -lvstgui -lvstgui_standalone -lvstgui_support -lvstgui_uidescription $(GLIB_LIBS) $(W32API_LIBS)

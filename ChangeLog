@@ -1,3 +1,9 @@
+ags (3.10.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* disabled -DDEVELOPMENT of libags_vst.so in Makefile.am
+	* added VST3_RELEASE_TYPE to configure.ac and Makefile.am
+
 ags (3.10.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
