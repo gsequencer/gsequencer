@@ -2,6 +2,7 @@ ags (3.10.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented VST3 program support
+	* improved thread-safety
 
 ags (3.10.9)
 

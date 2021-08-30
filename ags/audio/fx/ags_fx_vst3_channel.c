@@ -803,7 +803,7 @@ ags_fx_vst3_channel_load_port(AgsFxVst3Channel *fx_vst3_channel)
 			      vst3_port[nth]);
 	
 	  g_signal_connect_after(vst3_port[nth], "safe-write",
-				 ags_fx_vst3_channel_safe_write_callback, fx_vst3_audio);
+				 ags_fx_vst3_channel_safe_write_callback, fx_vst3_channel);
 
 	  g_free(plugin_name);
 	  g_free(specifier);
@@ -987,7 +987,7 @@ ags_fx_vst3_channel_load_port(AgsFxVst3Channel *fx_vst3_channel)
 			      vst3_port[nth]);
 	
 	  g_signal_connect_after(vst3_port[nth], "safe-write",
-				 ags_fx_vst3_channel_safe_write_callback, fx_vst3_audio);
+				 ags_fx_vst3_channel_safe_write_callback, fx_vst3_channel);
       
 	  g_free(plugin_name);
 	  g_free(specifier);
@@ -1062,7 +1062,9 @@ ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
   guint port_index;
   gfloat param_value;
 
-//  g_message("write %s", port->specifier);
+  GRecMutex *fx_vst3_channel_mutex;
+
+  fx_vst3_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_channel);
   
   plugin_port = NULL;
 
@@ -1082,6 +1084,8 @@ ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
 
   info = ags_vst_parameter_info_alloc();      
 
+  g_rec_mutex_lock(fx_vst3_channel_mutex);
+	  
   for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
     AgsFxVst3ChannelInputData *input_data;
 
@@ -1095,11 +1099,13 @@ ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
 						  port_index, info);
 
       param_id = ags_vst_parameter_info_get_param_id(info);
-	  
+
       ags_vst_iedit_controller_set_param_normalized(input_data->iedit_controller,
 						    param_id, param_value);
     }
   }
+
+  g_rec_mutex_unlock(fx_vst3_channel_mutex);
 
   ags_vst_parameter_info_free(info);
 }

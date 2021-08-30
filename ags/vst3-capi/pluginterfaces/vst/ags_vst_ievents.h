@@ -44,9 +44,9 @@ extern "C" {
     AGS_VST_KNOTE_ID_USER_RANGE_UPPER_BOUND = -1000,
   }AgsVstNoteMidiUserRange;
 
-  AgsVstNoteOnEvent* ags_vst_note_on_event_alloc(gint channel, gint pitch, gfloat tuning, gfloat velocity, gint32 length, gint32 note_id);
+  AgsVstEvent* ags_vst_note_on_event_alloc(gint channel, gint pitch, gfloat tuning, gfloat velocity, gint32 length, gint32 note_id);
   
-  AgsVstNoteOffEvent* ags_vst_note_off_event_alloc(gint channel, gint pitch, gfloat tuning, gfloat velocity, gint32 length, gint32 note_id);
+  AgsVstEvent* ags_vst_note_off_event_alloc(gint channel, gint pitch, gfloat tuning, gfloat velocity, gint32 length, gint32 note_id);
   
   const AgsVstTUID* ags_vst_ievent_list_get_iid();
   

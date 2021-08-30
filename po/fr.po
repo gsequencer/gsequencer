@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-08-30 11:59+0200\n"
+"POT-Creation-Date: 2021-08-30 18:58+0200\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -103,7 +103,7 @@ msgstr ""
 #: ags/X/ags_preferences.c:227 ags/X/editor/ags_crop_note_dialog.c:270
 #: ags/X/editor/ags_envelope_dialog.c:227
 #: ags/X/editor/ags_envelope_editor_callbacks.c:51
-#: ags/X/editor/ags_machine_selection.c:140
+#: ags/X/editor/ags_machine_selection.c:145
 #: ags/X/editor/ags_move_note_dialog.c:263
 #: ags/X/editor/ags_pattern_envelope_callbacks.c:1052
 #: ags/X/editor/ags_position_automation_cursor_dialog.c:236
@@ -128,7 +128,7 @@ msgstr ""
 #: ags/X/ags_preferences.c:228 ags/X/editor/ags_crop_note_dialog.c:271
 #: ags/X/editor/ags_envelope_dialog.c:233
 #: ags/X/editor/ags_envelope_editor_callbacks.c:53
-#: ags/X/editor/ags_machine_selection.c:141
+#: ags/X/editor/ags_machine_selection.c:146
 #: ags/X/editor/ags_move_note_dialog.c:264
 #: ags/X/editor/ags_pattern_envelope_callbacks.c:1054
 #: ags/X/editor/ags_position_automation_cursor_dialog.c:237
@@ -1175,7 +1175,7 @@ msgstr "Blanche:x1"
 msgid "Note:y"
 msgstr "Blanche:y"
 
-#: ags/X/editor/ags_machine_selection.c:136
+#: ags/X/editor/ags_machine_selection.c:141
 msgid "select machines"
 msgstr "sélectionner des machines"
 

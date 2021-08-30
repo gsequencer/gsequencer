@@ -1831,8 +1831,10 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
   guint port_index;
   gfloat param_value;
   gboolean is_live_instrument;
+
+  GRecMutex *fx_vst3_audio_mutex;
   
-//  g_message("write %s", port->specifier);
+  fx_vst3_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_audio);
 
   audio = NULL;
   plugin_port = NULL;
@@ -1866,6 +1868,8 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
   is_live_instrument = ags_fx_vst3_audio_test_flags(fx_vst3_audio, AGS_FX_VST3_AUDIO_LIVE_INSTRUMENT);
 
   info = ags_vst_parameter_info_alloc();      
+  
+  g_rec_mutex_lock(fx_vst3_audio_mutex);
   
   for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
     AgsFxVst3AudioScopeData *audio_scope_data;
@@ -1919,6 +1923,8 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
     }
   }
 
+  g_rec_mutex_unlock(fx_vst3_audio_mutex);
+
   ags_vst_parameter_info_free(info);
   
   if(audio != NULL){
@@ -1958,6 +1964,10 @@ ags_fx_vst3_audio_change_program(AgsFxVst3Audio *fx_vst3_audio,
   gboolean is_live_instrument;
   AgsVstTResult val;
 
+  GRecMutex *fx_vst3_audio_mutex;
+  
+  fx_vst3_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_audio);
+
   if(!AGS_IS_FX_VST3_AUDIO(fx_vst3_audio)){
     return;
   }
@@ -1988,6 +1998,8 @@ ags_fx_vst3_audio_change_program(AgsFxVst3Audio *fx_vst3_audio,
   param_value = 1.0;
 
   info = ags_vst_parameter_info_alloc();      
+  
+  g_rec_mutex_lock(fx_vst3_audio_mutex);
   
   for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
     AgsFxVst3AudioScopeData *audio_scope_data;
@@ -2061,6 +2073,8 @@ ags_fx_vst3_audio_change_program(AgsFxVst3Audio *fx_vst3_audio,
       }
     }
   }
+  
+  g_rec_mutex_unlock(fx_vst3_audio_mutex);
 
   ags_vst_parameter_info_free(info);
   
