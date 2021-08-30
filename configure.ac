@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.10.7],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.10.8],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -421,8 +421,6 @@ WITH_VST3=0
 
 AS_IF([test "x$enable_vst3" != xno],
       [AC_DEFINE([AGS_WITH_VST3], [1], [VST3 enabled])
-      VST3_CXXFLAGS="-I/usr/include/vst3"
-      VST3_LIBS="-L/usr/lib/vst3 -lbase -lpluginterfaces -lsdk -lsdk_common -lsdk_hosting -lvstgui -lvstgui_standalone -lvstgui_support -lvstgui_uidescription"      
       AC_SUBST(VST3_CXXFLAGS)
       AC_SUBST(VST3_LIBS)
       AC_MSG_NOTICE([VST3 enabled])],

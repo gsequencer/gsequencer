@@ -40,6 +40,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.10.8" date="2021-08-30">
+      <description>
+	<p>Improved VST3 unicode support.</p>
+      </description>
+    </release>
+
     <release version="3.10.5" date="2021-08-29">
       <description>
 	<p>First VST3 plugin support.</p>

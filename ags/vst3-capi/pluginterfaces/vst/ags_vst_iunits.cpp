@@ -100,8 +100,33 @@ extern "C" {
 						    AgsVstString128 attribute_value)
   {
     Steinberg::Vst::String128 *tmp_attribute_value_0 = (Steinberg::Vst::String128 *) &attribute_value;
+
+#ifdef AGS_VST_UNICODE
+    char *tmp_attribute_id;
+
+    GError *error;
+#endif
+
+    AgsVstTResult retval;
+
+#ifdef AGS_VST_UNICODE
+    error = NULL;
+    tmp_attribute_id = g_utf16_to_utf8((gunichar2 *) attribute_id,
+				       -1,
+				       NULL,
+				       NULL,
+				       &error);
+
+    if(error != NULL){
+      g_warning("error occured while converting from wchar_t");
+    }
     
-    return(((Steinberg::Vst::IUnitInfo *) iunit_info)->getProgramInfo((Steinberg::Vst::ProgramListID) list_id, program_index, attribute_id, tmp_attribute_value_0[0]));
+    retval = ((Steinberg::Vst::IUnitInfo *) iunit_info)->getProgramInfo((Steinberg::Vst::ProgramListID) list_id, program_index, tmp_attribute_id, tmp_attribute_value_0[0]);
+#else
+    retval = ((Steinberg::Vst::IUnitInfo *) iunit_info)->getProgramInfo((Steinberg::Vst::ProgramListID) list_id, program_index, attribute_id, tmp_attribute_value_0[0]);
+#endif
+        
+    return(retval);
   }
   
   AgsVstTResult ags_vst_iunit_info_has_program_pitch_names(AgsVstIUnitInfo *iunit_info,

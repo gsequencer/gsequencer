@@ -1,3 +1,9 @@
+ags (3.10.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing XML persistenc of AgsVst3Bridge and AgsLiveVst3Bridge
+	* improved libags-vst.so unicode support
+
 ags (3.10.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

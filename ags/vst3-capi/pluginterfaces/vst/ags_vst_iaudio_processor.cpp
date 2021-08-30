@@ -54,7 +54,7 @@ extern "C" {
   const AgsVstCString ags_vst_konly_real_time            = "OnlyRT";
   const AgsVstCString ags_vst_konly_offline_process      = "OnlyOfflineProcess";
   const AgsVstCString ags_vst_konly_ara                  = "OnlyARA";
-  
+
   const AgsVstCString ags_vst_kno_offline_process        = "NoOfflineProcess";
   const AgsVstCString ags_vst_kup_down_mix               = "Up-Downmix";
   const AgsVstCString ags_vst_kanalyzer                  = "Analyzer";
@@ -63,7 +63,7 @@ extern "C" {
   const AgsVstCString ags_vst_kmono                      = "Mono";
   const AgsVstCString ags_vst_kstereo                    = "Stereo";
   const AgsVstCString ags_vst_ksurround                  = "Surround";
-
+ 
   AgsVstProcessSetup* ags_vst_process_setup_alloc()
   {
     return((AgsVstProcessSetup *) new Steinberg::Vst::ProcessSetup());

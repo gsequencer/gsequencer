@@ -34,7 +34,7 @@ extern "C" {
   const AgsVstCString AGS_VST_KCHANNEL_INDEX_NAMESPACE_LENGTH_KEY = "channel index namespace length";
   const AgsVstCString AGS_VST_KCHANNEL_IMAGE_KEY = "channel image";
   const AgsVstCString AGS_VST_KCHANNEL_PLUGIN_LOCATION_KEY = "channel plugin location";
-
+  
   const AgsVstTUID* ags_vst_iinfo_listener_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::ChannelContext::IInfoListener::iid.toTUID()));

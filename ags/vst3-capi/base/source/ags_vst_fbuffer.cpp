@@ -268,7 +268,11 @@ extern "C" {
   gboolean ags_vst_buffer_prepend_string(AgsVstBuffer *buffer,
 					 ags_vst_tchar *s)
   {
-    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->prependString(s)));
+#if !defined(AGS_VST_UNICODE)
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->prependString((char *) s)));
+#else
+    return(static_cast<gboolean>(static_cast<Steinberg::Buffer*>((void *) buffer)->prependString((char16_t *) s)));
+#endif
   }
 
   gboolean ags_vst_buffer_prepend_char(AgsVstBuffer *buffer,
@@ -360,7 +364,7 @@ extern "C" {
   
   ags_vst_tchar* ags_vst_buffer_to_str(AgsVstBuffer *buffer)
   {
-    return(static_cast<Steinberg::Buffer*>((void *) buffer)->str());
+    return((ags_vst_tchar *) static_cast<Steinberg::Buffer*>((void *) buffer)->str());
   }
   
   gchar* ags_vst_buffer_to_str8(AgsVstBuffer *buffer)

@@ -24,7 +24,7 @@
 extern "C" {
 
   const AgsVstCString ags_vst_editor = "editor";
-
+  
   AgsVstParameterInfo* ags_vst_parameter_info_alloc()
   {
     return((AgsVstParameterInfo *) new Steinberg::Vst::ParameterInfo);
@@ -152,7 +152,7 @@ extern "C" {
 					AgsVstID *out_id)
   {
     return(((Steinberg::Vst::IProgress *) iprogress)->start((Steinberg::Vst::IProgress::ProgressType) progress_type,
-							    optional_description,
+							    (Steinberg::tchar *) optional_description,
 							    const_cast<Steinberg::Vst::IProgress::ID&>(((Steinberg::Vst::IProgress::ID *) out_id)[0])));
   }
 
