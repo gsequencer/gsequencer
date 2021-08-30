@@ -23,6 +23,77 @@
 
 extern "C" {
 
+  AgsVstUnitInfo* ags_vst_unit_info_alloc()
+  {
+    return((AgsVstUnitInfo *) new Steinberg::Vst::UnitInfo());
+  }
+
+  void ags_vst_unit_info_free(AgsVstUnitInfo *unit_info)
+  {
+    delete unit_info;
+  }
+
+  AgsVstUnitID ags_vst_unit_info_get_id(AgsVstUnitInfo *unit_info)
+  {
+    return((AgsVstUnitID) ((Steinberg::Vst::UnitInfo *) unit_info)->id);
+  }
+
+  AgsVstUnitID ags_vst_unit_info_get_parent_unit_id(AgsVstUnitInfo *unit_info)
+  {
+    return((AgsVstUnitID) ((Steinberg::Vst::UnitInfo *) unit_info)->parentUnitId);
+  }
+
+  gchar* ags_vst_unit_info_get_name(AgsVstUnitInfo *unit_info)
+  {
+    gchar *name;
+    
+    name = g_utf16_to_utf8((gunichar2 *) ((Steinberg::Vst::UnitInfo *) unit_info)->name,
+			   -1,
+			   NULL,
+			   NULL,
+			   NULL);
+
+    return(name);
+  }
+
+  AgsVstProgramListID ags_vst_unit_info_get_program_list_id(AgsVstUnitInfo *unit_info)
+  {
+    return((AgsVstProgramListID) ((Steinberg::Vst::UnitInfo *) unit_info)->programListId);
+  }
+  
+  AgsVstProgramListInfo* ags_vst_program_list_info_alloc()
+  {
+    return((AgsVstProgramListInfo *) new Steinberg::Vst::ProgramListInfo());
+  }
+
+  void ags_vst_program_list_info_free(AgsVstProgramListInfo *program_list_info)
+  {
+    delete program_list_info;
+  }
+
+  AgsVstProgramListID ags_vst_program_list_info_get_id(AgsVstProgramListInfo *program_list_info)
+  {
+    return((AgsVstProgramListID) ((Steinberg::Vst::ProgramListInfo *) program_list_info)->id);
+  }
+
+  gchar* ags_vst_program_list_info_get_name(AgsVstProgramListInfo *program_list_info)
+  {
+    gchar *name;
+    
+    name = g_utf16_to_utf8((gunichar2 *) ((Steinberg::Vst::ProgramListInfo *) program_list_info)->name,
+			   -1,
+			   NULL,
+			   NULL,
+			   NULL);
+
+    return(name);
+  }
+  
+  gint32 ags_vst_program_list_info_get_program_count(AgsVstProgramListInfo *program_list_info)
+  {
+    return((gint32) ((Steinberg::Vst::ProgramListInfo *) program_list_info)->programCount);
+  }
+
   const AgsVstTUID* ags_vst_iunit_handler_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IUnitHandler::iid.toTUID()));
@@ -87,19 +158,29 @@ extern "C" {
 
   AgsVstTResult ags_vst_iunit_info_get_program_name(AgsVstIUnitInfo *iunit_info,
 						    AgsVstProgramListID list_id, gint32 program_index,
-						    AgsVstString128 name)
+						    gchar **name)
   {
-    Steinberg::Vst::String128 *tmp_name_0 = (Steinberg::Vst::String128 *) &name;
+    Steinberg::Vst::String128 tmp_name_0;
+
+    AgsVstTResult retval;
     
-    return(((Steinberg::Vst::IUnitInfo *) iunit_info)->getProgramName((Steinberg::Vst::ProgramListID) list_id, program_index, tmp_name_0[0]));
+    retval = ((Steinberg::Vst::IUnitInfo *) iunit_info)->getProgramName((Steinberg::Vst::ProgramListID) list_id, program_index, tmp_name_0);
+
+    name[0] = g_utf16_to_utf8((gunichar2 *) tmp_name_0,
+			      -1,
+			      NULL,
+			      NULL,
+			      NULL);
+    
+    return(retval);
   }
 
   AgsVstTResult ags_vst_iunit_info_get_program_info(AgsVstIUnitInfo *iunit_info,
 						    AgsVstProgramListID list_id, gint32 program_index,
 						    AgsVstCString attribute_id,
-						    AgsVstString128 attribute_value)
+						    gchar *attribute_value)
   {
-    Steinberg::Vst::String128 *tmp_attribute_value_0 = (Steinberg::Vst::String128 *) &attribute_value;
+    Steinberg::Vst::String128 *tmp_attribute_value_0 = (Steinberg::Vst::String128 *) attribute_value;
 
 #ifdef AGS_VST_UNICODE
     char *tmp_attribute_id;
@@ -138,13 +219,23 @@ extern "C" {
   AgsVstTResult ags_vst_iunit_info_get_program_pitch_name(AgsVstIUnitInfo *iunit_info,
 							  AgsVstProgramListID list_id, gint32 program_index,
 							  gint16 midi_pitch,
-							  AgsVstString128 name)
+							  gchar **name)
   {
-    Steinberg::Vst::String128 *tmp_name_0 = (Steinberg::Vst::String128 *) &name;
+    Steinberg::Vst::String128 tmp_name_0;
+
+    AgsVstTResult retval;
     
-    return(((Steinberg::Vst::IUnitInfo *) iunit_info)->getProgramPitchName((Steinberg::Vst::ProgramListID) list_id, program_index,
-									   midi_pitch,
-									   tmp_name_0[0]));
+    retval = ((Steinberg::Vst::IUnitInfo *) iunit_info)->getProgramPitchName((Steinberg::Vst::ProgramListID) list_id, program_index,
+									     midi_pitch,
+									     tmp_name_0);
+
+    name[0] = g_utf16_to_utf8((gunichar2 *) tmp_name_0,
+			      -1,
+			      NULL,
+			      NULL,
+			      NULL);
+    
+    return(retval);
   }
   
   AgsVstUnitID ags_vst_iunit_info_get_selected_unit(AgsVstIUnitInfo *iunit_info)

@@ -1,3 +1,8 @@
+ags (3.10.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented VST3 program support
+
 ags (3.10.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

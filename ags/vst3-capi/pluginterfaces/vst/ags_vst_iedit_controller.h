@@ -90,11 +90,11 @@ extern "C" {
 
   AgsVstParamID ags_vst_parameter_info_get_param_id(AgsVstParameterInfo *info);
   
-  AgsVstString128* ags_vst_parameter_info_get_title(AgsVstParameterInfo *info);
+  gchar* ags_vst_parameter_info_get_title(AgsVstParameterInfo *info);
   
-  AgsVstString128* ags_vst_parameter_info_get_short_title(AgsVstParameterInfo *info);
+  gchar* ags_vst_parameter_info_get_short_title(AgsVstParameterInfo *info);
   
-  AgsVstString128* ags_vst_parameter_info_get_units(AgsVstParameterInfo *info);
+  gchar* ags_vst_parameter_info_get_units(AgsVstParameterInfo *info);
   
   gint32 ags_vst_parameter_info_get_step_count(AgsVstParameterInfo *info);
 
@@ -166,7 +166,7 @@ extern "C" {
 
   AgsVstTResult ags_vst_iedit_controller_get_param_string_by_value(AgsVstIEditController *iedit_controller,
 								   AgsVstParamID id, AgsVstParamValue value_normalized,
-								   AgsVstString128 *string);
+								   gchar *string);
 
   AgsVstTResult ags_vst_iedit_controller_get_param_value_by_string(AgsVstIEditController *iedit_controller,
 								   AgsVstParamID id,

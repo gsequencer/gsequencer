@@ -40,19 +40,19 @@ extern "C" {
     return((AgsVstParamID) ((Steinberg::Vst::ParameterInfo *) info)->id);
   }
   
-  AgsVstString128* ags_vst_parameter_info_get_title(AgsVstParameterInfo *info)
+  gchar* ags_vst_parameter_info_get_title(AgsVstParameterInfo *info)
   {
-    return((AgsVstString128 *) &(((Steinberg::Vst::ParameterInfo *) info)->title));
+    return((gchar *) &(((Steinberg::Vst::ParameterInfo *) info)->title));
   }
   
-  AgsVstString128* ags_vst_parameter_info_get_short_title(AgsVstParameterInfo *info)
+  gchar* ags_vst_parameter_info_get_short_title(AgsVstParameterInfo *info)
   {
-    return((AgsVstString128 *) &(((Steinberg::Vst::ParameterInfo *) info)->shortTitle));
+    return((gchar *) &(((Steinberg::Vst::ParameterInfo *) info)->shortTitle));
   }
   
-  AgsVstString128* ags_vst_parameter_info_get_units(AgsVstParameterInfo *info)
+  gchar* ags_vst_parameter_info_get_units(AgsVstParameterInfo *info)
   {
-    return((AgsVstString128 *) &(((Steinberg::Vst::ParameterInfo *) info)->units));
+    return((gchar *) &(((Steinberg::Vst::ParameterInfo *) info)->units));
   }
   
   gint32 ags_vst_parameter_info_get_step_count(AgsVstParameterInfo *info)
@@ -206,7 +206,7 @@ extern "C" {
 
   AgsVstTResult ags_vst_iedit_controller_get_param_string_by_value(AgsVstIEditController *iedit_controller,
 								   AgsVstParamID id, AgsVstParamValue value_normalized,
-								   AgsVstString128 *string)
+								   gchar *string)
   {
     Steinberg::Vst::String128 tmp_string;
     Steinberg::tresult retval;

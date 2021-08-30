@@ -75,6 +75,9 @@ struct _AgsFxVst3Audio
 
   guint input_port_count;
   guint *input_port;
+
+  gint program_port_index;
+  gint program_param_id;
   
   AgsFxVst3AudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];
 
@@ -160,6 +163,12 @@ void ags_fx_vst3_audio_unset_flags(AgsFxVst3Audio *fx_vst3_audio, guint flags);
 /* load/unload */
 void ags_fx_vst3_audio_load_plugin(AgsFxVst3Audio *fx_vst3_audio);
 void ags_fx_vst3_audio_load_port(AgsFxVst3Audio *fx_vst3_audio);
+
+/* plugin */
+void ags_fx_vst3_audio_change_program(AgsFxVst3Audio *fx_vst3_audio,
+				      guint port_index,
+				      guint program_list_id,
+				      guint program_index);
 
 /* instantiate */
 AgsFxVst3Audio* ags_fx_vst3_audio_new(AgsAudio *audio);

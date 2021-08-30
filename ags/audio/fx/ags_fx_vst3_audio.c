@@ -172,6 +172,9 @@ ags_fx_vst3_audio_init(AgsFxVst3Audio *fx_vst3_audio)
   fx_vst3_audio->input_port_count = 0;
   fx_vst3_audio->input_port = NULL;
 
+  fx_vst3_audio->program_port_index = -1;
+  fx_vst3_audio->program_param_id = -1;
+  
   /* scope data */
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
     if(i == AGS_SOUND_SCOPE_PLAYBACK ||
@@ -275,7 +278,9 @@ ags_fx_vst3_audio_notify_effect_callback(GObject *gobject,
 					 GParamSpec *pspec,
 					 gpointer user_data)
 {
-  //TODO:JK: implement me
+  AGS_FX_VST3_AUDIO(gobject)->vst3_plugin = ags_vst3_manager_find_vst3_plugin(ags_vst3_manager_get_instance(),
+									      AGS_RECALL(gobject)->filename,
+									      AGS_RECALL(gobject)->effect);
 }
 
 void
@@ -1374,6 +1379,14 @@ ags_fx_vst3_audio_load_plugin(AgsFxVst3Audio *fx_vst3_audio)
   g_free(effect);
 }
 
+/**
+ * ags_fx_vst3_audio_load_port:
+ * @fx_vst3_audio: the #AgsFxVst3Audio
+ * 
+ * Load port of @fx_vst3_audio.
+ * 
+ * Since: 3.10.5
+ */
 void
 ags_fx_vst3_audio_load_port(AgsFxVst3Audio *fx_vst3_audio)
 {
@@ -1809,6 +1822,143 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
 
   if(plugin_port != NULL){
     g_object_unref(plugin_port);
+  }
+}
+
+/**
+ * ags_fx_vst3_audio_load_plugin:
+ * @fx_vst3_audio: the #AgsFxVst3Audio
+ * @port_index: the port index
+ * @program_list_id: the program list id
+ * @program_index: the program index
+ * 
+ * Change program of @fx_vst3_audio.
+ * 
+ * Since: 3.10.10
+ */
+void
+ags_fx_vst3_audio_change_program(AgsFxVst3Audio *fx_vst3_audio,
+				 guint port_index,
+				 guint program_list_id,
+				 guint program_index)
+{
+  AgsAudio *audio;
+  
+  AgsVstIProgramListData *iprogram_list_data;
+  AgsVstParameterInfo *info;
+  
+  guint audio_channels;
+  gint sound_scope;
+  gfloat param_value;
+  gboolean is_live_instrument;
+  AgsVstTResult val;
+
+  if(!AGS_IS_FX_VST3_AUDIO(fx_vst3_audio)){
+    return;
+  }
+
+  if(fx_vst3_audio->vst3_plugin == NULL ||
+     !ags_base_plugin_test_flags((AgsBasePlugin *) fx_vst3_audio->vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    return;
+  }
+  
+  audio = NULL;
+
+  audio_channels = 0;
+
+  port_index = 0;
+  
+  g_object_get(fx_vst3_audio,
+	       "audio", &audio,
+	       NULL);
+
+  if(audio != NULL){
+    g_object_get(audio,
+		 "audio-channels", &audio_channels,
+		 NULL);
+  }
+  
+  is_live_instrument = ags_fx_vst3_audio_test_flags(fx_vst3_audio, AGS_FX_VST3_AUDIO_LIVE_INSTRUMENT);
+
+  param_value = 1.0;
+
+  info = ags_vst_parameter_info_alloc();      
+  
+  for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
+    AgsFxVst3AudioScopeData *audio_scope_data;
+
+    guint channel;
+    
+    audio_scope_data = fx_vst3_audio->scope_data[sound_scope];
+
+    if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK ||
+       sound_scope == AGS_SOUND_SCOPE_NOTATION ||
+       sound_scope == AGS_SOUND_SCOPE_MIDI){
+      for(channel = 0; channel < audio_channels; channel++){
+	AgsFxVst3AudioChannelData *channel_data;
+
+	guint key;
+	
+	channel_data = audio_scope_data->channel_data[channel];
+
+	if(is_live_instrument){
+	  AgsVstParamID param_id;
+
+	  if(channel_data->iedit_controller != NULL){
+	    iprogram_list_data = NULL;
+	    
+	    val = ags_vst_funknown_query_interface(channel_data->iedit_controller,
+						   ags_vst_iprogram_list_data_get_iid(), &iprogram_list_data);
+
+	    if(iprogram_list_data != NULL){
+	      AgsVstIBStream *data;
+
+	      data = NULL;
+	      
+	      ags_vst_iprogram_list_data_get_program_data(iprogram_list_data,
+							  program_list_id, program_index,
+							  data);
+	    
+	      ags_vst_iedit_controller_set_state(channel_data->iedit_controller,
+						 data);
+	    }
+	  }
+	}else{	
+	  for(key = 0; key < AGS_SEQUENCER_MAX_MIDI_KEYS; key++){
+	    AgsFxVst3AudioInputData *input_data;
+	  
+	    AgsVstParamID param_id;
+
+	    input_data = channel_data->input_data[key];
+
+	    if(input_data->iedit_controller != NULL && iprogram_list_data != NULL){
+	      val = ags_vst_funknown_query_interface(channel_data->iedit_controller,
+						     ags_vst_iprogram_list_data_get_iid(), &iprogram_list_data);
+
+
+	      if(iprogram_list_data != NULL){
+		AgsVstIBStream *data;
+
+		data = NULL;
+	      
+		ags_vst_iprogram_list_data_get_program_data(iprogram_list_data,
+							    program_list_id, program_index,
+							    data);
+	    
+		ags_vst_iedit_controller_set_state(channel_data->iedit_controller,
+						   data);
+	      }
+	    }
+	  }
+	}
+      }
+    }
+  }
+
+  ags_vst_parameter_info_free(info);
+  
+  if(audio != NULL){
+    g_object_unref(audio);
   }
 }
 

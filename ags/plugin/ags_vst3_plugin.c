@@ -161,6 +161,10 @@ ags_vst3_plugin_init(AgsVst3Plugin *vst3_plugin)
 							 NULL);
   }
 
+  vst3_plugin->program = g_hash_table_new_full(g_direct_hash, g_str_equal,
+					       NULL,
+					       NULL);
+
   vst3_plugin->get_plugin_factory = NULL;
 
   vst3_plugin->host_context = NULL;
@@ -632,6 +636,30 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	gint32 step_count;
 	AgsVstParamValue default_normalized_value;
       
+	info = ags_vst_parameter_info_alloc();
+      
+	ags_vst_iedit_controller_get_parameter_info(AGS_VST3_PLUGIN(base_plugin)->iedit_controller,
+						    i, info);
+
+	flags = ags_vst_parameter_info_get_flags(info);
+
+	if((AGS_VST_KIS_PROGRAM_CHANGE & (flags)) != 0){
+	  gchar *program;
+	  
+	  program = g_utf16_to_utf8(ags_vst_parameter_info_get_title(info),
+				    128,
+				    NULL,
+				    NULL,
+				    &error);
+	    
+	  g_hash_table_insert(AGS_VST3_PLUGIN(base_plugin)->program,
+			      program, GUINT_TO_POINTER(i));
+
+	  g_message("%s program - %s", base_plugin->effect, program);
+	  
+	  continue;
+	}
+	
 	current_plugin_port = ags_plugin_port_new();
 	g_object_ref(current_plugin_port);
 
@@ -644,13 +672,6 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 		     G_TYPE_FLOAT);
 	g_value_init(current_plugin_port->upper_value,
 		     G_TYPE_FLOAT);
-      
-	info = ags_vst_parameter_info_alloc();
-      
-	ags_vst_iedit_controller_get_parameter_info(AGS_VST3_PLUGIN(base_plugin)->iedit_controller,
-						    i, info);
-
-	flags = ags_vst_parameter_info_get_flags(info);
 
 	step_count = ags_vst_parameter_info_get_step_count(info);
 
@@ -741,10 +762,6 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	}
       
 	if((AGS_VST_KIS_HIDDEN & (flags)) != 0){
-	  //TODO:JK: implement me
-	}
-      
-	if((AGS_VST_KIS_PROGRAM_CHANGE & (flags)) != 0){
 	  //TODO:JK: implement me
 	}
       

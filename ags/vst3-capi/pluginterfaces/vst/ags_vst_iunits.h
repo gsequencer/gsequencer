@@ -43,6 +43,28 @@ extern "C" {
 
   static const gint32 ags_vst_kall_program_invalid = -1;
 
+  AgsVstUnitInfo* ags_vst_unit_info_alloc();
+
+  void ags_vst_unit_info_free(AgsVstUnitInfo *unit_info);
+
+  AgsVstUnitID ags_vst_unit_info_get_id(AgsVstUnitInfo *unit_info);
+
+  AgsVstUnitID ags_vst_unit_info_get_parent_unit_id(AgsVstUnitInfo *unit_info);
+
+  gchar* ags_vst_unit_info_get_name(AgsVstUnitInfo *unit_info);
+
+  AgsVstProgramListID ags_vst_unit_info_get_program_list_id(AgsVstUnitInfo *unit_info);
+  
+  AgsVstProgramListInfo* ags_vst_program_list_info_alloc();
+
+  void ags_vst_program_list_info_free(AgsVstProgramListInfo *program_list_info);
+
+  AgsVstProgramListID ags_vst_program_list_info_get_id(AgsVstProgramListInfo *program_list_info);
+
+  gchar* ags_vst_program_list_info_get_name(AgsVstProgramListInfo *program_list_info);
+  
+  gint32 ags_vst_program_list_info_get_program_count(AgsVstProgramListInfo *program_list_info);
+  
   const AgsVstTUID* ags_vst_iunit_handler_get_iid();
   
   AgsVstTResult ags_vst_iunit_handler_notify_unit_selection(AgsVstIUnitHandler *iunit_handler,
@@ -69,12 +91,12 @@ extern "C" {
 
   AgsVstTResult ags_vst_iunit_info_get_program_name(AgsVstIUnitInfo *iunit_info,
 						    AgsVstProgramListID list_id, gint32 program_index,
-						    AgsVstString128 name);
+						    gchar **name);
 
   AgsVstTResult ags_vst_iunit_info_get_program_info(AgsVstIUnitInfo *iunit_info,
 						    AgsVstProgramListID list_id, gint32 program_index,
 						    AgsVstCString attribute_id,
-						    AgsVstString128 attribute_value);
+						    gchar *attribute_value);
   
   AgsVstTResult ags_vst_iunit_info_has_program_pitch_names(AgsVstIUnitInfo *iunit_info,
 							   AgsVstProgramListID list_id, gint32 program_index);
@@ -82,7 +104,7 @@ extern "C" {
   AgsVstTResult ags_vst_iunit_info_get_program_pitch_name(AgsVstIUnitInfo *iunit_info,
 							  AgsVstProgramListID list_id, gint32 program_index,
 							  gint16 midi_pitch,
-							  AgsVstString128 name);
+							  gchar **name);
   
   AgsVstUnitID ags_vst_iunit_info_get_selected_unit(AgsVstIUnitInfo *iunit_info);
   

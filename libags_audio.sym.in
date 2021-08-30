@@ -895,6 +895,7 @@ ags_fx_vst3_audio_set_flags
 ags_fx_vst3_audio_unset_flags
 ags_fx_vst3_audio_load_plugin
 ags_fx_vst3_audio_load_port
+ags_fx_vst3_audio_change_program
 ags_fx_vst3_audio_new
 ags_fx_lfo_recycling_get_type
 ags_fx_lfo_recycling_new
