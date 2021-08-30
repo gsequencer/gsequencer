@@ -69,6 +69,11 @@ guint ags_vst3_plugin_get_audio_input_bus_count(AgsVst3Plugin *vst3_plugin);
 guint ags_vst3_plugin_get_event_output_bus_count(AgsVst3Plugin *vst3_plugin);
 guint ags_vst3_plugin_get_event_input_bus_count(AgsVst3Plugin *vst3_plugin);
 
+guint ags_vst3_plugin_get_audio_output_port_count(AgsVst3Plugin *vst3_plugin,
+						  guint bus_index);
+guint ags_vst3_plugin_get_audio_input_port_count(AgsVst3Plugin *vst3_plugin,
+						 guint bus_index);
+
 AgsVstProcessData* ags_vst3_plugin_process_data_lookup(AgsVstIComponent *icomponent);
 void ags_vst3_plugin_process_data_insert(AgsVstIComponent *icomponent,
 					 AgsVstProcessData *data);

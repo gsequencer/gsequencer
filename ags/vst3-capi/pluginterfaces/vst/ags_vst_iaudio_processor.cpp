@@ -250,9 +250,7 @@ extern "C" {
   AgsVstTResult ags_vst_iaudio_processor_process(AgsVstIAudioProcessor *iaudio_processor,
 						 AgsVstProcessData *data)
   {
-    const Steinberg::Vst::ProcessData& tmp_data_0 = const_cast<Steinberg::Vst::ProcessData&>(((Steinberg::Vst::ProcessData *) data)[0]);
-
-    return(((Steinberg::Vst::IAudioProcessor *) iaudio_processor)->process(const_cast<Steinberg::Vst::ProcessData&>(tmp_data_0)));
+    return(((Steinberg::Vst::IAudioProcessor *) iaudio_processor)->process(const_cast<Steinberg::Vst::ProcessData&>(((Steinberg::Vst::ProcessData *) data)[0])));
   }
   
   guint32 ags_vst_iaudio_processor_get_tail_samples(AgsVstIAudioProcessor *iaudio_processor)

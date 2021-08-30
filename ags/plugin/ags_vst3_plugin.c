@@ -875,6 +875,96 @@ ags_vst3_plugin_get_event_input_bus_count(AgsVst3Plugin *vst3_plugin)
 }
 
 /**
+ * ags_vst3_plugin_get_audio_output_port_count:
+ * @vst3_plugin: the #AgsVst3Plugin
+ * @bus_index: the bus index
+ * 
+ * Get audio output port count.
+ * 
+ * Returns: the audio output port count
+ * 
+ * Since: 3.10.10
+ */
+guint
+ags_vst3_plugin_get_audio_output_port_count(AgsVst3Plugin *vst3_plugin,
+					    guint bus_index)
+{
+  guint audio_output_port_count;
+
+  audio_output_port_count = 0;
+  
+  if(vst3_plugin->icomponent != NULL){
+    AgsVstIAudioProcessor *iaudio_processor;
+    
+    AgsVstSpeakerArrangement arrangement;
+
+    guint i;
+    
+    iaudio_processor = NULL;
+  
+    ags_vst_funknown_query_interface(vst3_plugin->icomponent,
+				     ags_vst_iaudio_processor_get_iid(), &iaudio_processor);
+    
+    ags_vst_iaudio_processor_get_bus_arrangement(iaudio_processor,
+						 AGS_VST_KOUTPUT, bus_index,
+						 &arrangement);
+
+    for(i = 0; i < 8 * sizeof(AgsVstSpeakerArrangement); i++){
+      if((1 << i) & arrangement != 0){
+	audio_output_port_count++;
+      }
+    }
+  }
+
+  return(audio_output_port_count);
+}
+
+/**
+ * ags_vst3_plugin_get_audio_input_port_count:
+ * @vst3_plugin: the #AgsVst3Plugin
+ * @bus_index: the bus index
+ * 
+ * Get audio input port count.
+ * 
+ * Returns: the audio input port count
+ * 
+ * Since: 3.10.10
+ */
+guint
+ags_vst3_plugin_get_audio_input_port_count(AgsVst3Plugin *vst3_plugin,
+					   guint bus_index)
+{
+  guint audio_input_port_count;
+
+  audio_input_port_count = 0;
+  
+  if(vst3_plugin->icomponent != NULL){
+    AgsVstIAudioProcessor *iaudio_processor;
+    
+    AgsVstSpeakerArrangement arrangement;
+
+    guint i;
+    
+    iaudio_processor = NULL;
+  
+    ags_vst_funknown_query_interface(vst3_plugin->icomponent,
+				     ags_vst_iaudio_processor_get_iid(), &iaudio_processor);
+    
+    ags_vst_iaudio_processor_get_bus_arrangement(iaudio_processor,
+						 AGS_VST_KINPUT, bus_index,
+						 &arrangement);
+
+    for(i = 0; i < 8 * sizeof(AgsVstSpeakerArrangement); i++){
+      if((1 << i) & arrangement != 0){
+	audio_input_port_count++;
+      }
+    }
+  }
+
+  return(audio_input_port_count);
+}
+
+/**
  * ags_vst3_plugin_process_data_lookup:
  * @icomponent: the icomponent as key
  * 

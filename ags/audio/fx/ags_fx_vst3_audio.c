@@ -1474,6 +1474,7 @@ ags_fx_vst3_audio_load_port(AgsFxVst3Audio *fx_vst3_audio)
   
   guint input_pads;
   guint audio_channels;
+  guint key;
   guint output_port_count, input_port_count;
   guint control_port_count;
   guint buffer_size;
@@ -1547,8 +1548,10 @@ ags_fx_vst3_audio_load_port(AgsFxVst3Audio *fx_vst3_audio)
   output_port = NULL;
   input_port = NULL;
   
-  output_port_count = 0;
-  input_port_count = 0;
+  output_port_count = ags_vst3_plugin_get_audio_output_port_count(vst3_plugin,
+								  0);
+  input_port_count = ags_vst3_plugin_get_audio_input_port_count(vst3_plugin,
+								0);
   
   control_port_count = 0;
 
@@ -1743,6 +1746,12 @@ ags_fx_vst3_audio_load_port(AgsFxVst3Audio *fx_vst3_audio)
 
 	if(is_live_instrument){	  
 	  guint nth;
+
+	  ags_vst_process_data_set_num_inputs(channel_data->process_data,
+					      input_port_count);
+
+	  ags_vst_process_data_set_num_outputs(channel_data->process_data,
+					       output_port_count);
 	  
 	  if(channel_data->output == NULL &&
 	     output_port_count > 0 &&
@@ -1754,6 +1763,33 @@ ags_fx_vst3_audio_load_port(AgsFxVst3Audio *fx_vst3_audio)
 	     input_port_count > 0 &&
 	     buffer_size > 0){
 	    channel_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
+	  }
+	}else{
+	  for(key = 0; key < AGS_SEQUENCER_MAX_MIDI_KEYS; key++){
+	    AgsFxVst3AudioInputData *input_data;
+	  
+	    AgsVstParamID param_id;
+
+	    input_data = channel_data->input_data[key];
+
+	    ags_vst_process_data_set_num_inputs(input_data->process_data,
+						input_port_count);
+
+	    ags_vst_process_data_set_num_outputs(input_data->process_data,
+						 output_port_count);
+	  
+	    if(input_data->output == NULL &&
+	       output_port_count > 0 &&
+	       buffer_size > 0){
+	      input_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
+	    }
+	  
+	    if(input_data->input == NULL &&
+	       input_port_count > 0 &&
+	       buffer_size > 0){
+	      input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
+	    }
+
 	  }
 	}
       }
