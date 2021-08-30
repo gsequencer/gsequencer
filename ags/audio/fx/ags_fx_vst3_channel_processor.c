@@ -19,6 +19,12 @@
 
 #include <ags/audio/fx/ags_fx_vst3_channel_processor.h>
 
+#include <ags/plugin/ags_base_plugin.h>
+#include <ags/plugin/ags_vst3_plugin.h>
+
+#include <ags/audio/fx/ags_fx_vst3_audio.h>
+#include <ags/audio/fx/ags_fx_vst3_channel.h>
+#include <ags/audio/fx/ags_fx_vst3_audio_processor.h>
 #include <ags/audio/fx/ags_fx_vst3_recycling.h>
 
 #include <ags/i18n.h>
@@ -27,6 +33,9 @@ void ags_fx_vst3_channel_processor_class_init(AgsFxVst3ChannelProcessorClass *fx
 void ags_fx_vst3_channel_processor_init(AgsFxVst3ChannelProcessor *fx_vst3_channel_processor);
 void ags_fx_vst3_channel_processor_dispose(GObject *gobject);
 void ags_fx_vst3_channel_processor_finalize(GObject *gobject);
+
+void ags_fx_vst3_channel_processor_run_init_pre(AgsRecall *recall);
+void ags_fx_vst3_channel_processor_done(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_vst3_channel_processor
@@ -77,6 +86,7 @@ void
 ags_fx_vst3_channel_processor_class_init(AgsFxVst3ChannelProcessorClass *fx_vst3_channel_processor)
 {
   GObjectClass *gobject;
+  AgsRecallClass *recall;
 
   ags_fx_vst3_channel_processor_parent_class = g_type_class_peek_parent(fx_vst3_channel_processor);
 
@@ -85,6 +95,12 @@ ags_fx_vst3_channel_processor_class_init(AgsFxVst3ChannelProcessorClass *fx_vst3
 
   gobject->dispose = ags_fx_vst3_channel_processor_dispose;
   gobject->finalize = ags_fx_vst3_channel_processor_finalize;
+
+  /* AgsRecallClass */
+  recall = (AgsRecallClass *) fx_vst3_channel_processor;
+
+  recall->run_init_pre = ags_fx_vst3_channel_processor_run_init_pre;
+  recall->done = ags_fx_vst3_channel_processor_done;
 }
 
 void
@@ -118,6 +134,170 @@ ags_fx_vst3_channel_processor_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_vst3_channel_processor_parent_class)->finalize(gobject);
+}
+
+void
+ags_fx_vst3_channel_processor_run_init_pre(AgsRecall *recall)
+{
+  AgsFxVst3Audio *fx_vst3_audio;
+  
+  AgsVst3Plugin *vst3_plugin;
+
+  AgsFxVst3ChannelInputData *input_data;
+
+  guint sound_scope;
+  gboolean is_live_instrument;
+
+  guint j, k;
+  GRecMutex *recall_mutex;
+  
+  GRecMutex *fx_vst3_audio_mutex;
+  
+  fx_vst3_audio = NULL;
+
+  g_object_get(recall,
+	       "recall-audio", &fx_vst3_audio,
+	       NULL);
+
+  sound_scope = ags_recall_get_sound_scope(recall);
+
+  /* get VST3 plugin */
+  fx_vst3_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_audio);
+
+  is_live_instrument = ags_fx_vst3_audio_test_flags(fx_vst3_audio, AGS_FX_VST3_AUDIO_LIVE_INSTRUMENT);
+
+  g_rec_mutex_lock(fx_vst3_audio_mutex);
+
+  vst3_plugin = fx_vst3_audio->vst3_plugin;
+  
+  g_rec_mutex_unlock(fx_vst3_audio_mutex);
+
+  if(vst3_plugin == NULL ||
+     ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    /* unref */
+    if(fx_vst3_audio != NULL){
+      g_object_unref(fx_vst3_audio);
+    }
+
+    return;
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_audio);
+
+  g_rec_mutex_lock(recall_mutex);
+
+  input_data = fx_vst3_audio->scope_data[sound_scope];
+
+  ags_base_plugin_activate(vst3_plugin,
+			   input_data->icomponent);
+
+  ags_vst_icomponent_activate_bus(input_data->icomponent,
+				  AGS_VST_KAUDIO, AGS_VST_KINPUT,
+				  0,
+				  TRUE);
+
+  ags_vst_icomponent_activate_bus(input_data->icomponent,
+				  AGS_VST_KAUDIO, AGS_VST_KOUTPUT,
+				  0,
+				  TRUE);
+
+  ags_vst_icomponent_activate_bus(input_data->icomponent,
+				  AGS_VST_KEVENT, AGS_VST_KINPUT,
+				  0,
+				  TRUE);
+
+  g_rec_mutex_unlock(recall_mutex);
+      
+  /* unref */
+  if(fx_vst3_audio != NULL){
+    g_object_unref(fx_vst3_audio);
+  }
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_fx_vst3_channel_processor_parent_class)->run_init_pre(recall);
+}
+
+void
+ags_fx_vst3_channel_processor_done(AgsRecall *recall)
+{
+  AgsFxVst3Audio *fx_vst3_audio;
+  
+  AgsVst3Plugin *vst3_plugin;
+
+  AgsFxVst3ChannelInputData *input_data;
+
+  guint sound_scope;
+  gboolean is_live_instrument;
+
+  guint j, k;
+  GRecMutex *recall_mutex;
+  
+  GRecMutex *fx_vst3_audio_mutex;
+  
+  fx_vst3_audio = NULL;
+
+  g_object_get(recall,
+	       "recall-audio", &fx_vst3_audio,
+	       NULL);
+
+  sound_scope = ags_recall_get_sound_scope(recall);
+
+  /* get VST3 plugin */
+  fx_vst3_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_audio);
+
+  is_live_instrument = ags_fx_vst3_audio_test_flags(fx_vst3_audio, AGS_FX_VST3_AUDIO_LIVE_INSTRUMENT);
+
+  g_rec_mutex_lock(fx_vst3_audio_mutex);
+
+  vst3_plugin = fx_vst3_audio->vst3_plugin;
+  
+  g_rec_mutex_unlock(fx_vst3_audio_mutex);
+
+  if(vst3_plugin == NULL ||
+     ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    /* unref */
+    if(fx_vst3_audio != NULL){
+      g_object_unref(fx_vst3_audio);
+    }
+
+    return;
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_audio);
+
+  g_rec_mutex_lock(recall_mutex);
+
+  input_data = fx_vst3_audio->scope_data[sound_scope];
+
+  ags_base_plugin_deactivate(vst3_plugin,
+			     input_data->icomponent);
+
+  ags_vst_icomponent_activate_bus(input_data->icomponent,
+				  AGS_VST_KAUDIO, AGS_VST_KINPUT,
+				  0,
+				  FALSE);
+
+  ags_vst_icomponent_activate_bus(input_data->icomponent,
+				  AGS_VST_KAUDIO, AGS_VST_KOUTPUT,
+				  0,
+				  FALSE);
+
+  ags_vst_icomponent_activate_bus(input_data->icomponent,
+				  AGS_VST_KEVENT, AGS_VST_KINPUT,
+				  0,
+				  FALSE);
+
+  g_rec_mutex_unlock(recall_mutex);
+      
+  /* unref */
+  if(fx_vst3_audio != NULL){
+    g_object_unref(fx_vst3_audio);
+  }
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_fx_vst3_channel_processor_parent_class)->done(recall);
 }
 
 /**

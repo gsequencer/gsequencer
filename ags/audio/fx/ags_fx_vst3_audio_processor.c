@@ -177,6 +177,16 @@ ags_fx_vst3_audio_processor_run_init_pre(AgsRecall *recall)
   
   g_rec_mutex_unlock(fx_vst3_audio_mutex);
 
+  if(vst3_plugin == NULL ||
+     !ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    /* unref */
+    if(fx_vst3_audio != NULL){
+      g_object_unref(fx_vst3_audio);
+    }
+
+    return;
+  }
+
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_audio);
 
@@ -286,6 +296,16 @@ ags_fx_vst3_audio_processor_done(AgsRecall *recall)
   vst3_plugin = fx_vst3_audio->vst3_plugin;
   
   g_rec_mutex_unlock(fx_vst3_audio_mutex);
+
+  if(vst3_plugin == NULL ||
+     !ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    /* unref */
+    if(fx_vst3_audio != NULL){
+      g_object_unref(fx_vst3_audio);
+    }
+
+    return;
+  }
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_audio);

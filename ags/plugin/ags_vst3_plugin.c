@@ -475,6 +475,7 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
   GError *error;
 
+  gboolean (*InitDll)();
   AgsVstIPluginFactory* (*GetPluginFactory)();
   
   GRecMutex *base_plugin_mutex;
@@ -508,6 +509,22 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
   success = FALSE;
 
+#ifdef AGS_W32API
+  InitDll = GetProcAddress(base_plugin->plugin_so,
+			   "InitDll");
+    
+  success = (AGS_VST3_PLUGIN(base_plugin)->get_plugin_factory != NULL) ? TRUE: FALSE;
+#else
+  InitDll = dlsym(base_plugin->plugin_so,
+		  "InitDll");
+  
+  success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
+
+  if(InitDll){
+    InitDll();
+  }
+    
 #ifdef AGS_W32API
   GetPluginFactory =
     AGS_VST3_PLUGIN(base_plugin)->get_plugin_factory = GetProcAddress(base_plugin->plugin_so,
