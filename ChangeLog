@@ -1,3 +1,8 @@
+ags (3.10.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsVst3PluginBrowser
+
 ags (3.10.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

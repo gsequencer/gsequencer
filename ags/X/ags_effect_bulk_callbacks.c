@@ -139,6 +139,10 @@ ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
 				    "lv2",
 				    4)){
 	plugin_name = "ags-fx-lv2";
+      }else if(!g_ascii_strncasecmp(plugin_type,
+				    "vst3",
+				    5)){
+	plugin_name = "ags-fx-vst3";
       }
 
       /* retrieve plugin */

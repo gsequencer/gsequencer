@@ -791,6 +791,11 @@ if get_option('vst3')
 
   libags_vst_sources += files(
     'vst3-capi/host/ags_vst_host_context.cpp',
+    'vst3-capi/host/hostcontext.h',
+    'vst3-capi/host/updatehandler.h',
+    'vst3-capi/host/hostcontext.cpp',
+    'vst3-capi/host/updatehandler.cpp',
+    'vst3-capi/host/ags_vst_host_context.cpp',
     'vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.cpp',
     'vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.cpp',
     'vst3-capi/pluginterfaces/base/ags_vst_geo_constants.cpp',
@@ -1201,6 +1206,8 @@ if get_option('vst3')
     'X/machine/ags_live_vst3_bridge_callbacks.c',
     'X/machine/ags_vst3_bridge.c',
     'X/machine/ags_vst3_bridge_callbacks.c',
+    'X/ags_vst3_browser.c',
+    'X/ags_vst3_browser_callbacks.c',
   )
 endif
 

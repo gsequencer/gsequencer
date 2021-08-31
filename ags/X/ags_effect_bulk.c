@@ -2321,7 +2321,8 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
   k = 0;
 
   while(plugin_port != NULL){
-    if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
+    if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL) &&
+       !ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_HIDDEN)){
       GtkWidget *child_widget;
 
       AgsVst3Conversion *vst3_conversion;

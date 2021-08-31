@@ -23,6 +23,7 @@
 #include <ags/X/ags_lv2_browser.h>
 #include <ags/X/ags_dssi_browser.h>
 #include <ags/X/ags_ladspa_browser.h>
+#include <ags/X/ags_vst3_browser.h>
 
 #include <ags/i18n.h>
 
@@ -177,6 +178,8 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 				 "lv2");
   gtk_combo_box_text_append_text(plugin_browser->plugin_type,
 				 "ladspa");
+  gtk_combo_box_text_append_text(plugin_browser->plugin_type,
+				 "vst3");
 
   plugin_browser->active_browser = NULL;
   
@@ -194,7 +197,11 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 		     FALSE, FALSE,
 		     0);
 
-  plugin_browser->vst_browser = NULL;
+  plugin_browser->vst3_browser = (GtkWidget *) ags_vst3_browser_new();
+  gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) plugin_browser->vst3_browser,
+		     FALSE, FALSE,
+		     0);
 
   /* action area */
   gtk_dialog_add_buttons((GtkDialog *) plugin_browser,
@@ -222,6 +229,7 @@ ags_plugin_browser_show(GtkWidget *widget)
 
   gtk_widget_hide(plugin_browser->lv2_browser);
   gtk_widget_hide(plugin_browser->ladspa_browser);
+  gtk_widget_hide(plugin_browser->vst3_browser);
 }
 
 void
@@ -242,6 +250,7 @@ ags_plugin_browser_connect(AgsConnectable *connectable)
   
   ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->lv2_browser));
   ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->ladspa_browser));
+  ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->vst3_browser));
 
   /* AgsPluginBrowser response */
   g_signal_connect((GObject *) plugin_browser, "response",
@@ -269,6 +278,7 @@ ags_plugin_browser_disconnect(AgsConnectable *connectable)
   
   ags_connectable_disconnect(AGS_CONNECTABLE(plugin_browser->lv2_browser));
   ags_connectable_disconnect(AGS_CONNECTABLE(plugin_browser->ladspa_browser));
+  ags_connectable_disconnect(AGS_CONNECTABLE(plugin_browser->vst3_browser));
 
   /* AgsPluginBrowser buttons */
   g_object_disconnect((GObject *) plugin_browser,
@@ -313,6 +323,8 @@ ags_plugin_browser_get_plugin_filename(AgsPluginBrowser *plugin_browser)
     return(ags_lv2_browser_get_plugin_filename((AgsLv2Browser *) plugin_browser->lv2_browser));
   }else if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
     return(ags_ladspa_browser_get_plugin_filename((AgsLadspaBrowser *) plugin_browser->ladspa_browser));
+  }else if(AGS_IS_VST3_BROWSER(plugin_browser->active_browser)){
+    return(ags_vst3_browser_get_plugin_filename((AgsVst3Browser *) plugin_browser->vst3_browser));
   }else{
     return(NULL);
   }
@@ -335,6 +347,8 @@ ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser)
     return(ags_lv2_browser_get_plugin_effect((AgsLv2Browser *) plugin_browser->lv2_browser));
   }else if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
     return(ags_ladspa_browser_get_plugin_effect((AgsLadspaBrowser *) plugin_browser->ladspa_browser));
+  }else if(AGS_IS_VST3_BROWSER(plugin_browser->active_browser)){
+    return(ags_vst3_browser_get_plugin_effect((AgsVst3Browser *) plugin_browser->vst3_browser));
   }else{
     return(NULL);
   }

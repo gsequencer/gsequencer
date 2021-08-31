@@ -116,6 +116,7 @@ ags_plugin_port_flags_get_type()
       { AGS_PLUGIN_PORT_BOUNDED_BELOW, "AGS_PLUGIN_PORT_BOUNDED_BELOW", "plugin-port-bounded-below" },
       { AGS_PLUGIN_PORT_BOUNDED_ABOVE, "AGS_PLUGIN_PORT_BOUNDED_ABOVE", "plugin-port-bounded-above" },
       { AGS_PLUGIN_PORT_UI_NOTIFICATION, "AGS_PLUGIN_PORT_UI_NOTIFICATION", "plugin-port-ui-notification" },
+      { AGS_PLUGIN_PORT_HIDDEN, "AGS_PLUGIN_PORT_HIDDEN", "plugin-port-hidden" },
       { 0, NULL, NULL }
     };
 

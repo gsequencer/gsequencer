@@ -2330,6 +2330,12 @@ libgsequencer_h_sources = \
 	ags/X/ags_window_callbacks.h \
 	ags/X/ags_xorg_application_context.h
 
+if WITH_VST3
+libgsequencer_h_sources += \
+	ags/X/ags_vst3_browser_callbacks.h \
+	ags/X/ags_vst3_browser.h
+endif
+
 deprecated_libgsequencer_c_sources =
 
 libgsequencer_c_sources = \
@@ -2454,6 +2460,12 @@ libgsequencer_c_sources = \
 	ags/X/ags_soundcard_editor.c \
 	ags/X/ags_window_callbacks.c \
 	ags/X/ags_xorg_application_context.c
+
+if WITH_VST3
+libgsequencer_c_sources += \
+	ags/X/ags_vst3_browser_callbacks.c \
+	ags/X/ags_vst3_browser.c
+endif
 
 # libgsequencer - OSC conotroller
 deprecated_libgsequencer_osc_controller_h_sources =
@@ -2897,8 +2909,6 @@ libags_vst_h_sources = \
 	$(deprecated_libags_vst_h_sources) \
 	ags/vst3-capi/ags_vst_headers.h \
 	ags/vst3-capi/host/ags_vst_host_context.h \
-	ags/vst3-capi/host/hostcontext.h \
-	ags/vst3-capi/host/updatehandler.h \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.h \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.h \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h \
@@ -2964,6 +2974,8 @@ deprecated_libags_vst_c_sources =
 libags_vst_c_sources = \
 	$(deprecated_libags_vst_c_sources) \
 	ags/vst3-capi/host/ags_vst_host_context.cpp \
+	ags/vst3-capi/host/hostcontext.h \
+	ags/vst3-capi/host/updatehandler.h \
 	ags/vst3-capi/host/hostcontext.cpp \
 	ags/vst3-capi/host/updatehandler.cpp \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.cpp \

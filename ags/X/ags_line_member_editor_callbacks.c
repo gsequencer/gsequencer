@@ -31,6 +31,7 @@
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
 #include <ags/X/ags_lv2_browser.h>
+#include <ags/X/ags_vst3_browser.h>
 #include <ags/X/ags_ladspa_browser.h>
 
 #include <stdio.h>
@@ -160,6 +161,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	plugin_name = "ags-fx-ladspa";
       }else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
 	plugin_name = "ags-fx-lv2";
+      }else if(AGS_IS_VST3_BROWSER(plugin_browser->active_browser)){
+	plugin_name = "ags-fx-vst3";
       }
 
       /* get control type */
@@ -183,8 +186,11 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	}else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
 	  description_start = 
 	    description = gtk_container_get_children((GtkContainer *) AGS_LV2_BROWSER(plugin_browser->active_browser)->description);
+	}else if(AGS_IS_VST3_BROWSER(plugin_browser->active_browser)){
+	  description_start = 
+	    description = gtk_container_get_children((GtkContainer *) AGS_VST3_BROWSER(plugin_browser->active_browser)->description);
 	}else{
-	  g_message("ags_line_callbacks.c unsupported plugin browser");
+	  g_message("ags_line_member_editor_callbacks.c unsupported plugin browser");
 	}
 
 	/* get port description */
@@ -398,6 +404,9 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 			     -1);
   }else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
     gtk_combo_box_set_active(AGS_LV2_BROWSER(plugin_browser->active_browser)->filename,
+			     -1);
+  }else if(AGS_IS_VST3_BROWSER(plugin_browser->active_browser)){
+    gtk_combo_box_set_active(AGS_VST3_BROWSER(plugin_browser->active_browser)->filename,
 			     -1);
   }
 

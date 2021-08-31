@@ -786,7 +786,7 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	}
       
 	if((AGS_VST_KIS_HIDDEN & (flags)) != 0){
-	  //TODO:JK: implement me
+	  current_plugin_port->flags |= AGS_PLUGIN_PORT_HIDDEN;
 	}
       
 	if((AGS_VST_KIS_BYPASS & (flags)) != 0){
