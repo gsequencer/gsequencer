@@ -1,3 +1,9 @@
+ags (3.10.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed host context
+	* implemented VST3 fallback of loading IEditController by query interface
+
 ags (3.10.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

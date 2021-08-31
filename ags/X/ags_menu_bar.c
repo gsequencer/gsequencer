@@ -486,7 +486,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   /* lv2 */
   list4_start = 
     list4 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list3->data));
-  //  list3 = list3->next;
+  list3 = list3->next;
   
   while(list4 != NULL){
     g_signal_connect(G_OBJECT(list4->data), "activate",

@@ -20,8 +20,6 @@
 #ifndef __AGS_VST_HEADERS_H__
 #define __AGS_VST_HEADERS_H__
 
-#include <base/source/fstring.h>
-
 #include <pluginterfaces/base/conststringtable.h>
 #include <pluginterfaces/base/funknown.h>
 #include <pluginterfaces/base/ipluginbase.h>
@@ -48,6 +46,7 @@
 #include <pluginterfaces/vst/vsttypes.h>
 
 #include <pluginterfaces/vst/ivstautomationstate.h>
+#include <pluginterfaces/vst/ivstpluginterfacesupport.h>
 
 #ifdef __cplusplus
 extern "C" {

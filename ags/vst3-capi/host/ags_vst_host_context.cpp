@@ -18,79 +18,16 @@
  */
 
 #include <ags/vst3-capi/host/ags_vst_host_context.h>
-
-#include <pluginterfaces/base/ftypes.h>
-
-#include <public.sdk/source/vst/hosting/pluginterfacesupport.h>
-
-#include <pluginterfaces/vst/ivsthostapplication.h>
-
-#include <base/source/updatehandler.cpp>
-
-using namespace Steinberg;
+#include <ags/vst3-capi/host/hostcontext.h>
 
 extern "C" {
 
-  namespace Ags
-  {
-    namespace Vst
-    {
-      class HostContext : public Steinberg::Vst::IHostApplication
-      {
-      public:
-	Steinberg::Vst::String128 name;
-	
-	HostContext(){
-	  //TODO:JK: implement me
-	}
-
-	~HostContext(){
-	  //TODO:JK: implement me
-	}
-	
-	Steinberg::tresult getName(Steinberg::Vst::String128){
-	  //TODO:JK: implement me	  
-	  
-	  return(0);
-	}
-
-	Steinberg::tresult createInstance(TUID cid,
-					  TUID iid,
-					  void **obj){
-	  //TODO:JK: implement me
-	}
-
-	Steinberg::Vst::PlugInterfaceSupport* getPlugInterfaceSupport(){
-	  //TODO:JK: implement me
-	}
-
-	tresult queryInterface(const TUID _iid, void **obj){
-	  //TODO:JK: implement me
-
-	  return(0);
-	}
- 
-	uint32 addRef(){
-	  //TODO:JK: implement me
-
-	  return(0);
-	}
-	
-	uint32 release(){
-	  //TODO:JK: implement me
-
-	  return(0);
-	}
-      };
-    }
-  }
-
-  Ags::Vst::HostContext *host_context = NULL;
+  Steinberg::Vst::HostApplication *host_context = NULL;
 
   AgsVstHostContext* ags_vst_host_context_get_instance()
   {
     if(host_context == NULL){
-      host_context = new Ags::Vst::HostContext();
+      host_context = new Steinberg::Vst::HostApplication();
     }
     
     return((AgsVstHostContext *) host_context);
@@ -98,7 +35,7 @@ extern "C" {
 
   AgsVstHostContext* ags_vst_host_context_new()
   {
-    return((AgsVstHostContext *) new Ags::Vst::HostContext());
+    return((AgsVstHostContext *) new Steinberg::Vst::HostApplication());
   }
 
 }

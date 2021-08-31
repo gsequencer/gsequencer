@@ -864,7 +864,8 @@ ags_vst3_bridge_load(AgsVst3Bridge *vst3_bridge)
 						  vst3_bridge->filename,
 						  vst3_bridge->effect);
 
-  if(vst3_plugin == NULL){
+  if(vst3_plugin == NULL ||
+    vst3_plugin->iedit_controller == NULL){
     return;
   }
 

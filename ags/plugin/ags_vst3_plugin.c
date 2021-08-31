@@ -337,20 +337,25 @@ ags_vst3_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 						    &iedit_controller_id,
 						    ags_vst_iedit_controller_get_iid(),
 						    (void **) &iedit_controller);
-
-      if(val != AGS_VST_KRESULT_TRUE){
+      
+      if(iedit_controller == NULL){
 	g_warning("failed to create VST3 instance with plugin factory - IEditController");
-	
+
+	val = ags_vst_funknown_query_interface(icomponent,
+					       ags_vst_iedit_controller_get_iid(), &iedit_controller);
+      }
+
+      if(iedit_controller == NULL){
 	break;
       }
+      
+      ags_vst_iplugin_base_initialize((AgsVstIPluginBase *) iedit_controller,
+				      AGS_VST3_PLUGIN(base_plugin)->host_context);
 
       if((position = ags_strv_index(parameter_name[0], "iedit-controller")) >= 0){
 	g_value_set_pointer(&(value[0][position]),
 			    iedit_controller);
       }
-
-      ags_vst_iplugin_base_initialize((AgsVstIPluginBase *) iedit_controller,
-				      AGS_VST3_PLUGIN(base_plugin)->host_context);
 
       break;
     }    
@@ -616,21 +621,26 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
       
       ags_vst_icomponent_get_controller_class_id(AGS_VST3_PLUGIN(base_plugin)->icomponent,
 						 &iedit_controller_id);
-      
+
       val = ags_vst_iplugin_factory_create_instance(iplugin_factory,
 						    (char *) iedit_controller_id,
 						    (char *) (ags_vst_iedit_controller_get_iid())[0],
 						    (void **) &(AGS_VST3_PLUGIN(base_plugin)->iedit_controller));
-
-      if(val != AGS_VST_KRESULT_TRUE){
+      
+      if(AGS_VST3_PLUGIN(base_plugin)->iedit_controller == NULL){
 	g_warning("failed to create VST3 instance with plugin factory - IEditController");
 
-	break;
+	val = ags_vst_funknown_query_interface(AGS_VST3_PLUGIN(base_plugin)->icomponent,
+					       ags_vst_iedit_controller_get_iid(), &(AGS_VST3_PLUGIN(base_plugin)->iedit_controller));
       }
 
+      if(AGS_VST3_PLUGIN(base_plugin)->iedit_controller == NULL){
+	break;
+      }
+      
       ags_vst_iplugin_base_initialize((AgsVstIPluginBase *) AGS_VST3_PLUGIN(base_plugin)->iedit_controller,
 				      AGS_VST3_PLUGIN(base_plugin)->host_context);
-
+      
       break;
     }
 
