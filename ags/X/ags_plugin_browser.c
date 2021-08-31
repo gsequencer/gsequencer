@@ -23,7 +23,10 @@
 #include <ags/X/ags_lv2_browser.h>
 #include <ags/X/ags_dssi_browser.h>
 #include <ags/X/ags_ladspa_browser.h>
+
+#if defined(AGS_WITH_VST3)
 #include <ags/X/ags_vst3_browser.h>
+#endif
 
 #include <ags/i18n.h>
 
@@ -176,11 +179,15 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   
   gtk_combo_box_text_append_text(plugin_browser->plugin_type,
 				 "lv2");
+
   gtk_combo_box_text_append_text(plugin_browser->plugin_type,
 				 "ladspa");
+
+#if defined(AGS_WITH_VST3)
   gtk_combo_box_text_append_text(plugin_browser->plugin_type,
 				 "vst3");
-
+#endif
+  
   plugin_browser->active_browser = NULL;
   
   plugin_browser->lv2_browser = (GtkWidget *) ags_lv2_browser_new();
@@ -197,12 +204,16 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 		     FALSE, FALSE,
 		     0);
 
+#if defined(AGS_WITH_VST3)
   plugin_browser->vst3_browser = (GtkWidget *) ags_vst3_browser_new();
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) plugin_browser->vst3_browser,
 		     FALSE, FALSE,
 		     0);
-
+#else
+  plugin_browser->vst3_browser = NULL;
+#endif
+  
   /* action area */
   gtk_dialog_add_buttons((GtkDialog *) plugin_browser,
 			 i18n("_OK"), GTK_RESPONSE_ACCEPT,
@@ -228,8 +239,12 @@ ags_plugin_browser_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_plugin_browser_parent_class)->show(widget);
 
   gtk_widget_hide(plugin_browser->lv2_browser);
+
   gtk_widget_hide(plugin_browser->ladspa_browser);
+
+#if defined(AGS_WITH_VST3)
   gtk_widget_hide(plugin_browser->vst3_browser);
+#endif
 }
 
 void
@@ -249,9 +264,13 @@ ags_plugin_browser_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_plugin_browser_plugin_type_changed_callback), plugin_browser);
   
   ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->lv2_browser));
-  ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->ladspa_browser));
-  ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->vst3_browser));
 
+  ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->ladspa_browser));
+
+#if defined(AGS_WITH_VST3)
+  ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->vst3_browser));
+#endif
+  
   /* AgsPluginBrowser response */
   g_signal_connect((GObject *) plugin_browser, "response",
 		   G_CALLBACK(ags_plugin_browser_response_callback), NULL);
@@ -277,9 +296,13 @@ ags_plugin_browser_disconnect(AgsConnectable *connectable)
 		      NULL);
   
   ags_connectable_disconnect(AGS_CONNECTABLE(plugin_browser->lv2_browser));
-  ags_connectable_disconnect(AGS_CONNECTABLE(plugin_browser->ladspa_browser));
-  ags_connectable_disconnect(AGS_CONNECTABLE(plugin_browser->vst3_browser));
 
+  ags_connectable_disconnect(AGS_CONNECTABLE(plugin_browser->ladspa_browser));
+
+#if defined(AGS_WITH_VST3)
+  ags_connectable_disconnect(AGS_CONNECTABLE(plugin_browser->vst3_browser));
+#endif
+  
   /* AgsPluginBrowser buttons */
   g_object_disconnect((GObject *) plugin_browser,
 		      "any_signal::response",
@@ -323,8 +346,10 @@ ags_plugin_browser_get_plugin_filename(AgsPluginBrowser *plugin_browser)
     return(ags_lv2_browser_get_plugin_filename((AgsLv2Browser *) plugin_browser->lv2_browser));
   }else if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
     return(ags_ladspa_browser_get_plugin_filename((AgsLadspaBrowser *) plugin_browser->ladspa_browser));
+#if defined(AGS_WITH_VST3)
   }else if(AGS_IS_VST3_BROWSER(plugin_browser->active_browser)){
     return(ags_vst3_browser_get_plugin_filename((AgsVst3Browser *) plugin_browser->vst3_browser));
+#endif
   }else{
     return(NULL);
   }
@@ -347,8 +372,10 @@ ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser)
     return(ags_lv2_browser_get_plugin_effect((AgsLv2Browser *) plugin_browser->lv2_browser));
   }else if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
     return(ags_ladspa_browser_get_plugin_effect((AgsLadspaBrowser *) plugin_browser->ladspa_browser));
+#if defined(AGS_WITH_VST3)
   }else if(AGS_IS_VST3_BROWSER(plugin_browser->active_browser)){
     return(ags_vst3_browser_get_plugin_effect((AgsVst3Browser *) plugin_browser->vst3_browser));
+#endif
   }else{
     return(NULL);
   }

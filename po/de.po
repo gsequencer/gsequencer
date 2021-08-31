@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-08-31 11:57+0200\n"
+"POT-Creation-Date: 2021-08-31 13:21+0200\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -99,7 +99,7 @@ msgid "_Apply"
 msgstr ""
 
 #: ags/X/ags_connection_editor.c:249 ags/X/ags_machine_editor.c:260
-#: ags/X/ags_midi_dialog.c:428 ags/X/ags_plugin_browser.c:208
+#: ags/X/ags_midi_dialog.c:428 ags/X/ags_plugin_browser.c:219
 #: ags/X/ags_preferences.c:227 ags/X/editor/ags_crop_note_dialog.c:270
 #: ags/X/editor/ags_envelope_dialog.c:227
 #: ags/X/editor/ags_envelope_editor_callbacks.c:51
@@ -124,7 +124,7 @@ msgid "_OK"
 msgstr ""
 
 #: ags/X/ags_connection_editor.c:254 ags/X/ags_export_soundcard_callbacks.c:410
-#: ags/X/ags_midi_dialog.c:433 ags/X/ags_plugin_browser.c:209
+#: ags/X/ags_midi_dialog.c:433 ags/X/ags_plugin_browser.c:220
 #: ags/X/ags_preferences.c:228 ags/X/editor/ags_crop_note_dialog.c:271
 #: ags/X/editor/ags_envelope_dialog.c:233
 #: ags/X/editor/ags_envelope_editor_callbacks.c:53
@@ -710,11 +710,11 @@ msgstr "Thread Pool - maximum unbenützte Threads"
 msgid "max precision of threads [Hz]"
 msgstr "Maximale Präzision der Threads [Hz]"
 
-#: ags/X/ags_plugin_browser.c:149
+#: ags/X/ags_plugin_browser.c:152
 msgid "Plugin browser"
 msgstr "Plugin Browser"
 
-#: ags/X/ags_plugin_browser.c:165
+#: ags/X/ags_plugin_browser.c:168
 msgid "Plugin type:"
 msgstr "Plugin Art:"
 
