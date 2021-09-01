@@ -1,3 +1,8 @@
+ags (3.10.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* remove libags_vst.la dependency from gtkdoc
+
 ags (3.10.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
