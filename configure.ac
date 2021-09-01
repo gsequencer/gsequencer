@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.10.14],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.10.15],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -190,6 +190,13 @@ AC_SUBST([GSEQUENCER_LDFLAGS])
 
 AC_SUBST([MIDI2XML_CFLAGS])
 AC_SUBST([MIDI2XML_LDFLAGS])
+
+AC_SUBST([LIBAGS_CPPFLAGS])
+AC_SUBST([LIBAGS_THREAD_CPPFLAGS])
+AC_SUBST([LIBAGS_SERVER_CPPFLAGS])
+AC_SUBST([LIBAGS_AUDIO_CPPFLAGS])
+AC_SUBST([LIBAGS_GUI_CPPFLAGS])
+AC_SUBST([LIBGSEQUENCER_CPPFLAGS])
 
 AC_SUBST([LIBGSEQUENCER_TEST_LIBADD])
 
@@ -421,9 +428,11 @@ WITH_VST3=0
 
 AS_IF([test "x$enable_vst3" != xno],
       [AC_DEFINE([AGS_WITH_VST3], [1], [VST3 enabled])
-      AC_SUBST(VST3_RELEASE_TYPE)
-      AC_SUBST(VST3_CXXFLAGS)
-      AC_SUBST(VST3_LIBS)
+      AC_SUBST(LIBAGS_VST3_RELEASE_TYPE)
+      AC_SUBST(LIBAGS_VST3_CPPFLAGS)
+      AC_SUBST(LIBAGS_VST3_CXXFLAGS)
+      AC_SUBST(LIBAGS_VST3_LDFLAGS)
+      AC_SUBST(LIBAGS_VST3_LIBS)
       AC_MSG_NOTICE([VST3 enabled])],
       [AC_MSG_NOTICE([VST3 disabled])])
 AM_CONDITIONAL([WITH_VST3], [test "x$enable_vst3" == xyes])

@@ -28,11 +28,15 @@ extern "C" {
   gboolean ags_vst_funknown_private_iid_equal(const void* iid1, const void* iid2)
   {
     //TODO:JK: implement me
+
+    return(FALSE);
   }
   
   gint32 ags_vst_funknown_private_atomic_add(gint32 *value, gint32 amount)
   {
     //TODO:JK: implement me
+
+    return(0);
   }
   
   AgsVstFUID* ags_vst_fuid_new()
@@ -54,7 +58,7 @@ extern "C" {
   
   void ags_vst_fuid_delete(AgsVstFUID *fuid)
   {
-    delete fuid;
+    delete (Steinberg::FUID *) fuid;
   }
     
   gboolean ags_vst_fuid_generate(AgsVstFUID *fuid)
@@ -204,7 +208,7 @@ extern "C" {
   
   void ags_freleaser_free(AgsVstFReleaser *freleaser)
   {
-    delete freleaser;
+    delete (Steinberg::FReleaser *) freleaser;
   }
   
 }

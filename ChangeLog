@@ -1,3 +1,9 @@
+ags (3.10.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved build compile libags_vst.so with -Wall -Wformat -Werror=format-security -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
+	* improved build additional LIBAGS*_CPPFLAGS and LIBGSEQUENCER_CPPFLAGS
+
 ags (3.10.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
