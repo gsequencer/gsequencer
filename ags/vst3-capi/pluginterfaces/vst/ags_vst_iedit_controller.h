@@ -33,6 +33,7 @@ extern "C" {
   
   typedef struct ParameterInfo AgsVstParameterInfo;
   typedef struct IComponentHandler AgsVstIComponentHandler;
+  typedef struct ComponentHandler AgsVstComponentHandler;
   typedef struct IComponentHandler2 AgsVstIComponentHandler2;
   typedef struct IComponentHandlerBusActivation AgsVstIComponentHandlerBusActivation;
   typedef struct IProgress AgsVstIProgress;
@@ -42,6 +43,11 @@ extern "C" {
   typedef struct IMidiMapping AgsVstIMidiMapping;
   typedef struct IEditControllerHostEditing AgsVstIEditControllerHostEditing;
   typedef guint64 AgsVstID;
+  
+  typedef void (*AgsVstIComponentHandlerBeginEdit)(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id);
+  typedef void (*AgsVstIComponentHandlerPerformEdit)(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id, AgsVstParamValue value_normalized);
+  typedef void (*AgsVstIComponentHandlerEndEdit)(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id);
+  typedef void (*AgsVstIComponentHandlerRestartComponent)(AgsVstIComponentHandler *icomponent_handler, gint32 flags);
 
   typedef enum
   {
@@ -106,6 +112,10 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_icomponent_handler_get_iid();
 
+  AgsVstIComponentHandler* ags_vst_component_handler_new();    
+  
+  void ags_vst_component_handler_destroy(AgsVstComponentHandler *component_handler);
+  
   AgsVstTResult ags_vst_icomponent_handler_begin_edit(AgsVstIComponentHandler *icomponent_handler,
 						      AgsVstParamID id);
 

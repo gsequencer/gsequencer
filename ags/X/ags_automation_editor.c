@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1372,8 +1372,6 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 
       gdouble upper, lower;
       gdouble default_value;
-
-      g_message("%s", AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->control_name);
       
       /* scale */
       scale = ags_scale_new();
@@ -1434,10 +1432,17 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 		       "default-value", &value,
 		       NULL);
 
-	  upper = g_value_get_float(upper_value);
-	  lower = g_value_get_float(lower_value);
-
-	  default_value = g_value_get_float(value);
+	  if(G_VALUE_HOLDS_DOUBLE(&value)){
+	    upper = g_value_get_double(upper_value);
+	    lower = g_value_get_double(lower_value);
+	  
+	    default_value = g_value_get_double(value);
+	  }else{
+	    upper = g_value_get_float(upper_value);
+	    lower = g_value_get_float(lower_value);
+	  
+	    default_value = g_value_get_float(value);
+	  }
 
 	  g_value_unset(upper_value);
 	  g_free(upper_value);

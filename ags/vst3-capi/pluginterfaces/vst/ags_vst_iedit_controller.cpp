@@ -19,7 +19,11 @@
 
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.h>
 
+#include <ags/vst3-capi/host/ags_vst_host_context.h>
+
 #include <pluginterfaces/vst/ivsteditcontroller.h>
+
+#include <public.sdk/source/vst/vstcomponent.h>
 
 extern "C" {
 
@@ -78,6 +82,20 @@ extern "C" {
   const AgsVstTUID* ags_vst_icomponent_handler_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IComponentHandler::iid.toTUID()));
+  }
+
+  AgsVstIComponentHandler* ags_vst_component_handler_new()
+  {
+    Steinberg::Vst::Component *component_handler = new Steinberg::Vst::Component();
+
+    component_handler->initialize((Steinberg::FUnknown *) ags_vst_host_context_get_instance());
+    
+    return((AgsVstIComponentHandler *) (static_cast<Steinberg::Vst::IComponent*>(component_handler)));
+  }
+  
+  void ags_vst_component_handler_destroy(AgsVstComponentHandler *component_handler)
+  {
+    //TODO:JK: implement me
   }
 
   AgsVstTResult ags_vst_icomponent_handler_begin_edit(AgsVstIComponentHandler *icomponent_handler,

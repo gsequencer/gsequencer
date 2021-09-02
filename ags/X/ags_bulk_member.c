@@ -1580,8 +1580,7 @@ ags_bulk_member_change_port_all(AgsBulkMember *bulk_member,
     }
 
     g_rec_mutex_unlock(port_mutex);
-      
-    //      g_message("change %f", g_value_get_float(&value));
+        
     ags_port_safe_write(port,
 			&value);
 
@@ -1667,10 +1666,10 @@ ags_bulk_member_find_specifier(GList *recall,
 				   specifier);
       
 #ifdef AGS_DEBUG
-    g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
+      g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
 #endif
 
-    if(port != NULL){
+    if(port != NULL){      
       current_port = port->data;
     }
 

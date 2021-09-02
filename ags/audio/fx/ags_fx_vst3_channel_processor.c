@@ -231,7 +231,6 @@ ags_fx_vst3_channel_processor_done(AgsRecall *recall)
   gboolean is_live_instrument;
 
   guint j, k;
-  GRecMutex *recall_mutex;
   
   GRecMutex *fx_vst3_audio_mutex;
   
@@ -264,10 +263,7 @@ ags_fx_vst3_channel_processor_done(AgsRecall *recall)
     return;
   }
 
-  /* get recall mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_audio);
-
-  g_rec_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(fx_vst3_audio_mutex);
 
   input_data = fx_vst3_audio->scope_data[sound_scope];
 
@@ -289,7 +285,7 @@ ags_fx_vst3_channel_processor_done(AgsRecall *recall)
 				  0,
 				  FALSE);
 
-  g_rec_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(fx_vst3_audio_mutex);
       
   /* unref */
   if(fx_vst3_audio != NULL){

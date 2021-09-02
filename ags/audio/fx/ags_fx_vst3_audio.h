@@ -117,6 +117,13 @@ struct _AgsFxVst3AudioChannelData
   AgsVstIEditController *iedit_controller;
   AgsVstIAudioProcessor *iaudio_processor;
 
+  AgsVstComponentHandler *icomponent_handler;
+  
+  AgsVstIComponentHandlerBeginEdit *begin_edit_callback;
+  AgsVstIComponentHandlerPerformEdit *perform_edit_callback;
+  AgsVstIComponentHandlerEndEdit *end_edit_callback;
+  AgsVstIComponentHandlerRestartComponent *restart_component_callback;
+  
   AgsVstProcessData *process_data;
   AgsVstIEventList *input_event;
   
@@ -136,6 +143,13 @@ struct _AgsFxVst3AudioInputData
   AgsVstIEditController *iedit_controller;
   AgsVstIAudioProcessor *iaudio_processor;
 
+  AgsVstComponentHandler *icomponent_handler;
+  
+  AgsVstIComponentHandlerBeginEdit *begin_edit_callback;
+  AgsVstIComponentHandlerPerformEdit *perform_edit_callback;
+  AgsVstIComponentHandlerEndEdit *end_edit_callback;
+  AgsVstIComponentHandlerRestartComponent *restart_component_callback;
+  
   AgsVstProcessData *process_data;
   AgsVstIEventList *input_event;
   

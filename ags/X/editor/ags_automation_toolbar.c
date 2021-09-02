@@ -1120,10 +1120,17 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 		   "default-value", &value,
 		   NULL);
 
-      upper = g_value_get_float(upper_value);
-      lower = g_value_get_float(lower_value);
-
-      default_value = g_value_get_float(value);
+      if(G_VALUE_HOLDS_DOUBLE(&value)){
+	upper = g_value_get_double(upper_value);
+	lower = g_value_get_double(lower_value);
+	  
+	default_value = g_value_get_double(value);
+      }else{
+	upper = g_value_get_float(upper_value);
+	lower = g_value_get_float(lower_value);
+	  
+	default_value = g_value_get_float(value);
+      }
 
       g_object_unref(plugin_port);
     }else{

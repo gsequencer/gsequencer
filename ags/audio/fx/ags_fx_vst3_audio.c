@@ -502,9 +502,7 @@ ags_fx_vst3_audio_notify_samplerate_callback(GObject *gobject,
 	}
       }
     }
-  }
-  
-  g_rec_mutex_unlock(recall_mutex);
+  }  
 
   /* unref */
   if(start_input != NULL){
@@ -687,6 +685,11 @@ ags_fx_vst3_audio_set_audio_channels_callback(AgsAudio *audio,
 	    channel_data->iedit_controller = g_value_get_pointer(value + 2);
 	    channel_data->iaudio_processor = g_value_get_pointer(value + 3);
 
+	    channel_data->icomponent_handler = ags_vst_component_handler_new();
+	    
+	    ags_vst_iedit_controller_set_component_handler(channel_data->iedit_controller,
+							   channel_data->icomponent_handler);
+	    
 	    ags_vst_process_data_set_num_samples(channel_data->process_data,
 						 buffer_size);
 	  
@@ -724,6 +727,11 @@ ags_fx_vst3_audio_set_audio_channels_callback(AgsAudio *audio,
 	      input_data->iedit_controller = g_value_get_pointer(value + 2);
 	      input_data->iaudio_processor = g_value_get_pointer(value + 3);
 
+	      input_data->icomponent_handler = ags_vst_component_handler_new();
+	    
+	      ags_vst_iedit_controller_set_component_handler(input_data->iedit_controller,
+							     input_data->icomponent_handler);
+	      
 	      ags_vst_process_data_set_num_samples(input_data->process_data,
 						   buffer_size);
 	      
@@ -956,6 +964,13 @@ ags_fx_vst3_audio_channel_data_alloc()
   channel_data->iedit_controller = NULL;
   channel_data->iaudio_processor = NULL;
 
+  channel_data->icomponent_handler = NULL;
+
+  channel_data->begin_edit_callback = NULL;
+  channel_data->perform_edit_callback = NULL;
+  channel_data->end_edit_callback = NULL;
+  channel_data->restart_component_callback = NULL;
+
   /* process data */
   channel_data->process_data = ags_vst_process_data_alloc();
 
@@ -1075,8 +1090,14 @@ ags_fx_vst3_audio_input_data_alloc()
 
   input_data->icomponent = NULL;
   input_data->iedit_controller = NULL;
-
   input_data->iaudio_processor = NULL;
+
+  input_data->icomponent_handler = NULL;
+
+  input_data->begin_edit_callback = NULL;
+  input_data->perform_edit_callback = NULL;
+  input_data->end_edit_callback = NULL;
+  input_data->restart_component_callback = NULL;
 
   /* process data */
   input_data->process_data = ags_vst_process_data_alloc();
@@ -1414,6 +1435,11 @@ ags_fx_vst3_audio_load_plugin(AgsFxVst3Audio *fx_vst3_audio)
 	      
 	      channel_data->iedit_controller = g_value_get_pointer(value + 2);
 	      channel_data->iaudio_processor = g_value_get_pointer(value + 3);
+
+	      channel_data->icomponent_handler = ags_vst_component_handler_new();
+	    
+	      ags_vst_iedit_controller_set_component_handler(channel_data->iedit_controller,
+							     channel_data->icomponent_handler);
 	    }
 	  }
 	
@@ -1430,6 +1456,11 @@ ags_fx_vst3_audio_load_plugin(AgsFxVst3Audio *fx_vst3_audio)
 
 		input_data->iedit_controller = g_value_get_pointer(value + 2);
 		input_data->iaudio_processor = g_value_get_pointer(value + 3);
+
+		input_data->icomponent_handler = ags_vst_component_handler_new();
+	    
+		ags_vst_iedit_controller_set_component_handler(input_data->iedit_controller,
+							       input_data->icomponent_handler);
 	      }
 	    }
 	  }
@@ -1537,6 +1568,8 @@ ags_fx_vst3_audio_load_port(AgsFxVst3Audio *fx_vst3_audio)
   vst3_port = fx_vst3_audio->vst3_port;
   
   g_rec_mutex_unlock(recall_mutex);
+
+  start_plugin_port = NULL;
   
   g_object_get(vst3_plugin,
 	       "plugin-port", &start_plugin_port,
@@ -1627,7 +1660,7 @@ ags_fx_vst3_audio_load_port(AgsFxVst3Audio *fx_vst3_audio)
 					vst3_plugin->cid[13],
 					vst3_plugin->cid[14],
 					vst3_plugin->cid[15]);
-
+	  
 	  specifier = NULL;
       
 	  port_index = 0;
@@ -1643,7 +1676,7 @@ ags_fx_vst3_audio_load_port(AgsFxVst3Audio *fx_vst3_audio)
 
 	  /* default value */
 	  g_value_init(&default_value,
-		       G_TYPE_FLOAT);
+		       G_TYPE_DOUBLE);
       
 	  g_rec_mutex_lock(plugin_port_mutex);
       
@@ -1658,7 +1691,7 @@ ags_fx_vst3_audio_load_port(AgsFxVst3Audio *fx_vst3_audio)
 					"specifier", specifier,
 					"control-port", control_port,
 					"port-value-is-pointer", FALSE,
-					"port-value-type", G_TYPE_FLOAT,
+					"port-value-type", G_TYPE_DOUBLE,
 					NULL);
       
 	  if(ags_plugin_port_test_flags(current_plugin_port,
@@ -1690,8 +1723,8 @@ ags_fx_vst3_audio_load_port(AgsFxVst3Audio *fx_vst3_audio)
 	  ags_recall_add_port((AgsRecall *) fx_vst3_audio,
 			      vst3_port[nth]);
 
-	  g_signal_connect_after(vst3_port[nth], "safe-write",
-				 ags_fx_vst3_audio_safe_write_callback, fx_vst3_audio);
+	  g_signal_connect(vst3_port[nth], "safe-write",
+			   ags_fx_vst3_audio_safe_write_callback, fx_vst3_audio);
 	  
 	  g_free(plugin_name);
 	  g_free(specifier);
@@ -1862,9 +1895,7 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
 		 "port-index", &port_index,
 		 NULL);
   }
-  
-  param_value = g_value_get_float(value);
-  
+    
   is_live_instrument = ags_fx_vst3_audio_test_flags(fx_vst3_audio, AGS_FX_VST3_AUDIO_LIVE_INSTRUMENT);
 
   info = ags_vst_parameter_info_alloc();      
@@ -1896,9 +1927,24 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
 							port_index, info);
 
 	    param_id = ags_vst_parameter_info_get_param_id(info);
-	  
+	  	  
+	    param_value = ags_vst_iedit_controller_plain_param_to_normalized(channel_data->iedit_controller,
+									     param_id,
+									     g_value_get_double(value));
+	    
+#if 1
 	    ags_vst_iedit_controller_set_param_normalized(channel_data->iedit_controller,
 							param_id, param_value);
+#else
+	    ags_vst_icomponent_handler_begin_edit(channel_data->icomponent_handler,
+						  param_id);
+
+	    ags_vst_icomponent_handler_perform_edit(channel_data->icomponent_handler,
+						    param_id, param_value);
+      
+	    ags_vst_icomponent_handler_end_edit(channel_data->icomponent_handler,
+						param_id);
+#endif
 	  }
 	}else{	
 	  for(key = 0; key < AGS_SEQUENCER_MAX_MIDI_KEYS; key++){
@@ -1913,9 +1959,24 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
 							  port_index, info);
 
 	      param_id = ags_vst_parameter_info_get_param_id(info);
-	  
+
+	      param_value = ags_vst_iedit_controller_plain_param_to_normalized(input_data->iedit_controller,
+									       param_id,
+									       g_value_get_double(value));
+	    
+#if 1
 	      ags_vst_iedit_controller_set_param_normalized(input_data->iedit_controller,
 							    param_id, param_value);
+#else
+	      ags_vst_icomponent_handler_begin_edit(input_data->icomponent_handler,
+						    param_id);
+
+	      ags_vst_icomponent_handler_perform_edit(input_data->icomponent_handler,
+						      param_id, param_value);
+      
+	      ags_vst_icomponent_handler_end_edit(input_data->icomponent_handler,
+						  param_id);
+#endif	      
 	    }
 	  }
 	}
@@ -1937,7 +1998,7 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
 }
 
 /**
- * ags_fx_vst3_audio_load_plugin:
+ * ags_fx_vst3_audio_change_program:
  * @fx_vst3_audio: the #AgsFxVst3Audio
  * @port_index: the port index
  * @program_list_id: the program list id
@@ -2031,7 +2092,7 @@ ags_fx_vst3_audio_change_program(AgsFxVst3Audio *fx_vst3_audio,
 	      AgsVstIBStream *data;
 
 	      data = NULL;
-	      
+
 	      ags_vst_iprogram_list_data_get_program_data(iprogram_list_data,
 							  program_list_id, program_index,
 							  data);
