@@ -224,7 +224,7 @@ extern "C" {
   const AgsVstTUID* ags_vst_iedit_controller_host_editing_get_iid();
 
   AgsVstTResult ags_vst_iedit_controller_host_editing_begin_edit_from_host(AgsVstIEditControllerHostEditing *iedit_controller_host_editing,
-								      AgsVstParamID param_id);
+									   AgsVstParamID param_id);
   
   AgsVstTResult ags_vst_iedit_controller_host_editing_end_edit_from_host(AgsVstIEditControllerHostEditing *iedit_controller_host_editing,
 									 AgsVstParamID param_id);

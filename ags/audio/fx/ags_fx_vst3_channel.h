@@ -88,6 +88,8 @@ struct _AgsFxVst3ChannelInputData
   AgsVstIEditController *iedit_controller;
   AgsVstIAudioProcessor *iaudio_processor;
 
+  AgsVstIEditControllerHostEditing *iedit_controller_host_editing;
+
   AgsVstIComponentHandler *icomponent_handler;
   
   AgsVstIComponentHandlerBeginEdit *begin_edit_callback;

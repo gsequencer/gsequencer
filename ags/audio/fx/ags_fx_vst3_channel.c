@@ -326,6 +326,8 @@ ags_fx_vst3_channel_input_data_alloc()
   input_data->iedit_controller = NULL;
   input_data->iaudio_processor = NULL;
 
+  input_data->iedit_controller_host_editing = NULL;
+
   input_data->icomponent_handler = NULL;
 
   input_data->begin_edit_callback = NULL;
@@ -469,16 +471,19 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
 		     "iedit-controller");
   g_strv_builder_add(strv_builder,
 		     "iaudio-processor");
+  g_strv_builder_add(strv_builder,
+		     "iedit-controller-host-editing");
 
   parameter_name = g_strv_builder_end(strv_builder);
 #else
-  parameter_name = (gchar **) g_malloc(5 * sizeof(gchar *));
+  parameter_name = (gchar **) g_malloc(6* sizeof(gchar *));
 
   parameter_name[0] = g_strdup("buffer-size");
   parameter_name[1] = g_strdup("samplerate");
   parameter_name[2] = g_strdup("iedit-controller");
   parameter_name[3] = g_strdup("iaudio-processor");
-  parameter_name[4] = NULL;
+  parameter_name[4] = g_strdup("iedit-controller-host-editing");
+  parameter_name[5] = NULL;
 #endif
   
   /* get recall mutex */
@@ -557,10 +562,12 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
 	input_data->iedit_controller = g_value_get_pointer(value + 2);
 	input_data->iaudio_processor = g_value_get_pointer(value + 3);
 
+	input_data->iedit_controller_host_editing = g_value_get_pointer(value + 4);
+
 	input_data->icomponent_handler = ags_vst_component_handler_new();
 	    
 	ags_vst_iedit_controller_set_component_handler(input_data->iedit_controller,
-						       input_data->icomponent_handler);
+						       input_data->icomponent_handler);	
       }
     }
     
@@ -1182,8 +1189,18 @@ ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
 	      
 	      
 #if 1
+	      if(input_data->iedit_controller_host_editing != NULL){
+		ags_vst_iedit_controller_host_editing_begin_edit_from_host(input_data->iedit_controller_host_editing,
+									   param_id);
+	      }	      
+	      
 	      ags_vst_iedit_controller_set_param_normalized(input_data->iedit_controller,
 							    param_id, param_value);
+
+	      if(input_data->iedit_controller_host_editing != NULL){
+		ags_vst_iedit_controller_host_editing_end_edit_from_host(input_data->iedit_controller_host_editing,
+									 param_id);
+	      }
 #else
 	      ags_vst_icomponent_handler_begin_edit(input_data->icomponent_handler,
 						    param_id);

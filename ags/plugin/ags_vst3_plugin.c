@@ -239,6 +239,7 @@ ags_vst3_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   AgsVstIPluginFactory *iplugin_factory;
   AgsVstIComponent *icomponent;
   AgsVstIEditController *iedit_controller;
+  AgsVstIEditControllerHostEditing *iedit_controller_host_editing;
 
   gpointer retval;
 
@@ -357,6 +358,23 @@ ags_vst3_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 			    iedit_controller);
       }
 
+      if(iedit_controller != NULL){
+	iedit_controller_host_editing = NULL;
+	
+	ags_vst_funknown_query_interface(iedit_controller,
+					 ags_vst_iedit_controller_host_editing_get_iid(), &iedit_controller_host_editing);
+
+	if(iedit_controller_host_editing != NULL){
+	  ags_vst_iplugin_base_initialize((AgsVstIPluginBase *) iedit_controller_host_editing,
+					  AGS_VST3_PLUGIN(base_plugin)->host_context);
+
+	  if((position = ags_strv_index(parameter_name[0], "iedit-controller-host-editing")) >= 0){
+	    g_value_set_pointer(&(value[0][position]),
+				iedit_controller_host_editing);
+	  }
+	}
+      }
+      
       break;
     }    
   }
