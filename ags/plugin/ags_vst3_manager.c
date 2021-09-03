@@ -618,9 +618,9 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
 			   gchar *filename)
 {
   AgsVst3Plugin *vst3_plugin;
-
+  
   gchar *path;
-
+  
   void *plugin_so;
 
   gboolean success;
@@ -630,11 +630,14 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
 #ifdef AGS_W32API
   gboolean (*InitDll)();
   gboolean (*ExitDll)();
-#endif
-  
+#else  
 #ifdef AGS_OSXAPI
-  typedef bool (*BundleEntryFunc) (CFBundleRef);
-  typedef bool (*BundleExitFunc) ();
+  bool (*BundleEntryFunc)(CFBundleRef);
+  bool (*BundleExitFunc)();
+#else
+  gboolean (*ModuleEntry)(void*);
+  gboolean (*ModuleExit)();
+#endif
 #endif
   
   GRecMutex *vst3_manager_mutex;
@@ -656,7 +659,7 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
 			 filename);
   
   g_message("ags_vst3_manager.c loading - %s", path);
-
+  
 #ifdef AGS_W32API
   plugin_so = LoadLibrary(path);
 #else
@@ -689,12 +692,14 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
 
   success = FALSE;
 
+  /* win32 */
 #ifdef AGS_W32API
   GetPluginFactory = GetProcAddress(plugin_so,
 				    "GetPluginFactory");
   
   success = (GetPluginFactory != NULL) ? TRUE: FALSE;
 #else
+  /* osx */
 #ifdef AGS_OSXAPI
   gpointer bundle;
 
@@ -714,10 +719,17 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
   GetPluginFactory = dlsym(plugin_so,
 			   "GetPluginFactory");
   
-  success = (dlerror() == NULL) ? TRUE: FALSE;
-#endif
-#endif
 
+  ModuleEntry = dlsym(plugin_so,
+		      "ModuleEntry");
+
+  ModuleExit = dlsym(plugin_so,
+		     "ModuleExit");
+
+  success = (ModuleEntry(plugin_so)) ? TRUE: FALSE;
+#endif
+#endif
+  
   if(success && GetPluginFactory){
     AgsVstIPluginFactory *iplugin_factory;
     AgsVstPClassInfo *info;
@@ -725,9 +737,10 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
     gchar *plugin_name;
 
     gint32 i, i_stop;
+
     
     iplugin_factory = GetPluginFactory();
-
+    
     info = ags_vst_pclass_info_alloc();
 
     i_stop = ags_vst_iplugin_factory_count_classes(iplugin_factory);
@@ -844,8 +857,6 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
 				  machine,
 				  sysname);	
 #endif
-      g_message("-> %s", arch_path);
-      
       if(g_file_test(arch_path,
 		     G_FILE_TEST_IS_DIR)){
 	error = NULL;
@@ -866,7 +877,6 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
 	  if(!g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
 				 arch_filename,
 				 strcmp)){
-	    g_message("load %s", arch_filename);
 	    ags_vst3_manager_load_file(vst3_manager,
 				       arch_path,
 				       arch_filename);
@@ -879,7 +889,7 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
 				 strcmp)){
 	    ags_vst3_manager_load_file(vst3_manager,
 				       arch_path,
-				       NULL);
+				       arch_filename);
 	  }
 #endif
 	}

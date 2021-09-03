@@ -17,34 +17,19 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_MODULE_H__
-#define __AGS_VST_MODULE_H__
+#ifndef __AGS_VST_UID_H__
+#define __AGS_VST_UID_H__
 
 #include <glib.h>
-
-#include <ags/vst3-capi/host/ags_vst_host_context.h>
-
-#include <ags/vst3-capi/public.sdk/source/vst/utility/ags_vst_uid.h>
-#include <ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-  typedef struct FactoryInfo AgsVstFactoryInfo;
-  typedef struct ClassInfo AgsVstClassInfo;
-  typedef struct PluginFactory AgsVstPluginFactory;
-  typedef struct Module AgsVstModule;
+  typedef struct UID AgsVstUID;
   
-  //TODO:JK: implement me
-
-  void ags_vst_plugin_factory_set_host_context(AgsVstPluginFactory *plugin_factory,
-					       AgsVstHostContext *host_context);
-  
-  AgsVstPluginFactory* ags_vst_module_get_factory(AgsVstModule *module);
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif /*__AGS_VST_MODULE_H__*/
+#endif /*__AGS_VST_UID_H__*/

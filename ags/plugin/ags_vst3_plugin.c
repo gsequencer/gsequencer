@@ -557,8 +557,6 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
     
     AgsVstTResult val;
 
-    g_message("fine");
-    
     info = ags_vst_pclass_info_alloc();
     info2 = ags_vst_pclass_info2_alloc();    
     
@@ -694,11 +692,11 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 				     current_plugin_port);
 
 	g_value_init(current_plugin_port->default_value,
-		     G_TYPE_FLOAT);
+		     G_TYPE_DOUBLE);
 	g_value_init(current_plugin_port->lower_value,
-		     G_TYPE_FLOAT);
+		     G_TYPE_DOUBLE);
 	g_value_init(current_plugin_port->upper_value,
-		     G_TYPE_FLOAT);
+		     G_TYPE_DOUBLE);
 
 	step_count = ags_vst_parameter_info_get_step_count(info);
 
@@ -723,15 +721,15 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
 	if(step_count == 0){
 	  /* set lower */
-	  g_value_set_float(current_plugin_port->lower_value,
+	  g_value_set_double(current_plugin_port->lower_value,
 			    0.0);
 	    
 	  /* set upper */
-	  g_value_set_float(current_plugin_port->upper_value,
+	  g_value_set_double(current_plugin_port->upper_value,
 			    1.0);
 
 	  /* set default */
-	  g_value_set_float(current_plugin_port->default_value,
+	  g_value_set_double(current_plugin_port->default_value,
 			    ags_vst_iedit_controller_normalized_param_to_plain(AGS_VST3_PLUGIN(base_plugin)->iedit_controller,
 									       id,
 									       default_normalized_value));
@@ -739,31 +737,31 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	  current_plugin_port->scale_steps = -1;
 	}else if(step_count == 1){
 	  /* set lower */
-	  g_value_set_float(current_plugin_port->lower_value,
+	  g_value_set_double(current_plugin_port->lower_value,
 			    0.0);
 	    
 	  /* set upper */
-	  g_value_set_float(current_plugin_port->upper_value,
+	  g_value_set_double(current_plugin_port->upper_value,
 			    1.0);
 
 	  /* set default */
 	  current_plugin_port->flags |= AGS_PLUGIN_PORT_TOGGLED;
 
-	  g_value_set_float(current_plugin_port->default_value,
+	  g_value_set_double(current_plugin_port->default_value,
 			    default_normalized_value);
 	
 	  current_plugin_port->scale_steps = step_count;
 	}else{
 	  /* set lower */
-	  g_value_set_float(current_plugin_port->lower_value,
+	  g_value_set_double(current_plugin_port->lower_value,
 			    0.0);
 	    
 	  /* set upper */
-	  g_value_set_float(current_plugin_port->upper_value,
-			    (gfloat) step_count);
+	  g_value_set_double(current_plugin_port->upper_value,
+			    (gdouble) step_count);
 
 	  /* set default */
-	  g_value_set_float(current_plugin_port->default_value,
+	  g_value_set_double(current_plugin_port->default_value,
 			    fmin(step_count, default_normalized_value * (step_count + 1)));
 	
 	  current_plugin_port->scale_steps = step_count;

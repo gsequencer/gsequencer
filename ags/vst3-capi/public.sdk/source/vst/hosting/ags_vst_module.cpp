@@ -19,6 +19,7 @@
 
 #include <ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_module.h>
 
+#include <public.sdk/source/vst/hosting/hostclasses.h>
 #include <public.sdk/source/vst/hosting/module.h>
 
 extern "C" {
@@ -26,30 +27,34 @@ extern "C" {
   void ags_vst_plugin_factory_set_host_context(AgsVstPluginFactory *plugin_factory,
 					       AgsVstHostContext *host_context)
   {
-    ((Vst3::Hosting::PluginFactory *) plugin_factory)->setHostContext((Vst3::Hosting::HostContext *) host_context);
+    ((VST3::Hosting::PluginFactory *) plugin_factory)->setHostContext((Steinberg::FUnknown *) host_context);
   }
 
+  //FIXME:JK: ???
+#if 0
   gpointer ags_vst_plugin_factory_create_instance(AgsVstPluginFactory *plugin_factory,
 						  AgsVstUID *class_id)
   {
-    return(((Vst3::Hosting::PluginFactory *) plugin_factory)->createInstance(const_cast<Vst3::UID&>((Vst3::UID *) class_id)[0]));
+    return((gpointer) ((VST3::Hosting::PluginFactory *) plugin_factory)->createInstance(const_cast<VST3::UID&>(((VST3::UID *) class_id)[0])));
   }
-
-  AgsVstEventList* ags_vst_module_new()
+#endif
+  
+  //FIXME:JK: ???
+#if 0
+  AgsVstModule* ags_vst_module_new(gchar *path, gchar *error_description)
   {
-    Vst3::Hosting::Module *module = new Vst3::Hosting::Module();
+    std::string *tmp_path = new std::string(path);
+    std::string *tmp_error_description = new std::string(error_description);
     
-    return((AgsVstModule *) module);
+    VST3::Hosting::Module::Ptr module = VST3::Hosting::Module::create(const_cast<std::string&>(tmp_path[0]), const_cast<std::string&>(tmp_error_description[0]));
+    
+    return((AgsVstModule *) &module);
   }
-
+#endif
+  
   AgsVstPluginFactory* ags_vst_module_get_factory(AgsVstModule *module)
   {
-    return(((Vst3::Hosting::Module *) module)->getFactory());
-  }
-
-  gboolean ags_vst_module_load(AgsVstModule *module, gchar *path, gchar *error_description)
-  {
-    return(((Vst3::Hosting::Module *) module)->load(path, error_description));
+    return((AgsVstPluginFactory *) const_cast<VST3::Hosting::PluginFactory *>(&(((VST3::Hosting::Module *) module)->getFactory())));
   }
 
 }

@@ -74,6 +74,9 @@
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_speaker.h>
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h>
 
+#include <ags/vst3-capi/public.sdk/source/vst/utility/ags_vst_uid.h>
+
 #include <ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_event_list.h>
+#include <ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_module.h>
 
 #endif /*__LIBAGS_VST_H__*/
