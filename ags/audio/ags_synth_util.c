@@ -21,6 +21,10 @@
 
 #include <ags/audio/ags_fourier_transform_util.h>
 
+#if defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+#include <Accelerate/Accelerate.h>
+#endif
+
 #include <math.h>
 #include <complex.h>
 

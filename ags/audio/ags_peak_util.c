@@ -21,6 +21,10 @@
 
 #include <ags/audio/ags_audio_buffer_util.h>
 
+#if defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
+#include <Accelerate/Accelerate.h>
+#endif
+
 /**
  * SECTION:ags_peak_util
  * @short_description: Boxed type of peak util
