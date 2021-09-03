@@ -38,6 +38,10 @@
 
 #include <sys/utsname.h>
 
+#if defined(AGS_OSXAPI)
+#import <CoreFoundation/CoreFoundation.h>
+#endif
+
 #include <ags/config.h>
 
 void ags_vst3_manager_class_init(AgsVst3ManagerClass *vst3_manager);
@@ -622,12 +626,21 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
   gboolean success;
 
   AgsVstIPluginFactory* (*GetPluginFactory)();
+
+#ifdef AGS_W32API
+  gboolean (*InitDll)();
+  gboolean (*ExitDll)();
+#endif
+  
+#ifdef AGS_OSXAPI
+  typedef bool (*BundleEntryFunc) (CFBundleRef);
+  typedef bool (*BundleExitFunc) ();
+#endif
   
   GRecMutex *vst3_manager_mutex;
 
   if(!AGS_IS_VST3_MANAGER(vst3_manager) ||
-     vst3_path == NULL ||
-     filename == NULL){
+     vst3_path == NULL){
     return;
   }
   
@@ -647,10 +660,21 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
 #ifdef AGS_W32API
   plugin_so = LoadLibrary(path);
 #else
+#ifdef AGS_OSXAPI
+  CFStringRef bundle_path = (CFStringCreateWithCString(kCFAllocatorDefault, vst3_path, kCFStringEncodingASCII));
+  CFURLRef bundleURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, 
+						     bundle_path,
+						     kCFURLPOSIXPathStyle,
+						     TRUE);
+  
+  plugin_so = CFBundleCreate(kCFAllocatorDefault,
+			     bundleURL);
+#else
   plugin_so = dlopen(path,
 		     RTLD_NOW);
 #endif
-	
+#endif
+  
   if(plugin_so == NULL){
     g_warning("ags_vst3_manager.c - failed to load static object file");
       
@@ -671,10 +695,27 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
   
   success = (GetPluginFactory != NULL) ? TRUE: FALSE;
 #else
+#ifdef AGS_OSXAPI
+  gpointer bundle;
+
+  bundle = plugin_so;
+
+  CFStringRef functionName = (CFStringCreateWithCString(kCFAllocatorDefault, "bundleEntry", kCFStringEncodingASCII));
+  auto bundleEntry = CFBundleGetFunctionPointerForName(bundle, functionName);
+  
+  functionName = (CFStringCreateWithCString(kCFAllocatorDefault, "bundleExit", kCFStringEncodingASCII));
+  auto bundleExit = CFBundleGetFunctionPointerForName(bundle, functionName);
+  
+  functionName = (CFStringCreateWithCString(kCFAllocatorDefault, "GetPluginFactory", kCFStringEncodingASCII));
+  GetPluginFactory = CFBundleGetFunctionPointerForName(bundle, functionName);
+
+  success = TRUE;
+#else
   GetPluginFactory = dlsym(plugin_so,
 			   "GetPluginFactory");
   
   success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
 #endif
 
   if(success && GetPluginFactory){
@@ -707,6 +748,8 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
 	vst3_plugin = ags_vst3_plugin_new(path,
 					  plugin_name,
 					  i);
+	vst3_plugin->get_plugin_factory = GetPluginFactory;
+	
 	vst3_plugin->cid = (gchar **) ags_vst_pclass_info_get_cid(info);
 	
 	ags_base_plugin_load_plugin((AgsBasePlugin *) vst3_plugin);
@@ -786,7 +829,12 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
 
       gchar *arch_path;
       gchar *arch_filename;
-	
+
+#if defined(AGS_OSXAPI)
+      arch_path = g_strdup_printf("%s/%s",
+				  vst3_path[0],
+				  filename);
+#else
       arch_path = g_strdup_printf("%s%c%s%cContents%c%s-%s",
 				  vst3_path[0],
 				  G_DIR_SEPARATOR,
@@ -795,7 +843,9 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
 				  G_DIR_SEPARATOR,
 				  machine,
 				  sysname);	
-	
+#endif
+      g_message("-> %s", arch_path);
+      
       if(g_file_test(arch_path,
 		     G_FILE_TEST_IS_DIR)){
 	error = NULL;
@@ -812,6 +862,16 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
 	}
 
 	while((arch_filename = g_dir_read_name(arch_dir)) != NULL){
+#if defined(AGS_OSXAPI)
+	  if(!g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
+				 arch_filename,
+				 strcmp)){
+	    g_message("load %s", arch_filename);
+	    ags_vst3_manager_load_file(vst3_manager,
+				       arch_path,
+				       arch_filename);
+	  }
+#else
 	  if(g_str_has_suffix(arch_filename,
 			      AGS_LIBRARY_SUFFIX) &&
 	     !g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
@@ -819,8 +879,9 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
 				 strcmp)){
 	    ags_vst3_manager_load_file(vst3_manager,
 				       arch_path,
-				       arch_filename);
+				       NULL);
 	  }
+#endif
 	}
 
       ags_vst3_manager_load_default_directory_ARCH_PATH:

@@ -1240,8 +1240,18 @@ ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
 									 g_value_get_double(value));
 
 #if 1	
+	if(input_data->iedit_controller_host_editing != NULL){
+	  ags_vst_iedit_controller_host_editing_begin_edit_from_host(input_data->iedit_controller_host_editing,
+								     param_id);
+	}	      
+	      
 	ags_vst_iedit_controller_set_param_normalized(input_data->iedit_controller,
 						      param_id, param_value);
+
+	if(input_data->iedit_controller_host_editing != NULL){
+	  ags_vst_iedit_controller_host_editing_end_edit_from_host(input_data->iedit_controller_host_editing,
+								   param_id);
+	}
 #else
 	ags_vst_icomponent_handler_begin_edit(input_data->icomponent_handler,
 					      param_id);
