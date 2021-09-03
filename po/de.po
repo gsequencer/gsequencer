@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-09-01 10:49+0200\n"
+"POT-Creation-Date: 2021-09-03 21:05+0200\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -1054,27 +1054,27 @@ msgstr "Port"
 msgid "Opacity"
 msgstr "Deckungskraft"
 
-#: ags/X/editor/ags_automation_toolbar.c:1328
+#: ags/X/editor/ags_automation_toolbar.c:1335
 #: ags/X/editor/ags_select_acceleration_dialog.c:188
 msgid "select accelerations"
 msgstr "Beschleuningungen auswählen"
 
-#: ags/X/editor/ags_automation_toolbar.c:1331
+#: ags/X/editor/ags_automation_toolbar.c:1338
 #: ags/X/editor/ags_ramp_acceleration_dialog.c:187
 msgid "ramp accelerations"
 msgstr "Beschleunigungen auframpen"
 
-#: ags/X/editor/ags_automation_toolbar.c:1334
+#: ags/X/editor/ags_automation_toolbar.c:1341
 #: ags/X/editor/ags_notation_toolbar.c:538 ags/X/editor/ags_wave_toolbar.c:440
 msgid "position cursor"
 msgstr "positioniere Wagenlauf"
 
-#: ags/X/editor/ags_automation_toolbar.c:1340
+#: ags/X/editor/ags_automation_toolbar.c:1347
 #: ags/X/editor/ags_wave_toolbar.c:446
 msgid "enable all lines"
 msgstr "Alle Lines einschalten"
 
-#: ags/X/editor/ags_automation_toolbar.c:1343
+#: ags/X/editor/ags_automation_toolbar.c:1350
 #: ags/X/editor/ags_wave_toolbar.c:449
 msgid "disable all lines"
 msgstr "Alle Lines ausschalten"

@@ -2,6 +2,7 @@ ags (3.10.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed 2 dead-locks with ags-fx-vst3
+	* minor improvements
 
 ags (3.10.15)
 
