@@ -632,8 +632,8 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
   gboolean (*ExitDll)();
 #else  
 #ifdef AGS_OSXAPI
-  bool (*BundleEntryFunc)(CFBundleRef);
-  bool (*BundleExitFunc)();
+  bool (*bundleEntry)(CFBundleRef);
+  bool (*bundleExit)();
 #else
   gboolean (*ModuleEntry)(void*);
   gboolean (*ModuleExit)();
@@ -706,15 +706,15 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
   bundle = plugin_so;
 
   CFStringRef functionName = (CFStringCreateWithCString(kCFAllocatorDefault, "bundleEntry", kCFStringEncodingASCII));
-  auto bundleEntry = CFBundleGetFunctionPointerForName(bundle, functionName);
+  bundleEntry = CFBundleGetFunctionPointerForName(bundle, functionName);
   
   functionName = (CFStringCreateWithCString(kCFAllocatorDefault, "bundleExit", kCFStringEncodingASCII));
-  auto bundleExit = CFBundleGetFunctionPointerForName(bundle, functionName);
+   bundleExit = CFBundleGetFunctionPointerForName(bundle, functionName);
   
   functionName = (CFStringCreateWithCString(kCFAllocatorDefault, "GetPluginFactory", kCFStringEncodingASCII));
   GetPluginFactory = CFBundleGetFunctionPointerForName(bundle, functionName);
 
-  success = TRUE;
+  success = (bundleEntry == NULL || bundleEntry(plugin_so)) ? TRUE: FALSE;
 #else
   GetPluginFactory = dlsym(plugin_so,
 			   "GetPluginFactory");
@@ -726,7 +726,7 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
   ModuleExit = dlsym(plugin_so,
 		     "ModuleExit");
 
-  success = (ModuleEntry(plugin_so)) ? TRUE: FALSE;
+  success = (ModuleEntry == NULL || ModuleEntry(plugin_so)) ? TRUE: FALSE;
 #endif
 #endif
   

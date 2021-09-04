@@ -441,7 +441,7 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
   AgsVst3Manager *vst3_manager;
   AgsVst3Plugin *vst3_plugin;
 
-#if defined(HAVE_GLIB_2_68)
+#if HAVE_GLIB_2_68
   GStrvBuilder *strv_builder;
 #endif
   
@@ -460,7 +460,7 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
 
   vst3_manager = ags_vst3_manager_get_instance();
 
-#if defined(HAVE_GLIB_2_68)
+#if HAVE_GLIB_2_68
   strv_builder = g_strv_builder_new();
 
   g_strv_builder_add(strv_builder,

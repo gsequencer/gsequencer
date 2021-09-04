@@ -3010,8 +3010,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     app_dir = NULL;
   }
   
-  blacklist_path = g_strdup_printf("%s\\%s",
+  blacklist_path = g_strdup_printf("%s%c%s",
 				   g_get_current_dir(),
+				   G_DIR_SEPARATOR,
 				   app_dir);
 
   g_free(app_dir);
@@ -3019,8 +3020,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   uid = getuid();
   pw = getpwuid(uid);
 
-  blacklist_path = g_strdup_printf("%s/%s",
+  blacklist_path = g_strdup_printf("%s%c%s",
 				   pw->pw_dir,
+				   G_DIR_SEPARATOR,
 				   AGS_DEFAULT_DIRECTORY);
 #endif
   

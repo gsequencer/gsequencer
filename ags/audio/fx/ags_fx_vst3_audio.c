@@ -164,7 +164,7 @@ ags_fx_vst3_audio_init(AgsFxVst3Audio *fx_vst3_audio)
   AGS_RECALL(fx_vst3_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_vst3_audio)->xml_type = "ags-fx-vst3-audio";
 
-  fx_vst3_audio->flags = 0;
+  fx_vst3_audio->flags = AGS_FX_VST3_AUDIO_LIVE_INSTRUMENT;
   
   fx_vst3_audio->output_port_count = 0;
   fx_vst3_audio->output_port = NULL;
@@ -526,7 +526,7 @@ ags_fx_vst3_audio_set_audio_channels_callback(AgsAudio *audio,
 
   GList *start_recall_channel, *recall_channel;
 
-#if defined(HAVE_GLIB_2_68)
+#if HAVE_GLIB_2_68
   GStrvBuilder *strv_builder;
 #endif
   
@@ -559,7 +559,7 @@ ags_fx_vst3_audio_set_audio_channels_callback(AgsAudio *audio,
     return;
   }
 
-#if defined(HAVE_GLIB_2_68)
+#if HAVE_GLIB_2_68
   strv_builder = g_strv_builder_new();
 
   g_strv_builder_add(strv_builder,
@@ -1302,7 +1302,7 @@ ags_fx_vst3_audio_load_plugin(AgsFxVst3Audio *fx_vst3_audio)
   AgsVst3Manager *vst3_manager;
   AgsVst3Plugin *vst3_plugin;
 
-#if defined(HAVE_GLIB_2_68)
+#if HAVE_GLIB_2_68
   GStrvBuilder *strv_builder;
 #endif
   
@@ -1321,7 +1321,7 @@ ags_fx_vst3_audio_load_plugin(AgsFxVst3Audio *fx_vst3_audio)
 
   vst3_manager = ags_vst3_manager_get_instance();
 
-#if defined(HAVE_GLIB_2_68)
+#if HAVE_GLIB_2_68
   strv_builder = g_strv_builder_new();
 
   g_strv_builder_add(strv_builder,
