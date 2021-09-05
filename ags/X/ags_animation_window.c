@@ -146,7 +146,7 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
 
   animation_window->filename = filename;
 
-  animation_window->image_size = 3 * 800 * 600;
+  animation_window->image_size = 4 * 800 * 600;
   
   animation_window->bg_data = (unsigned char *) malloc(animation_window->image_size * sizeof(unsigned char));
   animation_window->cache_data = (unsigned char *) malloc(animation_window->image_size * sizeof(unsigned char));

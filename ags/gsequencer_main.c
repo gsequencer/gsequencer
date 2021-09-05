@@ -108,11 +108,14 @@ ags_setup(int argc, char **argv)
 		      "Welcome to Advanced Gtk+ Sequencer");
   
   /* application context */
+#if 0
   g_thread_new("Advanced Gtk+ Sequencer - setup",
 	       ags_setup_thread,
 	       application_context);
+#endif
   
   ags_application_context_prepare(application_context);
+  //  ags_application_context_setup(AGS_APPLICATION_CONTEXT(xorg_application_context));
 }
 
 int

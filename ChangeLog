@@ -1,3 +1,8 @@
+ags (3.10.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved loading plugins from main thread
+
 ags (3.10.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
