@@ -174,6 +174,8 @@ ags_fx_vst3_audio_init(AgsFxVst3Audio *fx_vst3_audio)
 
   fx_vst3_audio->program_port_index = -1;
   fx_vst3_audio->program_param_id = -1;
+
+  fx_vst3_audio->parameter_changes[0].param_id = ~0;
   
   /* scope data */
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
@@ -1166,6 +1168,15 @@ ags_fx_vst3_audio_channel_data_alloc()
   ags_vst_process_data_set_num_outputs(channel_data->process_data,
 				       1);
 
+  /* parameter changes */
+  channel_data->input_parameter_changes = ags_vst_parameter_changes_new();
+
+  ags_vst_parameter_changes_set_max_parameters(channel_data->input_parameter_changes,
+					       AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES);
+  
+  ags_vst_process_data_set_input_iparameter_changes(channel_data->process_data,
+						    channel_data->input_parameter_changes);
+  
   /* event list */
   channel_data->input_event = ags_vst_event_list_new();
 
@@ -1297,6 +1308,15 @@ ags_fx_vst3_audio_input_data_alloc()
 
   ags_vst_process_data_set_num_outputs(input_data->process_data,
 				       1);
+
+  /* parameter changes */
+  input_data->input_parameter_changes = ags_vst_parameter_changes_new();
+
+  ags_vst_parameter_changes_set_max_parameters(input_data->input_parameter_changes,
+					       AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES);
+
+  ags_vst_process_data_set_input_iparameter_changes(input_data->process_data,
+						    input_data->input_parameter_changes);
 
   /* event list */
   input_data->input_event = ags_vst_event_list_new();
@@ -2070,6 +2090,7 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
   gint sound_scope;
   guint port_index;
   gfloat param_value;
+  guint i;
   gboolean is_live_instrument;
 
   GRecMutex *fx_vst3_audio_mutex;
@@ -2148,6 +2169,19 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
 	    ags_vst_iedit_controller_set_param_normalized(channel_data->iedit_controller,
 							  param_id, param_value);
 
+	    for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES; i++){
+	      if(fx_vst3_audio->parameter_changes[i].param_id == ~0){
+		fx_vst3_audio->parameter_changes[i].param_id = param_id;
+		fx_vst3_audio->parameter_changes[i].param_value = g_value_get_double(value);
+		
+		if(i +  1 < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES){
+		  fx_vst3_audio->parameter_changes[i + 1].param_id = ~0;
+		}
+		
+		break;
+	      }
+	    }
+	    
 	    if(channel_data->iedit_controller_host_editing != NULL){
 	      ags_vst_iedit_controller_host_editing_end_edit_from_host(channel_data->iedit_controller_host_editing,
 								       param_id);
@@ -2190,6 +2224,20 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
 	      ags_vst_iedit_controller_set_param_normalized(input_data->iedit_controller,
 							    param_id, param_value);
 
+	      
+	      for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES; i++){
+		if(fx_vst3_audio->parameter_changes[i].param_id == ~0){
+		  fx_vst3_audio->parameter_changes[i].param_id = param_id;
+		  fx_vst3_audio->parameter_changes[i].param_value = g_value_get_double(value);
+		
+		  if(i +  1 < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES){
+		    fx_vst3_audio->parameter_changes[i + 1].param_id = ~0;
+		  }
+		
+		  break;
+		}
+	      }
+	      
 	      if(input_data->iedit_controller_host_editing != NULL){
 		ags_vst_iedit_controller_host_editing_end_edit_from_host(input_data->iedit_controller_host_editing,
 									 param_id);

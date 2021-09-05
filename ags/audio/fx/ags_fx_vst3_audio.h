@@ -52,6 +52,7 @@ G_BEGIN_DECLS
 #define AGS_FX_VST3_AUDIO_INPUT_DATA(ptr) ((AgsFxVst3AudioInputData *) (ptr))
 #define AGS_FX_VST3_AUDIO_INPUT_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxVst3AudioInputData *)(ptr))->strct_mutex))
 
+#define AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES (1024)
 #define AGS_FX_VST3_AUDIO_DEFAULT_MIDI_LENGHT (8 * 256)
 
 typedef struct _AgsFxVst3Audio AgsFxVst3Audio;
@@ -78,6 +79,11 @@ struct _AgsFxVst3Audio
 
   gint program_port_index;
   gint program_param_id;
+
+  struct{
+    AgsVstParamID param_id;
+    AgsVstParamValue param_value;
+  }parameter_changes[AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES];
   
   AgsFxVst3AudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];
 
@@ -127,6 +133,7 @@ struct _AgsFxVst3AudioChannelData
   AgsVstIComponentHandlerRestartComponent *restart_component_callback;
   
   AgsVstProcessData *process_data;
+  AgsVstParameterChanges *input_parameter_changes;
   AgsVstIEventList *input_event;
   
   AgsFxVst3AudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
@@ -155,6 +162,7 @@ struct _AgsFxVst3AudioInputData
   AgsVstIComponentHandlerRestartComponent *restart_component_callback;
   
   AgsVstProcessData *process_data;
+  AgsVstParameterChanges *input_parameter_changes;
   AgsVstIEventList *input_event;
   
   snd_seq_event_t *event_buffer;

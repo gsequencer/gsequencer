@@ -66,6 +66,12 @@ extern "C" {
     return((AgsVstEvent *) event);
   }
 
+  void ags_vst_event_set_sample_offset(AgsVstEvent *event,
+				       gint32 sample_offset)
+  {
+    ((Steinberg::Vst::Event *) event)->sampleOffset = sample_offset;
+  }
+
   const AgsVstTUID* ags_vst_ievent_list_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IEventList::iid.toTUID()));

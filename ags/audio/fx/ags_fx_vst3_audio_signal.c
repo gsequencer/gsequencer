@@ -474,6 +474,10 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
     g_rec_mutex_lock(fx_vst3_audio_mutex);
 
     if(is_live_instrument){
+      AgsVstEvent *note_off;
+
+      guint i;
+      
 //	g_message("play channel data x0 = %d, y = %d", x0, y);
 	
       ags_vst_ievent_list_add_event(channel_data->input_event,
@@ -481,9 +485,43 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 								midi_note,
 								0.0,
 								1.0,
-								-1, // (x1 - x0) * (delay * buffer_size),
+								buffer_size, // (x1 - x0) * (delay * buffer_size),
 								-1));
+
+      note_off = ags_vst_note_off_event_alloc(0,
+					      midi_note,
+					      0.0,
+					      1.0,
+					      -1,
+					      -1);
+      
+      ags_vst_event_set_sample_offset(note_off,
+				      buffer_size);
+
+      ags_vst_ievent_list_add_event(channel_data->input_event,
+				    note_off);
+
+      for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES && fx_vst3_audio->parameter_changes[i].param_id != ~0; i++){
+	AgsVstParameterValueQueue *parameter_value_queue;
+	
+	gint32 index;
+
+	index = 0;
+	parameter_value_queue = ags_vst_parameter_changes_add_parameter_data(channel_data->input_parameter_changes,
+									     &(fx_vst3_audio->parameter_changes[i].param_id), &index);
+
+	index = 0;
+	ags_vst_parameter_value_queue_add_point(parameter_value_queue,
+						0, fx_vst3_audio->parameter_changes[i].param_value,
+						&index);
+      }
+
+      fx_vst3_audio->parameter_changes[0].param_id = ~0;
     }else{
+      AgsVstEvent *note_off;
+
+      guint i;
+      
 //	g_message("play input data x0 = %d, y = %d", x0, y);
 
       ags_vst_ievent_list_add_event(input_data->input_event,
@@ -491,8 +529,38 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 								midi_note,
 								0.0,
 								1.0,
-								-1, // (x1 - x0) * (delay * buffer_size),
+								buffer_size, // (x1 - x0) * (delay * buffer_size),
 								-1));
+
+      note_off = ags_vst_note_off_event_alloc(0,
+					      midi_note,
+					      0.0,
+					      1.0,
+					      -1,
+					      -1);
+      
+      ags_vst_event_set_sample_offset(note_off,
+				      buffer_size);
+      
+      ags_vst_ievent_list_add_event(input_data->input_event,
+				    note_off);
+
+      for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES && fx_vst3_audio->parameter_changes[i].param_id != ~0; i++){
+	AgsVstParameterValueQueue *parameter_value_queue;
+	
+      	gint32 index;
+	
+	index = 0;
+	parameter_value_queue = ags_vst_parameter_changes_add_parameter_data(input_data->input_parameter_changes,
+									     &(fx_vst3_audio->parameter_changes[i].param_id), &index);
+
+	index = 0;
+	ags_vst_parameter_value_queue_add_point(parameter_value_queue,
+						0, fx_vst3_audio->parameter_changes[i].param_value,
+						&index);
+      }
+
+      fx_vst3_audio->parameter_changes[0].param_id = ~0;
     }            
 
     g_rec_mutex_unlock(fx_vst3_audio_mutex);
@@ -574,8 +642,12 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 
     if(is_live_instrument){
       ags_vst_event_list_clear(channel_data->input_event);
+
+      ags_vst_parameter_changes_clear_queue(channel_data->input_parameter_changes);
     }else{
       ags_vst_event_list_clear(input_data->input_event);
+
+      ags_vst_parameter_changes_clear_queue(input_data->input_parameter_changes);
     }            
 
     g_rec_mutex_unlock(fx_vst3_audio_mutex);
@@ -700,74 +772,6 @@ ags_fx_vst3_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_aud
 
     input_data->key_on -= 1;
     
-    if(is_live_instrument){
-      ags_vst_ievent_list_add_event(channel_data->input_event,
-				    ags_vst_note_off_event_alloc(0,
-								 midi_note,
-								 0.0,
-								 1.0,
-								 -1,
-								 -1));
-    }else{
-      ags_vst_ievent_list_add_event(input_data->input_event,
-				    ags_vst_note_off_event_alloc(0,
-								 midi_note,
-								 0.0,
-								 1.0,
-								 -1,
-								 -1));
-    }
-
-    g_rec_mutex_unlock(fx_vst3_audio_mutex);
-
-    if(is_live_instrument){
-      g_rec_mutex_lock(fx_vst3_audio_mutex);
-      
-      if(channel_data->output != NULL){
-	ags_audio_buffer_util_clear_float(channel_data->output, 1,
-					  fx_vst3_audio->output_port_count * buffer_size);
-      }
-      
-      if(channel_data->input != NULL){
-	ags_audio_buffer_util_clear_float(channel_data->input, 1,
-					  fx_vst3_audio->input_port_count * buffer_size);
-      }
-
-      if(channel_data->iaudio_processor != NULL){
-	ags_vst_iaudio_processor_process(channel_data->iaudio_processor,
-					 channel_data->process_data);  
-      }
-
-      g_rec_mutex_unlock(fx_vst3_audio_mutex);
-    }else{
-      g_rec_mutex_lock(fx_vst3_audio_mutex);
-      
-      if(input_data->output != NULL){
-	ags_audio_buffer_util_clear_float(input_data->output, 1,
-					  fx_vst3_audio->output_port_count * buffer_size);
-      }
-      
-      if(input_data->input != NULL){
-	ags_audio_buffer_util_clear_float(input_data->input, 1,
-					  fx_vst3_audio->input_port_count * buffer_size);
-      }
-
-      if(input_data->iaudio_processor != NULL){
-	ags_vst_iaudio_processor_process(input_data->iaudio_processor,
-					 input_data->process_data);  
-      }
-      
-      g_rec_mutex_unlock(fx_vst3_audio_mutex);
-    }
-
-    g_rec_mutex_lock(fx_vst3_audio_mutex);
-
-    if(is_live_instrument){
-      ags_vst_event_list_clear(channel_data->input_event);
-    }else{
-      ags_vst_event_list_clear(input_data->input_event);
-    }            
-
     g_rec_mutex_unlock(fx_vst3_audio_mutex);
   }
   

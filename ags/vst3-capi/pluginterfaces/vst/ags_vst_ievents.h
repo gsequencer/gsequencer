@@ -48,6 +48,9 @@ extern "C" {
   
   AgsVstEvent* ags_vst_note_off_event_alloc(gint channel, gint pitch, gfloat tuning, gfloat velocity, gint32 length, gint32 note_id);
   
+  void ags_vst_event_set_sample_offset(AgsVstEvent *event,
+				       gint32 sample_offset);
+
   const AgsVstTUID* ags_vst_ievent_list_get_iid();
   
   gint32 ags_vst_ievent_list_get_event_count(AgsVstIEventList *ievent_list);

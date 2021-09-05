@@ -33,10 +33,19 @@ extern "C" {
 
   AgsVstParameterValueQueue* ags_vst_parameter_value_queue_new(AgsVstParamID param_id);
 
-  void ags_vst_parameter_value_queue_add_point(AgsVstParameterValueQueue *parameter_value_queue,
-					       gint32 sample_offset, AgsVstParamValue value,
-					       gint32 *index);
+  gint32 ags_vst_parameter_value_queue_get_point_count(AgsVstParameterValueQueue *parameter_value_queue);
 
+  AgsVstTResult ags_vst_parameter_value_queue_get_point(AgsVstParameterValueQueue *parameter_value_queue,
+							gint32 index,
+							gint32 *sample_offset, AgsVstParamValue *value);
+  
+  AgsVstTResult ags_vst_parameter_value_queue_add_point(AgsVstParameterValueQueue *parameter_value_queue,
+							gint32 sample_offset, AgsVstParamValue value,
+							gint32 *index);
+
+  void ags_vst_parameter_value_queue_set_param_id(AgsVstParameterValueQueue *parameter_value_queue,
+						  AgsVstParamID param_id);
+  
   void ags_vst_parameter_value_queue_clear(AgsVstParameterValueQueue *parameter_value_queue);
     
   AgsVstParameterChanges* ags_vst_parameter_changes_new();
