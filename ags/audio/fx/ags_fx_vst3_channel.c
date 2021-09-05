@@ -216,6 +216,8 @@ ags_fx_vst3_channel_notify_buffer_size_callback(GObject *gobject,
 
     input_data = fx_vst3_channel->input_data[i];
 
+//    g_message("ags_fx_vst3_channel_notify_buffer_size_callback() - input data buffer_size = %d", buffer_size);
+    
     ags_vst_process_data_set_num_samples(input_data->process_data,
 					 buffer_size);
     
@@ -252,10 +254,15 @@ ags_fx_vst3_channel_notify_samplerate_callback(GObject *gobject,
 
   AgsVst3Plugin *vst3_plugin;
 
+  gchar **parameter_name;
+  
+  guint n_params;
   guint output_port_count;
   guint buffer_size;
   guint samplerate;
   guint i;
+
+  GValue *value;
   
   GRecMutex *recall_mutex;
 
@@ -283,6 +290,60 @@ ags_fx_vst3_channel_notify_samplerate_callback(GObject *gobject,
 	       "samplerate", &samplerate,
 	       NULL);
 
+  n_params = 5;
+  
+#if HAVE_GLIB_2_68
+  strv_builder = g_strv_builder_new();
+
+  g_strv_builder_add(strv_builder,
+		     "buffer-size");
+  g_strv_builder_add(strv_builder,
+		     "samplerate");
+  g_strv_builder_add(strv_builder,
+		     "iedit-controller");
+  g_strv_builder_add(strv_builder,
+		     "iaudio-processor");
+  g_strv_builder_add(strv_builder,
+		     "iedit-controller-host-editing");
+
+  parameter_name = g_strv_builder_end(strv_builder);
+#else
+  parameter_name = (gchar **) g_malloc(6 * sizeof(gchar *));
+
+  parameter_name[0] = g_strdup("buffer-size");
+  parameter_name[1] = g_strdup("samplerate");
+  parameter_name[2] = g_strdup("iedit-controller");
+  parameter_name[3] = g_strdup("iaudio-processor");
+  parameter_name[4] = g_strdup("iedit-controller-host-editing");
+  parameter_name[5] = NULL;
+#endif
+
+  n_params = 5;
+
+  value = g_new0(GValue,
+		 5);
+
+  g_value_init(value,
+	       G_TYPE_UINT);
+    
+  g_value_init(value + 1,
+	       G_TYPE_UINT);
+    
+  g_value_init(value + 2,
+	       G_TYPE_POINTER);
+
+  g_value_init(value + 3,
+	       G_TYPE_POINTER);
+
+  g_value_init(value + 4,
+	       G_TYPE_POINTER);
+
+  g_value_set_uint(value,
+		   buffer_size);
+
+  g_value_set_uint(value + 1,
+		   samplerate);
+
   /* reallocate buffer - apply samplerate */
   g_rec_mutex_lock(recall_mutex);
 
@@ -291,7 +352,25 @@ ags_fx_vst3_channel_notify_samplerate_callback(GObject *gobject,
 
     input_data = fx_vst3_channel->input_data[i];
 
-    //TODO:JK: implement me
+//    g_message("ags_fx_vst3_channel_notify_samplerate_callback() - instantiate input data");
+    
+    if(input_data->icomponent != NULL){
+//      ags_vst_icomponent_destroy(input_data->icomponent);
+    }
+
+    input_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
+								     &n_params,
+								     &parameter_name, &value);
+	      
+    input_data->iedit_controller = g_value_get_pointer(value + 2);
+    input_data->iaudio_processor = g_value_get_pointer(value + 3);
+
+    input_data->iedit_controller_host_editing = g_value_get_pointer(value + 4);
+
+    input_data->icomponent_handler = ags_vst_component_handler_new();
+	    
+    ags_vst_iedit_controller_set_component_handler(input_data->iedit_controller,
+						   input_data->icomponent_handler);	
   }
   
   g_rec_mutex_unlock(recall_mutex);
@@ -315,6 +394,8 @@ ags_fx_vst3_channel_input_data_alloc()
 
   input_data = (AgsFxVst3ChannelInputData *) g_malloc(sizeof(AgsFxVst3ChannelInputData));
 
+//  g_message("ags_fx_vst3_channel_input_data_alloc()");
+  
   g_rec_mutex_init(&(input_data->strct_mutex));
 
   input_data->parent = NULL;
@@ -447,10 +528,14 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
   
   gchar **parameter_name;
 
-  gchar *filename, *effect;
+  gchar *filename;
+  gchar *effect;
 
+  guint n_params;
   guint buffer_size;
   guint samplerate;
+  
+  GValue *value;
   
   GRecMutex *recall_mutex;
 
@@ -476,7 +561,7 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
 
   parameter_name = g_strv_builder_end(strv_builder);
 #else
-  parameter_name = (gchar **) g_malloc(6* sizeof(gchar *));
+  parameter_name = (gchar **) g_malloc(6 * sizeof(gchar *));
 
   parameter_name[0] = g_strdup("buffer-size");
   parameter_name[1] = g_strdup("samplerate");
@@ -485,6 +570,26 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
   parameter_name[4] = g_strdup("iedit-controller-host-editing");
   parameter_name[5] = NULL;
 #endif
+
+  n_params = 5;
+
+  value = g_new0(GValue,
+		 5);
+
+  g_value_init(value,
+	       G_TYPE_UINT);
+    
+  g_value_init(value + 1,
+	       G_TYPE_UINT);
+    
+  g_value_init(value + 2,
+	       G_TYPE_POINTER);
+
+  g_value_init(value + 3,
+	       G_TYPE_POINTER);
+
+  g_value_init(value + 4,
+	       G_TYPE_POINTER);
   
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_channel);
@@ -503,6 +608,12 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
 	       "samplerate", &samplerate,
 	       NULL);
 
+  g_value_set_uint(value,
+		   buffer_size);
+
+  g_value_set_uint(value + 1,
+		   samplerate);
+    
   /* check if already loaded */
   g_rec_mutex_lock(recall_mutex);
 
@@ -518,33 +629,7 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
     
   if(vst3_plugin != NULL &&
      !ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
-    GValue *value;
-
-    guint i;
-    guint n_params;
-    
-    n_params = 4;
-
-    value = g_new0(GValue,
-		   4);
-
-    g_value_init(value,
-		 G_TYPE_UINT);
-    
-    g_value_set_uint(value,
-		     buffer_size);
-    
-    g_value_init(value + 1,
-		 G_TYPE_UINT);
-
-    g_value_set_uint(value + 1,
-		     samplerate);
-    
-    g_value_init(value + 2,
-		 G_TYPE_POINTER);
-
-    g_value_init(value + 3,
-		 G_TYPE_POINTER);
+    guint i;    
 
     /* set vst3 plugin */    
     g_rec_mutex_lock(recall_mutex);
@@ -555,6 +640,8 @@ ags_fx_vst3_channel_load_plugin(AgsFxVst3Channel *fx_vst3_channel)
       input_data = fx_vst3_channel->input_data[i];
 
       if(input_data->icomponent == NULL){
+//	g_message("ags_fx_vst3_channel_load_plugin() - instantiate input data");
+	
 	input_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
 									 &n_params,
 									 &parameter_name, &value);
@@ -768,6 +855,8 @@ ags_fx_vst3_channel_load_port(AgsFxVst3Channel *fx_vst3_channel)
 		       "port-index", &port_index,
 		       NULL);
 
+//	  g_message("channel has port %s", specifier);
+	  
 	  control_port = g_strdup_printf("%u/%u",
 					 nth,
 					 control_port_count);
@@ -956,6 +1045,8 @@ ags_fx_vst3_channel_load_port(AgsFxVst3Channel *fx_vst3_channel)
 					 nth,
 					 control_port_count);
 
+//	  g_message("audio has port %s", specifier);
+	  
 	  /* default value */
 	  g_value_init(&default_value,
 		       G_TYPE_DOUBLE);

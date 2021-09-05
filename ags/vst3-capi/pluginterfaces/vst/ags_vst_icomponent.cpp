@@ -30,6 +30,11 @@ extern "C" {
     return((AgsVstTUID *) &(Steinberg::Vst::IComponent::iid.toTUID()));
   }
 
+  void ags_vst_icomponent_destroy(AgsVstIComponent *icomponent)
+  {
+    delete ((Steinberg::Vst::IComponent *) icomponent);
+  }
+
   AgsVstTResult ags_vst_icomponent_get_controller_class_id(AgsVstIComponent *icomponent, AgsVstTUID *class_id)
   {
     return(((Steinberg::Vst::IComponent *) icomponent)->getControllerClassId((char *) class_id));
