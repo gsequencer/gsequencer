@@ -31,7 +31,28 @@ extern "C" {
   typedef struct ParameterValueQueue AgsVstParameterValueQueue;
   typedef struct ParameterChanges AgsVstParameterChanges;
 
+  AgsVstParameterValueQueue* ags_vst_parameter_value_queue_new(AgsVstParamID param_id);
+
+  void ags_vst_parameter_value_queue_add_point(AgsVstParameterValueQueue *parameter_value_queue,
+					       gint32 sample_offset, AgsVstParamValue value,
+					       gint32 *index);
+
+  void ags_vst_parameter_value_queue_clear(AgsVstParameterValueQueue *parameter_value_queue);
+    
   AgsVstParameterChanges* ags_vst_parameter_changes_new();
+
+  void ags_vst_parameter_changes_clear_queue(AgsVstParameterChanges *parameter_changes);
+
+  void ags_vst_parameter_changes_set_max_parameters(AgsVstParameterChanges *parameter_changes,
+						    gint32 max_parameters);
+  
+  gint32 ags_vst_parameter_changes_get_parameter_count(AgsVstParameterChanges *parameter_changes);
+
+  AgsVstParameterValueQueue* ags_vst_parameter_changes_get_parameter_data(AgsVstParameterChanges *parameter_changes,
+									  gint32 index);
+
+  AgsVstParameterValueQueue* ags_vst_parameter_changes_add_parameter_data(AgsVstParameterChanges *parameter_changes,
+									  AgsVstParamID *param_id, gint32 *index);
   
 #ifdef __cplusplus
 }
