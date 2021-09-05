@@ -1212,6 +1212,8 @@ ags_fx_vst3_audio_channel_data_alloc()
 
   ags_vst_process_data_set_outputs(channel_data->process_data,
 				   output);    
+
+  channel_data->parameter_changes[0].param_id = ~0;
   
   for(i = 0; i < AGS_SEQUENCER_MAX_MIDI_KEYS; i++){
     channel_data->input_data[i] = ags_fx_vst3_audio_input_data_alloc();
@@ -1317,6 +1319,8 @@ ags_fx_vst3_audio_input_data_alloc()
 
   ags_vst_process_data_set_input_iparameter_changes(input_data->process_data,
 						    input_data->input_parameter_changes);
+
+  input_data->parameter_changes[0].param_id = ~0;
 
   /* event list */
   input_data->input_event = ags_vst_event_list_new();

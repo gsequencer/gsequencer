@@ -136,6 +136,11 @@ struct _AgsFxVst3AudioChannelData
   AgsVstParameterChanges *input_parameter_changes;
   AgsVstIEventList *input_event;
   
+  struct{
+    AgsVstParamID param_id;
+    AgsVstParamValue param_value;
+  }parameter_changes[AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES];
+  
   AgsFxVst3AudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
 };
 
@@ -164,6 +169,11 @@ struct _AgsFxVst3AudioInputData
   AgsVstProcessData *process_data;
   AgsVstParameterChanges *input_parameter_changes;
   AgsVstIEventList *input_event;
+  
+  struct{
+    AgsVstParamID param_id;
+    AgsVstParamValue param_value;
+  }parameter_changes[AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES];
   
   snd_seq_event_t *event_buffer;
   guint key_on;

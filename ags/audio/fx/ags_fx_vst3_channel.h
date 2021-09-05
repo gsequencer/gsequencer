@@ -106,6 +106,11 @@ struct _AgsFxVst3ChannelInputData
 
   AgsVstProcessData *process_data;
   AgsVstParameterChanges *input_parameter_changes;
+
+  struct{
+    AgsVstParamID param_id;
+    AgsVstParamValue param_value;
+  }parameter_changes[AGS_FX_VST3_CHANNEL_MAX_PARAMETER_CHANGES];  
 };
 
 GType ags_fx_vst3_channel_get_type();

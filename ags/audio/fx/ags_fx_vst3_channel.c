@@ -475,6 +475,8 @@ ags_fx_vst3_channel_input_data_alloc()
   ags_vst_process_data_set_input_iparameter_changes(input_data->process_data,
 						    input_data->input_parameter_changes);
 
+  input_data->parameter_changes[0].param_id = ~0;
+
   return(input_data);
 }
 

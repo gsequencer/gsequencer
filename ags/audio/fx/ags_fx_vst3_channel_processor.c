@@ -35,6 +35,7 @@ void ags_fx_vst3_channel_processor_dispose(GObject *gobject);
 void ags_fx_vst3_channel_processor_finalize(GObject *gobject);
 
 void ags_fx_vst3_channel_processor_run_init_pre(AgsRecall *recall);
+void ags_fx_vst3_channel_processor_run_inter(AgsRecall *recall);
 void ags_fx_vst3_channel_processor_done(AgsRecall *recall);
 
 /**
@@ -100,6 +101,7 @@ ags_fx_vst3_channel_processor_class_init(AgsFxVst3ChannelProcessorClass *fx_vst3
   recall = (AgsRecallClass *) fx_vst3_channel_processor;
 
   recall->run_init_pre = ags_fx_vst3_channel_processor_run_init_pre;
+  recall->run_inter = ags_fx_vst3_channel_processor_run_inter;
   recall->done = ags_fx_vst3_channel_processor_done;
 }
 
@@ -216,6 +218,46 @@ ags_fx_vst3_channel_processor_run_init_pre(AgsRecall *recall)
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_vst3_channel_processor_parent_class)->run_init_pre(recall);
+}
+
+void
+ags_fx_vst3_channel_processor_run_inter(AgsRecall *recall)
+{
+  AgsFxVst3Channel *fx_vst3_channel;
+
+  AgsFxVst3ChannelInputData *input_data;
+  
+  guint sound_scope;
+  guint nth;
+
+  
+  GRecMutex *fx_vst3_channel_mutex;
+
+  fx_vst3_channel = NULL;
+
+  g_object_get(recall,
+	       "recall-channel", &fx_vst3_channel,
+	       NULL);
+
+  sound_scope = ags_recall_get_sound_scope(recall);
+
+  fx_vst3_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_channel);
+
+  g_rec_mutex_lock(fx_vst3_channel_mutex);
+
+  input_data = fx_vst3_channel->input_data[sound_scope];
+  
+  for(nth = 0; nth < AGS_FX_VST3_CHANNEL_MAX_PARAMETER_CHANGES && fx_vst3_channel->parameter_changes[nth].param_id != ~0; nth++){
+    input_data->parameter_changes[nth].param_id = fx_vst3_channel->parameter_changes[nth].param_id;
+    input_data->parameter_changes[nth].param_value = fx_vst3_channel->parameter_changes[nth].param_value;
+  }
+
+  fx_vst3_channel->parameter_changes[0].param_id = ~0;
+  
+  g_rec_mutex_unlock(fx_vst3_channel_mutex);
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_fx_vst3_channel_processor_parent_class)->run_inter(recall);
 }
 
 void

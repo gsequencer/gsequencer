@@ -501,22 +501,22 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       ags_vst_ievent_list_add_event(channel_data->input_event,
 				    note_off);
 
-      for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES && fx_vst3_audio->parameter_changes[i].param_id != ~0; i++){
+      for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES && channel_data->parameter_changes[i].param_id != ~0; i++){
 	AgsVstParameterValueQueue *parameter_value_queue;
 	
 	gint32 index;
 
 	index = 0;
 	parameter_value_queue = ags_vst_parameter_changes_add_parameter_data(channel_data->input_parameter_changes,
-									     &(fx_vst3_audio->parameter_changes[i].param_id), &index);
+									     &(channel_data->parameter_changes[i].param_id), &index);
 
 	index = 0;
 	ags_vst_parameter_value_queue_add_point(parameter_value_queue,
-						0, fx_vst3_audio->parameter_changes[i].param_value,
+						0, channel_data->parameter_changes[i].param_value,
 						&index);
       }
 
-      fx_vst3_audio->parameter_changes[0].param_id = ~0;
+      channel_data->parameter_changes[0].param_id = ~0;
     }else{
       AgsVstEvent *note_off;
 
@@ -545,22 +545,22 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       ags_vst_ievent_list_add_event(input_data->input_event,
 				    note_off);
 
-      for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES && fx_vst3_audio->parameter_changes[i].param_id != ~0; i++){
+      for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES && input_data->parameter_changes[i].param_id != ~0; i++){
 	AgsVstParameterValueQueue *parameter_value_queue;
 	
       	gint32 index;
 	
 	index = 0;
 	parameter_value_queue = ags_vst_parameter_changes_add_parameter_data(input_data->input_parameter_changes,
-									     &(fx_vst3_audio->parameter_changes[i].param_id), &index);
+									     &(input_data->parameter_changes[i].param_id), &index);
 
 	index = 0;
 	ags_vst_parameter_value_queue_add_point(parameter_value_queue,
-						0, fx_vst3_audio->parameter_changes[i].param_value,
+						0, input_data->parameter_changes[i].param_value,
 						&index);
       }
 
-      fx_vst3_audio->parameter_changes[0].param_id = ~0;
+      input_data->parameter_changes[0].param_id = ~0;
     }            
 
     g_rec_mutex_unlock(fx_vst3_audio_mutex);
