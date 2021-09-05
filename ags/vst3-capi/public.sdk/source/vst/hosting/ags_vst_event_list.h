@@ -31,6 +31,8 @@ extern "C" {
   typedef struct EventList AgsVstEventList;
 
   AgsVstEventList* ags_vst_event_list_new();
+
+  void ags_vst_event_list_clear(AgsVstEventList *event_list);
   
 #ifdef __cplusplus
 }
