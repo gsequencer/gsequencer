@@ -432,9 +432,6 @@ ags_fx_vst3_audio_notify_samplerate_callback(GObject *gobject,
 
   GList *start_recall_channel, *recall_channel;
 
-  gchar **parameter_name;
-  
-  guint n_params;
   guint input_pads;
   guint audio_channels;
   guint output_port_count, input_port_count;
@@ -443,8 +440,6 @@ ags_fx_vst3_audio_notify_samplerate_callback(GObject *gobject,
   guint i, j, k;
   gboolean is_live_instrument;
 
-  GValue *value;
-  
   GRecMutex *recall_mutex;
   
   fx_vst3_audio = AGS_FX_VST3_AUDIO(gobject);
@@ -471,52 +466,6 @@ ags_fx_vst3_audio_notify_samplerate_callback(GObject *gobject,
     return;
   }
 
-#if HAVE_GLIB_2_68
-  strv_builder = g_strv_builder_new();
-
-  g_strv_builder_add(strv_builder,
-		     "buffer-size");
-  g_strv_builder_add(strv_builder,
-		     "samplerate");
-  g_strv_builder_add(strv_builder,
-		     "iedit-controller");
-  g_strv_builder_add(strv_builder,
-		     "iaudio-processor");
-  g_strv_builder_add(strv_builder,
-		     "iedit-controller-host-editing");
-  
-  parameter_name = g_strv_builder_end(strv_builder);
-#else
-  parameter_name = (gchar **) g_malloc(6 * sizeof(gchar *));
-
-  parameter_name[0] = g_strdup("buffer-size");
-  parameter_name[1] = g_strdup("samplerate");
-  parameter_name[2] = g_strdup("iedit-controller");
-  parameter_name[3] = g_strdup("iaudio-processor");
-  parameter_name[4] = g_strdup("iedit-controller-host-editing");
-  parameter_name[5] = NULL;
-#endif
-
-  n_params = 5;
-
-  value = g_new0(GValue,
-		 5);
-
-  g_value_init(value,
-	       G_TYPE_UINT);
-    
-  g_value_init(value + 1,
-	       G_TYPE_UINT);
-    
-  g_value_init(value + 2,
-	       G_TYPE_POINTER);
-
-  g_value_init(value + 3,
-	       G_TYPE_POINTER);
-
-  g_value_init(value + 4,
-	       G_TYPE_POINTER);
-
   audio = NULL;
 
   recall_container = NULL;
@@ -530,12 +479,6 @@ ags_fx_vst3_audio_notify_samplerate_callback(GObject *gobject,
 	       "buffer-size", &buffer_size,
 	       "samplerate", &samplerate,
 	       NULL);
-
-  g_value_set_uint(value,
-		   buffer_size);
-
-  g_value_set_uint(value + 1,
-		   samplerate);
   
   start_recall_channel = ags_recall_container_get_recall_channel(recall_container);
 
@@ -581,28 +524,10 @@ ags_fx_vst3_audio_notify_samplerate_callback(GObject *gobject,
 	  
 	  guint nth;
 
-	  if(channel_data->icomponent != NULL){
-	    ags_vst_icomponent_destroy(channel_data->icomponent);
-	  }
-
 //	  g_message("ags_fx_vst3_audio_notify_samplerate_callback() - instantiate channel data");
 	  
 	  ags_vst_process_context_set_samplerate(channel_data->process_context,
 						 (gdouble) samplerate);	  
-	  
-	  channel_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
-									     &n_params,
-									     &parameter_name, &value);
-	      
-	  channel_data->iedit_controller = g_value_get_pointer(value + 2);
-	  channel_data->iaudio_processor = g_value_get_pointer(value + 3);
-
-	  channel_data->iedit_controller_host_editing = g_value_get_pointer(value + 4);
-
-	  channel_data->icomponent_handler = ags_vst_component_handler_new();
-	    
-	  ags_vst_iedit_controller_set_component_handler(channel_data->iedit_controller,
-							 channel_data->icomponent_handler);
 	}
 	
 	if(!is_live_instrument){
@@ -611,28 +536,10 @@ ags_fx_vst3_audio_notify_samplerate_callback(GObject *gobject,
 
 	    input_data = channel_data->input_data[k];
 
-	    if(input_data->icomponent != NULL){
-	      ags_vst_icomponent_destroy(input_data->icomponent);
-	    }
-
 //	    g_message("ags_fx_vst3_audio_notify_samplerate_callback() - instantiate input data");
 	  
 	    ags_vst_process_context_set_samplerate(input_data->process_context,
 						   (gdouble) samplerate);	  
-	    
-	    input_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
-									     &n_params,
-									     &parameter_name, &value);
-
-	    input_data->iedit_controller = g_value_get_pointer(value + 2);
-	    input_data->iaudio_processor = g_value_get_pointer(value + 3);
-
-	    input_data->iedit_controller_host_editing = g_value_get_pointer(value + 4);
-
-	    input_data->icomponent_handler = ags_vst_component_handler_new();
-	    
-	    ags_vst_iedit_controller_set_component_handler(input_data->iedit_controller,
-							   input_data->icomponent_handler);
 	  }
 	}
       }
@@ -670,8 +577,6 @@ ags_fx_vst3_audio_notify_samplerate_callback(GObject *gobject,
   if(recall_container != NULL){
     g_object_unref(recall_container);
   }
-
-  g_strfreev(parameter_name);
 }
 
 void
@@ -685,22 +590,13 @@ ags_fx_vst3_audio_set_audio_channels_callback(AgsAudio *audio,
   AgsVst3Plugin *vst3_plugin;
 
   GList *start_recall_channel, *recall_channel;
-
-#if HAVE_GLIB_2_68
-  GStrvBuilder *strv_builder;
-#endif
-  
-  gchar **parameter_name;
-    
-  guint n_params;
+      
   guint input_pads;
   guint output_port_count, input_port_count;
   guint buffer_size;
   guint samplerate;
   guint i, j, k;
   gboolean is_live_instrument;
-
-  GValue *value;
 
   GRecMutex *recall_mutex;
 
@@ -726,52 +622,6 @@ ags_fx_vst3_audio_set_audio_channels_callback(AgsAudio *audio,
     return;
   }
 
-#if HAVE_GLIB_2_68
-  strv_builder = g_strv_builder_new();
-
-  g_strv_builder_add(strv_builder,
-		     "buffer-size");
-  g_strv_builder_add(strv_builder,
-		     "samplerate");
-  g_strv_builder_add(strv_builder,
-		     "iedit-controller");
-  g_strv_builder_add(strv_builder,
-		     "iaudio-processor");
-  g_strv_builder_add(strv_builder,
-		     "iedit-controller-host-editing");
-  
-  parameter_name = g_strv_builder_end(strv_builder);
-#else
-  parameter_name = (gchar **) g_malloc(6 * sizeof(gchar *));
-
-  parameter_name[0] = g_strdup("buffer-size");
-  parameter_name[1] = g_strdup("samplerate");
-  parameter_name[2] = g_strdup("iedit-controller");
-  parameter_name[3] = g_strdup("iaudio-processor");
-  parameter_name[4] = g_strdup("iedit-controller-host-editing");
-  parameter_name[5] = NULL;
-#endif
-
-  n_params = 5;
-
-  value = g_new0(GValue,
-		 5);
-
-  g_value_init(value,
-	       G_TYPE_UINT);
-  
-  g_value_init(value + 1,
-	       G_TYPE_UINT);
-    
-  g_value_init(value + 2,
-	       G_TYPE_POINTER);
-
-  g_value_init(value + 3,
-	       G_TYPE_POINTER);
-
-  g_value_init(value + 4,
-	       G_TYPE_POINTER);
-
   start_input = NULL;
 
   input_pads = 0;
@@ -793,12 +643,6 @@ ags_fx_vst3_audio_set_audio_channels_callback(AgsAudio *audio,
 	       "samplerate", &samplerate,
 	       NULL);
   
-  g_value_set_uint(value,
-		   buffer_size);
-
-  g_value_set_uint(value + 1,
-		   samplerate);
-
   start_recall_channel = ags_recall_container_get_recall_channel(recall_container);
 
   /* get VST3 plugin */
@@ -852,21 +696,7 @@ ags_fx_vst3_audio_set_audio_channels_callback(AgsAudio *audio,
 	    guint nth;
 
 //	    g_message("ags_fx_vst3_audio_set_audio_channels_callback() - instantiate channel data");
-	    
-	    channel_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
-									       &n_params,
-									       &parameter_name, &value);
-	      
-	    channel_data->iedit_controller = g_value_get_pointer(value + 2);
-	    channel_data->iaudio_processor = g_value_get_pointer(value + 3);
-
-	    channel_data->iedit_controller_host_editing = g_value_get_pointer(value + 4);
-
-	    channel_data->icomponent_handler = ags_vst_component_handler_new();
-	    
-	    ags_vst_iedit_controller_set_component_handler(channel_data->iedit_controller,
-							   channel_data->icomponent_handler);
-	    
+	    	    
 	    ags_vst_process_data_set_num_samples(channel_data->process_data,
 						 buffer_size);
 	  
@@ -898,21 +728,7 @@ ags_fx_vst3_audio_set_audio_channels_callback(AgsAudio *audio,
 	      input_data = channel_data->input_data[k];
 	    
 //	      g_message("ags_fx_vst3_audio_set_audio_channels_callback() - instantiate input data");
-	      
-	      input_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
-									       &n_params,
-									       &parameter_name, &value);
-
-	      input_data->iedit_controller = g_value_get_pointer(value + 2);
-	      input_data->iaudio_processor = g_value_get_pointer(value + 3);
-
-	      input_data->iedit_controller_host_editing = g_value_get_pointer(value + 4);
-	      
-	      input_data->icomponent_handler = ags_vst_component_handler_new();
-	    
-	      ags_vst_iedit_controller_set_component_handler(input_data->iedit_controller,
-							     input_data->icomponent_handler);
-	      
+	      	      
 	      ags_vst_process_data_set_num_samples(input_data->process_data,
 						   buffer_size);
 	      
@@ -1540,20 +1356,11 @@ ags_fx_vst3_audio_load_plugin(AgsFxVst3Audio *fx_vst3_audio)
 {
   AgsVst3Manager *vst3_manager;
   AgsVst3Plugin *vst3_plugin;
-
-#if HAVE_GLIB_2_68
-  GStrvBuilder *strv_builder;
-#endif
-  
-  gchar **parameter_name;
   
   gchar *filename, *effect;
 
-  guint n_params;
   guint buffer_size;
   guint samplerate;
-  
-  GValue *value;
   
   GRecMutex *recall_mutex;
 
@@ -1562,52 +1369,6 @@ ags_fx_vst3_audio_load_plugin(AgsFxVst3Audio *fx_vst3_audio)
   }
 
   vst3_manager = ags_vst3_manager_get_instance();
-
-#if HAVE_GLIB_2_68
-  strv_builder = g_strv_builder_new();
-
-  g_strv_builder_add(strv_builder,
-		     "buffer-size");
-  g_strv_builder_add(strv_builder,
-		     "samplerate");
-  g_strv_builder_add(strv_builder,
-		     "iedit-controller");
-  g_strv_builder_add(strv_builder,
-		     "iaudio-processor");
-  g_strv_builder_add(strv_builder,
-		     "iedit-controller-host-editing");
-  
-  parameter_name = g_strv_builder_end(strv_builder);
-#else
-  parameter_name = (gchar **) g_malloc(6 * sizeof(gchar *));
-
-  parameter_name[0] = g_strdup("buffer-size");
-  parameter_name[1] = g_strdup("samplerate");
-  parameter_name[2] = g_strdup("iedit-controller");
-  parameter_name[3] = g_strdup("iaudio-processor");
-  parameter_name[4] = g_strdup("iedit-controller-host-editing");
-  parameter_name[5] = NULL;
-#endif
-  
-  n_params = 5;
-
-  value = g_new0(GValue,
-		 5);
-
-  g_value_init(value,
-	       G_TYPE_UINT);
-    
-  g_value_init(value + 1,
-	       G_TYPE_UINT);
-  
-  g_value_init(value + 2,
-	       G_TYPE_POINTER);
-
-  g_value_init(value + 3,
-	       G_TYPE_POINTER);
-
-  g_value_init(value + 4,
-	       G_TYPE_POINTER);
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_audio);
@@ -1625,12 +1386,6 @@ ags_fx_vst3_audio_load_plugin(AgsFxVst3Audio *fx_vst3_audio)
 	       "buffer-size", &buffer_size,
 	       "samplerate", &samplerate,
 	       NULL);
-
-  g_value_set_uint(value,
-		   buffer_size);
-
-  g_value_set_uint(value + 1,
-		   samplerate);
 
   /* check if already loaded */
   g_rec_mutex_lock(recall_mutex);
@@ -1678,21 +1433,7 @@ ags_fx_vst3_audio_load_plugin(AgsFxVst3Audio *fx_vst3_audio)
 
 	  if(is_live_instrument){
 	    if(channel_data->icomponent == NULL){
-//	      g_message("ags_fx_vst3_audio_load_plugin() - instantiate channel data");
-	      
-	      channel_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
-										 &n_params,
-										 &parameter_name, &value);
-	      
-	      channel_data->iedit_controller = g_value_get_pointer(value + 2);
-	      channel_data->iaudio_processor = g_value_get_pointer(value + 3);
-
-	      channel_data->iedit_controller_host_editing = g_value_get_pointer(value + 4);
-
-	      channel_data->icomponent_handler = ags_vst_component_handler_new();
-	    
-	      ags_vst_iedit_controller_set_component_handler(channel_data->iedit_controller,
-							     channel_data->icomponent_handler);
+//	      g_message("ags_fx_vst3_audio_load_plugin() - instantiate channel data");	      
 	    }
 	  }
 	
@@ -1704,20 +1445,6 @@ ags_fx_vst3_audio_load_plugin(AgsFxVst3Audio *fx_vst3_audio)
 
 	      if(input_data->icomponent == NULL){
 //		g_message("ags_fx_vst3_audio_load_plugin() - instantiate input data");
-		
-		input_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
-										 &n_params,
-										 &parameter_name, &value);
-
-		input_data->iedit_controller = g_value_get_pointer(value + 2);
-		input_data->iaudio_processor = g_value_get_pointer(value + 3);
-
-		input_data->iedit_controller_host_editing = g_value_get_pointer(value + 4);
-
-		input_data->icomponent_handler = ags_vst_component_handler_new();
-	    
-		ags_vst_iedit_controller_set_component_handler(input_data->iedit_controller,
-							       input_data->icomponent_handler);
 	      }
 	    }
 	  }
@@ -1726,12 +1453,8 @@ ags_fx_vst3_audio_load_plugin(AgsFxVst3Audio *fx_vst3_audio)
     }
     
     g_rec_mutex_unlock(recall_mutex);
-
-    g_free(value);
   }
 
-  g_strfreev(parameter_name);
-  
   g_free(filename);
   g_free(effect);
 }

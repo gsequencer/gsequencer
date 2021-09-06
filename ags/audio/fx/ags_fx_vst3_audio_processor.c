@@ -271,6 +271,20 @@ ags_fx_vst3_audio_processor_run_init_pre(AgsRecall *recall)
       channel_data = scope_data->channel_data[j];
 
       if(is_live_instrument){
+	channel_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
+									   &n_params,
+									   &parameter_name, &value);
+	      
+	channel_data->iedit_controller = g_value_get_pointer(value + 2);
+	channel_data->iaudio_processor = g_value_get_pointer(value + 3);
+
+	channel_data->iedit_controller_host_editing = g_value_get_pointer(value + 4);
+
+	channel_data->icomponent_handler = ags_vst_component_handler_new();
+	    
+	ags_vst_iedit_controller_set_component_handler(channel_data->iedit_controller,
+						       channel_data->icomponent_handler);
+	
 	ags_vst_process_context_set_state(channel_data->process_context,
 					  AGS_VST_KPLAYING);
 	
@@ -299,6 +313,20 @@ ags_fx_vst3_audio_processor_run_init_pre(AgsRecall *recall)
 
 	  input_data = channel_data->input_data[k];
 
+	  input_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
+									   &n_params,
+									   &parameter_name, &value);
+
+	  input_data->iedit_controller = g_value_get_pointer(value + 2);
+	  input_data->iaudio_processor = g_value_get_pointer(value + 3);
+
+	  input_data->iedit_controller_host_editing = g_value_get_pointer(value + 4);
+
+	  input_data->icomponent_handler = ags_vst_component_handler_new();
+	    
+	  ags_vst_iedit_controller_set_component_handler(input_data->iedit_controller,
+							 input_data->icomponent_handler);
+	  
 	  ags_vst_process_context_set_state(input_data->process_context,
 					    AGS_VST_KPLAYING);
 	  
@@ -330,6 +358,9 @@ ags_fx_vst3_audio_processor_run_init_pre(AgsRecall *recall)
   if(fx_vst3_audio != NULL){
     g_object_unref(fx_vst3_audio);
   }
+
+  g_strfreev(parameter_name);
+  g_free(value);
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_vst3_audio_processor_parent_class)->run_init_pre(recall);
@@ -516,6 +547,10 @@ ags_fx_vst3_audio_processor_done(AgsRecall *recall)
 					AGS_VST_KEVENT, AGS_VST_KINPUT,
 					0,
 					FALSE);
+
+	if(channel_data->icomponent != NULL){
+	  ags_vst_icomponent_destroy(channel_data->icomponent);
+	}
       }
 
       if(!is_live_instrument){
@@ -544,6 +579,10 @@ ags_fx_vst3_audio_processor_done(AgsRecall *recall)
 					  AGS_VST_KEVENT, AGS_VST_KINPUT,
 					  0,
 					  FALSE);
+
+	  if(input_data->icomponent != NULL){
+	    ags_vst_icomponent_destroy(input_data->icomponent);
+	  }
 	}
       }
     }
