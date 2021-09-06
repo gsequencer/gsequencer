@@ -173,6 +173,7 @@ ags_fx_vst3_audio_signal_real_run_inter(AgsRecall *recall)
   guint buffer_size;
   guint format;
   guint copy_mode_out, copy_mode_in;
+  guint i;
   
   GRecMutex *source_stream_mutex;
   GRecMutex *fx_vst3_audio_mutex;
@@ -291,6 +292,23 @@ ags_fx_vst3_audio_signal_real_run_inter(AgsRecall *recall)
 						  buffer_size, copy_mode_in);
     }
 
+    for(i = 0; i < AGS_FX_VST3_CHANNEL_MAX_PARAMETER_CHANGES && input_data->parameter_changes[i].param_id != ~0; i++){
+      AgsVstParameterValueQueue *parameter_value_queue;
+	
+      gint32 index;
+
+      index = 0;
+      parameter_value_queue = ags_vst_parameter_changes_add_parameter_data(input_data->input_parameter_changes,
+									   &(input_data->parameter_changes[i].param_id), &index);
+
+      index = 0;
+      ags_vst_parameter_value_queue_add_point(parameter_value_queue,
+					      0, input_data->parameter_changes[i].param_value,
+					      &index);
+    }
+
+    input_data->parameter_changes[0].param_id = ~0;
+    
     ags_vst_iaudio_processor_process(input_data->iaudio_processor,
 				     input_data->process_data);  
     
