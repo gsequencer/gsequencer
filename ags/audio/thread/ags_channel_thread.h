@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -80,6 +80,10 @@ struct _AgsChannelThread
   
   guint *staging_program;
   guint staging_program_count;
+
+  gboolean processing;
+
+  AgsTaskLauncher *task_launcher;
 };
 
 struct _AgsChannelThreadClass
@@ -93,6 +97,12 @@ GType ags_channel_thread_get_type();
 gboolean ags_channel_thread_test_status_flags(AgsChannelThread *channel_thread, guint status_flags);
 void ags_channel_thread_set_status_flags(AgsChannelThread *channel_thread, guint status_flags);
 void ags_channel_thread_unset_status_flags(AgsChannelThread *channel_thread, guint status_flags);
+
+gboolean ags_channel_thread_get_processing(AgsChannelThread *channel_thread);
+void ags_channel_thread_set_processing(AgsChannelThread *channel_thread,
+				       gboolean processing);
+
+AgsTaskLauncher* ags_channel_thread_get_task_launcher(AgsChannelThread *channel_thread);
 
 void ags_channel_thread_set_sound_scope(AgsChannelThread *channel_thread,
 					gint sound_scope);
