@@ -834,6 +834,7 @@ if get_option('vst3')
     'vst3-capi/pluginterfaces/vst/ags_vst_iparameter_function_name.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_iplug_interface_support.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_iprefetchable_support.cpp',
+    'vst3-capi/pluginterfaces/vst/ags_vst_iprocess_context.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_irepresentation.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_iunits.cpp',
     'vst3-capi/pluginterfaces/vst/ags_vst_speaker.cpp',

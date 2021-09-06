@@ -30,6 +30,13 @@ CPPFLAGS += -DAGS_WITH_LIBINSTPATCH=1
 endif
 
 CFLAGS =  @CFLAGS@
+CXXFLAGS =  @CXXFLAGS@
+
+if WITH_OSXAPI
+CFLAGS += -arch arm64 -arch x86_64
+CXXFLAGS += -arch arm64 -arch x86_64
+endif
+
 LDFLAGS = @LDFLAGS@ $(LTLIBINTL)
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 
@@ -745,7 +752,7 @@ endif
 # gsequencer
 gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders)
 
-gsequencer_CFLAGS += $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSOUP_CFLAGS) $(SNDFILE_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
+gsequencer_CFLAGS += $(CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSOUP_CFLAGS) $(SNDFILE_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(POPPLER_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
 gsequencer_LDFLAGS += -pthread
 gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lm $(RT_LIBS) $(X11_LIBS) $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_LIBS) $(LIBDSSIALSACOMPAT_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(LIBSOUP_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(WEBKITGTK_LIBS) $(POPPLER_LIBS) $(GTK_MAC_INTEGRATION_LIBS) $(W32API_LIBS)
 
@@ -3001,6 +3008,7 @@ libags_vst_c_sources = \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iparameter_function_name.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_interface_support.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iprefetchable_support.cpp \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_iprocess_context.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_irepresentation.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iunits.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.cpp \
@@ -3045,7 +3053,8 @@ gsequencerheaders = \
 gsequencer_c_sources = \
 	ags/gsequencer_main.c
 
-midi2xml_CFLAGS += -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
+midi2xml_CPPFLAGS = -std=gnu99 $(CPPFLAGS) 
+midi2xml_CFLAGS += $(CFLAGS) -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
 midi2xml_LDFLAGS += $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(GSTREAMER_LIBS) $(LIBINSTPATCH_LIBS) $(W32API_LIBS)
 midi2xml_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
@@ -3054,6 +3063,7 @@ else
 if WITH_OSXAPI
 else
 midi2xml_LDADD += -ldl
+midi2xml_CPPFLAGS += -I/usr/include -I/opt/local/include -I/opt/local/include/dssi
 endif
 endif
 

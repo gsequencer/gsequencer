@@ -31,7 +31,7 @@ extern "C" {
   
   AgsVstParameterInfo* ags_vst_parameter_info_alloc()
   {
-    return((AgsVstParameterInfo *) new Steinberg::Vst::ParameterInfo);
+    return((AgsVstParameterInfo *) new Steinberg::Vst::ParameterInfo());
   }
 
   void ags_vst_parameter_info_free(AgsVstParameterInfo *info)
