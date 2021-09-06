@@ -1171,7 +1171,7 @@ ags_fx_vst3_audio_channel_data_alloc()
 				       0);
 
   ags_vst_process_data_set_num_inputs(channel_data->process_data,
-				      1);
+				      0);
 
   ags_vst_process_data_set_num_outputs(channel_data->process_data,
 				       1);
@@ -1209,16 +1209,16 @@ ags_fx_vst3_audio_channel_data_alloc()
   input = ags_vst_audio_bus_buffers_alloc();
 
   ags_vst_audio_bus_buffers_set_num_channels(input,
-					     1);
+					     0);
 
   ags_vst_audio_bus_buffers_set_silence_flags(input,
-					      0);
+					      1);
 
   ags_vst_audio_bus_buffers_set_samples32(input,
-					  &(channel_data->input));
+					  NULL);
 
   ags_vst_process_data_set_inputs(channel_data->process_data,
-				  input);
+				  NULL);
 
   /* output */
   output = ags_vst_audio_bus_buffers_alloc();
@@ -1330,7 +1330,7 @@ ags_fx_vst3_audio_input_data_alloc()
 				       0);
 
   ags_vst_process_data_set_num_inputs(input_data->process_data,
-				      1);
+				      0);
 
   ags_vst_process_data_set_num_outputs(input_data->process_data,
 				       1);
@@ -1370,13 +1370,13 @@ ags_fx_vst3_audio_input_data_alloc()
   input = ags_vst_audio_bus_buffers_alloc();
 
   ags_vst_audio_bus_buffers_set_num_channels(input,
-					     1);
+					     0);
 
   ags_vst_audio_bus_buffers_set_silence_flags(input,
-					      0);
+					      1);
 
   ags_vst_audio_bus_buffers_set_samples32(input,
-					  &(input_data->input));
+					  NULL);
 
   ags_vst_process_data_set_inputs(input_data->process_data,
 				  input);
