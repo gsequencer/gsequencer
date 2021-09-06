@@ -31,7 +31,7 @@
 
 #include <gtk/gtk.h>
 
-#if 0 // def AGS_WITH_QUARTZ
+#if defined(AGS_WITH_MAC_INTEGRATION)
 #include <gtkosxapplication.h>
 #endif
 
@@ -433,7 +433,7 @@ main(int argc, char **argv)
   }
 #endif
   
-#if 0 // def AGS_WITH_QUARTZ
+#if defined(AGS_WITH_MAC_INTEGRATION)
   g_object_new(GTKOSX_TYPE_APPLICATION,
 	       NULL);
 #endif

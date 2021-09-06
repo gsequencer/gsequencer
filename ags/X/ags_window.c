@@ -22,10 +22,6 @@
 
 #include "config.h"
 
-#ifdef AGS_WITH_QUARTZ
-#include <gtkosxapplication.h>
-#endif
-
 #include <ags/X/ags_ui_provider.h>
 
 #include <ags/X/machine/ags_panel.h>

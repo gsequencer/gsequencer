@@ -135,7 +135,7 @@ ags_sfz_synth_util_alloc()
 }
 
 /**
- * ags_sfz_synth_util_copy:
+ * ags_sfz_synth_util_boxed_copy:
  * @ptr: the #AgsSFZSynthUtil-struct
  * 
  * Copy #AgsSFZSynthUtil-struct.

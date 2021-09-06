@@ -1126,6 +1126,8 @@ ags_fx_vst3_audio_channel_data_alloc()
 {
   AgsFxVst3AudioChannelData *channel_data;
 
+  AgsVstIParameterChanges *iparameter_changes;
+  AgsVstIEventList *ievent_list;
   AgsVstAudioBusBuffers *output, *input;
   
   guint i;
@@ -1185,15 +1187,23 @@ ags_fx_vst3_audio_channel_data_alloc()
 
   ags_vst_parameter_changes_set_max_parameters(channel_data->input_parameter_changes,
 					       AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES);
+
+  iparameter_changes = NULL;
+  ags_vst_funknown_query_interface(channel_data->input_parameter_changes,
+				   ags_vst_iparameter_changes_get_iid(), &iparameter_changes);
   
   ags_vst_process_data_set_input_iparameter_changes(channel_data->process_data,
-						    channel_data->input_parameter_changes);
+						    iparameter_changes);
   
   /* event list */
   channel_data->input_event = ags_vst_event_list_new();
 
+  ievent_list = NULL;
+  ags_vst_funknown_query_interface(channel_data->input_event,
+				   ags_vst_ievent_list_get_iid(), &ievent_list);
+
   ags_vst_process_data_set_input_events(channel_data->process_data,
-					channel_data->input_event);
+					ievent_list);
 
   /* input */
   input = ags_vst_audio_bus_buffers_alloc();
@@ -1279,6 +1289,8 @@ ags_fx_vst3_audio_input_data_alloc()
 {
   AgsFxVst3AudioInputData *input_data;
 
+  AgsVstIParameterChanges *iparameter_changes;
+  AgsVstIEventList *ievent_list;
   AgsVstAudioBusBuffers *output, *input;
   
 //  g_message("ags_fx_vst3_audio_input_data_alloc()");
@@ -1335,16 +1347,24 @@ ags_fx_vst3_audio_input_data_alloc()
   ags_vst_parameter_changes_set_max_parameters(input_data->input_parameter_changes,
 					       AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES);
 
+  iparameter_changes = NULL;
+  ags_vst_funknown_query_interface(input_data->input_parameter_changes,
+				   ags_vst_iparameter_changes_get_iid(), &iparameter_changes);
+
   ags_vst_process_data_set_input_iparameter_changes(input_data->process_data,
-						    input_data->input_parameter_changes);
+						    iparameter_changes);
 
   input_data->parameter_changes[0].param_id = ~0;
 
   /* event list */
   input_data->input_event = ags_vst_event_list_new();
 
+  ievent_list = NULL;
+  ags_vst_funknown_query_interface(input_data->input_event,
+				   ags_vst_ievent_list_get_iid(), &ievent_list);
+
   ags_vst_process_data_set_input_events(input_data->process_data,
-					input_data->input_event);
+					ievent_list);
 
   /* input */
   input = ags_vst_audio_bus_buffers_alloc();

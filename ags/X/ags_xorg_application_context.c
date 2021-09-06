@@ -21,7 +21,7 @@
 
 #include "config.h"
 
-#if 0 //def AGS_WITH_QUARTZ
+#if defined(AGS_WITH_MAC_INTEGRATION)
 #include <gtkosxapplication.h>
 #endif
 
@@ -2571,7 +2571,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   GtkWidget *widget;
   AgsWindow *window;
 
-#if 0 // def AGS_WITH_QUARTZ
+#if defined(AGS_WITH_MAC_INTEGRATION)
   GtkosxApplication *app;
 #endif
   
@@ -2767,7 +2767,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 
   xorg_application_context->navigation = (GtkWidget *) window->navigation;
   
-#if 0 //def AGS_WITH_QUARTZ  
+#if defined(AGS_WITH_MAC_INTEGRATION)
   app = gtkosx_application_get();
 
   gtkosx_application_set_menu_bar(app,

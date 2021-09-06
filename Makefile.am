@@ -3061,9 +3061,9 @@ midi2xml_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la
 if WITH_W32API
 else
 if WITH_OSXAPI
-else
 midi2xml_LDADD += -ldl
-midi2xml_CPPFLAGS += -I/usr/include -I/opt/local/include -I/opt/local/include/dssi
+midi2xml_CFLAGS += -I/usr/include -I/opt/local/include -I/opt/local/include/dssi
+else
 endif
 endif
 

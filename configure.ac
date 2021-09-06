@@ -68,6 +68,11 @@ AC_ARG_ENABLE(osxapi, [AS_HELP_STRING([--enable-osxapi],
               [],
               [enable_osxapi=no])
 
+AC_ARG_ENABLE(mac-integration, [AS_HELP_STRING([--enable-mac-integration],
+                                      [enable OS X mac integration (default is no)])],
+              [],
+              [enable_mac_integration=no])
+
 AC_ARG_ENABLE(alsa, [AS_HELP_STRING([--enable-alsa],
                                     [enable alsa (default is yes)])],
               [],
@@ -212,9 +217,6 @@ AS_IF([test "x$enable_x11" != xno],
 
 AS_IF([test "x$enable_quartz" != xno],
       [AC_DEFINE([AGS_WITH_QUARTZ], [1], [quartz enabled])
-       PKG_CHECK_MODULES([GTK_MAC_INTEGRATION], [gtk-mac-integration-gtk3 >= 2.0.7])
-       AC_SUBST(GTK_MAC_INTEGRATION_CFLAGS)
-       AC_SUBST(GTK_MAC_INTEGRATION_LIBS)
        AC_MSG_NOTICE([quartz enabled])],
       [AC_MSG_NOTICE([quartz disabled])])
 
@@ -272,6 +274,15 @@ AS_IF([test "x$enable_osxapi" != xno],
       AC_MSG_NOTICE([OS X api enabled])],
       [AC_MSG_NOTICE([OS X api disabled])])
 AM_CONDITIONAL([WITH_OSXAPI], [test "x$enable_osxapi" == xyes])
+
+AS_IF([test "x$enable_mac_integration" != xno],
+      [AC_DEFINE([AGS_WITH_MAC_INTEGRATION], [1], [mac integration enabled])
+       PKG_CHECK_MODULES([GTK_MAC_INTEGRATION], [gtk-mac-integration-gtk3 >= 2.0.7])
+       AC_SUBST(GTK_MAC_INTEGRATION_CFLAGS)
+       AC_SUBST(GTK_MAC_INTEGRATION_LIBS)
+       AC_MSG_NOTICE([mac integration enabled])],
+      [AC_MSG_NOTICE([mac integration disabled])])
+
 
 PKG_CHECK_MODULES([UUID], [uuid >= 1.0.1])
 AC_SUBST(UUID_CFLAGS)

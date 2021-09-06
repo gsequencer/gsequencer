@@ -21,7 +21,7 @@
 
 #include "config.h"
 
-#ifdef AGS_WITH_QUARTZ
+#if defined(AGS_WITH_MAC_INTEGRATION)
 #include <gtkosxapplication.h>
 #endif
 
@@ -42,7 +42,7 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
     
   GtkMenuItem *item;
 
-#ifdef AGS_WITH_QUARTZ
+#if defined(AGS_WITH_MAC_INTEGRATION)
   GtkosxApplication *app;
 #endif
 
@@ -190,7 +190,7 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_vst3_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) context_menu->live, (GtkWidget *) item);
 
-#ifdef AGS_WITH_QUARTZ
+#if defined(AGS_WITH_MAC_INTEGRATION)
   app = gtkosx_application_get();
 
   gtk_widget_show_all(window->menu_bar);

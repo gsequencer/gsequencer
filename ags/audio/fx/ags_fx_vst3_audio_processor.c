@@ -152,12 +152,18 @@ ags_fx_vst3_audio_processor_run_init_pre(AgsRecall *recall)
 
   AgsFxVst3AudioScopeData *scope_data;
 
-  guint sound_scope;
-  gboolean is_live_instrument;
+  gchar **parameter_name;
 
+  guint sound_scope;
+  guint buffer_size;
+  guint samplerate;
+  gboolean is_live_instrument;
+  guint n_params;
   guint j, k;
   GRecMutex *recall_mutex;
-  
+
+  GValue *value;
+    
   GRecMutex *fx_vst3_audio_mutex;
   
   fx_vst3_audio = NULL;
@@ -167,7 +173,7 @@ ags_fx_vst3_audio_processor_run_init_pre(AgsRecall *recall)
 	       NULL);
 
   sound_scope = ags_recall_get_sound_scope(recall);
-
+  
   /* get VST3 plugin */
   fx_vst3_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_audio);
 
@@ -188,6 +194,66 @@ ags_fx_vst3_audio_processor_run_init_pre(AgsRecall *recall)
 
     return;
   }
+
+#if HAVE_GLIB_2_68
+  strv_builder = g_strv_builder_new();
+
+  g_strv_builder_add(strv_builder,
+		     "buffer-size");
+  g_strv_builder_add(strv_builder,
+		     "samplerate");
+  g_strv_builder_add(strv_builder,
+		     "iedit-controller");
+  g_strv_builder_add(strv_builder,
+		     "iaudio-processor");
+  g_strv_builder_add(strv_builder,
+		     "iedit-controller-host-editing");
+  
+  parameter_name = g_strv_builder_end(strv_builder);
+#else
+  parameter_name = (gchar **) g_malloc(6 * sizeof(gchar *));
+
+  parameter_name[0] = g_strdup("buffer-size");
+  parameter_name[1] = g_strdup("samplerate");
+  parameter_name[2] = g_strdup("iedit-controller");
+  parameter_name[3] = g_strdup("iaudio-processor");
+  parameter_name[4] = g_strdup("iedit-controller-host-editing");
+  parameter_name[5] = NULL;
+#endif
+
+  n_params = 5;
+
+  value = g_new0(GValue,
+		 5);
+
+  g_value_init(value,
+	       G_TYPE_UINT);
+    
+  g_value_init(value + 1,
+	       G_TYPE_UINT);
+    
+  g_value_init(value + 2,
+	       G_TYPE_POINTER);
+
+  g_value_init(value + 3,
+	       G_TYPE_POINTER);
+
+  g_value_init(value + 4,
+	       G_TYPE_POINTER);
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  samplerate =  AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  g_object_get(recall,
+	       "buffer-size", &buffer_size,
+	       "samplerate", &samplerate,
+	       NULL);
+  
+  g_value_set_uint(value,
+		   buffer_size);
+
+  g_value_set_uint(value + 1,
+		   samplerate);
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_audio);
