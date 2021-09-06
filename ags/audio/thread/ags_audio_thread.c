@@ -1240,7 +1240,7 @@ ags_audio_thread_get_processing(AgsAudioThread *audio_thread)
 }
 
 /**
- * ags_audio_thread_get_processing:
+ * ags_audio_thread_set_processing:
  * @audio_thread: the #AgsAudioThread
  * @processing: %TRUE enables and %FALSE disables processing
  * 

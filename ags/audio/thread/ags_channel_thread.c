@@ -815,7 +815,7 @@ ags_channel_thread_get_processing(AgsChannelThread *channel_thread)
 }
 
 /**
- * ags_channel_thread_get_processing:
+ * ags_channel_thread_set_processing:
  * @channel_thread: the #AgsChannelThread
  * @processing: %TRUE enables and %FALSE disables processing
  * 
