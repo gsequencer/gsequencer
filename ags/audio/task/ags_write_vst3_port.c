@@ -19,6 +19,12 @@
 
 #include <ags/audio/task/ags_write_vst3_port.h>
 
+#include <ags/plugin/ags_plugin_port.h>
+
+#include <ags/audio/ags_recall_container.h>
+
+#include <ags/audio/fx/ags_fx_vst3_channel.h>
+
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
@@ -59,7 +65,6 @@ enum{
   PROP_VALUE,
   PROP_SOUND_SCOPE,
   PROP_AUDIO_CHANNEL,
-  PROP_DO_REPLACE,
 };
 
 GType
@@ -199,22 +204,6 @@ ags_write_vst3_port_class_init(AgsWriteVst3PortClass *write_vst3_port)
 				  PROP_AUDIO_CHANNEL,
 				  param_spec);
   
-  /**
-   * AgsWriteVst3Port:do-replace:
-   *
-   * Do replace.
-   * 
-   * Since: 3.11.0
-   */
-  param_spec =  g_param_spec_boolean("do-replace",
-				     i18n_pspec("do replace"),
-				     i18n_pspec("Do replace"),
-				     TRUE,
-				     G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_AUDIO_CHANNEL,
-				  param_spec);
-  
   /* task */
   task = (AgsTaskClass *) write_vst3_port;
 
@@ -228,8 +217,6 @@ ags_write_vst3_port_init(AgsWriteVst3Port *write_vst3_port)
 
   write_vst3_port->sound_scope = -1;
   write_vst3_port->audio_channel = -1;
-
-  write_vst3_port->do_replace = TRUE;
 }
 
 void
@@ -300,11 +287,6 @@ ags_write_vst3_port_set_property(GObject *gobject,
     write_vst3_port->audio_channel = g_value_get_int(value);
   }
   break;
-  case PROP_DO_REPLACE:
-  {
-    write_vst3_port->do_replace = g_value_get_int(value);
-  }
-  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -345,11 +327,6 @@ ags_write_vst3_port_get_property(GObject *gobject,
   case PROP_AUDIO_CHANNEL:
   {
     g_value_set_int(value, write_vst3_port->audio_channel);
-  }
-  break;
-  case PROP_DO_REPLACE:
-  {
-    g_value_set_int(value, write_vst3_port->do_replace);
   }
   break;
   default:
@@ -404,13 +381,327 @@ void
 ags_write_vst3_port_launch(AgsTask *task)
 {
   AgsWriteVst3Port *write_vst3_port;
+
+  AgsVst3Plugin *vst3_plugin;
+  AgsPluginPort *plugin_port;
+  
+  AgsFxVst3AudioScopeData *scope_data;
+  
+  AgsVstParameterInfo *info;
+ 
+  guint port_index;
+  gdouble param_value;
+  gint sound_scope;
+  guint i;
+  guint j, j_start, j_stop;
+  gboolean is_live_instrument;
+  
+  GRecMutex *fx_vst3_audio_mutex;
   
   write_vst3_port = AGS_WRITE_VST3_PORT(task);
 
   g_return_if_fail(AGS_IS_FX_VST3_AUDIO(write_vst3_port->fx_vst3_audio));
   g_return_if_fail(AGS_IS_PORT(write_vst3_port->port));
 
-  //TODO:JK: implement me
+  vst3_plugin = write_vst3_port->fx_vst3_audio->vst3_plugin;
+
+  /* get VST3 plugin */
+  fx_vst3_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(write_vst3_port->fx_vst3_audio);
+
+  g_rec_mutex_lock(fx_vst3_audio_mutex);
+
+  vst3_plugin = write_vst3_port->fx_vst3_audio->vst3_plugin;
+
+  g_rec_mutex_unlock(fx_vst3_audio_mutex);
+
+  if(vst3_plugin == NULL){
+    g_warning("can't get VST3 plugin");
+    
+    return;
+  }
+
+  sound_scope = write_vst3_port->sound_scope;
+
+  if(sound_scope < 0 ||
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
+    g_warning("sound scope invalid");
+    
+    return;
+  }
+
+  plugin_port = NULL;
+
+  port_index = 0;
+
+  g_object_get(write_vst3_port->port,
+	       "plugin-port", &plugin_port,
+	       NULL);
+
+  if(plugin_port != NULL){
+    g_object_get(plugin_port,
+		 "port-index", &port_index,
+		 NULL);
+  }
+
+  is_live_instrument = ags_fx_vst3_audio_test_flags(write_vst3_port->fx_vst3_audio, AGS_FX_VST3_AUDIO_LIVE_INSTRUMENT);
+
+  info = ags_vst_parameter_info_alloc();      
+  
+  g_rec_mutex_lock(fx_vst3_audio_mutex);
+
+  scope_data = write_vst3_port->fx_vst3_audio->scope_data[sound_scope];
+
+  if(write_vst3_port->audio_channel < 0){
+    j_start = 0;
+    j_stop = scope_data->audio_channels;
+  }else{
+    j_start = write_vst3_port->audio_channel;
+    j_stop = j_start + 1;
+  }
+  
+  if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK ||
+     sound_scope == AGS_SOUND_SCOPE_NOTATION ||
+     sound_scope == AGS_SOUND_SCOPE_MIDI){
+    if(ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+      AgsFxVst3AudioScopeData *scope_data;
+      
+      scope_data = write_vst3_port->fx_vst3_audio->scope_data[sound_scope];
+
+      if(write_vst3_port->audio_channel < 0){
+	j_start = 0;
+	j_stop = scope_data->audio_channels;
+      }else{
+	j_start = write_vst3_port->audio_channel;
+	j_stop = j_start + 1;
+      }
+  
+      for(j = j_start; j < j_stop && j < scope_data->audio_channels; j++){
+	AgsFxVst3AudioChannelData *channel_data;;
+
+	channel_data = scope_data->channel_data[j];
+
+	if(is_live_instrument){
+	  AgsVstParamID param_id;
+
+	  if(channel_data->iedit_controller != NULL){
+	    ags_vst_iedit_controller_get_parameter_info(channel_data->iedit_controller,
+							port_index, info);
+
+	    param_id = ags_vst_parameter_info_get_param_id(info);
+	  	  
+	    param_value = ags_vst_iedit_controller_plain_param_to_normalized(channel_data->iedit_controller,
+									     param_id,
+									     write_vst3_port->value);
+	    
+	    if(channel_data->iedit_controller_host_editing != NULL){
+	      ags_vst_iedit_controller_host_editing_begin_edit_from_host(channel_data->iedit_controller_host_editing,
+									 param_id);
+	    }
+	    
+	    ags_vst_iedit_controller_set_param_normalized(channel_data->iedit_controller,
+							  param_id, param_value);
+
+	    for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES; i++){
+	      if(write_vst3_port->fx_vst3_audio->parameter_changes[i].param_id == param_id){
+		write_vst3_port->fx_vst3_audio->parameter_changes[i].param_value = write_vst3_port->value;
+
+		break;
+	      }
+	      
+	      if(write_vst3_port->fx_vst3_audio->parameter_changes[i].param_id == ~0){
+		write_vst3_port->fx_vst3_audio->parameter_changes[i].param_id = param_id;
+		write_vst3_port->fx_vst3_audio->parameter_changes[i].param_value = write_vst3_port->value;
+		
+		if(i +  1 < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES){
+		  write_vst3_port->fx_vst3_audio->parameter_changes[i + 1].param_id = ~0;
+		}
+		
+		break;
+	      }
+	    }
+	    
+	    if(channel_data->iedit_controller_host_editing != NULL){
+	      ags_vst_iedit_controller_host_editing_end_edit_from_host(channel_data->iedit_controller_host_editing,
+								       param_id);
+	    }
+	  }
+	}
+
+	if(!is_live_instrument){
+	  guint key;
+	  
+	  for(key = 0; key < AGS_SEQUENCER_MAX_MIDI_KEYS; key++){
+	    AgsFxVst3AudioInputData *input_data;
+	  
+	    AgsVstParamID param_id;
+
+	    input_data = channel_data->input_data[key];
+
+	    if(input_data->iedit_controller != NULL){
+	      ags_vst_iedit_controller_get_parameter_info(input_data->iedit_controller,
+							  port_index, info);
+
+	      param_id = ags_vst_parameter_info_get_param_id(info);
+
+	      param_value = ags_vst_iedit_controller_plain_param_to_normalized(input_data->iedit_controller,
+									       param_id,
+									       write_vst3_port->value);
+	    
+	      if(input_data->iedit_controller_host_editing != NULL){
+		ags_vst_iedit_controller_host_editing_begin_edit_from_host(input_data->iedit_controller_host_editing,
+									   param_id);
+	      }
+	    
+	      ags_vst_iedit_controller_set_param_normalized(input_data->iedit_controller,
+							    param_id, param_value);
+
+	      
+	      for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES; i++){
+		if(write_vst3_port->fx_vst3_audio->parameter_changes[i].param_id == param_id){
+		  write_vst3_port->fx_vst3_audio->parameter_changes[i].param_value = write_vst3_port->value;
+
+		  break;
+		}
+		
+		if(write_vst3_port->fx_vst3_audio->parameter_changes[i].param_id == ~0){
+		  write_vst3_port->fx_vst3_audio->parameter_changes[i].param_id = param_id;
+		  write_vst3_port->fx_vst3_audio->parameter_changes[i].param_value = write_vst3_port->value;
+		
+		  if(i +  1 < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES){
+		    write_vst3_port->fx_vst3_audio->parameter_changes[i + 1].param_id = ~0;
+		  }
+		
+		  break;
+		}
+	      }
+	      
+	      if(input_data->iedit_controller_host_editing != NULL){
+		ags_vst_iedit_controller_host_editing_end_edit_from_host(input_data->iedit_controller_host_editing,
+									 param_id);
+	      }
+	    }
+	  }
+	}
+      }
+    }else{
+      AgsRecallContainer *recall_container;
+      
+      AgsFxVst3ChannelInputData *input_data;
+
+      GList *start_recall, *recall;
+      
+      AgsVstParamID param_id;
+
+      recall_container = NULL;
+
+      g_object_get(write_vst3_port->fx_vst3_audio,
+		   "recall-container", &recall_container,
+		   NULL);
+
+      recall = 
+	start_recall = ags_recall_container_get_recall_channel(recall_container);
+
+      while(recall != NULL){
+	AgsChannel *source;
+
+	guint current_pad;
+	guint current_audio_channel;
+	gboolean success;
+	
+	source = NULL;
+
+	current_pad = ~0;
+	current_audio_channel = ~0;
+
+	g_object_get(recall->data,
+		     "source", &source,
+		     NULL);
+
+	if(source != NULL){
+	  g_object_get(source,
+		       "pad", &current_pad,
+		       "audio-channel", &current_audio_channel,
+		       NULL);
+	}
+	
+	if(current_pad == 0 &&
+	   write_vst3_port->audio_channel == current_audio_channel){
+	  success = TRUE;
+	}
+
+	if(source != NULL){
+	  g_object_unref(source);
+	}
+
+	if(success){
+	  break;
+	}
+	
+	recall = recall->next;
+      }
+      
+      input_data = AGS_FX_VST3_CHANNEL(recall->data)->input_data[sound_scope];
+
+      if(input_data != NULL &&
+	 input_data->iedit_controller != NULL){
+	ags_vst_iedit_controller_get_parameter_info(input_data->iedit_controller,
+						    port_index, info);
+
+	param_id = ags_vst_parameter_info_get_param_id(info);
+	  
+	param_value = ags_vst_iedit_controller_plain_param_to_normalized(input_data->iedit_controller,
+									 param_id,
+									 write_vst3_port->value);
+
+	if(input_data->iedit_controller_host_editing != NULL){
+	  ags_vst_iedit_controller_host_editing_begin_edit_from_host(input_data->iedit_controller_host_editing,
+								     param_id);
+	}	      
+	      
+	ags_vst_iedit_controller_set_param_normalized(input_data->iedit_controller,
+						      param_id, param_value);
+
+	for(i = 0; i < AGS_FX_VST3_CHANNEL_MAX_PARAMETER_CHANGES; i++){
+	  if(AGS_FX_VST3_CHANNEL(recall->data)->parameter_changes[i].param_id == param_id){
+	    AGS_FX_VST3_CHANNEL(recall->data)->parameter_changes[i].param_value = write_vst3_port->value;
+
+	    break;
+	  }
+	  
+	  if(AGS_FX_VST3_CHANNEL(recall->data)->parameter_changes[i].param_id == ~0){
+	    AGS_FX_VST3_CHANNEL(recall->data)->parameter_changes[i].param_id = param_id;
+	    AGS_FX_VST3_CHANNEL(recall->data)->parameter_changes[i].param_value = write_vst3_port->value;
+		
+	    if(i +  1 < AGS_FX_VST3_CHANNEL_MAX_PARAMETER_CHANGES){
+	      AGS_FX_VST3_CHANNEL(recall->data)->parameter_changes[i + 1].param_id = ~0;
+	    }
+		
+	    break;
+	  }
+	}
+
+	if(input_data->iedit_controller_host_editing != NULL){
+	  ags_vst_iedit_controller_host_editing_end_edit_from_host(input_data->iedit_controller_host_editing,
+								   param_id);
+	}
+      }
+
+      if(recall_container != NULL){
+	g_object_unref(recall_container);
+      }
+      
+      g_list_free_full(start_recall,
+		       (GDestroyNotify) g_object_unref);
+    }
+  }
+
+  g_rec_mutex_unlock(fx_vst3_audio_mutex);
+
+  ags_vst_parameter_info_free(info);
+
+  if(plugin_port != NULL){
+    g_object_unref(plugin_port);
+  }
 }
 
 /**
@@ -418,9 +709,8 @@ ags_write_vst3_port_launch(AgsTask *task)
  * @fx_vst3_audio: the #AgsFxVst3Audio the port belongs to
  * @port: the #AgsPort to be written
  * @value: the value to write
- * @sound_scope: the #AgsSoundScope-enum or -1 for all
+ * @sound_scope: the #AgsSoundScope-enum
  * @audio_channel: the specific audio channel or -1 for all
- * @do_replace: do replace any prior added tasks of task launcher
  *
  * Create a new instance of #AgsWriteVst3Port.
  *
@@ -433,8 +723,7 @@ ags_write_vst3_port_new(AgsFxVst3Audio *fx_vst3_audio,
 			AgsPort *port,
 			gdouble value,
 			gint sound_scope,
-			gint audio_channel,
-			gboolean do_replace)
+			gint audio_channel)
 {
   AgsWriteVst3Port *write_vst3_port;
 
@@ -444,7 +733,6 @@ ags_write_vst3_port_new(AgsFxVst3Audio *fx_vst3_audio,
 						      "value", value,
 						      "sound-scope", sound_scope,
 						      "audio-channel", audio_channel,
-						      "do-replace", do_replace,
 						      NULL);
   
   return(write_vst3_port);

@@ -19,6 +19,10 @@
 
 #include <ags/audio/task/ags_instantiate_vst3_plugin.h>
 
+#include <ags/audio/ags_recall_container.h>
+
+#include <ags/audio/fx/ags_fx_vst3_channel.h>
+
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
@@ -322,18 +326,287 @@ void
 ags_instantiate_vst3_plugin_launch(AgsTask *task)
 {
   AgsInstantiateVst3Plugin *instantiate_vst3_plugin;
+
+  AgsVst3Plugin *vst3_plugin;
   
+  gchar **parameter_name;
+
+  gint sound_scope;
+  guint buffer_size;
+  guint samplerate;
+  guint n_params;
+  guint j, j_start, j_stop;
+  guint k;
+  gboolean is_live_instrument;
+  
+  GValue *value;
+
+  GRecMutex *fx_vst3_audio_mutex;
+
   instantiate_vst3_plugin = AGS_INSTANTIATE_VST3_PLUGIN(task);
 
   g_return_if_fail(AGS_IS_FX_VST3_AUDIO(instantiate_vst3_plugin->fx_vst3_audio));
 
-  //TODO:JK: implement me
+  /* get VST3 plugin */
+  fx_vst3_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(instantiate_vst3_plugin->fx_vst3_audio);
+
+  g_rec_mutex_lock(fx_vst3_audio_mutex);
+
+  vst3_plugin = instantiate_vst3_plugin->fx_vst3_audio->vst3_plugin;
+
+  g_rec_mutex_unlock(fx_vst3_audio_mutex);
+
+  if(vst3_plugin == NULL){
+    g_warning("can't get VST3 plugin");
+    
+    return;
+  }
+
+  sound_scope = instantiate_vst3_plugin->sound_scope;
+
+  if(sound_scope < 0 ||
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
+    g_warning("sound scope invalid");
+    
+    return;
+  }
+  
+#if HAVE_GLIB_2_68
+  strv_builder = g_strv_builder_new();
+
+  g_strv_builder_add(strv_builder,
+		     "buffer-size");
+  g_strv_builder_add(strv_builder,
+		     "samplerate");
+  g_strv_builder_add(strv_builder,
+		     "iedit-controller");
+  g_strv_builder_add(strv_builder,
+		     "iaudio-processor");
+  g_strv_builder_add(strv_builder,
+		     "iedit-controller-host-editing");
+  
+  parameter_name = g_strv_builder_end(strv_builder);
+#else
+  parameter_name = (gchar **) g_malloc(6 * sizeof(gchar *));
+
+  parameter_name[0] = g_strdup("buffer-size");
+  parameter_name[1] = g_strdup("samplerate");
+  parameter_name[2] = g_strdup("iedit-controller");
+  parameter_name[3] = g_strdup("iaudio-processor");
+  parameter_name[4] = g_strdup("iedit-controller-host-editing");
+  parameter_name[5] = NULL;
+#endif
+
+  n_params = 5;
+
+  value = g_new0(GValue,
+		 5);
+
+  g_value_init(value,
+	       G_TYPE_UINT);
+    
+  g_value_init(value + 1,
+	       G_TYPE_UINT);
+    
+  g_value_init(value + 2,
+	       G_TYPE_POINTER);
+
+  g_value_init(value + 3,
+	       G_TYPE_POINTER);
+
+  g_value_init(value + 4,
+	       G_TYPE_POINTER);
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  samplerate =  AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  g_object_get(instantiate_vst3_plugin->fx_vst3_audio,
+	       "buffer-size", &buffer_size,
+	       "samplerate", &samplerate,
+	       NULL);
+
+  g_value_set_uint(value,
+		   buffer_size);
+
+  g_value_set_uint(value + 1,
+		   samplerate);
+
+  is_live_instrument = ags_fx_vst3_audio_test_flags(instantiate_vst3_plugin->fx_vst3_audio, AGS_FX_VST3_AUDIO_LIVE_INSTRUMENT);
+  
+  g_rec_mutex_lock(fx_vst3_audio_mutex);
+
+  if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK ||
+     sound_scope == AGS_SOUND_SCOPE_NOTATION ||
+     sound_scope == AGS_SOUND_SCOPE_MIDI){
+    if(ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+      AgsFxVst3AudioScopeData *scope_data;
+      
+      scope_data = instantiate_vst3_plugin->fx_vst3_audio->scope_data[sound_scope];
+
+      if(instantiate_vst3_plugin->audio_channel < 0){
+	j_start = 0;
+	j_stop = scope_data->audio_channels;
+      }else{
+	j_start = instantiate_vst3_plugin->audio_channel;
+	j_stop = j_start + 1;
+      }
+  
+      for(j = j_start; j < j_stop && j < scope_data->audio_channels; j++){
+	AgsFxVst3AudioChannelData *channel_data;;
+
+	channel_data = scope_data->channel_data[j];
+
+	if(is_live_instrument){
+	  if(channel_data->icomponent == NULL ||
+	     instantiate_vst3_plugin->do_replace){
+	    if(channel_data->icomponent != NULL){
+	      ags_vst_icomponent_destroy(channel_data->icomponent);
+	    }
+	    
+	    channel_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
+									       &n_params,
+									       &parameter_name, &value);
+	      
+	    channel_data->iedit_controller = g_value_get_pointer(value + 2);
+	    channel_data->iaudio_processor = g_value_get_pointer(value + 3);
+
+	    channel_data->iedit_controller_host_editing = g_value_get_pointer(value + 4);
+
+	    channel_data->icomponent_handler = ags_vst_component_handler_new();
+	    
+	    ags_vst_iedit_controller_set_component_handler(channel_data->iedit_controller,
+							   channel_data->icomponent_handler);
+	  }
+	}
+
+	if(!is_live_instrument){
+	  for(k = 0; k < AGS_SEQUENCER_MAX_MIDI_KEYS; k++){
+	    AgsFxVst3AudioInputData *input_data;
+
+	    input_data = channel_data->input_data[k];
+
+	    if(input_data->icomponent == NULL ||
+	       instantiate_vst3_plugin->do_replace){
+	      if(input_data->icomponent != NULL){
+		ags_vst_icomponent_destroy(input_data->icomponent);
+	      }
+	      
+	      input_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
+									       &n_params,
+									       &parameter_name, &value);
+
+	      input_data->iedit_controller = g_value_get_pointer(value + 2);
+	      input_data->iaudio_processor = g_value_get_pointer(value + 3);
+
+	      input_data->iedit_controller_host_editing = g_value_get_pointer(value + 4);
+
+	      input_data->icomponent_handler = ags_vst_component_handler_new();
+	    
+	      ags_vst_iedit_controller_set_component_handler(input_data->iedit_controller,
+							     input_data->icomponent_handler);
+	    }
+	  }
+	}
+      }
+    }else{
+      AgsRecallContainer *recall_container;
+      
+      AgsFxVst3ChannelInputData *input_data;
+
+      GList *start_recall, *recall;
+      
+      AgsVstParamID param_id;
+
+      recall_container = NULL;
+
+      g_object_get(instantiate_vst3_plugin->fx_vst3_audio,
+		   "recall-container", &recall_container,
+		   NULL);
+
+      recall = 
+	start_recall = ags_recall_container_get_recall_channel(recall_container);
+
+      while(recall != NULL){
+	AgsChannel *source;
+
+	guint current_pad;
+	guint current_audio_channel;
+	gboolean success;
+	
+	source = NULL;
+
+	current_pad = ~0;
+	current_audio_channel = ~0;
+
+	g_object_get(recall->data,
+		     "source", &source,
+		     NULL);
+
+	if(source != NULL){
+	  g_object_get(source,
+		       "pad", &current_pad,
+		       "audio-channel", &current_audio_channel,
+		       NULL);
+	}
+	
+	if(current_pad == 0 &&
+	   instantiate_vst3_plugin->audio_channel == current_audio_channel){
+	  success = TRUE;
+	}
+
+	if(source != NULL){
+	  g_object_unref(source);
+	}
+
+	if(success){
+	  break;
+	}
+	
+	recall = recall->next;
+      }
+      
+      input_data = AGS_FX_VST3_CHANNEL(recall->data)->input_data[sound_scope];
+
+      if(input_data->icomponent != NULL){
+	ags_vst_icomponent_destroy(input_data->icomponent);
+      }
+
+      ags_vst_process_context_set_samplerate(input_data->process_context,
+					     (gdouble) samplerate);	  
+
+      input_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
+								       &n_params,
+								       &parameter_name, &value);
+	      
+      input_data->iedit_controller = g_value_get_pointer(value + 2);
+      input_data->iaudio_processor = g_value_get_pointer(value + 3);
+
+      input_data->iedit_controller_host_editing = g_value_get_pointer(value + 4);
+
+      input_data->icomponent_handler = ags_vst_component_handler_new();
+	    
+      ags_vst_iedit_controller_set_component_handler(input_data->iedit_controller,
+						     input_data->icomponent_handler);	
+
+      if(recall_container != NULL){
+	g_object_unref(recall_container);
+      }
+      
+      g_list_free_full(start_recall,
+		       (GDestroyNotify) g_object_unref);
+    }
+  }
+
+  g_rec_mutex_unlock(fx_vst3_audio_mutex);
+
+  g_strfreev(parameter_name);
+  g_free(value);
 }
 
 /**
  * ags_instantiate_vst3_plugin_new:
  * @fx_vst3_audio: the #AgsFxVst3Audio the port belongs to
- * @sound_scope: the #AgsSoundScope-enum or -1 for all
+ * @sound_scope: the #AgsSoundScope-enum
  * @audio_channel: the specific audio channel or -1 for all
  * @do_replace: do replace any prior added plugin instances
  *

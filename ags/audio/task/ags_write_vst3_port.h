@@ -51,8 +51,6 @@ struct _AgsWriteVst3Port
 
   gint sound_scope;
   gint audio_channel;
-
-  gboolean do_replace;
 };
 
 struct _AgsWriteVst3PortClass
@@ -66,8 +64,7 @@ AgsWriteVst3Port* ags_write_vst3_port_new(AgsFxVst3Audio *fx_vst3_audio,
 					  AgsPort *port,
 					  gdouble value,
 					  gint sound_scope,
-					  gint audio_channel,
-					  gboolean do_replace);
+					  gint audio_channel);
 
 G_END_DECLS
 

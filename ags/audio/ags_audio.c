@@ -13763,6 +13763,9 @@ ags_audio_real_start(AgsAudio *audio,
   ags_audio_loop_set_flags(audio_loop, AGS_AUDIO_LOOP_PLAY_AUDIO);
 
   /* get some fields */
+  playback_domain = NULL;
+  start_output_playback = NULL;
+  
   g_object_get(audio,
 	       "playback-domain", &playback_domain,
 	       NULL);
