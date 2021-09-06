@@ -276,6 +276,12 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 
   AgsFxVst3AudioScopeData *scope_data;
 
+  GObject *output_soundcard;
+
+  guint note_offset;
+  gdouble delay;
+  guint delay_counter;
+  guint buffer_size;
   guint sound_scope;
   gboolean is_live_instrument;
   guint j, k;
@@ -287,6 +293,7 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 
   g_object_get(recall,
 	       "recall-audio", &fx_vst3_audio,
+	       "output-soundcard", &output_soundcard,
 	       NULL);
 
   sound_scope = ags_recall_get_sound_scope(recall);
@@ -298,7 +305,17 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
   g_rec_mutex_lock(fx_vst3_audio_mutex);
 
   scope_data = fx_vst3_audio->scope_data[sound_scope];
-  
+
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+
+  ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
+			    NULL,
+			    NULL,
+			    &buffer_size,
+			    NULL);
+    
   if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK ||
      sound_scope == AGS_SOUND_SCOPE_NOTATION ||
      sound_scope == AGS_SOUND_SCOPE_MIDI){
@@ -307,6 +324,9 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 
       channel_data = scope_data->channel_data[j];
 
+      ags_vst_process_context_set_project_time_samples(channel_data->process_context,
+						       (note_offset * delay + delay_counter) * buffer_size);
+      
       if(is_live_instrument){
 	for(nth = 0; nth < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES && fx_vst3_audio->parameter_changes[nth].param_id != ~0; nth++){
 	  channel_data->parameter_changes[nth].param_id = fx_vst3_audio->parameter_changes[nth].param_id;
@@ -320,6 +340,9 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 
 	  input_data = channel_data->input_data[k];
 
+	  ags_vst_process_context_set_project_time_samples(input_data->process_context,
+							   (note_offset * delay + delay_counter) * buffer_size);
+
 	  for(nth = 0; nth < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES && fx_vst3_audio->parameter_changes[nth].param_id != ~0; nth++){
 	    input_data->parameter_changes[nth].param_id = fx_vst3_audio->parameter_changes[nth].param_id;
 	    input_data->parameter_changes[nth].param_value = fx_vst3_audio->parameter_changes[nth].param_value;
@@ -332,6 +355,14 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
   fx_vst3_audio->parameter_changes[0].param_id = ~0;
   
   g_rec_mutex_unlock(fx_vst3_audio_mutex);
+
+  if(fx_vst3_audio != NULL){
+    g_object_unref(fx_vst3_audio);
+  }
+
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
 
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_vst3_audio_processor_parent_class)->run_inter(recall);
@@ -399,6 +430,9 @@ ags_fx_vst3_audio_processor_done(AgsRecall *recall)
       channel_data = scope_data->channel_data[j];
 
       if(is_live_instrument){
+	ags_vst_process_context_set_state(channel_data->process_context,
+					  0);
+	
 	ags_base_plugin_deactivate(vst3_plugin,
 				   channel_data->icomponent);
 
@@ -424,6 +458,9 @@ ags_fx_vst3_audio_processor_done(AgsRecall *recall)
 
 	  input_data = channel_data->input_data[k];
 
+	  ags_vst_process_context_set_state(input_data->process_context,
+					    0);
+	
 	  ags_base_plugin_deactivate(vst3_plugin,
 				     input_data->icomponent);
 

@@ -229,17 +229,25 @@ ags_fx_vst3_channel_processor_run_inter(AgsRecall *recall)
   AgsFxVst3Channel *fx_vst3_channel;
 
   AgsFxVst3ChannelInputData *input_data;
-  
+
+  GObject *output_soundcard;
+
+  guint note_offset;
+  gdouble delay;
+  guint delay_counter;
+  guint buffer_size;
   guint sound_scope;
   guint nth;
-
   
   GRecMutex *fx_vst3_channel_mutex;
 
   fx_vst3_channel = NULL;
 
+  output_soundcard = NULL;
+  
   g_object_get(recall,
 	       "recall-channel", &fx_vst3_channel,
+	       "output-soundcard", &output_soundcard,
 	       NULL);
 
   sound_scope = ags_recall_get_sound_scope(recall);
@@ -258,6 +266,27 @@ ags_fx_vst3_channel_processor_run_inter(AgsRecall *recall)
   fx_vst3_channel->parameter_changes[0].param_id = ~0;
   
   g_rec_mutex_unlock(fx_vst3_channel_mutex);
+
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+
+  ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
+			    NULL,
+			    NULL,
+			    &buffer_size,
+			    NULL);
+  
+  ags_vst_process_context_set_project_time_samples(input_data->process_context,
+						   (note_offset * delay + delay_counter) * buffer_size);
+
+  if(fx_vst3_channel != NULL){
+    g_object_unref(fx_vst3_channel);
+  }
+
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_vst3_channel_processor_parent_class)->run_inter(recall);
@@ -311,6 +340,9 @@ ags_fx_vst3_channel_processor_done(AgsRecall *recall)
   g_rec_mutex_lock(fx_vst3_audio_mutex);
 
   input_data = fx_vst3_audio->scope_data[sound_scope];
+
+  ags_vst_process_context_set_state(input_data->process_context,
+				    0);	
 
   ags_base_plugin_deactivate(vst3_plugin,
 			     input_data->icomponent);
