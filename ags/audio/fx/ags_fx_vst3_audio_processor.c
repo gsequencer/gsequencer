@@ -205,6 +205,9 @@ ags_fx_vst3_audio_processor_run_init_pre(AgsRecall *recall)
       channel_data = scope_data->channel_data[j];
 
       if(is_live_instrument){
+	ags_vst_process_context_set_state(channel_data->process_context,
+					  AGS_VST_KPLAYING);
+	
 	ags_base_plugin_activate(vst3_plugin,
 				 channel_data->icomponent);
 
@@ -230,6 +233,9 @@ ags_fx_vst3_audio_processor_run_init_pre(AgsRecall *recall)
 
 	  input_data = channel_data->input_data[k];
 
+	  ags_vst_process_context_set_state(input_data->process_context,
+					    AGS_VST_KPLAYING);
+	  
 	  ags_base_plugin_activate(vst3_plugin,
 				   input_data->icomponent);
 

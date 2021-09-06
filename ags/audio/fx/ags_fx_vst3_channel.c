@@ -357,8 +357,11 @@ ags_fx_vst3_channel_notify_samplerate_callback(GObject *gobject,
 //    g_message("ags_fx_vst3_channel_notify_samplerate_callback() - instantiate input data");
     
     if(input_data->icomponent != NULL){
-//      ags_vst_icomponent_destroy(input_data->icomponent);
+      ags_vst_icomponent_destroy(input_data->icomponent);
     }
+
+    ags_vst_process_context_set_samplerate(input_data->process_context,
+					   (gdouble) samplerate);	  
 
     input_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
 								     &n_params,
@@ -435,6 +438,12 @@ ags_fx_vst3_channel_input_data_alloc()
 
   ags_vst_process_data_set_num_outputs(input_data->process_data,
 				       1);
+
+  /* process context */
+  input_data->process_context = ags_vst_process_context_alloc();
+
+  ags_vst_process_data_set_process_context(input_data->process_data,
+					   input_data->process_context);
 
   /* input */
   input = ags_vst_audio_bus_buffers_alloc();

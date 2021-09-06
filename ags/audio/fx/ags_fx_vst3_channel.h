@@ -105,6 +105,7 @@ struct _AgsFxVst3ChannelInputData
   AgsVstIComponentHandlerRestartComponent *restart_component_callback;  
 
   AgsVstProcessData *process_data;
+  AgsVstProcessContext *process_context;
   AgsVstParameterChanges *input_parameter_changes;
 
   struct{

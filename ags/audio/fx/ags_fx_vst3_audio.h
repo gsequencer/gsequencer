@@ -133,6 +133,7 @@ struct _AgsFxVst3AudioChannelData
   AgsVstIComponentHandlerRestartComponent *restart_component_callback;
   
   AgsVstProcessData *process_data;
+  AgsVstProcessContext *process_context;
   AgsVstParameterChanges *input_parameter_changes;
   AgsVstIEventList *input_event;
   
@@ -167,6 +168,7 @@ struct _AgsFxVst3AudioInputData
   AgsVstIComponentHandlerRestartComponent *restart_component_callback;
   
   AgsVstProcessData *process_data;
+  AgsVstProcessContext *process_context;
   AgsVstParameterChanges *input_parameter_changes;
   AgsVstIEventList *input_event;
   

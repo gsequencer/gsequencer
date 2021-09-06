@@ -191,6 +191,9 @@ ags_fx_vst3_channel_processor_run_init_pre(AgsRecall *recall)
 
   input_data = fx_vst3_audio->scope_data[sound_scope];
 
+  ags_vst_process_context_set_state(input_data->process_context,
+				    AGS_VST_KPLAYING);
+
   ags_base_plugin_activate(vst3_plugin,
 			   input_data->icomponent);
 

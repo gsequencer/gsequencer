@@ -582,10 +582,13 @@ ags_fx_vst3_audio_notify_samplerate_callback(GObject *gobject,
 	  guint nth;
 
 	  if(channel_data->icomponent != NULL){
-//	    ags_vst_icomponent_destroy(channel_data->icomponent);
+	    ags_vst_icomponent_destroy(channel_data->icomponent);
 	  }
 
 //	  g_message("ags_fx_vst3_audio_notify_samplerate_callback() - instantiate channel data");
+	  
+	  ags_vst_process_context_set_samplerate(channel_data->process_context,
+						 (gdouble) samplerate);	  
 	  
 	  channel_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
 									     &n_params,
@@ -609,10 +612,13 @@ ags_fx_vst3_audio_notify_samplerate_callback(GObject *gobject,
 	    input_data = channel_data->input_data[k];
 
 	    if(input_data->icomponent != NULL){
-//	      ags_vst_icomponent_destroy(input_data->icomponent);
+	      ags_vst_icomponent_destroy(input_data->icomponent);
 	    }
 
 //	    g_message("ags_fx_vst3_audio_notify_samplerate_callback() - instantiate input data");
+	  
+	    ags_vst_process_context_set_samplerate(input_data->process_context,
+						   (gdouble) samplerate);	  
 	    
 	    input_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
 									     &n_params,
@@ -1168,6 +1174,12 @@ ags_fx_vst3_audio_channel_data_alloc()
   ags_vst_process_data_set_num_outputs(channel_data->process_data,
 				       1);
 
+  /* process context */
+  channel_data->process_context = ags_vst_process_context_alloc();
+
+  ags_vst_process_data_set_process_context(channel_data->process_data,
+					   channel_data->process_context);
+  
   /* parameter changes */
   channel_data->input_parameter_changes = ags_vst_parameter_changes_new();
 
@@ -1310,6 +1322,12 @@ ags_fx_vst3_audio_input_data_alloc()
 
   ags_vst_process_data_set_num_outputs(input_data->process_data,
 				       1);
+
+  /* process context */
+  input_data->process_context = ags_vst_process_context_alloc();
+
+  ags_vst_process_data_set_process_context(input_data->process_data,
+					   input_data->process_context);
 
   /* parameter changes */
   input_data->input_parameter_changes = ags_vst_parameter_changes_new();
