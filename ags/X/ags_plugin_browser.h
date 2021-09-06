@@ -61,7 +61,7 @@ struct _AgsPluginBrowser
   GtkWidget *lv2_browser;
   GtkWidget *dssi_browser;
   GtkWidget *ladspa_browser;
-  GtkWidget *vst_browser;
+  GtkWidget *vst3_browser;
 };
 
 struct _AgsPluginBrowserClass

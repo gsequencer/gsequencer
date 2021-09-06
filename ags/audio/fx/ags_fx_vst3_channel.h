@@ -49,6 +49,8 @@ G_BEGIN_DECLS
 #define AGS_FX_VST3_CHANNEL_INPUT_DATA(ptr) ((AgsFxVst3ChannelInputData *)(ptr))
 #define AGS_FX_VST3_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxVst3ChannelInputData *)(ptr))->strct_mutex))
 
+#define AGS_FX_VST3_CHANNEL_MAX_PARAMETER_CHANGES (1024)
+
 typedef struct _AgsFxVst3Channel AgsFxVst3Channel;
 typedef struct _AgsFxVst3ChannelInputData AgsFxVst3ChannelInputData;
 typedef struct _AgsFxVst3ChannelClass AgsFxVst3ChannelClass;
@@ -62,6 +64,11 @@ struct _AgsFxVst3Channel
 
   guint input_port_count;
   guint *input_port;
+
+  struct{
+    AgsVstParamID param_id;
+    AgsVstParamValue param_value;
+  }parameter_changes[AGS_FX_VST3_CHANNEL_MAX_PARAMETER_CHANGES];
 
   AgsFxVst3ChannelInputData* input_data[AGS_SOUND_SCOPE_LAST];
 
@@ -88,7 +95,23 @@ struct _AgsFxVst3ChannelInputData
   AgsVstIEditController *iedit_controller;
   AgsVstIAudioProcessor *iaudio_processor;
 
+  AgsVstIEditControllerHostEditing *iedit_controller_host_editing;
+
+  AgsVstIComponentHandler *icomponent_handler;
+  
+  AgsVstIComponentHandlerBeginEdit *begin_edit_callback;
+  AgsVstIComponentHandlerPerformEdit *perform_edit_callback;
+  AgsVstIComponentHandlerEndEdit *end_edit_callback;
+  AgsVstIComponentHandlerRestartComponent *restart_component_callback;  
+
   AgsVstProcessData *process_data;
+  AgsVstProcessContext *process_context;
+  AgsVstParameterChanges *input_parameter_changes;
+
+  struct{
+    AgsVstParamID param_id;
+    AgsVstParamValue param_value;
+  }parameter_changes[AGS_FX_VST3_CHANNEL_MAX_PARAMETER_CHANGES];  
 };
 
 GType ags_fx_vst3_channel_get_type();

@@ -56,6 +56,7 @@ typedef struct _AgsPluginPortClass AgsPluginPortClass;
  * @AGS_PLUGIN_PORT_BOUNDED_BELOW: bounded below
  * @AGS_PLUGIN_PORT_BOUNDED_ABOVE: bounded above
  * @AGS_PLUGIN_PORT_UI_NOTIFICATION: ui notification
+ * @AGS_PLUGIN_PORT_HIDDEN: hidden port
  * 
  * Common port attributes.
  */
@@ -75,6 +76,7 @@ typedef enum{
   AGS_PLUGIN_PORT_BOUNDED_BELOW   = 1 << 12,
   AGS_PLUGIN_PORT_BOUNDED_ABOVE   = 1 << 13,
   AGS_PLUGIN_PORT_UI_NOTIFICATION = 1 << 14,
+  AGS_PLUGIN_PORT_HIDDEN          = 1 << 15,
 }AgsPluginPortFlags;
 
 struct _AgsPluginPort

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,7 +22,7 @@
 
 #include <glib.h>
 
-#define AGS_VST_UNICODE_OFF   // disable / enable unicode
+// #define AGS_VST_UNICODE_OFF   // disable / enable unicode
 
 #ifdef AGS_VST_UNICODE_OFF
 #ifdef AGS_VST_UNICODE
@@ -67,14 +67,14 @@ extern "C" {
   extern const double ags_vst_kmax_double;
 
 #ifdef AGS_VST_UNICODE
-  typedef gunichar2 ags_vst_tchar;
+  typedef wchar_t ags_vst_tchar;
 #else
   typedef gchar ags_vst_tchar;
 #endif
 
   typedef const gchar* AgsVstCStringA;
   typedef const gunichar2* AgsVstCStringW;
-  typedef const ags_vst_tchar* AgsVstCString;
+  typedef const char* AgsVstCString;
   gboolean ags_vst_str_empty(ags_vst_tchar *str);
   gboolean ags_vst_str8_empty(gchar *str);
   gboolean ags_vst_str16_empty(gunichar2 *str);

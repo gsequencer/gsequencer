@@ -453,8 +453,11 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 #if defined(AGS_WITH_VST3)
   list3_start = 
     list3 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list2->data));
+#endif
+
   list2 = list2->next;
 
+#if defined(AGS_WITH_VST3)
   while(list3 != NULL){
     g_signal_connect(G_OBJECT(list3->data), "activate",
 		     G_CALLBACK(ags_menu_action_add_vst3_bridge_callback), (gpointer) menu_bar);
@@ -486,7 +489,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   /* lv2 */
   list4_start = 
     list4 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list3->data));
-  //  list3 = list3->next;
+  list3 = list3->next;
   
   while(list4 != NULL){
     g_signal_connect(G_OBJECT(list4->data), "activate",

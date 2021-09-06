@@ -30,4 +30,8 @@ extern "C" {
     return((AgsVstEventList *) event_list);
   }
 
+  void ags_vst_event_list_clear(AgsVstEventList *event_list)
+  {
+    ((Steinberg::Vst::EventList *) event_list)->clear();
+  }
 }

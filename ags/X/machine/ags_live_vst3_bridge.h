@@ -107,6 +107,8 @@ void ags_live_vst3_bridge_output_map_recall(AgsLiveVst3Bridge *live_vst3_bridge,
 					    guint audio_channel_start,
 					    guint output_pad_start);
 
+void ags_live_vst3_bridge_load(AgsLiveVst3Bridge *live_vst3_bridge);
+
 AgsLiveVst3Bridge* ags_live_vst3_bridge_new(GObject *soundcard,
 					    gchar *filename,
 					    gchar *effect);

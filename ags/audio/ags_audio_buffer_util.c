@@ -521,21 +521,19 @@ ags_audio_buffer_util_clear_float(gfloat *buffer, guint channels,
   
   /* unrolled function */
   if(count > 8){
-    limit = count - 8;
+    limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      current_channel = 0;
-      
       buffer[0] = 0.0;
-      buffer[(current_channel = channels)] = 0.0;
-      buffer[(current_channel += channels)] = 0.0;
-      buffer[(current_channel += channels)] = 0.0;
-      buffer[(current_channel += channels)] = 0.0;
-      buffer[(current_channel += channels)] = 0.0;
-      buffer[(current_channel += channels)] = 0.0;
-      buffer[(current_channel += channels)] = 0.0;
+      buffer[channels] = 0.0;
+      buffer[2 * channels] = 0.0;
+      buffer[3 * channels] = 0.0;
+      buffer[4 * channels] = 0.0;
+      buffer[5 * channels] = 0.0;
+      buffer[6 * channels] = 0.0;
+      buffer[7 * channels] = 0.0;
 
-      buffer += (current_channel + channels);
+      buffer += (8 * channels);
     }
   }
 
@@ -576,18 +574,16 @@ ags_audio_buffer_util_clear_float32(Float32 *buffer, guint channels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      current_channel = 0;
-      
-      buffer[0] = (Float32) 0.0;
-      buffer[(current_channel = channels)] = (Float32) 0.0;
-      buffer[(current_channel += channels)] = (Float32) 0.0;
-      buffer[(current_channel += channels)] = (Float32) 0.0;
-      buffer[(current_channel += channels)] = (Float32) 0.0;
-      buffer[(current_channel += channels)] = (Float32) 0.0;
-      buffer[(current_channel += channels)] = (Float32) 0.0;
-      buffer[(current_channel += channels)] = (Float32) 0.0;
+      buffer[0] = 0.0;
+      buffer[channels] = 0.0;
+      buffer[2 * channels] = (Float32) 0.0;
+      buffer[3 * channels] = (Float32) 0.0;
+      buffer[4 * channels] = (Float32) 0.0;
+      buffer[5 * channels] = (Float32) 0.0;
+      buffer[6 * channels] = (Float32) 0.0;
+      buffer[7 * channels] = (Float32) 0.0;
 
-      buffer += (current_channel + channels);
+      buffer += (8 * channels);
     }
   }
 
@@ -628,18 +624,16 @@ ags_audio_buffer_util_clear_double(gdouble *buffer, guint channels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      current_channel = 0;
-
       buffer[0] = 0.0;
-      buffer[(current_channel = channels)] = 0.0;
-      buffer[(current_channel += channels)] = 0.0;
-      buffer[(current_channel += channels)] = 0.0;
-      buffer[(current_channel += channels)] = 0.0;
-      buffer[(current_channel += channels)] = 0.0;
-      buffer[(current_channel += channels)] = 0.0;
-      buffer[(current_channel += channels)] = 0.0;
+      buffer[channels] = 0.0;
+      buffer[2 * channels] = 0.0;
+      buffer[3 * channels] = 0.0;
+      buffer[4 * channels] = 0.0;
+      buffer[5 * channels] = 0.0;
+      buffer[6 * channels] = 0.0;
+      buffer[7 * channels] = 0.0;
 
-      buffer += (current_channel + channels);
+      buffer += (8 * channels);
     }
   }
 

@@ -72,7 +72,7 @@ extern "C" {
   
   ags_vst_tchar* ags_vst_tstrcpy(ags_vst_tchar *dst, ags_vst_tchar *src)
   {
-    return(tstrcpy((tchar *) dst, (tchar *) src));
+    return((ags_vst_tchar *) tstrcpy((tchar *) dst, (tchar *) src));
   }
   
   gchar* ags_vst_strcpy8(gchar *dst, gchar *src)
@@ -87,7 +87,7 @@ extern "C" {
   
   ags_vst_tchar* ags_vst_tstrncpy(ags_vst_tchar* dest, ags_vst_tchar* source, guint32 count)
   {
-    return(tstrncpy((tchar *) dest, (tchar *) source, count));
+    return((ags_vst_tchar *) tstrncpy((tchar *) dest, (tchar *) source, count));
   }
   
   gchar* ags_vst_strncpy8(gchar* dest, gchar* source, guint32 count)
@@ -102,7 +102,7 @@ extern "C" {
   
   ags_vst_tchar* ags_vst_tstrcat(ags_vst_tchar *dst, ags_vst_tchar *src)
   {
-    return(tstrcat((tchar *) dst, (tchar *) src));
+    return((ags_vst_tchar *) tstrcat((tchar *) dst, (tchar *) src));
   }
   
   gchar* ags_vst_strcat8(gchar *dst, gchar *src)

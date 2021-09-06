@@ -2256,7 +2256,7 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
   
   /* load plugin */
   vst3_plugin = ags_vst3_manager_find_vst3_plugin(ags_vst3_manager_get_instance(),
-					       filename, effect);
+						  filename, effect);
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(vst3_plugin);
@@ -2321,7 +2321,8 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
   k = 0;
 
   while(plugin_port != NULL){
-    if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
+    if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL) &&
+       !ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_HIDDEN)){
       GtkWidget *child_widget;
 
       AgsVst3Conversion *vst3_conversion;
@@ -2469,8 +2470,8 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
 	/* add controls of ports and apply range  */
 	g_rec_mutex_lock(plugin_port_mutex);
 	
-	lower_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->lower_value);
-	upper_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
+	lower_bound = g_value_get_double(AGS_PLUGIN_PORT(plugin_port->data)->lower_value);
+	upper_bound = g_value_get_double(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
 
 	g_rec_mutex_unlock(plugin_port_mutex);
 
@@ -2532,7 +2533,7 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
 	/* get/set default value */
 	g_rec_mutex_lock(plugin_port_mutex);
 	
-	default_value = (float) g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
+	default_value = (float) g_value_get_double(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
 
 	g_rec_mutex_unlock(plugin_port_mutex);
 
@@ -3228,6 +3229,7 @@ ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget)
     GList *list;
 
     gdouble val;
+    gboolean is_double;
     
     bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(widget,
 							    AGS_TYPE_BULK_MEMBER);
@@ -3239,13 +3241,33 @@ ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget)
     while(list != NULL){
       GValue value = {0,};
 
-      g_value_init(&value,
-		   G_TYPE_FLOAT);
+      GRecMutex *mutex;
 
-      ags_port_safe_read(AGS_BULK_PORT(list->data)->port,
-			 &value);
+      mutex = AGS_PORT_GET_OBJ_MUTEX(AGS_BULK_PORT(list->data)->port);
+      
+      g_rec_mutex_lock(mutex);
 
-      val += g_value_get_float(&value);
+      is_double = (AGS_BULK_PORT(list->data)->port->port_value_type == G_TYPE_DOUBLE) ? TRUE: FALSE;
+      
+      g_rec_mutex_unlock(mutex);
+      
+      if(is_double){
+	g_value_init(&value,
+		     G_TYPE_DOUBLE);
+	
+	ags_port_safe_read(AGS_BULK_PORT(list->data)->port,
+			   &value);
+      
+	val += g_value_get_double(&value);
+      }else{
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+	
+	ags_port_safe_read(AGS_BULK_PORT(list->data)->port,
+			   &value);
+      
+	val += g_value_get_float(&value);
+      }
       
       list = list->next;
     }

@@ -67,7 +67,7 @@ extern "C" {
 
   gboolean ags_vst_istring_is_wide_string(AgsVstIString *istring)
   {
-    ((Steinberg::IString *) istring)->isWideString();
+    return(((Steinberg::IString *) istring)->isWideString());
   }
   
 }

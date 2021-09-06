@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.10.6],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.10.18],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -67,6 +67,11 @@ AC_ARG_ENABLE(osxapi, [AS_HELP_STRING([--enable-osxapi],
                                       [enable OS X API (default is no)])],
               [],
               [enable_osxapi=no])
+
+AC_ARG_ENABLE(mac-integration, [AS_HELP_STRING([--enable-mac-integration],
+                                      [enable OS X mac integration (default is no)])],
+              [],
+              [enable_mac_integration=no])
 
 AC_ARG_ENABLE(alsa, [AS_HELP_STRING([--enable-alsa],
                                     [enable alsa (default is yes)])],
@@ -191,6 +196,13 @@ AC_SUBST([GSEQUENCER_LDFLAGS])
 AC_SUBST([MIDI2XML_CFLAGS])
 AC_SUBST([MIDI2XML_LDFLAGS])
 
+AC_SUBST([LIBAGS_CPPFLAGS])
+AC_SUBST([LIBAGS_THREAD_CPPFLAGS])
+AC_SUBST([LIBAGS_SERVER_CPPFLAGS])
+AC_SUBST([LIBAGS_AUDIO_CPPFLAGS])
+AC_SUBST([LIBAGS_GUI_CPPFLAGS])
+AC_SUBST([LIBGSEQUENCER_CPPFLAGS])
+
 AC_SUBST([LIBGSEQUENCER_TEST_LIBADD])
 
 AC_SUBST([GSEQUENCER_FUNCTIONAL_TEST_LDADD])
@@ -205,9 +217,6 @@ AS_IF([test "x$enable_x11" != xno],
 
 AS_IF([test "x$enable_quartz" != xno],
       [AC_DEFINE([AGS_WITH_QUARTZ], [1], [quartz enabled])
-       PKG_CHECK_MODULES([GTK_MAC_INTEGRATION], [gtk-mac-integration-gtk3 >= 2.0.7])
-       AC_SUBST(GTK_MAC_INTEGRATION_CFLAGS)
-       AC_SUBST(GTK_MAC_INTEGRATION_LIBS)
        AC_MSG_NOTICE([quartz enabled])],
       [AC_MSG_NOTICE([quartz disabled])])
 
@@ -265,6 +274,15 @@ AS_IF([test "x$enable_osxapi" != xno],
       AC_MSG_NOTICE([OS X api enabled])],
       [AC_MSG_NOTICE([OS X api disabled])])
 AM_CONDITIONAL([WITH_OSXAPI], [test "x$enable_osxapi" == xyes])
+
+AS_IF([test "x$enable_mac_integration" != xno],
+      [AC_DEFINE([AGS_WITH_MAC_INTEGRATION], [1], [mac integration enabled])
+       PKG_CHECK_MODULES([GTK_MAC_INTEGRATION], [gtk-mac-integration-gtk3 >= 2.0.7])
+       AC_SUBST(GTK_MAC_INTEGRATION_CFLAGS)
+       AC_SUBST(GTK_MAC_INTEGRATION_LIBS)
+       AC_MSG_NOTICE([mac integration enabled])],
+      [AC_MSG_NOTICE([mac integration disabled])])
+
 
 PKG_CHECK_MODULES([UUID], [uuid >= 1.0.1])
 AC_SUBST(UUID_CFLAGS)
@@ -374,6 +392,7 @@ AC_DEFINE([HAVE_GLIB_2_52], [1], [GLib 2.52 available])
 AC_DEFINE([HAVE_GLIB_2_54], [1], [GLib 2.54 available])
 AC_DEFINE([HAVE_GLIB_2_56], [1], [GLib 2.56 available])
 AC_DEFINE([HAVE_GLIB_2_62], [0], [GLib 2.62 available])
+AC_DEFINE([HAVE_GLIB_2_68], [0], [GLib 2.68 available])
 
 GOBJECT_INTROSPECTION_CHECK([1.30.0])
 
@@ -420,10 +439,11 @@ WITH_VST3=0
 
 AS_IF([test "x$enable_vst3" != xno],
       [AC_DEFINE([AGS_WITH_VST3], [1], [VST3 enabled])
-      VST3_CXXFLAGS="-I/usr/include/vst3"
-      VST3_LIBS="-L/usr/lib/vst3 -lbase -lpluginterfaces -lsdk -lsdk_common -lsdk_hosting -lvstgui -lvstgui_standalone -lvstgui_support -lvstgui_uidescription"      
-      AC_SUBST(VST3_CXXFLAGS)
-      AC_SUBST(VST3_LIBS)
+      AC_SUBST(LIBAGS_VST3_RELEASE_TYPE)
+      AC_SUBST(LIBAGS_VST3_CPPFLAGS)
+      AC_SUBST(LIBAGS_VST3_CXXFLAGS)
+      AC_SUBST(LIBAGS_VST3_LDFLAGS)
+      AC_SUBST(LIBAGS_VST3_LIBS)
       AC_MSG_NOTICE([VST3 enabled])],
       [AC_MSG_NOTICE([VST3 disabled])])
 AM_CONDITIONAL([WITH_VST3], [test "x$enable_vst3" == xyes])

@@ -19,6 +19,8 @@
 
 #include <ags/vst3-capi/util/ags_vst_string_util.h>
 
+#include <wchar.h>
+
 extern "C" {
 
   gunichar2*
@@ -83,6 +85,8 @@ extern "C" {
     if(destination_str != NULL){
       if(destination_str[0] != NULL){
 	gsize length;
+
+	length = wcslen((wchar_t *) str);
 	
 	memcpy(destination_str[0], str, length * sizeof(gunichar2));
 	destination_str[length] = 0x0;

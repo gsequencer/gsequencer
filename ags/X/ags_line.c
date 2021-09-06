@@ -34,6 +34,7 @@
 #include <ags/X/ags_ladspa_browser.h>
 #include <ags/X/ags_dssi_browser.h>
 #include <ags/X/ags_lv2_browser.h>
+#include <ags/X/ags_vst3_browser.h>
 
 #include <ags/config.h>
 
@@ -2567,7 +2568,8 @@ ags_line_add_vst3_plugin(AgsLine *line,
   k = 0;
   
   while(plugin_port != NULL){
-    if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
+    if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL) &&
+       !ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_HIDDEN)){
       GtkWidget *child_widget;
 
       AgsVst3Conversion *vst3_conversion;

@@ -54,7 +54,7 @@ extern "C" {
   const AgsVstCString ags_vst_konly_real_time            = "OnlyRT";
   const AgsVstCString ags_vst_konly_offline_process      = "OnlyOfflineProcess";
   const AgsVstCString ags_vst_konly_ara                  = "OnlyARA";
-  
+
   const AgsVstCString ags_vst_kno_offline_process        = "NoOfflineProcess";
   const AgsVstCString ags_vst_kup_down_mix               = "Up-Downmix";
   const AgsVstCString ags_vst_kanalyzer                  = "Analyzer";
@@ -63,7 +63,7 @@ extern "C" {
   const AgsVstCString ags_vst_kmono                      = "Mono";
   const AgsVstCString ags_vst_kstereo                    = "Stereo";
   const AgsVstCString ags_vst_ksurround                  = "Surround";
-
+ 
   AgsVstProcessSetup* ags_vst_process_setup_alloc()
   {
     return((AgsVstProcessSetup *) new Steinberg::Vst::ProcessSetup());
@@ -250,9 +250,7 @@ extern "C" {
   AgsVstTResult ags_vst_iaudio_processor_process(AgsVstIAudioProcessor *iaudio_processor,
 						 AgsVstProcessData *data)
   {
-    const Steinberg::Vst::ProcessData& tmp_data_0 = const_cast<Steinberg::Vst::ProcessData&>(((Steinberg::Vst::ProcessData *) data)[0]);
-
-    return(((Steinberg::Vst::IAudioProcessor *) iaudio_processor)->process(const_cast<Steinberg::Vst::ProcessData&>(tmp_data_0)));
+    return(((Steinberg::Vst::IAudioProcessor *) iaudio_processor)->process(const_cast<Steinberg::Vst::ProcessData&>(((Steinberg::Vst::ProcessData *) data)[0])));
   }
   
   guint32 ags_vst_iaudio_processor_get_tail_samples(AgsVstIAudioProcessor *iaudio_processor)

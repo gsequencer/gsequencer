@@ -25,7 +25,13 @@
 #define AGS_VST_KLITTLE_ENDIAN    (0)
 #define AGS_VST_KBIG_ENDIAN       (1)
 
+#if defined(__APPLE__) || defined(__FreeBSD__) || defined(__DragonFly__)
+#include <machine/endian.h>
+#else
+#ifndef AGS_W32API
 #include <endian.h>
+#endif
+#endif
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 #define AGS_VST_BYTEORDER AGS_VST_KLITTLE_ENDIAN

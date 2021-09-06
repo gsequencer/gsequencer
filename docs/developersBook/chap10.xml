@@ -158,5 +158,16 @@
 	</para>
       </listitem>
     </varlistentry>
-  </variablelist>
+ 
+    <varlistentry>
+      <term>
+	<code>ags-fx-vst3</code>
+      </term>
+      <listitem>
+	<para>
+	  Interface VST3 plugins - requires libags-vst.so to be available.
+	</para>
+      </listitem>
+    </varlistentry>
+ </variablelist>
 </chapter>

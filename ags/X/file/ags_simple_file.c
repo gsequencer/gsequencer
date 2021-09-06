@@ -70,6 +70,11 @@
 #include <ags/X/machine/ags_live_dssi_bridge.h>
 #include <ags/X/machine/ags_live_lv2_bridge.h>
 
+#if defined(AGS_WITH_VST3)
+#include <ags/X/machine/ags_vst3_bridge.h>
+#include <ags/X/machine/ags_live_vst3_bridge.h>
+#endif
+
 #include <ags/config.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
@@ -147,6 +152,10 @@ void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simple_file, xmlNode
 void ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveDssiBridge *live_dssi_bridge);
 void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLv2Bridge *lv2_bridge);
 void ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveLv2Bridge *live_lv2_bridge);
+#if defined(AGS_WITH_VST3)
+void ags_simple_file_read_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsVst3Bridge *vst3_bridge);
+void ags_simple_file_read_live_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveVst3Bridge *live_vst3_bridge);
+#endif
 void ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge);
 void ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBulk *effect_bulk);
 void ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsBulkMember *bulk_member);
@@ -2418,6 +2427,10 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	AgsLadspaManager *ladspa_manager;
 	AgsLv2Manager *lv2_manager;
 
+#if defined(AGS_WITH_VST3)
+	AgsVst3Manager *vst3_manager;
+#endif
+	
 	xmlNode *effect_list_child;
 
 	gchar *plugin_name;
@@ -2425,6 +2438,9 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 
 	gint position;
 	gboolean is_ladspa, is_lv2;
+#if defined(AGS_WITH_VST3)
+	gboolean is_vst3;
+#endif
 	gboolean is_output;
 	guint pads;
 
@@ -2432,7 +2448,13 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	   AGS_IS_DSSI_BRIDGE(gobject) ||
 	   AGS_IS_LIVE_DSSI_BRIDGE(gobject) ||
 	   AGS_IS_LV2_BRIDGE(gobject) ||
-	   AGS_IS_LIVE_LV2_BRIDGE(gobject)){
+	   AGS_IS_LIVE_LV2_BRIDGE(gobject)
+#if defined(AGS_WITH_VST3)
+	   || AGS_IS_VST3_BRIDGE(gobject)
+	   || AGS_IS_LIVE_VST3_BRIDGE(gobject)
+#endif
+
+	  ){
 	  child = child->next;
 	  
 	  continue;
@@ -2481,14 +2503,25 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	
 	ladspa_manager = ags_ladspa_manager_get_instance();
 	lv2_manager = ags_lv2_manager_get_instance();
+#if defined(AGS_WITH_VST3)
+	vst3_manager = ags_vst3_manager_get_instance();
+#endif
 	
 	is_ladspa = (ags_ladspa_manager_find_ladspa_plugin(ladspa_manager, filename, effect) != NULL) ? TRUE: FALSE;
 	is_lv2 = (g_strv_contains(lv2_manager->quick_scan_plugin_filename, filename) && g_strv_contains(lv2_manager->quick_scan_plugin_effect, effect)) ? TRUE: FALSE;
 
+#if defined(AGS_WITH_VST3)
+	is_vst3 = (ags_vst3_manager_find_vst3_plugin(vst3_manager, filename, effect) != NULL) ? TRUE: FALSE;
+#endif
+	
 	if(is_ladspa){
 	  plugin_name = "ags-fx-ladspa";
 	}else if(is_lv2){
 	  plugin_name = "ags-fx-lv2";
+#if defined(AGS_WITH_VST3)
+	}else if(is_vst3){
+	  plugin_name = "ags-fx-vst3";
+#endif
 	}
 	
 	ags_effect_bulk_add_plugin(effect_bulk,
@@ -4148,6 +4181,20 @@ ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode 
   }
 }
 
+#if defined(AGS_WITH_VST3)
+void
+ags_simple_file_read_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsVst3Bridge *vst3_bridge)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_simple_file_read_live_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveVst3Bridge *live_vst3_bridge)
+{
+  //TODO:JK: implement me
+}
+#endif
+
 void
 ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge)
 {
@@ -4516,6 +4563,12 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_simple_file_read_lv2_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsLv2Bridge *) machine);
   }else if(AGS_IS_LV2_BRIDGE(machine)){
     ags_simple_file_read_live_lv2_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsLiveLv2Bridge *) machine);
+#if defined(AGS_WITH_VST3)
+  }else if(AGS_IS_VST3_BRIDGE(machine)){
+    ags_simple_file_read_vst3_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsVst3Bridge *) machine);
+  }else if(AGS_IS_VST3_BRIDGE(machine)){
+    ags_simple_file_read_live_vst3_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsLiveVst3Bridge *) machine);
+#endif
   }
   
   /* children */
@@ -4995,6 +5048,9 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
   GObject *gobject;
 
   AgsLv2Manager *lv2_manager;
+#if defined(AGS_WITH_VST3)
+  AgsVst3Manager *vst3_manager;
+#endif
   
   AgsFileLaunch *file_launch;
   AgsFileIdRef *file_id_ref;
@@ -5019,10 +5075,19 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
   gboolean do_fixup_3_2_7;
 
   GRecMutex *lv2_manager_mutex;
+#if defined(AGS_WITH_VST3)
+  GRecMutex *vst3_manager_mutex;
+#endif
   
   lv2_manager = ags_lv2_manager_get_instance();
 
   lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
+
+#if defined(AGS_WITH_VST3)
+  vst3_manager = ags_vst3_manager_get_instance();
+
+  vst3_manager_mutex = AGS_VST3_MANAGER_GET_OBJ_MUTEX(vst3_manager);
+#endif
   
   /* fixup 3.2.7 */
   do_fixup_3_2_7 = FALSE;
@@ -5245,7 +5310,9 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	      xmlChar *filename, *effect;
 
 	      gboolean is_lv2_plugin;
-
+#if defined(AGS_WITH_VST3)
+	      gboolean is_vst3_plugin;
+#endif
 	      plugin_name = NULL;
 	      
 	      filename = xmlGetProp(effect_list_child,
@@ -5265,8 +5332,16 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	      
 	      g_rec_mutex_unlock(lv2_manager_mutex);
 
+#if defined(AGS_WITH_VST3)
+	      is_vst3_plugin = (ags_vst3_manager_find_vst3_plugin(vst3_manager, filename, effect) != NULL) ? TRUE: FALSE;
+#endif
+
 	      if(is_lv2_plugin){
 		plugin_name = "ags-fx-lv2";
+#if defined(AGS_WITH_VST3)
+	      }else if(is_vst3_plugin){
+		plugin_name = "ags-fx-vst3";
+#endif
 	      }else{
 		plugin_name = "ags-fx-ladspa";
 	      }
@@ -6103,7 +6178,10 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
   AgsFileIdRef *file_id_ref;
 
   AgsLv2Manager *lv2_manager;  
-
+#if defined(AGS_WITH_VST3)
+  AgsVst3Manager *vst3_manager;  
+#endif
+  
   xmlNode *child;
 
   xmlChar *version;
@@ -6114,6 +6192,9 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
   gboolean do_fixup_3_2_7;
 
   GRecMutex *lv2_manager_mutex;
+#if defined(AGS_WITH_VST3)
+  GRecMutex *vst3_manager_mutex;
+#endif
   
   if(*effect_line != NULL){
     gobject = *effect_line;
@@ -6125,6 +6206,12 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 
   lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
 
+#if defined(AGS_WITH_VST3)
+  vst3_manager = ags_vst3_manager_get_instance();
+
+  vst3_manager_mutex = AGS_VST3_MANAGER_GET_OBJ_MUTEX(vst3_manager);
+#endif
+  
   is_output = AGS_IS_OUTPUT(AGS_EFFECT_LINE(gobject)->channel) ? TRUE: FALSE;
   
   /* fixup 3.2.7 */
@@ -6193,7 +6280,10 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 	      gchar *plugin_name;
 
 	      gboolean is_lv2_plugin;
-
+#if defined(AGS_WITH_VST3)
+	      gboolean is_vst3_plugin;
+#endif
+	      
 	      filename = xmlGetProp(effect_list_child,
 				    "filename");
 	      
@@ -6211,8 +6301,16 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 	      
 	      g_rec_mutex_unlock(lv2_manager_mutex);
 
+#if defined(AGS_WITH_VST3)
+	      is_vst3_plugin = (ags_vst3_manager_find_vst3_plugin(vst3_manager, filename, effect) != NULL) ? TRUE: FALSE;
+#endif
+
 	      if(is_lv2_plugin){
 		plugin_name = "ags-fx-lv2";
+#if defined(AGS_WITH_VST3)
+	      }else if(is_vst3_plugin){
+		plugin_name = "ags-fx-vst3";
+#endif
 	      }else{
 		plugin_name = "ags-fx-ladspa";
 	      }
@@ -10041,6 +10139,32 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
       g_free(str);
     }
+#if defined(AGS_WITH_VST3)
+  }else if(AGS_IS_VST3_BRIDGE(machine)){
+    AgsVst3Bridge *vst3_bridge;
+
+    vst3_bridge = (AgsVst3Bridge *) machine;
+
+    xmlNewProp(node,
+	       "plugin-file",
+	       vst3_bridge->filename);
+
+    xmlNewProp(node,
+	       "effect",
+	       vst3_bridge->effect);
+  }else if(AGS_IS_LIVE_VST3_BRIDGE(machine)){
+    AgsLiveVst3Bridge *live_vst3_bridge;
+
+    live_vst3_bridge = (AgsLiveVst3Bridge *) machine;
+
+    xmlNewProp(node,
+	       "plugin-file",
+	       live_vst3_bridge->filename);
+
+    xmlNewProp(node,
+	       "effect",
+	       live_vst3_bridge->effect);
+#endif
   }
   
   /* input */

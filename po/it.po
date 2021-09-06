@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-08-29 10:48+0200\n"
+"POT-Creation-Date: 2021-09-05 16:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -98,11 +98,11 @@ msgid "_Apply"
 msgstr ""
 
 #: ags/X/ags_connection_editor.c:249 ags/X/ags_machine_editor.c:260
-#: ags/X/ags_midi_dialog.c:428 ags/X/ags_plugin_browser.c:201
+#: ags/X/ags_midi_dialog.c:428 ags/X/ags_plugin_browser.c:219
 #: ags/X/ags_preferences.c:227 ags/X/editor/ags_crop_note_dialog.c:270
 #: ags/X/editor/ags_envelope_dialog.c:227
 #: ags/X/editor/ags_envelope_editor_callbacks.c:51
-#: ags/X/editor/ags_machine_selection.c:140
+#: ags/X/editor/ags_machine_selection.c:145
 #: ags/X/editor/ags_move_note_dialog.c:263
 #: ags/X/editor/ags_pattern_envelope_callbacks.c:1052
 #: ags/X/editor/ags_position_automation_cursor_dialog.c:236
@@ -123,11 +123,11 @@ msgid "_OK"
 msgstr ""
 
 #: ags/X/ags_connection_editor.c:254 ags/X/ags_export_soundcard_callbacks.c:410
-#: ags/X/ags_midi_dialog.c:433 ags/X/ags_plugin_browser.c:202
+#: ags/X/ags_midi_dialog.c:433 ags/X/ags_plugin_browser.c:220
 #: ags/X/ags_preferences.c:228 ags/X/editor/ags_crop_note_dialog.c:271
 #: ags/X/editor/ags_envelope_dialog.c:233
 #: ags/X/editor/ags_envelope_editor_callbacks.c:53
-#: ags/X/editor/ags_machine_selection.c:141
+#: ags/X/editor/ags_machine_selection.c:146
 #: ags/X/editor/ags_move_note_dialog.c:264
 #: ags/X/editor/ags_pattern_envelope_callbacks.c:1054
 #: ags/X/editor/ags_position_automation_cursor_dialog.c:237
@@ -343,12 +343,12 @@ msgstr ""
 msgid "Copyright"
 msgstr ""
 
-#: ags/X/ags_effect_line.c:553 ags/X/ags_line.c:578
+#: ags/X/ags_effect_line.c:553 ags/X/ags_line.c:579
 msgid "group"
 msgstr ""
 
 #: ags/X/ags_effect_line.c:1009 ags/X/ags_effect_line.c:1015
-#: ags/X/ags_line.c:1099 ags/X/ags_line.c:1105 ags/X/ags_notation_editor.c:326
+#: ags/X/ags_line.c:1100 ags/X/ags_line.c:1106 ags/X/ags_notation_editor.c:326
 msgid "channel"
 msgstr ""
 
@@ -708,11 +708,11 @@ msgstr ""
 msgid "max precision of threads [Hz]"
 msgstr ""
 
-#: ags/X/ags_plugin_browser.c:148
+#: ags/X/ags_plugin_browser.c:152
 msgid "Plugin browser"
 msgstr ""
 
-#: ags/X/ags_plugin_browser.c:164
+#: ags/X/ags_plugin_browser.c:168
 msgid "Plugin type:"
 msgstr ""
 
@@ -884,27 +884,27 @@ msgstr ""
 msgid "VST3"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3320
+#: ags/X/ags_xorg_application_context.c:3383
 #: ags/audio/ags_audio_application_context.c:2137
 #: ags/audio/task/ags_apply_sound_config.c:902
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3330
+#: ags/X/ags_xorg_application_context.c:3393
 #: ags/audio/ags_audio_application_context.c:2147
 #: ags/audio/task/ags_apply_sound_config.c:912
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3570
+#: ags/X/ags_xorg_application_context.c:3633
 #: ags/audio/ags_audio_application_context.c:2389
 #: ags/audio/task/ags_apply_sound_config.c:1152
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3580
+#: ags/X/ags_xorg_application_context.c:3643
 #: ags/audio/ags_audio_application_context.c:2399
 #: ags/audio/task/ags_apply_sound_config.c:1162
 msgid "unknown sequencer backend - NULL"
@@ -1044,27 +1044,27 @@ msgstr ""
 msgid "Opacity"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1328
+#: ags/X/editor/ags_automation_toolbar.c:1335
 #: ags/X/editor/ags_select_acceleration_dialog.c:188
 msgid "select accelerations"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1331
+#: ags/X/editor/ags_automation_toolbar.c:1338
 #: ags/X/editor/ags_ramp_acceleration_dialog.c:187
 msgid "ramp accelerations"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1334
+#: ags/X/editor/ags_automation_toolbar.c:1341
 #: ags/X/editor/ags_notation_toolbar.c:538 ags/X/editor/ags_wave_toolbar.c:440
 msgid "position cursor"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1340
+#: ags/X/editor/ags_automation_toolbar.c:1347
 #: ags/X/editor/ags_wave_toolbar.c:446
 msgid "enable all lines"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1343
+#: ags/X/editor/ags_automation_toolbar.c:1350
 #: ags/X/editor/ags_wave_toolbar.c:449
 msgid "disable all lines"
 msgstr ""
@@ -1165,7 +1165,7 @@ msgstr ""
 msgid "Note:y"
 msgstr ""
 
-#: ags/X/editor/ags_machine_selection.c:136
+#: ags/X/editor/ags_machine_selection.c:141
 msgid "select machines"
 msgstr ""
 

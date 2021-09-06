@@ -21,7 +21,7 @@
 
 #include "config.h"
 
-#ifdef AGS_WITH_QUARTZ
+#if defined(AGS_WITH_MAC_INTEGRATION)
 #include <gtkosxapplication.h>
 #endif
 
@@ -2571,7 +2571,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   GtkWidget *widget;
   AgsWindow *window;
 
-#ifdef AGS_WITH_QUARTZ
+#if defined(AGS_WITH_MAC_INTEGRATION)
   GtkosxApplication *app;
 #endif
   
@@ -2767,7 +2767,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 
   xorg_application_context->navigation = (GtkWidget *) window->navigation;
   
-#ifdef AGS_WITH_QUARTZ  
+#if defined(AGS_WITH_MAC_INTEGRATION)
   app = gtkosx_application_get();
 
   gtkosx_application_set_menu_bar(app,
@@ -2784,6 +2784,9 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   }
   
   /* gtk main */
+  
+  ags_application_context_setup(AGS_APPLICATION_CONTEXT(application_context));
+  
   gtk_main();
 }
 
@@ -2843,7 +2846,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 #if defined AGS_W32API
   gchar *app_dir;
 #endif
-  
+
+  guint64 start_time, current_time;
   guint i, j;
   gboolean has_core_audio;
   gboolean has_pulse;
@@ -3010,8 +3014,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     app_dir = NULL;
   }
   
-  blacklist_path = g_strdup_printf("%s\\%s",
+  blacklist_path = g_strdup_printf("%s%c%s",
 				   g_get_current_dir(),
+				   G_DIR_SEPARATOR,
 				   app_dir);
 
   g_free(app_dir);
@@ -3019,9 +3024,14 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   uid = getuid();
   pw = getpwuid(uid);
 
-  blacklist_path = g_strdup_printf("%s/%s",
+#if 0
+  blacklist_path = g_strdup_printf("%s%c%s",
 				   pw->pw_dir,
+				   G_DIR_SEPARATOR,
 				   AGS_DEFAULT_DIRECTORY);
+#else
+  blacklist_path = g_strdup_printf("/Users/joelkrahemann/.gsequencer");  
+#endif
 #endif
   
   /* load ladspa manager */
@@ -3036,6 +3046,16 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   ags_log_add_message(log,
 		      "* Loading LADSPA plugins");
+
+  start_time =
+    current_time = g_get_monotonic_time();
+
+  while(current_time < start_time + G_USEC_PER_SEC / 2){
+    g_main_context_iteration(NULL,
+			     FALSE);
+
+     current_time = g_get_monotonic_time();
+  }
   
   ags_ladspa_manager_load_default_directory(ladspa_manager);
 
@@ -3052,6 +3072,16 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   ags_log_add_message(log,
 		      "* Loading DSSI plugins");
 
+  start_time =
+    current_time = g_get_monotonic_time();
+
+  while(current_time < start_time + G_USEC_PER_SEC / 2){
+    g_main_context_iteration(NULL,
+			     FALSE);
+
+     current_time = g_get_monotonic_time();
+  }
+  
   ags_dssi_manager_load_default_directory(dssi_manager);
 
   /* load lv2 manager */
@@ -3067,7 +3097,17 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   ags_log_add_message(log,
 		      "* Loading Lv2 plugins");
+  
+  start_time =
+    current_time = g_get_monotonic_time();
 
+  while(current_time < start_time + G_USEC_PER_SEC / 2){
+    g_main_context_iteration(NULL,
+			     FALSE);
+
+     current_time = g_get_monotonic_time();
+  }
+  
   ags_lv2_manager_quick_scan_default_directory(lv2_manager);
 
   /* load lv2ui manager */
@@ -3081,6 +3121,16 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 #if 0
   ags_log_add_message(log,
 		      "* Loading Lv2ui plugins");
+  
+  start_time =
+    current_time = g_get_monotonic_time();
+
+  while(current_time < start_time + G_USEC_PER_SEC / 2){
+    g_main_context_iteration(NULL,
+			     FALSE);
+
+     current_time = g_get_monotonic_time();
+  }
 
   ags_lv2ui_manager_load_default_directory(lv2ui_manager);
 #endif
@@ -3098,7 +3148,17 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   ags_log_add_message(log,
 		      "* Loading VST3 plugins");
+  
+  start_time =
+    current_time = g_get_monotonic_time();
 
+  while(current_time < start_time + G_USEC_PER_SEC / 2){
+    g_main_context_iteration(NULL,
+			     FALSE);
+
+     current_time = g_get_monotonic_time();
+  }
+  
   ags_vst3_manager_load_default_directory(vst3_manager);
 #endif
   
@@ -3106,6 +3166,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   ags_log_add_message(log,
 		      "* Launch user interface");
 
+  g_main_context_iteration(NULL,
+			   FALSE);
+  
   /* sound server */
   xorg_application_context->sound_server = NULL;
 
@@ -4294,7 +4357,7 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 
   g_list_free_full(start_list,
 		   g_object_unref);
-  
+
   gtk_main_quit();
 }
 

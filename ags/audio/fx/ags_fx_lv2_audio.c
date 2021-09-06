@@ -161,7 +161,7 @@ ags_fx_lv2_audio_init(AgsFxLv2Audio *fx_lv2_audio)
   AGS_RECALL(fx_lv2_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_lv2_audio)->xml_type = "ags-fx-lv2-audio";
 
-  fx_lv2_audio->flags = 0;
+  fx_lv2_audio->flags = AGS_FX_LV2_AUDIO_LIVE_INSTRUMENT;
   
   fx_lv2_audio->output_port_count = 0;
   fx_lv2_audio->output_port = NULL;

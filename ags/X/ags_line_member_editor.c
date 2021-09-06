@@ -271,6 +271,9 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
   while((recall = ags_recall_template_find_all_type(recall,
 						    AGS_TYPE_FX_LADSPA_CHANNEL,
 						    AGS_TYPE_FX_LV2_CHANNEL,
+#if defined(AGS_WITH_VST3)
+						    AGS_TYPE_FX_VST3_CHANNEL,
+#endif
 						    G_TYPE_NONE)) != NULL){
     if(ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
       recall = recall->next;

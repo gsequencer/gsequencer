@@ -1,3 +1,71 @@
+ags (3.10.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed playback of ags-fx-vst3
+
+ags (3.10.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved loading plugins from main thread
+
+ags (3.10.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed 2 dead-locks with ags-fx-vst3
+	* minor improvements
+
+ags (3.10.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved build compile libags_vst.so with -Wall -Wformat -Werror=format-security -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
+	* improved build additional LIBAGS*_CPPFLAGS and LIBGSEQUENCER_CPPFLAGS
+
+ags (3.10.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* remove libags_vst.la dependency from gtkdoc
+
+ags (3.10.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed linker errors of libgsequencer.so if VST3 is disabled
+
+ags (3.10.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsVst3PluginBrowser
+
+ags (3.10.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed host context
+	* implemented VST3 fallback of loading IEditController by query interface
+
+ags (3.10.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented VST3 program support
+	* improved thread-safety
+
+ags (3.10.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* disabled -DDEVELOPMENT of libags_vst.so in Makefile.am
+	* added VST3_RELEASE_TYPE to configure.ac and Makefile.am
+
+ags (3.10.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing XML persistenc of AgsVst3Bridge and AgsLiveVst3Bridge
+	* improved libags-vst.so unicode support
+
+ags (3.10.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing call to activate
+	* added ags-fx-vst3 effect processor to developer's book
+	* improved build
+
 ags (3.10.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

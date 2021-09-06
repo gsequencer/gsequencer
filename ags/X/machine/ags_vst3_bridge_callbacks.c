@@ -57,5 +57,60 @@ ags_vst3_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, Ag
 void
 ags_vst3_bridge_program_changed_callback(GtkComboBox *combo_box, AgsVst3Bridge *vst3_bridge)
 {
-  //TODO:JK: implement me  
+  GtkTreeIter iter;
+
+  GList *start_recall, *recall;
+
+  guint port_index;
+  guint program_list_id;
+  guint program_index;
+  
+  if(gtk_combo_box_get_active_iter(combo_box,
+				   &iter)){
+    gtk_tree_model_get(gtk_combo_box_get_model(combo_box), &iter,
+		       3, &port_index,
+		       4, &program_list_id,
+		       5, &program_index,
+		       -1);
+  
+    /* play context */
+    g_object_get(AGS_MACHINE(vst3_bridge)->audio,
+		 "play", &start_recall,
+		 NULL);
+    
+    recall = start_recall;
+    
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_VST3_AUDIO)) != NULL){
+      ags_fx_vst3_audio_change_program(recall->data,
+				       port_index,
+				       program_list_id,
+				       program_index);
+      
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     g_object_unref);
+
+    /* recall context */
+    g_object_get(AGS_MACHINE(vst3_bridge)->audio,
+		 "recall", &start_recall,
+		 NULL);
+    
+    recall = start_recall;
+    
+    while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_VST3_AUDIO)) != NULL){
+      ags_fx_vst3_audio_change_program(recall->data,
+				       port_index,
+				       program_list_id,
+				       program_index);
+            
+      /* iterate */
+      recall = recall->next;
+    }
+    
+    g_list_free_full(start_recall,
+		     g_object_unref);
+  }
 }

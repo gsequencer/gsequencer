@@ -36,6 +36,8 @@ DOC_MODULE=libags_audio
 # The top-level XML file.
 DOC_MAIN_SGML_FILE=$(DOC_MODULE).xml
 
+HTML_DIR=libags_audio
+
 # Directories containing the source code.
 # gtk-doc will search all .c and .h files beneath these paths
 # for inline comments documenting functions and macros.
@@ -48,18 +50,18 @@ SCANGOBJ_OPTIONS=--cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(XMLRPC_C
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
 # SCAN_OPTIONS=--rebuild-types --rebuild-sections
-SCAN_OPTIONS=--deprecated-guards="G_DISABLE_DEPRECATED"
+SCAN_OPTIONS=--module=libags_audio --deprecated-guards="G_DISABLE_DEPRECATED"
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
-MKDB_OPTIONS=--xml-mode --output-format=xml --name-space=ags --module=libags_audio
+MKDB_OPTIONS=--xml-mode --output-format=xml --name-space=ags --module=libags_audio --default-stability=Stable
 
 # Extra options to supply to gtkdoc-mkhtml
 MKHTML_OPTIONS=
 
 # Extra options to supply to gtkdoc-fixref. Normally not needed.
 # e.g. FIXXREF_OPTIONS=--extra-dir=../gdk-pixbuf/html --extra-dir=../gdk/html
-FIXXREF_OPTIONS=--module=libags_audio --module-dir=./libags-audio-html/ --html-dir=$(DESTDIR)/$(datadir)/doc/libags-audio-doc/api --extra-dir=$(top_srcdir)/docs/reference/libags/libags-html
+FIXXREF_OPTIONS=--module=libags_audio --module-dir=./html/ --html-dir=$(DESTDIR)/$(datadir)/doc/libags-audio-doc/api --extra-dir=$(top_srcdir)/docs/reference/libags/libags-html
 
 # Used for dependencies. The docs will be rebuilt if any of these change.
 # e.g. HFILE_GLOB=$(top_srcdir)/gtk/*.h

@@ -354,7 +354,7 @@ ags_osc_buffer_util_get_string(unsigned char *buffer,
     return;
   }
 
-  offset = index(buffer, '\0');
+  offset = strchr(buffer, '\0');
   count = offset - buffer;
   
   if(str != NULL){

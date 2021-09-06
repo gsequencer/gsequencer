@@ -23,31 +23,53 @@
 
 extern "C" {
 
-  AgsVstNoteOnEvent* ags_vst_note_on_event_alloc(gint channel, gint pitch, gfloat tuning, gfloat velocity, gint32 length, gint32 note_id)
+  AgsVstEvent* ags_vst_note_on_event_alloc(gint channel, gint pitch, gfloat tuning, gfloat velocity, gint32 length, gint32 note_id)
   {
-    Steinberg::Vst::NoteOnEvent *event = new Steinberg::Vst::NoteOnEvent();
+    Steinberg::Vst::Event *event = new Steinberg::Vst::Event();
 
-    event->channel = channel;
-    event->pitch = pitch;
-    event->tuning = tuning;
-    event->velocity = velocity;
-    event->length = length;
-    event->noteId = note_id;
+    event->busIndex = 0;
+    event->sampleOffset = 0;    
+    event->ppqPosition = 0;    
+    
+    event->flags = 1;
+    
+    event->type = Steinberg::Vst::Event::EventTypes::kNoteOnEvent;
+    
+    event->noteOn.channel = channel;
+    event->noteOn.pitch = pitch;
+    event->noteOn.tuning = tuning;
+    event->noteOn.velocity = velocity;
+    event->noteOn.length = length;
+    event->noteOn.noteId = note_id;
 
-    return((AgsVstNoteOnEvent *) event);
+    return((AgsVstEvent *) event);
   }
   
-  AgsVstNoteOffEvent* ags_vst_note_off_event_alloc(gint channel, gint pitch, gfloat tuning, gfloat velocity, gint32 length, gint32 note_id)
+  AgsVstEvent* ags_vst_note_off_event_alloc(gint channel, gint pitch, gfloat tuning, gfloat velocity, gint32 length, gint32 note_id)
   {
-    Steinberg::Vst::NoteOffEvent *event = new Steinberg::Vst::NoteOffEvent();
+    Steinberg::Vst::Event *event = new Steinberg::Vst::Event();
 
-    event->channel = channel;
-    event->pitch = pitch;
-    event->velocity = velocity;
-    event->noteId = note_id;
-    event->tuning = tuning;
+    event->busIndex = 0;
+    event->sampleOffset = 0;    
+    event->ppqPosition = 0;    
 
-    return((AgsVstNoteOffEvent *) event);
+    event->flags = 1;
+    
+    event->type = Steinberg::Vst::Event::EventTypes::kNoteOffEvent;
+    
+    event->noteOff.channel = channel;
+    event->noteOff.pitch = pitch;
+    event->noteOff.velocity = velocity;
+    event->noteOff.noteId = note_id;
+    event->noteOff.tuning = tuning;
+
+    return((AgsVstEvent *) event);
+  }
+
+  void ags_vst_event_set_sample_offset(AgsVstEvent *event,
+				       gint32 sample_offset)
+  {
+    ((Steinberg::Vst::Event *) event)->sampleOffset = sample_offset;
   }
 
   const AgsVstTUID* ags_vst_ievent_list_get_iid()

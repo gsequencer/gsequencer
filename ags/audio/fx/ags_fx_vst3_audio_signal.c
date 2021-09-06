@@ -173,6 +173,7 @@ ags_fx_vst3_audio_signal_real_run_inter(AgsRecall *recall)
   guint buffer_size;
   guint format;
   guint copy_mode_out, copy_mode_in;
+  guint i;
   
   GRecMutex *source_stream_mutex;
   GRecMutex *fx_vst3_audio_mutex;
@@ -291,6 +292,23 @@ ags_fx_vst3_audio_signal_real_run_inter(AgsRecall *recall)
 						  buffer_size, copy_mode_in);
     }
 
+    for(i = 0; i < AGS_FX_VST3_CHANNEL_MAX_PARAMETER_CHANGES && input_data->parameter_changes[i].param_id != ~0; i++){
+      AgsVstParameterValueQueue *parameter_value_queue;
+	
+      gint32 index;
+
+      index = 0;
+      parameter_value_queue = ags_vst_parameter_changes_add_parameter_data(input_data->input_parameter_changes,
+									   &(input_data->parameter_changes[i].param_id), &index);
+
+      index = 0;
+      ags_vst_parameter_value_queue_add_point(parameter_value_queue,
+					      0, input_data->parameter_changes[i].param_value,
+					      &index);
+    }
+
+    input_data->parameter_changes[0].param_id = ~0;
+    
     ags_vst_iaudio_processor_process(input_data->iaudio_processor,
 				     input_data->process_data);  
     
@@ -298,6 +316,9 @@ ags_fx_vst3_audio_signal_real_run_inter(AgsRecall *recall)
        fx_vst3_channel->output_port_count >= 1 &&
        source->stream_current != NULL){
       //NOTE:JK: only mono input, additional channels discarded
+      ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
+					 buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+      
       ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
 						  input_data->output, fx_vst3_channel->output_port_count, 0,
 						  buffer_size, copy_mode_out);
@@ -464,43 +485,121 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       g_rec_mutex_lock(fx_vst3_audio_mutex);
       
       input_data->key_on += 1;
-
+      
       g_rec_mutex_unlock(fx_vst3_audio_mutex);
     }
 
     g_rec_mutex_lock(fx_vst3_audio_mutex);
-    
+
     if(is_live_instrument){
+      AgsVstEvent *note_off;
+
+      guint i;
+      
+//	g_message("play channel data x0 = %d, y = %d", x0, y);
+	
       ags_vst_ievent_list_add_event(channel_data->input_event,
 				    ags_vst_note_on_event_alloc(0,
 								midi_note,
 								0.0,
 								1.0,
-								-1,
+								buffer_size, // (x1 - x0) * (delay * buffer_size),
 								-1));
+
+      note_off = ags_vst_note_off_event_alloc(0,
+					      midi_note,
+					      0.0,
+					      1.0,
+					      -1,
+					      -1);
+      
+      ags_vst_event_set_sample_offset(note_off,
+				      buffer_size);
+
+      ags_vst_ievent_list_add_event(channel_data->input_event,
+				    note_off);
+
+      for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES && channel_data->parameter_changes[i].param_id != ~0; i++){
+	AgsVstParameterValueQueue *parameter_value_queue;
+	
+	gint32 index;
+
+	index = 0;
+	parameter_value_queue = ags_vst_parameter_changes_add_parameter_data(channel_data->input_parameter_changes,
+									     &(channel_data->parameter_changes[i].param_id), &index);
+
+	index = 0;
+	ags_vst_parameter_value_queue_add_point(parameter_value_queue,
+						0, channel_data->parameter_changes[i].param_value,
+						&index);
+      }
+
+      channel_data->parameter_changes[0].param_id = ~0;
     }else{
+      AgsVstEvent *note_off;
+
+      guint i;
+      
+//	g_message("play input data x0 = %d, y = %d", x0, y);
+
       ags_vst_ievent_list_add_event(input_data->input_event,
 				    ags_vst_note_on_event_alloc(0,
 								midi_note,
 								0.0,
 								1.0,
-								-1,
+								buffer_size, // (x1 - x0) * (delay * buffer_size),
 								-1));
-    }      
+
+      note_off = ags_vst_note_off_event_alloc(0,
+					      midi_note,
+					      0.0,
+					      1.0,
+					      -1,
+					      -1);
+      
+      ags_vst_event_set_sample_offset(note_off,
+				      buffer_size);
+      
+      ags_vst_ievent_list_add_event(input_data->input_event,
+				    note_off);
+
+      for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES && input_data->parameter_changes[i].param_id != ~0; i++){
+	AgsVstParameterValueQueue *parameter_value_queue;
+	
+      	gint32 index;
+	
+	index = 0;
+	parameter_value_queue = ags_vst_parameter_changes_add_parameter_data(input_data->input_parameter_changes,
+									     &(input_data->parameter_changes[i].param_id), &index);
+
+	index = 0;
+	ags_vst_parameter_value_queue_add_point(parameter_value_queue,
+						0, input_data->parameter_changes[i].param_value,
+						&index);
+      }
+
+      input_data->parameter_changes[0].param_id = ~0;
+    }            
 
     g_rec_mutex_unlock(fx_vst3_audio_mutex);
+
     
     if(is_live_instrument){
       g_rec_mutex_lock(fx_vst3_audio_mutex);
       
       if(channel_data->output != NULL){
-	ags_audio_buffer_util_clear_float(channel_data->output, fx_vst3_audio->output_port_count,
-					  buffer_size);
+	ags_audio_buffer_util_clear_float(channel_data->output, 1,
+					  fx_vst3_audio->output_port_count * buffer_size);
+      }
+      
+      if(channel_data->input != NULL){
+	ags_audio_buffer_util_clear_float(channel_data->input, 1,
+					  fx_vst3_audio->input_port_count * buffer_size);
       }
 
-      if(input_data->iaudio_processor != NULL){
-	ags_vst_iaudio_processor_process(input_data->iaudio_processor,
-					 input_data->process_data);  
+      if(channel_data->iaudio_processor != NULL){
+	ags_vst_iaudio_processor_process(channel_data->iaudio_processor,
+					 channel_data->process_data);  
       }
 
       g_rec_mutex_lock(source_stream_mutex);
@@ -508,6 +607,9 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       if(channel_data->output != NULL &&
 	 fx_vst3_audio->output_port_count >= 1 &&
 	 source->stream_current != NULL){
+	ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
+					   buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+
 	//NOTE:JK: only mono input, additional channels discarded
 	ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
 						    channel_data->output, fx_vst3_audio->output_port_count, 0,
@@ -521,8 +623,13 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       g_rec_mutex_lock(fx_vst3_audio_mutex);
       
       if(input_data->output != NULL){
-	ags_audio_buffer_util_clear_float(input_data->output, fx_vst3_audio->output_port_count,
-					  buffer_size);
+	ags_audio_buffer_util_clear_float(input_data->output, 1,
+					  fx_vst3_audio->output_port_count * buffer_size);
+      }
+      
+      if(input_data->input != NULL){
+	ags_audio_buffer_util_clear_float(input_data->input, 1,
+					  fx_vst3_audio->input_port_count * buffer_size);
       }
 
       if(input_data->iaudio_processor != NULL){
@@ -535,6 +642,9 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
       if(input_data->output != NULL &&
 	 fx_vst3_audio->output_port_count >= 1 &&
 	 source->stream_current != NULL){
+	ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
+					   buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+
 	//NOTE:JK: only mono input, additional channels discarded
 	ags_audio_buffer_util_copy_buffer_to_buffer(source->stream_current->data, 1, 0,
 						    input_data->output, fx_vst3_audio->output_port_count, 0,
@@ -545,6 +655,20 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 
       g_rec_mutex_unlock(fx_vst3_audio_mutex);
     }
+
+    g_rec_mutex_lock(fx_vst3_audio_mutex);
+
+    if(is_live_instrument){
+      ags_vst_event_list_clear(channel_data->input_event);
+
+      ags_vst_parameter_changes_clear_queue(channel_data->input_parameter_changes);
+    }else{
+      ags_vst_event_list_clear(input_data->input_event);
+
+      ags_vst_parameter_changes_clear_queue(input_data->input_parameter_changes);
+    }            
+
+    g_rec_mutex_unlock(fx_vst3_audio_mutex);
   }
   
   /* unref */
@@ -582,8 +706,10 @@ ags_fx_vst3_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_aud
   AgsFxVst3ChannelProcessor *fx_vst3_channel_processor;
   AgsFxVst3Recycling *fx_vst3_recycling;
 
+  gboolean is_live_instrument;
   guint sound_scope;
   guint audio_channel;
+  guint buffer_size;
   guint audio_start_mapping;
   guint midi_start_mapping;
   gint midi_note;
@@ -605,6 +731,12 @@ ags_fx_vst3_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_aud
 
   audio_start_mapping = 0;
   midi_start_mapping = 0;
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
+  g_object_get(source,
+	       "buffer-size", &buffer_size,
+	       NULL);
 
   g_object_get(fx_notation_audio_signal,
 	       "parent", &fx_vst3_recycling,
@@ -634,7 +766,13 @@ ags_fx_vst3_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_aud
 
   fx_vst3_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_audio);
 
-  midi_note = (y - audio_start_mapping + midi_start_mapping);
+  is_live_instrument = ags_fx_vst3_audio_test_flags(fx_vst3_audio, AGS_FX_VST3_AUDIO_LIVE_INSTRUMENT);
+
+  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
+    midi_note = (128 - y - 1 - audio_start_mapping + midi_start_mapping);
+  }else{
+    midi_note = (y - audio_start_mapping + midi_start_mapping);
+  }
 
   if(midi_note >= 0 &&
      midi_note < 128){
@@ -652,24 +790,6 @@ ags_fx_vst3_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_aud
 
     input_data->key_on -= 1;
     
-    if(ags_fx_vst3_audio_test_flags(fx_vst3_audio, AGS_FX_VST3_AUDIO_LIVE_INSTRUMENT)){
-      ags_vst_ievent_list_add_event(channel_data->input_event,
-				    ags_vst_note_off_event_alloc(0,
-								 midi_note,
-								 0.0,
-								 1.0,
-								 -1,
-								 -1));
-    }else{
-      ags_vst_ievent_list_add_event(input_data->input_event,
-				    ags_vst_note_off_event_alloc(0,
-								 midi_note,
-								 0.0,
-								 1.0,
-								 -1,
-								 -1));
-    }
-
     g_rec_mutex_unlock(fx_vst3_audio_mutex);
   }
   

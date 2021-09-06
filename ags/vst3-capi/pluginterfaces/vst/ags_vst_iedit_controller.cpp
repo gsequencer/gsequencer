@@ -19,15 +19,19 @@
 
 #include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iedit_controller.h>
 
+#include <ags/vst3-capi/host/ags_vst_host_context.h>
+
 #include <pluginterfaces/vst/ivsteditcontroller.h>
+
+#include <public.sdk/source/vst/vstcomponent.h>
 
 extern "C" {
 
   const AgsVstCString ags_vst_editor = "editor";
-
+  
   AgsVstParameterInfo* ags_vst_parameter_info_alloc()
   {
-    return((AgsVstParameterInfo *) new Steinberg::Vst::ParameterInfo);
+    return((AgsVstParameterInfo *) new Steinberg::Vst::ParameterInfo());
   }
 
   void ags_vst_parameter_info_free(AgsVstParameterInfo *info)
@@ -40,19 +44,19 @@ extern "C" {
     return((AgsVstParamID) ((Steinberg::Vst::ParameterInfo *) info)->id);
   }
   
-  AgsVstString128* ags_vst_parameter_info_get_title(AgsVstParameterInfo *info)
+  gchar* ags_vst_parameter_info_get_title(AgsVstParameterInfo *info)
   {
-    return((AgsVstString128 *) &(((Steinberg::Vst::ParameterInfo *) info)->title));
+    return((gchar *) &(((Steinberg::Vst::ParameterInfo *) info)->title));
   }
   
-  AgsVstString128* ags_vst_parameter_info_get_short_title(AgsVstParameterInfo *info)
+  gchar* ags_vst_parameter_info_get_short_title(AgsVstParameterInfo *info)
   {
-    return((AgsVstString128 *) &(((Steinberg::Vst::ParameterInfo *) info)->shortTitle));
+    return((gchar *) &(((Steinberg::Vst::ParameterInfo *) info)->shortTitle));
   }
   
-  AgsVstString128* ags_vst_parameter_info_get_units(AgsVstParameterInfo *info)
+  gchar* ags_vst_parameter_info_get_units(AgsVstParameterInfo *info)
   {
-    return((AgsVstString128 *) &(((Steinberg::Vst::ParameterInfo *) info)->units));
+    return((gchar *) &(((Steinberg::Vst::ParameterInfo *) info)->units));
   }
   
   gint32 ags_vst_parameter_info_get_step_count(AgsVstParameterInfo *info)
@@ -78,6 +82,20 @@ extern "C" {
   const AgsVstTUID* ags_vst_icomponent_handler_get_iid()
   {
     return((AgsVstTUID *) &(Steinberg::Vst::IComponentHandler::iid.toTUID()));
+  }
+
+  AgsVstIComponentHandler* ags_vst_component_handler_new()
+  {
+    Steinberg::Vst::Component *component_handler = new Steinberg::Vst::Component();
+
+    component_handler->initialize((Steinberg::FUnknown *) ags_vst_host_context_get_instance());
+    
+    return((AgsVstIComponentHandler *) (static_cast<Steinberg::Vst::IComponent*>(component_handler)));
+  }
+  
+  void ags_vst_component_handler_destroy(AgsVstComponentHandler *component_handler)
+  {
+    //TODO:JK: implement me
   }
 
   AgsVstTResult ags_vst_icomponent_handler_begin_edit(AgsVstIComponentHandler *icomponent_handler,
@@ -152,7 +170,7 @@ extern "C" {
 					AgsVstID *out_id)
   {
     return(((Steinberg::Vst::IProgress *) iprogress)->start((Steinberg::Vst::IProgress::ProgressType) progress_type,
-							    optional_description,
+							    (Steinberg::tchar *) optional_description,
 							    const_cast<Steinberg::Vst::IProgress::ID&>(((Steinberg::Vst::IProgress::ID *) out_id)[0])));
   }
 
@@ -206,7 +224,7 @@ extern "C" {
 
   AgsVstTResult ags_vst_iedit_controller_get_param_string_by_value(AgsVstIEditController *iedit_controller,
 								   AgsVstParamID id, AgsVstParamValue value_normalized,
-								   AgsVstString128 *string)
+								   gchar *string)
   {
     Steinberg::Vst::String128 tmp_string;
     Steinberg::tresult retval;

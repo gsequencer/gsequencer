@@ -33,6 +33,7 @@ extern "C" {
   
   typedef struct ParameterInfo AgsVstParameterInfo;
   typedef struct IComponentHandler AgsVstIComponentHandler;
+  typedef struct ComponentHandler AgsVstComponentHandler;
   typedef struct IComponentHandler2 AgsVstIComponentHandler2;
   typedef struct IComponentHandlerBusActivation AgsVstIComponentHandlerBusActivation;
   typedef struct IProgress AgsVstIProgress;
@@ -42,6 +43,11 @@ extern "C" {
   typedef struct IMidiMapping AgsVstIMidiMapping;
   typedef struct IEditControllerHostEditing AgsVstIEditControllerHostEditing;
   typedef guint64 AgsVstID;
+  
+  typedef void (*AgsVstIComponentHandlerBeginEdit)(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id);
+  typedef void (*AgsVstIComponentHandlerPerformEdit)(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id, AgsVstParamValue value_normalized);
+  typedef void (*AgsVstIComponentHandlerEndEdit)(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id);
+  typedef void (*AgsVstIComponentHandlerRestartComponent)(AgsVstIComponentHandler *icomponent_handler, gint32 flags);
 
   typedef enum
   {
@@ -90,11 +96,11 @@ extern "C" {
 
   AgsVstParamID ags_vst_parameter_info_get_param_id(AgsVstParameterInfo *info);
   
-  AgsVstString128* ags_vst_parameter_info_get_title(AgsVstParameterInfo *info);
+  gchar* ags_vst_parameter_info_get_title(AgsVstParameterInfo *info);
   
-  AgsVstString128* ags_vst_parameter_info_get_short_title(AgsVstParameterInfo *info);
+  gchar* ags_vst_parameter_info_get_short_title(AgsVstParameterInfo *info);
   
-  AgsVstString128* ags_vst_parameter_info_get_units(AgsVstParameterInfo *info);
+  gchar* ags_vst_parameter_info_get_units(AgsVstParameterInfo *info);
   
   gint32 ags_vst_parameter_info_get_step_count(AgsVstParameterInfo *info);
 
@@ -106,6 +112,10 @@ extern "C" {
   
   const AgsVstTUID* ags_vst_icomponent_handler_get_iid();
 
+  AgsVstIComponentHandler* ags_vst_component_handler_new();    
+  
+  void ags_vst_component_handler_destroy(AgsVstComponentHandler *component_handler);
+  
   AgsVstTResult ags_vst_icomponent_handler_begin_edit(AgsVstIComponentHandler *icomponent_handler,
 						      AgsVstParamID id);
 
@@ -166,7 +176,7 @@ extern "C" {
 
   AgsVstTResult ags_vst_iedit_controller_get_param_string_by_value(AgsVstIEditController *iedit_controller,
 								   AgsVstParamID id, AgsVstParamValue value_normalized,
-								   AgsVstString128 *string);
+								   gchar *string);
 
   AgsVstTResult ags_vst_iedit_controller_get_param_value_by_string(AgsVstIEditController *iedit_controller,
 								   AgsVstParamID id,
@@ -214,7 +224,7 @@ extern "C" {
   const AgsVstTUID* ags_vst_iedit_controller_host_editing_get_iid();
 
   AgsVstTResult ags_vst_iedit_controller_host_editing_begin_edit_from_host(AgsVstIEditControllerHostEditing *iedit_controller_host_editing,
-								      AgsVstParamID param_id);
+									   AgsVstParamID param_id);
   
   AgsVstTResult ags_vst_iedit_controller_host_editing_end_edit_from_host(AgsVstIEditControllerHostEditing *iedit_controller_host_editing,
 									 AgsVstParamID param_id);

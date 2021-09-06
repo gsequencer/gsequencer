@@ -21,7 +21,12 @@
 
 #include <ags/plugin/ags_ladspa_conversion.h>
 #include <ags/plugin/ags_lv2_conversion.h>
+
+#include <ags/config.h>
+
+#if defined(AGS_WITH_VST3)
 #include <ags/plugin/ags_vst3_conversion.h>
+#endif
 
 gpointer ags_port_util_copy(gpointer ptr);
 void ags_port_util_free(gpointer ptr);
@@ -174,6 +179,7 @@ ags_port_util_load_lv2_conversion(AgsPort *port,
   }
 }
 
+#if defined(AGS_WITH_VST3)
 /**
  * ags_port_util_load_vst3_conversion:
  * @port: the #AgsPort
@@ -185,7 +191,7 @@ ags_port_util_load_lv2_conversion(AgsPort *port,
  */
 void
 ags_port_util_load_vst3_conversion(AgsPort *port,
-				  AgsPluginPort *plugin_port)
+				   AgsPluginPort *plugin_port)
 {
   AgsVst3Conversion *vst3_conversion;
 
@@ -202,3 +208,4 @@ ags_port_util_load_vst3_conversion(AgsPort *port,
 		 NULL);
   }
 }
+#endif

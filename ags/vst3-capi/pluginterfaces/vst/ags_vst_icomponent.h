@@ -71,6 +71,8 @@ extern "C" {
 
   const AgsVstTUID* ags_vst_icomponent_get_iid();
 
+  void ags_vst_icomponent_destroy(AgsVstIComponent *icomponent);
+  
   AgsVstTResult ags_vst_icomponent_get_controller_class_id(AgsVstIComponent *icomponent, AgsVstTUID *class_id);
 
   AgsVstTResult ags_vst_icomponent_set_io_mode(AgsVstIComponent *icomponent, guint io_mode);

@@ -52,6 +52,7 @@ G_BEGIN_DECLS
 #define AGS_FX_VST3_AUDIO_INPUT_DATA(ptr) ((AgsFxVst3AudioInputData *) (ptr))
 #define AGS_FX_VST3_AUDIO_INPUT_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxVst3AudioInputData *)(ptr))->strct_mutex))
 
+#define AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES (1024)
 #define AGS_FX_VST3_AUDIO_DEFAULT_MIDI_LENGHT (8 * 256)
 
 typedef struct _AgsFxVst3Audio AgsFxVst3Audio;
@@ -75,6 +76,14 @@ struct _AgsFxVst3Audio
 
   guint input_port_count;
   guint *input_port;
+
+  gint program_port_index;
+  gint program_param_id;
+
+  struct{
+    AgsVstParamID param_id;
+    AgsVstParamValue param_value;
+  }parameter_changes[AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES];
   
   AgsFxVst3AudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];
 
@@ -114,8 +123,24 @@ struct _AgsFxVst3AudioChannelData
   AgsVstIEditController *iedit_controller;
   AgsVstIAudioProcessor *iaudio_processor;
 
+  AgsVstIEditControllerHostEditing *iedit_controller_host_editing;
+
+  AgsVstComponentHandler *icomponent_handler;
+  
+  AgsVstIComponentHandlerBeginEdit *begin_edit_callback;
+  AgsVstIComponentHandlerPerformEdit *perform_edit_callback;
+  AgsVstIComponentHandlerEndEdit *end_edit_callback;
+  AgsVstIComponentHandlerRestartComponent *restart_component_callback;
+  
   AgsVstProcessData *process_data;
+  AgsVstProcessContext *process_context;
+  AgsVstParameterChanges *input_parameter_changes;
   AgsVstIEventList *input_event;
+  
+  struct{
+    AgsVstParamID param_id;
+    AgsVstParamValue param_value;
+  }parameter_changes[AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES];
   
   AgsFxVst3AudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
 };
@@ -133,8 +158,24 @@ struct _AgsFxVst3AudioInputData
   AgsVstIEditController *iedit_controller;
   AgsVstIAudioProcessor *iaudio_processor;
 
+  AgsVstIEditControllerHostEditing *iedit_controller_host_editing;
+
+  AgsVstComponentHandler *icomponent_handler;
+  
+  AgsVstIComponentHandlerBeginEdit *begin_edit_callback;
+  AgsVstIComponentHandlerPerformEdit *perform_edit_callback;
+  AgsVstIComponentHandlerEndEdit *end_edit_callback;
+  AgsVstIComponentHandlerRestartComponent *restart_component_callback;
+  
   AgsVstProcessData *process_data;
+  AgsVstProcessContext *process_context;
+  AgsVstParameterChanges *input_parameter_changes;
   AgsVstIEventList *input_event;
+  
+  struct{
+    AgsVstParamID param_id;
+    AgsVstParamValue param_value;
+  }parameter_changes[AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES];
   
   snd_seq_event_t *event_buffer;
   guint key_on;
@@ -160,6 +201,12 @@ void ags_fx_vst3_audio_unset_flags(AgsFxVst3Audio *fx_vst3_audio, guint flags);
 /* load/unload */
 void ags_fx_vst3_audio_load_plugin(AgsFxVst3Audio *fx_vst3_audio);
 void ags_fx_vst3_audio_load_port(AgsFxVst3Audio *fx_vst3_audio);
+
+/* plugin */
+void ags_fx_vst3_audio_change_program(AgsFxVst3Audio *fx_vst3_audio,
+				      guint port_index,
+				      guint program_list_id,
+				      guint program_index);
 
 /* instantiate */
 AgsFxVst3Audio* ags_fx_vst3_audio_new(AgsAudio *audio);

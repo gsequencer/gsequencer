@@ -31,7 +31,7 @@
 
 #include <gtk/gtk.h>
 
-#ifdef AGS_WITH_QUARTZ
+#if defined(AGS_WITH_MAC_INTEGRATION)
 #include <gtkosxapplication.h>
 #endif
 
@@ -108,11 +108,14 @@ ags_setup(int argc, char **argv)
 		      "Welcome to Advanced Gtk+ Sequencer");
   
   /* application context */
+#if 0
   g_thread_new("Advanced Gtk+ Sequencer - setup",
 	       ags_setup_thread,
 	       application_context);
+#endif
   
   ags_application_context_prepare(application_context);
+  //  ags_application_context_setup(AGS_APPLICATION_CONTEXT(xorg_application_context));
 }
 
 int
@@ -124,7 +127,7 @@ main(int argc, char **argv)
   AgsPriority *priority;
   
   gchar *filename;
-#if defined AGS_W32API
+#if defined(AGS_W32API) || defined(AGS_OSXAPI)
   gchar *app_dir;
   gchar *path;
 #endif
@@ -209,6 +212,61 @@ main(int argc, char **argv)
 
   putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s\\lib\\gstreamer-1.0", app_dir));
   putenv(g_strdup_printf("GST_PLUGIN_SCANNER=%s\\libexec\\gstreamer-1.0\\gst-plugin-scanner.exe", app_dir));
+
+  putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s\\lib\\gstreamer-1.0", app_dir));
+#else
+#if defined(AGS_OSXAPI)
+  uid = getuid();
+  pw = getpwuid(uid);
+
+  app_dir = app_dir = g_strndup(argv[0],
+				strlen(argv[0]) - strlen("Contents/MacOS/gsequencer"));
+  
+  putenv(g_strdup_printf("GIO_EXTRA_MODULES=%s/Contents/Resources/lib/gio/modules", app_dir));
+
+  putenv(g_strdup_printf("XDG_DATA_DIRS=%s/Contents/Resources/share", app_dir));
+  putenv(g_strdup_printf("XDG_CONFIG_HOME=%s/Contents/Resources/etc", app_dir));
+
+  putenv(g_strdup_printf("GDK_PIXBUF_MODULE_FILE=%s/Contents/Resources/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache", app_dir));
+
+  putenv(g_strdup_printf("GTK_EXE_PREFIX=%s/Contents/Resources", app_dir));
+  putenv(g_strdup_printf("GTK_DATA_PREFIX=%s/Contents/Resources/share", app_dir));
+  putenv(g_strdup_printf("GTK_PATH=%s/Contents/Resources", app_dir));
+  putenv(g_strdup_printf("GTK_IM_MODULE_FILE=%/Contents/Resourcess/lib/gtk-3.0/3.0.0/immodules.cache", app_dir));
+
+  if(getenv("GTK_THEME") == NULL){
+    putenv(g_strdup("GTK_THEME=Blackbird"));
+  }
+
+  putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s/lib/gstreamer-1.0", app_dir));
+  putenv(g_strdup_printf("GST_PLUGIN_SCANNER=%s/libexec/gstreamer-1.0/gst-plugin-scanner", app_dir));
+
+  putenv(g_strdup_printf("AGS_ANIMATION_FILENAME=%s/Contents/Resources/gsequencer-800x450.png", app_dir));
+  
+  putenv(g_strdup_printf("AGS_LOGO_FILENAME=%s/Contents/Resources/ags.png", app_dir));
+  
+  putenv(g_strdup_printf("AGS_LICENSE_FILENAME=%s/Contents/Resources/GPL-3", app_dir));
+  
+  putenv(g_strdup_printf("AGS_ONLINE_HELP_PDF_FILENAME=%s/Contents/Resources/share/doc/gsequencer/pdf/ags-user-manual.pdf", app_dir));
+  
+  putenv(g_strdup_printf("AAGS_CSS_FILENAME=%s/Contents/Resources/ags.css", app_dir));
+  
+  if((getenv("VST3_PATH")) == NULL){
+    putenv(g_strdup_printf("VST3_PATH=/Library/Audio/Plug-Ins/VST3:%s/Library/Audio/Plug-Ins/VST3:%s/Contents/Plugins/vst3", pw->pw_dir, app_dir));
+  }
+  
+  if((getenv("LADSPA_PATH")) == NULL){  
+    putenv(g_strdup_printf("LADSPA_PATH=%s/Contents/Plugins/ladspa", app_dir));
+  }
+
+  if((getenv("DSSI_PATH")) == NULL){
+    putenv(g_strdup_printf("DSSI_PATH=%s/Contents/Plugins/dssi", app_dir));
+  }
+  
+  if((getenv("LV2_PATH")) == NULL){
+    putenv(g_strdup_printf("LV2_PATH=%s/Contents/Plugins/lv2", app_dir));
+  }
+
 #else
   uid = getuid();
   pw = getpwuid(uid);
@@ -226,7 +284,8 @@ main(int argc, char **argv)
   g_free(priority_filename);
   g_free(wdir);
 #endif
-
+#endif
+  
   /* real-time setup */
 #ifdef AGS_WITH_RT
   result = getrlimit(RLIMIT_STACK, &rl);
@@ -374,7 +433,7 @@ main(int argc, char **argv)
   }
 #endif
   
-#ifdef AGS_WITH_QUARTZ
+#if defined(AGS_WITH_MAC_INTEGRATION)
   g_object_new(GTKOSX_TYPE_APPLICATION,
 	       NULL);
 #endif
