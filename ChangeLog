@@ -1,3 +1,8 @@
+ags (3.11.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved parallelism with VST3
+
 ags (3.10.18)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
