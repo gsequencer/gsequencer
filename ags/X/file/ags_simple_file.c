@@ -153,6 +153,8 @@ void ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simple_file, xm
 void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLv2Bridge *lv2_bridge);
 void ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveLv2Bridge *live_lv2_bridge);
 #if defined(AGS_WITH_VST3)
+void ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode *node, AgsMachine *machine, AgsVst3Plugin *vst3_plugin);
+
 void ags_simple_file_read_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsVst3Bridge *vst3_bridge);
 void ags_simple_file_read_live_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveVst3Bridge *live_vst3_bridge);
 #endif
@@ -4183,15 +4185,234 @@ ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode 
 
 #if defined(AGS_WITH_VST3)
 void
+ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode *node, AgsMachine *machine, AgsVst3Plugin *vst3_plugin)
+{
+  AgsAudio *audio;
+  AgsChannel *start_output, *output;
+  AgsPlaybackDomain *playback_domain;
+
+  AgsInstantiateVst3Plugin *instantiate_vst3_plugin;
+
+  AgsAudioThread *audio_thread;
+  AgsChannelThread *channel_thread;
+  
+  GList *start_playback, *playback;	
+  GList *start_play, *start_recall;
+  GList *start_list, *list;
+
+  guint audio_channels;
+
+  audio = machine->audio;
+  
+  start_output = NULL;
+  
+  start_play = NULL;
+  start_recall = NULL;
+
+  playback_domain = NULL;
+
+  audio_channels = 0;
+  
+  g_object_get(audio,
+	       "audio-channels", &audio_channels,
+	       "output", &start_output,
+	       "play", &start_play,
+	       "recall", &start_recall,
+	       "playback-domain", &playback_domain,
+	       NULL);
+
+  list = 
+    start_list = g_list_concat(start_play,
+			       start_recall);
+
+  start_playback = NULL;
+	
+  g_object_get(playback_domain,
+	       "output-playback", &start_playback,
+	       NULL);
+  
+  while(list != NULL){
+    if(AGS_IS_FX_VST3_AUDIO(list->data)){
+      AgsTaskLauncher *task_launcher;      
+
+      if(ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+	/*  */
+	if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_PLAYBACK)){
+	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							      AGS_SOUND_SCOPE_PLAYBACK);
+
+	  task_launcher = ags_audio_thread_get_task_launcher(audio_thread);
+	
+	  instantiate_vst3_plugin =  ags_instantiate_vst3_plugin_new(list->data,
+								     AGS_SOUND_SCOPE_PLAYBACK,
+								     -1,
+								     FALSE);
+	  ags_task_launcher_add_task(task_launcher,
+				     instantiate_vst3_plugin);
+
+	  g_object_unref(audio_thread);
+
+	  g_object_unref(task_launcher);
+	}
+	
+	/*  */
+	if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_SEQUENCER)){
+	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							      AGS_SOUND_SCOPE_SEQUENCER);
+
+	  task_launcher = ags_audio_thread_get_task_launcher(audio_thread);
+	
+	  instantiate_vst3_plugin =  ags_instantiate_vst3_plugin_new(list->data,
+								     AGS_SOUND_SCOPE_SEQUENCER,
+								     -1,
+								     FALSE);
+	  ags_task_launcher_add_task(task_launcher,
+				     instantiate_vst3_plugin);
+
+	  g_object_unref(audio_thread);
+
+	  g_object_unref(task_launcher);
+	}
+	
+	/*  */
+	if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_NOTATION)){
+	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							      AGS_SOUND_SCOPE_NOTATION);
+
+	  task_launcher = ags_audio_thread_get_task_launcher(audio_thread);
+	
+	  instantiate_vst3_plugin =  ags_instantiate_vst3_plugin_new(list->data,
+								     AGS_SOUND_SCOPE_NOTATION,
+								     -1,
+								     FALSE);
+	  ags_task_launcher_add_task(task_launcher,
+				     instantiate_vst3_plugin);
+
+	  g_object_unref(audio_thread);
+
+	  g_object_unref(task_launcher);
+	}
+      }else{
+	guint i;
+
+	for(i = 0; i < audio_channels; i++){
+	  playback = start_playback;
+
+	  output = ags_channel_nth(start_output,
+				   i);
+	  
+	  while(playback != NULL){
+	    AgsChannel *channel;
+	    
+	    gboolean success;
+
+	    channel = NULL;
+	    
+	    g_object_get(playback->data,
+			 "channel", &channel,
+			 NULL);
+
+	    success = FALSE;
+
+	    if(channel == output){
+	      success = TRUE;
+	    }
+
+	    g_object_unref(channel);
+	    
+	    if(success){
+	      break;
+	    }
+
+	    playback = playback->next;
+	  }
+	  
+	  /*  */
+	  if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_PLAYBACK)){
+	    channel_thread = ags_playback_get_channel_thread(playback->data,
+							     AGS_SOUND_SCOPE_PLAYBACK);
+	
+	    task_launcher = ags_channel_thread_get_task_launcher(channel_thread);
+	
+	    instantiate_vst3_plugin =  ags_instantiate_vst3_plugin_new(list->data,
+								       AGS_SOUND_SCOPE_PLAYBACK,
+								       -1,
+								       FALSE);
+	    ags_task_launcher_add_task(task_launcher,
+				       instantiate_vst3_plugin);
+
+	    g_object_unref(channel_thread);
+
+	    g_object_unref(task_launcher);
+	  }
+	  
+	  /*  */
+	  if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_SEQUENCER)){
+	    channel_thread = ags_playback_get_channel_thread(playback->data,
+							     AGS_SOUND_SCOPE_SEQUENCER);
+
+	    task_launcher = ags_channel_thread_get_task_launcher(channel_thread);
+
+	    instantiate_vst3_plugin =  ags_instantiate_vst3_plugin_new(list->data,
+								       AGS_SOUND_SCOPE_SEQUENCER,
+								       -1,
+								       FALSE);
+	    ags_task_launcher_add_task(task_launcher,
+				       instantiate_vst3_plugin);
+
+	    g_object_unref(channel_thread);
+
+	    g_object_unref(task_launcher);
+	  }
+	  
+	  /*  */
+	  if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_NOTATION)){
+	    channel_thread = ags_playback_get_channel_thread(playback->data,
+							     AGS_SOUND_SCOPE_NOTATION);
+
+	    task_launcher = ags_channel_thread_get_task_launcher(channel_thread);
+
+	    instantiate_vst3_plugin =  ags_instantiate_vst3_plugin_new(list->data,
+								       AGS_SOUND_SCOPE_NOTATION,
+								       -1,
+								       FALSE);
+	    ags_task_launcher_add_task(task_launcher,
+				       instantiate_vst3_plugin);
+
+	    g_object_unref(channel_thread);
+
+	    g_object_unref(task_launcher);
+	  }
+	  
+	  g_object_unref(output);
+	}	
+      }
+    }
+    
+    list = list->next;
+  }
+    
+  if(playback_domain != NULL){
+    g_object_unref(playback_domain);
+  }
+
+  g_list_free_full(start_playback,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
 ags_simple_file_read_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsVst3Bridge *vst3_bridge)
 {
-  //TODO:JK: implement me
+  ags_simple_file_read_instantiate_vst3_plugin(simple_file, node, vst3_bridge, vst3_bridge->vst3_plugin);
 }
 
 void
 ags_simple_file_read_live_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveVst3Bridge *live_vst3_bridge)
 {
-  //TODO:JK: implement me
+  ags_simple_file_read_instantiate_vst3_plugin(simple_file, node, live_vst3_bridge, live_vst3_bridge->vst3_plugin);
 }
 #endif
 
@@ -4525,9 +4746,135 @@ void
 ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 				    AgsMachine *machine)
 {
+  AgsChannel *start_output, *output;
+  AgsPlaybackDomain *playback_domain;
+  
+  AgsAudioLoop *audio_loop;
+  AgsAudioThread *audio_thread;
+  
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  GList *start_list;
+
   xmlNode *child;
 
   xmlChar *str;
+
+  gint sound_scope;
+  guint audio_channels;
+  guint input_pads, output_pads;
+  guint i, j;
+
+  application_context = ags_application_context_get_instance();
+
+  /* start threads */
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  /* get some fields */
+  start_output = NULL;
+
+  playback_domain = NULL;
+  
+  g_object_get(machine->audio,
+	       "audio-channels", &audio_channels,
+	       "output-pads", &output_pads,
+	       "input-pads", &input_pads,
+	       "output", &start_output,
+	       "playback-domain", &playback_domain,
+	       NULL);
+
+  /* add to start queue */
+  if(ags_audio_test_ability_flags(machine->audio, AGS_SOUND_ABILITY_PLAYBACK)){
+    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							AGS_SOUND_SCOPE_PLAYBACK);
+	
+    ags_thread_add_start_queue(audio_loop,
+			       audio_thread);
+  }
+  
+  if(ags_audio_test_ability_flags(machine->audio, AGS_SOUND_ABILITY_SEQUENCER)){
+    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							AGS_SOUND_SCOPE_SEQUENCER);
+	
+    ags_thread_add_start_queue(audio_loop,
+			       audio_thread);
+  }
+  
+  if(ags_audio_test_ability_flags(machine->audio, AGS_SOUND_ABILITY_NOTATION)){
+    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							AGS_SOUND_SCOPE_NOTATION);
+	
+    ags_thread_add_start_queue(audio_loop,
+			       audio_thread);
+  }
+
+  for(i = 0; i < output_pads; i++){
+    for(j = 0; j < audio_channels; j++){
+      AgsPlayback *playback;
+	
+      AgsChannelThread *channel_thread;
+	
+      output = ags_channel_nth(start_output,
+			       i * audio_channels + j);
+
+      playback = NULL;
+
+      g_object_get(output,
+		   "playback", &playback,
+		   NULL);
+
+      /* add to start queue */
+      if(ags_audio_test_ability_flags(machine->audio, AGS_SOUND_ABILITY_PLAYBACK)){
+	channel_thread = ags_playback_get_channel_thread(playback,
+							 AGS_SOUND_SCOPE_PLAYBACK);
+	
+	ags_thread_add_start_queue(audio_loop,
+				   channel_thread);
+
+	if(channel_thread != NULL){
+	  g_object_unref(channel_thread);
+	}
+      }
+	
+      if(ags_audio_test_ability_flags(machine->audio, AGS_SOUND_ABILITY_SEQUENCER)){
+	channel_thread = ags_playback_get_channel_thread(playback,
+							 AGS_SOUND_SCOPE_SEQUENCER);
+	
+	ags_thread_add_start_queue(audio_loop,
+				   channel_thread);
+
+	if(channel_thread != NULL){
+	  g_object_unref(channel_thread);
+	}
+      }
+      
+      if(ags_audio_test_ability_flags(machine->audio, AGS_SOUND_ABILITY_NOTATION)){
+	channel_thread = ags_playback_get_channel_thread(playback,
+							 AGS_SOUND_SCOPE_NOTATION);
+	
+	ags_thread_add_start_queue(audio_loop,
+				   channel_thread);
+
+	if(channel_thread != NULL){
+	  g_object_unref(channel_thread);
+	}
+      }
+      
+      g_object_unref(output);
+
+      g_object_unref(playback);
+    }
+  }  
+  
+  if(audio_loop != NULL){
+    g_object_unref(audio_loop);
+  }
+    
+  if(playback_domain != NULL){
+    g_object_unref(playback_domain);
+  }
   
   if(AGS_IS_EQUALIZER10(machine)){
     ags_simple_file_read_equalizer10_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsEqualizer10 *) machine);
@@ -4557,16 +4904,16 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_simple_file_read_audiorec_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsAudiorec *) machine);
   }else if(AGS_IS_DSSI_BRIDGE(machine)){
     ags_simple_file_read_dssi_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsDssiBridge *) machine);
-  }else if(AGS_IS_DSSI_BRIDGE(machine)){
+  }else if(AGS_IS_LIVE_DSSI_BRIDGE(machine)){
     ags_simple_file_read_live_dssi_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsLiveDssiBridge *) machine);
   }else if(AGS_IS_LV2_BRIDGE(machine)){
     ags_simple_file_read_lv2_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsLv2Bridge *) machine);
-  }else if(AGS_IS_LV2_BRIDGE(machine)){
+  }else if(AGS_IS_LIVE_LV2_BRIDGE(machine)){
     ags_simple_file_read_live_lv2_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsLiveLv2Bridge *) machine);
 #if defined(AGS_WITH_VST3)
   }else if(AGS_IS_VST3_BRIDGE(machine)){
     ags_simple_file_read_vst3_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsVst3Bridge *) machine);
-  }else if(AGS_IS_VST3_BRIDGE(machine)){
+  }else if(AGS_IS_LIVE_VST3_BRIDGE(machine)){
     ags_simple_file_read_live_vst3_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsLiveVst3Bridge *) machine);
 #endif
   }

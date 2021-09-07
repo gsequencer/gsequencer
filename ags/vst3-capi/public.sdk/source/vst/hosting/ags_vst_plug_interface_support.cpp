@@ -17,26 +17,27 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_HOST_CONTEXT_H__
-#define __AGS_VST_HOST_CONTEXT_H__
-
-#include <glib.h>
-
 #include <ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_plug_interface_support.h>
 
-#ifdef __cplusplus
+#include <public.sdk/source/vst/hosting/pluginterfacesupport.h>
+
 extern "C" {
-#endif
 
-  typedef struct HostContext AgsVstHostContext;
-  
-  AgsVstHostContext* ags_vst_host_context_get_instance();
-  AgsVstHostContext* ags_vst_host_context_new();
+  AgsVstPlugInterfaceSupport* ags_vst_plug_interface_support_new()
+  {
+    return((AgsVstPlugInterfaceSupport *) new Steinberg::Vst::PlugInterfaceSupport());
+  }
 
-  AgsVstPlugInterfaceSupport* ags_vst_host_context_get_plug_interface_support(AgsVstHostContext *host_context);
+  void ags_vst_plug_interface_support_add_plug_interface_supported(AgsVstPlugInterfaceSupport *plug_interface_support,
+								   AgsVstTUID *tuid)
+  {
+    ((Steinberg::Vst::PlugInterfaceSupport *) plug_interface_support)->addPlugInterfaceSupported(((Steinberg::TUID *) tuid)[0]);
+  }
+
+  gboolean ags_vst_plug_interface_support_remove_plug_interface_supported(AgsVstPlugInterfaceSupport *plug_interface_support,
+									  AgsVstTUID *tuid)
+  {
+    return(((Steinberg::Vst::PlugInterfaceSupport *) plug_interface_support)->removePlugInterfaceSupported(((Steinberg::TUID *) tuid)[0]));
+  }
   
-#ifdef __cplusplus
 }
-#endif
-
-#endif /*__AGS_VST_HOST_CONTEXT_H__*/

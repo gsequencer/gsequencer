@@ -78,6 +78,7 @@
 
 #include <ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_event_list.h>
 #include <ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_parameter_changes.h>
+#include <ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_plug_interface_support.h>
 #include <ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_module.h>
 
 #endif /*__LIBAGS_VST_H__*/

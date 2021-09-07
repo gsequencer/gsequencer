@@ -2989,6 +2989,7 @@ libags_vst_h_sources = \
 	ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_event_list.h \
 	ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_module.h \
 	ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_parameter_changes.h \
+	ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_plug_interface_support.h \
 	ags/vst3-capi/public.sdk/source/vst/utility/ags_vst_uid.h
 
 
@@ -3057,6 +3058,7 @@ libags_vst_c_sources = \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp \
 	ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_event_list.cpp \
 	ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_parameter_changes.cpp \
+	ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_plug_interface_support.cpp \
 	ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_module.cpp
 
 # gsequencer all files

@@ -87,6 +87,11 @@ static gboolean locale_initialized = FALSE;
 
 void ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint response, gpointer data);
 
+#if defined(AGS_WITH_VST3)
+void ags_menu_action_add_live_vst3_bridge_add_audio_callback(AgsTask *task,
+							     AgsLiveVst3Bridge *live_vst3_bridge);
+#endif
+
 void
 ags_menu_action_open_callback(GtkWidget *menu_item, gpointer data)
 {
@@ -947,11 +952,11 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
 				(AgsTask *) add_audio);
 }
 
+#if defined(AGS_WITH_VST3)
 void
 ags_menu_action_add_live_vst3_bridge_add_audio_callback(AgsTask *task,
 							AgsLiveVst3Bridge *live_vst3_bridge)
 {
-#if defined(AGS_WITH_VST3)
   AgsAudio *audio;
   AgsChannel *start_output, *output;
   AgsPlaybackDomain *playback_domain;
@@ -1170,8 +1175,8 @@ ags_menu_action_add_live_vst3_bridge_add_audio_callback(AgsTask *task,
 
   g_list_free_full(start_list,
 		   (GDestroyNotify) g_object_unref);
-#endif
 }
+#endif
 
 void
 ags_menu_action_add_live_vst3_bridge_callback(GtkWidget *menu_item, gpointer data)

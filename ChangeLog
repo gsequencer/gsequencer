@@ -1,3 +1,9 @@
+ags (3.11.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed compilation error if vst3 disabled
+	* fixed restore from XML with vst3 bridges
+
 ags (3.11.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
