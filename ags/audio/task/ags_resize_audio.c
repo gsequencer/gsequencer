@@ -397,29 +397,39 @@ ags_resize_audio_launch(AgsTask *task)
 		     NULL);
 
 	/* add to start queue */
-	channel_thread = ags_playback_get_channel_thread(playback,
-							 AGS_SOUND_SCOPE_PLAYBACK);
+	if(ags_audio_test_ability_flags(resize_audio->audio, AGS_SOUND_ABILITY_PLAYBACK)){
+	  channel_thread = ags_playback_get_channel_thread(playback,
+							   AGS_SOUND_SCOPE_PLAYBACK);
 	
-	ags_thread_add_start_queue(audio_loop,
-				   channel_thread);
+	  ags_thread_add_start_queue(audio_loop,
+				     channel_thread);
 
-	channel_thread = ags_playback_get_channel_thread(playback,
-							 AGS_SOUND_SCOPE_SEQUENCER);
+	  g_object_unref(channel_thread);
+	}
 	
-	ags_thread_add_start_queue(audio_loop,
-				   channel_thread);
+	if(ags_audio_test_ability_flags(resize_audio->audio, AGS_SOUND_ABILITY_SEQUENCER)){
+	  channel_thread = ags_playback_get_channel_thread(playback,
+							   AGS_SOUND_SCOPE_SEQUENCER);
+	
+	  ags_thread_add_start_queue(audio_loop,
+				     channel_thread);
 
-	channel_thread = ags_playback_get_channel_thread(playback,
-							 AGS_SOUND_SCOPE_NOTATION);
+	  g_object_unref(channel_thread);
+	}
 	
-	ags_thread_add_start_queue(audio_loop,
-				   channel_thread);
+	if(ags_audio_test_ability_flags(resize_audio->audio, AGS_SOUND_ABILITY_NOTATION)){
+	  channel_thread = ags_playback_get_channel_thread(playback,
+							   AGS_SOUND_SCOPE_NOTATION);
+	
+	  ags_thread_add_start_queue(audio_loop,
+				     channel_thread);
+
+	  g_object_unref(channel_thread);
+	}
 	
 	g_object_unref(output);
 
 	g_object_unref(playback);
-
-	g_object_unref(channel_thread);
       }
     }
   }

@@ -180,7 +180,7 @@ ags_instantiate_vst3_plugin_class_init(AgsInstantiateVst3PluginClass *instantiat
 				     TRUE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_AUDIO_CHANNEL,
+				  PROP_DO_REPLACE,
 				  param_spec);
   
   /* task */
@@ -244,7 +244,7 @@ ags_instantiate_vst3_plugin_set_property(GObject *gobject,
   break;
   case PROP_DO_REPLACE:
   {
-    instantiate_vst3_plugin->do_replace = g_value_get_int(value);
+    instantiate_vst3_plugin->do_replace = g_value_get_boolean(value);
   }
   break;
   default:
@@ -281,7 +281,7 @@ ags_instantiate_vst3_plugin_get_property(GObject *gobject,
   break;
   case PROP_DO_REPLACE:
   {
-    g_value_set_int(value, instantiate_vst3_plugin->do_replace);
+    g_value_set_boolean(value, instantiate_vst3_plugin->do_replace);
   }
   break;
   default:
@@ -538,6 +538,8 @@ ags_instantiate_vst3_plugin_launch(AgsTask *task)
 	current_pad = ~0;
 	current_audio_channel = ~0;
 
+	success = FALSE;
+	
 	g_object_get(recall->data,
 		     "source", &source,
 		     NULL);

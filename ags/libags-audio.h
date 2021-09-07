@@ -45,9 +45,12 @@
 #include <ags/plugin/ags_lv2ui_plugin.h>
 #include <ags/plugin/ags_plugin_stock.h>
 #include <ags/plugin/ags_plugin_port.h>
+
+#if defined(AGS_WITH_VST3)
 #include <ags/plugin/ags_vst3_conversion.h>
 #include <ags/plugin/ags_vst3_manager.h>
 #include <ags/plugin/ags_vst3_plugin.h>
+#endif
 
 /* audio */
 #include <ags/audio/ags_acceleration.h>
@@ -408,12 +411,16 @@
 #include <ags/audio/fx/ags_fx_volume_channel.h>
 #include <ags/audio/fx/ags_fx_volume_channel_processor.h>
 #include <ags/audio/fx/ags_fx_volume_recycling.h>
+
+#if defined(AGS_WITH_VST3)
 #include <ags/audio/fx/ags_fx_vst3_audio.h>
 #include <ags/audio/fx/ags_fx_vst3_audio_processor.h>
 #include <ags/audio/fx/ags_fx_vst3_audio_signal.h>
 #include <ags/audio/fx/ags_fx_vst3_channel.h>
 #include <ags/audio/fx/ags_fx_vst3_channel_processor.h>
 #include <ags/audio/fx/ags_fx_vst3_recycling.h>
+#endif
+
 #include <ags/audio/fx/ags_fx_eq10_audio.h>
 #include <ags/audio/fx/ags_fx_eq10_audio_processor.h>
 #include <ags/audio/fx/ags_fx_eq10_audio_signal.h>
@@ -470,6 +477,11 @@
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 #include <ags/audio/task/ags_tic_device.h>
 #include <ags/audio/task/ags_toggle_pattern_bit.h>
+
+#if defined(AGS_WITH_VST3)
+#include <ags/audio/task/ags_write_vst3_port.h>
+#include <ags/audio/task/ags_instantiate_vst3_plugin.h>
+#endif
 
 /* audio recall task */
 #include <ags/audio/task/ags_apply_bpm.h>

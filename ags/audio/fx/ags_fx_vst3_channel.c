@@ -1115,6 +1115,8 @@ ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
 	  AgsChannel *current_output;
 
 	  gboolean success;
+
+	  success = FALSE;
 	  
 	  g_object_get(output_playback->data,
 		       "channel", &current_output,
@@ -1160,7 +1162,7 @@ ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
 	
 	write_vst3_port = ags_write_vst3_port_new(fx_vst3_audio,
 						  port,
-						  g_value_get_double(&value),
+						  g_value_get_double(value),
 						  j,
 						  i);
 
@@ -1209,7 +1211,9 @@ ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
 	AgsChannel *current_output;
 
 	gboolean success;
-	  
+
+	success = FALSE;
+	
 	g_object_get(output_playback->data,
 		     "channel", &current_output,
 		     NULL);

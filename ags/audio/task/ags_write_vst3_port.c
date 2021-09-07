@@ -274,7 +274,7 @@ ags_write_vst3_port_set_property(GObject *gobject,
   break;
   case PROP_VALUE:
   {
-    write_vst3_port->value = g_value_get_int(value);
+    write_vst3_port->value = g_value_get_double(value);
   }
   break;
   case PROP_SOUND_SCOPE:
@@ -316,7 +316,7 @@ ags_write_vst3_port_get_property(GObject *gobject,
   break;
   case PROP_VALUE:
   {
-    g_value_set_int(value, write_vst3_port->value);
+    g_value_set_double(value, write_vst3_port->value);
   }
   break;
   case PROP_SOUND_SCOPE:
@@ -613,6 +613,8 @@ ags_write_vst3_port_launch(AgsTask *task)
 	current_pad = ~0;
 	current_audio_channel = ~0;
 
+	success = FALSE;
+	
 	g_object_get(recall->data,
 		     "source", &source,
 		     NULL);

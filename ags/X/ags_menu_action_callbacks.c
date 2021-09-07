@@ -948,6 +948,232 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
 }
 
 void
+ags_menu_action_add_live_vst3_bridge_add_audio_callback(AgsTask *task,
+							AgsLiveVst3Bridge *live_vst3_bridge)
+{
+#if defined(AGS_WITH_VST3)
+  AgsAudio *audio;
+  AgsChannel *start_output, *output;
+  AgsPlaybackDomain *playback_domain;
+
+  AgsInstantiateVst3Plugin *instantiate_vst3_plugin;
+
+  AgsVst3Plugin *vst3_plugin;
+
+  AgsAudioThread *audio_thread;
+  AgsChannelThread *channel_thread;
+  
+  GList *start_playback, *playback;	
+  GList *start_play, *start_recall;
+  GList *start_list, *list;
+
+  guint audio_channels;
+
+  audio = AGS_MACHINE(live_vst3_bridge)->audio;
+  
+  vst3_plugin = live_vst3_bridge->vst3_plugin;
+
+  start_output = NULL;
+  
+  start_play = NULL;
+  start_recall = NULL;
+
+  playback_domain = NULL;
+
+  audio_channels = 0;
+  
+  g_object_get(audio,
+	       "audio-channels", &audio_channels,
+	       "output", &start_output,
+	       "play", &start_play,
+	       "recall", &start_recall,
+	       "playback-domain", &playback_domain,
+	       NULL);
+
+  list = 
+    start_list = g_list_concat(start_play,
+			       start_recall);
+
+  start_playback = NULL;
+	
+  g_object_get(playback_domain,
+	       "output-playback", &start_playback,
+	       NULL);
+
+  while(list != NULL){
+    if(AGS_IS_FX_VST3_AUDIO(list->data)){
+      AgsTaskLauncher *task_launcher;      
+
+      if(ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+	/*  */
+	if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_PLAYBACK)){
+	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							      AGS_SOUND_SCOPE_PLAYBACK);
+
+	  task_launcher = ags_audio_thread_get_task_launcher(audio_thread);
+	
+	  instantiate_vst3_plugin =  ags_instantiate_vst3_plugin_new(list->data,
+								     AGS_SOUND_SCOPE_PLAYBACK,
+								     -1,
+								     FALSE);
+	  ags_task_launcher_add_task(task_launcher,
+				     instantiate_vst3_plugin);
+
+	  g_object_unref(audio_thread);
+
+	  g_object_unref(task_launcher);
+	}
+	
+	/*  */
+	if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_SEQUENCER)){
+	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							      AGS_SOUND_SCOPE_SEQUENCER);
+
+	  task_launcher = ags_audio_thread_get_task_launcher(audio_thread);
+	
+	  instantiate_vst3_plugin =  ags_instantiate_vst3_plugin_new(list->data,
+								     AGS_SOUND_SCOPE_SEQUENCER,
+								     -1,
+								     FALSE);
+	  ags_task_launcher_add_task(task_launcher,
+				     instantiate_vst3_plugin);
+
+	  g_object_unref(audio_thread);
+
+	  g_object_unref(task_launcher);
+	}
+	
+	/*  */
+	if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_NOTATION)){
+	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							      AGS_SOUND_SCOPE_NOTATION);
+
+	  task_launcher = ags_audio_thread_get_task_launcher(audio_thread);
+	
+	  instantiate_vst3_plugin =  ags_instantiate_vst3_plugin_new(list->data,
+								     AGS_SOUND_SCOPE_NOTATION,
+								     -1,
+								     FALSE);
+	  ags_task_launcher_add_task(task_launcher,
+				     instantiate_vst3_plugin);
+
+	  g_object_unref(audio_thread);
+
+	  g_object_unref(task_launcher);
+	}
+      }else{
+	guint i;
+
+	for(i = 0; i < audio_channels; i++){
+	  playback = start_playback;
+
+	  output = ags_channel_nth(start_output,
+				   i);
+	  
+	  while(playback != NULL){
+	    AgsChannel *channel;
+	    
+	    gboolean success;
+
+	    channel = NULL;
+	    
+	    g_object_get(playback->data,
+			 "channel", &channel,
+			 NULL);
+
+	    success = FALSE;
+
+	    if(channel == output){
+	      success = TRUE;
+	    }
+
+	    g_object_unref(channel);
+	    
+	    if(success){
+	      break;
+	    }
+
+	    playback = playback->next;
+	  }
+	  
+	  /*  */
+	  if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_PLAYBACK)){
+	    channel_thread = ags_playback_get_channel_thread(playback->data,
+							     AGS_SOUND_SCOPE_PLAYBACK);
+	
+	    task_launcher = ags_channel_thread_get_task_launcher(channel_thread);
+	
+	    instantiate_vst3_plugin =  ags_instantiate_vst3_plugin_new(list->data,
+								       AGS_SOUND_SCOPE_PLAYBACK,
+								       -1,
+								       FALSE);
+	    ags_task_launcher_add_task(task_launcher,
+				       instantiate_vst3_plugin);
+
+	    g_object_unref(channel_thread);
+
+	    g_object_unref(task_launcher);
+	  }
+	  
+	  /*  */
+	  if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_SEQUENCER)){
+	    channel_thread = ags_playback_get_channel_thread(playback->data,
+							     AGS_SOUND_SCOPE_SEQUENCER);
+
+	    task_launcher = ags_channel_thread_get_task_launcher(channel_thread);
+
+	    instantiate_vst3_plugin =  ags_instantiate_vst3_plugin_new(list->data,
+								       AGS_SOUND_SCOPE_SEQUENCER,
+								       -1,
+								       FALSE);
+	    ags_task_launcher_add_task(task_launcher,
+				       instantiate_vst3_plugin);
+
+	    g_object_unref(channel_thread);
+
+	    g_object_unref(task_launcher);
+	  }
+	  
+	  /*  */
+	  if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_NOTATION)){
+	    channel_thread = ags_playback_get_channel_thread(playback->data,
+							     AGS_SOUND_SCOPE_NOTATION);
+
+	    task_launcher = ags_channel_thread_get_task_launcher(channel_thread);
+
+	    instantiate_vst3_plugin =  ags_instantiate_vst3_plugin_new(list->data,
+								       AGS_SOUND_SCOPE_NOTATION,
+								       -1,
+								       FALSE);
+	    ags_task_launcher_add_task(task_launcher,
+				       instantiate_vst3_plugin);
+
+	    g_object_unref(channel_thread);
+
+	    g_object_unref(task_launcher);
+	  }
+	  
+	  g_object_unref(output);
+	}	
+      }
+    }
+    
+    list = list->next;
+  }
+    
+  if(playback_domain != NULL){
+    g_object_unref(playback_domain);
+  }
+
+  g_list_free_full(start_playback,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
+#endif
+}
+
+void
 ags_menu_action_add_live_vst3_bridge_callback(GtkWidget *menu_item, gpointer data)
 {
 #if defined(AGS_WITH_VST3)
@@ -970,6 +1196,10 @@ ags_menu_action_add_live_vst3_bridge_callback(GtkWidget *menu_item, gpointer dat
   live_vst3_bridge = (AgsLiveVst3Bridge *) ags_machine_util_new_live_vst3_bridge(filename, effect);
   
   add_audio = ags_add_audio_new(AGS_MACHINE(live_vst3_bridge)->audio);
+
+  g_signal_connect_after(add_audio, "launch",
+			 G_CALLBACK(ags_menu_action_add_live_vst3_bridge_add_audio_callback), live_vst3_bridge);
+  
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 #endif
