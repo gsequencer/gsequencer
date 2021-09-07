@@ -1516,6 +1516,8 @@ ags_machine_util_new_live_vst3_bridge(gchar *filename, gchar *effect)
 					      filename,
 					      effect);
   
+  live_vst3_bridge->vst3_plugin = vst3_plugin;
+  
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(live_vst3_bridge),
 		     FALSE, FALSE, 0);

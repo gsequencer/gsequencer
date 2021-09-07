@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -84,6 +84,10 @@ struct _AgsAudioThread
   guint staging_program_count;
 
   AgsAudioThreadScopeData* scope_data[AGS_SOUND_SCOPE_LAST];
+
+  gboolean processing;
+
+  AgsTaskLauncher *task_launcher;
 };
 
 struct _AgsAudioThreadClass
@@ -106,6 +110,12 @@ GType ags_audio_thread_get_type();
 gboolean ags_audio_thread_test_status_flags(AgsAudioThread *audio_thread, guint status_flags);
 void ags_audio_thread_set_status_flags(AgsAudioThread *audio_thread, guint status_flags);
 void ags_audio_thread_unset_status_flags(AgsAudioThread *audio_thread, guint status_flags);
+
+gboolean ags_audio_thread_get_processing(AgsAudioThread *audio_thread);
+void ags_audio_thread_set_processing(AgsAudioThread *audio_thread,
+				     gboolean processing);
+
+AgsTaskLauncher* ags_audio_thread_get_task_launcher(AgsAudioThread *audio_thread);
 
 void ags_audio_thread_set_sound_scope(AgsAudioThread *audio_thread,
 				      gint sound_scope);

@@ -24,9 +24,16 @@
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_plugin_port.h>
 
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_port_util.h>
+
+#include <ags/audio/thread/ags_audio_thread.h>
+#include <ags/audio/thread/ags_channel_thread.h>
+
+#include <ags/audio/task/ags_write_vst3_port.h>
 
 #include <ags/audio/fx/ags_fx_vst3_channel.h>
 
@@ -958,8 +965,8 @@ ags_fx_vst3_audio_channel_data_alloc()
   
   channel_data->event_count = 0;
 
-  channel_data->output = NULL;
-  channel_data->input = NULL;
+  channel_data->output = g_malloc(AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE * sizeof(float));
+  channel_data->input = g_malloc(AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE * sizeof(float));
 
   channel_data->icomponent = NULL;
   channel_data->iedit_controller = NULL;
@@ -984,7 +991,7 @@ ags_fx_vst3_audio_channel_data_alloc()
 						AGS_VST_KSAMPLE32);  
 
   ags_vst_process_data_set_num_samples(channel_data->process_data,
-				       0);
+				       AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
 
   ags_vst_process_data_set_num_inputs(channel_data->process_data,
 				      1);
@@ -1847,27 +1854,38 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
 				      AgsFxVst3Audio *fx_vst3_audio)
 {
   AgsAudio *audio;
-  AgsPluginPort *plugin_port;
-  
-  AgsVstParameterInfo *info;
-  
+  AgsChannel *start_output, *output;
+  AgsPlaybackDomain *playback_domain;
+
+  AgsVst3Plugin *vst3_plugin;
+
+  GList *start_output_playback, *output_playback;
+    
   guint audio_channels;
   gint sound_scope;
-  guint port_index;
-  gfloat param_value;
-  guint i;
+  guint i, i_start, i_stop;
+  guint j;
   gboolean is_live_instrument;
 
   GRecMutex *fx_vst3_audio_mutex;
   
   fx_vst3_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_vst3_audio);
 
+  g_rec_mutex_lock(fx_vst3_audio_mutex);
+
+  vst3_plugin = fx_vst3_audio->vst3_plugin;
+  
+  g_rec_mutex_unlock(fx_vst3_audio_mutex);
+
+  if(vst3_plugin == NULL){
+    g_warning("can't get VST3 plugin");
+
+    return;
+  }
+
   audio = NULL;
-  plugin_port = NULL;
 
   audio_channels = 0;
-
-  port_index = 0;
   
   g_object_get(fx_vst3_audio,
 	       "audio", &audio,
@@ -1878,163 +1896,139 @@ ags_fx_vst3_audio_safe_write_callback(AgsPort *port, GValue *value,
 		 "audio-channels", &audio_channels,
 		 NULL);
   }
-
-  g_object_get(port,
-	       "plugin-port", &plugin_port,
-	       NULL);
-
-  if(plugin_port != NULL){
-    g_object_get(plugin_port,
-		 "port-index", &port_index,
-		 NULL);
-  }
     
   is_live_instrument = ags_fx_vst3_audio_test_flags(fx_vst3_audio, AGS_FX_VST3_AUDIO_LIVE_INSTRUMENT);
 
-  info = ags_vst_parameter_info_alloc();      
-  
-  g_rec_mutex_lock(fx_vst3_audio_mutex);
-  
-  for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
-    AgsFxVst3AudioScopeData *audio_scope_data;
-
-    guint channel;
+  if(!is_live_instrument){  
+    g_critical("invalid port access of instrument");
     
-    audio_scope_data = fx_vst3_audio->scope_data[sound_scope];
+    if(audio != NULL){
+      g_object_unref(audio);
+    }
+    
+    return;
+  }
 
-    if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK ||
-       sound_scope == AGS_SOUND_SCOPE_NOTATION ||
-       sound_scope == AGS_SOUND_SCOPE_MIDI){
-      for(channel = 0; channel < audio_channels; channel++){
-	AgsFxVst3AudioChannelData *channel_data;
+  /* get some fields */
+  playback_domain = NULL;
+  start_output = NULL;
+  
+  start_output_playback = NULL;
+  
+  g_object_get(audio,
+	       "playback-domain", &playback_domain,
+	       "output", &start_output,
+	       NULL);
+    
+  g_object_get(playback_domain,
+	       "output-playback", &start_output_playback,
+	       NULL);
 
-	guint key;
+  if(ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    AgsAudioThread *audio_thread;
+    AgsChannelThread *channel_thread;
+
+    AgsTaskLauncher *task_launcher;
+
+    i_start = 0;
+    i_stop = audio_channels;
+    
+    for(i = i_start; i < i_stop && i < audio_channels; i++){
+      for(j = 0; j < AGS_SOUND_SCOPE_LAST; j++){
+	AgsWriteVst3Port *write_vst3_port;
+
+	audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							    j);
+
+	output = ags_channel_nth(start_output,
+				 i);
 	
-	channel_data = audio_scope_data->channel_data[channel];
+	output_playback = start_output_playback;
+	
+	while(output_playback != NULL){
+	  AgsChannel *current_output;
 
-	if(is_live_instrument){
-	  AgsVstParamID param_id;
+	  gboolean success;
 
-	  if(channel_data->iedit_controller != NULL){
-	    ags_vst_iedit_controller_get_parameter_info(channel_data->iedit_controller,
-							port_index, info);
-
-	    param_id = ags_vst_parameter_info_get_param_id(info);
-	  	  
-	    param_value = ags_vst_iedit_controller_plain_param_to_normalized(channel_data->iedit_controller,
-									     param_id,
-									     g_value_get_double(value));
-	    
-#if 1
-	    if(channel_data->iedit_controller_host_editing != NULL){
-	      ags_vst_iedit_controller_host_editing_begin_edit_from_host(channel_data->iedit_controller_host_editing,
-									 param_id);
-	    }
-	    
-	    ags_vst_iedit_controller_set_param_normalized(channel_data->iedit_controller,
-							  param_id, param_value);
-
-	    for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES; i++){
-	      if(fx_vst3_audio->parameter_changes[i].param_id == ~0){
-		fx_vst3_audio->parameter_changes[i].param_id = param_id;
-		fx_vst3_audio->parameter_changes[i].param_value = g_value_get_double(value);
-		
-		if(i +  1 < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES){
-		  fx_vst3_audio->parameter_changes[i + 1].param_id = ~0;
-		}
-		
-		break;
-	      }
-	    }
-	    
-	    if(channel_data->iedit_controller_host_editing != NULL){
-	      ags_vst_iedit_controller_host_editing_end_edit_from_host(channel_data->iedit_controller_host_editing,
-								       param_id);
-	    }
-#else
-	    ags_vst_icomponent_handler_begin_edit(channel_data->icomponent_handler,
-						  param_id);
-
-	    ags_vst_icomponent_handler_perform_edit(channel_data->icomponent_handler,
-						    param_id, param_value);
-      
-	    ags_vst_icomponent_handler_end_edit(channel_data->icomponent_handler,
-						param_id);
-#endif
-	  }
-	}else{	
-	  for(key = 0; key < AGS_SEQUENCER_MAX_MIDI_KEYS; key++){
-	    AgsFxVst3AudioInputData *input_data;
+	  success = FALSE;
 	  
-	    AgsVstParamID param_id;
+	  g_object_get(output_playback->data,
+		       "channel", &current_output,
+		       NULL);
 
-	    input_data = channel_data->input_data[key];
+	  if(output == current_output){
+	    success = TRUE;
+	  }
 
-	    if(input_data->iedit_controller != NULL){
-	      ags_vst_iedit_controller_get_parameter_info(input_data->iedit_controller,
-							  port_index, info);
+	  if(current_output != NULL){
+	    g_object_unref(current_output);
+	  }
+	  
+	  if(success){
+	    break;
+	  }
+	  
+	  output_playback = output_playback->next;
+	}
 
-	      param_id = ags_vst_parameter_info_get_param_id(info);
+	channel_thread = NULL;
 
-	      param_value = ags_vst_iedit_controller_plain_param_to_normalized(input_data->iedit_controller,
-									       param_id,
-									       g_value_get_double(value));
-	    
-#if 1
-	      if(input_data->iedit_controller_host_editing != NULL){
-		ags_vst_iedit_controller_host_editing_begin_edit_from_host(input_data->iedit_controller_host_editing,
-									   param_id);
-	      }
-	    
-	      ags_vst_iedit_controller_set_param_normalized(input_data->iedit_controller,
-							    param_id, param_value);
+	if(output_playback != NULL){
+	  channel_thread = ags_playback_get_channel_thread(output_playback->data,
+							   j);
+	}
 
-	      
-	      for(i = 0; i < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES; i++){
-		if(fx_vst3_audio->parameter_changes[i].param_id == ~0){
-		  fx_vst3_audio->parameter_changes[i].param_id = param_id;
-		  fx_vst3_audio->parameter_changes[i].param_value = g_value_get_double(value);
-		
-		  if(i +  1 < AGS_FX_VST3_AUDIO_MAX_PARAMETER_CHANGES){
-		    fx_vst3_audio->parameter_changes[i + 1].param_id = ~0;
-		  }
-		
-		  break;
-		}
-	      }
-	      
-	      if(input_data->iedit_controller_host_editing != NULL){
-		ags_vst_iedit_controller_host_editing_end_edit_from_host(input_data->iedit_controller_host_editing,
-									 param_id);
-	      }
-#else
-	      ags_vst_icomponent_handler_begin_edit(input_data->icomponent_handler,
-						    param_id);
-
-	      ags_vst_icomponent_handler_perform_edit(input_data->icomponent_handler,
-						      param_id, param_value);
-      
-	      ags_vst_icomponent_handler_end_edit(input_data->icomponent_handler,
-						  param_id);
-#endif	      
+	task_launcher = NULL;
+	
+	if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
+	  if(!ags_playback_test_flags(output_playback->data, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
+	    if(audio_thread != NULL){
+	      g_object_get(audio_thread,
+			   "task-launcher", &task_launcher,
+			   NULL);
+	    }
+	  }else{
+	    if(channel_thread != NULL){
+	      g_object_get(channel_thread,
+			   "task-launcher", &task_launcher,
+			   NULL);
 	    }
 	  }
+	}else{
+	  //NOTE:JK: wtf!
+	}
+	
+	if(task_launcher != NULL){
+	  write_vst3_port = ags_write_vst3_port_new(fx_vst3_audio,
+						    port,
+						    g_value_get_double(value),
+						    j,
+						    i);
+
+	  ags_task_launcher_add_task(task_launcher,
+				     write_vst3_port);
+
+	  g_object_unref(task_launcher);
+	}
+	
+	if(output != NULL){
+	  g_object_unref(output);
 	}
       }
     }
-  }
+  }  
 
-  g_rec_mutex_unlock(fx_vst3_audio_mutex);
-
-  ags_vst_parameter_info_free(info);
-  
+  /* unref */
   if(audio != NULL){
     g_object_unref(audio);
   }
 
-  if(plugin_port != NULL){
-    g_object_unref(plugin_port);
+  if(start_output != NULL){
+    g_object_unref(start_output);
   }
+  
+  g_list_free_full(start_output_playback,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**

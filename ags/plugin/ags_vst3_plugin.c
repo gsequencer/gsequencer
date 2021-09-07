@@ -161,18 +161,21 @@ ags_vst3_plugin_init(AgsVst3Plugin *vst3_plugin)
 							 NULL);
   }
 
-  vst3_plugin->program = g_hash_table_new_full(g_direct_hash, g_str_equal,
-					       NULL,
-					       NULL);
-
   vst3_plugin->get_plugin_factory = NULL;
 
   vst3_plugin->host_context = NULL;
 
   vst3_plugin->cid = NULL;
 
+  vst3_plugin->plugin_init = NULL;
+  vst3_plugin->plugin_exit = NULL;
+
   vst3_plugin->icomponent = NULL;
   vst3_plugin->iedit_controller = NULL;
+
+  vst3_plugin->program = g_hash_table_new_full(g_direct_hash, g_str_equal,
+					       NULL,
+					       NULL);
 }
 
 void
@@ -497,7 +500,6 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
   GError *error;
 
-  gboolean (*InitDll)();
   AgsVstIPluginFactory* (*GetPluginFactory)();
   
   GRecMutex *base_plugin_mutex;
@@ -530,18 +532,6 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 #endif
 
   plugin_port = NULL;
-
-#ifdef AGS_W32API
-  InitDll = GetProcAddress(base_plugin->plugin_so,
-			   "InitDll");
-#else
-  InitDll = dlsym(base_plugin->plugin_so,
-		  "InitDll");
-#endif
-
-  if(InitDll){
-    InitDll();
-  }
   
   GetPluginFactory = AGS_VST3_PLUGIN(base_plugin)->get_plugin_factory;
   

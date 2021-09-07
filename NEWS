@@ -10,6 +10,12 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
+Overview of Changes in AGS 3.11.0
+================================
+
+* Completed VST3 host support. Enjoy your AgsVst3Bridge and AgsLiveVst3Bridge.
+* AgsAudioThread and AgsChannelThread are always on, now.
+
 Overview of Changes in AGS 3.8.0
 ================================
 

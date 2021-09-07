@@ -2074,11 +2074,18 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_reset_fx_peak.h \
 	ags/audio/task/ags_set_muted.h
 
+
 if WITH_LIBINSTPATCH
 libags_audio_task_h_sources += \
 	ags/audio/task/ags_apply_sf2_synth.h \
 	ags/audio/task/ags_open_sf2_instrument.h \
 	ags/audio/task/ags_open_sf2_sample.h
+endif
+
+if WITH_VST3
+libags_audio_task_h_sources += \
+	ags/audio/task/ags_instantiate_vst3_plugin.h \
+	ags/audio/task/ags_write_vst3_port.h
 endif
 
 deprecated_libags_audio_task_c_sources =
@@ -2142,6 +2149,12 @@ libags_audio_task_c_sources += \
 	ags/audio/task/ags_apply_sf2_synth.c \
 	ags/audio/task/ags_open_sf2_instrument.c \
 	ags/audio/task/ags_open_sf2_sample.c
+endif
+
+if WITH_VST3
+libags_audio_task_c_sources += \
+	ags/audio/task/ags_instantiate_vst3_plugin.c \
+	ags/audio/task/ags_write_vst3_port.c
 endif
 
 # libags-gui all files

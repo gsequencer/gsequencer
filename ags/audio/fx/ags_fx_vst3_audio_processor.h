@@ -44,6 +44,8 @@ typedef struct _AgsFxVst3AudioProcessorClass AgsFxVst3AudioProcessorClass;
 struct _AgsFxVst3AudioProcessor
 {
   AgsFxNotationAudioProcessor fx_notation_audio_processor;
+
+  gboolean activated;
 };
 
 struct _AgsFxVst3AudioProcessorClass

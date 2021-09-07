@@ -44,6 +44,8 @@ typedef struct _AgsFxVst3ChannelProcessorClass AgsFxVst3ChannelProcessorClass;
 struct _AgsFxVst3ChannelProcessor
 {
   AgsFxNotationChannelProcessor fx_notation_channel_processor;
+
+  gboolean activated;
 };
 
 struct _AgsFxVst3ChannelProcessorClass

@@ -697,6 +697,12 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
   GetPluginFactory = GetProcAddress(plugin_so,
 				    "GetPluginFactory");
   
+  InitDll = GetProcAddress(base_plugin->plugin_so,
+			   "InitDll");
+
+  ExitDll = GetProcAddress(base_plugin->plugin_so,
+			   "ExitDll");
+
   success = (GetPluginFactory != NULL) ? TRUE: FALSE;
 #else
   /* osx */
@@ -719,7 +725,6 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
   GetPluginFactory = dlsym(plugin_so,
 			   "GetPluginFactory");
   
-
   ModuleEntry = dlsym(plugin_so,
 		      "ModuleEntry");
 
@@ -761,6 +766,20 @@ ags_vst3_manager_load_file(AgsVst3Manager *vst3_manager,
 	vst3_plugin = ags_vst3_plugin_new(path,
 					  plugin_name,
 					  i);
+
+#ifdef AGS_OSXAPI
+	vst3_plugin->plugin_init = bundleEntry;
+	vst3_plugin->plugin_exit = bundleExit;
+#else
+#ifdef AGS_W32API
+	vst3_plugin->plugin_init = InitDll;
+	vst3_plugin->plugin_exit = ExitDll;
+#else
+	vst3_plugin->plugin_init = ModuleEntry;
+	vst3_plugin->plugin_exit = ModuleExit;
+#endif
+#endif
+	
 	vst3_plugin->get_plugin_factory = GetPluginFactory;
 	
 	vst3_plugin->cid = (gchar **) ags_vst_pclass_info_get_cid(info);
@@ -797,7 +816,6 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
 
   gchar **vst3_path;
   gchar *filename;
-  gchar *machine;
   gchar *sysname;
 
   GError *error;
@@ -808,7 +826,6 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
 
   uname(&buf);
 
-  machine = g_strdup(buf.machine);
   sysname = g_ascii_strdown(buf.sysname,
 			    -1);
 
@@ -854,7 +871,29 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
 				  filename,
 				  G_DIR_SEPARATOR,
 				  G_DIR_SEPARATOR,
-				  machine,
+#if defined(__x86_64__)
+				  "x86_64",
+#elif defined(__i386__)
+				  "i386",
+#elif defined(__aarch64__)
+				  "arm64",
+#elif defined(__arm__)
+				  "arm",
+#elif defined(__alpha__)
+				  "alpha",
+#elif defined(__hppa__)
+				  "hppa",
+#elif defined(__m68k__)
+				  "m68000",
+#elif defined(__mips__)
+				  "mips",
+#elif defined(__ppc__)
+				  "ppc",
+#elif defined(__s390x__)
+				  "s390x",
+#else
+				  "unknown"
+#endif
 				  sysname);	
 #endif
       if(g_file_test(arch_path,
@@ -904,7 +943,6 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
   }
 
   g_free(sysname);
-  g_free(machine);
 }
 
 /**

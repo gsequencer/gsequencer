@@ -727,6 +727,8 @@ libags_audio_sources += files(
     'audio/fx/ags_fx_vst3_channel.c',
     'audio/fx/ags_fx_vst3_channel_processor.c',
     'audio/fx/ags_fx_vst3_recycling.c',
+    'audio/task/ags_write_vst3_port.c',
+    'audio/task/ags_instantiate_vst3_plugin.c',
   )
 endif
 
@@ -1946,6 +1948,13 @@ libags_audio_audio_task_headers = [
   'audio/task/ags_tic_device.h',
   'audio/task/ags_toggle_pattern_bit.h',
 ]
+
+if get_option('vst3')
+  libags_audio_audio_task_headers += [
+    'audio/task/ags_write_vst3_port.h',
+    'audio/task/ags_instantiate_vst3_plugin.h',
+  ]
+endif
 
 libags_audio_audio_thread_headers = [
   'audio/thread/ags_audio_loop.h',

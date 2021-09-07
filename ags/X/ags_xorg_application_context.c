@@ -4267,6 +4267,10 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
   AgsDssiManager *dssi_manager;
   AgsLv2Manager *lv2_manager;
 
+#if defined(AGS_WITH_VST3)
+  AgsVst3Manager *vst3_manager;
+#endif
+
   AgsCoreAudioServer *core_audio_server;
 
   AgsPulseServer *pulse_server;
@@ -4286,6 +4290,22 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 
   lv2_manager = ags_lv2_manager_get_instance();
   g_object_unref(lv2_manager);
+
+#if defined(AGS_WITH_VST3)
+  vst3_manager = ags_vst3_manager_get_instance();
+
+  list = vst3_manager->vst3_plugin;
+
+  while(list != NULL){
+    if(AGS_VST3_PLUGIN(list->data)->plugin_exit != NULL){
+      AGS_VST3_PLUGIN(list->data)->plugin_exit();
+    }
+    
+    list = list->next;
+  }
+  
+  g_object_unref(vst3_manager);
+#endif
   
   /* retrieve core audio server */
   start_list = 
