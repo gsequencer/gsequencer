@@ -91,6 +91,15 @@ struct _AgsLiveVst3Bridge
   GtkBox *vbox;
   
   GtkComboBox *program;
+
+  AgsVstIComponent *icomponent;
+  AgsVstIEditController *iedit_controller;
+
+  AgsVstComponentHandler *icomponent_handler;
+
+  AgsVstIPlugView *iplug_view;
+  
+  GtkMenu *vst3_menu;
 };
 
 struct _AgsLiveVst3BridgeClass

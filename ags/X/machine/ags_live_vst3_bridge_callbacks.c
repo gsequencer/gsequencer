@@ -52,6 +52,26 @@ ags_live_vst3_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_paren
 }
 
 void
+ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge *live_vst3_bridge)
+{
+  AgsVst3Plugin *vst3_plugin;
+
+  vst3_plugin = live_vst3_bridge->vst3_plugin;
+
+  if(live_vst3_bridge->iplug_view == NULL){
+    g_message("create view");
+    
+    live_vst3_bridge->iplug_view = ags_vst_iedit_controller_create_view(live_vst3_bridge->iedit_controller,
+									ags_vst_editor);
+    ags_vst_iplug_view_attached(live_vst3_bridge->iplug_view,
+				live_vst3_bridge,
+				ags_vst_kplatform_type_ns_view);
+  }
+  
+  //TODO:JK: implement me
+}
+
+void
 ags_live_vst3_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveVst3Bridge *live_vst3_bridge)
 {
   GtkTreeIter iter;
