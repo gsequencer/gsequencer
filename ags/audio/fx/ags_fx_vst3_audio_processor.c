@@ -22,6 +22,8 @@
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_vst3_plugin.h>
 
+#include <ags/audio/task/ags_write_vst3_port.h>
+
 #include <ags/audio/fx/ags_fx_vst3_audio.h>
 #include <ags/audio/fx/ags_fx_vst3_audio_processor.h>
 
@@ -216,7 +218,7 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
   audio_channel = 0;
 
   g_object_get(recall,
-	       "audio-channel", &audio_channnel,
+	       "audio-channel", &audio_channel,
 	       NULL);
   
   g_rec_mutex_lock(fx_vst3_audio_processor_mutex);
@@ -279,6 +281,8 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 					  0,
 					  TRUE);
 
+	  /* apply port */
+#if 0
 	  iter = fx_vst3_audio->vst3_port;
 
 	  for(; iter != NULL && iter[0] != NULL; iter++){
@@ -299,11 +303,13 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 						      val,
 						      sound_scope,
 						      audio_channel);
-	    ags_task_launch(write_vst3_port,
-			    NULL);
+	    ags_task_launch(write_vst3_port);
 
+	    g_value_unset(&value);
+	      
 	    g_object_unref(write_vst3_port);
 	  }
+#endif
 	}
 
 	if(!is_live_instrument){
@@ -311,6 +317,8 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 	    AgsFxVst3AudioInputData *input_data;
 
 	    AgsPort **iter;
+	  
+	    AgsWriteVst3Port *write_vst3_port;
 
 	    gdouble val;
 
@@ -337,6 +345,7 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 					    0,
 					    TRUE);
 
+#if 0
 	    iter = fx_vst3_audio->vst3_port;
 
 	    for(; iter != NULL && iter[0] != NULL; iter++){
@@ -357,11 +366,13 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 							val,
 							sound_scope,
 							audio_channel);
-	      ags_task_launch(write_vst3_port,
-			      NULL);
+	      ags_task_launch(write_vst3_port);
 
+	      g_value_unset(&value);
+	      
 	      g_object_unref(write_vst3_port);
 	    }
+#endif
 	  }
 	}
       }
