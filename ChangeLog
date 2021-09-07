@@ -1,7 +1,10 @@
 ags (3.11.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* improved parallelism with VST3
+	* implemented AgsWriteVst3Port task
+	* implemented AgsInstantiateVst3Plugin task
+	* refactored ags-fx-vst3 to improve parallelism with VST3
+	* minor improvements
 
 ags (3.10.18)
 
