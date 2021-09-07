@@ -965,8 +965,8 @@ ags_fx_vst3_audio_channel_data_alloc()
   
   channel_data->event_count = 0;
 
-  channel_data->output = NULL;
-  channel_data->input = NULL;
+  channel_data->output = g_malloc(AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE * sizeof(float));
+  channel_data->input = g_malloc(AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE * sizeof(float));
 
   channel_data->icomponent = NULL;
   channel_data->iedit_controller = NULL;
@@ -991,7 +991,7 @@ ags_fx_vst3_audio_channel_data_alloc()
 						AGS_VST_KSAMPLE32);  
 
   ags_vst_process_data_set_num_samples(channel_data->process_data,
-				       0);
+				       AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
 
   ags_vst_process_data_set_num_inputs(channel_data->process_data,
 				      1);

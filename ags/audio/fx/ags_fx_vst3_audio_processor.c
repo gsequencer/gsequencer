@@ -164,6 +164,7 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 
   GObject *output_soundcard;
 
+  guint audio_channel;
   guint note_offset;
   gdouble delay;
   guint delay_counter;
@@ -212,6 +213,12 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
     return;
   }
 
+  audio_channel = 0;
+
+  g_object_get(recall,
+	       "audio-channel", &audio_channnel,
+	       NULL);
+  
   g_rec_mutex_lock(fx_vst3_audio_processor_mutex);
 
   activated = AGS_FX_VST3_AUDIO_PROCESSOR(recall)->activated;
@@ -245,6 +252,12 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 	channel_data = scope_data->channel_data[j];
 
 	if(is_live_instrument){
+	  AgsPort **iter;
+	  
+	  AgsWriteVst3Port *write_vst3_port;
+
+	  gdouble val;
+	  
 	  ags_vst_process_context_set_state(channel_data->process_context,
 					    AGS_VST_KPLAYING);
 	
@@ -265,11 +278,41 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 					  AGS_VST_KEVENT, AGS_VST_KINPUT,
 					  0,
 					  TRUE);
+
+	  iter = fx_vst3_audio->vst3_port;
+
+	  for(; iter != NULL && iter[0] != NULL; iter++){
+	    GValue value = G_VALUE_INIT;
+	  
+	    val = 1.0;
+
+	    g_value_init(&value,
+			 G_TYPE_DOUBLE);
+	    
+	    ags_port_safe_read(iter[0],
+			       &value);
+
+	    val = g_value_get_double(&value);
+	    
+	    write_vst3_port = ags_write_vst3_port_new(fx_vst3_audio,
+						      iter[0],
+						      val,
+						      sound_scope,
+						      audio_channel);
+	    ags_task_launch(write_vst3_port,
+			    NULL);
+
+	    g_object_unref(write_vst3_port);
+	  }
 	}
 
 	if(!is_live_instrument){
 	  for(k = 0; k < AGS_SEQUENCER_MAX_MIDI_KEYS; k++){
 	    AgsFxVst3AudioInputData *input_data;
+
+	    AgsPort **iter;
+
+	    gdouble val;
 
 	    input_data = channel_data->input_data[k];
 
@@ -293,6 +336,32 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 					    AGS_VST_KEVENT, AGS_VST_KINPUT,
 					    0,
 					    TRUE);
+
+	    iter = fx_vst3_audio->vst3_port;
+
+	    for(; iter != NULL && iter[0] != NULL; iter++){
+	      GValue value = G_VALUE_INIT;
+	  
+	      val = 1.0;
+
+	      g_value_init(&value,
+			   G_TYPE_DOUBLE);
+	    
+	      ags_port_safe_read(iter[0],
+				 &value);
+
+	      val = g_value_get_double(&value);
+	    
+	      write_vst3_port = ags_write_vst3_port_new(fx_vst3_audio,
+							iter[0],
+							val,
+							sound_scope,
+							audio_channel);
+	      ags_task_launch(write_vst3_port,
+			      NULL);
+
+	      g_object_unref(write_vst3_port);
+	    }
 	  }
 	}
       }
@@ -300,6 +369,9 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
   
     g_rec_mutex_unlock(fx_vst3_audio_mutex);
 
+    /* apply default values */
+
+    
     /* set activated */
     g_rec_mutex_lock(fx_vst3_audio_processor_mutex);
 
