@@ -63,9 +63,10 @@ ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge *liv
     
     live_vst3_bridge->iplug_view = ags_vst_iedit_controller_create_view(live_vst3_bridge->iedit_controller,
 									"editor");
-    ags_vst_iplug_view_attached(live_vst3_bridge->iplug_view,
-				gtk_widget_get_toplevel(live_vst3_bridge),
-				"X11EmbedWindowID");
+
+//    ags_vst_iplug_view_attached(live_vst3_bridge->iplug_view,
+//				gtk_widget_get_toplevel(live_vst3_bridge),
+//				"X11EmbedWindowID");
   }
   
   //TODO:JK: implement me

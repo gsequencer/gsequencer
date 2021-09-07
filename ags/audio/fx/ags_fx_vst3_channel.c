@@ -280,9 +280,17 @@ ags_fx_vst3_channel_input_data_alloc()
 {
   AgsFxVst3ChannelInputData *input_data;
 
+  AgsConfig *config;
+
   AgsVstAudioBusBuffers *output, *input;
 
+  guint buffer_size;
+
   input_data = (AgsFxVst3ChannelInputData *) g_malloc(sizeof(AgsFxVst3ChannelInputData));
+
+  config = ags_config_get_instance();
+
+  buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
 
 //  g_message("ags_fx_vst3_channel_input_data_alloc()");
   
@@ -290,8 +298,8 @@ ags_fx_vst3_channel_input_data_alloc()
 
   input_data->parent = NULL;
 
-  input_data->output = NULL;
-  input_data->input = NULL;
+  input_data->output = g_malloc(buffer_size * sizeof(float));
+  input_data->input = g_malloc(buffer_size * sizeof(float));
 
   input_data->icomponent = NULL;
   input_data->iedit_controller = NULL;
@@ -316,7 +324,7 @@ ags_fx_vst3_channel_input_data_alloc()
 						AGS_VST_KSAMPLE32);  
 
   ags_vst_process_data_set_num_samples(input_data->process_data,
-				       0);
+				       buffer_size);
 
   ags_vst_process_data_set_num_inputs(input_data->process_data,
 				      1);
