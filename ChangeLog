@@ -1,3 +1,10 @@
+ags (3.11.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed use ags_vst_funknown_release() instead of ags_vst_icomponent_destroy()
+	* fixed missing call AgsVst3Plugin:plugin_exit()
+	* minor improvements
+
 ags (3.11.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -460,7 +460,7 @@ ags_instantiate_vst3_plugin_launch(AgsTask *task)
 	  if(channel_data->icomponent == NULL ||
 	     instantiate_vst3_plugin->do_replace){
 	    if(channel_data->icomponent != NULL){
-	      ags_vst_icomponent_destroy(channel_data->icomponent);
+	      ags_vst_funknown_release(channel_data->icomponent);
 	    }
 	    
 	    channel_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,
@@ -488,7 +488,7 @@ ags_instantiate_vst3_plugin_launch(AgsTask *task)
 	    if(input_data->icomponent == NULL ||
 	       instantiate_vst3_plugin->do_replace){
 	      if(input_data->icomponent != NULL){
-		ags_vst_icomponent_destroy(input_data->icomponent);
+		ags_vst_funknown_release(input_data->icomponent);
 	      }
 	      
 	      input_data->icomponent = ags_base_plugin_instantiate_with_params((AgsBasePlugin *) vst3_plugin,

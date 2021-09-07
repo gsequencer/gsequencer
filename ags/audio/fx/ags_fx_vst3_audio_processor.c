@@ -458,7 +458,7 @@ ags_fx_vst3_audio_processor_done(AgsRecall *recall)
 					FALSE);
 
 	if(channel_data->icomponent != NULL){
-	  ags_vst_icomponent_destroy(channel_data->icomponent);
+	  ags_vst_funknown_release(channel_data->icomponent);
 	}
       }
 
@@ -490,7 +490,7 @@ ags_fx_vst3_audio_processor_done(AgsRecall *recall)
 					  FALSE);
 
 	  if(input_data->icomponent != NULL){
-	    ags_vst_icomponent_destroy(input_data->icomponent);
+	    ags_vst_funknown_release(input_data->icomponent);
 	  }
 	}
       }
