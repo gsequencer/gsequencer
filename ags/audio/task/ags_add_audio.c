@@ -23,6 +23,13 @@
 
 #include <ags/audio/ags_sound_provider.h>
 
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_audio_thread.h>
+#include <ags/audio/thread/ags_channel_thread.h>
+
 #include <ags/i18n.h>
 
 void ags_add_audio_class_init(AgsAddAudioClass *add_audio);
@@ -248,11 +255,21 @@ ags_add_audio_finalize(GObject *gobject)
 void
 ags_add_audio_launch(AgsTask *task)
 {
+  AgsChannel *start_output, *output;
+  AgsPlaybackDomain *playback_domain;
+  
+  AgsAudioLoop *audio_loop;
+  AgsAudioThread *audio_thread;
+  
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
   
   GList *start_list;
+
+  guint audio_channels;
+  guint input_pads, output_pads;
+  guint i, j;
   
   add_audio = AGS_ADD_AUDIO(task);
 
@@ -279,6 +296,88 @@ ags_add_audio_launch(AgsTask *task)
   
   /* AgsAudio */
   ags_connectable_connect(AGS_CONNECTABLE(add_audio->audio));
+
+  /* get some fields */
+  start_output = NULL;
+
+  playback_domain = NULL;
+  
+  g_object_get(add_audio->audio,
+	       "audio-channels", &audio_channels,
+	       "output-pads", &output_pads,
+	       "input-pads", &input_pads,
+	       "output", &start_output,
+	       "playback-domain", &playback_domain,
+	       NULL);
+
+  /* start threads */
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  /* add to start queue */
+  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+						      AGS_SOUND_SCOPE_PLAYBACK);
+	
+  ags_thread_add_start_queue(audio_loop,
+			     audio_thread);
+
+  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+						      AGS_SOUND_SCOPE_SEQUENCER);
+	
+  ags_thread_add_start_queue(audio_loop,
+			     audio_thread);
+
+  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+						      AGS_SOUND_SCOPE_NOTATION);
+	
+  ags_thread_add_start_queue(audio_loop,
+			     audio_thread);
+
+  for(i = 0; i < output_pads; i++){
+    for(j = 0; j < audio_channels; j++){
+      AgsPlayback *playback;
+	
+      AgsChannelThread *channel_thread;
+	
+      output = ags_channel_nth(start_output,
+			       i * audio_channels + j);
+
+      playback = NULL;
+
+      g_object_get(output,
+		   "playback", &playback,
+		   NULL);
+
+      /* add to start queue */
+      channel_thread = ags_playback_get_channel_thread(playback,
+						       AGS_SOUND_SCOPE_PLAYBACK);
+	
+      ags_thread_add_start_queue(audio_loop,
+				 channel_thread);
+
+      channel_thread = ags_playback_get_channel_thread(playback,
+						       AGS_SOUND_SCOPE_SEQUENCER);
+	
+      ags_thread_add_start_queue(audio_loop,
+				 channel_thread);
+
+      channel_thread = ags_playback_get_channel_thread(playback,
+						       AGS_SOUND_SCOPE_NOTATION);
+	
+      ags_thread_add_start_queue(audio_loop,
+				 channel_thread);
+	
+      g_object_unref(output);
+
+      g_object_unref(playback);
+
+      g_object_unref(channel_thread);
+    }
+  }  
+  
+  if(audio_loop != NULL){
+    g_object_unref(audio_loop);
+  }
+  
 }
 
 /**
