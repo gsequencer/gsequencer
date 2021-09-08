@@ -913,7 +913,8 @@ ags_live_vst3_bridge_load(AgsLiveVst3Bridge *live_vst3_bridge)
   AgsVst3Plugin *vst3_plugin;
 
   AgsConfig *config;
-  
+
+  AgsVstComponentHandler *component_handler;
   AgsVstIUnitInfo *iunit_info;    
 
   GList *start_program, *program;
@@ -1003,8 +1004,11 @@ ags_live_vst3_bridge_load(AgsLiveVst3Bridge *live_vst3_bridge)
   
   live_vst3_bridge->iedit_controller = g_value_get_pointer(value + 2);
   
-  live_vst3_bridge->icomponent_handler = ags_vst_component_handler_new();
-	    
+  component_handler = ags_vst_component_handler_new();
+
+  ags_vst_funknown_query_interface(component_handler,
+				   ags_vst_icomponent_handler_get_iid(), &(live_vst3_bridge->icomponent_handler));
+
   ags_vst_component_handler_connect_handler(live_vst3_bridge->icomponent_handler, "performEdit", ags_live_vst3_bridge_perform_edit_callback, live_vst3_bridge);
   
   ags_vst_iedit_controller_set_component_handler(live_vst3_bridge->iedit_controller,
