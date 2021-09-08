@@ -1609,6 +1609,49 @@ ags_port_find_specifier(GList *port, gchar *specifier)
 }
 
 /**
+ * ags_port_find_plugin_port:
+ * @port: (element-type AgsAudio.Port) (transfer none): the #GList-struct containing #AgsPort
+ * @plugin_port: the #AgsPluginPort
+ *
+ * Retrieve port by plugin port.
+ *
+ * Returns: (element-type AgsAudio.Port) (transfer none): Next matching #GList-struct or %NULL
+ *
+ * Since: 3.11.4
+ */
+GList*
+ags_port_find_plugin_port(GList *port, GObject *plugin_port)
+{
+  AgsPort *current_port;
+  
+  gboolean success;
+
+  GRecMutex *port_mutex;
+  
+  while(port != NULL){
+    current_port = port->data;
+
+    /* get port mutex */
+    port_mutex = AGS_PORT_GET_OBJ_MUTEX(current_port);
+
+    /* check specifier */
+    g_rec_mutex_lock(port_mutex);
+
+    success = (current_port->plugin_port== plugin_port) ? TRUE: FALSE;
+
+    g_rec_mutex_unlock(port_mutex);
+
+    if(success){
+      return(port);
+    }
+
+    port = port->next;
+  }
+
+  return(NULL);
+}
+
+/**
  * ags_port_add_automation:
  * @port: the #AgsPort
  * @automation: the #AgsAutomation

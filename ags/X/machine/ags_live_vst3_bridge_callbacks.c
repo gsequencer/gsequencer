@@ -176,8 +176,117 @@ ags_live_vst3_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveVst
   }
 }
 
+void
+ags_live_vst3_bridge_perform_edit_live_instrument_port(GList *start_recall, AgsPluginPort *plugin_port, gchar *filename, gchar *effect, AgsVstParamValue value_normalized)
+{
+  GList *recall;
+  
+  recall = start_recall;
+
+  while((recall = ags_recall_find_recall_id_with_effect(recall, NULL, filename, effect)) != NULL){
+    if(AGS_IS_FX_VST3_AUDIO(recall->data) &&
+       ags_fx_vst3_audio_test_flags(recall->data, AGS_FX_VST3_AUDIO_LIVE_INSTRUMENT)){
+      GList *start_port, *port;
+
+      start_port = NULL;
+      
+      g_object_get(recall->data,
+		   "port", &start_port,
+		   NULL);
+
+      port = ags_port_find_plugin_port(start_port, plugin_port);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_DOUBLE);
+
+	g_value_set_double(&value,
+			   value_normalized);
+
+	ags_port_safe_write(port->data,
+			    &value);
+	
+	g_value_unset(&value);
+      }
+
+      g_list_free_full(start_port,
+		       (GDestroyNotify) g_object_unref);
+    }
+    
+    recall = recall->next;
+  }
+}
+
 AgsVstTResult
 ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id, AgsVstParamValue value_normalized, AgsLiveVst3Bridge *live_vst3_bridge)
 {
+  AgsVst3Plugin *vst3_plugin;
+  AgsPluginPort *plugin_port;
+
+  GList *start_recall;
+
+  gchar *filename, *effect;
+  
+  GRecMutex *base_plugin_mutex;
+  
   g_message("edit %d -> %f", id, value_normalized);
+
+  if(live_vst3_bridge->vst3_plugin == NULL){
+    return;
+  }
+
+  vst3_plugin = live_vst3_bridge->vst3_plugin;
+
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(vst3_plugin);
+
+  g_rec_mutex_lock(base_plugin_mutex);
+  
+  plugin_port = g_hash_table_lookup(vst3_plugin->plugin_port,
+				    id);  
+
+  g_rec_mutex_unlock(base_plugin_mutex);
+
+  filename = NULL;
+  effect = NULL;
+  
+  g_object_get(vst3_plugin,
+	       "filename", &filename,
+	       "effect", &effect,
+	       NULL);
+  
+  /* live instrument ports */
+  start_recall = NULL;
+  
+  g_object_get(AGS_MACHINE(live_vst3_bridge)->audio,
+	       "play", &start_recall,
+	       NULL);
+
+  ags_live_vst3_bridge_perform_edit_live_instrument_port(start_recall,
+							 plugin_port,
+							 filename, effect,
+							 value_normalized);
+  
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  start_recall = NULL;
+
+  g_object_get(AGS_MACHINE(live_vst3_bridge)->audio,
+	       "recall", &start_recall,
+	       NULL);
+
+  ags_live_vst3_bridge_perform_edit_live_instrument_port(start_recall,
+							 plugin_port,
+							 filename, effect,
+							 value_normalized);
+  
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+  
+  g_free(filename);
+  g_free(effect);
+  
+  return(0);
 }

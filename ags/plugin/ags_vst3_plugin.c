@@ -176,6 +176,10 @@ ags_vst3_plugin_init(AgsVst3Plugin *vst3_plugin)
   vst3_plugin->program = g_hash_table_new_full(g_direct_hash, g_str_equal,
 					       NULL,
 					       NULL);
+
+  vst3_plugin->plugin_port = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+						   NULL,
+						   NULL);
 }
 
 void
@@ -229,6 +233,10 @@ ags_vst3_plugin_finalize(GObject *gobject)
 
   vst3_plugin = AGS_VST3_PLUGIN(gobject);
 
+  g_hash_table_destroy(vst3_plugin->program);
+  
+  g_hash_table_destroy(vst3_plugin->plugin_port);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_vst3_plugin_parent_class)->finalize(gobject);
 }
@@ -691,6 +699,9 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	step_count = ags_vst_parameter_info_get_step_count(info);
 
 	id = ags_vst_parameter_info_get_param_id(info);
+
+	g_hash_table_insert(AGS_VST3_PLUGIN(base_plugin)->plugin_port,
+			    GUINT_TO_POINTER(id), plugin_port);
 
 	current_plugin_port->flags |= AGS_PLUGIN_PORT_CONTROL;
 	

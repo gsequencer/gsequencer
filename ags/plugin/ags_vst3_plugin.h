@@ -57,6 +57,7 @@ struct _AgsVst3Plugin
   AgsVstIEditController *iedit_controller;
 
   GHashTable *program;
+  GHashTable *plugin_port;
 };
 
 struct _AgsVst3PluginClass
