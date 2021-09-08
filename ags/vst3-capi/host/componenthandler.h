@@ -34,6 +34,15 @@ namespace Ags
     typedef AgsVstTResult (*ComponentHandlerEndEdit)(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id, gpointer data);
     typedef AgsVstTResult (*ComponentHandlerRestartComponent)(AgsVstIComponentHandler *icomponent_handler, gint32 flags, gpointer data);
 
+    struct AgsHandler
+    {
+      char *event_name;
+      
+      void *callback;
+      void *data;
+      int handler_id;
+    };
+      
     class ComponentHandler : public Steinberg::Vst::IComponentHandler
     {
     public:
@@ -47,37 +56,13 @@ namespace Ags
 
       Steinberg::tresult PLUGIN_API restartComponent(Steinberg::int32 flags);
 
-      int connectBeginEdit(void *beginEdit, void *data);
-      
-      int connectPerformEdit(void *performEdit, void *data);
-
-      int connectEndEdit(void *endEdit, void *data);
-
-      int connectRestartComponent(void *restartComponent, void *data);
-
+      int connectHandler(char *event_name, void *callback, void *data);
       void disconnectHandler(int handler_id);
-      
-      void **beginEditArr;
-      void **beginEditData;
-      int *beginEditHandler;
-      int beginEditDataCount;
-      
-      void **performEditArr;
-      void **performEditData;
-      int *performEditHandler;
-      int performEditDataCount;
-      
-      void **endEditArr;
-      void **endEditData;
-      int *endEditHandler;
-      int endEditDataCount;
 
-      void **restartComponentArr;      
-      void **restartComponentData;
-      int *restartComponentHandler;
-      int restartComponentDataCount;
-
+      AgsHandler *handler;
+      
       int handlerCount;
+      int handlerIDCount;
 
       std::mutex componentHandlerMutex;
     };

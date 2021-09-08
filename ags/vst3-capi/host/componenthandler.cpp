@@ -31,33 +31,14 @@ namespace Ags {
 
     ComponentHandler::ComponentHandler()
     {
-      this->beginEditArr = NULL;
-      this->beginEditData = NULL;
-      this->beginEditHandler = NULL;
-      this->beginEditDataCount = 0;
-      
-      this->performEditArr = NULL;
-      this->performEditData = NULL;
-      this->performEditHandler = NULL;
-      this->performEditDataCount = 0;
-
-      this->endEditArr = NULL;
-      this->endEditData = NULL;
-      this->endEditHandler = NULL;
-      this->endEditDataCount = 0;
-
-      this->restartComponentArr = NULL;
-      this->restartComponentData = NULL;
-      this->restartComponentHandler = NULL;
-      this->restartComponentDataCount = 0;
+      this->handler = NULL;
 
       this->handlerCount = 0;
+      this->handlerIDCount = 0;
     }
 
     Steinberg::tresult PLUGIN_API ComponentHandler::beginEdit(Steinberg::Vst::ParamID id)
     {
-      ComponentHandlerBeginEdit **beginEditIter;
-
       void *component_handler;
       
       int i;
@@ -66,15 +47,13 @@ namespace Ags {
       
       this->componentHandlerMutex.lock();
       
-      beginEditIter = (ComponentHandlerBeginEdit **) this->beginEditArr;
-
-      for(i = 0; i < this->beginEditDataCount; i++){
-	if(beginEditIter[i] != NULL){
+      for(i = 0; i < this->handlerCount; i++){
+	if(!strncmp(this->handler[i].event_name, "beginEdit", 10)){
 	  void *data;
 
-	  data = (void *) this->beginEditData[i];
+	  data = (void *) this->handler[i].data;
 	  
-	  beginEditIter[i][0]((AgsVstIComponentHandler *) component_handler, id, data);
+	  ((ComponentHandlerBeginEdit *) (this->handler[i].callback))[0]((AgsVstIComponentHandler *) component_handler, id, data);
 	}
       }
       
@@ -85,8 +64,6 @@ namespace Ags {
 
     Steinberg::tresult PLUGIN_API ComponentHandler::performEdit(Steinberg::Vst::ParamID id, Steinberg::Vst::ParamValue valueNormalized)
     {
-      ComponentHandlerPerformEdit **performEditIter;
-
       void *component_handler;
 
       int i;
@@ -94,16 +71,14 @@ namespace Ags {
       component_handler = (void *) this;
       
       this->componentHandlerMutex.lock();
-      
-      performEditIter = (ComponentHandlerPerformEdit **) this->performEditArr;
 
-      for(i = 0; i < this->performEditDataCount; i++){
-	if(performEditIter[i] != NULL){
+      for(i = 0; i < this->handlerCount; i++){
+	if(!strncmp(this->handler[i].event_name, "performEdit", 10)){
 	  void *data;
 
-	  data = (void *) this->performEditData[i];
+	  data = (void *) this->handler[i].data;
 	  
-	  performEditIter[i][0]((AgsVstIComponentHandler *) component_handler, id, valueNormalized, data);
+	  ((ComponentHandlerPerformEdit *) (this->handler[i].callback))[0]((AgsVstIComponentHandler *) component_handler, id, valueNormalized, data);
 	}
       }
 
@@ -114,8 +89,6 @@ namespace Ags {
 
     Steinberg::tresult PLUGIN_API ComponentHandler::endEdit(Steinberg::Vst::ParamID id)
     {
-      ComponentHandlerEndEdit **endEditIter;
-
       void *component_handler;
 
       int i;
@@ -124,15 +97,13 @@ namespace Ags {
       
       this->componentHandlerMutex.lock();
       
-      endEditIter = (ComponentHandlerEndEdit **) this->endEditArr;
-
-      for(i = 0; i < this->endEditDataCount; i++){
-	if(endEditIter[i] != NULL){
+      for(i = 0; i < this->handlerCount; i++){
+	if(!strncmp(this->handler[i].event_name, "endEdit", 10)){
 	  void *data;
 
-	  data = (void *) this->endEditData[i];
+	  data = (void *) this->handler[i].data;
 	  
-	  endEditIter[i][0]((AgsVstIComponentHandler *) component_handler, id, data);
+	  ((ComponentHandlerEndEdit *) (this->handler[i].callback))[0]((AgsVstIComponentHandler *) component_handler, id, data);
 	}
       }
 
@@ -143,8 +114,6 @@ namespace Ags {
 
     Steinberg::tresult PLUGIN_API ComponentHandler::restartComponent(Steinberg::int32 flags)
     {
-      ComponentHandlerRestartComponent **restartComponentIter;
-
       void *component_handler;
 
       int i;
@@ -152,16 +121,14 @@ namespace Ags {
       component_handler = (void *) this;
       
       this->componentHandlerMutex.lock();
-      
-      restartComponentIter = (ComponentHandlerRestartComponent **) this->restartComponentArr;
 
-      for(i = 0; i < this->restartComponentDataCount; i++){
-	if(restartComponentIter[i] != NULL){
+      for(i = 0; i < this->handlerCount; i++){
+	if(!strncmp(this->handler[i].event_name, "restartComponent", 10)){
 	  void *data;
 
-	  data = (void *) this->restartComponentData[i];
+	  data = (void *) this->handler[i].data;
 	  
-	  restartComponentIter[i][0]((AgsVstIComponentHandler *) component_handler, flags, data);
+	  ((ComponentHandlerRestartComponent *) (this->handler[i].callback))[0]((AgsVstIComponentHandler *) component_handler, flags, data);
 	}
       }
 
@@ -170,44 +137,86 @@ namespace Ags {
       return(0);
     }
 
-    int ComponentHandler::connectBeginEdit(void *beginEdit, void *data)
+    int ComponentHandler::connectHandler(char *event_name, void *callback, void *data)
     {
+      AgsHandler *handler;
       int handlerID;
-
+      
       handlerID = -1;
       
-      return(handlerID);
-    }
+      this->componentHandlerMutex.lock();
+
+      handlerID = this->handlerIDCount;
+
+      if(!strncmp(event_name, "beginEdit", 10)){
+      }else if(!strncmp(event_name, "performEdit", 12)){
+      }else if(!strncmp(event_name, "endEdit", 8)){
+      }else if(!strncmp(event_name, "restartComponent", 8)){
+      }else{
+	this->componentHandlerMutex.unlock();
+	
+	g_critical("unknown event name of callback");
+
+	return(-1);
+      }
+
+      this->handler = (AgsHandler *) realloc(this->handler,
+					     this->handlerCount * sizeof(AgsHandler));
+
+      this->handler[this->handlerCount].event_name = strdup(event_name);
+      this->handler[this->handlerCount].callback = callback;      
+      this->handler[this->handlerCount].data = data;
+
+      this->handler[this->handlerCount].handler_id = this->handlerIDCount;
       
-    int ComponentHandler::connectPerformEdit(void *beginEdit, void *data)
-    {
-      int handlerID;
-
-      handlerID = -1;
+      this->handlerCount++;
+      this->handlerIDCount++;
       
-      return(handlerID);
-    }
-
-    int ComponentHandler::connectEndEdit(void *beginEdit, void *data)
-    {
-      int handlerID;
-
-      handlerID = -1;
-      
-      return(handlerID);
-    }
-
-    int ComponentHandler::connectRestartComponent(void *beginEdit, void *data)
-    {
-      int handlerID;
-
-      handlerID = -1;
+      this->componentHandlerMutex.unlock();      
       
       return(handlerID);
     }
 
     void ComponentHandler::disconnectHandler(int handler_id)
     {
+      int position;
+      int i;
+
+      position = -1;
+      
+      this->componentHandlerMutex.lock();
+
+      for(i = 0; i < this->handlerCount; i++){
+	if(this->handler[i].handler_id == handler_id){
+	  position = i;
+	  
+	  break;
+	}
+      }
+
+      if(position >= 0){
+	AgsHandler *handler;
+
+	handler = NULL;
+	handler = (AgsHandler *) realloc(handler,
+					 (this->handlerCount - 1) * sizeof(AgsHandler));
+
+	if(position > 0){
+	  memcpy(handler, this->handler, (position - 1) * sizeof(AgsHandler));
+	}
+
+	if(position < this->handlerCount - 1){
+	  memcpy(handler + position, this->handler + position + 1, (this->handlerCount - position - 1) * sizeof(AgsHandler));
+	}
+
+	free(this->handler);
+	
+	this->handler = handler;
+	
+	this->handlerCount--;      
+      }
+      
+      this->componentHandlerMutex.unlock();
     }
     
   }
