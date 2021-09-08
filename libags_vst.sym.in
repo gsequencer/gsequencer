@@ -16,6 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
 
+ags_vst_component_handler_new
+ags_vst_component_handler_destroy
+ags_vst_component_handler_connect_handler
+ags_vst_component_handler_disconnect_handler
 ags_vst_host_context_get_instance
 ags_vst_host_context_new
 ags_vst_host_context_get_plug_interface_support
@@ -408,8 +412,6 @@ ags_vst_parameter_info_get_default_normalized_value
 ags_vst_parameter_info_get_unit_id
 ags_vst_parameter_info_get_flags
 ags_vst_icomponent_handler_get_iid
-ags_vst_component_handler_new
-ags_vst_component_handler_destroy
 ags_vst_icomponent_handler_begin_edit
 ags_vst_icomponent_handler_perform_edit
 ags_vst_icomponent_handler_end_edit
