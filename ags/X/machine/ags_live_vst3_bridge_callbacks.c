@@ -234,7 +234,7 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
   g_message("edit %d -> %f", id, value_normalized);
 
   if(live_vst3_bridge->vst3_plugin == NULL){
-    return;
+    return(-1);
   }
 
   vst3_plugin = live_vst3_bridge->vst3_plugin;
