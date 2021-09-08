@@ -298,8 +298,8 @@ ags_fx_vst3_channel_input_data_alloc()
 
   input_data->parent = NULL;
 
-  input_data->output = g_malloc(buffer_size * sizeof(float));
-  input_data->input = g_malloc(buffer_size * sizeof(float));
+  input_data->output = g_malloc(2 * buffer_size * sizeof(float));
+  input_data->input = g_malloc(2 * buffer_size * sizeof(float));
 
   input_data->icomponent = NULL;
   input_data->iedit_controller = NULL;
@@ -342,7 +342,7 @@ ags_fx_vst3_channel_input_data_alloc()
   input = ags_vst_audio_bus_buffers_alloc();
 
   ags_vst_audio_bus_buffers_set_num_channels(input,
-					     1);
+					     2);
 
   ags_vst_audio_bus_buffers_set_silence_flags(input,
 					      0);
@@ -357,7 +357,7 @@ ags_fx_vst3_channel_input_data_alloc()
   output = ags_vst_audio_bus_buffers_alloc();
 
   ags_vst_audio_bus_buffers_set_num_channels(output,
-					     1);
+					     2);
 
   ags_vst_audio_bus_buffers_set_silence_flags(output,
 					      0);

@@ -266,10 +266,10 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 	  ags_base_plugin_activate(vst3_plugin,
 				   channel_data->icomponent);
 
-	  ags_vst_icomponent_activate_bus(channel_data->icomponent,
-					  AGS_VST_KAUDIO, AGS_VST_KINPUT,
-					  0,
-					  TRUE);
+//	  ags_vst_icomponent_activate_bus(channel_data->icomponent,
+//					  AGS_VST_KAUDIO, AGS_VST_KINPUT,
+//					  0,
+//					  TRUE);
 
 	  ags_vst_icomponent_activate_bus(channel_data->icomponent,
 					  AGS_VST_KAUDIO, AGS_VST_KOUTPUT,
@@ -330,10 +330,10 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 	    ags_base_plugin_activate(vst3_plugin,
 				     input_data->icomponent);
 
-	    ags_vst_icomponent_activate_bus(input_data->icomponent,
-					    AGS_VST_KAUDIO, AGS_VST_KINPUT,
-					    0,
-					    TRUE);
+//	    ags_vst_icomponent_activate_bus(input_data->icomponent,
+//					    AGS_VST_KAUDIO, AGS_VST_KINPUT,
+//					    0,
+//					    TRUE);
 
 	    ags_vst_icomponent_activate_bus(input_data->icomponent,
 					    AGS_VST_KAUDIO, AGS_VST_KOUTPUT,
@@ -525,10 +525,10 @@ ags_fx_vst3_audio_processor_done(AgsRecall *recall)
 	ags_base_plugin_deactivate(vst3_plugin,
 				   channel_data->icomponent);
 
-	ags_vst_icomponent_activate_bus(channel_data->icomponent,
-					AGS_VST_KAUDIO, AGS_VST_KINPUT,
-					0,
-					FALSE);
+//	ags_vst_icomponent_activate_bus(channel_data->icomponent,
+//					AGS_VST_KAUDIO, AGS_VST_KINPUT,
+//					0,
+//					FALSE);
 
 	ags_vst_icomponent_activate_bus(channel_data->icomponent,
 					AGS_VST_KAUDIO, AGS_VST_KOUTPUT,
@@ -557,10 +557,10 @@ ags_fx_vst3_audio_processor_done(AgsRecall *recall)
 	  ags_base_plugin_deactivate(vst3_plugin,
 				     input_data->icomponent);
 
-	  ags_vst_icomponent_activate_bus(input_data->icomponent,
-					  AGS_VST_KAUDIO, AGS_VST_KINPUT,
-					  0,
-					  FALSE);
+//	  ags_vst_icomponent_activate_bus(input_data->icomponent,
+//					  AGS_VST_KAUDIO, AGS_VST_KINPUT,
+//					  0,
+//					  FALSE);
 
 	  ags_vst_icomponent_activate_bus(input_data->icomponent,
 					  AGS_VST_KAUDIO, AGS_VST_KOUTPUT,

@@ -1,3 +1,8 @@
+ags (3.11.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags-fx-vst3 by initializing default with stereo arrangement
+
 ags (3.11.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

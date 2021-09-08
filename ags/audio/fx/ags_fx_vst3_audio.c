@@ -972,8 +972,8 @@ ags_fx_vst3_audio_channel_data_alloc()
   
   channel_data->event_count = 0;
 
-  channel_data->output = g_malloc(buffer_size * sizeof(float));
-  channel_data->input = g_malloc(buffer_size * sizeof(float));
+  channel_data->output = g_malloc(2 * buffer_size * sizeof(float));
+  channel_data->input = g_malloc(2 * buffer_size * sizeof(float));
 
   channel_data->icomponent = NULL;
   channel_data->iedit_controller = NULL;
@@ -1039,10 +1039,10 @@ ags_fx_vst3_audio_channel_data_alloc()
   input = ags_vst_audio_bus_buffers_alloc();
 
   ags_vst_audio_bus_buffers_set_num_channels(input,
-					     1);
+					     0);
 
   ags_vst_audio_bus_buffers_set_silence_flags(input,
-					      0);
+					      1);
 
   ags_vst_audio_bus_buffers_set_samples32(input,
 					  &(channel_data->input));
@@ -1054,7 +1054,7 @@ ags_fx_vst3_audio_channel_data_alloc()
   output = ags_vst_audio_bus_buffers_alloc();
 
   ags_vst_audio_bus_buffers_set_num_channels(output,
-					     1);
+					     2);
 
   ags_vst_audio_bus_buffers_set_silence_flags(output,
 					      0);
@@ -1139,8 +1139,8 @@ ags_fx_vst3_audio_input_data_alloc()
 
   input_data->parent = NULL;
 
-  input_data->output = g_malloc(buffer_size * sizeof(float));
-  input_data->input = g_malloc(buffer_size * sizeof(float));
+  input_data->output = g_malloc(2 * buffer_size * sizeof(float));
+  input_data->input = g_malloc(2 * buffer_size * sizeof(float));
 
   input_data->icomponent = NULL;
   input_data->iedit_controller = NULL;
@@ -1208,10 +1208,10 @@ ags_fx_vst3_audio_input_data_alloc()
   input = ags_vst_audio_bus_buffers_alloc();
 
   ags_vst_audio_bus_buffers_set_num_channels(input,
-					     1);
+					     0);
 
   ags_vst_audio_bus_buffers_set_silence_flags(input,
-					      0);
+					      1);
 
   ags_vst_audio_bus_buffers_set_samples32(input,
 					  &(input_data->input));
@@ -1223,7 +1223,7 @@ ags_fx_vst3_audio_input_data_alloc()
   output = ags_vst_audio_bus_buffers_alloc();
 
   ags_vst_audio_bus_buffers_set_num_channels(output,
-					     1);
+					     2);
 
   ags_vst_audio_bus_buffers_set_silence_flags(output,
 					      0);
