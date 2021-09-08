@@ -53,7 +53,7 @@ namespace Ags {
 
 	  data = (void *) this->handler[i].data;
 	  
-	  ((ComponentHandlerBeginEdit *) (this->handler[i].callback))[0]((AgsVstIComponentHandler *) component_handler, id, data);
+	  ((ComponentHandlerBeginEdit) (this->handler[i].callback))((AgsVstIComponentHandler *) component_handler, id, data);
 	}
       }
       
@@ -78,7 +78,7 @@ namespace Ags {
 
 	  data = (void *) this->handler[i].data;
 	  
-	  ((ComponentHandlerPerformEdit *) (this->handler[i].callback))[0]((AgsVstIComponentHandler *) component_handler, id, valueNormalized, data);
+	  ((ComponentHandlerPerformEdit) (this->handler[i].callback))((AgsVstIComponentHandler *) component_handler, id, valueNormalized, data);
 	}
       }
 
@@ -103,7 +103,7 @@ namespace Ags {
 
 	  data = (void *) this->handler[i].data;
 	  
-	  ((ComponentHandlerEndEdit *) (this->handler[i].callback))[0]((AgsVstIComponentHandler *) component_handler, id, data);
+	  ((ComponentHandlerEndEdit) (this->handler[i].callback))((AgsVstIComponentHandler *) component_handler, id, data);
 	}
       }
 
@@ -128,7 +128,7 @@ namespace Ags {
 
 	  data = (void *) this->handler[i].data;
 	  
-	  ((ComponentHandlerRestartComponent *) (this->handler[i].callback))[0]((AgsVstIComponentHandler *) component_handler, flags, data);
+	  ((ComponentHandlerRestartComponent) (this->handler[i].callback))((AgsVstIComponentHandler *) component_handler, flags, data);
 	}
       }
 
