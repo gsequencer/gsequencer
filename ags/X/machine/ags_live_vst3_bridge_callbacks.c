@@ -25,6 +25,13 @@
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
 
+#include <ags/libags-vst.h>
+
+#if defined(AGS_WITH_QUARTZ)
+#import <CoreFoundation/CoreFoundation.h>
+#import <Cocoa/Cocoa.h>
+#endif
+
 void
 ags_live_vst3_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLiveVst3Bridge *live_vst3_bridge)
 {
@@ -64,9 +71,45 @@ ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge *liv
     live_vst3_bridge->iplug_view = ags_vst_iedit_controller_create_view(live_vst3_bridge->iedit_controller,
 									"editor");
 
-//    ags_vst_iplug_view_attached(live_vst3_bridge->iplug_view,
-//				gtk_widget_get_toplevel(live_vst3_bridge),
-//				"X11EmbedWindowID");
+    if(live_vst3_bridge->iplug_view != NULL){
+#if defined(AGS_WITH_QUARTZ)
+      AgsVstViewRect *view_rect = ags_vst_view_rect_alloc();
+
+      ags_vst_iplug_view_check_size_constraint(live_vst3_bridge->iplug_view,
+					       view_rect);
+      
+      NSWindow *ns_window = [[NSWindow alloc] init];
+    
+      live_vst3_bridge->ns_window = (gpointer) ns_window;
+    
+      NSUInteger masks = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskTexturedBackground;
+      [ns_window setStyleMask:masks];
+
+      gint32 width = ags_vst_view_rect_get_width(view_rect);
+      gint32 height = ags_vst_view_rect_get_height(view_rect);
+
+      g_message("%d %d", width, height);
+      
+      NSView *view = [[NSView alloc] initWithFrame:NSMakeRect(0.0, 0.0, (CGFloat) width, (CGFloat) height)];
+
+      live_vst3_bridge->ns_view = (gpointer) view;
+
+      view.layer.backgroundColor = [[NSColor yellowColor] CGColor];
+
+      [ns_window.contentView addSubview:view];
+
+      NSRect rect;
+
+      rect.size.width = width;
+      rect.size.height = height;
+
+      [ns_window setFrame:rect display:YES];
+
+      ags_vst_iplug_view_attached(live_vst3_bridge->iplug_view,
+				  live_vst3_bridge->ns_view,
+				  "NSView");
+#endif
+    }
   }
   
   //TODO:JK: implement me

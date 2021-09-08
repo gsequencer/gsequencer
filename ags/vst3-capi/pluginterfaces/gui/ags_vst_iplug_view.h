@@ -40,6 +40,8 @@ extern "C" {
   extern const AgsVstFIDString ags_vst_kplatform_type_ns_view;
   extern const AgsVstFIDString ags_vst_kplatform_type_ui_view;
   extern const AgsVstFIDString ags_vst_kplatform_type_x11_embed_window_id;
+
+  AgsVstViewRect* ags_vst_view_rect_alloc();
   
   gint32 ags_vst_view_rect_get_width(AgsVstViewRect *view_rect);
   gint32 ags_vst_view_rect_get_height(AgsVstViewRect *view_rect);
@@ -65,7 +67,7 @@ extern "C" {
   AgsVstTResult ags_vst_iplug_view_can_resize(AgsVstIPlugView *iplug_view);
 
   AgsVstTResult ags_vst_iplug_view_check_size_constraint(AgsVstIPlugView *iplug_view, AgsVstViewRect *rect);
-
+  
 #ifdef __cplusplus
 }
 #endif
