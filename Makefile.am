@@ -2927,6 +2927,7 @@ deprecated_libags_vst_h_sources =
 libags_vst_h_sources = \
 	$(deprecated_libags_vst_h_sources) \
 	ags/vst3-capi/ags_vst_headers.h \
+	ags/vst3-capi/host/ags_vst_component_handler.h \
 	ags/vst3-capi/host/ags_vst_host_context.h \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.h \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.h \
@@ -2997,6 +2998,7 @@ deprecated_libags_vst_c_sources =
 
 libags_vst_c_sources = \
 	$(deprecated_libags_vst_c_sources) \
+	ags/vst3-capi/host/ags_vst_component_handler.cpp \
 	ags/vst3-capi/host/ags_vst_host_context.cpp \
 	ags/vst3-capi/host/componenthandler.h \
 	ags/vst3-capi/host/hostcontext.h \

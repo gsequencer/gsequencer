@@ -39,6 +39,8 @@ void ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge
 
 void ags_live_vst3_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveVst3Bridge *live_vst3_bridge);
 
+AgsVstTResult ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id, AgsVstParamValue value_normalized, AgsLiveVst3Bridge *live_vst3_bridge);
+
 G_END_DECLS
 
 #endif /*__AGS_LIVE_VST3_BRIDGE_CALLBACKS_H__*/

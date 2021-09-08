@@ -19,7 +19,10 @@
 
 #pragma once
 
+#include <pluginterfaces/base/conststringtable.h>
+#include <pluginterfaces/base/funknown.h>
 #include <pluginterfaces/vst/ivsteditcontroller.h>
+#include <public.sdk/source/vst/hosting/pluginterfacesupport.h>
 
 #include <libags-vst.h>
 
@@ -34,7 +37,7 @@ namespace Ags
     typedef AgsVstTResult (*ComponentHandlerEndEdit)(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id, gpointer data);
     typedef AgsVstTResult (*ComponentHandlerRestartComponent)(AgsVstIComponentHandler *icomponent_handler, gint32 flags, gpointer data);
 
-    struct AgsHandler
+    struct EventHandler
     {
       char *event_name;
       
@@ -48,23 +51,32 @@ namespace Ags
     public:
       ComponentHandler();
       
-      Steinberg::tresult PLUGIN_API beginEdit(Steinberg::Vst::ParamID id);
+      virtual ~ComponentHandler () { FUNKNOWN_DTOR }
+      
+      Steinberg::tresult PLUGIN_API beginEdit(Steinberg::Vst::ParamID id) override;
 
-      Steinberg::tresult PLUGIN_API performEdit(Steinberg::Vst::ParamID id, Steinberg::Vst::ParamValue valueNormalized);
+      Steinberg::tresult PLUGIN_API performEdit(Steinberg::Vst::ParamID id, Steinberg::Vst::ParamValue valueNormalized) override;
 
-      Steinberg::tresult PLUGIN_API endEdit(Steinberg::Vst::ParamID id);
+      Steinberg::tresult PLUGIN_API endEdit(Steinberg::Vst::ParamID id) override;
 
-      Steinberg::tresult PLUGIN_API restartComponent(Steinberg::int32 flags);
+      Steinberg::tresult PLUGIN_API restartComponent(Steinberg::int32 flags) override;
+
+      DECLARE_FUNKNOWN_METHODS
+
+      Steinberg::Vst::PlugInterfaceSupport* getPlugInterfaceSupport () const { return mPlugInterfaceSupport; }
 
       int connectHandler(char *event_name, void *callback, void *data);
       void disconnectHandler(int handler_id);
 
-      AgsHandler *handler;
+      EventHandler *handler;
       
       int handlerCount;
       int handlerIDCount;
 
       std::mutex componentHandlerMutex;
+
+protected:
+	Steinberg::IPtr<Steinberg::Vst::PlugInterfaceSupport> mPlugInterfaceSupport;
     };
     
   }

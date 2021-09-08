@@ -20,6 +20,8 @@
 #ifndef __AGS_VST_IPLUG_VIEW_H__
 #define __AGS_VST_IPLUG_VIEW_H__
 
+#include <glib.h>
+
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
 
 #define AGS_VST_IPLUG_VIEW_IID (ags_vst_iplug_view_get_iid())

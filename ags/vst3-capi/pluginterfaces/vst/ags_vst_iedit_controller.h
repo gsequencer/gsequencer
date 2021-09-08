@@ -111,10 +111,6 @@ extern "C" {
   guint ags_vst_parameter_info_get_flags(AgsVstParameterInfo *info);
   
   const AgsVstTUID* ags_vst_icomponent_handler_get_iid();
-
-  AgsVstIComponentHandler* ags_vst_component_handler_new();    
-  
-  void ags_vst_component_handler_destroy(AgsVstComponentHandler *component_handler);
   
   AgsVstTResult ags_vst_icomponent_handler_begin_edit(AgsVstIComponentHandler *icomponent_handler,
 						      AgsVstParamID id);

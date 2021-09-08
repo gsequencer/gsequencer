@@ -139,7 +139,7 @@ namespace Ags {
 
     int ComponentHandler::connectHandler(char *event_name, void *callback, void *data)
     {
-      AgsHandler *handler;
+      EventHandler *handler;
       int handlerID;
       
       handlerID = -1;
@@ -160,8 +160,8 @@ namespace Ags {
 	return(-1);
       }
 
-      this->handler = (AgsHandler *) realloc(this->handler,
-					     this->handlerCount * sizeof(AgsHandler));
+      this->handler = (EventHandler *) realloc(this->handler,
+					       this->handlerCount * sizeof(EventHandler));
 
       this->handler[this->handlerCount].event_name = strdup(event_name);
       this->handler[this->handlerCount].callback = callback;      
@@ -195,18 +195,18 @@ namespace Ags {
       }
 
       if(position >= 0){
-	AgsHandler *handler;
+	EventHandler *handler;
 
 	handler = NULL;
-	handler = (AgsHandler *) realloc(handler,
-					 (this->handlerCount - 1) * sizeof(AgsHandler));
+	handler = (EventHandler *) realloc(handler,
+					   (this->handlerCount - 1) * sizeof(EventHandler));
 
 	if(position > 0){
-	  memcpy(handler, this->handler, (position - 1) * sizeof(AgsHandler));
+	  memcpy(handler, this->handler, (position - 1) * sizeof(EventHandler));
 	}
 
 	if(position < this->handlerCount - 1){
-	  memcpy(handler + position, this->handler + position + 1, (this->handlerCount - position - 1) * sizeof(AgsHandler));
+	  memcpy(handler + position, this->handler + position + 1, (this->handlerCount - position - 1) * sizeof(EventHandler));
 	}
 
 	free(this->handler);
@@ -219,6 +219,29 @@ namespace Ags {
       this->componentHandlerMutex.unlock();
     }
     
+    Steinberg::tresult PLUGIN_API ComponentHandler::queryInterface (const char* _iid, void** obj)
+    {
+      QUERY_INTERFACE (_iid, obj, FUnknown::iid, IComponentHandler)
+	QUERY_INTERFACE (_iid, obj, IComponentHandler::iid, IComponentHandler)
+
+	if(mPlugInterfaceSupport && mPlugInterfaceSupport->queryInterface (iid, obj) == Steinberg::kResultTrue){
+	  return Steinberg::kResultOk;
+	}
+
+      *obj = nullptr;
+
+      return Steinberg::kResultFalse;
+    }
+
+    Steinberg::uint32 PLUGIN_API ComponentHandler::addRef ()
+    {
+      return 1;
+    }
+
+    Steinberg::uint32 PLUGIN_API ComponentHandler::release ()
+    {
+      return 1;
+    }
   }
   
 }

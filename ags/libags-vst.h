@@ -23,6 +23,7 @@
 #include <glib.h>
 
 #include <ags/vst3-capi/host/ags_vst_host_context.h>
+#include <ags/vst3-capi/host/ags_vst_component_handler.h>
 
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_const_string_table.h>
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_fplatform.h>

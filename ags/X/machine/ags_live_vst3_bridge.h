@@ -97,6 +97,8 @@ struct _AgsLiveVst3Bridge
 
   AgsVstComponentHandler *icomponent_handler;
 
+  int peform_edit_handler;
+  
   AgsVstIPlugView *iplug_view;
   
   GtkMenu *vst3_menu;
