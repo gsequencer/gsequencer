@@ -66,8 +66,6 @@ ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge *liv
   vst3_plugin = live_vst3_bridge->vst3_plugin;
 
   if(live_vst3_bridge->iplug_view == NULL){
-    g_message("create view");
-    
     live_vst3_bridge->iplug_view = ags_vst_iedit_controller_create_view(live_vst3_bridge->iedit_controller,
 									"editor");
 
@@ -87,8 +85,6 @@ ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge *liv
 
       gint32 width = ags_vst_view_rect_get_width(view_rect);
       gint32 height = ags_vst_view_rect_get_height(view_rect);
-
-      g_message("%d %d", width, height);
       
       NSView *view = [[NSView alloc] initWithFrame:NSMakeRect(0.0, 0.0, (CGFloat) width, (CGFloat) height)];
 
@@ -176,58 +172,18 @@ ags_live_vst3_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveVst
   }
 }
 
-void
-ags_live_vst3_bridge_perform_edit_live_instrument_port(GList *start_recall, AgsPluginPort *plugin_port, gchar *filename, gchar *effect, AgsVstParamValue value_normalized)
-{
-  GList *recall;
-  
-  recall = start_recall;
-
-  while(recall != NULL){
-    if(AGS_IS_FX_VST3_AUDIO(recall->data) &&
-       ags_fx_vst3_audio_test_flags(recall->data, AGS_FX_VST3_AUDIO_LIVE_INSTRUMENT)){
-      GList *start_port, *port;
-
-      start_port = NULL;
-      
-      g_object_get(recall->data,
-		   "port", &start_port,
-		   NULL);
-
-      port = ags_port_find_plugin_port(start_port, plugin_port);
-
-      if(port != NULL){
-	GValue value = G_VALUE_INIT;
-
-	g_value_init(&value,
-		     G_TYPE_DOUBLE);
-
-	g_value_set_double(&value,
-			   value_normalized);
-
-	ags_port_safe_write(port->data,
-			    &value);
-	
-	g_value_unset(&value);
-      }
-
-      g_list_free_full(start_port,
-		       (GDestroyNotify) g_object_unref);
-    }
-    
-    recall = recall->next;
-  }
-}
-
 AgsVstTResult
 ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id, AgsVstParamValue value_normalized, AgsLiveVst3Bridge *live_vst3_bridge)
 {
   AgsVst3Plugin *vst3_plugin;
   AgsPluginPort *plugin_port;
 
-  GList *start_recall;
-
+  GList *start_bulk_member, *bulk_member;
+  
   gchar *filename, *effect;
+  gchar *specifier;
+
+  gdouble value;
   
   GRecMutex *base_plugin_mutex;
   
@@ -248,43 +204,46 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
 
   filename = NULL;
   effect = NULL;
+
+  specifier = NULL;
   
   g_object_get(vst3_plugin,
 	       "filename", &filename,
 	       "effect", &effect,
 	       NULL);
+
+  g_object_get(plugin_port,
+	       "port-name", &specifier,
+	       NULL);
   
   /* live instrument ports */
-  start_recall = NULL;
-  
-  g_object_get(AGS_MACHINE(live_vst3_bridge)->audio,
-	       "play", &start_recall,
-	       NULL);
+  value = value_normalized;
+  value = ags_vst_iedit_controller_normalized_param_to_plain(vst3_plugin->iedit_controller,
+							     id,
+							     value_normalized);
 
-  ags_live_vst3_bridge_perform_edit_live_instrument_port(start_recall,
-							 plugin_port,
-							 filename, effect,
-							 value_normalized);
-  
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+  start_bulk_member = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge)->bulk_input)->bulk_member);
 
-  start_recall = NULL;
+  bulk_member = start_bulk_member;
 
-  g_object_get(AGS_MACHINE(live_vst3_bridge)->audio,
-	       "recall", &start_recall,
-	       NULL);
+  while(bulk_member != NULL){
+    if(AGS_IS_BULK_MEMBER(bulk_member->data) &&
+       !g_strcmp0(AGS_BULK_MEMBER(bulk_member->data)->specifier, specifier)){
+      ags_bulk_member_change_port(bulk_member->data,
+				  (gpointer) &value);
 
-  ags_live_vst3_bridge_perform_edit_live_instrument_port(start_recall,
-							 plugin_port,
-							 filename, effect,
-							 value_normalized);
-  
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
+      break;
+    }
+    
+    bulk_member = bulk_member->next;
+  }
+
+  g_list_free(start_bulk_member);
   
   g_free(filename);
   g_free(effect);
+
+  g_free(specifier);
   
   return(0);
 }

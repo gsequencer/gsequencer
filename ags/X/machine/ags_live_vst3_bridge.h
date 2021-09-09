@@ -100,6 +100,9 @@ struct _AgsLiveVst3Bridge
   int peform_edit_handler;
   
   AgsVstIPlugView *iplug_view;
+
+  gpointer ns_window;
+  gpointer ns_view;
   
   GtkMenu *vst3_menu;
 };

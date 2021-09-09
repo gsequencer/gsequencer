@@ -117,6 +117,8 @@ struct _AgsXorgApplicationContext
 
   GtkWidget *navigation;
 
+  gboolean start_loader;
+  
   gboolean setup_ready;
   gboolean loader_ready;
   

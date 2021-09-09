@@ -652,6 +652,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   xorg_application_context->navigation = NULL;
 
+  xorg_application_context->start_loader = FALSE;
+
   xorg_application_context->setup_ready = FALSE;
   xorg_application_context->loader_ready = FALSE;
 
@@ -3057,6 +3059,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   blacklist_path = g_strdup_printf("/Users/joelkrahemann/.gsequencer");  
 #endif
 #endif
+
+  xorg_application_context->start_loader = TRUE;
   
   /* load ladspa manager */
   ladspa_manager = ags_ladspa_manager_get_instance();
@@ -4508,6 +4512,10 @@ ags_xorg_application_context_loader_timeout(AgsXorgApplicationContext *xorg_appl
 
   GError *error;
 
+  if(!xorg_application_context->start_loader){
+    return(TRUE);
+  }
+  
   log = ags_log_get_instance();
   
   if(xorg_application_context->loader_ready &&
@@ -4954,7 +4962,7 @@ ags_xorg_application_context_loader_timeout(AgsXorgApplicationContext *xorg_appl
     loader_filename = xorg_application_context->vst3_loader->data;
 
 #if defined(AGS_OSXAPI)
-    arch_path = g_strdup(loader_filenmae);
+    arch_path = g_strdup(loader_filename);
 #else
     arch_path = g_strdup_printf("%s%cContents%c%s-%s",
 				loader_filename,
