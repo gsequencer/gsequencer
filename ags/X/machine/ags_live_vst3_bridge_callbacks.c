@@ -243,7 +243,7 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
 							     id,
 							     value_normalized);
 
-  start_bulk_member = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge)->bulk_input)->bulk_member);
+  start_bulk_member = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge)->bulk_input)->grid);
 
   bulk_member = start_bulk_member;
 
@@ -252,10 +252,10 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
        !g_strcmp0(AGS_BULK_MEMBER(bulk_member->data)->specifier, specifier)){
       GtkWidget *child_widget;
 
-      child_widget = gtk_bin_get_child(bulk_member->data);
+      child_widget = ags_bulk_member_get_widget(bulk_member->data);
 
       if(AGS_IS_DIAL(child_widget)){
-	gtk_dial_set_value((AgsDial *) child_widget,
+	ags_dial_set_value((AgsDial *) child_widget,
 			   value);
       }else if(GTK_IS_SCALE(child_widget)){
 	gtk_range_set_value((GtkRange *) child_widget,

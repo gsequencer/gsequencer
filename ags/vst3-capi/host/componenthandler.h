@@ -24,7 +24,7 @@
 #include <pluginterfaces/vst/ivsteditcontroller.h>
 #include <public.sdk/source/vst/hosting/pluginterfacesupport.h>
 
-#include <libags-vst.h>
+#include <ags/libags-vst.h>
 
 #include <mutex>
 
