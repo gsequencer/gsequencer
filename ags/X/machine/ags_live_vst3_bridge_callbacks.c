@@ -80,8 +80,8 @@ ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge *liv
     
       live_vst3_bridge->ns_window = (gpointer) ns_window;
     
-      NSUInteger masks = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskTexturedBackground;
-      [ns_window setStyleMask:masks];
+//      NSUInteger masks = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskTexturedBackground;
+      //    [ns_window setStyleMask:masks];
 
       gint32 width = ags_vst_view_rect_get_width(view_rect);
       gint32 height = ags_vst_view_rect_get_height(view_rect);
@@ -104,9 +104,27 @@ ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge *liv
       ags_vst_iplug_view_attached(live_vst3_bridge->iplug_view,
 				  live_vst3_bridge->ns_view,
 				  "NSView");
+
+      live_vst3_bridge->flags |= AGS_LIVE_VST3_BRIDGE_UI_VISIBLE;
 #endif
     }
+  }else{
+#if defined(AGS_WITH_QUARTZ)
+    NSWindow *ns_window = live_vst3_bridge->ns_window;
+    
+    if(){
+      [ns_window orderOut:self];
+
+      live_vst3_bridge->flags &= (~AGS_LIVE_VST3_BRIDGE_UI_VISIBLE);
+    }else{
+      [ns_window makeKeyAndOrderFront:self];
+      [NSApp activateIgnoringOtherApps:YES];
+      
+      live_vst3_bridge->flags |= AGS_LIVE_VST3_BRIDGE_UI_VISIBLE;
+    }
+#endif
   }
+    
   
   //TODO:JK: implement me
 }
@@ -202,6 +220,10 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
 
   g_rec_mutex_unlock(base_plugin_mutex);
 
+  if(plugin_port == NULL){
+    return;
+  }
+  
   filename = NULL;
   effect = NULL;
 

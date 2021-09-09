@@ -53,6 +53,7 @@ typedef enum{
   AGS_LIVE_VST3_BRIDGE_DISPLAY_OUTPUT   = 1 <<  2,
   AGS_LIVE_VST3_BRIDGE_BULK_INPUT       = 1 <<  3,
   AGS_LIVE_VST3_BRIDGE_NO_UPDATE        = 1 <<  4,
+  AGS_LIVE_VST3_BRIDGE_UI_VISIBLE       = 1 <<  5,
 }AgsLiveVst3BridgeFlags;
 
 struct _AgsLiveVst3Bridge
