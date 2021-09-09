@@ -112,13 +112,13 @@ ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge *liv
 #if defined(AGS_WITH_QUARTZ)
     NSWindow *ns_window = live_vst3_bridge->ns_window;
     
-    if(){
-      [ns_window orderOut:self];
+    if((AGS_LIVE_VST3_BRIDGE_UI_VISIBLE & (live_vst3_bridge->flags)) != 0){
+      [ns_window orderOut:nil];
 
       live_vst3_bridge->flags &= (~AGS_LIVE_VST3_BRIDGE_UI_VISIBLE);
     }else{
-      [ns_window makeKeyAndOrderFront:self];
-      [NSApp activateIgnoringOtherApps:YES];
+      [ns_window orderBack:nil];
+      [ns_window makeKeyAndOrderFront:nil];
       
       live_vst3_bridge->flags |= AGS_LIVE_VST3_BRIDGE_UI_VISIBLE;
     }
@@ -205,7 +205,7 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
   
   GRecMutex *base_plugin_mutex;
   
-  if(live_vst3_bridge->vst3_plugin == NULL){
+  if(live_vst3_bridge == NULL || live_vst3_bridge->vst3_plugin == NULL){
     return(-1);
   }
 
@@ -216,12 +216,12 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
   g_rec_mutex_lock(base_plugin_mutex);
   
   plugin_port = g_hash_table_lookup(vst3_plugin->plugin_port,
-				    id);  
+				    GINT_TO_POINTER(id));  
 
   g_rec_mutex_unlock(base_plugin_mutex);
 
   if(plugin_port == NULL){
-    return;
+    return(-1);
   }
   
   filename = NULL;
@@ -239,8 +239,7 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
 	       NULL);
   
   /* live instrument ports */
-  value = value_normalized;
-  value = ags_vst_iedit_controller_normalized_param_to_plain(vst3_plugin->iedit_controller,
+  value = ags_vst_iedit_controller_normalized_param_to_plain(live_vst3_bridge->iedit_controller,
 							     id,
 							     value_normalized);
 
@@ -251,8 +250,24 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
   while(bulk_member != NULL){
     if(AGS_IS_BULK_MEMBER(bulk_member->data) &&
        !g_strcmp0(AGS_BULK_MEMBER(bulk_member->data)->specifier, specifier)){
-      ags_bulk_member_change_port(bulk_member->data,
-				  (gpointer) &value);
+      GList *start_list;
+
+      start_list = gtk_container_get_children(bulk_member->data);
+
+      if(AGS_IS_DIAL(start_list->data)){
+	gtk_adjustment_set_value(AGS_DIAL(start_list->data)->adjustment,
+				 value);
+      }else if(GTK_IS_SCALE(start_list->data)){
+	gtk_range_set_value(start_list->data,
+			    value);
+      }else if(GTK_IS_TOGGLE_BUTTON(start_list->data)){
+	gboolean active;
+
+	active = (value != 0.0) ? TRUE: FALSE;
+	
+	gtk_toggle_button_set_active((GtkToggleButton *) start_list->data,
+				     active);
+      }
 
       break;
     }

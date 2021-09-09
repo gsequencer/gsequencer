@@ -701,7 +701,7 @@ ags_vst3_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	id = ags_vst_parameter_info_get_param_id(info);
 
 	g_hash_table_insert(AGS_VST3_PLUGIN(base_plugin)->plugin_port,
-			    GUINT_TO_POINTER(id), plugin_port);
+			    GINT_TO_POINTER(id), current_plugin_port);
 
 	current_plugin_port->flags |= AGS_PLUGIN_PORT_CONTROL;
 	

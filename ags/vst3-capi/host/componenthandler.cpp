@@ -31,7 +31,7 @@ namespace Ags {
 
     ComponentHandler::ComponentHandler()
     {
-      this->handler = NULL;
+      this->handler = nullptr;
 
       this->handlerCount = 0;
       this->handlerIDCount = 0;
@@ -161,7 +161,7 @@ namespace Ags {
       }
 
       this->handler = (EventHandler *) realloc(this->handler,
-					       this->handlerCount * sizeof(EventHandler));
+					       (this->handlerCount + 1) * sizeof(EventHandler));
 
       this->handler[this->handlerCount].event_name = strdup(event_name);
       this->handler[this->handlerCount].callback = callback;      
