@@ -4752,20 +4752,20 @@ ags_xorg_application_context_loader_timeout(AgsXorgApplicationContext *xorg_appl
 				2)){
 	  continue;
 	}
-      }
       
-      plugin_path = g_strdup_printf("%s%c%s",
-				    vst3_path[0],
-				    G_DIR_SEPARATOR,
-				    filename);
+	plugin_path = g_strdup_printf("%s%c%s",
+				      vst3_path[0],
+				      G_DIR_SEPARATOR,
+				      filename);
       
-      if(g_file_test(plugin_path,
-		     G_FILE_TEST_IS_DIR) &&
-	 !g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
-			     filename,
-			     g_strcmp0)){
-	xorg_application_context->vst3_loader = g_list_prepend(xorg_application_context->vst3_loader,
-							       g_strdup(plugin_path));
+	if(g_file_test(plugin_path,
+		       G_FILE_TEST_IS_DIR) &&
+	   !g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
+			       filename,
+			       g_strcmp0)){
+	  xorg_application_context->vst3_loader = g_list_prepend(xorg_application_context->vst3_loader,
+								 g_strdup(plugin_path));
+	}
       }
       
       vst3_path++;

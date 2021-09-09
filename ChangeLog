@@ -1,3 +1,9 @@
+ags (3.11.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented plugin loader in ags_xorg_application_context.c
+	* implemented VST3 cocoa UI of AgsLiveVst3Bridge
+
 ags (3.11.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
