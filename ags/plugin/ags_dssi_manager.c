@@ -752,7 +752,7 @@ ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager)
 			  AGS_LIBRARY_SUFFIX) &&
 	 !g_list_find_custom(dssi_manager->dssi_plugin_blacklist,
 			     filename,
-			     strcmp)){
+			     g_strcmp0)){
 	ags_dssi_manager_load_file(dssi_manager,
 				   *dssi_path,
 				   filename);

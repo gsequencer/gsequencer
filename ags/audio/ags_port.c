@@ -1637,7 +1637,7 @@ ags_port_find_plugin_port(GList *port, GObject *plugin_port)
     /* check specifier */
     g_rec_mutex_lock(port_mutex);
 
-    success = (current_port->plugin_port== plugin_port) ? TRUE: FALSE;
+    success = (current_port->plugin_port == plugin_port) ? TRUE: FALSE;
 
     g_rec_mutex_unlock(port_mutex);
 

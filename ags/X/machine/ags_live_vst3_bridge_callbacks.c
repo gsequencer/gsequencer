@@ -183,7 +183,7 @@ ags_live_vst3_bridge_perform_edit_live_instrument_port(GList *start_recall, AgsP
   
   recall = start_recall;
 
-  while((recall = ags_recall_find_recall_id_with_effect(recall, NULL, filename, effect)) != NULL){
+  while(recall != NULL){
     if(AGS_IS_FX_VST3_AUDIO(recall->data) &&
        ags_fx_vst3_audio_test_flags(recall->data, AGS_FX_VST3_AUDIO_LIVE_INSTRUMENT)){
       GList *start_port, *port;
@@ -231,8 +231,6 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
   
   GRecMutex *base_plugin_mutex;
   
-  g_message("edit %d -> %f", id, value_normalized);
-
   if(live_vst3_bridge->vst3_plugin == NULL){
     return(-1);
   }
