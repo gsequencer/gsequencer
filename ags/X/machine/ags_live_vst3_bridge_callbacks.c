@@ -250,23 +250,25 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
   while(bulk_member != NULL){
     if(AGS_IS_BULK_MEMBER(bulk_member->data) &&
        !g_strcmp0(AGS_BULK_MEMBER(bulk_member->data)->specifier, specifier)){
-      GList *start_list;
+      GtkWidget *child_widget;
 
-      start_list = gtk_container_get_children(bulk_member->data);
+      child_widget = gtk_bin_get_child(bulk_member->data);
 
-      if(AGS_IS_DIAL(start_list->data)){
-	gtk_adjustment_set_value(AGS_DIAL(start_list->data)->adjustment,
-				 value);
-      }else if(GTK_IS_SCALE(start_list->data)){
-	gtk_range_set_value(start_list->data,
+      if(AGS_IS_DIAL(child_widget)){
+	gtk_dial_set_value((AgsDial *) child_widget,
+			   value);
+      }else if(GTK_IS_SCALE(child_widget)){
+	gtk_range_set_value((GtkRange *) child_widget,
 			    value);
-      }else if(GTK_IS_TOGGLE_BUTTON(start_list->data)){
+      }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
 	gboolean active;
 
 	active = (value != 0.0) ? TRUE: FALSE;
 	
-	gtk_toggle_button_set_active((GtkToggleButton *) start_list->data,
+	gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 				     active);
+      }else if(GTK_IS_BUTTON(child_widget)){
+	gtk_button_clicked((GtkButton *) child_widget);
       }
 
       break;
