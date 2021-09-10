@@ -926,6 +926,7 @@ ags_live_vst3_bridge_load(AgsLiveVst3Bridge *live_vst3_bridge)
   guint n_params;
   guint i, i_stop;
   guint j, j_stop;
+  gint32 parameter_count;
   AgsVstTResult val;
   
   GValue *value;
@@ -1016,6 +1017,8 @@ ags_live_vst3_bridge_load(AgsLiveVst3Bridge *live_vst3_bridge)
 
   g_strfreev(parameter_name);
   g_free(value);
+
+  live_vst3_bridge->iedit_controller_host_editing = g_value_get_pointer(value + 4);
   
   /*  */
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(live_vst3_bridge->program))));
@@ -1024,72 +1027,117 @@ ags_live_vst3_bridge_load(AgsLiveVst3Bridge *live_vst3_bridge)
   val = ags_vst_funknown_query_interface(vst3_plugin->iedit_controller,
 					 ags_vst_iunit_info_get_iid(), &iunit_info);
 
-  if(iunit_info == NULL){
-    return;
+  if(iunit_info != NULL){
+    program =
+      start_program = g_hash_table_get_keys(vst3_plugin->program);
+  
+    /* load ports */
+    model = gtk_list_store_new(6,
+			       G_TYPE_STRING,
+			       G_TYPE_STRING,
+			       G_TYPE_STRING,
+			       G_TYPE_UINT,
+			       G_TYPE_UINT,
+			       G_TYPE_UINT);
+  
+    while(program != NULL){
+      i_stop = ags_vst_iunit_info_get_program_list_count(iunit_info);
+
+      for(i = 0; i < i_stop; i++){
+	AgsVstProgramListInfo *program_list_info;
+
+	gchar *program_list_info_name;      
+
+	AgsVstProgramListID program_list_info_id;
+
+	program_list_info = ags_vst_program_list_info_alloc();
+
+	ags_vst_iunit_info_get_program_list_info(iunit_info,
+						 i,
+						 program_list_info);
+
+	j_stop = ags_vst_program_list_info_get_program_count(program_list_info);
+
+	program_list_info_id = ags_vst_program_list_info_get_id(program_list_info);
+
+	program_list_info_name = ags_vst_program_list_info_get_name(program_list_info);
+      
+	for(j = 0; j < j_stop; j++){
+	  gchar *program_name;
+
+	  program_name = NULL;
+	  ags_vst_iunit_info_get_program_name(iunit_info,
+					      program_list_info_id, j,
+					      &program_name);
+
+	  gtk_list_store_append(model, &iter);
+
+	  gtk_list_store_set(model, &iter,
+			     0, program->data,
+			     1, program_list_info_name,
+			     2, program_name,
+			     3, GPOINTER_TO_UINT(g_hash_table_lookup(vst3_plugin->program, program->data)),
+			     4, program_list_info_id,
+			     5, j,
+			     -1);
+	}
+      }
+    
+      program = program->next;
+    }
+
+    g_list_free(start_program);
+
+    gtk_combo_box_set_model(GTK_COMBO_BOX(live_vst3_bridge->program),
+			    GTK_TREE_MODEL(model));
   }
 
-  program =
-    start_program = g_hash_table_get_keys(vst3_plugin->program);
+  parameter_count = ags_vst_iedit_controller_get_parameter_count(live_vst3_bridge->iedit_controller);
+
+  live_vst3_bridge->flags |= AGS_LIVE_VST3_BRIDGE_NO_UPDATE;
   
-  /* load ports */
-  model = gtk_list_store_new(6,
-			     G_TYPE_STRING,
-			     G_TYPE_STRING,
-			     G_TYPE_STRING,
-			     G_TYPE_UINT,
-			     G_TYPE_UINT,
-			     G_TYPE_UINT);
-  
-  while(program != NULL){
-    i_stop = ags_vst_iunit_info_get_program_list_count(iunit_info);
+  for(i = 0; i < parameter_count; i++){
+    AgsVstParameterInfo *info;
+    AgsVstParamID param_id;
+    
+    guint flags;
+    gdouble default_normalized_value;
+    
+    info = ags_vst_parameter_info_alloc();
+    
+    ags_vst_iedit_controller_get_parameter_info(live_vst3_bridge->iedit_controller,
+						i, info);
 
-    for(i = 0; i < i_stop; i++){
-      AgsVstProgramListInfo *program_list_info;
+    flags = ags_vst_parameter_info_get_flags(info);
 
-      gchar *program_list_info_name;      
-
-      AgsVstProgramListID program_list_info_id;
-
-      program_list_info = ags_vst_program_list_info_alloc();
-
-      ags_vst_iunit_info_get_program_list_info(iunit_info,
-					       i,
-					       program_list_info);
-
-      j_stop = ags_vst_program_list_info_get_program_count(program_list_info);
-
-      program_list_info_id = ags_vst_program_list_info_get_id(program_list_info);
-
-      program_list_info_name = ags_vst_program_list_info_get_name(program_list_info);
+    if((AGS_VST_KIS_PROGRAM_CHANGE & (flags)) != 0){
+      ags_vst_parameter_info_free(info);
       
-      for(j = 0; j < j_stop; j++){
-	gchar *program_name;
+      continue;
+    }
 
-	program_name = NULL;
-	ags_vst_iunit_info_get_program_name(iunit_info,
-					    program_list_info_id, j,
-					    &program_name);
+    param_id = ags_vst_parameter_info_get_param_id(info);
+    
+    default_normalized_value = ags_vst_parameter_info_get_default_normalized_value(info);
 
-	gtk_list_store_append(model, &iter);
-
-	gtk_list_store_set(model, &iter,
-			   0, program->data,
-			   1, program_list_info_name,
-			   2, program_name,
-			   3, GPOINTER_TO_UINT(g_hash_table_lookup(vst3_plugin->program, program->data)),
-			   4, program_list_info_id,
-			   5, j,
-			   -1);
-      }
+    if(live_vst3_bridge->iedit_controller_host_editing != NULL){
+      ags_vst_iedit_controller_host_editing_begin_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
+								 param_id);
     }
     
-    program = program->next;
+    ags_vst_iedit_controller_set_param_normalized(live_vst3_bridge->iedit_controller,
+						  param_id,
+						  default_normalized_value);
+
+    if(live_vst3_bridge->iedit_controller_host_editing != NULL){
+      ags_vst_iedit_controller_host_editing_end_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
+							       param_id);
+    }
+    
+    ags_vst_parameter_info_free(info);
   }
-
-  g_list_free(start_program);
-
-  gtk_combo_box_set_model(GTK_COMBO_BOX(live_vst3_bridge->program),
-			  GTK_TREE_MODEL(model));
+  
+  live_vst3_bridge->flags &= (~AGS_LIVE_VST3_BRIDGE_NO_UPDATE);
 }
 
 /**

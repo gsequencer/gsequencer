@@ -205,7 +205,7 @@ ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_h
   
   GRecMutex *base_plugin_mutex;
   
-  if(live_vst3_bridge == NULL || live_vst3_bridge->vst3_plugin == NULL){
+  if(live_vst3_bridge == NULL || live_vst3_bridge->vst3_plugin == NULL || (AGS_LIVE_VST3_BRIDGE_NO_UPDATE & (live_vst3_bridge->flags)) != 0){
     return(-1);
   }
 

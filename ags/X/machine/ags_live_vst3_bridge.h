@@ -95,6 +95,7 @@ struct _AgsLiveVst3Bridge
 
   AgsVstIComponent *icomponent;
   AgsVstIEditController *iedit_controller;
+  AgsVstIEditControllerHostEditing *iedit_controller_host_editing;
 
   AgsVstComponentHandler *icomponent_handler;
 

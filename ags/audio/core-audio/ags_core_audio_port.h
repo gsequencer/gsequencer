@@ -135,6 +135,21 @@ struct _AgsCoreAudioPort
   volatile gboolean input_running;
   volatile gboolean is_empty;
   volatile guint queued;
+
+#ifdef AGS_WITH_CORE_AUDIO
+  AudioObjectPropertyAddress *output_property_address;
+  AudioObjectID output_device;
+  AudioDeviceIOProcID output_proc_id;
+
+  AudioObjectPropertyAddress *input_property_address;
+  AudioObjectID input_device; 
+  AudioDeviceIOProcID input_proc_id;
+#else
+  gpointer property_address;
+
+  gint64 output_device;
+  gint64 input_proc_id;
+#endif
 };
 
 struct _AgsCoreAudioPortClass

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -440,7 +440,8 @@ ags_apply_sound_config_launch(AgsTask *task)
 	ags_audio_recursive_run_stage(audio->data,
 				      sound_scope, staging_flags);
       
-	ags_thread_stop(audio_thread);
+	ags_audio_thread_set_processing(audio_thread,
+					FALSE);
       }
 
       /* output */
@@ -461,7 +462,8 @@ ags_apply_sound_config_launch(AgsTask *task)
 				   sound_scope);
 
 	if(channel_thread != NULL){
-	  ags_thread_stop(channel_thread);
+	  ags_channel_thread_set_processing(channel_thread,
+					    FALSE);
 	}
 
 	g_object_unref(channel);
@@ -488,7 +490,8 @@ ags_apply_sound_config_launch(AgsTask *task)
 				   sound_scope);
 
 	if(channel_thread != NULL){
-	  ags_thread_stop(channel_thread);
+	  ags_channel_thread_set_processing(channel_thread,
+					    FALSE);
 	}
 
 	g_object_unref(channel);
