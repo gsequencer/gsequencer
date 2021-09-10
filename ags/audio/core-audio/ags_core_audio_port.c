@@ -1200,15 +1200,14 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
   guint i;
   gboolean use_cache;
 
-#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
-  OSStatus retval;
-#else
 #ifdef AGS_WITH_CORE_AUDIO
+#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
+#else
   AUGraph *graph;
+#endif
   OSStatus retval;
 #else
   gpointer graph;
-#endif
 #endif
   
   GRecMutex *core_audio_client_mutex;
@@ -1250,6 +1249,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
   core_audio_client_mutex = AGS_CORE_AUDIO_CLIENT_GET_OBJ_MUTEX(core_audio_client);
 
   /* get graph */
+#ifdef AGS_WITH_CORE_AUDIO
 #if defined(AGS_CORE_AUDIO_PORT_USE_HW)
 #else
   g_rec_mutex_lock(core_audio_client_mutex);
@@ -1265,6 +1265,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
     
     return;
   }
+#endif
 #endif
   
   /* get core_audio port mutex */
@@ -1293,6 +1294,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
     ags_core_audio_port_set_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_AUDIO);
 
     if(is_output){
+#ifdef AGS_WITH_CORE_AUDIO
 #if defined(AGS_CORE_AUDIO_PORT_USE_HW)
       UInt32 property_size;
 
@@ -1353,7 +1355,6 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	g_message("core audio - unsupported word size");
       }
 
-#ifdef AGS_WITH_CORE_AUDIO
       if(!g_atomic_int_get(&ags_core_audio_port_output_run_loop_initialized)){
 	g_atomic_int_set(&(core_audio_port->output_running),
 			 TRUE);
@@ -1407,6 +1408,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 #endif
 #endif
     }else{
+#ifdef AGS_WITH_CORE_AUDIO
 #if defined(AGS_CORE_AUDIO_PORT_USE_HW)
 #else
       GThread *thread;
@@ -1445,7 +1447,6 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	g_message("core audio - unsupported word size");
       }
 
-#ifdef AGS_WITH_CORE_AUDIO
       if(!g_atomic_int_get(&ags_core_audio_port_input_run_loop_initialized)){
 	g_atomic_int_set(&(core_audio_port->input_running),
 			 TRUE);

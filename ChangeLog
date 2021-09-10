@@ -1,7 +1,7 @@
 ags (3.11.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	
+	* implemented VST3 Cocoa UI with default values
 
 ags (3.11.4)
 
