@@ -335,6 +335,8 @@ ags_instantiate_vst3_plugin_launch(AgsTask *task)
   guint buffer_size;
   guint samplerate;
   guint n_params;
+  guint parameter_count;
+  guint i;
   guint j, j_start, j_stop;
   guint k;
   gboolean is_live_instrument;
@@ -476,6 +478,49 @@ ags_instantiate_vst3_plugin_launch(AgsTask *task)
 	    
 	    ags_vst_iedit_controller_set_component_handler(channel_data->iedit_controller,
 							   channel_data->icomponent_handler);
+
+	    parameter_count = ags_vst_iedit_controller_get_parameter_count(channel_data->iedit_controller);
+  
+	    for(i = 0; i < parameter_count; i++){
+	      AgsVstParameterInfo *info;
+	      AgsVstParamID param_id;
+    
+	      guint flags;
+	      gdouble default_normalized_value;
+    
+	      info = ags_vst_parameter_info_alloc();
+    
+	      ags_vst_iedit_controller_get_parameter_info(channel_data->iedit_controller,
+							  i, info);
+
+	      flags = ags_vst_parameter_info_get_flags(info);
+
+	      if((AGS_VST_KIS_PROGRAM_CHANGE & (flags)) != 0){
+		ags_vst_parameter_info_free(info);
+      
+		continue;
+	      }
+
+	      param_id = ags_vst_parameter_info_get_param_id(info);
+    
+	      default_normalized_value = ags_vst_parameter_info_get_default_normalized_value(info);
+
+	      if(channel_data->iedit_controller_host_editing != NULL){
+		ags_vst_iedit_controller_host_editing_begin_edit_from_host(channel_data->iedit_controller_host_editing,
+									   param_id);
+	      }
+    
+	      ags_vst_iedit_controller_set_param_normalized(channel_data->iedit_controller,
+							    param_id,
+							    default_normalized_value);
+
+	      if(channel_data->iedit_controller_host_editing != NULL){
+		ags_vst_iedit_controller_host_editing_end_edit_from_host(channel_data->iedit_controller_host_editing,
+									 param_id);
+	      }
+    
+	      ags_vst_parameter_info_free(info);
+	    }	      
 	  }
 	}
 
@@ -504,6 +549,49 @@ ags_instantiate_vst3_plugin_launch(AgsTask *task)
 	    
 	      ags_vst_iedit_controller_set_component_handler(input_data->iedit_controller,
 							     input_data->icomponent_handler);
+
+	      parameter_count = ags_vst_iedit_controller_get_parameter_count(input_data->iedit_controller);
+  
+	      for(i = 0; i < parameter_count; i++){
+		AgsVstParameterInfo *info;
+		AgsVstParamID param_id;
+    
+		guint flags;
+		gdouble default_normalized_value;
+    
+		info = ags_vst_parameter_info_alloc();
+    
+		ags_vst_iedit_controller_get_parameter_info(input_data->iedit_controller,
+							    i, info);
+
+		flags = ags_vst_parameter_info_get_flags(info);
+
+		if((AGS_VST_KIS_PROGRAM_CHANGE & (flags)) != 0){
+		  ags_vst_parameter_info_free(info);
+      
+		  continue;
+		}
+
+		param_id = ags_vst_parameter_info_get_param_id(info);
+    
+		default_normalized_value = ags_vst_parameter_info_get_default_normalized_value(info);
+
+		if(input_data->iedit_controller_host_editing != NULL){
+		  ags_vst_iedit_controller_host_editing_begin_edit_from_host(input_data->iedit_controller_host_editing,
+									     param_id);
+		}
+    
+		ags_vst_iedit_controller_set_param_normalized(input_data->iedit_controller,
+							      param_id,
+							      default_normalized_value);
+
+		if(input_data->iedit_controller_host_editing != NULL){
+		  ags_vst_iedit_controller_host_editing_end_edit_from_host(input_data->iedit_controller_host_editing,
+									   param_id);
+		}
+    
+		ags_vst_parameter_info_free(info);
+	      }	      
 	    }
 	  }
 	}
@@ -590,6 +678,49 @@ ags_instantiate_vst3_plugin_launch(AgsTask *task)
       ags_vst_iedit_controller_set_component_handler(input_data->iedit_controller,
 						     input_data->icomponent_handler);	
 
+      parameter_count = ags_vst_iedit_controller_get_parameter_count(input_data->iedit_controller);
+  
+      for(i = 0; i < parameter_count; i++){
+	AgsVstParameterInfo *info;
+	AgsVstParamID param_id;
+    
+	guint flags;
+	gdouble default_normalized_value;
+    
+	info = ags_vst_parameter_info_alloc();
+    
+	ags_vst_iedit_controller_get_parameter_info(input_data->iedit_controller,
+						    i, info);
+
+	flags = ags_vst_parameter_info_get_flags(info);
+
+	if((AGS_VST_KIS_PROGRAM_CHANGE & (flags)) != 0){
+	  ags_vst_parameter_info_free(info);
+      
+	  continue;
+	}
+
+	param_id = ags_vst_parameter_info_get_param_id(info);
+    
+	default_normalized_value = ags_vst_parameter_info_get_default_normalized_value(info);
+
+	if(input_data->iedit_controller_host_editing != NULL){
+	  ags_vst_iedit_controller_host_editing_begin_edit_from_host(input_data->iedit_controller_host_editing,
+								     param_id);
+	}
+    
+	ags_vst_iedit_controller_set_param_normalized(input_data->iedit_controller,
+						      param_id,
+						      default_normalized_value);
+
+	if(input_data->iedit_controller_host_editing != NULL){
+	  ags_vst_iedit_controller_host_editing_end_edit_from_host(input_data->iedit_controller_host_editing,
+								   param_id);
+	}
+    
+	ags_vst_parameter_info_free(info);
+      }
+      
       if(recall_container != NULL){
 	g_object_unref(recall_container);
       }

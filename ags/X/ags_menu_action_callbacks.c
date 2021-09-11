@@ -88,6 +88,9 @@ static gboolean locale_initialized = FALSE;
 void ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint response, gpointer data);
 
 #if defined(AGS_WITH_VST3)
+void ags_menu_action_add_vst3_bridge_add_audio_callback(AgsTask *task,
+							AgsVst3Bridge *vst3_bridge);
+
 void ags_menu_action_add_live_vst3_bridge_add_audio_callback(AgsTask *task,
 							     AgsLiveVst3Bridge *live_vst3_bridge);
 #endif
@@ -872,90 +875,10 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
 				(AgsTask *) add_audio);
 }
 
-void
-ags_menu_action_add_vst3_bridge_callback(GtkWidget *menu_item, gpointer data)
-{
-#if defined(AGS_WITH_VST3)
-  AgsVst3Bridge *vst3_bridge;
-
-  AgsAddAudio *add_audio;
-
-  AgsApplicationContext *application_context;
-
-  gchar *filename, *effect;
-
-  filename = g_object_get_data((GObject *) menu_item,
-			       AGS_MENU_ITEM_FILENAME_KEY);
-  effect = g_object_get_data((GObject *) menu_item,
-			     AGS_MENU_ITEM_EFFECT_KEY);
-  
-  application_context = ags_application_context_get_instance();
-  
-  /* create vst3 bridge */
-  vst3_bridge = (AgsVst3Bridge *) ags_machine_util_new_vst3_bridge(filename, effect);
-  
-  add_audio = ags_add_audio_new(AGS_MACHINE(vst3_bridge)->audio);
-  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-				(AgsTask *) add_audio);
-#endif
-}
-
-void
-ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
-{
-  AgsLiveDssiBridge *live_dssi_bridge;
-
-  AgsAddAudio *add_audio;
-
-  AgsApplicationContext *application_context;
-  
-  gchar *filename, *effect;
-
-  filename = g_object_get_data((GObject *) menu_item,
-			       AGS_MENU_ITEM_FILENAME_KEY);
-  effect = g_object_get_data((GObject *) menu_item,
-			     AGS_MENU_ITEM_EFFECT_KEY);
-  
-  application_context = ags_application_context_get_instance();
-  
-  /* create live dssi bridge */
-  live_dssi_bridge = (AgsLiveDssiBridge *) ags_machine_util_new_live_dssi_bridge(filename, effect);
-  
-  add_audio = ags_add_audio_new(AGS_MACHINE(live_dssi_bridge)->audio);
-  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-				(AgsTask *) add_audio);
-}
-
-void
-ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
-{
-  AgsLiveLv2Bridge *live_lv2_bridge;
-
-  AgsAddAudio *add_audio;
-
-  AgsApplicationContext *application_context;
-
-  gchar *filename, *effect;
-    
-  filename = g_object_get_data((GObject *) menu_item,
-			       AGS_MENU_ITEM_FILENAME_KEY);
-  effect = g_object_get_data((GObject *) menu_item,
-			     AGS_MENU_ITEM_EFFECT_KEY);
-  
-  application_context = ags_application_context_get_instance();
-  
-  /* create live lv2 bridge */
-  live_lv2_bridge = (AgsLiveLv2Bridge *) ags_machine_util_new_live_lv2_bridge(filename, effect);
-    
-  add_audio = ags_add_audio_new(AGS_MACHINE(live_lv2_bridge)->audio);
-  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-				(AgsTask *) add_audio);
-}
-
 #if defined(AGS_WITH_VST3)
 void
-ags_menu_action_add_live_vst3_bridge_add_audio_callback(AgsTask *task,
-							AgsLiveVst3Bridge *live_vst3_bridge)
+ags_menu_action_add_vst3_bridge_add_audio_callback(AgsTask *task,
+						   AgsVst3Bridge *vst3_bridge)
 {
   AgsAudio *audio;
   AgsChannel *start_output, *output;
@@ -974,9 +897,9 @@ ags_menu_action_add_live_vst3_bridge_add_audio_callback(AgsTask *task,
 
   guint audio_channels;
 
-  audio = AGS_MACHINE(live_vst3_bridge)->audio;
+  audio = AGS_MACHINE(vst3_bridge)->audio;
   
-  vst3_plugin = live_vst3_bridge->vst3_plugin;
+  vst3_plugin = vst3_bridge->vst3_plugin;
 
   start_output = NULL;
   
@@ -1160,6 +1083,222 @@ ags_menu_action_add_live_vst3_bridge_add_audio_callback(AgsTask *task,
 	  
 	  g_object_unref(output);
 	}	
+      }
+    }
+    
+    list = list->next;
+  }
+    
+  if(playback_domain != NULL){
+    g_object_unref(playback_domain);
+  }
+
+  g_list_free_full(start_playback,
+		   (GDestroyNotify) g_object_unref);
+
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
+}
+#endif
+
+void
+ags_menu_action_add_vst3_bridge_callback(GtkWidget *menu_item, gpointer data)
+{
+#if defined(AGS_WITH_VST3)
+  AgsVst3Bridge *vst3_bridge;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+
+  gchar *filename, *effect;
+
+  filename = g_object_get_data((GObject *) menu_item,
+			       AGS_MENU_ITEM_FILENAME_KEY);
+  effect = g_object_get_data((GObject *) menu_item,
+			     AGS_MENU_ITEM_EFFECT_KEY);
+  
+  application_context = ags_application_context_get_instance();
+  
+  /* create vst3 bridge */
+  vst3_bridge = (AgsVst3Bridge *) ags_machine_util_new_vst3_bridge(filename, effect);
+  
+  add_audio = ags_add_audio_new(AGS_MACHINE(vst3_bridge)->audio);
+
+  g_signal_connect_after(add_audio, "launch",
+			 G_CALLBACK(ags_menu_action_add_vst3_bridge_add_audio_callback), vst3_bridge);
+
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+#endif
+}
+
+void
+ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
+{
+  AgsLiveDssiBridge *live_dssi_bridge;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  gchar *filename, *effect;
+
+  filename = g_object_get_data((GObject *) menu_item,
+			       AGS_MENU_ITEM_FILENAME_KEY);
+  effect = g_object_get_data((GObject *) menu_item,
+			     AGS_MENU_ITEM_EFFECT_KEY);
+  
+  application_context = ags_application_context_get_instance();
+  
+  /* create live dssi bridge */
+  live_dssi_bridge = (AgsLiveDssiBridge *) ags_machine_util_new_live_dssi_bridge(filename, effect);
+  
+  add_audio = ags_add_audio_new(AGS_MACHINE(live_dssi_bridge)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
+ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
+{
+  AgsLiveLv2Bridge *live_lv2_bridge;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+
+  gchar *filename, *effect;
+    
+  filename = g_object_get_data((GObject *) menu_item,
+			       AGS_MENU_ITEM_FILENAME_KEY);
+  effect = g_object_get_data((GObject *) menu_item,
+			     AGS_MENU_ITEM_EFFECT_KEY);
+  
+  application_context = ags_application_context_get_instance();
+  
+  /* create live lv2 bridge */
+  live_lv2_bridge = (AgsLiveLv2Bridge *) ags_machine_util_new_live_lv2_bridge(filename, effect);
+    
+  add_audio = ags_add_audio_new(AGS_MACHINE(live_lv2_bridge)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+#if defined(AGS_WITH_VST3)
+void
+ags_menu_action_add_live_vst3_bridge_add_audio_callback(AgsTask *task,
+							AgsLiveVst3Bridge *live_vst3_bridge)
+{
+  AgsAudio *audio;
+  AgsChannel *start_output, *output;
+  AgsPlaybackDomain *playback_domain;
+
+  AgsInstantiateVst3Plugin *instantiate_vst3_plugin;
+
+  AgsVst3Plugin *vst3_plugin;
+
+  AgsAudioThread *audio_thread;
+  AgsChannelThread *channel_thread;
+  
+  GList *start_playback, *playback;	
+  GList *start_play, *start_recall;
+  GList *start_list, *list;
+
+  guint audio_channels;
+
+  audio = AGS_MACHINE(live_vst3_bridge)->audio;
+  
+  vst3_plugin = live_vst3_bridge->vst3_plugin;
+
+  start_output = NULL;
+  
+  start_play = NULL;
+  start_recall = NULL;
+
+  playback_domain = NULL;
+
+  audio_channels = 0;
+  
+  g_object_get(audio,
+	       "audio-channels", &audio_channels,
+	       "output", &start_output,
+	       "play", &start_play,
+	       "recall", &start_recall,
+	       "playback-domain", &playback_domain,
+	       NULL);
+
+  list = 
+    start_list = g_list_concat(start_play,
+			       start_recall);
+
+  start_playback = NULL;
+	
+  g_object_get(playback_domain,
+	       "output-playback", &start_playback,
+	       NULL);
+
+  while(list != NULL){
+    if(AGS_IS_FX_VST3_AUDIO(list->data)){
+      AgsTaskLauncher *task_launcher;      
+
+      if(ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+	/*  */
+	if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_PLAYBACK)){
+	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							      AGS_SOUND_SCOPE_PLAYBACK);
+
+	  task_launcher = ags_audio_thread_get_task_launcher(audio_thread);
+	
+	  instantiate_vst3_plugin =  ags_instantiate_vst3_plugin_new(list->data,
+								     AGS_SOUND_SCOPE_PLAYBACK,
+								     -1,
+								     FALSE);
+	  ags_task_launcher_add_task(task_launcher,
+				     instantiate_vst3_plugin);
+
+	  g_object_unref(audio_thread);
+
+	  g_object_unref(task_launcher);
+	}
+	
+	/*  */
+	if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_SEQUENCER)){
+	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							      AGS_SOUND_SCOPE_SEQUENCER);
+
+	  task_launcher = ags_audio_thread_get_task_launcher(audio_thread);
+	
+	  instantiate_vst3_plugin =  ags_instantiate_vst3_plugin_new(list->data,
+								     AGS_SOUND_SCOPE_SEQUENCER,
+								     -1,
+								     FALSE);
+	  ags_task_launcher_add_task(task_launcher,
+				     instantiate_vst3_plugin);
+
+	  g_object_unref(audio_thread);
+
+	  g_object_unref(task_launcher);
+	}
+	
+	/*  */
+	if(ags_audio_test_ability_flags(audio, AGS_SOUND_ABILITY_NOTATION)){
+	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							      AGS_SOUND_SCOPE_NOTATION);
+
+	  task_launcher = ags_audio_thread_get_task_launcher(audio_thread);
+	
+	  instantiate_vst3_plugin =  ags_instantiate_vst3_plugin_new(list->data,
+								     AGS_SOUND_SCOPE_NOTATION,
+								     -1,
+								     FALSE);
+	  ags_task_launcher_add_task(task_launcher,
+				     instantiate_vst3_plugin);
+
+	  g_object_unref(audio_thread);
+
+	  g_object_unref(task_launcher);
+	}
       }
     }
     

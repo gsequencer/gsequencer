@@ -521,6 +521,9 @@ void
 ags_live_vst3_bridge_connect(AgsConnectable *connectable)
 {
   AgsLiveVst3Bridge *live_vst3_bridge;
+  AgsEffectBridge *effect_bridge;
+  AgsBulkMember *bulk_member;
+  GtkWidget *control;
 
   GList *list, *list_start;
 
@@ -541,6 +544,42 @@ ags_live_vst3_bridge_connect(AgsConnectable *connectable)
 
   g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_live_vst3_bridge_show_gui_callback), live_vst3_bridge);
+
+  g_list_free(list_start);
+
+  /* bulk member */
+  effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge);
+  
+  list =
+    list_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(effect_bridge->bulk_input)->grid);
+
+  while(list != NULL){
+    bulk_member = list->data;
+
+    control = gtk_bin_get_child(GTK_BIN(bulk_member));
+
+    if(bulk_member->widget_type == AGS_TYPE_DIAL){
+      g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			     G_CALLBACK(ags_live_vst3_bridge_dial_changed_callback), live_vst3_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_SCALE){
+      g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			     G_CALLBACK(ags_live_vst3_bridge_scale_changed_callback), live_vst3_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_SPIN_BUTTON){
+      g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			     G_CALLBACK(ags_live_vst3_bridge_spin_button_changed_callback), live_vst3_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_CHECK_BUTTON){
+      g_signal_connect_after(GTK_WIDGET(control), "clicked",
+			     G_CALLBACK(ags_live_vst3_bridge_check_button_clicked_callback), live_vst3_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
+      g_signal_connect_after(GTK_WIDGET(control), "clicked",
+			     G_CALLBACK(ags_live_vst3_bridge_toggle_button_clicked_callback), live_vst3_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_BUTTON){
+      g_signal_connect_after(GTK_WIDGET(control), "clicked",
+			     G_CALLBACK(ags_live_vst3_bridge_button_clicked_callback), live_vst3_bridge);
+    }
+
+    list = list->next;
+  }
 
   g_list_free(list_start);
 }

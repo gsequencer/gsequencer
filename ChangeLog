@@ -1,3 +1,10 @@
+ags (3.11.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing default values of ags-fx-vst3
+	* fixed missing VST3 plugin instantiate of AgsVst3Bridge
+	* fixed missing AgsLiveVst3Bridge effect bulk callback
+
 ags (3.11.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
