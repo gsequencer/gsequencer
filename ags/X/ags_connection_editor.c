@@ -241,17 +241,17 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
 
   /* GtkButton's in GtkDialog->action_area  */
-  connection_editor->apply = (GtkButton *) gtk_button_new_with_label(i18n("_Apply"));
+  connection_editor->apply = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Apply"));
   gtk_dialog_add_action_widget((GtkDialog *) connection_editor,
 			       (GtkWidget *) connection_editor->apply,
 			       GTK_RESPONSE_NONE);
 
-  connection_editor->ok = (GtkButton *) gtk_button_new_with_label(i18n("_OK"));
+  connection_editor->ok = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_OK"));
   gtk_dialog_add_action_widget((GtkDialog *) connection_editor,
 			       (GtkWidget *) connection_editor->ok,
 			       GTK_RESPONSE_NONE);
 
-  connection_editor->cancel = (GtkButton *) gtk_button_new_with_label(i18n("_Cancel"));
+  connection_editor->cancel = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Cancel"));
   gtk_dialog_add_action_widget((GtkDialog *) connection_editor,
 			       (GtkWidget *) connection_editor->cancel,
 			       GTK_RESPONSE_NONE);

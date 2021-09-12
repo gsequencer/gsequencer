@@ -292,7 +292,7 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 		     FALSE, FALSE,
 		     0);
 
-  audiorec->open = (GtkButton *) gtk_button_new_with_label(i18n("_Open"));
+  audiorec->open = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Open"));
   gtk_box_pack_start(filename_hbox,
 		     (GtkWidget *) audiorec->open,
 		     FALSE, FALSE,
