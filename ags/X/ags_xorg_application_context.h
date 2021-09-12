@@ -42,6 +42,8 @@ G_BEGIN_DECLS
 #define AGS_XORG_VERSION "3.0.0"
 #define AGS_XORG_BUILD_ID "Thu Nov  7 01:44:21 UTC 2019"
 
+#define AGS_XORG_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL (1000 / 25)
+
 typedef struct _AgsXorgApplicationContext AgsXorgApplicationContext;
 typedef struct _AgsXorgApplicationContextClass AgsXorgApplicationContextClass;
 
@@ -114,6 +116,23 @@ struct _AgsXorgApplicationContext
   GtkWidget *composite_editor;
 
   GtkWidget *navigation;
+
+  gboolean start_loader;
+  
+  gboolean setup_ready;
+  gboolean loader_ready;
+  
+  gboolean ladspa_loading;
+  gboolean dssi_loading;
+  gboolean lv2_loading;
+  gboolean vst3_loading;
+  
+  GList *ladspa_loader;
+  GList *dssi_loader;
+  GList *lv2_loader;
+  GList *vst3_loader;
+  
+  AgsLv2TurtleScanner *lv2_turtle_scanner;
 };
 
 struct _AgsXorgApplicationContextClass
@@ -125,6 +144,8 @@ GType ags_xorg_application_context_get_type();
 
 gboolean ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *xorg_application_context);
 gboolean ags_xorg_application_context_task_timeout(AgsXorgApplicationContext *xorg_application_context);
+
+gboolean ags_xorg_application_context_loader_timeout(AgsXorgApplicationContext *xorg_application_context);
 
 AgsXorgApplicationContext* ags_xorg_application_context_new();
 

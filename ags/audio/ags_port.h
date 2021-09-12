@@ -134,6 +134,7 @@ void ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *val
 void ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value);
 
 GList* ags_port_find_specifier(GList *port, gchar *specifier);
+GList* ags_port_find_plugin_port(GList *port, GObject *plugin_port);
 
 void ags_port_add_automation(AgsPort *port,
 			     GObject *automation);

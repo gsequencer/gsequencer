@@ -66,15 +66,17 @@ HostApplication::HostApplication()
 {
   FUNKNOWN_CTOR
 
-    mPlugInterfaceSupport = owned (NEW PlugInterfaceSupport);
+    mPlugInterfaceSupport = owned (NEW Steinberg::Vst::PlugInterfaceSupport);
 }
 
 //-----------------------------------------------------------------------------
 Steinberg::tresult PLUGIN_API HostApplication::getName (Steinberg::Vst::String128 name)
 {
+#if 0
   Steinberg::String str("Advanced Gtk+ Sequencer VST3 HostApplication");
 
   str.copyTo16(name, 0, 127);
+#endif
   
   return Steinberg::kResultTrue;
 }

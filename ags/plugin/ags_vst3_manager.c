@@ -112,6 +112,9 @@ ags_vst3_manager_class_init(AgsVst3ManagerClass *vst3_manager)
 void
 ags_vst3_manager_init(AgsVst3Manager *vst3_manager)
 {
+  AgsVstHostContext *host_context;
+  AgsVstPlugInterfaceSupport *plug_interface_support;
+  
   /* vst3 manager mutex */
   g_rec_mutex_init(&(vst3_manager->obj_mutex));
 
@@ -232,6 +235,22 @@ ags_vst3_manager_init(AgsVst3Manager *vst3_manager)
 #endif
     }
   }
+
+  host_context = ags_vst_host_context_get_instance();
+
+  plug_interface_support = ags_vst_host_context_get_plug_interface_support(host_context);
+
+  ags_vst_plug_interface_support_add_plug_interface_supported(plug_interface_support,
+							      ags_vst_icomponent_get_iid());
+
+  ags_vst_plug_interface_support_add_plug_interface_supported(plug_interface_support,
+							      ags_vst_iaudio_processor_get_iid());
+
+  ags_vst_plug_interface_support_add_plug_interface_supported(plug_interface_support,
+							      ags_vst_iedit_controller_get_iid());
+
+  ags_vst_plug_interface_support_add_plug_interface_supported(plug_interface_support,
+							      ags_vst_iedit_controller_host_editing_get_iid());
 }
 
 void
@@ -896,6 +915,7 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
 #endif
 				  sysname);	
 #endif
+
       if(g_file_test(arch_path,
 		     G_FILE_TEST_IS_DIR)){
 	error = NULL;
@@ -925,7 +945,7 @@ ags_vst3_manager_load_default_directory(AgsVst3Manager *vst3_manager)
 			      AGS_LIBRARY_SUFFIX) &&
 	     !g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
 				 arch_filename,
-				 strcmp)){
+				 g_strcmp0)){
 	    ags_vst3_manager_load_file(vst3_manager,
 				       arch_path,
 				       arch_filename);

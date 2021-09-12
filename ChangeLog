@@ -1,3 +1,39 @@
+ags (3.11.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed functional tests launch application context
+	* fixed AgsDevout's AgsSoundcardThread started while playback initialization failed.
+	* fixed missing plugins in context menu
+
+ags (3.11.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing default values of ags-fx-vst3
+	* fixed missing VST3 plugin instantiate of AgsVst3Bridge
+	* fixed missing AgsLiveVst3Bridge effect bulk callback
+
+ags (3.11.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented VST3 Cocoa UI with default values
+
+ags (3.11.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented plugin loader in ags_xorg_application_context.c
+	* implemented VST3 cocoa UI of AgsLiveVst3Bridge
+
+ags (3.11.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags-fx-vst3 by initializing default with stereo arrangement
+
+ags (3.11.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed compilation error if vst3 disabled
+	* fixed restore from XML with vst3 bridges
+
 ags (3.11.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

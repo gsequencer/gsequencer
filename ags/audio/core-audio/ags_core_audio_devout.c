@@ -40,6 +40,8 @@
 #include <ags/config.h>
 #include <ags/i18n.h>
 
+#define AGS_CORE_AUDIO_PORT_USE_HW (1)
+
 void ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout);
 void ags_core_audio_devout_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_core_audio_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard);
@@ -2188,6 +2190,8 @@ ags_core_audio_devout_port_free(AgsSoundcard *soundcard)
   core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
 
   /* check use cache */
+#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
+#else
   g_rec_mutex_lock(core_audio_port_mutex);
 
   cache_buffer_size = core_audio_port->cache_buffer_size;
@@ -2239,7 +2243,8 @@ ags_core_audio_devout_port_free(AgsSoundcard *soundcard)
   }
 
   g_rec_mutex_unlock(core_audio_port_mutex);
-
+#endif
+  
   /*  */
   g_rec_mutex_lock(core_audio_devout_mutex);
 

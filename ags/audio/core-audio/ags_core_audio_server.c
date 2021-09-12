@@ -1164,10 +1164,13 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
 
   g_rec_mutex_unlock(core_audio_client_mutex);
 
+#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
+#else
   if(graph == NULL){
     g_warning("ags_core_audio_server.c - can't open core audio client");
   }
-
+#endif
+  
   soundcard = NULL;
 
   /* the soundcard */
@@ -1441,10 +1444,13 @@ ags_core_audio_server_register_sequencer(AgsSoundServer *sound_server,
 
   g_rec_mutex_unlock(core_audio_client_mutex);
 
+#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
+#else
   if(graph == NULL){
     g_warning("ags_core_audio_server.c - can't open core audio client");
   }
-
+#endif
+  
   core_audio_midiin = ags_core_audio_midiin_new();
 
   str = g_strdup_printf("ags-core-audio-midiin-%d",
@@ -1643,10 +1649,13 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
 
   g_rec_mutex_unlock(core_audio_client_mutex);
 
+#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
+#else
   if(graph == NULL){
     g_warning("ags_core_audio_server.c - can't open core audio client");
   }
-
+#endif
+  
   /* the soundcard */
   core_audio_devout = ags_core_audio_devout_new();
   g_object_set(AGS_CORE_AUDIO_DEVOUT(core_audio_devout),

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,6 +30,8 @@
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
 
 #include <ags/i18n.h>
+
+#define AGS_CORE_AUDIO_PORT_USE_HW (1)
 
 void ags_core_audio_client_class_init(AgsCoreAudioClientClass *core_audio_client);
 void ags_core_audio_client_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -493,10 +495,13 @@ ags_core_audio_client_finalize(GObject *gobject)
   }
 
   /* core audio graph */
+#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
+#else
   if(core_audio_client->graph != NULL){
     free(core_audio_client->graph);
   }
-
+#endif
+  
   /* device */
   if(core_audio_client->device != NULL){
     g_list_free_full(core_audio_client->device,
@@ -911,6 +916,8 @@ ags_core_audio_client_open(AgsCoreAudioClient *core_audio_client,
   /* check already open */
   g_rec_mutex_lock(core_audio_client_mutex);
 
+#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
+#else
   if(core_audio_client->graph != NULL){
     g_rec_mutex_unlock(core_audio_client_mutex);
 
@@ -918,7 +925,8 @@ ags_core_audio_client_open(AgsCoreAudioClient *core_audio_client,
     
     return;
   } 
-
+#endif
+  
   core_audio_server = core_audio_client->core_audio_server;
   
   g_rec_mutex_unlock(core_audio_client_mutex);
@@ -932,6 +940,8 @@ ags_core_audio_client_open(AgsCoreAudioClient *core_audio_client,
   /* get core_audio server mutex */
   core_audio_server_mutex = AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(core_audio_server);
 
+#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
+#else
 #ifdef AGS_WITH_CORE_AUDIO
   core_audio_client->graph = (AUGraph *) malloc(sizeof(AUGraph));
   memset(core_audio_client->graph, 0, sizeof(AUGraph));
@@ -943,6 +953,7 @@ ags_core_audio_client_open(AgsCoreAudioClient *core_audio_client,
     
     core_audio_client->graph = NULL;
   }
+#endif
 #endif
 }
 
@@ -957,12 +968,15 @@ ags_core_audio_client_open(AgsCoreAudioClient *core_audio_client,
 void
 ags_core_audio_client_activate(AgsCoreAudioClient *core_audio_client)
 {
+#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
+#else
 #ifdef AGS_WITH_CORE_AUDIO
   AUGraph *graph;
 #else
   gpointer graph;
 #endif
-
+#endif
+  
   GList *port_start, *port;
   
   int ret;
@@ -976,6 +990,11 @@ ags_core_audio_client_activate(AgsCoreAudioClient *core_audio_client)
   /* get core_audio client mutex */
   core_audio_client_mutex = AGS_CORE_AUDIO_CLIENT_GET_OBJ_MUTEX(core_audio_client);
 
+#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
+  if(ags_core_audio_client_test_flags(core_audio_client, AGS_CORE_AUDIO_CLIENT_ACTIVATED)){
+    return;
+  }  
+#else
   /* get graph */
   g_rec_mutex_lock(core_audio_client_mutex);
 
@@ -987,7 +1006,8 @@ ags_core_audio_client_activate(AgsCoreAudioClient *core_audio_client)
      graph == NULL){
     return;
   }  
-
+#endif
+  
   g_rec_mutex_lock(core_audio_client_mutex);
 
   port =
@@ -1028,12 +1048,15 @@ ags_core_audio_client_activate(AgsCoreAudioClient *core_audio_client)
 void
 ags_core_audio_client_deactivate(AgsCoreAudioClient *core_audio_client)
 {
+#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
+#else
 #ifdef AGS_WITH_CORE_AUDIO
   AUGraph *graph;
 #else
   gpointer graph;
 #endif
-
+#endif
+  
   GRecMutex *core_audio_client_mutex;
 
   if(!AGS_IS_CORE_AUDIO_CLIENT(core_audio_client)){
@@ -1043,6 +1066,8 @@ ags_core_audio_client_deactivate(AgsCoreAudioClient *core_audio_client)
   /* get core_audio client mutex */
   core_audio_client_mutex = AGS_CORE_AUDIO_CLIENT_GET_OBJ_MUTEX(core_audio_client);
 
+#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
+#else
   /* get graph */
   g_rec_mutex_lock(core_audio_client_mutex);
 
@@ -1056,6 +1081,7 @@ ags_core_audio_client_deactivate(AgsCoreAudioClient *core_audio_client)
 
 #ifdef AGS_WITH_CORE_AUDIO
   AUGraphStop(graph);
+#endif
 #endif
   
   /* set graph */

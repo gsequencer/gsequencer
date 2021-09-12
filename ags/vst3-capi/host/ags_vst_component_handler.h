@@ -17,26 +17,26 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_HOST_CONTEXT_H__
-#define __AGS_VST_HOST_CONTEXT_H__
+#ifndef __AGS_VST_COMPONENT_HANDLER_H__
+#define __AGS_VST_COMPONENT_HANDLER_H__
 
 #include <glib.h>
-
-#include <ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_plug_interface_support.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-  typedef struct HostContext AgsVstHostContext;
-  
-  AgsVstHostContext* ags_vst_host_context_get_instance();
-  AgsVstHostContext* ags_vst_host_context_new();
+  typedef struct ComponentHandler AgsVstComponentHandler;
 
-  AgsVstPlugInterfaceSupport* ags_vst_host_context_get_plug_interface_support(AgsVstHostContext *host_context);
+  AgsVstComponentHandler* ags_vst_component_handler_new();
+  
+  void ags_vst_component_handler_destroy(AgsVstComponentHandler *component_handler);
+
+  int ags_vst_component_handler_connect_handler(AgsVstComponentHandler *component_handler, char *event_name, void *callback, void *data);
+  void ags_vst_component_handler_disconnect_handler(AgsVstComponentHandler *component_handler, int handler_id);
   
 #ifdef __cplusplus
 }
 #endif
 
-#endif /*__AGS_VST_HOST_CONTEXT_H__*/
+#endif /*__AGS_VST_COMPONENT_HANDLER_H__*/

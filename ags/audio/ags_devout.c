@@ -2946,6 +2946,8 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 		    "unable to open pcm device: %s",
 		    str);
       }
+
+      g_free(device_fixup);
       
       return;
     }

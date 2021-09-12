@@ -40,6 +40,27 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.11.7" date="2021-09-11">
+      <description>
+	<p>
+	  Fixed soundcard thread left in error status with alsa after
+	  intialization failed.
+	</p>
+      </description>
+    </release>
+
+    <release version="3.11.4" date="2021-09-09">
+      <description>
+	<p>Improved plugin loading from AgsXorgApplicationContext by timeout.</p>
+      </description>
+    </release>
+
+    <release version="3.11.2" date="2021-09-07">
+      <description>
+	<p>Fixed restore from XML.</p>
+      </description>
+    </release>
+ 
     <release version="3.11.1" date="2021-09-07">
       <description>
 	<p>Fixed SIGSEGV after destroy AgsLiveVstBridge.</p>

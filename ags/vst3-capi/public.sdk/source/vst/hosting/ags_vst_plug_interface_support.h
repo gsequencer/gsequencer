@@ -17,26 +17,27 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_HOST_CONTEXT_H__
-#define __AGS_VST_HOST_CONTEXT_H__
+#ifndef __AGS_VST_PLUG_INTERFACE_SUPPORT_H__
+#define __AGS_VST_PLUG_INTERFACE_SUPPORT_H__
 
-#include <glib.h>
-
-#include <ags/vst3-capi/public.sdk/source/vst/hosting/ags_vst_plug_interface_support.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_iplug_interface_support.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-  typedef struct HostContext AgsVstHostContext;
-  
-  AgsVstHostContext* ags_vst_host_context_get_instance();
-  AgsVstHostContext* ags_vst_host_context_new();
+  typedef struct PlugInterfaceSupport AgsVstPlugInterfaceSupport;
 
-  AgsVstPlugInterfaceSupport* ags_vst_host_context_get_plug_interface_support(AgsVstHostContext *host_context);
+  AgsVstPlugInterfaceSupport* ags_vst_plug_interface_support_new();
+
+  void ags_vst_plug_interface_support_add_plug_interface_supported(AgsVstPlugInterfaceSupport *plug_interface_support,
+								   AgsVstTUID *tuid);
+
+  gboolean ags_vst_plug_interface_support_remove_plug_interface_supported(AgsVstPlugInterfaceSupport *plug_interface_support,
+									  AgsVstTUID *tuid);
   
 #ifdef __cplusplus
 }
 #endif
 
-#endif /*__AGS_VST_HOST_CONTEXT_H__*/
+#endif /*__AGS_VST_PLUG_INTERFACE_SUPPORT_H__*/

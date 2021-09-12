@@ -38,4 +38,9 @@ extern "C" {
     return((AgsVstHostContext *) new Steinberg::Vst::HostApplication());
   }
 
+  AgsVstPlugInterfaceSupport* ags_vst_host_context_get_plug_interface_support(AgsVstHostContext *host_context)
+  {
+    return((AgsVstPlugInterfaceSupport *) ((Steinberg::Vst::HostApplication *) host_context)->getPlugInterfaceSupport());
+  }
+  
 }

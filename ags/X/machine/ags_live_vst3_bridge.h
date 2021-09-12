@@ -53,6 +53,7 @@ typedef enum{
   AGS_LIVE_VST3_BRIDGE_DISPLAY_OUTPUT   = 1 <<  2,
   AGS_LIVE_VST3_BRIDGE_BULK_INPUT       = 1 <<  3,
   AGS_LIVE_VST3_BRIDGE_NO_UPDATE        = 1 <<  4,
+  AGS_LIVE_VST3_BRIDGE_UI_VISIBLE       = 1 <<  5,
 }AgsLiveVst3BridgeFlags;
 
 struct _AgsLiveVst3Bridge
@@ -91,6 +92,21 @@ struct _AgsLiveVst3Bridge
   GtkBox *vbox;
   
   GtkComboBox *program;
+
+  AgsVstIComponent *icomponent;
+  AgsVstIEditController *iedit_controller;
+  AgsVstIEditControllerHostEditing *iedit_controller_host_editing;
+
+  AgsVstComponentHandler *icomponent_handler;
+
+  int peform_edit_handler;
+  
+  AgsVstIPlugView *iplug_view;
+
+  gpointer ns_window;
+  gpointer ns_view;
+  
+  GtkMenu *vst3_menu;
 };
 
 struct _AgsLiveVst3BridgeClass

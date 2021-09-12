@@ -756,7 +756,7 @@ ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
 			  AGS_LIBRARY_SUFFIX) &&
 	 !g_list_find_custom(ladspa_manager->ladspa_plugin_blacklist,
 			     filename,
-			     strcmp)){
+			     g_strcmp0)){
 	ags_ladspa_manager_load_file(ladspa_manager,
 				     *ladspa_path,
 				     filename);

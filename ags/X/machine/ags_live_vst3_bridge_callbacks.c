@@ -25,6 +25,13 @@
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
 
+#include <ags/libags-vst.h>
+
+#if defined(AGS_WITH_QUARTZ)
+#import <CoreFoundation/CoreFoundation.h>
+#import <Cocoa/Cocoa.h>
+#endif
+
 void
 ags_live_vst3_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLiveVst3Bridge *live_vst3_bridge)
 {
@@ -49,6 +56,77 @@ ags_live_vst3_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_paren
 				       AGS_TYPE_LIVE_VST3_BRIDGE);
 
   g_free(str);
+}
+
+void
+ags_live_vst3_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveVst3Bridge *live_vst3_bridge)
+{
+  AgsVst3Plugin *vst3_plugin;
+
+  vst3_plugin = live_vst3_bridge->vst3_plugin;
+
+  if(live_vst3_bridge->iplug_view == NULL){
+    live_vst3_bridge->iplug_view = ags_vst_iedit_controller_create_view(live_vst3_bridge->iedit_controller,
+									"editor");
+
+    if(live_vst3_bridge->iplug_view != NULL){
+#if defined(AGS_WITH_QUARTZ)
+      AgsVstViewRect *view_rect = ags_vst_view_rect_alloc();
+
+      ags_vst_iplug_view_check_size_constraint(live_vst3_bridge->iplug_view,
+					       view_rect);
+      
+      NSWindow *ns_window = [[NSWindow alloc] init];
+    
+      live_vst3_bridge->ns_window = (gpointer) ns_window;
+    
+//      NSUInteger masks = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskTexturedBackground;
+      //    [ns_window setStyleMask:masks];
+
+      gint32 width = ags_vst_view_rect_get_width(view_rect);
+      gint32 height = ags_vst_view_rect_get_height(view_rect);
+      
+      NSView *view = [[NSView alloc] initWithFrame:NSMakeRect(0.0, 0.0, (CGFloat) width, (CGFloat) height)];
+
+      live_vst3_bridge->ns_view = (gpointer) view;
+
+      view.layer.backgroundColor = [[NSColor yellowColor] CGColor];
+
+      [ns_window.contentView addSubview:view];
+
+      NSRect rect;
+
+      rect.size.width = width;
+      rect.size.height = height;
+
+      [ns_window setFrame:rect display:YES];
+
+      ags_vst_iplug_view_attached(live_vst3_bridge->iplug_view,
+				  live_vst3_bridge->ns_view,
+				  "NSView");
+
+      live_vst3_bridge->flags |= AGS_LIVE_VST3_BRIDGE_UI_VISIBLE;
+#endif
+    }
+  }else{
+#if defined(AGS_WITH_QUARTZ)
+    NSWindow *ns_window = live_vst3_bridge->ns_window;
+    
+    if((AGS_LIVE_VST3_BRIDGE_UI_VISIBLE & (live_vst3_bridge->flags)) != 0){
+      [ns_window orderOut:nil];
+
+      live_vst3_bridge->flags &= (~AGS_LIVE_VST3_BRIDGE_UI_VISIBLE);
+    }else{
+      [ns_window orderBack:nil];
+      [ns_window makeKeyAndOrderFront:nil];
+      
+      live_vst3_bridge->flags |= AGS_LIVE_VST3_BRIDGE_UI_VISIBLE;
+    }
+#endif
+  }
+    
+  
+  //TODO:JK: implement me
 }
 
 void
@@ -110,4 +188,453 @@ ags_live_vst3_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveVst
     g_list_free_full(start_recall,
 		     g_object_unref);
   }
+}
+
+AgsVstTResult
+ags_live_vst3_bridge_perform_edit_callback(AgsVstIComponentHandler *icomponent_handler, AgsVstParamID id, AgsVstParamValue value_normalized, AgsLiveVst3Bridge *live_vst3_bridge)
+{
+  AgsVst3Plugin *vst3_plugin;
+  AgsPluginPort *plugin_port;
+
+  GList *start_bulk_member, *bulk_member;
+  
+  gchar *filename, *effect;
+  gchar *specifier;
+
+  gdouble value;
+  
+  GRecMutex *base_plugin_mutex;
+  
+  if(live_vst3_bridge == NULL || live_vst3_bridge->vst3_plugin == NULL || (AGS_LIVE_VST3_BRIDGE_NO_UPDATE & (live_vst3_bridge->flags)) != 0){
+    return(-1);
+  }
+
+  vst3_plugin = live_vst3_bridge->vst3_plugin;
+
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(vst3_plugin);
+
+  g_rec_mutex_lock(base_plugin_mutex);
+  
+  plugin_port = g_hash_table_lookup(vst3_plugin->plugin_port,
+				    GINT_TO_POINTER(id));  
+
+  g_rec_mutex_unlock(base_plugin_mutex);
+
+  if(plugin_port == NULL){
+    return(-1);
+  }
+  
+  filename = NULL;
+  effect = NULL;
+
+  specifier = NULL;
+  
+  g_object_get(vst3_plugin,
+	       "filename", &filename,
+	       "effect", &effect,
+	       NULL);
+
+  g_object_get(plugin_port,
+	       "port-name", &specifier,
+	       NULL);
+  
+  /* live instrument ports */
+  value = ags_vst_iedit_controller_normalized_param_to_plain(live_vst3_bridge->iedit_controller,
+							     id,
+							     value_normalized);
+
+  start_bulk_member = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_vst3_bridge)->bridge)->bulk_input)->grid);
+
+  bulk_member = start_bulk_member;
+
+  while(bulk_member != NULL){
+    if(AGS_IS_BULK_MEMBER(bulk_member->data) &&
+       !g_strcmp0(AGS_BULK_MEMBER(bulk_member->data)->specifier, specifier)){
+      GtkWidget *child_widget;
+
+      child_widget = ags_bulk_member_get_widget(bulk_member->data);
+
+      if(AGS_IS_DIAL(child_widget)){
+	ags_dial_set_value((AgsDial *) child_widget,
+			   value);
+      }else if(GTK_IS_SCALE(child_widget)){
+	gtk_range_set_value((GtkRange *) child_widget,
+			    value);
+      }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+	gboolean active;
+
+	active = (value != 0.0) ? TRUE: FALSE;
+	
+	gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
+				     active);
+      }else if(GTK_IS_BUTTON(child_widget)){
+	gtk_button_clicked((GtkButton *) child_widget);
+      }
+
+      break;
+    }
+    
+    bulk_member = bulk_member->next;
+  }
+
+  g_list_free(start_bulk_member);
+  
+  g_free(filename);
+  g_free(effect);
+
+  g_free(specifier);
+  
+  return(0);
+}
+
+void
+ags_live_vst3_bridge_dial_changed_callback(GtkWidget *dial, AgsLiveVst3Bridge *live_vst3_bridge)
+{
+  AgsBulkMember *bulk_member;
+  GtkAdjustment *adjustment;
+
+  AgsVstParameterInfo *info;
+  AgsVstParamID param_id;  
+
+  gint32 port_index;
+  gdouble val;
+  gdouble value_normalized;
+
+  if((AGS_LIVE_VST3_BRIDGE_NO_UPDATE & (live_vst3_bridge->flags)) != 0){
+    return;
+  }
+
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(dial,
+							  AGS_TYPE_BULK_MEMBER);
+
+  g_object_get(dial,
+	       "adjustment", &adjustment,
+	       NULL);
+
+  port_index = bulk_member->port_index;
+
+  val = gtk_adjustment_get_value(adjustment);
+
+  info = ags_vst_parameter_info_alloc();
+    
+  ags_vst_iedit_controller_get_parameter_info(live_vst3_bridge->iedit_controller,
+					      port_index, info);
+  
+  param_id = ags_vst_parameter_info_get_param_id(info);
+
+  value_normalized = ags_vst_iedit_controller_plain_param_to_normalized(live_vst3_bridge->iedit_controller,
+									param_id,
+									val);
+  
+  live_vst3_bridge->flags |= AGS_LIVE_VST3_BRIDGE_NO_UPDATE;
+
+  if(live_vst3_bridge->iedit_controller_host_editing != NULL){
+    ags_vst_iedit_controller_host_editing_begin_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
+							       param_id);
+  }
+    
+  ags_vst_iedit_controller_set_param_normalized(live_vst3_bridge->iedit_controller,
+						param_id,
+						value_normalized);
+
+  if(live_vst3_bridge->iedit_controller_host_editing != NULL){
+    ags_vst_iedit_controller_host_editing_end_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
+							     param_id);
+  }
+  
+  live_vst3_bridge->flags &= (~AGS_LIVE_VST3_BRIDGE_NO_UPDATE);
+
+  ags_vst_parameter_info_free(info);
+}
+
+void
+ags_live_vst3_bridge_scale_changed_callback(GtkWidget *scale, AgsLiveVst3Bridge *live_vst3_bridge)
+{
+  AgsBulkMember *bulk_member;
+  GtkAdjustment *adjustment;
+
+  AgsVstParameterInfo *info;
+  AgsVstParamID param_id;  
+
+  gint32 port_index;
+  gdouble val;
+  gdouble value_normalized;
+
+  if((AGS_LIVE_VST3_BRIDGE_NO_UPDATE & (live_vst3_bridge->flags)) != 0){
+    return;
+  }
+
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(scale,
+							  AGS_TYPE_BULK_MEMBER);
+
+  g_object_get(scale,
+	       "adjustment", &adjustment,
+	       NULL);
+
+  port_index = bulk_member->port_index;
+
+  val = gtk_adjustment_get_value(adjustment);
+  
+
+  info = ags_vst_parameter_info_alloc();
+    
+  ags_vst_iedit_controller_get_parameter_info(live_vst3_bridge->iedit_controller,
+					      port_index, info);
+  
+  param_id = ags_vst_parameter_info_get_param_id(info);
+
+  value_normalized = ags_vst_iedit_controller_plain_param_to_normalized(live_vst3_bridge->iedit_controller,
+									param_id,
+									val);
+  
+  live_vst3_bridge->flags |= AGS_LIVE_VST3_BRIDGE_NO_UPDATE;
+
+  if(live_vst3_bridge->iedit_controller_host_editing != NULL){
+    ags_vst_iedit_controller_host_editing_begin_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
+							       param_id);
+  }
+    
+  ags_vst_iedit_controller_set_param_normalized(live_vst3_bridge->iedit_controller,
+						param_id,
+						value_normalized);
+
+  if(live_vst3_bridge->iedit_controller_host_editing != NULL){
+    ags_vst_iedit_controller_host_editing_end_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
+							     param_id);
+  }
+  
+  live_vst3_bridge->flags &= (~AGS_LIVE_VST3_BRIDGE_NO_UPDATE);
+
+  ags_vst_parameter_info_free(info);
+}
+
+
+void
+ags_live_vst3_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLiveVst3Bridge *live_vst3_bridge)
+{
+  AgsBulkMember *bulk_member;
+  GtkAdjustment *adjustment;
+
+  AgsVstParameterInfo *info;
+  AgsVstParamID param_id;  
+
+  gint32 port_index;
+  gdouble val;
+  gdouble value_normalized;
+
+  if((AGS_LIVE_VST3_BRIDGE_NO_UPDATE & (live_vst3_bridge->flags)) != 0){
+    return;
+  }
+
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(spin_button,
+							  AGS_TYPE_BULK_MEMBER);
+
+  g_object_get(spin_button,
+	       "adjustment", &adjustment,
+	       NULL);
+
+  port_index = bulk_member->port_index;
+
+  val = gtk_adjustment_get_value(adjustment);
+
+  info = ags_vst_parameter_info_alloc();
+    
+  ags_vst_iedit_controller_get_parameter_info(live_vst3_bridge->iedit_controller,
+					      port_index, info);
+  
+  param_id = ags_vst_parameter_info_get_param_id(info);
+
+  value_normalized = ags_vst_iedit_controller_plain_param_to_normalized(live_vst3_bridge->iedit_controller,
+									param_id,
+									val);
+  
+  live_vst3_bridge->flags |= AGS_LIVE_VST3_BRIDGE_NO_UPDATE;
+
+  if(live_vst3_bridge->iedit_controller_host_editing != NULL){
+    ags_vst_iedit_controller_host_editing_begin_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
+							       param_id);
+  }
+    
+  ags_vst_iedit_controller_set_param_normalized(live_vst3_bridge->iedit_controller,
+						param_id,
+						value_normalized);
+
+  if(live_vst3_bridge->iedit_controller_host_editing != NULL){
+    ags_vst_iedit_controller_host_editing_end_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
+							     param_id);
+  }
+  
+  live_vst3_bridge->flags &= (~AGS_LIVE_VST3_BRIDGE_NO_UPDATE);
+
+  ags_vst_parameter_info_free(info);
+}
+
+void
+ags_live_vst3_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsLiveVst3Bridge *live_vst3_bridge)
+{
+  AgsBulkMember *bulk_member;
+
+  AgsVstParameterInfo *info;
+  AgsVstParamID param_id;  
+
+  gboolean is_active;
+  gint32 port_index;
+  gdouble val;
+  gdouble value_normalized;
+
+  if((AGS_LIVE_VST3_BRIDGE_NO_UPDATE & (live_vst3_bridge->flags)) != 0){
+    return;
+  }
+
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(check_button,
+							  AGS_TYPE_BULK_MEMBER);
+
+  is_active = gtk_toggle_button_get_active((GtkToggleButton *) check_button);
+  
+  port_index = bulk_member->port_index;
+
+  val = is_active ? 1.0: 0.0;
+
+  info = ags_vst_parameter_info_alloc();
+    
+  ags_vst_iedit_controller_get_parameter_info(live_vst3_bridge->iedit_controller,
+					      port_index, info);
+  
+  param_id = ags_vst_parameter_info_get_param_id(info);
+
+  value_normalized = ags_vst_iedit_controller_plain_param_to_normalized(live_vst3_bridge->iedit_controller,
+									param_id,
+									val);
+  
+  live_vst3_bridge->flags |= AGS_LIVE_VST3_BRIDGE_NO_UPDATE;
+
+  if(live_vst3_bridge->iedit_controller_host_editing != NULL){
+    ags_vst_iedit_controller_host_editing_begin_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
+							       param_id);
+  }
+    
+  ags_vst_iedit_controller_set_param_normalized(live_vst3_bridge->iedit_controller,
+						param_id,
+						value_normalized);
+
+  if(live_vst3_bridge->iedit_controller_host_editing != NULL){
+    ags_vst_iedit_controller_host_editing_end_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
+							     param_id);
+  }
+  
+  live_vst3_bridge->flags &= (~AGS_LIVE_VST3_BRIDGE_NO_UPDATE);
+
+  ags_vst_parameter_info_free(info);
+}
+
+void
+ags_live_vst3_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLiveVst3Bridge *live_vst3_bridge)
+{
+  AgsBulkMember *bulk_member;
+
+  AgsVstParameterInfo *info;
+  AgsVstParamID param_id;  
+
+  gboolean is_active;
+  gint32 port_index;
+  gdouble val;
+  gdouble value_normalized;
+
+  if((AGS_LIVE_VST3_BRIDGE_NO_UPDATE & (live_vst3_bridge->flags)) != 0){
+    return;
+  }
+
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(toggle_button,
+							  AGS_TYPE_BULK_MEMBER);
+
+  is_active = gtk_toggle_button_get_active((GtkToggleButton *) toggle_button);
+  
+  port_index = bulk_member->port_index;
+  val = is_active ? 1.0: 0.0;
+
+  info = ags_vst_parameter_info_alloc();
+    
+  ags_vst_iedit_controller_get_parameter_info(live_vst3_bridge->iedit_controller,
+					      port_index, info);
+  
+  param_id = ags_vst_parameter_info_get_param_id(info);
+
+  value_normalized = ags_vst_iedit_controller_plain_param_to_normalized(live_vst3_bridge->iedit_controller,
+									param_id,
+									val);
+  
+  live_vst3_bridge->flags |= AGS_LIVE_VST3_BRIDGE_NO_UPDATE;
+
+  if(live_vst3_bridge->iedit_controller_host_editing != NULL){
+    ags_vst_iedit_controller_host_editing_begin_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
+							       param_id);
+  }
+    
+  ags_vst_iedit_controller_set_param_normalized(live_vst3_bridge->iedit_controller,
+						param_id,
+						value_normalized);
+
+  if(live_vst3_bridge->iedit_controller_host_editing != NULL){
+    ags_vst_iedit_controller_host_editing_end_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
+							     param_id);
+  }
+  
+  live_vst3_bridge->flags &= (~AGS_LIVE_VST3_BRIDGE_NO_UPDATE);
+
+  ags_vst_parameter_info_free(info);
+}
+
+void
+ags_live_vst3_bridge_button_clicked_callback(GtkWidget *button, AgsLiveVst3Bridge *live_vst3_bridge)
+{
+  AgsBulkMember *bulk_member;
+
+  AgsVstParameterInfo *info;
+  AgsVstParamID param_id;  
+
+  gint32 port_index;
+  gdouble val;
+  gdouble value_normalized;
+
+  if((AGS_LIVE_VST3_BRIDGE_NO_UPDATE & (live_vst3_bridge->flags)) != 0){
+    return;
+  }
+
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(button,
+							  AGS_TYPE_BULK_MEMBER);
+
+  port_index = bulk_member->port_index;
+
+  val = 0.0;
+
+  info = ags_vst_parameter_info_alloc();
+    
+  ags_vst_iedit_controller_get_parameter_info(live_vst3_bridge->iedit_controller,
+					      port_index, info);
+  
+  param_id = ags_vst_parameter_info_get_param_id(info);
+
+  value_normalized = ags_vst_iedit_controller_plain_param_to_normalized(live_vst3_bridge->iedit_controller,
+									param_id,
+									val);
+  
+  live_vst3_bridge->flags |= AGS_LIVE_VST3_BRIDGE_NO_UPDATE;
+
+  if(live_vst3_bridge->iedit_controller_host_editing != NULL){
+    ags_vst_iedit_controller_host_editing_begin_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
+							       param_id);
+  }
+    
+  ags_vst_iedit_controller_set_param_normalized(live_vst3_bridge->iedit_controller,
+						param_id,
+						value_normalized);
+
+  if(live_vst3_bridge->iedit_controller_host_editing != NULL){
+    ags_vst_iedit_controller_host_editing_end_edit_from_host(live_vst3_bridge->iedit_controller_host_editing,
+							     param_id);
+  }
+  
+  live_vst3_bridge->flags &= (~AGS_LIVE_VST3_BRIDGE_NO_UPDATE);
+
+  ags_vst_parameter_info_free(info);
 }
