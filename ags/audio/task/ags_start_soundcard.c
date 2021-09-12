@@ -227,9 +227,11 @@ ags_start_soundcard_launch(AgsTask *task)
       }
     
       /* append soundcard thread */
-      ags_thread_add_start_queue(audio_loop,
-				 soundcard_thread);
-
+      if(AGS_SOUNDCARD_THREAD(soundcard_thread)->error == NULL){
+	ags_thread_add_start_queue(audio_loop,
+				   soundcard_thread);
+      }
+      
       g_object_unref(soundcard);
     }
 

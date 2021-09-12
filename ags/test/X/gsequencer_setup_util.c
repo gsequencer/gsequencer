@@ -25,6 +25,9 @@
 
 #include "gsequencer_setup_util.h"
 
+//FIXME:JK: conflict of KeyCode
+#define __AGS_VST_KEYCODES_H__
+
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>

@@ -19,6 +19,9 @@
 
 #include <ags/test/X/ags_functional_test_util.h>
 
+//FIXME:JK: conflict of KeyCode
+#define __AGS_VST_KEYCODES_H__
+
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
@@ -178,12 +181,6 @@ ags_functional_test_util_do_run_thread(void *ptr)
   xorg_application_context = (AgsXorgApplicationContext *) ags_application_context_get_instance();
 
   is_available = ptr;
-
-  while(g_atomic_int_get(&(xorg_application_context->gui_ready)) == 0){
-    usleep(500000);
-  }
-  
-  ags_xorg_application_context_setup(xorg_application_context);
   
   //  g_atomic_int_set(&(xorg_application_context->gui_ready),
   //		   FALSE);

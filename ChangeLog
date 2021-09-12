@@ -1,3 +1,10 @@
+ags (3.11.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed functional tests launch application context
+	* fixed AgsDevout's AgsSoundcardThread started while playback initialization failed.
+	* fixed missing plugins in context menu
+
 ags (3.11.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

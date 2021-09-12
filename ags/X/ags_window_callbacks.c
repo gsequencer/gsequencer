@@ -203,6 +203,8 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   /* connect and show window */
   ags_connectable_connect(AGS_CONNECTABLE(window));
   gtk_widget_show_all((GtkWidget *) window);
+
+  gtk_widget_show_all((GtkWidget *) context_menu);
 }
 
 gboolean
