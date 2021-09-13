@@ -447,6 +447,10 @@ ags_connection_editor_add_children(AgsConnectionEditor *connection_editor)
   gtk_container_add((GtkContainer *) connection_editor->output_listing_editor_scrolled_window,
 		    (GtkWidget *) connection_editor->output_listing_editor);
 
+  ags_listing_editor_add_children(connection_editor->output_listing_editor,
+				  connection_editor->machine->audio, 0,
+				  FALSE);
+
   /* input */
   input_connection_editor_child_value = g_new0(GValue,
 					       1);
@@ -469,6 +473,10 @@ ags_connection_editor_add_children(AgsConnectionEditor *connection_editor)
   gtk_container_add((GtkContainer *) connection_editor->input_listing_editor_scrolled_window,
 		    (GtkWidget *) connection_editor->input_listing_editor);
   
+
+  ags_listing_editor_add_children(connection_editor->input_listing_editor,
+				  connection_editor->machine->audio, 0,
+				  FALSE);
 
   /* AgsOutput connection editor */
   connection_editor->output_connection_editor = ags_property_collection_editor_new(AGS_TYPE_OUTPUT_COLLECTION_EDITOR,

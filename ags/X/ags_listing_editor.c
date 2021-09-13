@@ -21,6 +21,7 @@
 #include <ags/X/ags_listing_editor_callbacks.h>
 
 #include <ags/X/ags_machine_editor.h>
+#include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_pad_editor.h>
 #include <ags/X/ags_line_editor.h>
 #include <ags/X/ags_link_editor.h>
@@ -298,6 +299,7 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
 				AgsAudio *audio, guint nth,
 				gboolean connect)
 {
+  GtkWidget *toplevel;
   AgsPadEditor *pad_editor;
   GtkBox *vbox;
 
@@ -314,6 +316,8 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
   if(audio == NULL){
     return;
   }
+
+  toplevel = gtk_widget_get_toplevel(listing_editor);
   
   /* instantiate pad editor vbox */
   if(nth == 0){
@@ -351,11 +355,23 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
     /* instantiate pad editor */
     pad_editor = ags_pad_editor_new(NULL);
 
-    pad_editor->editor_type_count = 2;
-    pad_editor->editor_type = (GType *) malloc(pad_editor->editor_type_count * sizeof(GType));
-    pad_editor->editor_type[0] = AGS_TYPE_LINK_EDITOR;
-    pad_editor->editor_type[1] = AGS_TYPE_LINE_MEMBER_EDITOR;
-
+    if(AGS_IS_MACHINE_EDITOR(toplevel)){
+      pad_editor->editor_type_count = 2;
+      pad_editor->editor_type = (GType *) malloc(pad_editor->editor_type_count * sizeof(GType));
+      pad_editor->editor_type[0] = AGS_TYPE_LINK_EDITOR;
+      pad_editor->editor_type[1] = AGS_TYPE_LINE_MEMBER_EDITOR;
+    }else if(AGS_IS_CONNECTION_EDITOR(toplevel)){
+      if(listing_editor->channel_type == AGS_TYPE_OUTPUT){
+	pad_editor->editor_type_count = 1;
+	pad_editor->editor_type = (GType *) malloc(pad_editor->editor_type_count * sizeof(GType));
+	pad_editor->editor_type[0] = AGS_TYPE_OUTPUT_EDITOR;
+      }else{
+	pad_editor->editor_type_count = 1;
+	pad_editor->editor_type = (GType *) malloc(pad_editor->editor_type_count * sizeof(GType));
+	pad_editor->editor_type[0] = AGS_TYPE_INPUT_EDITOR;
+      }
+    }
+    
     g_object_set(pad_editor,
 		 "channel", channel,
 		 NULL);

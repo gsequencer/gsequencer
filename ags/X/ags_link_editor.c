@@ -347,6 +347,8 @@ void
 ags_link_editor_reset(AgsApplicable *applicable)
 {
   AgsLinkEditor *link_editor;
+  AgsMachineEditor *machine_editor;
+  AgsLineEditor *line_editor;
 
   GtkTreeModel *model;
 
@@ -354,25 +356,27 @@ ags_link_editor_reset(AgsApplicable *applicable)
 
   link_editor = AGS_LINK_EDITOR(applicable);
 
+  line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
+							AGS_TYPE_LINE_EDITOR));
+
+  machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(line_editor),
+							      AGS_TYPE_MACHINE_EDITOR));
+
+  if(machine_editor == NULL){
+    return;
+  }
+  
   model = gtk_combo_box_get_model(link_editor->combo);
 
   if(gtk_tree_model_get_iter_first(model,
 				   &iter)){
     AgsMachine *machine, *link_machine, *link;
-    AgsMachineEditor *machine_editor;
-    AgsLineEditor *line_editor;
 
     AgsAudio *audio;
     AgsChannel *channel, *link_channel;
 
     gint i;
     gboolean found;
-
-    line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
-							  AGS_TYPE_LINE_EDITOR));
-
-    machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(line_editor),
-								AGS_TYPE_MACHINE_EDITOR));
 
     machine = machine_editor->machine;
 

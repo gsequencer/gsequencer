@@ -282,8 +282,6 @@ ags_input_editor_reset(AgsApplicable *applicable)
 		   "audio", &audio,
 		   "input-soundcard", &input_soundcard,
 		   NULL);
-      g_object_unref(audio);
-      g_object_unref(input_soundcard);
     }
     
     i = 0;
@@ -323,6 +321,15 @@ ags_input_editor_reset(AgsApplicable *applicable)
     }else{
       gtk_combo_box_set_active(GTK_COMBO_BOX(input_editor->soundcard),
 			       0);
+    }
+    
+    /* unref */
+    if(audio != NULL){
+      g_object_unref(audio);
+    }
+
+    if(input_soundcard != NULL){
+      g_object_unref(input_soundcard);
     }
   }
 }
