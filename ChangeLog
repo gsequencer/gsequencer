@@ -3,6 +3,7 @@ ags (3.12.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed layout of AgsLinkCollectionEditor and AgsResizeEditor
 	* fixed mnemonic of AgsConnectionEditor and AgsAudiorec
+	* fixed ref-count over-flow in ags_thread.c
 
 ags (3.11.7)
 

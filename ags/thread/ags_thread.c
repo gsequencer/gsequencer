@@ -2573,7 +2573,9 @@ ags_thread_real_clock(AgsThread *thread)
     /* run task launcher */
     ags_task_launcher_sync_run(task_launcher);
 
-    g_object_unref(task_launcher);
+    if(task_launcher != NULL){
+      g_object_unref(task_launcher);
+    }
     
     /* signal */
 #if 1
@@ -2623,9 +2625,9 @@ ags_thread_real_clock(AgsThread *thread)
     }
 
     g_mutex_unlock(&(task_launcher->wait_mutex));
-  }
 
-  g_object_unref(task_launcher);
+    g_object_unref(task_launcher);
+  }
   
   /* compute clocked steps */
   clocked_steps = 0;
@@ -2655,6 +2657,10 @@ ags_thread_real_clock(AgsThread *thread)
 
   if(thread == main_loop){
     ags_main_loop_set_critical_region(AGS_MAIN_LOOP(main_loop), FALSE);
+  }
+
+  if(main_loop != NULL){
+    g_object_unref(main_loop);
   }
   
   return(clocked_steps);
@@ -2878,7 +2884,9 @@ ags_thread_loop(void *ptr)
     /* run task launcher */
     ags_task_launcher_sync_run(task_launcher);
 
-    g_object_unref(task_launcher);
+    if(task_launcher != NULL){
+      g_object_unref(task_launcher);
+    }
     
     /* signal */
 #if 1
@@ -2903,6 +2911,10 @@ ags_thread_loop(void *ptr)
     ags_main_loop_set_syncing(AGS_MAIN_LOOP(main_loop), FALSE);
       
     g_rec_mutex_unlock(tree_mutex);
+
+    if(main_loop != NULL){
+      g_object_unref(main_loop);
+    }
   }
   
   /* exit thread */
