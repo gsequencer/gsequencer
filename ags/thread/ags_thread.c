@@ -2656,6 +2656,10 @@ ags_thread_real_clock(AgsThread *thread)
   if(thread == main_loop){
     ags_main_loop_set_critical_region(AGS_MAIN_LOOP(main_loop), FALSE);
   }
+
+  if(main_loop != NULL){
+    g_object_unref(main_loop);
+  }
   
   return(clocked_steps);
 }
@@ -2903,6 +2907,10 @@ ags_thread_loop(void *ptr)
     ags_main_loop_set_syncing(AGS_MAIN_LOOP(main_loop), FALSE);
       
     g_rec_mutex_unlock(tree_mutex);
+  }
+
+  if(main_loop != NULL){
+    g_object_unref(main_loop);
   }
   
   /* exit thread */
