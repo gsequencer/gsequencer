@@ -2911,10 +2911,6 @@ ags_thread_loop(void *ptr)
     ags_main_loop_set_syncing(AGS_MAIN_LOOP(main_loop), FALSE);
       
     g_rec_mutex_unlock(tree_mutex);
-
-    if(main_loop != NULL){
-      g_object_unref(main_loop);
-    }
   }
 
   if(main_loop != NULL){
