@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-09-11 18:15+0200\n"
+"POT-Creation-Date: 2021-09-30 13:01+0200\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -63,7 +63,7 @@ msgstr "sortant"
 msgid "line"
 msgstr "ligne"
 
-#: ags/X/ags_automation_editor.c:553 ags/X/ags_connection_editor.c:466
+#: ags/X/ags_automation_editor.c:553 ags/X/ags_connection_editor.c:470
 #: ags/X/ags_machine_editor.c:231 ags/X/machine/ags_audiorec.c:344
 msgid "input"
 msgstr "intrant"
@@ -150,11 +150,11 @@ msgstr ""
 msgid "_Cancel"
 msgstr "Abandonner"
 
-#: ags/X/ags_connection_editor.c:481
+#: ags/X/ags_connection_editor.c:489
 msgid "connect output"
 msgstr "connecter sortant"
 
-#: ags/X/ags_connection_editor.c:495
+#: ags/X/ags_connection_editor.c:503
 msgid "connect input"
 msgstr "connecter intrant"
 
@@ -686,7 +686,7 @@ msgstr "porte"
 msgid "monitor timeout"
 msgstr "délai d'inactivité"
 
-#: ags/X/ags_pad_editor.c:464
+#: ags/X/ags_pad_editor.c:467
 msgid "pad"
 msgstr "composite"
 
