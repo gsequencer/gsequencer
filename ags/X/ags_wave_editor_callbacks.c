@@ -34,7 +34,7 @@ ags_wave_editor_vscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_ed
 {
   GtkAdjustment *vadjustment;
 
-  vadjustment = gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(wave_editor->scrolled_wave_edit_box->viewport));
+  vadjustment = wave_editor->scrolled_wave_edit_box->viewport->vadjustment;
   gtk_adjustment_set_value(vadjustment,
 			   gtk_range_get_value(range));
 

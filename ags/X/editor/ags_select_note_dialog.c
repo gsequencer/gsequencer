@@ -20,6 +20,7 @@
 #include <ags/X/editor/ags_select_note_dialog.h>
 #include <ags/X/editor/ags_select_note_dialog_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_machine.h>
@@ -426,13 +427,15 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
   AgsSelectNoteDialog *select_note_dialog;
 
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
   AgsMachine *machine;
+  AgsNotebook *notebook;
 
   AgsAudio *audio;
 
   AgsTimestamp *timestamp;
 
+  AgsApplicationContext *application_context;
+  
   xmlDoc *clipboard;
   xmlNode *audio_node, *notation_node;
 
@@ -440,6 +443,7 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
 
   xmlChar *buffer;
   
+  gboolean use_composite_editor;
   int size;
   guint x0, y0;
   guint x1, y1;
@@ -449,11 +453,33 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
   
   select_note_dialog = AGS_SELECT_NOTE_DIALOG(applicable);
 
-  window = (AgsWindow *) select_note_dialog->main_window;
-  notation_editor = window->notation_editor;
+  /* application context */
+  application_context = ags_application_context_get_instance();
 
-  machine = notation_editor->selected_machine;
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
 
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  machine = NULL;
+
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
+    
+    composite_editor = window->composite_editor;
+
+    machine = composite_editor->selected_machine;
+
+    notebook = composite_editor->notation_edit->channel_selector;
+  }else{
+    AgsNotationEditor *notation_editor;
+    
+    notation_editor = window->notation_editor;
+
+    machine = notation_editor->selected_machine;
+
+    notebook = notation_editor->notebook;
+  }
+  
   if(machine == NULL){
     return;
   }
@@ -490,7 +516,7 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
   
   i = 0;
   
-  while((i = ags_notebook_next_active_tab(notation_editor->notebook,
+  while((i = ags_notebook_next_active_tab(notebook,
 					  i)) != -1){
     list_notation = start_list_notation;
     

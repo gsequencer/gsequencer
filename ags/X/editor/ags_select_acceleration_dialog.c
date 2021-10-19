@@ -23,6 +23,7 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_automation_editor.h>
@@ -344,8 +345,12 @@ ags_select_acceleration_dialog_get_property(GObject *gobject,
 void
 ags_select_acceleration_dialog_connect(AgsConnectable *connectable)
 {
-  AgsAutomationEditor *automation_editor;
+  AgsWindow *window;
   AgsSelectAccelerationDialog *select_acceleration_dialog;
+
+  AgsApplicationContext *application_context;
+  
+  gboolean use_composite_editor;
 
   select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(connectable);
 
@@ -355,8 +360,13 @@ ags_select_acceleration_dialog_connect(AgsConnectable *connectable)
 
   select_acceleration_dialog->flags |= AGS_SELECT_ACCELERATION_DIALOG_CONNECTED;
 
-  automation_editor = AGS_WINDOW(select_acceleration_dialog->main_window)->automation_window->automation_editor;
+   /* application context */
+  application_context = ags_application_context_get_instance();
 
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
+  
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  
   g_signal_connect(select_acceleration_dialog, "response",
 		   G_CALLBACK(ags_select_acceleration_dialog_response_callback), select_acceleration_dialog);
 
@@ -365,8 +375,21 @@ ags_select_acceleration_dialog_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_select_acceleration_dialog_add_callback), select_acceleration_dialog);
 
   /* machine changed */
-  g_signal_connect_after(automation_editor, "machine-changed",
-			 G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback), select_acceleration_dialog);  
+  if(use_composite_editor){
+     AgsCompositeEditor *composite_editor;
+    
+    composite_editor = window->composite_editor;
+    
+    g_signal_connect_after(composite_editor, "machine-changed",
+			   G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback), select_acceleration_dialog);
+  }else{
+    AgsAutomationEditor *automation_editor;
+    
+    automation_editor = window->automation_window->automation_editor;
+    
+    g_signal_connect_after(automation_editor, "machine-changed",
+			   G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback), select_acceleration_dialog);
+  }
 }
 
 void
@@ -425,12 +448,14 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 {
   AgsSelectAccelerationDialog *select_acceleration_dialog;
   AgsWindow *window;
-  AgsAutomationEditor *automation_editor;
   AgsMachine *machine;
   AgsNotebook *notebook;
+  AgsAutomationEdit *focused_automation_edit;
 
   AgsAudio *audio;
 
+  AgsApplicationContext *application_context;
+  
   xmlDoc *clipboard;
   xmlNode *audio_node, *automation_node;
 
@@ -444,6 +469,7 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   
   GType channel_type;
 
+  gboolean use_composite_editor;
   gdouble gui_y;
   
   gdouble c_y0, c_y1;
@@ -461,28 +487,51 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
     
   select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(applicable);
 
-  window = (AgsWindow *) select_acceleration_dialog->main_window;
-  automation_editor = window->automation_window->automation_editor;
+  /* application context */
+  application_context = ags_application_context_get_instance();
 
-  machine = automation_editor->selected_machine;
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
 
-  if(machine == NULL ||
-     automation_editor->focused_automation_edit == NULL){
-    return;
-  }
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  notebook = NULL;
+  machine = NULL;
+
   channel_type = G_TYPE_NONE;
+  
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
+    
+    composite_editor = window->composite_editor;
 
-  if(automation_editor->focused_automation_edit->channel_type == G_TYPE_NONE){
-    notebook = NULL;
-    channel_type = G_TYPE_NONE;
-  }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
-    notebook = automation_editor->output_notebook;
-    channel_type = AGS_TYPE_OUTPUT;
-  }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
-    notebook = automation_editor->input_notebook;
-    channel_type = AGS_TYPE_INPUT;
+    machine = composite_editor->selected_machine;
+
+    focused_automation_edit = composite_editor->automation_edit->focused_edit;
+    
+    notebook = composite_editor->automation_edit->channel_selector;
+  }else{
+    AgsAutomationEditor *automation_editor;
+    
+    automation_editor = window->automation_window->automation_editor;
+
+    machine = automation_editor->selected_machine;
+
+    focused_automation_edit = automation_editor->focused_automation_edit;
+    
+    if(automation_editor->focused_automation_edit->channel_type == G_TYPE_NONE){
+      notebook = NULL;
+      channel_type = G_TYPE_NONE;
+    }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
+      notebook = automation_editor->output_notebook;
+      channel_type = AGS_TYPE_OUTPUT;
+    }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
+      notebook = automation_editor->input_notebook;
+      channel_type = AGS_TYPE_INPUT;
+    }
+  }
+  
+  if(machine == NULL ||
+     focused_automation_edit == NULL){
+    return;
   }
   
   audio = machine->audio;

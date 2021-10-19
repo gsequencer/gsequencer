@@ -1039,6 +1039,28 @@ ags_ui_provider_get_composite_editor(AgsUiProvider *ui_provider)
 }
 
 /**
+ * ags_ui_provider_use_composite_editor:
+ * @ui_provider: the #AgsUiProvider
+ * 
+ * Get use composite editor.
+ * 
+ * Returns: %TRUE if using composite editor, otherwise %FALSE
+ * 
+ * Since: 3.12.0
+ */
+gboolean
+ags_ui_provider_use_composite_editor(AgsUiProvider *ui_provider)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_UI_PROVIDER(ui_provider), FALSE);
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_val_if_fail(ui_provider_interface->use_composite_editor, FALSE);
+
+  return(ui_provider_interface->use_composite_editor(ui_provider));
+}
+
+/**
  * ags_ui_provider_set_composite_editor:
  * @ui_provider: the #AgsUiProvider
  * @composite_editor: the #GtkWidget

@@ -32,11 +32,6 @@ endif
 CFLAGS =  @CFLAGS@
 CXXFLAGS =  @CXXFLAGS@
 
-if WITH_OSXAPI
-CFLAGS += -arch arm64 -arch x86_64
-CXXFLAGS += -arch arm64 -arch x86_64
-endif
-
 LDFLAGS = @LDFLAGS@ $(LTLIBINTL)
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 
@@ -418,12 +413,12 @@ nobase_include_HEADERS = $(libags_la_HEADERS_0) $(libags_thread_la_HEADERS_0) $(
 
 # doc
 # docdir = $(datadir)/doc/gsequencer
-doc_DATA = README ags_example.xml
+doc_DATA = README
 
 # documentation
-manpages = \
-	gsequencer.1.xml \
-	midi2xml.1.xml
+# manpages = \
+# 	gsequencer.1.xml \
+# 	midi2xml.1.xml
 
 EXTRA_DIST += \
 	docs/custom.css
@@ -1367,6 +1362,11 @@ libags_audio_file_h_sources = \
 	ags/audio/file/ags_sfz_region.h \
 	ags/audio/file/ags_sfz_sample.h	
 
+if WITH_OSXAPI
+libags_audio_file_h_sources += \
+	ags/audio/file/ags_audio_toolbox.h
+endif
+
 if WITH_LIBINSTPATCH
 libags_audio_file_h_sources += \
 	ags/audio/file/ags_ipatch.h \
@@ -1380,8 +1380,6 @@ if WITH_GSTREAMER
 libags_audio_file_h_sources += \
 	ags/audio/file/ags_gstreamer_file.h
 endif
-
-deprecated_libags_audio_file_c_sources =
 
 libags_audio_file_c_sources = \
 	$(deprecated_libags_audio_file_c_sources) \
@@ -1397,6 +1395,11 @@ libags_audio_file_c_sources = \
 	ags/audio/file/ags_sfz_group.c \
 	ags/audio/file/ags_sfz_region.c \
 	ags/audio/file/ags_sfz_sample.c	
+
+if WITH_OSXAPI
+libags_audio_file_c_sources += \
+	ags/audio/file/ags_audio_toolbox.c
+endif
 
 if WITH_LIBINSTPATCH
 libags_audio_file_c_sources += \
@@ -2197,6 +2200,7 @@ libags_gui_h_sources = \
 	ags/widget/ags_ruler.h \
 	ags/widget/ags_vindicator.h \
 	ags/widget/ags_vled_array.h \
+	ags/widget/ags_viewport.h \
 	ags/widget/ags_widget_marshal.h \
 	ags/widget/ags_container.h
 
@@ -2229,6 +2233,7 @@ libags_gui_c_sources = \
 	ags/widget/ags_ruler.c \
 	ags/widget/ags_vindicator.c \
 	ags/widget/ags_vled_array.c \
+	ags/widget/ags_viewport.c \
 	ags/widget/ags_widget_marshal.c \
 	ags/widget/ags_container.c
 

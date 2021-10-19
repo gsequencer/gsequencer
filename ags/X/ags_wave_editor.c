@@ -257,7 +257,8 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 					       "homogeneous", FALSE,
 					       "spacing", 0,
 					       NULL);
-  wave_editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_WAVE);
+  ags_machine_selector_set_edit(wave_editor->machine_selector,
+				AGS_MACHINE_SELECTOR_EDIT_WAVE);
   gtk_label_set_label(wave_editor->machine_selector->label,
 		      i18n("wave"));
   
@@ -613,9 +614,9 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
   gtk_adjustment_set_upper(vscrollbar_adjustment,
 			   v_upper);
 
-  gtk_adjustment_set_upper(gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(wave_editor->scrolled_wave_edit_box->viewport)),
+  gtk_adjustment_set_upper(wave_editor->scrolled_wave_edit_box->viewport->vadjustment,
 			   v_upper);
-  gtk_adjustment_set_upper(gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(wave_editor->scrolled_level_box->viewport)),
+  gtk_adjustment_set_upper(wave_editor->scrolled_level_box->viewport->vadjustment,
 			   v_upper);
 
   /* reset horizontal scrollbar */

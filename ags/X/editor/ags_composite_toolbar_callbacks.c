@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -399,25 +399,25 @@ ags_composite_toolbar_paste_no_duplicates_callback(GtkMenuItem *button, AgsCompo
 void
 ags_composite_toolbar_menu_tool_popup_notation_move_note_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
-  //TODO:JK: implement me
+  gtk_widget_show_all((GtkWidget *) composite_toolbar->notation_move_note);
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_notation_crop_note_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
-  //TODO:JK: implement me
+  gtk_widget_show_all((GtkWidget *) composite_toolbar->notation_crop_note);
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_notation_select_note_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
-  //TODO:JK: implement me
+  gtk_widget_show_all((GtkWidget *) composite_toolbar->notation_select_note);
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_notation_position_cursor_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
-  //TODO:JK: implement me
+  gtk_widget_show_all((GtkWidget *) composite_toolbar->notation_position_cursor);
 }
 
 void
@@ -429,31 +429,33 @@ ags_composite_toolbar_menu_tool_popup_sheet_position_cursor_callback(GtkMenuItem
 void
 ags_composite_toolbar_menu_tool_popup_automation_select_acceleration_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
-  //TODO:JK: implement me
+  gtk_widget_show_all((GtkWidget *) composite_toolbar->automation_select_acceleration);
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_automation_ramp_acceleration_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
-  //TODO:JK: implement me
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->automation_ramp_acceleration));
+  
+  gtk_widget_show_all((GtkWidget *) composite_toolbar->automation_ramp_acceleration);
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_automation_position_cursor_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
-{
-  //TODO:JK: implement me
+{  
+  gtk_widget_show_all((GtkWidget *) composite_toolbar->automation_position_cursor);
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_wave_select_buffer_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
-  //TODO:JK: implement me
+  gtk_widget_show_all((GtkWidget *) composite_toolbar->wave_select_buffer);
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_wave_position_cursor_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
-  //TODO:JK: implement me
+  gtk_widget_show_all((GtkWidget *) composite_toolbar->wave_position_cursor);
 }
 
 void
@@ -481,9 +483,246 @@ ags_composite_toolbar_menu_tool_popup_disable_all_lines_callback(GtkMenuItem *it
 }
 
 void
+ags_composite_toolbar_port_callback(GtkComboBox *combo_box, AgsCompositeToolbar *composite_toolbar)
+{
+  AgsCompositeEditor *composite_editor;
+  AgsMachine *machine;
+  
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  gchar *scope;
+  gchar *control_name;
+
+  GType channel_type;
+  
+  GValue value = G_VALUE_INIT;
+
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) composite_toolbar,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+
+  machine = composite_editor->selected_machine;
+  
+  model = gtk_combo_box_get_model(combo_box);
+
+  if(gtk_combo_box_get_active_iter(combo_box, &iter)){
+    gtk_tree_model_get(model,
+		       &iter,
+		       1, &scope,
+		       2, &control_name,
+		       -1);
+    
+    channel_type = G_TYPE_NONE;
+  
+    if(!g_strcmp0("audio",
+		  scope)){
+      channel_type = G_TYPE_NONE;
+    }else if(!g_strcmp0("output",
+			scope)){
+      channel_type = AGS_TYPE_OUTPUT;
+    }else if(!g_strcmp0("input",
+			scope)){
+      channel_type = AGS_TYPE_INPUT;
+    }
+
+    if(control_name != NULL &&
+       strlen(control_name) > 0){
+      gtk_tree_model_get_value(model,
+			       &iter,
+			       0, &value);
+      
+      if(g_value_get_boolean(&value)){
+	AgsMachineAutomationPort *current_automation_port;
+	
+	GList *automation_port;
+	
+	g_value_set_boolean(&value, FALSE);
+	
+	gtk_list_store_set_value(GTK_LIST_STORE(model),
+			       &iter,
+			       0,
+			       &value);
+
+	automation_port = ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
+											  channel_type, control_name);
+
+	if(automation_port != NULL){
+	  current_automation_port = automation_port->data;
+	
+	  machine->enabled_automation_port = g_list_remove(machine->enabled_automation_port,
+							   current_automation_port);
+
+	  ags_machine_automation_port_free(current_automation_port);
+	}
+	
+	ags_composite_editor_remove_automation_port(composite_editor,
+						    channel_type,
+						    control_name);
+      }else{
+	AgsMachineAutomationPort *current_automation_port;
+	
+	GList *automation_port;
+	
+	g_value_set_boolean(&value, TRUE);
+	
+	gtk_list_store_set_value(GTK_LIST_STORE(model),
+			       &iter,
+			       0,
+			       &value);
+
+	automation_port = ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
+											  channel_type, control_name);
+
+	if(automation_port == NULL){
+	  current_automation_port = ags_machine_automation_port_alloc(channel_type, control_name);
+	  machine->enabled_automation_port = g_list_prepend(machine->enabled_automation_port,
+							    current_automation_port);
+	}
+	
+	ags_composite_editor_add_automation_port(composite_editor,
+						 channel_type,
+						 control_name);
+      }
+    }
+  }
+}
+
+void
 ags_composite_toolbar_zoom_callback(GtkComboBox *combo_box, AgsCompositeToolbar *composite_toolbar)
 {
-  //TODO:JK: implement me
+
+  AgsCompositeEditor *composite_editor;
+  AgsNotationEditor *notation_editor;
+  AgsSheetEditor *sheet_editor;
+  AgsAutomationEditor *automation_editor;
+  AgsWaveEditor *wave_editor;
+
+  AgsApplicationContext *application_context;
+
+  gdouble old_zoom_factor;
+  gdouble zoom_factor, zoom;
+  gboolean success;
+  
+  application_context = ags_application_context_get_instance();
+
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  
+  notation_editor = NULL;
+  sheet_editor = NULL;
+  automation_editor = NULL;
+  wave_editor = NULL;
+
+  success = FALSE;
+
+  old_zoom_factor = exp2(6.0 - (double) composite_toolbar->selected_zoom);
+  
+  composite_toolbar->selected_zoom = gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom);
+
+  zoom_factor = exp2(6.0 - (double) composite_toolbar->selected_zoom);
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom) - 2.0);
+  
+  if(composite_editor != NULL){
+    if(composite_editor->notation_edit != NULL){
+      gtk_range_set_value(GTK_RANGE(composite_editor->notation_edit->hscrollbar),
+			  gtk_range_get_value(GTK_RANGE(composite_editor->notation_edit->hscrollbar)) * old_zoom_factor / zoom_factor);
+  
+      gtk_widget_queue_draw((GtkWidget *) composite_editor->notation_edit);
+      
+      /* reset ruler */
+      composite_editor->notation_edit->ruler->factor = zoom_factor;
+      composite_editor->notation_edit->ruler->precision = zoom;
+      composite_editor->notation_edit->ruler->scale_precision = 1.0 / zoom;
+  
+      gtk_widget_queue_draw((GtkWidget *) composite_editor->notation_edit->ruler);
+    }
+
+    if(composite_editor->automation_edit != NULL){
+      gtk_range_set_value(GTK_RANGE(composite_editor->automation_edit->hscrollbar),
+			  gtk_range_get_value(GTK_RANGE(composite_editor->automation_edit->hscrollbar)) * old_zoom_factor / zoom_factor);
+  
+      gtk_widget_queue_draw((GtkWidget *) composite_editor->automation_edit);
+      
+      /* reset ruler */
+      composite_editor->automation_edit->ruler->factor = zoom_factor;
+      composite_editor->automation_edit->ruler->precision = zoom;
+      composite_editor->automation_edit->ruler->scale_precision = 1.0 / zoom;
+  
+      gtk_widget_queue_draw((GtkWidget *) composite_editor->automation_edit->ruler);
+    }
+    
+    if(composite_editor->wave_edit != NULL){
+      gtk_range_set_value(GTK_RANGE(composite_editor->wave_edit->hscrollbar),
+			  gtk_range_get_value(GTK_RANGE(composite_editor->wave_edit->hscrollbar)) * old_zoom_factor / zoom_factor);
+  
+      gtk_widget_queue_draw((GtkWidget *) composite_editor->wave_edit);
+      
+      /* reset ruler */
+      composite_editor->wave_edit->ruler->factor = zoom_factor;
+      composite_editor->wave_edit->ruler->precision = zoom;
+      composite_editor->wave_edit->ruler->scale_precision = 1.0 / zoom;
+  
+      gtk_widget_queue_draw((GtkWidget *) composite_editor->wave_edit->ruler);
+    }
+    
+    success = TRUE;
+  }else{
+    notation_editor = gtk_widget_get_ancestor(composite_toolbar,
+					      AGS_TYPE_NOTATION_EDITOR);
+
+    if(notation_editor != NULL){
+      AgsNotationEdit *notation_edit;
+      
+      notation_edit = notation_editor->notation_edit;
+      
+      ags_notation_edit_reset_hscrollbar(notation_edit);
+
+      gtk_range_set_value(GTK_RANGE(notation_edit->hscrollbar),
+			  gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)) * old_zoom_factor / zoom_factor);
+  
+      gtk_widget_queue_draw((GtkWidget *) notation_edit);  
+
+      /* reset ruler */
+      notation_edit->ruler->factor = zoom_factor;
+      notation_edit->ruler->precision = zoom;
+      notation_edit->ruler->scale_precision = 1.0 / zoom;
+  
+      gtk_widget_queue_draw((GtkWidget *) notation_edit->ruler);
+      
+      success = TRUE;
+    }else{
+      sheet_editor = gtk_widget_get_ancestor(composite_toolbar,
+					     AGS_TYPE_SHEET_EDITOR);
+    }
+
+    if(sheet_editor != NULL){
+      //TODO:JK: implement me
+      
+      success = TRUE;
+    }else{
+      if(notation_editor == NULL){
+	automation_editor = gtk_widget_get_ancestor(composite_toolbar,
+						    AGS_TYPE_AUTOMATION_EDITOR);
+      }
+    }
+
+    if(automation_editor != NULL){
+      //TODO:JK: implement me
+      
+      success = TRUE;
+    }else{
+      if(notation_editor == NULL &&
+	 sheet_editor == NULL){
+	wave_editor = gtk_widget_get_ancestor(composite_toolbar,
+					      AGS_TYPE_WAVE_EDITOR);
+      }
+    }
+
+    if(wave_editor != NULL){
+      //TODO:JK: implement me
+      
+      success = TRUE;
+    }
+  }
 }
 
 void

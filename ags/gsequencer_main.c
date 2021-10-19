@@ -215,7 +215,7 @@ main(int argc, char **argv)
 
   putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s\\lib\\gstreamer-1.0", app_dir));
 #else
-#if defined(AGS_OSXAPI)
+#if 0 //defined(AGS_OSXAPI)
   uid = getuid();
   pw = getpwuid(uid);
 
@@ -249,7 +249,7 @@ main(int argc, char **argv)
   
   putenv(g_strdup_printf("AGS_ONLINE_HELP_PDF_FILENAME=%s/Contents/Resources/share/doc/gsequencer/pdf/ags-user-manual.pdf", app_dir));
   
-  putenv(g_strdup_printf("AAGS_CSS_FILENAME=%s/Contents/Resources/ags.css", app_dir));
+  putenv(g_strdup_printf("AGS_CSS_FILENAME=%s/Contents/Resources/ags.css", app_dir));
   
   if((getenv("VST3_PATH")) == NULL){
     putenv(g_strdup_printf("VST3_PATH=/Library/Audio/Plug-Ins/VST3:%s/Library/Audio/Plug-Ins/VST3:%s/Contents/Plugins/vst3", pw->pw_dir, app_dir));

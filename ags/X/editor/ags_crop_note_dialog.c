@@ -402,7 +402,6 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   AgsCropNoteDialog *crop_note_dialog;
 
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
   AgsMachine *machine;
 
   AgsCropNote *crop_note;  
@@ -417,6 +416,7 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   guint x_padding;
   guint x_crop;
   
+  gboolean use_composite_editor;
   gboolean absolute;
   gboolean in_place;
   gboolean do_resize;
@@ -426,11 +426,26 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   /* application context */
   application_context = ags_application_context_get_instance();
 
-  window = (AgsWindow *) crop_note_dialog->main_window;
-  notation_editor = window->notation_editor;
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
 
-  machine = notation_editor->selected_machine;
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
+  machine = NULL;
+
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
+    
+    composite_editor = window->composite_editor;
+
+    machine = composite_editor->selected_machine;
+  }else{
+    AgsNotationEditor *notation_editor;
+    
+    notation_editor = window->notation_editor;
+
+    machine = notation_editor->selected_machine;
+  }
+  
   if(machine == NULL){
     return;
   }

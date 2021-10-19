@@ -246,7 +246,8 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 						     "homogeneous", FALSE,
 						     "spacing", 0,
 						     NULL);
-  automation_editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_AUTOMATION);
+  ags_machine_selector_set_edit(automation_editor->machine_selector,
+				AGS_MACHINE_SELECTOR_EDIT_AUTOMATION);
   gtk_label_set_label(automation_editor->machine_selector->label,
 		      i18n("automation"));
   

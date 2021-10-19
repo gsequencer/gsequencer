@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,17 +47,22 @@ typedef struct _AgsMachineSelectionClass AgsMachineSelectionClass;
 
 typedef enum{
   AGS_MACHINE_SELECTION_CONNECTED     = 1,
-  AGS_MACHINE_SELECTION_NOTATION      = 1 <<  1,
-  AGS_MACHINE_SELECTION_AUTOMATION    = 1 <<  2,
-  AGS_MACHINE_SELECTION_WAVE          = 1 <<  3,
 }AgsMachineSelectionFlags;
+
+typedef enum{
+  AGS_MACHINE_SELECTION_EDIT_NOTATION    = 1,
+  AGS_MACHINE_SELECTION_EDIT_SHEET       = 1 <<  1,
+  AGS_MACHINE_SELECTION_EDIT_AUTOMATION  = 1 <<  2,
+  AGS_MACHINE_SELECTION_EDIT_WAVE        = 1 <<  3,
+}AgsMachineSelectionEdit;
 
 struct _AgsMachineSelection
 {
   GtkDialog dialog;
 
   guint flags;
-
+  guint edit;
+  
   AgsWindow *window;
   GList *machine;
 };
@@ -68,6 +73,8 @@ struct _AgsMachineSelectionClass
 };
 
 GType ags_machine_selection_get_type(void);
+
+void ags_machine_selection_set_edit(AgsMachineSelection *machine_selection, guint edit);
 
 void ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection);
 

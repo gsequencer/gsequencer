@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-10-09 11:52+0200\n"
+"POT-Creation-Date: 2021-10-19 11:04+0200\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -45,25 +45,25 @@ msgstr "starten"
 msgid "stop"
 msgstr "anhalten"
 
-#: ags/X/ags_automation_editor.c:251
+#: ags/X/ags_automation_editor.c:252
 msgid "automation"
 msgstr "Automation"
 
-#: ags/X/ags_automation_editor.c:290 ags/X/ags_preferences.c:180
+#: ags/X/ags_automation_editor.c:291 ags/X/ags_preferences.c:180
 msgid "audio"
 msgstr "Audio"
 
-#: ags/X/ags_automation_editor.c:412 ags/X/ags_connection_editor.c:444
+#: ags/X/ags_automation_editor.c:413 ags/X/ags_connection_editor.c:445
 #: ags/X/ags_machine_editor.c:224
 msgid "output"
 msgstr "Ausgang"
 
-#: ags/X/ags_automation_editor.c:447 ags/X/ags_automation_editor.c:588
-#: ags/X/ags_wave_editor.c:301
+#: ags/X/ags_automation_editor.c:448 ags/X/ags_automation_editor.c:589
+#: ags/X/ags_wave_editor.c:302
 msgid "line"
 msgstr "Line"
 
-#: ags/X/ags_automation_editor.c:553 ags/X/ags_connection_editor.c:470
+#: ags/X/ags_automation_editor.c:554 ags/X/ags_connection_editor.c:471
 #: ags/X/ags_machine_editor.c:231 ags/X/machine/ags_audiorec.c:344
 msgid "input"
 msgstr "Eingang"
@@ -78,34 +78,15 @@ msgstr "Automation"
 msgid "Plugin file not present"
 msgstr "Plugin Datei nicht vorhanden"
 
-#: ags/X/ags_connection_editor.c:206
+#: ags/X/ags_connection_editor.c:207
 msgid "connections"
 msgstr "Verbindungen"
 
-#: ags/X/ags_connection_editor.c:244 ags/X/ags_machine_editor.c:255
+#: ags/X/ags_connection_editor.c:245 ags/X/ags_machine_editor.c:255
 #: ags/X/ags_midi_dialog.c:423 ags/X/ags_preferences.c:226
 #: ags/X/editor/ags_crop_note_dialog.c:269
 #: ags/X/editor/ags_envelope_dialog.c:221
 #: ags/X/editor/ags_move_note_dialog.c:262
-#: ags/X/editor/ags_position_automation_cursor_dialog.c:235
-#: ags/X/editor/ags_position_notation_cursor_dialog.c:257
-#: ags/X/editor/ags_position_wave_cursor_dialog.c:235
-#: ags/X/editor/ags_ramp_acceleration_dialog.c:335
-#: ags/X/editor/ags_select_acceleration_dialog.c:278
-#: ags/X/editor/ags_select_buffer_dialog.c:262
-#: ags/X/editor/ags_select_note_dialog.c:304
-#: ags/X/export/ags_wave_export_dialog.c:354
-msgid "_Apply"
-msgstr ""
-
-#: ags/X/ags_connection_editor.c:249 ags/X/ags_machine_editor.c:260
-#: ags/X/ags_midi_dialog.c:428 ags/X/ags_plugin_browser.c:219
-#: ags/X/ags_preferences.c:227 ags/X/editor/ags_crop_note_dialog.c:270
-#: ags/X/editor/ags_envelope_dialog.c:227
-#: ags/X/editor/ags_envelope_editor_callbacks.c:51
-#: ags/X/editor/ags_machine_selection.c:145
-#: ags/X/editor/ags_move_note_dialog.c:263
-#: ags/X/editor/ags_pattern_envelope_callbacks.c:1052
 #: ags/X/editor/ags_position_automation_cursor_dialog.c:236
 #: ags/X/editor/ags_position_notation_cursor_dialog.c:258
 #: ags/X/editor/ags_position_wave_cursor_dialog.c:236
@@ -113,6 +94,25 @@ msgstr ""
 #: ags/X/editor/ags_select_acceleration_dialog.c:279
 #: ags/X/editor/ags_select_buffer_dialog.c:263
 #: ags/X/editor/ags_select_note_dialog.c:305
+#: ags/X/export/ags_wave_export_dialog.c:354
+msgid "_Apply"
+msgstr ""
+
+#: ags/X/ags_connection_editor.c:250 ags/X/ags_machine_editor.c:260
+#: ags/X/ags_midi_dialog.c:428 ags/X/ags_plugin_browser.c:219
+#: ags/X/ags_preferences.c:227 ags/X/editor/ags_crop_note_dialog.c:270
+#: ags/X/editor/ags_envelope_dialog.c:227
+#: ags/X/editor/ags_envelope_editor_callbacks.c:51
+#: ags/X/editor/ags_machine_selection.c:145
+#: ags/X/editor/ags_move_note_dialog.c:263
+#: ags/X/editor/ags_pattern_envelope_callbacks.c:1052
+#: ags/X/editor/ags_position_automation_cursor_dialog.c:237
+#: ags/X/editor/ags_position_notation_cursor_dialog.c:259
+#: ags/X/editor/ags_position_wave_cursor_dialog.c:237
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:337
+#: ags/X/editor/ags_select_acceleration_dialog.c:280
+#: ags/X/editor/ags_select_buffer_dialog.c:264
+#: ags/X/editor/ags_select_note_dialog.c:306
 #: ags/X/export/ags_midi_export_wizard.c:202
 #: ags/X/export/ags_wave_export_dialog.c:358
 #: ags/X/export/ags_wave_export_dialog_callbacks.c:34
@@ -123,7 +123,7 @@ msgstr ""
 msgid "_OK"
 msgstr ""
 
-#: ags/X/ags_connection_editor.c:254 ags/X/ags_export_soundcard_callbacks.c:410
+#: ags/X/ags_connection_editor.c:255 ags/X/ags_export_soundcard_callbacks.c:410
 #: ags/X/ags_midi_dialog.c:433 ags/X/ags_plugin_browser.c:220
 #: ags/X/ags_preferences.c:228 ags/X/editor/ags_crop_note_dialog.c:271
 #: ags/X/editor/ags_envelope_dialog.c:233
@@ -131,13 +131,13 @@ msgstr ""
 #: ags/X/editor/ags_machine_selection.c:146
 #: ags/X/editor/ags_move_note_dialog.c:264
 #: ags/X/editor/ags_pattern_envelope_callbacks.c:1054
-#: ags/X/editor/ags_position_automation_cursor_dialog.c:237
-#: ags/X/editor/ags_position_notation_cursor_dialog.c:259
-#: ags/X/editor/ags_position_wave_cursor_dialog.c:237
-#: ags/X/editor/ags_ramp_acceleration_dialog.c:337
-#: ags/X/editor/ags_select_acceleration_dialog.c:280
-#: ags/X/editor/ags_select_buffer_dialog.c:264
-#: ags/X/editor/ags_select_note_dialog.c:306
+#: ags/X/editor/ags_position_automation_cursor_dialog.c:238
+#: ags/X/editor/ags_position_notation_cursor_dialog.c:260
+#: ags/X/editor/ags_position_wave_cursor_dialog.c:238
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:338
+#: ags/X/editor/ags_select_acceleration_dialog.c:281
+#: ags/X/editor/ags_select_buffer_dialog.c:265
+#: ags/X/editor/ags_select_note_dialog.c:307
 #: ags/X/export/ags_midi_export_wizard.c:203
 #: ags/X/export/ags_wave_export_dialog.c:362
 #: ags/X/export/ags_wave_export_dialog_callbacks.c:33
@@ -150,11 +150,11 @@ msgstr ""
 msgid "_Cancel"
 msgstr "Abbrechen"
 
-#: ags/X/ags_connection_editor.c:489
+#: ags/X/ags_connection_editor.c:490
 msgid "connect output"
 msgstr "Ausgang verbinden"
 
-#: ags/X/ags_connection_editor.c:503
+#: ags/X/ags_connection_editor.c:504
 msgid "connect input"
 msgstr "Eingang verbinden"
 
@@ -259,39 +259,44 @@ msgid "Desk"
 msgstr "Desk"
 
 #: ags/X/ags_context_menu.c:231 ags/X/ags_menu_bar.c:228
+#, fuzzy
+msgid "Notation"
+msgstr "Notation"
+
+#: ags/X/ags_context_menu.c:237 ags/X/ags_menu_bar.c:234
 msgid "Automation"
 msgstr "Automation"
 
-#: ags/X/ags_context_menu.c:237 ags/X/ags_menu_bar.c:234
+#: ags/X/ags_context_menu.c:243 ags/X/ags_menu_bar.c:240
 msgid "Wave"
 msgstr "Wellenform"
 
-#: ags/X/ags_context_menu.c:246 ags/X/ags_menu_bar.c:243
+#: ags/X/ags_context_menu.c:252 ags/X/ags_menu_bar.c:249
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: ags/X/ags_context_menu.c:256 ags/X/ags_machine.c:3711
-#: ags/X/ags_menu_bar.c:253
+#: ags/X/ags_context_menu.c:262 ags/X/ags_machine.c:3711
+#: ags/X/ags_menu_bar.c:259
 msgid "import"
 msgstr "importieren"
 
-#: ags/X/ags_context_menu.c:259 ags/X/ags_menu_bar.c:256
+#: ags/X/ags_context_menu.c:265 ags/X/ags_menu_bar.c:262
 msgid "export track"
 msgstr "Track exportieren"
 
-#: ags/X/ags_context_menu.c:265 ags/X/ags_menu_bar.c:262
+#: ags/X/ags_context_menu.c:271 ags/X/ags_menu_bar.c:268
 msgid "playback"
 msgstr "abspielen"
 
-#: ags/X/ags_context_menu.c:271 ags/X/ags_menu_bar.c:268
+#: ags/X/ags_context_menu.c:277 ags/X/ags_menu_bar.c:274
 msgid "_Help"
 msgstr "_Hilfe"
 
-#: ags/X/ags_context_menu.c:277 ags/X/ags_menu_bar.c:274
+#: ags/X/ags_context_menu.c:283 ags/X/ags_menu_bar.c:280
 msgid "Online help"
 msgstr "Online Hilfe"
 
-#: ags/X/ags_context_menu.c:280 ags/X/ags_menu_bar.c:277
+#: ags/X/ags_context_menu.c:286 ags/X/ags_menu_bar.c:283
 msgid "About"
 msgstr "Über"
 
@@ -350,7 +355,7 @@ msgid "group"
 msgstr "Gruppe"
 
 #: ags/X/ags_effect_line.c:1009 ags/X/ags_effect_line.c:1015
-#: ags/X/ags_line.c:1100 ags/X/ags_line.c:1106 ags/X/ags_notation_editor.c:326
+#: ags/X/ags_line.c:1100 ags/X/ags_line.c:1106 ags/X/ags_notation_editor.c:327
 msgid "channel"
 msgstr "Kanal"
 
@@ -630,7 +635,7 @@ msgstr "Schleife L"
 msgid "loop R"
 msgstr "Schleife R"
 
-#: ags/X/ags_notation_editor.c:295
+#: ags/X/ags_notation_editor.c:296
 msgid "notation"
 msgstr "Notation"
 
@@ -806,7 +811,7 @@ msgstr "MIDI Karte"
 #: ags/X/ags_sequencer_editor.c:237 ags/X/ags_soundcard_editor.c:269
 #: ags/X/editor/ags_envelope_editor.c:184
 #: ags/X/editor/ags_pattern_envelope.c:670
-#: ags/X/editor/ags_select_acceleration_dialog.c:216
+#: ags/X/editor/ags_select_acceleration_dialog.c:217
 msgid "_Add"
 msgstr ""
 
@@ -862,7 +867,7 @@ msgstr "WASAPI Teilungs Modus"
 msgid "WASAPI buffer size"
 msgstr "WASAPI Puffer grösse"
 
-#: ags/X/ags_wave_editor.c:262 ags/X/machine/ags_fm_oscillator.c:155
+#: ags/X/ags_wave_editor.c:263 ags/X/machine/ags_fm_oscillator.c:155
 #: ags/X/machine/ags_oscillator.c:152
 msgid "wave"
 msgstr "Wellenform"
@@ -891,27 +896,27 @@ msgstr "Lv2"
 msgid "VST3"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3327
+#: ags/X/ags_xorg_application_context.c:3348
 #: ags/audio/ags_audio_application_context.c:2137
 #: ags/audio/task/ags_apply_sound_config.c:905
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "unbekannte Soundkarten Schnittstelle - %s"
 
-#: ags/X/ags_xorg_application_context.c:3337
+#: ags/X/ags_xorg_application_context.c:3358
 #: ags/audio/ags_audio_application_context.c:2147
 #: ags/audio/task/ags_apply_sound_config.c:915
 msgid "unknown soundcard backend - NULL"
 msgstr "unbekannte Soundkarten Schnittstelle - NULL"
 
-#: ags/X/ags_xorg_application_context.c:3577
+#: ags/X/ags_xorg_application_context.c:3598
 #: ags/audio/ags_audio_application_context.c:2389
 #: ags/audio/task/ags_apply_sound_config.c:1155
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "unbekannte Sequenzer Schnittstelle - %s"
 
-#: ags/X/ags_xorg_application_context.c:3587
+#: ags/X/ags_xorg_application_context.c:3608
 #: ags/audio/ags_audio_application_context.c:2399
 #: ags/audio/task/ags_apply_sound_config.c:1165
 msgid "unknown sequencer backend - NULL"
@@ -1055,12 +1060,12 @@ msgid "Opacity"
 msgstr "Deckungskraft"
 
 #: ags/X/editor/ags_automation_toolbar.c:1335
-#: ags/X/editor/ags_select_acceleration_dialog.c:188
+#: ags/X/editor/ags_select_acceleration_dialog.c:189
 msgid "select accelerations"
 msgstr "Beschleuningungen auswählen"
 
 #: ags/X/editor/ags_automation_toolbar.c:1338
-#: ags/X/editor/ags_ramp_acceleration_dialog.c:187
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:188
 msgid "ramp accelerations"
 msgstr "Beschleunigungen auframpen"
 
@@ -1179,23 +1184,23 @@ msgstr "Note:y"
 msgid "select machines"
 msgstr "Maschinen auswählen"
 
-#: ags/X/editor/ags_machine_selector.c:445
+#: ags/X/editor/ags_machine_selector.c:525
 msgid "add index"
 msgstr "Index hinzufügen"
 
-#: ags/X/editor/ags_machine_selector.c:448
+#: ags/X/editor/ags_machine_selector.c:528
 msgid "remove index"
 msgstr "Index entfernen"
 
-#: ags/X/editor/ags_machine_selector.c:451
+#: ags/X/editor/ags_machine_selector.c:531
 msgid "link index"
 msgstr "Index verknüpfen"
 
-#: ags/X/editor/ags_machine_selector.c:455
+#: ags/X/editor/ags_machine_selector.c:535
 msgid "reverse mapping"
 msgstr "Mapping umkehren"
 
-#: ags/X/editor/ags_machine_selector.c:462
+#: ags/X/editor/ags_machine_selector.c:543
 msgid "shift piano"
 msgstr "Klavier schieben"
 
@@ -1234,7 +1239,7 @@ msgid "Invert"
 msgstr "Invertieren"
 
 #: ags/X/editor/ags_notation_toolbar.c:535
-#: ags/X/editor/ags_select_note_dialog.c:184
+#: ags/X/editor/ags_select_note_dialog.c:185
 msgid "select notes"
 msgstr "Noten auswählen"
 
@@ -1276,81 +1281,81 @@ msgstr "x Anfang"
 msgid "x end"
 msgstr "x Ende"
 
-#: ags/X/editor/ags_position_automation_cursor_dialog.c:190
+#: ags/X/editor/ags_position_automation_cursor_dialog.c:191
 msgid "position automation cursor"
 msgstr "positioniere Wagenlauf"
 
-#: ags/X/editor/ags_position_automation_cursor_dialog.c:200
-#: ags/X/editor/ags_position_notation_cursor_dialog.c:197
-#: ags/X/editor/ags_position_wave_cursor_dialog.c:200
+#: ags/X/editor/ags_position_automation_cursor_dialog.c:201
+#: ags/X/editor/ags_position_notation_cursor_dialog.c:198
+#: ags/X/editor/ags_position_wave_cursor_dialog.c:201
 msgid "set focus"
 msgstr "setze Fokus"
 
-#: ags/X/editor/ags_position_automation_cursor_dialog.c:216
-#: ags/X/editor/ags_position_notation_cursor_dialog.c:213
-#: ags/X/editor/ags_position_wave_cursor_dialog.c:216
+#: ags/X/editor/ags_position_automation_cursor_dialog.c:217
+#: ags/X/editor/ags_position_notation_cursor_dialog.c:214
+#: ags/X/editor/ags_position_wave_cursor_dialog.c:217
 msgid "position x"
 msgstr "positioniere x"
 
-#: ags/X/editor/ags_position_notation_cursor_dialog.c:187
+#: ags/X/editor/ags_position_notation_cursor_dialog.c:188
 msgid "position notation cursor"
 msgstr "positioniere Notation's Wagenlauf"
 
-#: ags/X/editor/ags_position_notation_cursor_dialog.c:238
+#: ags/X/editor/ags_position_notation_cursor_dialog.c:239
 msgid "position y"
 msgstr "positioniere y"
 
-#: ags/X/editor/ags_position_wave_cursor_dialog.c:190
+#: ags/X/editor/ags_position_wave_cursor_dialog.c:191
 msgid "position wave cursor"
 msgstr "positioniere Wellenform Wakenlauf"
 
-#: ags/X/editor/ags_ramp_acceleration_dialog.c:212
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:213
 msgid "ramp x0"
 msgstr "x0 rampen"
 
-#: ags/X/editor/ags_ramp_acceleration_dialog.c:239
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:240
 msgid "ramp y0"
 msgstr "y0 rampen"
 
-#: ags/X/editor/ags_ramp_acceleration_dialog.c:264
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:265
 msgid "ramp x1"
 msgstr "x1 rampen"
 
-#: ags/X/editor/ags_ramp_acceleration_dialog.c:291
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:292
 msgid "ramp y1"
 msgstr "y1 rampen"
 
-#: ags/X/editor/ags_ramp_acceleration_dialog.c:316
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:317
 msgid "ramp step count"
 msgstr "Rampen Schrittanzahl"
 
-#: ags/X/editor/ags_select_acceleration_dialog.c:199
-#: ags/X/editor/ags_select_buffer_dialog.c:198
-#: ags/X/editor/ags_select_note_dialog.c:194
+#: ags/X/editor/ags_select_acceleration_dialog.c:200
+#: ags/X/editor/ags_select_buffer_dialog.c:199
+#: ags/X/editor/ags_select_note_dialog.c:195
 msgid "copy selection"
 msgstr "kopiere Auswahl"
 
-#: ags/X/editor/ags_select_acceleration_dialog.c:230
-#: ags/X/editor/ags_select_buffer_dialog.c:214
-#: ags/X/editor/ags_select_note_dialog.c:210
+#: ags/X/editor/ags_select_acceleration_dialog.c:231
+#: ags/X/editor/ags_select_buffer_dialog.c:215
+#: ags/X/editor/ags_select_note_dialog.c:211
 msgid "select x0"
 msgstr "x0 auswählen"
 
-#: ags/X/editor/ags_select_acceleration_dialog.c:257
-#: ags/X/editor/ags_select_buffer_dialog.c:241
-#: ags/X/editor/ags_select_note_dialog.c:260
+#: ags/X/editor/ags_select_acceleration_dialog.c:258
+#: ags/X/editor/ags_select_buffer_dialog.c:242
+#: ags/X/editor/ags_select_note_dialog.c:261
 msgid "select x1"
 msgstr "x1 auswählen"
 
-#: ags/X/editor/ags_select_buffer_dialog.c:187
+#: ags/X/editor/ags_select_buffer_dialog.c:188
 msgid "select buffers"
 msgstr "selektioniere Puffer"
 
-#: ags/X/editor/ags_select_note_dialog.c:235
+#: ags/X/editor/ags_select_note_dialog.c:236
 msgid "select y0"
 msgstr "y0 selektionieren"
 
-#: ags/X/editor/ags_select_note_dialog.c:285
+#: ags/X/editor/ags_select_note_dialog.c:286
 msgid "select y1"
 msgstr "y1 selektionieren"
 

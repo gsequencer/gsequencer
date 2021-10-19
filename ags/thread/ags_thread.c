@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2573,9 +2573,7 @@ ags_thread_real_clock(AgsThread *thread)
     /* run task launcher */
     ags_task_launcher_sync_run(task_launcher);
 
-    if(task_launcher != NULL){
-      g_object_unref(task_launcher);
-    }
+    g_object_unref(task_launcher);
     
     /* signal */
 #if 1
@@ -2625,9 +2623,9 @@ ags_thread_real_clock(AgsThread *thread)
     }
 
     g_mutex_unlock(&(task_launcher->wait_mutex));
-
-    g_object_unref(task_launcher);
   }
+
+  g_object_unref(task_launcher);
   
   /* compute clocked steps */
   clocked_steps = 0;
@@ -2884,9 +2882,7 @@ ags_thread_loop(void *ptr)
     /* run task launcher */
     ags_task_launcher_sync_run(task_launcher);
 
-    if(task_launcher != NULL){
-      g_object_unref(task_launcher);
-    }
+    g_object_unref(task_launcher);
     
     /* signal */
 #if 1

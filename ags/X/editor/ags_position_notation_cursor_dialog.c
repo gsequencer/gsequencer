@@ -20,6 +20,7 @@
 #include <ags/X/editor/ags_position_notation_cursor_dialog.h>
 #include <ags/X/editor/ags_position_notation_cursor_dialog_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_machine.h>
@@ -379,14 +380,16 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
   AgsPositionNotationCursorDialog *position_notation_cursor_dialog;
 
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
-  AgsNotationToolbar *notation_toolbar;
-  AgsNotationEdit *notation_edit;
   AgsMachine *machine;
+  GtkWidget *editor;
+  AgsNotationEdit *notation_edit;
   GtkWidget *widget;
   
   GtkAdjustment *hadjustment;
+  
+  AgsApplicationContext *application_context;
 
+  gboolean use_composite_editor;
   gdouble zoom;
   guint map_height, height;
   guint history;
@@ -394,29 +397,57 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
   
   position_notation_cursor_dialog = AGS_POSITION_NOTATION_CURSOR_DIALOG(applicable);
 
-  window = (AgsWindow *) position_notation_cursor_dialog->main_window;
-  notation_editor = window->notation_editor;
+  /* application context */
+  application_context = ags_application_context_get_instance();
 
-  machine = notation_editor->selected_machine;
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
 
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  machine = NULL;
+
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
+    AgsCompositeToolbar *composite_toolbar;
+    
+    composite_editor = window->composite_editor;
+
+    composite_toolbar = composite_editor->toolbar;
+    
+    machine = composite_editor->selected_machine;
+
+    history = gtk_combo_box_get_active(GTK_COMBO_BOX(composite_toolbar->zoom));
+  }else{
+    AgsNotationEditor *notation_editor;
+    AgsNotationToolbar *notation_toolbar;
+    
+    notation_editor = window->notation_editor;
+
+    notation_toolbar = notation_editor->notation_toolbar;
+    
+    machine = notation_editor->selected_machine;
+
+    history = gtk_combo_box_get_active(GTK_COMBO_BOX(notation_toolbar->zoom));
+  }
+  
   if(machine == NULL){
     return;
   }
-
-  notation_toolbar = notation_editor->notation_toolbar;
-
-  history = gtk_combo_box_get_active(GTK_COMBO_BOX(notation_toolbar->zoom));
+  
   zoom = exp2((double) history - 2.0);
-
-  notation_edit = notation_editor->notation_edit;
-
-  if(notation_edit == NULL){
-    return;
-  }
   
   x = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_x);
-  notation_edit->cursor_position_x = 16 * x;
-  notation_edit->cursor_position_y = 0.0;
+
+  if(use_composite_editor){
+    notation_edit = AGS_COMPOSITE_EDITOR(editor)->notation_edit->edit;
+  }else{
+    notation_edit = AGS_NOTATION_EDITOR(editor)->notation_edit;
+  }
+
+  if(notation_edit != NULL){
+    notation_edit->cursor_position_x = 16 * x;
+    notation_edit->cursor_position_y = 0.0;
+  }
 
   hadjustment = gtk_range_get_adjustment(GTK_RANGE(notation_edit->hscrollbar));
 

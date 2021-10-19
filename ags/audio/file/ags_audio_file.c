@@ -32,6 +32,10 @@
 #include <ags/audio/file/ags_gstreamer_file.h>
 #endif
 
+#ifdef AGS_WITH_CORE_AUDIO
+#include <ags/audio/file/ags_audio_toolbox.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -996,7 +1000,11 @@ ags_audio_file_unset_flags(AgsAudioFile *audio_file, guint flags)
 gboolean
 ags_audio_file_check_suffix(gchar *filename)
 {
-  if(ags_sndfile_check_suffix(filename)
+  if(
+#if defined(AGS_WITH_CORE_AUDIO)
+     ags_audio_toolbox_check_suffix(filename) ||
+#endif
+     ags_sndfile_check_suffix(filename)
 #ifdef AGS_WITH_GSTREAMER
      || ags_gstreamer_file_check_suffix(filename)
 #endif
@@ -1187,6 +1195,41 @@ ags_audio_file_open(AgsAudioFile *audio_file)
   retval = FALSE;
   
   if(g_file_test(filename, G_FILE_TEST_EXISTS)){
+#if defined(AGS_WITH_CORE_AUDIO)
+    if(ags_audio_toolbox_check_suffix(filename)){
+      g_rec_mutex_lock(audio_file_mutex);
+
+      sound_resource = 
+	audio_file->sound_resource = (GObject *) ags_audio_toolbox_new();
+      g_object_ref(audio_file->sound_resource);
+
+      g_rec_mutex_unlock(audio_file_mutex);
+    
+      if(ags_sound_resource_open(AGS_SOUND_RESOURCE(sound_resource),
+				 filename)){
+	ags_sound_resource_info(AGS_SOUND_RESOURCE(sound_resource),
+				&file_frame_count,
+				NULL, NULL);
+
+	g_object_set(audio_file,
+		     "file-frame-count", file_frame_count,
+		     NULL);
+
+	ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sound_resource),
+				       &file_audio_channels,
+				       &file_samplerate,
+				       NULL,
+				       NULL);
+
+	g_object_set(audio_file,
+		     "file-audio-channels", file_audio_channels,
+		     "file-samplerate", file_samplerate,
+		     NULL);
+
+	retval = TRUE;
+      }
+    }else
+#endif
     if(ags_sndfile_check_suffix(filename)){
       g_rec_mutex_lock(audio_file_mutex);
       
@@ -1198,7 +1241,6 @@ ags_audio_file_open(AgsAudioFile *audio_file)
     
       if(ags_sound_resource_open(AGS_SOUND_RESOURCE(sound_resource),
 				 filename)){
-	//FIXME:JK: this call should occure just before reading frames because of the new iterate functions of an AgsPlayable
 	ags_sound_resource_info(AGS_SOUND_RESOURCE(sound_resource),
 				&file_frame_count,
 				NULL, NULL);
@@ -1232,7 +1274,6 @@ ags_audio_file_open(AgsAudioFile *audio_file)
     
       if(ags_sound_resource_open(AGS_SOUND_RESOURCE(sound_resource),
 				 filename)){
-	//FIXME:JK: this call should occure just before reading frames because of the new iterate functions of an AgsPlayable
 	ags_sound_resource_info(AGS_SOUND_RESOURCE(sound_resource),
 				&file_frame_count,
 				NULL, NULL);
@@ -1316,7 +1357,29 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
   }
 
   retval = FALSE;
-  
+
+#if defined(AGS_WITH_CORE_AUDIO)
+  if(ags_audio_toolbox_check_suffix(audio_file->filename)){
+    GError *error;
+    guint loop_start, loop_end;
+
+    /* sound resource */
+    g_rec_mutex_lock(audio_file_mutex);
+
+    sound_resource = 
+      audio_file->sound_resource = (GObject *) ags_audio_toolbox_new();
+    g_object_ref(audio_file->sound_resource);
+
+    g_rec_mutex_unlock(audio_file_mutex);
+
+    if(ags_sound_resource_rw_open(AGS_SOUND_RESOURCE(sound_resource),
+				  filename,
+				  file_audio_channels, file_samplerate,
+				  create)){
+      retval = TRUE;
+    }
+  }else 
+#endif  
   if(ags_sndfile_check_suffix(audio_file->filename)){
     GError *error;
     guint loop_start, loop_end;

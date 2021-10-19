@@ -199,6 +199,9 @@ void ags_simple_file_read_automation_editor_launch(AgsFileLaunch *file_launch,
 void ags_simple_file_read_wave_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsWaveEditor **wave_editor);
 void ags_simple_file_read_wave_editor_launch(AgsFileLaunch *file_launch,
 					     AgsWaveEditor *wave_editor);
+void ags_simple_file_read_composite_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsCompositeEditor **composite_editor);
+void ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
+						  AgsCompositeEditor *composite_editor);
 
 void ags_simple_file_read_notation_list(AgsSimpleFile *simple_file, xmlNode *node, GList **notation);
 void ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNotation **notation);
@@ -261,6 +264,9 @@ void ags_simple_file_write_automation_editor_resolve_machine(AgsFileLookup *file
 xmlNode* ags_simple_file_write_wave_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsWaveEditor *wave_editor);
 void ags_simple_file_write_wave_editor_resolve_machine(AgsFileLookup *file_lookup,
 						       AgsWaveEditor *wave_editor);
+xmlNode* ags_simple_file_write_composite_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsCompositeEditor *composite_editor);
+void ags_simple_file_write_composite_editor_resolve_machine(AgsFileLookup *file_lookup,
+							    AgsCompositeEditor *composite_editor);
 xmlNode* ags_simple_file_write_notation_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *notation);
 xmlNode* ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsNotation *notation);
 xmlNode* ags_simple_file_write_automation_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *automation);
@@ -1810,6 +1816,12 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
 	ags_simple_file_read_wave_editor(simple_file,
 					 child,
 					 &(AGS_WAVE_WINDOW(gobject->wave_window)->wave_editor));
+      }else if(!xmlStrncmp(child->name,
+			   (xmlChar *) "ags-sf-composite-editor",
+			   24)){
+	ags_simple_file_read_composite_editor(simple_file,
+					      child,
+					      &(gobject->composite_editor));
       }
     }
 
@@ -7846,6 +7858,143 @@ ags_simple_file_read_wave_editor_launch(AgsFileLaunch *file_launch,
 }
 
 void
+ags_simple_file_read_composite_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsCompositeEditor **composite_editor)
+{
+  AgsCompositeEditor *gobject;
+  
+  AgsFileLaunch *file_launch;
+
+  if(*composite_editor != NULL){
+    gobject = *composite_editor;
+  }else{
+    return;
+  }
+
+  /* launch AgsLine */
+  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+					       "file", simple_file,
+					       "node", node,
+					       NULL);
+  g_signal_connect(G_OBJECT(file_launch), "start",
+		   G_CALLBACK(ags_simple_file_read_composite_editor_launch), gobject);
+  ags_simple_file_add_launch(simple_file,
+			     (GObject *) file_launch);
+}
+
+void
+ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
+					     AgsCompositeEditor *composite_editor)
+{
+  xmlNode *child;
+  
+  xmlChar *str;
+
+  str = xmlGetProp(file_launch->node,
+		   "zoom");
+
+  if(str != NULL){
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+
+    gchar *value;
+
+    model = gtk_combo_box_get_model(GTK_COMBO_BOX(composite_editor->toolbar->zoom));
+    
+    if(gtk_tree_model_get_iter_first(model, &iter)){
+      do{
+	gtk_tree_model_get(model, &iter,
+			   0, &value,
+			   -1);
+
+	if(!g_strcmp0(str,
+		      value)){
+	  gtk_combo_box_set_active_iter((GtkComboBox *) composite_editor->toolbar->zoom,
+					&iter);
+	  break;
+	}
+      }while(gtk_tree_model_iter_next(model,
+				      &iter));
+    }
+
+    xmlFree(str);
+  }
+
+  /* children */
+  child = file_launch->node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-property-list",
+		     21)){
+	GList *start_list, *list;
+	GList *start_property, *property;
+
+	start_property = NULL;
+	ags_simple_file_read_property_list((AgsSimpleFile *) file_launch->file,
+					   child,
+					   &start_property);
+
+	property = start_property;
+
+	while(property != NULL){
+  	  if(!g_strcmp0(((GParameter *) property->data)->name,
+			"machine")){
+	    AgsMachine *machine;
+
+	    GList *file_id_ref;
+	    GList *start_list, *list;
+
+	    str = g_value_get_string(&(((GParameter *) property->data)->value));
+
+	    if(str != NULL){
+	      ags_machine_selector_add_index(composite_editor->machine_selector);
+
+	      file_id_ref = ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
+								 str);
+
+	      if(file_id_ref != NULL &&
+		 file_id_ref->data != NULL &&
+		 AGS_FILE_ID_REF(file_id_ref->data)->ref != NULL){
+		machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
+	    
+		start_list = gtk_container_get_children((GtkContainer *) composite_editor->machine_selector);
+		list = g_list_last(start_list);
+
+		gtk_button_clicked(list->data);
+		ags_machine_selector_link_index(composite_editor->machine_selector,
+						machine);
+	      
+		g_list_free(start_list);
+	      }
+	    }
+	  }else{
+	    g_object_set_property((GObject *) composite_editor,
+				  ((GParameter *) property->data)->name,
+				  &(((GParameter *) property->data)->value));
+	  }
+	  
+	  property = property->next;
+	}
+
+	start_list = gtk_container_get_children((GtkContainer *) composite_editor->machine_selector);
+	list = start_list->next;
+
+	if(list != NULL){
+	  gtk_button_clicked(list->data);
+	}
+	
+	g_list_free(start_list);
+	g_list_free_full(start_property,
+			 g_free);
+      }
+    }
+
+    child = child->next;
+  }
+}
+
+void
 ags_simple_file_read_notation_list(AgsSimpleFile *simple_file, xmlNode *node, GList **notation)
 {
   AgsNotation *current;
@@ -9139,11 +9288,19 @@ ags_simple_file_write_value(AgsSimpleFile *simple_file, xmlNode *parent, GValue 
 xmlNode*
 ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWindow *window)
 {
+  AgsApplicationContext *application_context;
+  
   xmlNode *node;
 
   GList *list;
 
   gchar *str;
+
+  gboolean use_composite_editor;
+
+  application_context = ags_application_context_get_instance();
+  
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
   
   node = xmlNewNode(NULL,
 		    "ags-sf-window");
@@ -9191,17 +9348,23 @@ ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWin
 				     list);
   g_list_free(list);
 
-  ags_simple_file_write_notation_editor(simple_file,
-					node,
-					window->notation_editor);
-
-  ags_simple_file_write_automation_editor(simple_file,
+  if(use_composite_editor){
+    ags_simple_file_write_composite_editor(simple_file,
+					   node,
+					   window->composite_editor);
+  }else{
+    ags_simple_file_write_notation_editor(simple_file,
 					  node,
-					  window->automation_window->automation_editor);
+					  window->notation_editor);
 
-  ags_simple_file_write_wave_editor(simple_file,
-				    node,
-				    window->wave_window->wave_editor);
+    ags_simple_file_write_automation_editor(simple_file,
+					    node,
+					    window->automation_window->automation_editor);
+
+    ags_simple_file_write_wave_editor(simple_file,
+				      node,
+				      window->wave_window->wave_editor);
+  }
   
   /* add to parent */
   xmlAddChild(parent,
@@ -12243,6 +12406,120 @@ ags_simple_file_write_wave_editor_resolve_machine(AgsFileLookup *file_lookup,
 	      property_list);
   
   g_list_free(list_start);
+}
+
+xmlNode*
+ags_simple_file_write_composite_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsCompositeEditor *composite_editor)
+{
+  AgsFileLookup *file_lookup;
+
+  xmlNode *node;
+  
+  node = xmlNewNode(NULL,
+		    "ags-sf-composite-editor");
+
+  xmlNewProp(node,
+	     "zoom",
+	     gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(composite_editor->toolbar->zoom)));
+
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file", simple_file,
+					       "node", node,
+					       "reference", composite_editor,
+					       NULL);
+  ags_simple_file_add_lookup(simple_file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve",
+		   G_CALLBACK(ags_simple_file_write_composite_editor_resolve_machine), composite_editor);
+  
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
+}
+
+void
+ags_simple_file_write_composite_editor_resolve_machine(AgsFileLookup *file_lookup,
+						       AgsCompositeEditor *composite_editor)
+{
+  xmlNode *node;
+  xmlNode *property_list;
+  xmlNode *property;
+  
+  GList *start_list, *list;
+  GList *file_id_ref;
+
+  xmlChar *xpath;
+  xmlChar *str;
+  
+  node = file_lookup->node;
+  property_list = NULL;
+  
+  start_list = gtk_container_get_children((GtkContainer *) composite_editor->machine_selector);
+  list = start_list->next;
+
+  if(list != NULL){
+    property_list = xmlNewNode(NULL,
+			       "ags-sf-property-list");
+  }
+  
+  while(list != NULL){    
+    if(AGS_MACHINE_RADIO_BUTTON(list->data)->machine != NULL){
+      property = xmlNewNode(NULL,
+			    "ags-sf-property");
+      
+      xmlNewProp(property,
+		 "name",
+		 "machine");
+
+      file_id_ref = ags_simple_file_find_id_ref_by_reference((AgsSimpleFile *) file_lookup->file,
+							     AGS_MACHINE_RADIO_BUTTON(list->data)->machine);
+      if(file_id_ref != NULL){
+	str = xmlGetProp(AGS_FILE_ID_REF(file_id_ref->data)->node,
+			 "id");
+	
+	xpath = g_strdup_printf("xpath=//ags-sf-machine[@id='%s']",
+				str);
+
+	if(str != NULL){
+	  xmlFree(str);
+	}
+      }else{
+	xpath = g_strdup("(null)");
+      }
+      
+      xmlNewProp(property,
+		 "value",
+		 xpath);
+
+      /* add to parent */
+      xmlAddChild(property_list,
+		  property);
+    }else{
+      property = xmlNewNode(NULL,
+			    "ags-sf-property");
+      
+      xmlNewProp(property,
+		 "name",
+		 "machine");
+
+      xmlNewProp(property,
+		 "value",
+		 "(null)");
+
+      /* add to parent */
+      xmlAddChild(property_list,
+		  property);
+    }
+    
+    list = list->next;
+  }
+
+  /* add to parent */
+  xmlAddChild(node,
+	      property_list);
+  
+  g_list_free(start_list);
 }
 
 xmlNode*

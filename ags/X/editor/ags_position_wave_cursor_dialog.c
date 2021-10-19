@@ -20,6 +20,7 @@
 #include <ags/X/editor/ags_position_wave_cursor_dialog.h>
 #include <ags/X/editor/ags_position_wave_cursor_dialog_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_wave_window.h>
 #include <ags/X/ags_wave_editor.h>
@@ -358,49 +359,71 @@ ags_position_wave_cursor_dialog_apply(AgsApplicable *applicable)
 
   AgsWindow *window;
   AgsWaveWindow *wave_window;
-  AgsWaveEditor *wave_editor;
-  AgsWaveToolbar *wave_toolbar;
-  AgsWaveEdit *wave_edit;
+  AgsWaveEdit *focused_wave_edit;
   AgsMachine *machine;
   GtkWidget *widget;
 
   GtkAdjustment *hadjustment;
 
+  AgsApplicationContext *application_context;
+  
+  gboolean use_composite_editor;
   gdouble zoom;
   guint history;
   guint x;
 
   position_wave_cursor_dialog = AGS_POSITION_WAVE_CURSOR_DIALOG(applicable);
 
-  window = (AgsWindow *) position_wave_cursor_dialog->main_window;
+  /* application context */
+  application_context = ags_application_context_get_instance();
 
-  wave_window = window->wave_window;
-  wave_editor = wave_window->wave_editor;
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
 
-  machine = wave_editor->selected_machine;
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  if(machine == NULL){
-    return;
+  machine = NULL;
+  
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
+    AgsCompositeToolbar *composite_toolbar;
+    
+    composite_editor = window->composite_editor;
+
+    composite_toolbar = composite_editor->toolbar;
+
+    machine = composite_editor->selected_machine;
+
+    focused_wave_edit = composite_editor->wave_edit->focused_edit;
+    
+    history = gtk_combo_box_get_active(GTK_COMBO_BOX(composite_toolbar->zoom));
+  }else{
+    AgsWaveEditor *wave_editor;
+    AgsWaveToolbar *wave_toolbar;
+    
+    wave_editor = window->wave_window->wave_editor;
+
+    wave_toolbar = wave_editor->wave_toolbar;
+    
+    machine = wave_editor->selected_machine;
+
+    focused_wave_edit = wave_editor->focused_wave_edit;
+
+    history = gtk_combo_box_get_active(GTK_COMBO_BOX(wave_toolbar->zoom));
   }
-
-  wave_toolbar = wave_editor->wave_toolbar;
-
-  history = gtk_combo_box_get_active(GTK_COMBO_BOX(wave_toolbar->zoom));
+  
   zoom = exp2((double) history - 2.0);
   
-  wave_edit = wave_editor->focused_wave_edit;
-
-  if(wave_edit == NULL){
+  if(focused_wave_edit == NULL){
     return;
   }
   
   x = gtk_spin_button_get_value_as_int(position_wave_cursor_dialog->position_x);
-  wave_edit->cursor_position_x = 16 * x;
-  wave_edit->cursor_position_y = 0.0;
+  focused_wave_edit->cursor_position_x = 16 * x;
+  focused_wave_edit->cursor_position_y = 0.0;
 
-  hadjustment = gtk_range_get_adjustment(GTK_RANGE(wave_edit->hscrollbar));
+  hadjustment = gtk_range_get_adjustment(GTK_RANGE(focused_wave_edit->hscrollbar));
 
-  widget = (GtkWidget *) wave_edit->drawing_area;
+  widget = (GtkWidget *) focused_wave_edit->drawing_area;
     
   /* make visible */  
   if(hadjustment != NULL){

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,8 @@
  */
 
 #include <ags/X/editor/ags_machine_selector_callbacks.h>
+
+#include <ags/X/ags_ui_provider.h>
 
 #include <ags/X/editor/ags_machine_selection.h>
 #include <ags/X/editor/ags_machine_radio_button.h>
@@ -85,8 +87,9 @@ ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineS
   AgsMachine *machine;
   AgsMachineSelection *machine_selection;
   AgsMachineRadioButton *machine_radio_button;
-  GList *list;
 
+  GList *list;
+  
   list = gtk_window_list_toplevels();
 
   while(list != NULL && !AGS_IS_WINDOW(list->data)) list = list->next;
@@ -94,18 +97,22 @@ ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineS
   if(list == NULL){
     return;
   }
-  
+
   window = list->data;
 
   machine_selection = (AgsMachineSelection *) ags_machine_selection_new(window);
   machine_selector->machine_selection = (GtkDialog *) machine_selection;
 
-  if((AGS_MACHINE_SELECTOR_NOTATION & (machine_selector->flags)) != 0){
-    machine_selection->flags |= AGS_MACHINE_SELECTION_NOTATION;
-  }else if((AGS_MACHINE_SELECTOR_AUTOMATION & (machine_selector->flags)) != 0){
-    machine_selection->flags |= AGS_MACHINE_SELECTION_AUTOMATION;
-  }else if((AGS_MACHINE_SELECTOR_WAVE & (machine_selector->flags)) != 0){
-    machine_selection->flags |= AGS_MACHINE_SELECTION_WAVE;
+  if((AGS_MACHINE_SELECTOR_EDIT_NOTATION & (machine_selector->edit)) != 0){
+    ags_machine_selection_set_edit(machine_selection, AGS_MACHINE_SELECTION_EDIT_NOTATION);
+  }
+
+  if((AGS_MACHINE_SELECTOR_EDIT_AUTOMATION & (machine_selector->edit)) != 0){
+    ags_machine_selection_set_edit(machine_selection, AGS_MACHINE_SELECTION_EDIT_AUTOMATION);
+  }
+
+  if((AGS_MACHINE_SELECTOR_EDIT_WAVE & (machine_selector->edit)) != 0){
+    ags_machine_selection_set_edit(machine_selection, AGS_MACHINE_SELECTION_EDIT_WAVE);
   }
   
   ags_machine_selection_load_defaults(machine_selection);

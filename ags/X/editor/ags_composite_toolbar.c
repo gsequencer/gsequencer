@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,12 +20,22 @@
 #include <ags/X/editor/ags_composite_toolbar.h>
 #include <ags/X/editor/ags_composite_toolbar_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_menu_bar.h>
+#include <ags/X/ags_machine.h>
+#include <ags/X/ags_composite_editor.h>
 
 #include <ags/X/editor/ags_move_note_dialog.h>
 #include <ags/X/editor/ags_crop_note_dialog.h>
 #include <ags/X/editor/ags_select_note_dialog.h>
 #include <ags/X/editor/ags_position_notation_cursor_dialog.h>
+
+#include <ags/X/editor/ags_select_acceleration_dialog.h>
+#include <ags/X/editor/ags_ramp_acceleration_dialog.h>
+#include <ags/X/editor/ags_position_automation_cursor_dialog.h>
+
+#include <ags/X/editor/ags_select_buffer_dialog.h>
+#include <ags/X/editor/ags_position_wave_cursor_dialog.h>
 
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
@@ -177,19 +187,19 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
 
   composite_toolbar->opacity = NULL;
 
-  composite_toolbar->notation_move_note = NULL;
-  composite_toolbar->notation_crop_note = NULL;
-  composite_toolbar->notation_select_note = NULL;
-  composite_toolbar->notation_position_cursor = NULL;
+  composite_toolbar->notation_move_note = (GtkDialog *) ags_move_note_dialog_new(NULL);
+  composite_toolbar->notation_crop_note = (GtkDialog *) ags_crop_note_dialog_new(NULL);
+  composite_toolbar->notation_select_note = (GtkDialog *) ags_select_note_dialog_new(NULL);
+  composite_toolbar->notation_position_cursor = (GtkDialog *) ags_position_notation_cursor_dialog_new(NULL);
 
   composite_toolbar->sheet_position_cursor = NULL;
 
-  composite_toolbar->automation_select_acceleration = NULL;
-  composite_toolbar->automation_ramp_acceleration = NULL;
-  composite_toolbar->automation_position_cursor = NULL;
+  composite_toolbar->automation_select_acceleration = (GtkDialog *) ags_select_acceleration_dialog_new(NULL);
+  composite_toolbar->automation_ramp_acceleration = (GtkDialog *) ags_ramp_acceleration_dialog_new(NULL);
+  composite_toolbar->automation_position_cursor = (GtkDialog *) ags_position_automation_cursor_dialog_new(NULL);
 
-  composite_toolbar->wave_select_buffer = NULL;
-  composite_toolbar->wave_position_cursor = NULL;
+  composite_toolbar->wave_select_buffer = (GtkDialog *) ags_select_buffer_dialog_new(NULL);
+  composite_toolbar->wave_position_cursor = (GtkDialog *) ags_position_wave_cursor_dialog_new(NULL);
 }
 
 AgsUUID*
@@ -330,6 +340,18 @@ ags_composite_toolbar_connect(AgsConnectable *connectable)
 
   composite_toolbar->flags |= AGS_COMPOSITE_TOOLBAR_CONNECTED;
 
+  ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->notation_move_note));
+  ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->notation_crop_note));
+  ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->notation_select_note));
+  ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->notation_position_cursor));
+  
+  ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->automation_select_acceleration));
+  ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->automation_ramp_acceleration));
+  ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->automation_position_cursor));
+
+  ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->wave_select_buffer));
+  ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->wave_position_cursor));
+  
   //TODO:JK: implement me
 }
 
@@ -345,6 +367,18 @@ ags_composite_toolbar_disconnect(AgsConnectable *connectable)
   }
 
   composite_toolbar->flags &= (~AGS_COMPOSITE_TOOLBAR_CONNECTED);
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->notation_move_note));
+  ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->notation_crop_note));
+  ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->notation_select_note));
+  ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->notation_position_cursor));
+  
+  ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->automation_select_acceleration));
+  ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->automation_ramp_acceleration));
+  ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->automation_position_cursor));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->wave_select_buffer));
+  ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->wave_position_cursor));
 
   //TODO:JK: implement me
 }
@@ -439,121 +473,140 @@ ags_composite_toolbar_connect_connection(AgsConnectable *connectable,
 
     if(composite_toolbar->menu_tool_dialog != NULL &&
        composite_toolbar->menu_tool_value != NULL) {
-      for(i = 0, j = 0; i < AGS_COMPOSITE_TOOLBAR_DIALOG_SCOPE_COUNT; i++){
+      for(i = 0, j = 0; composite_toolbar->menu_tool_dialog[i] != NULL; i++){
 	guint current_value;
 
-	if(composite_toolbar->menu_tool_dialog[j] != NULL){
-	  current_value = g_value_get_uint(composite_toolbar->menu_tool_value + j);
+	current_value = g_value_get_uint(composite_toolbar->menu_tool_value + i);
 	
-	  if(!g_strcmp0(composite_toolbar->menu_tool_dialog[j],
-			AGS_COMPOSITE_TOOLBAR_SCOPE_COMMON)){
-	    if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_AUDIO_CHANNELS & current_value) != 0){
-	      g_signal_connect_after(list->data, "activate",
-				     G_CALLBACK(ags_composite_toolbar_menu_tool_popup_enable_all_audio_channels_callback), composite_toolbar);
+	if(!g_strcmp0(composite_toolbar->menu_tool_dialog[i],
+		      AGS_COMPOSITE_TOOLBAR_SCOPE_COMMON)){
+	  if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_AUDIO_CHANNELS & current_value) != 0){
+	    g_signal_connect_after(list->data, "activate",
+				   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_enable_all_audio_channels_callback), composite_toolbar);
 
-	      list = list->next;
-	    }
-
-	    if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_AUDIO_CHANNELS & current_value) != 0){
-	      g_signal_connect_after(list->data, "activate",
-				     G_CALLBACK(ags_composite_toolbar_menu_tool_popup_disable_all_audio_channels_callback), composite_toolbar);
-
-	      list = list->next;
-	    }
-
-	    if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_LINES & current_value) != 0){
-	      g_signal_connect_after(list->data, "activate",
-				     G_CALLBACK(ags_composite_toolbar_menu_tool_popup_enable_all_lines_callback), composite_toolbar);
-
-	      list = list->next;
-	    }
-
-	    if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_LINES & current_value) != 0){
-	      g_signal_connect_after(list->data, "activate",
-				     G_CALLBACK(ags_composite_toolbar_menu_tool_popup_disable_all_lines_callback), composite_toolbar);
-
-	      list = list->next;
-	    }
-	  
-	    j++;	
-	  }else if(!g_strcmp0(composite_toolbar->menu_tool_dialog[j],
-			      AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION)){
-	    if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_MOVE_NOTE & current_value) != 0){
-	      g_signal_connect_after(list->data, "activate",
-				     G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_move_note_callback), composite_toolbar);
-
-	      list = list->next;
-	    }else if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_CROP_NOTE & current_value) != 0){
-	      g_signal_connect_after(list->data, "activate",
-				     G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_crop_note_callback), composite_toolbar);
-
-	      list = list->next;
-	    }else if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_SELECT_NOTE & current_value) != 0){
-	      g_signal_connect_after(list->data, "activate",
-				     G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_select_note_callback), composite_toolbar);
-
-	      list = list->next;
-	    }else if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_POSITION_CURSOR & current_value) != 0){
-	      g_signal_connect_after(list->data, "activate",
-				     G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_position_cursor_callback), composite_toolbar);
-
-	      list = list->next;
-	    }
-	  
+	    list = list->next;
 	    j++;
-	  }else if(!g_strcmp0(composite_toolbar->menu_tool_dialog[j],
-			      AGS_COMPOSITE_TOOLBAR_SCOPE_SHEET)){	
-	    if((AGS_COMPOSITE_TOOLBAR_SHEET_DIALOG_POSITION_CURSOR & current_value) != 0){
-	      g_signal_connect_after(list->data, "activate",
-				     G_CALLBACK(ags_composite_toolbar_menu_tool_popup_sheet_position_cursor_callback), composite_toolbar);
-
-	      list = list->next;
-	    }
-	  
-	    j++;
-	  }else if(!g_strcmp0(composite_toolbar->menu_tool_dialog[j],
-			      AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION)){
-	    if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_SELECT_ACCELERATION & current_value) != 0){
-	      g_signal_connect_after(list->data, "activate",
-				     G_CALLBACK(ags_composite_toolbar_menu_tool_popup_automation_select_acceleration_callback), composite_toolbar);
-
-	      list = list->next;
-	    }else if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_RAMP_ACCELERATION & current_value) != 0){
-	      g_signal_connect_after(list->data, "activate",
-				     G_CALLBACK(ags_composite_toolbar_menu_tool_popup_automation_ramp_acceleration_callback), composite_toolbar);
-
-	      list = list->next;
-	    }else if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_POSITION_CURSOR & current_value) != 0){
-	      g_signal_connect_after(list->data, "activate",
-				     G_CALLBACK(ags_composite_toolbar_menu_tool_popup_automation_position_cursor_callback), composite_toolbar);
-
-	      list = list->next;
-	    }
-	
-	    j++;
-	  }else if(!g_strcmp0(composite_toolbar->menu_tool_dialog[j],
-			      AGS_COMPOSITE_TOOLBAR_SCOPE_WAVE)){
-	    if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_SELECT_BUFFER & current_value) != 0){
-	      g_signal_connect_after(list->data, "activate",
-				     G_CALLBACK(ags_composite_toolbar_menu_tool_popup_wave_select_buffer_callback), composite_toolbar);
-
-	      list = list->next;
-	    }else if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_POSITION_CURSOR & current_value) != 0){
-	      g_signal_connect_after(list->data, "activate",
-				     G_CALLBACK(ags_composite_toolbar_menu_tool_popup_wave_position_cursor_callback), composite_toolbar);
-
-	      list = list->next;
-	    }
-	
-	    j++;
-	  }else{
-	    g_warning("unknown dialog");
 	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_AUDIO_CHANNELS & current_value) != 0){
+	    g_signal_connect_after(list->data, "activate",
+				   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_disable_all_audio_channels_callback), composite_toolbar);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_LINES & current_value) != 0){
+	    g_signal_connect_after(list->data, "activate",
+				   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_enable_all_lines_callback), composite_toolbar);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_LINES & current_value) != 0){
+	    g_signal_connect_after(list->data, "activate",
+				   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_disable_all_lines_callback), composite_toolbar);
+
+	    list = list->next;
+	    j++;
+	  }
+	}else if(!g_strcmp0(composite_toolbar->menu_tool_dialog[i],
+			    AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION)){
+	  if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_MOVE_NOTE & current_value) != 0){
+	    g_signal_connect_after(list->data, "activate",
+				   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_move_note_callback), composite_toolbar);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_CROP_NOTE & current_value) != 0){
+	    g_signal_connect_after(list->data, "activate",
+				   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_crop_note_callback), composite_toolbar);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_SELECT_NOTE & current_value) != 0){
+	    g_signal_connect_after(list->data, "activate",
+				   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_select_note_callback), composite_toolbar);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_POSITION_CURSOR & current_value) != 0){
+	    g_signal_connect_after(list->data, "activate",
+				   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_position_cursor_callback), composite_toolbar);
+
+	    list = list->next;
+	    j++;
+	  }
+	}else if(!g_strcmp0(composite_toolbar->menu_tool_dialog[i],
+			    AGS_COMPOSITE_TOOLBAR_SCOPE_SHEET)){	
+	  if((AGS_COMPOSITE_TOOLBAR_SHEET_DIALOG_POSITION_CURSOR & current_value) != 0){
+	    g_signal_connect_after(list->data, "activate",
+				   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_sheet_position_cursor_callback), composite_toolbar);
+
+	    list = list->next;
+	    j++;
+	  }
+	}else if(!g_strcmp0(composite_toolbar->menu_tool_dialog[i],
+			    AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION)){
+	  if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_SELECT_ACCELERATION & current_value) != 0){
+	    g_signal_connect_after(list->data, "activate",
+				   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_automation_select_acceleration_callback), composite_toolbar);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_RAMP_ACCELERATION & current_value) != 0){
+	    g_signal_connect_after(list->data, "activate",
+				   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_automation_ramp_acceleration_callback), composite_toolbar);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_POSITION_CURSOR & current_value) != 0){
+	    g_signal_connect_after(list->data, "activate",
+				   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_automation_position_cursor_callback), composite_toolbar);
+
+	    list = list->next;
+	    j++;
+	  }
+	}else if(!g_strcmp0(composite_toolbar->menu_tool_dialog[i],
+			    AGS_COMPOSITE_TOOLBAR_SCOPE_WAVE)){
+	  if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_SELECT_BUFFER & current_value) != 0){
+	    g_signal_connect_after(list->data, "activate",
+				   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_wave_select_buffer_callback), composite_toolbar);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_POSITION_CURSOR & current_value) != 0){
+	    g_signal_connect_after(list->data, "activate",
+				   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_wave_position_cursor_callback), composite_toolbar);
+
+	    list = list->next;
+	    j++;
+	  }
+	}else{
+	  g_warning("unknown dialog");
 	}
       }
     }
     
     g_list_free(start_list);
+  }
+
+  if(composite_toolbar->port == connection){
+    g_signal_connect_after(connection, "changed",
+			   G_CALLBACK(ags_composite_toolbar_port_callback), composite_toolbar);
   }
 
   if(composite_toolbar->zoom == connection){
@@ -680,149 +733,170 @@ ags_composite_toolbar_disconnect_connection(AgsConnectable *connectable,
 
     if(composite_toolbar->menu_tool_dialog != NULL &&
        composite_toolbar->menu_tool_value != NULL) {
-      for(i = 0, j = 0; i < AGS_COMPOSITE_TOOLBAR_DIALOG_SCOPE_COUNT; i++){
+      for(i = 0, j = 0; composite_toolbar->menu_tool_dialog[i] != NULL; i++){
 	guint current_value;
 
-	if(composite_toolbar->menu_tool_dialog[j] != NULL){
-	  current_value = g_value_get_uint(composite_toolbar->menu_tool_value + j);
+	current_value = g_value_get_uint(composite_toolbar->menu_tool_value + i);
 	
-	  if(!g_strcmp0(composite_toolbar->menu_tool_dialog[j],
-			AGS_COMPOSITE_TOOLBAR_SCOPE_COMMON)){
-	    if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_AUDIO_CHANNELS & current_value) != 0){
-	      g_object_disconnect(list->data, "any_signal::activate",
-				  G_CALLBACK(ags_composite_toolbar_menu_tool_popup_enable_all_audio_channels_callback),
-				  composite_toolbar,
-				  NULL);
+	if(!g_strcmp0(composite_toolbar->menu_tool_dialog[i],
+		      AGS_COMPOSITE_TOOLBAR_SCOPE_COMMON)){
+	  if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_AUDIO_CHANNELS & current_value) != 0){
+	    g_object_disconnect(list->data, "any_signal::activate",
+				G_CALLBACK(ags_composite_toolbar_menu_tool_popup_enable_all_audio_channels_callback),
+				composite_toolbar,
+				NULL);
 
-	      list = list->next;
-	    }
-
-	    if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_AUDIO_CHANNELS & current_value) != 0){
-	      g_object_disconnect(list->data, "any_signal::activate",
-				  G_CALLBACK(ags_composite_toolbar_menu_tool_popup_disable_all_audio_channels_callback),
-				  composite_toolbar,
-				  NULL);
-
-	      list = list->next;
-	    }
-
-	    if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_LINES & current_value) != 0){
-	      g_object_disconnect(list->data, "any_signal::activate",
-				  G_CALLBACK(ags_composite_toolbar_menu_tool_popup_enable_all_lines_callback),
-				  composite_toolbar,
-				  NULL);
-
-	      list = list->next;
-	    }
-
-	    if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_LINES & current_value) != 0){
-	      g_object_disconnect(list->data, "any_signal::activate",
-				  G_CALLBACK(ags_composite_toolbar_menu_tool_popup_disable_all_lines_callback),
-				  composite_toolbar,
-				  NULL);
-
-	      list = list->next;
-	    }
-	  
-	    j++;	
-	  }else if(!g_strcmp0(composite_toolbar->menu_tool_dialog[j],
-			      AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION)){
-	    if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_MOVE_NOTE & current_value) != 0){
-	      g_object_disconnect(list->data, "any_signal::activate",
-				  G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_move_note_callback),
-				  composite_toolbar,
-				  NULL);
-
-	      list = list->next;
-	    }else if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_CROP_NOTE & current_value) != 0){
-	      g_object_disconnect(list->data, "any_signal::activate",
-				  G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_crop_note_callback),
-				  composite_toolbar,
-				  NULL);
-
-	      list = list->next;
-	    }else if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_SELECT_NOTE & current_value) != 0){
-	      g_object_disconnect(list->data, "any_signal::activate",
-				  G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_select_note_callback),
-				  composite_toolbar,
-				  NULL);
-
-	      list = list->next;
-	    }else if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_POSITION_CURSOR & current_value) != 0){
-	      g_object_disconnect(list->data, "any_signal::activate",
-				  G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_position_cursor_callback),
-				  composite_toolbar,
-				  NULL);
-
-	      list = list->next;
-	    }
-	  
+	    list = list->next;
 	    j++;
-	  }else if(!g_strcmp0(composite_toolbar->menu_tool_dialog[j],
-			      AGS_COMPOSITE_TOOLBAR_SCOPE_SHEET)){	
-	    if((AGS_COMPOSITE_TOOLBAR_SHEET_DIALOG_POSITION_CURSOR & current_value) != 0){
-	      g_object_disconnect(list->data, "any_signal::activate",
-				  G_CALLBACK(ags_composite_toolbar_menu_tool_popup_sheet_position_cursor_callback),
-				  composite_toolbar,
-				  NULL);
-
-	      list = list->next;
-	    }
-	  
-	    j++;
-	  }else if(!g_strcmp0(composite_toolbar->menu_tool_dialog[j],
-			      AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION)){
-	    if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_SELECT_ACCELERATION & current_value) != 0){
-	      g_object_disconnect(list->data, "any_signal::activate",
-				  G_CALLBACK(ags_composite_toolbar_menu_tool_popup_automation_select_acceleration_callback),
-				  composite_toolbar,
-				  NULL);
-
-	      list = list->next;
-	    }else if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_RAMP_ACCELERATION & current_value) != 0){
-	      g_object_disconnect(list->data, "any_signal::activate",
-				  G_CALLBACK(ags_composite_toolbar_menu_tool_popup_automation_ramp_acceleration_callback),
-				  composite_toolbar,
-				  NULL);
-
-	      list = list->next;
-	    }else if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_POSITION_CURSOR & current_value) != 0){
-	      g_object_disconnect(list->data, "any_signal::activate",
-				  G_CALLBACK(ags_composite_toolbar_menu_tool_popup_automation_position_cursor_callback),
-				  composite_toolbar,
-				  NULL);
-
-	      list = list->next;
-	    }
-	
-	    j++;
-	  }else if(!g_strcmp0(composite_toolbar->menu_tool_dialog[j],
-			      AGS_COMPOSITE_TOOLBAR_SCOPE_WAVE)){
-	    if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_SELECT_BUFFER & current_value) != 0){
-	      g_object_disconnect(list->data, "any_signal::activate",
-				  G_CALLBACK(ags_composite_toolbar_menu_tool_popup_wave_select_buffer_callback),
-				  composite_toolbar,
-				  NULL);
-
-	      list = list->next;
-	    }else if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_POSITION_CURSOR & current_value) != 0){
-	      g_object_disconnect(list->data, "any_signal::activate",
-				  G_CALLBACK(ags_composite_toolbar_menu_tool_popup_wave_position_cursor_callback),
-				  composite_toolbar,
-				  NULL);
-
-	      list = list->next;
-	    }
-	
-	    j++;
-	  }else{
-	    g_warning("unknown dialog");
 	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_AUDIO_CHANNELS & current_value) != 0){
+	    g_object_disconnect(list->data, "any_signal::activate",
+				G_CALLBACK(ags_composite_toolbar_menu_tool_popup_disable_all_audio_channels_callback),
+				composite_toolbar,
+				NULL);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_LINES & current_value) != 0){
+	    g_object_disconnect(list->data, "any_signal::activate",
+				G_CALLBACK(ags_composite_toolbar_menu_tool_popup_enable_all_lines_callback),
+				composite_toolbar,
+				NULL);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_LINES & current_value) != 0){
+	    g_object_disconnect(list->data, "any_signal::activate",
+				G_CALLBACK(ags_composite_toolbar_menu_tool_popup_disable_all_lines_callback),
+				composite_toolbar,
+				NULL);
+
+	    list = list->next;
+	    j++;
+	  }
+	}else if(!g_strcmp0(composite_toolbar->menu_tool_dialog[i],
+			    AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION)){
+	  if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_MOVE_NOTE & current_value) != 0){
+	    g_object_disconnect(list->data, "any_signal::activate",
+				G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_move_note_callback),
+				composite_toolbar,
+				NULL);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_CROP_NOTE & current_value) != 0){
+	    g_object_disconnect(list->data, "any_signal::activate",
+				G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_crop_note_callback),
+				composite_toolbar,
+				NULL);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_SELECT_NOTE & current_value) != 0){
+	    g_object_disconnect(list->data, "any_signal::activate",
+				G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_select_note_callback),
+				composite_toolbar,
+				NULL);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_POSITION_CURSOR & current_value) != 0){
+	    g_object_disconnect(list->data, "any_signal::activate",
+				G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_position_cursor_callback),
+				composite_toolbar,
+				NULL);
+
+	    list = list->next;
+	    j++;
+	  }
+	}else if(!g_strcmp0(composite_toolbar->menu_tool_dialog[i],
+			    AGS_COMPOSITE_TOOLBAR_SCOPE_SHEET)){	
+	  if((AGS_COMPOSITE_TOOLBAR_SHEET_DIALOG_POSITION_CURSOR & current_value) != 0){
+	    g_object_disconnect(list->data, "any_signal::activate",
+				G_CALLBACK(ags_composite_toolbar_menu_tool_popup_sheet_position_cursor_callback),
+				composite_toolbar,
+				NULL);
+
+	    list = list->next;
+	    j++;
+	  }
+	}else if(!g_strcmp0(composite_toolbar->menu_tool_dialog[i],
+			    AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION)){
+	  if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_SELECT_ACCELERATION & current_value) != 0){
+	    g_object_disconnect(list->data, "any_signal::activate",
+				G_CALLBACK(ags_composite_toolbar_menu_tool_popup_automation_select_acceleration_callback),
+				composite_toolbar,
+				NULL);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_RAMP_ACCELERATION & current_value) != 0){
+	    g_object_disconnect(list->data, "any_signal::activate",
+				G_CALLBACK(ags_composite_toolbar_menu_tool_popup_automation_ramp_acceleration_callback),
+				composite_toolbar,
+				NULL);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_POSITION_CURSOR & current_value) != 0){
+	    g_object_disconnect(list->data, "any_signal::activate",
+				G_CALLBACK(ags_composite_toolbar_menu_tool_popup_automation_position_cursor_callback),
+				composite_toolbar,
+				NULL);
+
+	    list = list->next;
+	    j++;
+	  }
+	}else if(!g_strcmp0(composite_toolbar->menu_tool_dialog[i],
+			    AGS_COMPOSITE_TOOLBAR_SCOPE_WAVE)){
+	  if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_SELECT_BUFFER & current_value) != 0){
+	    g_object_disconnect(list->data, "any_signal::activate",
+				G_CALLBACK(ags_composite_toolbar_menu_tool_popup_wave_select_buffer_callback),
+				composite_toolbar,
+				NULL);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_POSITION_CURSOR & current_value) != 0){
+	    g_object_disconnect(list->data, "any_signal::activate",
+				G_CALLBACK(ags_composite_toolbar_menu_tool_popup_wave_position_cursor_callback),
+				composite_toolbar,
+				NULL);
+
+	    list = list->next;
+	    j++;
+	  }
+	}else{
+	  g_warning("unknown dialog");
 	}
       }
     }
     
     g_list_free(start_list);
+  }
+
+  if(composite_toolbar->port == connection){
+    g_object_disconnect(connection, "any_signal::changed",
+			G_CALLBACK(ags_composite_toolbar_port_callback),
+			composite_toolbar,
+			NULL);
   }
 
   if(composite_toolbar->zoom == connection){
@@ -1193,7 +1267,7 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
   /* paste action */
   if((AGS_COMPOSITE_TOOLBAR_ACTION_PASTE & action) != 0 &&
      composite_toolbar->paste == NULL){
-    composite_toolbar->paste = (GtkMenuToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
+    composite_toolbar->paste = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
 								  NULL);
     g_object_set(composite_toolbar->paste,
 		 "label", i18n("Paste"),
@@ -1206,6 +1280,7 @@ ags_composite_toolbar_set_action(AgsCompositeToolbar *composite_toolbar, guint a
     composite_toolbar->paste_popup = (GtkMenu *) ags_composite_toolbar_paste_popup_new(composite_toolbar->paste_mode);
     gtk_menu_tool_button_set_menu(composite_toolbar->paste,
 				  (GtkWidget *) composite_toolbar->paste_popup);
+    gtk_widget_show_all(composite_toolbar->paste_popup);
 
     position++;
   }else if(composite_toolbar->paste != NULL){
@@ -1362,6 +1437,9 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
 											       composite_toolbar->menu_tool_value);
     gtk_menu_tool_button_set_menu(composite_toolbar->menu_tool,
 				  (GtkWidget *) composite_toolbar->menu_tool_popup);
+    gtk_widget_show_all((GtkWidget *) composite_toolbar->menu_tool_popup);
+
+    position++;
   }else if(composite_toolbar->menu_tool != NULL){
     position++;
   }
@@ -1398,6 +1476,8 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
 		       (GtkWidget *) composite_toolbar->zoom,
 		       FALSE, FALSE,
 		       0);
+
+    position++;
   }else if(composite_toolbar->zoom != NULL){
     position++;
   }
@@ -1432,6 +1512,8 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
 		       (GtkWidget *) composite_toolbar->opacity,
 		       FALSE, FALSE,
 		       0);
+
+    position++;
   }else if(composite_toolbar->opacity != NULL){
     position++;
   }
@@ -1496,6 +1578,8 @@ ags_composite_toolbar_set_option(AgsCompositeToolbar *composite_toolbar, guint o
 		       FALSE, FALSE,
 		       0);
 
+    //TODO:JK: implement me
+    
     position++;
   }else if(composite_toolbar->port != NULL){
     position++;
@@ -1531,14 +1615,14 @@ ags_composite_toolbar_unset_option(AgsCompositeToolbar *composite_toolbar, guint
 
   if((AGS_COMPOSITE_TOOLBAR_HAS_OPACITY & option) != 0 &&
      composite_toolbar->opacity != NULL){
-    gtk_widget_destroy((GtkWidget *) composite_toolbar->opacity);
+    gtk_widget_destroy(gtk_widget_get_parent(composite_toolbar->opacity));
 
     composite_toolbar->opacity = NULL;
   }
 
   if((AGS_COMPOSITE_TOOLBAR_HAS_PORT & option) != 0 &&
      composite_toolbar->port != NULL){
-    gtk_widget_destroy((GtkWidget *) composite_toolbar->port);
+    gtk_widget_destroy(gtk_widget_get_parent(composite_toolbar->port));
 
     composite_toolbar->port = NULL;
   }
@@ -1619,99 +1703,141 @@ ags_composite_toolbar_menu_tool_popup_new(gchar **dialog,
 
   if(dialog != NULL &&
      value != NULL){
-    for(i = 0, j = 0; i < AGS_COMPOSITE_TOOLBAR_DIALOG_SCOPE_COUNT; i++){
+    for(i = 0, j = 0; dialog[i] != NULL; i++){
       guint current_value;
 
-      if(dialog[j] != NULL){
-	current_value = g_value_get_uint(value + j);
-	
-	if(!g_strcmp0(dialog[j],
+      if(dialog[i] != NULL){
+	if(!g_strcmp0(dialog[i],
 		      AGS_COMPOSITE_TOOLBAR_SCOPE_COMMON)){
+	  current_value = g_value_get_uint(value + i);
+	
 	  if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_AUDIO_CHANNELS & current_value) != 0){
 	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("enable all audio channels"));
 	    gtk_menu_shell_append((GtkMenuShell *) menu,
 				  (GtkWidget *) item);
+	    j++;
 	  }
+	  
+	  current_value = g_value_get_uint(value + i);
 
 	  if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_AUDIO_CHANNELS & current_value) != 0){
 	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("disable all audio channels"));
 	    gtk_menu_shell_append((GtkMenuShell *) menu,
 				  (GtkWidget *) item);
+	    j++;
 	  }
+	  
+	  current_value = g_value_get_uint(value + i);
 
 	  if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_LINES & current_value) != 0){
 	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("enable all lines"));
 	    gtk_menu_shell_append((GtkMenuShell *) menu,
 				  (GtkWidget *) item);
+	    j++;
 	  }
+	  
+	  current_value = g_value_get_uint(value + i);
 
 	  if((AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_LINES & current_value) != 0){
 	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("disable all lines"));
 	    gtk_menu_shell_append((GtkMenuShell *) menu,
 				  (GtkWidget *) item);
+	    j++;
 	  }
-	  
-	  j++;	
-	}else if(!g_strcmp0(dialog[j],
+	}else if(!g_strcmp0(dialog[i],
 			    AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION)){
+	  current_value = g_value_get_uint(value + i);
+	    
 	  if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_MOVE_NOTE & current_value) != 0){
 	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("move notes"));
 	    gtk_menu_shell_append((GtkMenuShell *) menu,
 				  (GtkWidget *) item);
-	  }else if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_CROP_NOTE & current_value) != 0){
+	    j++;
+	  }
+
+	  current_value = g_value_get_uint(value + i);
+	  
+	  if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_CROP_NOTE & current_value) != 0){
 	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("crop notes"));
 	    gtk_menu_shell_append((GtkMenuShell *) menu,
 				  (GtkWidget *) item);
- 	  }else if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_SELECT_NOTE & current_value) != 0){
+	    j++;
+ 	  }
+	  
+	  current_value = g_value_get_uint(value + i);
+	  
+	  if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_SELECT_NOTE & current_value) != 0){
 	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("select notes"));
 	    gtk_menu_shell_append((GtkMenuShell *) menu,
 				  (GtkWidget *) item);
-	  }else if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_POSITION_CURSOR & current_value) != 0){
+	    j++;
+	  }
+
+	  current_value = g_value_get_uint(value + i);
+	  
+	  if((AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_POSITION_CURSOR & current_value) != 0){
 	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("position cursor"));
 	    gtk_menu_shell_append((GtkMenuShell *) menu,
 				  (GtkWidget *) item);
+	    j++;
 	  }
+	}else if(!g_strcmp0(dialog[i],
+			    AGS_COMPOSITE_TOOLBAR_SCOPE_SHEET)){
+	  current_value = g_value_get_uint(value + i);
 	  
-	  j++;
-	}else if(!g_strcmp0(dialog[j],
-			    AGS_COMPOSITE_TOOLBAR_SCOPE_SHEET)){	
 	  if((AGS_COMPOSITE_TOOLBAR_SHEET_DIALOG_POSITION_CURSOR & current_value) != 0){
 	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("position cursor"));
 	    gtk_menu_shell_append((GtkMenuShell *) menu,
 				  (GtkWidget *) item);
+	    j++;
 	  }
-	  
-	  j++;
-	}else if(!g_strcmp0(dialog[j],
+	}else if(!g_strcmp0(dialog[i],
 			    AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION)){
+	  current_value = g_value_get_uint(value + i);
+	  
 	  if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_SELECT_ACCELERATION & current_value) != 0){
 	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("select acceleration"));
 	    gtk_menu_shell_append((GtkMenuShell *) menu,
 				  (GtkWidget *) item);
-	  }else if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_RAMP_ACCELERATION & current_value) != 0){
+	    j++;
+	  }
+	  
+	  current_value = g_value_get_uint(value + i);
+
+	  if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_RAMP_ACCELERATION & current_value) != 0){
 	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("ramp acceleration"));
 	    gtk_menu_shell_append((GtkMenuShell *) menu,
 				  (GtkWidget *) item);
-	  }else if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_POSITION_CURSOR & current_value) != 0){
+	    j++;
+	  }
+	  
+	  current_value = g_value_get_uint(value + i);
+
+	  if((AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_POSITION_CURSOR & current_value) != 0){
 	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("position cursor"));
 	    gtk_menu_shell_append((GtkMenuShell *) menu,
 				  (GtkWidget *) item);
+	    j++;
 	  }
-	
-	  j++;
-	}else if(!g_strcmp0(dialog[j],
+	}else if(!g_strcmp0(dialog[i],
 			    AGS_COMPOSITE_TOOLBAR_SCOPE_WAVE)){
+	  current_value = g_value_get_uint(value + i);
+	  
 	  if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_SELECT_BUFFER & current_value) != 0){
 	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("select buffer"));
 	    gtk_menu_shell_append((GtkMenuShell *) menu,
 				  (GtkWidget *) item);
-	  }else if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_POSITION_CURSOR & current_value) != 0){
+	    j++;
+	  }
+	  
+	  current_value = g_value_get_uint(value + i);
+
+	  if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_POSITION_CURSOR & current_value) != 0){
 	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("position cursor"));
 	    gtk_menu_shell_append((GtkMenuShell *) menu,
 				  (GtkWidget *) item);
+	    j++;
 	  }
-	
-	  j++;
 	}else{
 	  g_warning("unknown dialog");
 	}
@@ -1720,6 +1846,353 @@ ags_composite_toolbar_menu_tool_popup_new(gchar **dialog,
   }
   
   return(menu);
+}
+
+/**
+ * ags_composite_toolbar_load_port:
+ * @composite_toolbar: the #AgsCompositeToolbar
+ * 
+ * Load ports of @composite_toolbar.
+ *
+ * Since: 3.12.2
+ */
+void
+ags_composite_toolbar_load_port(AgsCompositeToolbar *composite_toolbar)
+{
+  AgsCompositeEditor *composite_editor;
+  AgsMachine *machine;
+
+  GtkListStore *list_store;
+  GtkTreeIter iter;
+
+  AgsChannel *start_channel;
+  AgsChannel *channel;
+
+  GList *start_port, *port;
+
+  gchar **collected_specifier;
+
+  guint length;
+  
+  if(!AGS_IS_COMPOSITE_TOOLBAR(composite_toolbar)){
+    return;
+  }
+  
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) composite_toolbar,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+  machine = composite_editor->selected_machine;
+  
+  if(machine == NULL){
+    gtk_combo_box_set_model(composite_toolbar->port,
+			    NULL);
+    
+    return;
+  }
+
+  collected_specifier = (gchar **) malloc(sizeof(gchar*));
+
+  collected_specifier[0] = NULL;
+  length = 1;
+  
+  list_store = gtk_list_store_new(3,
+				  G_TYPE_BOOLEAN,
+				  G_TYPE_STRING,
+				  G_TYPE_STRING);
+  
+  gtk_combo_box_set_model(composite_toolbar->port,
+			  GTK_TREE_MODEL(list_store));
+
+  /* audio */
+  port =
+    start_port = ags_audio_collect_all_audio_ports(machine->audio);
+
+  while(port != NULL){
+    AgsPluginPort *plugin_port;
+
+    gchar *specifier;
+
+    gboolean is_enabled;
+    gboolean contains_control_name;
+
+    specifier = NULL;
+    plugin_port = NULL;
+    
+    g_object_get(port->data,
+		 "specifier", &specifier,
+		 "plugin-port", &plugin_port,
+		 NULL);
+
+    if(specifier == NULL){
+      if(plugin_port != NULL){
+	g_object_unref(plugin_port);
+      }
+      
+      /* iterate */
+      port = port->next;
+
+      continue;
+    }
+    
+#ifdef HAVE_GLIB_2_44
+    contains_control_name = g_strv_contains(collected_specifier,
+					    specifier);
+#else
+    contains_control_name = ags_strv_contains(collected_specifier,
+					      specifier);
+#endif
+
+    if(plugin_port != NULL &&
+       !contains_control_name){
+      /* create list store entry */
+      is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
+										    G_TYPE_NONE,
+										    specifier)) ? TRUE: FALSE;
+
+      gtk_list_store_append(list_store, &iter);
+      gtk_list_store_set(list_store, &iter,
+			 0, is_enabled,
+			 1, g_strdup("audio"),
+			 2, g_strdup(specifier),
+			 -1);      
+
+      /* add to collected specifier */
+      collected_specifier = (gchar **) realloc(collected_specifier,
+					       (length + 1) * sizeof(gchar *));
+      collected_specifier[length - 1] = g_strdup(specifier);
+      collected_specifier[length] = NULL;
+
+      length++;
+    }
+
+    g_free(specifier);
+    
+    if(plugin_port != NULL){
+      g_object_unref(plugin_port);
+    }
+    
+    /* iterate */
+    port = port->next;
+  }
+  
+  g_strfreev(collected_specifier);
+
+  g_list_free_full(start_port,
+		   g_object_unref);
+
+  /* output */
+  start_channel = NULL;
+  
+  g_object_get(machine->audio,
+	       "output", &start_channel,
+	       NULL);
+
+  channel = start_channel;
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+  
+  collected_specifier = (gchar **) malloc(sizeof(gchar*));
+
+  collected_specifier[0] = NULL;
+  length = 1;
+  
+  while(channel != NULL){
+    AgsChannel *next;
+    
+    /* output */
+    port =
+      start_port = ags_channel_collect_all_channel_ports(channel);
+
+    while(port != NULL){
+      AgsPluginPort *plugin_port;
+
+      gchar *specifier;
+
+      gboolean is_enabled;
+      gboolean contains_control_name;
+
+      specifier = NULL;
+      plugin_port = NULL;
+    
+      g_object_get(port->data,
+		   "specifier", &specifier,
+		   "plugin-port", &plugin_port,
+		   NULL);
+
+      if(specifier == NULL){
+	if(plugin_port != NULL){
+	  g_object_unref(plugin_port);
+	}
+      
+	/* iterate */
+	port = port->next;
+
+	continue;
+      }
+      
+      contains_control_name = g_strv_contains(collected_specifier,
+					      specifier);
+
+      if(plugin_port != NULL &&
+	 !contains_control_name){
+	/* create list store entry */
+	is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
+										      AGS_TYPE_OUTPUT,
+										      specifier)) ? TRUE: FALSE;
+    
+	gtk_list_store_append(list_store, &iter);
+	gtk_list_store_set(list_store, &iter,
+			   0, is_enabled,
+			   1, g_strdup("output"),
+			   2, g_strdup(specifier),
+			   -1);      
+
+	/* add to collected specifier */
+	collected_specifier = (gchar **) realloc(collected_specifier,
+						 (length + 1) * sizeof(gchar *));
+	collected_specifier[length - 1] = g_strdup(specifier);
+	collected_specifier[length] = NULL;
+
+	length++;
+      }
+
+      g_free(specifier);
+      
+      if(plugin_port != NULL){
+	g_object_unref(plugin_port);
+      }
+    
+      /* iterate */
+      port = port->next;
+    }
+
+    g_list_free_full(start_port,
+		     g_object_unref);
+    
+    /* iterate */
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
+  }
+
+  /* unref */
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }
+  
+  /* input */
+  start_channel = NULL;
+  
+  g_object_get(machine->audio,
+	       "input", &start_channel,
+	       NULL);
+
+  channel = start_channel;
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+  
+  while(channel != NULL){
+    AgsChannel *next;
+    
+    /* input */
+    port =
+      start_port = ags_channel_collect_all_channel_ports(channel);
+
+    while(port != NULL){
+      AgsChannel *next;
+      AgsPluginPort *plugin_port;
+
+      gchar *specifier;
+
+      gboolean is_enabled;
+      gboolean contains_control_name;
+
+      specifier = NULL;
+      plugin_port = NULL;
+    
+      g_object_get(port->data,
+		   "specifier", &specifier,
+		   "plugin-port", &plugin_port,
+		   NULL);
+
+      if(specifier == NULL){
+	if(plugin_port != NULL){
+	  g_object_unref(plugin_port);
+	}
+      
+	/* iterate */
+	port = port->next;
+
+	continue;
+      }
+      
+      contains_control_name = g_strv_contains(collected_specifier,
+					      specifier);
+
+      if(plugin_port != NULL &&
+	 !contains_control_name){
+	/* create list store entry */
+	is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
+										      AGS_TYPE_INPUT,
+										      specifier)) ? TRUE: FALSE;
+    
+	gtk_list_store_append(list_store, &iter);
+	gtk_list_store_set(list_store, &iter,
+			   0, is_enabled,
+			   1, g_strdup("input"),
+			   2, g_strdup(specifier),
+			   -1);      
+
+	/* add to collected specifier */
+	collected_specifier = (gchar **) realloc(collected_specifier,
+						 (length + 1) * sizeof(gchar *));
+	collected_specifier[length - 1] = g_strdup(specifier);
+	collected_specifier[length] = NULL;
+
+	length++;
+      }
+
+      g_free(specifier);
+      
+      if(plugin_port != NULL){
+	g_object_unref(plugin_port);
+      }
+    
+      /* iterate */
+      port = port->next;
+    }
+
+    g_list_free_full(start_port,
+		     g_object_unref);
+    
+    /* iterate */
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
+  }
+
+  /* unref */
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }
+
+  g_strfreev(collected_specifier);
+  
+  gtk_list_store_append(list_store, &iter);
+  gtk_list_store_set(list_store, &iter,
+		     0, FALSE,
+		     1, g_strdup(""),
+		     2, g_strdup(""),
+		     -1);
+  gtk_combo_box_set_active_iter(composite_toolbar->port,
+				&iter);
 }
 
 /**
@@ -1797,14 +2270,16 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 				      AGS_COMPOSITE_TOOLBAR_HAS_OPACITY |
 				      AGS_COMPOSITE_TOOLBAR_HAS_PORT));
 
+  composite_toolbar->selected_tool = NULL;
+  
   /* create new */
   if(scope != NULL){
     if(!g_strcmp0(scope,
 		  AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION)){
-      static const gchar **notation_menu_tool_dialog = {
-							AGS_COMPOSITE_TOOLBAR_SCOPE_COMMON,
-							AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION,
-							NULL,
+      static gchar* notation_menu_tool_dialog[] = {
+	AGS_COMPOSITE_TOOLBAR_SCOPE_COMMON,
+	AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION,
+	NULL,
       };
 
       static GValue *notation_menu_tool_value = NULL;
@@ -1833,6 +2308,9 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 	initialized = TRUE;
       }
 
+      composite_toolbar->menu_tool_dialog = notation_menu_tool_dialog;
+      composite_toolbar->menu_tool_value = notation_menu_tool_value;
+      
       /* set tool, action and option */
       ags_composite_toolbar_set_tool(composite_toolbar,
 				     (AGS_COMPOSITE_TOOLBAR_TOOL_POSITION |
@@ -1892,10 +2370,10 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
       success = TRUE;
     }else if(!g_strcmp0(scope,
 			AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION)){
-      static const gchar **automation_menu_tool_dialog = {
-							  AGS_COMPOSITE_TOOLBAR_SCOPE_COMMON,
-							  AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION,
-							  NULL,
+      static gchar* automation_menu_tool_dialog[] = {
+	AGS_COMPOSITE_TOOLBAR_SCOPE_COMMON,
+	AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION,
+	NULL,
       };
 
       static GValue *automation_menu_tool_value = NULL;
@@ -1923,6 +2401,9 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 	initialized = TRUE;
       }
 
+      composite_toolbar->menu_tool_dialog = automation_menu_tool_dialog;
+      composite_toolbar->menu_tool_value = automation_menu_tool_value;
+      
       /* set tool, action and option */
       ags_composite_toolbar_set_tool(composite_toolbar,
 				     (AGS_COMPOSITE_TOOLBAR_TOOL_POSITION |
@@ -1942,6 +2423,8 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 					AGS_COMPOSITE_TOOLBAR_HAS_OPACITY |
 					AGS_COMPOSITE_TOOLBAR_HAS_PORT));
 
+      ags_composite_toolbar_load_port(composite_toolbar);
+      
       /* connect */
       ags_connectable_connect_connection(AGS_CONNECTABLE(composite_toolbar),
 					 composite_toolbar->position);
@@ -1977,10 +2460,10 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
       success = TRUE;
     }else if(!g_strcmp0(scope,
 			AGS_COMPOSITE_TOOLBAR_SCOPE_WAVE)){
-      static const gchar **wave_menu_tool_dialog = {
-						    AGS_COMPOSITE_TOOLBAR_SCOPE_COMMON,
-						    AGS_COMPOSITE_TOOLBAR_SCOPE_WAVE,
-						    NULL,
+      static gchar* wave_menu_tool_dialog[] = {
+	AGS_COMPOSITE_TOOLBAR_SCOPE_COMMON,
+	AGS_COMPOSITE_TOOLBAR_SCOPE_WAVE,
+	NULL,
       };
 
       static GValue *wave_menu_tool_value = NULL;
@@ -2007,11 +2490,12 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 	initialized = TRUE;
       }
 
+      composite_toolbar->menu_tool_dialog = wave_menu_tool_dialog;
+      composite_toolbar->menu_tool_value = wave_menu_tool_value;
+      
       /* set tool, action and option */
       ags_composite_toolbar_set_tool(composite_toolbar,
 				     (AGS_COMPOSITE_TOOLBAR_TOOL_POSITION |
-				      AGS_COMPOSITE_TOOLBAR_TOOL_EDIT |
-				      AGS_COMPOSITE_TOOLBAR_TOOL_CLEAR |
 				      AGS_COMPOSITE_TOOLBAR_TOOL_SELECT));
 
       composite_toolbar->paste_mode = (AGS_COMPOSITE_TOOLBAR_PASTE_MATCH_AUDIO_CHANNEL);
@@ -2053,6 +2537,8 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
       success = TRUE;
     }
   }
+
+  gtk_widget_show_all(composite_toolbar);
 }
 
 /**

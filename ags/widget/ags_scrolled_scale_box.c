@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -187,9 +187,9 @@ ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) scrolled_scale_box;
 
-//  widget->get_preferred_width = ags_scrolled_scale_get_preferred_width;
-//  widget->get_preferred_height = ags_scrolled_scale_get_preferred_height;
-//  widget->size_allocate = ags_scrolled_scale_box_size_allocate;
+  //  widget->get_preferred_width = ags_scrolled_scale_get_preferred_width;
+  //  widget->get_preferred_height = ags_scrolled_scale_get_preferred_height;
+  widget->size_allocate = ags_scrolled_scale_box_size_allocate;
 }
 
 void
@@ -201,8 +201,7 @@ ags_scrolled_scale_box_init(AgsScrolledScaleBox *scrolled_scale_box)
   scrolled_scale_box->margin_right = 0;
 
   /* viewport */
-  scrolled_scale_box->viewport = gtk_viewport_new(NULL,
-						  NULL);
+  scrolled_scale_box->viewport = (AgsViewport *) ags_viewport_new();
   g_object_set(scrolled_scale_box->viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
@@ -322,8 +321,8 @@ ags_scrolled_scale_get_preferred_height(GtkWidget *widget,
 					gint *minimal_height,
 					gint *natural_height)
 {
-  minimal_height =
-    natural_height = NULL;
+  minimal_height[0] =
+    natural_height[0] = 1;
 }
 
 void
@@ -336,6 +335,14 @@ ags_scrolled_scale_box_size_allocate(GtkWidget *widget,
   GtkRequisition child_requisition;
   
   scrolled_scale_box = AGS_SCROLLED_SCALE_BOX(widget);
+  
+  //GTK_WIDGET_CLASS(ags_scrolled_scale_box_parent_class)->size_allocate(widget, allocation);
+  
+  gtk_widget_set_allocation(widget,
+			    allocation);
+  
+  gtk_widget_set_allocation(scrolled_scale_box->viewport,
+			    allocation);
 
   /* viewport allocation */
   gtk_widget_get_child_requisition((GtkWidget *) scrolled_scale_box->viewport,
@@ -349,19 +356,21 @@ ags_scrolled_scale_box_size_allocate(GtkWidget *widget,
 
   gtk_widget_size_allocate((GtkWidget *) scrolled_scale_box->viewport,
 			   &child_allocation);
-
-  /* box */
-  gtk_widget_get_child_requisition((GtkWidget *) scrolled_scale_box->scale_box,
-				   &child_requisition);
-
-  child_allocation.x = 0;
-  child_allocation.y = 0;
-
-  child_allocation.width = allocation->width;
-  child_allocation.height = child_requisition.height;
   
-  gtk_widget_size_allocate((GtkWidget *) scrolled_scale_box->scale_box,
-			   &child_allocation);
+  /* box */
+  if(scrolled_scale_box->scale_box != NULL){
+    gtk_widget_get_child_requisition((GtkWidget *) scrolled_scale_box->scale_box,
+				     &child_requisition);
+
+    child_allocation.x = 0;
+    child_allocation.y = 0;
+
+    child_allocation.width = AGS_SCALE_DEFAULT_SCALE_WIDTH;
+    child_allocation.height = allocation->height;
+  
+    gtk_widget_size_allocate((GtkWidget *) scrolled_scale_box->scale_box,
+			     &child_allocation);
+  }
 }
 
 /**

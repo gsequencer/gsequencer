@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,8 +51,8 @@ struct _AgsScrolledWaveEditBox
   guint margin_bottom;
   guint margin_left;
   guint margin_right;
-  
-  GtkViewport *viewport;
+
+  AgsViewport *viewport;
 
   AgsWaveEditBox *wave_edit_box;
 };

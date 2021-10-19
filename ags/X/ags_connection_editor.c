@@ -23,6 +23,7 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/X/ags_listing_editor.h>
 #include <ags/X/ags_output_collection_editor.h>
 #include <ags/X/ags_input_collection_editor.h>
 #include <ags/X/ags_output_listing_editor.h>

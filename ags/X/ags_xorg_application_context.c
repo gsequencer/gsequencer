@@ -227,6 +227,7 @@ void ags_xorg_application_context_set_midi_export_wizard(AgsUiProvider *ui_provi
 GList* ags_xorg_application_context_get_machine(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_machine(AgsUiProvider *ui_provider,
 					      GList *machine);
+gboolean ags_xorg_application_context_use_composite_editor(AgsUiProvider *ui_provider);
 GtkWidget* ags_xorg_application_context_get_composite_editor(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_composite_editor(AgsUiProvider *ui_provider,
 						       GtkWidget *widget);
@@ -564,6 +565,8 @@ ags_xorg_application_context_ui_provider_interface_init(AgsUiProviderInterface *
   ui_provider->get_machine = ags_xorg_application_context_get_machine;
   ui_provider->set_machine = ags_xorg_application_context_set_machine;
 
+  ui_provider->use_composite_editor = ags_xorg_application_context_use_composite_editor;
+
   ui_provider->get_composite_editor = ags_xorg_application_context_get_composite_editor;
   ui_provider->set_composite_editor = ags_xorg_application_context_set_composite_editor;
 
@@ -647,6 +650,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->midi_export_wizard = NULL;
 
   xorg_application_context->machine = NULL;
+
+  xorg_application_context->use_composite_editor = TRUE;
 
   xorg_application_context->composite_editor = NULL;
 
@@ -2536,6 +2541,22 @@ ags_xorg_application_context_set_machine(AgsUiProvider *ui_provider,
   
   xorg_application_context->machine = machine;
 }
+
+gboolean
+ags_xorg_application_context_use_composite_editor(AgsUiProvider *ui_provider)
+{
+  gboolean use_composite_editor;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get use composite editor */
+  use_composite_editor = xorg_application_context->use_composite_editor;
+
+  return(use_composite_editor);
+}
+
 
 GtkWidget*
 ags_xorg_application_context_get_composite_editor(AgsUiProvider *ui_provider)

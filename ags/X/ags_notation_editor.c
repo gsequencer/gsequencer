@@ -289,8 +289,9 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 						   "spacing", 0,
 						   NULL);
   notation_editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING |
-					       AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO |
-					       AGS_MACHINE_SELECTOR_NOTATION);
+					       AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
+  ags_machine_selector_set_edit(notation_editor->machine_selector,
+				AGS_MACHINE_SELECTOR_EDIT_NOTATION);
   gtk_label_set_label(notation_editor->machine_selector->label,
 		      i18n("notation"));
   
@@ -1937,7 +1938,6 @@ ags_notation_editor_cut(AgsNotationEditor *notation_editor)
     xmlFreeDoc(clipboard);
   }
 }
-
 
 void
 ags_notation_editor_get_boundary(AgsNotationEditor *notation_editor,

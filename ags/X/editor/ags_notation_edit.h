@@ -44,6 +44,8 @@ G_BEGIN_DECLS
 #define AGS_NOTATION_EDIT_DEFAULT_CONTROL_MARGIN_X (0)
 #define AGS_NOTATION_EDIT_DEFAULT_CONTROL_MARGIN_Y (2)
 
+#define AGS_NOTATION_EDIT_DEFAULT_KEY_COUNT (128)
+
 #define AGS_NOTATION_EDIT_DEFAULT_CURSOR_POSITION_X (0)
 #define AGS_NOTATION_EDIT_DEFAULT_CURSOR_POSITION_Y (0)
 
@@ -103,6 +105,8 @@ struct _AgsNotationEdit
 
   guint control_margin_x;
   guint control_margin_y;
+
+  guint key_count;
   
   guint cursor_position_x;
   guint cursor_position_y;

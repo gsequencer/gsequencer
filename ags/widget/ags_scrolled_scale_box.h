@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,7 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/widget/ags_viewport.h>
 #include <ags/widget/ags_scale_box.h>
 
 G_BEGIN_DECLS
@@ -48,7 +49,7 @@ struct _AgsScrolledScaleBox
   guint margin_left;
   guint margin_right;
   
-  GtkViewport *viewport;
+  AgsViewport *viewport;
 
   AgsScaleBox *scale_box;
 };
