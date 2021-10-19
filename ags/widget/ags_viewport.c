@@ -317,7 +317,7 @@ ags_viewport_size_allocate(GtkWidget *widget,
   if(gtk_widget_get_realized(widget)){
     gdk_window_move_resize(gtk_widget_get_window(widget),
 			   allocation->x - position_x, allocation->y - position_y,
-			   child_allocation.width, child_allocation.height);
+			   allocation->width, allocation->height);
     
     ags_viewport_send_configure(viewport);
   }

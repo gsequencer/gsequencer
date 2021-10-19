@@ -416,9 +416,9 @@ nobase_include_HEADERS = $(libags_la_HEADERS_0) $(libags_thread_la_HEADERS_0) $(
 doc_DATA = README
 
 # documentation
-# manpages = \
-# 	gsequencer.1.xml \
-# 	midi2xml.1.xml
+manpages = \
+	gsequencer.1.xml \
+	midi2xml.1.xml
 
 EXTRA_DIST += \
 	docs/custom.css
