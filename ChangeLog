@@ -1,3 +1,11 @@
+ags (3.12.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed SIGSEGV while restore from AgsSimpleFile XML
+	* fixed SIGSEGV after destroy AgsMachine
+	* fixed functional UI tests
+	* fixed typo in ags/test/ags_functional_loop_0??_xml_test.c
+
 ags (3.12.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

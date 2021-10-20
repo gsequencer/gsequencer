@@ -1807,15 +1807,19 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-automation-editor",
 			   25)){
-	ags_simple_file_read_automation_editor(simple_file,
-					       child,
-					       &(AGS_AUTOMATION_WINDOW(gobject->automation_window)->automation_editor));
+	if(gobject->automation_window != NULL){
+	  ags_simple_file_read_automation_editor(simple_file,
+						 child,
+						 &(AGS_AUTOMATION_WINDOW(gobject->automation_window)->automation_editor));
+	}
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-wave-editor",
 			   19)){
-	ags_simple_file_read_wave_editor(simple_file,
-					 child,
-					 &(AGS_WAVE_WINDOW(gobject->wave_window)->wave_editor));
+	if(gobject->wave_window != NULL){
+	  ags_simple_file_read_wave_editor(simple_file,
+					   child,
+					   &(AGS_WAVE_WINDOW(gobject->wave_window)->wave_editor));
+	}
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-composite-editor",
 			   24)){

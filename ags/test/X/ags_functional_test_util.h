@@ -205,20 +205,20 @@ gboolean ags_functional_test_util_notation_toolbar_cut_click();
 
 gboolean ags_functional_test_util_notation_toolbar_zoom(guint nth_zoom);
 
-/* machine selector */
-gboolean ags_functional_test_util_machine_selector_select(gchar *editor_type,
-							  guint nth_index);
-
 /* machine selection */
 gboolean ags_functional_test_util_machine_selection_select(gchar *editor_type,
 							   gchar *machine);
 
-gboolean ags_functional_test_util_machine_selection_remove_index(gchar *editor_type);
-gboolean ags_functional_test_util_machine_selection_add_index(gchar *editor_type);
-gboolean ags_functional_test_util_machine_selection_link_index(gchar *editor_type);
+/* machine selector */
+gboolean ags_functional_test_util_machine_selector_select(gchar *editor_type,
+							  guint nth_index);
 
-gboolean ags_functional_test_util_machine_selection_reverse_mapping();
-gboolean ags_functional_test_util_machine_selection_shift_piano(guint nth_shift);
+gboolean ags_functional_test_util_machine_selector_remove_index(gchar *editor_type);
+gboolean ags_functional_test_util_machine_selector_add_index(gchar *editor_type);
+gboolean ags_functional_test_util_machine_selector_link_index(gchar *editor_type);
+
+gboolean ags_functional_test_util_machine_selector_reverse_mapping();
+gboolean ags_functional_test_util_machine_selector_shift_piano(guint nth_shift);
 
 /* notation edit */
 gboolean ags_functional_test_util_notation_edit_delete_point(guint x,

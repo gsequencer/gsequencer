@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-10-19 11:04+0200\n"
+"POT-Creation-Date: 2021-10-20 01:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -510,15 +510,15 @@ msgstr ""
 msgid "destroy"
 msgstr ""
 
-#: ags/X/ags_machine.c:3497 ags/X/ags_machine_callbacks.c:413
+#: ags/X/ags_machine.c:3497 ags/X/ags_machine_callbacks.c:396
 msgid "rename"
 msgstr ""
 
-#: ags/X/ags_machine.c:3500 ags/X/ags_machine_callbacks.c:475
+#: ags/X/ags_machine.c:3500 ags/X/ags_machine_callbacks.c:458
 msgid "rename audio"
 msgstr ""
 
-#: ags/X/ags_machine.c:3503 ags/X/ags_machine_callbacks.c:556
+#: ags/X/ags_machine.c:3503 ags/X/ags_machine_callbacks.c:539
 msgid "reposition audio"
 msgstr ""
 
