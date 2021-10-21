@@ -20,6 +20,8 @@
 #include <ags/X/editor/ags_machine_selector_callbacks.h>
 
 #include <ags/X/ags_ui_provider.h>
+#include <ags/X/ags_composite_editor.h>
+#include <ags/X/ags_notation_editor.h>
 
 #include <ags/X/editor/ags_machine_selection.h>
 #include <ags/X/editor/ags_machine_radio_button.h>
@@ -176,21 +178,42 @@ ags_machine_selector_radio_changed(GtkWidget *radio_button, AgsMachineSelector *
 void
 ags_machine_selector_popup_reverse_mapping_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector)
 {
-  AgsNotationEditor *notation_editor;
+  AgsMachine *machine;
+  
+  AgsApplicationContext *application_context;
+  
+  gboolean use_composite_editor;
 
   if((AGS_MACHINE_SELECTOR_BLOCK_REVERSE_MAPPING & (machine_selector->flags)) != 0){
     return;
   }
+
+  application_context = ags_application_context_get_instance();
+
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
+    
+    composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
+					       AGS_TYPE_COMPOSITE_EDITOR);
+
+    machine = composite_editor->selected_machine;
+  }else{
+    AgsNotationEditor *notation_editor;
+    
+    notation_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
+					      AGS_TYPE_NOTATION_EDITOR);
+
+    machine = notation_editor->selected_machine;
+  }
   
-  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
-								  AGS_TYPE_NOTATION_EDITOR);
-  
-  if(notation_editor->selected_machine != NULL){
+  if(machine != NULL){
     if(gtk_check_menu_item_get_active((GtkCheckMenuItem *) menu_item)){
-      ags_audio_set_behaviour_flags(notation_editor->selected_machine->audio,
+      ags_audio_set_behaviour_flags(machine->audio,
 				    AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING);
     }else{
-      ags_audio_unset_behaviour_flags(notation_editor->selected_machine->audio,
+      ags_audio_unset_behaviour_flags(machine->audio,
 				      AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING);
     }
   }
@@ -199,12 +222,38 @@ ags_machine_selector_popup_reverse_mapping_callback(GtkWidget *menu_item, AgsMac
 void
 ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector)
 {
-  AgsNotationEditor *notation_editor;
+  AgsMachine *machine;
+  AgsPiano *piano;
+  
+  AgsApplicationContext *application_context;
+  
+  gboolean use_composite_editor;
 
-  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
-								  AGS_TYPE_NOTATION_EDITOR);
+  application_context = ags_application_context_get_instance();
 
-  if(notation_editor->selected_machine != NULL){
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
+    
+    composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
+					       AGS_TYPE_COMPOSITE_EDITOR);
+
+    machine = composite_editor->selected_machine;
+
+    piano = AGS_SCROLLED_PIANOG(composite_editor->notation_edit->edit_control)->piano;
+  }else{
+    AgsNotationEditor *notation_editor;
+    
+    notation_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
+					      AGS_TYPE_NOTATION_EDITOR);
+
+    machine = notation_editor->selected_machine;
+
+    piano = notation_editor->scrolled_piano->piano;
+  }
+  
+  if(machine != NULL){
     GList *notation;
 
     gchar *base_note;
@@ -279,10 +328,10 @@ ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachine
       base_key_code = 32;
     }
 
-    g_object_set(notation_editor->scrolled_piano->piano,
+    g_object_set(piano,
 		 "base-note", base_note,
 		 "base-key-code", base_key_code,
 		 NULL);
-    gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano->piano);
+    gtk_widget_queue_draw((GtkWidget *) piano);
   }
 }
