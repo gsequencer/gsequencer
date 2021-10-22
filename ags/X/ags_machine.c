@@ -491,6 +491,9 @@ ags_machine_init(AgsMachine *machine)
   machine->audio->flags |= AGS_AUDIO_CAN_NEXT_ACTIVE;
   machine->audio->machine_widget = (GObject *) machine;
 
+  machine->base_note = NULL;
+  machine->base_key_code = 0;
+  
   machine->active_playback = NULL;
   
   /* AgsAudio related forwarded signals */
@@ -1161,6 +1164,8 @@ ags_machine_finalize(GObject *gobject)
 		   (GDestroyNotify) ags_machine_automation_port_free);  
   
   //TODO:JK: better clean-up of audio
+
+  g_free(machine->base_note);
   
   if(machine->properties != NULL){
     gtk_widget_destroy((GtkWidget *) machine->properties);

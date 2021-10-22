@@ -1078,6 +1078,13 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     g_object_set(AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano,
 		 "key-count", channel_count,
 		 NULL);
+
+    if(machine->base_note != NULL){
+      g_object_set(AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano,
+		   "base-note", machine->base_note,
+		   "base-key-code", machine->base_key_code,
+		   NULL);
+    }
   }else{
     /* apply default */
     AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->key_count = AGS_NOTATION_EDIT_DEFAULT_KEY_COUNT;
@@ -1783,6 +1790,7 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
       i++;
     }
 
+    gtk_widget_queue_draw(composite_editor->notation_edit->edit);
     
     g_list_free_full(start_notation,
 		     (GDestroyNotify) g_object_unref);
@@ -1848,6 +1856,8 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
 
       i++;
     }
+
+    gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit));
     
     g_list_free_full(start_automation,
 		     g_object_unref);
@@ -1898,6 +1908,8 @@ ags_composite_editor_select_all(AgsCompositeEditor *composite_editor)
 
       i++;
     }
+
+    gtk_widget_queue_draw(composite_editor->wave_edit->focused_edit);
     
     g_list_free_full(start_wave,
 		     g_object_unref);
@@ -2909,6 +2921,8 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
       first_x = 0;
     }
     
+    gtk_widget_queue_draw(composite_editor->notation_edit);
+    
     xmlFreeDoc(clipboard); 
 
     if(paste_from_position){
@@ -3018,6 +3032,8 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
     if(first_x == -1){
       first_x = 0;
     }
+    
+    gtk_widget_queue_draw(composite_editor->automation_edit->focused_edit);
     
     xmlFreeDoc(clipboard); 
 
@@ -3144,6 +3160,8 @@ ags_composite_editor_paste(AgsCompositeEditor *composite_editor)
     if(first_x == -1){
       first_x = 0;
     }
+    
+    gtk_widget_queue_draw(composite_editor->wave_edit->focused_edit);
     
     xmlFreeDoc(clipboard); 
 
@@ -3495,6 +3513,8 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
 
     xmlFreeDoc(clipboard);
+    
+    gtk_widget_queue_draw(composite_editor->notation_edit);
   }else if(composite_editor->selected_edit == composite_editor->sheet_edit){
     //TODO:JK: implement me
   }else if(composite_editor->selected_edit == composite_editor->automation_edit){    
@@ -3565,6 +3585,8 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
 
     xmlFreeDoc(clipboard);
+    
+    gtk_widget_queue_draw(composite_editor->automation_edit->focused_edit);
   }else if(composite_editor->selected_edit == composite_editor->wave_edit){
     AgsNotebook *notebook;
   
@@ -3639,6 +3661,8 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
 
     xmlFreeDoc(clipboard);
+    
+    gtk_widget_queue_draw(composite_editor->wave_edit->focused_edit);
   }
 }
 
@@ -3809,7 +3833,9 @@ ags_composite_editor_invert(AgsCompositeEditor *composite_editor)
       
       i++;
     }
-
+    
+    gtk_widget_queue_draw(composite_editor->notation_edit);
+    
     g_list_free_full(start_notation,
 		     g_object_unref);
   }else if(composite_editor->selected_edit == composite_editor->sheet_edit){
@@ -3917,6 +3943,8 @@ ags_composite_editor_add_note(AgsCompositeEditor *composite_editor,
       /* iterate */
       i++;
     }
+    
+    gtk_widget_queue_draw(composite_editor->notation_edit);
 
     g_object_unref(timestamp);
   }else if(composite_editor->selected_edit == composite_editor->sheet_edit){
@@ -3987,6 +4015,8 @@ ags_composite_editor_delete_note(AgsCompositeEditor *composite_editor,
       /* iterate */
       i++;
     }
+    
+    gtk_widget_queue_draw(composite_editor->notation_edit);
 
     g_object_unref(timestamp);
   }else if(composite_editor->selected_edit == composite_editor->sheet_edit){
@@ -4211,8 +4241,10 @@ ags_composite_editor_add_acceleration(AgsCompositeEditor *composite_editor,
     }
       
     i++;
-  }
-    
+  }    
+  
+  gtk_widget_queue_draw(composite_editor->automation_edit->focused_edit);
+  
   /* unref */
   if(start_output != NULL){
     g_object_unref(start_output);
@@ -4362,6 +4394,8 @@ ags_composite_editor_delete_acceleration(AgsCompositeEditor *composite_editor,
     i++;
   }
 
+  gtk_widget_queue_draw(composite_editor->automation_edit->focused_edit);
+  
   g_list_free_full(start_automation,
 		   g_object_unref);
 }
@@ -4442,6 +4476,8 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
       i++;
     }
 
+    gtk_widget_queue_draw(composite_editor->notation_edit);
+  
     g_list_free_full(start_notation,
 		     (GDestroyNotify) g_object_unref);
   }else if(composite_editor->selected_edit == composite_editor->sheet_edit){
@@ -4518,6 +4554,8 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
       i++;
     }
     
+    gtk_widget_queue_draw(composite_editor->automation_edit->focused_edit);
+  
     g_list_free_full(start_automation,
 		     g_object_unref);
   }else if(composite_editor->selected_edit == composite_editor->wave_edit){
@@ -4632,7 +4670,9 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
       
       i++;
     }
-
+    
+    gtk_widget_queue_draw(composite_editor->wave_edit->focused_edit);
+  
     if(soundcard != NULL){
       g_object_unref(soundcard);
     }

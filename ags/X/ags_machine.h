@@ -133,6 +133,9 @@ struct _AgsMachine
   
   AgsAudio *audio;
 
+  gchar *base_note;
+  gint base_key_code;
+  
   GList *active_playback;
   
   GtkToggleButton *play;

@@ -2397,7 +2397,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
   guint x0, x1;
   guint offset;
   guint line;
-  gint i;
+  gint i, i_stop;
   
   if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
     return;
@@ -2415,6 +2415,8 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
   notebook = NULL;
   
   /* zoom */
+  i_stop = 0;
+  
   if(use_composite_editor){
     AgsCompositeEditor *composite_editor;
     AgsCompositeToolbar *composite_toolbar;
@@ -2425,14 +2427,26 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     if(composite_editor->selected_machine == NULL){
       return;
     }
+    
+    selected_machine = composite_editor->selected_machine;
 
     if(composite_editor->automation_edit->focused_edit == automation_edit){
       notebook = composite_editor->automation_edit->channel_selector;
     }else{
       notebook = NULL;
+      
+      if(automation_edit->channel_type == G_TYPE_NONE){
+	notebook = NULL;
+      }else if(automation_edit->channel_type == AGS_TYPE_OUTPUT){
+	g_object_get(selected_machine->audio,
+		     "output-lines", &i_stop,
+		     NULL);
+      }else if(automation_edit->channel_type == AGS_TYPE_INPUT){
+	g_object_get(selected_machine->audio,
+		     "input-lines", &i_stop,
+		     NULL);
+      }
     }
-    
-    selected_machine = composite_editor->selected_machine;
     
     composite_toolbar = composite_editor->toolbar;
 
@@ -2447,6 +2461,8 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     if(automation_editor->selected_machine == NULL){
       return;
     }
+    
+    selected_machine = automation_editor->selected_machine;
 
     if(automation_edit->channel_type == G_TYPE_NONE){
       notebook = NULL;
@@ -2455,8 +2471,6 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     }else if(automation_edit->channel_type == AGS_TYPE_INPUT){
       notebook = automation_editor->input_notebook;
     }
-    
-    selected_machine = automation_editor->selected_machine;
     
     automation_toolbar = automation_editor->automation_toolbar;
     
@@ -2547,11 +2561,12 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
       list_automation = list_automation->next;
     }
     
-    if(notebook == NULL){
+    i++;
+    
+    if(notebook == NULL &&
+       i >= i_stop){
       break;
     }
-    
-    i++;
   }
 
   g_list_free_full(start_list_automation,

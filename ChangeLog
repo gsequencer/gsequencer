@@ -1,3 +1,10 @@
+ags (3.12.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved restore of AgsPiano shift while AgsCompositeEditor::machine-changed()
+	* improved AgsAutomationEdit draw all automation if not focused
+	* minor improvements
+
 ags (3.12.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
