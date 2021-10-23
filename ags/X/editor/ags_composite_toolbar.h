@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -208,6 +208,8 @@ void ags_composite_toolbar_unset_option(AgsCompositeToolbar *composite_toolbar, 
 GtkMenu* ags_composite_toolbar_paste_popup_new(guint paste_mode);
 GtkMenu* ags_composite_toolbar_menu_tool_popup_new(gchar **dialog,
 						   GValue *value);
+
+void ags_composite_toolbar_load_port(AgsCompositeToolbar *composite_toolbar);
 
 void ags_composite_toolbar_set_selected_tool(AgsCompositeToolbar *composite_toolbar,
 					     GtkToggleToolButton *selected_tool);

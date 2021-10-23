@@ -177,6 +177,8 @@ ags_line_editor_init(AgsLineEditor *line_editor)
   line_editor->channel = NULL;
   
   line_editor->link_editor = NULL;
+  line_editor->output_editor = NULL;
+  line_editor->input_editor = NULL;
   line_editor->member_editor = NULL;
 }
 

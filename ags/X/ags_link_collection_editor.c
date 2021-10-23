@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -190,7 +190,7 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
   gtk_widget_set_valign(label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign(label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_vexpand(label,
 			 TRUE);
   gtk_widget_set_hexpand(label,
@@ -206,7 +206,7 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
   gtk_widget_set_valign(label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign(label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_vexpand(label,
 			 TRUE);
   gtk_widget_set_hexpand(label,
@@ -245,7 +245,7 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
   gtk_widget_set_valign(label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign(label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_vexpand(label,
 			 TRUE);
   gtk_widget_set_hexpand(label,
@@ -268,7 +268,7 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
   gtk_widget_set_valign(label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign(label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_vexpand(label,
 			 TRUE);
   gtk_widget_set_hexpand(label,
@@ -291,7 +291,7 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
   gtk_widget_set_valign(label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign(label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
   gtk_widget_set_vexpand(label,
 			 TRUE);
   gtk_widget_set_hexpand(label,

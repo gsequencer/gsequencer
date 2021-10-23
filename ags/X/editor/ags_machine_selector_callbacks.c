@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,10 @@
  */
 
 #include <ags/X/editor/ags_machine_selector_callbacks.h>
+
+#include <ags/X/ags_ui_provider.h>
+#include <ags/X/ags_composite_editor.h>
+#include <ags/X/ags_notation_editor.h>
 
 #include <ags/X/editor/ags_machine_selection.h>
 #include <ags/X/editor/ags_machine_radio_button.h>
@@ -85,8 +89,9 @@ ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineS
   AgsMachine *machine;
   AgsMachineSelection *machine_selection;
   AgsMachineRadioButton *machine_radio_button;
-  GList *list;
 
+  GList *list;
+  
   list = gtk_window_list_toplevels();
 
   while(list != NULL && !AGS_IS_WINDOW(list->data)) list = list->next;
@@ -94,18 +99,22 @@ ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineS
   if(list == NULL){
     return;
   }
-  
+
   window = list->data;
 
   machine_selection = (AgsMachineSelection *) ags_machine_selection_new(window);
   machine_selector->machine_selection = (GtkDialog *) machine_selection;
 
-  if((AGS_MACHINE_SELECTOR_NOTATION & (machine_selector->flags)) != 0){
-    machine_selection->flags |= AGS_MACHINE_SELECTION_NOTATION;
-  }else if((AGS_MACHINE_SELECTOR_AUTOMATION & (machine_selector->flags)) != 0){
-    machine_selection->flags |= AGS_MACHINE_SELECTION_AUTOMATION;
-  }else if((AGS_MACHINE_SELECTOR_WAVE & (machine_selector->flags)) != 0){
-    machine_selection->flags |= AGS_MACHINE_SELECTION_WAVE;
+  if((AGS_MACHINE_SELECTOR_EDIT_NOTATION & (machine_selector->edit)) != 0){
+    ags_machine_selection_set_edit(machine_selection, AGS_MACHINE_SELECTION_EDIT_NOTATION);
+  }
+
+  if((AGS_MACHINE_SELECTOR_EDIT_AUTOMATION & (machine_selector->edit)) != 0){
+    ags_machine_selection_set_edit(machine_selection, AGS_MACHINE_SELECTION_EDIT_AUTOMATION);
+  }
+
+  if((AGS_MACHINE_SELECTOR_EDIT_WAVE & (machine_selector->edit)) != 0){
+    ags_machine_selection_set_edit(machine_selection, AGS_MACHINE_SELECTION_EDIT_WAVE);
   }
   
   ags_machine_selection_load_defaults(machine_selection);
@@ -169,21 +178,42 @@ ags_machine_selector_radio_changed(GtkWidget *radio_button, AgsMachineSelector *
 void
 ags_machine_selector_popup_reverse_mapping_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector)
 {
-  AgsNotationEditor *notation_editor;
+  AgsMachine *machine;
+  
+  AgsApplicationContext *application_context;
+  
+  gboolean use_composite_editor;
 
   if((AGS_MACHINE_SELECTOR_BLOCK_REVERSE_MAPPING & (machine_selector->flags)) != 0){
     return;
   }
+
+  application_context = ags_application_context_get_instance();
+
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
+    
+    composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
+					       AGS_TYPE_COMPOSITE_EDITOR);
+
+    machine = composite_editor->selected_machine;
+  }else{
+    AgsNotationEditor *notation_editor;
+    
+    notation_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
+					      AGS_TYPE_NOTATION_EDITOR);
+
+    machine = notation_editor->selected_machine;
+  }
   
-  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
-								  AGS_TYPE_NOTATION_EDITOR);
-  
-  if(notation_editor->selected_machine != NULL){
+  if(machine != NULL){
     if(gtk_check_menu_item_get_active((GtkCheckMenuItem *) menu_item)){
-      ags_audio_set_behaviour_flags(notation_editor->selected_machine->audio,
+      ags_audio_set_behaviour_flags(machine->audio,
 				    AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING);
     }else{
-      ags_audio_unset_behaviour_flags(notation_editor->selected_machine->audio,
+      ags_audio_unset_behaviour_flags(machine->audio,
 				      AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING);
     }
   }
@@ -192,90 +222,113 @@ ags_machine_selector_popup_reverse_mapping_callback(GtkWidget *menu_item, AgsMac
 void
 ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector)
 {
-  AgsNotationEditor *notation_editor;
+  AgsMachine *machine;
+  AgsPiano *piano;
+  AgsNotationEdit *notation_edit;
+  
+  AgsApplicationContext *application_context;
+  
+  gchar *base_note;
+  gchar *label;
 
-  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
-								  AGS_TYPE_NOTATION_EDITOR);
+  gint base_key_code;
+  gboolean use_composite_editor;
 
-  if(notation_editor->selected_machine != NULL){
-    GList *notation;
+  application_context = ags_application_context_get_instance();
 
-    gchar *base_note;
-    gchar *label;
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
 
-    gint base_key_code;
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
     
-    label = gtk_menu_item_get_label((GtkMenuItem *) menu_item);
+    composite_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
+					       AGS_TYPE_COMPOSITE_EDITOR);
 
-    //FIXME:JK: modify to the new API
-#if 0
-    notation = notation_editor->selected_machine->audio->notation;
+    machine = composite_editor->selected_machine;
 
-    while(notation != NULL){
-      g_free(AGS_NOTATION(notation->data)->base_note);
-      AGS_NOTATION(notation->data)->base_note = g_strdup(label);
-      
-      notation = notation->next;
-    }
-#endif
-
-    base_note = NULL;
-    base_key_code = 0;
+    notation_edit = composite_editor->notation_edit->edit;
     
-    if(!g_strcmp0(label,
-		  "A")){
-      base_note = AGS_PIANO_KEYS_OCTAVE_2_A;
-      base_key_code = 33;
-    }else if(!g_strcmp0(label,
-			"A#")){
-      base_note = AGS_PIANO_KEYS_OCTAVE_2_AIS;
-      base_key_code = 34;
-    }else if(!g_strcmp0(label,
-			"H")){
-      base_note = AGS_PIANO_KEYS_OCTAVE_2_H;
-      base_key_code = 35;
-    }else if(!g_strcmp0(label,
-			"C")){
-      base_note = AGS_PIANO_KEYS_OCTAVE_2_C;
-      base_key_code = 24;
-    }else if(!g_strcmp0(label,
-			"C#")){
-      base_note = AGS_PIANO_KEYS_OCTAVE_2_CIS;
-      base_key_code = 25;
-    }else if(!g_strcmp0(label,
-			"D")){
-      base_note = AGS_PIANO_KEYS_OCTAVE_2_D;
-      base_key_code = 26;
-    }else if(!g_strcmp0(label,
-			"D#")){
-      base_note = AGS_PIANO_KEYS_OCTAVE_2_DIS;
-      base_key_code = 27;
-    }else if(!g_strcmp0(label,
-			"E")){
-      base_note = AGS_PIANO_KEYS_OCTAVE_2_E;
-      base_key_code = 28;
-    }else if(!g_strcmp0(label,
-			"F")){
-      base_note = AGS_PIANO_KEYS_OCTAVE_2_F;
-      base_key_code = 29;
-    }else if(!g_strcmp0(label,
-			"F#")){
-      base_note = AGS_PIANO_KEYS_OCTAVE_2_FIS;
-      base_key_code = 30;
-    }else if(!g_strcmp0(label,
-			"G")){
-      base_note = AGS_PIANO_KEYS_OCTAVE_2_G;
-      base_key_code = 31;
-    }else if(!g_strcmp0(label,
-			"G#")){
-      base_note = AGS_PIANO_KEYS_OCTAVE_2_GIS;
-      base_key_code = 32;
-    }
+    piano = AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano;
+  }else{
+    AgsNotationEditor *notation_editor;
+    
+    notation_editor = gtk_widget_get_ancestor(GTK_WIDGET(machine_selector),
+					      AGS_TYPE_NOTATION_EDITOR);
 
-    g_object_set(notation_editor->scrolled_piano->piano,
-		 "base-note", base_note,
-		 "base-key-code", base_key_code,
-		 NULL);
-    gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano->piano);
+    machine = notation_editor->selected_machine;
+
+    notation_edit = notation_editor->notation_edit;
+    
+    piano = notation_editor->scrolled_piano->piano;
   }
+  
+  label = gtk_menu_item_get_label((GtkMenuItem *) menu_item);
+
+  base_note = NULL;
+  base_key_code = 0;
+    
+  if(!g_strcmp0(label,
+		"A")){
+    base_note = AGS_PIANO_KEYS_OCTAVE_2_A;
+    base_key_code = 33;
+  }else if(!g_strcmp0(label,
+		      "A#")){
+    base_note = AGS_PIANO_KEYS_OCTAVE_2_AIS;
+    base_key_code = 34;
+  }else if(!g_strcmp0(label,
+		      "H")){
+    base_note = AGS_PIANO_KEYS_OCTAVE_2_H;
+    base_key_code = 35;
+  }else if(!g_strcmp0(label,
+		      "C")){
+    base_note = AGS_PIANO_KEYS_OCTAVE_2_C;
+    base_key_code = 24;
+  }else if(!g_strcmp0(label,
+		      "C#")){
+    base_note = AGS_PIANO_KEYS_OCTAVE_2_CIS;
+    base_key_code = 25;
+  }else if(!g_strcmp0(label,
+		      "D")){
+    base_note = AGS_PIANO_KEYS_OCTAVE_2_D;
+    base_key_code = 26;
+  }else if(!g_strcmp0(label,
+		      "D#")){
+    base_note = AGS_PIANO_KEYS_OCTAVE_2_DIS;
+    base_key_code = 27;
+  }else if(!g_strcmp0(label,
+		      "E")){
+    base_note = AGS_PIANO_KEYS_OCTAVE_2_E;
+    base_key_code = 28;
+  }else if(!g_strcmp0(label,
+		      "F")){
+    base_note = AGS_PIANO_KEYS_OCTAVE_2_F;
+    base_key_code = 29;
+  }else if(!g_strcmp0(label,
+		      "F#")){
+    base_note = AGS_PIANO_KEYS_OCTAVE_2_FIS;
+    base_key_code = 30;
+  }else if(!g_strcmp0(label,
+		      "G")){
+    base_note = AGS_PIANO_KEYS_OCTAVE_2_G;
+    base_key_code = 31;
+  }else if(!g_strcmp0(label,
+		      "G#")){
+    base_note = AGS_PIANO_KEYS_OCTAVE_2_GIS;
+    base_key_code = 32;
+  }
+
+  g_object_set(piano,
+	       "base-note", base_note,
+	       "base-key-code", base_key_code,
+	       NULL);
+  
+  if(machine != NULL){
+    g_free(machine->base_note);
+    
+    machine->base_note = g_strdup(base_note);
+    machine->base_key_code = base_key_code;
+  }
+  
+  gtk_widget_queue_draw((GtkWidget *) piano);
+  gtk_widget_queue_draw((GtkWidget *) notation_edit);
 }

@@ -23,10 +23,38 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/X/ags_ui_provider.h>
+#include <ags/X/ags_composite_editor.h>
 #include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_automation_editor.h>
 
 #include <ags/X/editor/ags_machine_radio_button.h>
+
+#include <ags/X/machine/ags_drum.h>
+#include <ags/X/machine/ags_matrix.h>
+#include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_fm_synth.h>
+#include <ags/X/machine/ags_syncsynth.h>
+#include <ags/X/machine/ags_fm_syncsynth.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
+#include <ags/X/machine/ags_ffplayer.h>
+#include <ags/X/machine/ags_sf2_synth.h>
+#endif
+
+#include <ags/X/machine/ags_pitch_sampler.h>
+#include <ags/X/machine/ags_sfz_synth.h>
+
+#include <ags/X/machine/ags_audiorec.h>
+#include <ags/X/machine/ags_dssi_bridge.h>
+#include <ags/X/machine/ags_lv2_bridge.h>
+#include <ags/X/machine/ags_live_dssi_bridge.h>
+#include <ags/X/machine/ags_live_lv2_bridge.h>
+
+#if defined(AGS_WITH_VST3)
+#include <ags/X/machine/ags_vst3_bridge.h>
+#include <ags/X/machine/ags_live_vst3_bridge.h>
+#endif
 
 #include <ags/i18n.h>
 
@@ -156,6 +184,8 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
   machine_selector->current = NULL;
   machine_selector->popup = NULL;
 
+  machine_selector->shift_piano = NULL;
+
   machine_selector->menu_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
 					       "icon-name", "system-run",
 					       NULL);
@@ -233,6 +263,16 @@ ags_machine_selector_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_machine_selector_set_edit(AgsMachineSelector *machine_selector, guint edit)
+{
+  if(!AGS_IS_MACHINE_SELECTOR(machine_selector)){
+    return;
+  }
+
+  machine_selector->edit |= edit;
+}
+
+void
 ags_machine_selector_add_index(AgsMachineSelector *machine_selector)
 {
   AgsMachineRadioButton *machine_radio_button, *group;
@@ -266,8 +306,6 @@ void
 ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,
 				  guint nth)
 {
-  AgsNotationEditor *notation_editor;
-  AgsAutomationEditor *automation_editor;
   AgsMachineRadioButton *machine_radio_button;
   
   GList *list, *list_start;
@@ -342,6 +380,48 @@ ags_machine_selector_link_index(AgsMachineSelector *machine_selector,
 void
 ags_machine_selector_real_changed(AgsMachineSelector *machine_selector, AgsMachine *machine)
 {
+  AgsApplicationContext *application_context;
+  
+  gboolean use_composite_editor;
+
+  application_context = ags_application_context_get_instance();
+
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
+    
+    composite_editor = gtk_widget_get_ancestor(machine_selector,
+					       AGS_TYPE_COMPOSITE_EDITOR);
+    
+    if(AGS_IS_DRUM(machine) ||
+       AGS_IS_MATRIX(machine)  ||
+       AGS_IS_SYNCSYNTH(machine) ||
+       AGS_IS_FM_SYNCSYNTH(machine) ||
+#ifdef AGS_WITH_LIBINSTPATCH
+       AGS_IS_FFPLAYER(machine) ||
+       AGS_IS_SF2_SYNTH(machine) ||
+#endif
+#if defined(AGS_WITH_VST3)
+       (AGS_IS_VST3_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(machine)->flags)) != 0) ||
+       AGS_IS_LIVE_VST3_BRIDGE(machine) ||	 
+#endif
+       AGS_IS_PITCH_SAMPLER(machine) ||
+       AGS_IS_SFZ_SYNTH(machine) ||
+       AGS_IS_DSSI_BRIDGE(machine) ||
+       (AGS_IS_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(machine)->flags)) != 0) ||
+       AGS_IS_LIVE_DSSI_BRIDGE(machine) ||
+       AGS_IS_LIVE_LV2_BRIDGE(machine)){
+      gtk_widget_show_all(composite_editor->notation_edit);
+
+      //TODO:JK: implement me
+    }else if(AGS_IS_AUDIOREC(machine)){
+      //TODO:JK: implement me
+    }else{
+      //TODO:JK: implement me
+    }
+  }
+  
   if((AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING & (machine_selector->flags)) != 0){
     GtkMenuItem *menu_item;
     
@@ -459,7 +539,8 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   keys = NULL;
   
   if((AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO & (machine_selector->flags)) != 0){
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("shift piano"));
+    item =
+      machine_selector->shift_piano = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("shift piano"));
     gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
     keys = (GtkMenu *) gtk_menu_new();

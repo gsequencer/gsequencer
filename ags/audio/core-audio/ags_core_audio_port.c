@@ -247,7 +247,7 @@ ags_core_audio_port_class_init(AgsCoreAudioPortClass *core_audio_port)
   param_spec = g_param_spec_string("port-name",
 				   i18n_pspec("port name"),
 				   i18n_pspec("The port name"),
-				   "hw:0",
+				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PORT_NAME,

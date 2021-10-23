@@ -20,6 +20,7 @@
 #include <ags/X/editor/ags_select_buffer_dialog.h>
 #include <ags/X/editor/ags_select_buffer_dialog_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_wave_window.h>
 #include <ags/X/ags_wave_editor.h>
@@ -384,12 +385,15 @@ ags_select_buffer_dialog_apply(AgsApplicable *applicable)
   AgsSelectBufferDialog *select_buffer_dialog;
 
   AgsWindow *window;
-  AgsWaveEditor *wave_editor;
   AgsMachine *machine;
+  AgsNotebook *notebook;
+  AgsWaveEdit *focused_wave_edit;
 
   AgsAudio *audio;
 
   AgsTimestamp *timestamp;
+
+  AgsApplicationContext *application_context;
 
   GObject *output_soundcard;
   
@@ -400,6 +404,7 @@ ags_select_buffer_dialog_apply(AgsApplicable *applicable)
 
   xmlChar *buffer;
 
+  gboolean use_composite_editor;
   guint samplerate;
   guint buffer_size;
   gdouble delay;
@@ -413,15 +418,37 @@ ags_select_buffer_dialog_apply(AgsApplicable *applicable)
     
   select_buffer_dialog = AGS_SELECT_BUFFER_DIALOG(applicable);
 
-  window = (AgsWindow *) select_buffer_dialog->main_window;
-  wave_editor = window->wave_window->wave_editor;
+  /* application context */
+  application_context = ags_application_context_get_instance();
 
-  machine = wave_editor->selected_machine;
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
 
-  if(machine == NULL){
-    return;
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  machine = NULL;
+  
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
+    
+    composite_editor = window->composite_editor;
+
+    machine = composite_editor->selected_machine;
+
+    focused_wave_edit = composite_editor->wave_edit->focused_edit;
+    
+    notebook = composite_editor->wave_edit->channel_selector;
+  }else{
+    AgsWaveEditor *wave_editor;
+    
+    wave_editor = window->wave_window->wave_editor;
+
+    machine = wave_editor->selected_machine;
+
+    focused_wave_edit = wave_editor->focused_wave_edit;
+
+    notebook = wave_editor->notebook;
   }
-
+  
   audio = machine->audio;
 
   g_object_get(audio,
@@ -461,7 +488,7 @@ ags_select_buffer_dialog_apply(AgsApplicable *applicable)
   
   i = 0;
   
-  while((i = ags_notebook_next_active_tab(wave_editor->notebook,
+  while((i = ags_notebook_next_active_tab(notebook,
 					  i)) != -1){
     list_wave = start_list_wave;
     timestamp->timer.ags_offset.offset = 0;

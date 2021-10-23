@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -112,6 +112,8 @@ struct _AgsXorgApplicationContext
   GtkWidget *midi_export_wizard;
 
   GList *machine;
+
+  gboolean use_composite_editor;  
 
   GtkWidget *composite_editor;
 

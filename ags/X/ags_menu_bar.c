@@ -224,6 +224,12 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 #endif
   
+  /* notation */
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Notation"));
+  //  gtk_widget_set_sensitive(item,
+  //			   FALSE);
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
+  
   /* automation */
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Automation"));
   //  gtk_widget_set_sensitive(item,
@@ -519,7 +525,11 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   g_list_free(list3_start);
   g_list_free(list2_start);
 
-  /* automation, wave and preferences */
+  /* notation, automation, wave and preferences */
+  g_signal_connect(G_OBJECT (list1->data), "activate",
+		   G_CALLBACK (ags_menu_action_notation_callback), (gpointer) menu_bar);
+  list1 = list1->next;
+  
   g_signal_connect(G_OBJECT (list1->data), "activate",
 		   G_CALLBACK (ags_menu_action_automation_callback), (gpointer) menu_bar);
   list1 = list1->next;

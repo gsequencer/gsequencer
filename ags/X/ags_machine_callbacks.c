@@ -353,24 +353,7 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   
   /* destroy editor */
   list =
-    list_start = gtk_container_get_children((GtkContainer *) window->notation_editor->machine_selector);
-
-  list = list->next;
-
-  while(list != NULL){
-    if(AGS_IS_MACHINE_RADIO_BUTTON(list->data) && AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
-      gtk_widget_destroy(list->data);
-      break;
-    }
-    
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-
-  /* destroy automation editor */  
-  list =
-    list_start = gtk_container_get_children((GtkContainer *) window->automation_window->automation_editor->machine_selector);
+    list_start = gtk_container_get_children((GtkContainer *) window->composite_editor->machine_selector);
 
   list = list->next;
 

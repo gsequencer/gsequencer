@@ -202,7 +202,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFuncitonalAudioConfigTest", ags_functional_loop_010_xml_test_init_suite, ags_functional_loop_010_xml_test_clean_suite);
+  pSuite = CU_add_suite("AgsFunctionalLoop010XmlTest", ags_functional_loop_010_xml_test_init_suite, ags_functional_loop_010_xml_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();

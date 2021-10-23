@@ -38,6 +38,7 @@
 #include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_wave_window.h>
 #include <ags/X/ags_preferences.h>
+#include <ags/X/ags_composite_editor.h>
 
 
 G_BEGIN_DECLS
@@ -97,6 +98,8 @@ struct _AgsWindow
   GtkWidget *midi_file_chooser;
   
   AgsPreferences *preferences;
+
+  AgsCompositeEditor *composite_editor;
 };
 
 struct _AgsWindowClass

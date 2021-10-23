@@ -166,6 +166,16 @@ ags_machine_selection_finalize(GObject *gobject)
 }
 
 void
+ags_machine_selection_set_edit(AgsMachineSelection *machine_selection, guint edit)
+{
+  if(!AGS_IS_MACHINE_SELECTION(machine_selection)){
+    return;
+  }
+
+  machine_selection->edit |= edit;
+}
+
+void
 ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 {
   AgsMachine *machine;
@@ -189,7 +199,11 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
   while(list != NULL){
     GtkRadioButton *radio_button;
 
-    if((AGS_MACHINE_SELECTION_NOTATION & (machine_selection->flags)) != 0){
+    gboolean success;
+
+    success = FALSE;
+    
+    if((AGS_MACHINE_SELECTION_EDIT_NOTATION & (machine_selection->edit)) != 0){
       if(AGS_IS_DRUM(list->data) ||
 	 AGS_IS_MATRIX(list->data)  ||
 	 AGS_IS_SYNCSYNTH(list->data) ||
@@ -199,7 +213,7 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 	 AGS_IS_SF2_SYNTH(list->data) ||
 #endif
 #if defined(AGS_WITH_VST3)
-	 AGS_IS_VST3_BRIDGE(list->data) ||
+	 (AGS_IS_VST3_BRIDGE(list->data) && (AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(list->data)->flags)) != 0) ||
 	 AGS_IS_LIVE_VST3_BRIDGE(list->data) ||	 
 #endif
 	 AGS_IS_PITCH_SAMPLER(list->data) ||
@@ -225,8 +239,13 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 	if(group == NULL){
 	  group = radio_button;
 	}
+
+	success = TRUE;
       }
-    }else if((AGS_MACHINE_SELECTION_AUTOMATION & (machine_selection->flags)) != 0){
+    }
+
+    if(!success &&
+       (AGS_MACHINE_SELECTION_EDIT_AUTOMATION & (machine_selection->edit)) != 0){
       str = g_strdup_printf("%s: %s",
 			    G_OBJECT_TYPE_NAME(list->data),
 			    AGS_MACHINE(list->data)->machine_name);
@@ -244,7 +263,12 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
       if(group == NULL){
 	group = radio_button;
       }
-    }else if((AGS_MACHINE_SELECTION_WAVE & (machine_selection->flags)) != 0){
+
+      success = TRUE;
+    }
+
+    if(!success &&
+       (AGS_MACHINE_SELECTION_EDIT_WAVE & (machine_selection->edit)) != 0){
       if(AGS_IS_AUDIOREC(list->data)){
 	str = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(list->data),
@@ -263,6 +287,8 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 	if(group == NULL){
 	  group = radio_button;
 	}
+
+	success = TRUE;
       }
     }
     

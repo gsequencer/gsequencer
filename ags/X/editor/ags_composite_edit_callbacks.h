@@ -34,6 +34,11 @@
 
 G_BEGIN_DECLS
 
+void ags_composite_edit_vscrollbar_changed(GtkAdjustment *adjustment,
+					   AgsCompositeEdit *composite_edit);
+void ags_composite_edit_hscrollbar_changed(GtkAdjustment *adjustment,
+					   AgsCompositeEdit *composite_edit);
+
 void ags_composite_edit_vscrollbar_callback(GtkRange *scrollbar,
 					    AgsCompositeEdit *composite_edit);
 void ags_composite_edit_hscrollbar_callback(GtkRange *scrollbar,

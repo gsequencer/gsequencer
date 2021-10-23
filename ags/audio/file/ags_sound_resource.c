@@ -607,6 +607,8 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 			  &frame_count,
 			  NULL, NULL);
 
+  g_message("do %d", frame_count);
+  
   ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sound_resource),
 				 &audio_channels,
 				 &samplerate,
@@ -638,8 +640,6 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
   if(audio_channel == -1){
     i_start = 0;
     i_stop = audio_channels;
-
-    //    g_message("do %d", audio_channels);
   }else{
     i_start = audio_channel;
     i_stop = i_start + 1;

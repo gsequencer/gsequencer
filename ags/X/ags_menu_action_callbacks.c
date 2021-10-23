@@ -1350,15 +1350,97 @@ ags_menu_action_add_live_vst3_bridge_callback(GtkWidget *menu_item, gpointer dat
 }
 
 void
+ags_menu_action_notation_callback(GtkWidget *menu_item, gpointer data)
+{
+  AgsApplicationContext *application_context;
+  AgsWindow *window;
+
+  gboolean use_composite_editor;
+  
+  application_context = ags_application_context_get_instance();
+  
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
+    AgsMachine *machine;
+    
+    composite_editor = window->composite_editor;
+
+    machine = composite_editor->selected_machine;
+    
+    if(AGS_IS_DRUM(machine) ||
+       AGS_IS_MATRIX(machine) ||
+       AGS_IS_SYNCSYNTH(machine) ||
+       AGS_IS_FM_SYNCSYNTH(machine) ||
+#ifdef AGS_WITH_LIBINSTPATCH
+       AGS_IS_FFPLAYER(machine) ||
+       AGS_IS_SF2_SYNTH(machine) ||
+#endif
+       AGS_IS_PITCH_SAMPLER(machine) ||
+       AGS_IS_SFZ_SYNTH(machine) ||
+       AGS_IS_DSSI_BRIDGE(machine) ||
+       AGS_IS_LIVE_DSSI_BRIDGE(machine) ||
+       (AGS_IS_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0) ||
+       AGS_IS_LIVE_LV2_BRIDGE(machine)
+#if defined(AGS_WITH_VST3)
+       || (AGS_IS_VST3_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0) ||
+       AGS_IS_LIVE_VST3_BRIDGE(machine)
+#endif
+       ){
+      ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
+						     AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION);
+    
+      composite_editor->selected_edit = composite_editor->notation_edit;
+      
+      gtk_widget_show_all(composite_editor->notation_edit);
+      gtk_widget_hide(composite_editor->sheet_edit);
+      gtk_widget_hide(composite_editor->automation_edit);
+      gtk_widget_hide(composite_editor->wave_edit);
+
+      gtk_widget_show(composite_editor->machine_selector->shift_piano);
+    }
+  }
+}
+
+void
 ags_menu_action_automation_callback(GtkWidget *menu_item, gpointer data)
 {
   AgsApplicationContext *application_context;
   AgsWindow *window;
 
+  gboolean use_composite_editor;
+  
   application_context = ags_application_context_get_instance();
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
 
-  gtk_widget_show_all((GtkWidget *) window->automation_window);
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
+    AgsMachine *machine;
+
+    composite_editor = window->composite_editor;
+
+    machine = composite_editor->selected_machine;
+    
+    ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
+						   AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION);
+    
+    composite_editor->selected_edit = composite_editor->automation_edit;
+    
+    gtk_widget_hide(composite_editor->notation_edit);
+    gtk_widget_hide(composite_editor->sheet_edit);
+    gtk_widget_show_all(composite_editor->automation_edit);
+    gtk_widget_hide(composite_editor->wave_edit);
+
+    gtk_widget_hide(composite_editor->machine_selector->shift_piano);
+  }else{  
+    gtk_widget_show_all((GtkWidget *) window->automation_window);
+  }
 }
 
 void
@@ -1367,10 +1449,38 @@ ags_menu_action_wave_callback(GtkWidget *menu_item, gpointer data)
   AgsApplicationContext *application_context;
   AgsWindow *window;
 
+  gboolean use_composite_editor;
+  
   application_context = ags_application_context_get_instance();
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
 
-  gtk_widget_show_all((GtkWidget *) window->wave_window);
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
+    AgsMachine *machine;
+
+    composite_editor = window->composite_editor;
+
+    machine = composite_editor->selected_machine;
+
+    if(AGS_IS_AUDIOREC(machine)){
+      ags_composite_toolbar_scope_create_and_connect(composite_editor->toolbar,
+						     AGS_COMPOSITE_TOOLBAR_SCOPE_WAVE);
+
+      composite_editor->selected_edit = composite_editor->wave_edit;
+      
+      gtk_widget_hide(composite_editor->notation_edit);
+      gtk_widget_hide(composite_editor->sheet_edit);
+      gtk_widget_hide(composite_editor->automation_edit);
+      gtk_widget_show_all(composite_editor->wave_edit);
+
+      gtk_widget_hide(composite_editor->machine_selector->shift_piano);
+    }
+  }else{  
+    gtk_widget_show_all((GtkWidget *) window->wave_window);
+  }
 }
 
 void

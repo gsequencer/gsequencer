@@ -318,6 +318,11 @@ ags_output_editor_reset(AgsApplicable *applicable)
 			       0);
     }
 
+    /* unref */
+    if(audio != NULL){
+      g_object_unref(audio);
+    }
+
     if(output_soundcard != NULL){
       g_object_unref(output_soundcard);
     }

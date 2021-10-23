@@ -23,6 +23,7 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/X/ags_listing_editor.h>
 #include <ags/X/ags_output_collection_editor.h>
 #include <ags/X/ags_input_collection_editor.h>
 #include <ags/X/ags_output_listing_editor.h>
@@ -241,17 +242,17 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
 
   /* GtkButton's in GtkDialog->action_area  */
-  connection_editor->apply = (GtkButton *) gtk_button_new_with_label(i18n("_Apply"));
+  connection_editor->apply = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Apply"));
   gtk_dialog_add_action_widget((GtkDialog *) connection_editor,
 			       (GtkWidget *) connection_editor->apply,
 			       GTK_RESPONSE_NONE);
 
-  connection_editor->ok = (GtkButton *) gtk_button_new_with_label(i18n("_OK"));
+  connection_editor->ok = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_OK"));
   gtk_dialog_add_action_widget((GtkDialog *) connection_editor,
 			       (GtkWidget *) connection_editor->ok,
 			       GTK_RESPONSE_NONE);
 
-  connection_editor->cancel = (GtkButton *) gtk_button_new_with_label(i18n("_Cancel"));
+  connection_editor->cancel = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Cancel"));
   gtk_dialog_add_action_widget((GtkDialog *) connection_editor,
 			       (GtkWidget *) connection_editor->cancel,
 			       GTK_RESPONSE_NONE);
@@ -447,6 +448,10 @@ ags_connection_editor_add_children(AgsConnectionEditor *connection_editor)
   gtk_container_add((GtkContainer *) connection_editor->output_listing_editor_scrolled_window,
 		    (GtkWidget *) connection_editor->output_listing_editor);
 
+  ags_listing_editor_add_children(connection_editor->output_listing_editor,
+				  connection_editor->machine->audio, 0,
+				  FALSE);
+
   /* input */
   input_connection_editor_child_value = g_new0(GValue,
 					       1);
@@ -469,6 +474,10 @@ ags_connection_editor_add_children(AgsConnectionEditor *connection_editor)
   gtk_container_add((GtkContainer *) connection_editor->input_listing_editor_scrolled_window,
 		    (GtkWidget *) connection_editor->input_listing_editor);
   
+
+  ags_listing_editor_add_children(connection_editor->input_listing_editor,
+				  connection_editor->machine->audio, 0,
+				  FALSE);
 
   /* AgsOutput connection editor */
   connection_editor->output_connection_editor = ags_property_collection_editor_new(AGS_TYPE_OUTPUT_COLLECTION_EDITOR,

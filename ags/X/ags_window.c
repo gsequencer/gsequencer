@@ -195,6 +195,8 @@ ags_window_init(AgsWindow *window)
   AgsApplicationContext *application_context;
   
   gchar *str;
+
+  gboolean use_composite_editor;
   
   GError *error;
 
@@ -279,7 +281,9 @@ ags_window_init(AgsWindow *window)
   window->machine_counter = ags_window_standard_machine_counter_alloc();
   window->selected = NULL;
 
-  /* editor */
+  /* composite editor */
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
+
   viewport = (GtkViewport *) gtk_viewport_new(NULL,
 					      NULL);
   g_object_set(viewport,
@@ -289,39 +293,69 @@ ags_window_init(AgsWindow *window)
 		  (GtkWidget *) viewport,
 		  TRUE, TRUE);
 
-  window->notation_editor = g_object_new(AGS_TYPE_NOTATION_EDITOR,
-					 "homogeneous", FALSE,
-					 "spacing", 0,
-					 NULL);
+  window->composite_editor = ags_composite_editor_new();
+  ags_ui_provider_set_composite_editor(AGS_UI_PROVIDER(application_context),
+				       window->composite_editor);
+  g_object_set(window->composite_editor,
+	       "homogeneous", FALSE,
+	       "spacing", 0,
+	       NULL);
   gtk_container_add((GtkContainer *) viewport,
-		    (GtkWidget *) window->notation_editor);
+		    (GtkWidget *) window->composite_editor);
 
-  /* navigation */
+  /* editor */
+  if(!use_composite_editor){
+    viewport = (GtkViewport *) gtk_viewport_new(NULL,
+						NULL);
+    g_object_set(viewport,
+		 "shadow-type", GTK_SHADOW_NONE,
+		 NULL);
+    gtk_paned_pack2((GtkPaned *) window->paned,
+		    (GtkWidget *) viewport,
+		    TRUE, TRUE);
+
+    window->notation_editor = g_object_new(AGS_TYPE_NOTATION_EDITOR,
+					   "homogeneous", FALSE,
+					   "spacing", 0,
+					   NULL);
+    gtk_container_add((GtkContainer *) viewport,
+		      (GtkWidget *) window->notation_editor);
+  }else{
+    window->notation_editor = NULL;
+  }
+  
+    /* navigation */
   window->navigation = g_object_new(AGS_TYPE_NAVIGATION,
 				    "homogeneous", FALSE,
 				    "spacing", 0,
 				    NULL);
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) window->navigation,
-		     FALSE, FALSE, 0);
+		     FALSE, FALSE,
+		     0);
 
   /* windows and dialogs */
   window->dialog = NULL;
 
-  window->automation_window = ags_automation_window_new((GtkWidget *) window);
+  if(!use_composite_editor){
+    window->automation_window = ags_automation_window_new((GtkWidget *) window);
 
-  window->wave_window = ags_wave_window_new((GtkWidget *) window);
+    window->wave_window = ags_wave_window_new((GtkWidget *) window);
+  }else{
+    window->automation_window = NULL;
+    window->wave_window = NULL;
+  }
   
   window->export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW,
 							   "main-window", window,
 							   NULL);
-
+  
   window->midi_import_wizard = NULL;
   window->midi_export_wizard = NULL;
   window->midi_file_chooser = NULL;
   
   window->preferences = NULL;
-
+  
   /* load file */
   if(ags_window_load_file == NULL){
     ags_window_load_file = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -374,13 +408,19 @@ ags_window_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
 
+  AgsApplicationContext *application_context;
+  
   GList *list, *list_start;
+
+  gboolean use_composite_editor;
 
   window = AGS_WINDOW(connectable);
 
   if((AGS_WINDOW_CONNECTED & (window->flags)) != 0){
     return;
   }
+
+  application_context = ags_application_context_get_instance();
 
   window->flags |= AGS_WINDOW_CONNECTED;
   
@@ -400,14 +440,25 @@ ags_window_connect(AgsConnectable *connectable)
   }
 
   g_list_free(list_start);
+
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  if(use_composite_editor){
+    ags_connectable_connect(AGS_CONNECTABLE(window->composite_editor));
+  }
   
-  ags_connectable_connect(AGS_CONNECTABLE(window->notation_editor));
+  if(!use_composite_editor){
+    ags_connectable_connect(AGS_CONNECTABLE(window->notation_editor));
+  }
+  
   ags_connectable_connect(AGS_CONNECTABLE(window->navigation));
 
-  ags_connectable_connect(AGS_CONNECTABLE(window->automation_window));
-
-  ags_connectable_connect(AGS_CONNECTABLE(window->wave_window));
-
+  if(!use_composite_editor){
+    ags_connectable_connect(AGS_CONNECTABLE(window->automation_window));
+    
+    ags_connectable_connect(AGS_CONNECTABLE(window->wave_window));
+  }
+  
   ags_connectable_connect(AGS_CONNECTABLE(window->export_window));
 }
 
@@ -416,13 +467,19 @@ ags_window_disconnect(AgsConnectable *connectable)
 {
   AgsWindow *window;
 
+  AgsApplicationContext *application_context;
+  
   GList *list, *list_start;
+
+  gboolean use_composite_editor;
 
   window = AGS_WINDOW(connectable);
 
   if((AGS_WINDOW_CONNECTED & (window->flags)) == 0){
     return;
   }
+
+  application_context = ags_application_context_get_instance();
 
   window->flags &= (~AGS_WINDOW_CONNECTED);
   
@@ -445,14 +502,25 @@ ags_window_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(list_start);
+
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  if(use_composite_editor){
+    ags_connectable_disconnect(AGS_CONNECTABLE(window->composite_editor));
+  }
   
-  ags_connectable_disconnect(AGS_CONNECTABLE(window->notation_editor));
+  if(!use_composite_editor){
+    ags_connectable_disconnect(AGS_CONNECTABLE(window->notation_editor));
+  }
+  
   ags_connectable_disconnect(AGS_CONNECTABLE(window->navigation));
 
-  ags_connectable_disconnect(AGS_CONNECTABLE(window->automation_window));
-
-  ags_connectable_disconnect(AGS_CONNECTABLE(window->wave_window));
-
+  if(!use_composite_editor){
+    ags_connectable_disconnect(AGS_CONNECTABLE(window->automation_window));
+    
+    ags_connectable_disconnect(AGS_CONNECTABLE(window->wave_window));
+  }
+  
   ags_connectable_disconnect(AGS_CONNECTABLE(window->export_window));
 }
 

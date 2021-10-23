@@ -107,11 +107,37 @@ void ags_composite_editor_unset_flags(AgsCompositeEditor *composite_editor, guin
 void ags_composite_editor_machine_changed(AgsCompositeEditor *composite_editor,
 					  AgsMachine *machine);
 
+/* automation */
+void ags_composite_editor_add_automation_port(AgsCompositeEditor *composite_editor,
+					      GType channel_type,
+					      gchar *control_name);
+
+void ags_composite_editor_remove_automation_port(AgsCompositeEditor *composite_editor,
+						 GType channel_type,
+						 gchar *control_name);
+
 /* common */
+void ags_composite_editor_select_all(AgsCompositeEditor *composite_editor);
 void ags_composite_editor_paste(AgsCompositeEditor *composite_editor);
 void ags_composite_editor_copy(AgsCompositeEditor *composite_editor);
 void ags_composite_editor_cut(AgsCompositeEditor *composite_editor);
 void ags_composite_editor_invert(AgsCompositeEditor *composite_editor);
+
+void ags_composite_editor_do_feedback(AgsCompositeEditor *composite_editor);
+
+void ags_composite_editor_add_note(AgsCompositeEditor *composite_editor,
+				   AgsNote *note);
+void ags_composite_editor_delete_note(AgsCompositeEditor *composite_editor,
+				      guint x, guint y);
+
+void ags_composite_editor_add_acceleration(AgsCompositeEditor *composite_editor,
+					   AgsAcceleration *acceleration);
+void ags_composite_editor_delete_acceleration(AgsCompositeEditor *composite_editor,
+					      guint x, gdouble y);
+
+void ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
+					guint x0, guint y0, 
+					guint x1, guint y1);
 
 /* instantiate */
 AgsCompositeEditor* ags_composite_editor_new();

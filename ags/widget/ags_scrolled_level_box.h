@@ -25,6 +25,7 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/widget/ags_viewport.h>
 #include <ags/widget/ags_level_box.h>
 
 G_BEGIN_DECLS
@@ -47,8 +48,8 @@ struct _AgsScrolledLevelBox
   guint margin_bottom;
   guint margin_left;
   guint margin_right;
-  
-  GtkViewport *viewport;
+
+  AgsViewport *viewport;
 
   AgsLevelBox *level_box;
 };

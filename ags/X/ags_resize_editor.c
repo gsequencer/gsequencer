@@ -144,7 +144,7 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
 		  GTK_WIDGET(label),
@@ -156,7 +156,7 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
   gtk_widget_set_valign((GtkWidget *) resize_editor->audio_channels,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) resize_editor->audio_channels,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
 		  GTK_WIDGET(resize_editor->audio_channels),
@@ -169,7 +169,7 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
 		   GTK_WIDGET(label),
@@ -181,7 +181,7 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
   gtk_widget_set_valign((GtkWidget *) resize_editor->output_pads,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) resize_editor->output_pads,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
 		   GTK_WIDGET(resize_editor->output_pads),
@@ -194,7 +194,7 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
   gtk_widget_set_valign((GtkWidget *) label,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) label,
-			GTK_ALIGN_FILL);
+			GTK_ALIGN_START);
 
   gtk_grid_attach(grid,
 		   GTK_WIDGET(label),

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -130,6 +130,8 @@ struct _AgsUiProviderInterface
   void (*set_machine)(AgsUiProvider *ui_provider,
 		      GList *machine);
 
+  gboolean (*use_composite_editor)(AgsUiProvider *ui_provider);
+  
   GtkWidget* (*get_composite_editor)(AgsUiProvider *ui_provider);
   void (*set_composite_editor)(AgsUiProvider *ui_provider,
 			       GtkWidget *composite_editor);  
@@ -226,6 +228,8 @@ void ags_ui_provider_set_machine(AgsUiProvider *ui_provider,
 GtkWidget* ags_ui_provider_get_composite_editor(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_composite_editor(AgsUiProvider *ui_provider,
 					  GtkWidget *composite_editor);  
+
+gboolean ags_ui_provider_use_composite_editor(AgsUiProvider *ui_provider);
 
 GtkWidget* ags_ui_provider_get_navigation(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_navigation(AgsUiProvider *ui_provider,

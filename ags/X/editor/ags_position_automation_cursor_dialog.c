@@ -20,6 +20,7 @@
 #include <ags/X/editor/ags_position_automation_cursor_dialog.h>
 #include <ags/X/editor/ags_position_automation_cursor_dialog_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_automation_editor.h>
@@ -357,50 +358,76 @@ ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
   AgsPositionAutomationCursorDialog *position_automation_cursor_dialog;
 
   AgsWindow *window;
-  AgsAutomationWindow *automation_window;
-  AgsAutomationEditor *automation_editor;
-  AgsAutomationToolbar *automation_toolbar;
-  AgsAutomationEdit *automation_edit;
   AgsMachine *machine;
+  GtkWidget *editor;
+  AgsAutomationEdit *focused_automation_edit;
   GtkWidget *widget;
 
   GtkAdjustment *hadjustment;
+  
+  AgsApplicationContext *application_context;
 
+  gboolean use_composite_editor;
   gdouble zoom;
   guint history;
   guint x;
 
   position_automation_cursor_dialog = AGS_POSITION_AUTOMATION_CURSOR_DIALOG(applicable);
 
-  window = (AgsWindow *) position_automation_cursor_dialog->main_window;
+  /* application context */
+  application_context = ags_application_context_get_instance();
 
-  automation_window = window->automation_window;
-  automation_editor = automation_window->automation_editor;
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
 
-  machine = automation_editor->selected_machine;
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
+  machine = NULL;
+
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
+    AgsCompositeToolbar *composite_toolbar;
+    
+    composite_editor = window->composite_editor;
+
+    composite_toolbar = composite_editor->toolbar;
+
+    focused_automation_edit = composite_editor->automation_edit->focused_edit;
+
+    machine = composite_editor->selected_machine;
+
+    history = gtk_combo_box_get_active(GTK_COMBO_BOX(composite_toolbar->zoom));
+  }else{
+    AgsAutomationEditor *automation_editor;
+    AgsAutomationToolbar *automation_toolbar;
+    
+    automation_editor = window->automation_window->automation_editor;
+
+    automation_toolbar = automation_editor->automation_toolbar;
+    
+    focused_automation_edit = automation_editor->focused_automation_edit;
+    
+    machine = automation_editor->selected_machine;
+
+    history = gtk_combo_box_get_active(GTK_COMBO_BOX(automation_toolbar->zoom));
+  }
+  
   if(machine == NULL){
     return;
   }
-
-  automation_toolbar = automation_editor->automation_toolbar;
-
-  history = gtk_combo_box_get_active(GTK_COMBO_BOX(automation_toolbar->zoom));
-  zoom = exp2((double) history - 2.0);
   
-  automation_edit = automation_editor->focused_automation_edit;
+  zoom = exp2((double) history - 2.0);
 
-  if(automation_edit == NULL){
+  if(focused_automation_edit == NULL){
     return;
   }
   
   x = gtk_spin_button_get_value_as_int(position_automation_cursor_dialog->position_x);
-  automation_edit->cursor_position_x = 16 * x;
-  automation_edit->cursor_position_y = 0.0;
+  focused_automation_edit->cursor_position_x = 16 * x;
+  focused_automation_edit->cursor_position_y = 0.0;
 
-  hadjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->hscrollbar));
+  hadjustment = gtk_range_get_adjustment(GTK_RANGE(focused_automation_edit->hscrollbar));
 
-  widget = (GtkWidget *) automation_edit->drawing_area;
+  widget = (GtkWidget *) focused_automation_edit->drawing_area;
     
   /* make visible */  
   if(hadjustment != NULL){

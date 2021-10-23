@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -186,9 +186,9 @@ ags_scrolled_wave_edit_box_class_init(AgsScrolledWaveEditBoxClass *scrolled_wave
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) scrolled_wave_edit_box;
 
-//  widget->size_allocate = ags_scrolled_wave_edit_box_size_allocate;
-//  widget->get_preferred_width = ags_scrolled_wave_edit_box_get_preferred_width;
-//  widget->get_preferred_height = ags_scrolled_wave_edit_box_get_preferred_height;
+  widget->size_allocate = ags_scrolled_wave_edit_box_size_allocate;
+  widget->get_preferred_width = ags_scrolled_wave_edit_box_get_preferred_width;
+  widget->get_preferred_height = ags_scrolled_wave_edit_box_get_preferred_height;
 }
 
 void
@@ -200,16 +200,17 @@ ags_scrolled_wave_edit_box_init(AgsScrolledWaveEditBox *scrolled_wave_edit_box)
   scrolled_wave_edit_box->margin_right = 0;
 
   /* viewport */
-  scrolled_wave_edit_box->viewport = (GtkViewport *) gtk_viewport_new(NULL,
-								      NULL);
-  gtk_widget_set_vexpand(scrolled_wave_edit_box->viewport, TRUE);
-  gtk_widget_set_hexpand(scrolled_wave_edit_box->viewport, TRUE);
+  scrolled_wave_edit_box->viewport = ags_viewport_new();
   g_object_set(scrolled_wave_edit_box->viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
+
+  gtk_widget_set_vexpand(scrolled_wave_edit_box->viewport, TRUE);
+  gtk_widget_set_hexpand(scrolled_wave_edit_box->viewport, TRUE);
+   
   gtk_container_add((GtkContainer *) scrolled_wave_edit_box,
 		    (GtkWidget *) scrolled_wave_edit_box->viewport);
-
+  
   /* wave_edit box */
   scrolled_wave_edit_box->wave_edit_box = NULL;
   
@@ -311,25 +312,19 @@ ags_scrolled_wave_edit_box_size_allocate(GtkWidget *widget,
 {
   AgsScrolledWaveEditBox *scrolled_wave_edit_box;
 
-  AgsApplicationContext *application_context;
-  
   GtkAllocation child_allocation;
-  GtkRequisition child_requisition;  
+  GtkRequisition child_requisition;
   
-  gdouble gui_scale_factor;
-
   scrolled_wave_edit_box = AGS_SCROLLED_WAVE_EDIT_BOX(widget);
-
-  application_context = ags_application_context_get_instance();
-
-  GTK_WIDGET_CLASS(ags_scrolled_wave_edit_box_parent_class)->size_allocate(widget,
-									   allocation);
-
-  /* scale factor */
-  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
-
-  allocation->height = (gint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_HEIGHT);
   
+  //GTK_WIDGET_CLASS(ags_scrolled_wave_edit_box_parent_class)->size_allocate(widget, allocation);
+  
+  gtk_widget_set_allocation(widget,
+			    allocation);
+  
+  gtk_widget_set_allocation(scrolled_wave_edit_box->viewport,
+			    allocation);
+
   /* viewport allocation */
   gtk_widget_get_child_requisition((GtkWidget *) scrolled_wave_edit_box->viewport,
 				   &child_requisition);
@@ -342,19 +337,21 @@ ags_scrolled_wave_edit_box_size_allocate(GtkWidget *widget,
 
   gtk_widget_size_allocate((GtkWidget *) scrolled_wave_edit_box->viewport,
 			   &child_allocation);
-
-  /* box */
-  gtk_widget_get_child_requisition((GtkWidget *) scrolled_wave_edit_box->wave_edit_box,
-				   &child_requisition);
-
-  child_allocation.x = 0;
-  child_allocation.y = 0;
-
-  child_allocation.width = allocation->width;
-  child_allocation.height = child_requisition.height;
   
-  gtk_widget_size_allocate((GtkWidget *) scrolled_wave_edit_box->wave_edit_box,
-			   &child_allocation);
+  /* box */
+  if(scrolled_wave_edit_box->wave_edit_box != NULL){
+    gtk_widget_get_child_requisition((GtkWidget *) scrolled_wave_edit_box->wave_edit_box,
+				     &child_requisition);
+
+    child_allocation.x = 0;
+    child_allocation.y = 0;
+
+    child_allocation.width = allocation->width;
+    child_allocation.height = allocation->height;
+  
+    gtk_widget_size_allocate((GtkWidget *) scrolled_wave_edit_box->wave_edit_box,
+			     &child_allocation);
+  }
 }
 
 void
@@ -362,8 +359,8 @@ ags_scrolled_wave_edit_box_get_preferred_width(GtkWidget *widget,
 					       gint *minimal_width,
 					       gint *natural_width)
 {
-  minimal_width =
-    natural_width = NULL;
+  minimal_width[0] =
+    natural_width[0] = AGS_LEVEL_DEFAULT_LEVEL_WIDTH;
 }
 
 void
@@ -371,8 +368,8 @@ ags_scrolled_wave_edit_box_get_preferred_height(GtkWidget *widget,
 						gint *minimal_height,
 						gint *natural_height)
 {
-  minimal_height =
-    natural_height = NULL;
+  minimal_height[0] =
+    natural_height[0] = 1;
 }
 
 /**

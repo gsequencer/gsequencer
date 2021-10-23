@@ -19,6 +19,7 @@
 
 #include <ags/widget/ags_scrolled_level_box.h>
 
+#include <ags/widget/ags_viewport.h>
 #include <ags/widget/ags_level.h>
 #include <ags/widget/ags_vlevel_box.h>
 
@@ -189,7 +190,7 @@ ags_scrolled_level_box_class_init(AgsScrolledLevelBoxClass *scrolled_level_box)
 
 //  widget->get_preferred_width = ags_scrolled_level_get_preferred_width;
 //  widget->get_preferred_height = ags_scrolled_level_get_preferred_height;
-//  widget->size_allocate = ags_scrolled_level_box_size_allocate;
+  widget->size_allocate = ags_scrolled_level_box_size_allocate;
 }
 
 void
@@ -201,8 +202,7 @@ ags_scrolled_level_box_init(AgsScrolledLevelBox *scrolled_level_box)
   scrolled_level_box->margin_right = 0;
 
   /* viewport */
-  scrolled_level_box->viewport = (GtkViewport *) gtk_viewport_new(NULL,
-								  NULL);
+  scrolled_level_box->viewport = (AgsViewport *) ags_viewport_new();
   g_object_set(scrolled_level_box->viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
@@ -323,8 +323,8 @@ ags_scrolled_level_get_preferred_height(GtkWidget *widget,
 					gint *minimal_height,
 					gint *natural_height)
 {
-  minimal_height =
-    natural_height = NULL;
+  minimal_height[0] =
+      natural_height[0] = 1;
 }
 
 void
@@ -337,6 +337,14 @@ ags_scrolled_level_box_size_allocate(GtkWidget *widget,
   GtkRequisition child_requisition;
   
   scrolled_level_box = AGS_SCROLLED_LEVEL_BOX(widget);
+  
+  //GTK_WIDGET_CLASS(ags_scrolled_level_box_parent_class)->size_allocate(widget, allocation);
+  
+  gtk_widget_set_allocation(widget,
+			    allocation);
+  
+  gtk_widget_set_allocation(scrolled_level_box->viewport,
+			    allocation);
 
   /* viewport allocation */
   gtk_widget_get_child_requisition((GtkWidget *) scrolled_level_box->viewport,
@@ -350,20 +358,23 @@ ags_scrolled_level_box_size_allocate(GtkWidget *widget,
 
   gtk_widget_size_allocate((GtkWidget *) scrolled_level_box->viewport,
 			   &child_allocation);
-
-  /* box */
-  gtk_widget_get_child_requisition((GtkWidget *) scrolled_level_box->level_box,
-				   &child_requisition);
-
-  child_allocation.x = 0;
-  child_allocation.y = 0;
-
-  child_allocation.width = allocation->width;
-  child_allocation.height = child_requisition.height;
   
-  gtk_widget_size_allocate((GtkWidget *) scrolled_level_box->level_box,
-			   &child_allocation);
+  /* box */
+  if(scrolled_level_box->level_box != NULL){
+    gtk_widget_get_child_requisition((GtkWidget *) scrolled_level_box->level_box,
+				     &child_requisition);
+
+    child_allocation.x = 0;
+    child_allocation.y = 0;
+
+    child_allocation.width = AGS_LEVEL_DEFAULT_LEVEL_WIDTH;
+    child_allocation.height = allocation->height;
+  
+    gtk_widget_size_allocate((GtkWidget *) scrolled_level_box->level_box,
+			     &child_allocation);
+  }
 }
+
 
 /**
  * ags_scrolled_level_box_new:

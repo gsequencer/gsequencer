@@ -47,22 +47,29 @@ typedef enum{
   AGS_MACHINE_SELECTOR_CONNECTED              = 1,
   AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING   = 1 <<  1,
   AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO       = 1 <<  2,
-  AGS_MACHINE_SELECTOR_NOTATION               = 1 <<  3,
-  AGS_MACHINE_SELECTOR_AUTOMATION             = 1 <<  4,
-  AGS_MACHINE_SELECTOR_WAVE                   = 1 <<  5,
-  AGS_MACHINE_SELECTOR_BLOCK_REVERSE_MAPPING  = 1 <<  6,
+  AGS_MACHINE_SELECTOR_BLOCK_REVERSE_MAPPING  = 1 <<  3,
 }AgsMachineSelectorFlags;
+
+typedef enum{
+  AGS_MACHINE_SELECTOR_EDIT_NOTATION    = 1,
+  AGS_MACHINE_SELECTOR_EDIT_SHEET       = 1 <<  1,
+  AGS_MACHINE_SELECTOR_EDIT_AUTOMATION  = 1 <<  2,
+  AGS_MACHINE_SELECTOR_EDIT_WAVE        = 1 <<  3,
+}AgsMachineSelectorEdit;
 
 struct _AgsMachineSelector
 {
   GtkVBox vbox;
 
   guint flags;
+  guint edit;
   
   GtkLabel *label;
 
   GtkMenuToolButton *menu_button;
   GtkMenu *popup;
+
+  GtkWidget *shift_piano;
   
   GtkWidget *current;
 
@@ -77,6 +84,8 @@ struct _AgsMachineSelectorClass
 };
 
 GType ags_machine_selector_get_type(void);
+
+void ags_machine_selector_set_edit(AgsMachineSelector *machine_selector, guint edit);
 
 void ags_machine_selector_add_index(AgsMachineSelector *machine_selector);
 void ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,

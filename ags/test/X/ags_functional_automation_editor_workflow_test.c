@@ -177,7 +177,7 @@ ags_functional_automation_editor_workflow_test_panel()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsAutomationEditor *automation_editor;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
@@ -229,18 +229,13 @@ ags_functional_automation_editor_workflow_test_panel()
   ags_test_enter();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  automation_editor = window->automation_window->automation_editor;
+  composite_editor = window->composite_editor;
   edit_menu = window->menu_bar->edit;
   
   ags_test_leave();
-
-  /* open automation window */
-  ags_functional_test_util_menu_bar_click("_Edit");
-  ags_functional_test_util_menu_click(edit_menu,
-				      "Automation");
   
   /* add index and link */
-  success = ags_functional_test_util_machine_selection_add_index("AgsAutomationEditor");
+  success = ags_functional_test_util_machine_selector_add_index("AgsAutomationEditor");
 
   CU_ASSERT(success == TRUE);
 
@@ -249,14 +244,14 @@ ags_functional_automation_editor_workflow_test_panel()
   
   CU_ASSERT(success == TRUE);
 
-  success = ags_functional_test_util_machine_selection_link_index("AgsAutomationEditor");
+  success = ags_functional_test_util_machine_selector_link_index("AgsAutomationEditor");
 
   CU_ASSERT(success == TRUE);
 
   /* select machine */
   ags_test_enter();
 
-  machine_selector = automation_editor->machine_selector;
+  machine_selector = composite_editor->machine_selector;
   machine_selection = machine_selector->machine_selection;
 
   machine_str = g_strdup_printf("%s: %s",
@@ -274,6 +269,11 @@ ags_functional_automation_editor_workflow_test_panel()
 
   CU_ASSERT(success == TRUE);
 
+  /* open automation window */
+  ags_functional_test_util_menu_bar_click("_Edit");
+  ags_functional_test_util_menu_click(edit_menu,
+				      "Automation");
+
   /* close automation window */
   ags_test_enter();
 
@@ -289,7 +289,7 @@ ags_functional_automation_editor_workflow_test_mixer()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsAutomationEditor *automation_editor;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
@@ -341,18 +341,13 @@ ags_functional_automation_editor_workflow_test_mixer()
   ags_test_enter();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  automation_editor = window->automation_window->automation_editor;
+  composite_editor = window->composite_editor;
   edit_menu = window->menu_bar->edit;
   
   ags_test_leave();
-
-  /* open automation window */
-  ags_functional_test_util_menu_bar_click("_Edit");
-  ags_functional_test_util_menu_click(edit_menu,
-				      "Automation");
   
   /* add index and link */
-  success = ags_functional_test_util_machine_selection_add_index("AgsAutomationEditor");
+  success = ags_functional_test_util_machine_selector_add_index("AgsAutomationEditor");
 
   CU_ASSERT(success == TRUE);
 
@@ -361,14 +356,14 @@ ags_functional_automation_editor_workflow_test_mixer()
   
   CU_ASSERT(success == TRUE);
 
-  success = ags_functional_test_util_machine_selection_link_index("AgsAutomationEditor");
+  success = ags_functional_test_util_machine_selector_link_index("AgsAutomationEditor");
 
   CU_ASSERT(success == TRUE);
 
   /* select machine */
   ags_test_enter();
 
-  machine_selector = automation_editor->machine_selector;
+  machine_selector = composite_editor->machine_selector;
   machine_selection = machine_selector->machine_selection;
 
   machine_str = g_strdup_printf("%s: %s",
@@ -386,6 +381,12 @@ ags_functional_automation_editor_workflow_test_mixer()
 
   CU_ASSERT(success == TRUE);
 
+
+  /* open automation window */
+  ags_functional_test_util_menu_bar_click("_Edit");
+  ags_functional_test_util_menu_click(edit_menu,
+				      "Automation");
+
   /* close automation window */
   ags_test_enter();
 
@@ -401,7 +402,7 @@ ags_functional_automation_editor_workflow_test_equalizer10()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsAutomationEditor *automation_editor;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
@@ -453,18 +454,13 @@ ags_functional_automation_editor_workflow_test_equalizer10()
   ags_test_enter();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  automation_editor = window->automation_window->automation_editor;
+  composite_editor = window->composite_editor;
   edit_menu = window->menu_bar->edit;
   
   ags_test_leave();
-
-  /* open automation window */
-  ags_functional_test_util_menu_bar_click("_Edit");
-  ags_functional_test_util_menu_click(edit_menu,
-				      "Automation");
   
   /* add index and link */
-  success = ags_functional_test_util_machine_selection_add_index("AgsAutomationEditor");
+  success = ags_functional_test_util_machine_selector_add_index("AgsAutomationEditor");
 
   CU_ASSERT(success == TRUE);
 
@@ -473,14 +469,14 @@ ags_functional_automation_editor_workflow_test_equalizer10()
   
   CU_ASSERT(success == TRUE);
 
-  success = ags_functional_test_util_machine_selection_link_index("AgsAutomationEditor");
+  success = ags_functional_test_util_machine_selector_link_index("AgsAutomationEditor");
 
   CU_ASSERT(success == TRUE);
 
   /* select machine */
   ags_test_enter();
 
-  machine_selector = automation_editor->machine_selector;
+  machine_selector = composite_editor->machine_selector;
   machine_selection = machine_selector->machine_selection;
 
   machine_str = g_strdup_printf("%s: %s",
@@ -498,6 +494,11 @@ ags_functional_automation_editor_workflow_test_equalizer10()
 
   CU_ASSERT(success == TRUE);
 
+  /* open automation window */
+  ags_functional_test_util_menu_bar_click("_Edit");
+  ags_functional_test_util_menu_click(edit_menu,
+				      "Automation");
+
   /* close automation window */
   ags_test_enter();
 
@@ -513,7 +514,7 @@ ags_functional_automation_editor_workflow_test_drum()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsAutomationEditor *automation_editor;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
@@ -565,18 +566,13 @@ ags_functional_automation_editor_workflow_test_drum()
   ags_test_enter();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  automation_editor = window->automation_window->automation_editor;
+  composite_editor = window->composite_editor;
   edit_menu = window->menu_bar->edit;
   
   ags_test_leave();
-
-  /* open automation window */
-  ags_functional_test_util_menu_bar_click("_Edit");
-  ags_functional_test_util_menu_click(edit_menu,
-				      "Automation");
   
   /* add index and link */
-  success = ags_functional_test_util_machine_selection_add_index("AgsAutomationEditor");
+  success = ags_functional_test_util_machine_selector_add_index("AgsAutomationEditor");
 
   CU_ASSERT(success == TRUE);
 
@@ -585,14 +581,14 @@ ags_functional_automation_editor_workflow_test_drum()
   
   CU_ASSERT(success == TRUE);
 
-  success = ags_functional_test_util_machine_selection_link_index("AgsAutomationEditor");
+  success = ags_functional_test_util_machine_selector_link_index("AgsAutomationEditor");
 
   CU_ASSERT(success == TRUE);
 
   /* select machine */
   ags_test_enter();
 
-  machine_selector = automation_editor->machine_selector;
+  machine_selector = composite_editor->machine_selector;
   machine_selection = machine_selector->machine_selection;
 
   machine_str = g_strdup_printf("%s: %s",
@@ -610,6 +606,11 @@ ags_functional_automation_editor_workflow_test_drum()
 
   CU_ASSERT(success == TRUE);
 
+  /* open automation window */
+  ags_functional_test_util_menu_bar_click("_Edit");
+  ags_functional_test_util_menu_click(edit_menu,
+				      "Automation");
+
   /* close automation window */
   ags_test_enter();
 
@@ -625,7 +626,7 @@ ags_functional_automation_editor_workflow_test_matrix()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsAutomationEditor *automation_editor;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
@@ -677,18 +678,13 @@ ags_functional_automation_editor_workflow_test_matrix()
   ags_test_enter();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  automation_editor = window->automation_window->automation_editor;
+  composite_editor = window->composite_editor;
   edit_menu = window->menu_bar->edit;
   
   ags_test_leave();
-
-  /* open automation window */
-  ags_functional_test_util_menu_bar_click("_Edit");
-  ags_functional_test_util_menu_click(edit_menu,
-				      "Automation");
   
   /* add index and link */
-  success = ags_functional_test_util_machine_selection_add_index("AgsAutomationEditor");
+  success = ags_functional_test_util_machine_selector_add_index("AgsAutomationEditor");
 
   CU_ASSERT(success == TRUE);
 
@@ -697,14 +693,14 @@ ags_functional_automation_editor_workflow_test_matrix()
   
   CU_ASSERT(success == TRUE);
 
-  success = ags_functional_test_util_machine_selection_link_index("AgsAutomationEditor");
+  success = ags_functional_test_util_machine_selector_link_index("AgsAutomationEditor");
 
   CU_ASSERT(success == TRUE);
 
   /* select machine */
   ags_test_enter();
 
-  machine_selector = automation_editor->machine_selector;
+  machine_selector = composite_editor->machine_selector;
   machine_selection = machine_selector->machine_selection;
 
   machine_str = g_strdup_printf("%s: %s",
@@ -722,6 +718,11 @@ ags_functional_automation_editor_workflow_test_matrix()
 
   CU_ASSERT(success == TRUE);
 
+  /* open automation window */
+  ags_functional_test_util_menu_bar_click("_Edit");
+  ags_functional_test_util_menu_click(edit_menu,
+				      "Automation");
+
   /* close automation window */
   ags_test_enter();
 
@@ -737,7 +738,7 @@ ags_functional_automation_editor_workflow_test_syncsynth()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsAutomationEditor *automation_editor;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
@@ -789,18 +790,13 @@ ags_functional_automation_editor_workflow_test_syncsynth()
   ags_test_enter();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  automation_editor = window->automation_window->automation_editor;
+  composite_editor = window->composite_editor;
   edit_menu = window->menu_bar->edit;
   
   ags_test_leave();
-
-  /* open automation window */
-  ags_functional_test_util_menu_bar_click("_Edit");
-  ags_functional_test_util_menu_click(edit_menu,
-				      "Automation");
   
   /* add index and link */
-  success = ags_functional_test_util_machine_selection_add_index("AgsAutomationEditor");
+  success = ags_functional_test_util_machine_selector_add_index("AgsAutomationEditor");
 
   CU_ASSERT(success == TRUE);
 
@@ -809,14 +805,14 @@ ags_functional_automation_editor_workflow_test_syncsynth()
   
   CU_ASSERT(success == TRUE);
 
-  success = ags_functional_test_util_machine_selection_link_index("AgsAutomationEditor");
+  success = ags_functional_test_util_machine_selector_link_index("AgsAutomationEditor");
 
   CU_ASSERT(success == TRUE);
 
   /* select machine */
   ags_test_enter();
 
-  machine_selector = automation_editor->machine_selector;
+  machine_selector = composite_editor->machine_selector;
   machine_selection = machine_selector->machine_selection;
 
   machine_str = g_strdup_printf("%s: %s",
@@ -834,6 +830,11 @@ ags_functional_automation_editor_workflow_test_syncsynth()
 
   CU_ASSERT(success == TRUE);
 
+  /* open automation window */
+  ags_functional_test_util_menu_bar_click("_Edit");
+  ags_functional_test_util_menu_click(edit_menu,
+				      "Automation");
+
   /* close automation window */
   ags_test_enter();
 
@@ -850,7 +851,7 @@ ags_functional_automation_editor_workflow_test_ffplayer()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsAutomationEditor *automation_editor;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
@@ -902,18 +903,13 @@ ags_functional_automation_editor_workflow_test_ffplayer()
   ags_test_enter();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  automation_editor = window->automation_window->automation_editor;
+  composite_editor = window->composite_editor;
   edit_menu = window->menu_bar->edit;
   
   ags_test_leave();
-
-  /* open automation window */
-  ags_functional_test_util_menu_bar_click("_Edit");
-  ags_functional_test_util_menu_click(edit_menu,
-				      "Automation");
   
   /* add index and link */
-  success = ags_functional_test_util_machine_selection_add_index("AgsAutomationEditor");
+  success = ags_functional_test_util_machine_selector_add_index("AgsAutomationEditor");
 
   CU_ASSERT(success == TRUE);
 
@@ -922,14 +918,14 @@ ags_functional_automation_editor_workflow_test_ffplayer()
   
   CU_ASSERT(success == TRUE);
 
-  success = ags_functional_test_util_machine_selection_link_index("AgsAutomationEditor");
+  success = ags_functional_test_util_machine_selector_link_index("AgsAutomationEditor");
 
   CU_ASSERT(success == TRUE);
 
   /* select machine */
   ags_test_enter();
 
-  machine_selector = automation_editor->machine_selector;
+  machine_selector = composite_editor->machine_selector;
   machine_selection = machine_selector->machine_selection;
 
   machine_str = g_strdup_printf("%s: %s",
@@ -946,6 +942,11 @@ ags_functional_automation_editor_workflow_test_ffplayer()
   success = ags_functional_test_util_dialog_ok(machine_selection);
 
   CU_ASSERT(success == TRUE);
+
+  /* open automation window */
+  ags_functional_test_util_menu_bar_click("_Edit");
+  ags_functional_test_util_menu_click(edit_menu,
+				      "Automation");
 
   /* close automation window */
   ags_test_enter();

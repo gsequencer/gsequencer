@@ -60,6 +60,8 @@ ags_indicator_set_adjustment
 ags_indicator_new
 ags_vled_array_get_type
 ags_vled_array_new
+ags_viewport_get_type
+ags_viewport_new
 ags_hindicator_get_type
 ags_hindicator_new
 ags_level_get_type
@@ -93,6 +95,8 @@ ags_vscale_box_get_type
 ags_vscale_box_new
 ags_scrolled_level_box_get_type
 ags_scrolled_level_box_new
+ags_scrolled_window_get_type
+ags_scrolled_window_new
 ags_scale_get_type
 ags_scale_set_scale_width
 ags_scale_get_scale_width

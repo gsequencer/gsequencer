@@ -47,6 +47,7 @@
 #include <ags/widget/ags_vindicator.h>
 #include <ags/widget/ags_vlevel_box.h>
 #include <ags/widget/ags_vscale_box.h>
+#include <ags/widget/ags_viewport.h>
 #include <ags/widget/ags_widget_marshal.h>
 
 #endif /*__LIBAGS_GUI_H__*/

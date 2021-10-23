@@ -22,6 +22,7 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_automation_editor.h>
@@ -58,7 +59,6 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
 					   AgsRampAccelerationDialog *ramp_acceleration_dialog)
 {
   AgsWindow *window;
-  AgsAutomationEditor *automation_editor;
   AgsMachine *machine;
 
   AgsChannel *start_channel;
@@ -66,15 +66,51 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
   
   AgsPluginPort *plugin_port;
 
+  AgsApplicationContext *application_context;
+  
   GList *start_port, *port;
 
   gchar *specifier;
 
-  window = AGS_WINDOW(ramp_acceleration_dialog->main_window);
-  automation_editor = window->automation_window->automation_editor;
+  GType channel_type;
+  
+  gboolean use_composite_editor;
+  
+  /* application context */
+  application_context = ags_application_context_get_instance();
 
-  machine = automation_editor->selected_machine;
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
+  
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
+  machine = NULL;
+
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
+    
+    composite_editor = window->composite_editor;
+
+    machine = composite_editor->selected_machine;
+
+    if(composite_editor->automation_edit->focused_edit == NULL){
+      return;
+    }
+    
+    channel_type = AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type;
+  }else{
+    AgsAutomationEditor *automation_editor;
+    
+    automation_editor = window->automation_window->automation_editor;
+
+    machine = automation_editor->selected_machine;
+
+    if(automation_editor->focused_automation_edit == NULL){
+      return;
+    }
+    
+    channel_type = automation_editor->focused_automation_edit->channel_type;
+  }
+  
   if(machine == NULL){
     return;
   }
@@ -84,17 +120,50 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
 
   start_port = NULL;
   
-  switch(gtk_notebook_get_current_page(automation_editor->notebook)){
-  case 0:
-    {
-      port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
-									specifier,
-									TRUE);
-      start_port = port;
+  if(channel_type == G_TYPE_NONE){
+    port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+								      specifier,
+								      TRUE);
+    start_port = port;
       
-      port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
-									specifier,
-									FALSE);
+    port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+								      specifier,
+								      FALSE);
+
+    if(start_port != NULL){
+      start_port = g_list_concat(start_port,
+				 port);
+    }else{
+      start_port = port;
+    }
+  }else if(channel_type == AGS_TYPE_OUTPUT){
+    g_object_get(machine->audio,
+		 "output", &start_channel,
+		 NULL);
+
+    channel = start_channel;
+
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+      
+    next_channel = NULL;
+    start_port = NULL;
+      
+    while(channel != NULL){
+      port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+									    specifier,
+									    TRUE);
+      if(start_port != NULL){
+	start_port = g_list_concat(start_port,
+				   port);
+      }else{
+	start_port = port;
+      }
+      
+      port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+									    specifier,
+									    FALSE);
 
       if(start_port != NULL){
 	start_port = g_list_concat(start_port,
@@ -102,116 +171,73 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
       }else{
 	start_port = port;
       }
+
+      /* iterate */
+      next_channel = ags_channel_next(channel);
+
+      g_object_unref(channel);
+
+      channel = next_channel;
     }
-    break;
-  case 1:
-    {
-      g_object_get(machine->audio,
-		   "output", &start_channel,
-		   NULL);
 
-      channel = start_channel;
-
-      if(channel != NULL){
-	g_object_ref(channel);
-      }
-      
-      next_channel = NULL;
-      start_port = NULL;
-      
-      while(channel != NULL){
-	port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
-									      specifier,
-									      TRUE);
-	if(start_port != NULL){
-	  start_port = g_list_concat(start_port,
-				     port);
-	}else{
-	  start_port = port;
-	}
-      
-	port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
-									      specifier,
-									      FALSE);
-
-	if(start_port != NULL){
-	  start_port = g_list_concat(start_port,
-				     port);
-	}else{
-	  start_port = port;
-	}
-
-	/* iterate */
-	next_channel = ags_channel_next(channel);
-
-	g_object_unref(channel);
-
-	channel = next_channel;
-      }
-
-      if(start_channel != NULL){
-	g_object_unref(start_channel);
-      }
-
-      if(next_channel != NULL){
-	g_object_unref(next_channel);
-      }
+    if(start_channel != NULL){
+      g_object_unref(start_channel);
     }
-    break;
-  case 2:
-    {
-      g_object_get(machine->audio,
-		   "input", &start_channel,
-		   NULL);
 
-      channel = start_channel;
-
-      if(channel != NULL){
-	g_object_ref(channel);
-      }
-      
-      next_channel = NULL;
-      start_port = NULL;
-      
-      while(channel != NULL){
-	port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
-									      specifier,
-									      TRUE);
-	if(start_port != NULL){
-	  start_port = g_list_concat(start_port,
-				     port);
-	}else{
-	  start_port = port;
-	}
-      
-	port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
-									      specifier,
-									      FALSE);
-
-	if(start_port != NULL){
-	  start_port = g_list_concat(start_port,
-				     port);
-	}else{
-	  start_port = port;
-	}
-
-	/* iterate */
-	next_channel = ags_channel_next(channel);
-
-	g_object_unref(channel);
-
-	channel = next_channel;
-      }
-
-      if(start_channel != NULL){
-	g_object_unref(start_channel);
-      }
-
-      if(next_channel != NULL){
-	g_object_unref(next_channel);
-      }
+    if(next_channel != NULL){
+      g_object_unref(next_channel);
     }
-    break;
+  }else if(channel_type == AGS_TYPE_INPUT){
+    g_object_get(machine->audio,
+		 "input", &start_channel,
+		 NULL);
+
+    channel = start_channel;
+
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+      
+    next_channel = NULL;
+    start_port = NULL;
+      
+    while(channel != NULL){
+      port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+									    specifier,
+									    TRUE);
+      if(start_port != NULL){
+	start_port = g_list_concat(start_port,
+				   port);
+      }else{
+	start_port = port;
+      }
+      
+      port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+									    specifier,
+									    FALSE);
+
+      if(start_port != NULL){
+	start_port = g_list_concat(start_port,
+				   port);
+      }else{
+	start_port = port;
+      }
+
+      /* iterate */
+      next_channel = ags_channel_next(channel);
+
+      g_object_unref(channel);
+
+      channel = next_channel;
+    }
+
+    if(start_channel != NULL){
+      g_object_unref(start_channel);
+    }
+
+    if(next_channel != NULL){
+      g_object_unref(next_channel);
+    }
   }
   
   /* reset range */

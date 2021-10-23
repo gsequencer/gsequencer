@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,9 +37,38 @@
 
 G_BEGIN_DECLS
 
-void ags_composite_editor_machine_changed_callback(AgsMachineSelector *machine_selector,
-						   AgsMachine *machine,
-						   AgsCompositeEditor *composite_editor);
+void ags_composite_editor_edit_viewport_vadjustment_changed_callback(GtkAdjustment *adjustment,
+								     AgsCompositeEditor *composite_editor);
+
+void ags_composite_editor_edit_vadjustment_value_changed_callback(GtkAdjustment *adjustment,
+								  AgsCompositeEditor *composite_editor);
+
+void ags_composite_editor_automation_edit_hadjustment_changed_callback(GtkAdjustment *adjustment,
+								       AgsCompositeEditor *composite_editor);
+
+void ags_composite_editor_edit_hadjustment_value_changed_callback(GtkAdjustment *adjustment,
+								  AgsCompositeEditor *composite_editor);
+
+void ags_composite_editor_wave_edit_hadjustment_changed_callback(GtkAdjustment *adjustment,
+								 AgsCompositeEditor *composite_editor);
+
+void ags_composite_editor_machine_selector_changed_callback(AgsMachineSelector *machine_selector,
+							    AgsMachine *machine,
+							    AgsCompositeEditor *composite_editor);
+
+void ags_composite_editor_resize_audio_channels_callback(AgsMachine *machine, 
+							 guint audio_channels, guint audio_channels_old,
+							 AgsCompositeEditor *composite_editor);
+void ags_composite_editor_resize_pads_callback(AgsMachine *machine, GType channel_type,
+					       guint pads, guint pads_old,
+					       AgsCompositeEditor *composite_editor);
+
+void ags_composite_editor_automation_edit_hscrollbar_value_changed(GtkRange *range,
+								   AgsCompositeEditor *composite_editor);
+
+void ags_composite_editor_wave_edit_hscrollbar_value_changed(GtkRange *range,
+							     AgsCompositeEditor *composite_editor);
+
 
 G_END_DECLS
 

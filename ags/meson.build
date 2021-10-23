@@ -896,6 +896,7 @@ libags_gui_sources = files(
   'widget/ags_vled_array.c',
   'widget/ags_vlevel_box.c',
   'widget/ags_vscale_box.c',
+  'widget/ags_viewport.c',
   'widget/ags_widget_marshal.c',
 )
 
@@ -2104,6 +2105,7 @@ libags_gui_widget_headers = [
   'widget/ags_hled_array.h',
   'widget/ags_notebook.h',
   'widget/ags_piano.h',
+  'widget/ags_viewport.h',
 ]
 
 libags_gui_headers = libags_gui_widget_headers

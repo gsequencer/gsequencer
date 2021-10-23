@@ -39,7 +39,7 @@
 <!ELEMENT ags-sf-value (ags-sf-value*)>
 
 <!-- GUI -->
-<!ELEMENT ags-sf-window (ags-sf-machine-list*, ags-sf-editor, ags-sf-automation-editor)>
+<!ELEMENT ags-sf-window (ags-sf-machine-list*, ags-sf-notation-editor?, ags-sf-automation-editor?, ags-sf-wave-editor?, ags-sf-composite-editor?)>
 <!ATTLIST ags-sf-window
 	  filename        CDATA     #IMPLIED
 	  bpm             NMTOKEN   120
@@ -264,15 +264,27 @@
 	  y               NMTOKEN  #REQUIRED	  
 	  >
 
-<!-- editor -->
-<!ELEMENT ags-sf-editor (ags-sf-property*)>
-<!ATTLIST ags-sf-editor
+<!-- notation editor -->
+<!ELEMENT ags-sf-notation-editor (ags-sf-property*)>
+<!ATTLIST ags-sf-notation-editor
 	  zoom            NMTOKEN   "1/1"
 	  >
 
 <!-- automation editor -->
 <!ELEMENT ags-sf-automation-editor (ags-sf-property-list*)>
 <!ATTLIST ags-sf-automation-editor
+	  zoom            NMTOKEN   "1/1"
+	  >
+
+<!-- wave editor -->
+<!ELEMENT ags-sf-wave-editor (ags-sf-property-list*)>
+<!ATTLIST ags-sf-wave-editor
+	  zoom            NMTOKEN   "1/1"
+	  >
+
+<!-- composite editor -->
+<!ELEMENT ags-sf-composite-editor (ags-sf-property-list*)>
+<!ATTLIST ags-sf-composite-editor
 	  zoom            NMTOKEN   "1/1"
 	  >
 

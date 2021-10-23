@@ -1350,7 +1350,7 @@ ags_functional_test_util_file_default_editor_resize()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
+  AgsCompositeEditor *composite_editor;
 
   GtkPaned *main_paned;
   GtkPaned *editor_paned;
@@ -1361,10 +1361,10 @@ ags_functional_test_util_file_default_editor_resize()
     
   xorg_application_context = ags_application_context_get_instance();
   window = AGS_WINDOW(xorg_application_context->window);
-  notation_editor = window->notation_editor;
+  composite_editor = window->composite_editor;
 
   main_paned = window->paned;
-  editor_paned = notation_editor->paned;
+  editor_paned = composite_editor->paned;
 
   gtk_paned_set_position(main_paned,
 			 (1080 - 64) * (2.0 / 3.0));
@@ -1390,7 +1390,7 @@ ags_functional_test_util_file_default_automation_window_resize()
   xorg_application_context = ags_application_context_get_instance();
   window = AGS_WINDOW(xorg_application_context->window);
 
-  gdk_window_move_resize(gtk_widget_get_window(window->automation_window),
+  gdk_window_move_resize(gtk_widget_get_window(window),
 			 64, 0,
 			 1920 - 128, 1080 - 64);
     
@@ -1406,7 +1406,7 @@ ags_functional_test_util_file_default_automation_editor_resize()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsAutomationEditor *automation_editor;
+  AgsCompositeEditor *composite_editor;
 
   GtkPaned *editor_paned;
   
@@ -1417,9 +1417,9 @@ ags_functional_test_util_file_default_automation_editor_resize()
   xorg_application_context = ags_application_context_get_instance();
   window = AGS_WINDOW(xorg_application_context->window);
 
-  automation_editor = window->automation_window->automation_editor;
+  composite_editor = window->composite_editor;
 
-  editor_paned = automation_editor->paned;
+  editor_paned = composite_editor->paned;
 
   ags_test_leave();
 
@@ -2199,8 +2199,8 @@ ags_functional_test_util_notation_toolbar_cursor_click()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
-  AgsNotationToolbar *notation_toolbar;
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
   
   GtkToolButton *position;
 
@@ -2211,10 +2211,10 @@ ags_functional_test_util_notation_toolbar_cursor_click()
   xorg_application_context = ags_application_context_get_instance();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  notation_editor = window->notation_editor;
-  notation_toolbar = notation_editor->notation_toolbar;
+  composite_editor = window->composite_editor;
+  composite_toolbar = composite_editor->toolbar;
 
-  position = notation_toolbar->position;
+  position = composite_toolbar->position;
   
   ags_test_leave();
 
@@ -2228,8 +2228,8 @@ ags_functional_test_util_notation_toolbar_edit_click()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
-  AgsNotationToolbar *notation_toolbar;
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
   
   GtkToolButton *edit;
 
@@ -2240,10 +2240,10 @@ ags_functional_test_util_notation_toolbar_edit_click()
   xorg_application_context = ags_application_context_get_instance();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  notation_editor = window->notation_editor;
-  notation_toolbar = notation_editor->notation_toolbar;
+  composite_editor = window->composite_editor;
+  composite_toolbar = composite_editor->toolbar;
 
-  edit = notation_toolbar->edit;
+  edit = composite_toolbar->edit;
   
   ags_test_leave();
 
@@ -2257,8 +2257,8 @@ ags_functional_test_util_notation_toolbar_delete_click()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
-  AgsNotationToolbar *notation_toolbar;
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
   
   GtkToolButton *clear;
 
@@ -2269,10 +2269,10 @@ ags_functional_test_util_notation_toolbar_delete_click()
   xorg_application_context = ags_application_context_get_instance();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  notation_editor = window->notation_editor;
-  notation_toolbar = notation_editor->notation_toolbar;
+  composite_editor = window->composite_editor;
+  composite_toolbar = composite_editor->toolbar;
 
-  clear = notation_toolbar->clear;
+  clear = composite_toolbar->clear;
   
   ags_test_leave();
 
@@ -2286,8 +2286,8 @@ ags_functional_test_util_notation_toolbar_select_click()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
-  AgsNotationToolbar *notation_toolbar;
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
   
   GtkToolButton *select;
 
@@ -2298,10 +2298,10 @@ ags_functional_test_util_notation_toolbar_select_click()
   xorg_application_context = ags_application_context_get_instance();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  notation_editor = window->notation_editor;
-  notation_toolbar = notation_editor->notation_toolbar;
+  composite_editor = window->composite_editor;
+  composite_toolbar = composite_editor->toolbar;
 
-  select = notation_toolbar->select;
+  select = composite_toolbar->select;
   
   ags_test_leave();
 
@@ -2315,8 +2315,8 @@ ags_functional_test_util_notation_toolbar_invert_click()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
-  AgsNotationToolbar *notation_toolbar;
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
   
   GtkToolButton *invert;
 
@@ -2327,10 +2327,10 @@ ags_functional_test_util_notation_toolbar_invert_click()
   xorg_application_context = ags_application_context_get_instance();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  notation_editor = window->notation_editor;
-  notation_toolbar = notation_editor->notation_toolbar;
+  composite_editor = window->composite_editor;
+  composite_toolbar = composite_editor->toolbar;
 
-  invert = notation_toolbar->invert;
+  invert = composite_toolbar->invert;
   
   ags_test_leave();
 
@@ -2344,8 +2344,8 @@ ags_functional_test_util_notation_toolbar_paste_click()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
-  AgsNotationToolbar *notation_toolbar;
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
   
   GtkToolButton *paste;
 
@@ -2356,10 +2356,10 @@ ags_functional_test_util_notation_toolbar_paste_click()
   xorg_application_context = ags_application_context_get_instance();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  notation_editor = window->notation_editor;
-  notation_toolbar = notation_editor->notation_toolbar;
+  composite_editor = window->composite_editor;
+  composite_toolbar = composite_editor->toolbar;
 
-  paste = notation_toolbar->paste_tool;
+  paste = composite_toolbar->paste;
   
   ags_test_leave();
 
@@ -2373,8 +2373,8 @@ ags_functional_test_util_notation_toolbar_copy_click()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
-  AgsNotationToolbar *notation_toolbar;
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
   
   GtkToolButton *copy;
 
@@ -2385,10 +2385,10 @@ ags_functional_test_util_notation_toolbar_copy_click()
   xorg_application_context = ags_application_context_get_instance();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  notation_editor = window->notation_editor;
-  notation_toolbar = notation_editor->notation_toolbar;
+  composite_editor = window->composite_editor;
+  composite_toolbar = composite_editor->toolbar;
 
-  copy = notation_toolbar->copy;
+  copy = composite_toolbar->copy;
   
   ags_test_leave();
 
@@ -2402,8 +2402,8 @@ ags_functional_test_util_notation_toolbar_cut_click()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
-  AgsNotationToolbar *notation_toolbar;
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
   
   GtkToolButton *cut;
 
@@ -2414,10 +2414,10 @@ ags_functional_test_util_notation_toolbar_cut_click()
   xorg_application_context = ags_application_context_get_instance();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  notation_editor = window->notation_editor;
-  notation_toolbar = notation_editor->notation_toolbar;
+  composite_editor = window->composite_editor;
+  composite_toolbar = composite_editor->toolbar;
 
-  cut = notation_toolbar->cut;
+  cut = composite_toolbar->cut;
   
   ags_test_leave();
 
@@ -2431,8 +2431,8 @@ ags_functional_test_util_notation_toolbar_zoom(guint nth_zoom)
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
-  AgsNotationToolbar *notation_toolbar;
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
   
   GtkComboBox *zoom;
 
@@ -2443,77 +2443,15 @@ ags_functional_test_util_notation_toolbar_zoom(guint nth_zoom)
   xorg_application_context = ags_application_context_get_instance();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  notation_editor = window->notation_editor;
-  notation_toolbar = notation_editor->notation_toolbar;
+  composite_editor = window->composite_editor;
+  composite_toolbar = composite_editor->toolbar;
 
-  zoom = notation_toolbar->zoom;
+  zoom = composite_toolbar->zoom;
   
   ags_test_leave();
 
   success = ags_functional_test_util_combo_box_click(zoom,
 						     nth_zoom);
-
-  return(success);
-}
-
-gboolean
-ags_functional_test_util_machine_selector_select(gchar *editor_type,
-						 guint nth_index)
-{
-  AgsXorgApplicationContext *xorg_application_context;
-  AgsWindow *window;
-  AgsMachineSelector *machine_selector;
-  AgsMachineRadioButton *machine_radio_button;
-  
-  GList *list_start, *list;
-  
-  gboolean success;
-
-  ags_test_enter();
-  
-  xorg_application_context = ags_application_context_get_instance();
-
-  window = AGS_WINDOW(xorg_application_context->window);
-
-  machine_selector = NULL;
-  
-  if(!g_strcmp0(editor_type,
-		"AgsNotationEditor")){
-    AgsNotationEditor *notation_editor;
-    
-    notation_editor = window->notation_editor;
-    machine_selector = notation_editor->machine_selector;
-  }else if(!g_strcmp0(editor_type,
-		      "AgsAutomationEditor")){
-    AgsAutomationEditor *automation_editor;
-    
-    automation_editor = window->automation_window->automation_editor;
-    machine_selector = automation_editor->machine_selector;
-  }else if(!g_strcmp0(editor_type,
-		      "AgsWaveEditor")){
-    AgsWaveEditor *wave_editor;
-    
-    wave_editor = window->wave_window->wave_editor;
-    machine_selector = wave_editor->machine_selector;
-  }  
-  
-  list_start = gtk_container_get_children(machine_selector);
-
-  ags_test_leave();
-
-  list = g_list_nth(list_start,
-		    nth_index + 1);
-  
-  if(list == NULL){
-    return(FALSE);
-  }
-
-  machine_radio_button = list->data;
-  g_list_free(list_start);
-  
-  success = ags_functional_test_util_button_click(machine_radio_button);
-
-  ags_functional_test_util_reaction_time_long();  
 
   return(success);
 }
@@ -2547,22 +2485,22 @@ ags_functional_test_util_machine_selection_select(gchar *editor_type,
   
   if(!g_strcmp0(editor_type,
 		"AgsNotationEditor")){
-    AgsNotationEditor *notation_editor;
+    AgsCompositeEditor *composite_editor;
     
-    notation_editor = window->notation_editor;
-    machine_selector = notation_editor->machine_selector;
+    composite_editor = window->composite_editor;
+    machine_selector = composite_editor->machine_selector;
   }else if(!g_strcmp0(editor_type,
 		      "AgsAutomationEditor")){
-    AgsAutomationEditor *automation_editor;
+    AgsCompositeEditor *composite_editor;
     
-    automation_editor = window->automation_window->automation_editor;
-    machine_selector = automation_editor->machine_selector;
+    composite_editor = window->composite_editor;
+    machine_selector = composite_editor->machine_selector;
   }else if(!g_strcmp0(editor_type,
 		      "AgsWaveEditor")){
-    AgsWaveEditor *wave_editor;
+    AgsCompositeEditor *composite_editor;
     
-    wave_editor = window->wave_window->wave_editor;
-    machine_selector = wave_editor->machine_selector;
+    composite_editor = window->composite_editor;
+    machine_selector = composite_editor->machine_selector;
   }  
 
   machine_selection = machine_selector->machine_selection;
@@ -2607,7 +2545,69 @@ ags_functional_test_util_machine_selection_select(gchar *editor_type,
 }
 
 gboolean
-ags_functional_test_util_machine_selection_remove_index(gchar *editor_type)
+ags_functional_test_util_machine_selector_select(gchar *editor_type,
+						 guint nth_index)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsMachineSelector *machine_selector;
+  AgsMachineRadioButton *machine_radio_button;
+  
+  GList *list_start, *list;
+  
+  gboolean success;
+
+  ags_test_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = AGS_WINDOW(xorg_application_context->window);
+
+  machine_selector = NULL;
+  
+  if(!g_strcmp0(editor_type,
+		"AgsNotationEditor")){
+    AgsCompositeEditor *composite_editor;
+    
+    composite_editor = window->composite_editor;
+    machine_selector = composite_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsAutomationEditor")){
+    AgsCompositeEditor *composite_editor;
+    
+    composite_editor = window->composite_editor;
+    machine_selector = composite_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsWaveEditor")){
+    AgsCompositeEditor *composite_editor;
+    
+    composite_editor = window->composite_editor;
+    machine_selector = composite_editor->machine_selector;
+  }  
+  
+  list_start = gtk_container_get_children(machine_selector);
+
+  ags_test_leave();
+
+  list = g_list_nth(list_start,
+		    nth_index + 1);
+  
+  if(list == NULL){
+    return(FALSE);
+  }
+
+  machine_radio_button = list->data;
+  g_list_free(list_start);
+  
+  success = ags_functional_test_util_button_click(machine_radio_button);
+
+  ags_functional_test_util_reaction_time_long();  
+
+  return(success);
+}
+
+gboolean
+ags_functional_test_util_machine_selector_remove_index(gchar *editor_type)
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
@@ -2628,22 +2628,22 @@ ags_functional_test_util_machine_selection_remove_index(gchar *editor_type)
   
   if(!g_strcmp0(editor_type,
 		"AgsNotationEditor")){
-    AgsNotationEditor *notation_editor;
+    AgsCompositeEditor *composite_editor;
     
-    notation_editor = window->notation_editor;
-    machine_selector = notation_editor->machine_selector;
+    composite_editor = window->composite_editor;
+    machine_selector = composite_editor->machine_selector;
   }else if(!g_strcmp0(editor_type,
 		      "AgsAutomationEditor")){
-    AgsAutomationEditor *automation_editor;
+    AgsCompositeEditor *composite_editor;
     
-    automation_editor = window->automation_window->automation_editor;
-    machine_selector = automation_editor->machine_selector;
+    composite_editor = window->composite_editor;
+    machine_selector = composite_editor->machine_selector;
   }else if(!g_strcmp0(editor_type,
 		      "AgsWaveEditor")){
-    AgsWaveEditor *wave_editor;
+    AgsCompositeEditor *composite_editor;
     
-    wave_editor = window->wave_window->wave_editor;
-    machine_selector = wave_editor->machine_selector;
+    composite_editor = window->composite_editor;
+    machine_selector = composite_editor->machine_selector;
   }  
   
   menu_tool_button = machine_selector->menu_button;
@@ -2668,7 +2668,7 @@ ags_functional_test_util_machine_selection_remove_index(gchar *editor_type)
 }
 
 gboolean
-ags_functional_test_util_machine_selection_add_index(gchar *editor_type)
+ags_functional_test_util_machine_selector_add_index(gchar *editor_type)
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
@@ -2689,22 +2689,22 @@ ags_functional_test_util_machine_selection_add_index(gchar *editor_type)
   
   if(!g_strcmp0(editor_type,
 		"AgsNotationEditor")){
-    AgsNotationEditor *notation_editor;
+    AgsCompositeEditor *composite_editor;
     
-    notation_editor = window->notation_editor;
-    machine_selector = notation_editor->machine_selector;
+    composite_editor = window->composite_editor;
+    machine_selector = composite_editor->machine_selector;
   }else if(!g_strcmp0(editor_type,
 		      "AgsAutomationEditor")){
-    AgsAutomationEditor *automation_editor;
+    AgsCompositeEditor *composite_editor;
     
-    automation_editor = window->automation_window->automation_editor;
-    machine_selector = automation_editor->machine_selector;
+    composite_editor = window->composite_editor;
+    machine_selector = composite_editor->machine_selector;
   }else if(!g_strcmp0(editor_type,
 		      "AgsWaveEditor")){
-    AgsWaveEditor *wave_editor;
+    AgsCompositeEditor *composite_editor;
     
-    wave_editor = window->wave_window->wave_editor;
-    machine_selector = wave_editor->machine_selector;
+    composite_editor = window->composite_editor;
+    machine_selector = composite_editor->machine_selector;
   }  
   
   menu_tool_button = machine_selector->menu_button;
@@ -2729,7 +2729,7 @@ ags_functional_test_util_machine_selection_add_index(gchar *editor_type)
 }
 
 gboolean
-ags_functional_test_util_machine_selection_link_index(gchar *editor_type)
+ags_functional_test_util_machine_selector_link_index(gchar *editor_type)
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
@@ -2750,22 +2750,22 @@ ags_functional_test_util_machine_selection_link_index(gchar *editor_type)
   
   if(!g_strcmp0(editor_type,
 		"AgsNotationEditor")){
-    AgsNotationEditor *notation_editor;
+    AgsCompositeEditor *composite_editor;
     
-    notation_editor = window->notation_editor;
-    machine_selector = notation_editor->machine_selector;
+    composite_editor = window->composite_editor;
+    machine_selector = composite_editor->machine_selector;
   }else if(!g_strcmp0(editor_type,
 		      "AgsAutomationEditor")){
-    AgsAutomationEditor *automation_editor;
+    AgsCompositeEditor *composite_editor;
     
-    automation_editor = window->automation_window->automation_editor;
-    machine_selector = automation_editor->machine_selector;
+    composite_editor = window->composite_editor;
+    machine_selector = composite_editor->machine_selector;
   }else if(!g_strcmp0(editor_type,
 		      "AgsWaveEditor")){
-    AgsWaveEditor *wave_editor;
+    AgsCompositeEditor *composite_editor;
     
-    wave_editor = window->wave_window->wave_editor;
-    machine_selector = wave_editor->machine_selector;
+    composite_editor = window->composite_editor;
+    machine_selector = composite_editor->machine_selector;
   }  
   
   menu_tool_button = machine_selector->menu_button;
@@ -2790,11 +2790,11 @@ ags_functional_test_util_machine_selection_link_index(gchar *editor_type)
 }
 
 gboolean
-ags_functional_test_util_machine_selection_reverse_mapping()
+ags_functional_test_util_machine_selector_reverse_mapping()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
+  AgsCompositeEditor *composite_editor;
   AgsMachineSelector *machine_selector;
   
   GtkButton *menu_tool_button;
@@ -2807,8 +2807,8 @@ ags_functional_test_util_machine_selection_reverse_mapping()
   xorg_application_context = ags_application_context_get_instance();
 
   window = AGS_WINDOW(xorg_application_context->window);
-  notation_editor = window->notation_editor;
-  machine_selector = notation_editor->machine_selector;
+  composite_editor = window->composite_editor;
+  machine_selector = composite_editor->machine_selector;
   
   menu_tool_button = machine_selector->menu_button;
   popup = machine_selector->popup;
@@ -2832,7 +2832,7 @@ ags_functional_test_util_machine_selection_reverse_mapping()
 }
 
 gboolean
-ags_functional_test_util_machine_selection_shift_piano(guint nth_shift)
+ags_functional_test_util_machine_selector_shift_piano(guint nth_shift)
 {
   //TODO:JK: 
 }
@@ -2849,8 +2849,8 @@ ags_functional_test_util_notation_edit_add_point(guint x0, guint x1,
 						 guint y)
 {
   AgsXorgApplicationContext *xorg_application_context;
-  AgsNotationEditor *notation_editor;
-  AgsNotationToolbar *notation_toolbar;
+  AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
   AgsNotationEdit *notation_edit;
   
   GtkWidget *widget;
@@ -2876,19 +2876,19 @@ ags_functional_test_util_notation_edit_add_point(guint x0, guint x1,
   
   xorg_application_context = ags_application_context_get_instance();
 
-  notation_editor = AGS_WINDOW(xorg_application_context->window)->notation_editor;
-  notation_toolbar = notation_editor->notation_toolbar;
+  composite_editor = AGS_WINDOW(xorg_application_context->window)->composite_editor;
+  composite_toolbar = composite_editor->toolbar;
 
-  if(notation_editor->selected_machine == NULL){
+  if(composite_editor->selected_machine == NULL){
     ags_test_leave();
 
     return(FALSE);
   }
   
-  notation_edit = notation_editor->notation_edit;
+  notation_edit = composite_editor->notation_edit->edit;
   widget = notation_edit->drawing_area;
   
-  history = gtk_combo_box_get_active(GTK_COMBO_BOX(notation_toolbar->zoom));
+  history = gtk_combo_box_get_active(GTK_COMBO_BOX(composite_toolbar->zoom));
   zoom = exp2((double) history - 2.0);
   
   ags_test_leave();

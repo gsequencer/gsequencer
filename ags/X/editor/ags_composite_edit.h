@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -61,6 +61,17 @@ typedef enum{
   AGS_COMPOSITE_EDIT_CHANNEL_SELECTOR_INPUT_LINE,
 }AgsCompositeEditChannelSelectorMode;
 
+typedef enum{
+  AGS_COMPOSITE_EDIT_PATTERN_MODE,
+  AGS_COMPOSITE_EDIT_NOTATION_MODE,
+}AgsCompositeEditEditMode;
+
+typedef enum{
+  AGS_COMPOSITE_EDIT_PASTE_MATCH_AUDIO_CHANNEL  =  1,
+  AGS_COMPOSITE_EDIT_PASTE_MATCH_LINE           =  1 <<  1,
+  AGS_COMPOSITE_EDIT_PASTE_NO_DUPLICATES        =  1 <<  2,
+}AgsCompositeEditPasteFlags;
+
 struct _AgsCompositeEdit
 {
   GtkBox box;
@@ -79,13 +90,20 @@ struct _AgsCompositeEdit
 
   GtkGrid *composite_grid;
 
+  AgsRuler *ruler;
+
   guint channel_selector_mode;
   AgsNotebook *channel_selector;
 
+  guint edit_mode;
+  guint paste_flags;
+  
   GtkBox *edit_box;
   
-  GtkWidget *edit_control;  
+  GtkWidget *edit_control;
   GtkWidget *edit;
+
+  GtkWidget *focused_edit;
 
   gboolean block_vscrollbar;
   GtkScrollbar *vscrollbar;
@@ -107,6 +125,14 @@ GType ags_composite_edit_get_type(void);
 gboolean ags_composite_edit_test_flags(AgsCompositeEdit *composite_edit, guint flags);
 void ags_composite_edit_set_flags(AgsCompositeEdit *composite_edit, guint flags);
 void ags_composite_edit_unset_flags(AgsCompositeEdit *composite_edit, guint flags);
+
+gboolean ags_composite_edit_test_scrollbar(AgsCompositeEdit *composite_edit, guint scrollbar);
+void ags_composite_edit_set_scrollbar(AgsCompositeEdit *composite_edit, guint scrollbar);
+void ags_composite_edit_unset_scrollbar(AgsCompositeEdit *composite_edit, guint scrollbar);
+
+void ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, guint channel_selector_mode);
+
+void ags_composite_edit_set_edit_mode(AgsCompositeEdit *composite_edit, guint edit_mode);
 
 /* instantiate */
 AgsCompositeEdit* ags_composite_edit_new();
