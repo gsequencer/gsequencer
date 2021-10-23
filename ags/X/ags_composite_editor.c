@@ -3854,7 +3854,141 @@ ags_composite_editor_invert(AgsCompositeEditor *composite_editor)
 void
 ags_composite_editor_do_feedback(AgsCompositeEditor *composite_editor)
 {
-  //TODO:JK: implement me
+  AgsMachine *machine;
+  AgsNotationEdit *notation_edit;
+  
+  AgsChannel *start_output, *start_input;
+  AgsChannel *nth_channel, *nth_pad;
+  AgsPlayback *playback;
+    
+  AgsTimestamp *timestamp;
+    
+  GList *start_list_notation, *list_notation;
+    
+  guint output_pads, input_pads;
+  gint i;
+  
+  if(!AGS_IS_COMPOSITE_EDITOR(composite_editor)){
+    return;
+  }
+
+  machine = composite_editor->selected_machine;
+
+  if(machine == NULL){
+    return;
+  }
+
+  notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
+  
+  /* check all active tabs */
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+    
+  timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(notation_edit->cursor_position_x / AGS_NOTATION_DEFAULT_OFFSET);
+
+  i = 0;
+
+  g_object_get(machine->audio,
+	       "output", &start_output,
+	       "output-pads", &output_pads,
+	       "input", &start_input,
+	       "input-pads", &input_pads,
+	       "notation", &start_list_notation,
+	       NULL);
+
+  while((i = ags_notebook_next_active_tab(composite_editor->notation_edit->channel_selector,
+					  i)) != -1){
+    AgsNote *current_note;
+    AgsNote *play_note;
+      
+    list_notation = start_list_notation;
+    list_notation = ags_notation_find_near_timestamp(list_notation, i,
+						     timestamp);
+
+    if(list_notation == NULL){
+      i++;
+	
+      continue;
+    }
+
+    current_note = ags_notation_find_point(list_notation->data,
+					   notation_edit->cursor_position_x, notation_edit->cursor_position_y,
+					   FALSE);
+
+    if(current_note != NULL){
+      if(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT)){
+	nth_channel = ags_channel_nth(start_output,
+				      i);
+      }else{
+	nth_channel = ags_channel_nth(start_input,
+				      i);
+      }
+	
+      if(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
+	nth_pad = ags_channel_pad_nth(nth_channel,
+				      (ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT) ? output_pads: input_pads) - notation_edit->cursor_position_y - 1);
+      }else{
+	nth_pad = ags_channel_pad_nth(nth_channel,
+				      notation_edit->cursor_position_y);
+      }
+
+      if(nth_pad != NULL){
+	guint x0, x1;
+	  
+	g_object_get(nth_pad,
+		     "playback", &playback,
+		     NULL);
+
+	g_object_get(playback,
+		     "play-note", &play_note,
+		     NULL);
+
+	g_object_get(current_note,
+		     "x0", &x0,
+		     "x1", &x1,
+		     NULL);
+	  
+	g_object_set(play_note,
+		     "x0", 0,
+		     "x1", x1 - x0,
+		     NULL);
+	  
+	ags_machine_playback_set_active(machine,
+					playback,
+					TRUE);
+	  
+	g_object_unref(playback);
+
+	g_object_unref(play_note);
+      }
+
+      /* unref */
+      if(nth_channel != NULL){
+	g_object_unref(nth_channel);
+      }
+
+      if(nth_pad != NULL){
+	g_object_unref(nth_pad);
+      }
+    }
+
+    /* iterate */
+    i++;
+  }
+
+  g_list_free_full(start_list_notation,
+		   g_object_unref);
+
+  /* unref */
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
 }
 
 /**

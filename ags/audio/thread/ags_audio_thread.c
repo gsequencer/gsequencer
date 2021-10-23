@@ -600,7 +600,7 @@ ags_audio_thread_run(AgsThread *thread)
 	       NULL);
   
   ags_task_launcher_run(task_launcher);
-
+  
   if(processing){
     audio = NULL;
 

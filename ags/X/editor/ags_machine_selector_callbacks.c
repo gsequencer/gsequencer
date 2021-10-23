@@ -224,6 +224,7 @@ ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachine
 {
   AgsMachine *machine;
   AgsPiano *piano;
+  AgsNotationEdit *notation_edit;
   
   AgsApplicationContext *application_context;
   
@@ -245,7 +246,9 @@ ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachine
 
     machine = composite_editor->selected_machine;
 
-    piano = AGS_SCROLLED_PIANOG(composite_editor->notation_edit->edit_control)->piano;
+    notation_edit = composite_editor->notation_edit->edit;
+    
+    piano = AGS_SCROLLED_PIANO(composite_editor->notation_edit->edit_control)->piano;
   }else{
     AgsNotationEditor *notation_editor;
     
@@ -254,6 +257,8 @@ ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachine
 
     machine = notation_editor->selected_machine;
 
+    notation_edit = notation_editor->notation_edit;
+    
     piano = notation_editor->scrolled_piano->piano;
   }
   
@@ -325,4 +330,5 @@ ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachine
   }
   
   gtk_widget_queue_draw((GtkWidget *) piano);
+  gtk_widget_queue_draw((GtkWidget *) notation_edit);
 }

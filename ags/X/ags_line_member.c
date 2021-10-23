@@ -1664,6 +1664,11 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 
   machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
 						   AGS_TYPE_MACHINE);
+
+  if(machine == NULL){
+    return(NULL);
+  }
+  
   parent = gtk_widget_get_ancestor(GTK_WIDGET(line_member),
 				   AGS_TYPE_LINE);
 
