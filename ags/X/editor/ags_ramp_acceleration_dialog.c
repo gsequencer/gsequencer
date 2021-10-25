@@ -591,6 +591,10 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
     machine = composite_editor->selected_machine;
 
     focused_automation_edit = composite_editor->automation_edit->focused_edit;
+
+    if(focused_automation_edit == NULL){
+      return;
+    }
     
     notebook = composite_editor->automation_edit->channel_selector;
 
@@ -603,6 +607,10 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
     machine = automation_editor->selected_machine;
 
     focused_automation_edit = automation_editor->focused_automation_edit;
+
+    if(focused_automation_edit == NULL){
+      return;
+    }
     
     if(automation_editor->focused_automation_edit->channel_type == G_TYPE_NONE){
       notebook = NULL;
@@ -616,8 +624,7 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
     }
   }
   
-  if(machine == NULL ||
-     focused_automation_edit == NULL){
+  if(machine == NULL){
     return;
   }
 

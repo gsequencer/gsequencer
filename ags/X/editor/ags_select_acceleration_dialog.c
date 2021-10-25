@@ -459,6 +459,9 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   xmlDoc *clipboard;
   xmlNode *audio_node, *automation_node;
 
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
   GList *start_list_automation, *list_automation;
   GList *port, *port_start;
   GList *list;
@@ -466,6 +469,7 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   gchar **specifier;
   xmlChar *buffer;
   gchar *str;
+  gchar *scope;
   
   GType channel_type;
 
@@ -529,8 +533,7 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
     }
   }
   
-  if(machine == NULL ||
-     focused_automation_edit == NULL){
+  if(machine == NULL){
     return;
   }
   
@@ -567,7 +570,13 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 
   for(i = 0; port != NULL;){
     list = gtk_container_get_children((GtkContainer *) port->data);
-    str = gtk_combo_box_text_get_active_text(list->data);
+
+    model = gtk_combo_box_get_model(list->data);
+    gtk_tree_model_get(model,
+		       &iter,
+		       0, &scope,
+		       1, &str,
+		       -1);
 
     g_list_free(list);
     
@@ -590,6 +599,14 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
     specifier[i + 1] = NULL;
     
     line = 0;
+
+    channel_type = G_TYPE_NONE;
+
+    if(!g_strcmp0(scope, "output")){
+      channel_type = AGS_TYPE_OUTPUT;
+    }else if(!g_strcmp0(scope, "input")){
+      channel_type = AGS_TYPE_INPUT;
+    }
     
     while((line = ags_notebook_next_active_tab(notebook,
 					       line)) != -1){

@@ -1,3 +1,9 @@
+ags (3.12.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed SIGSEGV with AgsRampAccelerationDialog
+	* fixed SIGSEGV with AgsSelectAccelerationDialog
+
 ags (3.12.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
