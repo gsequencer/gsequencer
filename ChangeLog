@@ -3,6 +3,8 @@ ags (3.12.5)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed SIGSEGV with AgsRampAccelerationDialog
 	* fixed SIGSEGV with AgsSelectAccelerationDialog
+	* fixed missing paste flags implementation in AgsCompositeToolbar callbacks
+	* fixed missing channel selector control implementation in AgsCompositeToolbar callbacks
 
 ags (3.12.4)
 

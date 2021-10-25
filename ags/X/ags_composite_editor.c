@@ -1164,6 +1164,9 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     
     composite_editor->selected_edit = composite_editor->notation_edit;
 
+    composite_editor->notation_edit->paste_flags = (AGS_COMPOSITE_EDIT_PASTE_MATCH_AUDIO_CHANNEL |
+						    AGS_COMPOSITE_EDIT_PASTE_NO_DUPLICATES);
+    
     gtk_widget_show_all(composite_editor->notation_edit);
     gtk_widget_hide(composite_editor->sheet_edit);
     gtk_widget_hide(composite_editor->automation_edit);
@@ -1187,6 +1190,9 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 						   AGS_COMPOSITE_TOOLBAR_SCOPE_AUTOMATION);
     
     composite_editor->selected_edit = composite_editor->automation_edit;
+
+    composite_editor->automation_edit->paste_flags = (AGS_COMPOSITE_EDIT_PASTE_MATCH_LINE |
+						      AGS_COMPOSITE_EDIT_PASTE_NO_DUPLICATES);
 
     start_automation_port = g_list_copy(machine->enabled_automation_port);
 
@@ -1252,6 +1258,9 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     
     composite_editor->selected_edit = composite_editor->wave_edit;
     
+    composite_editor->wave_edit->paste_flags = (AGS_COMPOSITE_EDIT_PASTE_MATCH_AUDIO_CHANNEL |
+						AGS_COMPOSITE_EDIT_PASTE_NO_DUPLICATES);
+
     gtk_widget_hide(composite_editor->notation_edit);
     gtk_widget_hide(composite_editor->sheet_edit);
     gtk_widget_hide(composite_editor->automation_edit);
