@@ -95,6 +95,9 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
   
   unsigned char *image_data;
 
+  int width, height;
+  int stride;
+  
   g_object_set(animation_window,
 	       "app-paintable", TRUE,
 	       "decorated", FALSE,
@@ -146,23 +149,44 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
 
   animation_window->filename = filename;
 
-  animation_window->image_size = 4 * 800 * 600;
+  width = 800;
+  height = 600;
+
+  stride = 2 * width;
   
-  animation_window->bg_data = (unsigned char *) malloc(animation_window->image_size * sizeof(unsigned char));
-  animation_window->cache_data = (unsigned char *) malloc(animation_window->image_size * sizeof(unsigned char));
+  animation_window->image_size = stride * height;
+
+  surface = NULL;
 
   if(filename != NULL){
+    cairo_format_t format;
+    
     surface = cairo_image_surface_create_from_png(filename);
 
     image_data = cairo_image_surface_get_data(surface);
 
+    format = cairo_image_surface_get_format(surface);
+
+    width = cairo_image_surface_get_width(surface);
+    height = cairo_image_surface_get_height(surface);
+
+    stride = cairo_format_stride_for_width(format,
+					   width);
+  
+    animation_window->image_size = stride * height;
+  }
+  
+  animation_window->bg_data = (unsigned char *) malloc(animation_window->image_size * sizeof(unsigned char));
+  animation_window->cache_data = (unsigned char *) malloc(animation_window->image_size * sizeof(unsigned char));
+
+  if(surface != NULL){
     if(image_data != NULL){
       memcpy(animation_window->bg_data, image_data, animation_window->image_size * sizeof(unsigned char));
     }
     
     cairo_surface_destroy(surface);
   }
-
+  
   animation_window->text_box_x0 = 4;
   animation_window->text_box_y0 = 220;
 
