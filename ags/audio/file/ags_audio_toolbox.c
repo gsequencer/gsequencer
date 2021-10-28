@@ -896,11 +896,12 @@ ags_audio_toolbox_open(AgsSoundResource *sound_resource,
   client_stream = (AudioStreamBasicDescription *) g_malloc(sizeof(AudioStreamBasicDescription));
   
   memcpy(client_stream, stream, sizeof(AudioStreamBasicDescription));
- 
+
+  client_stream->mSampleRate = samplerate;
   client_stream->mFormatID = kAudioFormatLinearPCM;
-  client_stream->mFormatFlags = kAudioFormatFlagIsPacked;
+  client_stream->mFormatFlags = kAudioFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger;
   client_stream->mBitsPerChannel = 16;
-  client_stream->mChannelsPerFrame = 2;
+  client_stream->mChannelsPerFrame = audio_channels;
   client_stream->mBytesPerFrame = client_stream->mChannelsPerFrame * 2;
   client_stream->mFramesPerPacket = 1;
   client_stream->mBytesPerPacket = client_stream->mFramesPerPacket * client_stream->mBytesPerFrame;
@@ -1250,6 +1251,9 @@ ags_audio_toolbox_read(AgsSoundResource *sound_resource,
     multi_frames = read_count * audio_toolbox->audio_channels;
 
     retval = -1;
+
+    ags_audio_buffer_util_clear_buffer(audio_toolbox->audio_buffer_list->mBuffers[0].mData, 1,
+				       audio_toolbox->audio_channels * audio_toolbox->buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
     
     //    if(!use_cache){
     //      g_message("read %d %d", audio_toolbox->offset, audio_toolbox->buffer_size);
@@ -1297,7 +1301,7 @@ ags_audio_toolbox_read(AgsSoundResource *sound_resource,
     }
 
     //    }
-
+    
     ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, (i * daudio_channels),
 						audio_toolbox->audio_buffer_list->mBuffers[0].mData, audio_toolbox->audio_channels, audio_channel,
 						read_count, copy_mode);
