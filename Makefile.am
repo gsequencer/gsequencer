@@ -667,7 +667,14 @@ endif
 endif
 
 # library libags-audio
-libags_audio_la_CPPFLAGS = -std=gnu99 $(CPPFLAGS) $(LIBAGS_AUDIO_CPPFLAGS)
+if WITH_OSXAPI
+libags_audio_la_CPPFLAGS = -x objective-c -framework Cocoa
+else
+libags_audio_la_CPPFLAGS = -std=gnu99
+endif
+
+libags_audio_la_CPPFLAGS += $(CPPFLAGS) $(LIBAGS_AUDIO_CPPFLAGS)
+
 libags_audio_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(W32API_CFLAGS)
 libags_audio_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 $(PIC_FLAGS) -pthread 
 libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la

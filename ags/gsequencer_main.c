@@ -215,7 +215,7 @@ main(int argc, char **argv)
 
   putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s\\lib\\gstreamer-1.0", app_dir));
 #else
-#if 0 //defined(AGS_OSXAPI)
+#if 0 // defined(AGS_OSXAPI)
   uid = getuid();
   pw = getpwuid(uid);
 

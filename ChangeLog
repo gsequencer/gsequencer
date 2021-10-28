@@ -1,3 +1,18 @@
+ags (3.12.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_animation_window_init() to obtain stride from format
+	* fixed ags_audio_toolbox_open() to set samplerate and integer format
+	* fixed ags_audio_toolbox_read() to clear buffer
+
+ags (3.12.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed SIGSEGV with AgsRampAccelerationDialog
+	* fixed SIGSEGV with AgsSelectAccelerationDialog
+	* fixed missing paste flags implementation in AgsCompositeToolbar callbacks
+	* fixed missing channel selector control implementation in AgsCompositeToolbar callbacks
+
 ags (3.12.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

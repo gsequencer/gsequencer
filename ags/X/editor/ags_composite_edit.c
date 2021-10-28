@@ -257,6 +257,9 @@ ags_composite_edit_init(AgsCompositeEdit *composite_edit)
 		  1, 1);  
 
   /* edit vertical box */
+  composite_edit->edit_mode = 0;
+  composite_edit->paste_flags = 0;
+  
   composite_edit->edit_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 						    0);
 

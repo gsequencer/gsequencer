@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-10-23 09:43+0200\n"
+"POT-Creation-Date: 2021-10-28 22:17+0200\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -752,7 +752,7 @@ msgstr "Dienst"
 #: ags/X/ags_soundcard_editor.c:275 ags/X/ags_soundcard_editor.c:614
 #: ags/X/editor/ags_envelope_editor.c:190
 #: ags/X/editor/ags_pattern_envelope.c:677
-#: ags/X/editor/ags_select_acceleration_dialog_callbacks.c:302
+#: ags/X/editor/ags_select_acceleration_dialog_callbacks.c:408
 #, fuzzy
 msgid "_Remove"
 msgstr "bewege x"

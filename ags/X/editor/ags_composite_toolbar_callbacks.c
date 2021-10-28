@@ -381,19 +381,58 @@ ags_composite_toolbar_paste_callback(GtkToolButton *button, AgsCompositeToolbar 
 void
 ags_composite_toolbar_paste_match_audio_channel_callback(GtkMenuItem *button, AgsCompositeToolbar *composite_toolbar)
 {
-  //TODO:JK: implement me
+  AgsCompositeEditor *composite_editor;
+
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) composite_toolbar,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+
+  if(composite_editor->selected_edit == NULL){
+    return;
+  }
+
+  if(!gtk_check_menu_item_get_active(button)){
+    composite_editor->selected_edit->paste_flags &= (~AGS_COMPOSITE_EDIT_PASTE_MATCH_AUDIO_CHANNEL);
+  }else{
+    composite_editor->selected_edit->paste_flags |= AGS_COMPOSITE_EDIT_PASTE_MATCH_AUDIO_CHANNEL;
+  }
 }
 
 void
 ags_composite_toolbar_paste_match_line_callback(GtkMenuItem *button, AgsCompositeToolbar *composite_toolbar)
 {
-  //TODO:JK: implement me
+  AgsCompositeEditor *composite_editor;
+
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) composite_toolbar,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+
+  if(composite_editor->selected_edit == NULL){
+    return;
+  }
+
+  if(!gtk_check_menu_item_get_active(button)){
+    composite_editor->selected_edit->paste_flags &= (~AGS_COMPOSITE_EDIT_PASTE_MATCH_LINE);
+  }else{
+    composite_editor->selected_edit->paste_flags |= AGS_COMPOSITE_EDIT_PASTE_MATCH_LINE;
+  }
 }
 
 void
 ags_composite_toolbar_paste_no_duplicates_callback(GtkMenuItem *button, AgsCompositeToolbar *composite_toolbar)
 {
-  //TODO:JK: implement me
+  AgsCompositeEditor *composite_editor;
+
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) composite_toolbar,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+
+  if(composite_editor->selected_edit == NULL){
+    return;
+  }
+
+  if(!gtk_check_menu_item_get_active(button)){
+    composite_editor->selected_edit->paste_flags &= (~AGS_COMPOSITE_EDIT_PASTE_NO_DUPLICATES);
+  }else{
+    composite_editor->selected_edit->paste_flags |= AGS_COMPOSITE_EDIT_PASTE_NO_DUPLICATES;
+  }
 }
 
 void
@@ -461,25 +500,97 @@ ags_composite_toolbar_menu_tool_popup_wave_position_cursor_callback(GtkMenuItem 
 void
 ags_composite_toolbar_menu_tool_popup_enable_all_audio_channels_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
-  //TODO:JK: implement me
+  AgsCompositeEditor *composite_editor;
+
+  GList *list;
+  
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) composite_toolbar,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+
+  if(composite_editor->selected_edit == NULL){
+    return;
+  }
+
+  list = composite_editor->selected_edit->channel_selector->tab;
+
+  while(list != NULL){
+    gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+				 TRUE);
+
+    list = list->next;
+  }
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_disable_all_audio_channels_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
-  //TODO:JK: implement me
+  AgsCompositeEditor *composite_editor;
+
+  GList *list;
+  
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) composite_toolbar,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+
+  if(composite_editor->selected_edit == NULL){
+    return;
+  }
+
+  list = composite_editor->selected_edit->channel_selector->tab;
+
+  while(list != NULL){
+    gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+				 FALSE);
+
+    list = list->next;
+  }
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_enable_all_lines_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
-  //TODO:JK: implement me
+  AgsCompositeEditor *composite_editor;
+
+  GList *list;
+  
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) composite_toolbar,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+
+  if(composite_editor->selected_edit == NULL){
+    return;
+  }
+
+  list = composite_editor->selected_edit->channel_selector->tab;
+
+  while(list != NULL){
+    gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+				 TRUE);
+
+    list = list->next;
+  }
 }
 
 void
 ags_composite_toolbar_menu_tool_popup_disable_all_lines_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
-  //TODO:JK: implement me
+  AgsCompositeEditor *composite_editor;
+
+  GList *list;
+  
+  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) composite_toolbar,
+								    AGS_TYPE_COMPOSITE_EDITOR);
+
+  if(composite_editor->selected_edit == NULL){
+    return;
+  }
+
+  list = composite_editor->selected_edit->channel_selector->tab;
+
+  while(list != NULL){
+    gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+				 FALSE);
+
+    list = list->next;
+  }
 }
 
 void
