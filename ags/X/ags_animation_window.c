@@ -149,6 +149,10 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
 
   animation_window->filename = filename;
 
+  surface = NULL;
+  
+  image_data = NULL;
+  
   width = 800;
   height = 600;
 

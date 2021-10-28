@@ -1,6 +1,7 @@
 ags (3.12.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_animation_window_init() to obtain stride from format
 	* fixed ags_audio_toolbox_open() to set samplerate and integer format
 	* fixed ags_audio_toolbox_read() to clear buffer
 
