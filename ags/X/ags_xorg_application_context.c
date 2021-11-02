@@ -82,7 +82,10 @@
 #include <stdbool.h>
 
 #include <unistd.h>
+
+#ifndef AGS_W32API
 #include <sys/utsname.h>
+#endif
 
 #include <sys/types.h>
 #include <signal.h>
@@ -4518,8 +4521,10 @@ ags_xorg_application_context_loader_timeout(AgsXorgApplicationContext *xorg_appl
   
   AgsLog *log;
 
+#ifndef AGS_W32API
   struct utsname buf;
-    
+#endif
+  
   gchar **ladspa_path;
   gchar **dssi_path;
   gchar **lv2_path;
@@ -4564,11 +4569,15 @@ ags_xorg_application_context_loader_timeout(AgsXorgApplicationContext *xorg_appl
 
   initial_load = TRUE;
 
+#ifndef AGS_W32API
   uname(&buf);
 
   sysname = g_ascii_strdown(buf.sysname,
 			    -1);
-
+#else
+  sysname = g_strdup("win");
+#endif
+  
   /* get plugin managers */
   ladspa_manager = ags_ladspa_manager_get_instance();
   
