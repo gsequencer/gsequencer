@@ -3,6 +3,7 @@ ags (3.12.7)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* updated README windows build
 	* improved ags_xorg_application_context.c to conditional build sysname of windows
+	* fixed missing include of ags/config.h
 
 ags (3.12.6)
 

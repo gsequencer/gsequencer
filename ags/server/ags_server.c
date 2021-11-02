@@ -31,7 +31,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef AGS_W32API
+#include <ags/config.h>
+
+#if !defined(AGS_W32API)
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>

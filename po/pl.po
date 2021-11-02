@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-10-28 22:17+0200\n"
+"POT-Creation-Date: 2021-11-02 18:46+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,8 +73,8 @@ msgstr "wejście"
 msgid "edit automation"
 msgstr "automatyczny"
 
-#: ags/X/ags_bulk_member.c:867 ags/X/machine/ags_dssi_bridge.c:381
-#: ags/X/machine/ags_live_dssi_bridge.c:384
+#: ags/X/ags_bulk_member.c:867 ags/X/machine/ags_dssi_bridge.c:383
+#: ags/X/machine/ags_live_dssi_bridge.c:386
 msgid "Plugin file not present"
 msgstr "Wtyczka niedostępna"
 
@@ -896,27 +896,27 @@ msgstr "Lv2"
 msgid "VST3"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3348
+#: ags/X/ags_xorg_application_context.c:3351
 #: ags/audio/ags_audio_application_context.c:2137
 #: ags/audio/task/ags_apply_sound_config.c:905
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "nieznany backend karty dźwiękowej - %s"
 
-#: ags/X/ags_xorg_application_context.c:3358
+#: ags/X/ags_xorg_application_context.c:3361
 #: ags/audio/ags_audio_application_context.c:2147
 #: ags/audio/task/ags_apply_sound_config.c:915
 msgid "unknown soundcard backend - NULL"
 msgstr "nieznany backend karty dźwiękowej - NULL"
 
-#: ags/X/ags_xorg_application_context.c:3598
+#: ags/X/ags_xorg_application_context.c:3601
 #: ags/audio/ags_audio_application_context.c:2389
 #: ags/audio/task/ags_apply_sound_config.c:1155
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "nieznany backend sekwencera - %s"
 
-#: ags/X/ags_xorg_application_context.c:3608
+#: ags/X/ags_xorg_application_context.c:3611
 #: ags/audio/ags_audio_application_context.c:2399
 #: ags/audio/task/ags_apply_sound_config.c:1165
 msgid "unknown sequencer backend - NULL"
@@ -1476,7 +1476,7 @@ msgstr "Otwórz Plik"
 msgid "channel: "
 msgstr "kanał: "
 
-#: ags/X/machine/ags_dssi_bridge.c:305 ags/X/machine/ags_live_dssi_bridge.c:308
+#: ags/X/machine/ags_dssi_bridge.c:307 ags/X/machine/ags_live_dssi_bridge.c:310
 #: ags/X/machine/ags_live_lv2_bridge.c:1232 ags/X/machine/ags_lv2_bridge.c:1311
 #: ags/X/machine/ags_sf2_synth.c:346
 msgid "program"

@@ -942,9 +942,9 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	  acceleration->x = ((gdouble) x0 + (gdouble) ((gdouble) (x1 - x0) * (gdouble) ((gdouble) (i) / ((gdouble) step_count))));
 	  acceleration->y = ((gdouble) y0 + ((gdouble) (y1 - y0) * (gdouble) ((gdouble) (i + 1) / ((gdouble) step_count))));
 
-	  //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
 	  g_message("line %d - %d %f", line, acceleration->x, acceleration->y);
-	  //#endif
+#endif
 	
 	  ags_automation_add_acceleration(current,
 					  acceleration,
