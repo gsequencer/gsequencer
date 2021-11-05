@@ -17,7 +17,6 @@ Free Documentation License".
 * TODO:JK: extended user's handbook to cover OSC server preferences
 * TODO:JK: implemented AgsFunction and fix typo in header
 * TODO:JK: implemented support for GtkApplication
-* TODO:JK: refactored AgsNotationToolbar, AgsAutomationToolbar and AgsWaveToolbar
 * TODO:JK: migrated AgsBasePlugin to GModule
 * TODO:JK: removed AgsMenuBar
 * TODO:JK: migrated to gi18n.h?
@@ -40,7 +39,6 @@ Free Documentation License".
 * TODO:JK: implemented damping/vibration of AgsAudioSignal
 * TODO:JK: implemented exponential curve option for ags-envelope recall
 * TODO:JK: implement AgsNoteCursor, AgsAccelerationCursor, AgsBufferCursor and AgsTrackCursor
-* TODO:JK: implement VST support
 * TODO:JK: implement AudioUnit support on Apple Mac OS X
 * TODO:JK: implement UI configuration of plugins, loading at runtime
 * TODO:JK: implement AgsDesk a better jukebox as mixing desk
