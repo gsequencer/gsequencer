@@ -82,8 +82,8 @@ OSStatus ags_core_audio_port_hw_input_callback(AudioObjectID device,
 					       const AudioTimeStamp* time_now,
 					       const AudioBufferList* in,
 					       const AudioTimeStamp* in_time,
-					       AudioBufferList* in,
-					       const AudioTimeStamp* in_tim,
+					       AudioBufferList* out,
+					       const AudioTimeStamp* out_tim,
 					       AgsCoreAudioPort *core_audio_port);
 
 void* ags_core_audio_port_cached_output_thread(AgsCoreAudioPort *core_audio_port);
@@ -1184,8 +1184,8 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
 				      const AudioTimeStamp* time_now,
 				      const AudioBufferList* in,
 				      const AudioTimeStamp* in_time,
-				      AudioBufferList* in,
-				      const AudioTimeStamp* in_tim,
+				      AudioBufferList* out,
+				      const AudioTimeStamp* out_tim,
 				      AgsCoreAudioPort *core_audio_port)
 {
   AgsCoreAudioDevin *core_audio_devin;
@@ -1296,8 +1296,8 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
 			      NULL,
 			      &format);
   
-    copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
-						    ags_audio_buffer_util_format_from_soundcard(format));
+    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+						    AGS_AUDIO_BUFFER_UTIL_FLOAT);
   
     buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
   
