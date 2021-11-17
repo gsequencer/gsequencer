@@ -966,17 +966,17 @@ ags_audio_toolbox_rw_open(AgsSoundResource *sound_resource,
 
   g_rec_mutex_lock(audio_toolbox_mutex);
 
-  audio_toolbox->stream = (AudioStreamBasicDescription *) g_malloc(sizeof(AudioStreamBasicDescription));
-  memset(audio_toolbox->stream, 0, sizeof(AudioStreamBasicDescription));
+  audio_toolbox->client_stream = (AudioStreamBasicDescription *) g_malloc(sizeof(AudioStreamBasicDescription));
+  memset(audio_toolbox->client_stream, 0, sizeof(AudioStreamBasicDescription));
 
-  audio_toolbox->stream->mSampleRate = samplerate;
-  audio_toolbox->stream->mFormatID = kAudioFormatLinearPCM;
-  audio_toolbox->stream->mFormatFlags = kAudioFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger;
-  audio_toolbox->stream->mBitsPerChannel = 16;
-  audio_toolbox->stream->mChannelsPerFrame = audio_channels;
-  audio_toolbox->stream->mBytesPerFrame = audio_toolbox->stream->mChannelsPerFrame * 2;
-  audio_toolbox->stream->mFramesPerPacket = 1;
-  audio_toolbox->stream->mBytesPerPacket = audio_toolbox->stream->mFramesPerPacket * audio_toolbox->stream->mBytesPerFrame; 
+  audio_toolbox->client_stream->mSampleRate = samplerate;
+  audio_toolbox->client_stream->mFormatID = kAudioFormatLinearPCM;
+  audio_toolbox->client_stream->mFormatFlags = kAudioFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger;
+  audio_toolbox->client_stream->mBitsPerChannel = 16;
+  audio_toolbox->client_stream->mChannelsPerFrame = audio_channels;
+  audio_toolbox->client_stream->mBytesPerFrame = audio_toolbox->client_stream->mChannelsPerFrame * 2;
+  audio_toolbox->client_stream->mFramesPerPacket = 1;
+  audio_toolbox->client_stream->mBytesPerPacket = audio_toolbox->client_stream->mFramesPerPacket * audio_toolbox->client_stream->mBytesPerFrame; 
 
   audio_toolbox->audio_buffer_list = (AudioBufferList *) g_malloc(sizeof(AudioBufferList));
   
@@ -992,22 +992,23 @@ ags_audio_toolbox_rw_open(AgsSoundResource *sound_resource,
   g_rec_mutex_unlock(audio_toolbox_mutex);
   
   if(g_str_has_suffix(filename, ".wav")){
-    AudioStreamBasicDescription file_format = {0};
-    
-    file_format.mSampleRate = samplerate;
-    file_format.mFormatID = kAudioFormatLinearPCM;
-    file_format.mFormatFlags = kAudioFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger;
-    file_format.mBitsPerChannel = 16;
-    file_format.mChannelsPerFrame = audio_channels;
-    file_format.mBytesPerFrame = file_format.mChannelsPerFrame * 2;
-    file_format.mFramesPerPacket = 1;
-    file_format.mBytesPerPacket = file_format.mFramesPerPacket * file_format.mBytesPerFrame;
-    
     g_rec_mutex_lock(audio_toolbox_mutex);
+    
+    audio_toolbox->stream = (AudioStreamBasicDescription *) g_malloc(sizeof(AudioStreamBasicDescription));
+    memset(audio_toolbox->stream, 0, sizeof(AudioStreamBasicDescription));
+    
+    audio_toolbox->stream->mSampleRate = samplerate;
+    audio_toolbox->stream->mFormatID = kAudioFormatLinearPCM;
+    audio_toolbox->stream->mFormatFlags = kAudioFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger;
+    audio_toolbox->stream->mBitsPerChannel = 16;
+    audio_toolbox->stream->mChannelsPerFrame = audio_channels;
+    audio_toolbox->stream->mBytesPerFrame = audio_toolbox->stream->mChannelsPerFrame * 2;
+    audio_toolbox->stream->mFramesPerPacket = 1;
+    audio_toolbox->stream->mBytesPerPacket = audio_toolbox->stream->mFramesPerPacket * audio_toolbox->stream->mBytesPerFrame;
     
     retval = ExtAudioFileCreateWithURL((CFURLRef) audio_url,
 				       kAudioFileWAVEType,
-				       &file_format,
+				       audio_toolbox->stream,
 				       NULL,
 				       kAudioFileFlags_EraseFile,
 				       &(audio_toolbox->audio_file));
@@ -1016,44 +1017,67 @@ ags_audio_toolbox_rw_open(AgsSoundResource *sound_resource,
   }else if(g_str_has_suffix(filename, ".aif") ||
 	   g_str_has_suffix(filename, ".aiff") ||
 	   g_str_has_suffix(filename, ".aifc")){
-    AudioStreamBasicDescription file_format = {0};   
-    
-    file_format.mSampleRate = samplerate;
-    file_format.mFormatID = kAudioFormatLinearPCM;
-    file_format.mFormatFlags = kAudioFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger;
-    file_format.mBitsPerChannel = 16;
-    file_format.mChannelsPerFrame = audio_channels;
-    file_format.mBytesPerFrame = file_format.mChannelsPerFrame * 2;
-    file_format.mFramesPerPacket = 1;
-    file_format.mBytesPerPacket = file_format.mFramesPerPacket * file_format.mBytesPerFrame;
-    
     g_rec_mutex_lock(audio_toolbox_mutex);
 
+    audio_toolbox->stream = (AudioStreamBasicDescription *) g_malloc(sizeof(AudioStreamBasicDescription));
+    memset(audio_toolbox->stream, 0, sizeof(AudioStreamBasicDescription));
+    
+    audio_toolbox->stream->mSampleRate = samplerate;
+    audio_toolbox->stream->mFormatID = kAudioFormatLinearPCM;
+    audio_toolbox->stream->mFormatFlags = kAudioFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger;
+    audio_toolbox->stream->mBitsPerChannel = 16;
+    audio_toolbox->stream->mChannelsPerFrame = audio_channels;
+    audio_toolbox->stream->mBytesPerFrame = audio_toolbox->stream->mChannelsPerFrame * 2;
+    audio_toolbox->stream->mFramesPerPacket = 1;
+    audio_toolbox->stream->mBytesPerPacket = audio_toolbox->stream->mFramesPerPacket * audio_toolbox->stream->mBytesPerFrame;
+    
     retval = ExtAudioFileCreateWithURL((CFURLRef) audio_url,
 				       kAudioFileAIFFType,
-				       &file_format,
+				       audio_toolbox->stream,
 				       NULL,
 				       kAudioFileFlags_EraseFile,
 				       &(audio_toolbox->audio_file));
 
     g_rec_mutex_unlock(audio_toolbox_mutex);
-  }else{
-    AudioStreamBasicDescription file_format = {0};
-    
-    file_format.mSampleRate = samplerate;
-    file_format.mFormatID = kAudioFormatLinearPCM;
-    file_format.mFormatFlags = kAudioFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger;
-    file_format.mBitsPerChannel = 16;
-    file_format.mChannelsPerFrame = audio_channels;
-    file_format.mBytesPerFrame = file_format.mChannelsPerFrame * 2;
-    file_format.mFramesPerPacket = 1;
-    file_format.mBytesPerPacket = file_format.mFramesPerPacket * file_format.mBytesPerFrame;
-    
+  }else if(g_str_has_suffix(filename, ".mp4") ||
+	   g_str_has_suffix(filename, ".m4a") ||
+	   g_str_has_suffix(filename, ".aac")){
     g_rec_mutex_lock(audio_toolbox_mutex);
+
+    audio_toolbox->stream = (AudioStreamBasicDescription *) g_malloc(sizeof(AudioStreamBasicDescription));
+    memset(audio_toolbox->stream, 0, sizeof(AudioStreamBasicDescription));
+    
+    audio_toolbox->stream->mSampleRate = samplerate;
+    audio_toolbox->stream->mFormatID = kAudioFormatMPEG4AAC;
+    audio_toolbox->stream->mFormatFlags = kMPEG4Object_AAC_Main;
+    audio_toolbox->stream->mChannelsPerFrame = audio_channels;
+    
+    retval = ExtAudioFileCreateWithURL((CFURLRef) audio_url,
+				       kAudioFileAIFFType,
+				       audio_toolbox->stream,
+				       NULL,
+				       kAudioFileFlags_EraseFile,
+				       &(audio_toolbox->audio_file));
+    
+    g_rec_mutex_unlock(audio_toolbox_mutex);
+  }else{
+    g_rec_mutex_lock(audio_toolbox_mutex);
+
+    audio_toolbox->stream = (AudioStreamBasicDescription *) g_malloc(sizeof(AudioStreamBasicDescription));
+    memset(audio_toolbox->stream, 0, sizeof(AudioStreamBasicDescription));
+    
+    audio_toolbox->stream->mSampleRate = samplerate;
+    audio_toolbox->stream->mFormatID = kAudioFormatLinearPCM;
+    audio_toolbox->stream->mFormatFlags = kAudioFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger;
+    audio_toolbox->stream->mBitsPerChannel = 16;
+    audio_toolbox->stream->mChannelsPerFrame = audio_channels;
+    audio_toolbox->stream->mBytesPerFrame = audio_toolbox->stream->mChannelsPerFrame * 2;
+    audio_toolbox->stream->mFramesPerPacket = 1;
+    audio_toolbox->stream->mBytesPerPacket = audio_toolbox->stream->mFramesPerPacket * audio_toolbox->stream->mBytesPerFrame;
     
     retval = ExtAudioFileCreateWithURL((CFURLRef) audio_url,
 				       kAudioFileWAVEType,
-				       &file_format,
+				       audio_toolbox->stream,
 				       NULL,
 				       kAudioFileFlags_EraseFile,
 				       &(audio_toolbox->audio_file));
@@ -1066,7 +1090,7 @@ ags_audio_toolbox_rw_open(AgsSoundResource *sound_resource,
   ExtAudioFileSetProperty(audio_toolbox->audio_file,
 			  kExtAudioFileProperty_ClientDataFormat,
 			  sizeof(AudioStreamBasicDescription),
-			  audio_toolbox->stream);
+			  audio_toolbox->client_stream);
     
   success = (audio_toolbox->audio_file != NULL) ? TRUE: FALSE;
   
