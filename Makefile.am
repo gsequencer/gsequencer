@@ -498,7 +498,8 @@ devdocimages = \
 	docs/images/AGS_iterator.png \
 	docs/images/AGS_recall_lifecycle.png \
 	docs/images/AGS_super-threaded.png \
-	docs/images/AGS_linking.png
+	docs/images/AGS_linking.png \
+	docs/images/ags-threading.png
 
 userdocimages = \
 	docs/images/ags_audiorec.png \
