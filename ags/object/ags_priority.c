@@ -28,7 +28,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifndef AGS_W32API
+#include <ags/config.h>
+
+#if !defined(AGS_W32API)
 #include <pwd.h>
 #endif
 

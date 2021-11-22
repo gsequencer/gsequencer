@@ -28,6 +28,8 @@
 
 #include <unistd.h>
 
+#include <ags/config.h>
+
 #if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__DragonFly__) && !defined(AGS_W32API)
 #define __USE_GNU
 #define _GNU_SOURCE

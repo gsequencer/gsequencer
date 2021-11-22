@@ -69,6 +69,48 @@
   <sect1>
     <title>Threads in general</title>
     <para>
+      Libags provides a thread wrapper built on top of GLib's threading API. The AgsThread object
+      synchronizes the thread tree by AgsThread::clock() event. It is somekind of parallelism trap.
+    </para>
+
+    <imagedata fileref="../images/ags-threading.png" />
+    
+    <para>
+      All threads within tree synchronize to AgsThread:max-precision per second, because all threads
+      shall have the very same time running in parallel. I talk of tic-based parallelism, with a max-precision
+      of 1000 Hz, each thread synchronizes 1000 times within tree. Giving you strong semantics to compute
+      a deterministic result in a multi-threaded fashion.
+    </para>
+    
+    <para>
+      Since we want to run tasks exclusively without any interference from competing threads. There is a
+      mutex lock involved just after synchronization and then invokes ags_task_launcher_sync_run(). Be
+      aware the conditional lock can be evaluate to true for many threads.
+    </para>
+
+    <para>
+      After how many tics the flow is repeated depends on samplerate and buffer size. If you have an AgsThread
+      with max-precision 1000, samplerate of 44100 common for audio CDs and a buffer size  of 512 frames, then
+      the delay until its repeated calculates as following:
+    </para>
+
+    <example>
+      <title>Calculating tic delay</title>
+      <programlisting language="C">
+	tic_delay = 1000.0 / 44100.0 * 512.0; // 11.609977324263039
+      </programlisting>
+    </example>
+
+    <para>
+      As you might have pre-/post-synchronization needing 3 tics to do its work you get 8 unused tics.
+    </para>
+
+    <para>
+      Pre-synchronization is used for reading from soundcard or MIDI device. The intermediate tic does the
+      actual audio processing. Post-synchronization is used by outputing to soundcard or exporting to audio file.
+    </para>
+
+    <para>
       Within thread tree context you have to take care not to hang it up with a dead-lock.
       Usually you have to use the :start_queue to start threads.
       Alternatively you may want to use <code language="C">void ags_thread_start(AgsThread*)</code>.

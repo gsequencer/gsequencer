@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,7 +29,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifndef AGS_W32API
+#include <ags/config.h>
+
+#if !defined(AGS_W32API)
 #include <pwd.h>
 #endif
 
@@ -710,7 +712,7 @@ ags_config_to_data(AgsConfig *config,
 void
 ags_config_save(AgsConfig *config)
 {
-#ifdef AGS_W32API
+#if defined(AGS_W32API)
   AgsApplicationContext *application_context;
 #else
   struct passwd *pw;
@@ -740,7 +742,7 @@ ags_config_save(AgsConfig *config)
   g_rec_mutex_lock(config_mutex);
 
   /* open conf dir */
-#ifdef AGS_W32API
+#if defined(AGS_W32API)
   app_dir = NULL;
 
   application_context = ags_application_context_get_instance();

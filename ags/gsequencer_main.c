@@ -215,7 +215,7 @@ main(int argc, char **argv)
 
   putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s\\lib\\gstreamer-1.0", app_dir));
 #else
-#if 0 // defined(AGS_OSXAPI)
+#if defined(AGS_OSX_DMG_ENV)
   uid = getuid();
   pw = getpwuid(uid);
 
@@ -266,7 +266,6 @@ main(int argc, char **argv)
   if((getenv("LV2_PATH")) == NULL){
     putenv(g_strdup_printf("LV2_PATH=%s/Contents/Plugins/lv2", app_dir));
   }
-
 #else
   uid = getuid();
   pw = getpwuid(uid);

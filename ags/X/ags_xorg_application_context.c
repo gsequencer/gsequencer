@@ -75,14 +75,17 @@
 
 #include <sys/types.h>
 
-#ifndef AGS_W32API
+#if !defined(AGS_W32API)
 #include <pwd.h>
 #endif
 
 #include <stdbool.h>
 
 #include <unistd.h>
+
+#if !defined(AGS_W32API)
 #include <sys/utsname.h>
+#endif
 
 #include <sys/types.h>
 #include <signal.h>
@@ -270,7 +273,7 @@ static AgsConnectableInterface* ags_xorg_application_context_parent_connectable_
 extern AgsApplicationContext *ags_application_context;
 
 //TODO:JK: implement get functions
-#ifndef AGS_W32API
+#if !defined(AGS_W32API)
 static struct sigaction ags_sigact;
 #endif
 
@@ -368,7 +371,7 @@ ags_xorg_application_context_get_type()
 void
 ags_xorg_application_context_signal_handler(int signr)
 {
-#ifndef AGS_W32API
+#if !defined(AGS_W32API)
   if(signr == SIGINT){
     //TODO:JK: do backup
     
@@ -385,7 +388,7 @@ ags_xorg_application_context_signal_handler(int signr)
 static void
 ags_xorg_application_context_signal_cleanup()
 {
-#ifndef AGS_W32API
+#if !defined(AGS_W32API)
   sigemptyset(&(ags_sigact.sa_mask));
 #endif
 }
@@ -2876,7 +2879,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   GList *list;  
   
-#ifndef AGS_W32API
+#if !defined(AGS_W32API)
   struct passwd *pw;
   
   uid_t uid;
@@ -2891,7 +2894,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   gchar *osc_server_group;
   gchar *str;
   gchar *capability;
-#if defined AGS_W32API
+#if defined(AGS_W32API)
   gchar *app_dir;
 #endif
 
@@ -2924,7 +2927,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   atexit(ags_xorg_application_context_signal_cleanup);
 
   /* Ignore interactive and job-control signals.  */
-#ifndef AGS_W32API
+#if !defined(AGS_W32API)
   signal(SIGINT, SIG_IGN);
   signal(SIGQUIT, SIG_IGN);
   signal(SIGTSTP, SIG_IGN);
@@ -2932,7 +2935,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   signal(SIGTTOU, SIG_IGN);
   signal(SIGCHLD, SIG_IGN);
   
-#ifndef AGS_W32API
+#if !defined(AGS_W32API)
   ags_sigact.sa_handler = ags_xorg_application_context_signal_handler;
   sigemptyset(&ags_sigact.sa_mask);
   ags_sigact.sa_flags = 0;
@@ -3051,7 +3054,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   }
 
   /* get user information */
-#if defined AGS_W32API
+#if defined(AGS_W32API)
   application_context = ags_application_context_get_instance();
 
   if(strlen(application_context->argv[0]) > strlen("gsequencer.exe")){
@@ -4518,8 +4521,10 @@ ags_xorg_application_context_loader_timeout(AgsXorgApplicationContext *xorg_appl
   
   AgsLog *log;
 
+#if !defined(AGS_W32API)
   struct utsname buf;
-    
+#endif
+  
   gchar **ladspa_path;
   gchar **dssi_path;
   gchar **lv2_path;
@@ -4564,11 +4569,15 @@ ags_xorg_application_context_loader_timeout(AgsXorgApplicationContext *xorg_appl
 
   initial_load = TRUE;
 
+#if !defined(AGS_W32API)
   uname(&buf);
 
   sysname = g_ascii_strdown(buf.sysname,
 			    -1);
-
+#else
+  sysname = g_strdup("win");
+#endif
+  
   /* get plugin managers */
   ladspa_manager = ags_ladspa_manager_get_instance();
   
