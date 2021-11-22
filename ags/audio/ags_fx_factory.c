@@ -122,6 +122,9 @@
 #include <ags/audio/fx/ags_fx_lv2_recycling.h>
 #include <ags/audio/fx/ags_fx_lv2_audio_signal.h>
 
+#include <ags/config.h>
+
+#if defined(AGS_WITH_VST3)
 #include <ags/audio/fx/ags_fx_vst3_audio.h>
 #include <ags/audio/fx/ags_fx_vst3_audio_processor.h>
 #include <ags/audio/fx/ags_fx_vst3_channel.h>
@@ -129,9 +132,6 @@
 #include <ags/audio/fx/ags_fx_vst3_recycling.h>
 #include <ags/audio/fx/ags_fx_vst3_audio_signal.h>
 
-#include <ags/config.h>
-
-#if defined(AGS_WITH_VST3)
 #include <ags/plugin/ags_vst3_manager.h>
 #include <ags/plugin/ags_vst3_plugin.h>
 #endif
