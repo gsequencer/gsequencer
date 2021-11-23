@@ -1,0 +1,74 @@
+/* Copyright (C) 2005-2021 Joël Krähemann
+ * Permission is granted to copy, distribute and/or modify this document
+ * under the terms of the GNU Free Documentation License, Version 1.3
+ * or any later version published by the Free Software Foundation;
+ * with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+ * A copy of the license is included in the section entitled "GNU
+ * Free Documentation License".
+ */
+
+#include <glib.h>
+#include <glib-object.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+AgsApplicationContext *application_context;
+
+GObject *soundcard;
+
+AgsSynthUtil synth_util;
+
+GList *start_list;
+
+void *buffer;
+
+guint audio_channels;
+guint samplerate;
+guint buffer_length;
+guint format;
+
+application_context = ags_application_context_get_instance();
+
+start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+if(start_list != NULL){
+  soundcard = G_OBJECT(start_list->data);
+
+  if(ags_soundcard_is_playing(AGS_SOUNDCARD(soundcard))){
+    buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
+
+    ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			      &audio_channels,
+			      &samplerate,
+			      &buffer_length,
+			      &format);
+    
+    synth_util.source = buffer;
+    synth_util.source_stride = audio_channels;
+
+    synth_util.buffer_length = buffer_length;
+    synth_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+    synth_util.samplerate = samplerate;
+
+    synth_util.synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN;
+
+    synth_util.frequency = 440.0;
+    synth_util.phase = 0.0;
+    synth_util.volume = 1.0;
+
+    synth_util.frame_count = buffer_length;
+    synth_util.offset = 0;
+
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
+			      buffer);
+    
+    ags_synth_util_compute_sin(&synth_util);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
+				buffer);
+  }
+}
+
+g_list_free_full(start_list,
+		 (GDestroyNotify) g_object_unref);

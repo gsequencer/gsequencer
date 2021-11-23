@@ -1,4 +1,4 @@
-/* Copyright (C) 2005-2018 Joël Krähemann
+/* Copyright (C) 2005-2021 Joël Krähemann
  * Permission is granted to copy, distribute and/or modify this document
  * under the terms of the GNU Free Documentation License, Version 1.3
  * or any later version published by the Free Software Foundation;
@@ -17,7 +17,7 @@ AgsApplicationContext *application_context;
 
 GObject *soundcard;
 
-GList *list;
+GList *start_list;
 
 guint channels_min, channels_max;
 guint rate_min, rate_max;
@@ -27,10 +27,10 @@ GError *error;
 
 application_context = ags_application_context_get_instance();
 
-list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-if(list != NULL){
-  soundcard = G_OBJECT(list->data);
+if(start_list != NULL){
+  soundcard = G_OBJECT(start_list->data);
 
   error = NULL;
   ags_soundcard_pcm_info(AGS_SOUNDCARD(soundcard),
@@ -45,3 +45,6 @@ if(list != NULL){
     g_error_free(error);
   }
 }
+
+g_list_free_full(start_list,
+		 (GDestroyNotify) g_object_unref);

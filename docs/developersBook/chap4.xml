@@ -120,4 +120,20 @@
       </programlisting>
     </example>    
   </sect1>
+
+  <sect1>
+    <title>Obtain audio buffer</title>
+    <para>
+      Here we get audio buffer from AgsSoundcard and write some sine synth tone at
+      440 Hz. First we get presets from soundcard, then we fill the AgsSynthUtil struct
+      and finally compute the sine sound using utility function.
+    </para>
+    
+    <example>
+      <title>PCM information from AgsSoundcard</title>
+      <programlisting language="C">
+<xi:include href="../listings/soundcard_buffer.c" parse="text" />
+      </programlisting>
+    </example>
+  </sect1>
 </chapter>
