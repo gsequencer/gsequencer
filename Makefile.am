@@ -259,6 +259,7 @@ CLEANFILES = \
 	docs/listings/port.c \
 	docs/listings/pull_thread.c \
 	docs/listings/recycling.c \
+	docs/listings/sequencer_buffer.c \
 	docs/listings/start_thread.c \
 	docs/listings/soundcard_buffer.c \
 	docs/listings/thread_application_context.c \
@@ -493,6 +494,7 @@ devdoclistings = \
 	docs/listings/recycling.c.in \
 	docs/listings/soundcard_buffer.c.in \
 	docs/listings/start_thread.c.in \
+	docs/listings/sequencer_buffer.c.in \
 	docs/listings/thread_obj_mutex.c.in \
 	docs/listings/thread_application_context.c.in
 
