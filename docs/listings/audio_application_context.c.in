@@ -1,4 +1,4 @@
-/* Copyright (C) 2005-2018 Joël Krähemann
+/* Copyright (C) 2005-2021 Joël Krähemann
  * Permission is granted to copy, distribute and/or modify this document
  * under the terms of the GNU Free Documentation License, Version 1.3
  * or any later version published by the Free Software Foundation;
@@ -13,8 +13,48 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+void setup_callback(AgsApplicationContext *application_context, gpointer user_data);
+gboolean loader_timeout(AgsApplicationContext *application_context);
+
+#define DEFAULT_LOADER_INTERVAL (1000 / 25)
+
 AgsApplicationContext *application_context;
-AgsTaskLauncher *task_launcher;
+gboolean start_loader;
 
 application_context = (AgsApplicationContext *) ags_audio_application_context_new();
-task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+g_signal_connect_after(application_context, "setup",
+		       G_CALLBACK(setup_callback), NULL);
+
+start_loader = FALSE;
+
+g_timeout_add(DEFAULT_LOADER_INTERVAL,
+	      loader_timeout,
+	      application_context);
+
+ags_application_context_prepare(application_context);
+
+void
+setup_callback(AgsApplicationContext *application_context, gpointer user_data)
+{
+  start_loader = TRUE;
+}
+
+gboolean
+loader_timeout(AgsApplicationContext *application_context)
+{
+  AgsTaskLauncher *task_launcher;
+  AgsStartSoundcard *start_soundcard;
+  
+  if(!start_loader){
+    return(TRUE);
+  }
+  
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  start_soundcard = ags_start_soundcard_new();
+
+  ags_task_launcher_add_task(task_launcher,
+			     start_soundcard);
+  
+  return(FALSE);
+}
