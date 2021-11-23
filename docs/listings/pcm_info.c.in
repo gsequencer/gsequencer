@@ -38,6 +38,7 @@ if(list != NULL){
                          &rate_min, &rate_max,
                          &buffer_size_min, &buffer_size_max,
                          &error);
+  
   if(error != NULL){
     g_warning("%s", error->msg);
 
