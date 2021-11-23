@@ -136,4 +136,17 @@
       </programlisting>
     </example>
   </sect1>
+
+  <sect1>
+    <title>Read from MIDI device</title>
+    <para>
+    </para>
+    
+    <example>
+      <title>PCM information from AgsSoundcard</title>
+      <programlisting language="C">
+<xi:include href="../listings/soundcard_buffer.c" parse="text" />
+      </programlisting>
+    </example>
+  </sect1>
 </chapter>

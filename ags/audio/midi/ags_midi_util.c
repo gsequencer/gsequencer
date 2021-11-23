@@ -27,7 +27,7 @@
 gpointer ags_midi_util_copy(gpointer ptr);
 void ags_midi_util_free(gpointer ptr);
 
-unsigned char* ags_midi_util_to_smf_realloc(unsigned char *smf_buffer, guint smf_buffer_length);
+guchar* ags_midi_util_to_smf_realloc(guchar *smf_buffer, guint smf_buffer_length);
 
 /**
  * SECTION:ags_midi_util
@@ -83,7 +83,7 @@ ags_midi_util_free(gpointer ptr)
  * Since: 3.0.0
  */
 gboolean
-ags_midi_util_is_key_on(unsigned char *buffer)
+ags_midi_util_is_key_on(guchar *buffer)
 {
   gboolean retval;
 
@@ -101,7 +101,7 @@ ags_midi_util_is_key_on(unsigned char *buffer)
  * Since: 3.0.0
  */
 gboolean
-ags_midi_util_is_key_off(unsigned char *buffer)
+ags_midi_util_is_key_off(guchar *buffer)
 {
   gboolean retval;
 
@@ -119,7 +119,7 @@ ags_midi_util_is_key_off(unsigned char *buffer)
  * Since: 3.0.0
  */
 gboolean
-ags_midi_util_is_key_pressure(unsigned char *buffer)
+ags_midi_util_is_key_pressure(guchar *buffer)
 {
   gboolean retval;
 
@@ -137,7 +137,7 @@ ags_midi_util_is_key_pressure(unsigned char *buffer)
  * Since: 3.0.0
  */
 gboolean
-ags_midi_util_is_change_parameter(unsigned char *buffer)
+ags_midi_util_is_change_parameter(guchar *buffer)
 {
   gboolean retval;
 
@@ -155,7 +155,7 @@ ags_midi_util_is_change_parameter(unsigned char *buffer)
  * Since: 3.0.0
  */
 gboolean
-ags_midi_util_is_pitch_bend(unsigned char *buffer)
+ags_midi_util_is_pitch_bend(guchar *buffer)
 {
   gboolean retval;
 
@@ -173,7 +173,7 @@ ags_midi_util_is_pitch_bend(unsigned char *buffer)
  * Since: 3.0.0
  */
 gboolean
-ags_midi_util_is_change_program(unsigned char *buffer)
+ags_midi_util_is_change_program(guchar *buffer)
 {
   gboolean retval;
 
@@ -191,7 +191,7 @@ ags_midi_util_is_change_program(unsigned char *buffer)
  * Since: 3.0.0
  */
 gboolean
-ags_midi_util_is_change_pressure(unsigned char *buffer)
+ags_midi_util_is_change_pressure(guchar *buffer)
 {
   gboolean retval;
 
@@ -209,7 +209,7 @@ ags_midi_util_is_change_pressure(unsigned char *buffer)
  * Since: 3.0.0
  */
 gboolean
-ags_midi_util_is_sysex(unsigned char *buffer)
+ags_midi_util_is_sysex(guchar *buffer)
 {
   gboolean retval;
 
@@ -227,7 +227,7 @@ ags_midi_util_is_sysex(unsigned char *buffer)
  * Since: 3.0.0
  */
 gboolean
-ags_midi_util_is_quarter_frame(unsigned char *buffer)
+ags_midi_util_is_quarter_frame(guchar *buffer)
 {
   gboolean retval;
 
@@ -245,7 +245,7 @@ ags_midi_util_is_quarter_frame(unsigned char *buffer)
  * Since: 3.0.0
  */
 gboolean
-ags_midi_util_is_song_position(unsigned char *buffer)
+ags_midi_util_is_song_position(guchar *buffer)
 {
   gboolean retval;
 
@@ -263,7 +263,7 @@ ags_midi_util_is_song_position(unsigned char *buffer)
  * Since: 3.0.0
  */
 gboolean
-ags_midi_util_is_song_select(unsigned char *buffer)
+ags_midi_util_is_song_select(guchar *buffer)
 {
   gboolean retval;
 
@@ -281,7 +281,7 @@ ags_midi_util_is_song_select(unsigned char *buffer)
  * Since: 3.0.0
  */
 gboolean
-ags_midi_util_is_tune_request(unsigned char *buffer)
+ags_midi_util_is_tune_request(guchar *buffer)
 {
   gboolean retval;
 
@@ -299,7 +299,7 @@ ags_midi_util_is_tune_request(unsigned char *buffer)
  * Since: 3.0.0
  */
 gboolean
-ags_midi_util_is_meta_event(unsigned char *buffer)
+ags_midi_util_is_meta_event(guchar *buffer)
 {
   gboolean retval;
 
@@ -308,14 +308,14 @@ ags_midi_util_is_meta_event(unsigned char *buffer)
   return(retval);
 }
 
-unsigned char*
-ags_midi_util_to_smf_realloc(unsigned char *smf_buffer, guint smf_buffer_length)
+guchar*
+ags_midi_util_to_smf_realloc(guchar *smf_buffer, guint smf_buffer_length)
 {
   if(smf_buffer == NULL){
-    smf_buffer = (unsigned char *) malloc(smf_buffer_length * sizeof(unsigned char));
+    smf_buffer = (guchar *) malloc(smf_buffer_length * sizeof(guchar));
   }else{
-    smf_buffer = (unsigned char *) realloc(smf_buffer,
-					   smf_buffer_length * sizeof(unsigned char));
+    smf_buffer = (guchar *) realloc(smf_buffer,
+					   smf_buffer_length * sizeof(guchar));
   }
 
   return(smf_buffer);
@@ -334,13 +334,13 @@ ags_midi_util_to_smf_realloc(unsigned char *smf_buffer, guint smf_buffer_length)
  * 
  * Since: 3.0.0
  */
-unsigned char*
-ags_midi_util_to_smf(unsigned char *midi_buffer, guint buffer_length,
+guchar*
+ags_midi_util_to_smf(guchar *midi_buffer, guint buffer_length,
 		     glong delta_time,
 		     guint *smf_buffer_length)
 {
-  unsigned char *midi_iter;
-  unsigned char *smf_buffer;
+  guchar *midi_iter;
+  guchar *smf_buffer;
   
   guint ret_smf_buffer_length;
     
