@@ -46,7 +46,9 @@ AC_DEFUN([AGS_DEVELOPER_BOOK_LISTINGS],
   `tail -n +10 $srcdir/docs/listings/port.c.in > $PWD/docs/listings/port.c`
   `tail -n +10 $srcdir/docs/listings/pull_thread.c.in > $PWD/docs/listings/pull_thread.c`
   `tail -n +10 $srcdir/docs/listings/recycling.c.in > $PWD/docs/listings/recycling.c`
+  `tail -n +10 $srcdir/docs/listings/soundcard_buffer.c.in > $PWD/docs/listings/soundcard_buffer.c`
   `tail -n +10 $srcdir/docs/listings/start_thread.c.in > $PWD/docs/listings/start_thread.c`
+  `tail -n +10 $srcdir/docs/listings/sequencer_buffer.c.in > $PWD/docs/listings/sequencer_buffer.c`
   `tail -n +10 $srcdir/docs/listings/thread_application_context.c.in > $PWD/docs/listings/thread_application_context.c`
   `tail -n +10 $srcdir/docs/listings/thread_obj_mutex.c.in > $PWD/docs/listings/thread_obj_mutex.c`
 ])
