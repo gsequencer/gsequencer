@@ -18,20 +18,29 @@ AgsAudioSignal *template;
 
 AgsApplicationContext *application_context;
 
-GList *soundcard;
+GObject *current_soundcard;
+
+GList *start_soundcard;
 
 guint stream_length;
 
 application_context = ags_application_context_get_instance();
-soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+current_soundcard = NULL;
+
+if(start_soundcard != NULL){
+  current_soundcard = start_soundcard->data;
+}
 
 /* create recycling */
-recycling = ags_recycling_new(soundcard->data);
+recycling = ags_recycling_new(current_soundcard);
 
 /* create audio signal and add to recycling */
 stream_length = 5;
 
-audio_signal = ags_audio_signal_new(soundcard->data,
+audio_signal = ags_audio_signal_new(current_soundcard,
                                     recycling,
                                     NULL,
                                     stream_length);
@@ -39,3 +48,6 @@ ags_audio_signal_set_flags(audio_signal,
 			   AGS_AUDIO_SIGNAL_TEMPLATE);
 ags_recycling_add_audio_signal(recyclig,
                                audio_signal);
+
+g_list_free_full(start_soundcard,
+		 (GDestroyNotify) g_object_unref);
