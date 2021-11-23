@@ -24,11 +24,30 @@
     Making Advanced Gtk+ Sequencer objects reachable from different contices was
     mandatory as introducing AgsApplicationContext. Imagine you are within a GUI
     callback and want to lookup a soundcard or sequencer the application context
-    shall provide this functioanlity and provide access to its objects through a
+    shall provide this functionality and provide access to its objects through a
     well defined interface. As doing it with interfaces you are not limited to one
     specific implementation rather having the option to choose the appropriate one
     implementing the interfaces.
   </para>
+
+  <itemizedlist mark="bullet">
+    <listitem>
+      <para>
+	AgsConcurrencyProvider
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	AgsServiceProvider
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	AgsSoundProvider
+      </para>
+    </listitem>
+  </itemizedlist>
+  
   <para>
     There are different contices available e.g. AgsThreadApplicationContext providing
     its functionality by AgsConcurrencyProvider, AgsAudioApplicationContext giving
@@ -36,15 +55,34 @@
     For example the code below should each giving you the same meaning object but
     using different contices.
   </para>
+
+  <para>
+    Since AgsApplicationContext is a singleton you create only 1 instance of your
+    desired implementation. The application context is usually obtained by calling
+    <code language="C">AgsApplicationContext* ags_application_context_get_instance()</code>.
+    Make sure to instantiate an application context before using this function.
+  </para>
   
   <sect1>
     <title>Implementations and their interfaces</title>
     <para>
-      Creating a AgsThreadApplicationContext and then get the task launcher by calling
+      The most basic application context implementing AgsConcurrencyProvider is
+      AgsThreadApplicationContext. If you use your very own application context
+      implementation make sure to set main loop, because AgsThread makes use of
+      the appropriate getter
+      <code language="C">AgsThread* ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider*)</code>.
+      Further for your very own application context you should set the AgsTaskLauncher
+      in order to take advantage of launching AgsTask implementations. The interface
+      allows you to set a thread pool and some worker threads if needed.
+    </para>
+    
+    <para>
+      This example instantiates AgsThreadApplicationContext and then get the task
+      launcher by calling
       <code language="C">AgsThread* ags_concurrency_provider_get_task_launcher(AgsConcurrencyProvider*)</code>.
-      Since the AgsConcurrency interface is implemented by the context, we retrieve
-      the task launcher. The AgsTaskLauncher gives you a thread safe signal. It is used
-      to launch AgsTask objects to do thread safe operations but later on this.
+      By instantiating the application context the global variable ags_application_context
+      is initially set. Later you can obtain your application context by calling
+      <code language="C">AgsApplicationContext* ags_application_context_get_instance() </code>.
     </para>
     
     <example>

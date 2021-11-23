@@ -670,11 +670,11 @@ ags_thread_application_context_prepare(AgsApplicationContext *application_contex
 
   g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(generic_main_loop));
 
-#if 0
+  ags_application_context_setup(AGS_APPLICATION_CONTEXT(application_context));
+  
   /* main loop run */
   g_main_loop_run(g_main_loop_new(g_main_context_default(),
 				  TRUE));
-#endif
 }
 
 void

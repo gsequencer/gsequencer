@@ -855,6 +855,12 @@ ags_server_application_context_prepare(AgsApplicationContext *application_contex
 
   ags_task_launcher_attach(task_launcher,
 			   server_main_context);
+
+  ags_application_context_setup(AGS_APPLICATION_CONTEXT(application_context));
+  
+  /* main loop run */
+  g_main_loop_run(g_main_loop_new(g_main_context_default(),
+				  TRUE));
 }
 
 void

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,6 +38,8 @@ G_BEGIN_DECLS
 #define AGS_AUDIO_BUILD_ID "Fri Nov  8 21:47:01 UTC 2019"
 
 #define AGS_EFFECTS_DEFAULT_VERSION "0.7.13"
+
+#define AGS_AUDIO_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL (1000 / 25)
 
 typedef struct _AgsAudioApplicationContext AgsAudioApplicationContext;
 typedef struct _AgsAudioApplicationContextClass AgsAudioApplicationContextClass;
@@ -78,6 +80,23 @@ struct _AgsAudioApplicationContext
   GList *sound_server;
 
   GList *osc_server;
+
+  gboolean start_loader;
+  
+  gboolean setup_ready;
+  gboolean loader_ready;
+  
+  gboolean ladspa_loading;
+  gboolean dssi_loading;
+  gboolean lv2_loading;
+  gboolean vst3_loading;
+  
+  GList *ladspa_loader;
+  GList *dssi_loader;
+  GList *lv2_loader;
+  GList *vst3_loader;
+  
+  AgsLv2TurtleScanner *lv2_turtle_scanner;
 };
 
 struct _AgsAudioApplicationContextClass
@@ -86,6 +105,8 @@ struct _AgsAudioApplicationContextClass
 };
 
 GType ags_audio_application_context_get_type();
+
+gboolean ags_audio_application_context_loader_timeout(AgsAudioApplicationContext *audio_application_context);
 
 AgsAudioApplicationContext* ags_audio_application_context_new();
 

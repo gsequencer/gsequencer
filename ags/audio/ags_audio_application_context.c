@@ -452,6 +452,27 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   audio_application_context->audio = NULL;
 
   audio_application_context->osc_server = NULL;
+
+  audio_application_context->start_loader = FALSE;
+
+  audio_application_context->setup_ready = FALSE;
+  audio_application_context->loader_ready = FALSE;
+
+  audio_application_context->ladspa_loading = FALSE;
+  audio_application_context->dssi_loading = FALSE;
+  audio_application_context->lv2_loading = FALSE;
+  audio_application_context->vst3_loading = FALSE;
+  
+  audio_application_context->ladspa_loader = NULL;
+  audio_application_context->dssi_loader = NULL;
+  audio_application_context->lv2_loader = NULL;
+  audio_application_context->vst3_loader = NULL;
+
+  audio_application_context->lv2_turtle_scanner = NULL;
+  
+  g_timeout_add(AGS_AUDIO_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL,
+		ags_audio_application_context_loader_timeout,
+		audio_application_context);
 }
 
 void
@@ -1739,6 +1760,12 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
   }
 
   g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(audio_loop));
+
+  ags_application_context_setup(AGS_APPLICATION_CONTEXT(application_context));
+  
+  /* main loop run */
+  g_main_loop_run(g_main_loop_new(g_main_context_default(),
+				  TRUE));
 }
 
 void
@@ -1883,11 +1910,6 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   ags_ladspa_manager_load_blacklist(ladspa_manager,
 				    blacklist_filename);
 
-  ags_log_add_message(log,
-		      "* Loading LADSPA plugins");
-  
-  ags_ladspa_manager_load_default_directory(ladspa_manager);
-
   /* load dssi manager */
   dssi_manager = ags_dssi_manager_get_instance();
 
@@ -1897,11 +1919,6 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 				       "dssi_plugin.blacklist");
   ags_dssi_manager_load_blacklist(dssi_manager,
 				  blacklist_filename);
-
-  ags_log_add_message(log,
-		      "* Loading DSSI plugins");
-
-  ags_dssi_manager_load_default_directory(dssi_manager);
 
   /* load lv2 manager */
   lv2_manager = ags_lv2_manager_get_instance();
@@ -1914,10 +1931,19 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   ags_lv2_manager_load_blacklist(lv2_manager,
 				 blacklist_filename);
 
-  ags_log_add_message(log,
-		      "* Loading Lv2 plugins");
+  /* load vst3 manager */
+#if defined(AGS_WITH_VST3)
+  vst3_manager = ags_vst3_manager_get_instance();
 
-  ags_lv2_manager_load_default_directory(lv2_manager);
+  blacklist_filename = g_strdup_printf("%s%c%s",
+				       blacklist_path,
+				       G_DIR_SEPARATOR,
+				       "vst3_plugin.blacklist");
+  ags_vst3_manager_load_blacklist(vst3_manager,
+				  blacklist_filename);
+#endif
+  
+  audio_application_context->start_loader = TRUE;
   
   /* launch audio */
   ags_log_add_message(log,
@@ -3281,6 +3307,578 @@ ags_audio_application_context_audio_main_loop_thread(GMainLoop *main_loop)
   g_thread_exit(NULL);
 
   return(NULL);
+}
+
+gboolean
+ags_audio_application_context_loader_timeout(AgsAudioApplicationContext *audio_application_context)
+{
+  AgsLadspaManager *ladspa_manager;
+  AgsDssiManager *dssi_manager;
+  AgsLv2Manager *lv2_manager;
+  AgsLv2TurtleScanner *lv2_turtle_scanner;  
+
+#if defined(AGS_WITH_VST3)
+  AgsVst3Manager *vst3_manager;
+#endif
+  
+  AgsLog *log;
+
+#if !defined(AGS_W32API)
+  struct utsname buf;
+#endif
+  
+  gchar **ladspa_path;
+  gchar **dssi_path;
+  gchar **lv2_path;
+  gchar **vst3_path;
+
+  gchar *sysname;
+
+  gint64 start_time;
+  gint64 current_time;
+  gboolean initial_load;
+
+  GError *error;
+
+  if(!audio_application_context->start_loader){
+    return(TRUE);
+  }
+  
+  log = ags_log_get_instance();
+  
+  if(audio_application_context->loader_ready &&
+     audio_application_context->ladspa_loader == NULL &&
+     audio_application_context->dssi_loader == NULL &&
+     audio_application_context->lv2_loader == NULL &&
+     audio_application_context->vst3_loader == NULL){
+    ags_log_add_message(log,
+			"* Launch audio application context");
+
+    while(!audio_application_context->setup_ready){
+      g_main_context_iteration(NULL,
+			       FALSE);
+    }
+    
+    /* stop animation */
+    if(audio_application_context->setup_ready){
+      ags_ui_provider_set_show_animation(AGS_UI_PROVIDER(audio_application_context), FALSE);
+    }
+    
+    return(FALSE);
+  }
+
+  start_time = g_get_monotonic_time();
+
+  initial_load = TRUE;
+
+#if !defined(AGS_W32API)
+  uname(&buf);
+
+  sysname = g_ascii_strdown(buf.sysname,
+			    -1);
+#else
+  sysname = g_strdup("win");
+#endif
+  
+  /* get plugin managers */
+  ladspa_manager = ags_ladspa_manager_get_instance();
+  
+  dssi_manager = ags_dssi_manager_get_instance();
+  
+  lv2_manager = ags_lv2_manager_get_instance();
+  
+#if defined(AGS_WITH_VST3)
+  vst3_manager = ags_vst3_manager_get_instance();
+#endif
+  
+  ladspa_path = ags_ladspa_manager_get_default_path();
+
+  dssi_path = ags_dssi_manager_get_default_path();
+
+  lv2_path = ags_lv2_manager_get_default_path();
+
+#if defined(AGS_WITH_VST3)
+  vst3_path = ags_vst3_manager_get_default_path();
+#endif
+  
+  if(audio_application_context->lv2_turtle_scanner == NULL){
+    audio_application_context->lv2_turtle_scanner = ags_lv2_turtle_scanner_new();
+  }
+  
+  lv2_turtle_scanner = audio_application_context->lv2_turtle_scanner;
+    
+  if(!audio_application_context->loader_ready){
+    AgsBasePlugin *plugin;
+    
+    GDir *dir;
+
+    gchar *filename;
+
+    /* prepare loader - ladspa */
+    while(*ladspa_path != NULL){
+      if(!g_file_test(*ladspa_path,
+		      G_FILE_TEST_EXISTS)){
+	ladspa_path++;
+      
+	continue;
+      }
+    
+      error = NULL;
+      dir = g_dir_open(*ladspa_path,
+		       0,
+		       &error);
+
+      if(error != NULL){
+	g_warning("%s", error->message);
+
+	ladspa_path++;
+
+	g_error_free(error);
+      
+	continue;
+      }
+
+      while((filename = g_dir_read_name(dir)) != NULL){
+	if(g_str_has_suffix(filename,
+			    AGS_LIBRARY_SUFFIX) &&
+	   !g_list_find_custom(ladspa_manager->ladspa_plugin_blacklist,
+			       filename,
+			       g_strcmp0)){
+	  audio_application_context->ladspa_loader = g_list_prepend(audio_application_context->ladspa_loader,
+								    g_strdup_printf("%s%c%s",
+										    ladspa_path[0],
+										    G_DIR_SEPARATOR,
+										    filename));
+	}
+      }
+    
+      ladspa_path++;
+    }    
+
+    audio_application_context->ladspa_loader = g_list_reverse(audio_application_context->ladspa_loader);
+
+    /* prepare loader - dssi */
+    while(*dssi_path != NULL){
+      if(!g_file_test(*dssi_path,
+		      G_FILE_TEST_EXISTS)){
+	dssi_path++;
+      
+	continue;
+      }
+    
+      error = NULL;
+      dir = g_dir_open(*dssi_path,
+		       0,
+		       &error);
+
+      if(error != NULL){
+	g_warning("%s", error->message);
+
+	dssi_path++;
+
+	g_error_free(error);
+      
+	continue;
+      }
+
+      while((filename = g_dir_read_name(dir)) != NULL){
+	if(g_str_has_suffix(filename,
+			    AGS_LIBRARY_SUFFIX) &&
+	   !g_list_find_custom(dssi_manager->dssi_plugin_blacklist,
+			       filename,
+			       g_strcmp0)){
+	  audio_application_context->dssi_loader = g_list_prepend(audio_application_context->dssi_loader,
+								  g_strdup_printf("%s%c%s",
+										  dssi_path[0],
+										  G_DIR_SEPARATOR,
+										  filename));
+	}
+      }
+    
+      dssi_path++;
+    }    
+
+    audio_application_context->dssi_loader = g_list_reverse(audio_application_context->dssi_loader);	
+
+    /* prepare loader - lv2 */    
+    while(*lv2_path != NULL){
+      gchar *plugin_path;
+      
+      if(!g_file_test(*lv2_path,
+		      G_FILE_TEST_EXISTS)){
+	lv2_path++;
+      
+	continue;
+      }
+    
+      error = NULL;
+      dir = g_dir_open(*lv2_path,
+		       0,
+		       &error);
+
+      if(error != NULL){
+	g_warning("%s", error->message);
+
+	lv2_path++;
+
+	g_error_free(error);
+      
+	continue;
+      }
+
+      while((filename = g_dir_read_name(dir)) != NULL){
+	if(!g_ascii_strncasecmp(filename,
+				"..",
+				3) ||
+	   !g_ascii_strncasecmp(filename,
+				".",
+				2)){
+	  continue;
+	}
+
+	plugin_path = g_strdup_printf("%s%c%s",
+				      lv2_path[0],
+				      G_DIR_SEPARATOR,
+				      filename);
+      
+	if(g_file_test(plugin_path,
+		       G_FILE_TEST_IS_DIR) &&
+	   !g_list_find_custom(lv2_manager->lv2_plugin_blacklist,
+			       filename,
+			       g_strcmp0)){
+	  audio_application_context->lv2_loader = g_list_prepend(audio_application_context->lv2_loader,
+								 g_strdup(plugin_path));
+	}
+      }
+            
+      lv2_path++;
+    }
+
+    audio_application_context->lv2_loader = g_list_reverse(audio_application_context->lv2_loader);
+
+#if defined(AGS_WITH_VST3)
+    while(vst3_path[0] != NULL){    
+      gchar *plugin_path;
+      
+      if(!g_file_test(vst3_path[0],
+		      G_FILE_TEST_EXISTS)){
+	vst3_path++;
+      
+	continue;
+      }
+
+      error = NULL;
+      dir = g_dir_open(vst3_path[0],
+		       0,
+		       &error);
+
+      if(error != NULL){
+	g_warning("%s", error->message);
+
+	vst3_path++;
+
+	g_error_free(error);
+      
+	continue;
+      }
+
+
+      while((filename = g_dir_read_name(dir)) != NULL){
+	if(!g_ascii_strncasecmp(filename,
+				"..",
+				3) ||
+	   !g_ascii_strncasecmp(filename,
+				".",
+				2)){
+	  continue;
+	}
+      
+	plugin_path = g_strdup_printf("%s%c%s",
+				      vst3_path[0],
+				      G_DIR_SEPARATOR,
+				      filename);
+      
+	if(g_file_test(plugin_path,
+		       G_FILE_TEST_IS_DIR) &&
+	   !g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
+			       filename,
+			       g_strcmp0)){
+	  audio_application_context->vst3_loader = g_list_prepend(audio_application_context->vst3_loader,
+								  g_strdup(plugin_path));
+	}
+      }
+      
+      vst3_path++;
+    }
+
+    audio_application_context->vst3_loader = g_list_reverse(audio_application_context->vst3_loader);
+#endif
+    
+    audio_application_context->loader_ready = TRUE;
+  }
+  
+  /* load ladspa */
+  current_time = g_get_monotonic_time();
+  
+  if(current_time < start_time + AGS_AUDIO_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL &&
+     !audio_application_context->ladspa_loading){
+    ags_log_add_message(log,
+			"* Loading LADSPA plugins");
+
+    audio_application_context->ladspa_loading = TRUE;
+  }
+  
+  while(audio_application_context->ladspa_loader != NULL){
+    gchar *loader_filename;
+    gchar *path;
+    gchar *filename;
+    
+    current_time = g_get_monotonic_time();
+    
+    if(!initial_load &&
+       current_time > start_time + AGS_AUDIO_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL){
+      break;
+    }
+
+    loader_filename = audio_application_context->ladspa_loader->data;
+
+    path = g_path_get_dirname(loader_filename);
+    filename = g_path_get_basename(loader_filename);
+
+    if(path != NULL && filename != NULL){
+      ags_ladspa_manager_load_file(ladspa_manager,
+				   path,
+				   filename);
+    }
+    
+    audio_application_context->ladspa_loader = g_list_remove(audio_application_context->ladspa_loader,
+							     loader_filename);
+    
+    initial_load = FALSE;
+  }
+
+  /* load dssi */
+  current_time = g_get_monotonic_time();
+  
+  if(current_time < start_time + AGS_AUDIO_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL &&
+     !audio_application_context->dssi_loading){
+    ags_log_add_message(log,
+			"* Loading DSSI plugins");
+
+    audio_application_context->dssi_loading = TRUE;
+  }
+  
+  while(audio_application_context->dssi_loader != NULL){
+    gchar *loader_filename;
+    gchar *path;
+    gchar *filename;
+
+    current_time = g_get_monotonic_time();
+    
+    if(!initial_load &&
+       current_time > start_time + AGS_AUDIO_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL){
+      break;
+    }
+
+    loader_filename = audio_application_context->dssi_loader->data;
+
+    path = g_path_get_dirname(loader_filename);
+    filename = g_path_get_basename(loader_filename);
+    
+    if(path != NULL && filename != NULL){
+      ags_dssi_manager_load_file(dssi_manager,
+				 path,
+				 filename);
+    }
+    
+    audio_application_context->dssi_loader = g_list_remove(audio_application_context->dssi_loader,
+							   loader_filename);
+    
+    initial_load = FALSE;
+  }
+
+  /* load lv2 */
+  current_time = g_get_monotonic_time();
+  
+  if(current_time < start_time + AGS_AUDIO_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL &&
+     !audio_application_context->lv2_loading){
+    ags_log_add_message(log,
+			"* Loading LV2 plugins");
+
+    audio_application_context->lv2_loading = TRUE;
+  }
+  
+  while(audio_application_context->lv2_loader != NULL){
+    gchar *loader_filename;
+    
+    current_time = g_get_monotonic_time();
+    
+    if(!initial_load &&
+       current_time > start_time + AGS_AUDIO_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL){
+      break;
+    }
+
+    loader_filename = audio_application_context->lv2_loader->data;
+
+    if(g_file_test(loader_filename,
+		   G_FILE_TEST_IS_DIR)){
+      AgsLv2TurtleParser *lv2_turtle_parser;
+	
+      AgsTurtle *manifest;
+      AgsTurtle **turtle;
+
+      GList *start_list, *list;
+
+      gchar *manifest_filename;
+	
+      guint n_turtle;
+	
+      manifest_filename = g_strdup_printf("%s%c%s",
+					  loader_filename,
+					  G_DIR_SEPARATOR,
+					  "manifest.ttl");
+
+      if(!g_file_test(manifest_filename,
+		      G_FILE_TEST_EXISTS)){
+	audio_application_context->lv2_loader = g_list_remove(audio_application_context->lv2_loader,
+							      loader_filename);
+
+	g_free(manifest_filename);
+	  
+	continue;
+      }
+
+      g_message("quick scan turtle [Manifest] - %s", manifest_filename);
+	
+      ags_lv2_turtle_scanner_quick_scan(lv2_turtle_scanner,
+					manifest_filename);
+      
+      g_free(manifest_filename);
+      
+    }
+      
+    audio_application_context->lv2_loader = g_list_remove(audio_application_context->lv2_loader,
+							  loader_filename);
+    
+    initial_load = FALSE;
+  }
+
+  /* load vst3 */
+#if defined(AGS_WITH_VST3)
+  current_time = g_get_monotonic_time();
+  
+  if(current_time < start_time + AGS_AUDIO_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL &&
+     !audio_application_context->vst3_loading){
+    ags_log_add_message(log,
+			"* Loading VST3 plugins");
+
+    audio_application_context->vst3_loading = TRUE;
+  }
+
+  while(audio_application_context->vst3_loader != NULL){
+    GDir *arch_dir;
+
+    gchar *arch_path;
+    gchar *loader_filename;
+    gchar *arch_filename;
+    gchar *path;
+    gchar *filename;
+
+    current_time = g_get_monotonic_time();
+    
+    if(!initial_load &&
+       current_time > start_time + AGS_AUDIO_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL){
+      break;
+    }
+
+    loader_filename = audio_application_context->vst3_loader->data;
+
+#if defined(AGS_OSXAPI)
+    arch_path = g_strdup(loader_filename);
+#else
+    arch_path = g_strdup_printf("%s%cContents%c%s-%s",
+				loader_filename,
+				G_DIR_SEPARATOR,
+				G_DIR_SEPARATOR,
+#if defined(__x86_64__)
+				"x86_64",
+#elif defined(__i386__)
+				"i386",
+#elif defined(__aarch64__)
+				"arm64",
+#elif defined(__arm__)
+				"arm",
+#elif defined(__alpha__)
+				"alpha",
+#elif defined(__hppa__)
+				"hppa",
+#elif defined(__m68k__)
+				"m68000",
+#elif defined(__mips__)
+				"mips",
+#elif defined(__ppc__)
+				"ppc",
+#elif defined(__s390x__)
+				"s390x",
+#else
+				"unknown"
+#endif
+				sysname);	
+#endif
+
+    if(g_file_test(arch_path,
+		   G_FILE_TEST_IS_DIR)){
+      error = NULL;
+      arch_dir = g_dir_open(arch_path,
+			    0,
+			    &error);
+
+      if(error != NULL){
+	g_warning("%s", error->message);
+
+	audio_application_context->vst3_loader = g_list_remove(audio_application_context->vst3_loader,
+							       loader_filename);
+
+	g_free(arch_path);
+
+	g_error_free(error);
+	
+	continue;
+      }
+
+      while((arch_filename = g_dir_read_name(arch_dir)) != NULL){
+#if defined(AGS_OSXAPI)
+	if(!g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
+			       arch_filename,
+			       g_strcmp0)){
+	  ags_vst3_manager_load_file(vst3_manager,
+				     arch_path,
+				     arch_filename);
+	}
+#else
+	if(g_str_has_suffix(arch_filename,
+			    AGS_LIBRARY_SUFFIX) &&
+	   !g_list_find_custom(vst3_manager->vst3_plugin_blacklist,
+			       arch_filename,
+			       strcmp)){
+	  ags_vst3_manager_load_file(vst3_manager,
+				     arch_path,
+				     arch_filename);
+	}
+#endif
+      }
+    }
+
+    audio_application_context->vst3_loader = g_list_remove(audio_application_context->vst3_loader,
+							   loader_filename);
+
+    g_free(arch_path);
+    
+    initial_load = FALSE;
+  }
+#endif
+  
+  return(TRUE);
 }
 
 AgsAudioApplicationContext*
