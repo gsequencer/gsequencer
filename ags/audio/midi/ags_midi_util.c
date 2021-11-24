@@ -308,6 +308,185 @@ ags_midi_util_is_meta_event(guchar *buffer)
   return(retval);
 }
 
+/**
+ * ags_midi_util_get_key_on:
+ * @buffer: the MIDI buffer
+ * @channel: the return location of channel
+ * @key: the return location of key
+ * @velocity: the return location of velocity
+ * 
+ * Get key on fields from @buffer.
+ * 
+ * Returns: %TRUE if successful, otherwise %FALSE
+ * 
+ * Since: 3.13.0
+ */
+gboolean
+ags_midi_util_get_key_on(guchar *buffer,
+			 gint *channel, gint *key, gint *velocity)
+{
+  if(buffer == NULL ||
+     (0xf0 & (buffer[0])) != 0x90){
+    if(channel != NULL){
+      channel[0] = 0;
+    }
+
+    if(key != NULL){
+      key[0] = 0;
+    }
+
+    if(velocity != NULL){
+      velocity[0] = 0;
+    }
+    
+    return(FALSE);
+  }
+
+  if(channel != NULL){
+    channel[0] = 0xf & (buffer[0]);
+  }
+
+  if(key != NULL){
+    key[0] = 0x7f & (buffer[1]);
+  }
+
+  if(velocity != NULL){
+    velocity[0] = 0x7f & (buffer[2]);
+  }
+  
+  return(TRUE);
+}
+
+/**
+ * ags_midi_util_get_key_off:
+ * @buffer: the MIDI buffer
+ * @channel: the return location of channel
+ * @key: the return location of key
+ * @velocity: the return location of velocity
+ * 
+ * Get key off fields from @buffer.
+ * 
+ * Returns: %TRUE if successful, otherwise %FALSE
+ * 
+ * Since: 3.13.0
+ */
+gboolean
+ags_midi_util_get_key_off(guchar *buffer,
+			  gint *channel, gint *key, gint *velocity)
+{
+  if(buffer == NULL ||
+     (0xf0 & (buffer[0])) != 0x80){
+    if(channel != NULL){
+      channel[0] = 0;
+    }
+
+    if(key != NULL){
+      key[0] = 0;
+    }
+
+    if(velocity != NULL){
+      velocity[0] = 0;
+    }
+    
+    return(FALSE);
+  }
+
+  if(channel != NULL){
+    channel[0] = 0xf & (buffer[0]);
+  }
+
+  if(key != NULL){
+    key[0] = 0x7f & (buffer[1]);
+  }
+
+  if(velocity != NULL){
+    velocity[0] = 0x7f & (buffer[2]);
+  }
+  
+  return(TRUE);
+}
+
+gboolean
+ags_midi_util_get_key_pressure(guchar *buffer,
+			       gint *channel, gint *key, gint *pressure)
+{
+  //TODO:JK: implement me
+  
+  return(TRUE);
+}
+
+gboolean
+ags_midi_util_get_change_parameter(guchar *buffer,
+				   gint *channel, gint *control, gint *value)
+{
+  //TODO:JK: implement me
+  
+  return(TRUE);
+}
+
+gboolean
+ags_midi_util_get_pitch_bend(guchar *buffer,
+			     gint *channel, gint *pitch, gint *transmitter)
+{
+  //TODO:JK: implement me
+  
+  return(TRUE);
+}
+
+gboolean
+ags_midi_util_get_change_program(guchar *buffer,
+				 gint *channel, gint *program)
+{
+  //TODO:JK: implement me
+  
+  return(TRUE);
+}
+
+gboolean
+ags_midi_util_get_change_pressure(guchar *buffer,
+				  gint *channel, gint *pressure)
+{
+  //TODO:JK: implement me
+  
+  return(TRUE);
+}
+
+gboolean
+ags_midi_util_get_sysex(guchar *buffer,
+			guchar *data, gint *length)
+{
+  //TODO:JK: implement me
+  
+  return(TRUE);
+}
+
+gboolean
+ags_midi_util_get_quarter_frame(guchar *buffer,
+				gint *message_type, gint *values)
+{
+  //TODO:JK: implement me
+  
+  return(TRUE);
+}
+
+gboolean
+ags_midi_util_get_song_position(guchar *buffer,
+				gint *song_position)
+{
+  //TODO:JK: implement me
+  
+  return(TRUE);
+}
+
+gboolean
+ags_midi_util_get_song_select(guchar *buffer,
+			      gint *song_select)
+{
+  //TODO:JK: implement me
+  
+  return(TRUE);
+}
+
 guchar*
 ags_midi_util_to_smf_realloc(guchar *smf_buffer, guint smf_buffer_length)
 {

@@ -60,6 +60,32 @@ gboolean ags_midi_util_is_tune_request(guchar *buffer);
 gboolean ags_midi_util_is_meta_event(guchar *buffer);
 
 /*  */
+gboolean ags_midi_util_get_key_on(guchar *buffer,
+				  gint *channel, gint *key, gint *velocity);
+gboolean ags_midi_util_get_key_off(guchar *buffer,
+				   gint *channel, gint *key, gint *velocity);
+gboolean ags_midi_util_get_key_pressure(guchar *buffer,
+					gint *channel, gint *key, gint *pressure);
+gboolean ags_midi_util_get_change_parameter(guchar *buffer,
+					    gint *channel, gint *control, gint *value);
+gboolean ags_midi_util_get_pitch_bend(guchar *buffer,
+				      gint *channel, gint *pitch, gint *transmitter);
+gboolean ags_midi_util_get_change_program(guchar *buffer,
+					  gint *channel, gint *program);
+gboolean ags_midi_util_get_change_pressure(guchar *buffer,
+					   gint *channel, gint *pressure);
+
+gboolean ags_midi_util_get_sysex(guchar *buffer,
+				 guchar *data, gint *length);
+
+gboolean ags_midi_util_get_quarter_frame(guchar *buffer,
+					 gint *message_type, gint *values);
+gboolean ags_midi_util_get_song_position(guchar *buffer,
+					 gint *song_position);
+gboolean ags_midi_util_get_song_select(guchar *buffer,
+				       gint *song_select);
+
+/*  */
 guchar* ags_midi_util_to_smf(guchar *midi_buffer, guint buffer_length,
 			     glong delta_time,
 			     guint *smf_buffer_length);
