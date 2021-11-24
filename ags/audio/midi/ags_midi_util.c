@@ -652,7 +652,7 @@ ags_midi_util_get_sysex(guchar *buffer,
   guint i;
   
   if(buffer == NULL ||
-     (0xf0 & (buffer[0])) != 0xf0){
+     (0xff & (buffer[0])) != 0xf0){
     if(data != NULL){
       data[0] = NULL;
     }
@@ -669,7 +669,7 @@ ags_midi_util_get_sysex(guchar *buffer,
   if(data != NULL){
     data[0] = (guchar *) g_malloc(i * sizeof(guchar));
 
-    memcpy(data[0], buffer, i * sizeof(guchar));
+    memcpy(data[0], buffer + 1, i * sizeof(guchar));
   }
 
   if(length != NULL){
@@ -679,29 +679,104 @@ ags_midi_util_get_sysex(guchar *buffer,
   return(TRUE);
 }
 
+/**
+ * ags_midi_util_get_quarter_frame:
+ * @buffer: the MIDI buffer
+ * @message_type: (out): the return location of message type
+ * @values: (out): the return location of values
+ * 
+ * Get quarter frame fields of @buffer.
+ * 
+ * Returns: %TRUE if successful, otherwise %FALSE
+ * 
+ * Since: 3.13.0
+ */
 gboolean
 ags_midi_util_get_quarter_frame(guchar *buffer,
 				gint *message_type, gint *values)
 {
-  //TODO:JK: implement me
+  if(buffer == NULL ||
+     (0xff & (buffer[0])) != 0xf1){
+    if(message_type != NULL){
+      message_type[0] = 0;
+    }
+
+    if(values != NULL){
+      values[0] = 0;
+    }
+    
+    return(FALSE);
+  }
+
+  if(message_type != NULL){
+    message_type[0] = 0x70 & (buffer[1]);
+  }
+
+  if(values != NULL){
+    values[0] = 0x0f & (buffer[1]);
+  }
   
   return(TRUE);
 }
 
+/**
+ * ags_midi_util_get_song_position:
+ * @buffer: the MIDI buffer
+ * @song_position: (out): the return location of song position
+ * 
+ * Get song position fields of @buffer.
+ * 
+ * Returns: %TRUE if successful, otherwise %FALSE
+ * 
+ * Since: 3.13.0
+ */
 gboolean
 ags_midi_util_get_song_position(guchar *buffer,
 				gint *song_position)
 {
-  //TODO:JK: implement me
+  if(buffer == NULL ||
+     (0xff & (buffer[0])) != 0xf2){
+    if(song_position != NULL){
+      song_position[0] = 0;
+    }
+    
+    return(FALSE);
+  }
+
+  if(song_position != NULL){
+    song_position[0] = (0x7f & (buffer[1])) | (0x3f80 & (buffer[2] << 7));
+  }
   
   return(TRUE);
 }
 
+/**
+ * ags_midi_util_get_song_select:
+ * @buffer: the MIDI buffer
+ * @song_select: (out): the return location of song select
+ * 
+ * Get song select fields of @buffer.
+ * 
+ * Returns: %TRUE if successful, otherwise %FALSE
+ * 
+ * Since: 3.13.0
+ */
 gboolean
 ags_midi_util_get_song_select(guchar *buffer,
 			      gint *song_select)
 {
-  //TODO:JK: implement me
+  if(buffer == NULL ||
+     (0xff & (buffer[0])) != 0xf2){
+    if(song_select != NULL){
+      song_select[0] = 0;
+    }
+    
+    return(FALSE);
+  }
+
+  if(song_select != NULL){
+    song_select[0] = (0x7f & (buffer[1]));
+  }
   
   return(TRUE);
 }
