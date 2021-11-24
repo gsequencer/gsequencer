@@ -315,7 +315,7 @@ ags_midi_util_is_meta_event(guchar *buffer)
  * @key: the return location of key
  * @velocity: the return location of velocity
  * 
- * Get key on fields from @buffer.
+ * Get key on fields of @buffer.
  * 
  * Returns: %TRUE if successful, otherwise %FALSE
  * 
@@ -364,7 +364,7 @@ ags_midi_util_get_key_on(guchar *buffer,
  * @key: the return location of key
  * @velocity: the return location of velocity
  * 
- * Get key off fields from @buffer.
+ * Get key off fields of @buffer.
  * 
  * Returns: %TRUE if successful, otherwise %FALSE
  * 
@@ -406,20 +406,100 @@ ags_midi_util_get_key_off(guchar *buffer,
   return(TRUE);
 }
 
+/**
+ * ags_midi_util_get_key_pressure:
+ * @buffer: the MIDI buffer
+ * @channel: the return location of channel
+ * @key: the return location of key
+ * @pressure: the return location of pressure
+ * 
+ * Get key pressure fields of @buffer.
+ * 
+ * Returns: %TRUE if successful, otherwise %FALSE
+ * 
+ * Since: 3.13.0
+ */
 gboolean
 ags_midi_util_get_key_pressure(guchar *buffer,
 			       gint *channel, gint *key, gint *pressure)
 {
-  //TODO:JK: implement me
+  if(buffer == NULL ||
+     (0xf0 & (buffer[0])) != 0xa0){
+    if(channel != NULL){
+      channel[0] = 0;
+    }
+
+    if(key != NULL){
+      key[0] = 0;
+    }
+
+    if(pressure != NULL){
+      pressure[0] = 0;
+    }
+    
+    return(FALSE);
+  }
+
+  if(channel != NULL){
+    channel[0] = 0xf & (buffer[0]);
+  }
+
+  if(key != NULL){
+    key[0] = 0x7f & (buffer[1]);
+  }
+
+  if(pressure != NULL){
+    pressure[0] = 0x7f & (buffer[2]);
+  }
   
   return(TRUE);
 }
 
+/**
+ * ags_midi_util_get_change_parameter:
+ * @buffer: the MIDI buffer
+ * @channel: the return location of channel
+ * @control: the return location of control
+ * @value: the return location of value
+ * 
+ * Get change parameter fields of @buffer.
+ * 
+ * Returns: %TRUE if successful, otherwise %FALSE
+ * 
+ * Since: 3.13.0
+ */
 gboolean
 ags_midi_util_get_change_parameter(guchar *buffer,
 				   gint *channel, gint *control, gint *value)
 {
-  //TODO:JK: implement me
+  if(buffer == NULL ||
+     (0xf0 & (buffer[0])) != 0xb0){
+    if(channel != NULL){
+      channel[0] = 0;
+    }
+
+    if(key != NULL){
+      key[0] = 0;
+    }
+
+    if(pressure != NULL){
+      pressure[0] = 0;
+    }
+    
+    return(FALSE);
+  }
+
+  if(channel != NULL){
+    channel[0] = 0xf & (buffer[0]);
+  }
+
+  if(control != NULL){
+    control[0] = 0x7f & (buffer[1]);
+  }
+
+  if(value != NULL){
+    value[0] = 0x7f & (buffer[2]);
+  }
   
   return(TRUE);
 }
