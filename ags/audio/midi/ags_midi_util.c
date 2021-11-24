@@ -311,9 +311,9 @@ ags_midi_util_is_meta_event(guchar *buffer)
 /**
  * ags_midi_util_get_key_on:
  * @buffer: the MIDI buffer
- * @channel: the return location of channel
- * @key: the return location of key
- * @velocity: the return location of velocity
+ * @channel: (out): the return location of channel
+ * @key: (out): the return location of key
+ * @velocity: (out): the return location of velocity
  * 
  * Get key on fields of @buffer.
  * 
@@ -360,9 +360,9 @@ ags_midi_util_get_key_on(guchar *buffer,
 /**
  * ags_midi_util_get_key_off:
  * @buffer: the MIDI buffer
- * @channel: the return location of channel
- * @key: the return location of key
- * @velocity: the return location of velocity
+ * @channel: (out): the return location of channel
+ * @key: (out): the return location of key
+ * @velocity: (out): the return location of velocity
  * 
  * Get key off fields of @buffer.
  * 
@@ -409,9 +409,9 @@ ags_midi_util_get_key_off(guchar *buffer,
 /**
  * ags_midi_util_get_key_pressure:
  * @buffer: the MIDI buffer
- * @channel: the return location of channel
- * @key: the return location of key
- * @pressure: the return location of pressure
+ * @channel: (out): the return location of channel
+ * @key: (out): the return location of key
+ * @pressure: (out): the return location of pressure
  * 
  * Get key pressure fields of @buffer.
  * 
@@ -458,9 +458,9 @@ ags_midi_util_get_key_pressure(guchar *buffer,
 /**
  * ags_midi_util_get_change_parameter:
  * @buffer: the MIDI buffer
- * @channel: the return location of channel
- * @control: the return location of control
- * @value: the return location of value
+ * @channel: (out): the return location of channel
+ * @control: (out): the return location of control
+ * @value: (out): the return location of value
  * 
  * Get change parameter fields of @buffer.
  * 
@@ -478,12 +478,12 @@ ags_midi_util_get_change_parameter(guchar *buffer,
       channel[0] = 0;
     }
 
-    if(key != NULL){
-      key[0] = 0;
+    if(control != NULL){
+      control[0] = 0;
     }
 
-    if(pressure != NULL){
-      pressure[0] = 0;
+    if(value != NULL){
+      value[0] = 0;
     }
     
     return(FALSE);
@@ -504,38 +504,177 @@ ags_midi_util_get_change_parameter(guchar *buffer,
   return(TRUE);
 }
 
+/**
+ * ags_midi_util_get_pitch_bend:
+ * @buffer: the MIDI buffer
+ * @channel: (out): the return location of channel
+ * @pitch: (out): the return location of pitch
+ * @transmitter: (out): the return location of transmitter
+ * 
+ * Get pitch bend fields of @buffer.
+ * 
+ * Returns: %TRUE if successful, otherwise %FALSE
+ * 
+ * Since: 3.13.0
+ */
 gboolean
 ags_midi_util_get_pitch_bend(guchar *buffer,
 			     gint *channel, gint *pitch, gint *transmitter)
 {
-  //TODO:JK: implement me
+  if(buffer == NULL ||
+     (0xf0 & (buffer[0])) != 0xe0){
+    if(channel != NULL){
+      channel[0] = 0;
+    }
+
+    if(pitch != NULL){
+      pitch[0] = 0;
+    }
+
+    if(transmitter != NULL){
+      transmitter[0] = 0;
+    }
+    
+    return(FALSE);
+  }
+
+  if(channel != NULL){
+    channel[0] = 0xf & (buffer[0]);
+  }
+
+  if(pitch != NULL){
+    pitch[0] = 0x7f & (buffer[1]);
+  }
+
+  if(transmitter != NULL){
+    transmitter[0] = 0x7f & (buffer[2]);
+  }
   
   return(TRUE);
 }
 
+/**
+ * ags_midi_util_get_change_program:
+ * @buffer: the MIDI buffer
+ * @channel: (out): the return location of channel
+ * @program: (out): the return location of program
+ * 
+ * Get change program fields of @buffer.
+ * 
+ * Returns: %TRUE if successful, otherwise %FALSE
+ * 
+ * Since: 3.13.0
+ */
 gboolean
 ags_midi_util_get_change_program(guchar *buffer,
 				 gint *channel, gint *program)
 {
-  //TODO:JK: implement me
-  
+  if(buffer == NULL ||
+     (0xf0 & (buffer[0])) != 0xc0){
+    if(channel != NULL){
+      channel[0] = 0;
+    }
+
+    if(program != NULL){
+      program[0] = 0;
+    }
+    
+    return(FALSE);
+  }
+
+  if(channel != NULL){
+    channel[0] = 0xf & (buffer[0]);
+  }
+
+  if(program != NULL){
+    program[0] = 0x7f & (buffer[1]);
+  }
+
   return(TRUE);
 }
 
+/**
+ * ags_midi_util_get_change_pressure:
+ * @buffer: the MIDI buffer
+ * @channel: (out): the return location of channel
+ * @pressure: (out): the return location of pressure
+ * 
+ * Get change pressure fields of @buffer.
+ * 
+ * Returns: %TRUE if successful, otherwise %FALSE
+ * 
+ * Since: 3.13.0
+ */
 gboolean
 ags_midi_util_get_change_pressure(guchar *buffer,
 				  gint *channel, gint *pressure)
 {
-  //TODO:JK: implement me
+  if(buffer == NULL ||
+     (0xf0 & (buffer[0])) != 0xd0){
+    if(channel != NULL){
+      channel[0] = 0;
+    }
+
+    if(pressure != NULL){
+      pressure[0] = 0;
+    }
+    
+    return(FALSE);
+  }
+
+  if(channel != NULL){
+    channel[0] = 0xf & (buffer[0]);
+  }
+
+  if(pressure != NULL){
+    pressure[0] = 0x7f & (buffer[1]);
+  }
   
   return(TRUE);
 }
 
+/**
+ * ags_midi_util_get_sysex:
+ * @buffer: the MIDI buffer
+ * @data: (out) (transfer full): the return location of data
+ * @pressure: (out): the return location of pressure
+ * 
+ * Get sysex fields of @buffer.
+ * 
+ * Returns: %TRUE if successful, otherwise %FALSE
+ * 
+ * Since: 3.13.0
+ */
 gboolean
 ags_midi_util_get_sysex(guchar *buffer,
-			guchar *data, gint *length)
+			guchar **data, gint *length)
 {
-  //TODO:JK: implement me
+  guint i;
+  
+  if(buffer == NULL ||
+     (0xf0 & (buffer[0])) != 0xf0){
+    if(data != NULL){
+      data[0] = NULL;
+    }
+
+    if(length != NULL){
+      length[0] = 0;
+    }
+    
+    return(FALSE);
+  }
+
+  for(i = 0; buffer[i + 1] != 0xf7; i++);
+
+  if(data != NULL){
+    data[0] = (guchar *) g_malloc(i * sizeof(guchar));
+
+    memcpy(data[0], buffer, i * sizeof(guchar));
+  }
+
+  if(length != NULL){
+    length[0] = i;
+  }
   
   return(TRUE);
 }

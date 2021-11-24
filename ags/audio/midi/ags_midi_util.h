@@ -76,7 +76,7 @@ gboolean ags_midi_util_get_change_pressure(guchar *buffer,
 					   gint *channel, gint *pressure);
 
 gboolean ags_midi_util_get_sysex(guchar *buffer,
-				 guchar *data, gint *length);
+				 guchar **data, gint *length);
 
 gboolean ags_midi_util_get_quarter_frame(guchar *buffer,
 					 gint *message_type, gint *values);
