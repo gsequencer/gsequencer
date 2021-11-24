@@ -601,7 +601,7 @@ ags_function_literal_solve_expand_functions(gchar *transformed_function)
     if((regexec_result = regexec(&function_regex, offset, max_matches, match_arr, 0)) == 0){
       if(close_offset == NULL ||
 	 close_offset > match_arr[0].rm_so){
-	offset = (gchar *) match_arr[0].rm_so;
+	offset += match_arr[0].rm_so;
 
 	/* find close parenthesis */
 	open_parenthesis = offset;

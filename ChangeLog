@@ -1,3 +1,9 @@
+ags (3.13.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented getter functions in ags_midi_util.c
+	* updated developer manual additional content and listings
+
 ags (3.12.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
