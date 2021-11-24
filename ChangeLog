@@ -2,6 +2,8 @@ ags (3.13.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented getter functions in ags_midi_util.c
+	* TODO:JK: refactored ags-fx recalls to make use of improved utility functions
+	* refactored ags-fx-volume to use new accelerated AgsVolumeUtil functions
 	* updated developer manual additional content and listings
 
 ags (3.12.9)

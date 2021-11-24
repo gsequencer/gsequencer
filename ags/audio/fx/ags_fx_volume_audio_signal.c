@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,7 @@
 
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_volume_util.h>
 
 #include <ags/audio/fx/ags_fx_volume_audio.h>
 #include <ags/audio/fx/ags_fx_volume_channel.h>
@@ -141,11 +142,14 @@ ags_fx_volume_audio_signal_real_run_inter(AgsRecall *recall)
   AgsFxVolumeChannelProcessor *fx_volume_channel_processor;
   AgsFxVolumeRecycling *fx_volume_recycling;
   
+  AgsFxVolumeChannelInputData *input_data;
+	
   guint buffer_size;
   guint format;
   gdouble volume;
   gboolean muted;
 
+  GRecMutex *volume_channel_mutex;
   GRecMutex *stream_mutex;
   
   source = NULL;
@@ -253,6 +257,16 @@ ags_fx_volume_audio_signal_real_run_inter(AgsRecall *recall)
       g_value_unset(&value);
     }
   }
+
+  if(volume_channel != NULL){
+    volume_channel_mutex = AGS_FX_VOLUME_CHANNEL_GET_OBJ_MUTEX(volume_channel);
+
+    g_rec_mutex_lock(volume_channel_mutex);
+    
+    input_data = volume_channel->input_data[sound_scope];
+
+    g_rec_mutex_unlock(volume_channel_mutex);
+  }
   
   if(source != NULL &&
      source->stream_current != NULL){
@@ -261,10 +275,22 @@ ags_fx_volume_audio_signal_real_run_inter(AgsRecall *recall)
     g_rec_mutex_lock(stream_mutex);
 
     if(!muted){
-      ags_audio_buffer_util_volume(source->stream_current->data, 1,
-				   ags_audio_buffer_util_format_from_soundcard(format),
-				   buffer_size,
-				   volume);
+      if(input_data != NULL){
+	input_data->volume_util.destination = source->stream_current->data;
+	input_data->volume_util.destination_stride = 1;
+	
+	input_data->volume_util.source = source->stream_current->data;
+	input_data->volume_util.source_stride = 1;
+	
+	input_data->volume_util.buffer_length = buffer_size;
+	input_data->volume_util.format = format;
+	
+	input_data->volume_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+
+	input_data->volume_util.volume = volume;
+	
+	ags_volume_util_compute(&(input_data->volume_util));
+      }
     }else{
       ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
 					 buffer_size, ags_audio_buffer_util_format_from_soundcard(format));

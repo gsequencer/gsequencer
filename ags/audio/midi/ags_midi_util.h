@@ -59,7 +59,7 @@ gboolean ags_midi_util_is_tune_request(guchar *buffer);
 /* real-time meta event utility */
 gboolean ags_midi_util_is_meta_event(guchar *buffer);
 
-/*  */
+/* real-time channel message getter */
 gboolean ags_midi_util_get_key_on(guchar *buffer,
 				  gint *channel, gint *key, gint *velocity);
 gboolean ags_midi_util_get_key_off(guchar *buffer,
@@ -75,9 +75,11 @@ gboolean ags_midi_util_get_change_program(guchar *buffer,
 gboolean ags_midi_util_get_change_pressure(guchar *buffer,
 					   gint *channel, gint *pressure);
 
+/* real-time sysex gettery */
 gboolean ags_midi_util_get_sysex(guchar *buffer,
 				 guchar **data, gint *length);
 
+/* real-time system common getter */
 gboolean ags_midi_util_get_quarter_frame(guchar *buffer,
 					 gint *message_type, gint *values);
 gboolean ags_midi_util_get_song_position(guchar *buffer,
@@ -85,11 +87,12 @@ gboolean ags_midi_util_get_song_position(guchar *buffer,
 gboolean ags_midi_util_get_song_select(guchar *buffer,
 				       gint *song_select);
 
-/*  */
+/* create Standard MIDI Format unsigned char buffer */
 guchar* ags_midi_util_to_smf(guchar *midi_buffer, guint buffer_length,
 			     glong delta_time,
 			     guint *smf_buffer_length);
 
+/* note offset to and from delta time */
 guint ags_midi_util_delta_time_to_offset(gdouble delay_factor,
 					 glong division,
 					 glong tempo,

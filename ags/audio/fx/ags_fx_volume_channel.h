@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,7 @@
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_volume_util.h>
 
 G_BEGIN_DECLS
 
@@ -38,6 +39,7 @@ G_BEGIN_DECLS
 #define AGS_FX_VOLUME_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_VOLUME_CHANNEL, AgsFxVolumeChannelClass))
 
 typedef struct _AgsFxVolumeChannel AgsFxVolumeChannel;
+typedef struct _AgsFxVolumeChannelInputData AgsFxVolumeChannelInputData;
 typedef struct _AgsFxVolumeChannelClass AgsFxVolumeChannelClass;
 
 struct _AgsFxVolumeChannel
@@ -46,6 +48,8 @@ struct _AgsFxVolumeChannel
 
   AgsPort *muted;
   AgsPort *volume;
+
+  AgsFxVolumeChannelInputData* input_data[AGS_SOUND_SCOPE_LAST];
 };
 
 struct _AgsFxVolumeChannelClass
@@ -53,7 +57,19 @@ struct _AgsFxVolumeChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
+struct _AgsFxVst3ChannelInputData
+{
+  GRecMutex strct_mutex;
+  
+  gpointer parent;
+
+  AgsVolumeUtil volume_util;
+};
+
 GType ags_fx_volume_channel_get_type();
+
+AgsFxVolumeChannelInputData* ags_fx_volume_channel_input_data_alloc();
+void ags_fx_volume_channel_input_data_free(AgsFxVolumeChannelInputData *input_data);
 
 /*  */
 AgsFxVolumeChannel* ags_fx_volume_channel_new(AgsChannel *channel);
