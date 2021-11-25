@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,7 @@
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_audio_signal.h>
+#include <ags/audio/ags_volume_util.h>
 
 G_BEGIN_DECLS
 
@@ -43,6 +44,8 @@ typedef struct _AgsFxVolumeAudioSignalClass AgsFxVolumeAudioSignalClass;
 struct _AgsFxVolumeAudioSignal
 {
   AgsRecallAudioSignal recall_audio_signal;
+
+  AgsVolumeUtil volume_util;
 };
 
 struct _AgsFxVolumeAudioSignalClass

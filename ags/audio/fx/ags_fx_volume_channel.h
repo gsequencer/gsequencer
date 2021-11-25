@@ -27,7 +27,6 @@
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel.h>
-#include <ags/audio/ags_volume_util.h>
 
 G_BEGIN_DECLS
 
@@ -48,8 +47,6 @@ struct _AgsFxVolumeChannel
 
   AgsPort *muted;
   AgsPort *volume;
-
-  AgsFxVolumeChannelInputData* input_data[AGS_SOUND_SCOPE_LAST];
 };
 
 struct _AgsFxVolumeChannelClass
@@ -57,19 +54,7 @@ struct _AgsFxVolumeChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
-struct _AgsFxVst3ChannelInputData
-{
-  GRecMutex strct_mutex;
-  
-  gpointer parent;
-
-  AgsVolumeUtil volume_util;
-};
-
 GType ags_fx_volume_channel_get_type();
-
-AgsFxVolumeChannelInputData* ags_fx_volume_channel_input_data_alloc();
-void ags_fx_volume_channel_input_data_free(AgsFxVolumeChannelInputData *input_data);
 
 /*  */
 AgsFxVolumeChannel* ags_fx_volume_channel_new(AgsChannel *channel);

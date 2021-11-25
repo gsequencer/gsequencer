@@ -176,8 +176,6 @@ ags_fx_volume_channel_mutable_interface_init(AgsMutableInterface *mutable)
 void
 ags_fx_volume_channel_init(AgsFxVolumeChannel *fx_volume_channel)
 {
-  guint i;
-  
   AGS_RECALL(fx_volume_channel)->name = "ags-fx-volume";
   AGS_RECALL(fx_volume_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_volume_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
@@ -222,13 +220,6 @@ ags_fx_volume_channel_init(AgsFxVolumeChannel *fx_volume_channel)
 
   ags_recall_add_port((AgsRecall *) fx_volume_channel,
 		      fx_volume_channel->volume);
-
-  /* input data */
-  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-    fx_volume_channel->input_data[i] = ags_fx_volume_channel_input_data_alloc();
-      
-    fx_volume_channel->input_data[i]->parent = fx_volume_channel;
-  }
 }
 
 void
@@ -494,60 +485,6 @@ ags_fx_volume_channel_get_volume_plugin_port()
   g_mutex_unlock(&mutex);
     
   return(plugin_port);
-}
-
-/**
- * ags_fx_volume_channel_input_data_alloc:
- * 
- * Allocate #AgsFxVolumeChannelInputData-struct
- * 
- * Returns: the new #AgsFxVolumeChannelInputData-struct
- * 
- * Since: 3.13.0
- */
-AgsFxVolumeChannelInputData*
-ags_fx_volume_channel_input_data_alloc()
-{
-  AgsFxVolumeChannelInputData *input_data;
-
-  input_data = (AgsFxVolumeChannelInputData *) g_malloc(sizeof(AgsFxVolumeChannelInputData));
-
-  g_rec_mutex_init(&(input_data->strct_mutex));
-
-  input_data->parent = NULL;
-  
-  input_data->volume_util.destination = NULL;
-  input_data->volume_util.destination_stride = 0;
-    
-  input_data->volume_util.source = NULL;
-  input_data->volume_util.source_stride = 0;
-    
-  input_data->volume_util.buffer_length = 0;
-  input_data->volume_util.format = 0;
-
-  input_data->volume_util.audio_buffer_util_format = 0;
-
-  input_data->volume_util.volume = 1.0;
-
-  return(input_data);
-}
-
-/**
- * ags_fx_volume_channel_input_data_free:
- * @input_data: the #AgsFxVolumeChannelInputData-struct
- * 
- * Free @input_data.
- * 
- * Since: 3.13.0
- */
-void
-ags_fx_volume_channel_input_data_free(AgsFxVolumeChannelInputData *input_data)
-{
-  if(input_data == NULL){
-    return;
-  }
-  
-  g_free(input_data);
 }
 
 /**

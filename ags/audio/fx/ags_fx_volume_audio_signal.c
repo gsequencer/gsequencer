@@ -141,9 +141,8 @@ ags_fx_volume_audio_signal_real_run_inter(AgsRecall *recall)
   AgsFxVolumeChannel *fx_volume_channel;
   AgsFxVolumeChannelProcessor *fx_volume_channel_processor;
   AgsFxVolumeRecycling *fx_volume_recycling;
+  AgsFxVolumeAudioSignal *fx_volume_audio_signal;
   
-  AgsFxVolumeChannelInputData *input_data;
-	
   guint buffer_size;
   guint format;
   gdouble volume;
@@ -158,6 +157,7 @@ ags_fx_volume_audio_signal_real_run_inter(AgsRecall *recall)
   fx_volume_channel = NULL;
   fx_volume_channel_processor = NULL;
   fx_volume_recycling = NULL;
+  fx_volume_audio_signal = (AgsFxVolumeAudioSignal *) recall;
 
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
@@ -275,22 +275,20 @@ ags_fx_volume_audio_signal_real_run_inter(AgsRecall *recall)
     g_rec_mutex_lock(stream_mutex);
 
     if(!muted){
-      if(input_data != NULL){
-	input_data->volume_util.destination = source->stream_current->data;
-	input_data->volume_util.destination_stride = 1;
+      fx_volume_audio_signal->volume_util.destination = source->stream_current->data;
+      fx_volume_audio_signal->volume_util.destination_stride = 1;
 	
-	input_data->volume_util.source = source->stream_current->data;
-	input_data->volume_util.source_stride = 1;
+      fx_volume_audio_signal->volume_util.source = source->stream_current->data;
+      fx_volume_audio_signal->volume_util.source_stride = 1;
 	
-	input_data->volume_util.buffer_length = buffer_size;
-	input_data->volume_util.format = format;
+      fx_volume_audio_signal->volume_util.buffer_length = buffer_size;
+      fx_volume_audio_signal->volume_util.format = format;
 	
-	input_data->volume_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+      fx_volume_audio_signal->volume_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
 
-	input_data->volume_util.volume = volume;
+      fx_volume_audio_signal->volume_util.volume = volume;
 	
-	ags_volume_util_compute(&(input_data->volume_util));
-      }
+      ags_volume_util_compute(&(fx_volume_audio_signal->volume_util));
     }else{
       ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
 					 buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
