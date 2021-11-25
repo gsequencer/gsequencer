@@ -38,7 +38,6 @@ G_BEGIN_DECLS
 #define AGS_FX_VOLUME_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_VOLUME_CHANNEL, AgsFxVolumeChannelClass))
 
 typedef struct _AgsFxVolumeChannel AgsFxVolumeChannel;
-typedef struct _AgsFxVolumeChannelInputData AgsFxVolumeChannelInputData;
 typedef struct _AgsFxVolumeChannelClass AgsFxVolumeChannelClass;
 
 struct _AgsFxVolumeChannel

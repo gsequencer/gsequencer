@@ -4,6 +4,7 @@ ags (3.13.0)
 	* implemented getter functions in ags_midi_util.c
 	* TODO:JK: refactored ags-fx recalls to make use of improved utility functions
 	* refactored ags-fx-volume to use new accelerated AgsVolumeUtil functions
+	* refactored ags-fx-envelope to use new accelerated AgsEnvelopeUtil functions
 	* updated developer manual additional content and listings
 
 ags (3.12.9)

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -182,6 +182,7 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
   AgsFxEnvelopeChannel *fx_envelope_channel;
   AgsFxEnvelopeChannelProcessor *fx_envelope_channel_processor;
   AgsFxEnvelopeRecycling *fx_envelope_recycling;
+  AgsFxEnvelopeAudioSignal *fx_envelope_audio_signal;
   AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
   AgsFxNotationAudioProcessor *fx_notation_audio_processor;
   AgsPort *fixed_length;
@@ -222,6 +223,7 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
   fx_envelope_channel = NULL;
   fx_envelope_channel_processor = NULL;
   fx_envelope_recycling = NULL;
+  fx_envelope_audio_signal = (AgsFxEnvelopeAudioSignal *) recall;
 
   fixed_length = NULL;
 
@@ -363,6 +365,14 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
      source->stream_current != NULL){
     stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
 
+    fx_envelope_audio_signal->envelope_util.destination_stride = 1;
+    
+    fx_envelope_audio_signal->envelope_util.source_stride = 1;
+    
+    fx_envelope_audio_signal->envelope_util.format = format;
+    
+    fx_envelope_audio_signal->envelope_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+    
     if(start_note != NULL){
       note = start_note;
   
@@ -513,12 +523,18 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 								     envelope_end_frame - envelope_start_frame);
 
 	    g_rec_mutex_lock(stream_mutex);
+	    
+	    fx_envelope_audio_signal->envelope_util.destination = source->stream_current->data + offset;
+	    
+	    fx_envelope_audio_signal->envelope_util.source = source->stream_current->data + offset;
+	    
+	    fx_envelope_audio_signal->envelope_util.volume = current_volume;
 
-	    ags_audio_buffer_util_envelope(source->stream_current->data + offset, 1,
-					   ags_audio_buffer_util_format_from_soundcard(format),
-					   current_frame_count,
-					   current_volume,
-					   current_ratio);
+	    fx_envelope_audio_signal->envelope_util.amount = current_ratio;
+	    
+	    fx_envelope_audio_signal->envelope_util.buffer_length = current_frame_count;
+	
+	    ags_envelope_util_compute(&(fx_envelope_audio_signal->envelope_util));
 
 	    g_rec_mutex_unlock(stream_mutex);
 
@@ -564,13 +580,19 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 								     envelope_end_frame - envelope_start_frame);
 
 	    g_rec_mutex_lock(stream_mutex);
+	    
+	    fx_envelope_audio_signal->envelope_util.destination = source->stream_current->data + offset;
+	    
+	    fx_envelope_audio_signal->envelope_util.source = source->stream_current->data + offset;
+	    
+	    fx_envelope_audio_signal->envelope_util.volume = current_volume;
 
-	    ags_audio_buffer_util_envelope(source->stream_current->data + offset, 1,
-					   ags_audio_buffer_util_format_from_soundcard(format),
-					   current_frame_count,
-					   current_volume,
-					   current_ratio);
-
+	    fx_envelope_audio_signal->envelope_util.amount = current_ratio;
+	    
+	    fx_envelope_audio_signal->envelope_util.buffer_length = current_frame_count;
+	
+	    ags_envelope_util_compute(&(fx_envelope_audio_signal->envelope_util));
+	    
 	    g_rec_mutex_unlock(stream_mutex);
 
 	    current_frame += current_frame_count;
@@ -615,12 +637,18 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 								     envelope_end_frame - envelope_start_frame);
 
 	    g_rec_mutex_lock(stream_mutex);
+	    
+	    fx_envelope_audio_signal->envelope_util.destination = source->stream_current->data + offset;
+	    
+	    fx_envelope_audio_signal->envelope_util.source = source->stream_current->data + offset;
+	    
+	    fx_envelope_audio_signal->envelope_util.volume = current_volume;
 
-	    ags_audio_buffer_util_envelope(source->stream_current->data + offset, 1,
-					   ags_audio_buffer_util_format_from_soundcard(format),
-					   current_frame_count,
-					   current_volume,
-					   current_ratio);
+	    fx_envelope_audio_signal->envelope_util.amount = current_ratio;
+	    
+	    fx_envelope_audio_signal->envelope_util.buffer_length = current_frame_count;
+	
+	    ags_envelope_util_compute(&(fx_envelope_audio_signal->envelope_util));
 
 	    g_rec_mutex_unlock(stream_mutex);
 
@@ -670,13 +698,19 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 								     envelope_end_frame - envelope_start_frame);
 
 	    g_rec_mutex_lock(stream_mutex);
+	    
+	    fx_envelope_audio_signal->envelope_util.destination = source->stream_current->data + offset;
+	    
+	    fx_envelope_audio_signal->envelope_util.source = source->stream_current->data + offset;
+	    
+	    fx_envelope_audio_signal->envelope_util.volume = current_volume;
 
-	    ags_audio_buffer_util_envelope(source->stream_current->data + offset, 1,
-					   ags_audio_buffer_util_format_from_soundcard(format),
-					   current_frame_count,
-					   current_volume,
-					   current_ratio);
-
+	    fx_envelope_audio_signal->envelope_util.amount = current_ratio;
+	    
+	    fx_envelope_audio_signal->envelope_util.buffer_length = current_frame_count;
+	
+	    ags_envelope_util_compute(&(fx_envelope_audio_signal->envelope_util));
+	    
 	    g_rec_mutex_unlock(stream_mutex);
 
 	    offset += current_frame_count;

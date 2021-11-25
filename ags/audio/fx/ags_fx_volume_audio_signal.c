@@ -272,22 +272,22 @@ ags_fx_volume_audio_signal_real_run_inter(AgsRecall *recall)
      source->stream_current != NULL){
     stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
     
+    fx_volume_audio_signal->volume_util.destination = source->stream_current->data;
+    fx_volume_audio_signal->volume_util.destination_stride = 1;
+	
+    fx_volume_audio_signal->volume_util.source = source->stream_current->data;
+    fx_volume_audio_signal->volume_util.source_stride = 1;
+	
+    fx_volume_audio_signal->volume_util.buffer_length = buffer_size;
+    fx_volume_audio_signal->volume_util.format = format;
+	
+    fx_volume_audio_signal->volume_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+
+    fx_volume_audio_signal->volume_util.volume = volume;
+      
     g_rec_mutex_lock(stream_mutex);
 
     if(!muted){
-      fx_volume_audio_signal->volume_util.destination = source->stream_current->data;
-      fx_volume_audio_signal->volume_util.destination_stride = 1;
-	
-      fx_volume_audio_signal->volume_util.source = source->stream_current->data;
-      fx_volume_audio_signal->volume_util.source_stride = 1;
-	
-      fx_volume_audio_signal->volume_util.buffer_length = buffer_size;
-      fx_volume_audio_signal->volume_util.format = format;
-	
-      fx_volume_audio_signal->volume_util.audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
-
-      fx_volume_audio_signal->volume_util.volume = volume;
-	
       ags_volume_util_compute(&(fx_volume_audio_signal->volume_util));
     }else{
       ags_audio_buffer_util_clear_buffer(source->stream_current->data, 1,
