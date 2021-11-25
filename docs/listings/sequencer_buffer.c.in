@@ -42,52 +42,54 @@ if(start_list != NULL){
       /* parse bytes */
       midi_iter = midi_buffer;
 
-      ags_sequencer_lock_buffer(AGS_SEQUENCER(sequencer),
-				midi_buffer);
-    
-      if(ags_midi_util_is_key_on(midi_iter)){
-	g_message("key %d on with velocity %d", (0x7f & (midi_buffer[1])), (0x7f & (midi_buffer[2])));
-	
-	midi_iter += 3;
-      }else if(ags_midi_util_is_key_off(midi_iter)){
-	midi_iter += 3;
-      }else if(ags_midi_util_is_key_pressure(midi_iter)){
-	midi_iter += 3;
-      }else if(ags_midi_util_is_change_parameter(midi_iter)){
-	midi_iter += 3;
-      }else if(ags_midi_util_is_pitch_bend(midi_iter)){
-	midi_iter += 3;
-      }else if(ags_midi_util_is_change_program(midi_iter)){
-	midi_iter += 2;
-      }else if(ags_midi_util_is_change_pressure(midi_iter)){
-	midi_iter += 2;
-      }else if(ags_midi_util_is_sysex(midi_iter)){
-	guint n;
-	  
-	/* sysex */
-	n = 0;
-	  
-	while(midi_iter[n] != 0xf7){
-	  n++;
-	}
-	  
-	midi_iter += (n + 1);
-      }else if(ags_midi_util_is_song_position(midi_iter)){
-	midi_iter += 3;
-      }else if(ags_midi_util_is_song_select(midi_iter)){
-	midi_iter += 2;
-      }else if(ags_midi_util_is_tune_request(midi_iter)){
-	midi_iter += 1;
-      }else if(ags_midi_util_is_meta_event(midi_iter)){
-	midi_iter += (3 + midi_iter[2]);
-      }else{
-	g_warning("unexpected byte %x", midi_iter[0]);
-	  
-	midi_iter++;
-      }
-      
-      ags_sequencer_unlock_buffer(AGS_SEQUENCER(sequencer),
+      while(midi_iter < midi_buffer + buffer_length){
+	ags_sequencer_lock_buffer(AGS_SEQUENCER(sequencer),
 				  midi_buffer);
+    
+	if(ags_midi_util_is_key_on(midi_iter)){
+	  g_message("key %d on with velocity %d", (0x7f & (midi_buffer[1])), (0x7f & (midi_buffer[2])));
+	
+	  midi_iter += 3;
+	}else if(ags_midi_util_is_key_off(midi_iter)){
+	  midi_iter += 3;
+	}else if(ags_midi_util_is_key_pressure(midi_iter)){
+	  midi_iter += 3;
+	}else if(ags_midi_util_is_change_parameter(midi_iter)){
+	  midi_iter += 3;
+	}else if(ags_midi_util_is_pitch_bend(midi_iter)){
+	  midi_iter += 3;
+	}else if(ags_midi_util_is_change_program(midi_iter)){
+	  midi_iter += 2;
+	}else if(ags_midi_util_is_change_pressure(midi_iter)){
+	  midi_iter += 2;
+	}else if(ags_midi_util_is_sysex(midi_iter)){
+	  guint n;
+	  
+	  /* sysex */
+	  n = 0;
+	  
+	  while(midi_iter[n] != 0xf7){
+	    n++;
+	  }
+	  
+	  midi_iter += (n + 1);
+	}else if(ags_midi_util_is_song_position(midi_iter)){
+	  midi_iter += 3;
+	}else if(ags_midi_util_is_song_select(midi_iter)){
+	  midi_iter += 2;
+	}else if(ags_midi_util_is_tune_request(midi_iter)){
+	  midi_iter += 1;
+	}else if(ags_midi_util_is_meta_event(midi_iter)){
+	  midi_iter += (3 + midi_iter[2]);
+	}else{
+	  g_warning("unexpected byte %x", midi_iter[0]);
+	  
+	  midi_iter++;
+	}
+      
+	ags_sequencer_unlock_buffer(AGS_SEQUENCER(sequencer),
+				    midi_buffer);
+      }
     }
   }
 }
