@@ -130,7 +130,7 @@
     </para>
     
     <example>
-      <title>PCM information from AgsSoundcard</title>
+      <title>Get AgsSoundcard buffer</title>
       <programlisting language="C">
 <xi:include href="../listings/soundcard_buffer.c" parse="text" />
       </programlisting>
@@ -143,9 +143,9 @@
     </para>
     
     <example>
-      <title>PCM information from AgsSoundcard</title>
+      <title>Get AgsSequencer buffer</title>
       <programlisting language="C">
-<xi:include href="../listings/soundcard_buffer.c" parse="text" />
+<xi:include href="../listings/sequencer_buffer.c" parse="text" />
       </programlisting>
     </example>
   </sect1>
