@@ -1138,6 +1138,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_sfz_util.h \
 	ags/audio/ags_synth_generator.h \
 	ags/audio/ags_synth_util.h \
+	ags/audio/ags_time_stretch_util.h \
 	ags/audio/ags_track.h \
 	ags/audio/ags_volume_util.h \
 	ags/audio/ags_wave.h
@@ -1233,6 +1234,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_sfz_util.c \
 	ags/audio/ags_synth_generator.c \
 	ags/audio/ags_synth_util.c \
+	ags/audio/ags_time_stretch_util.c \
 	ags/audio/ags_track.c \
 	ags/audio/ags_volume_util.c \
 	ags/audio/ags_wave.c
