@@ -185,15 +185,15 @@
     </itemizedlist>
 
     <para>
-      AgsAudio holds a sorted list of AgsWave objects, <code language="C">gint ags_wave_sort_func(gconstpointer a, gconstpointer b)</code>
-      does the actual sorting. You can use it with <code language="C">GList* g_list_insert_sorted(GList* list, gpointer data, GCompareFunc func)</code>.
+      AgsAudio holds a sorted list of AgsWave objects, <code language="C">gint ags_wave_sort_func(gconstpointer, gconstpointer)</code>
+      does the actual sorting. You can use it with <code language="C">GList* g_list_insert_sorted(GList*, gpointer, GCompareFunc)</code>.
     </para>
 
     <para>
-      AgsWave holds a sorted list of AgsBuffer objects, <code language="C">gint ags_buffer_sort_func (gconstpointer a, gconstpointer b)</code>
-      does the actual sorting. You can use it with <code language="C">GList* g_list_insert_sorted(GList* list, gpointer data, GCompareFunc func)</code>.
+      AgsWave holds a sorted list of AgsBuffer objects, <code language="C">gint ags_buffer_sort_func (gconstpointer, gconstpointer)</code>
+      does the actual sorting. You can use it with <code language="C">GList* g_list_insert_sorted(GList*, gpointer, GCompareFunc)</code>.
       AgsWave:timestamp uses sample position with matching samplerate. As using
-      <code language="C">void ags_timestamp_set_ags_offset (AgsTimestamp *timestamp, guint64 ags_offset)</code> ags_offset equals 0
+      <code language="C">void ags_timestamp_set_ags_offset (AgsTimestamp*, guint64)</code> ags_offset equals 0
       is your very first sample. You have to introduce after <code language="C">AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate</code> samples
       a new AgsWave object. The actual playback recall does bisect AgsWave and AgsBuffer in order to get current playing audio data.
     </para>
