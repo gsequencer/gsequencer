@@ -227,7 +227,7 @@
     </para>
 
     <example>
-    <title>Using AgsWave Clipboard</title>
+    <title>Concat AgsWave</title>
     <programlisting language="C">
 <xi:include href="../listings/wave_concat.c" parse="text" />
     </programlisting>
