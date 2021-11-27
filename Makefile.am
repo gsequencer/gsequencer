@@ -264,6 +264,7 @@ CLEANFILES = \
 	docs/listings/soundcard_buffer.c \
 	docs/listings/thread_application_context.c \
 	docs/listings/thread_obj_mutex.c \
+	docs/listings/wave_concat.c \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
 	docs/reference/libags/libags.interfaces \
@@ -496,7 +497,8 @@ devdoclistings = \
 	docs/listings/start_thread.c.in \
 	docs/listings/sequencer_buffer.c.in \
 	docs/listings/thread_obj_mutex.c.in \
-	docs/listings/thread_application_context.c.in
+	docs/listings/thread_application_context.c.in \
+	docs/listings/wave_concat.c.in
 
 devdocimages = \
 	docs/images/AGS_iterator.png \

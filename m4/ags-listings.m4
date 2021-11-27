@@ -51,4 +51,5 @@ AC_DEFUN([AGS_DEVELOPER_BOOK_LISTINGS],
   `tail -n +10 $srcdir/docs/listings/sequencer_buffer.c.in > $PWD/docs/listings/sequencer_buffer.c`
   `tail -n +10 $srcdir/docs/listings/thread_application_context.c.in > $PWD/docs/listings/thread_application_context.c`
   `tail -n +10 $srcdir/docs/listings/thread_obj_mutex.c.in > $PWD/docs/listings/thread_obj_mutex.c`
+  `tail -n +10 $srcdir/docs/listings/wave_concat.c.in > $PWD/docs/listings/wave_concat.c`
 ])

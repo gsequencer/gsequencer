@@ -207,7 +207,7 @@
       Note audio effects are not applied to AgsWave but to AgsAudioSignal. The program flow is as following:
     </para>
 
-    <orderedlist numeration="loweralpha">
+    <orderedlist numeration="arabic">
       <listitem>
 	ags-fx-playback does feed AgsWave to AgsAudioSignal of AgsInput.
       </listitem>
@@ -218,10 +218,21 @@
 	Another AgsAudio containing ags-fx-playback, then it plays it on your soundcard. Assumed you prior linked
 	the the audio tree.
       </listitem>
-      <listitem>
-	AgsAudioSignal
-      </listitem>
     </orderedlist>
+
+    <para>
+      In this example, we first read audio data from 2 different files and concat the returned AgsWave objects. Note
+      if you want to read multi-channel data, you have to modify the example with a for loop or such, to copy overlapping
+      AgsBuffer. AgsBuffer:x shall be unique for specific audio channel.
+    </para>
+
+    <example>
+    <title>Using AgsWave Clipboard</title>
+    <programlisting language="C">
+<xi:include href="../listings/wave_concat.c" parse="text" />
+    </programlisting>
+  </example>
+    
   </sect1>
   
   <sect1>

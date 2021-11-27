@@ -1,0 +1,139 @@
+/* Copyright (C) 2005-2018 Joël Krähemann
+ * Permission is granted to copy, distribute and/or modify this document
+ * under the terms of the GNU Free Documentation License, Version 1.3
+ * or any later version published by the Free Software Foundation;
+ * with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+ * A copy of the license is included in the section entitled "GNU
+ * Free Documentation License".
+ */
+
+#include <glib.h>
+#include <glib-object.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#define FILENAME_A "test_000.wav"
+#define FILENAME_B "test_001.wav"
+
+AgsAudio *audio;
+AgsAudioFile *audio_file;
+
+AgsTimestamp *timestamp_a, *timestamp_b;
+
+AgsApplicationContext *application_context;
+
+GObject *current_soundcard;
+
+xmlNode *clipboard;
+
+GList *start_soundcard;
+GList *start_wave_a, *end_wave_a;
+GList *start_wave_b;
+
+guint64 file_a_frame_count;
+guint audio_channels;
+guint output_pads, input_pads;
+guint i;
+
+/* get application context and soundcard */
+application_context = ags_application_context_get_instance();
+
+start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+current_soundcard = start_soundcard->data;
+
+audio_channels = 1;
+
+output_pads = 1;
+input_pads = 1;
+
+audio = ags_audio_new(current_soundcard);
+ags_audio_set_flags(audio,
+		    (AGS_AUDIO_SYNC |
+		     AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		     AGS_AUDIO_INPUT_HAS_RECYCLING));
+
+ags_audio_set_audio_channels(audio,
+                             audio_channels);
+
+ags_audio_set_pads(audio,
+                   AGS_TYPE_OUTPUT,
+                   output_pads);
+ags_audio_set_pads(audio,
+                   AGS_TYPE_INPUT,
+                   input_pads);
+
+/* open first audio file */
+audio_file = ags_audio_file_new(FILENAME_A,
+				current_soundcard,
+				-1);
+ags_audio_file_open(audio_file);
+
+ags_sound_resource_info(AGS_SOUND_RESOURCE(audio_file->sound_resource),
+			&file_a_frame_count,
+			NULL, NULL);
+
+start_wave_a = ags_sound_resource_read_wave(AGS_SOUND_RESOURCE(audio_file->sound_resource),
+					    current_soundcard,
+					    0, // change to -1 for all audio channels
+					    0,
+					    0.0, 0);
+
+/* open second audio file */
+audio_file = ags_audio_file_new(FILENAME_B,
+				current_soundcard,
+				-1);
+ags_audio_file_open(audio_file);
+
+start_wave_b = ags_sound_resource_read_wave(AGS_SOUND_RESOURCE(audio_file->sound_resource),
+					    current_soundcard,
+					    0, // change to -1 for all audio channels
+					    file_a_frame_count,
+					    0.0, 0);
+
+/* concat AgsWave */
+audio->wave = start_wave_a;
+
+end_wave_a = g_list_last(start_wave_a);
+
+timestamp_a = ags_wave_get_timestamp(end_wave_a->data);
+
+timestamp_b = ags_wave_get_timestamp(start_wave_b->data);
+
+if(ags_timestamp_get_ags_offset(timestamp_a) == ags_timestamp_get_ags_offset(timestamp_b)){
+  GList *start_buffer_a, *end_buffer_a;
+  GList *start_buffer_b, *buffer_b;
+  
+  start_buffer_a = ags_wave_get_buffer(start_wave_a->data);
+
+  end_buffer_a = g_list_last(start_buffer_a->data);
+  
+  buffer_b = 
+    start_buffer_b = ags_wave_get_buffer(start_wave_b->data);
+
+  if(ags_buffer_get_x(buffer_b->data) == ags_buffer_get_x(end_buffer_a->data)){
+    AgsBuffer *current_mix_buffer_b;
+
+    current_mix_buffer_b = start_buffer_b->data;
+
+    start_buffer_b = start_buffer_b->next;
+    
+    ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(start_buffer_a->data)->data, 1, 0,
+						current_mix_buffer_b->data, 1, 0,
+						buffer_size, ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(ags_buffer_get_format(start_buffer_a->data)),
+												 ags_audio_buffer_util_format_from_soundcard(ags_buffer_get_format(current_mix_buffer_b))));
+    
+    end_buffer_a->next = start_buffer_b;
+
+    if(start_buffer_b != NULL){
+      start_buffer_b->prev = end_buffer_a;
+    }
+  }else{
+    end_buffer_a->next = start_buffer_b;
+    start_buffer_b->prev = end_buffer_a;
+  }
+}else{
+  end_wave_a->next = start_wave_b;
+  start_wave_b->prev = end_wave_a;
+}
