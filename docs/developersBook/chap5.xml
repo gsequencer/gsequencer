@@ -35,6 +35,30 @@
   </orderedlist>
 
   <para>
+    In order the audio processing threads are capable to iterate the audio tree, you
+    need to set either (AGS_AUDIO_SYNC) or (AGS_AUDIO_SYNC | AGS_AUDIO_ASYNC)
+    flags. Further if your AgsAudio is a source of AgsAudioSignal you need to set
+    both flags (AGS_AUDIO_OUTPUT_HAS_RECYCLING | AGS_AUDIO_INPUT_HAS_RECYCLING).
+  </para>
+
+  <para>
+    If you set AGS_AUDIO_SYNC flag, this causes the output and input channels to be aligned
+    straight. Eg. input line 0 goes to output line 0, input line 1 goes to output line 1 ...
+  </para>
+
+  <para>
+    If you set both flags AGS_AUDIO_SYNC and AGS_AUDIO_ASYNC, output and input is
+    not aligned straight. Eg. you have 2 audio channels, 1 output pad and 8 input pads, then
+    input line 0 goes to output line 0, input line 1 goes to output line 1, input line 3 goes to
+    output line 0 ...
+  </para>
+
+  <para>
+    It is only possible to have mulitple output pads if you have AgsRecycling assigned to
+    AgsOutput of AgsAudio. This is usually done by sources like instruments.
+  </para>
+  
+  <para>
     AgsAudioSignal keeps your audio data as a GList of buffers. AgsRecycling is your
     nested tree to AgsChannel, giving you the opportunity to emit ::add_audio_signal
     or ::remove_audio_signal by producer and to have many consumers. AgsChannel is your
