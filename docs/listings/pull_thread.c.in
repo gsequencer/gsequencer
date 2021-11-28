@@ -1,4 +1,4 @@
-/* Copyright (C) 2005-2018 Joël Krähemann
+/* Copyright (C) 2005-2021 Joël Krähemann
  * Permission is granted to copy, distribute and/or modify this document
  * under the terms of the GNU Free Documentation License, Version 1.3
  * or any later version published by the Free Software Foundation;
@@ -12,7 +12,59 @@
 
 #include <ags/libags.h>
 
+void setup_callback(AgsApplicationContext *application_context, gpointer data);
 void thread_run_callback(AgsThread *thread, gpointer data);
+
+gchar *thread_0_str = "thread 0";
+gchar *thread_1_str = "thread 1";
+
+void
+setup_callback(AgsApplicationContext *application_context, gpointer data)
+{
+  AgsThread *main_loop;
+  AgsThread *thread_0, *thread_1;
+  AgsThreadPool *thread_pool;
+  
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  thread_pool = ags_thread_pool_new(main_loop);
+  ags_concurrency_provider_set_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context),
+					   thread_pool);
+
+  ags_thread_pool_start(thread_pool);
+  
+  /* pull thread 0 */
+  thread_0 = ags_thread_pool_pull(thread_pool);
+  
+  g_rec_mutex_lock(AGS_RETURNABLE_THREAD_GET_RESET_MUTEX(thread_0));
+
+  g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread_0)->safe_data),
+                       thread_0_str);
+
+  ags_returnable_thread_connect_safe_run(AGS_RETURNABLE_THREAD(thread_0),
+                                         thread_run_callback);
+
+  ags_returnable_thread_set_flags(thread_0,
+				  AGS_RETURNABLE_THREAD_IN_USE);
+    
+  g_rec_mutex_unlock(AGS_RETURNABLE_THREAD_GET_RESET_MUTEX(thread_0));
+
+  /* pull thread 1 */
+  thread_1 = ags_thread_pool_pull(thread_pool);
+  
+  g_rec_mutex_lock(AGS_RETURNABLE_THREAD_GET_RESET_MUTEX(thread_1));
+
+  g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread_1)->safe_data),
+                       thread_1_str);
+
+  ags_returnable_thread_connect_safe_run(AGS_RETURNABLE_THREAD(thread_1),
+                                         thread_run_callback);
+
+  ags_returnable_thread_set_flags(thread_1,
+				  AGS_RETURNABLE_THREAD_IN_USE);
+    
+  g_rec_mutex_unlock(AGS_RETURNABLE_THREAD_GET_RESET_MUTEX(thread_1));
+}
 
 void
 thread_run_callback(AgsThread *thread, gpointer data)
@@ -23,60 +75,15 @@ thread_run_callback(AgsThread *thread, gpointer data)
 int
 main(int argc, char **argv)
 {
-  AgsThread *main_loop;
-  AgsThread *thread_0, *thread_1;
-  AgsThreadPool *thread_pool;
-  
   AgsApplicationContext *application_context;
 
   application_context = ags_thread_application_context_new();
+  g_object_ref(application_context);
+
+  g_signal_connect(application_context, "setup",
+		   G_CALLBACK(setup_callback), NULL);
 
   ags_application_context_prepare(application_context);
-  ags_application_context_setup(application_context);
-  
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-
-  thread_pool = ags_thread_pool_new(main_loop);
-  ags_concurrency_provider_set_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context),
-					   thread_pool);
-
-  ags_thread_start(main_loop);
-  ags_thread_pool_start(thread_pool);
-  
-  /* create thread 0 */
-  thread_0 = ags_thread_pool_pull(thread_pool);
-  
-  g_rec_mutex_lock(AGS_RETURNABLE_THREAD(thread_0)->reset_mutex);
-
-  g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread_0)->safe_data),
-                       "thread 0");
-
-  ags_returnable_thread_connect_safe_run(AGS_RETURNABLE_THREAD(thread_0),
-                                         thread_run_callback);
-
-  ags_returnable_thread_set_flags(thread_0,
-				  AGS_RETURNABLE_THREAD_IN_USE);
-    
-  g_rec_mutex_unlock(AGS_RETURNABLE_THREAD(thread_0)->reset_mutex);
-
-  /* create thread 1 */
-  thread_1 = ags_thread_pool_pull(thread_pool);
-  
-  g_rec_mutex_lock(AGS_RETURNABLE_THREAD(thread_1)->reset_mutex);
-
-  g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread_1)->safe_data),
-                       "thread 1");
-
-  ags_returnable_thread_connect_safe_run(AGS_RETURNABLE_THREAD(thread_1),
-                                         thread_run_callback);
-
-  ags_returnable_thread_set_flags(thread_1,
-				  AGS_RETURNABLE_THREAD_IN_USE);
-    
-  g_rec_mutex_unlock(AGS_RETURNABLE_THREAD(thread_1)->reset_mutex);
-
-  /*  */
-  g_thread_join(main_loop->thread);
   
   return(0);
 }

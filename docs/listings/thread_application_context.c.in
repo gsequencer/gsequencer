@@ -53,4 +53,3 @@ loader_timeout(AgsApplicationContext *application_context)
 
   return(FALSE);
 }
-
