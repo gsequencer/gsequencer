@@ -25,10 +25,15 @@
 
 #include <ags/libags.h>
 
+#include <math.h>
+#include <complex.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_TIME_STRETCH_UTIL         (ags_time_stretch_util_get_type())
 #define AGS_TIME_STRETCH_UTIL(ptr) ((AgsTimeStretchUtil *)(ptr))
+
+#define AGS_TIME_STRETCH_UTIL_DEFAULT_FREQUENCY (440.0)
 
 typedef struct _AgsTimeStretchUtil AgsTimeStretchUtil;
 
@@ -36,14 +41,18 @@ struct _AgsTimeStretchUtil
 {
   gpointer source;
   guint source_stride;
+  guint source_buffer_length;
 
   gpointer destination;
   guint destination_stride;
-
-  guint buffer_length;
+  guint destination_buffer_length;
+  
+  guint buffer_size;
   guint format;
   guint samplerate;
 
+  gdouble frequency;
+  
   gdouble orig_bpm;
   gdouble new_bpm;  
 };
@@ -63,6 +72,10 @@ guint ags_time_stretch_util_get_source_stride(AgsTimeStretchUtil *time_stretch_u
 void ags_time_stretch_util_set_source_stride(AgsTimeStretchUtil *time_stretch_util,
 					     guint source_stride);
 
+guint ags_time_stretch_util_get_source_buffer_length(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_set_source_buffer_length(AgsTimeStretchUtil *time_stretch_util,
+						    guint source_buffer_length);
+
 gpointer ags_time_stretch_util_get_destination(AgsTimeStretchUtil *time_stretch_util);
 void ags_time_stretch_util_set_destination(AgsTimeStretchUtil *time_stretch_util,
 					   gpointer destination);
@@ -71,9 +84,13 @@ guint ags_time_stretch_util_get_destination_stride(AgsTimeStretchUtil *time_stre
 void ags_time_stretch_util_set_destination_stride(AgsTimeStretchUtil *time_stretch_util,
 						  guint destination_stride);
 
-guint ags_time_stretch_util_get_buffer_length(AgsTimeStretchUtil *time_stretch_util);
-void ags_time_stretch_util_set_buffer_length(AgsTimeStretchUtil *time_stretch_util,
-					     guint buffer_length);
+guint ags_time_stretch_util_get_destination_buffer_length(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_set_destination_buffer_length(AgsTimeStretchUtil *time_stretch_util,
+							 guint destination_buffer_length);
+
+guint ags_time_stretch_util_get_buffer_size(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_set_buffer_size(AgsTimeStretchUtil *time_stretch_util,
+					   guint buffer_size);
 
 guint ags_time_stretch_util_get_format(AgsTimeStretchUtil *time_stretch_util);
 void ags_time_stretch_util_set_format(AgsTimeStretchUtil *time_stretch_util,
@@ -82,6 +99,10 @@ void ags_time_stretch_util_set_format(AgsTimeStretchUtil *time_stretch_util,
 guint ags_time_stretch_util_get_samplerate(AgsTimeStretchUtil *time_stretch_util);
 void ags_time_stretch_util_set_samplerate(AgsTimeStretchUtil *time_stretch_util,
 					  guint samplerate);
+
+gdouble ags_time_stretch_util_get_frequency(AgsTimeStretchUtil *time_stretch_util);
+void ags_time_stretch_util_set_frequency(AgsTimeStretchUtil *time_stretch_util,
+					 gdouble frequency);
 
 gdouble ags_time_stretch_util_get_orig_bpm(AgsTimeStretchUtil *time_stretch_util);
 void ags_time_stretch_util_set_orig_bpm(AgsTimeStretchUtil *time_stretch_util,

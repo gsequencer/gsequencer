@@ -75,6 +75,8 @@ ags_time_stretch_util_alloc()
   ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
+  ptr->frequency = AGS_TIME_STRETCH_UTIL_DEFAULT_FREQUENCY;
+  
   ptr->orig_bpm = 120.0;
   ptr->new_bpm = 120.0;
 
@@ -109,6 +111,8 @@ ags_time_stretch_util_copy(AgsTimeStretchUtil *ptr)
   new_ptr->format = ptr->format;
   new_ptr->samplerate = ptr->samplerate;
 
+  new_ptr->frequency = ptr->frequency;
+
   new_ptr->orig_bpm = ptr->orig_bpm;
   new_ptr->new_bpm = ptr->new_bpm;
 
@@ -133,86 +137,6 @@ ags_time_stretch_util_free(AgsTimeStretchUtil *ptr)
   }
   
   g_free(ptr);
-}
-
-/**
- * ags_time_stretch_util_get_destination:
- * @time_stretch_util: the #AgsTimeStretchUtil-struct
- * 
- * Get destination buffer of @time_stretch_util.
- * 
- * Returns: the destination buffer
- * 
- * Since: 3.13.0
- */
-gpointer
-ags_time_stretch_util_get_destination(AgsTimeStretchUtil *time_stretch_util)
-{
-  if(time_stretch_util == NULL){
-    return(NULL);
-  }
-
-  return(time_stretch_util->destination);
-}
-
-/**
- * ags_time_stretch_util_set_destination:
- * @time_stretch_util: the #AgsTimeStretchUtil-struct
- * @destination: the destination buffer
- *
- * Set @destination buffer of @time_stretch_util.
- *
- * Since: 3.13.0
- */
-void
-ags_time_stretch_util_set_destination(AgsTimeStretchUtil *time_stretch_util,
-				      gpointer destination)
-{
-  if(time_stretch_util == NULL){
-    return;
-  }
-
-  time_stretch_util->destination = destination;
-}
-
-/**
- * ags_time_stretch_util_get_destination_stride:
- * @time_stretch_util: the #AgsTimeStretchUtil-struct
- * 
- * Get destination stride of @time_stretch_util.
- * 
- * Returns: the destination buffer stride
- * 
- * Since: 3.13.0
- */
-guint
-ags_time_stretch_util_get_destination_stride(AgsTimeStretchUtil *time_stretch_util)
-{
-  if(time_stretch_util == NULL){
-    return(0);
-  }
-
-  return(time_stretch_util->destination_stride);
-}
-
-/**
- * ags_time_stretch_util_set_destination_stride:
- * @time_stretch_util: the #AgsTimeStretchUtil-struct
- * @destination_stride: the destination buffer stride
- *
- * Set @destination stride of @time_stretch_util.
- *
- * Since: 3.13.0
- */
-void
-ags_time_stretch_util_set_destination_stride(AgsTimeStretchUtil *time_stretch_util,
-					     guint destination_stride)
-{
-  if(time_stretch_util == NULL){
-    return;
-  }
-
-  time_stretch_util->destination_stride = destination_stride;
 }
 
 /**
@@ -296,43 +220,203 @@ ags_time_stretch_util_set_source_stride(AgsTimeStretchUtil *time_stretch_util,
 }
 
 /**
- * ags_time_stretch_util_get_buffer_length:
+ * ags_time_stretch_util_get_source_buffer_length:
  * @time_stretch_util: the #AgsTimeStretchUtil-struct
  * 
- * Get buffer length of @time_stretch_util.
+ * Get source buffer length of @time_stretch_util.
  * 
- * Returns: the buffer length
+ * Returns: the source buffer length
  * 
  * Since: 3.13.0
  */
 guint
-ags_time_stretch_util_get_buffer_length(AgsTimeStretchUtil *time_stretch_util)
+ags_time_stretch_util_get_source_buffer_length(AgsTimeStretchUtil *time_stretch_util)
 {
   if(time_stretch_util == NULL){
     return(0);
   }
 
-  return(time_stretch_util->buffer_length);
+  return(time_stretch_util->source_buffer_length);
 }
 
 /**
- * ags_time_stretch_util_set_buffer_length:
+ * ags_time_stretch_util_set_source_buffer_length:
  * @time_stretch_util: the #AgsTimeStretchUtil-struct
- * @buffer_length: the buffer length
+ * @source_buffer_length: the buffer length
  *
- * Set @buffer_length of @time_stretch_util.
+ * Set @source_buffer_length of @time_stretch_util.
  *
  * Since: 3.13.0
  */
 void
-ags_time_stretch_util_set_buffer_length(AgsTimeStretchUtil *time_stretch_util,
-					guint buffer_length)
+ags_time_stretch_util_set_source_buffer_length(AgsTimeStretchUtil *time_stretch_util,
+					       guint source_buffer_length)
 {
   if(time_stretch_util == NULL){
     return;
   }
 
-  time_stretch_util->buffer_length = buffer_length;
+  time_stretch_util->source_buffer_length = source_buffer_length;
+}
+
+/**
+ * ags_time_stretch_util_get_destination:
+ * @time_stretch_util: the #AgsTimeStretchUtil-struct
+ * 
+ * Get destination buffer of @time_stretch_util.
+ * 
+ * Returns: the destination buffer
+ * 
+ * Since: 3.13.0
+ */
+gpointer
+ags_time_stretch_util_get_destination(AgsTimeStretchUtil *time_stretch_util)
+{
+  if(time_stretch_util == NULL){
+    return(NULL);
+  }
+
+  return(time_stretch_util->destination);
+}
+
+/**
+ * ags_time_stretch_util_set_destination:
+ * @time_stretch_util: the #AgsTimeStretchUtil-struct
+ * @destination: the destination buffer
+ *
+ * Set @destination buffer of @time_stretch_util.
+ *
+ * Since: 3.13.0
+ */
+void
+ags_time_stretch_util_set_destination(AgsTimeStretchUtil *time_stretch_util,
+				      gpointer destination)
+{
+  if(time_stretch_util == NULL){
+    return;
+  }
+
+  time_stretch_util->destination = destination;
+}
+
+/**
+ * ags_time_stretch_util_get_destination_stride:
+ * @time_stretch_util: the #AgsTimeStretchUtil-struct
+ * 
+ * Get destination stride of @time_stretch_util.
+ * 
+ * Returns: the destination buffer stride
+ * 
+ * Since: 3.13.0
+ */
+guint
+ags_time_stretch_util_get_destination_stride(AgsTimeStretchUtil *time_stretch_util)
+{
+  if(time_stretch_util == NULL){
+    return(0);
+  }
+
+  return(time_stretch_util->destination_stride);
+}
+
+/**
+ * ags_time_stretch_util_set_destination_stride:
+ * @time_stretch_util: the #AgsTimeStretchUtil-struct
+ * @destination_stride: the destination buffer stride
+ *
+ * Set @destination stride of @time_stretch_util.
+ *
+ * Since: 3.13.0
+ */
+void
+ags_time_stretch_util_set_destination_stride(AgsTimeStretchUtil *time_stretch_util,
+					     guint destination_stride)
+{
+  if(time_stretch_util == NULL){
+    return;
+  }
+
+  time_stretch_util->destination_stride = destination_stride;
+}
+
+/**
+ * ags_time_stretch_util_get_destination_buffer_length:
+ * @time_stretch_util: the #AgsTimeStretchUtil-struct
+ * 
+ * Get destination buffer length of @time_stretch_util.
+ * 
+ * Returns: the destination buffer length
+ * 
+ * Since: 3.13.0
+ */
+guint
+ags_time_stretch_util_get_destination_buffer_length(AgsTimeStretchUtil *time_stretch_util)
+{
+  if(time_stretch_util == NULL){
+    return(0);
+  }
+
+  return(time_stretch_util->destination_buffer_length);
+}
+
+/**
+ * ags_time_stretch_util_set_destination_buffer_length:
+ * @time_stretch_util: the #AgsTimeStretchUtil-struct
+ * @destination_buffer_length: the buffer length
+ *
+ * Set @destination_buffer_length of @time_stretch_util.
+ *
+ * Since: 3.13.0
+ */
+void
+ags_time_stretch_util_set_destination_buffer_length(AgsTimeStretchUtil *time_stretch_util,
+						    guint destination_buffer_length)
+{
+  if(time_stretch_util == NULL){
+    return;
+  }
+
+  time_stretch_util->destination_buffer_length = destination_buffer_length;
+}
+
+/**
+ * ags_time_stretch_util_get_buffer_size:
+ * @time_stretch_util: the #AgsTimeStretchUtil-struct
+ * 
+ * Get buffer size of @time_stretch_util.
+ * 
+ * Returns: the buffer size
+ * 
+ * Since: 3.13.0
+ */
+guint
+ags_time_stretch_util_get_buffer_size(AgsTimeStretchUtil *time_stretch_util)
+{
+  if(time_stretch_util == NULL){
+    return(0);
+  }
+
+  return(time_stretch_util->buffer_size);
+}
+
+/**
+ * ags_time_stretch_util_set_buffer_size:
+ * @time_stretch_util: the #AgsTimeStretchUtil-struct
+ * @buffer_size: the buffer size
+ *
+ * Set @buffer_size of @time_stretch_util.
+ *
+ * Since: 3.13.0
+ */
+void
+ags_time_stretch_util_set_buffer_size(AgsTimeStretchUtil *time_stretch_util,
+				      guint buffer_size)
+{
+  if(time_stretch_util == NULL){
+    return;
+  }
+
+  time_stretch_util->buffer_size = buffer_size;
 }
 
 /**
@@ -413,6 +497,46 @@ ags_time_stretch_util_set_samplerate(AgsTimeStretchUtil *time_stretch_util,
   }
 
   time_stretch_util->samplerate = samplerate;
+}
+
+/**
+ * ags_time_stretch_util_get_frequency:
+ * @time_stretch_util: the #AgsTimeStretchUtil-struct
+ * 
+ * Get frequency of @time_stretch_util.
+ * 
+ * Returns: the frequency
+ * 
+ * Since: 3.13.0
+ */
+gdouble
+ags_time_stretch_util_get_frequency(AgsTimeStretchUtil *time_stretch_util)
+{
+  if(time_stretch_util == NULL){
+    return(0.0);
+  }
+
+  return(time_stretch_util->frequency);
+}
+
+/**
+ * ags_time_stretch_util_set_frequency:
+ * @time_stretch_util: the #AgsTimeStretchUtil-struct
+ * @frequency: the frequency
+ *
+ * Set @frequency of @time_stretch_util.
+ *
+ * Since: 3.13.0
+ */
+void
+ags_time_stretch_util_set_frequency(AgsTimeStretchUtil *time_stretch_util,
+				    gdouble frequency)
+{
+  if(time_stretch_util == NULL){
+    return;
+  }
+
+  time_stretch_util->frequency = frequency;
 }
 
 /**
@@ -506,7 +630,72 @@ ags_time_stretch_util_set_new_bpm(AgsTimeStretchUtil *time_stretch_util,
 void
 ags_time_stretch_util_stretch_s8(AgsTimeStretchUtil *time_stretch_util)
 {
-  //TODO:JK: implement me
+  gint8 *destination, *source;
+
+  guint destination_stride, source_stride;
+  guint destinatio_buffer_length, nsource_buffer_length;
+  guint buffer_size;
+  guint samplerate;
+  gdouble frequency;
+  gdouble frequency_period;
+  gdouble orig_delay;
+  gdouble factor;
+
+  guint i;
+  
+  if(time_stretch_util == NULL ||
+     time_stretch_util->destination == NULL ||
+     time_stretch_util->source == NULL){
+    return;
+  }
+
+  destination = time_stretch_util->destination;
+  destination_stride = time_stretch_util->destination_stride;
+  destination_buffer_length = time_stretch_util->destination_buffer_length;
+
+  source = time_stretch_util->source;
+  source_stride = time_stretch_util->source_stride;
+  source_buffer_length = time_stretch_util->source_buffer_length;
+
+  buffer_size = time_stretch_util->buffer_size;
+  samplerate = time_stretch_util->samplerate;
+
+  frequency = time_stretch_util->frequency;
+
+  frequency_period = 2.0 * M_PI * samplerate / frequency;
+
+  orig_delay = samplerate / buffer_size / time_stretch_util->orig_bpm * ((1.0 / 16.0) * (1.0 / (1.0 / 4.0)));
+  
+  factor = time_stretch_util->new_bpm / time_stretch_util->orig_bpm;
+
+  for(i = 0; i < destination_buffer_length; i++){
+    gint8 new_z;
+    guint buffer_offset;
+    guint beat_offset;
+    gdouble phase;
+    guint start_x;
+    guint j;
+
+    beat_offset = (guint) floor((factor * i) / (orig_delay * buffer_size));
+
+    if(floor(orig_delay * buffer_size) != 0.0){
+      start_x = (orig_delay * buffer_size) * floor((double) (factor * i) / (orig_delay * buffer_size));
+    }else{
+      start_x = 0;
+    }
+    
+    phase = fmod((factor * i) - (beat_offset * orig_delay * buffer_size), frequency_period);
+    
+    j = start_x + phase;
+
+    if(j < source_buffer_length){
+      new_z = source[j * source_stride];
+    }else{
+      new_z = 0;
+    }
+    
+    destination[i * destination_stride] = new_z;
+  }
 }
 
 /**
