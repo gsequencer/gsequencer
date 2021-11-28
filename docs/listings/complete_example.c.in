@@ -501,10 +501,9 @@ main(int argc, char **argv)
 
   /* create application context */
   application_context = ags_audio_application_context_new();
-  g_object_ref(application_context);
   
-  g_signal_connect(application_context, "setup",
-		   G_CALLBACK(setup_callback), NULL);
+  g_signal_connect_after(application_context, "setup",
+			 G_CALLBACK(setup_callback), NULL);
   
   ags_application_context_prepare(audio_application_context);
 
