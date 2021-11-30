@@ -75,6 +75,7 @@
 #include <ags/audio/ags_fluid_interpolate_4th_order_util.h>
 #include <ags/audio/ags_fluid_interpolate_7th_order_util.h>
 #include <ags/audio/ags_fluid_pitch_util.h>
+#include <ags/audio/ags_time_stretch_util.h>
 #include <ags/audio/ags_fm_synth_util.h>
 #include <ags/audio/ags_fourier_transform_util.h>
 #include <ags/audio/ags_frequency_aliase_util.h>

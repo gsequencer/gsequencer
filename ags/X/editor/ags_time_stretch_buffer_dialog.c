@@ -335,6 +335,7 @@ ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
   guint buffer_size;
   guint format;
   gdouble delay;
+  guint64 relative_offset;
   guint64 x0;
   guint64 x1;
   gdouble factor;
@@ -612,23 +613,23 @@ ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
 	  
 	  new_buffer_x = ags_buffer_get_x(new_buffer->data);
 
-	  orig_buffer = ags_wave_find_point(orig_wave,
+	  orig_buffer = ags_wave_find_point(orig_wave->data,
 					    new_buffer_x,
 					    FALSE);
 
-	  orig_wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(orig_wave);
+	  orig_wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(orig_wave->data);
 
 	  g_rec_mutex_lock(orig_wave_mutex);
 
 	  /* remove original */
-	  orig_wave->buffer = g_list_remove(orig_wave->buffer,
-					    orig_buffer);
+	  AGS_WAVE(orig_wave->data)->buffer = g_list_remove(AGS_WAVE(orig_wave->data)->buffer,
+							    orig_buffer);
 	  g_object_unref(orig_buffer);
 
 	  /* add new */
-	  orig_wave->buffer = g_list_insert_sorted(orig_wave->buffer,
-						   new_buffer->data,
-						   (GCompareFunc) ags_buffer_sort_func);
+	  AGS_WAVE(orig_wave->data)->buffer = g_list_insert_sorted(AGS_WAVE(orig_wave->data)->buffer,
+								   new_buffer->data,
+								   (GCompareFunc) ags_buffer_sort_func);
 	  g_object_ref(new_buffer->data);
 
 	  g_rec_mutex_unlock(orig_wave_mutex);
