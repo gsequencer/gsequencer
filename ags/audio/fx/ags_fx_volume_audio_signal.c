@@ -148,7 +148,6 @@ ags_fx_volume_audio_signal_real_run_inter(AgsRecall *recall)
   gdouble volume;
   gboolean muted;
 
-  GRecMutex *volume_channel_mutex;
   GRecMutex *stream_mutex;
   
   source = NULL;
@@ -256,16 +255,6 @@ ags_fx_volume_audio_signal_real_run_inter(AgsRecall *recall)
 
       g_value_unset(&value);
     }
-  }
-
-  if(volume_channel != NULL){
-    volume_channel_mutex = AGS_FX_VOLUME_CHANNEL_GET_OBJ_MUTEX(volume_channel);
-
-    g_rec_mutex_lock(volume_channel_mutex);
-    
-    input_data = volume_channel->input_data[sound_scope];
-
-    g_rec_mutex_unlock(volume_channel_mutex);
   }
   
   if(source != NULL &&

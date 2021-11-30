@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/plugin/ags_lv2_turtle_scanner.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_AUDIO_APPLICATION_CONTEXT                (ags_audio_application_context_get_type())

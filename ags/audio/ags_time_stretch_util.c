@@ -67,11 +67,13 @@ ags_time_stretch_util_alloc()
 
   ptr->source = NULL;
   ptr->source_stride = 1;
+  ptr->source_buffer_length = 0;
 
   ptr->destination = NULL;
   ptr->destination_stride = 1;
+  ptr->destination_buffer_length = 0;
   
-  ptr->buffer_length = 0;
+  ptr->buffer_size = 0;
   ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
@@ -103,11 +105,13 @@ ags_time_stretch_util_copy(AgsTimeStretchUtil *ptr)
   
   new_ptr->destination = ptr->destination;
   new_ptr->destination_stride = ptr->destination_stride;
+  new_ptr->destination_buffer_length = ptr->destination_buffer_length;
 
   new_ptr->source = ptr->source;
   new_ptr->source_stride = ptr->source_stride;
+  new_ptr->source_buffer_length = ptr->source_buffer_length;
   
-  new_ptr->buffer_length = ptr->buffer_length;
+  new_ptr->buffer_size = ptr->buffer_size;
   new_ptr->format = ptr->format;
   new_ptr->samplerate = ptr->samplerate;
 
@@ -633,7 +637,7 @@ ags_time_stretch_util_stretch_s8(AgsTimeStretchUtil *time_stretch_util)
   gint8 *destination, *source;
 
   guint destination_stride, source_stride;
-  guint destinatio_buffer_length, nsource_buffer_length;
+  guint destination_buffer_length, source_buffer_length;
   guint buffer_size;
   guint samplerate;
   gdouble frequency;
@@ -723,7 +727,7 @@ ags_time_stretch_util_stretch_s16(AgsTimeStretchUtil *time_stretch_util)
   gint16 *destination, *source;
 
   guint destination_stride, source_stride;
-  guint destinatio_buffer_length, nsource_buffer_length;
+  guint destination_buffer_length, source_buffer_length;
   guint buffer_size;
   guint samplerate;
   gdouble frequency;
@@ -813,7 +817,7 @@ ags_time_stretch_util_stretch_s24(AgsTimeStretchUtil *time_stretch_util)
   gint32 *destination, *source;
 
   guint destination_stride, source_stride;
-  guint destinatio_buffer_length, nsource_buffer_length;
+  guint destination_buffer_length, source_buffer_length;
   guint buffer_size;
   guint samplerate;
   gdouble frequency;
@@ -903,7 +907,7 @@ ags_time_stretch_util_stretch_s32(AgsTimeStretchUtil *time_stretch_util)
   gint32 *destination, *source;
 
   guint destination_stride, source_stride;
-  guint destinatio_buffer_length, nsource_buffer_length;
+  guint destination_buffer_length, source_buffer_length;
   guint buffer_size;
   guint samplerate;
   gdouble frequency;
@@ -993,7 +997,7 @@ ags_time_stretch_util_stretch_s64(AgsTimeStretchUtil *time_stretch_util)
   gint64 *destination, *source;
 
   guint destination_stride, source_stride;
-  guint destinatio_buffer_length, nsource_buffer_length;
+  guint destination_buffer_length, source_buffer_length;
   guint buffer_size;
   guint samplerate;
   gdouble frequency;
@@ -1083,7 +1087,7 @@ ags_time_stretch_util_stretch_float(AgsTimeStretchUtil *time_stretch_util)
   gfloat *destination, *source;
 
   guint destination_stride, source_stride;
-  guint destinatio_buffer_length, nsource_buffer_length;
+  guint destination_buffer_length, source_buffer_length;
   guint buffer_size;
   guint samplerate;
   gdouble frequency;
@@ -1157,7 +1161,6 @@ ags_time_stretch_util_stretch_float(AgsTimeStretchUtil *time_stretch_util)
     
     destination[i * destination_stride] = new_z;
   }
-  //TODO:JK: implement me
 }
 
 /**
@@ -1174,7 +1177,7 @@ ags_time_stretch_util_stretch_double(AgsTimeStretchUtil *time_stretch_util)
   gdouble *destination, *source;
 
   guint destination_stride, source_stride;
-  guint destinatio_buffer_length, nsource_buffer_length;
+  guint destination_buffer_length, source_buffer_length;
   guint buffer_size;
   guint samplerate;
   gdouble frequency;
@@ -1248,7 +1251,6 @@ ags_time_stretch_util_stretch_double(AgsTimeStretchUtil *time_stretch_util)
     
     destination[i * destination_stride] = new_z;
   }
-  //TODO:JK: implement me
 }
 
 /**
@@ -1265,7 +1267,7 @@ ags_time_stretch_util_stretch_complex(AgsTimeStretchUtil *time_stretch_util)
   AgsComplex *destination, *source;
 
   guint destination_stride, source_stride;
-  guint destinatio_buffer_length, nsource_buffer_length;
+  guint destination_buffer_length, source_buffer_length;
   guint buffer_size;
   guint samplerate;
   gdouble frequency;
@@ -1362,42 +1364,42 @@ ags_time_stretch_util_stretch(AgsTimeStretchUtil *time_stretch_util)
   switch(time_stretch_util->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
   {
-    ags_time_stretch_util_pitch_s8(time_stretch_util);
+    ags_time_stretch_util_stretch_s8(time_stretch_util);
   }
   break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
   {
-    ags_time_stretch_util_pitch_s16(time_stretch_util);
+    ags_time_stretch_util_stretch_s16(time_stretch_util);
   }
   break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
   {
-    ags_time_stretch_util_pitch_s24(time_stretch_util);
+    ags_time_stretch_util_stretch_s24(time_stretch_util);
   }
   break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
   {
-    ags_time_stretch_util_pitch_s32(time_stretch_util);
+    ags_time_stretch_util_stretch_s32(time_stretch_util);
   }
   break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
   {
-    ags_time_stretch_util_pitch_s64(time_stretch_util);
+    ags_time_stretch_util_stretch_s64(time_stretch_util);
   }
   break;
   case AGS_SOUNDCARD_FLOAT:
   {
-    ags_time_stretch_util_pitch_float(time_stretch_util);
+    ags_time_stretch_util_stretch_float(time_stretch_util);
   }
   break;
   case AGS_SOUNDCARD_DOUBLE:
   {
-    ags_time_stretch_util_pitch_double(time_stretch_util);
+    ags_time_stretch_util_stretch_double(time_stretch_util);
   }
   break;
   case AGS_SOUNDCARD_COMPLEX:
   {
-    ags_time_stretch_util_pitch_complex(time_stretch_util);
+    ags_time_stretch_util_stretch_complex(time_stretch_util);
   }
   break;
   default:

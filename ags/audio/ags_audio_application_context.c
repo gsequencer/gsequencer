@@ -21,6 +21,7 @@
 
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_dssi_manager.h>
+#include <ags/plugin/ags_lv2_turtle_parser.h>
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2ui_manager.h>
 #include <ags/plugin/ags_lv2_worker_manager.h>
@@ -96,8 +97,14 @@
 
 #include <sys/types.h>
 
-#ifndef AGS_W32API
+#include <unistd.h>
+
+#if !defined(AGS_W32API)
 #include <pwd.h>
+#endif
+
+#if !defined(AGS_W32API)
+#include <sys/utsname.h>
 #endif
 
 #include <stdbool.h>
@@ -3361,7 +3368,7 @@ ags_audio_application_context_loader_timeout(AgsAudioApplicationContext *audio_a
     
     /* stop animation */
     if(audio_application_context->setup_ready){
-      ags_ui_provider_set_show_animation(AGS_UI_PROVIDER(audio_application_context), FALSE);
+//      ags_ui_provider_set_show_animation(AGS_UI_PROVIDER(audio_application_context), FALSE);
     }
     
     return(FALSE);
