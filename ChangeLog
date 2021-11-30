@@ -3,8 +3,8 @@ ags (3.13.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented ags_time_stretch_util.c
 	* implemented getter functions in ags_midi_util.c
-	* TODO:JK: implemented ags-fx-low-pass
-	* TODO:JK: implemented ags-fx-high-pass
+	* implemented ags-fx-low-pass
+	* implemented ags-fx-high-pass
 	* refactored ags-fx-volume to use new accelerated AgsVolumeUtil functions
 	* refactored ags-fx-envelope to use new accelerated AgsEnvelopeUtil functions
 	* updated developer manual additional content and listings

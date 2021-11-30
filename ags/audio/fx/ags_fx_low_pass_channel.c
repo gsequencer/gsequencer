@@ -196,7 +196,7 @@ ags_fx_low_pass_channel_init(AgsFxLowPassChannel *fx_low_pass_channel)
   fx_low_pass_channel->filter_gain->port_value.ags_port_float = (gfloat) 1.0;
 
   g_object_set(fx_low_pass_channel->filter_gain,
-	       "plugin-port", ags_fx_filter_gain_channel_get_filter_gain_plugin_port(),
+	       "plugin-port", ags_fx_low_pass_channel_get_filter_gain_plugin_port(),
 	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_low_pass_channel,
@@ -394,7 +394,7 @@ ags_fx_low_pass_channel_get_q_lin_plugin_port()
     g_value_set_float(plugin_port->default_value,
 		      0.0);
     g_value_set_float(plugin_port->lower_value,
-		      0.0);
+		      -1.0);
     g_value_set_float(plugin_port->upper_value,
 		      1.0);
   }

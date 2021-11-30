@@ -358,6 +358,12 @@
 #include <ags/audio/fx/ags_fx_envelope_channel.h>
 #include <ags/audio/fx/ags_fx_envelope_channel_processor.h>
 #include <ags/audio/fx/ags_fx_envelope_recycling.h>
+#include <ags/audio/fx/ags_fx_high_pass_audio.h>
+#include <ags/audio/fx/ags_fx_high_pass_audio_processor.h>
+#include <ags/audio/fx/ags_fx_high_pass_audio_signal.h>
+#include <ags/audio/fx/ags_fx_high_pass_channel.h>
+#include <ags/audio/fx/ags_fx_high_pass_channel_processor.h>
+#include <ags/audio/fx/ags_fx_high_pass_recycling.h>
 #include <ags/audio/fx/ags_fx_ladspa_audio.h>
 #include <ags/audio/fx/ags_fx_ladspa_audio_processor.h>
 #include <ags/audio/fx/ags_fx_ladspa_audio_signal.h>
@@ -370,6 +376,12 @@
 #include <ags/audio/fx/ags_fx_lfo_channel.h>
 #include <ags/audio/fx/ags_fx_lfo_channel_processor.h>
 #include <ags/audio/fx/ags_fx_lfo_recycling.h>
+#include <ags/audio/fx/ags_fx_low_pass_audio.h>
+#include <ags/audio/fx/ags_fx_low_pass_audio_processor.h>
+#include <ags/audio/fx/ags_fx_low_pass_audio_signal.h>
+#include <ags/audio/fx/ags_fx_low_pass_channel.h>
+#include <ags/audio/fx/ags_fx_low_pass_channel_processor.h>
+#include <ags/audio/fx/ags_fx_low_pass_recycling.h>
 #include <ags/audio/fx/ags_fx_lv2_audio.h>
 #include <ags/audio/fx/ags_fx_lv2_audio_processor.h>
 #include <ags/audio/fx/ags_fx_lv2_audio_signal.h>

@@ -196,7 +196,7 @@ ags_fx_high_pass_channel_init(AgsFxHighPassChannel *fx_high_pass_channel)
   fx_high_pass_channel->filter_gain->port_value.ags_port_float = (gfloat) 1.0;
 
   g_object_set(fx_high_pass_channel->filter_gain,
-	       "plugin-port", ags_fx_filter_gain_channel_get_filter_gain_plugin_port(),
+	       "plugin-port", ags_fx_high_pass_channel_get_filter_gain_plugin_port(),
 	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_high_pass_channel,
@@ -386,15 +386,15 @@ ags_fx_high_pass_channel_get_q_lin_plugin_port()
     /* range */
     g_value_init(plugin_port->default_value,
 		 G_TYPE_FLOAT);
-    g_value_init(plugin_port->higher_value,
+    g_value_init(plugin_port->lower_value,
 		 G_TYPE_FLOAT);
     g_value_init(plugin_port->upper_value,
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
 		      0.0);
-    g_value_set_float(plugin_port->higher_value,
-		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      -1.0);
     g_value_set_float(plugin_port->upper_value,
 		      1.0);
   }
@@ -425,14 +425,14 @@ ags_fx_high_pass_channel_get_filter_gain_plugin_port()
     /* range */
     g_value_init(plugin_port->default_value,
 		 G_TYPE_FLOAT);
-    g_value_init(plugin_port->higher_value,
+    g_value_init(plugin_port->lower_value,
 		 G_TYPE_FLOAT);
     g_value_init(plugin_port->upper_value,
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
 		      1.0);
-    g_value_set_float(plugin_port->higher_value,
+    g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
 		      2.0);

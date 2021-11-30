@@ -20,8 +20,6 @@
 #include <ags/audio/fx/ags_fx_high_pass_audio_signal.h>
 
 #include <ags/audio/ags_port.h>
-#include <ags/audio/ags_audio_buffer_util.h>
-#include <ags/audio/ags_high_pass_util.h>
 
 #include <ags/audio/fx/ags_fx_high_pass_audio.h>
 #include <ags/audio/fx/ags_fx_high_pass_channel.h>
@@ -145,8 +143,9 @@ ags_fx_high_pass_audio_signal_real_run_inter(AgsRecall *recall)
   
   guint buffer_size;
   guint format;
-  gdouble high_pass;
-  gboolean muted;
+  guint samplerate;
+  gdouble q_lin;
+  gdouble filter_gain;
 
   GRecMutex *stream_mutex;
   
@@ -160,10 +159,10 @@ ags_fx_high_pass_audio_signal_real_run_inter(AgsRecall *recall)
 
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   
-  high_pass = 1.0;
-  
-  muted = FALSE;
+  q_lin = 0.0;
+  filter_gain = 1.0;
 
   g_object_get(recall,
 	       "parent", &fx_high_pass_recycling,
@@ -182,9 +181,76 @@ ags_fx_high_pass_audio_signal_real_run_inter(AgsRecall *recall)
   g_object_get(source,
 	       "buffer-size", &buffer_size,
 	       "format", &format,
+	       "samplerate", &samplerate,
 	       NULL);
 
-  //TODO:JK: implement me
+  if(fx_high_pass_channel != NULL){
+    AgsPort *port;
+
+    GValue value = {0,};
+        
+    /* q-lin */    
+    g_object_get(fx_high_pass_channel,
+		 "q-lin", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+      
+      q_lin = g_value_get_float(&value);
+
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* filter gain */
+    g_object_get(fx_high_pass_channel,
+		 "filter-gain", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      filter_gain = g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+  }
+
+  if(source != NULL &&
+     source->stream_current != NULL){
+    stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
+    
+    fx_high_pass_audio_signal->fluid_iir_filter_util.destination = source->stream_current->data;
+    fx_high_pass_audio_signal->fluid_iir_filter_util.destination_stride = 1;
+	
+    fx_high_pass_audio_signal->fluid_iir_filter_util.source = source->stream_current->data;
+    fx_high_pass_audio_signal->fluid_iir_filter_util.source_stride = 1;
+	
+    fx_high_pass_audio_signal->fluid_iir_filter_util.buffer_length = buffer_size;
+    fx_high_pass_audio_signal->fluid_iir_filter_util.format = format;
+    fx_high_pass_audio_signal->fluid_iir_filter_util.samplerate = samplerate;
+	
+    fx_high_pass_audio_signal->fluid_iir_filter_util.filter_type = AGS_FLUID_IIR_HIGHPASS;
+
+    fx_high_pass_audio_signal->fluid_iir_filter_util.q_lin = q_lin;      
+    fx_high_pass_audio_signal->fluid_iir_filter_util.filter_gain = filter_gain;
+      
+    g_rec_mutex_lock(stream_mutex);
+
+    ags_fluid_iir_filter_util_process(&(fx_high_pass_audio_signal->fluid_iir_filter_util));
+    
+    g_rec_mutex_unlock(stream_mutex);
+  }
   
   if(source == NULL ||
      source->stream_current == NULL){
