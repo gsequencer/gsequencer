@@ -36,6 +36,7 @@
 
 #include <ags/X/editor/ags_select_buffer_dialog.h>
 #include <ags/X/editor/ags_position_wave_cursor_dialog.h>
+#include <ags/X/editor/ags_time_stretch_buffer_dialog.h>
 
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
@@ -200,6 +201,7 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
 
   composite_toolbar->wave_select_buffer = (GtkDialog *) ags_select_buffer_dialog_new(NULL);
   composite_toolbar->wave_position_cursor = (GtkDialog *) ags_position_wave_cursor_dialog_new(NULL);
+  composite_toolbar->wave_time_stretch_buffer = (GtkDialog *) ags_time_stretch_buffer_dialog_new();
 }
 
 AgsUUID*
@@ -351,6 +353,7 @@ ags_composite_toolbar_connect(AgsConnectable *connectable)
 
   ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->wave_select_buffer));
   ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->wave_position_cursor));
+  ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->wave_time_stretch_buffer));
   
   //TODO:JK: implement me
 }
@@ -379,6 +382,7 @@ ags_composite_toolbar_disconnect(AgsConnectable *connectable)
 
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->wave_select_buffer));
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->wave_position_cursor));
+  ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->wave_time_stretch_buffer));
 
   //TODO:JK: implement me
 }
@@ -591,6 +595,14 @@ ags_composite_toolbar_connect_connection(AgsConnectable *connectable,
 	  if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_POSITION_CURSOR & current_value) != 0){
 	    g_signal_connect_after(list->data, "activate",
 				   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_wave_position_cursor_callback), composite_toolbar);
+
+	    list = list->next;
+	    j++;
+	  }
+	  
+	  if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_TIME_STRETCH_BUFFER & current_value) != 0){
+	    g_signal_connect_after(list->data, "activate",
+				   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_wave_time_stretch_buffer_callback), composite_toolbar);
 
 	    list = list->next;
 	    j++;
@@ -877,6 +889,16 @@ ags_composite_toolbar_disconnect_connection(AgsConnectable *connectable,
 	  if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_POSITION_CURSOR & current_value) != 0){
 	    g_object_disconnect(list->data, "any_signal::activate",
 				G_CALLBACK(ags_composite_toolbar_menu_tool_popup_wave_position_cursor_callback),
+				composite_toolbar,
+				NULL);
+
+	    list = list->next;
+	    j++;
+	  }
+
+	  if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_TIME_STRETCH_BUFFER & current_value) != 0){
+	    g_object_disconnect(list->data, "any_signal::activate",
+				G_CALLBACK(ags_composite_toolbar_menu_tool_popup_wave_time_stretch_buffer_callback),
 				composite_toolbar,
 				NULL);
 
@@ -1838,6 +1860,15 @@ ags_composite_toolbar_menu_tool_popup_new(gchar **dialog,
 				  (GtkWidget *) item);
 	    j++;
 	  }
+
+	  current_value = g_value_get_uint(value + i);
+	  
+	  if((AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_TIME_STRETCH_BUFFER & current_value) != 0){
+	    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("time stretch buffer"));
+	    gtk_menu_shell_append((GtkMenuShell *) menu,
+				  (GtkWidget *) item);
+	    j++;
+	  }
 	}else{
 	  g_warning("unknown dialog");
 	}
@@ -2485,7 +2516,8 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 		     G_TYPE_UINT);
 	g_value_set_uint(wave_menu_tool_value + 1,
 			 (AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_SELECT_BUFFER |
-			  AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_POSITION_CURSOR));
+			  AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_POSITION_CURSOR |
+			  AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_TIME_STRETCH_BUFFER));
 	
 	initialized = TRUE;
       }

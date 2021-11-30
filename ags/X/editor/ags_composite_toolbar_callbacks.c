@@ -498,6 +498,12 @@ ags_composite_toolbar_menu_tool_popup_wave_position_cursor_callback(GtkMenuItem 
 }
 
 void
+ags_composite_toolbar_menu_tool_popup_wave_time_stretch_buffer_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
+{
+  gtk_widget_show_all((GtkWidget *) composite_toolbar->wave_time_stretch_buffer);
+}
+
+void
 ags_composite_toolbar_menu_tool_popup_enable_all_audio_channels_callback(GtkMenuItem *item, AgsCompositeToolbar *composite_toolbar)
 {
   AgsCompositeEditor *composite_editor;
