@@ -21,6 +21,8 @@ AgsApplicationContext *application_context;
 gboolean start_loader;
 
 application_context = (AgsApplicationContext *) ags_thread_application_context_new();
+g_object_ref(application_context);
+
 g_signal_connect_after(application_context, "setup",
 		       G_CALLBACK(setup_callback), NULL);
 
@@ -31,6 +33,11 @@ g_timeout_add(DEFAULT_LOADER_INTERVAL,
 	      application_context);
 
 ags_application_context_prepare(application_context);
+ags_application_context_setup(application_context);
+  
+/* main loop run */
+g_main_loop_run(g_main_loop_new(g_main_context_default(),
+				TRUE));
 
 void
 setup_callback(AgsApplicationContext *application_context, gpointer user_data)

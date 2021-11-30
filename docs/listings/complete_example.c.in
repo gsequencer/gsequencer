@@ -501,11 +501,17 @@ main(int argc, char **argv)
 
   /* create application context */
   application_context = ags_audio_application_context_new();
+  g_object_ref(application_context);
   
   g_signal_connect_after(application_context, "setup",
 			 G_CALLBACK(setup_callback), NULL);
   
-  ags_application_context_prepare(audio_application_context);
+  ags_application_context_prepare(application_context);
+  ags_application_context_setup(application_context);
+  
+  /* main loop run */
+  g_main_loop_run(g_main_loop_new(g_main_context_default(),
+				  TRUE));
 
   return(0);
 }

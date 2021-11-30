@@ -249,6 +249,11 @@ ags_functional_test_util_do_run(int argc, char **argv,
   		  g_main_context_default());
   
   ags_application_context_prepare(application_context);
+
+  ags_application_context_setup(AGS_APPLICATION_CONTEXT(application_context));
+  
+  /* gtk main */
+  gtk_main();
 }
 
 void

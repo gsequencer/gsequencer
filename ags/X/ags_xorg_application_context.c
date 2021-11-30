@@ -2832,12 +2832,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   
   if(filename != NULL){
     window->filename = filename;
-  }
-  
-  ags_application_context_setup(AGS_APPLICATION_CONTEXT(application_context));
-  
-  /* gtk main */
-  gtk_main();
+  }  
 }
 
 void
