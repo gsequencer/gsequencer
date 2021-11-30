@@ -1,6 +1,7 @@
 ags (3.13.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsTimeStretchBufferDialog
 	* implemented ags_time_stretch_util.c
 	* implemented getter functions in ags_midi_util.c
 	* implemented ags-fx-low-pass

@@ -516,7 +516,7 @@ ags_select_buffer_dialog_apply(AgsApplicable *applicable)
   g_object_unref(timestamp);
   
   g_list_free_full(start_list_wave,
-		   g_object_unref);
+		   (GDestroyNotify) g_object_unref);
 
   g_object_unref(output_soundcard);
   

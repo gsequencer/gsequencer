@@ -312,9 +312,348 @@ ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
 {
   AgsTimeStretchBufferDialog *time_stretch_buffer_dialog;
     
+  AgsWindow *window;
+  AgsMachine *machine;
+  AgsNotebook *notebook;
+  AgsWaveEdit *focused_wave_edit;
+
+  AgsAudio *audio;
+  
+  AgsTimestamp *timestamp;
+
+  AgsApplicationContext *application_context;
+
+  GObject *output_soundcard;
+
+  AgsTimeStretchUtil time_stretch_util;
+
+  GList *start_wave, *wave;
+  GList *start_new_wave, *new_wave;
+  
+  gboolean use_composite_editor;
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+  gdouble delay;
+  guint64 x0;
+  guint64 x1;
+  gdouble factor;
+  guint copy_mode;
+  gboolean has_selection;
+  gint i;
+
   time_stretch_buffer_dialog = AGS_TIME_STRETCH_BUFFER_DIALOG(applicable);
 
-  //TODO:JK: implement me
+  /* application context */
+  application_context = ags_application_context_get_instance();
+
+  use_composite_editor = ags_ui_provider_use_composite_editor(AGS_UI_PROVIDER(application_context));
+
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  machine = NULL;
+  
+  if(use_composite_editor){
+    AgsCompositeEditor *composite_editor;
+    
+    composite_editor = window->composite_editor;
+
+    machine = composite_editor->selected_machine;
+
+    focused_wave_edit = composite_editor->wave_edit->focused_edit;
+    
+    notebook = composite_editor->wave_edit->channel_selector;
+  }else{
+    AgsWaveEditor *wave_editor;
+    
+    wave_editor = window->wave_window->wave_editor;
+
+    machine = wave_editor->selected_machine;
+
+    focused_wave_edit = wave_editor->focused_wave_edit;
+
+    notebook = wave_editor->notebook;
+  }
+  
+  audio = machine->audio;
+
+  output_soundcard = NULL;
+
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
+  
+  g_object_get(audio,
+	       "output-soundcard", &output_soundcard,
+	       "samplerate", &samplerate,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       "wave", &start_wave,
+	       NULL);
+
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
+
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+  relative_offset = samplerate * AGS_WAVE_DEFAULT_BUFFER_LENGTH;
+  
+  start_new_wave = NULL;
+
+  time_stretch_util.source = NULL;
+  time_stretch_util.source_stride = 1;
+  time_stretch_util.source_buffer_length = 0;
+
+  time_stretch_util.destination = NULL;
+  time_stretch_util.destination_stride = 1;
+  time_stretch_util.destination_buffer_length = 0;
+  
+  time_stretch_util.buffer_size = buffer_size;
+  time_stretch_util.format = format;
+  time_stretch_util.samplerate = samplerate;
+
+  time_stretch_util.frequency = gtk_spin_button_get_value(time_stretch_buffer_dialog->frequency);
+
+  time_stretch_util.orig_bpm = gtk_spin_button_get_value(time_stretch_buffer_dialog->orig_bpm);
+  time_stretch_util.new_bpm = gtk_spin_button_get_value(time_stretch_buffer_dialog->new_bpm);
+
+  factor = time_stretch_util.new_bpm / time_stretch_util.orig_bpm;
+  
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+						  ags_audio_buffer_util_format_from_soundcard(format));
+  
+  i = 0;
+  
+  while((i = ags_notebook_next_active_tab(notebook,
+					  i)) != -1){
+    wave = start_wave;
+    timestamp->timer.ags_offset.offset = 0;
+
+    while((wave = ags_wave_find_near_timestamp(wave, i,
+					       timestamp)) != NULL){
+      AgsWave *current_new_wave;
+
+      GList *start_buffer, *buffer;
+
+      buffer = 
+	start_buffer = ags_wave_get_buffer(wave->data);
+
+      ags_stream_free(time_stretch_util.source);
+      ags_stream_free(time_stretch_util.destination);
+
+      time_stretch_util.source = NULL;
+      time_stretch_util.source_buffer_length = 0;
+      
+      time_stretch_util.destination = NULL;
+      time_stretch_util.destination_buffer_length = 0;
+      
+      x0 = 0;
+      x1 = 0;
+
+      has_selection = FALSE;
+
+      while(buffer != NULL){
+	if(ags_buffer_test_flags(buffer->data, AGS_BUFFER_IS_SELECTED)){
+	  if(!has_selection){
+	    x0 = ags_buffer_get_x(buffer->data);
+	  }
+	  
+	  x1 = ags_buffer_get_x(buffer->data) + buffer_size;
+	  
+	  has_selection = TRUE;
+	}
+      
+	/* iterate */
+	buffer = buffer->next;
+      }
+
+      if(has_selection){
+	guint64 j;
+	
+	buffer = start_buffer;
+
+	time_stretch_util.source = ags_stream_alloc((x1 - x0),
+						    format);
+	time_stretch_util.source_buffer_length = x1 - x0;
+
+	time_stretch_util.destination = ags_stream_alloc((guint) floor((1.0 / factor) * (x1 - x0)),
+							 format);
+	time_stretch_util.destination_buffer_length = (guint) floor((1.0 / factor) * (x1 - x0));
+	
+	while(buffer != NULL){
+	  if(ags_buffer_test_flags(buffer->data, AGS_BUFFER_IS_SELECTED)){
+	    guint64 current_x;
+	    
+	    current_x = ags_buffer_get_x(buffer->data);
+
+	    if(current_x >= x0 && current_x < x1){
+	      ags_buffer_lock(buffer->data);
+	      
+	      ags_audio_buffer_util_copy_buffer_to_buffer(time_stretch_util.source, 1, current_x - x0,
+							  ags_buffer_get_data(buffer->data), 1, 0,
+							  buffer_size, copy_mode);
+
+	      ags_buffer_unlock(buffer->data);
+	    }
+	    
+	    has_selection = TRUE;
+	  }
+      
+	  /* iterate */	
+	  buffer = buffer->next;
+	}
+
+	ags_time_stretch_util_stretch(&time_stretch_util);
+
+	current_new_wave = ags_wave_new(audio,
+					i);
+
+	g_object_set(current_new_wave,
+		     "samplerate", samplerate,
+		     "buffer-size", buffer_size,
+		     "format", format,
+		     NULL);
+	
+	current_new_wave->timestamp->timer.ags_offset.offset = (guint64) relative_offset * floor(x0 / relative_offset);
+
+	start_new_wave = g_list_insert_sorted(start_new_wave,
+					      current_new_wave,
+					      (GCompareFunc) ags_wave_sort_func);
+
+	for(j = x0; j < x1;){
+	  AgsBuffer *current_new_buffer;
+
+	  guint frame_count;
+	  
+	  current_new_buffer = ags_buffer_new();
+
+	  g_object_set(current_new_buffer,
+		       "x", j,
+		       "samplerate", samplerate,
+		       "buffer-size", buffer_size,
+		       "format", format,
+		       NULL);
+
+	  ags_wave_add_buffer(current_new_wave,
+			      current_new_buffer,
+			      FALSE);
+	      
+	  frame_count = buffer_size;
+	  
+	  if(j % relative_offset < (j + frame_count) % relative_offset){
+	    frame_count = buffer_size - ((j + frame_count) % relative_offset);
+	  }
+	  
+	  ags_buffer_lock(current_new_buffer);
+
+	  ags_audio_buffer_util_copy_buffer_to_buffer(ags_buffer_get_data(current_new_buffer), 1, 0,
+						      time_stretch_util.destination, 1, j - x0,
+						      frame_count, copy_mode);
+
+	  ags_buffer_unlock(current_new_buffer);
+      
+	  /* iterate */
+	  if(j % relative_offset < (j + buffer_size) % relative_offset){
+	    current_new_wave = ags_wave_new(audio,
+					    i);
+
+	    g_object_set(current_new_wave,
+			 "samplerate", samplerate,
+			 "buffer-size", buffer_size,
+			 "format", format,
+			 NULL);
+	
+	    current_new_wave->timestamp->timer.ags_offset.offset = (guint64) relative_offset * floor((j + buffer_size) / relative_offset);
+
+	    start_new_wave = g_list_insert_sorted(start_new_wave,
+						  current_new_wave,
+						  (GCompareFunc) ags_wave_sort_func);
+	  }
+	  
+	  j += frame_count;
+	}
+      }
+      
+      /* iterate */
+      timestamp->timer.ags_offset.offset += relative_offset;
+
+      wave = wave->next;
+    }
+
+    new_wave = start_new_wave;
+
+    while(new_wave != NULL){
+      AgsTimestamp *current_new_timestamp;
+      
+      GList *orig_wave;
+
+      current_new_timestamp = ags_wave_get_timestamp(new_wave->data);
+      
+      orig_wave = ags_wave_find_near_timestamp(start_wave, i,
+					       current_new_timestamp);
+
+      if(orig_wave == NULL){
+	ags_audio_add_wave(audio,
+			   new_wave->data);
+      }else{
+	GList *start_new_buffer, *new_buffer;
+
+	new_buffer =
+	  start_new_buffer = ags_wave_get_buffer(new_wave->data);
+
+	while(new_buffer != NULL){
+	  AgsBuffer *orig_buffer;
+	  
+	  guint64 new_buffer_x;
+	  
+	  GRecMutex *orig_wave_mutex;
+	  
+	  new_buffer_x = ags_buffer_get_x(new_buffer->data);
+
+	  orig_buffer = ags_wave_find_point(orig_wave,
+					    new_buffer_x,
+					    FALSE);
+
+	  orig_wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(orig_wave);
+
+	  g_rec_mutex_lock(orig_wave_mutex);
+
+	  /* remove original */
+	  orig_wave->buffer = g_list_remove(orig_wave->buffer,
+					    orig_buffer);
+	  g_object_unref(orig_buffer);
+
+	  /* add new */
+	  orig_wave->buffer = g_list_insert_sorted(orig_wave->buffer,
+						   new_buffer->data,
+						   (GCompareFunc) ags_buffer_sort_func);
+	  g_object_ref(new_buffer->data);
+
+	  g_rec_mutex_unlock(orig_wave_mutex);
+
+	  /* iterate */
+	  new_buffer = new_buffer->next;
+	}
+      }
+      
+      /* iterate */
+      new_wave = new_wave->next;
+    }
+      
+    /* iterate */
+    i++;
+  }    
+  
+  g_list_free_full(start_wave,
+		   (GDestroyNotify) g_object_unref);
+
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+
+  g_object_unref(timestamp);
 }
 
 void
