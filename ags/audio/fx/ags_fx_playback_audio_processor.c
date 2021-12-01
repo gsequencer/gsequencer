@@ -791,7 +791,7 @@ ags_fx_playback_audio_processor_run_inter(AgsRecall *recall)
     
     return;
   }
-
+  
   recycling_context = NULL;
   parent_recycling_context = NULL;
   
@@ -891,13 +891,13 @@ ags_fx_playback_audio_processor_run_inter(AgsRecall *recall)
   }
   
   /* play/record/feed/master */
-  if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_WAVE)){
+  if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_NOTATION)){
     if(parent_recycling_context != NULL){
       ags_fx_playback_audio_processor_play(fx_playback_audio_processor);
     }
   }
 
-  if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_WAVE)){
+  if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_NOTATION)){
     if(parent_recycling_context != NULL){
       ags_fx_playback_audio_processor_record(fx_playback_audio_processor);
     }

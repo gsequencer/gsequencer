@@ -463,7 +463,7 @@ ags_fx_factory_create_playback(AgsAudio *audio,
     
     return(NULL);
   }
-
+    
   start_recall = NULL;
   
   g_object_get(audio,

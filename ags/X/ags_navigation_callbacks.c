@@ -179,7 +179,7 @@ ags_navigation_play_callback(GtkWidget *widget,
       
       ags_machine_set_run_extended(machine,
 				   TRUE,
-				   FALSE, FALSE, TRUE, FALSE);
+				   FALSE, TRUE, FALSE, FALSE);
     }
 
     machines = machines->next;
@@ -231,7 +231,7 @@ ags_navigation_stop_callback(GtkWidget *widget,
       
       ags_machine_set_run_extended(machine,
 				   FALSE,
-				   FALSE, FALSE, TRUE, FALSE);
+				   FALSE, TRUE, FALSE, FALSE);
     }
 
     machines = machines->next;

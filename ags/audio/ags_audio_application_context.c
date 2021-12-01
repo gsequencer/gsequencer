@@ -19,12 +19,18 @@
 
 #include <ags/audio/ags_audio_application_context.h>
 
+#include <ags/config.h>
+
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_dssi_manager.h>
 #include <ags/plugin/ags_lv2_turtle_parser.h>
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2ui_manager.h>
 #include <ags/plugin/ags_lv2_worker_manager.h>
+
+#if defined(AGS_WITH_VST3)
+#include <ags/plugin/ags_vst3_manager.h>
+#endif
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_devout.h>
@@ -1786,6 +1792,10 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   AgsLv2uiManager *lv2ui_manager;
   AgsLv2WorkerManager *lv2_worker_manager;
 
+#if defined(AGS_WITH_VST3)
+  AgsVst3Manager *vst3_manager;
+#endif
+  
   AgsServer *server;
 
   AgsThread *main_loop;

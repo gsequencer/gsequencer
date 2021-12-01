@@ -186,7 +186,7 @@ ags_time_stretch_buffer_dialog_init(AgsTimeStretchBufferDialog *time_stretch_buf
   gtk_spin_button_set_digits(time_stretch_buffer_dialog->frequency,
 			     3);
   gtk_spin_button_set_value(time_stretch_buffer_dialog->frequency,
-			    0.0);
+			    AGS_TIME_STRETCH_BUFFER_DEFAULT_FREQUENCY);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) time_stretch_buffer_dialog->frequency,
 		     FALSE, FALSE,
@@ -383,6 +383,8 @@ ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;  
+
+  start_wave = NULL;
   
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
@@ -441,9 +443,6 @@ ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
       buffer = 
 	start_buffer = ags_wave_get_buffer(wave->data);
 
-      ags_stream_free(time_stretch_util.source);
-      ags_stream_free(time_stretch_util.destination);
-
       time_stretch_util.source = NULL;
       time_stretch_util.source_buffer_length = 0;
       
@@ -496,6 +495,9 @@ ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
 							  ags_buffer_get_data(buffer->data), 1, 0,
 							  buffer_size, copy_mode);
 
+	      ags_audio_buffer_util_clear_buffer(ags_buffer_get_data(buffer->data), 1,
+						 buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+	      
 	      ags_buffer_unlock(buffer->data);
 	    }
 	    
@@ -543,7 +545,7 @@ ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
 	      
 	  frame_count = buffer_size;
 	  
-	  if(j % relative_offset < (j + frame_count) % relative_offset){
+	  if(floor(j / relative_offset) < floor((j + frame_count) / relative_offset)){
 	    frame_count = buffer_size - ((j + frame_count) % relative_offset);
 	  }
 	  
@@ -556,7 +558,7 @@ ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
 	  ags_buffer_unlock(current_new_buffer);
       
 	  /* iterate */
-	  if(j % relative_offset < (j + buffer_size) % relative_offset){
+	  if(floor(j / relative_offset) < floor((j + buffer_size) / relative_offset)){
 	    current_new_wave = ags_wave_new(audio,
 					    i);
 
@@ -576,6 +578,12 @@ ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
 	  j += frame_count;
 	}
       }
+
+      ags_stream_free(time_stretch_util.source);
+      ags_stream_free(time_stretch_util.destination);
+
+      time_stretch_util.source = NULL;
+      time_stretch_util.destination = NULL;
       
       /* iterate */
       timestamp->timer.ags_offset.offset += relative_offset;
@@ -642,7 +650,7 @@ ags_time_stretch_buffer_dialog_apply(AgsApplicable *applicable)
       /* iterate */
       new_wave = new_wave->next;
     }
-      
+        
     /* iterate */
     i++;
   }    

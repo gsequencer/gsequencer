@@ -485,6 +485,20 @@
       <xi:include href="xml/ags_fx_volume_channel_processor.xml"/>
       <xi:include href="xml/ags_fx_volume_recycling.xml"/>
 
+      <xi:include href="xml/ags_fx_low_pass_audio.xml"/>
+      <xi:include href="xml/ags_fx_low_pass_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_low_pass_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_low_pass_channel.xml"/>
+      <xi:include href="xml/ags_fx_low_pass_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_low_pass_recycling.xml"/>
+
+      <xi:include href="xml/ags_fx_high_pass_audio.xml"/>
+      <xi:include href="xml/ags_fx_high_pass_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_high_pass_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_high_pass_channel.xml"/>
+      <xi:include href="xml/ags_fx_high_pass_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_high_pass_recycling.xml"/>
+
       <xi:include href="xml/ags_fx_eq10_audio.xml"/>
       <xi:include href="xml/ags_fx_eq10_audio_processor.xml"/>
       <xi:include href="xml/ags_fx_eq10_audio_signal.xml"/>

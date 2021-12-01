@@ -196,6 +196,7 @@ GtkWindowAccessible AtkComponent AtkWindow
 GtkFrameAccessible AtkComponent
 GtkMenuShellAccessible AtkComponent AtkSelection
 GtkMenuAccessible AtkComponent AtkSelection
+GtkFileChooserWidgetAccessible AtkComponent AtkAction
 GtkButtonAccessible AtkComponent AtkAction AtkImage
 GtkToggleButtonAccessible AtkComponent AtkAction AtkImage
 GtkRadioButtonAccessible AtkComponent AtkAction AtkImage

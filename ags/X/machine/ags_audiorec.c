@@ -193,7 +193,7 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
 			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 			      AGS_AUDIO_INPUT_HAS_RECYCLING));
-  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_WAVE));
+  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_NOTATION));
 
   g_object_get(audio,
 	       "playback-domain", &playback_domain,
@@ -626,7 +626,7 @@ ags_audiorec_map_recall(AgsMachine *machine)
   audio = machine->audio;
 
   position = 0;
-  
+
   /* ags-fx-playback */
   start_recall = ags_fx_factory_create(audio,
 				       audiorec->playback_play_container, audiorec->playback_recall_container,
@@ -732,7 +732,7 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
 
   input_pads = 0;
   audio_channels = 0;
-
+    
   /* get some fields */
   g_object_get(audio,
 	       "input-pads", &input_pads,
