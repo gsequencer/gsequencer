@@ -2907,6 +2907,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   /* set operating */
   g_rec_mutex_lock(application_context_mutex);
 
+  audio_application_context->setup_ready = TRUE;
+  
   audio_application_context->is_operating = TRUE;
 
   g_rec_mutex_unlock(application_context_mutex);

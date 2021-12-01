@@ -1,3 +1,8 @@
+ags (3.13.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsAudioApplicationContext to set setup_ready field to TRUE
+
 ags (3.13.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

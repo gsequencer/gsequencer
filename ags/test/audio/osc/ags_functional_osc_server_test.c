@@ -121,19 +121,12 @@ AgsOscClient *osc_client;
 
 GObject *default_soundcard;
 
-GMainLoop *main_loop;
+GMainLoop *main_loop = NULL;
 
 gpointer
 ags_functional_osc_server_test_add_thread(gpointer data)
 {
   CU_pSuite pSuite = NULL;
-
-  putenv("LC_ALL=C");
-  putenv("LANG=C");
-
-  putenv("LADSPA_PATH=\"\"");
-  putenv("DSSI_PATH=\"\"");
-  putenv("LV2_PATH=\"\"");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -180,23 +173,12 @@ ags_functional_osc_server_test_add_thread(gpointer data)
 int
 ags_functional_osc_server_test_init_suite()
 {
-  AgsConfig *config;
+  AgsApplicationContext *application_context;
 
   GList *start_audio;
+
+  application_context = ags_application_context_get_instance();
   
-  ags_priority_load_defaults(ags_priority_get_instance());  
-
-  config = ags_config_get_instance();
-  ags_config_load_from_data(config,
-			    AGS_FUNCTIONAL_OSC_SERVER_TEST_CONFIG,
-			    strlen(AGS_FUNCTIONAL_OSC_SERVER_TEST_CONFIG));
-
-  application_context = ags_audio_application_context_new();
-  g_object_ref(application_context);
-  
-  ags_application_context_prepare(application_context);
-  ags_application_context_setup(application_context);
-
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   /* drum */
@@ -847,7 +829,29 @@ ags_functional_osc_server_test_status_controller()
 int
 main(int argc, char **argv)
 {
+  AgsConfig *config;
+  
   int retval;
+
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
+
+  putenv("LADSPA_PATH=\"\"");
+  putenv("DSSI_PATH=\"\"");
+  putenv("LV2_PATH=\"\"");
+  
+  ags_priority_load_defaults(ags_priority_get_instance());  
+
+  config = ags_config_get_instance();
+  ags_config_load_from_data(config,
+			    AGS_FUNCTIONAL_OSC_SERVER_TEST_CONFIG,
+			    strlen(AGS_FUNCTIONAL_OSC_SERVER_TEST_CONFIG));
+
+  application_context = ags_audio_application_context_new();
+  g_object_ref(application_context);
+  
+  ags_application_context_prepare(application_context);
+  ags_application_context_setup(application_context);
   
   add_thread = g_thread_new("libags_audio.so - functional OSC server test",
 			    ags_functional_osc_server_test_add_thread,
