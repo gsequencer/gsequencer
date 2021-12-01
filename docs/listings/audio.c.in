@@ -13,9 +13,10 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
-AgsApplicationContext *application_context;
 AgsAudio *audio;
 AgsNotation *notation;
+
+AgsApplicationContext *application_context;
 
 GObject *current_soundcard;
 
@@ -39,8 +40,15 @@ output_pads = 1;
 input_pads = 88;
 
 audio = ags_audio_new(current_soundcard);
+ags_audio_set_flags(audio,
+		    (AGS_AUDIO_SYNC |
+		     AGS_AUDIO_ASYNC |
+		     AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		     AGS_AUDIO_INPUT_HAS_RECYCLING));
+
 ags_audio_set_audio_channels(audio,
                              audio_channels);
+
 ags_audio_set_pads(audio,
                    AGS_TYPE_OUTPUT,
                    output_pads);

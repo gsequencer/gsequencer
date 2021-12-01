@@ -606,8 +606,6 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
   ags_sound_resource_info(AGS_SOUND_RESOURCE(sound_resource),
 			  &frame_count,
 			  NULL, NULL);
-
-  g_message("do %d", frame_count);
   
   ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sound_resource),
 				 &audio_channels,

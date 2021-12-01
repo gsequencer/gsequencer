@@ -24,11 +24,30 @@
     Making Advanced Gtk+ Sequencer objects reachable from different contices was
     mandatory as introducing AgsApplicationContext. Imagine you are within a GUI
     callback and want to lookup a soundcard or sequencer the application context
-    shall provide this functioanlity and provide access to its objects through a
+    shall provide this functionality and provide access to its objects through a
     well defined interface. As doing it with interfaces you are not limited to one
     specific implementation rather having the option to choose the appropriate one
     implementing the interfaces.
   </para>
+
+  <itemizedlist mark="bullet">
+    <listitem>
+      <para>
+	AgsConcurrencyProvider
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	AgsServiceProvider
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	AgsSoundProvider
+      </para>
+    </listitem>
+  </itemizedlist>
+  
   <para>
     There are different contices available e.g. AgsThreadApplicationContext providing
     its functionality by AgsConcurrencyProvider, AgsAudioApplicationContext giving
@@ -36,15 +55,38 @@
     For example the code below should each giving you the same meaning object but
     using different contices.
   </para>
+
+  <para>
+    Since AgsApplicationContext is a singleton you create only 1 instance of your
+    desired implementation. The application context is usually obtained by calling
+    <code language="C">AgsApplicationContext* ags_application_context_get_instance()</code>.
+    Make sure to instantiate an application context before using this function.
+  </para>
   
   <sect1>
     <title>Implementations and their interfaces</title>
     <para>
-      Creating a AgsThreadApplicationContext and then get the task launcher by calling
+      The most basic application context implementing AgsConcurrencyProvider is
+      AgsThreadApplicationContext. If you use your very own application context
+      implementation make sure to set main loop, because AgsThread makes use of
+      the appropriate getter
+      <code language="C">AgsThread* ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider*)</code>.
+      Further for your very own application context you should set the AgsTaskLauncher
+      in order to take advantage of launching AgsTask implementations. The interface
+      allows you to set a thread pool and some worker threads if needed.
+    </para>
+    
+    <para>
+      This example instantiates AgsThreadApplicationContext. By instantiating the
+      application context the global variable ags_application_context is initially set.
+      Later you can obtain your application context by calling
+      <code language="C">AgsApplicationContext* ags_application_context_get_instance()</code>.
+      Later the code connects to the AgsApplicationContext::setup() signal. The
+      <code language="C">void setup_callback(AgsApplicationContext*, gpointer)</code>
+      function sets the global variable start_loader to TRUE. This causes the prior
+      added timeout to do the actual work with AgsTaskLauncher.
+      The task launcher is obtained by calling
       <code language="C">AgsThread* ags_concurrency_provider_get_task_launcher(AgsConcurrencyProvider*)</code>.
-      Since the AgsConcurrency interface is implemented by the context, we retrieve
-      the task launcher. The AgsTaskLauncher gives you a thread safe signal. It is used
-      to launch AgsTask objects to do thread safe operations but later on this.
     </para>
     
     <example>
@@ -56,9 +98,15 @@
 
     <para>
       The AgsAudioApplicationContext inherites from AgsApplicationContext and implements
-      the AgsConcurrency interface, too. So you can retrieve the task launcher the same
+      the AgsConcurrencyProvider interface, too. So you can retrieve the task launcher the same
       way. But the context implements one more, the AgsSoundProvider interface. Giving
       you objects related to threading and audio processing.
+    </para>
+
+    <para>
+      This example does the same as the prior, but this time instantiates the AgsAudioApplicationContext.
+      The <code language="C">gboolean loader_timeout(AgsApplicationContext *application_context)</code>.
+      does this time add the AgsStartSoundcard task to the task launcher.
     </para>
     
     <example>
@@ -76,15 +124,22 @@
       AgsMainLoop interface. &libagsthreadso; provides you the AgsGenericMainLoop object or
       if you intend to use &libagsaudioso;, this property shall point to AgsAudioLoop.
     </para>
+
+    <para>
+      However you should rather use <code language="C">AgsThread* ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider*)</code>
+      to obtain the main loop instead.
+    </para>
   </sect1>
 
   <sect1>
     <title>The config property</title>
     <para>
       The AgsApplicationContext base class provides you an AgsConfig instance. It might
-      load a default configuration or from current users home directory. The config should
-      be obtained as property using <code language="C">void g_object_get(gpointer, gchar*, ...)</code>
-      or similar.
+      load a default configuration or from current users home directory.
+    </para>
+
+    <para>
+      Since AgsConfig is a singleton you should obtain it by calling <code language="C">AgsConfig* ags_config_get_instance()</code>.
     </para>
     
     <para>
@@ -132,6 +187,12 @@
       AgsApplicationContext::register-types. It is upto you how the application shall behave.
     </para>
 
+    <para>
+      Note since version 3.13.0 you call only AgsApplicationContext::prepare, which calls
+      AgsApplicationContext::setup and then enters GLib's main loop. So the prepare signal
+      won't return unless you terminate your application.
+    </para>
+    
     <para>
       AgsApplicationContext::quit signal terminates your application. Feel free to provide your
       own implementation.

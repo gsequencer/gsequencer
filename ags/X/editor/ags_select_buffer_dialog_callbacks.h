@@ -30,7 +30,7 @@
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
-#include <ags/X/ags_automation_editor.h>
+#include <ags/X/ags_wave_editor.h>
 
 #include <ags/X/editor/ags_select_buffer_dialog.h>
 

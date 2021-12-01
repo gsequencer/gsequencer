@@ -26,7 +26,85 @@
     runs. Real-time behaviour is indicated as all pending sync operations were fulfilled
     as the next buffer is needed.
   </para>
-
+  
+  <para>
+    The Advanced Gtk+ Sequencer framework implements following
+    soundcard objects. Note to register soundcards by a sound server make
+    use of AgsSoundServer interface. This applies to JACK, Pulseaudio and CoreAudio
+    backend.
+  </para>
+  
+  <itemizedlist mark="bullet">
+    <listitem>
+      <para>
+	AgsDevout ALSA and OSSv4 soundcard output.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	AgsDevin ALSA and OSSv4 soundcard input.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	AgsPulseDevout Pulseaudio output.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	AgsJackDevout JACK Audio Connection Kit output.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	AgsJackDevin JACK Audio Connection Kit input.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	AgsWasapiDevout Windows soundcard output.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	AgsWasapiDevin Windows soundcard input.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	AgsCoreAudioDevout macos soundcard output.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	AgsCoreAudioDevin macos soundcard input.
+      </para>
+    </listitem>
+  </itemizedlist>
+  
+  <para>
+    The Advanced Gtk+ Sequencer framework implements following
+    sequencer objects.
+  </para>
+  
+  <itemizedlist mark="bullet">
+    <listitem>
+      <para>
+	AgsMidiin ALSA and OSSv4 MIDI input.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	AgsJackMidiin JACK Audio Connection Kit MIDI input.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	AgsCoreAudioMidiin macos MIDI input.
+      </para>
+    </listitem>
+  </itemizedlist>
+  
   <sect1>
     <title>Gathering PCM information of soundcard</title>
     <para>
@@ -41,5 +119,34 @@
 <xi:include href="../listings/pcm_info.c" parse="text" />
       </programlisting>
     </example>    
+  </sect1>
+
+  <sect1>
+    <title>Obtain audio buffer</title>
+    <para>
+      Here we get audio buffer from AgsSoundcard and write some sine synth tone at
+      440 Hz. First we get presets from soundcard, then we fill the AgsSynthUtil struct
+      and finally compute the sine sound using utility function.
+    </para>
+    
+    <example>
+      <title>Get AgsSoundcard buffer</title>
+      <programlisting language="C">
+<xi:include href="../listings/soundcard_buffer.c" parse="text" />
+      </programlisting>
+    </example>
+  </sect1>
+
+  <sect1>
+    <title>Read from MIDI device</title>
+    <para>
+    </para>
+    
+    <example>
+      <title>Get AgsSequencer buffer</title>
+      <programlisting language="C">
+<xi:include href="../listings/sequencer_buffer.c" parse="text" />
+      </programlisting>
+    </example>
   </sect1>
 </chapter>

@@ -1,4 +1,4 @@
-/* Copyright (C) 2005-2018 Joël Krähemann
+/* Copyright (C) 2005-2021 Joël Krähemann
  * Permission is granted to copy, distribute and/or modify this document
  * under the terms of the GNU Free Documentation License, Version 1.3
  * or any later version published by the Free Software Foundation;
@@ -17,11 +17,46 @@ AgsAudio *audio;
 AgsNotation *notation;
 AgsNote *note;
 
+AgsApplicationContext *application_context;
+
+GObject *current_soundcard;
+
 xmlNode *clipboard;
 
+GList *start_soundcard;
+
+guint audio_channels;
+guint output_pads, input_pads;
 guint i;
 
-audio = ags_audio_new();
+/* get application context and soundcard */
+application_context = ags_application_context_get_instance();
+
+start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+current_soundcard = start_soundcard->data;
+
+audio_channels = 1;
+
+output_pads = 2;
+input_pads = 88;
+
+audio = ags_audio_new(current_soundcard);
+ags_audio_set_flags(audio,
+		    (AGS_AUDIO_SYNC |
+		     AGS_AUDIO_ASYNC |
+		     AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		     AGS_AUDIO_INPUT_HAS_RECYCLING));
+
+ags_audio_set_audio_channels(audio,
+                             audio_channels);
+
+ags_audio_set_pads(audio,
+                   AGS_TYPE_OUTPUT,
+                   output_pads);
+ags_audio_set_pads(audio,
+                   AGS_TYPE_INPUT,
+                   input_pads);
 
 notation = ags_notation_new(audio,
 			    0);

@@ -122,6 +122,7 @@ typedef enum{
 typedef enum{
   AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_SELECT_BUFFER       = 1,
   AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_POSITION_CURSOR     = 1 <<  1,
+  AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_TIME_STRETCH_BUFFER = 1 <<  2,
 }AgsCompositeToolbarWaveDialog;
 
 struct _AgsCompositeToolbar
@@ -180,6 +181,7 @@ struct _AgsCompositeToolbar
 
   GtkDialog *wave_select_buffer;
   GtkDialog *wave_position_cursor;
+  GtkDialog *wave_time_stretch_buffer;
 };
 
 struct _AgsCompositeToolbarClass

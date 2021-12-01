@@ -259,9 +259,12 @@ CLEANFILES = \
 	docs/listings/port.c \
 	docs/listings/pull_thread.c \
 	docs/listings/recycling.c \
+	docs/listings/sequencer_buffer.c \
 	docs/listings/start_thread.c \
+	docs/listings/soundcard_buffer.c \
 	docs/listings/thread_application_context.c \
 	docs/listings/thread_obj_mutex.c \
+	docs/listings/wave_concat.c \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
 	docs/reference/libags/libags.interfaces \
@@ -490,9 +493,12 @@ devdoclistings = \
 	docs/listings/pull_thread.c.in \
 	docs/listings/port.c.in \
 	docs/listings/recycling.c.in \
+	docs/listings/soundcard_buffer.c.in \
 	docs/listings/start_thread.c.in \
+	docs/listings/sequencer_buffer.c.in \
 	docs/listings/thread_obj_mutex.c.in \
-	docs/listings/thread_application_context.c.in
+	docs/listings/thread_application_context.c.in \
+	docs/listings/wave_concat.c.in
 
 devdocimages = \
 	docs/images/AGS_iterator.png \
@@ -1134,6 +1140,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_sfz_util.h \
 	ags/audio/ags_synth_generator.h \
 	ags/audio/ags_synth_util.h \
+	ags/audio/ags_time_stretch_util.h \
 	ags/audio/ags_track.h \
 	ags/audio/ags_volume_util.h \
 	ags/audio/ags_wave.h
@@ -1229,6 +1236,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_sfz_util.c \
 	ags/audio/ags_synth_generator.c \
 	ags/audio/ags_synth_util.c \
+	ags/audio/ags_time_stretch_util.c \
 	ags/audio/ags_track.c \
 	ags/audio/ags_volume_util.c \
 	ags/audio/ags_wave.c
@@ -1867,6 +1875,18 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_lfo_channel_processor.h \
 	ags/audio/fx/ags_fx_lfo_recycling.h \
 	ags/audio/fx/ags_fx_lfo_audio_signal.h \
+	ags/audio/fx/ags_fx_low_pass_audio.h \
+	ags/audio/fx/ags_fx_low_pass_audio_processor.h \
+	ags/audio/fx/ags_fx_low_pass_channel.h \
+	ags/audio/fx/ags_fx_low_pass_channel_processor.h \
+	ags/audio/fx/ags_fx_low_pass_recycling.h \
+	ags/audio/fx/ags_fx_low_pass_audio_signal.h \
+	ags/audio/fx/ags_fx_high_pass_audio.h \
+	ags/audio/fx/ags_fx_high_pass_audio_processor.h \
+	ags/audio/fx/ags_fx_high_pass_channel.h \
+	ags/audio/fx/ags_fx_high_pass_channel_processor.h \
+	ags/audio/fx/ags_fx_high_pass_recycling.h \
+	ags/audio/fx/ags_fx_high_pass_audio_signal.h \
 	ags/audio/fx/ags_fx_eq10_audio.h \
 	ags/audio/fx/ags_fx_eq10_audio_processor.h \
 	ags/audio/fx/ags_fx_eq10_channel.h \
@@ -1960,6 +1980,18 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_volume_channel_processor.c \
 	ags/audio/fx/ags_fx_volume_recycling.c \
 	ags/audio/fx/ags_fx_volume_audio_signal.c \
+	ags/audio/fx/ags_fx_low_pass_audio.c \
+	ags/audio/fx/ags_fx_low_pass_audio_processor.c \
+	ags/audio/fx/ags_fx_low_pass_channel.c \
+	ags/audio/fx/ags_fx_low_pass_channel_processor.c \
+	ags/audio/fx/ags_fx_low_pass_recycling.c \
+	ags/audio/fx/ags_fx_low_pass_audio_signal.c \
+	ags/audio/fx/ags_fx_high_pass_audio.c \
+	ags/audio/fx/ags_fx_high_pass_audio_processor.c \
+	ags/audio/fx/ags_fx_high_pass_channel.c \
+	ags/audio/fx/ags_fx_high_pass_channel_processor.c \
+	ags/audio/fx/ags_fx_high_pass_recycling.c \
+	ags/audio/fx/ags_fx_high_pass_audio_signal.c \
 	ags/audio/fx/ags_fx_lfo_audio.c \
 	ags/audio/fx/ags_fx_lfo_audio_processor.c \
 	ags/audio/fx/ags_fx_lfo_channel.c \
@@ -2865,6 +2897,8 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_sheet_edit_callbacks.h \
 	ags/X/editor/ags_sheet_toolbar.h \
 	ags/X/editor/ags_sheet_toolbar_callbacks.h \
+	ags/X/editor/ags_time_stretch_buffer_dialog.h \
+	ags/X/editor/ags_time_stretch_buffer_dialog_callbacks.h \
 	ags/X/editor/ags_vautomation_edit_box.h \
 	ags/X/editor/ags_vwave_edit_box.h \
 	ags/X/editor/ags_wave_edit_callbacks.h \
@@ -2933,6 +2967,8 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_sheet_edit_callbacks.c \
 	ags/X/editor/ags_sheet_toolbar.c \
 	ags/X/editor/ags_sheet_toolbar_callbacks.c \
+	ags/X/editor/ags_time_stretch_buffer_dialog.c \
+	ags/X/editor/ags_time_stretch_buffer_dialog_callbacks.c \
 	ags/X/editor/ags_vautomation_edit_box.c \
 	ags/X/editor/ags_vwave_edit_box.c \
 	ags/X/editor/ags_wave_edit.c \

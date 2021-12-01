@@ -115,7 +115,10 @@ ags_setup(int argc, char **argv)
 #endif
   
   ags_application_context_prepare(application_context);
-  //  ags_application_context_setup(AGS_APPLICATION_CONTEXT(xorg_application_context));
+  ags_application_context_setup(application_context);
+  
+  /* gtk main */
+  gtk_main();
 }
 
 int

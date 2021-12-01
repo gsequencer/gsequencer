@@ -13,6 +13,8 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+void setup_callback(AgsApplicationContext *application_context, gpointer data);
+
 AgsAudio* setup_master(AgsApplicationContext *application_context);
 AgsAudio* setup_slave(AgsApplicationContext *application_context);
 
@@ -41,6 +43,104 @@ AgsAudio* setup_slave(AgsApplicationContext *application_context);
   "auto-sense=true\n"					\
   "\n"
 
+
+void setup_callback(AgsApplicationContext *application_context, gpointer data)
+{
+  AgsAudio *master, *slave;
+  AgsChannel *start_output, *output;
+  AgsChannel *start_input, *input;
+
+  AgsStartAudio *start_audio;
+  
+  AgsThread *main_loop;
+  AgsTaskLauncher *task_launcher;
+  
+  GError *error;
+
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+  
+  /* main loop */
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  /* setup audio tree */
+  master = setup_master(application_context);
+  slave = setup_slave(application_context);
+
+  /* set link */
+  start_input = NULL;
+  start_output = NULL;
+  
+  g_object_get(master,
+	       "input", &start_input,
+	       NULL);
+
+  g_object_get(slave,
+	       "input", &start_output,
+	       NULL);
+  
+  input = start_input;
+
+  if(input != NULL){
+    g_object_ref(input);
+  }  
+
+  output = start_output;
+
+  if(output != NULL){
+    g_object_ref(output);
+  }  
+
+  while(input != NULL &&
+        output != NULL){
+    AgsChannel *next;
+    
+    error = NULL;
+    ags_channel_set_link(input,
+                         output,
+                         &error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+    }
+
+    /* iterate output */
+    next = ags_channel_next(output);
+
+    g_object_unref(output);
+    
+    output = next;
+
+    /* iterate input */
+    next = ags_channel_next(input);
+
+    g_object_unref(input);
+    
+    input = next;
+  }
+
+  start_audio = ags_start_audio_new(slave,
+				    AGS_SOUND_SCOPE_SEQUENCER);
+
+  /* launch task */
+  ags_task_launcher_add_task(task_launcher,
+			     start_audio);
+
+  if(main_loop != NULL){
+    g_object_unref(main_loop);
+  }
+
+  if(task_launcher != NULL){
+    g_object_unref(task_launcher);
+  }
+
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+}
 
 AgsAudio*
 setup_master(AgsApplicationContext *application_context)
@@ -391,19 +491,8 @@ setup_slave(AgsApplicationContext *application_context)
 int
 main(int argc, char **argv)
 {
-  AgsAudio *master, *slave;
-  AgsChannel *start_output, *output;
-  AgsChannel *start_input, *input;
-
-  AgsStartAudio *start_audio;
-  
-  AgsThread *main_loop;
-  AgsTaskLauncher *task_launcher;
-  
   AgsApplicationContext *application_context;
   AgsConfig *config;
-
-  GError *error;
 
   config = ags_config_get_instance();
   ags_config_load_from_data(config,
@@ -412,92 +501,17 @@ main(int argc, char **argv)
 
   /* create application context */
   application_context = ags_audio_application_context_new();
-  g_object_ref(audio_application_context);
+  g_object_ref(application_context);
   
-  ags_application_context_prepare(audio_application_context);
-  ags_application_context_setup(audio_application_context);
-
-  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+  g_signal_connect_after(application_context, "setup",
+			 G_CALLBACK(setup_callback), NULL);
   
-  /* main loop */
-  main_loop = application_context->main_loop;
-
-  /* setup audio tree */
-  master = setup_master(application_context);
-  slave = setup_slave(application_context);
-
-  /* set link */
-  start_input = NULL;
-  start_output = NULL;
+  ags_application_context_prepare(application_context);
+  ags_application_context_setup(application_context);
   
-  g_object_get(master,
-	       "input", &start_input,
-	       NULL);
+  /* main loop run */
+  g_main_loop_run(g_main_loop_new(g_main_context_default(),
+				  TRUE));
 
-  g_object_get(slave,
-	       "input", &start_output,
-	       NULL);
-  
-  input = start_input;
-
-  if(input != NULL){
-    g_object_ref(input);
-  }  
-
-  output = start_output;
-
-  if(output != NULL){
-    g_object_ref(output);
-  }  
-
-  while(input != NULL &&
-        output != NULL){
-    AgsChannel *next;
-    
-    error = NULL;
-    ags_channel_set_link(input,
-                         output,
-                         &error);
-
-    if(error != NULL){
-      g_message("%s", error->message);
-    }
-
-    /* iterate output */
-    next = ags_channel_next(output);
-
-    g_object_unref(output);
-    
-    output = next;
-
-    /* iterate input */
-    next = ags_channel_next(input);
-
-    g_object_unref(input);
-    
-    input = next;
-  }
-
-  if(start_output != NULL){
-    g_object_unref(start_output);
-  }
-
-  if(start_input != NULL){
-    g_object_unref(start_input);
-  }
-
-  start_audio = ags_start_audio_new(slave,
-				    AGS_SOUND_SCOPE_SEQUENCER);
-
-  /* launch task */
-  sleep(3);
-
-  ags_task_launcher_add_task(task_launcher,
-			     start_audio);
-
-  /* GLib's main loop */
-  g_main_loop_run(g_main_loop_new(NULL,
-				  FALSE));
-  
   return(0);
 }

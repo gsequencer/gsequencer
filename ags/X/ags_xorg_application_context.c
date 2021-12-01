@@ -2832,13 +2832,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   
   if(filename != NULL){
     window->filename = filename;
-  }
-  
-  /* gtk main */
-  
-  ags_application_context_setup(AGS_APPLICATION_CONTEXT(application_context));
-  
-  gtk_main();
+  }  
 }
 
 void
@@ -3083,8 +3077,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   blacklist_path = g_strdup_printf("/Users/joelkrahemann/.gsequencer");  
 #endif
 #endif
-
-  xorg_application_context->start_loader = TRUE;
   
   /* load ladspa manager */
   ladspa_manager = ags_ladspa_manager_get_instance();
@@ -3137,6 +3129,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 				  blacklist_filename);
 #endif
     
+  xorg_application_context->start_loader = TRUE;
+  
   /* sound server */
   xorg_application_context->sound_server = NULL;
 
