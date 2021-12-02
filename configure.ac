@@ -73,6 +73,11 @@ AC_ARG_ENABLE(mac-integration, [AS_HELP_STRING([--enable-mac-integration],
               [],
               [enable_mac_integration=no])
 
+AC_ARG_ENABLE(osx-dmg-env, [AS_HELP_STRING([--enable-osx-dmg-env],
+                                      [enable OS X DMG environment (default is no)])],
+              [],
+              [enable_osx_dmg_env=no])
+
 AC_ARG_ENABLE(alsa, [AS_HELP_STRING([--enable-alsa],
                                     [enable alsa (default is yes)])],
               [],
@@ -282,6 +287,12 @@ AS_IF([test "x$enable_mac_integration" != xno],
        AC_SUBST(GTK_MAC_INTEGRATION_LIBS)
        AC_MSG_NOTICE([mac integration enabled])],
       [AC_MSG_NOTICE([mac integration disabled])])
+
+AS_IF([test "x$enable_osx_dmg_env" != xno],
+      [AC_DEFINE([AGS_OSX_DMG_ENV], [1], [OS X DMG environment enabled])
+      AC_MSG_NOTICE([OS X DMG environment enabled])],
+      [AC_MSG_NOTICE([OS X DMG environment disabled])])
+AM_CONDITIONAL([WITH_OSX_DMG_ENV], [test "x$enable_osx_dmg_env" == xyes])
 
 
 PKG_CHECK_MODULES([UUID], [uuid >= 1.0.1])
