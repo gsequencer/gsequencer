@@ -1743,7 +1743,7 @@ ags_alsa_devout_is_available(AgsSoundcard *soundcard)
   /* check is starting */
   g_rec_mutex_lock(alsa_devout_mutex);
 
-  handle = alsa_devout->out.alsa.handle;
+  handle = alsa_devout->handle;
   
   g_rec_mutex_unlock(alsa_devout_mutex);
 
@@ -1913,7 +1913,7 @@ ags_alsa_devout_device_init(AgsSoundcard *soundcard,
   /* retrieve word size */
   g_rec_mutex_lock(alsa_devout_mutex);
 
-  if(alsa_devout->out.alsa.device == NULL){
+  if(alsa_devout->device == NULL){
     g_rec_mutex_unlock(alsa_devout_mutex);
     
     return;
@@ -2000,14 +2000,14 @@ ags_alsa_devout_device_init(AgsSoundcard *soundcard,
   /* Open PCM device for playback. */  
   handle = NULL;
 
-  if((err = snd_pcm_open(&handle, alsa_devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0){
+  if((err = snd_pcm_open(&handle, alsa_devout->device, SND_PCM_STREAM_PLAYBACK, 0)) < 0){
     gchar *device_fixup;
     
     str = snd_strerror(err);
     g_warning("Playback open error (attempting fixup): %s", str);
     
     device_fixup = g_strdup_printf("%s,0",
-				   alsa_devout->out.alsa.device);
+				   alsa_devout->device);
 
     handle = NULL;
     
@@ -2056,7 +2056,7 @@ ags_alsa_devout_device_init(AgsSoundcard *soundcard,
 		  str);
     }
 
-    alsa_devout->out.alsa.handle = NULL;
+    alsa_devout->handle = NULL;
     
     //    free(str);
     
@@ -2097,7 +2097,7 @@ ags_alsa_devout_device_init(AgsSoundcard *soundcard,
 		  str);
     }
 
-    alsa_devout->out.alsa.handle = NULL;
+    alsa_devout->handle = NULL;
     
     //    free(str);
     
@@ -2124,7 +2124,7 @@ ags_alsa_devout_device_init(AgsSoundcard *soundcard,
 		  str);
     }
 
-    alsa_devout->out.alsa.handle = NULL;
+    alsa_devout->handle = NULL;
     
     //    free(str);
     
@@ -2152,7 +2152,7 @@ ags_alsa_devout_device_init(AgsSoundcard *soundcard,
 		  str);
     }
 
-    alsa_devout->out.alsa.handle = NULL;
+    alsa_devout->handle = NULL;
     
     //    free(str);
     
@@ -2181,7 +2181,7 @@ ags_alsa_devout_device_init(AgsSoundcard *soundcard,
 		  str);
     }
 
-    alsa_devout->out.alsa.handle = NULL;
+    alsa_devout->handle = NULL;
     
     //    free(str);
     
@@ -2204,7 +2204,7 @@ ags_alsa_devout_device_init(AgsSoundcard *soundcard,
 		  "unable to open pcm device");
     }
 
-    alsa_devout->out.alsa.handle = NULL;
+    alsa_devout->handle = NULL;
     
     return;
   }
@@ -2231,7 +2231,7 @@ ags_alsa_devout_device_init(AgsSoundcard *soundcard,
 		  str);
     }
 
-    alsa_devout->out.alsa.handle = NULL;
+    alsa_devout->handle = NULL;
     
     //    free(str);
     
@@ -2274,7 +2274,7 @@ ags_alsa_devout_device_init(AgsSoundcard *soundcard,
 		  str);
     }
 
-    alsa_devout->out.alsa.handle = NULL;
+    alsa_devout->handle = NULL;
     
     //    free(str);
     
@@ -2337,17 +2337,17 @@ ags_alsa_devout_device_init(AgsSoundcard *soundcard,
   */
 
   /*  */
-  alsa_devout->out.alsa.handle = handle;
+  alsa_devout->handle = handle;
 
 #if 0
-  i_stop = snd_pcm_poll_descriptors_count(alsa_devout->out.alsa.handle);
+  i_stop = snd_pcm_poll_descriptors_count(alsa_devout->handle);
 
   if(i_stop > 0){
     struct pollfd *fds;
     
     fds = (struct pollfd *) malloc(i_stop * sizeof(struct pollfd));
     
-    snd_pcm_poll_descriptors(alsa_devout->out.alsa.handle, fds, i_stop);
+    snd_pcm_poll_descriptors(alsa_devout->handle, fds, i_stop);
     
     for(i = 0; i < i_stop; i++){
       GIOChannel *io_channel;
@@ -2734,20 +2734,20 @@ ags_alsa_devout_device_play(AgsSoundcard *soundcard,
   /* write ring buffer */
 //  g_message("write %d", alsa_devout->buffer_size);
   
-  alsa_devout->out.alsa.rc = snd_pcm_writei(alsa_devout->out.alsa.handle,
-					    alsa_devout->ring_buffer[alsa_devout->nth_ring_buffer],
-					    (snd_pcm_uframes_t) (alsa_devout->buffer_size));
+  alsa_devout->rc = snd_pcm_writei(alsa_devout->handle,
+				   alsa_devout->ring_buffer[alsa_devout->nth_ring_buffer],
+				   (snd_pcm_uframes_t) (alsa_devout->buffer_size));
   
   /* check error flag */
   if((AGS_ALSA_DEVOUT_NONBLOCKING & (alsa_devout->flags)) == 0){
-    if(alsa_devout->out.alsa.rc == -EPIPE){
+    if(alsa_devout->rc == -EPIPE){
       /* EPIPE means underrun */
-      snd_pcm_prepare(alsa_devout->out.alsa.handle);
+      snd_pcm_prepare(alsa_devout->handle);
 
 #ifdef AGS_DEBUG
       g_message("underrun occurred");
 #endif
-    }else if(alsa_devout->out.alsa.rc == -ESTRPIPE){
+    }else if(alsa_devout->rc == -ESTRPIPE){
       static const struct timespec idle = {
 	0,
 	4000,
@@ -2755,19 +2755,19 @@ ags_alsa_devout_device_play(AgsSoundcard *soundcard,
 
       int err;
 
-      while((err = snd_pcm_resume(alsa_devout->out.alsa.handle)) < 0){ // == -EAGAIN
+      while((err = snd_pcm_resume(alsa_devout->handle)) < 0){ // == -EAGAIN
 	nanosleep(&idle, NULL); /* wait until the suspend flag is released */
       }
 	
       if(err < 0){
-	err = snd_pcm_prepare(alsa_devout->out.alsa.handle);
+	err = snd_pcm_prepare(alsa_devout->handle);
       }
-    }else if(alsa_devout->out.alsa.rc < 0){
-      str = snd_strerror(alsa_devout->out.alsa.rc);
+    }else if(alsa_devout->rc < 0){
+      str = snd_strerror(alsa_devout->rc);
       
       g_message("error from writei: %s", str);
-    }else if(alsa_devout->out.alsa.rc != (int) alsa_devout->buffer_size) {
-      g_message("short write, write %d frames", alsa_devout->out.alsa.rc);
+    }else if(alsa_devout->rc != (int) alsa_devout->buffer_size) {
+      g_message("short write, write %d frames", alsa_devout->rc);
     }
   }      
   
@@ -2815,7 +2815,7 @@ ags_alsa_devout_device_play(AgsSoundcard *soundcard,
 		   g_object_unref);
   
 #ifdef AGS_WITH_ALSA
-  snd_pcm_prepare(alsa_devout->out.alsa.handle);
+  snd_pcm_prepare(alsa_devout->handle);
 #endif
 
   /* unref */
@@ -2850,9 +2850,9 @@ ags_alsa_devout_device_free(AgsSoundcard *soundcard)
   g_rec_mutex_unlock(alsa_devout_mutex);
   
 #ifdef AGS_WITH_ALSA
-  //  snd_pcm_drain(alsa_devout->out.alsa.handle);
-  snd_pcm_close(alsa_devout->out.alsa.handle);
-  alsa_devout->out.alsa.handle = NULL;
+  //  snd_pcm_drain(alsa_devout->handle);
+  snd_pcm_close(alsa_devout->handle);
+  alsa_devout->handle = NULL;
 #endif
 
   /* free ring-buffer */
