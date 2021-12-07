@@ -187,20 +187,30 @@ struct _AgsDevoutClass
   GObjectClass gobject;
 };
 
+G_DEPRECATED
 GType ags_devout_get_type();
+G_DEPRECATED
 GType ags_devout_flags_get_type();
 
+G_DEPRECATED
 GQuark ags_devout_error_quark();
 
+G_DEPRECATED
 gboolean ags_devout_test_flags(AgsDevout *devout, guint flags);
+G_DEPRECATED
 void ags_devout_set_flags(AgsDevout *devout, guint flags);
+G_DEPRECATED
 void ags_devout_unset_flags(AgsDevout *devout, guint flags);
 
+G_DEPRECATED
 void ags_devout_switch_buffer_flag(AgsDevout *devout);
 
+G_DEPRECATED
 void ags_devout_adjust_delay_and_attack(AgsDevout *devout);
+G_DEPRECATED
 void ags_devout_realloc_buffer(AgsDevout *devout);
 
+G_DEPRECATED
 AgsDevout* ags_devout_new();
 
 G_END_DECLS

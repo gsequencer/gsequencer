@@ -75,11 +75,11 @@ typedef enum
 
   AGS_OSS_DEVOUT_PLAY               = 1 <<  7,
 
-  AGS_ALSA_DEVOUT_SHUTDOWN           = 1 <<  8,
-  AGS_ALSA_DEVOUT_START_PLAY         = 1 <<  9,
+  AGS_OSS_DEVOUT_SHUTDOWN           = 1 <<  8,
+  AGS_OSS_DEVOUT_START_PLAY         = 1 <<  9,
 
-  AGS_ALSA_DEVOUT_NONBLOCKING        = 1 << 10,
-  AGS_ALSA_DEVOUT_INITIALIZED        = 1 << 11,
+  AGS_OSS_DEVOUT_NONBLOCKING        = 1 << 10,
+  AGS_OSS_DEVOUT_INITIALIZED        = 1 << 11,
 }AgsOssDevoutFlags;
 
 #define AGS_OSS_DEVOUT_ERROR (ags_oss_devout_error_quark())

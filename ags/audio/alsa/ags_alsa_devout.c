@@ -290,7 +290,7 @@ ags_alsa_devout_class_init(AgsAlsaDevoutClass *alsa_devout)
    *
    * The alsa soundcard indentifier
    * 
-   * Since: 3.13.1
+   * Since: 3.13.2
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
@@ -306,7 +306,7 @@ ags_alsa_devout_class_init(AgsAlsaDevoutClass *alsa_devout)
    *
    * The dsp channel count
    * 
-   * Since: 3.13.1
+   * Since: 3.13.2
    */
   param_spec = g_param_spec_uint("dsp-channels",
 				 i18n_pspec("count of DSP channels"),
@@ -324,7 +324,7 @@ ags_alsa_devout_class_init(AgsAlsaDevoutClass *alsa_devout)
    *
    * The pcm channel count
    * 
-   * Since: 3.13.1
+   * Since: 3.13.2
    */
   param_spec = g_param_spec_uint("pcm-channels",
 				 i18n_pspec("count of PCM channels"),
@@ -342,7 +342,7 @@ ags_alsa_devout_class_init(AgsAlsaDevoutClass *alsa_devout)
    *
    * The precision of the buffer
    * 
-   * Since: 3.13.1
+   * Since: 3.13.2
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("precision of buffer"),
@@ -360,7 +360,7 @@ ags_alsa_devout_class_init(AgsAlsaDevoutClass *alsa_devout)
    *
    * The buffer size
    * 
-   * Since: 3.13.1
+   * Since: 3.13.2
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("frame count of a buffer"),
@@ -378,7 +378,7 @@ ags_alsa_devout_class_init(AgsAlsaDevoutClass *alsa_devout)
    *
    * The samplerate
    * 
-   * Since: 3.13.1
+   * Since: 3.13.2
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("frames per second"),
@@ -396,7 +396,7 @@ ags_alsa_devout_class_init(AgsAlsaDevoutClass *alsa_devout)
    *
    * The buffer
    * 
-   * Since: 3.13.1
+   * Since: 3.13.2
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -411,7 +411,7 @@ ags_alsa_devout_class_init(AgsAlsaDevoutClass *alsa_devout)
    *
    * Beats per minute
    * 
-   * Since: 3.13.1
+   * Since: 3.13.2
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -429,7 +429,7 @@ ags_alsa_devout_class_init(AgsAlsaDevoutClass *alsa_devout)
    *
    * tact
    * 
-   * Since: 3.13.1
+   * Since: 3.13.2
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -447,7 +447,7 @@ ags_alsa_devout_class_init(AgsAlsaDevoutClass *alsa_devout)
    *
    * Attack of the buffer
    * 
-   * Since: 3.13.1
+   * Since: 3.13.2
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -580,7 +580,7 @@ ags_alsa_devout_init(AgsAlsaDevout *alsa_devout)
   alsa_devout->uuid = ags_uuid_alloc();
   ags_uuid_generate(alsa_devout->uuid);
 
-  /* flags */
+  /* config */
   config = ags_config_get_instance();
 
   /* presets */
@@ -1192,7 +1192,7 @@ ags_alsa_devout_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 3.13.1
+ * Since: 3.13.2
  */
 gboolean
 ags_alsa_devout_test_flags(AgsAlsaDevout *alsa_devout, guint flags)
@@ -1225,7 +1225,7 @@ ags_alsa_devout_test_flags(AgsAlsaDevout *alsa_devout, guint flags)
  *
  * Enable a feature of @alsa_devout.
  *
- * Since: 3.13.1
+ * Since: 3.13.2
  */
 void
 ags_alsa_devout_set_flags(AgsAlsaDevout *alsa_devout, guint flags)
@@ -1256,7 +1256,7 @@ ags_alsa_devout_set_flags(AgsAlsaDevout *alsa_devout, guint flags)
  *
  * Disable a feature of @alsa_devout.
  *
- * Since: 3.13.1
+ * Since: 3.13.2
  */
 void
 ags_alsa_devout_unset_flags(AgsAlsaDevout *alsa_devout, guint flags)
@@ -3674,7 +3674,7 @@ ags_alsa_devout_unlock_sub_block(AgsSoundcard *soundcard,
  *
  * The buffer flag indicates the currently played buffer.
  *
- * Since: 3.13.1
+ * Since: 3.13.2
  */
 void
 ags_alsa_devout_switch_buffer_flag(AgsAlsaDevout *alsa_devout)
@@ -3714,7 +3714,7 @@ ags_alsa_devout_switch_buffer_flag(AgsAlsaDevout *alsa_devout)
  *
  * Calculate delay and attack and reset it.
  *
- * Since: 3.13.1
+ * Since: 3.13.2
  */
 void
 ags_alsa_devout_adjust_delay_and_attack(AgsAlsaDevout *alsa_devout)
@@ -3732,7 +3732,7 @@ ags_alsa_devout_adjust_delay_and_attack(AgsAlsaDevout *alsa_devout)
  *
  * Reallocate the internal audio buffer.
  *
- * Since: 3.13.1
+ * Since: 3.13.2
  */
 void
 ags_alsa_devout_realloc_buffer(AgsAlsaDevout *alsa_devout)
@@ -3831,7 +3831,7 @@ ags_alsa_devout_realloc_buffer(AgsAlsaDevout *alsa_devout)
  *
  * Returns: the new #AgsAlsaDevout
  *
- * Since: 3.13.1
+ * Since: 3.13.2
  */
 AgsAlsaDevout*
 ags_alsa_devout_new()
