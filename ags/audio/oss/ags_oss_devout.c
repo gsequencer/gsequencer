@@ -1502,7 +1502,7 @@ ags_oss_devout_list_cards(AgsSoundcard *soundcard,
 
 #ifdef AGS_WITH_OSS
   if((mixer_device = getenv("OSS_MIXERDEV")) == NULL){
-    mixer_device = "/dev/mixer";
+    mixer_device = AGS_OSS_DEVOUT_DEFAULT_OSS_MIXER_DEVICE;
   }
 
   if((mixerfd = open(mixer_device, O_RDONLY, 0)) == -1){

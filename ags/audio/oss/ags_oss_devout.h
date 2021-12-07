@@ -37,6 +37,7 @@ G_BEGIN_DECLS
 #define AGS_OSS_DEVOUT_GET_OBJ_MUTEX(obj) (&(((AgsOssDevout *) obj)->obj_mutex))
 
 #define AGS_OSS_DEVOUT_DEFAULT_OSS_DEVICE "/dev/dsp"
+#define AGS_OSS_DEVOUT_DEFAULT_OSS_MIXER_DEVICE "/dev/mixer"
 
 #define AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE (4)
 #define AGS_OSS_DEVOUT_DEFAULT_BACKEND_BUFFER_SIZE (8)
@@ -143,7 +144,7 @@ struct _AgsOssDevout
   guint pcm_channels;
   guint format;
   guint buffer_size;
-  guint samplerate; // sample_rate
+  guint samplerate;
   
   guint app_buffer_mode;
   
