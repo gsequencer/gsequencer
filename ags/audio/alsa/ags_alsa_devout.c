@@ -602,10 +602,10 @@ ags_alsa_devout_init(AgsAlsaDevout *alsa_devout)
   }
   
   alsa_devout->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
-  alsa_devout->sub_block_mutex = (GRecMutex **) malloc(AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE * alsa_devout->sub_block_count * alsa_devout->pcm_channels * sizeof(GRecMutex *));
+  alsa_devout->sub_block_mutex = (GRecMutex **) g_malloc(AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE * alsa_devout->sub_block_count * alsa_devout->pcm_channels * sizeof(GRecMutex *));
 
   for(i = 0; i < AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE * alsa_devout->sub_block_count * alsa_devout->pcm_channels; i++){
-    alsa_devout->sub_block_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
+    alsa_devout->sub_block_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
 
     g_rec_mutex_init(alsa_devout->sub_block_mutex[i]);
   }
@@ -747,18 +747,18 @@ ags_alsa_devout_set_property(GObject *gobject,
     old_pcm_channels = alsa_devout->pcm_channels;
 
     /* destroy if less pcm-channels */
-    for(i = 4 * alsa_devout->sub_block_count * pcm_channels; i < 4 * alsa_devout->sub_block_count * old_pcm_channels; i++){
+    for(i = AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE * alsa_devout->sub_block_count * pcm_channels; i < AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE * alsa_devout->sub_block_count * old_pcm_channels; i++){
       g_rec_mutex_clear(alsa_devout->sub_block_mutex[i]);
 
-      free(alsa_devout->sub_block_mutex[i]);
+      g_free(alsa_devout->sub_block_mutex[i]);
     }
 
-    alsa_devout->sub_block_mutex = (GRecMutex **) realloc(alsa_devout->sub_block_mutex,
-							  4 * alsa_devout->sub_block_count * pcm_channels * sizeof(GRecMutex *));
+    alsa_devout->sub_block_mutex = (GRecMutex **) g_realloc(alsa_devout->sub_block_mutex,
+							    AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE * alsa_devout->sub_block_count * pcm_channels * sizeof(GRecMutex *));
 
     /* create if more pcm-channels */
-    for(i = 4 * alsa_devout->sub_block_count * old_pcm_channels; i < 4 * alsa_devout->sub_block_count * pcm_channels; i++){
-      alsa_devout->sub_block_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
+    for(i = AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE * alsa_devout->sub_block_count * old_pcm_channels; i < AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE * alsa_devout->sub_block_count * pcm_channels; i++){
+      alsa_devout->sub_block_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
 
       g_rec_mutex_init(alsa_devout->sub_block_mutex[i]);
     }
@@ -1033,6 +1033,22 @@ ags_alsa_devout_finalize(GObject *gobject)
 
   g_free(alsa_devout->backend_buffer);
 
+  for(i = 0; i < AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE; i++){
+    g_rec_mutex_clear(alsa_devout->app_buffer_mutex[i]);
+    
+    g_free(alsa_devout->app_buffer_mutex[i])
+  }
+
+  g_free(alsa_devout->app_buffer_mutex);
+  
+  for(i = 0; i < AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE * alsa_devout->sub_block_count * alsa_devout->pcm_channels; i++){
+    g_rec_mutex_clear(alsa_devout->sub_block_mutex[i]);
+    
+    g_free(alsa_devout->sub_block_mutex[i]);
+  }
+
+  g_free(alsa_devout->sub_block_mutex);
+  
   g_free(alsa_devout->delay);
   g_free(alsa_devout->attack);
   
@@ -2367,7 +2383,7 @@ ags_alsa_devout_device_play_init(AgsSoundcard *soundcard,
   if(i_stop > 0){
     struct pollfd *fds;
     
-    fds = (struct pollfd *) malloc(i_stop * sizeof(struct pollfd));
+    fds = (struct pollfd *) g_malloc(i_stop * sizeof(struct pollfd));
     
     snd_pcm_poll_descriptors(alsa_devout->handle, fds, i_stop);
     

@@ -631,10 +631,10 @@ ags_oss_devout_init(AgsOssDevout *oss_devout)
   }
   
   oss_devout->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
-  oss_devout->sub_block_mutex = (GRecMutex **) malloc(AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE * oss_devout->sub_block_count * oss_devout->pcm_channels * sizeof(GRecMutex *));
+  oss_devout->sub_block_mutex = (GRecMutex **) g_malloc(AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE * oss_devout->sub_block_count * oss_devout->pcm_channels * sizeof(GRecMutex *));
 
   for(i = 0; i < AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE * oss_devout->sub_block_count * oss_devout->pcm_channels; i++){
-    oss_devout->sub_block_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
+    oss_devout->sub_block_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
 
     g_rec_mutex_init(oss_devout->sub_block_mutex[i]);
   }
@@ -680,11 +680,11 @@ ags_oss_devout_init(AgsOssDevout *oss_devout)
   }
 
   /* delay and attack */
-  oss_devout->delay = (gdouble *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					 sizeof(gdouble));
+  oss_devout->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+					   sizeof(gdouble));
   
-  oss_devout->attack = (guint *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					sizeof(guint));
+  oss_devout->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+					  sizeof(guint));
 
   ags_oss_devout_adjust_delay_and_attack(oss_devout);
   
@@ -776,18 +776,18 @@ ags_oss_devout_set_property(GObject *gobject,
     old_pcm_channels = oss_devout->pcm_channels;
 
     /* destroy if less pcm-channels */
-    for(i = 4 * oss_devout->sub_block_count * pcm_channels; i < 4 * oss_devout->sub_block_count * old_pcm_channels; i++){
+    for(i = AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE * oss_devout->sub_block_count * pcm_channels; i < AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE * oss_devout->sub_block_count * old_pcm_channels; i++){
       g_rec_mutex_clear(oss_devout->sub_block_mutex[i]);
 
-      free(oss_devout->sub_block_mutex[i]);
+      g_free(oss_devout->sub_block_mutex[i]);
     }
 
-    oss_devout->sub_block_mutex = (GRecMutex **) realloc(oss_devout->sub_block_mutex,
-							 4 * oss_devout->sub_block_count * pcm_channels * sizeof(GRecMutex *));
+    oss_devout->sub_block_mutex = (GRecMutex **) g_realloc(oss_devout->sub_block_mutex,
+							   AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE * oss_devout->sub_block_count * pcm_channels * sizeof(GRecMutex *));
 
     /* create if more pcm-channels */
-    for(i = 4 * oss_devout->sub_block_count * old_pcm_channels; i < 4 * oss_devout->sub_block_count * pcm_channels; i++){
-      oss_devout->sub_block_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
+    for(i = AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE * oss_devout->sub_block_count * old_pcm_channels; i < AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE * oss_devout->sub_block_count * pcm_channels; i++){
+      oss_devout->sub_block_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
 
       g_rec_mutex_init(oss_devout->sub_block_mutex[i]);
     }
@@ -1062,6 +1062,22 @@ ags_oss_devout_finalize(GObject *gobject)
 
   g_free(oss_devout->backend_buffer);
 
+  for(i = 0; i < AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE; i++){
+    g_rec_mutex_clear(oss_devout->app_buffer_mutex[i]);
+    
+    g_free(oss_devout->app_buffer_mutex[i])
+  }
+
+  g_free(oss_devout->app_buffer_mutex);
+  
+  for(i = 0; i < AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE * oss_devout->sub_block_count * oss_devout->pcm_channels; i++){
+    g_rec_mutex_clear(oss_devout->sub_block_mutex[i]);
+    
+    g_free(oss_devout->sub_block_mutex[i]);
+  }
+
+  g_free(oss_devout->sub_block_mutex);
+  
   g_free(oss_devout->delay);
   g_free(oss_devout->attack);
   
@@ -2280,16 +2296,16 @@ ags_oss_devout_device_play(AgsSoundcard *soundcard,
 #ifdef AGS_WITH_OSS    
   /* fill ring buffer */
   ags_soundcard_lock_buffer(soundcard,
-			    oss_devout->app_buffer[alsa_devout->app_buffer_mode]);
+			    oss_devout->app_buffer[oss_devout->app_buffer_mode]);
 
-  ags_oss_devout_oss_play_fill_ring_buffer(oss_devout->app_buffer[alsa_devout->app_buffer_mode],
+  ags_oss_devout_oss_play_fill_ring_buffer(oss_devout->app_buffer[oss_devout->app_buffer_mode],
 					   oss_devout->format,
 					   oss_devout->backend_buffer[oss_devout->backend_buffer_mode],
 					   oss_devout->pcm_channels,
 					   oss_devout->buffer_size);
 
   ags_soundcard_unlock_buffer(soundcard,
-			      oss_devout->app_buffer[alsa_devout->app_buffer_mode]);
+			      oss_devout->app_buffer[oss_devout->app_buffer_mode]);
 
   /* wait until available */
   poll_timeout = g_get_monotonic_time() + (G_USEC_PER_SEC * (1.0 / (gdouble) oss_devout->samplerate * (gdouble) oss_devout->buffer_size));
