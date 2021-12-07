@@ -126,7 +126,7 @@ struct _AgsAlsaDevout
   guint ring_buffer_size;
   guint nth_ring_buffer;
   
-  unsigned char **ring_buffer;
+  guchar **ring_buffer;
 
   double bpm; // beats per minute
   gdouble delay_factor;

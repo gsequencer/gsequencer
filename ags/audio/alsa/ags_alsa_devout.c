@@ -96,7 +96,7 @@ void ags_alsa_devout_device_init(AgsSoundcard *soundcard,
 				 GError **error);
 void ags_alsa_devout_device_play_fill_ring_buffer(void *buffer,
 						  guint ags_format,
-						  unsigned char *ring_buffer,
+						  guchar *ring_buffer,
 						  guint channels,
 						  guint buffer_size);
 void ags_alsa_devout_device_play(AgsSoundcard *soundcard,
@@ -1986,12 +1986,12 @@ ags_alsa_devout_device_init(AgsSoundcard *soundcard,
 
   /* allocate ring buffer */
 #ifdef AGS_WITH_ALSA
-  alsa_devout->ring_buffer = (unsigned char **) malloc(alsa_devout->ring_buffer_size * sizeof(unsigned char *));
+  alsa_devout->ring_buffer = (guchar **) malloc(alsa_devout->ring_buffer_size * sizeof(guchar *));
 
   for(i = 0; i < alsa_devout->ring_buffer_size; i++){
-    alsa_devout->ring_buffer[i] = (unsigned char *) malloc(alsa_devout->pcm_channels *
+    alsa_devout->ring_buffer[i] = (guchar *) malloc(alsa_devout->pcm_channels *
 							   alsa_devout->buffer_size * (snd_pcm_format_physical_width(format) / 8) *
-							   sizeof(unsigned char));
+							   sizeof(guchar));
   }
  
   /*  */
@@ -2389,7 +2389,7 @@ ags_alsa_devout_device_init(AgsSoundcard *soundcard,
 void
 ags_alsa_devout_device_play_fill_ring_buffer(void *buffer,
 					     guint ags_format,
-					     unsigned char *ring_buffer,
+					     guchar *ring_buffer,
 					     guint channels,
 					     guint buffer_size)
 {

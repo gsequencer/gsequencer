@@ -1249,44 +1249,31 @@ libags_audio_c_sources += \
 	ags/audio/ags_sf2_util.c
 endif
 
-# libags-audio - thread
-deprecated_libags_audio_thread_h_sources =
+# libags-audio - alsa
+deprecated_libags_audio_alsa_h_sources =
 
-libags_audio_thread_h_sources = \
-	$(deprecated_libags_audio_thread_h_sources) \
-	ags/audio/thread/ags_audio_loop.h \
-	ags/audio/thread/ags_audio_thread.h \
-	ags/audio/thread/ags_channel_thread.h \
-	ags/audio/thread/ags_sequencer_thread.h \
-	ags/audio/thread/ags_soundcard_thread.h \
-	ags/audio/thread/ags_export_thread.h \
-	ags/audio/thread/ags_sfz_loader.h \
-	ags/audio/thread/ags_wave_loader.h
+libags_audio_alsa_h_sources = \
+	$(deprecated_libags_audio_alsa_h_sources) \
+	ags/audio/alsa/ags_alsa_devout.h
 
-if WITH_LIBINSTPATCH
-libags_audio_thread_h_sources += \
-	$(deprecated_libags_audio_thread_h_sources) \
-	ags/audio/thread/ags_sf2_loader.h
-endif
+deprecated_libags_audio_alsa_c_sources =
 
-deprecated_libags_audio_thread_c_sources =
+libags_audio_alsa_c_sources = \
+	$(deprecated_libags_audio_alsa_c_sources) \
+	ags/audio/alsa/ags_alsa_devout.c
 
-libags_audio_thread_c_sources = \
-	$(deprecated_libags_audio_thread_c_sources) \
-	ags/audio/thread/ags_audio_loop.c \
-	ags/audio/thread/ags_audio_thread.c \
-	ags/audio/thread/ags_channel_thread.c \
-	ags/audio/thread/ags_sequencer_thread.c \
-	ags/audio/thread/ags_soundcard_thread.c \
-	ags/audio/thread/ags_export_thread.c \
-	ags/audio/thread/ags_sfz_loader.c \
-	ags/audio/thread/ags_wave_loader.c
+# libags-audio - oss
+deprecated_libags_audio_oss_h_sources =
 
-if WITH_LIBINSTPATCH
-libags_audio_thread_c_sources += \
-	$(deprecated_libags_audio_thread_c_sources) \
-	ags/audio/thread/ags_sf2_loader.c
-endif
+libags_audio_oss_h_sources = \
+	$(deprecated_libags_audio_oss_h_sources) \
+	ags/audio/oss/ags_oss_devout.h
+
+deprecated_libags_audio_oss_c_sources =
+
+libags_audio_oss_c_sources = \
+	$(deprecated_libags_audio_oss_c_sources) \
+	ags/audio/oss/ags_oss_devout.c
 
 # libags-audio - plugin
 deprecated_libags_plugin_h_sources =

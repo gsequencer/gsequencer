@@ -119,7 +119,7 @@ void ags_oss_devout_device_init(AgsSoundcard *soundcard,
 				GError **error);
 void ags_oss_devout_device_play_fill_ring_buffer(void *buffer,
 						 guint ags_format,
-						 unsigned char *ring_buffer,
+						 guchar *ring_buffer,
 						 guint channels,
 						 guint buffer_size);
 
@@ -1991,12 +1991,12 @@ ags_oss_devout_device_init(AgsSoundcard *soundcard,
   g_atomic_int_set(&(oss_devout->available),
 		   FALSE);
   
-  oss_devout->ring_buffer = (unsigned char **) malloc(oss_devout->ring_buffer_size * sizeof(unsigned char *));
+  oss_devout->ring_buffer = (guchar **) malloc(oss_devout->ring_buffer_size * sizeof(guchar *));
 
   for(i = 0; i < oss_devout->ring_buffer_size; i++){
-    oss_devout->ring_buffer[i] = (unsigned char *) malloc(oss_devout->pcm_channels *
+    oss_devout->ring_buffer[i] = (guchar *) malloc(oss_devout->pcm_channels *
 							  oss_devout->buffer_size * word_size *
-							  sizeof(unsigned char));
+							  sizeof(guchar));
   }
 
 #ifdef AGS_WITH_OSS
@@ -2188,7 +2188,7 @@ ags_oss_devout_device_init(AgsSoundcard *soundcard,
 void
 ags_oss_devout_device_play_fill_ring_buffer(void *buffer,
 					    guint ags_format,
-					    unsigned char *ring_buffer,
+					    guchar *ring_buffer,
 					    guint channels,
 					    guint buffer_size)
 {
