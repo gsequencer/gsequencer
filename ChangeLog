@@ -1,6 +1,8 @@
 ags (3.13.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsWave insert from clipboard
+	* fixed AgsCompositEdit match line of wave form editor
 	* fixed AgsAudioApplicationContext to set setup_ready field to TRUE
 
 ags (3.13.0)

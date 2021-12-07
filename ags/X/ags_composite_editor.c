@@ -1258,7 +1258,7 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
     
     composite_editor->selected_edit = composite_editor->wave_edit;
     
-    composite_editor->wave_edit->paste_flags = (AGS_COMPOSITE_EDIT_PASTE_MATCH_AUDIO_CHANNEL |
+    composite_editor->wave_edit->paste_flags = (AGS_COMPOSITE_EDIT_PASTE_MATCH_LINE |
 						AGS_COMPOSITE_EDIT_PASTE_NO_DUPLICATES);
 
     gtk_widget_hide(composite_editor->notation_edit);
