@@ -2233,7 +2233,10 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
       word_size = sizeof(gint64);
     }
   default:
+    g_rec_mutex_unlock(devout_mutex);
+    
     g_warning("ags_devout_oss_init(): unsupported word size");
+    
     return;
   }
 
@@ -2609,7 +2612,10 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
     }
     //NOTE:JK: not available    break;
   default:
+    g_rec_mutex_unlock(devout_mutex);
+    
     g_warning("ags_devout_oss_play(): unsupported word size");
+    
     return;
   }
 

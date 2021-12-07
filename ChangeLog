@@ -1,3 +1,10 @@
+ags (3.13.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsAlsaDevout
+	* implemented AgsOssDevout
+	* deprecated AgsDevout
+
 ags (3.13.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

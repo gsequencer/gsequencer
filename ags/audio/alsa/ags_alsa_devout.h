@@ -41,7 +41,8 @@ G_BEGIN_DECLS
 
 #define AGS_ALSA_DEVOUT_DEFAULT_ALSA_DEVICE "hw:0,0"
 
-#define AGS_ALSA_DEVOUT_DEFAULT_RING_BUFFER_SIZE (8)
+#define AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE (4)
+#define AGS_ALSA_DEVOUT_DEFAULT_BACKEND_BUFFER_SIZE (8)
 
 typedef struct _AgsAlsaDevout AgsAlsaDevout;
 typedef struct _AgsAlsaDevoutClass AgsAlsaDevoutClass;
@@ -50,16 +51,12 @@ typedef struct _AgsAlsaDevoutClass AgsAlsaDevoutClass;
  * AgsAlsaDevoutFlags:
  * @AGS_ALSA_DEVOUT_ADDED_TO_REGISTRY: the alsa_devout was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_ALSA_DEVOUT_CONNECTED: indicates the alsa_devout was connected by calling #AgsConnectable::connect()
- * @AGS_ALSA_DEVOUT_BUFFER0: ring-buffer 0
- * @AGS_ALSA_DEVOUT_BUFFER1: ring-buffer 1
- * @AGS_ALSA_DEVOUT_BUFFER2: ring-buffer 2
- * @AGS_ALSA_DEVOUT_BUFFER3: ring-buffer 3
- * @AGS_ALSA_DEVOUT_ATTACK_FIRST: use first attack, instead of second one
+ * @AGS_ALSA_DEVOUT_INITIALIZED: the soundcard was initialized
  * @AGS_ALSA_DEVOUT_PLAY: devout is running
  * @AGS_ALSA_DEVOUT_SHUTDOWN: stop playback
  * @AGS_ALSA_DEVOUT_START_PLAY: playback starting
  * @AGS_ALSA_DEVOUT_NONBLOCKING: do non-blocking calls
- * @AGS_ALSA_DEVOUT_INITIALIZED: the soundcard was initialized
+ * @AGS_ALSA_DEVOUT_ATTACK_FIRST: use first attack, instead of second one
  * 
  * Enum values to control the behavior or indicate internal state of #AgsAlsaDevout by
  * enable/disable as flags.
@@ -69,21 +66,58 @@ typedef enum
   AGS_ALSA_DEVOUT_ADDED_TO_REGISTRY  = 1,
   AGS_ALSA_DEVOUT_CONNECTED          = 1 <<  1,
 
-  AGS_ALSA_DEVOUT_BUFFER0            = 1 <<  2,
-  AGS_ALSA_DEVOUT_BUFFER1            = 1 <<  3,
-  AGS_ALSA_DEVOUT_BUFFER2            = 1 <<  4,
-  AGS_ALSA_DEVOUT_BUFFER3            = 1 <<  5,
+  AGS_ALSA_DEVOUT_INITIALIZED        = 1 <<  2,
 
-  AGS_ALSA_DEVOUT_ATTACK_FIRST       = 1 <<  6,
+  AGS_ALSA_DEVOUT_START_PLAY         = 1 <<  3,
+  AGS_ALSA_DEVOUT_PLAY               = 1 <<  4,
+  AGS_ALSA_DEVOUT_SHUTDOWN           = 1 <<  5,
 
-  AGS_ALSA_DEVOUT_PLAY               = 1 <<  7,
+  AGS_ALSA_DEVOUT_NONBLOCKING        = 1 <<  6,
 
-  AGS_ALSA_DEVOUT_SHUTDOWN           = 1 <<  8,
-  AGS_ALSA_DEVOUT_START_PLAY         = 1 <<  9,
-
-  AGS_ALSA_DEVOUT_NONBLOCKING        = 1 << 10,
-  AGS_ALSA_DEVOUT_INITIALIZED        = 1 << 11,
+  AGS_ALSA_DEVOUT_ATTACK_FIRST       = 1 <<  7,
 }AgsAlsaDevoutFlags;
+
+/**
+ * AgsAlsaDevoutAppBufferMode:
+ * @AGS_ALSA_DEVOUT_APP_BUFFER_0: ring-buffer 0
+ * @AGS_ALSA_DEVOUT_APP_BUFFER_1: ring-buffer 1
+ * @AGS_ALSA_DEVOUT_APP_BUFFER_2: ring-buffer 2
+ * @AGS_ALSA_DEVOUT_APP_BUFFER_3: ring-buffer 3
+ * 
+ * Enum values to indicate internal state of #AgsAlsaDevout application buffer by
+ * setting mode.
+ */
+typedef enum{
+  AGS_ALSA_DEVOUT_APP_BUFFER_0,
+  AGS_ALSA_DEVOUT_APP_BUFFER_1,
+  AGS_ALSA_DEVOUT_APP_BUFFER_2,
+  AGS_ALSA_DEVOUT_APP_BUFFER_3,
+}AgsAlsaDevoutAppBufferMode;
+
+/**
+ * AgsAlsaDevoutBackendBufferMode:
+ * @AGS_ALSA_DEVOUT_BACKEND_BUFFER_0: ring-buffer 0
+ * @AGS_ALSA_DEVOUT_BACKEND_BUFFER_1: ring-buffer 1
+ * @AGS_ALSA_DEVOUT_BACKEND_BUFFER_2: ring-buffer 2
+ * @AGS_ALSA_DEVOUT_BACKEND_BUFFER_3: ring-buffer 3
+ * @AGS_ALSA_DEVOUT_BACKEND_BUFFER_4: ring-buffer 4
+ * @AGS_ALSA_DEVOUT_BACKEND_BUFFER_5: ring-buffer 5
+ * @AGS_ALSA_DEVOUT_BACKEND_BUFFER_6: ring-buffer 6
+ * @AGS_ALSA_DEVOUT_BACKEND_BUFFER_7: ring-buffer 7
+ * 
+ * Enum values to indicate internal state of #AgsAlsaDevout backend buffer by
+ * setting mode.
+ */
+typedef enum{
+  AGS_ALSA_DEVOUT_BACKEND_BUFFER_0,
+  AGS_ALSA_DEVOUT_BACKEND_BUFFER_1,
+  AGS_ALSA_DEVOUT_BACKEND_BUFFER_2,
+  AGS_ALSA_DEVOUT_BACKEND_BUFFER_3,
+  AGS_ALSA_DEVOUT_BACKEND_BUFFER_4,
+  AGS_ALSA_DEVOUT_BACKEND_BUFFER_5,
+  AGS_ALSA_DEVOUT_BACKEND_BUFFER_6,
+  AGS_ALSA_DEVOUT_BACKEND_BUFFER_7,
+}AgsAlsaDevoutBackendBufferMode;
 
 #define AGS_ALSA_DEVOUT_ERROR (ags_alsa_devout_error_quark())
 
@@ -113,20 +147,21 @@ struct _AgsAlsaDevout
   guint format;
   guint buffer_size;
   guint samplerate; // sample_rate
+
+  guint app_buffer_mode;
   
-  GRecMutex **buffer_mutex;
+  GRecMutex **app_buffer_mutex;
 
   guint sub_block_count;
   GRecMutex **sub_block_mutex;
 
-  void **buffer;
+  void **app_buffer;
 
   volatile gboolean available;
   
-  guint ring_buffer_size;
-  guint nth_ring_buffer;
+  guint backend_buffer_mode;
   
-  guchar **ring_buffer;
+  guchar **backend_buffer;
 
   double bpm; // beats per minute
   gdouble delay_factor;
@@ -172,7 +207,7 @@ gboolean ags_alsa_devout_test_flags(AgsAlsaDevout *alsa_devout, guint flags);
 void ags_alsa_devout_set_flags(AgsAlsaDevout *alsa_devout, guint flags);
 void ags_alsa_devout_unset_flags(AgsAlsaDevout *alsa_devout, guint flags);
 
-void ags_alsa_devout_switch_buffer_flag(AgsAlsaDevout *alsa_devout);
+void ags_alsa_devout_switch_buffer(AgsAlsaDevout *alsa_devout);
 
 void ags_alsa_devout_adjust_delay_and_attack(AgsAlsaDevout *alsa_devout);
 void ags_alsa_devout_realloc_buffer(AgsAlsaDevout *alsa_devout);

@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/ags_oss_devout.h>
+#include <ags/audio/oss/ags_oss_devout.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_soundcard_util.h>
@@ -27,10 +27,10 @@
 #include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 
-#include <ags/config.h>
-
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#include <ags/ags_api_config.h>
 
 #if !defined(AGS_W32API)
 #include <fcntl.h>
@@ -115,13 +115,13 @@ gboolean ags_oss_devout_is_playing(AgsSoundcard *soundcard);
 
 gchar* ags_oss_devout_get_uptime(AgsSoundcard *soundcard);
 
-void ags_oss_devout_device_init(AgsSoundcard *soundcard,
-				GError **error);
-void ags_oss_devout_device_play_fill_ring_buffer(void *buffer,
-						 guint ags_format,
-						 guchar *ring_buffer,
-						 guint channels,
-						 guint buffer_size);
+void ags_oss_devout_device_play_init(AgsSoundcard *soundcard,
+				     GError **error);
+void ags_oss_devout_device_fill_backend_buffer(void *app_buffer,
+					       guint ags_format,
+					       guchar *backend_buffer,
+					       guint channels,
+					       guint buffer_size);
 
 gboolean ags_oss_devout_device_io_func(GIOChannel *source,
 				       GIOCondition condition,
@@ -273,16 +273,12 @@ ags_oss_devout_flags_get_type()
     static const GFlagsValue values[] = {
       { AGS_OSS_DEVOUT_ADDED_TO_REGISTRY, "AGS_OSS_DEVOUT_ADDED_TO_REGISTRY", "oss-devout-added-to-registry" },
       { AGS_OSS_DEVOUT_CONNECTED, "AGS_OSS_DEVOUT_CONNECTED", "oss-devout-connected" },
-      { AGS_OSS_DEVOUT_BUFFER0, "AGS_OSS_DEVOUT_BUFFER0", "oss-devout-buffer0" },
-      { AGS_OSS_DEVOUT_BUFFER1, "AGS_OSS_DEVOUT_BUFFER1", "oss-devout-buffer1" },
-      { AGS_OSS_DEVOUT_BUFFER2, "AGS_OSS_DEVOUT_BUFFER2", "oss-devout-buffer2" },
-      { AGS_OSS_DEVOUT_BUFFER3, "AGS_OSS_DEVOUT_BUFFER3", "oss-devout-buffer3" },
-      { AGS_OSS_DEVOUT_ATTACK_FIRST, "AGS_OSS_DEVOUT_ATTACK_FIRST", "oss-devout-attack-first" },
+      { AGS_OSS_DEVOUT_INITIALIZED, "AGS_OSS_DEVOUT_INITIALIZED", "oss-devout-initialized" },
+      { AGS_OSS_DEVOUT_START_PLAY, "AGS_OSS_DEVOUT_START_PLAY", "oss-devout-start-play" },
       { AGS_OSS_DEVOUT_PLAY, "AGS_OSS_DEVOUT_PLAY", "oss-devout-play" },
       { AGS_OSS_DEVOUT_SHUTDOWN, "AGS_OSS_DEVOUT_SHUTDOWN", "oss-devout-shutdown" },
-      { AGS_OSS_DEVOUT_START_PLAY, "AGS_OSS_DEVOUT_START_PLAY", "oss-devout-start-play" },
       { AGS_OSS_DEVOUT_NONBLOCKING, "AGS_OSS_DEVOUT_NONBLOCKING", "oss-devout-nonblocking" },
-      { AGS_OSS_DEVOUT_INITIALIZED, "AGS_OSS_DEVOUT_INITIALIZED", "oss-devout-initialized" },
+      { AGS_OSS_DEVOUT_ATTACK_FIRST, "AGS_OSS_DEVOUT_ATTACK_FIRST", "oss-devout-attack-first" },
       { 0, NULL, NULL }
     };
 
@@ -623,38 +619,42 @@ ags_oss_devout_init(AgsOssDevout *oss_devout)
   oss_devout->device_fd = -1;
   oss_devout->device = g_strdup(AGS_OSS_DEVOUT_DEFAULT_OSS_DEVICE);
 
-  /* buffer */
-  oss_devout->buffer_mutex = (GRecMutex **) malloc(4 * sizeof(GRecMutex *));
+  /* app buffer */
+  oss_devout->app_buffer_mode = AGS_OSS_DEVOUT_APP_BUFFER_0;
 
-  for(i = 0; i < 4; i++){
-    oss_devout->buffer_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
+  oss_devout->app_buffer_mutex = (GRecMutex **) g_malloc(AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE * sizeof(GRecMutex *));
 
-    g_rec_mutex_init(oss_devout->buffer_mutex[i]);
+  for(i = 0; i < AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE; i++){
+    oss_devout->app_buffer_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
+
+    g_rec_mutex_init(oss_devout->app_buffer_mutex[i]);
   }
   
   oss_devout->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
-  oss_devout->sub_block_mutex = (GRecMutex **) malloc(4 * oss_devout->sub_block_count * oss_devout->pcm_channels * sizeof(GRecMutex *));
+  oss_devout->sub_block_mutex = (GRecMutex **) malloc(AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE * oss_devout->sub_block_count * oss_devout->pcm_channels * sizeof(GRecMutex *));
 
-  for(i = 0; i < 4 * oss_devout->sub_block_count * oss_devout->pcm_channels; i++){
+  for(i = 0; i < AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE * oss_devout->sub_block_count * oss_devout->pcm_channels; i++){
     oss_devout->sub_block_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
 
     g_rec_mutex_init(oss_devout->sub_block_mutex[i]);
   }
 
-  oss_devout->buffer = (void **) malloc(4 * sizeof(void *));
-
-  oss_devout->buffer[0] = NULL;
-  oss_devout->buffer[1] = NULL;
-  oss_devout->buffer[2] = NULL;
-  oss_devout->buffer[3] = NULL;
+  oss_devout->app_buffer = (void **) g_malloc(AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE * sizeof(void *));
+  
+  for(i = 0; i < AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE; i++){
+    oss_devout->app_buffer[i] = NULL;
+  }
 
   g_atomic_int_set(&(oss_devout->available),
 		   TRUE);
   
-  oss_devout->ring_buffer_size = AGS_OSS_DEVOUT_DEFAULT_RING_BUFFER_SIZE;
-  oss_devout->nth_ring_buffer = 0;
+  oss_devout->backend_buffer_mode = AGS_OSS_DEVOUT_BACKEND_BUFFER_0;
   
-  oss_devout->ring_buffer = NULL;
+  oss_devout->backend_buffer = (guchar **) g_malloc(AGS_OSS_DEVOUT_DEFAULT_BACKEND_BUFFER_SIZE * sizeof(guchar *));
+
+  for(i = 0; i < AGS_OSS_DEVOUT_DEFAULT_BACKEND_BUFFER_SIZE; i++){
+    oss_devout->backend_buffer[i] = NULL;
+  }
 
   ags_oss_devout_realloc_buffer(oss_devout);
   
@@ -990,7 +990,7 @@ ags_oss_devout_get_property(GObject *gobject,
   {
     g_rec_mutex_lock(oss_devout_mutex);
 
-    g_value_set_pointer(value, oss_devout->buffer);
+    g_value_set_pointer(value, oss_devout->app_buffer);
 
     g_rec_mutex_unlock(oss_devout_mutex);
   }
@@ -1044,21 +1044,28 @@ ags_oss_devout_finalize(GObject *gobject)
 {
   AgsOssDevout *oss_devout;
 
+  guint i;
+  
   oss_devout = AGS_OSS_DEVOUT(gobject);
 
   ags_uuid_free(oss_devout->uuid);
   
-  /* free output buffer */
-  free(oss_devout->buffer[0]);
-  free(oss_devout->buffer[1]);
-  free(oss_devout->buffer[2]);
-  free(oss_devout->buffer[3]);
+  for(i = 0; i < AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE; i++){
+    g_free(oss_devout->app_buffer[i]);
+  }
 
-  /* free buffer array */
-  free(oss_devout->buffer);
+  g_free(oss_devout->app_buffer);
 
-  /* free AgsAttack */
-  free(oss_devout->attack);
+  for(i = 0; i < AGS_OSS_DEVOUT_DEFAULT_BACKEND_BUFFER_SIZE; i++){
+    g_free(oss_devout->backend_buffer[i]);
+  }
+
+  g_free(oss_devout->backend_buffer);
+
+  g_free(oss_devout->delay);
+  g_free(oss_devout->attack);
+  
+  g_free(oss_devout->device);
   
   /* call parent */
   G_OBJECT_CLASS(ags_oss_devout_parent_class)->finalize(gobject);
@@ -1573,6 +1580,16 @@ ags_oss_devout_pcm_info(AgsSoundcard *soundcard,
 {
   AgsOssDevout *oss_devout;
 
+#if defined(AGS_WITH_OSS)
+  oss_audioinfo ainfo;
+#endif
+  
+  gchar *str;
+    
+  int mixerfd;
+  int acc;
+  unsigned int cmd;
+
   GRecMutex *oss_devout_mutex;
 
   if(card_id == NULL){
@@ -1587,172 +1604,86 @@ ags_oss_devout_pcm_info(AgsSoundcard *soundcard,
   /* pcm info */
   g_rec_mutex_lock(oss_devout_mutex);
 
-  if((AGS_OSS_DEVOUT_ALSA & (oss_devout->flags)) != 0){
-#ifdef AGS_WITH_ALSA
-    snd_pcm_t *handle;
-    snd_pcm_hw_params_t *params;
-    
-    gchar *str;
-    
-    unsigned int val;
-    int dir;
-    snd_pcm_uframes_t frames;
+#if defined(AGS_WITH_OSS)
+  mixerfd = open(card_id, O_RDWR, 0);
 
-    int rc;
-    int err;
-
-    /* Open PCM device for playback. */
-    handle = NULL;
-
-    rc = snd_pcm_open(&handle, card_id, SND_PCM_STREAM_PLAYBACK, 0);
-
-    if(rc < 0){      
-      str = snd_strerror(rc);
-      g_message("unable to open pcm device (attempting fixup): %s", str);
-
-      if(index(card_id,
-	       ',') != NULL){
-	gchar *device_fixup;
-	
-	device_fixup = g_strndup(card_id,
-				 index(card_id,
-				       ',') - card_id);
-	handle = NULL;
-	
-	rc = snd_pcm_open(&handle, device_fixup, SND_PCM_STREAM_PLAYBACK, 0);
+  if(mixerfd == -1){
+    int e = errno;
       
-	if(rc < 0){
-	  if(error != NULL){
-	    g_set_error(error,
-			AGS_OSS_DEVOUT_ERROR,
-			AGS_OSS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
-			"unable to open pcm device: %s\n",
-			str);
-	  }
-	  
-	  //    free(str);
-	  
-	  goto ags_oss_devout_pcm_info_ERR;
-	}
-      }else{
-	if(error != NULL){
-	  g_set_error(error,
-		      AGS_OSS_DEVOUT_ERROR,
-		      AGS_OSS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
-		      "unable to open pcm device: %s\n",
-		      str);
-	}
-	
-	goto ags_oss_devout_pcm_info_ERR;
-      }
-    }
+    str = strerror(e);
+    g_message("unable to open pcm device: %s\n", str);
 
-    /* Allocate a hardware parameters object. */
-    snd_pcm_hw_params_alloca(&params);
-
-    /* Fill it in with default values. */
-    snd_pcm_hw_params_any(handle, params);
-
-    /* channels */
-    snd_pcm_hw_params_get_channels_min(params, &val);
-    *channels_min = val;
-
-    snd_pcm_hw_params_get_channels_max(params, &val);
-    *channels_max = val;
-
-    /* samplerate */
-    dir = 0;
-    snd_pcm_hw_params_get_rate_min(params, &val, &dir);
-    *rate_min = val;
-
-    dir = 0;
-    snd_pcm_hw_params_get_rate_max(params, &val, &dir);
-    *rate_max = val;
-
-    /* buffer size */
-    dir = 0;
-    snd_pcm_hw_params_get_buffer_size_min(params, &frames);
-    *buffer_size_min = frames;
-
-    dir = 0;
-    snd_pcm_hw_params_get_buffer_size_max(params, &frames);
-    *buffer_size_max = frames;
-
-    snd_pcm_close(handle);
-#endif
-  }else{
-#ifdef AGS_WITH_OSS
-    oss_audioinfo ainfo;
-
-    gchar *str;
-    
-    int mixerfd;
-    int acc;
-    unsigned int cmd;
-    
-    mixerfd = open(card_id, O_RDWR, 0);
-
-    if(mixerfd == -1){
-      int e = errno;
-      
-      str = strerror(e);
-      g_message("unable to open pcm device: %s\n", str);
-
-      if(error != NULL){
-	g_set_error(error,
-		    AGS_OSS_DEVOUT_ERROR,
-		    AGS_OSS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
-		    "unable to open pcm device: %s\n",
-		    str);
-      }
-    
-      goto ags_oss_devout_pcm_info_ERR;      
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_OSS_DEVOUT_ERROR,
+		  AGS_OSS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+		  "unable to open pcm device: %s\n",
+		  str);
     }
     
-    memset(&ainfo, 0, sizeof (ainfo));
-    
-    cmd = SNDCTL_AUDIOINFO;
-
-    if(card_id != NULL &&
-       !g_ascii_strncasecmp(card_id,
-			    "/dev/dsp",
-			    8)){
-      if(strlen(card_id) > 8){
-	sscanf(card_id,
-	       "/dev/dsp%d",
-	       &(ainfo.dev));
-      }else{
-	ainfo.dev = 0;
-      }
-    }else{
-      goto ags_oss_devout_pcm_info_ERR;
-    }
-    
-    if(ioctl(mixerfd, cmd, &ainfo) == -1){
-      int e = errno;
-
-      str = strerror(e);
-      g_message("unable to retrieve audio info: %s\n", str);
-
-      if(error != NULL){
-	g_set_error(error,
-		    AGS_OSS_DEVOUT_ERROR,
-		    AGS_OSS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
-		    "unable to retrieve audio info: %s\n",
-		    str);
-      }
-    
-      return;
-    }
-  
-    *channels_min = ainfo.min_channels;
-    *channels_max = ainfo.max_channels;
-    *rate_min = ainfo.min_rate;
-    *rate_max = ainfo.max_rate;
-    *buffer_size_min = 64;
-    *buffer_size_max = 8192;
-#endif
+    goto ags_oss_devout_pcm_info_ERR;      
   }
+    
+  memset(&ainfo, 0, sizeof (ainfo));
+    
+  cmd = SNDCTL_AUDIOINFO;
+
+  if(card_id != NULL &&
+     !g_ascii_strncasecmp(card_id,
+			  "/dev/dsp",
+			  8)){
+    if(strlen(card_id) > 8){
+      sscanf(card_id,
+	     "/dev/dsp%d",
+	     &(ainfo.dev));
+    }else{
+      ainfo.dev = 0;
+    }
+  }else{
+    goto ags_oss_devout_pcm_info_ERR;
+  }
+    
+  if(ioctl(mixerfd, cmd, &ainfo) == -1){
+    int e = errno;
+
+    str = strerror(e);
+    g_message("unable to retrieve audio info: %s\n", str);
+
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_OSS_DEVOUT_ERROR,
+		  AGS_OSS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+		  "unable to retrieve audio info: %s\n",
+		  str);
+    }
+    
+    return;
+  }
+
+  if(channels_min != NULL){
+    channels_min[0] = ainfo.min_channels;
+  }
+
+  if(channels_max != NULL){
+    channels_max[0] = ainfo.max_channels;
+  }
+
+  if(rate_min != NULL){
+    rate_min[0] = ainfo.min_rate;
+  }
+
+  if(rate_max != NULL){
+    rate_max[0] = ainfo.max_rate;
+  }
+
+  if(buffer_size_min != NULL){
+    buffer_size_min[0] = 64;
+  }
+
+  if(buffer_size_max != NULL){
+    buffer_size_max[0] = 8192;
+  }
+#endif
 
 ags_oss_devout_pcm_info_ERR:
 
@@ -1770,9 +1701,7 @@ ags_oss_devout_is_available(AgsSoundcard *soundcard)
 {
   AgsOssDevout *oss_devout;
   
-#ifdef AGS_WITH_ALSA
-  snd_pcm_t *handle;
-
+#if defined(AGS_WITH_OSS)
   struct pollfd fds;
 #endif
 
@@ -1785,26 +1714,14 @@ ags_oss_devout_is_available(AgsSoundcard *soundcard)
   /* get oss devout mutex */
   oss_devout_mutex = AGS_OSS_DEVOUT_GET_OBJ_MUTEX(oss_devout);  
 
-#ifdef AGS_WITH_ALSA
-  /* check is starting */
-  g_rec_mutex_lock(oss_devout_mutex);
-
-  handle = oss_devout->out.alsa.handle;
+#if defined(AGS_WITH_OSS)
+  fds.events = POLLOUT;
+  fds.fd = oss_devout->device_fd;
   
-  g_rec_mutex_unlock(oss_devout_mutex);
-
-  if(handle != NULL){
-    fds.events = POLLOUT;
+  poll(&fds, 1, 0);
   
-    snd_pcm_poll_descriptors(handle, &fds, 1);
-  
-    poll(&fds, 1, 0);
-  
-    /* check available */
-    is_available = ((POLLOUT & (fds.revents)) != 0) ? TRUE: FALSE;
-  }else{
-    is_available = FALSE;
-  }
+  /* check available */
+  is_available = ((POLLOUT & (fds.revents)) != 0) ? TRUE: FALSE;
 #else
   is_available = FALSE;
 #endif
@@ -1901,8 +1818,8 @@ ags_oss_devout_get_uptime(AgsSoundcard *soundcard)
 }
 
 void
-ags_oss_devout_device_init(AgsSoundcard *soundcard,
-			   GError **error)
+ags_oss_devout_device_play_init(AgsSoundcard *soundcard,
+				GError **error)
 {
   AgsOssDevout *oss_devout;
 
@@ -1973,7 +1890,10 @@ ags_oss_devout_device_init(AgsSoundcard *soundcard,
     word_size = sizeof(gint64);
   }
   default:
+    g_rec_mutex_unlock(oss_devout_mutex);
+
     g_warning("ags_oss_devout_oss_init(): unsupported word size");
+
     return;
   }
 
@@ -1982,21 +1902,15 @@ ags_oss_devout_device_init(AgsSoundcard *soundcard,
 			AGS_OSS_DEVOUT_PLAY |
 			AGS_OSS_DEVOUT_NONBLOCKING);
 
-  memset(oss_devout->buffer[0], 0, oss_devout->pcm_channels * oss_devout->buffer_size * word_size);
-  memset(oss_devout->buffer[1], 0, oss_devout->pcm_channels * oss_devout->buffer_size * word_size);
-  memset(oss_devout->buffer[2], 0, oss_devout->pcm_channels * oss_devout->buffer_size * word_size);
-  memset(oss_devout->buffer[3], 0, oss_devout->pcm_channels * oss_devout->buffer_size * word_size);
+  for(i = 0; i < AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE; i++){
+    memset(oss_devout->app_buffer[i], 0, oss_devout->pcm_channels * oss_devout->buffer_size * word_size);
+  }
 
   /* allocate ring buffer */
-  g_atomic_int_set(&(oss_devout->available),
-		   FALSE);
-  
-  oss_devout->ring_buffer = (guchar **) malloc(oss_devout->ring_buffer_size * sizeof(guchar *));
-
-  for(i = 0; i < oss_devout->ring_buffer_size; i++){
-    oss_devout->ring_buffer[i] = (guchar *) malloc(oss_devout->pcm_channels *
-							  oss_devout->buffer_size * word_size *
-							  sizeof(guchar));
+  for(i = 0; i < AGS_OSS_DEVOUT_DEFAULT_BACKEND_BUFFER_SIZE; i++){
+    oss_devout->backend_buffer[i] = (guchar *) g_malloc(oss_devout->pcm_channels *
+							oss_devout->buffer_size * word_size *
+							sizeof(guchar));
   }
 
 #ifdef AGS_WITH_OSS
@@ -2154,7 +2068,8 @@ ags_oss_devout_device_init(AgsSoundcard *soundcard,
 	      tmp,
 	      oss_devout->samplerate);
   }
-
+  
+#if 0
   io_channel = g_io_channel_unix_new(oss_devout->device_fd);
   tag = g_io_add_watch(io_channel,
 		       G_IO_OUT,
@@ -2165,32 +2080,30 @@ ags_oss_devout_device_init(AgsSoundcard *soundcard,
 					  io_channel);
   oss_devout->tag = g_list_prepend(oss_devout->tag,
 				   GUINT_TO_POINTER(tag));
-
+#endif
 #endif
   
   oss_devout->tact_counter = 0.0;
   oss_devout->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(oss_devout)));
   oss_devout->tic_counter = 0;
 
-  oss_devout->nth_ring_buffer = 0;
+  oss_devout->backend_buffer_mode = AGS_OSS_DEVOUT_BACKEND_BUFFER_0;
   
 #ifdef AGS_WITH_OSS
   oss_devout->flags |= AGS_OSS_DEVOUT_INITIALIZED;
 #endif
-  oss_devout->flags |= AGS_OSS_DEVOUT_BUFFER0;
-  oss_devout->flags &= (~(AGS_OSS_DEVOUT_BUFFER1 |
-			  AGS_OSS_DEVOUT_BUFFER2 |
-			  AGS_OSS_DEVOUT_BUFFER3));
+
+  oss_devout->app_buffer_mode = AGS_OSS_DEVOUT_APP_BUFFER_0;
   
   g_rec_mutex_unlock(oss_devout_mutex);
 }
 
 void
-ags_oss_devout_device_play_fill_ring_buffer(void *buffer,
-					    guint ags_format,
-					    guchar *ring_buffer,
-					    guint channels,
-					    guint buffer_size)
+ags_oss_devout_device_fill_backend_buffer(void *app_buffer,
+					  guint ags_format,
+					  guchar *backend_buffer,
+					  guint channels,
+					  guint buffer_size)
 {
   int format_bits;
   guint word_size;
@@ -2238,22 +2151,22 @@ ags_oss_devout_device_play_fill_ring_buffer(void *buffer,
       switch(ags_format){
       case AGS_SOUNDCARD_SIGNED_8_BIT:
       {
-	res = (int) ((gint8 *) buffer)[count * channels + chn];
+	res = (int) ((gint8 *) app_buffer)[count * channels + chn];
       }
       break;
       case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
-	res = (int) ((gint16 *) buffer)[count * channels + chn];
+	res = (int) ((gint16 *) app_buffer)[count * channels + chn];
       }
       break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
       {
-	res = (int) ((gint32 *) buffer)[count * channels + chn];
+	res = (int) ((gint32 *) app_buffer)[count * channels + chn];
       }
       break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:
       {
-	res = (int) ((gint32 *) buffer)[count * channels + chn];
+	res = (int) ((gint32 *) app_buffer)[count * channels + chn];
       }
       break;
       }
@@ -2261,16 +2174,16 @@ ags_oss_devout_device_play_fill_ring_buffer(void *buffer,
       /* Generate data in native endian format */
       if(ags_endian_host_is_be()){
 	for(i = 0; i < bps; i++){
-	  *(ring_buffer + chn * bps + word_size - 1 - i) = (res >> i * 8) & 0xff;
+	  *(backend_buffer + chn * bps + word_size - 1 - i) = (res >> i * 8) & 0xff;
 	}
       }else{
 	for(i = 0; i < bps; i++){
-	  *(ring_buffer + chn * bps + i) = (res >>  i * 8) & 0xff;
+	  *(backend_buffer + chn * bps + i) = (res >>  i * 8) & 0xff;
 	}
       }	
     }
 
-    ring_buffer += channels * bps;
+    backend_buffer += channels * bps;
   }
 }
 
@@ -2305,7 +2218,6 @@ ags_oss_devout_device_play(AgsSoundcard *soundcard,
 
   gint64 poll_timeout;
   guint word_size;
-  guint nth_buffer;
 
   int n_write;
   
@@ -2349,7 +2261,10 @@ ags_oss_devout_device_play(AgsSoundcard *soundcard,
   }
   //NOTE:JK: not available    break;
   default:
+    g_rec_mutex_unlock(oss_devout_mutex);
+    
     g_warning("ags_oss_devout_oss_play(): unsupported word size");
+    
     return;
   }
 
@@ -2362,32 +2277,19 @@ ags_oss_devout_device_play(AgsSoundcard *soundcard,
     return;
   }
 
-  /* check buffer flag */
-  nth_buffer = 0;
-  
-  if((AGS_OSS_DEVOUT_BUFFER0 & (oss_devout->flags)) != 0){
-    nth_buffer = 0;
-  }else if((AGS_OSS_DEVOUT_BUFFER1 & (oss_devout->flags)) != 0){
-    nth_buffer = 1;
-  }else if((AGS_OSS_DEVOUT_BUFFER2 & (oss_devout->flags)) != 0){
-    nth_buffer = 2;
-  }else if((AGS_OSS_DEVOUT_BUFFER3 & (oss_devout->flags)) != 0){
-    nth_buffer = 3;
-  }
-
 #ifdef AGS_WITH_OSS    
   /* fill ring buffer */
   ags_soundcard_lock_buffer(soundcard,
-			    oss_devout->buffer[nth_buffer]);
+			    oss_devout->app_buffer[alsa_devout->app_buffer_mode]);
 
-  ags_oss_devout_oss_play_fill_ring_buffer(oss_devout->buffer[nth_buffer],
+  ags_oss_devout_oss_play_fill_ring_buffer(oss_devout->app_buffer[alsa_devout->app_buffer_mode],
 					   oss_devout->format,
-					   oss_devout->ring_buffer[oss_devout->nth_ring_buffer],
+					   oss_devout->backend_buffer[oss_devout->backend_buffer_mode],
 					   oss_devout->pcm_channels,
 					   oss_devout->buffer_size);
 
   ags_soundcard_unlock_buffer(soundcard,
-			      oss_devout->buffer[nth_buffer]);
+			      oss_devout->app_buffer[alsa_devout->app_buffer_mode]);
 
   /* wait until available */
   poll_timeout = g_get_monotonic_time() + (G_USEC_PER_SEC * (1.0 / (gdouble) oss_devout->samplerate * (gdouble) oss_devout->buffer_size));
@@ -2411,7 +2313,7 @@ ags_oss_devout_device_play(AgsSoundcard *soundcard,
 
   /* write ring buffer */
   n_write = write(oss_devout->device_fd,
-		  oss_devout->ring_buffer[oss_devout->nth_ring_buffer],
+		  oss_devout->backend_buffer[oss_devout->backend_buffer_mode],
 		  oss_devout->pcm_channels * oss_devout->buffer_size * word_size * sizeof (char));
   
   if(n_write != oss_devout->pcm_channels * oss_devout->buffer_size * word_size * sizeof (char)){
@@ -2420,10 +2322,10 @@ ags_oss_devout_device_play(AgsSoundcard *soundcard,
 #endif
 
   /* increment nth ring-buffer */
-  if(oss_devout->nth_ring_buffer + 1 >= oss_devout->ring_buffer_size){
-    oss_devout->nth_ring_buffer = 0;
+  if(oss_devout->backend_buffer_mode + 1 > AGS_OSS_DEVOUT_BACKEND_BUFFER_7){
+    oss_devout->backend_buffer_mode = AGS_OSS_DEVOUT_BACKEND_BUFFER_0;
   }else{
-    oss_devout->nth_ring_buffer += 1;
+    oss_devout->backend_buffer_mode += 1;
   }
   
   g_rec_mutex_unlock(oss_devout_mutex);
@@ -2483,33 +2385,35 @@ ags_oss_devout_device_free(AgsSoundcard *soundcard)
     
     return;
   }
+
+  g_rec_mutex_unlock(oss_devout_mutex);
   
   close(oss_devout->device_fd);
   oss_devout->device_fd = -1;
 
   /* free ring-buffer */
-  g_atomic_int_set(&(oss_devout->available), TRUE);
+  g_rec_mutex_lock(oss_devout_mutex);
 
-  if(oss_devout->ring_buffer != NULL){
-    for(i = 0; i < oss_devout->ring_buffer_size; i++){
-      free(oss_devout->ring_buffer[i]);
+  if(oss_devout->backend_buffer != NULL){
+    for(i = 0; i < AGS_OSS_DEVOUT_DEFAULT_BACKEND_BUFFER_SIZE; i++){
+      g_free(oss_devout->backend_buffer[i]);
+
+      oss_devout->backend_buffer[i] = NULL;
     }
-    
-    free(oss_devout->ring_buffer);
   }
-  
-  oss_devout->ring_buffer = NULL;
 
   /* reset flags */
-  oss_devout->flags &= (~(AGS_OSS_DEVOUT_BUFFER0 |
-			  AGS_OSS_DEVOUT_BUFFER1 |
-			  AGS_OSS_DEVOUT_BUFFER2 |
-			  AGS_OSS_DEVOUT_BUFFER3 |
-			  AGS_OSS_DEVOUT_PLAY |
+  oss_devout->flags &= (~(AGS_OSS_DEVOUT_PLAY |
 			  AGS_OSS_DEVOUT_INITIALIZED));
+
+  oss_devout->app_buffer_mode = AGS_OSS_DEVOUT_APP_BUFFER_0;
+
+  oss_devout->backend_buffer_mode = AGS_OSS_DEVOUT_BACKEND_BUFFER_0;
 
   oss_devout->note_offset = oss_devout->start_note_offset;
   oss_devout->note_offset_absolute = oss_devout->start_note_offset;
+
+  g_atomic_int_set(&(oss_devout->available), FALSE);
 
   g_rec_mutex_unlock(oss_devout_mutex);
 }
@@ -2789,17 +2693,7 @@ ags_oss_devout_get_buffer(AgsSoundcard *soundcard)
   
   oss_devout = AGS_OSS_DEVOUT(soundcard);
 
-  if(ags_oss_devout_test_flags(oss_devout, AGS_OSS_DEVOUT_BUFFER0)){
-    buffer = oss_devout->buffer[0];
-  }else if(ags_oss_devout_test_flags(oss_devout, AGS_OSS_DEVOUT_BUFFER1)){
-    buffer = oss_devout->buffer[1];
-  }else if(ags_oss_devout_test_flags(oss_devout, AGS_OSS_DEVOUT_BUFFER2)){
-    buffer = oss_devout->buffer[2];
-  }else if(ags_oss_devout_test_flags(oss_devout, AGS_OSS_DEVOUT_BUFFER3)){
-    buffer = oss_devout->buffer[3];
-  }else{
-    buffer = NULL;
-  }
+  buffer = oss_devout->app_buffer[oss_devout->app_buffer_mode];
 
   return(buffer);
 }
@@ -2813,21 +2707,10 @@ ags_oss_devout_get_next_buffer(AgsSoundcard *soundcard)
   
   oss_devout = AGS_OSS_DEVOUT(soundcard);
 
-  //  g_message("next - 0x%0x", ((AGS_OSS_DEVOUT_BUFFER0 |
-  //				AGS_OSS_DEVOUT_BUFFER1 |
-  //				AGS_OSS_DEVOUT_BUFFER2 |
-  //				AGS_OSS_DEVOUT_BUFFER3) & (oss_devout->flags)));
-
-  if(ags_oss_devout_test_flags(oss_devout, AGS_OSS_DEVOUT_BUFFER0)){
-    buffer = oss_devout->buffer[1];
-  }else if(ags_oss_devout_test_flags(oss_devout, AGS_OSS_DEVOUT_BUFFER1)){
-    buffer = oss_devout->buffer[2];
-  }else if(ags_oss_devout_test_flags(oss_devout, AGS_OSS_DEVOUT_BUFFER2)){
-    buffer = oss_devout->buffer[3];
-  }else if(ags_oss_devout_test_flags(oss_devout, AGS_OSS_DEVOUT_BUFFER3)){
-    buffer = oss_devout->buffer[0];
+  if(oss_devout->app_buffer_mode == AGS_OSS_DEVOUT_APP_BUFFER_3){
+    buffer = oss_devout->app_buffer[AGS_OSS_DEVOUT_APP_BUFFER_0];
   }else{
-    buffer = NULL;
+    buffer = oss_devout->app_buffer[oss_devout->app_buffer_mode + 1];
   }
 
   return(buffer);
@@ -2842,16 +2725,10 @@ ags_oss_devout_get_prev_buffer(AgsSoundcard *soundcard)
   
   oss_devout = AGS_OSS_DEVOUT(soundcard);
 
-  if(ags_oss_devout_test_flags(oss_devout, AGS_OSS_DEVOUT_BUFFER0)){
-    buffer = oss_devout->buffer[3];
-  }else if(ags_oss_devout_test_flags(oss_devout, AGS_OSS_DEVOUT_BUFFER1)){
-    buffer = oss_devout->buffer[0];
-  }else if(ags_oss_devout_test_flags(oss_devout, AGS_OSS_DEVOUT_BUFFER2)){
-    buffer = oss_devout->buffer[1];
-  }else if(ags_oss_devout_test_flags(oss_devout, AGS_OSS_DEVOUT_BUFFER3)){
-    buffer = oss_devout->buffer[2];
+  if(oss_devout->app_buffer_mode == AGS_OSS_DEVOUT_APP_BUFFER_0){
+    buffer = oss_devout->app_buffer[AGS_OSS_DEVOUT_APP_BUFFER_3];
   }else{
-    buffer = NULL;
+    buffer = oss_devout->app_buffer[oss_devout->app_buffer_mode - 1];
   }
 
   return(buffer);
@@ -2869,15 +2746,15 @@ ags_oss_devout_lock_buffer(AgsSoundcard *soundcard,
 
   buffer_mutex = NULL;
 
-  if(oss_devout->buffer != NULL){
-    if(buffer == oss_devout->buffer[0]){
-      buffer_mutex = oss_devout->buffer_mutex[0];
-    }else if(buffer == oss_devout->buffer[1]){
-      buffer_mutex = oss_devout->buffer_mutex[1];
-    }else if(buffer == oss_devout->buffer[2]){
-      buffer_mutex = oss_devout->buffer_mutex[2];
-    }else if(buffer == oss_devout->buffer[3]){
-      buffer_mutex = oss_devout->buffer_mutex[3];
+  if(oss_devout->app_buffer != NULL){
+    if(buffer == oss_devout->app_buffer[0]){
+      buffer_mutex = oss_devout->app_buffer_mutex[0];
+    }else if(buffer == oss_devout->app_buffer[1]){
+      buffer_mutex = oss_devout->app_buffer_mutex[1];
+    }else if(buffer == oss_devout->app_buffer[2]){
+      buffer_mutex = oss_devout->app_buffer_mutex[2];
+    }else if(buffer == oss_devout->app_buffer[3]){
+      buffer_mutex = oss_devout->app_buffer_mutex[3];
     }
   }
   
@@ -2898,15 +2775,15 @@ ags_oss_devout_unlock_buffer(AgsSoundcard *soundcard,
 
   buffer_mutex = NULL;
 
-  if(oss_devout->buffer != NULL){
-    if(buffer == oss_devout->buffer[0]){
-      buffer_mutex = oss_devout->buffer_mutex[0];
-    }else if(buffer == oss_devout->buffer[1]){
-      buffer_mutex = oss_devout->buffer_mutex[1];
-    }else if(buffer == oss_devout->buffer[2]){
-      buffer_mutex = oss_devout->buffer_mutex[2];
-    }else if(buffer == oss_devout->buffer[3]){
-      buffer_mutex = oss_devout->buffer_mutex[3];
+  if(oss_devout->app_buffer != NULL){
+    if(buffer == oss_devout->app_buffer[0]){
+      buffer_mutex = oss_devout->app_buffer_mutex[0];
+    }else if(buffer == oss_devout->app_buffer[1]){
+      buffer_mutex = oss_devout->app_buffer_mutex[1];
+    }else if(buffer == oss_devout->app_buffer[2]){
+      buffer_mutex = oss_devout->app_buffer_mutex[2];
+    }else if(buffer == oss_devout->app_buffer[3]){
+      buffer_mutex = oss_devout->app_buffer_mutex[3];
     }
   }
 
@@ -3212,14 +3089,14 @@ ags_oss_devout_trylock_sub_block(AgsSoundcard *soundcard,
 
   success = FALSE;
   
-  if(oss_devout->buffer != NULL){
-    if(buffer == oss_devout->buffer[0]){
+  if(oss_devout->app_buffer != NULL){
+    if(buffer == oss_devout->app_buffer[0]){
       sub_block_mutex = oss_devout->sub_block_mutex[sub_block];
-    }else if(buffer == oss_devout->buffer[1]){
+    }else if(buffer == oss_devout->app_buffer[1]){
       sub_block_mutex = oss_devout->sub_block_mutex[pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == oss_devout->buffer[2]){
+    }else if(buffer == oss_devout->app_buffer[2]){
       sub_block_mutex = oss_devout->sub_block_mutex[2 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == oss_devout->buffer[3]){
+    }else if(buffer == oss_devout->app_buffer[3]){
       sub_block_mutex = oss_devout->sub_block_mutex[3 * pcm_channels * sub_block_count + sub_block];
     }
   }
@@ -3260,14 +3137,14 @@ ags_oss_devout_unlock_sub_block(AgsSoundcard *soundcard,
   
   sub_block_mutex = NULL;
   
-  if(oss_devout->buffer != NULL){
-    if(buffer == oss_devout->buffer[0]){
+  if(oss_devout->app_buffer != NULL){
+    if(buffer == oss_devout->app_buffer[0]){
       sub_block_mutex = oss_devout->sub_block_mutex[sub_block];
-    }else if(buffer == oss_devout->buffer[1]){
+    }else if(buffer == oss_devout->app_buffer[1]){
       sub_block_mutex = oss_devout->sub_block_mutex[pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == oss_devout->buffer[2]){
+    }else if(buffer == oss_devout->app_buffer[2]){
       sub_block_mutex = oss_devout->sub_block_mutex[2 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == oss_devout->buffer[3]){
+    }else if(buffer == oss_devout->app_buffer[3]){
       sub_block_mutex = oss_devout->sub_block_mutex[3 * pcm_channels * sub_block_count + sub_block];
     }
   }
@@ -3300,18 +3177,10 @@ ags_oss_devout_switch_buffer_flag(AgsOssDevout *oss_devout)
   /* switch buffer flag */
   g_rec_mutex_lock(oss_devout_mutex);
 
-  if((AGS_OSS_DEVOUT_BUFFER0 & (oss_devout->flags)) != 0){
-    oss_devout->flags &= (~AGS_OSS_DEVOUT_BUFFER0);
-    oss_devout->flags |= AGS_OSS_DEVOUT_BUFFER1;
-  }else if((AGS_OSS_DEVOUT_BUFFER1 & (oss_devout->flags)) != 0){
-    oss_devout->flags &= (~AGS_OSS_DEVOUT_BUFFER1);
-    oss_devout->flags |= AGS_OSS_DEVOUT_BUFFER2;
-  }else if((AGS_OSS_DEVOUT_BUFFER2 & (oss_devout->flags)) != 0){
-    oss_devout->flags &= (~AGS_OSS_DEVOUT_BUFFER2);
-    oss_devout->flags |= AGS_OSS_DEVOUT_BUFFER3;
-  }else if((AGS_OSS_DEVOUT_BUFFER3 & (oss_devout->flags)) != 0){
-    oss_devout->flags &= (~AGS_OSS_DEVOUT_BUFFER3);
-    oss_devout->flags |= AGS_OSS_DEVOUT_BUFFER0;
+  if(oss_devout->app_buffer_mode < AGS_OSS_DEVOUT_APP_BUFFER_3){
+    oss_devout->app_buffer_mode += 1;
+  }else{
+    oss_devout->app_buffer_mode = AGS_OSS_DEVOUT_APP_BUFFER_0;
   }
 
   g_rec_mutex_unlock(oss_devout_mutex);
@@ -3398,38 +3267,35 @@ ags_oss_devout_realloc_buffer(AgsOssDevout *oss_devout)
   break;
   default:
     g_warning("ags_oss_devout_realloc_buffer(): unsupported word size");
+    
     return;
   }  
 
   //NOTE:JK: there is no lock applicable to buffer
-  
-  /* AGS_OSS_DEVOUT_BUFFER_0 */
-  if(oss_devout->buffer[0] != NULL){
-    free(oss_devout->buffer[0]);
+
+  if(oss_devout->app_buffer[0] != NULL){
+    g_free(oss_devout->app_buffer[0]);
   }
   
-  oss_devout->buffer[0] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  oss_devout->app_buffer[0] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
   
-  /* AGS_OSS_DEVOUT_BUFFER_1 */
-  if(oss_devout->buffer[1] != NULL){
-    free(oss_devout->buffer[1]);
+  if(oss_devout->app_buffer[1] != NULL){
+    g_free(oss_devout->app_buffer[1]);
   }
 
-  oss_devout->buffer[1] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  oss_devout->app_buffer[1] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
   
-  /* AGS_OSS_DEVOUT_BUFFER_2 */
-  if(oss_devout->buffer[2] != NULL){
-    free(oss_devout->buffer[2]);
+  if(oss_devout->app_buffer[2] != NULL){
+    g_free(oss_devout->app_buffer[2]);
   }
 
-  oss_devout->buffer[2] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  oss_devout->app_buffer[2] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
   
-  /* AGS_OSS_DEVOUT_BUFFER_3 */
-  if(oss_devout->buffer[3] != NULL){
-    free(oss_devout->buffer[3]);
+  if(oss_devout->app_buffer[3] != NULL){
+    g_free(oss_devout->app_buffer[3]);
   }
   
-  oss_devout->buffer[3] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  oss_devout->app_buffer[3] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 }
 
 /**

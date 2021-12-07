@@ -38,7 +38,8 @@ G_BEGIN_DECLS
 
 #define AGS_OSS_DEVOUT_DEFAULT_OSS_DEVICE "/dev/dsp"
 
-#define AGS_OSS_DEVOUT_DEFAULT_RING_BUFFER_SIZE (8)
+#define AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE (4)
+#define AGS_OSS_DEVOUT_DEFAULT_BACKEND_BUFFER_SIZE (8)
 
 typedef struct _AgsOssDevout AgsOssDevout;
 typedef struct _AgsOssDevoutClass AgsOssDevoutClass;
@@ -47,16 +48,12 @@ typedef struct _AgsOssDevoutClass AgsOssDevoutClass;
  * AgsOssDevoutFlags:
  * @AGS_OSS_DEVOUT_ADDED_TO_REGISTRY: the oss_devout was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_OSS_DEVOUT_CONNECTED: indicates the oss_devout was connected by calling #AgsConnectable::connect()
- * @AGS_OSS_DEVOUT_BUFFER0: ring-buffer 0
- * @AGS_OSS_DEVOUT_BUFFER1: ring-buffer 1
- * @AGS_OSS_DEVOUT_BUFFER2: ring-buffer 2
- * @AGS_OSS_DEVOUT_BUFFER3: ring-buffer 3
- * @AGS_OSS_DEVOUT_ATTACK_FIRST: use first attack, instead of second one
+ * @AGS_OSS_DEVOUT_INITIALIZED: the soundcard was initialized
+ * @AGS_OSS_DEVOUT_START_PLAY: playback starting
  * @AGS_OSS_DEVOUT_PLAY: devout is running
  * @AGS_OSS_DEVOUT_SHUTDOWN: stop playback
- * @AGS_OSS_DEVOUT_START_PLAY: playback starting
  * @AGS_OSS_DEVOUT_NONBLOCKING: do non-blocking calls
- * @AGS_OSS_DEVOUT_INITIALIZED: the soundcard was initialized
+ * @AGS_OSS_DEVOUT_ATTACK_FIRST: use first attack, instead of second one
  * 
  * Enum values to control the behavior or indicate internal state of #AgsOssDevout by
  * enable/disable as flags.
@@ -66,21 +63,58 @@ typedef enum
   AGS_OSS_DEVOUT_ADDED_TO_REGISTRY  = 1,
   AGS_OSS_DEVOUT_CONNECTED          = 1 <<  1,
 
-  AGS_OSS_DEVOUT_BUFFER0            = 1 <<  2,
-  AGS_OSS_DEVOUT_BUFFER1            = 1 <<  3,
-  AGS_OSS_DEVOUT_BUFFER2            = 1 <<  4,
-  AGS_OSS_DEVOUT_BUFFER3            = 1 <<  5,
+  AGS_OSS_DEVOUT_INITIALIZED        = 1 <<  2,
 
-  AGS_OSS_DEVOUT_ATTACK_FIRST       = 1 <<  6,
+  AGS_OSS_DEVOUT_PLAY               = 1 <<  3,
+  AGS_OSS_DEVOUT_START_PLAY         = 1 <<  4,
+  AGS_OSS_DEVOUT_SHUTDOWN           = 1 <<  5,
 
-  AGS_OSS_DEVOUT_PLAY               = 1 <<  7,
-
-  AGS_OSS_DEVOUT_SHUTDOWN           = 1 <<  8,
-  AGS_OSS_DEVOUT_START_PLAY         = 1 <<  9,
-
-  AGS_OSS_DEVOUT_NONBLOCKING        = 1 << 10,
-  AGS_OSS_DEVOUT_INITIALIZED        = 1 << 11,
+  AGS_OSS_DEVOUT_NONBLOCKING        = 1 <<  6,
+  
+  AGS_OSS_DEVOUT_ATTACK_FIRST       = 1 <<  7,
 }AgsOssDevoutFlags;
+
+/**
+ * AgsOssDevoutAppBufferMode:
+ * @AGS_OSS_DEVOUT_APP_BUFFER_0: ring-buffer 0
+ * @AGS_OSS_DEVOUT_APP_BUFFER_1: ring-buffer 1
+ * @AGS_OSS_DEVOUT_APP_BUFFER_2: ring-buffer 2
+ * @AGS_OSS_DEVOUT_APP_BUFFER_3: ring-buffer 3
+ * 
+ * Enum values to indicate internal state of #AgsOssDevout application buffer by
+ * setting mode.
+ */
+typedef enum{
+  AGS_OSS_DEVOUT_APP_BUFFER_0,
+  AGS_OSS_DEVOUT_APP_BUFFER_1,
+  AGS_OSS_DEVOUT_APP_BUFFER_2,
+  AGS_OSS_DEVOUT_APP_BUFFER_3,
+}AgsOssDevoutAppBufferMode;
+
+/**
+ * AgsOssDevoutBackendBufferMode:
+ * @AGS_OSS_DEVOUT_BACKEND_BUFFER_0: ring-buffer 0
+ * @AGS_OSS_DEVOUT_BACKEND_BUFFER_1: ring-buffer 1
+ * @AGS_OSS_DEVOUT_BACKEND_BUFFER_2: ring-buffer 2
+ * @AGS_OSS_DEVOUT_BACKEND_BUFFER_3: ring-buffer 3
+ * @AGS_OSS_DEVOUT_BACKEND_BUFFER_4: ring-buffer 4
+ * @AGS_OSS_DEVOUT_BACKEND_BUFFER_5: ring-buffer 5
+ * @AGS_OSS_DEVOUT_BACKEND_BUFFER_6: ring-buffer 6
+ * @AGS_OSS_DEVOUT_BACKEND_BUFFER_7: ring-buffer 7
+ * 
+ * Enum values to indicate internal state of #AgsOssDevout backend buffer by
+ * setting mode.
+ */
+typedef enum{
+  AGS_OSS_DEVOUT_BACKEND_BUFFER_0,
+  AGS_OSS_DEVOUT_BACKEND_BUFFER_1,
+  AGS_OSS_DEVOUT_BACKEND_BUFFER_2,
+  AGS_OSS_DEVOUT_BACKEND_BUFFER_3,
+  AGS_OSS_DEVOUT_BACKEND_BUFFER_4,
+  AGS_OSS_DEVOUT_BACKEND_BUFFER_5,
+  AGS_OSS_DEVOUT_BACKEND_BUFFER_6,
+  AGS_OSS_DEVOUT_BACKEND_BUFFER_7,
+}AgsOssDevoutBackendBufferMode;
 
 #define AGS_OSS_DEVOUT_ERROR (ags_oss_devout_error_quark())
 
@@ -111,19 +145,20 @@ struct _AgsOssDevout
   guint buffer_size;
   guint samplerate; // sample_rate
   
-  GRecMutex **buffer_mutex;
+  guint app_buffer_mode;
+  
+  GRecMutex **app_buffer_mutex;
 
   guint sub_block_count;
   GRecMutex **sub_block_mutex;
 
-  void **buffer;
+  void **app_buffer;
 
   volatile gboolean available;
   
-  guint ring_buffer_size;
-  guint nth_ring_buffer;
+  guint backend_buffer_mode;
   
-  guchar **ring_buffer;
+  guchar **backend_buffer;
 
   double bpm; // beats per minute
   gdouble delay_factor;

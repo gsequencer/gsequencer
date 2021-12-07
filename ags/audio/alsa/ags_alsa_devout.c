@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/ags_alsa_devout.h>
+#include <ags/audio/alsa/ags_alsa_devout.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_soundcard_util.h>
@@ -92,13 +92,13 @@ gboolean ags_alsa_devout_device_io_func(GIOChannel *source,
 					GIOCondition condition,
 					AgsAlsaDevout *alsa_devout);
 
-void ags_alsa_devout_device_init(AgsSoundcard *soundcard,
-				 GError **error);
-void ags_alsa_devout_device_play_fill_ring_buffer(void *buffer,
-						  guint ags_format,
-						  guchar *ring_buffer,
-						  guint channels,
-						  guint buffer_size);
+void ags_alsa_devout_device_play_init(AgsSoundcard *soundcard,
+				      GError **error);
+void ags_alsa_devout_device_fill_backend_buffer(void *app_buffer,
+						guint ags_format,
+						guchar *backend_buffer,
+						guint channels,
+						guint buffer_size);
 void ags_alsa_devout_device_play(AgsSoundcard *soundcard,
 				 GError **error);
 void ags_alsa_devout_device_free(AgsSoundcard *soundcard);
@@ -245,16 +245,12 @@ ags_alsa_devout_flags_get_type()
     static const GFlagsValue values[] = {
       { AGS_ALSA_DEVOUT_ADDED_TO_REGISTRY, "AGS_ALSA_DEVOUT_ADDED_TO_REGISTRY", "alsa-devout-added-to-registry" },
       { AGS_ALSA_DEVOUT_CONNECTED, "AGS_ALSA_DEVOUT_CONNECTED", "alsa-devout-connected" },
-      { AGS_ALSA_DEVOUT_BUFFER0, "AGS_ALSA_DEVOUT_BUFFER0", "alsa-devout-buffer0" },
-      { AGS_ALSA_DEVOUT_BUFFER1, "AGS_ALSA_DEVOUT_BUFFER1", "alsa-devout-buffer1" },
-      { AGS_ALSA_DEVOUT_BUFFER2, "AGS_ALSA_DEVOUT_BUFFER2", "alsa-devout-buffer2" },
-      { AGS_ALSA_DEVOUT_BUFFER3, "AGS_ALSA_DEVOUT_BUFFER3", "alsa-devout-buffer3" },
-      { AGS_ALSA_DEVOUT_ATTACK_FIRST, "AGS_ALSA_DEVOUT_ATTACK_FIRST", "alsa-devout-attack-first" },
+      { AGS_ALSA_DEVOUT_INITIALIZED, "AGS_ALSA_DEVOUT_INITIALIZED", "alsa-devout-initialized" },
+      { AGS_ALSA_DEVOUT_START_PLAY, "AGS_ALSA_DEVOUT_START_PLAY", "alsa-devout-start-play" },
       { AGS_ALSA_DEVOUT_PLAY, "AGS_ALSA_DEVOUT_PLAY", "alsa-devout-play" },
       { AGS_ALSA_DEVOUT_SHUTDOWN, "AGS_ALSA_DEVOUT_SHUTDOWN", "alsa-devout-shutdown" },
-      { AGS_ALSA_DEVOUT_START_PLAY, "AGS_ALSA_DEVOUT_START_PLAY", "alsa-devout-start-play" },
       { AGS_ALSA_DEVOUT_NONBLOCKING, "AGS_ALSA_DEVOUT_NONBLOCKING", "alsa-devout-nonblocking" },
-      { AGS_ALSA_DEVOUT_INITIALIZED, "AGS_ALSA_DEVOUT_INITIALIZED", "alsa-devout-initialized" },
+      { AGS_ALSA_DEVOUT_ATTACK_FIRST, "AGS_ALSA_DEVOUT_ATTACK_FIRST", "alsa-devout-attack-first" },
       { 0, NULL, NULL }
     };
 
@@ -594,38 +590,42 @@ ags_alsa_devout_init(AgsAlsaDevout *alsa_devout)
   /* device */
   alsa_devout->device = g_strdup(AGS_ALSA_DEVOUT_DEFAULT_ALSA_DEVICE);
 
-  /* buffer */
-  alsa_devout->buffer_mutex = (GRecMutex **) malloc(4 * sizeof(GRecMutex *));
+  /* app buffer */
+  alsa_devout->app_buffer_mode = AGS_ALSA_DEVOUT_APP_BUFFER_0;
 
-  for(i = 0; i < 4; i++){
-    alsa_devout->buffer_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
+  alsa_devout->app_buffer_mutex = (GRecMutex **) g_malloc(AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE * sizeof(GRecMutex *));
 
-    g_rec_mutex_init(alsa_devout->buffer_mutex[i]);
+  for(i = 0; i < AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE; i++){
+    alsa_devout->app_buffer_mutex[i] = (GRecMutex *) g_malloc(sizeof(GRecMutex));
+
+    g_rec_mutex_init(alsa_devout->app_buffer_mutex[i]);
   }
   
   alsa_devout->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
-  alsa_devout->sub_block_mutex = (GRecMutex **) malloc(4 * alsa_devout->sub_block_count * alsa_devout->pcm_channels * sizeof(GRecMutex *));
+  alsa_devout->sub_block_mutex = (GRecMutex **) malloc(AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE * alsa_devout->sub_block_count * alsa_devout->pcm_channels * sizeof(GRecMutex *));
 
-  for(i = 0; i < 4 * alsa_devout->sub_block_count * alsa_devout->pcm_channels; i++){
+  for(i = 0; i < AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE * alsa_devout->sub_block_count * alsa_devout->pcm_channels; i++){
     alsa_devout->sub_block_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
 
     g_rec_mutex_init(alsa_devout->sub_block_mutex[i]);
   }
 
-  alsa_devout->buffer = (void **) malloc(4 * sizeof(void *));
-
-  alsa_devout->buffer[0] = NULL;
-  alsa_devout->buffer[1] = NULL;
-  alsa_devout->buffer[2] = NULL;
-  alsa_devout->buffer[3] = NULL;
+  alsa_devout->app_buffer = (void **) g_malloc(AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE * sizeof(void *));
+  
+  for(i = 0; i < AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE; i++){
+    alsa_devout->app_buffer[i] = NULL;
+  }
 
   g_atomic_int_set(&(alsa_devout->available),
 		   TRUE);
   
-  alsa_devout->ring_buffer_size = AGS_ALSA_DEVOUT_DEFAULT_RING_BUFFER_SIZE;
-  alsa_devout->nth_ring_buffer = 0;
+  alsa_devout->backend_buffer_mode = AGS_ALSA_DEVOUT_BACKEND_BUFFER_0;
   
-  alsa_devout->ring_buffer = NULL;
+  alsa_devout->backend_buffer = (guchar **) g_malloc(AGS_ALSA_DEVOUT_DEFAULT_BACKEND_BUFFER_SIZE * sizeof(guchar *));
+
+  for(i = 0; i < AGS_ALSA_DEVOUT_DEFAULT_BACKEND_BUFFER_SIZE; i++){
+    alsa_devout->backend_buffer[i] = NULL;
+  }
 
   ags_alsa_devout_realloc_buffer(alsa_devout);
   
@@ -651,11 +651,11 @@ ags_alsa_devout_init(AgsAlsaDevout *alsa_devout)
   }
 
   /* delay and attack */
-  alsa_devout->delay = (gdouble *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					  sizeof(gdouble));
+  alsa_devout->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+					    sizeof(gdouble));
   
-  alsa_devout->attack = (guint *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					 sizeof(guint));
+  alsa_devout->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+					   sizeof(guint));
 
   ags_alsa_devout_adjust_delay_and_attack(alsa_devout);
   
@@ -961,7 +961,7 @@ ags_alsa_devout_get_property(GObject *gobject,
   {
     g_rec_mutex_lock(alsa_devout_mutex);
 
-    g_value_set_pointer(value, alsa_devout->buffer);
+    g_value_set_pointer(value, alsa_devout->app_buffer);
 
     g_rec_mutex_unlock(alsa_devout_mutex);
   }
@@ -1015,22 +1015,29 @@ ags_alsa_devout_finalize(GObject *gobject)
 {
   AgsAlsaDevout *alsa_devout;
 
+  guint i;
+  
   alsa_devout = AGS_ALSA_DEVOUT(gobject);
 
   ags_uuid_free(alsa_devout->uuid);
-  
-  /* free output buffer */
-  free(alsa_devout->buffer[0]);
-  free(alsa_devout->buffer[1]);
-  free(alsa_devout->buffer[2]);
-  free(alsa_devout->buffer[3]);
 
-  /* free buffer array */
-  free(alsa_devout->buffer);
+  for(i = 0; i < AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE; i++){
+    g_free(alsa_devout->app_buffer[i]);
+  }
 
-  /* free AgsAttack */
-  free(alsa_devout->attack);
+  g_free(alsa_devout->app_buffer);
+
+  for(i = 0; i < AGS_ALSA_DEVOUT_DEFAULT_BACKEND_BUFFER_SIZE; i++){
+    g_free(alsa_devout->backend_buffer[i]);
+  }
+
+  g_free(alsa_devout->backend_buffer);
+
+  g_free(alsa_devout->delay);
+  g_free(alsa_devout->attack);
   
+  g_free(alsa_devout->device);
+
   /* call parent */
   G_OBJECT_CLASS(ags_alsa_devout_parent_class)->finalize(gobject);
 }
@@ -1682,29 +1689,47 @@ ags_alsa_devout_pcm_info(AgsSoundcard *soundcard,
 
   /* channels */
   snd_pcm_hw_params_get_channels_min(params, &val);
-  *channels_min = val;
 
+  if(channels_min != NULL){
+    channels_min[0] = val;
+  }
+  
   snd_pcm_hw_params_get_channels_max(params, &val);
-  *channels_max = val;
+
+  if(channels_max != NULL){
+    channels_max[0] = val;
+  }
 
   /* samplerate */
   dir = 0;
   snd_pcm_hw_params_get_rate_min(params, &val, &dir);
-  *rate_min = val;
+
+  if(rate_min != NULL){
+    rate_min[0] = val;
+  }
 
   dir = 0;
   snd_pcm_hw_params_get_rate_max(params, &val, &dir);
-  *rate_max = val;
+
+  if(rate_max != NULL){
+    rate_max[0] = val;
+  }
 
   /* buffer size */
   dir = 0;
   snd_pcm_hw_params_get_buffer_size_min(params, &frames);
-  *buffer_size_min = frames;
+
+  if(buffer_size_min != NULL){
+    buffer_size_min[0] = frames;
+  }
 
   dir = 0;
   snd_pcm_hw_params_get_buffer_size_max(params, &frames);
-  *buffer_size_max = frames;
 
+  if(buffer_size_max != NULL){
+    buffer_size_max[0] = frames;
+  }
+  
   snd_pcm_close(handle);
 
 ags_alsa_devout_pcm_info_ERR:
@@ -1865,8 +1890,8 @@ ags_alsa_devout_device_io_func(GIOChannel *source,
 }
 
 void
-ags_alsa_devout_device_init(AgsSoundcard *soundcard,
-			    GError **error)
+ags_alsa_devout_device_play_init(AgsSoundcard *soundcard,
+				 GError **error)
 {
   AgsAlsaDevout *alsa_devout;
 
@@ -1979,19 +2004,16 @@ ags_alsa_devout_device_init(AgsSoundcard *soundcard,
 			 AGS_ALSA_DEVOUT_PLAY |
 			 AGS_ALSA_DEVOUT_NONBLOCKING);
 
-  memset(alsa_devout->buffer[0], 0, alsa_devout->pcm_channels * alsa_devout->buffer_size * word_size);
-  memset(alsa_devout->buffer[1], 0, alsa_devout->pcm_channels * alsa_devout->buffer_size * word_size);
-  memset(alsa_devout->buffer[2], 0, alsa_devout->pcm_channels * alsa_devout->buffer_size * word_size);
-  memset(alsa_devout->buffer[3], 0, alsa_devout->pcm_channels * alsa_devout->buffer_size * word_size);
+  for(i = 0; i < AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE; i++){
+    memset(alsa_devout->app_buffer[i], 0, alsa_devout->pcm_channels * alsa_devout->buffer_size * word_size);
+  }
 
   /* allocate ring buffer */
 #ifdef AGS_WITH_ALSA
-  alsa_devout->ring_buffer = (guchar **) malloc(alsa_devout->ring_buffer_size * sizeof(guchar *));
-
-  for(i = 0; i < alsa_devout->ring_buffer_size; i++){
-    alsa_devout->ring_buffer[i] = (guchar *) malloc(alsa_devout->pcm_channels *
-							   alsa_devout->buffer_size * (snd_pcm_format_physical_width(format) / 8) *
-							   sizeof(guchar));
+  for(i = 0; i < AGS_ALSA_DEVOUT_DEFAULT_BACKEND_BUFFER_SIZE; i++){
+    alsa_devout->backend_buffer[i] = (guchar *) g_malloc(alsa_devout->pcm_channels *
+							 alsa_devout->buffer_size * (snd_pcm_format_physical_width(format) / 8) *
+							 sizeof(guchar));
   }
  
   /*  */
@@ -2373,25 +2395,23 @@ ags_alsa_devout_device_init(AgsSoundcard *soundcard,
   alsa_devout->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(alsa_devout)));
   alsa_devout->tic_counter = 0;
 
-  alsa_devout->nth_ring_buffer = 0;
+  alsa_devout->backend_buffer_mode = AGS_ALSA_DEVOUT_BACKEND_BUFFER_0;
     
 #ifdef AGS_WITH_ALSA
   alsa_devout->flags |= AGS_ALSA_DEVOUT_INITIALIZED;
 #endif
-  alsa_devout->flags |= AGS_ALSA_DEVOUT_BUFFER0;
-  alsa_devout->flags &= (~(AGS_ALSA_DEVOUT_BUFFER1 |
-			   AGS_ALSA_DEVOUT_BUFFER2 |
-			   AGS_ALSA_DEVOUT_BUFFER3));
+
+  alsa_devout->app_buffer_mode = AGS_ALSA_DEVOUT_APP_BUFFER_0;
   
   g_rec_mutex_unlock(alsa_devout_mutex);
 }
 
 void
-ags_alsa_devout_device_play_fill_ring_buffer(void *buffer,
-					     guint ags_format,
-					     guchar *ring_buffer,
-					     guint channels,
-					     guint buffer_size)
+ags_alsa_devout_device_fill_backend_buffer(void *app_buffer,
+					   guint ags_format,
+					   guchar *backend_buffer,
+					   guint channels,
+					   guint buffer_size)
 {
 #ifdef AGS_WITH_ALSA
   snd_pcm_format_t format;
@@ -2456,50 +2476,50 @@ ags_alsa_devout_device_play_fill_ring_buffer(void *buffer,
       switch(ags_format){
       case AGS_SOUNDCARD_SIGNED_8_BIT:
       {
-	res[0] = (int) ((gint8 *) buffer)[count * channels + chn];
-	res[1] = (int) ((gint8 *) buffer)[(count + 1) * channels + chn];
-	res[2] = (int) ((gint8 *) buffer)[(count + 2) * channels + chn];
-	res[3] = (int) ((gint8 *) buffer)[(count + 3) * channels + chn];
-	res[4] = (int) ((gint8 *) buffer)[(count + 4) * channels + chn];
-	res[5] = (int) ((gint8 *) buffer)[(count + 5) * channels + chn];
-	res[6] = (int) ((gint8 *) buffer)[(count + 6) * channels + chn];
-	res[7] = (int) ((gint8 *) buffer)[(count + 7) * channels + chn];
+	res[0] = (int) ((gint8 *) app_buffer)[count * channels + chn];
+	res[1] = (int) ((gint8 *) app_buffer)[(count + 1) * channels + chn];
+	res[2] = (int) ((gint8 *) app_buffer)[(count + 2) * channels + chn];
+	res[3] = (int) ((gint8 *) app_buffer)[(count + 3) * channels + chn];
+	res[4] = (int) ((gint8 *) app_buffer)[(count + 4) * channels + chn];
+	res[5] = (int) ((gint8 *) app_buffer)[(count + 5) * channels + chn];
+	res[6] = (int) ((gint8 *) app_buffer)[(count + 6) * channels + chn];
+	res[7] = (int) ((gint8 *) app_buffer)[(count + 7) * channels + chn];
       }
       break;
       case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
-	res[0] = (int) ((gint16 *) buffer)[count * channels + chn];
-	res[1] = (int) ((gint16 *) buffer)[(count + 1) * channels + chn];
-	res[2] = (int) ((gint16 *) buffer)[(count + 2) * channels + chn];
-	res[3] = (int) ((gint16 *) buffer)[(count + 3) * channels + chn];
-	res[4] = (int) ((gint16 *) buffer)[(count + 4) * channels + chn];
-	res[5] = (int) ((gint16 *) buffer)[(count + 5) * channels + chn];
-	res[6] = (int) ((gint16 *) buffer)[(count + 6) * channels + chn];
-	res[7] = (int) ((gint16 *) buffer)[(count + 7) * channels + chn];
+	res[0] = (int) ((gint16 *) app_buffer)[count * channels + chn];
+	res[1] = (int) ((gint16 *) app_buffer)[(count + 1) * channels + chn];
+	res[2] = (int) ((gint16 *) app_buffer)[(count + 2) * channels + chn];
+	res[3] = (int) ((gint16 *) app_buffer)[(count + 3) * channels + chn];
+	res[4] = (int) ((gint16 *) app_buffer)[(count + 4) * channels + chn];
+	res[5] = (int) ((gint16 *) app_buffer)[(count + 5) * channels + chn];
+	res[6] = (int) ((gint16 *) app_buffer)[(count + 6) * channels + chn];
+	res[7] = (int) ((gint16 *) app_buffer)[(count + 7) * channels + chn];
       }
       break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
       {
-	res[0] = (int) ((gint32 *) buffer)[count * channels + chn];
-	res[1] = (int) ((gint32 *) buffer)[(count + 1) * channels + chn];
-	res[2] = (int) ((gint32 *) buffer)[(count + 2) * channels + chn];
-	res[3] = (int) ((gint32 *) buffer)[(count + 3) * channels + chn];
-	res[4] = (int) ((gint32 *) buffer)[(count + 4) * channels + chn];
-	res[5] = (int) ((gint32 *) buffer)[(count + 5) * channels + chn];
-	res[6] = (int) ((gint32 *) buffer)[(count + 6) * channels + chn];
-	res[7] = (int) ((gint32 *) buffer)[(count + 7) * channels + chn];
+	res[0] = (int) ((gint32 *) app_buffer)[count * channels + chn];
+	res[1] = (int) ((gint32 *) app_buffer)[(count + 1) * channels + chn];
+	res[2] = (int) ((gint32 *) app_buffer)[(count + 2) * channels + chn];
+	res[3] = (int) ((gint32 *) app_buffer)[(count + 3) * channels + chn];
+	res[4] = (int) ((gint32 *) app_buffer)[(count + 4) * channels + chn];
+	res[5] = (int) ((gint32 *) app_buffer)[(count + 5) * channels + chn];
+	res[6] = (int) ((gint32 *) app_buffer)[(count + 6) * channels + chn];
+	res[7] = (int) ((gint32 *) app_buffer)[(count + 7) * channels + chn];
       }
       break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:
       {
-	res[0] = (int) ((gint32 *) buffer)[count * channels + chn];
-	res[1] = (int) ((gint32 *) buffer)[(count + 1) * channels + chn];
-	res[2] = (int) ((gint32 *) buffer)[(count + 2) * channels + chn];
-	res[3] = (int) ((gint32 *) buffer)[(count + 3) * channels + chn];
-	res[4] = (int) ((gint32 *) buffer)[(count + 4) * channels + chn];
-	res[5] = (int) ((gint32 *) buffer)[(count + 5) * channels + chn];
-	res[6] = (int) ((gint32 *) buffer)[(count + 6) * channels + chn];
-	res[7] = (int) ((gint32 *) buffer)[(count + 7) * channels + chn];
+	res[0] = (int) ((gint32 *) app_buffer)[count * channels + chn];
+	res[1] = (int) ((gint32 *) app_buffer)[(count + 1) * channels + chn];
+	res[2] = (int) ((gint32 *) app_buffer)[(count + 2) * channels + chn];
+	res[3] = (int) ((gint32 *) app_buffer)[(count + 3) * channels + chn];
+	res[4] = (int) ((gint32 *) app_buffer)[(count + 4) * channels + chn];
+	res[5] = (int) ((gint32 *) app_buffer)[(count + 5) * channels + chn];
+	res[6] = (int) ((gint32 *) app_buffer)[(count + 6) * channels + chn];
+	res[7] = (int) ((gint32 *) app_buffer)[(count + 7) * channels + chn];
       }
       break;
       default:
@@ -2527,30 +2547,30 @@ ags_alsa_devout_device_play_fill_ring_buffer(void *buffer,
       /* Generate data in native endian format */
       if(big_endian){
 	for(i = 0; i < bps; i++){
-	  *(ring_buffer + chn * bps + phys_bps - 1 - i) = (res[0] >> i * 8) & 0xff;
-	  *(ring_buffer + channels * bps + chn * bps + phys_bps - 1 - i) = (res[1] >> i * 8) & 0xff;
-	  *(ring_buffer + 2 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[2] >> i * 8) & 0xff;
-	  *(ring_buffer + 3 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[3] >> i * 8) & 0xff;
-	  *(ring_buffer + 4 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[4] >> i * 8) & 0xff;
-	  *(ring_buffer + 5 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[5] >> i * 8) & 0xff;
-	  *(ring_buffer + 6 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[6] >> i * 8) & 0xff;
-	  *(ring_buffer + 7 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[7] >> i * 8) & 0xff;
+	  *(backend_buffer + chn * bps + phys_bps - 1 - i) = (res[0] >> i * 8) & 0xff;
+	  *(backend_buffer + channels * bps + chn * bps + phys_bps - 1 - i) = (res[1] >> i * 8) & 0xff;
+	  *(backend_buffer + 2 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[2] >> i * 8) & 0xff;
+	  *(backend_buffer + 3 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[3] >> i * 8) & 0xff;
+	  *(backend_buffer + 4 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[4] >> i * 8) & 0xff;
+	  *(backend_buffer + 5 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[5] >> i * 8) & 0xff;
+	  *(backend_buffer + 6 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[6] >> i * 8) & 0xff;
+	  *(backend_buffer + 7 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[7] >> i * 8) & 0xff;
 	}
       }else{
 	for(i = 0; i < bps; i++){
-	  *(ring_buffer + chn * bps + i) = (res[0] >> i * 8) & 0xff;
-	  *(ring_buffer + channels * bps + chn * bps + i) = (res[1] >>  i * 8) & 0xff;
-	  *(ring_buffer + 2 * channels * bps + chn * bps + i) = (res[2] >>  i * 8) & 0xff;
-	  *(ring_buffer + 3 * channels * bps + chn * bps + i) = (res[3] >>  i * 8) & 0xff;
-	  *(ring_buffer + 4 * channels * bps + chn * bps + i) = (res[4] >>  i * 8) & 0xff;
-	  *(ring_buffer + 5 * channels * bps + chn * bps + i) = (res[5] >>  i * 8) & 0xff;
-	  *(ring_buffer + 6 * channels * bps + chn * bps + i) = (res[6] >>  i * 8) & 0xff;
-	  *(ring_buffer + 7 * channels * bps + chn * bps + i) = (res[7] >>  i * 8) & 0xff;
+	  *(backend_buffer + chn * bps + i) = (res[0] >> i * 8) & 0xff;
+	  *(backend_buffer + channels * bps + chn * bps + i) = (res[1] >>  i * 8) & 0xff;
+	  *(backend_buffer + 2 * channels * bps + chn * bps + i) = (res[2] >>  i * 8) & 0xff;
+	  *(backend_buffer + 3 * channels * bps + chn * bps + i) = (res[3] >>  i * 8) & 0xff;
+	  *(backend_buffer + 4 * channels * bps + chn * bps + i) = (res[4] >>  i * 8) & 0xff;
+	  *(backend_buffer + 5 * channels * bps + chn * bps + i) = (res[5] >>  i * 8) & 0xff;
+	  *(backend_buffer + 6 * channels * bps + chn * bps + i) = (res[6] >>  i * 8) & 0xff;
+	  *(backend_buffer + 7 * channels * bps + chn * bps + i) = (res[7] >>  i * 8) & 0xff;
 	}
       }
     }
 
-    ring_buffer += 8 * channels * bps;
+    backend_buffer += 8 * channels * bps;
     count += 8;
   }
 
@@ -2559,22 +2579,22 @@ ags_alsa_devout_device_play_fill_ring_buffer(void *buffer,
       switch(ags_format){
       case AGS_SOUNDCARD_SIGNED_8_BIT:
       {
-	res[0] = (int) ((gint8 *) buffer)[count * channels + chn];
+	res[0] = (int) ((gint8 *) app_buffer)[count * channels + chn];
       }
       break;
       case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
-	res[0] = (int) ((gint16 *) buffer)[count * channels + chn];
+	res[0] = (int) ((gint16 *) app_buffer)[count * channels + chn];
       }
       break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
       {
-	res[0] = (int) ((gint32 *) buffer)[count * channels + chn];
+	res[0] = (int) ((gint32 *) app_buffer)[count * channels + chn];
       }
       break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:
       {
-	res[0] = (int) ((gint32 *) buffer)[count * channels + chn];
+	res[0] = (int) ((gint32 *) app_buffer)[count * channels + chn];
       }
       break;
       default:
@@ -2588,16 +2608,16 @@ ags_alsa_devout_device_play_fill_ring_buffer(void *buffer,
       /* Generate data in native endian format */
       if(big_endian){
 	for(i = 0; i < bps; i++){
-	  *(ring_buffer + chn * bps + phys_bps - 1 - i) = (res[0] >> i * 8) & 0xff;
+	  *(backend_buffer + chn * bps + phys_bps - 1 - i) = (res[0] >> i * 8) & 0xff;
 	}
       }else{
 	for(i = 0; i < bps; i++){
-	  *(ring_buffer + chn * bps + i) = (res[0] >>  i * 8) & 0xff;
+	  *(backend_buffer + chn * bps + i) = (res[0] >>  i * 8) & 0xff;
 	}
       }	
     }
 
-    ring_buffer += channels * bps;
+    backend_buffer += channels * bps;
   }
 #endif
 }
@@ -2623,7 +2643,6 @@ ags_alsa_devout_device_play(AgsSoundcard *soundcard,
 
   gint64 poll_timeout;
   guint word_size;
-  guint nth_buffer;
   
   GRecMutex *alsa_devout_mutex;
   
@@ -2681,36 +2700,17 @@ ags_alsa_devout_device_play(AgsSoundcard *soundcard,
     return;
   }
 
-  //  g_message("play - 0x%0x", ((AGS_ALSA_DEVOUT_BUFFER0 |
-  //				AGS_ALSA_DEVOUT_BUFFER1 |
-  //				AGS_ALSA_DEVOUT_BUFFER2 |
-  //				AGS_ALSA_DEVOUT_BUFFER3) & (alsa_devout->flags)));
-
-  /* check buffer flag */
-  nth_buffer = 0;
-  
-  if((AGS_ALSA_DEVOUT_BUFFER0 & (alsa_devout->flags)) != 0){
-    nth_buffer = 0;
-  }else if((AGS_ALSA_DEVOUT_BUFFER1 & (alsa_devout->flags)) != 0){
-    nth_buffer = 1;
-  }else if((AGS_ALSA_DEVOUT_BUFFER2 & (alsa_devout->flags)) != 0){
-    nth_buffer = 2;
-  }else if((AGS_ALSA_DEVOUT_BUFFER3 & (alsa_devout->flags)) != 0){
-    nth_buffer = 3;
-  }
-
 #ifdef AGS_WITH_ALSA
-
   /* fill ring buffer */
   ags_soundcard_lock_buffer(soundcard,
-			    alsa_devout->buffer[nth_buffer]);
+			    alsa_devout->app_buffer[alsa_devout->app_buffer_mode]);
   
-  ags_alsa_devout_alsa_play_fill_ring_buffer(alsa_devout->buffer[nth_buffer], alsa_devout->format,
-					     alsa_devout->ring_buffer[alsa_devout->nth_ring_buffer],
+  ags_alsa_devout_device_fill_backend_buffer(alsa_devout->app_buffer[alsa_devout->app_buffer_mode], alsa_devout->format,
+					     alsa_devout->backend_buffer[alsa_devout->backend_buffer_mode],
 					     alsa_devout->pcm_channels, alsa_devout->buffer_size);
 
   ags_soundcard_unlock_buffer(soundcard,
-			      alsa_devout->buffer[nth_buffer]);
+			      alsa_devout->app_buffer[alsa_devout->app_buffer_mode]);
 
   /* wait until available */
   poll_timeout = g_get_monotonic_time() + (G_USEC_PER_SEC * (1.0 / (gdouble) alsa_devout->samplerate * (gdouble) alsa_devout->buffer_size));
@@ -2735,7 +2735,7 @@ ags_alsa_devout_device_play(AgsSoundcard *soundcard,
 //  g_message("write %d", alsa_devout->buffer_size);
   
   alsa_devout->rc = snd_pcm_writei(alsa_devout->handle,
-				   alsa_devout->ring_buffer[alsa_devout->nth_ring_buffer],
+				   alsa_devout->backend_buffer[alsa_devout->backend_buffer_mode],
 				   (snd_pcm_uframes_t) (alsa_devout->buffer_size));
   
   /* check error flag */
@@ -2774,10 +2774,10 @@ ags_alsa_devout_device_play(AgsSoundcard *soundcard,
 #endif
 
   /* increment nth ring-buffer */
-  if(alsa_devout->nth_ring_buffer + 1 >= alsa_devout->ring_buffer_size){
-    alsa_devout->nth_ring_buffer = 0;
+  if(alsa_devout->backend_buffer_mode + 1 > AGS_ALSA_DEVOUT_BACKEND_BUFFER_7){
+    alsa_devout->backend_buffer_mode = AGS_ALSA_DEVOUT_BACKEND_BUFFER_0;
   }else{
-    alsa_devout->nth_ring_buffer += 1;
+    alsa_devout->backend_buffer_mode += 1;
   }
   
   g_rec_mutex_unlock(alsa_devout_mutex);
@@ -2858,24 +2858,22 @@ ags_alsa_devout_device_free(AgsSoundcard *soundcard)
   /* free ring-buffer */
   g_rec_mutex_lock(alsa_devout_mutex);
 
-  if(alsa_devout->ring_buffer != NULL){
-    for(i = 0; i < alsa_devout->ring_buffer_size; i++){
-      free(alsa_devout->ring_buffer[i]);
+  if(alsa_devout->backend_buffer != NULL){
+    for(i = 0; i < AGS_ALSA_DEVOUT_DEFAULT_BACKEND_BUFFER_SIZE; i++){
+      g_free(alsa_devout->backend_buffer[i]);
+
+      alsa_devout->backend_buffer[i] = NULL;
     }
-    
-    free(alsa_devout->ring_buffer);
   }
-  
-  alsa_devout->ring_buffer = NULL;
 
   /* reset flags */
-  alsa_devout->flags &= (~(AGS_ALSA_DEVOUT_BUFFER0 |
-			   AGS_ALSA_DEVOUT_BUFFER1 |
-			   AGS_ALSA_DEVOUT_BUFFER2 |
-			   AGS_ALSA_DEVOUT_BUFFER3 |
-			   AGS_ALSA_DEVOUT_PLAY |
+  alsa_devout->flags &= (~(AGS_ALSA_DEVOUT_PLAY |
 			   AGS_ALSA_DEVOUT_INITIALIZED));
+  
+  alsa_devout->app_buffer_mode = AGS_ALSA_DEVOUT_APP_BUFFER_0;
 
+  alsa_devout->backend_buffer_mode = AGS_ALSA_DEVOUT_BACKEND_BUFFER_0;
+  
   g_rec_mutex_unlock(alsa_devout_mutex);
 
   g_rec_mutex_lock(alsa_devout_mutex);
@@ -2900,7 +2898,7 @@ ags_alsa_devout_device_free(AgsSoundcard *soundcard)
 
   alsa_devout->io_channel = NULL;
 
-  g_atomic_int_set(&(alsa_devout->available), TRUE);
+  g_atomic_int_set(&(alsa_devout->available), FALSE);
   
   g_rec_mutex_unlock(alsa_devout_mutex);
 }
@@ -3180,17 +3178,7 @@ ags_alsa_devout_get_buffer(AgsSoundcard *soundcard)
   
   alsa_devout = AGS_ALSA_DEVOUT(soundcard);
 
-  if(ags_alsa_devout_test_flags(alsa_devout, AGS_ALSA_DEVOUT_BUFFER0)){
-    buffer = alsa_devout->buffer[0];
-  }else if(ags_alsa_devout_test_flags(alsa_devout, AGS_ALSA_DEVOUT_BUFFER1)){
-    buffer = alsa_devout->buffer[1];
-  }else if(ags_alsa_devout_test_flags(alsa_devout, AGS_ALSA_DEVOUT_BUFFER2)){
-    buffer = alsa_devout->buffer[2];
-  }else if(ags_alsa_devout_test_flags(alsa_devout, AGS_ALSA_DEVOUT_BUFFER3)){
-    buffer = alsa_devout->buffer[3];
-  }else{
-    buffer = NULL;
-  }
+  buffer = alsa_devout->app_buffer[alsa_devout->app_buffer_mode];
 
   return(buffer);
 }
@@ -3204,21 +3192,10 @@ ags_alsa_devout_get_next_buffer(AgsSoundcard *soundcard)
   
   alsa_devout = AGS_ALSA_DEVOUT(soundcard);
 
-  //  g_message("next - 0x%0x", ((AGS_ALSA_DEVOUT_BUFFER0 |
-  //				AGS_ALSA_DEVOUT_BUFFER1 |
-  //				AGS_ALSA_DEVOUT_BUFFER2 |
-  //				AGS_ALSA_DEVOUT_BUFFER3) & (alsa_devout->flags)));
-
-  if(ags_alsa_devout_test_flags(alsa_devout, AGS_ALSA_DEVOUT_BUFFER0)){
-    buffer = alsa_devout->buffer[1];
-  }else if(ags_alsa_devout_test_flags(alsa_devout, AGS_ALSA_DEVOUT_BUFFER1)){
-    buffer = alsa_devout->buffer[2];
-  }else if(ags_alsa_devout_test_flags(alsa_devout, AGS_ALSA_DEVOUT_BUFFER2)){
-    buffer = alsa_devout->buffer[3];
-  }else if(ags_alsa_devout_test_flags(alsa_devout, AGS_ALSA_DEVOUT_BUFFER3)){
-    buffer = alsa_devout->buffer[0];
+  if(alsa_devout->app_buffer_mode == AGS_ALSA_DEVOUT_APP_BUFFER_3){
+    buffer = alsa_devout->app_buffer[AGS_ALSA_DEVOUT_APP_BUFFER_0];
   }else{
-    buffer = NULL;
+    buffer = alsa_devout->app_buffer[alsa_devout->app_buffer_mode + 1];
   }
 
   return(buffer);
@@ -3233,16 +3210,10 @@ ags_alsa_devout_get_prev_buffer(AgsSoundcard *soundcard)
   
   alsa_devout = AGS_ALSA_DEVOUT(soundcard);
 
-  if(ags_alsa_devout_test_flags(alsa_devout, AGS_ALSA_DEVOUT_BUFFER0)){
-    buffer = alsa_devout->buffer[3];
-  }else if(ags_alsa_devout_test_flags(alsa_devout, AGS_ALSA_DEVOUT_BUFFER1)){
-    buffer = alsa_devout->buffer[0];
-  }else if(ags_alsa_devout_test_flags(alsa_devout, AGS_ALSA_DEVOUT_BUFFER2)){
-    buffer = alsa_devout->buffer[1];
-  }else if(ags_alsa_devout_test_flags(alsa_devout, AGS_ALSA_DEVOUT_BUFFER3)){
-    buffer = alsa_devout->buffer[2];
+  if(alsa_devout->app_buffer_mode == AGS_ALSA_DEVOUT_APP_BUFFER_0){
+    buffer = alsa_devout->app_buffer[AGS_ALSA_DEVOUT_APP_BUFFER_3];
   }else{
-    buffer = NULL;
+    buffer = alsa_devout->app_buffer[alsa_devout->app_buffer_mode - 1];
   }
 
   return(buffer);
@@ -3260,15 +3231,15 @@ ags_alsa_devout_lock_buffer(AgsSoundcard *soundcard,
 
   buffer_mutex = NULL;
 
-  if(alsa_devout->buffer != NULL){
-    if(buffer == alsa_devout->buffer[0]){
-      buffer_mutex = alsa_devout->buffer_mutex[0];
-    }else if(buffer == alsa_devout->buffer[1]){
-      buffer_mutex = alsa_devout->buffer_mutex[1];
-    }else if(buffer == alsa_devout->buffer[2]){
-      buffer_mutex = alsa_devout->buffer_mutex[2];
-    }else if(buffer == alsa_devout->buffer[3]){
-      buffer_mutex = alsa_devout->buffer_mutex[3];
+  if(alsa_devout->app_buffer != NULL){
+    if(buffer == alsa_devout->app_buffer[0]){
+      buffer_mutex = alsa_devout->app_buffer_mutex[0];
+    }else if(buffer == alsa_devout->app_buffer[1]){
+      buffer_mutex = alsa_devout->app_buffer_mutex[1];
+    }else if(buffer == alsa_devout->app_buffer[2]){
+      buffer_mutex = alsa_devout->app_buffer_mutex[2];
+    }else if(buffer == alsa_devout->app_buffer[3]){
+      buffer_mutex = alsa_devout->app_buffer_mutex[3];
     }
   }
   
@@ -3289,15 +3260,15 @@ ags_alsa_devout_unlock_buffer(AgsSoundcard *soundcard,
 
   buffer_mutex = NULL;
 
-  if(alsa_devout->buffer != NULL){
-    if(buffer == alsa_devout->buffer[0]){
-      buffer_mutex = alsa_devout->buffer_mutex[0];
-    }else if(buffer == alsa_devout->buffer[1]){
-      buffer_mutex = alsa_devout->buffer_mutex[1];
-    }else if(buffer == alsa_devout->buffer[2]){
-      buffer_mutex = alsa_devout->buffer_mutex[2];
-    }else if(buffer == alsa_devout->buffer[3]){
-      buffer_mutex = alsa_devout->buffer_mutex[3];
+  if(alsa_devout->app_buffer != NULL){
+    if(buffer == alsa_devout->app_buffer[0]){
+      buffer_mutex = alsa_devout->app_buffer_mutex[0];
+    }else if(buffer == alsa_devout->app_buffer[1]){
+      buffer_mutex = alsa_devout->app_buffer_mutex[1];
+    }else if(buffer == alsa_devout->app_buffer[2]){
+      buffer_mutex = alsa_devout->app_buffer_mutex[2];
+    }else if(buffer == alsa_devout->app_buffer[3]){
+      buffer_mutex = alsa_devout->app_buffer_mutex[3];
     }
   }
 
@@ -3603,14 +3574,14 @@ ags_alsa_devout_trylock_sub_block(AgsSoundcard *soundcard,
 
   success = FALSE;
   
-  if(alsa_devout->buffer != NULL){
-    if(buffer == alsa_devout->buffer[0]){
+  if(alsa_devout->app_buffer != NULL){
+    if(buffer == alsa_devout->app_buffer[0]){
       sub_block_mutex = alsa_devout->sub_block_mutex[sub_block];
-    }else if(buffer == alsa_devout->buffer[1]){
+    }else if(buffer == alsa_devout->app_buffer[1]){
       sub_block_mutex = alsa_devout->sub_block_mutex[pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == alsa_devout->buffer[2]){
+    }else if(buffer == alsa_devout->app_buffer[2]){
       sub_block_mutex = alsa_devout->sub_block_mutex[2 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == alsa_devout->buffer[3]){
+    }else if(buffer == alsa_devout->app_buffer[3]){
       sub_block_mutex = alsa_devout->sub_block_mutex[3 * pcm_channels * sub_block_count + sub_block];
     }
   }
@@ -3651,14 +3622,14 @@ ags_alsa_devout_unlock_sub_block(AgsSoundcard *soundcard,
   
   sub_block_mutex = NULL;
   
-  if(alsa_devout->buffer != NULL){
-    if(buffer == alsa_devout->buffer[0]){
+  if(alsa_devout->app_buffer != NULL){
+    if(buffer == alsa_devout->app_buffer[0]){
       sub_block_mutex = alsa_devout->sub_block_mutex[sub_block];
-    }else if(buffer == alsa_devout->buffer[1]){
+    }else if(buffer == alsa_devout->app_buffer[1]){
       sub_block_mutex = alsa_devout->sub_block_mutex[pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == alsa_devout->buffer[2]){
+    }else if(buffer == alsa_devout->app_buffer[2]){
       sub_block_mutex = alsa_devout->sub_block_mutex[2 * pcm_channels * sub_block_count + sub_block];
-    }else if(buffer == alsa_devout->buffer[3]){
+    }else if(buffer == alsa_devout->app_buffer[3]){
       sub_block_mutex = alsa_devout->sub_block_mutex[3 * pcm_channels * sub_block_count + sub_block];
     }
   }
@@ -3669,15 +3640,15 @@ ags_alsa_devout_unlock_sub_block(AgsSoundcard *soundcard,
 }
 
 /**
- * ags_alsa_devout_switch_buffer_flag:
+ * ags_alsa_devout_switch_buffer:
  * @alsa_devout: the #AgsAlsaDevout
  *
- * The buffer flag indicates the currently played buffer.
+ * Switch currently played buffer.
  *
  * Since: 3.13.2
  */
 void
-ags_alsa_devout_switch_buffer_flag(AgsAlsaDevout *alsa_devout)
+ags_alsa_devout_switch_buffer(AgsAlsaDevout *alsa_devout)
 {
   GRecMutex *alsa_devout_mutex;
   
@@ -3691,18 +3662,10 @@ ags_alsa_devout_switch_buffer_flag(AgsAlsaDevout *alsa_devout)
   /* switch buffer flag */
   g_rec_mutex_lock(alsa_devout_mutex);
 
-  if((AGS_ALSA_DEVOUT_BUFFER0 & (alsa_devout->flags)) != 0){
-    alsa_devout->flags &= (~AGS_ALSA_DEVOUT_BUFFER0);
-    alsa_devout->flags |= AGS_ALSA_DEVOUT_BUFFER1;
-  }else if((AGS_ALSA_DEVOUT_BUFFER1 & (alsa_devout->flags)) != 0){
-    alsa_devout->flags &= (~AGS_ALSA_DEVOUT_BUFFER1);
-    alsa_devout->flags |= AGS_ALSA_DEVOUT_BUFFER2;
-  }else if((AGS_ALSA_DEVOUT_BUFFER2 & (alsa_devout->flags)) != 0){
-    alsa_devout->flags &= (~AGS_ALSA_DEVOUT_BUFFER2);
-    alsa_devout->flags |= AGS_ALSA_DEVOUT_BUFFER3;
-  }else if((AGS_ALSA_DEVOUT_BUFFER3 & (alsa_devout->flags)) != 0){
-    alsa_devout->flags &= (~AGS_ALSA_DEVOUT_BUFFER3);
-    alsa_devout->flags |= AGS_ALSA_DEVOUT_BUFFER0;
+  if(alsa_devout->app_buffer_mode < AGS_ALSA_DEVOUT_APP_BUFFER_3){
+    alsa_devout->app_buffer_mode += 1;
+  }else{
+    alsa_devout->app_buffer_mode = AGS_ALSA_DEVOUT_APP_BUFFER_0;
   }
 
   g_rec_mutex_unlock(alsa_devout_mutex);
@@ -3795,33 +3758,29 @@ ags_alsa_devout_realloc_buffer(AgsAlsaDevout *alsa_devout)
 
   //NOTE:JK: there is no lock applicable to buffer
 
-  /* AGS_ALSA_DEVOUT_BUFFER_0 */
-  if(alsa_devout->buffer[0] != NULL){
-    free(alsa_devout->buffer[0]);
+  if(alsa_devout->app_buffer[0] != NULL){
+    g_free(alsa_devout->app_buffer[0]);
   }
   
-  alsa_devout->buffer[0] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  alsa_devout->app_buffer[0] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
   
-  /* AGS_ALSA_DEVOUT_BUFFER_1 */
-  if(alsa_devout->buffer[1] != NULL){
-    free(alsa_devout->buffer[1]);
+  if(alsa_devout->app_buffer[1] != NULL){
+    g_free(alsa_devout->app_buffer[1]);
   }
 
-  alsa_devout->buffer[1] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  alsa_devout->app_buffer[1] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
   
-  /* AGS_ALSA_DEVOUT_BUFFER_2 */
-  if(alsa_devout->buffer[2] != NULL){
-    free(alsa_devout->buffer[2]);
+  if(alsa_devout->app_buffer[2] != NULL){
+    g_free(alsa_devout->app_buffer[2]);
   }
 
-  alsa_devout->buffer[2] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  alsa_devout->app_buffer[2] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
   
-  /* AGS_ALSA_DEVOUT_BUFFER_3 */
-  if(alsa_devout->buffer[3] != NULL){
-    free(alsa_devout->buffer[3]);
+  if(alsa_devout->app_buffer[3] != NULL){
+    g_free(alsa_devout->app_buffer[3]);
   }
   
-  alsa_devout->buffer[3] = (void *) malloc(pcm_channels * buffer_size * word_size);
+  alsa_devout->app_buffer[3] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 }
 
 /**
