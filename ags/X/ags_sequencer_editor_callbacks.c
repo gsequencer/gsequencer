@@ -75,12 +75,10 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
   
   if(AGS_IS_JACK_MIDIIN(sequencer)){
     str = "jack";
-  }else if(AGS_IS_MIDIIN(sequencer)){
-    if((AGS_MIDIIN_ALSA & (AGS_MIDIIN(sequencer)->flags)) != 0){
-      str = "alsa";
-    }else if((AGS_MIDIIN_OSS & (AGS_MIDIIN(sequencer)->flags)) != 0){
-      str = "oss";
-    }
+  }else if(AGS_IS_ALSA_MIDIIN(sequencer)){
+    str = "alsa";
+  }else if(AGS_IS_OSS_MIDIIN(sequencer)){
+    str = "oss";
   }
 
   if(str != NULL &&

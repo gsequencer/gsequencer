@@ -91,8 +91,7 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
     }else if(!g_ascii_strncasecmp(backend,
 				  "alsa",
 				  5)){
-      if(AGS_IS_DEVOUT(soundcard->data) &&
-	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_ALSA)){
+      if(AGS_IS_ALSA_DEVOUT(soundcard->data)){
 	 tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
 	 	 
 	 if(!g_ascii_strcasecmp(device,
@@ -113,8 +112,7 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
     }else if(!g_ascii_strncasecmp(backend,
 				  "oss",
 				  4)){    
-      if(AGS_IS_DEVOUT(soundcard->data) &&
-	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_OSS)){
+      if(AGS_IS_OSS_DEVOUT(soundcard->data)){
 	tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
 	
 	if(!g_ascii_strcasecmp(device,
@@ -275,8 +273,7 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
     }else if(!g_ascii_strncasecmp(backend,
 				  "alsa",
 				  5)){
-      if(AGS_IS_DEVOUT(soundcard->data) &&
-	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_ALSA)){
+      if(AGS_IS_ALSA_DEVOUT(soundcard->data)){
 	 tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
 	 	 
 	 if(!g_ascii_strcasecmp(device,
@@ -297,8 +294,7 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
     }else if(!g_ascii_strncasecmp(backend,
 				  "oss",
 				  4)){    
-      if(AGS_IS_DEVOUT(soundcard->data) &&
-	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_OSS)){
+      if(AGS_IS_OSS_DEVOUT(soundcard->data)){
 	tmp_device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
 	
 	if(!g_ascii_strcasecmp(device,

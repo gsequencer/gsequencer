@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,14 @@
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_devin.h>
 #include <ags/audio/ags_midiin.h>
+
+#include <ags/audio/alsa/ags_alsa_devout.h>
+#include <ags/audio/alsa/ags_alsa_devin.h>
+#include <ags/audio/alsa/ags_alsa_midiin.h>
+
+#include <ags/audio/oss/ags_oss_devout.h>
+#include <ags/audio/oss/ags_oss_devin.h>
+#include <ags/audio/oss/ags_oss_midiin.h>
 
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_devin.h>
@@ -339,6 +347,58 @@ ags_clear_buffer_launch(AgsTask *task)
     memset(devin->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
 
     ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), devin->buffer[nth_buffer]);
+  }else if(AGS_IS_ALSA_DEVOUT(clear_buffer->device)){
+    AgsAlsaDevout *alsa_devout;
+
+    alsa_devout = (AgsAlsaDevout *) clear_buffer->device;
+
+    /* retrieve nth buffer */
+    nth_buffer = alsa_devout->app_buffer_mode;
+
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), alsa_devout->app_buffer[nth_buffer]);
+    
+    memset(alsa_devout->app_buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), alsa_devout->app_buffer[nth_buffer]);
+  }else if(AGS_IS_ALSA_DEVIN(clear_buffer->device)){
+    AgsAlsaDevin *alsa_devin;
+
+    alsa_devin = (AgsAlsaDevin *) clear_buffer->device;    
+
+    /* retrieve nth buffer */    
+    nth_buffer = alsa_devin->app_buffer_mode;
+    
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), alsa_devin->app_buffer[nth_buffer]);
+    
+    memset(alsa_devin->app_buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), alsa_devin->app_buffer[nth_buffer]);
+  }else if(AGS_IS_OSS_DEVOUT(clear_buffer->device)){
+    AgsOssDevout *oss_devout;
+
+    oss_devout = (AgsOssDevout *) clear_buffer->device;
+
+    /* retrieve nth buffer */    
+    nth_buffer = oss_devout->app_buffer_mode;
+
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), oss_devout->app_buffer[nth_buffer]);
+    
+    memset(oss_devout->app_buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), oss_devout->app_buffer[nth_buffer]);
+  }else if(AGS_IS_OSS_DEVIN(clear_buffer->device)){
+    AgsOssDevin *oss_devin;
+
+    oss_devin = (AgsOssDevin *) clear_buffer->device;    
+
+    /* retrieve nth buffer */    
+    nth_buffer = oss_devin->app_buffer_mode;
+    
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), oss_devin->app_buffer[nth_buffer]);
+    
+    memset(oss_devin->app_buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), oss_devin->app_buffer[nth_buffer]);
   }else if(AGS_IS_JACK_DEVOUT(clear_buffer->device)){
     AgsJackDevout *jack_devout;
     

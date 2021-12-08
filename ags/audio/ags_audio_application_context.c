@@ -33,9 +33,6 @@
 #endif
 
 #include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_devin.h>
-#include <ags/audio/ags_midiin.h>
 #include <ags/audio/ags_generic_recall_channel_run.h>
 #include <ags/audio/ags_recall_ladspa.h>
 #include <ags/audio/ags_recall_ladspa_run.h>
@@ -43,6 +40,14 @@
 #include <ags/audio/ags_recall_lv2_run.h>
 #include <ags/audio/ags_recall_dssi.h>
 #include <ags/audio/ags_recall_dssi_run.h>
+
+#include <ags/audio/alsa/ags_alsa_devout.h>
+#include <ags/audio/alsa/ags_alsa_devin.h>
+#include <ags/audio/alsa/ags_alsa_midiin.h>
+
+#include <ags/audio/oss/ags_oss_devout.h>
+#include <ags/audio/oss/ags_oss_devin.h>
+#include <ags/audio/oss/ags_oss_midiin.h>
 
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
 #include <ags/audio/core-audio/ags_core_audio_server.h>
@@ -2078,15 +2083,9 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 				    "alsa",
 				    5)){
 	if(is_output){
-	  soundcard = (GObject *) ags_devout_new((GObject *) audio_application_context);
-	  
-	  AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_OSS);
-	  AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_ALSA;
+	  soundcard = (GObject *) ags_alsa_devout_new();
 	}else{
-	  soundcard = (GObject *) ags_devin_new((GObject *) audio_application_context);
-	  
-	  AGS_DEVIN(soundcard)->flags &= (~AGS_DEVIN_OSS);
-	  AGS_DEVIN(soundcard)->flags |= AGS_DEVIN_ALSA;
+	  soundcard = (GObject *) ags_alsa_devin_new();
 	}
       }else if(!g_ascii_strncasecmp(str,
 				    "wasapi",
@@ -2160,15 +2159,9 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 				    "oss",
 				    4)){
 	if(is_output){
-	  soundcard = (GObject *) ags_devout_new((GObject *) audio_application_context);
-
-	  AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_ALSA);
-	  AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_OSS;
+	  soundcard = (GObject *) ags_oss_devout_new();
 	}else{
-	  soundcard = (GObject *) ags_devin_new((GObject *) audio_application_context);
-
-	  AGS_DEVIN(soundcard)->flags &= (~AGS_DEVIN_ALSA);
-	  AGS_DEVIN(soundcard)->flags |= AGS_DEVIN_OSS;	  
+	  soundcard = (GObject *) ags_oss_devin_new();
 	}
       }else{
 	g_warning(i18n("unknown soundcard backend - %s"), str);
@@ -2413,15 +2406,11 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa",
 				    5)){
-	sequencer = (GObject *) ags_midiin_new((GObject *) audio_application_context);
-	AGS_MIDIIN(sequencer)->flags &= (~AGS_MIDIIN_OSS);
-	AGS_MIDIIN(sequencer)->flags |= AGS_MIDIIN_ALSA;
+	sequencer = (GObject *) ags_alsa_midiin_new();
       }else if(!g_ascii_strncasecmp(str,
 				    "oss",
 				    4)){
-	sequencer = (GObject *) ags_midiin_new((GObject *) audio_application_context);
-	AGS_MIDIIN(sequencer)->flags &= (~AGS_MIDIIN_ALSA);
-	AGS_MIDIIN(sequencer)->flags |= AGS_MIDIIN_OSS;
+	sequencer = (GObject *) ags_oss_midiin_new();
       }else{
 	g_warning(i18n("unknown sequencer backend - %s"), str);
 
@@ -2661,7 +2650,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
     export_thread = NULL;
     
     /* export thread */
-    if(AGS_IS_DEVOUT(list->data) ||
+    if(AGS_IS_ALSA_DEVOUT(list->data) ||
+       AGS_IS_OSS_DEVOUT(list->data) ||
        AGS_IS_WASAPI_DEVOUT(list->data) ||
        AGS_IS_JACK_DEVOUT(list->data) ||
        AGS_IS_PULSE_DEVOUT(list->data) ||
