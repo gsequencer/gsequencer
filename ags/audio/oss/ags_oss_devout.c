@@ -1065,7 +1065,7 @@ ags_oss_devout_finalize(GObject *gobject)
   for(i = 0; i < AGS_OSS_DEVOUT_DEFAULT_APP_BUFFER_SIZE; i++){
     g_rec_mutex_clear(oss_devout->app_buffer_mutex[i]);
     
-    g_free(oss_devout->app_buffer_mutex[i])
+    g_free(oss_devout->app_buffer_mutex[i]);
   }
 
   g_free(oss_devout->app_buffer_mutex);

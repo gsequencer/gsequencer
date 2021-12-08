@@ -42,7 +42,7 @@ G_BEGIN_DECLS
 #define AGS_ALSA_DEVIN_DEFAULT_ALSA_DEVICE "hw:0,0"
 
 #define AGS_ALSA_DEVIN_DEFAULT_APP_BUFFER_SIZE (4)
-#define AGS_ALSA_DEVIN_DEFAULT_RING_BUFFER_SIZE (8)
+#define AGS_ALSA_DEVIN_DEFAULT_BACKEND_BUFFER_SIZE (8)
 
 typedef struct _AgsAlsaDevin AgsAlsaDevin;
 typedef struct _AgsAlsaDevinClass AgsAlsaDevinClass;
@@ -76,6 +76,13 @@ typedef enum
 
   AGS_ALSA_DEVIN_ATTACK_FIRST       = 1 <<  7,
 }AgsAlsaDevinFlags;
+
+/**
+ * AgsAlsaDevinAppBufferMode:
+ * @AGS_ALSA_DEVIN_APP_BUFFER_0: ring-buffer 0
+ * @AGS_ALSA_DEVIN_APP_BUFFER_1: ring-buffer 1
+ * @AGS_ALSA_DEVIN_APP_BUFFER_2: ring-buffer 2
+ * @AGS_ALSA_DEVIN_APP_BUFFER_3: ring-buffer 3
  * 
  * Enum values to indicate internal state of #AgsAlsaDevin application buffer by
  * setting mode.

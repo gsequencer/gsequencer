@@ -1037,7 +1037,7 @@ ags_alsa_devout_finalize(GObject *gobject)
   for(i = 0; i < AGS_ALSA_DEVOUT_DEFAULT_APP_BUFFER_SIZE; i++){
     g_rec_mutex_clear(alsa_devout->app_buffer_mutex[i]);
     
-    g_free(alsa_devout->app_buffer_mutex[i])
+    g_free(alsa_devout->app_buffer_mutex[i]);
   }
 
   g_free(alsa_devout->app_buffer_mutex);

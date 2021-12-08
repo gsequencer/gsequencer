@@ -925,7 +925,7 @@ ags_alsa_devin_get_property(GObject *gobject,
   {
     g_rec_mutex_lock(alsa_devin_mutex);
 
-    g_value_set_pointer(value, alsa_devin->buffer);
+    g_value_set_pointer(value, alsa_devin->app_buffer);
 
     g_rec_mutex_unlock(alsa_devin_mutex);
   }
@@ -981,6 +981,8 @@ ags_alsa_devin_finalize(GObject *gobject)
 {
   AgsAlsaDevin *alsa_devin;
 
+  guint i;
+  
   alsa_devin = AGS_ALSA_DEVIN(gobject);
 
   ags_uuid_free(alsa_devin->uuid);
@@ -1000,7 +1002,7 @@ ags_alsa_devin_finalize(GObject *gobject)
   for(i = 0; i < AGS_ALSA_DEVIN_DEFAULT_APP_BUFFER_SIZE; i++){
     g_rec_mutex_clear(alsa_devin->app_buffer_mutex[i]);
     
-    g_free(alsa_devin->app_buffer_mutex[i])
+    g_free(alsa_devin->app_buffer_mutex[i]);
   }
 
   g_free(alsa_devin->app_buffer_mutex);
@@ -2464,7 +2466,7 @@ ags_alsa_devin_device_record(AgsSoundcard *soundcard,
 //  g_message("read %d", alsa_devin->buffer_size);
   
   alsa_devin->rc = snd_pcm_readi(alsa_devin->handle,
-				 alsa_devin->backend_buffer[alsa_devout->backend_buffer_mode],
+				 alsa_devin->backend_buffer[alsa_devin->backend_buffer_mode],
 				 (snd_pcm_uframes_t) (alsa_devin->buffer_size));
 
 
@@ -2474,7 +2476,7 @@ ags_alsa_devin_device_record(AgsSoundcard *soundcard,
   
   ags_alsa_devin_device_fill_backend_buffer(alsa_devin->app_buffer[alsa_devin->app_buffer_mode],
 					    alsa_devin->format,
-					    alsa_devin->backend_buffer[alsa_devout->backend_buffer_mode],
+					    alsa_devin->backend_buffer[alsa_devin->backend_buffer_mode],
 					    alsa_devin->pcm_channels,
 					    alsa_devin->buffer_size);
 

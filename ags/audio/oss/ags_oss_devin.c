@@ -114,8 +114,8 @@ gboolean ags_oss_devin_is_recording(AgsSoundcard *soundcard);
 
 gchar* ags_oss_devin_get_uptime(AgsSoundcard *soundcard);
 
-void ags_oss_devin_oss_init(AgsSoundcard *soundcard,
-			    GError **error);
+void ags_oss_devin_device_record_init(AgsSoundcard *soundcard,
+				      GError **error);
 
 void ags_oss_devin_oss_record_fill_buffer(void *app_buffer,
 					  guint ags_format,
@@ -123,9 +123,9 @@ void ags_oss_devin_oss_record_fill_buffer(void *app_buffer,
 					  guint channels,
 					  guint buffer_size);
 
-void ags_oss_devin_oss_record(AgsSoundcard *soundcard,
-			      GError **error);
-void ags_oss_devin_oss_free(AgsSoundcard *soundcard);
+void ags_oss_devin_device_record(AgsSoundcard *soundcard,
+				 GError **error);
+void ags_oss_devin_device_free(AgsSoundcard *soundcard);
 
 void ags_oss_devin_tic(AgsSoundcard *soundcard);
 void ags_oss_devin_offset_changed(AgsSoundcard *soundcard,
@@ -951,7 +951,7 @@ ags_oss_devin_get_property(GObject *gobject,
   {
     g_rec_mutex_lock(oss_devin_mutex);
 
-    g_value_set_pointer(value, oss_devin->buffer);
+    g_value_set_pointer(value, oss_devin->app_buffer);
 
     g_rec_mutex_unlock(oss_devin_mutex);
   }
@@ -1007,6 +1007,8 @@ ags_oss_devin_finalize(GObject *gobject)
 {
   AgsOssDevin *oss_devin;
 
+  guint i;
+  
   oss_devin = AGS_OSS_DEVIN(gobject);
 
   ags_uuid_free(oss_devin->uuid);
@@ -1026,7 +1028,7 @@ ags_oss_devin_finalize(GObject *gobject)
   for(i = 0; i < AGS_OSS_DEVIN_DEFAULT_APP_BUFFER_SIZE; i++){
     g_rec_mutex_clear(oss_devin->app_buffer_mutex[i]);
     
-    g_free(oss_devin->app_buffer_mutex[i])
+    g_free(oss_devin->app_buffer_mutex[i]);
   }
 
   g_free(oss_devin->app_buffer_mutex);
@@ -1850,7 +1852,7 @@ ags_oss_devin_device_record_init(AgsSoundcard *soundcard,
     word_size = sizeof(gint64);
   }
   default:
-    g_rec_mutex_unlock(devin_mutex);
+    g_rec_mutex_unlock(oss_devin_mutex);
     
     g_warning("ags_oss_devin_oss_init(): unsupported word size");
     
@@ -1872,7 +1874,7 @@ ags_oss_devin_device_record_init(AgsSoundcard *soundcard,
   
   for(i = 0; i < AGS_OSS_DEVIN_DEFAULT_BACKEND_BUFFER_SIZE; i++){
     oss_devin->backend_buffer[i] = (guchar *) g_malloc(oss_devin->pcm_channels *
-						       oss_devin->buffer_size * (snd_pcm_format_physical_width(format) / 8) *
+						       oss_devin->buffer_size * word_size *
 						       sizeof(guchar));
   }
 
@@ -2138,8 +2140,8 @@ ags_oss_devin_oss_record_fill_buffer(void *app_buffer,
 }
 
 void
-ags_oss_devin_oss_record(AgsSoundcard *soundcard,
-			 GError **error)
+ags_oss_devin_device_record(AgsSoundcard *soundcard,
+			    GError **error)
 {
   AgsOssDevin *oss_devin;
 
