@@ -646,7 +646,7 @@ ags_oss_devout_init(AgsOssDevout *oss_devout)
   }
 
   g_atomic_int_set(&(oss_devout->available),
-		   TRUE);
+		   FALSE);
   
   oss_devout->backend_buffer_mode = AGS_OSS_DEVOUT_BACKEND_BUFFER_0;
   

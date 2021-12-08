@@ -2089,8 +2089,11 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
     {
       word_size = sizeof(gint64);
     }
-  default:
+  default:    
+    g_rec_mutex_unlock(devin_mutex);
+
     g_warning("ags_devin_oss_init(): unsupported word size");
+
     return;
   }
 
@@ -4202,7 +4205,10 @@ ags_devin_realloc_buffer(AgsDevin *devin)
     }
     break;
   default:
+    g_rec_mutex_unlock(devin_mutex);
+    
     g_warning("ags_devin_realloc_buffer(): unsupported word size");
+    
     return;
   }  
 

@@ -178,9 +178,16 @@ struct _AgsAlsaDevin
   
   char *device;
   int rc;
+
+#if defined(AGS_WITH_ALSA)
   snd_pcm_t *handle;
   snd_async_handler_t *ahandler;
   snd_pcm_hw_params_t *params;
+#else
+  gpointer handle;
+  gpointer ahandler;
+  gpointer params;
+#endif
 };
 
 struct _AgsAlsaDevinClass
