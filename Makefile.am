@@ -1537,14 +1537,16 @@ deprecated_libags_audio_alsa_h_sources =
 libags_audio_alsa_h_sources = \
 	$(deprecated_libags_audio_alsa_h_sources) \
 	ags/audio/alsa/ags_alsa_devout.h \
-	ags/audio/alsa/ags_alsa_devin.h
+	ags/audio/alsa/ags_alsa_devin.h \
+	ags/audio/alsa/ags_alsa_midiin.h
 
 deprecated_libags_audio_alsa_c_sources =
 
 libags_audio_alsa_c_sources = \
 	$(deprecated_libags_audio_alsa_c_sources) \
 	ags/audio/alsa/ags_alsa_devout.c \
-	ags/audio/alsa/ags_alsa_devin.c
+	ags/audio/alsa/ags_alsa_devin.c \
+	ags/audio/alsa/ags_alsa_midiin.c
 
 # libags-audio - oss
 deprecated_libags_audio_oss_h_sources =
@@ -1552,14 +1554,16 @@ deprecated_libags_audio_oss_h_sources =
 libags_audio_oss_h_sources = \
 	$(deprecated_libags_audio_oss_h_sources) \
 	ags/audio/oss/ags_oss_devout.h \
-	ags/audio/oss/ags_oss_devin.h
+	ags/audio/oss/ags_oss_devin.h \
+	ags/audio/oss/ags_oss_midiin.h
 
 deprecated_libags_audio_oss_c_sources =
 
 libags_audio_oss_c_sources = \
 	$(deprecated_libags_audio_oss_c_sources) \
 	ags/audio/oss/ags_oss_devout.c \
-	ags/audio/oss/ags_oss_devin.c
+	ags/audio/oss/ags_oss_devin.c \
+	ags/audio/oss/ags_oss_midiin.c
 
 # libags-audio - jack
 deprecated_libags_audio_jack_h_sources =

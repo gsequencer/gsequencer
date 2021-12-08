@@ -180,20 +180,30 @@ struct _AgsDevinClass
   GObjectClass gobject;
 };
 
+G_DEPRECATED
 GType ags_devin_get_type();
+G_DEPRECATED
 GType ags_devin_flags_get_type();
 
+G_DEPRECATED
 GQuark ags_devin_error_quark();
 
+G_DEPRECATED
 gboolean ags_devin_test_flags(AgsDevin *devin, guint flags);
+G_DEPRECATED
 void ags_devin_set_flags(AgsDevin *devin, guint flags);
+G_DEPRECATED
 void ags_devin_unset_flags(AgsDevin *devin, guint flags);
 
+G_DEPRECATED
 void ags_devin_switch_buffer_flag(AgsDevin *devin);
 
+G_DEPRECATED
 void ags_devin_adjust_delay_and_attack(AgsDevin *devin);
+G_DEPRECATED
 void ags_devin_realloc_buffer(AgsDevin *devin);
 
+G_DEPRECATED
 AgsDevin* ags_devin_new();
 
 G_END_DECLS
