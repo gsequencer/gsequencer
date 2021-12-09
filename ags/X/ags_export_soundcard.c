@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -599,8 +599,7 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
 				  "alsa",
 				  5)){
       while(soundcard != NULL){
-	if(AGS_IS_DEVOUT(soundcard->data) &&
-	   ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_ALSA)){
+	if(AGS_IS_ALSA_DEVOUT(soundcard->data)){
 	  device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
 
 	  if(device != NULL){
@@ -615,8 +614,7 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
 				  "oss",
 				  4)){    
       while(soundcard != NULL){
-	if(AGS_IS_DEVOUT(soundcard->data) &&
-	   ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_OSS)){
+	if(AGS_IS_OSS_DEVOUT(soundcard->data)){
 	  device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
 
 	  if(device != NULL){

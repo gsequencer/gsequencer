@@ -2530,7 +2530,7 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 				     (AGS_COMPOSITE_TOOLBAR_TOOL_POSITION |
 				      AGS_COMPOSITE_TOOLBAR_TOOL_SELECT));
 
-      composite_toolbar->paste_mode = (AGS_COMPOSITE_TOOLBAR_PASTE_MATCH_AUDIO_CHANNEL);
+      composite_toolbar->paste_mode = (AGS_COMPOSITE_TOOLBAR_PASTE_MATCH_LINE);
       ags_composite_toolbar_set_action(composite_toolbar,
 				       (AGS_COMPOSITE_TOOLBAR_ACTION_COPY |
 					AGS_COMPOSITE_TOOLBAR_ACTION_CUT |

@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2021-11-30 20:58+0100\n"
+"POT-Creation-Date: 2021-12-09 08:08+0100\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -123,7 +123,7 @@ msgstr ""
 msgid "_OK"
 msgstr ""
 
-#: ags/X/ags_connection_editor.c:255 ags/X/ags_export_soundcard_callbacks.c:410
+#: ags/X/ags_connection_editor.c:255 ags/X/ags_export_soundcard_callbacks.c:406
 #: ags/X/ags_midi_dialog.c:433 ags/X/ags_plugin_browser.c:220
 #: ags/X/ags_preferences.c:228 ags/X/editor/ags_crop_note_dialog.c:271
 #: ags/X/editor/ags_envelope_dialog.c:233
@@ -162,7 +162,7 @@ msgstr "connecter intrant"
 msgid "_File"
 msgstr "_Fichier"
 
-#: ags/X/ags_context_menu.c:134 ags/X/ags_export_soundcard_callbacks.c:411
+#: ags/X/ags_context_menu.c:134 ags/X/ags_export_soundcard_callbacks.c:407
 #: ags/X/ags_menu_bar.c:131 ags/X/machine/ags_audiorec.c:295
 #: ags/X/machine/ags_drum.c:306 ags/X/machine/ags_drum_input_pad_callbacks.c:54
 #: ags/X/machine/ags_ffplayer.c:363 ags/X/machine/ags_sf2_synth.c:255
@@ -896,29 +896,29 @@ msgstr "Lv2"
 msgid "VST3"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3345
-#: ags/audio/ags_audio_application_context.c:2174
-#: ags/audio/task/ags_apply_sound_config.c:905
+#: ags/X/ags_xorg_application_context.c:3333
+#: ags/audio/ags_audio_application_context.c:2167
+#: ags/audio/task/ags_apply_sound_config.c:898
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "carte son backend inconnu - %s"
 
-#: ags/X/ags_xorg_application_context.c:3355
-#: ags/audio/ags_audio_application_context.c:2184
-#: ags/audio/task/ags_apply_sound_config.c:915
+#: ags/X/ags_xorg_application_context.c:3343
+#: ags/audio/ags_audio_application_context.c:2177
+#: ags/audio/task/ags_apply_sound_config.c:908
 msgid "unknown soundcard backend - NULL"
 msgstr "carte son backend inconnu - NULL"
 
-#: ags/X/ags_xorg_application_context.c:3595
-#: ags/audio/ags_audio_application_context.c:2426
-#: ags/audio/task/ags_apply_sound_config.c:1155
+#: ags/X/ags_xorg_application_context.c:3579
+#: ags/audio/ags_audio_application_context.c:2415
+#: ags/audio/task/ags_apply_sound_config.c:1144
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "séquencer backend inconnu - %s"
 
-#: ags/X/ags_xorg_application_context.c:3605
-#: ags/audio/ags_audio_application_context.c:2436
-#: ags/audio/task/ags_apply_sound_config.c:1165
+#: ags/X/ags_xorg_application_context.c:3589
+#: ags/audio/ags_audio_application_context.c:2425
+#: ags/audio/task/ags_apply_sound_config.c:1154
 msgid "unknown sequencer backend - NULL"
 msgstr "séquencer backend inconnu - NULL"
 

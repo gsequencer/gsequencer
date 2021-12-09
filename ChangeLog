@@ -1,6 +1,23 @@
+ags (3.13.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsTaskLauncher freeing tasks
+	* fixed AgsScrolledLevelBox, AgsScrolledScaleBox, AgsScrolledAutomationEditBox
+	  and AgsScrolledWaveEditBox not available property shadow-type of AgsViewport
+
+ags (3.13.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsAlsaDevout, AgsAlsaDevin and AgsAlsaMidiin
+	* implemented AgsOssDevout, AgsOssDevin and AgsOssMidiin
+	* deprecated AgsDevout, AgsDevin and AgsMidiin
+	* refactored make use of new device implementation of ALSA and OSS
+
 ags (3.13.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsWave insert from clipboard
+	* fixed AgsCompositEdit match line of wave form editor
 	* fixed AgsAudioApplicationContext to set setup_ready field to TRUE
 
 ags (3.13.0)

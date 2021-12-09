@@ -360,14 +360,14 @@ ags_task_launcher_dispose(GObject *gobject)
   
   if(task_launcher->task != NULL){
     g_list_free_full(task_launcher->task,
-		     g_object_unref);
+		     (GDestroyNotify) g_object_unref);
     
     task_launcher->task = NULL;
   }
   
   if(task_launcher->cyclic_task != NULL){
     g_list_free_full(task_launcher->cyclic_task,
-		     g_object_unref);
+		     (GDestroyNotify) g_object_unref);
     
     task_launcher->cyclic_task = NULL;
   }
@@ -393,8 +393,12 @@ ags_task_launcher_finalize(GObject *gobject)
   g_list_free_full(task_launcher->task,
 		   g_object_unref);
 
+  task_launcher->task = NULL;
+  
   g_list_free_full(task_launcher->cyclic_task,
 		   g_object_unref);
+
+  task_launcher->cyclic_task = NULL;
   
   /* call parent */
   G_OBJECT_CLASS(ags_task_launcher_parent_class)->finalize(gobject);
@@ -818,6 +822,9 @@ ags_task_launcher_real_run(AgsTaskLauncher *task_launcher)
   /* get task launcher mutex */
   task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
 
+  start_task = NULL;
+  start_cyclic_task = NULL;
+  
   g_rec_mutex_lock(task_launcher_mutex);
 
   g_object_get(task_launcher,
@@ -826,7 +833,7 @@ ags_task_launcher_real_run(AgsTaskLauncher *task_launcher)
 	       NULL);
 
   g_list_free_full(task_launcher->task,
-		   g_object_unref);
+		   (GDestroyNotify) g_object_unref);
   
   task_launcher->task = NULL;
   
@@ -843,7 +850,7 @@ ags_task_launcher_real_run(AgsTaskLauncher *task_launcher)
   }
 
   g_list_free_full(start_task,
-		   g_object_unref);
+		   (GDestroyNotify) g_object_unref);
 
   /* cyclic task */
   cyclic_task = start_cyclic_task;
@@ -856,7 +863,7 @@ ags_task_launcher_real_run(AgsTaskLauncher *task_launcher)
   }
 
   g_list_free_full(start_cyclic_task,
-		   g_object_unref);
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**

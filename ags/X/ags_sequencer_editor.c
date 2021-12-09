@@ -462,12 +462,10 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
   
   if(AGS_IS_JACK_MIDIIN(sequencer)){
     backend = "jack";
-  }else if(AGS_IS_MIDIIN(sequencer)){
-    if((AGS_MIDIIN_ALSA & (AGS_MIDIIN(sequencer)->flags)) != 0){
-      backend = "alsa";
-    }else if((AGS_MIDIIN_OSS & (AGS_MIDIIN(sequencer)->flags)) != 0){
-      backend = "oss";
-    }
+  }else if(AGS_IS_ALSA_MIDIIN(sequencer)){
+    backend = "alsa";
+  }else if(AGS_IS_OSS_MIDIIN(sequencer)){
+    backend = "oss";
   }
 
   if(backend != NULL){
@@ -795,16 +793,12 @@ ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
   
   application_context = ags_application_context_get_instance();
 
-  if(AGS_IS_MIDIIN(sequencer)){
-    if((AGS_MIDIIN_ALSA & (AGS_MIDIIN(sequencer)->flags)) != 0){
-      ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
-			       "hw:0,0");
-    }else if((AGS_MIDIIN_OSS & (AGS_MIDIIN(sequencer)->flags)) != 0){
-      ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
-			       "/dev/dsp0");
-    }else{
-      g_warning("unknown sequencer implementation");
-    }
+  if(AGS_IS_ALSA_MIDIIN(sequencer)){
+    ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
+			     "hw:0,0");
+  }else if(AGS_IS_OSS_MIDIIN(sequencer)){
+    ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
+			     "/dev/midi00");
   }else{
     g_warning("unknown sequencer implementation");
   }
@@ -925,18 +919,16 @@ ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor)
 void
 ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor)
 {
-  AgsMidiin *midiin;
+  AgsAlsaMidiin *alsa_midiin;
 
   GList *card_id;
   
   /*  */
-  midiin = g_object_new(AGS_TYPE_MIDIIN,
-			NULL);
-  midiin->flags &= (~AGS_MIDIIN_OSS);
-  midiin->flags |= AGS_MIDIIN_ALSA;
+  alsa_midiin = g_object_new(AGS_TYPE_ALSA_MIDIIN,
+			     NULL);
 
   card_id = NULL;
-  ags_sequencer_list_cards(AGS_SEQUENCER(midiin),
+  ags_sequencer_list_cards(AGS_SEQUENCER(alsa_midiin),
 			   &card_id, NULL);
 
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(sequencer_editor->card))));
@@ -958,24 +950,22 @@ ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor)
 
   /* add new */
   ags_sequencer_editor_add_sequencer(sequencer_editor,
-				     (GObject *) midiin);
+				     (GObject *) alsa_midiin);
 }
 
 void
 ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor)
 {
-  AgsMidiin *midiin;
+  AgsOssMidiin *oss_midiin;
 
   GList *card_id;
     
   /*  */  
-  midiin = g_object_new(AGS_TYPE_MIDIIN,
-			NULL);
-  midiin->flags &= (~AGS_MIDIIN_ALSA);
-  midiin->flags |= AGS_MIDIIN_OSS;
+  oss_midiin = g_object_new(AGS_TYPE_OSS_MIDIIN,
+			    NULL);
 
   card_id = NULL;
-  ags_sequencer_list_cards(AGS_SEQUENCER(midiin),
+  ags_sequencer_list_cards(AGS_SEQUENCER(oss_midiin),
 			   &card_id, NULL);
 
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(sequencer_editor->card))));
@@ -997,7 +987,7 @@ ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor)
 
   /* add new */
   ags_sequencer_editor_add_sequencer(sequencer_editor,
-				     (GObject *) midiin);
+				     (GObject *) oss_midiin);
 }
 
 /**

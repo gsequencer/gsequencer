@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -628,12 +628,10 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
 
       if(AGS_IS_WASAPI_DEVOUT(list->data)){
 	backend = "wasapi";
-      }else if(AGS_IS_DEVOUT(list->data)){
-	if(ags_devout_test_flags(AGS_DEVOUT(list->data), AGS_DEVOUT_ALSA)){
-	  backend = "alsa";
-	}else if(ags_devout_test_flags(AGS_DEVOUT(list->data), AGS_DEVOUT_OSS)){
-	  backend = "oss";
-	}
+      }else if(AGS_IS_ALSA_DEVOUT(list->data)){
+	backend = "alsa";
+      }else if(AGS_IS_OSS_DEVOUT(list->data)){
+	backend = "oss";
       }else if(AGS_IS_JACK_DEVOUT(list->data)){
 	backend = "jack";
       }else if(AGS_IS_PULSE_DEVOUT(list->data)){

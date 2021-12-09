@@ -3249,15 +3249,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 				    "alsa",
 				    5)){
 	if(is_output){
-	  soundcard = (GObject *) ags_devout_new((GObject *) xorg_application_context);
-	  
-	  AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_OSS);
-	  AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_ALSA;
+	  soundcard = (GObject *) ags_alsa_devout_new();
 	}else{
-	  soundcard = (GObject *) ags_devin_new((GObject *) xorg_application_context);
-	  
-	  AGS_DEVIN(soundcard)->flags &= (~AGS_DEVIN_OSS);
-	  AGS_DEVIN(soundcard)->flags |= AGS_DEVIN_ALSA;
+	  soundcard = (GObject *) ags_alsa_devin_new();
 	}
       }else if(!g_ascii_strncasecmp(str,
 				    "wasapi",
@@ -3331,15 +3325,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 				    "oss",
 				    4)){
 	if(is_output){
-	  soundcard = (GObject *) ags_devout_new((GObject *) xorg_application_context);
-
-	  AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_ALSA);
-	  AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_OSS;
+	  soundcard = (GObject *) ags_oss_devout_new();
 	}else{
-	  soundcard = (GObject *) ags_devin_new((GObject *) xorg_application_context);
-
-	  AGS_DEVIN(soundcard)->flags &= (~AGS_DEVIN_ALSA);
-	  AGS_DEVIN(soundcard)->flags |= AGS_DEVIN_OSS;	  
+	  soundcard = (GObject *) ags_oss_devin_new();
 	}
       }else{
 	g_warning(i18n("unknown soundcard backend - %s"), str);
@@ -3582,15 +3570,11 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa",
 				    5)){
-	sequencer = (GObject *) ags_midiin_new((GObject *) xorg_application_context);
-	AGS_MIDIIN(sequencer)->flags &= (~AGS_MIDIIN_OSS);
-	AGS_MIDIIN(sequencer)->flags |= AGS_MIDIIN_ALSA;
+	sequencer = (GObject *) ags_alsa_midiin_new();
       }else if(!g_ascii_strncasecmp(str,
 				    "oss",
 				    4)){
-	sequencer = (GObject *) ags_midiin_new((GObject *) xorg_application_context);
-	AGS_MIDIIN(sequencer)->flags &= (~AGS_MIDIIN_ALSA);
-	AGS_MIDIIN(sequencer)->flags |= AGS_MIDIIN_OSS;
+	sequencer = (GObject *) ags_oss_midiin_new();
       }else{
 	g_warning(i18n("unknown sequencer backend - %s"), str);
 

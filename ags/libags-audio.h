@@ -222,6 +222,16 @@
 #include <ags/audio/audio-unit/ags_audio_unit_port.h>
 #include <ags/audio/audio-unit/ags_audio_unit_server.h>
 
+/* audio alsa */
+#include <ags/audio/alsa/ags_alsa_devout.h>
+#include <ags/audio/alsa/ags_alsa_devin.h>
+#include <ags/audio/alsa/ags_alsa_midiin.h>
+
+/* audio oss */
+#include <ags/audio/oss/ags_oss_devout.h>
+#include <ags/audio/oss/ags_oss_devin.h>
+#include <ags/audio/oss/ags_oss_midiin.h>
+
 /* audio pulse */
 #include <ags/audio/pulse/ags_pulse_client.h>
 #include <ags/audio/pulse/ags_pulse_devout.h>

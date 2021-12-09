@@ -201,9 +201,6 @@ ags_scrolled_automation_edit_box_init(AgsScrolledAutomationEditBox *scrolled_aut
 
   /* viewport */
   scrolled_automation_edit_box->viewport = (AgsViewport *) ags_viewport_new();
-  g_object_set(scrolled_automation_edit_box->viewport,
-	       "shadow-type", GTK_SHADOW_NONE,
-	       NULL);
 
   gtk_widget_set_vexpand(scrolled_automation_edit_box->viewport, TRUE);
   gtk_widget_set_hexpand(scrolled_automation_edit_box->viewport, TRUE);

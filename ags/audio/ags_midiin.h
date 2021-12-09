@@ -172,16 +172,23 @@ struct _AgsMidiinClass
   GObjectClass gobject;
 };
 
+G_DEPRECATED
 GType ags_midiin_get_type();
 
+G_DEPRECATED
 GQuark ags_midiin_error_quark();
 
+G_DEPRECATED
 gboolean ags_midiin_test_flags(AgsMidiin *midiin, guint flags);
+G_DEPRECATED
 void ags_midiin_set_flags(AgsMidiin *midiin, guint flags);
+G_DEPRECATED
 void ags_midiin_unset_flags(AgsMidiin *midiin, guint flags);
 
+G_DEPRECATED
 void ags_midiin_switch_buffer_flag(AgsMidiin *midiin);
 
+G_DEPRECATED
 AgsMidiin* ags_midiin_new();
 
 G_END_DECLS

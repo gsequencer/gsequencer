@@ -1083,12 +1083,12 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     backend = "wasapi";
 
     capability = AGS_SOUNDCARD_CAPABILITY_PLAYBACK;
-  }else if(AGS_IS_DEVOUT(soundcard)){
-    if((AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard)->flags)) != 0){
-      backend = "alsa";
-    }else if((AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard)->flags)) != 0){
-      backend = "oss";
-    }
+  }else if(AGS_IS_ALSA_DEVOUT(soundcard)){
+    backend = "alsa";
+
+    capability = AGS_SOUNDCARD_CAPABILITY_PLAYBACK;
+  }else if(AGS_IS_OSS_DEVOUT(soundcard)){
+    backend = "oss";
 
     capability = AGS_SOUNDCARD_CAPABILITY_PLAYBACK;
   }else if(AGS_IS_CORE_AUDIO_DEVIN(soundcard)){
@@ -1107,12 +1107,12 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     backend = "wasapi";
 
     capability = AGS_SOUNDCARD_CAPABILITY_CAPTURE;
-  }else if(AGS_IS_DEVIN(soundcard)){
-    if((AGS_DEVIN_ALSA & (AGS_DEVIN(soundcard)->flags)) != 0){
-      backend = "alsa";
-    }else if((AGS_DEVIN_OSS & (AGS_DEVIN(soundcard)->flags)) != 0){
-      backend = "oss";
-    }
+  }else if(AGS_IS_ALSA_DEVIN(soundcard)){
+    backend = "alsa";
+
+    capability = AGS_SOUNDCARD_CAPABILITY_CAPTURE;
+  }else if(AGS_IS_OSS_DEVIN(soundcard)){
+    backend = "oss";
 
     capability = AGS_SOUNDCARD_CAPABILITY_CAPTURE;
   }
@@ -2016,16 +2016,12 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
 
   initial_soundcard = FALSE;
   
-  if(AGS_IS_DEVOUT(soundcard)){
-    if((AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard)->flags)) != 0){
-      ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
-			       "hw:0,0");
-    }else if((AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard)->flags)) != 0){
-      ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
-			       "/dev/dsp0");
-    }else{
-      g_warning("unknown soundcard implementation");
-    }
+  if(AGS_IS_ALSA_DEVOUT(soundcard)){
+    ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
+			     "hw:0,0");
+  }else if(AGS_IS_OSS_DEVOUT(soundcard)){
+    ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
+			     "/dev/dsp0");
   }else if(AGS_IS_WASAPI_DEVOUT(soundcard)){
     //nothing
   }else{
@@ -2458,7 +2454,7 @@ ags_soundcard_editor_load_wasapi_card(AgsSoundcardEditor *soundcard_editor)
 void
 ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsDevout *devout;
+  AgsAlsaDevout *alsa_devout;
 
   GList *list;
   GList *card_id;
@@ -2474,13 +2470,11 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
   soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_LOAD;
 
   /*  */
-  devout = g_object_new(AGS_TYPE_DEVOUT,
+  alsa_devout = g_object_new(AGS_TYPE_ALSA_DEVOUT,
 			NULL);
-  devout->flags &= (~AGS_DEVOUT_OSS);
-  devout->flags |= AGS_DEVOUT_ALSA;
 
   card_id = NULL;
-  ags_soundcard_list_cards(AGS_SOUNDCARD(devout),
+  ags_soundcard_list_cards(AGS_SOUNDCARD(alsa_devout),
 			   &card_id, NULL);
 
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
@@ -2502,7 +2496,7 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
 
   /* add new */
   ags_soundcard_editor_add_soundcard(soundcard_editor,
-				     (GObject *) devout);
+				     (GObject *) alsa_devout);
 
   /*  */
   list = gtk_container_get_children((GtkContainer *) gtk_widget_get_parent(GTK_WIDGET(soundcard_editor)));
@@ -2520,7 +2514,7 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
 void
 ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsDevout *devout;
+  AgsOssDevout *oss_devout;
 
   GList *list;
   GList *card_id;
@@ -2530,13 +2524,11 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
   }
   
   /*  */
-  devout = g_object_new(AGS_TYPE_DEVOUT,
-			NULL);
-  devout->flags &= (~AGS_DEVOUT_ALSA);
-  devout->flags |= AGS_DEVOUT_OSS;
+  oss_devout = g_object_new(AGS_TYPE_OSS_DEVOUT,
+			    NULL);
 
   card_id = NULL;
-  ags_soundcard_list_cards(AGS_SOUNDCARD(devout),
+  ags_soundcard_list_cards(AGS_SOUNDCARD(oss_devout),
 			   &card_id, NULL);
 
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
@@ -2558,7 +2550,7 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
 
   /* add new */
   ags_soundcard_editor_add_soundcard(soundcard_editor,
-				     (GObject *) devout);
+				     (GObject *) oss_devout);
 
   /*  */
   list = gtk_container_get_children((GtkContainer *) gtk_widget_get_parent(GTK_WIDGET(soundcard_editor)));

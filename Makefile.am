@@ -605,8 +605,8 @@ libags_thread_la_HEADERS_0 = $(libags_thread_h_sources) $(libags_thread_task_h_s
 libags_server_la_SOURCES = $(libags_server_c_sources) $(libags_server_security_c_sources) $(libags_server_controller_c_sources)
 libags_server_la_HEADERS_0 = $(libags_server_h_sources) $(libags_server_security_h_sources) $(libags_server_controller_h_sources)
 
-libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_osc_c_sources) $(libags_audio_osc_controller_c_sources) $(libags_audio_osc_xmlrpc_c_sources) $(libags_audio_gstreamer_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_pulse_c_sources) $(libags_audio_core_audio_c_sources) $(libags_audio_audio_unit_c_sources) $(libags_audio_wasapi_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources) $(libags_audio_fx_c_sources) $(libags_plugin_c_sources) 
-libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_osc_h_sources) $(libags_audio_osc_controller_h_sources) $(libags_audio_osc_xmlrpc_h_sources) $(libags_audio_gstreamer_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_pulse_h_sources) $(libags_audio_core_audio_h_sources) $(libags_audio_audio_unit_h_sources) $(libags_audio_wasapi_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources) $(libags_audio_fx_h_sources)$(libags_plugin_h_sources)
+libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_osc_c_sources) $(libags_audio_osc_controller_c_sources) $(libags_audio_osc_xmlrpc_c_sources) $(libags_audio_gstreamer_c_sources) $(libags_audio_alsa_c_sources) $(libags_audio_oss_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_pulse_c_sources) $(libags_audio_core_audio_c_sources) $(libags_audio_audio_unit_c_sources) $(libags_audio_wasapi_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources) $(libags_audio_fx_c_sources) $(libags_plugin_c_sources) 
+libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_osc_h_sources) $(libags_audio_osc_controller_h_sources) $(libags_audio_osc_xmlrpc_h_sources) $(libags_audio_gstreamer_h_sources) $(libags_audio_alsa_h_sources) $(libags_audio_oss_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_pulse_h_sources) $(libags_audio_core_audio_h_sources) $(libags_audio_audio_unit_h_sources) $(libags_audio_wasapi_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources) $(libags_audio_fx_h_sources)$(libags_plugin_h_sources)
 
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
@@ -1151,6 +1151,11 @@ libags_audio_h_sources += \
 	ags/audio/ags_sf2_synth_generator.h \
 	ags/audio/ags_sf2_synth_util.h \
 	ags/audio/ags_sf2_util.h
+else
+EXTRA_DIST +=  \
+	ags/audio/ags_sf2_synth_generator.h \
+	ags/audio/ags_sf2_synth_util.h \
+	ags/audio/ags_sf2_util.h
 endif
 
 deprecated_libags_audio_c_sources =
@@ -1247,45 +1252,56 @@ libags_audio_c_sources += \
 	ags/audio/ags_sf2_synth_generator.c \
 	ags/audio/ags_sf2_synth_util.c \
 	ags/audio/ags_sf2_util.c
+else
+EXTRA_DIST +=  \
+	ags/audio/ags_sf2_synth_generator.c \
+	ags/audio/ags_sf2_synth_util.c \
+	ags/audio/ags_sf2_util.c
 endif
 
 # libags-audio - thread
 deprecated_libags_audio_thread_h_sources =
 
 libags_audio_thread_h_sources = \
-	$(deprecated_libags_audio_thread_h_sources) \
-	ags/audio/thread/ags_audio_loop.h \
-	ags/audio/thread/ags_audio_thread.h \
-	ags/audio/thread/ags_channel_thread.h \
-	ags/audio/thread/ags_sequencer_thread.h \
-	ags/audio/thread/ags_soundcard_thread.h \
-	ags/audio/thread/ags_export_thread.h \
-	ags/audio/thread/ags_sfz_loader.h \
-	ags/audio/thread/ags_wave_loader.h
+       $(deprecated_libags_audio_thread_h_sources) \
+       ags/audio/thread/ags_audio_loop.h \
+       ags/audio/thread/ags_audio_thread.h \
+       ags/audio/thread/ags_channel_thread.h \
+       ags/audio/thread/ags_sequencer_thread.h \
+       ags/audio/thread/ags_soundcard_thread.h \
+       ags/audio/thread/ags_export_thread.h \
+       ags/audio/thread/ags_sfz_loader.h \
+       ags/audio/thread/ags_wave_loader.h
 
 if WITH_LIBINSTPATCH
 libags_audio_thread_h_sources += \
-	$(deprecated_libags_audio_thread_h_sources) \
-	ags/audio/thread/ags_sf2_loader.h
+       $(deprecated_libags_audio_thread_h_sources) \
+       ags/audio/thread/ags_sf2_loader.h
+else
+EXTRA_DIST += \
+       ags/audio/thread/ags_sf2_loader.h
 endif
 
 deprecated_libags_audio_thread_c_sources =
 
 libags_audio_thread_c_sources = \
-	$(deprecated_libags_audio_thread_c_sources) \
-	ags/audio/thread/ags_audio_loop.c \
-	ags/audio/thread/ags_audio_thread.c \
-	ags/audio/thread/ags_channel_thread.c \
-	ags/audio/thread/ags_sequencer_thread.c \
-	ags/audio/thread/ags_soundcard_thread.c \
-	ags/audio/thread/ags_export_thread.c \
-	ags/audio/thread/ags_sfz_loader.c \
-	ags/audio/thread/ags_wave_loader.c
+       $(deprecated_libags_audio_thread_c_sources) \
+       ags/audio/thread/ags_audio_loop.c \
+       ags/audio/thread/ags_audio_thread.c \
+       ags/audio/thread/ags_channel_thread.c \
+       ags/audio/thread/ags_sequencer_thread.c \
+       ags/audio/thread/ags_soundcard_thread.c \
+       ags/audio/thread/ags_export_thread.c \
+       ags/audio/thread/ags_sfz_loader.c \
+       ags/audio/thread/ags_wave_loader.c
 
 if WITH_LIBINSTPATCH
 libags_audio_thread_c_sources += \
-	$(deprecated_libags_audio_thread_c_sources) \
-	ags/audio/thread/ags_sf2_loader.c
+       $(deprecated_libags_audio_thread_c_sources) \
+       ags/audio/thread/ags_sf2_loader.c
+else
+EXTRA_DIST +=  \
+       ags/audio/thread/ags_sf2_loader.c
 endif
 
 # libags-audio - plugin
@@ -1320,6 +1336,11 @@ libags_plugin_h_sources = \
 
 if WITH_VST3
 libags_plugin_h_sources += \
+	ags/plugin/ags_vst3_conversion.h \
+	ags/plugin/ags_vst3_manager.h \
+	ags/plugin/ags_vst3_plugin.h
+else
+EXTRA_DIST +=  \
 	ags/plugin/ags_vst3_conversion.h \
 	ags/plugin/ags_vst3_manager.h \
 	ags/plugin/ags_vst3_plugin.h
@@ -1358,6 +1379,11 @@ libags_plugin_c_sources += \
 	ags/plugin/ags_vst3_conversion.c \
 	ags/plugin/ags_vst3_manager.c \
 	ags/plugin/ags_vst3_plugin.c
+else
+EXTRA_DIST +=  \
+	ags/plugin/ags_vst3_conversion.c \
+	ags/plugin/ags_vst3_manager.c \
+	ags/plugin/ags_vst3_plugin.c
 endif
 
 # libags-audio - file
@@ -1381,6 +1407,9 @@ libags_audio_file_h_sources = \
 if WITH_OSXAPI
 libags_audio_file_h_sources += \
 	ags/audio/file/ags_audio_toolbox.h
+else
+EXTRA_DIST +=  \
+	ags/audio/file/ags_audio_toolbox.h
 endif
 
 if WITH_LIBINSTPATCH
@@ -1394,6 +1423,9 @@ endif
 
 if WITH_GSTREAMER
 libags_audio_file_h_sources += \
+	ags/audio/file/ags_gstreamer_file.h
+else
+EXTRA_DIST += \
 	ags/audio/file/ags_gstreamer_file.h
 endif
 
@@ -1415,6 +1447,9 @@ libags_audio_file_c_sources = \
 if WITH_OSXAPI
 libags_audio_file_c_sources += \
 	ags/audio/file/ags_audio_toolbox.c
+else
+EXTRA_DIST += \
+	ags/audio/file/ags_audio_toolbox.c
 endif
 
 if WITH_LIBINSTPATCH
@@ -1424,10 +1459,20 @@ libags_audio_file_c_sources += \
 	ags/audio/file/ags_ipatch_dls2_reader.c \
 	ags/audio/file/ags_ipatch_gig_reader.c \
 	ags/audio/file/ags_ipatch_sf2_reader.c
+else
+EXTRA_DIST += \
+	ags/audio/file/ags_ipatch.c \
+	ags/audio/file/ags_ipatch_sample.c \
+	ags/audio/file/ags_ipatch_dls2_reader.c \
+	ags/audio/file/ags_ipatch_gig_reader.c \
+	ags/audio/file/ags_ipatch_sf2_reader.c
 endif
 
 if WITH_GSTREAMER
 libags_audio_file_c_sources += \
+	ags/audio/file/ags_gstreamer_file.c
+else
+EXTRA_DIST += \
 	ags/audio/file/ags_gstreamer_file.c
 endif
 
@@ -1530,6 +1575,40 @@ deprecated_libags_audio_osc_xmlrpc_c_sources =
 libags_audio_osc_xmlrpc_c_sources = \
 	$(deprecated_libags_audio_xmlrpc_osc_c_sources) \
 	ags/audio/osc/xmlrpc/ags_osc_xmlrpc_controller.c
+
+# libags-audio - alsa
+deprecated_libags_audio_alsa_h_sources =
+
+libags_audio_alsa_h_sources = \
+	$(deprecated_libags_audio_alsa_h_sources) \
+	ags/audio/alsa/ags_alsa_devout.h \
+	ags/audio/alsa/ags_alsa_devin.h \
+	ags/audio/alsa/ags_alsa_midiin.h
+
+deprecated_libags_audio_alsa_c_sources =
+
+libags_audio_alsa_c_sources = \
+	$(deprecated_libags_audio_alsa_c_sources) \
+	ags/audio/alsa/ags_alsa_devout.c \
+	ags/audio/alsa/ags_alsa_devin.c \
+	ags/audio/alsa/ags_alsa_midiin.c
+
+# libags-audio - oss
+deprecated_libags_audio_oss_h_sources =
+
+libags_audio_oss_h_sources = \
+	$(deprecated_libags_audio_oss_h_sources) \
+	ags/audio/oss/ags_oss_devout.h \
+	ags/audio/oss/ags_oss_devin.h \
+	ags/audio/oss/ags_oss_midiin.h
+
+deprecated_libags_audio_oss_c_sources =
+
+libags_audio_oss_c_sources = \
+	$(deprecated_libags_audio_oss_c_sources) \
+	ags/audio/oss/ags_oss_devout.c \
+	ags/audio/oss/ags_oss_devin.c \
+	ags/audio/oss/ags_oss_midiin.c
 
 # libags-audio - jack
 deprecated_libags_audio_jack_h_sources =
@@ -1956,6 +2035,14 @@ libags_audio_fx_h_sources += \
 	ags/audio/fx/ags_fx_vst3_channel_processor.h \
 	ags/audio/fx/ags_fx_vst3_recycling.h \
 	ags/audio/fx/ags_fx_vst3_audio_signal.h
+else
+EXTRA_DIST += \
+	ags/audio/fx/ags_fx_vst3_audio.h \
+	ags/audio/fx/ags_fx_vst3_audio_processor.h \
+	ags/audio/fx/ags_fx_vst3_channel.h \
+	ags/audio/fx/ags_fx_vst3_channel_processor.h \
+	ags/audio/fx/ags_fx_vst3_recycling.h \
+	ags/audio/fx/ags_fx_vst3_audio_signal.h
 endif
 
 deprecated_libags_audio_fx_c_sources =
@@ -2067,6 +2154,14 @@ libags_audio_fx_c_sources += \
 	ags/audio/fx/ags_fx_vst3_channel_processor.c \
 	ags/audio/fx/ags_fx_vst3_recycling.c \
 	ags/audio/fx/ags_fx_vst3_audio_signal.c
+else
+EXTRA_DIST += \
+	ags/audio/fx/ags_fx_vst3_audio.c \
+	ags/audio/fx/ags_fx_vst3_audio_processor.c \
+	ags/audio/fx/ags_fx_vst3_channel.c \
+	ags/audio/fx/ags_fx_vst3_channel_processor.c \
+	ags/audio/fx/ags_fx_vst3_recycling.c \
+	ags/audio/fx/ags_fx_vst3_audio_signal.c
 endif
 
 # libags-audio - task
@@ -2132,10 +2227,19 @@ libags_audio_task_h_sources += \
 	ags/audio/task/ags_apply_sf2_synth.h \
 	ags/audio/task/ags_open_sf2_instrument.h \
 	ags/audio/task/ags_open_sf2_sample.h
+else
+EXTRA_DIST += \
+	ags/audio/task/ags_apply_sf2_synth.h \
+	ags/audio/task/ags_open_sf2_instrument.h \
+	ags/audio/task/ags_open_sf2_sample.h
 endif
 
 if WITH_VST3
 libags_audio_task_h_sources += \
+	ags/audio/task/ags_instantiate_vst3_plugin.h \
+	ags/audio/task/ags_write_vst3_port.h
+else
+EXTRA_DIST += \
 	ags/audio/task/ags_instantiate_vst3_plugin.h \
 	ags/audio/task/ags_write_vst3_port.h
 endif
@@ -2201,10 +2305,19 @@ libags_audio_task_c_sources += \
 	ags/audio/task/ags_apply_sf2_synth.c \
 	ags/audio/task/ags_open_sf2_instrument.c \
 	ags/audio/task/ags_open_sf2_sample.c
+else
+EXTRA_DIST += \
+	ags/audio/task/ags_apply_sf2_synth.c \
+	ags/audio/task/ags_open_sf2_instrument.c \
+	ags/audio/task/ags_open_sf2_sample.c
 endif
 
 if WITH_VST3
 libags_audio_task_c_sources += \
+	ags/audio/task/ags_instantiate_vst3_plugin.c \
+	ags/audio/task/ags_write_vst3_port.c
+else
+EXTRA_DIST += \
 	ags/audio/task/ags_instantiate_vst3_plugin.c \
 	ags/audio/task/ags_write_vst3_port.c
 endif
@@ -2407,6 +2520,10 @@ if WITH_VST3
 libgsequencer_h_sources += \
 	ags/X/ags_vst3_browser_callbacks.h \
 	ags/X/ags_vst3_browser.h
+else
+EXTRA_DIST += \
+	ags/X/ags_vst3_browser_callbacks.h \
+	ags/X/ags_vst3_browser.h
 endif
 
 deprecated_libgsequencer_c_sources =
@@ -2536,6 +2653,10 @@ libgsequencer_c_sources = \
 
 if WITH_VST3
 libgsequencer_c_sources += \
+	ags/X/ags_vst3_browser_callbacks.c \
+	ags/X/ags_vst3_browser.c
+else
+EXTRA_DIST += \
 	ags/X/ags_vst3_browser_callbacks.c \
 	ags/X/ags_vst3_browser.c
 endif
@@ -2725,10 +2846,30 @@ libgsequencer_machine_h_sources += \
 	ags/X/machine/ags_ffplayer_input_pad.h \
 	ags/X/machine/ags_sf2_synth_callbacks.h \
 	ags/X/machine/ags_sf2_synth.h
+else
+EXTRA_DIST += \
+	ags/X/machine/ags_ffplayer_callbacks.h \
+	ags/X/machine/ags_ffplayer.h \
+	ags/X/machine/ags_ffplayer_bridge_callbacks.h \
+	ags/X/machine/ags_ffplayer_bridge.h \
+	ags/X/machine/ags_ffplayer_bulk_input_callbacks.h \
+	ags/X/machine/ags_ffplayer_bulk_input.h \
+	ags/X/machine/ags_ffplayer_input_line_callbacks.h \
+	ags/X/machine/ags_ffplayer_input_line.h \
+	ags/X/machine/ags_ffplayer_input_pad_callbacks.h \
+	ags/X/machine/ags_ffplayer_input_pad.h \
+	ags/X/machine/ags_sf2_synth_callbacks.h \
+	ags/X/machine/ags_sf2_synth.h
 endif
 
 if WITH_VST3
 libgsequencer_machine_h_sources += \
+	ags/X/machine/ags_live_vst3_bridge_callbacks.h \
+	ags/X/machine/ags_live_vst3_bridge.h \
+	ags/X/machine/ags_vst3_bridge_callbacks.h \
+	ags/X/machine/ags_vst3_bridge.h
+else
+EXTRA_DIST += \
 	ags/X/machine/ags_live_vst3_bridge_callbacks.h \
 	ags/X/machine/ags_live_vst3_bridge.h \
 	ags/X/machine/ags_vst3_bridge_callbacks.h \
@@ -2828,10 +2969,30 @@ libgsequencer_machine_c_sources += \
 	ags/X/machine/ags_ffplayer_input_pad_callbacks.c \
 	ags/X/machine/ags_sf2_synth.c \
 	ags/X/machine/ags_sf2_synth_callbacks.c
+else
+EXTRA_DIST += \
+	ags/X/machine/ags_ffplayer.c \
+	ags/X/machine/ags_ffplayer_callbacks.c \
+	ags/X/machine/ags_ffplayer_bridge.c \
+	ags/X/machine/ags_ffplayer_bridge_callbacks.c \
+	ags/X/machine/ags_ffplayer_bulk_input.c \
+	ags/X/machine/ags_ffplayer_bulk_input_callbacks.c \
+	ags/X/machine/ags_ffplayer_input_line.c \
+	ags/X/machine/ags_ffplayer_input_line_callbacks.c \
+	ags/X/machine/ags_ffplayer_input_pad.c \
+	ags/X/machine/ags_ffplayer_input_pad_callbacks.c \
+	ags/X/machine/ags_sf2_synth.c \
+	ags/X/machine/ags_sf2_synth_callbacks.c
 endif
 
 if WITH_VST3
 libgsequencer_machine_c_sources += \
+	ags/X/machine/ags_live_vst3_bridge.c \
+	ags/X/machine/ags_live_vst3_bridge_callbacks.c \
+	ags/X/machine/ags_vst3_bridge.c \
+	ags/X/machine/ags_vst3_bridge_callbacks.c
+else
+EXTRA_DIST += \
 	ags/X/machine/ags_live_vst3_bridge.c \
 	ags/X/machine/ags_live_vst3_bridge_callbacks.c \
 	ags/X/machine/ags_vst3_bridge.c \

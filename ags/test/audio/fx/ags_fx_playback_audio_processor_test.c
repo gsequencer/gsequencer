@@ -135,8 +135,8 @@ ags_fx_playback_audio_processor_test_new()
 void
 ags_fx_playback_audio_processor_test_run_inter()
 {
-  AgsDevout *devout;
-  AgsDevin *devin;
+  AgsAlsaDevout *alsa_devout;
+  AgsAlsaDevin *alsa_devin;
   AgsAudio *audio;
   AgsChannel *input;
   AgsRecallID *parent_recall_id;
@@ -149,8 +149,8 @@ ags_fx_playback_audio_processor_test_run_inter()
 
   guint i;
   
-  devout = audio_application_context->default_soundcard;
-  devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_DEVIN)->data;
+  alsa_devout = audio_application_context->default_soundcard;
+  alsa_devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)->data;
   
   parent_recall_id = ags_recall_id_new();
   recall_id = ags_recall_id_new();
@@ -170,8 +170,8 @@ ags_fx_playback_audio_processor_test_run_inter()
   
   /* audio */
   audio = g_object_new(AGS_TYPE_AUDIO,
-		       "output-soundcard", devout,
-		       "input-soundcard", devin,
+		       "output-soundcard", alsa_devout,
+		       "input-soundcard", alsa_devin,
 		       NULL);
   ags_audio_set_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING);
   ags_audio_set_flags(audio, AGS_AUDIO_INPUT_HAS_RECYCLING);
@@ -251,8 +251,8 @@ ags_fx_playback_audio_processor_test_run_inter()
 void
 ags_fx_playback_audio_processor_test_data_put()
 {
-  AgsDevout *devout;
-  AgsDevin *devin;
+  AgsAlsaDevout *alsa_devout;
+  AgsAlsaDevin *alsa_devin;
   AgsAudio *audio;
   AgsChannel *input;
   AgsBuffer *buffer;
@@ -266,8 +266,8 @@ ags_fx_playback_audio_processor_test_data_put()
 
   guint i;
   
-  devout = audio_application_context->default_soundcard;
-  devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_DEVIN)->data;
+  alsa_devout = audio_application_context->default_soundcard;
+  alsa_devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)->data;
   
   parent_recall_id = ags_recall_id_new();
   recall_id = ags_recall_id_new();
@@ -287,8 +287,8 @@ ags_fx_playback_audio_processor_test_data_put()
   
   /* audio */
   audio = g_object_new(AGS_TYPE_AUDIO,
-		       "output-soundcard", devout,
-		       "input-soundcard", devin,
+		       "output-soundcard", alsa_devout,
+		       "input-soundcard", alsa_devin,
 		       NULL);
   ags_audio_set_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING);
   ags_audio_set_flags(audio, AGS_AUDIO_INPUT_HAS_RECYCLING);
@@ -372,8 +372,8 @@ ags_fx_playback_audio_processor_test_data_put()
 void
 ags_fx_playback_audio_processor_test_data_get()
 {
-  AgsDevout *devout;
-  AgsDevin *devin;
+  AgsAlsaDevout *alsa_devout;
+  AgsAlsaDevin *alsa_devin;
   AgsAudio *audio;
   AgsChannel *input;
   AgsBuffer *buffer;
@@ -387,8 +387,8 @@ ags_fx_playback_audio_processor_test_data_get()
 
   guint i;
   
-  devout = audio_application_context->default_soundcard;
-  devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_DEVIN)->data;
+  alsa_devout = audio_application_context->default_soundcard;
+  alsa_devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)->data;
   
   parent_recall_id = ags_recall_id_new();
   recall_id = ags_recall_id_new();
@@ -408,8 +408,8 @@ ags_fx_playback_audio_processor_test_data_get()
   
   /* audio */
   audio = g_object_new(AGS_TYPE_AUDIO,
-		       "output-soundcard", devout,
-		       "input-soundcard", devin,
+		       "output-soundcard", alsa_devout,
+		       "input-soundcard", alsa_devin,
 		       NULL);
   ags_audio_set_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING);
   ags_audio_set_flags(audio, AGS_AUDIO_INPUT_HAS_RECYCLING);
@@ -493,8 +493,8 @@ ags_fx_playback_audio_processor_test_data_get()
 void
 ags_fx_playback_audio_processor_test_play()
 {
-  AgsDevout *devout;
-  AgsDevin *devin;
+  AgsAlsaDevout *alsa_devout;
+  AgsAlsaDevin *alsa_devin;
   AgsAudio *audio;
   AgsChannel *input;
   AgsWave *wave;
@@ -509,8 +509,8 @@ ags_fx_playback_audio_processor_test_play()
 
   guint i;
   
-  devout = audio_application_context->default_soundcard;
-  devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_DEVIN)->data;
+  alsa_devout = audio_application_context->default_soundcard;
+  alsa_devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)->data;
   
   parent_recall_id = ags_recall_id_new();
   recall_id = ags_recall_id_new();
@@ -530,8 +530,8 @@ ags_fx_playback_audio_processor_test_play()
   
   /* audio */
   audio = g_object_new(AGS_TYPE_AUDIO,
-		       "output-soundcard", devout,
-		       "input-soundcard", devin,
+		       "output-soundcard", alsa_devout,
+		       "input-soundcard", alsa_devin,
 		       NULL);
   ags_audio_set_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING);
   ags_audio_set_flags(audio, AGS_AUDIO_INPUT_HAS_RECYCLING);
@@ -625,8 +625,8 @@ ags_fx_playback_audio_processor_test_play()
 void
 ags_fx_playback_audio_processor_test_record()
 {
-  AgsDevout *devout;
-  AgsDevin *devin;
+  AgsAlsaDevout *alsa_devout;
+  AgsAlsaDevin *alsa_devin;
   AgsAudio *audio;
   AgsChannel *input;
   AgsRecallID *parent_recall_id;
@@ -639,8 +639,8 @@ ags_fx_playback_audio_processor_test_record()
 
   guint i;
   
-  devout = audio_application_context->default_soundcard;
-  devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_DEVIN)->data;
+  alsa_devout = audio_application_context->default_soundcard;
+  alsa_devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)->data;
   
   parent_recall_id = ags_recall_id_new();
   recall_id = ags_recall_id_new();
@@ -660,8 +660,8 @@ ags_fx_playback_audio_processor_test_record()
   
   /* audio */
   audio = g_object_new(AGS_TYPE_AUDIO,
-		       "output-soundcard", devout,
-		       "input-soundcard", devin,
+		       "output-soundcard", alsa_devout,
+		       "input-soundcard", alsa_devin,
 		       NULL);
   ags_audio_set_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING);
   ags_audio_set_flags(audio, AGS_AUDIO_INPUT_HAS_RECYCLING);
@@ -742,8 +742,8 @@ ags_fx_playback_audio_processor_test_record()
 void
 ags_fx_playback_audio_processor_test_feed()
 {
-  AgsDevout *devout;
-  AgsDevin *devin;
+  AgsAlsaDevout *alsa_devout;
+  AgsAlsaDevin *alsa_devin;
   AgsAudio *audio;
   AgsChannel *input;
   AgsAudioSignal *audio_signal;
@@ -757,8 +757,8 @@ ags_fx_playback_audio_processor_test_feed()
 
   guint i;
   
-  devout = audio_application_context->default_soundcard;
-  devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_DEVIN)->data;
+  alsa_devout = audio_application_context->default_soundcard;
+  alsa_devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)->data;
   
   parent_recall_id = ags_recall_id_new();
   recall_id = ags_recall_id_new();
@@ -778,8 +778,8 @@ ags_fx_playback_audio_processor_test_feed()
   
   /* audio */
   audio = g_object_new(AGS_TYPE_AUDIO,
-		       "output-soundcard", devout,
-		       "input-soundcard", devin,
+		       "output-soundcard", alsa_devout,
+		       "input-soundcard", alsa_devin,
 		       NULL);
   ags_audio_set_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING);
   ags_audio_set_flags(audio, AGS_AUDIO_INPUT_HAS_RECYCLING);
@@ -857,7 +857,7 @@ ags_fx_playback_audio_processor_test_feed()
   ags_fx_playback_audio_processor_feed(fx_playback_audio_processor);
 
   /* attempt #1 */
-  audio_signal = ags_audio_signal_new(devout,
+  audio_signal = ags_audio_signal_new(alsa_devout,
 				      audio->input->first_recycling,
 				      recall_id);
   ags_recycling_add_audio_signal(audio->input->first_recycling,
@@ -872,8 +872,8 @@ ags_fx_playback_audio_processor_test_feed()
 void
 ags_fx_playback_audio_processor_test_master()
 {
-  AgsDevout *devout;
-  AgsDevin *devin;
+  AgsAlsaDevout *alsa_devout;
+  AgsAlsaDevin *alsa_devin;
   AgsAudio *audio;
   AgsChannel *input;
   AgsAudioSignal *audio_signal;
@@ -887,8 +887,8 @@ ags_fx_playback_audio_processor_test_master()
 
   guint i;
   
-  devout = audio_application_context->default_soundcard;
-  devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_DEVIN)->data;
+  alsa_devout = audio_application_context->default_soundcard;
+  alsa_devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)->data;
   
   parent_recall_id = ags_recall_id_new();
   recall_id = ags_recall_id_new();
@@ -908,8 +908,8 @@ ags_fx_playback_audio_processor_test_master()
   
   /* audio */
   audio = g_object_new(AGS_TYPE_AUDIO,
-		       "output-soundcard", devout,
-		       "input-soundcard", devin,
+		       "output-soundcard", alsa_devout,
+		       "input-soundcard", alsa_devin,
 		       NULL);
   ags_audio_set_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING);
   ags_audio_set_flags(audio, AGS_AUDIO_INPUT_HAS_RECYCLING);
@@ -987,7 +987,7 @@ ags_fx_playback_audio_processor_test_master()
   ags_fx_playback_audio_processor_master(fx_playback_audio_processor);
 
   /* attempt #1 */  
-  audio_signal = ags_audio_signal_new(devout,
+  audio_signal = ags_audio_signal_new(alsa_devout,
 				      audio->input->first_recycling,
 				      recall_id);
   ags_recycling_add_audio_signal(audio->input->first_recycling,
@@ -1002,8 +1002,8 @@ ags_fx_playback_audio_processor_test_master()
 void
 ags_fx_playback_audio_processor_test_counter_change()
 {
-  AgsDevout *devout;
-  AgsDevin *devin;
+  AgsAlsaDevout *alsa_devout;
+  AgsAlsaDevin *alsa_devin;
   AgsAudio *audio;
   AgsChannel *input;
   AgsRecallID *parent_recall_id;
@@ -1016,8 +1016,8 @@ ags_fx_playback_audio_processor_test_counter_change()
 
   guint i;
   
-  devout = audio_application_context->default_soundcard;
-  devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_DEVIN)->data;
+  alsa_devout = audio_application_context->default_soundcard;
+  alsa_devin = ags_list_util_find_type(audio_application_context->soundcard, AGS_TYPE_ALSA_DEVIN)->data;
   
   parent_recall_id = ags_recall_id_new();
   recall_id = ags_recall_id_new();
@@ -1037,8 +1037,8 @@ ags_fx_playback_audio_processor_test_counter_change()
   
   /* audio */
   audio = g_object_new(AGS_TYPE_AUDIO,
-		       "output-soundcard", devout,
-		       "input-soundcard", devin,
+		       "output-soundcard", alsa_devout,
+		       "input-soundcard", alsa_devin,
 		       NULL);
   ags_audio_set_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING);
   ags_audio_set_flags(audio, AGS_AUDIO_INPUT_HAS_RECYCLING);

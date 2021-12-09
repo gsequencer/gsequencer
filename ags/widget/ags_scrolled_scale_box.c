@@ -202,9 +202,6 @@ ags_scrolled_scale_box_init(AgsScrolledScaleBox *scrolled_scale_box)
 
   /* viewport */
   scrolled_scale_box->viewport = (AgsViewport *) ags_viewport_new();
-  g_object_set(scrolled_scale_box->viewport,
-	       "shadow-type", GTK_SHADOW_NONE,
-	       NULL);
   gtk_container_add((GtkContainer *) scrolled_scale_box,
 		    (GtkWidget *) scrolled_scale_box->viewport);
 

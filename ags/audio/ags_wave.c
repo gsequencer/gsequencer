@@ -3228,7 +3228,7 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 	    
 	  /* find first */
 	  buffer = ags_wave_find_point(wave,
-				       wave_buffer_size * floor(x_val / wave_buffer_size),
+				       (floor(x_val / relative_offset) * relative_offset) + (wave_buffer_size * (floor(x_val - floor(x_val / relative_offset) * relative_offset) / wave_buffer_size)),
 				       FALSE);
 
 	  if(buffer != NULL &&
@@ -3318,7 +3318,7 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 			 "format", wave_format,
 			 NULL);  
 	      
-	    buffer->x = x_val;
+	    buffer->x = (floor(x_val / relative_offset) * relative_offset) + (wave_buffer_size * (floor(x_val - floor(x_val / relative_offset) * relative_offset) / wave_buffer_size));
 	      
 	    //	      g_message("created %d", x_val);
 	      
@@ -3371,7 +3371,7 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 	  /* find next */
 	  if(attack + frame_count > wave_buffer_size){
 	    buffer = ags_wave_find_point(wave,
-					 x_val + 1,
+					 (floor((x_val + wave_buffer_size) / relative_offset) * relative_offset) + (wave_buffer_size * (floor((x_val + wave_buffer_size) - floor((x_val + wave_buffer_size) / relative_offset) * relative_offset) / wave_buffer_size)),
 					 FALSE);
 
 	    if(buffer != NULL &&
@@ -3399,7 +3399,7 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 			   "buffer-size", wave_buffer_size,
 			   "format", wave_format,
 			   NULL);  
-	      buffer->x = x_val + 1;
+	      buffer->x = (floor((x_val + wave_buffer_size) / relative_offset) * relative_offset) + (wave_buffer_size * (floor((x_val + wave_buffer_size) - floor((x_val + wave_buffer_size) / relative_offset) * relative_offset) / wave_buffer_size));
 	      
 	      ags_wave_add_buffer(wave,
 				  buffer,

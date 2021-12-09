@@ -637,7 +637,7 @@ ags_midi_util_get_change_pressure(guchar *buffer,
  * ags_midi_util_get_sysex:
  * @buffer: the MIDI buffer
  * @data: (out) (transfer full): the return location of data
- * @pressure: (out): the return location of pressure
+ * @length: (out): the return location of length
  * 
  * Get sysex fields of @buffer.
  * 

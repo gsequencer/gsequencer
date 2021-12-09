@@ -359,11 +359,6 @@ ags_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
   
   sequencer->stop = ags_midiin_delegate_stop;
 
-  sequencer->record_init = ags_midiin_alsa_init;
-  sequencer->record = ags_midiin_alsa_record;
-
-  sequencer->stop = ags_midiin_alsa_free;
-
   sequencer->tic = ags_midiin_tic;
   sequencer->offset_changed = ags_midiin_offset_changed;
     
