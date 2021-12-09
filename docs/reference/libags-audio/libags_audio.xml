@@ -168,10 +168,15 @@
 	JACK, Pulseaudio or CoreAudio.
       </para>
 
-      <xi:include href="xml/ags_devout.xml"/>
-      <xi:include href="xml/ags_devin.xml"/>
-      <xi:include href="xml/ags_midiin.xml"/>
       <xi:include href="xml/ags_fifoout.xml"/>
+
+      <xi:include href="xml/ags_alsa_devin.xml"/>
+      <xi:include href="xml/ags_alsa_devout.xml"/>
+      <xi:include href="xml/ags_alsa_midiin.xml"/>
+
+      <xi:include href="xml/ags_oss_devin.xml"/>
+      <xi:include href="xml/ags_oss_devout.xml"/>
+      <xi:include href="xml/ags_oss_midiin.xml"/>
 
       <xi:include href="xml/ags_wasapi_devout.xml"/>
       <xi:include href="xml/ags_wasapi_devin.xml"/>
