@@ -1,3 +1,10 @@
+ags (3.13.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsTaskLauncher freeing tasks
+	* fixed AgsScrolledLevelBox, AgsScrolledScaleBox, AgsScrolledAutomationEditBox
+	  and AgsScrolledWaveEditBox not available property shadow-type of AgsViewport
+
 ags (3.13.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

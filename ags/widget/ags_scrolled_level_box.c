@@ -203,9 +203,6 @@ ags_scrolled_level_box_init(AgsScrolledLevelBox *scrolled_level_box)
 
   /* viewport */
   scrolled_level_box->viewport = (AgsViewport *) ags_viewport_new();
-  g_object_set(scrolled_level_box->viewport,
-	       "shadow-type", GTK_SHADOW_NONE,
-	       NULL);
   gtk_container_add((GtkContainer *) scrolled_level_box,
 		    (GtkWidget *) scrolled_level_box->viewport);
 
