@@ -77,6 +77,8 @@ ags_chorus_util_alloc()
   ptr->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   ptr->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
+  ptr->offset = 0;
+
   ptr->base_key = 0.0;
 
   ptr->input_volume = 1.0;
@@ -785,6 +787,14 @@ ags_chorus_util_set_delay(AgsChorusUtil *chorus_util,
   chorus_util->delay = delay;
 }
 
+/**
+ * ags_chorus_util_compute_s8:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * 
+ * Choralize @chorus_util of signed 8 bit data.
+ *
+ * Since: 3.13.4
+ */
 void
 ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
 {
@@ -808,8 +818,11 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
   gdouble freq_period, pitch_freq_period;
   gdouble tuning;
   gdouble mix_a, mix_b;
-  
+  gdouble ratio;
+  guint64 offset;
   guint i;
+
+  static const gdouble scale = 127.0;
 
   if(chorus_util == NULL ||
      chorus_util->destination == NULL ||
@@ -828,11 +841,15 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
   buffer_length = chorus_util->buffer_length;
   samplerate = chorus_util->samplerate;
 
+  offset = chorus_util->offset;
+  
   input_volume = chorus_util->input_volume;
   output_volume = chorus_util->output_volume;
   
   lfo_oscillator = chorus_util->lfo_oscillator;
   lfo_frequency = chorus_util->lfo_frequency;
+
+  ratio = lfo_frequency / samplerate;
 
   mix = chorus_util->mix;
   delay = chorus_util->delay;
@@ -908,37 +925,55 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
     switch(lfo_oscillator){
     case AGS_SYNTH_OSCILLATOR_SIN:
     {
-      if(i + floor(delay * (sin(i * 2.0 * M_PI * lfo_frequency / samplerate))) < pitch_mix_buffer_length){
-	new_z = output_volume * (mix_a * (input_volume * source[i * source_stride]) + mix_b * (input_volume * pitch_mix_buffer[i + (guint) floor(delay * (sin(i * 2.0 * M_PI * lfo_frequency / samplerate)))]));
+      if(i + (guint) floor(delay * (sin(i * 2.0 * M_PI * lfo_frequency / samplerate))) < pitch_mix_buffer_length){
+	new_z = output_volume * (mix_a * (input_volume * source[i * source_stride]) + mix_b * (input_volume * pitch_mix_buffer[i + (guint) floor(delay * (sin((offset + i) * 2.0 * M_PI * lfo_frequency / samplerate)))]));
       }
     }
     break;
     case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
     {
-      //TODO:JK: implement me
+      if(i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), ratio) * 2.0 * ratio) - 1.0) * scale)) < pitch_mix_buffer_length){
+	new_z = output_volume * (mix_a * (input_volume * source[i * source_stride]) + mix_b * (input_volume * pitch_mix_buffer[i + (guint) floor(delay * (((fmod(((gdouble) (offset + i)), ratio) * 2.0 * ratio) - 1.0) * scale))]));
+      }
     }
     break;
     case AGS_SYNTH_OSCILLATOR_TRIANGLE:
     {
-      //TODO:JK: implement me
+      if(i + (guint) floor(delay * (((((offset + i)) * ratio * 2.0) - (((double) ((((offset + i)) * ratio)) / 2.0) * 2.0) - 1.0) * scale)) < pitch_mix_buffer_length){
+	new_z = output_volume * (mix_a * (input_volume * source[i * source_stride]) + mix_b * (input_volume * pitch_mix_buffer[i + (guint) floor(delay * (((((offset + i)) * ratio * 2.0) - (((double) ((((offset + i)) * ratio)) / 2.0) * 2.0) - 1.0) * scale))]));
+      }
     }
     break;
     case AGS_SYNTH_OSCILLATOR_SQUARE:
     {
-      //TODO:JK: implement me
+      if(i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0) * scale)) < pitch_mix_buffer_length){
+	new_z = output_volume * (mix_a * (input_volume * source[i * source_stride]) + mix_b * (input_volume * pitch_mix_buffer[i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= 0.0 ? 1.0: -1.0) * scale))]));
+      }
     }
     break;
     case AGS_SYNTH_OSCILLATOR_IMPULSE:
     {
-      //TODO:JK: implement me
+      if(i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale)) < pitch_mix_buffer_length){
+	new_z = output_volume * (mix_a * (input_volume * source[i * source_stride]) + mix_b * (input_volume * pitch_mix_buffer[i + (guint) floor(delay * ((sin((gdouble) ((offset + i)) * 2.0 * M_PI * lfo_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale))]));
+      }
     }
     break;
     }
     
     destination[i * destination_stride] = new_z;
   }
+
+  chorus_util->offset += buffer_length;
 }
 
+/**
+ * ags_chorus_util_compute_s16:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * 
+ * Choralize @chorus_util of signed 16 bit data.
+ *
+ * Since: 3.13.4
+ */
 void
 ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
 {
@@ -951,6 +986,14 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
   //TODO:JK: implement me
 }
 
+/**
+ * ags_chorus_util_compute_s24:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * 
+ * Choralize @chorus_util of signed 24 bit data.
+ *
+ * Since: 3.13.4
+ */
 void
 ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
 {
@@ -963,6 +1006,14 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
   //TODO:JK: implement me
 }
 
+/**
+ * ags_chorus_util_compute_s32:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * 
+ * Choralize @chorus_util of signed 32 bit data.
+ *
+ * Since: 3.13.4
+ */
 void
 ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
 {
@@ -975,6 +1026,14 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
   //TODO:JK: implement me
 }
 
+/**
+ * ags_chorus_util_compute_s64:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * 
+ * Choralize @chorus_util of signed 64 bit data.
+ *
+ * Since: 3.13.4
+ */
 void
 ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
 {
@@ -987,6 +1046,14 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
   //TODO:JK: implement me
 }
 
+/**
+ * ags_chorus_util_compute_float:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * 
+ * Choralize @chorus_util of floating point data.
+ *
+ * Since: 3.13.4
+ */
 void
 ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
 {
@@ -999,6 +1066,14 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
   //TODO:JK: implement me
 }
 
+/**
+ * ags_chorus_util_compute_double:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * 
+ * Choralize @chorus_util of double precision floating point data.
+ *
+ * Since: 3.13.4
+ */
 void
 ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
 {
@@ -1011,6 +1086,14 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
   //TODO:JK: implement me
 }
 
+/**
+ * ags_chorus_util_compute_complex:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * 
+ * Choralize @chorus_util of complex data.
+ *
+ * Since: 3.13.4
+ */
 void
 ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
 {
@@ -1023,6 +1106,14 @@ ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
   //TODO:JK: implement me
 }
 
+/**
+ * ags_chorus_util_compute:
+ * @chorus_util: the #AgsChorusUtil-struct
+ * 
+ * Choralize @chorus_util.
+ *
+ * Since: 3.13.4
+ */
 void
 ags_chorus_util_compute(AgsChorusUtil *chorus_util)
 {

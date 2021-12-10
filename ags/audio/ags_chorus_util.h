@@ -59,6 +59,8 @@ struct _AgsChorusUtil
   guint format;
   guint samplerate;
 
+  guint64 offset;
+  
   gdouble base_key;
   
   gdouble input_volume;
