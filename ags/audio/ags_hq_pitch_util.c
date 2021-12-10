@@ -21,7 +21,6 @@
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
-#include <ags/audio/ags_linear_interpolate_util.h>
 
 /**
  * SECTION:ags_hq_pitch_util
@@ -84,6 +83,8 @@ ags_hq_pitch_util_alloc()
 
   ptr->base_key = 0.0;
   ptr->tuning = 0.0;
+
+  ptr->linear_interpolate_util = NULL;
 
   return(ptr);
 }

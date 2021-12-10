@@ -62,6 +62,7 @@
 #include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_buffer.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_chorus_util.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_devin.h>
 #include <ags/audio/ags_diatonic_scale.h>

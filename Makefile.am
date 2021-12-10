@@ -1072,6 +1072,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_buffer.h \
 	ags/audio/ags_channel.h \
 	ags/audio/ags_char_buffer_util.h \
+	ags/audio/ags_chorus_util.h \
 	ags/audio/ags_devout.h \
 	ags/audio/ags_devin.h \
 	ags/audio/ags_diatonic_scale.h \
@@ -1173,6 +1174,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_buffer.c \
 	ags/audio/ags_channel.c \
 	ags/audio/ags_char_buffer_util.c \
+	ags/audio/ags_chorus_util.c \
 	ags/audio/ags_devout.c \
 	ags/audio/ags_devin.c \
 	ags/audio/ags_diatonic_scale.c \
