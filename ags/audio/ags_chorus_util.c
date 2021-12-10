@@ -795,11 +795,19 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
 
   guint destination_stride, source_stride;
   guint buffer_length;
+  guint samplerate;
   gdouble base_key;
+  gdouble input_volume;
+  gdouble output_volume;
+  guint lfo_oscillator;
+  gdouble lfo_frequency;
+  gdouble mix;
+  gdouble delay;
   guint pitch_mix_buffer_length;  
   gdouble base_freq, pitch_freq;
   gdouble freq_period, pitch_freq_period;
   gdouble tuning;
+  gdouble mix_a, mix_b;
   
   guint i;
 
@@ -818,9 +826,19 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
   source_stride = chorus_util->source_stride;
 
   buffer_length = chorus_util->buffer_length;
+  samplerate = chorus_util->samplerate;
+
+  input_volume = chorus_util->input_volume;
+  output_volume = chorus_util->output_volume;
+  
+  lfo_oscillator = chorus_util->lfo_oscillator;
+  lfo_frequency = chorus_util->lfo_frequency;
+
+  mix = chorus_util->mix;
+  delay = chorus_util->delay;
 
   /* frequency */
-  tuning = 0.25;
+  tuning = chorus_util->depth * 0.25;
   
   base_freq = exp2((chorus_util->base_key) / 12.0) * 440.0;
 
@@ -837,7 +855,10 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
     
     return;
   }
-
+  
+  /* get frequency period */
+  freq_period = 2.0 * M_PI * samplerate / base_freq;
+  
   pitch_freq_period = samplerate / pitch_freq;
 
   pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
@@ -864,9 +885,57 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
 
   ags_hq_pitch_util_pitch(hq_pitch_util);
 
-  /* pitch mix buffer */
+  /* mix pitch buffer */
+  mix_a = mix;
+  mix_b = mix - 0.5;
+
+  if(mix_a > 0.5){
+    mix_a = 0.5 - (-1.0 * (0.5 - mix_a));
+  }
+
+  if(mix_b < 0.0){
+    mix_b = 0.5 - (-1.0 * mix_b);
+  }
+
+  mix_a *= 2.0;
+  mix_b *= 2.0;
+  
   for(i = 0; i < buffer_length; i++){
-    //TODO:JK: implement me
+    gint8 new_z;
+
+    new_z = 0;
+    
+    switch(lfo_oscillator){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+    {
+      if(i + floor(delay * (sin(i * 2.0 * M_PI * lfo_frequency / samplerate))) < pitch_mix_buffer_length){
+	new_z = output_volume * (mix_a * (input_volume * source[i * source_stride]) + mix_b * (input_volume * pitch_mix_buffer[i + (guint) floor(delay * (sin(i * 2.0 * M_PI * lfo_frequency / samplerate)))]));
+      }
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+    {
+      //TODO:JK: implement me
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+    {
+      //TODO:JK: implement me
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+    {
+      //TODO:JK: implement me
+    }
+    break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+    {
+      //TODO:JK: implement me
+    }
+    break;
+    }
+    
+    destination[i * destination_stride] = new_z;
   }
 }
 
