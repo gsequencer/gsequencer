@@ -788,13 +788,86 @@ ags_chorus_util_set_delay(AgsChorusUtil *chorus_util,
 void
 ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
 {
+  AgsHQPitchUtil *hq_pitch_util;
+
+  gint8 *destination, *source;
+  gint8 *pitch_mix_buffer;
+
+  guint destination_stride, source_stride;
+  guint buffer_length;
+  gdouble base_key;
+  guint pitch_mix_buffer_length;  
+  gdouble base_freq, pitch_freq;
+  gdouble freq_period, pitch_freq_period;
+  gdouble tuning;
+  
+  guint i;
+
   if(chorus_util == NULL ||
      chorus_util->destination == NULL ||
      chorus_util->source == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  hq_pitch_util = chorus_util->hq_pitch_util;
+
+  destination = chorus_util->destination;
+  destination_stride = chorus_util->destination_stride;
+
+  source = chorus_util->source;
+  source_stride = chorus_util->source_stride;
+
+  buffer_length = chorus_util->buffer_length;
+
+  /* frequency */
+  tuning = 0.25;
+  
+  base_freq = exp2((chorus_util->base_key) / 12.0) * 440.0;
+
+  pitch_freq = exp2((chorus_util->base_key - tuning) / 12.0) * 440.0;
+  
+  if(base_freq <= 0.0){
+    g_warning("rejecting pitch base freq %f <= 0.0", base_freq);
+    
+    return;
+  }
+
+  if(pitch_freq <= 0.0){
+    g_warning("rejecting pitch pitch freq %f <= 0.0", pitch_freq);
+    
+    return;
+  }
+
+  pitch_freq_period = samplerate / pitch_freq;
+
+  pitch_mix_buffer_length = (freq_period / pitch_freq_period) * buffer_length;
+
+  pitch_mix_buffer = (gint8 *) chorus_util->pitch_mix_buffer;
+
+  ags_hq_pitch_util_set_destination(hq_pitch_util,
+				    pitch_mix_buffer);
+  
+  ags_hq_pitch_util_set_source(hq_pitch_util,
+			       source);
+
+  ags_hq_pitch_util_set_buffer_length(hq_pitch_util,
+				      pitch_mix_buffer_length);
+
+  ags_hq_pitch_util_set_format(hq_pitch_util,
+			       AGS_SOUNDCARD_SIGNED_8_BIT);
+
+  ags_hq_pitch_util_set_base_key(hq_pitch_util,
+				 chorus_util->base_key);
+
+  ags_hq_pitch_util_set_tuning(hq_pitch_util,
+			       tuning);
+
+  ags_hq_pitch_util_pitch(hq_pitch_util);
+
+  /* pitch mix buffer */
+  for(i = 0; i < buffer_length; i++){
+    //TODO:JK: implement me
+  }
 }
 
 void
