@@ -84,7 +84,7 @@ ags_hq_pitch_util_alloc()
   ptr->base_key = 0.0;
   ptr->tuning = 0.0;
 
-  ptr->linear_interpolate_util = NULL;
+  ptr->linear_interpolate_util = ags_linear_interpolate_util_alloc();
 
   return(ptr);
 }

@@ -36,6 +36,8 @@ G_BEGIN_DECLS
 #define AGS_TYPE_CHORUS_UTIL         (ags_chorus_util_get_type())
 #define AGS_CHORUS_UTIL(ptr) ((AgsChorusUtil *)(ptr))
 
+#define AGS_CHORUS_UTIL_DEFAULT_HISTORY_BUFFER_LENGTH (256)
+
 #define AGS_CHORUS_UTIL_DEFAULT_LFO_OSCILLATOR (AGS_SYNTH_OSCILLATOR_SIN)
 #define AGS_CHORUS_UTIL_DEFAULT_LFO_FREQUENCY (10.0)
 
@@ -54,6 +56,9 @@ struct _AgsChorusUtil
   guint destination_stride;
 
   gpointer pitch_mix_buffer;
+
+  gpointer pitch_mix_buffer_history;
+  guint history_buffer_length;
   
   guint buffer_length;
   guint format;
