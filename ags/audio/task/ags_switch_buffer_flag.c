@@ -263,7 +263,7 @@ ags_switch_buffer_flag_launch(AgsTask *task)
   }else if(AGS_IS_DEVIN(switch_buffer_flag->device)){
     ags_devin_switch_buffer_flag((AgsDevin *) switch_buffer_flag->device);
   }else if(AGS_IS_ALSA_DEVOUT(switch_buffer_flag->device)){
-    ags_alsa_devout_switch_buffer_flag((AgsAlsaDevout *) switch_buffer_flag->device);
+    ags_alsa_devout_switch_buffer((AgsAlsaDevout *) switch_buffer_flag->device);
   }else if(AGS_IS_ALSA_DEVIN(switch_buffer_flag->device)){
     ags_alsa_devin_switch_buffer_flag((AgsAlsaDevin *) switch_buffer_flag->device);
   }else if(AGS_IS_OSS_DEVOUT(switch_buffer_flag->device)){
