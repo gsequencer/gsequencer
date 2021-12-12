@@ -78,6 +78,7 @@ ags_channel_flags_get_type
 ags_channel_get_type
 ags_channel_thread_get_type
 ags_char_buffer_util_get_type
+ags_chorus_util_get_type
 ags_clear_audio_signal_get_type
 ags_clear_buffer_get_type
 ags_copy_audio_signal_get_type

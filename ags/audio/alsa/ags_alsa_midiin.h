@@ -23,8 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/ags_api_config.h>
+
+#if defined(AGS_WITH_ALSA)
 #include <sys/types.h>
 #include <alsa/asoundlib.h>
+#endif
 
 #include <ags/libags.h>
 

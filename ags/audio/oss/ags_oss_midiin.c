@@ -1133,7 +1133,7 @@ ags_oss_midiin_device_record_init(AgsSequencer *sequencer,
 #ifdef AGS_WITH_OSS
   /* open device fd */
   str = oss_midiin->device;
-  oss_midiin->device_fd = open(str, O_WRONLY, 0);
+  oss_midiin->device_fd = open(str, (O_RDONLY | O_NONBLOCK), 0);
 
   if(oss_midiin->device_fd == -1){
     oss_midiin->flags &= (~(AGS_OSS_MIDIIN_START_RECORD |
@@ -1251,11 +1251,12 @@ ags_oss_midiin_device_record(AgsSequencer *sequencer,
     num_read = read(device_fd, buf, sizeof(buf));
     
     if((num_read < 0)){
-      g_warning("Problem reading MIDI input");
+      // g_warning("Problem reading MIDI input");
     }
 
     if(num_read > 0){
-      if(ceil((backend_buffer_size + num_read) / AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE) > ceil(backend_buffer_size / AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE)){
+      if(backend_buffer[backend_buffer_mode] == NULL ||
+	 ceil((backend_buffer_size + num_read) / AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE) > ceil(backend_buffer_size / AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE)){
 	if(backend_buffer[backend_buffer_mode] == NULL){
 	  backend_buffer[backend_buffer_mode] = (char *) g_malloc(AGS_OSS_MIDIIN_DEFAULT_BUFFER_SIZE * sizeof(char));
 	}else{
