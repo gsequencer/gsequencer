@@ -1348,6 +1348,7 @@ ags_oss_devout_set_device(AgsSoundcard *soundcard,
   /* get oss devout mutex */
   oss_devout_mutex = AGS_OSS_DEVOUT_GET_OBJ_MUTEX(oss_devout);
 
+#if 0
   /* list cards */
   card_id = NULL;
   card_name = NULL;
@@ -1380,6 +1381,13 @@ ags_oss_devout_set_device(AgsSoundcard *soundcard,
 		   g_free);
   g_list_free_full(card_name_start,
 		   g_free);
+#else
+  g_rec_mutex_lock(oss_devout_mutex);
+
+  oss_devout->device = g_strdup(device);
+
+  g_rec_mutex_unlock(oss_devout_mutex);
+#endif
 }
 
 gchar*

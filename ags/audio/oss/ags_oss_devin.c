@@ -1309,7 +1309,8 @@ ags_oss_devin_set_device(AgsSoundcard *soundcard,
 
   /* get oss_devin mutex */
   oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
+  
+#if 0
   /* list cards */
   card_id = NULL;
   card_name = NULL;
@@ -1342,6 +1343,13 @@ ags_oss_devin_set_device(AgsSoundcard *soundcard,
 		   g_free);
   g_list_free_full(card_name_start,
 		   g_free);
+#else
+  g_rec_mutex_lock(oss_devin_mutex);
+
+  oss_devin->device = g_strdup(device);
+
+  g_rec_mutex_unlock(oss_devin_mutex);
+#endif
 }
 
 gchar*
