@@ -3,6 +3,7 @@ ags (3.13.6)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed missing ALSA and OSSv4 switch buffer flag
 	* fixed missing ALSA and OSSv4 soundcard thread sync flags
+	* fixed AgsClearBuffer task to clear correct buffer for new ALSA and OSSv4
 
 ags (3.13.5)
 
