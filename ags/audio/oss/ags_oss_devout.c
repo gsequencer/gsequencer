@@ -29,6 +29,7 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <poll.h>
 
 #include <ags/ags_api_config.h>
 
@@ -2298,11 +2299,11 @@ ags_oss_devout_device_play(AgsSoundcard *soundcard,
   ags_soundcard_lock_buffer(soundcard,
 			    oss_devout->app_buffer[oss_devout->app_buffer_mode]);
 
-  ags_oss_devout_oss_play_fill_ring_buffer(oss_devout->app_buffer[oss_devout->app_buffer_mode],
-					   oss_devout->format,
-					   oss_devout->backend_buffer[oss_devout->backend_buffer_mode],
-					   oss_devout->pcm_channels,
-					   oss_devout->buffer_size);
+  ags_oss_devout_device_fill_backend_buffer(oss_devout->app_buffer[oss_devout->app_buffer_mode],
+					    oss_devout->format,
+					    oss_devout->backend_buffer[oss_devout->backend_buffer_mode],
+					    oss_devout->pcm_channels,
+					    oss_devout->buffer_size);
 
   ags_soundcard_unlock_buffer(soundcard,
 			      oss_devout->app_buffer[oss_devout->app_buffer_mode]);
