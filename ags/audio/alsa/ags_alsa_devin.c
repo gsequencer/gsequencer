@@ -1560,8 +1560,10 @@ ags_alsa_devin_pcm_info(AgsSoundcard *soundcard,
     
   unsigned int val;
   int dir;
+#if defined(AGS_WITH_ALSA)
   snd_pcm_uframes_t frames;
-
+#endif
+  
   int rc;
   int err;
 
