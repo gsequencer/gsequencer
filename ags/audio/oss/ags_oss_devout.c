@@ -1567,7 +1567,7 @@ ags_oss_devout_list_cards(AgsSoundcard *soundcard,
     if((DSP_CAP_OUTPUT & (ai.caps)) != 0){
       if(card_id != NULL){
 	card_id[0] = g_list_prepend(card_id[0],
-				    g_strdup_printf("/dev/dsp%i", i));
+				    g_strdup(ai.devnode));
       }
 	
       if(card_name != NULL){
@@ -1575,10 +1575,10 @@ ags_oss_devout_list_cards(AgsSoundcard *soundcard,
 				      g_strdup(ai.name));
       }
     }
-
+    
     next = ai.next_play_engine;
       
-    if(next <= 0){
+    if(next < 0){
       break;
     }
   }

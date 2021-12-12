@@ -1523,22 +1523,22 @@ ags_oss_devin_list_cards(AgsSoundcard *soundcard,
 	
       continue;
     }
-      
-    if((DSP_CAP_OUTPUT & (ai.caps)) != 0){
+
+    if((DSP_CAP_INPUT & (ai.caps)) != 0){
       if(card_id != NULL){
-	*card_id = g_list_prepend(*card_id,
-				  g_strdup_printf("/dev/dsp%i", i));
+	card_id[0] = g_list_prepend(card_id[0],
+				    g_strdup(ai.devnode));
       }
 	
       if(card_name != NULL){
-	*card_name = g_list_prepend(*card_name,
-				    g_strdup(ai.name));
+	card_name[0] = g_list_prepend(card_name[0],
+				      g_strdup(ai.name));
       }
     }
 
     next = ai.next_rec_engine;
       
-    if(next <= 0){
+    if(next < 0){
       break;
     }
   }
