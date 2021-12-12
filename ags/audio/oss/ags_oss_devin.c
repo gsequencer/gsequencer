@@ -2221,7 +2221,7 @@ ags_oss_devin_device_record(AgsSoundcard *soundcard,
 
   /* write ring buffer */
   n_write = read(oss_devin->device_fd,
-		 oss_devin->backend_buffer[oss_devin->nth_ring_buffer],
+		 oss_devin->backend_buffer[oss_devin->backend_buffer_mode],
 		 oss_devin->pcm_channels * oss_devin->buffer_size * word_size * sizeof (char));
 
   /* fill buffer */
