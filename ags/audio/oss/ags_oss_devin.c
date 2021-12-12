@@ -1867,7 +1867,7 @@ ags_oss_devin_device_record_init(AgsSoundcard *soundcard,
     return;
   }
 
-  /* prepare for recordback */
+  /* prepare for recording */
   oss_devin->flags |= (AGS_OSS_DEVIN_START_RECORD |
 		       AGS_OSS_DEVIN_RECORD |
 		       AGS_OSS_DEVIN_NONBLOCKING);
@@ -1973,7 +1973,7 @@ ags_oss_devin_device_record_init(AgsSoundcard *soundcard,
     g_rec_mutex_unlock(oss_devin_mutex);
 
     str = strerror(errno);
-    g_warning("Channels count (%i) not available for recordbacks: %s", oss_devin->dsp_channels, str);
+    g_warning("Channels count (%i) not available for recording: %s", oss_devin->dsp_channels, str);
 
     if(error != NULL){
       g_set_error(error,
