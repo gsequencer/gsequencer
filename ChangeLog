@@ -3,6 +3,7 @@ ags (3.13.5)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed AgsChorusUtil boundaries
 	* fixed conditional build of AgsAlsaDevout
+	* fixed AgsOssMidiin recording MIDI
 
 ags (3.13.4)
 
