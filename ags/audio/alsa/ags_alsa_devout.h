@@ -23,8 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/ags_api_config.h>
+
+#if defined(AGS_WITH_ALSA)
 #include <sys/types.h>
 #include <alsa/asoundlib.h>
+#endif
 
 #include <ags/libags.h>
 
@@ -185,10 +189,17 @@ struct _AgsAlsaDevout
   
   char *device;
   int rc;
+
+#if defined(AGS_WITH_ALSA)
   snd_pcm_t *handle;
   snd_async_handler_t *ahandler;
   snd_pcm_hw_params_t *params;
-
+#else
+  gpointer handle;
+  gpointer ahandler;
+  gpointer params;
+#endif
+  
   GList *io_channel;
   GList *tag;
 };

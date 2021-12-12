@@ -2,6 +2,7 @@ ags (3.13.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed AgsChorusUtil boundaries
+	* fixed conditional build of AgsAlsaDevout
 
 ags (3.13.4)
 
