@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,14 @@
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_devin.h>
 #include <ags/audio/ags_midiin.h>
+
+#include <ags/audio/alsa/ags_alsa_devout.h>
+#include <ags/audio/alsa/ags_alsa_devin.h>
+#include <ags/audio/alsa/ags_alsa_midiin.h>
+
+#include <ags/audio/oss/ags_oss_devout.h>
+#include <ags/audio/oss/ags_oss_devin.h>
+#include <ags/audio/oss/ags_oss_midiin.h>
 
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_devin.h>
@@ -254,6 +262,14 @@ ags_switch_buffer_flag_launch(AgsTask *task)
     ags_devout_switch_buffer_flag((AgsDevout *) switch_buffer_flag->device);
   }else if(AGS_IS_DEVIN(switch_buffer_flag->device)){
     ags_devin_switch_buffer_flag((AgsDevin *) switch_buffer_flag->device);
+  }else if(AGS_IS_ALSA_DEVOUT(switch_buffer_flag->device)){
+    ags_alsa_devout_switch_buffer_flag((AgsAlsaDevout *) switch_buffer_flag->device);
+  }else if(AGS_IS_ALSA_DEVIN(switch_buffer_flag->device)){
+    ags_alsa_devin_switch_buffer_flag((AgsAlsaDevin *) switch_buffer_flag->device);
+  }else if(AGS_IS_OSS_DEVOUT(switch_buffer_flag->device)){
+    ags_oss_devout_switch_buffer_flag((AgsOssDevout *) switch_buffer_flag->device);
+  }else if(AGS_IS_OSS_DEVIN(switch_buffer_flag->device)){
+    ags_oss_devin_switch_buffer_flag((AgsOssDevin *) switch_buffer_flag->device);
   }else if(AGS_IS_JACK_DEVOUT(switch_buffer_flag->device)){
     ags_jack_devout_switch_buffer_flag((AgsJackDevout *) switch_buffer_flag->device);
   }else if(AGS_IS_JACK_DEVIN(switch_buffer_flag->device)){
@@ -272,6 +288,10 @@ ags_switch_buffer_flag_launch(AgsTask *task)
     ags_core_audio_devin_switch_buffer_flag((AgsCoreAudioDevin *) switch_buffer_flag->device);
   }else if(AGS_IS_MIDIIN(switch_buffer_flag->device)){
     ags_midiin_switch_buffer_flag((AgsMidiin *) switch_buffer_flag->device);
+  }else if(AGS_IS_ALSA_MIDIIN(switch_buffer_flag->device)){
+    ags_alsa_midiin_switch_buffer_flag((AgsAlsaMidiin *) switch_buffer_flag->device);
+  }else if(AGS_IS_OSS_MIDIIN(switch_buffer_flag->device)){
+    ags_oss_midiin_switch_buffer_flag((AgsOssMidiin *) switch_buffer_flag->device);
   }else if(AGS_IS_JACK_MIDIIN(switch_buffer_flag->device)){
     ags_jack_midiin_switch_buffer_flag((AgsJackMidiin *) switch_buffer_flag->device);
   }else if(AGS_IS_CORE_AUDIO_MIDIIN(switch_buffer_flag->device)){
