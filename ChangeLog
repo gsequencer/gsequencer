@@ -2,6 +2,7 @@ ags (3.13.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed missing ALSA and OSSv4 switch buffer flag
+	* fixed missing ALSA and OSSv4 soundcard thread sync flags
 
 ags (3.13.5)
 

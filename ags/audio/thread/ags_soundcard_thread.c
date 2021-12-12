@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2021 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,12 @@
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_devin.h>
+
+#include <ags/audio/alsa/ags_alsa_devout.h>
+#include <ags/audio/alsa/ags_alsa_devin.h>
+
+#include <ags/audio/oss/ags_oss_devout.h>
+#include <ags/audio/oss/ags_oss_devin.h>
 
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_devin.h>
@@ -267,6 +273,10 @@ ags_soundcard_thread_set_property(GObject *gobject,
 	/* playback */
 	if(AGS_IS_DEVOUT(soundcard)){
 	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
+	}else if(AGS_IS_ALSA_DEVOUT(soundcard)){
+	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
+	}else if(AGS_IS_OSS_DEVOUT(soundcard)){
+	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
 	}else if(AGS_IS_WASAPI_DEVOUT(soundcard)){
 	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_POST_SYNC);
 	}else if(AGS_IS_JACK_DEVOUT(soundcard) ||
@@ -278,6 +288,10 @@ ags_soundcard_thread_set_property(GObject *gobject,
 
 	/* capture */
 	if(AGS_IS_DEVIN(soundcard)){
+	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
+	}else if(AGS_IS_ALSA_DEVIN(soundcard)){
+	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
+	}else if(AGS_IS_OSS_DEVIN(soundcard)){
 	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
 	}else if(AGS_IS_WASAPI_DEVIN(soundcard)){
 	  ags_thread_set_flags(soundcard_thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC);
