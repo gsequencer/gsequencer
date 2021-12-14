@@ -1583,7 +1583,7 @@ ags_alsa_devin_pcm_info(AgsSoundcard *soundcard,
   g_rec_mutex_lock(alsa_devin_mutex);
 
 #if defined(AGS_WITH_ALSA)
-  /* Open PCM device for recordback. */
+  /* Open PCM device for recording. */
   handle = NULL;
 
   rc = snd_pcm_open(&handle, card_id, SND_PCM_STREAM_CAPTURE, 0);
@@ -2320,6 +2320,7 @@ ags_alsa_devin_device_fill_backend_buffer(void *app_buffer,
   break;
   default:
     g_warning("ags_alsa_devin_alsa_record(): unsupported word size");
+
     return;
   }
 
@@ -2333,7 +2334,7 @@ ags_alsa_devin_device_fill_backend_buffer(void *app_buffer,
     
   big_endian = snd_pcm_format_big_endian(format) == 1;
   to_unsigned = snd_pcm_format_unsigned(format) == 1;
-
+  
   /* fill the channel areas */
   for(count = 0; count < buffer_size; count++){
     for(chn = 0; chn < channels; chn++){	
@@ -2462,10 +2463,10 @@ ags_alsa_devin_device_record(AgsSoundcard *soundcard,
   //				AGS_ALSA_DEVIN_BUFFER1 |
   //				AGS_ALSA_DEVIN_BUFFER2 |
   //				AGS_ALSA_DEVIN_BUFFER3) & (alsa_devin->flags)));
-
+  
 #ifdef AGS_WITH_ALSA  
   /* write ring buffer */
-//  g_message("read %d", alsa_devin->buffer_size);
+//  g_message("read %d from 0x%x -> 0x%x", alsa_devin->buffer_size, alsa_devin->backend_buffer[alsa_devin->backend_buffer_mode], alsa_devin->app_buffer[alsa_devin->app_buffer_mode]);
   
   alsa_devin->rc = snd_pcm_readi(alsa_devin->handle,
 				 alsa_devin->backend_buffer[alsa_devin->backend_buffer_mode],
@@ -3259,10 +3260,10 @@ ags_alsa_devin_switch_buffer_flag(AgsAlsaDevin *alsa_devin)
   /* switch buffer flag */
   g_rec_mutex_lock(alsa_devin_mutex);
 
-  if(alsa_devin->app_buffer_mode < AGS_ALSA_DEVIN_APP_BUFFER_3){
-    alsa_devin->app_buffer_mode += 1;
-  }else{
+  if(alsa_devin->app_buffer_mode == AGS_ALSA_DEVIN_APP_BUFFER_3){
     alsa_devin->app_buffer_mode = AGS_ALSA_DEVIN_APP_BUFFER_0;
+  }else{
+    alsa_devin->app_buffer_mode += 1;
   }
 
   g_rec_mutex_unlock(alsa_devin_mutex);

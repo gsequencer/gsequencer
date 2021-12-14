@@ -1652,10 +1652,10 @@ ags_devin_list_cards(AgsSoundcard *soundcard,
 	continue;
       }
       
-      if((DSP_CAP_OUTPUT & (ai.caps)) != 0){
+      if((DSP_CAP_INPUT & (ai.caps)) != 0){
 	if(card_id != NULL){
 	  *card_id = g_list_prepend(*card_id,
-				    g_strdup_printf("/dev/dsp%i", i));
+				    g_strdup(ai.devnode));
 	}
 	
 	if(card_name != NULL){
@@ -1666,7 +1666,7 @@ ags_devin_list_cards(AgsSoundcard *soundcard,
 
       next = ai.next_rec_engine;
       
-      if(next <= 0){
+      if(next < 0){
 	break;
       }
     }

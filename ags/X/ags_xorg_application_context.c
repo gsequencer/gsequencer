@@ -3815,6 +3815,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     
     /* export thread */
     if(AGS_IS_DEVOUT(list->data) ||
+       AGS_IS_ALSA_DEVOUT(list->data) ||
+       AGS_IS_OSS_DEVOUT(list->data) ||
        AGS_IS_WASAPI_DEVOUT(list->data) ||
        AGS_IS_JACK_DEVOUT(list->data) ||
        AGS_IS_PULSE_DEVOUT(list->data) ||

@@ -365,8 +365,12 @@ ags_clear_buffer_launch(AgsTask *task)
 
     alsa_devin = (AgsAlsaDevin *) clear_buffer->device;    
 
-    /* retrieve nth buffer */    
-    nth_buffer = alsa_devin->app_buffer_mode;
+    /* retrieve nth buffer */
+    if(alsa_devin->app_buffer_mode == AGS_ALSA_DEVIN_APP_BUFFER_3){
+      nth_buffer = AGS_ALSA_DEVIN_APP_BUFFER_0;
+    }else{
+      nth_buffer = alsa_devin->app_buffer_mode + 1;
+    }
     
     ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), alsa_devin->app_buffer[nth_buffer]);
     
@@ -378,7 +382,7 @@ ags_clear_buffer_launch(AgsTask *task)
 
     oss_devout = (AgsOssDevout *) clear_buffer->device;
 
-    /* retrieve nth buffer */    
+    /* retrieve nth buffer */
     nth_buffer = oss_devout->app_buffer_mode;
 
     ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), oss_devout->app_buffer[nth_buffer]);
@@ -391,8 +395,12 @@ ags_clear_buffer_launch(AgsTask *task)
 
     oss_devin = (AgsOssDevin *) clear_buffer->device;    
 
-    /* retrieve nth buffer */    
-    nth_buffer = oss_devin->app_buffer_mode;
+    /* retrieve nth buffer */
+    if(oss_devin->app_buffer_mode == AGS_OSS_DEVIN_APP_BUFFER_3){
+      nth_buffer = AGS_OSS_DEVIN_APP_BUFFER_0;
+    }else{
+      nth_buffer = oss_devin->app_buffer_mode + 1;
+    }
     
     ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), oss_devin->app_buffer[nth_buffer]);
     
